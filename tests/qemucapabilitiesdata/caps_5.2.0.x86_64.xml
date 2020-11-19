@@ -68,7 +68,6 @@
   <flag name='kvm-pit-lost-tick-policy'/>
   <flag name='boot-strict'/>
   <flag name='pvpanic'/>
-  <flag name='enable-fips'/>
   <flag name='spice-file-xfer-disable'/>
   <flag name='usb-kbd'/>
   <flag name='msg-timestamp'/>
@@ -251,10 +250,10 @@
   <flag name='fsdev.createmode'/>
   <flag name='dc390'/>
   <flag name='am53c974'/>
-  <version>5001091</version>
+  <version>5002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
-  <package>v5.2.0-rc1</package>
+  <package>v5.2.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>

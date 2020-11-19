@@ -17,11 +17,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 91,
-      "minor": 1,
+      "micro": 0,
+      "minor": 2,
       "major": 5
     },
-    "package": "v5.2.0-rc1"
+    "package": "v5.2.0"
   },
   "id": "libvirt-2"
 }
@@ -1154,8 +1154,8 @@
       "parent": "sys-bus-device"
     },
     {
-      "name": "pc-q35-2.8-machine",
-      "parent": "generic-pc-machine"
+      "name": "i82557a",
+      "parent": "pci-device"
     },
     {
       "name": "vhost-user-scsi-pci-non-transitional",
@@ -1170,12 +1170,12 @@
       "parent": "chardev"
     },
     {
-      "name": "generic-sdhci",
-      "parent": "sys-bus-device"
+      "name": "pc-q35-2.8-machine",
+      "parent": "generic-pc-machine"
     },
     {
-      "name": "i82557a",
-      "parent": "pci-device"
+      "name": "generic-sdhci",
+      "parent": "sys-bus-device"
     },
     {
       "name": "virtio-scsi-pci-non-transitional",
@@ -1310,12 +1310,12 @@
       "parent": "ide-device"
     },
     {
-      "name": "tcg-accel",
-      "parent": "accel"
+      "name": "EPYC-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
-      "name": "piix4-ide",
-      "parent": "pci-ide"
+      "name": "tcg-accel",
+      "parent": "accel"
     },
     {
       "name": "virtio-balloon-pci",
@@ -1350,24 +1350,24 @@
       "parent": "pci-device"
     },
     {
-      "name": "i82551",
-      "parent": "pci-device"
-    },
-    {
-      "name": "EPYC-v1-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "pc-i440fx-2.6-machine",
+      "parent": "generic-pc-machine"
     },
     {
       "name": "isa-ipmi-kcs",
       "parent": "isa-device"
     },
     {
+      "name": "i82551",
+      "parent": "pci-device"
+    },
+    {
       "name": "Icelake-Server-noTSX-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
-      "name": "pc-i440fx-2.6-machine",
-      "parent": "generic-pc-machine"
+      "name": "piix4-ide",
+      "parent": "pci-ide"
     },
     {
       "name": "SandyBridge-x86_64-cpu",
@@ -1406,12 +1406,12 @@
       "parent": "apic-common"
     },
     {
-      "name": "kvm64-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "isa-pit",
       "parent": "pit-common"
+    },
+    {
+      "name": "kvm64-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "Broadwell-v4-x86_64-cpu",
@@ -1462,12 +1462,12 @@
       "parent": "pci-device"
     },
     {
-      "name": "pentium3-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "kvm-i8259",
       "parent": "pic-common"
+    },
+    {
+      "name": "pentium3-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "isa-serial",
@@ -1486,6 +1486,10 @@
       "parent": "vhost-user-blk-pci-base"
     },
     {
+      "name": "virtio-rng-pci-non-transitional",
+      "parent": "virtio-rng-pci-base"
+    },
+    {
       "name": "cirrus-vga",
       "parent": "pci-device"
     },
@@ -1502,16 +1506,12 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "virtio-serial-pci",
-      "parent": "virtio-serial-pci-base"
-    },
-    {
       "name": "i82559er",
       "parent": "pci-device"
     },
     {
-      "name": "virtio-rng-pci-non-transitional",
-      "parent": "virtio-rng-pci-base"
+      "name": "virtio-serial-pci",
+      "parent": "virtio-serial-pci-base"
     },
     {
       "name": "Skylake-Client-x86_64-cpu",
@@ -1750,11 +1750,11 @@
       "parent": "base-sysbus-fdc"
     },
     {
-      "name": "AMDVI-PCI",
+      "name": "i82559c",
       "parent": "pci-device"
     },
     {
-      "name": "i82559c",
+      "name": "AMDVI-PCI",
       "parent": "pci-device"
     },
     {
@@ -1990,12 +1990,12 @@
       "parent": "pci-ehci-usb"
     },
     {
-      "name": "pc-i440fx-2.11-machine",
-      "parent": "generic-pc-machine"
-    },
-    {
       "name": "pxb",
       "parent": "pci-device"
+    },
+    {
+      "name": "pc-i440fx-2.11-machine",
+      "parent": "generic-pc-machine"
     },
     {
       "name": "AC97",
@@ -2026,8 +2026,8 @@
       "parent": "isa-device"
     },
     {
-      "name": "virtio-iommu-pci-non-transitional",
-      "parent": "virtio-iommu-device-base"
+      "name": "hyperv-testdev",
+      "parent": "isa-device"
     },
     {
       "name": "scsi-hd",
@@ -2074,28 +2074,28 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "hyperv-testdev",
-      "parent": "isa-device"
+      "name": "virtio-iommu-pci-non-transitional",
+      "parent": "virtio-iommu-device-base"
     },
     {
       "name": "s3c-sdhci",
       "parent": "generic-sdhci"
     },
     {
-      "name": "Westmere-v2-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "tpm-tis",
+      "parent": "isa-device"
     },
     {
       "name": "fw_cfg_mem",
       "parent": "fw_cfg"
     },
     {
-      "name": "ccid-card-emulated",
-      "parent": "ccid-card"
+      "name": "Westmere-v2-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
-      "name": "tpm-tis",
-      "parent": "isa-device"
+      "name": "ccid-card-emulated",
+      "parent": "ccid-card"
     },
     {
       "name": "pc-q35-5.1-machine",
@@ -2518,12 +2518,12 @@
       "parent": "virtio-gpu-base"
     },
     {
-      "name": "hda-duplex",
-      "parent": "hda-audio"
-    },
-    {
       "name": "pentium-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
+    },
+    {
+      "name": "hda-duplex",
+      "parent": "hda-audio"
     },
     {
       "name": "amd-iommu-iommu-memory-region",
@@ -2534,10 +2534,6 @@
       "parent": "object"
     },
     {
-      "name": "virtio-balloon-device",
-      "parent": "virtio-device"
-    },
-    {
       "name": "Cooperlake-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
@@ -2546,12 +2542,16 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "Nehalem-IBRS-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "cfi.pflash01",
       "parent": "sys-bus-device"
+    },
+    {
+      "name": "virtio-balloon-device",
+      "parent": "virtio-device"
+    },
+    {
+      "name": "Nehalem-IBRS-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "pc-q35-2.7-machine",
@@ -2782,8 +2782,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "kvm64-v1-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "pcie-root-port",
+      "parent": "pcie-root-port-base"
     },
     {
       "name": "IDE",
@@ -2794,16 +2794,16 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "pcie-root-port",
-      "parent": "pcie-root-port-base"
-    },
-    {
       "name": "mptsas1068",
       "parent": "pci-device"
     },
     {
       "name": "scsi-block",
       "parent": "scsi-disk-base"
+    },
+    {
+      "name": "kvm64-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "Snowridge-v1-x86_64-cpu",
@@ -4007,11 +4007,6 @@
       "type": "bool"
     },
     {
-      "default-value": false,
-      "name": "x-no-mmap",
-      "type": "bool"
-    },
-    {
       "default-value": 0,
       "name": "yres",
       "type": "uint32"
@@ -4021,6 +4016,17 @@
       "name": "x-vga",
       "description": "on/off",
       "type": "bool"
+    },
+    {
+      "default-value": "on",
+      "name": "x-pre-copy-dirty-page-tracking",
+      "description": "on/off/auto",
+      "type": "OnOffAuto"
+    },
+    {
+      "name": "x-nv-gpudirect-clique",
+      "description": "NVIDIA GPUDirect Clique ID (0 - 15)",
+      "type": "uint4"
     },
     {
       "default-value": "off",
@@ -4056,6 +4062,11 @@
       "default-value": 4294967295,
       "name": "x-pci-sub-vendor-id",
       "type": "uint32"
+    },
+    {
+      "default-value": false,
+      "name": "x-enable-migration",
+      "type": "bool"
     },
     {
       "default-value": false,
@@ -4106,9 +4117,9 @@
       "type": "bool"
     },
     {
-      "name": "x-nv-gpudirect-clique",
-      "description": "NVIDIA GPUDirect Clique ID (0 - 15)",
-      "type": "uint4"
+      "default-value": 4294967295,
+      "name": "x-pci-vendor-id",
+      "type": "uint32"
     },
     {
       "default-value": 0,
@@ -4116,9 +4127,9 @@
       "type": "uint32"
     },
     {
-      "default-value": 4294967295,
-      "name": "x-pci-vendor-id",
-      "type": "uint32"
+      "default-value": false,
+      "name": "x-no-mmap",
+      "type": "bool"
     },
     {
       "default-value": false,
@@ -4809,7 +4820,6 @@
     {
       "default-value": false,
       "name": "removable",
-      "description": "on/off",
       "type": "bool"
     },
     {
@@ -4833,6 +4843,11 @@
       "default-value": 0,
       "name": "opt_io_size",
       "type": "size"
+    },
+    {
+      "default-value": false,
+      "name": "commandlog",
+      "type": "bool"
     },
     {
       "name": "drive",
@@ -10727,6 +10742,170 @@
     {
       "parameters": [
         {
+          "name": "resourcecontrol",
+          "type": "string"
+        },
+        {
+          "name": "spawn",
+          "type": "string"
+        },
+        {
+          "name": "elevateprivileges",
+          "type": "string"
+        },
+        {
+          "name": "obsolete",
+          "type": "string"
+        },
+        {
+          "name": "enable",
+          "type": "boolean"
+        }
+      ],
+      "option": "sandbox"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "smbios"
+    },
+    {
+      "parameters": [
+        {
+          "name": "rendernode",
+          "type": "string"
+        },
+        {
+          "name": "gl",
+          "type": "boolean"
+        },
+        {
+          "name": "head",
+          "type": "number"
+        },
+        {
+          "name": "display",
+          "type": "string"
+        },
+        {
+          "name": "seamless-migration",
+          "type": "boolean"
+        },
+        {
+          "name": "playback-compression",
+          "type": "boolean"
+        },
+        {
+          "name": "agent-mouse",
+          "type": "boolean"
+        },
+        {
+          "name": "streaming-video",
+          "type": "string"
+        },
+        {
+          "name": "zlib-glz-wan-compression",
+          "type": "string"
+        },
+        {
+          "name": "jpeg-wan-compression",
+          "type": "string"
+        },
+        {
+          "name": "image-compression",
+          "type": "string"
+        },
+        {
+          "name": "plaintext-channel",
+          "type": "string"
+        },
+        {
+          "name": "tls-channel",
+          "type": "string"
+        },
+        {
+          "name": "tls-ciphers",
+          "type": "string"
+        },
+        {
+          "name": "x509-dh-key-file",
+          "type": "string"
+        },
+        {
+          "name": "x509-cacert-file",
+          "type": "string"
+        },
+        {
+          "name": "x509-cert-file",
+          "type": "string"
+        },
+        {
+          "name": "x509-key-password",
+          "type": "string"
+        },
+        {
+          "name": "x509-key-file",
+          "type": "string"
+        },
+        {
+          "name": "x509-dir",
+          "type": "string"
+        },
+        {
+          "name": "sasl",
+          "type": "boolean"
+        },
+        {
+          "name": "disable-agent-file-xfer",
+          "type": "boolean"
+        },
+        {
+          "name": "disable-copy-paste",
+          "type": "boolean"
+        },
+        {
+          "name": "disable-ticketing",
+          "type": "boolean"
+        },
+        {
+          "name": "password",
+          "type": "string"
+        },
+        {
+          "name": "unix",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv6",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv4",
+          "type": "boolean"
+        },
+        {
+          "name": "addr",
+          "type": "string"
+        },
+        {
+          "name": "tls-port",
+          "type": "number"
+        },
+        {
+          "name": "port",
+          "type": "number"
+        }
+      ],
+      "option": "spice"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "acpi"
+    },
+    {
+      "parameters": [
+        {
           "name": "dmode",
           "type": "number"
         },
@@ -10912,170 +11091,6 @@
         }
       ],
       "option": "fsdev"
-    },
-    {
-      "parameters": [
-        {
-          "name": "rendernode",
-          "type": "string"
-        },
-        {
-          "name": "gl",
-          "type": "boolean"
-        },
-        {
-          "name": "head",
-          "type": "number"
-        },
-        {
-          "name": "display",
-          "type": "string"
-        },
-        {
-          "name": "seamless-migration",
-          "type": "boolean"
-        },
-        {
-          "name": "playback-compression",
-          "type": "boolean"
-        },
-        {
-          "name": "agent-mouse",
-          "type": "boolean"
-        },
-        {
-          "name": "streaming-video",
-          "type": "string"
-        },
-        {
-          "name": "zlib-glz-wan-compression",
-          "type": "string"
-        },
-        {
-          "name": "jpeg-wan-compression",
-          "type": "string"
-        },
-        {
-          "name": "image-compression",
-          "type": "string"
-        },
-        {
-          "name": "plaintext-channel",
-          "type": "string"
-        },
-        {
-          "name": "tls-channel",
-          "type": "string"
-        },
-        {
-          "name": "tls-ciphers",
-          "type": "string"
-        },
-        {
-          "name": "x509-dh-key-file",
-          "type": "string"
-        },
-        {
-          "name": "x509-cacert-file",
-          "type": "string"
-        },
-        {
-          "name": "x509-cert-file",
-          "type": "string"
-        },
-        {
-          "name": "x509-key-password",
-          "type": "string"
-        },
-        {
-          "name": "x509-key-file",
-          "type": "string"
-        },
-        {
-          "name": "x509-dir",
-          "type": "string"
-        },
-        {
-          "name": "sasl",
-          "type": "boolean"
-        },
-        {
-          "name": "disable-agent-file-xfer",
-          "type": "boolean"
-        },
-        {
-          "name": "disable-copy-paste",
-          "type": "boolean"
-        },
-        {
-          "name": "disable-ticketing",
-          "type": "boolean"
-        },
-        {
-          "name": "password",
-          "type": "string"
-        },
-        {
-          "name": "unix",
-          "type": "boolean"
-        },
-        {
-          "name": "ipv6",
-          "type": "boolean"
-        },
-        {
-          "name": "ipv4",
-          "type": "boolean"
-        },
-        {
-          "name": "addr",
-          "type": "string"
-        },
-        {
-          "name": "tls-port",
-          "type": "number"
-        },
-        {
-          "name": "port",
-          "type": "number"
-        }
-      ],
-      "option": "spice"
-    },
-    {
-      "parameters": [
-        {
-          "name": "resourcecontrol",
-          "type": "string"
-        },
-        {
-          "name": "spawn",
-          "type": "string"
-        },
-        {
-          "name": "elevateprivileges",
-          "type": "string"
-        },
-        {
-          "name": "obsolete",
-          "type": "string"
-        },
-        {
-          "name": "enable",
-          "type": "boolean"
-        }
-      ],
-      "option": "sandbox"
-    },
-    {
-      "parameters": [
-      ],
-      "option": "acpi"
-    },
-    {
-      "parameters": [
-      ],
-      "option": "smbios"
     },
     {
       "parameters": [
