@@ -654,6 +654,7 @@ if conf.has('WITH_LIBVIRTD')
     'virsh-define-dev-segfault',
     'virsh-int-overflow',
     'virsh-optparse',
+    'virsh-output',
     'virsh-read-bufsiz',
     'virsh-read-non-seekable',
     'virsh-schedinfo',
