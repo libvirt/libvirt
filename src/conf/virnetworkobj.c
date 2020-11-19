@@ -1001,6 +1001,7 @@ virNetworkLoadConfig(virNetworkObjListPtr nets,
     char *configFile = NULL, *autostartLink = NULL;
     virNetworkDefPtr def = NULL;
     virNetworkObjPtr obj;
+    bool saveConfig = false;
     int autostart;
 
     if ((configFile = virNetworkConfigFile(configDir, name)) == NULL)
@@ -1029,7 +1030,10 @@ virNetworkLoadConfig(virNetworkObjListPtr nets,
     case VIR_NETWORK_FORWARD_OPEN:
         if (!def->mac_specified) {
             virNetworkSetBridgeMacAddr(def);
-            virNetworkSaveConfig(configDir, def, xmlopt);
+            /* We just generated a new MAC address, and we need to persist
+             * the configuration to disk to avoid the network getting a
+             * different one the next time the daemon is started */
+            saveConfig = true;
         }
         break;
 
@@ -1046,6 +1050,17 @@ virNetworkLoadConfig(virNetworkObjListPtr nets,
     case VIR_NETWORK_FORWARD_LAST:
     default:
         virReportEnumRangeError(virNetworkForwardType, def->forward.type);
+        goto error;
+    }
+
+    /* The network didn't have a UUID so we generated a new one, and
+     * we need to persist the configuration to disk to avoid the network
+     * getting a different one the next time the daemon is started */
+    if (!def->uuid_specified)
+        saveConfig = true;
+
+    if (saveConfig &&
+        virNetworkSaveConfig(configDir, def, xmlopt) < 0) {
         goto error;
     }
 
