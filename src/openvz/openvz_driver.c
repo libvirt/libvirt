@@ -2130,9 +2130,9 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
                            _("missing host in migration URI: %s"),
                            uri_in);
             goto error;
-        } else {
-            hostname = uri->server;
         }
+
+        hostname = uri->server;
     }
 
     *uri_out = g_strdup_printf("ssh://%s", hostname);
