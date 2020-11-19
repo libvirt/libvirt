@@ -562,13 +562,23 @@ static bool
 cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
-    const char *source = NULL, *target = NULL, *driver = NULL,
-                *subdriver = NULL, *type = NULL, *mode = NULL,
-                *iothread = NULL, *cache = NULL, *io = NULL,
-                *serial = NULL, *straddr = NULL, *wwn = NULL,
-                *targetbus = NULL, *alias = NULL;
+    const char *source = NULL;
+    const char *target = NULL;
+    const char *driver = NULL;
+    const char *subdriver = NULL;
+    const char *type = NULL;
+    const char *mode = NULL;
+    const char *iothread = NULL;
+    const char *cache = NULL;
+    const char *io = NULL;
+    const char *serial = NULL;
+    const char *straddr = NULL;
+    const char *wwn = NULL;
+    const char *targetbus = NULL;
+    const char *alias = NULL;
     struct DiskAddress diskAddr;
-    bool isFile = false, functionReturn = false;
+    bool isFile = false;
+    bool functionReturn = false;
     int ret;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     const char *stype = NULL;
