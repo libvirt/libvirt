@@ -577,7 +577,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     const char *targetbus = NULL;
     const char *alias = NULL;
     struct DiskAddress diskAddr;
-    bool isFile = false;
+    bool isBlock = false;
     int ret;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     const char *stype = NULL;
@@ -617,15 +617,15 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (!stype) {
-        if (driver && (STREQ(driver, "file") || STREQ(driver, "tap"))) {
-            isFile = true;
-        } else {
-            if (source && !stat(source, &st))
-                isFile = S_ISREG(st.st_mode) ? true : false;
-        }
-    } else if (STREQ(stype, "file")) {
-        isFile = true;
-    } else if (STRNEQ(stype, "block")) {
+        if (STRNEQ_NULLABLE(driver, "file") &&
+            STRNEQ_NULLABLE(driver, "tap") &&
+            source &&
+            stat(source, &st) == 0 &&
+            S_ISBLK(st.st_mode))
+            isBlock = true;
+    } else if (STREQ(stype, "block")) {
+        isBlock = true;
+    } else if (STRNEQ(stype, "file")) {
         vshError(ctl, _("Unknown source type: '%s'"), stype);
         return false;
     }
@@ -642,8 +642,12 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     /* Make XML of disk */
-    virBufferAsprintf(&buf, "<disk type='%s'",
-                      isFile ? "file" : "block");
+    virBufferAddLit(&buf, "<disk");
+    if (isBlock)
+        virBufferAddLit(&buf, " type='block'");
+    else
+        virBufferAddLit(&buf, " type='file'");
+
     if (type)
         virBufferAsprintf(&buf, " device='%s'", type);
     if (vshCommandOptBool(cmd, "rawio"))
@@ -670,7 +674,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (source)
         virBufferAsprintf(&buf, "<source %s='%s'/>\n",
-                          isFile ? "file" : "dev", source);
+                          !isBlock ? "file" : "dev", source);
     virBufferAsprintf(&buf, "<target dev='%s'", target);
     if (targetbus)
         virBufferAsprintf(&buf, " bus='%s'", targetbus);

@@ -10,8 +10,8 @@ error: command 'attach-disk' requires <target> option
 error: command 'attach-disk' requires <target> option
 + attach_disk --target hda
 + ./virsh attach-disk --print-xml --domain testdom --target hda --source /nonexistent/file
-<disk type='block'>
-  <source dev='/nonexistent/file'/>
+<disk type='file'>
+  <source file='/nonexistent/file'/>
   <target dev='hda'/>
 </disk>
 
