@@ -3083,6 +3083,7 @@ void virDomainNVRAMDefFree(virDomainNVRAMDefPtr def);
 void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
 virDomainVideoDefPtr virDomainVideoDefNew(virDomainXMLOptionPtr xmlopt);
 void virDomainVideoDefFree(virDomainVideoDefPtr def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainVideoDef, virDomainVideoDefFree);
 void virDomainVideoDefClear(virDomainVideoDefPtr def);
 virDomainHostdevDefPtr virDomainHostdevDefNew(void);
 void virDomainHostdevDefClear(virDomainHostdevDefPtr def);

@@ -22211,7 +22211,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n)
         def->videos = g_new0(virDomainVideoDefPtr, n);
     for (i = 0; i < n; i++) {
-        virDomainVideoDefPtr video;
+        g_autoptr(virDomainVideoDef) video = NULL;
         ssize_t insertAt = -1;
 
         if (!(video = virDomainVideoDefParseXML(xmlopt, nodes[i],
@@ -22220,7 +22220,6 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         if (video->primary) {
             if (def->nvideos != 0 && def->videos[0]->primary) {
-                virDomainVideoDefFree(video);
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Only one primary video device is supported"));
                 goto error;
@@ -22232,7 +22231,6 @@ virDomainDefParseXML(xmlDocPtr xml,
                                        insertAt,
                                        def->nvideos,
                                        video) < 0) {
-            virDomainVideoDefFree(video);
             goto error;
         }
     }
