@@ -182,7 +182,7 @@ error: No support for whatever in command 'attach-disk'
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='hda'/>
-  <address type='drive' controller='1' bus='2' unit='3' />
+  <address type='drive' controller='1' bus='2' unit='3'/>
 </disk>
 
 + attach_disk --target hda --sourcetype file --type disk --address ide:1.2.4
@@ -190,7 +190,7 @@ error: No support for whatever in command 'attach-disk'
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='hda'/>
-  <address type='drive' controller='1' bus='2' unit='4' />
+  <address type='drive' controller='1' bus='2' unit='4'/>
 </disk>
 
 + attach_disk --target hda --sourcetype file --type disk --address ide:1:2:5
@@ -198,7 +198,7 @@ error: No support for whatever in command 'attach-disk'
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='hda'/>
-  <address type='drive' controller='1' bus='2' unit='5' />
+  <address type='drive' controller='1' bus='2' unit='5'/>
 </disk>
 
 + attach_disk --target sda --sourcetype file --type disk --address ide:1.2.3
@@ -214,7 +214,7 @@ error: expecting a pci:0000.00.00.00 or ccw:00.0.0000 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='sda'/>
-  <address type='usb' bus='12' port='34' />
+  <address type='usb' bus='12' port='34'/>
 </disk>
 
 + attach_disk --target sda --sourcetype file --type disk --address usb:12.3
@@ -222,7 +222,7 @@ error: expecting a pci:0000.00.00.00 or ccw:00.0.0000 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='sda'/>
-  <address type='usb' bus='12' port='3' />
+  <address type='usb' bus='12' port='3'/>
 </disk>
 
 + attach_disk --target sda --sourcetype file --type disk --address usb:12:34
@@ -230,7 +230,7 @@ error: expecting a pci:0000.00.00.00 or ccw:00.0.0000 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='sda'/>
-  <address type='usb' bus='12' port='34' />
+  <address type='usb' bus='12' port='34'/>
 </disk>
 
 + attach_disk --target vda --sourcetype file --type disk --address usb:12.34
@@ -246,7 +246,7 @@ error: expecting an ide:00.00.00 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='sda'/>
-  <address type='drive' controller='1' bus='2' unit='3' />
+  <address type='drive' controller='1' bus='2' unit='3'/>
 </disk>
 
 + attach_disk --target sda --sourcetype file --type disk --address scsi:1.2.4
@@ -254,7 +254,7 @@ error: expecting an ide:00.00.00 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='sda'/>
-  <address type='drive' controller='1' bus='2' unit='4' />
+  <address type='drive' controller='1' bus='2' unit='4'/>
 </disk>
 
 + attach_disk --target sda --sourcetype file --type disk --address scsi:1:2:5
@@ -262,7 +262,7 @@ error: expecting an ide:00.00.00 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='sda'/>
-  <address type='drive' controller='1' bus='2' unit='5' />
+  <address type='drive' controller='1' bus='2' unit='5'/>
 </disk>
 
 + attach_disk --target hda --sourcetype file --type disk --address scsi:1.2.3
@@ -278,7 +278,7 @@ error: expecting a pci:0000.00.00.00 or ccw:00.0.0000 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='sda'/>
-  <address type='drive' controller='1' bus='2' unit='3' />
+  <address type='drive' controller='1' bus='2' unit='3'/>
 </disk>
 
 + attach_disk --target sda --sourcetype file --type disk --address sata:1.2.4
@@ -286,7 +286,7 @@ error: expecting a pci:0000.00.00.00 or ccw:00.0.0000 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='sda'/>
-  <address type='drive' controller='1' bus='2' unit='4' />
+  <address type='drive' controller='1' bus='2' unit='4'/>
 </disk>
 
 + attach_disk --target sda --sourcetype file --type disk --address sata:1:2:5
@@ -294,7 +294,7 @@ error: expecting a pci:0000.00.00.00 or ccw:00.0.0000 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='sda'/>
-  <address type='drive' controller='1' bus='2' unit='5' />
+  <address type='drive' controller='1' bus='2' unit='5'/>
 </disk>
 
 + attach_disk --target hda --sourcetype file --type disk --address sata:1.2.3
@@ -310,7 +310,7 @@ error: expecting a pci:0000.00.00.00 or ccw:00.0.0000 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='vda'/>
-  <address type='pci' domain='0x0012' bus ='0x34' slot='0x56' function='0x78'/>
+  <address type='pci' domain='0x0012' bus='0x34' slot='0x56' function='0x78'/>
 </disk>
 
 + attach_disk --target vda --sourcetype file --type disk --address pci:12:34:56:78
@@ -318,7 +318,7 @@ error: expecting a pci:0000.00.00.00 or ccw:00.0.0000 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='vda'/>
-  <address type='pci' domain='0x0012' bus ='0x34' slot='0x56' function='0x78'/>
+  <address type='pci' domain='0x0012' bus='0x34' slot='0x56' function='0x78'/>
 </disk>
 
 + attach_disk --target vda --sourcetype file --type disk --address pci:12.34.56.aa
@@ -326,7 +326,7 @@ error: expecting a pci:0000.00.00.00 or ccw:00.0.0000 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='vda'/>
-  <address type='pci' domain='0x0012' bus ='0x34' slot='0x56' function='0xaa'/>
+  <address type='pci' domain='0x0012' bus='0x34' slot='0x56' function='0xaa'/>
 </disk>
 
 + attach_disk --target hda --sourcetype file --type disk --address pci:12.34.56.aa
@@ -342,7 +342,7 @@ error: expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='vda'/>
-  <address type='pci' domain='0x0012' bus ='0x34' slot='0x56' function='0x78' multifunction='on'/>
+  <address type='pci' domain='0x0012' bus='0x34' slot='0x56' function='0x78' multifunction='on'/>
 </disk>
 
 + attach_disk --target vda --sourcetype file --type disk --address pci:12:34:56:78 --multifunction
@@ -350,7 +350,7 @@ error: expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='vda'/>
-  <address type='pci' domain='0x0012' bus ='0x34' slot='0x56' function='0x78' multifunction='on'/>
+  <address type='pci' domain='0x0012' bus='0x34' slot='0x56' function='0x78' multifunction='on'/>
 </disk>
 
 + attach_disk --target vda --sourcetype file --type disk --address pci:12.34.56.aa --multifunction
@@ -358,7 +358,7 @@ error: expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='vda'/>
-  <address type='pci' domain='0x0012' bus ='0x34' slot='0x56' function='0xaa' multifunction='on'/>
+  <address type='pci' domain='0x0012' bus='0x34' slot='0x56' function='0xaa' multifunction='on'/>
 </disk>
 
 + attach_disk --target vda --sourcetype file --type disk --address ccw:12.34.56
@@ -366,7 +366,7 @@ error: expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='vda'/>
-  <address type='ccw' cssid='0x12' ssid='0x34' devno='0x0056' />
+  <address type='ccw' cssid='0x12' ssid='0x34' devno='0x0056'/>
 </disk>
 
 + attach_disk --target vda --sourcetype file --type disk --address ccw:12:34:56
@@ -374,7 +374,7 @@ error: expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='vda'/>
-  <address type='ccw' cssid='0x12' ssid='0x34' devno='0x0056' />
+  <address type='ccw' cssid='0x12' ssid='0x34' devno='0x0056'/>
 </disk>
 
 + attach_disk --target vda --sourcetype file --type disk --address ccw:12.34.56
@@ -382,7 +382,7 @@ error: expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address.
 <disk type='file' device='disk'>
   <source file='/nonexistent/file'/>
   <target dev='vda'/>
-  <address type='ccw' cssid='0x12' ssid='0x34' devno='0x0056' />
+  <address type='ccw' cssid='0x12' ssid='0x34' devno='0x0056'/>
 </disk>
 
 + attach_disk --target hda --sourcetype file --type disk --address ccw:12.34.56
