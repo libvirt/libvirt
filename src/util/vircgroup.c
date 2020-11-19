@@ -2821,6 +2821,17 @@ virCgroupNewPartition(const char *path G_GNUC_UNUSED,
 
 
 int
+virCgroupNew(const char *path G_GNUC_UNUSED,
+             int controllers G_GNUC_UNUSED,
+             virCgroupPtr *group G_GNUC_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
 virCgroupNewSelf(virCgroupPtr *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
