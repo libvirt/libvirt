@@ -2943,37 +2943,38 @@ virCPUx86Update(virCPUDefPtr guest,
     virCPUx86MapPtr map;
     size_t i;
 
-    if (!relative)
-        return 0;
-
-    if (!host) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("unknown host CPU model"));
-        return -1;
-    }
-
     if (!(map = virCPUx86GetMap()))
         return -1;
 
-    if (!(model = x86ModelFromCPU(host, map, -1)))
-        return -1;
+    if (relative) {
+        if (!host) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("unknown host CPU model"));
+            return -1;
+        }
 
-    for (i = 0; i < guest->nfeatures; i++) {
-        if (guest->features[i].policy == VIR_CPU_FEATURE_OPTIONAL) {
-            int supported = x86FeatureInData(guest->features[i].name,
-                                             &model->data, map);
-            if (supported < 0)
+        if (!(model = x86ModelFromCPU(host, map, -1)))
+            return -1;
+
+        for (i = 0; i < guest->nfeatures; i++) {
+            if (guest->features[i].policy == VIR_CPU_FEATURE_OPTIONAL) {
+                int supported = x86FeatureInData(guest->features[i].name,
+                                                 &model->data, map);
+                if (supported < 0)
+                    return -1;
+                else if (supported)
+                    guest->features[i].policy = VIR_CPU_FEATURE_REQUIRE;
+                else
+                    guest->features[i].policy = VIR_CPU_FEATURE_DISABLE;
+            }
+        }
+
+        if (guest->mode == VIR_CPU_MODE_HOST_MODEL ||
+            guest->match == VIR_CPU_MATCH_MINIMUM) {
+            if (x86UpdateHostModel(guest, host) < 0)
                 return -1;
-            else if (supported)
-                guest->features[i].policy = VIR_CPU_FEATURE_REQUIRE;
-            else
-                guest->features[i].policy = VIR_CPU_FEATURE_DISABLE;
         }
     }
-
-    if (guest->mode == VIR_CPU_MODE_HOST_MODEL ||
-        guest->match == VIR_CPU_MATCH_MINIMUM)
-        return x86UpdateHostModel(guest, host);
 
     return 0;
 }
