@@ -79,6 +79,7 @@ virStorageEncryptionPtr virStorageEncryptionCopy(const virStorageEncryption *src
     ATTRIBUTE_NONNULL(1);
 
 void virStorageEncryptionFree(virStorageEncryptionPtr enc);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageEncryption, virStorageEncryptionFree);
 
 virStorageEncryptionPtr virStorageEncryptionParseNode(xmlNodePtr node,
                                                       xmlXPathContextPtr ctxt);
