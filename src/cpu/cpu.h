@@ -79,7 +79,8 @@ typedef virCPUDefPtr
 
 typedef int
 (*virCPUArchUpdate)(virCPUDefPtr guest,
-                    const virCPUDef *host);
+                    const virCPUDef *host,
+                    bool relative);
 
 typedef int
 (*virCPUArchUpdateLive)(virCPUDefPtr cpu,

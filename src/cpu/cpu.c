@@ -538,12 +538,11 @@ virCPUBaseline(virArch arch,
  * @guest: guest CPU definition to be updated
  * @host: host CPU definition
  *
- * Updates @guest CPU definition according to @host CPU. This is required to
- * support guest CPU definitions specified relatively to host CPU, such as
- * CPUs with VIR_CPU_MODE_CUSTOM and optional features or
- * VIR_CPU_MATCH_MINIMUM, or CPUs with VIR_CPU_MODE_HOST_MODEL.
- * When the guest CPU was not specified relatively, the function does nothing
- * and returns success.
+ * Updates @guest CPU definition possibly taking @host CPU into account. This
+ * is required for maintaining compatibility with older libvirt releases or to
+ * support guest CPU definitions specified relatively to host CPU, such as CPUs
+ * with VIR_CPU_MODE_CUSTOM and optional features or VIR_CPU_MATCH_MINIMUM, or
+ * CPUs with VIR_CPU_MODE_HOST_MODEL.
  *
  * Returns 0 on success, -1 on error.
  */
@@ -553,6 +552,7 @@ virCPUUpdate(virArch arch,
              const virCPUDef *host)
 {
     struct cpuArchDriver *driver;
+    bool relative;
 
     VIR_DEBUG("arch=%s, guest=%p mode=%s model=%s, host=%p model=%s",
               virArchToString(arch), guest, virCPUModeTypeToString(guest->mode),
@@ -561,30 +561,36 @@ virCPUUpdate(virArch arch,
     if (!(driver = cpuGetSubDriver(arch)))
         return -1;
 
-    if (guest->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
+    switch ((virCPUMode) guest->mode) {
+    case VIR_CPU_MODE_HOST_PASSTHROUGH:
         return 0;
 
-    if (guest->mode == VIR_CPU_MODE_CUSTOM &&
-        guest->match != VIR_CPU_MATCH_MINIMUM) {
-        size_t i;
-        bool optional = false;
+    case VIR_CPU_MODE_HOST_MODEL:
+        relative = true;
+        break;
 
-        for (i = 0; i < guest->nfeatures; i++) {
-            if (guest->features[i].policy == VIR_CPU_FEATURE_OPTIONAL) {
-                optional = true;
-                break;
+    case VIR_CPU_MODE_CUSTOM:
+        if (guest->match == VIR_CPU_MATCH_MINIMUM) {
+            relative = true;
+        } else {
+            size_t i;
+
+            relative = false;
+            for (i = 0; i < guest->nfeatures; i++) {
+                if (guest->features[i].policy == VIR_CPU_FEATURE_OPTIONAL) {
+                    relative = true;
+                    break;
+                }
             }
         }
+        break;
 
-        if (!optional)
-            return 0;
+    case VIR_CPU_MODE_LAST:
+    default:
+        virReportEnumRangeError(virCPUMode, guest->mode);
+        return -1;
     }
 
-    /* We get here if guest CPU is either
-     *  - host-model
-     *  - custom with minimum match
-     *  - custom with optional features
-     */
     if (!driver->update) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("cannot update guest CPU for %s architecture"),
@@ -592,7 +598,7 @@ virCPUUpdate(virArch arch,
         return -1;
     }
 
-    if (driver->update(guest, host) < 0)
+    if (driver->update(guest, host, relative) < 0)
         return -1;
 
     VIR_DEBUG("model=%s", NULLSTR(guest->model));

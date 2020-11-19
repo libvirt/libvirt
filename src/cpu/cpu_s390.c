@@ -43,10 +43,14 @@ virCPUs390Compare(virCPUDefPtr host G_GNUC_UNUSED,
 
 static int
 virCPUs390Update(virCPUDefPtr guest,
-                 const virCPUDef *host)
+                 const virCPUDef *host,
+                 bool relative)
 {
     g_autoptr(virCPUDef) updated = NULL;
     size_t i;
+
+    if (!relative)
+        return 0;
 
     if (guest->mode == VIR_CPU_MODE_CUSTOM) {
         if (guest->match == VIR_CPU_MATCH_MINIMUM) {

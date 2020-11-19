@@ -614,7 +614,8 @@ virCPUppc64GetHost(virCPUDefPtr cpu,
 
 static int
 virCPUppc64Update(virCPUDefPtr guest,
-                  const virCPUDef *host G_GNUC_UNUSED)
+                  const virCPUDef *host G_GNUC_UNUSED,
+                  bool relative G_GNUC_UNUSED)
 {
     /*
      * - host-passthrough doesn't even get here

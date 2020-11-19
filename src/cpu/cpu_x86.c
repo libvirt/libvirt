@@ -2936,11 +2936,15 @@ x86UpdateHostModel(virCPUDefPtr guest,
 
 static int
 virCPUx86Update(virCPUDefPtr guest,
-                const virCPUDef *host)
+                const virCPUDef *host,
+                bool relative)
 {
     g_autoptr(virCPUx86Model) model = NULL;
     virCPUx86MapPtr map;
     size_t i;
+
+    if (!relative)
+        return 0;
 
     if (!host) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
