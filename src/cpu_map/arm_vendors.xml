@@ -11,4 +11,5 @@
   <vendor name='Qualcomm' value='0x51'/>
   <vendor name='Marvell' value='0x56'/>
   <vendor name='Intel' value='0x69'/>
+  <vendor name='Phytium' value='0x70'/>
 </cpus>
