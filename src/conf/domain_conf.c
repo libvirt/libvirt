@@ -16127,7 +16127,7 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
                           xmlXPathContextPtr ctxt,
                           unsigned int flags)
 {
-    virDomainVideoDefPtr def;
+    g_autoptr(virDomainVideoDef) def = NULL;
     xmlNodePtr cur;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *type = NULL;
@@ -16168,12 +16168,12 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
                         if (def->accel == NULL &&
                             virXMLNodeNameEqual(child, "acceleration")) {
                             if ((def->accel = virDomainVideoAccelDefParseXML(child)) == NULL)
-                                goto error;
+                                return NULL;
                         }
                         if (def->res == NULL &&
                             virXMLNodeNameEqual(child, "resolution")) {
                             if ((def->res = virDomainVideoResolutionDefParseXML(child)) == NULL)
-                                goto error;
+                                return NULL;
                         }
                     }
                     child = child->next;
@@ -16181,7 +16181,7 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
             }
             if (virXMLNodeNameEqual(cur, "driver")) {
                 if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
-                    goto error;
+                    return NULL;
                 driver_name = virXMLPropString(cur, "name");
             }
         }
@@ -16192,7 +16192,7 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
         if ((def->type = virDomainVideoTypeFromString(type)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown video model '%s'"), type);
-            goto error;
+            return NULL;
         }
     } else {
         def->type = VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
@@ -16203,7 +16203,7 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
         if ((backend = virDomainVideoBackendTypeFromString(driver_name)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown video driver '%s'"), driver_name);
-            goto error;
+            return NULL;
         }
         def->backend = backend;
     } else {
@@ -16214,12 +16214,12 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (def->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("ram attribute only supported for type of qxl"));
-            goto error;
+            return NULL;
         }
         if (virStrToLong_uip(ram, NULL, 10, &def->ram) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse video ram '%s'"), ram);
-            goto error;
+            return NULL;
         }
     }
 
@@ -16227,7 +16227,7 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (virStrToLong_uip(vram, NULL, 10, &def->vram) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse video vram '%s'"), vram);
-            goto error;
+            return NULL;
         }
     }
 
@@ -16235,12 +16235,12 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (def->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("vram64 attribute only supported for type of qxl"));
-            goto error;
+            return NULL;
         }
         if (virStrToLong_uip(vram64, NULL, 10, &def->vram64) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse video vram64 '%s'"), vram64);
-            goto error;
+            return NULL;
         }
     }
 
@@ -16248,12 +16248,12 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (def->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("vgamem attribute only supported for type of qxl"));
-            goto error;
+            return NULL;
         }
         if (virStrToLong_uip(vgamem, NULL, 10, &def->vgamem) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse video vgamem '%s'"), vgamem);
-            goto error;
+            return NULL;
         }
     }
 
@@ -16261,20 +16261,16 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (virStrToLong_uip(heads, NULL, 10, &def->heads) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot parse video heads '%s'"), heads);
-            goto error;
+            return NULL;
         }
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, &def->info, flags) < 0)
-        goto error;
+        return NULL;
 
     def->driver = virDomainVideoDriverDefParseXML(node);
 
-    return def;
-
- error:
-    virDomainVideoDefFree(def);
-    return NULL;
+    return g_steal_pointer(&def);
 }
 
 static virDomainHostdevDefPtr
@@ -25008,8 +25004,7 @@ virDomainDefAddImplicitControllers(virDomainDefPtr def)
 static int
 virDomainDefAddImplicitVideo(virDomainDefPtr def, virDomainXMLOptionPtr xmlopt)
 {
-    int ret = -1;
-    virDomainVideoDefPtr video = NULL;
+    g_autoptr(virDomainVideoDef) video = NULL;
 
     /* For backwards compatibility, if no <video> tag is set but there
      * is a <graphics> tag, then we add a single video tag */
@@ -25017,15 +25012,12 @@ virDomainDefAddImplicitVideo(virDomainDefPtr def, virDomainXMLOptionPtr xmlopt)
         return 0;
 
     if (!(video = virDomainVideoDefNew(xmlopt)))
-        goto cleanup;
+        return -1;
     video->type = VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
     if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, video) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virDomainVideoDefFree(video);
-    return ret;
+    return 0;
 }
 
 int
