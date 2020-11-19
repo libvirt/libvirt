@@ -561,7 +561,7 @@ static int str2DiskAddress(const char *str, struct DiskAddress *diskAddr)
 static bool
 cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *source = NULL;
     const char *target = NULL;
     const char *driver = NULL;
@@ -583,7 +583,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     const char *stype = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     struct stat st;
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
@@ -783,8 +783,6 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    VIR_FREE(xml);
-    virshDomainFree(dom);
     return functionReturn;
 }
 
