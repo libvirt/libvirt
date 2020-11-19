@@ -3040,6 +3040,7 @@ const char *virDomainInputDefGetPath(virDomainInputDefPtr input);
 void virDomainInputDefFree(virDomainInputDefPtr def);
 virDomainDiskDefPtr virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt);
 void virDomainDiskDefFree(virDomainDiskDefPtr def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainDiskDef, virDomainDiskDefFree);
 void virDomainLeaseDefFree(virDomainLeaseDefPtr def);
 int virDomainDiskGetType(virDomainDiskDefPtr def);
 void virDomainDiskSetType(virDomainDiskDefPtr def, int type);

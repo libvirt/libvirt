@@ -10448,11 +10448,11 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                          xmlXPathContextPtr ctxt,
                          unsigned int flags)
 {
-    virDomainDiskDefPtr def;
+    g_autoptr(virDomainDiskDef) def = NULL;
     xmlNodePtr cur;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     bool source = false;
-    virStorageEncryptionPtr encryption = NULL;
+    g_autoptr(virStorageEncryption) encryption = NULL;
     g_autoptr(virStorageAuthDef) authdef = NULL;
     g_autofree char *tmp = NULL;
     g_autofree char *snapshot = NULL;
@@ -10484,7 +10484,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         (def->src->type = virStorageTypeFromString(tmp)) <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown disk type '%s'"), tmp);
-        goto error;
+        return NULL;
     }
     VIR_FREE(tmp);
 
@@ -10492,7 +10492,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         (def->device = virDomainDiskDeviceTypeFromString(tmp)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown disk device '%s'"), tmp);
-        goto error;
+        return NULL;
     }
     VIR_FREE(tmp);
 
@@ -10500,7 +10500,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         (def->model = virDomainDiskModelTypeFromString(tmp)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown disk model '%s'"), tmp);
-        goto error;
+        return NULL;
     }
     VIR_FREE(tmp);
 
@@ -10515,7 +10515,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 
         if (!source && virXMLNodeNameEqual(cur, "source")) {
             if (virDomainStorageSourceParse(cur, ctxt, def->src, flags, xmlopt) < 0)
-                goto error;
+                return NULL;
 
             source = true;
 
@@ -10525,7 +10525,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 (tmp = virXMLPropString(cur, "index")) &&
                 virStrToLong_uip(tmp, NULL, 10, &def->src->id) < 0) {
                 virReportError(VIR_ERR_XML_ERROR, _("invalid disk index '%s'"), tmp);
-                goto error;
+                return NULL;
             }
             VIR_FREE(tmp);
         } else if (!target &&
@@ -10545,7 +10545,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             domain_name = virXMLPropString(cur, "name");
         } else if (virXMLNodeNameEqual(cur, "geometry")) {
             if (virDomainDiskDefGeometryParse(def, cur) < 0)
-                goto error;
+                return NULL;
         } else if (virXMLNodeNameEqual(cur, "blockio")) {
             logical_block_size =
                 virXMLPropString(cur, "logical_block_size");
@@ -10555,7 +10555,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("invalid logical block size '%s'"),
                                logical_block_size);
-                goto error;
+                return NULL;
             }
             physical_block_size =
                 virXMLPropString(cur, "physical_block_size");
@@ -10565,28 +10565,28 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("invalid physical block size '%s'"),
                                physical_block_size);
-                goto error;
+                return NULL;
             }
         } else if (!virDomainDiskGetDriver(def) &&
                    virXMLNodeNameEqual(cur, "driver")) {
             if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
-                goto error;
+                return NULL;
 
             if (virDomainDiskDefDriverParseXML(def, cur) < 0)
-                goto error;
+                return NULL;
         } else if (!def->mirror &&
                    virXMLNodeNameEqual(cur, "mirror") &&
                    !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
             if (virDomainDiskDefMirrorParse(def, cur, ctxt, flags, xmlopt) < 0)
-                goto error;
+                return NULL;
         } else if (!authdef &&
                    virXMLNodeNameEqual(cur, "auth")) {
             if (!(authdef = virStorageAuthDefParse(cur, ctxt)))
-                goto error;
+                return NULL;
             def->diskElementAuth = true;
         } else if (virXMLNodeNameEqual(cur, "iotune")) {
             if (virDomainDiskDefIotuneParse(def, ctxt) < 0)
-                goto error;
+                return NULL;
         } else if (virXMLNodeNameEqual(cur, "readonly")) {
             def->src->readonly = true;
         } else if (virXMLNodeNameEqual(cur, "shareable")) {
@@ -10596,52 +10596,52 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         } else if (!encryption &&
                    virXMLNodeNameEqual(cur, "encryption")) {
             if (!(encryption = virStorageEncryptionParseNode(cur, ctxt)))
-                goto error;
+                return NULL;
 
             def->diskElementEnc = true;
 
         } else if (!serial &&
                    virXMLNodeNameEqual(cur, "serial")) {
             if (!(serial = virXMLNodeContentString(cur)))
-                goto error;
+                return NULL;
         } else if (!wwn &&
                    virXMLNodeNameEqual(cur, "wwn")) {
             if (!(wwn = virXMLNodeContentString(cur)))
-                goto error;
+                return NULL;
 
             if (!virValidateWWN(wwn))
-                goto error;
+                return NULL;
         } else if (!vendor &&
                    virXMLNodeNameEqual(cur, "vendor")) {
             if (!(vendor = virXMLNodeContentString(cur)))
-                goto error;
+                return NULL;
 
             if (strlen(vendor) > VENDOR_LEN) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("disk vendor is more than 8 characters"));
-                goto error;
+                return NULL;
             }
 
             if (!virStringIsPrintable(vendor)) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("disk vendor is not printable string"));
-                goto error;
+                return NULL;
             }
         } else if (!product &&
                    virXMLNodeNameEqual(cur, "product")) {
             if (!(product = virXMLNodeContentString(cur)))
-                goto error;
+                return NULL;
 
             if (strlen(product) > PRODUCT_LEN) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("disk product is more than 16 characters"));
-                goto error;
+                return NULL;
             }
 
             if (!virStringIsPrintable(product)) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("disk product is not printable string"));
-                goto error;
+                return NULL;
             }
         } else if (virXMLNodeNameEqual(cur, "boot")) {
             /* boot is parsed as part of virDomainDeviceInfoParseXML */
@@ -10667,7 +10667,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
          (flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE))) {
         virReportError(VIR_ERR_NO_SOURCE,
                        target ? "%s" : NULL, target);
-        goto error;
+        return NULL;
     }
 
     if (!target && !(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
@@ -10680,7 +10680,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         } else {
             virReportError(VIR_ERR_NO_TARGET, def->src->path ? "%s" : NULL, def->src->path);
         }
-        goto error;
+        return NULL;
     }
 
     if (!(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
@@ -10688,7 +10688,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             !STRPREFIX(target, "fd")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid floppy device name: %s"), target);
-            goto error;
+            return NULL;
         }
 
         /* Force CDROM to be listed as read only */
@@ -10704,7 +10704,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             !STRPREFIX((const char *)target, "ubd")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid harddisk device name: %s"), target);
-            goto error;
+            return NULL;
         }
     }
 
@@ -10714,7 +10714,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk snapshot setting '%s'"),
                            snapshot);
-            goto error;
+            return NULL;
         }
     } else if (def->src->readonly) {
         def->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
@@ -10725,7 +10725,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown disk rawio setting '%s'"),
                            rawio);
-            goto error;
+            return NULL;
         }
     }
 
@@ -10733,7 +10733,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         if ((def->sgio = virDomainDeviceSGIOTypeFromString(sgio)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk sgio mode '%s'"), sgio);
-            goto error;
+            return NULL;
         }
     }
 
@@ -10741,7 +10741,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         if ((def->bus = virDomainDiskBusTypeFromString(bus)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk bus type '%s'"), bus);
-            goto error;
+            return NULL;
         }
     } else {
         if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
@@ -10766,14 +10766,14 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         if ((def->tray_status = virDomainDiskTrayTypeFromString(tray)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk tray status '%s'"), tray);
-            goto error;
+            return NULL;
         }
 
         if (def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
             def->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("tray is only valid for cdrom and floppy"));
-            goto error;
+            return NULL;
         }
     }
 
@@ -10781,13 +10781,13 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         if ((def->removable = virTristateSwitchTypeFromString(removable)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk removable status '%s'"), removable);
-            goto error;
+            return NULL;
         }
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, &def->info,
                                     flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) < 0) {
-        goto error;
+        return NULL;
     }
 
     if (startupPolicy) {
@@ -10797,7 +10797,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown startupPolicy value '%s'"),
                            startupPolicy);
-            goto error;
+            return NULL;
         }
         def->startupPolicy = val;
     }
@@ -10810,7 +10810,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("an <auth> definition already found for "
                                  "disk source"));
-                goto error;
+                return NULL;
             }
 
         def->src->auth = g_steal_pointer(&authdef);
@@ -10823,7 +10823,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("an <encryption> definition already found for "
                                  "disk source"));
-                goto error;
+                return NULL;
             }
 
         def->src->encryption = g_steal_pointer(&encryption);
@@ -10835,23 +10835,16 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     def->product = g_steal_pointer(&product);
 
     if (virDomainDiskBackingStoreParse(ctxt, def->src, flags, xmlopt) < 0)
-        goto error;
+        return NULL;
 
     if (flags & VIR_DOMAIN_DEF_PARSE_STATUS &&
         virDomainDiskDefParsePrivateData(ctxt, def, xmlopt) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainDiskDefParseValidate(def) < 0)
-        goto error;
+        return NULL;
 
- cleanup:
-    virStorageEncryptionFree(encryption);
-    return def;
-
- error:
-    virDomainDiskDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return g_steal_pointer(&def);
 }
 
 
