@@ -52,6 +52,8 @@ int virIdentityGetX509DName(virIdentity *ident,
                             const char **dname);
 int virIdentityGetSELinuxContext(virIdentity *ident,
                                  const char **context);
+int virIdentityGetSystemToken(virIdentity *ident,
+                              const char **token);
 
 
 int virIdentitySetUserName(virIdentity *ident,
@@ -72,6 +74,8 @@ int virIdentitySetX509DName(virIdentity *ident,
                             const char *dname);
 int virIdentitySetSELinuxContext(virIdentity *ident,
                                  const char *context);
+int virIdentitySetSystemToken(virIdentity *ident,
+                              const char *token);
 
 int virIdentitySetParameters(virIdentity *ident,
                              virTypedParameterPtr params,

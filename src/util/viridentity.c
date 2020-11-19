@@ -40,6 +40,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_IDENTITY
 
+#define VIR_CONNECT_IDENTITY_SYSTEM_TOKEN "system.token"
+
 VIR_LOG_INIT("util.identity");
 
 struct _virIdentity {
@@ -382,6 +384,17 @@ int virIdentityGetSELinuxContext(virIdentity *ident,
 }
 
 
+int virIdentityGetSystemToken(virIdentity *ident,
+                              const char **token)
+{
+    *token = NULL;
+    return virTypedParamsGetString(ident->params,
+                                   ident->nparams,
+                                   VIR_CONNECT_IDENTITY_SYSTEM_TOKEN,
+                                   token);
+}
+
+
 int virIdentitySetUserName(virIdentity *ident,
                            const char *username)
 {
@@ -554,6 +567,25 @@ int virIdentitySetSELinuxContext(virIdentity *ident,
 }
 
 
+int virIdentitySetSystemToken(virIdentity *ident,
+                              const char *token)
+{
+    if (virTypedParamsGet(ident->params,
+                          ident->nparams,
+                          VIR_CONNECT_IDENTITY_SYSTEM_TOKEN)) {
+        virReportError(VIR_ERR_OPERATION_DENIED, "%s",
+                       _("Identity attribute is already set"));
+        return -1;
+    }
+
+    return virTypedParamsAddString(&ident->params,
+                                   &ident->nparams,
+                                   &ident->maxparams,
+                                   VIR_CONNECT_IDENTITY_SYSTEM_TOKEN,
+                                   token);
+}
+
+
 int virIdentitySetParameters(virIdentity *ident,
                              virTypedParameterPtr params,
                              int nparams)
@@ -576,6 +608,8 @@ int virIdentitySetParameters(virIdentity *ident,
                                VIR_CONNECT_IDENTITY_X509_DISTINGUISHED_NAME,
                                VIR_TYPED_PARAM_STRING,
                                VIR_CONNECT_IDENTITY_SELINUX_CONTEXT,
+                               VIR_TYPED_PARAM_STRING,
+                               VIR_CONNECT_IDENTITY_SYSTEM_TOKEN,
                                VIR_TYPED_PARAM_STRING,
                                NULL) < 0)
         return -1;
