@@ -175,7 +175,7 @@ static int testMaskNetwork(const char *addrstr,
 {
     virSocketAddr addr;
     virSocketAddr network;
-    char *gotnet = NULL;
+    g_autofree char *gotnet = NULL;
 
     /* Intentionally fill with garbage */
     memset(&network, 1, sizeof(network));
@@ -190,11 +190,9 @@ static int testMaskNetwork(const char *addrstr,
         return -1;
 
     if (STRNEQ(networkstr, gotnet)) {
-        VIR_FREE(gotnet);
         fprintf(stderr, "Expected %s, got %s\n", networkstr, gotnet);
         return -1;
     }
-    VIR_FREE(gotnet);
     return 0;
 }
 
