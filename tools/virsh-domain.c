@@ -323,16 +323,10 @@ struct PCIAddress {
     bool multifunction;
 };
 
-struct SCSIAddress {
+struct DriveAddress {
     unsigned int controller;
     unsigned int bus;
     unsigned long long unit;
-};
-
-struct IDEAddress {
-    unsigned int controller;
-    unsigned int bus;
-    unsigned int unit;
 };
 
 struct CCWAddress {
@@ -346,21 +340,13 @@ struct USBAddress {
     unsigned int port;
 };
 
-struct SATAAddress {
-    unsigned int controller;
-    unsigned int bus;
-    unsigned long long unit;
-};
-
 struct DiskAddress {
     int type;
     union {
         struct PCIAddress pci;
-        struct SCSIAddress scsi;
-        struct IDEAddress ide;
+        struct DriveAddress drive;
         struct CCWAddress ccw;
         struct USBAddress usb;
-        struct SATAAddress sata;
     } addr;
 };
 
@@ -393,7 +379,7 @@ static int str2PCIAddress(const char *str, struct PCIAddress *pciAddr)
     return 0;
 }
 
-static int str2SCSIAddress(const char *str, struct SCSIAddress *scsiAddr)
+static int str2DriveAddress(const char *str, struct DriveAddress *scsiAddr)
 {
     char *controller, *bus, *unit;
 
@@ -413,31 +399,6 @@ static int str2SCSIAddress(const char *str, struct SCSIAddress *scsiAddr)
 
     unit++;
     if (virStrToLong_ullp(unit, NULL, 10, &scsiAddr->unit) != 0)
-        return -1;
-
-    return 0;
-}
-
-static int str2IDEAddress(const char *str, struct IDEAddress *ideAddr)
-{
-    char *controller, *bus, *unit;
-
-    if (!ideAddr)
-        return -1;
-    if (!str)
-        return -1;
-
-    controller = (char *)str;
-
-    if (virStrToLong_uip(controller, &bus, 10, &ideAddr->controller) != 0)
-        return -1;
-
-    bus++;
-    if (virStrToLong_uip(bus, &unit, 10, &ideAddr->bus) != 0)
-        return -1;
-
-    unit++;
-    if (virStrToLong_uip(unit, NULL, 10, &ideAddr->unit) != 0)
         return -1;
 
     return 0;
@@ -489,31 +450,6 @@ static int str2USBAddress(const char *str, struct USBAddress *usbAddr)
     return 0;
 }
 
-static int str2SATAAddress(const char *str, struct SATAAddress *sataAddr)
-{
-    char *controller, *bus, *unit;
-
-    if (!sataAddr)
-        return -1;
-    if (!str)
-        return -1;
-
-    controller = (char *)str;
-
-    if (virStrToLong_uip(controller, &bus, 10, &sataAddr->controller) != 0)
-        return -1;
-
-    bus++;
-    if (virStrToLong_uip(bus, &unit, 10, &sataAddr->bus) != 0)
-        return -1;
-
-    unit++;
-    if (virStrToLong_ullp(unit, NULL, 10, &sataAddr->unit) != 0)
-        return -1;
-
-    return 0;
-}
-
 /* pci address pci:0000.00.0x0a.0 (domain:bus:slot:function)
  * ide disk address: ide:00.00.0 (controller:bus:unit)
  * scsi disk address: scsi:00.00.0 (controller:bus:unit)
@@ -542,10 +478,10 @@ static int str2DiskAddress(const char *str, struct DiskAddress *diskAddr, bool m
         return str2PCIAddress(addr + 1, &diskAddr->addr.pci);
     } else if (STREQLEN(type, "scsi", addr - type)) {
         diskAddr->type = DISK_ADDR_TYPE_SCSI;
-        return str2SCSIAddress(addr + 1, &diskAddr->addr.scsi);
+        return str2DriveAddress(addr + 1, &diskAddr->addr.drive);
     } else if (STREQLEN(type, "ide", addr - type)) {
         diskAddr->type = DISK_ADDR_TYPE_IDE;
-        return str2IDEAddress(addr + 1, &diskAddr->addr.ide);
+        return str2DriveAddress(addr + 1, &diskAddr->addr.drive);
     } else if (STREQLEN(type, "ccw", addr - type)) {
         diskAddr->type = DISK_ADDR_TYPE_CCW;
         return str2CCWAddress(addr + 1, &diskAddr->addr.ccw);
@@ -554,7 +490,7 @@ static int str2DiskAddress(const char *str, struct DiskAddress *diskAddr, bool m
         return str2USBAddress(addr + 1, &diskAddr->addr.usb);
     } else if (STREQLEN(type, "sata", addr - type)) {
         diskAddr->type = DISK_ADDR_TYPE_SATA;
-        return str2SATAAddress(addr + 1, &diskAddr->addr.sata);
+        return str2DriveAddress(addr + 1, &diskAddr->addr.drive);
     }
 
     return -1;
@@ -580,20 +516,14 @@ virshAddressFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
         break;
 
+    case DISK_ADDR_TYPE_SATA:
+    case DISK_ADDR_TYPE_IDE:
     case DISK_ADDR_TYPE_SCSI:
         virBufferAsprintf(buf,
                           "<address type='drive' controller='%u' bus='%u' unit='%llu'/>\n",
-                          addr->addr.scsi.controller,
-                          addr->addr.scsi.bus,
-                          addr->addr.scsi.unit);
-        break;
-
-    case DISK_ADDR_TYPE_IDE:
-        virBufferAsprintf(buf,
-                          "<address type='drive' controller='%u' bus='%u' unit='%u'/>\n",
-                          addr->addr.ide.controller,
-                          addr->addr.ide.bus,
-                          addr->addr.ide.unit);
+                          addr->addr.drive.controller,
+                          addr->addr.drive.bus,
+                          addr->addr.drive.unit);
         break;
 
     case DISK_ADDR_TYPE_CCW:
@@ -609,14 +539,6 @@ virshAddressFormat(virBufferPtr buf,
                           "<address type='usb' bus='%u' port='%u'/>\n",
                           addr->addr.usb.bus,
                           addr->addr.usb.port);
-        break;
-
-    case DISK_ADDR_TYPE_SATA:
-        virBufferAsprintf(buf,
-                          "<address type='drive' controller='%u' bus='%u' unit='%llu'/>\n",
-                          addr->addr.sata.controller,
-                          addr->addr.sata.bus,
-                          addr->addr.sata.unit);
         break;
 
     case DISK_ADDR_TYPE_INVALID:
