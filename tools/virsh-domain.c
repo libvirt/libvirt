@@ -558,6 +558,81 @@ static int str2DiskAddress(const char *str, struct DiskAddress *diskAddr)
     return -1;
 }
 
+
+static int
+cmdAttachDiskFormatAddress(vshControl *ctl,
+                           virBufferPtr buf,
+                           const char *straddr,
+                           const char *target,
+                           bool multifunction)
+{
+    struct DiskAddress diskAddr;
+
+    if (str2DiskAddress(straddr, &diskAddr) != 0) {
+        vshError(ctl, _("Invalid address."));
+        return -1;
+    }
+
+    if (STRPREFIX((const char *)target, "vd")) {
+        if (diskAddr.type == DISK_ADDR_TYPE_PCI) {
+            virBufferAsprintf(buf,
+                              "<address type='pci' domain='0x%04x'"
+                              " bus ='0x%02x' slot='0x%02x' function='0x%0x'",
+                              diskAddr.addr.pci.domain, diskAddr.addr.pci.bus,
+                              diskAddr.addr.pci.slot, diskAddr.addr.pci.function);
+            if (multifunction)
+                virBufferAddLit(buf, " multifunction='on'");
+            virBufferAddLit(buf, "/>\n");
+        } else if (diskAddr.type == DISK_ADDR_TYPE_CCW) {
+            virBufferAsprintf(buf,
+                              "<address type='ccw' cssid='0x%02x'"
+                              " ssid='0x%01x' devno='0x%04x' />\n",
+                              diskAddr.addr.ccw.cssid, diskAddr.addr.ccw.ssid,
+                              diskAddr.addr.ccw.devno);
+        } else {
+            vshError(ctl, "%s",
+                     _("expecting a pci:0000.00.00.00 or ccw:00.0.0000 address."));
+            return -1;
+        }
+    } else if (STRPREFIX((const char *)target, "sd")) {
+        if (diskAddr.type == DISK_ADDR_TYPE_SCSI) {
+            virBufferAsprintf(buf,
+                              "<address type='drive' controller='%u'"
+                              " bus='%u' unit='%llu' />\n",
+                              diskAddr.addr.scsi.controller, diskAddr.addr.scsi.bus,
+                              diskAddr.addr.scsi.unit);
+        } else if (diskAddr.type == DISK_ADDR_TYPE_USB) {
+            virBufferAsprintf(buf,
+                              "<address type='usb' bus='%u' port='%u' />\n",
+                              diskAddr.addr.usb.bus, diskAddr.addr.usb.port);
+        } else if (diskAddr.type == DISK_ADDR_TYPE_SATA) {
+            virBufferAsprintf(buf,
+                              "<address type='drive' controller='%u'"
+                              " bus='%u' unit='%llu' />\n",
+                              diskAddr.addr.sata.controller, diskAddr.addr.sata.bus,
+                              diskAddr.addr.sata.unit);
+        } else {
+            vshError(ctl, "%s",
+                     _("expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address."));
+            return -1;
+        }
+    } else if (STRPREFIX((const char *)target, "hd")) {
+        if (diskAddr.type == DISK_ADDR_TYPE_IDE) {
+            virBufferAsprintf(buf,
+                              "<address type='drive' controller='%u'"
+                              " bus='%u' unit='%u' />\n",
+                              diskAddr.addr.ide.controller, diskAddr.addr.ide.bus,
+                              diskAddr.addr.ide.unit);
+        } else {
+            vshError(ctl, "%s", _("expecting an ide:00.00.00 address."));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 static bool
 cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 {
@@ -576,7 +651,6 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     const char *wwn = NULL;
     const char *targetbus = NULL;
     const char *alias = NULL;
-    struct DiskAddress diskAddr;
     bool isBlock = false;
     int ret;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
@@ -588,6 +662,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool persistent = vshCommandOptBool(cmd, "persistent");
+    bool multifunction = vshCommandOptBool(cmd, "multifunction");
 
     VSH_EXCLUSIVE_OPTIONS_VAR(persistent, current);
 
@@ -692,68 +767,9 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     if (wwn)
         virBufferAsprintf(&buf, "<wwn>%s</wwn>\n", wwn);
 
-    if (straddr) {
-        if (str2DiskAddress(straddr, &diskAddr) != 0) {
-            vshError(ctl, _("Invalid address."));
-            return false;
-        }
-
-        if (STRPREFIX((const char *)target, "vd")) {
-            if (diskAddr.type == DISK_ADDR_TYPE_PCI) {
-                virBufferAsprintf(&buf,
-                                  "<address type='pci' domain='0x%04x'"
-                                  " bus ='0x%02x' slot='0x%02x' function='0x%0x'",
-                                  diskAddr.addr.pci.domain, diskAddr.addr.pci.bus,
-                                  diskAddr.addr.pci.slot, diskAddr.addr.pci.function);
-                if (vshCommandOptBool(cmd, "multifunction"))
-                    virBufferAddLit(&buf, " multifunction='on'");
-                virBufferAddLit(&buf, "/>\n");
-            } else if (diskAddr.type == DISK_ADDR_TYPE_CCW) {
-                virBufferAsprintf(&buf,
-                                  "<address type='ccw' cssid='0x%02x'"
-                                  " ssid='0x%01x' devno='0x%04x' />\n",
-                                  diskAddr.addr.ccw.cssid, diskAddr.addr.ccw.ssid,
-                                  diskAddr.addr.ccw.devno);
-            } else {
-                vshError(ctl, "%s",
-                         _("expecting a pci:0000.00.00.00 or ccw:00.0.0000 address."));
-                return false;
-            }
-        } else if (STRPREFIX((const char *)target, "sd")) {
-            if (diskAddr.type == DISK_ADDR_TYPE_SCSI) {
-                virBufferAsprintf(&buf,
-                                  "<address type='drive' controller='%u'"
-                                  " bus='%u' unit='%llu' />\n",
-                                  diskAddr.addr.scsi.controller, diskAddr.addr.scsi.bus,
-                                  diskAddr.addr.scsi.unit);
-            } else if (diskAddr.type == DISK_ADDR_TYPE_USB) {
-                virBufferAsprintf(&buf,
-                                  "<address type='usb' bus='%u' port='%u' />\n",
-                                  diskAddr.addr.usb.bus, diskAddr.addr.usb.port);
-            } else if (diskAddr.type == DISK_ADDR_TYPE_SATA) {
-                virBufferAsprintf(&buf,
-                                  "<address type='drive' controller='%u'"
-                                  " bus='%u' unit='%llu' />\n",
-                                  diskAddr.addr.sata.controller, diskAddr.addr.sata.bus,
-                                  diskAddr.addr.sata.unit);
-            } else {
-                vshError(ctl, "%s",
-                _("expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address."));
-                return false;
-            }
-        } else if (STRPREFIX((const char *)target, "hd")) {
-            if (diskAddr.type == DISK_ADDR_TYPE_IDE) {
-                virBufferAsprintf(&buf,
-                                  "<address type='drive' controller='%u'"
-                                  " bus='%u' unit='%u' />\n",
-                                  diskAddr.addr.ide.controller, diskAddr.addr.ide.bus,
-                                  diskAddr.addr.ide.unit);
-            } else {
-                vshError(ctl, "%s", _("expecting an ide:00.00.00 address."));
-                return false;
-            }
-        }
-    }
+    if (straddr &&
+        cmdAttachDiskFormatAddress(ctl, &buf, straddr, target, multifunction) < 0)
+        return false;
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</disk>\n");
