@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-10-26 17:26+0000\n"
-"PO-Revision-Date: 2020-11-11 14:35+0000\n"
+"PO-Revision-Date: 2020-11-19 00:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -718,27 +718,31 @@ msgstr ""
 
 #, c-format
 msgid "%s uri uuid action\n"
-msgstr ""
+msgstr "%s uri uuid åtgärd\n"
 
 #, c-format
 msgid ""
 "%s with index %d is configured for a NUMA node (%d) not present in the "
 "domain's <cpu><numa> array (%zu)"
 msgstr ""
+"%s med index %d är konfigurerad för en NUMA-nod (%d) som inte finns i "
+"domänens <cpu><numa>-vektor (%zu)"
 
 #, c-format
 msgid ""
 "%s:\n"
 "%s%c"
 msgstr ""
+"%s:\n"
+"%s%c"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %d: failed to allocate argv"
-msgstr "%s: %d: misslyckades att allokera %d bytes"
+msgstr "%s: %d: misslyckades att allokera argv"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %d: failed to allocate mountpoints"
-msgstr "%s: %d: misslyckades att allokera %d bytes"
+msgstr "%s: %d: misslyckades att allokera monteringspunkter"
 
 #, c-format
 msgid "%s: %s"
@@ -748,124 +752,136 @@ msgstr "%s: %s"
 msgid "%s: %s: unsupported auth %s"
 msgstr "%s: %s: ej stödd autenticering %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: '%s' does not exist"
-msgstr "Hyra %s i låsrymden %s finns inte"
+msgstr "%s: ”%s” finns inte"
 
 #, c-format
 msgid "%s: Address '%s' in route definition is not a network address"
-msgstr ""
+msgstr "%s: adressen ”%s” i ruttdefinitionen är inte en nätverksadress"
 
 #, c-format
 msgid "%s: Bad gateway address '%s' in route definition"
-msgstr ""
+msgstr "%s: felaktig gateway-adress ”%s” i ruttdefinitionen"
 
 #, c-format
 msgid "%s: Bad netmask address '%s' in route definition"
-msgstr ""
+msgstr "%s: felaktig nätmasksadress ”%s” i ruttdefinitionen"
 
 #, c-format
 msgid "%s: Bad network address '%s' in route definition"
-msgstr ""
+msgstr "%s: felaktig nätverksadress ”%s” i ruttdefinitionen"
 
 #, c-format
 msgid "%s: Cannot request read and write flags together"
-msgstr ""
+msgstr "%s: det går inte att begära läs- och skrivflaggor tillsammans"
 
 #, c-format
 msgid ""
 "%s: Error converting address '%s' with netmask '%s' to network-address in "
 "route definition"
 msgstr ""
+"%s: fel vid konverering av adressen ”%s” med nätmasken ”%s” till "
+"nätverksadress i ruttdefinitionen"
 
 #, c-format
 msgid ""
 "%s: Error converting address '%s' with prefix %u to network-address in route "
 "definition"
 msgstr ""
+"%s: fel vid konverering av adressen ”%s” med prefixet ”%u” till "
+"nätverksadress i ruttdefinitionen"
 
 #, c-format
 msgid "%s: IPv4 family specified for non-IPv4 address '%s' in route definition"
 msgstr ""
+"%s: IPv4-familjen angiven för en icke-IPv4-adress ”%s” i ruttdefinitionen"
 
 #, c-format
 msgid "%s: IPv4 family specified for non-IPv4 gateway '%s' in route definition"
 msgstr ""
+"%s: IPv4-familjen angiven för en icke-IPv4-gateway ”%s” i ruttdefinitionen"
 
 #, c-format
 msgid "%s: Invalid metric specified in route definition"
-msgstr ""
+msgstr "%s: felaktigt mätetal angivet i ruttdefinitionen"
 
 #, c-format
 msgid "%s: Invalid metric value, must be > 0 in route definition"
-msgstr ""
+msgstr "%s: felaktigt mätetalsvärde, måste vara > 0 i ruttdefinitionen"
 
 #, c-format
 msgid "%s: Invalid netmask '%s' for address '%s' (both must be IPv4)"
-msgstr ""
+msgstr "%s: felaktig nätmask ”%s” för adressen ”%s” (båda måste vara IPv4)"
 
 #, c-format
 msgid "%s: Invalid prefix %u specified in route definition, must be 0 - 128"
-msgstr ""
+msgstr "%s: felaktigt prefix %u angivet i ruttdefinitionen, måste vara 0 - 128"
 
 #, c-format
 msgid "%s: Invalid prefix %u specified in route definition, must be 0 - 32"
-msgstr ""
+msgstr "%s: felaktigt prefix %u angivet i ruttdefinitionen, måste vara 0 - 32"
 
 #, c-format
 msgid "%s: Invalid prefix specified in route definition"
-msgstr ""
+msgstr "%s: felaktigt prefix angivet i ruttdefinitionen"
 
 #, c-format
 msgid "%s: Missing required address attribute in route definition"
-msgstr ""
+msgstr "%s: saknad nödvändigt adressattribut i ruttdefinitionen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Missing required gateway attribute in route definition"
-msgstr "Källsökvägsattribut saknas för teckenenhet"
+msgstr "%s: saknad nödvändigt gateway-attribut i ruttdefinitionen"
 
 #, c-format
 msgid "%s: No family specified for non-IPv4 address '%s' in route definition"
 msgstr ""
+"%s: ingen familj angiven för en icke-IPv4-adress ”%s” i ruttdefinitionen"
 
 #, c-format
 msgid "%s: No family specified for non-IPv4 gateway '%s' in route definition"
 msgstr ""
+"%s: ingen familj angiven för en icke-IPv4-gateway ”%s” i ruttdefinitionen"
 
 #, c-format
 msgid "%s: Route definition cannot have both a prefix and a netmask"
-msgstr ""
+msgstr "%s ruttdefinitionen kan inte ha både ett prefix och en nätmask"
 
 #, c-format
 msgid ""
 "%s: Specifying netmask invalid for IPv6 address '%s' in route definition"
 msgstr ""
+"%s: anger en nätmask som är felaktig för en IPv6-adress ”%s” i "
+"ruttdefinitionen"
 
 #, c-format
 msgid ""
 "%s: Starting external device: %s\n"
 "%s\n"
 msgstr ""
+"%s: startar extern enhet: %s\n"
+"%s\n"
 
 #, c-format
 msgid "%s: Unrecognized family '%s' in route definition"
-msgstr ""
+msgstr "%s: okänd familj ”%s” i ruttdefinitionen"
 
 #, c-format
 msgid "%s: cannot connect to '%s': %s\n"
-msgstr ""
+msgstr "%s: kan inte ansluta till ”%s”: %s\n"
 
 #, c-format
 msgid "%s: cannot parse URI transport '%s': %s\n"
-msgstr ""
+msgstr "%s: kan inte tolka URI-transporten ”%s”: %s\n"
 
 #, c-format
 msgid "%s: could not proxy traffic: %s\n"
-msgstr ""
+msgstr "%s: kunde inte vara proxy för trafik: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: error: %s%c"
-msgstr "fel: "
+msgstr "%s: fel: %s%c"
 
 #, c-format
 msgid ""
@@ -881,75 +897,75 @@ msgstr "%s: fel: kan inte avgöra om demonen kör: %s\n"
 
 #, c-format
 msgid "%s: event '%s' for node device %s\n"
-msgstr ""
+msgstr "%s: händelse ”%s” för nodenheten %s\n"
 
 #, c-format
 msgid "%s: event '%s' for secret %s\n"
-msgstr ""
+msgstr "%s: händelsen ”%s” för hemligheten %s\n"
 
 #, c-format
 msgid "%s: event '%s' for storage pool %s\n"
-msgstr ""
+msgstr "%s: händelsen ”%s” för lagringspoolen %s\n"
 
 #, c-format
 msgid "%s: event 'lifecycle' for network %s: %s\n"
-msgstr ""
+msgstr "%s: händelsen ”lifecycle” för nätverket %s: %s\n"
 
 #, c-format
 msgid "%s: event 'lifecycle' for node device %s: %s\n"
-msgstr ""
+msgstr "%s: händelsen ”lifecycle” för nodenheten %s: %s\n"
 
 #, c-format
 msgid "%s: event 'lifecycle' for secret %s: %s\n"
-msgstr ""
+msgstr "%s: händelsen ”lifecycle” för hemligheten %s: %s\n"
 
 #, c-format
 msgid "%s: event 'lifecycle' for storage pool %s: %s\n"
-msgstr ""
+msgstr "%s: händelsen ”lifecycle” för lagringspoolen %s: %s\n"
 
 #, c-format
 msgid "%s: expected a bool for '%s' parameter"
-msgstr ""
+msgstr "%s: en bool förväntades till parametern ”%s”"
 
 #, c-format
 msgid "%s: expected a signed integer for '%s' parameter"
-msgstr ""
+msgstr "%s: en heltal med tecken förväntades till parametern ”%s”"
 
 #, c-format
 msgid "%s: expected a string for '%s' parameter"
-msgstr ""
+msgstr "%s: en sträng förväntades till parametern ”%s”"
 
 #, c-format
 msgid "%s: expected a string list for '%s' parameter"
-msgstr ""
+msgstr "%s: en stränglista förväntades till parametern ”%s”"
 
 #, c-format
 msgid "%s: expected a string or string list for '%s' parameter"
-msgstr ""
+msgstr "%s: en sträng eller stränglista förväntades till parametern ”%s”"
 
 #, c-format
 msgid "%s: expected an unsigned integer for '%s' parameter"
-msgstr ""
+msgstr "%s: en teckenlöst heltal förväntades till parametern ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: failed to communicate with bridge helper: %s%s"
-msgstr "%s: misslyckades att skriva loggfilen: %s"
+msgstr "%s: misslyckades att kommuniciera med brygghjälparen: %s%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: failed to read temporary file: %s"
-msgstr "%s: misslyckades att skriva loggfilen: %s"
+msgstr "%s: misslyckades att läsa temporärfilen: %s"
 
 #, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "%s: misslyckades att skriva loggfilen: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: failure with %s: %s"
-msgstr "%s: misslyckades att skriva loggfilen: %s"
+msgstr "%s: misslyckades med %s: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: initialization failed"
-msgstr "%s: initiering misslyckades\n"
+msgstr "%s: initiering misslyckades"
 
 #, c-format
 msgid "%s: initialization failed\n"
@@ -958,405 +974,429 @@ msgstr "%s: initiering misslyckades\n"
 #, c-format
 msgid "%s: ipv6 family specified for non-IPv6 address '%s' in route definition"
 msgstr ""
+"%s: IPv6-familjen angiven för en icke-IPv6-adress ”%s” i ruttdefinitionen"
 
 #, c-format
 msgid ""
 "%s: ipv6 specified for non-IPv6 gateway address '%s' in route definition"
 msgstr ""
+"%s: ipv6 angivet för en icke-IPv6-gateway-adress ”%s” i ruttdefinitionen"
 
 #, c-format
 msgid "%s: malformed fd %s"
-msgstr ""
+msgstr "%s: felformaterad fb %s"
 
 #, c-format
 msgid ""
 "%s: migration_port_max: port must be between the minimal port %d and 65535"
 msgstr ""
+"%s: migration_port_max: porten måste vara mellan minimiporten %d och 65535"
 
 #, c-format
 msgid "%s: migration_port_min: port must be greater than 0"
-msgstr ""
+msgstr "%s: migration_port_min: porten måste vara större än 0"
 
 #, c-format
 msgid "%s: must be run as root\n"
-msgstr ""
+msgstr "%s måste köras som root\n"
 
 #, c-format
 msgid "%s: must not be run setuid root\n"
-msgstr ""
+msgstr "%s: får inte köra setuid root\n"
 
 #, c-format
 msgid "%s: nvdimm without a path"
-msgstr ""
+msgstr "%s: nvdimm utan en sökväg"
 
 #, c-format
 msgid "%s: passthrough input device has no source"
-msgstr ""
+msgstr "%s: genomgångsinmatningsenheten har ingen källa"
 
 #, c-format
 msgid ""
 "%s: remote_display_port_max: port must be between the minimal port and %d"
 msgstr ""
+"%s: remote_display_port_max: porten måsta vara mellan minimiporten och %d"
 
 #, c-format
 msgid "%s: remote_display_port_min: min port must not be greater than max port"
 msgstr ""
+"%s: remote_display_port_min: minimiporten får inte vara större än maxporten"
 
 #, c-format
 msgid "%s: remote_display_port_min: port must be greater than or equal to %d"
-msgstr ""
+msgstr "%s: remote_display_port_min: porten måste vara större eller lika med %d"
 
 #, c-format
 msgid ""
 "%s: remote_websocket_port_max: port must be between the minimal port and %d"
 msgstr ""
+"%s: remote_websocket_port_max: porten måsta vara mellan minimiporten och %d"
 
 #, c-format
 msgid ""
 "%s: remote_websocket_port_min: min port must not be greater than max port"
 msgstr ""
+"%s: remote_websocket_port_min: minimiporten får inte vara större än maxporten"
 
 #, c-format
 msgid "%s: remote_websocket_port_min: port must be greater than or equal to %d"
 msgstr ""
+"%s: remote_websocket_port_min: porten måste vara större eller lika med %d"
 
 #, c-format
 msgid ""
 "%s: temporary filename contains shell meta or other unacceptable characters "
 "(is $TMPDIR wrong?)"
 msgstr ""
+"%s: temporärfilnamnet innehåller skalmetatecken eller andra oacceptabla "
+"tecken (är $TMPDIR fel?)"
 
 #, c-format
 msgid "%s: too many command line arguments\n"
-msgstr ""
+msgstr "%s: för många kommandoradsargument\n"
 
 #, c-format
 msgid "%s: try --help for more details"
-msgstr ""
+msgstr "%s: prova --help för fler detaljer"
 
 #, c-format
 msgid "%s: try --help for more details\n"
-msgstr ""
+msgstr "%s: prova --help för fler detaljer\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: unable to determine access mode of fd %d"
-msgstr "%s: fel: kan inte avgöra om demonen kör: %s\n"
+msgstr "%s: kan inte avgöra åtkomsträttigheter på fb: %d"
 
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
-msgstr ""
+msgstr "%s: oväntad URI-transport ”%s”\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: unsupported hypervisor name %s\n"
-msgstr "%s: %s: ej stödd autenticering %s"
+msgstr "%s: hypervisor-namn som ej stöds %s\n"
 
 #, c-format
 msgid "%s: value for '%s' parameter must be 0 or 1"
-msgstr ""
+msgstr "%s: värdet på parametern ”%s” måste vara 0 eller 1"
 
 #, c-format
 msgid "%s: value for '%s' parameter must be in range %d:%d"
-msgstr ""
+msgstr "%s: värdet på parametern ”%s” måste ligga i intervallet %d:%d"
 
 #, c-format
 msgid "%s: value for '%s' parameter must be in range %lld:%lld"
-msgstr ""
+msgstr "%s: värdet på parametern ”%s” måste ligga i intervallet %lld:%lld"
 
 #, c-format
 msgid "%s: value for '%s' parameter must be in range %zd:%zd"
-msgstr ""
+msgstr "%s: värdet på parametern ”%s” måste ligga i intervallet %zd:%zd"
 
 #, c-format
 msgid "%s: value for '%s' parameter must be in range 0:%u"
-msgstr ""
+msgstr "%s: värdet på parametern ”%s” måste ligga i intervallet 0:%u"
 
 #, c-format
 msgid "%s: value for '%s' parameter must be in range 0:%zu"
-msgstr ""
+msgstr "%s: värdet på parametern ”%s” måste ligga i intervallet 0:%zu"
 
 #, c-format
 msgid "%s: warning: %s%c"
-msgstr ""
+msgstr "%s: varning: %s%c"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: %s"
-msgstr "%s: %s"
+msgstr "%s:%d: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s:%d: %s%s\n"
 "%s"
-msgstr "%s: %s"
+msgstr ""
+"%s:%d: %s%s\n"
+"%s"
 
 #, c-format
 msgid "%s_DEBUG not set with a valid numeric value"
-msgstr ""
+msgstr "%s_DEBUG är inte satt till ett giltigt numeriskt värde"
 
 #, c-format
 msgid "'%s'"
-msgstr ""
+msgstr "”%s”"
 
 #, c-format
 msgid "'%s' architecture is not supported by CPU driver"
-msgstr ""
+msgstr "arkitekturen ”%s” stödjs inte av CPU-drivrutinen"
 
 #, c-format
 msgid "'%s' attributes '%s' must not overlap"
-msgstr ""
+msgstr "”%s” attribut ”%s” får inte överlappa"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' controller cannot be hot plugged."
-msgstr "Denna typ av disk kan inte tas bort under drift"
+msgstr "styrenheten ”%s” kan inte sättas in under drift."
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' controller cannot be hot unplugged."
-msgstr "Denna typ av disk kan inte tas bort under drift"
+msgstr "styrenheten ”%s” kan inte tas bort under drift."
 
 #, c-format
 msgid "'%s' controller only supports up to '%u' ports"
-msgstr ""
+msgstr "styrenheten ”%s” stödjer bara upp till ”%u” portar"
 
 #, c-format
 msgid "'%s' denied access"
-msgstr ""
+msgstr "”%s” nekad åtkomst"
 
 #, c-format
 msgid "'%s' does not exist"
-msgstr ""
+msgstr "”%s” finns inte"
 
 #, c-format
 msgid "'%s' file does not fit in memory"
-msgstr ""
+msgstr "filen ”%s” får inte plats i minnet"
 
 #, c-format
 msgid "'%s' is not a VF device"
-msgstr ""
+msgstr "”%s” är inte en VF-enhet"
 
 #, c-format
 msgid "'%s' is not a known interface"
-msgstr ""
+msgstr "”%s” är inte ett känt gränssnitt"
 
 #, c-format
 msgid "'%s' is not a suitable bridge helper"
-msgstr ""
+msgstr "”%s” är inte en användbara brygghjälpare"
 
 #, c-format
 msgid "'%s' is not a suitable dbus-daemon"
-msgstr ""
+msgstr "”%s” är inte en användbar dbus-demon"
 
 #, c-format
 msgid "'%s' is not a suitable pr helper"
-msgstr ""
+msgstr "”%s” är inte en användbara pr-hjälpare"
 
 #, c-format
 msgid "'%s' is not supported in this QEMU binary"
-msgstr ""
+msgstr "”%s” stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "'%s' missing in guest-get-fsinfo 'disk' data"
-msgstr ""
+msgstr "”%s” saknas i guest-get-fsinfo ”disk”-data"
 
 #, c-format
 msgid "'%s' scheduler bitmap '%s' is empty"
-msgstr ""
+msgstr "schemaläggaren ”%s” bitkarta ”%s” är tom"
 
 #, c-format
 msgid "'%s' starting from %llu has only %zd bytes available"
-msgstr ""
+msgstr "”%s” som börjar vid %llu har bara %zd byte tillgängligt"
 
 #, c-format
 msgid "'%s' value longer than '%zu' bytes"
-msgstr ""
+msgstr "värdet ”%s” är längre än ”%zu” byte"
 
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
 msgstr ""
+"”--wipe-storage” kräver ”--storage <sträng>” eller ”--remove-all-storage”"
 
 #, c-format
 msgid "':' not allowed in RBD source volume name '%s'"
-msgstr ""
+msgstr "”:” är inte tillåtet i RBD-källvolymnamnet ”%s”"
 
 msgid "'adapter' name must be specified for scsi hostdev source"
-msgstr ""
+msgstr "”adapter”-namnet måste anges för scsi-värdenhetskällan"
 
 msgid "'address' is not supported for 'ramfb' video devices"
-msgstr ""
+msgstr "”address” stödjs inte för ”ramfb”-videoenheter"
 
 msgid "'address' must be specified for scsi hostdev source"
-msgstr ""
+msgstr "”address” måste anges för scsi-värdenhetskällan"
 
 msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
+"ett ”arch”-element kan inte användas inuti ett ”cpu”-element med attributet "
+"”match”"
 
 #, c-format
 msgid "'auto' attribute can be 'yes' or 'no': %s"
-msgstr ""
+msgstr "attributet ”auto” kan vara ”yes” eller ”no”: %s"
 
 msgid "'base' and 'baseNode' can't be used together"
-msgstr ""
+msgstr "”base” och ”baseNode” får inte användas tillsammans"
 
-#, fuzzy
 msgid ""
 "'bus', 'target', and 'unit' must be specified for scsi hostdev source address"
-msgstr "måltypen måste anges för %s-enhet"
+msgstr "”bus”, ”target” och ”unit” måste anges för scsi-värdenhetens källadress"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
-msgstr ""
+msgstr "”cache” refererar till en NUMA-nodcaceh som inte finns"
 
 msgid "'can-offline' missing in reply of guest-get-vcpus"
-msgstr ""
+msgstr "”can-offline” saknas i svaret på guest-get-vcpus"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'cid' attribute must be a positive number: %s"
-msgstr "sndbuf måste vara ett positivt heltal"
+msgstr "attributet ”cid” måste vara ett positivt tal: %s"
 
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
-msgstr ""
+msgstr "”cmd_per_lun” stödj endast av styrenheten virtio-scsi"
 
 msgid "'cow' storage format is not supported"
-msgstr ""
+msgstr "lagringsformatet ”cow” stödjs inte"
 
 msgid ""
 "'directory' storage format is not directly supported by QEMU, use 'dir' disk "
 "type instead"
 msgstr ""
+"lagringsformatet ”directory” stödjs inte direkt av QEMU, använd disktypen "
+"”dir” istället"
 
 msgid "'disk' missing in reply of guest-get-fsinfo"
-msgstr ""
+msgstr "”disk” saknas i svar från guest-get-fsinfo"
 
 msgid "'floor' attribute allowed only in <inbound> element"
-msgstr ""
+msgstr "attributet ”floor” är endast tillåtet i elementet <inbound>"
 
 msgid "'gluster' command line tool not found"
-msgstr ""
+msgstr "kommandoradsverktyget ”gluster” finns inte"
 
 msgid "'host-name' missing in guest-get-host-name reply"
-msgstr ""
+msgstr "”host-name” saknas i svaret på guest-get-host-name"
 
 #, c-format
 msgid ""
 "'incremental' backup mode of disk '%s' requires setting 'incremental' field "
 "for disk or backup"
 msgstr ""
+"säkerhetskopieringsläget ”incremental” för disken ”%s” kräver att ställa in "
+"fältet ”incremental” för disken eller säkerhetskopian"
 
 msgid "'initiator' refers to a non-existent NUMA node"
-msgstr ""
+msgstr "”initiator” refererar till en NUMA-nod som inte finns"
 
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
-msgstr ""
+msgstr "”ioeventfd” stödjs endast av styrenheten virtio-scsi"
 
 msgid "'iothread' attribute only supported for virtio scsi controllers"
-msgstr ""
+msgstr "attributet ”iothread” stödjs endast för styrenheten virtio scsi"
 
 msgid "'iothread' is only supported for virtio-scsi controller"
-msgstr ""
+msgstr "attributet ”iothread” stödjs endast för styrenheten virtio-scsi"
 
 msgid "'logical-id' missing in reply of guest-get-vcpus"
-msgstr ""
+msgstr "”logical-id” saknas i svaret på guest-get-vcpus"
 
 msgid "'login-time' missing in reply of guest-get-users"
-msgstr ""
+msgstr "”login-time” saknas i svaret på guest-get-users"
 
 msgid "'max_sectors' is only supported by virtio-scsi controller"
-msgstr ""
+msgstr "”max_sectors” stödjs endast av styrenheten virtio-scsi"
 
 msgid "'max_workers' must be greater than 0"
-msgstr ""
+msgstr "”max_workers” måste vara större än 0"
 
 msgid ""
 "'mode' attribute for Xen feature 'passthrough' must be 'sync_pt' or "
 "'share_pt'"
 msgstr ""
+"attributet ”mode” för Xen-funktionen ”passthrough” måste vara ”sync_pt” "
+"eller ”share_pt”"
 
 #, c-format
 msgid ""
 "'mode' of Xen passthrough feature differs: source: '%s', destination: '%s'"
 msgstr ""
+"”mode” för funktionen Xen passthrough skiljer: källa ”%s”, destination ”%s”"
 
 #, c-format
 msgid "'model' attribute in <hostdev> is only supported when type='%s'"
-msgstr ""
+msgstr "attributet ”model” i <hostdev> stödjs bara när typ=”%s”"
 
 msgid "'mountpoint' missing in reply of guest-get-fsinfo"
-msgstr ""
+msgstr "”mountpoint” saknas i svaret på guest-get-fsinfo"
 
 msgid "'name' missing in reply of guest-get-fsinfo"
-msgstr ""
+msgstr "”name” saknas i svaret på guest-get-fsinfo"
 
 msgid "'netns' namespace source can only be used with sharenet"
-msgstr ""
+msgstr "namnrymden ”netns” källa kan endaste användas med sharenet"
 
-#, fuzzy
 msgid "'network' attribute is valid only for listen type 'network'"
-msgstr ""
-"Inget <source> ”network”-attribut angivet med <interface type='network'/>"
+msgstr "attributet ”network” är endast giltigt för lyssningstypen ”network”"
 
 msgid "'offset' missing in reply of guest-get-timezone"
-msgstr ""
+msgstr "”offset” saknas i svaret på guest-get-timezone"
 
 msgid "'online' missing in reply of guest-get-vcpus"
-msgstr ""
+msgstr "”online” saknas i svaret på guest-get-vcpus"
 
 msgid "'parent' for vHBA not specified, and cannot find one on this host"
 msgstr ""
+"”parent” för vHBA är inte angivet, och det går inte att hitta en på denna "
+"värd"
 
 msgid "'pci-controller' missing in guest-get-fsinfo 'disk' data"
-msgstr ""
+msgstr "”pci-controller” saknas i guest-get-fsinfo ”disk”-data"
 
 msgid "'peak' and 'burst' require 'average' attribute"
-msgstr ""
+msgstr "”peak” och ”burst” kräver attributet ”average”"
 
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
-msgstr ""
+msgstr "”pool” och ”volume” måste anges tillsammans för källan av typen ”pool”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'queues' attribute must be positive number: %s"
-msgstr "sndbuf måste vara ett positivt heltal"
+msgstr "attributet ”queues” måste vara ett positivt tal: %s"
 
 msgid "'queues' is only supported by virtio-scsi controller"
-msgstr ""
+msgstr "”queues” stödjs endast av styrenheten virtio-scsi"
 
 msgid ""
 "'reconnect' attribute  unsupported 'server' mode for <interface "
 "type='vhostuser'>"
 msgstr ""
+"attributet ”reconnect” ej stött ”server”-läge för <interface "
+"type='vhostuser'>"
 
 #, c-format
 msgid "'rx_queue_size' attribute must be positive number: %s"
-msgstr ""
+msgstr "attributet ”rx_queue_size” måste vara ett positivt tal: %s"
 
 msgid "'sgio' is not supported for SCSI generic device yet "
-msgstr ""
+msgstr "”sgio” stödjs inte för den generella SCSI-enheten än "
 
 #, c-format
 msgid "'sibling_id %d' does not refer to a valid cell within NUMA 'cell id %d'"
 msgstr ""
+"”sibling_id %d” refererar inte till en giltig cell med NUMA ”cell id %d”"
 
 msgid "'socket' attribute is valid only for listen type 'socket'"
-msgstr ""
+msgstr "attributet ”socket” är endast giltigt för lyssningstypen ”socket”"
 
 msgid "'ssh' protocol is not yet supported"
-msgstr ""
+msgstr "protokollet ”ssh” stödjs inte ännu"
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
-msgstr ""
+msgstr "”startupPolicy” är endast giltigt för volymer av typen ”file”"
 
 msgid "'target' refers to a non-existent NUMA node"
-msgstr ""
+msgstr "”target” refererar till en NUMA-nod som inte finns"
 
 msgid "'tftp' protocol is not supported with this QEMU binary"
-msgstr ""
+msgstr "protokollet ”tftp” stödjs inte med denna QEMU-binär"
 
 msgid "'trim' algorithm not supported"
-msgstr ""
+msgstr "algoritmen ”trim” stödjs inte"
 
 #, c-format
 msgid "'tx_queue_size' attribute must be positive number: %s"
-msgstr ""
+msgstr "attributet ”tx_queue_size” måste vara ett positivt tal: %s"
 
 msgid "'type' missing in reply of guest-get-fsinfo"
-msgstr ""
+msgstr "”type” saknas i svar från guest-get-fsinfo"
 
 #, fuzzy, c-format
 msgid "'unsupported perf event '%s'"
