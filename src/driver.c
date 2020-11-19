@@ -33,6 +33,8 @@
 #include "virstring.h"
 #include "virthread.h"
 #include "virutil.h"
+#include "viridentity.h"
+#include "datatypes.h"
 #include "configmake.h"
 
 VIR_LOG_INIT("driver");
@@ -136,6 +138,7 @@ static virConnectPtr
 virGetConnectGeneric(virThreadLocal *threadPtr, const char *name)
 {
     virConnectPtr conn;
+    virErrorPtr saved;
 
     if (virConnectCacheInitialize() < 0)
         return NULL;
@@ -153,8 +156,32 @@ virGetConnectGeneric(virThreadLocal *threadPtr, const char *name)
 
         conn = virConnectOpen(uri);
         VIR_DEBUG("Opened new %s connection %p", name, conn);
+        if (!conn)
+            return NULL;
+
+        if (conn->driver->connectSetIdentity != NULL) {
+            g_autoptr(virIdentity) ident = NULL;
+            virTypedParameterPtr identparams = NULL;
+            int nidentparams = 0;
+
+            VIR_DEBUG("Attempting to delegate current identity");
+            if (!(ident = virIdentityGetCurrent()))
+                goto error;
+
+            if (virIdentityGetParameters(ident, &identparams, &nidentparams) < 0)
+                goto error;
+
+            if (virConnectSetIdentity(conn, identparams, nidentparams, 0) < 0)
+                goto error;
+        }
     }
     return conn;
+
+ error:
+    saved = virSaveLastError();
+    virConnectClose(conn);
+    virSetError(saved);
+    return NULL;
 }
 
 
