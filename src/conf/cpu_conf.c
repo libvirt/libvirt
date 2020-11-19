@@ -858,10 +858,10 @@ virCPUDefFormatBuf(virBufferPtr buf,
 }
 
 static int
-virCPUDefUpdateFeatureInternal(virCPUDefPtr def,
-                               const char *name,
-                               int policy,
-                               bool update)
+virCPUDefAddFeatureInternal(virCPUDefPtr def,
+                            const char *name,
+                            int policy,
+                            bool update)
 {
     virCPUFeatureDefPtr feat;
 
@@ -898,7 +898,7 @@ virCPUDefUpdateFeature(virCPUDefPtr def,
                        const char *name,
                        int policy)
 {
-    return virCPUDefUpdateFeatureInternal(def, name, policy, true);
+    return virCPUDefAddFeatureInternal(def, name, policy, true);
 }
 
 int
@@ -906,7 +906,7 @@ virCPUDefAddFeature(virCPUDefPtr def,
                     const char *name,
                     int policy)
 {
-    return virCPUDefUpdateFeatureInternal(def, name, policy, false);
+    return virCPUDefAddFeatureInternal(def, name, policy, false);
 }
 
 
