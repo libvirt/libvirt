@@ -1815,7 +1815,7 @@ qemuAgentSetTime(qemuAgentPtr agent,
     return ret;
 }
 
-static void
+void
 qemuAgentDiskAddressFree(qemuAgentDiskAddressPtr info)
 {
     if (!info)

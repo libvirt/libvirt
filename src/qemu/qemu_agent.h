@@ -78,6 +78,8 @@ struct _qemuAgentDiskAddress {
     unsigned int unit;
     char *devnode;
 };
+void qemuAgentDiskAddressFree(qemuAgentDiskAddressPtr addr);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuAgentDiskAddress, qemuAgentDiskAddressFree);
 
 typedef struct _qemuAgentFSInfo qemuAgentFSInfo;
 typedef qemuAgentFSInfo *qemuAgentFSInfoPtr;
