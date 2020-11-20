@@ -81,6 +81,17 @@ struct _qemuAgentDiskAddress {
 void qemuAgentDiskAddressFree(qemuAgentDiskAddressPtr addr);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuAgentDiskAddress, qemuAgentDiskAddressFree);
 
+typedef struct _qemuAgentDiskInfo qemuAgentDiskInfo;
+typedef qemuAgentDiskInfo *qemuAgentDiskInfoPtr;
+struct _qemuAgentDiskInfo {
+    char *name;
+    bool partition;
+    char **dependencies;
+    qemuAgentDiskAddressPtr address;
+    char *alias;
+};
+void qemuAgentDiskInfoFree(qemuAgentDiskInfoPtr info);
+
 typedef struct _qemuAgentFSInfo qemuAgentFSInfo;
 typedef qemuAgentFSInfo *qemuAgentFSInfoPtr;
 struct _qemuAgentFSInfo {
@@ -187,3 +198,7 @@ int qemuAgentSSHRemoveAuthorizedKeys(qemuAgentPtr agent,
                                      const char *user,
                                      const char **keys,
                                      size_t nkeys);
+
+int qemuAgentGetDisks(qemuAgentPtr mon,
+                      qemuAgentDiskInfoPtr **disks,
+                      bool report_unsupported);

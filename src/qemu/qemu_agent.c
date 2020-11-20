@@ -1827,6 +1827,21 @@ qemuAgentDiskAddressFree(qemuAgentDiskAddressPtr info)
     g_free(info);
 }
 
+
+void
+qemuAgentDiskInfoFree(qemuAgentDiskInfoPtr info)
+{
+    if (!info)
+        return;
+
+    g_free(info->name);
+    g_strfreev(info->dependencies);
+    qemuAgentDiskAddressFree(info->address);
+    g_free(info->alias);
+    g_free(info);
+}
+
+
 void
 qemuAgentFSInfoFree(qemuAgentFSInfoPtr info)
 {
@@ -2638,4 +2653,81 @@ qemuAgentSSHRemoveAuthorizedKeys(qemuAgentPtr agent,
         return -1;
 
     return qemuAgentCommand(agent, cmd, &reply, agent->timeout);
+}
+
+
+int qemuAgentGetDisks(qemuAgentPtr agent,
+                      qemuAgentDiskInfoPtr **disks,
+                      bool report_unsupported)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    virJSONValuePtr data = NULL;
+    size_t ndata;
+    size_t i;
+    int rc;
+
+    if (!(cmd = qemuAgentMakeCommand("guest-get-disks", NULL)))
+        return -1;
+
+    if ((rc = qemuAgentCommandFull(agent, cmd, &reply, agent->timeout,
+                                   report_unsupported)) < 0)
+        return rc;
+
+    if (!(data = virJSONValueObjectGetArray(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qemu agent didn't return an array of disks"));
+        return -1;
+    }
+
+    ndata = virJSONValueArraySize(data);
+
+    *disks = g_new0(qemuAgentDiskInfoPtr, ndata);
+
+    for (i = 0; i < ndata; i++) {
+        virJSONValuePtr addr;
+        virJSONValuePtr entry = virJSONValueArrayGet(data, i);
+        qemuAgentDiskInfoPtr disk;
+
+        if (!entry) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("array element missing in guest-get-disks return "
+                             "value"));
+            goto error;
+        }
+
+        disk = g_new0(qemuAgentDiskInfo, 1);
+        (*disks)[i] = disk;
+
+        disk->name = g_strdup(virJSONValueObjectGetString(entry, "name"));
+        if (!disk->name) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("'name' missing in reply of guest-get-disks"));
+            goto error;
+        }
+
+        if (virJSONValueObjectGetBoolean(entry, "partition", &disk->partition) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("'partition' missing in reply of guest-get-disks"));
+            goto error;
+        }
+
+        disk->dependencies = virJSONValueObjectGetStringArray(entry, "dependencies");
+        disk->alias = g_strdup(virJSONValueObjectGetString(entry, "alias"));
+        addr = virJSONValueObjectGetObject(entry, "address");
+        if (addr) {
+            disk->address = qemuAgentGetDiskAddress(addr);
+            if (!disk->address)
+                goto error;
+        }
+    }
+
+    return ndata;
+
+ error:
+    for (i = 0; i < ndata; i++) {
+        qemuAgentDiskInfoFree((*disks)[i]);
+    }
+    g_free(*disks);
+    return -1;
 }

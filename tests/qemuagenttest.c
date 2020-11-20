@@ -1022,6 +1022,116 @@ testQemuAgentGetInterfaces(const void *data)
     return ret;
 }
 
+
+/* this is a bit of a pathological response on a real hw */
+static const char testQemuAgentGetDisksResponse[] =
+    "{\"return\": "
+    "  ["
+    "    {\"alias\" : \"fedora_localhost--live-home\","
+    "     \"dependencies\" : "
+    "     ["
+    "       \"/dev/dm-0\""
+    "     ],"
+    "     \"name\" : \"/dev/dm-3\","
+    "     \"partition\" : false"
+    "    },"
+    "    {\"address\" : "
+    "      {\"bus\" : 0,"
+    "       \"bus-type\" : \"unknown\","
+    "       \"dev\" : \"/dev/nvme0n1\","
+    "       \"pci-controller\" : "
+    "         {\"bus\" : -1,"
+    "          \"domain\" : -1,"
+    "          \"function\" : -1,"
+    "          \"slot\" : -1"
+    "         },"
+    "     \"serial\" : \"GIGABYTE GP-ASM2NE6100TTTD_SN202208900567\","
+    "     \"target\" : 0,"
+    "     \"unit\" : 0"
+    "    },"
+    "    \"dependencies\" : [],"
+    "    \"name\" : \"/dev/nvme0n1\","
+    "    \"partition\" : false"
+    "   }"
+    "  ]"
+    "}";
+
+static int
+testQemuAgentGetDisks(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    size_t i;
+    int ret = -1;
+    int disks_count = 0;
+    qemuAgentDiskInfoPtr *disks = NULL;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "guest-get-disks",
+                               testQemuAgentGetDisksResponse) < 0)
+        goto cleanup;
+
+    if ((disks_count = qemuAgentGetDisks(qemuMonitorTestGetAgent(test),
+                                         &disks, true)) < 0)
+        goto cleanup;
+
+    if (disks_count != 2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "expected 2 disks, got %d", ret);
+        goto cleanup;
+    }
+
+    if (STRNEQ(disks[0]->name, "/dev/dm-3") ||
+        STRNEQ(disks[1]->name, "/dev/nvme0n1")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected return values for disks names");
+        goto cleanup;
+    }
+
+    if (STRNEQ(disks[0]->alias, "fedora_localhost--live-home") ||
+        disks[1]->alias != NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected return values for disks aliases");
+        goto cleanup;
+    }
+
+    if (STRNEQ(disks[0]->dependencies[0], "/dev/dm-0") ||
+        disks[0]->dependencies[1] != NULL ||
+        disks[1]->dependencies[0] != NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected return values for disks dependencies");
+        goto cleanup;
+    }
+
+    if (disks[0]->address != NULL ||
+        disks[1]->address->bus != 0 ||
+        disks[1]->address->target != 0 ||
+        disks[1]->address->unit != 0 ||
+        STRNEQ(disks[1]->address->serial, "GIGABYTE GP-ASM2NE6100TTTD_SN202208900567") ||
+        STRNEQ(disks[1]->address->bus_type, "unknown")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected return values for disks addresses");
+        goto cleanup;
+    }
+    ret = 0;
+
+ cleanup:
+    qemuMonitorTestFree(test);
+    if (disks) {
+        for (i = 0; i < disks_count; i++)
+            qemuAgentDiskInfoFree(disks[i]);
+    }
+    VIR_FREE(disks);
+
+    return ret;
+}
+
+
 static const char testQemuAgentUsersResponse[] =
     "{\"return\": "
     "   ["
@@ -1394,6 +1504,7 @@ mymain(void)
     DO_TEST(OSInfo);
     DO_TEST(Timezone);
     DO_TEST(SSHKeys);
+    DO_TEST(GetDisks);
 
     DO_TEST(Timeout); /* Timeout should always be called last */
 
