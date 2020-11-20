@@ -349,6 +349,9 @@ int qemuTestCapsCacheInsert(virFileCachePtr cache,
             tmpCaps = virQEMUCapsNew();
         }
 
+        if (!tmpCaps)
+            return -1;
+
         if (!virQEMUCapsHasMachines(tmpCaps)) {
             const char *defaultRAMid = NULL;
 
