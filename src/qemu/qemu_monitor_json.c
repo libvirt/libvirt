@@ -7533,10 +7533,6 @@ qemuMonitorJSONGetStringArray(qemuMonitorPtr mon, const char *qmpCmd,
     int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
-    virJSONValuePtr data;
-    char **list = NULL;
-    size_t n = 0;
-    size_t i;
 
     *array = NULL;
 
@@ -7554,32 +7550,12 @@ qemuMonitorJSONGetStringArray(qemuMonitorPtr mon, const char *qmpCmd,
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
         goto cleanup;
 
-    data = virJSONValueObjectGetArray(reply, "return");
-    n = virJSONValueArraySize(data);
+    if (!(*array = virJSONValueObjectGetStringArray(reply, "return")))
+        goto cleanup;
 
-    /* null-terminated list */
-    list = g_new0(char *, n + 1);
-
-    for (i = 0; i < n; i++) {
-        virJSONValuePtr child = virJSONValueArrayGet(data, i);
-        const char *tmp;
-
-        if (!(tmp = virJSONValueGetString(child))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s array element does not contain data"),
-                           qmpCmd);
-            goto cleanup;
-        }
-
-        list[i] = g_strdup(tmp);
-    }
-
-    ret = n;
-    *array = list;
-    list = NULL;
+    ret = g_strv_length(*array);
 
  cleanup:
-    g_strfreev(list);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
