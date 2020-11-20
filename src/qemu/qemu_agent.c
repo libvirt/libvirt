@@ -1846,6 +1846,47 @@ qemuAgentFSInfoFree(qemuAgentFSInfoPtr info)
     g_free(info);
 }
 
+
+static qemuAgentDiskAddressPtr
+qemuAgentGetDiskAddress(virJSONValuePtr json)
+{
+    virJSONValuePtr pci;
+    g_autoptr(qemuAgentDiskAddress) addr = NULL;
+
+    addr = g_new0(qemuAgentDiskAddress, 1);
+    addr->bus_type = g_strdup(virJSONValueObjectGetString(json, "bus-type"));
+    addr->serial = g_strdup(virJSONValueObjectGetString(json, "serial"));
+    addr->devnode = g_strdup(virJSONValueObjectGetString(json, "dev"));
+
+#define GET_DISK_ADDR(jsonObject, var, name) \
+    do { \
+        if (virJSONValueObjectGetNumberUint(jsonObject, name, var) < 0) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           _("'%s' missing"), name); \
+            return NULL; \
+        } \
+    } while (0)
+
+    GET_DISK_ADDR(json, &addr->bus, "bus");
+    GET_DISK_ADDR(json, &addr->target, "target");
+    GET_DISK_ADDR(json, &addr->unit, "unit");
+
+    if (!(pci = virJSONValueObjectGet(json, "pci-controller"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("'pci-controller' missing"));
+        return NULL;
+    }
+
+    GET_DISK_ADDR(pci, &addr->pci_controller.domain, "domain");
+    GET_DISK_ADDR(pci, &addr->pci_controller.bus, "bus");
+    GET_DISK_ADDR(pci, &addr->pci_controller.slot, "slot");
+    GET_DISK_ADDR(pci, &addr->pci_controller.function, "function");
+#undef GET_DISK_ADDR
+
+    return g_steal_pointer(&addr);
+}
+
+
 static int
 qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
                             qemuAgentFSInfoPtr fsinfo)
@@ -1867,9 +1908,6 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
 
     for (i = 0; i < fsinfo->ndisks; i++) {
         virJSONValuePtr jsondisk = virJSONValueArrayGet(jsondisks, i);
-        virJSONValuePtr pci;
-        qemuAgentDiskAddressPtr disk;
-        const char *val;
 
         if (!jsondisk) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1879,44 +1917,8 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
             return -1;
         }
 
-        fsinfo->disks[i] = g_new0(qemuAgentDiskAddress, 1);
-        disk = fsinfo->disks[i];
-
-        if ((val = virJSONValueObjectGetString(jsondisk, "bus-type")))
-            disk->bus_type = g_strdup(val);
-
-        if ((val = virJSONValueObjectGetString(jsondisk, "serial")))
-            disk->serial = g_strdup(val);
-
-        if ((val = virJSONValueObjectGetString(jsondisk, "dev")))
-            disk->devnode = g_strdup(val);
-
-#define GET_DISK_ADDR(jsonObject, var, name) \
-        do { \
-            if (virJSONValueObjectGetNumberUint(jsonObject, name, var) < 0) { \
-                virReportError(VIR_ERR_INTERNAL_ERROR, \
-                               _("'%s' missing in guest-get-fsinfo " \
-                                 "'disk' data"), name); \
-                return -1; \
-            } \
-        } while (0)
-
-        GET_DISK_ADDR(jsondisk, &disk->bus, "bus");
-        GET_DISK_ADDR(jsondisk, &disk->target, "target");
-        GET_DISK_ADDR(jsondisk, &disk->unit, "unit");
-
-        if (!(pci = virJSONValueObjectGet(jsondisk, "pci-controller"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("'pci-controller' missing in guest-get-fsinfo "
-                             "'disk' data"));
+        if (!(fsinfo->disks[i] = qemuAgentGetDiskAddress(jsondisk)))
             return -1;
-        }
-
-        GET_DISK_ADDR(pci, &disk->pci_controller.domain, "domain");
-        GET_DISK_ADDR(pci, &disk->pci_controller.bus, "bus");
-        GET_DISK_ADDR(pci, &disk->pci_controller.slot, "slot");
-        GET_DISK_ADDR(pci, &disk->pci_controller.function, "function");
-#undef GET_DISK_ADDR
     }
 
     return 0;
