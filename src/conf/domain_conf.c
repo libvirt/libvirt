@@ -27882,24 +27882,21 @@ static void
 virDomainMemoryTargetDefFormat(virBufferPtr buf,
                                virDomainMemoryDefPtr def)
 {
-    virBufferAddLit(buf, "<target>\n");
-    virBufferAdjustIndent(buf, 2);
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
-    virBufferAsprintf(buf, "<size unit='KiB'>%llu</size>\n", def->size);
+    virBufferAsprintf(&childBuf, "<size unit='KiB'>%llu</size>\n", def->size);
     if (def->targetNode >= 0)
-        virBufferAsprintf(buf, "<node>%d</node>\n", def->targetNode);
+        virBufferAsprintf(&childBuf, "<node>%d</node>\n", def->targetNode);
     if (def->labelsize) {
-        virBufferAddLit(buf, "<label>\n");
-        virBufferAdjustIndent(buf, 2);
-        virBufferAsprintf(buf, "<size unit='KiB'>%llu</size>\n", def->labelsize);
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</label>\n");
+        g_auto(virBuffer) labelChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
+
+        virBufferAsprintf(&labelChildBuf, "<size unit='KiB'>%llu</size>\n", def->labelsize);
+        virXMLFormatElement(&childBuf, "label", NULL, &labelChildBuf);
     }
     if (def->readonly)
-        virBufferAddLit(buf, "<readonly/>\n");
+        virBufferAddLit(&childBuf, "<readonly/>\n");
 
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</target>\n");
+    virXMLFormatElement(buf, "target", NULL, &childBuf);
 }
 
 static int
