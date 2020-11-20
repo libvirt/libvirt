@@ -8544,14 +8544,12 @@ qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
  */
 int
 qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
-                                   virQEMUCapsPtr qemuCaps,
+                                   virQEMUCapsPtr qemuCaps G_GNUC_UNUSED,
                                    const virDomainMemoryDef *mem)
 {
     unsigned int nmems = def->nmems;
     unsigned long long hotplugSpace;
     unsigned long long hotplugMemory = 0;
-    bool needPCDimmCap = false;
-    bool needNvdimmCap = false;
     size_t i;
 
     hotplugSpace = def->mem.max_memory - virDomainDefGetMemoryInitial(def);
@@ -8598,38 +8596,10 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
     for (i = 0; i < def->nmems; i++) {
         hotplugMemory += def->mems[i]->size;
 
-        switch (def->mems[i]->model) {
-        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
-            needPCDimmCap = true;
-            break;
-
-        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-            needNvdimmCap = true;
-            break;
-
-        case VIR_DOMAIN_MEMORY_MODEL_NONE:
-        case VIR_DOMAIN_MEMORY_MODEL_LAST:
-            break;
-        }
-
         /* already existing devices don't need to be checked on hotplug */
         if (!mem &&
             qemuDomainDefValidateMemoryHotplugDevice(def->mems[i], def) < 0)
             return -1;
-    }
-
-    if (needPCDimmCap &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PC_DIMM)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("memory hotplug isn't supported by this QEMU binary"));
-        return -1;
-    }
-
-    if (needNvdimmCap &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("nvdimm isn't supported by this QEMU binary"));
-        return -1;
     }
 
     if (hotplugMemory > hotplugSpace) {
