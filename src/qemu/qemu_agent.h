@@ -67,9 +67,9 @@ typedef enum {
     QEMU_AGENT_SHUTDOWN_LAST,
 } qemuAgentShutdownMode;
 
-typedef struct _qemuAgentDiskInfo qemuAgentDiskInfo;
-typedef qemuAgentDiskInfo *qemuAgentDiskInfoPtr;
-struct _qemuAgentDiskInfo {
+typedef struct _qemuAgentDiskAddress qemuAgentDiskAddress;
+typedef qemuAgentDiskAddress *qemuAgentDiskAddressPtr;
+struct _qemuAgentDiskAddress {
     char *serial;
     virPCIDeviceAddress pci_controller;
     char *bus_type;
@@ -88,7 +88,7 @@ struct _qemuAgentFSInfo {
     long long total_bytes;
     long long used_bytes;
     size_t ndisks;
-    qemuAgentDiskInfoPtr *disks;
+    qemuAgentDiskAddressPtr *disks;
 };
 void qemuAgentFSInfoFree(qemuAgentFSInfoPtr info);
 

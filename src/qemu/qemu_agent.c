@@ -1816,7 +1816,7 @@ qemuAgentSetTime(qemuAgentPtr agent,
 }
 
 static void
-qemuAgentDiskInfoFree(qemuAgentDiskInfoPtr info)
+qemuAgentDiskAddressFree(qemuAgentDiskAddressPtr info)
 {
     if (!info)
         return;
@@ -1840,7 +1840,7 @@ qemuAgentFSInfoFree(qemuAgentFSInfoPtr info)
     g_free(info->fstype);
 
     for (i = 0; i < info->ndisks; i++)
-        qemuAgentDiskInfoFree(info->disks[i]);
+        qemuAgentDiskAddressFree(info->disks[i]);
     g_free(info->disks);
 
     g_free(info);
@@ -1862,13 +1862,13 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
     ndisks = virJSONValueArraySize(jsondisks);
 
     if (ndisks)
-        fsinfo->disks = g_new0(qemuAgentDiskInfoPtr, ndisks);
+        fsinfo->disks = g_new0(qemuAgentDiskAddressPtr, ndisks);
     fsinfo->ndisks = ndisks;
 
     for (i = 0; i < fsinfo->ndisks; i++) {
         virJSONValuePtr jsondisk = virJSONValueArrayGet(jsondisks, i);
         virJSONValuePtr pci;
-        qemuAgentDiskInfoPtr disk;
+        qemuAgentDiskAddressPtr disk;
         const char *val;
 
         if (!jsondisk) {
@@ -1879,7 +1879,7 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
             return -1;
         }
 
-        fsinfo->disks[i] = g_new0(qemuAgentDiskInfo, 1);
+        fsinfo->disks[i] = g_new0(qemuAgentDiskAddress, 1);
         disk = fsinfo->disks[i];
 
         if ((val = virJSONValueObjectGetString(jsondisk, "bus-type")))

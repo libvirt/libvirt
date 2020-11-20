@@ -18873,7 +18873,7 @@ qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent,
     ret->ndevAlias = agent->ndisks;
 
     for (i = 0; i < ret->ndevAlias; i++) {
-        qemuAgentDiskInfoPtr agentdisk = agent->disks[i];
+        qemuAgentDiskAddressPtr agentdisk = agent->disks[i];
         virDomainDiskDefPtr diskDef;
 
         diskDef = virDomainDiskByAddress(vmdef,
@@ -19925,7 +19925,7 @@ qemuAgentFSInfoFormatParams(qemuAgentFSInfoPtr *fsinfo,
             return;
         for (j = 0; j < fsinfo[i]->ndisks; j++) {
             virDomainDiskDefPtr diskdef = NULL;
-            qemuAgentDiskInfoPtr d = fsinfo[i]->disks[j];
+            qemuAgentDiskAddressPtr d = fsinfo[i]->disks[j];
             /* match the disk to the target in the vm definition */
             diskdef = virDomainDiskByAddress(vmdef,
                                              &d->pci_controller,
