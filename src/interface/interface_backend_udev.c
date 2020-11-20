@@ -303,7 +303,7 @@ udevConnectListAllInterfaces(virConnectPtr conn,
     int tmp_count;
     int count = 0;
     int status = 0;
-    int ret;
+    int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE, -1);
 
@@ -320,7 +320,6 @@ udevConnectListAllInterfaces(virConnectPtr conn,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to get list of %s interfaces on host"),
                        virUdevStatusString(status));
-        ret = -1;
         goto cleanup;
     }
 
