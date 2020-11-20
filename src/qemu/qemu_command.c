@@ -1625,17 +1625,39 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                                                        disk->info.addr.drive.controller)))
            return NULL;
 
-        if (controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
+        switch ((virDomainControllerModelSCSI)controllerModel) {
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
             virBufferAsprintf(&opt, ",bus=%s.%d,scsi-id=%d",
                               contAlias,
                               disk->info.addr.drive.bus,
                               disk->info.addr.drive.unit);
-        } else {
+            break;
+
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
             virBufferAsprintf(&opt, ",bus=%s.0,channel=%d,scsi-id=%d,lun=%d",
                               contAlias,
                               disk->info.addr.drive.bus,
                               disk->info.addr.drive.target,
                               disk->info.addr.drive.unit);
+            break;
+
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unexpected SCSI controller model %d"),
+                           controllerModel);
+            return NULL;
         }
 
         if (scsiVPDDeviceId)
