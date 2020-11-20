@@ -1508,7 +1508,7 @@ xenParseConfigCommon(virConfPtr conf,
     if (xenParseTimeOffset(conf, def) < 0)
         return -1;
 
-    if (xenConfigCopyStringOpt(conf, "device_model", &def->emulator) < 0)
+    if (xenConfigCopyStringOpt(conf, "device_model_override", &def->emulator) < 0)
         return -1;
 
     if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XL)) {
@@ -2242,7 +2242,7 @@ static int
 xenFormatEmulator(virConfPtr conf, virDomainDefPtr def)
 {
     if (def->emulator &&
-        xenConfigSetString(conf, "device_model", def->emulator) < 0)
+        xenConfigSetString(conf, "device_model_override", def->emulator) < 0)
         return -1;
 
     return 0;
