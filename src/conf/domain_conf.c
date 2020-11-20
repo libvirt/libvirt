@@ -13523,7 +13523,7 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
                               unsigned int flags)
 {
     xmlNodePtr cur;
-    virDomainSmartcardDefPtr def;
+    g_autoptr(virDomainSmartcardDef) def = NULL;
     size_t i;
     g_autofree char *mode = NULL;
     g_autofree char *type = NULL;
@@ -13534,13 +13534,13 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (mode == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing smartcard device mode"));
-        goto error;
+        return NULL;
     }
     if ((def->type = virDomainSmartcardTypeFromString(mode)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown smartcard device mode: %s"),
                        mode);
-        goto error;
+        return NULL;
     }
 
     switch (def->type) {
@@ -13557,23 +13557,23 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("host-certificates mode needs "
                                      "exactly three certificates"));
-                    goto error;
+                    return NULL;
                 }
                 if (!(def->data.cert.file[i] = virXMLNodeContentString(cur)))
-                    goto error;
+                    return NULL;
 
                 i++;
             } else if (cur->type == XML_ELEMENT_NODE &&
                        virXMLNodeNameEqual(cur, "database") &&
                        !def->data.cert.database) {
                 if (!(def->data.cert.database = virXMLNodeContentString(cur)))
-                    goto error;
+                    return NULL;
 
                 if (*def->data.cert.database != '/') {
                     virReportError(VIR_ERR_XML_ERROR,
                                    _("expecting absolute path: %s"),
                                    def->data.cert.database);
-                    goto error;
+                    return NULL;
                 }
             }
             cur = cur->next;
@@ -13582,7 +13582,7 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("host-certificates mode needs "
                              "exactly three certificates"));
-            goto error;
+            return NULL;
         }
         break;
 
@@ -13592,23 +13592,23 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("passthrough mode requires a character "
                              "device type attribute"));
-            goto error;
+            return NULL;
         }
 
         if (!(def->data.passthru = virDomainChrSourceDefNew(xmlopt)))
-            goto error;
+            return NULL;
 
         if ((def->data.passthru->type = virDomainChrTypeFromString(type)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown type presented to host for "
                              "character device: %s"), type);
-            goto error;
+            return NULL;
         }
 
         cur = node->children;
         if (virDomainChrSourceDefParseXML(def->data.passthru, cur, flags,
                                           NULL, ctxt) < 0)
-            goto error;
+            return NULL;
 
         if (def->data.passthru->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
             def->data.passthru->data.spicevmc
@@ -13620,23 +13620,20 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unknown smartcard mode"));
-        goto error;
+        return NULL;
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, &def->info, flags) < 0)
-        goto error;
+        return NULL;
+
     if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Controllers must use the 'ccid' address type"));
-        goto error;
+        return NULL;
     }
 
-    return def;
-
- error:
-    virDomainSmartcardDefFree(def);
-    return NULL;
+    return g_steal_pointer(&def);
 }
 
 /* Parse the XML definition for a TPM device
