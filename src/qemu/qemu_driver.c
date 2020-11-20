@@ -19846,7 +19846,8 @@ static const unsigned int qemuDomainGetGuestInfoSupportedTypes =
     VIR_DOMAIN_GUEST_INFO_OS |
     VIR_DOMAIN_GUEST_INFO_TIMEZONE |
     VIR_DOMAIN_GUEST_INFO_HOSTNAME |
-    VIR_DOMAIN_GUEST_INFO_FILESYSTEM;
+    VIR_DOMAIN_GUEST_INFO_FILESYSTEM |
+    VIR_DOMAIN_GUEST_INFO_DISKS;
 
 static int
 qemuDomainGetGuestInfoCheckSupport(unsigned int types,
@@ -19868,6 +19869,82 @@ qemuDomainGetGuestInfoCheckSupport(unsigned int types,
 
     return 0;
 }
+
+
+static void
+qemuAgentDiskInfoFormatParams(qemuAgentDiskInfoPtr *info,
+                              int ndisks,
+                              virDomainDefPtr vmdef,
+                              virTypedParameterPtr *params,
+                              int *nparams, int *maxparams)
+{
+    size_t i, j, ndeps;
+
+    if (virTypedParamsAddUInt(params, nparams, maxparams,
+                              "disks.count", ndisks) < 0)
+        return;
+
+    for (i = 0; i < ndisks; i++) {
+        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
+
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "disks.%zu.name", i);
+        if (virTypedParamsAddString(params, nparams, maxparams,
+                                    param_name, info[i]->name) < 0)
+            return;
+
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "disks.%zu.partition", i);
+        if (virTypedParamsAddBoolean(params, nparams, maxparams,
+                                     param_name, info[i]->partition) < 0)
+            return;
+
+        if (info[i]->dependencies) {
+            ndeps = g_strv_length(info[i]->dependencies);
+            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       "disks.%zu.dependencies.count", i);
+            if (ndeps &&
+                virTypedParamsAddUInt(params, nparams, maxparams,
+                                      param_name, ndeps) < 0)
+                return;
+            for (j = 0; j < ndeps; j++) {
+                g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                           "disks.%zu.dependencies.%zu.name", i, j);
+                if (virTypedParamsAddString(params, nparams, maxparams,
+                                            param_name, info[i]->dependencies[j]) < 0)
+                    return;
+            }
+        }
+
+        if (info[i]->address) {
+            virDomainDiskDefPtr diskdef = NULL;
+
+            /* match the disk to the target in the vm definition */
+            diskdef = virDomainDiskByAddress(vmdef,
+                                             &info[i]->address->pci_controller,
+                                             info[i]->address->bus,
+                                             info[i]->address->target,
+                                             info[i]->address->unit);
+            if (diskdef) {
+                g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                           "disks.%zu.alias", i);
+                if (diskdef->dst &&
+                    virTypedParamsAddString(params, nparams, maxparams,
+                                            param_name, diskdef->dst) < 0)
+                    return;
+            }
+        }
+
+        if (info[i]->alias) {
+            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       "disks.%zu.guest_alias", i);
+            if (virTypedParamsAddString(params, nparams, maxparams,
+                                        param_name, info[i]->alias) < 0)
+                return;
+        }
+    }
+}
+
 
 static void
 qemuAgentFSInfoFormatParams(qemuAgentFSInfoPtr *fsinfo,
@@ -19977,6 +20054,8 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     int rc;
     size_t nfs = 0;
     qemuAgentFSInfoPtr *agentfsinfo = NULL;
+    size_t ndisks = 0;
+    qemuAgentDiskInfoPtr *agentdiskinfo = NULL;
     size_t i;
 
     virCheckFlags(0, -1);
@@ -20033,6 +20112,15 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         }
     }
 
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_DISKS) {
+        rc = qemuAgentGetDisks(agent, &agentdiskinfo, report_unsupported);
+        if (rc == -1) {
+            goto exitagent;
+        } else if (rc >= 0) {
+            ndisks = rc;
+        }
+    }
+
     ret = 0;
 
  exitagent:
@@ -20041,7 +20129,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
  endagentjob:
     qemuDomainObjEndAgentJob(vm);
 
-    if (nfs > 0) {
+    if (nfs > 0 || ndisks > 0) {
         if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
             goto cleanup;
 
@@ -20050,7 +20138,11 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
 
         /* we need to convert the agent fsinfo struct to parameters and match
          * it to the vm disk target */
-        qemuAgentFSInfoFormatParams(agentfsinfo, nfs, vm->def, params, nparams, &maxparams);
+        if (nfs > 0)
+            qemuAgentFSInfoFormatParams(agentfsinfo, nfs, vm->def, params, nparams, &maxparams);
+
+        if (ndisks > 0)
+            qemuAgentDiskInfoFormatParams(agentdiskinfo, ndisks, vm->def, params, nparams, &maxparams);
 
  endjob:
         qemuDomainObjEndJob(driver, vm);
@@ -20060,6 +20152,9 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     for (i = 0; i < nfs; i++)
         qemuAgentFSInfoFree(agentfsinfo[i]);
     g_free(agentfsinfo);
+    for (i = 0; i < ndisks; i++)
+        qemuAgentDiskInfoFree(agentdiskinfo[i]);
+    g_free(agentdiskinfo);
 
     virDomainObjEndAPI(&vm);
     return ret;
