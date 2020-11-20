@@ -1463,6 +1463,43 @@ virJSONValueObjectIsNull(virJSONValuePtr object,
     return virJSONValueIsNull(val);
 }
 
+char **
+virJSONValueObjectGetStringArray(virJSONValuePtr object, const char *key)
+{
+    g_auto(GStrv) ret = NULL;
+    virJSONValuePtr data;
+    size_t n;
+    size_t i;
+
+    data = virJSONValueObjectGetArray(object, key);
+    if (!data)
+        return NULL;
+
+    n = virJSONValueArraySize(data);
+    ret = g_new0(char *, n + 1);
+    for (i = 0; i < n; i++) {
+        virJSONValuePtr child = virJSONValueArrayGet(data, i);
+        const char *tmp;
+
+        if (!child) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s array element is missing item %zu"),
+                           key, i);
+            return NULL;
+        }
+
+        if (!(tmp = virJSONValueGetString(child))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s array element does not contain a string"),
+                           key);
+            return NULL;
+        }
+
+        ret[i] = g_strdup(tmp);
+    }
+
+    return g_steal_pointer(&ret);
+}
 
 /**
  * virJSONValueObjectForeachKeyValue:
