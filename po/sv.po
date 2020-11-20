@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-10-26 17:26+0000\n"
-"PO-Revision-Date: 2020-11-19 00:19+0000\n"
+"PO-Revision-Date: 2020-11-20 20:35+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -1429,9 +1429,8 @@ msgstr ""
 msgid "(bridge interface definition)"
 msgstr "misslyckades att få gränssnittsinformation"
 
-#, fuzzy
 msgid "(capabilities)"
-msgstr "kapabiliteter"
+msgstr "(förmågor)"
 
 msgid "(definition_of_secret)"
 msgstr ""
@@ -1492,7 +1491,7 @@ msgid "(node_device_definition)"
 msgstr ""
 
 msgid "(none)"
-msgstr ""
+msgstr "(ingen)"
 
 msgid "(nwfilter_definition)"
 msgstr ""
@@ -1763,7 +1762,7 @@ msgid "Accept SSH host key with hash '%s' for host '%s:%d' (%s/%s)?"
 msgstr ""
 
 msgid "Access denied"
-msgstr ""
+msgstr "Åtkomst nekas"
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%s'"
@@ -1785,9 +1784,8 @@ msgstr ""
 msgid "Active console session exists for this domain"
 msgstr ""
 
-#, fuzzy
 msgid "Active:"
-msgstr "aktiv"
+msgstr "Aktivt:"
 
 #, c-format
 msgid "Actual interface '%s' hostdev was not a PCI device"
@@ -1804,7 +1802,7 @@ msgid "Added"
 msgstr ""
 
 msgid "Address"
-msgstr ""
+msgstr "Adress"
 
 msgid "Advice from numad is needed in case of automatic numa placement"
 msgstr ""
@@ -1828,10 +1826,10 @@ msgid "Allocate or free some pages in the pool for NUMA cell."
 msgstr ""
 
 msgid "Allocation"
-msgstr ""
+msgstr "Allokering"
 
 msgid "Allocation:"
-msgstr ""
+msgstr "Allokering:"
 
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr ""
@@ -1987,12 +1985,11 @@ msgstr ""
 msgid "Autostart"
 msgstr "Autostart"
 
-#, fuzzy
 msgid "Autostart:"
-msgstr "Autostart"
+msgstr "Autostart:"
 
 msgid "Available"
-msgstr ""
+msgstr "Tillgängliga"
 
 msgid ""
 "Available servers on a daemon. Currently only supports 'libvirtd' or "
@@ -2000,7 +1997,7 @@ msgid ""
 msgstr ""
 
 msgid "Available:"
-msgstr ""
+msgstr "Tillgängliga:"
 
 msgid "Backup"
 msgstr ""
@@ -2083,7 +2080,7 @@ msgid "Block device '%s' is resized"
 msgstr ""
 
 msgid "Booted"
-msgstr ""
+msgstr "Startad"
 
 msgid ""
 "Both 'name' and 'parent' cannot be specified for the 'scsi_host' adapter"
@@ -2117,7 +2114,7 @@ msgid "Bridge name %s too long for destination"
 msgstr ""
 
 msgid "Bridge:"
-msgstr ""
+msgstr "Brygga:"
 
 msgid "Buffer to small for ipset name"
 msgstr ""
@@ -2148,7 +2145,7 @@ msgid "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
 msgstr ""
 
 msgid "Busy"
-msgstr ""
+msgstr "Upptagen"
 
 msgid "CA certificate:"
 msgstr ""
@@ -2168,9 +2165,8 @@ msgstr ""
 msgid "CPU %d in cpulist '%s' exceed the maxcpu %d"
 msgstr ""
 
-#, fuzzy
 msgid "CPU Affinity"
-msgstr "CPU-släktskap:"
+msgstr "CPU-affinitet"
 
 msgid "CPU Affinity:"
 msgstr "CPU-släktskap:"
@@ -2271,9 +2267,8 @@ msgstr "Sökvägen %s är för lång för unix-uttag"
 msgid "CPU model:"
 msgstr "CPU-modell:"
 
-#, fuzzy
 msgid "CPU models"
-msgstr "CPU-modell:"
+msgstr "CPU-modeller"
 
 msgid "CPU socket topology has changed"
 msgstr ""
@@ -2284,9 +2279,8 @@ msgstr "CPU-uttag:"
 msgid "CPU throttling rate increment for auto-convergence"
 msgstr ""
 
-#, fuzzy
 msgid "CPU time"
-msgstr "CPU-tid:"
+msgstr "CPU-tid"
 
 msgid "CPU time:"
 msgstr "CPU-tid:"
@@ -2562,9 +2556,8 @@ msgid ""
 "Cancelable task is blocked by an unanswered question but cancellation failed"
 msgstr "Icke annullerbar uppgift blockeras av en obesvarad fråga"
 
-#, fuzzy
 msgid "Cancelled"
-msgstr "avbruten"
+msgstr "Avbruten"
 
 #, fuzzy, c-format
 msgid "Cannot access '%s'"
@@ -2686,13 +2679,13 @@ msgstr ""
 msgid "Cannot create autostart directory %s"
 msgstr "kan inte skapa konfigurationskatalogen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot create directory '%s'"
-msgstr "kan inte skapa konfigurationskatalogen ”%s”"
+msgstr "Kan inte skapa katalogen \"%s\""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot create log directory '%s'"
-msgstr "kan inte skapa konfigurationskatalogen ”%s”"
+msgstr "Kan inte skapa loggkatalogen ”%s”"
 
 msgid "Cannot create macvlan devices on this platform"
 msgstr ""
@@ -3021,9 +3014,8 @@ msgstr "Kan inte tolka <address> ”port”-attribut"
 msgid "Cannot parse <HardDisk> 'location' attribute"
 msgstr "Kan inte tolka <address> ”function”-attributet"
 
-#, fuzzy
 msgid "Cannot parse <HardDisk> 'uuid' attribute"
-msgstr "Kan inte tolka <address> ”unit”-attribut"
+msgstr "Kan inte tolka <HardDisk> ”uuid”-attribut"
 
 #, fuzzy
 msgid "Cannot parse <Machine> 'currentSnapshot' attribute"
@@ -3084,60 +3076,50 @@ msgstr "Kan inte tolka <address> ”bus”-attributet"
 msgid "Cannot parse <address> 'controller' attribute"
 msgstr "Kan inte tolka <address> ”controller”-attribut"
 
-#, fuzzy
 msgid "Cannot parse <address> 'cssid' attribute"
-msgstr "Kan inte tolka <address> ”bus”-attributet"
+msgstr "Kan inte tolka <address> ”cssid”-attributet"
 
-#, fuzzy
 msgid "Cannot parse <address> 'devno' attribute"
-msgstr "Kan inte tolka <address> ”domain”-attributet"
+msgstr "Kan inte tolka <address> ”devno”-attribut"
 
 msgid "Cannot parse <address> 'domain' attribute"
 msgstr "Kan inte tolka <address> ”domain”-attributet"
 
-#, fuzzy
 msgid "Cannot parse <address> 'fid' attribute"
-msgstr "Kan inte tolka <address> ”unit”-attribut"
+msgstr "Kan inte tolka <address> ”fid”-attribut"
 
 msgid "Cannot parse <address> 'function' attribute"
 msgstr "Kan inte tolka <address> ”function”-attributet"
 
-#, fuzzy
 msgid "Cannot parse <address> 'iobase' attribute"
-msgstr "Kan inte tolka <address> ”bus”-attributet"
+msgstr "Kan inte tolka <address> ”iobase”-attribut"
 
-#, fuzzy
 msgid "Cannot parse <address> 'irq' attribute"
-msgstr "Kan inte tolka <address> ”port”-attribut"
+msgstr "Kan inte tolka <address> ”irq”-attribut"
 
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "Kan inte tolka <address> ”port”-attribut"
 
-#, fuzzy
 msgid "Cannot parse <address> 'reg' attribute"
-msgstr "Kan inte tolka <address> ”port”-attribut"
+msgstr "Kan inte tolka <address> ”reg”-attribut"
 
 msgid "Cannot parse <address> 'slot' attribute"
 msgstr "Kan inte tolka <address> ”slot”-attributet"
 
-#, fuzzy
 msgid "Cannot parse <address> 'ssid' attribute"
-msgstr "Kan inte tolka <address> ”bus”-attributet"
+msgstr "Kan inte tolka <address> ”ssid”-attribut"
 
-#, fuzzy
 msgid "Cannot parse <address> 'target' attribute"
-msgstr "Kan inte tolka <address> ”port”-attribut"
+msgstr "Kan inte tolka <address> ”target”-attribut"
 
-#, fuzzy
 msgid "Cannot parse <address> 'uid' attribute"
-msgstr "Kan inte tolka <address> ”unit”-attribut"
+msgstr "Kan inte tolka <address> ”uid”-attribut"
 
 msgid "Cannot parse <address> 'unit' attribute"
 msgstr "Kan inte tolka <address> ”unit”-attribut"
 
-#, fuzzy
 msgid "Cannot parse <local> 'port' attribute with socket interface"
-msgstr "Kan inte tolka <source> ”port”-attribut med uttagsgränssnitt"
+msgstr "Kan inte tolka <local> ”port”-attribut med uttagsgränssnitt"
 
 #, fuzzy
 msgid "Cannot parse <master> 'startport' attribute"
@@ -3483,10 +3465,10 @@ msgid "Cannot write pid in tasks file '%s'"
 msgstr "kan inte skriva konfigurationsfilen ”%s”"
 
 msgid "Capacity"
-msgstr ""
+msgstr "Kapacitet"
 
 msgid "Capacity:"
-msgstr ""
+msgstr "Kapacitet:"
 
 msgid ""
 "Cardinality of list items must be the same for processing them in parallel"
@@ -3531,9 +3513,8 @@ msgstr ""
 msgid "Cgroup backend '%s' already registered."
 msgstr "lagringsvolymnamnet ”%s” används redan."
 
-#, fuzzy
 msgid "Chain name contains invalid characters"
-msgstr "Modellnamnet innehåller ogiltiga tecken"
+msgstr "Kedjenamnet innehåller ogiltiga tecken"
 
 msgid "Change bottom limit to number of workers."
 msgstr ""
@@ -3735,9 +3716,8 @@ msgstr ""
 msgid "Compiled with support for:\n"
 msgstr ""
 
-#, fuzzy
 msgid "Completed"
-msgstr "färdig"
+msgstr "Färdig"
 
 msgid "Completed with no error"
 msgstr ""
@@ -3801,9 +3781,8 @@ msgstr ""
 msgid "Config entry '%s' must represent an integer value"
 msgstr ""
 
-#, fuzzy
 msgid "Configuration file"
-msgstr "operation misslyckades"
+msgstr "Konfigurationsfil"
 
 #, fuzzy
 msgid "Configuration file (unless overridden by -f):"
@@ -3815,9 +3794,8 @@ msgstr "Konfigurera en domän till att automatiskt starta vid uppstart."
 msgid "Configure a network to be automatically started at boot."
 msgstr "Konfigurera ett nätverk att starta automatiskt vid uppstart."
 
-#, fuzzy
 msgid "Configure a pool to be automatically started at boot."
-msgstr "Konfigurera en domän till att automatiskt starta vid uppstart."
+msgstr "Konfigurera en pool till att automatiskt starta vid uppstart."
 
 #, c-format
 msgid ""
@@ -4057,9 +4035,9 @@ msgstr "Kunde inte starta domänen: %s"
 msgid "Could not deserialize pull response item"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not destroy domain: %s"
-msgstr "Kunde inte starta domänen: %s"
+msgstr "Kunde inte förstöra domänen: %s"
 
 #, c-format
 msgid "Could not determine kernel version from string %s"
@@ -4171,9 +4149,9 @@ msgstr "Kunde inte hitta %s med namnet ”%s”"
 msgid "Could not find domain with UUID '%s'"
 msgstr "Kunde inte hitta %s med namnet ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find domain with name '%s'"
-msgstr "Kunde inte hitta %s med namnet ”%s”"
+msgstr "Kunde inte hitta domänen med namnet ”%s”"
 
 #, fuzzy, c-format
 msgid "Could not find host system specified in '%s'"
