@@ -299,7 +299,7 @@
 
   <define name="absFilePath">
     <data type="string">
-      <param name="pattern">/.+</param>
+      <param name="pattern">(/|[a-zA-Z]:\\).+</param>
     </data>
   </define>
 

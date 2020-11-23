@@ -1,0 +1,17 @@
+<domain type='hyperv'>
+  <name>test_disk-hyperv</name>
+  <uuid>deadbeef-dead-beef-dead-beefdeadbeef</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <vcpu placement='static'>3</vcpu>
+  <os>
+    <type>hvm</type>
+  </os>
+  <devices>
+    <disk type='block' device='disk'>
+      <source dev='2'/>
+      <target dev='sdb' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='scsi' index='0'/>
+  </devices>
+</domain>
