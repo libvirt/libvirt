@@ -696,8 +696,8 @@ catchXMLError(void *ctx, const char *msg G_GNUC_UNUSED, ...)
     unsigned int n, col;        /* GCC warns if signed, because compared with sizeof() */
     int domcode = VIR_FROM_XML;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *contextstr = NULL;
-    char *pointerstr = NULL;
+    g_autofree char *contextstr = NULL;
+    g_autofree char *pointerstr = NULL;
 
 
     /* conditions for error printing */
@@ -763,9 +763,6 @@ catchXMLError(void *ctx, const char *msg G_GNUC_UNUSED, ...)
                               contextstr,
                               pointerstr);
     }
-
-    VIR_FREE(contextstr);
-    VIR_FREE(pointerstr);
 }
 
 /**
