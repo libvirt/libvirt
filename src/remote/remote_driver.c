@@ -8066,7 +8066,7 @@ static int
 remoteDomainAuthorizedSSHKeysSet(virDomainPtr domain,
                                  const char *user,
                                  const char **keys,
-                                 int nkeys,
+                                 unsigned int nkeys,
                                  unsigned int flags)
 {
     int rv = -1;

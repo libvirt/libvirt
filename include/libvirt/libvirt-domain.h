@@ -5115,7 +5115,7 @@ typedef enum {
 int virDomainAuthorizedSSHKeysSet(virDomainPtr domain,
                                   const char *user,
                                   const char **keys,
-                                  int nkeys,
+                                  unsigned int nkeys,
                                   unsigned int flags);
 
 #endif /* LIBVIRT_DOMAIN_H */

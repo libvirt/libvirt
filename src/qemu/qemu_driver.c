@@ -20134,7 +20134,7 @@ static int
 qemuDomainAuthorizedSSHKeysSet(virDomainPtr dom,
                                const char *user,
                                const char **keys,
-                               int nkeys,
+                               unsigned int nkeys,
                                unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;

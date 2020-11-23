@@ -1397,7 +1397,7 @@ typedef int
 (*virDrvDomainAuthorizedSSHKeysSet)(virDomainPtr domain,
                                     const char *user,
                                     const char **keys,
-                                    int nkeys,
+                                    unsigned int nkeys,
                                     unsigned int flags);
 
 typedef struct _virHypervisorDriver virHypervisorDriver;

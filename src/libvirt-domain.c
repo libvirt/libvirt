@@ -12853,12 +12853,12 @@ int
 virDomainAuthorizedSSHKeysSet(virDomainPtr domain,
                               const char *user,
                               const char **keys,
-                              int nkeys,
+                              unsigned int nkeys,
                               unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "user=%s, keys=%p, nkeys=%d, flags=0x%x",
+    VIR_DOMAIN_DEBUG(domain, "user=%s, keys=%p, nkeys=%u, flags=0x%x",
                      user, keys, nkeys, flags);
 
     virResetLastError();
