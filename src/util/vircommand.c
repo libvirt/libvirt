@@ -1503,7 +1503,7 @@ virCommandAddArg(virCommandPtr cmd, const char *val)
 
     if (val == NULL) {
         cmd->has_error = EINVAL;
-        abort();
+        return;
     }
 
     arg = g_strdup(val);
