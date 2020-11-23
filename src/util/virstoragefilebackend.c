@@ -51,7 +51,7 @@ virStorageFileLoadBackendModule(const char *name,
                                 const char *regfunc,
                                 bool forceload)
 {
-    char *modfile = NULL;
+    g_autofree char *modfile = NULL;
     int ret;
 
     if (!(modfile = virFileFindResourceFull(name,
@@ -63,8 +63,6 @@ virStorageFileLoadBackendModule(const char *name,
         return -1;
 
     ret = virModuleLoad(modfile, regfunc, forceload);
-
-    VIR_FREE(modfile);
 
     return ret;
 }
