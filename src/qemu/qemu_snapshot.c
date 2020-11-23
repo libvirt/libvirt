@@ -47,6 +47,36 @@
 VIR_LOG_INIT("qemu.qemu_snapshot");
 
 
+/**
+ * qemuSnapshotSetCurrent: Set currently active snapshot
+ *
+ * @vm: domain object
+ * @newcurrent: snapshot object to set as current/active
+ *
+ * Sets @newcurrent as the 'current' snapshot of @vm. This helper ensures that
+ * the snapshot which was 'current' previously is updated.
+ */
+static void
+qemuSnapshotSetCurrent(virDomainObjPtr vm,
+                       virDomainMomentObjPtr newcurrent)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    virDomainMomentObjPtr oldcurrent = virDomainSnapshotGetCurrent(vm->snapshots);
+
+    virDomainSnapshotSetCurrent(vm->snapshots, newcurrent);
+
+    /* we need to write out metadata for the old snapshot to update the
+     * 'active' property */
+    if (oldcurrent &&
+        oldcurrent != newcurrent) {
+        if (qemuDomainSnapshotWriteMetadata(vm, oldcurrent, driver->xmlopt, cfg->snapshotDir) < 0)
+            VIR_WARN("failed to update old current snapshot");
+    }
+}
+
+
 /* Looks up snapshot object from VM and name */
 virDomainMomentObjPtr
 qemuSnapObjFromName(virDomainObjPtr vm,
@@ -1781,7 +1811,8 @@ qemuSnapshotCreateXML(virDomainPtr domain,
  endjob:
     if (snapshot && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
         if (update_current)
-            virDomainSnapshotSetCurrent(vm->snapshots, snap);
+            qemuSnapshotSetCurrent(vm, snap);
+
         if (qemuDomainSnapshotWriteMetadata(vm, snap,
                                             driver->xmlopt,
                                             cfg->snapshotDir) < 0) {
@@ -2243,7 +2274,7 @@ qemuSnapshotRevert(virDomainObjPtr vm,
 
  cleanup:
     if (ret == 0) {
-        virDomainSnapshotSetCurrent(vm->snapshots, snap);
+        qemuSnapshotSetCurrent(vm, snap);
         if (qemuDomainSnapshotWriteMetadata(vm, snap,
                                             driver->xmlopt,
                                             cfg->snapshotDir) < 0) {
@@ -2360,7 +2391,8 @@ qemuSnapshotDelete(virDomainObjPtr vm,
         if (rem.err < 0)
             goto endjob;
         if (rem.found) {
-            virDomainSnapshotSetCurrent(vm->snapshots, snap);
+            qemuSnapshotSetCurrent(vm, snap);
+
             if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
                 if (qemuDomainSnapshotWriteMetadata(vm, snap,
                                                     driver->xmlopt,
