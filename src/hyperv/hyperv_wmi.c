@@ -1491,6 +1491,32 @@ hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
 
 
 int
+hypervGetResourceAllocationSD(hypervPrivate *priv,
+                              const char *id,
+                              Msvm_ResourceAllocationSettingData **data)
+{
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    virBufferEscapeSQL(&query,
+                       "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID='%s'} "
+                       "WHERE AssocClass = Msvm_VirtualSystemSettingDataComponent "
+                       "ResultClass = Msvm_ResourceAllocationSettingData",
+                       id);
+
+    if (hypervGetWmiClass(Msvm_ResourceAllocationSettingData, data) < 0)
+        return -1;
+
+    if (!*data) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not look up resource allocation setting data with virtual system instance ID '%s'"),
+                       id);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int
 hypervGetProcessorSD(hypervPrivate *priv,
                      const char *id,
                      Msvm_ProcessorSettingData **data)
@@ -1530,6 +1556,25 @@ hypervGetMemorySD(hypervPrivate *priv,
                       vssd_instanceid);
 
     if (hypervGetWmiClass(Msvm_MemorySettingData, list) < 0 || !*list)
+        return -1;
+
+    return 0;
+}
+
+
+int
+hypervGetStorageAllocationSD(hypervPrivate *priv,
+                             const char *id,
+                             Msvm_StorageAllocationSettingData **data)
+{
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    virBufferEscapeSQL(&query,
+                       "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID='%s'} "
+                       "WHERE AssocClass = Msvm_VirtualSystemSettingDataComponent "
+                       "ResultClass = Msvm_StorageAllocationSettingData",
+                       id);
+
+    if (hypervGetWmiClass(Msvm_StorageAllocationSettingData, data) < 0)
         return -1;
 
     return 0;

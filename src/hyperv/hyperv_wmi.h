@@ -236,6 +236,10 @@ int hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
                                                   const char *uuid_string,
                                                   Msvm_VirtualSystemSettingData **list);
 
+int hypervGetResourceAllocationSD(hypervPrivate *priv,
+                                  const char *id,
+                                  Msvm_ResourceAllocationSettingData **data);
+
 int hypervGetProcessorSD(hypervPrivate *priv,
                          const char *id,
                          Msvm_ProcessorSettingData **data);
@@ -243,6 +247,10 @@ int hypervGetProcessorSD(hypervPrivate *priv,
 int hypervGetMemorySD(hypervPrivate *priv,
                       const char *vssd_instanceid,
                       Msvm_MemorySettingData **list);
+
+int hypervGetStorageAllocationSD(hypervPrivate *priv,
+                                 const char *id,
+                                 Msvm_StorageAllocationSettingData **data);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Msvm_VirtualSystemManagementService

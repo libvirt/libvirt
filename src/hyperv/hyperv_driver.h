@@ -22,4 +22,9 @@
 
 #pragma once
 
+#define HYPERV_MAX_SCSI_CONTROLLERS 4
+#define HYPERV_MAX_DRIVES_PER_SCSI_CONTROLLER 64
+#define HYPERV_MAX_IDE_CHANNELS 2
+#define HYPERV_MAX_DRIVES_PER_IDE_CHANNEL 2
+
 int hypervRegister(void);

@@ -294,6 +294,400 @@ hypervCapsInit(hypervPrivate *priv)
 }
 
 /*
+ * Virtual device functions
+ */
+static int
+hypervGetDeviceParentRasdFromDeviceId(const char *parentDeviceId,
+                                      Msvm_ResourceAllocationSettingData *list,
+                                      Msvm_ResourceAllocationSettingData **out)
+{
+    Msvm_ResourceAllocationSettingData *entry = list;
+    *out = NULL;
+
+    while (entry) {
+        g_autofree char *escapedDeviceId = virStringReplace(entry->data->InstanceID, "\\", "\\\\");
+        g_autofree char *expectedSuffix = g_strdup_printf("%s\"", escapedDeviceId);
+
+        if (g_str_has_suffix(parentDeviceId, expectedSuffix)) {
+            *out = entry;
+            break;
+        }
+
+        entry = entry->next;
+    }
+
+    if (*out)
+        return 0;
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Failed to locate parent device with ID '%s'"),
+                   parentDeviceId);
+
+    return -1;
+}
+
+
+
+/*
+ * Functions for deserializing device entries
+ */
+static int
+hypervDomainDefAppendController(virDomainDefPtr def,
+                                int idx,
+                                virDomainControllerType controllerType)
+{
+    virDomainControllerDefPtr controller = NULL;
+
+    if (!(controller = virDomainControllerDefNew(controllerType)))
+        return -1;
+
+    controller->idx = idx;
+
+    if (VIR_APPEND_ELEMENT(def->controllers, def->ncontrollers, controller) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+hypervDomainDefAppendIDEController(virDomainDefPtr def)
+{
+    return hypervDomainDefAppendController(def, 0, VIR_DOMAIN_CONTROLLER_TYPE_IDE);
+}
+
+
+static int
+hypervDomainDefAppendSCSIController(virDomainDefPtr def, int idx)
+{
+    return hypervDomainDefAppendController(def, idx, VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
+}
+
+
+static int
+hypervDomainDefAppendDisk(virDomainDefPtr def,
+                          virDomainDiskDefPtr disk,
+                          virDomainDiskBus busType,
+                          int diskNameOffset,
+                          const char *diskNamePrefix,
+                          int maxControllers,
+                          Msvm_ResourceAllocationSettingData **controllers,
+                          Msvm_ResourceAllocationSettingData *diskParent,
+                          Msvm_ResourceAllocationSettingData *diskController)
+{
+    size_t i = 0;
+    int ctrlr_idx = -1;
+    int addr = -1;
+
+    if (virStrToLong_i(diskParent->data->AddressOnParent, NULL, 10, &addr) < 0)
+        return -1;
+
+    if (addr < 0)
+        return -1;
+
+    /* Find controller index */
+    for (i = 0; i < maxControllers; i++) {
+        if (diskController == controllers[i]) {
+            ctrlr_idx = i;
+            break;
+        }
+    }
+
+    if (ctrlr_idx < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not find controller for disk!"));
+        return -1;
+    }
+
+    disk->bus = busType;
+    disk->dst = virIndexToDiskName(ctrlr_idx * diskNameOffset + addr, diskNamePrefix);
+    if (busType == VIR_DOMAIN_DISK_BUS_IDE) {
+        disk->info.addr.drive.controller = 0;
+        disk->info.addr.drive.bus = ctrlr_idx;
+    } else {
+        disk->info.addr.drive.controller = ctrlr_idx;
+        disk->info.addr.drive.bus = 0;
+    }
+    disk->info.addr.drive.target = 0;
+    disk->info.addr.drive.unit = addr;
+
+    if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+hypervDomainDefParseFloppyStorageExtent(virDomainDefPtr def, virDomainDiskDefPtr disk)
+{
+    disk->bus = VIR_DOMAIN_DISK_BUS_FDC;
+    disk->dst = g_strdup("fda");
+
+    if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+hypervDomainDefParseVirtualExtent(hypervPrivate *priv,
+                                  virDomainDefPtr def,
+                                  Msvm_StorageAllocationSettingData *disk_entry,
+                                  Msvm_ResourceAllocationSettingData *rasd,
+                                  Msvm_ResourceAllocationSettingData **ideChannels,
+                                  Msvm_ResourceAllocationSettingData **scsiControllers)
+{
+    Msvm_ResourceAllocationSettingData *diskParent = NULL;
+    Msvm_ResourceAllocationSettingData *controller = NULL;
+    virDomainDiskDefPtr disk = NULL;
+    int result = -1;
+
+    if (disk_entry->data->HostResource.count < 1)
+        goto cleanup;
+
+    if (!(disk = virDomainDiskDefNew(priv->xmlopt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not allocate disk definition"));
+        goto cleanup;
+    }
+
+    /* get disk associated with storage extent */
+    if (hypervGetDeviceParentRasdFromDeviceId(disk_entry->data->Parent, rasd, &diskParent) < 0)
+        goto cleanup;
+
+    /* get associated controller */
+    if (hypervGetDeviceParentRasdFromDeviceId(diskParent->data->Parent, rasd, &controller) < 0)
+        goto cleanup;
+
+    /* common fields first */
+    disk->src->type = VIR_STORAGE_TYPE_FILE;
+    disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+
+    /* note if it's a CDROM disk */
+    if (STREQ(disk_entry->data->ResourceSubType, "Microsoft:Hyper-V:Virtual CD/DVD Disk"))
+        disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
+    else
+        disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
+
+    /* copy in the source path */
+    virDomainDiskSetSource(disk, *(char **)disk_entry->data->HostResource.data);
+
+    /* controller-specific fields */
+    if (controller->data->ResourceType == MSVM_RASD_RESOURCETYPE_PARALLEL_SCSI_HBA) {
+        if (hypervDomainDefAppendDisk(def, disk, VIR_DOMAIN_DISK_BUS_SCSI,
+                                      64, "sd", HYPERV_MAX_SCSI_CONTROLLERS,
+                                      scsiControllers, diskParent, controller) < 0) {
+            goto cleanup;
+        }
+    } else if (controller->data->ResourceType == MSVM_RASD_RESOURCETYPE_IDE_CONTROLLER) {
+        if (hypervDomainDefAppendDisk(def, disk, VIR_DOMAIN_DISK_BUS_IDE,
+                                      2, "hd", HYPERV_MAX_IDE_CHANNELS,
+                                      ideChannels, diskParent, controller) < 0) {
+            goto cleanup;
+        }
+    } else if (controller->data->ResourceType == MSVM_RASD_RESOURCETYPE_OTHER &&
+               diskParent->data->ResourceType == MSVM_RASD_RESOURCETYPE_DISKETTE_DRIVE) {
+        if (hypervDomainDefParseFloppyStorageExtent(def, disk) < 0)
+            goto cleanup;
+        disk->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unrecognized controller type %d"),
+                       controller->data->ResourceType);
+        goto cleanup;
+    }
+
+    result = 0;
+
+ cleanup:
+    if (result != 0 && disk)
+        virDomainDiskDefFree(disk);
+
+    return result;
+}
+
+
+static int
+hypervDomainDefParsePhysicalDisk(hypervPrivate *priv,
+                                 virDomainDefPtr def,
+                                 Msvm_ResourceAllocationSettingData *entry,
+                                 Msvm_ResourceAllocationSettingData *rasd,
+                                 Msvm_ResourceAllocationSettingData **ideChannels,
+                                 Msvm_ResourceAllocationSettingData **scsiControllers)
+{
+    int result = -1;
+    Msvm_ResourceAllocationSettingData *controller = NULL;
+    Msvm_DiskDrive *diskdrive = NULL;
+    virDomainDiskDefPtr disk = NULL;
+    char **hostResource = entry->data->HostResource.data;
+    g_autofree char *hostEscaped = NULL;
+    g_autofree char *driveNumberStr = NULL;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    int addr = -1, ctrlr_idx = -1;
+    size_t i = 0;
+
+    if (virStrToLong_i(entry->data->AddressOnParent, NULL, 10, &addr) < 0)
+        return -1;
+
+    if (addr < 0)
+        return -1;
+
+    if (hypervGetDeviceParentRasdFromDeviceId(entry->data->Parent, rasd, &controller) < 0)
+        goto cleanup;
+
+    /* create disk definition */
+    if (!(disk = virDomainDiskDefNew(priv->xmlopt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not allocate disk def"));
+        goto cleanup;
+    }
+
+    /* Query Msvm_DiskDrive for the DriveNumber */
+    hostEscaped = virStringReplace(*hostResource, "\\\"", "\"");
+    hostEscaped = virStringReplace(hostEscaped, "\\", "\\\\");
+
+    /* quotes must be preserved, so virBufferEscapeSQL can't be used */
+    virBufferAsprintf(&query,
+                      MSVM_DISKDRIVE_WQL_SELECT "WHERE __PATH='%s'",
+                      hostEscaped);
+
+    if (hypervGetWmiClass(Msvm_DiskDrive, &diskdrive) < 0)
+        goto cleanup;
+
+    if (!diskdrive) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not find Msvm_DiskDrive object"));
+        goto cleanup;
+    }
+
+    driveNumberStr = g_strdup_printf("%u", diskdrive->data->DriveNumber);
+    virDomainDiskSetSource(disk, driveNumberStr);
+
+    if (addr < 0)
+        goto cleanup;
+
+    if (controller->data->ResourceType == MSVM_RASD_RESOURCETYPE_PARALLEL_SCSI_HBA) {
+        for (i = 0; i < HYPERV_MAX_SCSI_CONTROLLERS; i++) {
+            if (controller == scsiControllers[i]) {
+                ctrlr_idx = i;
+                break;
+            }
+        }
+        disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
+        disk->dst = virIndexToDiskName(ctrlr_idx * 64 + addr, "sd");
+        disk->info.addr.drive.unit = addr;
+        disk->info.addr.drive.controller = ctrlr_idx;
+        disk->info.addr.drive.bus = 0;
+    } else if (controller->data->ResourceType == MSVM_RASD_RESOURCETYPE_IDE_CONTROLLER) {
+        for (i = 0; i < HYPERV_MAX_IDE_CHANNELS; i++) {
+            if (controller == ideChannels[i]) {
+                ctrlr_idx = i;
+                break;
+            }
+        }
+        disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
+        disk->dst = virIndexToDiskName(ctrlr_idx * 4 + addr, "hd");
+        disk->info.addr.drive.unit = addr;
+        disk->info.addr.drive.controller = 0;
+        disk->info.addr.drive.bus = ctrlr_idx;
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid controller type for LUN"));
+        goto cleanup;
+    }
+
+    disk->info.addr.drive.target = 0;
+    virDomainDiskSetType(disk, VIR_STORAGE_TYPE_BLOCK);
+    disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
+
+    disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+
+    if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
+        goto cleanup;
+
+    result = 0;
+
+ cleanup:
+    if (result != 0 && disk)
+        virDomainDiskDefFree(disk);
+    hypervFreeObject(priv, (hypervObject *)diskdrive);
+
+    return result;
+}
+
+
+static int
+hypervDomainDefParseStorage(hypervPrivate *priv,
+                            virDomainDefPtr def,
+                            Msvm_ResourceAllocationSettingData *rasd,
+                            Msvm_StorageAllocationSettingData *sasd)
+{
+    Msvm_ResourceAllocationSettingData *entry = rasd;
+    Msvm_StorageAllocationSettingData *disk_entry = sasd;
+    Msvm_ResourceAllocationSettingData *ideChannels[HYPERV_MAX_IDE_CHANNELS];
+    Msvm_ResourceAllocationSettingData *scsiControllers[HYPERV_MAX_SCSI_CONTROLLERS];
+    bool hasIdeController = false;
+    int channel = -1;
+    int scsi_idx = 0;
+
+    /* first pass: populate storage controllers */
+    while (entry) {
+        if (entry->data->ResourceType == MSVM_RASD_RESOURCETYPE_IDE_CONTROLLER) {
+            channel = entry->data->Address[0] - '0';
+            ideChannels[channel] = entry;
+            if (!hasIdeController) {
+                /* Hyper-V represents its PIIX4 controller's two channels as separate objects. */
+                if (hypervDomainDefAppendIDEController(def) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not add IDE controller"));
+                    return -1;
+                }
+                hasIdeController = true;
+            }
+        } else if (entry->data->ResourceType == MSVM_RASD_RESOURCETYPE_PARALLEL_SCSI_HBA) {
+            scsiControllers[scsi_idx++] = entry;
+            if (hypervDomainDefAppendSCSIController(def, scsi_idx - 1) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not parse SCSI controller"));
+                return -1;
+            }
+        }
+
+        entry = entry->next;
+    }
+
+    /* second pass: populate physical disks */
+    entry = rasd;
+    while (entry) {
+        if (entry->data->ResourceType == MSVM_RASD_RESOURCETYPE_DISK_DRIVE &&
+            entry->data->HostResource.count > 0) {
+            char **hostResource = entry->data->HostResource.data;
+
+            if (strstr(*hostResource, "NODRIVE")) {
+                /* Hyper-V doesn't let you define LUNs with no connection */
+                VIR_DEBUG("Skipping empty LUN '%s'", *hostResource);
+                entry = entry->next;
+                continue;
+            }
+
+            if (hypervDomainDefParsePhysicalDisk(priv, def, entry, rasd,
+                                                 ideChannels, scsiControllers) < 0)
+                return -1;
+        }
+
+        entry = entry->next;
+    }
+
+    /* third pass: populate virtual disks */
+    while (disk_entry) {
+        if (hypervDomainDefParseVirtualExtent(priv, def, disk_entry, rasd,
+                                              ideChannels, scsiControllers) < 0)
+            return -1;
+
+        disk_entry = disk_entry->next;
+    }
+
+    return 0;
+}
+
+
+
+/*
  * Driver functions
  */
 
@@ -1249,6 +1643,8 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     Msvm_VirtualSystemSettingData *virtualSystemSettingData = NULL;
     Msvm_ProcessorSettingData *processorSettingData = NULL;
     Msvm_MemorySettingData *memorySettingData = NULL;
+    Msvm_ResourceAllocationSettingData *rasd = NULL;
+    Msvm_StorageAllocationSettingData *sasd = NULL;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
@@ -1274,6 +1670,18 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
                           virtualSystemSettingData->data->InstanceID,
                           &memorySettingData) < 0)
         goto cleanup;
+
+    if (hypervGetResourceAllocationSD(priv,
+                                      virtualSystemSettingData->data->InstanceID,
+                                      &rasd) < 0) {
+        goto cleanup;
+    }
+
+    if (hypervGetStorageAllocationSD(priv,
+                                     virtualSystemSettingData->data->InstanceID,
+                                     &sasd) < 0) {
+        goto cleanup;
+    }
 
     /* Fill struct */
     def->virtType = VIR_DOMAIN_VIRT_HYPERV;
@@ -1324,7 +1732,20 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     def->os.type = VIR_DOMAIN_OSTYPE_HVM;
 
-    /* FIXME: devices section is totally missing */
+    /* Allocate space for all potential devices */
+
+    /* 256 scsi drives + 4 ide drives */
+    def->disks = g_new0(virDomainDiskDefPtr,
+                        HYPERV_MAX_SCSI_CONTROLLERS * HYPERV_MAX_DRIVES_PER_SCSI_CONTROLLER +
+                        HYPERV_MAX_IDE_CHANNELS * HYPERV_MAX_DRIVES_PER_IDE_CHANNEL);
+    def->ndisks = 0;
+
+    /* 1 ide & 4 scsi controllers */
+    def->controllers = g_new0(virDomainControllerDefPtr, 5);
+    def->ncontrollers = 0;
+
+    if (hypervDomainDefParseStorage(priv, def, rasd, sasd) < 0)
+        goto cleanup;
 
     /* XXX xmlopts must be non-NULL */
     xml = virDomainDefFormat(def, NULL,
@@ -1336,6 +1757,8 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     hypervFreeObject(priv, (hypervObject *)virtualSystemSettingData);
     hypervFreeObject(priv, (hypervObject *)processorSettingData);
     hypervFreeObject(priv, (hypervObject *)memorySettingData);
+    hypervFreeObject(priv, (hypervObject *)rasd);
+    hypervFreeObject(priv, (hypervObject *)sasd);
 
     return xml;
 }

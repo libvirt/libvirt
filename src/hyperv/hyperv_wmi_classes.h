@@ -98,6 +98,25 @@ enum _Msvm_ConcreteJob_JobState {
 };
 
 
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Msvm_ResourceAllocationSettingData
+ */
+
+/* https://docs.microsoft.com/en-us/windows/win32/hyperv_v2/msvm-resourceallocationsettingdata */
+enum _Msvm_ResourceAllocationSettingData_ResourceType {
+    MSVM_RASD_RESOURCETYPE_OTHER = 1,
+    MSVM_RASD_RESOURCETYPE_IDE_CONTROLLER = 5,
+    MSVM_RASD_RESOURCETYPE_PARALLEL_SCSI_HBA = 6,
+    MSVM_RASD_RESOURCETYPE_DISKETTE_DRIVE = 14,
+    MSVM_RASD_RESOURCETYPE_CD_DRIVE = 15,
+    MSVM_RASD_RESOURCETYPE_DVD_DRIVE = 16,
+    MSVM_RASD_RESOURCETYPE_DISK_DRIVE = 17,
+    MSVM_RASD_RESOURCETYPE_STORAGE_EXTENT = 19,
+};
+
+
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * WMI
  */
