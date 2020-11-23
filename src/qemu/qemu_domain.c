@@ -6560,18 +6560,11 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriverPtr driver,
  * failure, 1 if we skipped a disk due to try_all.  */
 int
 qemuDomainSnapshotForEachQcow2(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
+                               virDomainDefPtr def,
                                virDomainMomentObjPtr snap,
                                const char *op,
                                bool try_all)
 {
-    /* Prefer action on the disks in use at the time the snapshot was
-     * created; but fall back to current definition if dealing with a
-     * snapshot created prior to libvirt 0.9.5.  */
-    virDomainDefPtr def = snap->def->dom;
-
-    if (!def)
-        def = vm->def;
     return qemuDomainSnapshotForEachQcow2Raw(driver, def, snap->def->name,
                                              op, try_all, def->ndisks);
 }
@@ -6592,9 +6585,16 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
     if (!metadata_only) {
         if (!virDomainObjIsActive(vm)) {
             /* Ignore any skipped disks */
-            if (qemuDomainSnapshotForEachQcow2(driver, vm, snap, "-d",
-                                               true) < 0)
-                return -1;
+
+            /* Prefer action on the disks in use at the time the snapshot was
+             * created; but fall back to current definition if dealing with a
+             * snapshot created prior to libvirt 0.9.5.  */
+            virDomainDefPtr def = snap->def->dom;
+
+            if (!def)
+                def = vm->def;
+
+            return qemuDomainSnapshotForEachQcow2(driver, def, snap, "-d", true);
         } else {
             priv = vm->privateData;
             qemuDomainObjEnterMonitor(driver, vm);

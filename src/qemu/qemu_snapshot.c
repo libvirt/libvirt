@@ -138,7 +138,7 @@ qemuSnapshotCreateInactiveInternal(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainMomentObjPtr snap)
 {
-    return qemuDomainSnapshotForEachQcow2(driver, vm, snap, "-c", false);
+    return qemuDomainSnapshotForEachQcow2(driver, vm->def, snap, "-c", false);
 }
 
 
@@ -1813,9 +1813,19 @@ qemuSnapshotRevertInactive(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            virDomainMomentObjPtr snap)
 {
+    /* Prefer action on the disks in use at the time the snapshot was
+     * created; but fall back to current definition if dealing with a
+     * snapshot created prior to libvirt 0.9.5.  */
+    virDomainDefPtr def = snap->def->dom;
+
+    if (!def)
+        def = vm->def;
+
     /* Try all disks, but report failure if we skipped any.  */
-    int ret = qemuDomainSnapshotForEachQcow2(driver, vm, snap, "-a", true);
-    return ret > 0 ? -1 : ret;
+    if (qemuDomainSnapshotForEachQcow2(driver, def, snap, "-a", true) != 0)
+        return -1;
+
+    return 0;
 }
 
 
