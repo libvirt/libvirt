@@ -653,6 +653,7 @@ firewalld_dbus_signal_callback(GDBusConnection *connection G_GNUC_UNUSED,
     if (STREQ(interfaceName, "org.fedoraproject.FirewallD1") &&
         STREQ(signalName, "Reloaded")) {
         reload = true;
+        VIR_DEBUG("Reload in bridge_driver because of 'Reloaded' signal");
     } else if (STREQ(interfaceName, "org.freedesktop.DBus") &&
                STREQ(signalName, "NameOwnerChanged")) {
         char *name = NULL;
@@ -661,14 +662,15 @@ firewalld_dbus_signal_callback(GDBusConnection *connection G_GNUC_UNUSED,
 
         g_variant_get(parameters, "(&s&s&s)", &name, &old_owner, &new_owner);
 
-        if (new_owner && *new_owner)
+        if (new_owner && *new_owner) {
+            VIR_DEBUG("Reload in bridge_driver because of 'NameOwnerChanged' signal, new owner is: '%s'",
+                      new_owner);
             reload = true;
+        }
     }
 
-    if (reload) {
-        VIR_DEBUG("Reload in bridge_driver because of firewalld.");
+    if (reload)
         networkReloadFirewallRules(driver, false, true);
-    }
 }
 #endif
 
