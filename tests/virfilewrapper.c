@@ -56,7 +56,11 @@ static void init_syms(void)
     VIR_MOCK_REAL_INIT(access);
     VIR_MOCK_REAL_INIT(mkdir);
     VIR_MOCK_REAL_INIT(open);
+# ifdef __APPLE__
+    VIR_MOCK_REAL_INIT_ALIASED(opendir, "opendir$INODE64");
+# else
     VIR_MOCK_REAL_INIT(opendir);
+# endif
     VIR_MOCK_REAL_INIT(execv);
     VIR_MOCK_REAL_INIT(execve);
 }

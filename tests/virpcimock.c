@@ -935,7 +935,11 @@ init_syms(void)
     VIR_MOCK_REAL_INIT(__open_2);
 # endif /* ! __GLIBC__ */
     VIR_MOCK_REAL_INIT(close);
+# ifdef __APPLE__
+    VIR_MOCK_REAL_INIT_ALIASED(opendir, "opendir$INODE64");
+# else
     VIR_MOCK_REAL_INIT(opendir);
+# endif
     VIR_MOCK_REAL_INIT(virFileCanonicalizePath);
 }
 
