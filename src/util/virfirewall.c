@@ -649,6 +649,36 @@ virFirewallApplyRuleFirewallD(virFirewallRulePtr rule,
     return virFirewallDApplyRule(rule->layer, rule->args, rule->argsLen, ignoreErrors, output);
 }
 
+
+void
+virFirewallBackendSynchronize(void)
+{
+    const char *arg = "-V";
+    g_autofree char *output = NULL;
+
+    switch (currentBackend) {
+    case VIR_FIREWALL_BACKEND_DIRECT:
+        /* nobody to synchronize with */
+        break;
+    case VIR_FIREWALL_BACKEND_FIREWALLD:
+        /* Send a simple rule via firewalld's passthrough iptables
+         * command so that we'll be sure firewalld has fully
+         * initialized and caught up with its internal queue of
+         * iptables commands. Waiting for this will prevent our own
+         * directly-executed iptables commands from being run while
+         * firewalld is still initializing.
+         */
+        ignore_value(virFirewallDApplyRule(VIR_FIREWALL_LAYER_IPV4,
+                                           (char **)&arg, 1, true, &output));
+        VIR_DEBUG("Result of 'iptables -V' via firewalld: %s", NULLSTR(output));
+        break;
+    case VIR_FIREWALL_BACKEND_AUTOMATIC:
+    case VIR_FIREWALL_BACKEND_LAST:
+        break;
+    }
+}
+
+
 static int
 virFirewallApplyRule(virFirewallPtr firewall,
                      virFirewallRulePtr rule,
