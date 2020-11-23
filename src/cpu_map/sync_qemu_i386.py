@@ -23,7 +23,6 @@ def translate_vendor(name):
 
 def translate_feature(name):
     T = {
-        # translating qemu -> libvirt cpu feature names
         "CPUID_6_EAX_ARAT": "arat",
         "CPUID_7_0_EBX_ADX": "adx",
         "CPUID_7_0_EBX_AVX2": "avx2",
@@ -151,15 +150,20 @@ def translate_feature(name):
         "MSR_ARCH_CAP_SKIP_L1DFL_VMENTRY": "skip-l1dfl-vmentry",
         "MSR_ARCH_CAP_TAA_NO": "taa-no",
         "MSR_CORE_CAP_SPLIT_LOCK_DETECT": "split-lock-detect",
-
-        # always disabled features
-        "CPUID_EXT_MONITOR": None,
-        "0": None,
-
-        # set to "no auto enable" by qemu
-        "CPUID_EXT3_TOPOEXT": None,
-        "MSR_VMX_BASIC_DUAL_MONITOR": None,
     }
+
+    ignore = any([
+        name.startswith("VMX_"),
+        name.startswith("vmx-"),
+        name.startswith("MSR_VMX_"),
+        name in ("0", "model", "model-id", "stepping"),
+        name in ("CPUID_EXT_MONITOR", "monitor"),
+        name in ("MSR_VMX_BASIC_DUAL_MONITOR", "dual-monitor"),
+        name in ("CPUID_EXT3_TOPOEXT", "topoext"),
+    ])
+
+    if ignore:
+        return None
 
     if name in T:
         return T[name]
@@ -295,8 +299,6 @@ def expand_model(model):
     for k in [k for k in model if k.startswith(".features")]:
         v = model.pop(k)
         for feature in v.split():
-            if feature.startswith("VMX_") or feature.startswith("MSR_VMX_"):
-                continue
             translated = translate_feature(feature)
             if translated:
                 result["features"].add(translated)
