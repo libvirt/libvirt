@@ -505,8 +505,8 @@ virLogVMessage(virLogSourcePtr source,
                va_list vargs)
 {
     static bool logInitMessageStderr = true;
-    char *str = NULL;
-    char *msg = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *msg = NULL;
     char timestamp[VIR_TIME_STRING_BUFLEN];
     size_t i;
     int saved_errno = errno;
@@ -603,8 +603,6 @@ virLogVMessage(virLogSourcePtr source,
     virLogUnlock();
 
  cleanup:
-    VIR_FREE(str);
-    VIR_FREE(msg);
     errno = saved_errno;
 }
 
