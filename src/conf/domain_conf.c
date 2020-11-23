@@ -21350,7 +21350,7 @@ virDomainDefTunablesParse(virDomainDefPtr def,
     if ((n = virXPathNodeSet("./blkiotune/device", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot extract blkiotune nodes"));
-        goto error;
+        return -1;
     }
     if (n)
         def->blkio.devices = g_new0(virBlkioDevice, n);
@@ -21358,7 +21358,7 @@ virDomainDefTunablesParse(virDomainDefPtr def,
     for (i = 0; i < n; i++) {
         if (virDomainBlkioDeviceParseXML(nodes[i],
                                          &def->blkio.devices[i]) < 0)
-            goto error;
+            return -1;
         def->blkio.ndevices++;
         for (j = 0; j < i; j++) {
             if (STREQ(def->blkio.devices[j].path,
@@ -21366,7 +21366,7 @@ virDomainDefTunablesParse(virDomainDefPtr def,
                 virReportError(VIR_ERR_XML_ERROR,
                                _("duplicate blkio device path '%s'"),
                                def->blkio.devices[i].path);
-                goto error;
+                return -1;
             }
         }
     }
@@ -21375,32 +21375,32 @@ virDomainDefTunablesParse(virDomainDefPtr def,
     /* Extract other memory tunables */
     if (virDomainParseMemoryLimit("./memtune/hard_limit[1]", NULL, ctxt,
                                   &def->mem.hard_limit) < 0)
-        goto error;
+        return -1;
 
     if (virDomainParseMemoryLimit("./memtune/soft_limit[1]", NULL, ctxt,
                                   &def->mem.soft_limit) < 0)
-        goto error;
+        return -1;
 
     if (virDomainParseMemory("./memtune/min_guarantee[1]", NULL, ctxt,
                              &def->mem.min_guarantee, false, false) < 0)
-        goto error;
+        return -1;
 
     if (virDomainParseMemoryLimit("./memtune/swap_hard_limit[1]", NULL, ctxt,
                                   &def->mem.swap_hard_limit) < 0)
-        goto error;
+        return -1;
 
     if (virDomainVcpuParse(def, ctxt, xmlopt) < 0)
-        goto error;
+        return -1;
 
     if (virDomainDefParseIOThreads(def, ctxt) < 0)
-        goto error;
+        return -1;
 
     /* Extract cpu tunables. */
     if ((n = virXPathULongLong("string(./cputune/shares[1])", ctxt,
                                &def->cputune.shares)) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune shares value"));
-        goto error;
+        return -1;
     } else if (n == 0) {
         def->cputune.sharesSpecified = true;
     }
@@ -21409,42 +21409,42 @@ virDomainDefTunablesParse(virDomainDefPtr def,
                           &def->cputune.period) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune period value"));
-        goto error;
+        return -1;
     }
 
     if (virXPathLongLong("string(./cputune/quota[1])", ctxt,
                          &def->cputune.quota) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune quota value"));
-        goto error;
+        return -1;
     }
 
     if (virXPathULongLong("string(./cputune/global_period[1])", ctxt,
                           &def->cputune.global_period) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune global period value"));
-        goto error;
+        return -1;
     }
 
     if (virXPathLongLong("string(./cputune/global_quota[1])", ctxt,
                          &def->cputune.global_quota) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune global quota value"));
-        goto error;
+        return -1;
     }
 
     if (virXPathULongLong("string(./cputune/emulator_period[1])", ctxt,
                           &def->cputune.emulator_period) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune emulator period value"));
-        goto error;
+        return -1;
     }
 
     if (virXPathLongLong("string(./cputune/emulator_quota[1])", ctxt,
                          &def->cputune.emulator_quota) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune emulator quota value"));
-        goto error;
+        return -1;
     }
 
 
@@ -21452,41 +21452,40 @@ virDomainDefTunablesParse(virDomainDefPtr def,
                           &def->cputune.iothread_period) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune iothread period value"));
-        goto error;
+        return -1;
     }
 
     if (virXPathLongLong("string(./cputune/iothread_quota[1])", ctxt,
                          &def->cputune.iothread_quota) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune iothread quota value"));
-        goto error;
+        return -1;
     }
 
     if ((n = virXPathNodeSet("./cputune/vcpupin", ctxt, &nodes)) < 0)
-        goto error;
+        return -1;
 
     for (i = 0; i < n; i++) {
         if (virDomainVcpuPinDefParseXML(def, nodes[i]))
-            goto error;
+            return -1;
     }
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./cputune/emulatorpin", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot extract emulatorpin nodes"));
-        goto error;
+        return -1;
     }
 
     if (n) {
         if (n > 1) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("only one emulatorpin is supported"));
-            VIR_FREE(nodes);
-            goto error;
+            return -1;
         }
 
         if (!(def->cputune.emulatorpin = virDomainEmulatorPinDefParseXML(nodes[0])))
-            goto error;
+            return -1;
     }
     VIR_FREE(nodes);
 
@@ -21494,86 +21493,82 @@ virDomainDefTunablesParse(virDomainDefPtr def,
     if ((n = virXPathNodeSet("./cputune/iothreadpin", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot extract iothreadpin nodes"));
-        goto error;
+        return -1;
     }
 
     for (i = 0; i < n; i++) {
         if (virDomainIOThreadPinDefParseXML(nodes[i], def) < 0)
-            goto error;
+            return -1;
     }
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./cputune/vcpusched", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot extract vcpusched nodes"));
-        goto error;
+        return -1;
     }
 
     for (i = 0; i < n; i++) {
         if (virDomainVcpuThreadSchedParse(nodes[i], def) < 0)
-            goto error;
+            return -1;
     }
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./cputune/iothreadsched", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot extract iothreadsched nodes"));
-        goto error;
+        return -1;
     }
 
     for (i = 0; i < n; i++) {
         if (virDomainIOThreadSchedParse(nodes[i], def) < 0)
-            goto error;
+            return -1;
     }
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./cputune/emulatorsched", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot extract emulatorsched nodes"));
-        goto error;
+        return -1;
     }
 
     if (n) {
         if (n > 1) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("only one emulatorsched is supported"));
-            VIR_FREE(nodes);
-            goto error;
+            return -1;
         }
 
         if (virDomainEmulatorSchedParse(nodes[0], def) < 0)
-            goto error;
+            return -1;
     }
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./cputune/cachetune", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot extract cachetune nodes"));
-        goto error;
+        return -1;
     }
 
     for (i = 0; i < n; i++) {
         if (virDomainCachetuneDefParse(def, ctxt, nodes[i], flags) < 0)
-            goto error;
+            return -1;
     }
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./cputune/memorytune", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot extract memorytune nodes"));
-        goto error;
+        return -1;
     }
 
     for (i = 0; i < n; i++) {
         if (virDomainMemorytuneDefParse(def, ctxt, nodes[i], flags) < 0)
-            goto error;
+            return -1;
     }
     VIR_FREE(nodes);
 
     return 0;
-
- error:
-    return -1;
 }
 
 
