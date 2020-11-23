@@ -6507,6 +6507,13 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriverPtr driver,
         if (def->disks[i]->device != VIR_DOMAIN_DISK_DEVICE_DISK)
             continue;
 
+        if (!virStorageSourceIsLocalStorage(def->disks[i]->src)) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("can't manipulate inactive snapshots of disk '%s'"),
+                           def->disks[i]->dst);
+            return -1;
+        }
+
         if (format > 0 && format != VIR_STORAGE_FILE_QCOW2) {
             if (try_all) {
                 /* Continue on even in the face of error, since other
