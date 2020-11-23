@@ -164,6 +164,10 @@ def translate_feature(name):
     if name in T:
         return T[name]
 
+    for v in T.values():
+        if name.replace("-", "_") == v.replace("-", "_"):
+            return v
+
     print("warning: Unknown feature '{}'".format(name))
     return name
 
@@ -308,6 +312,11 @@ def expand_model(model):
 
         props = version.pop(".props", dict())
         for k, v in props:
+            if k not in ("model-id", "stepping", "model"):
+                k = translate_feature(k)
+            if k is None:
+                continue
+
             if v == "on":
                 result["features"].add(k)
             elif v == "off" and k in result["features"]:
