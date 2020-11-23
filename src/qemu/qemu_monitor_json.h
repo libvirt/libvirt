@@ -710,3 +710,8 @@ qemuMonitorJSONSetAction(qemuMonitor *mon,
                          qemuMonitorActionReboot reboot,
                          qemuMonitorActionWatchdog watchdog,
                          qemuMonitorActionPanic panic);
+
+int
+qemuMonitorJSONChangeMemoryRequestedSize(qemuMonitor *mon,
+                                         const char *alias,
+                                         unsigned long long requestedsize);

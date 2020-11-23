@@ -9398,3 +9398,18 @@ qemuMonitorJSONSetAction(qemuMonitor *mon,
 
     return 0;
 }
+
+
+int
+qemuMonitorJSONChangeMemoryRequestedSize(qemuMonitor *mon,
+                                         const char *alias,
+                                         unsigned long long requestedsize)
+{
+    g_autofree char *path = g_strdup_printf("/machine/peripheral/%s", alias);
+    qemuMonitorJSONObjectProperty prop = {
+        .type = QEMU_MONITOR_OBJECT_PROPERTY_ULONG,
+        .val.ul = requestedsize * 1024, /* monitor needs bytes */
+    };
+
+    return qemuMonitorJSONSetObjectProperty(mon, path, "requested-size", &prop);
+}

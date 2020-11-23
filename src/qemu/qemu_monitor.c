@@ -4625,3 +4625,16 @@ qemuMonitorSetAction(qemuMonitor *mon,
 
     return qemuMonitorJSONSetAction(mon, shutdown, reboot, watchdog, panic);
 }
+
+
+int
+qemuMonitorChangeMemoryRequestedSize(qemuMonitor *mon,
+                                     const char *alias,
+                                     unsigned long long requestedsize)
+{
+    VIR_DEBUG("alias=%s requestedsize=%llu", alias, requestedsize);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONChangeMemoryRequestedSize(mon, alias, requestedsize);
+}

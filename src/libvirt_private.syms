@@ -508,6 +508,7 @@ virDomainMemballoonModelTypeFromString;
 virDomainMemballoonModelTypeToString;
 virDomainMemoryDefFree;
 virDomainMemoryFindByDef;
+virDomainMemoryFindByDeviceInfo;
 virDomainMemoryFindInactiveByDef;
 virDomainMemoryInsert;
 virDomainMemoryModelTypeToString;

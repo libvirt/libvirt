@@ -1537,3 +1537,8 @@ qemuMonitorSetAction(qemuMonitor *mon,
                      qemuMonitorActionReboot reboot,
                      qemuMonitorActionWatchdog watchdog,
                      qemuMonitorActionPanic panic);
+
+int
+qemuMonitorChangeMemoryRequestedSize(qemuMonitor *mon,
+                                     const char *alias,
+                                     unsigned long long requestedsize);

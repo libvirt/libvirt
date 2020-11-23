@@ -3807,6 +3807,11 @@ int virDomainMemoryFindByDef(virDomainDef *def, virDomainMemoryDef *mem)
 int virDomainMemoryFindInactiveByDef(virDomainDef *def,
                                      virDomainMemoryDef *mem)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
+virDomainMemoryDef *
+virDomainMemoryFindByDeviceInfo(virDomainDef *dev,
+                                virDomainDeviceInfo *info,
+                                int *pos)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 int virDomainShmemDefInsert(virDomainDef *def, virDomainShmemDef *shmem)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;

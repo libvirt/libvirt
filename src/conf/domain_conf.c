@@ -16578,6 +16578,50 @@ virDomainMemoryFindInactiveByDef(virDomainDef *def,
 
 
 /**
+ * virDomainMemoryFindByDeviceInfo:
+ * @def: domain defintion
+ * @info: device info to match
+ * @pos: store position within array
+ *
+ * For given domain definition @def find <memory/> device with
+ * matching address and matching device alias (if set in @info,
+ * otherwise ignored).
+ *
+ * If @pos is not NULL then the position of the matched device
+ * within the array is stored there.
+ *
+ * Returns: device if found,
+ *          NULL otherwise.
+ */
+virDomainMemoryDef *
+virDomainMemoryFindByDeviceInfo(virDomainDef *def,
+                                virDomainDeviceInfo *info,
+                                int *pos)
+{
+    size_t i;
+
+    for (i = 0; i < def->nmems; i++) {
+        virDomainMemoryDef *tmp = def->mems[i];
+
+        if (!virDomainDeviceInfoAddressIsEqual(&tmp->info, info))
+            continue;
+
+        /* alias, if present */
+        if (info->alias &&
+            STRNEQ_NULLABLE(tmp->info.alias, info->alias))
+            continue;
+
+        if (pos)
+            *pos = i;
+
+        return tmp;
+    }
+
+    return NULL;
+}
+
+
+/**
  * virDomainMemoryInsert:
  *
  * Inserts a memory device definition into the domain definition. This helper
@@ -28590,7 +28634,8 @@ virDomainDefCompatibleDevice(virDomainDef *def,
             return -1;
         }
 
-        if ((virDomainDefGetMemoryTotal(def) + sz) > def->mem.max_memory) {
+        if (action == VIR_DOMAIN_DEVICE_ACTION_ATTACH &&
+            (virDomainDefGetMemoryTotal(def) + sz) > def->mem.max_memory) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Attaching memory device with size '%llu' would "
                              "exceed domain's maxMemory config size '%llu'"),
