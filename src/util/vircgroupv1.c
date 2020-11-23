@@ -1549,7 +1549,7 @@ virCgroupV1GetMemoryStat(virCgroupPtr group,
                          unsigned long long *unevictable)
 {
     int ret = -1;
-    char *stat = NULL;
+    g_autofree char *stat = NULL;
     char *line = NULL;
     unsigned long long cacheVal = 0;
     unsigned long long activeAnonVal = 0;
@@ -1614,7 +1614,6 @@ virCgroupV1GetMemoryStat(virCgroupPtr group,
     ret = 0;
 
  cleanup:
-    VIR_FREE(stat);
     return ret;
 }
 
