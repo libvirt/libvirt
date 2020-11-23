@@ -65,8 +65,8 @@ int
 virSecretLookupParseSecret(xmlNodePtr secretnode,
                            virSecretLookupTypeDefPtr def)
 {
-    char *uuid;
-    char *usage;
+    g_autofree char *uuid = NULL;
+    g_autofree char *usage = NULL;
     int ret = -1;
 
     uuid = virXMLPropString(secretnode, "uuid");
@@ -98,8 +98,6 @@ virSecretLookupParseSecret(xmlNodePtr secretnode,
     ret = 0;
 
  cleanup:
-    VIR_FREE(uuid);
-    VIR_FREE(usage);
     return ret;
 }
 
