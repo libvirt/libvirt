@@ -129,7 +129,7 @@ static int
 virMacMapLoadFile(virMacMapPtr mgr,
                   const char *file)
 {
-    char *map_str = NULL;
+    g_autofree char *map_str = NULL;
     virJSONValuePtr map = NULL;
     int map_str_len = 0;
     size_t i;
@@ -189,7 +189,6 @@ virMacMapLoadFile(virMacMapPtr mgr,
 
     ret = 0;
  cleanup:
-    VIR_FREE(map_str);
     virJSONValueFree(map);
     return ret;
 }
