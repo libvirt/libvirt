@@ -6,12 +6,11 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install --no-install-recommends -y \
             augeas-lenses \
             augeas-tools \
-            bash \
             bash-completion \
             ca-certificates \
             ccache \
             clang \
-            cpanminus \
+            diffutils \
             dnsmasq-base \
             dwarves \
             ebtables \
@@ -31,7 +30,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             numad \
             open-iscsi \
             parted \
-            patch \
             perl \
             pkgconf \
             policykit-1 \
@@ -113,11 +111,9 @@ RUN pip3 install \
          meson==0.54.0
 
 ENV LANG "en_US.UTF-8"
-
 ENV MAKE "/usr/bin/make"
 ENV NINJA "/usr/bin/ninja"
 ENV PYTHON "/usr/bin/python3"
-
 ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 ENV ABI "powerpc64le-linux-gnu"

@@ -9,7 +9,6 @@ RUN dnf install 'dnf-command(config-manager)' -y && \
         audit-libs-devel \
         augeas \
         avahi-devel \
-        bash \
         bash-completion \
         ca-certificates \
         ccache \
@@ -17,6 +16,7 @@ RUN dnf install 'dnf-command(config-manager)' -y && \
         cyrus-sasl-devel \
         dbus-devel \
         device-mapper-devel \
+        diffutils \
         dnsmasq \
         dwarves \
         ebtables \
@@ -62,9 +62,7 @@ RUN dnf install 'dnf-command(config-manager)' -y && \
         numad \
         parted \
         parted-devel \
-        patch \
         perl \
-        perl-App-cpanminus \
         pkgconfig \
         polkit \
         python3 \
@@ -94,9 +92,7 @@ RUN pip3 install \
          meson==0.54.0
 
 ENV LANG "en_US.UTF-8"
-
 ENV MAKE "/usr/bin/make"
 ENV NINJA "/usr/bin/ninja"
 ENV PYTHON "/usr/bin/python3"
-
 ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
