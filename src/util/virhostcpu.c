@@ -87,7 +87,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
                           int *nparams)
 {
     const char *sysctl_name;
-    long *cpu_times;
+    g_autofree long *cpu_times = NULL;
     struct clockinfo clkinfo;
     size_t i, j, cpu_times_size, clkinfo_size;
     int cpu_times_num, offset, hz, stathz, ret = -1;
@@ -172,8 +172,6 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
     ret = 0;
 
  cleanup:
-    VIR_FREE(cpu_times);
-
     return ret;
 }
 
