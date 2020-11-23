@@ -574,7 +574,13 @@ foreach data : tests
     ],
     export_dynamic: true,
   )
-  test(data['name'], test_bin, env: tests_env)
+  if data['name'] == 'qemuxml2argvtest'
+    timeout = 90
+  else
+    # default meson timeout
+    timeout = 30
+  endif
+  test(data['name'], test_bin, env: tests_env, timeout: timeout)
 endforeach
 
 
