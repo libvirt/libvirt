@@ -241,10 +241,9 @@ virURIFormat(virURIPtr uri)
     ret = (char *)xmlSaveUri(&xmluri);
     if (!ret) {
         virReportOOMError();
-        goto cleanup;
+        return NULL;
     }
 
- cleanup:
     return ret;
 }
 
