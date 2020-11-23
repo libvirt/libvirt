@@ -1,18 +1,15 @@
-FROM fedora:rawhide
+FROM registry.fedoraproject.org/fedora:rawhide
 
 RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
     dnf update -y && \
     dnf install -y \
         audit-libs-devel \
         augeas \
-        autoconf \
-        automake \
         avahi-devel \
         bash \
         bash-completion \
         ca-certificates \
         ccache \
-        chrony \
         clang \
         cppi \
         cyrus-sasl-devel \
@@ -24,9 +21,7 @@ RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
         firewalld-filesystem \
         fuse-devel \
         gcc \
-        gdb \
         gettext \
-        gettext-devel \
         git \
         glib2-devel \
         glibc-devel \
@@ -51,17 +46,14 @@ RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
         libssh-devel \
         libssh2-devel \
         libtirpc-devel \
-        libtool \
         libudev-devel \
         libwsman-devel \
         libxml2 \
         libxml2-devel \
         libxslt \
-        lsof \
         lvm2 \
         make \
         meson \
-        net-tools \
         netcf-devel \
         nfs-utils \
         ninja-build \
@@ -86,17 +78,12 @@ RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
         rpcgen \
         rpm-build \
         sanlock-devel \
-        screen \
         scrub \
         sheepdog \
-        strace \
-        sudo \
         systemtap-sdt-devel \
-        vim \
         wireshark-devel \
         xen-devel \
         xfsprogs-devel \
-        xz \
         yajl-devel \
         zfs-fuse && \
     dnf autoremove -y && \

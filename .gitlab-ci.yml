@@ -145,15 +145,15 @@ x64-debian-sid-container:
   variables:
     NAME: debian-sid
 
-x64-fedora-31-container:
-  <<: *container_job_definition
-  variables:
-    NAME: fedora-31
-
 x64-fedora-32-container:
   <<: *container_job_definition
   variables:
     NAME: fedora-32
+
+x64-fedora-33-container:
+  <<: *container_job_definition
+  variables:
+    NAME: fedora-33
 
 x64-fedora-rawhide-container:
   <<: *container_job_definition
@@ -334,20 +334,20 @@ x64-centos-stream:
     NAME: centos-stream
     RPM: skip
 
-x64-fedora-31:
-  <<: *native_build_job_definition
-  needs:
-    - x64-fedora-31-container
-  variables:
-    NAME: fedora-31
-    RPM: skip
-
 x64-fedora-32:
   <<: *native_build_job_definition
   needs:
     - x64-fedora-32-container
   variables:
     NAME: fedora-32
+    RPM: skip
+
+x64-fedora-33:
+  <<: *native_build_job_definition
+  needs:
+    - x64-fedora-33-container
+  variables:
+    NAME: fedora-33
 
 x64-fedora-rawhide:
   <<: *native_build_job_definition

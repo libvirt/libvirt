@@ -1,16 +1,13 @@
-FROM fedora:rawhide
+FROM registry.fedoraproject.org/fedora:rawhide
 
 RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
     dnf update -y && \
     dnf install -y \
         augeas \
-        autoconf \
-        automake \
         bash \
         bash-completion \
         ca-certificates \
         ccache \
-        chrony \
         clang \
         cppi \
         dnsmasq \
@@ -18,23 +15,18 @@ RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
         ebtables \
         firewalld-filesystem \
         gcc \
-        gdb \
-        gettext-devel \
         git \
         glibc-langpack-en \
         iproute \
         iproute-tc \
         iscsi-initiator-utils \
         kmod \
-        libtool \
         libwsman-devel \
         libxml2 \
         libxslt \
-        lsof \
         lvm2 \
         make \
         meson \
-        net-tools \
         nfs-utils \
         ninja-build \
         numad \
@@ -53,13 +45,8 @@ RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
         radvd \
         rpcgen \
         rpm-build \
-        screen \
         scrub \
         sheepdog \
-        strace \
-        sudo \
-        vim \
-        xz \
         zfs-fuse && \
     dnf autoremove -y && \
     dnf clean all -y && \

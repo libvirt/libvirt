@@ -1,4 +1,4 @@
-FROM centos:7
+FROM registry.centos.org/centos:7
 
 RUN echo -e '[openvz]\n\
 name=OpenVZ addons\n\
@@ -35,14 +35,11 @@ WEiJKtQrZDJloqtyi/mmRa1VsV7RYR0VPJjhK/R8EQ7Ysshy\n\
     yum install -y \
         audit-libs-devel \
         augeas \
-        autoconf \
-        automake \
         avahi-devel \
         bash \
         bash-completion \
         ca-certificates \
         ccache \
-        chrony \
         clang \
         cyrus-sasl-devel \
         dbus-devel \
@@ -53,9 +50,7 @@ WEiJKtQrZDJloqtyi/mmRa1VsV7RYR0VPJjhK/R8EQ7Ysshy\n\
         firewalld-filesystem \
         fuse-devel \
         gcc \
-        gdb \
         gettext \
-        gettext-devel \
         git \
         glib2-devel \
         glibc-common \
@@ -80,16 +75,13 @@ WEiJKtQrZDJloqtyi/mmRa1VsV7RYR0VPJjhK/R8EQ7Ysshy\n\
         libssh-devel \
         libssh2-devel \
         libtirpc-devel \
-        libtool \
         libudev-devel \
         libwsman-devel \
         libxml2 \
         libxml2-devel \
         libxslt \
-        lsof \
         lvm2 \
         make \
-        net-tools \
         netcf-devel \
         nfs-utils \
         ninja-build \
@@ -112,15 +104,10 @@ WEiJKtQrZDJloqtyi/mmRa1VsV7RYR0VPJjhK/R8EQ7Ysshy\n\
         readline-devel \
         rpm-build \
         sanlock-devel \
-        screen \
         scrub \
-        strace \
-        sudo \
         systemtap-sdt-devel \
-        vim \
         wireshark-devel \
         xfsprogs-devel \
-        xz \
         yajl-devel && \
     yum autoremove -y && \
     yum clean all -y && \

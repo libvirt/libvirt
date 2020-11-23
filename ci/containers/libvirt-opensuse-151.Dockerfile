@@ -1,18 +1,15 @@
-FROM opensuse/leap:15.1
+FROM registry.opensuse.org/opensuse/leap:15.1
 
 RUN zypper update -y && \
     zypper install -y \
            audit-devel \
            augeas \
            augeas-lenses \
-           autoconf \
-           automake \
            avahi-devel \
            bash \
            bash-completion \
            ca-certificates \
            ccache \
-           chrony \
            clang \
            cppi \
            cyrus-sasl-devel \
@@ -23,9 +20,7 @@ RUN zypper update -y && \
            ebtables \
            fuse-devel \
            gcc \
-           gdb \
            gettext \
-           gettext-devel \
            git \
            glib2-devel \
            glibc-devel \
@@ -50,17 +45,14 @@ RUN zypper update -y && \
            libssh-devel \
            libssh2-devel \
            libtirpc-devel \
-           libtool \
            libudev-devel \
            libwsman-devel \
            libxml2 \
            libxml2-devel \
            libxslt \
            libyajl-devel \
-           lsof \
            lvm2 \
            make \
-           net-tools \
            nfs-utils \
            ninja \
            numad \
@@ -84,16 +76,11 @@ RUN zypper update -y && \
            rpcgen \
            rpm-build \
            sanlock-devel \
-           screen \
            scrub \
-           strace \
-           sudo \
            systemtap-sdt-devel \
-           vim \
            wireshark-devel \
            xen-devel \
-           xfsprogs-devel \
-           xz && \
+           xfsprogs-devel && \
     zypper clean --all && \
     mkdir -p /usr/libexec/ccache-wrappers && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc && \

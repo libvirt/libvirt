@@ -1,4 +1,4 @@
-FROM debian:10
+FROM docker.io/library/debian:10
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
@@ -6,14 +6,10 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install --no-install-recommends -y \
             augeas-lenses \
             augeas-tools \
-            autoconf \
-            automake \
-            autopoint \
             bash \
             bash-completion \
             ca-certificates \
             ccache \
-            chrony \
             clang \
             cpanminus \
             dnsmasq-base \
@@ -21,20 +17,15 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             ebtables \
             flake8 \
             gcc \
-            gdb \
             gettext \
             git \
             iproute2 \
             kmod \
             libc-dev-bin \
-            libtool \
-            libtool-bin \
             libxml2-utils \
             locales \
-            lsof \
             lvm2 \
             make \
-            net-tools \
             nfs-common \
             ninja-build \
             numad \
@@ -51,13 +42,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             python3-wheel \
             qemu-utils \
             radvd \
-            screen \
             scrub \
-            strace \
-            sudo \
-            vim \
             xsltproc \
-            xz-utils \
             zfs-fuse && \
     apt-get autoremove -y && \
     apt-get autoclean -y && \

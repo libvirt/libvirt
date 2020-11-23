@@ -1,21 +1,19 @@
-FROM centos:8
+FROM registry.centos.org/centos:8
 
 RUN dnf install -y centos-release-stream && \
     dnf install 'dnf-command(config-manager)' -y && \
     dnf config-manager --set-enabled -y Stream-PowerTools && \
+    dnf install -y centos-release-advanced-virtualization && \
     dnf install -y epel-release && \
     dnf update -y && \
     dnf install -y \
         audit-libs-devel \
         augeas \
-        autoconf \
-        automake \
         avahi-devel \
         bash \
         bash-completion \
         ca-certificates \
         ccache \
-        chrony \
         clang \
         cyrus-sasl-devel \
         dbus-devel \
@@ -26,9 +24,7 @@ RUN dnf install -y centos-release-stream && \
         firewalld-filesystem \
         fuse-devel \
         gcc \
-        gdb \
         gettext \
-        gettext-devel \
         git \
         glib2-devel \
         glibc-devel \
@@ -53,16 +49,13 @@ RUN dnf install -y centos-release-stream && \
         libssh-devel \
         libssh2-devel \
         libtirpc-devel \
-        libtool \
         libudev-devel \
         libwsman-devel \
         libxml2 \
         libxml2-devel \
         libxslt \
-        lsof \
         lvm2 \
         make \
-        net-tools \
         netcf-devel \
         nfs-utils \
         ninja-build \
@@ -87,15 +80,10 @@ RUN dnf install -y centos-release-stream && \
         rpcgen \
         rpm-build \
         sanlock-devel \
-        screen \
         scrub \
-        strace \
-        sudo \
         systemtap-sdt-devel \
-        vim \
         wireshark-devel \
         xfsprogs-devel \
-        xz \
         yajl-devel && \
     dnf autoremove -y && \
     dnf clean all -y && \
