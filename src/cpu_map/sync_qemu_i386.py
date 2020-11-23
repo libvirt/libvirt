@@ -8,11 +8,6 @@ import re
 
 
 T = {
-    # translating qemu -> libvirt cpu vendor names
-    "CPUID_VENDOR_AMD": "AMD",
-    "CPUID_VENDOR_INTEL": "Intel",
-    "CPUID_VENDOR_HYGON": "Hygon",
-
     # translating qemu -> libvirt cpu feature names
     "CPUID_6_EAX_ARAT": "arat",
     "CPUID_7_0_EBX_ADX": "adx",
@@ -152,6 +147,20 @@ T = {
 }
 
 
+def translate_vendor(name):
+    T = {
+        "CPUID_VENDOR_AMD": "AMD",
+        "CPUID_VENDOR_INTEL": "Intel",
+        "CPUID_VENDOR_HYGON": "Hygon",
+    }
+
+    if name in T:
+        return T[name]
+
+    print("warning: Unknown vendor '{}'".format(name))
+    return name
+
+
 def readline_cont(f):
     """Read one logical line from a file `f` i.e. continues lines that end in
     a backslash."""
@@ -264,7 +273,7 @@ def expand_model(model):
 
     result = {
         "name": model.pop(".name"),
-        "vendor": T[model.pop(".vendor")],
+        "vendor": translate_vendor(model.pop(".vendor")),
         "features": set(),
         "extra": dict()}
 
