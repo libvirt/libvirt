@@ -5,6 +5,7 @@ import copy
 import lark
 import os
 import re
+import xml.etree.ElementTree
 
 
 def translate_vendor(name):
@@ -392,6 +393,22 @@ def main():
         name = os.path.join(args.outdir, "x86_{}.xml".format(model["name"]))
         with open(name, "wt") as f:
             output_model(f, model)
+
+    features = set()
+    for model in models:
+        features.update(model["features"])
+
+    try:
+        filename = os.path.join(args.outdir, "x86_features.xml")
+        dom = xml.etree.ElementTree.parse(filename)
+        known = [x.attrib["name"] for x in dom.getroot().iter("feature")]
+        unknown = [x for x in features if x not in known and x is not None]
+    except Exception as e:
+        unknown = []
+        print("warning: Unable to read libvirt x86_features.xml: {}".format(e))
+
+    for x in unknown:
+        print("warning: Feature unknown to libvirt: {}".format(x))
 
 
 if __name__ == "__main__":
