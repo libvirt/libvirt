@@ -6501,49 +6501,48 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriverPtr driver,
     for (i = 0; i < ndisks; i++) {
         g_autoptr(virCommand) cmd = virCommandNewArgList(qemuimgbin, "snapshot",
                                                          op, name, NULL);
+        int format = virDomainDiskGetFormat(def->disks[i]);
 
         /* FIXME: we also need to handle LVM here */
-        if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-            int format = virDomainDiskGetFormat(def->disks[i]);
+        if (def->disks[i]->device != VIR_DOMAIN_DISK_DEVICE_DISK)
+            continue;
 
-            if (format > 0 && format != VIR_STORAGE_FILE_QCOW2) {
-                if (try_all) {
-                    /* Continue on even in the face of error, since other
-                     * disks in this VM may have the same snapshot name.
-                     */
-                    VIR_WARN("skipping snapshot action on %s",
-                             def->disks[i]->dst);
-                    skipped = true;
-                    continue;
-                } else if (STREQ(op, "-c") && i) {
-                    /* We must roll back partial creation by deleting
-                     * all earlier snapshots.  */
-                    qemuDomainSnapshotForEachQcow2Raw(driver, def, name,
-                                                      "-d", false, i);
-                }
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("Disk device '%s' does not support"
-                                 " snapshotting"),
-                               def->disks[i]->dst);
-                return -1;
+        if (format > 0 && format != VIR_STORAGE_FILE_QCOW2) {
+            if (try_all) {
+                /* Continue on even in the face of error, since other
+                 * disks in this VM may have the same snapshot name.
+                 */
+                VIR_WARN("skipping snapshot action on %s",
+                         def->disks[i]->dst);
+                skipped = true;
+                continue;
+            } else if (STREQ(op, "-c") && i) {
+                /* We must roll back partial creation by deleting
+                 * all earlier snapshots.  */
+                qemuDomainSnapshotForEachQcow2Raw(driver, def, name,
+                                                  "-d", false, i);
             }
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("Disk device '%s' does not support snapshotting"),
+                           def->disks[i]->dst);
+            return -1;
+        }
 
-            virCommandAddArg(cmd, virDomainDiskGetSource(def->disks[i]));
+        virCommandAddArg(cmd, virDomainDiskGetSource(def->disks[i]));
 
-            if (virCommandRun(cmd, NULL) < 0) {
-                if (try_all) {
-                    VIR_WARN("skipping snapshot action on %s",
-                             def->disks[i]->dst);
-                    skipped = true;
-                    continue;
-                } else if (STREQ(op, "-c") && i) {
-                    /* We must roll back partial creation by deleting
-                     * all earlier snapshots.  */
-                    qemuDomainSnapshotForEachQcow2Raw(driver, def, name,
-                                                      "-d", false, i);
-                }
-                return -1;
+        if (virCommandRun(cmd, NULL) < 0) {
+            if (try_all) {
+                VIR_WARN("skipping snapshot action on %s",
+                         def->disks[i]->dst);
+                skipped = true;
+                continue;
+            } else if (STREQ(op, "-c") && i) {
+                /* We must roll back partial creation by deleting
+                 * all earlier snapshots.  */
+                qemuDomainSnapshotForEachQcow2Raw(driver, def, name,
+                                                  "-d", false, i);
             }
+            return -1;
         }
     }
 
