@@ -115,24 +115,6 @@ if conf.has('WITH_SECDRIVER_SELINUX')
   ]
 endif
 
-foreach mock : mock_libs
-  shared_library(
-    mock['name'],
-    mock.get('sources', [ '@0@.c'.format(mock['name']) ]),
-    override_options: [
-     'b_asneeded=false',
-     'b_lundef=false',
-    ],
-    dependencies: [
-      tests_dep,
-      mock.get('deps', []),
-    ],
-    link_with: [
-      libvirt_lib,
-    ],
-  )
-endforeach
-
 
 # build libraries used by tests
 
@@ -201,6 +183,24 @@ test_file_wrapper_lib = static_library(
   dependencies: [ tests_dep ],
 )
 
+foreach mock : mock_libs
+  shared_library(
+    mock['name'],
+    mock.get('sources', [ '@0@.c'.format(mock['name']) ]),
+    override_options: [
+     'b_asneeded=false',
+     'b_lundef=false',
+    ],
+    dependencies: [
+      tests_dep,
+      mock.get('deps', []),
+    ],
+    link_with: [
+      libvirt_lib,
+      mock.get('link_with', []),
+    ],
+  )
+endforeach
 
 # build helpers used by tests
 
