@@ -19,6 +19,7 @@
 #include <config.h>
 
 #if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
+# define VIR_MOCK_LOOKUP_MAIN
 # include "virmock.h"
 # include <unistd.h>
 # include <fcntl.h>

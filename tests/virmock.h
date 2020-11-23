@@ -284,9 +284,21 @@
     static void (*real_##name)(void); \
     void wrap_##name(void)
 
+#if defined(VIR_MOCK_LOOKUP_MAIN) && defined(__APPLE__)
+# define VIR_MOCK_REAL_INIT_MAIN(name, alias) \
+    do { \
+        if (real_##name == NULL) { \
+            real_##name = dlsym(RTLD_MAIN_ONLY, alias); \
+        } \
+    } while (0)
+#else
+# define VIR_MOCK_REAL_INIT_MAIN(name, alias) \
+    do {} while (0)
+#endif
 
 #define VIR_MOCK_REAL_INIT(name) \
     do { \
+        VIR_MOCK_REAL_INIT_MAIN(name, #name); \
         if (real_##name == NULL && \
             !(real_##name = dlsym(RTLD_NEXT, \
                                   #name))) { \
@@ -297,6 +309,7 @@
 
 #define VIR_MOCK_REAL_INIT_ALIASED(name, alias) \
     do { \
+        VIR_MOCK_REAL_INIT_MAIN(name, alias); \
         if (real_##name == NULL && \
             !(real_##name = dlsym(RTLD_NEXT, \
                                   alias))) { \
