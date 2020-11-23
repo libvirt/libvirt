@@ -41,6 +41,36 @@
 
 VIR_LOG_INIT("qemu.qemu_checkpoint");
 
+/**
+ * qemuCheckpointSetCurrent: Set currently active checkpoint
+ *
+ * @vm: domain object
+ * @newcurrent: checkpoint object to set as current/active
+ *
+ * Sets @newcurrent as the 'current' checkpoint of @vm. This helper ensures that
+ * the checkpoint which was 'current' previously is updated.
+ */
+static void
+qemuCheckpointSetCurrent(virDomainObjPtr vm,
+                       virDomainMomentObjPtr newcurrent)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    virDomainMomentObjPtr oldcurrent = virDomainCheckpointGetCurrent(vm->checkpoints);
+
+    virDomainCheckpointSetCurrent(vm->checkpoints, newcurrent);
+
+    /* we need to write out metadata for the old checkpoint to update the
+     * 'active' property */
+    if (oldcurrent &&
+        oldcurrent != newcurrent) {
+        if (qemuCheckpointWriteMetadata(vm, oldcurrent, driver->xmlopt, cfg->checkpointDir) < 0)
+            VIR_WARN("failed to update old current checkpoint");
+    }
+}
+
+
 /* Looks up the domain object from checkpoint and unlocks the
  * driver. The returned domain object is locked and ref'd and the
  * caller must call virDomainObjEndAPI() on it. */
@@ -506,7 +536,7 @@ qemuCheckpointCreateFinalize(virQEMUDriverPtr driver,
                              bool update_current)
 {
     if (update_current)
-        virDomainCheckpointSetCurrent(vm->checkpoints, chk);
+        qemuCheckpointSetCurrent(vm, chk);
 
     if (qemuCheckpointWriteMetadata(vm, chk,
                                     driver->xmlopt,
@@ -848,7 +878,8 @@ qemuCheckpointDelete(virDomainObjPtr vm,
         if (rem.err < 0)
             goto endjob;
         if (rem.found) {
-            virDomainCheckpointSetCurrent(vm->checkpoints, chk);
+            qemuCheckpointSetCurrent(vm, chk);
+
             if (flags & VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY) {
                 if (qemuCheckpointWriteMetadata(vm, chk,
                                                 driver->xmlopt,
