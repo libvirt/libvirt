@@ -803,7 +803,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
     case VIR_DOMAIN_DEVICE_HOSTDEV: {
         virDomainHostdevDefPtr hostdev = dev->data.hostdev;
         bool isExpress = false;
-        virPCIDevicePtr pciDev;
+        g_autoptr(virPCIDevice) pciDev = NULL;
         virPCIDeviceAddressPtr hostAddr = &hostdev->source.subsys.u.pci.addr;
 
         if (!virHostdevIsMdevDevice(hostdev) &&
@@ -891,8 +891,6 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             off_t configLen
                = virFileLength(virPCIDeviceGetConfigPath(pciDev), -1);
 
-            virPCIDeviceFree(pciDev);
-
             if (configLen == 256)
                 return pciFlags;
 
@@ -904,7 +902,6 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
          * a definitive answer.
          */
         isExpress = virPCIDeviceIsPCIExpress(pciDev);
-        virPCIDeviceFree(pciDev);
 
         if (isExpress)
             return pcieFlags;
