@@ -655,7 +655,10 @@ virsh migrate --p2p --tunnelled web1 qemu+ssh://desthost/system qemu+ssh://10.0.
       software):
     </p>
     <pre>
-virsh migrate web1 [--p2p] --copy-storage-all 'qemu+unix:///system?socket=/tmp/migdir/test-sock-driver' 'unix:///tmp/migdir/test-sock-qemu' --disks-uri unix:///tmp/migdir/test-sock-nbd
+virsh migrate --domain web1 [--p2p] --copy-storage-all
+  --desturi 'qemu+unix:///system?socket=/tmp/migdir/test-sock-driver'
+  --migrateuri 'unix:///tmp/migdir/test-sock-qemu'
+  --disks-uri unix:///tmp/migdir/test-sock-nbd
     </pre>
 
     <p>
