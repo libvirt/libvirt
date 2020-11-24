@@ -35,6 +35,7 @@ module Test_libvirtd_qemu =
 { "migrate_tls_x509_cert_dir" = "/etc/pki/libvirt-migrate" }
 { "migrate_tls_x509_verify" = "1" }
 { "migrate_tls_x509_secret_uuid" = "00000000-0000-0000-0000-000000000000" }
+{ "migrate_tls_force" = "0" }
 { "backup_tls_x509_cert_dir" = "/etc/pki/libvirt-backup" }
 { "backup_tls_x509_verify" = "1" }
 { "backup_tls_x509_secret_uuid" = "00000000-0000-0000-0000-000000000000" }

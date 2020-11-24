@@ -2332,8 +2332,17 @@ qemuMigrationSrcBegin(virConnectPtr conn,
                       unsigned long flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     char *xml = NULL;
     qemuDomainAsyncJob asyncJob;
+
+    if (cfg->migrateTLSForce &&
+        !(flags & VIR_MIGRATE_TUNNELLED) &&
+        !(flags & VIR_MIGRATE_TLS)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"));
+        goto cleanup;
+    }
 
     if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
         if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
@@ -2501,6 +2510,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                            qemuMigrationParamsPtr migParams,
                            unsigned long flags)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainObjPtr vm = NULL;
     virObjectEventPtr event = NULL;
     virErrorPtr origErr;
@@ -2560,6 +2570,14 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     if (flags & VIR_MIGRATE_POSTCOPY && flags & VIR_MIGRATE_TUNNELLED) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("post-copy is not supported with tunnelled migration"));
+        goto cleanup;
+    }
+
+    if (cfg->migrateTLSForce &&
+        !(flags & VIR_MIGRATE_TUNNELLED) &&
+        !(flags & VIR_MIGRATE_TLS)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"));
         goto cleanup;
     }
 
@@ -5013,6 +5031,8 @@ qemuMigrationSrcPerform(virQEMUDriverPtr driver,
                         unsigned long resource,
                         bool v3proto)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+
     VIR_DEBUG("driver=%p, conn=%p, vm=%p, xmlin=%s, dconnuri=%s, "
               "uri=%s, graphicsuri=%s, listenAddress=%s, "
               "nmigrate_disks=%zu, migrate_disks=%p, nbdPort=%d, "
@@ -5024,6 +5044,14 @@ qemuMigrationSrcPerform(virQEMUDriverPtr driver,
               nmigrate_disks, migrate_disks, nbdPort, NULLSTR(nbdURI),
               NULLSTR(cookiein), cookieinlen, cookieout, cookieoutlen,
               flags, NULLSTR(dname), resource, v3proto);
+
+    if (cfg->migrateTLSForce &&
+        !(flags & VIR_MIGRATE_TUNNELLED) &&
+        !(flags & VIR_MIGRATE_TLS)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"));
+        return -1;
+    }
 
     if ((flags & (VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER))) {
         if (cookieinlen) {

@@ -58,6 +58,7 @@ module Libvirtd_qemu =
    let migrate_entry = str_entry "migrate_tls_x509_cert_dir"
                  | bool_entry "migrate_tls_x509_verify"
                  | str_entry "migrate_tls_x509_secret_uuid"
+                 | bool_entry "migrate_tls_force"
 
    let backup_entry = str_entry "backup_tls_x509_cert_dir"
                  | bool_entry "backup_tls_x509_verify"

@@ -494,6 +494,8 @@ virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfigPtr cfg,
         return -1;
     if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)
         return -1;
+    if (virConfGetValueBool(conf, "migrate_tls_force", &cfg->migrateTLSForce) < 0)
+        return -1;
 
 #define GET_CONFIG_TLS_CERTINFO_COMMON(val) \
     do { \
