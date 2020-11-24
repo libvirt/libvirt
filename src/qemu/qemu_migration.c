@@ -2219,6 +2219,17 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
     }
 
     if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) {
+        if (flags & VIR_MIGRATE_TUNNELLED) {
+            if (nmigrate_disks) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("Selecting disks to migrate is not implemented for tunnelled migration"));
+                return NULL;
+            }
+        } else {
+            cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
+            priv->nbdPort = 0;
+        }
+
         if (nmigrate_disks) {
             size_t i, j;
             /* Check user requested only known disk targets. */
@@ -2235,18 +2246,6 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
                     return NULL;
                 }
             }
-
-            if (flags & VIR_MIGRATE_TUNNELLED) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               _("Selecting disks to migrate is not "
-                                 "implemented for tunnelled migration"));
-                return NULL;
-            }
-        }
-
-        if (!(flags & VIR_MIGRATE_TUNNELLED)) {
-            cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
-            priv->nbdPort = 0;
         }
     }
 
