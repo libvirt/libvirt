@@ -17,9 +17,9 @@
 static bhyveConn driver;
 
 typedef enum {
-    FLAG_EXPECT_FAILURE     = 1,
-    FLAG_EXPECT_PARSE_ERROR = 2,
-    FLAG_EXPECT_WARNING     = 4,
+    FLAG_EXPECT_FAILURE     = 1 << 0,
+    FLAG_EXPECT_PARSE_ERROR = 1 << 1,
+    FLAG_EXPECT_WARNING     = 1 << 2,
 } virBhyveArgv2XMLTestFlags;
 
 static int
