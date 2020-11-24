@@ -4628,7 +4628,6 @@ qemuBuildChrChardevFileStr(virLogManagerPtr logManager,
 {
     if (logManager) {
         g_autofree char *fdset = NULL;
-        g_autofree char *fdpath = NULL;
         int flags = 0;
         int logfd;
         size_t idx;
@@ -4652,10 +4651,7 @@ qemuBuildChrChardevFileStr(virLogManagerPtr logManager,
         virCommandAddArg(cmd, "-add-fd");
         virCommandAddArg(cmd, fdset);
 
-        if (!(fdpath = qemuVirCommandGetDevSet(cmd, logfd)))
-            return -1;
-
-        virBufferAsprintf(buf, ",%s=%s,%s=on", filearg, fdpath, appendarg);
+        virBufferAsprintf(buf, ",%s=/dev/fdset/%zu,%s=on", filearg, idx, appendarg);
     } else {
         virBufferAsprintf(buf, ",%s=", filearg);
         virQEMUBuildBufferEscapeComma(buf, fileval);
@@ -8204,7 +8200,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
 
         virCommandPassFDIndex(cmd, vdpafd, VIR_COMMAND_PASS_FD_CLOSE_PARENT, &idx);
         fdset = qemuBuildFDSet(vdpafd, idx);
-        vdpafdName = qemuVirCommandGetDevSet(cmd, vdpafd);
+        vdpafdName = g_strdup_printf("/dev/fdset/%zu", idx);
         /* set opaque to the devicepath so that we can look up the fdset later
          * if necessary */
         addfdarg = g_strdup_printf("%s,opaque=%s", fdset,
