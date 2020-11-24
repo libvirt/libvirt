@@ -225,6 +225,23 @@ qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
 
 
 /**
+ * qemuBuildFDSet:
+ * @fd: fd to reassign to the child
+ * @idx: index in the fd set
+ *
+ * Format the parameters for the -add-fd command line option
+ * for the given file descriptor. The file descriptor must previously
+ * have been 'transferred' in a virCommandPassFDIndex() call,
+ * and @idx is the value returned by that call.
+ */
+static char *
+qemuBuildFDSet(int fd, size_t idx)
+{
+    return g_strdup_printf("set=%zu,fd=%d", idx, fd);
+}
+
+
+/**
  * qemuVirCommandGetFDSet:
  * @cmd: the command to modify
  * @fd: fd to reassign to the child
@@ -4614,6 +4631,7 @@ qemuBuildChrChardevFileStr(virLogManagerPtr logManager,
         g_autofree char *fdpath = NULL;
         int flags = 0;
         int logfd;
+        size_t idx;
 
         if (appendval == VIR_TRISTATE_SWITCH_ABSENT ||
             appendval == VIR_TRISTATE_SWITCH_OFF)
@@ -4628,9 +4646,8 @@ qemuBuildChrChardevFileStr(virLogManagerPtr logManager,
                                                     NULL, NULL)) < 0)
             return -1;
 
-        virCommandPassFD(cmd, logfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-        if (!(fdset = qemuVirCommandGetFDSet(cmd, logfd)))
-            return -1;
+        virCommandPassFDIndex(cmd, logfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT, &idx);
+        fdset = qemuBuildFDSet(logfd, idx);
 
         virCommandAddArg(cmd, "-add-fd");
         virCommandAddArg(cmd, fdset);
@@ -8183,11 +8200,10 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
     if (vdpafd > 0) {
         g_autofree char *fdset = NULL;
         g_autofree char *addfdarg = NULL;
+        size_t idx;
 
-        virCommandPassFD(cmd, vdpafd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-        fdset = qemuVirCommandGetFDSet(cmd, vdpafd);
-        if (!fdset)
-            goto cleanup;
+        virCommandPassFDIndex(cmd, vdpafd, VIR_COMMAND_PASS_FD_CLOSE_PARENT, &idx);
+        fdset = qemuBuildFDSet(vdpafd, idx);
         vdpafdName = qemuVirCommandGetDevSet(cmd, vdpafd);
         /* set opaque to the devicepath so that we can look up the fdset later
          * if necessary */
