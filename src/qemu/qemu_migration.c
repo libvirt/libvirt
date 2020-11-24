@@ -2244,10 +2244,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
             }
         }
 
-        /* TODO support NBD for TUNNELLED migration */
-        if (flags & VIR_MIGRATE_TUNNELLED) {
-            VIR_WARN("NBD in tunnelled migration is currently not supported");
-        } else {
+        if (!(flags & VIR_MIGRATE_TUNNELLED)) {
             cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
             priv->nbdPort = 0;
         }
