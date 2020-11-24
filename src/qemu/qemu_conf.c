@@ -834,6 +834,7 @@ virQEMUDriverConfigLoadNVRAMEntry(virQEMUDriverConfigPtr cfg,
         VIR_AUTOSTRINGLIST fwList = NULL;
 
         virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
+        cfg->firmwares = NULL;
 
         if (qemuFirmwareFetchConfigs(&fwList, privileged) < 0)
             return -1;
