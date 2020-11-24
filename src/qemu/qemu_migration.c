@@ -2220,6 +2220,12 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
 
     if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) {
         if (flags & VIR_MIGRATE_TUNNELLED) {
+            if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("migration of non-shared storage is not supported with tunnelled migration and this QEMU"));
+                return NULL;
+            }
+
             if (nmigrate_disks) {
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                                _("Selecting disks to migrate is not implemented for tunnelled migration"));
