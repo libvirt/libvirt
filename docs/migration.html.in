@@ -32,6 +32,14 @@
     </p>
 
     <p>
+      Modern hypervisors support TLS for encryption and authentication of the
+      migration connections which can be enabled using the
+      <code>VIR_MIGRATE_TLS</code> flag. The <em>qemu</em> hypervisor driver
+      allows users to force use of TLS via the <code>migrate_tls_force</code>
+      knob configured in <code>/etc/libvirt/qemu.conf</code>.
+    </p>
+
+    <p>
       <img class="diagram" src="migration-native.png" alt="Migration native path"/>
     </p>
 
