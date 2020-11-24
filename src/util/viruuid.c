@@ -170,24 +170,21 @@ virUUIDFormat(const unsigned char *uuid, char *uuidstr)
  * Basic tests:
  *  - Not all of the digits may be equal
  */
-int
-virUUIDIsValid(unsigned char *uuid)
+bool
+virUUIDIsValid(const unsigned char *uuid)
 {
     size_t i;
-    unsigned int ctr = 1;
-    unsigned char c;
 
     if (!uuid)
-        return 0;
-
-    c = uuid[0];
+        return false;
 
     for (i = 1; i < VIR_UUID_BUFLEN; i++)
-        if (uuid[i] == c)
-            ctr++;
+        if (uuid[i] != uuid[0])
+            return true;
 
-    return ctr != VIR_UUID_BUFLEN;
+    return false;
 }
+
 
 static int
 getDMISystemUUID(char *uuid, int len)
