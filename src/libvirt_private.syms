@@ -1884,6 +1884,7 @@ virCommandNewVAList;
 virCommandNonblockingFDs;
 virCommandPassFD;
 virCommandPassFDGetFDIndex;
+virCommandPassFDIndex;
 virCommandRawStatus;
 virCommandRequireHandshake;
 virCommandRun;

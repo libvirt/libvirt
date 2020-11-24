@@ -999,10 +999,11 @@ virCommandNewVAList(const char *binary, va_list list)
         VIR_FORCE_CLOSE(fd)
 
 /**
- * virCommandPassFD:
+ * virCommandPassFDIndex:
  * @cmd: the command to modify
  * @fd: fd to reassign to the child
  * @flags: extra flags; binary-OR of virCommandPassFDFlags
+ * @idx: pointer to fill with the index of the FD in the transfer set
  *
  * Transfer the specified file descriptor to the child, instead
  * of closing it on exec. @fd must not be one of the three
@@ -1013,7 +1014,7 @@ virCommandNewVAList(const char *binary, va_list list)
  * should cease using the @fd when this call completes
  */
 void
-virCommandPassFD(virCommandPtr cmd, int fd, unsigned int flags)
+virCommandPassFDIndex(virCommandPtr cmd, int fd, unsigned int flags, size_t *idx)
 {
     int ret = 0;
 
@@ -1037,6 +1038,29 @@ virCommandPassFD(virCommandPtr cmd, int fd, unsigned int flags)
         VIR_COMMAND_MAYBE_CLOSE_FD(fd, flags);
         return;
     }
+
+    if (idx)
+        *idx = cmd->npassfd - 1;
+}
+
+/**
+ * virCommandPassFD:
+ * @cmd: the command to modify
+ * @fd: fd to reassign to the child
+ * @flags: extra flags; binary-OR of virCommandPassFDFlags
+ *
+ * Transfer the specified file descriptor to the child, instead
+ * of closing it on exec. @fd must not be one of the three
+ * standard streams.
+ *
+ * If the flag VIR_COMMAND_PASS_FD_CLOSE_PARENT is set then fd will
+ * be closed in the parent no later than Run/RunAsync/Free. The parent
+ * should cease using the @fd when this call completes
+ */
+void
+virCommandPassFD(virCommandPtr cmd, int fd, unsigned int flags)
+{
+    virCommandPassFDIndex(cmd, fd, flags, NULL);
 }
 
 /*

@@ -57,6 +57,11 @@ void virCommandPassFD(virCommandPtr cmd,
                       int fd,
                       unsigned int flags) G_GNUC_NO_INLINE;
 
+void virCommandPassFDIndex(virCommandPtr cmd,
+                           int fd,
+                           unsigned int flags,
+                           size_t *idx) G_GNUC_NO_INLINE;
+
 int virCommandPassFDGetFDIndex(virCommandPtr cmd,
                                int fd);
 
