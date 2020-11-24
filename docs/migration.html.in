@@ -50,6 +50,14 @@
     </p>
 
     <p>
+      <em>Note:</em> Certain features such as migration of non-shared storage
+      (<code>VIR_MIGRATE_NON_SHARED_DISK</code>), the multi-connection migration
+      (<code>VIR_MIGRATE_PARALLEL</code>), or post-copy migration
+      (<code>VIR_MIGRATE_POSTCOPY</code>) may not be available when using
+      libvirt's tunnelling.
+    </p>
+
+    <p>
       <img class="diagram" src="migration-tunnel.png" alt="Migration tunnel path"/>
     </p>
 
