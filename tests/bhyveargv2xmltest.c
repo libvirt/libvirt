@@ -131,16 +131,16 @@ mymain(void)
     DO_TEST_FULL(name, 0)
 
 # define DO_TEST_FAIL(name) \
-    DO_TEST_FULL(name, 5)
+    DO_TEST_FULL(name, FLAG_EXPECT_FAILURE | FLAG_EXPECT_WARNING)
 
 # define DO_TEST_WARN(name) \
-    DO_TEST_FULL(name, 4)
+    DO_TEST_FULL(name, FLAG_EXPECT_WARNING)
 
 # define DO_TEST_FAIL_SILENT(name) \
-    DO_TEST_FULL(name, 1)
+    DO_TEST_FULL(name, FLAG_EXPECT_FAILURE)
 
 # define DO_TEST_PARSE_ERROR(name) \
-    DO_TEST_FULL(name, 2)
+    DO_TEST_FULL(name, FLAG_EXPECT_PARSE_ERROR)
 
     driver.grubcaps = BHYVE_GRUB_CAP_CONSDEV;
     driver.bhyvecaps = BHYVE_CAP_RTC_UTC;
