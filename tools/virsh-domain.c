@@ -9018,9 +9018,6 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_AFFECT_CONFIG;
     if (live)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
-    /* none of the options were specified */
-    if (!current && !live && !config)
-        flags = -1;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -9037,7 +9034,7 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     }
     kibibytes = VIR_DIV_UP(bytes, 1024);
 
-    if (flags == -1) {
+    if (flags == 0) {
         if (virDomainSetMemory(dom, kibibytes) != 0)
             ret = false;
     } else {
@@ -9090,7 +9087,7 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
-    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT | VIR_DOMAIN_MEM_MAXIMUM;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
     VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
@@ -9099,9 +9096,6 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_AFFECT_CONFIG;
     if (live)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
-    /* none of the options were specified */
-    if (!current && !live && !config)
-        flags = -1;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -9118,13 +9112,13 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
     }
     kibibytes = VIR_DIV_UP(bytes, 1024);
 
-    if (flags == -1) {
+    if (flags == 0) {
         if (virDomainSetMaxMemory(dom, kibibytes) != 0) {
             vshError(ctl, "%s", _("Unable to change MaxMemorySize"));
             ret = false;
         }
     } else {
-        if (virDomainSetMemoryFlags(dom, kibibytes, flags) < 0) {
+        if (virDomainSetMemoryFlags(dom, kibibytes, flags | VIR_DOMAIN_MEM_MAXIMUM) < 0) {
             vshError(ctl, "%s", _("Unable to change MaxMemorySize"));
             ret = false;
         }
