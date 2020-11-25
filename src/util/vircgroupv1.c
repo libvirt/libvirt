@@ -1881,13 +1881,13 @@ static int
 virCgroupV1SetCpuCfsPeriod(virCgroupPtr group,
                            unsigned long long cfs_period)
 {
-    /* The cfs_period should be greater or equal than 1ms, and less or equal
-     * than 1s.
-     */
-    if (cfs_period < 1000 || cfs_period > 1000000) {
+    if (cfs_period < VIR_CGROUP_CPU_PERIOD_MIN ||
+        cfs_period > VIR_CGROUP_CPU_PERIOD_MAX) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("cfs_period '%llu' must be in range (1000, 1000000)"),
-                       cfs_period);
+                       _("cfs_period '%llu' must be in range (%llu, %llu)"),
+                       cfs_period,
+                       VIR_CGROUP_CPU_PERIOD_MIN,
+                       VIR_CGROUP_CPU_PERIOD_MAX);
         return -1;
     }
 
@@ -1911,13 +1911,14 @@ static int
 virCgroupV1SetCpuCfsQuota(virCgroupPtr group,
                           long long cfs_quota)
 {
-    /* The cfs_quota should be greater or equal than 1ms */
     if (cfs_quota >= 0 &&
-        (cfs_quota < 1000 ||
-         cfs_quota > ULLONG_MAX / 1000)) {
+        (cfs_quota < VIR_CGROUP_CPU_QUOTA_MIN ||
+         cfs_quota > VIR_CGROUP_CPU_QUOTA_MAX)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("cfs_quota '%lld' must be in range (1000, %llu)"),
-                       cfs_quota, ULLONG_MAX / 1000);
+                       _("cfs_quota '%lld' must be in range (%llu, %llu)"),
+                       cfs_quota,
+                       VIR_CGROUP_CPU_QUOTA_MIN,
+                       VIR_CGROUP_CPU_QUOTA_MAX);
         return -1;
     }
 
