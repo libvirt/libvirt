@@ -189,9 +189,21 @@ virEventGLibHandleFind(int watch)
  * If the last reference to a GSource is released in a non-main
  * thread we're exposed to a race condition that causes a
  * crash:
- * https://gitlab.gnome.org/GNOME/glib/-/merge_requests/1358
- * Thus we're using an idle func to release our ref
+ *
+ *    https://gitlab.gnome.org/GNOME/glib/-/merge_requests/1358
+ *
+ * Thus we're using an idle func to release our ref...
+ *
+ * ...but this imposes a significant performance penalty on
+ * I/O intensive workloads which are sensitive to the iterations
+ * of the event loop, so avoid the workaround if we know we have
+ * new enough glib.
  */
+#if GLIB_CHECK_VERSION(2, 64, 0)
+# define g_vir_source_unref_safe(source) g_source_unref(source)
+#else
+# define g_vir_source_unref_safe(source) g_idle_add(virEventGLibSourceUnrefIdle, source)
+
 static gboolean
 virEventGLibSourceUnrefIdle(gpointer data)
 {
@@ -201,6 +213,7 @@ virEventGLibSourceUnrefIdle(gpointer data)
 
     return FALSE;
 }
+#endif
 
 
 static void
@@ -231,7 +244,7 @@ virEventGLibHandleUpdate(int watch,
         if (data->source != NULL) {
             VIR_DEBUG("Removed old handle source=%p", data->source);
             g_source_destroy(data->source);
-            g_idle_add(virEventGLibSourceUnrefIdle, data->source);
+            g_vir_source_unref_safe(data->source);
         }
 
         data->source = virEventGLibAddSocketWatch(
@@ -245,7 +258,7 @@ virEventGLibHandleUpdate(int watch,
 
         VIR_DEBUG("Removed old handle source=%p", data->source);
         g_source_destroy(data->source);
-        g_idle_add(virEventGLibSourceUnrefIdle, data->source);
+        g_vir_source_unref_safe(data->source);
         data->source = NULL;
         data->events = 0;
     }
@@ -294,7 +307,7 @@ virEventGLibHandleRemove(int watch)
 
     if (data->source != NULL) {
         g_source_destroy(data->source);
-        g_idle_add(virEventGLibSourceUnrefIdle, data->source);
+        g_vir_source_unref_safe(data->source);
         data->source = NULL;
         data->events = 0;
     }
@@ -427,7 +440,7 @@ virEventGLibTimeoutUpdate(int timer,
     if (interval >= 0) {
         if (data->source != NULL) {
             g_source_destroy(data->source);
-            g_idle_add(virEventGLibSourceUnrefIdle, data->source);
+            g_vir_source_unref_safe(data->source);
         }
 
         data->interval = interval;
@@ -437,7 +450,7 @@ virEventGLibTimeoutUpdate(int timer,
             goto cleanup;
 
         g_source_destroy(data->source);
-        g_idle_add(virEventGLibSourceUnrefIdle, data->source);
+        g_vir_source_unref_safe(data->source);
         data->source = NULL;
     }
 
@@ -486,7 +499,7 @@ virEventGLibTimeoutRemove(int timer)
 
     if (data->source != NULL) {
         g_source_destroy(data->source);
-        g_idle_add(virEventGLibSourceUnrefIdle, data->source);
+        g_vir_source_unref_safe(data->source);
         data->source = NULL;
     }
 
