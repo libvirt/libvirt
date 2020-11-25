@@ -16101,6 +16101,12 @@ virDomainDiskIndexByAddress(virDomainDefPtr def,
     if ((cidx = virDomainControllerFindByPCIAddress(def, pci_address)) >= 0)
         controller = def->controllers[cidx];
 
+    if (!controller && ccw_addr) {
+        cidx = virDomainControllerFindByCCWAddress(def, ccw_addr);
+        if (cidx >= 0)
+            controller = def->controllers[cidx];
+    }
+
     for (i = 0; i < def->ndisks; i++) {
         vdisk = def->disks[i];
         if (vdisk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
@@ -16728,6 +16734,23 @@ virDomainControllerFindByType(virDomainDefPtr def,
 
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type == type)
+            return i;
+    }
+
+    return -1;
+}
+
+int
+virDomainControllerFindByCCWAddress(virDomainDefPtr def,
+                                    virDomainDeviceCCWAddressPtr addr)
+{
+    size_t i;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        virDomainDeviceInfoPtr info = &def->controllers[i]->info;
+
+        if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
+            virDomainDeviceCCWAddressEqual(&info->addr.ccw, addr))
             return i;
     }
 

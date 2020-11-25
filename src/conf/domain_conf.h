@@ -3464,6 +3464,8 @@ void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
                                          virDomainControllerDefPtr controller);
 int virDomainControllerFind(const virDomainDef *def, int type, int idx);
 int virDomainControllerFindByType(virDomainDefPtr def, int type);
+int virDomainControllerFindByCCWAddress(virDomainDefPtr def,
+                                        virDomainDeviceCCWAddressPtr addr);
 int virDomainControllerFindByPCIAddress(virDomainDefPtr def,
                                         virPCIDeviceAddressPtr addr);
 int virDomainControllerFindUnusedIndex(virDomainDef const *def, int type);
