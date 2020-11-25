@@ -1482,12 +1482,12 @@ virCgroupV2SetCpuCfsPeriod(virCgroupPtr group,
     g_autofree char *str = NULL;
     char *tmp;
 
-    /* The cfs_period should be greater or equal than 1ms, and less or equal
-     * than 1s.
-     */
-    if (cfs_period < 1000 || cfs_period > 1000000) {
+    if (cfs_period < VIR_CGROUP_CPU_PERIOD_MIN ||
+        cfs_period > VIR_CGROUP_CPU_PERIOD_MAX) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("cfs_period '%llu' must be in range (1000, 1000000)"),
+                       _("cfs_period '%llu' must be in range (%llu, %llu)"),
+                       VIR_CGROUP_CPU_PERIOD_MIN,
+                       VIR_CGROUP_CPU_PERIOD_MAX,
                        cfs_period);
         return -1;
     }
@@ -1543,17 +1543,18 @@ static int
 virCgroupV2SetCpuCfsQuota(virCgroupPtr group,
                           long long cfs_quota)
 {
-    /* The cfs_quota should be greater or equal than 1ms */
     if (cfs_quota >= 0 &&
-        (cfs_quota < 1000 ||
-         cfs_quota > ULLONG_MAX / 1000)) {
+        (cfs_quota < VIR_CGROUP_CPU_QUOTA_MIN ||
+         cfs_quota > VIR_CGROUP_CPU_QUOTA_MAX)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("cfs_quota '%lld' must be in range (1000, %llu)"),
-                       cfs_quota, ULLONG_MAX / 1000);
+                       _("cfs_quota '%lld' must be in range (%llu, %llu)"),
+                       cfs_quota,
+                       VIR_CGROUP_CPU_QUOTA_MIN,
+                       VIR_CGROUP_CPU_QUOTA_MAX);
         return -1;
     }
 
-    if (cfs_quota == ULLONG_MAX / 1000) {
+    if (cfs_quota == VIR_CGROUP_CPU_QUOTA_MAX) {
         return virCgroupSetValueStr(group,
                                     VIR_CGROUP_CONTROLLER_CPU,
                                     "cpu.max", "max");
@@ -1578,7 +1579,7 @@ virCgroupV2GetCpuCfsQuota(virCgroupPtr group,
     }
 
     if (STREQLEN(str, "max", 3)) {
-        *cfs_quota = ULLONG_MAX / 1000;
+        *cfs_quota = VIR_CGROUP_CPU_QUOTA_MAX;
         return 0;
     }
 
