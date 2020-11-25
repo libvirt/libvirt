@@ -1,0 +1,153 @@
+projects:
+  - libvirt
+
+gitlab:
+  namespace: libvirt
+  project: libvirt
+
+targets:
+  centos-8:
+    jobs:
+      - arch: x86_64
+        variables:
+          RPM: skip
+
+      - arch: x86_64
+        suffix: -clang
+        variables:
+          RPM: skip
+          CC: clang
+
+  centos-stream-8:
+    jobs:
+      - arch: x86_64
+        variables:
+          RPM: skip
+
+  debian-10:
+    jobs:
+      - arch: x86_64
+
+      - arch: x86_64
+        suffix: -clang
+
+      - arch: aarch64
+        allow-failure: true
+        builds: false
+
+      - arch: armv6l
+
+      - arch: armv7l
+
+      - arch: i686
+        allow-failure: true
+        builds: false
+
+      - arch: mips
+
+      - arch: mips64el
+        allow-failure: true
+        builds: false
+
+      - arch: mipsel
+
+      - arch: ppc64le
+
+      - arch: s390x
+        allow-failure: true
+        builds: false
+
+  debian-sid:
+    jobs:
+      - arch: x86_64
+
+      - arch: aarch64
+
+      - arch: armv6l
+        allow-failure: true
+        builds: false
+
+      - arch: armv7l
+        allow-failure: true
+        builds: false
+
+      - arch: i686
+
+      - arch: mips64el
+
+      - arch: mipsel
+        allow-failure: true
+        builds: false
+
+      - arch: ppc64le
+        allow-failure: true
+        builds: false
+
+      - arch: s390x
+
+  fedora-33: x86_64
+
+  fedora-34: x86_64
+
+  fedora-rawhide:
+    jobs:
+      - arch: x86_64
+        allow-failure: true
+
+      - arch: x86_64
+        suffix: -clang
+        allow-failure: true
+        variables:
+          CC: clang
+          RPM: skip
+
+      - arch: mingw32
+        allow-failure: true
+
+      - arch: mingw64
+        allow-failure: true
+
+  freebsd-12: x86_64
+
+  freebsd-13: x86_64
+
+  freebsd-current:
+    jobs:
+      - arch: x86_64
+        builds: False
+
+  opensuse-leap-152:
+    jobs:
+      - arch: x86_64
+        variables:
+          RPM: skip
+
+  opensuse-tumbleweed:
+    jobs:
+      - arch: x86_64
+        variables:
+          RPM: skip
+
+  macos-11:
+    jobs:
+      - arch: x86_64
+        variables:
+          PATH_EXTRA: /usr/local/opt/ccache/libexec:/usr/local/opt/gettext/bin:/usr/local/opt/libpcap/bin:/usr/local/opt/libxslt/bin:/usr/local/opt/rpcgen/bin
+          PKG_CONFIG_PATH: /usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libpcap/lib/pkgconfig:/usr/local/opt/libxml2/lib/pkgconfig:/usr/local/opt/ncurses/lib/pkgconfig:/usr/local/opt/readline/lib/pkgconfig
+
+  ubuntu-1804: x86_64
+
+  ubuntu-2004:
+    jobs:
+      - arch: x86_64
+        variables:
+          ASAN_OPTIONS: verify_asan_link_order=0
+          MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+
+      - arch: x86_64
+        suffix: -clang
+        variables:
+          CC: clang
+          MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
