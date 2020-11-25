@@ -126,11 +126,6 @@ VIR_LOG_INIT("qemu.qemu_driver");
 
 #define QEMU_NB_NUMA_PARAM 2
 
-#define QEMU_SCHED_MIN_PERIOD              1000LL
-#define QEMU_SCHED_MAX_PERIOD           1000000LL
-#define QEMU_SCHED_MIN_QUOTA               1000LL
-#define QEMU_SCHED_MAX_QUOTA  18446744073709551LL
-
 #define QEMU_GUEST_VCPU_MAX_ID 4096
 
 #define QEMU_NB_BLKIO_PARAM  6
@@ -9364,7 +9359,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_PERIOD)) {
             SCHED_RANGE_CHECK(value_ul, VIR_DOMAIN_SCHEDULER_VCPU_PERIOD,
-                              QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
+                              VIR_CGROUP_CPU_PERIOD_MIN, VIR_CGROUP_CPU_PERIOD_MAX);
 
             if (def && value_ul) {
                 if ((rc = qemuSetVcpusBWLive(vm, priv->cgroup, value_ul, 0)))
@@ -9384,7 +9379,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA)) {
             SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA,
-                              QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
+                              VIR_CGROUP_CPU_QUOTA_MIN, VIR_CGROUP_CPU_QUOTA_MAX);
 
             if (def && value_l) {
                 if ((rc = qemuSetVcpusBWLive(vm, priv->cgroup, 0, value_l)))
@@ -9404,7 +9399,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD)) {
             SCHED_RANGE_CHECK(value_ul, VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD,
-                              QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
+                              VIR_CGROUP_CPU_PERIOD_MIN, VIR_CGROUP_CPU_PERIOD_MAX);
 
             if (def && value_ul) {
                 if ((rc = qemuSetGlobalBWLive(priv->cgroup, value_ul, 0)))
@@ -9424,7 +9419,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA)) {
             SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA,
-                              QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
+                              VIR_CGROUP_CPU_QUOTA_MIN, VIR_CGROUP_CPU_QUOTA_MAX);
 
             if (def && value_l) {
                 if ((rc = qemuSetGlobalBWLive(priv->cgroup, 0, value_l)))
@@ -9444,7 +9439,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD)) {
             SCHED_RANGE_CHECK(value_ul, VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD,
-                              QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
+                              VIR_CGROUP_CPU_PERIOD_MIN, VIR_CGROUP_CPU_PERIOD_MAX);
 
             if (def && value_ul) {
                 if ((rc = qemuSetEmulatorBandwidthLive(priv->cgroup,
@@ -9465,7 +9460,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA)) {
             SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA,
-                              QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
+                              VIR_CGROUP_CPU_QUOTA_MIN, VIR_CGROUP_CPU_QUOTA_MAX);
 
             if (def && value_l) {
                 if ((rc = qemuSetEmulatorBandwidthLive(priv->cgroup,
@@ -9486,7 +9481,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_IOTHREAD_PERIOD)) {
             SCHED_RANGE_CHECK(value_ul, VIR_DOMAIN_SCHEDULER_IOTHREAD_PERIOD,
-                              QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
+                              VIR_CGROUP_CPU_PERIOD_MIN, VIR_CGROUP_CPU_PERIOD_MAX);
 
             if (def && value_ul) {
                 if ((rc = qemuSetIOThreadsBWLive(vm, priv->cgroup, value_ul, 0)))
@@ -9506,7 +9501,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_IOTHREAD_QUOTA)) {
             SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_IOTHREAD_QUOTA,
-                              QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
+                              VIR_CGROUP_CPU_QUOTA_MIN, VIR_CGROUP_CPU_QUOTA_MAX);
 
             if (def && value_l) {
                 if ((rc = qemuSetIOThreadsBWLive(vm, priv->cgroup, 0, value_l)))

@@ -230,6 +230,11 @@ int virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares);
 int virCgroupSetupCpuShares(virCgroupPtr cgroup, unsigned long long shares,
                             unsigned long long *realValue);
 
+#define VIR_CGROUP_CPU_PERIOD_MIN 1000LL
+#define VIR_CGROUP_CPU_PERIOD_MAX 1000000LL
+#define VIR_CGROUP_CPU_QUOTA_MIN 1000LL
+#define VIR_CGROUP_CPU_QUOTA_MAX 18446744073709551LL
+
 int virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period);
 int virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period);
 int virCgroupGetCpuPeriodQuota(virCgroupPtr cgroup, unsigned long long *period,
