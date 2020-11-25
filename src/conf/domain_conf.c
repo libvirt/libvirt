@@ -16089,6 +16089,7 @@ virDomainDiskControllerMatch(int controller_type, int disk_bus)
 int
 virDomainDiskIndexByAddress(virDomainDefPtr def,
                             virPCIDeviceAddressPtr pci_address,
+                            virDomainDeviceCCWAddressPtr ccw_addr,
                             unsigned int bus, unsigned int target,
                             unsigned int unit)
 {
@@ -16105,6 +16106,11 @@ virDomainDiskIndexByAddress(virDomainDefPtr def,
         if (vdisk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
             virPCIDeviceAddressEqual(&vdisk->info.addr.pci, pci_address))
             return i;
+        if (vdisk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
+            ccw_addr &&
+            virDomainDeviceCCWAddressEqual(&vdisk->info.addr.ccw, ccw_addr)) {
+            return i;
+        }
         if (vdisk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
             virDomainDeviceDriveAddressPtr drive = &vdisk->info.addr.drive;
             if (controller &&
@@ -16121,11 +16127,13 @@ virDomainDiskIndexByAddress(virDomainDefPtr def,
 virDomainDiskDefPtr
 virDomainDiskByAddress(virDomainDefPtr def,
                        virPCIDeviceAddressPtr pci_address,
+                       virDomainDeviceCCWAddressPtr ccw_addr,
                        unsigned int bus,
                        unsigned int target,
                        unsigned int unit)
 {
-    int idx = virDomainDiskIndexByAddress(def, pci_address, bus, target, unit);
+    int idx = virDomainDiskIndexByAddress(def, pci_address, ccw_addr,
+                                          bus, target, unit);
     return idx < 0 ? NULL : def->disks[idx];
 }
 

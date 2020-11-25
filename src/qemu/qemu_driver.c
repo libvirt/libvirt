@@ -18887,15 +18887,15 @@ qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent,
 
         diskDef = virDomainDiskByAddress(vmdef,
                                          &agentdisk->pci_controller,
+                                         agentdisk->has_ccw_address ?
+                                             &agentdisk->ccw_addr : NULL,
                                          agentdisk->bus,
                                          agentdisk->target,
                                          agentdisk->unit);
         if (diskDef != NULL)
             ret->devAlias[i] = g_strdup(diskDef->dst);
-        else if (agentdisk->devnode != NULL)
-            ret->devAlias[i] = g_strdup(agentdisk->devnode);
         else
-            VIR_DEBUG("Missing devnode name for '%s'.", ret->mountpoint);
+            VIR_DEBUG("Missing target name for '%s'.", ret->mountpoint);
     }
 
     return ret;
@@ -19931,6 +19931,8 @@ qemuAgentDiskInfoFormatParams(qemuAgentDiskInfoPtr *info,
             /* match the disk to the target in the vm definition */
             diskdef = virDomainDiskByAddress(vmdef,
                                              &info[i]->address->pci_controller,
+                                             info[i]->address->has_ccw_address ?
+                                                &info[i]->address->ccw_addr : NULL,
                                              info[i]->address->bus,
                                              info[i]->address->target,
                                              info[i]->address->unit);
@@ -20015,6 +20017,8 @@ qemuAgentFSInfoFormatParams(qemuAgentFSInfoPtr *fsinfo,
             /* match the disk to the target in the vm definition */
             diskdef = virDomainDiskByAddress(vmdef,
                                              &d->pci_controller,
+                                             d->has_ccw_address ?
+                                                 &d->ccw_addr : NULL,
                                              d->bus,
                                              d->target,
                                              d->unit);
