@@ -24204,6 +24204,12 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDefPtr src,
                              "source NVDIMM readonly flag"));
             return false;
         }
+
+        if (memcmp(src->uuid, dst->uuid, VIR_UUID_BUFLEN) != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Target NVDIMM UUID doesn't match source NVDIMM"));
+            return false;
+        }
     }
 
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
