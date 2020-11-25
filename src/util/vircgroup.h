@@ -233,7 +233,9 @@ int virCgroupSetupCpuShares(virCgroupPtr cgroup, unsigned long long shares,
 #define VIR_CGROUP_CPU_PERIOD_MIN 1000LL
 #define VIR_CGROUP_CPU_PERIOD_MAX 1000000LL
 #define VIR_CGROUP_CPU_QUOTA_MIN 1000LL
-#define VIR_CGROUP_CPU_QUOTA_MAX 18446744073709551LL
+/* Based on kernel code ((1ULL << MAX_BW_BITS) - 1) where MAX_BW_BITS is
+ * (64 - BW_SHIFT) and BW_SHIFT is 20 */
+#define VIR_CGROUP_CPU_QUOTA_MAX 17592186044415LL
 
 int virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period);
 int virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period);
