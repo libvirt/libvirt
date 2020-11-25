@@ -1385,10 +1385,13 @@ int qemuMonitorSetIOThread(qemuMonitor *mon,
 
 typedef struct _qemuMonitorMemoryDeviceInfo qemuMonitorMemoryDeviceInfo;
 struct _qemuMonitorMemoryDeviceInfo {
+    /* For pc-dimm */
     unsigned long long address;
     unsigned int slot;
     bool hotplugged;
     bool hotpluggable;
+    /* For virtio-mem */
+    unsigned long long size; /* in bytes */
 };
 
 int qemuMonitorGetMemoryDeviceInfo(qemuMonitor *mon,

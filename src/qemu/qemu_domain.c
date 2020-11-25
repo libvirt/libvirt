@@ -8212,9 +8212,23 @@ qemuDomainUpdateMemoryDeviceInfo(virQEMUDriver *driver,
         if (!(dimm = virHashLookup(meminfo, mem->info.alias)))
             continue;
 
-        mem->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM;
-        mem->info.addr.dimm.slot = dimm->slot;
-        mem->info.addr.dimm.base = dimm->address;
+        switch (mem->model) {
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+            mem->currentsize = VIR_DIV_UP(dimm->size, 1024);
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+            mem->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM;
+            mem->info.addr.dimm.slot = dimm->slot;
+            mem->info.addr.dimm.base = dimm->address;
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
+            break;
+        }
     }
 
     virHashFree(meminfo);

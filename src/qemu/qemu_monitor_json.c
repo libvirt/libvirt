@@ -7978,7 +7978,6 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
     virJSONValue *cmd;
     virJSONValue *reply = NULL;
     virJSONValue *data = NULL;
-    qemuMonitorMemoryDeviceInfo *meminfo = NULL;
     size_t i;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-memory-devices", NULL)))
@@ -7999,6 +7998,9 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
 
     for (i = 0; i < virJSONValueArraySize(data); i++) {
         virJSONValue *elem = virJSONValueArrayGet(data, i);
+        g_autofree qemuMonitorMemoryDeviceInfo *meminfo = NULL;
+        virJSONValue *dimminfo;
+        const char *devalias;
         const char *type;
 
         if (!(type = virJSONValueObjectGetString(elem, "type"))) {
@@ -8008,26 +8010,26 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
             goto cleanup;
         }
 
+        if (!(dimminfo = virJSONValueObjectGetObject(elem, "data"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-memory-devices reply data doesn't "
+                             "contain enum data"));
+            goto cleanup;
+        }
+
+        /* While 'id' attribute is marked as optional in QEMU's QAPI
+         * specification, Libvirt always sets it. Thus we can fail if not
+         * present. */
+        if (!(devalias = virJSONValueObjectGetString(dimminfo, "id"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("dimm memory info data is missing 'id'"));
+            goto cleanup;
+        }
+
+        meminfo = g_new0(qemuMonitorMemoryDeviceInfo, 1);
+
         /* dimm memory devices */
         if (STREQ(type, "dimm")) {
-            virJSONValue *dimminfo;
-            const char *devalias;
-
-            if (!(dimminfo = virJSONValueObjectGetObject(elem, "data"))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("query-memory-devices reply data doesn't "
-                                 "contain enum data"));
-                goto cleanup;
-            }
-
-            if (!(devalias = virJSONValueObjectGetString(dimminfo, "id"))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("dimm memory info data is missing 'id'"));
-                goto cleanup;
-            }
-
-            meminfo = g_new0(qemuMonitorMemoryDeviceInfo, 1);
-
             if (virJSONValueObjectGetNumberUlong(dimminfo, "addr",
                                                  &meminfo->address) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -8058,17 +8060,27 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
 
             }
 
-            if (virHashAddEntry(info, devalias, meminfo) < 0)
+        } else if (STREQ(type, "virtio-mem")) {
+            if (virJSONValueObjectGetNumberUlong(dimminfo, "size",
+                                                 &meminfo->size) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("malformed/missing size in virtio memory info"));
                 goto cleanup;
-
-            meminfo = NULL;
+            }
+        } else {
+            /* type not handled yet */
+            continue;
         }
+
+        if (virHashAddEntry(info, devalias, meminfo) < 0)
+            goto cleanup;
+
+        meminfo = NULL;
     }
 
     ret = 0;
 
  cleanup:
-    VIR_FREE(meminfo);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
