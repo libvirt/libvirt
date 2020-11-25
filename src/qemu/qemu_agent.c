@@ -1866,6 +1866,7 @@ static qemuAgentDiskAddressPtr
 qemuAgentGetDiskAddress(virJSONValuePtr json)
 {
     virJSONValuePtr pci;
+    virJSONValuePtr ccw;
     g_autoptr(qemuAgentDiskAddress) addr = NULL;
 
     addr = g_new0(qemuAgentDiskAddress, 1);
@@ -1896,6 +1897,15 @@ qemuAgentGetDiskAddress(virJSONValuePtr json)
     GET_DISK_ADDR(pci, &addr->pci_controller.bus, "bus");
     GET_DISK_ADDR(pci, &addr->pci_controller.slot, "slot");
     GET_DISK_ADDR(pci, &addr->pci_controller.function, "function");
+
+    if ((ccw = virJSONValueObjectGet(json, "ccw-address"))) {
+        addr->has_ccw_address = true;
+        GET_DISK_ADDR(ccw, &addr->ccw_addr.cssid, "cssid");
+        if (addr->ccw_addr.cssid == 0)  /* Guest CSSID 0 is 0xfe on host */
+            addr->ccw_addr.cssid = 0xfe;
+        GET_DISK_ADDR(ccw, &addr->ccw_addr.ssid, "ssid");
+        GET_DISK_ADDR(ccw, &addr->ccw_addr.devno, "devno");
+    }
 #undef GET_DISK_ADDR
 
     return g_steal_pointer(&addr);
