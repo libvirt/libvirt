@@ -9870,9 +9870,11 @@ static int
 qemuBuildSEVCommandLine(virDomainObjPtr vm, virCommandPtr cmd,
                         virDomainSEVDefPtr sev)
 {
+    g_autoptr(virJSONValue) props = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *path = NULL;
+    g_autofree char *dhpath = NULL;
+    g_autofree char *sessionpath = NULL;
 
     if (!sev)
         return 0;
@@ -9880,21 +9882,23 @@ qemuBuildSEVCommandLine(virDomainObjPtr vm, virCommandPtr cmd,
     VIR_DEBUG("policy=0x%x cbitpos=%d reduced_phys_bits=%d",
               sev->policy, sev->cbitpos, sev->reduced_phys_bits);
 
-    virBufferAsprintf(&buf, "sev-guest,id=sev0,cbitpos=%d", sev->cbitpos);
-    virBufferAsprintf(&buf, ",reduced-phys-bits=%d", sev->reduced_phys_bits);
-    virBufferAsprintf(&buf, ",policy=0x%x", sev->policy);
+    if (sev->dh_cert)
+        dhpath = g_strdup_printf("%s/dh_cert.base64", priv->libDir);
 
-    if (sev->dh_cert) {
-        path = g_strdup_printf("%s/dh_cert.base64", priv->libDir);
-        virBufferAsprintf(&buf, ",dh-cert-file=%s", path);
-        VIR_FREE(path);
-    }
+    if (sev->session)
+        sessionpath = g_strdup_printf("%s/session.base64", priv->libDir);
 
-    if (sev->session) {
-        path = g_strdup_printf("%s/session.base64", priv->libDir);
-        virBufferAsprintf(&buf, ",session-file=%s", path);
-        VIR_FREE(path);
-    }
+    if (qemuMonitorCreateObjectProps(&props, "sev-guest", "sev0",
+                                     "u:cbitpos", sev->cbitpos,
+                                     "u:reduced-phys-bits", sev->reduced_phys_bits,
+                                     "u:policy", sev->policy,
+                                     "S:dh-cert-file", dhpath,
+                                     "S:session-file", sessionpath,
+                                     NULL) < 0)
+        return -1;
+
+    if (virQEMUBuildObjectCommandlineFromJSON(&buf, props) < 0)
+        return -1;
 
     virCommandAddArg(cmd, "-object");
     virCommandAddArgBuffer(cmd, &buf);

@@ -29,7 +29,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--object sev-guest,id=sev0,cbitpos=47,reduced-phys-bits=1,policy=0x1,\
+-object sev-guest,id=sev0,cbitpos=47,reduced-phys-bits=1,policy=1,\
 dh-cert-file=/tmp/lib/domain--1-QEMUGuest1/dh_cert.base64,\
 session-file=/tmp/lib/domain--1-QEMUGuest1/session.base64 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
