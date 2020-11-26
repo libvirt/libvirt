@@ -7270,15 +7270,19 @@ qemuBuildIOThreadCommandLine(virCommandPtr cmd,
     if (def->niothreadids == 0)
         return 0;
 
-    /* Create iothread objects using the defined iothreadids list
-     * and the defined id and name from the list. These may be used
-     * by a disk definition which will associate to an iothread by
-     * supplying a value of an id from the list
-     */
     for (i = 0; i < def->niothreadids; i++) {
+        g_autoptr(virJSONValue) props = NULL;
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+        g_autofree char *alias = g_strdup_printf("iothread%u", def->iothreadids[i]->iothread_id);
+
+        if (qemuMonitorCreateObjectProps(&props, "iothread", alias, NULL) < 0)
+            return -1;
+
+        if (virQEMUBuildObjectCommandlineFromJSON(&buf, props) < 0)
+            return -1;
+
         virCommandAddArg(cmd, "-object");
-        virCommandAddArgFormat(cmd, "iothread,id=iothread%u",
-                               def->iothreadids[i]->iothread_id);
+        virCommandAddArgBuffer(cmd, &buf);
     }
 
     return 0;
