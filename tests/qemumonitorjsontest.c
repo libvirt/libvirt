@@ -2740,20 +2740,6 @@ testQAPISchemaObjectDeviceAdd(const void *opaque)
         return -1;
     }
 
-    if (virQEMUQAPISchemaPathGet("object-add/arg-type", schema, &entry) < 0) {
-        fprintf(stderr, "schema for 'objectadd' not found\n");
-        return -1;
-    }
-
-    if (testQEMUSchemaEntryMatchTemplate(entry,
-                                         "str:qom-type",
-                                         "str:id",
-                                         "any:props",
-                                         NULL) < 0) {
-        VIR_TEST_VERBOSE("object-add has unexpected members in schema");
-        return -1;
-    }
-
     return 0;
 }
 
