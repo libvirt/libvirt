@@ -210,6 +210,7 @@ qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
     g_autofree char *alias = NULL;
     g_autofree char *path = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
 
     /* If the -object secret does not exist, then just return. This just
      * means the domain won't be able to use a secret master key and is
@@ -231,9 +232,16 @@ qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
     if (!(path = qemuDomainGetMasterKeyFilePath(priv->libDir)))
         return -1;
 
+    if (qemuMonitorCreateObjectProps(&props, "secret", alias,
+                                     "s:format", "raw",
+                                     "s:file", path,
+                                     NULL) < 0)
+        return -1;
+
+    if (virQEMUBuildObjectCommandlineFromJSON(&buf, props) < 0)
+        return -1;
+
     virCommandAddArg(cmd, "-object");
-    virBufferAsprintf(&buf, "secret,id=%s,format=raw,file=", alias);
-    virQEMUBuildBufferEscapeComma(&buf, path);
     virCommandAddArgBuffer(cmd, &buf);
 
     return 0;
