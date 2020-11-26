@@ -42,6 +42,14 @@ v6.10.0 (unreleased)
 
 * **Improvements**
 
+  * virsh: Support network disks in ``virsh attach-disk``
+
+    The ``virsh attach-disk`` helper command which simplifies attaching of disks
+    without the need for the user to formulate the disk XML manually now
+    supports network-backed images. Users can specify the protocol and host
+    specification with new command line arguments. Please refer to the man
+    page of virsh for further information.
+
 * **Bug fixes**
 
   * remote: fixed performance regression in SSH tunnelling
