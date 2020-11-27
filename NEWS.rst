@@ -44,6 +44,13 @@ v6.10.0 (unreleased)
 
 * **Bug fixes**
 
+  * remote: fixed performance regression in SSH tunnelling
+
+    The ``virt-ssh-helper`` binary introduced in 6.8.0 had very
+    poor scalability which impacted libvirt tunnelled migration
+    and storage volume upload/download in particular. It has been
+    updated and now has performance on par with netcat.
+
 * **Removed features**
 
   * hyperv: removed support for the Hyper-V V1 WMI API
