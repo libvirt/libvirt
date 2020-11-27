@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-10-26 17:26+0000\n"
+"POT-Creation-Date: 2020-11-24 23:25+0000\n"
 "PO-Revision-Date: 2020-09-29 12:11+0000\n"
 "Last-Translator: Olesya Gerasimenko <gammaray@basealt.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -595,6 +595,10 @@ msgid "%s forwarding requested, but no IP address provided for network '%s'"
 msgstr "запрашивается перенаправление %s, но IP-адрес для сети «%s» не задан"
 
 #, c-format
+msgid "%s graphics are not supported with this QEMU"
+msgstr ""
+
+#, c-format
 msgid "%s harddisk '%s' has unsupported cache mode '%s'"
 msgstr "Недопустимый режим кэширования для диска %s «%s»: «%s»"
 
@@ -683,6 +687,10 @@ msgstr "модуль %s не загружен, "
 #, c-format
 msgid "%s namespace is not available"
 msgstr "пространство имён %s недоступно"
+
+#, c-format
+msgid "%s not available, firewall backend will not function"
+msgstr ""
 
 #, c-format
 msgid "%s not found in %s"
@@ -1641,6 +1649,9 @@ msgstr "--max-unauth-clients должно быть меньше или равн�
 msgid "--min-workers must be less than or equal to --max-workers"
 msgstr "--min-workers должно быть меньше или равно --max-workers"
 
+msgid "--source-protocol option requires --sourcetype network"
+msgstr ""
+
 msgid ""
 "--verbose requires at least one of --timeout, --wait, --pivot, or --finish"
 msgstr ""
@@ -1928,6 +1939,11 @@ msgid "AnyType is missing 'type' property"
 msgstr "Отсутствует свойство «type» для AnyType"
 
 msgid ""
+"Append, reset or remove specified key from the authorized keys file for "
+"given user"
+msgstr ""
+
+msgid ""
 "Argument 'cellid' in memnode element must correspond to existing guest's "
 "NUMA cell"
 msgstr ""
@@ -2106,9 +2122,6 @@ msgstr "Резервное копирование началось\n"
 #, c-format
 msgid "Bad $%s value."
 msgstr "Неверное значение $%s."
-
-msgid "Bad child elements counting."
-msgstr "Ошибочное количество дочерних элементов."
 
 #, c-format
 msgid "Bad ipv4 end address '%s' in <nat> in <forward> in network '%s'"
@@ -2383,6 +2396,10 @@ msgstr "Процессор «%s» не поддерживается гиперв
 #, c-format
 msgid "CPU model %s too long for destination"
 msgstr "Слишком длинная запись модели процессора %s для назначения"
+
+#, c-format
+msgid "CPU model '%s' not supported by hypervisor"
+msgstr ""
 
 msgid "CPU model:"
 msgstr "Модель процессора:"
@@ -2744,9 +2761,6 @@ msgstr "Невозможно изменить существующий набо�
 msgid "Cannot alter an existing nmem_nodes distances set for node: %zu"
 msgstr ""
 "Невозможно изменить существующий набор расстояний nmem_nodes для узла: %zu"
-
-msgid "Cannot assign SCSI host device address"
-msgstr "Не удалось назначить адрес устройства SCSI основной системы"
 
 msgid "Cannot attach disk until init PID is known"
 msgstr "Диск может быть подключен, только если известен PID init"
@@ -3776,6 +3790,10 @@ msgstr "XML-конфигурация контрольной точки %s не �
 msgid "Checkpoint %s edited.\n"
 msgstr "Контрольная точка %s изменена.\n"
 
+#, c-format
+msgid "Checkpoint '%s' for incremental backup of disk '%s' not found"
+msgstr ""
+
 msgid "Checkpoint Delete"
 msgstr "Удаление контрольной точки"
 
@@ -4078,6 +4096,9 @@ msgstr "Том %s не найден."
 msgid "Could not add CDATA to doc root"
 msgstr "Не удалось добавить CDATA к корневому элементу документа"
 
+msgid "Could not add IDE controller"
+msgstr ""
+
 msgid "Could not add attribute to XML node"
 msgstr "Не удалось добавить атрибут к узлу XML"
 
@@ -4093,6 +4114,12 @@ msgstr "Не удалось добавить дочерний узел к method
 
 msgid "Could not add child to XML node"
 msgstr "Не удалось добавить дочерний элемент к узлу XML"
+
+msgid "Could not allocate disk def"
+msgstr ""
+
+msgid "Could not allocate disk definition"
+msgstr ""
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -4265,6 +4292,9 @@ msgstr "HostVirtualSwitch с UUID «%s» не найден"
 msgid "Could not find HostVirtualSwitch with name '%s'"
 msgstr "HostVirtualSwitch «%s» не найден"
 
+msgid "Could not find Msvm_DiskDrive object"
+msgstr ""
+
 #, c-format
 msgid ""
 "Could not find PCI controller with index %u required for device at address %s"
@@ -4300,6 +4330,9 @@ msgstr ""
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
 msgstr "Не удалось найти вычислительный ресурс, заданный в  «%s»"
+
+msgid "Could not find controller for disk!"
+msgstr ""
 
 #, c-format
 msgid "Could not find datacenter specified in '%s'"
@@ -4657,11 +4690,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Could not look up memory setting data with virtual system instance ID '%s'"
-msgstr ""
-
-#, c-format
-msgid ""
 "Could not look up processor setting data with virtual system instance ID '%s'"
 msgstr ""
 
@@ -4670,7 +4698,9 @@ msgid "Could not look up processor(s) on '%s'"
 msgstr ""
 
 #, c-format
-msgid "Could not look up virtual system setting data with UUID '%s'"
+msgid ""
+"Could not look up resource allocation setting data with virtual system "
+"instance ID '%s'"
 msgstr ""
 
 #, c-format
@@ -4707,10 +4737,6 @@ msgstr "Не удалось найти элементы ответа pull"
 
 msgid "Could not lookup root snapshot list"
 msgstr "Не удалось выполнить поиск списка снимков root"
-
-#, c-format
-msgid "Could not match WMI class info for version %s"
-msgstr "Не удалось найти сведения о классах WMI для версии %s"
 
 #, c-format
 msgid "Could not migrate domain, migration task finished with an error: %s"
@@ -4774,6 +4800,9 @@ msgstr "Не удалось разобрать «bridge/stp_state» «%s» дл�
 msgid "Could not parse MTU value '%s'"
 msgstr "Не удалось обработать значение MTU «%s»"
 
+msgid "Could not parse SCSI controller"
+msgstr ""
+
 #, c-format
 msgid "Could not parse UUID from '%s'"
 msgstr "Не удалось извлечь UUID из «%s»"
@@ -4828,10 +4857,6 @@ msgid "Could not parse version from '%s'"
 msgstr ""
 
 #, c-format
-msgid "Could not press key %d"
-msgstr "Не удалось нажать клавишу %d"
-
-#, c-format
 msgid "Could not produce packed version number from '%s'"
 msgstr ""
 
@@ -4878,10 +4903,6 @@ msgstr "Не удалось прочитать информацию о типе"
 #, c-format
 msgid "Could not read typefile '%s'"
 msgstr "Не удалось прочитать файл типа «%s»"
-
-#, c-format
-msgid "Could not release key %s"
-msgstr "Не удалось отпустить клавишу %s"
 
 #, c-format
 msgid "Could not resume domain: %s"
@@ -4956,9 +4977,6 @@ msgstr "Не удалось задать UUID"
 msgid "Could not set disk quota"
 msgstr "Не удалось установить дисковую квоту"
 
-msgid "Could not set disk source"
-msgstr "Не удалось указать источник диска"
-
 #, c-format
 msgid ""
 "Could not set limit to %lld MHz, expecting positive value or -1 (unlimited)"
@@ -4969,9 +4987,6 @@ msgstr ""
 #, c-format
 msgid "Could not set max-memory to %lu kilobytes: %s"
 msgstr "Не удалось установить максимальный размер памяти в  %lu килобайт: %s"
-
-msgid "Could not set memory"
-msgstr "Не удалось задать памятm"
 
 msgid "Could not set memory size"
 msgstr "Не удалось задать размер памяти"
@@ -7648,6 +7663,10 @@ msgid "Failed to load snapshot: %s"
 msgstr "Не удалось загрузить снимок: %s"
 
 #, c-format
+msgid "Failed to locate parent device with ID '%s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to login: %s"
 msgstr "Не удалось войти: %s"
 
@@ -7858,6 +7877,10 @@ msgid "Failed to parse group '%s'"
 msgstr "Не удалось разобрать группу «%s»"
 
 #, c-format
+msgid "Failed to parse int '%s' from udev property '%s' on '%s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse interface index from '%s'"
 msgstr "Не удалось извлечь индекс интерфейса из «%s»"
 
@@ -7903,6 +7926,10 @@ msgstr "Не удалось разобрать цель «%s»"
 #, c-format
 msgid "Failed to parse uid and gid from '%s'"
 msgstr "Не удалось извлечь значения UID и GID из «%s»"
+
+#, c-format
+msgid "Failed to parse uint '%s' from udev property '%s' on '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse user '%s'"
@@ -8560,6 +8587,10 @@ msgstr "Не удалось удалить определение пула %s"
 
 msgid "Failed to unescape command line string"
 msgstr "Не удалось снять экранирование строки команды"
+
+#, c-format
+msgid "Failed to unlink '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to unmark domain %s as autostarted"
@@ -9625,6 +9656,10 @@ msgstr "Недопустимый атрибут «level» в элементе к
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr "Недопустимое значение «%s» атрибута «memAccess»"
 
+#, c-format
+msgid "Invalid 'removed' attribute for feature %s in model %s"
+msgstr ""
+
 msgid "Invalid 'target' attribute in NUMA interconnects"
 msgstr "Недопустимый атрибут «target» в межсоединениях NUMA"
 
@@ -9977,6 +10012,9 @@ msgstr "Недопустимый контекст"
 #, c-format
 msgid "Invalid controller id '%d'"
 msgstr "Недопустимый идентификатор контроллера «%d»"
+
+msgid "Invalid controller type for LUN"
+msgstr ""
 
 #, c-format
 msgid "Invalid cpuNum in %s"
@@ -12024,6 +12062,10 @@ msgid "Missing storage volume name for disk '%s'"
 msgstr "Отсутствует название тома для диска «%s»"
 
 #, c-format
+msgid "Missing udev property '%s' on '%s'"
+msgstr ""
+
+#, c-format
 msgid "Missing vendor string for CPU vendor %s"
 msgstr "Отсутствует строка производителя процессора %s"
 
@@ -12133,6 +12175,9 @@ msgstr "нет"
 
 msgid "NBD migration with TLS is not supported"
 msgstr "Миграция NBD с помощью TLS не поддерживается"
+
+msgid "NBD migration with TLS is not supported over UNIX socket"
+msgstr ""
 
 msgid "NIC model 'e1000' is not supported by given bhyve binary"
 msgstr "Указанный исполняемый файл bhyve не поддерживает модель NIC «e1000»"
@@ -12967,6 +13012,10 @@ msgstr ""
 "количество: %d"
 
 #, c-format
+msgid "Number of keys %d, which exceeds max liit: %d"
+msgstr ""
+
+#, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
 msgstr ""
 "Количество аренд составляет %d, что превышает максимальное допустимое "
@@ -13255,6 +13304,9 @@ msgstr ""
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr "Параметр --%s требуется для работы параметра --%s"
+
+msgid "Option --file is required"
+msgstr ""
 
 msgid "Option argument is empty"
 msgstr "Аргумент параметра пуст"
@@ -14119,11 +14171,10 @@ msgstr "Заменить существующий файл состояния д
 
 #, c-format
 msgid ""
-"Requested TSC frequency %llu Hz does not match host (%llu Hz) and TSC "
-"scaling is not supported by the host CPU"
+"Requested TSC frequency %llu Hz is outside tolerance range ([%llu, %llu] Hz) "
+"around host frequency %llu Hz and TSC scaling is not supported by the host "
+"CPU"
 msgstr ""
-"Запрошенная частота TSC %llu Гц не соответствует частоте основной системы "
-"(%llu Гц), а процессор основной системы не поддерживает масштабирование TSC"
 
 #, c-format
 msgid "Requested data len %llu is larger than maximum %d"
@@ -15586,8 +15637,8 @@ msgid "Target TPM version doesn't match source"
 msgstr "Версия TPM не соответствует исходной"
 
 #, c-format
-msgid "Target TSC frequency %lu does not match source %lu"
-msgstr "%lu не соответствует исходной частоте TSC (%lu)"
+msgid "Target TSC frequency %llu does not match source %llu"
+msgstr ""
 
 #, c-format
 msgid "Target TSC mode %s does not match source %s"
@@ -16297,9 +16348,6 @@ msgstr "Исполняемый файл QEMU %s не поддерживает т
 msgid "The QEMU executable %s does not support TPM model %s"
 msgstr "Исполняемый файл QEMU %s не поддерживает модель TPM %s"
 
-msgid "The WMI class info list is empty"
-msgstr "Список сведений о классах WMI пуст"
-
 msgid "The XML configuration was changed by another user."
 msgstr "XML-конфигурация была изменена другим пользователем."
 
@@ -16512,6 +16560,12 @@ msgstr "Этот QEMU не поддерживает rendernode OpenGL в spice"
 msgid "This QEMU doesn't support target greater than 7"
 msgstr "Значение «target» не может быть больше 7"
 
+msgid "This QEMU doesn't support the AM53C974 (ESP) controller"
+msgstr ""
+
+msgid "This QEMU doesn't support the DC390 (ESP) controller"
+msgstr ""
+
 msgid "This QEMU doesn't support the LSI 53C895A SCSI controller"
 msgstr "QEMU не поддерживает контроллер SCSI LSI 53C895A"
 
@@ -16520,6 +16574,9 @@ msgstr "Этот QEMU не поддерживает контроллер LSI SAS
 
 msgid "This QEMU doesn't support the LSI SAS1078 (MegaRAID) controller"
 msgstr "Этот QEMU не поддерживает контроллер LSI SAS1078 (MegaRAID)"
+
+msgid "This QEMU doesn't support the NCR53C90 (ESP) controller"
+msgstr ""
 
 msgid ""
 "This QEMU doesn't support the pvscsi (VMware paravirtual SCSI) controller"
@@ -19513,6 +19570,10 @@ msgstr "Неизвестный тип прокси «%s»"
 msgid "Unpaused"
 msgstr "Возобновлён"
 
+#, c-format
+msgid "Unrecognized controller type %d"
+msgstr ""
+
 msgid "Unrecognized disk label found, requires build"
 msgstr "Обнаружена неопознанная метка диска, требуется команда build"
 
@@ -19925,6 +19986,9 @@ msgid ""
 msgstr ""
 "Для использования атрибутов «wwnn», «wwpn» и «parent» необходимо "
 "использовать адаптер «type»"
+
+msgid "Use the guest agent to query authorized SSH keys for given user"
+msgstr ""
 
 msgid ""
 "Use the guest agent to query or set cpu state from guest's point of view"
@@ -20542,6 +20606,14 @@ msgstr "после восстановления изменить состоян�
 msgid "algorithm=%d is not supported"
 msgstr "алгоритм=%d не поддерживается"
 
+#, c-format
+msgid "alias '%s' of command '%s' has mismatched alias type"
+msgstr ""
+
+#, c-format
+msgid "alias '%s' of command '%s' has missing alias option"
+msgstr ""
+
 msgid "all CPU models are accepted"
 msgstr "принимаются все модели процессоров"
 
@@ -20670,6 +20742,9 @@ msgstr "ответ guest-get-users не содержит элемент масс
 
 msgid "array element missing in guest-get-vcpus return value"
 msgstr "ответ guest-get-vcpus не содержит элемент массива"
+
+msgid "array element missing in guest-ssh-get-authorized-keys return value"
+msgstr ""
 
 msgid ""
 "at least 1 server is necessary in JSON backing definition for gluster volume"
@@ -21289,6 +21364,10 @@ msgstr "не удалось идентифицировать том в URI %s"
 
 msgid "can't keep relative backing relationship"
 msgstr "не удалось сохранить относительное отношение резервного копирования"
+
+#, c-format
+msgid "can't manipulate inactive snapshots of disk '%s'"
+msgstr ""
 
 #, c-format
 msgid "can't open session to the domain with id %d"
@@ -22573,21 +22652,11 @@ msgstr "не удалось удалить файл тома gluster «%s»"
 msgid "cannot remove managed save file %s"
 msgstr "не удалось удалить файл сохранённого состояния %s"
 
-#, c-format
-msgid "cannot remove old domain config file %s"
-msgstr "не удалось удалить старый файл конфигурации домена %s"
-
 msgid "cannot rename a transient domain"
 msgstr "нельзя переименовать временный домен"
 
 msgid "cannot rename active domain"
 msgstr "нельзя переименовать активный домен"
-
-msgid "cannot rename domain with checkpoints"
-msgstr "нельзя переименовать домен с контрольными точками"
-
-msgid "cannot rename domain with snapshots"
-msgstr "нельзя переименовать домен со снимками"
 
 #, c-format
 msgid "cannot rename file '%s' as '%s'"
@@ -23069,6 +23138,13 @@ msgstr "у контрольной точки «%s» нет родителя"
 msgid "checkpoint for disk %s unsupported for storage type %s"
 msgstr "контрольная точка для диска %s не поддерживается для типа хранилища %s"
 
+msgid "checkpoint inconsistent"
+msgstr ""
+
+#, c-format
+msgid "checkpoint inconsistent: %s"
+msgstr ""
+
 msgid "checkpoint information"
 msgstr "информация о контрольной точке"
 
@@ -23114,6 +23190,9 @@ msgid "classID attribute not supported on <bandwidth> in this usage context"
 msgstr ""
 "в этом контексте использования атрибут classID не поддерживается для "
 "<bandwidth>"
+
+msgid "clear out authorized keys file before adding new keys"
+msgstr ""
 
 msgid "client hooks cannot be NULL"
 msgstr "обработчики клиента не могут содержать NULL"
@@ -23163,10 +23242,6 @@ msgid "command"
 msgstr "командная строка"
 
 #, c-format
-msgid "command '%s' does not list argv option last"
-msgstr "команда «%s» не указывает параметр argv последним в списке"
-
-#, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "команда «%s» не поддерживает опцию --%s"
 
@@ -23175,32 +23250,12 @@ msgid "command '%s' has inconsistent alias"
 msgstr "команда «%s» имеет несовместимое альтернативное название"
 
 #, c-format
-msgid "command '%s' has incorrect alias option"
-msgstr "в команде «%s» указан неверный параметр alias"
-
-#, c-format
-msgid "command '%s' has mismatched alias type"
-msgstr "команда «%s» имеет несоответствующий тип альтернативного названия"
-
-#, c-format
-msgid "command '%s' has missing alias option"
-msgstr "в команде «%s» отсутствует параметр alias"
-
-#, c-format
-msgid "command '%s' has non-required VSH_OT_DATA"
-msgstr "команда «%s» содержит необязательный VSH_OT_DATA"
-
-#, c-format
 msgid "command '%s' has too many options"
 msgstr "команда «%s» имеет слишком много параметров"
 
 #, c-format
 msgid "command '%s' lacks help"
 msgstr "отсутствует справка для команды «%s»"
-
-#, c-format
-msgid "command '%s' misused VSH_OFLAG_REQ"
-msgstr "команда «%s» ошибочно использует VSH_OFLAG_REQ"
 
 #, c-format
 msgid "command '%s' requires --%s option"
@@ -24326,10 +24381,6 @@ msgstr "отсутствует «id» в данных сведений о пам
 msgid "dir"
 msgstr "каталог"
 
-#, c-format
-msgid "direct firewall backend requested, but %s is not available"
-msgstr "запрошен модуль межсетевого экрана direct, но %s недоступно"
-
 msgid "direct migration"
 msgstr "прямая миграция"
 
@@ -24751,8 +24802,12 @@ msgstr ""
 "VIR_DOMAIN_AFFECT_CONFIG"
 
 #, c-format
-msgid "domain configuration does not support '%s' value '%s'"
-msgstr "конфигурация домена не поддерживает для «%s» значение «%s»"
+msgid "domain configuration does not support rng model '%s'"
+msgstr ""
+
+#, c-format
+msgid "domain configuration does not support video model '%s'"
+msgstr ""
 
 msgid "domain control interface state"
 msgstr "состояние интерфейса управления доменом"
@@ -25086,9 +25141,6 @@ msgstr "редактировать XML файла сохранения сост�
 
 msgid "edit XML for a snapshot"
 msgstr "редактировать XML снимка"
-
-msgid "egl-headless display is not supported with this QEMU binary"
-msgstr "этот исполняемый файл QEMU не поддерживает дисплеи egl-headless"
 
 msgid "either --list or --event <type> is required"
 msgstr "необходимо указать --list or --event <тип>"
@@ -26090,6 +26142,9 @@ msgstr "не удалось получить привязку nwfilter «%s»"
 msgid "failed to get parent pool"
 msgstr "не удалось получить родительский пул"
 
+msgid "failed to get persistent definition object"
+msgstr ""
+
 #, c-format
 msgid "failed to get pool '%s'"
 msgstr "ошибка при получении данных пула «%s»"
@@ -26971,8 +27026,8 @@ msgstr "найти потенциальные источники пулов но
 msgid "finish step ignored that migration was cancelled"
 msgstr "отмена миграции на завершающем этапе была проигнорирована"
 
-msgid "firewalld firewall backend requested, but service is not running"
-msgstr "запрошен модуль межсетевого экрана firewalld, но служба не запущена"
+msgid "firewalld backend requested, but service is not running"
+msgstr ""
 
 msgid ""
 "firewalld is set to use the nftables backend, but the required firewalld "
@@ -27010,6 +27065,12 @@ msgstr ""
 
 msgid "floor attribute is not supported for this config"
 msgstr "атрибут floor не поддерживается для этой конфигурации"
+
+msgid "fmode and dmode are not supported with this QEMU binary"
+msgstr ""
+
+msgid "fmode and dmode must be used with accessmode=mapped"
+msgstr ""
 
 #, c-format
 msgid "for %s module"
@@ -27494,6 +27555,9 @@ msgstr "основная система не поддерживает %d"
 msgid "host migration TLS directory not configured"
 msgstr "каталог миграции TLS основной системы не настроен"
 
+msgid "host name for source of disk device"
+msgstr ""
+
 msgid "host pci device "
 msgstr "устройство PCI основной системы"
 
@@ -27512,6 +27576,12 @@ msgstr "устройство SCSI основной системы %s:%u:%u.%llu 
 #, c-format
 msgid "host scsi iSCSI path %s not found"
 msgstr "путь iSCSI scsi основной системы %s не найден"
+
+msgid "host socket for source of disk device"
+msgstr ""
+
+msgid "host transport for source of disk device"
+msgstr ""
 
 #, c-format
 msgid "host usb device %03d.%03d not found"
@@ -28053,10 +28123,6 @@ msgid "internal error: %s"
 msgstr "внутренняя ошибка: %s"
 
 #, c-format
-msgid "internal error: bad options in command: '%s'"
-msgstr "Внутренняя ошибка: недопустимые параметры в команде «%s»"
-
-#, c-format
 msgid "internal inactive snapshots are not supported on '%s' disks"
 msgstr "внутренние неактивные снимки не поддерживаются для дисков «%s»"
 
@@ -28432,6 +28498,10 @@ msgstr ""
 "недопустимое дисковое назначение «%s», на дисковых назначениях не может быть "
 "разделов"
 
+#, c-format
+msgid "invalid dmode: '%s'"
+msgstr ""
+
 msgid "invalid domain pointer in"
 msgstr "недопустимый указатель домена в"
 
@@ -28472,6 +28542,10 @@ msgstr "недопустимый флаг"
 #, c-format
 msgid "invalid flag combination: (0x%x)"
 msgstr "недопустимая комбинация флагов: (0x%x)"
+
+#, c-format
+msgid "invalid fmode: '%s'"
+msgstr ""
 
 #, c-format
 msgid "invalid freePageReporting attribute value '%s'"
@@ -28612,11 +28686,9 @@ msgstr "недопустимое значение проверки MAC-адре�
 
 #, c-format
 msgid ""
-"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"invalid mac address type value: '%s'. Valid values are \"generated\" and "
 "\"static\"."
 msgstr ""
-"недопустимое значение проверки MAC-адреса: «%s». Допустимыми значениями "
-"являются «generated» и «static»."
 
 #, c-format
 msgid "invalid master key read, size=%zd"
@@ -29323,6 +29395,9 @@ msgstr "список блочных устройств домена"
 msgid "list all domain virtual interfaces"
 msgstr "список виртуальных интерфейсов домена"
 
+msgid "list authorized SSH keys for given user (via agent)"
+msgstr ""
+
 msgid "list available servers on a daemon"
 msgstr "список доступных серверов фоновой службы"
 
@@ -29337,6 +29412,9 @@ msgstr "список подключённых к серверу <server> кли�
 
 msgid "list devices in a tree"
 msgstr "список устройств в дереве"
+
+msgid "list domain IDs only"
+msgstr ""
 
 msgid "list domain names only"
 msgstr "список имён доменов"
@@ -29911,6 +29989,9 @@ msgstr "сохранённое состояние домена"
 msgid "mandatory attribute 'width' is missing or malformed"
 msgstr "отсутствует или неверно сформирован обязательный атрибут «width»"
 
+msgid "manipulate authorized SSH keys file for given user (via agent)"
+msgstr ""
+
 msgid "mark inactive domains with managed save state"
 msgstr "отметить неактивные домены с управляемым сохранением состояния"
 
@@ -30205,6 +30286,11 @@ msgstr "сбой миграции диска %s"
 msgid "migration of disk %s failed: %s"
 msgstr "сбой миграции диска %s: %s"
 
+msgid ""
+"migration of non-shared storage is not supported with tunnelled migration "
+"and this QEMU"
+msgstr ""
+
 msgid "migration out job"
 msgstr "задание исходящей миграции"
 
@@ -30451,6 +30537,9 @@ msgstr ""
 
 msgid "missing <target> element for <memory> device"
 msgstr "отсутствует элемент <target> для устройства <memory>"
+
+msgid "missing <type> element in <capability> element"
+msgstr ""
 
 msgid "missing @managed attribute for <reservations/>"
 msgstr "отсутствует атрибут @managed для <reservations/>"
@@ -31491,6 +31580,12 @@ msgstr "ncpus должно быть равно 1, если start_cpu is -1"
 
 msgid "ncpus too large"
 msgstr "слишком большое значение ncpus"
+
+msgid "ncr53c90 SCSI controller is not a built-in for this machine"
+msgstr ""
+
+msgid "ncr53c90 can only be used as first SCSI controller"
+msgstr ""
 
 msgid "need at least one serial port to use SGA"
 msgstr "для использования SGA требуется хотя бы один последовательный порт"
@@ -32844,6 +32939,9 @@ msgstr "дополнительные возможности процессора
 msgid "optional file of source xml to query for pools"
 msgstr "запрос пулов в XML-файле (дополнительно)"
 
+msgid "optional file to read keys from"
+msgstr ""
+
 msgid "optional host to query"
 msgstr "запрос на узле (дополнительно)"
 
@@ -32970,6 +33068,27 @@ msgstr "параметр «%s» не поддерживается"
 #, c-format
 msgid "parameter '%s' occurs multiple times"
 msgstr "Параметр «%s» повторяется несколько раз"
+
+#, c-format
+msgid "parameter '%s' of command '%s' has incorrect alias option"
+msgstr ""
+
+#, c-format
+msgid "parameter '%s' of command '%s' misused VSH_OFLAG_REQ"
+msgstr ""
+
+#, c-format
+msgid ""
+"parameter '%s' of command '%s' must be listed before optional parameters"
+msgstr ""
+
+#, c-format
+msgid "parameter '%s' of command '%s' must be listed last"
+msgstr ""
+
+#, c-format
+msgid "parameter '%s' of command '%s' must use VSH_OFLAG_REQ flag"
+msgstr ""
 
 msgid "parameter=value"
 msgstr "параметр=значение"
@@ -33496,6 +33615,9 @@ msgstr "протокол «sheepdog» принимает не более одн�
 msgid "protocol misses the family attribute"
 msgstr "в протоколе отсутствует атрибут family"
 
+msgid "protocol used by disk device source"
+msgstr ""
+
 msgid "provide XML suitable for migrations"
 msgstr "предоставить XML, подходящий для миграции"
 
@@ -33520,6 +33642,9 @@ msgstr "агент QEMU не предоставил поле «name»"
 
 msgid "qemu agent didn't return an array of interfaces"
 msgstr "агент QEMU не вернул массив интерфейсов"
+
+msgid "qemu agent didn't return an array of keys"
+msgstr ""
 
 #, c-format
 msgid "qemu block name '%s' doesn't match expected '%s'"
@@ -33884,6 +34009,12 @@ msgstr "сбой обновления ploop: не удалось удалить 
 msgid "refusing to generate file name for disk '%s'"
 msgstr "отказано в генерации имени файла для диска «%s»"
 
+msgid "remoteDomainAuthorizedSSHKeysGet: returned number of keys exceeds limit"
+msgstr ""
+
+msgid "remoteDomainAuthorizedSSHKeysSet: returned number of keys exceeds limit"
+msgstr ""
+
 msgid "remoteDomainBlockStatsFlags: returned number of stats exceeds limit"
 msgstr ""
 "remoteDomainBlockStatsFlags: возвращённое количество записей статистики "
@@ -33940,6 +34071,9 @@ msgstr ""
 
 msgid "remove domain managed state file"
 msgstr "удалить файл сохранённого состояния домена"
+
+msgid "remove keys from the authorized keys file"
+msgstr ""
 
 msgid "remove nvram file, if inactive"
 msgstr "удалить файл nvram (в случае неактивности)"
@@ -34838,8 +34972,8 @@ msgstr "носитель источника является блочным ус
 msgid "source name for underlying storage"
 msgstr "исходное имя для базового хранилища"
 
-msgid "source of disk device"
-msgstr "путь к исходному файлу или дисковому устройству"
+msgid "source of disk device or name of network disk"
+msgstr ""
 
 msgid "source of network interface"
 msgstr "источник сетевого интерфейса"
@@ -34910,9 +35044,6 @@ msgstr "в записи filetransfer spice отсутствует enable"
 
 msgid "spice gl element missing enable"
 msgstr "в элементе gl spice отсутствует enable"
-
-msgid "spice graphics are not supported with this QEMU"
-msgstr "этот исполняемый файл QEMU не поддерживает графическую систему SPICE"
 
 msgid "spice image missing compression"
 msgstr "не задан режим сжатия образов для SPICE"
@@ -35640,6 +35771,9 @@ msgstr "функция не поддерживается драйвером со
 msgid "this function is not supported by the connection driver: %s"
 msgstr "функция не поддерживается драйвером соединения: %s"
 
+msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
+msgstr ""
+
 msgid "this network exists already"
 msgstr "сеть уже существует"
 
@@ -36216,8 +36350,8 @@ msgstr "тип %s не поддерживается"
 msgid "type mismatch in event (actual 0x%x, expected 0x%x)"
 msgstr "несоответствие типов в событии (имеется 0x%x, ожидался 0x%x)"
 
-msgid "type of source (block|file)"
-msgstr "тип описания исходного устройства (block|file)"
+msgid "type of source (block|file|network)"
+msgstr ""
 
 msgid "type of storage pool sources to discover"
 msgstr "тип источников пулов носителей для обнаружения"
@@ -36559,10 +36693,6 @@ msgstr "не удалось обработать идентификатор уз
 #, c-format
 msgid "unable to parse page size: %s"
 msgstr "не удалось обработать размер страницы: %s"
-
-#, c-format
-msgid "unable to parse unique_id: %s"
-msgstr "не удалось обработать unique_id: %s"
 
 #, c-format
 msgid "unable to parse: %s"
@@ -38487,10 +38617,6 @@ msgid "unsupported gluster lookup"
 msgstr "неподдерживаемый фильтр gluster"
 
 #, c-format
-msgid "unsupported graphics type '%s'"
-msgstr "неподдерживаемый тип графики «%s»"
-
-#, c-format
 msgid "unsupported guest information types '0x%x'"
 msgstr "неподдерживаемые типы информации о гостевой системе «0x%x»"
 
@@ -38717,6 +38843,12 @@ msgstr "пользователь"
 msgid "user cancelled authentication process"
 msgstr "процесс аутентификации отменён пользователем"
 
+msgid "user to list authorized keys for"
+msgstr ""
+
+msgid "user to set authorized keys for"
+msgstr ""
+
 msgid "user:"
 msgstr "пользователь:"
 
@@ -38808,6 +38940,9 @@ msgid "validate the XML against the schema"
 msgstr "проверить XML на соответствие схеме"
 
 msgid "validate the XML document against schema"
+msgstr ""
+
+msgid "validate the redefined checkpoint"
 msgstr ""
 
 #, c-format
@@ -39260,6 +39395,9 @@ msgstr ""
 msgid "virtio-serial controller %u not available"
 msgstr "контроллер virtio-serial %u недоступен"
 
+msgid "virtiofs does not support fmode and dmode"
+msgstr ""
+
 msgid "virtiofs does not support format"
 msgstr "virtiofs не поддерживает format"
 
@@ -39350,9 +39488,6 @@ msgstr "отсутствует программа vmrun"
 
 msgid "vnc display"
 msgstr "дисплей VNC"
-
-msgid "vnc graphics are not supported with this QEMU"
-msgstr "этот QEMU не поддерживает графическую систему VNC"
 
 msgid "vnc port must be in range [5900,65535]"
 msgstr "порт VNC должен находиться в диапазоне [5900,65535]"
@@ -39704,6 +39839,109 @@ msgstr "поступил запрос о зоне %s для сети %s, но fi
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <строка>}..."
+
+#~ msgid "Bad child elements counting."
+#~ msgstr "Ошибочное количество дочерних элементов."
+
+#~ msgid "Cannot assign SCSI host device address"
+#~ msgstr "Не удалось назначить адрес устройства SCSI основной системы"
+
+#~ msgid "Could not match WMI class info for version %s"
+#~ msgstr "Не удалось найти сведения о классах WMI для версии %s"
+
+#~ msgid "Could not press key %d"
+#~ msgstr "Не удалось нажать клавишу %d"
+
+#~ msgid "Could not release key %s"
+#~ msgstr "Не удалось отпустить клавишу %s"
+
+#~ msgid "Could not set disk source"
+#~ msgstr "Не удалось указать источник диска"
+
+#~ msgid "Could not set memory"
+#~ msgstr "Не удалось задать памятm"
+
+#~ msgid ""
+#~ "Requested TSC frequency %llu Hz does not match host (%llu Hz) and TSC "
+#~ "scaling is not supported by the host CPU"
+#~ msgstr ""
+#~ "Запрошенная частота TSC %llu Гц не соответствует частоте основной системы "
+#~ "(%llu Гц), а процессор основной системы не поддерживает масштабирование "
+#~ "TSC"
+
+#~ msgid "Target TSC frequency %lu does not match source %lu"
+#~ msgstr "%lu не соответствует исходной частоте TSC (%lu)"
+
+#~ msgid "The WMI class info list is empty"
+#~ msgstr "Список сведений о классах WMI пуст"
+
+#~ msgid "cannot remove old domain config file %s"
+#~ msgstr "не удалось удалить старый файл конфигурации домена %s"
+
+#~ msgid "cannot rename domain with checkpoints"
+#~ msgstr "нельзя переименовать домен с контрольными точками"
+
+#~ msgid "cannot rename domain with snapshots"
+#~ msgstr "нельзя переименовать домен со снимками"
+
+#~ msgid "command '%s' does not list argv option last"
+#~ msgstr "команда «%s» не указывает параметр argv последним в списке"
+
+#~ msgid "command '%s' has incorrect alias option"
+#~ msgstr "в команде «%s» указан неверный параметр alias"
+
+#~ msgid "command '%s' has mismatched alias type"
+#~ msgstr "команда «%s» имеет несоответствующий тип альтернативного названия"
+
+#~ msgid "command '%s' has missing alias option"
+#~ msgstr "в команде «%s» отсутствует параметр alias"
+
+#~ msgid "command '%s' has non-required VSH_OT_DATA"
+#~ msgstr "команда «%s» содержит необязательный VSH_OT_DATA"
+
+#~ msgid "command '%s' misused VSH_OFLAG_REQ"
+#~ msgstr "команда «%s» ошибочно использует VSH_OFLAG_REQ"
+
+#~ msgid "direct firewall backend requested, but %s is not available"
+#~ msgstr "запрошен модуль межсетевого экрана direct, но %s недоступно"
+
+#~ msgid "domain configuration does not support '%s' value '%s'"
+#~ msgstr "конфигурация домена не поддерживает для «%s» значение «%s»"
+
+#~ msgid "egl-headless display is not supported with this QEMU binary"
+#~ msgstr "этот исполняемый файл QEMU не поддерживает дисплеи egl-headless"
+
+#~ msgid "firewalld firewall backend requested, but service is not running"
+#~ msgstr "запрошен модуль межсетевого экрана firewalld, но служба не запущена"
+
+#~ msgid "internal error: bad options in command: '%s'"
+#~ msgstr "Внутренняя ошибка: недопустимые параметры в команде «%s»"
+
+#~ msgid ""
+#~ "invalid mac address check value: '%s'. Valid values are \"generated\" and "
+#~ "\"static\"."
+#~ msgstr ""
+#~ "недопустимое значение проверки MAC-адреса: «%s». Допустимыми значениями "
+#~ "являются «generated» и «static»."
+
+#~ msgid "source of disk device"
+#~ msgstr "путь к исходному файлу или дисковому устройству"
+
+#~ msgid "spice graphics are not supported with this QEMU"
+#~ msgstr ""
+#~ "этот исполняемый файл QEMU не поддерживает графическую систему SPICE"
+
+#~ msgid "type of source (block|file)"
+#~ msgstr "тип описания исходного устройства (block|file)"
+
+#~ msgid "unable to parse unique_id: %s"
+#~ msgstr "не удалось обработать unique_id: %s"
+
+#~ msgid "unsupported graphics type '%s'"
+#~ msgstr "неподдерживаемый тип графики «%s»"
+
+#~ msgid "vnc graphics are not supported with this QEMU"
+#~ msgstr "этот QEMU не поддерживает графическую систему VNC"
 
 #~ msgid "%s: %d: failed to allocate %d bytes"
 #~ msgstr "%s: %d: не удалось выделить %d байт"

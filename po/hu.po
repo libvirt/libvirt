@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-10-26 17:26+0000\n"
+"POT-Creation-Date: 2020-11-24 23:25+0000\n"
 "PO-Revision-Date: 2020-07-20 15:17+0000\n"
 "Last-Translator: Balázs Meskó <meskobalazs@mailbox.org>\n"
 "Language-Team: Hungarian <https://translate.fedoraproject.org/projects/"
@@ -397,6 +397,10 @@ msgid "%s forwarding requested, but no IP address provided for network '%s'"
 msgstr ""
 
 #, c-format
+msgid "%s graphics are not supported with this QEMU"
+msgstr ""
+
+#, c-format
 msgid "%s harddisk '%s' has unsupported cache mode '%s'"
 msgstr ""
 
@@ -482,6 +486,10 @@ msgstr ""
 
 #, c-format
 msgid "%s namespace is not available"
+msgstr ""
+
+#, c-format
+msgid "%s not available, firewall backend will not function"
 msgstr ""
 
 #, c-format
@@ -1364,6 +1372,9 @@ msgstr ""
 msgid "--min-workers must be less than or equal to --max-workers"
 msgstr ""
 
+msgid "--source-protocol option requires --sourcetype network"
+msgstr ""
+
 msgid ""
 "--verbose requires at least one of --timeout, --wait, --pivot, or --finish"
 msgstr ""
@@ -1628,6 +1639,11 @@ msgid "AnyType is missing 'type' property"
 msgstr ""
 
 msgid ""
+"Append, reset or remove specified key from the authorized keys file for "
+"given user"
+msgstr ""
+
+msgid ""
 "Argument 'cellid' in memnode element must correspond to existing guest's "
 "NUMA cell"
 msgstr ""
@@ -1782,9 +1798,6 @@ msgstr "%s tartomány elindítva\n"
 
 #, c-format
 msgid "Bad $%s value."
-msgstr ""
-
-msgid "Bad child elements counting."
 msgstr ""
 
 #, c-format
@@ -2033,6 +2046,10 @@ msgstr ""
 
 #, c-format
 msgid "CPU model %s too long for destination"
+msgstr ""
+
+#, c-format
+msgid "CPU model '%s' not supported by hypervisor"
 msgstr ""
 
 msgid "CPU model:"
@@ -2366,9 +2383,6 @@ msgstr ""
 
 #, c-format
 msgid "Cannot alter an existing nmem_nodes distances set for node: %zu"
-msgstr ""
-
-msgid "Cannot assign SCSI host device address"
 msgstr ""
 
 msgid "Cannot attach disk until init PID is known"
@@ -3348,6 +3362,10 @@ msgstr ""
 msgid "Checkpoint %s edited.\n"
 msgstr ""
 
+#, c-format
+msgid "Checkpoint '%s' for incremental backup of disk '%s' not found"
+msgstr ""
+
 msgid "Checkpoint Delete"
 msgstr ""
 
@@ -3641,6 +3659,9 @@ msgstr ""
 msgid "Could not add CDATA to doc root"
 msgstr ""
 
+msgid "Could not add IDE controller"
+msgstr ""
+
 msgid "Could not add attribute to XML node"
 msgstr ""
 
@@ -3655,6 +3676,12 @@ msgid "Could not add child node to methodNode"
 msgstr ""
 
 msgid "Could not add child to XML node"
+msgstr ""
+
+msgid "Could not allocate disk def"
+msgstr ""
+
+msgid "Could not allocate disk definition"
 msgstr ""
 
 #, c-format
@@ -3830,6 +3857,9 @@ msgstr ""
 msgid "Could not find HostVirtualSwitch with name '%s'"
 msgstr ""
 
+msgid "Could not find Msvm_DiskDrive object"
+msgstr ""
+
 #, c-format
 msgid ""
 "Could not find PCI controller with index %u required for device at address %s"
@@ -3861,6 +3891,9 @@ msgstr ""
 
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
+msgstr ""
+
+msgid "Could not find controller for disk!"
 msgstr ""
 
 #, c-format
@@ -4217,11 +4250,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Could not look up memory setting data with virtual system instance ID '%s'"
-msgstr ""
-
-#, c-format
-msgid ""
 "Could not look up processor setting data with virtual system instance ID '%s'"
 msgstr ""
 
@@ -4230,7 +4258,9 @@ msgid "Could not look up processor(s) on '%s'"
 msgstr ""
 
 #, c-format
-msgid "Could not look up virtual system setting data with UUID '%s'"
+msgid ""
+"Could not look up resource allocation setting data with virtual system "
+"instance ID '%s'"
 msgstr ""
 
 #, c-format
@@ -4265,10 +4295,6 @@ msgid "Could not lookup pull response items"
 msgstr ""
 
 msgid "Could not lookup root snapshot list"
-msgstr ""
-
-#, c-format
-msgid "Could not match WMI class info for version %s"
 msgstr ""
 
 #, c-format
@@ -4333,6 +4359,9 @@ msgstr ""
 msgid "Could not parse MTU value '%s'"
 msgstr ""
 
+msgid "Could not parse SCSI controller"
+msgstr ""
+
 #, c-format
 msgid "Could not parse UUID from '%s'"
 msgstr ""
@@ -4386,10 +4415,6 @@ msgid "Could not parse version from '%s'"
 msgstr ""
 
 #, c-format
-msgid "Could not press key %d"
-msgstr ""
-
-#, c-format
 msgid "Could not produce packed version number from '%s'"
 msgstr ""
 
@@ -4436,10 +4461,6 @@ msgstr "csomópont-információ"
 
 #, c-format
 msgid "Could not read typefile '%s'"
-msgstr ""
-
-#, c-format
-msgid "Could not release key %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4514,9 +4535,6 @@ msgstr ""
 msgid "Could not set disk quota"
 msgstr ""
 
-msgid "Could not set disk source"
-msgstr ""
-
 #, c-format
 msgid ""
 "Could not set limit to %lld MHz, expecting positive value or -1 (unlimited)"
@@ -4525,10 +4543,6 @@ msgstr ""
 #, c-format
 msgid "Could not set max-memory to %lu kilobytes: %s"
 msgstr ""
-
-#, fuzzy
-msgid "Could not set memory"
-msgstr "nincs több memória"
 
 msgid "Could not set memory size"
 msgstr ""
@@ -7205,6 +7219,10 @@ msgstr "Nem sikerült menteni a(z) %s tartományt ide: %s"
 msgid "Failed to load snapshot: %s"
 msgstr "%s hálózat indítása nem sikerült"
 
+#, c-format
+msgid "Failed to locate parent device with ID '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to login: %s"
 msgstr "%s tartomány indítása nem sikerült"
@@ -7415,6 +7433,10 @@ msgstr "nem sikerült értelmezni a(z) %s beállítási fájlt"
 msgid "Failed to parse group '%s'"
 msgstr "%s tartomány felélesztése nem sikerült"
 
+#, c-format
+msgid "Failed to parse int '%s' from udev property '%s' on '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to parse interface index from '%s'"
 msgstr "Nem sikerült visszaállítani a tartományt ebből: %s"
@@ -7465,6 +7487,10 @@ msgstr "%s hálózat indítása nem sikerült"
 #, fuzzy, c-format
 msgid "Failed to parse uid and gid from '%s'"
 msgstr "Nem sikerült visszaállítani a tartományt ebből: %s"
+
+#, c-format
+msgid "Failed to parse uint '%s' from udev property '%s' on '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to parse user '%s'"
@@ -8129,6 +8155,10 @@ msgstr "Nem sikerült eltávolítani a(z) %s tartomány definícióját"
 #, fuzzy
 msgid "Failed to unescape command line string"
 msgstr "%s tartomány felfüggesztése nem sikerült"
+
+#, c-format
+msgid "Failed to unlink '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to unmark domain %s as autostarted"
@@ -9120,6 +9150,10 @@ msgstr ""
 msgid "Invalid 'memAccess' attribute value '%s'"
 msgstr ""
 
+#, c-format
+msgid "Invalid 'removed' attribute for feature %s in model %s"
+msgstr ""
+
 msgid "Invalid 'target' attribute in NUMA interconnects"
 msgstr ""
 
@@ -9455,6 +9489,9 @@ msgstr "nem érvényes csatlakozás"
 #, fuzzy, c-format
 msgid "Invalid controller id '%d'"
 msgstr "érvénytelen csatlakozás-mutató itt: %s"
+
+msgid "Invalid controller type for LUN"
+msgstr ""
 
 #, c-format
 msgid "Invalid cpuNum in %s"
@@ -11401,6 +11438,10 @@ msgstr ""
 msgid "Missing storage volume name for disk '%s'"
 msgstr "hiányzó forrásinformáció a(z) %s eszközhöz"
 
+#, c-format
+msgid "Missing udev property '%s' on '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Missing vendor string for CPU vendor %s"
 msgstr "hiányzó forrásinformáció a(z) %s eszközhöz"
@@ -11499,6 +11540,9 @@ msgid "N/A"
 msgstr ""
 
 msgid "NBD migration with TLS is not supported"
+msgstr ""
+
+msgid "NBD migration with TLS is not supported over UNIX socket"
 msgstr ""
 
 msgid "NIC model 'e1000' is not supported by given bhyve binary"
@@ -12314,6 +12358,10 @@ msgid "Number of interfaces, %d exceeds the max limit: %d"
 msgstr ""
 
 #, c-format
+msgid "Number of keys %d, which exceeds max liit: %d"
+msgstr ""
+
+#, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
 msgstr ""
 
@@ -12568,6 +12616,9 @@ msgstr ""
 
 #, c-format
 msgid "Option --%s is required by option --%s"
+msgstr ""
+
+msgid "Option --file is required"
 msgstr ""
 
 msgid "Option argument is empty"
@@ -13372,8 +13423,9 @@ msgstr "egy tartomány visszaállítása egy fájlba mentett állapotból"
 
 #, c-format
 msgid ""
-"Requested TSC frequency %llu Hz does not match host (%llu Hz) and TSC "
-"scaling is not supported by the host CPU"
+"Requested TSC frequency %llu Hz is outside tolerance range ([%llu, %llu] Hz) "
+"around host frequency %llu Hz and TSC scaling is not supported by the host "
+"CPU"
 msgstr ""
 
 #, c-format
@@ -14750,7 +14802,7 @@ msgid "Target TPM version doesn't match source"
 msgstr ""
 
 #, c-format
-msgid "Target TSC frequency %lu does not match source %lu"
+msgid "Target TSC frequency %llu does not match source %llu"
 msgstr ""
 
 #, c-format
@@ -15383,9 +15435,6 @@ msgstr ""
 msgid "The QEMU executable %s does not support TPM model %s"
 msgstr ""
 
-msgid "The WMI class info list is empty"
-msgstr ""
-
 msgid "The XML configuration was changed by another user."
 msgstr ""
 
@@ -15576,6 +15625,12 @@ msgstr ""
 msgid "This QEMU doesn't support target greater than 7"
 msgstr ""
 
+msgid "This QEMU doesn't support the AM53C974 (ESP) controller"
+msgstr ""
+
+msgid "This QEMU doesn't support the DC390 (ESP) controller"
+msgstr ""
+
 msgid "This QEMU doesn't support the LSI 53C895A SCSI controller"
 msgstr ""
 
@@ -15583,6 +15638,9 @@ msgid "This QEMU doesn't support the LSI SAS1068 (MPT Fusion) controller"
 msgstr ""
 
 msgid "This QEMU doesn't support the LSI SAS1078 (MegaRAID) controller"
+msgstr ""
+
+msgid "This QEMU doesn't support the NCR53C90 (ESP) controller"
 msgstr ""
 
 msgid ""
@@ -18560,6 +18618,10 @@ msgstr ""
 msgid "Unpaused"
 msgstr "megállítva"
 
+#, c-format
+msgid "Unrecognized controller type %d"
+msgstr ""
+
 msgid "Unrecognized disk label found, requires build"
 msgstr ""
 
@@ -18949,6 +19011,9 @@ msgstr ""
 msgid ""
 "Use of 'wwnn', 'wwpn', and 'parent' attributes requires use of the adapter "
 "'type'"
+msgstr ""
+
+msgid "Use the guest agent to query authorized SSH keys for given user"
 msgstr ""
 
 msgid ""
@@ -19530,6 +19595,14 @@ msgstr ""
 msgid "algorithm=%d is not supported"
 msgstr ""
 
+#, c-format
+msgid "alias '%s' of command '%s' has mismatched alias type"
+msgstr ""
+
+#, c-format
+msgid "alias '%s' of command '%s' has missing alias option"
+msgstr ""
+
 msgid "all CPU models are accepted"
 msgstr ""
 
@@ -19654,6 +19727,9 @@ msgid "array element missing in guest-get-users return value"
 msgstr ""
 
 msgid "array element missing in guest-get-vcpus return value"
+msgstr ""
+
+msgid "array element missing in guest-ssh-get-authorized-keys return value"
 msgstr ""
 
 msgid ""
@@ -20224,6 +20300,10 @@ msgid "can't identify volume in uri %s"
 msgstr ""
 
 msgid "can't keep relative backing relationship"
+msgstr ""
+
+#, c-format
+msgid "can't manipulate inactive snapshots of disk '%s'"
 msgstr ""
 
 #, c-format
@@ -21438,22 +21518,12 @@ msgstr ""
 msgid "cannot remove managed save file %s"
 msgstr ""
 
-#, c-format
-msgid "cannot remove old domain config file %s"
-msgstr ""
-
 msgid "cannot rename a transient domain"
 msgstr ""
 
 #, fuzzy
 msgid "cannot rename active domain"
 msgstr "az inaktív tartomány neve"
-
-msgid "cannot rename domain with checkpoints"
-msgstr ""
-
-msgid "cannot rename domain with snapshots"
-msgstr ""
 
 #, c-format
 msgid "cannot rename file '%s' as '%s'"
@@ -21923,6 +21993,13 @@ msgstr ""
 msgid "checkpoint for disk %s unsupported for storage type %s"
 msgstr ""
 
+msgid "checkpoint inconsistent"
+msgstr ""
+
+#, c-format
+msgid "checkpoint inconsistent: %s"
+msgstr ""
+
 #, fuzzy
 msgid "checkpoint information"
 msgstr "tartományinformáció"
@@ -21964,6 +22041,9 @@ msgid "cipher info missing 'size' attribute"
 msgstr ""
 
 msgid "classID attribute not supported on <bandwidth> in this usage context"
+msgstr ""
+
+msgid "clear out authorized keys file before adding new keys"
 msgstr ""
 
 msgid "client hooks cannot be NULL"
@@ -22014,10 +22094,6 @@ msgstr ""
 msgid "command"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "command '%s' does not list argv option last"
-msgstr "'%s' parancs nem támogatja a(z) --%s opciót"
-
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "'%s' parancs nem támogatja a(z) --%s opciót"
@@ -22027,31 +22103,11 @@ msgid "command '%s' has inconsistent alias"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "command '%s' has incorrect alias option"
-msgstr "'%s' parancs a(z) --%s opciót igényli"
-
-#, c-format
-msgid "command '%s' has mismatched alias type"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "command '%s' has missing alias option"
-msgstr "'%s' parancs a(z) --%s opciót igényli"
-
-#, c-format
-msgid "command '%s' has non-required VSH_OT_DATA"
-msgstr ""
-
-#, fuzzy, c-format
 msgid "command '%s' has too many options"
 msgstr "'%s' parancs a(z) --%s opciót igényli"
 
 #, c-format
 msgid "command '%s' lacks help"
-msgstr ""
-
-#, c-format
-msgid "command '%s' misused VSH_OFLAG_REQ"
 msgstr ""
 
 #, c-format
@@ -23159,10 +23215,6 @@ msgstr ""
 msgid "dir"
 msgstr ""
 
-#, c-format
-msgid "direct firewall backend requested, but %s is not available"
-msgstr ""
-
 #, fuzzy
 msgid "direct migration"
 msgstr "csomópont-információ"
@@ -23581,7 +23633,11 @@ msgid "domain config update needs VIR_DOMAIN_AFFECT_CONFIG flag to be set"
 msgstr ""
 
 #, c-format
-msgid "domain configuration does not support '%s' value '%s'"
+msgid "domain configuration does not support rng model '%s'"
+msgstr ""
+
+#, c-format
+msgid "domain configuration does not support video model '%s'"
 msgstr ""
 
 msgid "domain control interface state"
@@ -23940,9 +23996,6 @@ msgid "edit XML for a domain's saved state file"
 msgstr "egy tartomány visszaállítása egy fájlba mentett állapotból"
 
 msgid "edit XML for a snapshot"
-msgstr ""
-
-msgid "egl-headless display is not supported with this QEMU binary"
 msgstr ""
 
 msgid "either --list or --event <type> is required"
@@ -24971,6 +25024,9 @@ msgstr "\"%s\" tartomány lekérdezése nem sikerült"
 msgid "failed to get parent pool"
 msgstr "a fájl megnyitása nem sikerült"
 
+msgid "failed to get persistent definition object"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to get pool '%s'"
 msgstr "\"%s\" tartomány lekérdezése nem sikerült"
@@ -25907,7 +25963,7 @@ msgstr ""
 msgid "finish step ignored that migration was cancelled"
 msgstr ""
 
-msgid "firewalld firewall backend requested, but service is not running"
+msgid "firewalld backend requested, but service is not running"
 msgstr ""
 
 msgid ""
@@ -25935,6 +25991,12 @@ msgid ""
 msgstr ""
 
 msgid "floor attribute is not supported for this config"
+msgstr ""
+
+msgid "fmode and dmode are not supported with this QEMU binary"
+msgstr ""
+
+msgid "fmode and dmode must be used with accessmode=mapped"
 msgstr ""
 
 #, c-format
@@ -26368,6 +26430,9 @@ msgstr ""
 msgid "host migration TLS directory not configured"
 msgstr ""
 
+msgid "host name for source of disk device"
+msgstr ""
+
 msgid "host pci device "
 msgstr ""
 
@@ -26385,6 +26450,12 @@ msgstr ""
 
 #, c-format
 msgid "host scsi iSCSI path %s not found"
+msgstr ""
+
+msgid "host socket for source of disk device"
+msgstr ""
+
+msgid "host transport for source of disk device"
 msgstr ""
 
 #, c-format
@@ -26878,10 +26949,6 @@ msgid "internal error: %s"
 msgstr "belső hiba"
 
 #, c-format
-msgid "internal error: bad options in command: '%s'"
-msgstr ""
-
-#, c-format
 msgid "internal inactive snapshots are not supported on '%s' disks"
 msgstr ""
 
@@ -27241,6 +27308,10 @@ msgstr "érvénytelen tartománymutató itt: %s"
 msgid "invalid disk target '%s', partitions can't appear in disk targets"
 msgstr ""
 
+#, c-format
+msgid "invalid dmode: '%s'"
+msgstr ""
+
 msgid "invalid domain pointer in"
 msgstr "érvénytelen tartománymutató itt:"
 
@@ -27281,6 +27352,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "invalid flag combination: (0x%x)"
 msgstr "érvénytelen tartománymutató itt: %s"
+
+#, c-format
+msgid "invalid fmode: '%s'"
+msgstr ""
 
 #, c-format
 msgid "invalid freePageReporting attribute value '%s'"
@@ -27416,7 +27491,7 @@ msgstr ""
 
 #, c-format
 msgid ""
-"invalid mac address check value: '%s'. Valid values are \"generated\" and "
+"invalid mac address type value: '%s'. Valid values are \"generated\" and "
 "\"static\"."
 msgstr ""
 
@@ -28110,6 +28185,9 @@ msgstr "tartományok listázása"
 msgid "list all domain virtual interfaces"
 msgstr ""
 
+msgid "list authorized SSH keys for given user (via agent)"
+msgstr ""
+
 msgid "list available servers on a daemon"
 msgstr ""
 
@@ -28125,6 +28203,9 @@ msgstr ""
 #, fuzzy
 msgid "list devices in a tree"
 msgstr "hiányzó eszközinformáció"
+
+msgid "list domain IDs only"
+msgstr ""
 
 #, fuzzy
 msgid "list domain names only"
@@ -28699,6 +28780,9 @@ msgstr "egy tartományállapot mentése egy fájlba"
 msgid "mandatory attribute 'width' is missing or malformed"
 msgstr ""
 
+msgid "manipulate authorized SSH keys file for given user (via agent)"
+msgstr ""
+
 msgid "mark inactive domains with managed save state"
 msgstr ""
 
@@ -28968,6 +29052,11 @@ msgstr "művelet nem sikerült"
 msgid "migration of disk %s failed: %s"
 msgstr "művelet nem sikerült: %s"
 
+msgid ""
+"migration of non-shared storage is not supported with tunnelled migration "
+"and this QEMU"
+msgstr ""
+
 msgid "migration out job"
 msgstr ""
 
@@ -29196,6 +29285,9 @@ msgstr ""
 #, fuzzy
 msgid "missing <target> element for <memory> device"
 msgstr "hiányzó célinformáció az eszközhöz"
+
+msgid "missing <type> element in <capability> element"
+msgstr ""
 
 msgid "missing @managed attribute for <reservations/>"
 msgstr ""
@@ -30248,6 +30340,12 @@ msgid "ncpus must be 1 when start_cpu is -1"
 msgstr ""
 
 msgid "ncpus too large"
+msgstr ""
+
+msgid "ncr53c90 SCSI controller is not a built-in for this machine"
+msgstr ""
+
+msgid "ncr53c90 can only be used as first SCSI controller"
 msgstr ""
 
 msgid "need at least one serial port to use SGA"
@@ -31559,6 +31657,9 @@ msgstr ""
 msgid "optional file of source xml to query for pools"
 msgstr ""
 
+msgid "optional file to read keys from"
+msgstr ""
+
 msgid "optional host to query"
 msgstr ""
 
@@ -31682,6 +31783,27 @@ msgstr ""
 
 #, c-format
 msgid "parameter '%s' occurs multiple times"
+msgstr ""
+
+#, c-format
+msgid "parameter '%s' of command '%s' has incorrect alias option"
+msgstr ""
+
+#, c-format
+msgid "parameter '%s' of command '%s' misused VSH_OFLAG_REQ"
+msgstr ""
+
+#, c-format
+msgid ""
+"parameter '%s' of command '%s' must be listed before optional parameters"
+msgstr ""
+
+#, c-format
+msgid "parameter '%s' of command '%s' must be listed last"
+msgstr ""
+
+#, c-format
+msgid "parameter '%s' of command '%s' must use VSH_OFLAG_REQ flag"
 msgstr ""
 
 msgid "parameter=value"
@@ -32178,6 +32300,9 @@ msgstr ""
 msgid "protocol misses the family attribute"
 msgstr ""
 
+msgid "protocol used by disk device source"
+msgstr ""
+
 msgid "provide XML suitable for migrations"
 msgstr ""
 
@@ -32201,6 +32326,9 @@ msgid "qemu agent didn't provide 'name' field"
 msgstr ""
 
 msgid "qemu agent didn't return an array of interfaces"
+msgstr ""
+
+msgid "qemu agent didn't return an array of keys"
 msgstr ""
 
 #, c-format
@@ -32552,6 +32680,12 @@ msgstr ""
 msgid "refusing to generate file name for disk '%s'"
 msgstr ""
 
+msgid "remoteDomainAuthorizedSSHKeysGet: returned number of keys exceeds limit"
+msgstr ""
+
+msgid "remoteDomainAuthorizedSSHKeysSet: returned number of keys exceeds limit"
+msgstr ""
+
 msgid "remoteDomainBlockStatsFlags: returned number of stats exceeds limit"
 msgstr ""
 
@@ -32592,6 +32726,9 @@ msgstr ""
 #, fuzzy
 msgid "remove domain managed state file"
 msgstr "egy tartomány visszaállítása egy fájlba mentett állapotból"
+
+msgid "remove keys from the authorized keys file"
+msgstr ""
 
 msgid "remove nvram file, if inactive"
 msgstr ""
@@ -33462,7 +33599,7 @@ msgstr ""
 msgid "source name for underlying storage"
 msgstr ""
 
-msgid "source of disk device"
+msgid "source of disk device or name of network disk"
 msgstr ""
 
 msgid "source of network interface"
@@ -33526,9 +33663,6 @@ msgid "spice filetransfer missing enable"
 msgstr ""
 
 msgid "spice gl element missing enable"
-msgstr ""
-
-msgid "spice graphics are not supported with this QEMU"
 msgstr ""
 
 msgid "spice image missing compression"
@@ -34217,6 +34351,9 @@ msgstr ""
 msgid "this function is not supported by the connection driver: %s"
 msgstr ""
 
+msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
+msgstr ""
+
 msgid "this network exists already"
 msgstr "ez a hálózat már létezik"
 
@@ -34714,7 +34851,7 @@ msgstr ""
 msgid "type mismatch in event (actual 0x%x, expected 0x%x)"
 msgstr ""
 
-msgid "type of source (block|file)"
+msgid "type of source (block|file|network)"
 msgstr ""
 
 msgid "type of storage pool sources to discover"
@@ -35059,10 +35196,6 @@ msgstr "nem sikerült értelmezni a(z) %s beállítási fájlt"
 
 #, fuzzy, c-format
 msgid "unable to parse page size: %s"
-msgstr "nem sikerült értelmezni a(z) %s beállítási fájlt"
-
-#, fuzzy, c-format
-msgid "unable to parse unique_id: %s"
 msgstr "nem sikerült értelmezni a(z) %s beállítási fájlt"
 
 #, c-format
@@ -36980,10 +37113,6 @@ msgid "unsupported gluster lookup"
 msgstr ""
 
 #, c-format
-msgid "unsupported graphics type '%s'"
-msgstr ""
-
-#, c-format
 msgid "unsupported guest information types '0x%x'"
 msgstr ""
 
@@ -37204,6 +37333,12 @@ msgstr ""
 msgid "user cancelled authentication process"
 msgstr ""
 
+msgid "user to list authorized keys for"
+msgstr ""
+
+msgid "user to set authorized keys for"
+msgstr ""
+
 msgid "user:"
 msgstr ""
 
@@ -37284,6 +37419,9 @@ msgid "validate the XML against the schema"
 msgstr ""
 
 msgid "validate the XML document against schema"
+msgstr ""
+
+msgid "validate the redefined checkpoint"
 msgstr ""
 
 #, c-format
@@ -37689,6 +37827,9 @@ msgstr ""
 msgid "virtio-serial controller %u not available"
 msgstr ""
 
+msgid "virtiofs does not support fmode and dmode"
+msgstr ""
+
 msgid "virtiofs does not support format"
 msgstr ""
 
@@ -37773,9 +37914,6 @@ msgstr ""
 
 msgid "vnc display"
 msgstr "VNC-képernyő"
-
-msgid "vnc graphics are not supported with this QEMU"
-msgstr ""
 
 msgid "vnc port must be in range [5900,65535]"
 msgstr ""
@@ -38102,6 +38240,26 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <szöveg>"
+
+#, fuzzy
+#~ msgid "Could not set memory"
+#~ msgstr "nincs több memória"
+
+#, fuzzy
+#~ msgid "command '%s' does not list argv option last"
+#~ msgstr "'%s' parancs nem támogatja a(z) --%s opciót"
+
+#, fuzzy
+#~ msgid "command '%s' has incorrect alias option"
+#~ msgstr "'%s' parancs a(z) --%s opciót igényli"
+
+#, fuzzy
+#~ msgid "command '%s' has missing alias option"
+#~ msgstr "'%s' parancs a(z) --%s opciót igényli"
+
+#, fuzzy
+#~ msgid "unable to parse unique_id: %s"
+#~ msgstr "nem sikerült értelmezni a(z) %s beállítási fájlt"
 
 #~ msgid "%s: %d: failed to allocate %d bytes"
 #~ msgstr "%s: %d: nem sikerült lefoglalni %d bájtot"
