@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-10-26 17:26+0000\n"
-"PO-Revision-Date: 2020-11-20 20:35+0000\n"
+"PO-Revision-Date: 2020-11-24 13:17+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -1398,143 +1398,137 @@ msgstr "attributet ”tx_queue_size” måste vara ett positivt tal: %s"
 msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "”type” saknas i svar från guest-get-fsinfo"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'unsupported perf event '%s'"
-msgstr "ej stödd händelse-ID %d"
+msgstr "ej stödd perf-händelse ”%s”"
 
 msgid "'user' missing in reply of guest-get-users"
-msgstr ""
+msgstr "”user” saknas i svaret på guest-get-users"
 
 #, c-format
 msgid "'value %d' is invalid for 'sibling id %d' under NUMA 'cell id %d'"
-msgstr ""
+msgstr "”value %d” är inte giltigt för ”sibling id %d” under NUMA ”cell id %d”"
 
 #, c-format
 msgid "'value %s' is invalid for 'sibling id %d' under NUMA 'cell id %d'"
-msgstr ""
+msgstr "”value %s” är inte giltigt för ”sibling id %d” under NUMA ”cell id %d”"
 
 msgid "'vhostuser' driver is only supported with 'virtio' device"
-msgstr ""
+msgstr "drivrutinen ”vhostuser” stödjs endast med enheten ”virtio”"
 
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
-msgstr ""
+msgstr "”wwnn” och ”wwpn” måste anges för adaptertypen ”fchost”"
 
 msgid "(CPU_definition)"
-msgstr ""
+msgstr "(CPU_definition)"
 
 msgid "(_migration_cookie)"
-msgstr ""
+msgstr "(_migrationskaka)"
 
-#, fuzzy
 msgid "(bridge interface definition)"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "(brygggränssnittsdefinition)"
 
 msgid "(capabilities)"
 msgstr "(förmågor)"
 
 msgid "(definition_of_secret)"
-msgstr ""
+msgstr "(definition_av_hemlighet)"
 
 msgid "(device_definition)"
-msgstr ""
+msgstr "(enhetsdefinition)"
 
 msgid "(disk_definition)"
-msgstr ""
+msgstr "(diskdefinition)"
 
-#, fuzzy
 msgid "(domainCapabilities)"
-msgstr "kapabiliteter"
+msgstr "(domänFörmågor)"
 
 msgid "(domain_backup)"
-msgstr ""
+msgstr "(domänsäkerhetskopia)"
 
 msgid "(domain_checkpoint)"
-msgstr ""
+msgstr "(domäncheckpunkt)"
 
-#, fuzzy
 msgid "(domain_definition)"
-msgstr "domäninformation"
+msgstr "(domändefinition)"
 
-#, fuzzy
 msgid "(domain_snapshot)"
-msgstr "domäntillstånd"
+msgstr "(domänögonblicksbild)"
 
 msgid "(esx execute response)"
-msgstr ""
+msgstr "(esx-exekveringssvar)"
 
 msgid "(gluster_cli_output)"
-msgstr ""
+msgstr "(gluster_cli_utdata)"
 
 msgid "(interface definition)"
-msgstr ""
+msgstr "(gränssnittsdefinition)"
 
 msgid "(interface_definition)"
-msgstr ""
+msgstr "(gränssnittsdefinition)"
 
 msgid "(libxl_migration_cookie)"
-msgstr ""
+msgstr "(libxl_migrationskaka)"
 
 msgid "(metadata_xml)"
-msgstr ""
+msgstr "(metadata_xml)"
 
-#, fuzzy
 msgid "(network status)"
-msgstr "nätverksnamn"
+msgstr "(nätverksstatus)"
 
 msgid "(network_definition)"
-msgstr ""
+msgstr "(nätverksdefinition)"
 
 msgid "(networkport_definition)"
-msgstr ""
+msgstr "(nätverksportsdefinition)"
 
 msgid "(node_device_definition)"
-msgstr ""
+msgstr "(nodenhetsdefinition)"
 
 msgid "(none)"
 msgstr "(ingen)"
 
 msgid "(nwfilter_definition)"
-msgstr ""
+msgstr "(nwfilter_definition)"
 
 msgid "(nwfilterbinding_definition)"
-msgstr ""
+msgstr "(nwfilterbinding_definition)"
 
 msgid "(nwfilterbinding_status)"
-msgstr ""
+msgstr "(nwfilterbinding_status)"
 
-#, fuzzy
 msgid "(pool state)"
-msgstr "inget tillstånd"
+msgstr "(pooltillstånd)"
 
 msgid "(qemu_migration_cookie)"
-msgstr ""
+msgstr "(qemu_migrationskaka)"
 
 msgid "(re)connect to hypervisor"
 msgstr "(åter)anslut till hypervisor"
 
 msgid "(save cookie)"
-msgstr ""
+msgstr "(spara kaka)"
 
 msgid "(snapshot_tree)"
-msgstr ""
+msgstr "(ögonblicksbildsträd)"
 
 msgid "(storage_pool_definition)"
-msgstr ""
+msgstr "(lagringspoolsdefinition)"
 
 msgid "(storage_source_specification)"
-msgstr ""
+msgstr "(lagringskällspecifikation)"
 
 msgid "(storage_volume_definition)"
-msgstr ""
+msgstr "(lagringsvolymsdefinition)"
 
 msgid "(test driver)"
-msgstr ""
+msgstr "(testdrivrutin)"
 
 msgid "(volume_definition)"
-msgstr ""
+msgstr "(volymdefinition)"
 
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #, c-format
 msgid "--%s <number>"
@@ -1546,40 +1540,43 @@ msgstr "--%s <sträng>"
 
 #, c-format
 msgid "--%s and --current are mutually exclusive"
-msgstr ""
+msgstr "--%s och --current är ömsesidigt uteslutande"
 
 #, c-format
 msgid "--%s and --tree are mutually exclusive"
-msgstr ""
+msgstr "--%s och --tree är ömsesidigt uteslutande"
 
 #, c-format
 msgid "--%s is required"
-msgstr ""
+msgstr "--%s krävs"
 
 #, c-format
 msgid "--%s or --current is required"
-msgstr ""
+msgstr "--%s eller --current krävs"
 
 msgid "------------------------------"
-msgstr ""
+msgstr "——————————————————————————————"
 
 msgid "-------------------------------------------------"
-msgstr ""
+msgstr "—————————————————————————————————————————————————"
 
 msgid ""
 "--async requires at least one of --timeout, --wait, --pivot, or --finish"
 msgstr ""
+"--async kräver åtminstone en av --timeout, --wait, --pivot eller --finish"
 
 msgid ""
 "--async requires at least one of --timeout, --wait, --pivot, or --keep-"
 "overlay"
 msgstr ""
+"--async kräver åtminstone en av --timeout, --wait, --pivot eller --keep-"
+"overlay"
 
 msgid "--descendants requires --from"
-msgstr ""
+msgstr "--descendants kräver --from"
 
 msgid "--descendants requires either --from or --current"
-msgstr ""
+msgstr "--descendants kräver antingen --from eller --current"
 
 msgid "--format only works with --memory-only"
 msgstr "--format fungerar endast med --memory-only"
@@ -1588,242 +1585,260 @@ msgid ""
 "--listen parameter not permitted with systemd activation sockets, see 'man "
 "libvirtd' for further guidance"
 msgstr ""
+"parametern --listen är inte tillåten med systemd-aktiveringuttag, se ”man "
+"libvirtd” för vidare vägledning"
 
 msgid "--max-unauth-clients must be less than or equal to --max-clients"
-msgstr ""
+msgstr "--max-unauth-clients måste vara mindre än eller lika med --max-clients"
 
 msgid "--min-workers must be less than or equal to --max-workers"
-msgstr ""
+msgstr "--min-workers måste vara mindre än eller lika med --max-workers"
 
 msgid ""
 "--verbose requires at least one of --timeout, --wait, --pivot, or --finish"
 msgstr ""
+"--verbose kräver åtminstone en av --timeout, --wait, --pivot eller --finish"
 
 msgid ""
 "--verbose requires at least one of --timeout, --wait, --pivot, or --keep-"
 "overlay"
 msgstr ""
+"--verbose kräver åtminstone en av --timeout, --wait, --pivot eller --keep-"
+"overlay"
 
 msgid "/proc/net/dev: Interface not found"
-msgstr ""
+msgstr "/proc/net/dev: gränssnittet finns inte"
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
-msgstr ""
+msgstr "64-bitars PCI-hålsinställning är endast för rot-PCI-styrenheter"
 
 msgid "64-bit PCI hole size setting is not supported with this QEMU binary"
-msgstr ""
+msgstr "64-bitars PCI-hålstorleksinställning stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "<%s>"
-msgstr ""
+msgstr "<%s>"
 
 #, c-format
 msgid "<%s>..."
-msgstr ""
+msgstr "<%s>…"
 
 #, c-format
 msgid ""
 "<address>, <interface>, and <pf> elements of <forward> in network %s are "
 "mutually exclusive"
 msgstr ""
+"elementen <address>, <interface> och <pf> i <forward> i nätverket %s är "
+"ömsesidigt uteslutande"
 
 msgid "<config> element is currently supported only with 'rbd' disks"
-msgstr ""
+msgstr "elementet <config> stödjs för närvarande bara med ”rbd”-diskar"
 
 msgid "<domainbackup> must specify TCP port for now"
-msgstr ""
+msgstr "<domainbackup> måste tills vidare ange TCP-port"
 
 #, c-format
 msgid "<forward dev='%s'> must match first <interface dev='%s'/> in network %s"
 msgstr ""
+"<forward dev='%s'> måste matcha den första <interface dev='%s'/> i nätverket "
+"%s"
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
-msgstr ""
+msgstr "attributet ”display” i <hostdev> stödjs endast med model='vfio-pci'"
 
 msgid "<reservations/> allowed only for lun devices"
-msgstr ""
+msgstr "<reservations/> är endast tillåtna för lun-enheter"
 
 msgid "<snapshot> element is currently supported only with 'rbd' disks"
-msgstr ""
+msgstr "elementet <snapshot> stödjs för närvarande bara med ”rbd”-diskar"
 
 #, c-format
 msgid "<uuid> does not match secret file name '%s'"
-msgstr ""
+msgstr "<uuid> stämmer inte med ett hemlighetsfilnamn ”%s”"
 
 #, c-format
 msgid ""
 "<virtualport type='%s'> not supported for network '%s' which uses IP "
 "forwarding"
 msgstr ""
+"<virtualport type='%s'> stödjs inte för nätverket ”%s” vilket använder IP-"
+"vidarebefordran"
 
 #, c-format
 msgid ""
 "<virtualport type='%s'> not supported for network '%s' which uses a bridge "
 "device"
 msgstr ""
+"<virtualport type='%s'> stödjs inte för nätverket ”%s” vilket använder en "
+"bryggenhet"
 
 #, c-format
 msgid ""
 "<virtualport type='%s'> not supported for network '%s' which uses a macvtap "
 "device"
 msgstr ""
+"<virtualport type='%s'> stödjs inte för nätverket ”%s” vilket använder en "
+"macvtap-enhet"
 
 #, c-format
 msgid ""
 "<virtualport type='%s'> not supported for network '%s' which uses an SR-IOV "
 "Virtual Function via PCI passthrough"
 msgstr ""
+"<virtualport type='%s'> stödjs inte för nätverket ”%s” vilket använder en SR-"
+"IOV virtuell funktion via PCI-genomgång"
 
 #, c-format
 msgid "<virtualport> element unsupported for <interface type='%s'>"
-msgstr ""
+msgstr "elementet <virtualport> stödjs inte för <interface type='%s'>"
 
 #, c-format
 msgid ""
 "<virtualport> element unsupported for type='%s' in interface's <actual> "
 "element"
 msgstr ""
+"elementet <virtualport> stödjs inte för type='%s' i gränssnittets element "
+"<actual>"
 
 #, c-format
 msgid ""
 "<vlan> element specified for network %s, whose type doesn't support vlan "
 "configuration"
 msgstr ""
+"elementet <vlan> angivet för nätverket %s, vars typ inte stödjer en vlan-"
+"konfiguration"
 
-#, fuzzy
 msgid "? - print this help"
-msgstr "skriv ut hjälp"
+msgstr "? - skriv ut denna hjälp"
 
 msgid "A close callback is already registered"
-msgstr ""
+msgstr "Ett närliggande återanrop är redan registrerat"
 
 msgid "A different callback was requested"
-msgstr ""
+msgstr "Ett annat återanrop begärdes"
 
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
-msgstr ""
+msgstr "En domändefinition kan inte ha mer än en chiffernod med namnet %s"
 
-#, fuzzy
 msgid "A interface driver is already registered"
-msgstr "för många drivrutiner registrerade"
+msgstr "En gränssnittsdrivrutin är redan registrerad"
 
-#, fuzzy
 msgid "A network driver is already registered"
-msgstr "för många drivrutiner registrerade"
+msgstr "En nätverksdrivrutin är redan registrerad"
 
-#, fuzzy
 msgid "A network filter driver is already registered"
-msgstr "för många drivrutiner registrerade"
+msgstr "En nätverksfilterdrivrutin är redan registrerad"
 
 #, c-format
 msgid ""
 "A network with forward mode='%s' can specify a bridge name or a forward dev, "
 "but not both (network '%s')"
 msgstr ""
+"Ett nätverk med vidarebefordransläge=”%s” kan ange ett bryggnamn eller en "
+"vidarebefordranenhet, men inte båda (nätver ”%s”)"
 
-#, fuzzy
 msgid "A node device driver is already registered"
-msgstr "för många drivrutiner registrerade"
+msgstr "En nodenhetsdrivrutin är redan registrerad"
 
-#, fuzzy
 msgid "A secret driver is already registered"
-msgstr "för många drivrutiner registrerade"
+msgstr "En hemlighetsdrivrutin är redan registrerad"
 
 msgid ""
 "A single <secret type='passphrase'...> element is expected in encryption "
 "description"
 msgstr ""
+"Ett enda element <secret type='lösenfras'…> förväntas i "
+"krypteringsbeskrivningen"
 
-#, fuzzy
 msgid "A storage driver is already registered"
-msgstr "lagringsvolymen finns redan"
+msgstr "En lagringsdrivrutin är redan registrerad"
 
 msgid "ACPI requires UEFI on this architecture"
-msgstr ""
+msgstr "ACPI kräver UEFI på denna arkitektur"
 
 #, c-format
 msgid "AES256CBC encryption invalid keylen=%zu"
-msgstr ""
+msgstr "AES256CBC-kryptering med feaktig keylen=%zu"
 
 #, c-format
 msgid "AES256CBC initialization vector invalid len=%zu"
-msgstr ""
+msgstr "AES256CBC-initieringsvektor med felaktig len=%zu"
 
-#, fuzzy
 msgid "API error"
-msgstr "RPC-fel"
+msgstr "API-fel"
 
 msgid "Aborts the currently running domain job"
-msgstr ""
+msgstr "Avbryter det just nu körande domänjobbet"
 
 #, c-format
 msgid "Accept SSH host key with hash '%s' for host '%s:%d' (%s/%s)?"
-msgstr ""
+msgstr "Acceptera SSH-värdnyckel med hashen ”%s” för värden ”%s:%d” (%s/%s)?"
 
 msgid "Access denied"
 msgstr "Åtkomst nekas"
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%s'"
-msgstr ""
+msgstr "Aktivering av avlyssningsbegäran misslyckades på gränssnittet ”%s”"
 
 #, c-format
 msgid "Active %s devices on bus with %s, not doing bus reset"
-msgstr ""
+msgstr "Aktiva %s-enheter på bussen med %s, gör ingen bussåterställning"
 
 msgid "Active Block Commit"
-msgstr ""
+msgstr "Aktivt blockfastställande"
 
 msgid "Active Block Commit started"
-msgstr ""
+msgstr "Aktivt blockfastställande startade"
 
 msgid "Active channel stream exists for this domain"
-msgstr ""
+msgstr "Aktiva kanalströmmar finns för denna domän"
 
 msgid "Active console session exists for this domain"
-msgstr ""
+msgstr "Aktiv konsolsession finns för denna domän"
 
 msgid "Active:"
 msgstr "Aktivt:"
 
 #, c-format
 msgid "Actual interface '%s' hostdev was not a PCI device"
-msgstr ""
+msgstr "Faktiskt gränssnitt ”%s” värdenhet var inte en PCI-enhet"
 
-#, fuzzy
 msgid "Add an IOThread to the guest domain."
-msgstr "Kör ett omstartskommando i måldomänen."
+msgstr "Lägg till en IOThread till gästdomänen."
 
 msgid "Add or remove vcpus"
-msgstr ""
+msgstr "Lägg till eller ta bort vcpu:er"
 
 msgid "Added"
-msgstr ""
+msgstr "Tillagt"
 
 msgid "Address"
 msgstr "Adress"
 
 msgid "Advice from numad is needed in case of automatic numa placement"
-msgstr ""
+msgstr "Råd från numad behövs vid automatisk numa-placering"
 
 #, c-format
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr ""
+"Efter minnesdumpen, misslyckades att återuppta domän ”%d” med libxenlight"
 
 msgid "Ain't nobody heard of that much cache level"
-msgstr ""
+msgstr "Det har väl ingen hört talas om så många cache-nivåer"
 
 msgid "All identities provided by the SSH Agent were rejected"
-msgstr ""
+msgstr "Alla identiteter levererade av SSH-agenten avvisades"
 
 msgid ""
 "All provided authentication methods with credentials were rejected by the "
 "server"
 msgstr ""
+"Alla tillhandahållna autentiseringsmetoder med kreditiv avvisades av servern"
 
 msgid "Allocate or free some pages in the pool for NUMA cell."
-msgstr ""
+msgstr "Allokera eller frigör några sidor i poolen för NUMA-cel."
 
 msgid "Allocation"
 msgstr "Allokering"
@@ -1833,78 +1848,91 @@ msgstr "Allokering:"
 
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr ""
+"Tillåt inställning eller ändring av beskrivningen eller titeln för en domän."
 
 msgid "An error occurred, but the cause is unknown"
-msgstr ""
+msgstr "Ett fel inträffade, men orsaken är okänd"
 
 msgid "An event loop implementation must be registered"
-msgstr ""
+msgstr "En implementering av en händelseslinga måste registreras"
 
 msgid "An explicit disk format must be specified"
-msgstr ""
+msgstr "Ett explicit diskformat måste anges"
 
 #, c-format
 msgid "Ancestor model %s not found for CPU model %s"
-msgstr ""
+msgstr "Förfadersmodellen %s finns inte för CPU-modellen %s"
 
 #, c-format
 msgid "Another close callback is already defined for domain %s"
-msgstr ""
+msgstr "Ett annat återanrop för stängning är redan definierat för domänen %s"
 
 msgid "Another relabel transaction is already started"
-msgstr ""
+msgstr "En annan ometiketteringstransaktion är redan startad"
 
 msgid "AnyType is missing 'type' property"
-msgstr ""
+msgstr "AnyType saknar egenskapen ”type”"
 
 msgid ""
 "Argument 'cellid' in memnode element must correspond to existing guest's "
 "NUMA cell"
 msgstr ""
+"Argumentet ”cellid” i ett memnode-element måste motsvara en befintlig gästs "
+"NUMA-cell"
 
 #, c-format
 msgid "Argument 'node' %zu outranges defined number of NUMA nodes"
 msgstr ""
+"Argumetet ”node” %zu går utanför intervallet för det definierade antalet "
+"NUMA-noder"
 
 msgid "Arguments must be non null"
-msgstr ""
+msgstr "Argumenten måste vara skilda från null"
 
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
 msgstr ""
+"Argument under memnode-element motsvarar inte en befintlig gästs NUMA-cell"
 
 msgid "At least one NUMA node has to have CPUs"
-msgstr ""
+msgstr "Åtminstone en NUMA-nod måste ha CPU:er"
 
 msgid "At least one PTY console is required"
-msgstr ""
+msgstr "Åtminstone en PTY-konsol krävs"
 
-#, fuzzy
 msgid "At least one cgroup controller is required"
-msgstr "cgroup-CPU-regulatorn är inte monterad"
+msgstr "Åtminstone en cgroup-styrenhet krävs"
 
 msgid ""
 "At least one numa node has to be configured when enabling memory hotplug"
 msgstr ""
+"Åtminstone en numa-nod måste vara konfigurerad när man aktiverar minnesbyte "
+"i drift"
 
 #, c-format
 msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
 "definition in network '%s' "
 msgstr ""
+"Åtminstone ett av attributen name, mac eller ip måste anges för en statisk "
+"värddefintion i nätverket ”%s” "
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
 msgstr ""
+"Åtminstone en av flaggorna --max-clients, --max-unauth-clients är "
+"obligatorisk"
 
 msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
 "mandatory "
 msgstr ""
+"Åtminstone en av flaggorna --min-workers, --max-workers, --priority-workers "
+"är obligatorisk "
 
 msgid "At least one tty is required"
-msgstr ""
+msgstr "Åtminstone en tty krävs"
 
 msgid "Attach device from an XML <file>."
 msgstr "Anslut enhet från en XML <fil>."
@@ -1915,72 +1943,78 @@ msgstr "Anslut ny diskenhet."
 msgid "Attach new network interface."
 msgstr "Anslut nytt nätverksgränssnitt."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Attached device %s has no type"
-msgstr "målenhetstyp"
+msgstr "Den anslutna enheten %s har ingen typ"
 
 #, c-format
 msgid ""
 "Attaching memory device with size '%llu' would exceed domain's maxMemory "
 "config size '%llu'"
 msgstr ""
+"Att ansluta en minnesenhet med storleken ”%llu” skulle överskrida domänens "
+"konfigurerade maxMemory-storlek ”%llu”"
 
 #, c-format
 msgid "Attempt to create %s without specifying mode"
-msgstr ""
+msgstr "Försök att skapa %s utan att ange läge"
 
 msgid "Attempt to migrate guest to the same host"
-msgstr ""
+msgstr "Försök att migrera en gäst till samma värd"
 
 #, c-format
 msgid "Attempt to migrate guest to the same host %s"
-msgstr ""
+msgstr "Försök att migrera en gäst till samma värd %s"
 
 #, c-format
 msgid "Attempt to overwrite resctrlid='%s' with id='%s'"
-msgstr ""
+msgstr "Försök att skriva över resctrlid='%s' med id='%s'"
 
 msgid "Attempt to pass closed vhostuser FD"
-msgstr ""
+msgstr "Försök att skicka stängt vhostuer-FB"
 
 msgid "Attempt to send a non-blocking message with a synchronous reply"
 msgstr ""
+"Försök att skicka ett icke blockerande meddelanden med ett synkront svar"
 
 msgid "Attempt to send an asynchronous message with a synchronous reply"
-msgstr ""
+msgstr "Försök att skicka ett asynkront meddelanden med ett synkront svar"
 
 #, c-format
 msgid "Attempted double use of PCI Address %s"
-msgstr ""
+msgstr "Försök att dubbelanvända PCI-adressen %s"
 
 msgid "Attempting to use unknown stub driver"
-msgstr ""
+msgstr "Försök att använda en okänd stubb-drivrutin"
 
 msgid "Attribute migratable is only allowed for host-passthrough CPU"
-msgstr ""
+msgstr "Attributet migratable är endast tillåtet för värdgenomgångs-CPU"
 
 msgid "Attribute mode is only allowed for guest CPU"
-msgstr ""
+msgstr "Attributet mode är endast tillåtet för en gäst-CPU"
 
 msgid "Audio type OSS requires to have <input> and <output> specified"
-msgstr ""
+msgstr "Audiotypen OSS kräver att <input> och <output> anges"
 
 msgid "Audit is not supported by the kernel"
-msgstr ""
+msgstr "Granskning (audit) stödjs inte av kärnan"
 
 msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
 "qemu.conf"
 msgstr ""
+"Automatallokering av spice-TLS-port begärd men spice-TLS är avaktiverat i "
+"qemu.conf"
 
 msgid "Auto converge throttle:"
-msgstr ""
+msgstr "Automatkonvergeringsstrypning:"
 
 msgid "Auto-spawn of daemon requested, but no binary specified"
-msgstr ""
+msgstr "Automatstart av en demon begärd, men ingen binär angiven"
 
 msgid "Automatic disk lease mode enabled, but no host ID is set"
 msgstr ""
+"Automatisk diskhyrläge (lease mode) aktiverat, men ingen värd-ID är satt"
 
 msgid "Autostart"
 msgstr "Autostart"
@@ -1995,12 +2029,14 @@ msgid ""
 "Available servers on a daemon. Currently only supports 'libvirtd' or "
 "'virtproxyd'."
 msgstr ""
+"Tillgängliga servrar på en demon. För närvarande stödjs endast ”libvritd” "
+"eller ”virtproxyd”."
 
 msgid "Available:"
 msgstr "Tillgängliga:"
 
 msgid "Backup"
-msgstr ""
+msgstr "Säkerhetskopia"
 
 msgid "Backup Dump XML"
 msgstr ""
