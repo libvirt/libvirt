@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-11-24 23:25+0000\n"
-"PO-Revision-Date: 2020-11-24 13:17+0000\n"
+"PO-Revision-Date: 2020-11-27 14:15+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -583,7 +583,7 @@ msgstr ""
 
 #, c-format
 msgid "%s graphics are not supported with this QEMU"
-msgstr ""
+msgstr "%s-grafik stödjs inte med denna QEMU"
 
 #, c-format
 msgid "%s harddisk '%s' has unsupported cache mode '%s'"
@@ -675,7 +675,7 @@ msgstr "namnrymden %s är inte tillgänglig"
 
 #, c-format
 msgid "%s not available, firewall backend will not function"
-msgstr ""
+msgstr "%s är inte tillgängligt, brandvägsbakänden kommer inte fungera"
 
 #, c-format
 msgid "%s not found in %s"
@@ -1606,7 +1606,7 @@ msgid "--min-workers must be less than or equal to --max-workers"
 msgstr "--min-workers måste vara mindre än eller lika med --max-workers"
 
 msgid "--source-protocol option requires --sourcetype network"
-msgstr ""
+msgstr "flaggan --source-protocol kräver nätverkets --sourcetype"
 
 msgid ""
 "--verbose requires at least one of --timeout, --wait, --pivot, or --finish"
@@ -1891,6 +1891,8 @@ msgid ""
 "Append, reset or remove specified key from the authorized keys file for "
 "given user"
 msgstr ""
+"Lägg till, återställ eller ta bort den angivna nyckeln från filen med "
+"auktoriserade nycklar för den angivna användaren"
 
 msgid ""
 "Argument 'cellid' in memnode element must correspond to existing guest's "
@@ -2058,164 +2060,166 @@ msgid "Backup"
 msgstr "Säkerhetskopia"
 
 msgid "Backup Dump XML"
-msgstr ""
+msgstr "Säkerhetsdumps-XML"
 
-#, fuzzy
 msgid "Backup started\n"
-msgstr "Gränssnitt %s startat\n"
+msgstr "Säkerhetskopian startad\n"
 
 #, c-format
 msgid "Bad $%s value."
-msgstr ""
+msgstr "Felaktigt $%s-värde."
 
 #, c-format
 msgid "Bad ipv4 end address '%s' in <nat> in <forward> in network '%s'"
-msgstr ""
+msgstr "Felaktig ipv4-slutadress ”%s” i <nat> i <forward> i nätverket ”%s”"
 
 #, c-format
 msgid "Bad ipv4 start address '%s' in <nat> in <forward> in network '%s'"
-msgstr ""
+msgstr "Felaktig ipv4-startadress ”%s” i <nat> i <forward> i nätverket ”%s”"
 
 #, c-format
 msgid "Bad prefix name '%s' for resctrl monitor"
-msgstr ""
+msgstr "Felaktigt prefixnamn ”%s” för resctrl-monitor"
 
-#, fuzzy
 msgid "Bad value for nativeMode"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "Felaktigt värde för nativeMode"
 
 msgid "Bandwidth rate limiting is not supported"
-msgstr ""
+msgstr "Begränsning av bandbreddshastighet stödjs inte"
 
 #, c-format
 msgid "Before dumping core, failed to suspend domain '%d' with libxenlight"
-msgstr ""
+msgstr "Före minnesdumpen, misslyckades att söva domänen ”%d” med libxenlight"
 
 msgid "Bhyve version does not support framebuffer"
-msgstr ""
+msgstr "Bhyve-versionen stödjer inte rambuffertar"
 
 #, c-format
 msgid ""
 "Bit 29 (Long Mode) of HostSystem property 'hardware.cpuFeature[].edx' with "
 "value '%s' has unexpected value '%c', expecting '0' or '1'"
 msgstr ""
+"Bit 29 (långt läge) av egenskapen HostSystem ”hardware.cpuFeature[].edx” med "
+"värdet ”%s” har ett oväntat värde ”%c”, ”0” eller ”1” förväntades"
 
 msgid "Block Commit"
-msgstr ""
+msgstr "Blockfastställande"
 
 msgid "Block Commit started"
-msgstr ""
+msgstr "Blockfastställande startade"
 
 msgid "Block Copy"
-msgstr ""
+msgstr "Blockkopiering"
 
 msgid "Block Copy started"
-msgstr ""
+msgstr "Blockkopiering startade"
 
 msgid "Block I/O tuning is not available in session mode"
-msgstr ""
+msgstr "Block-I/O-trimning är inte tillgängligt i sessionsläge"
 
 msgid "Block I/O tuning is not available on this host"
-msgstr ""
+msgstr "Block-I/O-trimning är inte tillgängligt på denna värd"
 
 msgid "Block Pull"
-msgstr ""
+msgstr "Blockhämtande"
 
 msgid "Block Pull started"
-msgstr ""
+msgstr "Blockhämtande startade"
 
 msgid "Block commit"
-msgstr ""
+msgstr "Blockfastställande"
 
 #, c-format
 msgid "Block device '%s' is resized"
-msgstr ""
+msgstr "Blockenheten ”%s” har ändrad storlek"
 
 msgid "Booted"
 msgstr "Startad"
 
 msgid ""
 "Both 'name' and 'parent' cannot be specified for the 'scsi_host' adapter"
-msgstr ""
+msgstr "Både ”name” och ”parent” kan inte anges för adaptern ”scsi_host”"
 
 msgid ""
 "Both port and URI requested for disk migration while being mutually exclusive"
 msgstr ""
+"Både port och URI begärda för diskmigrering fast de är ömsesidigt uteslutande"
 
 msgid "Bounded"
-msgstr ""
+msgstr "Begränsad"
 
 #, c-format
 msgid "Bridge %s too big for destination"
-msgstr ""
+msgstr "Bryggan %s är för stor för destinationen"
 
 #, c-format
 msgid "Bridge '%s' has no QoS set, therefore unable to set 'floor' on '%s'"
 msgstr ""
+"Bryggan ”%s” har inte QoS satt, därför går det inte att sätta ”floor” på ”%s”"
 
 #, c-format
 msgid "Bridge generation exceeded max id %d"
-msgstr ""
+msgstr "Bryggenerering överskred max-id %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Bridge interface %s started\n"
-msgstr "Gränssnitt %s startat\n"
+msgstr "Bryggränssnitt %s startat\n"
 
 #, c-format
 msgid "Bridge name %s too long for destination"
-msgstr ""
+msgstr "Bryggnamnet %s är för långt för målet"
 
 msgid "Bridge:"
 msgstr "Brygga:"
 
 msgid "Buffer to small for ipset name"
-msgstr ""
+msgstr "Bufferten är för liten för ipset-namnet"
 
 msgid "Buffer too small for IPSETFLAGS type"
-msgstr ""
+msgstr "Bufferten är för liten för IPSETFLAGS-typen"
 
 msgid "Buffer too small for MAC address"
-msgstr ""
+msgstr "Bufferten är för liten för MAC-adressen"
 
 msgid "Buffer too small for uint16 type"
-msgstr ""
+msgstr "Bufferten är för liten för typen uint16"
 
 msgid "Buffer too small for uint32 type"
-msgstr ""
+msgstr "Bufferten är för liten för typen uint32"
 
 msgid "Buffer too small for uint8 type"
-msgstr ""
+msgstr "Bufferten är för liten för typen uint8"
 
 #, c-format
 msgid "Buffer too small to print variable '%s' into"
-msgstr ""
+msgstr "Bufferten är för liten för att skriva variabeln ”%s” i"
 
 msgid "Build a given pool."
-msgstr ""
+msgstr "Bygg en angiven pool."
 
 msgid "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
-msgstr ""
+msgstr "Buss 0 måste vara PCI för integrerade PIIX3 USB- eller IDE-styrenheter"
 
 msgid "Busy"
 msgstr "Upptagen"
 
 msgid "CA certificate:"
-msgstr ""
+msgstr "CA-certifikat:"
 
 msgid "CCW address type is not supported by this QEMU"
-msgstr ""
+msgstr "CCW-adresstypen stödjs inte av denna QEMU"
 
 #, c-format
 msgid "CHS geometry can not be set for '%s' bus"
-msgstr ""
+msgstr "CHS-geometrin kan inte anges för bussen ”%s”"
 
 #, c-format
 msgid "CHS translation mode can only be set for 'ide' bus not '%s'"
-msgstr ""
+msgstr "CHS-översättningsläget kan endast sättas för bussen ”ide” inte ”%s”"
 
 #, c-format
 msgid "CPU %d in cpulist '%s' exceed the maxcpu %d"
-msgstr ""
+msgstr "CPU %d i cpulistan ”%s” överskrider maxcpu %d"
 
 msgid "CPU Affinity"
 msgstr "CPU-affinitet"
@@ -2224,57 +2228,61 @@ msgid "CPU Affinity:"
 msgstr "CPU-släktskap:"
 
 msgid "CPU IDs in <numa> exceed the <vcpu> count"
-msgstr ""
+msgstr "CPU-ID:n i <numa> överskrider antalet <vcpu>"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU Model %s too long for destination"
-msgstr "Sökvägen %s är för lång för unix-uttag"
+msgstr "CPU-modellen %s är för lång för målet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU arch %s does not match host arch"
-msgstr "Mål-CPU-arkitekturen %s stämmer inte med källan %s"
+msgstr "CPU-arkitekturen %s stämmer inte med värdarkitekturen"
 
 msgid "CPU architecture (/domain/os/type/@arch)"
-msgstr ""
+msgstr "CPU-arkitektur (/domän/os/typ/@arkitektur)"
 
 #, c-format
 msgid "CPU cache mode '%s' can only be used with '%s' CPUs"
-msgstr ""
+msgstr "CPU-cacheläget ”%s” kan endast användas med ”%s”-CPU:er"
 
 #, c-format
 msgid "CPU cache mode '%s' can only be used with level='3'"
-msgstr ""
+msgstr "CPU-cacheläget ”%s” kan endast användas med level='3'"
 
 #, c-format
 msgid "CPU cache specification is not supported for '%s' architecture"
-msgstr ""
+msgstr "CPU-cachespecifikationen stödjs inte för arkitekturen ”%s”"
 
 msgid "CPU data"
-msgstr ""
+msgstr "CPU-data"
 
 #, c-format
 msgid "CPU described in %s is identical to host CPU\n"
-msgstr ""
+msgstr "CPU:n som är beskriven i %s är identisk med värd-CPU:n\n"
 
 #, c-format
 msgid ""
 "CPU described in %s is identical to the CPU provided by hypervisor on the "
 "host\n"
 msgstr ""
+"CPU:n som beskrivs i %s är identisk med CPU:n som tillhandahålls av "
+"hypervisorn på värden\n"
 
 #, c-format
 msgid "CPU described in %s is incompatible with host CPU\n"
-msgstr ""
+msgstr "CPU:n som beskrivs i %s är inkompatibel med värd-CPU:n\n"
 
 #, c-format
 msgid ""
 "CPU described in %s is incompatible with the CPU provided by hypervisor on "
 "the host\n"
 msgstr ""
+"CPU:n som beskrivs i %s är inkompatibel med CPU:n som tillhandahålls av "
+"hypervisorn på värden\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU driver '%s' does not exist"
-msgstr "Hyra %s i låsrymden %s finns inte"
+msgstr "CPU-drivrutinen ”%s” finns inte"
 
 #, c-format
 msgid "CPU feature %s already defined"
