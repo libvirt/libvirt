@@ -623,6 +623,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "vnc-power-control",
               "audiodev",
               "blockdev-backup",
+              "object.qapified",
     );
 
 
