@@ -444,10 +444,6 @@ int qemuMonitorSetLink(qemuMonitorPtr mon,
 char *qemuMonitorNextCommandID(qemuMonitorPtr mon);
 int qemuMonitorSend(qemuMonitorPtr mon,
                     qemuMonitorMessagePtr msg) G_GNUC_NO_INLINE;
-virJSONValuePtr qemuMonitorGetOptions(qemuMonitorPtr mon)
-    ATTRIBUTE_NONNULL(1);
-void qemuMonitorSetOptions(qemuMonitorPtr mon, virJSONValuePtr options)
-    ATTRIBUTE_NONNULL(1);
 int qemuMonitorUpdateVideoMemorySize(qemuMonitorPtr mon,
                                      virDomainVideoDefPtr video,
                                      const char *videoName)
@@ -1284,10 +1280,6 @@ int qemuMonitorGetCommands(qemuMonitorPtr mon,
                            char ***commands);
 int qemuMonitorGetEvents(qemuMonitorPtr mon,
                          char ***events);
-int qemuMonitorGetCommandLineOptionParameters(qemuMonitorPtr mon,
-                                              const char *option,
-                                              char ***params,
-                                              bool *found);
 GHashTable *qemuMonitorGetCommandLineOptions(qemuMonitorPtr mon);
 
 int qemuMonitorGetKVMState(qemuMonitorPtr mon,

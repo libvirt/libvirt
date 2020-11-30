@@ -101,9 +101,6 @@ struct _qemuMonitor {
 
     bool waitGreeting;
 
-    /* cache of query-command-line-options results */
-    virJSONValuePtr options;
-
     /* If found, path to the virtio memballoon driver */
     char *balloonpath;
     bool ballooninit;
@@ -240,7 +237,6 @@ qemuMonitorDispose(void *obj)
     virResetError(&mon->lastError);
     virCondDestroy(&mon->notify);
     VIR_FREE(mon->buffer);
-    virJSONValueFree(mon->options);
     VIR_FREE(mon->balloonpath);
 }
 
@@ -989,20 +985,6 @@ qemuMonitorLastError(qemuMonitorPtr mon)
         return NULL;
 
     return virErrorCopyNew(&mon->lastError);
-}
-
-
-virJSONValuePtr
-qemuMonitorGetOptions(qemuMonitorPtr mon)
-{
-    return mon->options;
-}
-
-
-void
-qemuMonitorSetOptions(qemuMonitorPtr mon, virJSONValuePtr options)
-{
-    mon->options = options;
 }
 
 
@@ -3853,23 +3835,6 @@ qemuMonitorGetEvents(qemuMonitorPtr mon,
     QEMU_CHECK_MONITOR(mon);
 
     return qemuMonitorJSONGetEvents(mon, events);
-}
-
-
-/* Collect the parameters associated with a given command line option.
- * Return count of known parameters or -1 on error.  */
-int
-qemuMonitorGetCommandLineOptionParameters(qemuMonitorPtr mon,
-                                          const char *option,
-                                          char ***params,
-                                          bool *found)
-{
-    VIR_DEBUG("option=%s params=%p", option, params);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONGetCommandLineOptionParameters(mon, option,
-                                                         params, found);
 }
 
 

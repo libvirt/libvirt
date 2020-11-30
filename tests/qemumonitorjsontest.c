@@ -616,122 +616,6 @@ testQemuMonitorJSONGetTPMModels(const void *opaque)
 }
 
 
-static int
-testQemuMonitorJSONGetCommandLineOptionParameters(const void *opaque)
-{
-    const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
-    char **params = NULL;
-    int nparams = 0;
-    bool found = false;
-    g_autoptr(qemuMonitorTest) test = NULL;
-
-    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
-        return -1;
-
-    if (qemuMonitorTestAddItem(test, "query-command-line-options",
-                               "{ "
-                               "  \"return\": [ "
-                               "  {\"parameters\": [], \"option\": \"acpi\" },"
-                               "  {\"parameters\": ["
-                               "    {\"name\": \"romfile\", "
-                               "     \"type\": \"string\"}, "
-                               "    {\"name\": \"bootindex\", "
-                               "     \"type\": \"number\"}], "
-                               "   \"option\": \"option-rom\"}"
-                               "  ]"
-                               "}") < 0)
-        goto cleanup;
-
-    /* present with params */
-    if ((nparams = qemuMonitorGetCommandLineOptionParameters(qemuMonitorTestGetMonitor(test),
-                                                             "option-rom",
-                                                             &params,
-                                                             NULL)) < 0)
-        goto cleanup;
-
-    if (nparams != 2) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "nparams was %d, expected 2", nparams);
-        goto cleanup;
-    }
-
-#define CHECK(i, wantname) \
-    do { \
-        if (STRNEQ(params[i], (wantname))) { \
-            virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           "name was %s, expected %s", \
-                           params[i], (wantname)); \
-            goto cleanup; \
-        } \
-    } while (0)
-
-    CHECK(0, "romfile");
-    CHECK(1, "bootindex");
-
-#undef CHECK
-
-    g_strfreev(params);
-    params = NULL;
-
-    /* present but empty */
-    if ((nparams = qemuMonitorGetCommandLineOptionParameters(qemuMonitorTestGetMonitor(test),
-                                                             "acpi",
-                                                             &params,
-                                                             &found)) < 0)
-        goto cleanup;
-
-    if (nparams != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "nparams was %d, expected 0", nparams);
-        goto cleanup;
-    }
-    if (!found) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "found was false, expected true");
-        goto cleanup;
-    }
-    if (params && params[0]) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "unexpected array contents");
-        goto cleanup;
-    }
-
-    g_strfreev(params);
-    params = NULL;
-
-    /* no such option */
-    if ((nparams = qemuMonitorGetCommandLineOptionParameters(qemuMonitorTestGetMonitor(test),
-                                                             "foobar",
-                                                             &params,
-                                                             &found)) < 0)
-        goto cleanup;
-
-    if (nparams != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "nparams was %d, expected 0", nparams);
-        goto cleanup;
-    }
-    if (found) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "found was true, expected false");
-        goto cleanup;
-    }
-    if (params && params[0]) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "unexpected array contents");
-        goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    g_strfreev(params);
-    return ret;
-}
-
-
 struct qemuMonitorJSONTestAttachChardevData {
     qemuMonitorTestPtr test;
     virDomainChrSourceDefPtr chr;
@@ -3256,7 +3140,6 @@ mymain(void)
     DO_TEST(GetCPUDefinitions);
     DO_TEST(GetCommands);
     DO_TEST(GetTPMModels);
-    DO_TEST(GetCommandLineOptionParameters);
     if (qemuMonitorJSONTestAttachChardev(driver.xmlopt, qapiData.schema) < 0)
         ret = -1;
     DO_TEST(DetachChardev);
