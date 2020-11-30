@@ -793,7 +793,7 @@ int qemuMonitorSetMigrationCacheSize(qemuMonitorPtr mon,
 int qemuMonitorGetMigrationParams(qemuMonitorPtr mon,
                                   virJSONValuePtr *params);
 int qemuMonitorSetMigrationParams(qemuMonitorPtr mon,
-                                  virJSONValuePtr params);
+                                  virJSONValuePtr *params);
 
 typedef enum {
     QEMU_MONITOR_MIGRATION_STATUS_INACTIVE,

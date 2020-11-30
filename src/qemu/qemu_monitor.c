@@ -2464,22 +2464,17 @@ qemuMonitorGetMigrationParams(qemuMonitorPtr mon,
  * @mon: Pointer to the monitor object.
  * @params: Migration parameters.
  *
- * The @params object is consumed and should not be referenced by the caller
- * after this function returns.
+ * The @params object is consumed and cleared on success and some errors.
  *
  * Returns 0 on success, -1 on error.
  */
 int
 qemuMonitorSetMigrationParams(qemuMonitorPtr mon,
-                              virJSONValuePtr params)
+                              virJSONValuePtr *params)
 {
-    QEMU_CHECK_MONITOR_GOTO(mon, error);
+    QEMU_CHECK_MONITOR(mon);
 
     return qemuMonitorJSONSetMigrationParams(mon, params);
-
- error:
-    virJSONValueFree(params);
-    return -1;
 }
 
 

@@ -843,12 +843,9 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
     if (!(params = qemuMigrationParamsToJSON(migParams)))
         goto cleanup;
 
-    if (virJSONValueObjectKeysNumber(params) > 0) {
-        rc = qemuMonitorSetMigrationParams(priv->mon, params);
-        params = NULL;
-        if (rc < 0)
-            goto cleanup;
-    }
+    if (virJSONValueObjectKeysNumber(params) > 0 &&
+        qemuMonitorSetMigrationParams(priv->mon, &params) < 0)
+        goto cleanup;
 
     ret = 0;
 

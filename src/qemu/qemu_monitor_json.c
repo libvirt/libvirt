@@ -3461,12 +3461,13 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
-                                  virJSONValuePtr params)
+                                  virJSONValuePtr *params)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
+    virJSONValuePtr par = g_steal_pointer(params);
 
-    if (!(cmd = qemuMonitorJSONMakeCommandInternal("migrate-set-parameters", params)))
+    if (!(cmd = qemuMonitorJSONMakeCommandInternal("migrate-set-parameters", par)))
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
