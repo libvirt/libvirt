@@ -3052,13 +3052,12 @@ qemuMonitorAddObject(qemuMonitorPtr mon,
 {
     const char *type = NULL;
     const char *id = NULL;
-    char *tmp = NULL;
-    int ret = -1;
+    g_autofree char *aliasCopy = NULL;
 
     if (!*props) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("object props can't be NULL"));
-        goto cleanup;
+        return -1;
     }
 
     type = virJSONValueObjectGetString(*props, "qom-type");
@@ -3066,31 +3065,25 @@ qemuMonitorAddObject(qemuMonitorPtr mon,
 
     VIR_DEBUG("type=%s id=%s", NULLSTR(type), NULLSTR(id));
 
-    QEMU_CHECK_MONITOR_GOTO(mon, cleanup);
+    QEMU_CHECK_MONITOR(mon);
 
     if (!id || !type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("missing alias or qom-type for qemu object '%s'"),
                        NULLSTR(type));
-        goto cleanup;
+        return -1;
     }
 
     if (alias)
-        tmp = g_strdup(id);
+        aliasCopy = g_strdup(id);
 
     if (qemuMonitorJSONAddObject(mon, props) < 0)
-        goto cleanup;
+        return -1;
 
     if (alias)
-        *alias = g_steal_pointer(&tmp);
+        *alias = g_steal_pointer(&aliasCopy);
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(tmp);
-    virJSONValueFree(*props);
-    *props = NULL;
-    return ret;
+    return 0;
 }
 
 
