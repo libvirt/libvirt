@@ -1288,6 +1288,7 @@ int qemuMonitorGetCommandLineOptionParameters(qemuMonitorPtr mon,
                                               const char *option,
                                               char ***params,
                                               bool *found);
+GHashTable *qemuMonitorGetCommandLineOptions(qemuMonitorPtr mon);
 
 int qemuMonitorGetKVMState(qemuMonitorPtr mon,
                            bool *enabled,

@@ -6378,6 +6378,54 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
 }
 
 
+static int
+qemuMonitorJSONGetCommandLineOptionsWorker(size_t pos G_GNUC_UNUSED,
+                                           virJSONValuePtr item,
+                                           void *opaque)
+{
+    const char *name = virJSONValueObjectGetString(item, "option");
+    g_autoptr(virJSONValue) parameters = NULL;
+    GHashTable *options = opaque;
+
+    if (!name ||
+        virJSONValueObjectRemoveKey(item, "parameters", &parameters) <= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("reply data was missing 'option' name or parameters"));
+        return -1;
+    }
+
+    g_hash_table_insert(options, g_strdup(name), parameters);
+    parameters = NULL;
+
+    return 0;
+}
+
+
+GHashTable *
+qemuMonitorJSONGetCommandLineOptions(qemuMonitorPtr mon)
+{
+    g_autoptr(GHashTable) ret = virHashNew(virJSONValueHashFree);
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-command-line-options", NULL)))
+        return NULL;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return NULL;
+
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
+        return NULL;
+
+    if (virJSONValueArrayForeachSteal(virJSONValueObjectGetArray(reply, "return"),
+                                      qemuMonitorJSONGetCommandLineOptionsWorker,
+                                      ret) < 0)
+        return NULL;
+
+    return g_steal_pointer(&ret);
+}
+
+
 int
 qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
                                               const char *option,

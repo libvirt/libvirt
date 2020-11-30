@@ -430,6 +430,7 @@ int qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
                                                   char ***params,
                                                   bool *found)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+GHashTable *qemuMonitorJSONGetCommandLineOptions(qemuMonitorPtr mon);
 
 int qemuMonitorJSONGetKVMState(qemuMonitorPtr mon,
                                bool *enabled,

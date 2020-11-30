@@ -3873,6 +3873,15 @@ qemuMonitorGetCommandLineOptionParameters(qemuMonitorPtr mon,
 }
 
 
+GHashTable *
+qemuMonitorGetCommandLineOptions(qemuMonitorPtr mon)
+{
+    QEMU_CHECK_MONITOR_NULL(mon);
+
+    return qemuMonitorJSONGetCommandLineOptions(mon);
+}
+
+
 int
 qemuMonitorGetKVMState(qemuMonitorPtr mon,
                        bool *enabled,
