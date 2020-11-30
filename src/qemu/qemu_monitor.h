@@ -864,7 +864,7 @@ int qemuMonitorGetMigrationStats(qemuMonitorPtr mon,
 int qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
                                         char ***capabilities);
 int qemuMonitorSetMigrationCapabilities(qemuMonitorPtr mon,
-                                        virJSONValuePtr caps);
+                                        virJSONValuePtr *caps);
 
 int qemuMonitorGetGICCapabilities(qemuMonitorPtr mon,
                                   virGICCapability **capabilities);

@@ -803,7 +803,6 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
     g_autoptr(virJSONValue) caps = NULL;
     qemuMigrationParam xbzrle = QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE;
     int ret = -1;
-    int rc;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
@@ -819,12 +818,9 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
         if (!(caps = qemuMigrationCapsToJSON(priv->migrationCaps, migParams->caps)))
             goto cleanup;
 
-        if (virJSONValueArraySize(caps) > 0) {
-            rc = qemuMonitorSetMigrationCapabilities(priv->mon, caps);
-            caps = NULL;
-            if (rc < 0)
-                goto cleanup;
-        }
+        if (virJSONValueArraySize(caps) > 0 &&
+            qemuMonitorSetMigrationCapabilities(priv->mon, &caps) < 0)
+            goto cleanup;
     }
 
     /* If QEMU is too old to support xbzrle-cache-size migration parameter,
@@ -1389,8 +1385,7 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
             return -1;
 
-        rc = qemuMonitorSetMigrationCapabilities(priv->mon, json);
-        json = NULL;
+        rc = qemuMonitorSetMigrationCapabilities(priv->mon, &json);
 
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             return -1;

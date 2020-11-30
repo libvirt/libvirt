@@ -2092,8 +2092,7 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *opaque)
         goto cleanup;
 
     ret = qemuMonitorJSONSetMigrationCapabilities(qemuMonitorTestGetMonitor(test),
-                                                  json);
-    json = NULL;
+                                                  &json);
 
  cleanup:
     virJSONValueFree(json);

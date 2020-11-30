@@ -6972,14 +6972,14 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONSetMigrationCapabilities(qemuMonitorPtr mon,
-                                        virJSONValuePtr caps)
+                                        virJSONValuePtr *caps)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("migrate-set-capabilities",
-                                     "a:capabilities", &caps,
+                                     "a:capabilities", caps,
                                      NULL);
     if (!cmd)
         goto cleanup;
@@ -6992,7 +6992,6 @@ qemuMonitorJSONSetMigrationCapabilities(qemuMonitorPtr mon,
 
     ret = 0;
  cleanup:
-    virJSONValueFree(caps);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;

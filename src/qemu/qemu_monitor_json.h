@@ -149,7 +149,7 @@ int qemuMonitorJSONGetMigrationStats(qemuMonitorPtr mon,
 int qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
                                             char ***capabilities);
 int qemuMonitorJSONSetMigrationCapabilities(qemuMonitorPtr mon,
-                                            virJSONValuePtr caps);
+                                            virJSONValuePtr *caps);
 
 int qemuMonitorJSONGetGICCapabilities(qemuMonitorPtr mon,
                                       virGICCapability **capabilities);

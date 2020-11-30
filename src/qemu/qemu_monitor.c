@@ -3879,22 +3879,17 @@ qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
  * @mon: Pointer to the monitor object.
  * @caps: Migration capabilities.
  *
- * The @caps object is consumed and should not be referenced by the caller
- * after this function returns.
+ * The @caps object is consumed cleared on success and some errors.
  *
  * Returns 0 on success, -1 on error.
  */
 int
 qemuMonitorSetMigrationCapabilities(qemuMonitorPtr mon,
-                                    virJSONValuePtr caps)
+                                    virJSONValuePtr *caps)
 {
-    QEMU_CHECK_MONITOR_GOTO(mon, error);
+    QEMU_CHECK_MONITOR(mon);
 
     return qemuMonitorJSONSetMigrationCapabilities(mon, caps);
-
- error:
-    virJSONValueFree(caps);
-    return -1;
 }
 
 
