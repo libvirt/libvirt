@@ -2050,11 +2050,10 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     const char *cap;
-    char **caps = NULL;
-    virBitmapPtr bitmap = NULL;
-    virJSONValuePtr json = NULL;
+    g_auto(GStrv) caps = NULL;
+    g_autoptr(virBitmap) bitmap = NULL;
+    g_autoptr(virJSONValue) json = NULL;
     const char *reply =
         "{"
         "    \"return\": ["
@@ -2073,32 +2072,26 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *opaque)
     if (qemuMonitorTestAddItem(test, "query-migrate-capabilities", reply) < 0 ||
         qemuMonitorTestAddItem(test, "migrate-set-capabilities",
                                "{\"return\":{}}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorGetMigrationCapabilities(qemuMonitorTestGetMonitor(test),
                                             &caps) < 0)
-        goto cleanup;
+        return -1;
 
     cap = qemuMigrationCapabilityTypeToString(QEMU_MIGRATION_CAP_XBZRLE);
     if (!virStringListHasString((const char **) caps, cap)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Expected capability %s is missing", cap);
-        goto cleanup;
+        return -1;
     }
 
     bitmap = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
     ignore_value(virBitmapSetBit(bitmap, QEMU_MIGRATION_CAP_XBZRLE));
     if (!(json = qemuMigrationCapsToJSON(bitmap, bitmap)))
-        goto cleanup;
+        return -1;
 
-    ret = qemuMonitorJSONSetMigrationCapabilities(qemuMonitorTestGetMonitor(test),
-                                                  &json);
-
- cleanup:
-    virJSONValueFree(json);
-    g_strfreev(caps);
-    virBitmapFree(bitmap);
-    return ret;
+    return qemuMonitorJSONSetMigrationCapabilities(qemuMonitorTestGetMonitor(test),
+                                                   &json);
 }
 
 static int
