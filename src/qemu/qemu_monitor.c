@@ -3078,8 +3078,7 @@ qemuMonitorAddObject(qemuMonitorPtr mon,
     if (alias)
         tmp = g_strdup(id);
 
-    ret = qemuMonitorJSONAddObject(mon, *props);
-    *props = NULL;
+    ret = qemuMonitorJSONAddObject(mon, props);
 
     if (alias)
         *alias = g_steal_pointer(&tmp);

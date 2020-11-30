@@ -4593,12 +4593,13 @@ qemuMonitorJSONAddDevice(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONAddObject(qemuMonitorPtr mon,
-                         virJSONValuePtr props)
+                         virJSONValuePtr *props)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
+    virJSONValuePtr pr = g_steal_pointer(props);
 
-    if (!(cmd = qemuMonitorJSONMakeCommandInternal("object-add", props)))
+    if (!(cmd = qemuMonitorJSONMakeCommandInternal("object-add", pr)))
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
