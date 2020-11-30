@@ -883,30 +883,6 @@ virJSONValueObjectGet(virJSONValuePtr object,
 }
 
 
-static virJSONValuePtr
-virJSONValueObjectSteal(virJSONValuePtr object,
-                        const char *key)
-{
-    size_t i;
-    virJSONValuePtr obj = NULL;
-
-    if (object->type != VIR_JSON_TYPE_OBJECT)
-        return NULL;
-
-    for (i = 0; i < object->data.object.npairs; i++) {
-        if (STREQ(object->data.object.pairs[i].key, key)) {
-            obj = g_steal_pointer(&object->data.object.pairs[i].value);
-            VIR_FREE(object->data.object.pairs[i].key);
-            VIR_DELETE_ELEMENT(object->data.object.pairs, i,
-                               object->data.object.npairs);
-            break;
-        }
-    }
-
-    return obj;
-}
-
-
 /* Return the value associated with KEY within OBJECT, but return NULL
  * if the key is missing or if value is not the correct TYPE.  */
 virJSONValuePtr
@@ -929,7 +905,10 @@ virJSONValueObjectStealByType(virJSONValuePtr object,
                               const char *key,
                               virJSONType type)
 {
-    virJSONValuePtr value = virJSONValueObjectSteal(object, key);
+    virJSONValuePtr value;
+
+    if (virJSONValueObjectRemoveKey(object, key, &value) <= 0)
+        return NULL;
 
     if (value && value->type == type)
         return value;
