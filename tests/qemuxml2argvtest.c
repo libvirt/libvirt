@@ -524,6 +524,7 @@ testCompareXMLToArgvValidateSchema(virQEMUDriverPtr drv,
     g_autoptr(GHashTable) schema = NULL;
     g_autoptr(virCommand) cmd = NULL;
     unsigned int parseFlags = info->parseFlags;
+    bool netdevQAPIfied = false;
 
     if (info->schemafile)
         schema = testQEMUSchemaLoad(info->schemafile);
@@ -552,6 +553,8 @@ testCompareXMLToArgvValidateSchema(virQEMUDriverPtr drv,
     if (virCommandGetArgList(cmd, &args, &nargs) < 0)
         return -1;
 
+    netdevQAPIfied = !virQEMUQAPISchemaPathExists("netdev_add/arg-type/type/!string", schema);
+
     for (i = 0; i < nargs; i++) {
         g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
         g_autoptr(virJSONValue) jsonargs = NULL;
@@ -569,12 +572,13 @@ testCompareXMLToArgvValidateSchema(virQEMUDriverPtr drv,
 
             i++;
         } else if (STREQ(args[i], "-netdev")) {
+            if (!netdevQAPIfied) {
+                i++;
+                continue;
+            }
+
             if (!(jsonargs = virJSONValueFromString(args[i + 1])))
                 return -1;
-
-            /* skip the validation for pre-QAPIfication cases */
-            if (virQEMUQAPISchemaPathExists("netdev_add/arg-type/type/!string", schema))
-                continue;
 
             if (testQEMUSchemaValidateCommand("netdev_add", jsonargs,
                                               schema, false, false, &debug) < 0) {
