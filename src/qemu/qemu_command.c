@@ -3085,7 +3085,10 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
 
         if (mem->nvdimmPath) {
             memPath = g_strdup(mem->nvdimmPath);
-            prealloc = true;
+            /* If the NVDIMM is a real device then there's nothing to prealloc.
+             * If anything, we would be only wearing off the device. */
+            if (!mem->nvdimmPmem)
+                prealloc = true;
         } else if (useHugepage) {
             if (qemuGetDomainHupageMemPath(priv->driver, def, pagesize, &memPath) < 0)
                 return -1;

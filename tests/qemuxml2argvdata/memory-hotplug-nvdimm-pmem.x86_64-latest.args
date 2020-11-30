@@ -20,7 +20,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -object memory-backend-ram,id=ram-node0,size=224395264 \
 -numa node,nodeid=0,cpus=0-1,memdev=ram-node0 \
 -object memory-backend-file,id=memnvdimm0,mem-path=/tmp/nvdimm,share=no,\
-prealloc=yes,size=536870912,pmem=yes \
+size=536870912,pmem=yes \
 -device nvdimm,node=0,memdev=memnvdimm0,id=nvdimm0,slot=0 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \
