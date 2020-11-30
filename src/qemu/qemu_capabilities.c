@@ -3226,28 +3226,32 @@ static int
 virQEMUCapsProbeQMPCommandLine(virQEMUCapsPtr qemuCaps,
                                qemuMonitorPtr mon)
 {
-    bool found = false;
-    int nvalues;
-    char **values;
-    size_t i, j;
+    g_autoptr(GHashTable) options = NULL;
+    size_t i;
+
+    if (!(options = qemuMonitorGetCommandLineOptions(mon)))
+        return -1;
 
     for (i = 0; i < G_N_ELEMENTS(virQEMUCapsCommandLine); i++) {
-        if ((nvalues = qemuMonitorGetCommandLineOptionParameters(mon,
-                                                                 virQEMUCapsCommandLine[i].option,
-                                                                 &values,
-                                                                 &found)) < 0)
-            return -1;
+        virJSONValuePtr option = g_hash_table_lookup(options, virQEMUCapsCommandLine[i].option);
+        size_t j;
 
-        if (found && !virQEMUCapsCommandLine[i].param)
+        if (!option)
+            continue;
+
+        /* not looking for a specific argument */
+        if (!virQEMUCapsCommandLine[i].param) {
             virQEMUCapsSet(qemuCaps, virQEMUCapsCommandLine[i].flag);
-
-        for (j = 0; j < nvalues; j++) {
-            if (STREQ_NULLABLE(virQEMUCapsCommandLine[i].param, values[j])) {
-                virQEMUCapsSet(qemuCaps, virQEMUCapsCommandLine[i].flag);
-                break;
-            }
+            continue;
         }
-        g_strfreev(values);
+
+        for (j = 0; j < virJSONValueArraySize(option); j++) {
+            virJSONValuePtr param = virJSONValueArrayGet(option, j);
+            const char *paramname = virJSONValueObjectGetString(param, "name");
+
+            if (STREQ_NULLABLE(virQEMUCapsCommandLine[i].param, paramname))
+                virQEMUCapsSet(qemuCaps, virQEMUCapsCommandLine[i].flag);
+        }
     }
 
     return 0;
