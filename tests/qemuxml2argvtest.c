@@ -519,6 +519,7 @@ testCompareXMLToArgvValidateSchema(virQEMUDriverPtr drv,
 {
     g_auto(GStrv) args = NULL;
     g_autoptr(virDomainObj) vm = NULL;
+    qemuDomainObjPrivatePtr priv = NULL;
     size_t nargs = 0;
     size_t i;
     g_autoptr(GHashTable) schema = NULL;
@@ -544,6 +545,11 @@ testCompareXMLToArgvValidateSchema(virQEMUDriverPtr drv,
     if (!(vm->def = virDomainDefParseFile(info->infile,
                                           driver.xmlopt,
                                           NULL, parseFlags)))
+        return -1;
+
+    priv = vm->privateData;
+
+    if (virBitmapParse("0-3", &priv->autoNodeset, 4) < 0)
         return -1;
 
     if (!(cmd = testCompareXMLToArgvCreateArgs(drv, vm, migrateURI, info, flags,
