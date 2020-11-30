@@ -4756,7 +4756,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
                        const virDomainChrSourceDef *dev,
                        const char *alias,
                        virQEMUCapsPtr qemuCaps,
-                       unsigned int flags)
+                       unsigned int cdevflags)
 {
     qemuDomainChrSourcePrivatePtr chrSourcePriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -4789,7 +4789,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
     case VIR_DOMAIN_CHR_TYPE_FILE:
         virBufferAsprintf(&buf, "file,id=%s", charAlias);
 
-        if (qemuBuildChrChardevFileStr(flags & QEMU_BUILD_CHARDEV_FILE_LOGD ?
+        if (qemuBuildChrChardevFileStr(cdevflags & QEMU_BUILD_CHARDEV_FILE_LOGD ?
                                        logManager : NULL,
                                        cmd, def, &buf,
                                        "path", dev->data.file.path,
@@ -4838,7 +4838,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
 
         if (dev->data.tcp.listen) {
             virBufferAddLit(&buf, ",server");
-            if (flags & QEMU_BUILD_CHARDEV_TCP_NOWAIT)
+            if (cdevflags & QEMU_BUILD_CHARDEV_TCP_NOWAIT)
                 virBufferAddLit(&buf, ",nowait");
         }
 
@@ -4878,7 +4878,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         virBufferAsprintf(&buf, "socket,id=%s", charAlias);
         if (dev->data.nix.listen &&
-            (flags & QEMU_BUILD_CHARDEV_UNIX_FD_PASS) &&
+            (cdevflags & QEMU_BUILD_CHARDEV_UNIX_FD_PASS) &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS)) {
             int fd;
 
@@ -4901,7 +4901,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         }
         if (dev->data.nix.listen) {
             virBufferAddLit(&buf, ",server");
-            if (flags & QEMU_BUILD_CHARDEV_TCP_NOWAIT)
+            if (cdevflags & QEMU_BUILD_CHARDEV_TCP_NOWAIT)
                 virBufferAddLit(&buf, ",nowait");
         }
 
