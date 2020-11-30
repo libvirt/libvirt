@@ -1006,10 +1006,6 @@ int qemuMonitorAddDeviceWithFd(qemuMonitorPtr mon,
 int qemuMonitorDelDevice(qemuMonitorPtr mon,
                          const char *devalias);
 
-virJSONValuePtr qemuMonitorCreateObjectPropsWrap(const char *type,
-                                                 const char *alias,
-                                                 virJSONValuePtr *props);
-
 int qemuMonitorCreateObjectProps(virJSONValuePtr *propsret,
                                  const char *type,
                                  const char *alias,

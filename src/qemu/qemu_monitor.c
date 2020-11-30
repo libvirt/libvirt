@@ -3015,21 +3015,6 @@ qemuMonitorAddDeviceArgs(qemuMonitorPtr mon,
 }
 
 
-virJSONValuePtr
-qemuMonitorCreateObjectPropsWrap(const char *type,
-                                 const char *alias,
-                                 virJSONValuePtr *props)
-{
-
-    if (virJSONValueObjectPrependString(*props, "id", alias) < 0 ||
-        virJSONValueObjectPrependString(*props, "qom-type", type))
-        return NULL;
-
-    return g_steal_pointer(props);
-}
-
-
-
 /**
  * qemuMonitorCreateObjectProps:
  * @propsret: returns full object properties

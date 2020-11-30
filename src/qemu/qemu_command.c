@@ -3284,9 +3284,11 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
         rc = 0;
     }
 
-    if (!(*backendProps = qemuMonitorCreateObjectPropsWrap(backendType, alias,
-                                                           &props)))
+    if (virJSONValueObjectPrependString(props, "id", alias) < 0 ||
+        virJSONValueObjectPrependString(props, "qom-type", backendType) < 0)
         return -1;
+
+    *backendProps = g_steal_pointer(&props);
 
     return rc;
 }
