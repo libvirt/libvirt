@@ -131,7 +131,7 @@ around operators and keywords:
 
   indent-libvirt()
   {
-    indent -bad -bap -bbb -bli4 -br -ce -brs -cs -i4 -l75 -lc75 \
+    indent -bad -bap -bbb -bli4 -br -ce -brs -cs -i4 -l100 -lc100 \
            -sbi4 -psl -saf -sai -saw -sbi4 -ss -sc -cdw -cli4 -npcs -nbc \
            --no-tabs "$@"
   }
@@ -140,6 +140,9 @@ Note that sometimes you'll have to post-process that output
 further, by piping it through ``expand -i``, since some leading
 TABs can get through. Usually they're in macro definitions or
 strings, and should be converted anyhow.
+
+The maximum permitted line length is 100 characters, but lines
+should aim to be approximately 80 characters.
 
 Libvirt requires a C99 compiler for various reasons. However, most
 of the code base prefers to stick to C89 syntax unless there is a
