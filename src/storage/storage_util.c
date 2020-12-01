@@ -679,6 +679,74 @@ struct _virStorageBackendQemuImgInfo {
 };
 
 
+/**
+ * storageBackendBuildQemuImgEncriptionOpts:
+ * @buf: buffer to build the string into
+ * @encinfo: pointer to encryption info
+ * @alias: alias to use
+ *
+ * Generate the string for id=$alias and any encryption options for
+ * into the buffer.
+ *
+ * Important note, a trailing comma (",") is built into the return since
+ * it's expected other arguments are appended after the id=$alias string.
+ * So either turn something like:
+ *
+ *     "key-secret=$alias,"
+ *
+ * or
+ *     "key-secret=$alias,cipher-alg=twofish-256,cipher-mode=cbc,
+ *     hash-alg=sha256,ivgen-alg=plain64,igven-hash-alg=sha256,"
+ *
+ */
+static void
+storageBackendBuildQemuImgEncriptionOpts(virBufferPtr buf,
+                                         int format,
+                                         virStorageEncryptionInfoDefPtr encinfo,
+                                         const char *alias)
+{
+        const char *encprefix;
+
+    if (format == VIR_STORAGE_FILE_QCOW2) {
+        virBufferAddLit(buf, "encrypt.format=luks,");
+        encprefix = "encrypt.";
+    } else {
+        encprefix = "";
+    }
+
+    virBufferAsprintf(buf, "%skey-secret=%s,", encprefix, alias);
+
+    if (!encinfo->cipher_name)
+        return;
+
+    virBufferAsprintf(buf, "%scipher-alg=", encprefix);
+    virQEMUBuildBufferEscapeComma(buf, encinfo->cipher_name);
+    virBufferAsprintf(buf, "-%u,", encinfo->cipher_size);
+    if (encinfo->cipher_mode) {
+        virBufferAsprintf(buf, "%scipher-mode=", encprefix);
+        virQEMUBuildBufferEscapeComma(buf, encinfo->cipher_mode);
+        virBufferAddLit(buf, ",");
+    }
+    if (encinfo->cipher_hash) {
+        virBufferAsprintf(buf, "%shash-alg=", encprefix);
+        virQEMUBuildBufferEscapeComma(buf, encinfo->cipher_hash);
+        virBufferAddLit(buf, ",");
+    }
+    if (!encinfo->ivgen_name)
+        return;
+
+    virBufferAsprintf(buf, "%sivgen-alg=", encprefix);
+    virQEMUBuildBufferEscapeComma(buf, encinfo->ivgen_name);
+    virBufferAddLit(buf, ",");
+
+    if (encinfo->ivgen_hash) {
+        virBufferAsprintf(buf, "%sivgen-hash-alg=", encprefix);
+        virQEMUBuildBufferEscapeComma(buf, encinfo->ivgen_hash);
+        virBufferAddLit(buf, ",");
+    }
+}
+
+
 static int
 storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
                                 char **opts,
@@ -690,8 +758,10 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
         virBufferAsprintf(&buf, "backing_fmt=%s,",
                           virStorageFileFormatTypeToString(info->backingFormat));
 
-    if (encinfo)
-        virQEMUBuildQemuImgKeySecretOpts(&buf, info->format, encinfo, info->secretAlias);
+    if (encinfo) {
+        storageBackendBuildQemuImgEncriptionOpts(&buf, info->format, encinfo,
+                                                 info->secretAlias);
+    }
 
     if (info->preallocate) {
         if (info->size_arg > info->allocation)
