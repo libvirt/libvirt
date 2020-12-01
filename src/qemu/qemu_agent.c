@@ -2533,9 +2533,6 @@ qemuAgentSSHGetAuthorizedKeys(qemuAgentPtr agent,
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr data = NULL;
-    size_t ndata;
-    size_t i;
-    char **keys_ret = NULL;
 
     if (!(cmd = qemuAgentMakeCommand("guest-ssh-get-authorized-keys",
                                      "s:username", user,
@@ -2545,35 +2542,16 @@ qemuAgentSSHGetAuthorizedKeys(qemuAgentPtr agent,
     if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0)
         return -1;
 
-    if (!(data = virJSONValueObjectGetObject(reply, "return")) ||
-        !(data = virJSONValueObjectGetArray(data, "keys"))) {
+    if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("qemu agent didn't return an array of keys"));
         return -1;
     }
 
-    ndata = virJSONValueArraySize(data);
+    if (!(*keys = virJSONValueObjectGetStringArray(data, "keys")))
+        return -1;
 
-    keys_ret = g_new0(char *, ndata + 1);
-
-    for (i = 0; i < ndata; i++) {
-        virJSONValuePtr entry = virJSONValueArrayGet(data, i);
-
-        if (!entry) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("array element missing in guest-ssh-get-authorized-keys return value"));
-            goto error;
-        }
-
-        keys_ret[i] = g_strdup(virJSONValueGetString(entry));
-    }
-
-    *keys = g_steal_pointer(&keys_ret);
-    return ndata;
-
- error:
-    virStringListFreeCount(keys_ret, ndata);
-    return -1;
+    return g_strv_length(*keys);
 }
 
 

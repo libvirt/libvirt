@@ -5931,41 +5931,17 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
             cpu->type = g_strdup(tmp);
 
         if (virJSONValueObjectHasKey(child, "unavailable-features")) {
-            virJSONValuePtr blockers;
-            size_t j;
-            size_t len;
-
-            blockers = virJSONValueObjectGetArray(child,
-                                                  "unavailable-features");
-            if (!blockers) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("unavailable-features in query-cpu-definitions "
-                                 "reply data was not an array"));
+            if (!(cpu->blockers = virJSONValueObjectGetStringArray(child,
+                                                                   "unavailable-features")))
                 return -1;
-            }
 
-            len = virJSONValueArraySize(blockers);
-
-            if (len == 0) {
+            if (g_strv_length(cpu->blockers) == 0) {
                 cpu->usable = VIR_DOMCAPS_CPU_USABLE_YES;
+                g_clear_pointer(&cpu->blockers, g_strfreev);
                 continue;
             }
 
             cpu->usable = VIR_DOMCAPS_CPU_USABLE_NO;
-            cpu->blockers = g_new0(char *, len + 1);
-
-            for (j = 0; j < len; j++) {
-                virJSONValuePtr blocker = virJSONValueArrayGet(blockers, j);
-
-                if (virJSONValueGetType(blocker) != VIR_JSON_TYPE_STRING) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("unexpected value in unavailable-features "
-                                     "array"));
-                    return -1;
-                }
-
-                cpu->blockers[j] = g_strdup(virJSONValueGetString(blocker));
-            }
         }
     }
 
@@ -6787,10 +6763,6 @@ qemuMonitorJSONGetStringListProperty(qemuMonitorPtr mon,
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
-    VIR_AUTOSTRINGLIST list = NULL;
-    virJSONValuePtr data;
-    size_t n;
-    size_t i;
 
     *strList = NULL;
 
@@ -6806,25 +6778,10 @@ qemuMonitorJSONGetStringListProperty(qemuMonitorPtr mon,
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
         return -1;
 
-    data = virJSONValueObjectGetArray(reply, "return");
-    n = virJSONValueArraySize(data);
+    if (!(*strList = virJSONValueObjectGetStringArray(reply, "return")))
+        return -1;
 
-    list = g_new0(char *, n + 1);
-
-    for (i = 0; i < n; i++) {
-        virJSONValuePtr item = virJSONValueArrayGet(data, i);
-
-        if (virJSONValueGetType(item) != VIR_JSON_TYPE_STRING) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected value in %s array"), property);
-            return -1;
-        }
-
-        list[i] = g_strdup(virJSONValueGetString(item));
-    }
-
-    *strList = g_steal_pointer(&list);
-    return n;
+    return g_strv_length(*strList);
 }
 
 
