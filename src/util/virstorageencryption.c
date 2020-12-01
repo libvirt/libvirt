@@ -364,37 +364,3 @@ virStorageEncryptionFormat(virBufferPtr buf,
 
     return 0;
 }
-
-int
-virStorageGenerateQcowPassphrase(unsigned char *dest)
-{
-    int fd;
-    size_t i;
-
-    /* A qcow passphrase is up to 16 bytes, with any data following a NUL
-       ignored.  Prohibit control and non-ASCII characters to avoid possible
-       unpleasant surprises with the qemu monitor input mechanism. */
-    fd = open("/dev/urandom", O_RDONLY);
-    if (fd < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot open /dev/urandom"));
-        return -1;
-    }
-    i = 0;
-    while (i < VIR_STORAGE_QCOW_PASSPHRASE_SIZE) {
-        ssize_t r;
-
-        while ((r = read(fd, dest + i, 1)) == -1 && errno == EINTR)
-            ;
-        if (r <= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot read from /dev/urandom"));
-            VIR_FORCE_CLOSE(fd);
-            return -1;
-        }
-        if (dest[i] >= 0x20 && dest[i] <= 0x7E)
-            i++; /* Got an acceptable character */
-    }
-    VIR_FORCE_CLOSE(fd);
-    return 0;
-}

@@ -90,5 +90,3 @@ int virStorageEncryptionFormat(virBufferPtr buf,
 enum {
   VIR_STORAGE_QCOW_PASSPHRASE_SIZE = 16
 };
-
-int virStorageGenerateQcowPassphrase(unsigned char *dest);
