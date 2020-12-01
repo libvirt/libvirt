@@ -290,9 +290,9 @@ virDomainCheckpointCompareDiskIndex(const void *a, const void *b)
  * if any def->disks[n]->name appears more than once or does not map
  * to dom->disks. */
 int
-virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
+virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr chkdef)
 {
-    virDomainDefPtr domdef = def->parent.dom;
+    virDomainDefPtr domdef = chkdef->parent.dom;
     g_autoptr(virBitmap) map = NULL;
     size_t i;
     int ndisks;
@@ -304,7 +304,7 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
         return -1;
     }
 
-    if (def->ndisks > domdef->ndisks) {
+    if (chkdef->ndisks > domdef->ndisks) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("too many disk checkpoint requests for domain"));
         return -1;
@@ -319,14 +319,14 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
 
     /* If <disks> omitted, do bitmap on all writeable disks;
      * otherwise, do nothing for omitted disks */
-    if (!def->ndisks)
+    if (!chkdef->ndisks)
         checkpoint_default = VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP;
 
     map = virBitmapNew(domdef->ndisks);
 
     /* Double check requested disks.  */
-    for (i = 0; i < def->ndisks; i++) {
-        virDomainCheckpointDiskDefPtr disk = &def->disks[i];
+    for (i = 0; i < chkdef->ndisks; i++) {
+        virDomainCheckpointDiskDefPtr disk = &chkdef->disks[i];
         int idx = virDomainDiskIndexByName(domdef, disk->name, false);
 
         if (idx < 0) {
@@ -359,9 +359,9 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
     }
 
     /* Provide defaults for all remaining disks.  */
-    ndisks = def->ndisks;
-    if (VIR_EXPAND_N(def->disks, def->ndisks,
-                     domdef->ndisks - def->ndisks) < 0)
+    ndisks = chkdef->ndisks;
+    if (VIR_EXPAND_N(chkdef->disks, chkdef->ndisks,
+                     domdef->ndisks - chkdef->ndisks) < 0)
         return -1;
 
     for (i = 0; i < domdef->ndisks; i++) {
@@ -369,7 +369,7 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
 
         if (virBitmapIsBitSet(map, i))
             continue;
-        disk = &def->disks[ndisks++];
+        disk = &chkdef->disks[ndisks++];
         disk->name = g_strdup(domdef->disks[i]->dst);
         disk->idx = i;
 
@@ -381,11 +381,11 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
             disk->type = checkpoint_default;
     }
 
-    qsort(&def->disks[0], def->ndisks, sizeof(def->disks[0]),
+    qsort(&chkdef->disks[0], chkdef->ndisks, sizeof(chkdef->disks[0]),
           virDomainCheckpointCompareDiskIndex);
 
     /* Generate default bitmap names for checkpoint */
-    if (virDomainCheckpointDefAssignBitmapNames(def) < 0)
+    if (virDomainCheckpointDefAssignBitmapNames(chkdef) < 0)
         return -1;
 
     return 0;
