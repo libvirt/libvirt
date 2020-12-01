@@ -19,24 +19,24 @@ HOSTS=$($LCITOOL hosts | grep -Ev 'freebsd|macos')
 for host in $HOSTS
 do
     case "$host" in
-    libvirt-fedora-rawhide)
+    fedora-rawhide)
         for cross in mingw32 mingw64
         do
-            $LCITOOL dockerfile $host libvirt --cross $cross >$host-cross-$cross.Dockerfile
+            $LCITOOL dockerfile $host libvirt --cross $cross > ci-$host-cross-$cross.Dockerfile
         done
         ;;
-    libvirt-debian-*)
+    debian-*)
         for cross in aarch64 armv6l armv7l i686 mips mips64el mipsel ppc64le s390x
         do
-            if test "$host-cross-$cross" = "libvirt-debian-9-cross-i686" ||
-               test "$host-cross-$cross" = "libvirt-debian-sid-cross-mips"
+            if test "$host-cross-$cross" = "debian-9-cross-i686" ||
+               test "$host-cross-$cross" = "debian-sid-cross-mips"
             then
                 continue
             fi
-            $LCITOOL dockerfile $host libvirt --cross $cross >$host-cross-$cross.Dockerfile
+            $LCITOOL dockerfile $host libvirt --cross $cross > ci-$host-cross-$cross.Dockerfile
         done
         ;;
     esac
 
-    $LCITOOL dockerfile $host libvirt >$host.Dockerfile
+    $LCITOOL dockerfile $host libvirt > ci-$host.Dockerfile
 done
