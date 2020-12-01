@@ -632,7 +632,7 @@ static int
 virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfigPtr cfg,
                                     virConfPtr conf)
 {
-    VIR_AUTOSTRINGLIST hugetlbfs = NULL;
+    g_auto(GStrv) hugetlbfs = NULL;
     g_autofree char *stdioHandler = NULL;
     g_autofree char *corestr = NULL;
     size_t i;
@@ -825,13 +825,13 @@ virQEMUDriverConfigLoadNVRAMEntry(virQEMUDriverConfigPtr cfg,
                                   virConfPtr conf,
                                   bool privileged)
 {
-    VIR_AUTOSTRINGLIST nvram = NULL;
+    g_auto(GStrv) nvram = NULL;
     size_t i;
 
     if (virConfGetValueStringList(conf, "nvram", false, &nvram) < 0)
         return -1;
     if (nvram) {
-        VIR_AUTOSTRINGLIST fwList = NULL;
+        g_auto(GStrv) fwList = NULL;
 
         virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
         cfg->firmwares = NULL;
@@ -880,8 +880,8 @@ virQEMUDriverConfigLoadSecurityEntry(virQEMUDriverConfigPtr cfg,
                                      virConfPtr conf,
                                      bool privileged)
 {
-    VIR_AUTOSTRINGLIST controllers = NULL;
-    VIR_AUTOSTRINGLIST namespaces = NULL;
+    g_auto(GStrv) controllers = NULL;
+    g_auto(GStrv) namespaces = NULL;
     g_autofree char *user = NULL;
     g_autofree char *group = NULL;
     size_t i, j;

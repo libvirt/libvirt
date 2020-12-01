@@ -56,7 +56,7 @@ static int
 testFWPrecedence(const void *opaque G_GNUC_UNUSED)
 {
     g_autofree char *fakehome = NULL;
-    VIR_AUTOSTRINGLIST fwList = NULL;
+    g_auto(GStrv) fwList = NULL;
     size_t nfwList;
     size_t i;
     const char *expected[] = {

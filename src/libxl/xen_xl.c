@@ -1151,7 +1151,7 @@ static int
 xenParseXLNamespaceData(virConfPtr conf, virDomainDefPtr def)
 {
     virConfValuePtr list = virConfGetValue(conf, "device_model_args");
-    VIR_AUTOSTRINGLIST args = NULL;
+    g_auto(GStrv) args = NULL;
     size_t nargs;
     libxlDomainXmlNsDefPtr nsdata = NULL;
 

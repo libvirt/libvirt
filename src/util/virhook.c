@@ -343,7 +343,7 @@ virHookCall(int driver,
     struct dirent *entry;
     g_autofree char *path = NULL;
     g_autofree char *dir_path = NULL;
-    VIR_AUTOSTRINGLIST entries = NULL;
+    g_auto(GStrv) entries = NULL;
     const char *drvstr;
     const char *opstr;
     const char *subopstr;

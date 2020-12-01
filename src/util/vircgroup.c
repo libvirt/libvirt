@@ -1140,7 +1140,7 @@ virCgroupEnableMissingControllers(char *path,
                                   virCgroupPtr *group)
 {
     g_autoptr(virCgroup) parent = NULL;
-    VIR_AUTOSTRINGLIST tokens = virStringSplit(path, "/", 0);
+    g_auto(GStrv) tokens = virStringSplit(path, "/", 0);
     size_t i;
 
     if (virCgroupNew("/", controllers, &parent) < 0)

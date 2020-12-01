@@ -2112,7 +2112,7 @@ virJSONValueObjectDeflattenWorker(const char *key,
     virJSONValuePtr retobj = opaque;
     g_autoptr(virJSONValue) newval = NULL;
     virJSONValuePtr existobj;
-    VIR_AUTOSTRINGLIST tokens = NULL;
+    g_auto(GStrv) tokens = NULL;
     size_t ntokens = 0;
 
     /* non-nested keys only need to be copied */

@@ -37,7 +37,7 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
     int ndevs = 0;
     size_t i = 0;
     char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -70,7 +70,7 @@ virshNodeDeviceEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
                                   unsigned int flags)
 {
     size_t i = 0;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -88,7 +88,7 @@ virshNodeDeviceCapabilityNameCompleter(vshControl *ctl,
                                        const vshCmd *cmd,
                                        unsigned int flags)
 {
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
     const char *cap_str = NULL;
     size_t i = 0;
 

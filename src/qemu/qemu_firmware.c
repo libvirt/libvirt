@@ -1183,7 +1183,7 @@ qemuFirmwareFetchParsedConfigs(bool privileged,
                                qemuFirmwarePtr **firmwaresRet,
                                char ***pathsRet)
 {
-    VIR_AUTOSTRINGLIST paths = NULL;
+    g_auto(GStrv) paths = NULL;
     size_t npaths;
     qemuFirmwarePtr *firmwares = NULL;
     size_t i;
@@ -1218,7 +1218,7 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
                        virDomainDefPtr def,
                        unsigned int flags)
 {
-    VIR_AUTOSTRINGLIST paths = NULL;
+    g_auto(GStrv) paths = NULL;
     qemuFirmwarePtr *firmwares = NULL;
     ssize_t nfirmwares = 0;
     const qemuFirmware *theone = NULL;

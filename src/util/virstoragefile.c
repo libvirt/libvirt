@@ -1503,7 +1503,7 @@ virStorageFileParseBackingStoreStr(const char *str,
     size_t nstrings;
     unsigned int idx = 0;
     char *suffix;
-    VIR_AUTOSTRINGLIST strings = NULL;
+    g_auto(GStrv) strings = NULL;
 
     *chainIndex = 0;
 
@@ -2778,7 +2778,7 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
 {
     g_autoptr(virURI) uri = NULL;
     const char *path = NULL;
-    VIR_AUTOSTRINGLIST scheme = NULL;
+    g_auto(GStrv) scheme = NULL;
 
     if (!(uri = virURIParse(uristr))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2880,7 +2880,7 @@ virStorageSourceRBDAddHost(virStorageSourcePtr src,
 {
     char *port;
     size_t skip;
-    VIR_AUTOSTRINGLIST parts = NULL;
+    g_auto(GStrv) parts = NULL;
 
     if (VIR_EXPAND_N(src->hosts, src->nhosts, 1) < 0)
         return -1;
@@ -3220,7 +3220,7 @@ virStorageSourceParseBackingJSONUriCookies(virStorageSourcePtr src,
                                            const char *jsonstr)
 {
     const char *cookiestr;
-    VIR_AUTOSTRINGLIST cookies = NULL;
+    g_auto(GStrv) cookies = NULL;
     size_t ncookies = 0;
     size_t i;
 
@@ -4512,7 +4512,7 @@ int
 virStorageFileCheckCompat(const char *compat)
 {
     unsigned int result;
-    VIR_AUTOSTRINGLIST version = NULL;
+    g_auto(GStrv) version = NULL;
 
     if (!compat)
         return 0;

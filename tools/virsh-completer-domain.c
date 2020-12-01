@@ -42,7 +42,7 @@ virshDomainNameCompleter(vshControl *ctl,
     int ndomains = 0;
     size_t i = 0;
     char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_ACTIVE |
                   VIR_CONNECT_LIST_DOMAINS_INACTIVE |
@@ -89,7 +89,7 @@ virshDomainUUIDCompleter(vshControl *ctl,
     int ndomains = 0;
     size_t i = 0;
     char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_ACTIVE |
                   VIR_CONNECT_LIST_DOMAINS_INACTIVE |
@@ -142,7 +142,7 @@ virshDomainInterfaceCompleter(vshControl *ctl,
     g_autofree xmlNodePtr *interfaces = NULL;
     size_t i;
     unsigned int domainXMLFlags = 0;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(VIRSH_DOMAIN_INTERFACE_COMPLETER_MAC, NULL);
 
@@ -189,7 +189,7 @@ virshDomainDiskTargetCompleter(vshControl *ctl,
     g_autofree xmlNodePtr *disks = NULL;
     int ndisks;
     size_t i;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -221,7 +221,7 @@ virshDomainEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
                               unsigned int flags)
 {
     size_t i = 0;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -249,7 +249,7 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
     g_autofree xmlNodePtr *interfaces = NULL;
     g_autofree char *xpath = NULL;
     g_autofree char *state = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -303,7 +303,7 @@ virshDomainDeviceAliasCompleter(vshControl *ctl,
     g_autofree xmlNodePtr *aliases = NULL;
     size_t i;
     unsigned int domainXMLFlags = 0;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -392,7 +392,7 @@ virshDomainPerfEnableCompleter(vshControl *ctl,
                               unsigned int flags)
 {
     size_t i = 0;
-    VIR_AUTOSTRINGLIST events = NULL;
+    g_auto(GStrv) events = NULL;
     const char *event = NULL;
 
     virCheckFlags(0, NULL);
@@ -415,7 +415,7 @@ virshDomainPerfDisableCompleter(vshControl *ctl,
                                 unsigned int flags)
 {
     size_t i = 0;
-    VIR_AUTOSTRINGLIST events = NULL;
+    g_auto(GStrv) events = NULL;
     const char *event = NULL;
 
     virCheckFlags(0, NULL);
@@ -443,7 +443,7 @@ virshDomainIOThreadIdCompleter(vshControl *ctl,
     size_t i;
     int rc;
     char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -479,7 +479,7 @@ virshDomainVcpuCompleter(vshControl *ctl,
     int nvcpus = 0;
     unsigned int id;
     char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -519,7 +519,7 @@ virshDomainVcpulistCompleter(vshControl *ctl,
     xmlXPathContextPtr ctxt = NULL;
     int nvcpus = 0;
     unsigned int id;
-    VIR_AUTOSTRINGLIST vcpulist = NULL;
+    g_auto(GStrv) vcpulist = NULL;
     const char *vcpuid = NULL;
     char **ret = NULL;
 
@@ -564,7 +564,7 @@ virshDomainCpulistCompleter(vshControl *ctl,
     int cpunum;
     g_autofree unsigned char *cpumap = NULL;
     unsigned int online;
-    VIR_AUTOSTRINGLIST cpulist = NULL;
+    g_auto(GStrv) cpulist = NULL;
     const char *cpuid = NULL;
 
     virCheckFlags(0, NULL);
@@ -596,7 +596,7 @@ virshDomainVcpulistViaAgentCompleter(vshControl *ctl,
     unsigned int nparams = 0;
     size_t i;
     int nvcpus;
-    VIR_AUTOSTRINGLIST cpulist = NULL;
+    g_auto(GStrv) cpulist = NULL;
     const char *vcpuid = NULL;
     char **ret = NULL;
 
@@ -677,7 +677,7 @@ virshDomainConsoleCompleter(vshControl *ctl,
     g_autofree xmlNodePtr *parallels = NULL;
     size_t i;
     size_t offset = 0;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -722,7 +722,7 @@ virshDomainSignalCompleter(vshControl *ctl G_GNUC_UNUSED,
                            const vshCmd *cmd G_GNUC_UNUSED,
                            unsigned int flags)
 {
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
     size_t i = 0;
 
     virCheckFlags(0, NULL);
@@ -743,7 +743,7 @@ virshDomainLifecycleCompleter(vshControl *ctl G_GNUC_UNUSED,
                               const vshCmd *cmd G_GNUC_UNUSED,
                               unsigned int flags)
 {
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
     size_t i = 0;
 
     virCheckFlags(0, NULL);
@@ -764,7 +764,7 @@ virshDomainLifecycleActionCompleter(vshControl *ctl G_GNUC_UNUSED,
                                     const vshCmd *cmd G_GNUC_UNUSED,
                                     unsigned int flags)
 {
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
     size_t i = 0;
 
     virCheckFlags(0, NULL);

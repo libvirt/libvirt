@@ -38,7 +38,7 @@ virshInterfaceStringHelper(vshControl *ctl,
     virInterfacePtr *ifaces = NULL;
     int nifaces = 0;
     size_t i = 0;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(VIR_CONNECT_LIST_INTERFACES_ACTIVE |
                   VIR_CONNECT_LIST_INTERFACES_INACTIVE,

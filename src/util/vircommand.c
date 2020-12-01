@@ -3201,7 +3201,7 @@ virCommandRunRegex(virCommandPtr cmd,
     int totgroups = 0, ngroup = 0;
     char **groups;
     g_autofree char *outbuf = NULL;
-    VIR_AUTOSTRINGLIST lines = NULL;
+    g_auto(GStrv) lines = NULL;
     int ret = -1;
 
     /* Compile all regular expressions */

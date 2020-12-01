@@ -37,7 +37,7 @@ virshSecretUUIDCompleter(vshControl *ctl,
     int nsecrets = 0;
     size_t i = 0;
     char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -73,7 +73,7 @@ virshSecretEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
                               unsigned int flags)
 {
     size_t i;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 

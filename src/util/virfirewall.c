@@ -686,7 +686,7 @@ virFirewallApplyRule(virFirewallPtr firewall,
 {
     g_autofree char *output = NULL;
     g_autofree char *str = virFirewallRuleToString(rule);
-    VIR_AUTOSTRINGLIST lines = NULL;
+    g_auto(GStrv) lines = NULL;
     VIR_INFO("Applying rule '%s'", NULLSTR(str));
 
     if (rule->ignoreErrors)

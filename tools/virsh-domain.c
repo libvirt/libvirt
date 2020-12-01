@@ -14288,7 +14288,7 @@ cmdGetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     const char *user;
-    VIR_AUTOSTRINGLIST keys = NULL;
+    g_auto(GStrv) keys = NULL;
     int nkeys = 0;
     size_t i;
     const unsigned int flags = 0;
@@ -14358,7 +14358,7 @@ cmdSetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
     const char *user;
     const char *from;
     g_autofree char *buffer = NULL;
-    VIR_AUTOSTRINGLIST keys = NULL;
+    g_auto(GStrv) keys = NULL;
     int nkeys = 0;
     unsigned int flags = 0;
     bool ret = false;

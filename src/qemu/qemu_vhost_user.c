@@ -242,7 +242,7 @@ qemuVhostUserFetchParsedConfigs(bool privileged,
                                 qemuVhostUserPtr **vhostuserRet,
                                 char ***pathsRet)
 {
-    VIR_AUTOSTRINGLIST paths = NULL;
+    g_auto(GStrv) paths = NULL;
     size_t npaths;
     qemuVhostUserPtr *vus = NULL;
     size_t i;

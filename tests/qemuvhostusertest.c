@@ -56,7 +56,7 @@ static int
 testVUPrecedence(const void *opaque G_GNUC_UNUSED)
 {
     g_autofree char *fakehome = NULL;
-    VIR_AUTOSTRINGLIST vuList = NULL;
+    g_auto(GStrv) vuList = NULL;
     size_t nvuList;
     size_t i;
     const char *expected[] = {

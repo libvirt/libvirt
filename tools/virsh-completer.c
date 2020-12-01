@@ -89,8 +89,8 @@ virshCommaStringListComplete(const char *input,
 {
     const size_t optionsLen = virStringListLength(options);
     g_autofree char *inputCopy = NULL;
-    VIR_AUTOSTRINGLIST inputList = NULL;
-    VIR_AUTOSTRINGLIST ret = NULL;
+    g_auto(GStrv) inputList = NULL;
+    g_auto(GStrv) ret = NULL;
     size_t nret = 0;
     size_t i;
 

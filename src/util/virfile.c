@@ -1619,7 +1619,7 @@ char *
 virFindFileInPath(const char *file)
 {
     const char *origpath = NULL;
-    VIR_AUTOSTRINGLIST paths = NULL;
+    g_auto(GStrv) paths = NULL;
     char **pathiter;
 
     if (file == NULL)

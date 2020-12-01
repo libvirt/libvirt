@@ -5482,7 +5482,7 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
 
         if (ARCH_IS_X86(vm->def->os.arch) &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_UNAVAILABLE_FEATURES)) {
-            VIR_AUTOSTRINGLIST features = NULL;
+            g_auto(GStrv) features = NULL;
             int n;
 
             if ((n = virCPUDefCheckFeatures(vm->def->cpu,
@@ -6181,7 +6181,7 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
         return -1;
 
     if (ARCH_IS_X86(def->os.arch)) {
-        VIR_AUTOSTRINGLIST features = NULL;
+        g_auto(GStrv) features = NULL;
 
         if (virQEMUCapsGetCPUFeatures(qemuCaps, def->virtType, false, &features) < 0)
             return -1;

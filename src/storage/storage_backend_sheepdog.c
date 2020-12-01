@@ -139,8 +139,8 @@ virStorageBackendSheepdogRefreshAllVol(virStoragePoolObjPtr pool)
 {
     size_t i;
     g_autofree char *output = NULL;
-    VIR_AUTOSTRINGLIST lines = NULL;
-    VIR_AUTOSTRINGLIST cells = NULL;
+    g_auto(GStrv) lines = NULL;
+    g_auto(GStrv) cells = NULL;
     g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(SHEEPDOGCLI, "vdi", "list", "-r", NULL);

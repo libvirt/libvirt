@@ -101,8 +101,8 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
     bool is_new_vol = false;
     virStorageVolDefPtr volume = NULL;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    VIR_AUTOSTRINGLIST tokens = NULL;
-    VIR_AUTOSTRINGLIST name_tokens = NULL;
+    g_auto(GStrv) tokens = NULL;
+    g_auto(GStrv) name_tokens = NULL;
 
     if (!(tokens = virStringSplitCount(volume_string, "\t", 0, &count)))
         return -1;
@@ -169,7 +169,7 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     size_t i;
-    VIR_AUTOSTRINGLIST lines = NULL;
+    g_auto(GStrv) lines = NULL;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *volumes_list = NULL;
 
@@ -216,9 +216,9 @@ virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool G_GNUC_UNUSED)
     char *zpool_props = NULL;
     size_t i;
     g_autoptr(virCommand) cmd = NULL;
-    VIR_AUTOSTRINGLIST lines = NULL;
-    VIR_AUTOSTRINGLIST tokens = NULL;
-    VIR_AUTOSTRINGLIST name_tokens = NULL;
+    g_auto(GStrv) lines = NULL;
+    g_auto(GStrv) tokens = NULL;
+    g_auto(GStrv) name_tokens = NULL;
 
     /**
      * $ zpool get -Hp health,size,free,allocated test

@@ -7977,7 +7977,7 @@ qemuMonitorJSONGetCPUData(qemuMonitorPtr mon,
                           virCPUDataPtr data)
 {
     qemuMonitorJSONObjectProperty prop = { .type = QEMU_MONITOR_OBJECT_PROPERTY_BOOLEAN };
-    VIR_AUTOSTRINGLIST props = NULL;
+    g_auto(GStrv) props = NULL;
     char **p;
 
     if (qemuMonitorJSONGetCPUProperties(mon, &props) < 0)
@@ -8009,7 +8009,7 @@ qemuMonitorJSONGetCPUDataDisabled(qemuMonitorPtr mon,
                                   void *opaque,
                                   virCPUDataPtr data)
 {
-    VIR_AUTOSTRINGLIST props = NULL;
+    g_auto(GStrv) props = NULL;
     char **p;
 
     if (qemuMonitorJSONGetStringListProperty(mon, QOM_CPU_PATH,

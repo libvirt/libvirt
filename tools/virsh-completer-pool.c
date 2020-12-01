@@ -37,7 +37,7 @@ virshStoragePoolNameCompleter(vshControl *ctl,
     int npools = 0;
     size_t i = 0;
     char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE |
                   VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE |
@@ -73,7 +73,7 @@ virshPoolEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
                             unsigned int flags)
 {
     size_t i = 0;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -91,7 +91,7 @@ virshPoolTypeCompleter(vshControl *ctl,
                        const vshCmd *cmd,
                        unsigned int flags)
 {
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
     const char *type_str = NULL;
     size_t i = 0;
 

@@ -432,7 +432,7 @@ virQEMUQAPISchemaPathGet(const char *query,
                          GHashTable *schema,
                          virJSONValuePtr *entry)
 {
-    VIR_AUTOSTRINGLIST elems = NULL;
+    g_auto(GStrv) elems = NULL;
     struct virQEMUQAPISchemaTraverseContext ctxt;
     const char *cmdname;
     int rc;

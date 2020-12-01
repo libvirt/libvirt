@@ -2616,7 +2616,7 @@ virQEMUCapsProbeQMPObjectProperties(virQEMUCapsPtr qemuCaps,
 
     for (i = 0; i < G_N_ELEMENTS(virQEMUCapsObjectProps); i++) {
         virQEMUCapsObjectTypeProps *props = virQEMUCapsObjectProps + i;
-        VIR_AUTOSTRINGLIST values = NULL;
+        g_auto(GStrv) values = NULL;
         int nvalues;
 
         if (props->capsCondition >= 0 &&
@@ -2883,7 +2883,7 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
     /* QEMU 2.11 for Power renamed all CPU models to lower case, we need to
      * translate them back to libvirt's upper case model names. */
     if (ARCH_IS_PPC64(arch)) {
-        VIR_AUTOSTRINGLIST libvirtModels = NULL;
+        g_auto(GStrv) libvirtModels = NULL;
         char **name;
 
         if (virCPUGetModels(arch, &libvirtModels) < 0)
@@ -5912,7 +5912,7 @@ virQEMUCapsFillDomainCPUCaps(virQEMUCapsPtr qemuCaps,
                                       VIR_CPU_MODE_CUSTOM,
                                       domCaps->machine)) {
         const char *forbidden[] = { "host", NULL };
-        VIR_AUTOSTRINGLIST models = NULL;
+        g_auto(GStrv) models = NULL;
 
         if (virCPUGetModels(domCaps->arch, &models) >= 0) {
             domCaps->cpu.custom = virQEMUCapsGetCPUModels(qemuCaps,

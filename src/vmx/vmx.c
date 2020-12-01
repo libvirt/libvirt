@@ -1577,7 +1577,7 @@ virVMXParseConfig(virVMXContext *ctx,
     }
 
     if (sched_cpu_affinity != NULL && STRCASENEQ(sched_cpu_affinity, "all")) {
-        VIR_AUTOSTRINGLIST afflist = NULL;
+        g_auto(GStrv) afflist = NULL;
         char **aff;
         size_t naffs;
 

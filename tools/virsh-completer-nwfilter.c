@@ -35,7 +35,7 @@ virshNWFilterNameCompleter(vshControl *ctl,
     int nnwfilters = 0;
     size_t i = 0;
     char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -72,7 +72,7 @@ virshNWFilterBindingNameCompleter(vshControl *ctl,
     int nbindings = 0;
     size_t i = 0;
     char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 

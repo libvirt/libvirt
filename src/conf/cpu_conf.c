@@ -985,7 +985,7 @@ virCPUDefCheckFeatures(virCPUDefPtr cpu,
                        void *opaque,
                        char ***features)
 {
-    VIR_AUTOSTRINGLIST list = NULL;
+    g_auto(GStrv) list = NULL;
     size_t n = 0;
     size_t i;
 

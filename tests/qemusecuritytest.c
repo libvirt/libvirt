@@ -87,7 +87,7 @@ testDomain(const void *opaque)
 {
     const struct testData *data = opaque;
     g_autoptr(virDomainObj) vm = NULL;
-    VIR_AUTOSTRINGLIST notRestored = NULL;
+    g_auto(GStrv) notRestored = NULL;
     size_t i;
     int ret = -1;
 

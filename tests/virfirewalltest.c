@@ -102,7 +102,7 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
     } else if (STREQ(bus_name, VIR_FIREWALL_FIREWALLD_SERVICE) &&
                STREQ(method_name, "passthrough")) {
         g_autoptr(GVariantIter) iter = NULL;
-        VIR_AUTOSTRINGLIST args = NULL;
+        g_auto(GStrv) args = NULL;
         size_t nargs = 0;
         char *type = NULL;
         char *item = NULL;

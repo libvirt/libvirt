@@ -681,7 +681,7 @@ virSystemdActivationInitFromNames(virSystemdActivationPtr act,
                                   int nfds,
                                   const char *fdnames)
 {
-    VIR_AUTOSTRINGLIST fdnamelistptr = NULL;
+    g_auto(GStrv) fdnamelistptr = NULL;
     char **fdnamelist;
     size_t nfdnames;
     size_t i;

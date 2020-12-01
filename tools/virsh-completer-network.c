@@ -36,7 +36,7 @@ virshNetworkNameCompleter(vshControl *ctl,
     int nnets = 0;
     size_t i = 0;
     char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(VIR_CONNECT_LIST_NETWORKS_INACTIVE |
                   VIR_CONNECT_LIST_NETWORKS_ACTIVE |
@@ -72,7 +72,7 @@ virshNetworkEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
                                unsigned int flags)
 {
     size_t i = 0;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -145,7 +145,7 @@ virshNetworkUUIDCompleter(vshControl *ctl,
     int nnets = 0;
     size_t i = 0;
     char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -187,7 +187,7 @@ virshNetworkDhcpMacCompleter(vshControl *ctl,
     int nleases;
     size_t i = 0;
     char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
+    g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
 

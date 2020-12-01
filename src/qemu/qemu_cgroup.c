@@ -60,7 +60,7 @@ qemuSetupImagePathCgroup(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int perms = VIR_CGROUP_DEVICE_READ;
-    VIR_AUTOSTRINGLIST targetPaths = NULL;
+    g_auto(GStrv) targetPaths = NULL;
     size_t i;
     int rv;
 

@@ -130,7 +130,7 @@ static virStorageVolPtr
 fakeStorageVolLookupByName(virStoragePoolPtr pool,
                            const char *name)
 {
-    VIR_AUTOSTRINGLIST volinfo = NULL;
+    g_auto(GStrv) volinfo = NULL;
     virStorageVolPtr ret = NULL;
 
     if (STREQ(pool->name, "inactive")) {
@@ -517,7 +517,7 @@ testCompareXMLToArgvValidateSchema(virQEMUDriverPtr drv,
                                    struct testQemuInfo *info,
                                    unsigned int flags)
 {
-    VIR_AUTOSTRINGLIST args = NULL;
+    g_auto(GStrv) args = NULL;
     g_autoptr(virDomainObj) vm = NULL;
     size_t nargs = 0;
     size_t i;

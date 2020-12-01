@@ -985,7 +985,7 @@ int virProcessGetStartTime(pid_t pid,
     int len;
     g_autofree char *filename = NULL;
     g_autofree char *buf = NULL;
-    VIR_AUTOSTRINGLIST tokens = NULL;
+    g_auto(GStrv) tokens = NULL;
 
     filename = g_strdup_printf("/proc/%llu/stat", (long long)pid);
 
