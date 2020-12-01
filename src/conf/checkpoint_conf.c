@@ -274,16 +274,6 @@ virDomainCheckpointDefAssignBitmapNames(virDomainCheckpointDefPtr def)
 }
 
 
-static int
-virDomainCheckpointCompareDiskIndex(const void *a, const void *b)
-{
-    const virDomainCheckpointDiskDef *diska = a;
-    const virDomainCheckpointDiskDef *diskb = b;
-
-    /* Integer overflow shouldn't be a problem here.  */
-    return diska->idx - diskb->idx;
-}
-
 /* Align def->disks to def->domain.  Sort the list of def->disks,
  * filling in any missing disks with appropriate default.  Convert
  * paths to disk targets for uniformity.  Issue an error and return -1
@@ -293,9 +283,9 @@ int
 virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr chkdef)
 {
     virDomainDefPtr domdef = chkdef->parent.dom;
-    g_autoptr(virBitmap) map = NULL;
+    g_autoptr(GHashTable) map = virHashNew(NULL);
+    g_autofree virDomainCheckpointDiskDefPtr olddisks = NULL;
     size_t i;
-    int ndisks;
     int checkpoint_default = VIR_DOMAIN_CHECKPOINT_TYPE_NONE;
 
     if (!domdef) {
@@ -322,8 +312,6 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr chkdef)
     if (!chkdef->ndisks)
         checkpoint_default = VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP;
 
-    map = virBitmapNew(domdef->ndisks);
-
     /* Double check requested disks.  */
     for (i = 0; i < chkdef->ndisks; i++) {
         virDomainCheckpointDiskDefPtr chkdisk = &chkdef->disks[i];
@@ -338,12 +326,15 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr chkdef)
 
         domdisk = domdef->disks[idx];
 
-        if (virBitmapIsBitSet(map, idx)) {
+        if (virHashHasEntry(map, domdisk->dst)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' specified twice"),
                            chkdisk->name);
             return -1;
         }
+
+        if (virHashAddEntry(map, domdisk->dst, chkdisk) < 0)
+            return -1;
 
         if ((virStorageSourceIsEmpty(domdisk->src) ||
              domdisk->src->readonly) &&
@@ -353,8 +344,6 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr chkdef)
                            chkdisk->name);
             return -1;
         }
-        ignore_value(virBitmapSetBit(map, idx));
-        chkdisk->idx = idx;
 
         if (STRNEQ(chkdisk->name, domdisk->dst)) {
             VIR_FREE(chkdisk->name);
@@ -362,31 +351,31 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr chkdef)
         }
     }
 
-    /* Provide defaults for all remaining disks.  */
-    ndisks = chkdef->ndisks;
-    if (VIR_EXPAND_N(chkdef->disks, chkdef->ndisks,
-                     domdef->ndisks - chkdef->ndisks) < 0)
-        return -1;
+    olddisks = g_steal_pointer(&chkdef->disks);
+    chkdef->disks = g_new0(virDomainCheckpointDiskDef, domdef->ndisks);
+    chkdef->ndisks = domdef->ndisks;
 
     for (i = 0; i < domdef->ndisks; i++) {
-        virDomainCheckpointDiskDefPtr chkdisk;
+        virDomainDiskDefPtr domdisk = domdef->disks[i];
+        virDomainCheckpointDiskDefPtr chkdisk = chkdef->disks + i;
+        virDomainCheckpointDiskDefPtr existing;
 
-        if (virBitmapIsBitSet(map, i))
+        /* copy existing disks */
+        if ((existing = virHashLookup(map, domdisk->dst))) {
+            memcpy(chkdisk, existing, sizeof(*chkdisk));
             continue;
-        chkdisk = &chkdef->disks[ndisks++];
-        chkdisk->name = g_strdup(domdef->disks[i]->dst);
-        chkdisk->idx = i;
+        }
+
+        /* Provide defaults for all remaining disks. */
+        chkdisk->name = g_strdup(domdisk->dst);
 
         /* Don't checkpoint empty or readonly drives */
-        if (virStorageSourceIsEmpty(domdef->disks[i]->src) ||
-            domdef->disks[i]->src->readonly)
+        if (virStorageSourceIsEmpty(domdisk->src) ||
+            domdisk->src->readonly)
             chkdisk->type = VIR_DOMAIN_CHECKPOINT_TYPE_NONE;
         else
             chkdisk->type = checkpoint_default;
     }
-
-    qsort(&chkdef->disks[0], chkdef->ndisks, sizeof(chkdef->disks[0]),
-          virDomainCheckpointCompareDiskIndex);
 
     /* Generate default bitmap names for checkpoint */
     if (virDomainCheckpointDefAssignBitmapNames(chkdef) < 0)
