@@ -17649,7 +17649,11 @@ virDomainDiskByName(virDomainDefPtr def,
                     bool allow_ambiguous)
 {
     int idx = virDomainDiskIndexByName(def, name, allow_ambiguous);
-    return idx < 0 ? NULL : def->disks[idx];
+
+    if (idx < 0)
+        return NULL;
+
+    return def->disks[idx];
 }
 
 
