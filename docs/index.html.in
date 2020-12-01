@@ -18,7 +18,7 @@
       </p>
       <ul>
         <li>is a toolkit to manage <a href="platforms.html">virtualization platforms</a></li>
-        <li>is accessible from C, Python, Perl, Java and more</li>
+        <li>is accessible from C, Python, Perl, Go and more</li>
         <li>is licensed under open source licenses</li>
         <li>supports <a href="drvqemu.html">KVM</a>,
           <a href="drvqemu.html">QEMU</a>, <a href="drvxen.html">Xen</a>,
