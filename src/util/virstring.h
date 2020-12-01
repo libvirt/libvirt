@@ -45,7 +45,6 @@ void virStringListRemove(char ***strings,
 int virStringListMerge(char ***dst,
                        char ***src);
 
-void virStringListAutoFree(char ***strings);
 void virStringListFreeCount(char **strings,
                             size_t count);
 
@@ -179,11 +178,3 @@ int virStringParsePort(const char *str,
 int virStringParseYesNo(const char *str,
                         bool *result)
     G_GNUC_WARN_UNUSED_RESULT;
-/**
- * VIR_AUTOSTRINGLIST:
- *
- * Declares a NULL-terminated list of strings which will be automatically freed
- * when the pointer goes out of scope.
- */
-#define VIR_AUTOSTRINGLIST \
-        __attribute__((cleanup(virStringListAutoFree))) char **

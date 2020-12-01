@@ -3227,7 +3227,6 @@ virStringHasSuffix;
 virStringIsEmpty;
 virStringIsPrintable;
 virStringListAdd;
-virStringListAutoFree;
 virStringListFreeCount;
 virStringListGetFirstWithPrefix;
 virStringListHasString;

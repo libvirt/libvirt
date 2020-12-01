@@ -259,16 +259,6 @@ virStringListMerge(char ***dst,
 }
 
 
-void virStringListAutoFree(char ***strings)
-{
-    if (!*strings)
-        return;
-
-    g_strfreev(*strings);
-    *strings = NULL;
-}
-
-
 /**
  * virStringListFreeCount:
  * @strings: array of strings to free
