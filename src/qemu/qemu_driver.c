@@ -20116,12 +20116,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         }
     }
 
-    ret = 0;
-
- exitagent:
     qemuDomainObjExitAgent(vm, agent);
-
- endagentjob:
     qemuDomainObjEndAgentJob(vm);
 
     if (nfs > 0 || ndisks > 0) {
@@ -20143,6 +20138,8 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         qemuDomainObjEndJob(driver, vm);
     }
 
+    ret = 0;
+
  cleanup:
     for (i = 0; i < nfs; i++)
         qemuAgentFSInfoFree(agentfsinfo[i]);
@@ -20153,6 +20150,13 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
 
     virDomainObjEndAPI(&vm);
     return ret;
+
+ exitagent:
+    qemuDomainObjExitAgent(vm, agent);
+
+ endagentjob:
+    qemuDomainObjEndAgentJob(vm);
+    goto cleanup;
 }
 
 
