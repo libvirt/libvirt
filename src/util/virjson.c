@@ -1472,8 +1472,12 @@ virJSONValueObjectGetStringArray(virJSONValuePtr object, const char *key)
     size_t i;
 
     data = virJSONValueObjectGetArray(object, key);
-    if (!data)
+    if (!data) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s is missing or not an array"),
+                       key);
         return NULL;
+    }
 
     n = virJSONValueArraySize(data);
     ret = g_new0(char *, n + 1);
