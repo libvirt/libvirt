@@ -292,25 +292,26 @@ virDomainCheckpointCompareDiskIndex(const void *a, const void *b)
 int
 virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
 {
+    virDomainDefPtr domdef = def->parent.dom;
     g_autoptr(virBitmap) map = NULL;
     size_t i;
     int ndisks;
     int checkpoint_default = VIR_DOMAIN_CHECKPOINT_TYPE_NONE;
 
-    if (!def->parent.dom) {
+    if (!domdef) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing domain in checkpoint"));
         return -1;
     }
 
-    if (def->ndisks > def->parent.dom->ndisks) {
+    if (def->ndisks > domdef->ndisks) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("too many disk checkpoint requests for domain"));
         return -1;
     }
 
     /* Unlikely to have a guest without disks but technically possible.  */
-    if (!def->parent.dom->ndisks) {
+    if (!domdef->ndisks) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("domain must have at least one disk to perform checkpoints"));
         return -1;
@@ -321,12 +322,12 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
     if (!def->ndisks)
         checkpoint_default = VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP;
 
-    map = virBitmapNew(def->parent.dom->ndisks);
+    map = virBitmapNew(domdef->ndisks);
 
     /* Double check requested disks.  */
     for (i = 0; i < def->ndisks; i++) {
         virDomainCheckpointDiskDefPtr disk = &def->disks[i];
-        int idx = virDomainDiskIndexByName(def->parent.dom, disk->name, false);
+        int idx = virDomainDiskIndexByName(domdef, disk->name, false);
 
         if (idx < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -340,8 +341,8 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
                            disk->name);
             return -1;
         }
-        if ((virStorageSourceIsEmpty(def->parent.dom->disks[idx]->src) ||
-             def->parent.dom->disks[idx]->src->readonly) &&
+        if ((virStorageSourceIsEmpty(domdef->disks[idx]->src) ||
+             domdef->disks[idx]->src->readonly) &&
             disk->type != VIR_DOMAIN_CHECKPOINT_TYPE_NONE) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' is empty or readonly"),
@@ -351,30 +352,30 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
         ignore_value(virBitmapSetBit(map, idx));
         disk->idx = idx;
 
-        if (STRNEQ(disk->name, def->parent.dom->disks[idx]->dst)) {
+        if (STRNEQ(disk->name, domdef->disks[idx]->dst)) {
             VIR_FREE(disk->name);
-            disk->name = g_strdup(def->parent.dom->disks[idx]->dst);
+            disk->name = g_strdup(domdef->disks[idx]->dst);
         }
     }
 
     /* Provide defaults for all remaining disks.  */
     ndisks = def->ndisks;
     if (VIR_EXPAND_N(def->disks, def->ndisks,
-                     def->parent.dom->ndisks - def->ndisks) < 0)
+                     domdef->ndisks - def->ndisks) < 0)
         return -1;
 
-    for (i = 0; i < def->parent.dom->ndisks; i++) {
+    for (i = 0; i < domdef->ndisks; i++) {
         virDomainCheckpointDiskDefPtr disk;
 
         if (virBitmapIsBitSet(map, i))
             continue;
         disk = &def->disks[ndisks++];
-        disk->name = g_strdup(def->parent.dom->disks[i]->dst);
+        disk->name = g_strdup(domdef->disks[i]->dst);
         disk->idx = i;
 
         /* Don't checkpoint empty or readonly drives */
-        if (virStorageSourceIsEmpty(def->parent.dom->disks[i]->src) ||
-            def->parent.dom->disks[i]->src->readonly)
+        if (virStorageSourceIsEmpty(domdef->disks[i]->src) ||
+            domdef->disks[i]->src->readonly)
             disk->type = VIR_DOMAIN_CHECKPOINT_TYPE_NONE;
         else
             disk->type = checkpoint_default;
