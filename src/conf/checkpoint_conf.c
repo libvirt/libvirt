@@ -328,6 +328,7 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr chkdef)
     for (i = 0; i < chkdef->ndisks; i++) {
         virDomainCheckpointDiskDefPtr chkdisk = &chkdef->disks[i];
         int idx = virDomainDiskIndexByName(domdef, chkdisk->name, false);
+        virDomainDiskDefPtr domdisk;
 
         if (idx < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -335,14 +336,17 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr chkdef)
             return -1;
         }
 
+        domdisk = domdef->disks[idx];
+
         if (virBitmapIsBitSet(map, idx)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' specified twice"),
                            chkdisk->name);
             return -1;
         }
-        if ((virStorageSourceIsEmpty(domdef->disks[idx]->src) ||
-             domdef->disks[idx]->src->readonly) &&
+
+        if ((virStorageSourceIsEmpty(domdisk->src) ||
+             domdisk->src->readonly) &&
             chkdisk->type != VIR_DOMAIN_CHECKPOINT_TYPE_NONE) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' is empty or readonly"),
@@ -352,9 +356,9 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr chkdef)
         ignore_value(virBitmapSetBit(map, idx));
         chkdisk->idx = idx;
 
-        if (STRNEQ(chkdisk->name, domdef->disks[idx]->dst)) {
+        if (STRNEQ(chkdisk->name, domdisk->dst)) {
             VIR_FREE(chkdisk->name);
-            chkdisk->name = g_strdup(domdef->disks[idx]->dst);
+            chkdisk->name = g_strdup(domdisk->dst);
         }
     }
 
