@@ -312,8 +312,7 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
     /* Unlikely to have a guest without disks but technically possible.  */
     if (!def->parent.dom->ndisks) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("domain must have at least one disk to perform "
-                         "checkpoints"));
+                       _("domain must have at least one disk to perform checkpoints"));
         return -1;
     }
 
