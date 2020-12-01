@@ -315,16 +315,13 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr chkdef)
     /* Double check requested disks.  */
     for (i = 0; i < chkdef->ndisks; i++) {
         virDomainCheckpointDiskDefPtr chkdisk = &chkdef->disks[i];
-        int idx = virDomainDiskIndexByName(domdef, chkdisk->name, false);
-        virDomainDiskDefPtr domdisk;
+        virDomainDiskDefPtr domdisk = virDomainDiskByName(domdef, chkdisk->name, false);
 
-        if (idx < 0) {
+        if (!domdisk) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("no disk named '%s'"), chkdisk->name);
             return -1;
         }
-
-        domdisk = domdef->disks[idx];
 
         if (virHashHasEntry(map, domdisk->dst)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
