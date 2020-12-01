@@ -1368,10 +1368,12 @@ libutil_dep = cc.find_library('util', required: false)
 if host_machine.system() == 'windows'
   ole32_dep = cc.find_library('ole32')
   oleaut32_dep = cc.find_library('oleaut32')
+  winsock2_dep = cc.find_library('ws2_32')
   win32_dep = declare_dependency(
     dependencies: [
       ole32_dep,
       oleaut32_dep,
+      winsock2_dep,
     ],
   )
   if get_option('default_library') == 'static'
