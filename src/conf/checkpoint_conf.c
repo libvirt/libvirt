@@ -530,8 +530,7 @@ virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
 
 virDomainMomentObjPtr
 virDomainCheckpointRedefineCommit(virDomainObjPtr vm,
-                                  virDomainCheckpointDefPtr *defptr,
-                                  virDomainXMLOptionPtr xmlopt)
+                                  virDomainCheckpointDefPtr *defptr)
 {
     virDomainCheckpointDefPtr def = *defptr;
     virDomainMomentObjPtr other = NULL;
@@ -541,10 +540,6 @@ virDomainCheckpointRedefineCommit(virDomainObjPtr vm,
     other = virDomainCheckpointFindByName(vm->checkpoints, def->parent.name);
     if (other) {
         otherdef = virDomainCheckpointObjGetDef(other);
-        if (!virDomainDefCheckABIStability(otherdef->parent.dom,
-                                           def->parent.dom, xmlopt))
-            return NULL;
-
         /* Drop and rebuild the parent relationship, but keep all
          * child relations by reusing chk.  */
         virDomainMomentDropParent(other);

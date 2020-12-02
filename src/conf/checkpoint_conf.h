@@ -96,7 +96,6 @@ virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
 
 virDomainMomentObjPtr
 virDomainCheckpointRedefineCommit(virDomainObjPtr vm,
-                                  virDomainCheckpointDefPtr *defptr,
-                                  virDomainXMLOptionPtr xmlopt);
+                                  virDomainCheckpointDefPtr *defptr);
 
 VIR_ENUM_DECL(virDomainCheckpoint);

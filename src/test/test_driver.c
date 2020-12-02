@@ -8991,7 +8991,7 @@ testDomainCheckpointCreateXML(virDomainPtr domain,
         if (virDomainCheckpointRedefinePrep(vm, def, &update_current) < 0)
             goto cleanup;
 
-        if (!(chk = virDomainCheckpointRedefineCommit(vm, &def, privconn->xmlopt)))
+        if (!(chk = virDomainCheckpointRedefineCommit(vm, &def)))
             goto cleanup;
     } else {
         if (!(def->parent.dom = virDomainDefCopy(vm->def,

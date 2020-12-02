@@ -439,8 +439,7 @@ qemuCheckpointRedefineValidateBitmaps(virDomainObjPtr vm,
 
 
 static virDomainMomentObjPtr
-qemuCheckpointRedefine(virQEMUDriverPtr driver,
-                       virDomainObjPtr vm,
+qemuCheckpointRedefine(virDomainObjPtr vm,
                        virDomainCheckpointDefPtr *def,
                        bool *update_current,
                        bool validate_bitmaps)
@@ -452,7 +451,7 @@ qemuCheckpointRedefine(virQEMUDriverPtr driver,
         qemuCheckpointRedefineValidateBitmaps(vm, *def) < 0)
         return NULL;
 
-    return virDomainCheckpointRedefineCommit(vm, def, driver->xmlopt);
+    return virDomainCheckpointRedefineCommit(vm, def);
 }
 
 
@@ -605,7 +604,7 @@ qemuCheckpointCreateXML(virDomainPtr domain,
         return NULL;
 
     if (redefine) {
-        chk = qemuCheckpointRedefine(driver, vm, &def, &update_current, validate_bitmaps);
+        chk = qemuCheckpointRedefine(vm, &def, &update_current, validate_bitmaps);
     } else {
         chk = qemuCheckpointCreate(driver, vm, &def);
     }
