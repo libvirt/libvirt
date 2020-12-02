@@ -1,5 +1,9 @@
   #include <abstractions/base>
 
+ # Allow receiving signals from libvirtd
+  signal (receive) peer=libvirtd,
+  signal (receive) peer=/usr/sbin/libvirtd,
+
   umount,
 
   # ignore DENIED message on / remount
