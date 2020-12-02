@@ -835,6 +835,7 @@ virQEMUDriverConfigLoadNVRAMEntry(virQEMUDriverConfigPtr cfg,
 
         virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
         cfg->firmwares = NULL;
+        cfg->nfirmwares = 0;
 
         if (qemuFirmwareFetchConfigs(&fwList, privileged) < 0)
             return -1;
@@ -843,13 +844,11 @@ virQEMUDriverConfigLoadNVRAMEntry(virQEMUDriverConfigPtr cfg,
             VIR_WARN("Obsolete nvram variable is set while firmware metadata "
                      "files found. Note that the nvram config file variable is "
                      "going to be ignored.");
-            cfg->nfirmwares = 0;
             return 0;
         }
 
         cfg->nfirmwares = virStringListLength((const char *const *)nvram);
-        if (nvram[0])
-            cfg->firmwares = g_new0(virFirmwarePtr, cfg->nfirmwares);
+        cfg->firmwares = g_new0(virFirmwarePtr, cfg->nfirmwares);
 
         for (i = 0; nvram[i] != NULL; i++) {
             cfg->firmwares[i] = g_new0(virFirmware, 1);
