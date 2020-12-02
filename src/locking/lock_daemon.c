@@ -700,7 +700,7 @@ virLockDaemonPreExecRestart(const char *state_file,
     virJSONValuePtr child;
     char *state = NULL;
     virJSONValuePtr object = virJSONValueNewObject();
-    char *magic;
+    char *magic = NULL;
     virHashKeyValuePairPtr pairs = NULL, tmp;
     virJSONValuePtr lockspaces;
 
@@ -748,10 +748,8 @@ virLockDaemonPreExecRestart(const char *state_file,
     if (!(magic = virLockDaemonGetExecRestartMagic()))
         goto cleanup;
 
-    if (virJSONValueObjectAppendString(object, "magic", magic) < 0) {
-        VIR_FREE(magic);
+    if (virJSONValueObjectAppendString(object, "magic", magic) < 0)
         goto cleanup;
-    }
 
     if (!(state = virJSONValueToString(object, true)))
         goto cleanup;
@@ -775,6 +773,7 @@ virLockDaemonPreExecRestart(const char *state_file,
     abort(); /* This should be impossible to reach */
 
  cleanup:
+    VIR_FREE(magic);
     VIR_FREE(pairs);
     VIR_FREE(state);
     virJSONValueFree(object);
