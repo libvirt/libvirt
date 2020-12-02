@@ -6197,8 +6197,7 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
 
 
 static int
-qemuProcessPrepareDomainNUMAPlacement(virQEMUDriverPtr driver,
-                                      virDomainObjPtr vm)
+qemuProcessPrepareDomainNUMAPlacement(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autofree char *nodeset = NULL;
@@ -6226,7 +6225,7 @@ qemuProcessPrepareDomainNUMAPlacement(virQEMUDriverPtr driver,
     if (virBitmapParse(nodeset, &numadNodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
         return -1;
 
-    if (!(caps = virQEMUDriverGetHostNUMACaps(driver)))
+    if (!(caps = virCapabilitiesHostNUMANewHost()))
         return -1;
 
     /* numad may return a nodeset that only contains cpus but cgroups don't play
@@ -6428,7 +6427,7 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
         }
         virDomainAuditSecurityLabel(vm, true);
 
-        if (qemuProcessPrepareDomainNUMAPlacement(driver, vm) < 0)
+        if (qemuProcessPrepareDomainNUMAPlacement(vm) < 0)
             return -1;
     }
 

@@ -2498,8 +2498,7 @@ qemuDomainObjPrivateXMLParseVcpu(xmlNodePtr node,
 
 static int
 qemuDomainObjPrivateXMLParseAutomaticPlacement(xmlXPathContextPtr ctxt,
-                                               qemuDomainObjPrivatePtr priv,
-                                               virQEMUDriverPtr driver)
+                                               qemuDomainObjPrivatePtr priv)
 {
     g_autoptr(virCapsHostNUMA) caps = NULL;
     g_autofree char *nodeset = NULL;
@@ -2513,7 +2512,7 @@ qemuDomainObjPrivateXMLParseAutomaticPlacement(xmlXPathContextPtr ctxt,
     if (!nodeset && !cpuset)
         return 0;
 
-    if (!(caps = virQEMUDriverGetHostNUMACaps(driver)))
+    if (!(caps = virCapabilitiesHostNUMANewHost()))
         return -1;
 
     /* Figure out how big the nodeset bitmap needs to be.
@@ -3114,7 +3113,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     }
     VIR_FREE(nodes);
 
-    if (qemuDomainObjPrivateXMLParseAutomaticPlacement(ctxt, priv, driver) < 0)
+    if (qemuDomainObjPrivateXMLParseAutomaticPlacement(ctxt, priv) < 0)
         goto error;
 
     if ((tmp = virXPathString("string(./libDir/@path)", ctxt)))
