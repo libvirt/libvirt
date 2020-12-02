@@ -1445,57 +1445,6 @@ testQemuMonitorJSONqemuMonitorJSONGetBalloonInfo(const void *opaque)
     return 0;
 }
 
-static int
-testQemuMonitorJSONqemuMonitorJSONGetVirtType(const void *opaque)
-{
-    const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    virDomainVirtType virtType;
-    g_autoptr(qemuMonitorTest) test = NULL;
-
-    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
-        return -1;
-
-    if (qemuMonitorTestAddItem(test, "query-kvm",
-                               "{"
-                               "    \"return\": {"
-                               "        \"enabled\": true,"
-                               "        \"present\": true"
-                               "    },"
-                               "    \"id\": \"libvirt-8\""
-                               "}") < 0 ||
-        qemuMonitorTestAddItem(test, "query-kvm",
-                               "{"
-                               "    \"return\": {"
-                               "        \"enabled\": false,"
-                               "        \"present\": true"
-                               "    },"
-                               "    \"id\": \"libvirt-7\""
-                               "}") < 0)
-        return -1;
-
-    if (qemuMonitorJSONGetVirtType(qemuMonitorTestGetMonitor(test), &virtType) < 0)
-        return -1;
-
-    if (virtType != VIR_DOMAIN_VIRT_KVM) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Unexpected virt type: %d, expecting %d", virtType, VIR_DOMAIN_VIRT_KVM);
-        return -1;
-    }
-
-    if (qemuMonitorJSONGetVirtType(qemuMonitorTestGetMonitor(test), &virtType) < 0)
-        return -1;
-
-    if (virtType != VIR_DOMAIN_VIRT_QEMU) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Unexpected virt type: %d, expecting %d", virtType, VIR_DOMAIN_VIRT_QEMU);
-        return -1;
-    }
-
-    return 0;
-}
-
-
 static void
 testQemuMonitorJSONGetBlockInfoPrint(const struct qemuDomainDiskInfo *d)
 {
@@ -3205,7 +3154,6 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetMigrationCapabilities);
     DO_TEST(qemuMonitorJSONQueryCPUs);
     DO_TEST(qemuMonitorJSONQueryCPUsFast);
-    DO_TEST(qemuMonitorJSONGetVirtType);
     DO_TEST(qemuMonitorJSONSendKey);
     DO_TEST(qemuMonitorJSONGetDumpGuestMemoryCapability);
     DO_TEST(qemuMonitorJSONSendKeyHoldtime);

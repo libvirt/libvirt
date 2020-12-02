@@ -2052,46 +2052,6 @@ qemuMonitorJSONQueryCPUs(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorJSONGetVirtType(qemuMonitorPtr mon,
-                               virDomainVirtType *virtType)
-{
-    int ret = -1;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-kvm",
-                                                     NULL);
-    virJSONValuePtr reply = NULL;
-    virJSONValuePtr data;
-    bool val = false;
-
-    *virtType = VIR_DOMAIN_VIRT_QEMU;
-
-    if (!cmd)
-        return -1;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
-        goto cleanup;
-
-    data = virJSONValueObjectGetObject(reply, "return");
-
-    if (virJSONValueObjectGetBoolean(data, "enabled", &val) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("info kvm reply missing 'enabled' field"));
-        goto cleanup;
-    }
-
-    if (val)
-        *virtType = VIR_DOMAIN_VIRT_KVM;
-
-    ret = 0;
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
-}
-
-
 /**
  * Loads correct video memory size values from QEMU and update the video
  * definition.

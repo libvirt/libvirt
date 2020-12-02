@@ -1964,16 +1964,6 @@ qemuMonitorSetLink(qemuMonitorPtr mon,
 }
 
 
-int
-qemuMonitorGetVirtType(qemuMonitorPtr mon,
-                       virDomainVirtType *virtType)
-{
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONGetVirtType(mon, virtType);
-}
-
-
 /**
  * Returns: 0 if balloon not supported, +1 if balloon query worked
  * or -1 on failure

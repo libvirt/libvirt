@@ -656,8 +656,6 @@ virBitmapPtr qemuMonitorGetCpuHalted(qemuMonitorPtr mon,
                                      size_t maxvcpus,
                                      bool fast);
 
-int qemuMonitorGetVirtType(qemuMonitorPtr mon,
-                           virDomainVirtType *virtType);
 int qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
                               unsigned long long *currmem);
 int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,

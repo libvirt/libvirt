@@ -57,8 +57,6 @@ int qemuMonitorJSONQueryCPUs(qemuMonitorPtr mon,
                              size_t *nentries,
                              bool force,
                              bool fast);
-int qemuMonitorJSONGetVirtType(qemuMonitorPtr mon,
-                               virDomainVirtType *virtType);
 int qemuMonitorJSONUpdateVideoMemorySize(qemuMonitorPtr mon,
                                          virDomainVideoDefPtr video,
                                          char *path);
