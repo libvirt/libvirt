@@ -7,7 +7,7 @@ function die {
 
 function show_help {
     cat << EOF
-Usage: ${0##*/} -[hqnu] [PATH]
+Usage: ${0##*/} -[hqnu] [PATH ...]
 
 Clear out any XATTRs set by libvirt on all files that have them.
 The idea is to reset refcounting, should it break.
@@ -25,7 +25,6 @@ EOF
 QUIET=0
 DRY_RUN=0
 UNSAFE=0
-DIR="/"
 
 # So far only qemu and lxc drivers use security driver.
 URI=("qemu:///system"
@@ -57,15 +56,6 @@ while getopts hqnu opt; do
     esac
 done
 
-shift $((OPTIND - 1))
-if [ $# -gt 0 ]; then
-    DIR=$1
-else
-    if [ ${UNSAFE} -eq 1 ]; then
-        die "Unsafe mode (-u) requires explicit 'PATH' argument"
-    fi
-fi
-
 case $(uname -s) in
     Linux)
         XATTR_PREFIX="trusted.libvirt.security"
@@ -95,17 +85,34 @@ for i in "dac" "selinux"; do
     XATTRS+=("$XATTR_PREFIX.$i" "$XATTR_PREFIX.ref_$i" "$XATTR_PREFIX.timestamp_$i")
 done
 
+fix_xattrs() {
+    local DIR="$1"
 
-for i in $(getfattr -R -d -m ${XATTR_PREFIX} --absolute-names ${DIR} 2>/dev/null | grep "^# file:" | cut -d':' -f 2); do
-    if [ ${DRY_RUN} -ne 0 ]; then
-        getfattr -d -m $p --absolute-names $i | grep -v "^# file:"
-        continue
-    fi
+    for i in $(getfattr -R -d -m ${XATTR_PREFIX} --absolute-names ${DIR} 2>/dev/null | grep "^# file:" | cut -d':' -f 2); do
+        if [ ${DRY_RUN} -ne 0 ]; then
+            getfattr -d -m $p --absolute-names $i | grep -v "^# file:"
+            continue
+        fi
 
-    if [ ${QUIET} -eq 0 ]; then
-        echo "Fixing $i";
-    fi
-    for x in ${XATTRS[*]}; do
-        setfattr -x $x $i
+        if [ ${QUIET} -eq 0 ]; then
+            echo "Fixing $i";
+        fi
+        for x in ${XATTRS[*]}; do
+            setfattr -x $x $i
+        done
     done
-done
+}
+
+
+shift $((OPTIND - 1))
+if [ $# -gt 0 ]; then
+    while [ $# -gt 0 ]; do
+        fix_xattrs "$1"
+        shift $((OPTIND - 1))
+    done
+else
+    if [ ${UNSAFE} -eq 1 ]; then
+        die "Unsafe mode (-u) requires explicit 'PATH' argument"
+    fi
+    fix_xattrs "/"
+fi
