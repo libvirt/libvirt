@@ -34,7 +34,7 @@ URI=("qemu:///system"
 LIBVIRT_XATTR_PREFIXES=("trusted.libvirt.security"
                         "system.libvirt.security")
 
-if [ `whoami` != "root" ]; then
+if [ $(whoami) != "root" ]; then
     die "Must be run as root"
 fi
 
