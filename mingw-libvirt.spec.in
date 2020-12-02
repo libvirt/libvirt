@@ -11,26 +11,6 @@
     %define supported_platform 0
 %endif
 
-# Default to skipping autoreconf.  Distros can change just this one line
-# (or provide a command-line override) if they backport any patches that
-# touch configure.ac or Makefile.am.
-%{!?enable_autotools:%define enable_autotools 0}
-
-# The mingw build is client only.  Set up defaults for hypervisor drivers
-# that talk via a native remote protocol, and for which prereq mingw
-# libraries exist.
-%define with_esx           0%{!?_without_esx:1}
-# missing libwsman, so can't build hyper-v
-%define with_hyperv        0%{!?_without_hyperv:0}
-%define with_xenapi        0%{!?_without_xenapi:1}
-%define with_vz            0%{!?_without_vz:0}
-
-# RHEL ships ESX but not PowerHypervisor, HyperV, or libxenserver (xenapi)
-%if 0%{?rhel}
-    %define with_xenapi 0
-    %define with_hyperv 0
-%endif
-
 Name:           mingw-libvirt
 Version:        @VERSION@
 Release:        1%{?dist}
@@ -74,20 +54,15 @@ BuildRequires:  libxslt
 BuildRequires:  python3
 BuildRequires:  perl-interpreter
 BuildRequires:  perl(Getopt::Long)
-%if 0%{?enable_autotools}
-BuildRequires: autoconf
-BuildRequires: automake
-BuildRequires: gettext-devel
-BuildRequires: libtool
-%endif
+BuildRequires:  make
+BuildRequires:  meson
+BuildRequires:  ninja-build
 BuildRequires: python3-docutils
 
 BuildRequires: mingw32-libssh2
 BuildRequires: mingw64-libssh2
-%if %{with_esx}
 BuildRequires: mingw32-curl
 BuildRequires: mingw64-curl
-%endif
 BuildRequires: cpp
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires: rpcgen
@@ -101,30 +76,18 @@ MinGW Windows libvirt virtualization library.
 # Mingw32
 %package -n mingw32-libvirt
 Summary: %{summary}
+Obsoletes: mingw32-libvirt < 7.0.0
 
 %description -n mingw32-libvirt
 MinGW Windows libvirt virtualization library.
 
-%package -n mingw32-libvirt-static
-Summary: %{summary}
-Requires: mingw32-libvirt = %{version}-%{release}
-
-%description -n mingw32-libvirt-static
-MinGW Windows libvirt virtualization library, static version.
-
 # Mingw64
 %package -n mingw64-libvirt
 Summary: %{summary}
+Obsoletes: mingw64-libvirt < 7.0.0
 
 %description -n mingw64-libvirt
 MinGW Windows libvirt virtualization library.
-
-%package -n mingw64-libvirt-static
-Summary: %{summary}
-Requires: mingw64-libvirt = %{version}-%{release}
-
-%description -n mingw64-libvirt-static
-MinGW Windows libvirt virtualization library, static version.
 
 %{?mingw_debug_package}
 
@@ -138,55 +101,82 @@ echo "This RPM requires Fedora >= %{min_fedora}"
 exit 1
 %endif
 
-%if ! %{with_esx}
-    %define _without_esx --without-esx
-%endif
-
-%if ! %{with_hyperv}
-    %define _without_hyperv --without-hyperv
-%endif
-
-%if ! %{with_xenapi}
-    %define _without_xenapi --without-xenapi
-%endif
-
-%if ! %{with_vz}
-    %define _without_vz --without-vz
-%endif
-
-%if 0%{?enable_autotools}
-autoreconf -if
-%endif
-
-# XXX enable SASL in future
-%mingw_configure \
-  --enable-static \
-  --without-xen \
-  --without-qemu \
-  --without-openvz \
-  --without-lxc \
-  --without-vbox \
-  %{?_without_xenapi} \
-  --without-sasl \
-  --without-polkit \
-  --without-libvirtd \
-  %{?_without_esx} \
-  %{?_without_hyperv} \
-  --without-vmware \
-  --without-parallels \
-  --without-netcf \
-  --without-audit \
-  --without-dtrace \
-  --enable-expensive-tests
-
-%mingw_make %{?_smp_mflags}
-
+%mingw_meson \
+  --auto-features=enabled \
+  -Ddriver_remote=enabled \
+  -Ddriver_esx=enabled \
+  -Dcurl=enabled \
+  -Ddocs=enabled \
+  -Dapparmor=disabled \
+  -Dattr=disabled \
+  -Daudit=disabled \
+  -Dbash_completion=disabled \
+  -Dblkid=disabled \
+  -Dcapng=disabled \
+  -Ddriver_bhyve=disabled \
+  -Ddriver_hyperv=disabled \
+  -Ddriver_interface=disabled \
+  -Ddriver_libvirtd=disabled \
+  -Ddriver_libxl=disabled \
+  -Ddriver_lxc=disabled \
+  -Ddriver_network=disabled \
+  -Ddriver_openvz=disabled \
+  -Ddriver_qemu=disabled \
+  -Ddriver_secrets=disabled \
+  -Ddriver_vbox=disabled \
+  -Ddriver_vmware=disabled \
+  -Ddriver_vz=disabled \
+  -Ddtrace=disabled \
+  -Dexpensive_tests=enabled \
+  -Dfirewalld=disabled \
+  -Dfirewalld_zone=disabled \
+  -Dfuse=disabled \
+  -Dglusterfs=disabled \
+  -Dhost_validate=disabled \
+  -Dlibiscsi=disabled \
+  -Dlibnl=disabled \
+  -Dlibpcap=disabled \
+  -Dlibssh2=disabled \
+  -Dlibssh=disabled \
+  -Dlogin_shell=disabled \
+  -Dnetcf=disabled \
+  -Dnls=disabled \
+  -Dnss=disabled \
+  -Dnumactl=disabled \
+  -Dnumad=disabled \
+  -Dopenwsman=disabled \
+  -Dpciaccess=disabled \
+  -Dpm_utils=disabled \
+  -Dpolkit=disabled \
+  -Dreadline=disabled \
+  -Drpath=disabled \
+  -Dsanlock=disabled \
+  -Dsasl=disabled \
+  -Dsecdriver_apparmor=disabled \
+  -Dsecdriver_selinux=disabled \
+  -Dselinux=disabled \
+  -Dstorage_dir=disabled \
+  -Dstorage_disk=disabled \
+  -Dstorage_fs=disabled \
+  -Dstorage_gluster=disabled \
+  -Dstorage_iscsi_direct=disabled \
+  -Dstorage_iscsi=disabled \
+  -Dstorage_lvm=disabled \
+  -Dstorage_mpath=disabled \
+  -Dstorage_rbd=disabled \
+  -Dstorage_scsi=disabled \
+  -Dstorage_sheepdog=disabled \
+  -Dstorage_vstorage=disabled \
+  -Dstorage_zfs=disabled \
+  -Dsysctl_config=disabled \
+  -Dtests=disabled \
+  -Dudev=disabled \
+  -Dwireshark_dissector=disabled \
+  -Dyajl=disabled
+%mingw_ninja
 
 %install
-%mingw_make_install "DESTDIR=$RPM_BUILD_ROOT"
-
-# Libtool files don't need to be bundled
-find $RPM_BUILD_ROOT -name "*.la" -delete
+%mingw_ninja_install
 
 rm -rf $RPM_BUILD_ROOT%{mingw32_sysconfdir}/libvirt/nwfilter
 rm -rf $RPM_BUILD_ROOT%{mingw64_sysconfdir}/libvirt/nwfilter
@@ -267,12 +257,6 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw32_mandir}/man1/virt-pki-validate.1*
 %{mingw32_mandir}/man7/virkey*.7*
 
-%files -n mingw32-libvirt-static
-%{mingw32_libdir}/libvirt.a
-%{mingw32_libdir}/libvirt-lxc.a
-%{mingw32_libdir}/libvirt-qemu.a
-%{mingw32_libdir}/libvirt-admin.a
-
 # Mingw64
 %files -n mingw64-libvirt
 %dir %{mingw64_sysconfdir}/libvirt/
@@ -299,28 +283,8 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 
 %dir %{mingw64_datadir}/libvirt/
 %dir %{mingw64_datadir}/libvirt/schemas/
-%{mingw64_datadir}/libvirt/schemas/basictypes.rng
-%{mingw64_datadir}/libvirt/schemas/capability.rng
-%{mingw64_datadir}/libvirt/schemas/cputypes.rng
-%{mingw64_datadir}/libvirt/schemas/domain.rng
-%{mingw64_datadir}/libvirt/schemas/domainbackup.rng
-%{mingw64_datadir}/libvirt/schemas/domaincaps.rng
-%{mingw64_datadir}/libvirt/schemas/domaincheckpoint.rng
-%{mingw64_datadir}/libvirt/schemas/domaincommon.rng
-%{mingw64_datadir}/libvirt/schemas/domainsnapshot.rng
-%{mingw64_datadir}/libvirt/schemas/interface.rng
-%{mingw64_datadir}/libvirt/schemas/network.rng
-%{mingw64_datadir}/libvirt/schemas/networkcommon.rng
-%{mingw64_datadir}/libvirt/schemas/networkport.rng
-%{mingw64_datadir}/libvirt/schemas/nodedev.rng
-%{mingw64_datadir}/libvirt/schemas/nwfilter.rng
-%{mingw64_datadir}/libvirt/schemas/nwfilter_params.rng
-%{mingw64_datadir}/libvirt/schemas/nwfilterbinding.rng
-%{mingw64_datadir}/libvirt/schemas/secret.rng
-%{mingw64_datadir}/libvirt/schemas/storagecommon.rng
-%{mingw64_datadir}/libvirt/schemas/storagepool.rng
-%{mingw64_datadir}/libvirt/schemas/storagepoolcaps.rng
-%{mingw64_datadir}/libvirt/schemas/storagevol.rng
+%{mingw64_datadir}/libvirt/schemas/*.rng
+
 %dir %{mingw64_datadir}/libvirt/api/
 %{mingw64_datadir}/libvirt/api/libvirt-api.xml
 %{mingw64_datadir}/libvirt/api/libvirt-lxc-api.xml
@@ -358,12 +322,5 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw64_mandir}/man1/virt-xml-validate.1*
 %{mingw64_mandir}/man1/virt-pki-validate.1*
 %{mingw64_mandir}/man7/virkey*.7*
-
-%files -n mingw64-libvirt-static
-%{mingw64_libdir}/libvirt.a
-%{mingw64_libdir}/libvirt-lxc.a
-%{mingw64_libdir}/libvirt-qemu.a
-%{mingw64_libdir}/libvirt-admin.a
-
 
 %changelog
