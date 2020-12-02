@@ -42,7 +42,6 @@ typedef struct _virDomainCheckpointDiskDef virDomainCheckpointDiskDef;
 typedef virDomainCheckpointDiskDef *virDomainCheckpointDiskDefPtr;
 struct _virDomainCheckpointDiskDef {
     char *name;     /* name matching the <target dev='...' of the domain */
-    int idx;        /* index within checkpoint->dom->disks that matches name */
     int type;       /* virDomainCheckpointType */
     char *bitmap;   /* bitmap name, if type is bitmap */
     unsigned long long size; /* current checkpoint size in bytes */
