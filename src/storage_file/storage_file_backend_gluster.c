@@ -1,5 +1,5 @@
 /*
- * storage_file_gluster.c: storage file backend for Gluster handling
+ * storage_file_backend_gluster.c: storage file backend for Gluster handling
  *
  * Copyright (C) 2013-2018 Red Hat, Inc.
  *
@@ -23,7 +23,7 @@
 
 #include <glusterfs/api/glfs.h>
 
-#include "storage_file_gluster.h"
+#include "storage_file_backend_gluster.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"

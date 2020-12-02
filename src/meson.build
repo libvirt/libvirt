@@ -266,6 +266,7 @@ subdir('nwfilter')
 subdir('secret')
 subdir('security')
 subdir('storage')
+subdir('storage_file')
 
 subdir('bhyve')
 subdir('esx')

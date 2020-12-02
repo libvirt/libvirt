@@ -1,5 +1,5 @@
 /*
- * storage_file_fs.h: storage file code for FS and directory handling
+ * storage_file_backend_gluster.h: storage file backend for Gluster handling
  *
  * Copyright (C) 2018 Red Hat, Inc.
  *
@@ -16,8 +16,9 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
+ *
  */
 
 #pragma once
 
-int virStorageFileFsRegister(void);
+int virStorageFileGlusterRegister(void);

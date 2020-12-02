@@ -222,9 +222,9 @@
 @SRCDIR@src/storage/storage_backend_vstorage.c
 @SRCDIR@src/storage/storage_backend_zfs.c
 @SRCDIR@src/storage/storage_driver.c
-@SRCDIR@src/storage/storage_file_fs.c
-@SRCDIR@src/storage/storage_file_gluster.c
 @SRCDIR@src/storage/storage_util.c
+@SRCDIR@src/storage_file/storage_file_backend_fs.c
+@SRCDIR@src/storage_file/storage_file_backend_gluster.c
 @SRCDIR@src/test/test_driver.c
 @SRCDIR@src/util/iohelper.c
 @SRCDIR@src/util/viralloc.c

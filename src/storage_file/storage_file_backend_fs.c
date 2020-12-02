@@ -1,5 +1,5 @@
 /*
- * storage_file_fs.c: storage file code for FS and directory handling
+ * storage_file_backend_fs.c: storage file code for FS and directory handling
  *
  * Copyright (C) 2007-2018 Red Hat, Inc.
  *
@@ -25,7 +25,7 @@
 #include <fcntl.h>
 
 #include "virerror.h"
-#include "storage_file_fs.h"
+#include "storage_file_backend_fs.h"
 #include "storage_util.h"
 #include "virstoragefilebackend.h"
 #include "vircommand.h"
