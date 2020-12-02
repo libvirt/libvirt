@@ -126,7 +126,6 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
     virDomainCheckpointDefPtr ret = NULL;
     size_t i;
     int n;
-    char *tmp;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autoptr(virDomainCheckpointDef) def = NULL;
 
@@ -146,6 +145,8 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
     def->parent.description = virXPathString("string(./description)", ctxt);
 
     if (flags & VIR_DOMAIN_CHECKPOINT_PARSE_REDEFINE) {
+        xmlNodePtr domainNode;
+
         if (virXPathLongLong("string(./creationTime)", ctxt,
                              &def->parent.creationTime) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -155,17 +156,10 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
 
         def->parent.parent_name = virXPathString("string(./parent/name)", ctxt);
 
-        if ((tmp = virXPathString("string(./domain/@type)", ctxt))) {
+        if ((domainNode = virXPathNode("./domain", ctxt))) {
             int domainflags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
                               VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
-            xmlNodePtr domainNode = virXPathNode("./domain", ctxt);
 
-            VIR_FREE(tmp);
-            if (!domainNode) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing domain in checkpoint"));
-                return NULL;
-            }
             def->parent.dom = virDomainDefParseNode(ctxt->node->doc, domainNode,
                                                     xmlopt, parseOpaque,
                                                     domainflags);
