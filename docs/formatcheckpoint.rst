@@ -1,3 +1,5 @@
+.. role:: since
+
 Checkpoint XML format
 =====================
 
@@ -103,11 +105,15 @@ The top-level ``domaincheckpoint`` element may contain the following elements:
    A readonly representation of the inactive `domain
    configuration <formatdomain.html>`__ at the time the checkpoint was created.
    This element may be omitted for output brevity by supplying the
-   ``VIR_DOMAIN_CHECKPOINT_XML_NO_DOMAIN`` flag, but the resulting XML is no
-   longer viable for use with the ``VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE`` flag
-   of ``virDomainCheckpointCreateXML()``. The domain will have
+   ``VIR_DOMAIN_CHECKPOINT_XML_NO_DOMAIN`` flag. The domain will have
    security-sensitive information omitted unless the flag
    ``VIR_DOMAIN_CHECKPOINT_XML_SECURE`` is provided on a read-write connection.
+
+   ``virDomainCheckpointCreateXML()`` requires that the ``<domain>`` is present
+   when used with ``VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE``.
+   :since:`Since 7.0.0` the ``<domain>`` element can be omitted when redefining
+   a checkpoint, but hypervisors may not support certain operations if it's
+   missing.
 
 Examples
 --------

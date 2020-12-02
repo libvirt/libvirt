@@ -165,10 +165,6 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
                                                     domainParseFlags);
             if (!def->parent.dom)
                 return NULL;
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("missing domain in checkpoint redefine"));
-            return NULL;
         }
     } else if (virDomainXMLOptionRunMomentPostParse(xmlopt, &def->parent) < 0) {
         return NULL;
