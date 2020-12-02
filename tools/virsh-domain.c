@@ -14209,9 +14209,9 @@ static const vshCmdOptDef opts_guestinfo[] = {
      .type = VSH_OT_BOOL,
      .help = N_("report filesystem information"),
     },
-    {.name = "disks",
+    {.name = "disk",
      .type = VSH_OT_BOOL,
-     .help = N_("report disks information"),
+     .help = N_("report disk information"),
     },
     {.name = NULL}
 };
@@ -14236,7 +14236,7 @@ cmdGuestInfo(vshControl *ctl, const vshCmd *cmd)
         types |= VIR_DOMAIN_GUEST_INFO_HOSTNAME;
     if (vshCommandOptBool(cmd, "filesystem"))
         types |= VIR_DOMAIN_GUEST_INFO_FILESYSTEM;
-    if (vshCommandOptBool(cmd, "disks"))
+    if (vshCommandOptBool(cmd, "disk"))
         types |= VIR_DOMAIN_GUEST_INFO_DISKS;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))

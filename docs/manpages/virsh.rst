@@ -2679,7 +2679,7 @@ guestinfo
 ::
 
    guestinfo domain [--user] [--os] [--timezone] [--hostname] [--filesystem]
-      [--disks]
+      [--disk]
 
 Print information about the guest from the point of view of the guest agent.
 Note that this command requires a guest agent to be configured and running in
@@ -2690,7 +2690,7 @@ are supported by the guest agent. You can limit the types of information that
 are returned by specifying one or more flags.  If a requested information
 type is not supported, the processes will provide an exit code of 1.
 Available information types flags are *--user*, *--os*,
-*--timezone*, *--hostname*, *--filesystem* and *--disks*.
+*--timezone*, *--hostname*, *--filesystem* and *--disk*.
 
 Note that depending on the hypervisor type and the version of the guest agent
 running within the domain, not all of the following information may be
@@ -2747,15 +2747,15 @@ returned:
 * ``fs.<num>.disk.<num>.serial`` - the serial number of disk <num>
 * ``fs.<num>.disk.<num>.device`` - the device node of disk <num>
 
-*--disks* returns:
+*--disk* returns:
 
-* ``disks.count`` - the number of disks defined on this domain
-* ``disks.<num>.name`` - device node (Linux) or device UNC (Windows)
-* ``disks.<num>.partition`` - whether this is a partition or disk
-* ``disks.<num>.dependencies.count`` - the number of device dependencies
-* ``disks.<num>.dependencies.<num>.name`` - a dependency name
-* ``disks.<num>.alias`` - the device alias of the disk (e.g. sda)
-* ``disks.<num>.guest_alias`` - optional alias assigned to the disk
+* ``disk.count`` - the number of disks defined on this domain
+* ``disk.<num>.name`` - device node (Linux) or device UNC (Windows)
+* ``disk.<num>.partition`` - whether this is a partition or disk
+* ``disk.<num>.dependency.count`` - the number of device dependencies
+* ``disk.<num>.dependency.<num>.name`` - a dependency name
+* ``disk.<num>.alias`` - the device alias of the disk (e.g. sda)
+* ``disk.<num>.guest_alias`` - optional alias assigned to the disk
 
 
 guestvcpus
