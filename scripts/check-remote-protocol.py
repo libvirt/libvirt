@@ -121,7 +121,7 @@ if n < 1:
     print("WARNING: install dwarves-1.3 or newer", file=sys.stderr)
     sys.exit(8)
 
-diff = subprocess.Popen(["diff", "-u", expected, "-"], stdin=subprocess.PIPE)
+diff = subprocess.Popen(["diff", "-b", "-u", expected, "-"], stdin=subprocess.PIPE)
 actualstr = "\n".join(actual) + "\n"
 # i686 builds on x86_64 host add __attribute__(packed)) to
 # the structs. This doesn't matter functionally because we
