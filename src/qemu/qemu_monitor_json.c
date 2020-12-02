@@ -8083,7 +8083,8 @@ qemuMonitorJSONRTCResetReinjection(qemuMonitorPtr mon)
  */
 int
 qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
-                            qemuMonitorIOThreadInfoPtr **iothreads)
+                            qemuMonitorIOThreadInfoPtr **iothreads,
+                            int *niothreads)
 {
     int ret = -1;
     virJSONValuePtr cmd;
@@ -8160,9 +8161,10 @@ qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
             info->poll_valid = true;
     }
 
-    ret = n;
+    *niothreads = n;
     *iothreads = infolist;
     infolist = NULL;
+    ret = 0;
 
  cleanup:
     if (infolist) {

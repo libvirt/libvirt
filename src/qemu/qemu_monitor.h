@@ -1365,7 +1365,8 @@ struct _qemuMonitorIOThreadInfo {
     bool set_poll_shrink;
 };
 int qemuMonitorGetIOThreads(qemuMonitorPtr mon,
-                            qemuMonitorIOThreadInfoPtr **iothreads);
+                            qemuMonitorIOThreadInfoPtr **iothreads,
+                            int *niothreads);
 int qemuMonitorSetIOThread(qemuMonitorPtr mon,
                            qemuMonitorIOThreadInfoPtr iothreadInfo);
 

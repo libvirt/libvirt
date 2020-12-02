@@ -4211,22 +4211,24 @@ qemuMonitorRTCResetReinjection(qemuMonitorPtr mon)
  * qemuMonitorGetIOThreads:
  * @mon: Pointer to the monitor
  * @iothreads: Location to return array of IOThreadInfo data
+ * @niothreads: Count of the number of IOThreads in the array
  *
  * Issue query-iothreads command.
  * Retrieve the list of iothreads defined/running for the machine
  *
- * Returns count of IOThreadInfo structures on success
+ * Returns 0 on success
  *        -1 on error.
  */
 int
 qemuMonitorGetIOThreads(qemuMonitorPtr mon,
-                        qemuMonitorIOThreadInfoPtr **iothreads)
+                        qemuMonitorIOThreadInfoPtr **iothreads,
+                        int *niothreads)
 {
     VIR_DEBUG("iothreads=%p", iothreads);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONGetIOThreads(mon, iothreads);
+    return qemuMonitorJSONGetIOThreads(mon, iothreads, niothreads);
 }
 
 

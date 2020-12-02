@@ -550,7 +550,8 @@ int qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
 int qemuMonitorJSONRTCResetReinjection(qemuMonitorPtr mon);
 
 int qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
-                                qemuMonitorIOThreadInfoPtr **iothreads)
+                                qemuMonitorIOThreadInfoPtr **iothreads,
+                                int *niothreads)
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorJSONSetIOThread(qemuMonitorPtr mon,
