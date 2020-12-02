@@ -26,6 +26,7 @@
 @SRCDIR@src/conf/domain_capabilities.c
 @SRCDIR@src/conf/domain_conf.c
 @SRCDIR@src/conf/domain_event.c
+@SRCDIR@src/conf/domain_validate.c
 @SRCDIR@src/conf/interface_conf.c
 @SRCDIR@src/conf/netdev_bandwidth_conf.c
 @SRCDIR@src/conf/netdev_vlan_conf.c

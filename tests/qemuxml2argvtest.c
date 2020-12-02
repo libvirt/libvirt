@@ -1006,7 +1006,8 @@ mymain(void)
     DO_TEST("boot-menu-enable-with-timeout",
             QEMU_CAPS_SPLASH_TIMEOUT);
     DO_TEST_PARSE_ERROR("boot-menu-enable-with-timeout", NONE);
-    DO_TEST_PARSE_ERROR("boot-menu-enable-with-timeout-invalid", NONE);
+    DO_TEST_PARSE_ERROR("boot-menu-enable-with-timeout-invalid",
+                        QEMU_CAPS_SPLASH_TIMEOUT);
     DO_TEST("boot-menu-disable", NONE);
     DO_TEST("boot-menu-disable-drive", NONE);
     DO_TEST_PARSE_ERROR("boot-dev+order",

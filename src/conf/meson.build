@@ -14,6 +14,7 @@ domain_conf_sources = [
   'domain_capabilities.c',
   'domain_conf.c',
   'domain_nwfilter.c',
+  'domain_validate.c',
   'moment_conf.c',
   'numa_conf.c',
   'snapshot_conf.c',
