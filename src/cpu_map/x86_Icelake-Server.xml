@@ -1,7 +1,7 @@
 <cpus>
   <model name='Icelake-Server'>
     <decode host='on' guest='on'/>
-    <signature family='6' model='134'/> <!-- 080660 -->
+    <signature family='6' model='106'/> <!-- 0606A5 -->
     <vendor name='Intel'/>
     <feature name='3dnowprefetch'/>
     <feature name='abm'/>
