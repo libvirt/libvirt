@@ -2673,7 +2673,7 @@ virNodeDeviceGetMdevTypesCaps(const char *sysfspath,
 
     /* this could be a refresh, so clear out the old data */
     for (i = 0; i < *nmdev_types; i++)
-       virMediatedDeviceTypeFree(*mdev_types[i]);
+       virMediatedDeviceTypeFree((*mdev_types)[i]);
     VIR_FREE(*mdev_types);
     *nmdev_types = 0;
 
