@@ -157,12 +157,12 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
         def->parent.parent_name = virXPathString("string(./parent/name)", ctxt);
 
         if ((domainNode = virXPathNode("./domain", ctxt))) {
-            int domainflags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                              VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
+            unsigned int domainParseFlags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                            VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
 
             def->parent.dom = virDomainDefParseNode(ctxt->node->doc, domainNode,
                                                     xmlopt, parseOpaque,
-                                                    domainflags);
+                                                    domainParseFlags);
             if (!def->parent.dom)
                 return NULL;
         } else {
