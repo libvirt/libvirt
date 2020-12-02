@@ -508,7 +508,7 @@ virLogDaemonPreExecRestart(const char *state_file,
     virJSONValuePtr child;
     char *state = NULL;
     virJSONValuePtr object = virJSONValueNewObject();
-    char *magic;
+    char *magic = NULL;
 
     VIR_DEBUG("Running pre-restart exec");
 
@@ -523,10 +523,8 @@ virLogDaemonPreExecRestart(const char *state_file,
     if (!(magic = virLogDaemonGetExecRestartMagic()))
         goto cleanup;
 
-    if (virJSONValueObjectAppendString(object, "magic", magic) < 0) {
-        VIR_FREE(magic);
+    if (virJSONValueObjectAppendString(object, "magic", magic) < 0)
         goto cleanup;
-    }
 
     if (!(child = virLogHandlerPreExecRestart(logDaemon->handler)))
         goto cleanup;
@@ -559,6 +557,7 @@ virLogDaemonPreExecRestart(const char *state_file,
     abort(); /* This should be impossible to reach */
 
  cleanup:
+    VIR_FREE(magic);
     VIR_FREE(state);
     virJSONValueFree(object);
     return -1;
