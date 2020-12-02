@@ -20,7 +20,7 @@
     (<span class="since">Since 5.2.0</span>):</p>
 
 <pre>
-<a href="/html/libvirt-libvirt-domain.html#virConnectGetStoragePoolCapabilities">virConnectGetStoragePoolCapabilities</a>
+<a href="/html/libvirt-libvirt-storage.html#virConnectGetStoragePoolCapabilities">virConnectGetStoragePoolCapabilities</a>
 </pre>
 
     <p>The root element that emulator capability XML document starts with is
