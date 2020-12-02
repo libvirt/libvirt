@@ -7,9 +7,7 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='ppc64' machine='pseries'>hvm</type>
-    <kernel>/media/ram/uImage</kernel>
-    <initrd>/media/ram/ramdisk</initrd>
-    <cmdline>root=/dev/ram rw console=ttyS0,115200</cmdline>
+    <boot dev='hd'/>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
@@ -17,16 +15,24 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>
-    <memballoon model='virtio'/>
+    <controller type='usb' index='0' model='none'/>
+    <controller type='pci' index='0' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='0'/>
+    </controller>
+    <memballoon model='none'/>
+    <panic model='pseries'/>
     <memory model='dimm'>
       <target>
         <size unit='KiB'>523264</size>
       </target>
+      <address type='dimm' slot='0'/>
     </memory>
     <memory model='dimm'>
       <target>
         <size unit='KiB'>524287</size>
       </target>
+      <address type='dimm' slot='1'/>
     </memory>
   </devices>
 </domain>
