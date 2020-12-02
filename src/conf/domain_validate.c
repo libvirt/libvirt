@@ -128,5 +128,25 @@ virDomainVideoDefValidate(const virDomainVideoDef *video,
         return -1;
     }
 
+    if (video->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
+        if (video->ram != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ram attribute only supported for video type qxl"));
+            return -1;
+        }
+
+        if (video->vram64 != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vram64 attribute only supported for video type qxl"));
+            return -1;
+        }
+
+        if (video->vgamem != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vgamem attribute only supported for video type qxl"));
+            return -1;
+        }
+    }
+
     return 0;
 }
