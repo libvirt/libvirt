@@ -87,11 +87,6 @@ testCompareXMLToXMLFiles(const char *inxml,
         formatflags |= VIR_DOMAIN_CHECKPOINT_FORMAT_SIZE;
     }
 
-    /* Parsing XML does not populate the domain definition; work
-     * around that by not requesting domain on output */
-    if (!def->parent.dom)
-        formatflags |= VIR_DOMAIN_CHECKPOINT_FORMAT_NO_DOMAIN;
-
     if (!(actual = virDomainCheckpointDefFormat(def,
                                                 driver.xmlopt,
                                                 formatflags)))

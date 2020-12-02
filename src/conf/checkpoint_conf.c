@@ -460,10 +460,10 @@ virDomainCheckpointDefFormatInternal(virBufferPtr buf,
         virBufferAddLit(buf, "</disks>\n");
     }
 
-    if (!(flags & VIR_DOMAIN_CHECKPOINT_FORMAT_NO_DOMAIN) &&
-        virDomainDefFormatInternal(def->parent.dom, xmlopt,
-                                   buf, domainflags) < 0)
-        return -1;
+    if (def->parent.dom && !(flags & VIR_DOMAIN_CHECKPOINT_FORMAT_NO_DOMAIN)) {
+        if (virDomainDefFormatInternal(def->parent.dom, xmlopt, buf, domainflags) < 0)
+            return -1;
+    }
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</domaincheckpoint>\n");
@@ -495,23 +495,24 @@ virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
                                 virDomainCheckpointDefPtr def,
                                 bool *update_current)
 {
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainMomentObjPtr parent = NULL;
-
-    virUUIDFormat(vm->def->uuid, uuidstr);
 
     if (virDomainCheckpointCheckCycles(vm->checkpoints, def, vm->def->name) < 0)
         return -1;
 
-    if (!def->parent.dom ||
-        memcmp(def->parent.dom->uuid, vm->def->uuid, VIR_UUID_BUFLEN)) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("definition for checkpoint %s must use uuid %s"),
-                       def->parent.name, uuidstr);
-        return -1;
+    if (def->parent.dom) {
+        if (memcmp(def->parent.dom->uuid, vm->def->uuid, VIR_UUID_BUFLEN)) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+            virUUIDFormat(vm->def->uuid, uuidstr);
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("definition for checkpoint %s must use uuid %s"),
+                           def->parent.name, uuidstr);
+            return -1;
+        }
+
+        if (virDomainCheckpointAlignDisks(def) < 0)
+            return -1;
     }
-    if (virDomainCheckpointAlignDisks(def) < 0)
-        return -1;
 
     if (def->parent.parent_name &&
          (parent = virDomainCheckpointFindByName(vm->checkpoints,
