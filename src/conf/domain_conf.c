@@ -7350,6 +7350,9 @@ virDomainDefValidateInternal(const virDomainDef *def,
     if (virDomainDefBootValidate(def) < 0)
         return -1;
 
+    if (virDomainDefVideoValidate(def) < 0)
+        return -1;
+
     if (virDomainNumaDefValidate(def->numa) < 0)
         return -1;
 
@@ -22146,14 +22149,9 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
 
         if (video->primary) {
-            if (def->nvideos != 0 && def->videos[0]->primary) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Only one primary video device is supported"));
-                goto error;
-            }
-
             insertAt = 0;
         }
+
         if (VIR_INSERT_ELEMENT_INPLACE(def->videos,
                                        insertAt,
                                        def->nvideos,

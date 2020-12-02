@@ -25,3 +25,4 @@
 #include "domain_conf.h"
 
 int virDomainDefBootValidate(const virDomainDef *def);
+int virDomainDefVideoValidate(const virDomainDef *def);

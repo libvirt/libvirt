@@ -2379,6 +2379,11 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-riscv64", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-s390x", "s390x");
 
+    DO_TEST_PARSE_ERROR("video-multiple-primaries",
+                        QEMU_CAPS_DEVICE_QXL,
+                        QEMU_CAPS_DEVICE_VGA,
+                        QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
+
     DO_TEST("virtio-rng-default",
             QEMU_CAPS_DEVICE_VIRTIO_RNG,
             QEMU_CAPS_OBJECT_RNG_RANDOM);
