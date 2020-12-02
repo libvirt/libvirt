@@ -428,7 +428,7 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
 int
 virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
 {
-    virCommandPtr cmd = virNetDevOpenvswitchCreateCmd();
+    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
     int exitstatus;
 
     *master = NULL;
