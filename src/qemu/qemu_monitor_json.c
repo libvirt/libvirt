@@ -7457,6 +7457,10 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
         backend_type = "file";
         if (virJSONValueObjectAppendString(data, "out", chr->data.file.path) < 0)
             goto cleanup;
+        if (virJSONValueObjectAdd(data,
+                                  "T:append", chr->data.file.append,
+                                  NULL) < 0)
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
