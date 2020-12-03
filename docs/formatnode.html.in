@@ -431,6 +431,14 @@
                   device.</dd>
             </dl>
           </dd>
+          <dt><code>ap_card</code></dt>
+          <dd>Describes the Adjunct Processor (AP) Card device on a S390 host.
+              Sub-elements include:
+            <dl>
+              <dt><code>ap-adapter</code></dt>
+              <dd>AP Card identifier.</dd>
+            </dl>
+          </dd>
         </dl>
       </dd>
     </dl>

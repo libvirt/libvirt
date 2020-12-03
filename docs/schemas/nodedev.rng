@@ -87,6 +87,7 @@
         <ref name="capccwdev"/>
         <ref name="capcssdev"/>
         <ref name="capvdpa"/>
+        <ref name="capapcard"/>
       </choice>
     </element>
   </define>
@@ -665,6 +666,15 @@
     </attribute>
     <element name="chardev">
       <ref name="path"/>
+    </element>
+  </define>
+
+  <define name="capapcard">
+    <attribute name="type">
+      <value>ap_card</value>
+    </attribute>
+    <element name="ap-adapter">
+      <ref name="uint8"/>
     </element>
   </define>
 
