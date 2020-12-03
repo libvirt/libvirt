@@ -454,6 +454,9 @@
               <dd>AP Queue identifier.</dd>
             </dl>
           </dd>
+          <dt><code>ap_matrix</code></dt>
+          <dd>Describes an AP Matrix device on a S390 architecture providing
+              cryptographic host resources usable for virtualization.</dd>
         </dl>
       </dd>
     </dl>

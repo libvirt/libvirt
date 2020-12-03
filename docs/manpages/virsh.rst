@@ -5043,7 +5043,7 @@ List all of the devices available on the node that are known by libvirt.
 separated by comma, e.g. --cap pci,scsi. Valid capability types include
 'system', 'pci', 'usb_device', 'usb', 'net', 'scsi_host', 'scsi_target',
 'scsi', 'storage', 'fc_host', 'vports', 'scsi_generic', 'drm', 'mdev',
-'mdev_types', 'ccw', 'css', 'ap_card', 'ap_queue'.
+'mdev_types', 'ccw', 'css', 'ap_card', 'ap_queue', 'ap_matrix'.
 If *--tree* is used, the output is formatted in a tree representing parents of each
 node.  *cap* and *--tree* are mutually exclusive.
 
