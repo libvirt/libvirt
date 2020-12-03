@@ -1,0 +1,9 @@
+<device>
+  <name>ap_07_0038</name>
+  <path>/sys/devices/ap/card07/07.0038</path>
+  <parent>ap_card07</parent>
+  <capability type='ap_queue'>
+    <ap-adapter>0x07</ap-adapter>
+    <ap-domain>0x0038</ap-domain>
+  </capability>
+</device>

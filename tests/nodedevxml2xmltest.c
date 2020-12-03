@@ -126,6 +126,7 @@ mymain(void)
     DO_TEST("css_0_0_ffff");
     DO_TEST("css_0_0_fffe_mdev_types");
     DO_TEST("ap_card07");
+    DO_TEST("ap_07_0038");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
