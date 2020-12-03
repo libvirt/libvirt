@@ -169,7 +169,7 @@ virLXCControllerDriverNew(void)
     }
 
     driver->caps = virLXCDriverCapsInit(NULL);
-    driver->xmlopt = lxcDomainXMLConfInit(driver);
+    driver->xmlopt = lxcDomainXMLConfInit(driver, NULL);
 
     return driver;
 }

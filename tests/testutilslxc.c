@@ -71,7 +71,7 @@ testLXCDriverInit(void)
     }
 
     driver->caps = testLXCCapsInit();
-    driver->xmlopt = lxcDomainXMLConfInit(driver);
+    driver->xmlopt = lxcDomainXMLConfInit(driver, NULL);
 
     return driver;
 }

@@ -1470,6 +1470,7 @@ static int lxcStateInitialize(bool privileged,
 {
     virLXCDriverConfigPtr cfg = NULL;
     bool autostart = true;
+    const char *defsecmodel;
 
     if (root != NULL) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1525,7 +1526,9 @@ static int lxcStateInitialize(bool privileged,
     if (!(lxc_driver->hostdevMgr = virHostdevManagerGetDefault()))
         goto cleanup;
 
-    if (!(lxc_driver->xmlopt = lxcDomainXMLConfInit(lxc_driver)))
+    defsecmodel = virSecurityManagerGetModel(lxc_driver->securityManager);
+
+    if (!(lxc_driver->xmlopt = lxcDomainXMLConfInit(lxc_driver, defsecmodel)))
         goto cleanup;
 
     if (!(lxc_driver->closeCallbacks = virCloseCallbacksNew()))

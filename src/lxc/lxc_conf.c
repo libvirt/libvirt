@@ -209,9 +209,10 @@ virCapsPtr virLXCDriverGetCapabilities(virLXCDriverPtr driver,
 
 
 virDomainXMLOptionPtr
-lxcDomainXMLConfInit(virLXCDriverPtr driver)
+lxcDomainXMLConfInit(virLXCDriverPtr driver, const char *defsecmodel)
 {
     virLXCDriverDomainDefParserConfig.priv = driver;
+    virLXCDriverDomainDefParserConfig.defSecModel = defsecmodel;
     return virDomainXMLOptionNew(&virLXCDriverDomainDefParserConfig,
                                  &virLXCDriverPrivateDataCallbacks,
                                  &virLXCDriverDomainXMLNamespace,
