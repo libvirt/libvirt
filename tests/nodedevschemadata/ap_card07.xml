@@ -1,0 +1,8 @@
+<device>
+  <name>ap_card07</name>
+  <path>/sys/devices/ap/card07</path>
+  <parent>computer</parent>
+  <capability type='ap_card'>
+    <ap-adapter>0x07</ap-adapter>
+  </capability>
+</device>
