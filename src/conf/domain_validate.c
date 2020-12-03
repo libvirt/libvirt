@@ -225,6 +225,9 @@ virSecurityDeviceLabelDefValidateXML(virSecurityDeviceLabelDefPtr *seclabels,
 }
 
 
+#define VENDOR_LEN  8
+#define PRODUCT_LEN 16
+
 int
 virDomainDiskDefValidate(const virDomainDef *def,
                          const virDomainDiskDef *disk)
@@ -299,6 +302,28 @@ virDomainDiskDefValidate(const virDomainDef *def,
                                                  def->seclabels,
                                                  def->nseclabels) < 0)
             return -1;
+    }
+
+    if (disk->tray_status &&
+        disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+        disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("tray is only valid for cdrom and floppy"));
+        return -1;
+    }
+
+    if (disk->vendor && strlen(disk->vendor) > VENDOR_LEN) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("disk vendor is more than %d characters"),
+                       VENDOR_LEN);
+        return -1;
+    }
+
+    if (disk->product && strlen(disk->product) > PRODUCT_LEN) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("disk product is more than %d characters"),
+                       PRODUCT_LEN);
+        return -1;
     }
 
     return 0;
