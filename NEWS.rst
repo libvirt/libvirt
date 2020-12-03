@@ -13,6 +13,12 @@ v7.0.0 (unreleased)
 
 * **New features**
 
+  * nodedev: Add node device driver support for AP devices
+
+    Add support for detecting and listing Adjunct Processor(AP) cards, AP
+    queues and AP matrix devices (which are capable of MDEV) of a KVM host
+    system in libvirt node device driver with correct object relationships.
+
 * **Improvements**
 
 * **Bug fixes**
