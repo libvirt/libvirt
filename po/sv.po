@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-11-24 23:25+0000\n"
-"PO-Revision-Date: 2020-11-27 14:15+0000\n"
+"PO-Revision-Date: 2020-12-03 06:30+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -2286,47 +2286,47 @@ msgstr "CPU-drivrutinen ”%s” finns inte"
 
 #, c-format
 msgid "CPU feature %s already defined"
-msgstr ""
+msgstr "CPU-funktionen %s är redan definierad"
 
 #, c-format
 msgid "CPU feature '%s' specified more than once"
-msgstr ""
+msgstr "CPU-funktionen ”%s” är angiven mer än en gång"
 
 #, c-format
 msgid "CPU features not supported by hypervisor for %s architecture"
-msgstr ""
+msgstr "CPU-funktioner stödjs inte av hypervisorn för arkitekturen %s"
 
 #, c-format
 msgid "CPU flags requested but can't determine default CPU for arch %s"
 msgstr ""
+"CPU-flaggor begärda men kan inte avgöra standard-CPU för arkitekturen %s"
 
 msgid "CPU frequency:"
 msgstr "CPU-frekvens:"
 
-#, fuzzy
 msgid "CPU map:"
-msgstr "CPU-tid:"
+msgstr "CPU-avbildning:"
 
 #, c-format
 msgid ""
 "CPU mode '%s' for %s %s domain on %s host is not supported by hypervisor"
-msgstr ""
+msgstr "CPU-läge ”%s” för domänen %s %s på värden %s stödjs inte av hypervisorn"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU model %s already defined"
-msgstr "Pool %s har blivit odefinierad\n"
+msgstr "CPU-modellen %s är redan definierad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU model %s is not supported by hypervisor"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "CPU-modellen %s stödjs inte av hypervisorn"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU model %s too long for destination"
-msgstr "Sökvägen %s är för lång för unix-uttag"
+msgstr "CPU-modellen %s är för lång för destinationen"
 
 #, c-format
 msgid "CPU model '%s' not supported by hypervisor"
-msgstr ""
+msgstr "CPU-modellen ”%s” stödjs inte av hypervisorn"
 
 msgid "CPU model:"
 msgstr "CPU-modell:"
@@ -2335,13 +2335,13 @@ msgid "CPU models"
 msgstr "CPU-modeller"
 
 msgid "CPU socket topology has changed"
-msgstr ""
+msgstr "CPU-sockeltopologin har ändrats"
 
 msgid "CPU socket(s):"
 msgstr "CPU-uttag:"
 
 msgid "CPU throttling rate increment for auto-convergence"
-msgstr ""
+msgstr "CPU-strypningshastighetsökning för automatkonvergens"
 
 msgid "CPU time"
 msgstr "CPU-tid"
@@ -2350,39 +2350,38 @@ msgid "CPU time:"
 msgstr "CPU-tid:"
 
 msgid "CPU topology doesn't match maximum vcpu count"
-msgstr ""
+msgstr "CPU-topologin matchar inte maximala vcpu-antalet"
 
 msgid "CPU topology doesn't match the desired vcpu count"
-msgstr ""
+msgstr "CPU-topologin matchar inte det önskade vcpu-antalet"
 
 msgid "CPU tuning is not available in session mode"
-msgstr ""
+msgstr "CPU-trimning är inte tillgängligt i sessionsläge"
 
 msgid "CPU tuning is not available on this host"
-msgstr ""
+msgstr "CPU-trimning är inte tillgängligt på denna värd"
 
 #, c-format
 msgid "CPU vendor %s already defined"
-msgstr ""
+msgstr "CPU-tillverkaren %s är redan definierad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU vendor %s not found"
-msgstr "Nätverk hittades inte"
+msgstr "CPU-tillverkaren %s finns inte"
 
 #, c-format
 msgid "CPU vendor %s of model %s differs from vendor %s"
-msgstr ""
+msgstr "CPU-tillverkaren %s av modell %s skiljer från tillverkaren %s"
 
 msgid "CPU vendor specified without CPU model"
 msgstr "CPU-leverantören anges utan CPU-modell"
 
 #, c-format
 msgid "CPU vendor value 0x%2lx already defined"
-msgstr ""
+msgstr "CPU-tillverkarvärdet 0x%2lx är redan definierat"
 
-#, fuzzy
 msgid "CPU vendors do not match"
-msgstr "Mål-CPU-tillverkaren %s stämmer inte med källan %s"
+msgstr "CPU-tillverkare stämmer inte överens"
 
 msgid "CPU(s):"
 msgstr "CPU(er):"
@@ -2391,354 +2390,372 @@ msgid "CPU:"
 msgstr "CPU:"
 
 msgid "CPUID registers unavailable"
-msgstr ""
+msgstr "CPUID-register är inte tillgängliga"
 
 msgid "CPUs are incompatible"
-msgstr ""
+msgstr "CPU:er är inkompatibla"
 
 msgid "CPUs online:"
-msgstr ""
+msgstr "CPU:er inkopplade:"
 
 msgid "CPUs present:"
-msgstr ""
+msgstr "CPU:er närvarande:"
 
 msgid "CURL (multi) mismatch"
-msgstr ""
+msgstr "CURL (multi) stämmer inte"
 
 msgid "CURL (share) mismatch"
-msgstr ""
+msgstr "CURL (share) stämmer inte"
 
 #, c-format
 msgid ""
 "Cache allocation for the whole cache is not possible, specify size smaller "
 "than %llu"
 msgstr ""
+"Cache-allokering för hela cachen är inte möjligt, ange en storlek mindre än "
+"%llu"
 
 #, c-format
 msgid "Cache allocation of size %llu is not divisible by granularity %llu"
-msgstr ""
+msgstr "Cache-allokering av storlek %llu är inte delbar med noggrannheten %llu"
 
 #, c-format
 msgid ""
 "Cache allocation of size %llu is smaller than the minimum allowed allocation "
 "%llu"
 msgstr ""
+"Cache-allokering av storlek %llu är mindre än den minsta tillåtna "
+"allokeringen %llu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cache level %d does not support tuning"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "Cache-nivå %d stödjer inte trimning"
 
 #, c-format
 msgid "Cache level %d does not support tuning for scope type '%s'"
-msgstr ""
+msgstr "Cache-nivå %d stödjer inte trimning av räckviddstypen ”%s”"
 
 #, c-format
 msgid "Cache level %d id %u does not support tuning for scope type '%s'"
-msgstr ""
+msgstr "Cache-nivå %d id %u stödjer inte trimning av räckviddstypen ”%s”"
 
 #, c-format
 msgid "Cache level '%u' already defined"
-msgstr ""
+msgstr "Cache-nivå ”%u” är redan definierad"
 
 #, c-format
 msgid "Cache with id %u does not exists for level %d"
-msgstr ""
+msgstr "Cachen med i %u finns inte för nivå %d"
 
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "Anrop av %s för oväntad typ ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
-msgstr "Anrop av %s för oväntad typ ”%s”"
+msgstr "Anrop av %s för oväntad typ ”%s”, ”%s” förväntades"
 
 #, c-format
 msgid "Call to '%s' returned a list, expecting exactly one item"
-msgstr ""
+msgstr "Anrop av ”%s” returnerade en lista, precis en post förväntades"
 
 #, c-format
 msgid "Call to '%s' returned an empty result, expecting a non-empty result"
 msgstr ""
+"Anrop av ”%s” returnerade ett tomt resultat, en icke tomt resultat "
+"förväntades"
 
 #, c-format
 msgid "Call to '%s' returned something, expecting an empty result"
-msgstr ""
+msgstr "Anrop av ”%s” returnerade något, ett tomt resultat förväntades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Call to utsname failed: %d"
-msgstr "operation misslyckades: %s"
+msgstr "Anrop av utsname misslyckades: %d"
 
 #, c-format
 msgid "Calling %s from '%s' failed"
-msgstr ""
+msgstr "Anrop av %s från ”%s” misslyckades"
 
 msgid "Can only modify disk quota"
-msgstr ""
+msgstr "Kan endast ändra diskkvot"
 
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
-msgstr ""
+msgstr "Kan endast öppna VNC- eller SPICE-grafikbakändar, inte %s"
 
 msgid "Can't add USB hub: USB is disabled for this domain"
-msgstr ""
+msgstr "Kan inte lägga till ett USB-nav: USB är avaktiverat för denna domän"
 
 msgid "Can't add USB input device. USB bus is disabled"
-msgstr ""
+msgstr "Kan inte lägga till en USB-inmatningsenhet. USB-bussen är avaktiverad"
 
 msgid "Can't add another USB controller: USB is disabled for this domain"
 msgstr ""
+"Kan inte lägga till en annan USB-styrenhet: USB är avaktiverat för denna "
+"domän"
 
 msgid "Can't add host USB device: USB is disabled in this host"
-msgstr ""
+msgstr "Kan inte lägga till en värd-USB-enhet: USB är avaktiverat på denna värd"
 
 msgid "Can't change domain configuration in managed save state"
-msgstr ""
+msgstr "Kan inte ändra domänkonfigurationen i hanterat sparat tillstånd"
 
-#, fuzzy
 msgid "Can't change domain state."
-msgstr "domäntillstånd"
+msgstr "Kan inte ändra domäntillstånd."
 
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
-msgstr ""
+msgstr "Kan inte ansluta till $uri. Hoppar över."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't create %s container: %s"
-msgstr "kan inte skapa konfigurationskatalogen %s"
+msgstr "Kan inte skapa en %s-behållare: %s"
 
 msgid "Can't create initial configuration"
-msgstr ""
+msgstr "Kan inte skapa en initial konfiguration"
 
 msgid "Can't define NWFilter bindings in session mode"
-msgstr ""
+msgstr "Kan inte definiera NWFilter-bindningar i sessionsläge"
 
 msgid "Can't define NWFilters in session mode"
-msgstr ""
+msgstr "Kan inte definiera NWFilter i sessionsläge"
 
-#, fuzzy
 msgid "Can't determine config path"
-msgstr "kan inte ta bort konfigurationen %s"
+msgstr "Kan inte avgöra konfigurationssökvägen"
 
 msgid "Can't determine page size"
-msgstr ""
+msgstr "Kan inte avgöra sidstorlek"
 
 msgid "Can't determine pid file path."
-msgstr ""
+msgstr "Kan inte avgöra pid-filsökvägen."
 
 msgid "Can't determine restart state file path"
-msgstr ""
+msgstr "Kan inte avgöra starta om tillståndsfilsökvägen"
 
 msgid "Can't determine socket paths"
-msgstr ""
+msgstr "Kan inte avgöra uttagssökvägen"
 
 #, c-format
 msgid "Can't find boot device of type: %d, device index: %d"
-msgstr ""
+msgstr "Kan inte hitta startenhet av typen: %d, enhetsindex: %d"
 
 #, c-format
 msgid "Can't find boot device of type: %s, index: %d"
-msgstr ""
+msgstr "Kan inte hitta startenhet av typen: %s, index: %d"
 
 #, c-format
 msgid "Can't find network boot device for index: %d"
-msgstr ""
+msgstr "Kan inte hitta nätverksstartenhet för index: %d"
 
 msgid "Can't find prlctl command in the PATH env"
-msgstr ""
+msgstr "Kan inte hitta prlctl-kommando i miljön PATH"
 
 #, c-format
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
 "%08x"
 msgstr ""
+"Kan inte hämta UUID:t för filen att ansluta som hårddisk/dvd/floppy: %s, "
+"rc=%08x"
 
-#, fuzzy
 msgid "Can't initialize Parallels SDK"
-msgstr "kan inte initiera mutex"
+msgstr "Kan inte initiera Parallels-SDK:n"
 
-#, fuzzy
 msgid "Can't initialize access manager"
-msgstr "kan inte initiera mutex"
+msgstr "Kan inte initiera åtkomsthanteraren"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't load config file: %s: %s"
-msgstr "ingen konfigurationsfil för %s"
+msgstr "Kan inte läsa in konfigurationsfilen: %s: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't modify device type '%s'"
-msgstr "Diskenhettypen ”%s” stödjs inte"
+msgstr "Kan inte modifiera enhetstypen ”%s”"
 
 #, c-format
 msgid "Can't parse barrier from vzlist output '%s'"
-msgstr ""
+msgstr "Kan inte tolka barriärer från vzlist-utdata ”%s”"
 
 #, c-format
 msgid "Can't parse limit from vzlist output '%s'"
-msgstr ""
+msgstr "Kan inte tolka gränsen från vzlist-utdata ”%s”"
 
 msgid "Can't parse prlctl output"
-msgstr ""
+msgstr "Kan inte tolka prlctl-utdata"
 
 msgid "Can't perform authentication: Authentication callback not provided"
 msgstr ""
+"Det går inte att utföra autentisering: inget autentiseringsåteranrop angivet"
 
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
 "not provided "
 msgstr ""
+"Det går inte att utföra tangentbordsinteraktiv autentisering: inget "
+"autentiseringsåteranrop angivet "
 
 #, c-format
 msgid "Can't read %s"
 msgstr "Kan inte läsa %s"
 
-#, fuzzy
 msgid "Can't rename domain to itself"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Det går inte att byta namn på domänen till sig själv"
 
 msgid "Can't set 0 processors for a VM"
-msgstr ""
+msgstr "Det går inte att ange 0 processorer till en VM"
 
 msgid "Can't set soft limit without hard limit"
-msgstr ""
+msgstr "Det går inte att ange en mjuk gräns utan en hård gräns"
 
 msgid "Can't setup disk for non-block device"
-msgstr ""
+msgstr "Det går inte att sätta upp en disk för en icke-blockenhet"
 
 msgid "Can't setup disk without media"
-msgstr ""
+msgstr "Det går inte att sätta upp en disk utan media"
 
 msgid "Can't setup host uuid"
-msgstr ""
+msgstr "Kan inte sätta upp värd-uuid"
 
 msgid ""
 "Can't shrink capacity below current capacity unless shrink flag explicitly "
 "specified"
 msgstr ""
+"Det går inte att krympa kapaciteten under den aktuella kapaciteten om inte "
+"flaggan shrink explicit är angiven"
 
-#, fuzzy
 msgid ""
 "Cancelable task is blocked by an unanswered question but cancellation failed"
-msgstr "Icke annullerbar uppgift blockeras av en obesvarad fråga"
+msgstr ""
+"Annullerbar uppgift blockeras av en obesvarad fråga men annullationen "
+"misslyckades"
 
 msgid "Cancelled"
 msgstr "Avbruten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot access '%s'"
-msgstr "okända åtkomstläge ”%s”"
+msgstr "Kan inte komma åt ”%s”"
 
 #, c-format
 msgid "Cannot access backing file '%s' of storage file '%s'"
-msgstr ""
+msgstr "Kan inte komma åt den bakomliggande filen ”%s” för lagringsfilen ”%s”"
 
 #, c-format
 msgid ""
 "Cannot access backing file '%s' of storage file '%s' (as uid:%u, gid:%u)"
 msgstr ""
+"Kan inte komma åt den bakomliggande filen ”%s” för lagringsfilen ”%s” (som "
+"aid:%u, gid:%u)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot access storage file '%s'"
-msgstr "kan inte skriva konfigurationsfilen ”%s”"
+msgstr "Kan inte komma åt lagringsfilen ”%s”"
 
 #, c-format
 msgid "Cannot access storage file '%s' (as uid:%u, gid:%u)"
-msgstr ""
+msgstr "Kan inte komma åt lagringsfilen ”%s” (som aid:%u, gid:%u)"
 
 msgid "Cannot add CURL handle to a multi handle twice"
-msgstr ""
+msgstr "Kan inte lägga till ett CURL-handtag till ett multihandtag två gånger"
 
 #, c-format
 msgid "Cannot add multicast MAC %s on '%s' interface"
-msgstr ""
+msgstr "Det går inte att lägga till en multicast-MAC %s på gränssnittet ”%s”"
 
 msgid "Cannot add pid to non-existing resctrl group"
 msgstr ""
+"Det går inte att lägga till ett pid till en icke befintlig rescrtrl-grupp"
 
 msgid "Cannot add uninitialized CURL handle to a multi handle"
 msgstr ""
+"Det går inte att lägga till ett oinitierat CURL-handtag till en multihandtag"
 
 msgid "Cannot alter an existing mem_nodes set"
-msgstr ""
+msgstr "Det går inte att ändra en befintlig mem_nodes-mängd"
 
 #, c-format
 msgid "Cannot alter an existing nmem_nodes distances set for node: %zu"
 msgstr ""
+"Det går inte att ändra ett befintlig nmem_nodes-avstånd sat för node: %zu"
 
 msgid "Cannot attach disk until init PID is known"
-msgstr ""
+msgstr "Det går inte att ansluta en disk tills init-PID är känd"
 
 msgid "Cannot attach hostdev until init PID is known"
-msgstr ""
+msgstr "Det går inte att ansluta hostdev tills init-PID är känd"
 
 #, c-format
 msgid ""
 "Cannot automatically add a new PCI bus for a device with connect flags %.2x"
 msgstr ""
+"Det går inte att automatiskt lägga till en ny PCI-buss för en enhet med "
+"anslutningsflaggorna %.2x"
 
 #, c-format
 msgid "Cannot boot from device %s"
-msgstr ""
+msgstr "Det går inte att starta från enheten %s"
 
 #, c-format
 msgid "Cannot check NBD device %s pid"
-msgstr ""
+msgstr "Kan inte kontrollera pid:en för NBD-enheten %s"
 
 #, c-format
 msgid "Cannot check QEMU binary %s"
-msgstr ""
+msgstr "Kan inte kontrollera QEMU-binären %s"
 
 #, c-format
 msgid "Cannot check QEMU module directory %s"
-msgstr ""
+msgstr "Kan inte kontrollera QEMU-modulkatalogen %s"
 
 msgid "Cannot check address family on this platform"
-msgstr ""
+msgstr "Kan inte kontrollera adressfamiljen på denna plattform"
 
 #, c-format
 msgid "Cannot check dnsmasq binary %s"
-msgstr ""
+msgstr "Kan inte kontrollera dnsmasq-binären %s"
 
 #, c-format
 msgid "Cannot chown uniq path: %s"
-msgstr ""
+msgstr "Kan inte chown:a unik sökväg: %s"
 
 msgid "Cannot close resctrl"
-msgstr ""
+msgstr "Kan inte stänga resctrl"
 
 msgid "Cannot complete within timeout period"
-msgstr ""
+msgstr "Kan inte avsluta inom tidsgränsen"
 
-#, fuzzy
 msgid "Cannot convert domain name to wide character string"
-msgstr "konvertera ett domännamn eller id till domän-UUID"
+msgstr "Kan inte konvertera domännamnet till en bred teckensträng"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot convert socket address to string: %s"
-msgstr "kan inte byta till rotkatalogen: %s"
+msgstr "Kan inte konvertera uttagsadressen till en sträng: %s"
 
 msgid "Cannot convert wide character string back to multi-byte domain name"
 msgstr ""
+"Kan inte konvertera en bred teckensträng tillbaka till ett multibytes "
+"domännamn"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot create %s"
-msgstr "kan inte ta bort konfigurationen %s"
+msgstr "Kan inte skapa %s"
 
 msgid "Cannot create /dev"
-msgstr ""
+msgstr "Kan inte skapa /dev"
 
-#, fuzzy
 msgid "Cannot create /dev/pts"
-msgstr "kan inte skapa konfigurationskatalogen %s"
+msgstr "Kan inte skapa /dev/pts"
 
 msgid "Cannot create a vboxSnapshotXmlHardDisk"
-msgstr ""
+msgstr "Kan inte skapa en vboxSnapshotXmlHardDisk"
 
 msgid "Cannot create a vboxSnapshotXmlSnapshotPtr"
-msgstr ""
+msgstr "Kan inte skapa en vboxSnapshotXmlSnapshotPtr"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot create autostart directory %s"
-msgstr "kan inte skapa konfigurationskatalogen %s"
+msgstr "Kan inte skapa autostartkatalogen %s"
 
 #, c-format
 msgid "Cannot create directory '%s'"
@@ -2749,80 +2766,81 @@ msgid "Cannot create log directory '%s'"
 msgstr "Kan inte skapa loggkatalogen ”%s”"
 
 msgid "Cannot create macvlan devices on this platform"
-msgstr ""
+msgstr "Det går inte att skapa macvlan-enheter på denna plattform"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot create resctrl directory '%s'"
-msgstr "kan inte skapa konfigurationskatalogen ”%s”"
+msgstr "Kan inte skapa resctrl-katalogen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot create user runtime directory '%s'"
-msgstr "kan inte skapa konfigurationskatalogen ”%s”"
+msgstr "Kan inte skapa användarkörtidskatalogen ”%s”"
 
 msgid "Cannot deactivate network autostart"
-msgstr ""
+msgstr "Kan inte avaktivera nätversautostarten"
 
 msgid "Cannot deactivate storage pool autostart"
-msgstr ""
+msgstr "Kan inte avaktivera lagringspoolsautostarten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot delete directory '%s'"
-msgstr "kan inte skapa konfigurationskatalogen ”%s”"
+msgstr "Kunde inte ta bort katalogen \"%s\""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot delete file '%s'"
-msgstr "kan inte skriva konfigurationsfilen ”%s”"
+msgstr "Kan inte ta bort filen ”%s”"
 
 #, c-format
 msgid "Cannot detach %s device with no alias"
-msgstr ""
+msgstr "Det går inte att koppla ifrån en %s-enhet utan alias"
 
 msgid "Cannot determine balloon device path"
-msgstr ""
+msgstr "Kan inte avgöra ballongenhetens sökväg"
 
 msgid "Cannot determine system clock HZ"
-msgstr ""
+msgstr "Kan inte avgöra systemklockans Hz"
 
 msgid "Cannot disable close-on-exec flag"
-msgstr ""
+msgstr "Kan inte avaktivera flaggan close-on-exec"
 
 #, c-format
 msgid "Cannot disable close-on-exec flag on pipe %d"
-msgstr ""
+msgstr "Kan inte avaktivera flaggan close-on-exec på rör %d"
 
 #, c-format
 msgid "Cannot disable close-on-exec flag on socket %d"
-msgstr ""
+msgstr "Kan inte avaktivera flaggan close-on-exec på uttag %d"
 
 #, c-format
 msgid "Cannot duplicate FD %d"
-msgstr ""
+msgstr "Kan inte duplicera FB %d"
 
 #, c-format
 msgid "Cannot duplicate fd %d onto fd %d"
-msgstr ""
+msgstr "Kan inte duplicera fb %d på fb %d"
 
 msgid "Cannot enable close-on-exec flag"
-msgstr ""
+msgstr "Kan inte aktivera flaggan close-on-exec"
 
 msgid "Cannot enable general autostart option without affecting other domains"
 msgstr ""
+"Det går inte att aktivera allmänna autostartflaggor utan att påverka andra "
+"domäner"
 
 msgid "Cannot extract CPU definition from domain capabilities XML"
-msgstr ""
+msgstr "Kan inte extrahera CPU-definitionen från domänförmågorna i XML"
 
 msgid "Cannot extract cache nodes under cachetune"
-msgstr ""
+msgstr "Kan inte extrahera cache-noder under cachetune"
 
 msgid "Cannot extract memnode nodes"
-msgstr ""
+msgstr "Kan inte extrahera memnode-noder"
 
 msgid "Cannot extract memory nodes under memorytune"
-msgstr ""
+msgstr "Kan inte extrahera minnesnoder under memorytune"
 
-#, fuzzy
 msgid "Cannot extract monitor nodes"
-msgstr "Kan inte tolka styrenhetsindex %s"
+msgstr "Kan inte extrahera monitornoder"
 
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
@@ -2830,63 +2848,63 @@ msgstr "Kan inte hämta ut version från körande %s hypervisor\n"
 
 #, c-format
 msgid "Cannot find %s - Possibly the package isn't installed"
-msgstr ""
+msgstr "Kan inte hitta %s – möjligen är paketet inte installerat"
 
 #, c-format
 msgid "Cannot find '%s' in node device database"
-msgstr ""
+msgstr "Kan inte hitta ”%s” i nodenhetsdatabasen"
 
 #, c-format
 msgid "Cannot find '%s' in path"
-msgstr ""
+msgstr "Kan inte hitta ”%s” i sökvägen"
 
 #, c-format
 msgid "Cannot find 'iothread' : %u"
-msgstr ""
+msgstr "Kan inte hitta ”iothread”: %u"
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%03lx"
-msgstr ""
+msgstr "Kan inte hitta en CPU-modell med PVR 0x%03lx"
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%08x"
-msgstr ""
+msgstr "Kan inte hitta en CPU-modell med PVR 0x%08x"
 
 #, c-format
 msgid "Cannot find CPU vendor with vendor id 0x%02lx"
-msgstr ""
+msgstr "Kan inte hitta en CPU-tillverkare med tillverkar-id 0x%02lx"
 
 #, c-format
 msgid "Cannot find boot device of requested type %s"
-msgstr ""
+msgstr "Kan inte hitta en startenhet av den begärda typen %s"
 
 #, c-format
 msgid "Cannot find byte %sstats for block device '%s'"
-msgstr ""
+msgstr "Kan inte hitta statistik av typen %s för blockenheten ”%s”"
 
 #, c-format
 msgid "Cannot find byte '%s' stats for block device '%s'"
-msgstr ""
+msgstr "Kan inte hitta byte ”%s” statistik för blockenhet ”%s”"
 
 #, c-format
 msgid "Cannot find byte stats for block device '%s'"
-msgstr ""
+msgstr "Kan inte hitta bytestatistik för blockenhet ”%s”"
 
 #, c-format
 msgid "Cannot find name for FD %d socket family %d"
-msgstr ""
+msgstr "Kan inte hitta namnet för FB %d uttagsfamilj %d"
 
 #, c-format
 msgid "Cannot find program %d version %d"
-msgstr ""
+msgstr "Kan inte hitta program %d version %d"
 
 #, c-format
 msgid "Cannot find request %sstats for block device '%s'"
-msgstr ""
+msgstr "Kan inte hitta begäransstatistik av typen %s för blockenhet ”%s”"
 
 #, c-format
 msgid "Cannot find request stats for block device '%s'"
-msgstr ""
+msgstr "Kan inte hitta begäransstatistick för blockenhet ”%s”"
 
 #, fuzzy, c-format
 msgid "Cannot find security driver '%s'"
