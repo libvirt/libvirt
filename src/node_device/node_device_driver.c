@@ -638,7 +638,8 @@ nodeDeviceFindAddressByName(const char *name)
 
     def = virNodeDeviceObjGetDef(dev);
     for (caps = def->caps; caps != NULL; caps = caps->next) {
-        if (caps->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
+        switch (caps->data.type) {
+        case VIR_NODE_DEV_CAP_PCI_DEV: {
             virPCIDeviceAddress pci_addr = {
                 .domain = caps->data.pci_dev.domain,
                 .bus = caps->data.pci_dev.bus,
@@ -648,7 +649,9 @@ nodeDeviceFindAddressByName(const char *name)
 
             addr = virPCIDeviceAddressAsString(&pci_addr);
             break;
-        } else if (caps->data.type == VIR_NODE_DEV_CAP_CSS_DEV) {
+            }
+
+        case VIR_NODE_DEV_CAP_CSS_DEV: {
             virDomainDeviceCCWAddress ccw_addr = {
                 .cssid = caps->data.ccw_dev.cssid,
                 .ssid = caps->data.ccw_dev.ssid,
@@ -656,6 +659,29 @@ nodeDeviceFindAddressByName(const char *name)
             };
 
             addr = virDomainCCWAddressAsString(&ccw_addr);
+            break;
+            }
+
+        case VIR_NODE_DEV_CAP_SYSTEM:
+        case VIR_NODE_DEV_CAP_USB_DEV:
+        case VIR_NODE_DEV_CAP_USB_INTERFACE:
+        case VIR_NODE_DEV_CAP_NET:
+        case VIR_NODE_DEV_CAP_SCSI_HOST:
+        case VIR_NODE_DEV_CAP_SCSI_TARGET:
+        case VIR_NODE_DEV_CAP_SCSI:
+        case VIR_NODE_DEV_CAP_STORAGE:
+        case VIR_NODE_DEV_CAP_FC_HOST:
+        case VIR_NODE_DEV_CAP_VPORTS:
+        case VIR_NODE_DEV_CAP_SCSI_GENERIC:
+        case VIR_NODE_DEV_CAP_DRM:
+        case VIR_NODE_DEV_CAP_MDEV_TYPES:
+        case VIR_NODE_DEV_CAP_MDEV:
+        case VIR_NODE_DEV_CAP_CCW_DEV:
+        case VIR_NODE_DEV_CAP_VDPA:
+        case VIR_NODE_DEV_CAP_AP_CARD:
+        case VIR_NODE_DEV_CAP_AP_QUEUE:
+        case VIR_NODE_DEV_CAP_AP_MATRIX:
+        case VIR_NODE_DEV_CAP_LAST:
             break;
         }
     }
