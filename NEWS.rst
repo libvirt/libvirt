@@ -17,6 +17,13 @@ v7.9.0 (unreleased)
 
 * **New features**
 
+    * Introduce virtio-mem ``<memory/>`` model
+
+    New virtio-mem model is introduced for ``<memory/>`` device which is a
+    paravirtualized mechanism of adding/removing memory to/from a VM. Use
+    ``virDomainUpdateDeviceFlags()`` API to adjust amount of memory or ``virsh
+    update-memory-device`` for convenience.
+
 * **Improvements**
 
 * **Bug fixes**
