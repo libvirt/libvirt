@@ -1,0 +1,14 @@
+<device>
+  <name>ap_matrix</name>
+  <path>/sys/devices/vfio_ap/matrix</path>
+  <parent>computer</parent>
+  <capability type='ap_matrix'>
+    <capability type='mdev_types'>
+      <type id='vfio_ap-passthrough'>
+        <name>VFIO AP Passthrough Device</name>
+        <deviceAPI>vfio-ap</deviceAPI>
+        <availableInstances>65536</availableInstances>
+      </type>
+    </capability>
+  </capability>
+</device>

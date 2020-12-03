@@ -696,6 +696,9 @@
     <attribute name='type'>
       <value>ap_matrix</value>
     </attribute>
+    <optional>
+      <ref name="mdev_types"/>
+    </optional>
   </define>
 
   <define name="address">
@@ -736,6 +739,7 @@
             <choice>
               <value>vfio-pci</value>
               <value>vfio-ccw</value>
+              <value>vfio-ap</value>
             </choice>
           </element>
           <element name="availableInstances">

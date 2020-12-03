@@ -663,10 +663,15 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def)
             virBufferAsprintf(&buf, "<ap-domain>0x%04x</ap-domain>\n",
                               data->ap_queue.ap_domain);
             break;
+        case VIR_NODE_DEV_CAP_AP_MATRIX:
+            if (data->ap_matrix.flags & VIR_NODE_DEV_CAP_FLAG_AP_MATRIX_MDEV)
+                virNodeDeviceCapMdevTypesFormat(&buf,
+                                                data->ap_matrix.mdev_types,
+                                                data->ap_matrix.nmdev_types);
+
         case VIR_NODE_DEV_CAP_MDEV_TYPES:
         case VIR_NODE_DEV_CAP_FC_HOST:
         case VIR_NODE_DEV_CAP_VPORTS:
-        case VIR_NODE_DEV_CAP_AP_MATRIX:
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }
@@ -862,6 +867,33 @@ virNodeDevCapMdevTypesParseXML(xmlXPathContextPtr ctxt,
 
 
 static int
+virNodeDevAPMatrixCapabilityParseXML(xmlXPathContextPtr ctxt,
+                                     xmlNodePtr node,
+                                     virNodeDevCapAPMatrixPtr apm_dev)
+{
+    g_autofree char *type = virXMLPropString(node, "type");
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    ctxt->node = node;
+
+    if (!type) {
+        virReportError(VIR_ERR_XML_ERROR, "%s", _("Missing capability type"));
+        return -1;
+    }
+
+    if (STREQ(type, "mdev_types")) {
+        if (virNodeDevCapMdevTypesParseXML(ctxt,
+                                           &apm_dev->mdev_types,
+                                           &apm_dev->nmdev_types) < 0)
+            return -1;
+        apm_dev->flags |= VIR_NODE_DEV_CAP_FLAG_AP_MATRIX_MDEV;
+    }
+
+    return 0;
+}
+
+
+static int
 virNodeDevCSSCapabilityParseXML(xmlXPathContextPtr ctxt,
                                 xmlNodePtr node,
                                 virNodeDevCapCCWPtr ccw_dev)
@@ -1027,6 +1059,31 @@ virNodeDevCapAPQueueParseXML(xmlXPathContextPtr ctxt,
                        _("ap-domain value '%s' is out of range for '%s'"),
                        dom, def->name);
         return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virNodeDevCapAPMatrixParseXML(xmlXPathContextPtr ctxt,
+                              virNodeDeviceDefPtr def G_GNUC_UNUSED,
+                              xmlNodePtr node,
+                              virNodeDevCapAPMatrixPtr ap_matrix)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    g_autofree xmlNodePtr *nodes = NULL;
+    int n = 0;
+    size_t i = 0;
+
+    ctxt->node = node;
+
+    if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0)
+        return -1;
+
+    for (i = 0; i < n; i++) {
+        if (virNodeDevAPMatrixCapabilityParseXML(ctxt, nodes[i], ap_matrix) < 0)
+            return -1;
     }
 
     return 0;
@@ -2080,7 +2137,8 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
                                            &caps->data.ap_queue);
         break;
     case VIR_NODE_DEV_CAP_AP_MATRIX:
-        ret = 0;
+        ret = virNodeDevCapAPMatrixParseXML(ctxt, def, node,
+                                            &caps->data.ap_matrix);
         break;
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
     case VIR_NODE_DEV_CAP_FC_HOST:
@@ -2405,6 +2463,9 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         break;
     case VIR_NODE_DEV_CAP_AP_MATRIX:
         VIR_FREE(data->ap_matrix.addr);
+        for (i = 0; i < data->ap_matrix.nmdev_types; i++)
+            virMediatedDeviceTypeFree(data->ap_matrix.mdev_types[i]);
+        VIR_FREE(data->ap_matrix.mdev_types);
         break;
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
     case VIR_NODE_DEV_CAP_DRM:
@@ -2456,6 +2517,11 @@ virNodeDeviceUpdateCaps(virNodeDeviceDefPtr def)
                                                &cap->data.ccw_dev) < 0)
                 return -1;
             break;
+        case VIR_NODE_DEV_CAP_AP_MATRIX:
+            if (virNodeDeviceGetAPMatrixDynamicCaps(def->sysfs_path,
+                                                    &cap->data.ap_matrix) < 0)
+                return -1;
+            break;
 
             /* all types that (supposedly) don't require any updates
              * relative to what's in the cache.
@@ -2475,7 +2541,6 @@ virNodeDeviceUpdateCaps(virNodeDeviceDefPtr def)
         case VIR_NODE_DEV_CAP_VDPA:
         case VIR_NODE_DEV_CAP_AP_CARD:
         case VIR_NODE_DEV_CAP_AP_QUEUE:
-        case VIR_NODE_DEV_CAP_AP_MATRIX:
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }
@@ -2554,6 +2619,15 @@ virNodeDeviceCapsListExport(virNodeDeviceDefPtr def,
             flags = caps->data.ccw_dev.flags;
 
             if (flags & VIR_NODE_DEV_CAP_FLAG_CSS_MDEV) {
+                MAYBE_ADD_CAP(VIR_NODE_DEV_CAP_MDEV_TYPES);
+                ncaps++;
+            }
+        }
+
+        if (caps->data.type == VIR_NODE_DEV_CAP_AP_MATRIX) {
+            flags = caps->data.ap_matrix.flags;
+
+            if (flags & VIR_NODE_DEV_CAP_FLAG_AP_MATRIX_MDEV) {
                 MAYBE_ADD_CAP(VIR_NODE_DEV_CAP_MDEV_TYPES);
                 ncaps++;
             }
@@ -2845,6 +2919,27 @@ virNodeDeviceGetCSSDynamicCaps(const char *sysfsPath,
     return 0;
 }
 
+/* virNodeDeviceGetAPMatrixDynamicCaps() get info that is stored in sysfs
+ * about devices related to this device, i.e. things that can change
+ * without this device itself changing. These must be refreshed
+ * anytime full XML of the device is requested, because they can
+ * change with no corresponding notification from the kernel/udev.
+ */
+int
+virNodeDeviceGetAPMatrixDynamicCaps(const char *sysfsPath,
+                                    virNodeDevCapAPMatrixPtr ap_matrix)
+{
+    ap_matrix->flags &= ~VIR_NODE_DEV_CAP_FLAG_AP_MATRIX_MDEV;
+    if (virNodeDeviceGetMdevTypesCaps(sysfsPath,
+                                      &ap_matrix->mdev_types,
+                                      &ap_matrix->nmdev_types) < 0)
+        return -1;
+    if (ap_matrix->nmdev_types > 0)
+        ap_matrix->flags |= VIR_NODE_DEV_CAP_FLAG_AP_MATRIX_MDEV;
+
+    return 0;
+}
+
 #else
 
 int
@@ -2870,6 +2965,13 @@ int virNodeDeviceGetSCSITargetCaps(const char *sysfsPath G_GNUC_UNUSED,
 int
 virNodeDeviceGetCSSDynamicCaps(const char *sysfsPath G_GNUC_UNUSED,
                                virNodeDevCapCCWPtr ccw_dev G_GNUC_UNUSED)
+{
+    return -1;
+}
+
+int
+virNodeDeviceGetAPMatrixDynamicCaps(const char *sysfsPath G_GNUC_UNUSED,
+                                    virNodeDevCapAPMatrixPtr ap_matrix G_GNUC_UNUSED)
 {
     return -1;
 }

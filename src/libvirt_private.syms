@@ -823,6 +823,7 @@ virNodeDeviceDefFree;
 virNodeDeviceDefParseFile;
 virNodeDeviceDefParseNode;
 virNodeDeviceDefParseString;
+virNodeDeviceGetAPMatrixDynamicCaps;
 virNodeDeviceGetCSSDynamicCaps;
 virNodeDeviceGetPCIDynamicCaps;
 virNodeDeviceGetSCSIHostCaps;

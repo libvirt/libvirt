@@ -456,7 +456,26 @@
           </dd>
           <dt><code>ap_matrix</code></dt>
           <dd>Describes an AP Matrix device on a S390 architecture providing
-              cryptographic host resources usable for virtualization.</dd>
+              cryptographic host resources usable for virtualization.
+              Sub-elements include:
+            <dl>
+              <dt><code>capability</code></dt>
+              <dd>
+                This optional element can occur multiple times. If it
+                exists, it has a mandatory <code>type</code> attribute
+                which will be set to:
+                <dl>
+                  <dt><code><a id="MDEVTypesCapAP">mdev_types</a></code></dt>
+                  <dd>
+                    <span class="since">Since 6.10.0</span>
+                    This device is capable of creating mediated devices.
+                    The sub-elements are summarized in
+                    <a href="#MDEVTypesCap">mdev_types capability</a>.
+                  </dd>
+                </dl>
+              </dd>
+            </dl>
+          </dd>
         </dl>
       </dd>
     </dl>
@@ -464,7 +483,8 @@
     <h3><a id="MDEVTypesCap">mdev_types capability</a></h3>
 
     <p>
-      <a href="#MDEVTypesCapPCI">PCI</a> and <a href="#MDEVTypesCapCSS">CSS</a>
+      <a href="#MDEVTypesCapPCI">PCI</a>, <a href="#MDEVTypesCapCSS">CSS</a>
+      and <a href="#MDEVTypesCapAP">AP Matrix</a>
       devices can be capable of creating mediated devices.
       If they indeed are capable, then the parent <code>capability</code>
       element for <code>mdev_types</code> type will contain a list of

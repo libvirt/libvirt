@@ -1247,6 +1247,10 @@ udevProcessAPMatrix(struct udev_device *device,
     data->ap_matrix.addr =  g_strdup(udev_device_get_sysname(device));
     def->name = g_strdup("ap_matrix");
 
+    if (virNodeDeviceGetAPMatrixDynamicCaps(def->sysfs_path,
+                                            &data->ap_matrix) < 0)
+        return -1;
+
     return 0;
 }
 

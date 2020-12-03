@@ -110,6 +110,10 @@ typedef enum {
 } virNodeDevCCWCapFlags;
 
 typedef enum {
+    VIR_NODE_DEV_CAP_FLAG_AP_MATRIX_MDEV            = (1 << 0),
+} virNodeDevAPMatrixCapFlags;
+
+typedef enum {
     /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
     VIR_NODE_DEV_DRM_PRIMARY,
     VIR_NODE_DEV_DRM_CONTROL,
@@ -309,6 +313,9 @@ typedef struct _virNodeDevCapAPMatrix virNodeDevCapAPMatrix;
 typedef virNodeDevCapAPMatrix *virNodeDevCapAPMatrixPtr;
 struct _virNodeDevCapAPMatrix {
     char *addr;
+    unsigned int flags; /* enum virNodeDevAPMatrixCapFlags */
+    virMediatedDeviceTypePtr *mdev_types;
+    size_t nmdev_types;
 };
 
 typedef struct _virNodeDevCapData virNodeDevCapData;
@@ -429,6 +436,10 @@ virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath,
 int
 virNodeDeviceGetCSSDynamicCaps(const char *sysfsPath,
                                virNodeDevCapCCWPtr ccw_dev);
+
+int
+virNodeDeviceGetAPMatrixDynamicCaps(const char *sysfsPath,
+                                    virNodeDevCapAPMatrixPtr ap_matrix);
 
 int
 virNodeDeviceUpdateCaps(virNodeDeviceDefPtr def);
