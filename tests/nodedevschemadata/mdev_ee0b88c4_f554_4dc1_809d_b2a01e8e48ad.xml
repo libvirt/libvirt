@@ -1,0 +1,9 @@
+<device>
+  <name>mdev_ee0b88c4-f554-4dc1-809d-b2a01e8e48ad</name>
+  <path>/sys/devices/vfio_ap/matrix/mdev_ee0b88c4-f554-4dc1-809d-b2a01e8e48ad</path>
+  <parent>ap_matrix</parent>
+  <capability type='mdev'>
+    <type id='vfio_ap-passthrough'/>
+    <iommuGroup number='0'/>
+  </capability>
+</device>

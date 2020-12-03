@@ -1,0 +1,7 @@
+<device>
+  <name>ap_matrix</name>
+  <path>/sys/devices/vfio_ap/matrix</path>
+  <parent>computer</parent>
+  <capability type='ap_matrix'>
+  </capability>
+</device>
