@@ -439,6 +439,21 @@
               <dd>AP Card identifier.</dd>
             </dl>
           </dd>
+          <dt><code>ap_queue</code></dt>
+          <dd>Describes the AP queue on a s390 host. An AP queue is
+              an AP domain on an AP adapter which is specified by an
+              adapter identifier and a domain identifier.
+              Sub-elements include:
+            <dl>
+              <dt><code>ap-adapter</code></dt>
+              <dd>The ap-adapter of an AP queue identifies the AP
+                  card to which this AP queue belongs.</dd>
+              <dt><code>ap-domain</code></dt>
+              <dd>The ap-domain of an AP queue identifies the AP
+                  domain to which this AP queue belongs.</dd>
+              <dd>AP Queue identifier.</dd>
+            </dl>
+          </dd>
         </dl>
       </dd>
     </dl>

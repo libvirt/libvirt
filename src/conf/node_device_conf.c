@@ -68,6 +68,7 @@ VIR_ENUM_IMPL(virNodeDevCap,
               "css",
               "vdpa",
               "ap_card",
+              "ap_queue",
 );
 
 VIR_ENUM_IMPL(virNodeDevNetCap,
@@ -655,6 +656,12 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def)
             virBufferAsprintf(&buf, "<ap-adapter>0x%02x</ap-adapter>\n",
                               data->ap_card.ap_adapter);
             break;
+        case VIR_NODE_DEV_CAP_AP_QUEUE:
+            virBufferAsprintf(&buf, "<ap-adapter>0x%02x</ap-adapter>\n",
+                              data->ap_queue.ap_adapter);
+            virBufferAsprintf(&buf, "<ap-domain>0x%04x</ap-domain>\n",
+                              data->ap_queue.ap_domain);
+            break;
         case VIR_NODE_DEV_CAP_MDEV_TYPES:
         case VIR_NODE_DEV_CAP_FC_HOST:
         case VIR_NODE_DEV_CAP_VPORTS:
@@ -980,6 +987,47 @@ virNodeDevCapAPCardParseXML(xmlXPathContextPtr ctxt,
     ctxt->node = node;
 
     return virNodeDevCapAPAdapterParseXML(ctxt, def, &ap_card->ap_adapter);
+}
+
+
+static int
+virNodeDevCapAPQueueParseXML(xmlXPathContextPtr ctxt,
+                            virNodeDeviceDefPtr def,
+                            xmlNodePtr node,
+                            virNodeDevCapAPQueuePtr ap_queue)
+{
+    int ret = -1;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    g_autofree char *dom = NULL;
+
+    ctxt->node = node;
+
+    ret = virNodeDevCapAPAdapterParseXML(ctxt, def, &ap_queue->ap_adapter);
+
+    if (ret < 0)
+        return ret;
+
+    if (!(dom = virXPathString("string(./ap-domain[1])", ctxt))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("missing ap-domain value for '%s'"), def->name);
+        return -1;
+    }
+
+    if (virStrToLong_uip(dom, NULL, 0, &ap_queue->ap_domain) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("invalid ap-domain value '%s' for '%s'"),
+                       dom, def->name);
+        return -1;
+    }
+
+    if (ap_queue->ap_domain > 255) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("ap-domain value '%s' is out of range for '%s'"),
+                       dom, def->name);
+        return -1;
+    }
+
+    return 0;
 }
 
 
@@ -2025,6 +2073,10 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
         ret = virNodeDevCapAPCardParseXML(ctxt, def, node,
                                           &caps->data.ap_card);
         break;
+    case VIR_NODE_DEV_CAP_AP_QUEUE:
+        ret = virNodeDevCapAPQueueParseXML(ctxt, def, node,
+                                           &caps->data.ap_queue);
+        break;
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:
@@ -2353,6 +2405,7 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
     case VIR_NODE_DEV_CAP_CCW_DEV:
     case VIR_NODE_DEV_CAP_VDPA:
     case VIR_NODE_DEV_CAP_AP_CARD:
+    case VIR_NODE_DEV_CAP_AP_QUEUE:
     case VIR_NODE_DEV_CAP_LAST:
         /* This case is here to shutup the compiler */
         break;
@@ -2413,6 +2466,7 @@ virNodeDeviceUpdateCaps(virNodeDeviceDefPtr def)
         case VIR_NODE_DEV_CAP_CCW_DEV:
         case VIR_NODE_DEV_CAP_VDPA:
         case VIR_NODE_DEV_CAP_AP_CARD:
+        case VIR_NODE_DEV_CAP_AP_QUEUE:
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }

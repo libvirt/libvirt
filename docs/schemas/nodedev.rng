@@ -88,6 +88,7 @@
         <ref name="capcssdev"/>
         <ref name="capvdpa"/>
         <ref name="capapcard"/>
+        <ref name="capapqueue"/>
       </choice>
     </element>
   </define>
@@ -678,6 +679,18 @@
     </element>
   </define>
 
+  <define name="capapqueue">
+    <attribute name="type">
+      <value>ap_queue</value>
+    </attribute>
+    <element name="ap-adapter">
+      <ref name="uint8"/>
+    </element>
+    <element name="ap-domain">
+      <ref name="apDomainRange"/>
+    </element>
+  </define>
+
   <define name="address">
     <element name="address">
       <attribute name="domain"><ref name="hexuint"/></attribute>
@@ -724,6 +737,18 @@
         </element>
       </oneOrMore>
     </element>
+  </define>
+
+  <define name="apDomainRange">
+    <choice>
+      <data type="string">
+        <param name="pattern">0x[0-9a-fA-F]{1,4}</param>
+      </data>
+      <data type="int">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">255</param>
+      </data>
+    </choice>
   </define>
 
 </grammar>
