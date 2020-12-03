@@ -473,6 +473,7 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         case VIR_NODE_DEV_CAP_AP_QUEUE:
             flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_QUEUE;
             break;
+        case VIR_NODE_DEV_CAP_AP_MATRIX:
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }

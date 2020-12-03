@@ -68,6 +68,7 @@ typedef enum {
     VIR_NODE_DEV_CAP_VDPA,              /* vDPA device */
     VIR_NODE_DEV_CAP_AP_CARD,           /* s390 AP Card device */
     VIR_NODE_DEV_CAP_AP_QUEUE,          /* s390 AP Queue */
+    VIR_NODE_DEV_CAP_AP_MATRIX,         /* s390 AP Matrix device */
 
     VIR_NODE_DEV_CAP_LAST
 } virNodeDevCapType;
@@ -304,6 +305,12 @@ struct _virNodeDevCapAPQueue {
     unsigned int ap_domain;
 };
 
+typedef struct _virNodeDevCapAPMatrix virNodeDevCapAPMatrix;
+typedef virNodeDevCapAPMatrix *virNodeDevCapAPMatrixPtr;
+struct _virNodeDevCapAPMatrix {
+    char *addr;
+};
+
 typedef struct _virNodeDevCapData virNodeDevCapData;
 typedef virNodeDevCapData *virNodeDevCapDataPtr;
 struct _virNodeDevCapData {
@@ -325,6 +332,7 @@ struct _virNodeDevCapData {
         virNodeDevCapVDPA vdpa;
         virNodeDevCapAPCard ap_card;
         virNodeDevCapAPQueue ap_queue;
+        virNodeDevCapAPMatrix ap_matrix;
     };
 };
 

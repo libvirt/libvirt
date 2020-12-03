@@ -719,6 +719,7 @@ virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
         case VIR_NODE_DEV_CAP_VDPA:
         case VIR_NODE_DEV_CAP_AP_CARD:
         case VIR_NODE_DEV_CAP_AP_QUEUE:
+        case VIR_NODE_DEV_CAP_AP_MATRIX:
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }

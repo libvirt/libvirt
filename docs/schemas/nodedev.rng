@@ -89,6 +89,7 @@
         <ref name="capvdpa"/>
         <ref name="capapcard"/>
         <ref name="capapqueue"/>
+        <ref name="capapmatrix"/>
       </choice>
     </element>
   </define>
@@ -689,6 +690,12 @@
     <element name="ap-domain">
       <ref name="apDomainRange"/>
     </element>
+  </define>
+
+  <define name='capapmatrix'>
+    <attribute name='type'>
+      <value>ap_matrix</value>
+    </attribute>
   </define>
 
   <define name="address">
