@@ -1371,6 +1371,8 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     if (qemuInterfaceStartDevice(net) < 0)
         goto cleanup;
 
+    qemuDomainInterfaceSetDefaultQDisc(driver, net);
+
     /* Set bandwidth or warn if requested and not supported. */
     actualBandwidth = virDomainNetGetActualBandwidth(net);
     if (actualBandwidth) {
@@ -1388,8 +1390,6 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     if (net->mtu &&
         virNetDevSetMTU(net->ifname, net->mtu) < 0)
         goto cleanup;
-
-    qemuDomainInterfaceSetDefaultQDisc(driver, net);
 
     for (i = 0; i < tapfdSize; i++) {
         if (qemuSecuritySetTapFDLabel(driver->securityManager,

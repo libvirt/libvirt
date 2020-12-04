@@ -8132,6 +8132,8 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
        break;
     }
 
+    qemuDomainInterfaceSetDefaultQDisc(driver, net);
+
     /* Set bandwidth or warn if requested and not supported. */
     actualBandwidth = virDomainNetGetActualBandwidth(net);
     if (actualBandwidth) {
@@ -8145,8 +8147,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
                      virDomainNetTypeToString(actualType));
         }
     }
-
-    qemuDomainInterfaceSetDefaultQDisc(driver, net);
 
     if (net->mtu &&
         virNetDevSetMTU(net->ifname, net->mtu) < 0)
