@@ -14649,7 +14649,7 @@ qemuBlockJobInfoTranslate(qemuMonitorBlockJobInfoPtr rawInfo,
      * applications think job is completed. Except when both cur
      * and end are zero, in which case qemu hasn't started the
      * job yet. */
-    if (!info->cur && !info->end) {
+    if (info->cur == 0 && info->end == 0) {
         if (rawInfo->ready_present) {
             info->end = 1;
             if (rawInfo->ready)
