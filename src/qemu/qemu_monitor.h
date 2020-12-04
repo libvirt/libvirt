@@ -1123,10 +1123,6 @@ struct _qemuMonitorBlockJobInfo {
 
 GHashTable *qemuMonitorGetAllBlockJobInfo(qemuMonitorPtr mon,
                                               bool rawjobname);
-int qemuMonitorGetBlockJobInfo(qemuMonitorPtr mon,
-                               const char *device,
-                               qemuMonitorBlockJobInfoPtr info)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int qemuMonitorJobDismiss(qemuMonitorPtr mon,
                           const char *jobname)

@@ -3393,35 +3393,6 @@ qemuMonitorGetAllBlockJobInfo(qemuMonitorPtr mon,
 }
 
 
-/**
- * qemuMonitorGetBlockJobInfo:
- * Parse Block Job information, and populate info for the named device.
- * Return 1 if info available, 0 if device has no block job, and -1 on error.
- */
-int
-qemuMonitorGetBlockJobInfo(qemuMonitorPtr mon,
-                           const char *alias,
-                           qemuMonitorBlockJobInfoPtr info)
-{
-    GHashTable *all;
-    qemuMonitorBlockJobInfoPtr data;
-    int ret = 0;
-
-    VIR_DEBUG("alias=%s, info=%p", alias, info);
-
-    if (!(all = qemuMonitorGetAllBlockJobInfo(mon, true)))
-        return -1;
-
-    if ((data = virHashLookup(all, alias))) {
-        *info = *data;
-        ret = 1;
-    }
-
-    virHashFree(all);
-    return ret;
-}
-
-
 int
 qemuMonitorJobDismiss(qemuMonitorPtr mon,
                       const char *jobname)
