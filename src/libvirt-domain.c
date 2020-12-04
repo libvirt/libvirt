@@ -9947,6 +9947,11 @@ virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
  * and was no-op. In this case libvirt reports cur = 1 and end = 1.
  * Since 2.3.0.
  *
+ * Applications looking for a reliable and low-overhead way to determine whether
+ * a block job already finished or reached synchronised phase should register a
+ * handler for the VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2 event instead of polling this
+ * API.
+ *
  * Note that the progress reported for blockjobs corresponding to a pull-mode
  * backup don't report progress of the backup but rather usage of temporary
  * space required for the backup.
