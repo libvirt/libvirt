@@ -551,6 +551,54 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
                 return -1;
             }
         }
+
+        if (opts->chassisNr != -1) {
+            if (opts->chassisNr < 1 || opts->chassisNr > 255) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("PCI controller chassisNr '%d' out of range "
+                                 "- must be 1-255"),
+                               opts->chassisNr);
+                return -1;
+            }
+        }
+
+        if (opts->chassis != -1) {
+            if (opts->chassis < 0 || opts->chassis > 255) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("PCI controller chassis '%d' out of range "
+                                 "- must be 0-255"),
+                               opts->chassis);
+                return -1;
+            }
+        }
+
+        if (opts->port != -1) {
+            if (opts->port < 0 || opts->port > 255) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("PCI controller port '%d' out of range "
+                                 "- must be 0-255"),
+                               opts->port);
+                return -1;
+            }
+        }
+
+        if (opts->busNr != -1) {
+            if (opts->busNr < 1 || opts->busNr > 254) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("PCI controller busNr '%d' out of range "
+                                 "- must be 1-254"),
+                               opts->busNr);
+                return -1;
+            }
+        }
+
+        if (opts->numaNode >= 0 && controller->idx == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("The PCI controller with index=0 can't "
+                             "be associated with a NUMA node"));
+            return -1;
+        }
     }
+
     return 0;
 }
