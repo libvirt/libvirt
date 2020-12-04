@@ -8176,8 +8176,8 @@ qemuProcessRefreshLegacyBlockjob(void *payload,
         return -1;
 
     if (disk->mirror) {
-        if (info->ready == 1 ||
-            (info->ready == -1 && info->end == info->cur)) {
+        if ((!info->ready_present && info->end == info->cur) ||
+            info->ready) {
             disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
             job->state = VIR_DOMAIN_BLOCK_JOB_READY;
         }

@@ -14650,17 +14650,18 @@ qemuBlockJobInfoTranslate(qemuMonitorBlockJobInfoPtr rawInfo,
      * and end are zero, in which case qemu hasn't started the
      * job yet. */
     if (!info->cur && !info->end) {
-        if (rawInfo->ready > 0) {
-            info->cur = info->end = 1;
-        } else if (!rawInfo->ready) {
+        if (rawInfo->ready_present) {
             info->end = 1;
+            if (rawInfo->ready)
+                info->cur = 1;
         }
     }
 
     /* If qemu reports that it's not ready yet don't make the job go to
      * cur == end as some apps wrote code polling this instead of waiting for
      * the ready event */
-    if (rawInfo->ready == 0 &&
+    if (rawInfo->ready_present &&
+        !rawInfo->ready &&
         info->cur == info->end &&
         info->cur > 0)
         info->cur -= 1;
