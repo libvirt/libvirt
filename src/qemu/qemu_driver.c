@@ -14695,8 +14695,9 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
     virDomainObjPtr vm;
     virDomainDiskDefPtr disk;
     int ret = -1;
-    qemuMonitorBlockJobInfo rawInfo;
+    qemuMonitorBlockJobInfoPtr rawInfo;
     g_autoptr(qemuBlockJobData) job = NULL;
+    g_autoptr(GHashTable) blockjobstats = NULL;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES, -1);
 
@@ -14722,17 +14723,20 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorGetBlockJobInfo(qemuDomainGetMonitor(vm), job->name, &rawInfo);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
-    if (ret <= 0)
+    blockjobstats = qemuMonitorGetAllBlockJobInfo(qemuDomainGetMonitor(vm), true);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockjobstats)
         goto endjob;
 
-    if (qemuBlockJobInfoTranslate(&rawInfo, info, disk,
-                                  flags & VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES) < 0) {
-        ret = -1;
+    if (!(rawInfo = g_hash_table_lookup(blockjobstats, job->name))) {
+        ret = 0;
         goto endjob;
     }
+
+    if (qemuBlockJobInfoTranslate(rawInfo, info, disk,
+                                  flags & VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES) < 0)
+        goto endjob;
+
+    ret = 1;
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
