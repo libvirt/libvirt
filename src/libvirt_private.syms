@@ -546,7 +546,6 @@ virDomainNetTypeToString;
 virDomainNetUpdate;
 virDomainNostateReasonTypeFromString;
 virDomainNostateReasonTypeToString;
-virDomainNVDimmAlignSizePseries;
 virDomainObjAssignDef;
 virDomainObjBroadcast;
 virDomainObjCheckActive;
