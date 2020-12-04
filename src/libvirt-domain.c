@@ -9940,12 +9940,18 @@ virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
- * As a corner case underlying hypervisor may report cur == 0 and
- * end == 0 when the block job hasn't been started yet. In this
- * case libvirt reports cur = 0 and end = 1. However, hypervisor
- * may return cur == 0 and end == 0 if the block job has finished
- * and was no-op. In this case libvirt reports cur = 1 and end = 1.
- * Since 2.3.0.
+ * In cases when libvirt can't determine actual progress of the block job from
+ * the underlying hypervisor due to corner cases such as the job wasn't yet
+ * fully initialized, or finalized and thus the progress can't be queried,
+ * libvirt reports 'cur = 0, end = 1'.
+ *
+ * For jobs requiring finalizing via qemuDomainBlockJobAbort() with
+ * VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT flag which reached synchronised phase, but
+ * were empty, or the progress can't be determined libvirt returns
+ * 'cur = 1, end = 1'.
+ *
+ * Users thus should not consider any data where 'end = 1' as absolute progress
+ * value.
  *
  * Applications looking for a reliable and low-overhead way to determine whether
  * a block job already finished or reached synchronised phase should register a
