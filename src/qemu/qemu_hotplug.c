@@ -3881,6 +3881,15 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
              */
             virNetDevBandwidthClear(newdev->ifname);
         }
+
+        /* If the old bandwidth was cleared out, restore qdisc. */
+        if (virDomainNetTypeSharesHostView(newdev)) {
+            if (!newb->out || newb->out->average == 0)
+                qemuDomainInterfaceSetDefaultQDisc(driver, newdev);
+        } else {
+            if (!newb->in || newb->in->average == 0)
+                qemuDomainInterfaceSetDefaultQDisc(driver, newdev);
+        }
         needReplaceDevDef = true;
     }
 

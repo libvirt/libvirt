@@ -10339,6 +10339,15 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
             goto endjob;
         }
 
+        /* If the old bandwidth was cleared out, restore qdisc. */
+        if (virDomainNetTypeSharesHostView(net)) {
+            if (!newBandwidth->out || newBandwidth->out->average == 0)
+                qemuDomainInterfaceSetDefaultQDisc(driver, net);
+        } else {
+            if (!newBandwidth->in || newBandwidth->in->average == 0)
+                qemuDomainInterfaceSetDefaultQDisc(driver, net);
+        }
+
         virNetDevBandwidthFree(net->bandwidth);
         if (newBandwidth->in || newBandwidth->out) {
             net->bandwidth = newBandwidth;
