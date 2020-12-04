@@ -14642,6 +14642,15 @@ qemuBlockJobInfoTranslate(qemuMonitorBlockJobInfoPtr rawInfo,
                           virDomainDiskDefPtr disk,
                           bool reportBytes)
 {
+    /* If the job data is no longer present this means that the job already
+     * disappeared in qemu (pre-blockdev) but libvirt didn't process the
+     * finishing yet. Fake a incomplete job. */
+    if (!rawInfo) {
+        info->cur = 0;
+        info->end = 1;
+        return 0;
+    }
+
     info->cur = rawInfo->cur;
     info->end = rawInfo->end;
 
@@ -14727,10 +14736,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockjobstats)
         goto endjob;
 
-    if (!(rawInfo = g_hash_table_lookup(blockjobstats, job->name))) {
-        ret = 0;
-        goto endjob;
-    }
+    rawInfo = g_hash_table_lookup(blockjobstats, job->name);
 
     if (qemuBlockJobInfoTranslate(rawInfo, info, disk,
                                   flags & VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES) < 0)
