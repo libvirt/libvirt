@@ -1251,68 +1251,6 @@ int virStorageFileIsClusterFS(const char *path)
                                  VIR_FILE_SHFS_CEPH);
 }
 
-#ifdef LVS
-int virStorageFileGetLVMKey(const char *path,
-                            char **key)
-{
-    /*
-     *  # lvs --noheadings --unbuffered --nosuffix --options "uuid" LVNAME
-     *    06UgP5-2rhb-w3Bo-3mdR-WeoL-pytO-SAa2ky
-     */
-    int status;
-    int ret = -1;
-    g_autoptr(virCommand) cmd = NULL;
-
-    cmd = virCommandNewArgList(LVS, "--noheadings",
-                               "--unbuffered", "--nosuffix",
-                               "--options", "uuid", path,
-                               NULL
-                               );
-    *key = NULL;
-
-    /* Run the program and capture its output */
-    virCommandSetOutputBuffer(cmd, key);
-    if (virCommandRun(cmd, &status) < 0)
-        goto cleanup;
-
-    /* Explicitly check status == 0, rather than passing NULL
-     * to virCommandRun because we don't want to raise an actual
-     * error in this scenario, just return a NULL key.
-     */
-
-    if (status == 0 && *key) {
-        char *nl;
-        char *tmp = *key;
-
-        /* Find first non-space character */
-        while (*tmp && g_ascii_isspace(*tmp))
-            tmp++;
-        /* Kill leading spaces */
-        if (tmp != *key)
-            memmove(*key, tmp, strlen(tmp)+1);
-
-        /* Kill trailing newline */
-        if ((nl = strchr(*key, '\n')))
-            *nl = '\0';
-    }
-
-    ret = 0;
-
- cleanup:
-    if (*key && STREQ(*key, ""))
-        VIR_FREE(*key);
-
-    return ret;
-}
-#else
-int virStorageFileGetLVMKey(const char *path,
-                            char **key G_GNUC_UNUSED)
-{
-    virReportSystemError(ENOSYS, _("Unable to get LVM key for %s"), path);
-    return -1;
-}
-#endif
-
 #ifdef WITH_UDEV
 /* virStorageFileGetSCSIKey
  * @path: Path to the SCSI device

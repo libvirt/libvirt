@@ -3135,7 +3135,6 @@ virStorageFileFeatureTypeToString;
 virStorageFileFormatTypeFromString;
 virStorageFileFormatTypeToString;
 virStorageFileGetBackingStoreStr;
-virStorageFileGetLVMKey;
 virStorageFileGetMetadata;
 virStorageFileGetMetadataFromBuf;
 virStorageFileGetMetadataFromFD;
