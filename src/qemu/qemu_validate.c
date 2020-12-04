@@ -1156,7 +1156,7 @@ qemuValidateDomainDef(const virDomainDef *def,
     if (qemuValidateDomainDefCpu(driver, def, qemuCaps) < 0)
         return -1;
 
-    if (qemuDomainDefValidateMemoryHotplug(def, qemuCaps, NULL) < 0)
+    if (qemuDomainDefValidateMemoryHotplug(def, NULL) < 0)
         return -1;
 
     if (qemuValidateDomainDefClockTimers(def, qemuCaps) < 0)

@@ -8532,7 +8532,6 @@ qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
 /**
  * qemuDomainDefValidateMemoryHotplug:
  * @def: domain definition
- * @qemuCaps: qemu capabilities object
  * @mem: definition of memory device that is to be added to @def with hotplug,
  *       NULL in case of regular VM startup
  *
@@ -8544,7 +8543,6 @@ qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
  */
 int
 qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
-                                   virQEMUCapsPtr qemuCaps G_GNUC_UNUSED,
                                    const virDomainMemoryDef *mem)
 {
     unsigned int nmems = def->nmems;
