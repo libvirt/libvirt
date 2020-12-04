@@ -496,3 +496,24 @@ virDomainSmartcardDefValidate(const virDomainSmartcardDef *smartcard,
 
     return 0;
 }
+
+
+int
+virDomainDefTunablesValidate(const virDomainDef *def)
+{
+    size_t i, j;
+
+    for (i = 0; i < def->blkio.ndevices; i++) {
+        for (j = 0; j < i; j++) {
+            if (STREQ(def->blkio.devices[j].path,
+                      def->blkio.devices[i].path)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("duplicate blkio device path '%s'"),
+                               def->blkio.devices[i].path);
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}

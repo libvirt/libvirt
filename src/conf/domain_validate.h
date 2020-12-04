@@ -42,3 +42,4 @@ int virDomainRNGDefValidate(const virDomainRNGDef *rng,
                             const virDomainDef *def);
 int virDomainSmartcardDefValidate(const virDomainSmartcardDef *smartcard,
                                   const virDomainDef *def);
+int virDomainDefTunablesValidate(const virDomainDef *def);
