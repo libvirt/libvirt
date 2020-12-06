@@ -608,7 +608,7 @@ virPCIDeviceDetectFunctionLevelReset(virPCIDevicePtr dev, int cfgfd)
  * and that a D3hot->D0 transition will results in a full
  * internal reset, not just a soft reset.
  */
-static unsigned int
+static bool
 virPCIDeviceDetectPowerManagementReset(virPCIDevicePtr dev, int cfgfd)
 {
     if (dev->pci_pm_cap_pos) {
@@ -618,13 +618,13 @@ virPCIDeviceDetectPowerManagementReset(virPCIDevicePtr dev, int cfgfd)
         ctl = virPCIDeviceRead32(dev, cfgfd, dev->pci_pm_cap_pos + PCI_PM_CTRL);
         if (!(ctl & PCI_PM_CTRL_NO_SOFT_RESET)) {
             VIR_DEBUG("%s %s: detected PM reset capability", dev->id, dev->name);
-            return 1;
+            return true;
         }
     }
 
     VIR_DEBUG("%s %s: no PM reset capability found", dev->id, dev->name);
 
-    return 0;
+    return false;
 }
 
 /* Any active devices on the same domain/bus ? */
@@ -888,7 +888,7 @@ virPCIDeviceInit(virPCIDevicePtr dev, int cfgfd)
     dev->pcie_cap_pos   = virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_EXP);
     dev->pci_pm_cap_pos = virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_PM);
     dev->has_flr = virPCIDeviceDetectFunctionLevelReset(dev, cfgfd);
-    dev->has_pm_reset = !!virPCIDeviceDetectPowerManagementReset(dev, cfgfd);
+    dev->has_pm_reset = virPCIDeviceDetectPowerManagementReset(dev, cfgfd);
 
     return 0;
 }
