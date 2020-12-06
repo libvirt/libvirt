@@ -549,7 +549,7 @@ virPCIDeviceFindExtendedCapabilityOffset(virPCIDevicePtr dev,
 /* detects whether this device has FLR.  Returns 0 if the device does
  * not have FLR, 1 if it does, and -1 on error
  */
-static int
+static bool
 virPCIDeviceDetectFunctionLevelReset(virPCIDevicePtr dev, int cfgfd)
 {
     uint32_t caps;
@@ -567,7 +567,7 @@ virPCIDeviceDetectFunctionLevelReset(virPCIDevicePtr dev, int cfgfd)
         caps = virPCIDeviceRead32(dev, cfgfd, dev->pcie_cap_pos + PCI_EXP_DEVCAP);
         if (caps & PCI_EXP_DEVCAP_FLR) {
             VIR_DEBUG("%s %s: detected PCIe FLR capability", dev->id, dev->name);
-            return 1;
+            return true;
         }
     }
 
@@ -580,7 +580,7 @@ virPCIDeviceDetectFunctionLevelReset(virPCIDevicePtr dev, int cfgfd)
         caps = virPCIDeviceRead16(dev, cfgfd, pos + PCI_AF_CAP);
         if (caps & PCI_AF_CAP_FLR) {
             VIR_DEBUG("%s %s: detected PCI FLR capability", dev->id, dev->name);
-            return 1;
+            return true;
         }
     }
 
@@ -596,12 +596,12 @@ virPCIDeviceDetectFunctionLevelReset(virPCIDevicePtr dev, int cfgfd)
     if (found) {
         VIR_DEBUG("%s %s: buggy device didn't advertise FLR, but is a VF; forcing flr on",
                   dev->id, dev->name);
-        return 1;
+        return true;
     }
 
     VIR_DEBUG("%s %s: no FLR capability found", dev->id, dev->name);
 
-    return 0;
+    return false;
 }
 
 /* Require the device has the PCI Power Management capability
@@ -885,15 +885,10 @@ virPCIDeviceTryPowerManagementReset(virPCIDevicePtr dev, int cfgfd)
 static int
 virPCIDeviceInit(virPCIDevicePtr dev, int cfgfd)
 {
-    int flr;
-
     dev->pcie_cap_pos   = virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_EXP);
     dev->pci_pm_cap_pos = virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_PM);
-    flr = virPCIDeviceDetectFunctionLevelReset(dev, cfgfd);
-    if (flr < 0)
-        return flr;
-    dev->has_flr        = !!flr;
-    dev->has_pm_reset   = !!virPCIDeviceDetectPowerManagementReset(dev, cfgfd);
+    dev->has_flr = virPCIDeviceDetectFunctionLevelReset(dev, cfgfd);
+    dev->has_pm_reset = !!virPCIDeviceDetectPowerManagementReset(dev, cfgfd);
 
     return 0;
 }
