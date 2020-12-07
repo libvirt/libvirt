@@ -332,8 +332,8 @@ virPCIDeviceRead(virPCIDevicePtr dev,
 
     if (lseek(cfgfd, pos, SEEK_SET) != pos ||
         saferead(cfgfd, buf, buflen) != buflen) {
-        VIR_WARN("Failed to read from '%s' : %s", dev->path,
-                 g_strerror(errno));
+        VIR_DEBUG("Failed to read %u bytes at %u from '%s' : %s",
+                 buflen, pos, dev->path, g_strerror(errno));
         return -1;
     }
     return 0;
