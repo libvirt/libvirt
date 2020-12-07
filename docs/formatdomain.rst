@@ -7257,20 +7257,30 @@ Example: usage of the memory devices
          </label>
        </target>
      </memory>
+     <memory model='virtio-pmem' access='shared'>
+       <source>
+         <path>/tmp/virtio_pmem</path>
+       </source>
+       <target>
+         <size unit='KiB'>524288</size>
+       </target>
+     </memory>
    </devices>
    ...
 
 ``model``
    Provide ``dimm`` to add a virtual DIMM module to the guest. :since:`Since
-   1.2.14` Provide ``nvdimm`` model adds a Non-Volatile DIMM module.
-   :since:`Since 3.2.0`
+   1.2.14` Provide ``nvdimm`` model that adds a Non-Volatile DIMM module.
+   :since:`Since 3.2.0` Provide ``virtio-pmem`` model to add a paravirtualized
+   persistent memory device. :since:`Since 7.1.0`
 
 ``access``
    An optional attribute ``access`` ( :since:`since 3.2.0` ) that provides
    capability to fine tune mapping of the memory on per module basis. Values are
    the same as `Memory Backing <#elementsMemoryBacking>`__: ``shared`` and
    ``private``. For ``nvdimm`` model, if using real NVDIMM DAX device as
-   backend, ``shared`` is required.
+   backend, ``shared`` is required. For ``virtio-pmem`` model ``shared`` is
+   required.
 
 ``discard``
    An optional attribute ``discard`` ( :since:`since 4.4.0` ) that provides
@@ -7299,9 +7309,9 @@ Example: usage of the memory devices
       This element can be used to override the default set of NUMA nodes where
       the memory would be allocated.
 
-   For model ``nvdimm`` this element is mandatory. The mandatory child element
-   ``path`` represents a path in the host that backs the nvdimm module in the
-   guest. The following optional elements may be used:
+   For model ``nvdimm`` the ``source`` element is mandatory. The mandatory
+   child element ``path`` represents a path in the host that backs the nvdimm
+   module in the guest. The following optional elements may be used:
 
    ``alignsize``
       The ``alignsize`` element defines the page size alignment used to mmap the
@@ -7314,6 +7324,13 @@ Example: usage of the memory devices
       If persistent memory is supported and enabled by the hypervisor in order
       to guarantee the persistence of writes to the vNVDIMM backend, then use
       the ``pmem`` element in order to utilize the feature. :since:`Since 5.0.0`
+
+   For model ``virtio-pmem`` the ``source`` element is mandatory. The following
+   optional elements may be used:
+
+   ``path``
+     Represents a path in the host that backs the virtio memory module in the
+     guest. It is mandatory.
 
 ``target``
    The mandatory ``target`` element configures the placement and sizing of the

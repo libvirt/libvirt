@@ -6019,6 +6019,7 @@
         <choice>
           <value>dimm</value>
           <value>nvdimm</value>
+          <value>virtio-pmem</value>
         </choice>
       </attribute>
       <optional>

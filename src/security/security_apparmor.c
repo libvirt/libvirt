@@ -690,6 +690,7 @@ AppArmorSetMemoryLabel(virSecurityManagerPtr mgr,
             return -1;
         }
         return reload_profile(mgr, def, mem->nvdimmPath, true);
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:

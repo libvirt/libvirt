@@ -1389,7 +1389,8 @@ static int
 virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
                            const virDomainDef *def)
 {
-    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+    switch (mem->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         if (!mem->nvdimmPath) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("path is required for model 'nvdimm'"));
@@ -1407,6 +1408,43 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
                            _("label size is required for NVDIMM device"));
             return -1;
         }
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        if (!mem->nvdimmPath) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("path is required for model '%s'"),
+                           virDomainMemoryModelTypeToString(mem->model));
+            return -1;
+        }
+
+        if (mem->discard == VIR_TRISTATE_BOOL_YES) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("discard is not supported for model '%s'"),
+                           virDomainMemoryModelTypeToString(mem->model));
+            return -1;
+        }
+
+        if (mem->access != VIR_DOMAIN_MEMORY_ACCESS_SHARED) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("shared access mode required for virtio-pmem device"));
+            return -1;
+        }
+
+        if (mem->targetNode != -1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtio-pmem does not support NUMA nodes"));
+            return -1;
+        }
+
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+    default:
+        virReportEnumRangeError(virDomainMemoryModel, mem->model);
+        return -1;
     }
 
     return 0;

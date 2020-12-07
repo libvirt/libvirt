@@ -3325,6 +3325,7 @@ qemuBuildMemoryDeviceStr(const virDomainDef *def,
             return NULL;
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         break;

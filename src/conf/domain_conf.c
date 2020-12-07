@@ -1309,6 +1309,7 @@ VIR_ENUM_IMPL(virDomainMemoryModel,
               "",
               "dimm",
               "nvdimm",
+              "virtio-pmem",
 );
 
 VIR_ENUM_IMPL(virDomainShmemModel,
@@ -5332,6 +5333,28 @@ virDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
 
 
 static int
+virDomainMemoryDefPostParse(virDomainMemoryDefPtr mem)
+{
+    switch (mem->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        /* Virtio-pmem mandates shared access so that guest writes get
+         * reflected in the underlying file. */
+        if (mem->access == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)
+            mem->access = VIR_DOMAIN_MEMORY_ACCESS_SHARED;
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
                                   const virDomainDef *def,
                                   unsigned int parseFlags G_GNUC_UNUSED,
@@ -5376,6 +5399,10 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
         ret = 0;
         break;
 
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        ret = virDomainMemoryDefPostParse(dev->data.memory);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -5390,7 +5417,6 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
-    case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_AUDIO:
         ret = 0;
@@ -15310,6 +15336,10 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
 
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        def->nvdimmPath = virXPathString("string(./path)", ctxt);
+        break;
+
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         break;
@@ -17190,6 +17220,11 @@ virDomainMemoryFindByDefInternal(virDomainDefPtr def,
             break;
 
         case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+            if (STRNEQ(tmp->nvdimmPath, mem->nvdimmPath))
+                continue;
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
             if (STRNEQ(tmp->nvdimmPath, mem->nvdimmPath))
                 continue;
             break;
@@ -26484,6 +26519,10 @@ virDomainMemorySourceDefFormat(virBufferPtr buf,
 
         if (def->nvdimmPmem)
             virBufferAddLit(&childBuf, "<pmem/>\n");
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        virBufferEscapeString(&childBuf, "<path>%s</path>\n", def->nvdimmPath);
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:

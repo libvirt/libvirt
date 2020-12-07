@@ -56,7 +56,8 @@ void qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
 void qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
                                     virDomainDeviceInfoPtr info);
 
-int qemuDomainAssignMemoryDeviceSlot(virDomainDefPtr def,
+int qemuDomainAssignMemoryDeviceSlot(virQEMUDriverPtr driver,
+                                     virDomainObjPtr vm,
                                      virDomainMemoryDefPtr mem);
 
 int qemuDomainEnsureVirtioAddress(bool *releaseAddr,

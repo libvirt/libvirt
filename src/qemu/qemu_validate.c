@@ -4624,6 +4624,14 @@ qemuValidateDomainDeviceDefMemory(virDomainMemoryDefPtr mem,
         }
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_PMEM_PCI)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtio-pmem isn't supported by this QEMU binary"));
+            return -1;
+        }
+        break;
+
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         break;

@@ -2307,6 +2307,7 @@ typedef enum {
     VIR_DOMAIN_MEMORY_MODEL_NONE,
     VIR_DOMAIN_MEMORY_MODEL_DIMM, /* dimm hotpluggable memory device */
     VIR_DOMAIN_MEMORY_MODEL_NVDIMM, /* nvdimm memory device */
+    VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM, /* virtio-pmem memory device */
 
     VIR_DOMAIN_MEMORY_MODEL_LAST
 } virDomainMemoryModel;
@@ -2318,7 +2319,7 @@ struct _virDomainMemoryDef {
     /* source */
     virBitmapPtr sourceNodes;
     unsigned long long pagesize; /* kibibytes */
-    char *nvdimmPath;
+    char *nvdimmPath; /* valid for NVDIMM an VIRTIO_PMEM */
     unsigned long long alignsize; /* kibibytes; valid only for NVDIMM */
     bool nvdimmPmem; /* valid only for NVDIMM */
 

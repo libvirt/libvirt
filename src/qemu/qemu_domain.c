@@ -8605,6 +8605,8 @@ static int
 qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
                                          const virDomainDef *def)
 {
+    bool needsNuma = true;
+
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
@@ -8640,9 +8642,32 @@ qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
         }
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        if (mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+            mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("only 'pci' addresses are supported for the "
+                             "virtio-pmem device"));
+            return -1;
+        }
+
+        /* virtio-pmem doesn't have .node attribute. */
+        needsNuma = false;
+        break;
+
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         return -1;
+    }
+
+    if (needsNuma &&
+        virDomainNumaGetNodeCount(def->numa) != 0) {
+        if (mem->targetNode == -1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("target NUMA node needs to be specified for "
+                             "memory device"));
+            return -1;
+        }
     }
 
     return 0;

@@ -1581,6 +1581,7 @@ virSecuritySELinuxSetMemoryLabel(virSecurityManagerPtr mgr,
             return -1;
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
@@ -1608,6 +1609,7 @@ virSecuritySELinuxRestoreMemoryLabel(virSecurityManagerPtr mgr,
         ret = virSecuritySELinuxRestoreFileLabel(mgr, mem->nvdimmPath, true);
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
