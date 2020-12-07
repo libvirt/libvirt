@@ -879,7 +879,7 @@ qemuProcessHandleIOError(qemuMonitorPtr mon G_GNUC_UNUSED,
     if (diskAlias)
         disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL);
     else if (nodename)
-        disk = qemuDomainDiskLookupByNodename(vm->def, nodename, NULL);
+        disk = qemuDomainDiskLookupByNodename(vm->def, NULL, nodename, NULL);
     else
         disk = NULL;
 
@@ -1483,6 +1483,7 @@ qemuProcessHandleBlockThreshold(qemuMonitorPtr mon G_GNUC_UNUSED,
                                 unsigned long long excess,
                                 void *opaque)
 {
+    qemuDomainObjPrivatePtr priv;
     virQEMUDriverPtr driver = opaque;
     virObjectEventPtr eventSource = NULL;
     virObjectEventPtr eventDevice = NULL;
@@ -1492,11 +1493,13 @@ qemuProcessHandleBlockThreshold(qemuMonitorPtr mon G_GNUC_UNUSED,
 
     virObjectLock(vm);
 
+    priv  = vm->privateData;
+
     VIR_DEBUG("BLOCK_WRITE_THRESHOLD event for block node '%s' in domain %p %s:"
               "threshold '%llu' exceeded by '%llu'",
               nodename, vm, vm->def->name, threshold, excess);
 
-    if ((disk = qemuDomainDiskLookupByNodename(vm->def, nodename, &src))) {
+    if ((disk = qemuDomainDiskLookupByNodename(vm->def, priv->backup, nodename, &src))) {
         if (virStorageSourceIsLocalStorage(src))
             path = src->path;
 

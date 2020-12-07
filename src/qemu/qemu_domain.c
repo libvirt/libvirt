@@ -9895,6 +9895,7 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
 /**
  * qemuDomainDiskLookupByNodename:
  * @def: domain definition to look for the disk
+ * @backupdef: definition of the backup job of the domain (optional)
  * @nodename: block backend node name to find
  * @src: filled with the specific backing store element if provided
  *
@@ -9904,6 +9905,7 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
  */
 virDomainDiskDefPtr
 qemuDomainDiskLookupByNodename(virDomainDefPtr def,
+                               virDomainBackupDefPtr backupdef,
                                const char *nodename,
                                virStorageSourcePtr *src)
 {
@@ -9922,6 +9924,16 @@ qemuDomainDiskLookupByNodename(virDomainDefPtr def,
         if (domdisk->mirror &&
             (*src = virStorageSourceFindByNodeName(domdisk->mirror, nodename)))
             return domdisk;
+    }
+
+    if (backupdef) {
+        for (i = 0; i < backupdef->ndisks; i++) {
+            virDomainBackupDiskDefPtr backupdisk = backupdef->disks + i;
+
+            if (backupdisk->store &&
+                (*src = virStorageSourceFindByNodeName(backupdisk->store, nodename)))
+                return virDomainDiskByTarget(def, backupdisk->name);
+        }
     }
 
     return NULL;

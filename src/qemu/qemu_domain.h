@@ -912,6 +912,7 @@ int qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
                              int *perms);
 
 virDomainDiskDefPtr qemuDomainDiskLookupByNodename(virDomainDefPtr def,
+                                                   virDomainBackupDefPtr backupdef,
                                                    const char *nodename,
                                                    virStorageSourcePtr *src);
 
