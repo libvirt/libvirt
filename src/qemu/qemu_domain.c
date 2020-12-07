@@ -9953,7 +9953,6 @@ qemuDomainGetStorageSourceByDevstr(const char *devstr,
     virStorageSourcePtr src = NULL;
     g_autofree char *target = NULL;
     unsigned int idx;
-    size_t i;
 
     if (virStorageFileParseBackingStoreStr(devstr, &target, &idx) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -9961,14 +9960,7 @@ qemuDomainGetStorageSourceByDevstr(const char *devstr,
         return NULL;
     }
 
-    for (i = 0; i < def->ndisks; i++) {
-        if (STREQ(target, def->disks[i]->dst)) {
-            disk = def->disks[i];
-            break;
-        }
-    }
-
-    if (!disk) {
+    if (!(disk = virDomainDiskByTarget(def, target))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("failed to find disk '%s'"), target);
         return NULL;
