@@ -612,3 +612,26 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
 
     return 0;
 }
+
+
+int
+virDomainDefIdMapValidate(const virDomainDef *def)
+{
+    if ((def->idmap.uidmap && !def->idmap.gidmap) ||
+        (!def->idmap.uidmap && def->idmap.gidmap)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("uid and gid should be mapped both"));
+        return -1;
+    }
+
+    if ((def->idmap.uidmap && def->idmap.uidmap[0].start != 0) ||
+        (def->idmap.gidmap && def->idmap.gidmap[0].start != 0)) {
+        /* Root user of container hasn't been mapped to any user of host,
+         * return error. */
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("You must map the root user of container"));
+        return -1;
+    }
+
+    return 0;
+}

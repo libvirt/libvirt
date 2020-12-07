@@ -44,3 +44,4 @@ int virDomainSmartcardDefValidate(const virDomainSmartcardDef *smartcard,
                                   const virDomainDef *def);
 int virDomainDefTunablesValidate(const virDomainDef *def);
 int virDomainControllerDefValidate(const virDomainControllerDef *controller);
+int virDomainDefIdMapValidate(const virDomainDef *def);
