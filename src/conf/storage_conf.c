@@ -1296,6 +1296,27 @@ virStorageSize(const char *unit,
 }
 
 
+static int
+virStorageCheckCompat(const char *compat)
+{
+    unsigned int result;
+    g_auto(GStrv) version = NULL;
+
+    if (!compat)
+        return 0;
+
+    version = virStringSplit(compat, ".", 2);
+    if (!version || !version[1] ||
+        virStrToLong_ui(version[0], NULL, 10, &result) < 0 ||
+        virStrToLong_ui(version[1], NULL, 10, &result) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("forbidden characters in 'compat' attribute"));
+        return -1;
+    }
+    return 0;
+}
+
+
 static virStorageVolDefPtr
 virStorageVolDefParseXML(virStoragePoolDefPtr pool,
                          xmlXPathContextPtr ctxt,
@@ -1424,7 +1445,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     }
 
     def->target.compat = virXPathString("string(./target/compat)", ctxt);
-    if (virStorageFileCheckCompat(def->target.compat) < 0)
+    if (virStorageCheckCompat(def->target.compat) < 0)
         return NULL;
 
     if (virXPathNode("./target/nocow", ctxt))

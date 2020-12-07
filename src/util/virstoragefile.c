@@ -4410,30 +4410,6 @@ virStorageFileGetRelativeBackingPath(virStorageSourcePtr top,
 }
 
 
-/*
- * virStorageFileCheckCompat
- */
-int
-virStorageFileCheckCompat(const char *compat)
-{
-    unsigned int result;
-    g_auto(GStrv) version = NULL;
-
-    if (!compat)
-        return 0;
-
-    version = virStringSplit(compat, ".", 2);
-    if (!version || !version[1] ||
-        virStrToLong_ui(version[0], NULL, 10, &result) < 0 ||
-        virStrToLong_ui(version[1], NULL, 10, &result) < 0) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("forbidden characters in 'compat' attribute"));
-        return -1;
-    }
-    return 0;
-}
-
-
 /**
  * virStorageSourceIsRelative:
  * @src: storage source to check
