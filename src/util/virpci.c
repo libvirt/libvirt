@@ -329,6 +329,7 @@ virPCIDeviceRead(virPCIDevicePtr dev,
                  unsigned int buflen)
 {
     memset(buf, 0, buflen);
+    errno = 0;
 
     if (lseek(cfgfd, pos, SEEK_SET) != pos ||
         saferead(cfgfd, buf, buflen) != buflen) {
@@ -339,6 +340,27 @@ virPCIDeviceRead(virPCIDevicePtr dev,
     return 0;
 }
 
+
+/**
+ * virPCIDeviceReadN:
+ * @dev: virPCIDevice object (used only to log name of config file)
+ * @cfgfd: open file descriptor for device config file in sysfs
+ * @pos: byte offset in the file to read from
+ *
+ * read "N" (where "N" is "8", "16", or "32", and appears at the end
+ * of the function name) bytes from a PCI device's already-opened
+ * sysfs config file and return them as the return value from the
+ * function.
+ *
+ * Returns the value at @pos in the file, or 0 if there was an
+ * error. NB: since 0 could be a valid value, occurence of an error
+ * must be determined by examining errno. errno is always reset to 0
+ * before the seek/read is attempted (see virPCIDeviceRead()), so if
+ * errno != 0 on return from one of these functions, then either the
+ * seek or the read operation failed for some reason. If errno == 0
+ * and the return value is 0, then the config file really does contain
+ * the value 0 at @pos.
+ */
 static uint8_t
 virPCIDeviceRead8(virPCIDevicePtr dev, int cfgfd, unsigned int pos)
 {
@@ -483,19 +505,38 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
     return ret;
 }
 
-static uint8_t
+
+/**
+ * virPCIDeviceFindCapabilityOffset:
+ * @dev: virPCIDevice object (used only to log name of config file)
+ * @cfgfd: open file descriptor for device config file in sysfs
+ * @capability: PCI_CAP_ID_* being requested
+ * @offset: used to return the offset of @capability in the file
+ *
+ * Find the offset of @capability within the PCI config file @cfgfd of
+ * the device @dev. if found, the offset is returned in @offset,
+ * otherwise @offset is set to 0.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+static int
 virPCIDeviceFindCapabilityOffset(virPCIDevicePtr dev,
                                  int cfgfd,
-                                 unsigned int capability)
+                                 unsigned int capability,
+                                 unsigned int *offset)
 {
     uint16_t status;
     uint8_t pos;
 
+    *offset = 0; /* assume failure (*nothing* can be at offset 0) */
+
     status = virPCIDeviceRead16(dev, cfgfd, PCI_STATUS);
-    if (!(status & PCI_STATUS_CAP_LIST))
-        return 0;
+    if (errno != 0 || !(status & PCI_STATUS_CAP_LIST))
+        goto error;
 
     pos = virPCIDeviceRead8(dev, cfgfd, PCI_CAPABILITY_LIST);
+    if (errno != 0)
+        goto error;
 
     /* Zero indicates last capability, capabilities can't
      * be in the config space header and 0xff is returned
@@ -506,18 +547,31 @@ virPCIDeviceFindCapabilityOffset(virPCIDevicePtr dev,
      */
     while (pos >= PCI_CONF_HEADER_LEN && pos != 0xff) {
         uint8_t capid = virPCIDeviceRead8(dev, cfgfd, pos);
+        if (errno != 0)
+            goto error;
+
         if (capid == capability) {
             VIR_DEBUG("%s %s: found cap 0x%.2x at 0x%.2x",
                       dev->id, dev->name, capability, pos);
-            return pos;
+            *offset = pos;
+            return 0;
         }
 
         pos = virPCIDeviceRead8(dev, cfgfd, pos + 1);
+        if (errno != 0)
+            goto error;
     }
 
-    VIR_DEBUG("%s %s: failed to find cap 0x%.2x", dev->id, dev->name, capability);
+ error:
+    VIR_DEBUG("%s %s: failed to find cap 0x%.2x (%s)",
+              dev->id, dev->name, capability, g_strerror(errno));
 
-    return 0;
+    /* reset errno in case the failure was due to insufficient
+     * privileges to read the entire PCI config file
+     */
+    errno = 0;
+
+    return -1;
 }
 
 static unsigned int
@@ -553,7 +607,7 @@ static bool
 virPCIDeviceDetectFunctionLevelReset(virPCIDevicePtr dev, int cfgfd)
 {
     uint32_t caps;
-    uint8_t pos;
+    unsigned int pos;
     g_autofree char *path = NULL;
     int found;
 
@@ -575,7 +629,8 @@ virPCIDeviceDetectFunctionLevelReset(virPCIDevicePtr dev, int cfgfd)
      * the same thing, except for conventional PCI
      * devices. This is not common yet.
      */
-    pos = virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_AF);
+    virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_AF, &pos);
+
     if (pos) {
         caps = virPCIDeviceRead16(dev, cfgfd, pos + PCI_AF_CAP);
         if (caps & PCI_AF_CAP_FLR) {
@@ -885,8 +940,8 @@ virPCIDeviceTryPowerManagementReset(virPCIDevicePtr dev, int cfgfd)
 static int
 virPCIDeviceInit(virPCIDevicePtr dev, int cfgfd)
 {
-    dev->pcie_cap_pos   = virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_EXP);
-    dev->pci_pm_cap_pos = virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_PM);
+    virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_EXP, &dev->pcie_cap_pos);
+    virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_PM, &dev->pci_pm_cap_pos);
     dev->has_flr = virPCIDeviceDetectFunctionLevelReset(dev, cfgfd);
     dev->has_pm_reset = virPCIDeviceDetectPowerManagementReset(dev, cfgfd);
 
