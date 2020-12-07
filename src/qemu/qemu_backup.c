@@ -266,8 +266,16 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
     if (!qemuDomainDiskBlockJobIsSupported(vm, dd->domdisk))
         return -1;
 
-    if (!dd->store->format)
+    if (dd->store->format == VIR_STORAGE_FILE_NONE) {
         dd->store->format = VIR_STORAGE_FILE_QCOW2;
+    } else if (dd->store->format != VIR_STORAGE_FILE_QCOW2) {
+        if (pull) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("pull mode backup for disk '%s' requires qcow2 driver"),
+                           dd->backupdisk->name);
+            return -1;
+        }
+    }
 
     /* calculate backing store to use:
      * push mode:

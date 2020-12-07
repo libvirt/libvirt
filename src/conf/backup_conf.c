@@ -204,11 +204,6 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk backup driver '%s'"), driver);
             return -1;
-        } else if (!push && def->store->format != VIR_STORAGE_FILE_QCOW2) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("pull mode requires qcow2 driver, not '%s'"),
-                           driver);
-            return -1;
         }
     }
 
