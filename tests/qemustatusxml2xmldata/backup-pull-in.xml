@@ -256,7 +256,7 @@
       <incremental>12345</incremental>
       <server transport='tcp' tls='yes' name='localhost' port='10809'/>
       <disks>
-        <disk name='vda' backup='yes' state='running' type='file'>
+        <disk name='vda' backup='yes' state='running' type='file' index='123'>
           <scratch file='/path/to/file/'/>
         </disk>
       </disks>

@@ -105,6 +105,7 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *type = NULL;
     g_autofree char *format = NULL;
+    g_autofree char *idx = NULL;
     g_autofree char *backup = NULL;
     g_autofree char *state = NULL;
     g_autofree char *backupmode = NULL;
@@ -171,8 +172,10 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
 
     type = virXMLPropString(node, "type");
     format = virXPathString("string(./driver/@type)", ctxt);
+    if (internal)
+        idx = virXMLPropString(node, "index");
 
-    if (!(def->store = virDomainStorageSourceParseBase(type, format, NULL)))
+    if (!(def->store = virDomainStorageSourceParseBase(type, format, idx)))
           return -1;
 
     if (def->store->type != VIR_STORAGE_TYPE_FILE &&
@@ -385,6 +388,9 @@ virDomainBackupDiskDefFormat(virBufferPtr buf,
 
         virBufferEscapeString(&attrBuf, " exportname='%s'", disk->exportname);
         virBufferEscapeString(&attrBuf, " exportbitmap='%s'", disk->exportbitmap);
+
+        if (disk->store->id != 0)
+            virBufferAsprintf(&attrBuf, " index='%u'", disk->store->id);
 
         if (disk->store->format > 0)
             virBufferEscapeString(&childBuf, "<driver type='%s'/>\n",

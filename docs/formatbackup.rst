@@ -95,6 +95,10 @@ were supplied). The following child elements and attributes are supported:
          Similar to a disk declaration for a domain, the choice of type controls
          what additional sub-elements are needed to describe the destination.
 
+      ``index``
+         Output only. The value can be used to refer to the scratch or output
+         file of the backup in APIs such as ``virDomainSetBlockThreshold``.
+
       ``target``
          Valid only for push mode backups, this is the primary sub-element that
          describes the file name of the backup destination, similar to the
