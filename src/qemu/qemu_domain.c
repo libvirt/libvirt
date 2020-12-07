@@ -9950,7 +9950,7 @@ qemuDomainGetStorageSourceByDevstr(const char *devstr,
                                    virDomainDefPtr def)
 {
     virDomainDiskDefPtr disk = NULL;
-    virStorageSourcePtr src = NULL;
+    virStorageSourcePtr n;
     g_autofree char *target = NULL;
     unsigned int idx;
 
@@ -9969,13 +9969,20 @@ qemuDomainGetStorageSourceByDevstr(const char *devstr,
     if (idx == 0)
         return disk->src;
 
-    if ((src = virStorageFileChainLookup(disk->src, NULL, NULL, idx, NULL)))
-        return src;
+    for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (n->id == idx)
+            return n;
+    }
 
-    if (disk->mirror &&
-        (src = virStorageFileChainLookup(disk->mirror, NULL, NULL, idx, NULL)))
-        return src;
+    if (disk->mirror) {
+        for (n = disk->mirror; virStorageSourceIsBacking(n); n = n->backingStore) {
+            if (n->id == idx)
+                return n;
+        }
+    }
 
+    virReportError(VIR_ERR_INVALID_ARG,
+                   _("failed to find disk '%s'"), devstr);
     return NULL;
 }
 
