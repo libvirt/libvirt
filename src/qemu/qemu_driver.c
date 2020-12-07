@@ -14638,9 +14638,11 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
 static int
 qemuBlockJobInfoTranslate(qemuMonitorBlockJobInfoPtr rawInfo,
                           virDomainBlockJobInfoPtr info,
-                          virDomainDiskDefPtr disk,
+                          qemuBlockJobDataPtr job,
                           bool reportBytes)
 {
+    info->type = job->type;
+
     /* If the job data is no longer present this means that the job already
      * disappeared in qemu (pre-blockdev) but libvirt didn't process the
      * finishing yet. Fake a incomplete job. */
@@ -14673,11 +14675,6 @@ qemuBlockJobInfoTranslate(qemuMonitorBlockJobInfoPtr rawInfo,
         info->cur == info->end &&
         info->cur > 0)
         info->cur -= 1;
-
-    info->type = rawInfo->type;
-    if (info->type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
-        disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
-        info->type = disk->mirrorJob;
 
     if (rawInfo->bandwidth && !reportBytes)
         rawInfo->bandwidth = VIR_DIV_UP(rawInfo->bandwidth, 1024 * 1024);
@@ -14737,7 +14734,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
 
     rawInfo = g_hash_table_lookup(blockjobstats, job->name);
 
-    if (qemuBlockJobInfoTranslate(rawInfo, info, disk,
+    if (qemuBlockJobInfoTranslate(rawInfo, info, job,
                                   flags & VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES) < 0)
         goto endjob;
 
