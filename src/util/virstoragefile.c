@@ -1193,53 +1193,6 @@ virStorageFileGetMetadataFromFD(const char *path,
 }
 
 
-/**
- * virStorageFileResize:
- *
- * Change the capacity of the raw storage file at 'path'.
- */
-int
-virStorageFileResize(const char *path,
-                     unsigned long long capacity,
-                     bool pre_allocate)
-{
-    int rc;
-    VIR_AUTOCLOSE fd = -1;
-
-    if ((fd = open(path, O_RDWR)) < 0) {
-        virReportSystemError(errno, _("Unable to open '%s'"), path);
-        return -1;
-    }
-
-    if (pre_allocate) {
-        if ((rc = virFileAllocate(fd, 0, capacity)) != 0) {
-            if (rc == -2) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               _("preallocate is not supported on this platform"));
-            } else {
-                virReportSystemError(errno,
-                                     _("Failed to pre-allocate space for "
-                                       "file '%s'"), path);
-            }
-            return -1;
-        }
-    }
-
-    if (ftruncate(fd, capacity) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to truncate file '%s'"), path);
-        return -1;
-    }
-
-    if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("Unable to save '%s'"), path);
-        return -1;
-    }
-
-    return 0;
-}
-
-
 int virStorageFileIsClusterFS(const char *path)
 {
     /* These are coherent cluster filesystems known to be safe for

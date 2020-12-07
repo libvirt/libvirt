@@ -557,6 +557,53 @@ virFileRewriteStr(const char *path,
 }
 
 
+/**
+ * virFileResize:
+ *
+ * Change the capacity of the raw storage file at 'path'.
+ */
+int
+virFileResize(const char *path,
+              unsigned long long capacity,
+              bool pre_allocate)
+{
+    int rc;
+    VIR_AUTOCLOSE fd = -1;
+
+    if ((fd = open(path, O_RDWR)) < 0) {
+        virReportSystemError(errno, _("Unable to open '%s'"), path);
+        return -1;
+    }
+
+    if (pre_allocate) {
+        if ((rc = virFileAllocate(fd, 0, capacity)) != 0) {
+            if (rc == -2) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("preallocate is not supported on this platform"));
+            } else {
+                virReportSystemError(errno,
+                                     _("Failed to pre-allocate space for "
+                                       "file '%s'"), path);
+            }
+            return -1;
+        }
+    }
+
+    if (ftruncate(fd, capacity) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to truncate file '%s'"), path);
+        return -1;
+    }
+
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno, _("Unable to save '%s'"), path);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 int virFileTouch(const char *path, mode_t mode)
 {
     int fd = -1;

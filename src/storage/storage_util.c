@@ -2394,7 +2394,7 @@ virStorageBackendVolResizeLocal(virStoragePoolObjPtr pool,
                   VIR_STORAGE_VOL_RESIZE_SHRINK, -1);
 
     if (vol->target.format == VIR_STORAGE_FILE_RAW && !vol->target.encryption) {
-        return virStorageFileResize(vol->target.path, capacity, pre_allocate);
+        return virFileResize(vol->target.path, capacity, pre_allocate);
     } else if (vol->target.format == VIR_STORAGE_FILE_RAW && vol->target.encryption) {
         if (pre_allocate) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",

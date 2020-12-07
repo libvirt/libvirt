@@ -133,6 +133,10 @@ int virFileRewriteStr(const char *path,
                       mode_t mode,
                       const char *str);
 
+int virFileResize(const char *path,
+                  unsigned long long capacity,
+                  bool pre_allocate);
+
 int virFileTouch(const char *path, mode_t mode);
 
 int virFileUpdatePerm(const char *path,

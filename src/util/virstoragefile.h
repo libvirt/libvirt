@@ -420,10 +420,6 @@ virStorageSourcePtr virStorageFileChainLookup(virStorageSourcePtr chain,
                                               virStorageSourcePtr *parent)
     ATTRIBUTE_NONNULL(1);
 
-int virStorageFileResize(const char *path,
-                         unsigned long long capacity,
-                         bool pre_allocate);
-
 int virStorageFileIsClusterFS(const char *path);
 bool virStorageIsFile(const char *path);
 bool virStorageIsRelative(const char *backing);
