@@ -104,7 +104,7 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *type = NULL;
-    g_autofree char *driver = NULL;
+    g_autofree char *format = NULL;
     g_autofree char *backup = NULL;
     g_autofree char *state = NULL;
     g_autofree char *backupmode = NULL;
@@ -169,23 +169,17 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
         def->state = tmp;
     }
 
-    def->store = virStorageSourceNew();
+    type = virXMLPropString(node, "type");
+    format = virXPathString("string(./driver/@type)", ctxt);
 
-    if ((type = virXMLPropString(node, "type"))) {
-        if ((def->store->type = virStorageTypeFromString(type)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown disk backup type '%s'"), type);
-            return -1;
-        }
+    if (!(def->store = virDomainStorageSourceParseBase(type, format, NULL)))
+          return -1;
 
-        if (def->store->type != VIR_STORAGE_TYPE_FILE &&
-            def->store->type != VIR_STORAGE_TYPE_BLOCK) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unsupported disk backup type '%s'"), type);
-            return -1;
-        }
-    } else {
-        def->store->type = VIR_STORAGE_TYPE_FILE;
+    if (def->store->type != VIR_STORAGE_TYPE_FILE &&
+        def->store->type != VIR_STORAGE_TYPE_BLOCK) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unsupported disk backup type '%s'"), type);
+        return -1;
     }
 
     if (push)
@@ -197,15 +191,6 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
         virDomainStorageSourceParse(srcNode, ctxt, def->store,
                                     storageSourceParseFlags, xmlopt) < 0)
         return -1;
-
-    if ((driver = virXPathString("string(./driver/@type)", ctxt))) {
-        def->store->format = virStorageFileFormatTypeFromString(driver);
-        if (def->store->format <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk backup driver '%s'"), driver);
-            return -1;
-        }
-    }
 
     return 0;
 }
