@@ -19585,7 +19585,7 @@ qemuDomainSetBlockThreshold(virDomainPtr dom,
         goto endjob;
     }
 
-    if (!(src = qemuDomainGetStorageSourceByDevstr(dev, vm->def)))
+    if (!(src = qemuDomainGetStorageSourceByDevstr(dev, vm->def, priv->backup)))
         goto endjob;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&

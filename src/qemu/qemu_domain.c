@@ -9959,7 +9959,8 @@ qemuDomainDiskBackingStoreGetName(virDomainDiskDefPtr disk,
 
 virStorageSourcePtr
 qemuDomainGetStorageSourceByDevstr(const char *devstr,
-                                   virDomainDefPtr def)
+                                   virDomainDefPtr def,
+                                   virDomainBackupDefPtr backupdef)
 {
     virDomainDiskDefPtr disk = NULL;
     virStorageSourcePtr n;
@@ -9990,6 +9991,22 @@ qemuDomainGetStorageSourceByDevstr(const char *devstr,
         for (n = disk->mirror; virStorageSourceIsBacking(n); n = n->backingStore) {
             if (n->id == idx)
                 return n;
+        }
+    }
+
+    if (backupdef) {
+        size_t i;
+
+        for (i = 0; i < backupdef->ndisks; i++) {
+            virDomainBackupDiskDefPtr backupdisk = backupdef->disks + i;
+
+            if (STRNEQ(target, backupdisk->name))
+                continue;
+
+            for (n = backupdisk->store; virStorageSourceIsBacking(n); n = n->backingStore) {
+                if (n->id == idx)
+                    return n;
+            }
         }
     }
 

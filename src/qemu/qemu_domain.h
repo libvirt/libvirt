@@ -920,7 +920,8 @@ char *qemuDomainDiskBackingStoreGetName(virDomainDiskDefPtr disk,
                                         unsigned int idx);
 
 virStorageSourcePtr qemuDomainGetStorageSourceByDevstr(const char *devstr,
-                                                       virDomainDefPtr def);
+                                                       virDomainDefPtr def,
+                                                       virDomainBackupDefPtr backupdef);
 
 int
 qemuDomainUpdateCPU(virDomainObjPtr vm,
