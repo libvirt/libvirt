@@ -270,7 +270,6 @@ testStorageChain(const void *args)
     virStorageSourcePtr elt;
     size_t i = 0;
     g_autoptr(virStorageSource) meta = NULL;
-    g_autofree char *broken = NULL;
 
     meta = testStorageFileGetMetadata(data->start, data->format, -1, -1);
     if (!meta) {
@@ -286,11 +285,6 @@ testStorageChain(const void *args)
 
     if (virGetLastErrorCode()) {
         fprintf(stderr, "call should not have reported error\n");
-        return -1;
-    }
-
-    if (virStorageFileChainGetBroken(meta, &broken) || broken) {
-        fprintf(stderr, "chain should not be identified as broken\n");
         return -1;
     }
 

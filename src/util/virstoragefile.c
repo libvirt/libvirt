@@ -1194,39 +1194,6 @@ virStorageFileGetMetadataFromFD(const char *path,
 
 
 /**
- * virStorageFileChainCheckBroken
- *
- * If CHAIN is broken, set *brokenFile to the broken file name,
- * otherwise set it to NULL. Caller MUST free *brokenFile after use.
- * Return 0 on success (including when brokenFile is set), negative on
- * error (allocation failure).
- */
-int
-virStorageFileChainGetBroken(virStorageSourcePtr chain,
-                             char **brokenFile)
-{
-    virStorageSourcePtr tmp;
-
-    *brokenFile = NULL;
-
-    if (!chain)
-        return 0;
-
-    for (tmp = chain; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
-        /* Break when we hit end of chain; report error if we detected
-         * a missing backing file, infinite loop, or other error */
-        if (!tmp->backingStore && tmp->backingStoreRaw) {
-            *brokenFile = g_strdup(tmp->backingStoreRaw);
-
-           return 0;
-        }
-    }
-
-    return 0;
-}
-
-
-/**
  * virStorageFileResize:
  *
  * Change the capacity of the raw storage file at 'path'.

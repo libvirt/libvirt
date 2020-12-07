@@ -3127,7 +3127,6 @@ virStorageAuthDefFree;
 virStorageAuthDefParse;
 virStorageFileAccess;
 virStorageFileCanonicalizePath;
-virStorageFileChainGetBroken;
 virStorageFileChainLookup;
 virStorageFileChown;
 virStorageFileCreate;
