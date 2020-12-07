@@ -6357,7 +6357,7 @@ qemuMonitorJSONGetCommandLineOptionsWorker(size_t pos G_GNUC_UNUSED,
     g_hash_table_insert(options, g_strdup(name), parameters);
     parameters = NULL;
 
-    return 0;
+    return 1;
 }
 
 
