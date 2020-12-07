@@ -9910,24 +9910,18 @@ qemuDomainDiskLookupByNodename(virDomainDefPtr def,
     size_t i;
     virStorageSourcePtr tmp = NULL;
 
-    if (src)
-        *src = NULL;
+    if (!src)
+        src = &tmp;
 
     for (i = 0; i < def->ndisks; i++) {
-        if ((tmp = virStorageSourceFindByNodeName(def->disks[i]->src, nodename))) {
-            if (src)
-                *src = tmp;
+        virDomainDiskDefPtr domdisk = def->disks[i];
 
-            return def->disks[i];
-        }
+        if ((*src = virStorageSourceFindByNodeName(domdisk->src, nodename)))
+            return domdisk;
 
-        if (def->disks[i]->mirror &&
-            (tmp = virStorageSourceFindByNodeName(def->disks[i]->mirror, nodename))) {
-            if (src)
-                *src = tmp;
-
-            return def->disks[i];
-        }
+        if (domdisk->mirror &&
+            (*src = virStorageSourceFindByNodeName(domdisk->mirror, nodename)))
+            return domdisk;
     }
 
     return NULL;
