@@ -1466,7 +1466,7 @@ qemuMigrationSrcIsSafe(virDomainDefPtr def,
             } else if (rc == 0) {
                 unsafe = true;
             }
-            if ((rc = virStorageFileIsClusterFS(src)) < 0)
+            if ((rc = virFileIsClusterFS(src)) < 0)
                 return false;
             else if (rc == 1)
                 continue;

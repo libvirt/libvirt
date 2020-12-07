@@ -1193,17 +1193,6 @@ virStorageFileGetMetadataFromFD(const char *path,
 }
 
 
-int virStorageFileIsClusterFS(const char *path)
-{
-    /* These are coherent cluster filesystems known to be safe for
-     * migration with cache != none
-     */
-    return virFileIsSharedFSType(path,
-                                 VIR_FILE_SHFS_GFS2 |
-                                 VIR_FILE_SHFS_OCFS |
-                                 VIR_FILE_SHFS_CEPH);
-}
-
 #ifdef WITH_UDEV
 /* virStorageFileGetSCSIKey
  * @path: Path to the SCSI device
