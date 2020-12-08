@@ -6613,63 +6613,6 @@ virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
 
 
 static int
-virDomainVideoDefValidate(const virDomainVideoDef *video,
-                          const virDomainDef *def)
-{
-    size_t i;
-
-    if (video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("missing video model and cannot determine default"));
-        return -1;
-    }
-
-    /* it doesn't make sense to pair video device type 'none' with any other
-     * types, there can be only a single video device in such case
-     */
-    for (i = 0; i < def->nvideos; i++) {
-        if (def->videos[i]->type == VIR_DOMAIN_VIDEO_TYPE_NONE &&
-            def->nvideos > 1) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("a 'none' video type must be the only video device "
-                             "defined for the domain"));
-            return -1;
-        }
-    }
-
-    switch (video->backend) {
-    case VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER:
-        if (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'vhostuser' driver is only supported with 'virtio' device"));
-            return -1;
-        }
-        break;
-    case VIR_DOMAIN_VIDEO_BACKEND_TYPE_DEFAULT:
-    case VIR_DOMAIN_VIDEO_BACKEND_TYPE_QEMU:
-        if (video->accel && video->accel->rendernode) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("unsupported rendernode accel attribute without 'vhostuser'"));
-            return -1;
-        }
-        break;
-    case VIR_DOMAIN_VIDEO_BACKEND_TYPE_LAST:
-    default:
-        virReportEnumRangeError(virDomainInputType, video->backend);
-        return -1;
-    }
-
-    if (video->res && (video->res->x == 0 || video->res->y == 0)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("video resolution values must be greater than 0"));
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
 virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
                            const virDomainDef *def)
 {

@@ -26,3 +26,5 @@
 
 int virDomainDefBootValidate(const virDomainDef *def);
 int virDomainDefVideoValidate(const virDomainDef *def);
+int virDomainVideoDefValidate(const virDomainVideoDef *video,
+                              const virDomainDef *def);
