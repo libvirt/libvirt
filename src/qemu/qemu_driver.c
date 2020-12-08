@@ -533,13 +533,6 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
                        vm->def->name);
     virDomainCheckpointSetCurrent(vm->checkpoints, current);
 
-    /* Note that it is not practical to automatically construct
-     * checkpoints based solely on qcow2 bitmaps, since qemu does not
-     * track parent relations which we find important in our metadata.
-     * Perhaps we could double-check that our just-loaded checkpoint
-     * metadata is consistent with existing qcow2 bitmaps, but a user
-     * that changes things behind our backs deserves what happens. */
-
     virResetLastError();
 
     ret = 0;
