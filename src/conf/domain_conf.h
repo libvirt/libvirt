@@ -29,7 +29,7 @@
 #include "internal.h"
 #include "virconftypes.h"
 #include "capabilities.h"
-#include "virstorageencryption.h"
+#include "storage_encryption_conf.h"
 #include "cpu_conf.h"
 #include "virthread.h"
 #include "virhash.h"

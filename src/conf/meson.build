@@ -54,6 +54,7 @@ storage_conf_sources = [
   'storage_adapter_conf.c',
   'storage_capabilities.c',
   'storage_conf.c',
+  'storage_encryption_conf.c',
   'storage_source_conf.c',
   'virstorageobj.c',
 ]

@@ -21,13 +21,13 @@
 
 #pragma once
 
+#include "storage_encryption_conf.h"
 #include "virbitmap.h"
 #include "virenum.h"
 #include "virobject.h"
 #include "virpci.h"
 #include "virseclabel.h"
 #include "virsecret.h"
-#include "virstorageencryption.h"
 
 /* Types of disk backends (host resource).  Comparable to the public
  * virStorageVolType, except we have an undetermined state, don't have

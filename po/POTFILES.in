@@ -43,6 +43,7 @@
 @SRCDIR@src/conf/snapshot_conf.c
 @SRCDIR@src/conf/storage_adapter_conf.c
 @SRCDIR@src/conf/storage_conf.c
+@SRCDIR@src/conf/storage_encryption_conf.c
 @SRCDIR@src/conf/storage_source_conf.c
 @SRCDIR@src/conf/virchrdev.c
 @SRCDIR@src/conf/virdomainmomentobjlist.c
@@ -307,7 +308,6 @@
 @SRCDIR@src/util/virscsivhost.c
 @SRCDIR@src/util/virsecret.c
 @SRCDIR@src/util/virsocketaddr.c
-@SRCDIR@src/util/virstorageencryption.c
 @SRCDIR@src/util/virstoragefile.c
 @SRCDIR@src/util/virstring.c
 @SRCDIR@src/util/virsysinfo.c

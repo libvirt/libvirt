@@ -1,5 +1,5 @@
 /*
- * virstorageencryption.h: volume encryption information
+ * storage_encryption_conf.h: volume encryption information
  *
  * Copyright (C) 2009-2011, 2014 Red Hat, Inc.
  *

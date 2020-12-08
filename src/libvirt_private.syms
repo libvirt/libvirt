@@ -1047,6 +1047,12 @@ virStorageVolTypeFromString;
 virStorageVolTypeToString;
 
 
+# conf/storage_encryption_conf.h
+virStorageEncryptionFormat;
+virStorageEncryptionFree;
+virStorageEncryptionParseNode;
+
+
 # conf/storage_event.h
 virStoragePoolEventLifecycleNew;
 virStoragePoolEventRefreshNew;
@@ -3204,12 +3210,6 @@ virSocketAddrSetIPv4AddrNetOrder;
 virSocketAddrSetIPv6Addr;
 virSocketAddrSetIPv6AddrNetOrder;
 virSocketAddrSetPort;
-
-
-# util/virstorageencryption.h
-virStorageEncryptionFormat;
-virStorageEncryptionFree;
-virStorageEncryptionParseNode;
 
 
 # util/virstoragefile.h
