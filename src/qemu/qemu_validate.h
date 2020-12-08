@@ -26,10 +26,13 @@
 #include "qemu_capabilities.h"
 #include "qemu_conf.h"
 
-int qemuValidateDomainDef(const virDomainDef *def, void *opaque);
+int qemuValidateDomainDef(const virDomainDef *def,
+                          void *opaque,
+                          void *parseOpaque);
 int qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
                                     const virDomainDef *def,
                                     virQEMUCapsPtr qemuCaps);
 int qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
                                 const virDomainDef *def,
-                                void *opaque);
+                                void *opaque,
+                                void *parseOpaque);

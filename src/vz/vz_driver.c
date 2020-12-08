@@ -259,7 +259,8 @@ vzDomainDefPostParse(virDomainDefPtr def,
 
 static int
 vzDomainDefValidate(const virDomainDef *def,
-                    void *opaque)
+                    void *opaque,
+                    void *parseOpaque G_GNUC_UNUSED)
 {
     if (vzCheckUnsupportedControllers(def, opaque) < 0)
         return -1;
@@ -295,7 +296,8 @@ vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 static int
 vzDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                           const virDomainDef *def,
-                          void *opaque)
+                          void *opaque,
+                          void *parseOpaque G_GNUC_UNUSED)
 {
     vzDriverPtr driver = opaque;
 

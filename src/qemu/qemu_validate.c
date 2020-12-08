@@ -1066,7 +1066,8 @@ qemuValidateDomainDefPanic(const virDomainDef *def,
 
 int
 qemuValidateDomainDef(const virDomainDef *def,
-                      void *opaque)
+                      void *opaque,
+                      void *parseOpaque G_GNUC_UNUSED)
 {
     virQEMUDriverPtr driver = opaque;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -4670,7 +4671,8 @@ qemuValidateDomainDeviceDefShmem(virDomainShmemDefPtr shmem,
 int
 qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
                             const virDomainDef *def,
-                            void *opaque)
+                            void *opaque,
+                            void *parseOpaque G_GNUC_UNUSED)
 {
     int ret = 0;
     virQEMUDriverPtr driver = opaque;

@@ -2867,13 +2867,15 @@ typedef void (*virDomainDefPostParseDataFree)(void *parseOpaque);
  * for configurations that were previously accepted. This shall not modify the
  * config. */
 typedef int (*virDomainDefValidateCallback)(const virDomainDef *def,
-                                            void *opaque);
+                                            void *opaque,
+                                            void *parseOpaque);
 
 /* Called once per device, for adjusting per-device settings while
  * leaving the overall domain otherwise unchanged.  */
 typedef int (*virDomainDeviceDefValidateCallback)(const virDomainDeviceDef *dev,
                                                   const virDomainDef *def,
-                                                  void *opaque);
+                                                  void *opaque,
+                                                  void *parseOpaque);
 
 struct _virDomainDefParserConfig {
     /* driver domain definition callbacks */
@@ -2993,7 +2995,8 @@ bool virDomainDeviceAliasIsUserAlias(const char *aliasStr);
 
 int virDomainDefValidate(virDomainDefPtr def,
                          unsigned int parseFlags,
-                         virDomainXMLOptionPtr xmlopt);
+                         virDomainXMLOptionPtr xmlopt,
+                         void *parseOpaque);
 
 int
 virDomainActualNetDefValidate(const virDomainNetDef *net);

@@ -6974,14 +6974,15 @@ static int
 virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                            const virDomainDef *def,
                            unsigned int parseFlags,
-                           virDomainXMLOptionPtr xmlopt)
+                           virDomainXMLOptionPtr xmlopt,
+                           void *parseOpaque)
 {
     /* validate configuration only in certain places */
     if (parseFlags & VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)
         return 0;
 
     if (xmlopt->config.deviceValidateCallback &&
-        xmlopt->config.deviceValidateCallback(dev, def, xmlopt->config.priv))
+        xmlopt->config.deviceValidateCallback(dev, def, xmlopt->config.priv, parseOpaque))
         return -1;
 
     if (virDomainDeviceDefValidateInternal(dev, def) < 0)
@@ -6999,7 +7000,8 @@ virDomainDefValidateDeviceIterator(virDomainDefPtr def,
 {
     struct virDomainDefPostParseDeviceIteratorData *data = opaque;
     return virDomainDeviceDefValidate(dev, def,
-                                      data->parseFlags, data->xmlopt);
+                                      data->parseFlags, data->xmlopt,
+                                      data->parseOpaque);
 }
 
 
@@ -7357,6 +7359,7 @@ virDomainDefValidateInternal(const virDomainDef *def,
  * @caps: driver capabilities object
  * @parseFlags: virDomainDefParseFlags
  * @xmlopt: XML parser option object
+ * @parseOpaque: hypervisor driver specific data for this validation run
  *
  * This validation function is designed to take checks of globally invalid
  * configurations that the parser needs to accept so that VMs don't vanish upon
@@ -7369,11 +7372,13 @@ virDomainDefValidateInternal(const virDomainDef *def,
 int
 virDomainDefValidate(virDomainDefPtr def,
                      unsigned int parseFlags,
-                     virDomainXMLOptionPtr xmlopt)
+                     virDomainXMLOptionPtr xmlopt,
+                     void *parseOpaque)
 {
     struct virDomainDefPostParseDeviceIteratorData data = {
         .xmlopt = xmlopt,
         .parseFlags = parseFlags,
+        .parseOpaque = parseOpaque,
     };
 
     /* validate configuration only in certain places */
@@ -7382,7 +7387,7 @@ virDomainDefValidate(virDomainDefPtr def,
 
     /* call the domain config callback */
     if (xmlopt->config.domainValidateCallback &&
-        xmlopt->config.domainValidateCallback(def, xmlopt->config.priv) < 0)
+        xmlopt->config.domainValidateCallback(def, xmlopt->config.priv, parseOpaque) < 0)
         return -1;
 
     /* iterate the devices */
@@ -17220,7 +17225,7 @@ virDomainDeviceDefParse(const char *xmlStr,
         return NULL;
 
     /* validate the configuration */
-    if (virDomainDeviceDefValidate(dev, def, flags, xmlopt) < 0)
+    if (virDomainDeviceDefValidate(dev, def, flags, xmlopt, parseOpaque) < 0)
         return NULL;
 
     return g_steal_pointer(&dev);
@@ -22617,7 +22622,7 @@ virDomainObjParseXML(xmlDocPtr xml,
         goto error;
 
     /* validate configuration */
-    if (virDomainDefValidate(obj->def, flags, xmlopt) < 0)
+    if (virDomainDefValidate(obj->def, flags, xmlopt, parseOpaque) < 0)
         goto error;
 
     return obj;
@@ -22701,7 +22706,7 @@ virDomainDefParseNode(xmlDocPtr xml,
         return NULL;
 
     /* validate configuration */
-    if (virDomainDefValidate(def, flags, xmlopt) < 0)
+    if (virDomainDefValidate(def, flags, xmlopt, parseOpaque) < 0)
         return NULL;
 
     return g_steal_pointer(&def);

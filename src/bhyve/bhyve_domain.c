@@ -199,7 +199,8 @@ virBhyveDriverCreateXMLConf(bhyveConnPtr driver)
 static int
 bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                              const virDomainDef *def G_GNUC_UNUSED,
-                             void *opaque G_GNUC_UNUSED)
+                             void *opaque G_GNUC_UNUSED,
+                             void *parseOpaque G_GNUC_UNUSED)
 {
     if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
         dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA &&
