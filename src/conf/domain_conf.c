@@ -6212,43 +6212,6 @@ virDomainNetDefValidate(const virDomainNetDef *net)
 
 
 static int
-virDomainControllerDefValidate(const virDomainControllerDef *controller)
-{
-    if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-        const virDomainPCIControllerOpts *opts = &controller->opts.pciopts;
-
-        if (controller->idx > 255) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("PCI controller index %d too high, maximum is 255"),
-                           controller->idx);
-            return -1;
-        }
-
-        /* Only validate the target index if it's been set */
-        if (opts->targetIndex != -1) {
-
-            if (opts->targetIndex < 0 || opts->targetIndex > 30) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("PCI controller target index '%d' out of "
-                                 "range - must be 0-30"),
-                               opts->targetIndex);
-                return -1;
-            }
-
-            if ((controller->idx == 0 && opts->targetIndex != 0) ||
-                (controller->idx != 0 && opts->targetIndex == 0)) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Only the PCI controller with index 0 can "
-                                 "have target index 0, and vice versa"));
-                return -1;
-            }
-        }
-    }
-    return 0;
-}
-
-
-static int
 virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
 {
     if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
