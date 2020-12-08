@@ -10825,12 +10825,6 @@ virDomainControllerDefParseXML(virDomainXMLOptionPtr xmlopt,
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT: {
             unsigned long long bytes;
-            if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("pci-root and pcie-root controllers should not "
-                                 "have an address"));
-                return NULL;
-            }
             if ((rc = virParseScaledValue("./pcihole64", NULL,
                                           ctxt, &bytes, 1024,
                                           1024ULL * ULONG_MAX, false)) < 0)

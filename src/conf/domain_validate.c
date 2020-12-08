@@ -525,6 +525,16 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
     if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
         const virDomainPCIControllerOpts *opts = &controller->opts.pciopts;
 
+        if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
+            controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
+            if (controller->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("pci-root and pcie-root controllers "
+                                 "should not have an address"));
+                return -1;
+            }
+        }
+
         if (controller->idx > 255) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("PCI controller index %d too high, maximum is 255"),
