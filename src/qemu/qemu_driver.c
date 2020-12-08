@@ -512,18 +512,11 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
             continue;
         }
 
-        def = virDomainCheckpointDefParseString(xmlStr,
-                                                qemu_driver->xmlopt,
-                                                priv->qemuCaps,
-                                                flags);
-        if (!def || virDomainCheckpointAlignDisks(def) < 0) {
-            /* Nothing we can do here, skip this one */
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to parse checkpoint XML from file '%s'"),
-                           fullpath);
-            virObjectUnref(def);
+        if (!(def = virDomainCheckpointDefParseString(xmlStr,
+                                                      qemu_driver->xmlopt,
+                                                      priv->qemuCaps,
+                                                      flags)))
             continue;
-        }
 
         chk = virDomainCheckpointAssignDef(vm->checkpoints, def);
         if (chk == NULL)
