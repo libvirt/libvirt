@@ -28,6 +28,8 @@
 typedef struct _virStorageFileBackend virStorageFileBackend;
 typedef virStorageFileBackend *virStorageFileBackendPtr;
 
+typedef struct _virStorageDriverData virStorageDriverData;
+typedef virStorageDriverData *virStorageDriverDataPtr;
 struct _virStorageDriverData {
     virStorageFileBackendPtr backend;
     void *priv;

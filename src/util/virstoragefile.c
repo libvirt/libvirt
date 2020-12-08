@@ -4619,7 +4619,8 @@ virStorageFileGetBackendForSupportCheck(const virStorageSource *src,
     }
 
     if (src->drv) {
-        *backend = src->drv->backend;
+        virStorageDriverDataPtr drv = src->drv;
+        *backend = drv->backend;
         return 1;
     }
 
@@ -4715,12 +4716,16 @@ virStorageFileSupportsCreate(const virStorageSource *src)
 void
 virStorageFileDeinit(virStorageSourcePtr src)
 {
+    virStorageDriverDataPtr drv = NULL;
+
     if (!virStorageFileIsInitialized(src))
         return;
 
-    if (src->drv->backend &&
-        src->drv->backend->backendDeinit)
-        src->drv->backend->backendDeinit(src);
+    drv = src->drv;
+
+    if (drv->backend &&
+        drv->backend->backendDeinit)
+        drv->backend->backendDeinit(src);
 
     VIR_FREE(src->drv);
 }
@@ -4744,26 +4749,28 @@ virStorageFileInitAs(virStorageSourcePtr src,
                      uid_t uid, gid_t gid)
 {
     int actualType = virStorageSourceGetActualType(src);
-    src->drv = g_new0(virStorageDriverData, 1);
+    virStorageDriverDataPtr drv = g_new0(virStorageDriverData, 1);
+
+    src->drv = drv;
 
     if (uid == (uid_t) -1)
-        src->drv->uid = geteuid();
+        drv->uid = geteuid();
     else
-        src->drv->uid = uid;
+        drv->uid = uid;
 
     if (gid == (gid_t) -1)
-        src->drv->gid = getegid();
+        drv->gid = getegid();
     else
-        src->drv->gid = gid;
+        drv->gid = gid;
 
     if (virStorageFileBackendForType(actualType,
                                      src->protocol,
                                      true,
-                                     &src->drv->backend) < 0)
+                                     &drv->backend) < 0)
         goto error;
 
-    if (src->drv->backend->backendInit &&
-        src->drv->backend->backendInit(src) < 0)
+    if (drv->backend->backendInit &&
+        drv->backend->backendInit(src) < 0)
         goto error;
 
     return 0;
@@ -4798,15 +4805,22 @@ virStorageFileInit(virStorageSourcePtr src)
 int
 virStorageFileCreate(virStorageSourcePtr src)
 {
+    virStorageDriverDataPtr drv = NULL;
     int ret;
 
-    if (!virStorageFileIsInitialized(src) ||
-        !src->drv->backend->storageFileCreate) {
+    if (!virStorageFileIsInitialized(src)) {
         errno = ENOSYS;
         return -2;
     }
 
-    ret = src->drv->backend->storageFileCreate(src);
+    drv = src->drv;
+
+    if (!drv->backend->storageFileCreate) {
+        errno = ENOSYS;
+        return -2;
+    }
+
+    ret = drv->backend->storageFileCreate(src);
 
     VIR_DEBUG("created storage file %p: ret=%d, errno=%d",
               src, ret, errno);
@@ -4828,15 +4842,22 @@ virStorageFileCreate(virStorageSourcePtr src)
 int
 virStorageFileUnlink(virStorageSourcePtr src)
 {
+    virStorageDriverDataPtr drv = NULL;
     int ret;
 
-    if (!virStorageFileIsInitialized(src) ||
-        !src->drv->backend->storageFileUnlink) {
+    if (!virStorageFileIsInitialized(src)) {
         errno = ENOSYS;
         return -2;
     }
 
-    ret = src->drv->backend->storageFileUnlink(src);
+    drv = src->drv;
+
+    if (!drv->backend->storageFileUnlink) {
+        errno = ENOSYS;
+        return -2;
+    }
+
+    ret = drv->backend->storageFileUnlink(src);
 
     VIR_DEBUG("unlinked storage file %p: ret=%d, errno=%d",
               src, ret, errno);
@@ -4858,15 +4879,22 @@ int
 virStorageFileStat(virStorageSourcePtr src,
                    struct stat *st)
 {
+    virStorageDriverDataPtr drv = NULL;
     int ret;
 
-    if (!virStorageFileIsInitialized(src) ||
-        !src->drv->backend->storageFileStat) {
+    if (!virStorageFileIsInitialized(src)) {
         errno = ENOSYS;
         return -2;
     }
 
-    ret = src->drv->backend->storageFileStat(src, st);
+    drv = src->drv;
+
+    if (!drv->backend->storageFileStat) {
+        errno = ENOSYS;
+        return -2;
+    }
+
+    ret = drv->backend->storageFileStat(src, st);
 
     VIR_DEBUG("stat of storage file %p: ret=%d, errno=%d",
               src, ret, errno);
@@ -4893,6 +4921,7 @@ virStorageFileRead(virStorageSourcePtr src,
                    size_t len,
                    char **buf)
 {
+    virStorageDriverDataPtr drv = NULL;
     ssize_t ret;
 
     if (!virStorageFileIsInitialized(src)) {
@@ -4901,10 +4930,12 @@ virStorageFileRead(virStorageSourcePtr src,
         return -1;
     }
 
-    if (!src->drv->backend->storageFileRead)
+    drv = src->drv;
+
+    if (!drv->backend->storageFileRead)
         return -2;
 
-    ret = src->drv->backend->storageFileRead(src, offset, len, buf);
+    ret = drv->backend->storageFileRead(src, offset, len, buf);
 
     VIR_DEBUG("read '%zd' bytes from storage '%p' starting at offset '%zu'",
               ret, src, offset);
@@ -4924,13 +4955,17 @@ virStorageFileRead(virStorageSourcePtr src,
 const char *
 virStorageFileGetUniqueIdentifier(virStorageSourcePtr src)
 {
+    virStorageDriverDataPtr drv = NULL;
+
     if (!virStorageFileIsInitialized(src)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("storage file backend not initialized"));
         return NULL;
     }
 
-    if (!src->drv->backend->storageFileGetUniqueIdentifier) {
+    drv = src->drv;
+
+    if (!drv->backend->storageFileGetUniqueIdentifier) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unique storage file identifier not implemented for "
                          "storage type %s (protocol: %s)'"),
@@ -4939,7 +4974,7 @@ virStorageFileGetUniqueIdentifier(virStorageSourcePtr src)
         return NULL;
     }
 
-    return src->drv->backend->storageFileGetUniqueIdentifier(src);
+    return drv->backend->storageFileGetUniqueIdentifier(src);
 }
 
 
@@ -4957,13 +4992,21 @@ int
 virStorageFileAccess(virStorageSourcePtr src,
                      int mode)
 {
-    if (!virStorageFileIsInitialized(src) ||
-        !src->drv->backend->storageFileAccess) {
+    virStorageDriverDataPtr drv = NULL;
+
+    if (!virStorageFileIsInitialized(src)) {
         errno = ENOSYS;
         return -2;
     }
 
-    return src->drv->backend->storageFileAccess(src, mode);
+    drv = src->drv;
+
+    if (!drv->backend->storageFileAccess) {
+        errno = ENOSYS;
+        return -2;
+    }
+
+    return drv->backend->storageFileAccess(src, mode);
 }
 
 
@@ -4983,8 +5026,16 @@ virStorageFileChown(const virStorageSource *src,
                     uid_t uid,
                     gid_t gid)
 {
-    if (!virStorageFileIsInitialized(src) ||
-        !src->drv->backend->storageFileChown) {
+    virStorageDriverDataPtr drv = NULL;
+
+    if (!virStorageFileIsInitialized(src)) {
+        errno = ENOSYS;
+        return -2;
+    }
+
+    drv = src->drv;
+
+    if (!drv->backend->storageFileChown) {
         errno = ENOSYS;
         return -2;
     }
@@ -4992,7 +5043,7 @@ virStorageFileChown(const virStorageSource *src,
     VIR_DEBUG("chown of storage file %p to %u:%u",
               src, (unsigned int)uid, (unsigned int)gid);
 
-    return src->drv->backend->storageFileChown(src, uid, gid);
+    return drv->backend->storageFileChown(src, uid, gid);
 }
 
 
@@ -5012,8 +5063,9 @@ virStorageFileReportBrokenChain(int errcode,
                                 virStorageSourcePtr parent)
 {
     if (src->drv) {
-        unsigned int access_user = src->drv->uid;
-        unsigned int access_group = src->drv->gid;
+        virStorageDriverDataPtr drv = src->drv;
+        unsigned int access_user = drv->uid;
+        unsigned int access_group = drv->gid;
 
         if (src == parent) {
             virReportSystemError(errcode,

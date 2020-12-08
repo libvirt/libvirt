@@ -51,7 +51,8 @@ struct _virStorageFileBackendFsPriv {
 static void
 virStorageFileBackendFileDeinit(virStorageSourcePtr src)
 {
-    virStorageFileBackendFsPrivPtr priv = src->drv->priv;
+    virStorageDriverDataPtr drv = src->drv;
+    virStorageFileBackendFsPrivPtr priv = drv->priv;
 
     VIR_DEBUG("deinitializing FS storage file %p (%s:%s)", src,
               virStorageTypeToString(virStorageSourceGetActualType(src)),
@@ -66,16 +67,17 @@ virStorageFileBackendFileDeinit(virStorageSourcePtr src)
 static int
 virStorageFileBackendFileInit(virStorageSourcePtr src)
 {
+    virStorageDriverDataPtr drv = src->drv;
     virStorageFileBackendFsPrivPtr priv = NULL;
 
     VIR_DEBUG("initializing FS storage file %p (%s:%s)[%u:%u]", src,
               virStorageTypeToString(virStorageSourceGetActualType(src)),
               src->path,
-              (unsigned int)src->drv->uid, (unsigned int)src->drv->gid);
+              (unsigned int)drv->uid, (unsigned int)drv->gid);
 
     priv = g_new0(virStorageFileBackendFsPriv, 1);
 
-    src->drv->priv = priv;
+    drv->priv = priv;
 
     return 0;
 }
@@ -84,10 +86,11 @@ virStorageFileBackendFileInit(virStorageSourcePtr src)
 static int
 virStorageFileBackendFileCreate(virStorageSourcePtr src)
 {
+    virStorageDriverDataPtr drv = src->drv;
     VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virFileOpenAs(src->path, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR,
-                            src->drv->uid, src->drv->gid, 0)) < 0) {
+                            drv->uid, drv->gid, 0)) < 0) {
         errno = -fd;
         return -1;
     }
@@ -117,11 +120,12 @@ virStorageFileBackendFileRead(virStorageSourcePtr src,
                               size_t len,
                               char **buf)
 {
+    virStorageDriverDataPtr drv = src->drv;
     ssize_t ret = -1;
     VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virFileOpenAs(src->path, O_RDONLY, 0,
-                            src->drv->uid, src->drv->gid, 0)) < 0) {
+                            drv->uid, drv->gid, 0)) < 0) {
         virReportSystemError(-fd, _("Failed to open file '%s'"),
                              src->path);
         return -1;
@@ -146,7 +150,8 @@ virStorageFileBackendFileRead(virStorageSourcePtr src,
 static const char *
 virStorageFileBackendFileGetUniqueIdentifier(virStorageSourcePtr src)
 {
-    virStorageFileBackendFsPrivPtr priv = src->drv->priv;
+    virStorageDriverDataPtr drv = src->drv;
+    virStorageFileBackendFsPrivPtr priv = drv->priv;
 
     if (!priv->canonpath) {
         if (!(priv->canonpath = virFileCanonicalizePath(src->path))) {
@@ -164,8 +169,10 @@ static int
 virStorageFileBackendFileAccess(virStorageSourcePtr src,
                                 int mode)
 {
+    virStorageDriverDataPtr drv = src->drv;
+
     return virFileAccessibleAs(src->path, mode,
-                               src->drv->uid, src->drv->gid);
+                               drv->uid, drv->gid);
 }
 
 
