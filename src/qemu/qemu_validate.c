@@ -3997,8 +3997,7 @@ qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
         return -1;
     }
     if (fs->multidevs != VIR_DOMAIN_FS_MODEL_DEFAULT &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV_MULTIDEVS))
-    {
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV_MULTIDEVS)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("multidevs is not supported with this QEMU binary"));
         return -1;
