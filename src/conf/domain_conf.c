@@ -6164,10 +6164,10 @@ virDomainChrSourceDefValidate(const virDomainChrSourceDef *src_def,
         break;
     }
 
-    if (virSecurityDeviceLabelDefValidateXML(src_def->seclabels,
-                                             src_def->nseclabels,
-                                             def->seclabels,
-                                             def->nseclabels) < 0)
+    if (virSecurityDeviceLabelDefValidate(src_def->seclabels,
+                                          src_def->nseclabels,
+                                          def->seclabels,
+                                          def->nseclabels) < 0)
         return -1;
 
     return 0;

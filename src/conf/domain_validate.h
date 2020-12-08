@@ -28,9 +28,9 @@ int virDomainDefBootValidate(const virDomainDef *def);
 int virDomainDefVideoValidate(const virDomainDef *def);
 int virDomainVideoDefValidate(const virDomainVideoDef *video,
                               const virDomainDef *def);
-int virSecurityDeviceLabelDefValidateXML(virSecurityDeviceLabelDefPtr *seclabels,
-                                         size_t nseclabels,
-                                         virSecurityLabelDefPtr *vmSeclabels,
-                                         size_t nvmSeclabels);
+int virSecurityDeviceLabelDefValidate(virSecurityDeviceLabelDefPtr *seclabels,
+                                      size_t nseclabels,
+                                      virSecurityLabelDefPtr *vmSeclabels,
+                                      size_t nvmSeclabels);
 int virDomainDiskDefValidate(const virDomainDef *def,
                              const virDomainDiskDef *disk);

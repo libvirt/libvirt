@@ -195,10 +195,10 @@ virDomainDiskAddressDiskBusCompatibility(virDomainDiskBus bus,
 
 
 int
-virSecurityDeviceLabelDefValidateXML(virSecurityDeviceLabelDefPtr *seclabels,
-                                     size_t nseclabels,
-                                     virSecurityLabelDefPtr *vmSeclabels,
-                                     size_t nvmSeclabels)
+virSecurityDeviceLabelDefValidate(virSecurityDeviceLabelDefPtr *seclabels,
+                                  size_t nseclabels,
+                                  virSecurityLabelDefPtr *vmSeclabels,
+                                  size_t nvmSeclabels)
 {
     virSecurityDeviceLabelDefPtr seclabel;
     size_t i;
@@ -213,7 +213,7 @@ virSecurityDeviceLabelDefValidateXML(virSecurityDeviceLabelDefPtr *seclabels,
                 continue;
 
             if (!vmSeclabels[j]->relabel) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("label overrides require relabeling to be "
                                  "enabled at the domain level"));
                 return -1;
@@ -297,10 +297,10 @@ virDomainDiskDefValidate(const virDomainDef *def,
     }
 
     for (next = disk->src; next; next = next->backingStore) {
-        if (virSecurityDeviceLabelDefValidateXML(next->seclabels,
-                                                 next->nseclabels,
-                                                 def->seclabels,
-                                                 def->nseclabels) < 0)
+        if (virSecurityDeviceLabelDefValidate(next->seclabels,
+                                              next->nseclabels,
+                                              def->seclabels,
+                                              def->nseclabels) < 0)
             return -1;
     }
 
