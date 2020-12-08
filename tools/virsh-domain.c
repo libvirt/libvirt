@@ -14398,6 +14398,10 @@ cmdSetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
 
         nkeys = virStringListLength((const char **) keys);
+        if (nkeys == 0) {
+            vshError(ctl, _("File %s contains no keys"), from);
+            goto cleanup;
+        }
     }
 
     if (virDomainAuthorizedSSHKeysSet(dom, user,
