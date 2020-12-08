@@ -14375,17 +14375,18 @@ cmdSetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         goto cleanup;
 
-    if (!vshCommandOptBool(cmd, "reset")) {
-        flags |= VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND;
+    if (vshCommandOptBool(cmd, "remove")) {
+        flags |= VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE;
+    } else {
+        if (!vshCommandOptBool(cmd, "reset")) {
+            flags |= VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND;
 
-        if (!from) {
-            vshError(ctl, _("Option --file is required"));
-            goto cleanup;
+            if (!from) {
+                vshError(ctl, _("Option --file is required"));
+                goto cleanup;
+            }
         }
     }
-
-    if (vshCommandOptBool(cmd, "remove"))
-        flags |= VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE;
 
     if (from) {
         if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
