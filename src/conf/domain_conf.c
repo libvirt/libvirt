@@ -13227,13 +13227,6 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (virDomainDeviceInfoParseXML(xmlopt, node, &def->info, flags) < 0)
         return NULL;
 
-    if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Controllers must use the 'ccid' address type"));
-        return NULL;
-    }
-
     return g_steal_pointer(&def);
 }
 
