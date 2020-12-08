@@ -579,7 +579,6 @@ qemuDomainDeviceCalculatePCIAddressExtensionFlags(virQEMUCapsPtr qemuCaps,
  */
 static virDomainPCIConnectFlags
 qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
-                                         virQEMUDriverPtr driver,
                                          virDomainPCIConnectFlags pcieFlags,
                                          virDomainPCIConnectFlags virtioFlags)
 {
@@ -802,7 +801,6 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
 
     case VIR_DOMAIN_DEVICE_HOSTDEV: {
         virDomainHostdevDefPtr hostdev = dev->data.hostdev;
-        bool isExpress = false;
         g_autoptr(virPCIDevice) pciDev = NULL;
         virPCIDeviceAddressPtr hostAddr = &hostdev->source.subsys.u.pci.addr;
 
@@ -873,37 +871,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             return pcieFlags;
         }
 
-        if (!driver->privileged) {
-            /* unprivileged libvirtd is unable to read *all* of a
-             * device's PCI config (it can only read the first 64
-             * bytes, which isn't enough for the check that's done
-             * in virPCIDeviceIsPCIExpress()), so instead of
-             * trying and failing, we make an educated guess based
-             * on the length of the device's config file - if it
-             * is 256 bytes, then it is definitely a legacy PCI
-             * device. If it's larger than that, then it is
-             * *probably PCIe (although it could be PCI-x, but
-             * those are extremely rare). If the config file can't
-             * be found (in which case the "length" will be -1),
-             * then we blindly assume the most likely outcome -
-             * PCIe.
-             */
-            off_t configLen
-               = virFileLength(virPCIDeviceGetConfigPath(pciDev), -1);
-
-            if (configLen == 256)
-                return pciFlags;
-
-            return pcieFlags;
-        }
-
-        /* If we are running with privileges, we can examine the
-         * PCI config contents with virPCIDeviceIsPCIExpress() for
-         * a definitive answer.
-         */
-        isExpress = virPCIDeviceIsPCIExpress(pciDev);
-
-        if (isExpress)
+        if (virPCIDeviceIsPCIExpress(pciDev))
             return pcieFlags;
 
         return pciFlags;
@@ -1124,7 +1092,7 @@ qemuDomainFillDevicePCIConnectFlagsIter(virDomainDefPtr def G_GNUC_UNUSED,
     qemuDomainFillDevicePCIConnectFlagsIterData *data = opaque;
 
     info->pciConnectFlags
-        = qemuDomainDeviceCalculatePCIConnectFlags(dev, data->driver,
+        = qemuDomainDeviceCalculatePCIConnectFlags(dev,
                                                    data->pcieFlags,
                                                    data->virtioFlags);
     return 0;
@@ -1468,7 +1436,7 @@ qemuDomainFillDevicePCIConnectFlags(virDomainDefPtr def,
         qemuDomainFillDevicePCIConnectFlagsIterInit(def, qemuCaps, driver, &data);
 
         info->pciConnectFlags
-            = qemuDomainDeviceCalculatePCIConnectFlags(dev, data.driver,
+            = qemuDomainDeviceCalculatePCIConnectFlags(dev,
                                                        data.pcieFlags,
                                                        data.virtioFlags);
     }
