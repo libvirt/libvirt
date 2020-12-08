@@ -73,10 +73,18 @@ struct _virPCIDevice {
     char          *used_by_drvname;
     char          *used_by_domname;
 
+    /* The following 5 items are only valid after virPCIDeviceInit()
+     * has been called for the virPCIDevice object. This is *not* done
+     * in most cases (because it creates extra overhead, and parts of
+     * it can fail if libvirtd is running unprivileged)
+     */
     unsigned int  pcie_cap_pos;
     unsigned int  pci_pm_cap_pos;
     bool          has_flr;
     bool          has_pm_reset;
+    bool          is_pcie;
+    /**/
+
     bool          managed;
 
     virPCIStubDriver stubDriver;
@@ -629,7 +637,8 @@ virPCIDeviceDetectFunctionLevelReset(virPCIDevicePtr dev, int cfgfd)
      * the same thing, except for conventional PCI
      * devices. This is not common yet.
      */
-    virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_AF, &pos);
+    if (virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_AF, &pos) < 0)
+        goto error;
 
     if (pos) {
         caps = virPCIDeviceRead16(dev, cfgfd, pos + PCI_AF_CAP);
@@ -654,8 +663,8 @@ virPCIDeviceDetectFunctionLevelReset(virPCIDevicePtr dev, int cfgfd)
         return true;
     }
 
+ error:
     VIR_DEBUG("%s %s: no FLR capability found", dev->id, dev->name);
-
     return false;
 }
 
@@ -937,10 +946,59 @@ virPCIDeviceTryPowerManagementReset(virPCIDevicePtr dev, int cfgfd)
     return 0;
 }
 
+/**
+ * virPCIDeviceInit:
+ * @dev: virPCIDevice object needing its PCI capabilities info initialized
+ * @cfgfd: open file descriptor for device config file in sysfs
+ *
+ * Initialize the PCI capabilities attributes of a virPCIDevice object
+ * (i.e. pcie_cap_pos, pci_pm_cap_pos, has_flr, has_pm_reset, and
+ * is_pcie). This is done by walking the info in the (already-opened)
+ * device PCI config file in sysfs. This function can be called
+ * regardless of whether a process has sufficient privilege to read
+ * the entire file (unprivileged processes can only read the 1st 64
+ * bytes, while the Express Capabilities are all located beyond that
+ * boundary).
+ *
+ * In the case that we are unable to read a capability
+ * directly, we will attempt to infer its value by other means. In
+ * particular, we can determine that a device is (almost surely) PCIe
+ * by checking that the length of the config file is != 256 (since all
+ * conventional PCI config files are 256 bytes), and we know that any
+ * device that is an SR-IOV VF will have FLR available (since that is
+ * required by the SR-IOV spec.)
+ *
+ * Always returns success (0) (for now)
+ */
 static int
 virPCIDeviceInit(virPCIDevicePtr dev, int cfgfd)
 {
-    virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_EXP, &dev->pcie_cap_pos);
+    dev->is_pcie = false;
+    if (virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_EXP, &dev->pcie_cap_pos) < 0) {
+        /* an unprivileged process is unable to read *all* of a
+         * device's PCI config (it can only read the first 64
+         * bytes, which isn't enough for see the Express
+         * Capabilities data). If virPCIDeviceFindCapabilityOffset
+         * returns failure (and not just a pcie_cap_pos == 0,
+         * which is *success* at determining the device is *not*
+         * PCIe) we make an educated guess based on the length of
+         * the device's config file - if it is 256 bytes, then it
+         * is definitely a legacy PCI device. If it's larger than
+         * that, then it is *probably PCIe (although it could be
+         * PCI-x, but those are extremely rare). If the config
+         * file can't be found (in which case the "length" will be
+         * -1), then we blindly assume the most likely outcome -
+         * PCIe.
+         */
+        off_t configLen = virFileLength(virPCIDeviceGetConfigPath(dev), -1);
+
+        if (configLen != 256)
+            dev->is_pcie = true;
+
+    } else {
+        dev->is_pcie = (dev->pcie_cap_pos != 0);
+    }
+
     virPCIDeviceFindCapabilityOffset(dev, cfgfd, PCI_CAP_ID_PM, &dev->pci_pm_cap_pos);
     dev->has_flr = virPCIDeviceDetectFunctionLevelReset(dev, cfgfd);
     dev->has_pm_reset = virPCIDeviceDetectPowerManagementReset(dev, cfgfd);
@@ -2644,7 +2702,7 @@ virPCIDeviceIsPCIExpress(virPCIDevicePtr dev)
     if (virPCIDeviceInit(dev, fd) < 0)
         goto cleanup;
 
-    ret = dev->pcie_cap_pos != 0;
+    ret = dev->is_pcie;
 
  cleanup:
     virPCIDeviceConfigClose(dev, fd);
