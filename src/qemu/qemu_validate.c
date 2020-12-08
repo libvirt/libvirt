@@ -1067,16 +1067,21 @@ qemuValidateDomainDefPanic(const virDomainDef *def,
 int
 qemuValidateDomainDef(const virDomainDef *def,
                       void *opaque,
-                      void *parseOpaque G_GNUC_UNUSED)
+                      void *parseOpaque)
 {
     virQEMUDriverPtr driver = opaque;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    g_autoptr(virQEMUCaps) qemuCaps = NULL;
+    g_autoptr(virQEMUCaps) qemuCapsLocal = NULL;
+    virQEMUCapsPtr qemuCaps = parseOpaque;
     size_t i;
 
-    if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
-                                            def->emulator)))
-        return -1;
+    if (!qemuCaps) {
+        if (!(qemuCapsLocal = virQEMUCapsCacheLookup(driver->qemuCapsCache,
+                                                     def->emulator)))
+            return -1;
+
+        qemuCaps = qemuCapsLocal;
+    }
 
     if (def->os.type != VIR_DOMAIN_OSTYPE_HVM) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -4666,15 +4671,20 @@ int
 qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
                             const virDomainDef *def,
                             void *opaque,
-                            void *parseOpaque G_GNUC_UNUSED)
+                            void *parseOpaque)
 {
     int ret = 0;
     virQEMUDriverPtr driver = opaque;
-    g_autoptr(virQEMUCaps) qemuCaps = NULL;
+    g_autoptr(virQEMUCaps) qemuCapsLocal = NULL;
+    virQEMUCapsPtr qemuCaps = parseOpaque;
 
-    if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
-                                            def->emulator)))
-        return -1;
+    if (!qemuCaps) {
+        if (!(qemuCapsLocal = virQEMUCapsCacheLookup(driver->qemuCapsCache,
+                                                     def->emulator)))
+            return -1;
+
+        qemuCaps = qemuCapsLocal;
+    }
 
     if ((ret = qemuValidateDomainDeviceDefAddress(dev, qemuCaps)) < 0)
         return ret;
