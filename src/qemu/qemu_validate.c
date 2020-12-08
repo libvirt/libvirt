@@ -1099,8 +1099,7 @@ qemuValidateDomainDef(const virDomainDef *def,
         return -1;
     }
 
-    if (qemuCaps &&
-        !virQEMUCapsIsMachineSupported(qemuCaps, def->virtType, def->os.machine)) {
+    if (!virQEMUCapsIsMachineSupported(qemuCaps, def->virtType, def->os.machine)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Emulator '%s' does not support machine type '%s'"),
                        def->emulator, def->os.machine);
@@ -2648,36 +2647,34 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         return -1;
     }
 
-    if (qemuCaps) {
-        if (disk->serial &&
-            disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
-            disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("scsi-block 'lun' devices do not support the "
-                             "serial property"));
-            return -1;
-        }
+    if (disk->serial &&
+        disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
+        disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("scsi-block 'lun' devices do not support the "
+                         "serial property"));
+        return -1;
+    }
 
-        if (disk->discard &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DISCARD)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("discard is not supported by this QEMU binary"));
-            return -1;
-        }
+    if (disk->discard &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DISCARD)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("discard is not supported by this QEMU binary"));
+        return -1;
+    }
 
-        if (disk->detect_zeroes &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DETECT_ZEROES)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("detect_zeroes is not supported by this QEMU binary"));
-            return -1;
-        }
+    if (disk->detect_zeroes &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DETECT_ZEROES)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("detect_zeroes is not supported by this QEMU binary"));
+        return -1;
+    }
 
-        if (disk->iomode == VIR_DOMAIN_DISK_IO_URING) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_AIO_IO_URING)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("io uring is not supported by this QEMU binary"));
-                return -1;
-            }
+    if (disk->iomode == VIR_DOMAIN_DISK_IO_URING) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_AIO_IO_URING)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("io uring is not supported by this QEMU binary"));
+            return -1;
         }
     }
 
@@ -2753,33 +2750,31 @@ qemuValidateDomainDeviceDefDiskBlkdeviotune(const virDomainDiskDef *disk,
         return -1;
     }
 
-    if (qemuCaps) {
-        /* block I/O throttling 1.7 */
-        if (virDomainBlockIoTuneInfoHasMax(&disk->blkdeviotune) &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("there are some block I/O throttling parameters "
-                             "that are not supported with this QEMU binary"));
-            return -1;
-        }
+    /* block I/O throttling 1.7 */
+    if (virDomainBlockIoTuneInfoHasMax(&disk->blkdeviotune) &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("there are some block I/O throttling parameters "
+                         "that are not supported with this QEMU binary"));
+        return -1;
+    }
 
-        /* block I/O group 2.4 */
-        if (disk->blkdeviotune.group_name &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_GROUP)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("the block I/O throttling group parameter is "
-                             "not supported with this QEMU binary"));
-            return -1;
-        }
+    /* block I/O group 2.4 */
+    if (disk->blkdeviotune.group_name &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_GROUP)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("the block I/O throttling group parameter is "
+                         "not supported with this QEMU binary"));
+        return -1;
+    }
 
-        /* block I/O throttling length 2.6 */
-        if (virDomainBlockIoTuneInfoHasMaxLength(&disk->blkdeviotune) &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("there are some block I/O throttling length parameters "
-                             "that are not supported with this QEMU binary"));
-            return -1;
-        }
+    /* block I/O throttling length 2.6 */
+    if (virDomainBlockIoTuneInfoHasMaxLength(&disk->blkdeviotune) &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("there are some block I/O throttling length parameters "
+                         "that are not supported with this QEMU binary"));
+        return -1;
     }
 
     return 0;
@@ -2822,7 +2817,7 @@ qemuValidateDomainDeviceDefDiskTransient(const virDomainDiskDef *disk,
         return -1;
     }
 
-    if (qemuCaps && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("transient disk not supported by this QEMU binary (%s)"),
                        disk->dst);
