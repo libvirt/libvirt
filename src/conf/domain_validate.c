@@ -328,3 +328,164 @@ virDomainDiskDefValidate(const virDomainDef *def,
 
     return 0;
 }
+
+
+#define SERIAL_CHANNEL_NAME_CHARS \
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-."
+
+static int
+virDomainChrSourceDefValidate(const virDomainChrSourceDef *src_def,
+                              const virDomainChrDef *chr_def,
+                              const virDomainDef *def)
+{
+    switch ((virDomainChrType) src_def->type) {
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+        if (!src_def->data.file.path) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing source path attribute for char device"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+        if (!src_def->data.nmdm.master) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing master path attribute for nmdm device"));
+            return -1;
+        }
+
+        if (!src_def->data.nmdm.slave) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing slave path attribute for nmdm device"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+        if (!src_def->data.tcp.host) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing source host attribute for char device"));
+            return -1;
+        }
+
+        if (!src_def->data.tcp.service) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing source service attribute for char device"));
+            return -1;
+        }
+
+        if (src_def->data.tcp.listen && src_def->data.tcp.reconnect.enabled) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("chardev reconnect is possible only for connect mode"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+        if (!src_def->data.udp.connectService) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing source service attribute for char device"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        /* The source path can be auto generated for certain specific
+         * types of channels, but in most cases we should report an
+         * error if the user didn't provide it */
+        if (!src_def->data.nix.path &&
+            !(chr_def &&
+              chr_def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+              (chr_def->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN ||
+               chr_def->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing source path attribute for char device"));
+            return -1;
+        }
+
+        if (src_def->data.nix.listen && src_def->data.nix.reconnect.enabled) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("chardev reconnect is possible only for connect mode"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+        if (!src_def->data.spiceport.channel) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing source channel attribute for char device"));
+            return -1;
+        }
+        if (strspn(src_def->data.spiceport.channel,
+                   SERIAL_CHANNEL_NAME_CHARS) < strlen(src_def->data.spiceport.channel)) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("Invalid character in source channel for char device"));
+            return -1;
+        }
+        break;
+    }
+
+    if (virSecurityDeviceLabelDefValidate(src_def->seclabels,
+                                          src_def->nseclabels,
+                                          def->seclabels,
+                                          def->nseclabels) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
+virDomainRedirdevDefValidate(const virDomainDef *def,
+                             const virDomainRedirdevDef *redirdev)
+{
+    if (redirdev->bus == VIR_DOMAIN_REDIRDEV_BUS_USB &&
+        !virDomainDefHasUSB(def)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cannot add redirected USB device: "
+                         "USB is disabled for this domain"));
+        return -1;
+    }
+
+    return virDomainChrSourceDefValidate(redirdev->source, NULL, def);
+}
+
+
+int
+virDomainChrDefValidate(const virDomainChrDef *chr,
+                        const virDomainDef *def)
+{
+    return virDomainChrSourceDefValidate(chr->source, chr, def);
+}
+
+
+int
+virDomainRNGDefValidate(const virDomainRNGDef *rng,
+                        const virDomainDef *def)
+{
+    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD)
+        return virDomainChrSourceDefValidate(rng->source.chardev, NULL, def);
+
+    return 0;
+}
+
+
+int
+virDomainSmartcardDefValidate(const virDomainSmartcardDef *smartcard,
+                              const virDomainDef *def)
+{
+    if (smartcard->type == VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH)
+        return virDomainChrSourceDefValidate(smartcard->data.passthru, NULL, def);
+
+    return 0;
+}

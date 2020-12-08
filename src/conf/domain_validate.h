@@ -34,3 +34,11 @@ int virSecurityDeviceLabelDefValidate(virSecurityDeviceLabelDefPtr *seclabels,
                                       size_t nvmSeclabels);
 int virDomainDiskDefValidate(const virDomainDef *def,
                              const virDomainDiskDef *disk);
+int virDomainRedirdevDefValidate(const virDomainDef *def,
+                                 const virDomainRedirdevDef *redirdev);
+int virDomainChrDefValidate(const virDomainChrDef *chr,
+                            const virDomainDef *def);
+int virDomainRNGDefValidate(const virDomainRNGDef *rng,
+                            const virDomainDef *def);
+int virDomainSmartcardDefValidate(const virDomainSmartcardDef *smartcard,
+                                  const virDomainDef *def);
