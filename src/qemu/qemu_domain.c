@@ -6666,7 +6666,8 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
             if (!def)
                 def = vm->def;
 
-            return qemuDomainSnapshotForEachQcow2(driver, def, snap, "-d", true);
+            if (qemuDomainSnapshotForEachQcow2(driver, def, snap, "-d", true) < 0)
+                return -1;
         } else {
             priv = vm->privateData;
             qemuDomainObjEnterMonitor(driver, vm);
