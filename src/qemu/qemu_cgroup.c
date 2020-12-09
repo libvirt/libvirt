@@ -502,7 +502,8 @@ qemuSetupMemoryDevicesCgroup(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rv;
 
-    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
+    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+        mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM)
         return 0;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
@@ -525,7 +526,8 @@ qemuTeardownMemoryDevicesCgroup(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rv;
 
-    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
+    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+        mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM)
         return 0;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
