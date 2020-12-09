@@ -7707,8 +7707,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         qemuSecurityRestoreAllLabel(driver, vm,
                                     !!(flags & VIR_QEMU_PROCESS_STOP_MIGRATED));
 
-    qemuSecurityReleaseLabel(driver->securityManager, vm->def);
-
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDeviceDef dev;
         virDomainDiskDefPtr disk = vm->def->disks[i];
@@ -7895,6 +7893,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
             }
         }
     }
+
+    qemuSecurityReleaseLabel(driver->securityManager, vm->def);
 
     /* clear all private data entries which are no longer needed */
     qemuDomainObjPrivateDataClear(priv);
