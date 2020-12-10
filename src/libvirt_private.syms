@@ -342,7 +342,6 @@ virDomainDefSave;
 virDomainDefSetMemoryTotal;
 virDomainDefSetVcpus;
 virDomainDefSetVcpusMax;
-virDomainDefValidate;
 virDomainDefVcpuOrderClear;
 virDomainDeleteConfig;
 virDomainDeviceAliasIsUserAlias;
@@ -744,6 +743,7 @@ virDomainConfVMNWFilterTeardown;
 
 
 # conf/domain_validate.h
+virDomainDefValidate;
 virDomainDeviceValidateAliasForHotplug;
 
 

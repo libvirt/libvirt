@@ -58,3 +58,7 @@ int virDomainDefMemtuneValidate(const virDomainDef *def);
 int virDomainDefOSValidate(const virDomainDef *def,
                            virDomainXMLOptionPtr xmlopt);
 int virDomainDefCputuneValidate(const virDomainDef *def);
+int virDomainDefValidate(virDomainDefPtr def,
+                         unsigned int parseFlags,
+                         virDomainXMLOptionPtr xmlopt,
+                         void *parseOpaque);

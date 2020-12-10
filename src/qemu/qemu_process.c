@@ -74,6 +74,7 @@
 #include "virhostcpu.h"
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
+#include "domain_validate.h"
 #include "locking/domain_lock.h"
 #include "viruuid.h"
 #include "virprocess.h"

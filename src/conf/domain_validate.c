@@ -1040,3 +1040,132 @@ virDomainDefCputuneValidate(const virDomainDef *def)
 }
 #undef CPUTUNE_VALIDATE_PERIOD
 #undef CPUTUNE_VALIDATE_QUOTA
+
+
+static int
+virDomainDefValidateInternal(const virDomainDef *def,
+                             virDomainXMLOptionPtr xmlopt)
+{
+    if (virDomainDefDuplicateDiskInfoValidate(def) < 0)
+        return -1;
+
+    if (virDomainDefDuplicateDriveAddressesValidate(def) < 0)
+        return -1;
+
+    if (virDomainDefGetVcpusTopology(def, NULL) < 0)
+        return -1;
+
+    if (virDomainDefValidateAliases(def, NULL) < 0)
+        return -1;
+
+    if (def->iommu &&
+        def->iommu->intremap == VIR_TRISTATE_SWITCH_ON &&
+        def->features[VIR_DOMAIN_FEATURE_IOAPIC] != VIR_DOMAIN_IOAPIC_QEMU) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("IOMMU interrupt remapping requires split I/O APIC "
+                         "(ioapic driver='qemu')"));
+        return -1;
+    }
+
+    if (def->iommu &&
+        def->iommu->eim == VIR_TRISTATE_SWITCH_ON &&
+        def->iommu->intremap != VIR_TRISTATE_SWITCH_ON) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("IOMMU eim requires interrupt remapping to be enabled"));
+        return -1;
+    }
+
+    if (virDomainDefLifecycleActionValidate(def) < 0)
+        return -1;
+
+    if (virDomainDefMemtuneValidate(def) < 0)
+        return -1;
+
+    if (virDomainDefOSValidate(def, xmlopt) < 0)
+        return -1;
+
+    if (virDomainDefCputuneValidate(def) < 0)
+        return -1;
+
+    if (virDomainDefBootValidate(def) < 0)
+        return -1;
+
+    if (virDomainDefVideoValidate(def) < 0)
+        return -1;
+
+    if (virDomainDefTunablesValidate(def) < 0)
+        return -1;
+
+    if (virDomainDefIdMapValidate(def) < 0)
+        return -1;
+
+    if (virDomainNumaDefValidate(def->numa) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+virDomainDefValidateDeviceIterator(virDomainDefPtr def,
+                                   virDomainDeviceDefPtr dev,
+                                   virDomainDeviceInfoPtr info G_GNUC_UNUSED,
+                                   void *opaque)
+{
+    struct virDomainDefPostParseDeviceIteratorData *data = opaque;
+    return virDomainDeviceDefValidate(dev, def,
+                                      data->parseFlags, data->xmlopt,
+                                      data->parseOpaque);
+}
+
+
+/**
+ * virDomainDefValidate:
+ * @def: domain definition
+ * @caps: driver capabilities object
+ * @parseFlags: virDomainDefParseFlags
+ * @xmlopt: XML parser option object
+ * @parseOpaque: hypervisor driver specific data for this validation run
+ *
+ * This validation function is designed to take checks of globally invalid
+ * configurations that the parser needs to accept so that VMs don't vanish upon
+ * daemon restart. Such definition can be rejected upon startup or define, where
+ * this function shall be called.
+ *
+ * Returns 0 if domain definition is valid, -1 on error and reports an
+ * appropriate message.
+ */
+int
+virDomainDefValidate(virDomainDefPtr def,
+                     unsigned int parseFlags,
+                     virDomainXMLOptionPtr xmlopt,
+                     void *parseOpaque)
+{
+    struct virDomainDefPostParseDeviceIteratorData data = {
+        .xmlopt = xmlopt,
+        .parseFlags = parseFlags,
+        .parseOpaque = parseOpaque,
+    };
+
+    /* validate configuration only in certain places */
+    if (parseFlags & VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)
+        return 0;
+
+    /* call the domain config callback */
+    if (xmlopt->config.domainValidateCallback &&
+        xmlopt->config.domainValidateCallback(def, xmlopt->config.priv, parseOpaque) < 0)
+        return -1;
+
+    /* iterate the devices */
+    if (virDomainDeviceInfoIterateFlags(def,
+                                        virDomainDefValidateDeviceIterator,
+                                        (DOMAIN_DEVICE_ITERATE_ALL_CONSOLES |
+                                         DOMAIN_DEVICE_ITERATE_MISSING_INFO),
+                                        &data) < 0)
+        return -1;
+
+    if (virDomainDefValidateInternal(def, xmlopt) < 0)
+        return -1;
+
+    return 0;
+}

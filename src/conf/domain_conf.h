@@ -3006,6 +3006,12 @@ struct _virDomainXMLOption {
     virDomainMomentPostParseCallback momentPostParse;
 };
 
+struct virDomainDefPostParseDeviceIteratorData {
+    virDomainXMLOptionPtr xmlopt;
+    void *parseOpaque;
+    unsigned int parseFlags;
+};
+
 bool
 virDomainSCSIDriveAddressIsUsed(const virDomainDef *def,
                                 const virDomainDeviceDriveAddress *addr);
@@ -3017,11 +3023,6 @@ int virDomainDefPostParse(virDomainDefPtr def,
 bool virDomainDefHasUSB(const virDomainDef *def);
 
 bool virDomainDeviceAliasIsUserAlias(const char *aliasStr);
-
-int virDomainDefValidate(virDomainDefPtr def,
-                         unsigned int parseFlags,
-                         virDomainXMLOptionPtr xmlopt,
-                         void *parseOpaque);
 
 int
 virDomainActualNetDefValidate(const virDomainNetDef *net);
@@ -3124,6 +3125,11 @@ void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def);
 void virDomainRedirFilterDefFree(virDomainRedirFilterDefPtr def);
 void virDomainShmemDefFree(virDomainShmemDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
+int virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
+                               const virDomainDef *def,
+                               unsigned int parseFlags,
+                               virDomainXMLOptionPtr xmlopt,
+                               void *parseOpaque);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainDeviceDef, virDomainDeviceDefFree);
 virDomainDeviceDefPtr virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
                                              const virDomainDef *def,
