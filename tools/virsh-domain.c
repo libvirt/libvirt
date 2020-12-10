@@ -124,7 +124,7 @@ virshAddressParse(const char *str,
     g_autofree char *type = g_strdup(str);
     char *a = strchr(type, ':');
 
-    if (!addr)
+    if (!a)
         return -1;
 
     *a = '\0';
