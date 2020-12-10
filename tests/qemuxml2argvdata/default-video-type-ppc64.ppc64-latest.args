@@ -12,9 +12,11 @@ QEMU_AUDIO_DRV=none \
 -S \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-default-video-type-p/master-key.aes \
--machine pseries,accel=kvm,usb=off,dump-guest-core=off \
+-machine pseries,accel=kvm,usb=off,dump-guest-core=off,\
+memory-backend=ppc_spapr.ram \
 -cpu host \
 -m 1024 \
+-object memory-backend-ram,id=ppc_spapr.ram,size=1073741824 \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 6ba410c5-1e5c-4d57-bee7-2228e7ffa32f \
