@@ -2759,6 +2759,11 @@ typedef enum {
     VIR_DOMAIN_TAINT_LAST
 } virDomainTaintFlags;
 
+typedef enum {
+    DOMAIN_DEVICE_ITERATE_ALL_CONSOLES = 1 << 0,
+    DOMAIN_DEVICE_ITERATE_MISSING_INFO = 1 << 1,
+} virDomainDeviceIterateFlags;
+
 /* Guest VM runtime state */
 typedef struct _virDomainStateReason virDomainStateReason;
 struct _virDomainStateReason {
@@ -2987,10 +2992,6 @@ int virDomainDefPostParse(virDomainDefPtr def,
                           void *parseOpaque);
 bool virDomainDefHasUSB(const virDomainDef *def);
 
-int virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
-                                           virDomainDeviceDefPtr dev,
-                                           unsigned int flags);
-
 bool virDomainDeviceAliasIsUserAlias(const char *aliasStr);
 
 int virDomainDefValidate(virDomainDefPtr def,
@@ -3129,6 +3130,11 @@ virDomainChrSourceDefPtr
 virDomainChrSourceDefNew(virDomainXMLOptionPtr xmlopt);
 
 virDomainChrDefPtr virDomainChrDefNew(virDomainXMLOptionPtr xmlopt);
+
+int virDomainDeviceInfoIterateFlags(virDomainDefPtr def,
+                                    virDomainDeviceInfoCallback cb,
+                                    unsigned int iteratorFlags,
+                                    void *opaque);
 
 virDomainGraphicsDefPtr
 virDomainGraphicsDefNew(virDomainXMLOptionPtr xmlopt);

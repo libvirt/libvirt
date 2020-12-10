@@ -47,3 +47,8 @@ int virDomainControllerDefValidate(const virDomainControllerDef *controller);
 int virDomainDefIdMapValidate(const virDomainDef *def);
 int virDomainDefDuplicateDiskInfoValidate(const virDomainDef *def);
 int virDomainDefDuplicateDriveAddressesValidate(const virDomainDef *def);
+int virDomainDefValidateAliases(const virDomainDef *def,
+                                GHashTable **aliases);
+int virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
+                                           virDomainDeviceDefPtr dev,
+                                           unsigned int flags);

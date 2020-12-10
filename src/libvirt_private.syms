@@ -354,7 +354,6 @@ virDomainDeviceGetInfo;
 virDomainDeviceInfoIterate;
 virDomainDeviceSetData;
 virDomainDeviceTypeToString;
-virDomainDeviceValidateAliasForHotplug;
 virDomainDiskBackingStoreFormat;
 virDomainDiskBackingStoreParse;
 virDomainDiskBusTypeToString;
@@ -742,6 +741,10 @@ virHostdevIsVFIODevice;
 virDomainConfNWFilterInstantiate;
 virDomainConfNWFilterTeardown;
 virDomainConfVMNWFilterTeardown;
+
+
+# conf/domain_validate.h
+virDomainDeviceValidateAliasForHotplug;
 
 
 # conf/interface_conf.h

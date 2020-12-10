@@ -4213,16 +4213,11 @@ virDomainSkipBackcompatConsole(virDomainDefPtr def,
 }
 
 
-enum {
-    DOMAIN_DEVICE_ITERATE_ALL_CONSOLES = 1 << 0,
-    DOMAIN_DEVICE_ITERATE_MISSING_INFO = 1 << 1,
-} virDomainDeviceIterateFlags;
-
 /*
  * Iterates over domain devices calling @cb on each device. The default
  * behaviour can be altered with virDomainDeviceIterateFlags.
  */
-static int
+int
 virDomainDeviceInfoIterateFlags(virDomainDefPtr def,
                                 virDomainDeviceInfoCallback cb,
                                 unsigned int iteratorFlags,
@@ -6422,143 +6417,6 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_LAST:
         break;
     }
-
-    return 0;
-}
-
-
-struct virDomainDefValidateAliasesData {
-    GHashTable *aliases;
-};
-
-
-static int
-virDomainDeviceDefValidateAliasesIterator(virDomainDefPtr def,
-                                          virDomainDeviceDefPtr dev,
-                                          virDomainDeviceInfoPtr info,
-                                          void *opaque)
-{
-    struct virDomainDefValidateAliasesData *data = opaque;
-    const char *alias = info->alias;
-
-    if (!virDomainDeviceAliasIsUserAlias(alias))
-        return 0;
-
-    /* Some crazy backcompat for consoles. */
-    if (def->nserials && def->nconsoles &&
-        def->consoles[0]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
-        def->consoles[0]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL &&
-        dev->type == VIR_DOMAIN_DEVICE_CHR &&
-        virDomainChrEquals(def->serials[0], dev->data.chr))
-        return 0;
-
-    if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
-        dev->data.hostdev->parentnet) {
-        /* This hostdev is a copy of some previous interface.
-         * Aliases are duplicated. */
-        return 0;
-    }
-
-    if (virHashLookup(data->aliases, alias)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("non unique alias detected: %s"),
-                       alias);
-        return -1;
-    }
-
-    if (virHashAddEntry(data->aliases, alias, (void *) 1) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to construct table of device aliases"));
-        return -1;
-    }
-
-    return 0;
-}
-
-
-/**
- * virDomainDefValidateAliases:
- *
- * Check for uniqueness of device aliases. If @aliases is not
- * NULL return hash table of all the aliases in it.
- *
- * Returns 0 on success,
- *        -1 otherwise (with error reported).
- */
-static int
-virDomainDefValidateAliases(const virDomainDef *def,
-                            GHashTable **aliases)
-{
-    struct virDomainDefValidateAliasesData data;
-    int ret = -1;
-
-    /* We are not storing copies of aliases. Don't free them. */
-    if (!(data.aliases = virHashNew(NULL)))
-        goto cleanup;
-
-    if (virDomainDeviceInfoIterateFlags((virDomainDefPtr) def,
-                                        virDomainDeviceDefValidateAliasesIterator,
-                                        DOMAIN_DEVICE_ITERATE_ALL_CONSOLES,
-                                        &data) < 0)
-        goto cleanup;
-
-    if (aliases)
-        *aliases = g_steal_pointer(&data.aliases);
-
-    ret = 0;
- cleanup:
-    virHashFree(data.aliases);
-    return ret;
-}
-
-
-static int
-virDomainDeviceValidateAliasImpl(const virDomainDef *def,
-                                 virDomainDeviceDefPtr dev)
-{
-    GHashTable *aliases = NULL;
-    virDomainDeviceInfoPtr info = virDomainDeviceGetInfo(dev);
-    int ret = -1;
-
-    if (!info || !info->alias)
-        return 0;
-
-    if (virDomainDefValidateAliases(def, &aliases) < 0)
-        goto cleanup;
-
-    if (virHashLookup(aliases, info->alias)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("non unique alias detected: %s"),
-                       info->alias);
-        goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-
-    virHashFree(aliases);
-    return ret;
-}
-
-
-int
-virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
-                                       virDomainDeviceDefPtr dev,
-                                       unsigned int flags)
-{
-    virDomainDefPtr persDef = NULL;
-    virDomainDefPtr liveDef = NULL;
-
-    if (virDomainObjGetDefs(vm, flags, &liveDef, &persDef) < 0)
-        return -1;
-
-    if (persDef &&
-        virDomainDeviceValidateAliasImpl(persDef, dev) < 0)
-        return -1;
-
-    if (liveDef &&
-        virDomainDeviceValidateAliasImpl(liveDef, dev) < 0)
-        return -1;
 
     return 0;
 }
