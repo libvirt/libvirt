@@ -687,6 +687,9 @@ nodeDeviceFindAddressByName(const char *name)
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }
+
+        if (addr)
+            break;
     }
 
     virNodeDeviceObjEndAPI(&dev);
