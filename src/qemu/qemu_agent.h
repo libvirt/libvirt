@@ -77,8 +77,7 @@ struct _qemuAgentDiskAddress {
     unsigned int target;
     unsigned int unit;
     char *devnode;
-    bool has_ccw_address;
-    virDomainDeviceCCWAddress ccw_addr;
+    virDomainDeviceCCWAddressPtr ccw_addr;
 };
 void qemuAgentDiskAddressFree(qemuAgentDiskAddressPtr addr);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuAgentDiskAddress, qemuAgentDiskAddressFree);

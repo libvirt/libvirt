@@ -18887,8 +18887,7 @@ qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent,
 
         diskDef = virDomainDiskByAddress(vmdef,
                                          &agentdisk->pci_controller,
-                                         agentdisk->has_ccw_address ?
-                                             &agentdisk->ccw_addr : NULL,
+                                         agentdisk->ccw_addr,
                                          agentdisk->bus,
                                          agentdisk->target,
                                          agentdisk->unit);
@@ -19931,8 +19930,7 @@ qemuAgentDiskInfoFormatParams(qemuAgentDiskInfoPtr *info,
             /* match the disk to the target in the vm definition */
             diskdef = virDomainDiskByAddress(vmdef,
                                              &info[i]->address->pci_controller,
-                                             info[i]->address->has_ccw_address ?
-                                                &info[i]->address->ccw_addr : NULL,
+                                             info[i]->address->ccw_addr,
                                              info[i]->address->bus,
                                              info[i]->address->target,
                                              info[i]->address->unit);
@@ -20017,8 +20015,7 @@ qemuAgentFSInfoFormatParams(qemuAgentFSInfoPtr *fsinfo,
             /* match the disk to the target in the vm definition */
             diskdef = virDomainDiskByAddress(vmdef,
                                              &d->pci_controller,
-                                             d->has_ccw_address ?
-                                                 &d->ccw_addr : NULL,
+                                             d->ccw_addr,
                                              d->bus,
                                              d->target,
                                              d->unit);

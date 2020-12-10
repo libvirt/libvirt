@@ -1824,6 +1824,7 @@ qemuAgentDiskAddressFree(qemuAgentDiskAddressPtr info)
     g_free(info->serial);
     g_free(info->bus_type);
     g_free(info->devnode);
+    g_free(info->ccw_addr);
     g_free(info);
 }
 
@@ -1899,12 +1900,17 @@ qemuAgentGetDiskAddress(virJSONValuePtr json)
     GET_DISK_ADDR(pci, &addr->pci_controller.function, "function");
 
     if ((ccw = virJSONValueObjectGet(json, "ccw-address"))) {
-        addr->has_ccw_address = true;
-        GET_DISK_ADDR(ccw, &addr->ccw_addr.cssid, "cssid");
-        if (addr->ccw_addr.cssid == 0)  /* Guest CSSID 0 is 0xfe on host */
-            addr->ccw_addr.cssid = 0xfe;
-        GET_DISK_ADDR(ccw, &addr->ccw_addr.ssid, "ssid");
-        GET_DISK_ADDR(ccw, &addr->ccw_addr.devno, "devno");
+        g_autofree virDomainDeviceCCWAddressPtr ccw_addr = NULL;
+
+        ccw_addr = g_new0(virDomainDeviceCCWAddress, 1);
+
+        GET_DISK_ADDR(ccw, &ccw_addr->cssid, "cssid");
+        if (ccw_addr->cssid == 0)  /* Guest CSSID 0 is 0xfe on host */
+            ccw_addr->cssid = 0xfe;
+        GET_DISK_ADDR(ccw, &ccw_addr->ssid, "ssid");
+        GET_DISK_ADDR(ccw, &ccw_addr->devno, "devno");
+
+        addr->ccw_addr = g_steal_pointer(&ccw_addr);
     }
 #undef GET_DISK_ADDR
 
