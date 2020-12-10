@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include "domain_conf.h"
+#include "virconftypes.h"
 
 int virDomainDefBootValidate(const virDomainDef *def);
 int virDomainDefVideoValidate(const virDomainDef *def);
@@ -52,3 +53,8 @@ int virDomainDefValidateAliases(const virDomainDef *def,
 int virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
                                            virDomainDeviceDefPtr dev,
                                            unsigned int flags);
+int virDomainDefLifecycleActionValidate(const virDomainDef *def);
+int virDomainDefMemtuneValidate(const virDomainDef *def);
+int virDomainDefOSValidate(const virDomainDef *def,
+                           virDomainXMLOptionPtr xmlopt);
+int virDomainDefCputuneValidate(const virDomainDef *def);

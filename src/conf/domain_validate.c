@@ -22,6 +22,7 @@
 
 #include "domain_validate.h"
 #include "domain_conf.h"
+#include "virconftypes.h"
 #include "virlog.h"
 #include "virutil.h"
 
@@ -898,3 +899,144 @@ virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
 
     return 0;
 }
+
+
+int
+virDomainDefLifecycleActionValidate(const virDomainDef *def)
+{
+    if (!virDomainDefLifecycleActionAllowed(VIR_DOMAIN_LIFECYCLE_POWEROFF,
+                                            def->onPoweroff)) {
+        return -1;
+    }
+
+    if (!virDomainDefLifecycleActionAllowed(VIR_DOMAIN_LIFECYCLE_REBOOT,
+                                            def->onReboot)) {
+        return -1;
+    }
+
+    if (!virDomainDefLifecycleActionAllowed(VIR_DOMAIN_LIFECYCLE_CRASH,
+                                            def->onCrash)) {
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int
+virDomainDefMemtuneValidate(const virDomainDef *def)
+{
+    const virDomainMemtune *mem = &(def->mem);
+    size_t i;
+    ssize_t pos = virDomainNumaGetNodeCount(def->numa) - 1;
+
+    for (i = 0; i < mem->nhugepages; i++) {
+        size_t j;
+        ssize_t nextBit;
+
+        for (j = 0; j < i; j++) {
+            if (mem->hugepages[i].nodemask &&
+                mem->hugepages[j].nodemask &&
+                virBitmapOverlaps(mem->hugepages[i].nodemask,
+                                  mem->hugepages[j].nodemask)) {
+                virReportError(VIR_ERR_XML_DETAIL,
+                               _("nodeset attribute of hugepages "
+                                 "of sizes %llu and %llu intersect"),
+                               mem->hugepages[i].size,
+                               mem->hugepages[j].size);
+                return -1;
+            } else if (!mem->hugepages[i].nodemask &&
+                       !mem->hugepages[j].nodemask) {
+                virReportError(VIR_ERR_XML_DETAIL,
+                               _("two master hugepages detected: "
+                                 "%llu and %llu"),
+                               mem->hugepages[i].size,
+                               mem->hugepages[j].size);
+                return -1;
+            }
+        }
+
+        if (!mem->hugepages[i].nodemask) {
+            /* This is the master hugepage to use. Skip it as it has no
+             * nodemask anyway. */
+            continue;
+        }
+
+        nextBit = virBitmapNextSetBit(mem->hugepages[i].nodemask, pos);
+        if (nextBit >= 0) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("hugepages: node %zd not found"),
+                           nextBit);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+int
+virDomainDefOSValidate(const virDomainDef *def,
+                       virDomainXMLOptionPtr xmlopt)
+{
+    if (!def->os.loader)
+        return 0;
+
+    if (def->os.firmware &&
+        !(xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT)) {
+        virReportError(VIR_ERR_XML_DETAIL, "%s",
+                       _("firmware auto selection not implemented for this driver"));
+        return -1;
+    }
+
+    if (!def->os.loader->path &&
+        def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE) {
+        virReportError(VIR_ERR_XML_DETAIL, "%s",
+                       _("no loader path specified and firmware auto selection disabled"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+#define CPUTUNE_VALIDATE_PERIOD(name) \
+    do { \
+        if (def->cputune.name > 0 && \
+            (def->cputune.name < 1000 || def->cputune.name > 1000000)) { \
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
+                           _("Value of cputune '%s' must be in range " \
+                           "[1000, 1000000]"), #name); \
+            return -1; \
+        } \
+    } while (0)
+
+#define CPUTUNE_VALIDATE_QUOTA(name) \
+    do { \
+        if (def->cputune.name > 0 && \
+            (def->cputune.name < 1000 || \
+            def->cputune.name > 18446744073709551LL)) { \
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
+                           _("Value of cputune '%s' must be in range " \
+                           "[1000, 18446744073709551]"), #name); \
+            return -1; \
+        } \
+    } while (0)
+
+int
+virDomainDefCputuneValidate(const virDomainDef *def)
+{
+    CPUTUNE_VALIDATE_PERIOD(period);
+    CPUTUNE_VALIDATE_PERIOD(global_period);
+    CPUTUNE_VALIDATE_PERIOD(emulator_period);
+    CPUTUNE_VALIDATE_PERIOD(iothread_period);
+
+    CPUTUNE_VALIDATE_QUOTA(quota);
+    CPUTUNE_VALIDATE_QUOTA(global_quota);
+    CPUTUNE_VALIDATE_QUOTA(emulator_quota);
+    CPUTUNE_VALIDATE_QUOTA(iothread_quota);
+
+    return 0;
+}
+#undef CPUTUNE_VALIDATE_PERIOD
+#undef CPUTUNE_VALIDATE_QUOTA
