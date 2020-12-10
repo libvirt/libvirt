@@ -3317,7 +3317,8 @@ qemuBuildMemoryDeviceStr(const virDomainDef *def,
         virBufferAsprintf(&buf, "memdev=mem%s,id=%s",
                           mem->info.alias, mem->info.alias);
 
-        qemuBuildDeviceAddressStr(&buf, def, &mem->info, qemuCaps);
+        if (qemuBuildDeviceAddressStr(&buf, def, &mem->info, qemuCaps) < 0)
+            return NULL;
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
