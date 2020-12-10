@@ -4867,7 +4867,7 @@ virDomainDefPostParseGraphics(virDomainDef *def)
  * Return true if any disk is already using the given address on the
  * given bus, false otherwise.
  */
-static bool
+bool
 virDomainDriveAddressIsUsedByDisk(const virDomainDef *def,
                                   virDomainDiskBus bus_type,
                                   const virDomainDeviceDriveAddress *addr)
@@ -6599,129 +6599,6 @@ virDomainDefValidateDeviceIterator(virDomainDefPtr def,
 }
 
 
-static int
-virDomainDefCheckDuplicateDiskInfo(const virDomainDef *def)
-{
-    size_t i;
-    size_t j;
-
-    for (i = 0; i < def->ndisks; i++) {
-        for (j = i + 1; j < def->ndisks; j++) {
-            if (virDomainDiskDefCheckDuplicateInfo(def->disks[i],
-                                                   def->disks[j]) < 0)
-                return -1;
-        }
-    }
-
-    return 0;
-}
-
-/**
- * virDomainDefCheckDuplicateDriveAddresses:
- * @def: domain definition to check against
- *
- * This function checks @def for duplicate drive addresses. Drive
- * addresses are only in use for disks and hostdevs at the moment.
- *
- * Returns 0 in case of there are no duplicate drive addresses, -1
- * otherwise.
- */
-static int
-virDomainDefCheckDuplicateDriveAddresses(const virDomainDef *def)
-{
-    size_t i;
-    size_t j;
-
-    for (i = 0; i < def->ndisks; i++) {
-        virDomainDiskDefPtr disk_i = def->disks[i];
-        virDomainDeviceInfoPtr disk_info_i = &disk_i->info;
-
-        if (disk_info_i->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
-            continue;
-
-        for (j = i + 1; j < def->ndisks; j++) {
-            virDomainDiskDefPtr disk_j = def->disks[j];
-            virDomainDeviceInfoPtr disk_info_j = &disk_j->info;
-
-            if (disk_i->bus != disk_j->bus)
-                continue;
-
-            if (disk_info_j->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
-                continue;
-
-            if (virDomainDeviceInfoAddressIsEqual(disk_info_i, disk_info_j)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Found duplicate drive address for disk with "
-                                 "target name '%s' controller='%u' bus='%u' "
-                                 "target='%u' unit='%u'"),
-                               disk_i->dst,
-                               disk_info_i->addr.drive.controller,
-                               disk_info_i->addr.drive.bus,
-                               disk_info_i->addr.drive.target,
-                               disk_info_i->addr.drive.unit);
-                return -1;
-            }
-        }
-
-        /* Note: There is no need to check for conflicts with SCSI
-         * hostdevs above, because conflicts with hostdevs are checked
-         * in the next loop.
-         */
-    }
-
-    for (i = 0; i < def->nhostdevs; i++) {
-        virDomainHostdevDefPtr hdev_i = def->hostdevs[i];
-        virDomainDeviceInfoPtr hdev_info_i = hdev_i->info;
-        virDomainDeviceDriveAddressPtr hdev_addr_i;
-
-        if (!virHostdevIsSCSIDevice(hdev_i))
-            continue;
-
-        if (hdev_i->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
-            continue;
-
-        hdev_addr_i = &hdev_info_i->addr.drive;
-        for (j = i + 1; j < def->nhostdevs; j++) {
-            virDomainHostdevDefPtr hdev_j = def->hostdevs[j];
-            virDomainDeviceInfoPtr hdev_info_j = hdev_j->info;
-
-            if (!virHostdevIsSCSIDevice(hdev_j))
-                continue;
-
-            /* Address type check for hdev_j will be done implicitly
-             * in virDomainDeviceInfoAddressIsEqual() */
-
-            if (virDomainDeviceInfoAddressIsEqual(hdev_info_i, hdev_info_j)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("SCSI host address controller='%u' "
-                                 "bus='%u' target='%u' unit='%u' in "
-                                 "use by another SCSI host device"),
-                               hdev_addr_i->bus,
-                               hdev_addr_i->controller,
-                               hdev_addr_i->target,
-                               hdev_addr_i->unit);
-                return -1;
-            }
-        }
-
-        if (virDomainDriveAddressIsUsedByDisk(def, VIR_DOMAIN_DISK_BUS_SCSI,
-                                              hdev_addr_i)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("SCSI host address controller='%u' "
-                             "bus='%u' target='%u' unit='%u' in "
-                             "use by another SCSI disk"),
-                           hdev_addr_i->bus,
-                           hdev_addr_i->controller,
-                           hdev_addr_i->target,
-                           hdev_addr_i->unit);
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-
 bool
 virDomainDefLifecycleActionAllowed(virDomainLifecycle type,
                                    virDomainLifecycleAction action)
@@ -6899,10 +6776,10 @@ static int
 virDomainDefValidateInternal(const virDomainDef *def,
                              virDomainXMLOptionPtr xmlopt)
 {
-    if (virDomainDefCheckDuplicateDiskInfo(def) < 0)
+    if (virDomainDefDuplicateDiskInfoValidate(def) < 0)
         return -1;
 
-    if (virDomainDefCheckDuplicateDriveAddresses(def) < 0)
+    if (virDomainDefDuplicateDriveAddressesValidate(def) < 0)
         return -1;
 
     if (virDomainDefGetVcpusTopology(def, NULL) < 0)

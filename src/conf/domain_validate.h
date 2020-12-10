@@ -45,3 +45,5 @@ int virDomainSmartcardDefValidate(const virDomainSmartcardDef *smartcard,
 int virDomainDefTunablesValidate(const virDomainDef *def);
 int virDomainControllerDefValidate(const virDomainControllerDef *controller);
 int virDomainDefIdMapValidate(const virDomainDef *def);
+int virDomainDefDuplicateDiskInfoValidate(const virDomainDef *def);
+int virDomainDefDuplicateDriveAddressesValidate(const virDomainDef *def);

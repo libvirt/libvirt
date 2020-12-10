@@ -3916,6 +3916,11 @@ virDomainBlockIoTuneInfoEqual(const virDomainBlockIoTuneInfo *a,
                               const virDomainBlockIoTuneInfo *b);
 
 bool
+virDomainDriveAddressIsUsedByDisk(const virDomainDef *def,
+                                  virDomainDiskBus bus_type,
+                                  const virDomainDeviceDriveAddress *addr);
+
+bool
 virHostdevIsSCSIDevice(const virDomainHostdevDef *hostdev)
     ATTRIBUTE_NONNULL(1);
 bool
