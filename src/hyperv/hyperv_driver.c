@@ -561,9 +561,6 @@ hypervDomainDefParsePhysicalDisk(hypervPrivate *priv,
     driveNumberStr = g_strdup_printf("%u", diskdrive->data->DriveNumber);
     virDomainDiskSetSource(disk, driveNumberStr);
 
-    if (addr < 0)
-        goto cleanup;
-
     if (controller->data->ResourceType == MSVM_RASD_RESOURCETYPE_PARALLEL_SCSI_HBA) {
         for (i = 0; i < HYPERV_MAX_SCSI_CONTROLLERS; i++) {
             if (controller == scsiControllers[i]) {
