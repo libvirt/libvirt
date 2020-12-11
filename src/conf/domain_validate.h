@@ -25,14 +25,8 @@
 #include "domain_conf.h"
 #include "virconftypes.h"
 
-int virDomainDefBootValidate(const virDomainDef *def);
-int virDomainDefVideoValidate(const virDomainDef *def);
 int virDomainVideoDefValidate(const virDomainVideoDef *video,
                               const virDomainDef *def);
-int virSecurityDeviceLabelDefValidate(virSecurityDeviceLabelDefPtr *seclabels,
-                                      size_t nseclabels,
-                                      virSecurityLabelDefPtr *vmSeclabels,
-                                      size_t nvmSeclabels);
 int virDomainDiskDefValidate(const virDomainDef *def,
                              const virDomainDiskDef *disk);
 int virDomainRedirdevDefValidate(const virDomainDef *def,
@@ -43,21 +37,10 @@ int virDomainRNGDefValidate(const virDomainRNGDef *rng,
                             const virDomainDef *def);
 int virDomainSmartcardDefValidate(const virDomainSmartcardDef *smartcard,
                                   const virDomainDef *def);
-int virDomainDefTunablesValidate(const virDomainDef *def);
 int virDomainControllerDefValidate(const virDomainControllerDef *controller);
-int virDomainDefIdMapValidate(const virDomainDef *def);
-int virDomainDefDuplicateDiskInfoValidate(const virDomainDef *def);
-int virDomainDefDuplicateDriveAddressesValidate(const virDomainDef *def);
-int virDomainDefValidateAliases(const virDomainDef *def,
-                                GHashTable **aliases);
 int virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
                                            virDomainDeviceDefPtr dev,
                                            unsigned int flags);
-int virDomainDefLifecycleActionValidate(const virDomainDef *def);
-int virDomainDefMemtuneValidate(const virDomainDef *def);
-int virDomainDefOSValidate(const virDomainDef *def,
-                           virDomainXMLOptionPtr xmlopt);
-int virDomainDefCputuneValidate(const virDomainDef *def);
 int virDomainDefValidate(virDomainDefPtr def,
                          unsigned int parseFlags,
                          virDomainXMLOptionPtr xmlopt,

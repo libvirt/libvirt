@@ -30,7 +30,7 @@
 
 VIR_LOG_INIT("conf.domain_validate");
 
-int
+static int
 virDomainDefBootValidate(const virDomainDef *def)
 {
     if (def->os.bm_timeout_set && def->os.bm_timeout > 65535) {
@@ -52,7 +52,7 @@ virDomainDefBootValidate(const virDomainDef *def)
 }
 
 
-int
+static int
 virDomainDefVideoValidate(const virDomainDef *def)
 {
     size_t i;
@@ -195,7 +195,7 @@ virDomainDiskAddressDiskBusCompatibility(virDomainDiskBus bus,
 }
 
 
-int
+static int
 virSecurityDeviceLabelDefValidate(virSecurityDeviceLabelDefPtr *seclabels,
                                   size_t nseclabels,
                                   virSecurityLabelDefPtr *vmSeclabels,
@@ -499,7 +499,7 @@ virDomainSmartcardDefValidate(const virDomainSmartcardDef *smartcard,
 }
 
 
-int
+static int
 virDomainDefTunablesValidate(const virDomainDef *def)
 {
     size_t i, j;
@@ -615,7 +615,7 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
 }
 
 
-int
+static int
 virDomainDefIdMapValidate(const virDomainDef *def)
 {
     if ((def->idmap.uidmap && !def->idmap.gidmap) ||
@@ -638,7 +638,7 @@ virDomainDefIdMapValidate(const virDomainDef *def)
 }
 
 
-int
+static int
 virDomainDefDuplicateDiskInfoValidate(const virDomainDef *def)
 {
     size_t i;
@@ -667,7 +667,7 @@ virDomainDefDuplicateDiskInfoValidate(const virDomainDef *def)
  * Returns 0 in case of there are no duplicate drive addresses, -1
  * otherwise.
  */
-int
+static int
 virDomainDefDuplicateDriveAddressesValidate(const virDomainDef *def)
 {
     size_t i;
@@ -822,7 +822,7 @@ virDomainDeviceDefValidateAliasesIterator(virDomainDefPtr def,
  * Returns 0 on success,
  *        -1 otherwise (with error reported).
  */
-int
+static int
 virDomainDefValidateAliases(const virDomainDef *def,
                             GHashTable **aliases)
 {
@@ -901,7 +901,7 @@ virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
 }
 
 
-int
+static int
 virDomainDefLifecycleActionValidate(const virDomainDef *def)
 {
     if (!virDomainDefLifecycleActionAllowed(VIR_DOMAIN_LIFECYCLE_POWEROFF,
@@ -923,7 +923,7 @@ virDomainDefLifecycleActionValidate(const virDomainDef *def)
 }
 
 
-int
+static int
 virDomainDefMemtuneValidate(const virDomainDef *def)
 {
     const virDomainMemtune *mem = &(def->mem);
@@ -975,7 +975,7 @@ virDomainDefMemtuneValidate(const virDomainDef *def)
 }
 
 
-int
+static int
 virDomainDefOSValidate(const virDomainDef *def,
                        virDomainXMLOptionPtr xmlopt)
 {
@@ -1023,7 +1023,7 @@ virDomainDefOSValidate(const virDomainDef *def,
         } \
     } while (0)
 
-int
+static int
 virDomainDefCputuneValidate(const virDomainDef *def)
 {
     CPUTUNE_VALIDATE_PERIOD(period);
