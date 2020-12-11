@@ -3024,9 +3024,6 @@ bool virDomainDefHasUSB(const virDomainDef *def);
 
 bool virDomainDeviceAliasIsUserAlias(const char *aliasStr);
 
-int
-virDomainActualNetDefValidate(const virDomainNetDef *net);
-
 static inline bool
 virDomainObjIsActive(virDomainObjPtr dom)
 {

@@ -58,6 +58,7 @@
 #include "domain_cgroup.h"
 #include "domain_driver.h"
 #include "domain_nwfilter.h"
+#include "domain_validate.h"
 #include "virinitctl.h"
 #include "virnetdev.h"
 #include "virnetdevtap.h"

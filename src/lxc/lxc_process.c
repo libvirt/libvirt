@@ -42,6 +42,7 @@
 #include "domain_nwfilter.h"
 #include "viralloc.h"
 #include "domain_audit.h"
+#include "domain_validate.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "vircommand.h"

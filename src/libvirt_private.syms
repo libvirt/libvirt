@@ -226,7 +226,6 @@ virDiskNameParse;
 virDiskNameToBusDeviceIndex;
 virDiskNameToIndex;
 virDomainActualNetDefFree;
-virDomainActualNetDefValidate;
 virDomainAudioTypeTypeFromString;
 virDomainAudioTypeTypeToString;
 virDomainBlockedReasonTypeFromString;
@@ -743,6 +742,7 @@ virDomainConfVMNWFilterTeardown;
 
 
 # conf/domain_validate.h
+virDomainActualNetDefValidate;
 virDomainDefValidate;
 virDomainDeviceValidateAliasForHotplug;
 

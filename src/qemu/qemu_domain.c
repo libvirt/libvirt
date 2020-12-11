@@ -48,6 +48,7 @@
 #include "domain_capabilities.h"
 #include "domain_driver.h"
 #include "domain_event.h"
+#include "domain_validate.h"
 #include "virtime.h"
 #include "virnetdevopenvswitch.h"
 #include "virstoragefile.h"

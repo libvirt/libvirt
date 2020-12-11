@@ -35,6 +35,7 @@
 #include "locking/domain_lock.h"
 #include "xen_common.h"
 #include "driver.h"
+#include "domain_validate.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 

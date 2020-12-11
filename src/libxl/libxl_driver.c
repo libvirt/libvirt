@@ -55,6 +55,7 @@
 #include "virnetdevtap.h"
 #include "cpu/cpu.h"
 #include "virutil.h"
+#include "domain_validate.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
