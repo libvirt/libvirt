@@ -291,7 +291,7 @@ virDomainDiskDefValidate(const virDomainDef *def,
     if (disk->src->type == VIR_STORAGE_TYPE_NVME) {
         /* NVMe namespaces start from 1 */
         if (disk->src->nvme->namespc == 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("NVMe namespace can't be zero"));
             return -1;
         }
@@ -423,7 +423,7 @@ virDomainChrSourceDefValidate(const virDomainChrSourceDef *src_def,
 
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
         if (!src_def->data.spiceport.channel) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Missing source channel attribute for char device"));
             return -1;
         }
@@ -547,7 +547,7 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
         if (opts->targetIndex != -1) {
 
             if (opts->targetIndex < 0 || opts->targetIndex > 30) {
-                virReportError(VIR_ERR_XML_ERROR,
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("PCI controller target index '%d' out of "
                                  "range - must be 0-30"),
                                opts->targetIndex);
@@ -556,7 +556,7 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
 
             if ((controller->idx == 0 && opts->targetIndex != 0) ||
                 (controller->idx != 0 && opts->targetIndex == 0)) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Only the PCI controller with index 0 can "
                                  "have target index 0, and vice versa"));
                 return -1;
@@ -797,7 +797,7 @@ virDomainDeviceDefValidateAliasesIterator(virDomainDefPtr def,
     }
 
     if (virHashLookup(data->aliases, alias)) {
-        virReportError(VIR_ERR_XML_ERROR,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("non unique alias detected: %s"),
                        alias);
         return -1;
@@ -864,7 +864,7 @@ virDomainDeviceValidateAliasImpl(const virDomainDef *def,
         goto cleanup;
 
     if (virHashLookup(aliases, info->alias)) {
-        virReportError(VIR_ERR_XML_ERROR,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("non unique alias detected: %s"),
                        info->alias);
         goto cleanup;
@@ -1050,7 +1050,7 @@ virDomainDefIOMMUValidate(const virDomainDef *def)
 
     if (def->iommu->intremap == VIR_TRISTATE_SWITCH_ON &&
         def->features[VIR_DOMAIN_FEATURE_IOAPIC] != VIR_DOMAIN_IOAPIC_QEMU) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("IOMMU interrupt remapping requires split I/O APIC "
                          "(ioapic driver='qemu')"));
         return -1;
@@ -1058,7 +1058,7 @@ virDomainDefIOMMUValidate(const virDomainDef *def)
 
     if (def->iommu->eim == VIR_TRISTATE_SWITCH_ON &&
         def->iommu->intremap != VIR_TRISTATE_SWITCH_ON) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("IOMMU eim requires interrupt remapping to be enabled"));
         return -1;
     }
@@ -1352,7 +1352,7 @@ virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
             if (hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
                 hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("SCSI host device must use 'drive' "
                                  "address type"));
                 return -1;
@@ -1362,7 +1362,7 @@ virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
             if (hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
                 hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
                 hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("SCSI_host host device must use 'pci' "
                                  "or 'ccw' address type"));
                 return -1;
@@ -1371,7 +1371,7 @@ virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
             if (hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
                 hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("USB host device must use 'usb' address type"));
                 return -1;
             }
@@ -1417,7 +1417,7 @@ static int
 virDomainVsockDefValidate(const virDomainVsockDef *vsock)
 {
     if (vsock->guest_cid > 0 && vsock->guest_cid <= 2) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("guest CIDs must be >= 3"));
         return -1;
     }
@@ -1434,7 +1434,7 @@ virDomainInputDefValidate(const virDomainInputDef *input)
         case VIR_DOMAIN_INPUT_TYPE_TABLET:
         case VIR_DOMAIN_INPUT_TYPE_KBD:
             if (input->source.evdev) {
-                 virReportError(VIR_ERR_XML_ERROR, "%s",
+                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                 _("setting source evdev path only supported for "
                                   "passthrough input devices"));
                  return -1;
@@ -1443,7 +1443,7 @@ virDomainInputDefValidate(const virDomainInputDef *input)
 
         case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
             if (input->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("only bus 'virtio' is supported for 'passthrough' "
                                  "input devices"));
                 return -1;
@@ -1464,19 +1464,19 @@ static int
 virDomainShmemDefValidate(const virDomainShmemDef *shmem)
 {
     if (strchr(shmem->name, '/')) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("shmem name cannot include '/' character"));
         return -1;
     }
 
     if (STREQ(shmem->name, ".")) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("shmem name cannot be equal to '.'"));
         return -1;
     }
 
     if (STREQ(shmem->name, "..")) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("shmem name cannot be equal to '..'"));
         return -1;
     }
