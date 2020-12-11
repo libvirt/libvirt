@@ -76,7 +76,7 @@ virDomainDefVideoValidate(const virDomainDef *def)
 }
 
 
-int
+static int
 virDomainVideoDefValidate(const virDomainVideoDef *video,
                           const virDomainDef *def)
 {
@@ -229,7 +229,7 @@ virSecurityDeviceLabelDefValidate(virSecurityDeviceLabelDefPtr *seclabels,
 #define VENDOR_LEN  8
 #define PRODUCT_LEN 16
 
-int
+static int
 virDomainDiskDefValidate(const virDomainDef *def,
                          const virDomainDiskDef *disk)
 {
@@ -446,7 +446,7 @@ virDomainChrSourceDefValidate(const virDomainChrSourceDef *src_def,
 }
 
 
-int
+static int
 virDomainRedirdevDefValidate(const virDomainDef *def,
                              const virDomainRedirdevDef *redirdev)
 {
@@ -462,7 +462,7 @@ virDomainRedirdevDefValidate(const virDomainDef *def,
 }
 
 
-int
+static int
 virDomainChrDefValidate(const virDomainChrDef *chr,
                         const virDomainDef *def)
 {
@@ -470,7 +470,7 @@ virDomainChrDefValidate(const virDomainChrDef *chr,
 }
 
 
-int
+static int
 virDomainRNGDefValidate(const virDomainRNGDef *rng,
                         const virDomainDef *def)
 {
@@ -481,7 +481,7 @@ virDomainRNGDefValidate(const virDomainRNGDef *rng,
 }
 
 
-int
+static int
 virDomainSmartcardDefValidate(const virDomainSmartcardDef *smartcard,
                               const virDomainDef *def)
 {
@@ -520,7 +520,7 @@ virDomainDefTunablesValidate(const virDomainDef *def)
 }
 
 
-int
+static int
 virDomainControllerDefValidate(const virDomainControllerDef *controller)
 {
     if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
@@ -1273,7 +1273,7 @@ virDomainActualNetDefValidate(const virDomainNetDef *net)
 }
 
 
-int
+static int
 virDomainNetDefValidate(const virDomainNetDef *net)
 {
     char macstr[VIR_MAC_STRING_BUFLEN];
@@ -1323,7 +1323,7 @@ virDomainNetDefValidate(const virDomainNetDef *net)
 }
 
 
-int
+static int
 virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
 {
     if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
@@ -1374,7 +1374,7 @@ virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
 }
 
 
-int
+static int
 virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
                            const virDomainDef *def)
 {
@@ -1402,7 +1402,7 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
 }
 
 
-int
+static int
 virDomainVsockDefValidate(const virDomainVsockDef *vsock)
 {
     if (vsock->guest_cid > 0 && vsock->guest_cid <= 2) {
@@ -1414,7 +1414,8 @@ virDomainVsockDefValidate(const virDomainVsockDef *vsock)
     return 0;
 }
 
-int
+
+static int
 virDomainInputDefValidate(const virDomainInputDef *input)
 {
     switch ((virDomainInputType) input->type) {
@@ -1448,7 +1449,7 @@ virDomainInputDefValidate(const virDomainInputDef *input)
 }
 
 
-int
+static int
 virDomainShmemDefValidate(const virDomainShmemDef *shmem)
 {
     if (strchr(shmem->name, '/')) {
