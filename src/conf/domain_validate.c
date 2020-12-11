@@ -1043,6 +1043,31 @@ virDomainDefCputuneValidate(const virDomainDef *def)
 
 
 static int
+virDomainDefIOMMUValidate(const virDomainDef *def)
+{
+    if (!def->iommu)
+        return 0;
+
+    if (def->iommu->intremap == VIR_TRISTATE_SWITCH_ON &&
+        def->features[VIR_DOMAIN_FEATURE_IOAPIC] != VIR_DOMAIN_IOAPIC_QEMU) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("IOMMU interrupt remapping requires split I/O APIC "
+                         "(ioapic driver='qemu')"));
+        return -1;
+    }
+
+    if (def->iommu->eim == VIR_TRISTATE_SWITCH_ON &&
+        def->iommu->intremap != VIR_TRISTATE_SWITCH_ON) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("IOMMU eim requires interrupt remapping to be enabled"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDefValidateInternal(const virDomainDef *def,
                              virDomainXMLOptionPtr xmlopt)
 {
@@ -1058,22 +1083,8 @@ virDomainDefValidateInternal(const virDomainDef *def,
     if (virDomainDefValidateAliases(def, NULL) < 0)
         return -1;
 
-    if (def->iommu &&
-        def->iommu->intremap == VIR_TRISTATE_SWITCH_ON &&
-        def->features[VIR_DOMAIN_FEATURE_IOAPIC] != VIR_DOMAIN_IOAPIC_QEMU) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("IOMMU interrupt remapping requires split I/O APIC "
-                         "(ioapic driver='qemu')"));
+    if (virDomainDefIOMMUValidate(def) < 0)
         return -1;
-    }
-
-    if (def->iommu &&
-        def->iommu->eim == VIR_TRISTATE_SWITCH_ON &&
-        def->iommu->intremap != VIR_TRISTATE_SWITCH_ON) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("IOMMU eim requires interrupt remapping to be enabled"));
-        return -1;
-    }
 
     if (virDomainDefLifecycleActionValidate(def) < 0)
         return -1;
