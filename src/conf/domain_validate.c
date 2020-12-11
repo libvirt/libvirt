@@ -1471,3 +1471,91 @@ virDomainShmemDefValidate(const virDomainShmemDef *shmem)
 
     return 0;
 }
+
+
+static int
+virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
+                                   const virDomainDef *def)
+{
+    switch ((virDomainDeviceType) dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        return virDomainDiskDefValidate(def, dev->data.disk);
+
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        return virDomainRedirdevDefValidate(def, dev->data.redirdev);
+
+    case VIR_DOMAIN_DEVICE_NET:
+        return virDomainNetDefValidate(dev->data.net);
+
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+        return virDomainControllerDefValidate(dev->data.controller);
+
+    case VIR_DOMAIN_DEVICE_CHR:
+        return virDomainChrDefValidate(dev->data.chr, def);
+
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+        return virDomainSmartcardDefValidate(dev->data.smartcard, def);
+
+    case VIR_DOMAIN_DEVICE_RNG:
+        return virDomainRNGDefValidate(dev->data.rng, def);
+
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        return virDomainHostdevDefValidate(dev->data.hostdev);
+
+    case VIR_DOMAIN_DEVICE_VIDEO:
+        return virDomainVideoDefValidate(dev->data.video, def);
+
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        return virDomainMemoryDefValidate(dev->data.memory, def);
+
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        return virDomainVsockDefValidate(dev->data.vsock);
+
+    case VIR_DOMAIN_DEVICE_INPUT:
+        return virDomainInputDefValidate(dev->data.input);
+
+    case VIR_DOMAIN_DEVICE_SHMEM:
+        return virDomainShmemDefValidate(dev->data.shmem);
+
+    case VIR_DOMAIN_DEVICE_AUDIO:
+        /* TODO: validate? */
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+int
+virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
+                           const virDomainDef *def,
+                           unsigned int parseFlags,
+                           virDomainXMLOptionPtr xmlopt,
+                           void *parseOpaque)
+{
+    /* validate configuration only in certain places */
+    if (parseFlags & VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)
+        return 0;
+
+    if (xmlopt->config.deviceValidateCallback &&
+        xmlopt->config.deviceValidateCallback(dev, def, xmlopt->config.priv, parseOpaque))
+        return -1;
+
+    if (virDomainDeviceDefValidateInternal(dev, def) < 0)
+        return -1;
+
+    return 0;
+}

@@ -53,3 +53,8 @@ int virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
 int virDomainVsockDefValidate(const virDomainVsockDef *vsock);
 int virDomainInputDefValidate(const virDomainInputDef *input);
 int virDomainShmemDefValidate(const virDomainShmemDef *shmem);
+int virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
+                               const virDomainDef *def,
+                               unsigned int parseFlags,
+                               virDomainXMLOptionPtr xmlopt,
+                               void *parseOpaque);

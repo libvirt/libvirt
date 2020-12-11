@@ -3122,11 +3122,7 @@ void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def);
 void virDomainRedirFilterDefFree(virDomainRedirFilterDefPtr def);
 void virDomainShmemDefFree(virDomainShmemDefPtr def);
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
-int virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
-                               const virDomainDef *def,
-                               unsigned int parseFlags,
-                               virDomainXMLOptionPtr xmlopt,
-                               void *parseOpaque);
+
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainDeviceDef, virDomainDeviceDefFree);
 virDomainDeviceDefPtr virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
                                              const virDomainDef *def,
