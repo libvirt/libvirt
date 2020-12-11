@@ -1321,3 +1321,153 @@ virDomainNetDefValidate(const virDomainNetDef *net)
 
     return 0;
 }
+
+
+int
+virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
+{
+    if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+        switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            if (hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED &&
+                hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("PCI host devices must use 'pci' or "
+                                 "'unassigned' address type"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+            if (hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("SCSI host device must use 'drive' "
+                                 "address type"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+            if (hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+                hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("SCSI_host host device must use 'pci' "
+                                 "or 'ccw' address type"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+            if (hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("USB host device must use 'usb' address type"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
+            break;
+        }
+    }
+    return 0;
+}
+
+
+int
+virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
+                           const virDomainDef *def)
+{
+    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+        if (!mem->nvdimmPath) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("path is required for model 'nvdimm'"));
+            return -1;
+        }
+
+        if (mem->discard == VIR_TRISTATE_BOOL_YES) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("discard is not supported for nvdimms"));
+            return -1;
+        }
+
+        if (ARCH_IS_PPC64(def->os.arch) && mem->labelsize == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("label size is required for NVDIMM device"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+int
+virDomainVsockDefValidate(const virDomainVsockDef *vsock)
+{
+    if (vsock->guest_cid > 0 && vsock->guest_cid <= 2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("guest CIDs must be >= 3"));
+        return -1;
+    }
+
+    return 0;
+}
+
+int
+virDomainInputDefValidate(const virDomainInputDef *input)
+{
+    switch ((virDomainInputType) input->type) {
+        case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+        case VIR_DOMAIN_INPUT_TYPE_TABLET:
+        case VIR_DOMAIN_INPUT_TYPE_KBD:
+            if (input->source.evdev) {
+                 virReportError(VIR_ERR_XML_ERROR, "%s",
+                                _("setting source evdev path only supported for "
+                                  "passthrough input devices"));
+                 return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+            if (input->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("only bus 'virtio' is supported for 'passthrough' "
+                                 "input devices"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_INPUT_TYPE_LAST:
+        default:
+            virReportEnumRangeError(virDomainInputType, input->type);
+            return -1;
+    }
+
+    return 0;
+}
+
+
+int
+virDomainShmemDefValidate(const virDomainShmemDef *shmem)
+{
+    if (strchr(shmem->name, '/')) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("shmem name cannot include '/' character"));
+        return -1;
+    }
+
+    if (STREQ(shmem->name, ".")) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("shmem name cannot be equal to '.'"));
+        return -1;
+    }
+
+    if (STREQ(shmem->name, "..")) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("shmem name cannot be equal to '..'"));
+        return -1;
+    }
+
+    return 0;
+}

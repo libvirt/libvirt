@@ -47,3 +47,9 @@ int virDomainDefValidate(virDomainDefPtr def,
                          void *parseOpaque);
 int virDomainActualNetDefValidate(const virDomainNetDef *net);
 int virDomainNetDefValidate(const virDomainNetDef *net);
+int virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev);
+int virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
+                               const virDomainDef *def);
+int virDomainVsockDefValidate(const virDomainVsockDef *vsock);
+int virDomainInputDefValidate(const virDomainInputDef *input);
+int virDomainShmemDefValidate(const virDomainShmemDef *shmem);
