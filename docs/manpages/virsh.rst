@@ -3346,17 +3346,17 @@ bind to for incoming disks traffic. Currently it is supported only by QEMU.
 Optional *disks-uri* can also be specified (mutually exclusive with
 *disks-port*) to specify what the remote hypervisor should bind/connect to when
 migrating disks.  This can be *tcp://address:port* to specify a listen address
-(which overrides *--listen-address* for the disk migration) and a port or
-*unix:///path/to/socket* in case you need the disk migration to happen over a
-UNIX socket with that specified path.  In this case you need to make sure the
-same socket path is accessible to both source and destination hypervisors and
-connecting to the socket on the source (after hypervisor creates it on the
-destination) will actually connect to the destination. If you are using SELinux
-(at least on the source host) you need to make sure the socket on the source is
-accessible to libvirtd/QEMU for connection.  Libvirt cannot change the context
-of the existing socket because it is different from the file representation of
-the socket and the context is chosen by its creator (usually by using
-*setsockcreatecon{,_raw}()* functions).
+(which overrides *--migrate-uri* and *--listen-address* for the disk migration)
+and a port or *unix:///path/to/socket* in case you need the disk migration to
+happen over a UNIX socket with that specified path.  In this case you need to
+make sure the same socket path is accessible to both source and destination
+hypervisors and connecting to the socket on the source (after hypervisor creates
+it on the destination) will actually connect to the destination. If you are
+using SELinux (at least on the source host) you need to make sure the socket on
+the source is accessible to libvirtd/QEMU for connection.  Libvirt cannot change
+the context of the existing socket because it is different from the file
+representation of the socket and the context is chosen by its creator (usually
+by using *setsockcreatecon{,_raw}()* functions).
 
 
 migrate-compcache
