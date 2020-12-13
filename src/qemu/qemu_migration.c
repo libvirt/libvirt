@@ -408,6 +408,11 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
         if (!uri)
             return -1;
 
+        if (!uri->scheme) {
+            virReportError(VIR_ERR_INVALID_ARG, _("No URI scheme specified: %s"), nbdURI);
+            return -1;
+        }
+
         if (STREQ(uri->scheme, "tcp")) {
             server.transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
             if (!uri->server || STREQ(uri->server, "")) {
