@@ -754,6 +754,9 @@ static int
 qemuValidateDomainDefMemory(const virDomainDef *def,
                             virQEMUCapsPtr qemuCaps)
 {
+    const char *defaultRAMid = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
+                                                                 def->virtType,
+                                                                 def->os.machine);
     const long system_page_size = virGetSystemPageSizeKB();
     const virDomainMemtune *mem = &def->mem;
 
@@ -781,9 +784,10 @@ qemuValidateDomainDefMemory(const virDomainDef *def,
         return -1;
     }
 
-    /* We can't guarantee any other mem.access
-     * if no guest NUMA nodes are defined. */
-    if (mem->hugepages[0].size != system_page_size &&
+    /* We can't guarantee any other mem.access if no guest NUMA
+     * nodes are defined, unless defaultRAMid is provided. */
+    if (!defaultRAMid &&
+        mem->hugepages[0].size != system_page_size &&
         virDomainNumaGetNodeCount(def->numa) == 0 &&
         mem->access != VIR_DOMAIN_MEMORY_ACCESS_DEFAULT &&
         mem->access != VIR_DOMAIN_MEMORY_ACCESS_PRIVATE) {
