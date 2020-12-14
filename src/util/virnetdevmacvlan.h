@@ -48,23 +48,15 @@ typedef enum {
    VIR_NETDEV_MACVLAN_VNET_HDR          = 1 << 2,
 } virNetDevMacVLanCreateFlags;
 
-/* libvirt will start macvtap/macvlan interface names with one of
- * these prefixes when it auto-generates the name
- */
-#define VIR_NET_GENERATED_MACVTAP_PREFIX "macvtap"
-#define VIR_NET_GENERATED_MACVLAN_PREFIX "macvlan"
-
-void virNetDevMacVLanReserveName(const char *name);
-
 bool virNetDevMacVLanIsMacvtap(const char *ifname)
    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
 
 int virNetDevMacVLanCreate(const char *ifname,
-                           const char *type,
                            const virMacAddr *macaddress,
                            const char *srcdev,
-                           uint32_t macvlan_mode)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
+                           uint32_t macvlan_mode,
+                           unsigned int flags)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevMacVLanDelete(const char *ifname)

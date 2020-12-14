@@ -3391,7 +3391,7 @@ qemuProcessNotifyNets(virDomainDefPtr def)
          */
         switch (virDomainNetGetActualType(net)) {
         case VIR_DOMAIN_NET_TYPE_DIRECT:
-            virNetDevMacVLanReserveName(net->ifname);
+            virNetDevReserveName(net->ifname);
             break;
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
         case VIR_DOMAIN_NET_TYPE_NETWORK:
