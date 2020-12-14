@@ -13,21 +13,22 @@
 # Timo Trinks <ttrinks@redhat.com>, 2007
 # noxin <transifex.com@davidmainzer.com>, 2013
 # Florian H. <postfuerflo@gmail.com>, 2016
+# Fabian Affolter <mail@fabian-affolter.ch>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2020-11-24 23:25+0000\n"
-"PO-Revision-Date: 2016-04-01 11:32+0000\n"
-"Last-Translator: Florian H. <postfuerflo@gmail.com>\n"
-"Language-Team: German (http://www.transifex.com/projects/p/libvirt/language/"
-"de/)\n"
+"PO-Revision-Date: 2020-12-13 02:19+0000\n"
+"Last-Translator: Fabian Affolter <mail@fabian-affolter.ch>\n"
+"Language-Team: German <https://translate.fedoraproject.org/projects/libvirt/"
+"libvirt/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3.2\n"
 
 msgid ""
 "\n"
@@ -872,9 +873,11 @@ msgstr "%s: Initialisierung fehlgeschlagen\n"
 msgid "%s: initialization failed\n"
 msgstr "%s: Initialisierung fehlgeschlagen\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: ipv6 family specified for non-IPv6 address '%s' in route definition"
-msgstr "%s Familie spezifiziert für nicht-IPv4-Adresse '%s' in Netzwerk '%s'"
+msgstr ""
+"%s: IPv6-Familie spezifiziert für nicht-IPv6-Adresse '%s' in der Route-"
+"Beschreibung"
 
 #, fuzzy, c-format
 msgid ""
@@ -893,14 +896,13 @@ msgstr ""
 "%s: remote_display_port_max: Port muss zwischen dem Minimalen Port und %d "
 "sein"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: migration_port_min: port must be greater than 0"
-msgstr ""
-"%s: remote_display_port_min: Port muss größer als oder gleich mit %d sein"
+msgstr "%s: migration_port_min: Port muss größer als 0 sein"
 
 #, c-format
 msgid "%s: must be run as root\n"
-msgstr ""
+msgstr "%s: darf nicht als root ausgeführt werden\n"
 
 #, fuzzy, c-format
 msgid "%s: must not be run setuid root\n"
@@ -966,9 +968,9 @@ msgstr "%s: Zu viele Befehlszeilen-Argumente\n"
 msgid "%s: try --help for more details"
 msgstr "%s: Versuchen Sie --help für mehr Details"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: try --help for more details\n"
-msgstr "%s: Versuchen Sie --help für mehr Details"
+msgstr "%s: Versuchen Sie --help für mehr Details\n"
 
 #, c-format
 msgid "%s: unable to determine access mode of fd %d"
@@ -1028,15 +1030,15 @@ msgstr ""
 
 #, c-format
 msgid "'%s'"
-msgstr ""
+msgstr "'%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' architecture is not supported by CPU driver"
-msgstr "Filtern wird nicht unterstützt von diesem libvirt"
+msgstr "'%s'-Architektur wird nicht unterstützt vom CPU-Treiber"
 
 #, c-format
 msgid "'%s' attributes '%s' must not overlap"
-msgstr ""
+msgstr "'%s'-Attribute '%s' dürfen sich nicht überlappen"
 
 #, c-format
 msgid "'%s' controller cannot be hot plugged."
@@ -1046,13 +1048,13 @@ msgstr "Controller '%s' kann nicht im laufenden Betrieb entfernt werden."
 msgid "'%s' controller cannot be hot unplugged."
 msgstr "Controller '%s' kann nicht im laufenden Betrieb entfernt werden."
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' controller only supports up to '%u' ports"
-msgstr "SCSI-Controller unterstützt nur 1 Bus"
+msgstr "'%s' -Controller unterstützt nur bis '%u' Ports"
 
 #, c-format
 msgid "'%s' denied access"
-msgstr ""
+msgstr "'%s' Zugriff verweigert"
 
 #, c-format
 msgid "'%s' does not exist"
