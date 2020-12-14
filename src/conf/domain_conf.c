@@ -11081,7 +11081,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     if (def->managed_tap != VIR_TRISTATE_BOOL_NO && ifname &&
         (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
-        (STRPREFIX(ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
+        (STRPREFIX(ifname, VIR_NET_GENERATED_VNET_PREFIX) ||
          STRPREFIX(ifname, VIR_NET_GENERATED_MACVTAP_PREFIX) ||
          STRPREFIX(ifname, VIR_NET_GENERATED_MACVLAN_PREFIX) ||
          (prefix && STRPREFIX(ifname, prefix)))) {
@@ -25504,7 +25504,7 @@ virDomainNetDefFormat(virBufferPtr buf,
     if (def->ifname &&
         (def->managed_tap == VIR_TRISTATE_BOOL_NO ||
          !((flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
-           (STRPREFIX(def->ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
+           (STRPREFIX(def->ifname, VIR_NET_GENERATED_VNET_PREFIX) ||
             STRPREFIX(def->ifname, VIR_NET_GENERATED_MACVTAP_PREFIX) ||
             STRPREFIX(def->ifname, VIR_NET_GENERATED_MACVLAN_PREFIX) ||
             (prefix && STRPREFIX(def->ifname, prefix)))))) {

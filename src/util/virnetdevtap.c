@@ -76,11 +76,11 @@ virNetDevTapReserveName(const char *name)
     const char *idstr = NULL;
 
 
-    if (STRPREFIX(name, VIR_NET_GENERATED_TAP_PREFIX)) {
+    if (STRPREFIX(name, VIR_NET_GENERATED_VNET_PREFIX)) {
 
         VIR_INFO("marking device in use: '%s'", name);
 
-        idstr = name + strlen(VIR_NET_GENERATED_TAP_PREFIX);
+        idstr = name + strlen(VIR_NET_GENERATED_VNET_PREFIX);
 
         if (virStrToLong_ui(idstr, NULL, 10, &id) >= 0) {
             virMutexLock(&virNetDevTapCreateMutex);
@@ -200,7 +200,7 @@ static int
 virNetDevTapGenerateName(char **ifname)
 {
     int id;
-    double maxIDd = pow(10, IFNAMSIZ - 1 - strlen(VIR_NET_GENERATED_TAP_PREFIX));
+    double maxIDd = pow(10, IFNAMSIZ - 1 - strlen(VIR_NET_GENERATED_VNET_PREFIX));
     int maxID = INT_MAX;
     int attempts = 0;
 
@@ -227,7 +227,7 @@ virNetDevTapGenerateName(char **ifname)
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("no unused %s names available"),
-                   VIR_NET_GENERATED_TAP_PREFIX);
+                   VIR_NET_GENERATED_VNET_PREFIX);
     return -1;
 }
 
@@ -270,7 +270,7 @@ int virNetDevTapCreate(char **ifname,
      * immediately re-using names that have just been released, which
      * can lead to race conditions).
      */
-    if (STREQ(*ifname, VIR_NET_GENERATED_TAP_PREFIX "%d") &&
+    if (STREQ(*ifname, VIR_NET_GENERATED_VNET_PREFIX "%d") &&
         virNetDevTapGenerateName(ifname) < 0) {
         goto cleanup;
     }
