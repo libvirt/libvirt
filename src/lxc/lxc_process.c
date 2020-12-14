@@ -1636,13 +1636,6 @@ virLXCProcessReconnectNotifyNets(virDomainDefPtr def)
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
-        /* keep others from trying to use the macvtap device name, but
-         * don't return error if this happens, since that causes the
-         * domain to be unceremoniously killed, which would be *very*
-         * impolite.
-         */
-        if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT)
-            virNetDevMacVLanReserveName(net->ifname);
 
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             if (!conn && !(conn = virGetConnectNetwork()))
