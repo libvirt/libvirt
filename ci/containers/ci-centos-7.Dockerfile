@@ -1,6 +1,13 @@
+# THIS FILE WAS AUTO-GENERATED
+#
+#  $ lcitool dockerfile centos-7 libvirt
+#
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/b098ec6631a85880f818f2dd25c437d509e53680
 FROM registry.centos.org/centos:7
 
-RUN echo -e '[openvz]\n\
+RUN yum update -y && \
+    echo 'skip_missing_names_on_install=0' >> /etc/yum.conf && \
+    echo -e '[openvz]\n\
 name=OpenVZ addons\n\
 baseurl=https://download.openvz.org/virtuozzo/releases/openvz-7.0.11-235/x86_64/os/\n\
 enabled=1\n\
@@ -31,7 +38,7 @@ WEiJKtQrZDJloqtyi/mmRa1VsV7RYR0VPJjhK/R8EQ7Ysshy\n\
 -----END PGP PUBLIC KEY BLOCK-----' > /etc/pki/rpm-gpg/RPM-GPG-KEY-OpenVZ && \
     rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-OpenVZ && \
     yum install -y epel-release && \
-    yum update -y && \
+    yum install -y centos-release-xen-48 && \
     yum install -y \
         audit-libs-devel \
         augeas \
@@ -105,10 +112,12 @@ WEiJKtQrZDJloqtyi/mmRa1VsV7RYR0VPJjhK/R8EQ7Ysshy\n\
         scrub \
         systemtap-sdt-devel \
         wireshark-devel \
+        xen-devel \
         xfsprogs-devel \
         yajl-devel && \
     yum autoremove -y && \
     yum clean all -y && \
+    rpm -qa | sort > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/$(basename /usr/bin/gcc)

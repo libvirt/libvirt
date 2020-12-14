@@ -1,7 +1,22 @@
+# THIS FILE WAS AUTO-GENERATED
+#
+#  $ lcitool dockerfile fedora-33 libvirt
+#
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/b098ec6631a85880f818f2dd25c437d509e53680
 FROM registry.fedoraproject.org/fedora:33
 
-RUN dnf update -y && \
-    dnf install -y \
+RUN dnf install -y nosync && \
+    echo -e '#!/bin/sh\n\
+if test -d /usr/lib64\n\
+then\n\
+    export LD_PRELOAD=/usr/lib64/nosync/nosync.so\n\
+else\n\
+    export LD_PRELOAD=/usr/lib/nosync/nosync.so\n\
+fi\n\
+exec "$@"' > /usr/bin/nosync && \
+    chmod +x /usr/bin/nosync && \
+    nosync dnf update -y && \
+    nosync dnf install -y \
         audit-libs-devel \
         augeas \
         avahi-devel \
@@ -80,8 +95,9 @@ RUN dnf update -y && \
         xfsprogs-devel \
         yajl-devel \
         zfs-fuse && \
-    dnf autoremove -y && \
-    dnf clean all -y && \
+    nosync dnf autoremove -y && \
+    nosync dnf clean all -y && \
+    rpm -qa | sort > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/$(basename /usr/bin/gcc)

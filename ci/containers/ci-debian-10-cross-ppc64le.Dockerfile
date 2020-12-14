@@ -1,9 +1,15 @@
-FROM docker.io/library/debian:10
+# THIS FILE WAS AUTO-GENERATED
+#
+#  $ lcitool dockerfile --cross ppc64le debian-10 libvirt
+#
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/b098ec6631a85880f818f2dd25c437d509e53680
+FROM docker.io/library/debian:10-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
-    apt-get dist-upgrade -y && \
-    apt-get install --no-install-recommends -y \
+    apt-get install -y eatmydata && \
+    eatmydata apt-get dist-upgrade -y && \
+    eatmydata apt-get install --no-install-recommends -y \
             augeas-lenses \
             augeas-tools \
             bash-completion \
@@ -43,20 +49,21 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             scrub \
             xsltproc \
             zfs-fuse && \
-    apt-get autoremove -y && \
-    apt-get autoclean -y && \
+    eatmydata apt-get autoremove -y && \
+    eatmydata apt-get autoclean -y && \
     sed -Ei 's,^# (en_US\.UTF-8 .*)$,\1,' /etc/locale.gen && \
     dpkg-reconfigure locales && \
+    dpkg-query --showformat '${Package}_${Version}_${Architecture}\n' --show > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/powerpc64le-linux-gnu-cc && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/powerpc64le-linux-gnu-$(basename /usr/bin/gcc)
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     dpkg --add-architecture ppc64el && \
-    apt-get update && \
-    apt-get dist-upgrade -y && \
-    apt-get install --no-install-recommends -y dpkg-dev && \
-    apt-get install --no-install-recommends -y \
+    eatmydata apt-get update && \
+    eatmydata apt-get dist-upgrade -y && \
+    eatmydata apt-get install --no-install-recommends -y dpkg-dev && \
+    eatmydata apt-get install --no-install-recommends -y \
             gcc-powerpc64le-linux-gnu \
             libacl1-dev:ppc64el \
             libapparmor-dev:ppc64el \
@@ -92,8 +99,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libxml2-dev:ppc64el \
             libyajl-dev:ppc64el \
             xfslibs-dev:ppc64el && \
-    apt-get autoremove -y && \
-    apt-get autoclean -y && \
+    eatmydata apt-get autoremove -y && \
+    eatmydata apt-get autoclean -y && \
     mkdir -p /usr/local/share/meson/cross && \
     echo "[binaries]\n\
 c = '/usr/bin/powerpc64le-linux-gnu-gcc'\n\
@@ -117,5 +124,4 @@ ENV PYTHON "/usr/bin/python3"
 ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 ENV ABI "powerpc64le-linux-gnu"
-ENV CONFIGURE_OPTS "--host=powerpc64le-linux-gnu"
 ENV MESON_OPTS "--cross-file=powerpc64le-linux-gnu"
