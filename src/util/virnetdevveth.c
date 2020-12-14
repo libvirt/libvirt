@@ -32,48 +32,6 @@
 
 VIR_LOG_INIT("util.netdevveth");
 
-/* Functions */
-
-virMutex virNetDevVethCreateMutex = VIR_MUTEX_INITIALIZER;
-
-static int virNetDevVethExists(int devNum)
-{
-    int ret;
-    g_autofree char *path = NULL;
-
-    path = g_strdup_printf(SYSFS_NET_DIR "vnet%d/", devNum);
-    ret = virFileExists(path) ? 1 : 0;
-    VIR_DEBUG("Checked dev vnet%d usage: %d", devNum, ret);
-    return ret;
-}
-
-/**
- * virNetDevVethGetFreeNum:
- * @startDev: device number to start at (x in vethx)
- *
- * Looks in /sys/class/net/ to find the first available veth device
- * name.
- *
- * Returns non-negative device number on success or -1 in case of error
- */
-static int virNetDevVethGetFreeNum(int startDev)
-{
-    int devNum;
-
-#define MAX_DEV_NUM 65536
-
-    for (devNum = startDev; devNum < MAX_DEV_NUM; devNum++) {
-        int ret = virNetDevVethExists(devNum);
-        if (ret < 0)
-            return -1;
-        if (ret == 0)
-            return devNum;
-    }
-
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("No free veth devices available"));
-    return -1;
-}
 
 /**
  * virNetDevVethCreate:
@@ -102,77 +60,42 @@ static int virNetDevVethGetFreeNum(int startDev)
  */
 int virNetDevVethCreate(char** veth1, char** veth2)
 {
-    int ret = -1;
-    int vethNum = 0;
-    size_t i;
+    int status;
+    g_autofree char *veth1auto = NULL;
+    g_autofree char *veth2auto = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
-    /*
-     * We might race with other containers, but this is reasonably
-     * unlikely, so don't do too many retries for device creation
-     */
-    virMutexLock(&virNetDevVethCreateMutex);
-#define MAX_VETH_RETRIES 10
+    if (virNetDevGenerateName(&veth1auto, VIR_NET_DEV_GEN_NAME_VNET) < 0)
+        return -1;
 
-    for (i = 0; i < MAX_VETH_RETRIES; i++) {
-        g_autofree char *veth1auto = NULL;
-        g_autofree char *veth2auto = NULL;
-        g_autoptr(virCommand) cmd = NULL;
+    if (virNetDevGenerateName(&veth2auto, VIR_NET_DEV_GEN_NAME_VNET) < 0)
+        return -1;
 
-        int status;
-        if (!*veth1) {
-            int veth1num;
-            if ((veth1num = virNetDevVethGetFreeNum(vethNum)) < 0)
-                goto cleanup;
+    cmd = virCommandNew("ip");
+    virCommandAddArgList(cmd, "link", "add",
+                         *veth1 ? *veth1 : veth1auto,
+                         "type", "veth", "peer", "name",
+                         *veth2 ? *veth2 : veth2auto,
+                         NULL);
 
-            veth1auto = g_strdup_printf("vnet%d", veth1num);
-            vethNum = veth1num + 1;
-        }
-        if (!*veth2) {
-            int veth2num;
-            if ((veth2num = virNetDevVethGetFreeNum(vethNum)) < 0)
-                goto cleanup;
-
-            veth2auto = g_strdup_printf("vnet%d", veth2num);
-            vethNum = veth2num + 1;
-        }
-
-        cmd = virCommandNew("ip");
-        virCommandAddArgList(cmd, "link", "add",
-                             *veth1 ? *veth1 : veth1auto,
-                             "type", "veth", "peer", "name",
-                             *veth2 ? *veth2 : veth2auto,
-                             NULL);
-
-        if (virCommandRun(cmd, &status) < 0)
-            goto cleanup;
-
-        if (status == 0) {
-            if (veth1auto) {
-                *veth1 = veth1auto;
-                veth1auto = NULL;
-            }
-            if (veth2auto) {
-                *veth2 = veth2auto;
-                veth2auto = NULL;
-            }
-            VIR_DEBUG("Create Host: %s guest: %s", *veth1, *veth2);
-            ret = 0;
-            goto cleanup;
-        }
-
-        VIR_DEBUG("Failed to create veth host: %s guest: %s: %d",
-                  *veth1 ? *veth1 : veth1auto,
-                  *veth2 ? *veth2 : veth2auto,
-                  status);
+    if (virCommandRun(cmd, &status) < 0 || status) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("Failed to allocate free veth pair"));
+        return -1;
     }
 
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Failed to allocate free veth pair after %d attempts"),
-                   MAX_VETH_RETRIES);
+    VIR_DEBUG("create veth host: %s guest: %s: %d",
+              *veth1 ? *veth1 : veth1auto,
+              *veth2 ? *veth2 : veth2auto,
+              status);
 
- cleanup:
-    virMutexUnlock(&virNetDevVethCreateMutex);
-    return ret;
+    if (veth1auto)
+        *veth1 = g_steal_pointer(&veth1auto);
+    if (veth2auto)
+        *veth2 = g_steal_pointer(&veth2auto);
+
+    VIR_DEBUG("Create Host: %s guest: %s", *veth1, *veth2);
+    return 0;
 }
 
 /**
