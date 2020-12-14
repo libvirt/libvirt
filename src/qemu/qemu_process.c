@@ -3396,7 +3396,7 @@ qemuProcessNotifyNets(virDomainDefPtr def)
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
         case VIR_DOMAIN_NET_TYPE_NETWORK:
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
-            virNetDevTapReserveName(net->ifname);
+            virNetDevReserveName(net->ifname);
             break;
         case VIR_DOMAIN_NET_TYPE_USER:
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
