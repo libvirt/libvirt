@@ -96,7 +96,7 @@ def call_qemu(qemu, qmp_cmds):
             yield json.loads(line)
 
 
-def gather_static_model(args):
+def gather_model(args):
     output = call_qemu(args.path_to_qemu, [
         {
             "execute": "query-cpu-model-expansion",
@@ -108,14 +108,11 @@ def gather_static_model(args):
             "id": "model-expansion"
         }])
 
+    static_model = None
     for o in output:
         if o.get("id") == "model-expansion":
-            return o["return"]["model"]
+            static_model = o["return"]["model"]
 
-    return None
-
-
-def gather_full_model(args, static_model):
     if static_model:
         return call_qemu(args.path_to_qemu, [
             {
@@ -231,15 +228,13 @@ def main():
         for key, value in sorted(msr.items()):
             print("   0x{:x}: 0x{:016x}\n".format(int(key), value))
 
-    static_model = gather_static_model(args)
-    model = gather_full_model(args, static_model)
+    model = gather_model(args)
     for o in model:
         print(json.dumps(o))
 
     print(end="", flush=True)
     os.environ["CPU_GATHER_PY"] = "true"
     os.environ["qemu"] = args.path_to_qemu
-    os.environ["model"] = json.dumps(static_model) if static_model else ""
     subprocess.check_call("./cpu-gather.sh")
 
 
