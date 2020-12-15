@@ -208,26 +208,31 @@ static int
 lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
                            void **data)
 {
-    lxcDomainDefPtr lxcDef = g_new0(lxcDomainDef, 1);
+    lxcDomainDefPtr lxcDef = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
-    bool uses_lxc_ns = false;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    int feature;
     int n;
     size_t i;
+    int ret = -1;
 
     if ((n = virXPathNodeSet("./lxc:namespace/*", ctxt, &nodes)) < 0)
-        goto error;
-    uses_lxc_ns |= n > 0;
+        return -1;
+
+    if (n == 0)
+        return 0;
+
+    lxcDef = g_new0(lxcDomainDef, 1);
 
     for (i = 0; i < n; i++) {
         g_autofree char *tmp = NULL;
+        int feature;
+
         if ((feature = virLXCDomainNamespaceTypeFromString(
                  (const char *)nodes[i]->name)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("unsupported Namespace feature: %s"),
-                            nodes[i]->name);
-            goto error;
+                           _("unsupported Namespace feature: %s"),
+                           nodes[i]->name);
+            goto cleanup;
         }
 
         ctxt->node = nodes[i];
@@ -235,31 +240,30 @@ lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
         if (!(tmp = virXMLPropString(nodes[i], "type"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("No lxc environment type specified"));
-            goto error;
+            goto cleanup;
         }
         if ((lxcDef->ns_source[feature] =
              virLXCDomainNamespaceSourceTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown LXC namespace source '%s'"),
                            tmp);
-            goto error;
+            goto cleanup;
         }
 
         if (!(lxcDef->ns_val[feature] =
               virXMLPropString(nodes[i], "value"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("No lxc environment type specified"));
-            goto error;
+            goto cleanup;
         }
     }
-    if (uses_lxc_ns)
-        *data = lxcDef;
-    else
-        g_free(lxcDef);
-    return 0;
- error:
+
+    *data = g_steal_pointer(&lxcDef);
+    ret = 0;
+
+ cleanup:
     lxcDomainDefNamespaceFree(lxcDef);
-    return -1;
+    return ret;
 }
 
 
