@@ -174,15 +174,14 @@ int virNetDevTapCreate(char **ifname,
     int ret = -1;
     int fd = -1;
 
-    /* if ifname is "vnet%d", then auto-generate a name for the new
+    /* if ifname is empty, then auto-generate a name for the new
      * device (the kernel could do this for us, but has a bad habit of
      * immediately re-using names that have just been released, which
-     * can lead to race conditions).
-     * if ifname is just a user-provided name, virNetDevGenerateName
-     * leaves it unchanged. */
-    if (virNetDevGenerateName(ifname, VIR_NET_DEV_GEN_NAME_VNET) < 0) {
+     * can lead to race conditions).  if ifname is just a
+     * user-provided name, virNetDevGenerateName leaves it
+     * unchanged. */
+    if (virNetDevGenerateName(ifname, VIR_NET_DEV_GEN_NAME_VNET) < 0)
         return -1;
-    }
 
     if (!tunpath)
         tunpath = "/dev/net/tun";
