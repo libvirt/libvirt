@@ -192,6 +192,15 @@ def gather(args):
     return result
 
 
+def parse(args):
+    os.environ["CPU_GATHER_PY"] = "true"
+    output = subprocess.check_output(
+        "./cpu-parse.sh",
+        stderr=subprocess.STDOUT,
+        universal_newlines=True)
+    print(output)
+
+
 def output_to_text(data):
     output = list()
 
@@ -231,7 +240,20 @@ def main():
         "If unset, will try '/usr/bin/qemu-system-x86_64', "
         "'/usr/bin/qemu-kvm', and '/usr/libexec/qemu-kvm'.")
 
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
+        "--gather",
+        action="store_true",
+        help="Acquire data on target system. This is the default.")
+    mode.add_argument(
+        "--parse",
+        action="store_true",
+        help="Parse data for libvirt use.")
+
     args = parser.parse_args()
+
+    if not args.gather and not args.parse:
+        args.gather = True
 
     if not args.path_to_qemu:
         args.path_to_qemu = "qemu-system-x86_64"
@@ -243,8 +265,11 @@ def main():
             if os.path.isfile(f):
                 args.path_to_qemu = f
 
-    data = gather(args)
-    print(output_to_text(data))
+    if args.gather:
+        data = gather(args)
+        print(output_to_text(data))
+    else:
+        parse(args)
 
 
 if __name__ == "__main__":
