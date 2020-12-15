@@ -98,6 +98,8 @@ def call_qemu(qemu, qmp_cmds):
         response = json.loads(line)
         if "return" in response and not response["return"]:
             continue
+        if response.get("event") == "SHUTDOWN":
+            continue
         yield response
 
 
