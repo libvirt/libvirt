@@ -337,17 +337,7 @@
           </element>
         </optional>
         <optional>
-          <element name="topology">
-            <attribute name="sockets">
-              <ref name="positiveInteger"/>
-            </attribute>
-            <attribute name="cores">
-              <ref name="positiveInteger"/>
-            </attribute>
-            <attribute name="threads">
-              <ref name="positiveInteger"/>
-            </attribute>
-          </element>
+          <ref name="cpuTopology"/>
         </optional>
         <zeroOrMore>
           <element name="feature">
