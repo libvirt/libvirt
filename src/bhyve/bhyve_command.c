@@ -79,13 +79,6 @@ bhyveBuildNetArgStr(const virDomainDef *def,
         goto cleanup;
     }
 
-    if (!net->ifname ||
-        STRPREFIX(net->ifname, VIR_NET_GENERATED_VNET_PREFIX) ||
-        strchr(net->ifname, '%')) {
-        VIR_FREE(net->ifname);
-        net->ifname = g_strdup(VIR_NET_GENERATED_VNET_PREFIX "%d");
-    }
-
     if (!dryRun) {
         if (virNetDevTapCreateInBridgePort(brname, &net->ifname, &net->mac,
                                            def->uuid, NULL, NULL, 0,
