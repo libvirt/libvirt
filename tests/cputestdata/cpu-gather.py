@@ -115,6 +115,63 @@ def gather_static_model(args):
     return None
 
 
+def gather_full_model(args, static_model):
+    if static_model:
+        return []
+    else:
+        return call_qemu(args.path_to_qemu, [
+            {
+                "execute": "qom-get",
+                "arguments":
+                {
+                    "path": "/machine/unattached/device[0]",
+                    "property": "feature-words"
+                },
+                "id": "feature-words"
+            },
+            {
+                "execute": "qom-get",
+                "arguments":
+                {
+                    "path": "/machine/unattached/device[0]",
+                    "property": "family"
+                },
+                "id": "family"
+            },
+            {
+                "execute": "qom-get",
+                "arguments":
+                {
+                    "path": "/machine/unattached/device[0]",
+                    "property": "model"
+                },
+                "id": "model"
+            },
+            {
+                "execute": "qom-get",
+                "arguments":
+                {
+                    "path": "/machine/unattached/device[0]",
+                    "property": "stepping"
+                },
+                "id": "stepping"
+            },
+            {
+                "execute": "qom-get",
+                "arguments":
+                {
+                    "path": "/machine/unattached/device[0]",
+                    "property": "model-id"
+                },
+                "id": "model-id"
+            },
+            {
+                "execute": "query-cpu-definitions",
+                "id": "definitions"
+            }
+        ])
+
+
 def main():
     parser = argparse.ArgumentParser(description="Gather cpu test data")
     parser.add_argument(
@@ -161,6 +218,9 @@ def main():
             print("   0x{:x}: 0x{:016x}\n".format(int(key), value))
 
     static_model = gather_static_model(args)
+    model = gather_full_model(args, static_model)
+    for o in model:
+        print(json.dumps(o))
 
     print(end="", flush=True)
     os.environ["CPU_GATHER_PY"] = "true"
