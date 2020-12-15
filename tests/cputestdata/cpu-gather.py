@@ -244,13 +244,43 @@ def output_xml(data, filename):
         f.write("</cpudata>\n")
 
 
+def output_json(data, filename):
+    replies = list()
+    for reply in data["model"]:
+        if "QMP" in reply:
+            continue
+        if "timestamp" in reply:
+            continue
+        if "return" in reply and not reply["return"]:
+            continue
+        replies.append(reply)
+
+    if not replies:
+        return
+
+    if "model-expansion" not in [reply.get("id") for reply in replies]:
+        exit(
+            "Error: Missing query-cpu-model-expansion reply in "
+            "{}".format(filename))
+
+    print(filename)
+    with open(filename, "wt") as f:
+        for reply in replies:
+            if reply is not replies[0]:
+                f.write("\n")
+            json.dump(reply, f, indent=2)
+            f.write("\n")
+
+
 def parse(args):
     data = json.load(sys.stdin)
 
     filename = parse_filename(data)
     filename_xml = "{}.xml".format(filename)
+    filename_json = "{}.json".format(filename)
 
     output_xml(data, filename_xml)
+    output_json(data, filename_json)
 
     os.environ["CPU_GATHER_PY"] = "true"
     os.environ["model"] = data["name"]
