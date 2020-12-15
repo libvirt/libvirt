@@ -12,9 +12,11 @@ QEMU_AUDIO_DRV=none \
 -S \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine s390-ccw-virtio,accel=tcg,usb=off,dump-guest-core=off \
+-machine s390-ccw-virtio,accel=tcg,usb=off,dump-guest-core=off,\
+memory-backend=s390.ram \
 -cpu qemu \
 -m 214 \
+-object memory-backend-ram,id=s390.ram,size=224395264 \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -object iothread,id=iothread1 \
@@ -33,7 +35,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 "node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
 "file":"libvirt-2-storage"}' \
--device virtio-blk-ccw,iothread=iothread1,scsi=off,devno=fe.0.0000,\
+-device virtio-blk-ccw,iothread=iothread1,devno=fe.0.0000,\
 drive=libvirt-2-format,id=virtio-disk0,bootindex=1 \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2",\
 "node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \

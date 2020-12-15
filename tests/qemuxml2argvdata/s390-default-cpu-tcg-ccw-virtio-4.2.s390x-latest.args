@@ -12,9 +12,11 @@ QEMU_AUDIO_DRV=none \
 -S \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-test/master-key.aes \
--machine s390-ccw-virtio-4.2,accel=tcg,usb=off,dump-guest-core=off \
+-machine s390-ccw-virtio-4.2,accel=tcg,usb=off,dump-guest-core=off,\
+memory-backend=s390.ram \
 -cpu qemu \
 -m 256 \
+-object memory-backend-ram,id=s390.ram,size=268435456 \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 9aa4b45c-b9dd-45ef-91fe-862b27b4231f \
