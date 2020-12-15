@@ -193,9 +193,12 @@ def gather(args):
 
 
 def parse(args):
+    data = json.load(sys.stdin)
+
     os.environ["CPU_GATHER_PY"] = "true"
     output = subprocess.check_output(
         "./cpu-parse.sh",
+        input=output_to_text(data),
         stderr=subprocess.STDOUT,
         universal_newlines=True)
     print(output)
@@ -267,7 +270,7 @@ def main():
 
     if args.gather:
         data = gather(args)
-        print(output_to_text(data))
+        json.dump(data, sys.stdout, indent=2)
     else:
         parse(args)
 
