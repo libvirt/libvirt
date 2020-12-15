@@ -207,10 +207,50 @@ def parse_filename(data):
     return "x86_64-cpuid-{}".format(filename)
 
 
+def output_xml(data, filename):
+    leave_pattern = re.compile(
+        "^\\s*"
+        "(0x[0-9a-f]+)\\s*"
+        "(0x[0-9a-f]+):\\s*"
+        "eax=(0x[0-9a-f]+)\\s*"
+        "ebx=(0x[0-9a-f]+)\\s*"
+        "ecx=(0x[0-9a-f]+)\\s*"
+        "edx=(0x[0-9a-f]+)\\s*$")
+
+    leave_template = \
+        "  <cpuid" \
+        " eax_in='{}'" \
+        " ecx_in='{}'" \
+        " eax='{}'" \
+        " ebx='{}'" \
+        " ecx='{}'" \
+        " edx='{}'" \
+        "/>\n"
+
+    msr_template = "  <msr index='0x{:x}' edx='0x{:08x}' eax='0x{:08x}'/>\n"
+
+    print(filename)
+    with open(filename, "wt") as f:
+        f.write("<!-- {} -->\n".format(data["name"]))
+        f.write("<cpudata arch='x86'>\n")
+        for line in data["leaves"]:
+            match = leave_pattern.match(line)
+            f.write(leave_template.format(*match.groups()))
+        for key, value in sorted(data["msr"].items()):
+            f.write(msr_template.format(
+                int(key),
+                0xffffffff & (value >> 32),
+                0xffffffff & (value >> 0)))
+        f.write("</cpudata>\n")
+
+
 def parse(args):
     data = json.load(sys.stdin)
 
     filename = parse_filename(data)
+    filename_xml = "{}.xml".format(filename)
+
+    output_xml(data, filename_xml)
 
     os.environ["CPU_GATHER_PY"] = "true"
     os.environ["model"] = data["name"]
