@@ -455,14 +455,10 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
                 goto cleanup;
         }
     } else {
-        if (!net->ifname ||
-            STRPREFIX(net->ifname, VIR_NET_GENERATED_VNET_PREFIX) ||
-            strchr(net->ifname, '%')) {
-            VIR_FREE(net->ifname);
-            net->ifname = g_strdup(VIR_NET_GENERATED_VNET_PREFIX "%d");
-            /* avoid exposing vnet%d in getXMLDesc or error outputs */
+
+        if (!net->ifname)
             template_ifname = true;
-        }
+
         if (virNetDevTapCreate(&net->ifname, tunpath, tapfd, tapfdSize,
                                tap_create_flags) < 0) {
             goto cleanup;
@@ -559,14 +555,8 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
         goto cleanup;
     }
 
-    if (!net->ifname ||
-        STRPREFIX(net->ifname, VIR_NET_GENERATED_VNET_PREFIX) ||
-        strchr(net->ifname, '%')) {
-        VIR_FREE(net->ifname);
-        net->ifname = g_strdup(VIR_NET_GENERATED_VNET_PREFIX "%d");
-        /* avoid exposing vnet%d in getXMLDesc or error outputs */
+    if (!net->ifname)
         template_ifname = true;
-    }
 
     if (qemuInterfaceIsVnetCompatModel(net))
         tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
