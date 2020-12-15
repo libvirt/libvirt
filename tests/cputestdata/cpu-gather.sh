@@ -9,8 +9,6 @@ if [ -z "${CPU_GATHER_PY}" ]; then
     exit 1
 fi
 
-grep 'model name' /proc/cpuinfo | head -n1
-
 cpuid -1r
 echo
 
