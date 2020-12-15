@@ -337,6 +337,19 @@
           </element>
         </optional>
         <optional>
+          <element name="counter">
+            <attribute name="name">
+              <text/>
+            </attribute>
+            <attribute name="frequency">
+              <ref name="positiveInteger"/>
+            </attribute>
+            <attribute name="scaling">
+              <ref name="virYesNo"/>
+            </attribute>
+          </element>
+        </optional>
+        <optional>
           <ref name="cpuTopology"/>
         </optional>
         <zeroOrMore>
