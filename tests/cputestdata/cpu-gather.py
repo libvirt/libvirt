@@ -196,6 +196,7 @@ def parse(args):
     data = json.load(sys.stdin)
 
     os.environ["CPU_GATHER_PY"] = "true"
+    os.environ["model"] = data["name"]
     output = subprocess.check_output(
         "./cpu-parse.sh",
         input=output_to_text(data),

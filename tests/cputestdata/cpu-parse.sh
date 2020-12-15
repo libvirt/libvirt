@@ -7,8 +7,6 @@ fi
 
 data=`cat`
 
-model=`sed -ne '/^model name[ 	]*:/ {s/^[^:]*: \(.*\)/\1/p; q}' <<<"$data"`
-
 fname=`sed -e 's/^ *//;
                s/ *$//;
                s/[ -]\+ \+/ /g;
