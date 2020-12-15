@@ -77,8 +77,24 @@ def main():
         metavar="PATH",
         help="Path to 'cpuid' utility. "
         "If unset, the first executable 'cpuid' in $PATH is used.")
+    parser.add_argument(
+        "--path-to-qemu",
+        metavar="PATH",
+        help="Path to qemu. "
+        "If unset, will try '/usr/bin/qemu-system-x86_64', "
+        "'/usr/bin/qemu-kvm', and '/usr/libexec/qemu-kvm'.")
 
     args = parser.parse_args()
+
+    if not args.path_to_qemu:
+        args.path_to_qemu = "qemu-system-x86_64"
+        search = [
+            "/usr/bin/qemu-system-x86_64",
+            "/usr/bin/qemu-kvm",
+            "/usr/libexec/qemu-kvm"]
+        for f in search:
+            if os.path.isfile(f):
+                args.path_to_qemu = f
 
     name = gather_name(args)
     print("model name\t: {}".format(name))
@@ -97,6 +113,7 @@ def main():
 
     print(end="", flush=True)
     os.environ["CPU_GATHER_PY"] = "true"
+    os.environ["qemu"] = args.path_to_qemu
     subprocess.check_call("./cpu-gather.sh")
 
 

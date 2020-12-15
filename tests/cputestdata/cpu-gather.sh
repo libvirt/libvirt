@@ -5,14 +5,6 @@ if [ -z "${CPU_GATHER_PY}" ]; then
     exit 1
 fi
 
-qemu=qemu-system-x86_64
-for cmd in /usr/bin/$qemu /usr/bin/qemu-kvm /usr/libexec/qemu-kvm; do
-    if [[ -x $cmd ]]; then
-        qemu=$cmd
-        break
-    fi
-done
-
 qom_get()
 {
     path='/machine/unattached/device[0]'
