@@ -292,37 +292,6 @@ def parse(args):
         universal_newlines=True)
     print(output)
 
-    os.environ["CPU_GATHER_PY"] = "true"
-    os.environ["model"] = data["name"]
-    os.environ["fname"] = filename
-    output = subprocess.check_output(
-        "./cpu-parse.sh",
-        input=output_to_text(data),
-        stderr=subprocess.STDOUT,
-        universal_newlines=True)
-    print(output)
-
-
-def output_to_text(data):
-    output = list()
-
-    output.append("model name\t: {}".format(data["name"]))
-
-    output.append("CPU:")
-    for leave in data["leaves"]:
-        output.append("   {}".format(leave))
-    output.append("")
-
-    if data["via"] is not None:
-        output.append("MSR{}:".format(data["via"]))
-        for key, value in sorted(data["msr"].items()):
-            output.append("   0x{:x}: 0x{:016x}\n".format(int(key), value))
-
-    for o in data["model"]:
-        output.append(json.dumps(o))
-
-    return "\n".join(output)
-
 
 def main():
     parser = argparse.ArgumentParser(description="Gather cpu test data")
