@@ -232,11 +232,6 @@ def main():
     for o in model:
         print(json.dumps(o))
 
-    print(end="", flush=True)
-    os.environ["CPU_GATHER_PY"] = "true"
-    os.environ["qemu"] = args.path_to_qemu
-    subprocess.check_call("./cpu-gather.sh")
-
 
 if __name__ == "__main__":
     main()
