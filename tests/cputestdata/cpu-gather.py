@@ -4,6 +4,7 @@ import argparse
 import fcntl
 import json
 import os
+import re
 import struct
 import subprocess
 import sys
@@ -192,11 +193,28 @@ def gather(args):
     return result
 
 
+def parse_filename(data):
+    filename = data["name"].strip()
+    filename = re.sub("[ -]+ +", " ", filename)
+    filename = re.sub("\\(([Rr]|[Tt][Mm])\\)", "", filename)
+    filename = re.sub(".*(Intel|AMD) ", "", filename)
+    filename = re.sub(" (Duo|Quad|II X[0-9]+)", " ", filename)
+    filename = re.sub(" (CPU|Processor)", "", filename)
+    filename = re.sub(" @.*", "", filename)
+    filename = re.sub(" APU .*", "", filename)
+    filename = re.sub(" SE$", "", filename)
+    filename = re.sub(" ", "-", filename)
+    return "x86_64-cpuid-{}".format(filename)
+
+
 def parse(args):
     data = json.load(sys.stdin)
 
+    filename = parse_filename(data)
+
     os.environ["CPU_GATHER_PY"] = "true"
     os.environ["model"] = data["name"]
+    os.environ["fname"] = filename
     output = subprocess.check_output(
         "./cpu-parse.sh",
         input=output_to_text(data),

@@ -7,19 +7,6 @@ fi
 
 data=`cat`
 
-fname=`sed -e 's/^ *//;
-               s/ *$//;
-               s/[ -]\+ \+/ /g;
-               s/(\([Rr]\|[Tt][Mm]\))//g;
-               s/.*\(Intel\|AMD\) //;
-               s/ \(Duo\|Quad\|II X[0-9]\+\) / /;
-               s/ \(CPU\|Processor\)\>//;
-               s/ @.*//;
-               s/ APU .*//;
-               s/ SE$//;
-               s/ /-/g' <<<"$model"`
-fname="x86_64-cpuid-$fname"
-
 xml()
 {
     hex='\(0x[0-9a-f]\+\)'
