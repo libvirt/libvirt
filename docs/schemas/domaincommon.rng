@@ -6821,36 +6821,42 @@
     -->
   <define name="lxcsharens">
     <element name="namespace" ns="http://libvirt.org/schemas/domain/lxc/1.0">
-      <zeroOrMore>
-        <element name="sharenet">
-          <attribute name="type">
-            <choice>
-              <value>netns</value>
-              <value>name</value>
-              <value>pid</value>
-            </choice>
-          </attribute>
-          <attribute name="value"/>
-        </element>
-        <element name="shareipc">
-          <attribute name="type">
-            <choice>
-              <value>name</value>
-              <value>pid</value>
-            </choice>
-          </attribute>
-          <attribute name="value"/>
-        </element>
-        <element name="shareuts">
-          <attribute name="type">
-            <choice>
-              <value>name</value>
-              <value>pid</value>
-            </choice>
-          </attribute>
-          <attribute name="value"/>
-        </element>
-      </zeroOrMore>
+      <interleave>
+        <optional>
+          <element name="sharenet">
+            <attribute name="type">
+              <choice>
+                <value>netns</value>
+                <value>name</value>
+                <value>pid</value>
+              </choice>
+            </attribute>
+            <attribute name="value"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="shareipc">
+            <attribute name="type">
+              <choice>
+                <value>name</value>
+                <value>pid</value>
+              </choice>
+            </attribute>
+            <attribute name="value"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="shareuts">
+            <attribute name="type">
+              <choice>
+                <value>name</value>
+                <value>pid</value>
+              </choice>
+            </attribute>
+            <attribute name="value"/>
+          </element>
+        </optional>
+      </interleave>
     </element>
   </define>
 
