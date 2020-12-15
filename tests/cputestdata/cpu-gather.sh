@@ -1,16 +1,9 @@
 #!/bin/bash
-#
-# The cpuid tool can be usually found in a package called "cpuid". If your
-# distro does not provide such package, you can find the sources or binary
-# packages at https://www.etallen.com/cpuid.html
 
 if [ -z "${CPU_GATHER_PY}" ]; then
     echo >&2 "Do not call this script directly. Use 'cpu-gather.py' instead."
     exit 1
 fi
-
-cpuid -1r
-echo
 
 python3 <<EOF
 from struct import pack, unpack
