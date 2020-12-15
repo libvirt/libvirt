@@ -58,24 +58,29 @@ def gather_cpuid_leaves(args):
 
 
 def gather_msr():
-    IA32_ARCH_CAPABILITIES_MSR = 0x10a
+    msrs = dict()
+    addresses = [
+        0x10a,  # IA32_ARCH_CAPABILITIES_MSR
+    ]
     KVM_GET_MSRS = 0xc008ae88
 
     try:
         with open("/dev/cpu/0/msr", "rb") as f:
-            f.seek(IA32_ARCH_CAPABILITIES_MSR)
-            buf = f.read(8)
-            msr = struct.unpack("=Q", buf)[0]
-            return "", {IA32_ARCH_CAPABILITIES_MSR: msr}
+            for addr in addresses:
+                f.seek(addr)
+                buf = f.read(8)
+                msrs[addr] = struct.unpack("=Q", buf)[0]
+            return "", msrs
     except IOError as e:
         print("Warning: {}".format(e), file=sys.stderr)
 
     try:
-        bufIn = struct.pack("=LLLLQ", 1, 0, IA32_ARCH_CAPABILITIES_MSR, 0, 0)
         with open("/dev/kvm", "rb") as f:
-            bufOut = fcntl.ioctl(f, KVM_GET_MSRS, bufIn)
-            msr = struct.unpack("=LLLLQ", bufOut)[4]
-            return " via KVM", {IA32_ARCH_CAPABILITIES_MSR: msr}
+            for addr in addresses:
+                bufIn = struct.pack("=LLLLQ", 1, 0, addr, 0, 0)
+                bufOut = fcntl.ioctl(f, KVM_GET_MSRS, bufIn)
+                msrs[addr] = struct.unpack("=LLLLQ", bufOut)[4]
+            return " via KVM", msrs
     except IOError as e:
         print("Warning: {}".format(e), file=sys.stderr)
 
