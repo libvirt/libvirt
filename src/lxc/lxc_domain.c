@@ -195,6 +195,10 @@ lxcDomainDefNamespaceFree(void *nsdata)
 {
     size_t i;
     lxcDomainDefPtr lxcDef = nsdata;
+
+    if (!lxcDef)
+        return;
+
     for (i = 0; i < VIR_LXC_DOMAIN_NAMESPACE_LAST; i++)
         g_free(lxcDef->ns_val[i]);
     g_free(nsdata);
