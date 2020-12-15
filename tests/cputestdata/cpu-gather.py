@@ -183,6 +183,36 @@ def gather_model(args):
         ])
 
 
+def gather(args):
+    result = dict()
+    result["name"] = gather_name(args)
+    result["leaves"] = list(gather_cpuid_leaves(args))
+    result["via"], result["msr"] = gather_msr()
+    result["model"] = list(gather_model(args))
+    return result
+
+
+def output_to_text(data):
+    output = list()
+
+    output.append("model name\t: {}".format(data["name"]))
+
+    output.append("CPU:")
+    for leave in data["leaves"]:
+        output.append("   {}".format(leave))
+    output.append("")
+
+    if data["via"] is not None:
+        output.append("MSR{}:".format(data["via"]))
+        for key, value in sorted(data["msr"].items()):
+            output.append("   0x{:x}: 0x{:016x}\n".format(int(key), value))
+
+    for o in data["model"]:
+        output.append(json.dumps(o))
+
+    return "\n".join(output)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Gather cpu test data")
     parser.add_argument(
@@ -213,24 +243,8 @@ def main():
             if os.path.isfile(f):
                 args.path_to_qemu = f
 
-    name = gather_name(args)
-    print("model name\t: {}".format(name))
-
-    leaves = gather_cpuid_leaves(args)
-    print("CPU:")
-    for leave in leaves:
-        print("   {}".format(leave))
-    print()
-
-    via, msr = gather_msr()
-    if via is not None:
-        print("MSR{}:".format(via))
-        for key, value in sorted(msr.items()):
-            print("   0x{:x}: 0x{:016x}\n".format(int(key), value))
-
-    model = gather_model(args)
-    for o in model:
-        print(json.dumps(o))
+    data = gather(args)
+    print(output_to_text(data))
 
 
 if __name__ == "__main__":
