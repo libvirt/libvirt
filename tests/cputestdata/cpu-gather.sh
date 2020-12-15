@@ -22,13 +22,6 @@ model_expansion()
 }
 
 model=$(
-    $qemu -machine accel=kvm -cpu host -nodefaults -nographic -qmp stdio <<EOF
-{"execute":"qmp_capabilities"}
-$(model_expansion static '{"name":"host"}')
-{"execute":"quit"}
-EOF
-)
-model=$(
     echo "$model" | \
     sed -ne 's/^{"return": {"model": {\(.*{.*}\)}}, .*/{\1}/p'
 )

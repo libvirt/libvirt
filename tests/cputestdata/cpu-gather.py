@@ -2,6 +2,7 @@
 
 import argparse
 import fcntl
+import json
 import os
 import struct
 import subprocess
@@ -66,6 +67,47 @@ def gather_msr():
     return None, {}
 
 
+def call_qemu(qemu, qmp_cmds):
+    cmd = [
+        qemu,
+        "-machine", "accel=kvm",
+        "-cpu", "host",
+        "-nodefaults",
+        "-nographic",
+        "-qmp", "stdio"]
+
+    stdin = list()
+    stdin.append("{\"execute\": \"qmp_capabilities\"}")
+    stdin.extend([json.dumps(o) for o in qmp_cmds])
+    stdin.append("{\"execute\": \"quit\"}")
+
+    try:
+        output = subprocess.check_output(
+            cmd,
+            universal_newlines=True,
+            input="\n".join(stdin))
+    except subprocess.CalledProcessError:
+        exit("Error: Non-zero exit code from '{}'.".format(qemu))
+    except FileNotFoundError:
+        exit("Error: File not found: '{}'.".format(qemu))
+
+    return output
+
+
+def gather_static_model(args):
+    output = call_qemu(args.path_to_qemu, [
+        {
+            "execute": "query-cpu-model-expansion",
+            "arguments":
+            {
+                "type": "static",
+                "model": {"name": "host"}
+            },
+            "id": "model-expansion"
+        }])
+    return output
+
+
 def main():
     parser = argparse.ArgumentParser(description="Gather cpu test data")
     parser.add_argument(
@@ -111,9 +153,12 @@ def main():
         for key, value in sorted(msr.items()):
             print("   0x{:x}: 0x{:016x}\n".format(int(key), value))
 
+    static_model = gather_static_model(args)
+
     print(end="", flush=True)
     os.environ["CPU_GATHER_PY"] = "true"
     os.environ["qemu"] = args.path_to_qemu
+    os.environ["model"] = static_model
     subprocess.check_call("./cpu-gather.sh")
 
 
