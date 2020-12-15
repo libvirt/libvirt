@@ -18,10 +18,11 @@ def gather_name(args):
          "Use '--model' to set a model name.")
 
 
-def gather_cpuid_leaves():
+def gather_cpuid_leaves(args):
+    cpuid = args.path_to_cpuid or "cpuid"
     try:
         output = subprocess.check_output(
-            ["cpuid", "-1r"],
+            [cpuid, "-1r"],
             universal_newlines=True)
     except FileNotFoundError as e:
         exit("Error: '{}' not found.\n'cpuid' can be usually found in a "
@@ -43,13 +44,18 @@ def main():
         "--name",
         help="CPU model name. "
         "If unset, model name is read from '/proc/cpuinfo'.")
+    parser.add_argument(
+        "--path-to-cpuid",
+        metavar="PATH",
+        help="Path to 'cpuid' utility. "
+        "If unset, the first executable 'cpuid' in $PATH is used.")
 
     args = parser.parse_args()
 
     name = gather_name(args)
     print("model name\t: {}".format(name))
 
-    leaves = gather_cpuid_leaves()
+    leaves = gather_cpuid_leaves(args)
     print("CPU:")
     for leave in leaves:
         print("   {}".format(leave))
