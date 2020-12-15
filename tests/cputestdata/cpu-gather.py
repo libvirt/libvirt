@@ -282,6 +282,16 @@ def parse(args):
     output_xml(data, filename_xml)
     output_json(data, filename_json)
 
+    if not os.path.isfile(filename_json):
+        return
+    if os.path.getsize(filename_json) == 0:
+        return
+
+    output = subprocess.check_output(
+        ["./cpu-cpuid.py", "diff", filename_json],
+        universal_newlines=True)
+    print(output)
+
     os.environ["CPU_GATHER_PY"] = "true"
     os.environ["model"] = data["name"]
     os.environ["fname"] = filename
