@@ -24,6 +24,15 @@ def gather_name(args):
 
 
 def gather_cpuid_leaves(args):
+    leave_pattern = re.compile(
+        "^\\s*"
+        "(0x[0-9a-f]+)\\s*"
+        "(0x[0-9a-f]+):\\s*"
+        "eax=(0x[0-9a-f]+)\\s*"
+        "ebx=(0x[0-9a-f]+)\\s*"
+        "ecx=(0x[0-9a-f]+)\\s*"
+        "edx=(0x[0-9a-f]+)\\s*$")
+
     cpuid = args.path_to_cpuid or "cpuid"
     try:
         output = subprocess.check_output(
@@ -36,11 +45,16 @@ def gather_cpuid_leaves(args):
              "'http://www.etallen.com/cpuid.html'.".format(e.filename))
 
     for line in output.split("\n"):
-        if not line:
+        match = leave_pattern.match(line)
+        if not match:
             continue
-        if line == "CPU:":
-            continue
-        yield line.strip()
+        yield {
+            "eax_in": int(match.group(1), 0),
+            "ecx_in": int(match.group(2), 0),
+            "eax": int(match.group(3), 0),
+            "ebx": int(match.group(4), 0),
+            "ecx": int(match.group(5), 0),
+            "edx": int(match.group(6), 0)}
 
 
 def gather_msr():
@@ -214,23 +228,14 @@ def parse_filename(data):
 
 
 def output_xml(data, filename):
-    leave_pattern = re.compile(
-        "^\\s*"
-        "(0x[0-9a-f]+)\\s*"
-        "(0x[0-9a-f]+):\\s*"
-        "eax=(0x[0-9a-f]+)\\s*"
-        "ebx=(0x[0-9a-f]+)\\s*"
-        "ecx=(0x[0-9a-f]+)\\s*"
-        "edx=(0x[0-9a-f]+)\\s*$")
-
     leave_template = \
         "  <cpuid" \
-        " eax_in='{}'" \
-        " ecx_in='{}'" \
-        " eax='{}'" \
-        " ebx='{}'" \
-        " ecx='{}'" \
-        " edx='{}'" \
+        " eax_in='0x{0[eax_in]:08x}'" \
+        " ecx_in='0x{0[ecx_in]:02x}'" \
+        " eax='0x{0[eax]:08x}'" \
+        " ebx='0x{0[ebx]:08x}'" \
+        " ecx='0x{0[ecx]:08x}'" \
+        " edx='0x{0[edx]:08x}'" \
         "/>\n"
 
     msr_template = "  <msr index='0x{:x}' edx='0x{:08x}' eax='0x{:08x}'/>\n"
@@ -239,9 +244,8 @@ def output_xml(data, filename):
     with open(filename, "wt") as f:
         f.write("<!-- {} -->\n".format(data["name"]))
         f.write("<cpudata arch='x86'>\n")
-        for line in data["leaves"]:
-            match = leave_pattern.match(line)
-            f.write(leave_template.format(*match.groups()))
+        for leave in data["leaves"]:
+            f.write(leave_template.format(leave))
         for key, value in sorted(data["msr"].items()):
             f.write(msr_template.format(
                 int(key),
