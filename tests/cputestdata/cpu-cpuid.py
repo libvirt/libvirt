@@ -158,8 +158,9 @@ def parseMap():
     cpuMap = {}
     for feature in data["cpus"]["feature"]:
         for fType in ["cpuid", "msr"]:
-            if fType in feature:
-                cpuMap[feature["@name"]] = parseMapFeature(fType, feature[fType])
+            if fType not in feature:
+                continue
+            cpuMap[feature["@name"]] = parseMapFeature(fType, feature[fType])
 
     return cpuMap
 
