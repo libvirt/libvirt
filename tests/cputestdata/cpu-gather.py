@@ -117,7 +117,21 @@ def gather_static_model(args):
 
 def gather_full_model(args, static_model):
     if static_model:
-        return []
+        return call_qemu(args.path_to_qemu, [
+            {
+                "execute": "query-cpu-model-expansion",
+                "arguments":
+                {
+                    "type": "full",
+                    "model": static_model
+                },
+                "id": "model-expansion"
+            },
+            {
+                "execute": "query-cpu-definitions",
+                "id": "definitions"
+            }
+        ])
     else:
         return call_qemu(args.path_to_qemu, [
             {
