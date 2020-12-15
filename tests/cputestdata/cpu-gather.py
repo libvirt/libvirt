@@ -93,8 +93,12 @@ def call_qemu(qemu, qmp_cmds):
         exit("Error: File not found: '{}'.".format(qemu))
 
     for line in output.split("\n"):
-        if line:
-            yield json.loads(line)
+        if not line:
+            continue
+        response = json.loads(line)
+        if "return" in response and not response["return"]:
+            continue
+        yield response
 
 
 def gather_model(args):
