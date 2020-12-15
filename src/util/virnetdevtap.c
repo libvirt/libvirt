@@ -308,13 +308,18 @@ int virNetDevTapCreate(char **ifname,
     int s;
     struct ifreq ifr;
     int ret = -1;
-    char *newifname = NULL;
 
     if (tapfdSize > 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Multiqueue devices are not supported on this system"));
         goto cleanup;
     }
+
+    /* auto-generate an unused name for the new device (this
+     * is NOP if a name has been provided)
+     */
+    if (virNetDevGenerateName(ifname, VIR_NET_DEV_GEN_NAME_VNET) < 0)
+        return -1;
 
     /* As FreeBSD determines interface type by name,
      * we have to create 'tap' interface first and
@@ -327,34 +332,6 @@ int virNetDevTapCreate(char **ifname,
         virReportSystemError(errno, "%s",
                              _("Unable to create tap device"));
         goto cleanup;
-    }
-
-    /* In case we were given exact interface name (e.g. 'vnetN'),
-     * we just rename to it. If we have format string like
-     * 'vnet%d', we need to find the first available name that
-     * matches this pattern
-     */
-    if (strstr(*ifname, "%d") != NULL) {
-        size_t i;
-        for (i = 0; i <= IF_MAXUNIT; i++) {
-            g_autofree char *newname = NULL;
-
-            newname = g_strdup_printf(*ifname, i);
-
-            if (virNetDevExists(newname) == 0) {
-                newifname = g_steal_pointer(&newname);
-                break;
-            }
-        }
-        if (newifname) {
-            VIR_FREE(*ifname);
-            *ifname = newifname;
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to generate new name for interface %s"),
-                           ifr.ifr_name);
-            goto cleanup;
-        }
     }
 
     if (tapfd) {
