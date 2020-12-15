@@ -282,9 +282,7 @@ def output_json(data, filename):
             f.write("\n")
 
 
-def parse(args):
-    data = json.load(sys.stdin)
-
+def parse(data):
     filename = parse_filename(data)
     filename_xml = "{}.xml".format(filename)
     filename_json = "{}.json".format(filename)
@@ -320,16 +318,16 @@ def main():
         help="Path to qemu. "
         "If unset, will try '/usr/bin/qemu-system-x86_64', "
         "'/usr/bin/qemu-kvm', and '/usr/libexec/qemu-kvm'.")
-
-    mode = parser.add_mutually_exclusive_group()
-    mode.add_argument(
+    parser.add_argument(
         "--gather",
         action="store_true",
-        help="Acquire data on target system. This is the default.")
-    mode.add_argument(
+        help="Acquire data on target system. This is the default. "
+        "If '--parse' is not set, outputs data on stdout.")
+    parser.add_argument(
         "--parse",
         action="store_true",
-        help="Parse data for libvirt use.")
+        help="Parse data for libvirt use. "
+        "If '--gather' is not set, expects input on stdin.")
 
     args = parser.parse_args()
 
@@ -348,9 +346,13 @@ def main():
 
     if args.gather:
         data = gather(args)
-        json.dump(data, sys.stdout, indent=2)
-    else:
-        parse(args)
+        if not args.parse:
+            json.dump(data, sys.stdout, indent=2)
+
+    if args.parse:
+        if not args.gather:
+            data = json.load(sys.stdin)
+        parse(data)
 
 
 if __name__ == "__main__":
