@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
 import argparse
+import fcntl
 import os
+import struct
 import subprocess
+import sys
 
 
 def gather_name(args):
@@ -38,6 +41,31 @@ def gather_cpuid_leaves(args):
         yield line.strip()
 
 
+def gather_msr():
+    IA32_ARCH_CAPABILITIES_MSR = 0x10a
+    KVM_GET_MSRS = 0xc008ae88
+
+    try:
+        with open("/dev/cpu/0/msr", "rb") as f:
+            f.seek(IA32_ARCH_CAPABILITIES_MSR)
+            buf = f.read(8)
+            msr = struct.unpack("=Q", buf)[0]
+            return "", {IA32_ARCH_CAPABILITIES_MSR: msr}
+    except IOError as e:
+        print("Warning: {}".format(e), file=sys.stderr)
+
+    try:
+        bufIn = struct.pack("=LLLLQ", 1, 0, IA32_ARCH_CAPABILITIES_MSR, 0, 0)
+        with open("/dev/kvm", "rb") as f:
+            bufOut = fcntl.ioctl(f, KVM_GET_MSRS, bufIn)
+            msr = struct.unpack("=LLLLQ", bufOut)[4]
+            return " via KVM", {IA32_ARCH_CAPABILITIES_MSR: msr}
+    except IOError as e:
+        print("Warning: {}".format(e), file=sys.stderr)
+
+    return None, {}
+
+
 def main():
     parser = argparse.ArgumentParser(description="Gather cpu test data")
     parser.add_argument(
@@ -60,6 +88,12 @@ def main():
     for leave in leaves:
         print("   {}".format(leave))
     print()
+
+    via, msr = gather_msr()
+    if via is not None:
+        print("MSR{}:".format(via))
+        for key, value in sorted(msr.items()):
+            print("   0x{:x}: 0x{:016x}\n".format(int(key), value))
 
     print(end="", flush=True)
     os.environ["CPU_GATHER_PY"] = "true"

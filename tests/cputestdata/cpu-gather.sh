@@ -5,46 +5,6 @@ if [ -z "${CPU_GATHER_PY}" ]; then
     exit 1
 fi
 
-python3 <<EOF
-from struct import pack, unpack
-from fcntl import ioctl
-import sys, errno
-
-IA32_ARCH_CAPABILITIES_MSR = 0x10a
-KVM_GET_MSRS = 0xc008ae88
-
-def print_msr(msr, via=None):
-    if via is None:
-        print("MSR:")
-    else:
-        print("MSR via %s:" % via)
-    print("   0x%x: 0x%016x" % (IA32_ARCH_CAPABILITIES_MSR, msr))
-    print()
-
-try:
-    fd = open("/dev/cpu/0/msr", "rb")
-    fd.seek(IA32_ARCH_CAPABILITIES_MSR)
-    buf = fd.read(8)
-    msr = unpack("=Q", buf)[0]
-
-    print_msr(msr)
-    sys.exit(0)
-except IOError as e:
-    # The MSR is not supported on the host
-    if e.errno == errno.EIO:
-        sys.exit(0)
-
-try:
-    fd = open("/dev/kvm", "r")
-    bufIn = pack("=LLLLQ", 1, 0, IA32_ARCH_CAPABILITIES_MSR, 0, 0)
-    bufOut = ioctl(fd, KVM_GET_MSRS, bufIn)
-    msr = unpack("=LLLLQ", bufOut)[4]
-
-    print_msr(msr, via="KVM")
-except IOError as e:
-    pass
-EOF
-
 qemu=qemu-system-x86_64
 for cmd in /usr/bin/$qemu /usr/bin/qemu-kvm /usr/libexec/qemu-kvm; do
     if [[ -x $cmd ]]; then
