@@ -61,6 +61,7 @@ def gather_msr():
     msrs = dict()
     addresses = [
         0x10a,  # IA32_ARCH_CAPABILITIES_MSR
+        0xcf,   # IA32_CORE_CAPABILITY_MSR
     ]
     KVM_GET_MSRS = 0xc008ae88
 
