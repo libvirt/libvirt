@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Usage:
-# ./cpu-gather.sh | ./cpu-parse.sh
+# ./cpu-gather.py | ./cpu-parse.sh
 
 data=`cat`
 
