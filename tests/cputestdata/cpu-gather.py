@@ -91,7 +91,9 @@ def call_qemu(qemu, qmp_cmds):
     except FileNotFoundError:
         exit("Error: File not found: '{}'.".format(qemu))
 
-    return output
+    for line in output.split("\n"):
+        if line:
+            yield json.loads(line)
 
 
 def gather_static_model(args):
@@ -105,7 +107,12 @@ def gather_static_model(args):
             },
             "id": "model-expansion"
         }])
-    return output
+
+    for o in output:
+        if o.get("id") == "model-expansion":
+            return o["return"]["model"]
+
+    return None
 
 
 def main():
@@ -158,7 +165,7 @@ def main():
     print(end="", flush=True)
     os.environ["CPU_GATHER_PY"] = "true"
     os.environ["qemu"] = args.path_to_qemu
-    os.environ["model"] = static_model
+    os.environ["model"] = json.dumps(static_model) if static_model else ""
     subprocess.check_call("./cpu-gather.sh")
 
 
