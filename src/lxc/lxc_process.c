@@ -303,7 +303,7 @@ virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
                                const char *brname)
 {
     char *parentVeth;
-    char *containerVeth = NULL;
+    g_autofree char *containerVeth = NULL;
     const virNetDevVPortProfile *vport = virDomainNetGetActualVirtPortProfile(net);
 
     VIR_DEBUG("calling vethCreate()");
@@ -357,7 +357,7 @@ virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
         virDomainConfNWFilterInstantiate(vm->name, vm->uuid, net, false) < 0)
         return NULL;
 
-    return containerVeth;
+    return g_steal_pointer(&containerVeth);
 }
 
 
