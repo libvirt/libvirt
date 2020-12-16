@@ -60,6 +60,10 @@ int virNetDevOpenvswitchInterfaceStats(const char *ifname,
 int virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
+int
+virNetDevOpenvswitchMaybeUnescapeReply(char *reply)
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
+
 int virNetDevOpenvswitchGetVhostuserIfname(const char *path,
                                            bool server,
                                            char **ifname)

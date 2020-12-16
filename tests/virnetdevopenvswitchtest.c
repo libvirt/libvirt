@@ -75,6 +75,42 @@ testInterfaceParseStats(const void *opaque)
 }
 
 
+typedef struct _escapeData escapeData;
+struct _escapeData {
+    const char *input;
+    const char *expect;
+};
+
+
+static int
+testNameEscape(const void *opaque)
+{
+    const escapeData *data = opaque;
+    g_autofree char *reply = g_strdup(data->input);
+    int rv;
+
+    rv = virNetDevOpenvswitchMaybeUnescapeReply(reply);
+
+    if (data->expect) {
+        if (rv < 0 || STRNEQ(reply, data->expect)) {
+            fprintf(stderr,
+                    "Unexpected failure, expected: %s for input %s got %s\n",
+                    data->expect, data->input, reply);
+            return -1;
+        }
+    } else {
+        if (rv >= 0) {
+            fprintf(stderr,
+                    "Unexpected success, input %s got %s\n",
+                    data->input, reply);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 static int
 mymain(void)
 {
@@ -93,6 +129,22 @@ mymain(void)
 
     TEST_INTERFACE_STATS("stats1.json", 9, 12, 11, 10, 2, 8, 5, 4);
     TEST_INTERFACE_STATS("stats2.json", 12406, 173, 0, 0, 0, 0, 0, 0);
+
+#define TEST_NAME_ESCAPE(str, fail) \
+    do { \
+        const escapeData data = {str, fail};\
+        if (virTestRun("Name escape " str, testNameEscape, &data) < 0) \
+            ret = -1; \
+    } while (0)
+
+    TEST_NAME_ESCAPE("", "");
+    TEST_NAME_ESCAPE("\"\"", "");
+    TEST_NAME_ESCAPE("vhost-user1", "vhost-user1");
+    TEST_NAME_ESCAPE("\"vhost-user1\"", "vhost-user1");
+    TEST_NAME_ESCAPE("\"vhost_user-name.to.escape1", NULL);
+    TEST_NAME_ESCAPE("\"vhost_user-name.to\\\"escape1\"", "vhost_user-name.to\"escape1");
+    TEST_NAME_ESCAPE("\"vhost\"user1\"", NULL);
+    TEST_NAME_ESCAPE("\"\\\\", NULL);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

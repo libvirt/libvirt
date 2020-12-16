@@ -2676,6 +2676,7 @@ virNetDevOpenvswitchGetVhostuserIfname;
 virNetDevOpenvswitchInterfaceGetMaster;
 virNetDevOpenvswitchInterfaceParseStats;
 virNetDevOpenvswitchInterfaceStats;
+virNetDevOpenvswitchMaybeUnescapeReply;
 virNetDevOpenvswitchRemovePort;
 virNetDevOpenvswitchSetMigrateData;
 virNetDevOpenvswitchSetTimeout;

@@ -461,6 +461,48 @@ virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
 
 
 /**
+ * virNetDevOpenvswitchMaybeUnescapeReply:
+ * @reply: a string to unescape
+ *
+ * Depending on ovs-vsctl version a string might be escaped. For instance:
+ *  -version 2.11.4 allows only is_alpha(), an underscore, a dash or a dot,
+ *  -version 2.14.0 allows only is_alnum(), an underscore, a dash or a dot,
+ * any other character causes the string to be escaped.
+ *
+ * What this function does, is it checks whether @reply string consists solely
+ * from safe, not escaped characters (as defined by version 2.14.0) and if not
+ * an error is reported. If @reply is a string enclosed in double quotes, but
+ * otherwise safe those double quotes are removed.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise (with error reported).
+ */
+int
+virNetDevOpenvswitchMaybeUnescapeReply(char *reply)
+{
+    g_autoptr(virJSONValue) json = NULL;
+    g_autofree char *jsonStr = NULL;
+    const char *tmp = NULL;
+    size_t replyLen = strlen(reply);
+
+    if (*reply != '"')
+        return 0;
+
+    jsonStr = g_strdup_printf("{\"name\": %s}", reply);
+    if (!(json = virJSONValueFromString(jsonStr)))
+        return -1;
+
+    if (!(tmp = virJSONValueObjectGetString(json, "name"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Malformed ovs-vsctl output"));
+        return -1;
+    }
+
+    return virStrcpy(reply, tmp, replyLen);
+}
+
+
+/**
  * virNetDevOpenvswitchGetVhostuserIfname:
  * @path: the path of the unix socket
  * @server: true if OVS creates the @path
@@ -520,6 +562,11 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
     if (status != 0) {
         /* it's not a openvswitch vhostuser interface. */
         return 0;
+    }
+
+    if (virNetDevOpenvswitchMaybeUnescapeReply(*ifname) < 0) {
+        VIR_FREE(*ifname);
+        return -1;
     }
 
     return 1;
