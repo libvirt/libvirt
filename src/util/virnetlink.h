@@ -84,6 +84,7 @@ struct _virNetlinkNewLinkData {
     const int *ifindex;             /* The index for the 'link' device */
     const virMacAddr *mac;          /* The MAC address of the device */
     const uint32_t *macvlan_mode;   /* The mode of macvlan */
+    const char *veth_peer;          /* The peer name for veth */
 };
 
 int virNetlinkNewLink(const char *ifname,
