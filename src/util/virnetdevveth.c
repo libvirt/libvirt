@@ -27,21 +27,69 @@
 #include "virfile.h"
 #include "virstring.h"
 #include "virnetdev.h"
+#include "virnetlink.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("util.netdevveth");
 
 
+#if defined(WITH_LIBNL)
+static int
+virNetDevVethCreateInternal(const char *veth1, const char *veth2)
+{
+    int status;     /* Just ignore it */
+    virNetlinkNewLinkData data = { .veth_peer = veth2 };
+
+    return virNetlinkNewLink(veth1, "veth", &data, &status);
+}
+
+static int
+virNetDevVethDeleteInternal(const char *veth)
+{
+    return virNetlinkDelLink(veth, NULL);
+}
+#else
+static int
+virNetDevVethCreateInternal(const char *veth1, const char *veth2)
+{
+    g_autoptr(virCommand) cmd = virCommandNew("ip");
+    virCommandAddArgList(cmd, "link", "add", veth1, "type", "veth",
+                         "peer", "name", veth2, NULL);
+
+    return virCommandRun(cmd, NULL);
+}
+
+static int
+virNetDevVethDeleteInternal(const char *veth)
+{
+    int status;
+    g_autoptr(virCommand) cmd = virCommandNewArgList("ip", "link",
+                                                     "del", veth, NULL);
+
+    if (virCommandRun(cmd, &status) < 0)
+        return -1;
+
+    if (status != 0) {
+        if (!virNetDevExists(veth)) {
+            VIR_DEBUG("Device %s already deleted (by kernel namespace cleanup)", veth);
+            return 0;
+        }
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to delete veth device %s"), veth);
+        return -1;
+    }
+
+    return 0;
+}
+#endif /* WITH_LIBNL */
+
 /**
  * virNetDevVethCreate:
- * @veth1: pointer to name for parent end of veth pair
- * @veth2: pointer to return name for container end of veth pair
+ * @veth1: pointer to name for one end of veth pair
+ * @veth2: pointer to name for another end of veth pair
  *
- * Creates a veth device pair using the ip command:
- * ip link add veth1 type veth peer name veth2
- * If veth1 points to NULL on entry, it will be a valid interface on
- * return.  veth2 should point to NULL on entry.
+ * Creates a veth device pair.
  *
  * NOTE: If veth1 and veth2 names are not specified, ip will auto assign
  *       names.  There seems to be two problems here -
@@ -58,44 +106,31 @@ VIR_LOG_INIT("util.netdevveth");
  *
  * Returns 0 on success or -1 in case of error
  */
-int virNetDevVethCreate(char** veth1, char** veth2)
+int virNetDevVethCreate(char **veth1, char **veth2)
 {
-    int status;
-    g_autofree char *veth1auto = NULL;
-    g_autofree char *veth2auto = NULL;
-    g_autoptr(virCommand) cmd = NULL;
+    const char *orig1 = *veth1;
+    const char *orig2 = *veth2;
 
-    if (virNetDevGenerateName(&veth1auto, VIR_NET_DEV_GEN_NAME_VNET) < 0)
-        return -1;
+    if (virNetDevGenerateName(veth1, VIR_NET_DEV_GEN_NAME_VNET) < 0)
+        goto cleanup;
 
-    if (virNetDevGenerateName(&veth2auto, VIR_NET_DEV_GEN_NAME_VNET) < 0)
-        return -1;
+    if (virNetDevGenerateName(veth2, VIR_NET_DEV_GEN_NAME_VNET) < 0)
+        goto cleanup;
 
-    cmd = virCommandNew("ip");
-    virCommandAddArgList(cmd, "link", "add",
-                         *veth1 ? *veth1 : veth1auto,
-                         "type", "veth", "peer", "name",
-                         *veth2 ? *veth2 : veth2auto,
-                         NULL);
-
-    if (virCommandRun(cmd, &status) < 0 || status) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Failed to allocate free veth pair"));
-        return -1;
-    }
-
-    VIR_DEBUG("create veth host: %s guest: %s: %d",
-              *veth1 ? *veth1 : veth1auto,
-              *veth2 ? *veth2 : veth2auto,
-              status);
-
-    if (veth1auto)
-        *veth1 = g_steal_pointer(&veth1auto);
-    if (veth2auto)
-        *veth2 = g_steal_pointer(&veth2auto);
+    if (virNetDevVethCreateInternal(*veth1, *veth2) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Create Host: %s guest: %s", *veth1, *veth2);
     return 0;
+
+ cleanup:
+    if (orig1 == NULL)
+        VIR_FREE(*veth1);
+
+    if (orig2 == NULL)
+        VIR_FREE(*veth2);
+
+    return -1;
 }
 
 /**
@@ -111,22 +146,5 @@ int virNetDevVethCreate(char** veth1, char** veth2)
  */
 int virNetDevVethDelete(const char *veth)
 {
-    int status;
-    g_autoptr(virCommand) cmd = virCommandNewArgList("ip", "link",
-                                                       "del", veth, NULL);
-
-    if (virCommandRun(cmd, &status) < 0)
-        return -1;
-
-    if (status != 0) {
-        if (!virNetDevExists(veth)) {
-            VIR_DEBUG("Device %s already deleted (by kernel namespace cleanup)", veth);
-            return 0;
-        }
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to delete veth device %s"), veth);
-        return -1;
-    }
-
-    return 0;
+    return virNetDevVethDeleteInternal(veth);
 }
