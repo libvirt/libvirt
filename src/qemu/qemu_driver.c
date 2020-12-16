@@ -11503,6 +11503,16 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
                                                    QEMU_MIGRATION_DESTINATION)))
         return -1;
 
+    if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) ||
+        nmigrate_disks > 0) {
+        if (uri_in && STRPREFIX(uri_in, "unix:") && !nbdURI) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("NBD URI must be supplied when "
+                             "migration URI uses UNIX transport method"));
+            return -1;
+        }
+    }
+
     if (nbdURI && nbdPort) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Both port and URI requested for disk migration "
@@ -11743,6 +11753,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
                                 &persist_xml) < 0)
         goto cleanup;
 
+
     if (nbdURI && nbdPort) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Both port and URI requested for disk migration "
@@ -11765,6 +11776,16 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
 
     if (nmigrate_disks < 0)
         goto cleanup;
+
+    if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) ||
+        nmigrate_disks > 0) {
+        if (uri && STRPREFIX(uri, "unix:") && !nbdURI) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("NBD URI must be supplied when "
+                             "migration URI uses UNIX transport method"));
+            return -1;
+        }
+    }
 
     if (!(migParams = qemuMigrationParamsFromFlags(params, nparams, flags,
                                                    QEMU_MIGRATION_SOURCE)))
