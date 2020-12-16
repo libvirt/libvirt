@@ -494,7 +494,7 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
     if (server) {
         virCommandAddArgList(cmd, "--no-headings", "--columns=name", "find",
                              "Interface", NULL);
-        virCommandAddArgPair(cmd, "options:vhost-server-path", "path");
+        virCommandAddArgPair(cmd, "options:vhost-server-path", path);
     } else {
         const char *tmpIfname = NULL;
 
