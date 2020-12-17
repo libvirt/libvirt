@@ -1336,12 +1336,13 @@ virTypedParameterValidateSet(virConnectPtr conn,
                              virTypedParameterPtr params,
                              int nparams)
 {
-    bool string_okay;
+    int string_okay;
     size_t i;
 
-    string_okay = VIR_DRV_SUPPORTS_FEATURE(conn->driver,
-                                           conn,
+    string_okay = VIR_DRV_SUPPORTS_FEATURE(conn->driver, conn,
                                            VIR_DRV_FEATURE_TYPED_PARAM_STRING);
+    if (string_okay < 0)
+        return -1;
     for (i = 0; i < nparams; i++) {
         if (strnlen(params[i].field, VIR_TYPED_PARAM_FIELD_LENGTH) ==
             VIR_TYPED_PARAM_FIELD_LENGTH) {

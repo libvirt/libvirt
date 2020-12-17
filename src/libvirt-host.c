@@ -772,6 +772,8 @@ virNodeGetMemoryParameters(virConnectPtr conn,
                            int *nparams,
                            unsigned int flags)
 {
+    int rc;
+
     VIR_DEBUG("conn=%p, params=%p, nparams=%p, flags=0x%x",
               conn, params, nparams, flags);
 
@@ -783,8 +785,11 @@ virNodeGetMemoryParameters(virConnectPtr conn,
     if (*nparams != 0)
         virCheckNonNullArgGoto(params, error);
 
-    if (VIR_DRV_SUPPORTS_FEATURE(conn->driver, conn,
-                                 VIR_DRV_FEATURE_TYPED_PARAM_STRING))
+    rc = VIR_DRV_SUPPORTS_FEATURE(conn->driver, conn,
+                                  VIR_DRV_FEATURE_TYPED_PARAM_STRING);
+    if (rc < 0)
+        goto error;
+    if (rc)
         flags |= VIR_TYPED_PARAM_STRING_OKAY;
 
     if (conn->driver->nodeGetMemoryParameters) {
@@ -1724,6 +1729,8 @@ virNodeGetSEVInfo(virConnectPtr conn,
                   int *nparams,
                   unsigned int flags)
 {
+    int rc;
+
     VIR_DEBUG("conn=%p, params=%p, nparams=%p, flags=0x%x",
               conn, params, nparams, flags);
 
@@ -1734,8 +1741,11 @@ virNodeGetSEVInfo(virConnectPtr conn,
     virCheckNonNegativeArgGoto(*nparams, error);
     virCheckReadOnlyGoto(conn->flags, error);
 
-    if (VIR_DRV_SUPPORTS_FEATURE(conn->driver, conn,
-                                 VIR_DRV_FEATURE_TYPED_PARAM_STRING))
+    rc = VIR_DRV_SUPPORTS_FEATURE(conn->driver, conn,
+                                  VIR_DRV_FEATURE_TYPED_PARAM_STRING);
+    if (rc < 0)
+        goto error;
+    if (rc)
         flags |= VIR_TYPED_PARAM_STRING_OKAY;
 
     if (conn->driver->nodeGetSEVInfo) {
