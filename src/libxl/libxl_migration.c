@@ -1146,7 +1146,7 @@ libxlDomainMigrationSrcPerformP2P(libxlDriverPrivatePtr driver,
                                   unsigned int flags)
 {
     int ret = -1;
-    bool useParams;
+    int useParams;
     virConnectPtr dconn = NULL;
     virErrorPtr orig_err = NULL;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
@@ -1171,9 +1171,11 @@ libxlDomainMigrationSrcPerformP2P(libxlDriverPrivatePtr driver,
                                          VIR_DRV_FEATURE_MIGRATION_PARAMS);
     virObjectLock(vm);
 
-    if (!useParams) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("Destination libvirt does not support migration with extensible parameters"));
+    if (useParams <= 0) {
+        if (useParams == 0)
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Destination libvirt does not support migration"
+                             " with extensible parameters"));
         goto cleanup;
     }
 
