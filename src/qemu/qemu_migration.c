@@ -4706,12 +4706,13 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
 {
     int ret = -1;
     g_autoptr(virConnect) dconn = NULL;
-    bool p2p;
+    int p2p;
     virErrorPtr orig_err = NULL;
     bool offline = !!(flags & VIR_MIGRATE_OFFLINE);
-    bool dstOffline = false;
+    int dstOffline;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    bool useParams;
+    int useParams;
+    int rc;
 
     VIR_DEBUG("driver=%p, sconn=%p, vm=%p, xmlin=%s, dconnuri=%s, uri=%s, "
               "graphicsuri=%s, listenAddress=%s, nmigrate_disks=%zu, "
@@ -4771,17 +4772,27 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
     qemuDomainObjEnterRemote(vm);
     p2p = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                    VIR_DRV_FEATURE_MIGRATION_P2P);
-        /* v3proto reflects whether the caller used Perform3, but with
-         * p2p migrate, regardless of whether Perform2 or Perform3
-         * were used, we decide protocol based on what target supports
-         */
-    *v3proto = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
-                                        VIR_DRV_FEATURE_MIGRATION_V3);
+    if (p2p < 0)
+        goto cleanup;
+    /* v3proto reflects whether the caller used Perform3, but with
+     * p2p migrate, regardless of whether Perform2 or Perform3
+     * were used, we decide protocol based on what target supports
+     */
+    rc = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                  VIR_DRV_FEATURE_MIGRATION_V3);
+    if (rc < 0)
+        goto cleanup;
+    *v3proto = !!rc;
     useParams = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                          VIR_DRV_FEATURE_MIGRATION_PARAMS);
-    if (offline)
+    if (useParams < 0)
+        goto cleanup;
+    if (offline) {
         dstOffline = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                               VIR_DRV_FEATURE_MIGRATION_OFFLINE);
+        if (dstOffline < 0)
+            goto cleanup;
+    }
     if (qemuDomainObjExitRemote(vm, !offline) < 0)
         goto cleanup;
 
@@ -4819,7 +4830,7 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
                                                 persist_xml, dname, uri, graphicsuri,
                                                 listenAddress, nmigrate_disks, migrate_disks,
                                                 nbdPort, nbdURI, migParams, resource,
-                                                useParams, flags);
+                                                !!useParams, flags);
     } else {
         ret = qemuMigrationSrcPerformPeer2Peer2(driver, sconn, dconn, vm,
                                                 dconnuri, flags, dname, resource,
