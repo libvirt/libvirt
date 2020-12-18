@@ -4031,22 +4031,16 @@ networkGetDHCPLeases(virNetworkPtr net,
                      unsigned int flags)
 {
     virNetworkDriverStatePtr driver = networkGetDriver();
-    size_t i, j;
+    size_t i;
     size_t nleases = 0;
     int rv = -1;
     size_t size = 0;
     bool need_results = !!leases;
     long long currtime = 0;
-    long long expirytime_tmp = -1;
-    bool ipv6 = false;
     g_autofree char *lease_entries = NULL;
     g_autofree char *custom_lease_file = NULL;
-    const char *ip_tmp = NULL;
-    const char *mac_tmp = NULL;
-    virJSONValuePtr lease_tmp = NULL;
     g_autoptr(virJSONValue) leases_array = NULL;
-    virNetworkIPDefPtr ipdef_tmp = NULL;
-    virNetworkDHCPLeasePtr *leases_ret = NULL;
+    g_autofree virNetworkDHCPLeasePtr *leases_ret = NULL;
     virNetworkObjPtr obj;
     virNetworkDefPtr def;
     virMacAddr mac_addr;
@@ -4084,34 +4078,38 @@ networkGetDHCPLeases(virNetworkPtr net,
                                  _("Unable to read leases file: %s"),
                                  custom_lease_file);
         }
-        goto error;
+        goto cleanup;
     }
 
     if (STREQ(lease_entries, "")) {
         rv = 0;
-        goto error;
+        goto cleanup;
     }
 
     if (!(leases_array = virJSONValueFromString(lease_entries))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid json in file: %s"), custom_lease_file);
-        goto error;
+        goto cleanup;
     }
 
     if (!virJSONValueIsArray(leases_array)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Malformed lease_entries array"));
-        goto error;
+        goto cleanup;
     }
     size = virJSONValueArraySize(leases_array);
 
     currtime = (long long)time(NULL);
 
     for (i = 0; i < size; i++) {
-        if (!(lease_tmp = virJSONValueArrayGet(leases_array, i))) {
+        virJSONValuePtr lease_tmp = virJSONValueArrayGet(leases_array, i);
+        long long expirytime_tmp = -1;
+        const char *mac_tmp = NULL;
+
+        if (!lease_tmp) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to parse json"));
-            goto error;
+            goto cleanup;
         }
 
         if (!(mac_tmp = virJSONValueObjectGetString(lease_tmp, "mac-address"))) {
@@ -4119,7 +4117,7 @@ networkGetDHCPLeases(virNetworkPtr net,
              * mac-address is known otherwise not */
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("found lease without mac-address"));
-            goto error;
+            goto cleanup;
         }
 
         if (mac && virMacAddrCompare(mac, mac_tmp))
@@ -4129,7 +4127,7 @@ networkGetDHCPLeases(virNetworkPtr net,
             /* A lease cannot be present without expiry-time */
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("found lease without expiry-time"));
-            goto error;
+            goto cleanup;
         }
 
         /* Do not report expired lease */
@@ -4138,6 +4136,9 @@ networkGetDHCPLeases(virNetworkPtr net,
 
         if (need_results) {
             g_autoptr(virNetworkDHCPLease) lease = g_new0(virNetworkDHCPLease, 1);
+            const char *ip_tmp = NULL;
+            bool ipv6 = false;
+            size_t j;
 
             lease->expirytime = expirytime_tmp;
 
@@ -4145,7 +4146,7 @@ networkGetDHCPLeases(virNetworkPtr net,
                 /* A lease without ip-address makes no sense */
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("found lease without ip-address"));
-                goto error;
+                goto cleanup;
             }
 
             /* Unlike IPv4, IPv6 uses ':' instead of '.' as separator */
@@ -4154,7 +4155,7 @@ networkGetDHCPLeases(virNetworkPtr net,
 
             /* Obtain prefix */
             for (j = 0; j < def->nips; j++) {
-                ipdef_tmp = &def->ips[j];
+                virNetworkIPDefPtr ipdef_tmp = ipdef_tmp = &def->ips[j];
 
                 if (ipv6 && VIR_SOCKET_ADDR_IS_FAMILY(&ipdef_tmp->address,
                                                       AF_INET6)) {
@@ -4162,7 +4163,7 @@ networkGetDHCPLeases(virNetworkPtr net,
                     break;
                 }
                 if (!ipv6 && VIR_SOCKET_ADDR_IS_FAMILY(&ipdef_tmp->address,
-                                                      AF_INET)) {
+                                                       AF_INET)) {
                     lease->prefix = virSocketAddrGetIPPrefix(&ipdef_tmp->address,
                                                              &ipdef_tmp->netmask,
                                                              ipdef_tmp->prefix);
@@ -4180,7 +4181,7 @@ networkGetDHCPLeases(virNetworkPtr net,
             lease->hostname = g_strdup(virJSONValueObjectGetString(lease_tmp, "hostname"));
 
             if (VIR_APPEND_ELEMENT(leases_ret, nleases, lease) < 0)
-                goto error;
+                goto cleanup;
 
         } else {
             nleases++;
@@ -4197,15 +4198,11 @@ networkGetDHCPLeases(virNetworkPtr net,
 
  cleanup:
     virNetworkObjEndAPI(&obj);
-    return rv;
-
- error:
     if (leases_ret) {
         for (i = 0; i < nleases; i++)
             virNetworkDHCPLeaseFree(leases_ret[i]);
-        g_free(leases_ret);
     }
-    goto cleanup;
+    return rv;
 }
 
 
