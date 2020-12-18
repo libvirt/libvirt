@@ -253,6 +253,8 @@ main(int argc, char **argv)
     rv = EXIT_SUCCESS;
 
  cleanup:
+    if (rv != EXIT_SUCCESS)
+        virDispatchError(NULL);
     if (pid_file_fd != -1)
         virPidFileReleasePath(pid_file, pid_file_fd);
 
