@@ -930,8 +930,12 @@
 &lt;/dns&gt;
 &lt;ip address="192.168.122.1" netmask="255.255.255.0" localPtr="yes"&gt;
   &lt;dhcp&gt;
-    &lt;range start="192.168.122.100" end="192.168.122.254"/&gt;
-    &lt;host mac="00:16:3e:77:e2:ed" name="foo.example.com" ip="192.168.122.10"/&gt;
+    &lt;range start="192.168.122.100" end="192.168.122.254"&gt;
+      &lt;lease expiry='1' unit='hours'/&gt;
+    &lt;/range&gt;
+    &lt;host mac="00:16:3e:77:e2:ed" name="foo.example.com" ip="192.168.122.10"&gt;
+      &lt;lease expiry='30' unit='minutes'/&gt;
+    &lt;/host&gt;
     &lt;host mac="00:16:3e:3e:a9:1a" name="bar.example.com" ip="192.168.122.11"/&gt;
   &lt;/dhcp&gt;
 &lt;/ip&gt;
@@ -1130,6 +1134,19 @@
                 <span class="since">since 0.7.3</span>)
               </dd>
             </dl>
+
+            <p>
+              Optionally, <code>range</code> and <code>host</code> elements can
+              have <code>lease</code> child element which specifies the lease
+              time through it's attributes <code>expiry</code> and
+              <code>unit</code> (which accepts <code>seconds</code>,
+              <code>minutes</code> and <code>hours</code> and defaults to
+              <code>minutes</code> if omitted). The minimal lease time is 2
+              minutes, except when setting an infinite lease time
+              (<code>expiry='0'</code>).
+              <span class="since">Since 6.3.0</span>
+            </p>
+
           </dd>
         </dl>
       </dd>
