@@ -227,14 +227,13 @@ virLeaseNew(virJSONValuePtr *lease_ret,
         /* Removed extraneous trailing space in DNSMASQ_LEASE_EXPIRES
          * (dnsmasq < 2.52) */
         virTrimSpaces(exptime, NULL);
-    }
 
-    if (!exptime ||
-        virStrToLong_ll(exptime, NULL, 10, &expirytime) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to convert lease expiry time to long long: %s"),
-                       NULLSTR(exptime));
-        return -1;
+        if (virStrToLong_ll(exptime, NULL, 10, &expirytime) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to convert lease expiry time to long long: %s"),
+                           NULLSTR(exptime));
+            return -1;
+        }
     }
 
     /* Create new lease */
@@ -252,7 +251,7 @@ virLeaseNew(virJSONValuePtr *lease_ret,
         return -1;
     if (server_duid && virJSONValueObjectAppendString(lease_new, "server-duid", server_duid) < 0)
         return -1;
-    if (expirytime && virJSONValueObjectAppendNumberLong(lease_new, "expiry-time", expirytime) < 0)
+    if (virJSONValueObjectAppendNumberLong(lease_new, "expiry-time", expirytime) < 0)
         return -1;
 
     *lease_ret = lease_new;
