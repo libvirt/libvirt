@@ -4179,7 +4179,7 @@ networkGetDHCPLeases(virNetworkPtr net,
             lease->clientid = g_strdup(virJSONValueObjectGetString(lease_tmp, "client-id"));
             lease->hostname = g_strdup(virJSONValueObjectGetString(lease_tmp, "hostname"));
 
-            if (VIR_INSERT_ELEMENT(leases_ret, nleases, nleases, lease) < 0)
+            if (VIR_APPEND_ELEMENT(leases_ret, nleases, lease) < 0)
                 goto error;
 
         } else {
