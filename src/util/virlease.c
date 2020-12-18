@@ -226,8 +226,7 @@ virLeaseNew(virJSONValuePtr *lease_ret,
 
         /* Removed extraneous trailing space in DNSMASQ_LEASE_EXPIRES
          * (dnsmasq < 2.52) */
-        if (exptime[strlen(exptime) - 1] == ' ')
-            exptime[strlen(exptime) - 1] = '\0';
+        virTrimSpaces(exptime, NULL);
     }
 
     if (!exptime ||
