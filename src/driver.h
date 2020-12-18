@@ -47,17 +47,14 @@ typedef enum {
  * directly if you don't have to, because it may be NULL, use this macro
  * instead.
  *
- * Note that this treats a possible error returned by drv->supports_feature
- * the same as not supported. If you care about the error, call
- * drv->supports_feature directly.
- *
  * Returns:
- *   != 0  Feature is supported.
+ *   -1    Error
+ *   >0    Feature is supported.
  *   0     Feature is not supported.
  */
 #define VIR_DRV_SUPPORTS_FEATURE(drv, conn, feature) \
     ((drv)->connectSupportsFeature ? \
-        (drv)->connectSupportsFeature((conn), (feature)) > 0 : 0)
+        (drv)->connectSupportsFeature((conn), (feature)) : 0)
 
 
 #define __VIR_DRIVER_H_INCLUDES___
