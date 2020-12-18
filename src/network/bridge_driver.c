@@ -4131,7 +4131,7 @@ networkGetDHCPLeases(virNetworkPtr net,
         }
 
         /* Do not report expired lease */
-        if (expirytime_tmp < currtime)
+        if (expirytime_tmp > 0 && expirytime_tmp < currtime)
             continue;
 
         if (need_results) {
