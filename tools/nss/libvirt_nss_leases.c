@@ -276,7 +276,8 @@ findLeasesParserEndMap(void *ctx)
             found = true;
     }
     DEBUG("Found %d", found);
-    if (parser->entry.expiry < parser->now) {
+    if (parser->entry.expiry != 0 &&
+        parser->entry.expiry < parser->now) {
         DEBUG("Entry expired at %llu vs now %llu",
               parser->entry.expiry, parser->now);
         found = false;
@@ -298,6 +299,7 @@ findLeasesParserEndMap(void *ctx)
     free(parser->entry.macaddr);
     free(parser->entry.ipaddr);
     free(parser->entry.hostname);
+    parser->entry.expiry = 0;
     parser->entry.macaddr = NULL;
     parser->entry.ipaddr = NULL;
     parser->entry.hostname = NULL;
