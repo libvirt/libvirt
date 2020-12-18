@@ -4035,7 +4035,6 @@ networkGetDHCPLeases(virNetworkPtr net,
     size_t nleases = 0;
     int rv = -1;
     size_t size = 0;
-    int custom_lease_file_len = 0;
     bool need_results = !!leases;
     long long currtime = 0;
     long long expirytime_tmp = -1;
@@ -4071,9 +4070,9 @@ networkGetDHCPLeases(virNetworkPtr net,
     custom_lease_file = networkDnsmasqLeaseFileNameCustom(driver, def->bridge);
 
     /* Read entire contents */
-    if ((custom_lease_file_len = virFileReadAllQuiet(custom_lease_file,
-                                                     VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX,
-                                                     &lease_entries)) < 0) {
+    if (virFileReadAllQuiet(custom_lease_file,
+                            VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX,
+                            &lease_entries) < 0) {
         /* Not all networks are guaranteed to have leases file.
          * Only those which run dnsmasq. Therefore, if we failed
          * to read the leases file, don't report error. Return 0
@@ -4088,20 +4087,23 @@ networkGetDHCPLeases(virNetworkPtr net,
         goto error;
     }
 
-    if (custom_lease_file_len) {
-        if (!(leases_array = virJSONValueFromString(lease_entries))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("invalid json in file: %s"), custom_lease_file);
-            goto error;
-        }
-
-        if (!virJSONValueIsArray(leases_array)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Malformed lease_entries array"));
-            goto error;
-        }
-        size = virJSONValueArraySize(leases_array);
+    if (STREQ(lease_entries, "")) {
+        rv = 0;
+        goto error;
     }
+
+    if (!(leases_array = virJSONValueFromString(lease_entries))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid json in file: %s"), custom_lease_file);
+        goto error;
+    }
+
+    if (!virJSONValueIsArray(leases_array)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Malformed lease_entries array"));
+        goto error;
+    }
+    size = virJSONValueArraySize(leases_array);
 
     currtime = (long long)time(NULL);
 
