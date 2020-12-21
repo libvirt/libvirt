@@ -247,8 +247,8 @@ mymain(void)
     DO_TEST("cdrom-ide-raw-auto-detect", "cdrom-ide-raw-auto-detect");
     DO_TEST("cdrom-ide-raw-auto-detect", "cdrom-ide-raw-auto-detect");
 
-    DO_TEST_FAIL("cdrom-ide-file-missing-datastore", "cdrom-ide-empty");
-    DO_TEST_FAIL("cdrom-ide-file-missing-file", "cdrom-ide-empty");
+    DO_TEST("cdrom-ide-file-missing-datastore", "cdrom-ide-empty");
+    DO_TEST("cdrom-ide-file-missing-file", "cdrom-ide-empty");
 
     DO_TEST_FAIL("harddisk-ide-file-missing-datastore", "harddisk-ide-file");
     DO_TEST_FAIL("harddisk-scsi-file-missing-file", "harddisk-scsi-file");

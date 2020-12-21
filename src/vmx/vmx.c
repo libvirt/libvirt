@@ -2448,7 +2448,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             }
 
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_FILE);
-            if (ctx->parseFileName(fileName, ctx->opaque, &tmp, false) < 0)
+            if (ctx->parseFileName(fileName, ctx->opaque, &tmp, true) < 0)
                 goto cleanup;
             virDomainDiskSetSource(*def, tmp);
             VIR_FREE(tmp);
