@@ -130,7 +130,7 @@ testCompareHelper(const void *data)
 static char *
 testParseVMXFileName(const char *fileName, void *opaque G_GNUC_UNUSED)
 {
-    char *copyOfFileName = NULL;
+    g_autofree char *copyOfFileName = NULL;
     char *tmp = NULL;
     char *saveptr = NULL;
     char *datastoreName = NULL;
@@ -145,7 +145,7 @@ testParseVMXFileName(const char *fileName, void *opaque G_GNUC_UNUSED)
         if ((tmp = STRSKIP(copyOfFileName, "/vmfs/volumes/")) == NULL ||
             (datastoreName = strtok_r(tmp, "/", &saveptr)) == NULL ||
             (directoryAndFileName = strtok_r(NULL, "", &saveptr)) == NULL) {
-            goto cleanup;
+            return NULL;
         }
 
         src = g_strdup_printf("[%s] %s", datastoreName, directoryAndFileName);
@@ -154,14 +154,11 @@ testParseVMXFileName(const char *fileName, void *opaque G_GNUC_UNUSED)
         src = g_strdup(fileName);
     } else if (strchr(fileName, '/') != NULL) {
         /* Found relative path, this is not supported */
-        src = NULL;
+        return NULL;
     } else {
         /* Found single file name referencing a file inside a datastore */
         src = g_strdup_printf("[datastore] directory/%s", fileName);
     }
-
- cleanup:
-    VIR_FREE(copyOfFileName);
 
     return src;
 }
