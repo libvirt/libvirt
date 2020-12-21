@@ -139,7 +139,8 @@ testCompareHelper(const void *data)
 static int
 testParseVMXFileName(const char *fileName,
                      void *opaque G_GNUC_UNUSED,
-                     char **src)
+                     char **src,
+                     bool allow_missing)
 {
     g_autofree char *copyOfFileName = NULL;
     char *tmp = NULL;
@@ -157,6 +158,16 @@ testParseVMXFileName(const char *fileName,
         if ((tmp = STRSKIP(copyOfFileName, "/vmfs/volumes/")) == NULL ||
             (datastoreName = strtok_r(tmp, "/", &saveptr)) == NULL ||
             (directoryAndFileName = strtok_r(NULL, "", &saveptr)) == NULL) {
+            return -1;
+        }
+
+        if (STREQ(datastoreName, "missing") ||
+            STRPREFIX(directoryAndFileName, "missing")) {
+            if (allow_missing)
+                return 0;
+
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "Referenced missing file '%s'", fileName);
             return -1;
         }
 

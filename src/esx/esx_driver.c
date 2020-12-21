@@ -128,7 +128,8 @@ esxFreePrivate(esxPrivate **priv)
 static int
 esxParseVMXFileName(const char *fileName,
                     void *opaque,
-                    char **out)
+                    char **out,
+                    bool allow_missing G_GNUC_UNUSED)
 {
     esxVMX_Data *data = opaque;
     esxVI_String *propertyNameList = NULL;

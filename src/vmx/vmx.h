@@ -36,7 +36,10 @@ virDomainXMLOptionPtr virVMXDomainXMLConfInit(virCapsPtr caps);
  * Context
  */
 
-typedef int (*virVMXParseFileName)(const char *fileName, void *opaque, char **src);
+typedef int (*virVMXParseFileName)(const char *fileName,
+                                   void *opaque,
+                                   char **src,
+                                   bool allow_missing);
 typedef char * (*virVMXFormatFileName)(const char *src, void *opaque);
 typedef int (*virVMXAutodetectSCSIControllerModel)(virDomainDiskDefPtr def,
                                                    int *model, void *opaque);

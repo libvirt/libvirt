@@ -2411,7 +2411,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             }
 
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_FILE);
-            if (ctx->parseFileName(fileName, ctx->opaque, &tmp) < 0)
+            if (ctx->parseFileName(fileName, ctx->opaque, &tmp, false) < 0)
                 goto cleanup;
             virDomainDiskSetSource(*def, tmp);
             VIR_FREE(tmp);
@@ -2448,7 +2448,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             }
 
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_FILE);
-            if (ctx->parseFileName(fileName, ctx->opaque, &tmp) < 0)
+            if (ctx->parseFileName(fileName, ctx->opaque, &tmp, false) < 0)
                 goto cleanup;
             virDomainDiskSetSource(*def, tmp);
             VIR_FREE(tmp);
@@ -2515,7 +2515,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
 
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_FILE);
             if (fileName &&
-                ctx->parseFileName(fileName, ctx->opaque, &tmp) < 0)
+                ctx->parseFileName(fileName, ctx->opaque, &tmp, false) < 0)
                 goto cleanup;
             virDomainDiskSetSource(*def, tmp);
             VIR_FREE(tmp);
@@ -2977,7 +2977,8 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
         (*def)->source->type = VIR_DOMAIN_CHR_TYPE_FILE;
         if (ctx->parseFileName(fileName,
                               ctx->opaque,
-                              &(*def)->source->data.file.path) < 0)
+                              &(*def)->source->data.file.path,
+                              false) < 0)
             goto cleanup;
     } else if (STRCASEEQ(fileType, "pipe")) {
         /*
@@ -3142,7 +3143,8 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
         (*def)->source->type = VIR_DOMAIN_CHR_TYPE_FILE;
         if (ctx->parseFileName(fileName,
                               ctx->opaque,
-                              &(*def)->source->data.file.path) < 0)
+                              &(*def)->source->data.file.path,
+                              false) < 0)
             goto cleanup;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,

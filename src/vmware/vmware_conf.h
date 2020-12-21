@@ -86,7 +86,8 @@ int vmwareExtractPid(const char * vmxPath);
 int
 vmwareParseVMXFileName(const char *datastorePath,
                        void *opaque,
-                       char **out);
+                       char **out,
+                       bool allow_missing);
 
 char *
 vmwareFormatVMXFileName(const char *datastorePath,
