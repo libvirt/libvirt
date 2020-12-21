@@ -308,8 +308,6 @@ virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
 
     VIR_DEBUG("calling vethCreate()");
     parentVeth = net->ifname;
-    if (parentVeth)
-        virNetDevReserveName(parentVeth);
 
     if (virNetDevVethCreate(&parentVeth, &containerVeth) < 0)
         return NULL;
