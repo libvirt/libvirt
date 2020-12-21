@@ -939,7 +939,7 @@ ok:
 Although libvirt does not encourage the Linux kernel wind/unwind
 style of multiple labels, there's a good general discussion of the
 issue archived at
-`KernelTrap <http://kerneltrap.org/node/553/2131>`__
+`KernelTrap <https://web.archive.org/web/20130521051957/http://kerneltrap.org/node/553/2131>`__
 
 When using goto, please use one of these standard labels if it
 makes sense:
