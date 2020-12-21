@@ -125,10 +125,11 @@ esxFreePrivate(esxPrivate **priv)
  * exception and need special handling. Parse the datastore name and use it
  * to lookup the datastore by name to verify that it exists.
  */
-static char *
-esxParseVMXFileName(const char *fileName, void *opaque)
+static int
+esxParseVMXFileName(const char *fileName,
+                    void *opaque,
+                    char **out)
 {
-    char *result = NULL;
     esxVMX_Data *data = opaque;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *datastoreList = NULL;
@@ -140,18 +141,22 @@ esxParseVMXFileName(const char *fileName, void *opaque)
     char *strippedFileName = NULL;
     char *copyOfFileName = NULL;
     char *directoryAndFileName;
+    int ret = -1;
+
+    *out = NULL;
 
     if (!strchr(fileName, '/') && !strchr(fileName, '\\')) {
         /* Plain file name, use same directory as for the .vmx file */
-        return g_strdup_printf("%s/%s", data->datastorePathWithoutFileName,
+        *out = g_strdup_printf("%s/%s", data->datastorePathWithoutFileName,
                                fileName);
+        return 0;
     }
 
     if (esxVI_String_AppendValueToList(&propertyNameList,
                                        "summary.name") < 0 ||
         esxVI_LookupDatastoreList(data->ctx, propertyNameList,
                                   &datastoreList) < 0) {
-        return NULL;
+        return -1;
     }
 
     /* Search for datastore by mount path */
@@ -189,13 +194,13 @@ esxParseVMXFileName(const char *fileName, void *opaque)
             ++tmp;
         }
 
-        result = g_strdup_printf("[%s] %s", datastoreName, strippedFileName);
+        *out = g_strdup_printf("[%s] %s", datastoreName, strippedFileName);
 
         break;
     }
 
     /* Fallback to direct datastore name match */
-    if (!result && STRPREFIX(fileName, "/vmfs/volumes/")) {
+    if (!*out && STRPREFIX(fileName, "/vmfs/volumes/")) {
         copyOfFileName = g_strdup(fileName);
 
         /* Expected format: '/vmfs/volumes/<datastore>/<path>' */
@@ -223,22 +228,22 @@ esxParseVMXFileName(const char *fileName, void *opaque)
             goto cleanup;
         }
 
-        result = g_strdup_printf("[%s] %s", datastoreName,
-                                 directoryAndFileName);
+        *out = g_strdup_printf("[%s] %s", datastoreName, directoryAndFileName);
     }
 
     /* If it's an absolute path outside of a datastore just use it as is */
-    if (!result && *fileName == '/') {
+    if (!*out && *fileName == '/') {
         /* FIXME: need to deal with Windows paths here too */
-        result = g_strdup(fileName);
+        *out = g_strdup(fileName);
     }
 
-    if (!result) {
+    if (!*out) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not handle file name '%s'"), fileName);
         goto cleanup;
     }
 
+    ret = 0;
  cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&datastoreList);
@@ -246,7 +251,7 @@ esxParseVMXFileName(const char *fileName, void *opaque)
     VIR_FREE(strippedFileName);
     VIR_FREE(copyOfFileName);
 
-    return result;
+    return ret;
 }
 
 

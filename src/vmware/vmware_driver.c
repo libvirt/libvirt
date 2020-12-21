@@ -409,7 +409,7 @@ vmwareDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     ctx.parseFileName = NULL;
-    ctx.formatFileName = vmwareCopyVMXFileName;
+    ctx.formatFileName = vmwareFormatVMXFileName;
     ctx.autodetectSCSIControllerModel = NULL;
     ctx.datacenterPath = NULL;
 
@@ -662,7 +662,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     ctx.parseFileName = NULL;
-    ctx.formatFileName = vmwareCopyVMXFileName;
+    ctx.formatFileName = vmwareFormatVMXFileName;
     ctx.autodetectSCSIControllerModel = NULL;
     ctx.datacenterPath = NULL;
 
@@ -950,7 +950,7 @@ vmwareConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
         return NULL;
     }
 
-    ctx.parseFileName = vmwareCopyVMXFileName;
+    ctx.parseFileName = vmwareParseVMXFileName;
     ctx.formatFileName = NULL;
     ctx.autodetectSCSIControllerModel = NULL;
     ctx.datacenterPath = NULL;

@@ -127,15 +127,18 @@ testCompareHelper(const void *data)
     return ret;
 }
 
-static char *
-testParseVMXFileName(const char *fileName, void *opaque G_GNUC_UNUSED)
+static int
+testParseVMXFileName(const char *fileName,
+                     void *opaque G_GNUC_UNUSED,
+                     char **src)
 {
     g_autofree char *copyOfFileName = NULL;
     char *tmp = NULL;
     char *saveptr = NULL;
     char *datastoreName = NULL;
     char *directoryAndFileName = NULL;
-    char *src = NULL;
+
+    *src = NULL;
 
     if (STRPREFIX(fileName, "/vmfs/volumes/")) {
         /* Found absolute path referencing a file inside a datastore */
@@ -145,22 +148,22 @@ testParseVMXFileName(const char *fileName, void *opaque G_GNUC_UNUSED)
         if ((tmp = STRSKIP(copyOfFileName, "/vmfs/volumes/")) == NULL ||
             (datastoreName = strtok_r(tmp, "/", &saveptr)) == NULL ||
             (directoryAndFileName = strtok_r(NULL, "", &saveptr)) == NULL) {
-            return NULL;
+            return -1;
         }
 
-        src = g_strdup_printf("[%s] %s", datastoreName, directoryAndFileName);
+        *src = g_strdup_printf("[%s] %s", datastoreName, directoryAndFileName);
     } else if (STRPREFIX(fileName, "/")) {
         /* Found absolute path referencing a file outside a datastore */
-        src = g_strdup(fileName);
+        *src = g_strdup(fileName);
     } else if (strchr(fileName, '/') != NULL) {
         /* Found relative path, this is not supported */
-        return NULL;
+        return -1;
     } else {
         /* Found single file name referencing a file inside a datastore */
-        src = g_strdup_printf("[datastore] directory/%s", fileName);
+        *src = g_strdup_printf("[datastore] directory/%s", fileName);
     }
 
-    return src;
+    return 0;
 }
 
 static int
