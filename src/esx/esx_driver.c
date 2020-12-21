@@ -143,100 +143,100 @@ esxParseVMXFileName(const char *fileName, void *opaque)
 
     if (!strchr(fileName, '/') && !strchr(fileName, '\\')) {
         /* Plain file name, use same directory as for the .vmx file */
-        result = g_strdup_printf("%s/%s", data->datastorePathWithoutFileName,
-                                 fileName);
-    } else {
-        if (esxVI_String_AppendValueToList(&propertyNameList,
-                                           "summary.name") < 0 ||
-            esxVI_LookupDatastoreList(data->ctx, propertyNameList,
-                                      &datastoreList) < 0) {
-            return NULL;
-        }
+        return g_strdup_printf("%s/%s", data->datastorePathWithoutFileName,
+                               fileName);
+    }
 
-        /* Search for datastore by mount path */
-        for (datastore = datastoreList; datastore;
-             datastore = datastore->_next) {
-            esxVI_DatastoreHostMount_Free(&hostMount);
-            datastoreName = NULL;
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "summary.name") < 0 ||
+        esxVI_LookupDatastoreList(data->ctx, propertyNameList,
+                                  &datastoreList) < 0) {
+        return NULL;
+    }
 
-            if (esxVI_LookupDatastoreHostMount(data->ctx, datastore->obj,
-                                               &hostMount,
-                                               esxVI_Occurrence_RequiredItem) < 0 ||
-                esxVI_GetStringValue(datastore, "summary.name", &datastoreName,
-                                     esxVI_Occurrence_RequiredItem) < 0) {
-                goto cleanup;
-            }
+    /* Search for datastore by mount path */
+    for (datastore = datastoreList; datastore;
+         datastore = datastore->_next) {
+        esxVI_DatastoreHostMount_Free(&hostMount);
+        datastoreName = NULL;
 
-            tmp = (char *)STRSKIP(fileName, hostMount->mountInfo->path);
-
-            if (!tmp)
-                continue;
-
-            /* Found a match. Strip leading separators */
-            while (*tmp == '/' || *tmp == '\\')
-                ++tmp;
-
-            strippedFileName = g_strdup(tmp);
-
-            tmp = strippedFileName;
-
-            /* Convert \ to / */
-            while (*tmp != '\0') {
-                if (*tmp == '\\')
-                    *tmp = '/';
-
-                ++tmp;
-            }
-
-            result = g_strdup_printf("[%s] %s", datastoreName, strippedFileName);
-
-            break;
-        }
-
-        /* Fallback to direct datastore name match */
-        if (!result && STRPREFIX(fileName, "/vmfs/volumes/")) {
-            copyOfFileName = g_strdup(fileName);
-
-            /* Expected format: '/vmfs/volumes/<datastore>/<path>' */
-            if (!(tmp = STRSKIP(copyOfFileName, "/vmfs/volumes/")) ||
-                !(datastoreName = strtok_r(tmp, "/", &saveptr))    ||
-                !(directoryAndFileName = strtok_r(NULL, "", &saveptr))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("File name '%s' doesn't have expected format "
-                                 "'/vmfs/volumes/<datastore>/<path>'"), fileName);
-                goto cleanup;
-            }
-
-            esxVI_ObjectContent_Free(&datastoreList);
-
-            if (esxVI_LookupDatastoreByName(data->ctx, datastoreName,
-                                            NULL, &datastoreList,
-                                            esxVI_Occurrence_OptionalItem) < 0) {
-                goto cleanup;
-            }
-
-            if (!datastoreList) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("File name '%s' refers to non-existing datastore '%s'"),
-                               fileName, datastoreName);
-                goto cleanup;
-            }
-
-            result = g_strdup_printf("[%s] %s", datastoreName,
-                                     directoryAndFileName);
-        }
-
-        /* If it's an absolute path outside of a datastore just use it as is */
-        if (!result && *fileName == '/') {
-            /* FIXME: need to deal with Windows paths here too */
-            result = g_strdup(fileName);
-        }
-
-        if (!result) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not handle file name '%s'"), fileName);
+        if (esxVI_LookupDatastoreHostMount(data->ctx, datastore->obj,
+                                           &hostMount,
+                                           esxVI_Occurrence_RequiredItem) < 0 ||
+            esxVI_GetStringValue(datastore, "summary.name", &datastoreName,
+                                 esxVI_Occurrence_RequiredItem) < 0) {
             goto cleanup;
         }
+
+        tmp = (char *)STRSKIP(fileName, hostMount->mountInfo->path);
+
+        if (!tmp)
+            continue;
+
+        /* Found a match. Strip leading separators */
+        while (*tmp == '/' || *tmp == '\\')
+            ++tmp;
+
+        strippedFileName = g_strdup(tmp);
+
+        tmp = strippedFileName;
+
+        /* Convert \ to / */
+        while (*tmp != '\0') {
+            if (*tmp == '\\')
+                *tmp = '/';
+
+            ++tmp;
+        }
+
+        result = g_strdup_printf("[%s] %s", datastoreName, strippedFileName);
+
+        break;
+    }
+
+    /* Fallback to direct datastore name match */
+    if (!result && STRPREFIX(fileName, "/vmfs/volumes/")) {
+        copyOfFileName = g_strdup(fileName);
+
+        /* Expected format: '/vmfs/volumes/<datastore>/<path>' */
+        if (!(tmp = STRSKIP(copyOfFileName, "/vmfs/volumes/")) ||
+            !(datastoreName = strtok_r(tmp, "/", &saveptr))    ||
+            !(directoryAndFileName = strtok_r(NULL, "", &saveptr))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("File name '%s' doesn't have expected format "
+                             "'/vmfs/volumes/<datastore>/<path>'"), fileName);
+            goto cleanup;
+        }
+
+        esxVI_ObjectContent_Free(&datastoreList);
+
+        if (esxVI_LookupDatastoreByName(data->ctx, datastoreName,
+                                        NULL, &datastoreList,
+                                        esxVI_Occurrence_OptionalItem) < 0) {
+            goto cleanup;
+        }
+
+        if (!datastoreList) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("File name '%s' refers to non-existing datastore '%s'"),
+                           fileName, datastoreName);
+            goto cleanup;
+        }
+
+        result = g_strdup_printf("[%s] %s", datastoreName,
+                                 directoryAndFileName);
+    }
+
+    /* If it's an absolute path outside of a datastore just use it as is */
+    if (!result && *fileName == '/') {
+        /* FIXME: need to deal with Windows paths here too */
+        result = g_strdup(fileName);
+    }
+
+    if (!result) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not handle file name '%s'"), fileName);
+        goto cleanup;
     }
 
  cleanup:
