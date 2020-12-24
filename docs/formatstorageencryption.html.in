@@ -128,7 +128,9 @@
 
     <p>
       Here is an example specifying use of the <code>luks</code> format for
-      a specific cipher algorithm for volume creation:
+      a specific cipher algorithm for volume creation.
+      <span class="since">Since 6.10.0,</span> the <code>target</code> format
+      can also support <code>qcow2</code> type with <code>luks</code> encryption.
     </p>
     <pre>
 &lt;volume&gt;
