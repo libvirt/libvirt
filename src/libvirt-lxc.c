@@ -35,6 +35,7 @@
 # include <sys/apparmor.h>
 #endif
 #include "vircgroup.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -213,7 +214,7 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
                 goto error;
             }
 
-            if (strlen((char *) ctx) >= VIR_SECURITY_LABEL_BUFLEN) {
+            if (virStrcpy(oldlabel->label, ctx, VIR_SECURITY_LABEL_BUFLEN) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("security label exceeds "
                                  "maximum length: %d"),
@@ -221,8 +222,6 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
                 freecon(ctx);
                 goto error;
             }
-
-            strcpy(oldlabel->label, (char *) ctx);
             freecon(ctx);
 
             if ((oldlabel->enforcing = security_getenforce()) < 0) {

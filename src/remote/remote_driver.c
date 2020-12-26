@@ -2328,12 +2328,11 @@ remoteDomainGetSecurityLabel(virDomainPtr domain, virSecurityLabelPtr seclabel)
     }
 
     if (ret.label.label_val != NULL) {
-        if (strlen(ret.label.label_val) >= sizeof(seclabel->label)) {
+        if (virStrcpyStatic(seclabel->label, ret.label.label_val) < 0) {
             virReportError(VIR_ERR_RPC, _("security label exceeds maximum: %zu"),
                            sizeof(seclabel->label) - 1);
             goto cleanup;
         }
-        strcpy(seclabel->label, ret.label.label_val);
         seclabel->enforcing = ret.enforcing;
     }
 
@@ -2372,13 +2371,12 @@ remoteDomainGetSecurityLabelList(virDomainPtr domain, virSecurityLabelPtr* secla
     for (i = 0; i < ret.labels.labels_len; i++) {
         remote_domain_get_security_label_ret *cur = &ret.labels.labels_val[i];
         if (cur->label.label_val != NULL) {
-            if (strlen(cur->label.label_val) >= sizeof((*seclabels)->label)) {
+            if (virStrcpyStatic((*seclabels)[i].label, cur->label.label_val) < 0) {
                 virReportError(VIR_ERR_RPC, _("security label exceeds maximum: %zd"),
                                sizeof((*seclabels)->label) - 1);
                 VIR_FREE(*seclabels);
                 goto cleanup;
             }
-            strcpy((*seclabels)[i].label, cur->label.label_val);
             (*seclabels)[i].enforcing = cur->enforcing;
         }
     }
@@ -2444,21 +2442,19 @@ remoteNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
     }
 
     if (ret.model.model_val != NULL) {
-        if (strlen(ret.model.model_val) >= sizeof(secmodel->model)) {
+        if (virStrcpyStatic(secmodel->model, ret.model.model_val) < 0) {
             virReportError(VIR_ERR_RPC, _("security model exceeds maximum: %zu"),
                            sizeof(secmodel->model) - 1);
             goto cleanup;
         }
-        strcpy(secmodel->model, ret.model.model_val);
     }
 
     if (ret.doi.doi_val != NULL) {
-        if (strlen(ret.doi.doi_val) >= sizeof(secmodel->doi)) {
+        if (virStrcpyStatic(secmodel->doi, ret.doi.doi_val) < 0) {
             virReportError(VIR_ERR_RPC, _("security doi exceeds maximum: %zu"),
                            sizeof(secmodel->doi) - 1);
             goto cleanup;
         }
-        strcpy(secmodel->doi, ret.doi.doi_val);
     }
 
     rv = 0;

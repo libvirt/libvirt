@@ -1209,7 +1209,7 @@ virSecuritySELinuxGetProcessLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
         return -1;
     }
 
-    if (strlen((char *)ctx) >= VIR_SECURITY_LABEL_BUFLEN) {
+    if (virStrcpy(sec->label, ctx, VIR_SECURITY_LABEL_BUFLEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label exceeds "
                          "maximum length: %d"),
@@ -1218,7 +1218,6 @@ virSecuritySELinuxGetProcessLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
         return -1;
     }
 
-    strcpy(sec->label, (char *)ctx);
     freecon(ctx);
 
     VIR_DEBUG("label=%s", sec->label);
