@@ -1051,6 +1051,40 @@ virHostdevReAttachPCIDevicesImpl(virHostdevManagerPtr mgr,
 }
 
 
+static void
+virHostdevDeleteMissingPCIDevices(virHostdevManagerPtr mgr,
+                                  virDomainHostdevDefPtr *hostdevs,
+                                  int nhostdevs)
+{
+    size_t i;
+
+    if (nhostdevs == 0)
+        return;
+
+    virObjectLock(mgr->activePCIHostdevs);
+    virObjectLock(mgr->inactivePCIHostdevs);
+
+    for (i = 0; i < nhostdevs; i++) {
+        virDomainHostdevDef *hostdev = hostdevs[i];
+        virDomainHostdevSubsysPCI *pcisrc = &hostdev->source.subsys.u.pci;
+        g_autoptr(virPCIDevice) pci = NULL;
+
+        if (virHostdevGetPCIHostDevice(hostdev, &pci) != -2)
+            continue;
+
+        /* The PCI device from 'hostdev' does not exist in the host
+         * anymore. Delete it from both active and inactive lists to
+         * reflect the current host state.
+         */
+        virPCIDeviceListDel(mgr->activePCIHostdevs, &pcisrc->addr);
+        virPCIDeviceListDel(mgr->inactivePCIHostdevs, &pcisrc->addr);
+    }
+
+    virObjectUnlock(mgr->inactivePCIHostdevs);
+    virObjectUnlock(mgr->activePCIHostdevs);
+}
+
+
 void
 virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
                              const char *drv_name,
@@ -1072,6 +1106,10 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
 
     virHostdevReAttachPCIDevicesImpl(mgr, drv_name, dom_name, pcidevs,
                                      hostdevs, nhostdevs);
+
+    /* Handle the case where PCI devices from the host went missing
+     * during the domain lifetime */
+    virHostdevDeleteMissingPCIDevices(mgr, hostdevs, nhostdevs);
 }
 
 
