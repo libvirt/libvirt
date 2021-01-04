@@ -4,7 +4,6 @@ import argparse
 import os
 import sys
 import json
-import xmltodict
 import xml.etree.ElementTree
 
 
@@ -105,31 +104,19 @@ def parseQemu(path, features):
 
 
 def parseCPUData(path):
-    cpuData = {}
-    with open(path, "rb") as f:
-        data = xmltodict.parse(f)
+    cpuData = dict()
+    for f in xml.etree.ElementTree.parse(path).getroot():
+        if f.tag == "cpuid":
+            reg_list = ["eax_in", "ecx_in", "eax", "ebx", "ecx", "edx"]
+        elif f.tag == "msr":
+            reg_list = ["index", "eax", "edx"]
+        else:
+            continue
 
-    for leaf in data["cpudata"]["cpuid"]:
-        feature = {"type": "cpuid"}
-        feature["eax_in"] = int(leaf["@eax_in"], 0)
-        feature["ecx_in"] = int(leaf["@ecx_in"], 0)
-        for reg in ["eax", "ebx", "ecx", "edx"]:
-            feature[reg] = int(leaf["@" + reg], 0)
-
+        feature = {"type": f.tag}
+        for reg in reg_list:
+            feature[reg] = int(f.attrib.get(reg, "0"), 0)
         addFeature(cpuData, feature)
-
-    if "msr" in data["cpudata"]:
-        if not isinstance(data["cpudata"]["msr"], list):
-            data["cpudata"]["msr"] = [data["cpudata"]["msr"]]
-
-        for msr in data["cpudata"]["msr"]:
-            feature = {"type": "msr"}
-            feature["index"] = int(msr["@index"], 0)
-            feature["edx"] = int(msr["@edx"], 0)
-            feature["eax"] = int(msr["@eax"], 0)
-
-            addFeature(cpuData, feature)
-
     return cpuData
 
 
