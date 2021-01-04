@@ -48,7 +48,4 @@ int virDomainDriverSetupPersistentDefBlkioParams(virDomainDefPtr persistentDef,
                                                  int nparams);
 
 int virDomainDriverNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
-                                        unsigned *domain,
-                                        unsigned *bus,
-                                        unsigned *slot,
-                                        unsigned *function);
+                                        virPCIDeviceAddressPtr devAddr);

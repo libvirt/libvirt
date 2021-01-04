@@ -11971,7 +11971,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
 {
     virQEMUDriverPtr driver = dev->conn->privateData;
     virPCIDevicePtr pci = NULL;
-    unsigned domain = 0, bus = 0, slot = 0, function = 0;
+    virPCIDeviceAddress devAddr;
     int ret = -1;
     virNodeDeviceDefPtr def = NULL;
     g_autofree char *xml = NULL;
@@ -12006,10 +12006,10 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
     if (virNodeDeviceDetachFlagsEnsureACL(dev->conn, def) < 0)
         goto cleanup;
 
-    if (virDomainDriverNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
+    if (virDomainDriverNodeDeviceGetPCIInfo(def, &devAddr) < 0)
         goto cleanup;
 
-    pci = virPCIDeviceNew(domain, bus, slot, function);
+    pci = virPCIDeviceNew(devAddr.domain, devAddr.bus, devAddr.slot, devAddr.function);
     if (!pci)
         goto cleanup;
 
@@ -12055,7 +12055,7 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
 {
     virQEMUDriverPtr driver = dev->conn->privateData;
     virPCIDevicePtr pci = NULL;
-    unsigned domain = 0, bus = 0, slot = 0, function = 0;
+    virPCIDeviceAddress devAddr;
     int ret = -1;
     virNodeDeviceDefPtr def = NULL;
     g_autofree char *xml = NULL;
@@ -12087,10 +12087,10 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
     if (virNodeDeviceReAttachEnsureACL(dev->conn, def) < 0)
         goto cleanup;
 
-    if (virDomainDriverNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
+    if (virDomainDriverNodeDeviceGetPCIInfo(def, &devAddr) < 0)
         goto cleanup;
 
-    pci = virPCIDeviceNew(domain, bus, slot, function);
+    pci = virPCIDeviceNew(devAddr.domain, devAddr.bus, devAddr.slot, devAddr.function);
     if (!pci)
         goto cleanup;
 
@@ -12109,7 +12109,7 @@ qemuNodeDeviceReset(virNodeDevicePtr dev)
 {
     virQEMUDriverPtr driver = dev->conn->privateData;
     virPCIDevicePtr pci;
-    unsigned domain = 0, bus = 0, slot = 0, function = 0;
+    virPCIDeviceAddress devAddr;
     int ret = -1;
     virNodeDeviceDefPtr def = NULL;
     g_autofree char *xml = NULL;
@@ -12141,10 +12141,10 @@ qemuNodeDeviceReset(virNodeDevicePtr dev)
     if (virNodeDeviceResetEnsureACL(dev->conn, def) < 0)
         goto cleanup;
 
-    if (virDomainDriverNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
+    if (virDomainDriverNodeDeviceGetPCIInfo(def, &devAddr) < 0)
         goto cleanup;
 
-    pci = virPCIDeviceNew(domain, bus, slot, function);
+    pci = virPCIDeviceNew(devAddr.domain, devAddr.bus, devAddr.slot, devAddr.function);
     if (!pci)
         goto cleanup;
 

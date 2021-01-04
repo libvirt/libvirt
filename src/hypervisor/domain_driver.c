@@ -340,20 +340,17 @@ virDomainDriverSetupPersistentDefBlkioParams(virDomainDefPtr persistentDef,
 
 int
 virDomainDriverNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
-                                    unsigned *domain,
-                                    unsigned *bus,
-                                    unsigned *slot,
-                                    unsigned *function)
+                                    virPCIDeviceAddressPtr devAddr)
 {
     virNodeDevCapsDefPtr cap;
 
     cap = def->caps;
     while (cap) {
         if (cap->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
-            *domain   = cap->data.pci_dev.domain;
-            *bus      = cap->data.pci_dev.bus;
-            *slot     = cap->data.pci_dev.slot;
-            *function = cap->data.pci_dev.function;
+            devAddr->domain = cap->data.pci_dev.domain;
+            devAddr->bus = cap->data.pci_dev.bus;
+            devAddr->slot = cap->data.pci_dev.slot;
+            devAddr->function = cap->data.pci_dev.function;
             break;
         }
 
