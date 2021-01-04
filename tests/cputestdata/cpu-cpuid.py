@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import sys
 import json
@@ -191,39 +192,45 @@ def formatCPUData(cpuData, path, comment):
         f.write("</cpudata>\n")
 
 
-def diff(cpuMap, path):
-    base = path.replace(".json", "")
-    jsonFile = path
-    cpuDataFile = base + ".xml"
-    enabledFile = base + "-enabled.xml"
-    disabledFile = base + "-disabled.xml"
-
-    cpuData = parseCPUData(cpuDataFile)
-    qemu = parseQemu(jsonFile, cpuMap)
-
-    enabled = {"cpuid": {}}
-    disabled = {"cpuid": {}}
-    for feature in cpuMap.values():
-        if checkFeature(qemu, feature):
-            addFeature(enabled, feature)
-        elif checkFeature(cpuData, feature):
-            addFeature(disabled, feature)
-
-    formatCPUData(enabled, enabledFile, "Features enabled by QEMU")
-    formatCPUData(disabled, disabledFile, "Features disabled by QEMU")
-
-
-if len(sys.argv) < 3:
-    print("Usage: %s diff json_file..." % sys.argv[0])
-    sys.exit(1)
-
-action = sys.argv[1]
-args = sys.argv[2:]
-
-if action == "diff":
+def diff(args):
     cpuMap = parseMap()
-    for path in args:
-        diff(cpuMap, path)
-else:
-    print("Unknown action: %s" % action)
-    sys.exit(1)
+
+    for jsonFile in args.json_files:
+        cpuDataFile = jsonFile.replace(".json", ".xml")
+        enabledFile = jsonFile.replace(".json", "-enabled.xml")
+        disabledFile = jsonFile.replace(".json", "-disabled.xml")
+
+        cpuData = parseCPUData(cpuDataFile)
+        qemu = parseQemu(jsonFile, cpuMap)
+
+        enabled = dict()
+        disabled = dict()
+        for feature in cpuMap.values():
+            if checkFeature(qemu, feature):
+                addFeature(enabled, feature)
+            elif checkFeature(cpuData, feature):
+                addFeature(disabled, feature)
+
+        formatCPUData(enabled, enabledFile, "Features enabled by QEMU")
+        formatCPUData(disabled, disabledFile, "Features disabled by QEMU")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Diff cpuid results")
+    subparsers = parser.add_subparsers(dest="action", required=True)
+    diffparser = subparsers.add_parser(
+        "diff",
+        help="Diff json description of CPU model against known features.")
+    diffparser.add_argument(
+        "json_files",
+        nargs="+",
+        metavar="FILE",
+        type=os.path.realpath,
+        help="Path to one or more json CPU model descriptions.")
+    args = parser.parse_args()
+
+    diff(args)
+
+
+if __name__ == "__main__":
+    main()
