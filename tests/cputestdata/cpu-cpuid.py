@@ -5,6 +5,7 @@ import os
 import sys
 import json
 import xmltodict
+import xml.etree.ElementTree
 
 
 def checkCPUIDFeature(cpuData, feature):
@@ -132,37 +133,23 @@ def parseCPUData(path):
     return cpuData
 
 
-def parseMapFeature(fType, data):
-    ret = {"type": fType}
-
-    if fType == "cpuid":
-        fields = ["eax_in", "ecx_in", "eax", "ebx", "ecx", "edx"]
-    elif fType == "msr":
-        fields = ["index", "edx", "eax"]
-
-    for field in fields:
-        attr = "@%s" % field
-        if attr in data:
-            ret[field] = int(data[attr], 0)
-        else:
-            ret[field] = 0
-
-    return ret
-
-
 def parseMap():
     path = os.path.dirname(sys.argv[0])
     path = os.path.join(path, "..", "..", "src", "cpu_map", "x86_features.xml")
-    with open(path, "rb") as f:
-        data = xmltodict.parse(f)
 
-    cpuMap = {}
-    for feature in data["cpus"]["feature"]:
-        for fType in ["cpuid", "msr"]:
-            if fType not in feature:
-                continue
-            cpuMap[feature["@name"]] = parseMapFeature(fType, feature[fType])
+    cpuMap = dict()
+    for f in xml.etree.ElementTree.parse(path).getroot().iter("feature"):
+        if f[0].tag == "cpuid":
+            reg_list = ["eax_in", "ecx_in", "eax", "ebx", "ecx", "edx"]
+        elif f[0].tag == "msr":
+            reg_list = ["index", "eax", "edx"]
+        else:
+            continue
 
+        feature = {"type": f[0].tag}
+        for reg in reg_list:
+            feature[reg] = int(f[0].attrib.get(reg, "0"), 0)
+        cpuMap[f.attrib["name"]] = feature
     return cpuMap
 
 
