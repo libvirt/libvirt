@@ -2310,7 +2310,8 @@ msgstr "CPU-avbildning:"
 #, c-format
 msgid ""
 "CPU mode '%s' for %s %s domain on %s host is not supported by hypervisor"
-msgstr "CPU-läge ”%s” för domänen %s %s på värden %s stödjs inte av hypervisorn"
+msgstr ""
+"CPU-läge ”%s” för domänen %s %s på värden %s stödjs inte av hypervisorn"
 
 #, c-format
 msgid "CPU model %s already defined"
@@ -2496,7 +2497,8 @@ msgstr ""
 "domän"
 
 msgid "Can't add host USB device: USB is disabled in this host"
-msgstr "Kan inte lägga till en värd-USB-enhet: USB är avaktiverat på denna värd"
+msgstr ""
+"Kan inte lägga till en värd-USB-enhet: USB är avaktiverat på denna värd"
 
 msgid "Can't change domain configuration in managed save state"
 msgstr "Kan inte ändra domänkonfigurationen i hanterat sparat tillstånd"
@@ -2556,8 +2558,8 @@ msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
 "%08x"
 msgstr ""
-"Kan inte hämta UUID:t för filen att ansluta som hårddisk/dvd/floppy: %s, "
-"rc=%08x"
+"Kan inte hämta UUID:t för filen att ansluta som hårddisk/dvd/floppy: %s, rc="
+"%08x"
 
 msgid "Can't initialize Parallels SDK"
 msgstr "Kan inte initiera Parallels-SDK:n"
@@ -3894,8 +3896,8 @@ msgid ""
 "Configuring the '%s' timer is not supported for virtType=%s arch=%s machine="
 "%s guests"
 msgstr ""
-"Konfiguration at timern ”%s” stödjs inte för gäster virtType=%s "
-"arkitektur=%s maskin=%s"
+"Konfiguration at timern ”%s” stödjs inte för gäster virtType=%s arkitektur="
+"%s maskin=%s"
 
 #, c-format
 msgid "Configuring the '%s' timer is not supported with this QEMU binary"
@@ -4637,8 +4639,8 @@ msgstr "Kunde inte slå upp rotögonblicksbildslistan"
 #, c-format
 msgid "Could not migrate domain, migration task finished with an error: %s"
 msgstr ""
-"Det gick inte att migrera domänen, migreringsuppdraget avslutade med ett fel:"
-" %s"
+"Det gick inte att migrera domänen, migreringsuppdraget avslutade med ett "
+"fel: %s"
 
 msgid "Could not migrate domain, validation reported a problem"
 msgstr ""
@@ -5253,7 +5255,8 @@ msgid "Detach device from an XML <file>"
 msgstr "Avmontera enhet från en XML-fil"
 
 msgid "Detach device identified by the given alias from a domain"
-msgstr "Koppla ifrån enheten som idetifieras av det givna aliaset från en domän"
+msgstr ""
+"Koppla ifrån enheten som idetifieras av det givna aliaset från en domän"
 
 msgid "Detach disk device."
 msgstr "Avmontera diskenhet."

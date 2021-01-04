@@ -3563,7 +3563,8 @@ msgstr ""
 "Aseta verkkotuki käynnistymään automaattisesti käynnistyksen yhteydessä."
 
 msgid "Configure a pool to be automatically started at boot."
-msgstr "Määritä varanto käynnistymään automaattisesti käynnistyksen yhteydessä."
+msgstr ""
+"Määritä varanto käynnistymään automaattisesti käynnistyksen yhteydessä."
 
 #, c-format
 msgid ""
@@ -25660,7 +25661,8 @@ msgstr ""
 
 #, c-format
 msgid "failed to unmark pool %s as autostarted"
-msgstr "varannon %s automaattinen käynnistys -merkinnän poistaminen epäonnistui"
+msgstr ""
+"varannon %s automaattinen käynnistys -merkinnän poistaminen epäonnistui"
 
 #, c-format
 msgid "failed to unprotect snapshot '%s/%s@%s'"
@@ -25734,7 +25736,8 @@ msgstr "otsikkotietojen kirjoittaminen '%s':lle epäonnistui"
 
 #, c-format
 msgid "failed to write header to domain save file '%s'"
-msgstr "otsikon kirjoittaminen toimialueen tallennustiedostoon '%s' epäonnistui"
+msgstr ""
+"otsikon kirjoittaminen toimialueen tallennustiedostoon '%s' epäonnistui"
 
 #, fuzzy, c-format
 msgid "failed to write known_host file '%s': %s"
