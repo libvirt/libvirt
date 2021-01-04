@@ -11965,37 +11965,6 @@ qemuDomainMigrateConfirm3Params(virDomainPtr domain,
 
 
 static int
-qemuNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
-                         unsigned *domain,
-                         unsigned *bus,
-                         unsigned *slot,
-                         unsigned *function)
-{
-    virNodeDevCapsDefPtr cap;
-
-    cap = def->caps;
-    while (cap) {
-        if (cap->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
-            *domain   = cap->data.pci_dev.domain;
-            *bus      = cap->data.pci_dev.bus;
-            *slot     = cap->data.pci_dev.slot;
-            *function = cap->data.pci_dev.function;
-            break;
-        }
-
-        cap = cap->next;
-    }
-
-    if (!cap) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("device %s is not a PCI device"), def->name);
-        return -1;
-    }
-
-    return 0;
-}
-
-static int
 qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
                           const char *driverName,
                           unsigned int flags)
@@ -12037,7 +12006,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
     if (virNodeDeviceDetachFlagsEnsureACL(dev->conn, def) < 0)
         goto cleanup;
 
-    if (qemuNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
+    if (virDomainDriverNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
         goto cleanup;
 
     pci = virPCIDeviceNew(domain, bus, slot, function);
@@ -12118,7 +12087,7 @@ qemuNodeDeviceReAttach(virNodeDevicePtr dev)
     if (virNodeDeviceReAttachEnsureACL(dev->conn, def) < 0)
         goto cleanup;
 
-    if (qemuNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
+    if (virDomainDriverNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
         goto cleanup;
 
     pci = virPCIDeviceNew(domain, bus, slot, function);
@@ -12172,7 +12141,7 @@ qemuNodeDeviceReset(virNodeDevicePtr dev)
     if (virNodeDeviceResetEnsureACL(dev->conn, def) < 0)
         goto cleanup;
 
-    if (qemuNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
+    if (virDomainDriverNodeDeviceGetPCIInfo(def, &domain, &bus, &slot, &function) < 0)
         goto cleanup;
 
     pci = virPCIDeviceNew(domain, bus, slot, function);

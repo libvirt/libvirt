@@ -21,6 +21,7 @@
 #pragma once
 
 #include "domain_conf.h"
+#include "node_device_conf.h"
 
 char *
 virDomainDriverGenerateRootHash(const char *drivername,
@@ -45,3 +46,9 @@ int virDomainDriverParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
 int virDomainDriverSetupPersistentDefBlkioParams(virDomainDefPtr persistentDef,
                                                  virTypedParameterPtr params,
                                                  int nparams);
+
+int virDomainDriverNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
+                                        unsigned *domain,
+                                        unsigned *bus,
+                                        unsigned *slot,
+                                        unsigned *function);

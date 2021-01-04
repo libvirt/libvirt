@@ -336,3 +336,35 @@ virDomainDriverSetupPersistentDefBlkioParams(virDomainDefPtr persistentDef,
 
     return ret;
 }
+
+
+int
+virDomainDriverNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
+                                    unsigned *domain,
+                                    unsigned *bus,
+                                    unsigned *slot,
+                                    unsigned *function)
+{
+    virNodeDevCapsDefPtr cap;
+
+    cap = def->caps;
+    while (cap) {
+        if (cap->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
+            *domain   = cap->data.pci_dev.domain;
+            *bus      = cap->data.pci_dev.bus;
+            *slot     = cap->data.pci_dev.slot;
+            *function = cap->data.pci_dev.function;
+            break;
+        }
+
+        cap = cap->next;
+    }
+
+    if (!cap) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("device %s is not a PCI device"), def->name);
+        return -1;
+    }
+
+    return 0;
+}
