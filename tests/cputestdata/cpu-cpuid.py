@@ -7,51 +7,27 @@ import json
 import xml.etree.ElementTree
 
 
-def checkCPUIDFeature(cpuData, feature):
-    eax_in = feature["eax_in"]
-    ecx_in = feature["ecx_in"]
-    eax = feature["eax"]
-    ebx = feature["ebx"]
-    ecx = feature["ecx"]
-    edx = feature["edx"]
-
-    if "cpuid" not in cpuData:
-        return False
-
-    cpuid = cpuData["cpuid"]
-    if eax_in not in cpuid or ecx_in not in cpuid[eax_in]:
-        return False
-
-    leaf = cpuid[eax_in][ecx_in]
-    return ((eax > 0 and leaf["eax"] & eax == eax) or
-            (ebx > 0 and leaf["ebx"] & ebx == ebx) or
-            (ecx > 0 and leaf["ecx"] & ecx == ecx) or
-            (edx > 0 and leaf["edx"] & edx == edx))
-
-
-def checkMSRFeature(cpuData, feature):
-    index = feature["index"]
-    edx = feature["edx"]
-    eax = feature["eax"]
-
-    if "msr" not in cpuData:
-        return False
-
-    msr = cpuData["msr"]
-    if index not in msr:
-        return False
-
-    msr = msr[index]
-    return ((edx > 0 and msr["edx"] & edx == edx) or
-            (eax > 0 and msr["eax"] & eax == eax))
-
-
 def checkFeature(cpuData, feature):
     if feature["type"] == "cpuid":
-        return checkCPUIDFeature(cpuData, feature)
+        # cpuData["cpuid"][eax_in][ecx_in] = {eax:, ebx:, ecx:, edx:}
+        keyList = ["type", "eax_in", "ecx_in"]
+        regList = ["eax", "ebx", "ecx", "edx"]
+    elif feature["type"] == "msr":
+        # cpuData["msr"][index] = {eax:, edx:}
+        keyList = ["type", "index"]
+        regList = ["eax", "edx"]
+    else:
+        return False
 
-    if feature["type"] == "msr":
-        return checkMSRFeature(cpuData, feature)
+    for key in keyList:
+        if feature[key] not in cpuData:
+            return False
+        cpuData = cpuData[feature[key]]
+
+    for reg in regList:
+        if feature[reg] > 0 and feature[reg] == feature[reg] & cpuData[reg]:
+            return True
+    return False
 
 
 def addFeature(cpuData, feature):
