@@ -54,41 +54,25 @@ def checkFeature(cpuData, feature):
         return checkMSRFeature(cpuData, feature)
 
 
-def addCPUIDFeature(cpuData, feature):
-    if "cpuid" not in cpuData:
-        cpuData["cpuid"] = {}
-    cpuid = cpuData["cpuid"]
-
-    if feature["eax_in"] not in cpuid:
-        cpuid[feature["eax_in"]] = {}
-    leaf = cpuid[feature["eax_in"]]
-
-    if feature["ecx_in"] not in leaf:
-        leaf[feature["ecx_in"]] = {"eax": 0, "ebx": 0, "ecx": 0, "edx": 0}
-    leaf = leaf[feature["ecx_in"]]
-
-    for reg in ["eax", "ebx", "ecx", "edx"]:
-        leaf[reg] |= feature[reg]
-
-
-def addMSRFeature(cpuData, feature):
-    if "msr" not in cpuData:
-        cpuData["msr"] = {}
-    msr = cpuData["msr"]
-
-    if feature["index"] not in msr:
-        msr[feature["index"]] = {"edx": 0, "eax": 0}
-    msr = msr[feature["index"]]
-
-    for reg in ["edx", "eax"]:
-        msr[reg] |= feature[reg]
-
-
 def addFeature(cpuData, feature):
     if feature["type"] == "cpuid":
-        addCPUIDFeature(cpuData, feature)
+        # cpuData["cpuid"][eax_in][ecx_in] = {eax:, ebx:, ecx:, edx:}
+        keyList = ["type", "eax_in", "ecx_in"]
+        regList = ["eax", "ebx", "ecx", "edx"]
     elif feature["type"] == "msr":
-        addMSRFeature(cpuData, feature)
+        # cpuData["msr"][index] = {eax:, edx:}
+        keyList = ["type", "index"]
+        regList = ["eax", "edx"]
+    else:
+        return
+
+    for key in keyList:
+        if feature[key] not in cpuData:
+            cpuData[feature[key]] = dict()
+        cpuData = cpuData[feature[key]]
+
+    for reg in regList:
+        cpuData[reg] = cpuData.get(reg, 0) | feature[reg]
 
 
 def parseQemu(path, features):
