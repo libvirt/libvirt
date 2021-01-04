@@ -1336,7 +1336,7 @@ virPCIDeviceReattach(virPCIDevicePtr dev,
     /* Steal the dev from list inactiveDevs */
     if (inactiveDevs) {
         VIR_DEBUG("Removing PCI device %s from inactive list", dev->name);
-        virPCIDeviceListDel(inactiveDevs, dev);
+        virPCIDeviceListDel(inactiveDevs, &dev->address);
     }
 
     return 0;
@@ -1750,9 +1750,9 @@ virPCIDeviceListSteal(virPCIDeviceListPtr list,
 
 void
 virPCIDeviceListDel(virPCIDeviceListPtr list,
-                    virPCIDevicePtr dev)
+                    virPCIDeviceAddressPtr devAddr)
 {
-    virPCIDeviceFree(virPCIDeviceListSteal(list, &dev->address));
+    virPCIDeviceFree(virPCIDeviceListSteal(list, devAddr));
 }
 
 int

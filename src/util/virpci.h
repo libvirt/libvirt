@@ -170,7 +170,7 @@ virPCIDevicePtr virPCIDeviceListSteal(virPCIDeviceListPtr list,
 virPCIDevicePtr virPCIDeviceListStealIndex(virPCIDeviceListPtr list,
                                            int idx);
 void virPCIDeviceListDel(virPCIDeviceListPtr list,
-                         virPCIDevicePtr dev);
+                         virPCIDeviceAddressPtr devAddr);
 virPCIDevicePtr virPCIDeviceListFind(virPCIDeviceListPtr list,
                                      virPCIDeviceAddressPtr devAddr);
 virPCIDevicePtr

@@ -980,11 +980,11 @@ virHostdevReAttachPCIDevicesImpl(virHostdevManagerPtr mgr,
             if (STRNEQ_NULLABLE(drv_name, actual_drvname) ||
                 STRNEQ_NULLABLE(dom_name, actual_domname)) {
 
-                virPCIDeviceListDel(pcidevs, pci);
+                virPCIDeviceListDel(pcidevs, virPCIDeviceGetAddress(pci));
                 continue;
             }
         } else {
-            virPCIDeviceListDel(pcidevs, pci);
+            virPCIDeviceListDel(pcidevs, virPCIDeviceGetAddress(pci));
             continue;
         }
 
@@ -2486,7 +2486,8 @@ virHostdevUpdateActiveNVMeDevices(virHostdevManagerPtr hostdev_mgr,
     while (lastGoodPCIIdx >= 0) {
         virPCIDevicePtr actual = virPCIDeviceListGet(pciDevices, i);
 
-        virPCIDeviceListDel(hostdev_mgr->activePCIHostdevs, actual);
+        virPCIDeviceListDel(hostdev_mgr->activePCIHostdevs,
+                            virPCIDeviceGetAddress(actual));
 
         lastGoodPCIIdx--;
     }
