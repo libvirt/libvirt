@@ -735,6 +735,9 @@ Requires: xz
     %if 0%{?fedora} || 0%{?rhel} > 7
 Requires: systemd-container
     %endif
+    %if 0%{?fedora} || 0%{?rhel} > 7
+Requires: swtpm-tools
+    %endif
 
 %description daemon-driver-qemu
 The qemu driver plugin for the libvirtd daemon, providing
