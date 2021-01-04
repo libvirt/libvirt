@@ -7,47 +7,36 @@ import json
 import xml.etree.ElementTree
 
 
-def checkFeature(cpuData, feature):
-    if feature["type"] == "cpuid":
-        # cpuData["cpuid"][eax_in][ecx_in] = {eax:, ebx:, ecx:, edx:}
-        keyList = ["type", "eax_in", "ecx_in"]
-        regList = ["eax", "ebx", "ecx", "edx"]
-    elif feature["type"] == "msr":
-        # cpuData["msr"][index] = {eax:, edx:}
-        keyList = ["type", "index"]
-        regList = ["eax", "edx"]
-    else:
-        return False
+_KEYS = {
+    "cpuid": ["eax_in", "ecx_in"],
+    "msr": ["index"],
+}
 
-    for key in keyList:
+_REGS = {
+    "cpuid": ["eax", "ebx", "ecx", "edx"],
+    "msr": ["eax", "edx"],
+}
+
+
+def checkFeature(cpuData, feature):
+    for key in ["type"] + _KEYS.get(feature["type"], list()):
         if feature[key] not in cpuData:
             return False
         cpuData = cpuData[feature[key]]
 
-    for reg in regList:
+    for reg in _REGS.get(feature["type"], list()):
         if feature[reg] > 0 and feature[reg] == feature[reg] & cpuData[reg]:
             return True
     return False
 
 
 def addFeature(cpuData, feature):
-    if feature["type"] == "cpuid":
-        # cpuData["cpuid"][eax_in][ecx_in] = {eax:, ebx:, ecx:, edx:}
-        keyList = ["type", "eax_in", "ecx_in"]
-        regList = ["eax", "ebx", "ecx", "edx"]
-    elif feature["type"] == "msr":
-        # cpuData["msr"][index] = {eax:, edx:}
-        keyList = ["type", "index"]
-        regList = ["eax", "edx"]
-    else:
-        return
-
-    for key in keyList:
+    for key in ["type"] + _KEYS.get(feature["type"], list()):
         if feature[key] not in cpuData:
             cpuData[feature[key]] = dict()
         cpuData = cpuData[feature[key]]
 
-    for reg in regList:
+    for reg in _REGS.get(feature["type"], list()):
         cpuData[reg] = cpuData.get(reg, 0) | feature[reg]
 
 
@@ -66,15 +55,11 @@ def parseQemu(path, features):
 def parseCPUData(path):
     cpuData = dict()
     for f in xml.etree.ElementTree.parse(path).getroot():
-        if f.tag == "cpuid":
-            reg_list = ["eax_in", "ecx_in", "eax", "ebx", "ecx", "edx"]
-        elif f.tag == "msr":
-            reg_list = ["index", "eax", "edx"]
-        else:
+        if f.tag not in ("cpuid", "msr"):
             continue
 
         feature = {"type": f.tag}
-        for reg in reg_list:
+        for reg in _KEYS[f.tag] + _REGS[f.tag]:
             feature[reg] = int(f.attrib.get(reg, "0"), 0)
         addFeature(cpuData, feature)
     return cpuData
@@ -86,15 +71,11 @@ def parseMap():
 
     cpuMap = dict()
     for f in xml.etree.ElementTree.parse(path).getroot().iter("feature"):
-        if f[0].tag == "cpuid":
-            reg_list = ["eax_in", "ecx_in", "eax", "ebx", "ecx", "edx"]
-        elif f[0].tag == "msr":
-            reg_list = ["index", "eax", "edx"]
-        else:
+        if f[0].tag not in ("cpuid", "msr"):
             continue
 
         feature = {"type": f[0].tag}
-        for reg in reg_list:
+        for reg in _KEYS[f[0].tag] + _REGS[f[0].tag]:
             feature[reg] = int(f[0].attrib.get(reg, "0"), 0)
         cpuMap[f.attrib["name"]] = feature
     return cpuMap
