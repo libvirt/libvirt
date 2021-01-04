@@ -220,7 +220,8 @@ virHostdevManagerGetDefault(void)
  * is returned.
  *
  * Returns: 0 on success (@pci might be NULL though),
- *         -1 otherwise (with error reported).
+ *         -1 otherwise (with error reported),
+ *         -2 PCI device not found. @pci will be NULL
  */
 static int
 virHostdevGetPCIHostDevice(const virDomainHostdevDef *hostdev,
@@ -234,6 +235,9 @@ virHostdevGetPCIHostDevice(const virDomainHostdevDef *hostdev,
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
         hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
         return 0;
+
+    if (!virPCIDeviceExists(&pcisrc->addr))
+        return -2;
 
     actual = virPCIDeviceNew(&pcisrc->addr);
 
@@ -270,7 +274,7 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         g_autoptr(virPCIDevice) pci = NULL;
 
-        if (virHostdevGetPCIHostDevice(hostdev, &pci) < 0)
+        if (virHostdevGetPCIHostDevice(hostdev, &pci) == -1)
             return NULL;
 
         if (!pci)
