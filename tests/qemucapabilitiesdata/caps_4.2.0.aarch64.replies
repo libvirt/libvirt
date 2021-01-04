@@ -6303,11 +6303,90 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "vhost-user-fs-device"
+  },
+  "id": "libvirt-32"
+}
+
+{
+  "return": [
+    {
+      "default-value": false,
+      "name": "packed",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "iommu_platform",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "x-disable-legacy-check",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "use-started",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "chardev",
+      "description": "ID of a chardev to use as a backend",
+      "type": "str"
+    },
+    {
+      "default-value": 128,
+      "name": "queue-size",
+      "type": "uint16"
+    },
+    {
+      "name": "tag",
+      "type": "str"
+    },
+    {
+      "default-value": 1,
+      "name": "num-request-queues",
+      "type": "uint16"
+    }
+  ],
+  "id": "libvirt-32"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -6372,7 +6451,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -6380,7 +6459,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -6444,7 +6523,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -6452,7 +6531,7 @@
   "arguments": {
     "typename": "max-arm-cpu"
   },
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -6639,12 +6718,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -7202,7 +7281,7 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -7210,7 +7289,7 @@
   "arguments": {
     "typename": "virt-4.2-machine"
   },
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -7363,12 +7442,12 @@
       "type": "child<cfi.pflash01>"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -7559,34 +7638,34 @@
       "static": false
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -8754,12 +8833,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -8837,12 +8916,12 @@
       "capability": "validate-uuid"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -21413,12 +21492,12 @@
       ]
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "execute": "query-gic-capabilities",
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -21434,7 +21513,7 @@
       "kernel": false
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -21445,7 +21524,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -21475,7 +21554,7 @@
       }
     }
   },
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {

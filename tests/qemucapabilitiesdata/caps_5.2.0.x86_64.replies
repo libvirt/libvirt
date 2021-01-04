@@ -6529,11 +6529,95 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "vhost-user-fs-device"
+  },
+  "id": "libvirt-37"
+}
+
+{
+  "return": [
+    {
+      "default-value": false,
+      "name": "packed",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "use-disabled-flag",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "iommu_platform",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "x-disable-legacy-check",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "use-started",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "chardev",
+      "description": "ID of a chardev to use as a backend",
+      "type": "str"
+    },
+    {
+      "default-value": 128,
+      "name": "queue-size",
+      "type": "uint16"
+    },
+    {
+      "name": "tag",
+      "type": "str"
+    },
+    {
+      "default-value": 1,
+      "name": "num-request-queues",
+      "type": "uint16"
+    }
+  ],
+  "id": "libvirt-37"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -6603,7 +6687,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -6611,7 +6695,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -6680,7 +6764,7 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -6688,7 +6772,7 @@
   "arguments": {
     "typename": "max-x86_64-cpu"
   },
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -8286,12 +8370,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -8749,12 +8833,12 @@
       "default-ram-id": "pc.ram"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -10579,12 +10663,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -10592,12 +10676,12 @@
     "tpm-crb",
     "tpm-tis"
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -10605,12 +10689,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -11905,12 +11989,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -11988,12 +12072,12 @@
       "capability": "validate-uuid"
     }
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -26612,16 +26696,16 @@
       ]
     }
   ],
-  "id": "libvirt-46"
-}
-
-{
-  "execute": "query-sev-capabilities",
   "id": "libvirt-47"
 }
 
 {
-  "id": "libvirt-47",
+  "execute": "query-sev-capabilities",
+  "id": "libvirt-48"
+}
+
+{
+  "id": "libvirt-48",
   "error": {
     "class": "GenericError",
     "desc": "SEV is not enabled in KVM"
@@ -26636,7 +26720,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -26945,7 +27029,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -26959,7 +27043,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-50"
 }
 
 {
@@ -27268,7 +27352,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-50"
 }
 
 {

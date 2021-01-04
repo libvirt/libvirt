@@ -251,6 +251,7 @@
   <flag name='dc390'/>
   <flag name='am53c974'/>
   <flag name='virtio-pmem-pci'/>
+  <flag name='vhost-user-fs.bootindex'/>
   <version>5002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

@@ -610,6 +610,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "dc390",
               "am53c974",
               "virtio-pmem-pci",
+              "vhost-user-fs.bootindex",
     );
 
 
@@ -1510,6 +1511,10 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsNVDIMM[] = {
     { "unarmed", QEMU_CAPS_DEVICE_NVDIMM_UNARMED, NULL },
 };
 
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVhostUserFS[] = {
+    { "bootindex", QEMU_CAPS_VHOST_USER_FS_BOOTINDEX, NULL },
+};
+
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/options/+gluster/debug-level", QEMU_CAPS_GLUSTER_DEBUG_LEVEL},
@@ -1661,6 +1666,9 @@ static virQEMUCapsDeviceTypeProps virQEMUCapsDeviceProps[] = {
     { "usb-host", virQEMUCapsDevicePropsUSBHost,
       G_N_ELEMENTS(virQEMUCapsDevicePropsUSBHost),
       -1 },
+    { "vhost-user-fs-device", virQEMUCapsDevicePropsVhostUserFS,
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVhostUserFS),
+      QEMU_CAPS_DEVICE_VHOST_USER_FS },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] = {

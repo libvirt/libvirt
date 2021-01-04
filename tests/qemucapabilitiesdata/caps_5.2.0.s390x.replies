@@ -5057,11 +5057,95 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "vhost-user-fs-device"
+  },
+  "id": "libvirt-31"
+}
+
+{
+  "return": [
+    {
+      "default-value": false,
+      "name": "packed",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "use-disabled-flag",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "iommu_platform",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "x-disable-legacy-check",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "use-started",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "chardev",
+      "description": "ID of a chardev to use as a backend",
+      "type": "str"
+    },
+    {
+      "default-value": 128,
+      "name": "queue-size",
+      "type": "uint16"
+    },
+    {
+      "name": "tag",
+      "type": "str"
+    },
+    {
+      "default-value": 1,
+      "name": "num-request-queues",
+      "type": "uint16"
+    }
+  ],
+  "id": "libvirt-31"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-31"
+  "id": "libvirt-32"
 }
 
 {
@@ -5131,7 +5215,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-32"
 }
 
 {
@@ -5139,7 +5223,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -5208,12 +5292,12 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -5382,12 +5466,12 @@
       "default-ram-id": "s390.ram"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -6068,34 +6152,34 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -7251,12 +7335,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -7334,12 +7418,12 @@
       "capability": "validate-uuid"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -21661,7 +21745,7 @@
       ]
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -21672,7 +21756,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -21728,7 +21812,7 @@
       }
     }
   },
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
