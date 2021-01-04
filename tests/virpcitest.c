@@ -60,8 +60,9 @@ testVirPCIDeviceNew(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     virPCIDevicePtr dev;
     const char *devName;
+    virPCIDeviceAddress devAddr = {.domain = 0, .bus = 0, .slot = 0, .function = 0};
 
-    if (!(dev = virPCIDeviceNew(0, 0, 0, 0)))
+    if (!(dev = virPCIDeviceNew(&devAddr)))
         goto cleanup;
 
     devName = virPCIDeviceGetName(dev);
@@ -103,7 +104,9 @@ testVirPCIDeviceDetach(const void *opaque G_GNUC_UNUSED)
     CHECK_LIST_COUNT(inactiveDevs, 0);
 
     for (i = 0; i < nDev; i++) {
-        if (!(dev[i] = virPCIDeviceNew(0, 0, i + 1, 0)))
+        virPCIDeviceAddress devAddr = {.domain = 0, .bus = 0,
+                                       .slot = i + 1, .function = 0};
+        if (!(dev[i] = virPCIDeviceNew(&devAddr)))
             goto cleanup;
 
         virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
@@ -144,7 +147,9 @@ testVirPCIDeviceReset(const void *opaque G_GNUC_UNUSED)
     CHECK_LIST_COUNT(inactiveDevs, 0);
 
     for (i = 0; i < nDev; i++) {
-        if (!(dev[i] = virPCIDeviceNew(0, 0, i + 1, 0)))
+        virPCIDeviceAddress devAddr = {.domain = 0, .bus = 0,
+                                       .slot = i + 1, .function = 0};
+        if (!(dev[i] = virPCIDeviceNew(&devAddr)))
             goto cleanup;
 
         virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
@@ -176,7 +181,9 @@ testVirPCIDeviceReattach(const void *opaque G_GNUC_UNUSED)
         goto cleanup;
 
     for (i = 0; i < nDev; i++) {
-        if (!(dev[i] = virPCIDeviceNew(0, 0, i + 1, 0)))
+        virPCIDeviceAddress devAddr = {.domain = 0, .bus = 0,
+                                       .slot = i + 1, .function = 0};
+        if (!(dev[i] = virPCIDeviceNew(&devAddr)))
             goto cleanup;
 
         if (virPCIDeviceListAdd(inactiveDevs, dev[i]) < 0) {
@@ -222,8 +229,10 @@ testVirPCIDeviceIsAssignable(const void *opaque)
     const struct testPCIDevData *data = opaque;
     int ret = -1;
     virPCIDevicePtr dev;
+    virPCIDeviceAddress devAddr = {.domain = data->domain, .bus = data->bus,
+                                   .slot = data->slot, .function = data->function};
 
-    if (!(dev = virPCIDeviceNew(data->domain, data->bus, data->slot, data->function)))
+    if (!(dev = virPCIDeviceNew(&devAddr)))
         return -1;
 
     if (virPCIDeviceIsAssignable(dev, true))
@@ -239,8 +248,10 @@ testVirPCIDeviceDetachSingle(const void *opaque)
     const struct testPCIDevData *data = opaque;
     int ret = -1;
     virPCIDevicePtr dev;
+    virPCIDeviceAddress devAddr = {.domain = data->domain, .bus = data->bus,
+                                   .slot = data->slot, .function = data->function};
 
-    dev = virPCIDeviceNew(data->domain, data->bus, data->slot, data->function);
+    dev = virPCIDeviceNew(&devAddr);
     if (!dev)
         goto cleanup;
 
@@ -261,8 +272,10 @@ testVirPCIDeviceReattachSingle(const void *opaque)
     const struct testPCIDevData *data = opaque;
     int ret = -1;
     virPCIDevicePtr dev;
+    virPCIDeviceAddress devAddr = {.domain = data->domain, .bus = data->bus,
+                                   .slot = data->slot, .function = data->function};
 
-    dev = virPCIDeviceNew(data->domain, data->bus, data->slot, data->function);
+    dev = virPCIDeviceNew(&devAddr);
     if (!dev)
         goto cleanup;
 
@@ -285,8 +298,10 @@ testVirPCIDeviceCheckDriverTest(const void *opaque)
     const struct testPCIDevData *data = opaque;
     int ret = -1;
     virPCIDevicePtr dev;
+    virPCIDeviceAddress devAddr = {.domain = data->domain, .bus = data->bus,
+                                   .slot = data->slot, .function = data->function};
 
-    dev = virPCIDeviceNew(data->domain, data->bus, data->slot, data->function);
+    dev = virPCIDeviceNew(&devAddr);
     if (!dev)
         goto cleanup;
 
@@ -305,8 +320,10 @@ testVirPCIDeviceUnbind(const void *opaque)
     const struct testPCIDevData *data = opaque;
     int ret = -1;
     virPCIDevicePtr dev;
+    virPCIDeviceAddress devAddr = {.domain = data->domain, .bus = data->bus,
+                                   .slot = data->slot, .function = data->function};
 
-    dev = virPCIDeviceNew(data->domain, data->bus, data->slot, data->function);
+    dev = virPCIDeviceNew(&devAddr);
     if (!dev)
         goto cleanup;
 

@@ -290,10 +290,7 @@ virNVMeDeviceCreatePCIDevice(const virNVMeDevice *nvme)
 {
     g_autoptr(virPCIDevice) pci = NULL;
 
-    if (!(pci = virPCIDeviceNew(nvme->address.domain,
-                                nvme->address.bus,
-                                nvme->address.slot,
-                                nvme->address.function)))
+    if (!(pci = virPCIDeviceNew(&nvme->address)))
         return NULL;
 
     /* NVMe devices must be bound to vfio */

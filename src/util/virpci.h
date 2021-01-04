@@ -118,10 +118,7 @@ struct _virPCIEDeviceInfo {
     virPCIELink *link_sta;   /* Actually negotiated capabilities */
 };
 
-virPCIDevicePtr virPCIDeviceNew(unsigned int domain,
-                                unsigned int bus,
-                                unsigned int slot,
-                                unsigned int function);
+virPCIDevicePtr virPCIDeviceNew(const virPCIDeviceAddress *address);
 virPCIDevicePtr virPCIDeviceCopy(virPCIDevicePtr dev);
 void virPCIDeviceFree(virPCIDevicePtr dev);
 const char *virPCIDeviceGetName(virPCIDevicePtr dev);

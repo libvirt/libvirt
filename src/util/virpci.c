@@ -475,24 +475,24 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
         return -1;
 
     while ((ret = virDirRead(dir, &entry, PCI_SYSFS "devices")) > 0) {
-        unsigned int domain, bus, slot, function;
         g_autoptr(virPCIDevice) check = NULL;
+        virPCIDeviceAddress devAddr;
         char *tmp;
 
         /* expected format: <domain>:<bus>:<slot>.<function> */
         if (/* domain */
-            virStrToLong_ui(entry->d_name, &tmp, 16, &domain) < 0 || *tmp != ':' ||
+            virStrToLong_ui(entry->d_name, &tmp, 16, &devAddr.domain) < 0 || *tmp != ':' ||
             /* bus */
-            virStrToLong_ui(tmp + 1, &tmp, 16, &bus) < 0 || *tmp != ':' ||
+            virStrToLong_ui(tmp + 1, &tmp, 16, &devAddr.bus) < 0 || *tmp != ':' ||
             /* slot */
-            virStrToLong_ui(tmp + 1, &tmp, 16, &slot) < 0 || *tmp != '.' ||
+            virStrToLong_ui(tmp + 1, &tmp, 16, &devAddr.slot) < 0 || *tmp != '.' ||
             /* function */
-            virStrToLong_ui(tmp + 1, NULL, 16, &function) < 0) {
+            virStrToLong_ui(tmp + 1, NULL, 16, &devAddr.function) < 0) {
             VIR_WARN("Unusual entry in " PCI_SYSFS "devices: %s", entry->d_name);
             continue;
         }
 
-        check = virPCIDeviceNew(domain, bus, slot, function);
+        check = virPCIDeviceNew(&devAddr);
         if (!check) {
             ret = -1;
             break;
@@ -767,10 +767,7 @@ virPCIDeviceIsParent(virPCIDevicePtr dev, virPCIDevicePtr check, void *data)
      */
     if (dev->address.bus > secondary && dev->address.bus <= subordinate) {
         if (*best == NULL) {
-            *best = virPCIDeviceNew(check->address.domain,
-                                    check->address.bus,
-                                    check->address.slot,
-                                    check->address.function);
+            *best = virPCIDeviceNew(&check->address);
             if (*best == NULL) {
                 ret = -1;
                 goto cleanup;
@@ -790,10 +787,7 @@ virPCIDeviceIsParent(virPCIDevicePtr dev, virPCIDevicePtr check, void *data)
 
             if (secondary > best_secondary) {
                 virPCIDeviceFree(*best);
-                *best = virPCIDeviceNew(check->address.domain,
-                                        check->address.bus,
-                                        check->address.slot,
-                                        check->address.function);
+                *best = virPCIDeviceNew(&check->address);
                 if (*best == NULL) {
                     ret = -1;
                     goto cleanup;
@@ -1455,10 +1449,7 @@ virPCIDeviceAddressAsString(const virPCIDeviceAddress *addr)
 }
 
 virPCIDevicePtr
-virPCIDeviceNew(unsigned int domain,
-                unsigned int bus,
-                unsigned int slot,
-                unsigned int function)
+virPCIDeviceNew(const virPCIDeviceAddress *address)
 {
     g_autoptr(virPCIDevice) dev = NULL;
     g_autofree char *vendor = NULL;
@@ -1466,10 +1457,7 @@ virPCIDeviceNew(unsigned int domain,
 
     dev = g_new0(virPCIDevice, 1);
 
-    dev->address.domain = domain;
-    dev->address.bus = bus;
-    dev->address.slot = slot;
-    dev->address.function = function;
+    virPCIDeviceAddressCopy(&dev->address, address);
 
     dev->name = virPCIDeviceAddressAsString(&dev->address);
 
@@ -1896,8 +1884,7 @@ virPCIDeviceGetIOMMUGroupAddOne(virPCIDeviceAddressPtr newDevAddr, void *opaque)
     virPCIDeviceListPtr groupList = opaque;
     g_autoptr(virPCIDevice) newDev = NULL;
 
-    if (!(newDev = virPCIDeviceNew(newDevAddr->domain, newDevAddr->bus,
-                                   newDevAddr->slot, newDevAddr->function)))
+    if (!(newDev = virPCIDeviceNew(newDevAddr)))
         return -1;
 
     if (virPCIDeviceListAdd(groupList, newDev) < 0)
@@ -2028,10 +2015,7 @@ virPCIDeviceAddressGetIOMMUGroupDev(const virPCIDeviceAddress *devAddr)
 {
     g_autoptr(virPCIDevice) pci = NULL;
 
-    if (!(pci = virPCIDeviceNew(devAddr->domain,
-                                devAddr->bus,
-                                devAddr->slot,
-                                devAddr->function)))
+    if (!(pci = virPCIDeviceNew(devAddr)))
         return NULL;
 
     return virPCIDeviceGetIOMMUGroupDev(pci);

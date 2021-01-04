@@ -5818,7 +5818,7 @@ libxlNodeDeviceDetachFlags(virNodeDevicePtr dev,
     if (virDomainDriverNodeDeviceGetPCIInfo(def, &devAddr) < 0)
         goto cleanup;
 
-    pci = virPCIDeviceNew(devAddr.domain, devAddr.bus, devAddr.slot, devAddr.function);
+    pci = virPCIDeviceNew(&devAddr);
     if (!pci)
         goto cleanup;
 
@@ -5889,7 +5889,7 @@ libxlNodeDeviceReAttach(virNodeDevicePtr dev)
     if (virDomainDriverNodeDeviceGetPCIInfo(def, &devAddr) < 0)
         goto cleanup;
 
-    pci = virPCIDeviceNew(devAddr.domain, devAddr.bus, devAddr.slot, devAddr.function);
+    pci = virPCIDeviceNew(&devAddr);
     if (!pci)
         goto cleanup;
 
@@ -5947,7 +5947,7 @@ libxlNodeDeviceReset(virNodeDevicePtr dev)
     if (virDomainDriverNodeDeviceGetPCIInfo(def, &devAddr) < 0)
         goto cleanup;
 
-    pci = virPCIDeviceNew(devAddr.domain, devAddr.bus, devAddr.slot, devAddr.function);
+    pci = virPCIDeviceNew(&devAddr);
     if (!pci)
         goto cleanup;
 

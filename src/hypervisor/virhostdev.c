@@ -235,8 +235,7 @@ virHostdevGetPCIHostDevice(const virDomainHostdevDef *hostdev,
         hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
         return 0;
 
-    actual = virPCIDeviceNew(pcisrc->addr.domain, pcisrc->addr.bus,
-                             pcisrc->addr.slot, pcisrc->addr.function);
+    actual = virPCIDeviceNew(&pcisrc->addr);
 
     if (!actual)
         return -1;

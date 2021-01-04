@@ -367,6 +367,7 @@ udevProcessPCI(struct udev_device *device,
     virNodeDevCapPCIDevPtr pci_dev = &def->caps->data.pci_dev;
     virPCIEDeviceInfoPtr pci_express = NULL;
     virPCIDevicePtr pciDev = NULL;
+    virPCIDeviceAddress devAddr;
     int ret = -1;
     char *p;
     bool privileged;
@@ -416,10 +417,12 @@ udevProcessPCI(struct udev_device *device,
     if (virNodeDeviceGetPCIDynamicCaps(def->sysfs_path, pci_dev) < 0)
         goto cleanup;
 
-    if (!(pciDev = virPCIDeviceNew(pci_dev->domain,
-                                   pci_dev->bus,
-                                   pci_dev->slot,
-                                   pci_dev->function)))
+    devAddr.domain = pci_dev->domain;
+    devAddr.bus = pci_dev->bus;
+    devAddr.slot = pci_dev->slot;
+    devAddr.function = pci_dev->function;
+
+    if (!(pciDev = virPCIDeviceNew(&devAddr)))
         goto cleanup;
 
     /* We need to be root to read PCI device configs */

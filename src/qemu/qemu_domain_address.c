@@ -863,10 +863,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             return 0;
         }
 
-        if (!(pciDev = virPCIDeviceNew(hostAddr->domain,
-                                       hostAddr->bus,
-                                       hostAddr->slot,
-                                       hostAddr->function))) {
+        if (!(pciDev = virPCIDeviceNew(hostAddr))) {
             /* libvirt should be able to perform all the
              * operations in virPCIDeviceNew() even if it's
              * running unprivileged, so if this fails, the device

@@ -1141,8 +1141,7 @@ virNetDevGetPCIDevice(const char *devName)
     if (!vfPCIAddr)
         return NULL;
 
-    return virPCIDeviceNew(vfPCIAddr->domain, vfPCIAddr->bus,
-                           vfPCIAddr->slot, vfPCIAddr->function);
+    return virPCIDeviceNew(vfPCIAddr);
 }
 # endif
 
