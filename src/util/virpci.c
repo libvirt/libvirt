@@ -1471,8 +1471,7 @@ virPCIDeviceNew(unsigned int domain,
     dev->address.slot = slot;
     dev->address.function = function;
 
-    dev->name = g_strdup_printf(VIR_PCI_DEVICE_ADDRESS_FMT, domain, bus, slot,
-                                function);
+    dev->name = virPCIDeviceAddressAsString(&dev->address);
 
     dev->path = g_strdup_printf(PCI_SYSFS "devices/%s/config", dev->name);
 
@@ -1998,8 +1997,7 @@ virPCIDeviceAddressGetIOMMUGroupNum(virPCIDeviceAddressPtr addr)
     g_autofree char *groupNumStr = NULL;
     unsigned int groupNum;
 
-    devName = g_strdup_printf(VIR_PCI_DEVICE_ADDRESS_FMT, addr->domain, addr->bus,
-                              addr->slot, addr->function);
+    devName = virPCIDeviceAddressAsString(addr);
 
     devPath = virPCIFile(devName, "iommu_group");
 

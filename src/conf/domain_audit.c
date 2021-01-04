@@ -361,11 +361,7 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            address = g_strdup_printf(VIR_PCI_DEVICE_ADDRESS_FMT,
-                                      pcisrc->addr.domain,
-                                      pcisrc->addr.bus,
-                                      pcisrc->addr.slot,
-                                      pcisrc->addr.function);
+            address = virPCIDeviceAddressAsString(&pcisrc->addr);
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
             address = g_strdup_printf("%.3d.%.3d", usbsrc->bus, usbsrc->device);
