@@ -68,7 +68,7 @@ variable:
 
 However, when you are using the session mode ``qemu:///session`` or you run the
 ``libvirtd`` as unprivileged user you will find configuration file under
-``$XDG_CONFIG_HOME/libvirt/libvirt.conf``.
+``$XDG_CONFIG_HOME/libvirt/libvirtd.conf``.
 
 Runtime setting
 ^^^^^^^^^^^^^^^
