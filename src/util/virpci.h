@@ -206,6 +206,7 @@ int virPCIDeviceAddressGetIOMMUGroupAddresses(virPCIDeviceAddressPtr devAddr,
                                               size_t *nIommuGroupDevices);
 int virPCIDeviceAddressGetIOMMUGroupNum(virPCIDeviceAddressPtr addr);
 char *virPCIDeviceAddressGetIOMMUGroupDev(const virPCIDeviceAddress *devAddr);
+bool virPCIDeviceExists(const virPCIDeviceAddress *addr);
 char *virPCIDeviceGetIOMMUGroupDev(virPCIDevicePtr dev);
 
 int virPCIDeviceIsAssignable(virPCIDevicePtr dev,

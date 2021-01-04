@@ -1448,6 +1448,16 @@ virPCIDeviceAddressAsString(const virPCIDeviceAddress *addr)
     return str;
 }
 
+bool
+virPCIDeviceExists(const virPCIDeviceAddress *addr)
+{
+    g_autofree char *devName = virPCIDeviceAddressAsString(addr);
+    g_autofree char *devPath = g_strdup_printf(PCI_SYSFS "devices/%s/config",
+                                               devName);
+
+    return virFileExists(devPath);
+}
+
 virPCIDevicePtr
 virPCIDeviceNew(const virPCIDeviceAddress *address)
 {
