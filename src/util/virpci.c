@@ -705,7 +705,7 @@ virPCIDeviceSharesBusWithActive(virPCIDevicePtr dev, virPCIDevicePtr check, void
         return 0;
 
     /* same bus, but inactive, i.e. about to be assigned to guest */
-    if (inactiveDevs && virPCIDeviceListFind(inactiveDevs, check))
+    if (inactiveDevs && virPCIDeviceListFind(inactiveDevs, &check->address))
         return 0;
 
     return 1;
@@ -1022,7 +1022,7 @@ virPCIDeviceReset(virPCIDevicePtr dev,
         return -1;
     }
 
-    if (activeDevs && virPCIDeviceListFind(activeDevs, dev)) {
+    if (activeDevs && virPCIDeviceListFind(activeDevs, &dev->address)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Not resetting active device %s"), dev->name);
         return -1;
@@ -1294,7 +1294,7 @@ virPCIDeviceDetach(virPCIDevicePtr dev,
     if (virPCIProbeStubDriver(dev->stubDriver) < 0)
         return -1;
 
-    if (activeDevs && virPCIDeviceListFind(activeDevs, dev)) {
+    if (activeDevs && virPCIDeviceListFind(activeDevs, &dev->address)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Not detaching active device %s"), dev->name);
         return -1;
@@ -1306,7 +1306,7 @@ virPCIDeviceDetach(virPCIDevicePtr dev,
     /* Add *a copy of* the dev into list inactiveDevs, if
      * it's not already there.
      */
-    if (inactiveDevs && !virPCIDeviceListFind(inactiveDevs, dev)) {
+    if (inactiveDevs && !virPCIDeviceListFind(inactiveDevs, &dev->address)) {
         VIR_DEBUG("Adding PCI device %s to inactive list", dev->name);
         if (virPCIDeviceListAddCopy(inactiveDevs, dev) < 0)
             return -1;
@@ -1324,7 +1324,7 @@ virPCIDeviceReattach(virPCIDevicePtr dev,
                      virPCIDeviceListPtr activeDevs,
                      virPCIDeviceListPtr inactiveDevs)
 {
-    if (activeDevs && virPCIDeviceListFind(activeDevs, dev)) {
+    if (activeDevs && virPCIDeviceListFind(activeDevs, &dev->address)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Not reattaching active device %s"), dev->name);
         return -1;
@@ -1684,7 +1684,7 @@ int
 virPCIDeviceListAdd(virPCIDeviceListPtr list,
                     virPCIDevicePtr dev)
 {
-    if (virPCIDeviceListFind(list, dev)) {
+    if (virPCIDeviceListFind(list, &dev->address)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Device %s is already in use"), dev->name);
         return -1;
@@ -1795,11 +1795,11 @@ virPCIDeviceListFindByIDs(virPCIDeviceListPtr list,
 
 
 virPCIDevicePtr
-virPCIDeviceListFind(virPCIDeviceListPtr list, virPCIDevicePtr dev)
+virPCIDeviceListFind(virPCIDeviceListPtr list, virPCIDeviceAddressPtr devAddr)
 {
     int idx;
 
-    if ((idx = virPCIDeviceListFindIndex(list, &dev->address)) >= 0)
+    if ((idx = virPCIDeviceListFindIndex(list, devAddr)) >= 0)
         return list->devs[idx];
     else
         return NULL;
