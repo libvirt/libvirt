@@ -347,12 +347,18 @@ virHostdevNetDevice(virDomainHostdevDefPtr hostdev,
 }
 
 
+bool
+virHostdevIsPCIDevice(const virDomainHostdevDef *hostdev)
+{
+    return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
+}
+
+
 static bool
 virHostdevIsPCINetDevice(const virDomainHostdevDef *hostdev)
 {
-    return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-        hostdev->parentnet != NULL;
+    return virHostdevIsPCIDevice(hostdev) && hostdev->parentnet != NULL;
 }
 
 

@@ -233,3 +233,5 @@ virHostdevUpdateActiveNVMeDevices(virHostdevManagerPtr hostdev_mgr,
                                   const char *dom_name,
                                   virDomainDiskDefPtr *disks,
                                   size_t ndisks);
+
+bool virHostdevIsPCIDevice(const virDomainHostdevDef *hostdev);
