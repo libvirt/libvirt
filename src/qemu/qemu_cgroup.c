@@ -467,6 +467,16 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
+    /* Skip tearing down Cgroup for hostdevs that represents absent
+     * PCI devices, e.g. SR-IOV virtual functions that were removed from
+     * the host while the domain was still running. */
+    if (virHostdevIsPCIDevice(dev)) {
+        const virDomainHostdevSubsysPCI *pcisrc = &dev->source.subsys.u.pci;
+
+        if (!virPCIDeviceExists(&pcisrc->addr))
+            return 0;
+    }
+
     if (qemuDomainGetHostdevPath(dev, &path, NULL) < 0)
         return -1;
 
