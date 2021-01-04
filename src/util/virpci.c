@@ -1745,7 +1745,7 @@ virPCIDevicePtr
 virPCIDeviceListSteal(virPCIDeviceListPtr list,
                       virPCIDevicePtr dev)
 {
-    return virPCIDeviceListStealIndex(list, virPCIDeviceListFindIndex(list, dev));
+    return virPCIDeviceListStealIndex(list, virPCIDeviceListFindIndex(list, &dev->address));
 }
 
 void
@@ -1756,16 +1756,17 @@ virPCIDeviceListDel(virPCIDeviceListPtr list,
 }
 
 int
-virPCIDeviceListFindIndex(virPCIDeviceListPtr list, virPCIDevicePtr dev)
+virPCIDeviceListFindIndex(virPCIDeviceListPtr list,
+                          virPCIDeviceAddressPtr devAddr)
 {
     size_t i;
 
     for (i = 0; i < list->count; i++) {
         virPCIDevicePtr other = list->devs[i];
-        if (other->address.domain   == dev->address.domain &&
-            other->address.bus      == dev->address.bus    &&
-            other->address.slot     == dev->address.slot   &&
-            other->address.function == dev->address.function)
+        if (other->address.domain   == devAddr->domain &&
+            other->address.bus      == devAddr->bus    &&
+            other->address.slot     == devAddr->slot   &&
+            other->address.function == devAddr->function)
             return i;
     }
     return -1;
@@ -1798,7 +1799,7 @@ virPCIDeviceListFind(virPCIDeviceListPtr list, virPCIDevicePtr dev)
 {
     int idx;
 
-    if ((idx = virPCIDeviceListFindIndex(list, dev)) >= 0)
+    if ((idx = virPCIDeviceListFindIndex(list, &dev->address)) >= 0)
         return list->devs[idx];
     else
         return NULL;
