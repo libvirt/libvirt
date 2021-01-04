@@ -1362,6 +1362,7 @@ struct _virDomainTPMDef {
             char *logfile;
             unsigned char secretuuid[VIR_UUID_BUFLEN];
             bool hassecretuuid;
+            bool persistent_state;
         } emulator;
     } data;
 };

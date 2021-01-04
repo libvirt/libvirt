@@ -729,7 +729,8 @@ qemuExtTPMCleanupHost(virDomainDefPtr def)
         if (def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
             continue;
 
-        qemuTPMDeleteEmulatorStorage(def->tpms[i]);
+        if (!def->tpms[i]->data.emulator.persistent_state)
+            qemuTPMDeleteEmulatorStorage(def->tpms[i]);
     }
 }
 

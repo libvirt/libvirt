@@ -6986,6 +6986,13 @@ Example: usage of the TPM Emulator
    -  '1.2' : creates a TPM 1.2
    -  '2.0' : creates a TPM 2.0
 
+``persistent_state``
+   The ``persistent_state`` attribute indicates whether 'swtpm' TPM state is
+   kept or not when a transient domain is powered off or undefined. This
+   option can be used for preserving TPM state. By default the value is ``no``.
+   This attribute only works with the ``emulator`` backend. The accepted values
+   are ``yes`` and ``no``. :since:`Since 7.0.0`
+
 ``encryption``
    The ``encryption`` element allows the state of a TPM emulator to be
    encrypted. The ``secret`` must reference a secret object that holds the

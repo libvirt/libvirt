@@ -12220,6 +12220,12 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
  *     <encryption secret='32ee7e76-2178-47a1-ab7b-269e6e348015'/>
  *   </backend>
  * </tpm>
+ *
+ * Emulator persistent_state is supported with the following:
+ *
+ * <tpm model='tpm-tis'>
+ *   <backend type='emulator' version='2.0' persistent_state='yes'>
+ * </tpm>
  */
 static virDomainTPMDefPtr
 virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
@@ -12235,6 +12241,7 @@ virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
     g_autofree char *backend = NULL;
     g_autofree char *version = NULL;
     g_autofree char *secretuuid = NULL;
+    g_autofree char *persistent_state = NULL;
     g_autofree xmlNodePtr *backends = NULL;
 
     def = g_new0(virDomainTPMDef, 1);
@@ -12306,6 +12313,16 @@ virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
                 goto error;
             }
             def->data.emulator.hassecretuuid = true;
+        }
+
+        persistent_state = virXMLPropString(backends[0], "persistent_state");
+        if (persistent_state) {
+            if (virStringParseYesNo(persistent_state,
+                                    &def->data.emulator.persistent_state) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Invalid persistent_state value, either 'yes' or 'no'"));
+                goto error;
+            }
         }
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
@@ -26025,6 +26042,8 @@ virDomainTPMDefFormat(virBufferPtr buf,
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         virBufferAsprintf(buf, " version='%s'",
                           virDomainTPMVersionTypeToString(def->version));
+        if (def->data.emulator.persistent_state)
+            virBufferAddLit(buf, " persistent_state='yes'");
         if (def->data.emulator.hassecretuuid) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
             virBufferAddLit(buf, ">\n");

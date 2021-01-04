@@ -4766,6 +4766,14 @@
              <value>emulator</value>
           </attribute>
           <ref name="tpm-backend-emulator-encryption"/>
+          <optional>
+            <attribute name="persistent_state">
+              <choice>
+                <value>yes</value>
+                <value>no</value>
+              </choice>
+           </attribute>
+          </optional>
         </group>
       </choice>
       <choice>
