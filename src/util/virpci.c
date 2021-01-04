@@ -1743,16 +1743,16 @@ virPCIDeviceListStealIndex(virPCIDeviceListPtr list,
 
 virPCIDevicePtr
 virPCIDeviceListSteal(virPCIDeviceListPtr list,
-                      virPCIDevicePtr dev)
+                      virPCIDeviceAddressPtr devAddr)
 {
-    return virPCIDeviceListStealIndex(list, virPCIDeviceListFindIndex(list, &dev->address));
+    return virPCIDeviceListStealIndex(list, virPCIDeviceListFindIndex(list, devAddr));
 }
 
 void
 virPCIDeviceListDel(virPCIDeviceListPtr list,
                     virPCIDevicePtr dev)
 {
-    virPCIDeviceFree(virPCIDeviceListSteal(list, dev));
+    virPCIDeviceFree(virPCIDeviceListSteal(list, &dev->address));
 }
 
 int

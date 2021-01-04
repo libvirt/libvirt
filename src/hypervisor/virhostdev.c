@@ -822,7 +822,7 @@ virHostdevPreparePCIDevicesImpl(virHostdevManagerPtr mgr,
 
         VIR_DEBUG("Removing PCI device %s from inactive list",
                   virPCIDeviceGetName(pci));
-        actual = virPCIDeviceListSteal(mgr->inactivePCIHostdevs, pci);
+        actual = virPCIDeviceListSteal(mgr->inactivePCIHostdevs, virPCIDeviceGetAddress(pci));
 
         VIR_DEBUG("Adding PCI device %s to active list",
                   virPCIDeviceGetName(pci));
@@ -894,7 +894,8 @@ virHostdevPreparePCIDevicesImpl(virHostdevManagerPtr mgr,
 
         VIR_DEBUG("Removing PCI device %s from active list",
                   virPCIDeviceGetName(pci));
-        if (!(actual = virPCIDeviceListSteal(mgr->activePCIHostdevs, pci)))
+        if (!(actual = virPCIDeviceListSteal(mgr->activePCIHostdevs,
+                                             virPCIDeviceGetAddress(pci))))
             continue;
 
         VIR_DEBUG("Adding PCI device %s to inactive list",
@@ -997,7 +998,8 @@ virHostdevReAttachPCIDevicesImpl(virHostdevManagerPtr mgr,
 
         VIR_DEBUG("Removing PCI device %s from active list",
                   virPCIDeviceGetName(pci));
-        actual = virPCIDeviceListSteal(mgr->activePCIHostdevs, pci);
+        actual = virPCIDeviceListSteal(mgr->activePCIHostdevs,
+                                       virPCIDeviceGetAddress(pci));
 
         VIR_DEBUG("Adding PCI device %s to inactive list",
                   virPCIDeviceGetName(pci));
