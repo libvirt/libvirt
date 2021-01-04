@@ -324,21 +324,22 @@ def main():
         help="Path to qemu. "
         "If unset, will try '/usr/bin/qemu-system-x86_64', "
         "'/usr/bin/qemu-kvm', and '/usr/libexec/qemu-kvm'.")
-    parser.add_argument(
-        "--gather",
-        action="store_true",
-        help="Acquire data on target system. This is the default. "
-        "If '--parse' is not set, outputs data on stdout.")
-    parser.add_argument(
-        "--parse",
-        action="store_true",
-        help="Parse data for libvirt use. "
-        "If '--gather' is not set, expects input on stdin.")
+    subparsers = parser.add_subparsers(dest="action")
+    subparsers.add_parser(
+        "gather",
+        help="Acquire data on target system and outputs to stdout. "
+        "This is the default. ")
+    subparsers.add_parser(
+        "parse",
+        help="Reads data from stdin and parses data for libvirt use.")
+    subparsers.add_parser(
+        "full",
+        help="Equivalent to `cpu-gather gather | cpu-gather parse`.")
 
     args = parser.parse_args()
 
-    if not args.gather and not args.parse:
-        args.gather = True
+    if not args.action:
+        args.action = "gather"
 
     if not args.path_to_qemu:
         args.path_to_qemu = "qemu-system-x86_64"
@@ -350,13 +351,13 @@ def main():
             if os.path.isfile(f):
                 args.path_to_qemu = f
 
-    if args.gather:
+    if args.action in ["gather", "full"]:
         data = gather(args)
-        if not args.parse:
+        if args.action == "gather":
             json.dump(data, sys.stdout, indent=2)
 
-    if args.parse:
-        if not args.gather:
+    if args.action in ["parse", "full"]:
+        if args.action == "parse":
             data = json.load(sys.stdin)
         parse(data)
 
