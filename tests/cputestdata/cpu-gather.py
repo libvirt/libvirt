@@ -288,7 +288,7 @@ def output_json(data, filename):
             f.write("\n")
 
 
-def parse(data):
+def parse(args, data):
     filename = parse_filename(data)
     filename_xml = "{}.xml".format(filename)
     filename_json = "{}.json".format(filename)
@@ -301,10 +301,7 @@ def parse(data):
     if os.path.getsize(filename_json) == 0:
         return
 
-    output = subprocess.check_output(
-        ["./cpu-cpuid.py", "diff", filename_json],
-        universal_newlines=True)
-    print(output)
+    args.json_files = getattr(args, "json_files", list()) + [filename_json]
 
 
 def main():
@@ -359,7 +356,12 @@ def main():
     if args.action in ["parse", "full"]:
         if args.action == "parse":
             data = json.load(sys.stdin)
-        parse(data)
+        parse(args, data)
+
+    if "json_files" in args:
+        cmd = ["./cpu-cpuid.py", "diff"]
+        cmd.extend(args.json_files)
+        subprocess.check_call(cmd, universal_newlines=True)
 
 
 if __name__ == "__main__":
