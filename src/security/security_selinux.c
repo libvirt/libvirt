@@ -2103,7 +2103,12 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-        g_autoptr(virPCIDevice) pci = virPCIDeviceNew(&pcisrc->addr);
+        g_autoptr(virPCIDevice) pci = NULL;
+
+        if (!virPCIDeviceExists(&pcisrc->addr))
+            break;
+
+        pci = virPCIDeviceNew(&pcisrc->addr);
 
         if (!pci)
             return -1;
@@ -2331,7 +2336,12 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManagerPtr mgr,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-        g_autoptr(virPCIDevice) pci = virPCIDeviceNew(&pcisrc->addr);
+        g_autoptr(virPCIDevice) pci = NULL;
+
+        if (!virPCIDeviceExists(&pcisrc->addr))
+            break;
+
+        pci = virPCIDeviceNew(&pcisrc->addr);
 
         if (!pci)
             return -1;
