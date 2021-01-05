@@ -1,0 +1,7 @@
+config.version = "8"
+virtualHW.version = "4"
+scsi0.present = "true"
+scsi0:0.present = "true"
+scsi0:0.deviceType = "scsi-hardDisk"
+scsi0:0.fileName = "/vmfs/volumes/ds/missing.vmdk"
+displayName = "test"
