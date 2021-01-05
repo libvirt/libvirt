@@ -491,7 +491,6 @@ virsh migrate web1 xen+tls://desthost/system
 eg using secondary network interface
 
 virsh migrate web1 qemu://desthost/system tcp://10.0.0.1/
-virsh migrate web1 xen+tcp://desthost/system  xenmigr:10.0.0.1/
     </pre>
 
     <p>
@@ -562,12 +561,7 @@ syntax: virsh migrate GUESTNAME HV-URI
 
 eg using same libvirt URI for all connections
 
-virsh migrate --direct web1 xenmigr://desthost/
     </pre>
-
-    <p>
-      Supported by Xen driver
-    </p>
 
     <h3><a id="nativepeer2peer">Native migration, peer2peer between two libvirtd servers</a></h3>
 
