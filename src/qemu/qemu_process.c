@@ -5403,7 +5403,7 @@ qemuProcessStartValidateTSC(virQEMUDriverPtr driver,
               tsc->frequency, virTristateBoolTypeToString(tsc->scaling),
               tolerance);
 
-    if (freq > minFreq && freq < maxFreq) {
+    if (freq >= minFreq && freq <= maxFreq) {
         VIR_DEBUG("Requested TSC frequency is within tolerance interval");
         return 0;
     }
