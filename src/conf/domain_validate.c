@@ -1578,6 +1578,19 @@ virDomainShmemDefValidate(const virDomainShmemDef *shmem)
     return 0;
 }
 
+static int
+virDomainFSDefValidate(const virDomainFSDef *fs)
+{
+    if (fs->info.bootIndex &&
+        fs->fsdriver != VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("boot order is only supported for virtiofs"));
+        return -1;
+    }
+
+    return 0;
+}
+
 
 static int
 virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
@@ -1623,10 +1636,12 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_SHMEM:
         return virDomainShmemDefValidate(dev->data.shmem);
 
+    case VIR_DOMAIN_DEVICE_FS:
+        return virDomainFSDefValidate(dev->data.fs);
+
     case VIR_DOMAIN_DEVICE_AUDIO:
         /* TODO: validate? */
     case VIR_DOMAIN_DEVICE_LEASE:
-    case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_GRAPHICS:

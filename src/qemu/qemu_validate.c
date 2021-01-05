@@ -4093,6 +4093,12 @@ qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
         }
         if (qemuValidateDomainDefVirtioFSSharedMemory(def, qemuCaps) < 0)
             return -1;
+        if (fs->info.bootIndex &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOST_USER_FS_BOOTINDEX)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("setting virtiofs boot order is not supported with this QEMU binary"));
+            return -1;
+        }
         break;
 
     case VIR_DOMAIN_FS_DRIVER_TYPE_LAST:
