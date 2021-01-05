@@ -4155,7 +4155,7 @@ networkGetDHCPLeases(virNetworkPtr net,
 
             /* Obtain prefix */
             for (j = 0; j < def->nips; j++) {
-                virNetworkIPDefPtr ipdef_tmp = ipdef_tmp = &def->ips[j];
+                virNetworkIPDefPtr ipdef_tmp = &def->ips[j];
 
                 if (ipv6 && VIR_SOCKET_ADDR_IS_FAMILY(&ipdef_tmp->address,
                                                       AF_INET6)) {
