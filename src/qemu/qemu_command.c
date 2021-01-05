@@ -2194,6 +2194,9 @@ qemuBuildVHostUserFsCommandLine(virCommandPtr cmd,
     virQEMUBuildBufferEscapeComma(&opt, fs->dst);
     qemuBuildVirtioOptionsStr(&opt, fs->virtio);
 
+    if (fs->info.bootIndex)
+        virBufferAsprintf(&opt, ",bootindex=%u", fs->info.bootIndex);
+
     if (qemuBuildDeviceAddressStr(&opt, def, &fs->info, priv->qemuCaps) < 0)
         return -1;
 
