@@ -2813,6 +2813,9 @@
             </element>
           </optional>
           <optional>
+            <ref name="deviceBoot"/>
+          </optional>
+          <optional>
             <ref name="alias"/>
           </optional>
           <optional>
