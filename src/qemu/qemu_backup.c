@@ -235,7 +235,7 @@ qemuBackupDiskPrepareOneBitmaps(struct qemuBackupDiskData *dd,
                                                  blockNamedNodeData) < 0)
             return -1;
 
-        dd->domdiskIncrementalBitmap = dd->backupdisk->incremental;
+        dd->domdiskIncrementalBitmap = dd->incrementalBitmap;
     }
 
     return 0;
