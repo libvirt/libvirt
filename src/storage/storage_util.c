@@ -128,7 +128,6 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
                           bool reflink_copy)
 {
     int amtread = -1;
-    int ret = 0;
     size_t rbytes = READ_BLOCK_SIZE_DEFAULT;
     int wbytes = 0;
     int interval;
@@ -138,11 +137,10 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
     VIR_AUTOCLOSE inputfd = -1;
 
     if ((inputfd = open(inputvol->target.path, O_RDONLY)) < 0) {
-        ret = -errno;
         virReportSystemError(errno,
                              _("could not open input path '%s'"),
                              inputvol->target.path);
-        return ret;
+        return -1;
     }
 
 #ifdef __linux__
@@ -160,11 +158,10 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
 
     if (reflink_copy) {
         if (reflinkCloneFile(fd, inputfd) < 0) {
-            ret = -errno;
             virReportSystemError(errno,
                                  _("failed to clone files from '%s'"),
                                  inputvol->target.path);
-            return ret;
+            return -1;
         } else {
             VIR_DEBUG("btrfs clone finished.");
             return 0;
@@ -178,11 +175,10 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
             rbytes = *total;
 
         if ((amtread = saferead(inputfd, buf, rbytes)) < 0) {
-            ret = -errno;
             virReportSystemError(errno,
                                  _("failed reading from file '%s'"),
                                  inputvol->target.path);
-            return ret;
+            return -1;
         }
         *total -= amtread;
 
@@ -195,36 +191,32 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
 
             if (want_sparse && memcmp(buf+offset, zerobuf, interval) == 0) {
                 if (lseek(fd, interval, SEEK_CUR) < 0) {
-                    ret = -errno;
                     virReportSystemError(errno,
                                          _("cannot extend file '%s'"),
                                          vol->target.path);
-                    return ret;
+                    return -1;
                 }
             } else if (safewrite(fd, buf+offset, interval) < 0) {
-                ret = -errno;
                 virReportSystemError(errno,
                                      _("failed writing to file '%s'"),
                                      vol->target.path);
-                return ret;
+                return -1;
 
             }
         } while ((amtleft -= interval) > 0);
     }
 
     if (virFileDataSync(fd) < 0) {
-        ret = -errno;
         virReportSystemError(errno, _("cannot sync data to file '%s'"),
                              vol->target.path);
-        return ret;
+        return -1;
     }
 
     if (VIR_CLOSE(inputfd) < 0) {
-        ret = -errno;
         virReportSystemError(errno,
                              _("cannot close file '%s'"),
                              inputvol->target.path);
-        return ret;
+        return -1;
     }
 
     return 0;
