@@ -384,11 +384,9 @@ storageBackendCreateRaw(virStoragePoolObjPtr pool,
                         unsigned int flags)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    int ret = -1;
     int operation_flags;
     bool reflink_copy = false;
     mode_t open_mode = VIR_STORAGE_DEFAULT_VOL_PERM_MODE;
-    bool created = false;
     VIR_AUTOCLOSE fd = -1;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA |
@@ -399,13 +397,13 @@ storageBackendCreateRaw(virStoragePoolObjPtr pool,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("metadata preallocation is not supported for raw "
                          "volumes"));
-        goto cleanup;
+        return -1;
     }
 
     if (virStorageSourceHasBacking(&vol->target)) {
         virReportError(VIR_ERR_NO_SUPPORT, "%s",
                        _("backing storage not supported for raw volumes"));
-        goto cleanup;
+        return -1;
     }
 
     if (flags & VIR_STORAGE_VOL_CREATE_REFLINK)
@@ -415,7 +413,7 @@ storageBackendCreateRaw(virStoragePoolObjPtr pool,
     if (vol->target.encryption) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("storage pool does not support encrypted volumes"));
-        goto cleanup;
+        return -1;
     }
 
     operation_flags = VIR_FILE_OPEN_FORCE_MODE | VIR_FILE_OPEN_FORCE_OWNER;
@@ -434,26 +432,27 @@ storageBackendCreateRaw(virStoragePoolObjPtr pool,
         virReportSystemError(-fd,
                              _("Failed to create file '%s'"),
                              vol->target.path);
-        goto cleanup;
+        return -1;
     }
-    created = true;
 
     /* NB, COW flag can only be toggled when the file is zero-size,
      * so must go before the createRawFile call allocates payload */
     if (vol->target.nocow &&
         virFileSetCOW(vol->target.path, VIR_TRISTATE_BOOL_NO) < 0)
-        goto cleanup;
+        goto error;
 
-    if ((ret = createRawFile(fd, vol, inputvol, reflink_copy)) < 0)
+    if (createRawFile(fd, vol, inputvol, reflink_copy) < 0) {
         /* createRawFile already reported the exact error. */
-        ret = -1;
+        goto error;
+    }
 
- cleanup:
-    if (ret < 0 && created)
-        ignore_value(virFileRemove(vol->target.path,
-                                   vol->target.perms->uid,
-                                   vol->target.perms->gid));
-    return ret;
+    return 0;
+
+ error:
+    virFileRemove(vol->target.path,
+                  vol->target.perms->uid,
+                  vol->target.perms->gid);
+    return -1;
 }
 
 
