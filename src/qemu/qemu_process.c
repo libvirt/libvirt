@@ -6838,6 +6838,10 @@ qemuProcessSetupDiskThrottlingBlockdev(virQEMUDriverPtr driver,
         if (qemuDiskBusIsSD(disk->bus))
             continue;
 
+        /* Setting throttling for empty drives fails */
+        if (virStorageSourceIsEmpty(disk->src))
+            continue;
+
         if (!qemuDiskConfigBlkdeviotuneEnabled(disk))
             continue;
 

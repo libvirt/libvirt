@@ -558,6 +558,16 @@ qemuDomainChangeMediaBlockdev(virQEMUDriverPtr driver,
                                                  nodename);
     }
 
+    /* set throttling for the new image */
+    if (rc == 0 &&
+        !virStorageSourceIsEmpty(newsrc) &&
+        qemuDiskConfigBlkdeviotuneEnabled(disk)) {
+        rc = qemuMonitorSetBlockIoThrottle(priv->mon, NULL,
+                                           diskPriv->qomName,
+                                           &disk->blkdeviotune,
+                                           true, true, true);
+    }
+
     if (rc == 0)
         rc = qemuMonitorBlockdevTrayClose(priv->mon, diskPriv->qomName);
 
