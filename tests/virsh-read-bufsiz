@@ -42,7 +42,7 @@ for i in before after; do
   ( test $i = before && cat sp xml || cat xml sp ) > $in || fail=1
 
   $abs_top_builddir/tools/virsh --connect test:///default define $in > out || fail=1
-  printf "Domain newtest defined from $in\n\n" > exp || fail=1
+  printf "Domain 'newtest' defined from $in\n\n" > exp || fail=1
   compare exp out || fail=1
 done
 

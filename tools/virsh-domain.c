@@ -1117,17 +1117,17 @@ cmdAutostart(vshControl *ctl, const vshCmd *cmd)
 
     if (virDomainSetAutostart(dom, autostart) < 0) {
         if (autostart)
-            vshError(ctl, _("Failed to mark domain %s as autostarted"), name);
+            vshError(ctl, _("Failed to mark domain '%s' as autostarted"), name);
         else
-            vshError(ctl, _("Failed to unmark domain %s as autostarted"), name);
+            vshError(ctl, _("Failed to unmark domain '%s' as autostarted"), name);
         virshDomainFree(dom);
         return false;
     }
 
     if (autostart)
-        vshPrintExtra(ctl, _("Domain %s marked as autostarted\n"), name);
+        vshPrintExtra(ctl, _("Domain '%s' marked as autostarted\n"), name);
     else
-        vshPrintExtra(ctl, _("Domain %s unmarked as autostarted\n"), name);
+        vshPrintExtra(ctl, _("Domain '%s' unmarked as autostarted\n"), name);
 
     virshDomainFree(dom);
     return true;
@@ -2987,7 +2987,7 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom,
         return false;
     }
 
-    vshPrintExtra(ctl, _("Connected to domain %s\n"), virDomainGetName(dom));
+    vshPrintExtra(ctl, _("Connected to domain '%s'\n"), virDomainGetName(dom));
     vshPrintExtra(ctl, _("Escape character is %s"), priv->escapeChar);
     if (priv->escapeChar[0] == '^')
         vshPrintExtra(ctl, " (Ctrl + %c)", priv->escapeChar[1]);
@@ -3427,9 +3427,9 @@ cmdSuspend(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainSuspend(dom) == 0) {
-        vshPrintExtra(ctl, _("Domain %s suspended\n"), name);
+        vshPrintExtra(ctl, _("Domain '%s' suspended\n"), name);
     } else {
-        vshError(ctl, _("Failed to suspend domain %s"), name);
+        vshError(ctl, _("Failed to suspend domain '%s'"), name);
         ret = false;
     }
 
@@ -3501,12 +3501,12 @@ cmdDomPMSuspend(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virDomainPMSuspendForDuration(dom, suspendTarget, duration, 0) < 0) {
-        vshError(ctl, _("Domain %s could not be suspended"),
+        vshError(ctl, _("Domain '%s' could not be suspended"),
                  virDomainGetName(dom));
         goto cleanup;
     }
 
-    vshPrintExtra(ctl, _("Domain %s successfully suspended"),
+    vshPrintExtra(ctl, _("Domain '%s' successfully suspended"),
              virDomainGetName(dom));
 
     ret = true;
@@ -3548,12 +3548,12 @@ cmdDomPMWakeup(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainPMWakeup(dom, flags) < 0) {
-        vshError(ctl, _("Domain %s could not be woken up"),
+        vshError(ctl, _("Domain '%s' could not be woken up"),
                  virDomainGetName(dom));
         goto cleanup;
     }
 
-    vshPrintExtra(ctl, _("Domain %s successfully woken up"),
+    vshPrintExtra(ctl, _("Domain '%s' successfully woken up"),
                   virDomainGetName(dom));
 
     ret = true;
@@ -3930,10 +3930,10 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
  out:
     if (rc == 0) {
-        vshPrintExtra(ctl, _("Domain %s has been undefined\n"), name);
+        vshPrintExtra(ctl, _("Domain '%s' has been undefined\n"), name);
         ret = true;
     } else {
-        vshError(ctl, _("Failed to undefine domain %s"), name);
+        vshError(ctl, _("Failed to undefine domain '%s'"), name);
         goto cleanup;
     }
 
@@ -4150,12 +4150,12 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     if ((nfds ? virDomainCreateWithFiles(dom, nfds, fds, flags) :
          (flags ? virDomainCreateWithFlags(dom, flags)
           : virDomainCreate(dom))) < 0) {
-        vshError(ctl, _("Failed to start domain %s"), virDomainGetName(dom));
+        vshError(ctl, _("Failed to start domain '%s'"), virDomainGetName(dom));
         goto cleanup;
     }
 
  started:
-    vshPrintExtra(ctl, _("Domain %s started\n"),
+    vshPrintExtra(ctl, _("Domain '%s' started\n"),
                   virDomainGetName(dom));
 #ifndef WIN32
     if (console && !cmdRunConsole(ctl, dom, NULL, 0))
@@ -4255,7 +4255,7 @@ doSave(void *opaque)
     if (((flags || xml)
          ? virDomainSaveFlags(dom, to, xml, flags)
          : virDomainSave(dom, to)) < 0) {
-        vshError(ctl, _("Failed to save domain %s to %s"), name, to);
+        vshError(ctl, _("Failed to save domain '%s' to %s"), name, to);
         goto out;
     }
 
@@ -4512,7 +4512,7 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
     virThreadJoin(&workerThread);
 
     if (!data.ret)
-        vshPrintExtra(ctl, _("\nDomain %s saved to %s\n"), name, to);
+        vshPrintExtra(ctl, _("\nDomain '%s' saved to %s\n"), name, to);
 
  cleanup:
     virshDomainFree(dom);
@@ -4771,7 +4771,7 @@ doManagedsave(void *opaque)
         goto out;
 
     if (virDomainManagedSave(dom, flags) < 0) {
-        vshError(ctl, _("Failed to save domain %s state"), name);
+        vshError(ctl, _("Failed to save domain '%s' state"), name);
         goto out;
     }
 
@@ -4819,7 +4819,7 @@ cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
     virThreadJoin(&workerThread);
 
     if (!data.ret)
-        vshPrintExtra(ctl, _("\nDomain %s state saved by libvirt\n"), name);
+        vshPrintExtra(ctl, _("\nDomain '%s' state saved by libvirt\n"), name);
 
  cleanup:
     virshDomainFree(dom);
@@ -4863,15 +4863,15 @@ cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
 
     if (hassave) {
         if (virDomainManagedSaveRemove(dom, 0) < 0) {
-            vshError(ctl, _("Failed to remove managed save image for domain %s"),
+            vshError(ctl, _("Failed to remove managed save image for domain '%s'"),
                      name);
             goto cleanup;
         }
         else
-            vshPrintExtra(ctl, _("Removed managedsave image for domain %s"), name);
+            vshPrintExtra(ctl, _("Removed managedsave image for domain '%s'"), name);
     }
     else
-        vshPrintExtra(ctl, _("Domain %s has no manage save image; removal skipped"),
+        vshPrintExtra(ctl, _("Domain '%s' has no manage save image; removal skipped"),
                       name);
 
     ret = true;
@@ -4929,7 +4929,7 @@ cmdManagedSaveEdit(vshControl *ctl, const vshCmd *cmd)
 #define EDIT_GET_XML virDomainManagedSaveGetXMLDesc(dom, getxml_flags)
 #define EDIT_NOT_CHANGED \
     do { \
-        vshPrintExtra(ctl, _("Managed save image of domain %s XML configuration " \
+        vshPrintExtra(ctl, _("Managed save image of domain '%s' XML configuration " \
                              "not changed.\n"), virDomainGetName(dom)); \
         ret = true; \
         goto edit_cleanup; \
@@ -4938,7 +4938,7 @@ cmdManagedSaveEdit(vshControl *ctl, const vshCmd *cmd)
     (virDomainManagedSaveDefineXML(dom, doc_edited, define_flags) == 0)
 #include "virsh-edit.c"
 
-    vshPrintExtra(ctl, _("Managed save image of Domain %s XML configuration edited.\n"),
+    vshPrintExtra(ctl, _("Managed save image of Domain '%s' XML configuration edited.\n"),
                   virDomainGetName(dom));
     ret = true;
 
@@ -5057,7 +5057,7 @@ cmdManagedSaveDefine(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrintExtra(ctl, _("Managed save state file of domain %s updated.\n"),
+    vshPrintExtra(ctl, _("Managed save state file of domain '%s' updated.\n"),
                          virDomainGetName(dom));
     ret = true;
 
@@ -5485,12 +5485,12 @@ doDump(void *opaque)
 
     if (dumpformat != VIR_DOMAIN_CORE_DUMP_FORMAT_RAW) {
         if (virDomainCoreDumpWithFormat(dom, to, dumpformat, flags) < 0) {
-            vshError(ctl, _("Failed to core dump domain %s to %s"), name, to);
+            vshError(ctl, _("Failed to core dump domain '%s' to %s"), name, to);
             goto out;
         }
     } else {
         if (virDomainCoreDump(dom, to, flags) < 0) {
-            vshError(ctl, _("Failed to core dump domain %s to %s"), name, to);
+            vshError(ctl, _("Failed to core dump domain '%s' to %s"), name, to);
             goto out;
         }
     }
@@ -5543,7 +5543,7 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
     virThreadJoin(&workerThread);
 
     if (!data.ret)
-        vshPrintExtra(ctl, _("\nDomain %s dumped to %s\n"), name, to);
+        vshPrintExtra(ctl, _("\nDomain '%s' dumped to %s\n"), name, to);
 
  cleanup:
     virshDomainFree(dom);
@@ -5659,7 +5659,7 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
     cbdata.fd = fd;
 
     if (virStreamRecvAll(st, virshStreamSink, &cbdata) < 0) {
-        vshError(ctl, _("could not receive data from domain %s"), name);
+        vshError(ctl, _("could not receive data from domain '%s'"), name);
         goto cleanup;
     }
 
@@ -5669,7 +5669,7 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virStreamFinish(st) < 0) {
-        vshError(ctl, _("cannot close stream on domain %s"), name);
+        vshError(ctl, _("cannot close stream on domain '%s'"), name);
         goto cleanup;
     }
 
@@ -5882,9 +5882,9 @@ cmdResume(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainResume(dom) == 0) {
-        vshPrintExtra(ctl, _("Domain %s resumed\n"), name);
+        vshPrintExtra(ctl, _("Domain '%s' resumed\n"), name);
     } else {
-        vshError(ctl, _("Failed to resume domain %s"), name);
+        vshError(ctl, _("Failed to resume domain '%s'"), name);
         ret = false;
     }
 
@@ -5964,9 +5964,9 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
     else
         rv = virDomainShutdown(dom);
     if (rv == 0) {
-        vshPrintExtra(ctl, _("Domain %s is being shutdown\n"), name);
+        vshPrintExtra(ctl, _("Domain '%s' is being shutdown\n"), name);
     } else {
-        vshError(ctl, _("Failed to shutdown domain %s"), name);
+        vshError(ctl, _("Failed to shutdown domain '%s'"), name);
         goto cleanup;
     }
 
@@ -6044,9 +6044,9 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (virDomainReboot(dom, flags) == 0) {
-        vshPrintExtra(ctl, _("Domain %s is being rebooted\n"), name);
+        vshPrintExtra(ctl, _("Domain '%s' is being rebooted\n"), name);
     } else {
-        vshError(ctl, _("Failed to reboot domain %s"), name);
+        vshError(ctl, _("Failed to reboot domain '%s'"), name);
         goto cleanup;
     }
 
@@ -6086,9 +6086,9 @@ cmdReset(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainReset(dom, 0) == 0) {
-        vshPrintExtra(ctl, _("Domain %s was reset\n"), name);
+        vshPrintExtra(ctl, _("Domain '%s' was reset\n"), name);
     } else {
-        vshError(ctl, _("Failed to reset domain %s"), name);
+        vshError(ctl, _("Failed to reset domain '%s'"), name);
         ret = false;
     }
 
@@ -8311,7 +8311,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrintExtra(ctl, _("Domain %s created from %s\n"),
+    vshPrintExtra(ctl, _("Domain '%s' created from %s\n"),
                   virDomainGetName(dom), from);
 #ifndef WIN32
     if (console)
@@ -8374,7 +8374,7 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(buffer);
 
     if (dom != NULL) {
-        vshPrintExtra(ctl, _("Domain %s defined from %s\n"),
+        vshPrintExtra(ctl, _("Domain '%s' defined from %s\n"),
                       virDomainGetName(dom), from);
         virshDomainFree(dom);
     } else {
@@ -8427,9 +8427,9 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
        result = virDomainDestroy(dom);
 
     if (result == 0) {
-        vshPrintExtra(ctl, _("Domain %s destroyed\n"), name);
+        vshPrintExtra(ctl, _("Domain '%s' destroyed\n"), name);
     } else {
-        vshError(ctl, _("Failed to destroy domain %s"), name);
+        vshError(ctl, _("Failed to destroy domain '%s'"), name);
         ret = false;
     }
 
@@ -9724,10 +9724,10 @@ virshEventQemuPrint(virConnectPtr conn G_GNUC_UNUSED,
         if (virTimeStringNowRaw(timestamp) < 0)
             timestamp[0] = '\0';
 
-        vshPrint(data->ctl, "%s: event %s for domain %s: %s\n",
+        vshPrint(data->ctl, "%s: event %s for domain '%s': %s\n",
                  timestamp, event, virDomainGetName(dom), NULLSTR(details));
     } else {
-        vshPrint(data->ctl, "event %s at %lld.%06u for domain %s: %s\n",
+        vshPrint(data->ctl, "event %s at %lld.%06u for domain '%s': %s\n",
                  event, seconds, micros, virDomainGetName(dom), NULLSTR(details));
     }
 
@@ -9886,7 +9886,7 @@ cmdQemuAttach(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    vshPrintExtra(ctl, _("Domain %s attached to pid %u\n"),
+    vshPrintExtra(ctl, _("Domain '%s' attached to pid %u\n"),
                   virDomainGetName(dom), pid_value);
     virshDomainFree(dom);
     return true;
@@ -12766,7 +12766,7 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
 #define EDIT_GET_XML virDomainGetXMLDesc(dom, query_flags)
 #define EDIT_NOT_CHANGED \
     do { \
-        vshPrintExtra(ctl, _("Domain %s XML configuration not changed.\n"), \
+        vshPrintExtra(ctl, _("Domain '%s' XML configuration not changed.\n"), \
                       virDomainGetName(dom)); \
         ret = true; \
         goto edit_cleanup; \
@@ -12781,7 +12781,7 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
 #include "virsh-edit.c"
 #undef EDIT_RELAX
 
-    vshPrintExtra(ctl, _("Domain %s XML configuration edited.\n"),
+    vshPrintExtra(ctl, _("Domain '%s' XML configuration edited.\n"),
                   virDomainGetName(dom_edited));
 
     ret = true;
@@ -13088,7 +13088,7 @@ virshEventGenericPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event '%s' for domain %s\n"),
+    virBufferAsprintf(&buf, _("event '%s' for domain '%s'\n"),
                       ((virshDomEventData *) opaque)->cb->name,
                       virDomainGetName(dom));
     virshEventPrint(opaque, &buf);
@@ -13103,7 +13103,7 @@ virshEventLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'lifecycle' for domain %s: %s %s\n"),
+    virBufferAsprintf(&buf, _("event 'lifecycle' for domain '%s': %s %s\n"),
                       virDomainGetName(dom),
                       virshDomainEventToString(event),
                       virshDomainEventDetailToString(event, detail));
@@ -13118,7 +13118,7 @@ virshEventRTCChangePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'rtc-change' for domain %s: %lld\n"),
+    virBufferAsprintf(&buf, _("event 'rtc-change' for domain '%s': %lld\n"),
                       virDomainGetName(dom),
                       utcoffset);
     virshEventPrint(opaque, &buf);
@@ -13132,7 +13132,7 @@ virshEventWatchdogPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'watchdog' for domain %s: %s\n"),
+    virBufferAsprintf(&buf, _("event 'watchdog' for domain '%s': %s\n"),
                       virDomainGetName(dom),
                       virshDomainEventWatchdogToString(action));
     virshEventPrint(opaque, &buf);
@@ -13148,7 +13148,7 @@ virshEventIOErrorPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'io-error' for domain %s: %s (%s) %s\n"),
+    virBufferAsprintf(&buf, _("event 'io-error' for domain '%s': %s (%s) %s\n"),
                       virDomainGetName(dom),
                       srcPath,
                       devAlias,
@@ -13169,7 +13169,7 @@ virshEventGraphicsPrint(virConnectPtr conn G_GNUC_UNUSED,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    virBufferAsprintf(&buf, _("event 'graphics' for domain %s: "
+    virBufferAsprintf(&buf, _("event 'graphics' for domain '%s': "
                               "%s local[%s %s %s] remote[%s %s %s] %s\n"),
                       virDomainGetName(dom),
                       virshGraphicsPhaseToString(phase),
@@ -13199,7 +13199,7 @@ virshEventIOErrorReasonPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'io-error-reason' for domain %s: "
+    virBufferAsprintf(&buf, _("event 'io-error-reason' for domain '%s': "
                               "%s (%s) %s due to %s\n"),
                       virDomainGetName(dom),
                       srcPath,
@@ -13219,7 +13219,7 @@ virshEventBlockJobPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event '%s' for domain %s: %s for %s %s\n"),
+    virBufferAsprintf(&buf, _("event '%s' for domain '%s': %s for %s %s\n"),
                       ((virshDomEventData *) opaque)->cb->name,
                       virDomainGetName(dom),
                       virshDomainBlockJobToString(type),
@@ -13239,7 +13239,7 @@ virshEventDiskChangePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'disk-change' for domain %s disk %s: "
+    virBufferAsprintf(&buf, _("event 'disk-change' for domain '%s' disk %s: "
                               "%s -> %s: %s\n"),
                       virDomainGetName(dom),
                       alias,
@@ -13258,7 +13258,7 @@ virshEventTrayChangePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'tray-change' for domain %s disk %s: %s\n"),
+    virBufferAsprintf(&buf, _("event 'tray-change' for domain '%s' disk %s: %s\n"),
                       virDomainGetName(dom),
                       alias,
                       virshDomainEventTrayChangeToString(reason));
@@ -13284,7 +13284,7 @@ virshEventBalloonChangePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'balloon-change' for domain %s: %lluKiB\n"),
+    virBufferAsprintf(&buf, _("event 'balloon-change' for domain '%s': %lluKiB\n"),
                       virDomainGetName(dom),
                       actual);
     virshEventPrint(opaque, &buf);
@@ -13298,7 +13298,7 @@ virshEventDeviceRemovedPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'device-removed' for domain %s: %s\n"),
+    virBufferAsprintf(&buf, _("event 'device-removed' for domain '%s': %s\n"),
                       virDomainGetName(dom),
                       alias);
     virshEventPrint(opaque, &buf);
@@ -13312,7 +13312,7 @@ virshEventDeviceAddedPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'device-added' for domain %s: %s\n"),
+    virBufferAsprintf(&buf, _("event 'device-added' for domain '%s': %s\n"),
                       virDomainGetName(dom),
                       alias);
     virshEventPrint(opaque, &buf);
@@ -13329,7 +13329,7 @@ virshEventTunablePrint(virConnectPtr conn G_GNUC_UNUSED,
     size_t i;
     char *value;
 
-    virBufferAsprintf(&buf, _("event 'tunable' for domain %s:\n"),
+    virBufferAsprintf(&buf, _("event 'tunable' for domain '%s':\n"),
                       virDomainGetName(dom));
     for (i = 0; i < nparams; i++) {
         value = virTypedParameterToString(&params[i]);
@@ -13365,7 +13365,7 @@ virshEventAgentLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'agent-lifecycle' for domain %s: state: "
+    virBufferAsprintf(&buf, _("event 'agent-lifecycle' for domain '%s': state: "
                               "'%s' reason: '%s'\n"),
                       virDomainGetName(dom),
                       UNKNOWNSTR(virshEventAgentLifecycleStateTypeToString(state)),
@@ -13381,7 +13381,7 @@ virshEventMigrationIterationPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'migration-iteration' for domain %s: "
+    virBufferAsprintf(&buf, _("event 'migration-iteration' for domain '%s': "
                               "iteration: '%d'\n"),
                       virDomainGetName(dom),
                       iteration);
@@ -13400,7 +13400,7 @@ virshEventJobCompletedPrint(virConnectPtr conn G_GNUC_UNUSED,
     size_t i;
     char *value;
 
-    virBufferAsprintf(&buf, _("event 'job-completed' for domain %s:\n"),
+    virBufferAsprintf(&buf, _("event 'job-completed' for domain '%s':\n"),
                       virDomainGetName(dom));
     for (i = 0; i < nparams; i++) {
         value = virTypedParameterToString(&params[i]);
@@ -13421,7 +13421,7 @@ virshEventDeviceRemovalFailedPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'device-removal-failed' for domain %s: %s\n"),
+    virBufferAsprintf(&buf, _("event 'device-removal-failed' for domain '%s': %s\n"),
                       virDomainGetName(dom),
                       alias);
     virshEventPrint(opaque, &buf);
@@ -13443,7 +13443,7 @@ virshEventMetadataChangePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'metadata-change' for domain %s: %s %s\n"),
+    virBufferAsprintf(&buf, _("event 'metadata-change' for domain '%s': %s %s\n"),
                       virDomainGetName(dom),
                       UNKNOWNSTR(virshEventMetadataChangeTypeTypeToString(type)),
                       NULLSTR(nsuri));
@@ -13462,7 +13462,7 @@ virshEventBlockThresholdPrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'block-threshold' for domain %s: "
+    virBufferAsprintf(&buf, _("event 'block-threshold' for domain '%s': "
                               "dev: %s(%s) %llu %llu\n"),
                       virDomainGetName(dom),
                       dev, NULLSTR(path), threshold, excess);
@@ -13494,7 +13494,7 @@ virshEventMemoryFailurePrint(virConnectPtr conn G_GNUC_UNUSED,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, _("event 'memory-failure' for domain %s:\n"
+    virBufferAsprintf(&buf, _("event 'memory-failure' for domain '%s':\n"
                               "recipient: %s\naction: %s\n"),
                       virDomainGetName(dom),
                       UNKNOWNSTR(virshEventMemoryFailureRecipientTypeTypeToString(recipient)),

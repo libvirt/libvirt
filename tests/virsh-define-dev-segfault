@@ -65,7 +65,7 @@ url=test:///default
 $abs_top_builddir/tools/virsh --connect "$url" 'define D.xml; dumpxml D' > out 2>&1 || fail=1
 
 cat > exp <<EOF || fail=1
-Domain D defined from D.xml
+Domain 'D' defined from D.xml
 
 $(cat D.xml)
 

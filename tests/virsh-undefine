@@ -37,7 +37,7 @@ sed '/^Persistent/n; /:/d' < out1 > out
 cat <<\EOF > exp || fail=1
 Persistent:     yes
 
-Domain test has been undefined
+Domain 'test' has been undefined
 
 Persistent:     no
 
@@ -52,7 +52,7 @@ sed '/^Persistent/n; /:/d' < out1 > out
 cat <<\EOF > exp || fail=1
 Persistent:     yes
 
-Domain 1 has been undefined
+Domain '1' has been undefined
 
 Persistent:     no
 
@@ -64,9 +64,9 @@ $abs_top_builddir/tools/virsh -c test:///default \
     'shutdown test; undefine test; dominfo test' > out 2>&1
 test $? = 1 || fail=1
 cat <<\EOF > expout || fail=1
-Domain test is being shutdown
+Domain 'test' is being shutdown
 
-Domain test has been undefined
+Domain 'test' has been undefined
 
 error: failed to get domain 'test'
 
