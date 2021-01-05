@@ -66,7 +66,7 @@ testCapsInit(void)
 }
 
 static int
-testCompareFiles(const char *vmx, const char *xml)
+testCompareFiles(const char *vmx, const char *xml, bool should_fail_parse)
 {
     int ret = -1;
     char *vmxData = NULL;
@@ -74,9 +74,17 @@ testCompareFiles(const char *vmx, const char *xml)
     virDomainDefPtr def = NULL;
 
     if (virTestLoadFile(vmx, &vmxData) < 0)
-        goto cleanup;
+        return -1;
 
-    if (!(def = virVMXParseConfig(&ctx, xmlopt, caps, vmxData)))
+    def = virVMXParseConfig(&ctx, xmlopt, caps, vmxData);
+    if (should_fail_parse) {
+        if (!def)
+            ret = 0;
+        else
+            VIR_TEST_DEBUG("passed instead of expected failure");
+        goto cleanup;
+    }
+    if (!def)
         goto cleanup;
 
     if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
@@ -104,6 +112,7 @@ testCompareFiles(const char *vmx, const char *xml)
 struct testInfo {
     const char *input;
     const char *output;
+    bool should_fail;
 };
 
 static int
@@ -119,7 +128,7 @@ testCompareHelper(const void *data)
     xml = g_strdup_printf("%s/vmx2xmldata/vmx2xml-%s.xml", abs_srcdir,
                           info->output);
 
-    ret = testCompareFiles(vmx, xml);
+    ret = testCompareFiles(vmx, xml, info->should_fail);
 
     VIR_FREE(vmx);
     VIR_FREE(xml);
@@ -171,15 +180,18 @@ mymain(void)
 {
     int ret = 0;
 
-# define DO_TEST(_in, _out) \
+# define DO_TEST_FULL(_in, _out, _should_fail) \
         do { \
-            struct testInfo info = { _in, _out }; \
+            struct testInfo info = { _in, _out, _should_fail }; \
             virResetLastError(); \
             if (virTestRun("VMware VMX-2-XML "_in" -> "_out, \
                            testCompareHelper, &info) < 0) { \
                 ret = -1; \
             } \
         } while (0)
+
+# define DO_TEST(_in, _out) DO_TEST_FULL(_in, _out, false)
+# define DO_TEST_FAIL(_in, _out) DO_TEST_FULL(_in, _out, true)
 
     testCapsInit();
 
