@@ -1790,7 +1790,7 @@ if not get_option('driver_vbox').disabled() and conf.has('WITH_LIBVIRTD')
   conf.set_quoted('VBOX_XPCOMC_DIR', get_option('vbox_xpcomc_dir'))
 endif
 
-if get_option('driver_vmware').enabled()
+if not get_option('driver_vmware').disabled()
   conf.set('WITH_VMWARE', 1)
   conf.set('WITH_VMX', 1)
 endif
