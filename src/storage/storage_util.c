@@ -315,7 +315,6 @@ createRawFile(int fd, virStorageVolDefPtr vol,
               bool reflink_copy)
 {
     bool need_alloc = true;
-    int ret = 0;
     unsigned long long pos = 0;
 
     /* If the new allocation is lower than the capacity of the original file,
@@ -327,11 +326,10 @@ createRawFile(int fd, virStorageVolDefPtr vol,
     /* Seek to the final size, so the capacity is available upfront
      * for progress reporting */
     if (ftruncate(fd, vol->target.capacity) < 0) {
-        ret = -errno;
         virReportSystemError(errno,
                              _("cannot extend file '%s'"),
                              vol->target.path);
-        return ret;
+        return -1;
     }
 
 /* Avoid issues with older kernel's <linux/fs.h> namespace pollution. */
@@ -347,11 +345,10 @@ createRawFile(int fd, virStorageVolDefPtr vol,
         if (fallocate(fd, 0, 0, vol->target.allocation) == 0) {
             need_alloc = false;
         } else if (errno != ENOSYS && errno != EOPNOTSUPP) {
-            ret = -errno;
             virReportSystemError(errno,
                                  _("cannot allocate %llu bytes in file '%s'"),
                                  vol->target.allocation, vol->target.path);
-            return ret;
+            return -1;
         }
     }
 #endif
@@ -361,9 +358,9 @@ createRawFile(int fd, virStorageVolDefPtr vol,
         /* allow zero blocks to be skipped if we've requested sparse
          * allocation (allocation < capacity) or we have already
          * been able to allocate the required space. */
-        if ((ret = virStorageBackendCopyToFD(vol, inputvol, fd, &remain,
-                                             !need_alloc, reflink_copy)) < 0)
-            return ret;
+        if (virStorageBackendCopyToFD(vol, inputvol, fd, &remain,
+                                      !need_alloc, reflink_copy) < 0)
+            return -1;
 
         /* If the new allocation is greater than the original capacity,
          * but fallocate failed, fill the rest with zeroes.
@@ -373,21 +370,19 @@ createRawFile(int fd, virStorageVolDefPtr vol,
 
     if (need_alloc && (vol->target.allocation - pos > 0)) {
         if (safezero(fd, pos, vol->target.allocation - pos) < 0) {
-            ret = -errno;
             virReportSystemError(errno, _("cannot fill file '%s'"),
                                  vol->target.path);
-            return ret;
+            return -1;
         }
     }
 
     if (g_fsync(fd) < 0) {
-        ret = -errno;
         virReportSystemError(errno, _("cannot sync data to file '%s'"),
                              vol->target.path);
-        return ret;
+        return -1;
     }
 
-    return ret;
+    return 0;
 }
 
 static int
