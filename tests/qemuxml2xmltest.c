@@ -302,6 +302,7 @@ mymain(void)
     DO_TEST("disk-network-source-auth", NONE);
     DO_TEST("disk-network-sheepdog", NONE);
     DO_TEST("disk-network-vxhs", NONE);
+    DO_TEST_CAPS_LATEST("disk-network-nfs");
     DO_TEST("disk-network-tlsx509-nbd", NONE);
     DO_TEST("disk-network-tlsx509-vxhs", NONE);
     DO_TEST("disk-nvme", QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_QCOW2_LUKS);

@@ -1253,6 +1253,7 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-network-source-auth", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-source-auth");
     DO_TEST("disk-network-vxhs", QEMU_CAPS_VXHS);
+    DO_TEST_CAPS_LATEST("disk-network-nfs");
     driver.config->vxhsTLS = 1;
     driver.config->nbdTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     driver.config->vxhsTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
