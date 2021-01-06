@@ -28,7 +28,6 @@
 
 #include "internal.h"
 #include "virbitmap.h"
-#include "virstoragefile.h"
 #include "virenum.h"
 
 typedef enum {
@@ -144,7 +143,7 @@ int virFileLoopDeviceAssociate(const char *file,
                                char **dev);
 
 int virFileNBDDeviceAssociate(const char *file,
-                              virStorageFileFormat fmt,
+                              const char *fmtstr,
                               bool readonly,
                               char **dev);
 

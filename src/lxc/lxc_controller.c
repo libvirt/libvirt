@@ -509,7 +509,7 @@ static int virLXCControllerSetupNBDDeviceFS(virDomainFSDefPtr fs)
     }
 
     if (virFileNBDDeviceAssociate(fs->src->path,
-                                  fs->format,
+                                  virStorageFileFormatTypeToString(fs->format),
                                   fs->readonly,
                                   &dev) < 0)
         return -1;
@@ -541,7 +541,7 @@ static int virLXCControllerSetupNBDDeviceDisk(virDomainDiskDefPtr disk)
     }
 
     if (virFileNBDDeviceAssociate(src,
-                                  format,
+                                  virStorageFileFormatTypeToString(format),
                                   disk->src->readonly,
                                   &dev) < 0)
         return -1;

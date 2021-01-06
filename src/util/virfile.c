@@ -879,14 +879,13 @@ virFileNBDLoadDriver(void)
 }
 
 int virFileNBDDeviceAssociate(const char *file,
-                              virStorageFileFormat fmt,
+                              const char *fmtstr,
                               bool readonly,
                               char **dev)
 {
     g_autofree char *nbddev = NULL;
     g_autofree char *qemunbd = NULL;
     g_autoptr(virCommand) cmd = NULL;
-    const char *fmtstr = NULL;
 
     if (!virFileNBDLoadDriver())
         return -1;
@@ -899,9 +898,6 @@ int virFileNBDDeviceAssociate(const char *file,
                              _("Unable to find 'qemu-nbd' binary in $PATH"));
         return -1;
     }
-
-    if (fmt > 0)
-        fmtstr = virStorageFileFormatTypeToString(fmt);
 
     cmd = virCommandNew(qemunbd);
 
@@ -945,7 +941,7 @@ int virFileLoopDeviceAssociate(const char *file,
 }
 
 int virFileNBDDeviceAssociate(const char *file,
-                              virStorageFileFormat fmt G_GNUC_UNUSED,
+                              const char *fmtstr G_GNUC_UNUSED,
                               bool readonly G_GNUC_UNUSED,
                               char **dev G_GNUC_UNUSED)
 {
