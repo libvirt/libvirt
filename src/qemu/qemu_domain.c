@@ -4657,6 +4657,21 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         }
     }
 
+    /* metadata cache size control is currently supported only for qcow2 */
+    if (src->metadataCacheMaxSize > 0) {
+        if (src->format != VIR_STORAGE_FILE_QCOW2) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("metdata cache max size control is supported only with qcow2 images"));
+            return -1;
+        }
+
+        if (!blockdev) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("metdata cache max size control is not supported with this QEMU binary"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
