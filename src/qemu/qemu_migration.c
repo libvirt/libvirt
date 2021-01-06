@@ -4709,7 +4709,7 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
     int p2p;
     virErrorPtr orig_err = NULL;
     bool offline = !!(flags & VIR_MIGRATE_OFFLINE);
-    int dstOffline;
+    int dstOffline = 0;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int useParams;
     int rc;
