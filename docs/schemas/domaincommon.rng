@@ -4776,18 +4776,14 @@
           </optional>
         </group>
       </choice>
-      <choice>
-        <group>
-          <optional>
-            <attribute name="version">
-              <choice>
-                <value>1.2</value>
-                <value>2.0</value>
-              </choice>
-           </attribute>
-          </optional>
-        </group>
-      </choice>
+      <optional>
+        <attribute name="version">
+          <choice>
+            <value>1.2</value>
+            <value>2.0</value>
+          </choice>
+       </attribute>
+      </optional>
     </element>
   </define>
 
