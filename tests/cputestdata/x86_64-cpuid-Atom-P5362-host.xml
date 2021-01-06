@@ -64,4 +64,5 @@
   <feature name='mds-no'/>
   <feature name='pschange-mc-no'/>
   <feature name='taa-no'/>
+  <feature name='split-lock-detect'/>
 </cpu>

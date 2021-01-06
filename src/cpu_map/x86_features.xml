@@ -581,4 +581,9 @@
   <feature name='taa-no'>
     <msr index='0x10a' edx='0x00000000' eax='0x00000100'/>
   </feature>
+
+  <!-- IA32_CORE_CAPABILITIES features -->
+  <feature name='split-lock-detect'>
+    <msr index='0xcf' edx='0x00000000' eax='0x00000020'/>
+  </feature>
 </cpus>

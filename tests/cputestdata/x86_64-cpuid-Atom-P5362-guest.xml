@@ -53,6 +53,7 @@
   <feature policy='require' name='mds-no'/>
   <feature policy='require' name='pschange-mc-no'/>
   <feature policy='require' name='taa-no'/>
+  <feature policy='require' name='split-lock-detect'/>
   <feature policy='disable' name='avx'/>
   <feature policy='disable' name='f16c'/>
 </cpu>
