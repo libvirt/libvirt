@@ -3600,6 +3600,16 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
+    if (!!olddev->virtio != !!newdev->virtio ||
+        (olddev->virtio && newdev->virtio &&
+         (olddev->virtio->iommu != newdev->virtio->iommu ||
+          olddev->virtio->ats != newdev->virtio->ats ||
+          olddev->virtio->packed != newdev->virtio->packed))) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot modify virtio network device driver options"));
+           goto cleanup;
+   }
+
     /* data: this union will be examined later, after allocating new actualdev */
     /* virtPortProfile: will be examined later, after allocating new actualdev */
 
