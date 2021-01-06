@@ -35,4 +35,10 @@ key=QVFDVm41aE82SHpGQWhBQXEwTkN2OGp0SmNJY0UrSE9CbE1RMUE=:\
 auth_supported=cephx\;none:mon_host=mon1.example.org\:6321\;mon2.example.org\:\
 6322\;mon3.example.org\:6322,format=raw,if=none,id=drive-virtio-disk1' \
 -device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,\
-id=virtio-disk1
+id=virtio-disk1 \
+-drive 'file=rbd:pool/image2:id=myname:\
+key=QVFDVm41aE82SHpGQWhBQXEwTkN2OGp0SmNJY0UrSE9CbE1RMUE=:\
+auth_supported=cephx\;none:mon_host=mon1.example.org\:6321\;mon2.example.org\:\
+6322\;mon3.example.org\:6322,format=raw,if=none,id=drive-virtio-disk2' \
+-device virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-virtio-disk2,\
+id=virtio-disk2

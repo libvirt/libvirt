@@ -6261,7 +6261,7 @@
           <ref name="UUID"/>
         </attribute>
         <attribute name="usage">
-          <ref name="genericName"/>
+          <ref name="objectName"/>
         </attribute>
       </choice>
     </element>

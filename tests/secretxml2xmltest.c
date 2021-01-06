@@ -74,6 +74,7 @@ mymain(void)
     DO_TEST("ephemeral-usage-volume");
     DO_TEST("usage-volume");
     DO_TEST("usage-ceph");
+    DO_TEST("usage-ceph-space");
     DO_TEST("usage-iscsi");
     DO_TEST("usage-tls");
     DO_TEST("usage-vtpm");

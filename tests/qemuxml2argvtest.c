@@ -64,7 +64,8 @@ fakeSecretLookupByUsage(virConnectPtr conn,
                            usageID);
             return NULL;
         }
-    } else if (STRNEQ(usageID, "mycluster_myname")) {
+    } else if (STRNEQ(usageID, "mycluster_myname") &&
+               STRNEQ(usageID, "client.admin secret")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "test provided incorrect usage '%s'", usageID);
         return NULL;

@@ -45,6 +45,15 @@ mon_host=mon1.example.org\:6321\;mon2.example.org\:6322\;mon3.example.org\:\
 id=drive-virtio-disk1' \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk1,\
 id=virtio-disk1 \
+-object secret,id=virtio-disk2-auth-secret0,\
+data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
+keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
+-drive 'file=rbd:pool/image2:id=myname:auth_supported=cephx\;none:\
+mon_host=mon1.example.org\:6321\;mon2.example.org\:6322\;mon3.example.org\:\
+6322,file.password-secret=virtio-disk2-auth-secret0,format=raw,if=none,\
+id=drive-virtio-disk2' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk2,\
+id=virtio-disk2 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on
