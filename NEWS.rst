@@ -61,6 +61,14 @@ v7.0.0 (unreleased)
     starting as qemu doesn't accept the tuning for an empty drive. We now
     postpone setting the parameters until a new media is inserted.
 
+  * Avoid taking extra host memory when launching pSeries guests
+
+    Under certain conditions, pSeries guests were being launched with more
+    RAM than it was specified in the domain XML by the user. New pSeries
+    domains created with libvirt 7.0.0 will always launch with the right
+    amount of initial memory. Existing guests that migrate from an older
+    libvirt version to 7.0.0 will not be affected by this change.
+
 
 v6.10.0 (2020-12-01)
 ====================
