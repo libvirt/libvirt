@@ -2722,6 +2722,11 @@ virPCIDeviceHasPCIExpressLink(virPCIDevicePtr dev)
     if (virPCIDeviceInit(dev, fd) < 0)
         goto cleanup;
 
+    if (dev->pcie_cap_pos == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
     cap = virPCIDeviceRead16(dev, fd, dev->pcie_cap_pos + PCI_CAP_FLAGS);
     type = (cap & PCI_EXP_FLAGS_TYPE) >> 4;
 
