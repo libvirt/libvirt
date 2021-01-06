@@ -294,6 +294,7 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-cache", "2.7.0");
     DO_TEST_CAPS_VER("disk-cache", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cache");
+    DO_TEST_CAPS_LATEST("disk-metadata-cache");
     DO_TEST("disk-network-nbd", NONE);
     DO_TEST("disk-network-iscsi", QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_BLOCK);

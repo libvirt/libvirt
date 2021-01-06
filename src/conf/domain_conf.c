@@ -8609,6 +8609,12 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
     if (!(backingStore = virDomainStorageSourceParseBase(type, format, idx)))
         return -1;
 
+    if (virParseScaledValue("./format/metadata_cache/max_size", NULL,
+                            ctxt,
+                            &backingStore->metadataCacheMaxSize,
+                            1, ULLONG_MAX, false) < 0)
+        return -1;
+
     /* backing store is always read-only */
     backingStore->readonly = true;
 
@@ -8959,9 +8965,13 @@ virDomainDiskDefParseValidate(const virDomainDiskDef *def)
 
 static int
 virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
-                               xmlNodePtr cur)
+                               xmlNodePtr cur,
+                               xmlXPathContextPtr ctxt)
 {
     g_autofree char *tmp = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    ctxt->node = cur;
 
     def->driverName = virXMLPropString(cur, "name");
 
@@ -9070,6 +9080,12 @@ virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
                        tmp);
         return -1;
     }
+
+    if (virParseScaledValue("./metadata_cache/max_size", NULL,
+                            ctxt,
+                            &def->src->metadataCacheMaxSize,
+                            1, ULLONG_MAX, false) < 0)
+        return -1;
 
     return 0;
 }
@@ -9227,7 +9243,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
                 return NULL;
 
-            if (virDomainDiskDefDriverParseXML(def, cur) < 0)
+            if (virDomainDiskDefDriverParseXML(def, cur, ctxt) < 0)
                 return NULL;
         } else if (!def->mirror &&
                    virXMLNodeNameEqual(cur, "mirror") &&
@@ -24081,6 +24097,8 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) formatAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) formatChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
     bool inactive = flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE;
     virStorageSourcePtr backingStore = src->backingStore;
 
@@ -24108,8 +24126,22 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
     if (backingStore->id != 0)
         virBufferAsprintf(&attrBuf, " index='%u'", backingStore->id);
 
-    virBufferAsprintf(&childBuf, "<format type='%s'/>\n",
+    virBufferAsprintf(&formatAttrBuf, " type='%s'",
                       virStorageFileFormatTypeToString(backingStore->format));
+
+    if (backingStore->metadataCacheMaxSize > 0) {
+        g_auto(virBuffer) metadataCacheChildBuf = VIR_BUFFER_INIT_CHILD(&formatChildBuf);
+
+        virBufferAsprintf(&metadataCacheChildBuf,
+                          "<max_size unit='bytes'>%llu</max_size>\n",
+                          backingStore->metadataCacheMaxSize);
+
+        virXMLFormatElement(&formatChildBuf, "metadata_cache", NULL, &metadataCacheChildBuf);
+    }
+
+    virXMLFormatElement(&childBuf, "format", &formatAttrBuf, &formatChildBuf);
+
+
     if (virDomainDiskSourceFormat(&childBuf, backingStore, "source", 0, false,
                                   flags, false, false, xmlopt) < 0)
         return -1;
@@ -24177,6 +24209,7 @@ virDomainDiskDefFormatDriver(virBufferPtr buf,
                              virDomainDiskDefPtr disk)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     virBufferEscapeString(&attrBuf, " name='%s'", virDomainDiskGetDriver(disk));
 
@@ -24228,7 +24261,17 @@ virDomainDiskDefFormatDriver(virBufferPtr buf,
 
     virDomainVirtioOptionsFormat(&attrBuf, disk->virtio);
 
-    virXMLFormatElement(buf, "driver", &attrBuf, NULL);
+    if (disk->src->metadataCacheMaxSize > 0) {
+        g_auto(virBuffer) metadataCacheChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
+
+        virBufferAsprintf(&metadataCacheChildBuf,
+                          "<max_size unit='bytes'>%llu</max_size>\n",
+                          disk->src->metadataCacheMaxSize);
+
+        virXMLFormatElement(&childBuf, "metadata_cache", NULL, &metadataCacheChildBuf);
+    }
+
+    virXMLFormatElement(buf, "driver", &attrBuf, &childBuf);
 }
 
 

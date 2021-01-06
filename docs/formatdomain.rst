@@ -2755,6 +2755,11 @@ paravirtualized driver is specified via the ``disk`` element.
    ``format``
       The ``format`` element contains ``type`` attribute which specifies the
       internal format of the backing store, such as ``raw`` or ``qcow2``.
+
+      The ``format`` element can contain ``metadata_cache`` subelement, which
+      has identical semantics to the identically named subelement of ``driver``
+      of a ``disk``.
+
    ``source``
       This element has the same structure as the ``source`` element in ``disk``.
       It specifies which file, device, or network location contains the data of
@@ -2967,6 +2972,44 @@ paravirtualized driver is specified via the ``disk`` element.
       virtio-blk. ( :since:`Since 3.9.0` )
    -  For virtio disks, `Virtio-specific options <#elementsVirtio>`__ can also
       be set. ( :since:`Since 3.5.0` )
+   -  The optional ``metadata_cache`` subelement controls aspects related to the
+      format specific caching of storage image metadata. Note that this setting
+      applies only on the top level image; the identically named subelement of
+      ``backingStore``'s ``format`` element can be used to specify cache
+      settings for the backing image.
+
+      :since:`Since 7.0.0` the maximum size of the metadata cache of ``qcow2``
+      format driver of the ``qemu`` hypervisor can be controlled via the
+      ``max_size`` subelement (see example below).
+
+      In the majority of cases the default configuration used by the hypervisor
+      is sufficient so modifying this setting should not be necessary. For
+      specifics on how the metadata cache of ``qcow2`` in ``qemu`` behaves refer
+      to the ``qemu``
+      `qcow2 cache docs <https://git.qemu.org/?p=qemu.git;a=blob;f=docs/qcow2-cache.txt>`__
+
+      **Example:**
+
+::
+
+   <disk type='file' device='disk'>
+     <driver name='qemu' type='qcow2'>
+       <metadata_cache>
+         <max_size unit='bytes'>1234</max_size>
+       </metadata_cache>
+     </driver>
+     <source file='/var/lib/libvirt/images/domain.qcow'/>
+     <backingStore type='file'>
+       <format type='qcow2'>
+         <metadata_cache>
+           <max_size unit='bytes'>1234</max_size>
+         </metadata_cache>
+       </format>
+       <source file='/var/lib/libvirt/images/snapshot.qcow'/>
+       <backingStore/>
+     </backingStore>
+     <target dev='vdd' bus='virtio'/>
+   </disk>
 
 ``backenddomain``
    The optional ``backenddomain`` element allows specifying a backend domain

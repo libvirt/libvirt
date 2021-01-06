@@ -322,6 +322,8 @@ struct _virStorageSource {
     unsigned long long clusterSize; /* in bytes, 0 if unknown */
     bool has_allocation; /* Set to true when provided in XML */
 
+    unsigned long long metadataCacheMaxSize; /* size of the metadata cache in bytes */
+
     size_t nseclabels;
     virSecurityDeviceLabelDefPtr *seclabels;
 
