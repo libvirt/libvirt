@@ -302,19 +302,16 @@ virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
                                virDomainNetDefPtr net,
                                const char *brname)
 {
-    char *parentVeth;
+    g_autofree char *parentVeth = NULL;
     g_autofree char *containerVeth = NULL;
     const virNetDevVPortProfile *vport = virDomainNetGetActualVirtPortProfile(net);
 
     VIR_DEBUG("calling vethCreate()");
-    parentVeth = net->ifname;
+    parentVeth = g_strdup(net->ifname);
 
     if (virNetDevVethCreate(&parentVeth, &containerVeth) < 0)
         return NULL;
     VIR_DEBUG("parentVeth: %s, containerVeth: %s", parentVeth, containerVeth);
-
-    if (net->ifname == NULL)
-        net->ifname = parentVeth;
 
     if (virNetDevSetMAC(containerVeth, &net->mac) < 0)
         return NULL;
@@ -354,6 +351,10 @@ virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
     if (net->filter &&
         virDomainConfNWFilterInstantiate(vm->name, vm->uuid, net, false) < 0)
         return NULL;
+
+    /* success is guaranteed, so update the interface object */
+    g_free(net->ifname);
+    net->ifname = g_steal_pointer(&parentVeth);
 
     return g_steal_pointer(&containerVeth);
 }
