@@ -6888,6 +6888,23 @@ virDomainStorageNetworkParseHosts(xmlNodePtr node,
 }
 
 
+static void
+virDomainStorageNetworkParseNFS(xmlNodePtr node,
+                               xmlXPathContextPtr ctxt,
+                               virStorageSourcePtr src)
+{
+    xmlNodePtr nfsIdentityNode = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+
+    ctxt->node = node;
+
+    if ((nfsIdentityNode = virXPathNode("./identity", ctxt))) {
+        src->nfs_user = virXMLPropString(nfsIdentityNode, "user");
+        src->nfs_group = virXMLPropString(nfsIdentityNode, "group");
+    }
+}
+
+
 static int
 virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
                                           xmlXPathContextPtr ctxt,
@@ -8249,6 +8266,9 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
 
     if (virDomainStorageNetworkParseHosts(node, ctxt, &src->hosts, &src->nhosts) < 0)
         return -1;
+
+    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_NFS)
+        virDomainStorageNetworkParseNFS(node, ctxt, src);
 
     virStorageSourceNetworkAssignDefaultPorts(src);
 
@@ -23850,6 +23870,17 @@ virDomainDiskSourceFormatNetwork(virBufferPtr attrBuf,
         virBufferEscapeString(childBuf, " socket='%s'", src->hosts[n].socket);
         virBufferAddLit(childBuf, "/>\n");
     }
+
+    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_NFS &&
+        (src->nfs_user || src->nfs_group)) {
+        virBufferAddLit(childBuf, "<identity");
+
+        virBufferEscapeString(childBuf, " user='%s'", src->nfs_user);
+        virBufferEscapeString(childBuf, " group='%s'", src->nfs_group);
+
+        virBufferAddLit(childBuf, "/>\n");
+    }
+
 
     virBufferEscapeString(childBuf, "<snapshot name='%s'/>\n", src->snapshot);
     virBufferEscapeString(childBuf, "<config file='%s'/>\n", src->configFile);
