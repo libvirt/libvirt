@@ -436,16 +436,10 @@
         </optional>
         <optional>
           <element name="inituser">
-            <choice>
-              <ref name="unsignedInt"/>
-              <ref name="genericName"/>
-            </choice>
+            <ref name="genericName"/>
           </element>
           <element name="initgroup">
-            <choice>
-              <ref name="unsignedInt"/>
-              <ref name="genericName"/>
-            </choice>
+            <ref name="genericName"/>
           </element>
         </optional>
       </interleave>
