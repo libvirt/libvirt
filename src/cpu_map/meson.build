@@ -72,6 +72,7 @@ cpumap_data = [
   'x86_Skylake-Server-IBRS.xml',
   'x86_Skylake-Server-noTSX-IBRS.xml',
   'x86_Skylake-Server.xml',
+  'x86_Snowridge.xml',
   'x86_vendors.xml',
   'x86_Westmere-IBRS.xml',
   'x86_Westmere.xml',

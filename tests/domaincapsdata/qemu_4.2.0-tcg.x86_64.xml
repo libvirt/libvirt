@@ -76,6 +76,7 @@
       <model usable='yes'>athlon</model>
       <model usable='no'>Westmere-IBRS</model>
       <model usable='no'>Westmere</model>
+      <model usable='no'>Snowridge</model>
       <model usable='no'>Skylake-Server-noTSX-IBRS</model>
       <model usable='no'>Skylake-Server-IBRS</model>
       <model usable='no'>Skylake-Server</model>
