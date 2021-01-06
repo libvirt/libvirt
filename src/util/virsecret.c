@@ -90,8 +90,7 @@ virSecretLookupParseSecret(xmlNodePtr secretnode,
         }
         def->type = VIR_SECRET_LOOKUP_TYPE_UUID;
     } else {
-        def->u.usage = usage;
-        usage = NULL;
+        def->u.usage = g_steal_pointer(&usage);
         def->type = VIR_SECRET_LOOKUP_TYPE_USAGE;
     }
     return 0;
