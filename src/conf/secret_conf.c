@@ -52,7 +52,7 @@ static int
 virSecretDefParseUsage(xmlXPathContextPtr ctxt,
                        virSecretDefPtr def)
 {
-    char *type_str;
+    g_autofree char *type_str = NULL;
     int type;
 
     type_str = virXPathString("string(./usage/@type)", ctxt);
@@ -65,10 +65,8 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
     if (type < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown secret usage type %s"), type_str);
-        VIR_FREE(type_str);
         return -1;
     }
-    VIR_FREE(type_str);
     def->usage_type = type;
     switch (def->usage_type) {
     case VIR_SECRET_USAGE_TYPE_NONE:
