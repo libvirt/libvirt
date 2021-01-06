@@ -2370,6 +2370,14 @@ paravirtualized driver is specified via the ``disk`` element.
        </source>
        <target dev='sdb' bus='scsi'/>
      </disk>
+     <disk type='network' device='disk'>
+       <driver name='qemu' type='raw'/>
+       <source protocol='nfs' name='PATH'>
+         <host name='example.com'/>
+         <identity user='USER' group='GROUP'/>
+       </source>
+       <target dev='vda' bus='virtio'/>
+     </disk>
      <disk type='network' device='lun'>
        <driver name='qemu' type='raw'/>
        <source protocol='iscsi' name='iqn.2013-07.com.example:iscsi-nopool/0'>
@@ -2491,7 +2499,7 @@ paravirtualized driver is specified via the ``disk`` element.
    ``network``
       The ``protocol`` attribute specifies the protocol to access to the
       requested image. Possible values are "nbd", "iscsi", "rbd", "sheepdog",
-      "gluster", "vxhs", "http", "https", "ftp", ftps", or "tftp".
+      "gluster", "vxhs", "nfs", "http", "https", "ftp", ftps", or "tftp".
 
       For any ``protocol`` other than ``nbd`` an additional attribute ``name``
       is mandatory to specify which volume/image will be used.
@@ -2601,12 +2609,15 @@ paravirtualized driver is specified via the ``disk`` element.
       sheepdog one of the sheepdog servers (default is localhost:7000) zero or one                                                  7000
       gluster  a server running glusterd daemon                        one or more ( :since:`Since 2.1.0` ), just one prior to that 24007
       vxhs     a server running Veritas HyperScale daemon              only one                                                     9999
+      nfs      a server running Network File System                    only one ( :since:`Since 7.0.0` )                            must be omitted
       ======== ======================================================= ============================================================ ================
 
       gluster supports "tcp", "rdma", "unix" as valid values for the transport
       attribute. nbd supports "tcp" and "unix". Others only support "tcp". If
       nothing is specified, "tcp" is assumed. If the transport is "unix", the
-      socket attribute specifies the path to an AF_UNIX socket.
+      socket attribute specifies the path to an AF_UNIX socket. nfs only
+      supports the use of a "tcp" transport, and does not support using a
+      port at all so it must be omitted.
 
    ``snapshot``
       The ``name`` attribute of ``snapshot`` element can optionally specify an
@@ -2683,6 +2694,15 @@ paravirtualized driver is specified via the ``disk`` element.
    ``timeout``
       Specifies the connection timeout for protocols which support it. Note that
       '0' is considered as if the value is not provided. :since:`Since 6.2.0`
+   ``identity``
+      When using an ``nfs`` protocol, this is used to provide information on the
+      configuration of the user and group. The element has two attributes,
+      ``user`` and ``group``. The user can provide these elements as user or
+      group strings, or as user and group ID numbers directly if the string
+      is formatted using a "+" at the beginning of the ID number. If either
+      of these attributes is omitted, then that field is assumed to be the
+      default value for the current system. If both ``user`` and ``group``
+      are intended to be default, then the entire element may be omitted.
 
    For a "file" or "volume" disk type which represents a cdrom or floppy (the
    ``device`` attribute), it is possible to define policy what to do with the

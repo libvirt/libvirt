@@ -1764,6 +1764,21 @@
     </element>
   </define>
 
+  <define name="diskSourceNetworkNFS">
+    <element name="identity">
+      <optional>
+        <attribute name="user">
+          <ref name="genericName"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="group">
+          <ref name="genericName"/>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+
   <define name="diskSourceNetworkProtocolRBD">
     <element name="source">
       <interleave>
@@ -2029,6 +2044,22 @@
     </element>
   </define>
 
+  <define name="diskSourceNetworkProtocolNFS">
+    <element name="source">
+      <interleave>
+        <attribute name="protocol">
+          <choice>
+            <value>nfs</value>
+          </choice>
+        </attribute>
+        <attribute name="name"/>
+        <ref name="diskSourceCommon"/>
+        <ref name="diskSourceNetworkHost"/>
+        <ref name="diskSourceNetworkNFS"/>
+      </interleave>
+    </element>
+  </define>
+
   <define name="diskSourceNetwork">
     <attribute name="type">
       <value>network</value>
@@ -2043,6 +2074,7 @@
       <ref name="diskSourceNetworkProtocolFTPS"/>
       <ref name="diskSourceNetworkProtocolSimple"/>
       <ref name="diskSourceNetworkProtocolVxHS"/>
+      <ref name="diskSourceNetworkProtocolNFS"/>
     </choice>
   </define>
 
