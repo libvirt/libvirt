@@ -38,6 +38,7 @@
 # include "viralloc.h"
 # include "virthread.h"
 # include "virerror.h"
+# include "virobject.h"
 
 VIR_LOG_INIT("tools.virsh-console");
 

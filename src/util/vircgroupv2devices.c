@@ -34,6 +34,7 @@
 #include "virbpf.h"
 #include "vircgroup.h"
 #include "vircgroupv2devices.h"
+#include "virerror.h"
 #include "virfile.h"
 #include "virlog.h"
 

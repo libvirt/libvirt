@@ -27,6 +27,7 @@
 #define LIBVIRT_VIRRESCTRLPRIV_H_ALLOW
 #include "virresctrlpriv.h"
 #include "viralloc.h"
+#include "virbuffer.h"
 #include "virfile.h"
 #include "virlog.h"
 #include "virobject.h"

@@ -23,6 +23,7 @@
 #include "virfile.h"
 #include "virstring.h"
 #include "viralloc.h"
+#include "virxml.h"
 
 static virDomainPtr
 virshLookupDomainInternal(vshControl *ctl,

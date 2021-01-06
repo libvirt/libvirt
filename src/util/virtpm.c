@@ -31,6 +31,7 @@
 #include "virbitmap.h"
 #include "virjson.h"
 #include "virlog.h"
+#include "virthread.h"
 
 #define VIR_FROM_THIS VIR_FROM_TPM
 

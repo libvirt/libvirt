@@ -40,6 +40,7 @@
 #include "virstring.h"
 #include "virgettext.h"
 #include "virdevmapper.h"
+#include "virerror.h"
 
 /* we don't need to include the full internal.h just for this */
 #define STREQ(a, b) (strcmp(a, b) == 0)

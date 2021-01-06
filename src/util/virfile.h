@@ -29,6 +29,7 @@
 #include "internal.h"
 #include "virbitmap.h"
 #include "virstoragefile.h"
+#include "virenum.h"
 
 typedef enum {
     VIR_FILE_CLOSE_PRESERVE_ERRNO = 1 << 0,
