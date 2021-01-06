@@ -3653,6 +3653,54 @@ virStorageSourceParseBackingJSONVxHS(virStorageSourcePtr src,
 
 
 static int
+virStorageSourceParseBackingJSONNFS(virStorageSourcePtr src,
+                                    virJSONValuePtr json,
+                                    const char *jsonstr G_GNUC_UNUSED,
+                                    int opaque G_GNUC_UNUSED)
+{
+    virJSONValuePtr server = virJSONValueObjectGetObject(json, "server");
+    int uidStore = -1;
+    int gidStore = -1;
+    int gotUID = virJSONValueObjectGetNumberInt(json, "user", &uidStore);
+    int gotGID = virJSONValueObjectGetNumberInt(json, "group", &gidStore);
+
+    if (!server) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing 'server' attribute in JSON backing definition for NFS volume"));
+        return -1;
+    }
+
+    if (gotUID < 0 || gotGID < 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing 'user' or 'group' attribute in JSON backing definition for NFS volume"));
+        return -1;
+    }
+
+    src->path = g_strdup(virJSONValueObjectGetString(json, "path"));
+    if (!src->path) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing 'path' attribute in JSON backing definition for NFS volume"));
+        return -1;
+    }
+
+    src->nfs_user = g_strdup_printf("+%d", uidStore);
+    src->nfs_group = g_strdup_printf("+%d", gidStore);
+
+    src->type = VIR_STORAGE_TYPE_NETWORK;
+    src->protocol = VIR_STORAGE_NET_PROTOCOL_NFS;
+
+    src->hosts = g_new0(virStorageNetHostDef, 1);
+    src->nhosts = 1;
+
+    if (virStorageSourceParseBackingJSONInetSocketAddress(src->hosts,
+                                                          server) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 virStorageSourceParseBackingJSONNVMe(virStorageSourcePtr src,
                                      virJSONValuePtr json,
                                      const char *jsonstr G_GNUC_UNUSED,
@@ -3711,6 +3759,7 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
     {"ssh", false, virStorageSourceParseBackingJSONSSH, 0},
     {"rbd", false, virStorageSourceParseBackingJSONRBD, 0},
     {"raw", true, virStorageSourceParseBackingJSONRaw, 0},
+    {"nfs", false, virStorageSourceParseBackingJSONNFS, 0},
     {"vxhs", false, virStorageSourceParseBackingJSONVxHS, 0},
     {"nvme", false, virStorageSourceParseBackingJSONNVMe, 0},
 };

@@ -1624,6 +1624,19 @@ mymain(void)
                        "<source protocol='vxhs' name='c6718f6b-0401-441d-a8c3-1f0064d75ee0'>\n"
                        "  <host name='example.com' port='9999'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"nfs\","
+                                   "\"user\":2,"
+                                   "\"group\":9,"
+                                   "\"path\":\"/foo/bar/baz\","
+                                   "\"server\": {  \"host\":\"example.com\","
+                                                  "\"type\":\"inet\""
+                                               "}"
+                                      "}"
+                            "}",
+                       "<source protocol='nfs' name='/foo/bar/baz'>\n"
+                       "  <host name='example.com'/>\n"
+                       "  <identity user='+2' group='+9'/>\n"
+                       "</source>\n");
     TEST_BACKING_PARSE_FULL("json:{ \"driver\": \"raw\","
                                     "\"offset\": 10752,"
                                     "\"size\": 4063232,"
