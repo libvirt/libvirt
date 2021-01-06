@@ -2293,6 +2293,11 @@ virStorageSourceCopy(const virStorageSource *src,
     def->ssh_host_key_check_disabled = src->ssh_host_key_check_disabled;
     def->ssh_user = g_strdup(src->ssh_user);
 
+    def->nfs_user = g_strdup(src->nfs_user);
+    def->nfs_group = g_strdup(src->nfs_group);
+    def->nfs_uid = src->nfs_uid;
+    def->nfs_gid = src->nfs_gid;
+
     return g_steal_pointer(&def);
 }
 
@@ -2532,6 +2537,9 @@ virStorageSourceClear(virStorageSourcePtr def)
     VIR_FREE(def->tlsCertdir);
 
     VIR_FREE(def->ssh_user);
+
+    VIR_FREE(def->nfs_user);
+    VIR_FREE(def->nfs_group);
 
     virStorageSourceInitiatorClear(&def->initiator);
 

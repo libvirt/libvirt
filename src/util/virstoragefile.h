@@ -385,6 +385,14 @@ struct _virStorageSource {
     /* these must not be used apart from formatting the output JSON in the qemu driver */
     char *ssh_user;
     bool ssh_host_key_check_disabled;
+
+    /* nfs_user and nfs_group store the strings passed in by the user for NFS params.
+     * nfs_uid and nfs_gid represent the converted/looked up ID numbers which are used
+     * during run time, and are not based on the configuration */
+    char *nfs_user;
+    char *nfs_group;
+    uid_t nfs_uid;
+    gid_t nfs_gid;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageSource, virObjectUnref);
