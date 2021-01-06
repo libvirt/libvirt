@@ -47,6 +47,7 @@
   <feature name='md-clear'/>
   <feature name='stibp'/>
   <feature name='arch-capabilities'/>
+  <feature name='core-capability'/>
   <feature name='ssbd'/>
   <feature name='xsaveopt'/>
   <feature name='xsavec'/>

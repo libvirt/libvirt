@@ -37,6 +37,7 @@
   <feature policy='require' name='md-clear'/>
   <feature policy='require' name='stibp'/>
   <feature policy='require' name='arch-capabilities'/>
+  <feature policy='require' name='core-capability'/>
   <feature policy='require' name='ssbd'/>
   <feature policy='require' name='xsaveopt'/>
   <feature policy='require' name='xsavec'/>
