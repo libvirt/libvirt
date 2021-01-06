@@ -90,6 +90,7 @@ VIR_ENUM_IMPL(virStorageNetProtocol,
               "tftp",
               "ssh",
               "vxhs",
+              "nfs",
 );
 
 VIR_ENUM_IMPL(virStorageNetHostTransport,
@@ -2999,6 +3000,7 @@ virStorageSourceParseBackingColon(virStorageSourcePtr src,
     case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
     case VIR_STORAGE_NET_PROTOCOL_SSH:
     case VIR_STORAGE_NET_PROTOCOL_VXHS:
+    case VIR_STORAGE_NET_PROTOCOL_NFS:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("malformed backing store path for protocol %s"),
                        protocol);
@@ -4449,6 +4451,10 @@ virStorageSourceNetworkDefaultPort(virStorageNetProtocol protocol)
 
         case VIR_STORAGE_NET_PROTOCOL_VXHS:
             return 9999;
+
+        case VIR_STORAGE_NET_PROTOCOL_NFS:
+            /* Port is not supported by NFS, so no default is provided */
+            return 0;
 
         case VIR_STORAGE_NET_PROTOCOL_LAST:
         case VIR_STORAGE_NET_PROTOCOL_NONE:

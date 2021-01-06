@@ -1180,6 +1180,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
                 return NULL;
             break;
 
+        case VIR_STORAGE_NET_PROTOCOL_NFS:
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
             virReportEnumRangeError(virStorageNetProtocol, src->protocol);
@@ -2111,6 +2112,7 @@ qemuBlockGetBackingStoreString(virStorageSourcePtr src,
             case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
             case VIR_STORAGE_NET_PROTOCOL_RBD:
             case VIR_STORAGE_NET_PROTOCOL_VXHS:
+            case VIR_STORAGE_NET_PROTOCOL_NFS:
             case VIR_STORAGE_NET_PROTOCOL_SSH:
             case VIR_STORAGE_NET_PROTOCOL_LAST:
             case VIR_STORAGE_NET_PROTOCOL_NONE:
@@ -2502,6 +2504,7 @@ qemuBlockStorageSourceCreateGetStorageProps(virStorageSourcePtr src,
         case VIR_STORAGE_NET_PROTOCOL_NBD:
         case VIR_STORAGE_NET_PROTOCOL_ISCSI:
         case VIR_STORAGE_NET_PROTOCOL_VXHS:
+        case VIR_STORAGE_NET_PROTOCOL_NFS:
         case VIR_STORAGE_NET_PROTOCOL_HTTP:
         case VIR_STORAGE_NET_PROTOCOL_HTTPS:
         case VIR_STORAGE_NET_PROTOCOL_FTP:
