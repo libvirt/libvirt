@@ -575,6 +575,29 @@ qemuBlockStorageSourceBuildJSONInetSocketAddress(virStorageNetHostDefPtr host)
 
 
 /**
+ * qemuBlockStorageSourceBuildJSONNFSServer(virStorageNetHostDefPtr host)
+ * @host: the virStorageNetHostDefPtr definition to build
+ *
+ * Formats @hosts into a json object conforming to the 'NFSServer' type
+ * in qemu.
+ *
+ * Returns a virJSONValuePtr for a single server.
+ */
+static virJSONValuePtr
+qemuBlockStorageSourceBuildJSONNFSServer(virStorageNetHostDefPtr host)
+{
+    virJSONValuePtr ret = NULL;
+
+    ignore_value(virJSONValueObjectCreate(&ret,
+                                          "s:host", host->name,
+                                          "s:type", "inet",
+                                          NULL));
+
+    return ret;
+}
+
+
+/**
  * qemuBlockStorageSourceBuildHostsJSONInetSocketAddress:
  * @src: disk storage source
  *
@@ -669,6 +692,39 @@ qemuBlockStorageSourceGetVxHSProps(virStorageSourcePtr src,
                                           "S:tls-creds", tlsAlias,
                                           "s:vdisk-id", src->path,
                                           "a:server", &server, NULL));
+
+    return ret;
+}
+
+
+static virJSONValuePtr
+qemuBlockStorageSourceGetNFSProps(virStorageSourcePtr src)
+{
+    g_autoptr(virJSONValue) server = NULL;
+    virJSONValuePtr ret = NULL;
+
+    if (!(server = qemuBlockStorageSourceBuildJSONNFSServer(&src->hosts[0])))
+        return NULL;
+
+    /* NFS disk specification example:
+     * { driver:"nfs",
+     *   user: "0",
+     *   group: "0",
+     *   path: "/foo/bar/baz",
+     *   server: {type:"tcp", host:"1.2.3.4"}}
+     */
+    if (virJSONValueObjectCreate(&ret,
+                                 "a:server", &server,
+                                 "S:path", src->path, NULL) < 0)
+        return NULL;
+
+    if (src->nfs_uid != -1 &&
+        virJSONValueObjectAdd(ret, "i:user", src->nfs_uid, NULL) < 0)
+        return NULL;
+
+    if (src->nfs_gid != -1 &&
+        virJSONValueObjectAdd(ret, "i:group", src->nfs_gid, NULL) < 0)
+        return NULL;
 
     return ret;
 }
@@ -1181,6 +1237,11 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_NFS:
+            driver = "nfs";
+            if (!(fileprops = qemuBlockStorageSourceGetNFSProps(src)))
+                return NULL;
+            break;
+
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
             virReportEnumRangeError(virStorageNetProtocol, src->protocol);
@@ -2500,11 +2561,16 @@ qemuBlockStorageSourceCreateGetStorageProps(virStorageSourcePtr src,
                 return -1;
             break;
 
+        case VIR_STORAGE_NET_PROTOCOL_NFS:
+            driver = "nfs";
+            if (!(location = qemuBlockStorageSourceGetNFSProps(src)))
+                return -1;
+            break;
+
             /* unsupported/impossible */
         case VIR_STORAGE_NET_PROTOCOL_NBD:
         case VIR_STORAGE_NET_PROTOCOL_ISCSI:
         case VIR_STORAGE_NET_PROTOCOL_VXHS:
-        case VIR_STORAGE_NET_PROTOCOL_NFS:
         case VIR_STORAGE_NET_PROTOCOL_HTTP:
         case VIR_STORAGE_NET_PROTOCOL_HTTPS:
         case VIR_STORAGE_NET_PROTOCOL_FTP:

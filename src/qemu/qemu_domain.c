@@ -4626,6 +4626,37 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         return -1;
     }
 
+    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_NFS) {
+        /* NFS protocol may only be used if current QEMU supports blockdev */
+        if (!blockdev) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'nfs' protocol is not supported with this QEMU binary"));
+            return -1;
+        }
+
+        /* NFS protocol must have exactly one host */
+        if (src->nhosts != 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'nfs' protocol requires the usage of exactly one host"));
+            return -1;
+        }
+
+        /* NFS can only use a TCP protocol */
+        if (src->hosts[0].transport != VIR_STORAGE_NET_HOST_TRANS_TCP) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'nfs' host must use TCP protocol"));
+            return -1;
+        }
+
+        /* NFS host cannot have a port */
+        if (src->hosts[0].port != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("port cannot be specified in 'nfs' protocol host"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -9590,6 +9621,42 @@ qemuProcessPrepareStorageSourceTLSNBD(virStorageSourcePtr src,
 }
 
 
+/* qemuPrepareStorageSourceNFS:
+ * @src: source for a disk
+ *
+ * If src is an NFS source, translate nfs_user and nfs_group
+ * into a uid and gid field. If these strings are empty (ie "")
+ * then provide the hypervisor default uid and gid.
+ */
+static int
+qemuDomainPrepareStorageSourceNFS(virStorageSourcePtr src)
+{
+    if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_NETWORK)
+        return 0;
+
+    if (src->protocol != VIR_STORAGE_NET_PROTOCOL_NFS)
+        return 0;
+
+    if (src->nfs_user) {
+        if (virGetUserID(src->nfs_user, &src->nfs_uid) < 0)
+            return -1;
+    } else {
+        /* -1 indicates default UID */
+        src->nfs_uid = -1;
+    }
+
+    if (src->nfs_group) {
+        if (virGetGroupID(src->nfs_group, &src->nfs_gid) < 0)
+            return -1;
+    } else {
+        /* -1 indicates default GID */
+        src->nfs_gid = -1;
+    }
+
+    return 0;
+}
+
+
 /* qemuProcessPrepareStorageSourceTLS:
  * @source: source for a disk
  * @cfg: driver configuration
@@ -10399,6 +10466,9 @@ qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDefPtr disk,
 
     if (qemuDomainPrepareStorageSourceTLS(src, cfg, src->nodestorage,
                                           priv) < 0)
+        return -1;
+
+    if (qemuDomainPrepareStorageSourceNFS(src) < 0)
         return -1;
 
     return 0;
