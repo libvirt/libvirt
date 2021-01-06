@@ -19,9 +19,7 @@
   <define name="title">
     <element name="title">
       <data type="string">
-        <!-- Use literal newline instead of \n for bug in libxml2 2.7.6 -->
-        <param name="pattern">[^
-]+</param>
+        <param name="pattern">[^\n]+</param>
       </data>
     </element>
   </define>
@@ -6948,9 +6946,7 @@
   </define>
   <define name="domainName">
     <data type="string">
-      <!-- Use literal newline instead of \n for bug in libxml2 2.7.6 -->
-      <param name="pattern">[^
-]+</param>
+      <param name="pattern">[^\n]+</param>
     </data>
   </define>
   <define name="diskSerial">
