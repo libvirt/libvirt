@@ -18,9 +18,7 @@
 
   <define name="title">
     <element name="title">
-      <data type="string">
-        <param name="pattern">[^\n]+</param>
-      </data>
+      <ref name="objectNameWithSlash"/>
     </element>
   </define>
 
@@ -559,7 +557,7 @@
     </optional>
     <interleave>
       <element name="name">
-        <ref name="domainName"/>
+        <ref name="objectNameWithSlash"/>
       </element>
       <optional>
         <element name="uuid">
@@ -1391,7 +1389,7 @@
       <optional>
         <element name="backenddomain">
           <attribute name="name">
-            <ref name="domainName"/>
+            <ref name="objectNameWithSlash"/>
           </attribute>
           <empty/>
         </element>
@@ -2056,7 +2054,7 @@
       <element name="source">
         <interleave>
           <attribute name="pool">
-            <ref name="poolName"/>
+            <ref name="objectName"/>
           </attribute>
           <attribute name="volume">
             <ref name="volName"/>
@@ -3269,7 +3267,7 @@
       <optional>
         <element name="backenddomain">
           <attribute name="name">
-            <ref name="domainName"/>
+            <ref name="objectNameWithSlash"/>
           </attribute>
           <empty/>
         </element>
@@ -6942,11 +6940,6 @@
       <param name="pattern">[0-9]+</param>
       <param name="minInclusive">100</param>
       <param name="maxInclusive">1000</param>
-    </data>
-  </define>
-  <define name="domainName">
-    <data type="string">
-      <param name="pattern">[^\n]+</param>
     </data>
   </define>
   <define name="diskSerial">

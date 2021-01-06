@@ -261,6 +261,19 @@
     </choice>
   </define>
 
+  <!-- objectName represents any generic string for naming objects like domain -->
+  <define name="objectNameWithSlash">
+    <data type="string">
+      <param name="pattern">[^\n]+</param>
+    </data>
+  </define>
+
+  <define name="objectName">
+    <data type="string">
+      <param name="pattern">[^/\n]+</param>
+    </data>
+  </define>
+
   <define name="genericName">
     <data type="string">
       <param name="pattern">[a-zA-Z0-9_\+\-]+</param>

@@ -6,12 +6,6 @@
   <!-- This schema is not designed for standalone use; another file
        must include both this file and basictypes.rng -->
 
-  <define name="poolName">
-    <data type="string">
-      <param name="pattern">[^/\n]+</param>
-    </data>
-  </define>
-
   <define name="encryption">
     <element name="encryption">
       <attribute name="format">

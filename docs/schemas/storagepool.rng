@@ -247,7 +247,7 @@
     <interleave>
       <optional>
         <element name="name">
-          <ref name="poolName"/>
+          <ref name="objectName"/>
         </element>
       </optional>
       <optional>
@@ -261,7 +261,7 @@
   <define name="commonmetadata">
     <interleave>
       <element name="name">
-        <ref name="poolName"/>
+        <ref name="objectName"/>
       </element>
       <optional>
         <element name="uuid">
