@@ -1,0 +1,41 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='forbid'>IvyBridge-IBRS</model>
+  <vendor>Intel</vendor>
+  <feature policy='require' name='ss'/>
+  <feature policy='require' name='vmx'/>
+  <feature policy='require' name='pdcm'/>
+  <feature policy='require' name='movbe'/>
+  <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='arat'/>
+  <feature policy='require' name='tsc_adjust'/>
+  <feature policy='require' name='rdseed'/>
+  <feature policy='require' name='smap'/>
+  <feature policy='require' name='clflushopt'/>
+  <feature policy='require' name='clwb'/>
+  <feature policy='require' name='sha-ni'/>
+  <feature policy='require' name='umip'/>
+  <feature policy='require' name='gfni'/>
+  <feature policy='require' name='rdpid'/>
+  <feature policy='require' name='cldemote'/>
+  <feature policy='require' name='movdiri'/>
+  <feature policy='require' name='movdir64b'/>
+  <feature policy='require' name='md-clear'/>
+  <feature policy='require' name='stibp'/>
+  <feature policy='require' name='arch-capabilities'/>
+  <feature policy='require' name='ssbd'/>
+  <feature policy='require' name='xsaveopt'/>
+  <feature policy='require' name='xsavec'/>
+  <feature policy='require' name='xgetbv1'/>
+  <feature policy='require' name='xsaves'/>
+  <feature policy='require' name='3dnowprefetch'/>
+  <feature policy='require' name='ibpb'/>
+  <feature policy='require' name='amd-stibp'/>
+  <feature policy='require' name='amd-ssbd'/>
+  <feature policy='require' name='rdctl-no'/>
+  <feature policy='require' name='ibrs-all'/>
+  <feature policy='require' name='skip-l1dfl-vmentry'/>
+  <feature policy='require' name='mds-no'/>
+  <feature policy='require' name='pschange-mc-no'/>
+  <feature policy='disable' name='avx'/>
+  <feature policy='disable' name='f16c'/>
+</cpu>
