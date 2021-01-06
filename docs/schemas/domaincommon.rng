@@ -2628,10 +2628,10 @@
           <attribute name="type">
             <value>file</value>
           </attribute>
-          <optional>
-            <ref name="fsDriver"/>
-          </optional>
           <interleave>
+            <optional>
+              <ref name="fsDriver"/>
+            </optional>
             <element name="source">
               <attribute name="file">
                 <ref name="absFilePath"/>
@@ -2644,10 +2644,10 @@
           <attribute name="type">
             <value>block</value>
           </attribute>
-          <optional>
-            <ref name="fsDriver"/>
-          </optional>
           <interleave>
+            <optional>
+              <ref name="fsDriver"/>
+            </optional>
             <element name="source">
               <attribute name="dev">
                 <ref name="absFilePath"/>
@@ -2663,13 +2663,13 @@
               <value>mount</value>
             </attribute>
           </optional>
-          <optional>
-            <ref name="fsDriver"/>
-          </optional>
-          <optional>
-            <ref name="fsBinary"/>
-          </optional>
           <interleave>
+            <optional>
+              <ref name="fsDriver"/>
+            </optional>
+            <optional>
+              <ref name="fsBinary"/>
+            </optional>
             <element name="source">
               <attribute name="dir">
                 <ref name="absDirPath"/>
@@ -2684,10 +2684,10 @@
               <value>bind</value>
             </attribute>
           </optional>
-          <optional>
-            <ref name="fsDriver"/>
-          </optional>
           <interleave>
+            <optional>
+              <ref name="fsDriver"/>
+            </optional>
             <element name="source">
               <attribute name="dir">
                 <ref name="absDirPath"/>
@@ -2700,10 +2700,10 @@
           <attribute name="type">
             <value>template</value>
           </attribute>
-          <optional>
-            <ref name="fsDriver"/>
-          </optional>
           <interleave>
+            <optional>
+              <ref name="fsDriver"/>
+            </optional>
             <element name="source">
               <attribute name="name">
                 <ref name="genericName"/>
@@ -2716,10 +2716,10 @@
           <attribute name="type">
             <value>ram</value>
           </attribute>
-          <optional>
-            <ref name="fsDriver"/>
-          </optional>
           <interleave>
+            <optional>
+              <ref name="fsDriver"/>
+            </optional>
             <element name="source">
               <attribute name="usage">
                 <ref name="unsignedLong"/>
