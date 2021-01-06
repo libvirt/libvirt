@@ -2623,184 +2623,186 @@
   </define>
   <define name="filesystem">
     <element name="filesystem">
-      <choice>
-        <group>
-          <attribute name="type">
-            <value>file</value>
-          </attribute>
-          <interleave>
-            <optional>
-              <ref name="fsDriver"/>
-            </optional>
-            <element name="source">
-              <attribute name="file">
-                <ref name="absFilePath"/>
-              </attribute>
-              <empty/>
-            </element>
-          </interleave>
-        </group>
-        <group>
-          <attribute name="type">
-            <value>block</value>
-          </attribute>
-          <interleave>
-            <optional>
-              <ref name="fsDriver"/>
-            </optional>
-            <element name="source">
-              <attribute name="dev">
-                <ref name="absFilePath"/>
-              </attribute>
-              <empty/>
-            </element>
-          </interleave>
-        </group>
-        <group>
-          <!-- type="mount" is default -->
-          <optional>
-            <attribute name="type">
-              <value>mount</value>
-            </attribute>
-          </optional>
-          <interleave>
-            <optional>
-              <ref name="fsDriver"/>
-            </optional>
-            <optional>
-              <ref name="fsBinary"/>
-            </optional>
-            <element name="source">
-              <attribute name="dir">
-                <ref name="absDirPath"/>
-              </attribute>
-              <empty/>
-            </element>
-          </interleave>
-        </group>
-        <group>
-          <optional>
-            <attribute name="type">
-              <value>bind</value>
-            </attribute>
-          </optional>
-          <interleave>
-            <optional>
-              <ref name="fsDriver"/>
-            </optional>
-            <element name="source">
-              <attribute name="dir">
-                <ref name="absDirPath"/>
-              </attribute>
-              <empty/>
-            </element>
-          </interleave>
-        </group>
-        <group>
-          <attribute name="type">
-            <value>template</value>
-          </attribute>
-          <interleave>
-            <optional>
-              <ref name="fsDriver"/>
-            </optional>
-            <element name="source">
-              <attribute name="name">
-                <ref name="genericName"/>
-              </attribute>
-              <empty/>
-            </element>
-          </interleave>
-        </group>
-        <group>
-          <attribute name="type">
-            <value>ram</value>
-          </attribute>
-          <interleave>
-            <optional>
-              <ref name="fsDriver"/>
-            </optional>
-            <element name="source">
-              <attribute name="usage">
-                <ref name="unsignedLong"/>
-              </attribute>
-              <optional>
-                <attribute name="units">
-                  <ref name="unit"/>
-                </attribute>
-              </optional>
-              <empty/>
-            </element>
-          </interleave>
-        </group>
-      </choice>
       <interleave>
-        <element name="target">
-          <attribute name="dir"/>
-          <empty/>
-        </element>
-        <optional>
-          <attribute name="accessmode">
-            <choice>
-              <value>passthrough</value>
-              <value>mapped</value>
-              <value>squash</value>
-            </choice>
-          </attribute>
-        </optional>
-        <optional>
-          <attribute name="multidevs">
-            <choice>
-              <value>default</value>
-              <value>remap</value>
-              <value>forbid</value>
-              <value>warn</value>
-            </choice>
-          </attribute>
-        </optional>
-        <optional>
-          <attribute name="fmode">
-            <ref name="createMode"/>
-          </attribute>
-        </optional>
-        <optional>
-          <attribute name="dmode">
-            <ref name="createMode"/>
-          </attribute>
-        </optional>
-        <optional>
-          <element name="readonly">
+        <choice>
+          <group>
+            <attribute name="type">
+              <value>file</value>
+            </attribute>
+            <interleave>
+              <optional>
+                <ref name="fsDriver"/>
+              </optional>
+              <element name="source">
+                <attribute name="file">
+                  <ref name="absFilePath"/>
+                </attribute>
+                <empty/>
+              </element>
+            </interleave>
+          </group>
+          <group>
+            <attribute name="type">
+              <value>block</value>
+            </attribute>
+            <interleave>
+              <optional>
+                <ref name="fsDriver"/>
+              </optional>
+              <element name="source">
+                <attribute name="dev">
+                  <ref name="absFilePath"/>
+                </attribute>
+                <empty/>
+              </element>
+            </interleave>
+          </group>
+          <group>
+            <!-- type="mount" is default -->
+            <optional>
+              <attribute name="type">
+                <value>mount</value>
+              </attribute>
+            </optional>
+            <interleave>
+              <optional>
+                <ref name="fsDriver"/>
+              </optional>
+              <optional>
+                <ref name="fsBinary"/>
+              </optional>
+              <element name="source">
+                <attribute name="dir">
+                  <ref name="absDirPath"/>
+                </attribute>
+                <empty/>
+              </element>
+            </interleave>
+          </group>
+          <group>
+            <optional>
+              <attribute name="type">
+                <value>bind</value>
+              </attribute>
+            </optional>
+            <interleave>
+              <optional>
+                <ref name="fsDriver"/>
+              </optional>
+              <element name="source">
+                <attribute name="dir">
+                  <ref name="absDirPath"/>
+                </attribute>
+                <empty/>
+              </element>
+            </interleave>
+          </group>
+          <group>
+            <attribute name="type">
+              <value>template</value>
+            </attribute>
+            <interleave>
+              <optional>
+                <ref name="fsDriver"/>
+              </optional>
+              <element name="source">
+                <attribute name="name">
+                  <ref name="genericName"/>
+                </attribute>
+                <empty/>
+              </element>
+            </interleave>
+          </group>
+          <group>
+            <attribute name="type">
+              <value>ram</value>
+            </attribute>
+            <interleave>
+              <optional>
+                <ref name="fsDriver"/>
+              </optional>
+              <element name="source">
+                <attribute name="usage">
+                  <ref name="unsignedLong"/>
+                </attribute>
+                <optional>
+                  <attribute name="units">
+                    <ref name="unit"/>
+                  </attribute>
+                </optional>
+                <empty/>
+              </element>
+            </interleave>
+          </group>
+        </choice>
+        <interleave>
+          <element name="target">
+            <attribute name="dir"/>
             <empty/>
           </element>
-        </optional>
+          <optional>
+            <attribute name="accessmode">
+              <choice>
+                <value>passthrough</value>
+                <value>mapped</value>
+                <value>squash</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="multidevs">
+              <choice>
+                <value>default</value>
+                <value>remap</value>
+                <value>forbid</value>
+                <value>warn</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="fmode">
+              <ref name="createMode"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="dmode">
+              <ref name="createMode"/>
+            </attribute>
+          </optional>
+          <optional>
+            <element name="readonly">
+              <empty/>
+            </element>
+          </optional>
+          <optional>
+            <ref name="alias"/>
+          </optional>
+          <optional>
+            <ref name="address"/>
+          </optional>
+        </interleave>
+        <interleave>
+          <optional>
+            <element name="space_hard_limit">
+              <ref name="scaledInteger"/>
+            </element>
+          </optional>
+          <optional>
+            <element name="space_soft_limit">
+              <ref name="scaledInteger"/>
+            </element>
+          </optional>
+        </interleave>
         <optional>
-          <ref name="alias"/>
-        </optional>
-        <optional>
-          <ref name="address"/>
+          <attribute name="model">
+            <choice>
+              <value>virtio</value>
+              <value>virtio-transitional</value>
+              <value>virtio-non-transitional</value>
+            </choice>
+          </attribute>
         </optional>
       </interleave>
-      <interleave>
-        <optional>
-          <element name="space_hard_limit">
-            <ref name="scaledInteger"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="space_soft_limit">
-            <ref name="scaledInteger"/>
-          </element>
-        </optional>
-      </interleave>
-      <optional>
-        <attribute name="model">
-          <choice>
-            <value>virtio</value>
-            <value>virtio-transitional</value>
-            <value>virtio-non-transitional</value>
-          </choice>
-        </attribute>
-      </optional>
     </element>
   </define>
   <define name="fsDriver">
