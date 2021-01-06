@@ -2177,7 +2177,7 @@ domrename
 Rename a domain. This command changes current domain name to the new name
 specified in the second argument.
 
-``Note``: Domain must be inactive and without snapshots or checkpoints.
+``Note``: Domain must be inactive.
 
 
 domstate
