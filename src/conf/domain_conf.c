@@ -24176,59 +24176,59 @@ static void
 virDomainDiskDefFormatDriver(virBufferPtr buf,
                              virDomainDiskDefPtr disk)
 {
-    g_auto(virBuffer) driverBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
 
-    virBufferEscapeString(&driverBuf, " name='%s'", virDomainDiskGetDriver(disk));
+    virBufferEscapeString(&attrBuf, " name='%s'", virDomainDiskGetDriver(disk));
 
     if (disk->src->format > 0)
-        virBufferAsprintf(&driverBuf, " type='%s'",
+        virBufferAsprintf(&attrBuf, " type='%s'",
                           virStorageFileFormatTypeToString(disk->src->format));
 
     if (disk->cachemode)
-        virBufferAsprintf(&driverBuf, " cache='%s'",
+        virBufferAsprintf(&attrBuf, " cache='%s'",
                           virDomainDiskCacheTypeToString(disk->cachemode));
 
     if (disk->error_policy)
-        virBufferAsprintf(&driverBuf, " error_policy='%s'",
+        virBufferAsprintf(&attrBuf, " error_policy='%s'",
                           virDomainDiskErrorPolicyTypeToString(disk->error_policy));
 
     if (disk->rerror_policy)
-        virBufferAsprintf(&driverBuf, " rerror_policy='%s'",
+        virBufferAsprintf(&attrBuf, " rerror_policy='%s'",
                           virDomainDiskErrorPolicyTypeToString(disk->rerror_policy));
 
     if (disk->iomode)
-        virBufferAsprintf(&driverBuf, " io='%s'",
+        virBufferAsprintf(&attrBuf, " io='%s'",
                           virDomainDiskIoTypeToString(disk->iomode));
 
     if (disk->ioeventfd)
-        virBufferAsprintf(&driverBuf, " ioeventfd='%s'",
+        virBufferAsprintf(&attrBuf, " ioeventfd='%s'",
                           virTristateSwitchTypeToString(disk->ioeventfd));
 
     if (disk->event_idx)
-        virBufferAsprintf(&driverBuf, " event_idx='%s'",
+        virBufferAsprintf(&attrBuf, " event_idx='%s'",
                           virTristateSwitchTypeToString(disk->event_idx));
 
     if (disk->copy_on_read)
-        virBufferAsprintf(&driverBuf, " copy_on_read='%s'",
+        virBufferAsprintf(&attrBuf, " copy_on_read='%s'",
                           virTristateSwitchTypeToString(disk->copy_on_read));
 
     if (disk->discard)
-        virBufferAsprintf(&driverBuf, " discard='%s'",
+        virBufferAsprintf(&attrBuf, " discard='%s'",
                           virDomainDiskDiscardTypeToString(disk->discard));
 
     if (disk->iothread)
-        virBufferAsprintf(&driverBuf, " iothread='%u'", disk->iothread);
+        virBufferAsprintf(&attrBuf, " iothread='%u'", disk->iothread);
 
     if (disk->detect_zeroes)
-        virBufferAsprintf(&driverBuf, " detect_zeroes='%s'",
+        virBufferAsprintf(&attrBuf, " detect_zeroes='%s'",
                           virDomainDiskDetectZeroesTypeToString(disk->detect_zeroes));
 
     if (disk->queues)
-        virBufferAsprintf(&driverBuf, " queues='%u'", disk->queues);
+        virBufferAsprintf(&attrBuf, " queues='%u'", disk->queues);
 
-    virDomainVirtioOptionsFormat(&driverBuf, disk->virtio);
+    virDomainVirtioOptionsFormat(&attrBuf, disk->virtio);
 
-    virXMLFormatElement(buf, "driver", &driverBuf, NULL);
+    virXMLFormatElement(buf, "driver", &attrBuf, NULL);
 }
 
 
