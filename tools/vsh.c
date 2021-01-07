@@ -1608,7 +1608,6 @@ vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res,
 {
     bool single_quote = false;
     bool double_quote = false;
-    int sz = 0;
     char *p = parser->pos;
     char *q = g_strdup(p);
 
@@ -1662,7 +1661,6 @@ vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res,
         }
 
         *q++ = *p++;
-        sz++;
     }
     if (double_quote) {
         if (report)
