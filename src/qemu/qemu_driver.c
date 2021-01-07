@@ -16301,9 +16301,6 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
 #undef CHECK_MAX
 
-         /* NB: Let's let QEMU decide how to handle issues with _length
-          * via the JSON error code from the block_set_io_throttle call */
-
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorSetBlockIoThrottle(priv->mon, drivealias, qdevid,
                                             &info, supportMaxOptions,
