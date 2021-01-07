@@ -1418,7 +1418,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                     if (optstr)
                         tkdata = optstr;
                     else
-                        tk = parser->getNextArg(ctl, parser, &tkdata, true);
+                        tk = parser->getNextArg(ctl, parser, &tkdata, partial == NULL);
                     if (tk == VSH_TK_ERROR)
                         goto syntaxError;
                     if (tk != VSH_TK_ARG) {
@@ -1673,10 +1673,16 @@ vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res,
 
         *q++ = *p++;
     }
+
     if (double_quote) {
-        if (report)
+        /* We have seen a double quote, but not it's companion
+         * ending. It's valid though, in case when we're called
+         * from completer (report = false), but it's not valid
+         * when parsing real command (report= true).  */
+        if (report) {
             vshError(ctl, "%s", _("missing \""));
-        return VSH_TK_ERROR;
+            return VSH_TK_ERROR;
+        }
     }
 
     *q = '\0';
