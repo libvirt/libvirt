@@ -2773,7 +2773,7 @@ vshReadlineParse(const char *text, int state)
     if (ret &&
         !rl_completion_quote_character) {
         g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-        virBufferEscapeShell(&buf, ret);
+        virBufferEscape(&buf, '\\', " ", "%s", ret);
         VIR_FREE(ret);
         ret = virBufferContentAndReset(&buf);
     }
@@ -2819,7 +2819,7 @@ vshReadlineInit(vshControl *ctl)
     int ret = -1;
     char *histsize_env = NULL;
     const char *histsize_str = NULL;
-    const char *break_characters = " \t\n\\`@$><=;|&{(";
+    const char *break_characters = " \t\n`@$><=;|&{(";
     const char *quote_characters = "\"'";
 
     /* Opaque data for autocomplete callbacks. */
