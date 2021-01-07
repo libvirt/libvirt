@@ -237,7 +237,7 @@ def parse_filename(data):
     filename = re.sub("\\(([Rr]|[Tt][Mm])\\)", "", filename)
     filename = re.sub(".*(Intel|AMD) ", "", filename)
     filename = re.sub(" (Duo|Quad|II X[0-9]+)", " ", filename)
-    filename = re.sub(" (CPU|Processor)", "", filename)
+    filename = re.sub(" (CPU|[Pp]rocessor)", "", filename)
     filename = re.sub(" @.*", "", filename)
     filename = re.sub(" APU .*", "", filename)
     filename = re.sub(" SE$", "", filename)
