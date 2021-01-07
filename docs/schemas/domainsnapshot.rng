@@ -212,7 +212,15 @@
             <ref name="storageFormatBacking"/>
           </attribute>
         </optional>
-        <empty/>
+        <optional>
+          <element name="metadata_cache">
+            <optional>
+              <element name="max_size">
+                <ref name="scaledInteger"/>
+              </element>
+            </optional>
+          </element>
+        </optional>
       </element>
     </optional>
   </define>

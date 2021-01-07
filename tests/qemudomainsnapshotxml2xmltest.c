@@ -181,6 +181,9 @@ mymain(void)
     DO_TEST_IN("description_only", NULL);
     DO_TEST_IN("name_only", NULL);
 
+    DO_TEST_INOUT("qcow2-metadata-cache", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8",
+                  1386166249, 0);
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

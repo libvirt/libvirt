@@ -190,6 +190,12 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
             goto cleanup;
     }
 
+    if (virParseScaledValue("./driver/metadata_cache/max_size", NULL,
+                            ctxt,
+                            &def->src->metadataCacheMaxSize,
+                            1, ULLONG_MAX, false) < 0)
+        goto cleanup;
+
     /* validate that the passed path is absolute */
     if (virStorageSourceIsRelative(def->src)) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -784,11 +790,26 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
                           virDomainSnapshotLocationTypeToString(disk->snapshot));
 
     if (disk->src->path || disk->src->format != 0) {
+        g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) driverChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
+
         virBufferAsprintf(&attrBuf, " type='%s'", virStorageTypeToString(disk->src->type));
 
         if (disk->src->format > 0)
-            virBufferEscapeString(&childBuf, "<driver type='%s'/>\n",
+            virBufferEscapeString(&driverAttrBuf, " type='%s'",
                                   virStorageFileFormatTypeToString(disk->src->format));
+
+        if (disk->src->metadataCacheMaxSize > 0) {
+            g_auto(virBuffer) metadataCacheChildBuf = VIR_BUFFER_INIT_CHILD(&driverChildBuf);
+
+            virBufferAsprintf(&metadataCacheChildBuf,
+                              "<max_size unit='bytes'>%llu</max_size>\n",
+                              disk->src->metadataCacheMaxSize);
+
+            virXMLFormatElement(&driverChildBuf, "metadata_cache", NULL, &metadataCacheChildBuf);
+        }
+
+        virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, &driverChildBuf);
 
         if (virDomainDiskSourceFormat(&childBuf, disk->src, "source", 0, false, 0,
                                       false, false, xmlopt) < 0)

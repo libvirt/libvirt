@@ -1,0 +1,14 @@
+<domainsnapshot>
+  <name>my snap name</name>
+  <description>!@#$%^</description>
+  <disks>
+    <disk name='hdd' snapshot='external'>
+      <source file='/path/to/new'/>
+      <driver type='qcow2'>
+        <metadata_cache>
+          <max_size unit='bytes'>1234</max_size>
+          </metadata_cache>
+      </driver>
+    </disk>
+  </disks>
+</domainsnapshot>

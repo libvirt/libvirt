@@ -186,6 +186,10 @@
               with an attribute <code>type</code> giving the driver type (such
               as qcow2), of the new file created by the external
               snapshot of the new file.
+
+              Optionally <code>metadata_cache</code> sub-element can be used
+              with same semantics as the identically named subelement of the
+              domain definition disk's driver.
               </dd>
               <dt><code>seclabel</code></dt>
             </dl>
