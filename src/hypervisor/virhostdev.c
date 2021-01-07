@@ -1980,10 +1980,10 @@ virHostdevReAttachMediatedDevices(virHostdevManagerPtr mgr,
         virDomainHostdevSubsysMediatedDevPtr mdevsrc;
         virDomainHostdevDefPtr hostdev = hostdevs[i];
 
-        mdevsrc = &hostdev->source.subsys.u.mdev;
-
         if (!virHostdevIsMdevDevice(hostdev))
             continue;
+
+        mdevsrc = &hostdev->source.subsys.u.mdev;
 
         if (!(mdev = virMediatedDeviceNew(mdevsrc->uuidstr,
                                           mdevsrc->model)))
