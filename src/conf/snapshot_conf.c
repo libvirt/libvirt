@@ -772,33 +772,30 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
                                virDomainSnapshotDiskDefPtr disk,
                                virDomainXMLOptionPtr xmlopt)
 {
-    int type = disk->src->type;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (!disk->name)
         return 0;
 
-    virBufferEscapeString(buf, "<disk name='%s'", disk->name);
+    virBufferEscapeString(&attrBuf, " name='%s'", disk->name);
     if (disk->snapshot > 0)
-        virBufferAsprintf(buf, " snapshot='%s'",
+        virBufferAsprintf(&attrBuf, " snapshot='%s'",
                           virDomainSnapshotLocationTypeToString(disk->snapshot));
 
-    if (!disk->src->path && disk->src->format == 0) {
-        virBufferAddLit(buf, "/>\n");
-        return 0;
+    if (disk->src->path || disk->src->format != 0) {
+        virBufferAsprintf(&attrBuf, " type='%s'", virStorageTypeToString(disk->src->type));
+
+        if (disk->src->format > 0)
+            virBufferEscapeString(&childBuf, "<driver type='%s'/>\n",
+                                  virStorageFileFormatTypeToString(disk->src->format));
+
+        if (virDomainDiskSourceFormat(&childBuf, disk->src, "source", 0, false, 0,
+                                      false, false, xmlopt) < 0)
+        return -1;
     }
 
-    virBufferAsprintf(buf, " type='%s'>\n", virStorageTypeToString(type));
-    virBufferAdjustIndent(buf, 2);
-
-    if (disk->src->format > 0)
-        virBufferEscapeString(buf, "<driver type='%s'/>\n",
-                              virStorageFileFormatTypeToString(disk->src->format));
-    if (virDomainDiskSourceFormat(buf, disk->src, "source", 0, false, 0,
-                                  false, false, xmlopt) < 0)
-        return -1;
-
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</disk>\n");
+    virXMLFormatElement(buf, "disk", &attrBuf, &childBuf);
     return 0;
 }
 
