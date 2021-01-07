@@ -1,7 +1,7 @@
 <!--
   After adding new features, update existing test files with
 
-    tests/cputestdata/cpu-gather.py diff tests/cputestdata/x86_64-cpuid-*.json
+    tests/cputestdata/cpu-data.py diff tests/cputestdata/x86_64-cpuid-*.json
 
 -->
 <cpus>

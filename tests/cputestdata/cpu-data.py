@@ -455,7 +455,7 @@ def main():
         help="Reads data from stdin and parses data for libvirt use.")
     subparsers.add_parser(
         "full",
-        help="Equivalent to `cpu-gather gather | cpu-gather parse`.")
+        help="Equivalent to `cpu-data.py gather | cpu-data.py parse`.")
     diffparser = subparsers.add_parser(
         "diff",
         help="Diff json description of CPU model against known features.")
