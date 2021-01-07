@@ -1,9 +1,8 @@
 <!--
   After adding new features, update existing test files with
 
-    for json in tests/cputestdata/x86_64-cpuid-*.json; do
-      tests/cputestdata/cpu-cpuid.py diff $json
-    done
+    tests/cputestdata/cpu-gather.py diff tests/cputestdata/x86_64-cpuid-*.json
+
 -->
 <cpus>
   <!-- standard features, EDX -->
