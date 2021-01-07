@@ -308,7 +308,7 @@ int
 virMediatedDeviceListAdd(virMediatedDeviceListPtr list,
                          virMediatedDevicePtr *dev)
 {
-    if (virMediatedDeviceListFind(list, *dev)) {
+    if (virMediatedDeviceListFind(list, (*dev)->path)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("device %s is already in use"), (*dev)->path);
         return -1;
@@ -354,7 +354,7 @@ virMediatedDevicePtr
 virMediatedDeviceListSteal(virMediatedDeviceListPtr list,
                            virMediatedDevicePtr dev)
 {
-    int idx = virMediatedDeviceListFindIndex(list, dev);
+    int idx = virMediatedDeviceListFindIndex(list, dev->path);
 
     return virMediatedDeviceListStealIndex(list, idx);
 }
@@ -370,13 +370,13 @@ virMediatedDeviceListDel(virMediatedDeviceListPtr list,
 
 int
 virMediatedDeviceListFindIndex(virMediatedDeviceListPtr list,
-                               virMediatedDevicePtr dev)
+                               const char *sysfspath)
 {
     size_t i;
 
     for (i = 0; i < list->count; i++) {
-        virMediatedDevicePtr other = list->devs[i];
-        if (STREQ(other->path, dev->path))
+        virMediatedDevicePtr dev = list->devs[i];
+        if (STREQ(sysfspath, dev->path))
             return i;
     }
     return -1;
@@ -385,11 +385,11 @@ virMediatedDeviceListFindIndex(virMediatedDeviceListPtr list,
 
 virMediatedDevicePtr
 virMediatedDeviceListFind(virMediatedDeviceListPtr list,
-                          virMediatedDevicePtr dev)
+                          const char *sysfspath)
 {
     int idx;
 
-    if ((idx = virMediatedDeviceListFindIndex(list, dev)) >= 0)
+    if ((idx = virMediatedDeviceListFindIndex(list, sysfspath)) >= 0)
         return list->devs[idx];
     else
         return NULL;
@@ -403,7 +403,7 @@ virMediatedDeviceIsUsed(virMediatedDevicePtr dev,
     const char *drvname, *domname;
     virMediatedDevicePtr tmp = NULL;
 
-    if ((tmp = virMediatedDeviceListFind(list, dev))) {
+    if ((tmp = virMediatedDeviceListFind(list, dev->path))) {
         virMediatedDeviceGetUsedBy(tmp, &drvname, &domname);
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("mediated device %s is in use by "

@@ -130,11 +130,11 @@ virMediatedDeviceListDel(virMediatedDeviceListPtr list,
 
 virMediatedDevicePtr
 virMediatedDeviceListFind(virMediatedDeviceListPtr list,
-                          virMediatedDevicePtr dev);
+                          const char *sysfspath);
 
 int
 virMediatedDeviceListFindIndex(virMediatedDeviceListPtr list,
-                               virMediatedDevicePtr dev);
+                               const char *sysfspath);
 
 int
 virMediatedDeviceListMarkDevices(virMediatedDeviceListPtr dst,

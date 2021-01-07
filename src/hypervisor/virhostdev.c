@@ -1975,7 +1975,7 @@ virHostdevReAttachMediatedDevices(virHostdevManagerPtr mgr,
 
     virObjectLock(mgr->activeMediatedHostdevs);
     for (i = 0; i < nhostdevs; i++) {
-        g_autoptr(virMediatedDevice) mdev = NULL;
+        g_autofree char *sysfspath = NULL;
         virMediatedDevicePtr tmp;
         virDomainHostdevSubsysMediatedDevPtr mdevsrc;
         virDomainHostdevDefPtr hostdev = hostdevs[i];
@@ -1984,14 +1984,12 @@ virHostdevReAttachMediatedDevices(virHostdevManagerPtr mgr,
             continue;
 
         mdevsrc = &hostdev->source.subsys.u.mdev;
-
-        if (!(mdev = virMediatedDeviceNew(mdevsrc->uuidstr,
-                                          mdevsrc->model)))
-            continue;
+        sysfspath = virMediatedDeviceGetSysfsPath(mdevsrc->uuidstr);
 
         /* Remove from the list only mdevs assigned to @drv_name/@dom_name */
 
-        tmp = virMediatedDeviceListFind(mgr->activeMediatedHostdevs, mdev);
+        tmp = virMediatedDeviceListFind(mgr->activeMediatedHostdevs,
+                                        sysfspath);
 
         /* skip inactive devices */
         if (!tmp)
