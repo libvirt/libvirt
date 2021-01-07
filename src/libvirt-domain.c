@@ -3022,7 +3022,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
     ret = VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                    VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION);
     if (ret < 0)
-        return NULL;
+        goto done;
     if (ret)
         protection = VIR_MIGRATE_CHANGE_PROTECTION;
 
