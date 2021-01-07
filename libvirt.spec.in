@@ -573,7 +573,6 @@ volumes using the host iscsi stack.
 Summary: Storage driver plugin for iscsi-direct
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
-Requires: libiscsi
 
 %description daemon-driver-storage-iscsi-direct
 The storage driver backend adding implementation of the storage APIs for iscsi
