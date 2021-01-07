@@ -74,6 +74,8 @@
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 #define MAX_BRIDGE_ID 256
 
+static virMutex bridgeNameValidateMutex = VIR_MUTEX_INITIALIZER;
+
 /**
  * VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX:
  *
@@ -3115,20 +3117,27 @@ static int
 networkBridgeNameValidate(virNetworkObjListPtr nets,
                           virNetworkDefPtr def)
 {
+    virMutexLock(&bridgeNameValidateMutex);
+
     if (def->bridge && !strstr(def->bridge, "%d")) {
         if (virNetworkObjBridgeInUse(nets, def->bridge, def->name)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("bridge name '%s' already in use."),
                            def->bridge);
-            return -1;
+            goto error;
         }
     } else {
         /* Allocate a bridge name */
         if (networkFindUnusedBridgeName(nets, def) < 0)
-            return -1;
+            goto error;
     }
 
+    virMutexUnlock(&bridgeNameValidateMutex);
     return 0;
+
+ error:
+    virMutexUnlock(&bridgeNameValidateMutex);
+    return -1;
 }
 
 
