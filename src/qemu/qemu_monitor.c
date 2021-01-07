@@ -2708,6 +2708,8 @@ void qemuMonitorFdsetsFree(qemuMonitorFdsetsPtr fdsets)
 
         for (j = 0; j < set->nfds; j++)
             g_free(set->fds[j].opaque);
+
+        g_free(set->fds);
     }
     g_free(fdsets->fdsets);
     g_free(fdsets);
