@@ -16301,16 +16301,23 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
 #undef CHECK_MAX
 
-        qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorSetBlockIoThrottle(priv->mon, drivealias, qdevid,
-                                            &info, supportMaxOptions,
-                                            set_fields & QEMU_BLOCK_IOTUNE_SET_GROUP_NAME,
-                                            supportMaxLengthOptions);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        /* blockdev-based qemu doesn't want to set the throttling when a cdrom
+         * is empty. Skip the monitor call here since we will set the throttling
+         * once new media is inserted */
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) ||
+            !virStorageSourceIsEmpty(disk->src)) {
+
+            qemuDomainObjEnterMonitor(driver, vm);
+            ret = qemuMonitorSetBlockIoThrottle(priv->mon, drivealias, qdevid,
+                                                &info, supportMaxOptions,
+                                                set_fields & QEMU_BLOCK_IOTUNE_SET_GROUP_NAME,
+                                                supportMaxLengthOptions);
+            if (qemuDomainObjExitMonitor(driver, vm) < 0)
+                ret = -1;
+            if (ret < 0)
+                goto endjob;
             ret = -1;
-        if (ret < 0)
-            goto endjob;
-        ret = -1;
+        }
 
         virDomainDiskSetBlockIOTune(disk, &info);
 
