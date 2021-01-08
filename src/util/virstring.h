@@ -110,6 +110,7 @@ int virDoubleToStr(char **strp, double number)
 
 void virSkipSpaces(const char **str) ATTRIBUTE_NONNULL(1);
 void virSkipSpacesAndBackslash(const char **str) ATTRIBUTE_NONNULL(1);
+void virSkipToDigit(const char **str) ATTRIBUTE_NONNULL(1);
 void virTrimSpaces(char *str, char **endp) ATTRIBUTE_NONNULL(1);
 void virSkipSpacesBackwards(const char *str, char **endp)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

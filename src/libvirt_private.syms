@@ -3217,6 +3217,7 @@ virStorageFileBackendRegister;
 virSkipSpaces;
 virSkipSpacesAndBackslash;
 virSkipSpacesBackwards;
+virSkipToDigit;
 virStrcpy;
 virStringBufferIsPrintable;
 virStringFilterChars;
