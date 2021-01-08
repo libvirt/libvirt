@@ -638,7 +638,9 @@ dnsmasqCapsSetFromBuffer(dnsmasqCapsPtr caps, const char *buf)
     p = STRSKIP(buf, DNSMASQ_VERSION_STR);
     if (!p)
        goto fail;
-    virSkipSpaces(&p);
+
+    virSkipToDigit(&p);
+
     if (virParseVersionString(p, &caps->version, true) < 0)
         goto fail;
 
