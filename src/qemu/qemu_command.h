@@ -161,7 +161,8 @@ int qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
                                 qemuDomainObjPrivatePtr priv,
                                 const virDomainDef *def,
                                 const virDomainMemoryDef *mem,
-                                bool force);
+                                bool force,
+                                bool systemMemory);
 
 char *
 qemuBuildMemoryDeviceStr(const virDomainDef *def,

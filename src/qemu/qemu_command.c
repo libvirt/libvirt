@@ -2975,7 +2975,8 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
                             qemuDomainObjPrivatePtr priv,
                             const virDomainDef *def,
                             const virDomainMemoryDef *mem,
-                            bool force)
+                            bool force,
+                            bool systemMemory)
 {
     const char *backendType = "memory-backend-file";
     virDomainNumatuneMemMode mode;
@@ -2992,6 +2993,10 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
     bool needHugepage = !!pagesize;
     bool useHugepage = !!pagesize;
     int discard = mem->discard;
+    bool disableCanonicalPath = false;
+
+    /* Disabling canonical path is required for migration compatibility of
+     * system memory objects, see below */
 
     /* The difference between @needHugepage and @useHugepage is that the latter
      * is true whenever huge page is defined for the current memory cell.
@@ -3106,6 +3111,9 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
         if (qemuBuildMemoryBackendPropsShare(props, memAccess) < 0)
             return -1;
 
+        if (systemMemory)
+            disableCanonicalPath = true;
+
     } else if (useHugepage || mem->nvdimmPath || memAccess ||
         def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
 
@@ -3148,9 +3156,28 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
 
         if (qemuBuildMemoryBackendPropsShare(props, memAccess) < 0)
             return -1;
+
+        if (systemMemory)
+            disableCanonicalPath = true;
+
     } else {
         backendType = "memory-backend-ram";
     }
+
+    /* This is a terrible hack, but unfortunately there is no better way.
+     * The replacement for '-m X' argument is not simple '-machine
+     * memory-backend' and '-object memory-backend-*,size=X' (which was the
+     * idea). This is because of create_default_memdev() in QEMU sets
+     * 'x-use-canonical-path-for-ramblock-id' attribute to false and is
+     * documented in QEMU in qemu-options.hx under 'memory-backend'. Note
+     * that QEMU consideres 'x-use-canonical-path-for-ramblock-id' stable
+     * and supported despite the 'x-' prefix.
+     * See QEMU commit 8db0b20415c129cf5e577a593a4a0372d90b7cc9.
+     */
+    if (disableCanonicalPath &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_X_USE_CANONICAL_PATH_FOR_RAMBLOCK_ID) &&
+        virJSONValueObjectAdd(props, "b:x-use-canonical-path-for-ramblock-id", false, NULL) < 0)
+        return -1;
 
     if (!priv->memPrealloc &&
         virJSONValueObjectAdd(props, "B:prealloc", prealloc, NULL) < 0)
@@ -3263,7 +3290,7 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
     mem.info.alias = alias;
 
     if ((rc = qemuBuildMemoryBackendProps(&props, alias, cfg,
-                                          priv, def, &mem, false)) < 0)
+                                          priv, def, &mem, false, false)) < 0)
         return -1;
 
     if (virQEMUBuildObjectCommandlineFromJSON(buf, props) < 0)
@@ -3292,7 +3319,7 @@ qemuBuildMemoryDimmBackendStr(virBufferPtr buf,
     alias = g_strdup_printf("mem%s", mem->info.alias);
 
     if (qemuBuildMemoryBackendProps(&props, alias, cfg,
-                                    priv, def, mem, true) < 0)
+                                    priv, def, mem, true, false) < 0)
         return -1;
 
     if (virQEMUBuildObjectCommandlineFromJSON(buf, props) < 0)
@@ -7105,7 +7132,7 @@ qemuBuildMemCommandLineMemoryDefaultBackend(virCommandPtr cmd,
     mem.info.alias = (char *) defaultRAMid;
 
     if (qemuBuildMemoryBackendProps(&props, defaultRAMid, cfg,
-                                    priv, def, &mem, false) < 0)
+                                    priv, def, &mem, false, true) < 0)
         return -1;
 
     if (virQEMUBuildObjectCommandlineFromJSON(&buf, props) < 0)
