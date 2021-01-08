@@ -354,7 +354,12 @@ virMediatedDevicePtr
 virMediatedDeviceListSteal(virMediatedDeviceListPtr list,
                            virMediatedDevicePtr dev)
 {
-    int idx = virMediatedDeviceListFindIndex(list, dev->path);
+    int idx = -1;
+
+    if (!dev)
+        return NULL;
+
+    idx = virMediatedDeviceListFindIndex(list, dev->path);
 
     return virMediatedDeviceListStealIndex(list, idx);
 }
