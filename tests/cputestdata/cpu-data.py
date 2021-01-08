@@ -36,6 +36,13 @@ def gather_name(args):
 
 
 def gather_cpuid_leaves(args):
+    def mask(regs, eax_in, ecx_in, eax_mask, ebx_mask, ecx_mask, edx_mask):
+        if regs["eax_in"] == eax_in and regs["ecx_in"] == ecx_in:
+            regs["eax"] &= eax_mask
+            regs["ebx"] &= ebx_mask
+            regs["ecx"] &= ecx_mask
+            regs["edx"] &= edx_mask
+
     leave_pattern = re.compile(
         "^\\s*"
         "(0x[0-9a-f]+)\\s*"
@@ -60,13 +67,20 @@ def gather_cpuid_leaves(args):
         match = leave_pattern.match(line)
         if not match:
             continue
-        yield {
+        regs = {
             "eax_in": int(match.group(1), 0),
             "ecx_in": int(match.group(2), 0),
             "eax": int(match.group(3), 0),
             "ebx": int(match.group(4), 0),
             "ecx": int(match.group(5), 0),
             "edx": int(match.group(6), 0)}
+
+        # local apic id. Pretend to always run on logical processor #0.
+        mask(regs, 0x01, 0x00, 0xffffffff, 0x00ffffff, 0xffffffff, 0xffffffff)
+        mask(regs, 0x0b, 0x00, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffff00)
+        mask(regs, 0x0b, 0x01, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffff00)
+
+        yield regs
 
 
 def gather_msr():
