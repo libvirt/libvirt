@@ -25,6 +25,7 @@
 #include "libxl_domain.h"
 #include "libxl_capabilities.h"
 
+#include "datatypes.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virerror.h"
@@ -849,7 +850,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
     char *file;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
-    virConnectPtr conn = NULL;
+    g_autoptr(virConnect) conn = NULL;
 
 #ifdef LIBXL_HAVE_PVUSB
     hostdev_flags |= VIR_HOSTDEV_SP_USB;
@@ -936,7 +937,6 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
     }
 
     virDomainObjRemoveTransientDef(vm);
-    virObjectUnref(conn);
 }
 
 /*
@@ -1050,7 +1050,7 @@ static int
 libxlNetworkPrepareDevices(virDomainDefPtr def)
 {
     size_t i;
-    virConnectPtr conn = NULL;
+    g_autoptr(virConnect) conn = NULL;
     int ret = -1;
 
     for (i = 0; i < def->nnets; i++) {
@@ -1096,7 +1096,6 @@ libxlNetworkPrepareDevices(virDomainDefPtr def)
 
     ret = 0;
  cleanup:
-    virObjectUnref(conn);
     return ret;
 }
 

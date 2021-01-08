@@ -3463,14 +3463,9 @@ lxcDomainAttachDeviceNetLive(virLXCDriverPtr driver,
      * to the one defined in the network definition.
      */
     if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        virConnectPtr netconn = virGetConnectNetwork();
-        if (!netconn)
+        g_autoptr(virConnect) netconn = virGetConnectNetwork();
+        if (!netconn || virDomainNetAllocateActualDevice(netconn, vm->def, net) < 0)
             return -1;
-        if (virDomainNetAllocateActualDevice(netconn, vm->def, net) < 0) {
-            virObjectUnref(netconn);
-            return -1;
-        }
-        virObjectUnref(netconn);
     }
 
     /* final validation now that actual type is known */
@@ -4028,13 +4023,11 @@ lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
     if (!ret) {
         virErrorPreserveLast(&save_err);
         if (detach->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-            virConnectPtr conn = virGetConnectNetwork();
-            if (conn) {
+            g_autoptr(virConnect) conn = virGetConnectNetwork();
+            if (conn)
                 virDomainNetReleaseActualDevice(conn, vm->def, detach);
-                virObjectUnref(conn);
-            } else {
+            else
                 VIR_WARN("Unable to release network device '%s'", NULLSTR(detach->ifname));
-            }
         }
         virDomainNetRemove(vm->def, detachidx);
         virDomainNetDefFree(detach);

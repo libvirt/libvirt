@@ -31040,7 +31040,7 @@ virDomainNetBandwidthUpdate(virDomainNetDefPtr iface,
     virNetworkPortPtr port = NULL;
     virTypedParameterPtr params = NULL;
     int nparams = 0;
-    virConnectPtr conn = NULL;
+    g_autoptr(virConnect) conn = NULL;
     int ret = -1;
 
     if (!(conn = virGetConnectNetwork()))
@@ -31060,7 +31060,6 @@ virDomainNetBandwidthUpdate(virDomainNetDefPtr iface,
 
     ret = 0;
  cleanup:
-    virObjectUnref(conn);
     virTypedParamsFree(params, nparams);
     virObjectUnref(port);
     virObjectUnref(net);

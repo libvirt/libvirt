@@ -355,7 +355,7 @@ static void
 libxlReconnectNotifyNets(virDomainDefPtr def)
 {
     size_t i;
-    virConnectPtr conn = NULL;
+    g_autoptr(virConnect) conn = NULL;
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
@@ -372,8 +372,6 @@ libxlReconnectNotifyNets(virDomainDefPtr def)
 
         virDomainNetNotifyActualDevice(conn, def, net);
     }
-
-    virObjectUnref(conn);
 }
 
 
@@ -3403,7 +3401,7 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
     libxl_device_nic nic;
     int ret = -1;
     char mac[VIR_MAC_STRING_BUFLEN];
-    virConnectPtr conn = NULL;
+    g_autoptr(virConnect) conn = NULL;
     virErrorPtr save_err = NULL;
 
     libxl_device_nic_init(&nic);
@@ -3478,7 +3476,6 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK && conn)
             virDomainNetReleaseActualDevice(conn, vm->def, net);
     }
-    virObjectUnref(conn);
     virObjectUnref(cfg);
     virErrorRestore(&save_err);
     return ret;
@@ -3904,13 +3901,11 @@ libxlDomainDetachNetDevice(libxlDriverPrivatePtr driver,
     libxl_device_nic_dispose(&nic);
     if (!ret) {
         if (detach->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-            virConnectPtr conn = virGetConnectNetwork();
-            if (conn) {
+            g_autoptr(virConnect) conn = virGetConnectNetwork();
+            if (conn)
                 virDomainNetReleaseActualDevice(conn, vm->def, detach);
-                virObjectUnref(conn);
-            } else {
+            else
                 VIR_WARN("Unable to release network device '%s'", NULLSTR(detach->ifname));
-            }
         }
         virDomainNetRemove(vm->def, detachidx);
     }

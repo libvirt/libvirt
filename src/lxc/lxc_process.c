@@ -172,7 +172,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     const virNetDevVPortProfile *vport = NULL;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
-    virConnectPtr conn = NULL;
+    g_autoptr(virConnect) conn = NULL;
 
     VIR_DEBUG("Cleanup VM name=%s pid=%d reason=%d flags=0x%x",
               vm->def->name, (int)vm->pid, (int)reason, flags);
@@ -281,7 +281,6 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
         virDomainObjRemoveTransientDef(vm);
 
     virObjectUnref(cfg);
-    virObjectUnref(conn);
 }
 
 
@@ -571,7 +570,7 @@ virLXCProcessSetupInterfaces(virLXCDriverPtr driver,
     size_t niface = 0;
     virDomainNetDefPtr net;
     virDomainNetType type;
-    virConnectPtr netconn = NULL;
+    g_autoptr(virConnect) netconn = NULL;
     virErrorPtr save_err = NULL;
 
     *veths = g_new0(char *, def->nnets + 1);
@@ -680,7 +679,6 @@ virLXCProcessSetupInterfaces(virLXCDriverPtr driver,
         }
         virErrorRestore(&save_err);
     }
-    virObjectUnref(netconn);
     return ret;
 }
 
@@ -1634,7 +1632,7 @@ static void
 virLXCProcessReconnectNotifyNets(virDomainDefPtr def)
 {
     size_t i;
-    virConnectPtr conn = NULL;
+    g_autoptr(virConnect) conn = NULL;
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
@@ -1668,8 +1666,6 @@ virLXCProcessReconnectNotifyNets(virDomainDefPtr def)
 
         virDomainNetNotifyActualDevice(conn, def, net);
     }
-
-    virObjectUnref(conn);
 }
 
 
