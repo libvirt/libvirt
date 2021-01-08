@@ -563,7 +563,6 @@ storageBackendCreatePloop(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                           unsigned int flags)
 {
     int ret = -1;
-    bool created = false;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *create_tool = NULL;
 
@@ -607,7 +606,7 @@ storageBackendCreatePloop(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                           0)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("error creating directory for ploop volume"));
-            goto cleanup;
+            return -1;
         }
         cmd = virCommandNewArgList(create_tool, "init", "-s", NULL);
         virCommandAddArgFormat(cmd, "%lluM", VIR_DIV_UP(vol->target.capacity,
@@ -620,10 +619,8 @@ storageBackendCreatePloop(virStoragePoolObjPtr pool G_GNUC_UNUSED,
         cmd = virCommandNewArgList("cp", "-r", inputvol->target.path,
                                    vol->target.path, NULL);
     }
-    created = true;
     ret = virCommandRun(cmd, NULL);
- cleanup:
-    if (ret < 0 && created)
+    if (ret < 0)
         virFileDeleteTree(vol->target.path);
     return ret;
 }
