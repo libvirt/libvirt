@@ -3411,11 +3411,10 @@ qemuProcessNotifyNets(virDomainDefPtr def)
             break;
         }
 
-        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-            if (!conn && !(conn = virGetConnectNetwork()))
-                continue;
-            virDomainNetNotifyActualDevice(conn, def, net);
-        }
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK && !conn)
+            conn = virGetConnectNetwork();
+
+        virDomainNetNotifyActualDevice(conn, def, net);
     }
 }
 
