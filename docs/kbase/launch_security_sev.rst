@@ -374,16 +374,15 @@ running:
 Limitations
 ===========
 
-Currently, the boot disk cannot be of type virtio-blk, instead,
-virtio-scsi needs to be used if virtio is desired. This limitation is
-expected to be lifted with future releases of kernel (the kernel used at
-the time of writing the article is 5.0.14). If you still cannot start an
-SEV VM, it could be because of wrong SELinux label on the ``/dev/sev``
-device with selinux-policy <3.14.2.40 which prevents QEMU from touching
-the device. This can be resolved by upgrading the package, tuning the
-selinux policy rules manually to allow svirt_t to access the device (see
-``audit2allow`` on how to do that) or putting SELinux into permissive
-mode (discouraged).
+With older kernels (kernel <5.1) the boot disk cannot not be of type
+virtio-blk, instead, virtio-scsi needs to be used if virtio is desired.
+
+If you still cannot start an SEV VM, it could be because of wrong SELinux label
+on the ``/dev/sev`` device with selinux-policy <3.14.2.40 which prevents QEMU
+from touching the device. This can be resolved by upgrading the package, tuning
+the selinux policy rules manually to allow svirt_t to access the device (see
+``audit2allow`` on how to do that) or putting SELinux into permissive mode
+(discouraged).
 
 Full domain XML examples
 ========================
