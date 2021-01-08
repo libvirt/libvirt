@@ -1051,7 +1051,6 @@ libxlNetworkPrepareDevices(virDomainDefPtr def)
 {
     size_t i;
     g_autoptr(virConnect) conn = NULL;
-    int ret = -1;
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
@@ -1063,9 +1062,9 @@ libxlNetworkPrepareDevices(virDomainDefPtr def)
          */
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             if (!conn && !(conn = virGetConnectNetwork()))
-                goto cleanup;
+                return -1;
             if (virDomainNetAllocateActualDevice(conn, def, net) < 0)
-                goto cleanup;
+                return -1;
         }
 
         /* final validation now that actual type is known */
@@ -1090,13 +1089,11 @@ libxlNetworkPrepareDevices(virDomainDefPtr def)
                 pcisrc->backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN;
 
             if (virDomainHostdevInsert(def, hostdev) < 0)
-                goto cleanup;
+                return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static void
