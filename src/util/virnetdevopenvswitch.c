@@ -29,6 +29,7 @@
 #include "virstring.h"
 #include "virlog.h"
 #include "virjson.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -529,9 +530,19 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
                                        bool server,
                                        char **ifname)
 {
-    g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *absoluteOvsVsctlPath = NULL;
     int status;
 
+    if (!(absoluteOvsVsctlPath = virFindFileInPath(OVS_VSCTL))) {
+        /* If there is no 'ovs-vsctl' then the interface is
+         * probably not an OpenVSwitch interface and the @path to
+         * socket was created by some DPDK testing script (e.g.
+         * dpdk-testpmd). */
+        return 0;
+    }
+
+    cmd = virNetDevOpenvswitchCreateCmd();
 
     if (server) {
         virCommandAddArgList(cmd, "--no-headings", "--columns=name", "find",
