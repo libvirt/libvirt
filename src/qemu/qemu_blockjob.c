@@ -1691,6 +1691,10 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
     case QEMU_BLOCKJOB_STATE_FAILED:
     case QEMU_BLOCKJOB_STATE_CANCELLED:
     case QEMU_BLOCKJOB_STATE_CONCLUDED:
+        if (job->disk) {
+            job->disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+            job->disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
+        }
         qemuBlockJobEventProcessConcluded(job, driver, vm, asyncJob);
         break;
 
