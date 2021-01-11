@@ -93,7 +93,7 @@ stages:
           -e "s|[@]PKGS@|$PKGS|g"
           -e "s|[@]MAKE@|$MAKE|g"
           -e "s|[@]PYTHON@|$PYTHON|g"
-          -e "s|[@]PIP@|$PIP|g"
+          -e "s|[@]PIP3@|$PIP3|g"
           -e "s|[@]PYPI_PKGS@|$PYPI_PKGS|g"
       <ci/cirrus/build.yml >ci/cirrus/$NAME.yml
     - cat ci/cirrus/$NAME.yml
