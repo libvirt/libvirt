@@ -615,5 +615,41 @@ pub  4096R/10084C9C 2020-07-20 Jiří Denemark &lt;jdenemar@redhat.com&gt;
 Fingerprint=453B 6531 0595 5628 5547  1199 CA68 BE80 1008 4C9C
 </pre>
 
+    <p>
+      Releases prior to libvirt-6.6 were signed with the following GPG key:
+    </p>
+
+    <pre>
+pub   dsa1024 2000-05-31 [SC]
+C744 15BA 7C9C 7F78 F02E  1DC3 4606 B8A5 DE95 BC1F
+uid           [ unknown] Daniel Veillard (Red Hat work email) &lt;veillard@redhat.com&gt;
+uid           [ unknown] Daniel Veillard &lt;Daniel.Veillard@w3.org&gt;
+    </pre>
+
+    <pre>
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
+
+Starting from libvirt-6.6.0 the upstream releases will be done by Jiří Denemark
+signed with his PGP key:
+
+pub  4096R/10084C9C 2020-07-20 Jiří Denemark &lt;jdenemar@redhat.com&gt;
+Fingerprint=453B 6531 0595 5628 5547  1199 CA68 BE80 1008 4C9C
+
+This message is signed by the old signing key which was used for previous
+releases.
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEE20ZoG7ka3OoXD6LUFViLJllr6l0FAl/8H9cACgkQFViLJllr
+6l3iVwgAm9n703/QoIfPbxT5qGQzWK6LNriEcG2R9MLgFcW+UuGA9cqIBLhH1RaJ
+q7Gc3gK0dgE2HAF6DxuG5+nkDY6LdmonLOVFWQkMCh41JHFrV6tw8y9hc/RNOb/m
+gFAl4HpwYisjTRvsTRcpR3ElK6lI0Yu4GY4gJxj5qH4L5exR+kkylwuAxqP+wuyY
+b/L/tP76F4+Q9SSPj0M01NRVC7V8m3yvnok5y374vtxvRFome0WMELn81vphxBLx
+X7LQ1LyjvRs0HhN5MutJES5FYDzArTYZfZJozJgE465XrHxMMCbXbZ/AgAs/aD+5
+x+m2mFplbS57tMEoMBP/ezbbL5wpvA==
+=KnaO
+-----END PGP SIGNATURE-----
+    </pre>
+
   </body>
 </html>
