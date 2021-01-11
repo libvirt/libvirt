@@ -38,29 +38,6 @@ struct nlmsghdr;
 
 #endif /* WITH_LIBNL */
 
-#define NETLINK_MSG_NEST_START(msg, container, attrtype) \
-do { \
-    container = nla_nest_start(msg, attrtype); \
-    if (!container) \
-        goto buffer_too_small; \
-} while(0)
-
-#define NETLINK_MSG_NEST_END(msg, container) \
-do { nla_nest_end(msg, container); } while(0)
-
-/*
- * we need to use an intermediary pointer to @data as compilers may sometimes
- * complain about @data not being a pointer type:
- * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
- */
-#define NETLINK_MSG_PUT(msg, attrtype, datalen, data) \
-do { \
-    const void *dataptr = data; \
-    if (dataptr && nla_put(msg, attrtype, datalen, dataptr) < 0) \
-        goto buffer_too_small; \
-} while(0)
-
-
 int virNetlinkStartup(void);
 void virNetlinkShutdown(void);
 

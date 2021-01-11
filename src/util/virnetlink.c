@@ -44,6 +44,35 @@ VIR_LOG_INIT("util.netlink");
 
 # include <linux/veth.h>
 
+# define NETLINK_MSG_NEST_START(msg, container, attrtype) \
+do { \
+    container = nla_nest_start(msg, attrtype); \
+    if (!container) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
+                       _("allocated netlink buffer is too small")); \
+        return -1; \
+    } \
+} while (0)
+
+# define NETLINK_MSG_NEST_END(msg, container) \
+do { nla_nest_end(msg, container); } while (0)
+
+/*
+ * we need to use an intermediary pointer to @data as compilers may sometimes
+ * complain about @data not being a pointer type:
+ * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
+ */
+# define NETLINK_MSG_PUT(msg, attrtype, datalen, data) \
+do { \
+    const void *dataptr = data; \
+    if (dataptr && nla_put(msg, attrtype, datalen, dataptr) < 0) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
+                       _("allocated netlink buffer is too small")); \
+        return -1; \
+    } \
+} while (0)
+
+
 /* State for a single netlink event handle */
 struct virNetlinkEventHandle {
     int watch;
@@ -406,10 +435,8 @@ virNetlinkDumpLink(const char *ifname, int ifindex,
     if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
         goto buffer_too_small;
 
-    if (ifname) {
-        if (nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
-            goto buffer_too_small;
-    }
+    if (ifname)
+        NETLINK_MSG_PUT(nl_msg, IFLA_IFNAME, (strlen(ifname) + 1), ifname);
 
 # ifdef RTEXT_FILTER_VF
     /* if this filter exists in the kernel's netlink implementation,
@@ -419,10 +446,8 @@ virNetlinkDumpLink(const char *ifname, int ifindex,
     {
         uint32_t ifla_ext_mask = RTEXT_FILTER_VF;
 
-        if (nla_put(nl_msg, IFLA_EXT_MASK,
-                    sizeof(ifla_ext_mask), &ifla_ext_mask) < 0) {
-            goto buffer_too_small;
-        }
+        NETLINK_MSG_PUT(nl_msg, IFLA_EXT_MASK,
+                        sizeof(ifla_ext_mask), &ifla_ext_mask);
     }
 # endif
 
@@ -636,8 +661,7 @@ virNetlinkDelLink(const char *ifname, virNetlinkDelLinkFallback fallback)
     if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
         goto buffer_too_small;
 
-    if (nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
-        goto buffer_too_small;
+    NETLINK_MSG_PUT(nl_msg, IFLA_IFNAME, (strlen(ifname) + 1), ifname);
 
     if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, 0,
                           NETLINK_ROUTE, 0) < 0) {
