@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-11-24 23:25+0000\n"
-"PO-Revision-Date: 2021-01-04 13:36+0000\n"
+"POT-Creation-Date: 2021-01-08 17:11+0000\n"
+"PO-Revision-Date: 2021-01-10 11:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -5427,7 +5427,7 @@ msgid "Disk copy_on_read is not supported by vz driver."
 msgstr ""
 
 msgid "Disk detached successfully\n"
-msgstr ""
+msgstr "Disken kopplades ifrån\n"
 
 #, fuzzy, c-format
 msgid "Disk device '%s' does not support snapshotting"
@@ -6931,9 +6931,9 @@ msgstr "Misslyckades att definiera nätverk från %s"
 msgid "Failed to define new bridge interface %s"
 msgstr "Misslyckades med att definiera det nya brygggränssnittet %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to define new interface %s"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Misslyckades att definiera det nya gränssnittet %s"
 
 #, c-format
 msgid "Failed to define pool %s"
@@ -7917,9 +7917,9 @@ msgstr "Misslyckades med att förstöra gränssnittet %s"
 msgid "Failed to query numad for the advisory nodeset"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to re-attach PCI device: %s"
-msgstr "Misslyckades att ansluta enhet från %s"
+msgstr "Misslyckades att återansluta PCI-enheten: %s"
 
 #, c-format
 msgid "Failed to re-attach device %s"
@@ -7933,9 +7933,9 @@ msgstr "Misslyckades att spara domän %s till %s"
 msgid "Failed to read %s"
 msgstr "Misslyckades att läsa %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades att läsa ”%s”"
 
 msgid "Failed to read /proc/mounts"
 msgstr "Det gick inte att läsa /proc/mounts"
@@ -7964,9 +7964,9 @@ msgstr "Misslyckades att läsa filen ”%s”"
 msgid "Failed to read from signal pipe"
 msgstr "Misslyckades att skapa domän från %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read pid file %s"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades att läsa pid-filen %s"
 
 #, c-format
 msgid "Failed to read pidfile %s"
@@ -8495,9 +8495,9 @@ msgstr ""
 msgid "Failed to unbind PCI device '%s' from %s"
 msgstr "Misslyckades att avmontera enheten från %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to undefine bridge interface %s"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Misslyckades att avdefiniera bryggränssnittet %s"
 
 #, c-format
 msgid "Failed to undefine domain %s"
@@ -11540,7 +11540,7 @@ msgid "Missing item 'credentials' in group '%s' in '%s'"
 msgstr ""
 
 msgid "Missing keepaliveCount data in JSON document"
-msgstr ""
+msgstr "Saknat keepaliveCount-data i JSON-dokument"
 
 msgid "Missing keepaliveInterval data in JSON document"
 msgstr "Saknat keepaliveInterval-data i JSON-dokument"
@@ -11567,9 +11567,8 @@ msgstr ""
 msgid "Missing mandatory average or floor attributes"
 msgstr "startordningsattribut saknas"
 
-#, fuzzy
 msgid "Missing master path attribute for nmdm device"
-msgstr "Källsökvägsattribut saknas för teckenenhet"
+msgstr "Saknat huvudsökvägsattribut för nmdm-enheten"
 
 msgid "Missing max_clients data in JSON document"
 msgstr ""
@@ -12203,7 +12202,7 @@ msgstr "misslyckades att skriva konfigurationsfilen"
 
 #, c-format
 msgid "Network filter %s XML configuration not changed.\n"
-msgstr ""
+msgstr "Nätverksfiltret %s XML-konfiguration inte ändrad.\n"
 
 #, fuzzy, c-format
 msgid "Network filter %s defined from %s\n"
@@ -12337,10 +12336,9 @@ msgstr ""
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "Inget <source> ”port”-attribut angivet med uttagsgränssnitt"
 
-#, fuzzy
 msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
 msgstr ""
-"Inget <source> ”name”-attribut angivet med <interface type='internal'/>"
+"Inget <source> ”type”-attribut angivet för <interface type='vhostuser'/>"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr ""
@@ -13442,9 +13440,8 @@ msgstr "Sätt fast domän-IOThreads till värdens fysiska CPU:er."
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "Sätt fast domän VCPU:er till värdens fysiska CPU:er."
 
-#, fuzzy
 msgid "Pin domain emulator threads to host physical CPUs."
-msgstr "Sätt fast domän VCPU:er till värdens fysiska CPU:er."
+msgstr "Sätt fast domänemulatortrådar till värdens fysiska CPU:er."
 
 #, c-format
 msgid "Plugin %s not accessible"
@@ -14059,9 +14056,8 @@ msgstr "Returnerar grundinformation om nätverket"
 msgid "Returns basic information about the node."
 msgstr "Returnerar grundinformation om noden."
 
-#, fuzzy
 msgid "Returns basic information about the storage pool."
-msgstr "Returnerar grundinformation om noden."
+msgstr "Returnerar grundinformation om lagringspoolen."
 
 msgid "Returns basic information about the storage vol."
 msgstr "Returnerar grundinformation om lagringsvolymen."
@@ -14808,7 +14804,7 @@ msgstr ""
 
 #, c-format
 msgid "Sound model %s too big for destination"
-msgstr ""
+msgstr "Ljudmodellen %s är för stor för destinationen"
 
 msgid "Source"
 msgstr "Källa"
@@ -15294,13 +15290,12 @@ msgstr "Mål-TSC-läget %s stämmer inte med källan %s"
 msgid "Target USB Class code does not match source"
 msgstr "Mål-sysinfo matchar inte källan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target USB allow '%s' does not match source '%s'"
-msgstr "Mål-CPU-arkitekturen %s stämmer inte med källan %s"
+msgstr "Mål-USB:n tillåter ”%s” stämmer inte med källan ”%s”"
 
-#, fuzzy
 msgid "Target USB product ID does not match source"
-msgstr "Mål-CPU stämmer inte med källan"
+msgstr "Mål-USB-produkt-ID stämmer inte med källan"
 
 #, fuzzy, c-format
 msgid "Target USB redirection filter rule count %zu does not match source %zu"
@@ -15309,9 +15304,8 @@ msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
 msgid "Target USB vendor ID does not match source"
 msgstr "Mål-USB-tillverkar-ID stämmer inte med källan"
 
-#, fuzzy
 msgid "Target USB version does not match source"
-msgstr "Mål-sysinfo matchar inte källan"
+msgstr "Mål-USB-version stämmer inte med källan"
 
 msgid "Target already exists"
 msgstr "Målet finns redan"
@@ -15339,9 +15333,9 @@ msgstr "Mål-sysinfo matchar inte källan"
 msgid "Target channel addr %s does not match source %s"
 msgstr "Målkanaladressen %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target channel name %s does not match source %s"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Målkanalnamnet %s stämmer inte med källan %s"
 
 #, c-format
 msgid "Target channel type %s does not match source %s"
@@ -15354,25 +15348,25 @@ msgstr "Målchassit stämmer inte med källan"
 msgid "Target console type %s does not match source %s"
 msgstr "Målkonsoltypen %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target controller index %d does not match source %d"
-msgstr "Mål-CPU-kärnor %d stämmer inte med källan %d"
+msgstr "Målstyrindex %d stämmer inte med källan %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target controller model %d does not match source %d"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Målstyrenhetstypen %d stämmer inte med källan %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target controller ports %d does not match source %d"
-msgstr "Mål-CPU-kärnor %d stämmer inte med källan %d"
+msgstr "Målstyrenhetsporten %d stämmer inte med källan %d"
 
 #, c-format
 msgid "Target controller type %s does not match source %s"
 msgstr "Målstyrenhetstypen %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target controller vectors %d does not match source %d"
-msgstr "Mål-CPU-kärnor %d stämmer inte med källan %d"
+msgstr "Målstyrenhetsvektorerna %d stämmer inte med källan %d"
 
 #, fuzzy
 msgid "Target device PCI address "
@@ -15443,9 +15437,9 @@ msgstr "Måldiskmodellen %s stämmer inte med källan %s"
 msgid "Target disk serial %s does not match source %s"
 msgstr "Måldiskserienumret %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target disk wwn '%s' does not match source '%s'"
-msgstr "Mål-sysinfo %s matchar inte källan %s"
+msgstr "Måldisk-wwn ”%s” matchar inte källan ”%s”"
 
 #, c-format
 msgid ""
@@ -15485,9 +15479,9 @@ msgstr "Måldomän-OS-typen %s stämmer inte med källan %s"
 msgid "Target domain RNG device count %zu does not match source %zu"
 msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain SMBIOS mode %s does not match source %s"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Måldomän-SMBIOS-läget %s stämmer inte med källan %s"
 
 #, c-format
 msgid "Target domain TPM device count %zu does not match source %zu"
@@ -15528,9 +15522,9 @@ msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
 msgid "Target domain filesystem count %zu does not match source %zu"
 msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain genid %s does not match source %s"
-msgstr "Mål-CPU-tillverkaren %s stämmer inte med källan %s"
+msgstr "Måldomän-genid %s stämmer inte med källan %s"
 
 #, fuzzy, c-format
 msgid "Target domain host device count %zu does not match source %zu"
@@ -15544,9 +15538,9 @@ msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
 msgid "Target domain input device count %zu does not match source %zu"
 msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain machine type %s does not match source %s"
-msgstr "Mål-CPU-typen %s stämmer inte med källan %s"
+msgstr "Måldomänmaskintypen %s stämmer inte med källan %s"
 
 #, fuzzy, c-format
 msgid "Target domain max memory %lld does not match source %lld"
@@ -15564,9 +15558,9 @@ msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
 msgid "Target domain memory slots count '%u' doesn't match source '%u'"
 msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain name '%s' does not match source '%s'"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Måldomännamnet ”%s” stämmer inte med källan ”%s”"
 
 #, fuzzy, c-format
 msgid "Target domain net card count %zu does not match source %zu"
@@ -15620,9 +15614,9 @@ msgstr "Mål-CPU-arkitekturen %s stämmer inte med källan %s"
 msgid "Target domain video card count %zu does not match source %zu"
 msgstr "Mål-CPU-funktionsantalet %zu stämmer inte med källan %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain virt type %s does not match source %s"
-msgstr "Mål-CPU-typen %s stämmer inte med källan %s"
+msgstr "Måldomänvirtualiseringstypen %s stämmer inte med källan %s"
 
 #, fuzzy
 msgid "Target domain vsock device count does not match source"
@@ -15648,9 +15642,9 @@ msgstr "Mål-CPU-funktionen %s stämmer inte med källan %s"
 msgid "Target filesystem model does not match source"
 msgstr "Mål-sysinfo matchar inte källan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target host device mode %s does not match source %s"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Målvärdenhetsläget %s stämmer inte med källan %s"
 
 #, fuzzy, c-format
 msgid "Target host device subsystem %s does not match source %s"
@@ -15660,13 +15654,13 @@ msgstr "Mål-sysinfo %s matchar inte källan %s"
 msgid "Target hub device type %s does not match source %s"
 msgstr "Målnavenhetstypen %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target input device bus %s does not match source %s"
-msgstr "Mål-sysinfo %s %s matchar inte källan %s"
+msgstr "Målinmatningsenhetsbussen %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target input device type %s does not match source %s"
-msgstr "Mål-CPU-typen %s stämmer inte med källan %s"
+msgstr "Målinmatningsenhetstypen %s stämmer inte med källan %s"
 
 #, c-format
 msgid "Target input model %s does not match source %s"
@@ -15709,13 +15703,13 @@ msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
 msgid "Target network card MTU %d does not match source %d"
 msgstr "Mål-CPU-trådar %d stämmer inte med källan %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target network card mac %s does not match source %s"
-msgstr "Mål-CPU-arkitekturen %s stämmer inte med källan %s"
+msgstr "Målnätverkskorts-mac %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target network card model %s does not match source %s"
-msgstr "Mål-CPU-modellen %s stämmer inte med källan %s"
+msgstr "Målnätverkskortsmodellen %s stämmer inte med källan %s"
 
 #, fuzzy
 msgid "Target not found"
@@ -15725,9 +15719,9 @@ msgstr "Nätverk hittades inte"
 msgid "Target panic model '%s' does not match source '%s'"
 msgstr "Målpanikmodellen %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target parallel port %d does not match source %d"
-msgstr "Mål-CPU-kärnor %d stämmer inte med källan %d"
+msgstr "Målparallellporten %d stämmer inte med källan %d"
 
 #, fuzzy, c-format
 msgid "Target redirected device bus %s does not match source %s"
@@ -15802,37 +15796,37 @@ msgstr ""
 msgid "Target type '%s' requires address type '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target video card 2d accel %u does not match source %u"
-msgstr "Mål-CPU-arkitekturen %s stämmer inte med källan %s"
+msgstr "Målvideokortets 2d-acceleration %u stämmer inte med källan %u"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target video card 3d accel %u does not match source %u"
-msgstr "Mål-CPU-arkitekturen %s stämmer inte med källan %s"
+msgstr "Målvideokortets 3d-acceleration %u stämmer inte med källan %u"
 
 #, fuzzy
 msgid "Target video card acceleration does not match source"
 msgstr "Mål-sysinfo matchar inte källan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target video card heads %u does not match source %u"
-msgstr "Mål-CPU-trådar %d stämmer inte med källan %d"
+msgstr "Målvideokortshuvuden %u stämmer inte med källan %u"
 
 #, c-format
 msgid "Target video card model %s does not match source %s"
 msgstr "Målvideokortsmodellen %s stämmer inte med källan %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target video card ram %u does not match source %u"
-msgstr "Mål-CPU-tillverkaren %s stämmer inte med källan %s"
+msgstr "Målvideokorts-ram %u stämmer inte med källan %u"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target video card vgamem %u does not match source %u"
-msgstr "Mål-CPU-kärnor %d stämmer inte med källan %d"
+msgstr "Målvideokortets vgamem %u stämmer inte med källan %u"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target video card vram %u does not match source %u"
-msgstr "Mål-CPU-tillverkaren %s stämmer inte med källan %s"
+msgstr "Målvideokortets vram %u stämmer inte med källan %u"
 
 #, fuzzy, c-format
 msgid "Target video card vram64 %u does not match source %u"
@@ -16283,9 +16277,9 @@ msgstr ""
 msgid "Too many domain_checkpoints '%d' for limit '%d'"
 msgstr "För många klienter ”%d” för gränsen ”%d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many domain_snapshots '%d' for limit '%d'"
-msgstr "För många klienter ”%d” för gränsen ”%d”"
+msgstr "För många domänögonblicksbilder ”%d” för gränsen ”%d”"
 
 #, c-format
 msgid "Too many domains '%d' for limit '%d'"
@@ -16330,21 +16324,21 @@ msgstr "För många modellnamn ”%d” för gränsen ”%d”"
 msgid "Too many mountpoints in fsinfo: %d for limit %d"
 msgstr "För många klienter ”%d” för gränsen ”%d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many network_ports '%d' for limit '%d'"
-msgstr "För många servrar ”%d” för gränsen ”%d”"
+msgstr "För många nätverksportar ”%d” för gränsen ”%d”"
 
 #, c-format
 msgid "Too many networks '%d' for limit '%d'"
 msgstr "För många nätverk ”%d” för gränsen ”%d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many node_devices '%d' for limit '%d'"
-msgstr "För många servrar ”%d” för gränsen ”%d”"
+msgstr "För många nodenheter ”%d” för gränsen ”%d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many nwfilter_bindings '%d' for limit '%d'"
-msgstr "För många klienter ”%d” för gränsen ”%d”"
+msgstr "För många nwfilter-bindningar ”%d” för gränsen ”%d”"
 
 #, c-format
 msgid "Too many nwfilters '%d' for limit '%d'"
@@ -16366,9 +16360,9 @@ msgstr "För många servrar ”%d” för gränsen ”%d”"
 msgid "Too many snapshots claiming to be current for domain %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many storage_pools '%d' for limit '%d'"
-msgstr "För många servrar ”%d” för gränsen ”%d”"
+msgstr "För många lagringspooler ”%d” för gränsen ”%d”"
 
 #, c-format
 msgid "Too many storage_vols '%d' for limit '%d'"
@@ -16920,17 +16914,16 @@ msgstr "Misslyckades att skapa domän från %s"
 msgid "Unable to create TAP devices on this platform"
 msgstr "kan inte skapa uttagspar"
 
-#, fuzzy
 msgid "Unable to create UNIX socket"
-msgstr "kan inte skapa uttagspar"
+msgstr "Kan inte skapa ett UNIX-uttag"
 
 #, fuzzy
 msgid "Unable to create blkid library handle"
 msgstr "kan inte skapa uttagspar"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create bridge %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte skapa bryggan %s"
 
 #, fuzzy
 msgid "Unable to create bridge device"
@@ -17736,9 +17729,8 @@ msgstr "Kan inte initiera certifikat"
 msgid "Unable to move %s mount to %s"
 msgstr "Kan inte skriva till övervakaren"
 
-#, fuzzy
 msgid "Unable to notify child process"
-msgstr "Kan inte vänta på föräldraprocessen"
+msgstr "Kan inte notifiera barnprocessen"
 
 msgid "Unable to notify parent process"
 msgstr "Kan inte notifiera föräldraprocessen"
@@ -17813,9 +17805,9 @@ msgstr "Kan inte öppna filen: %s"
 msgid "Unable to open filesystem %s"
 msgstr "Misslyckades att öppna filen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open log file %s"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Kan inte öppna loggfilen %s"
 
 #, fuzzy, c-format
 msgid "Unable to open resource %s"
@@ -17856,13 +17848,13 @@ msgstr "kan inte tolka mac-adressen ”%s”"
 msgid "Unable to parse MAC '%s'"
 msgstr "Misslyckades med att tolka läget ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse RNG %s: %s"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Kan inte tolka RNG %s: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse URI %s"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Kan inte tolka URI:n %s"
 
 #, fuzzy, c-format
 msgid "Unable to parse UUID '%s'"
@@ -17939,9 +17931,9 @@ msgstr "Kan inte skriva till övervakaren"
 msgid "Unable to parse uptime value '%s'"
 msgstr "kan inte tolka mac-adressen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse: %s"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Kan inte tolka: %s"
 
 #, fuzzy, c-format
 msgid "Unable to pre-create chardev file '%s'"
@@ -19124,9 +19116,9 @@ msgstr "Okänd modelltyp ”%s”"
 msgid "Unknown namespace: %s"
 msgstr "Okänd modelltyp ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown parameter %s"
-msgstr "okänd parametertyp: %d"
+msgstr "Okänd parameter %s"
 
 msgid "Unknown parameter type"
 msgstr "Okänd parametertyp"
@@ -19326,9 +19318,9 @@ msgstr "Diskenhettypen ”%s” stödjs inte"
 msgid "Unsupported NUMA memory tuning mode '%s'"
 msgstr "Konfigurationsformatet stödjs inte ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported OS type: %s"
-msgstr "Konfigurationstypen stödjs inte %s"
+msgstr "OS-typen %s stödjs inte"
 
 msgid "Unsupported PCI Express root controller"
 msgstr ""
@@ -19377,9 +19369,9 @@ msgstr "Startenhetstypen stödjs inte: ”%s”"
 msgid "Unsupported boot order configuration"
 msgstr "Konfigurationsformatet stödjs inte ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported bus type '%s'"
-msgstr "disktypen stödjs inte %s"
+msgstr "Busstypen ”%s” stödjs inte"
 
 #, fuzzy, c-format
 msgid "Unsupported bus type '%s' for %s"
@@ -19433,11 +19425,11 @@ msgid "Unsupported controller type: %s"
 msgstr "Konfigurationstypen stödjs inte %s"
 
 msgid "Unsupported device type"
-msgstr ""
+msgstr "Enhetstyp som inte stödjs"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported device type %d"
-msgstr "Diskenhettypen ”%s” stödjs inte"
+msgstr "Enhetstypen %d stödjs inte"
 
 #, c-format
 msgid "Unsupported device type '%s'"
@@ -19475,9 +19467,9 @@ msgstr "Konfigurationsformatet stödjs inte ”%s”"
 msgid "Unsupported graphics type '%s'"
 msgstr "Grafiktypen ”%s” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported host device mode %s"
-msgstr "Diskenhettypen ”%s” stödjs inte"
+msgstr "Värdenhetsläget %s stödjs inte"
 
 #, c-format
 msgid "Unsupported host device type %s"
@@ -19487,9 +19479,9 @@ msgstr "Värdenhetstypen ”%s” stödjs inte"
 msgid "Unsupported hostdev mode %s"
 msgstr "Diskenhettypen ”%s” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported hostdev type %s"
-msgstr "Diskenhettypen ”%s” stödjs inte"
+msgstr "Värdenhetstypen %s stödjs inte"
 
 #, c-format
 msgid "Unsupported interface %s for TPM 1.2"
@@ -19507,17 +19499,17 @@ msgstr "Konfigurationstypen stödjs inte %s"
 msgid "Unsupported net type %s"
 msgstr "Nättypen %s stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported net type '%s'"
-msgstr "Konfigurationstypen stödjs inte %s"
+msgstr "Nättypen ”%s” stödjs inte"
 
 #, fuzzy, c-format
 msgid "Unsupported network block protocol '%s'"
 msgstr "Konfigurationsformatet stödjs inte ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported network type %s"
-msgstr "Konfigurationstypen stödjs inte %s"
+msgstr "Nätverkstypen %s stödjs inte"
 
 #, c-format
 msgid ""
@@ -19561,9 +19553,9 @@ msgstr "Diskenhettypen ”%s” stödjs inte"
 msgid "Unsupported storage type %s, the only supported type is %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported vbox device type: %d"
-msgstr "Diskenhettypen ”%s” stödjs inte"
+msgstr "Vbox-enhetstypen %d stödjs inte"
 
 #, c-format
 msgid "Unsupported video device type '%s'"
@@ -19586,7 +19578,7 @@ msgid "Unusual value in %s/devices/%s/class: %s"
 msgstr ""
 
 msgid "Update device from an XML <file>."
-msgstr "Uppdatera enheten från en XML <fil>."
+msgstr "Uppdatera enhet från en XML <fil>."
 
 msgid "Update the media"
 msgstr ""
@@ -19624,7 +19616,7 @@ msgid ""
 msgstr ""
 
 msgid "Usage:"
-msgstr ""
+msgstr "Användning:"
 
 #, sh-format
 msgid ""
@@ -19702,9 +19694,8 @@ msgstr ""
 msgid "V1 controller '%s' is not wanted, but '%s' is co-mounted"
 msgstr ""
 
-#, fuzzy
 msgid "VCPU"
-msgstr "VCPU:"
+msgstr "VCPU"
 
 msgid "VCPU:"
 msgstr "VCPU:"
@@ -19717,7 +19708,7 @@ msgstr ""
 
 #, c-format
 msgid "VFB %s too big for destination"
-msgstr ""
+msgstr "VFB %s är för stor för destinationen"
 
 msgid "VFIO AP device assignment is not supported by this version of QEMU"
 msgstr ""
@@ -19766,7 +19757,7 @@ msgid "VMX entry 'sched.cpu.affinity' contains a %d, this value is too large"
 msgstr ""
 
 msgid "VNC"
-msgstr ""
+msgstr "VNC"
 
 msgid "VNC Password authentication not supported by bhyve"
 msgstr ""
@@ -19802,7 +19793,7 @@ msgstr ""
 
 #, c-format
 msgid "Vifname %s too big for destination"
-msgstr ""
+msgstr "Vif-namn %s är för stort för destinationen"
 
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
@@ -19830,9 +19821,9 @@ msgstr "Domän %s skapad från %s\n"
 msgid "Vol %s created\n"
 msgstr "Domän %s skapad från %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Vol %s created from %s\n"
-msgstr "Domän %s skapad från %s\n"
+msgstr "Volym %s skapad från %s\n"
 
 #, fuzzy, c-format
 msgid "Vol %s created from input vol %s\n"
@@ -19881,7 +19872,7 @@ msgid "VxHS protocol does not support URI syntax"
 msgstr ""
 
 msgid "VxHS protocol is not supported with this QEMU binary"
-msgstr ""
+msgstr "VxHS-protokollet stödjs inte med denna QEMU-binär"
 
 msgid "WARN"
 msgstr ""
@@ -19907,7 +19898,7 @@ msgid "Wakeup a domain that was previously suspended by power management."
 msgstr "Fortsätt en tidigare suspenderad domän."
 
 msgid "Watchdog"
-msgstr ""
+msgstr "Vakthund"
 
 #, fuzzy, c-format
 msgid ""
@@ -19941,11 +19932,9 @@ msgstr ""
 msgid "Write to '%s' to trigger host scan failed"
 msgstr ""
 
-#, fuzzy
 msgid ""
 "Wrong <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"Inget <source> ”name”-attribut angivet med <interface type='internal'/>"
+msgstr "Fel <source> ”mode”-attribut angivet med <interface type='vhostuser'/>"
 
 msgid "Wrong MAC address"
 msgstr ""
@@ -19990,28 +19979,23 @@ msgstr ""
 msgid "XML document failed to validate against schema: %s"
 msgstr ""
 
-#, fuzzy
 msgid "XML does not contain expected 'bios' element"
-msgstr "XML innehåller inte ett förväntat ”cpu”-element"
+msgstr "XML innehåller inte ett förväntat ”bios”-element"
 
-#, fuzzy
 msgid "XML does not contain expected 'chassis' element"
-msgstr "XML innehåller inte ett förväntat ”cpu”-element"
+msgstr "XML innehåller inte ett förväntat ”chassis”-element"
 
-#, fuzzy
 msgid "XML does not contain expected 'cookie' element"
-msgstr "XML innehåller inte ett förväntat ”cpu”-element"
+msgstr "XML innehåller inte ett förväntat ”cookie”-element"
 
 msgid "XML does not contain expected 'cpu' element"
 msgstr "XML innehåller inte ett förväntat ”cpu”-element"
 
-#, fuzzy
 msgid "XML does not contain expected 'sysinfo' element"
-msgstr "XML innehåller inte ett förväntat ”cpu”-element"
+msgstr "XML innehåller inte ett förväntat ”sysinfo”-element"
 
-#, fuzzy
 msgid "XML does not contain expected 'system' element"
-msgstr "XML innehåller inte ett förväntat ”cpu”-element"
+msgstr "XML innehåller inte ett förväntat ”system”-element"
 
 #, fuzzy, c-format
 msgid "XML error: %s"
@@ -20048,21 +20032,21 @@ msgstr ""
 msgid "[%s]"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "[--%s <number>]"
-msgstr "--%s <nummer>"
+msgstr "[--%s <nummer>]"
 
-#, fuzzy, c-format
+#, c-format
 msgid "[--%s <string>]"
-msgstr "--%s <sträng>"
+msgstr "[--%s <sträng>]"
 
-#, fuzzy, c-format
+#, c-format
 msgid "[--%s] <number>"
-msgstr "--%s <nummer>"
+msgstr "[--%s <nummer>]"
 
-#, fuzzy, c-format
+#, c-format
 msgid "[--%s] <string>"
-msgstr "--%s <sträng>"
+msgstr "[--%s <sträng>]"
 
 #, c-format
 msgid "[<%s>]..."
@@ -20138,7 +20122,7 @@ msgid "absolute path must be used as block copy target"
 msgstr ""
 
 msgid "access denied"
-msgstr ""
+msgstr "åtkomst nekas"
 
 msgid "access denied by policy"
 msgstr ""
@@ -20192,7 +20176,7 @@ msgid "add a column showing parent snapshot"
 msgstr ""
 
 msgid "add an IOThread to the guest domain"
-msgstr ""
+msgstr "lägg till en IOThread till gästdomänen"
 
 msgid "add backing chain information to block stats"
 msgstr ""
@@ -20326,22 +20310,20 @@ msgstr "måltypen måste anges för %s-enhet"
 msgid "another backup job is already running"
 msgstr "Domänen kör redan"
 
-#, fuzzy
 msgid "any configuration"
-msgstr "domäninformation"
+msgstr "någon konfiguration"
 
 msgid "apparmor_parser exited with error"
 msgstr ""
 
 msgid "append not supported in this QEMU binary"
-msgstr ""
+msgstr "att lägga till stödjs inte i denna QEMU-binär"
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr ""
 
-#, fuzzy
 msgid "architecture"
-msgstr "Saknad CPU-arkitektur"
+msgstr "arkitektur"
 
 #, c-format
 msgid "architecture from emulator '%s' doesn't match given architecture '%s'"
@@ -20475,13 +20457,12 @@ msgstr ""
 msgid "auth username to be used for underlying storage"
 msgstr ""
 
-#, fuzzy
 msgid "authentication cancelled"
-msgstr "autentisering misslyckades"
+msgstr "autenticeringen avbröts"
 
-#, fuzzy, c-format
+#, c-format
 msgid "authentication cancelled: %s"
-msgstr "autentisering misslyckades: %s"
+msgstr "autentisering avbruten: %s"
 
 msgid "authentication failed"
 msgstr "autentisering misslyckades"
@@ -20683,7 +20664,7 @@ msgid "blkio weight is valid only for bfq or cfq scheduler"
 msgstr ""
 
 msgid "block"
-msgstr ""
+msgstr "block"
 
 #, c-format
 msgid "block I/O throttle limit must be no more than %llu using QEMU"
@@ -20749,9 +20730,8 @@ msgstr ""
 msgid "blockdev-create job was cancelled"
 msgstr ""
 
-#, fuzzy
 msgid "blocked"
-msgstr "blockenhet"
+msgstr "blockerat"
 
 msgid "blockstats device entry was not in expected format"
 msgstr ""
@@ -20792,7 +20772,7 @@ msgid "boot order '%s' used for more than one device"
 msgstr ""
 
 msgid "booted"
-msgstr ""
+msgstr "startad"
 
 msgid ""
 "booting from assigned devices is not supported by mediated devices of model "
@@ -20864,10 +20844,10 @@ msgid "buffer for root interface name is too small"
 msgstr ""
 
 msgid "buffer too small for IP address"
-msgstr ""
+msgstr "bufferten är för liten för IP-adressen"
 
 msgid "buffer too small for IPv6 address"
-msgstr ""
+msgstr "bufferten är för liten för IPv6-adressen"
 
 msgid "build a pool"
 msgstr ""
@@ -20880,7 +20860,7 @@ msgstr ""
 
 #, c-format
 msgid "bus %s too big for destination"
-msgstr ""
+msgstr "bussen %s är för stor för destinationen"
 
 msgid "bus must be 0 for sata controller"
 msgstr ""
@@ -20889,7 +20869,7 @@ msgid "bypass cache unsupported by this system"
 msgstr ""
 
 msgid "bytes"
-msgstr ""
+msgstr "byte"
 
 #, fuzzy
 msgid "cache mode of disk device"
@@ -21186,9 +21166,8 @@ msgstr ""
 msgid "cannot change to '%u' group"
 msgstr "kan inte byta till rotkatalogen: %s"
 
-#, fuzzy
 msgid "cannot change to root directory"
-msgstr "kan inte byta till rotkatalogen: %s"
+msgstr "kan inte byta till rotkatalogen"
 
 #, c-format
 msgid "cannot change to root directory: %s"
@@ -21262,9 +21241,9 @@ msgstr "Misslyckades att konvertera ”%s” till teckenlöst heltal"
 msgid "cannot copy from volume to a directory volume"
 msgstr "kan inte byta till rotkatalogen: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create %s"
-msgstr "kan inte ta bort konfigurationen %s"
+msgstr "kan inte skapa %s"
 
 msgid "cannot create a mediated device without a parent"
 msgstr ""
@@ -21276,13 +21255,13 @@ msgstr "kan inte skapa konfigurationskatalogen %s"
 msgid "cannot create a vboxSnapshotXmlPtr"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create autostart directory %s"
-msgstr "kan inte skapa konfigurationskatalogen %s"
+msgstr "kan inte skapa autostartkatalogen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create autostart directory '%s'"
-msgstr "kan inte skapa konfigurationskatalogen ”%s”"
+msgstr "kan inte skapa autostartkatalogen ”%s”"
 
 msgid "cannot create capabilities for libxenlight"
 msgstr ""
@@ -21306,9 +21285,9 @@ msgstr "kan inte skapa konfigurationskatalogen %s"
 msgid "cannot create config directory '%s'"
 msgstr "kan inte skapa konfigurationskatalogen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create directory %s"
-msgstr "kan inte skapa konfigurationskatalogen %s"
+msgstr "kan inte skapa katalogen %s"
 
 #, fuzzy, c-format
 msgid "cannot create file %s"
@@ -21318,9 +21297,9 @@ msgstr "kan inte skapa konfigurationskatalogen %s"
 msgid "cannot create file '%s'"
 msgstr "kan inte skriva konfigurationsfilen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create log directory %s"
-msgstr "kan inte skapa konfigurationskatalogen %s"
+msgstr "kan inte skapa loggkatalogen %s"
 
 msgid "cannot create logger for libxenlight, disabling driver"
 msgstr ""
@@ -21339,9 +21318,9 @@ msgstr "kan inte skapa konfigurationskatalogen ”%s”"
 msgid "cannot create snapshot while checkpoint exists"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create state directory '%s'"
-msgstr "kan inte skapa konfigurationskatalogen ”%s”"
+msgstr "kan inte skapa tillståndskatalogen ”%s”"
 
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
@@ -21557,9 +21536,8 @@ msgstr ""
 msgid "cannot generate a random uuid for instanceid"
 msgstr "kan inte generera ett slumpmässigt uuid som instanceid"
 
-#, fuzzy
 msgid "cannot generate a random uuid for interfaceid"
-msgstr "kan inte generera ett slumpmässigt uuid som instanceid"
+msgstr "kan inte generera ett slumpmässigt uuid som iterfaceid"
 
 #, fuzzy, c-format
 msgid "cannot generate dac user and group id for domain %s"
@@ -21592,9 +21570,8 @@ msgstr ""
 msgid "cannot get current time"
 msgstr ""
 
-#, fuzzy
 msgid "cannot get disk location"
-msgstr "Misslyckades att få diskinformation"
+msgstr "kan inte hämta diskplats"
 
 msgid "cannot get feature flags on macvtap tap"
 msgstr ""
@@ -21626,13 +21603,13 @@ msgid "cannot get machine name"
 msgstr "kan inte initiera mutex"
 
 msgid "cannot get medium"
-msgstr ""
+msgstr "kan inte hämta medium"
 
 msgid "cannot get medium attachment type"
-msgstr ""
+msgstr "kan inte hämta anslutningstyp för medium"
 
 msgid "cannot get medium attachments"
-msgstr ""
+msgstr "kan inte hämta anslutningar för medium"
 
 msgid "cannot get netlink socket fd"
 msgstr ""
@@ -21837,13 +21814,13 @@ msgstr ""
 msgid "cannot obtain CPU freq"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s"
-msgstr "kan inte ta bort konfigurationen %s"
+msgstr "kan inte öppna %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open '%s'"
-msgstr "kan inte ta bort konfigurationen %s"
+msgstr "kan inte öppna ”%s”"
 
 msgid "cannot open SELinux label_handle"
 msgstr ""
@@ -21907,15 +21884,15 @@ msgstr "kan inte skriva konfigurationsfilen ”%s”"
 
 #, c-format
 msgid "cannot parse cpu sys stat '%s'"
-msgstr ""
+msgstr "kan inte tolka cpu-systemstatus ”%s”"
 
 #, c-format
 msgid "cannot parse cpu usage stat '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot parse cpu user stat '%s'"
-msgstr "Kan inte tolka styrenhetsindex %s"
+msgstr "kan inte tolka cpu-användarstatus ”%s”"
 
 #, fuzzy, c-format
 msgid "cannot parse device %s"
@@ -21931,9 +21908,8 @@ msgstr ""
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "kan inte tolka parametern instanceid som ett uuid"
 
-#, fuzzy
 msgid "cannot parse interfaceid parameter as a uuid"
-msgstr "kan inte tolka parametern instanceid som ett uuid"
+msgstr "kan inte tolka parametern interfaceid som ett uuid"
 
 #, fuzzy, c-format
 msgid "cannot parse json %s: %s"
@@ -22102,9 +22078,9 @@ msgstr ""
 msgid "cannot read %s value"
 msgstr "Kan inte läsa %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot read '%s'"
-msgstr "Kan inte läsa %s"
+msgstr "kan inte läsa ”%s”"
 
 #, c-format
 msgid "cannot read SELinux virtual domain context file '%s'"
@@ -22119,15 +22095,15 @@ msgid "cannot read beginning of file '%s'"
 msgstr "kan inte skriva konfigurationsfilen ”%s”"
 
 msgid "cannot read cputime for domain"
-msgstr ""
+msgstr "kan inte läsa cpu-tid för domänen"
 
 #, c-format
 msgid "cannot read cputime for domain %d"
-msgstr ""
+msgstr "kan inte läsa cpu-tid för domän %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot read dir '%s'"
-msgstr "kan inte skapa konfigurationskatalogen ”%s”"
+msgstr "kan inte läsa katalogen ”%s”"
 
 #, fuzzy, c-format
 msgid "cannot read domain image '%s'"
@@ -22175,13 +22151,13 @@ msgstr "namn för den inaktiva domänen"
 msgid "cannot remove config %s"
 msgstr "kan inte ta bort konfigurationen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot remove config file '%s'"
-msgstr "kan inte skriva konfigurationsfilen ”%s”"
+msgstr "kan inte ta bort konfigurationsfilen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot remove config for %s"
-msgstr "kan inte ta bort konfigurationen %s"
+msgstr "kan inte ta bort konfigurationen för %s"
 
 #, fuzzy, c-format
 msgid "cannot remove corrupt file: %s"
@@ -22225,9 +22201,8 @@ msgstr ""
 msgid "cannot reset current job"
 msgstr ""
 
-#, fuzzy
 msgid "cannot resize the maximum memory on an active domain"
-msgstr "Ändra gräns för maximal minnesallokering för gästdomänen."
+msgstr "det går inte att ändra storlek på maximalt minne på en aktiv domän"
 
 #, fuzzy, c-format
 msgid "cannot resolve '%s' without starting directory"
@@ -22286,13 +22261,11 @@ msgstr "Misslyckades att skapa uttag"
 msgid "cannot set CPU affinity on process %d"
 msgstr ""
 
-#, fuzzy
 msgid "cannot set autostart for transient domain"
-msgstr "autostarta en domän"
+msgstr "det går inte att sätta autostart för en transient domän"
 
-#, fuzzy
 msgid "cannot set autostart for transient network"
-msgstr "starta ett nätverk automatiskt"
+msgstr "det går inte att sätta autostart för ett transient nätverk"
 
 msgid "cannot set backing store for raw volume"
 msgstr ""
@@ -22317,7 +22290,7 @@ msgid "cannot set initial memory size greater than the maximum memory size"
 msgstr ""
 
 msgid "cannot set memory higher than max memory"
-msgstr ""
+msgstr "det går inte att sätta minnet högre än maximalt minne"
 
 #, fuzzy, c-format
 msgid "cannot set mode of '%s' to %04o"
@@ -22364,7 +22337,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot stat '%s'"
-msgstr ""
+msgstr "kan inte ta status på ”%s”"
 
 #, c-format
 msgid "cannot stat fd %d"
@@ -22425,9 +22398,8 @@ msgstr ""
 msgid "cannot undefine domain with nvram"
 msgstr "Misslyckades att avdefiniera domän %s"
 
-#, fuzzy
 msgid "cannot undefine transient domain"
-msgstr "Misslyckades att avdefiniera domän %s"
+msgstr "det går inte att avdefiniera en transient domän"
 
 #, c-format
 msgid "cannot unlink '%s'"
@@ -22553,20 +22525,17 @@ msgstr ""
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup-CPU-regulatorn är inte monterad"
 
-#, fuzzy
 msgid "cgroup CPUACCT controller is not mounted"
-msgstr "cgroup-CPU-regulatorn är inte monterad"
+msgstr "cgroup-CPUACCT-regulatorn är inte monterad"
 
 msgid "cgroup cpu is required for scheduler tuning"
 msgstr ""
 
-#, fuzzy
 msgid "cgroup cpuset controller is not mounted"
-msgstr "cgroup-CPU-regulatorn är inte monterad"
+msgstr "cgroup-cpuset-regulatorn är inte monterad"
 
-#, fuzzy
 msgid "cgroup memory controller is not mounted"
-msgstr "cgroup-CPU-regulatorn är inte monterad"
+msgstr "cgroup-minnesregulatorn är inte monterad"
 
 msgid "cgroups v2 BPF devices not supported with this kernel"
 msgstr ""
@@ -22587,9 +22556,8 @@ msgstr "ändra antal virtuella CPU:er"
 msgid "change of nodeset for running domain requires strict numa mode"
 msgstr ""
 
-#, fuzzy
 msgid "change the current directory"
-msgstr "kan inte byta till rotkatalogen: %s"
+msgstr "byt aktuell katalog"
 
 msgid "changed"
 msgstr "ändrad"
@@ -22610,7 +22578,7 @@ msgid "changing clock parameters is not supported by vz driver"
 msgstr ""
 
 msgid "changing cpu placement mode is not supported by vz driver"
-msgstr ""
+msgstr "att ändra cpu-placeringsläge stödjs inte av vz-drivrutinen"
 
 msgid "changing device alias is not allowed"
 msgstr ""
@@ -22789,7 +22757,7 @@ msgid "comma separated list of disks to be migrated"
 msgstr ""
 
 msgid "command"
-msgstr ""
+msgstr "kommando"
 
 #, c-format
 msgid "command '%s' doesn't support option --%s"
@@ -22930,9 +22898,8 @@ msgstr ""
 msgid "connect to the guest console"
 msgstr "anslut till gästkonsolen"
 
-#, fuzzy
 msgid "connected"
-msgstr "anslut"
+msgstr "ansluten"
 
 #, fuzzy, c-format
 msgid "connection %s too big"
@@ -23251,9 +23218,8 @@ msgstr ""
 msgid "could not get root snapshot for domain %s"
 msgstr "Kunde inte starta domänen: %s"
 
-#, fuzzy
 msgid "could not get snapshot UUID"
-msgstr "misslyckades att hämta nätverks-UUID"
+msgstr "kunde inte få tag i ögonblicsbilds-UUID"
 
 msgid "could not get snapshot children"
 msgstr ""
@@ -23265,9 +23231,8 @@ msgstr "Kunde inte starta domänen: %s"
 msgid "could not get snapshot count for listed domains"
 msgstr ""
 
-#, fuzzy
 msgid "could not get snapshot name"
-msgstr "misslyckades att få värdnamn"
+msgstr "kunde inte få tag i ögonblicksbildsnamn"
 
 #, c-format
 msgid "could not get the volume list in the pool: %s, rc=%08x"
@@ -23288,9 +23253,8 @@ msgstr "Kunde inte hitta %s med namnet ”%s”"
 msgid "could not parse XML"
 msgstr ""
 
-#, fuzzy
 msgid "could not parse arguments"
-msgstr "kunde inte allokera minne"
+msgstr "kunde inte tolka argumenteten"
 
 #, fuzzy, c-format
 msgid "could not parse read bytes sec %s"
@@ -23505,26 +23469,22 @@ msgstr "skapa ett nätverk från en XML-fil"
 msgid "create a network from an XML file"
 msgstr "skapa ett nätverk från en XML-fil"
 
-#, fuzzy
 msgid "create a network port from an XML file"
-msgstr "skapa ett nätverk från en XML-fil"
+msgstr "skapa en nätverksport från en XML-fil"
 
-#, fuzzy
 msgid "create a pool from a set of args"
-msgstr "skapa en domän från en XML-fil"
+msgstr "skapa en pool från en uppsättning argument"
 
-#, fuzzy
 msgid "create a pool from an XML file"
-msgstr "skapa en domän från en XML-fil"
+msgstr "skapa en pool från en XML-fil"
 
 msgid ""
 "create a snapshot of current interfaces settings, which can be later "
 "committed (iface-commit) or restored (iface-rollback)"
 msgstr ""
 
-#, fuzzy
 msgid "create a vol from an XML file"
-msgstr "skapa en domän från en XML-fil"
+msgstr "skapa en volym från en XML-fil"
 
 msgid "create a vol, using another volume as input"
 msgstr ""
@@ -23539,7 +23499,7 @@ msgid ""
 msgstr ""
 
 msgid "creating snapshot"
-msgstr ""
+msgstr "skapar en ögonblicksbild"
 
 msgid "creation of images with slice type='storage' is not supported"
 msgstr ""
@@ -23621,7 +23581,7 @@ msgstr ""
 
 #, c-format
 msgid "dbus-daemon %s didn't show up"
-msgstr ""
+msgstr "dbus-demonen %s dök inte upp"
 
 #, c-format
 msgid "dbus-daemon %s died unexpectedly"
@@ -23632,10 +23592,10 @@ msgid "dbus-daemon died and reported: %s"
 msgstr ""
 
 msgid "debug"
-msgstr ""
+msgstr "felsök"
 
 msgid "default"
-msgstr ""
+msgstr "standard"
 
 #, c-format
 msgid "default_tls_x509_cert_dir directory '%s' does not exist"
@@ -23695,7 +23655,7 @@ msgid "delete a vol"
 msgstr ""
 
 msgid "delete an IOThread from the guest domain"
-msgstr ""
+msgstr "radera en IOThread från gästdomänen"
 
 msgid "delete checkpoint and all children"
 msgstr ""
@@ -23731,7 +23691,7 @@ msgid ""
 msgstr ""
 
 msgid "delete the specified network port"
-msgstr ""
+msgstr "radera den angivna nätverksporten"
 
 #, c-format
 msgid "deleting %s drive failed: %s"
@@ -23751,7 +23711,7 @@ msgid "deletion of %d external disk snapshots not supported yet"
 msgstr ""
 
 msgid "description"
-msgstr ""
+msgstr "beskrivning"
 
 msgid "description of checkpoint"
 msgstr ""
@@ -23776,9 +23736,8 @@ msgstr ""
 msgid "destroy a physical host interface (disable it / \"if-down\")"
 msgstr "förstör ett fysiskt värdgränssnitt (avaktivera det / ”if-down”)"
 
-#, fuzzy
 msgid "destroyed"
-msgstr "Domän %s förstörd\n"
+msgstr "förstörd"
 
 msgid "detach device from an XML file"
 msgstr "avmontera enhet från en XML-fil"
@@ -23830,9 +23789,9 @@ msgstr ""
 msgid "device %s iommu_group symlink %s has invalid group number %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "device %s is already in use"
-msgstr "domänen ”%s” är redan definierat med UUID %s"
+msgstr "enheten %s används redan"
 
 #, c-format
 msgid "device %s is not a PCI device"
@@ -23840,7 +23799,7 @@ msgstr ""
 
 #, c-format
 msgid "device %s too big for destination"
-msgstr ""
+msgstr "enheten %s är för stor för destinationen"
 
 #, c-format
 msgid "device '%s' in network '%s' is not an SR-IOV Virtual Function"
@@ -23944,7 +23903,7 @@ msgid "directory to switch to (default: home or else root)"
 msgstr ""
 
 msgid "disable"
-msgstr ""
+msgstr "avaktivera"
 
 msgid "disable autostarting"
 msgstr "inaktivera autostartning"
@@ -23959,10 +23918,10 @@ msgid "disable shared memory is not available with this QEMU binary"
 msgstr ""
 
 msgid "disabled"
-msgstr ""
+msgstr "avaktiverad"
 
 msgid "discard is not supported by this QEMU binary"
-msgstr ""
+msgstr "discard stödjs inte av denna QEMU-binär"
 
 msgid "discard is not supported for nvdimms"
 msgstr ""
