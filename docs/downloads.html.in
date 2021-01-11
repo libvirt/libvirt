@@ -493,20 +493,6 @@
       <li><a href="https://libvirt.org/sources/">libvirt.org HTTPS server</a></li>
     </ul>
 
-    <h2><a id="keys">Signing keys</a></h2>
-
-    <p>
-      Source RPM packages and tarballs for libvirt and libvirt-python published
-      on this project site are signed with a GPG signature. You should always
-      verify the package signature before using the source to compile binary
-      packages. The following key is currently used to generate the GPG
-      signatures:
-    </p>
-    <pre>
-pub  4096R/10084C9C 2020-07-20 Jiří Denemark &lt;jdenemar@redhat.com&gt;
-Fingerprint=453B 6531 0595 5628 5547  1199 CA68 BE80 1008 4C9C
-</pre>
-
     <h2><a id="schedule">Primary release schedule</a></h2>
 
     <p>
@@ -614,6 +600,20 @@ git clone git://libvirt.org/[module name].git</pre>
     <pre>
 <a href="https://github.com/libvirt/">https://github.com/libvirt/</a>
 <a href="https://gitlab.com/libvirt/libvirt">https://gitlab.com/libvirt/</a></pre>
+
+    <h2><a id="keys">Signing keys</a></h2>
+
+    <p>
+      Source RPM packages and tarballs for libvirt and libvirt-python published
+      on this project site are signed with a GPG signature. You should always
+      verify the package signature before using the source to compile binary
+      packages. The following key is currently used to generate the GPG
+      signatures:
+    </p>
+    <pre>
+pub  4096R/10084C9C 2020-07-20 Jiří Denemark &lt;jdenemar@redhat.com&gt;
+Fingerprint=453B 6531 0595 5628 5547  1199 CA68 BE80 1008 4C9C
+</pre>
 
   </body>
 </html>
