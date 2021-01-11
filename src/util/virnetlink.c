@@ -72,6 +72,15 @@ do { \
     } \
 } while (0)
 
+# define NETLINK_MSG_APPEND(msg, datalen, dataptr) \
+do { \
+    if (nlmsg_append(msg, dataptr, datalen, NLMSG_ALIGNTO) < 0) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
+                       _("allocated netlink buffer is too small")); \
+        return -1; \
+    } \
+} while (0)
+
 
 /* State for a single netlink event handle */
 struct virNetlinkEventHandle {
@@ -432,8 +441,7 @@ virNetlinkDumpLink(const char *ifname, int ifindex,
         return -1;
     }
 
-    if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
-        goto buffer_too_small;
+    NETLINK_MSG_APPEND(nl_msg, sizeof(ifinfo), &ifinfo);
 
     if (ifname)
         NETLINK_MSG_PUT(nl_msg, IFLA_IFNAME, (strlen(ifname) + 1), ifname);
@@ -491,11 +499,6 @@ virNetlinkDumpLink(const char *ifname, int ifindex,
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
     return rc;
-
- buffer_too_small:
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("allocated netlink buffer is too small"));
-    return rc;
 }
 
 
@@ -545,8 +548,7 @@ virNetlinkNewLink(const char *ifname,
         return -1;
     }
 
-    if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
-        goto buffer_too_small;
+    NETLINK_MSG_APPEND(nl_msg, sizeof(ifinfo), &ifinfo);
 
     NETLINK_MSG_PUT(nl_msg, IFLA_IFNAME, (strlen(ifname) + 1), ifname);
 
@@ -620,11 +622,6 @@ virNetlinkNewLink(const char *ifname,
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
     return -1;
-
- buffer_too_small:
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("allocated netlink buffer is too small"));
-    return -1;
 }
 
 
@@ -658,8 +655,7 @@ virNetlinkDelLink(const char *ifname, virNetlinkDelLinkFallback fallback)
         return -1;
     }
 
-    if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
-        goto buffer_too_small;
+    NETLINK_MSG_APPEND(nl_msg, sizeof(ifinfo), &ifinfo);
 
     NETLINK_MSG_PUT(nl_msg, IFLA_IFNAME, (strlen(ifname) + 1), ifname);
 
@@ -701,11 +697,6 @@ virNetlinkDelLink(const char *ifname, virNetlinkDelLinkFallback fallback)
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
     return -1;
-
- buffer_too_small:
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("allocated netlink buffer is too small"));
-    return -1;
 }
 
 /**
@@ -740,9 +731,7 @@ virNetlinkGetNeighbor(void **nlData, uint32_t src_pid, uint32_t dst_pid)
         return -1;
     }
 
-    if (nlmsg_append(nl_msg, &ndinfo, sizeof(ndinfo), NLMSG_ALIGNTO) < 0)
-        goto buffer_too_small;
-
+    NETLINK_MSG_APPEND(nl_msg, sizeof(ndinfo), &ndinfo);
 
     if (virNetlinkCommand(nl_msg, &resp, &recvbuflen,
                           src_pid, dst_pid, NETLINK_ROUTE, 0) < 0)
@@ -777,11 +766,6 @@ virNetlinkGetNeighbor(void **nlData, uint32_t src_pid, uint32_t dst_pid)
  malformed_resp:
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("malformed netlink response message"));
-    return -1;
-
- buffer_too_small:
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("allocated netlink buffer is too small"));
     return -1;
 }
 
