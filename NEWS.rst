@@ -11,6 +11,15 @@ For a more fine-grained view, use the `git log`_.
 v7.0.0 (unreleased)
 ===================
 
+* **Project governance**
+
+  * Formal handover of release tarball signing
+
+    Starting from libvirt-6.6 the release tarballs are signed by Jiří Denemark.
+    Releases starting with 7.0 contain a note from the previous maintainer
+    Daniel Veillard offically handing over the signing of packages so that the
+    transition can be verified.
+
 * **New features**
 
   * nodedev: Add node device driver support for AP devices
@@ -19,9 +28,38 @@ v7.0.0 (unreleased)
     queues and AP matrix devices (which are capable of MDEV) of a KVM host
     system in libvirt node device driver with correct object relationships.
 
+  * qemu: Allow control of ``qcow2`` metadata cache
+
+    In specific usecases such as when massive storage images are used it's
+    possible to achieve better performance by increasing the metadata cache
+    size. The new knob allows advanced users setting the size according to
+    qemu's documentation to suit their image.
+
 * **Improvements**
 
+  * qemu: Discourage users from polling ``virDomainGetBlockJobInfo`` for block
+    job completion
+
+    Document that waiting for events is a more robust solution.
+
+  * secret: Relax XML schema for the ``usage`` name of a ``secret``
+
+    Various bits of documentation of how to use libvirt with RBD volumes used
+    an usage name which would not pass the XML validation. Relax the requirement
+    to make such XMLs valid.
+
 * **Bug fixes**
+
+  * qemu: Fix logic bug in inactive snapshot deletion
+
+    This release fixes a bug introduced in libvirt-6.9 where libvirt's
+    snapshot metadata would not be deleted on successful snapshot deletion.
+
+  * qemu: Fix VMs with ``<iotune>`` on an empty cdrom
+
+    Specifying ``<iotune>`` for an empty cdrom would prevent the VM from
+    starting as qemu doesn't accept the tuning for an empty drive. We now
+    postpone setting the parameters until a new media is inserted.
 
 
 v6.10.0 (2020-12-01)
