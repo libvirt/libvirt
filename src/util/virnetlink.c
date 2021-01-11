@@ -627,8 +627,7 @@ virNetlinkDelLink(const char *ifname, virNetlinkDelLinkFallback fallback)
     g_autoptr(virNetlinkMsg) nl_msg = NULL;
     g_autofree struct nlmsghdr *resp = NULL;
 
-    nl_msg = nlmsg_alloc_simple(RTM_DELLINK,
-                                NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
+    nl_msg = nlmsg_alloc_simple(RTM_DELLINK, NLM_F_REQUEST);
     if (!nl_msg) {
         virReportOOMError();
         return -1;
