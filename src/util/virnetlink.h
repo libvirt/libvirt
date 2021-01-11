@@ -69,9 +69,9 @@ int virNetlinkNewLink(const char *ifname,
                       virNetlinkNewLinkDataPtr data,
                       int *error);
 
-typedef int (*virNetlinkDelLinkFallback)(const char *ifname);
+typedef int (*virNetlinkTalkFallback)(const char *ifname);
 
-int virNetlinkDelLink(const char *ifname, virNetlinkDelLinkFallback fallback);
+int virNetlinkDelLink(const char *ifname, virNetlinkTalkFallback fallback);
 
 int virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen);
 
