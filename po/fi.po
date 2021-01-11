@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-11-24 23:25+0000\n"
+"POT-Creation-Date: 2021-01-08 17:11+0000\n"
 "PO-Revision-Date: 2020-12-09 13:35+0000\n"
 "Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -41,6 +41,7 @@ msgstr ""
 "  (anna help <ryhmä> saadaksesi tietoja ryhmän sisällä olevista "
 "komennoista)\n"
 
+#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -204,26 +205,20 @@ msgstr ""
 #, c-format
 msgid ""
 "\n"
-"Domain %s dumped to %s\n"
+"Domain '%s' dumped to %s\n"
 msgstr ""
-"\n"
-"Toimialue %s määritetty tiedostosta %s\n"
 
 #, c-format
 msgid ""
 "\n"
-"Domain %s saved to %s\n"
+"Domain '%s' saved to %s\n"
 msgstr ""
-"\n"
-"Toimialue %s luotu tiedostosta %s\n"
 
 #, c-format
 msgid ""
 "\n"
-"Domain %s state saved by libvirt\n"
+"Domain '%s' state saved by libvirt\n"
 msgstr ""
-"\n"
-"Toimialue %s käynnistetty\n"
 
 #, c-format
 msgid ""
@@ -297,6 +292,7 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr ""
 
+#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  NIMI\n"
 
@@ -368,7 +364,11 @@ msgid "%s 3d acceleration is not supported"
 msgstr ""
 
 #, c-format
-msgid "%s array element does not contain data"
+msgid "%s array element does not contain a string"
+msgstr ""
+
+#, c-format
+msgid "%s array element is missing item %zu"
 msgstr ""
 
 #, c-format
@@ -456,6 +456,10 @@ msgid "%s is missing 'type' property"
 msgstr ""
 
 #, c-format
+msgid "%s is missing or not an array"
+msgstr ""
+
+#, c-format
 msgid "%s is not a supported cipher name"
 msgstr ""
 
@@ -531,6 +535,16 @@ msgstr ""
 msgid "%s object has invalid dynamic type"
 msgstr ""
 
+#.
+#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
+#. * enumeration values).
+#. *
+#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
+#.
+#.
+#. * Macros to implement managed objects
+#.
+#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr ""
@@ -577,6 +591,7 @@ msgstr "%s: %d: argv:n varaus epäonnistui"
 msgid "%s: %d: failed to allocate mountpoints"
 msgstr "%s: %d: liitoskohtien varaus epäonnistui"
 
+#. The length of the formatting string minus two '%s'
 #, c-format
 msgid "%s: %s"
 msgstr ""
@@ -821,10 +836,6 @@ msgid "%s: must not be run setuid root\n"
 msgstr ""
 
 #, c-format
-msgid "%s: nvdimm without a path"
-msgstr ""
-
-#, c-format
 msgid "%s: passthrough input device has no source"
 msgstr ""
 
@@ -988,7 +999,7 @@ msgid "'%s' is not supported in this QEMU binary"
 msgstr ""
 
 #, c-format
-msgid "'%s' missing in guest-get-fsinfo 'disk' data"
+msgid "'%s' missing"
 msgstr ""
 
 #, c-format
@@ -1115,6 +1126,9 @@ msgstr ""
 msgid "'mountpoint' missing in reply of guest-get-fsinfo"
 msgstr ""
 
+msgid "'name' missing in reply of guest-get-disks"
+msgstr ""
+
 msgid "'name' missing in reply of guest-get-fsinfo"
 msgstr ""
 
@@ -1122,6 +1136,15 @@ msgid "'netns' namespace source can only be used with sharenet"
 msgstr ""
 
 msgid "'network' attribute is valid only for listen type 'network'"
+msgstr ""
+
+msgid "'nfs' host must use TCP protocol"
+msgstr ""
+
+msgid "'nfs' protocol is not supported with this QEMU binary"
+msgstr ""
+
+msgid "'nfs' protocol requires the usage of exactly one host"
 msgstr ""
 
 msgid "'offset' missing in reply of guest-get-timezone"
@@ -1133,7 +1156,10 @@ msgstr ""
 msgid "'parent' for vHBA not specified, and cannot find one on this host"
 msgstr ""
 
-msgid "'pci-controller' missing in guest-get-fsinfo 'disk' data"
+msgid "'partition' missing in reply of guest-get-disks"
+msgstr ""
+
+msgid "'pci-controller' missing"
 msgstr ""
 
 msgid "'peak' and 'burst' require 'average' attribute"
@@ -1266,6 +1292,7 @@ msgstr ""
 msgid "(libxl_migration_cookie)"
 msgstr ""
 
+#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr ""
 
@@ -1325,6 +1352,7 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr ""
 
+#. Capacity related information isn't available
 msgid "-"
 msgstr ""
 
@@ -2178,10 +2206,14 @@ msgstr ""
 msgid "Cache with id %u does not exists for level %d"
 msgstr ""
 
+#.
+#. * Macros to implement dynamic dispatched functions
+#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "Kutsu %s odottamattomalle tyypille '%s'"
 
+#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr ""
@@ -2749,9 +2781,6 @@ msgstr ""
 msgid "Cannot open %s"
 msgstr "Toimialuetta ei löytynyt: %s"
 
-msgid "Cannot open /dev/urandom"
-msgstr ""
-
 msgid "Cannot open /proc/cgroups"
 msgstr ""
 
@@ -3001,9 +3030,6 @@ msgstr "%s:ta ei voida lukea '%s'"
 #, fuzzy
 msgid "Cannot read cputime for domain"
 msgstr "Tee toimialueen muistivedos"
-
-msgid "Cannot read from /dev/urandom"
-msgstr ""
 
 msgid "Cannot recv data"
 msgstr ""
@@ -3596,8 +3622,8 @@ msgid "Connected since"
 msgstr ""
 
 #, c-format
-msgid "Connected to domain %s\n"
-msgstr "Yhdistetty toimialueeseen %s\n"
+msgid "Connected to domain '%s'\n"
+msgstr ""
 
 msgid "Connected to the admin server"
 msgstr ""
@@ -4516,6 +4542,7 @@ msgstr ""
 msgid "Could not retrieve 'bridge/stp_state' for '%s'"
 msgstr ""
 
+#. Something went wrong retrieving pool info, cope with it
 #, fuzzy
 msgid "Could not retrieve pool information"
 msgstr "solmun tietojen saanti epäonnistui"
@@ -5141,91 +5168,51 @@ msgid "Do not include features that block migration"
 msgstr ""
 
 #, c-format
-msgid "Domain %s XML configuration edited.\n"
-msgstr "Toimialueen %s XML-määritystä muokattu.\n"
-
-#, c-format
-msgid "Domain %s XML configuration not changed.\n"
-msgstr ""
-
-#, c-format
-msgid "Domain %s attached to pid %u\n"
-msgstr "Toimialue %s liitetty pid:een %u\n"
-
-#, c-format
-msgid "Domain %s could not be suspended"
-msgstr "Toimialue %s ei voitu keskeyttää"
-
-#, c-format
-msgid "Domain %s could not be woken up"
-msgstr ""
-
-#, c-format
-msgid "Domain %s created from %s\n"
-msgstr "Toimialue %s luotu tiedostosta %s\n"
-
-#, c-format
-msgid "Domain %s defined from %s\n"
-msgstr "Toimialue %s määritetty tiedostosta %s\n"
-
-#, c-format
-msgid "Domain %s destroyed\n"
-msgstr "Toimialue %s tuhottu\n"
-
-#, c-format
 msgid "Domain %s didn't show up"
 msgstr "Toimialue %s ei ilmestynyt"
 
 #, c-format
-msgid "Domain %s has been undefined\n"
-msgstr "Toimialueen %s määritys on poistettu\n"
-
-#, c-format
-msgid "Domain %s has no manage save image; removal skipped"
-msgstr ""
-
-#, c-format
-msgid "Domain %s is being rebooted\n"
-msgstr "Toimialuetta %s uudelleenkäynnistetään\n"
-
-#, c-format
-msgid "Domain %s is being shutdown\n"
-msgstr "Toimialuetta %s sammutetaan\n"
-
-#, c-format
-msgid "Domain %s marked as autostarted\n"
-msgstr "Toimialue %s merkitty automaattisesti käynnistyväksi\n"
-
-#, c-format
-msgid "Domain %s resumed\n"
-msgstr "Toimialue %s palautettu\n"
-
-#, c-format
-msgid "Domain %s started\n"
-msgstr "Toimialue %s käynnistetty\n"
-
-#, c-format
-msgid "Domain %s successfully suspended"
-msgstr "Toimialue %s keskeytetty onnistuneesti"
-
-#, c-format
-msgid "Domain %s successfully woken up"
-msgstr ""
-
-#, c-format
-msgid "Domain %s suspended\n"
-msgstr "Toimialue %s keskeytystilassa\n"
-
-#, c-format
-msgid "Domain %s unmarked as autostarted\n"
-msgstr "Toimialueen %s automaattisen käynnistyksen merkintä poistettu\n"
-
-#, fuzzy, c-format
-msgid "Domain %s was reset\n"
-msgstr "Toimialue %s palautettu\n"
-
-#, c-format
 msgid "Domain '%d' has to be running because libxenlight will suspend it"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' XML configuration edited.\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' XML configuration not changed.\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' attached to pid %u\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' could not be suspended"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' could not be woken up"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' created from %s\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' defined from %s\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' destroyed\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' has been undefined\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' has no manage save image; removal skipped"
 msgstr ""
 
 #, c-format
@@ -5233,7 +5220,47 @@ msgid "Domain '%s' is already running"
 msgstr "Toimialue '%s' on jo käynnissä"
 
 #, c-format
+msgid "Domain '%s' is being rebooted\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' is being shutdown\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' marked as autostarted\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' resumed\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' started\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' successfully suspended"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' successfully woken up"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' suspended\n"
+msgstr ""
+
+#, c-format
 msgid "Domain '%s' sysinfo are not available"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' unmarked as autostarted\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' was reset\n"
 msgstr ""
 
 #, fuzzy
@@ -5314,6 +5341,7 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr ""
 
+#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -6081,10 +6109,6 @@ msgid "Failed to allocate XML buffer"
 msgstr "XML:n luonti epäonnistui"
 
 #, c-format
-msgid "Failed to allocate free veth pair after %d attempts"
-msgstr ""
-
-#, c-format
 msgid "Failed to allocate memory for checkpoint directory for domain %s"
 msgstr ""
 
@@ -6326,8 +6350,8 @@ msgid "Failed to copy XML node"
 msgstr "XML:n luonti epäonnistui"
 
 #, c-format
-msgid "Failed to core dump domain %s to %s"
-msgstr "Toimialueen %s muistivedoksen tallentaminen tiedostoon %s epäonnistui"
+msgid "Failed to core dump domain '%s' to %s"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to count network filters"
@@ -6502,14 +6526,21 @@ msgstr "XML:n luonti epäonnistui"
 msgid "Failed to create thread for receiving migration data"
 msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 
+#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
@@ -6626,12 +6657,12 @@ msgid "Failed to destroy bridge interface %s"
 msgstr "Toimialueen %s tuhoaminen epäonnistui"
 
 #, c-format
-msgid "Failed to destroy domain %s"
-msgstr "Toimialueen %s tuhoaminen epäonnistui"
-
-#, c-format
 msgid "Failed to destroy domain '%d'"
 msgstr "Toimialueen '%d' tuhoaminen epäonnistui"
+
+#, c-format
+msgid "Failed to destroy domain '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to destroy interface %s"
@@ -6831,10 +6862,6 @@ msgstr "UUID:n luonti epäonnistui"
 
 msgid "Failed to generate genid"
 msgstr "genid:n luonti epäonnistui"
-
-#, c-format
-msgid "Failed to generate new name for interface %s"
-msgstr "Uuden nimen luominen liitännälle %s epäonnistui"
 
 msgid "Failed to generate uuid"
 msgstr "uuid luonti epäonnistui"
@@ -7099,6 +7126,7 @@ msgstr "Aktiivisten verkkojen luettelointi epäonnistui"
 msgid "Failed to list active pools"
 msgstr "Aktiivisten toimialueiden luettelointi epäonnistui"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list domains"
 msgstr "Aktiivisten toimialueiden luettelointi epäonnistui"
@@ -7117,26 +7145,32 @@ msgstr "Epäktiivisten verkkojen luettelointi epäonnistui"
 msgid "Failed to list inactive pools"
 msgstr "Epäaktiivisten toimialueiden luettelointi epäonnistui"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list interfaces"
 msgstr "Epäaktiivisten toimialueiden luettelointi epäonnistui"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "Epäaktiivisten toimialueiden luettelointi epäonnistui"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filters"
 msgstr "Verkon %s käynnistäminen epäonnistui"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list networks"
 msgstr "Aktiivisten verkkojen luettelointi epäonnistui"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list node devices"
 msgstr "Epäaktiivisten toimialueiden luettelointi epäonnistui"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list node secrets"
 msgstr "Epäktiivisten verkkojen luettelointi epäonnistui"
@@ -7145,6 +7179,7 @@ msgstr "Epäktiivisten verkkojen luettelointi epäonnistui"
 msgid "Failed to list persistent guests on $uri"
 msgstr "Epäktiivisten verkkojen luettelointi epäonnistui"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list pools"
 msgstr "Aktiivisten toimialueiden luettelointi epäonnistui"
@@ -7169,6 +7204,7 @@ msgstr "Aktiivisten verkkojen luettelointi epäonnistui"
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list volumes"
 msgstr "Aktiivisten toimialueiden luettelointi epäonnistui"
@@ -7262,9 +7298,8 @@ msgid "Failed to make root private"
 msgstr "mkdir %s epäonnistui"
 
 #, c-format
-msgid "Failed to mark domain %s as autostarted"
+msgid "Failed to mark domain '%s' as autostarted"
 msgstr ""
-"Toimialueen %s merkitseminen automaattisesti käynnistyväksi epäonnistui"
 
 #, c-format
 msgid "Failed to mkdir %s"
@@ -7399,10 +7434,6 @@ msgstr "bitmap:n '%s' jäsentäminen epäonnistui"
 #, c-format
 msgid "Failed to parse block name %s"
 msgstr "Lohkonimen %s jäsentäminen epäonnistui"
-
-#, fuzzy, c-format
-msgid "Failed to parse checkpoint XML from file '%s'"
-msgstr "asetustiedoston %s jäsentäminen epäonnistui"
 
 #, c-format
 msgid "Failed to parse configuration of %s"
@@ -7622,12 +7653,12 @@ msgid "Failed to reattach NVMe for disk target: %s"
 msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
 
 #, c-format
-msgid "Failed to reboot domain %s"
-msgstr "Toimialueen %s uudelleenkäynnistys epäonnistui"
-
-#, c-format
 msgid "Failed to reboot domain '%d' with libxenlight"
 msgstr "Toimialueen '%d' uudelleenkäynnistys libxenlight:n kanssa epäonnistui"
+
+#, c-format
+msgid "Failed to reboot domain '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to reconnect to the admin server"
@@ -7687,9 +7718,9 @@ msgstr "Toimialueen %s palautus epäonnistui"
 msgid "Failed to remove managed save file '%s'"
 msgstr "Toimialueen palautetus tiedostosta %s epäonnistui"
 
-#, fuzzy, c-format
-msgid "Failed to remove managed save image for domain %s"
-msgstr "Toimialueen %s palautus epäonnistui"
+#, c-format
+msgid "Failed to remove managed save image for domain '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to remove storage volume '%s'(%s)"
@@ -7720,8 +7751,8 @@ msgid "Failed to reset device %s"
 msgstr "Laitteen irrottaminen tiedostosta %s epäonnistui"
 
 #, c-format
-msgid "Failed to reset domain %s"
-msgstr "Toimialueen %s palautus epäonnistui"
+msgid "Failed to reset domain '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to resize block device '%s'"
@@ -7760,10 +7791,6 @@ msgid "Failed to restrict process: %s"
 msgstr "Toimialueen palautetus tiedostosta %s epäonnistui"
 
 #, c-format
-msgid "Failed to resume domain %s"
-msgstr "Toimialueen %s palautus epäonnistui"
-
-#, c-format
 msgid "Failed to resume domain '%d'"
 msgstr "Toimialueen '%d' palautus epäonnistui"
 
@@ -7771,6 +7798,13 @@ msgstr "Toimialueen '%d' palautus epäonnistui"
 msgid "Failed to resume domain '%d' with libxenlight"
 msgstr "Toimialueen '%d' jatkaminen libxenlightilla epäonnistui"
 
+#, c-format
+msgid "Failed to resume domain '%s'"
+msgstr ""
+
+#. Hm, we already know we are in error here.  We don't want to
+#. * overwrite the previous error, though, so we just throw something
+#. * to the logs and hope for the best
 #, fuzzy, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "Toimialueen %s palautus epäonnistui"
@@ -7827,16 +7861,16 @@ msgid "Failed to save VM settings, rc=%08x"
 msgstr "Virtuaalikoneen asetusten tallentaminen epäonnistui, rc=%08x"
 
 #, c-format
-msgid "Failed to save domain %s state"
-msgstr "Toimielueen %s tilan tallentaminen epäonnistui"
-
-#, c-format
-msgid "Failed to save domain %s to %s"
-msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
-
-#, c-format
 msgid "Failed to save domain '%d' with libxenlight"
 msgstr "Toimialueen '%d' tallentaminen libxenlightilla epäonnistui"
+
+#, c-format
+msgid "Failed to save domain '%s' state"
+msgstr ""
+
+#, c-format
+msgid "Failed to save domain '%s' to %s"
+msgstr ""
 
 #, c-format
 msgid "Failed to seek to %llu bytes to the end in volume with path '%s'"
@@ -7997,12 +8031,12 @@ msgid "Failed to setup keepalive on connection\n"
 msgstr "Yhteyden keepalive:n määrittäminen epäonnistui\n"
 
 #, c-format
-msgid "Failed to shutdown domain %s"
-msgstr "Toimialueen %s sammutus epäonnistui"
-
-#, c-format
 msgid "Failed to shutdown domain '%d' with libxenlight"
 msgstr "Toimialueen '%d' sammuttaminen libxenlight:lla epäonnistui"
+
+#, c-format
+msgid "Failed to shutdown domain '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to soft reset VM '%s'. Destroying VM"
@@ -8021,8 +8055,8 @@ msgid "Failed to start bridge interface %s"
 msgstr "Toimialueen %s käynnistys epäonnistui"
 
 #, c-format
-msgid "Failed to start domain %s"
-msgstr "Toimialueen %s käynnistys epäonnistui"
+msgid "Failed to start domain '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to start interface %s"
@@ -8065,16 +8099,16 @@ msgid "Failed to step SASL negotiation: %d (%s)"
 msgstr "SASL-neuvotteluun astuminen epäonnistui: %d (%s)"
 
 #, c-format
-msgid "Failed to suspend domain %s"
-msgstr "Toimialueen %s asettaminen keskeytystilaan epäonnistui"
-
-#, c-format
 msgid "Failed to suspend domain '%d'"
 msgstr "Toimialueen '%d'asettaminen keskeytystilaan epäonnistui"
 
 #, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "Toimialieen '%d' keskeyttäminen epäonnistui libxenlightilla"
+
+#, c-format
+msgid "Failed to suspend domain '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8121,8 +8155,8 @@ msgid "Failed to undefine bridge interface %s"
 msgstr "Toimialueen %s määrityksen poistaminen epäonnistui"
 
 #, c-format
-msgid "Failed to undefine domain %s"
-msgstr "Toimialueen %s määrityksen poistaminen epäonnistui"
+msgid "Failed to undefine domain '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to undefine interface %s"
@@ -8149,9 +8183,8 @@ msgid "Failed to unlink '%s'"
 msgstr ""
 
 #, c-format
-msgid "Failed to unmark domain %s as autostarted"
+msgid "Failed to unmark domain '%s' as autostarted"
 msgstr ""
-"Toimialueen %s automaattisen käynnistymisen merkinnän poistaminen epäonnistui"
 
 #, fuzzy, c-format
 msgid "Failed to unmarshall reply: %s"
@@ -8272,6 +8305,10 @@ msgid "Field name too long"
 msgstr ""
 
 #, c-format
+msgid "File %s contains no keys"
+msgstr ""
+
+#, c-format
 msgid ""
 "File '%s' does not contain any <cpu> element or valid domain XML, host "
 "capabilities XML, or domain capabilities XML"
@@ -8361,10 +8398,63 @@ msgid ""
 "for VMX file"
 msgstr ""
 
+#. Macros to help dealing with flag requirements.
+#. *
+#. * VIR_REQUIRE_FLAG_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @RET: Return value.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_REQUIRE_FLAG_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if required flag is not set.
+#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive flags.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @RET: Return value.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr ""
@@ -9320,6 +9410,15 @@ msgstr ""
 msgid "Invalid append attribute value '%s'"
 msgstr ""
 
+#.
+#. * Don't check for *selectSet != NULL here because selectSet is a list
+#. * and might contain items already. This function appends to selectSet.
+#.
+#. optional
+#. optional
+#. nothing
+#. nothing
+#. nothing
 msgid "Invalid argument"
 msgstr "Virheellinen argumentti"
 
@@ -9905,6 +10004,9 @@ msgstr ""
 
 #, c-format
 msgid "Invalid peer '%s' in <ip>"
+msgstr ""
+
+msgid "Invalid persistent_state value, either 'yes' or 'no'"
 msgstr ""
 
 #, c-format
@@ -10535,12 +10637,6 @@ msgstr ""
 msgid "Malformed owners array"
 msgstr ""
 
-msgid "Malformed query-command-line-options array"
-msgstr ""
-
-msgid "Malformed query-command-line-options parameters array"
-msgstr ""
-
 msgid "Malformed resources array"
 msgstr ""
 
@@ -10568,15 +10664,15 @@ msgid "Manage active block operations"
 msgstr ""
 
 #, c-format
-msgid "Managed save image of Domain %s XML configuration edited.\n"
+msgid "Managed save image of Domain '%s' XML configuration edited.\n"
 msgstr ""
 
 #, c-format
-msgid "Managed save image of domain %s XML configuration not changed.\n"
+msgid "Managed save image of domain '%s' XML configuration not changed.\n"
 msgstr ""
 
 #, c-format
-msgid "Managed save state file of domain %s updated.\n"
+msgid "Managed save state file of domain '%s' updated.\n"
 msgstr ""
 
 msgid "Managed save:"
@@ -11544,6 +11640,9 @@ msgstr ""
 msgid "N/A"
 msgstr "Ei saatavilla"
 
+msgid "NBD URI must be supplied when migration URI uses UNIX transport method"
+msgstr ""
+
 msgid "NBD migration with TLS is not supported"
 msgstr ""
 
@@ -11660,6 +11759,12 @@ msgstr ""
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
+#. Output old style header
+#. We only get here if the --details option was selected.
+#. Insert the header into table
+#. The old output format
+#. We only get here if the --details option was selected.
+#. Insert the header into table
 msgid "Name"
 msgstr "Nimi"
 
@@ -11925,6 +12030,10 @@ msgstr ""
 msgid "No URI scheme specified"
 msgstr ""
 
+#, c-format
+msgid "No URI scheme specified: %s"
+msgstr ""
+
 #, fuzzy
 msgid "No access manager registered"
 msgstr "liian monta rekisteröityä ajuria"
@@ -12071,9 +12180,6 @@ msgstr "Ei vapaita USB-portteja"
 msgid ""
 "No free busNr lower than current lowest busNr is available to auto-assign to "
 "bus %d. Must be manually assigned"
-msgstr ""
-
-msgid "No free veth devices available"
 msgstr ""
 
 msgid "No graphical display found"
@@ -12623,6 +12729,20 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
+#. Macros to help dealing with required options.
+#. VSH_REQUIRE_OPTION_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable).
+#. * @NAME2: String containing the name of required option.
+#. * @EXPR2: Expression to validate the variable (boolean variable).
+#. *
+#. * Check if required command options in virsh was set.  Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
@@ -12636,6 +12756,20 @@ msgstr ""
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive options.
+#. VSH_EXCLUSIVE_OPTIONS_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable)
+#. * @NAME2: String containing the name of the option.
+#. * @EXPR2: Expression to validate the variable (boolean variable)
+#. *
+#. * Reject mutually exclusive command options in virsh. Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr ""
@@ -12738,15 +12872,15 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "PCI controller busNr '%s' out of range - must be 1-254"
+msgid "PCI controller busNr '%d' out of range - must be 1-254"
 msgstr ""
 
 #, c-format
-msgid "PCI controller chassis '%s' out of range - must be 0-255"
+msgid "PCI controller chassis '%d' out of range - must be 0-255"
 msgstr ""
 
 #, c-format
-msgid "PCI controller chassisNr '%s' out of range - must be 1-255"
+msgid "PCI controller chassisNr '%d' out of range - must be 1-255"
 msgstr ""
 
 #, c-format
@@ -12757,7 +12891,7 @@ msgid "PCI controller model was not set correctly"
 msgstr ""
 
 #, c-format
-msgid "PCI controller port '%s' out of range - must be 0-255"
+msgid "PCI controller port '%d' out of range - must be 0-255"
 msgstr ""
 
 #, c-format
@@ -13406,7 +13540,7 @@ msgid "Removed"
 msgstr "Poistettu"
 
 #, c-format
-msgid "Removed managedsave image for domain %s"
+msgid "Removed managedsave image for domain '%s'"
 msgstr ""
 
 msgid "Renamed"
@@ -13703,6 +13837,7 @@ msgstr ""
 msgid "S4 state is disabled for this domain"
 msgstr ""
 
+#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14184,6 +14319,9 @@ msgstr "Prosessoriaika:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr ""
 
+#. XXX: Need to sort the returned params once new parameter
+#. * fields not of shared memory are added.
+#.
 msgid "Shared memory:\n"
 msgstr "Jaettu muisti\n"
 
@@ -14256,6 +14394,7 @@ msgstr ""
 msgid "Snapshot"
 msgstr "Tilannevedos"
 
+#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr ""
@@ -14695,6 +14834,7 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr ""
 
+#. title
 msgid "Target"
 msgstr "Kohde"
 
@@ -14766,6 +14906,9 @@ msgstr ""
 
 #, c-format
 msgid "Target NUMA node count '%zu' doesn't match source '%zu'"
+msgstr ""
+
+msgid "Target NVDIMM UUID doesn't match source NVDIMM"
 msgstr ""
 
 #, c-format
@@ -15898,9 +16041,11 @@ msgstr ""
 msgid "Try again?"
 msgstr "Yritääkö uudelleen?"
 
+#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr ""
 
@@ -16407,10 +16552,6 @@ msgstr "Ei voi muuttaa MaxMemorySizeä"
 #, fuzzy, c-format
 msgid "Unable to create device %s"
 msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
-
-#, c-format
-msgid "Unable to create device '%s'"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to create directory %s"
@@ -18418,6 +18559,7 @@ msgstr ""
 msgid "Unknown error"
 msgstr "Tuntematon virhe"
 
+#. should never happen (tm)
 #, fuzzy
 msgid "Unknown error value"
 msgstr "Tuntematon virhe"
@@ -19187,10 +19329,12 @@ msgstr ""
 msgid "Vifname %s too big for destination"
 msgstr ""
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr ""
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr ""
@@ -19701,6 +19845,10 @@ msgstr "toimialue on jo käynnissä"
 msgid "any configuration"
 msgstr "toimialueen tiedot"
 
+#, c-format
+msgid "ap-domain value '%s' is out of range for '%s'"
+msgstr ""
+
 msgid "apparmor_parser exited with error"
 msgstr ""
 
@@ -19750,13 +19898,13 @@ msgstr ""
 msgid "array element '%zd' of '%zd' missing in guest-get-fsinfo return data"
 msgstr ""
 
+msgid "array element missing in guest-get-disks return value"
+msgstr ""
+
 msgid "array element missing in guest-get-users return value"
 msgstr ""
 
 msgid "array element missing in guest-get-vcpus return value"
-msgstr ""
-
-msgid "array element missing in guest-ssh-get-authorized-keys return value"
 msgstr ""
 
 msgid ""
@@ -20593,9 +20741,9 @@ msgstr ""
 msgid "cannot close file: %s"
 msgstr "todennus epäonnistui: %s"
 
-#, fuzzy, c-format
-msgid "cannot close stream on domain %s"
-msgstr "Toimialueen %s uudelleenkäynnistys epäonnistui"
+#, c-format
+msgid "cannot close stream on domain '%s'"
+msgstr ""
 
 #, c-format
 msgid "cannot close volume %s"
@@ -21179,6 +21327,9 @@ msgstr ""
 msgid "cannot modify virtio network device driver attributes"
 msgstr ""
 
+msgid "cannot modify virtio network device driver options"
+msgstr ""
+
 msgid "cannot obtain CPU freq"
 msgstr ""
 
@@ -21215,6 +21366,7 @@ msgstr "Polkua '%s' ei voi avata"
 msgid "cannot open path '%s' in '%s'"
 msgstr ""
 
+#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr ""
@@ -21876,11 +22028,11 @@ msgid "cfpc configuration is not supported by this QEMU binary"
 msgstr ""
 
 #, c-format
-msgid "cfs_period '%llu' must be in range (1000, 1000000)"
+msgid "cfs_period '%llu' must be in range (%llu, %llu)"
 msgstr ""
 
 #, c-format
-msgid "cfs_quota '%lld' must be in range (1000, %llu)"
+msgid "cfs_quota '%lld' must be in range (%llu, %llu)"
 msgstr ""
 
 msgid "cgroup CPU controller is not mounted"
@@ -22036,6 +22188,7 @@ msgstr ""
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
+#. in case of EACCES, the parent will retry
 #, fuzzy, c-format
 msgid "child failed to create directory '%s'"
 msgstr "verkon ”%s” hakeminen epäonnistui"
@@ -22635,7 +22788,7 @@ msgid "could not read xml file"
 msgstr ""
 
 #, c-format
-msgid "could not receive data from domain %s"
+msgid "could not receive data from domain '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -23450,7 +23603,8 @@ msgstr ""
 msgid "disk port address is not supported by tunnelled migration"
 msgstr ""
 
-msgid "disk product is more than 16 characters"
+#, c-format
+msgid "disk product is more than %d characters"
 msgstr ""
 
 msgid "disk product is not printable string"
@@ -23480,7 +23634,8 @@ msgstr ""
 msgid "disk type of '%s' does not support ejectable media"
 msgstr ""
 
-msgid "disk vendor is more than 8 characters"
+#, c-format
+msgid "disk vendor is more than %d characters"
 msgstr ""
 
 msgid "disk vendor is not printable string"
@@ -24254,11 +24409,11 @@ msgid "ethtool ioctl error on %s"
 msgstr ""
 
 #, c-format
-msgid "event '%s' for domain %s\n"
-msgstr "tapahtuma '%s' toimialueelle %s\n"
+msgid "event '%s' for domain '%s'\n"
+msgstr ""
 
 #, c-format
-msgid "event '%s' for domain %s: %s for %s %s\n"
+msgid "event '%s' for domain '%s': %s for %s %s\n"
 msgstr ""
 
 #, c-format
@@ -24274,52 +24429,52 @@ msgid "event '%s' for storage pool %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'agent-lifecycle' for domain %s: state: '%s' reason: '%s'\n"
+msgid "event 'agent-lifecycle' for domain '%s': state: '%s' reason: '%s'\n"
 msgstr ""
 
 #, c-format
-msgid "event 'balloon-change' for domain %s: %lluKiB\n"
+msgid "event 'balloon-change' for domain '%s': %lluKiB\n"
 msgstr ""
 
 #, c-format
-msgid "event 'block-threshold' for domain %s: dev: %s(%s) %llu %llu\n"
+msgid "event 'block-threshold' for domain '%s': dev: %s(%s) %llu %llu\n"
 msgstr ""
 
 #, c-format
-msgid "event 'device-added' for domain %s: %s\n"
+msgid "event 'device-added' for domain '%s': %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'device-removal-failed' for domain %s: %s\n"
+msgid "event 'device-removal-failed' for domain '%s': %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'device-removed' for domain %s: %s\n"
+msgid "event 'device-removed' for domain '%s': %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'disk-change' for domain %s disk %s: %s -> %s: %s\n"
+msgid "event 'disk-change' for domain '%s' disk %s: %s -> %s: %s\n"
 msgstr ""
 
 #, c-format
 msgid ""
-"event 'graphics' for domain %s: %s local[%s %s %s] remote[%s %s %s] %s\n"
+"event 'graphics' for domain '%s': %s local[%s %s %s] remote[%s %s %s] %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'io-error' for domain %s: %s (%s) %s\n"
+msgid "event 'io-error' for domain '%s': %s (%s) %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'io-error-reason' for domain %s: %s (%s) %s due to %s\n"
+msgid "event 'io-error-reason' for domain '%s': %s (%s) %s due to %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'job-completed' for domain %s:\n"
+msgid "event 'job-completed' for domain '%s':\n"
 msgstr ""
 
 #, c-format
-msgid "event 'lifecycle' for domain %s: %s %s\n"
+msgid "event 'lifecycle' for domain '%s': %s %s\n"
 msgstr ""
 
 #, c-format
@@ -24340,33 +24495,33 @@ msgstr ""
 
 #, c-format
 msgid ""
-"event 'memory-failure' for domain %s:\n"
+"event 'memory-failure' for domain '%s':\n"
 "recipient: %s\n"
 "action: %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'metadata-change' for domain %s: %s %s\n"
+msgid "event 'metadata-change' for domain '%s': %s %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'migration-iteration' for domain %s: iteration: '%d'\n"
+msgid "event 'migration-iteration' for domain '%s': iteration: '%d'\n"
 msgstr ""
 
 #, c-format
-msgid "event 'rtc-change' for domain %s: %lld\n"
+msgid "event 'rtc-change' for domain '%s': %lld\n"
 msgstr ""
 
 #, c-format
-msgid "event 'tray-change' for domain %s disk %s: %s\n"
+msgid "event 'tray-change' for domain '%s' disk %s: %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'tunable' for domain %s:\n"
+msgid "event 'tunable' for domain '%s':\n"
 msgstr ""
 
 #, c-format
-msgid "event 'watchdog' for domain %s: %s\n"
+msgid "event 'watchdog' for domain '%s': %s\n"
 msgstr ""
 
 msgid "event callback already tracked"
@@ -25357,6 +25512,14 @@ msgid "failed to parse slirp-helper features"
 msgstr ""
 
 #, c-format
+msgid "failed to parse the AP Card from sysfs path: '%s'"
+msgstr ""
+
+#, c-format
+msgid "failed to parse the AP Queue from sysfs path: '%s'"
+msgstr ""
+
+#, c-format
 msgid "failed to parse the CCW address from sysfs path: '%s'"
 msgstr ""
 
@@ -25799,6 +25962,9 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
+#. parse inbound and outbound which are in the format of
+#. * 'average,peak,burst,floor', in which peak and burst are optional,
+#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, c-format
 msgid "field '%s' is malformed"
 msgstr ""
@@ -26384,6 +26550,7 @@ msgstr ""
 msgid "handler failed to wait on condition"
 msgstr "asetustiedoston kirjoitus epäonnistui"
 
+#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr ""
 
@@ -26743,9 +26910,6 @@ msgstr ""
 msgid "info balloon reply was missing balloon data"
 msgstr ""
 
-msgid "info kvm reply missing 'enabled' field"
-msgstr ""
-
 msgid "info migration reply was missing return status"
 msgstr ""
 
@@ -26927,6 +27091,25 @@ msgstr "verkon nimi"
 msgid "interface name %s does not fit into buffer "
 msgstr ""
 
+#.
+#. * virsh-interface.c: Commands to manage host interface
+#. *
+#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+#. *
+#. * This library is free software; you can redistribute it and/or
+#. * modify it under the terms of the GNU Lesser General Public
+#. * License as published by the Free Software Foundation; either
+#. * version 2.1 of the License, or (at your option) any later version.
+#. *
+#. * This library is distributed in the hope that it will be useful,
+#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#. * Lesser General Public License for more details.
+#. *
+#. * You should have received a copy of the GNU Lesser General Public
+#. * License along with this library.  If not, see
+#. * <http://www.gnu.org/licenses/>.
+#.
 msgid "interface name or MAC address"
 msgstr ""
 
@@ -27205,6 +27388,14 @@ msgstr ""
 
 #, c-format
 msgid "invalid allowReboot value '%s'"
+msgstr ""
+
+#, c-format
+msgid "invalid ap-adapter value '%s' for '%s'"
+msgstr ""
+
+#, c-format
+msgid "invalid ap-domain value '%s' for '%s'"
 msgstr ""
 
 msgid "invalid argument"
@@ -27841,7 +28032,13 @@ msgstr ""
 msgid "invalid value for 'managed': %s"
 msgstr ""
 
+msgid "invalid value for boot menu timeout"
+msgstr ""
+
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
+msgstr ""
+
+msgid "invalid value for rebootTimeout"
 msgstr ""
 
 msgid "invalid value for rebootTimeout, must be in range [-1,65535]"
@@ -29023,6 +29220,12 @@ msgstr ""
 msgid "metadata title can't contain newlines"
 msgstr ""
 
+msgid "metdata cache max size control is not supported with this QEMU binary"
+msgstr ""
+
+msgid "metdata cache max size control is supported only with qcow2 images"
+msgstr ""
+
 msgid "migrate domain to another host"
 msgstr "siirrä toimialue toiseen koneeseen"
 
@@ -29240,11 +29443,17 @@ msgstr ""
 msgid "missing 'nvram-template' in '%s'"
 msgstr ""
 
+msgid "missing 'path' attribute in JSON backing definition for NFS volume"
+msgstr ""
+
 msgid "missing 'portal' address in iSCSI backing definition"
 msgstr ""
 
 #, c-format
 msgid "missing 'process' value in selinux lxc contexts file '%s'"
+msgstr ""
+
+msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr ""
 
 #, c-format
@@ -29293,6 +29502,10 @@ msgid "missing 'url' in JSON backing volume definition"
 msgstr ""
 
 msgid "missing 'usage' attribute for RAM filesystem"
+msgstr ""
+
+msgid ""
+"missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
 msgstr ""
 
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
@@ -29385,6 +29598,14 @@ msgstr "lähdetietoja puuttuu laitteelle"
 
 #, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
+msgstr ""
+
+#, c-format
+msgid "missing ap-adapter value for '%s'"
+msgstr ""
+
+#, c-format
+msgid "missing ap-domain value for '%s'"
 msgstr ""
 
 msgid "missing arch in QEMU capabilities cache"
@@ -29514,9 +29735,6 @@ msgid "missing disk source for 'sheepdog' protocol"
 msgstr ""
 
 msgid "missing domain in checkpoint"
-msgstr ""
-
-msgid "missing domain in checkpoint redefine"
 msgstr ""
 
 #, fuzzy
@@ -30199,6 +30417,15 @@ msgstr ""
 msgid "monitor failure"
 msgstr ""
 
+#. *
+#. * QEMU_CHECK_MONITOR_FULL:
+#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
+#. * @exit: statement that is used to exit the function
+#. *
+#. * This macro checks that the monitor is valid for given operation and exits
+#. * the function if not. The macro also adds a debug statement regarding the
+#. * monitor.
+#.
 msgid "monitor must not be NULL"
 msgstr ""
 
@@ -30391,6 +30618,7 @@ msgstr ""
 msgid "negative size requires --shrink"
 msgstr ""
 
+#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr ""
@@ -32128,6 +32356,9 @@ msgstr ""
 msgid "port UUID"
 msgstr ""
 
+msgid "port cannot be specified in 'nfs' protocol host"
+msgstr ""
+
 msgid "port to use by target server for incoming disks migration"
 msgstr ""
 
@@ -32336,7 +32567,7 @@ msgid "ps2 bus does not support %s input device"
 msgstr ""
 
 #, c-format
-msgid "pull mode requires qcow2 driver, not '%s'"
+msgid "pull mode backup for disk '%s' requires qcow2 driver"
 msgstr ""
 
 #, c-format
@@ -32348,6 +32579,9 @@ msgid "qemu agent didn't provide 'ip-address-type' field for interface '%s'"
 msgstr ""
 
 msgid "qemu agent didn't provide 'name' field"
+msgstr ""
+
+msgid "qemu agent didn't return an array of disks"
 msgstr ""
 
 msgid "qemu agent didn't return an array of interfaces"
@@ -32439,15 +32673,6 @@ msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr ""
 
 msgid "query-block device entry was not in expected format"
-msgstr ""
-
-msgid "query-command-line-options parameter data was missing 'name'"
-msgstr ""
-
-msgid "query-command-line-options reply data was missing 'option'"
-msgstr ""
-
-msgid "query-command-line-options reply was missing return data"
 msgstr ""
 
 msgid "query-commands reply data was missing 'name'"
@@ -32568,7 +32793,7 @@ msgstr ""
 msgid "quit this interactive terminal"
 msgstr "poistu tästä vuorovaikutteisesta terminaalista"
 
-msgid "ram attribute only supported for type of qxl"
+msgid "ram attribute only supported for video type qxl"
 msgstr ""
 
 #, c-format
@@ -32783,6 +33008,9 @@ msgstr ""
 msgid "reply data was missing 'name'"
 msgstr ""
 
+msgid "reply data was missing 'option' name or parameters"
+msgstr ""
+
 msgid "reply was missing return data"
 msgstr ""
 
@@ -32793,6 +33021,9 @@ msgid "report active users"
 msgstr ""
 
 msgid "report daemon version too"
+msgstr ""
+
+msgid "report disk information"
 msgstr ""
 
 #, fuzzy
@@ -35066,6 +35297,7 @@ msgstr ""
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
+#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr ""
@@ -35406,10 +35638,6 @@ msgstr "lokitiedoston kirjoitus epäonnistui"
 
 #, c-format
 msgid "unable write to %s"
-msgstr ""
-
-msgid ""
-"unavailable-features in query-cpu-definitions reply data was not an array"
 msgstr ""
 
 #, fuzzy
@@ -35861,13 +36089,6 @@ msgid "unexpected value %s for on_reboot"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "unexpected value in %s array"
-msgstr "odottamatonta dataa ”%s”"
-
-msgid "unexpected value in unavailable-features array"
-msgstr ""
-
-#, fuzzy, c-format
 msgid "unexpected video model %d"
 msgstr "odottamatonta dataa ”%s”"
 
@@ -35911,6 +36132,8 @@ msgstr ""
 msgid "unix socket for spice graphics are not supported with this QEMU"
 msgstr ""
 
+#. Something went wrong retrieving a volume path, cope with it
+#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "tuntematon"
 
@@ -36124,14 +36347,6 @@ msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 #, c-format
 msgid "unknown dhcp peerdns value %s"
 msgstr ""
-
-#, c-format
-msgid "unknown disk backup driver '%s'"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "unknown disk backup type '%s'"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
 #, fuzzy, c-format
 msgid "unknown disk bus type '%s'"
@@ -37121,6 +37336,28 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
+#. *
+#. * virCheckFlags:
+#. * @supported: an OR'ed set of supported flags
+#. * @retval: return value in case unsupported flags were passed
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Exits the caller function if unsupported flags were
+#. * passed to it.
+#.
+#. *
+#. * virCheckFlagsGoto:
+#. * @supported: an OR'ed set of supported flags
+#. * @label: label to jump to on error
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr ""
@@ -37653,7 +37890,7 @@ msgstr ""
 msgid "version parsing error"
 msgstr "jäsenninvirhe"
 
-msgid "vgamem attribute only supported for type of qxl"
+msgid "vgamem attribute only supported for video type qxl"
 msgstr ""
 
 msgid "vhost-net is not supported with this QEMU binary"
@@ -38059,7 +38296,7 @@ msgstr ""
 msgid "vport operation '%s' is not supported for host%d"
 msgstr ""
 
-msgid "vram64 attribute only supported for type of qxl"
+msgid "vram64 attribute only supported for video type qxl"
 msgstr ""
 
 msgid "vsock device is not supported with this QEMU binary"
@@ -38280,6 +38517,148 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <merkkijono>}..."
+
+#~ msgid ""
+#~ "\n"
+#~ "Domain %s dumped to %s\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Toimialue %s määritetty tiedostosta %s\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "Domain %s saved to %s\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Toimialue %s luotu tiedostosta %s\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "Domain %s state saved by libvirt\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Toimialue %s käynnistetty\n"
+
+#~ msgid "Connected to domain %s\n"
+#~ msgstr "Yhdistetty toimialueeseen %s\n"
+
+#~ msgid "Domain %s XML configuration edited.\n"
+#~ msgstr "Toimialueen %s XML-määritystä muokattu.\n"
+
+#~ msgid "Domain %s attached to pid %u\n"
+#~ msgstr "Toimialue %s liitetty pid:een %u\n"
+
+#~ msgid "Domain %s could not be suspended"
+#~ msgstr "Toimialue %s ei voitu keskeyttää"
+
+#~ msgid "Domain %s created from %s\n"
+#~ msgstr "Toimialue %s luotu tiedostosta %s\n"
+
+#~ msgid "Domain %s defined from %s\n"
+#~ msgstr "Toimialue %s määritetty tiedostosta %s\n"
+
+#~ msgid "Domain %s destroyed\n"
+#~ msgstr "Toimialue %s tuhottu\n"
+
+#~ msgid "Domain %s has been undefined\n"
+#~ msgstr "Toimialueen %s määritys on poistettu\n"
+
+#~ msgid "Domain %s is being rebooted\n"
+#~ msgstr "Toimialuetta %s uudelleenkäynnistetään\n"
+
+#~ msgid "Domain %s is being shutdown\n"
+#~ msgstr "Toimialuetta %s sammutetaan\n"
+
+#~ msgid "Domain %s marked as autostarted\n"
+#~ msgstr "Toimialue %s merkitty automaattisesti käynnistyväksi\n"
+
+#~ msgid "Domain %s resumed\n"
+#~ msgstr "Toimialue %s palautettu\n"
+
+#~ msgid "Domain %s started\n"
+#~ msgstr "Toimialue %s käynnistetty\n"
+
+#~ msgid "Domain %s successfully suspended"
+#~ msgstr "Toimialue %s keskeytetty onnistuneesti"
+
+#~ msgid "Domain %s suspended\n"
+#~ msgstr "Toimialue %s keskeytystilassa\n"
+
+#~ msgid "Domain %s unmarked as autostarted\n"
+#~ msgstr "Toimialueen %s automaattisen käynnistyksen merkintä poistettu\n"
+
+#, fuzzy
+#~ msgid "Domain %s was reset\n"
+#~ msgstr "Toimialue %s palautettu\n"
+
+#~ msgid "Failed to core dump domain %s to %s"
+#~ msgstr ""
+#~ "Toimialueen %s muistivedoksen tallentaminen tiedostoon %s epäonnistui"
+
+#~ msgid "Failed to destroy domain %s"
+#~ msgstr "Toimialueen %s tuhoaminen epäonnistui"
+
+#~ msgid "Failed to generate new name for interface %s"
+#~ msgstr "Uuden nimen luominen liitännälle %s epäonnistui"
+
+#~ msgid "Failed to mark domain %s as autostarted"
+#~ msgstr ""
+#~ "Toimialueen %s merkitseminen automaattisesti käynnistyväksi epäonnistui"
+
+#, fuzzy
+#~ msgid "Failed to parse checkpoint XML from file '%s'"
+#~ msgstr "asetustiedoston %s jäsentäminen epäonnistui"
+
+#~ msgid "Failed to reboot domain %s"
+#~ msgstr "Toimialueen %s uudelleenkäynnistys epäonnistui"
+
+#, fuzzy
+#~ msgid "Failed to remove managed save image for domain %s"
+#~ msgstr "Toimialueen %s palautus epäonnistui"
+
+#~ msgid "Failed to reset domain %s"
+#~ msgstr "Toimialueen %s palautus epäonnistui"
+
+#~ msgid "Failed to resume domain %s"
+#~ msgstr "Toimialueen %s palautus epäonnistui"
+
+#~ msgid "Failed to save domain %s state"
+#~ msgstr "Toimielueen %s tilan tallentaminen epäonnistui"
+
+#~ msgid "Failed to save domain %s to %s"
+#~ msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
+
+#~ msgid "Failed to shutdown domain %s"
+#~ msgstr "Toimialueen %s sammutus epäonnistui"
+
+#~ msgid "Failed to start domain %s"
+#~ msgstr "Toimialueen %s käynnistys epäonnistui"
+
+#~ msgid "Failed to suspend domain %s"
+#~ msgstr "Toimialueen %s asettaminen keskeytystilaan epäonnistui"
+
+#~ msgid "Failed to undefine domain %s"
+#~ msgstr "Toimialueen %s määrityksen poistaminen epäonnistui"
+
+#~ msgid "Failed to unmark domain %s as autostarted"
+#~ msgstr ""
+#~ "Toimialueen %s automaattisen käynnistymisen merkinnän poistaminen "
+#~ "epäonnistui"
+
+#, fuzzy
+#~ msgid "cannot close stream on domain %s"
+#~ msgstr "Toimialueen %s uudelleenkäynnistys epäonnistui"
+
+#~ msgid "event '%s' for domain %s\n"
+#~ msgstr "tapahtuma '%s' toimialueelle %s\n"
+
+#, fuzzy
+#~ msgid "unexpected value in %s array"
+#~ msgstr "odottamatonta dataa ”%s”"
+
+#, fuzzy
+#~ msgid "unknown disk backup type '%s'"
+#~ msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 
 #, fuzzy
 #~ msgid "Could not release key %s"

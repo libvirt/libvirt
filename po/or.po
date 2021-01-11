@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2020-11-24 23:25+0000\n"
+"POT-Creation-Date: 2021-01-08 17:11+0000\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -37,6 +37,7 @@ msgstr ""
 "\n"
 "  (ନିର୍ଦ୍ଦେଶ ବିଷୟରେ ବିସ୍ତୃତ ବିବରଣୀ ପାଇବା ପାଇଁ help <group> କୁ ନିର୍ଦ୍ଦିଷ୍ଟ କରନ୍ତୁ)\n"
 
+#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -293,26 +294,20 @@ msgstr ""
 #, c-format
 msgid ""
 "\n"
-"Domain %s dumped to %s\n"
+"Domain '%s' dumped to %s\n"
 msgstr ""
-"\n"
-"ଡମେନ %s କୁ %s ରେ ଡମ୍ପ କରାଯାଇଛି\n"
 
 #, c-format
 msgid ""
 "\n"
-"Domain %s saved to %s\n"
+"Domain '%s' saved to %s\n"
 msgstr ""
-"\n"
-"ଡମେନ %s କୁ %s ରେ ସଂରକ୍ଷଣ କରାଯାଇଛି\n"
 
 #, c-format
 msgid ""
 "\n"
-"Domain %s state saved by libvirt\n"
+"Domain '%s' state saved by libvirt\n"
 msgstr ""
-"\n"
-"ଡମେନ %s ସ୍ଥିତିକୁ libvirt ଦ୍ୱାରା ସଂରକ୍ଷଣ କରାଯାଇଛି\n"
 
 #, c-format
 msgid ""
@@ -414,6 +409,7 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr ""
 
+#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  ନାମ\n"
 
@@ -486,8 +482,12 @@ msgid "%s 3d acceleration is not supported"
 msgstr "ପ୍ରୟୋଗ ସମର୍ଥିତ ନୁହଁ"
 
 #, c-format
-msgid "%s array element does not contain data"
-msgstr "%s ଆରେ ଉପାଦାନରେ କୌଣସି ତଥ୍ୟ ନାହିଁ"
+msgid "%s array element does not contain a string"
+msgstr ""
+
+#, c-format
+msgid "%s array element is missing item %zu"
+msgstr ""
 
 #, c-format
 msgid "%s can't be empty"
@@ -573,6 +573,10 @@ msgstr "%s ଟି  %s ରେ ନିଶ୍ତିତ ଭାବରେ ଶୂନ ହ
 msgid "%s is missing 'type' property"
 msgstr "%s ରେ 'ପ୍ରକାର' ଗୁଣଧର୍ମ ନାହିଁ"
 
+#, c-format
+msgid "%s is missing or not an array"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "%s is not a supported cipher name"
 msgstr "%s: ଅସମର୍ଥିତ ହାଇପରଭାଇଜର ନାମ %s\n"
@@ -649,6 +653,16 @@ msgstr "%s ଏହି QEMU ଦ୍ୱିମିକରେ ସମର୍ଥିତ ନ�
 msgid "%s object has invalid dynamic type"
 msgstr "%s ବସ୍ତୁରେ ଅବୈଧ ଅସ୍ଥାୟୀ ପ୍ରକାର ଅଛି"
 
+#.
+#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
+#. * enumeration values).
+#. *
+#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
+#.
+#.
+#. * Macros to implement managed objects
+#.
+#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s ବସ୍ତୁରେ ଆବଶ୍ୟକୀୟ '%s' ଗୁଣଧର୍ମ ନାହିଁ"
@@ -697,6 +711,7 @@ msgstr "%s: %d: argv କୁ ବଣ୍ଟନ କରିବାରେ ବିଫଳ"
 msgid "%s: %d: failed to allocate mountpoints"
 msgstr "%s: %d: %d ବାଇଟକୁ ବାଣ୍ଟିବାରେ ବିଫଳ"
 
+#. The length of the formatting string minus two '%s'
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
@@ -947,10 +962,6 @@ msgid "%s: must not be run setuid root\n"
 msgstr "%s ଟି  %s ରେ ନିଶ୍ତିତ ଭାବରେ ଶୂନ ହେବା ଉଚିତ ନୁହଁ"
 
 #, fuzzy, c-format
-msgid "%s: nvdimm without a path"
-msgstr "ଆଶୁଚିତ୍ର ନଥିବା ଡମେନଗୁଡ଼ିକୁ ସୂଚୀବଦ୍ଧ କରନ୍ତୁ"
-
-#, fuzzy, c-format
 msgid "%s: passthrough input device has no source"
 msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ନିବେଶ ଉପକରଣ ବସ %s ଉତ୍ସ %s ସହିତ ମେଳଖାଉ ନାହିଁ"
 
@@ -1127,7 +1138,7 @@ msgid "'%s' is not supported in this QEMU binary"
 msgstr "%s ଏହି QEMU ଦ୍ୱିମିକରେ ସମର୍ଥିତ ନୁହଁ"
 
 #, c-format
-msgid "'%s' missing in guest-get-fsinfo 'disk' data"
+msgid "'%s' missing"
 msgstr ""
 
 #, c-format
@@ -1266,6 +1277,9 @@ msgstr ""
 msgid "'mountpoint' missing in reply of guest-get-fsinfo"
 msgstr ""
 
+msgid "'name' missing in reply of guest-get-disks"
+msgstr ""
+
 msgid "'name' missing in reply of guest-get-fsinfo"
 msgstr ""
 
@@ -1278,6 +1292,15 @@ msgstr ""
 "<source> <interface type='network'/> ସହିତ ଉଲ୍ଲେଖ କରାଯାଇଥିବା କୌଣସି 'network' ଗୁଣ "
 "ନାହିଁ"
 
+msgid "'nfs' host must use TCP protocol"
+msgstr ""
+
+msgid "'nfs' protocol is not supported with this QEMU binary"
+msgstr ""
+
+msgid "'nfs' protocol requires the usage of exactly one host"
+msgstr ""
+
 msgid "'offset' missing in reply of guest-get-timezone"
 msgstr ""
 
@@ -1287,7 +1310,10 @@ msgstr ""
 msgid "'parent' for vHBA not specified, and cannot find one on this host"
 msgstr ""
 
-msgid "'pci-controller' missing in guest-get-fsinfo 'disk' data"
+msgid "'partition' missing in reply of guest-get-disks"
+msgstr ""
+
+msgid "'pci-controller' missing"
 msgstr ""
 
 msgid "'peak' and 'burst' require 'average' attribute"
@@ -1429,6 +1455,7 @@ msgstr "(interface_definition)"
 msgid "(libxl_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
 
+#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
 
@@ -1491,6 +1518,7 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr "(volume_definition)"
 
+#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -2377,10 +2405,14 @@ msgstr ""
 msgid "Cache with id %u does not exists for level %d"
 msgstr ""
 
+#.
+#. * Macros to implement dynamic dispatched functions
+#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "%s  ପ୍ରତି ଡାକରା ଅପ୍ରତ୍ୟାଶିତ ପ୍ରକାର '%s' ପାଇଁ"
 
+#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "%s ପ୍ରତି ଡାକରା ଅପ୍ରତ୍ୟାଶିତ ପ୍ରକାର '%s' ପାଇଁ, '%s' ଆଶାକରାଯାଇଥିଲା"
@@ -2974,9 +3006,6 @@ msgstr "ଯଥେଷ୍ଟ CPU କୁ ଅଫଲାଇନ କରିପାରି�
 msgid "Cannot open %s"
 msgstr "%s କୁ ଖୋଲିପାରିବେ ନାହିଁ"
 
-msgid "Cannot open /dev/urandom"
-msgstr " /dev/urandom କୁ ଖୋଲିପାରିବେ ନାହିଁ"
-
 msgid "Cannot open /proc/cgroups"
 msgstr "/proc/cgroups କୁ ଖୋଲିପାରିବେ ନାହିଁ"
 
@@ -3234,9 +3263,6 @@ msgstr "%s '%s' କୁ ପଢ଼ିପାରିବେ ନାହିଁ"
 
 msgid "Cannot read cputime for domain"
 msgstr "ଡମେନ ପାଇଁ cputime କୁ ପଢ଼ିପାରିବେ ନାହିଁ"
-
-msgid "Cannot read from /dev/urandom"
-msgstr "/dev/urandom ରୁ ପଢ଼ିପାରିବେ ନାହିଁ"
 
 #, fuzzy
 msgid "Cannot recv data"
@@ -3854,8 +3880,8 @@ msgid "Connected since"
 msgstr "ପରିସର %s ସହିତ ସଂଯୁକ୍ତ\n"
 
 #, c-format
-msgid "Connected to domain %s\n"
-msgstr "ପରିସର %s ସହିତ ସଂଯୁକ୍ତ\n"
+msgid "Connected to domain '%s'\n"
+msgstr ""
 
 #, fuzzy
 msgid "Connected to the admin server"
@@ -4794,6 +4820,7 @@ msgstr "'bridge/forward_delay' କୁ '%s' ପାଇଁ କାଢ଼ିପାର
 msgid "Could not retrieve 'bridge/stp_state' for '%s'"
 msgstr "'bridge/stp_state' କୁ '%s' ପାଇଁ କାଢ଼ିପାରିଲା ନାହିଁ"
 
+#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "ପୁଲ ସୂଚନା ବାହାର କରିପାରିଲା ନାହିଁ"
 
@@ -5442,91 +5469,51 @@ msgid "Do not include features that block migration"
 msgstr ""
 
 #, c-format
-msgid "Domain %s XML configuration edited.\n"
-msgstr "ପରିସର %s XML ବିନ୍ୟାସ ସମ୍ପାଦିତ ହୋଇଥାଏ।\n"
-
-#, c-format
-msgid "Domain %s XML configuration not changed.\n"
-msgstr "ପରିସର %s XML ବିନ୍ୟାସ ପରିବର୍ତ୍ତନ ହୋଇନାହିଁ।\n"
-
-#, c-format
-msgid "Domain %s attached to pid %u\n"
-msgstr "ଡମେନ %s pid %u ରେ ସଂଲଗ୍ନ\n"
-
-#, c-format
-msgid "Domain %s could not be suspended"
-msgstr "ଡମେନ %s କୁ ସ୍ଥଗିତ କରାଯାଇପାରିଲା ନାହିଁ"
-
-#, c-format
-msgid "Domain %s could not be woken up"
-msgstr "ଡମେନ %s କୁ ଜାଗ୍ରତ କରାଯାଇନଥିଲା"
-
-#, c-format
-msgid "Domain %s created from %s\n"
-msgstr "%s ପରିସର %s ରୁ ସୃଷ୍ଟ\n"
-
-#, c-format
-msgid "Domain %s defined from %s\n"
-msgstr "%s ପରସରକୁ %s ରୁ ବ୍ଯାଖ୍ଯା କରାଯାଇଛି\n"
-
-#, c-format
-msgid "Domain %s destroyed\n"
-msgstr "%s ପରିସରକୁ ନଷ୍ଟ କରାଯାଇଛି\n"
-
-#, c-format
 msgid "Domain %s didn't show up"
 msgstr "ଡମେନ %s କୁ ଦର୍ଶାଇପାରିବେ ନାହିଁ"
 
 #, c-format
-msgid "Domain %s has been undefined\n"
-msgstr "%s ପରିସର ନାମକୁ ସଜ୍ଞା ବିହୀନ କରାଯାଇଛି\n"
-
-#, c-format
-msgid "Domain %s has no manage save image; removal skipped"
-msgstr "ଡମେନ %s ରେ କୌଣସି ପରିଚାଳିତ ସଂରକ୍ଷଣ ପ୍ରତିଛବି ନାହିଁ; ବହିଷ୍କାରକୁ ଏଡ଼ାଇ ଦିଆଯାଇଛି"
-
-#, c-format
-msgid "Domain %s is being rebooted\n"
-msgstr "%s ପରିସରକୁ ପୁନର୍ଚାଳନ କରାଯାଇଛି\n"
-
-#, c-format
-msgid "Domain %s is being shutdown\n"
-msgstr "%s ପରିସରକୁ ବନ୍ଦ କରାଯାଇଛି\n"
-
-#, c-format
-msgid "Domain %s marked as autostarted\n"
-msgstr "%s ପରିସରକୁ ସ୍ବୟଂଚାଳିତ ଭାବରେ ଚିହ୍ନିତ କରାଯାଇଛି\n"
-
-#, c-format
-msgid "Domain %s resumed\n"
-msgstr "%s ପରିସରକୁ ପୁନଃପ୍ରାରମ୍ଭ କରାଗଲା\n"
-
-#, c-format
-msgid "Domain %s started\n"
-msgstr "%s ପରିସର ପ୍ରାରମ୍ଭ କରାଗଲା\n"
-
-#, c-format
-msgid "Domain %s successfully suspended"
-msgstr "ଡମେନ %s କୁ ସଫଳତାର ସହିତ ସ୍ଥଗିତ କରାଯାଇଛି"
-
-#, c-format
-msgid "Domain %s successfully woken up"
-msgstr "ଡମେନ %s କୁ ସଫଳତାର ସହିତ ଜାଗ୍ରତ କରାଯାଇଛି"
-
-#, c-format
-msgid "Domain %s suspended\n"
-msgstr "%s ପରିସରକୁ ସ୍ଥଗିତ କରାଯାଇଛି\n"
-
-#, c-format
-msgid "Domain %s unmarked as autostarted\n"
-msgstr "%s ପରିସରରୁ ସ୍ବୟଂଚାଳିତ ଚିହ୍ନକୁ ହଟାଯାଇଛି\n"
-
-#, c-format
-msgid "Domain %s was reset\n"
-msgstr "ଡମେନ %s କୁ ପୁନଃସ୍ଥାପନ କରାଗଲା\n"
-
-#, c-format
 msgid "Domain '%d' has to be running because libxenlight will suspend it"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' XML configuration edited.\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' XML configuration not changed.\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' attached to pid %u\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' could not be suspended"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' could not be woken up"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' created from %s\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' defined from %s\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' destroyed\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' has been undefined\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' has no manage save image; removal skipped"
 msgstr ""
 
 #, c-format
@@ -5534,8 +5521,48 @@ msgid "Domain '%s' is already running"
 msgstr "ପରିସର %s ଟି ପୂର୍ବରୁ ଚାଲୁଅଛି"
 
 #, c-format
+msgid "Domain '%s' is being rebooted\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' is being shutdown\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' marked as autostarted\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' resumed\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' started\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' successfully suspended"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' successfully woken up"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' suspended\n"
+msgstr ""
+
+#, c-format
 msgid "Domain '%s' sysinfo are not available"
 msgstr "ଡମେନ '%s' sysinfo ଗୁଡ଼ିକ ଉପଲବ୍ଧ ନାହିଁ"
+
+#, c-format
+msgid "Domain '%s' unmarked as autostarted\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%s' was reset\n"
+msgstr ""
 
 #, fuzzy
 msgid "Domain Events"
@@ -5624,6 +5651,7 @@ msgid ""
 msgstr ""
 "ଡମେନରେ%d ଅନ୍ତରାପୃଷ୍ଠ ଅଛି। --mac କୁ ବ୍ୟବହାର କରି କାହାକୁ ପୃଥକ କରାଯିବ ଦୟାକରି ତାହା ଉଲ୍ଲେଖ କରନ୍ତୁ"
 
+#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -6429,10 +6457,6 @@ msgid "Failed to allocate XML buffer"
 msgstr "XML ବଫର ବାଣ୍ଟିବାରେ ବିଫଳ"
 
 #, fuzzy, c-format
-msgid "Failed to allocate free veth pair after %d attempts"
-msgstr "ପଥ ପାଇଁ ସ୍ମୃତି ବାଣ୍ଟିବାରେ ବିଫଳ"
-
-#, fuzzy, c-format
 msgid "Failed to allocate memory for checkpoint directory for domain %s"
 msgstr "ଡମେନ %s ର ଆଶୁଚିତ୍ର ଡିରେକ୍ଟୋରୀ ପାଇଁ ସ୍ମୃତିସ୍ଥାନ ବଣ୍ଟନ କରିବାରେ ବିଫଳ"
 
@@ -6663,8 +6687,8 @@ msgid "Failed to copy XML node"
 msgstr "XML ନୋଡକୁ ନକଲ କରିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to core dump domain %s to %s"
-msgstr "%s ପରିସରକୁ %s କୁ ପଠାଇବାରେ ବିଫଳ"
+msgid "Failed to core dump domain '%s' to %s"
+msgstr ""
 
 msgid "Failed to count network filters"
 msgstr "ନେଟୱାର୍କ ଛାଣକକୁ ହିସାବ କରିବାରେ ବିଫଳ"
@@ -6832,14 +6856,21 @@ msgstr "%s କୁ ସୃଷ୍ଟି କରିବାରେ ବିଫଳ"
 msgid "Failed to create thread for receiving migration data"
 msgstr "ହୋଷ୍ଟକୁ ନିଲମ୍ବନ କରିବା ପାଇଁ ଥ୍ରେଡ ସୃଷ୍ଟି କରିବାରେ ବିଫଳ"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "ହୋଷ୍ଟକୁ ନିଲମ୍ବନ କରିବା ପାଇଁ ଥ୍ରେଡ ସୃଷ୍ଟି କରିବାରେ ବିଫଳ"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "ହୋଷ୍ଟକୁ ନିଲମ୍ବନ କରିବା ପାଇଁ ଥ୍ରେଡ ସୃଷ୍ଟି କରିବାରେ ବିଫଳ"
 
+#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "ହୋଷ୍ଟକୁ ନିଲମ୍ବନ କରିବା ପାଇଁ ଥ୍ରେଡ ସୃଷ୍ଟି କରିବାରେ ବିଫଳ"
@@ -6956,12 +6987,12 @@ msgid "Failed to destroy bridge interface %s"
 msgstr "ବ୍ରିଜ ଅନ୍ତରାପୃଷ୍ଠ %s କୁ ନଷ୍ଟ କରିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to destroy domain %s"
-msgstr "%s ପରିସରକୁ ନଷ୍ଟ କରିବାରେ ବିଫଳ"
-
-#, c-format
 msgid "Failed to destroy domain '%d'"
 msgstr "ଡମେନ '%d' କୁ ନଷ୍ଟ କରିବାରେ ବିଫଳ"
+
+#, c-format
+msgid "Failed to destroy domain '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to destroy interface %s"
@@ -7155,10 +7186,6 @@ msgstr "UUID ନିର୍ମାଣ କରିବାରେ ବିଫଳ"
 #, fuzzy
 msgid "Failed to generate genid"
 msgstr "uuid ନିର୍ମାଣ କରିବାରେ ବିଫଳ"
-
-#, c-format
-msgid "Failed to generate new name for interface %s"
-msgstr "ଅନ୍ତରାପୃଷ୍ଠ %s ପାଇଁ ନୂଆ ନାମ ସୃଷ୍ଟି କରିବାରେ ବିଫଳ"
 
 #, fuzzy
 msgid "Failed to generate uuid"
@@ -7401,6 +7428,7 @@ msgstr "ସକ୍ରିୟ ନେଟୱାର୍କ ମାନଙ୍କୁ ସୂ
 msgid "Failed to list active pools"
 msgstr "ସକ୍ରିୟ ପୁଲମାନଙ୍କୁ ତାଲିକାଭୁକ୍ତ କରିବାରେ ବିଫଳ"
 
+#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "ଡମେନଗୁଡ଼ିକୁ ସୂଚୀବଦ୍ଧ କରିବାରେ ବିଫଳ"
 
@@ -7416,22 +7444,28 @@ msgstr "ନିଷ୍କ୍ରିୟ ନେଟୱାର୍କ ମାନଙ୍କ�
 msgid "Failed to list inactive pools"
 msgstr "ନିଷ୍କ୍ରିୟ ପୁଲମାନଙ୍କୁ ତାଲିକାଭୁକ୍ତ କରିବାରେ ବିଫଳ"
 
+#. there was an error during the first or second call
 msgid "Failed to list interfaces"
 msgstr "ଅନ୍ତରାପୃଷ୍ଠଗୁଡ଼ିକୁ ସୂଚୀବଦ୍ଧ କରିବାରେ ବିଫଳ"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "ନେଟୱାର୍କ ଛାଣକକୁ ତାଲିକାଭୁକ୍ତ କରିବାରେ ବିଫଳ"
 
+#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "ନେଟୱାର୍କ ଛାଣକକୁ ତାଲିକାଭୁକ୍ତ କରିବାରେ ବିଫଳ"
 
+#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "ନେଟୱର୍କ ମାନଙ୍କୁ ସୂଚୀବଦ୍ଧ କରିବାରେ ବିଫଳ"
 
+#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "ନୋଡ ଉପକରଣଗୁଡ଼ିକୁ ସୂଚୀବଦ୍ଧ କରିବାରେ ବିଫଳ"
 
+#. there was an error during the call
 msgid "Failed to list node secrets"
 msgstr "ନୋଡ ଗୁପ୍ତ ତଥ୍ୟଗୁଡ଼ିକୁ ସୂଚୀବଦ୍ଧ କରିବାରେ ବିଫଳ"
 
@@ -7439,6 +7473,7 @@ msgstr "ନୋଡ ଗୁପ୍ତ ତଥ୍ୟଗୁଡ଼ିକୁ ସୂଚୀ
 msgid "Failed to list persistent guests on $uri"
 msgstr "$uri ଉପରେ ସ୍ଥାୟୀ ଅତିଥିମାନଙ୍କୁ ସୂଚୀବଦ୍ଧ କରିବାରେ ବିଫଳ"
 
+#. there was an error during the first or second call
 msgid "Failed to list pools"
 msgstr "ପୁଲଗୁଡ଼ିକୁ ତାଲିକାଭୁକ୍ତ କରିବାରେ ବିଫଳ"
 
@@ -7458,6 +7493,7 @@ msgstr "ଅସ୍ଥାୟୀ ଅତିଥିମାନଙ୍କୁ ସୂଚୀ�
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "ଡମେନ '%d' ପାଇଁ libxenlight ସହିତ vcpus କୁ ତାଲିକାଭୁକ୍ତ କରିବାରେ ବିଫଳ"
 
+#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "ଭଲ୍ୟୁମଗୁଡ଼ିକୁ ତାଲିକାଭୁକ୍ତ କରିବାରେ ବିଫଳ"
 
@@ -7546,8 +7582,8 @@ msgid "Failed to make root private"
 msgstr "ମୂଖ୍ୟ ଚାଳକକୁ ବ୍ୟକ୍ତିଗତ କରିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to mark domain %s as autostarted"
-msgstr "%s ପରିସରକୁ ସ୍ବୟଂଚାଳିତ ଭାବରେ ଚିହ୍ନିତ କରିବାରେ ବିଫଳ"
+msgid "Failed to mark domain '%s' as autostarted"
+msgstr ""
 
 #, c-format
 msgid "Failed to mkdir %s"
@@ -7685,10 +7721,6 @@ msgstr "ଧାରା '%s' କୁ ବିଶ୍ଲେଷଣ କରିବାରେ"
 #, c-format
 msgid "Failed to parse block name %s"
 msgstr "ବ୍ଲକ ନାମ %sକୁ ବିଶ୍ଳେଷଣ କରିବାରେ ବିଫଳ"
-
-#, fuzzy, c-format
-msgid "Failed to parse checkpoint XML from file '%s'"
-msgstr "ଆଶୁଚିତ୍ର XML  କୁ ଫାଇଲ '%s' ରୁ ବିଶ୍ଳେଷଣ କରିବାରେ ବିଫଳ"
 
 #, c-format
 msgid "Failed to parse configuration of %s"
@@ -7905,12 +7937,12 @@ msgid "Failed to reattach NVMe for disk target: %s"
 msgstr "ବନ୍ଧନ ଲକ୍ଷ୍ଯସ୍ଥଳ %s କୁ ନିର୍ମାଣ କରିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to reboot domain %s"
-msgstr "%s ପରିସରକୁ ପୁନର୍ଚାଳନ କରିବାରେ ବିଫଳ"
-
-#, c-format
 msgid "Failed to reboot domain '%d' with libxenlight"
 msgstr "ଡମେନ '%d' କୁ libxenlight  ସହିତ ପୁନର୍ଚାଳନ କରିବାରେ ବିଫଳ"
+
+#, c-format
+msgid "Failed to reboot domain '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to reconnect to the admin server"
@@ -7969,8 +8001,8 @@ msgid "Failed to remove managed save file '%s'"
 msgstr "ପରିଚାଳିତ ସଂରକ୍ଷଣ ଫାଇଲ '%s' କୁ ବାହାର କରିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to remove managed save image for domain %s"
-msgstr "ଡମେନ %s ପାଇଁ  ପରିଚାଳିତ ସଂରକ୍ଷଣ ପ୍ରତିଛବିକୁ ବାହାର କରିବାରେ ବିଫଳ"
+msgid "Failed to remove managed save image for domain '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to remove storage volume '%s'(%s)"
@@ -8001,8 +8033,8 @@ msgid "Failed to reset device %s"
 msgstr "ଉପକରଣ %sକୁ ପୁନଃସ୍ଥାପନ କରିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to reset domain %s"
-msgstr "ଡମେନ %sକୁ ପୁନଃସ୍ଥାପନ କରିବାରେ ବିଫଳ"
+msgid "Failed to reset domain '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to resize block device '%s'"
@@ -8039,10 +8071,6 @@ msgstr "ପଦ୍ଧତିକୁ ସିମୀତ କରିବାରେ ବିଫ
 msgid "Failed to restrict process: %s"
 msgstr "ପଦ୍ଧତିକୁ ସିମୀତ କରିବାରେ ବିଫଳ"
 
-#, c-format
-msgid "Failed to resume domain %s"
-msgstr "%s ପରିସରକୁ ପୁନଃପ୍ରାରମ୍ଭ କରିବାରେ ବିଫଳ"
-
 #, fuzzy, c-format
 msgid "Failed to resume domain '%d'"
 msgstr "%s ପରିସରକୁ ପୁନଃପ୍ରାରମ୍ଭ କରିବାରେ ବିଫଳ"
@@ -8051,6 +8079,13 @@ msgstr "%s ପରିସରକୁ ପୁନଃପ୍ରାରମ୍ଭ କରି�
 msgid "Failed to resume domain '%d' with libxenlight"
 msgstr "ଡମେନ '%d' କୁ libxenlight  ସହିତ ପୁନଃଚାଳନ କରିବାରେ ବିଫଳ"
 
+#, c-format
+msgid "Failed to resume domain '%s'"
+msgstr ""
+
+#. Hm, we already know we are in error here.  We don't want to
+#. * overwrite the previous error, though, so we just throw something
+#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "ବିଫଳତା ପରେ ଅତିଥି %s କୁ ପୁନଃସ୍ଥାପନ କରିବାରେ ବିଫଳ"
@@ -8105,16 +8140,16 @@ msgid "Failed to save VM settings, rc=%08x"
 msgstr "ହାର୍ଡ ଡିସ୍କ ବନ୍ଦ କରିବାରେ ଅସମର୍ଥ, rc=%08x"
 
 #, c-format
-msgid "Failed to save domain %s state"
-msgstr "ଡମେନ %s ସ୍ଥିତିରେ ସଂରକ୍ଷଣ କରିବାରେ ବିଫଳ"
-
-#, c-format
-msgid "Failed to save domain %s to %s"
-msgstr "%s ପରିସରକୁ %s ରେ ସଂରକ୍ଷଣ କରିବାରେ ବିଫଳ"
-
-#, c-format
 msgid "Failed to save domain '%d' with libxenlight"
 msgstr "ଡମେନ '%d' କୁ libxenlight ସହିତ ସଂରକ୍ଷଣ କରିବାରେ ବିଫଳ"
+
+#, c-format
+msgid "Failed to save domain '%s' state"
+msgstr ""
+
+#, c-format
+msgid "Failed to save domain '%s' to %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to seek to %llu bytes to the end in volume with path '%s'"
@@ -8274,12 +8309,12 @@ msgid "Failed to setup keepalive on connection\n"
 msgstr "ନୂତନ ଡମେନ ବର୍ଣ୍ଣନା ସେଟ କରିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to shutdown domain %s"
-msgstr "%s ପରିସରକୁ ବନ୍ଦ କରିବାରେ ବିଫଳ"
-
-#, c-format
 msgid "Failed to shutdown domain '%d' with libxenlight"
 msgstr "ଡମେନ '%d' କୁ libxenlight  ସହିତ ବନ୍ଦ କରିବାରେ ବିଫଳ"
+
+#, c-format
+msgid "Failed to shutdown domain '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to soft reset VM '%s'. Destroying VM"
@@ -8298,8 +8333,8 @@ msgid "Failed to start bridge interface %s"
 msgstr "ବ୍ରିଜ ଅନ୍ତରାପୃଷ୍ଠ %s ଆରମ୍ଭ କରିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to start domain %s"
-msgstr "%s ପରିସରକୁ ପ୍ରାରମ୍ଭ କରିବାରେ ବିଫଳ"
+msgid "Failed to start domain '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to start interface %s"
@@ -8340,10 +8375,6 @@ msgstr "ପଥ '%s' ସହିତ ସଂରକ୍ଷଣ ଭଲ୍ୟୁମକୁ 
 msgid "Failed to step SASL negotiation: %d (%s)"
 msgstr "SASL ଆଦାନ ପ୍ରଦାନ ବନ୍ଦ କରିବାରେ ବିଫଳ: %d (%s)"
 
-#, c-format
-msgid "Failed to suspend domain %s"
-msgstr "%s ପରିସରକୁ ସ୍ଥଗିତ କରିବାରେ ବିଫଳ"
-
 #, fuzzy, c-format
 msgid "Failed to suspend domain '%d'"
 msgstr "%s ପରିସରକୁ ସ୍ଥଗିତ କରିବାରେ ବିଫଳ"
@@ -8351,6 +8382,10 @@ msgstr "%s ପରିସରକୁ ସ୍ଥଗିତ କରିବାରେ ବି
 #, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
 msgstr "ଡମେନ '%d' କୁ libxenlight ସହିତ ସ୍ଥଗିତ କରିବାରେ ବିଫଳ"
+
+#, c-format
+msgid "Failed to suspend domain '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to symlink device %s to %s"
@@ -8397,8 +8432,8 @@ msgid "Failed to undefine bridge interface %s"
 msgstr "ବ୍ରିଜ ଅନ୍ତରାପୃଷ୍ଠ %s କୁ ବ୍ୟାଖ୍ୟା କରିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to undefine domain %s"
-msgstr "%s ପରିସରକୁ ସଜ୍ଞା ବିହୀନ କରିବାରେ ବିଫଳ"
+msgid "Failed to undefine domain '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to undefine interface %s"
@@ -8425,8 +8460,8 @@ msgid "Failed to unlink '%s'"
 msgstr ""
 
 #, c-format
-msgid "Failed to unmark domain %s as autostarted"
-msgstr "%s ପରିସରରୁ ସ୍ବୟଂଚାଳିତ ଚିହ୍ନକୁ ହଟାଇବାରେ ବିଫଳ"
+msgid "Failed to unmark domain '%s' as autostarted"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to unmarshall reply: %s"
@@ -8545,6 +8580,10 @@ msgid "Field name too long"
 msgstr "କ୍ଷେତ୍ର ନାମ '%s' ଟି ବହୁତ ବଡ଼"
 
 #, c-format
+msgid "File %s contains no keys"
+msgstr ""
+
+#, c-format
 msgid ""
 "File '%s' does not contain any <cpu> element or valid domain XML, host "
 "capabilities XML, or domain capabilities XML"
@@ -8639,10 +8678,63 @@ msgstr ""
 "ପ୍ରଥମ ଫାଇଲ-ଆଧାରିତ ହାର୍ଡ ଡିସ୍କରେ କୌଣସି ଉତ୍ସ ନାହିଁ, ତଥ୍ୟ ଭଣ୍ଡାର ଏବଂ  VMX ଫାଇଲ ପ୍ରତି ପଥକୁ "
 "ଅନୁମାନ କରିପାରିବେ ନାହିଁ"
 
+#. Macros to help dealing with flag requirements.
+#. *
+#. * VIR_REQUIRE_FLAG_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @RET: Return value.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_REQUIRE_FLAG_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if required flag is not set.
+#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive flags.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @RET: Return value.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, fuzzy, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "ବିକଳ୍ପ --%s ଏବଂ --%s ଗୁଡ଼ିକ ପରସ୍ପର ନିର୍ଭରଶୀଳ"
@@ -9632,6 +9724,15 @@ msgstr "ଅବୈଧ ଅନୁମତି ମୂଲ୍ୟ, କେବଳ 'ହଁ' �
 msgid "Invalid append attribute value '%s'"
 msgstr "ଅବୈଧ 'memAccess' ବିଶେଷତା ମୂଲ୍ୟ '%s'"
 
+#.
+#. * Don't check for *selectSet != NULL here because selectSet is a list
+#. * and might contain items already. This function appends to selectSet.
+#.
+#. optional
+#. optional
+#. nothing
+#. nothing
+#. nothing
 msgid "Invalid argument"
 msgstr "ଅବୈଧ ସ୍ବତନ୍ତ୍ରଚର"
 
@@ -10228,6 +10329,9 @@ msgstr "ଅବୈଧ ଧାରା: %s"
 #, fuzzy, c-format
 msgid "Invalid peer '%s' in <ip>"
 msgstr "'%s' ଉପରେ ଅବୈଧ ନମ୍ବର '%s'"
+
+msgid "Invalid persistent_state value, either 'yes' or 'no'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid pool type '%s'"
@@ -10888,14 +10992,6 @@ msgid "Malformed owners array"
 msgstr "ତ୍ରୁଟିଯୁକ୍ତ ମାଲିକର ଉପାଦାନ"
 
 #, fuzzy
-msgid "Malformed query-command-line-options array"
-msgstr "query-command-line-options ଉତ୍ତରରେ ଫେରସ୍ତ ତଥ୍ୟ ନଥିଲା"
-
-#, fuzzy
-msgid "Malformed query-command-line-options parameters array"
-msgstr "query-command-line-options ପ୍ରାଚଳ ତଥ୍ୟରେ 'ନାମ' ନଥିଲା"
-
-#, fuzzy
 msgid "Malformed resources array"
 msgstr "ତ୍ରୁଟିଯୁକ୍ତ ଫଳାଫଳ ମୂଲ୍ଯ"
 
@@ -10926,17 +11022,17 @@ msgstr "ତ୍ରୁଟିଯୁକ୍ତ wwn: %s"
 msgid "Manage active block operations"
 msgstr "ସକ୍ରିୟ ବ୍ଲକ ପ୍ରୟୋଗଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ"
 
-#, fuzzy, c-format
-msgid "Managed save image of Domain %s XML configuration edited.\n"
-msgstr "ପରିସର %s XML ବିନ୍ୟାସ ସମ୍ପାଦିତ ହୋଇଥାଏ।\n"
+#, c-format
+msgid "Managed save image of Domain '%s' XML configuration edited.\n"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Managed save image of domain %s XML configuration not changed.\n"
-msgstr "ସଂରକ୍ଷିତ ପ୍ରତିଛବି %s XML ସଂରଚନା ପରିବର୍ତ୍ତିତ ହୋଇନାହିଁ।\n"
+#, c-format
+msgid "Managed save image of domain '%s' XML configuration not changed.\n"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Managed save state file of domain %s updated.\n"
-msgstr "ଏକ ଡମେନ ସ୍ଥିତିର ପରିଚାଳିତ ସଂରକ୍ଷଣ"
+#, c-format
+msgid "Managed save state file of domain '%s' updated.\n"
+msgstr ""
 
 msgid "Managed save:"
 msgstr "ପରିଚାଳିତ ସଂରକ୍ଷଣ:"
@@ -11938,6 +12034,9 @@ msgstr ""
 msgid "N/A"
 msgstr "N/A"
 
+msgid "NBD URI must be supplied when migration URI uses UNIX transport method"
+msgstr ""
+
 #, fuzzy
 msgid "NBD migration with TLS is not supported"
 msgstr "cpu ସାଦୃଶ୍ୟ ସମର୍ଥିତ ନୁହଁ"
@@ -12064,6 +12163,12 @@ msgstr "SATA ଏହି QEMU ଦ୍ୱିମିକ ସହିତ ସମର୍ଥ�
 msgid "NVMe namespace can't be zero"
 msgstr "hugepage ର ଆକାର ଶୂନ ହୋଇପାରିବ ନାହିଁ"
 
+#. Output old style header
+#. We only get here if the --details option was selected.
+#. Insert the header into table
+#. The old output format
+#. We only get here if the --details option was selected.
+#. Insert the header into table
 msgid "Name"
 msgstr "ନାମ"
 
@@ -12346,6 +12451,10 @@ msgstr "କୌଣସି ବିଭାଗ ସୀମା ଉପଲବ୍ଧ ନା�
 msgid "No URI scheme specified"
 msgstr "କୌଣସି ବ୍ରିଜ ନାମ ନିର୍ଦ୍ଦିଷ୍ଟ ହୋଇନାହିଁ"
 
+#, c-format
+msgid "No URI scheme specified: %s"
+msgstr ""
+
 #, fuzzy
 msgid "No access manager registered"
 msgstr "ଅନେକ ଡ୍ରାଇଭର ପଞ୍ଜିକୃତ ହୋଇଛନ୍ତି"
@@ -12493,9 +12602,6 @@ msgid ""
 "No free busNr lower than current lowest busNr is available to auto-assign to "
 "bus %d. Must be manually assigned"
 msgstr ""
-
-msgid "No free veth devices available"
-msgstr "କୌଣସି ଖାଲି veth ଉପକରଣ ଉପଲବ୍ଧ ନାହିଁ"
 
 msgid "No graphical display found"
 msgstr ""
@@ -13079,6 +13185,20 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
+#. Macros to help dealing with required options.
+#. VSH_REQUIRE_OPTION_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable).
+#. * @NAME2: String containing the name of required option.
+#. * @EXPR2: Expression to validate the variable (boolean variable).
+#. *
+#. * Check if required command options in virsh was set.  Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
@@ -13092,6 +13212,20 @@ msgstr "ବିକଳ୍ପ ସ୍ୱତନ୍ତ୍ରଚରଟି ଖାଲି 
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive options.
+#. VSH_EXCLUSIVE_OPTIONS_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable)
+#. * @NAME2: String containing the name of the option.
+#. * @EXPR2: Expression to validate the variable (boolean variable)
+#. *
+#. * Reject mutually exclusive command options in virsh. Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "ବିକଳ୍ପ --%s ଏବଂ --%s ଗୁଡ଼ିକ ପରସ୍ପର ନିର୍ଭରଶୀଳ"
@@ -13193,15 +13327,15 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "PCI controller busNr '%s' out of range - must be 1-254"
+msgid "PCI controller busNr '%d' out of range - must be 1-254"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "PCI controller chassis '%s' out of range - must be 0-255"
-msgstr "FDC ନିୟନ୍ତ୍ରକ ଅନୁକ୍ରମଣିକା %d ସୀମା [0] ବାହାରେ"
+#, c-format
+msgid "PCI controller chassis '%d' out of range - must be 0-255"
+msgstr ""
 
 #, c-format
-msgid "PCI controller chassisNr '%s' out of range - must be 1-255"
+msgid "PCI controller chassisNr '%d' out of range - must be 1-255"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13212,9 +13346,9 @@ msgstr "FDC ନିୟନ୍ତ୍ରକ ଅନୁକ୍ରମଣିକା %d ସ
 msgid "PCI controller model was not set correctly"
 msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ନିୟନ୍ତ୍ରକ ମଡେଲ %d ଉତ୍ସ %d ସହିତ ମିଶୁ ନାହିଁ"
 
-#, fuzzy, c-format
-msgid "PCI controller port '%s' out of range - must be 0-255"
-msgstr "FDC ନିୟନ୍ତ୍ରକ ଅନୁକ୍ରମଣିକା %d ସୀମା [0] ବାହାରେ"
+#, c-format
+msgid "PCI controller port '%d' out of range - must be 0-255"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "PCI controller target index '%d' out of range - must be 0-30"
@@ -13897,8 +14031,8 @@ msgid "Removed"
 msgstr ""
 
 #, c-format
-msgid "Removed managedsave image for domain %s"
-msgstr "ଡମେନ %s ପାଇଁ ପରିଚାଳିତ ସଂରକ୍ଷିତ ପ୍ରତିଛବିକୁ ବାହାର କରାଯାଇଛି"
+msgid "Removed managedsave image for domain '%s'"
+msgstr ""
 
 msgid "Renamed"
 msgstr ""
@@ -14189,6 +14323,7 @@ msgstr "S3 ସ୍ଥିତିକୁ ଏହି ଡମେନ ପାଇଁ ନି�
 msgid "S4 state is disabled for this domain"
 msgstr "S4 ସ୍ଥିତିକୁ ଏହି ଡମେନ ପାଇଁ ନିଷ୍କ୍ରିୟ କରାଯାଇଛି"
 
+#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14712,6 +14847,9 @@ msgstr "CPU ସମୟ:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "spice ଆଲେଖିକଗୁଡ଼ିକ ଏହି QEMU ସହିତ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
+#. XXX: Need to sort the returned params once new parameter
+#. * fields not of shared memory are added.
+#.
 msgid "Shared memory:\n"
 msgstr "ସହଭାଗୀ ସ୍ମୃତି:\n"
 
@@ -14788,6 +14926,7 @@ msgstr "SATA ଏହି QEMU ଦ୍ୱିମିକ ସହିତ ସମର୍ଥ�
 msgid "Snapshot"
 msgstr "ଆଶୁଚିତ୍ର ତାଲିକା"
 
+#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "ଆଶୁଚିତ୍ର %s XML ବିନ୍ୟାସ ପରିବର୍ତ୍ତନ ହୋଇନାହିଁ।\n"
@@ -15252,6 +15391,7 @@ msgstr "TPM ଉପକରଣ ପଥ %s ଟି ଅବୈଧ"
 msgid "Table row cannot be empty"
 msgstr "%s ଶୂନ୍ୟ ହୋଇପାରିବ ନାହିଁ"
 
+#. title
 msgid "Target"
 msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ"
 
@@ -15325,6 +15465,9 @@ msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ଡିସ୍କ ପ୍ରବେଶାନ�
 #, fuzzy, c-format
 msgid "Target NUMA node count '%zu' doesn't match source '%zu'"
 msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ CPU ବିଶେଷତା ସଂଖ୍ୟା %zu ଉତ୍ସ %zu ସହିତ  ମେଳଖାଇନଥାଏ"
+
+msgid "Target NVDIMM UUID doesn't match source NVDIMM"
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -16485,9 +16628,11 @@ msgstr "'%s' ପାଇଁ ଆବଶ୍ୟକୀୟ ସକେଟ ନିର୍ମ�
 msgid "Try again?"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "MultiCURL ବସ୍ତୁକୁ ମୁକ୍ତ କରିବାକୁ ଚେଷ୍ଟା କରୁଅଛି ଯାହା ଏପର୍ଯ୍ୟନ୍ତ ବ୍ୟବହାରରେ ଅଛି"
 
+#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "ଏପର୍ଯ୍ୟନ୍ତ ବ୍ୟବହାରରେ ଥିବା SharedCURL ବସ୍ତୁକୁ ମୁକ୍ତ କରିବାକୁ ଚେଷ୍ଟା କରୁଅଛି"
 
@@ -17007,10 +17152,6 @@ msgstr "ବ୍ରିଜ ଉପକରଣକୁ ନିର୍ମାଣ କରିବ
 #, c-format
 msgid "Unable to create device %s"
 msgstr "ଉପକରଣ %s କୁ ନିର୍ମାଣ କରିବାରେ ଅସମର୍ଥ"
-
-#, c-format
-msgid "Unable to create device '%s'"
-msgstr ""
 
 #, c-format
 msgid "Unable to create directory %s"
@@ -19050,6 +19191,7 @@ msgstr "ଅଜଣା ଅଗ୍ରସର ପ୍ରକାର %d ନେଟୱର୍
 msgid "Unknown error"
 msgstr "ଅଜଣା ତ୍ରୁଟି"
 
+#. should never happen (tm)
 msgid "Unknown error value"
 msgstr "ଅଜଣା ତୃଟି ମୂଲ୍ୟ"
 
@@ -19828,10 +19970,12 @@ msgstr "spice ଆଲେଖିକଗୁଡ଼ିକ ଏହି QEMU ସହିତ �
 msgid "Vifname %s too big for destination"
 msgstr "Vifname %s ଟି ଲକ୍ଷ୍ଯସ୍ଥଳ ପାଇଁ ଅତ୍ୟଧିକ ବଡ଼"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr "libvirt %s ର Virsh ନିର୍ଦ୍ଦେଶନାମା ସାଧନ\n"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, fuzzy, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr "libvirt %s ର Virsh ନିର୍ଦ୍ଦେଶନାମା ସାଧନ\n"
@@ -20359,6 +20503,10 @@ msgstr "ପରିସର %s ଟି ପୂର୍ବରୁ ଚାଲୁଅଛି"
 msgid "any configuration"
 msgstr "ଅସମର୍ଥିତ ସଂରଚନା"
 
+#, c-format
+msgid "ap-domain value '%s' is out of range for '%s'"
+msgstr ""
+
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser ତୃଟି ସହିତ ପ୍ରସ୍ଥାନ କରିଥାଏ"
 
@@ -20411,13 +20559,13 @@ msgstr ""
 msgid "array element '%zd' of '%zd' missing in guest-get-fsinfo return data"
 msgstr ""
 
+msgid "array element missing in guest-get-disks return value"
+msgstr ""
+
 msgid "array element missing in guest-get-users return value"
 msgstr ""
 
 msgid "array element missing in guest-get-vcpus return value"
-msgstr ""
-
-msgid "array element missing in guest-ssh-get-authorized-keys return value"
 msgstr ""
 
 msgid ""
@@ -21291,8 +21439,8 @@ msgid "cannot close file: %s"
 msgstr "ଫାଇଲକୁ ବନ୍ଦ କରିପାରିବେ ନାହିଁ: %s"
 
 #, c-format
-msgid "cannot close stream on domain %s"
-msgstr "ଡମେନ %s ଉପରେ ଧାରାକୁ ବନ୍ଦ କରିପାରିବେ ନାହିଁ"
+msgid "cannot close stream on domain '%s'"
+msgstr ""
 
 #, c-format
 msgid "cannot close volume %s"
@@ -21893,6 +22041,9 @@ msgstr "ଗୋଟିଏ ଡମେନର ସ୍ଥାୟୀ ବିନ୍ୟାସ
 msgid "cannot modify virtio network device driver attributes"
 msgstr "virtio ନେଟୱର୍କ ଉପକରଣ ଡ୍ରାଇଭର ଗୁଣଧର୍ମଗୁଡ଼ିକୁ ପରିବର୍ତ୍ତନ କରିପାରବେ ନାହିଁ"
 
+msgid "cannot modify virtio network device driver options"
+msgstr ""
+
 msgid "cannot obtain CPU freq"
 msgstr "CPU freq ପାଇ ପାରିବେ ନାହିଁ"
 
@@ -21930,6 +22081,7 @@ msgstr "ପଥ '%s' କୁ ଖୋଲିପାରିବେ ନାହିଁ"
 msgid "cannot open path '%s' in '%s'"
 msgstr "ପଥ '%s' କୁ '%s' ରେ ଖୋଲିପାରିବେ ନାହିଁ"
 
+#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "ଆକାର '%s' କୁ ଖୋଲିପାରିବେ ନାହିଁ"
@@ -22605,12 +22757,12 @@ msgid "cfpc configuration is not supported by this QEMU binary"
 msgstr "ଏହି QEMU ବାଇନାରୀ ଦ୍ୱାରା splash ସମୟ ସମାପ୍ତି ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
 #, c-format
-msgid "cfs_period '%llu' must be in range (1000, 1000000)"
-msgstr "cfs_period '%llu' ନିଶ୍ଚିତ ଭାବରେ ଏହି ସୀମା ମଧ୍ଯରେ ରହିବା ଉଚିତ (1000, 1000000)"
+msgid "cfs_period '%llu' must be in range (%llu, %llu)"
+msgstr ""
 
 #, c-format
-msgid "cfs_quota '%lld' must be in range (1000, %llu)"
-msgstr "cfs_quota '%lld' ନିଶ୍ଚିତ ଭାବରେ ଏହି ସୀମା ମଧ୍ଯରେ ଥିବା ଉଚିତ (1000, %llu)"
+msgid "cfs_quota '%lld' must be in range (%llu, %llu)"
+msgstr ""
 
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup CPU ନିୟନ୍ତ୍ରକ ସ୍ଥାପିତ ହୋଇନାହିଁ"
@@ -22777,6 +22929,7 @@ msgstr "କ୍ଲୋନ ନାମ"
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
+#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "ନିମ୍ନ ସ୍ତରଟି ଡ଼ିରେକ୍ଟୋରୀ '%s' କୁ ନିର୍ମାଣ କରିବାରେ ବିଫଳ"
@@ -23383,8 +23536,8 @@ msgid "could not read xml file"
 msgstr "xml ଫାଇଲକୁ ପଢ଼ିପାରିଲା ନାହିଁ"
 
 #, c-format
-msgid "could not receive data from domain %s"
-msgstr "ଡମେନ %s ରୁ ତଥ୍ୟ ଗ୍ରହଣ କରିପାରିଲା ନାହିଁ"
+msgid "could not receive data from domain '%s'"
+msgstr ""
 
 #, c-format
 msgid "could not remove profile for '%s'"
@@ -24221,8 +24374,9 @@ msgstr "ଡିସ୍କ ଉପକରଣ='lun' ଟି ବସ='%s' ପରିପଥ
 msgid "disk port address is not supported by tunnelled migration"
 msgstr "ଟନେଲ ସ୍ଥାନାନ୍ତରଣ ପାଇଁ ପାଇପ ପାସ କରିପାରିବେ ନାହିଁ"
 
-msgid "disk product is more than 16 characters"
-msgstr "ଡିସ୍କ ଉତ୍ପାଦନ 16 ଅକ୍ଷରରୁ ଅଧିକ ହୋଇଥିବା ଉଚିତ"
+#, c-format
+msgid "disk product is more than %d characters"
+msgstr ""
 
 msgid "disk product is not printable string"
 msgstr "ଡିସ୍କ ଉତ୍ପାଦନ ଏକ ମୁଦ୍ରଣଯୋଗ୍ୟ ବାକ୍ୟ ନୁହଁ"
@@ -24251,8 +24405,9 @@ msgstr "ଡିସ୍କ %s ମିଳିଲା ନାହିଁ"
 msgid "disk type of '%s' does not support ejectable media"
 msgstr "ପୁଲ ପ୍ରକାର '%s' ଉତ୍ସ ଆବିଷ୍କାରକୁ ସମର୍ଥନ କରିନଥାଏ"
 
-msgid "disk vendor is more than 8 characters"
-msgstr "ଡିସ୍କ ବିକ୍ରେତା 8 ଅକ୍ଷରରୁ ଅଧିକ ହୋଇଥିବା ଉଚିତ"
+#, c-format
+msgid "disk vendor is more than %d characters"
+msgstr ""
 
 msgid "disk vendor is not printable string"
 msgstr "ଡିସ୍କ ବିକ୍ରେତା ଏକ ମୁଦ୍ରଣଯୋଗ୍ୟ ବାକ୍ୟଖଣ୍ଡ ନୁହଁ"
@@ -25027,12 +25182,12 @@ msgstr "ସେଲ ବ୍ୟବହାର ପାଇଁ ଏସକେପ"
 msgid "ethtool ioctl error on %s"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "event '%s' for domain %s\n"
-msgstr "%s କୁ ଡମେନ %s ପାଇଁ ଦେଖିପାରିଲା ନାହିଁ"
+#, c-format
+msgid "event '%s' for domain '%s'\n"
+msgstr ""
 
 #, c-format
-msgid "event '%s' for domain %s: %s for %s %s\n"
+msgid "event '%s' for domain '%s': %s for %s %s\n"
 msgstr ""
 
 #, fuzzy, c-format
@@ -25047,53 +25202,53 @@ msgstr ""
 msgid "event '%s' for storage pool %s\n"
 msgstr "ଅଜଣା ଭଣ୍ଡାର ପୁଲ ପ୍ରକାର %s"
 
-#, fuzzy, c-format
-msgid "event 'agent-lifecycle' for domain %s: state: '%s' reason: '%s'\n"
-msgstr "ଅବୈଧ ଡମେନ ସ୍ଥିତି କାରଣ '%s'"
-
 #, c-format
-msgid "event 'balloon-change' for domain %s: %lluKiB\n"
+msgid "event 'agent-lifecycle' for domain '%s': state: '%s' reason: '%s'\n"
 msgstr ""
 
 #, c-format
-msgid "event 'block-threshold' for domain %s: dev: %s(%s) %llu %llu\n"
+msgid "event 'balloon-change' for domain '%s': %lluKiB\n"
 msgstr ""
 
 #, c-format
-msgid "event 'device-added' for domain %s: %s\n"
+msgid "event 'block-threshold' for domain '%s': dev: %s(%s) %llu %llu\n"
 msgstr ""
 
 #, c-format
-msgid "event 'device-removal-failed' for domain %s: %s\n"
+msgid "event 'device-added' for domain '%s': %s\n"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "event 'device-removed' for domain %s: %s\n"
-msgstr "ଡମେନ ପାଇଁ କୌଣସି ବର୍ଣ୍ଣନା ନାହିଁ: %s"
+#, c-format
+msgid "event 'device-removal-failed' for domain '%s': %s\n"
+msgstr ""
 
 #, c-format
-msgid "event 'disk-change' for domain %s disk %s: %s -> %s: %s\n"
+msgid "event 'device-removed' for domain '%s': %s\n"
+msgstr ""
+
+#, c-format
+msgid "event 'disk-change' for domain '%s' disk %s: %s -> %s: %s\n"
 msgstr ""
 
 #, c-format
 msgid ""
-"event 'graphics' for domain %s: %s local[%s %s %s] remote[%s %s %s] %s\n"
+"event 'graphics' for domain '%s': %s local[%s %s %s] remote[%s %s %s] %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'io-error' for domain %s: %s (%s) %s\n"
+msgid "event 'io-error' for domain '%s': %s (%s) %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'io-error-reason' for domain %s: %s (%s) %s due to %s\n"
+msgid "event 'io-error-reason' for domain '%s': %s (%s) %s due to %s\n"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "event 'job-completed' for domain %s:\n"
-msgstr "ପରିସର %s ସହିତ ସଂଯୁକ୍ତ\n"
+#, c-format
+msgid "event 'job-completed' for domain '%s':\n"
+msgstr ""
 
 #, c-format
-msgid "event 'lifecycle' for domain %s: %s %s\n"
+msgid "event 'lifecycle' for domain '%s': %s %s\n"
 msgstr ""
 
 #, c-format
@@ -25114,33 +25269,33 @@ msgstr "ସଂରକ୍ଷଣ ପୁଲ '%s' କୁ ସ୍ୱୟଂଚାଳି�
 
 #, c-format
 msgid ""
-"event 'memory-failure' for domain %s:\n"
+"event 'memory-failure' for domain '%s':\n"
 "recipient: %s\n"
 "action: %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'metadata-change' for domain %s: %s %s\n"
+msgid "event 'metadata-change' for domain '%s': %s %s\n"
 msgstr ""
 
 #, c-format
-msgid "event 'migration-iteration' for domain %s: iteration: '%d'\n"
+msgid "event 'migration-iteration' for domain '%s': iteration: '%d'\n"
 msgstr ""
 
 #, c-format
-msgid "event 'rtc-change' for domain %s: %lld\n"
+msgid "event 'rtc-change' for domain '%s': %lld\n"
 msgstr ""
 
 #, c-format
-msgid "event 'tray-change' for domain %s disk %s: %s\n"
+msgid "event 'tray-change' for domain '%s' disk %s: %s\n"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "event 'tunable' for domain %s:\n"
-msgstr "ଡମେନ %s ପାଇଁ ପରିଚାଳିତ ସଂରକ୍ଷିତ ପ୍ରତିଛବିକୁ ବାହାର କରାଯାଇଛି"
+#, c-format
+msgid "event 'tunable' for domain '%s':\n"
+msgstr ""
 
 #, c-format
-msgid "event 'watchdog' for domain %s: %s\n"
+msgid "event 'watchdog' for domain '%s': %s\n"
 msgstr ""
 
 msgid "event callback already tracked"
@@ -26120,6 +26275,14 @@ msgstr "qemu ଉପକରଣ ତାଲିକାକୁ ବିଶ୍ଳେଷଣ �
 msgid "failed to parse slirp-helper features"
 msgstr "ଗଣନ ସଂଖ୍ୟା ବିଶ୍ଳେଷଣ କରିବାରେ ବିଫଳ: '%s'"
 
+#, c-format
+msgid "failed to parse the AP Card from sysfs path: '%s'"
+msgstr ""
+
+#, c-format
+msgid "failed to parse the AP Queue from sysfs path: '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to parse the CCW address from sysfs path: '%s'"
 msgstr "SCSI ଉପକରଣକୁ sysfs ପଥ '%s' ସହିତ କାର୍ଯ୍ୟକାରୀ କରିବାରେ ବିଫଳ"
@@ -26547,6 +26710,9 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
+#. parse inbound and outbound which are in the format of
+#. * 'average,peak,burst,floor', in which peak and burst are optional,
+#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "config ମୂଲ୍ୟ %s ତ୍ରୁଟିଯୁକ୍ତ ଥିଲା"
@@ -27155,6 +27321,7 @@ msgstr "ଆଶୁଚିତ୍ର ନିର୍ମାଣ ହେବା ପରେ �
 msgid "handler failed to wait on condition"
 msgstr "ସର୍ତ୍ତରେ ଅପେକ୍ଷା କରିବାରେ ବିଫଳ"
 
+#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr ""
 
@@ -27529,9 +27696,6 @@ msgstr "ସ୍ଥାନାନ୍ତରଣ ସମୟରେ ନୂତନ ନାମ
 msgid "info balloon reply was missing balloon data"
 msgstr "info balloon ଉତ୍ତରରେ balloon ତଥ୍ୟ ଅନୁପସ୍ଥିତ ଥିଲା"
 
-msgid "info kvm reply missing 'enabled' field"
-msgstr ""
-
 msgid "info migration reply was missing return status"
 msgstr "info ସ୍ଥାନାନ୍ତରଣ ଉତ୍ତରରେ ଫେରସ୍ତ ସ୍ଥିତି ନଥିଲା"
 
@@ -27714,6 +27878,25 @@ msgstr "ଅନ୍ତରାପୃଷ୍ଠ ନାମ"
 msgid "interface name %s does not fit into buffer "
 msgstr "ଅନ୍ତରାପୃଷ୍ଠ  ନାମ %s ବଫରରେ ଖାପ ଖାଇନଥାଏ"
 
+#.
+#. * virsh-interface.c: Commands to manage host interface
+#. *
+#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+#. *
+#. * This library is free software; you can redistribute it and/or
+#. * modify it under the terms of the GNU Lesser General Public
+#. * License as published by the Free Software Foundation; either
+#. * version 2.1 of the License, or (at your option) any later version.
+#. *
+#. * This library is distributed in the hope that it will be useful,
+#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#. * Lesser General Public License for more details.
+#. *
+#. * You should have received a copy of the GNU Lesser General Public
+#. * License along with this library.  If not, see
+#. * <http://www.gnu.org/licenses/>.
+#.
 msgid "interface name or MAC address"
 msgstr "ଅନ୍ତରାପୃଷ୍ଠ ନାମ ଅଥବା MAC ଠିକଣା"
 
@@ -27995,6 +28178,14 @@ msgstr "ଅବୈଧ କି ସଂକେତ: '%s'"
 #, fuzzy, c-format
 msgid "invalid allowReboot value '%s'"
 msgstr "ଅବୈଧ ପରିବର୍ତ୍ତନ ମୂଲ୍ୟ '%s'"
+
+#, c-format
+msgid "invalid ap-adapter value '%s' for '%s'"
+msgstr ""
+
+#, c-format
+msgid "invalid ap-domain value '%s' for '%s'"
+msgstr ""
 
 msgid "invalid argument"
 msgstr "ଅବୈଧ ସ୍ବତନ୍ତ୍ରଚର"
@@ -28639,9 +28830,15 @@ msgstr "ଅବୈଧ ପ୍ରକାର '%s' ପ୍ରାଚଳ '%s' ପାଇ�
 msgid "invalid value for 'managed': %s"
 msgstr "ବିକଳ୍ପ %s ପାଇଁ ଅବୈଧ ମୂଲ୍ୟ"
 
+msgid "invalid value for boot menu timeout"
+msgstr ""
+
 #, fuzzy
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr "ପୁନଃଚାଳନ ସମୟ ସମାପ୍ତି ପାଇଁ ଅବୈଧ ମୂଲ୍ୟ, ନିଶ୍ଚିତ ଭାବରେ [-1,65535] ଭିତରେ ରହିବା ଉଚିତ"
+
+msgid "invalid value for rebootTimeout"
+msgstr ""
 
 msgid "invalid value for rebootTimeout, must be in range [-1,65535]"
 msgstr "ପୁନଃଚାଳନ ସମୟ ସମାପ୍ତି ପାଇଁ ଅବୈଧ ମୂଲ୍ୟ, ନିଶ୍ଚିତ ଭାବରେ [-1,65535] ଭିତରେ ରହିବା ଉଚିତ"
@@ -29842,6 +30039,12 @@ msgstr "ଅଧିତଥ୍ଯ ପ୍ରାକ ବଣ୍ଟନ କେବଳ qcow2
 msgid "metadata title can't contain newlines"
 msgstr "ଡମେନ ଶୀର୍ଷକରେ ନୂତନ ଧାଡ଼ି ନଥାଏ"
 
+msgid "metdata cache max size control is not supported with this QEMU binary"
+msgstr ""
+
+msgid "metdata cache max size control is supported only with qcow2 images"
+msgstr ""
+
 msgid "migrate domain to another host"
 msgstr "ଅନ୍ଯ ଗୋଟିଏ ଆଧାରକୁ ପରିସରକୁ ଉତ୍ପ୍ରବାସ କରନ୍ତୁ"
 
@@ -30070,11 +30273,17 @@ msgstr "ଡିସ୍କ ଉତ୍ସ ପାଇଁ ନାମ ନାହିଁ"
 msgid "missing 'nvram-template' in '%s'"
 msgstr "%s ରେ ଅନୁପସ୍ଥିତ ନାମ ସୂଚନା"
 
+msgid "missing 'path' attribute in JSON backing definition for NFS volume"
+msgstr ""
+
 msgid "missing 'portal' address in iSCSI backing definition"
 msgstr ""
 
 #, c-format
 msgid "missing 'process' value in selinux lxc contexts file '%s'"
+msgstr ""
+
+msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr ""
 
 #, fuzzy, c-format
@@ -30126,6 +30335,10 @@ msgstr ""
 
 msgid "missing 'usage' attribute for RAM filesystem"
 msgstr "RAM ଫାଇଲତନ୍ତ୍ର ପାଇଁ  ଅନୁପସ୍ଥିତ 'ବ୍ୟବହାର' ଗୁଣ"
+
+msgid ""
+"missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
+msgstr ""
 
 #, fuzzy
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
@@ -30221,6 +30434,14 @@ msgstr "ଅନୁପସ୍ଥିତ ଉତ୍ସ ଉପକରଣ"
 #, fuzzy, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
 msgstr "ଡମେନ ବସ୍ତୁ ପାଇଁ ଅନୁପସ୍ଥିତ ନାମ ପ୍ରାଚଳ"
+
+#, c-format
+msgid "missing ap-adapter value for '%s'"
+msgstr ""
+
+#, c-format
+msgid "missing ap-domain value for '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "missing arch in QEMU capabilities cache"
@@ -30356,10 +30577,6 @@ msgstr "ନେଟୱର୍କ ଉତ୍ସ ପ୍ରଟୋକଲ ପ୍ରକା
 
 #, fuzzy
 msgid "missing domain in checkpoint"
-msgstr "ଆଶୁଚିତ୍ରରେ ଡମେନ ଅନୁପସ୍ଥିତ"
-
-#, fuzzy
-msgid "missing domain in checkpoint redefine"
 msgstr "ଆଶୁଚିତ୍ରରେ ଡମେନ ଅନୁପସ୍ଥିତ"
 
 msgid "missing domain in snapshot"
@@ -31046,6 +31263,15 @@ msgstr "ବର୍ଣ୍ଣନା ପରିବର୍ତ୍ତେ ଶୀର୍ଷ�
 msgid "monitor failure"
 msgstr "କୌଣସି ପ୍ରଦର୍ଶିକା ପଥ ନାହିଁ"
 
+#. *
+#. * QEMU_CHECK_MONITOR_FULL:
+#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
+#. * @exit: statement that is used to exit the function
+#. *
+#. * This macro checks that the monitor is valid for given operation and exits
+#. * the function if not. The macro also adds a debug statement regarding the
+#. * monitor.
+#.
 msgid "monitor must not be NULL"
 msgstr "ମନିଟର ନିଶ୍ଚିତ ଭାବରେ ଶୂନ୍ୟ ହେବା ଉଚିତ ନୁହଁ"
 
@@ -31249,6 +31475,7 @@ msgstr "rawio କ୍ଷମତା ଆବଶ୍ୟକ"
 msgid "negative size requires --shrink"
 msgstr ""
 
+#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "ସ୍ଥିରିକୃତ SSF %d ଟି ଯଥେଷ୍ଟ ଶକ୍ତ ନୁହଁ"
@@ -33055,6 +33282,9 @@ msgstr "ନୋଡ %zu ସୀମା ବାହାରେ ଅଛି"
 msgid "port UUID"
 msgstr "ଗୁପ୍ତ UUID"
 
+msgid "port cannot be specified in 'nfs' protocol host"
+msgstr ""
+
 msgid "port to use by target server for incoming disks migration"
 msgstr ""
 
@@ -33274,7 +33504,7 @@ msgid "ps2 bus does not support %s input device"
 msgstr "ps2 bus ନିବେଶ ଉପକରଣ %s କୁ ସମର୍ଥନ କରେନାହିଁ"
 
 #, c-format
-msgid "pull mode requires qcow2 driver, not '%s'"
+msgid "pull mode backup for disk '%s' requires qcow2 driver"
 msgstr ""
 
 #, fuzzy, c-format
@@ -33286,6 +33516,9 @@ msgid "qemu agent didn't provide 'ip-address-type' field for interface '%s'"
 msgstr ""
 
 msgid "qemu agent didn't provide 'name' field"
+msgstr ""
+
+msgid "qemu agent didn't return an array of disks"
 msgstr ""
 
 msgid "qemu agent didn't return an array of interfaces"
@@ -33385,15 +33618,6 @@ msgstr "ଅତିଥିରେ cpu ସ୍ଥିତିକୁ ପରିବର୍ତ
 #, fuzzy
 msgid "query-block device entry was not in expected format"
 msgstr "blockstats ଉପକରଣ ଭରଣଟି ଆଶାକରାଯାଉଥିବା ଶୈଳୀରେ ନାହିଁ"
-
-msgid "query-command-line-options parameter data was missing 'name'"
-msgstr "query-command-line-options ପ୍ରାଚଳ ତଥ୍ୟରେ 'ନାମ' ନଥିଲା"
-
-msgid "query-command-line-options reply data was missing 'option'"
-msgstr "query-command-line-options ଉତ୍ତର ତଥ୍ୟରେ 'ବିକଳ୍ପ' ନଥିଲା"
-
-msgid "query-command-line-options reply was missing return data"
-msgstr "query-command-line-options ଉତ୍ତରରେ ଫେରସ୍ତ ତଥ୍ୟ ନଥିଲା"
 
 msgid "query-commands reply data was missing 'name'"
 msgstr "query-commands ଉତ୍ତର ତଥ୍ୟରେ 'ନାମ'ନାହିଁ"
@@ -33523,8 +33747,8 @@ msgstr "quiesce ଅତିଥିର ଫାଇଲତନ୍ତ୍ର"
 msgid "quit this interactive terminal"
 msgstr "ଏହି ପାରସ୍ପରିକ କ୍ରିୟାକ୍ଷମ ଟର୍ମିନାଲକୁ ବନ୍ଦ କରନ୍ତୁ"
 
-msgid "ram attribute only supported for type of qxl"
-msgstr "ram ଗୁଣ କେବଳ qxl ର ପ୍ରକାର ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ"
+msgid "ram attribute only supported for video type qxl"
+msgstr ""
 
 #, c-format
 msgid "range %s - %s is not entirely within network %s/%d"
@@ -33748,6 +33972,9 @@ msgstr "rename(\"%s\", \"%s\")"
 msgid "reply data was missing 'name'"
 msgstr "qom-list ଉତ୍ତର ତଥ୍ୟରେ 'ନାମ' ନଥିଲା"
 
+msgid "reply data was missing 'option' name or parameters"
+msgstr ""
+
 msgid "reply was missing return data"
 msgstr "ଉତ୍ତରରେ ଫେରସ୍ତ ତଥ୍ୟ ଅନୁପସ୍ଥିତ"
 
@@ -33760,6 +33987,9 @@ msgstr "ଡମେନ ସ୍ଥିତି ଖବର କରନ୍ତୁ"
 
 msgid "report daemon version too"
 msgstr "ଡେମନ ଦୃଶ୍ୟକୁ ମଧ୍ଯ ଖବର କରନ୍ତୁ"
+
+msgid "report disk information"
+msgstr ""
 
 #, fuzzy
 msgid "report domain IOThread information"
@@ -36133,6 +36363,7 @@ msgstr "mutex କୁ init କରିବାରେ ଅସମର୍ଥ"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
+#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "%s କୁ fsync କରିବାରେ ଅସମର୍ଥ"
@@ -36479,11 +36710,6 @@ msgstr "ନିମ୍ନସ୍ତର ନିବେଶରେ ଲେଖିବାର�
 #, c-format
 msgid "unable write to %s"
 msgstr "%s କୁ ଲେଖିବାରେ ଅସମର୍ଥ"
-
-#, fuzzy
-msgid ""
-"unavailable-features in query-cpu-definitions reply data was not an array"
-msgstr "query-cpu-definitions ଉତ୍ତରରେ 'ନାମ' ନଥିଲା"
 
 msgid "unbridge a network device"
 msgstr "ଏକ ନେଟୱର୍କ ଉପକରଣକୁ ବ୍ରିଜ କରନ୍ତୁ ନାହିଁ"
@@ -36935,13 +37161,6 @@ msgstr "on_poweroff ପାଇଁ ଅପ୍ରତ୍ୟାଶିତ ମୂଲ୍�
 msgid "unexpected value %s for on_reboot"
 msgstr "on_reboot ପାଇଁ ଅପ୍ରତ୍ୟାଶିତ ମୂଲ୍ୟ %s"
 
-#, fuzzy, c-format
-msgid "unexpected value in %s array"
-msgstr "on_crash ପାଇଁ ଅପ୍ରତ୍ୟାଶିତ ମୂଲ୍ୟ %s"
-
-msgid "unexpected value in unavailable-features array"
-msgstr ""
-
 #, c-format
 msgid "unexpected video model %d"
 msgstr "ଅପ୍ରତ୍ୟାଶିତ ଭିଡ଼ିଓ ମଡେଲ %d"
@@ -36988,6 +37207,8 @@ msgstr ""
 msgid "unix socket for spice graphics are not supported with this QEMU"
 msgstr "spice ଆଲେଖିକଗୁଡ଼ିକ ଏହି QEMU ସହିତ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
+#. Something went wrong retrieving a volume path, cope with it
+#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "ଅଜଣା"
 
@@ -37200,14 +37421,6 @@ msgstr "ଅଜଣା ଉପକରଣ ପ୍ରକାର '%s'"
 #, c-format
 msgid "unknown dhcp peerdns value %s"
 msgstr "ଅଜଣା dhcp peerdns ମୂଲ୍ୟ %s"
-
-#, fuzzy, c-format
-msgid "unknown disk backup driver '%s'"
-msgstr "ଅଜଣା ଡିସ୍କ ଆଶୁଚିତ୍ର ସଂରଚନା ଡ୍ରାଇଭର '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk backup type '%s'"
-msgstr "ଅଜଣା ଡିସ୍କ ପରିପଥ ପ୍ରକାର '%s'"
 
 #, c-format
 msgid "unknown disk bus type '%s'"
@@ -38194,6 +38407,28 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
+#. *
+#. * virCheckFlags:
+#. * @supported: an OR'ed set of supported flags
+#. * @retval: return value in case unsupported flags were passed
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Exits the caller function if unsupported flags were
+#. * passed to it.
+#.
+#. *
+#. * virCheckFlagsGoto:
+#. * @supported: an OR'ed set of supported flags
+#. * @label: label to jump to on error
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "ଅସମର୍ଥିତ ସୂଚକ (0x%lx) କୁ ଫଳନ %s ରେ ପଠାଯାଇଛି"
@@ -38729,9 +38964,8 @@ msgstr "ସଂସ୍କରଣ ମେଳ ଖାଉନାହିଁ (ପ୍ରକ�
 msgid "version parsing error"
 msgstr "ସଂସ୍କରଣ ବିଶ୍ଳେଷଣ ତୃଟି"
 
-#, fuzzy
-msgid "vgamem attribute only supported for type of qxl"
-msgstr "ram ଗୁଣ କେବଳ qxl ର ପ୍ରକାର ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ"
+msgid "vgamem attribute only supported for video type qxl"
+msgstr ""
 
 msgid "vhost-net is not supported with this QEMU binary"
 msgstr "vhost-net ଏହି QEMU ଦ୍ୱିମିକ ସହିତ ସମର୍ଥିତ ନୁହଁ"
@@ -39163,9 +39397,8 @@ msgstr "ଆକାର ଉପଯୋଗିତା ଉଲ୍ଲେଖ କରାଯା
 msgid "vport operation '%s' is not supported for host%d"
 msgstr "vport ପ୍ରୟୋଗ '%s' ହୋଷ୍ଟ %d ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
-#, fuzzy
-msgid "vram64 attribute only supported for type of qxl"
-msgstr "ram ଗୁଣ କେବଳ qxl ର ପ୍ରକାର ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ"
+msgid "vram64 attribute only supported for video type qxl"
+msgstr ""
 
 #, fuzzy
 msgid "vsock device is not supported with this QEMU binary"
@@ -39393,6 +39626,269 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid ""
+#~ "\n"
+#~ "Domain %s dumped to %s\n"
+#~ msgstr ""
+#~ "\n"
+#~ "ଡମେନ %s କୁ %s ରେ ଡମ୍ପ କରାଯାଇଛି\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "Domain %s saved to %s\n"
+#~ msgstr ""
+#~ "\n"
+#~ "ଡମେନ %s କୁ %s ରେ ସଂରକ୍ଷଣ କରାଯାଇଛି\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "Domain %s state saved by libvirt\n"
+#~ msgstr ""
+#~ "\n"
+#~ "ଡମେନ %s ସ୍ଥିତିକୁ libvirt ଦ୍ୱାରା ସଂରକ୍ଷଣ କରାଯାଇଛି\n"
+
+#~ msgid "%s array element does not contain data"
+#~ msgstr "%s ଆରେ ଉପାଦାନରେ କୌଣସି ତଥ୍ୟ ନାହିଁ"
+
+#, fuzzy
+#~ msgid "%s: nvdimm without a path"
+#~ msgstr "ଆଶୁଚିତ୍ର ନଥିବା ଡମେନଗୁଡ଼ିକୁ ସୂଚୀବଦ୍ଧ କରନ୍ତୁ"
+
+#~ msgid "Cannot open /dev/urandom"
+#~ msgstr " /dev/urandom କୁ ଖୋଲିପାରିବେ ନାହିଁ"
+
+#~ msgid "Cannot read from /dev/urandom"
+#~ msgstr "/dev/urandom ରୁ ପଢ଼ିପାରିବେ ନାହିଁ"
+
+#~ msgid "Connected to domain %s\n"
+#~ msgstr "ପରିସର %s ସହିତ ସଂଯୁକ୍ତ\n"
+
+#~ msgid "Domain %s XML configuration edited.\n"
+#~ msgstr "ପରିସର %s XML ବିନ୍ୟାସ ସମ୍ପାଦିତ ହୋଇଥାଏ।\n"
+
+#~ msgid "Domain %s XML configuration not changed.\n"
+#~ msgstr "ପରିସର %s XML ବିନ୍ୟାସ ପରିବର୍ତ୍ତନ ହୋଇନାହିଁ।\n"
+
+#~ msgid "Domain %s attached to pid %u\n"
+#~ msgstr "ଡମେନ %s pid %u ରେ ସଂଲଗ୍ନ\n"
+
+#~ msgid "Domain %s could not be suspended"
+#~ msgstr "ଡମେନ %s କୁ ସ୍ଥଗିତ କରାଯାଇପାରିଲା ନାହିଁ"
+
+#~ msgid "Domain %s could not be woken up"
+#~ msgstr "ଡମେନ %s କୁ ଜାଗ୍ରତ କରାଯାଇନଥିଲା"
+
+#~ msgid "Domain %s created from %s\n"
+#~ msgstr "%s ପରିସର %s ରୁ ସୃଷ୍ଟ\n"
+
+#~ msgid "Domain %s defined from %s\n"
+#~ msgstr "%s ପରସରକୁ %s ରୁ ବ୍ଯାଖ୍ଯା କରାଯାଇଛି\n"
+
+#~ msgid "Domain %s destroyed\n"
+#~ msgstr "%s ପରିସରକୁ ନଷ୍ଟ କରାଯାଇଛି\n"
+
+#~ msgid "Domain %s has been undefined\n"
+#~ msgstr "%s ପରିସର ନାମକୁ ସଜ୍ଞା ବିହୀନ କରାଯାଇଛି\n"
+
+#~ msgid "Domain %s has no manage save image; removal skipped"
+#~ msgstr "ଡମେନ %s ରେ କୌଣସି ପରିଚାଳିତ ସଂରକ୍ଷଣ ପ୍ରତିଛବି ନାହିଁ; ବହିଷ୍କାରକୁ ଏଡ଼ାଇ ଦିଆଯାଇଛି"
+
+#~ msgid "Domain %s is being rebooted\n"
+#~ msgstr "%s ପରିସରକୁ ପୁନର୍ଚାଳନ କରାଯାଇଛି\n"
+
+#~ msgid "Domain %s is being shutdown\n"
+#~ msgstr "%s ପରିସରକୁ ବନ୍ଦ କରାଯାଇଛି\n"
+
+#~ msgid "Domain %s marked as autostarted\n"
+#~ msgstr "%s ପରିସରକୁ ସ୍ବୟଂଚାଳିତ ଭାବରେ ଚିହ୍ନିତ କରାଯାଇଛି\n"
+
+#~ msgid "Domain %s resumed\n"
+#~ msgstr "%s ପରିସରକୁ ପୁନଃପ୍ରାରମ୍ଭ କରାଗଲା\n"
+
+#~ msgid "Domain %s started\n"
+#~ msgstr "%s ପରିସର ପ୍ରାରମ୍ଭ କରାଗଲା\n"
+
+#~ msgid "Domain %s successfully suspended"
+#~ msgstr "ଡମେନ %s କୁ ସଫଳତାର ସହିତ ସ୍ଥଗିତ କରାଯାଇଛି"
+
+#~ msgid "Domain %s successfully woken up"
+#~ msgstr "ଡମେନ %s କୁ ସଫଳତାର ସହିତ ଜାଗ୍ରତ କରାଯାଇଛି"
+
+#~ msgid "Domain %s suspended\n"
+#~ msgstr "%s ପରିସରକୁ ସ୍ଥଗିତ କରାଯାଇଛି\n"
+
+#~ msgid "Domain %s unmarked as autostarted\n"
+#~ msgstr "%s ପରିସରରୁ ସ୍ବୟଂଚାଳିତ ଚିହ୍ନକୁ ହଟାଯାଇଛି\n"
+
+#~ msgid "Domain %s was reset\n"
+#~ msgstr "ଡମେନ %s କୁ ପୁନଃସ୍ଥାପନ କରାଗଲା\n"
+
+#, fuzzy
+#~ msgid "Failed to allocate free veth pair after %d attempts"
+#~ msgstr "ପଥ ପାଇଁ ସ୍ମୃତି ବାଣ୍ଟିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to core dump domain %s to %s"
+#~ msgstr "%s ପରିସରକୁ %s କୁ ପଠାଇବାରେ ବିଫଳ"
+
+#~ msgid "Failed to destroy domain %s"
+#~ msgstr "%s ପରିସରକୁ ନଷ୍ଟ କରିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to generate new name for interface %s"
+#~ msgstr "ଅନ୍ତରାପୃଷ୍ଠ %s ପାଇଁ ନୂଆ ନାମ ସୃଷ୍ଟି କରିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to mark domain %s as autostarted"
+#~ msgstr "%s ପରିସରକୁ ସ୍ବୟଂଚାଳିତ ଭାବରେ ଚିହ୍ନିତ କରିବାରେ ବିଫଳ"
+
+#, fuzzy
+#~ msgid "Failed to parse checkpoint XML from file '%s'"
+#~ msgstr "ଆଶୁଚିତ୍ର XML  କୁ ଫାଇଲ '%s' ରୁ ବିଶ୍ଳେଷଣ କରିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to reboot domain %s"
+#~ msgstr "%s ପରିସରକୁ ପୁନର୍ଚାଳନ କରିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to remove managed save image for domain %s"
+#~ msgstr "ଡମେନ %s ପାଇଁ  ପରିଚାଳିତ ସଂରକ୍ଷଣ ପ୍ରତିଛବିକୁ ବାହାର କରିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to reset domain %s"
+#~ msgstr "ଡମେନ %sକୁ ପୁନଃସ୍ଥାପନ କରିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to resume domain %s"
+#~ msgstr "%s ପରିସରକୁ ପୁନଃପ୍ରାରମ୍ଭ କରିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to save domain %s state"
+#~ msgstr "ଡମେନ %s ସ୍ଥିତିରେ ସଂରକ୍ଷଣ କରିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to save domain %s to %s"
+#~ msgstr "%s ପରିସରକୁ %s ରେ ସଂରକ୍ଷଣ କରିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to shutdown domain %s"
+#~ msgstr "%s ପରିସରକୁ ବନ୍ଦ କରିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to start domain %s"
+#~ msgstr "%s ପରିସରକୁ ପ୍ରାରମ୍ଭ କରିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to suspend domain %s"
+#~ msgstr "%s ପରିସରକୁ ସ୍ଥଗିତ କରିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to undefine domain %s"
+#~ msgstr "%s ପରିସରକୁ ସଜ୍ଞା ବିହୀନ କରିବାରେ ବିଫଳ"
+
+#~ msgid "Failed to unmark domain %s as autostarted"
+#~ msgstr "%s ପରିସରରୁ ସ୍ବୟଂଚାଳିତ ଚିହ୍ନକୁ ହଟାଇବାରେ ବିଫଳ"
+
+#, fuzzy
+#~ msgid "Malformed query-command-line-options array"
+#~ msgstr "query-command-line-options ଉତ୍ତରରେ ଫେରସ୍ତ ତଥ୍ୟ ନଥିଲା"
+
+#, fuzzy
+#~ msgid "Malformed query-command-line-options parameters array"
+#~ msgstr "query-command-line-options ପ୍ରାଚଳ ତଥ୍ୟରେ 'ନାମ' ନଥିଲା"
+
+#, fuzzy
+#~ msgid "Managed save image of Domain %s XML configuration edited.\n"
+#~ msgstr "ପରିସର %s XML ବିନ୍ୟାସ ସମ୍ପାଦିତ ହୋଇଥାଏ।\n"
+
+#, fuzzy
+#~ msgid "Managed save image of domain %s XML configuration not changed.\n"
+#~ msgstr "ସଂରକ୍ଷିତ ପ୍ରତିଛବି %s XML ସଂରଚନା ପରିବର୍ତ୍ତିତ ହୋଇନାହିଁ।\n"
+
+#, fuzzy
+#~ msgid "Managed save state file of domain %s updated.\n"
+#~ msgstr "ଏକ ଡମେନ ସ୍ଥିତିର ପରିଚାଳିତ ସଂରକ୍ଷଣ"
+
+#~ msgid "No free veth devices available"
+#~ msgstr "କୌଣସି ଖାଲି veth ଉପକରଣ ଉପଲବ୍ଧ ନାହିଁ"
+
+#, fuzzy
+#~ msgid "PCI controller chassis '%s' out of range - must be 0-255"
+#~ msgstr "FDC ନିୟନ୍ତ୍ରକ ଅନୁକ୍ରମଣିକା %d ସୀମା [0] ବାହାରେ"
+
+#, fuzzy
+#~ msgid "PCI controller port '%s' out of range - must be 0-255"
+#~ msgstr "FDC ନିୟନ୍ତ୍ରକ ଅନୁକ୍ରମଣିକା %d ସୀମା [0] ବାହାରେ"
+
+#~ msgid "Removed managedsave image for domain %s"
+#~ msgstr "ଡମେନ %s ପାଇଁ ପରିଚାଳିତ ସଂରକ୍ଷିତ ପ୍ରତିଛବିକୁ ବାହାର କରାଯାଇଛି"
+
+#~ msgid "cannot close stream on domain %s"
+#~ msgstr "ଡମେନ %s ଉପରେ ଧାରାକୁ ବନ୍ଦ କରିପାରିବେ ନାହିଁ"
+
+#~ msgid "cfs_period '%llu' must be in range (1000, 1000000)"
+#~ msgstr "cfs_period '%llu' ନିଶ୍ଚିତ ଭାବରେ ଏହି ସୀମା ମଧ୍ଯରେ ରହିବା ଉଚିତ (1000, 1000000)"
+
+#~ msgid "cfs_quota '%lld' must be in range (1000, %llu)"
+#~ msgstr "cfs_quota '%lld' ନିଶ୍ଚିତ ଭାବରେ ଏହି ସୀମା ମଧ୍ଯରେ ଥିବା ଉଚିତ (1000, %llu)"
+
+#~ msgid "could not receive data from domain %s"
+#~ msgstr "ଡମେନ %s ରୁ ତଥ୍ୟ ଗ୍ରହଣ କରିପାରିଲା ନାହିଁ"
+
+#~ msgid "disk product is more than 16 characters"
+#~ msgstr "ଡିସ୍କ ଉତ୍ପାଦନ 16 ଅକ୍ଷରରୁ ଅଧିକ ହୋଇଥିବା ଉଚିତ"
+
+#~ msgid "disk vendor is more than 8 characters"
+#~ msgstr "ଡିସ୍କ ବିକ୍ରେତା 8 ଅକ୍ଷରରୁ ଅଧିକ ହୋଇଥିବା ଉଚିତ"
+
+#, fuzzy
+#~ msgid "event '%s' for domain %s\n"
+#~ msgstr "%s କୁ ଡମେନ %s ପାଇଁ ଦେଖିପାରିଲା ନାହିଁ"
+
+#, fuzzy
+#~ msgid "event 'agent-lifecycle' for domain %s: state: '%s' reason: '%s'\n"
+#~ msgstr "ଅବୈଧ ଡମେନ ସ୍ଥିତି କାରଣ '%s'"
+
+#, fuzzy
+#~ msgid "event 'device-removed' for domain %s: %s\n"
+#~ msgstr "ଡମେନ ପାଇଁ କୌଣସି ବର୍ଣ୍ଣନା ନାହିଁ: %s"
+
+#, fuzzy
+#~ msgid "event 'job-completed' for domain %s:\n"
+#~ msgstr "ପରିସର %s ସହିତ ସଂଯୁକ୍ତ\n"
+
+#, fuzzy
+#~ msgid "event 'tunable' for domain %s:\n"
+#~ msgstr "ଡମେନ %s ପାଇଁ ପରିଚାଳିତ ସଂରକ୍ଷିତ ପ୍ରତିଛବିକୁ ବାହାର କରାଯାଇଛି"
+
+#, fuzzy
+#~ msgid "missing domain in checkpoint redefine"
+#~ msgstr "ଆଶୁଚିତ୍ରରେ ଡମେନ ଅନୁପସ୍ଥିତ"
+
+#~ msgid "query-command-line-options parameter data was missing 'name'"
+#~ msgstr "query-command-line-options ପ୍ରାଚଳ ତଥ୍ୟରେ 'ନାମ' ନଥିଲା"
+
+#~ msgid "query-command-line-options reply data was missing 'option'"
+#~ msgstr "query-command-line-options ଉତ୍ତର ତଥ୍ୟରେ 'ବିକଳ୍ପ' ନଥିଲା"
+
+#~ msgid "query-command-line-options reply was missing return data"
+#~ msgstr "query-command-line-options ଉତ୍ତରରେ ଫେରସ୍ତ ତଥ୍ୟ ନଥିଲା"
+
+#~ msgid "ram attribute only supported for type of qxl"
+#~ msgstr "ram ଗୁଣ କେବଳ qxl ର ପ୍ରକାର ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ"
+
+#, fuzzy
+#~ msgid ""
+#~ "unavailable-features in query-cpu-definitions reply data was not an array"
+#~ msgstr "query-cpu-definitions ଉତ୍ତରରେ 'ନାମ' ନଥିଲା"
+
+#, fuzzy
+#~ msgid "unexpected value in %s array"
+#~ msgstr "on_crash ପାଇଁ ଅପ୍ରତ୍ୟାଶିତ ମୂଲ୍ୟ %s"
+
+#, fuzzy
+#~ msgid "unknown disk backup driver '%s'"
+#~ msgstr "ଅଜଣା ଡିସ୍କ ଆଶୁଚିତ୍ର ସଂରଚନା ଡ୍ରାଇଭର '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk backup type '%s'"
+#~ msgstr "ଅଜଣା ଡିସ୍କ ପରିପଥ ପ୍ରକାର '%s'"
+
+#, fuzzy
+#~ msgid "vgamem attribute only supported for type of qxl"
+#~ msgstr "ram ଗୁଣ କେବଳ qxl ର ପ୍ରକାର ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ"
+
+#, fuzzy
+#~ msgid "vram64 attribute only supported for type of qxl"
+#~ msgstr "ram ଗୁଣ କେବଳ qxl ର ପ୍ରକାର ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ"
 
 #~ msgid "Bad child elements counting."
 #~ msgstr "ଖରାପ ଅନୁଗାମୀ ଉପାଦାନ ହିସାବ କରୁଅଛି।"
