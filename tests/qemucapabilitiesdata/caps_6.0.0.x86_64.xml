@@ -254,6 +254,7 @@
   <flag name='vhost-user-fs.bootindex'/>
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>
+  <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
   <version>5002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

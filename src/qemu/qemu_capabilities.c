@@ -615,6 +615,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 390 */
               "vhost-user-blk",
               "cpu-max",
+              "memory-backend-file.x-use-canonical-path-for-ramblock-id",
     );
 
 
@@ -1683,6 +1684,11 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] =
     { "discard-data", QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD },
     { "align", QEMU_CAPS_OBJECT_MEMORY_FILE_ALIGN },
     { "pmem", QEMU_CAPS_OBJECT_MEMORY_FILE_PMEM },
+    /* As of QEMU commit 8db0b20415c129cf5e577a593a4a0372d90b7cc9 the
+     * "x-use-canonical-path-for-ramblock-id" property is considered stable and
+     * supported. The 'x-' prefix was kept for compatibility with already
+     * released qemu versions. */
+    { "x-use-canonical-path-for-ramblock-id", QEMU_CAPS_X_USE_CANONICAL_PATH_FOR_RAMBLOCK_ID },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendMemfd[] = {

@@ -146,6 +146,7 @@
   <flag name='fsdev.createmode'/>
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>
+  <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100240</microcodeVersion>

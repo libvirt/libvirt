@@ -196,6 +196,7 @@
   <flag name='am53c974'/>
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>
+  <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900242</microcodeVersion>

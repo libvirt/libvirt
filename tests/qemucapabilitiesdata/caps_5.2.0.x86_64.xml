@@ -253,6 +253,7 @@
   <flag name='virtio-pmem-pci'/>
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>
+  <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
   <version>5002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
