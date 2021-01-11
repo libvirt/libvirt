@@ -253,6 +253,13 @@
         life-cycle, monitoring and so on.
       </dd>
 
+      <dt><a href="https://kubevirt.io/">KubeVirt</a></dt>
+      <dd>
+        KubeVirt is a virtual machine management add-on for Kubernetes. The aim
+        is to provide a common ground for virtualization solutions on top of
+        Kubernetes.
+      </dd>
+
       <dt><a href="https://github.com/gustavfranssonnyvell/cherrypop">Cherrypop</a></dt>
       <dd>
         A cloud software with no masters or central points. Nodes
