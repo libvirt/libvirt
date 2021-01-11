@@ -80,7 +80,7 @@ stages:
   image: registry.gitlab.com/libvirt/libvirt-ci/cirrus-run:master
   needs: []
   script:
-    - source ci/cirrus/libvirt-$NAME.vars
+    - source ci/cirrus/$NAME.vars
     - sed -e "s|[@]CI_REPOSITORY_URL@|$CI_REPOSITORY_URL|g"
           -e "s|[@]CI_COMMIT_REF_NAME@|$CI_COMMIT_REF_NAME|g"
           -e "s|[@]CI_COMMIT_SHA@|$CI_COMMIT_SHA|g"
