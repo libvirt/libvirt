@@ -591,10 +591,10 @@ qemuMigrationSrcNBDStorageCopyReady(virDomainObjPtr vm,
             return -1;
         }
 
-        virObjectUnref(job);
-
-        if (disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_READY)
+        if (job->state != VIR_DOMAIN_BLOCK_JOB_READY)
             notReady++;
+
+        virObjectUnref(job);
     }
 
     if (notReady) {
