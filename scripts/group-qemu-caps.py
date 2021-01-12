@@ -78,8 +78,8 @@ def regroup_caps(check, filename, start_regex, end_regex,
                                     stdin=subprocess.PIPE)
             diff.communicate(input=new.encode('utf-8'))
 
-            print("Incorrect line wrapping in $file",
-                  file=sys.stderr)
+            print("Incorrect line wrapping in '%s'" %
+                  filename, file=sys.stderr)
             print("Use group-qemu-caps.py to generate data files",
                   file=sys.stderr)
             return False

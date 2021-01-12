@@ -137,8 +137,8 @@ def rewrap(filename, in_place, check):
                                     stdin=subprocess.PIPE)
             diff.communicate(input=new.encode('utf-8'))
 
-            print("Incorrect line wrapping in $file",
-                  file=sys.stderr)
+            print("Incorrect line wrapping in '%s'" %
+                  filename, file=sys.stderr)
             print("Use test-wrap-argv.py to wrap test data files",
                   file=sys.stderr)
             return False
