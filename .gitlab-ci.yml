@@ -14,7 +14,7 @@ stages:
 
 # Common templates
 
-.container_job_template: &container_job_definition
+.container_job:
   image: docker:stable
   stage: containers
   needs: []
@@ -36,11 +36,11 @@ stages:
 # needed for the pipeline itself to complete: those sometimes fail, and when
 # that happens it's mostly because of temporary issues with Debian sid. We
 # don't want those failures to affect the overall pipeline status
-.container_optional_job_template: &container_optional_job_definition
-  <<: *container_job_definition
+.container_optional_job:
+  extends: .container_job
   allow_failure: true
 
-.native_build_job_template: &native_build_job_definition
+.native_build_job:
   stage: builds
   image: $CI_REGISTRY_IMAGE/ci-$NAME:latest
   cache:
@@ -75,7 +75,7 @@ stages:
 # Note that the $PATH environment variable has to be treated with
 # special care, because we can't just override it at the GitLab CI job
 # definition level or we risk breaking it completely.
-.cirrus_build_job_template: &cirrus_build_job_definition
+.cirrus_build_job:
   stage: builds
   image: registry.gitlab.com/libvirt/libvirt-ci/cirrus-run:master
   needs: []
@@ -103,7 +103,7 @@ stages:
       - $CIRRUS_GITHUB_REPO
       - $CIRRUS_API_TOKEN
 
-.cross_build_default_job_template: &cross_build_job_definition
+.cross_build_job:
   stage: builds
   image: $CI_REGISTRY_IMAGE/ci-$NAME-cross-$CROSS:latest
   cache:
@@ -121,57 +121,57 @@ stages:
 # Native container build jobs
 
 x64-centos-7-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: centos-7
 
 x64-centos-8-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: centos-8
 
 x64-centos-stream-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: centos-stream
 
 x64-debian-10-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: debian-10
 
 x64-debian-sid-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: debian-sid
 
 x64-fedora-32-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: fedora-32
 
 x64-fedora-33-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: fedora-33
 
 x64-fedora-rawhide-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: fedora-rawhide
 
 x64-opensuse-151-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: opensuse-151
 
 x64-ubuntu-1804-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: ubuntu-1804
 
 x64-ubuntu-2004-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: ubuntu-2004
 
@@ -179,97 +179,97 @@ x64-ubuntu-2004-container:
 # Cross-build containers build jobs
 
 aarch64-debian-10-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: debian-10-cross-aarch64
 
 armv6l-debian-10-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: debian-10-cross-armv6l
 
 armv7l-debian-10-container:
-  <<: *container_optional_job_definition
+  extends: .container_optional_job
   variables:
     NAME: debian-10-cross-armv7l
 
 i686-debian-10-container:
-  <<: *container_optional_job_definition
+  extends: .container_optional_job
   variables:
     NAME: debian-10-cross-i686
 
 mips-debian-10-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: debian-10-cross-mips
 
 mips64el-debian-10-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: debian-10-cross-mips64el
 
 mipsel-debian-10-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: debian-10-cross-mipsel
 
 ppc64le-debian-10-container:
-  <<: *container_optional_job_definition
+  extends: .container_optional_job
   variables:
     NAME: debian-10-cross-ppc64le
 
 s390x-debian-10-container:
-  <<: *container_optional_job_definition
+  extends: .container_optional_job
   variables:
     NAME: debian-10-cross-s390x
 
 aarch64-debian-sid-container:
-  <<: *container_optional_job_definition
+  extends: .container_optional_job
   variables:
     NAME: debian-sid-cross-aarch64
 
 armv6l-debian-sid-container:
-  <<: *container_optional_job_definition
+  extends: .container_optional_job
   variables:
     NAME: debian-sid-cross-armv6l
 
 armv7l-debian-sid-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: debian-sid-cross-armv7l
 
 i686-debian-sid-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: debian-sid-cross-i686
 
 mips64el-debian-sid-container:
-  <<: *container_optional_job_definition
+  extends: .container_optional_job
   variables:
     NAME: debian-sid-cross-mips64el
 
 mipsel-debian-sid-container:
-  <<: *container_optional_job_definition
+  extends: .container_optional_job
   variables:
     NAME: debian-sid-cross-mipsel
 
 ppc64le-debian-sid-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: debian-sid-cross-ppc64le
 
 s390x-debian-sid-container:
-  <<: *container_optional_job_definition
+  extends: .container_optional_job
   variables:
     NAME: debian-sid-cross-s390x
 
 mingw32-fedora-rawhide-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: fedora-rawhide-cross-mingw32
 
 mingw64-fedora-rawhide-container:
-  <<: *container_job_definition
+  extends: .container_job
   variables:
     NAME: fedora-rawhide-cross-mingw64
 
@@ -277,14 +277,14 @@ mingw64-fedora-rawhide-container:
 # Native architecture build + test jobs
 
 x64-debian-10:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-debian-10-container
   variables:
     NAME: debian-10
 
 x64-debian-10-clang:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-debian-10-container
   variables:
@@ -292,14 +292,14 @@ x64-debian-10-clang:
     CC: clang
 
 x64-debian-sid:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-debian-sid-container
   variables:
     NAME: debian-sid
 
 x64-centos-7:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-centos-7-container
   variables:
@@ -310,7 +310,7 @@ x64-centos-7:
     RPM: skip
 
 x64-centos-8:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-centos-8-container
   variables:
@@ -318,7 +318,7 @@ x64-centos-8:
     RPM: skip
 
 x64-centos-8-clang:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-centos-8-container
   variables:
@@ -327,7 +327,7 @@ x64-centos-8-clang:
     RPM: skip
 
 x64-centos-stream:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-centos-stream-container
   variables:
@@ -335,7 +335,7 @@ x64-centos-stream:
     RPM: skip
 
 x64-fedora-32:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-fedora-32-container
   variables:
@@ -343,21 +343,21 @@ x64-fedora-32:
     RPM: skip
 
 x64-fedora-33:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-fedora-33-container
   variables:
     NAME: fedora-33
 
 x64-fedora-rawhide:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-fedora-rawhide-container
   variables:
     NAME: fedora-rawhide
 
 x64-fedora-rawhide-clang:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-fedora-rawhide-container
   variables:
@@ -366,7 +366,7 @@ x64-fedora-rawhide-clang:
     RPM: skip
 
 x64-opensuse-151:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-opensuse-151-container
   variables:
@@ -374,21 +374,21 @@ x64-opensuse-151:
     RPM: skip
 
 x64-ubuntu-1804:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-ubuntu-1804-container
   variables:
     NAME: ubuntu-1804
 
 x64-ubuntu-2004:
-  <<: *native_build_job_definition
+  extends: .native_build_job
   needs:
     - x64-ubuntu-2004-container
   variables:
     NAME: ubuntu-2004
 
 x64-freebsd-11-build:
-  <<: *cirrus_build_job_definition
+  extends: .cirrus_build_job
   variables:
     NAME: freebsd-11
     CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
@@ -397,7 +397,7 @@ x64-freebsd-11-build:
     INSTALL_COMMAND: pkg install -y
 
 x64-freebsd-12-build:
-  <<: *cirrus_build_job_definition
+  extends: .cirrus_build_job
   variables:
     NAME: freebsd-12
     CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
@@ -406,7 +406,7 @@ x64-freebsd-12-build:
     INSTALL_COMMAND: pkg install -y
 
 x64-macos-1015-build:
-  <<: *cirrus_build_job_definition
+  extends: .cirrus_build_job
   variables:
     NAME: macos-1015
     CIRRUS_VM_INSTANCE_TYPE: osx_instance
@@ -420,7 +420,7 @@ x64-macos-1015-build:
 # Cross compiled build jobs
 
 armv6l-debian-10:
-  <<: *cross_build_job_definition
+  extends: .cross_build_job
   needs:
     - armv6l-debian-10-container
   variables:
@@ -428,7 +428,7 @@ armv6l-debian-10:
     CROSS: armv6l
 
 armv7l-debian-10:
-  <<: *cross_build_job_definition
+  extends: .cross_build_job
   needs:
     - armv7l-debian-10-container
   variables:
@@ -436,7 +436,7 @@ armv7l-debian-10:
     CROSS: armv7l
 
 mips64el-debian-10:
-  <<: *cross_build_job_definition
+  extends: .cross_build_job
   needs:
     - mips64el-debian-10-container
   variables:
@@ -444,7 +444,7 @@ mips64el-debian-10:
     CROSS: mips64el
 
 mips-debian-10:
-  <<: *cross_build_job_definition
+  extends: .cross_build_job
   needs:
     - mips-debian-10-container
   variables:
@@ -452,7 +452,7 @@ mips-debian-10:
     CROSS: mips
 
 aarch64-debian-10:
-  <<: *cross_build_job_definition
+  extends: .cross_build_job
   needs:
     - aarch64-debian-10-container
   variables:
@@ -460,7 +460,7 @@ aarch64-debian-10:
     CROSS: aarch64
 
 mipsel-debian-10:
-  <<: *cross_build_job_definition
+  extends: .cross_build_job
   needs:
     - mipsel-debian-10-container
   variables:
@@ -468,7 +468,7 @@ mipsel-debian-10:
     CROSS: mipsel
 
 s390x-debian-sid:
-  <<: *cross_build_job_definition
+  extends: .cross_build_job
   needs:
     - s390x-debian-10-container
   variables:
@@ -476,7 +476,7 @@ s390x-debian-sid:
     CROSS: s390x
 
 i686-debian-sid:
-  <<: *cross_build_job_definition
+  extends: .cross_build_job
   needs:
     - i686-debian-sid-container
   variables:
@@ -484,7 +484,7 @@ i686-debian-sid:
     CROSS: i686
 
 ppc64le-debian-sid:
-  <<: *cross_build_job_definition
+  extends: .cross_build_job
   needs:
     - ppc64le-debian-10-container
   variables:
@@ -492,7 +492,7 @@ ppc64le-debian-sid:
     CROSS: ppc64le
 
 mingw32-fedora-rawhide:
-  <<: *cross_build_job_definition
+  extends: .cross_build_job
   needs:
     - mingw32-fedora-rawhide-container
   variables:
@@ -500,7 +500,7 @@ mingw32-fedora-rawhide:
     CROSS: mingw32
 
 mingw64-fedora-rawhide:
-  <<: *cross_build_job_definition
+  extends: .cross_build_job
   needs:
     - mingw64-fedora-rawhide-container
   variables:
