@@ -756,21 +756,12 @@ AppArmorRestoreInputLabel(virSecurityManagerPtr mgr,
 
 /* Called when hotplugging */
 static int
-AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
-                              virDomainDefPtr def,
-                              virStorageSourcePtr src,
-                              virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
+AppArmorSetSecurityImageLabelInternal(virSecurityManagerPtr mgr,
+                                      virDomainDefPtr def,
+                                      virStorageSourcePtr src)
 {
-    virSecurityLabelDefPtr secdef;
     g_autofree char *vfioGroupDev = NULL;
     const char *path;
-
-    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
-    if (!secdef || !secdef->relabel)
-        return 0;
-
-    if (!secdef->imagelabel)
-        return 0;
 
     if (src->type == VIR_STORAGE_TYPE_NVME) {
         const virStorageSourceNVMeDef *nvme = src->nvme;
@@ -795,6 +786,30 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
     }
 
     return reload_profile(mgr, def, path, true);
+}
+
+static int
+AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
+                              virDomainDefPtr def,
+                              virStorageSourcePtr src,
+                              virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
+{
+    virSecurityLabelDefPtr secdef;
+    virStorageSourcePtr n;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
+    if (!secdef || !secdef->relabel)
+        return 0;
+
+    if (!secdef->imagelabel)
+        return 0;
+
+    for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (AppArmorSetSecurityImageLabelInternal(mgr, def, n) < 0)
+            return -1;
+    }
+
+    return 0;
 }
 
 static int
