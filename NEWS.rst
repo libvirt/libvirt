@@ -35,6 +35,12 @@ v7.0.0 (unreleased)
     size. The new knob allows advanced users setting the size according to
     qemu's documentation to suit their image.
 
+  * conf: Add support for keeping TPM emulator state
+
+    Currently, swtpm TPM state file is removed when a transient domain is
+    powered off or undefined. Add per-TPM emulator option ``persistent_state``
+    for keeping TPM state.
+
 * **Improvements**
 
   * qemu: Discourage users from polling ``virDomainGetBlockJobInfo`` for block
@@ -47,6 +53,22 @@ v7.0.0 (unreleased)
     Various bits of documentation of how to use libvirt with RBD volumes used
     an usage name which would not pass the XML validation. Relax the requirement
     to make such XMLs valid.
+
+  * virnetdevopenvswitch: Various improvements
+
+    The code that handles ``<interface type='vhostuser'/>`` was given various
+    improvements. So far, libvirt assumed vhostuser interfaces are handled
+    exclusively by OpenVSwitch and refused to start a guest if it was not so.
+    Now a guest can be started successfully even if the interface is created by
+    some other tool (e.g. ``dpdk-testpmd``). Also, the code that detects the
+    interface name was adapted to new versions of OpenVSwitch and thus can
+    detect name more reliably.
+
+  * qemu: Report guest disks informations in ``virDomainGetGuestInfo``
+
+    Libvirt is now able to report disks and filesystems from the guest's
+    perspective (using guest agent). And with sufficiently new guest agent
+    (5.3.0 or newer) the API also handles disks on CCW bus.
 
 * **Bug fixes**
 
@@ -68,6 +90,31 @@ v7.0.0 (unreleased)
     domains created with libvirt 7.0.0 will always launch with the right
     amount of initial memory. Existing guests that migrate from an older
     libvirt version to 7.0.0 will not be affected by this change.
+
+  * qemu: Don't cache NUMA caps
+
+    ``virsh capabilities`` contains ``<topology/>`` section which reports NUMA
+    topology among with amount of free hugepages per each NUMA node. However,
+    these amounts were not updated between calls.
+
+  * networkGetDHCPLeases: Handle leases with infinite expiry time
+
+    Since libvirt-6.3.0 it is possible to configure expiry time for DHCP
+    leases. If the expiry time was infinite then ``virsh net-dhcp-leases``
+    and NSS plugins refused to work.
+
+  * qemu: Don't prealloc mem for real NVDIMMs
+
+    If a real life NVDIMM is assigned to a guest via ``<memory model='nvdimm'/>``
+    then QEMU is no longer instructed to preallocate memory
+    for it. This prevents unnecessary wear on the NVDIMM.
+
+  * network: Introduce mutex for bridge name generation
+
+    When new libvirt network is defined or created and the input XML does not
+    contain any bridge name, libvirt generates one. However, it might have
+    happened that the same name would be generated for different networks if
+    two or more networks were defined/created at once.
 
 
 v6.10.0 (2020-12-01)
