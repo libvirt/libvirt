@@ -256,6 +256,11 @@ int hypervGetStorageAllocationSD(hypervPrivate *priv,
  * Msvm_VirtualSystemManagementService
  */
 
+int hypervMsvmVSMSAddResourceSettings(virDomainPtr domain,
+                                      GHashTable **resourceSettingsPtr,
+                                      hypervWmiClassInfoPtr wmiInfo,
+                                      WsXmlDocH *response);
+
 int hypervMsvmVSMSModifyResourceSettings(hypervPrivate *priv,
                                          GHashTable **resourceSettingsPtr,
                                          hypervWmiClassInfoPtr wmiInfo);

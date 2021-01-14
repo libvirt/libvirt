@@ -1586,6 +1586,58 @@ hypervGetStorageAllocationSD(hypervPrivate *priv,
  */
 
 int
+hypervMsvmVSMSAddResourceSettings(virDomainPtr domain,
+                                  GHashTable **resourceSettingsPtr,
+                                  hypervWmiClassInfoPtr wmiInfo,
+                                  WsXmlDocH *response)
+{
+    int result = -1;
+    hypervPrivate *priv = domain->conn->privateData;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    Msvm_VirtualSystemSettingData *vssd = NULL;
+    GHashTable *resourceSettings = *resourceSettingsPtr;
+    g_autoptr(hypervInvokeParamsList) params = NULL;
+    g_auto(virBuffer) eprQuery = VIR_BUFFER_INITIALIZER;
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
+        goto cleanup;
+
+    virBufferEscapeSQL(&eprQuery,
+                       MSVM_VIRTUALSYSTEMSETTINGDATA_WQL_SELECT "WHERE InstanceID='%s'",
+                       vssd->data->InstanceID);
+
+    params = hypervCreateInvokeParamsList("AddResourceSettings",
+                                          MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
+                                          Msvm_VirtualSystemManagementService_WmiInfo);
+
+    if (!params)
+        goto cleanup;
+
+    if (hypervAddEprParam(params, "AffectedConfiguration",
+                          &eprQuery, Msvm_VirtualSystemSettingData_WmiInfo) < 0)
+        goto cleanup;
+
+    if (hypervAddEmbeddedParam(params, "ResourceSettings", &resourceSettings, wmiInfo) < 0) {
+        hypervFreeEmbeddedParam(resourceSettings);
+        goto cleanup;
+    }
+
+    if (hypervInvokeMethod(priv, &params, response) < 0)
+        goto cleanup;
+
+    result = 0;
+
+ cleanup:
+    hypervFreeObject(priv, (hypervObject *)vssd);
+    *resourceSettingsPtr = NULL;
+
+    return result;
+}
+
+
+int
 hypervMsvmVSMSModifyResourceSettings(hypervPrivate *priv,
                                      GHashTable **resourceSettingsPtr,
                                      hypervWmiClassInfoPtr wmiInfo)
