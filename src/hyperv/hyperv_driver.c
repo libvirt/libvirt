@@ -1872,6 +1872,46 @@ hypervDomainCreate(virDomainPtr domain)
 
 
 static int
+hypervDomainUndefineFlags(virDomainPtr domain, unsigned int flags)
+{
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    hypervPrivate *priv = domain->conn->privateData;
+    g_autoptr(hypervInvokeParamsList) params = NULL;
+    g_auto(virBuffer) eprQuery = VIR_BUFFER_INITIALIZER;
+
+    virCheckFlags(0, -1);
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    /* prepare params */
+    params = hypervCreateInvokeParamsList("DestroySystem",
+                                          MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
+                                          Msvm_VirtualSystemManagementService_WmiInfo);
+
+    if (!params)
+        return -1;
+
+    virBufferEscapeSQL(&eprQuery, MSVM_COMPUTERSYSTEM_WQL_SELECT "WHERE Name = '%s'", uuid_string);
+
+    if (hypervAddEprParam(params, "AffectedSystem", &eprQuery, Msvm_ComputerSystem_WmiInfo) < 0)
+        return -1;
+
+    /* actually destroy the VM */
+    if (hypervInvokeMethod(priv, &params, NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+hypervDomainUndefine(virDomainPtr domain)
+{
+    return hypervDomainUndefineFlags(domain, 0);
+}
+
+
+static int
 hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
 {
     int result = -1;
@@ -2482,6 +2522,8 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .connectNumOfDefinedDomains = hypervConnectNumOfDefinedDomains, /* 0.9.5 */
     .domainCreate = hypervDomainCreate, /* 0.9.5 */
     .domainCreateWithFlags = hypervDomainCreateWithFlags, /* 0.9.5 */
+    .domainUndefine = hypervDomainUndefine, /* 7.1.0 */
+    .domainUndefineFlags = hypervDomainUndefineFlags, /* 7.1.0 */
     .domainGetAutostart = hypervDomainGetAutostart, /* 6.9.0 */
     .domainSetAutostart = hypervDomainSetAutostart, /* 6.9.0 */
     .domainGetSchedulerType = hypervDomainGetSchedulerType, /* 6.10.0 */
