@@ -327,6 +327,66 @@ hypervGetDeviceParentRasdFromDeviceId(const char *parentDeviceId,
 }
 
 
+static int
+hypervDomainCreateSCSIController(virDomainPtr domain, virDomainControllerDefPtr def)
+{
+    g_autoptr(GHashTable) scsiResource = NULL;
+    g_autofree char *resourceType = NULL;
+
+    if (def->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT &&
+        def->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported SCSI controller model '%d'"), def->model);
+        return -1;
+    }
+
+    if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported SCSI controller address type '%d'"), def->info.type);
+        return -1;
+    }
+
+    resourceType = g_strdup_printf("%d", MSVM_RASD_RESOURCETYPE_PARALLEL_SCSI_HBA);
+
+    VIR_DEBUG("Attaching SCSI Controller");
+
+    /* prepare embedded param */
+    scsiResource = hypervCreateEmbeddedParam(Msvm_ResourceAllocationSettingData_WmiInfo);
+    if (!scsiResource)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(scsiResource, "ResourceType", resourceType) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(scsiResource, "ResourceSubType",
+                                  "Microsoft:Hyper-V:Synthetic SCSI Controller") < 0)
+        return -1;
+
+    /* perform the settings change */
+    if (hypervMsvmVSMSAddResourceSettings(domain, &scsiResource,
+                                          Msvm_ResourceAllocationSettingData_WmiInfo, NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def)
+{
+    size_t i = 0;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+            continue;
+
+        if (hypervDomainCreateSCSIController(domain, def->controllers[i]) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
 
 /*
  * Functions for deserializing device entries
@@ -1980,6 +2040,10 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
 
     /* set VM memory */
     if (def->mem.cur_balloon > 0 && hypervDomainSetMemory(domain, def->mem.cur_balloon) < 0)
+        goto error;
+
+    /* attach all storage */
+    if (hypervDomainAttachStorage(domain, def) < 0)
         goto error;
 
     return domain;
