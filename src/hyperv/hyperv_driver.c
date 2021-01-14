@@ -831,6 +831,8 @@ hypervDomainAttachStorageVolume(virDomainPtr domain,
         break;
     case VIR_DOMAIN_DISK_DEVICE_CDROM:
         return hypervDomainAttachCDROM(domain, disk, controller, hostname);
+    case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+        return hypervDomainAttachFloppy(domain, disk, controller, hostname);
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Unsupported disk bus"));
         break;
@@ -2594,6 +2596,120 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
 
 
 static int
+hypervDomainAttachDeviceFlags(virDomainPtr domain, const char *xml, unsigned int flags)
+{
+    int result = -1;
+    hypervPrivate *priv = domain->conn->privateData;
+    g_autoptr(virDomainDef) def = NULL;
+    g_autoptr(virDomainDeviceDef) dev = NULL;
+    Win32_ComputerSystem *host = NULL;
+    char *hostname = NULL;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    Msvm_ResourceAllocationSettingData *controller = NULL;
+    Msvm_ResourceAllocationSettingData *rasd = NULL;
+    Msvm_ResourceAllocationSettingData *entry = NULL;
+    Msvm_VirtualSystemSettingData *vssd = NULL;
+    int num_scsi = 0;
+
+    virCheckFlags(0, -1);
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    /* get domain definition */
+    if (!(def = virDomainDefNew()))
+        return result;
+
+    /* get domain device definition */
+    dev = virDomainDeviceDefParse(xml, def, priv->xmlopt, NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE);
+    if (!dev)
+        goto cleanup;
+
+    /* get the host computer system */
+    if (hypervGetPhysicalSystemList(priv, &host) < 0)
+        goto cleanup;
+
+    hostname = host->data->Name;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        /* get our controller */
+        if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
+            goto cleanup;
+
+        if (hypervGetResourceAllocationSD(priv, vssd->data->InstanceID, &rasd) < 0)
+            goto cleanup;
+
+        entry = rasd;
+        switch (dev->data.disk->bus) {
+        case VIR_DOMAIN_DISK_BUS_IDE:
+            while (entry) {
+                if (entry->data->ResourceType == MSVM_RASD_RESOURCETYPE_IDE_CONTROLLER &&
+                    (entry->data->Address[0] - '0') == dev->data.disk->info.addr.drive.controller) {
+                    controller = entry;
+                    break;
+                }
+                entry = entry->next;
+            }
+            if (!entry)
+                goto cleanup;
+            break;
+        case VIR_DOMAIN_DISK_BUS_SCSI:
+            while (entry) {
+                if (entry->data->ResourceType == MSVM_RASD_RESOURCETYPE_PARALLEL_SCSI_HBA &&
+                    num_scsi++ == dev->data.disk->info.addr.drive.controller) {
+                    controller = entry;
+                    break;
+                }
+                entry = entry->next;
+            }
+            if (!entry)
+                goto cleanup;
+            break;
+        case VIR_DOMAIN_DISK_BUS_FDC:
+            while (entry) {
+                if (entry->data->ResourceType == MSVM_RASD_RESOURCETYPE_DISKETTE_DRIVE) {
+                    controller = entry;
+                    break;
+                }
+                entry = entry->next;
+            }
+            if (!entry)
+                goto cleanup;
+            break;
+        default:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid disk bus in definition"));
+            goto cleanup;
+        }
+
+        if (hypervDomainAttachStorageVolume(domain, dev->data.disk, controller, hostname) < 0)
+            goto cleanup;
+        break;
+    default:
+        /* unsupported device type */
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Attaching devices of type %d is not implemented"), dev->type);
+        goto cleanup;
+    }
+
+    result = 0;
+
+ cleanup:
+    hypervFreeObject(priv, (hypervObject *)vssd);
+    hypervFreeObject(priv, (hypervObject *)rasd);
+    hypervFreeObject(priv, (hypervObject *)host);
+
+    return result;
+}
+
+
+static int
+hypervDomainAttachDevice(virDomainPtr domain, const char *xml)
+{
+    return hypervDomainAttachDeviceFlags(domain, xml, 0);
+}
+
+
+static int
 hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
 {
     int result = -1;
@@ -3207,6 +3323,8 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainDefineXML = hypervDomainDefineXML, /* 7.1.0 */
     .domainUndefine = hypervDomainUndefine, /* 7.1.0 */
     .domainUndefineFlags = hypervDomainUndefineFlags, /* 7.1.0 */
+    .domainAttachDevice = hypervDomainAttachDevice, /* 7.1.0 */
+    .domainAttachDeviceFlags = hypervDomainAttachDeviceFlags, /* 7.1.0 */
     .domainGetAutostart = hypervDomainGetAutostart, /* 6.9.0 */
     .domainSetAutostart = hypervDomainSetAutostart, /* 6.9.0 */
     .domainGetSchedulerType = hypervDomainGetSchedulerType, /* 6.10.0 */
