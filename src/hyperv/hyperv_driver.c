@@ -763,6 +763,53 @@ hypervDomainAttachCDROM(virDomainPtr domain,
 
 
 static int
+hypervDomainAttachFloppy(virDomainPtr domain,
+                         virDomainDiskDefPtr disk,
+                         Msvm_ResourceAllocationSettingData *driveSettings,
+                         const char *hostname)
+{
+    g_autoptr(GHashTable) volumeResource = NULL;
+    g_autofree char *vhdInstanceIdEscaped = NULL;
+    g_autofree char *vfd__PATH = NULL;
+    g_autofree char *resourceType = NULL;
+
+    resourceType = g_strdup_printf("%d", MSVM_RASD_RESOURCETYPE_LOGICAL_DISK);
+
+    volumeResource = hypervCreateEmbeddedParam(Msvm_ResourceAllocationSettingData_WmiInfo);
+    if (!volumeResource)
+        return -1;
+
+    vhdInstanceIdEscaped = virStringReplace(driveSettings->data->InstanceID, "\\", "\\\\");
+    vfd__PATH = g_strdup_printf("\\\\%s\\Root\\Virtualization\\V2:"
+                                "Msvm_ResourceAllocationSettingData.InstanceID=\"%s\"",
+                                hostname, vhdInstanceIdEscaped);
+
+    if (!vfd__PATH)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(volumeResource, "Parent", vfd__PATH) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(volumeResource, "HostResource", disk->src->path) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(volumeResource, "ResourceType", resourceType) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(volumeResource, "ResourceSubType",
+                                  "Microsoft:Hyper-V:Virtual Floppy Disk") < 0)
+        return -1;
+
+    if (hypervMsvmVSMSAddResourceSettings(domain, &volumeResource,
+                                          Msvm_ResourceAllocationSettingData_WmiInfo,
+                                          NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 hypervDomainAttachStorageVolume(virDomainPtr domain,
                                 virDomainDiskDefPtr disk,
                                 Msvm_ResourceAllocationSettingData *controller,
@@ -807,6 +854,7 @@ hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def, const char *
     Msvm_ResourceAllocationSettingData *entry = NULL;
     Msvm_ResourceAllocationSettingData *ideChannels[HYPERV_MAX_IDE_CHANNELS];
     Msvm_ResourceAllocationSettingData *scsiControllers[HYPERV_MAX_SCSI_CONTROLLERS];
+    Msvm_ResourceAllocationSettingData *floppySettings = NULL;
 
     /* start with attaching scsi controllers */
     for (i = 0; i < def->ncontrollers; i++) {
@@ -832,6 +880,8 @@ hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def, const char *
             ideChannels[entry->data->Address[0] - '0'] = entry;
         else if (entry->data->ResourceType == MSVM_RASD_RESOURCETYPE_PARALLEL_SCSI_HBA)
             scsiControllers[num_scsi_controllers++] = entry;
+        else if (entry->data->ResourceType == MSVM_RASD_RESOURCETYPE_DISKETTE_DRIVE)
+            floppySettings = entry;
 
         entry = entry->next;
     }
@@ -852,6 +902,10 @@ hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def, const char *
                                                 scsiControllers[ctrlr_idx], hostname) < 0) {
                 goto cleanup;
             }
+            break;
+        case VIR_DOMAIN_DISK_BUS_FDC:
+            if (hypervDomainAttachFloppy(domain, def->disks[i], floppySettings, hostname) < 0)
+                goto cleanup;
             break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Unsupported controller type"));
