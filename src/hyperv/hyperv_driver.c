@@ -528,6 +528,115 @@ hypervDomainAttachVirtualDisk(virDomainPtr domain,
 
 
 static int
+hypervDomainAttachPhysicalDisk(virDomainPtr domain,
+                               virDomainDiskDefPtr disk,
+                               Msvm_ResourceAllocationSettingData *controller,
+                               const char *hostname)
+{
+    int result = -1;
+    hypervPrivate *priv = domain->conn->privateData;
+    g_autofree char *hostResource = NULL;
+    g_autofree char *controller__PATH = NULL;
+    g_auto(GStrv) matches = NULL;
+    ssize_t found = 0;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    Msvm_ResourceAllocationSettingData *diskdefault = NULL;
+    g_autofree char *controllerInstanceIdEscaped = NULL;
+    g_autoptr(GHashTable) diskResource = NULL;
+    g_autofree char *addressString = g_strdup_printf("%u", disk->info.addr.drive.unit);
+    g_autofree char *resourceType = NULL;
+
+    resourceType = g_strdup_printf("%d", MSVM_RASD_RESOURCETYPE_DISK_DRIVE);
+
+    if (strstr(disk->src->path, "NODRIVE")) {
+        /* Hyper-V doesn't let you define LUNs with no connection */
+        VIR_DEBUG("Skipping empty LUN '%s' with address %d on bus %d of type %d",
+                  disk->src->path, disk->info.addr.drive.unit,
+                  disk->info.addr.drive.controller, disk->bus);
+        return 0;
+    }
+
+    VIR_DEBUG("Now attaching LUN '%s' with address %d to bus %d of type %d",
+              disk->src->path, disk->info.addr.drive.unit,
+              disk->info.addr.drive.controller, disk->bus);
+
+    /* prepare HostResource */
+
+    /* get Msvm_DiskDrive root device ID */
+    virBufferAddLit(&query,
+                    MSVM_RESOURCEALLOCATIONSETTINGDATA_WQL_SELECT
+                    "WHERE ResourceSubType = 'Microsoft:Hyper-V:Physical Disk Drive' "
+                    "AND InstanceID LIKE '%%Default%%'");
+
+    if (hypervGetWmiClass(Msvm_ResourceAllocationSettingData, &diskdefault) < 0)
+        return -1;
+
+    if (!diskdefault) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not retrieve default Msvm_DiskDrive object"));
+        return -1;
+    }
+
+    found = virStringSearch(diskdefault->data->InstanceID,
+                            "([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})",
+                            1, &matches);
+
+    if (found < 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not get Msvm_DiskDrive default InstanceID"));
+        goto cleanup;
+    }
+
+    hostResource = g_strdup_printf("\\\\%s\\Root\\Virtualization\\V2:"
+                                   "Msvm_DiskDrive.CreationClassName=\"Msvm_DiskDrive\","
+                                   "DeviceID=\"Microsoft:%s\\\\%s\","
+                                   "SystemCreationClassName=\"Msvm_ComputerSystem\","
+                                   "SystemName=\"%s\"",
+                                   hostname, matches[0], disk->src->path, hostname);
+
+    /* create embedded param */
+    diskResource = hypervCreateEmbeddedParam(Msvm_ResourceAllocationSettingData_WmiInfo);
+    if (!diskResource)
+        return -1;
+
+    controllerInstanceIdEscaped = virStringReplace(controller->data->InstanceID, "\\", "\\\\");
+    controller__PATH = g_strdup_printf("\\\\%s\\Root\\Virtualization\\V2:"
+                                       "Msvm_ResourceAllocationSettingData.InstanceID=\"%s\"",
+                                       hostname, controllerInstanceIdEscaped);
+    if (!controller__PATH)
+        goto cleanup;
+
+    if (hypervSetEmbeddedProperty(diskResource, "Parent", controller__PATH) < 0)
+        goto cleanup;
+
+    if (hypervSetEmbeddedProperty(diskResource, "AddressOnParent", addressString) < 0)
+        goto cleanup;
+
+    if (hypervSetEmbeddedProperty(diskResource, "ResourceType", resourceType) < 0)
+        goto cleanup;
+
+    if (hypervSetEmbeddedProperty(diskResource, "ResourceSubType",
+                                  "Microsoft:Hyper-V:Physical Disk Drive") < 0)
+        goto cleanup;
+
+    if (hypervSetEmbeddedProperty(diskResource, "HostResource", hostResource) < 0)
+        goto cleanup;
+
+    if (hypervMsvmVSMSAddResourceSettings(domain, &diskResource,
+                                          Msvm_ResourceAllocationSettingData_WmiInfo,
+                                          NULL) < 0)
+        goto cleanup;
+
+    result = 0;
+
+ cleanup:
+    hypervFreeObject(priv, (hypervObject *)diskdefault);
+
+    return result;
+}
+
+
+static int
 hypervDomainAttachStorageVolume(virDomainPtr domain,
                                 virDomainDiskDefPtr disk,
                                 Msvm_ResourceAllocationSettingData *controller,
@@ -542,6 +651,8 @@ hypervDomainAttachStorageVolume(virDomainPtr domain,
     case VIR_DOMAIN_DISK_DEVICE_DISK:
         if (disk->src->type == VIR_STORAGE_TYPE_FILE)
             return hypervDomainAttachVirtualDisk(domain, disk, controller, hostname);
+        else if (disk->src->type == VIR_STORAGE_TYPE_BLOCK)
+            return hypervDomainAttachPhysicalDisk(domain, disk, controller, hostname);
         else
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Unsupported disk type"));
         break;
