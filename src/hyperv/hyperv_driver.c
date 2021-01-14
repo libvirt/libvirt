@@ -327,6 +327,30 @@ hypervGetDeviceParentRasdFromDeviceId(const char *parentDeviceId,
 }
 
 
+static char *
+hypervGetInstanceIDFromXMLResponse(WsXmlDocH response)
+{
+    WsXmlNodeH envelope = NULL;
+    char *instanceId = NULL;
+
+    envelope = ws_xml_get_soap_envelope(response);
+    if (!envelope) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid XML response"));
+        return NULL;
+    }
+
+    instanceId = ws_xml_get_xpath_value(response, (char *)"//w:Selector[@Name='InstanceID']");
+
+    if (!instanceId) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not find selectors in method response"));
+        return NULL;
+    }
+
+    return instanceId;
+}
+
+
 static int
 hypervDomainCreateSCSIController(virDomainPtr domain, virDomainControllerDefPtr def)
 {
@@ -372,10 +396,180 @@ hypervDomainCreateSCSIController(virDomainPtr domain, virDomainControllerDefPtr 
 
 
 static int
-hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def)
+hypervDomainAddVirtualDiskParent(virDomainPtr domain,
+                                 virDomainDiskDefPtr disk,
+                                 Msvm_ResourceAllocationSettingData *controller,
+                                 const char *hostname,
+                                 WsXmlDocH *response)
 {
-    size_t i = 0;
+    g_autoptr(GHashTable) controllerResource = NULL;
+    g_autofree char *parentInstanceIDEscaped = NULL;
+    g_autofree char *parent__PATH = NULL;
+    g_autofree char *addressString = g_strdup_printf("%u", disk->info.addr.drive.unit);
+    g_autofree char *resourceType = NULL;
 
+    resourceType = g_strdup_printf("%d", MSVM_RASD_RESOURCETYPE_DISK_DRIVE);
+
+    controllerResource = hypervCreateEmbeddedParam(Msvm_ResourceAllocationSettingData_WmiInfo);
+    if (!controllerResource)
+        return -1;
+
+    parentInstanceIDEscaped = virStringReplace(controller->data->InstanceID, "\\", "\\\\");
+    parent__PATH = g_strdup_printf("\\\\%s\\Root\\Virtualization\\V2:"
+                                   "Msvm_ResourceAllocationSettingData.InstanceID=\"%s\"",
+                                   hostname, parentInstanceIDEscaped);
+    if (!parent__PATH)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(controllerResource, "Parent", parent__PATH) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(controllerResource, "AddressOnParent", addressString) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(controllerResource, "ResourceType", resourceType) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(controllerResource, "ResourceSubType",
+                                  "Microsoft:Hyper-V:Synthetic Disk Drive") < 0)
+        return -1;
+
+    if (hypervMsvmVSMSAddResourceSettings(domain, &controllerResource,
+                                          Msvm_ResourceAllocationSettingData_WmiInfo,
+                                          response) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+hypervDomainAddVirtualHardDisk(virDomainPtr domain,
+                               virDomainDiskDefPtr disk,
+                               const char *hostname,
+                               char *parentInstanceID)
+{
+    g_autoptr(GHashTable) volumeResource = NULL;
+    g_autofree char *vhdInstanceIdEscaped = NULL;
+    g_autofree char *vhd__PATH = NULL;
+    g_autofree char *resourceType = NULL;
+
+    resourceType = g_strdup_printf("%d", MSVM_RASD_RESOURCETYPE_LOGICAL_DISK);
+
+    volumeResource = hypervCreateEmbeddedParam(Msvm_ResourceAllocationSettingData_WmiInfo);
+    if (!volumeResource)
+        return -1;
+
+    vhdInstanceIdEscaped = virStringReplace(parentInstanceID, "\\", "\\\\");
+    vhd__PATH = g_strdup_printf("\\\\%s\\Root\\Virtualization\\V2:"
+                                "Msvm_ResourceAllocationSettingData.InstanceID=\"%s\"",
+                                hostname, vhdInstanceIdEscaped);
+
+    if (!vhd__PATH)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(volumeResource, "Parent", vhd__PATH) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(volumeResource, "HostResource", disk->src->path) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(volumeResource, "ResourceType", resourceType) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(volumeResource, "ResourceSubType",
+                                  "Microsoft:Hyper-V:Virtual Hard Disk") < 0)
+        return -1;
+
+    if (hypervMsvmVSMSAddResourceSettings(domain, &volumeResource,
+                                          Msvm_ResourceAllocationSettingData_WmiInfo,
+                                          NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+hypervDomainAttachVirtualDisk(virDomainPtr domain,
+                              virDomainDiskDefPtr disk,
+                              Msvm_ResourceAllocationSettingData *controller,
+                              const char *hostname)
+{
+    int result = -1;
+    g_autofree char *parentInstanceID = NULL;
+    WsXmlDocH response = NULL;
+
+    VIR_DEBUG("Now attaching disk image '%s' with address %d to bus %d of type %d",
+              disk->src->path, disk->info.addr.drive.unit, disk->info.addr.drive.controller, disk->bus);
+
+    if (hypervDomainAddVirtualDiskParent(domain, disk, controller, hostname, &response) < 0)
+        return -1;
+
+    if (!response) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not add virtual disk parent"));
+        return -1;
+    }
+
+    parentInstanceID = hypervGetInstanceIDFromXMLResponse(response);
+    if (!parentInstanceID)
+        goto cleanup;
+
+    if (hypervDomainAddVirtualHardDisk(domain, disk, hostname, parentInstanceID) < 0)
+        goto cleanup;
+
+    result = 0;
+
+ cleanup:
+    ws_xml_destroy_doc(response);
+
+    return result;
+}
+
+
+static int
+hypervDomainAttachStorageVolume(virDomainPtr domain,
+                                virDomainDiskDefPtr disk,
+                                Msvm_ResourceAllocationSettingData *controller,
+                                const char *hostname)
+{
+    if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Unsupported disk address type"));
+        return -1;
+    }
+
+    switch (disk->device) {
+    case VIR_DOMAIN_DISK_DEVICE_DISK:
+        if (disk->src->type == VIR_STORAGE_TYPE_FILE)
+            return hypervDomainAttachVirtualDisk(domain, disk, controller, hostname);
+        else
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Unsupported disk type"));
+        break;
+    default:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Unsupported disk bus"));
+        break;
+    }
+
+    return -1;
+}
+
+
+static int
+hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def, const char *hostname)
+{
+    int result = -1;
+    hypervPrivate *priv = domain->conn->privateData;
+    size_t i = 0;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    int num_scsi_controllers = 0;
+    int ctrlr_idx = -1;
+    Msvm_VirtualSystemSettingData *vssd = NULL;
+    Msvm_ResourceAllocationSettingData *rasd = NULL;
+    Msvm_ResourceAllocationSettingData *entry = NULL;
+    Msvm_ResourceAllocationSettingData *ideChannels[HYPERV_MAX_IDE_CHANNELS];
+    Msvm_ResourceAllocationSettingData *scsiControllers[HYPERV_MAX_SCSI_CONTROLLERS];
+
+    /* start with attaching scsi controllers */
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
             continue;
@@ -384,7 +578,55 @@ hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def)
             return -1;
     }
 
-    return 0;
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    /* filter through all the rasd entries and isolate our controllers */
+    if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
+        goto cleanup;
+
+    if (hypervGetResourceAllocationSD(priv, vssd->data->InstanceID, &rasd) < 0)
+        goto cleanup;
+
+    entry = rasd;
+    while (entry) {
+        if (entry->data->ResourceType == MSVM_RASD_RESOURCETYPE_IDE_CONTROLLER)
+            ideChannels[entry->data->Address[0] - '0'] = entry;
+        else if (entry->data->ResourceType == MSVM_RASD_RESOURCETYPE_PARALLEL_SCSI_HBA)
+            scsiControllers[num_scsi_controllers++] = entry;
+
+        entry = entry->next;
+    }
+
+    /* now we loop through and attach all the disks */
+    for (i = 0; i < def->ndisks; i++) {
+        switch (def->disks[i]->bus) {
+        case VIR_DOMAIN_DISK_BUS_IDE:
+            ctrlr_idx = def->disks[i]->info.addr.drive.bus;
+            if (hypervDomainAttachStorageVolume(domain, def->disks[i],
+                                                ideChannels[ctrlr_idx], hostname) < 0) {
+                goto cleanup;
+            }
+            break;
+        case VIR_DOMAIN_DISK_BUS_SCSI:
+            ctrlr_idx = def->disks[i]->info.addr.drive.controller;
+            if (hypervDomainAttachStorageVolume(domain, def->disks[i],
+                                                scsiControllers[ctrlr_idx], hostname) < 0) {
+                goto cleanup;
+            }
+            break;
+        default:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Unsupported controller type"));
+            goto cleanup;
+        }
+    }
+
+    result = 0;
+
+ cleanup:
+    hypervFreeObject(priv, (hypervObject *)rasd);
+    hypervFreeObject(priv, (hypervObject *)vssd);
+
+    return result;
 }
 
 
@@ -1983,6 +2225,7 @@ static virDomainPtr
 hypervDomainDefineXML(virConnectPtr conn, const char *xml)
 {
     hypervPrivate *priv = conn->privateData;
+    g_autofree char *hostname = hypervConnectGetHostname(conn);
     g_autoptr(virDomainDef) def = NULL;
     virDomainPtr domain = NULL;
     g_autoptr(hypervInvokeParamsList) params = NULL;
@@ -2043,7 +2286,7 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
         goto error;
 
     /* attach all storage */
-    if (hypervDomainAttachStorage(domain, def) < 0)
+    if (hypervDomainAttachStorage(domain, def, hostname) < 0)
         goto error;
 
     return domain;
