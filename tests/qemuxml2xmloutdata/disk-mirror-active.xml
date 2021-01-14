@@ -61,6 +61,22 @@
       <target dev='vdb' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/tmp/data2.img'/>
+      <backingStore/>
+      <mirror type='file' file='/tmp/copy2.img' format='qcow2' job='copy'>
+        <format type='qcow2'>
+          <metadata_cache>
+            <max_size unit='bytes'>1234</max_size>
+          </metadata_cache>
+        </format>
+        <source file='/tmp/copy2.img'/>
+        <backingStore/>
+      </mirror>
+      <target dev='vdc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </disk>
     <controller type='usb' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
@@ -71,7 +87,7 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </memballoon>
   </devices>
 </domain>

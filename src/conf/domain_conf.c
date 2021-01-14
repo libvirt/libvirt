@@ -8784,6 +8784,12 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
         return -1;
     }
 
+    if (virParseScaledValue("./format/metadata_cache/max_size", NULL,
+                            ctxt,
+                            &def->mirror->metadataCacheMaxSize,
+                            1, ULLONG_MAX, false) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -24283,6 +24289,8 @@ virDomainDiskDefFormatMirror(virBufferPtr buf,
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) formatAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) formatChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
     const char *formatStr = NULL;
 
     /* For now, mirroring is currently output-only: we only output it
@@ -24311,7 +24319,19 @@ virDomainDiskDefFormatMirror(virBufferPtr buf,
         virBufferEscapeString(&attrBuf, " ready='%s'",
                               virDomainDiskMirrorStateTypeToString(disk->mirrorState));
 
-    virBufferEscapeString(&childBuf, "<format type='%s'/>\n", formatStr);
+    virBufferEscapeString(&formatAttrBuf, " type='%s'", formatStr);
+    if (disk->mirror->metadataCacheMaxSize > 0) {
+        g_auto(virBuffer) metadataCacheChildBuf = VIR_BUFFER_INIT_CHILD(&formatChildBuf);
+
+        virBufferAsprintf(&metadataCacheChildBuf,
+                          "<max_size unit='bytes'>%llu</max_size>\n",
+                          disk->mirror->metadataCacheMaxSize);
+
+        virXMLFormatElement(&formatChildBuf, "metadata_cache", NULL, &metadataCacheChildBuf);
+    }
+
+    virXMLFormatElement(&childBuf, "format", &formatAttrBuf, &formatChildBuf);
+
     if (virDomainDiskSourceFormat(&childBuf, disk->mirror, "source", 0, true,
                                   flags, false, false, xmlopt) < 0)
         return -1;
