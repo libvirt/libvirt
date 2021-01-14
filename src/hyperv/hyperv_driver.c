@@ -1118,6 +1118,13 @@ hypervDomainLookupByName(virConnectPtr conn, const char *name)
     if (hypervGetVirtualSystemByName(priv, name, &computerSystem) < 0)
         goto cleanup;
 
+    if (computerSystem->next) {
+        virReportError(VIR_ERR_MULTIPLE_DOMAINS,
+                       _("Multiple domains exist with the name '%s': repeat the request using a UUID"),
+                       name);
+        goto cleanup;
+    }
+
     hypervMsvmComputerSystemToDomain(conn, computerSystem, &domain);
 
  cleanup:

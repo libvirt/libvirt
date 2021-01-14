@@ -1229,8 +1229,10 @@ static const virErrorMsgTuple virErrorMsgStrings[] = {
         N_("no hostname found: %s") },
     [VIR_ERR_CHECKPOINT_INCONSISTENT] = {
         N_("checkpoint inconsistent"),
-        N_("checkpoint inconsistent: %s")
-    },
+        N_("checkpoint inconsistent: %s") },
+    [VIR_ERR_MULTIPLE_DOMAINS] = {
+        N_("multiple matching domains found"),
+        N_("multiple matching domains found: %s") },
 };
 
 G_STATIC_ASSERT(G_N_ELEMENTS(virErrorMsgStrings) == VIR_ERR_NUMBER_LAST);
