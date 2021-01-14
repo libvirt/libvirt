@@ -700,6 +700,9 @@ hypervFreePrivate(hypervPrivate **priv)
     if ((*priv)->caps)
         virObjectUnref((*priv)->caps);
 
+    if ((*priv)->xmlopt)
+        virObjectUnref((*priv)->xmlopt);
+
     hypervFreeParsedUri(&(*priv)->parsedUri);
     VIR_FREE(*priv);
 }
@@ -731,6 +734,8 @@ hypervInitConnection(virConnectPtr conn, hypervPrivate *priv,
     return 0;
 }
 
+
+virDomainDefParserConfig hypervDomainDefParserConfig;
 
 static virDrvOpenStatus
 hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
@@ -783,6 +788,9 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     priv->caps = hypervCapsInit(priv);
     if (!priv->caps)
         goto cleanup;
+
+    /* init xmlopt for domain XML */
+    priv->xmlopt = virDomainXMLOptionNew(&hypervDomainDefParserConfig, NULL, NULL, NULL, NULL);
 
     conn->privateData = priv;
     priv = NULL;
@@ -1911,6 +1919,80 @@ hypervDomainUndefine(virDomainPtr domain)
 }
 
 
+static virDomainPtr
+hypervDomainDefineXML(virConnectPtr conn, const char *xml)
+{
+    hypervPrivate *priv = conn->privateData;
+    g_autoptr(virDomainDef) def = NULL;
+    virDomainPtr domain = NULL;
+    g_autoptr(hypervInvokeParamsList) params = NULL;
+    g_autoptr(GHashTable) defineSystemParam = NULL;
+
+    /* parse xml */
+    def = virDomainDefParseString(xml, priv->xmlopt, NULL,
+                                  1 << VIR_DOMAIN_VIRT_HYPERV | VIR_DOMAIN_XML_INACTIVE);
+
+    if (!def)
+        goto error;
+
+    /* abort if a domain with this UUID already exists */
+    if ((domain = hypervDomainLookupByUUID(conn, def->uuid))) {
+        char uuid_string[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(domain->uuid, uuid_string);
+        virReportError(VIR_ERR_DOM_EXIST, _("Domain already exists with UUID '%s'"), uuid_string);
+
+        // Don't use the 'exit' label, since we don't want to delete the existing domain.
+        virObjectUnref(domain);
+        return NULL;
+    }
+
+    /* prepare params: only set the VM's name for now */
+    params = hypervCreateInvokeParamsList("DefineSystem",
+                                          MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
+                                          Msvm_VirtualSystemManagementService_WmiInfo);
+
+    if (!params)
+        goto error;
+
+    defineSystemParam = hypervCreateEmbeddedParam(Msvm_VirtualSystemSettingData_WmiInfo);
+
+    if (hypervSetEmbeddedProperty(defineSystemParam, "ElementName", def->name) < 0)
+        goto error;
+
+    if (hypervAddEmbeddedParam(params, "SystemSettings",
+                               &defineSystemParam, Msvm_VirtualSystemSettingData_WmiInfo) < 0)
+        goto error;
+
+    /* create the VM */
+    if (hypervInvokeMethod(priv, &params, NULL) < 0)
+        goto error;
+
+    /* populate a domain ptr so that we can edit it */
+    domain = hypervDomainLookupByName(conn, def->name);
+
+    /* set domain vcpus */
+    if (def->vcpus && hypervDomainSetVcpus(domain, def->maxvcpus) < 0)
+        goto error;
+
+    /* set VM maximum memory */
+    if (def->mem.max_memory > 0 && hypervDomainSetMaxMemory(domain, def->mem.max_memory) < 0)
+        goto error;
+
+    /* set VM memory */
+    if (def->mem.cur_balloon > 0 && hypervDomainSetMemory(domain, def->mem.cur_balloon) < 0)
+        goto error;
+
+    return domain;
+
+ error:
+    VIR_DEBUG("Domain creation failed, rolling back");
+    if (domain)
+        hypervDomainUndefine(domain);
+
+    return NULL;
+}
+
+
 static int
 hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
 {
@@ -2522,6 +2604,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .connectNumOfDefinedDomains = hypervConnectNumOfDefinedDomains, /* 0.9.5 */
     .domainCreate = hypervDomainCreate, /* 0.9.5 */
     .domainCreateWithFlags = hypervDomainCreateWithFlags, /* 0.9.5 */
+    .domainDefineXML = hypervDomainDefineXML, /* 7.1.0 */
     .domainUndefine = hypervDomainUndefine, /* 7.1.0 */
     .domainUndefineFlags = hypervDomainUndefineFlags, /* 7.1.0 */
     .domainGetAutostart = hypervDomainGetAutostart, /* 6.9.0 */
@@ -2540,6 +2623,11 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainManagedSaveRemove = hypervDomainManagedSaveRemove, /* 0.9.5 */
     .domainSendKey = hypervDomainSendKey, /* 3.6.0 */
     .connectIsAlive = hypervConnectIsAlive, /* 0.9.8 */
+};
+
+
+virDomainDefParserConfig hypervDomainDefParserConfig = {
+    .features = VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG,
 };
 
 
