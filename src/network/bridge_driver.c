@@ -2336,6 +2336,9 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
 
     /* Set bridge options */
 
+    if (def->mtu && virNetDevSetMTU(def->bridge, def->mtu) < 0)
+        goto error;
+
     /* delay is configured in seconds, but virNetDevBridgeSetSTPDelay
      * expects milliseconds
      */
