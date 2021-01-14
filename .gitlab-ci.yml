@@ -21,6 +21,8 @@ stages:
   services:
     - docker:dind
   rules:
+    - if: "$TEMPORARILY_DISABLED"
+      allow_failure: true
     - when: on_success
   before_script:
     - export TAG="$CI_REGISTRY_IMAGE/ci-$NAME:latest"
@@ -46,6 +48,8 @@ stages:
   stage: builds
   image: $CI_REGISTRY_IMAGE/ci-$NAME:latest
   rules:
+    - if: "$TEMPORARILY_DISABLED"
+      allow_failure: true
     - when: on_success
   cache:
     paths:
@@ -103,6 +107,8 @@ stages:
     - cat ci/cirrus/$NAME.yml
     - cirrus-run -v --show-build-log always ci/cirrus/$NAME.yml
   rules:
+    - if: "$TEMPORARILY_DISABLED"
+      allow_failure: true
     - if: "$CIRRUS_GITHUB_REPO && $CIRRUS_API_TOKEN"
 
 .cross_build_job:
@@ -113,6 +119,8 @@ stages:
       - ccache/
     key: "$CI_JOB_NAME"
   rules:
+    - if: "$TEMPORARILY_DISABLED"
+      allow_failure: true
     - when: on_success
   before_script:
     - *script_variables
