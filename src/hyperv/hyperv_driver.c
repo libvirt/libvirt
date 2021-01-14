@@ -637,6 +637,132 @@ hypervDomainAttachPhysicalDisk(virDomainPtr domain,
 
 
 static int
+hypervDomainAddOpticalDrive(virDomainPtr domain,
+                            virDomainDiskDefPtr disk,
+                            Msvm_ResourceAllocationSettingData *controller,
+                            const char *hostname,
+                            WsXmlDocH *response)
+{
+    g_autoptr(GHashTable) driveResource = NULL;
+    g_autofree char *parentInstanceIDEscaped = NULL;
+    g_autofree char *parent__PATH = NULL;
+    g_autofree char *addressString = g_strdup_printf("%u", disk->info.addr.drive.unit);
+    g_autofree char *resourceType = NULL;
+
+    resourceType = g_strdup_printf("%d", MSVM_RASD_RESOURCETYPE_DVD_DRIVE);
+
+    driveResource = hypervCreateEmbeddedParam(Msvm_ResourceAllocationSettingData_WmiInfo);
+    if (!driveResource)
+        return -1;
+
+    parentInstanceIDEscaped = virStringReplace(controller->data->InstanceID, "\\", "\\\\");
+    parent__PATH = g_strdup_printf("\\\\%s\\Root\\Virtualization\\V2:"
+                                   "Msvm_ResourceAllocationSettingData.InstanceID=\"%s\"",
+                                   hostname, parentInstanceIDEscaped);
+    if (!parent__PATH)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(driveResource, "Parent", parent__PATH) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(driveResource, "AddressOnParent", addressString) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(driveResource, "ResourceType", resourceType) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(driveResource, "ResourceSubType",
+                                  "Microsoft:Hyper-V:Synthetic DVD Drive") < 0)
+        return -1;
+
+    if (hypervMsvmVSMSAddResourceSettings(domain, &driveResource,
+                                          Msvm_ResourceAllocationSettingData_WmiInfo, response) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+hypervDomainAddOpticalDisk(virDomainPtr domain,
+                           virDomainDiskDefPtr disk,
+                           const char *hostname,
+                           char *driveInstanceID)
+{
+    g_autoptr(GHashTable) volumeResource = NULL;
+    g_autofree char *vhdInstanceIdEscaped = NULL;
+    g_autofree char *vhd__PATH = NULL;
+    g_autofree char *resourceType = NULL;
+
+    resourceType = g_strdup_printf("%d", MSVM_RASD_RESOURCETYPE_LOGICAL_DISK);
+
+    volumeResource = hypervCreateEmbeddedParam(Msvm_ResourceAllocationSettingData_WmiInfo);
+    if (!volumeResource)
+        return -1;
+
+    vhdInstanceIdEscaped = virStringReplace(driveInstanceID, "\\", "\\\\");
+    vhd__PATH = g_strdup_printf("\\\\%s\\Root\\Virtualization\\V2:"
+                                "Msvm_ResourceAllocationSettingData.InstanceID=\"%s\"",
+                                hostname, vhdInstanceIdEscaped);
+    if (!vhd__PATH)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(volumeResource, "Parent", vhd__PATH) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(volumeResource, "HostResource", disk->src->path) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(volumeResource, "ResourceType", resourceType) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(volumeResource, "ResourceSubType",
+                                  "Microsoft:Hyper-V:Virtual CD/DVD Disk") < 0)
+        return -1;
+
+    if (hypervMsvmVSMSAddResourceSettings(domain, &volumeResource,
+                                          Msvm_ResourceAllocationSettingData_WmiInfo, NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+hypervDomainAttachCDROM(virDomainPtr domain,
+                        virDomainDiskDefPtr disk,
+                        Msvm_ResourceAllocationSettingData *controller,
+                        const char *hostname)
+{
+    int result = -1;
+    WsXmlDocH response = NULL;
+    g_autofree char *driveInstanceID = NULL;
+
+    VIR_DEBUG("Now attaching CD/DVD '%s' with address %d to bus %d of type %d",
+              disk->src->path, disk->info.addr.drive.unit,
+              disk->info.addr.drive.controller, disk->bus);
+
+    if (hypervDomainAddOpticalDrive(domain, disk, controller, hostname, &response) < 0)
+        goto cleanup;
+
+    driveInstanceID = hypervGetInstanceIDFromXMLResponse(response);
+    if (!driveInstanceID)
+        goto cleanup;
+
+    if (hypervDomainAddOpticalDisk(domain, disk, hostname, driveInstanceID) < 0)
+        goto cleanup;
+
+    result = 0;
+
+ cleanup:
+    if (response)
+        ws_xml_destroy_doc(response);
+
+    return result;
+}
+
+
+static int
 hypervDomainAttachStorageVolume(virDomainPtr domain,
                                 virDomainDiskDefPtr disk,
                                 Msvm_ResourceAllocationSettingData *controller,
@@ -656,6 +782,8 @@ hypervDomainAttachStorageVolume(virDomainPtr domain,
         else
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Unsupported disk type"));
         break;
+    case VIR_DOMAIN_DISK_DEVICE_CDROM:
+        return hypervDomainAttachCDROM(domain, disk, controller, hostname);
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Unsupported disk bus"));
         break;
