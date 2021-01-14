@@ -20,6 +20,8 @@ stages:
   needs: []
   services:
     - docker:dind
+  rules:
+    - when: on_success
   before_script:
     - export TAG="$CI_REGISTRY_IMAGE/ci-$NAME:latest"
     - export COMMON_TAG="$CI_REGISTRY/libvirt/libvirt/ci-$NAME:latest"
@@ -43,6 +45,8 @@ stages:
 .native_build_job:
   stage: builds
   image: $CI_REGISTRY_IMAGE/ci-$NAME:latest
+  rules:
+    - when: on_success
   cache:
     paths:
       - ccache/
@@ -98,10 +102,8 @@ stages:
       <ci/cirrus/build.yml >ci/cirrus/$NAME.yml
     - cat ci/cirrus/$NAME.yml
     - cirrus-run -v --show-build-log always ci/cirrus/$NAME.yml
-  only:
-    variables:
-      - $CIRRUS_GITHUB_REPO
-      - $CIRRUS_API_TOKEN
+  rules:
+    - if: "$CIRRUS_GITHUB_REPO && $CIRRUS_API_TOKEN"
 
 .cross_build_job:
   stage: builds
@@ -110,6 +112,8 @@ stages:
     paths:
       - ccache/
     key: "$CI_JOB_NAME"
+  rules:
+    - when: on_success
   before_script:
     - *script_variables
   script:
@@ -552,8 +556,8 @@ potfile:
   image: $CI_REGISTRY_IMAGE/ci-centos-8:latest
   needs:
     - x64-centos-8-container
-  only:
-    - master
+  rules:
+    - if: "$CI_COMMIT_BRANCH == 'master'"
   before_script:
     - *script_variables
   script:
@@ -580,9 +584,8 @@ check-dco:
   image: registry.gitlab.com/libvirt/libvirt-ci/check-dco:master
   script:
     - /check-dco
-  except:
-    variables:
-      - $CI_PROJECT_NAMESPACE == 'libvirt'
+  rules:
+    - if: "$CI_PROJECT_NAMESPACE != 'libvirt'"
   variables:
     GIT_DEPTH: 1000
 
@@ -600,8 +603,5 @@ coverity:
     - cov-analysis-linux64-*/bin/cov-build --dir cov-int ninja -C build
     - tar cfz cov-int.tar.gz cov-int
     - curl https://scan.coverity.com/builds?project=$COVERITY_SCAN_PROJECT_NAME --form token=$COVERITY_SCAN_TOKEN --form email=$GITLAB_USER_EMAIL --form file=@cov-int.tar.gz --form version="$(git describe --tags)" --form description="$(git describe --tags) / $CI_COMMIT_TITLE / $CI_COMMIT_REF_NAME:$CI_PIPELINE_ID"
-  only:
-    refs:
-      - schedules
-    variables:
-      - $COVERITY_SCAN_PROJECT_NAME && $COVERITY_SCAN_TOKEN
+  rules:
+    - if: "$CI_PIPELINE_SOURCE == 'schedule' && $COVERITY_SCAN_PROJECT_NAME && $COVERITY_SCAN_TOKEN"
