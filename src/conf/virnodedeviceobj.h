@@ -128,3 +128,9 @@ virNodeDeviceObjIsActive(virNodeDeviceObj *obj);
 void
 virNodeDeviceObjSetActive(virNodeDeviceObj *obj,
                           bool active);
+bool
+virNodeDeviceObjIsPersistent(virNodeDeviceObj *obj);
+
+void
+virNodeDeviceObjSetPersistent(virNodeDeviceObj *obj,
+                              bool persistent);

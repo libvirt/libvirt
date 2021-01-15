@@ -40,6 +40,7 @@ struct _virNodeDeviceObj {
     bool skipUpdateCaps;                /* whether to skip checking host caps,
                                            used by testdriver */
     bool active;
+    bool persistent;
 };
 
 struct _virNodeDeviceObjList {
@@ -1002,4 +1003,19 @@ virNodeDeviceObjSetActive(virNodeDeviceObj *obj,
                           bool active)
 {
     obj->active = active;
+}
+
+
+bool
+virNodeDeviceObjIsPersistent(virNodeDeviceObj *obj)
+{
+    return obj->persistent;
+}
+
+
+void
+virNodeDeviceObjSetPersistent(virNodeDeviceObj *obj,
+                              bool persistent)
+{
+    obj->persistent = persistent;
 }
