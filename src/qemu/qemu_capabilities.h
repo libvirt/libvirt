@@ -589,6 +589,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_SCSI_NCR53C90, /* built-in SCSI */
     QEMU_CAPS_SCSI_DC390, /* -device dc-390 */
     QEMU_CAPS_SCSI_AM53C974, /* -device am53c974 */
+    QEMU_CAPS_DEVICE_VIRTIO_PMEM_PCI, /* -device virtio-pmem-pci */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
