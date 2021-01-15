@@ -66,6 +66,7 @@ nss_libvirt_lib = shared_module(
   link_args: [
     nss_libvirt_syms,
     libvirt_export_dynamic,
+    coverage_flags,
   ],
   link_whole: [
     nss_libvirt_impl,
@@ -81,6 +82,7 @@ nss_libvirt_guest_lib = shared_library(
   link_args: [
     nss_libvirt_guest_syms,
     libvirt_export_dynamic,
+    coverage_flags,
   ],
   link_whole: [
     nss_libvirt_guest_impl,

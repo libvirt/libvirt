@@ -26,7 +26,10 @@ tests_dep = declare_dependency(
     top_inc_dir,
     util_inc_dir,
   ],
-  link_args: libvirt_export_dynamic,
+  link_args: (
+    libvirt_export_dynamic
+    + coverage_flags
+  ),
 )
 
 tests_env = [
@@ -227,9 +230,6 @@ executable(
   [ 'ssh.c' ],
   dependencies: [
     tests_dep,
-  ],
-  link_args: [
-    coverage_flags,
   ],
 )
 

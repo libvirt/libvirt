@@ -12,6 +12,9 @@ shared_library(
     xdr_dep,
     tools_dep,
   ],
+  link_args: [
+    coverage_flags
+  ],
   install: true,
   install_dir: wireshark_plugindir,
 )
