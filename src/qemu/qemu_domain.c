@@ -2582,6 +2582,32 @@ qemuDomainObjPrivateXMLParseBlockjobChain(xmlNodePtr node,
 }
 
 
+/**
+ * qemuDomainVirStorageSourceFindByNodeName:
+ * @top: backing chain top
+ * @nodeName: node name to find in backing chain
+ *
+ * Looks up the given storage source in the backing chain and returns the
+ * pointer to it.
+ * On failure NULL is returned and no error is reported.
+ */
+static virStorageSourcePtr
+qemuDomainVirStorageSourceFindByNodeName(virStorageSourcePtr top,
+                                         const char *nodeName)
+{
+    virStorageSourcePtr tmp;
+
+    for (tmp = top; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
+        if ((tmp->nodeformat && STREQ(tmp->nodeformat, nodeName)) ||
+            (tmp->nodestorage && STREQ(tmp->nodestorage, nodeName)))
+            return tmp;
+    }
+
+    return NULL;
+}
+
+
+
 static void
 qemuDomainObjPrivateXMLParseBlockjobNodename(qemuBlockJobDataPtr job,
                                              const char *xpath,
@@ -2596,15 +2622,15 @@ qemuDomainObjPrivateXMLParseBlockjobNodename(qemuBlockJobDataPtr job,
         return;
 
     if (job->disk &&
-        (*src = virStorageSourceFindByNodeName(job->disk->src, nodename)))
+        (*src = qemuDomainVirStorageSourceFindByNodeName(job->disk->src, nodename)))
         return;
 
     if (job->chain &&
-        (*src = virStorageSourceFindByNodeName(job->chain, nodename)))
+        (*src = qemuDomainVirStorageSourceFindByNodeName(job->chain, nodename)))
         return;
 
     if (job->mirrorChain &&
-        (*src = virStorageSourceFindByNodeName(job->mirrorChain, nodename)))
+        (*src = qemuDomainVirStorageSourceFindByNodeName(job->mirrorChain, nodename)))
         return;
 
     /* the node was in the XML but was not found in the job definitions */
@@ -10028,11 +10054,11 @@ qemuDomainDiskLookupByNodename(virDomainDefPtr def,
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDefPtr domdisk = def->disks[i];
 
-        if ((*src = virStorageSourceFindByNodeName(domdisk->src, nodename)))
+        if ((*src = qemuDomainVirStorageSourceFindByNodeName(domdisk->src, nodename)))
             return domdisk;
 
         if (domdisk->mirror &&
-            (*src = virStorageSourceFindByNodeName(domdisk->mirror, nodename)))
+            (*src = qemuDomainVirStorageSourceFindByNodeName(domdisk->mirror, nodename)))
             return domdisk;
     }
 
@@ -10041,7 +10067,7 @@ qemuDomainDiskLookupByNodename(virDomainDefPtr def,
             virDomainBackupDiskDefPtr backupdisk = backupdef->disks + i;
 
             if (backupdisk->store &&
-                (*src = virStorageSourceFindByNodeName(backupdisk->store, nodename)))
+                (*src = qemuDomainVirStorageSourceFindByNodeName(backupdisk->store, nodename)))
                 return virDomainDiskByTarget(def, backupdisk->name);
         }
     }

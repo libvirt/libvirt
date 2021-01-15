@@ -521,11 +521,6 @@ int virStorageSourceNewFromBackingAbsolute(const char *path,
 
 bool virStorageSourceIsRelative(virStorageSourcePtr src);
 
-virStorageSourcePtr
-virStorageSourceFindByNodeName(virStorageSourcePtr top,
-                               const char *nodeName)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
 void
 virStorageSourceNetworkAssignDefaultPorts(virStorageSourcePtr src)
     ATTRIBUTE_NONNULL(1);

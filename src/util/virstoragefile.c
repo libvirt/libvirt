@@ -4445,31 +4445,6 @@ virStorageSourceIsRelative(virStorageSourcePtr src)
 }
 
 
-/**
- * virStorageSourceFindByNodeName:
- * @top: backing chain top
- * @nodeName: node name to find in backing chain
- *
- * Looks up the given storage source in the backing chain and returns the
- * pointer to it.
- * On failure NULL is returned and no error is reported.
- */
-virStorageSourcePtr
-virStorageSourceFindByNodeName(virStorageSourcePtr top,
-                               const char *nodeName)
-{
-    virStorageSourcePtr tmp;
-
-    for (tmp = top; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
-        if ((tmp->nodeformat && STREQ(tmp->nodeformat, nodeName)) ||
-            (tmp->nodestorage && STREQ(tmp->nodestorage, nodeName)))
-            return tmp;
-    }
-
-    return NULL;
-}
-
-
 static unsigned int
 virStorageSourceNetworkDefaultPort(virStorageNetProtocol protocol)
 {
