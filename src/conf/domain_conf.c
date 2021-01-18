@@ -5334,7 +5334,8 @@ virDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
 
 
 static int
-virDomainMemoryDefPostParse(virDomainMemoryDefPtr mem)
+virDomainMemoryDefPostParse(virDomainMemoryDefPtr mem,
+                            const virDomainDef *def)
 {
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
@@ -5345,6 +5346,19 @@ virDomainMemoryDefPostParse(virDomainMemoryDefPtr mem)
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        /* If no NVDIMM UUID was provided in XML, generate one. */
+        if (ARCH_IS_PPC64(def->os.arch) &&
+            !mem->uuid) {
+
+            mem->uuid = g_new0(unsigned char, VIR_UUID_BUFLEN);
+            if (virUUIDGenerate(mem->uuid) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("Failed to generate UUID"));
+                return -1;
+            }
+        }
+        break;
+
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
@@ -5401,7 +5415,7 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:
-        ret = virDomainMemoryDefPostParse(dev->data.memory);
+        ret = virDomainMemoryDefPostParse(dev->data.memory, def);
         break;
 
     case VIR_DOMAIN_DEVICE_LEASE:
@@ -15477,7 +15491,6 @@ static virDomainMemoryDefPtr
 virDomainMemoryDefParseXML(virDomainXMLOptionPtr xmlopt,
                            xmlNodePtr memdevNode,
                            xmlXPathContextPtr ctxt,
-                           const virDomainDef *dom,
                            unsigned int flags)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
@@ -15526,24 +15539,18 @@ virDomainMemoryDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
     VIR_FREE(tmp);
 
+    /* Extract NVDIMM UUID. */
     if (def->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-        ARCH_IS_PPC64(dom->os.arch)) {
-        /* Extract nvdimm uuid or generate a new one */
-        tmp = virXPathString("string(./uuid[1])", ctxt);
-
+        (tmp = virXPathString("string(./uuid[1])", ctxt))) {
         def->uuid = g_new0(unsigned char, VIR_UUID_BUFLEN);
-        if (!tmp) {
-            if (virUUIDGenerate(def->uuid) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("Failed to generate UUID"));
-                goto error;
-            }
-        } else if (virUUIDParse(tmp, def->uuid) < 0) {
+
+        if (virUUIDParse(tmp, def->uuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("malformed uuid element"));
             goto error;
         }
     }
+    VIR_FREE(tmp);
 
     /* source */
     if ((node = virXPathNode("./source", ctxt)) &&
@@ -15852,8 +15859,7 @@ virDomainDeviceDefParse(const char *xmlStr,
         break;
     case VIR_DOMAIN_DEVICE_MEMORY:
         if (!(dev->data.memory = virDomainMemoryDefParseXML(xmlopt, node,
-                                                            ctxt, def,
-                                                            flags)))
+                                                            ctxt, flags)))
             return NULL;
         break;
     case VIR_DOMAIN_DEVICE_IOMMU:
@@ -21064,7 +21070,6 @@ virDomainDefParseXML(xmlDocPtr xml,
         virDomainMemoryDefPtr mem = virDomainMemoryDefParseXML(xmlopt,
                                                                nodes[i],
                                                                ctxt,
-                                                               def,
                                                                flags);
         if (!mem)
             goto error;

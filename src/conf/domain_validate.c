@@ -1403,9 +1403,15 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
             return -1;
         }
 
-        if (ARCH_IS_PPC64(def->os.arch) && mem->labelsize == 0) {
+        if (ARCH_IS_PPC64(def->os.arch)) {
+            if (mem->labelsize == 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("label size is required for NVDIMM device"));
+                return -1;
+            }
+        } else if (mem->uuid) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("label size is required for NVDIMM device"));
+                           _("UUID is not supported for NVDIMM device"));
             return -1;
         }
         break;
