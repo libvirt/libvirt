@@ -1213,6 +1213,7 @@ mymain(void)
                  QEMU_CAPS_DEVICE_NVDIMM,
                  QEMU_CAPS_LAST, ARG_END);
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
+    DO_TEST_CAPS_LATEST("memory-hotplug-virtio-mem");
 
     DO_TEST_NOCAPS("net-udp");
 

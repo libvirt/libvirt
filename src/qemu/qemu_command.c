@@ -3209,6 +3209,7 @@ qemuBuildMemoryDeviceStr(const virDomainDef *def,
         device = "virtio-pmem-pci";
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
     default:

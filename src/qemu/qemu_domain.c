@@ -8875,6 +8875,16 @@ qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
         needsNuma = false;
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        if (mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+            mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("only 'pci' addresses are supported for the %s device"),
+                           virDomainMemoryModelTypeToString(mem->model));
+            return -1;
+        }
+        break;
+
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         return -1;

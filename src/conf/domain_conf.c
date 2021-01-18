@@ -1392,6 +1392,7 @@ VIR_ENUM_IMPL(virDomainMemoryModel,
               "dimm",
               "nvdimm",
               "virtio-pmem",
+              "virtio-mem",
 );
 
 VIR_ENUM_IMPL(virDomainShmemModel,
@@ -5494,6 +5495,7 @@ virDomainMemoryDefPostParse(virDomainMemoryDef *mem,
         }
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
@@ -14653,6 +14655,7 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
 
     switch (def->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
         if (virDomainParseMemory("./pagesize", "./pagesize/@unit", ctxt,
                                  &def->pagesize, false, false) < 0)
             return -1;
@@ -14719,7 +14722,8 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
                              &def->size, true, false) < 0)
         return -1;
 
-    if (def->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+    switch (def->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         if (virDomainParseMemory("./label/size", "./label/size/@unit", ctxt,
                                  &def->labelsize, false, false) < 0)
             return -1;
@@ -14738,6 +14742,23 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
 
         if (virXPathBoolean("boolean(./readonly)", ctxt))
             def->readonly = true;
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        if (virDomainParseMemory("./block", "./block/@unit", ctxt,
+                                 &def->blocksize, false, false) < 0)
+            return -1;
+
+        if (virDomainParseMemory("./requested", "./requested/@unit", ctxt,
+                                 &def->requestedsize, false, false) < 0)
+            return -1;
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        break;
     }
 
     return 0;
@@ -16494,11 +16515,14 @@ virDomainMemoryFindByDefInternal(virDomainDef *def,
         /* target info -> always present */
         if (tmp->model != mem->model ||
             tmp->targetNode != mem->targetNode ||
-            tmp->size != mem->size)
+            tmp->size != mem->size ||
+            tmp->blocksize != mem->blocksize ||
+            tmp->requestedsize != mem->requestedsize)
             continue;
 
         switch (mem->model) {
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
             /* source stuff -> match with device */
             if (tmp->pagesize != mem->pagesize)
                 continue;
@@ -21888,6 +21912,22 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDef *src,
         return false;
     }
 
+    if (src->blocksize != dst->blocksize) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target memory device block size '%llu' doesn't match "
+                         "source memory device block size '%llu'"),
+                       dst->blocksize, src->blocksize);
+        return false;
+    }
+
+    if (src->requestedsize != dst->requestedsize) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target memory device requested size '%llu' doesn't match "
+                         "source memory device requested size '%llu'"),
+                       dst->requestedsize, src->requestedsize);
+        return false;
+    }
+
     if (src->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
         if (src->labelsize != dst->labelsize) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -25796,6 +25836,7 @@ virDomainMemorySourceDefFormat(virBuffer *buf,
 
     switch (def->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
         if (def->sourceNodes) {
             if (!(bitmap = virBitmapFormat(def->sourceNodes)))
                 return -1;
@@ -25851,6 +25892,14 @@ virDomainMemoryTargetDefFormat(virBuffer *buf,
     }
     if (def->readonly)
         virBufferAddLit(&childBuf, "<readonly/>\n");
+
+    if (def->blocksize) {
+        virBufferAsprintf(&childBuf, "<block unit='KiB'>%llu</block>\n",
+                          def->blocksize);
+
+        virBufferAsprintf(&childBuf, "<requested unit='KiB'>%llu</requested>\n",
+                          def->requestedsize);
+    }
 
     virXMLFormatElement(buf, "target", NULL, &childBuf);
 }

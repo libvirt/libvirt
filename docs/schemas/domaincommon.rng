@@ -6600,6 +6600,7 @@
           <value>dimm</value>
           <value>nvdimm</value>
           <value>virtio-pmem</value>
+          <value>virtio-mem</value>
         </choice>
       </attribute>
       <optional>
@@ -6685,6 +6686,16 @@
         <optional>
           <element name="node">
             <ref name="unsignedInt"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="block">
+            <ref name="scaledInteger"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="requested">
+            <ref name="scaledInteger"/>
           </element>
         </optional>
         <optional>

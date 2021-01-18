@@ -2473,6 +2473,7 @@ typedef enum {
     VIR_DOMAIN_MEMORY_MODEL_DIMM, /* dimm hotpluggable memory device */
     VIR_DOMAIN_MEMORY_MODEL_NVDIMM, /* nvdimm memory device */
     VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM, /* virtio-pmem memory device */
+    VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM, /* virtio-mem memory device */
 
     VIR_DOMAIN_MEMORY_MODEL_LAST
 } virDomainMemoryModel;
@@ -2493,6 +2494,8 @@ struct _virDomainMemoryDef {
     int targetNode;
     unsigned long long size; /* kibibytes */
     unsigned long long labelsize; /* kibibytes; valid only for NVDIMM */
+    unsigned long long blocksize; /* kibibytes; valid only for VIRTIO_MEM */
+    unsigned long long requestedsize; /* kibibytes; valid only for VIRTIO_MEM */
     bool readonly; /* valid only for NVDIMM */
 
     /* required for QEMU NVDIMM ppc64 support */

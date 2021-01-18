@@ -28,6 +28,7 @@
 #include "virlog.h"
 #include "virutil.h"
 #include "virstring.h"
+#include "virhostmem.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -1966,6 +1967,8 @@ static int
 virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
                            const virDomainDef *def)
 {
+    unsigned long long thpSize;
+
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         if (!mem->nvdimmPath) {
@@ -2019,6 +2022,42 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
                            _("virtio-pmem does not support NUMA nodes"));
             return -1;
         }
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        if (mem->requestedsize > mem->size) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("requested size must be smaller than or equal to @size"));
+            return -1;
+        }
+
+        if (!VIR_IS_POW2(mem->blocksize)) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("block size must be a power of two"));
+            return -1;
+        }
+
+        if (virHostMemGetTHPSize(&thpSize) < 0) {
+            /* We failed to get THP size, fall back to a sane default. On
+             * almost every architecture the size will be 2MiB, except for some
+             * funky arches like sparc and m68k. Use 2MiB and refine later if
+             * somebody complains. */
+            thpSize = 2048;
+        }
+
+        if (mem->blocksize < thpSize) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("block size too small, must be at least %lluKiB"),
+                           thpSize);
+            return -1;
+        }
+
+        if (mem->requestedsize % mem->blocksize != 0) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("requested size must be an integer multiple of block size"));
+            return -1;
+        }
+        break;
 
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
         break;

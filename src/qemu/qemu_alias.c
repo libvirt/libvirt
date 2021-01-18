@@ -522,6 +522,7 @@ qemuAssignDeviceMemoryAlias(virDomainDef *def,
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
         prefix = "virtiopmem";
         break;
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
     default:

@@ -7792,6 +7792,18 @@ Example: usage of the memory devices
          <size unit='KiB'>524288</size>
        </target>
      </memory>
+     <memory model='virtio-mem'>
+       <source>
+         <nodemask>1-3</nodemask>
+         <pagesize unit='KiB'>2048</pagesize>
+       </source>
+       <target>
+         <size unit='KiB'>2097152</size>
+         <node>0</node>
+         <block unit='KiB'>2048</block>
+         <requested unit='KiB'>1048576</requested>
+       </target>
+     </memory>
    </devices>
    ...
 
@@ -7799,7 +7811,8 @@ Example: usage of the memory devices
    Provide ``dimm`` to add a virtual DIMM module to the guest. :since:`Since
    1.2.14` Provide ``nvdimm`` model that adds a Non-Volatile DIMM module.
    :since:`Since 3.2.0` Provide ``virtio-pmem`` model to add a paravirtualized
-   persistent memory device. :since:`Since 7.1.0`
+   persistent memory device. :since:`Since 7.1.0` Provide ``virtio-mem`` model
+   to add paravirtualized memory device. :since:`Since 7.9.0`
 
 ``access``
    An optional attribute ``access`` ( :since:`since 3.2.0` ) that provides
@@ -7822,10 +7835,11 @@ Example: usage of the memory devices
    allowed only for ``model='nvdimm'`` for pSeries guests. :since:`Since 6.2.0`
 
 ``source``
-   For model ``dimm`` this element is optional and allows to fine tune the
-   source of the memory used for the given memory device. If the element is not
-   provided defaults configured via ``numatune`` are used. If ``dimm`` is
-   provided, then the following optional elements can be provided as well:
+   For model ``dimm`` and model ``virtio-mem`` this element is optional and
+   allows to fine tune the source of the memory used for the given memory
+   device. If the element is not provided defaults configured via ``numatune``
+   are used. If the element is provided, then the following optional elements
+   can be provided:
 
    ``pagesize``
       This element can be used to override the default host page size used for
@@ -7864,7 +7878,8 @@ Example: usage of the memory devices
    added memory from the perspective of the guest.
 
    The mandatory ``size`` subelement configures the size of the added memory as
-   a scaled integer.
+   a scaled integer. For ``virtio-mem`` this represents the maximum possible
+   size exposed to the guest.
 
    The ``node`` subelement configures the guest NUMA node to attach the memory
    to. The element shall be used only if the guest has NUMA nodes configured.
@@ -7890,6 +7905,17 @@ Example: usage of the memory devices
       the real NVDIMM device backend can guarantee the guest write persistence,
       so other backend types should use the ``readonly`` element. :since:`Since
       5.0.0`
+
+   ``block``
+     For ``virtio-mem`` only.
+     The size of an individual block, granularity of division of memory block.
+     Must be power of two and at least equal to size of a transparent hugepage
+     (2MiB on x84_64). The default is hypervisor dependent.
+
+   ``requested``
+     For ``virtio-mem`` only.
+     The total size exposed to the guest. Must respect ``block`` granularity
+     and be smaller than or equal to ``size``.
 
 :anchor:`<a id="elementsIommu"/>`
 
