@@ -2022,6 +2022,7 @@ if host_machine.system() == 'linux'
   if dtrace_prog.found()
     conf.set('WITH_DTRACE_PROBES', 1)
   endif
+  dtrace_command = [ 'env', 'CC=' + ' '.join(meson.get_compiler('c').cmd_array()), dtrace_prog ]
 endif
 
 if not get_option('host_validate').disabled() and host_machine.system() != 'windows'

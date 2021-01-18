@@ -60,14 +60,14 @@ if conf.has('WITH_DTRACE_PROBES')
     out_h,
     input: infile,
     output: out_h,
-    command: [ dtrace_prog, '-o', '@OUTPUT@', '-h', '-s', '@INPUT@' ],
+    command: dtrace_command + [ '-o', '@OUTPUT@', '-h', '-s', '@INPUT@' ],
   )
 
   dtrace_gen_objects += custom_target(
     out_o,
     input: infile,
     output: out_o,
-    command: [ dtrace_prog, '-o', '@OUTPUT@', '-G', '-s', '@INPUT@' ],
+    command: dtrace_command + [ '-o', '@OUTPUT@', '-G', '-s', '@INPUT@' ],
   )
 
   custom_target(
