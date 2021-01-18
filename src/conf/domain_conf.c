@@ -3116,6 +3116,7 @@ void virDomainMemoryDefFree(virDomainMemoryDefPtr def)
 
     VIR_FREE(def->nvdimmPath);
     virBitmapFree(def->sourceNodes);
+    VIR_FREE(def->uuid);
     virDomainDeviceInfoClear(&def->info);
     VIR_FREE(def);
 }
@@ -15530,6 +15531,7 @@ virDomainMemoryDefParseXML(virDomainXMLOptionPtr xmlopt,
         /* Extract nvdimm uuid or generate a new one */
         tmp = virXPathString("string(./uuid[1])", ctxt);
 
+        def->uuid = g_new0(unsigned char, VIR_UUID_BUFLEN);
         if (!tmp) {
             if (virUUIDGenerate(def->uuid) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -22808,7 +22810,9 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDefPtr src,
             return false;
         }
 
-        if (memcmp(src->uuid, dst->uuid, VIR_UUID_BUFLEN) != 0) {
+        if ((src->uuid || dst->uuid) &&
+            !(src->uuid && dst->uuid &&
+              memcmp(src->uuid, dst->uuid, VIR_UUID_BUFLEN) == 0)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Target NVDIMM UUID doesn't match source NVDIMM"));
             return false;
@@ -26560,7 +26564,6 @@ virDomainMemoryTargetDefFormat(virBufferPtr buf,
 static int
 virDomainMemoryDefFormat(virBufferPtr buf,
                          virDomainMemoryDefPtr def,
-                         const virDomainDef *dom,
                          unsigned int flags)
 {
     const char *model = virDomainMemoryModelTypeToString(def->model);
@@ -26575,8 +26578,7 @@ virDomainMemoryDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 
-    if (def->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
-        ARCH_IS_PPC64(dom->os.arch)) {
+    if (def->uuid) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
 
         virUUIDFormat(def->uuid, uuidstr);
@@ -28974,7 +28976,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
         virDomainShmemDefFormat(buf, def->shmems[n], flags);
 
     for (n = 0; n < def->nmems; n++) {
-        if (virDomainMemoryDefFormat(buf, def->mems[n], def, flags) < 0)
+        if (virDomainMemoryDefFormat(buf, def->mems[n], flags) < 0)
             return -1;
     }
 
@@ -30091,7 +30093,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         rc = 0;
         break;
     case VIR_DOMAIN_DEVICE_MEMORY:
-        rc = virDomainMemoryDefFormat(&buf, src->data.memory, def, flags);
+        rc = virDomainMemoryDefFormat(&buf, src->data.memory, flags);
         break;
     case VIR_DOMAIN_DEVICE_SHMEM:
         virDomainShmemDefFormat(&buf, src->data.shmem, flags);

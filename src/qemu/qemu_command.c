@@ -3319,7 +3319,7 @@ qemuBuildMemoryDeviceStr(const virDomainDef *def,
     if (mem->labelsize)
         virBufferAsprintf(&buf, "label-size=%llu,", mem->labelsize * 1024);
 
-    if (virUUIDIsValid(mem->uuid)) {
+    if (mem->uuid) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
 
         virUUIDFormat(mem->uuid, uuidstr);
