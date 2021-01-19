@@ -1957,26 +1957,8 @@ if conf.has('WITH_LIBVIRTD')
   endif
 
   if not get_option('storage_vstorage').disabled()
-    vstorage_enable = true
-
-    foreach name : ['vstorage', 'vstorage-mount', 'umount']
-      set_variable(
-        '@0@_prog'.format(name.underscorify()),
-        find_program(name, required: get_option('storage_vstorage'), dirs: libvirt_sbin_path)
-      )
-      if not get_variable('@0@_prog'.format(name.underscorify())).found()
-        vstorage_enable = false
-      endif
-    endforeach
-
-    if vstorage_enable
-      use_storage = true
-      conf.set('WITH_STORAGE_VSTORAGE', 1)
-      foreach name : ['vstorage', 'vstorage-mount', 'umount']
-        path = get_variable('@0@_prog'.format(name.underscorify())).path()
-        conf.set_quoted(name.to_upper(), path)
-      endforeach
-    endif
+    use_storage = true
+    conf.set('WITH_STORAGE_VSTORAGE', 1)
   endif
 
   if not get_option('storage_zfs').disabled()

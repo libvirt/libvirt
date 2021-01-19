@@ -65,7 +65,7 @@ virStorageBackendVzPoolStart(virStoragePoolObjPtr pool)
 
     mode = g_strdup_printf("%o", def->target.perms.mode);
 
-    cmd = virCommandNewArgList(VSTORAGE_MOUNT,
+    cmd = virCommandNewArgList("vstorage-mount",
                                "-c", def->source.name,
                                def->target.path,
                                "-m", mode,
@@ -129,7 +129,7 @@ virStorageBackendVzPoolStop(virStoragePoolObjPtr pool)
     if ((rc = virStorageBackendVzIsMounted(pool)) != 1)
         return rc;
 
-    cmd = virCommandNewArgList(UMOUNT, def->target.path, NULL);
+    cmd = virCommandNewArgList("umount", def->target.path, NULL);
     return virCommandRun(cmd, NULL);
 }
 
