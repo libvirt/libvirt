@@ -3428,8 +3428,10 @@ machine types, accept the following ``model`` values:
 While the information outlined above applies to most virtio devices, there are a
 few exceptions:
 
--  for SCSI controllers, ``virtio-scsi`` must be used instead of ``virtio`` for
-   backwards compatibility reasons;
+-  for SCSI controllers, there is no ``virtio`` model available due to
+   historical reasons: use ``virtio-scsi`` instead, which behaves the same as
+   ``virtio`` does for other devices. Both ``virtio-transitional`` and
+   ``virtio-non-transitional`` work with SCSI controllers;
 -  some devices, such as GPUs and input devices (keyboard, tablet and mouse),
    are only defined in the virtio 1.0 spec and as such don't have a transitional
    variant: the only accepted model is ``virtio``, which will result in a
