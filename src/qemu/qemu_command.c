@@ -3028,9 +3028,23 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
         virJSONValueObjectAdd(props, "b:x-use-canonical-path-for-ramblock-id", false, NULL) < 0)
         return -1;
 
-    if (!priv->memPrealloc &&
-        virJSONValueObjectAdd(props, "B:prealloc", prealloc, NULL) < 0)
-        return -1;
+    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM) {
+        /* Explicitly disable prealloc for virtio-mem as it's not supported
+         * currently. Warn users if their config would result in prealloc. */
+        if (priv->memPrealloc || prealloc) {
+            VIR_WARN("Memory preallocation is unsupported for virtio-mem memory devices");
+        }
+        if (priv->memPrealloc &&
+            virJSONValueObjectAppendBoolean(props, "prealloc", 0) < 0)
+            return -1;
+        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MEMORY_BACKEND_RESERVE) &&
+            virJSONValueObjectAppendBoolean(props, "reserve", 0) < 0)
+            return -1;
+    } else {
+        if (!priv->memPrealloc &&
+            virJSONValueObjectAdd(props, "B:prealloc", prealloc, NULL) < 0)
+            return -1;
+    }
 
     if (virJSONValueObjectAdd(props, "U:size", mem->size * 1024, NULL) < 0)
         return -1;
@@ -3210,6 +3224,9 @@ qemuBuildMemoryDeviceStr(const virDomainDef *def,
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        device = "virtio-mem-pci";
+        break;
+
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
     default:
@@ -3225,6 +3242,11 @@ qemuBuildMemoryDeviceStr(const virDomainDef *def,
 
     if (mem->labelsize)
         virBufferAsprintf(&buf, "label-size=%llu,", mem->labelsize * 1024);
+
+    if (mem->blocksize) {
+        virBufferAsprintf(&buf, "block-size=%llu,", mem->blocksize * 1024);
+        virBufferAsprintf(&buf, "requested-size=%llu,", mem->requestedsize * 1024);
+    }
 
     if (mem->uuid) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];

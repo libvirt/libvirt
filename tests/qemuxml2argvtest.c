@@ -3085,6 +3085,7 @@ mymain(void)
                  ARG_END);
     DO_TEST_CAPS_VER("memory-hotplug-virtio-pmem", "5.2.0");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
+    DO_TEST_CAPS_LATEST("memory-hotplug-virtio-mem");
 
     DO_TEST("machine-aeskeywrap-on-caps",
             QEMU_CAPS_AES_KEY_WRAP,

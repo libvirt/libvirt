@@ -475,8 +475,11 @@ qemuDeviceMemoryGetAliasID(virDomainDef *def,
     size_t i;
     int maxidx = 0;
 
-    /* virtio-pmem goes onto PCI bus and thus DIMM address is not valid */
-    if (!oldAlias && mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM)
+    /* virtio-pmem and virtio-mem go onto PCI bus and thus DIMM address is not
+     * valid */
+    if (!oldAlias &&
+        mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM &&
+        mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM)
         return mem->info.addr.dimm.slot;
 
     for (i = 0; i < def->nmems; i++) {
@@ -523,6 +526,8 @@ qemuAssignDeviceMemoryAlias(virDomainDef *def,
         prefix = "virtiopmem";
         break;
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        prefix = "virtiomem";
+        break;
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
     default:
