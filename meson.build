@@ -1957,8 +1957,19 @@ if conf.has('WITH_LIBVIRTD')
   endif
 
   if not get_option('storage_vstorage').disabled()
-    use_storage = true
-    conf.set('WITH_STORAGE_VSTORAGE', 1)
+    vstorage_enable = true
+    if host_machine.system() != 'linux'
+      if get_option('storage_fs').enabled()
+        error('Vstorage is supported only on Linux')
+      else
+        vstorage_enable = false
+      endif
+    endif
+
+    if vstorage_enable
+      use_storage = true
+      conf.set('WITH_STORAGE_VSTORAGE', 1)
+    endif
   endif
 
   if not get_option('storage_zfs').disabled()
