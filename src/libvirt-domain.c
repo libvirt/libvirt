@@ -3089,7 +3089,6 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
             virTypedParamsReplaceString(&params, &nparams,
                                         VIR_MIGRATE_PARAM_URI,
                                         uri_out) < 0) {
-            cancelled = 1;
             virErrorPreserveLast(&orig_err);
             goto finish;
         }
@@ -3098,7 +3097,6 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
                                        VIR_MIGRATE_PARAM_URI, &uri) <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("domainMigratePrepare3 did not set uri"));
-        cancelled = 1;
         virErrorPreserveLast(&orig_err);
         goto finish;
     }
