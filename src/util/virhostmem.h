@@ -55,3 +55,6 @@ int virHostMemAllocPages(unsigned int npages,
                          unsigned int cellCount,
                          int lastCell,
                          bool add);
+
+int virHostMemGetTHPSize(unsigned long long *size)
+    G_GNUC_NO_INLINE;

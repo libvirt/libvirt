@@ -17,6 +17,7 @@
 #include <config.h>
 
 #include "virhostcpu.h"
+#include "virhostmem.h"
 
 #if WITH_QEMU
 # include "virmock.h"
@@ -51,3 +52,11 @@ virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps)
     return real_virQEMUCapsGetKVMSupportsSecureGuest(qemuCaps);
 }
 #endif
+
+int
+virHostMemGetTHPSize(unsigned long long *size)
+{
+    /* Pretend Transparent Huge Page size is 2MiB. */
+    *size = 2048;
+    return 0;
+}
