@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile --cross i686 debian-sid libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/d527e0c012f476c293f3bc801b7da08bc85f98ef
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/740f5254f607de914a92d664196d045149edb45a
 FROM docker.io/library/debian:sid-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -96,6 +96,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libudev-dev:i386 \
             libxml2-dev:i386 \
             libyajl-dev:i386 \
+            systemtap-sdt-dev:i386 \
             xfslibs-dev:i386 && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \

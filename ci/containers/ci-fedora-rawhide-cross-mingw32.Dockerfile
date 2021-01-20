@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile --cross mingw32 fedora-rawhide libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/d527e0c012f476c293f3bc801b7da08bc85f98ef
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/740f5254f607de914a92d664196d045149edb45a
 FROM registry.fedoraproject.org/fedora:rawhide
 
 RUN dnf install -y nosync && \

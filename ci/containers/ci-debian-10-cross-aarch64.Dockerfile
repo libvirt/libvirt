@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile --cross aarch64 debian-10 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/d527e0c012f476c293f3bc801b7da08bc85f98ef
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/740f5254f607de914a92d664196d045149edb45a
 FROM docker.io/library/debian:10-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -99,6 +99,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libxen-dev:arm64 \
             libxml2-dev:arm64 \
             libyajl-dev:arm64 \
+            systemtap-sdt-dev:arm64 \
             xfslibs-dev:arm64 && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \

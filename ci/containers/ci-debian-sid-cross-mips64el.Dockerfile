@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile --cross mips64el debian-sid libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/d527e0c012f476c293f3bc801b7da08bc85f98ef
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/740f5254f607de914a92d664196d045149edb45a
 FROM docker.io/library/debian:sid-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -96,6 +96,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libudev-dev:mips64el \
             libxml2-dev:mips64el \
             libyajl-dev:mips64el \
+            systemtap-sdt-dev:mips64el \
             xfslibs-dev:mips64el && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \
