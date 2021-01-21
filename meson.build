@@ -1155,8 +1155,10 @@ libm_dep = cc.find_library('m', required : false)
 
 netcf_version = '0.1.8'
 netcf_dep = dependency('netcf', version: '>=' + netcf_version, required: get_option('netcf'))
-if netcf_dep.found()
-  conf.set('WITH_NETCF', 1)
+if not get_option('netcf').disabled()
+  if netcf_dep.found()
+    conf.set('WITH_NETCF', 1)
+  endif
 endif
 
 have_gnu_gettext_tools = false
@@ -1550,7 +1552,7 @@ elif get_option('driver_hyperv').enabled()
   error('openwsman is required for the Hyper-V driver')
 endif
 
-if not get_option('driver_interface').disabled() and conf.has('WITH_LIBVIRTD') and (udev_dep.found() or netcf_dep.found())
+if not get_option('driver_interface').disabled() and conf.has('WITH_LIBVIRTD') and (udev_dep.found() or conf.has('WITH_NETCF'))
   conf.set('WITH_INTERFACE', 1)
 elif get_option('driver_interface').enabled()
   error('Requested the Interface driver without netcf or udev and libvirtd support')
@@ -2356,7 +2358,7 @@ libs_summary = {
   'libssh': libssh_dep.found(),
   'libssh2': libssh2_dep.found(),
   'libutil': libutil_dep.found(),
-  'netcf': netcf_dep.found(),
+  'netcf': conf.has('WITH_NETCF'),
   'NLS': have_gnu_gettext_tools,
   'numactl': numactl_dep.found(),
   'openwsman': openwsman_dep.found(),
