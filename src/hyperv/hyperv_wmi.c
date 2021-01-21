@@ -939,7 +939,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
     filter_t *filter = NULL;
     WsXmlDocH response = NULL;
     char *enumContext = NULL;
-    hypervObject *head = NULL;
+    g_autoptr(hypervObject) head = NULL;
     hypervObject *tail = NULL;
     WsXmlNodeH node = NULL;
     hypervObject *object;
@@ -1062,7 +1062,6 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
     VIR_FREE(query_string);
     ws_xml_destroy_doc(response);
     VIR_FREE(enumContext);
-    hypervFreeObject(head);
 
     return result;
 }
