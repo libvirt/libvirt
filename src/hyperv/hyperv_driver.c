@@ -2572,23 +2572,18 @@ hypervDomainAttachDevice(virDomainPtr domain, const char *xml)
 static int
 hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
 {
-    int result = -1;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     hypervPrivate *priv = domain->conn->privateData;
-    Msvm_VirtualSystemSettingData *vssd = NULL;
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
 
     virUUIDFormat(domain->uuid, uuid_string);
 
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
-        goto cleanup;
+        return -1;
 
     *autostart = vssd->data->AutomaticStartupAction == 4;
-    result = 0;
 
- cleanup:
-    hypervFreeObject((hypervObject *)vssd);
-
-    return result;
+    return 0;
 }
 
 
