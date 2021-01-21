@@ -1490,20 +1490,23 @@ hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
 }
 
 
+#define hypervGetSettingData(type, id, out) \
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER; \
+    virBufferEscapeSQL(&query, \
+                       "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID='%s'} " \
+                       "WHERE AssocClass = Msvm_VirtualSystemSettingDataComponent " \
+                       "ResultClass = " #type, \
+                       id); \
+    if (hypervGetWmiClass(type, out) < 0) \
+        return -1
+
+
 int
 hypervGetResourceAllocationSD(hypervPrivate *priv,
                               const char *id,
                               Msvm_ResourceAllocationSettingData **data)
 {
-    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    virBufferEscapeSQL(&query,
-                       "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID='%s'} "
-                       "WHERE AssocClass = Msvm_VirtualSystemSettingDataComponent "
-                       "ResultClass = Msvm_ResourceAllocationSettingData",
-                       id);
-
-    if (hypervGetWmiClass(Msvm_ResourceAllocationSettingData, data) < 0)
-        return -1;
+    hypervGetSettingData(Msvm_ResourceAllocationSettingData, id, data);
 
     if (!*data) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1521,15 +1524,7 @@ hypervGetProcessorSD(hypervPrivate *priv,
                      const char *id,
                      Msvm_ProcessorSettingData **data)
 {
-    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    virBufferEscapeSQL(&query,
-                       "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID='%s'} "
-                       "WHERE AssocClass = Msvm_VirtualSystemSettingDataComponent "
-                       "ResultClass = Msvm_ProcessorSettingData",
-                       id);
-
-    if (hypervGetWmiClass(Msvm_ProcessorSettingData, data) < 0)
-        return -1;
+    hypervGetSettingData(Msvm_ProcessorSettingData, id, data);
 
     if (!*data) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1547,15 +1542,9 @@ hypervGetMemorySD(hypervPrivate *priv,
                   const char *vssd_instanceid,
                   Msvm_MemorySettingData **list)
 {
-    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    hypervGetSettingData(Msvm_MemorySettingData, vssd_instanceid, list);
 
-    virBufferAsprintf(&query,
-                      "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID='%s'} "
-                      "WHERE AssocClass = Msvm_VirtualSystemSettingDataComponent "
-                      "ResultClass = Msvm_MemorySettingData",
-                      vssd_instanceid);
-
-    if (hypervGetWmiClass(Msvm_MemorySettingData, list) < 0 || !*list)
+    if (!*list)
         return -1;
 
     return 0;
@@ -1567,16 +1556,7 @@ hypervGetStorageAllocationSD(hypervPrivate *priv,
                              const char *id,
                              Msvm_StorageAllocationSettingData **data)
 {
-    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    virBufferEscapeSQL(&query,
-                       "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID='%s'} "
-                       "WHERE AssocClass = Msvm_VirtualSystemSettingDataComponent "
-                       "ResultClass = Msvm_StorageAllocationSettingData",
-                       id);
-
-    if (hypervGetWmiClass(Msvm_StorageAllocationSettingData, data) < 0)
-        return -1;
-
+    hypervGetSettingData(Msvm_StorageAllocationSettingData, id, data);
     return 0;
 }
 
