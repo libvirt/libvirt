@@ -1,8 +1,7 @@
 /*
- * hyperv_private.h: private driver struct for the Microsoft Hyper-V driver
+ * hyperv_wsman.h: OpenWSMAN include and GLib auto-cleanup
  *
- * Copyright (C) 2011 Matthias Bolte <matthias.bolte@googlemail.com>
- * Copyright (C) 2009 Michael Sievers <msievers83@googlemail.com>
+ * Copyright (C) 2021 Datto Inc
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,18 +21,8 @@
 
 #pragma once
 
-#include "internal.h"
-#include "virerror.h"
-#include "hyperv_util.h"
-#include "hyperv_wsman.h"
-#include "capabilities.h"
-#include "domain_conf.h"
+#include <wsman-api.h>
 
-typedef struct _hypervPrivate hypervPrivate;
-struct _hypervPrivate {
-    hypervParsedUri *parsedUri;
-    WsManClient *client;
-    virCapsPtr caps;
-    virDomainXMLOptionPtr xmlopt;
-    char *version;
-};
+G_DEFINE_AUTO_CLEANUP_FREE_FUNC(WsXmlDocH, ws_xml_destroy_doc, NULL);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(client_opt_t, wsmc_options_destroy);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(filter_t, filter_destroy);
