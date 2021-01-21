@@ -722,8 +722,7 @@ hypervDomainAttachCDROM(virDomainPtr domain,
                         Msvm_ResourceAllocationSettingData *controller,
                         const char *hostname)
 {
-    int result = -1;
-    WsXmlDocH response = NULL;
+    g_auto(WsXmlDocH) response = NULL;
     g_autofree char *driveInstanceID = NULL;
 
     VIR_DEBUG("Now attaching CD/DVD '%s' with address %d to bus %d of type %d",
@@ -731,22 +730,16 @@ hypervDomainAttachCDROM(virDomainPtr domain,
               disk->info.addr.drive.controller, disk->bus);
 
     if (hypervDomainAddOpticalDrive(domain, disk, controller, hostname, &response) < 0)
-        goto cleanup;
+        return -1;
 
     driveInstanceID = hypervGetInstanceIDFromXMLResponse(response);
     if (!driveInstanceID)
-        goto cleanup;
+        return -1;
 
     if (hypervDomainAddOpticalDisk(domain, disk, hostname, driveInstanceID) < 0)
-        goto cleanup;
+        return -1;
 
-    result = 0;
-
- cleanup:
-    if (response)
-        ws_xml_destroy_doc(response);
-
-    return result;
+    return 0;
 }
 
 
