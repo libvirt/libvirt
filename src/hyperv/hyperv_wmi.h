@@ -50,6 +50,7 @@ struct _hypervObject {
     XML_TYPE_PTR data; /* Unserialized data from wsman response */
     hypervWmiClassInfoPtr info; /* The info used to make wsman request */
     hypervObject *next;
+    hypervPrivate *priv;
 };
 
 typedef struct _hypervWqlQuery hypervWqlQuery;
@@ -62,7 +63,7 @@ struct _hypervWqlQuery {
 int hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
                       hypervObject **list);
 
-void hypervFreeObject(hypervPrivate *priv, hypervObject *object);
+void hypervFreeObject(hypervObject *object);
 
 
 /*

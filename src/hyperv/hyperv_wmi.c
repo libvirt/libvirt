@@ -870,7 +870,7 @@ hypervInvokeMethod(hypervPrivate *priv,
             case MSVM_CONCRETEJOB_JOBSTATE_STARTING:
             case MSVM_CONCRETEJOB_JOBSTATE_RUNNING:
             case MSVM_CONCRETEJOB_JOBSTATE_SHUTTING_DOWN:
-                hypervFreeObject(priv, (hypervObject *)job);
+                hypervFreeObject((hypervObject *)job);
                 job = NULL;
                 g_usleep(100 * 1000); /* sleep 100 ms */
                 timeout -= 100;
@@ -917,7 +917,7 @@ hypervInvokeMethod(hypervPrivate *priv,
     VIR_FREE(jobcode_instance_xpath);
     VIR_FREE(returnValue);
     VIR_FREE(instanceID);
-    hypervFreeObject(priv, (hypervObject *)job);
+    hypervFreeObject((hypervObject *)job);
     *paramsPtr = NULL;
     return result;
 }
@@ -1030,6 +1030,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
         object = g_new0(hypervObject, 1);
         object->info = wmiInfo;
         object->data = data;
+        object->priv = priv;
 
         if (head == NULL) {
             head = object;
@@ -1061,14 +1062,14 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
     VIR_FREE(query_string);
     ws_xml_destroy_doc(response);
     VIR_FREE(enumContext);
-    hypervFreeObject(priv, head);
+    hypervFreeObject(head);
 
     return result;
 }
 
 
 void
-hypervFreeObject(hypervPrivate *priv G_GNUC_UNUSED, hypervObject *object)
+hypervFreeObject(hypervObject *object)
 {
     hypervObject *next;
     WsSerializerContextH serializerContext;
@@ -1076,10 +1077,12 @@ hypervFreeObject(hypervPrivate *priv G_GNUC_UNUSED, hypervObject *object)
     if (object == NULL)
         return;
 
-    serializerContext = wsmc_get_serialization_context(priv->client);
+    serializerContext = wsmc_get_serialization_context(object->priv->client);
 
     while (object != NULL) {
         next = object->next;
+
+        object->priv = NULL;
 
         if (ws_serializer_free_mem(serializerContext, object->data,
                                    object->info->serializerInfo) < 0) {
@@ -1267,7 +1270,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
             case MSVM_CONCRETEJOB_JOBSTATE_STARTING:
             case MSVM_CONCRETEJOB_JOBSTATE_RUNNING:
             case MSVM_CONCRETEJOB_JOBSTATE_SHUTTING_DOWN:
-                hypervFreeObject(priv, (hypervObject *)concreteJob);
+                hypervFreeObject((hypervObject *)concreteJob);
                 concreteJob = NULL;
 
                 g_usleep(100 * 1000);
@@ -1312,7 +1315,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
     VIR_FREE(properties);
     VIR_FREE(returnValue);
     VIR_FREE(instanceID);
-    hypervFreeObject(priv, (hypervObject *)concreteJob);
+    hypervFreeObject((hypervObject *)concreteJob);
 
     return result;
 }
@@ -1610,7 +1613,7 @@ hypervMsvmVSMSAddResourceSettings(virDomainPtr domain,
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)vssd);
+    hypervFreeObject((hypervObject *)vssd);
     *resourceSettingsPtr = NULL;
 
     return result;

@@ -198,7 +198,6 @@ static int
 hypervRequestStateChange(virDomainPtr domain, int state)
 {
     int result = -1;
-    hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
@@ -212,7 +211,7 @@ hypervRequestStateChange(virDomainPtr domain, int state)
     result = hypervInvokeMsvmComputerSystemRequestStateChange(domain, state);
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return result;
 }
@@ -260,7 +259,7 @@ hypervLookupHostSystemBiosUuid(hypervPrivate *priv, unsigned char *uuid)
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return result;
 }
@@ -642,7 +641,7 @@ hypervDomainAttachPhysicalDisk(virDomainPtr domain,
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)diskdefault);
+    hypervFreeObject((hypervObject *)diskdefault);
 
     return result;
 }
@@ -930,8 +929,8 @@ hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def, const char *
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)rasd);
-    hypervFreeObject(priv, (hypervObject *)vssd);
+    hypervFreeObject((hypervObject *)rasd);
+    hypervFreeObject((hypervObject *)vssd);
 
     return result;
 }
@@ -1213,7 +1212,7 @@ hypervDomainDefParsePhysicalDisk(hypervPrivate *priv,
  cleanup:
     if (result != 0 && disk)
         virDomainDiskDefFree(disk);
-    hypervFreeObject(priv, (hypervObject *)diskdrive);
+    hypervFreeObject((hypervObject *)diskdrive);
 
     return result;
 }
@@ -1422,7 +1421,7 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     result = VIR_DRV_OPEN_SUCCESS;
 
  cleanup:
-    hypervFreeObject(priv ? priv : conn->privateData, (hypervObject *)os);
+    hypervFreeObject((hypervObject *)os);
     hypervFreePrivate(&priv);
 
     return result;
@@ -1505,7 +1504,7 @@ hypervConnectGetHostname(virConnectPtr conn)
     hostname = g_strdup(computerSystem->data->DNSHostName);
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return hostname;
 }
@@ -1546,7 +1545,7 @@ hypervConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
     result = processorSettingData->data->VirtualQuantity;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)processorSettingData);
+    hypervFreeObject((hypervObject *)processorSettingData);
 
     return result;
 }
@@ -1618,8 +1617,8 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
-    hypervFreeObject(priv, (hypervObject *)processorList);
+    hypervFreeObject((hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)processorList);
 
     return result;
 }
@@ -1651,7 +1650,7 @@ hypervConnectListDomains(virConnectPtr conn, int *ids, int maxids)
     success = true;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystemList);
+    hypervFreeObject((hypervObject *)computerSystemList);
 
     return success ? count : -1;
 }
@@ -1677,7 +1676,7 @@ hypervConnectNumOfDomains(virConnectPtr conn)
     success = true;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystemList);
+    hypervFreeObject((hypervObject *)computerSystemList);
 
     return success ? count : -1;
 }
@@ -1696,7 +1695,7 @@ hypervDomainLookupByID(virConnectPtr conn, int id)
     hypervMsvmComputerSystemToDomain(conn, computerSystem, &domain);
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return domain;
 }
@@ -1718,7 +1717,7 @@ hypervDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     hypervMsvmComputerSystemToDomain(conn, computerSystem, &domain);
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return domain;
 }
@@ -1744,7 +1743,7 @@ hypervDomainLookupByName(virConnectPtr conn, const char *name)
     hypervMsvmComputerSystemToDomain(conn, computerSystem, &domain);
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return domain;
 }
@@ -1761,7 +1760,6 @@ static int
 hypervDomainResume(virDomainPtr domain)
 {
     int result = -1;
-    hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
@@ -1777,7 +1775,7 @@ hypervDomainResume(virDomainPtr domain)
                                                               MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_ENABLED);
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return result;
 }
@@ -1842,8 +1840,8 @@ hypervDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
-    hypervFreeObject(priv, (hypervObject *)shutdown);
+    hypervFreeObject((hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)shutdown);
 
     return result;
 }
@@ -1876,7 +1874,6 @@ static int
 hypervDomainDestroyFlags(virDomainPtr domain, unsigned int flags)
 {
     int result = -1;
-    hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
     bool in_transition = false;
 
@@ -1896,7 +1893,7 @@ hypervDomainDestroyFlags(virDomainPtr domain, unsigned int flags)
                                                               MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_DISABLED);
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return result;
 }
@@ -1939,8 +1936,8 @@ hypervDomainGetMaxMemory(virDomainPtr domain)
     maxMemoryBytes = mem_sd->data->Limit * 1024;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)vssd);
-    hypervFreeObject(priv, (hypervObject *)mem_sd);
+    hypervFreeObject((hypervObject *)vssd);
+    hypervFreeObject((hypervObject *)mem_sd);
 
     return maxMemoryBytes;
 }
@@ -1984,8 +1981,8 @@ hypervDomainSetMemoryProperty(virDomainPtr domain,
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)vssd);
-    hypervFreeObject(priv, (hypervObject *)memsd);
+    hypervFreeObject((hypervObject *)vssd);
+    hypervFreeObject((hypervObject *)memsd);
 
     return result;
 }
@@ -2056,10 +2053,10 @@ hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
-    hypervFreeObject(priv, (hypervObject *)virtualSystemSettingData);
-    hypervFreeObject(priv, (hypervObject *)processorSettingData);
-    hypervFreeObject(priv, (hypervObject *)memorySettingData);
+    hypervFreeObject((hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)virtualSystemSettingData);
+    hypervFreeObject((hypervObject *)processorSettingData);
+    hypervFreeObject((hypervObject *)memorySettingData);
 
     return result;
 }
@@ -2070,7 +2067,6 @@ hypervDomainGetState(virDomainPtr domain, int *state, int *reason,
                      unsigned int flags)
 {
     int result = -1;
-    hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
 
     virCheckFlags(0, -1);
@@ -2086,7 +2082,7 @@ hypervDomainGetState(virDomainPtr domain, int *state, int *reason,
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return result;
 }
@@ -2132,8 +2128,8 @@ hypervDomainSetVcpusFlags(virDomainPtr domain,
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)vssd);
-    hypervFreeObject(priv, (hypervObject *)proc_sd);
+    hypervFreeObject((hypervObject *)vssd);
+    hypervFreeObject((hypervObject *)proc_sd);
 
     return result;
 }
@@ -2189,9 +2185,9 @@ hypervDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
     result = proc_sd->data->VirtualQuantity;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
-    hypervFreeObject(priv, (hypervObject *)vssd);
-    hypervFreeObject(priv, (hypervObject *)proc_sd);
+    hypervFreeObject((hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)vssd);
+    hypervFreeObject((hypervObject *)proc_sd);
 
     return result;
 }
@@ -2220,7 +2216,7 @@ hypervDomainGetVcpus(virDomainPtr domain,
         g_autofree char *vcpu_name = g_strdup_printf("%s:Hv VP %d", domain->name, vcpu_number);
 
         /* try to free objects from previous iteration */
-        hypervFreeObject(priv, (hypervObject *)vproc);
+        hypervFreeObject((hypervObject *)vproc);
         vproc = NULL;
 
         /* get the info */
@@ -2246,7 +2242,7 @@ hypervDomainGetVcpus(virDomainPtr domain,
         count++;
     }
 
-    hypervFreeObject(priv, (hypervObject *)vproc);
+    hypervFreeObject((hypervObject *)vproc);
 
     return count;
 }
@@ -2373,12 +2369,12 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
  cleanup:
     virDomainDefFree(def);
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
-    hypervFreeObject(priv, (hypervObject *)virtualSystemSettingData);
-    hypervFreeObject(priv, (hypervObject *)processorSettingData);
-    hypervFreeObject(priv, (hypervObject *)memorySettingData);
-    hypervFreeObject(priv, (hypervObject *)rasd);
-    hypervFreeObject(priv, (hypervObject *)sasd);
+    hypervFreeObject((hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)virtualSystemSettingData);
+    hypervFreeObject((hypervObject *)processorSettingData);
+    hypervFreeObject((hypervObject *)memorySettingData);
+    hypervFreeObject((hypervObject *)rasd);
+    hypervFreeObject((hypervObject *)sasd);
 
     return xml;
 }
@@ -2420,7 +2416,7 @@ hypervConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxn
         count = -1;
     }
 
-    hypervFreeObject(priv, (hypervObject *)computerSystemList);
+    hypervFreeObject((hypervObject *)computerSystemList);
 
     return count;
 }
@@ -2446,7 +2442,7 @@ hypervConnectNumOfDefinedDomains(virConnectPtr conn)
     success = true;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystemList);
+    hypervFreeObject((hypervObject *)computerSystemList);
 
     return success ? count : -1;
 }
@@ -2456,7 +2452,6 @@ static int
 hypervDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
 {
     int result = -1;
-    hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
 
     virCheckFlags(0, -1);
@@ -2474,7 +2469,7 @@ hypervDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
                                                               MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_ENABLED);
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return result;
 }
@@ -2705,9 +2700,9 @@ hypervDomainAttachDeviceFlags(virDomainPtr domain, const char *xml, unsigned int
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)vssd);
-    hypervFreeObject(priv, (hypervObject *)rasd);
-    hypervFreeObject(priv, (hypervObject *)host);
+    hypervFreeObject((hypervObject *)vssd);
+    hypervFreeObject((hypervObject *)rasd);
+    hypervFreeObject((hypervObject *)host);
 
     return result;
 }
@@ -2737,7 +2732,7 @@ hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)vssd);
+    hypervFreeObject((hypervObject *)vssd);
 
     return result;
 }
@@ -2784,7 +2779,7 @@ hypervDomainSetAutostart(virDomainPtr domain, int autostart)
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)vssd);
+    hypervFreeObject((hypervObject *)vssd);
 
     return result;
 }
@@ -2852,9 +2847,9 @@ hypervDomainGetSchedulerParametersFlags(virDomainPtr domain,
     result = 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
-    hypervFreeObject(priv, (hypervObject *)vssd);
-    hypervFreeObject(priv, (hypervObject *)proc_sd);
+    hypervFreeObject((hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)vssd);
+    hypervFreeObject((hypervObject *)proc_sd);
 
     return result;
 }
@@ -2889,7 +2884,7 @@ hypervNodeGetFreeMemory(virConnectPtr conn)
 
     freeMemoryBytes = operatingSystem->data->FreePhysicalMemory * 1024;
 
-    hypervFreeObject(priv, (hypervObject *)operatingSystem);
+    hypervFreeObject((hypervObject *)operatingSystem);
 
     return freeMemoryBytes;
 }
@@ -2941,7 +2936,6 @@ static int
 hypervDomainIsActive(virDomainPtr domain)
 {
     int result = -1;
-    hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
@@ -2950,7 +2944,7 @@ hypervDomainIsActive(virDomainPtr domain)
     result = hypervIsMsvmComputerSystemActive(computerSystem, NULL) ? 1 : 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return result;
 }
@@ -2985,7 +2979,6 @@ static int
 hypervDomainManagedSave(virDomainPtr domain, unsigned int flags)
 {
     int result = -1;
-    hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
     bool in_transition = false;
 
@@ -3004,7 +2997,7 @@ hypervDomainManagedSave(virDomainPtr domain, unsigned int flags)
     result = hypervInvokeMsvmComputerSystemRequestStateChange(domain, MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_OFFLINE);
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return result;
 }
@@ -3014,7 +3007,6 @@ static int
 hypervDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
 {
     int result = -1;
-    hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
 
     virCheckFlags(0, -1);
@@ -3025,7 +3017,7 @@ hypervDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
     result = computerSystem->data->EnabledState == MSVM_COMPUTERSYSTEM_ENABLEDSTATE_SUSPENDED ? 1 : 0;
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return result;
 }
@@ -3035,7 +3027,6 @@ static int
 hypervDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
 {
     int result = -1;
-    hypervPrivate *priv = domain->conn->privateData;
     Msvm_ComputerSystem *computerSystem = NULL;
 
     virCheckFlags(0, -1);
@@ -3053,7 +3044,7 @@ hypervDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
                                                               MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_DISABLED);
 
  cleanup:
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)computerSystem);
 
     return result;
 }
@@ -3179,7 +3170,7 @@ hypervConnectListAllDomains(virConnectPtr conn,
         VIR_FREE(doms);
     }
 
-    hypervFreeObject(priv, (hypervObject *)computerSystemList);
+    hypervFreeObject((hypervObject *)computerSystemList);
 
     return ret;
 }
@@ -3283,8 +3274,8 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
  cleanup:
     VIR_FREE(translatedKeycodes);
     VIR_FREE(selector);
-    hypervFreeObject(priv, (hypervObject *)keyboard);
-    hypervFreeObject(priv, (hypervObject *)computerSystem);
+    hypervFreeObject((hypervObject *)keyboard);
+    hypervFreeObject((hypervObject *)computerSystem);
     return result;
 }
 
