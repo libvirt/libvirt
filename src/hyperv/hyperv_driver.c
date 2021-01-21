@@ -1357,7 +1357,7 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     hypervPrivate *priv = NULL;
     g_autofree char *username = NULL;
     g_autofree char *password = NULL;
-    Win32_OperatingSystem *os = NULL;
+    g_autoptr(Win32_OperatingSystem) os = NULL;
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -1421,7 +1421,6 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     result = VIR_DRV_OPEN_SUCCESS;
 
  cleanup:
-    hypervFreeObject((hypervObject *)os);
     hypervFreePrivate(&priv);
 
     return result;
