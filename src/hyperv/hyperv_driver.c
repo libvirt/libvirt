@@ -2770,18 +2770,12 @@ hypervConnectIsAlive(virConnectPtr conn)
 static int
 hypervDomainIsActive(virDomainPtr domain)
 {
-    int result = -1;
-    Msvm_ComputerSystem *computerSystem = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
-        goto cleanup;
+        return -1;
 
-    result = hypervIsMsvmComputerSystemActive(computerSystem, NULL) ? 1 : 0;
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
-
-    return result;
+    return hypervIsMsvmComputerSystemActive(computerSystem, NULL) ? 1 : 0;
 }
 
 
