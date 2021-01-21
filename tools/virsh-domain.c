@@ -8927,6 +8927,161 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
     return true;
 }
 
+
+/*
+ * "update-memory-device" command
+ */
+static const vshCmdInfo info_update_memory_device[] = {
+    {.name = "help",
+     .data = N_("update memory device of a domain")
+    },
+    {.name = "desc",
+     .data = N_("Update values of a memory device of a domain")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_update_memory_device[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_CONFIG,
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
+    VIRSH_COMMON_OPT_DOMAIN_CURRENT,
+    {.name = "print-xml",
+     .type = VSH_OT_BOOL,
+     .help = N_("print updated memory device XML instead of executing the change")
+    },
+    {.name = "alias",
+     .type = VSH_OT_STRING,
+     .completer = virshDomainDeviceAliasCompleter,
+     .help = N_("memory device alias")
+    },
+    {.name = "node",
+     .type = VSH_OT_INT,
+     .help = N_("memory device target node")
+    },
+    {.name = "requested-size",
+     .type = VSH_OT_INT,
+     .help = N_("new value of <requested/> size, as scaled integer (default KiB)")
+    },
+    {.name = NULL}
+};
+
+static int
+virshGetUpdatedMemoryXML(char **updatedMemoryXML,
+                         vshControl *ctl,
+                         const vshCmd *cmd,
+                         virDomainPtr dom,
+                         unsigned int flags)
+{
+    const char *alias = NULL;
+    bool nodeOpt = false;
+    unsigned int node = 0;
+    g_autoptr(xmlDoc) doc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autofree char *xpath = NULL;
+    int nmems;
+    g_autofree xmlNodePtr *mems = NULL;
+    unsigned int domainXMLFlags = 0;
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+        domainXMLFlags |= VIR_DOMAIN_XML_INACTIVE;
+
+    if (virshDomainGetXMLFromDom(ctl, dom, domainXMLFlags, &doc, &ctxt) < 0)
+        return -1;
+
+    nodeOpt = vshCommandOptBool(cmd, "node");
+    if (vshCommandOptStringReq(ctl, cmd, "alias", &alias) < 0 ||
+        vshCommandOptUInt(ctl, cmd, "node", &node) < 0) {
+        return -1;
+    }
+
+    if (nodeOpt) {
+        xpath = g_strdup_printf("/domain/devices/memory[./target/node='%u']", node);
+    } else if (alias) {
+        xpath = g_strdup_printf("/domain/devices/memory[./alias/@name='%s']", alias);
+    } else {
+        xpath = g_strdup("/domain/devices/memory");
+    }
+
+    nmems = virXPathNodeSet(xpath, ctxt, &mems);
+    if (nmems < 0) {
+        vshSaveLibvirtError();
+        return -1;
+    } else if (nmems == 0) {
+        vshError(ctl, _("no memory device found"));
+        return -1;
+    } else if (nmems > 1) {
+        vshError(ctl, _("multiple memory devices found, use --alias or --node to select one"));
+        return -1;
+    }
+
+    ctxt->node = mems[0];
+
+    if (vshCommandOptBool(cmd, "requested-size")) {
+        xmlNodePtr requestedSizeNode;
+        g_autofree char *kibibytesStr = NULL;
+        unsigned long long bytes = 0;
+        unsigned long kibibytes = 0;
+
+        if (vshCommandOptScaledInt(ctl, cmd, "requested-size", &bytes, 1024, ULLONG_MAX) < 0)
+            return -1;
+        kibibytes = VIR_DIV_UP(bytes, 1024);
+
+        requestedSizeNode = virXPathNode("./target/requested", ctxt);
+
+        if (!requestedSizeNode) {
+            vshError(ctl, _("virtio-mem device is missing <requested/>"));
+            return -1;
+        }
+
+        kibibytesStr = g_strdup_printf("%lu", kibibytes);
+        xmlNodeSetContent(requestedSizeNode, BAD_CAST kibibytesStr);
+    }
+
+    if (!(*updatedMemoryXML = virXMLNodeToString(doc, mems[0]))) {
+        vshSaveLibvirtError();
+        return -1;
+    }
+
+    return 0;
+}
+
+static bool
+cmdUpdateMemoryDevice(vshControl *ctl, const vshCmd *cmd)
+{
+    g_autoptr(virshDomain) dom = NULL;
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    g_autofree char *updatedMemoryXML = NULL;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+    VSH_EXCLUSIVE_OPTIONS("node", "alias");
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (virshGetUpdatedMemoryXML(&updatedMemoryXML, ctl, cmd, dom, flags) < 0)
+        return false;
+
+    if (vshCommandOptBool(cmd, "print-xml")) {
+        vshPrint(ctl, "%s", updatedMemoryXML);
+    } else {
+        if (virDomainUpdateDeviceFlags(dom, updatedMemoryXML, flags) < 0)
+            return false;
+    }
+
+    return true;
+}
+
+
 /*
  * "memtune" command
  */
@@ -14674,6 +14829,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdUpdateDevice,
      .opts = opts_update_device,
      .info = info_update_device,
+     .flags = 0
+    },
+    {.name = "update-memory-device",
+     .handler = cmdUpdateMemoryDevice,
+     .opts = opts_update_memory_device,
+     .info = info_update_memory_device,
      .flags = 0
     },
     {.name = "vcpucount",
