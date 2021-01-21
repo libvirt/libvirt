@@ -903,14 +903,13 @@ int
 hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
                   hypervObject **list)
 {
-    int result = -1;
     WsSerializerContextH serializerContext;
-    client_opt_t *options = NULL;
-    char *query_string = NULL;
+    g_autoptr(client_opt_t) options = NULL;
+    g_autofree char *query_string = NULL;
     hypervWmiClassInfoPtr wmiInfo = wqlQuery->info;
-    filter_t *filter = NULL;
-    WsXmlDocH response = NULL;
-    char *enumContext = NULL;
+    g_autoptr(filter_t) filter = NULL;
+    g_auto(WsXmlDocH) response = NULL;
+    g_autofree char *enumContext = NULL;
     g_autoptr(hypervObject) head = NULL;
     hypervObject *tail = NULL;
     WsXmlNodeH node = NULL;
@@ -931,7 +930,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
     if (options == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not initialize options"));
-        goto cleanup;
+        return -1;
     }
 
     filter = filter_create_simple(WSM_WQL_FILTER_DIALECT, query_string);
@@ -939,14 +938,14 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
     if (filter == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not create filter"));
-        goto cleanup;
+        return -1;
     }
 
     response = wsmc_action_enumerate(priv->client, wmiInfo->rootUri, options,
                                      filter);
 
     if (hypervVerifyResponse(priv->client, response, "enumeration") < 0)
-        goto cleanup;
+        return -1;
 
     enumContext = wsmc_get_enum_context(response);
 
@@ -960,14 +959,14 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
                                     filter, enumContext);
 
         if (hypervVerifyResponse(priv->client, response, "pull") < 0)
-            goto cleanup;
+            return -1;
 
         node = ws_xml_get_soap_body(response);
 
         if (node == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not lookup SOAP body"));
-            goto cleanup;
+            return -1;
         }
 
         node = ws_xml_get_child(node, 0, XML_NS_ENUMERATION, WSENUM_PULL_RESP);
@@ -975,7 +974,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
         if (node == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not lookup pull response"));
-            goto cleanup;
+            return -1;
         }
 
         node = ws_xml_get_child(node, 0, XML_NS_ENUMERATION, WSENUM_ITEMS);
@@ -983,7 +982,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
         if (node == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not lookup pull response items"));
-            goto cleanup;
+            return -1;
         }
 
         if (ws_xml_get_child(node, 0, wmiInfo->resourceUri,
@@ -996,7 +995,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
         if (data == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not deserialize pull response item"));
-            goto cleanup;
+            return -1;
         }
 
         object = g_new0(hypervObject, 1);
@@ -1022,20 +1021,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
     *list = head;
     head = NULL;
 
-    result = 0;
-
- cleanup:
-    if (options != NULL)
-        wsmc_options_destroy(options);
-
-    if (filter != NULL)
-        filter_destroy(filter);
-
-    VIR_FREE(query_string);
-    ws_xml_destroy_doc(response);
-    VIR_FREE(enumContext);
-
-    return result;
+    return 0;
 }
 
 
