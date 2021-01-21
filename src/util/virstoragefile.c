@@ -20,7 +20,7 @@
  */
 
 #include <config.h>
-#include "virstoragefilebackend.h"
+#include "virstoragefile.h"
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -38,6 +38,7 @@
 #include "virbuffer.h"
 #include "virjson.h"
 #include "virstorageencryption.h"
+#include "virstoragefilebackend.h"
 #include "virsecret.h"
 #include "virutil.h"
 
