@@ -1540,20 +1540,19 @@ hypervConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
 static int
 hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 {
-    int result = -1;
     hypervPrivate *priv = conn->privateData;
-    Win32_ComputerSystem *computerSystem = NULL;
-    Win32_Processor *processorList = NULL;
+    g_autoptr(Win32_ComputerSystem) computerSystem = NULL;
+    g_autoptr(Win32_Processor) processorList = NULL;
     Win32_Processor *processor = NULL;
     char *tmp;
 
     memset(info, 0, sizeof(*info));
 
     if (hypervGetPhysicalSystemList(priv, &computerSystem) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervGetProcessorsByName(priv, computerSystem->data->Name, &processorList) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     /* Strip the string to fit more relevant information in 32 chars */
@@ -1583,7 +1582,7 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU model %s too long for destination"),
                        processorList->data->Name);
-        goto cleanup;
+        return -1;
     }
 
     info->memory = computerSystem->data->TotalPhysicalMemory / 1024; /* byte to kilobyte */
@@ -1600,13 +1599,7 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     info->threads = processorList->data->NumberOfLogicalProcessors / info->cores;
     info->cpus = info->sockets * info->cores;
 
-    result = 0;
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
-    hypervFreeObject((hypervObject *)processorList);
-
-    return result;
+    return 0;
 }
 
 
