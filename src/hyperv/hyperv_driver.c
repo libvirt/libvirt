@@ -1101,7 +1101,7 @@ hypervDomainDefParsePhysicalDisk(hypervPrivate *priv,
 {
     int result = -1;
     Msvm_ResourceAllocationSettingData *controller = NULL;
-    Msvm_DiskDrive *diskdrive = NULL;
+    g_autoptr(Msvm_DiskDrive) diskdrive = NULL;
     virDomainDiskDefPtr disk = NULL;
     char **hostResource = entry->data->HostResource.data;
     g_autofree char *hostEscaped = NULL;
@@ -1188,7 +1188,6 @@ hypervDomainDefParsePhysicalDisk(hypervPrivate *priv,
  cleanup:
     if (result != 0 && disk)
         virDomainDiskDefFree(disk);
-    hypervFreeObject((hypervObject *)diskdrive);
 
     return result;
 }
