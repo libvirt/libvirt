@@ -1818,29 +1818,23 @@ hypervDomainReset(virDomainPtr domain, unsigned int flags)
 static int
 hypervDomainDestroyFlags(virDomainPtr domain, unsigned int flags)
 {
-    int result = -1;
-    Msvm_ComputerSystem *computerSystem = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
     bool in_transition = false;
 
     virCheckFlags(0, -1);
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
-        goto cleanup;
+        return -1;
 
     if (!hypervIsMsvmComputerSystemActive(computerSystem, &in_transition) ||
         in_transition) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Domain is not active or is in state transition"));
-        goto cleanup;
+        return -1;
     }
 
-    result = hypervInvokeMsvmComputerSystemRequestStateChange(domain,
-                                                              MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_DISABLED);
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
-
-    return result;
+    return hypervInvokeMsvmComputerSystemRequestStateChange(domain,
+                                                            MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_DISABLED);
 }
 
 
