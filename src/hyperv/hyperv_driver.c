@@ -1860,25 +1860,18 @@ hypervDomainGetMaxMemory(virDomainPtr domain)
 {
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     hypervPrivate *priv = domain->conn->privateData;
-    Msvm_VirtualSystemSettingData *vssd = NULL;
-    Msvm_MemorySettingData *mem_sd = NULL;
-    int maxMemoryBytes = 0;
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
+    g_autoptr(Msvm_MemorySettingData) mem_sd = NULL;
 
     virUUIDFormat(domain->uuid, uuid_string);
 
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
-        goto cleanup;
+        return 0;
 
     if (hypervGetMemorySD(priv, vssd->data->InstanceID, &mem_sd) < 0)
-        goto cleanup;
+        return 0;
 
-    maxMemoryBytes = mem_sd->data->Limit * 1024;
-
- cleanup:
-    hypervFreeObject((hypervObject *)vssd);
-    hypervFreeObject((hypervObject *)mem_sd);
-
-    return maxMemoryBytes;
+    return mem_sd->data->Limit * 1024;
 }
 
 
