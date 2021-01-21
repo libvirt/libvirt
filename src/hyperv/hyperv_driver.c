@@ -2023,12 +2023,11 @@ hypervDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 static int
 hypervDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 {
-    int result = -1;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     hypervPrivate *priv = domain->conn->privateData;
-    Msvm_ComputerSystem *computerSystem = NULL;
-    Msvm_ProcessorSettingData *proc_sd = NULL;
-    Msvm_VirtualSystemSettingData *vssd = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
+    g_autoptr(Msvm_ProcessorSettingData) proc_sd = NULL;
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
 
     virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
                   VIR_DOMAIN_VCPU_CONFIG |
@@ -2038,36 +2037,27 @@ hypervDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 
     /* Start by getting the Msvm_ComputerSystem */
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
-        goto cleanup;
+        return -1;
 
     /* Check @flags to see if we are to query a running domain, and fail
      * if that domain is not running */
     if (flags & VIR_DOMAIN_VCPU_LIVE &&
         computerSystem->data->EnabledState != MSVM_COMPUTERSYSTEM_ENABLEDSTATE_ENABLED) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not active"));
-        goto cleanup;
+        return -1;
     }
 
     /* Check @flags to see if we are to return the maximum vCPU limit */
-    if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
-        result = hypervConnectGetMaxVcpus(domain->conn, NULL);
-        goto cleanup;
-    }
+    if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
+        return hypervConnectGetMaxVcpus(domain->conn, NULL);
 
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervGetProcessorSD(priv, vssd->data->InstanceID, &proc_sd) < 0)
-        goto cleanup;
+        return -1;
 
-    result = proc_sd->data->VirtualQuantity;
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
-    hypervFreeObject((hypervObject *)vssd);
-    hypervFreeObject((hypervObject *)proc_sd);
-
-    return result;
+    return proc_sd->data->VirtualQuantity;
 }
 
 
