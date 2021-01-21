@@ -1169,18 +1169,17 @@ int
 hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
                                                  int requestedState)
 {
-    int result = -1;
     hypervPrivate *priv = domain->conn->privateData;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
-    WsXmlDocH response = NULL;
-    client_opt_t *options = NULL;
-    char *selector = NULL;
-    char *properties = NULL;
-    char *returnValue = NULL;
+    g_auto(WsXmlDocH) response = NULL;
+    g_autoptr(client_opt_t) options = NULL;
+    g_autofree char *selector = NULL;
+    g_autofree char *properties = NULL;
+    g_autofree char *returnValue = NULL;
     int returnCode;
-    char *instanceID = NULL;
+    g_autofree char *instanceID = NULL;
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    Msvm_ConcreteJob *concreteJob = NULL;
+    g_autoptr(Msvm_ConcreteJob) concreteJob = NULL;
     bool completed = false;
 
     virUUIDFormat(domain->uuid, uuid_string);
@@ -1193,7 +1192,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
     if (options == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not initialize options"));
-        goto cleanup;
+        return -1;
     }
 
     wsmc_add_selectors_from_str(options, selector);
@@ -1204,7 +1203,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
                                   options, "RequestStateChange", NULL);
 
     if (hypervVerifyResponse(priv->client, response, "invocation") < 0)
-        goto cleanup;
+        return -1;
 
     /* Check return value */
     returnValue = ws_xml_get_xpath_value(response, (char *)"/s:Envelope/s:Body/p:RequestStateChange_OUTPUT/p:ReturnValue");
@@ -1213,13 +1212,13 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not lookup %s for %s invocation"),
                        "ReturnValue", "RequestStateChange");
-        goto cleanup;
+        return -1;
     }
 
     if (virStrToLong_i(returnValue, NULL, 10, &returnCode) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse return code from '%s'"), returnValue);
-        goto cleanup;
+        return -1;
     }
 
     if (returnCode == CIM_RETURNCODE_TRANSITION_STARTED) {
@@ -1230,7 +1229,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Could not lookup %s for %s invocation"),
                            "InstanceID", "RequestStateChange");
-            goto cleanup;
+            return -1;
         }
 
         /* FIXME: Poll every 100ms until the job completes or fails. There
@@ -1241,13 +1240,13 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
                               "WHERE InstanceID = '%s'", instanceID);
 
             if (hypervGetWmiClass(Msvm_ConcreteJob, &concreteJob) < 0)
-                goto cleanup;
+                return -1;
 
             if (concreteJob == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Could not lookup %s for %s invocation"),
                                "Msvm_ConcreteJob", "RequestStateChange");
-                goto cleanup;
+                return -1;
             }
 
             switch (concreteJob->data->JobState) {
@@ -1272,13 +1271,13 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Concrete job for %s invocation is in error state"),
                                "RequestStateChange");
-                goto cleanup;
+                return -1;
 
             default:
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Concrete job for %s invocation is in unknown state"),
                                "RequestStateChange");
-                goto cleanup;
+                return -1;
             }
         }
     } else if (returnCode != CIM_RETURNCODE_COMPLETED_WITH_NO_ERROR) {
@@ -1286,23 +1285,10 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
                        _("Invocation of %s returned an error: %s (%d)"),
                        "RequestStateChange", hypervReturnCodeToString(returnCode),
                        returnCode);
-        goto cleanup;
+        return -1;
     }
 
-    result = 0;
-
- cleanup:
-    if (options != NULL)
-        wsmc_options_destroy(options);
-
-    ws_xml_destroy_doc(response);
-    VIR_FREE(selector);
-    VIR_FREE(properties);
-    VIR_FREE(returnValue);
-    VIR_FREE(instanceID);
-    hypervFreeObject((hypervObject *)concreteJob);
-
-    return result;
+    return 0;
 }
 
 
