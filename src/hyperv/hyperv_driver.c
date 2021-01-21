@@ -1638,26 +1638,20 @@ hypervConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 static int
 hypervConnectNumOfDomains(virConnectPtr conn)
 {
-    bool success = false;
     hypervPrivate *priv = conn->privateData;
-    Msvm_ComputerSystem *computerSystemList = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystemList = NULL;
     Msvm_ComputerSystem *computerSystem = NULL;
     int count = 0;
 
     if (hypervGetActiveVirtualSystemList(priv, &computerSystemList) < 0)
-        goto cleanup;
+        return -1;
 
     for (computerSystem = computerSystemList; computerSystem != NULL;
          computerSystem = computerSystem->next) {
         ++count;
     }
 
-    success = true;
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystemList);
-
-    return success ? count : -1;
+    return count;
 }
 
 
