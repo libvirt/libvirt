@@ -2991,15 +2991,14 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
                     unsigned int holdtime, unsigned int *keycodes, int nkeycodes,
                     unsigned int flags)
 {
-    int result = -1;
     size_t i = 0;
     int keycode = 0;
-    int *translatedKeycodes = NULL;
+    g_autofree int *translatedKeycodes = NULL;
     hypervPrivate *priv = domain->conn->privateData;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
-    char *selector = NULL;
-    Msvm_ComputerSystem *computerSystem = NULL;
-    Msvm_Keyboard *keyboard = NULL;
+    g_autofree char *selector = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
+    g_autoptr(Msvm_Keyboard) keyboard = NULL;
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     g_autoptr(hypervInvokeParamsList) params = NULL;
     char keycodeStr[VIR_INT64_STR_BUFLEN];
@@ -3009,7 +3008,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
     virUUIDFormat(domain->uuid, uuid_string);
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
-        goto cleanup;
+        return -1;
 
     virBufferEscapeSQL(&query,
                        "ASSOCIATORS OF {Msvm_ComputerSystem.CreationClassName='Msvm_ComputerSystem',Name='%s'} "
@@ -3017,7 +3016,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
                        uuid_string);
 
     if (hypervGetWmiClass(Msvm_Keyboard, &keyboard) < 0)
-        goto cleanup;
+        return -1;
 
     translatedKeycodes = g_new0(int, nkeycodes);
 
@@ -3031,7 +3030,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
             if (keycode < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Could not translate keycode"));
-                goto cleanup;
+                return -1;
             }
             translatedKeycodes[i] = keycode;
         }
@@ -3049,13 +3048,13 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
                                               Msvm_Keyboard_WmiInfo);
 
         if (!params)
-            goto cleanup;
+            return -1;
 
         if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0)
-            goto cleanup;
+            return -1;
 
         if (hypervInvokeMethod(priv, &params, NULL) < 0)
-            goto cleanup;
+            return -1;
     }
 
     /* simulate holdtime by sleeping */
@@ -3069,23 +3068,16 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
                                               Msvm_Keyboard_WmiInfo);
 
         if (!params)
-            goto cleanup;
+            return -1;
 
         if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0)
-            goto cleanup;
+            return -1;
 
         if (hypervInvokeMethod(priv, &params, NULL) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    result = 0;
-
- cleanup:
-    VIR_FREE(translatedKeycodes);
-    VIR_FREE(selector);
-    hypervFreeObject((hypervObject *)keyboard);
-    hypervFreeObject((hypervObject *)computerSystem);
-    return result;
+    return 0;
 }
 
 
