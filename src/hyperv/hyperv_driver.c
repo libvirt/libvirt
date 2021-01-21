@@ -533,14 +533,13 @@ hypervDomainAttachPhysicalDisk(virDomainPtr domain,
                                Msvm_ResourceAllocationSettingData *controller,
                                const char *hostname)
 {
-    int result = -1;
     hypervPrivate *priv = domain->conn->privateData;
     g_autofree char *hostResource = NULL;
     g_autofree char *controller__PATH = NULL;
     g_auto(GStrv) matches = NULL;
     ssize_t found = 0;
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    Msvm_ResourceAllocationSettingData *diskdefault = NULL;
+    g_autoptr(Msvm_ResourceAllocationSettingData) diskdefault = NULL;
     g_autofree char *controllerInstanceIdEscaped = NULL;
     g_autoptr(GHashTable) diskResource = NULL;
     g_autofree char *addressString = g_strdup_printf("%u", disk->info.addr.drive.unit);
@@ -584,7 +583,7 @@ hypervDomainAttachPhysicalDisk(virDomainPtr domain,
     if (found < 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not get Msvm_DiskDrive default InstanceID"));
-        goto cleanup;
+        return -1;
     }
 
     hostResource = g_strdup_printf("\\\\%s\\Root\\Virtualization\\V2:"
@@ -604,35 +603,30 @@ hypervDomainAttachPhysicalDisk(virDomainPtr domain,
                                        "Msvm_ResourceAllocationSettingData.InstanceID=\"%s\"",
                                        hostname, controllerInstanceIdEscaped);
     if (!controller__PATH)
-        goto cleanup;
+        return -1;
 
     if (hypervSetEmbeddedProperty(diskResource, "Parent", controller__PATH) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervSetEmbeddedProperty(diskResource, "AddressOnParent", addressString) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervSetEmbeddedProperty(diskResource, "ResourceType", resourceType) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervSetEmbeddedProperty(diskResource, "ResourceSubType",
                                   "Microsoft:Hyper-V:Physical Disk Drive") < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervSetEmbeddedProperty(diskResource, "HostResource", hostResource) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervMsvmVSMSAddResourceSettings(domain, &diskResource,
                                           Msvm_ResourceAllocationSettingData_WmiInfo,
                                           NULL) < 0)
-        goto cleanup;
+        return -1;
 
-    result = 0;
-
- cleanup:
-    hypervFreeObject((hypervObject *)diskdefault);
-
-    return result;
+    return 0;
 }
 
 
