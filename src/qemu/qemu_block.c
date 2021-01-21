@@ -25,6 +25,7 @@
 #include "qemu_security.h"
 
 #include "viralloc.h"
+#include "virstoragefile.h"
 #include "virstring.h"
 #include "virlog.h"
 

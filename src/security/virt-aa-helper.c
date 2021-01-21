@@ -46,6 +46,7 @@
 #include "virfile.h"
 #include "configmake.h"
 #include "virrandom.h"
+#include "virstoragefile.h"
 #include "virstring.h"
 #include "virgettext.h"
 #include "virhostdev.h"

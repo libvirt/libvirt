@@ -38,6 +38,7 @@
 #include "locking/domain_lock.h"
 #include "libvirt_internal.h"
 #include "virxml.h"
+#include "virstoragefile.h"
 #include "virstring.h"
 #include "virdomainsnapshotobjlist.h"
 #include "virqemu.h"

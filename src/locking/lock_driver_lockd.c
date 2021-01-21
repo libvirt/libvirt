@@ -33,6 +33,7 @@
 #include "rpc/virnetclient.h"
 #include "lock_protocol.h"
 #include "configmake.h"
+#include "virstoragefile.h"
 #include "virstring.h"
 #include "virutil.h"
 
