@@ -1978,11 +1978,10 @@ hypervDomainSetVcpusFlags(virDomainPtr domain,
                           unsigned int nvcpus,
                           unsigned int flags)
 {
-    int result = -1;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     hypervPrivate *priv = domain->conn->privateData;
-    Msvm_VirtualSystemSettingData *vssd = NULL;
-    Msvm_ProcessorSettingData *proc_sd = NULL;
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
+    g_autoptr(Msvm_ProcessorSettingData) proc_sd = NULL;
     g_autoptr(GHashTable) vcpuResource = NULL;
     g_autofree char *nvcpus_str = g_strdup_printf("%u", nvcpus);
 
@@ -1991,32 +1990,26 @@ hypervDomainSetVcpusFlags(virDomainPtr domain,
     virUUIDFormat(domain->uuid, uuid_string);
 
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervGetProcessorSD(priv, vssd->data->InstanceID, &proc_sd) < 0)
-        goto cleanup;
+        return -1;
 
     vcpuResource = hypervCreateEmbeddedParam(Msvm_ProcessorSettingData_WmiInfo);
     if (!vcpuResource)
-        goto cleanup;
+        return -1;
 
     if (hypervSetEmbeddedProperty(vcpuResource, "VirtualQuantity", nvcpus_str) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervSetEmbeddedProperty(vcpuResource, "InstanceID", proc_sd->data->InstanceID) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervMsvmVSMSModifyResourceSettings(priv, &vcpuResource,
                                              Msvm_ProcessorSettingData_WmiInfo) < 0)
-        goto cleanup;
+        return -1;
 
-    result = 0;
-
- cleanup:
-    hypervFreeObject((hypervObject *)vssd);
-    hypervFreeObject((hypervObject *)proc_sd);
-
-    return result;
+    return 0;
 }
 
 
