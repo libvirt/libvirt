@@ -455,23 +455,21 @@ static int
 hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
                         const char *resourceUri, WsXmlNodeH *methodNode)
 {
-    int result = -1;
     WsXmlNodeH xmlNodeParam = NULL,
                xmlNodeTemp = NULL,
                xmlNodeAddr = NULL,
                xmlNodeRef = NULL;
-    WsXmlDocH xmlDocResponse = NULL;
-    WsXmlNsH ns = NULL;
-    client_opt_t *options = NULL;
-    filter_t *filter = NULL;
-    char *enumContext = NULL;
-    char *query_string = NULL;
+    g_auto(WsXmlDocH) xmlDocResponse = NULL;
+    g_autoptr(client_opt_t) options = NULL;
+    g_autoptr(filter_t) filter = NULL;
+    g_autofree char *enumContext = NULL;
+    g_autofree char *query_string = NULL;
 
     /* init and set up options */
     options = wsmc_options_init();
     if (!options) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not init options"));
-        goto cleanup;
+        return -1;
     }
     wsmc_set_action_option(options, FLAG_ENUMERATION_ENUM_EPR);
 
@@ -480,14 +478,14 @@ hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
     filter = filter_create_simple(WSM_WQL_FILTER_DIALECT, query_string);
     if (!filter) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not create WQL filter"));
-        goto cleanup;
+        return -1;
     }
 
     /* enumerate based on the filter from this query */
     xmlDocResponse = wsmc_action_enumerate(priv->client, p->epr.info->rootUri,
                                            options, filter);
     if (hypervVerifyResponse(priv->client, xmlDocResponse, "enumeration") < 0)
-        goto cleanup;
+        return -1;
 
     /* Get context */
     enumContext = wsmc_get_enum_context(xmlDocResponse);
@@ -498,41 +496,41 @@ hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
                                       filter, enumContext);
 
     if (hypervVerifyResponse(priv->client, xmlDocResponse, "pull") < 0)
-        goto cleanup;
+        return -1;
 
     /* drill down and extract EPR node children */
     if (!(xmlNodeTemp = ws_xml_get_soap_body(xmlDocResponse))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not get SOAP body"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(xmlNodeTemp = ws_xml_get_child(xmlNodeTemp, 0, XML_NS_ENUMERATION,
                                          WSENUM_PULL_RESP))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not get response"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(xmlNodeTemp = ws_xml_get_child(xmlNodeTemp, 0, XML_NS_ENUMERATION, WSENUM_ITEMS))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not get response items"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(xmlNodeTemp = ws_xml_get_child(xmlNodeTemp, 0, XML_NS_ADDRESSING, WSA_EPR))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not get EPR items"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(xmlNodeAddr = ws_xml_get_child(xmlNodeTemp, 0, XML_NS_ADDRESSING,
                                          WSA_ADDRESS))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not get EPR address"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(xmlNodeRef = ws_xml_get_child(xmlNodeTemp, 0, XML_NS_ADDRESSING,
                                         WSA_REFERENCE_PARAMETERS))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not lookup EPR item reference parameters"));
-        goto cleanup;
+        return -1;
     }
 
     /* now build a new xml doc with the EPR node children */
@@ -540,38 +538,26 @@ hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
                                           p->epr.name, NULL))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not add child node to methodNode"));
-        goto cleanup;
+        return -1;
     }
 
-    if (!(ns = ws_xml_ns_add(xmlNodeParam,
-                             "http://schemas.xmlsoap.org/ws/2004/08/addressing", "a"))) {
+    if (!ws_xml_ns_add(xmlNodeParam, "http://schemas.xmlsoap.org/ws/2004/08/addressing", "a")) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not set namespace address for xmlNodeParam"));
-        goto cleanup;
+        return -1;
     }
 
-    if (!(ns = ws_xml_ns_add(xmlNodeParam,
-                             "http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd", "w"))) {
+    if (!ws_xml_ns_add(xmlNodeParam, "http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd", "w")) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not set wsman namespace address for xmlNodeParam"));
-        goto cleanup;
+        return -1;
     }
 
     ws_xml_duplicate_tree(xmlNodeParam, xmlNodeAddr);
     ws_xml_duplicate_tree(xmlNodeParam, xmlNodeRef);
 
     /* we did it! */
-    result = 0;
-
- cleanup:
-    if (options != NULL)
-        wsmc_options_destroy(options);
-    if (filter != NULL)
-        filter_destroy(filter);
-    ws_xml_destroy_doc(xmlDocResponse);
-    VIR_FREE(enumContext);
-    VIR_FREE(query_string);
-    return result;
+    return 0;
 }
 
 
