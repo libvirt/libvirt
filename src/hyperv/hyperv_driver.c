@@ -237,25 +237,20 @@ hypervParseVersionString(const char *str, unsigned int *major,
 static int
 hypervLookupHostSystemBiosUuid(hypervPrivate *priv, unsigned char *uuid)
 {
-    Win32_ComputerSystemProduct *computerSystem = NULL;
+    g_autoptr(Win32_ComputerSystemProduct) computerSystem = NULL;
     g_auto(virBuffer) query = { g_string_new(WIN32_COMPUTERSYSTEMPRODUCT_WQL_SELECT), 0 };
-    int result = -1;
 
     if (hypervGetWmiClass(Win32_ComputerSystemProduct, &computerSystem) < 0)
-        goto cleanup;
+        return -1;
 
     if (virUUIDParse(computerSystem->data->UUID, uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse UUID from string '%s'"),
                        computerSystem->data->UUID);
-        goto cleanup;
+        return -1;
     }
-    result = 0;
 
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
-
-    return result;
+    return 0;
 }
 
 
