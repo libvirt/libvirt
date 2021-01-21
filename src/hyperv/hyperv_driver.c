@@ -496,9 +496,8 @@ hypervDomainAttachVirtualDisk(virDomainPtr domain,
                               Msvm_ResourceAllocationSettingData *controller,
                               const char *hostname)
 {
-    int result = -1;
     g_autofree char *parentInstanceID = NULL;
-    WsXmlDocH response = NULL;
+    g_auto(WsXmlDocH) response = NULL;
 
     VIR_DEBUG("Now attaching disk image '%s' with address %d to bus %d of type %d",
               disk->src->path, disk->info.addr.drive.unit, disk->info.addr.drive.controller, disk->bus);
@@ -513,17 +512,12 @@ hypervDomainAttachVirtualDisk(virDomainPtr domain,
 
     parentInstanceID = hypervGetInstanceIDFromXMLResponse(response);
     if (!parentInstanceID)
-        goto cleanup;
+        return -1;
 
     if (hypervDomainAddVirtualHardDisk(domain, disk, hostname, parentInstanceID) < 0)
-        goto cleanup;
+        return -1;
 
-    result = 0;
-
- cleanup:
-    ws_xml_destroy_doc(response);
-
-    return result;
+    return 0;
 }
 
 
