@@ -1913,13 +1913,12 @@ hypervDomainSetMemory(virDomainPtr domain, unsigned long memory)
 static int
 hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
-    int result = -1;
     hypervPrivate *priv = domain->conn->privateData;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
-    Msvm_ComputerSystem *computerSystem = NULL;
-    Msvm_VirtualSystemSettingData *virtualSystemSettingData = NULL;
-    Msvm_ProcessorSettingData *processorSettingData = NULL;
-    Msvm_MemorySettingData *memorySettingData = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
+    g_autoptr(Msvm_VirtualSystemSettingData) virtualSystemSettingData = NULL;
+    g_autoptr(Msvm_ProcessorSettingData) processorSettingData = NULL;
+    g_autoptr(Msvm_MemorySettingData) memorySettingData = NULL;
 
     memset(info, 0, sizeof(*info));
 
@@ -1927,21 +1926,21 @@ hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
     /* Get Msvm_ComputerSystem */
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string,
                                                       &virtualSystemSettingData) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervGetProcessorSD(priv,
                              virtualSystemSettingData->data->InstanceID,
                              &processorSettingData) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervGetMemorySD(priv,
                           virtualSystemSettingData->data->InstanceID,
                           &memorySettingData) < 0)
-        goto cleanup;
+        return -1;
 
     /* Fill struct */
     info->state = hypervMsvmComputerSystemEnabledStateToDomainState(computerSystem);
@@ -1950,15 +1949,7 @@ hypervDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     info->nrVirtCpu = processorSettingData->data->VirtualQuantity;
     info->cpuTime = 0;
 
-    result = 0;
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
-    hypervFreeObject((hypervObject *)virtualSystemSettingData);
-    hypervFreeObject((hypervObject *)processorSettingData);
-    hypervFreeObject((hypervObject *)memorySettingData);
-
-    return result;
+    return 0;
 }
 
 
