@@ -30,7 +30,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "checkpoint_conf.h"
-#include "virstoragefile.h"
+#include "storage_source_conf.h"
 #include "viruuid.h"
 #include "virfile.h"
 #include "virerror.h"

@@ -43,7 +43,7 @@
 #include "nwfilter_conf.h"
 #include "virnetworkportdef.h"
 #include "storage_conf.h"
-#include "virstoragefile.h"
+#include "storage_source_conf.h"
 #include "virfile.h"
 #include "virbitmap.h"
 #include "secret_conf.h"

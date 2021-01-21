@@ -30,12 +30,12 @@
 #include "qemu_command.h"
 
 #include "storage_source.h"
+#include "storage_source_conf.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virxml.h"
-#include "virstoragefile.h"
 #include "virstring.h"
 #include "backup_conf.h"
 #include "virdomaincheckpointobjlist.h"

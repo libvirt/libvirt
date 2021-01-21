@@ -43,6 +43,7 @@
 @SRCDIR@src/conf/snapshot_conf.c
 @SRCDIR@src/conf/storage_adapter_conf.c
 @SRCDIR@src/conf/storage_conf.c
+@SRCDIR@src/conf/storage_source_conf.c
 @SRCDIR@src/conf/virchrdev.c
 @SRCDIR@src/conf/virdomainmomentobjlist.c
 @SRCDIR@src/conf/virdomainobjlist.c

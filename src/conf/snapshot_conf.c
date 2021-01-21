@@ -38,7 +38,7 @@
 #include "nwfilter_conf.h"
 #include "secret_conf.h"
 #include "snapshot_conf.h"
-#include "virstoragefile.h"
+#include "storage_source_conf.h"
 #include "viruuid.h"
 #include "virfile.h"
 #include "virerror.h"

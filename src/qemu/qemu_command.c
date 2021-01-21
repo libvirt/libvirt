@@ -53,7 +53,7 @@
 #include "virnetdevtap.h"
 #include "virnetdevopenvswitch.h"
 #include "device_conf.h"
-#include "virstoragefile.h"
+#include "storage_source_conf.h"
 #include "virtpm.h"
 #include "virscsi.h"
 #include "virnuma.h"

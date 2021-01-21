@@ -27,12 +27,12 @@
 
 #include "internal.h"
 #include "storage_file_probe.h"
+#include "storage_source_conf.h"
 #include "viralloc.h"
 #include "virbitmap.h"
 #include "virendian.h"
 #include "virfile.h"
 #include "virlog.h"
-#include "virstoragefile.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

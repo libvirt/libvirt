@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "virstoragefile.h"
+#include "storage_source_conf.h"
 
 #ifndef DEV_BSIZE
 # define DEV_BSIZE 512

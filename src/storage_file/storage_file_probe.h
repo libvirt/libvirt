@@ -23,7 +23,7 @@
 
 #include <sys/stat.h>
 
-#include "virstoragefile.h"
+#include "storage_source_conf.h"
 
 /* Minimum header size required to probe all known formats with
  * virStorageFileProbeFormat, or obtain metadata from a known format.

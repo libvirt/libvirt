@@ -32,8 +32,8 @@
 #include "conf/domain_conf.h"
 #include "conf/domain_event.h"
 
+#include "storage_source_conf.h"
 #include "virlog.h"
-#include "virstoragefile.h"
 #include "virthread.h"
 #include "virtime.h"
 #include "locking/domain_lock.h"
