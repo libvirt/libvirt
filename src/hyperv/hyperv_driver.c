@@ -839,14 +839,13 @@ hypervDomainAttachStorageVolume(virDomainPtr domain,
 static int
 hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def, const char *hostname)
 {
-    int result = -1;
     hypervPrivate *priv = domain->conn->privateData;
     size_t i = 0;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     int num_scsi_controllers = 0;
     int ctrlr_idx = -1;
-    Msvm_VirtualSystemSettingData *vssd = NULL;
-    Msvm_ResourceAllocationSettingData *rasd = NULL;
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
+    g_autoptr(Msvm_ResourceAllocationSettingData) rasd = NULL;
     Msvm_ResourceAllocationSettingData *entry = NULL;
     Msvm_ResourceAllocationSettingData *ideChannels[HYPERV_MAX_IDE_CHANNELS];
     Msvm_ResourceAllocationSettingData *scsiControllers[HYPERV_MAX_SCSI_CONTROLLERS];
@@ -865,10 +864,10 @@ hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def, const char *
 
     /* filter through all the rasd entries and isolate our controllers */
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervGetResourceAllocationSD(priv, vssd->data->InstanceID, &rasd) < 0)
-        goto cleanup;
+        return -1;
 
     entry = rasd;
     while (entry) {
@@ -889,33 +888,27 @@ hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def, const char *
             ctrlr_idx = def->disks[i]->info.addr.drive.bus;
             if (hypervDomainAttachStorageVolume(domain, def->disks[i],
                                                 ideChannels[ctrlr_idx], hostname) < 0) {
-                goto cleanup;
+                return -1;
             }
             break;
         case VIR_DOMAIN_DISK_BUS_SCSI:
             ctrlr_idx = def->disks[i]->info.addr.drive.controller;
             if (hypervDomainAttachStorageVolume(domain, def->disks[i],
                                                 scsiControllers[ctrlr_idx], hostname) < 0) {
-                goto cleanup;
+                return -1;
             }
             break;
         case VIR_DOMAIN_DISK_BUS_FDC:
             if (hypervDomainAttachFloppy(domain, def->disks[i], floppySettings, hostname) < 0)
-                goto cleanup;
+                return -1;
             break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Unsupported controller type"));
-            goto cleanup;
+            return -1;
         }
     }
 
-    result = 0;
-
- cleanup:
-    hypervFreeObject((hypervObject *)rasd);
-    hypervFreeObject((hypervObject *)vssd);
-
-    return result;
+    return 0;
 }
 
 
