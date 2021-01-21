@@ -197,23 +197,17 @@ hypervGetOperatingSystem(hypervPrivate *priv, Win32_OperatingSystem **operatingS
 static int
 hypervRequestStateChange(virDomainPtr domain, int state)
 {
-    int result = -1;
-    Msvm_ComputerSystem *computerSystem = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
-        goto cleanup;
+        return -1;
 
     if (computerSystem->data->EnabledState != MSVM_COMPUTERSYSTEM_ENABLEDSTATE_ENABLED) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s", _("Domain is not active"));
-        goto cleanup;
+        return -1;
     }
 
-    result = hypervInvokeMsvmComputerSystemRequestStateChange(domain, state);
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
-
-    return result;
+    return hypervInvokeMsvmComputerSystemRequestStateChange(domain, state);
 }
 
 
