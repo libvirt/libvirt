@@ -2590,47 +2590,41 @@ hypervDomainGetAutostart(virDomainPtr domain, int *autostart)
 static int
 hypervDomainSetAutostart(virDomainPtr domain, int autostart)
 {
-    int result = -1;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     hypervPrivate *priv = domain->conn->privateData;
-    Msvm_VirtualSystemSettingData *vssd = NULL;
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
     g_autoptr(hypervInvokeParamsList) params = NULL;
     g_autoptr(GHashTable) autostartParam = NULL;
 
     virUUIDFormat(domain->uuid, uuid_string);
 
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
-        goto cleanup;
+        return -1;
 
     params = hypervCreateInvokeParamsList("ModifySystemSettings",
                                           MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
                                           Msvm_VirtualSystemManagementService_WmiInfo);
 
     if (!params)
-        goto cleanup;
+        return -1;
 
     autostartParam = hypervCreateEmbeddedParam(Msvm_VirtualSystemSettingData_WmiInfo);
 
     if (hypervSetEmbeddedProperty(autostartParam, "AutomaticStartupAction",
                                   autostart ? "4" : "2") < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervSetEmbeddedProperty(autostartParam, "InstanceID", vssd->data->InstanceID) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervAddEmbeddedParam(params, "SystemSettings",
                                &autostartParam, Msvm_VirtualSystemSettingData_WmiInfo) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervInvokeMethod(priv, &params, NULL) < 0)
-        goto cleanup;
+        return -1;
 
-    result = 0;
-
- cleanup:
-    hypervFreeObject((hypervObject *)vssd);
-
-    return result;
+    return 0;
 }
 
 
