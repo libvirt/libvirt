@@ -1671,17 +1671,14 @@ hypervDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virDomainPtr domain = NULL;
     hypervPrivate *priv = conn->privateData;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
-    Msvm_ComputerSystem *computerSystem = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
 
     virUUIDFormat(uuid, uuid_string);
 
     if (hypervMsvmComputerSystemFromUUID(priv, uuid_string, &computerSystem) < 0)
-        goto cleanup;
+        return NULL;
 
     hypervMsvmComputerSystemToDomain(conn, computerSystem, &domain);
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
 
     return domain;
 }
