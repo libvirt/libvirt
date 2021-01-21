@@ -2843,27 +2843,21 @@ hypervDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
 static int
 hypervDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
 {
-    int result = -1;
-    Msvm_ComputerSystem *computerSystem = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
 
     virCheckFlags(0, -1);
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
-        goto cleanup;
+        return -1;
 
     if (computerSystem->data->EnabledState != MSVM_COMPUTERSYSTEM_ENABLEDSTATE_SUSPENDED) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Domain has no managed save image"));
-        goto cleanup;
+        return -1;
     }
 
-    result = hypervInvokeMsvmComputerSystemRequestStateChange(domain,
-                                                              MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_DISABLED);
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
-
-    return result;
+    return hypervInvokeMsvmComputerSystemRequestStateChange(domain,
+                                                            MSVM_COMPUTERSYSTEM_REQUESTEDSTATE_DISABLED);
 }
 
 
