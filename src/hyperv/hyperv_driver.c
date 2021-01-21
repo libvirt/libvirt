@@ -183,6 +183,18 @@ hypervGetVirtualSystemByName(hypervPrivate *priv, const char *name,
 
 
 static int
+hypervGetOperatingSystem(hypervPrivate *priv, Win32_OperatingSystem **operatingSystem)
+{
+    g_auto(virBuffer) query = { g_string_new(WIN32_OPERATINGSYSTEM_WQL_SELECT), 0 };
+
+    if (hypervGetWmiClass(Win32_OperatingSystem, operatingSystem) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 hypervRequestStateChange(virDomainPtr domain, int state)
 {
     int result = -1;
@@ -1300,6 +1312,9 @@ hypervFreePrivate(hypervPrivate **priv)
     if ((*priv)->xmlopt)
         virObjectUnref((*priv)->xmlopt);
 
+    if ((*priv)->version)
+        g_free((*priv)->version);
+
     hypervFreeParsedUri(&(*priv)->parsedUri);
     VIR_FREE(*priv);
 }
@@ -1343,6 +1358,7 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     hypervPrivate *priv = NULL;
     g_autofree char *username = NULL;
     g_autofree char *password = NULL;
+    Win32_OperatingSystem *os = NULL;
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -1389,11 +1405,24 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     /* init xmlopt for domain XML */
     priv->xmlopt = virDomainXMLOptionNew(&hypervDomainDefParserConfig, NULL, NULL, NULL, NULL);
 
+    if (hypervGetOperatingSystem(priv, &os) < 0)
+        goto cleanup;
+
+    if (!os) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get version information for host %s"),
+                       conn->uri->server);
+        goto cleanup;
+    }
+
+    priv->version = g_strdup(os->data->Version);
+
     conn->privateData = priv;
     priv = NULL;
     result = VIR_DRV_OPEN_SUCCESS;
 
  cleanup:
+    hypervFreeObject(priv ? priv : conn->privateData, (hypervObject *)os);
     hypervFreePrivate(&priv);
 
     return result;
@@ -1423,27 +1452,14 @@ hypervConnectGetType(virConnectPtr conn G_GNUC_UNUSED)
 static int
 hypervConnectGetVersion(virConnectPtr conn, unsigned long *version)
 {
-    int result = -1;
     hypervPrivate *priv = conn->privateData;
-    Win32_OperatingSystem *os = NULL;
-    g_auto(virBuffer) query = { g_string_new(WIN32_OPERATINGSYSTEM_WQL_SELECT), 0 };
     unsigned int major, minor, micro;
 
-    if (hypervGetWmiClass(Win32_OperatingSystem, &os) < 0)
-        goto cleanup;
-
-    if (!os) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get version information for host %s"),
-                       conn->uri->server);
-        goto cleanup;
-    }
-
-    if (hypervParseVersionString(os->data->Version, &major, &minor, &micro) < 0) {
+    if (hypervParseVersionString(priv->version, &major, &minor, &micro) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse version from '%s'"),
-                       os->data->Version);
-        goto cleanup;
+                       priv->version);
+        return -1;
     }
 
     /*
@@ -1466,18 +1482,13 @@ hypervConnectGetVersion(virConnectPtr conn, unsigned long *version)
     if (major > 99 || minor > 99 || micro > 999999) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not produce packed version number from '%s'"),
-                       os->data->Version);
-        goto cleanup;
+                       priv->version);
+        return -1;
     }
 
     *version = major * 100000000 + minor * 1000000 + micro;
 
-    result = 0;
-
- cleanup:
-    hypervFreeObject(priv, (hypervObject *)os);
-
-    return result;
+    return 0;
 }
 
 
@@ -2865,9 +2876,8 @@ hypervNodeGetFreeMemory(virConnectPtr conn)
     unsigned long long freeMemoryBytes = 0;
     hypervPrivate *priv = conn->privateData;
     Win32_OperatingSystem *operatingSystem = NULL;
-    g_auto(virBuffer) query = { g_string_new(WIN32_OPERATINGSYSTEM_WQL_SELECT), 0 };
 
-    if (hypervGetWmiClass(Win32_OperatingSystem, &operatingSystem) < 0)
+    if (hypervGetOperatingSystem(priv, &operatingSystem) < 0)
         return 0;
 
     if (!operatingSystem) {
