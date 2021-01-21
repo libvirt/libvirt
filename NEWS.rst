@@ -13,6 +13,11 @@ v7.1.0 (unreleased)
 
 * **New features**
 
+  * Introduce virtio-pmem ``<memory/>`` model
+
+    The virtio-pmem is a virtio variant of NVDIMM and just like NVDIMM
+    virtio-pmem also allows accessing host pages bypassing guest page cache.
+
 * **Improvements**
 
 * **Bug fixes**
