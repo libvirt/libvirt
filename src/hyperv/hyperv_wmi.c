@@ -565,17 +565,16 @@ static int
 hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
                              WsXmlNodeH *methodNode)
 {
-    int result = -1;
     WsXmlNodeH xmlNodeInstance = NULL,
                xmlNodeProperty = NULL,
                xmlNodeParam = NULL,
                xmlNodeArray = NULL;
-    WsXmlDocH xmlDocTemp = NULL,
-              xmlDocCdata = NULL;
-    char *cdataContent = NULL;
+    g_auto(WsXmlDocH) xmlDocTemp = NULL;
+    g_auto(WsXmlDocH) xmlDocCdata = NULL;
+    g_autofree char *cdataContent = NULL;
     xmlNodePtr xmlNodeCdata = NULL;
     hypervWmiClassInfoPtr classInfo = p->embedded.info;
-    virHashKeyValuePairPtr items = NULL;
+    g_autofree virHashKeyValuePairPtr items = NULL;
     hypervCimTypePtr property = NULL;
     ssize_t numKeys = -1;
     int len = 0, i = 0;
@@ -584,7 +583,7 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
                                           NULL))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not add child node %s"),
                        p->embedded.name);
-        goto cleanup;
+        return -1;
     }
 
     /* create the temp xml doc */
@@ -593,13 +592,13 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
     if (!(xmlDocTemp = ws_xml_create_doc(NULL, "INSTANCE"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not create temporary xml doc"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(xmlNodeInstance = xml_parser_get_root(xmlDocTemp))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not get temp xml doc root"));
-        goto cleanup;
+        return -1;
     }
 
     /* add CLASSNAME node to INSTANCE node */
@@ -607,7 +606,7 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
                                classInfo->name))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not add attribute to node"));
-        goto cleanup;
+        return -1;
     }
 
     /* retrieve parameters out of hash table */
@@ -616,7 +615,7 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
     if (!items) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not read embedded param hash table"));
-        goto cleanup;
+        return -1;
     }
 
     /* Add the parameters */
@@ -629,7 +628,7 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
                                      &property) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Could not read type information"));
-                goto cleanup;
+                return -1;
             }
 
             if (!(xmlNodeProperty = ws_xml_add_child(xmlNodeInstance, NULL,
@@ -637,19 +636,19 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
                                                      NULL))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Could not add child to XML node"));
-                goto cleanup;
+                return -1;
             }
 
             if (!(ws_xml_add_node_attr(xmlNodeProperty, NULL, "NAME", name))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Could not add attribute to XML node"));
-                goto cleanup;
+                return -1;
             }
 
             if (!(ws_xml_add_node_attr(xmlNodeProperty, NULL, "TYPE", property->type))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Could not add attribute to XML node"));
-                goto cleanup;
+                return -1;
             }
 
             /* If this attribute is an array, add VALUE.ARRAY node */
@@ -658,7 +657,7 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
                                                       "VALUE.ARRAY", NULL))) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("Could not add child to XML node"));
-                    goto cleanup;
+                    return -1;
                 }
             }
 
@@ -667,7 +666,7 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
                                    NULL, "VALUE", value))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Could not add child to XML node"));
-                goto cleanup;
+                return -1;
             }
 
             xmlNodeArray = NULL;
@@ -682,7 +681,7 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
                                           (xmlChar *)cdataContent, len))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not create CDATA element"));
-        goto cleanup;
+        return -1;
     }
 
     /*
@@ -694,18 +693,11 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
     if (!(xmlAddChild((xmlNodePtr)(void *)xmlNodeParam, xmlNodeCdata))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not add CDATA to doc root"));
-        goto cleanup;
+        return -1;
     }
 
     /* we did it! */
-    result = 0;
-
- cleanup:
-    VIR_FREE(items);
-    ws_xml_destroy_doc(xmlDocCdata);
-    ws_xml_destroy_doc(xmlDocTemp);
-    ws_xml_free_memory(cdataContent);
-    return result;
+    return 0;
 }
 
 
