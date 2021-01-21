@@ -1736,10 +1736,9 @@ hypervDomainResume(virDomainPtr domain)
 static int
 hypervDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
 {
-    int result = -1;
     hypervPrivate *priv = domain->conn->privateData;
-    Msvm_ComputerSystem *computerSystem = NULL;
-    Msvm_ShutdownComponent *shutdown = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
+    g_autoptr(Msvm_ShutdownComponent) shutdown = NULL;
     bool in_transition = false;
     char uuid[VIR_UUID_STRING_BUFLEN];
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
@@ -1751,13 +1750,13 @@ hypervDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
     virUUIDFormat(domain->uuid, uuid);
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
-        goto cleanup;
+        return -1;
 
     if (!hypervIsMsvmComputerSystemActive(computerSystem, &in_transition) ||
         in_transition) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Domain is not active or in state transition"));
-        goto cleanup;
+        return -1;
     }
 
     virBufferEscapeSQL(&query, MSVM_SHUTDOWNCOMPONENT_WQL_SELECT "WHERE SystemName = '%s'", uuid);
@@ -1767,7 +1766,7 @@ hypervDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Could not get Msvm_ShutdownComponent for domain with UUID '%s'"),
                        uuid);
-        goto cleanup;
+        return -1;
     }
 
     selector = g_strdup_printf("CreationClassName=\"Msvm_ShutdownComponent\"&DeviceID=\"%s\"&"
@@ -1777,7 +1776,7 @@ hypervDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
     params = hypervCreateInvokeParamsList("InitiateShutdown", selector,
                                           Msvm_ShutdownComponent_WmiInfo);
     if (!params)
-        goto cleanup;
+        return -1;
 
     hypervAddSimpleParam(params, "Force", "False");
 
@@ -1787,15 +1786,9 @@ hypervDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
     hypervAddSimpleParam(params, "Reason", "Planned shutdown via libvirt");
 
     if (hypervInvokeMethod(priv, &params, NULL) < 0)
-        goto cleanup;
+        return -1;
 
-    result = 0;
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
-    hypervFreeObject((hypervObject *)shutdown);
-
-    return result;
+    return 0;
 }
 
 
