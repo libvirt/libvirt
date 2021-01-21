@@ -3235,6 +3235,12 @@ struct remote_domain_start_dirty_rate_calc_args {
         int                        seconds;
         u_int                      flags;
 };
+struct remote_domain_event_memory_device_size_change_msg {
+        int                        callbackID;
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      alias;
+        uint64_t                   size;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3673,4 +3679,5 @@ enum remote_procedure {
         REMOTE_PROC_NODE_DEVICE_IS_PERSISTENT = 435,
         REMOTE_PROC_NODE_DEVICE_IS_ACTIVE = 436,
         REMOTE_PROC_NETWORK_CREATE_XML_FLAGS = 437,
+        REMOTE_PROC_DOMAIN_EVENT_MEMORY_DEVICE_SIZE_CHANGE = 438,
 };

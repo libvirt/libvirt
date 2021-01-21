@@ -3893,6 +3893,13 @@ struct remote_domain_start_dirty_rate_calc_args {
 };
 
 
+struct remote_domain_event_memory_device_size_change_msg {
+    int callbackID;
+    remote_nonnull_domain dom;
+    remote_nonnull_string alias;
+    unsigned hyper size;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6892,5 +6899,11 @@ enum remote_procedure {
      * @acl: network:write
      * @acl: network:start
      */
-    REMOTE_PROC_NETWORK_CREATE_XML_FLAGS = 437
+    REMOTE_PROC_NETWORK_CREATE_XML_FLAGS = 437,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_MEMORY_DEVICE_SIZE_CHANGE = 438
 };

@@ -1334,6 +1334,35 @@ remoteRelayDomainEventMemoryFailure(virConnectPtr conn,
 }
 
 
+static int
+remoteRelayDomainEventMemoryDeviceSizeChange(virConnectPtr conn,
+                                             virDomainPtr dom,
+                                             const char *alias,
+                                             unsigned long long size,
+                                             void *opaque)
+{
+    daemonClientEventCallback *callback = opaque;
+    remote_domain_event_memory_device_size_change_msg data;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelayDomainEventCheckACL(callback->client, conn, dom))
+        return -1;
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    data.callbackID = callback->callbackID;
+    data.alias = g_strdup(alias);
+    data.size = size;
+    make_nonnull_domain(&data.dom, dom);
+
+    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_MEMORY_DEVICE_SIZE_CHANGE,
+                                  (xdrproc_t)xdr_remote_domain_event_memory_device_size_change_msg,
+                                  &data);
+    return 0;
+}
+
+
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventReboot),
@@ -1361,6 +1390,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventMetadataChange),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBlockThreshold),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventMemoryFailure),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventMemoryDeviceSizeChange),
 };
 
 G_STATIC_ASSERT(G_N_ELEMENTS(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

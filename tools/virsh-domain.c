@@ -13154,6 +13154,24 @@ virshEventMemoryFailurePrint(virConnectPtr conn G_GNUC_UNUSED,
 }
 
 
+static void
+virshEventMemoryDeviceSizeChangePrint(virConnectPtr conn G_GNUC_UNUSED,
+                                      virDomainPtr dom,
+                                      const char *alias,
+                                      unsigned long long size,
+                                      void *opaque)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&buf,
+                      _("event 'memory-device-size-change' for domain '%s':\n"
+                        "alias: %s\nsize: %llu\n"),
+                      virDomainGetName(dom), alias, size);
+
+    virshEventPrint(opaque, &buf);
+}
+
+
 virshDomainEventCallback virshDomainEventCallbacks[] = {
     { "lifecycle",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventLifecyclePrint), },
@@ -13205,6 +13223,8 @@ virshDomainEventCallback virshDomainEventCallbacks[] = {
       VIR_DOMAIN_EVENT_CALLBACK(virshEventBlockThresholdPrint), },
     { "memory-failure",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventMemoryFailurePrint), },
+    { "memory-device-size-change",
+      VIR_DOMAIN_EVENT_CALLBACK(virshEventMemoryDeviceSizeChangePrint), },
 };
 G_STATIC_ASSERT(VIR_DOMAIN_EVENT_ID_LAST == G_N_ELEMENTS(virshDomainEventCallbacks));
 

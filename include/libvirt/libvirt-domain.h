@@ -4656,6 +4656,29 @@ typedef void (*virConnectDomainEventMemoryFailureCallback)(virConnectPtr conn,
 
 
 /**
+ * virConnectDomainEventMemoryDeviceSizeChangeCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @alias: memory device alias
+ * @size: new current size of memory device (in KiB)
+ * @opaque: application specified data
+ *
+ * The callback occurs when the guest acknowledges request to change size of
+ * memory device (so far only virtio-mem model supports this). The @size then
+ * reflects the new amount of guest visible memory (in kibibytes).
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE with
+ * virConnectDomainEventRegisterAny().
+ */
+typedef void (*virConnectDomainEventMemoryDeviceSizeChangeCallback)(virConnectPtr conn,
+                                                                    virDomainPtr dom,
+                                                                    const char *alias,
+                                                                    unsigned long long size,
+                                                                    void *opaque);
+
+
+/**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
@@ -4698,6 +4721,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_METADATA_CHANGE = 23, /* virConnectDomainEventMetadataChangeCallback */
     VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD = 24, /* virConnectDomainEventBlockThresholdCallback */
     VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE = 25,  /* virConnectDomainEventMemoryFailureCallback */
+    VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE = 26, /* virConnectDomainEventMemoryDeviceSizeChangeCallback */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

@@ -58,6 +58,7 @@ static virClass *virDomainEventDeviceRemovalFailedClass;
 static virClass *virDomainEventMetadataChangeClass;
 static virClass *virDomainEventBlockThresholdClass;
 static virClass *virDomainEventMemoryFailureClass;
+static virClass *virDomainEventMemoryDeviceSizeChangeClass;
 
 static void virDomainEventDispose(void *obj);
 static void virDomainEventLifecycleDispose(void *obj);
@@ -81,6 +82,7 @@ static void virDomainEventDeviceRemovalFailedDispose(void *obj);
 static void virDomainEventMetadataChangeDispose(void *obj);
 static void virDomainEventBlockThresholdDispose(void *obj);
 static void virDomainEventMemoryFailureDispose(void *obj);
+static void virDomainEventMemoryDeviceSizeChangeDispose(void *obj);
 
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
@@ -277,6 +279,15 @@ struct _virDomainEventMemoryFailure {
 };
 typedef struct _virDomainEventMemoryFailure virDomainEventMemoryFailure;
 
+struct _virDomainEventMemoryDeviceSizeChange {
+    virDomainEvent parent;
+
+    char *alias;
+    unsigned long long size;
+};
+typedef struct _virDomainEventMemoryDeviceSizeChange virDomainEventMemoryDeviceSizeChange;
+typedef virDomainEventMemoryDeviceSizeChange *virDomainEventMemoryDeviceSizeChangePtr;
+
 static int
 virDomainEventsOnceInit(void)
 {
@@ -323,6 +334,8 @@ virDomainEventsOnceInit(void)
     if (!VIR_CLASS_NEW(virDomainEventBlockThreshold, virDomainEventClass))
         return -1;
     if (!VIR_CLASS_NEW(virDomainEventMemoryFailure, virDomainEventClass))
+        return -1;
+    if (!VIR_CLASS_NEW(virDomainEventMemoryDeviceSizeChange, virDomainEventClass))
         return -1;
     return 0;
 }
@@ -540,6 +553,14 @@ virDomainEventMemoryFailureDispose(void *obj)
     VIR_DEBUG("obj=%p", event);
 }
 
+static void
+virDomainEventMemoryDeviceSizeChangeDispose(void *obj)
+{
+    virDomainEventMemoryDeviceSizeChangePtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+
+    g_free(event->alias);
+}
 
 static void *
 virDomainEventNew(virClass *klass,
@@ -1664,6 +1685,57 @@ virDomainEventMemoryFailureNewFromDom(virDomainPtr dom,
                                           recipient, action, flags);
 }
 
+
+static virObjectEvent *
+virDomainEventMemoryDeviceSizeChangeNew(int id,
+                                        const char *name,
+                                        unsigned char *uuid,
+                                        const char *alias,
+                                        unsigned long long size)
+{
+    virDomainEventMemoryDeviceSizeChangePtr ev;
+
+    if (virDomainEventsInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNew(virDomainEventMemoryDeviceSizeChangeClass,
+                                 VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE,
+                                 id, name, uuid)))
+        return NULL;
+
+    ev->alias = g_strdup(alias);
+    ev->size = size;
+
+    return (virObjectEvent *)ev;
+}
+
+
+virObjectEvent *
+virDomainEventMemoryDeviceSizeChangeNewFromObj(virDomainObj *obj,
+                                               const char *alias,
+                                               unsigned long long size)
+{
+    return virDomainEventMemoryDeviceSizeChangeNew(obj->def->id,
+                                                   obj->def->name,
+                                                   obj->def->uuid,
+                                                   alias,
+                                                   size);
+}
+
+
+virObjectEvent *
+virDomainEventMemoryDeviceSizeChangeNewFromDom(virDomainPtr dom,
+                                               const char *alias,
+                                               unsigned long long size)
+{
+    return virDomainEventMemoryDeviceSizeChangeNew(dom->id,
+                                                   dom->name,
+                                                   dom->uuid,
+                                                   alias,
+                                                   size);
+}
+
+
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                   virObjectEvent *event,
@@ -1957,6 +2029,18 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                              memoryFailureEvent->action,
                                                              memoryFailureEvent->flags,
                                                              cbopaque);
+            goto cleanup;
+        }
+
+    case VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE:
+        {
+            virDomainEventMemoryDeviceSizeChangePtr memoryDeviceSizeChangeEvent;
+
+            memoryDeviceSizeChangeEvent = (virDomainEventMemoryDeviceSizeChangePtr)event;
+            ((virConnectDomainEventMemoryDeviceSizeChangeCallback)cb)(conn, dom,
+                                                                      memoryDeviceSizeChangeEvent->alias,
+                                                                      memoryDeviceSizeChangeEvent->size,
+                                                                      cbopaque);
             goto cleanup;
         }
 

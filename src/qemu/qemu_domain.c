@@ -10861,6 +10861,9 @@ qemuProcessEventFree(struct qemuProcessEvent *event)
     case QEMU_PROCESS_EVENT_JOB_STATUS_CHANGE:
         virObjectUnref(event->data);
         break;
+    case QEMU_PROCESS_EVENT_MEMORY_DEVICE_SIZE_CHANGE:
+        qemuMonitorMemoryDeviceSizeChangeFree(event->data);
+        break;
     case QEMU_PROCESS_EVENT_PR_DISCONNECT:
     case QEMU_PROCESS_EVENT_LAST:
         break;

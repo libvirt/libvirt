@@ -101,6 +101,14 @@ struct _qemuMonitorRdmaGidStatus {
 };
 
 
+typedef struct _qemuMonitorMemoryDeviceSizeChange qemuMonitorMemoryDeviceSizeChange;
+typedef qemuMonitorMemoryDeviceSizeChange *qemuMonitorMemoryDeviceSizeChangePtr;
+struct _qemuMonitorMemoryDeviceSizeChange {
+    char *devAlias;
+    unsigned long long size;
+};
+
+
 typedef enum {
     QEMU_MONITOR_ACTION_SHUTDOWN_KEEP, /* do not change the current setting */
     QEMU_MONITOR_ACTION_SHUTDOWN_POWEROFF,
@@ -187,6 +195,7 @@ struct _qemuMonitorJobInfo {
 char *qemuMonitorGuestPanicEventInfoFormatMsg(qemuMonitorEventPanicInfo *info);
 void qemuMonitorEventPanicInfoFree(qemuMonitorEventPanicInfo *info);
 void qemuMonitorEventRdmaGidStatusFree(qemuMonitorRdmaGidStatus *info);
+void qemuMonitorMemoryDeviceSizeChangeFree(qemuMonitorMemoryDeviceSizeChange *info);
 
 typedef void (*qemuMonitorDestroyCallback)(qemuMonitor *mon,
                                            virDomainObj *vm,
@@ -403,6 +412,12 @@ typedef void (*qemuMonitorDomainMemoryFailureCallback)(qemuMonitor *mon,
                                                        qemuMonitorEventMemoryFailure *mfp,
                                                        void *opaque);
 
+typedef int (*qemuMonitorDomainMemoryDeviceSizeChange)(qemuMonitor *mon,
+                                                       virDomainObj *vm,
+                                                       const char *alias,
+                                                       unsigned long long size,
+                                                       void *opaque);
+
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
 struct _qemuMonitorCallbacks {
     qemuMonitorEofNotifyCallback eofNotify;
@@ -437,6 +452,7 @@ struct _qemuMonitorCallbacks {
     qemuMonitorDomainRdmaGidStatusChangedCallback domainRdmaGidStatusChanged;
     qemuMonitorDomainGuestCrashloadedCallback domainGuestCrashloaded;
     qemuMonitorDomainMemoryFailureCallback domainMemoryFailure;
+    qemuMonitorDomainMemoryDeviceSizeChange domainMemoryDeviceSizeChange;
 };
 
 qemuMonitor *qemuMonitorOpen(virDomainObj *vm,
@@ -531,6 +547,10 @@ void qemuMonitorEmitSerialChange(qemuMonitor *mon,
                                  const char *devAlias,
                                  bool connected);
 void qemuMonitorEmitSpiceMigrated(qemuMonitor *mon);
+
+void qemuMonitorEmitMemoryDeviceSizeChange(qemuMonitor *mon,
+                                           const char *devAlias,
+                                           unsigned long long size);
 
 void qemuMonitorEmitMemoryFailure(qemuMonitor *mon,
                                   qemuMonitorEventMemoryFailure *mfp);

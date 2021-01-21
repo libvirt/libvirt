@@ -983,6 +983,22 @@ myDomainEventMemoryFailureCallback(virConnectPtr conn G_GNUC_UNUSED,
 
 
 static int
+myDomainEventMemoryDeviceSizeChangeCallback(virConnectPtr conn G_GNUC_UNUSED,
+                                            virDomainPtr dom,
+                                            const char *alias,
+                                            unsigned long long size,
+                                            void *opaque G_GNUC_UNUSED)
+{
+    /* Casts to uint64_t to work around mingw not knowing %lld */
+    printf("%s EVENT: Domain %s(%d) memory device size change: "
+           "alias: '%s' new size %" PRIu64 "'\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom),
+           alias, (uint64_t)size);
+    return 0;
+}
+
+
+static int
 myDomainEventMigrationIterationCallback(virConnectPtr conn G_GNUC_UNUSED,
                                         virDomainPtr dom,
                                         int iteration,
@@ -1113,6 +1129,7 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_METADATA_CHANGE, myDomainEventMetadataChangeCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD, myDomainEventBlockThresholdCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE, myDomainEventMemoryFailureCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE, myDomainEventMemoryDeviceSizeChangeCallback),
 };
 
 struct storagePoolEventData {

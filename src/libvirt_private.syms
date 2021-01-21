@@ -726,6 +726,8 @@ virDomainEventLifecycleNew;
 virDomainEventLifecycleNewFromDef;
 virDomainEventLifecycleNewFromDom;
 virDomainEventLifecycleNewFromObj;
+virDomainEventMemoryDeviceSizeChangeNewFromDom;
+virDomainEventMemoryDeviceSizeChangeNewFromObj;
 virDomainEventMemoryFailureNewFromDom;
 virDomainEventMemoryFailureNewFromObj;
 virDomainEventMetadataChangeNewFromDom;
