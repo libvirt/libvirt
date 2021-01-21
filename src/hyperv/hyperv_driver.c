@@ -2071,7 +2071,7 @@ hypervDomainGetVcpus(virDomainPtr domain,
     int count = 0;
     int vcpu_number;
     hypervPrivate *priv = domain->conn->privateData;
-    Win32_PerfRawData_HvStats_HyperVHypervisorVirtualProcessor *vproc = NULL;
+    g_autoptr(Win32_PerfRawData_HvStats_HyperVHypervisorVirtualProcessor) vproc = NULL;
 
     /* Hyper-V does not allow setting CPU affinity: all cores will be used */
     if (cpumaps && maplen > 0)
@@ -2109,8 +2109,6 @@ hypervDomainGetVcpus(virDomainPtr domain,
         }
         count++;
     }
-
-    hypervFreeObject((hypervObject *)vproc);
 
     return count;
 }
