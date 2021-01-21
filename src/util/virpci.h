@@ -55,6 +55,11 @@ struct _virZPCIDeviceAddress {
 
 #define VIR_PCI_DEVICE_ADDRESS_FMT "%04x:%02x:%02x.%d"
 
+/* Represents format of PF's phys_port_name in switchdev mode:
+ * 'p%u' or 'p%us%u'. New line checked since value is readed from sysfs file.
+ */
+#define VIR_PF_PHYS_PORT_NAME_REGEX  "(p[0-9]+$)|(p[0-9]+s[0-9]+$)"
+
 struct _virPCIDeviceAddress {
     unsigned int domain;
     unsigned int bus;

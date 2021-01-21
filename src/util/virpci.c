@@ -2467,9 +2467,9 @@ virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr addr,
  * virPCIGetNetName:
  * @device_link_sysfs_path: sysfs path to the PCI device
  * @idx: used to choose which netdev when there are several
- *       (ignored if physPortID is set)
+ *       (ignored if physPortID is set or physPortName is available)
  * @physPortID: match this string in the netdev's phys_port_id
- *       (or NULL to ignore and use idx instead)
+ *       (or NULL to ignore and use phys_port_name or idx instead)
  * @netname: used to return the name of the netdev
  *       (set to NULL (but returns success) if there is no netdev)
  *
@@ -2501,6 +2501,14 @@ virPCIGetNetName(const char *device_link_sysfs_path,
     }
 
     while (virDirRead(dir, &entry, pcidev_sysfs_net_path) > 0) {
+        /* save the first entry we find to use as a failsafe
+         * in case we don't match the phys_port_id. This is
+         * needed because some NIC drivers (e.g. i40e)
+         * implement phys_port_id for PFs, but not for VFs
+         */
+        if (!firstEntryName)
+            firstEntryName = g_strdup(entry->d_name);
+
         /* if the caller sent a physPortID, compare it to the
          * physportID of this netdev. If not, look for entry[idx].
          */
@@ -2511,33 +2519,49 @@ virPCIGetNetName(const char *device_link_sysfs_path,
                 return -1;
 
             /* if this one doesn't match, keep looking */
-            if (STRNEQ_NULLABLE(physPortID, thisPhysPortID)) {
-                /* save the first entry we find to use as a failsafe
-                 * in case we don't match the phys_port_id. This is
-                 * needed because some NIC drivers (e.g. i40e)
-                 * implement phys_port_id for PFs, but not for VFs
-                 */
-                if (!firstEntryName)
-                    firstEntryName = g_strdup(entry->d_name);
+            if (STRNEQ_NULLABLE(physPortID, thisPhysPortID))
+                continue;
 
-                continue;
-            }
         } else {
-            if (i++ < idx)
-                continue;
+            /* Most switch devices use phys_port_name instead of
+             * phys_port_id.
+             * NOTE: VFs' representors net devices can be linked to PF's PCI
+             * device, which mean that there'll be multiple net devices
+             * instances and to get a proper net device need to match on
+             * specific regex.
+             * To get PF netdev, for ex., used following regex:
+             * "(p[0-9]+$)|(p[0-9]+s[0-9]+$)"
+             * or to get exact VF's netdev next regex is used:
+             * "pf0vf1$"
+             */
+            g_autofree char *thisPhysPortName = NULL;
+
+            if (virNetDevGetPhysPortName(entry->d_name, &thisPhysPortName) < 0)
+                return -1;
+
+            if (thisPhysPortName) {
+
+                /* if this one doesn't match, keep looking */
+                if (!virStringMatch(thisPhysPortName, VIR_PF_PHYS_PORT_NAME_REGEX))
+                    continue;
+
+            } else {
+
+                if (i++ < idx)
+                    continue;
+            }
         }
 
         *netname = g_strdup(entry->d_name);
         return 0;
     }
 
-    if (!physPortID)
-        return 0;
-
     if (firstEntryName) {
-        /* we didn't match the provided phys_port_id, but this
-         * is probably because phys_port_id isn't implemented
-         * for this NIC driver, so just return the first
+        /* we didn't match the provided phys_port_id / find a
+         * phys_port_name matching VIR_PF_PHYS_PORT_NAME_REGEX / find
+         * as many net devices as the value of idx, but this is
+         * probably because phys_port_id / phys_port_name isn't
+         * implemented for this NIC driver, so just return the first
          * (probably only) netname we found.
          */
         *netname = g_steal_pointer(&firstEntryName);
@@ -2545,9 +2569,8 @@ virPCIGetNetName(const char *device_link_sysfs_path,
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Could not find network device with "
-                     "phys_port_id '%s' under PCI device at %s"),
-                   physPortID, device_link_sysfs_path);
+                   _("Could not find any network device under PCI device at %s"),
+                   device_link_sysfs_path);
     return -1;
 }
 
