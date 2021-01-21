@@ -2869,7 +2869,7 @@ hypervConnectListAllDomains(virConnectPtr conn,
 {
     hypervPrivate *priv = conn->privateData;
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    Msvm_ComputerSystem *computerSystemList = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystemList = NULL;
     Msvm_ComputerSystem *computerSystem = NULL;
     size_t ndoms;
     virDomainPtr domain;
@@ -2980,8 +2980,6 @@ hypervConnectListAllDomains(virConnectPtr conn,
 
         VIR_FREE(doms);
     }
-
-    hypervFreeObject((hypervObject *)computerSystemList);
 
     return ret;
 }
