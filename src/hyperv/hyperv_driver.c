@@ -1606,9 +1606,8 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
 static int
 hypervConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 {
-    bool success = false;
     hypervPrivate *priv = conn->privateData;
-    Msvm_ComputerSystem *computerSystemList = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystemList = NULL;
     Msvm_ComputerSystem *computerSystem = NULL;
     int count = 0;
 
@@ -1616,7 +1615,7 @@ hypervConnectListDomains(virConnectPtr conn, int *ids, int maxids)
         return 0;
 
     if (hypervGetActiveVirtualSystemList(priv, &computerSystemList) < 0)
-        goto cleanup;
+        return -1;
 
     for (computerSystem = computerSystemList; computerSystem != NULL;
          computerSystem = computerSystem->next) {
@@ -1626,12 +1625,7 @@ hypervConnectListDomains(virConnectPtr conn, int *ids, int maxids)
             break;
     }
 
-    success = true;
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystemList);
-
-    return success ? count : -1;
+    return count;
 }
 
 
