@@ -221,10 +221,10 @@ def report_error(message):
 
 
 def parse_class(block, number):
-    # expected format: class <name>
+    # expected format: class <name> : <optional parent>
     header_items = block[0][1].split()
 
-    if len(header_items) != 2:
+    if len(header_items) not in [2, 4]:
         report_error("line %d: invalid block header" % (number))
 
     assert header_items[0] == "class"
@@ -234,7 +234,13 @@ def parse_class(block, number):
     if name in wmi_classes_by_name:
         report_error("class '%s' has already been defined" % name)
 
-    properties = []
+    if len(header_items) == 4:
+        parent_class = header_items[3]
+        if parent_class not in wmi_classes_by_name:
+            report_error("nonexistent parent class specified: %s" % parent_class)
+        properties = wmi_classes_by_name[parent_class].properties.copy()
+    else:
+        properties = []
 
     for line in block[1:]:
         # expected format: <type> <name>
