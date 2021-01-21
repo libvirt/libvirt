@@ -1493,19 +1493,12 @@ hypervConnectGetVersion(virConnectPtr conn, unsigned long *version)
 static char *
 hypervConnectGetHostname(virConnectPtr conn)
 {
-    char *hostname = NULL;
-    hypervPrivate *priv = conn->privateData;
-    Win32_ComputerSystem *computerSystem = NULL;
+    g_autoptr(Win32_ComputerSystem) computerSystem = NULL;
 
-    if (hypervGetPhysicalSystemList(priv, &computerSystem) < 0)
-        goto cleanup;
+    if (hypervGetPhysicalSystemList((hypervPrivate *)conn->privateData, &computerSystem) < 0)
+        return NULL;
 
-    hostname = g_strdup(computerSystem->data->DNSHostName);
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
-
-    return hostname;
+    return g_strdup(computerSystem->data->DNSHostName);
 }
 
 
