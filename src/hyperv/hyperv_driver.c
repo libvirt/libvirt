@@ -2701,9 +2701,8 @@ hypervDomainGetSchedulerParameters(virDomainPtr domain,
 static unsigned long long
 hypervNodeGetFreeMemory(virConnectPtr conn)
 {
-    unsigned long long freeMemoryBytes = 0;
     hypervPrivate *priv = conn->privateData;
-    Win32_OperatingSystem *operatingSystem = NULL;
+    g_autoptr(Win32_OperatingSystem) operatingSystem = NULL;
 
     if (hypervGetOperatingSystem(priv, &operatingSystem) < 0)
         return 0;
@@ -2715,11 +2714,7 @@ hypervNodeGetFreeMemory(virConnectPtr conn)
         return 0;
     }
 
-    freeMemoryBytes = operatingSystem->data->FreePhysicalMemory * 1024;
-
-    hypervFreeObject((hypervObject *)operatingSystem);
-
-    return freeMemoryBytes;
+    return operatingSystem->data->FreePhysicalMemory * 1024;
 }
 
 
