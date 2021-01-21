@@ -1514,10 +1514,9 @@ hypervConnectGetCapabilities(virConnectPtr conn)
 static int
 hypervConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
 {
-    int result = -1;
     hypervPrivate *priv = conn->privateData;
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    Msvm_ProcessorSettingData *processorSettingData = NULL;
+    g_autoptr(Msvm_ProcessorSettingData) processorSettingData = NULL;
 
     /* Get max processors definition */
     virBufferAddLit(&query,
@@ -1525,21 +1524,16 @@ hypervConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
                     "WHERE InstanceID LIKE 'Microsoft:Definition%Maximum'");
 
     if (hypervGetWmiClass(Msvm_ProcessorSettingData, &processorSettingData) < 0)
-        goto cleanup;
+        return -1;
 
     if (!processorSettingData) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not get maximum definition of Msvm_ProcessorSettingData for host %s"),
                        conn->uri->server);
-        goto cleanup;
+        return -1;
     }
 
-    result = processorSettingData->data->VirtualQuantity;
-
- cleanup:
-    hypervFreeObject((hypervObject *)processorSettingData);
-
-    return result;
+    return processorSettingData->data->VirtualQuantity;
 }
 
 
