@@ -2253,7 +2253,7 @@ hypervConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxn
 {
     bool success = false;
     hypervPrivate *priv = conn->privateData;
-    Msvm_ComputerSystem *computerSystemList = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystemList = NULL;
     Msvm_ComputerSystem *computerSystem = NULL;
     int count = 0;
     size_t i;
@@ -2283,8 +2283,6 @@ hypervConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxn
 
         count = -1;
     }
-
-    hypervFreeObject((hypervObject *)computerSystemList);
 
     return count;
 }
