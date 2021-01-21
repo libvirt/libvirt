@@ -939,7 +939,7 @@ get_files(vahControl * ctl)
          *        so that the open could be re-tried as that user:group.
          */
         if (!virStorageSourceHasBacking(disk->src))
-            virStorageFileGetMetadata(disk->src, -1, -1, false);
+            virStorageSourceGetMetadata(disk->src, -1, -1, false);
 
          /* XXX should handle open errors more careful than just ignoring them.
          */

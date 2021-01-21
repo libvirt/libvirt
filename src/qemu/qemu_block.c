@@ -3426,15 +3426,15 @@ qemuBlockUpdateRelativeBacking(virDomainObjPtr vm,
         if (n->backingStore->relPath)
             break;
 
-        if (!virStorageFileSupportsBackingChainTraversal(n))
+        if (!virStorageSourceSupportsBackingChainTraversal(n))
             continue;
 
         if (qemuDomainStorageFileInit(driver, vm, n, topsrc) < 0)
             return -1;
 
-        rc = virStorageFileGetBackingStoreStr(n, &backingStoreStr);
+        rc = virStorageSourceGetBackingStoreStr(n, &backingStoreStr);
 
-        virStorageFileDeinit(n);
+        virStorageSourceDeinit(n);
 
         if (rc < 0)
             return rc;

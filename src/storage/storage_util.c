@@ -3427,9 +3427,9 @@ storageBackendProbeTarget(virStorageSourcePtr target,
         }
     }
 
-    if (!(meta = virStorageFileGetMetadataFromFD(target->path,
-                                                 fd,
-                                                 VIR_STORAGE_FILE_AUTO)))
+    if (!(meta = virStorageSourceGetMetadataFromFD(target->path,
+                                                   fd,
+                                                   VIR_STORAGE_FILE_AUTO)))
         return -1;
 
     if (meta->backingStoreRaw) {

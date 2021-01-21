@@ -101,7 +101,7 @@ testStorageFileGetMetadata(const char *path,
 
     def->path = g_strdup(path);
 
-    if (virStorageFileGetMetadata(def, uid, gid, true) < 0)
+    if (virStorageSourceGetMetadata(def, uid, gid, true) < 0)
         return NULL;
 
     return g_steal_pointer(&def);
@@ -366,9 +366,9 @@ testStorageLookup(const void *args)
     }
 
      /* Test twice to ensure optional parameter doesn't cause NULL deref. */
-    result = virStorageFileChainLookup(data->chain, data->from,
-                                       idx ? NULL : data->name,
-                                       idx, NULL);
+    result = virStorageSourceChainLookup(data->chain, data->from,
+                                         idx ? NULL : data->name,
+                                         idx, NULL);
 
     if (!data->expResult) {
         if (virGetLastErrorCode() == VIR_ERR_OK) {
@@ -395,8 +395,8 @@ testStorageLookup(const void *args)
         ret = -1;
     }
 
-    result = virStorageFileChainLookup(data->chain, data->from,
-                                       data->name, idx, &actualParent);
+    result = virStorageSourceChainLookup(data->chain, data->from,
+                                         data->name, idx, &actualParent);
     if (!data->expResult)
         virResetLastError();
 
@@ -552,9 +552,9 @@ testPathRelative(const void *args)
     const struct testPathRelativeBacking *data = args;
     g_autofree char *actual = NULL;
 
-    if (virStorageFileGetRelativeBackingPath(data->top,
-                                             data->base,
-                                             &actual) < 0) {
+    if (virStorageSourceGetRelativeBackingPath(data->top,
+                                               data->base,
+                                               &actual) < 0) {
         fprintf(stderr, "relative backing path resolution failed\n");
         return -1;
     }

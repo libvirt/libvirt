@@ -7887,8 +7887,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
                 VIR_DEBUG("Removing transient overlay '%s' of disk '%s'",
                           disk->src->path, disk->dst);
                 if (qemuDomainStorageFileInit(driver, vm, disk->src, NULL) >= 0) {
-                    virStorageFileUnlink(disk->src);
-                    virStorageFileDeinit(disk->src);
+                    virStorageSourceUnlink(disk->src);
+                    virStorageSourceDeinit(disk->src);
                 }
             }
         }

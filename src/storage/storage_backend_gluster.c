@@ -272,8 +272,8 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
                                             &header)) < 0)
         goto cleanup;
 
-    if (!(meta = virStorageFileGetMetadataFromBuf(name, header, len,
-                                                  VIR_STORAGE_FILE_AUTO)))
+    if (!(meta = virStorageSourceGetMetadataFromBuf(name, header, len,
+                                                    VIR_STORAGE_FILE_AUTO)))
         goto cleanup;
 
     if (meta->backingStoreRaw) {

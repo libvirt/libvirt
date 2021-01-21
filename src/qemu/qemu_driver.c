@@ -253,20 +253,20 @@ qemuSecurityChownCallback(const virStorageSource *src,
         return 0;
     }
 
-    if ((rv = virStorageFileSupportsSecurityDriver(src)) <= 0)
+    if ((rv = virStorageSourceSupportsSecurityDriver(src)) <= 0)
         return rv;
 
     if (!(cpy = virStorageSourceCopy(src, false)))
         return -1;
 
     /* src file init reports errors, return -2 on failure */
-    if (virStorageFileInit(cpy) < 0)
+    if (virStorageSourceInit(cpy) < 0)
         return -2;
 
-    ret = virStorageFileChown(cpy, uid, gid);
+    ret = virStorageSourceChown(cpy, uid, gid);
 
     save_errno = errno;
-    virStorageFileDeinit(cpy);
+    virStorageSourceDeinit(cpy);
     errno = save_errno;
 
     return ret;
@@ -10620,7 +10620,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
     if (qemuDomainStorageFileInit(driver, vm, disk->src, NULL) < 0)
         goto cleanup;
 
-    if ((nread = virStorageFileRead(disk->src, offset, size, &tmpbuf)) < 0) {
+    if ((nread = virStorageSourceRead(disk->src, offset, size, &tmpbuf)) < 0) {
         if (nread == -2) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("storage file reading is not supported for "
@@ -10644,7 +10644,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
 
  cleanup:
     if (disk)
-        virStorageFileDeinit(disk->src);
+        virStorageSourceDeinit(disk->src);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -10776,14 +10776,14 @@ qemuDomainStorageOpenStat(virQEMUDriverPtr driver,
             return -1;
         }
     } else {
-        if (skipInaccessible && virStorageFileSupportsBackingChainTraversal(src) <= 0)
+        if (skipInaccessible && virStorageSourceSupportsBackingChainTraversal(src) <= 0)
             return 0;
 
-        if (virStorageFileInitAs(src, cfg->user, cfg->group) < 0)
+        if (virStorageSourceInitAs(src, cfg->user, cfg->group) < 0)
             return -1;
 
-        if (virStorageFileStat(src, ret_sb) < 0) {
-            virStorageFileDeinit(src);
+        if (virStorageSourceStat(src, ret_sb) < 0) {
+            virStorageSourceDeinit(src);
             virReportSystemError(errno, _("failed to stat remote file '%s'"),
                                  NULLSTR(src->path));
             return -1;
@@ -10808,7 +10808,7 @@ qemuDomainStorageCloseStat(virStorageSourcePtr src,
     if (virStorageSourceIsLocalStorage(src))
         VIR_FORCE_CLOSE(*fd);
     else
-        virStorageFileDeinit(src);
+        virStorageSourceDeinit(src);
 }
 
 
@@ -10908,7 +10908,7 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
             goto cleanup;
         }
     } else {
-        if ((len = virStorageFileRead(src, 0, VIR_STORAGE_MAX_HEADER, &buf)) < 0)
+        if ((len = virStorageSourceRead(src, 0, VIR_STORAGE_MAX_HEADER, &buf)) < 0)
             goto cleanup;
     }
 
@@ -14449,8 +14449,8 @@ qemuDomainBlockPullCommon(virDomainObjPtr vm,
 
     if (base &&
         (virStorageFileParseChainIndex(disk->dst, base, &baseIndex) < 0 ||
-         !(baseSource = virStorageFileChainLookup(disk->src, disk->src,
-                                                  base, baseIndex, NULL))))
+         !(baseSource = virStorageSourceChainLookup(disk->src, disk->src,
+                                                    base, baseIndex, NULL))))
         goto endjob;
 
     if (baseSource) {
@@ -14466,9 +14466,9 @@ qemuDomainBlockPullCommon(virDomainObjPtr vm,
                 qemuBlockUpdateRelativeBacking(vm, disk->src, disk->src) < 0)
                 goto endjob;
 
-            if (virStorageFileGetRelativeBackingPath(disk->src->backingStore,
-                                                     baseSource,
-                                                     &backingPath) < 0)
+            if (virStorageSourceGetRelativeBackingPath(disk->src->backingStore,
+                                                       baseSource,
+                                                       &backingPath) < 0)
                 goto endjob;
 
             if (!backingPath) {
@@ -14839,7 +14839,7 @@ qemuDomainBlockCopyValidateMirror(virStorageSourcePtr mirror,
     if (!virStorageSourceIsLocalStorage(mirror))
         return 0;
 
-    if (virStorageFileAccess(mirror, F_OK) < 0) {
+    if (virStorageSourceAccess(mirror, F_OK) < 0) {
         if (errno != ENOENT) {
             virReportSystemError(errno, "%s",
                                  _("unable to verify existence of "
@@ -14854,7 +14854,7 @@ qemuDomainBlockCopyValidateMirror(virStorageSourcePtr mirror,
             return -1;
         }
     } else {
-        if (virStorageFileStat(mirror, &st) < 0) {
+        if (virStorageSourceStat(mirror, &st) < 0) {
             virReportSystemError(errno,
                                  _("unable to stat block copy target '%s'"),
                                  mirror->path);
@@ -15058,9 +15058,9 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         goto endjob;
     }
 
-    supports_access = virStorageFileSupportsAccess(mirror) == 1;
-    supports_create = virStorageFileSupportsCreate(mirror) == 1;
-    supports_detect = virStorageFileSupportsBackingChainTraversal(mirror) == 1;
+    supports_access = virStorageSourceSupportsAccess(mirror) == 1;
+    supports_create = virStorageSourceSupportsCreate(mirror) == 1;
+    supports_detect = virStorageSourceSupportsBackingChainTraversal(mirror) == 1;
 
     if (supports_access || supports_create || supports_detect) {
         if (qemuDomainStorageFileInit(driver, vm, mirror, NULL) < 0)
@@ -15104,7 +15104,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
      * required so that libvirt can properly label the image for access by qemu */
     if (!existing) {
         if (supports_create) {
-            if (virStorageFileCreate(mirror) < 0) {
+            if (virStorageSourceCreate(mirror) < 0) {
                 virReportSystemError(errno, "%s", _("failed to create copy target"));
                 goto endjob;
             }
@@ -15247,7 +15247,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
 
     /* Update vm in place to match changes.  */
     need_unlink = false;
-    virStorageFileDeinit(mirror);
+    virStorageSourceDeinit(mirror);
     disk->mirror = g_steal_pointer(&mirror);
     disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
     qemuBlockJobStarted(job, vm);
@@ -15266,9 +15266,9 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         if (need_revoke)
             qemuDomainStorageSourceChainAccessRevoke(driver, vm, mirror);
     }
-    if (need_unlink && virStorageFileUnlink(mirror) < 0)
+    if (need_unlink && virStorageSourceUnlink(mirror) < 0)
         VIR_WARN("%s", _("unable to remove just-created copy target"));
-    virStorageFileDeinit(mirror);
+    virStorageSourceDeinit(mirror);
     qemuDomainObjEndJob(driver, vm);
     qemuBlockJobStartupFinalize(vm, job);
 
@@ -15541,9 +15541,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (!top || STREQ(top, disk->dst))
         topSource = disk->src;
     else if (virStorageFileParseChainIndex(disk->dst, top, &topIndex) < 0 ||
-             !(topSource = virStorageFileChainLookup(disk->src, NULL,
-                                                     top, topIndex,
-                                                     &top_parent)))
+             !(topSource = virStorageSourceChainLookup(disk->src, NULL,
+                                                       top, topIndex,
+                                                       &top_parent)))
         goto endjob;
 
     if (topSource == disk->src) {
@@ -15576,8 +15576,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (!base && (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW))
         baseSource = topSource->backingStore;
     else if (virStorageFileParseChainIndex(disk->dst, base, &baseIndex) < 0 ||
-             !(baseSource = virStorageFileChainLookup(disk->src, topSource,
-                                                      base, baseIndex, NULL)))
+             !(baseSource = virStorageSourceChainLookup(disk->src, topSource,
+                                                        base, baseIndex, NULL)))
         goto endjob;
 
     if ((flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW) &&
@@ -15611,8 +15611,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
             qemuBlockUpdateRelativeBacking(vm, top_parent, disk->src) < 0)
             goto endjob;
 
-        if (virStorageFileGetRelativeBackingPath(topSource, baseSource,
-                                                 &backingPath) < 0)
+        if (virStorageSourceGetRelativeBackingPath(topSource, baseSource,
+                                                   &backingPath) < 0)
             goto endjob;
 
         if (!backingPath) {

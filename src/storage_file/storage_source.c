@@ -46,8 +46,8 @@ VIR_LOG_INIT("storage_source");
 
 
 static virStorageSourcePtr
-virStorageFileMetadataNew(const char *path,
-                          int format)
+virStorageSourceMetadataNew(const char *path,
+                            int format)
 {
     g_autoptr(virStorageSource) def = virStorageSourceNew();
 
@@ -61,7 +61,7 @@ virStorageFileMetadataNew(const char *path,
 
 
 /**
- * virStorageFileGetMetadataFromBuf:
+ * virStorageSourceGetMetadataFromBuf:
  * @path: name of file, for error messages
  * @buf: header bytes from @path
  * @len: length of @buf
@@ -83,14 +83,14 @@ virStorageFileMetadataNew(const char *path,
  * Caller MUST free the result after use via virObjectUnref.
  */
 virStorageSourcePtr
-virStorageFileGetMetadataFromBuf(const char *path,
-                                 char *buf,
-                                 size_t len,
-                                 int format)
+virStorageSourceGetMetadataFromBuf(const char *path,
+                                   char *buf,
+                                   size_t len,
+                                   int format)
 {
     virStorageSourcePtr ret = NULL;
 
-    if (!(ret = virStorageFileMetadataNew(path, format)))
+    if (!(ret = virStorageSourceMetadataNew(path, format)))
         return NULL;
 
     if (virStorageFileProbeGetMetadata(ret, buf, len) < 0) {
@@ -103,7 +103,7 @@ virStorageFileGetMetadataFromBuf(const char *path,
 
 
 /**
- * virStorageFileGetMetadataFromFD:
+ * virStorageSourceGetMetadataFromFD:
  *
  * Extract metadata about the storage volume with the specified
  * image format. If image format is VIR_STORAGE_FILE_AUTO, it
@@ -116,9 +116,9 @@ virStorageFileGetMetadataFromBuf(const char *path,
  * Caller MUST free the result after use via virObjectUnref.
  */
 virStorageSourcePtr
-virStorageFileGetMetadataFromFD(const char *path,
-                                int fd,
-                                int format)
+virStorageSourceGetMetadataFromFD(const char *path,
+                                  int fd,
+                                  int format)
 
 {
     ssize_t len = VIR_STORAGE_MAX_HEADER;
@@ -132,7 +132,7 @@ virStorageFileGetMetadataFromFD(const char *path,
         return NULL;
     }
 
-    if (!(meta = virStorageFileMetadataNew(path, format)))
+    if (!(meta = virStorageSourceMetadataNew(path, format)))
         return NULL;
 
     if (S_ISDIR(sb.st_mode)) {
@@ -177,11 +177,11 @@ virStorageFileGetMetadataFromFD(const char *path,
  * found.
  */
 virStorageSourcePtr
-virStorageFileChainLookup(virStorageSourcePtr chain,
-                          virStorageSourcePtr startFrom,
-                          const char *name,
-                          unsigned int idx,
-                          virStorageSourcePtr *parent)
+virStorageSourceChainLookup(virStorageSourcePtr chain,
+                            virStorageSourcePtr startFrom,
+                            const char *name,
+                            unsigned int idx,
+                            virStorageSourcePtr *parent)
 {
     virStorageSourcePtr prev;
     const char *start = chain->path;
@@ -1794,8 +1794,8 @@ virStorageSourceUpdateCapacity(virStorageSourcePtr src,
 
     if (format == VIR_STORAGE_FILE_RAW && !src->encryption) {
         src->capacity = src->physical;
-    } else if ((meta = virStorageFileGetMetadataFromBuf(src->path, buf,
-                                                        len, format))) {
+    } else if ((meta = virStorageSourceGetMetadataFromBuf(src->path, buf,
+                                                          len, format))) {
         src->capacity = meta->capacity ? meta->capacity : src->physical;
         if (src->encryption && meta->encryption)
             src->encryption->payload_offset = meta->encryption->payload_offset;
@@ -1811,7 +1811,7 @@ virStorageSourceUpdateCapacity(virStorageSourcePtr src,
 
 
 /**
- * virStorageFileRemoveLastPathComponent:
+ * virStorageSourceRemoveLastPathComponent:
  *
  * @path: Path string to remove the last component from
  *
@@ -1820,7 +1820,7 @@ virStorageSourceUpdateCapacity(virStorageSourcePtr src,
  * responsible to free the returned string.
  */
 static char *
-virStorageFileRemoveLastPathComponent(const char *path)
+virStorageSourceRemoveLastPathComponent(const char *path)
 {
     char *ret;
 
@@ -1833,7 +1833,7 @@ virStorageFileRemoveLastPathComponent(const char *path)
 
 
 /*
- * virStorageFileGetRelativeBackingPath:
+ * virStorageSourceGetRelativeBackingPath:
  *
  * Resolve relative path to be written to the overlay of @top image when
  * collapsing the backing chain between @top and @base.
@@ -1841,9 +1841,9 @@ virStorageFileRemoveLastPathComponent(const char *path)
  * Returns 0 on success; 1 if backing chain isn't relative and -1 on error.
  */
 int
-virStorageFileGetRelativeBackingPath(virStorageSourcePtr top,
-                                     virStorageSourcePtr base,
-                                     char **relpath)
+virStorageSourceGetRelativeBackingPath(virStorageSourcePtr top,
+                                       virStorageSourcePtr base,
+                                       char **relpath)
 {
     virStorageSourcePtr next;
     g_autofree char *tmp = NULL;
@@ -1855,7 +1855,7 @@ virStorageFileGetRelativeBackingPath(virStorageSourcePtr top,
         if (!next->relPath)
             return 1;
 
-        if (!(tmp = virStorageFileRemoveLastPathComponent(path)))
+        if (!(tmp = virStorageSourceRemoveLastPathComponent(path)))
             return -1;
 
         VIR_FREE(path);
@@ -1881,14 +1881,14 @@ virStorageFileGetRelativeBackingPath(virStorageSourcePtr top,
 
 
 static bool
-virStorageFileIsInitialized(const virStorageSource *src)
+virStorageSourceIsInitialized(const virStorageSource *src)
 {
     return src && src->drv;
 }
 
 
 /**
- * virStorageFileGetBackendForSupportCheck:
+ * virStorageSourceGetBackendForSupportCheck:
  * @src: storage source to check support for
  * @backend: pointer to the storage backend for @src if it's supported
  *
@@ -1896,8 +1896,8 @@ virStorageFileIsInitialized(const virStorageSource *src)
  * 1 if it is supported and -1 on error with an error reported.
  */
 static int
-virStorageFileGetBackendForSupportCheck(const virStorageSource *src,
-                                        virStorageFileBackendPtr *backend)
+virStorageSourceGetBackendForSupportCheck(const virStorageSource *src,
+                                          virStorageFileBackendPtr *backend)
 {
     int actualType;
 
@@ -1926,12 +1926,12 @@ virStorageFileGetBackendForSupportCheck(const virStorageSource *src,
 
 
 int
-virStorageFileSupportsBackingChainTraversal(const virStorageSource *src)
+virStorageSourceSupportsBackingChainTraversal(const virStorageSource *src)
 {
     virStorageFileBackendPtr backend;
     int rv;
 
-    if ((rv = virStorageFileGetBackendForSupportCheck(src, &backend)) < 1)
+    if ((rv = virStorageSourceGetBackendForSupportCheck(src, &backend)) < 1)
         return rv;
 
     return backend->storageFileGetUniqueIdentifier &&
@@ -1941,7 +1941,7 @@ virStorageFileSupportsBackingChainTraversal(const virStorageSource *src)
 
 
 /**
- * virStorageFileSupportsSecurityDriver:
+ * virStorageSourceSupportsSecurityDriver:
  *
  * @src: a storage file structure
  *
@@ -1949,12 +1949,12 @@ virStorageFileSupportsBackingChainTraversal(const virStorageSource *src)
  * driver to perform labelling
  */
 int
-virStorageFileSupportsSecurityDriver(const virStorageSource *src)
+virStorageSourceSupportsSecurityDriver(const virStorageSource *src)
 {
     virStorageFileBackendPtr backend;
     int rv;
 
-    if ((rv = virStorageFileGetBackendForSupportCheck(src, &backend)) < 1)
+    if ((rv = virStorageSourceGetBackendForSupportCheck(src, &backend)) < 1)
         return rv;
 
     return backend->storageFileChown ? 1 : 0;
@@ -1962,7 +1962,7 @@ virStorageFileSupportsSecurityDriver(const virStorageSource *src)
 
 
 /**
- * virStorageFileSupportsAccess:
+ * virStorageSourceSupportsAccess:
  *
  * @src: a storage file structure
  *
@@ -1970,12 +1970,12 @@ virStorageFileSupportsSecurityDriver(const virStorageSource *src)
  * for the given vm.
  */
 int
-virStorageFileSupportsAccess(const virStorageSource *src)
+virStorageSourceSupportsAccess(const virStorageSource *src)
 {
     virStorageFileBackendPtr backend;
     int rv;
 
-    if ((rv = virStorageFileGetBackendForSupportCheck(src, &backend)) < 1)
+    if ((rv = virStorageSourceGetBackendForSupportCheck(src, &backend)) < 1)
         return rv;
 
     return backend->storageFileAccess ? 1 : 0;
@@ -1983,19 +1983,19 @@ virStorageFileSupportsAccess(const virStorageSource *src)
 
 
 /**
- * virStorageFileSupportsCreate:
+ * virStorageSourceSupportsCreate:
  * @src: a storage file structure
  *
  * Check if the storage driver supports creating storage described by @src
- * via virStorageFileCreate.
+ * via virStorageSourceCreate.
  */
 int
-virStorageFileSupportsCreate(const virStorageSource *src)
+virStorageSourceSupportsCreate(const virStorageSource *src)
 {
     virStorageFileBackendPtr backend;
     int rv;
 
-    if ((rv = virStorageFileGetBackendForSupportCheck(src, &backend)) < 1)
+    if ((rv = virStorageSourceGetBackendForSupportCheck(src, &backend)) < 1)
         return rv;
 
     return backend->storageFileCreate ? 1 : 0;
@@ -2003,11 +2003,11 @@ virStorageFileSupportsCreate(const virStorageSource *src)
 
 
 void
-virStorageFileDeinit(virStorageSourcePtr src)
+virStorageSourceDeinit(virStorageSourcePtr src)
 {
     virStorageDriverDataPtr drv = NULL;
 
-    if (!virStorageFileIsInitialized(src))
+    if (!virStorageSourceIsInitialized(src))
         return;
 
     drv = src->drv;
@@ -2021,7 +2021,7 @@ virStorageFileDeinit(virStorageSourcePtr src)
 
 
 /**
- * virStorageFileInitAs:
+ * virStorageSourceInitAs:
  *
  * @src: storage source definition
  * @uid: uid used to access the file, or -1 for current uid
@@ -2034,8 +2034,8 @@ virStorageFileDeinit(virStorageSourcePtr src)
  * initialization failed. Libvirt error is reported.
  */
 int
-virStorageFileInitAs(virStorageSourcePtr src,
-                     uid_t uid, gid_t gid)
+virStorageSourceInitAs(virStorageSourcePtr src,
+                       uid_t uid, gid_t gid)
 {
     int actualType = virStorageSourceGetActualType(src);
     virStorageDriverDataPtr drv = g_new0(virStorageDriverData, 1);
@@ -2071,20 +2071,20 @@ virStorageFileInitAs(virStorageSourcePtr src,
 
 
 /**
- * virStorageFileInit:
+ * virStorageSourceInit:
  *
- * See virStorageFileInitAs. The file is initialized to be accessed by the
+ * See virStorageSourceInitAs. The file is initialized to be accessed by the
  * current user.
  */
 int
-virStorageFileInit(virStorageSourcePtr src)
+virStorageSourceInit(virStorageSourcePtr src)
 {
-    return virStorageFileInitAs(src, -1, -1);
+    return virStorageSourceInitAs(src, -1, -1);
 }
 
 
 /**
- * virStorageFileCreate: Creates an empty storage file via storage driver
+ * virStorageSourceCreate: Creates an empty storage file via storage driver
  *
  * @src: file structure pointing to the file
  *
@@ -2092,12 +2092,12 @@ virStorageFileInit(virStorageSourcePtr src)
  * -1 on other failure. Errno is set in case of failure.
  */
 int
-virStorageFileCreate(virStorageSourcePtr src)
+virStorageSourceCreate(virStorageSourcePtr src)
 {
     virStorageDriverDataPtr drv = NULL;
     int ret;
 
-    if (!virStorageFileIsInitialized(src)) {
+    if (!virStorageSourceIsInitialized(src)) {
         errno = ENOSYS;
         return -2;
     }
@@ -2119,7 +2119,7 @@ virStorageFileCreate(virStorageSourcePtr src)
 
 
 /**
- * virStorageFileUnlink: Unlink storage file via storage driver
+ * virStorageSourceUnlink: Unlink storage file via storage driver
  *
  * @src: file structure pointing to the file
  *
@@ -2129,12 +2129,12 @@ virStorageFileCreate(virStorageSourcePtr src)
  * -1 on other failure. Errno is set in case of failure.
  */
 int
-virStorageFileUnlink(virStorageSourcePtr src)
+virStorageSourceUnlink(virStorageSourcePtr src)
 {
     virStorageDriverDataPtr drv = NULL;
     int ret;
 
-    if (!virStorageFileIsInitialized(src)) {
+    if (!virStorageSourceIsInitialized(src)) {
         errno = ENOSYS;
         return -2;
     }
@@ -2156,7 +2156,7 @@ virStorageFileUnlink(virStorageSourcePtr src)
 
 
 /**
- * virStorageFileStat: returns stat struct of a file via storage driver
+ * virStorageSourceStat: returns stat struct of a file via storage driver
  *
  * @src: file structure pointing to the file
  * @stat: stat structure to return data
@@ -2165,13 +2165,13 @@ virStorageFileUnlink(virStorageSourcePtr src)
  * -1 on other failure. Errno is set in case of failure.
 */
 int
-virStorageFileStat(virStorageSourcePtr src,
-                   struct stat *st)
+virStorageSourceStat(virStorageSourcePtr src,
+                     struct stat *st)
 {
     virStorageDriverDataPtr drv = NULL;
     int ret;
 
-    if (!virStorageFileIsInitialized(src)) {
+    if (!virStorageSourceIsInitialized(src)) {
         errno = ENOSYS;
         return -2;
     }
@@ -2193,7 +2193,7 @@ virStorageFileStat(virStorageSourcePtr src,
 
 
 /**
- * virStorageFileRead: read bytes from a file into a buffer
+ * virStorageSourceRead: read bytes from a file into a buffer
  *
  * @src: file structure pointing to the file
  * @offset: number of bytes to skip in the storage file
@@ -2205,15 +2205,15 @@ virStorageFileStat(virStorageSourcePtr src,
  * Libvirt error is reported on failure.
  */
 ssize_t
-virStorageFileRead(virStorageSourcePtr src,
-                   size_t offset,
-                   size_t len,
-                   char **buf)
+virStorageSourceRead(virStorageSourcePtr src,
+                     size_t offset,
+                     size_t len,
+                     char **buf)
 {
     virStorageDriverDataPtr drv = NULL;
     ssize_t ret;
 
-    if (!virStorageFileIsInitialized(src)) {
+    if (!virStorageSourceIsInitialized(src)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("storage file backend not initialized"));
         return -1;
@@ -2234,7 +2234,7 @@ virStorageFileRead(virStorageSourcePtr src,
 
 
 /*
- * virStorageFileGetUniqueIdentifier: Get a unique string describing the volume
+ * virStorageSourceGetUniqueIdentifier: Get a unique string describing the volume
  *
  * @src: file structure pointing to the file
  *
@@ -2242,11 +2242,11 @@ virStorageFileRead(virStorageSourcePtr src,
  * The string shall not be freed and is valid until the storage file is
  * deinitialized. Returns NULL on error and sets a libvirt error code */
 const char *
-virStorageFileGetUniqueIdentifier(virStorageSourcePtr src)
+virStorageSourceGetUniqueIdentifier(virStorageSourcePtr src)
 {
     virStorageDriverDataPtr drv = NULL;
 
-    if (!virStorageFileIsInitialized(src)) {
+    if (!virStorageSourceIsInitialized(src)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("storage file backend not initialized"));
         return NULL;
@@ -2268,7 +2268,7 @@ virStorageFileGetUniqueIdentifier(virStorageSourcePtr src)
 
 
 /**
- * virStorageFileAccess: Check accessibility of a storage file
+ * virStorageSourceAccess: Check accessibility of a storage file
  *
  * @src: storage file to check access permissions
  * @mode: accessibility check options (see man 2 access)
@@ -2278,12 +2278,12 @@ virStorageFileGetUniqueIdentifier(virStorageSourcePtr src)
  * by libvirt storage backend.
  */
 int
-virStorageFileAccess(virStorageSourcePtr src,
-                     int mode)
+virStorageSourceAccess(virStorageSourcePtr src,
+                       int mode)
 {
     virStorageDriverDataPtr drv = NULL;
 
-    if (!virStorageFileIsInitialized(src)) {
+    if (!virStorageSourceIsInitialized(src)) {
         errno = ENOSYS;
         return -2;
     }
@@ -2300,7 +2300,7 @@ virStorageFileAccess(virStorageSourcePtr src,
 
 
 /**
- * virStorageFileChown: Change owner of a storage file
+ * virStorageSourceChown: Change owner of a storage file
  *
  * @src: storage file to change owner of
  * @uid: new owner id
@@ -2311,13 +2311,13 @@ virStorageFileAccess(virStorageSourcePtr src,
  * by libvirt storage backend.
  */
 int
-virStorageFileChown(const virStorageSource *src,
-                    uid_t uid,
-                    gid_t gid)
+virStorageSourceChown(const virStorageSource *src,
+                      uid_t uid,
+                      gid_t gid)
 {
     virStorageDriverDataPtr drv = NULL;
 
-    if (!virStorageFileIsInitialized(src)) {
+    if (!virStorageSourceIsInitialized(src)) {
         errno = ENOSYS;
         return -2;
     }
@@ -2337,7 +2337,7 @@ virStorageFileChown(const virStorageSource *src,
 
 
 /**
- * virStorageFileReportBrokenChain:
+ * virStorageSourceReportBrokenChain:
  *
  * @errcode: errno when accessing @src
  * @src: inaccessible file in the backing chain of @parent
@@ -2347,9 +2347,9 @@ virStorageFileChown(const virStorageSource *src,
  * for @parent.
  */
 void
-virStorageFileReportBrokenChain(int errcode,
-                                virStorageSourcePtr src,
-                                virStorageSourcePtr parent)
+virStorageSourceReportBrokenChain(int errcode,
+                                  virStorageSourcePtr src,
+                                  virStorageSourcePtr parent)
 {
     if (src->drv) {
         virStorageDriverDataPtr drv = src->drv;
@@ -2383,27 +2383,27 @@ virStorageFileReportBrokenChain(int errcode,
 
 
 static int
-virStorageFileGetMetadataRecurseReadHeader(virStorageSourcePtr src,
-                                           virStorageSourcePtr parent,
-                                           uid_t uid,
-                                           gid_t gid,
-                                           char **buf,
-                                           size_t *headerLen,
-                                           GHashTable *cycle)
+virStorageSourceGetMetadataRecurseReadHeader(virStorageSourcePtr src,
+                                             virStorageSourcePtr parent,
+                                             uid_t uid,
+                                             gid_t gid,
+                                             char **buf,
+                                             size_t *headerLen,
+                                             GHashTable *cycle)
 {
     int ret = -1;
     const char *uniqueName;
     ssize_t len;
 
-    if (virStorageFileInitAs(src, uid, gid) < 0)
+    if (virStorageSourceInitAs(src, uid, gid) < 0)
         return -1;
 
-    if (virStorageFileAccess(src, F_OK) < 0) {
-        virStorageFileReportBrokenChain(errno, src, parent);
+    if (virStorageSourceAccess(src, F_OK) < 0) {
+        virStorageSourceReportBrokenChain(errno, src, parent);
         goto cleanup;
     }
 
-    if (!(uniqueName = virStorageFileGetUniqueIdentifier(src)))
+    if (!(uniqueName = virStorageSourceGetUniqueIdentifier(src)))
         goto cleanup;
 
     if (virHashHasEntry(cycle, uniqueName)) {
@@ -2416,26 +2416,26 @@ virStorageFileGetMetadataRecurseReadHeader(virStorageSourcePtr src,
     if (virHashAddEntry(cycle, uniqueName, NULL) < 0)
         goto cleanup;
 
-    if ((len = virStorageFileRead(src, 0, VIR_STORAGE_MAX_HEADER, buf)) < 0)
+    if ((len = virStorageSourceRead(src, 0, VIR_STORAGE_MAX_HEADER, buf)) < 0)
         goto cleanup;
 
     *headerLen = len;
     ret = 0;
 
  cleanup:
-    virStorageFileDeinit(src);
+    virStorageSourceDeinit(src);
     return ret;
 }
 
 
-/* Recursive workhorse for virStorageFileGetMetadata.  */
+/* Recursive workhorse for virStorageSourceGetMetadata.  */
 static int
-virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
-                                 virStorageSourcePtr parent,
-                                 uid_t uid, gid_t gid,
-                                 bool report_broken,
-                                 GHashTable *cycle,
-                                 unsigned int depth)
+virStorageSourceGetMetadataRecurse(virStorageSourcePtr src,
+                                   virStorageSourcePtr parent,
+                                   uid_t uid, gid_t gid,
+                                   bool report_broken,
+                                   GHashTable *cycle,
+                                   unsigned int depth)
 {
     virStorageFileFormat orig_format = src->format;
     size_t headerLen;
@@ -2451,7 +2451,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         src->format = VIR_STORAGE_FILE_AUTO;
 
     /* exit if we can't load information about the current image */
-    rv = virStorageFileSupportsBackingChainTraversal(src);
+    rv = virStorageSourceSupportsBackingChainTraversal(src);
     if (rv <= 0) {
         if (orig_format == VIR_STORAGE_FILE_AUTO)
             return -2;
@@ -2459,8 +2459,8 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         return rv;
     }
 
-    if (virStorageFileGetMetadataRecurseReadHeader(src, parent, uid, gid,
-                                                   &buf, &headerLen, cycle) < 0)
+    if (virStorageSourceGetMetadataRecurseReadHeader(src, parent, uid, gid,
+                                                     &buf, &headerLen, cycle) < 0)
         return -1;
 
     if (virStorageFileProbeGetMetadata(src, buf, headerLen) < 0)
@@ -2484,10 +2484,10 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         if (rv == 1)
             return 0;
 
-        if ((rv = virStorageFileGetMetadataRecurse(backingStore, parent,
-                                                   uid, gid,
-                                                   report_broken,
-                                                   cycle, depth + 1)) < 0) {
+        if ((rv = virStorageSourceGetMetadataRecurse(backingStore, parent,
+                                                     uid, gid,
+                                                     report_broken,
+                                                     cycle, depth + 1)) < 0) {
             if (!report_broken)
                 return 0;
 
@@ -2513,7 +2513,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
 
 
 /**
- * virStorageFileGetMetadata:
+ * virStorageSourceGetMetadata:
  *
  * Extract metadata about the storage volume with the specified
  * image format. If image format is VIR_STORAGE_FILE_AUTO, it
@@ -2534,9 +2534,9 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
  * Caller MUST free result after use via virObjectUnref.
  */
 int
-virStorageFileGetMetadata(virStorageSourcePtr src,
-                          uid_t uid, gid_t gid,
-                          bool report_broken)
+virStorageSourceGetMetadata(virStorageSourcePtr src,
+                            uid_t uid, gid_t gid,
+                            bool report_broken)
 {
     GHashTable *cycle = NULL;
     virStorageType actualType = virStorageSourceGetActualType(src);
@@ -2556,8 +2556,8 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
             src->format = VIR_STORAGE_FILE_RAW;
     }
 
-    ret = virStorageFileGetMetadataRecurse(src, src, uid, gid,
-                                           report_broken, cycle, 1);
+    ret = virStorageSourceGetMetadataRecurse(src, src, uid, gid,
+                                             report_broken, cycle, 1);
 
     virHashFree(cycle);
     return ret;
@@ -2565,7 +2565,7 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
 
 
 /**
- * virStorageFileGetBackingStoreStr:
+ * virStorageSourceGetBackingStoreStr:
  * @src: storage object
  *
  * Extracts the backing store string as stored in the storage volume described
@@ -2574,8 +2574,8 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
  * returned.
  */
 int
-virStorageFileGetBackingStoreStr(virStorageSourcePtr src,
-                                 char **backing)
+virStorageSourceGetBackingStoreStr(virStorageSourcePtr src,
+                                   char **backing)
 {
     ssize_t headerLen;
     int rv;
@@ -2585,19 +2585,19 @@ virStorageFileGetBackingStoreStr(virStorageSourcePtr src,
     *backing = NULL;
 
     /* exit if we can't load information about the current image */
-    if (!virStorageFileSupportsBackingChainTraversal(src))
+    if (!virStorageSourceSupportsBackingChainTraversal(src))
         return 0;
 
-    rv = virStorageFileAccess(src, F_OK);
+    rv = virStorageSourceAccess(src, F_OK);
     if (rv == -2)
         return 0;
     if (rv < 0) {
-        virStorageFileReportBrokenChain(errno, src, src);
+        virStorageSourceReportBrokenChain(errno, src, src);
         return -1;
     }
 
-    if ((headerLen = virStorageFileRead(src, 0, VIR_STORAGE_MAX_HEADER,
-                                        &buf)) < 0) {
+    if ((headerLen = virStorageSourceRead(src, 0, VIR_STORAGE_MAX_HEADER,
+                                          &buf)) < 0) {
         if (headerLen == -2)
             return 0;
         return -1;

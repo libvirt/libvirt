@@ -567,13 +567,13 @@ qemuSnapshotPrepareDiskExternal(virDomainObjPtr vm,
     }
 
     if (virStorageSourceIsLocalStorage(snapdisk->src)) {
-        if (virStorageFileInit(snapdisk->src) < 0)
+        if (virStorageSourceInit(snapdisk->src) < 0)
             return -1;
 
-        rc = virStorageFileStat(snapdisk->src, &st);
+        rc = virStorageSourceStat(snapdisk->src, &st);
         err = errno;
 
-        virStorageFileDeinit(snapdisk->src);
+        virStorageSourceDeinit(snapdisk->src);
 
         if (rc < 0) {
             if (err != ENOENT) {
@@ -867,13 +867,13 @@ qemuSnapshotDiskCleanup(qemuSnapshotDiskDataPtr data,
             }
 
             if (data[i].created &&
-                virStorageFileUnlink(data[i].src) < 0) {
+                virStorageSourceUnlink(data[i].src) < 0) {
                 VIR_WARN("Unable to remove just-created %s",
                          NULLSTR(data[i].src->path));
             }
 
             if (data[i].initialized)
-                virStorageFileDeinit(data[i].src);
+                virStorageSourceDeinit(data[i].src);
 
             if (data[i].prepared)
                 qemuDomainStorageSourceAccessRevoke(driver, vm, data[i].src);
@@ -1072,13 +1072,13 @@ qemuSnapshotDiskPrepareOne(virDomainObjPtr vm,
             return -1;
     }
 
-    supportsCreate = virStorageFileSupportsCreate(dd->src);
+    supportsCreate = virStorageSourceSupportsCreate(dd->src);
 
     /* relative backing store paths need to be updated so that relative
      * block commit still works. With blockdev we must update it when doing
      * commit anyways so it's skipped here */
     if (!blockdev &&
-        virStorageFileSupportsBackingChainTraversal(dd->src))
+        virStorageSourceSupportsBackingChainTraversal(dd->src))
         updateRelativeBacking = true;
 
     if (supportsCreate || updateRelativeBacking) {
@@ -1091,7 +1091,7 @@ qemuSnapshotDiskPrepareOne(virDomainObjPtr vm,
             if (updateRelativeBacking) {
                 g_autofree char *backingStoreStr = NULL;
 
-                if (virStorageFileGetBackingStoreStr(dd->src, &backingStoreStr) < 0)
+                if (virStorageSourceGetBackingStoreStr(dd->src, &backingStoreStr) < 0)
                     return -1;
                 if (backingStoreStr != NULL) {
                     if (virStorageIsRelative(backingStoreStr))
@@ -1101,7 +1101,7 @@ qemuSnapshotDiskPrepareOne(virDomainObjPtr vm,
         } else {
             /* pre-create the image file so that we can label it before handing it to qemu */
             if (supportsCreate && dd->src->type != VIR_STORAGE_TYPE_BLOCK) {
-                if (virStorageFileCreate(dd->src) < 0) {
+                if (virStorageSourceCreate(dd->src) < 0) {
                     virReportSystemError(errno, _("failed to create image file '%s'"),
                                          NULLSTR(dd->src->path));
                     return -1;
@@ -1251,7 +1251,7 @@ qemuSnapshotDiskUpdateSource(virDomainObjPtr vm,
 
     /* storage driver access won'd be needed */
     if (dd->initialized)
-        virStorageFileDeinit(dd->src);
+        virStorageSourceDeinit(dd->src);
 
     if (qemuSecurityMoveImageMetadata(driver, vm, dd->disk->src, dd->src) < 0)
         VIR_WARN("Unable to move disk metadata on vm %s", vm->def->name);

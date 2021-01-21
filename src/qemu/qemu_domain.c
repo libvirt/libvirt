@@ -7160,7 +7160,7 @@ qemuDomainStorageFileInit(virQEMUDriverPtr driver,
 
     qemuDomainGetImageIds(cfg, vm, src, parent, &uid, &gid);
 
-    if (virStorageFileInitAs(src, uid, gid) < 0)
+    if (virStorageSourceInitAs(src, uid, gid) < 0)
         return -1;
 
     return 0;
@@ -7298,7 +7298,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
         if (!virFileExists(disksrc->path)) {
             if (report_broken)
-                virStorageFileReportBrokenChain(errno, disksrc, disksrc);
+                virStorageSourceReportBrokenChain(errno, disksrc, disksrc);
 
             return -1;
         }
@@ -7322,7 +7322,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
     /* skip to the end of the chain if there is any */
     while (virStorageSourceHasBacking(src)) {
         if (report_broken) {
-            int rv = virStorageFileSupportsAccess(src);
+            int rv = virStorageSourceSupportsAccess(src);
 
             if (rv < 0)
                 return -1;
@@ -7331,13 +7331,13 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                 if (qemuDomainStorageFileInit(driver, vm, src, disksrc) < 0)
                     return -1;
 
-                if (virStorageFileAccess(src, F_OK) < 0) {
-                    virStorageFileReportBrokenChain(errno, src, disksrc);
-                    virStorageFileDeinit(src);
+                if (virStorageSourceAccess(src, F_OK) < 0) {
+                    virStorageSourceReportBrokenChain(errno, src, disksrc);
+                    virStorageSourceDeinit(src);
                     return -1;
                 }
 
-                virStorageFileDeinit(src);
+                virStorageSourceDeinit(src);
             }
         }
         src = src->backingStore;
@@ -7354,7 +7354,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
     qemuDomainGetImageIds(cfg, vm, src, disksrc, &uid, &gid);
 
-    if (virStorageFileGetMetadata(src, uid, gid, report_broken) < 0)
+    if (virStorageSourceGetMetadata(src, uid, gid, report_broken) < 0)
         return -1;
 
     for (n = src->backingStore; virStorageSourceIsBacking(n); n = n->backingStore) {

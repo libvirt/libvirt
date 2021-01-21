@@ -135,7 +135,7 @@ qemuBackupDiskDataCleanupOne(virDomainObjPtr vm,
         }
 
         if (dd->created) {
-            if (virStorageFileUnlink(dd->store) < 0)
+            if (virStorageSourceUnlink(dd->store) < 0)
                 VIR_WARN("Unable to remove just-created %s", NULLSTR(dd->store->path));
         }
 
@@ -144,7 +144,7 @@ qemuBackupDiskDataCleanupOne(virDomainObjPtr vm,
     }
 
     if (dd->initialized)
-        virStorageFileDeinit(dd->store);
+        virStorageSourceDeinit(dd->store);
 
     if (dd->blockjob)
         qemuBlockJobStartupFinalize(vm, dd->blockjob);
@@ -429,7 +429,7 @@ qemuBackupDiskPrepareOneStorage(virDomainObjPtr vm,
 
     if (!reuse_external &&
         dd->store->type == VIR_STORAGE_TYPE_FILE &&
-        virStorageFileSupportsCreate(dd->store)) {
+        virStorageSourceSupportsCreate(dd->store)) {
 
         if (virFileExists(dd->store->path)) {
             virReportError(VIR_ERR_INVALID_ARG,
@@ -443,7 +443,7 @@ qemuBackupDiskPrepareOneStorage(virDomainObjPtr vm,
 
         dd->initialized = true;
 
-        if (virStorageFileCreate(dd->store) < 0) {
+        if (virStorageSourceCreate(dd->store) < 0) {
             virReportSystemError(errno,
                                  _("failed to create image file '%s'"),
                                  NULLSTR(dd->store->path));
