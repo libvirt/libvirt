@@ -63,7 +63,7 @@ struct _hypervWqlQuery {
 int hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
                       hypervObject **list);
 
-void hypervFreeObject(hypervObject *object);
+void hypervFreeObject(void *object);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(hypervObject, hypervFreeObject);
 
 

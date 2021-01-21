@@ -98,6 +98,8 @@ class WmiClass:
 
         typedef = "typedef struct _%s %s;\n" % (self.name, self.name)
         typedef += "typedef struct _%s_Data %s_Data;\n" % (self.name, self.name)
+        typedef += "G_DEFINE_AUTOPTR_CLEANUP_FUNC(%s, hypervFreeObject);\n" % self.name
+        typedef += "\n"
 
         return typedef
 
@@ -307,6 +309,8 @@ def main():
     classes_typedef.write(notice)
     classes_header.write(notice)
     classes_source.write(notice)
+
+    classes_typedef.write("void hypervFreeObject(void *object);\n\n\n")
 
     names = sorted(wmi_classes_by_name.keys())
 

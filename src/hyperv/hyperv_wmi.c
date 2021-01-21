@@ -1068,7 +1068,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
 
 
 void
-hypervFreeObject(hypervObject *object)
+hypervFreeObject(void *object)
 {
     hypervObject *next;
     WsSerializerContextH serializerContext;
@@ -1076,15 +1076,15 @@ hypervFreeObject(hypervObject *object)
     if (object == NULL)
         return;
 
-    serializerContext = wsmc_get_serialization_context(object->priv->client);
+    serializerContext = wsmc_get_serialization_context(((hypervObject *)object)->priv->client);
 
     while (object != NULL) {
-        next = object->next;
+        next = ((hypervObject *)object)->next;
 
-        object->priv = NULL;
+        ((hypervObject *)object)->priv = NULL;
 
-        if (ws_serializer_free_mem(serializerContext, object->data,
-                                   object->info->serializerInfo) < 0) {
+        if (ws_serializer_free_mem(serializerContext, ((hypervObject *)object)->data,
+                                   ((hypervObject *)object)->info->serializerInfo) < 0) {
             VIR_ERROR(_("Could not free deserialized data"));
         }
 
