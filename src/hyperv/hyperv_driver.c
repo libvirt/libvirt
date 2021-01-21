@@ -1957,25 +1957,19 @@ static int
 hypervDomainGetState(virDomainPtr domain, int *state, int *reason,
                      unsigned int flags)
 {
-    int result = -1;
-    Msvm_ComputerSystem *computerSystem = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
 
     virCheckFlags(0, -1);
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
-        goto cleanup;
+        return -1;
 
     *state = hypervMsvmComputerSystemEnabledStateToDomainState(computerSystem);
 
     if (reason != NULL)
         *reason = 0;
 
-    result = 0;
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
-
-    return result;
+    return 0;
 }
 
 
