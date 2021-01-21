@@ -2443,17 +2443,16 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
 static int
 hypervDomainAttachDeviceFlags(virDomainPtr domain, const char *xml, unsigned int flags)
 {
-    int result = -1;
     hypervPrivate *priv = domain->conn->privateData;
     g_autoptr(virDomainDef) def = NULL;
     g_autoptr(virDomainDeviceDef) dev = NULL;
-    Win32_ComputerSystem *host = NULL;
+    g_autoptr(Win32_ComputerSystem) host = NULL;
     char *hostname = NULL;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     Msvm_ResourceAllocationSettingData *controller = NULL;
-    Msvm_ResourceAllocationSettingData *rasd = NULL;
+    g_autoptr(Msvm_ResourceAllocationSettingData) rasd = NULL;
     Msvm_ResourceAllocationSettingData *entry = NULL;
-    Msvm_VirtualSystemSettingData *vssd = NULL;
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
     int num_scsi = 0;
 
     virCheckFlags(0, -1);
@@ -2462,16 +2461,16 @@ hypervDomainAttachDeviceFlags(virDomainPtr domain, const char *xml, unsigned int
 
     /* get domain definition */
     if (!(def = virDomainDefNew()))
-        return result;
+        return -1;
 
     /* get domain device definition */
     dev = virDomainDeviceDefParse(xml, def, priv->xmlopt, NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (!dev)
-        goto cleanup;
+        return -1;
 
     /* get the host computer system */
     if (hypervGetPhysicalSystemList(priv, &host) < 0)
-        goto cleanup;
+        return -1;
 
     hostname = host->data->Name;
 
@@ -2479,10 +2478,10 @@ hypervDomainAttachDeviceFlags(virDomainPtr domain, const char *xml, unsigned int
     case VIR_DOMAIN_DEVICE_DISK:
         /* get our controller */
         if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
-            goto cleanup;
+            return -1;
 
         if (hypervGetResourceAllocationSD(priv, vssd->data->InstanceID, &rasd) < 0)
-            goto cleanup;
+            return -1;
 
         entry = rasd;
         switch (dev->data.disk->bus) {
@@ -2496,7 +2495,7 @@ hypervDomainAttachDeviceFlags(virDomainPtr domain, const char *xml, unsigned int
                 entry = entry->next;
             }
             if (!entry)
-                goto cleanup;
+                return -1;
             break;
         case VIR_DOMAIN_DISK_BUS_SCSI:
             while (entry) {
@@ -2508,7 +2507,7 @@ hypervDomainAttachDeviceFlags(virDomainPtr domain, const char *xml, unsigned int
                 entry = entry->next;
             }
             if (!entry)
-                goto cleanup;
+                return -1;
             break;
         case VIR_DOMAIN_DISK_BUS_FDC:
             while (entry) {
@@ -2519,31 +2518,24 @@ hypervDomainAttachDeviceFlags(virDomainPtr domain, const char *xml, unsigned int
                 entry = entry->next;
             }
             if (!entry)
-                goto cleanup;
+                return -1;
             break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid disk bus in definition"));
-            goto cleanup;
+            return -1;
         }
 
         if (hypervDomainAttachStorageVolume(domain, dev->data.disk, controller, hostname) < 0)
-            goto cleanup;
+            return -1;
         break;
     default:
         /* unsupported device type */
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Attaching devices of type %d is not implemented"), dev->type);
-        goto cleanup;
+        return -1;
     }
 
-    result = 0;
-
- cleanup:
-    hypervFreeObject((hypervObject *)vssd);
-    hypervFreeObject((hypervObject *)rasd);
-    hypervFreeObject((hypervObject *)host);
-
-    return result;
+    return 0;
 }
 
 
