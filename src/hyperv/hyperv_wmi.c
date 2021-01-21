@@ -398,38 +398,27 @@ hypervGetCimTypeInfo(hypervCimTypePtr typemap, const char *name,
 static int
 hypervCreateInvokeXmlDoc(hypervInvokeParamsListPtr params, WsXmlDocH *docRoot)
 {
-    int result = -1;
-    char *method = NULL;
+    g_autofree char *method = g_strdup_printf("%s_INPUT", params->method);
+    g_auto(WsXmlDocH) invokeXmlDocRoot = ws_xml_create_doc(NULL, method);
     WsXmlNodeH xmlNodeMethod = NULL;
 
-    method = g_strdup_printf("%s_INPUT", params->method);
-
-    *docRoot = ws_xml_create_doc(NULL, method);
-    if (*docRoot == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not instantiate XML document"));
-        goto cleanup;
+    if (!invokeXmlDocRoot) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not instantiate XML document"));
+        return -1;
     }
 
-    xmlNodeMethod = xml_parser_get_root(*docRoot);
-    if (xmlNodeMethod == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not get root node of XML document"));
-        goto cleanup;
+    xmlNodeMethod = xml_parser_get_root(invokeXmlDocRoot);
+    if (!xmlNodeMethod) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not get root node of XML document"));
+        return -1;
     }
 
     /* add resource URI as namespace */
     ws_xml_set_ns(xmlNodeMethod, params->resourceUri, "p");
 
-    result = 0;
+    *docRoot = g_steal_pointer(&invokeXmlDocRoot);
 
- cleanup:
-    if (result < 0 && *docRoot != NULL) {
-        ws_xml_destroy_doc(*docRoot);
-        *docRoot = NULL;
-    }
-    VIR_FREE(method);
-    return result;
+    return 0;
 }
 
 
