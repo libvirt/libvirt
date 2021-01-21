@@ -2644,57 +2644,49 @@ hypervDomainGetSchedulerParametersFlags(virDomainPtr domain,
                                         int *nparams, unsigned int flags)
 {
     hypervPrivate *priv = domain->conn->privateData;
-    Msvm_ComputerSystem *computerSystem = NULL;
-    Msvm_VirtualSystemSettingData *vssd = NULL;
-    Msvm_ProcessorSettingData *proc_sd = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
+    g_autoptr(Msvm_ProcessorSettingData) proc_sd = NULL;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     int saved_nparams = 0;
-    int result = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
-        goto cleanup;
+        return -1;
 
     /* get info from host */
     virUUIDFormat(domain->uuid, uuid_string);
 
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervGetProcessorSD(priv, vssd->data->InstanceID, &proc_sd) < 0)
-        goto cleanup;
+        return -1;
 
     /* parse it all out */
     if (virTypedParameterAssign(&params[0], VIR_DOMAIN_SCHEDULER_LIMIT,
                                 VIR_TYPED_PARAM_LLONG, proc_sd->data->Limit) < 0)
-        goto cleanup;
+        return -1;
     saved_nparams++;
 
     if (*nparams > saved_nparams) {
         if (virTypedParameterAssign(&params[1], VIR_DOMAIN_SCHEDULER_RESERVATION,
                                     VIR_TYPED_PARAM_LLONG, proc_sd->data->Reservation) < 0)
-            goto cleanup;
+            return -1;
         saved_nparams++;
     }
 
     if (*nparams > saved_nparams) {
         if (virTypedParameterAssign(&params[2], VIR_DOMAIN_SCHEDULER_WEIGHT,
                                     VIR_TYPED_PARAM_UINT, proc_sd->data->Weight) < 0)
-            goto cleanup;
+            return -1;
         saved_nparams++;
     }
 
     *nparams = saved_nparams;
 
-    result = 0;
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
-    hypervFreeObject((hypervObject *)vssd);
-    hypervFreeObject((hypervObject *)proc_sd);
-
-    return result;
+    return 0;
 }
 
 
