@@ -418,8 +418,11 @@ virNetworkDHCPLeaseTimeDefParseXML(virNetworkDHCPLeaseTimeDefPtr *lease,
     if (!(expirystr = virXMLPropString(node, "expiry")))
         return 0;
 
-    if (virStrToLong_ul(expirystr, NULL, 10, &expiry) < 0)
+    if (virStrToLong_ul(expirystr, NULL, 10, &expiry) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("failed to parse expiry value '%s'"), expirystr);
         return -1;
+    }
 
     if ((unitstr = virXMLPropString(node, "unit"))) {
         if ((unit = virNetworkDHCPLeaseTimeUnitTypeFromString(unitstr)) < 0) {
