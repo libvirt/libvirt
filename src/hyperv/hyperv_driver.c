@@ -2117,52 +2117,51 @@ hypervDomainGetVcpus(virDomainPtr domain,
 static char *
 hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
-    char *xml = NULL;
     hypervPrivate *priv = domain->conn->privateData;
-    virDomainDefPtr def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
-    Msvm_ComputerSystem *computerSystem = NULL;
-    Msvm_VirtualSystemSettingData *virtualSystemSettingData = NULL;
-    Msvm_ProcessorSettingData *processorSettingData = NULL;
-    Msvm_MemorySettingData *memorySettingData = NULL;
-    Msvm_ResourceAllocationSettingData *rasd = NULL;
-    Msvm_StorageAllocationSettingData *sasd = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
+    g_autoptr(Msvm_VirtualSystemSettingData) virtualSystemSettingData = NULL;
+    g_autoptr(Msvm_ProcessorSettingData) processorSettingData = NULL;
+    g_autoptr(Msvm_MemorySettingData) memorySettingData = NULL;
+    g_autoptr(Msvm_ResourceAllocationSettingData) rasd = NULL;
+    g_autoptr(Msvm_StorageAllocationSettingData) sasd = NULL;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
     if (!(def = virDomainDefNew()))
-        goto cleanup;
+        return NULL;
 
     virUUIDFormat(domain->uuid, uuid_string);
 
     /* Get Msvm_ComputerSystem */
     if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
-        goto cleanup;
+        return NULL;
 
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string,
                                                       &virtualSystemSettingData) < 0)
-        goto cleanup;
+        return NULL;
 
     if (hypervGetProcessorSD(priv,
                              virtualSystemSettingData->data->InstanceID,
                              &processorSettingData) < 0)
-        goto cleanup;
+        return NULL;
 
     if (hypervGetMemorySD(priv,
                           virtualSystemSettingData->data->InstanceID,
                           &memorySettingData) < 0)
-        goto cleanup;
+        return NULL;
 
     if (hypervGetResourceAllocationSD(priv,
                                       virtualSystemSettingData->data->InstanceID,
                                       &rasd) < 0) {
-        goto cleanup;
+        return NULL;
     }
 
     if (hypervGetStorageAllocationSD(priv,
                                      virtualSystemSettingData->data->InstanceID,
                                      &sasd) < 0) {
-        goto cleanup;
+        return NULL;
     }
 
     /* Fill struct */
@@ -2207,10 +2206,10 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     virDomainDefSetMemoryTotal(def, memorySettingData->data->VirtualQuantity * 1024);
 
     if (virDomainDefSetVcpusMax(def, processorSettingData->data->VirtualQuantity, NULL) < 0)
-        goto cleanup;
+        return NULL;
 
     if (virDomainDefSetVcpus(def, processorSettingData->data->VirtualQuantity) < 0)
-        goto cleanup;
+        return NULL;
 
     def->os.type = VIR_DOMAIN_OSTYPE_HVM;
 
@@ -2227,22 +2226,10 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     def->ncontrollers = 0;
 
     if (hypervDomainDefParseStorage(priv, def, rasd, sasd) < 0)
-        goto cleanup;
+        return NULL;
 
     /* XXX xmlopts must be non-NULL */
-    xml = virDomainDefFormat(def, NULL,
-                             virDomainDefFormatConvertXMLFlags(flags));
-
- cleanup:
-    virDomainDefFree(def);
-    hypervFreeObject((hypervObject *)computerSystem);
-    hypervFreeObject((hypervObject *)virtualSystemSettingData);
-    hypervFreeObject((hypervObject *)processorSettingData);
-    hypervFreeObject((hypervObject *)memorySettingData);
-    hypervFreeObject((hypervObject *)rasd);
-    hypervFreeObject((hypervObject *)sasd);
-
-    return xml;
+    return virDomainDefFormat(def, NULL, virDomainDefFormatConvertXMLFlags(flags));
 }
 
 
