@@ -1654,15 +1654,12 @@ hypervDomainLookupByID(virConnectPtr conn, int id)
 {
     virDomainPtr domain = NULL;
     hypervPrivate *priv = conn->privateData;
-    Msvm_ComputerSystem *computerSystem = NULL;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
 
     if (hypervGetVirtualSystemByID(priv, id, &computerSystem) < 0)
-        goto cleanup;
+        return NULL;
 
     hypervMsvmComputerSystemToDomain(conn, computerSystem, &domain);
-
- cleanup:
-    hypervFreeObject((hypervObject *)computerSystem);
 
     return domain;
 }
