@@ -1545,18 +1545,19 @@ hypervMsvmVSMSAddResourceSettings(virDomainPtr domain,
                                   hypervWmiClassInfoPtr wmiInfo,
                                   WsXmlDocH *response)
 {
-    int result = -1;
     hypervPrivate *priv = domain->conn->privateData;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
-    Msvm_VirtualSystemSettingData *vssd = NULL;
-    GHashTable *resourceSettings = *resourceSettingsPtr;
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
+    g_autoptr(GHashTable) resourceSettings = *resourceSettingsPtr;
     g_autoptr(hypervInvokeParamsList) params = NULL;
     g_auto(virBuffer) eprQuery = VIR_BUFFER_INITIALIZER;
+
+    *resourceSettingsPtr = NULL;
 
     virUUIDFormat(domain->uuid, uuid_string);
 
     if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
-        goto cleanup;
+        return -1;
 
     virBufferEscapeSQL(&eprQuery,
                        MSVM_VIRTUALSYSTEMSETTINGDATA_WQL_SELECT "WHERE InstanceID='%s'",
@@ -1567,27 +1568,21 @@ hypervMsvmVSMSAddResourceSettings(virDomainPtr domain,
                                           Msvm_VirtualSystemManagementService_WmiInfo);
 
     if (!params)
-        goto cleanup;
+        return -1;
 
     if (hypervAddEprParam(params, "AffectedConfiguration",
                           &eprQuery, Msvm_VirtualSystemSettingData_WmiInfo) < 0)
-        goto cleanup;
+        return -1;
 
     if (hypervAddEmbeddedParam(params, "ResourceSettings", &resourceSettings, wmiInfo) < 0) {
         hypervFreeEmbeddedParam(resourceSettings);
-        goto cleanup;
+        return -1;
     }
 
     if (hypervInvokeMethod(priv, &params, response) < 0)
-        goto cleanup;
+        return -1;
 
-    result = 0;
-
- cleanup:
-    hypervFreeObject((hypervObject *)vssd);
-    *resourceSettingsPtr = NULL;
-
-    return result;
+    return 0;
 }
 
 
@@ -1596,29 +1591,25 @@ hypervMsvmVSMSModifyResourceSettings(hypervPrivate *priv,
                                      GHashTable **resourceSettingsPtr,
                                      hypervWmiClassInfoPtr wmiInfo)
 {
-    int result = -1;
-    GHashTable *resourceSettings = *resourceSettingsPtr;
+    g_autoptr(GHashTable) resourceSettings = *resourceSettingsPtr;
     g_autoptr(hypervInvokeParamsList) params = NULL;
+
+    *resourceSettingsPtr = NULL;
 
     params = hypervCreateInvokeParamsList("ModifyResourceSettings",
                                           MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
                                           Msvm_VirtualSystemManagementService_WmiInfo);
 
     if (!params)
-        goto cleanup;
+        return -1;
 
     if (hypervAddEmbeddedParam(params, "ResourceSettings", &resourceSettings, wmiInfo) < 0) {
         hypervFreeEmbeddedParam(resourceSettings);
-        goto cleanup;
+        return -1;
     }
 
     if (hypervInvokeMethod(priv, &params, NULL) < 0)
-        goto cleanup;
+        return -1;
 
-    result = 0;
-
- cleanup:
-    *resourceSettingsPtr = NULL;
-
-    return result;
+    return 0;
 }
