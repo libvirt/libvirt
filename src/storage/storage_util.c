@@ -62,6 +62,7 @@
 #include "vircrypto.h"
 #include "viruuid.h"
 #include "virstoragefile.h"
+#include "virstoragefileprobe.h"
 #include "storage_util.h"
 #include "virlog.h"
 #include "virfile.h"

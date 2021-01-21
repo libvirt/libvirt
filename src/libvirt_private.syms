@@ -3148,7 +3148,6 @@ virStorageFileInit;
 virStorageFileInitAs;
 virStorageFileParseBackingStoreStr;
 virStorageFileParseChainIndex;
-virStorageFileProbeFormat;
 virStorageFileRead;
 virStorageFileReportBrokenChain;
 virStorageFileStat;
@@ -3210,6 +3209,11 @@ virStorageTypeToString;
 
 # util/virstoragefilebackend.h
 virStorageFileBackendRegister;
+
+
+# util/virstoragefileprobe.h
+virStorageFileProbeFormat;
+virStorageFileProbeGetMetadata;
 
 
 # util/virstring.h

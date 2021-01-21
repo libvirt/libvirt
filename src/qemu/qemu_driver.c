@@ -83,6 +83,7 @@
 #include "domain_nwfilter.h"
 #include "virhook.h"
 #include "virstoragefile.h"
+#include "virstoragefileprobe.h"
 #include "virfile.h"
 #include "virfdstream.h"
 #include "configmake.h"

@@ -306,6 +306,7 @@
 @SRCDIR@src/util/virstorageencryption.c
 @SRCDIR@src/util/virstoragefile.c
 @SRCDIR@src/util/virstoragefilebackend.c
+@SRCDIR@src/util/virstoragefileprobe.c
 @SRCDIR@src/util/virstring.c
 @SRCDIR@src/util/virsysinfo.c
 @SRCDIR@src/util/virsystemd.c

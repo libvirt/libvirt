@@ -31,15 +31,6 @@
 #include "virenum.h"
 #include "virpci.h"
 
-/* Minimum header size required to probe all known formats with
- * virStorageFileProbeFormat, or obtain metadata from a known format.
- * Rounded to multiple of 512 (ISO has a 5-byte magic at offset
- * 32769).  Some formats can be probed with fewer bytes.  Although
- * some formats theoretically permit metadata that can rely on offsets
- * beyond this size, in practice that doesn't matter.  */
-#define VIR_STORAGE_MAX_HEADER 0x8200
-
-
 /* Types of disk backends (host resource).  Comparable to the public
  * virStorageVolType, except we have an undetermined state, don't have
  * a netdir type, and add a volume type for reference through a
@@ -400,8 +391,6 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageSource, virObjectUnref);
 #ifndef DEV_BSIZE
 # define DEV_BSIZE 512
 #endif
-
-int virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid);
 
 virStorageSourcePtr virStorageFileGetMetadataFromFD(const char *path,
                                                     int fd,
