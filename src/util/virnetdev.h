@@ -250,6 +250,10 @@ int virNetDevGetPhysPortID(const char *ifname,
                            char **physPortID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     G_GNUC_WARN_UNUSED_RESULT;
+int virNetDevGetPhysPortName(const char *ifname,
+                           char **physPortName)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevGetVirtualFunctions(const char *pfname,
                                  char ***vfname,
