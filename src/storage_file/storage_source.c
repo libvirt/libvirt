@@ -1421,16 +1421,12 @@ virStorageSourceGetMetadata(virStorageSourcePtr src,
                             uid_t uid, gid_t gid,
                             bool report_broken)
 {
-    GHashTable *cycle = NULL;
+    g_autoptr(GHashTable) cycle = virHashNew(NULL);
     virStorageType actualType = virStorageSourceGetActualType(src);
-    int ret = -1;
 
     VIR_DEBUG("path=%s format=%d uid=%u gid=%u report_broken=%d",
               src->path, src->format, (unsigned int)uid, (unsigned int)gid,
               report_broken);
-
-    if (!(cycle = virHashNew(NULL)))
-        return -1;
 
     if (src->format <= VIR_STORAGE_FILE_NONE) {
         if (actualType == VIR_STORAGE_TYPE_DIR)
@@ -1439,9 +1435,6 @@ virStorageSourceGetMetadata(virStorageSourcePtr src,
             src->format = VIR_STORAGE_FILE_RAW;
     }
 
-    ret = virStorageSourceGetMetadataRecurse(src, src, uid, gid,
-                                             report_broken, cycle, 1);
-
-    virHashFree(cycle);
-    return ret;
+    return virStorageSourceGetMetadataRecurse(src, src, uid, gid,
+                                              report_broken, cycle, 1);
 }
