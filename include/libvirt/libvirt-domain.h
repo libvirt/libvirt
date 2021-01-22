@@ -5119,4 +5119,13 @@ int virDomainAuthorizedSSHKeysSet(virDomainPtr domain,
                                   unsigned int nkeys,
                                   unsigned int flags);
 
+typedef enum {
+    VIR_DOMAIN_MESSAGE_DEPRECATION = (1 << 0),
+    VIR_DOMAIN_MESSAGE_TAINTING = (1 << 1),
+} virDomainMessageType;
+
+int virDomainGetMessages(virDomainPtr domain,
+                         char ***msgs,
+                         unsigned int flags);
+
 #endif /* LIBVIRT_DOMAIN_H */

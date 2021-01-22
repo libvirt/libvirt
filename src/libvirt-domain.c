@@ -13102,3 +13102,57 @@ virDomainAuthorizedSSHKeysSet(virDomainPtr domain,
     virDispatchError(conn);
     return -1;
 }
+
+
+/**
+ * virDomainGetMessages:
+ * @domain: a domain object
+ * @msgs: pointer to a variable to store messages
+ * @flags: zero or more virDomainMessageType flags
+ *
+ * Fetch a list of all messages recorded against the VM and
+ * store them into @msgs array which is allocated upon
+ * successful return and is NULL terminated. The caller is
+ * responsible for freeing @msgs when no longer needed.
+ *
+ * If @flags is zero then all messages are reported. The
+ * virDomainMessageType constants can be used to restrict
+ * results to certain types of message.
+ *
+ * Note it is hypervisor dependant whether messages are
+ * available for shutoff guests, or running guests, or
+ * both. Thus a client should be prepared to re-fetch
+ * messages when a guest transitions between running
+ * and shutoff states.
+ *
+ * Returns: number of messages stored in @msgs,
+ *          -1 otherwise.
+ */
+int
+virDomainGetMessages(virDomainPtr domain,
+                     char ***msgs,
+                     unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "msgs=%p, flags=0x%x", msgs, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+    virCheckNonNullArgGoto(msgs, error);
+
+    if (conn->driver->domainGetMessages) {
+        int ret;
+        ret = conn->driver->domainGetMessages(domain, msgs, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(conn);
+    return -1;
+}
