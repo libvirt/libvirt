@@ -120,4 +120,5 @@ virQEMUCapsAddMachine(virQEMUCapsPtr qemuCaps,
                       bool hotplugCpus,
                       bool isDefault,
                       bool numaMemSupported,
-                      const char *defaultRAMid);
+                      const char *defaultRAMid,
+                      bool deprecated);

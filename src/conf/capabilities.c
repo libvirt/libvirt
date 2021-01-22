@@ -1244,6 +1244,8 @@ virCapabilitiesFormatGuestXML(virCapsGuestPtr *guests,
                 virBufferAsprintf(buf, " canonical='%s'", machine->canonical);
             if (machine->maxCpus > 0)
                 virBufferAsprintf(buf, " maxCpus='%d'", machine->maxCpus);
+            if (machine->deprecated)
+                virBufferAddLit(buf, " deprecated='yes'");
             virBufferAsprintf(buf, ">%s</machine>\n", machine->name);
         }
 

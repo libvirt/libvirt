@@ -373,7 +373,8 @@ int qemuTestCapsCacheInsert(virFileCachePtr cache,
                                       false,
                                       false,
                                       true,
-                                      defaultRAMid);
+                                      defaultRAMid,
+                                      false);
                 virQEMUCapsSet(tmpCaps, QEMU_CAPS_TCG);
             }
             if (kvm_machines[i] != NULL) {
@@ -385,9 +386,10 @@ int qemuTestCapsCacheInsert(virFileCachePtr cache,
                                           NULL,
                                           0,
                                           false,
-                                      false,
+                                          false,
                                           true,
-                                          defaultRAMid);
+                                          defaultRAMid,
+                                          false);
                     virQEMUCapsSet(tmpCaps, QEMU_CAPS_KVM);
                 }
             }

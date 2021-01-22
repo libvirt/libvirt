@@ -649,7 +649,7 @@
   <machine type='kvm' name='g3beige' maxCpus='1' defaultCPU='750_v3.1-powerpc64-cpu'/>
   <machine type='kvm' name='pseries-3.0' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='pseries-2.10' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu' numaMemSupported='yes'/>
-  <machine type='kvm' name='prep' maxCpus='1' defaultCPU='602-powerpc64-cpu'/>
+  <machine type='kvm' name='prep' maxCpus='1' defaultCPU='602-powerpc64-cpu' deprecated='yes'/>
   <machine type='kvm' name='pseries-2.11' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='pseries-2.12' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu' numaMemSupported='yes'/>
   <machine type='kvm' name='pseries-2.9' hotplugCpus='yes' maxCpus='1024' defaultCPU='host-powerpc64-cpu' numaMemSupported='yes'/>
@@ -1117,7 +1117,7 @@
   <machine type='tcg' name='g3beige' maxCpus='1' defaultCPU='750_v3.1-powerpc64-cpu'/>
   <machine type='tcg' name='pseries-3.0' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='pseries-2.10' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu' numaMemSupported='yes'/>
-  <machine type='tcg' name='prep' maxCpus='1' defaultCPU='602-powerpc64-cpu'/>
+  <machine type='tcg' name='prep' maxCpus='1' defaultCPU='602-powerpc64-cpu' deprecated='yes'/>
   <machine type='tcg' name='pseries-2.11' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='pseries-2.12' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu' numaMemSupported='yes'/>
   <machine type='tcg' name='pseries-2.9' hotplugCpus='yes' maxCpus='1024' defaultCPU='power8_v2.0-powerpc64-cpu' numaMemSupported='yes'/>

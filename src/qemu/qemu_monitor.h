@@ -1178,6 +1178,7 @@ struct _qemuMonitorMachineInfo {
     char *defaultCPU;
     bool numaMemSupported;
     char *defaultRAMid;
+    bool deprecated;
 };
 
 int qemuMonitorGetMachines(qemuMonitorPtr mon,

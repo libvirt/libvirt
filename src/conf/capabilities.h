@@ -56,6 +56,7 @@ struct _virCapsGuestMachine {
     char *name;
     char *canonical;
     unsigned int maxCpus;
+    bool deprecated;
 };
 
 struct _virCapsGuestDomainInfo {

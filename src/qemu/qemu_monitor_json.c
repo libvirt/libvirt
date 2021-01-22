@@ -5814,6 +5814,10 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
 
             info->defaultRAMid = g_strdup(tmp);
         }
+
+        if (virJSONValueObjectHasKey(child, "deprecated") &&
+            virJSONValueObjectGetBoolean(child, "deprecated", &info->deprecated) < 0)
+            goto cleanup;
     }
 
     ret = n;

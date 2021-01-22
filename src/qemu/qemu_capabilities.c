@@ -625,6 +625,7 @@ struct _virQEMUCapsMachineType {
     char *defaultCPU;
     bool numaMemSupported;
     char *defaultRAMid;
+    bool deprecated;
 };
 
 typedef struct _virQEMUCapsHostCPUData virQEMUCapsHostCPUData;
@@ -944,6 +945,7 @@ virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
             mach->name = g_strdup(accel->machineTypes[i].name);
         }
         mach->maxCpus = accel->machineTypes[i].maxCpus;
+        mach->deprecated = accel->machineTypes[i].deprecated;
     }
 
     /* Make sure all canonical machine types also have their own entry so that
@@ -977,6 +979,7 @@ virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
             }
             mach->name = g_strdup(machine->canonical);
             mach->maxCpus = machine->maxCpus;
+            mach->deprecated = machine->deprecated;
             i++;
         }
         i++;
@@ -1882,6 +1885,7 @@ virQEMUCapsAccelCopyMachineTypes(virQEMUCapsAccelPtr dst,
         dst->machineTypes[i].qemuDefault = src->machineTypes[i].qemuDefault;
         dst->machineTypes[i].numaMemSupported = src->machineTypes[i].numaMemSupported;
         dst->machineTypes[i].defaultRAMid = g_strdup(src->machineTypes[i].defaultRAMid);
+        dst->machineTypes[i].deprecated = src->machineTypes[i].deprecated;
     }
 }
 
@@ -2716,7 +2720,8 @@ virQEMUCapsAddMachine(virQEMUCapsPtr qemuCaps,
                       bool hotplugCpus,
                       bool isDefault,
                       bool numaMemSupported,
-                      const char *defaultRAMid)
+                      const char *defaultRAMid,
+                      bool deprecated)
 {
     virQEMUCapsAccelPtr accel = virQEMUCapsGetAccel(qemuCaps, virtType);
     virQEMUCapsMachineTypePtr mach;
@@ -2739,6 +2744,7 @@ virQEMUCapsAddMachine(virQEMUCapsPtr qemuCaps,
     mach->numaMemSupported = numaMemSupported;
 
     mach->defaultRAMid = g_strdup(defaultRAMid);
+    mach->deprecated = deprecated;
 }
 
 /**
@@ -2786,7 +2792,8 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
                               machines[i]->hotplugCpus,
                               machines[i]->isDefault,
                               machines[i]->numaMemSupported,
-                              machines[i]->defaultRAMid);
+                              machines[i]->defaultRAMid,
+                              machines[i]->deprecated);
 
         if (preferredMachine &&
             (STREQ_NULLABLE(machines[i]->alias, preferredMachine) ||
@@ -4018,6 +4025,7 @@ virQEMUCapsLoadMachines(virQEMUCapsAccelPtr caps,
 
         caps->machineTypes[i].defaultCPU = virXMLPropString(nodes[i], "defaultCPU");
         caps->machineTypes[i].defaultRAMid = virXMLPropString(nodes[i], "defaultRAMid");
+        caps->machineTypes[i].deprecated = virXMLPropString(nodes[i], "deprecated");
     }
 
     return 0;
@@ -4508,6 +4516,8 @@ virQEMUCapsFormatMachines(virQEMUCapsAccelPtr caps,
             virBufferAddLit(buf, " numaMemSupported='yes'");
         virBufferEscapeString(buf, " defaultRAMid='%s'",
                               caps->machineTypes[i].defaultRAMid);
+        if (caps->machineTypes[i].deprecated)
+            virBufferAddLit(buf, " deprecated='yes'");
         virBufferAddLit(buf, "/>\n");
     }
 }
@@ -6332,7 +6342,8 @@ virQEMUCapsStripMachineAliasesForVirtType(virQEMUCapsPtr qemuCaps,
         if (name) {
             virQEMUCapsAddMachine(qemuCaps, virtType, name, NULL, mach->defaultCPU,
                                   mach->maxCpus, mach->hotplugCpus, mach->qemuDefault,
-                                  mach->numaMemSupported, mach->defaultRAMid);
+                                  mach->numaMemSupported, mach->defaultRAMid,
+                                  mach->deprecated);
         }
     }
 }
