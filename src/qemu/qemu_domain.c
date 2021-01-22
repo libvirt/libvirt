@@ -6198,21 +6198,50 @@ void qemuDomainObjTaint(virQEMUDriverPtr driver,
                         virDomainTaintFlags taint,
                         qemuDomainLogContextPtr logCtxt)
 {
+    qemuDomainObjTaintMsg(driver, obj, taint, logCtxt, NULL);
+}
+
+void qemuDomainObjTaintMsg(virQEMUDriverPtr driver,
+                           virDomainObjPtr obj,
+                           virDomainTaintFlags taint,
+                           qemuDomainLogContextPtr logCtxt,
+                           const char *fmt, ...)
+{
     virErrorPtr orig_err = NULL;
     g_autofree char *timestamp = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     int rc;
+    g_autofree char *extra = NULL;
+    const char *extraprefix = "";
+    const char *extramsg = "";
+    const char *extrasuffix = "";
+    va_list args;
 
-    if (!virDomainObjTaint(obj, taint))
-        return;
+    if (virDomainObjTaint(obj, taint)) {
+        /* If an extra message was given we must always
+         * emit the taint warning, otherwise it is a
+         * one-time only warning per VM
+         */
+        if (!fmt)
+            return;
+    }
 
     virUUIDFormat(obj->def->uuid, uuidstr);
 
-    VIR_WARN("Domain id=%d name='%s' uuid=%s is tainted: %s",
+    if (fmt) {
+        va_start(args, fmt);
+        extraprefix = " (";
+        extramsg = extra = g_strdup_vprintf(fmt, args);
+        extrasuffix = ")";
+        va_end(args);
+    }
+
+    VIR_WARN("Domain id=%d name='%s' uuid=%s is tainted: %s%s%s%s",
              obj->def->id,
              obj->def->name,
              uuidstr,
-             virDomainTaintTypeToString(taint));
+             virDomainTaintTypeToString(taint),
+             extraprefix, extramsg, extrasuffix);
 
     /* We don't care about errors logging taint info, so
      * preserve original error, and clear any error that
@@ -6224,16 +6253,18 @@ void qemuDomainObjTaint(virQEMUDriverPtr driver,
 
     if (logCtxt) {
         rc = qemuDomainLogContextWrite(logCtxt,
-                                       "%s: Domain id=%d is tainted: %s\n",
+                                       "%s: Domain id=%d is tainted: %s%s%s%s\n",
                                        timestamp,
                                        obj->def->id,
-                                       virDomainTaintTypeToString(taint));
+                                       virDomainTaintTypeToString(taint),
+                                       extraprefix, extramsg, extrasuffix);
     } else {
         rc = qemuDomainLogAppendMessage(driver, obj,
-                                        "%s: Domain id=%d is tainted: %s\n",
+                                        "%s: Domain id=%d is tainted: %s%s%s%s\n",
                                         timestamp,
                                         obj->def->id,
-                                        virDomainTaintTypeToString(taint));
+                                        virDomainTaintTypeToString(taint),
+                                        extraprefix, extramsg, extrasuffix);
     }
 
     if (rc < 0)
