@@ -8098,6 +8098,49 @@ remoteDomainAuthorizedSSHKeysSet(virDomainPtr domain,
 }
 
 
+static int
+remoteDomainGetMessages(virDomainPtr domain,
+                        char ***msgs,
+                        unsigned int flags)
+{
+    int rv = -1;
+    size_t i;
+    struct private_data *priv = domain->conn->privateData;
+    remote_domain_get_messages_args args;
+    remote_domain_get_messages_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.flags = flags;
+    memset(&ret, 0, sizeof(ret));
+
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_MESSAGES,
+             (xdrproc_t) xdr_remote_domain_get_messages_args, (char *)&args,
+             (xdrproc_t) xdr_remote_domain_get_messages_ret, (char *)&ret) == -1) {
+        goto cleanup;
+    }
+
+    if (ret.msgs.msgs_len > REMOTE_DOMAIN_MESSAGES_MAX) {
+        virReportError(VIR_ERR_RPC, "%s",
+                       _("remoteDomainGetMessages: "
+                         "returned number of msgs exceeds limit"));
+        goto cleanup;
+    }
+
+    *msgs = g_new0(char *, ret.msgs.msgs_len + 1);
+    for (i = 0; i < ret.msgs.msgs_len; i++)
+        (*msgs)[i] = g_strdup(ret.msgs.msgs_val[i]);
+
+    rv = ret.msgs.msgs_len;
+
+ cleanup:
+    remoteDriverUnlock(priv);
+    xdr_free((xdrproc_t)xdr_remote_domain_get_messages_ret,
+             (char *) &ret);
+    return rv;
+}
+
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
  * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
  * These can return NULL if underlying memory allocations fail,
@@ -8531,6 +8574,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainBackupGetXMLDesc = remoteDomainBackupGetXMLDesc, /* 6.0.0 */
     .domainAuthorizedSSHKeysGet = remoteDomainAuthorizedSSHKeysGet, /* 6.10.0 */
     .domainAuthorizedSSHKeysSet = remoteDomainAuthorizedSSHKeysSet, /* 6.10.0 */
+    .domainGetMessages = remoteDomainGetMessages, /* 7.1.0 */
 };
 
 static virNetworkDriver network_driver = {

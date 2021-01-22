@@ -7463,3 +7463,48 @@ remoteDispatchDomainAuthorizedSshKeysSet(virNetServerPtr server G_GNUC_UNUSED,
 
     return rv;
 }
+
+static int
+remoteDispatchDomainGetMessages(virNetServerPtr server G_GNUC_UNUSED,
+                                virNetServerClientPtr client,
+                                virNetMessagePtr msg G_GNUC_UNUSED,
+                                virNetMessageErrorPtr rerr,
+                                remote_domain_get_messages_args *args,
+                                remote_domain_get_messages_ret *ret)
+{
+    int rv = -1;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
+    int nmsgs = 0;
+    char **msgs = NULL;
+    virDomainPtr dom = NULL;
+
+    if (!conn)
+        goto cleanup;
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if ((nmsgs = virDomainGetMessages(dom, &msgs, args->flags)) < 0)
+        goto cleanup;
+
+    if (nmsgs > REMOTE_DOMAIN_MESSAGES_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Number of msgs %d, which exceeds max limit: %d"),
+                       nmsgs, REMOTE_DOMAIN_MESSAGES_MAX);
+        goto cleanup;
+    }
+
+    ret->msgs.msgs_val = g_steal_pointer(&msgs);
+    ret->msgs.msgs_len = nmsgs;
+
+    rv = nmsgs;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (nmsgs > 0)
+        virStringListFreeCount(msgs, nmsgs);
+    virObjectUnref(dom);
+
+    return rv;
+}

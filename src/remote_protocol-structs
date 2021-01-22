@@ -3162,6 +3162,16 @@ struct remote_domain_authorized_ssh_keys_set_args {
         } keys;
         u_int                      flags;
 };
+struct remote_domain_get_messages_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_get_messages_ret {
+        struct {
+                u_int              msgs_len;
+                remote_nonnull_string * msgs_val;
+        } msgs;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3588,4 +3598,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_MEMORY_FAILURE = 423,
         REMOTE_PROC_DOMAIN_AUTHORIZED_SSH_KEYS_GET = 424,
         REMOTE_PROC_DOMAIN_AUTHORIZED_SSH_KEYS_SET = 425,
+        REMOTE_PROC_DOMAIN_GET_MESSAGES = 426,
 };

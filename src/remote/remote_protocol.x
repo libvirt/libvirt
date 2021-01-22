@@ -283,6 +283,9 @@ const REMOTE_NETWORK_PORT_PARAMETERS_MAX = 16;
 /* Upper limit on number of SSH keys */
 const REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX = 2048;
 
+/* Upper limit on number of messages */
+const REMOTE_DOMAIN_MESSAGES_MAX = 2048;
+
 
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
@@ -3799,6 +3802,16 @@ struct remote_domain_authorized_ssh_keys_set_args {
     unsigned int flags;
 };
 
+struct remote_domain_get_messages_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_get_messages_ret {
+    remote_nonnull_string msgs<REMOTE_DOMAIN_MESSAGES_MAX>;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6714,5 +6727,11 @@ enum remote_procedure {
      * @generate: none
      * @acl: domain:write
      */
-    REMOTE_PROC_DOMAIN_AUTHORIZED_SSH_KEYS_SET = 425
+    REMOTE_PROC_DOMAIN_AUTHORIZED_SSH_KEYS_SET = 425,
+
+    /**
+     * @generate: none
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_GET_MESSAGES = 426
 };
