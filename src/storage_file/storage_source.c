@@ -45,6 +45,40 @@
 VIR_LOG_INIT("storage_source");
 
 
+static bool
+virStorageSourceBackinStoreStringIsFile(const char *backing)
+{
+    char *colon;
+    char *slash;
+
+    if (!backing)
+        return false;
+
+    colon = strchr(backing, ':');
+    slash = strchr(backing, '/');
+
+    /* Reject anything that looks like a protocol (such as nbd: or
+     * rbd:); if someone really does want a relative file name that
+     * includes ':', they can always prefix './'.  */
+    if (colon && (!slash || colon < slash))
+        return false;
+    return true;
+}
+
+
+static bool
+virStorageSourceBackinStoreStringIsRelative(const char *backing)
+{
+    if (backing[0] == '/')
+        return false;
+
+    if (!virStorageSourceBackinStoreStringIsFile(backing))
+        return false;
+
+    return true;
+}
+
+
 static virStorageSourcePtr
 virStorageSourceMetadataNew(const char *path,
                             int format)
@@ -185,7 +219,7 @@ virStorageSourceChainLookup(virStorageSourcePtr chain,
 {
     virStorageSourcePtr prev;
     const char *start = chain->path;
-    bool nameIsFile = virStorageIsFile(name);
+    bool nameIsFile = virStorageSourceBackinStoreStringIsFile(name);
 
     if (!parent)
         parent = &prev;
@@ -1532,7 +1566,7 @@ virStorageSourceNewFromBackingAbsolute(const char *path,
 
     *src = NULL;
 
-    if (virStorageIsFile(path)) {
+    if (virStorageSourceBackinStoreStringIsFile(path)) {
         def->type = VIR_STORAGE_TYPE_FILE;
 
         def->path = g_strdup(path);
@@ -1604,7 +1638,7 @@ virStorageSourceNewFromChild(virStorageSourcePtr parent,
 
     *child = NULL;
 
-    if (virStorageIsRelative(parentRaw)) {
+    if (virStorageSourceBackinStoreStringIsRelative(parentRaw)) {
         if (!(def = virStorageSourceNewFromBackingRelative(parent, parentRaw)))
             return -1;
     } else {
@@ -1927,7 +1961,7 @@ virStorageSourceFetchRelativeBackingPath(virStorageSourcePtr src,
     if (virStorageFileProbeGetMetadata(tmp, buf, headerLen) < 0)
         return -1;
 
-    if (virStorageIsRelative(tmp->backingStoreRaw))
+    if (virStorageSourceBackinStoreStringIsRelative(tmp->backingStoreRaw))
         *relPath = g_steal_pointer(&tmp->backingStoreRaw);
 
     return 0;

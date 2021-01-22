@@ -3218,8 +3218,6 @@ virStorageFileGetNPIVKey;
 virStorageFileGetSCSIKey;
 virStorageFileParseBackingStoreStr;
 virStorageFileParseChainIndex;
-virStorageIsFile;
-virStorageIsRelative;
 
 
 # util/virstring.h

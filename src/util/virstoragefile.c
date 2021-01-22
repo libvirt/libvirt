@@ -37,40 +37,6 @@
 VIR_LOG_INIT("util.storagefile");
 
 
-bool
-virStorageIsFile(const char *backing)
-{
-    char *colon;
-    char *slash;
-
-    if (!backing)
-        return false;
-
-    colon = strchr(backing, ':');
-    slash = strchr(backing, '/');
-
-    /* Reject anything that looks like a protocol (such as nbd: or
-     * rbd:); if someone really does want a relative file name that
-     * includes ':', they can always prefix './'.  */
-    if (colon && (!slash || colon < slash))
-        return false;
-    return true;
-}
-
-
-bool
-virStorageIsRelative(const char *backing)
-{
-    if (backing[0] == '/')
-        return false;
-
-    if (!virStorageIsFile(backing))
-        return false;
-
-    return true;
-}
-
-
 #ifdef WITH_UDEV
 /* virStorageFileGetSCSIKey
  * @path: Path to the SCSI device
