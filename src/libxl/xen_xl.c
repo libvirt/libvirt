@@ -29,7 +29,7 @@
 #include "domain_conf.h"
 #include "viralloc.h"
 #include "virstring.h"
-#include "virstoragefile.h"
+#include "storage_source.h"
 #include "xen_xl.h"
 #include "libxl_capabilities.h"
 #include "libxl_conf.h"

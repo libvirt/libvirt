@@ -64,6 +64,7 @@
 #include "virstoragefile.h"
 #include "virstoragefileprobe.h"
 #include "storage_util.h"
+#include "storage_source.h"
 #include "virlog.h"
 #include "virfile.h"
 #include "virjson.h"

@@ -17,6 +17,7 @@
 #include <config.h>
 
 
+#include "storage_source.h"
 #include "testutils.h"
 #include "testutilsqemu.h"
 #include "testutilsqemuschema.h"

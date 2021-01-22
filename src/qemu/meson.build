@@ -104,6 +104,7 @@ if conf.has('WITH_QEMU')
     include_directories: [
       conf_inc_dir,
       hypervisor_inc_dir,
+      storage_file_inc_dir,
     ],
   )
 

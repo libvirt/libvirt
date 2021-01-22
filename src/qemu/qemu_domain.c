@@ -52,6 +52,7 @@
 #include "virtime.h"
 #include "virnetdevopenvswitch.h"
 #include "virstoragefile.h"
+#include "storage_source.h"
 #include "virstring.h"
 #include "virthreadjob.h"
 #include "virprocess.h"

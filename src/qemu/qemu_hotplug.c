@@ -53,6 +53,7 @@
 #include "virnetdevmidonet.h"
 #include "device_conf.h"
 #include "virstoragefile.h"
+#include "storage_source.h"
 #include "virstring.h"
 #include "virtime.h"
 #include "virqemu.h"

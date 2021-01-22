@@ -84,6 +84,7 @@
 #include "virhook.h"
 #include "virstoragefile.h"
 #include "virstoragefileprobe.h"
+#include "storage_source.h"
 #include "virfile.h"
 #include "virfdstream.h"
 #include "configmake.h"

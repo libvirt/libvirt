@@ -20,6 +20,7 @@
 
 #include <unistd.h>
 
+#include "storage_source.h"
 #include "testutils.h"
 #include "vircommand.h"
 #include "virerror.h"

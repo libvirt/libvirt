@@ -48,6 +48,7 @@ if conf.has('WITH_LIBVIRTD') and conf.has('WITH_APPARMOR')
       conf_inc_dir,
       hypervisor_inc_dir,
       include_directories('.'),
+      include_directories('../storage_file'),
     ],
   }
 endif

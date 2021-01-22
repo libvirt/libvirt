@@ -24,6 +24,7 @@
 #include "qemu_alias.h"
 #include "qemu_security.h"
 
+#include "storage_source.h"
 #include "viralloc.h"
 #include "virstoragefile.h"
 #include "virstring.h"

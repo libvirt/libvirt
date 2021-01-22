@@ -37,6 +37,7 @@
 
 #include "security_driver.h"
 #include "security_apparmor.h"
+#include "storage_source.h"
 #include "domain_conf.h"
 #include "virxml.h"
 #include "viruuid.h"
@@ -46,7 +47,6 @@
 #include "virfile.h"
 #include "configmake.h"
 #include "virrandom.h"
-#include "virstoragefile.h"
 #include "virstring.h"
 #include "virgettext.h"
 #include "virhostdev.h"

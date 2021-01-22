@@ -442,7 +442,7 @@ endif
 if conf.has('WITH_QEMU')
   tests += [
     { 'name': 'qemuagenttest', 'link_with': [ test_qemu_driver_lib, test_utils_qemu_monitor_lib ], 'link_whole': [ test_utils_qemu_lib ] },
-    { 'name': 'qemublocktest', 'link_with': [ test_qemu_driver_lib, test_utils_qemu_monitor_lib ], 'link_whole': [ test_utils_qemu_lib ] },
+    { 'name': 'qemublocktest', 'include': [ storage_file_inc_dir ], 'link_with': [ test_qemu_driver_lib, test_utils_qemu_monitor_lib ], 'link_whole': [ test_utils_qemu_lib ] },
     { 'name': 'qemucapabilitiestest', 'link_with': [ test_qemu_driver_lib, test_utils_qemu_monitor_lib ], 'link_whole': [ test_utils_qemu_lib ] },
     { 'name': 'qemucaps2xmltest', 'link_with': [ test_qemu_driver_lib ], 'link_whole': [ test_utils_qemu_lib ] },
     { 'name': 'qemucommandutiltest', 'link_with': [ test_qemu_driver_lib, test_utils_qemu_monitor_lib ], 'link_whole': [ test_utils_qemu_lib ] },
@@ -509,7 +509,7 @@ endif
 
 if conf.has('WITH_STORAGE_FS')
   tests += [
-    { 'name': 'virstoragetest', 'link_with': [ storage_driver_impl_lib ] },
+    { 'name': 'virstoragetest', 'include': [ storage_file_inc_dir ],'link_with': [ storage_driver_impl_lib ] },
   ]
 endif
 

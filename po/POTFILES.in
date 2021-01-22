@@ -225,6 +225,7 @@
 @SRCDIR@src/storage/storage_util.c
 @SRCDIR@src/storage_file/storage_file_backend_fs.c
 @SRCDIR@src/storage_file/storage_file_backend_gluster.c
+@SRCDIR@src/storage_file/storage_source.c
 @SRCDIR@src/test/test_driver.c
 @SRCDIR@src/util/iohelper.c
 @SRCDIR@src/util/viralloc.c

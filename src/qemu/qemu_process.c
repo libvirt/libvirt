@@ -95,6 +95,7 @@
 #include "viridentity.h"
 #include "virthreadjob.h"
 #include "virutil.h"
+#include "storage_source.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

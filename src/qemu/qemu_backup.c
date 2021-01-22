@@ -29,6 +29,7 @@
 #include "qemu_checkpoint.h"
 #include "qemu_command.h"
 
+#include "storage_source.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virbuffer.h"

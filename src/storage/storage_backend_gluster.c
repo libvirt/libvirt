@@ -32,6 +32,7 @@
 #include "virstring.h"
 #include "viruri.h"
 #include "storage_util.h"
+#include "storage_source.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
