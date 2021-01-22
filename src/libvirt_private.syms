@@ -1691,7 +1691,7 @@ virStorageSourceChainLookup;
 virStorageSourceChown;
 virStorageSourceCreate;
 virStorageSourceDeinit;
-virStorageSourceGetBackingStoreStr;
+virStorageSourceFetchRelativeBackingPath;
 virStorageSourceGetMetadata;
 virStorageSourceGetMetadataFromBuf;
 virStorageSourceGetMetadataFromFD;

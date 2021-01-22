@@ -138,8 +138,8 @@ virStorageSourceGetMetadata(virStorageSourcePtr src,
     ATTRIBUTE_NONNULL(1);
 
 int
-virStorageSourceGetBackingStoreStr(virStorageSourcePtr src,
-                                   char **backing)
+virStorageSourceFetchRelativeBackingPath(virStorageSourcePtr src,
+                                         char **relPath)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void

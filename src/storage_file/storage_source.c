@@ -1881,24 +1881,26 @@ virStorageSourceGetRelativeBackingPath(virStorageSourcePtr top,
 
 
 /**
- * virStorageSourceGetBackingStoreStr:
+ * virStorageSourceFetchRelativeBackingPath:
  * @src: storage object
+ * @relPath: filled with the relative path to the backing image of @src if
+ *           the metadata of @src refer to it as relative.
  *
- * Extracts the backing store string as stored in the storage volume described
- * by @src and returns it to the user. Caller is responsible for freeing it.
- * In case when the string can't be retrieved or does not exist NULL is
- * returned.
+ * Fetches the backing store definition of @src by updating the metadata from
+ * disk and fills 'relPath' if the backing store string is relative. The data
+ * is used by virStorageSourceGetRelativeBackingPath to establish the relative
+ * path between two images.
  */
 int
-virStorageSourceGetBackingStoreStr(virStorageSourcePtr src,
-                                   char **backing)
+virStorageSourceFetchRelativeBackingPath(virStorageSourcePtr src,
+                                         char **relPath)
 {
     ssize_t headerLen;
     int rv;
     g_autofree char *buf = NULL;
     g_autoptr(virStorageSource) tmp = NULL;
 
-    *backing = NULL;
+    g_clear_pointer(relPath, g_free);
 
     /* exit if we can't load information about the current image */
     if (!virStorageSourceSupportsBackingChainTraversal(src))
@@ -1925,7 +1927,9 @@ virStorageSourceGetBackingStoreStr(virStorageSourcePtr src,
     if (virStorageFileProbeGetMetadata(tmp, buf, headerLen) < 0)
         return -1;
 
-    *backing = g_steal_pointer(&tmp->backingStoreRaw);
+    if (virStorageIsRelative(tmp->backingStoreRaw))
+        *relPath = g_steal_pointer(&tmp->backingStoreRaw);
+
     return 0;
 }
 

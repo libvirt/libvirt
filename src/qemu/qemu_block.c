@@ -3420,7 +3420,6 @@ qemuBlockUpdateRelativeBacking(virDomainObjPtr vm,
     virStorageSourcePtr n;
 
     for (n = src; virStorageSourceHasBacking(n); n = n->backingStore) {
-        g_autofree char *backingStoreStr = NULL;
         int rc;
 
         if (n->backingStore->relPath)
@@ -3432,15 +3431,12 @@ qemuBlockUpdateRelativeBacking(virDomainObjPtr vm,
         if (qemuDomainStorageFileInit(driver, vm, n, topsrc) < 0)
             return -1;
 
-        rc = virStorageSourceGetBackingStoreStr(n, &backingStoreStr);
+        rc = virStorageSourceFetchRelativeBackingPath(n, &n->backingStore->relPath);
 
         virStorageSourceDeinit(n);
 
         if (rc < 0)
             return rc;
-
-        if (backingStoreStr && virStorageIsRelative(backingStoreStr))
-            n->backingStore->relPath = g_steal_pointer(&backingStoreStr);
     }
 
     return 0;

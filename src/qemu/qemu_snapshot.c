@@ -1088,16 +1088,9 @@ qemuSnapshotDiskPrepareOne(virDomainObjPtr vm,
         dd->initialized = true;
 
         if (reuse) {
-            if (updateRelativeBacking) {
-                g_autofree char *backingStoreStr = NULL;
-
-                if (virStorageSourceGetBackingStoreStr(dd->src, &backingStoreStr) < 0)
-                    return -1;
-                if (backingStoreStr != NULL) {
-                    if (virStorageIsRelative(backingStoreStr))
-                        dd->relPath = g_steal_pointer(&backingStoreStr);
-                }
-            }
+            if (updateRelativeBacking &&
+                virStorageSourceFetchRelativeBackingPath(dd->src, &dd->relPath) < 0)
+                return -1;
         } else {
             /* pre-create the image file so that we can label it before handing it to qemu */
             if (supportsCreate && dd->src->type != VIR_STORAGE_TYPE_BLOCK) {
