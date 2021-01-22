@@ -938,7 +938,7 @@ get_files(vahControl * ctl)
         /* XXX - if we knew the qemu user:group here we could send it in
          *        so that the open could be re-tried as that user:group.
          */
-        if (!virStorageSourceHasBacking(disk->src))
+        if (!disk->src->backingStore)
             virStorageSourceGetMetadata(disk->src, -1, -1, false);
 
          /* XXX should handle open errors more careful than just ignoring them.
