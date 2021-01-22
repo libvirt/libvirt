@@ -316,14 +316,14 @@ virshDomainDeviceAliasCompleter(vshControl *ctl,
     if (virshDomainGetXML(ctl, cmd, domainXMLFlags, &xmldoc, &ctxt) < 0)
         return NULL;
 
-    naliases = virXPathNodeSet("./devices//alias/@name", ctxt, &aliases);
+    naliases = virXPathNodeSet("/domain/devices//alias[@name]", ctxt, &aliases);
     if (naliases < 0)
         return NULL;
 
     tmp = g_new0(char *, naliases + 1);
 
     for (i = 0; i < naliases; i++) {
-        if (!(tmp[i] = virXMLNodeContentString(aliases[i])))
+        if (!(tmp[i] = virXMLPropString(aliases[i], "name")))
             return NULL;
     }
 
