@@ -230,6 +230,7 @@
 @SRCDIR@src/storage_file/storage_file_backend_gluster.c
 @SRCDIR@src/storage_file/storage_file_probe.c
 @SRCDIR@src/storage_file/storage_source.c
+@SRCDIR@src/storage_file/storage_source_backingstore.c
 @SRCDIR@src/test/test_driver.c
 @SRCDIR@src/util/iohelper.c
 @SRCDIR@src/util/viralloc.c
