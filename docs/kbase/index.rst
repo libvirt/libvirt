@@ -40,6 +40,12 @@ Usage
 `KVM real time <kvm-realtime.html>`__
    Run real time workloads in guests on a KVM hypervisor
 
+`PCI hotplug <../pci-hotplug.html>`__
+   Effective usage of PCI hotplug
+
+`PCI topology <../pci-addresses.html>`__
+   Addressing schemes for PCI devices
+
 Internals / Debugging
 ---------------------
 
