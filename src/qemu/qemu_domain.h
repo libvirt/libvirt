@@ -572,6 +572,9 @@ void qemuDomainObjTaintMsg(virQEMUDriverPtr driver,
                            const char *msg,
                            ...) G_GNUC_PRINTF(5, 6);
 
+char **qemuDomainObjGetTainting(virQEMUDriverPtr driver,
+                                virDomainObjPtr obj);
+
 void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
                              virDomainObjPtr obj,
                              qemuDomainLogContextPtr logCtxt,

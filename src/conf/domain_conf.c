@@ -90,6 +90,23 @@ VIR_ENUM_IMPL(virDomainTaint,
               "deprecated-config",
 );
 
+VIR_ENUM_IMPL(virDomainTaintMessage,
+              VIR_DOMAIN_TAINT_LAST,
+              N_("custom configuration parameters specified"),
+              N_("custom monitor control commands issued"),
+              N_("running with undesirable elevated privileges"),
+              N_("network configuration using opaque shell scripts"),
+              N_("potentially unsafe disk format probing"),
+              N_("managing externally launched configuration"),
+              N_("potentially unsafe use of host CPU passthrough"),
+              N_("configuration potentially modified by hook script"),
+              N_("use of host cdrom passthrough"),
+              N_("custom device tree blob used"),
+              N_("custom guest agent control commands issued"),
+              N_("hypervisor feature autodetection override"),
+              N_("use of deprecated configuration settings"),
+);
+
 VIR_ENUM_IMPL(virDomainVirt,
               VIR_DOMAIN_VIRT_LAST,
               "none",

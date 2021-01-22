@@ -3636,6 +3636,7 @@ bool virDomainVsockDefEquals(const virDomainVsockDef *a,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 VIR_ENUM_DECL(virDomainTaint);
+VIR_ENUM_DECL(virDomainTaintMessage);
 VIR_ENUM_DECL(virDomainVirt);
 VIR_ENUM_DECL(virDomainBoot);
 VIR_ENUM_DECL(virDomainFeature);
