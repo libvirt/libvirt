@@ -3673,6 +3673,7 @@ qemuMonitorCPUDefsCopy(qemuMonitorCPUDefsPtr src)
         cpuDst->name = g_strdup(cpuSrc->name);
         cpuDst->type = g_strdup(cpuSrc->type);
         cpuDst->blockers = g_strdupv(cpuSrc->blockers);
+        cpuDst->deprecated = cpuSrc->deprecated;
     }
 
     return g_steal_pointer(&defs);

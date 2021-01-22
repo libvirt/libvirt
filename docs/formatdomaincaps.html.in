@@ -214,9 +214,9 @@
       &lt;feature policy='require' name='vmx'/&gt;
     &lt;/mode&gt;
     &lt;mode name='custom' supported='yes'&gt;
-      &lt;model usable='no'&gt;Broadwell&lt;/model&gt;
-      &lt;model usable='yes'&gt;Broadwell-noTSX&lt;/model&gt;
-      &lt;model usable='no'&gt;Haswell&lt;/model&gt;
+      &lt;model usable='no' deprecated='no'&gt;Broadwell&lt;/model&gt;
+      &lt;model usable='yes' deprecated='no'&gt;Broadwell-noTSX&lt;/model&gt;
+      &lt;model usable='no' deprecated='yes'&gt;Haswell&lt;/model&gt;
       ...
     &lt;/mode&gt;
   &lt;/cpu&gt;
@@ -262,7 +262,9 @@
         cannot be used without disabling some features that the CPU of such
         model is expected to have. A special value <code>unknown</code>
         indicates libvirt does not have enough information to provide the
-        usability data.
+        usability data. The <code>deprecated</code> attribute reflects
+        the hypervisor's policy on usage of this model
+        <span class="since">(since 7.1.0)</span>.
       </dd>
     </dl>
 

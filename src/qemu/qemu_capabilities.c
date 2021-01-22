@@ -2184,7 +2184,7 @@ virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefsPtr defs,
             continue;
 
         if (virDomainCapsCPUModelsAdd(cpuModels, cpu->name, cpu->usable,
-                                      cpu->blockers) < 0)
+                                      cpu->blockers, cpu->deprecated) < 0)
             return NULL;
     }
 
@@ -3904,6 +3904,7 @@ virQEMUCapsLoadCPUModels(virQEMUCapsAccelPtr caps,
         int usable = VIR_DOMCAPS_CPU_USABLE_UNKNOWN;
         g_autofree char * strUsable = NULL;
         g_autofree xmlNodePtr * blockerNodes = NULL;
+        g_autofree char *deprecated = NULL;
         int nblockers;
 
         if ((strUsable = virXMLPropString(nodes[i], "usable")) &&
@@ -3948,6 +3949,11 @@ virQEMUCapsLoadCPUModels(virQEMUCapsAccelPtr caps,
                 }
             }
         }
+
+        deprecated = virXMLPropString(nodes[i], "deprecated");
+        if (deprecated &&
+            STREQ(deprecated, "yes"))
+            cpu->deprecated = true;
     }
 
     caps->cpuModels = g_steal_pointer(&defs);
@@ -4456,6 +4462,8 @@ virQEMUCapsFormatCPUModels(virQEMUCapsAccelPtr caps,
             virBufferAsprintf(buf, " usable='%s'",
                               virDomainCapsCPUUsableTypeToString(cpu->usable));
         }
+        if (cpu->deprecated)
+            virBufferAddLit(buf, " deprecated='yes'");
 
         if (cpu->blockers) {
             size_t j;

@@ -175,7 +175,8 @@ virDomainCapsCPUModelsCopy(virDomainCapsCPUModelsPtr old)
         if (virDomainCapsCPUModelsAdd(cpuModels,
                                       old->models[i].name,
                                       old->models[i].usable,
-                                      old->models[i].blockers) < 0)
+                                      old->models[i].blockers,
+                                      old->models[i].deprecated) < 0)
             goto error;
     }
 
@@ -191,7 +192,8 @@ int
 virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
                           const char *name,
                           virDomainCapsCPUUsable usable,
-                          char **blockers)
+                          char **blockers,
+                          bool deprecated)
 {
     g_autofree char * nameCopy = NULL;
     virDomainCapsCPUModelPtr cpu;
@@ -208,6 +210,7 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
     cpu->usable = usable;
     cpu->name = g_steal_pointer(&nameCopy);
     cpu->blockers = g_strdupv(blockers);
+    cpu->deprecated = deprecated;
 
     return 0;
 }
@@ -388,8 +391,11 @@ virDomainCapsCPUCustomFormat(virBufferPtr buf,
 
     for (i = 0; i < custom->nmodels; i++) {
         virDomainCapsCPUModelPtr model = custom->models + i;
-        virBufferAsprintf(buf, "<model usable='%s'>%s</model>\n",
-                          virDomainCapsCPUUsableTypeToString(model->usable),
+        virBufferAsprintf(buf, "<model usable='%s'",
+                          virDomainCapsCPUUsableTypeToString(model->usable));
+        if (model->deprecated)
+            virBufferAddLit(buf, " deprecated='yes'");
+        virBufferAsprintf(buf, ">%s</model>\n",
                           model->name);
     }
 

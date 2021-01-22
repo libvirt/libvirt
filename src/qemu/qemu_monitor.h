@@ -1193,6 +1193,7 @@ struct _qemuMonitorCPUDefInfo {
     char *name;
     char *type;
     char **blockers; /* NULL-terminated string list */
+    bool deprecated;
 };
 
 typedef struct _qemuMonitorCPUDefs qemuMonitorCPUDefs;

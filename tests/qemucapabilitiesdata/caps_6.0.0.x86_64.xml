@@ -1059,7 +1059,7 @@
     <blocker name='avx512f'/>
     <blocker name='pku'/>
   </cpu>
-  <cpu type='kvm' name='Icelake-Client-v2' typename='Icelake-Client-v2-x86_64-cpu' usable='no'>
+  <cpu type='kvm' name='Icelake-Client-v2' typename='Icelake-Client-v2-x86_64-cpu' usable='no' deprecated='yes'>
     <blocker name='pcid'/>
     <blocker name='erms'/>
     <blocker name='invpcid'/>
@@ -1075,7 +1075,7 @@
     <blocker name='spec-ctrl'/>
     <blocker name='pku'/>
   </cpu>
-  <cpu type='kvm' name='Icelake-Client-v1' typename='Icelake-Client-v1-x86_64-cpu' usable='no'>
+  <cpu type='kvm' name='Icelake-Client-v1' typename='Icelake-Client-v1-x86_64-cpu' usable='no' deprecated='yes'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='erms'/>
@@ -1093,7 +1093,7 @@
     <blocker name='spec-ctrl'/>
     <blocker name='pku'/>
   </cpu>
-  <cpu type='kvm' name='Icelake-Client-noTSX' typename='Icelake-Client-noTSX-x86_64-cpu' usable='no'>
+  <cpu type='kvm' name='Icelake-Client-noTSX' typename='Icelake-Client-noTSX-x86_64-cpu' usable='no' deprecated='yes'>
     <blocker name='pcid'/>
     <blocker name='erms'/>
     <blocker name='invpcid'/>
@@ -1109,7 +1109,7 @@
     <blocker name='spec-ctrl'/>
     <blocker name='pku'/>
   </cpu>
-  <cpu type='kvm' name='Icelake-Client' typename='Icelake-Client-x86_64-cpu' usable='no'>
+  <cpu type='kvm' name='Icelake-Client' typename='Icelake-Client-x86_64-cpu' usable='no' deprecated='yes'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='erms'/>
@@ -2438,7 +2438,7 @@
     <blocker name='wbnoinvd'/>
     <blocker name='xsavec'/>
   </cpu>
-  <cpu type='tcg' name='Icelake-Client-v2' typename='Icelake-Client-v2-x86_64-cpu' usable='no'>
+  <cpu type='tcg' name='Icelake-Client-v2' typename='Icelake-Client-v2-x86_64-cpu' usable='no' deprecated='yes'>
     <blocker name='fma'/>
     <blocker name='pcid'/>
     <blocker name='x2apic'/>
@@ -2463,7 +2463,7 @@
     <blocker name='wbnoinvd'/>
     <blocker name='xsavec'/>
   </cpu>
-  <cpu type='tcg' name='Icelake-Client-v1' typename='Icelake-Client-v1-x86_64-cpu' usable='no'>
+  <cpu type='tcg' name='Icelake-Client-v1' typename='Icelake-Client-v1-x86_64-cpu' usable='no' deprecated='yes'>
     <blocker name='fma'/>
     <blocker name='pcid'/>
     <blocker name='x2apic'/>
@@ -2490,7 +2490,7 @@
     <blocker name='wbnoinvd'/>
     <blocker name='xsavec'/>
   </cpu>
-  <cpu type='tcg' name='Icelake-Client-noTSX' typename='Icelake-Client-noTSX-x86_64-cpu' usable='no'>
+  <cpu type='tcg' name='Icelake-Client-noTSX' typename='Icelake-Client-noTSX-x86_64-cpu' usable='no' deprecated='yes'>
     <blocker name='fma'/>
     <blocker name='pcid'/>
     <blocker name='x2apic'/>
@@ -2515,7 +2515,7 @@
     <blocker name='wbnoinvd'/>
     <blocker name='xsavec'/>
   </cpu>
-  <cpu type='tcg' name='Icelake-Client' typename='Icelake-Client-x86_64-cpu' usable='no'>
+  <cpu type='tcg' name='Icelake-Client' typename='Icelake-Client-x86_64-cpu' usable='no' deprecated='yes'>
     <blocker name='fma'/>
     <blocker name='pcid'/>
     <blocker name='x2apic'/>

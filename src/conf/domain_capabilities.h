@@ -146,6 +146,7 @@ struct _virDomainCapsCPUModel {
     char *name;
     virDomainCapsCPUUsable usable;
     char **blockers; /* NULL-terminated list of usability blockers */
+    bool deprecated;
 };
 
 typedef struct _virDomainCapsCPUModels virDomainCapsCPUModels;
@@ -228,7 +229,8 @@ virDomainCapsCPUModelsPtr virDomainCapsCPUModelsCopy(virDomainCapsCPUModelsPtr o
 int virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
                               const char *name,
                               virDomainCapsCPUUsable usable,
-                              char **blockers);
+                              char **blockers,
+                              bool deprecated);
 virDomainCapsCPUModelPtr
 virDomainCapsCPUModelsGet(virDomainCapsCPUModelsPtr cpuModels,
                           const char *name);

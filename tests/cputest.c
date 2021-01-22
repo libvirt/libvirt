@@ -846,7 +846,7 @@ cpuTestUpdateLive(const void *arg)
         }
 
         if (virDomainCapsCPUModelsAdd(models, expected->model,
-                                      usable, blockers) < 0)
+                                      usable, blockers, false) < 0)
             goto cleanup;
 
         cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
@@ -953,7 +953,7 @@ cpuTestInitModels(const char **list)
 
     for (model = list; *model; model++) {
         if (virDomainCapsCPUModelsAdd(cpus, *model,
-                                      VIR_DOMCAPS_CPU_USABLE_UNKNOWN, NULL) < 0)
+                                      VIR_DOMCAPS_CPU_USABLE_UNKNOWN, NULL, false) < 0)
             goto error;
     }
 

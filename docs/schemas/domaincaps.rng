@@ -138,6 +138,14 @@
               <value>unknown</value>
             </choice>
           </attribute>
+          <optional>
+            <attribute name="deprecated">
+              <choice>
+                <value>yes</value>
+                <value>no</value>
+              </choice>
+            </attribute>
+          </optional>
           <text/>
         </element>
       </zeroOrMore>

@@ -5896,6 +5896,10 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
 
             cpu->usable = VIR_DOMCAPS_CPU_USABLE_NO;
         }
+
+        if (virJSONValueObjectHasKey(child, "deprecated") &&
+            virJSONValueObjectGetBoolean(child, "deprecated", &cpu->deprecated) < 0)
+            return -1;
     }
 
     *cpuDefs = g_steal_pointer(&defs);
