@@ -20256,10 +20256,10 @@ qemuDomainAuthorizedSSHKeysGet(virDomainPtr dom,
         return -1;
 
     if (virDomainAuthorizedSshKeysGetEnsureACL(dom->conn, vm->def) < 0)
-        return -1;
+        goto cleanup;
 
     if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_QUERY) < 0)
-        return -1;
+        goto cleanup;
 
     if (!qemuDomainAgentAvailable(vm, true))
         goto endagentjob;
@@ -20270,6 +20270,7 @@ qemuDomainAuthorizedSSHKeysGet(virDomainPtr dom,
 
  endagentjob:
     qemuDomainObjEndAgentJob(vm);
+ cleanup:
     virDomainObjEndAPI(&vm);
     return rv;
 }
@@ -20283,7 +20284,7 @@ qemuDomainAuthorizedSSHKeysSet(virDomainPtr dom,
                                unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    g_autoptr(virDomainObj) vm = NULL;
+    virDomainObjPtr vm = NULL;
     qemuAgentPtr agent;
     const bool append = flags & VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND;
     const bool remove = flags & VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE;
@@ -20296,10 +20297,10 @@ qemuDomainAuthorizedSSHKeysSet(virDomainPtr dom,
         return -1;
 
     if (virDomainAuthorizedSshKeysSetEnsureACL(dom->conn, vm->def) < 0)
-        return -1;
+        goto cleanup;
 
     if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_QUERY) < 0)
-        return -1;
+        goto cleanup;
 
     if (!qemuDomainAgentAvailable(vm, true))
         goto endagentjob;
@@ -20313,6 +20314,7 @@ qemuDomainAuthorizedSSHKeysSet(virDomainPtr dom,
 
  endagentjob:
     qemuDomainObjEndAgentJob(vm);
+ cleanup:
     virDomainObjEndAPI(&vm);
     return rv;
 }
