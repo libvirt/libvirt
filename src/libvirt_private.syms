@@ -548,6 +548,7 @@ virDomainObjAssignDef;
 virDomainObjBroadcast;
 virDomainObjCheckActive;
 virDomainObjCopyPersistentDef;
+virDomainObjDeprecation;
 virDomainObjEndAPI;
 virDomainObjFormat;
 virDomainObjGetDefs;
