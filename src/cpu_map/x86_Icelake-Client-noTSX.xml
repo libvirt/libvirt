@@ -30,7 +30,7 @@
     <feature name='fsgsbase'/>
     <feature name='fxsr'/>
     <feature name='gfni'/>
-    <feature name='intel-pt'/>
+    <feature name='intel-pt' removed='yes'/>
     <feature name='invpcid'/>
     <feature name='lahf_lm'/>
     <feature name='lm'/>

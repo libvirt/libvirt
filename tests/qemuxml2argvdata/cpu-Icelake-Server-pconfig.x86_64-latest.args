@@ -13,7 +13,7 @@ QEMU_AUDIO_DRV=none \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-test/master-key.aes \
 -machine pc,accel=kvm,usb=off,dump-guest-core=off,memory-backend=pc.ram \
--cpu Icelake-Server \
+-cpu Icelake-Server,intel-pt=off \
 -m 214 \
 -object memory-backend-ram,id=pc.ram,size=224395264 \
 -overcommit mem-lock=off \

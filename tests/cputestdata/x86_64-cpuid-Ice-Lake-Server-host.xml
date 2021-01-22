@@ -22,6 +22,7 @@
   <feature name='tsc_adjust'/>
   <feature name='cmt'/>
   <feature name='avx512ifma'/>
+  <feature name='intel-pt'/>
   <feature name='sha-ni'/>
   <feature name='ospke'/>
   <feature name='rdpid'/>

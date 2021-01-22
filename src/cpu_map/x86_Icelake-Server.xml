@@ -38,7 +38,7 @@
     <feature name='fxsr'/>
     <feature name='gfni'/>
     <feature name='hle'/>
-    <feature name='intel-pt'/>
+    <feature name='intel-pt' removed='yes'/>
     <feature name='invpcid'/>
     <feature name='la57'/>
     <feature name='lahf_lm'/>
