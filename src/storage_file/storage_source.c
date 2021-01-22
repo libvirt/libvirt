@@ -1880,6 +1880,56 @@ virStorageSourceGetRelativeBackingPath(virStorageSourcePtr top,
 }
 
 
+/**
+ * virStorageSourceGetBackingStoreStr:
+ * @src: storage object
+ *
+ * Extracts the backing store string as stored in the storage volume described
+ * by @src and returns it to the user. Caller is responsible for freeing it.
+ * In case when the string can't be retrieved or does not exist NULL is
+ * returned.
+ */
+int
+virStorageSourceGetBackingStoreStr(virStorageSourcePtr src,
+                                   char **backing)
+{
+    ssize_t headerLen;
+    int rv;
+    g_autofree char *buf = NULL;
+    g_autoptr(virStorageSource) tmp = NULL;
+
+    *backing = NULL;
+
+    /* exit if we can't load information about the current image */
+    if (!virStorageSourceSupportsBackingChainTraversal(src))
+        return 0;
+
+    rv = virStorageSourceAccess(src, F_OK);
+    if (rv == -2)
+        return 0;
+    if (rv < 0) {
+        virStorageSourceReportBrokenChain(errno, src, src);
+        return -1;
+    }
+
+    if ((headerLen = virStorageSourceRead(src, 0, VIR_STORAGE_MAX_HEADER,
+                                          &buf)) < 0) {
+        if (headerLen == -2)
+            return 0;
+        return -1;
+    }
+
+    if (!(tmp = virStorageSourceCopy(src, false)))
+        return -1;
+
+    if (virStorageFileProbeGetMetadata(tmp, buf, headerLen) < 0)
+        return -1;
+
+    *backing = g_steal_pointer(&tmp->backingStoreRaw);
+    return 0;
+}
+
+
 static bool
 virStorageSourceIsInitialized(const virStorageSource *src)
 {
@@ -2561,54 +2611,4 @@ virStorageSourceGetMetadata(virStorageSourcePtr src,
 
     virHashFree(cycle);
     return ret;
-}
-
-
-/**
- * virStorageSourceGetBackingStoreStr:
- * @src: storage object
- *
- * Extracts the backing store string as stored in the storage volume described
- * by @src and returns it to the user. Caller is responsible for freeing it.
- * In case when the string can't be retrieved or does not exist NULL is
- * returned.
- */
-int
-virStorageSourceGetBackingStoreStr(virStorageSourcePtr src,
-                                   char **backing)
-{
-    ssize_t headerLen;
-    int rv;
-    g_autofree char *buf = NULL;
-    g_autoptr(virStorageSource) tmp = NULL;
-
-    *backing = NULL;
-
-    /* exit if we can't load information about the current image */
-    if (!virStorageSourceSupportsBackingChainTraversal(src))
-        return 0;
-
-    rv = virStorageSourceAccess(src, F_OK);
-    if (rv == -2)
-        return 0;
-    if (rv < 0) {
-        virStorageSourceReportBrokenChain(errno, src, src);
-        return -1;
-    }
-
-    if ((headerLen = virStorageSourceRead(src, 0, VIR_STORAGE_MAX_HEADER,
-                                          &buf)) < 0) {
-        if (headerLen == -2)
-            return 0;
-        return -1;
-    }
-
-    if (!(tmp = virStorageSourceCopy(src, false)))
-        return -1;
-
-    if (virStorageFileProbeGetMetadata(tmp, buf, headerLen) < 0)
-        return -1;
-
-    *backing = g_steal_pointer(&tmp->backingStoreRaw);
-    return 0;
 }
