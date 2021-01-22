@@ -1,6 +1,7 @@
 storage_file_sources = [
   'storage_source.c',
   'storage_file_backend.c',
+  'storage_file_probe.c',
 ]
 
 stoarge_file_fs_sources = [

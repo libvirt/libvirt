@@ -1,5 +1,5 @@
 /*
- * virstoragefileprobe.h: file utility functions for FS storage backend
+ * storage_file_probe.h: file utility functions for FS storage backend
  *
  * Copyright (C) 2007-2009, 2012-2016 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange

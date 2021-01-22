@@ -90,7 +90,6 @@ util_sources = [
   'virsocketaddr.c',
   'virstorageencryption.c',
   'virstoragefile.c',
-  'virstoragefileprobe.c',
   'virstring.c',
   'virsysinfo.c',
   'virsystemd.c',

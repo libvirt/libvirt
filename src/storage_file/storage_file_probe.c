@@ -1,5 +1,5 @@
 /*
- * virstoragefileprobe.c: file utility functions for FS storage backend
+ * storage_file_probe.c: file utility functions for FS storage backend
  *
  * Copyright (C) 2007-2017 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
@@ -26,17 +26,17 @@
 #include <fcntl.h>
 
 #include "internal.h"
+#include "storage_file_probe.h"
 #include "viralloc.h"
 #include "virbitmap.h"
 #include "virendian.h"
 #include "virfile.h"
 #include "virlog.h"
 #include "virstoragefile.h"
-#include "virstoragefileprobe.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
-VIR_LOG_INIT("util.storagefileprobe");
+VIR_LOG_INIT("storage_file.storagefileprobe");
 
 enum lv_endian {
     LV_LITTLE_ENDIAN = 1, /* 1234 */

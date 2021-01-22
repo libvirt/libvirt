@@ -226,6 +226,7 @@
 @SRCDIR@src/storage_file/storage_file_backend.c
 @SRCDIR@src/storage_file/storage_file_backend_fs.c
 @SRCDIR@src/storage_file/storage_file_backend_gluster.c
+@SRCDIR@src/storage_file/storage_file_probe.c
 @SRCDIR@src/storage_file/storage_source.c
 @SRCDIR@src/test/test_driver.c
 @SRCDIR@src/util/iohelper.c
@@ -307,7 +308,6 @@
 @SRCDIR@src/util/virsocketaddr.c
 @SRCDIR@src/util/virstorageencryption.c
 @SRCDIR@src/util/virstoragefile.c
-@SRCDIR@src/util/virstoragefileprobe.c
 @SRCDIR@src/util/virstring.c
 @SRCDIR@src/util/virsysinfo.c
 @SRCDIR@src/util/virsystemd.c

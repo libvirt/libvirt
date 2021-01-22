@@ -26,6 +26,7 @@
 
 #include "internal.h"
 #include "storage_file_backend.h"
+#include "storage_file_probe.h"
 #include "storage_source.h"
 #include "viralloc.h"
 #include "virerror.h"
@@ -35,7 +36,6 @@
 #include "virlog.h"
 #include "virobject.h"
 #include "virstoragefile.h"
-#include "virstoragefileprobe.h"
 #include "virstring.h"
 #include "viruri.h"
 #include "virutil.h"

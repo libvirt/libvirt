@@ -1622,6 +1622,11 @@ virSecurityXATTRNamespaceDefined;
 virStorageFileBackendRegister;
 
 
+# storage_file/storage_file_probe.h
+virStorageFileProbeFormat;
+virStorageFileProbeGetMetadata;
+
+
 # storage_file/storage_source.h
 virStorageFileAccess;
 virStorageFileChainLookup;
@@ -3212,11 +3217,6 @@ virStorageSourcePrivateDataFormatRelPath;
 virStorageSourcePrivateDataParseRelPath;
 virStorageTypeFromString;
 virStorageTypeToString;
-
-
-# util/virstoragefileprobe.h
-virStorageFileProbeFormat;
-virStorageFileProbeGetMetadata;
 
 
 # util/virstring.h
