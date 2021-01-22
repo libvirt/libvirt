@@ -933,7 +933,7 @@ get_files(vahControl * ctl)
     for (i = 0; i < ctl->def->ndisks; i++) {
         virDomainDiskDefPtr disk = ctl->def->disks[i];
 
-        if (!virDomainDiskGetSource(disk))
+        if (virStorageSourceIsEmpty(disk->src))
             continue;
         /* XXX - if we knew the qemu user:group here we could send it in
          *        so that the open could be re-tried as that user:group.
