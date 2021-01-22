@@ -25,6 +25,7 @@
 #include <unistd.h>
 
 #include "internal.h"
+#include "storage_file_backend.h"
 #include "storage_source.h"
 #include "viralloc.h"
 #include "virerror.h"
@@ -34,7 +35,6 @@
 #include "virlog.h"
 #include "virobject.h"
 #include "virstoragefile.h"
-#include "virstoragefilebackend.h"
 #include "virstoragefileprobe.h"
 #include "virstring.h"
 #include "viruri.h"

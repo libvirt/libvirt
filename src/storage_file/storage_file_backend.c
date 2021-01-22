@@ -1,5 +1,5 @@
 /*
- * virstoragefilebackend.c: internal storage source backend contract
+ * storage_file_backend.c: internal storage source backend contract
  *
  * Copyright (C) 2007-2018 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
@@ -27,7 +27,7 @@
 #include "virerror.h"
 #include "viralloc.h"
 #include "internal.h"
-#include "virstoragefilebackend.h"
+#include "storage_file_backend.h"
 #include "virlog.h"
 #include "virmodule.h"
 #include "virfile.h"

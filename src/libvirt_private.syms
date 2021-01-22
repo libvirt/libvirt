@@ -1618,6 +1618,10 @@ virSecurityManagerVerify;
 virSecurityXATTRNamespaceDefined;
 
 
+# storage_file/storage_file_backend.h
+virStorageFileBackendRegister;
+
+
 # storage_file/storage_source.h
 virStorageFileAccess;
 virStorageFileChainLookup;
@@ -3208,10 +3212,6 @@ virStorageSourcePrivateDataFormatRelPath;
 virStorageSourcePrivateDataParseRelPath;
 virStorageTypeFromString;
 virStorageTypeToString;
-
-
-# util/virstoragefilebackend.h
-virStorageFileBackendRegister;
 
 
 # util/virstoragefileprobe.h

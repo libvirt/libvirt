@@ -25,9 +25,9 @@
 #include <fcntl.h>
 
 #include "virerror.h"
+#include "storage_file_backend.h"
 #include "storage_file_backend_fs.h"
 #include "storage_util.h"
-#include "virstoragefilebackend.h"
 #include "vircommand.h"
 #include "viralloc.h"
 #include "virfile.h"

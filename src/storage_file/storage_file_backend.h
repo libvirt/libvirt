@@ -1,5 +1,5 @@
 /*
- * virstoragefilebackend.h: internal storage source backend contract
+ * storage_file_backend.h: internal storage source backend contract
  *
  * Copyright (C) 2007-2018 Red Hat, Inc.
  *
