@@ -87,6 +87,7 @@ VIR_ENUM_IMPL(virDomainTaint,
               "custom-dtb",
               "custom-ga-command",
               "custom-hypervisor-feature",
+              "deprecated-config",
 );
 
 VIR_ENUM_IMPL(virDomainVirt,
