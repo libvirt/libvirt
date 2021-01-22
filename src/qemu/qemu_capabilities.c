@@ -2446,6 +2446,23 @@ virQEMUCapsGetMachineDefaultCPU(virQEMUCapsPtr qemuCaps,
 
 
 bool
+virQEMUCapsIsCPUDeprecated(virQEMUCapsPtr qemuCaps,
+                           virDomainVirtType type,
+                           const char *model)
+{
+    virQEMUCapsAccelPtr accel = virQEMUCapsGetAccel(qemuCaps, type);
+    qemuMonitorCPUDefsPtr defs = accel->cpuModels;
+    size_t i;
+
+    for (i = 0; i < defs->ncpus; i++) {
+        if (STREQ_NULLABLE(defs->cpus[i].name, model))
+            return defs->cpus[i].deprecated;
+    }
+    return false;
+}
+
+
+bool
 virQEMUCapsGetMachineNumaMemSupported(virQEMUCapsPtr qemuCaps,
                                       virDomainVirtType virtType,
                                       const char *name)

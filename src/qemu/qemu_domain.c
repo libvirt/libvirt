@@ -6274,6 +6274,37 @@ void qemuDomainObjTaintMsg(virQEMUDriverPtr driver,
     virErrorRestore(&orig_err);
 }
 
+static void
+qemuDomainObjCheckCPUTaint(virQEMUDriverPtr driver,
+                           virDomainObjPtr obj,
+                           qemuDomainLogContextPtr logCtxt,
+                           bool incomingMigration)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+    virQEMUCapsPtr qemuCaps = priv->qemuCaps;
+
+    switch (obj->def->cpu->mode) {
+    case VIR_CPU_MODE_HOST_PASSTHROUGH:
+        if (incomingMigration)
+            qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HOST_CPU, logCtxt);
+        break;
+    case VIR_CPU_MODE_CUSTOM:
+        if (obj->def->cpu->model &&
+            virQEMUCapsIsCPUDeprecated(qemuCaps,
+                                       obj->def->virtType,
+                                       obj->def->cpu->model)) {
+            qemuDomainObjTaintMsg(driver, obj, VIR_DOMAIN_TAINT_DEPRECATED_CONFIG, logCtxt,
+                                  _("CPU model '%s'"),
+                                  obj->def->cpu->model);
+        }
+        break;
+    case VIR_CPU_MODE_HOST_MODEL:
+    case VIR_CPU_MODE_LAST:
+    default:
+        break;
+    }
+}
+
 
 void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
                              virDomainObjPtr obj,
@@ -6307,10 +6338,8 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
                            VIR_DOMAIN_TAINT_CUSTOM_HYPERVISOR_FEATURE, logCtxt);
     }
 
-    if (obj->def->cpu &&
-        obj->def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH &&
-        incomingMigration)
-        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HOST_CPU, logCtxt);
+    if (obj->def->cpu)
+        qemuDomainObjCheckCPUTaint(driver, obj, logCtxt, incomingMigration);
 
     for (i = 0; i < obj->def->ndisks; i++)
         qemuDomainObjCheckDiskTaint(driver, obj, obj->def->disks[i], logCtxt);
