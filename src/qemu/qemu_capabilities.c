@@ -2463,6 +2463,22 @@ virQEMUCapsIsCPUDeprecated(virQEMUCapsPtr qemuCaps,
 
 
 bool
+virQEMUCapsIsMachineDeprecated(virQEMUCapsPtr qemuCaps,
+                               virDomainVirtType type,
+                               const char *machine)
+{
+    virQEMUCapsAccelPtr accel = virQEMUCapsGetAccel(qemuCaps, type);
+    size_t i;
+
+    for (i = 0; i < accel->nmachineTypes; i++) {
+        if (STREQ_NULLABLE(accel->machineTypes[i].name, machine))
+            return accel->machineTypes[i].deprecated;
+    }
+    return false;
+}
+
+
+bool
 virQEMUCapsGetMachineNumaMemSupported(virQEMUCapsPtr qemuCaps,
                                       virDomainVirtType virtType,
                                       const char *name)

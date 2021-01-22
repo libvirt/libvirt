@@ -6275,6 +6275,24 @@ void qemuDomainObjTaintMsg(virQEMUDriverPtr driver,
 }
 
 static void
+qemuDomainObjCheckMachineTaint(virQEMUDriverPtr driver,
+                               virDomainObjPtr obj,
+                               qemuDomainLogContextPtr logCtxt)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+    virQEMUCapsPtr qemuCaps = priv->qemuCaps;
+
+    if (virQEMUCapsIsMachineDeprecated(qemuCaps,
+                                       obj->def->virtType,
+                                       obj->def->os.machine)) {
+        qemuDomainObjTaintMsg(driver, obj, VIR_DOMAIN_TAINT_DEPRECATED_CONFIG, logCtxt,
+                              _("machine type '%s'"),
+                              obj->def->os.machine);
+    }
+}
+
+
+static void
 qemuDomainObjCheckCPUTaint(virQEMUDriverPtr driver,
                            virDomainObjPtr obj,
                            qemuDomainLogContextPtr logCtxt,
@@ -6337,6 +6355,8 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
         qemuDomainObjTaint(driver, obj,
                            VIR_DOMAIN_TAINT_CUSTOM_HYPERVISOR_FEATURE, logCtxt);
     }
+
+    qemuDomainObjCheckMachineTaint(driver, obj, logCtxt);
 
     if (obj->def->cpu)
         qemuDomainObjCheckCPUTaint(driver, obj, logCtxt, incomingMigration);
