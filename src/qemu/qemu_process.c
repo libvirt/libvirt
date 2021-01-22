@@ -7849,6 +7849,11 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         }
     }
 
+    for (i = 0; i < vm->ndeprecations; i++)
+        g_free(vm->deprecations[i]);
+    g_free(vm->deprecations);
+    vm->ndeprecations = 0;
+    vm->deprecations = NULL;
     vm->taint = 0;
     vm->pid = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);

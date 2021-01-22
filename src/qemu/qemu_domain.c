@@ -6239,6 +6239,11 @@ void qemuDomainObjTaintMsg(virQEMUDriverPtr driver,
         va_end(args);
     }
 
+    if (taint == VIR_DOMAIN_TAINT_DEPRECATED_CONFIG &&
+        extramsg) {
+        virDomainObjDeprecation(obj, extramsg);
+    }
+
     VIR_WARN("Domain id=%d name='%s' uuid=%s is tainted: %s%s%s%s",
              obj->def->id,
              obj->def->name,
