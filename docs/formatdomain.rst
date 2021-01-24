@@ -1766,7 +1766,7 @@ Hypervisors may allow certain CPU / machine features to be toggled on/off.
      <kvm>
        <hidden state='on'/>
        <hint-dedicated state='on'/>
-       <poll-control='on'/>
+       <poll-control state='on'/>
      </kvm>
      <xen>
        <e820_host state='on'/>
