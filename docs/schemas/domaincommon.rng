@@ -1646,6 +1646,7 @@
       <ref name="diskSourceNetwork"/>
       <ref name="diskSourceVolume"/>
       <ref name="diskSourceNvme"/>
+      <ref name="diskSourceVhostUser"/>
     </choice>
   </define>
 
@@ -2154,6 +2155,24 @@
         </interleave>
       </element>
     </optional>
+  </define>
+
+  <define name="diskSourceVhostUser">
+    <attribute name="type">
+      <value>vhostuser</value>
+    </attribute>
+    <element name="source">
+      <attribute name="type">
+        <value>unix</value>
+      </attribute>
+      <attribute name="path">
+        <ref name="absFilePath"/>
+      </attribute>
+      <optional>
+         <ref name="reconnect"/>
+      </optional>
+      <empty/>
+    </element>
   </define>
 
   <define name="diskTarget">

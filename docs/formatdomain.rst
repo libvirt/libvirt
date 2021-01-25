@@ -2419,6 +2419,13 @@ paravirtualized driver is specified via the ``disk`` element.
        </source>
        <target dev='vde' bus='virtio'/>
      </disk>
+     <disk type='vhostuser' device='disk'>
+       <driver name='qemu' type='raw'/>
+       <source type='unix' path='/tmp/vhost-blk.sock'>
+         <reconnect enabled='yes' timeout='10'/>
+       </source>
+       <target dev='vdf' bus='virtio'/>
+     </disk>
    </devices>
    ...
 
@@ -2429,8 +2436,8 @@ paravirtualized driver is specified via the ``disk`` element.
    ``type``
       Valid values are "file", "block", "dir" ( :since:`since 0.7.5` ),
       "network" ( :since:`since 0.8.7` ), or "volume" ( :since:`since 1.0.5` ),
-      or "nvme" ( :since:`since 6.0.0` ) and refer to the underlying source for
-      the disk. :since:`Since 0.0.3`
+      or "nvme" ( :since:`since 6.0.0` ), or "vhostuser" ( :since:`since 7.1.0` )
+      and refer to the underlying source for the disk. :since:`Since 0.0.3`
    ``device``
       Indicates how the disk is to be exposed to the guest OS. Possible values
       for this attribute are "floppy", "disk", "cdrom", and "lun", defaulting to
@@ -2581,6 +2588,23 @@ paravirtualized driver is specified via the ``disk`` element.
       is not involved (compared to passing say ``/dev/nvme0n1`` via
       ``<disk type='block'>`` and therefore lower latencies can be achieved.
 
+   ``vhostuser``
+      Enables the hypervisor to connect to another process using vhost-user
+      protocol. Requires shared memory configured for the VM, for more details
+      see ``access`` mode for `memoryBacking <#elementsMemoryBacking>` element.
+
+      The ``source`` element has following mandatory attributes:
+
+      ``type``
+         The type of char device. Currently only ``unix`` type is supported.
+      ``path``
+         Path to the unix socket to be used as disk source.
+
+      Note that the vhost server replaces both the disk frontend and backend
+      thus almost all of the disk properties can't be configured via the
+      ``<disk>`` XML for this disk type. Additionally features such as blockjobs,
+      incremental backups and snapshots are not supported for this disk type.
+
    With "file", "block", and "volume", one or more optional sub-elements
    ``seclabel``, `described below <#seclabel>`__ (and :since:`since 0.9.9` ),
    can be used to override the domain security labeling policy for just that
@@ -2703,6 +2727,15 @@ paravirtualized driver is specified via the ``disk`` element.
       of these attributes is omitted, then that field is assumed to be the
       default value for the current system. If both ``user`` and ``group``
       are intended to be default, then the entire element may be omitted.
+   ``reconnect``
+      For disk type ``vhostuser`` configures reconnect timeout if the connection
+      is lost. It has two mandatory attributes:
+
+      ``enabled``
+         If the reconnect feature is enabled, accepts ``yes`` and ``no``
+      ``timeout``
+         The amount of seconds after which hypervisor tries to reconnect.
+
 
    For a "file" or "volume" disk type which represents a cdrom or floppy (the
    ``device`` attribute), it is possible to define policy what to do with the
