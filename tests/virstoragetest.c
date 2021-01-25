@@ -353,17 +353,6 @@ testStorageLookup(const void *args)
     int ret = 0;
     virStorageSourcePtr result;
     virStorageSourcePtr actualParent;
-    unsigned int idx;
-
-    if (virStorageFileParseChainIndex(data->target, data->name, &idx) < 0 &&
-        data->expIndex) {
-        fprintf(stderr, "call should not have failed\n");
-        ret = -1;
-    }
-    if (idx != data->expIndex) {
-        fprintf(stderr, "index: expected %u, got %u\n", data->expIndex, idx);
-        ret = -1;
-    }
 
     result = virStorageSourceChainLookup(data->chain, data->from,
                                          data->name, data->target, &actualParent);
@@ -385,6 +374,17 @@ testStorageLookup(const void *args)
         fprintf(stderr, "meta: expected %p, got %p\n",
                 data->expMeta, result);
         ret = -1;
+    }
+    if (data->expIndex > 0) {
+        if (!result) {
+            fprintf(stderr, "index: resulting lookup is empty, can't match index\n");
+            ret = -1;
+        } else {
+            if (result->id != data->expIndex) {
+                fprintf(stderr, "index: expected %u, got %u\n", data->expIndex, result->id);
+                ret = -1;
+            }
+        }
     }
     if (data->expParent != actualParent) {
         fprintf(stderr, "parent: expected %s, got %s\n",
@@ -1077,13 +1077,13 @@ mymain(void)
     TEST_LOOKUP_TARGET(72, "vda", NULL, "vda[0]", 0, NULL, NULL, NULL);
     TEST_LOOKUP_TARGET(73, "vda", NULL, "vda[1]", 1, chain2->path, chain2, chain);
     TEST_LOOKUP_TARGET(74, "vda", chain, "vda[1]", 1, chain2->path, chain2, chain);
-    TEST_LOOKUP_TARGET(75, "vda", chain2, "vda[1]", 1, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(76, "vda", chain3, "vda[1]", 1, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(75, "vda", chain2, "vda[1]", 0, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(76, "vda", chain3, "vda[1]", 0, NULL, NULL, NULL);
     TEST_LOOKUP_TARGET(77, "vda", NULL, "vda[2]", 2, chain3->path, chain3, chain2);
     TEST_LOOKUP_TARGET(78, "vda", chain, "vda[2]", 2, chain3->path, chain3, chain2);
     TEST_LOOKUP_TARGET(79, "vda", chain2, "vda[2]", 2, chain3->path, chain3, chain2);
-    TEST_LOOKUP_TARGET(80, "vda", chain3, "vda[2]", 2, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(81, "vda", NULL, "vda[3]", 3, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(80, "vda", chain3, "vda[2]", 0, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(81, "vda", NULL, "vda[3]", 0, NULL, NULL, NULL);
 
 #define TEST_PATH_CANONICALIZE(id, PATH, EXPECT) \
     do { \
