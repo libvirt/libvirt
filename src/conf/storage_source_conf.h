@@ -23,6 +23,7 @@
 
 #include "storage_encryption_conf.h"
 #include "virbitmap.h"
+#include "virconftypes.h"
 #include "virenum.h"
 #include "virobject.h"
 #include "virpci.h"
@@ -41,6 +42,7 @@ typedef enum {
     VIR_STORAGE_TYPE_NETWORK,
     VIR_STORAGE_TYPE_VOLUME,
     VIR_STORAGE_TYPE_NVME,
+    VIR_STORAGE_TYPE_VHOST_USER,
 
     VIR_STORAGE_TYPE_LAST
 } virStorageType;
@@ -299,6 +301,8 @@ struct _virStorageSource {
     unsigned long long timeout; /* connection timeout in seconds */
 
     virStorageSourceNVMeDefPtr nvme; /* type == VIR_STORAGE_TYPE_NVME */
+
+    virDomainChrSourceDefPtr vhostuser; /* type == VIR_STORAGE_TYPE_VHOST_USER */
 
     virStorageSourceInitiatorDef initiator;
 

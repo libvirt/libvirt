@@ -1173,6 +1173,11 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
             return NULL;
         break;
 
+    case VIR_STORAGE_TYPE_VHOST_USER:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("unable to create blockdev props for vhostuser disk type"));
+        return NULL;
+
     case VIR_STORAGE_TYPE_VOLUME:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("storage source pool '%s' volume '%s' is not translated"),
@@ -2599,6 +2604,7 @@ qemuBlockStorageSourceCreateGetStorageProps(virStorageSourcePtr src,
     case VIR_STORAGE_TYPE_DIR:
     case VIR_STORAGE_TYPE_VOLUME:
     case VIR_STORAGE_TYPE_NVME:
+    case VIR_STORAGE_TYPE_VHOST_USER:
         return 0;
 
     case VIR_STORAGE_TYPE_NONE:

@@ -22,6 +22,7 @@
 
 #include "domain_validate.h"
 #include "domain_conf.h"
+#include "snapshot_conf.h"
 #include "virconftypes.h"
 #include "virlog.h"
 #include "virutil.h"
@@ -254,6 +255,188 @@ virDomainCheckVirtioOptionsAreAbsent(virDomainVirtioOptionsPtr virtio)
 }
 
 
+static int
+virDomainDiskVhostUserValidate(const virDomainDiskDef *disk)
+{
+    if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("vhostuser disk supports only virtio bus"));
+        return -1;
+    }
+
+    if (disk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_NONE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("only snapshot=no is supported with vhostuser disk"));
+        return -1;
+    }
+
+    /* Unsupported driver attributes */
+
+    if (disk->cachemode != VIR_DOMAIN_DISK_CACHE_DEFAULT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cache is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->error_policy || disk->rerror_policy) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("error_policy is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->iomode) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("io is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->ioeventfd != VIR_TRISTATE_SWITCH_ABSENT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("ioeventfd is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->copy_on_read) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("copy_on_read is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->discard) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("discard is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->iothread) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("iothread is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->detect_zeroes) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("detect_zeroes is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    /* Unsupported driver elements */
+
+    if (disk->virtio) {
+        if (disk->virtio->iommu != VIR_TRISTATE_SWITCH_ABSENT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("iommu is not supported with vhostuser disk"));
+            return -1;
+        }
+
+        if (disk->virtio->ats != VIR_TRISTATE_SWITCH_ABSENT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ats is not supported with vhostuser disk"));
+            return -1;
+        }
+
+        if (disk->virtio->packed != VIR_TRISTATE_SWITCH_ABSENT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("packed is not supported with vhostuser disk"));
+            return -1;
+        }
+    }
+
+    if (disk->src->metadataCacheMaxSize > 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("metadata_cache is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    /* Unsupported disk elements */
+
+    if (disk->blkdeviotune.group_name ||
+        virDomainBlockIoTuneInfoHasAny(&disk->blkdeviotune)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("iotune is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->src->backingStore) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("backingStore is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->src->encryption) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("encryption is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->src->readonly) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("readonly is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->src->shared) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("shareable is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->transient) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("transient is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->serial) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("serial is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->wwn) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("wwn is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->vendor) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("vendor is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->product) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("product is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->src->auth) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("auth is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->geometry.cylinders > 0 ||
+        disk->geometry.heads > 0 ||
+        disk->geometry.sectors > 0 ||
+        disk->geometry.trans != VIR_DOMAIN_DISK_TRANS_DEFAULT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("geometry is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    if (disk->blockio.logical_block_size > 0 ||
+        disk->blockio.physical_block_size > 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("blockio is not supported with vhostuser disk"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 #define VENDOR_LEN  8
 #define PRODUCT_LEN 16
 
@@ -327,6 +510,11 @@ virDomainDiskDefValidate(const virDomainDef *def,
                            _("NVMe namespace can't be zero"));
             return -1;
         }
+    }
+
+    if (disk->src->type == VIR_STORAGE_TYPE_VHOST_USER &&
+        virDomainDiskVhostUserValidate(disk) < 0) {
+        return -1;
     }
 
     for (next = disk->src; next; next = next->backingStore) {
