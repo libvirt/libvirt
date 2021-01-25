@@ -367,6 +367,10 @@ x64-fedora-rawhide:
     - x64-fedora-rawhide-container
   variables:
     NAME: fedora-rawhide
+    # Temp workaround until we see what resolution is for
+    # https://bugzilla.redhat.com/show_bug.cgi?id=1919965
+    # Hopefully remove before F34 is released.
+    CFLAGS: -gdwarf-4
 
 x64-fedora-rawhide-clang:
   extends: .native_build_job
