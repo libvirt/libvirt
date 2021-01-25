@@ -56,7 +56,7 @@ _vsh_complete()
     # the name of the command whose arguments are being
     # completed.
     # Therefore, we might just run $1.
-    A=($($1 ${CMDLINE} complete -- "${INPUT[@]}" 2>/dev/null))
+    IFS=$'\n' A=($($1 ${CMDLINE} complete -- "${INPUT[@]}" 2>/dev/null))
 
     COMPREPLY=($(compgen -W "${A[*]%--}" -- ${cur}))
     __ltrim_colon_completions "$cur"
