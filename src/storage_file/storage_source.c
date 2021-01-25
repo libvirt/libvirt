@@ -198,31 +198,58 @@ virStorageSourceGetMetadataFromFD(const char *path,
 }
 
 
-/* Given a @chain, look for the backing store @name that is a backing file
- * of @startFrom (or any member of @chain if @startFrom is NULL) and return
- * that location within the chain.  @chain must always point to the top of
- * the chain.  Pass NULL for @name and 0 for @idx to find the base of the
- * chain.  Pass nonzero @idx to find the backing source according to its
- * position in the backing chain.  If @parent is not NULL, set *@parent to
- * the preferred name of the parent (or to NULL if @name matches the start
- * of the chain).  Since the results point within @chain, they must not be
- * independently freed. Reports an error and returns NULL if @name is not
- * found.
+/**
+ * virStorageSourceChainLookup:
+ * @chain: chain top to look in
+ * @startFrom: move the starting point of @chain if non-NULL
+ * @name: name of the file to look for in @chain
+ * @diskTarget: optional disk target to validate against
+ * @parent: Filled with parent virStorageSource of the returned value if non-NULL.
+ *
+ * Looks up a storage source definition corresponding to @name in @chain and
+ * returns the corresponding virStorageSource. If @startFrom is non-NULL, the
+ * lookup starts from that virStorageSource.
+ *
+ * @name can be:
+ *  - NULL: the end of the source chain is returned
+ *  - "vda[4]": Storage source with 'id' == 4 is returned. If @diskTarget is
+ *              non-NULL it's also validated that the part before the square
+ *              bracket matches the requested target
+ *  - "/path/to/file": Literal path is matched. Symlink resolution is attempted
+ *                     if the filename doesn't string-match with the path.
  */
 virStorageSourcePtr
 virStorageSourceChainLookup(virStorageSourcePtr chain,
                             virStorageSourcePtr startFrom,
                             const char *name,
-                            unsigned int idx,
+                            const char *diskTarget,
                             virStorageSourcePtr *parent)
 {
     virStorageSourcePtr prev;
     const char *start = chain->path;
     bool nameIsFile = virStorageSourceBackinStoreStringIsFile(name);
+    g_autofree char *target = NULL;
+    unsigned int idx = 0;
+
+    if (diskTarget)
+        start = diskTarget;
 
     if (!parent)
         parent = &prev;
     *parent = NULL;
+
+    /* parse the "vda[4]" type string */
+    if (name &&
+        virStorageFileParseBackingStoreStr(name, &target, &idx) == 0) {
+        if (diskTarget &&
+            idx != 0 &&
+            STRNEQ(diskTarget, target)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("requested target '%s' does not match target '%s'"),
+                           target, diskTarget);
+            return NULL;
+        }
+    }
 
     if (startFrom) {
         while (virStorageSourceIsBacking(chain) &&

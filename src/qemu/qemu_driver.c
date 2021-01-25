@@ -14412,7 +14412,6 @@ qemuDomainBlockPullCommon(virDomainObjPtr vm,
     const char *jobname = NULL;
     virDomainDiskDefPtr disk;
     virStorageSourcePtr baseSource = NULL;
-    unsigned int baseIndex = 0;
     g_autofree char *basePath = NULL;
     g_autofree char *backingPath = NULL;
     unsigned long long speed = bandwidth;
@@ -14448,9 +14447,8 @@ qemuDomainBlockPullCommon(virDomainObjPtr vm,
         goto endjob;
 
     if (base &&
-        (virStorageFileParseChainIndex(disk->dst, base, &baseIndex) < 0 ||
-         !(baseSource = virStorageSourceChainLookup(disk->src, disk->src,
-                                                    base, baseIndex, NULL))))
+        !(baseSource = virStorageSourceChainLookup(disk->src, disk->src,
+                                                   base, disk->dst, NULL)))
         goto endjob;
 
     if (baseSource) {
@@ -15465,9 +15463,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     int ret = -1;
     virDomainDiskDefPtr disk = NULL;
     virStorageSourcePtr topSource;
-    unsigned int topIndex = 0;
     virStorageSourcePtr baseSource = NULL;
-    unsigned int baseIndex = 0;
     virStorageSourcePtr top_parent = NULL;
     bool clean_access = false;
     g_autofree char *topPath = NULL;
@@ -15540,10 +15536,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
 
     if (!top || STREQ(top, disk->dst))
         topSource = disk->src;
-    else if (virStorageFileParseChainIndex(disk->dst, top, &topIndex) < 0 ||
-             !(topSource = virStorageSourceChainLookup(disk->src, NULL,
-                                                       top, topIndex,
-                                                       &top_parent)))
+    else if (!(topSource = virStorageSourceChainLookup(disk->src, NULL, top,
+                                                       disk->dst, &top_parent)))
         goto endjob;
 
     if (topSource == disk->src) {
@@ -15575,9 +15569,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
 
     if (!base && (flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW))
         baseSource = topSource->backingStore;
-    else if (virStorageFileParseChainIndex(disk->dst, base, &baseIndex) < 0 ||
-             !(baseSource = virStorageSourceChainLookup(disk->src, topSource,
-                                                        base, baseIndex, NULL)))
+    else if (!(baseSource = virStorageSourceChainLookup(disk->src, topSource,
+                                                        base, disk->dst, NULL)))
         goto endjob;
 
     if ((flags & VIR_DOMAIN_BLOCK_COMMIT_SHALLOW) &&

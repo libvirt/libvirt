@@ -43,7 +43,7 @@ virStorageSourcePtr
 virStorageSourceChainLookup(virStorageSourcePtr chain,
                             virStorageSourcePtr startFrom,
                             const char *name,
-                            unsigned int idx,
+                            const char *diskTarget,
                             virStorageSourcePtr *parent)
     ATTRIBUTE_NONNULL(1);
 

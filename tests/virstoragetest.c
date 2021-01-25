@@ -366,7 +366,7 @@ testStorageLookup(const void *args)
     }
 
     result = virStorageSourceChainLookup(data->chain, data->from,
-                                         data->name, idx, &actualParent);
+                                         data->name, data->target, &actualParent);
     if (!data->expResult)
         virResetLastError();
 
