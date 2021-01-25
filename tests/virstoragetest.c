@@ -365,36 +365,6 @@ testStorageLookup(const void *args)
         ret = -1;
     }
 
-     /* Test twice to ensure optional parameter doesn't cause NULL deref. */
-    result = virStorageSourceChainLookup(data->chain, data->from,
-                                         idx ? NULL : data->name,
-                                         idx, NULL);
-
-    if (!data->expResult) {
-        if (virGetLastErrorCode() == VIR_ERR_OK) {
-            fprintf(stderr, "call should have failed\n");
-            ret = -1;
-        }
-        virResetLastError();
-    } else {
-        if (virGetLastErrorCode()) {
-            fprintf(stderr, "call should not have warned\n");
-            ret = -1;
-        }
-    }
-
-    if (!result) {
-        if (data->expResult) {
-            fprintf(stderr, "result 1: expected %s, got NULL\n",
-                    data->expResult);
-            ret = -1;
-        }
-    } else if (STRNEQ_NULLABLE(data->expResult, result->path)) {
-        fprintf(stderr, "result 1: expected %s, got %s\n",
-                NULLSTR(data->expResult), NULLSTR(result->path));
-        ret = -1;
-    }
-
     result = virStorageSourceChainLookup(data->chain, data->from,
                                          data->name, idx, &actualParent);
     if (!data->expResult)
@@ -402,12 +372,12 @@ testStorageLookup(const void *args)
 
     if (!result) {
         if (data->expResult) {
-            fprintf(stderr, "result 2: expected %s, got NULL\n",
+            fprintf(stderr, "result: expected %s, got NULL\n",
                     data->expResult);
             ret = -1;
         }
     } else if (STRNEQ_NULLABLE(data->expResult, result->path)) {
-        fprintf(stderr, "result 2: expected %s, got %s\n",
+        fprintf(stderr, "result: expected %s, got %s\n",
                 NULLSTR(data->expResult), NULLSTR(result->path));
         ret = -1;
     }
