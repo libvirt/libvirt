@@ -216,38 +216,6 @@ virStorageFileParseBackingStoreStr(const char *str,
 }
 
 
-int
-virStorageFileParseChainIndex(const char *diskTarget,
-                              const char *name,
-                              unsigned int *chainIndex)
-{
-    unsigned int idx = 0;
-    g_autofree char *target = NULL;
-
-    *chainIndex = 0;
-
-    if (!name || !diskTarget)
-        return 0;
-
-    if (virStorageFileParseBackingStoreStr(name, &target, &idx) < 0)
-        return 0;
-
-    if (idx == 0)
-        return 0;
-
-    if (STRNEQ(diskTarget, target)) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("requested target '%s' does not match target '%s'"),
-                       target, diskTarget);
-        return -1;
-    }
-
-    *chainIndex = idx;
-
-    return 0;
-}
-
-
 static char *
 virStorageFileCanonicalizeFormatPath(char **components,
                                      size_t ncomponents,

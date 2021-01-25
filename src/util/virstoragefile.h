@@ -23,11 +23,6 @@
 
 #include "internal.h"
 
-int virStorageFileParseChainIndex(const char *diskTarget,
-                                  const char *name,
-                                  unsigned int *chainIndex)
-    ATTRIBUTE_NONNULL(3);
-
 int virStorageFileParseBackingStoreStr(const char *str,
                                        char **target,
                                        unsigned int *chainIndex)

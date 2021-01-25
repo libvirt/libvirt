@@ -3217,7 +3217,6 @@ virStorageFileCanonicalizePath;
 virStorageFileGetNPIVKey;
 virStorageFileGetSCSIKey;
 virStorageFileParseBackingStoreStr;
-virStorageFileParseChainIndex;
 
 
 # util/virstring.h
