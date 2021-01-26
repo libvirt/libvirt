@@ -739,6 +739,8 @@ vshCommandFree(vshCmd *cmd)
     }
 }
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(vshCmd, vshCommandFree);
+
 /**
  * vshCommandOpt:
  * @cmd: parsed command line to search
@@ -2704,10 +2706,10 @@ vshReadlineParse(const char *text, int state)
      * initialize those static variables above. On subsequent
      * calls @state is non zero. */
     if (!state) {
-        vshCmd *partial = NULL;
+        g_autoptr(vshCmd) partial = NULL;
         const vshCmdDef *cmd = NULL;
         const vshCmdOptDef *opt = NULL;
-        char *buf = g_strdup(rl_line_buffer);
+        g_autofree char *buf = g_strdup(rl_line_buffer);
 
         g_strfreev(list);
         list = NULL;
@@ -2716,8 +2718,6 @@ vshReadlineParse(const char *text, int state)
         *(buf + rl_point) = '\0';
 
         vshCommandStringParse(NULL, buf, &partial);
-
-        VIR_FREE(buf);
 
         if (partial) {
             cmd = partial->def;
@@ -2759,12 +2759,10 @@ vshReadlineParse(const char *text, int state)
                     (vshCompleterFilter(&completer_list, text) < 0 ||
                      virStringListMerge(&list, &completer_list) < 0)) {
                     g_strfreev(completer_list);
-                    vshCommandFree(partial);
                     goto cleanup;
                 }
             }
         }
-        vshCommandFree(partial);
     }
 
     if (list) {
