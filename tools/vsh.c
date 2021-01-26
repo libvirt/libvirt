@@ -2695,18 +2695,20 @@ vshCompleterFilter(char ***list,
 static char *
 vshReadlineParse(const char *text, int state)
 {
-    static vshCmd *partial;
     static char **list;
     static size_t list_index;
-    const vshCmdDef *cmd = NULL;
-    const vshCmdOptDef *opt = NULL;
     char *ret = NULL;
 
+    /* Readline calls this function until NULL is returned. On
+     * the very first call @state is zero which means we should
+     * initialize those static variables above. On subsequent
+     * calls @state is non zero. */
     if (!state) {
+        vshCmd *partial = NULL;
+        const vshCmdDef *cmd = NULL;
+        const vshCmdOptDef *opt = NULL;
         char *buf = g_strdup(rl_line_buffer);
 
-        vshCommandFree(partial);
-        partial = NULL;
         g_strfreev(list);
         list = NULL;
         list_index = 0;
@@ -2734,9 +2736,7 @@ vshReadlineParse(const char *text, int state)
         }
 
         opt = vshReadlineCommandFindOpt(partial, text);
-    }
 
-    if (!list) {
         if (!cmd) {
             list = vshReadlineCommandGenerator(text);
         } else {
@@ -2759,10 +2759,12 @@ vshReadlineParse(const char *text, int state)
                     (vshCompleterFilter(&completer_list, text) < 0 ||
                      virStringListMerge(&list, &completer_list) < 0)) {
                     g_strfreev(completer_list);
+                    vshCommandFree(partial);
                     goto cleanup;
                 }
             }
         }
+        vshCommandFree(partial);
     }
 
     if (list) {
@@ -2780,15 +2782,12 @@ vshReadlineParse(const char *text, int state)
 
  cleanup:
     if (!ret) {
-        vshCommandFree(partial);
-        partial = NULL;
         g_strfreev(list);
         list = NULL;
         list_index = 0;
     }
 
     return ret;
-
 }
 
 static char **
