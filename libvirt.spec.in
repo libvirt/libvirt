@@ -253,7 +253,6 @@ Requires: libvirt-libs = %{version}-%{release}
 
 # All build-time requirements. Run-time requirements are
 # listed against each sub-RPM
-BuildRequires: gettext-devel
 %if 0%{?rhel} == 7
 BuildRequires: python36-docutils
 %else
