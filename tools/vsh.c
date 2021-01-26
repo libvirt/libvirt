@@ -2566,37 +2566,30 @@ vshTreePrint(vshControl *ctl, vshTreeLookup lookup, void *opaque,
 static char **
 vshReadlineCommandGenerator(const char *text G_GNUC_UNUSED)
 {
-    size_t grp_list_index = 0, cmd_list_index = 0;
-    const char *name;
+    size_t grp_list_index = 0;
     const vshCmdGrp *grp;
-    const vshCmdDef *cmds;
     size_t ret_size = 0;
     g_auto(GStrv) ret = NULL;
 
     grp = cmdGroups;
 
-    /* Return the next name which partially matches from the
-     * command list.
-     */
-    while (grp[grp_list_index].name) {
-        cmds = grp[grp_list_index].commands;
+    for (grp_list_index = 0; grp[grp_list_index].name; grp_list_index++) {
+        const vshCmdDef *cmds = grp[grp_list_index].commands;
+        size_t cmd_list_index;
 
-        if (cmds[cmd_list_index].name) {
-            while ((name = cmds[cmd_list_index].name)) {
-                if (cmds[cmd_list_index++].flags & VSH_CMD_FLAG_ALIAS)
-                    continue;
+        for (cmd_list_index = 0; cmds[cmd_list_index].name; cmd_list_index++) {
+            const char *name = cmds[cmd_list_index].name;
 
-                if (VIR_REALLOC_N(ret, ret_size + 2) < 0)
-                    return NULL;
+            if (cmds[cmd_list_index].flags & VSH_CMD_FLAG_ALIAS)
+                continue;
 
-                ret[ret_size] = g_strdup(name);
-                ret_size++;
-                /* Terminate the string list properly. */
-                ret[ret_size] = NULL;
-            }
-        } else {
-            cmd_list_index = 0;
-            grp_list_index++;
+            if (VIR_REALLOC_N(ret, ret_size + 2) < 0)
+                return NULL;
+
+            ret[ret_size] = g_strdup(name);
+            ret_size++;
+            /* Terminate the string list properly. */
+            ret[ret_size] = NULL;
         }
     }
 
