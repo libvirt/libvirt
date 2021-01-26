@@ -245,13 +245,13 @@ testVirHostdevReAttachPCIHostdevs_unmanaged(void)
     inactive_count = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
 
     VIR_TEST_DEBUG("Test 0 hostdevs");
-    virHostdevReAttachPCIDevices(mgr, drv_name, dom_name, NULL, 0, NULL);
+    virHostdevReAttachPCIDevices(mgr, drv_name, dom_name, NULL, 0);
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
     VIR_TEST_DEBUG("Test >=1 unmanaged hostdevs");
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name,
-                                  hostdevs, nhostdevs, NULL);
+                                  hostdevs, nhostdevs);
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count - nhostdevs);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count + nhostdevs);
 
@@ -329,13 +329,13 @@ testVirHostdevReAttachPCIHostdevs_managed(bool mixed)
     inactive_count = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
 
     VIR_TEST_DEBUG("Test 0 hostdevs");
-    virHostdevReAttachPCIDevices(mgr, drv_name, dom_name, NULL, 0, NULL);
+    virHostdevReAttachPCIDevices(mgr, drv_name, dom_name, NULL, 0);
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
     VIR_TEST_DEBUG("Test >=1 hostdevs");
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name,
-                                  hostdevs, nhostdevs, NULL);
+                                  hostdevs, nhostdevs);
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count - nhostdevs);
     /* If testing a mixed roundtrip, devices are added back to the inactive
      * list as soon as we detach from the guest */
@@ -542,7 +542,7 @@ testNVMeDiskRoundtrip(const void *opaque G_GNUC_UNUSED)
     /* Don't rely on a state that previous test cases might have
      * left the manager in. Start with a clean slate. */
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name,
-                                 hostdevs, nhostdevs, NULL);
+                                 hostdevs, nhostdevs);
 
     CHECK_NVME_LIST_COUNT(mgr->activeNVMeHostdevs, 0);
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, 0);

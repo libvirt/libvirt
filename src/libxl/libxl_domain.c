@@ -868,7 +868,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
     }
 
     virHostdevReAttachDomainDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
-                                    vm->def, hostdev_flags, NULL);
+                                    vm->def, hostdev_flags);
 
     VIR_FREE(priv->lockState);
     if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)

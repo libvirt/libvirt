@@ -3153,7 +3153,7 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
 
  error:
     virHostdevReAttachPCIDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
-                                 vm->def->name, &hostdev, 1, NULL);
+                                 vm->def->name, &hostdev, 1);
 
  cleanup:
     virObjectUnref(cfg);
@@ -3690,7 +3690,7 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
     virDomainHostdevRemove(vm->def, idx);
 
     virHostdevReAttachPCIDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
-                                 vm->def->name, &hostdev, 1, NULL);
+                                 vm->def->name, &hostdev, 1);
 
     ret = 0;
 

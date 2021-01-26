@@ -113,8 +113,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
                              const char *drv_name,
                              const char *dom_name,
                              virDomainHostdevDefPtr *hostdevs,
-                             int nhostdevs,
-                             const char *oldStateDir)
+                             int nhostdevs)
     ATTRIBUTE_NONNULL(1);
 void
 virHostdevReAttachUSBDevices(virHostdevManagerPtr hostdev_mgr,
@@ -188,8 +187,7 @@ void
 virHostdevReAttachDomainDevices(virHostdevManagerPtr mgr,
                                 const char *driver,
                                 virDomainDefPtr def,
-                                unsigned int flags,
-                                const char *oldStateDir)
+                                unsigned int flags)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 /* functions used by NodeDevDetach/Reattach/Reset */
