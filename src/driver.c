@@ -116,18 +116,17 @@ virThreadLocal connectStorage;
 static int
 virConnectCacheOnceInit(void)
 {
-    if (virThreadLocalInit(&connectInterface, NULL) < 0)
+    if (virThreadLocalInit(&connectInterface, NULL) < 0 ||
+        virThreadLocalInit(&connectNetwork, NULL) < 0 ||
+        virThreadLocalInit(&connectNWFilter, NULL) < 0 ||
+        virThreadLocalInit(&connectNodeDev, NULL) < 0 ||
+        virThreadLocalInit(&connectSecret, NULL) < 0 ||
+        virThreadLocalInit(&connectStorage, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to initialize thread local variable"));
         return -1;
-    if (virThreadLocalInit(&connectNetwork, NULL) < 0)
-        return -1;
-    if (virThreadLocalInit(&connectNWFilter, NULL) < 0)
-        return -1;
-    if (virThreadLocalInit(&connectNodeDev, NULL) < 0)
-        return -1;
-    if (virThreadLocalInit(&connectSecret, NULL) < 0)
-        return -1;
-    if (virThreadLocalInit(&connectStorage, NULL) < 0)
-        return -1;
+    }
+
     return 0;
 }
 
