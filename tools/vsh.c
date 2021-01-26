@@ -2709,15 +2709,15 @@ vshReadlineParse(const char *text, int state)
         g_autoptr(vshCmd) partial = NULL;
         const vshCmdDef *cmd = NULL;
         const vshCmdOptDef *opt = NULL;
-        g_autofree char *buf = g_strdup(rl_line_buffer);
+        g_autofree char *line = g_strdup(rl_line_buffer);
 
         g_strfreev(list);
         list = NULL;
         list_index = 0;
 
-        *(buf + rl_point) = '\0';
+        *(line + rl_point) = '\0';
 
-        vshCommandStringParse(NULL, buf, &partial);
+        vshCommandStringParse(NULL, line, &partial);
 
         if (partial) {
             cmd = partial->def;
