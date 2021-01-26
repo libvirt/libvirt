@@ -152,6 +152,8 @@ struct _vshCmdOptDef {
 struct _vshCmdOpt {
     const vshCmdOptDef *def;    /* non-NULL pointer to option definition */
     char *data;                 /* allocated data, or NULL for bool option */
+    bool completeThis;          /* true if this is the option user's wishing to
+                                   autocomplete */
     vshCmdOpt *next;
 };
 
@@ -292,7 +294,8 @@ int vshBlockJobOptionBandwidth(vshControl *ctl,
                                unsigned long *bandwidth);
 bool vshCommandOptBool(const vshCmd *cmd, const char *name);
 bool vshCommandRun(vshControl *ctl, const vshCmd *cmd);
-bool vshCommandStringParse(vshControl *ctl, char *cmdstr, vshCmd **partial);
+bool vshCommandStringParse(vshControl *ctl, char *cmdstr,
+                           vshCmd **partial, size_t point);
 
 const vshCmdOpt *vshCommandOptArgv(vshControl *ctl, const vshCmd *cmd,
                                    const vshCmdOpt *opt);

@@ -1318,6 +1318,8 @@ struct _vshCommandParser {
                                  char **, bool);
     /* vshCommandStringGetArg() */
     char *pos;
+    const char *originalLine;
+    size_t point;
     /* vshCommandArgvGetArg() */
     char **arg_pos;
     char **arg_end;
@@ -1426,6 +1428,10 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                             arg->data = tkdata;
                             tkdata = NULL;
                             arg->next = NULL;
+
+                            if (parser->pos - parser->originalLine == parser->point - 1)
+                                arg->completeThis = true;
+
                             if (!first)
                                 first = arg;
                             if (last)
@@ -1476,6 +1482,9 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                 arg->data = tkdata;
                 arg->next = NULL;
                 tkdata = NULL;
+
+                if (parser->pos - parser->originalLine == parser->point)
+                    arg->completeThis = true;
 
                 if (!first)
                     first = arg;
@@ -1588,7 +1597,7 @@ vshCommandArgvGetArg(vshControl *ctl G_GNUC_UNUSED,
 bool
 vshCommandArgvParse(vshControl *ctl, int nargs, char **argv)
 {
-    vshCommandParser parser;
+    vshCommandParser parser = { 0 };
 
     if (nargs <= 0)
         return false;
@@ -1675,15 +1684,38 @@ vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res,
     return VSH_TK_ARG;
 }
 
+
+/**
+ * vshCommandStringParse:
+ * @ctl virsh control structure
+ * @cmdstr: string to parse
+ * @partial: store partially parsed command here
+ * @point: position of cursor (rl_point)
+ *
+ * Parse given string @cmdstr as a command and store it under
+ * @ctl->cmd. For readline completion, if @partial is not NULL on
+ * the input then errors in parsing are ignored (because user is
+ * still in progress of writing the command string) and partially
+ * parsed command is stored at *@partial (caller has to free it
+ * afterwards). Among with @partial, caller must set @point which
+ * is the position of cursor in @cmdstr (offset, numbered from 1).
+ * Parser will then set @completeThis attribute to true for the
+ * vshCmdOpt that appeared under the cursor.
+ */
 bool
-vshCommandStringParse(vshControl *ctl, char *cmdstr, vshCmd **partial)
+vshCommandStringParse(vshControl *ctl,
+                      char *cmdstr,
+                      vshCmd **partial,
+                      size_t point)
 {
-    vshCommandParser parser;
+    vshCommandParser parser = { 0 };
 
     if (cmdstr == NULL || *cmdstr == '\0')
         return false;
 
     parser.pos = cmdstr;
+    parser.originalLine = cmdstr;
+    parser.point = point;
     parser.getNextArg = vshCommandStringGetArg;
     return vshCommandParse(ctl, &parser, partial);
 }
@@ -2634,28 +2666,20 @@ vshReadlineOptionsGenerator(const char *text,
 
 
 static const vshCmdOptDef *
-vshReadlineCommandFindOpt(const vshCmd *partial,
-                          const char *text)
+vshReadlineCommandFindOpt(const vshCmd *partial)
 {
     const vshCmd *tmp = partial;
 
-    while (tmp && tmp->next) {
-        if (tmp->def == tmp->next->def &&
-            !tmp->next->opts)
-            break;
-        tmp = tmp->next;
-    }
-
-    if (tmp && tmp->opts) {
+    while (tmp) {
         const vshCmdOpt *opt = tmp->opts;
 
         while (opt) {
-            if (STREQ_NULLABLE(opt->data, text) ||
-                STREQ_NULLABLE(opt->data, " "))
+            if (opt->completeThis)
                 return opt->def;
 
             opt = opt->next;
         }
+        tmp = tmp->next;
     }
 
     return NULL;
@@ -2717,7 +2741,7 @@ vshReadlineParse(const char *text, int state)
 
         *(line + rl_point) = '\0';
 
-        vshCommandStringParse(NULL, line, &partial);
+        vshCommandStringParse(NULL, line, &partial, rl_point);
 
         if (partial) {
             cmd = partial->def;
@@ -2735,7 +2759,7 @@ vshReadlineParse(const char *text, int state)
             cmd = NULL;
         }
 
-        opt = vshReadlineCommandFindOpt(partial, text);
+        opt = vshReadlineCommandFindOpt(partial);
 
         if (!cmd) {
             list = vshReadlineCommandGenerator(text);
