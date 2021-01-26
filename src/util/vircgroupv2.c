@@ -938,7 +938,7 @@ virCgroupV2GetBlkioDeviceReadIops(virCgroupPtr group,
         }
         tmp += strlen(name);
 
-        if (STREQLEN(tmp, "max", 3)) {
+        if (STRPREFIX(tmp, "max")) {
             *riops = 0;
         } else if (virStrToLong_ui(tmp, &tmp, 10, riops) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1007,7 +1007,7 @@ virCgroupV2GetBlkioDeviceWriteIops(virCgroupPtr group,
         }
         tmp += strlen(name);
 
-        if (STREQLEN(tmp, "max", 3)) {
+        if (STRPREFIX(tmp, "max")) {
             *wiops = 0;
         } else if (virStrToLong_ui(tmp, &tmp, 10, wiops) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1076,7 +1076,7 @@ virCgroupV2GetBlkioDeviceReadBps(virCgroupPtr group,
         }
         tmp += strlen(name);
 
-        if (STREQLEN(tmp, "max", 3)) {
+        if (STRPREFIX(tmp, "max")) {
             *rbps = 0;
         } else if (virStrToLong_ull(tmp, &tmp, 10, rbps) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1145,7 +1145,7 @@ virCgroupV2GetBlkioDeviceWriteBps(virCgroupPtr group,
         }
         tmp += strlen(name);
 
-        if (STREQLEN(tmp, "max", 3)) {
+        if (STRPREFIX(tmp, "max")) {
             *wbps = 0;
         } else if (virStrToLong_ull(tmp, &tmp, 10, wbps) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1578,7 +1578,7 @@ virCgroupV2GetCpuCfsQuota(virCgroupPtr group,
         return -1;
     }
 
-    if (STREQLEN(str, "max", 3)) {
+    if (STRPREFIX(str, "max")) {
         *cfs_quota = VIR_CGROUP_CPU_QUOTA_MAX;
         return 0;
     }

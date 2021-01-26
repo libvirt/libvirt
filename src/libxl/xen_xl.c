@@ -950,7 +950,7 @@ xenParseXLUSBController(virConfPtr conf, virDomainDefPtr def)
                 else
                     usbctrl_type = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2;
             } else {
-                if (STREQLEN(type, "qusb", 4)) {
+                if (STRPREFIX(type, "qusb")) {
                     if (usbctrl_version == 1)
                         usbctrl_type = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1;
                     else

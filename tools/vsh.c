@@ -2568,7 +2568,6 @@ static char **
 vshReadlineCommandGenerator(const char *text)
 {
     size_t grp_list_index = 0, cmd_list_index = 0;
-    size_t len = strlen(text);
     const char *name;
     const vshCmdGrp *grp;
     const vshCmdDef *cmds;
@@ -2588,7 +2587,7 @@ vshReadlineCommandGenerator(const char *text)
                 if (cmds[cmd_list_index++].flags & VSH_CMD_FLAG_ALIAS)
                     continue;
 
-                if (STREQLEN(name, text, len)) {
+                if (STRPREFIX(name, text)) {
                     if (VIR_REALLOC_N(ret, ret_size + 2) < 0) {
                         g_strfreev(ret);
                         return NULL;
