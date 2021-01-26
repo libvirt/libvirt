@@ -2751,10 +2751,26 @@ vshReadlineParse(const char *text, int state)
                                                        partial,
                                                        opt->completer_flags);
 
+                /* Escape completions, if needed (i.e. argument
+                 * we are completing wasn't started with a quote
+                 * character). This also enables filtering done
+                 * below to work properly. */
+                if (completer_list &&
+                    !rl_completion_quote_character) {
+                    size_t i;
+
+                    for (i = 0; completer_list[i]; i++) {
+                        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+                        virBufferEscape(&buf, '\\', " ", "%s", completer_list[i]);
+                        VIR_FREE(completer_list[i]);
+                        completer_list[i] = virBufferContentAndReset(&buf);
+                    }
+                }
+
                 /* For string list returned by completer we have to do
                  * filtering based on @text because completer returns all
                  * possible strings. */
-
                 if (completer_list &&
                     (vshCompleterFilter(&completer_list, text) < 0 ||
                      virStringListMerge(&list, &completer_list) < 0)) {
@@ -2768,14 +2784,6 @@ vshReadlineParse(const char *text, int state)
     if (list) {
         ret = g_strdup(list[list_index]);
         list_index++;
-    }
-
-    if (ret &&
-        !rl_completion_quote_character) {
-        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-        virBufferEscape(&buf, '\\', " ", "%s", ret);
-        VIR_FREE(ret);
-        ret = virBufferContentAndReset(&buf);
     }
 
  cleanup:
