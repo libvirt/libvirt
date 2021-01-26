@@ -2778,9 +2778,9 @@ vshReadlineParse(const char *text, int state)
                 list = vshReadlineOptionsGenerator(text, cmd, partial);
 
             if (opt && opt->completer) {
-                char **completer_list = opt->completer(autoCompleteOpaque,
-                                                       partial,
-                                                       opt->completer_flags);
+                g_auto(GStrv) completer_list = opt->completer(autoCompleteOpaque,
+                                                              partial,
+                                                              opt->completer_flags);
 
                 /* Escape completions, if needed (i.e. argument
                  * we are completing wasn't started with a quote
@@ -2805,7 +2805,6 @@ vshReadlineParse(const char *text, int state)
                 if (completer_list &&
                     (vshCompleterFilter(&completer_list, text) < 0 ||
                      virStringListMerge(&list, &completer_list) < 0)) {
-                    g_strfreev(completer_list);
                     goto cleanup;
                 }
             }
