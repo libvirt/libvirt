@@ -1908,7 +1908,6 @@ virDomainVcpuDefFree(virDomainVcpuDefPtr info)
         return;
 
     virBitmapFree(info->cpumask);
-    info->cpumask = NULL;
     virObjectUnref(info->privateData);
     VIR_FREE(info);
 }
@@ -2474,7 +2473,6 @@ virDomainNetDefFree(virDomainNetDefPtr def)
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         virObjectUnref(def->data.vhostuser);
-        def->data.vhostuser = NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDPA:
@@ -2493,7 +2491,6 @@ virDomainNetDefFree(virDomainNetDefPtr def)
         g_free(def->data.network.name);
         g_free(def->data.network.portgroup);
         virDomainActualNetDefFree(def->data.network.actual);
-        def->data.network.actual = NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
@@ -2537,10 +2534,8 @@ virDomainNetDefFree(virDomainNetDefPtr def)
 
     g_free(def->filter);
     virHashFree(def->filterparams);
-    def->filterparams = NULL;
 
     virNetDevBandwidthFree(def->bandwidth);
-    def->bandwidth = NULL;
     virNetDevVlanClear(&def->vlan);
 
     virObjectUnref(def->privateData);

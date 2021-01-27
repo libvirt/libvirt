@@ -2422,7 +2422,6 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         VIR_FREE(data->net.ifname);
         VIR_FREE(data->net.address);
         virBitmapFree(data->net.features);
-        data->net.features = NULL;
         break;
     case VIR_NODE_DEV_CAP_SCSI_HOST:
         VIR_FREE(data->scsi_host.wwnn);
