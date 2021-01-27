@@ -1494,6 +1494,15 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
 }
 
 
+static bool
+virDomainVsockIsVirtioModel(const virDomainVsockDef *vsock)
+{
+    return (vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO ||
+            vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_TRANSITIONAL ||
+            vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_NON_TRANSITIONAL);
+}
+
+
 static int
 virDomainVsockDefValidate(const virDomainVsockDef *vsock)
 {
@@ -1502,6 +1511,10 @@ virDomainVsockDefValidate(const virDomainVsockDef *vsock)
                        _("guest CIDs must be >= 3"));
         return -1;
     }
+
+    if (!virDomainVsockIsVirtioModel(vsock) &&
+        virDomainCheckVirtioOptions(vsock->virtio) < 0)
+        return -1;
 
     return 0;
 }

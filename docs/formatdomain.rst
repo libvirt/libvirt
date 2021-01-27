@@ -7433,6 +7433,8 @@ devices <#elementsVirtioTransitional>`__ for more details. The optional
 attribute ``address`` of the ``cid`` element specifies the CID assigned to the
 guest. If the attribute ``auto`` is set to ``yes``, libvirt will assign a free
 CID automatically on domain startup. :since:`Since 4.4.0`
+The optional ``driver`` element allows to specify virtio options, see
+`Virtio-specific options <#elementsVirtio>`__  for more details. :since:`Since 7.1.0`
 
 ::
 

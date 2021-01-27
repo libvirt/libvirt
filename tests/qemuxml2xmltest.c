@@ -1403,6 +1403,8 @@ mymain(void)
             QEMU_CAPS_CCW);
     DO_TEST("vhost-vsock-ccw-auto", QEMU_CAPS_DEVICE_VHOST_VSOCK,
             QEMU_CAPS_CCW);
+    DO_TEST_CAPS_ARCH_LATEST("vhost-vsock-ccw-iommu", "s390x");
+
 
     DO_TEST_CAPS_LATEST("vhost-user-fs-fd-memory");
     DO_TEST_CAPS_LATEST("vhost-user-fs-hugepages");
