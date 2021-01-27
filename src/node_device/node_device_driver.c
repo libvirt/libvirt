@@ -698,10 +698,14 @@ nodeDeviceFindAddressByName(const char *name)
 }
 
 
-virCommandPtr
-nodeDeviceGetMdevctlStartCommand(virNodeDeviceDefPtr def,
-                                 char **uuid_out,
-                                 char **errmsg)
+/* the mdevctl 'start' and 'define' commands accept almost the exact same
+ * arguments, so provide a common implementation that can be wrapped by a more
+ * specific function */
+static virCommand*
+nodeDeviceGetMdevctlDefineStartCommand(virNodeDeviceDef *def,
+                                       const char *subcommand,
+                                       char **uuid_out,
+                                       char **errmsg)
 {
     virCommandPtr cmd;
     g_autofree char *json = NULL;
@@ -719,7 +723,7 @@ nodeDeviceGetMdevctlStartCommand(virNodeDeviceDefPtr def,
         return NULL;
     }
 
-    cmd = virCommandNewArgList(MDEVCTL, "start",
+    cmd = virCommandNewArgList(MDEVCTL, subcommand,
                                "-p", parent_addr,
                                "--jsonfile", "/dev/stdin",
                                NULL);
@@ -730,6 +734,26 @@ nodeDeviceGetMdevctlStartCommand(virNodeDeviceDefPtr def,
 
     return cmd;
 }
+
+virCommand*
+nodeDeviceGetMdevctlStartCommand(virNodeDeviceDef *def,
+                                 char **uuid_out,
+                                 char **errmsg)
+{
+    return nodeDeviceGetMdevctlDefineStartCommand(def, "start", uuid_out,
+                                                  errmsg);
+}
+
+virCommand*
+nodeDeviceGetMdevctlDefineCommand(virNodeDeviceDef *def,
+                                  char **uuid_out,
+                                  char **errmsg)
+{
+    return nodeDeviceGetMdevctlDefineStartCommand(def, "define", uuid_out,
+                                                  errmsg);
+}
+
+
 
 static int
 virMdevctlStart(virNodeDeviceDefPtr def, char **uuid, char **errmsg)
