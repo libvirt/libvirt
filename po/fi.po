@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-01-08 17:11+0000\n"
-"PO-Revision-Date: 2021-01-11 13:27+0000\n"
+"PO-Revision-Date: 2021-01-28 09:56+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4\n"
+"X-Generator: Weblate 4.4.2\n"
 
 msgid ""
 "\n"
@@ -2514,7 +2514,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot create resctrl directory '%s'"
-msgstr ""
+msgstr "Resctlr-hakemistoa '%s' ei voitu luoda"
 
 #, c-format
 msgid "Cannot create user runtime directory '%s'"
@@ -2528,7 +2528,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot delete directory '%s'"
-msgstr "Hakemiton '%s' poisto ei onnistu"
+msgstr "Hakemiston '%s' poisto ei onnistu"
 
 #, c-format
 msgid "Cannot delete file '%s'"
@@ -2780,7 +2780,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot open %s"
-msgstr "'%s' ei voi avata"
+msgstr "'%s':ta ei voi avata"
 
 msgid "Cannot open /proc/cgroups"
 msgstr ""
@@ -6504,11 +6504,11 @@ msgstr "XML:n luonti epäonnistui"
 
 #, c-format
 msgid "Failed to create state dir %s"
-msgstr "tilahakemiston '%s' luominen epäonnistui: %s"
+msgstr "Tilahakemiston %s luominen epäonnistui"
 
 #, c-format
 msgid "Failed to create state dir '%s'"
-msgstr "tilahakemiston '%s' luominen epäonnistui: %s"
+msgstr "Tilahakemiston %s luominen epäonnistui"
 
 #, fuzzy, c-format
 msgid "Failed to create symlink '%s to '%s'"
@@ -6662,7 +6662,7 @@ msgstr "Toimialueen '%d' tuhoaminen epäonnistui"
 
 #, c-format
 msgid "Failed to destroy domain '%s'"
-msgstr "Toimialueen '%d' tuhoaminen epäonnistui"
+msgstr "Toimialueen %s tuhoaminen epäonnistui"
 
 #, fuzzy, c-format
 msgid "Failed to destroy interface %s"
@@ -28159,9 +28159,9 @@ msgstr ""
 msgid "job"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "job type '%s' does not support pivot"
-msgstr "komento ”%s” ei tue valitsinta --%s"
+msgstr "komento ”%s” ei tue valitsinta"
 
 msgid "kdump-compressed format is not supported here"
 msgstr ""
@@ -29266,13 +29266,13 @@ msgstr "siirto peruttu"
 msgid "migration in job"
 msgstr "siirto käytettäessä"
 
-#, fuzzy, c-format
+#, c-format
 msgid "migration of disk %s failed"
-msgstr "toimenpide epäonnistui"
+msgstr "levyn %s migraatio epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "migration of disk %s failed: %s"
-msgstr "toimenpide epäonnistui: %s"
+msgstr "levyn %s migraatio epäonnistui: %s"
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
@@ -29301,9 +29301,9 @@ msgstr ""
 msgid "migration successfully aborted"
 msgstr "siirto-URI, voidaan yleensä jättää pois"
 
-#, fuzzy, c-format
+#, c-format
 msgid "migration successfully aborted: %s"
-msgstr "siirto-URI, voidaan yleensä jättää pois"
+msgstr "migraatio keskeytetty onnistuneesti: %s"
 
 msgid "migration was active, but RAM 'remaining' data was missing"
 msgstr ""
@@ -29382,9 +29382,9 @@ msgstr ""
 msgid "missing 'DateTime' element"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing 'architecture' in '%s'"
-msgstr "Puuttuva CPU arkkitehtuuri"
+msgstr "Puuttuva CPU arkkitehtuuri '%s'"
 
 #, c-format
 msgid "missing 'content' value in selinux lxc contexts file '%s'"
@@ -29685,9 +29685,9 @@ msgstr ""
 msgid "missing cssid value for '%s'"
 msgstr "laitetietoja puuttuu kohteelle %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing destination file for disk %s: %s"
-msgstr "laitetietoja puuttuu kohteelle %s"
+msgstr "kohdetiedosto puuttuu levylle %s %s"
 
 msgid "missing dev attribute in <interface> element"
 msgstr ""
@@ -29774,9 +29774,9 @@ msgstr ""
 msgid "missing entry in supported dump formats"
 msgstr "käyttöjärjestelmätieto puuttuu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing existing file for disk %s: %s"
-msgstr "kohdetietoja puuttuu laitteelle %s"
+msgstr "olemassaolevaa tiedosto puuttuu levylle %s:%s"
 
 #, fuzzy
 msgid "missing feature name"
@@ -30563,9 +30563,9 @@ msgid ""
 "fallback to aio=threads"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "nbd does not support transport '%s'"
-msgstr "komento ”%s” ei tue valitsinta --%s"
+msgstr "nbd ei tue valitsinta --%s"
 
 msgid "nbd port must be in range 0-65535"
 msgstr ""
@@ -30715,9 +30715,9 @@ msgstr "verkossa '%s' ei ole määritetty siltanimeä"
 msgid "network '%s' in %s must match connection"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "network '%s' is already defined with uuid %s"
-msgstr "verkko %s on jo olemassa"
+msgstr "verkko %s on jo olemassa uuidllä %s"
 
 #, fuzzy, c-format
 msgid "network '%s' is not active"
@@ -30788,9 +30788,9 @@ msgstr "verkkoliitännän tyyppi"
 msgid "network is already active"
 msgstr "Toimialue on jo aktiivinen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network is already active as '%s'"
-msgstr "Toimialue on jo aktiivinen"
+msgstr "verkko on jo aktiivinen %s"
 
 #, fuzzy
 msgid "network is not running"
@@ -31201,9 +31201,9 @@ msgstr ""
 msgid "no monitor path"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "no network interface supplied for '%s'"
-msgstr "verkkoliitännän tyyppi"
+msgstr "verkkoliitännän tyyppiä ei annettu %s:lle"
 
 #, c-format
 msgid "no network with matching name '%s'"
@@ -31376,9 +31376,9 @@ msgstr ""
 msgid "no system UUID supplied for '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "no target device %s"
-msgstr "kohdelaitetyyppi"
+msgstr "kohdelaitetyyppi puuttuu %s"
 
 #, c-format
 msgid "no target name supplied for '%s'"
@@ -31891,9 +31891,9 @@ msgstr ""
 msgid "option '-%c'/'--%s' requires an argument"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "option --%s already seen"
-msgstr "yhteys on jo auki"
+msgstr "vaihtoehto --%s on jo asetettu"
 
 #, c-format
 msgid "option parsing failed: %s\n"
@@ -31930,9 +31930,9 @@ msgstr ""
 msgid "out of memory"
 msgstr "muisti lopussa"
 
-#, fuzzy, c-format
+#, c-format
 msgid "out of memory: %s"
-msgstr "muisti lopussa"
+msgstr "muisti lopussa: %s"
 
 msgid "outbound average is mandatory"
 msgstr ""
@@ -32321,9 +32321,9 @@ msgstr ""
 msgid "pool information in XML"
 msgstr "toimialuetiedot XML-muodossa"
 
-#, fuzzy, c-format
+#, c-format
 msgid "pool is already active as '%s'"
-msgstr "Toimialue on jo aktiivinen"
+msgstr "Toimialue on jo aktiivinen %s"
 
 msgid "pool name"
 msgstr ""
@@ -32610,9 +32610,9 @@ msgstr ""
 msgid "qemu doesn't support taking snapshots of PMSUSPENDED guests"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "qemu emulator '%s' does not support xen"
-msgstr "komento ”%s” ei tue valitsinta --%s"
+msgstr "qemu emulaattori ”%s” ei tue xeniä"
 
 #, c-format
 msgid "qemu monitor event callback %d not registered"
@@ -33344,9 +33344,9 @@ msgstr ""
 msgid "saving domain '%s' to '%s': open failed"
 msgstr "tallenna toimialueen tila tiedostoon"
 
-#, fuzzy, c-format
+#, c-format
 msgid "saving domain '%s' to '%s': write failed"
-msgstr "tallenna toimialueen tila tiedostoon"
+msgstr "toimialueen %s tallentaminen tiedostoon %s : kirjoitus epäonnistui"
 
 msgid "sbbc configuration is not supported by this QEMU binary"
 msgstr ""
