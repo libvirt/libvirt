@@ -226,6 +226,34 @@ virSecurityDeviceLabelDefValidate(virSecurityDeviceLabelDefPtr *seclabels,
 }
 
 
+static int
+virDomainCheckVirtioOptions(virDomainVirtioOptionsPtr virtio)
+{
+    if (!virtio)
+        return 0;
+
+    if (virtio->iommu != VIR_TRISTATE_SWITCH_ABSENT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("iommu driver option is only supported "
+                         "for virtio devices"));
+        return -1;
+    }
+    if (virtio->ats != VIR_TRISTATE_SWITCH_ABSENT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("ats driver option is only supported "
+                         "for virtio devices"));
+        return -1;
+    }
+    if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("packed driver option is only supported "
+                         "for virtio devices"));
+        return -1;
+    }
+    return 0;
+}
+
+
 #define VENDOR_LEN  8
 #define PRODUCT_LEN 16
 
@@ -277,15 +305,19 @@ virDomainDiskDefValidate(const virDomainDef *def,
         return -1;
     }
 
-    if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
-        (disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO ||
-         disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_TRANSITIONAL ||
-         disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_NON_TRANSITIONAL)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("disk model '%s' not supported for bus '%s'"),
-                       virDomainDiskModelTypeToString(disk->model),
-                       virDomainDiskBusTypeToString(disk->bus));
-        return -1;
+    if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
+        if (disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO ||
+            disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_TRANSITIONAL ||
+            disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_NON_TRANSITIONAL) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("disk model '%s' not supported for bus '%s'"),
+                           virDomainDiskModelTypeToString(disk->model),
+                           virDomainDiskBusTypeToString(disk->bus));
+            return -1;
+        }
+
+        if (virDomainCheckVirtioOptions(disk->virtio) < 0)
+            return -1;
     }
 
     if (disk->src->type == VIR_STORAGE_TYPE_NVME) {
@@ -1327,6 +1359,11 @@ virDomainNetDefValidate(const virDomainNetDef *net)
 
     if (virDomainNetDefValidatePortOptions(macstr, net->type, net->virtPortProfile,
                                            net->isolatedPort) < 0) {
+        return -1;
+    }
+
+    if (!virDomainNetIsVirtioModel(net) &&
+        virDomainCheckVirtioOptions(net->virtio) < 0) {
         return -1;
     }
 

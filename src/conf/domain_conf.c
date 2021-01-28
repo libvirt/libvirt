@@ -5132,34 +5132,6 @@ virDomainHostdevDefPostParse(virDomainHostdevDefPtr dev,
 }
 
 
-static int
-virDomainCheckVirtioOptions(virDomainVirtioOptionsPtr virtio)
-{
-    if (!virtio)
-        return 0;
-
-    if (virtio->iommu != VIR_TRISTATE_SWITCH_ABSENT) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("iommu driver option is only supported "
-                         "for virtio devices"));
-        return -1;
-    }
-    if (virtio->ats != VIR_TRISTATE_SWITCH_ABSENT) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("ats driver option is only supported "
-                         "for virtio devices"));
-        return -1;
-    }
-    if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("packed driver option is only supported "
-                         "for virtio devices"));
-        return -1;
-    }
-    return 0;
-}
-
-
 static void
 virDomainChrDefPostParse(virDomainChrDefPtr chr,
                          const virDomainDef *def)
@@ -5256,11 +5228,6 @@ virDomainDiskDefPostParse(virDomainDiskDefPtr disk,
         virDomainPostParseCheckISCSIPath(&disk->src->path);
     }
 
-    if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
-        virDomainCheckVirtioOptions(disk->virtio) < 0) {
-        return -1;
-    }
-
     if (disk->src->type == VIR_STORAGE_TYPE_NVME) {
         if (disk->src->nvme->managed == VIR_TRISTATE_BOOL_ABSENT)
             disk->src->nvme->managed = VIR_TRISTATE_BOOL_YES;
@@ -5310,13 +5277,8 @@ virDomainControllerDefPostParse(virDomainControllerDefPtr cdev)
 
 
 static int
-virDomainNetDefPostParse(virDomainNetDefPtr net)
+virDomainNetDefPostParse(virDomainNetDefPtr net G_GNUC_UNUSED)
 {
-    if (!virDomainNetIsVirtioModel(net) &&
-        virDomainCheckVirtioOptions(net->virtio) < 0) {
-        return -1;
-    }
-
     return 0;
 }
 
