@@ -2468,7 +2468,6 @@ virDomainNetDefFree(virDomainNetDefPtr def)
         return;
 
     VIR_FREE(def->modelstr);
-    def->model = VIR_DOMAIN_NET_MODEL_UNKNOWN;
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
