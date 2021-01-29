@@ -423,6 +423,23 @@ Note that parameter values must be
       </tr>
       <tr>
         <td>
+          <code>known_hosts_verify</code>
+        </td>
+        <td> libssh2, libssh </td>
+        <td>
+            If set to <code>normal</code> (default), then the user will be
+            asked to accept new host keys. If set to <code>auto</code>, new
+            host keys will be auto-accepted, but existing host keys will
+            still be validated. If set to <code>ignore</code>, this disables
+            client's strict host key checking.
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>known_hosts_verify=ignore</code> </td>
+      </tr>
+      <tr>
+        <td>
           <code>sshauth</code>
         </td>
         <td> libssh2, libssh </td>
