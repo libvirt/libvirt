@@ -1,4 +1,5 @@
 libvirt-1-format:
+ qcow2 v2
   current: record:1 busy:0 persist:1 inconsist:1 gran:65536 dirty:0
    top-ok: record:1 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
  top-inactive: record:0 busy:0 persist:1 inconsist:0 gran:65536 dirty:0

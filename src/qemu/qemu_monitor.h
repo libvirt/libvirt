@@ -732,6 +732,9 @@ struct _qemuBlockNamedNodeData {
 
     /* the cluster size of the image is valid only when > 0 */
     unsigned long long clusterSize;
+
+    /* image version */
+    bool qcow2v2;
 };
 
 GHashTable *

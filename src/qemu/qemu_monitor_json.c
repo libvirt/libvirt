@@ -2978,6 +2978,7 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
     GHashTable *nodes = opaque;
     virJSONValuePtr img;
     virJSONValuePtr bitmaps;
+    virJSONValuePtr format_specific;
     const char *nodename;
     g_autoptr(qemuBlockNamedNodeData) ent = NULL;
 
@@ -2999,6 +3000,16 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
 
     if ((bitmaps = virJSONValueObjectGetArray(val, "dirty-bitmaps")))
         qemuMonitorJSONBlockGetNamedNodeDataBitmaps(bitmaps, ent);
+
+    /* query qcow2 format specific props */
+    if ((format_specific = virJSONValueObjectGetObject(img, "format-specific")) &&
+        STREQ_NULLABLE(virJSONValueObjectGetString(format_specific, "type"), "qcow2")) {
+        virJSONValuePtr qcow2props = virJSONValueObjectGetObject(format_specific, "data");
+
+        if (qcow2props &&
+            STREQ_NULLABLE(virJSONValueObjectGetString(qcow2props, "compat"), "0.10"))
+            ent->qcow2v2 = true;
+    }
 
     if (virHashAddEntry(nodes, nodename, ent) < 0)
         return -1;

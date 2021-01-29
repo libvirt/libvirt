@@ -12,7 +12,7 @@
       "format-specific": {
         "type": "qcow2",
         "data": {
-          "compat": "1.1",
+          "compat": "0.10",
           "compression-type": "zlib",
           "lazy-refcounts": false,
           "bitmaps": [

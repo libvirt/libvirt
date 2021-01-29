@@ -599,6 +599,8 @@ testQemuDetectBitmapsWorker(GHashTable *nodedata,
         return;
 
     virBufferAsprintf(buf, "%s:\n", nodename);
+    if (data->qcow2v2)
+        virBufferAddLit(buf, " qcow2 v2\n");
     virBufferAdjustIndent(buf, 1);
 
     for (i = 0; i < data->nbitmaps; i++) {
