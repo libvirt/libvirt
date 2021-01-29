@@ -18,6 +18,11 @@ v7.1.0 (unreleased)
     The virtio-pmem is a virtio variant of NVDIMM and just like NVDIMM
     virtio-pmem also allows accessing host pages bypassing guest page cache.
 
+  * Introduce ``<boot order/>`` for ``<filesystem>``
+
+    Booting is possible from virtiofs filesystems. Introduce an option
+    to control the boot order, like we do for other bootable devices.
+
 * **Improvements**
 
 * **Bug fixes**
