@@ -227,7 +227,7 @@ virSecurityDeviceLabelDefValidate(virSecurityDeviceLabelDefPtr *seclabels,
 
 
 static int
-virDomainCheckVirtioOptions(virDomainVirtioOptionsPtr virtio)
+virDomainCheckVirtioOptionsAreAbsent(virDomainVirtioOptionsPtr virtio)
 {
     if (!virtio)
         return 0;
@@ -316,7 +316,7 @@ virDomainDiskDefValidate(const virDomainDef *def,
             return -1;
         }
 
-        if (virDomainCheckVirtioOptions(disk->virtio) < 0)
+        if (virDomainCheckVirtioOptionsAreAbsent(disk->virtio) < 0)
             return -1;
     }
 
@@ -1363,7 +1363,7 @@ virDomainNetDefValidate(const virDomainNetDef *net)
     }
 
     if (!virDomainNetIsVirtioModel(net) &&
-        virDomainCheckVirtioOptions(net->virtio) < 0) {
+        virDomainCheckVirtioOptionsAreAbsent(net->virtio) < 0) {
         return -1;
     }
 
@@ -1513,7 +1513,7 @@ virDomainVsockDefValidate(const virDomainVsockDef *vsock)
     }
 
     if (!virDomainVsockIsVirtioModel(vsock) &&
-        virDomainCheckVirtioOptions(vsock->virtio) < 0)
+        virDomainCheckVirtioOptionsAreAbsent(vsock->virtio) < 0)
         return -1;
 
     return 0;
