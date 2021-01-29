@@ -48,7 +48,7 @@ VIR_ENUM_IMPL(virStorageEncryptionFormat,
 );
 
 static void
-virStorageEncryptionInfoDefFree(virStorageEncryptionInfoDefPtr def)
+virStorageEncryptionInfoDefClear(virStorageEncryptionInfoDefPtr def)
 {
     VIR_FREE(def->cipher_name);
     VIR_FREE(def->cipher_mode);
@@ -77,7 +77,7 @@ virStorageEncryptionFree(virStorageEncryptionPtr enc)
 
     for (i = 0; i < enc->nsecrets; i++)
         virStorageEncryptionSecretFree(enc->secrets[i]);
-    virStorageEncryptionInfoDefFree(&enc->encinfo);
+    virStorageEncryptionInfoDefClear(&enc->encinfo);
     VIR_FREE(enc->secrets);
     VIR_FREE(enc);
 }
