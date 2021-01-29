@@ -606,27 +606,34 @@
   </define>
 
   <define name="capmdev">
-    <attribute name="type">
-      <value>mdev</value>
-    </attribute>
-    <element name="type">
-      <attribute name="id">
-        <data type="string"/>
+    <interleave>
+      <attribute name="type">
+        <value>mdev</value>
       </attribute>
-    </element>
-    <optional>
-      <element name="iommuGroup">
-        <attribute name="number">
-          <ref name="unsignedInt"/>
+      <element name="type">
+        <attribute name="id">
+          <data type="string"/>
         </attribute>
       </element>
-    </optional>
-    <zeroOrMore>
-      <element name="attr">
-        <attribute name="name"/>
-        <attribute name="value"/>
-      </element>
-    </zeroOrMore>
+      <optional>
+        <element name="iommuGroup">
+          <attribute name="number">
+            <ref name="unsignedInt"/>
+          </attribute>
+        </element>
+      </optional>
+      <optional>
+        <element name="uuid">
+          <ref name="UUID"/>
+        </element>
+      </optional>
+      <zeroOrMore>
+        <element name="attr">
+          <attribute name="name"/>
+          <attribute name="value"/>
+        </element>
+      </zeroOrMore>
+    </interleave>
   </define>
 
   <define name="capccwdev">

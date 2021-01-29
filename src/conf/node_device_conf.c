@@ -527,6 +527,7 @@ virNodeDeviceCapMdevDefFormat(virBufferPtr buf,
     size_t i;
 
     virBufferEscapeString(buf, "<type id='%s'/>\n", data->mdev.type);
+    virBufferEscapeString(buf, "<uuid>%s</uuid>\n", data->mdev.uuid);
     virBufferAsprintf(buf, "<iommuGroup number='%u'/>\n",
                       data->mdev.iommuGroupNumber);
 
@@ -1948,6 +1949,7 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
     int nattrs = 0;
     g_autofree xmlNodePtr *attrs = NULL;
     size_t i;
+    g_autofree char *uuidstr = NULL;
 
     ctxt->node = node;
 
@@ -1955,6 +1957,18 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("missing type id attribute for '%s'"), def->name);
         return -1;
+    }
+
+    if ((uuidstr = virXPathString("string(./uuid[1])", ctxt))) {
+        unsigned char uuidbuf[VIR_UUID_BUFLEN];
+        /* make sure that the provided uuid is valid */
+        if (virUUIDParse(uuidstr, uuidbuf) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid uuid '%s' for new mdev device"), uuidstr);
+            return -1;
+        }
+        mdev->uuid = g_new0(char, VIR_UUID_STRING_BUFLEN);
+        virUUIDFormat(uuidbuf, mdev->uuid);
     }
 
     /* 'iommuGroup' is optional, only report an error if the supplied value is
