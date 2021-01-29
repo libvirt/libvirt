@@ -3,5 +3,6 @@
   <parent>pci_0000_00_02_0</parent>
   <capability type='mdev'>
     <type id='i915-GVTg_V5_8'/>
+    <uuid>d069d019-36ea-4111-8f0a-8c9a70e21366</uuid>
   </capability>
 </device>

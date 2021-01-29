@@ -729,6 +729,10 @@ nodeDeviceGetMdevctlDefineStartCommand(virNodeDeviceDef *def,
                                NULL);
 
     virCommandSetInputBuffer(cmd, json);
+
+    if (def->caps->data.mdev.uuid)
+        virCommandAddArgPair(cmd, "--uuid", def->caps->data.mdev.uuid);
+
     virCommandSetOutputBuffer(cmd, uuid_out);
     virCommandSetErrorBuffer(cmd, errmsg);
 
@@ -818,7 +822,12 @@ nodeDeviceCreateXMLMdev(virConnectPtr conn,
         return NULL;
     }
 
-    return nodeDeviceFindNewMediatedDevice(conn, uuid);
+    if (uuid && uuid[0]) {
+        g_free(def->caps->data.mdev.uuid);
+        def->caps->data.mdev.uuid = g_steal_pointer(&uuid);
+    }
+
+    return nodeDeviceFindNewMediatedDevice(conn, def->caps->data.mdev.uuid);
 }
 
 
@@ -1235,9 +1244,13 @@ nodeDeviceDefineXML(virConnect *conn,
         return NULL;
     }
 
-    def->caps->data.mdev.uuid = g_strdup(uuid);
+    if (uuid && uuid[0]) {
+        g_free(def->caps->data.mdev.uuid);
+        def->caps->data.mdev.uuid = g_steal_pointer(&uuid);
+    }
+
     mdevGenerateDeviceName(def);
-    device = nodeDeviceFindNewMediatedDevice(conn, uuid);
+    device = nodeDeviceFindNewMediatedDevice(conn, def->caps->data.mdev.uuid);
 
     return device;
 }
