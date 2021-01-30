@@ -5784,6 +5784,12 @@ libxlNodeDeviceDetachFlags(virNodeDevicePtr dev,
 
     virCheckFlags(0, -1);
 
+    if (driverName && STRNEQ(driverName, "xen")) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unsupported driver name '%s'"), driverName);
+        return -1;
+    }
+
     if (!(nodeconn = virGetConnectNodeDev()))
         goto cleanup;
 
@@ -5815,13 +5821,7 @@ libxlNodeDeviceDetachFlags(virNodeDevicePtr dev,
     if (!pci)
         goto cleanup;
 
-    if (!driverName || STREQ(driverName, "xen")) {
-        virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_XEN);
-    } else {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("unsupported driver name '%s'"), driverName);
-        goto cleanup;
-    }
+    virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_XEN);
 
     if (virHostdevPCINodeDeviceDetach(hostdev_mgr, pci) < 0)
         goto cleanup;
