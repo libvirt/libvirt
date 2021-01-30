@@ -12010,6 +12010,25 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
 
     virCheckFlags(0, -1);
 
+    if (!driverName)
+        driverName = "vfio";
+
+    if (STREQ(driverName, "vfio") && !vfio) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("VFIO device assignment is currently not "
+                         "supported on this system"));
+         return -1;
+    } else if (STREQ(driverName, "kvm")) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("KVM device assignment is no longer "
+                         "supported on this system"));
+        return -1;
+    } else {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown driver name '%s'"), driverName);
+        return -1;
+    }
+
     if (!(nodeconn = virGetConnectNodeDev()))
         goto cleanup;
 
@@ -12041,27 +12060,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
     if (!pci)
         goto cleanup;
 
-    if (!driverName)
-        driverName = "vfio";
-
-    if (STREQ(driverName, "vfio")) {
-        if (!vfio) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("VFIO device assignment is currently not "
-                             "supported on this system"));
-            goto cleanup;
-        }
-        virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_VFIO);
-    } else if (STREQ(driverName, "kvm")) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("KVM device assignment is no longer "
-                         "supported on this system"));
-        goto cleanup;
-    } else {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("unknown driver name '%s'"), driverName);
-        goto cleanup;
-    }
+    virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_VFIO);
 
     ret = virHostdevPCINodeDeviceDetach(hostdev_mgr, pci);
  cleanup:
