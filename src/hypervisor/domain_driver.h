@@ -53,3 +53,6 @@ int virDomainDriverNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
 
 int virDomainDriverNodeDeviceReset(virNodeDevicePtr dev,
                                    virHostdevManagerPtr hostdevMgr);
+
+int virDomainDriverNodeDeviceReAttach(virNodeDevicePtr dev,
+                                      virHostdevManagerPtr hostdevMgr);
