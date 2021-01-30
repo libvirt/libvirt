@@ -127,9 +127,9 @@ virCPUDefFree(virCPUDefPtr def)
 
     if (g_atomic_int_dec_and_test(&def->refs)) {
         virCPUDefFreeModel(def);
-        VIR_FREE(def->cache);
-        VIR_FREE(def->tsc);
-        VIR_FREE(def);
+        g_free(def->cache);
+        g_free(def->tsc);
+        g_free(def);
     }
 }
 
@@ -1199,5 +1199,5 @@ virCPUDefListFree(virCPUDefPtr *cpus)
     for (cpu = cpus; *cpu != NULL; cpu++)
         virCPUDefFree(*cpu);
 
-    VIR_FREE(cpus);
+    g_free(cpus);
 }

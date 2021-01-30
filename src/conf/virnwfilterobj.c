@@ -99,7 +99,7 @@ virNWFilterObjFree(virNWFilterObjPtr obj)
 
     virMutexDestroy(&obj->lock);
 
-    VIR_FREE(obj);
+    g_free(obj);
 }
 
 
@@ -109,8 +109,8 @@ virNWFilterObjListFree(virNWFilterObjListPtr nwfilters)
     size_t i;
     for (i = 0; i < nwfilters->count; i++)
         virNWFilterObjFree(nwfilters->objs[i]);
-    VIR_FREE(nwfilters->objs);
-    VIR_FREE(nwfilters);
+    g_free(nwfilters->objs);
+    g_free(nwfilters);
 }
 
 

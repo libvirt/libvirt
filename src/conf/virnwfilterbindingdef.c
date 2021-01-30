@@ -36,13 +36,13 @@ virNWFilterBindingDefFree(virNWFilterBindingDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->ownername);
-    VIR_FREE(def->portdevname);
-    VIR_FREE(def->linkdevname);
-    VIR_FREE(def->filter);
+    g_free(def->ownername);
+    g_free(def->portdevname);
+    g_free(def->linkdevname);
+    g_free(def->filter);
     virHashFree(def->filterparams);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 

@@ -140,8 +140,8 @@ virObjectEventCallbackFree(virObjectEventCallbackPtr cb)
         return;
 
     virObjectUnref(cb->conn);
-    VIR_FREE(cb->key);
-    VIR_FREE(cb);
+    g_free(cb->key);
+    g_free(cb);
 }
 
 /**
@@ -161,10 +161,10 @@ virObjectEventCallbackListFree(virObjectEventCallbackListPtr list)
         virFreeCallback freecb = list->callbacks[i]->freecb;
         if (freecb)
             (*freecb)(list->callbacks[i]->opaque);
-        VIR_FREE(list->callbacks[i]);
+        g_free(list->callbacks[i]);
     }
-    VIR_FREE(list->callbacks);
-    VIR_FREE(list);
+    g_free(list->callbacks);
+    g_free(list);
 }
 
 
@@ -494,7 +494,7 @@ virObjectEventQueueFree(virObjectEventQueuePtr queue)
         return;
 
     virObjectEventQueueClear(queue);
-    VIR_FREE(queue);
+    g_free(queue);
 }
 
 static virObjectEventQueuePtr

@@ -78,7 +78,7 @@ virDomainCheckpointObjListFree(virDomainCheckpointObjListPtr checkpoints)
     if (!checkpoints)
         return;
     virDomainMomentObjListFree(checkpoints->base);
-    VIR_FREE(checkpoints);
+    g_free(checkpoints);
 }
 
 

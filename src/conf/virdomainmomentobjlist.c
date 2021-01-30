@@ -229,7 +229,7 @@ virDomainMomentObjFree(virDomainMomentObjPtr moment)
     VIR_DEBUG("obj=%p", moment);
 
     virObjectUnref(moment->def);
-    VIR_FREE(moment);
+    g_free(moment);
 }
 
 
@@ -289,7 +289,7 @@ virDomainMomentObjListFree(virDomainMomentObjListPtr moments)
     if (!moments)
         return;
     virHashFree(moments->objs);
-    VIR_FREE(moments);
+    g_free(moments);
 }
 
 

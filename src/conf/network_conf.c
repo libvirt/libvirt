@@ -258,28 +258,28 @@ virNetworkDefFree(virNetworkDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->name);
-    VIR_FREE(def->bridge);
-    VIR_FREE(def->bridgeZone);
-    VIR_FREE(def->domain);
+    g_free(def->name);
+    g_free(def->bridge);
+    g_free(def->bridgeZone);
+    g_free(def->domain);
 
     virNetworkForwardDefClear(&def->forward);
 
     for (i = 0; i < def->nips && def->ips; i++)
         virNetworkIPDefClear(&def->ips[i]);
-    VIR_FREE(def->ips);
+    g_free(def->ips);
 
     for (i = 0; i < def->nroutes && def->routes; i++)
         virNetDevIPRouteFree(def->routes[i]);
-    VIR_FREE(def->routes);
+    g_free(def->routes);
 
     for (i = 0; i < def->nPortGroups && def->portGroups; i++)
         virPortGroupDefClear(&def->portGroups[i]);
-    VIR_FREE(def->portGroups);
+    g_free(def->portGroups);
 
     virNetworkDNSDefClear(&def->dns);
 
-    VIR_FREE(def->virtPortProfile);
+    g_free(def->virtPortProfile);
 
     virNetDevBandwidthFree(def->bandwidth);
     virNetDevVlanClear(&def->vlan);
@@ -288,7 +288,7 @@ virNetworkDefFree(virNetworkDefPtr def)
 
     if (def->namespaceData && def->ns.free)
         (def->ns.free)(def->namespaceData);
-    VIR_FREE(def);
+    g_free(def);
 }
 
 

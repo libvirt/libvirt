@@ -49,8 +49,8 @@ virInterfaceIPDefFree(virInterfaceIPDefPtr def)
 {
     if (def == NULL)
         return;
-    VIR_FREE(def->address);
-    VIR_FREE(def);
+    g_free(def->address);
+    g_free(def);
 }
 
 
@@ -63,10 +63,10 @@ virInterfaceProtocolDefFree(virInterfaceProtocolDefPtr def)
         return;
     for (i = 0; i < def->nips; i++)
         virInterfaceIPDefFree(def->ips[i]);
-    VIR_FREE(def->ips);
-    VIR_FREE(def->family);
-    VIR_FREE(def->gateway);
-    VIR_FREE(def);
+    g_free(def->ips);
+    g_free(def->family);
+    g_free(def->gateway);
+    g_free(def);
 }
 
 
@@ -79,39 +79,39 @@ virInterfaceDefFree(virInterfaceDefPtr def)
     if (def == NULL)
         return;
 
-    VIR_FREE(def->name);
-    VIR_FREE(def->mac);
+    g_free(def->name);
+    g_free(def->mac);
 
     switch (def->type) {
         case VIR_INTERFACE_TYPE_BRIDGE:
-            VIR_FREE(def->data.bridge.delay);
+            g_free(def->data.bridge.delay);
             for (i = 0; i < def->data.bridge.nbItf; i++) {
                 if (def->data.bridge.itf[i] == NULL)
                     break; /* to cope with half parsed data on errors */
                 virInterfaceDefFree(def->data.bridge.itf[i]);
             }
-            VIR_FREE(def->data.bridge.itf);
+            g_free(def->data.bridge.itf);
             break;
         case VIR_INTERFACE_TYPE_BOND:
-            VIR_FREE(def->data.bond.target);
+            g_free(def->data.bond.target);
             for (i = 0; i < def->data.bond.nbItf; i++) {
                 if (def->data.bond.itf[i] == NULL)
                     break; /* to cope with half parsed data on errors */
                 virInterfaceDefFree(def->data.bond.itf[i]);
             }
-            VIR_FREE(def->data.bond.itf);
+            g_free(def->data.bond.itf);
             break;
         case VIR_INTERFACE_TYPE_VLAN:
-            VIR_FREE(def->data.vlan.tag);
-            VIR_FREE(def->data.vlan.dev_name);
+            g_free(def->data.vlan.tag);
+            g_free(def->data.vlan.dev_name);
             break;
     }
 
     /* free all protos */
     for (pp = 0; pp < def->nprotos; pp++)
         virInterfaceProtocolDefFree(def->protos[pp]);
-    VIR_FREE(def->protos);
-    VIR_FREE(def);
+    g_free(def->protos);
+    g_free(def);
 }
 
 

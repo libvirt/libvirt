@@ -50,17 +50,17 @@ virNWFilterVarValueFree(virNWFilterVarValuePtr val)
 
     switch (val->valType) {
     case NWFILTER_VALUE_TYPE_SIMPLE:
-        VIR_FREE(val->u.simple.value);
+        g_free(val->u.simple.value);
         break;
     case NWFILTER_VALUE_TYPE_ARRAY:
         for (i = 0; i < val->u.array.nValues; i++)
-            VIR_FREE(val->u.array.values[i]);
-        VIR_FREE(val->u.array.values);
+            g_free(val->u.array.values[i]);
+        g_free(val->u.array.values);
         break;
     case NWFILTER_VALUE_TYPE_LAST:
         break;
     }
-    VIR_FREE(val);
+    g_free(val);
 }
 
 virNWFilterVarValuePtr
@@ -302,9 +302,9 @@ virNWFilterVarCombIterFree(virNWFilterVarCombIterPtr ci)
         return;
 
     for (i = 0; i < ci->nIter; i++)
-        VIR_FREE(ci->iter[i].varNames);
+        g_free(ci->iter[i].varNames);
 
-    VIR_FREE(ci);
+    g_free(ci);
 }
 
 static int
@@ -809,8 +809,8 @@ virNWFilterVarAccessFree(virNWFilterVarAccessPtr varAccess)
     if (!varAccess)
         return;
 
-    VIR_FREE(varAccess->varName);
-    VIR_FREE(varAccess);
+    g_free(varAccess->varName);
+    g_free(varAccess);
 }
 
 bool

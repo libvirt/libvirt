@@ -85,9 +85,9 @@ virSEVCapabilitiesFree(virSEVCapability *cap)
     if (!cap)
         return;
 
-    VIR_FREE(cap->pdh);
-    VIR_FREE(cap->cert_chain);
-    VIR_FREE(cap);
+    g_free(cap->pdh);
+    g_free(cap->cert_chain);
+    g_free(cap);
 }
 
 

@@ -43,9 +43,9 @@ virSecretDefFree(virSecretDefPtr def)
     if (def == NULL)
         return;
 
-    VIR_FREE(def->description);
-    VIR_FREE(def->usage_id);
-    VIR_FREE(def);
+    g_free(def->description);
+    g_free(def->usage_id);
+    g_free(def);
 }
 
 static int

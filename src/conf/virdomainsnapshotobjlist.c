@@ -101,7 +101,7 @@ virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots)
     if (!snapshots)
         return;
     virDomainMomentObjListFree(snapshots->base);
-    VIR_FREE(snapshots);
+    g_free(snapshots);
 }
 
 

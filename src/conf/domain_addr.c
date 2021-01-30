@@ -952,7 +952,7 @@ virDomainPCIAddressSetExtensionFree(virDomainZPCIAddressIdsPtr zpciIds)
     g_clear_pointer(&zpciIds->uids, g_hash_table_unref);
     g_clear_pointer(&zpciIds->fids, g_hash_table_unref);
 
-    VIR_FREE(zpciIds);
+    g_free(zpciIds);
 }
 
 
@@ -1002,8 +1002,8 @@ virDomainPCIAddressSetFree(virDomainPCIAddressSetPtr addrs)
         return;
 
     virDomainPCIAddressSetExtensionFree(addrs->zpciIds);
-    VIR_FREE(addrs->buses);
-    VIR_FREE(addrs);
+    g_free(addrs->buses);
+    g_free(addrs);
 }
 
 
@@ -1379,7 +1379,7 @@ void virDomainCCWAddressSetFree(virDomainCCWAddressSetPtr addrs)
         return;
 
     virHashFree(addrs->defined);
-    VIR_FREE(addrs);
+    g_free(addrs);
 }
 
 static virDomainCCWAddressSetPtr
@@ -1451,7 +1451,7 @@ virDomainVirtioSerialControllerFree(virDomainVirtioSerialControllerPtr cont)
 {
     if (cont) {
         virBitmapFree(cont->ports);
-        VIR_FREE(cont);
+        g_free(cont);
     }
 }
 
@@ -1558,8 +1558,8 @@ virDomainVirtioSerialAddrSetFree(virDomainVirtioSerialAddrSetPtr addrs)
     if (addrs) {
         for (i = 0; i < addrs->ncontrollers; i++)
             virDomainVirtioSerialControllerFree(addrs->controllers[i]);
-        VIR_FREE(addrs->controllers);
-        VIR_FREE(addrs);
+        g_free(addrs->controllers);
+        g_free(addrs);
     }
 }
 
@@ -1886,9 +1886,9 @@ virDomainUSBAddressHubFree(virDomainUSBAddressHubPtr hub)
 
     for (i = 0; i < hub->nports; i++)
         virDomainUSBAddressHubFree(hub->ports[i]);
-    VIR_FREE(hub->ports);
+    g_free(hub->ports);
     virBitmapFree(hub->portmap);
-    VIR_FREE(hub);
+    g_free(hub);
 }
 
 
@@ -1902,8 +1902,8 @@ virDomainUSBAddressSetFree(virDomainUSBAddressSetPtr addrs)
 
     for (i = 0; i < addrs->nbuses; i++)
         virDomainUSBAddressHubFree(addrs->buses[i]);
-    VIR_FREE(addrs->buses);
-    VIR_FREE(addrs);
+    g_free(addrs->buses);
+    g_free(addrs);
 }
 
 

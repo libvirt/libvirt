@@ -78,8 +78,8 @@ virStorageEncryptionFree(virStorageEncryptionPtr enc)
     for (i = 0; i < enc->nsecrets; i++)
         virStorageEncryptionSecretFree(enc->secrets[i]);
     virStorageEncryptionInfoDefClear(&enc->encinfo);
-    VIR_FREE(enc->secrets);
-    VIR_FREE(enc);
+    g_free(enc->secrets);
+    g_free(enc);
 }
 
 static virStorageEncryptionSecretPtr

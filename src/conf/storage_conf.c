@@ -448,15 +448,15 @@ virStorageVolDefFree(virStorageVolDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->name);
-    VIR_FREE(def->key);
+    g_free(def->name);
+    g_free(def->key);
 
     for (i = 0; i < def->source.nextent; i++)
-        VIR_FREE(def->source.extents[i].path);
-    VIR_FREE(def->source.extents);
+        g_free(def->source.extents[i].path);
+    g_free(def->source.extents);
 
     virStorageSourceClear(&def->target);
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
@@ -497,7 +497,7 @@ void
 virStoragePoolSourceFree(virStoragePoolSourcePtr source)
 {
     virStoragePoolSourceClear(source);
-    VIR_FREE(source);
+    g_free(source);
 }
 
 
@@ -507,16 +507,16 @@ virStoragePoolDefFree(virStoragePoolDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->name);
+    g_free(def->name);
 
     virStoragePoolSourceClear(&def->source);
 
-    VIR_FREE(def->target.path);
-    VIR_FREE(def->target.perms.label);
-    VIR_FREE(def->refresh);
+    g_free(def->target.path);
+    g_free(def->target.perms.label);
+    g_free(def->refresh);
     if (def->namespaceData && def->ns.free)
         (def->ns.free)(def->namespaceData);
-    VIR_FREE(def);
+    g_free(def);
 }
 
 

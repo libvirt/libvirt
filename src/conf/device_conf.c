@@ -99,7 +99,7 @@ virDomainDeviceInfoFree(virDomainDeviceInfoPtr info)
 {
     if (info) {
         virDomainDeviceInfoClear(info);
-        VIR_FREE(info);
+        g_free(info);
     }
 }
 

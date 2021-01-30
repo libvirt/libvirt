@@ -105,7 +105,7 @@ virDomainSnapshotDiskDefFree(virDomainSnapshotDiskDefPtr disk)
         return;
 
     virDomainSnapshotDiskDefClear(disk);
-    VIR_FREE(disk);
+    g_free(disk);
 }
 
 

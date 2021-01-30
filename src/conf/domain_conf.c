@@ -1806,30 +1806,30 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
 
     switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        VIR_FREE(def->data.vnc.keymap);
+        g_free(def->data.vnc.keymap);
         virDomainGraphicsAuthDefClear(&def->data.vnc.auth);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        VIR_FREE(def->data.sdl.display);
-        VIR_FREE(def->data.sdl.xauth);
+        g_free(def->data.sdl.display);
+        g_free(def->data.sdl.xauth);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
-        VIR_FREE(def->data.desktop.display);
+        g_free(def->data.desktop.display);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-        VIR_FREE(def->data.spice.rendernode);
-        VIR_FREE(def->data.spice.keymap);
+        g_free(def->data.spice.rendernode);
+        g_free(def->data.spice.keymap);
         virDomainGraphicsAuthDefClear(&def->data.spice.auth);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
-        VIR_FREE(def->data.egl_headless.rendernode);
+        g_free(def->data.egl_headless.rendernode);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
@@ -1838,10 +1838,10 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
 
     for (i = 0; i < def->nListens; i++)
         virDomainGraphicsListenDefClear(&def->listens[i]);
-    VIR_FREE(def->listens);
+    g_free(def->listens);
 
     virObjectUnref(def->privateData);
-    VIR_FREE(def);
+    g_free(def);
 }
 
 const char *virDomainInputDefGetPath(virDomainInputDefPtr input)
@@ -1865,9 +1865,9 @@ void virDomainInputDefFree(virDomainInputDefPtr def)
         return;
 
     virDomainDeviceInfoClear(&def->info);
-    VIR_FREE(def->source.evdev);
-    VIR_FREE(def->virtio);
-    VIR_FREE(def);
+    g_free(def->source.evdev);
+    g_free(def->virtio);
+    g_free(def);
 }
 
 void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
@@ -1875,11 +1875,11 @@ void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->lockspace);
-    VIR_FREE(def->key);
-    VIR_FREE(def->path);
+    g_free(def->lockspace);
+    g_free(def->key);
+    g_free(def->path);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
@@ -1909,7 +1909,7 @@ virDomainVcpuDefFree(virDomainVcpuDefPtr info)
 
     virBitmapFree(info->cpumask);
     virObjectUnref(info->privateData);
-    VIR_FREE(info);
+    g_free(info);
 }
 
 
@@ -2184,20 +2184,20 @@ virDomainDiskDefFree(virDomainDiskDefPtr def)
         return;
 
     virObjectUnref(def->src);
-    VIR_FREE(def->serial);
-    VIR_FREE(def->dst);
+    g_free(def->serial);
+    g_free(def->dst);
     virObjectUnref(def->mirror);
-    VIR_FREE(def->wwn);
-    VIR_FREE(def->driverName);
-    VIR_FREE(def->vendor);
-    VIR_FREE(def->product);
-    VIR_FREE(def->domain_name);
-    VIR_FREE(def->blkdeviotune.group_name);
-    VIR_FREE(def->virtio);
+    g_free(def->wwn);
+    g_free(def->driverName);
+    g_free(def->vendor);
+    g_free(def->product);
+    g_free(def->domain_name);
+    g_free(def->blkdeviotune.group_name);
+    g_free(def->virtio);
     virDomainDeviceInfoClear(&def->info);
     virObjectUnref(def->privateData);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
@@ -2327,9 +2327,9 @@ void virDomainControllerDefFree(virDomainControllerDefPtr def)
         return;
 
     virDomainDeviceInfoClear(&def->info);
-    VIR_FREE(def->virtio);
+    g_free(def->virtio);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
@@ -2391,13 +2391,13 @@ void virDomainFSDefFree(virDomainFSDefPtr def)
         return;
 
     virObjectUnref(def->src);
-    VIR_FREE(def->dst);
+    g_free(def->dst);
     virDomainDeviceInfoClear(&def->info);
-    VIR_FREE(def->virtio);
+    g_free(def->virtio);
     virObjectUnref(def->privateData);
-    VIR_FREE(def->binary);
+    g_free(def->binary);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 void
@@ -2409,10 +2409,10 @@ virDomainActualNetDefFree(virDomainActualNetDefPtr def)
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
-        VIR_FREE(def->data.bridge.brname);
+        g_free(def->data.bridge.brname);
         break;
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        VIR_FREE(def->data.direct.linkdev);
+        g_free(def->data.direct.linkdev);
         break;
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
         virDomainHostdevDefClear(&def->data.hostdev.def);
@@ -2421,10 +2421,10 @@ virDomainActualNetDefFree(virDomainActualNetDefPtr def)
         break;
     }
 
-    VIR_FREE(def->virtPortProfile);
+    g_free(def->virtPortProfile);
     virNetDevBandwidthFree(def->bandwidth);
     virNetDevVlanClear(&def->vlan);
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
@@ -2456,8 +2456,8 @@ virDomainVsockDefFree(virDomainVsockDefPtr vsock)
 
     virObjectUnref(vsock->privateData);
     virDomainDeviceInfoClear(&vsock->info);
-    VIR_FREE(vsock->virtio);
-    VIR_FREE(vsock);
+    g_free(vsock->virtio);
+    g_free(vsock);
 }
 
 
@@ -2467,7 +2467,7 @@ virDomainNetDefFree(virDomainNetDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->modelstr);
+    g_free(def->modelstr);
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
@@ -2475,7 +2475,7 @@ virDomainNetDefFree(virDomainNetDefPtr def)
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDPA:
-        VIR_FREE(def->data.vdpa.devicepath);
+        g_free(def->data.vdpa.devicepath);
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -2764,12 +2764,12 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
         switch (def->targetType) {
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
-            VIR_FREE(def->target.addr);
+            g_free(def->target.addr);
             break;
 
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN:
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
-            VIR_FREE(def->target.name);
+            g_free(def->target.name);
             break;
         }
         break;
@@ -2781,7 +2781,7 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
     virObjectUnref(def->source);
     virDomainDeviceInfoClear(&def->info);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def)
@@ -2796,8 +2796,8 @@ void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def)
 
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
         for (i = 0; i < VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES; i++)
-            VIR_FREE(def->data.cert.file[i]);
-        VIR_FREE(def->data.cert.database);
+            g_free(def->data.cert.file[i]);
+        g_free(def->data.cert.database);
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
@@ -2810,7 +2810,7 @@ void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def)
 
     virDomainDeviceInfoClear(&def->info);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 void virDomainSoundCodecDefFree(virDomainSoundCodecDefPtr def)
@@ -2818,7 +2818,7 @@ void virDomainSoundCodecDefFree(virDomainSoundCodecDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 void virDomainSoundDefFree(virDomainSoundDefPtr def)
@@ -2832,9 +2832,9 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def)
 
     for (i = 0; i < def->ncodecs; i++)
         virDomainSoundCodecDefFree(def->codecs[i]);
-    VIR_FREE(def->codecs);
+    g_free(def->codecs);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 void virDomainAudioDefFree(virDomainAudioDefPtr def)
@@ -2844,15 +2844,15 @@ void virDomainAudioDefFree(virDomainAudioDefPtr def)
 
     switch ((virDomainAudioType) def->type) {
     case VIR_DOMAIN_AUDIO_TYPE_OSS:
-        VIR_FREE(def->backend.oss.inputDev);
-        VIR_FREE(def->backend.oss.outputDev);
+        g_free(def->backend.oss.inputDev);
+        g_free(def->backend.oss.outputDev);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
         break;
     }
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 virDomainSoundDefPtr
@@ -2869,9 +2869,9 @@ void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def)
         return;
 
     virDomainDeviceInfoClear(&def->info);
-    VIR_FREE(def->virtio);
+    g_free(def->virtio);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 void virDomainNVRAMDefFree(virDomainNVRAMDefPtr def)
@@ -2881,7 +2881,7 @@ void virDomainNVRAMDefFree(virDomainNVRAMDefPtr def)
 
     virDomainDeviceInfoClear(&def->info);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def)
@@ -2891,7 +2891,7 @@ void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def)
 
     virDomainDeviceInfoClear(&def->info);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 void virDomainShmemDefFree(virDomainShmemDefPtr def)
@@ -2901,8 +2901,8 @@ void virDomainShmemDefFree(virDomainShmemDefPtr def)
 
     virDomainDeviceInfoClear(&def->info);
     virDomainChrSourceDefClear(&def->server.chr);
-    VIR_FREE(def->name);
-    VIR_FREE(def);
+    g_free(def->name);
+    g_free(def);
 }
 
 
@@ -2952,7 +2952,7 @@ void virDomainVideoDefFree(virDomainVideoDefPtr def)
         return;
 
     virDomainVideoDefClear(def);
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
@@ -3044,15 +3044,15 @@ void virDomainTPMDefFree(virDomainTPMDefPtr def)
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         virDomainChrSourceDefClear(&def->data.emulator.source);
-        VIR_FREE(def->data.emulator.storagepath);
-        VIR_FREE(def->data.emulator.logfile);
+        g_free(def->data.emulator.storagepath);
+        g_free(def->data.emulator.logfile);
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
 
     virDomainDeviceInfoClear(&def->info);
-    VIR_FREE(def);
+    g_free(def);
 }
 
 void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
@@ -3067,7 +3067,7 @@ void virDomainHostdevDefFree(virDomainHostdevDefPtr def)
      * the memory.
      */
     if (!def->parentnet)
-        VIR_FREE(def);
+        g_free(def);
 }
 
 void virDomainHubDefFree(virDomainHubDefPtr def)
@@ -3076,7 +3076,7 @@ void virDomainHubDefFree(virDomainHubDefPtr def)
         return;
 
     virDomainDeviceInfoClear(&def->info);
-    VIR_FREE(def);
+    g_free(def);
 }
 
 void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def)
@@ -3087,7 +3087,7 @@ void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def)
     virObjectUnref(def->source);
     virDomainDeviceInfoClear(&def->info);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 void virDomainRedirFilterDefFree(virDomainRedirFilterDefPtr def)
@@ -3098,10 +3098,10 @@ void virDomainRedirFilterDefFree(virDomainRedirFilterDefPtr def)
         return;
 
     for (i = 0; i < def->nusbdevs; i++)
-        VIR_FREE(def->usbdevs[i]);
+        g_free(def->usbdevs[i]);
 
-    VIR_FREE(def->usbdevs);
-    VIR_FREE(def);
+    g_free(def->usbdevs);
+    g_free(def);
 }
 
 void virDomainMemoryDefFree(virDomainMemoryDefPtr def)
@@ -3109,11 +3109,11 @@ void virDomainMemoryDefFree(virDomainMemoryDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->nvdimmPath);
+    g_free(def->nvdimmPath);
     virBitmapFree(def->sourceNodes);
-    VIR_FREE(def->uuid);
+    g_free(def->uuid);
     virDomainDeviceInfoClear(&def->info);
-    VIR_FREE(def);
+    g_free(def);
 }
 
 void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
@@ -3189,7 +3189,7 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
         virDomainMemoryDefFree(def->data.memory);
         break;
     case VIR_DOMAIN_DEVICE_IOMMU:
-        VIR_FREE(def->data.iommu);
+        g_free(def->data.iommu);
         break;
     case VIR_DOMAIN_DEVICE_VSOCK:
         virDomainVsockDefFree(def->data.vsock);
@@ -3202,7 +3202,7 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
         break;
     }
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 static void
@@ -3238,7 +3238,7 @@ virDomainIOThreadIDDefFree(virDomainIOThreadIDDefPtr def)
     if (!def)
         return;
     virBitmapFree(def->cpumask);
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
@@ -3254,7 +3254,7 @@ virDomainIOThreadIDDefArrayFree(virDomainIOThreadIDDefPtr *def,
     for (i = 0; i < nids; i++)
         virDomainIOThreadIDDefFree(def[i]);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
@@ -3311,8 +3311,8 @@ virDomainResourceDefFree(virDomainResourceDefPtr resource)
     if (!resource)
         return;
 
-    VIR_FREE(resource->partition);
-    VIR_FREE(resource);
+    g_free(resource->partition);
+    g_free(resource);
 }
 
 void
@@ -3322,7 +3322,7 @@ virDomainPanicDefFree(virDomainPanicDefPtr panic)
         return;
 
     virDomainDeviceInfoClear(&panic->info);
-    VIR_FREE(panic);
+    g_free(panic);
 }
 
 void
@@ -3331,10 +3331,10 @@ virDomainLoaderDefFree(virDomainLoaderDefPtr loader)
     if (!loader)
         return;
 
-    VIR_FREE(loader->path);
-    VIR_FREE(loader->nvram);
-    VIR_FREE(loader->templt);
-    VIR_FREE(loader);
+    g_free(loader->path);
+    g_free(loader->nvram);
+    g_free(loader->templt);
+    g_free(loader);
 }
 
 
@@ -3346,7 +3346,7 @@ virDomainResctrlMonDefFree(virDomainResctrlMonDefPtr domresmon)
 
     virBitmapFree(domresmon->vcpus);
     virObjectUnref(domresmon->instance);
-    VIR_FREE(domresmon);
+    g_free(domresmon);
 }
 
 
@@ -3363,8 +3363,8 @@ virDomainResctrlDefFree(virDomainResctrlDefPtr resctrl)
 
     virObjectUnref(resctrl->alloc);
     virBitmapFree(resctrl->vcpus);
-    VIR_FREE(resctrl->monitors);
-    VIR_FREE(resctrl);
+    g_free(resctrl->monitors);
+    g_free(resctrl);
 }
 
 
@@ -3374,10 +3374,10 @@ virDomainSEVDefFree(virDomainSEVDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->dh_cert);
-    VIR_FREE(def->session);
+    g_free(def->dh_cert);
+    g_free(def->session);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
@@ -3392,7 +3392,7 @@ void virDomainDefFree(virDomainDefPtr def)
 
     for (i = 0; i < def->maxvcpus; i++)
         virDomainVcpuDefFree(def->vcpus[i]);
-    VIR_FREE(def->vcpus);
+    g_free(def->vcpus);
 
     /* hostdevs must be freed before nets (or any future "intelligent
      * hostdevs") because the pointer to the hostdev is really
@@ -3402,133 +3402,133 @@ void virDomainDefFree(virDomainDefPtr def)
      */
     for (i = 0; i < def->nhostdevs; i++)
         virDomainHostdevDefFree(def->hostdevs[i]);
-    VIR_FREE(def->hostdevs);
+    g_free(def->hostdevs);
 
     for (i = 0; i < def->nleases; i++)
         virDomainLeaseDefFree(def->leases[i]);
-    VIR_FREE(def->leases);
+    g_free(def->leases);
 
     for (i = 0; i < def->ngraphics; i++)
         virDomainGraphicsDefFree(def->graphics[i]);
-    VIR_FREE(def->graphics);
+    g_free(def->graphics);
 
     for (i = 0; i < def->ninputs; i++)
         virDomainInputDefFree(def->inputs[i]);
-    VIR_FREE(def->inputs);
+    g_free(def->inputs);
 
     for (i = 0; i < def->ndisks; i++)
         virDomainDiskDefFree(def->disks[i]);
-    VIR_FREE(def->disks);
+    g_free(def->disks);
 
     for (i = 0; i < def->ncontrollers; i++)
         virDomainControllerDefFree(def->controllers[i]);
-    VIR_FREE(def->controllers);
+    g_free(def->controllers);
 
     for (i = 0; i < def->nfss; i++)
         virDomainFSDefFree(def->fss[i]);
-    VIR_FREE(def->fss);
+    g_free(def->fss);
 
     for (i = 0; i < def->nnets; i++)
         virDomainNetDefFree(def->nets[i]);
-    VIR_FREE(def->nets);
+    g_free(def->nets);
 
     for (i = 0; i < def->nsmartcards; i++)
         virDomainSmartcardDefFree(def->smartcards[i]);
-    VIR_FREE(def->smartcards);
+    g_free(def->smartcards);
 
     for (i = 0; i < def->nserials; i++)
         virDomainChrDefFree(def->serials[i]);
-    VIR_FREE(def->serials);
+    g_free(def->serials);
 
     for (i = 0; i < def->nparallels; i++)
         virDomainChrDefFree(def->parallels[i]);
-    VIR_FREE(def->parallels);
+    g_free(def->parallels);
 
     for (i = 0; i < def->nchannels; i++)
         virDomainChrDefFree(def->channels[i]);
-    VIR_FREE(def->channels);
+    g_free(def->channels);
 
     for (i = 0; i < def->nconsoles; i++)
         virDomainChrDefFree(def->consoles[i]);
-    VIR_FREE(def->consoles);
+    g_free(def->consoles);
 
     for (i = 0; i < def->nsounds; i++)
         virDomainSoundDefFree(def->sounds[i]);
-    VIR_FREE(def->sounds);
+    g_free(def->sounds);
 
     for (i = 0; i < def->naudios; i++)
         virDomainAudioDefFree(def->audios[i]);
-    VIR_FREE(def->audios);
+    g_free(def->audios);
 
     for (i = 0; i < def->nvideos; i++)
         virDomainVideoDefFree(def->videos[i]);
-    VIR_FREE(def->videos);
+    g_free(def->videos);
 
     for (i = 0; i < def->nhubs; i++)
         virDomainHubDefFree(def->hubs[i]);
-    VIR_FREE(def->hubs);
+    g_free(def->hubs);
 
     for (i = 0; i < def->nredirdevs; i++)
         virDomainRedirdevDefFree(def->redirdevs[i]);
-    VIR_FREE(def->redirdevs);
+    g_free(def->redirdevs);
 
     for (i = 0; i < def->nrngs; i++)
         virDomainRNGDefFree(def->rngs[i]);
-    VIR_FREE(def->rngs);
+    g_free(def->rngs);
 
     for (i = 0; i < def->nmems; i++)
         virDomainMemoryDefFree(def->mems[i]);
-    VIR_FREE(def->mems);
+    g_free(def->mems);
 
     for (i = 0; i < def->ntpms; i++)
         virDomainTPMDefFree(def->tpms[i]);
-    VIR_FREE(def->tpms);
+    g_free(def->tpms);
 
     for (i = 0; i < def->npanics; i++)
         virDomainPanicDefFree(def->panics[i]);
-    VIR_FREE(def->panics);
+    g_free(def->panics);
 
-    VIR_FREE(def->iommu);
+    g_free(def->iommu);
 
-    VIR_FREE(def->idmap.uidmap);
-    VIR_FREE(def->idmap.gidmap);
+    g_free(def->idmap.uidmap);
+    g_free(def->idmap.gidmap);
 
-    VIR_FREE(def->os.machine);
-    VIR_FREE(def->os.init);
+    g_free(def->os.machine);
+    g_free(def->os.init);
     for (i = 0; def->os.initargv && def->os.initargv[i]; i++)
-        VIR_FREE(def->os.initargv[i]);
-    VIR_FREE(def->os.initargv);
+        g_free(def->os.initargv[i]);
+    g_free(def->os.initargv);
     for (i = 0; def->os.initenv && def->os.initenv[i]; i++) {
-        VIR_FREE(def->os.initenv[i]->name);
-        VIR_FREE(def->os.initenv[i]->value);
-        VIR_FREE(def->os.initenv[i]);
+        g_free(def->os.initenv[i]->name);
+        g_free(def->os.initenv[i]->value);
+        g_free(def->os.initenv[i]);
     }
-    VIR_FREE(def->os.initdir);
-    VIR_FREE(def->os.inituser);
-    VIR_FREE(def->os.initgroup);
-    VIR_FREE(def->os.initenv);
-    VIR_FREE(def->os.kernel);
-    VIR_FREE(def->os.initrd);
-    VIR_FREE(def->os.cmdline);
-    VIR_FREE(def->os.dtb);
-    VIR_FREE(def->os.root);
-    VIR_FREE(def->os.slic_table);
+    g_free(def->os.initdir);
+    g_free(def->os.inituser);
+    g_free(def->os.initgroup);
+    g_free(def->os.initenv);
+    g_free(def->os.kernel);
+    g_free(def->os.initrd);
+    g_free(def->os.cmdline);
+    g_free(def->os.dtb);
+    g_free(def->os.root);
+    g_free(def->os.slic_table);
     virDomainLoaderDefFree(def->os.loader);
-    VIR_FREE(def->os.bootloader);
-    VIR_FREE(def->os.bootloaderArgs);
+    g_free(def->os.bootloader);
+    g_free(def->os.bootloaderArgs);
 
     virDomainClockDefClear(&def->clock);
 
-    VIR_FREE(def->name);
+    g_free(def->name);
     virBitmapFree(def->cpumask);
-    VIR_FREE(def->emulator);
-    VIR_FREE(def->description);
-    VIR_FREE(def->title);
-    VIR_FREE(def->hyperv_vendor_id);
+    g_free(def->emulator);
+    g_free(def->description);
+    g_free(def->title);
+    g_free(def->hyperv_vendor_id);
 
     virBlkioDeviceArrayClear(def->blkio.devices,
                              def->blkio.ndevices);
-    VIR_FREE(def->blkio.devices);
+    g_free(def->blkio.devices);
 
     virDomainWatchdogDefFree(def->watchdog);
 
@@ -3538,36 +3538,36 @@ void virDomainDefFree(virDomainDefPtr def)
 
     for (i = 0; i < def->mem.nhugepages; i++)
         virBitmapFree(def->mem.hugepages[i].nodemask);
-    VIR_FREE(def->mem.hugepages);
+    g_free(def->mem.hugepages);
 
     for (i = 0; i < def->nseclabels; i++)
         virSecurityLabelDefFree(def->seclabels[i]);
-    VIR_FREE(def->seclabels);
+    g_free(def->seclabels);
 
     virCPUDefFree(def->cpu);
 
     virDomainIOThreadIDDefArrayFree(def->iothreadids, def->niothreadids);
 
     virBitmapFree(def->cputune.emulatorpin);
-    VIR_FREE(def->cputune.emulatorsched);
+    g_free(def->cputune.emulatorsched);
 
     virDomainNumaFree(def->numa);
 
     for (i = 0; i < def->nsysinfo; i++)
         virSysinfoDefFree(def->sysinfo[i]);
-    VIR_FREE(def->sysinfo);
+    g_free(def->sysinfo);
 
     virDomainRedirFilterDefFree(def->redirfilter);
 
     for (i = 0; i < def->nshmems; i++)
         virDomainShmemDefFree(def->shmems[i]);
-    VIR_FREE(def->shmems);
+    g_free(def->shmems);
 
     for (i = 0; i < def->nresctrls; i++)
         virDomainResctrlDefFree(def->resctrls[i]);
-    VIR_FREE(def->resctrls);
+    g_free(def->resctrls);
 
-    VIR_FREE(def->keywrap);
+    g_free(def->keywrap);
 
     if (def->namespaceData && def->ns.free)
         (def->ns.free)(def->namespaceData);
@@ -3576,7 +3576,7 @@ void virDomainDefFree(virDomainDefPtr def)
 
     xmlFreeNode(def->metadata);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 static void virDomainObjDispose(void *obj)

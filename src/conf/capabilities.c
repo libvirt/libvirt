@@ -207,7 +207,7 @@ virCapsHostMemBWNodeFree(virCapsHostMemBWNodePtr ptr)
         return;
 
     virBitmapFree(ptr->cpus);
-    VIR_FREE(ptr);
+    g_free(ptr);
 }
 
 static void
@@ -1757,9 +1757,9 @@ virCapsHostCacheBankFree(virCapsHostCacheBankPtr ptr)
 
     virBitmapFree(ptr->cpus);
     for (i = 0; i < ptr->ncontrols; i++)
-        VIR_FREE(ptr->controls[i]);
-    VIR_FREE(ptr->controls);
-    VIR_FREE(ptr);
+        g_free(ptr->controls[i]);
+    g_free(ptr->controls);
+    g_free(ptr);
 }
 
 

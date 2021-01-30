@@ -309,12 +309,12 @@ virNWFilterRuleDefFree(virNWFilterRuleDefPtr def)
         virNWFilterVarAccessFree(def->varAccess[i]);
 
     for (i = 0; i < def->nstrings; i++)
-        VIR_FREE(def->strings[i]);
+        g_free(def->strings[i]);
 
-    VIR_FREE(def->varAccess);
-    VIR_FREE(def->strings);
+    g_free(def->varAccess);
+    g_free(def->strings);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
@@ -324,8 +324,8 @@ virNWFilterIncludeDefFree(virNWFilterIncludeDefPtr inc)
     if (!inc)
         return;
     virHashFree(inc->params);
-    VIR_FREE(inc->filterref);
-    VIR_FREE(inc);
+    g_free(inc->filterref);
+    g_free(inc);
 }
 
 
@@ -337,7 +337,7 @@ virNWFilterEntryFree(virNWFilterEntryPtr entry)
 
     virNWFilterRuleDefFree(entry->rule);
     virNWFilterIncludeDefFree(entry->include);
-    VIR_FREE(entry);
+    g_free(entry);
 }
 
 
@@ -348,15 +348,15 @@ virNWFilterDefFree(virNWFilterDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->name);
+    g_free(def->name);
 
     for (i = 0; i < def->nentries; i++)
         virNWFilterEntryFree(def->filterEntries[i]);
 
-    VIR_FREE(def->filterEntries);
-    VIR_FREE(def->chainsuffix);
+    g_free(def->filterEntries);
+    g_free(def->chainsuffix);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 

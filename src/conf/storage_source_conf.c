@@ -159,7 +159,7 @@ virStorageNetHostDefFree(size_t nhosts,
     for (i = 0; i < nhosts; i++)
         virStorageNetHostDefClear(&hosts[i]);
 
-    VIR_FREE(hosts);
+    g_free(hosts);
 }
 
 
@@ -169,8 +169,8 @@ virStoragePermsFree(virStoragePermsPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->label);
-    VIR_FREE(def);
+    g_free(def->label);
+    g_free(def);
 }
 
 
@@ -204,10 +204,10 @@ virStorageAuthDefFree(virStorageAuthDefPtr authdef)
     if (!authdef)
         return;
 
-    VIR_FREE(authdef->username);
-    VIR_FREE(authdef->secrettype);
+    g_free(authdef->username);
+    g_free(authdef->secrettype);
     virSecretLookupDefClear(&authdef->seclookupdef);
-    VIR_FREE(authdef);
+    g_free(authdef);
 }
 
 
@@ -314,9 +314,9 @@ virStoragePRDefFree(virStoragePRDefPtr prd)
     if (!prd)
         return;
 
-    VIR_FREE(prd->path);
-    VIR_FREE(prd->mgralias);
-    VIR_FREE(prd);
+    g_free(prd->path);
+    g_free(prd->mgralias);
+    g_free(prd);
 }
 
 
@@ -511,7 +511,7 @@ virStorageSourceNVMeDefFree(virStorageSourceNVMeDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
@@ -992,10 +992,10 @@ virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->pool);
-    VIR_FREE(def->volume);
+    g_free(def->pool);
+    g_free(def->volume);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
