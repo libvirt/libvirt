@@ -707,6 +707,8 @@ struct _virNodeDevice {
     char *parentName;                   /* parent device name */
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNodeDevice, virObjectUnref);
+
 /**
  * _virSecret:
  *
