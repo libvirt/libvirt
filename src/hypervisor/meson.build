@@ -11,6 +11,7 @@ hypervisor_lib = static_library(
     hypervisor_sources,
   ],
   dependencies: [
+    access_dep,
     src_dep,
   ],
   include_directories: [

@@ -22,6 +22,7 @@
 
 #include "domain_conf.h"
 #include "node_device_conf.h"
+#include "virhostdev.h"
 
 char *
 virDomainDriverGenerateRootHash(const char *drivername,
@@ -49,3 +50,6 @@ int virDomainDriverSetupPersistentDefBlkioParams(virDomainDefPtr persistentDef,
 
 int virDomainDriverNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
                                         virPCIDeviceAddressPtr devAddr);
+
+int virDomainDriverNodeDeviceReset(virNodeDevicePtr dev,
+                                   virHostdevManagerPtr hostdevMgr);

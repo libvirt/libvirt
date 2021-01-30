@@ -25,6 +25,10 @@
 #include "virstring.h"
 #include "vircrypto.h"
 #include "virutil.h"
+#include "virhostdev.h"
+#include "viraccessapicheck.h"
+#include "datatypes.h"
+#include "driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -364,4 +368,58 @@ virDomainDriverNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
     }
 
     return 0;
+}
+
+
+int
+virDomainDriverNodeDeviceReset(virNodeDevicePtr dev,
+                               virHostdevManagerPtr hostdevMgr)
+{
+    virPCIDevicePtr pci;
+    virPCIDeviceAddress devAddr;
+    virNodeDeviceDefPtr def = NULL;
+    g_autofree char *xml = NULL;
+    virConnectPtr nodeconn = NULL;
+    virNodeDevicePtr nodedev = NULL;
+    int ret = -1;
+
+    if (!(nodeconn = virGetConnectNodeDev()))
+        goto cleanup;
+
+    /* 'dev' is associated with virConnectPtr, so for split
+     * daemons, we need to get a copy that is associated with
+     * the virnodedevd daemon. */
+    if (!(nodedev = virNodeDeviceLookupByName(
+              nodeconn, virNodeDeviceGetName(dev))))
+        goto cleanup;
+
+    xml = virNodeDeviceGetXMLDesc(nodedev, 0);
+    if (!xml)
+        goto cleanup;
+
+    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL);
+    if (!def)
+        goto cleanup;
+
+    /* ACL check must happen against original 'dev',
+     * not the new 'nodedev' we acquired */
+    if (virNodeDeviceResetEnsureACL(dev->conn, def) < 0)
+        goto cleanup;
+
+    if (virDomainDriverNodeDeviceGetPCIInfo(def, &devAddr) < 0)
+        goto cleanup;
+
+    pci = virPCIDeviceNew(&devAddr);
+    if (!pci)
+        goto cleanup;
+
+    ret = virHostdevPCINodeDeviceReset(hostdevMgr, pci);
+
+    virPCIDeviceFree(pci);
+ cleanup:
+    virNodeDeviceDefFree(def);
+    virObjectUnref(nodedev);
+    virObjectUnref(nodeconn);
+    return ret;
+
 }
