@@ -944,15 +944,15 @@ virDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,
 
 
 static void
-virDomainPCIAddressSetExtensionFree(virDomainPCIAddressSetPtr addrs)
+virDomainPCIAddressSetExtensionFree(virDomainZPCIAddressIdsPtr zpciIds)
 {
-    if (!addrs || !addrs->zpciIds)
+    if (!zpciIds)
         return;
 
-    g_clear_pointer(&addrs->zpciIds->uids, g_hash_table_unref);
-    g_clear_pointer(&addrs->zpciIds->fids, g_hash_table_unref);
+    g_clear_pointer(&zpciIds->uids, g_hash_table_unref);
+    g_clear_pointer(&zpciIds->fids, g_hash_table_unref);
 
-    VIR_FREE(addrs->zpciIds);
+    VIR_FREE(zpciIds);
 }
 
 
@@ -1001,7 +1001,7 @@ virDomainPCIAddressSetFree(virDomainPCIAddressSetPtr addrs)
     if (!addrs)
         return;
 
-    virDomainPCIAddressSetExtensionFree(addrs);
+    virDomainPCIAddressSetExtensionFree(addrs->zpciIds);
     VIR_FREE(addrs->buses);
     VIR_FREE(addrs);
 }
