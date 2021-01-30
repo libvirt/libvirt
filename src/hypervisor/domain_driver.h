@@ -56,3 +56,7 @@ int virDomainDriverNodeDeviceReset(virNodeDevicePtr dev,
 
 int virDomainDriverNodeDeviceReAttach(virNodeDevicePtr dev,
                                       virHostdevManagerPtr hostdevMgr);
+
+int virDomainDriverNodeDeviceDetachFlags(virNodeDevicePtr dev,
+                                         virHostdevManagerPtr hostdevMgr,
+                                         const char *driverName);

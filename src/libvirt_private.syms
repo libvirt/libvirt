@@ -1507,6 +1507,7 @@ virDomainCgroupSetupMemtune;
 virDomainDriverGenerateMachineName;
 virDomainDriverGenerateRootHash;
 virDomainDriverMergeBlkioDevice;
+virDomainDriverNodeDeviceDetachFlags;
 virDomainDriverNodeDeviceGetPCIInfo;
 virDomainDriverNodeDeviceReAttach;
 virDomainDriverNodeDeviceReset;

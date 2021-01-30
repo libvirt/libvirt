@@ -459,3 +459,63 @@ virDomainDriverNodeDeviceReAttach(virNodeDevicePtr dev,
 
     return virHostdevPCINodeDeviceReAttach(hostdevMgr, pci);
 }
+
+int
+virDomainDriverNodeDeviceDetachFlags(virNodeDevicePtr dev,
+                                     virHostdevManagerPtr hostdevMgr,
+                                     const char *driverName)
+{
+    virPCIDevicePtr pci = NULL;
+    virPCIDeviceAddress devAddr;
+    int ret = -1;
+    virNodeDeviceDefPtr def = NULL;
+    g_autofree char *xml = NULL;
+    virConnectPtr nodeconn = NULL;
+    virNodeDevicePtr nodedev = NULL;
+
+    if (!driverName)
+        return -1;
+
+    if (!(nodeconn = virGetConnectNodeDev()))
+        goto cleanup;
+
+    /* 'dev' is associated with virConnectPtr, so for split
+     * daemons, we need to get a copy that is associated with
+     * the virnodedevd daemon. */
+    if (!(nodedev = virNodeDeviceLookupByName(nodeconn,
+                                              virNodeDeviceGetName(dev))))
+        goto cleanup;
+
+    xml = virNodeDeviceGetXMLDesc(nodedev, 0);
+    if (!xml)
+        goto cleanup;
+
+    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL);
+    if (!def)
+        goto cleanup;
+
+    /* ACL check must happen against original 'dev',
+     * not the new 'nodedev' we acquired */
+    if (virNodeDeviceDetachFlagsEnsureACL(dev->conn, def) < 0)
+        goto cleanup;
+
+    if (virDomainDriverNodeDeviceGetPCIInfo(def, &devAddr) < 0)
+        goto cleanup;
+
+    pci = virPCIDeviceNew(&devAddr);
+    if (!pci)
+        goto cleanup;
+
+    if (STREQ(driverName, "vfio"))
+        virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_VFIO);
+    else if (STREQ(driverName, "xen"))
+        virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_XEN);
+
+    ret = virHostdevPCINodeDeviceDetach(hostdevMgr, pci);
+ cleanup:
+    virPCIDeviceFree(pci);
+    virNodeDeviceDefFree(def);
+    virObjectUnref(nodedev);
+    virObjectUnref(nodeconn);
+    return ret;
+}

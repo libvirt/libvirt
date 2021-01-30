@@ -11998,15 +11998,8 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
                           unsigned int flags)
 {
     virQEMUDriverPtr driver = dev->conn->privateData;
-    virPCIDevicePtr pci = NULL;
-    virPCIDeviceAddress devAddr;
-    int ret = -1;
-    virNodeDeviceDefPtr def = NULL;
-    g_autofree char *xml = NULL;
     bool vfio = qemuHostdevHostSupportsPassthroughVFIO();
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
-    virConnectPtr nodeconn = NULL;
-    virNodeDevicePtr nodedev = NULL;
 
     virCheckFlags(0, -1);
 
@@ -12029,46 +12022,10 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
         return -1;
     }
 
-    if (!(nodeconn = virGetConnectNodeDev()))
-        goto cleanup;
 
-    /* 'dev' is associated with the QEMU virConnectPtr,
-     * so for split daemons, we need to get a copy that
-     * is associated with the virnodedevd daemon.
-     */
-    if (!(nodedev = virNodeDeviceLookupByName(nodeconn,
-                                              virNodeDeviceGetName(dev))))
-        goto cleanup;
-
-    xml = virNodeDeviceGetXMLDesc(nodedev, 0);
-    if (!xml)
-        goto cleanup;
-
-    def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL);
-    if (!def)
-        goto cleanup;
-
-    /* ACL check must happen against original 'dev',
-     * not the new 'nodedev' we acquired */
-    if (virNodeDeviceDetachFlagsEnsureACL(dev->conn, def) < 0)
-        goto cleanup;
-
-    if (virDomainDriverNodeDeviceGetPCIInfo(def, &devAddr) < 0)
-        goto cleanup;
-
-    pci = virPCIDeviceNew(&devAddr);
-    if (!pci)
-        goto cleanup;
-
-    virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_VFIO);
-
-    ret = virHostdevPCINodeDeviceDetach(hostdev_mgr, pci);
- cleanup:
-    virPCIDeviceFree(pci);
-    virNodeDeviceDefFree(def);
-    virObjectUnref(nodedev);
-    virObjectUnref(nodeconn);
-    return ret;
+    /* virNodeDeviceDetachFlagsEnsureACL() is being called by
+     * virDomainDriverNodeDeviceDetachFlags() */
+    return virDomainDriverNodeDeviceDetachFlags(dev, hostdev_mgr, driverName);
 }
 
 static int
