@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-01-08 17:11+0000\n"
-"PO-Revision-Date: 2021-01-28 09:56+0000\n"
+"PO-Revision-Date: 2021-01-31 19:40+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -5229,7 +5229,7 @@ msgstr ""
 
 #, c-format
 msgid "Domain '%s' marked as autostarted\n"
-msgstr ""
+msgstr "Toimialueen %s merkitty automaattisesti käynnistetyksi\n"
 
 #, c-format
 msgid "Domain '%s' resumed\n"
@@ -6391,9 +6391,9 @@ msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 msgid "Failed to create bridge node in xml document"
 msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create cache dir %s"
-msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
+msgstr "välimuistihakemiston '%s' luominen epäonnistui"
 
 #, fuzzy, c-format
 msgid "Failed to create channel target dir %s"
@@ -6405,7 +6405,7 @@ msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 
 #, c-format
 msgid "Failed to create dbus state dir %s"
-msgstr ""
+msgstr "dbus tilahakemiston '%s' luominen epäonnistui"
 
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
@@ -6427,9 +6427,9 @@ msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 msgid "Failed to create domain save file '%s'"
 msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create dump dir %s"
-msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
+msgstr "dumppaushakemiston '%s' luominen epäonnistui"
 
 #, c-format
 msgid "Failed to create file '%s'"
@@ -6450,9 +6450,9 @@ msgstr ""
 msgid "Failed to create iscsi context for %s"
 msgstr "Verkon luominen tiedostosta %s epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create lib dir %s"
-msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
+msgstr "lib-hakemiston '%s' luominen epäonnistui"
 
 #, fuzzy, c-format
 msgid "Failed to create memory backing dir %s"
@@ -6470,9 +6470,9 @@ msgstr "Verkon luominen tiedostosta %s epäonnistui"
 msgid "Failed to create node device from %s"
 msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create nvram dir %s"
-msgstr "Verkon luominen tiedostosta %s epäonnistui"
+msgstr "nvram-hakemiston '%s' luominen epäonnistui"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -6486,17 +6486,17 @@ msgstr "Varannon luominen %s:sta epäonnistui"
 msgid "Failed to create reboot thread, killing domain"
 msgstr "Toimialueen %s uudelleenkäynnistys epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create save dir %s"
-msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
+msgstr "save-hakemiston '%s' luominen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create slirp state dir %s"
-msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
+msgstr "slirp state-hakemiston '%s' luominen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create snapshot dir %s"
-msgstr "Verkon luominen tiedostosta %s epäonnistui"
+msgstr "snapshot hakemiston '%s' luominen epäonnistui"
 
 #, fuzzy
 msgid "Failed to create socket"
@@ -6652,9 +6652,9 @@ msgstr "veth-laitteen %s poistaminen epäonnistui"
 msgid "Failed to delete vol %s"
 msgstr "Taltion %s poistaminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to destroy bridge interface %s"
-msgstr "Toimialueen %s tuhoaminen epäonnistui"
+msgstr "Sillan liitännän %s tuhoaminen epäonnistui"
 
 #, c-format
 msgid "Failed to destroy domain '%d'"
@@ -6996,7 +6996,7 @@ msgstr "Liitännän tietojen haku epäonnistui"
 
 #, c-format
 msgid "Failed to get scheduler id for domain '%d' with libxenlight"
-msgstr ""
+msgstr "Skeduloija id:n haku toimialueelle '%d' epäonnistui libxenlightilla"
 
 #, c-format
 msgid "Failed to get scheduler parameters for domain '%d' with libxenlight"
@@ -7089,9 +7089,9 @@ msgstr "Epäaktiivisten toimialueiden luettelointi epäonnistui"
 msgid "Failed to initialize security drivers"
 msgstr "Epäktiivisten verkkojen luettelointi epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to initialize storage pool '%s': %s"
-msgstr "Liitäntätilastojen haku epäonnistui %s %s"
+msgstr "Tallennustilan varannon %s %s alustaminen epäonnistui"
 
 #, fuzzy
 msgid "Failed to inquire lock"
@@ -7197,7 +7197,7 @@ msgstr "Aktiivisten verkkojen luettelointi epäonnistui"
 
 #, c-format
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
-msgstr ""
+msgstr "Vcpu:den listaaminen toimialueelle '%d' epäonnistui libxenlightilla"
 
 #. there was an error during the call
 #, fuzzy
@@ -7566,9 +7566,9 @@ msgstr "Liitäntätilastojen haku epäonnistui %s %s"
 msgid "Failed to query numad for the advisory nodeset"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to re-attach PCI device: %s"
-msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
+msgstr "PCI-laitteen %s uudelleenliittäminen epäonnistui"
 
 #, c-format
 msgid "Failed to re-attach device %s"
@@ -7614,9 +7614,9 @@ msgstr "Tiedostoa'%s' ei voitu lukea"
 msgid "Failed to read from signal pipe"
 msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read pid file %s"
-msgstr "asetustiedoston %s lukeminen epäonnistui"
+msgstr "pid-tiedoston %s lukeminen epäonnistui"
 
 #, c-format
 msgid "Failed to read pidfile %s"
@@ -7664,9 +7664,9 @@ msgstr "Uudelleen yhdistäminen hypervisoriin epäonnistui"
 msgid "Failed to recv file descriptor"
 msgstr "Tiedoston kuvaajan palautus epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to refresh pool %s"
-msgstr "Toimialueen %s palautus epäonnistui"
+msgstr "Varannon %s päivittäminen epäonnistui"
 
 #, fuzzy
 msgid "Failed to register lock failure action"
@@ -7736,9 +7736,9 @@ msgstr "Portin %d varaaminen epäonnistui"
 msgid "Failed to reserve port %zu"
 msgstr "Portin %zu varaaminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reset PCI device: %s"
-msgstr "Laitteen irrottaminen tiedostosta %s epäonnistui"
+msgstr "PCI-laitteen:%s resetointi epäonnistui"
 
 #, c-format
 msgid "Failed to reset device %s"
@@ -7960,7 +7960,7 @@ msgstr "Toimialueen %s tuhoaminen epäonnistui"
 
 #, c-format
 msgid "Failed to set memory for domain '%d' with libxenlight"
-msgstr ""
+msgstr "Muistin asettaminen toimialueelle '%d' epäonnistui libxenlightilla"
 
 #, c-format
 msgid "Failed to set new attached interface name to '%s' in xml document"
@@ -8019,7 +8019,7 @@ msgstr "Verkon %s käynnistäminen epäonnistui"
 
 #, c-format
 msgid "Failed to set vcpus for domain '%d' with libxenlight"
-msgstr "Vcpu:den asettemainen toimialueeseen '%d' epäonnistui libxenlightilla"
+msgstr "Vcpu:den asettaminen toimialueelle '%d' epäonnistui libxenlightilla"
 
 msgid "Failed to setup keepalive on connection\n"
 msgstr "Yhteyden keepalive:n määrittäminen epäonnistui\n"
@@ -8030,7 +8030,7 @@ msgstr "Toimialueen '%d' sammuttaminen libxenlight:lla epäonnistui"
 
 #, c-format
 msgid "Failed to shutdown domain '%s'"
-msgstr ""
+msgstr "Toimialueen '%s' sammutus epäonnistui"
 
 #, c-format
 msgid "Failed to soft reset VM '%s'. Destroying VM"
@@ -8080,9 +8080,9 @@ msgstr "Verkon %s käynnistäminen epäonnistui"
 msgid "Failed to start the nwfilter driver: %s"
 msgstr "Verkon %s käynnistäminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to stat %s"
-msgstr "Toimialueen %s käynnistys epäonnistui"
+msgstr "Tilan %s saanti epäonnistui"
 
 #, fuzzy, c-format
 msgid "Failed to stat storage volume with path '%s'"
@@ -8104,9 +8104,9 @@ msgstr "Toimialieen '%d' keskeyttäminen epäonnistui libxenlightilla"
 msgid "Failed to suspend domain '%s'"
 msgstr "Toimialueen '%s'asettaminen keskeytystilaan epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to symlink device %s to %s"
-msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
+msgstr "%s:n liittäminen %s:een epäonnistui"
 
 #, c-format
 msgid "Failed to take snapshot: %s"
@@ -8144,9 +8144,9 @@ msgstr "Taltion tiivistäminen polussa '%s' 0 tavuun epäonnistui"
 msgid "Failed to unbind PCI device '%s' from %s"
 msgstr "PCI-laitteen '%s' irrotus %s:sta epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to undefine bridge interface %s"
-msgstr "Toimialueen %s määrityksen poistaminen epäonnistui"
+msgstr "Liitännän %s määritysten poistaminen epäonnistui"
 
 #, c-format
 msgid "Failed to undefine domain '%s'"
@@ -8164,9 +8164,9 @@ msgstr "Verkon %s pois määrittäminen epäonnistui"
 msgid "Failed to undefine network filter %s"
 msgstr "Verkkosuodattimen %s määritysten poistaminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to undefine pool %s"
-msgstr "Toimialueen %s määrityksen poistaminen epäonnistui"
+msgstr "Varannon %s määrityksen poistaminen epäonnistui"
 
 #, fuzzy
 msgid "Failed to unescape command line string"
@@ -8179,6 +8179,7 @@ msgstr ""
 #, c-format
 msgid "Failed to unmark domain '%s' as autostarted"
 msgstr ""
+"Toimialueen %s automaattinen käynnistys -merkinnän poistaminen epäonnistui"
 
 #, fuzzy, c-format
 msgid "Failed to unmarshall reply: %s"
@@ -8681,7 +8682,7 @@ msgstr ""
 
 #, c-format
 msgid "Group %s doesn't exist"
-msgstr ""
+msgstr "Ryhmää '%s' ei ole olemassa"
 
 msgid ""
 "Grouped commands:\n"
@@ -9642,9 +9643,9 @@ msgstr "virheellinen toimialueosoitin kohteessa"
 msgid "Invalid domain snapshot: %s"
 msgstr "virheellinen toimialueosoitin kohteessa %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid domain state %s"
-msgstr "virheellinen toimialueosoitin kohteessa %s"
+msgstr "Virheellinen toimialueen tila: %s"
 
 #, fuzzy
 msgid "Invalid domain supplied"
@@ -11863,7 +11864,7 @@ msgstr "Verkkosuodatinnan %s XML-määritystä muokattu.\n"
 
 #, c-format
 msgid "Network filter %s XML configuration not changed.\n"
-msgstr ""
+msgstr "Verkkosuodattimen %s XML-asetuksia ei muokattu.\n"
 
 #, fuzzy, c-format
 msgid "Network filter %s defined from %s\n"
@@ -12120,7 +12121,7 @@ msgstr ""
 
 #, c-format
 msgid "No domain with UUID %s"
-msgstr ""
+msgstr "Ei toimialuetta UUID:llä %s"
 
 #, c-format
 msgid "No domain with matching ID '%d'"
@@ -12984,7 +12985,7 @@ msgid "Parameter 'min_guarantee' not supported by QEMU."
 msgstr ""
 
 msgid "Parent"
-msgstr ""
+msgstr "Vanhemmat"
 
 #, c-format
 msgid ""
@@ -12997,7 +12998,7 @@ msgid "Parent device %s is not capable of vport operations"
 msgstr ""
 
 msgid "Parent:"
-msgstr ""
+msgstr "Vanhemmat:"
 
 #, c-format
 msgid "Parsed JSON reply '%s' isn't an object"
@@ -13107,10 +13108,9 @@ msgid "Pin domain VCPUs to host physical CPUs."
 msgstr ""
 "Kiinnitä toimialueen virtuaaliprosessorit isännän fyysisiin prosessoreihin."
 
-#, fuzzy
 msgid "Pin domain emulator threads to host physical CPUs."
 msgstr ""
-"Kiinnitä toimialueen virtuaaliprosessorit isännän fyysisiin prosessoreihin."
+"Kiinnitä toimialueen emulaattorisäikeet isännän fyysisiin prosessoreihin."
 
 #, c-format
 msgid "Plugin %s not accessible"
@@ -13125,7 +13125,7 @@ msgstr ""
 
 #, c-format
 msgid "Pool %s XML configuration edited.\n"
-msgstr ""
+msgstr "Varannon %s XML-asetuksia muokattu.\n"
 
 #, c-format
 msgid "Pool %s XML configuration not changed.\n"
@@ -13151,9 +13151,9 @@ msgstr "Varanto %s määritetty\n"
 msgid "Pool %s defined from %s\n"
 msgstr "Toimialue %s määritetty tiedostosta %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s deleted\n"
-msgstr "Toimialue %s tuhottu\n"
+msgstr "Varanto %s tuhottu\n"
 
 #, fuzzy, c-format
 msgid "Pool %s destroyed\n"
@@ -13163,9 +13163,9 @@ msgstr "Toimialue %s tuhottu\n"
 msgid "Pool %s has been undefined\n"
 msgstr "Toimialueen %s määritys on poistettu\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s marked as autostarted\n"
-msgstr "Toimialue %s merkitty automaattisesti käynnistyväksi\n"
+msgstr "Varanto %s merkitty automaattisesti käynnistetyksi\n"
 
 #, fuzzy, c-format
 msgid "Pool %s refreshed\n"
@@ -13717,9 +13717,8 @@ msgstr "Palauttaa verkon perustiedot"
 msgid "Returns basic information about the node."
 msgstr "Palauttaa perustietoja solmusta."
 
-#, fuzzy
 msgid "Returns basic information about the storage pool."
-msgstr "Palauttaa perustietoja solmusta."
+msgstr "Palauttaa perustietoja tallennustilan taltiosta."
 
 msgid "Returns basic information about the storage vol."
 msgstr "Palauttaa perustietoja tallennustilan taltiosta."
@@ -16166,7 +16165,7 @@ msgstr ""
 
 #, c-format
 msgid "USB device %s is already in use"
-msgstr ""
+msgstr "USB-laite %s on jo käytössä"
 
 #, c-format
 msgid "USB device %s is in use by driver %s, domain %s"
@@ -16251,7 +16250,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to add bridge %s port %s"
-msgstr ""
+msgstr "%s-sillan porttia %s ei pystytä lisäämään"
 
 msgid "Unable to add epoll fd"
 msgstr ""
@@ -16273,7 +16272,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to add lockspace %s"
-msgstr ""
+msgstr "Lukotilaa %s ei voi lisätä"
 
 #, fuzzy, c-format
 msgid "Unable to add lockspace %s: %s"
@@ -16319,7 +16318,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to allocate lockspace %s"
-msgstr ""
+msgstr "Lukkotilaa %s ei pystytä varaamaan"
 
 #, c-format
 msgid "Unable to allocate x509 credentials: %s"
@@ -16358,9 +16357,8 @@ msgstr ""
 msgid "Unable to bind to UNIX socket path '%s'"
 msgstr ""
 
-#, fuzzy
 msgid "Unable to bind to port"
-msgstr "Verkkoa ei löytynyt"
+msgstr "Ei voida sitoa porttiin"
 
 #, c-format
 msgid "Unable to bind to port %d"
@@ -16446,7 +16444,7 @@ msgid "Unable to clone to check reboot support"
 msgstr ""
 
 msgid "Unable to close"
-msgstr ""
+msgstr "Ei pysty sulkemaan"
 
 #, c-format
 msgid "Unable to close %s"
@@ -16567,9 +16565,9 @@ msgstr "XML:n luonti epäonnistui"
 msgid "Unable to create lock '%s'"
 msgstr "Verkon luominen tiedostosta %s epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create lockspace %s"
-msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
+msgstr "Lukkotilaa %s ei voi luoda"
 
 #, c-format
 msgid ""
@@ -16585,13 +16583,11 @@ msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 msgid "Unable to create migration thread"
 msgstr "asetustiedoston lukeminen epäonnistui"
 
-#, fuzzy
 msgid "Unable to create pipes"
-msgstr "XML:n luonti epäonnistui"
+msgstr "putkien luominen epäonnistui"
 
-#, fuzzy
 msgid "Unable to create rule"
-msgstr "XML:n luonti epäonnistui"
+msgstr "Säännön luominen epäonnistui"
 
 #, fuzzy
 msgid "Unable to create socket"
@@ -16653,7 +16649,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to delete bridge %s"
-msgstr ""
+msgstr "Siltaa %s ei voi poistaa"
 
 #, c-format
 msgid "Unable to delete file %s"
@@ -16854,9 +16850,8 @@ msgstr ""
 msgid "Unable to get ACLs on %s"
 msgstr "toimialueen ”%s” hakeminen epäonnistui"
 
-#, fuzzy
 msgid "Unable to get Capabilities"
-msgstr "ominaisuuksien hakeminen epäonnistui"
+msgstr "Ominaisuuksien hakeminen epäonnistui"
 
 #, fuzzy, c-format
 msgid "Unable to get Console object for domain %s"
@@ -17418,7 +17413,7 @@ msgstr "MAC:n '%s' jäsentäminen epäonnistui"
 
 #, c-format
 msgid "Unable to parse RNG %s: %s"
-msgstr ""
+msgstr "RNG: n %s:%s jäsentäminen epäonnistui"
 
 #, c-format
 msgid "Unable to parse URI %s"
@@ -17462,9 +17457,9 @@ msgstr ""
 msgid "Unable to parse lock state %s"
 msgstr "Lukitustilaa %s ei voida jäsentää"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse lock state %s: %s"
-msgstr "Lohkotilastojen haku epäonnistui %s %s"
+msgstr "Lukitustilaa %s:%s ei voida jäsentää"
 
 msgid "Unable to parse ovs-vsctl output"
 msgstr ""
@@ -17568,9 +17563,9 @@ msgstr "Liitännän tietojen haku epäonnistui"
 msgid "Unable to re-encode message length"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read %s"
-msgstr "Ei voida lukea %s"
+msgstr "'%s':ta ei voi lukea"
 
 #, c-format
 msgid "Unable to read %s for ipv6 forwarding checks"
@@ -17667,7 +17662,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to remove XATTR %s on %s"
-msgstr ""
+msgstr "XATTR: ta %s ei pystytty poistamaan %s:lla"
 
 #, fuzzy, c-format
 msgid "Unable to remove bridge %s"
@@ -17716,9 +17711,9 @@ msgstr "Toimialueen %s palautus epäonnistui"
 msgid "Unable to remove tap device %s"
 msgstr "Laitteen irrottaminen tiedostosta %s epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to rename %s to %s"
-msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
+msgstr "'%s'n uudelleen nimeäminen '%s':ksi ei onnistu"
 
 #, c-format
 msgid "Unable to rename '%s' to '%s'"
@@ -17895,9 +17890,9 @@ msgstr ""
 msgid "Unable to set STP on %s on this platform"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set XATTR %s on %s"
-msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
+msgstr "XATTR: ta %s ei pysty asettamaan %s:lla"
 
 msgid "Unable to set agent close-on-exec flag"
 msgstr ""
@@ -18107,9 +18102,9 @@ msgstr ""
 msgid "Unable to watch host console PTY"
 msgstr "Yhdistä vieraskonsoliin"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write %s"
-msgstr "mkdir %s epäonnistui"
+msgstr "Ei voi kirjoittaa %s:lle"
 
 #, fuzzy, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -18119,9 +18114,9 @@ msgstr "%s: lokitiedostoon kirjoitus epäonnistui: %s"
 msgid "Unable to write to %s"
 msgstr "Ei voi kirjoittaa %s:lle"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to '%s'"
-msgstr "verkon ”%s” hakeminen epäonnistui"
+msgstr "Ei voi kirjoittaa %s:lle"
 
 #, fuzzy
 msgid "Unable to write to agent"
@@ -18311,7 +18306,7 @@ msgstr "Odottamaton viestityyppi %u"
 
 #, c-format
 msgid "Unexpected message type: %d"
-msgstr ""
+msgstr "Odottamaton viestityyppi %d"
 
 #, fuzzy, c-format
 msgid "Unexpected network port type %s"
@@ -18345,7 +18340,7 @@ msgstr ""
 
 #, c-format
 msgid "Unexpected rule protocol %d"
-msgstr ""
+msgstr "Odottamaton protokolla %d"
 
 #, c-format
 msgid "Unexpected server name '%s' during restart"
@@ -18391,13 +18386,13 @@ msgstr "Tuntematon suorittimen ominaisuus %s"
 msgid "Unknown CPU mode: %X"
 msgstr "Tuntematon suorittimen tila: %X"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown CPU mode: %s"
-msgstr "Tuntematon julkaisu: %s"
+msgstr "Tuntematon suorittimen tila: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown CPU model %s"
-msgstr "Tuntematon julkaisu: %s"
+msgstr "Tuntematon suorittimen malli %s"
 
 #, c-format
 msgid "Unknown CPU vendor %s"
@@ -18506,9 +18501,9 @@ msgstr "tuntematon komento: ”%s”"
 msgid "Unknown controller type %d"
 msgstr "Tuntematon ohjaintyyppi %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown controller type '%s'"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
+msgstr "Tuntematon ohjaintyyppi %s"
 
 #, fuzzy, c-format
 msgid "Unknown core size '%s'"
@@ -18801,9 +18796,8 @@ msgstr ""
 msgid "Unrecognized value in %s: %s"
 msgstr ""
 
-#, fuzzy
 msgid "Unsafe migration"
-msgstr "siirto käytettäessä"
+msgstr "Epäturvallinen siirto"
 
 #, c-format
 msgid "Unsafe migration: %s"
@@ -18957,7 +18951,7 @@ msgid "Unsupported controller type: %s"
 msgstr "ei tuettu arkkitehtuuri: %s"
 
 msgid "Unsupported device type"
-msgstr ""
+msgstr "Laitetyyppiä ei tueta"
 
 #, c-format
 msgid "Unsupported device type %d"
@@ -19007,9 +19001,9 @@ msgstr "Isäntälaitetila %s ei tuettu"
 msgid "Unsupported host device type %s"
 msgstr "Isäntälaitetyyppi %s ei tuettu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported hostdev mode %s"
-msgstr "ei tuettu arkkitehtuuri: %s"
+msgstr "hostdev-tyyppi %s ei tuettu"
 
 #, c-format
 msgid "Unsupported hostdev type %s"
@@ -19538,7 +19532,7 @@ msgid "XML node doesn't contain text, expecting an %s value"
 msgstr "XML-solmu ei sisällä tekstiä, odottaen arvoa %s"
 
 msgid "XML node doesn't contain text, expecting an xsd:dateTime value"
-msgstr ""
+msgstr "XML-solmu ei sisällä tekstiä, odottaen xsd:dateTime arvoa"
 
 #, c-format
 msgid "XPath evaluation of response for call to '%s' failed"
@@ -20803,11 +20797,11 @@ msgstr ""
 
 #, c-format
 msgid "cannot create config directory '%s'"
-msgstr ""
+msgstr "Asetushakemistoa '%s' ei voitu luoda"
 
 #, c-format
 msgid "cannot create directory %s"
-msgstr ""
+msgstr "Hakemistoa '%s' ei voitu luoda"
 
 #, c-format
 msgid "cannot create file %s"
@@ -20819,7 +20813,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot create log directory %s"
-msgstr ""
+msgstr "Lokihakemistoa '%s' ei voitu luoda"
 
 msgid "cannot create logger for libxenlight, disabling driver"
 msgstr ""
@@ -20840,7 +20834,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot create state directory '%s'"
-msgstr ""
+msgstr "Statushakemistoa '%s' ei voitu luoda"
 
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
@@ -21327,9 +21321,9 @@ msgstr ""
 msgid "cannot obtain CPU freq"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s"
-msgstr "Toimialuetta ei löytynyt: %s"
+msgstr "'%s':ta ei voi avata"
 
 #, c-format
 msgid "cannot open '%s'"
@@ -21579,7 +21573,7 @@ msgstr ""
 msgid "cannot query both live and config at once"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot read %s"
 msgstr "Ei voida lukea %s"
 
@@ -21614,9 +21608,9 @@ msgstr ""
 msgid "cannot read cputime for domain %d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot read dir '%s'"
-msgstr "Ei voida lukea %s"
+msgstr "Ei voida lukea hakemistoa %s"
 
 #, fuzzy, c-format
 msgid "cannot read domain image '%s'"
@@ -21736,7 +21730,7 @@ msgid "cannot retrieve vcpu information for inactive domain"
 msgstr "ei voi noutaa vcpu-tietoja passiivisesta toimialueesta"
 
 msgid "cannot revert snapshot of running domain"
-msgstr ""
+msgstr "ei voi palauttaa käynnissä olevan toimialueen tilannevedosta"
 
 #, c-format
 msgid "cannot save file '%s'"
@@ -21847,7 +21841,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot stat '%s'"
-msgstr ""
+msgstr "Ei voida 'stat' %s"
 
 #, c-format
 msgid "cannot stat fd %d"
@@ -21859,7 +21853,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot stat path '%s'"
-msgstr ""
+msgstr "Polkua '%s' ei voi statustaa"
 
 #, c-format
 msgid "cannot stat tap fd %d"
@@ -22067,7 +22061,7 @@ msgid "change the current directory"
 msgstr ""
 
 msgid "changed"
-msgstr ""
+msgstr "vaihdettu"
 
 msgid "changes the password of the specified user inside the domain"
 msgstr ""
@@ -22183,9 +22177,9 @@ msgid "child didn't write error (status=%d)"
 msgstr ""
 
 #. in case of EACCES, the parent will retry
-#, fuzzy, c-format
+#, c-format
 msgid "child failed to create directory '%s'"
-msgstr "verkon ”%s” hakeminen epäonnistui"
+msgstr "hakemiston '%s' luonti lapselta epäonnistui"
 
 #, c-format
 msgid "child process failed to create file '%s'"
@@ -22756,7 +22750,7 @@ msgid "could not parse XML"
 msgstr ""
 
 msgid "could not parse arguments"
-msgstr ""
+msgstr "Argumentteja ei voitu jäsentää"
 
 #, fuzzy, c-format
 msgid "could not parse read bytes sec %s"
@@ -23037,7 +23031,7 @@ msgid "curl_easy_perform() returned an error: %s (%d) : %s"
 msgstr ""
 
 msgid "current"
-msgstr ""
+msgstr "nykyinen"
 
 msgid "current bridge device name"
 msgstr ""
@@ -23288,9 +23282,9 @@ msgstr ""
 msgid "device %s iommu_group symlink %s has invalid group number %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "device %s is already in use"
-msgstr "toimialue %s on jo olemassa"
+msgstr "laite %s on jo käytössä"
 
 #, c-format
 msgid "device %s is not a PCI device"
@@ -23298,7 +23292,7 @@ msgstr ""
 
 #, c-format
 msgid "device %s too big for destination"
-msgstr ""
+msgstr "laite %s on liian suuri määränpäähän"
 
 #, c-format
 msgid "device '%s' in network '%s' is not an SR-IOV Virtual Function"
@@ -24736,9 +24730,9 @@ msgstr "asetustiedoston %s lukeminen epäonnistui"
 msgid "failed recvfd for child creating '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to abort job for disk '%s'"
-msgstr "verkon ”%s” hakeminen epäonnistui"
+msgstr "työn keskeyttäminen levylle %s epäonnistui"
 
 #, c-format
 msgid "failed to access '%s'"
@@ -24898,9 +24892,9 @@ msgstr "sisältöä ei voitu tallentaa"
 msgid "failed to create directory '%s'"
 msgstr "hakemiston '%s' luonti epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create dump dir '%s': %s"
-msgstr "Toimialueen %s muistivedoksen tallentaminen tiedostoon %s epäonnistui"
+msgstr "dumppaushakemiston '%s' luominen epäonnistui: %s"
 
 #, fuzzy, c-format
 msgid "failed to create image file '%s'"
@@ -24910,9 +24904,8 @@ msgstr "toimialueen ”%s” hakeminen epäonnistui"
 msgid "failed to create include file"
 msgstr "lokitiedoston kirjoitus epäonnistui"
 
-#, fuzzy
 msgid "failed to create json"
-msgstr "XML:n luonti epäonnistui"
+msgstr "jsonin luonti epäonnistui"
 
 #, c-format
 msgid "failed to create lib dir '%s': %s"
@@ -24922,9 +24915,9 @@ msgstr "lib-hakemiston '%s' luominen epäonnistui: %s"
 msgid "failed to create libssh channel: %s"
 msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create log dir '%s': %s"
-msgstr "%s: lokitiedostoon kirjoitus epäonnistui: %s"
+msgstr "loki-hakemiston '%s' luominen epäonnistui: %s"
 
 #, c-format
 msgid "failed to create logfile %s"
@@ -24934,9 +24927,9 @@ msgstr "lokitiedoston luominen epäonnistui %s"
 msgid "failed to create profile"
 msgstr "lokitiedoston kirjoitus epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create save dir '%s': %s"
-msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
+msgstr "säästöhakemiston '%s' luominen epäonnistui: %s"
 
 #, fuzzy
 msgid "failed to create socket"
@@ -25047,15 +25040,14 @@ msgstr ""
 msgid "failed to find the real device for the VLAN device '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to finish job for disk %s"
-msgstr "Verkkoa ei löytynyt: %s"
+msgstr "työn tekeminen levylle %s epäonnistui"
 
 #, fuzzy, c-format
 msgid "failed to format image: '%s'"
 msgstr "toimialueen ”%s” hakeminen epäonnistui"
 
-#, fuzzy
 msgid "failed to generate XML"
 msgstr "XML:n luonti epäonnistui"
 
@@ -25221,9 +25213,9 @@ msgstr "liitännän %s tilan saaminen epäonnistui: %s%s%s"
 msgid "failed to get storage pool capabilities"
 msgstr "ominaisuuksien hakeminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get stripe count of RBD image %s"
-msgstr "asetustiedoston kirjoitus epäonnistui: %s"
+msgstr "RBD-levykuvan %s raitayksikön saaminen epäonnistui"
 
 #, fuzzy
 msgid "failed to get sysinfo"
@@ -25261,7 +25253,7 @@ msgstr "kirjastoversion saanti epäonnistui"
 
 #, c-format
 msgid "failed to get the stripe count of RBD image %s"
-msgstr ""
+msgstr "RBD-levykuvan %s raitamäärän saaminen epäonnistui"
 
 #, c-format
 msgid "failed to get the stripe unit of RBD image %s"
@@ -25305,13 +25297,13 @@ msgstr "Epäaktiivisten toimialueiden luettelointi epäonnistui"
 msgid "failed to initialize netcf"
 msgstr "netcf:n valmistelu epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to iterate RBD image '%s'"
-msgstr "toimialueen ”%s” hakeminen epäonnistui"
+msgstr "RBD-levykuvan '%s' iteroiminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to iterate RBD snapshot %s@%s"
-msgstr "Liitäntätilastojen haku epäonnistui %s %s"
+msgstr "RBD-tilannevedoksen iteroiminen epäonnistui %s@%s"
 
 #, c-format
 msgid "failed to list host interfaces: %s%s%s"
@@ -25446,13 +25438,12 @@ msgstr "asetustiedoston %s jäsentäminen epäonnistui"
 msgid "failed to parse int: '%s'"
 msgstr "int:n jäsentäminen epäonnistui: '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse integer: '%s'"
-msgstr "verkon ”%s” hakeminen epäonnistui"
+msgstr "integerin %s jäsentäminen epäonnistui"
 
-#, fuzzy
 msgid "failed to parse json"
-msgstr "sisältöä ei voitu tallentaa"
+msgstr "jsonin jäsentäminen epäonnistui"
 
 #, c-format
 msgid "failed to parse msr[%zu]"
@@ -25557,13 +25548,13 @@ msgstr "ei voitu avata tiedostoa"
 msgid "failed to preserve fd %d"
 msgstr "fd %d:n säilyttäminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to protect RBD snapshot %s@%s"
-msgstr "Lohkotilastojen haku epäonnistui %s %s"
+msgstr "RBD-tilannevedoksen suojelu epäonnistui %s@%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to query job for disk %s"
-msgstr "Verkon %s tuhoaminen epäonnistui"
+msgstr "työn kysely levylle %s epäonnistui"
 
 #, fuzzy
 msgid "failed to re-init netcf"
@@ -25628,9 +25619,8 @@ msgstr "asetustiedoston %s lukeminen epäonnistui"
 msgid "failed to receive device from udev monitor"
 msgstr "Laitteen irrottaminen tiedostosta %s epäonnistui"
 
-#, fuzzy
 msgid "failed to regenerate genid"
-msgstr "uuid luonti epäonnistui"
+msgstr "genid:n uudelleenluonti epäonnistui"
 
 #, fuzzy
 msgid "failed to register udev interface driver"
@@ -25716,9 +25706,8 @@ msgstr "fEtsiminen lokitiedostosta %s epäonnistui"
 msgid "failed to seek to end of %s"
 msgstr "toimialueen ”%s” hakeminen epäonnistui"
 
-#, fuzzy
 msgid "failed to serialize S-Expr"
-msgstr "ei voitu avata tiedostoa"
+msgstr "S-Expr:n sarjallisuudeksi muutamien epäonnistui"
 
 #, c-format
 msgid "failed to serialize S-Expr: %s"
@@ -25736,9 +25725,9 @@ msgstr "toimialueen ”%s” hakeminen epäonnistui"
 msgid "failed to set checkpoint '%s' as current"
 msgstr "toimialueen ”%s” hakeminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to set close-on-exec flag on %s"
-msgstr "asetustiedoston %s jäsentäminen epäonnistui"
+msgstr "close-on-exec flag '%s' asettaminen epäonnistui"
 
 msgid "failed to set cpuset.cpus in cgroup for emulator threads"
 msgstr ""
@@ -25787,13 +25776,13 @@ msgstr "lokitiedoston kirjoitus epäonnistui"
 msgid "failed to stat the RADOS pool '%s'"
 msgstr "Verkon %s käynnistäminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat the RBD image %s"
-msgstr "Toimialueen %s käynnistys epäonnistui"
+msgstr "RBD-levykuvan %s statustaminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat the RBD image '%s'"
-msgstr "Toimialueen %s käynnistys epäonnistui"
+msgstr "RBD-levykuvan '%s' statustaminen epäonnistui"
 
 #, c-format
 msgid "failed to store %lld to %s"
@@ -25974,9 +25963,8 @@ msgstr ""
 msgid "file '%s' for disk '%s' requires use of external snapshot mode"
 msgstr ""
 
-#, fuzzy
 msgid "file containing XML CPU descriptions"
-msgstr "tiedosto, joka sisältää XML-muotoisen toimialueen kuvauksen"
+msgstr "tiedosto, joka sisältää XML-muotoisen suorittimen kuvauksen"
 
 msgid "file containing an XML CPU description"
 msgstr "tiedosto, joka sisältää XML-muotoisen suorittimen kuvauksen"
@@ -25994,9 +25982,8 @@ msgstr "tiedosto, joka sisältää XML-muotoisen liitäntäkuvauksen"
 msgid "file containing an XML network description"
 msgstr "tiedosto, joka sisältää XML-muotoisen verkkokuvauksen"
 
-#, fuzzy
 msgid "file containing an XML network filter binding description"
-msgstr "tiedosto, joka sisältää XML-muotoisen verkkokuvauksen"
+msgstr "tiedosto, joka sisältää XML-muotoisen verkkosuodatinkuvauksen"
 
 msgid "file containing an XML network filter description"
 msgstr "tiedosto, joka sisältää XML-muotoisen verkkosuodatinkuvauksen"
@@ -26772,10 +26759,10 @@ msgid "iSCSI initiator IQN not supported with this QEMU binary"
 msgstr ""
 
 msgid "iSCSI storage pool does not support volume creation"
-msgstr ""
+msgstr "iSCSI tallennusvaranto ei tue taltion luomista"
 
 msgid "iSCSI storage pool does not support volume deletion"
-msgstr ""
+msgstr "iSCSI tallennusvaranto ei tue taltion poistoa"
 
 msgid "iSCSI storage pool does not support volume wiping"
 msgstr ""
@@ -27400,7 +27387,7 @@ msgstr ""
 
 #, c-format
 msgid "invalid argument: %s"
-msgstr ""
+msgstr "virheellinen argumentti: %s"
 
 msgid "invalid ats value"
 msgstr ""
@@ -27522,9 +27509,9 @@ msgstr "virheellinen toimialueosoitin kohteessa"
 msgid "invalid domain pointer in %s"
 msgstr "virheellinen toimialueosoitin kohteessa %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid domain state '%s'"
-msgstr "virheellinen toimialueosoitin kohteessa %s"
+msgstr "virheellinen toimialueen tila: %s"
 
 #, fuzzy, c-format
 msgid "invalid domain state reason '%s'"
@@ -28294,7 +28281,7 @@ msgid "libxenlight failed to attach disk '%s'"
 msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
 
 msgid "libxenlight failed to attach network device"
-msgstr ""
+msgstr "libxenlight ei voinut liittää verkkolaitetta"
 
 msgid "libxenlight failed to attach pci device "
 msgstr "libxenlight ei voinut liittää PCI-laitetta "
@@ -28322,9 +28309,8 @@ msgstr ""
 msgid "libxenlight failed to detach disk '%s'"
 msgstr "toimialueen ”%s” hakeminen epäonnistui"
 
-#, fuzzy
 msgid "libxenlight failed to detach network device"
-msgstr "verkon ”%s” hakeminen epäonnistui"
+msgstr "libxenlight ei voinut irrottaa verkkolaitetta"
 
 msgid "libxenlight failed to detach pci device "
 msgstr "libxenlight ei voinut irrottaa PCI-laitetta "
@@ -28545,9 +28531,8 @@ msgstr ""
 msgid "list of domains to get stats for"
 msgstr ""
 
-#, fuzzy
 msgid "list only active domains"
-msgstr "luetteloi epäaktiiviset toimialueet"
+msgstr "luetteloi vain aktiiviset toimialueet"
 
 msgid "list only checkpoints that are not leaves (with children)"
 msgstr ""
@@ -29945,9 +29930,8 @@ msgstr ""
 msgid "missing name from disk snapshot element"
 msgstr ""
 
-#, fuzzy
 msgid "missing name information"
-msgstr "ytimen tietoja puuttuu"
+msgstr "nimitietoja puuttuu"
 
 #, fuzzy, c-format
 msgid "missing name information in %s"
@@ -30719,9 +30703,9 @@ msgstr ""
 msgid "network '%s' is already defined with uuid %s"
 msgstr "verkko %s on jo olemassa uuidllä %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network '%s' is not active"
-msgstr "verkko %s on jo olemassa"
+msgstr "verkko %s ei ole aktiivinen"
 
 #, c-format
 msgid ""
@@ -30763,9 +30747,8 @@ msgstr ""
 msgid "network filter config filename '%s' does not match name '%s'"
 msgstr ""
 
-#, fuzzy
 msgid "network filter information in XML"
-msgstr "verkkotiedot XML-muodossa"
+msgstr "verkkosuodatintiedot XML-muodossa"
 
 #, fuzzy
 msgid "network filter name or uuid"
@@ -30810,7 +30793,7 @@ msgid "network port has no mac"
 msgstr ""
 
 msgid "network port has no owner UUID"
-msgstr ""
+msgstr "verkkoportilla ei ole omistajan UUID:tä"
 
 msgid "network port has no owner name"
 msgstr "verkkoportilla ei ole omistajan nimeä"
@@ -31850,9 +31833,9 @@ msgstr ""
 msgid "operation aborted"
 msgstr "toimenpide peruttu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "operation aborted: %s"
-msgstr "toimenpide epäonnistui: %s"
+msgstr "toimenpide peruttu: %s"
 
 msgid "operation failed"
 msgstr "toimenpide epäonnistui"
@@ -32808,7 +32791,7 @@ msgstr ""
 
 #, c-format
 msgid "rate %s too big for destination"
-msgstr ""
+msgstr "nopeus %s on liian suuri määränpäähän"
 
 msgid "rawio can be used only with device='lun'"
 msgstr ""
@@ -33340,9 +33323,9 @@ msgstr "tallennetaan"
 msgid "saving domain '%s' failed to allocate space for metadata"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "saving domain '%s' to '%s': open failed"
-msgstr "tallenna toimialueen tila tiedostoon"
+msgstr "tallentaessa toimialueen %s tila tiedostoon %s: avaus epäonnistui"
 
 #, c-format
 msgid "saving domain '%s' to '%s': write failed"
@@ -33652,13 +33635,13 @@ msgstr ""
 msgid "shmem element must contain 'name' attribute"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "shmem model '%s' does not support size setting"
-msgstr "komento ”%s” ei tue valitsinta --%s"
+msgstr "shmem malli ”%s” ei tue koon asettamista"
 
-#, fuzzy, c-format
+#, c-format
 msgid "shmem model '%s' doesn't support msi"
-msgstr "komento ”%s” ei tue valitsinta --%s"
+msgstr "shmem malli ”%s” ei tue msi:tä"
 
 #, c-format
 msgid "shmem model '%s' is not supported by this QEMU binary"
@@ -34034,9 +34017,9 @@ msgid ""
 "storage file reading is not supported for storage type %s (protocol: %s)"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "storage format '%s' does not support backing store"
-msgstr "komento ”%s” ei tue valitsinta --%s"
+msgstr "varaston alustus ”%s” ei tue varaston varmistamista"
 
 msgid "storage format 'fat' is supported only with 'dir' storage type"
 msgstr ""
@@ -34057,9 +34040,9 @@ msgstr ""
 msgid "storage pool '%s' is active"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "storage pool '%s' is already active"
-msgstr "Toimialue on jo aktiivinen"
+msgstr "varasto joukkue %s on jo aktiivinen"
 
 #, c-format
 msgid "storage pool '%s' is not active"
@@ -34084,7 +34067,7 @@ msgid "storage pool does not support encrypted volumes"
 msgstr ""
 
 msgid "storage pool does not support vol deletion"
-msgstr ""
+msgstr "tallennusvaranto ei tue taltion poistamista"
 
 msgid "storage pool does not support volume creation"
 msgstr "tallennusvaranto ei tue taltion luomista"
@@ -34096,10 +34079,10 @@ msgid "storage pool doesn't support volume download"
 msgstr ""
 
 msgid "storage pool doesn't support volume upload"
-msgstr ""
+msgstr "tallennusvaranto ei tue taltion lataamista"
 
 msgid "storage pool doesn't support volume wiping"
-msgstr ""
+msgstr "tallennusvaranto ei tue taltion pyyhkimistä"
 
 #, c-format
 msgid "storage pool event callback %d not registered"
@@ -34749,9 +34732,9 @@ msgstr "liian monta rekisteröityä ajuria"
 msgid "too many keycodes"
 msgstr "liian monta levyä"
 
-#, fuzzy, c-format
+#, c-format
 msgid "too many memory stats requested: %d > %d"
-msgstr "liian monta rekisteröityä ajuria kohteessa %s"
+msgstr "liian monta muisti tilastoa pyydetty: %d > %d"
 
 #, c-format
 msgid "too many parameters '%d' for limit '%d'"
@@ -35145,7 +35128,7 @@ msgstr "ei voi käyttää laitetta %s\n"
 
 #, c-format
 msgid "unable to access disk %s\n"
-msgstr ""
+msgstr "ei pääse levylle %s\n"
 
 #, c-format
 msgid "unable to add SSH host key for host '%s': %s"
@@ -35178,17 +35161,16 @@ msgstr ""
 msgid "unable to close %s"
 msgstr "%s:ta ei voida sulkea"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to close file %s"
-msgstr "ei voitu avata tiedostoa"
+msgstr "ei voitu sulkea tiedostoa %s"
 
-#, fuzzy
 msgid "unable to close pipe"
-msgstr "ei voitu avata tiedostoa"
+msgstr "putkea ei voida sulkea"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to connect to server at '%s:%s'"
-msgstr "Xen Storeen %s yhdistäminen epäonnistui"
+msgstr "ei pysty yhdistämään palvelimeen %s:%s"
 
 #, c-format
 msgid "unable to control COW flag on '%s', not btrfs"
@@ -35198,9 +35180,9 @@ msgstr ""
 msgid "unable to create hugepage path %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to create rundir %s: %s"
-msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
+msgstr "ei pysty luomaan ajohakemistoa %s: %s"
 
 #, fuzzy, c-format
 msgid "unable to create selinux context for: %s"
@@ -35330,9 +35312,8 @@ msgstr ""
 msgid "unable to get monitor count"
 msgstr "verkon ”%s” hakeminen epäonnistui"
 
-#, fuzzy
 msgid "unable to get node capabilities"
-msgstr "ominaisuuksien hakeminen epäonnistui"
+msgstr "solmun ominaisuuksien hakeminen epäonnistui"
 
 #, fuzzy
 msgid "unable to get numa affinity"
@@ -35363,9 +35344,9 @@ msgstr ""
 msgid "unable to handle disk requests in snapshot"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to handle monitor type: %s"
-msgstr "Ei voi muuttaa MaxMemorySizeä"
+msgstr "ei pysty käsittelemään monitorityyppiä: %s"
 
 msgid "unable to init mutex"
 msgstr ""
@@ -35408,15 +35389,15 @@ msgstr "%s:ta ei voi jäsentää"
 
 #, c-format
 msgid "unable to parse FD: %s"
-msgstr ""
+msgstr "ei voi jäsentää FD: %s"
 
 #, c-format
 msgid "unable to parse URI scheme '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to parse URI: %s"
-msgstr "URIn haku epäonnistui"
+msgstr "URI:n %s jäsentäminen epäonnistui"
 
 #, c-format
 msgid "unable to parse blkio device '%s' '%s'"
@@ -35426,9 +35407,9 @@ msgstr ""
 msgid "unable to parse diskspec: %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to parse json capabilities '%s'"
-msgstr "ominaisuuksien hakeminen epäonnistui"
+msgstr "ei pysty jäsentämään json kykyjä '%s'"
 
 #, fuzzy, c-format
 msgid "unable to parse json file '%s'"
@@ -35489,9 +35470,9 @@ msgstr "Laitteen irrottaminen tiedostosta %s epäonnistui"
 msgid "unable to read vmware log file"
 msgstr "lokitiedoston kirjoitus epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to read: %s"
-msgstr "Ei voida lukea %s"
+msgstr "'%s':ta ei voi lukea"
 
 msgid "unable to register monitor events"
 msgstr ""
@@ -35583,13 +35564,13 @@ msgstr ""
 msgid "unable to stat %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to stat block copy target '%s'"
-msgstr "Lohkotilastojen haku epäonnistui %s %s"
+msgstr "Lohkotilastojen haku epäonnistui %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to stat for disk %s: %s"
-msgstr "Verkon %s käynnistäminen epäonnistui"
+msgstr "ei pysty tilastoimaan levyä %s: %s"
 
 #, fuzzy, c-format
 msgid "unable to stat: %s"
@@ -35632,7 +35613,7 @@ msgstr "lokitiedoston kirjoitus epäonnistui"
 
 #, c-format
 msgid "unable write to %s"
-msgstr ""
+msgstr "Ei voi kirjoittaa %s:lle"
 
 #, fuzzy
 msgid "unbridge a network device"
@@ -35681,9 +35662,9 @@ msgstr ""
 msgid "unexpected %s URI path '%s', try %s:///system"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected %s action: %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamatonta %s toimintaa: %d"
 
 #, fuzzy, c-format
 msgid "unexpected DateTime format: '%s'"
@@ -35706,13 +35687,13 @@ msgstr ""
 msgid "unexpected Xen URI path '%s', try xen:///system"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected accessmode %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton pääsytila %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected actual net type %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton todellinen verkon tyyppi %d"
 
 msgid "unexpected address type for fdc disk"
 msgstr ""
@@ -35741,41 +35722,41 @@ msgstr ""
 msgid "unexpected binding %s already exists"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected boot device type %d"
-msgstr "kohdelaitetyyppi"
+msgstr "Odottamaton käynnistyslaitetyyppi %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected bus type '%d'"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton väylätyyppi %d"
 
 #, fuzzy, c-format
 msgid "unexpected capability feature '%s'"
 msgstr "odottamatonta dataa ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected char device type %d"
-msgstr "kohdelaitetyyppi"
+msgstr "Odottamaton merkki laitetyyppi %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected char type %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton merkki tyyppi %d"
 
 #, fuzzy
 msgid "unexpected chr device type"
 msgstr "kohdelaitetyyppi"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected clock offset '%d'"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton kellon vinoutuma %d"
 
 #, fuzzy
 msgid "unexpected code path"
 msgstr "odottamatonta dataa ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected codec type %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton codec tyyppi %d"
 
 #, c-format
 msgid "unexpected controller type %d"
@@ -35793,17 +35774,17 @@ msgstr "odottamatonta dataa ”%s”"
 msgid "unexpected disk backing store format %d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected disk bus %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton levyväylä %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected disk device %d"
-msgstr "levylaite ei tuettu"
+msgstr "odottamaton levylaite %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected disk type %d"
-msgstr "levytyyppi ei tuettu"
+msgstr "Odottamaton levytyyppi %d"
 
 #, fuzzy, c-format
 msgid "unexpected disk type %s"
@@ -35813,9 +35794,9 @@ msgstr "odottamatonta dataa ”%s”"
 msgid "unexpected domain %s already exists"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected domain type %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton toimialueen tyyppi %d"
 
 #, c-format
 msgid "unexpected element <%s>, expecting <%s>, while updating network '%s'"
@@ -35828,9 +35809,9 @@ msgstr "odottamatonta dataa ”%s”"
 msgid "unexpected encryption format"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected exit status %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton exit tila %d"
 
 #, fuzzy, c-format
 msgid "unexpected feature '%s'"
@@ -35848,77 +35829,76 @@ msgstr ""
 msgid "unexpected hostdev driver name type %d "
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected hostdev mode %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton hostdev moodi %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected hostdev type %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton hostdev tyyppi %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected hub type %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton hubityyppi %d"
 
 #, c-format
 msgid "unexpected input bus type %d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected input model %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton syötemalli %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected input type %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton syötetyyppi %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected interface type %d"
-msgstr "verkkoliitännän tyyppi"
+msgstr "odottamaton liitäntätyyppi %d"
 
 #, fuzzy, c-format
 msgid "unexpected iscsi volume name '%s'"
 msgstr "odottamatonta dataa ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected lifecycle action %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton elinkaaritoiminto %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
 msgstr ""
 
-#, fuzzy
 msgid "unexpected message type"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "Odottamaton viestityyppi"
 
 #, fuzzy, c-format
 msgid "unexpected migration status in %s"
 msgstr "odottamatonta dataa ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected mode 0x%x for %s"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton moodi 0x%x for %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected model name value %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton mallinimen arvo %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected model type %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton malli tyyppi %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected multidevs %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamattimia monilaitteita %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected name value %d"
-msgstr "odotetaan arvoa"
+msgstr "odottamaton nimiarvo %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected net type %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton verkkotyyppi %d"
 
 #, c-format
 msgid "unexpected number of snapshots < %u"
@@ -36003,25 +35983,25 @@ msgstr ""
 msgid "unexpected security label type '%s'"
 msgstr "odottamatonta dataa ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected smartcard type %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton älykortin tyyppi %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected smbios mode %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton smbios moodi %d"
 
 #, fuzzy, c-format
 msgid "unexpected snapshot state: %s"
 msgstr "odottamatonta dataa ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected sound model %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton äänimalli %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected source mode %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton äänimoodi %d"
 
 #, fuzzy, c-format
 msgid "unexpected storage mode for '%s'"
@@ -36039,21 +36019,21 @@ msgstr "odottamatonta dataa ”%s”"
 msgid "unexpected sysinfo type model %d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected timer mode %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton ajastinmoodi %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected timer name %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton ajastinnimi %d"
 
 #, c-format
 msgid "unexpected timer tickpolicy %d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected timer track %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton ajastin träkki %d"
 
 msgid "unexpected transport in <domainbackup>"
 msgstr ""
@@ -36082,20 +36062,20 @@ msgstr ""
 msgid "unexpected value %s for on_reboot"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected video model %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton videomalli %d"
 
 msgid "unexpected volume encryption secret type"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected watchdog action %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton vahtikoiran toiminto %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected watchdog model %d"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "odottamaton vahtikoiran malli %d"
 
 #, c-format
 msgid "unexpected zero/negative length request %lld"
@@ -36131,25 +36111,25 @@ msgstr ""
 msgid "unknown"
 msgstr "tuntematon"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown %s action: %s"
-msgstr "tuntematon kone %s"
+msgstr "tuntematon  %s toiminto: %s"
 
 #, fuzzy, c-format
 msgid "unknown 'unknown' value '%s'"
 msgstr "tuntematon komento: ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown CPU feature %s"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
+msgstr "Tuntematon suorittimen ominaisuus %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown CPU feature: %s"
-msgstr "tuntematon arkkitehtuuri: %s"
+msgstr "Tuntematon suorittimen ominaisuus %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown CPU model %s"
-msgstr "tuntematon kone %s"
+msgstr "Tuntematon suorittimen malli %s"
 
 #, fuzzy, c-format
 msgid "unknown CPU register '%s'"
@@ -36230,9 +36210,9 @@ msgstr ""
 msgid "unknown audio type '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown auth type '%s'"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
+msgstr "tuntematon valtuutus tyyppi %s"
 
 #, fuzzy, c-format
 msgid "unknown authentication type %s"
@@ -36354,9 +36334,9 @@ msgstr "tuntematon komento: ”%s”"
 msgid "unknown disk copy_on_read mode '%s'"
 msgstr "tuntematon komento: ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown disk device '%s'"
-msgstr "levylaite ei tuettu"
+msgstr "tuntematon levylaite %s"
 
 #, fuzzy, c-format
 msgid "unknown disk discard mode '%s'"
@@ -36418,9 +36398,9 @@ msgstr ""
 msgid "unknown disk tray status '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown disk type '%s'"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
+msgstr "tuntematon levytyyppi %s"
 
 #, fuzzy, c-format
 msgid "unknown driver detect_zeroes value '%s'"
@@ -36434,13 +36414,13 @@ msgstr "tuntematon arkkitehtuuri: %s"
 msgid "unknown driver name '%s'"
 msgstr "tuntematon arkkitehtuuri: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown drm type '%s' for '%s'"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
+msgstr "tuntematon drm tyyppi '%s'  '%s':lle"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown dumpformat '%d'"
-msgstr "tuntematon komento: ”%s”"
+msgstr "tuntematon dumppausformaatti %d"
 
 #, fuzzy, c-format
 msgid "unknown eim value: %s"
@@ -36671,9 +36651,9 @@ msgstr ""
 msgid "unknown memoryBacking/source/type '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown metadata type '%d'"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
+msgstr "tuntematon metadatan tyyppi %d"
 
 #, c-format
 msgid "unknown migratable value for '%s' host CPU model property"
@@ -36729,9 +36709,9 @@ msgstr "tuntematon komento: ”%s”"
 msgid "unknown parameter '%s'"
 msgstr "tuntematon parametri '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown parameter type: %d"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
+msgstr "Tuntematon parametrityyppi: %d"
 
 #, fuzzy
 msgid "unknown partition type"
@@ -36765,9 +36745,9 @@ msgstr "tuntematon arkkitehtuuri: %s"
 msgid "unknown posix lock value '%s'"
 msgstr "tuntematon komento: ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown procedure: %d"
-msgstr "tuntematon arkkitehtuuri: %s"
+msgstr "tuntematon prosessi: %d"
 
 #, c-format
 msgid "unknown protocol transport type '%s'"
@@ -36847,9 +36827,9 @@ msgstr "tuntematon arkkitehtuuri: %s"
 msgid "unknown smartcard mode"
 msgstr "tuntematon arkkitehtuuri: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown smartcard type %d"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
+msgstr "tuntematon älykortin tyyppi %d"
 
 #, fuzzy, c-format
 msgid "unknown smbios mode '%s'"
@@ -36929,9 +36909,9 @@ msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
 msgid "unknown storage vol backing store type %d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage vol type %d"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
+msgstr "tuntematon tallennusvolyymin tyyppi %d"
 
 #, fuzzy, c-format
 msgid "unknown suffix '%s'"
@@ -36977,9 +36957,9 @@ msgstr "tuntematon komento: ”%s”"
 msgid "unknown trustGuestRxFilters value '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown type '%s'"
-msgstr "tuntematon käyttöjärjestelmän tyyppi %s"
+msgstr "tuntematon tyyppi %s"
 
 #, c-format
 msgid "unknown type '%s' in interface's <actual> element"
@@ -37146,9 +37126,9 @@ msgstr ""
 msgid "unsupported CPU cache level for mode '%s'"
 msgstr "ei tuettu arkkitehtuuri: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported CPU type: %s"
-msgstr "levytyyppi ei tuettu"
+msgstr "suorittimen tyyppi ei tuettu: %s"
 
 #, fuzzy, c-format
 msgid "unsupported Hyper-V stimer feature: %s"
@@ -37189,9 +37169,9 @@ msgstr ""
 msgid "unsupported address type '%s' in network %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported algorithm %d"
-msgstr "ei tuettu arkkitehtuuri: %s"
+msgstr "ei tuettu algoritmi %d"
 
 #, c-format
 msgid "unsupported architecture: %s"
@@ -37201,21 +37181,21 @@ msgstr "ei tuettu arkkitehtuuri: %s"
 msgid "unsupported audio backend '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported authentication type %d"
-msgstr "levytyyppi ei tuettu"
+msgstr "ei tuettu tunnistautumistyyppi %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported balloon device model '%s'"
-msgstr "levylaite ei tuettu"
+msgstr "ei tuettu balloon laite malli %s"
 
 #, fuzzy, c-format
 msgid "unsupported chardev '%s'"
 msgstr "ei tuettu arkkitehtuuri: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported chr device type '%s'"
-msgstr "levytyyppi ei tuettu"
+msgstr "merkkilaite '%s' ei tuettu"
 
 msgid "unsupported clock adjustment='reset'"
 msgstr ""
@@ -37224,13 +37204,13 @@ msgstr ""
 msgid "unsupported clock offset '%s'"
 msgstr "ei tuettu arkkitehtuuri: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported clock offset='%s'"
-msgstr "levytyyppi ei tuettu"
+msgstr "ei tuettu kellon siirtymä=%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported config type %s"
-msgstr "levytyyppi ei tuettu"
+msgstr "Kokoonpanotyyppi %s ei tuettu"
 
 #, fuzzy
 msgid "unsupported configuration"
@@ -37248,21 +37228,21 @@ msgstr ""
 msgid "unsupported connection type for <reservations/>: %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported console target type %s"
-msgstr "levytyyppi ei tuettu"
+msgstr "ei tuettu konsolin kohdetyyppi %s"
 
 #, fuzzy, c-format
 msgid "unsupported cpu feature '%s'"
 msgstr "ei tuettu arkkitehtuuri: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported data type '%c' for arg '%s'"
-msgstr "levytyyppi ei tuettu"
+msgstr "ei tuettu tiedon tyyppi '%c' argumentille '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported device type %s 0%o"
-msgstr "levytyyppi ei tuettu"
+msgstr "laitetyyppi %s 0%o ei tuettu"
 
 #, fuzzy, c-format
 msgid "unsupported device type in network %s interface pool"
@@ -37279,9 +37259,9 @@ msgstr "levylaite ei tuettu"
 msgid "unsupported disk device"
 msgstr "levylaite ei tuettu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported disk driver %s"
-msgstr "levylaite ei tuettu"
+msgstr "levyajuri %s ei tuettu"
 
 msgid "unsupported disk type"
 msgstr "levytyyppi ei tuettu"
@@ -37471,9 +37451,9 @@ msgstr ""
 msgid "unsupported secret event ID %d"
 msgstr "levylaite ei tuettu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported source type '%s'"
-msgstr "levytyyppi ei tuettu"
+msgstr "lähdetyyppi '%s' ei tuettu"
 
 #, fuzzy
 msgid "unsupported state value"
@@ -38231,9 +38211,8 @@ msgstr ""
 msgid "vnuma vnode invalid format '%s'"
 msgstr ""
 
-#, fuzzy
 msgid "vol information in XML"
-msgstr "toimialuetiedot XML-muodossa"
+msgstr "volyymitiedot XML-muodossa"
 
 msgid "vol name, key or path"
 msgstr ""
