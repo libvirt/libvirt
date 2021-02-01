@@ -67,7 +67,6 @@ int main(int argc, char **argv) {
     int readfds[3] = { STDIN_FILENO, };
     int numreadfds = 1;
     struct pollfd fds[3];
-    int numpollfds = 0;
     char *buffers[3] = {NULL, NULL, NULL};
     size_t buflen[3] = {0, 0, 0};
     char c;
@@ -167,21 +166,20 @@ int main(int argc, char **argv) {
     fflush(stderr);
 
     for (i = 0; i < numreadfds; i++) {
-        fds[numpollfds].fd = readfds[i];
-        fds[numpollfds].events = POLLIN;
-        fds[numpollfds].revents = 0;
-        numpollfds++;
+        fds[i].fd = readfds[i];
+        fds[i].events = POLLIN;
+        fds[i].revents = 0;
     }
 
     for (;;) {
         unsigned ctr = 0;
 
-        if (poll(fds, numpollfds, -1) < 0) {
+        if (poll(fds, numreadfds, -1) < 0) {
             printf("poll failed: %s\n", strerror(errno));
             goto cleanup;
         }
 
-        for (i = 0; i < numpollfds; i++) {
+        for (i = 0; i < numreadfds; i++) {
             short revents = POLLIN | POLLHUP | POLLERR;
 
 # ifdef __APPLE__
@@ -212,7 +210,7 @@ int main(int argc, char **argv) {
                 }
             }
         }
-        for (i = 0; i < numpollfds; i++) {
+        for (i = 0; i < numreadfds; i++) {
             if (fds[i].events) {
                 ctr++;
                 break;
@@ -222,7 +220,7 @@ int main(int argc, char **argv) {
             break;
     }
 
-    for (i = 0; i < numpollfds; i++) {
+    for (i = 0; i < numreadfds; i++) {
         if (fwrite(buffers[i], 1, buflen[i], stdout) != buflen[i])
             goto cleanup;
         if (fwrite(buffers[i], 1, buflen[i], stderr) != buflen[i])
