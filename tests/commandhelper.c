@@ -140,10 +140,32 @@ static int printEnvironment(FILE *log)
     return ret;
 }
 
+static int printFds(FILE *log)
+{
+    long int open_max = sysconf(_SC_OPEN_MAX);
+    size_t i;
+
+    if (open_max < 0)
+        return -1;
+
+    for (i = 0; i < open_max; i++) {
+        int ignore;
+
+        if (i == fileno(log))
+            continue;
+
+        if (fcntl(i, F_GETFD, &ignore) == -1 && errno == EBADF)
+            continue;
+
+        fprintf(log, "FD:%zu\n", i);
+    }
+
+    return 0;
+}
+
 int main(int argc, char **argv) {
     struct Arguments *args = parseArguments(argc, argv);
     size_t i;
-    int open_max;
     char *cwd;
     FILE *log = fopen(abs_builddir "/commandhelper.log", "w");
     int ret = EXIT_FAILURE;
@@ -162,19 +184,8 @@ int main(int argc, char **argv) {
     if (printEnvironment(log) != 0)
         goto cleanup;
 
-    open_max = sysconf(_SC_OPEN_MAX);
-    if (open_max < 0)
+    if (printFds(log) != 0)
         goto cleanup;
-    for (i = 0; i < open_max; i++) {
-        int f;
-        int closed;
-        if (i == fileno(log))
-            continue;
-        closed = fcntl(i, F_GETFD, &f) == -1 &&
-            errno == EBADF;
-        if (!closed)
-            fprintf(log, "FD:%zu\n", i);
-    }
 
     while (true) {
         bool daemonized = getpgrp() != getppid();
