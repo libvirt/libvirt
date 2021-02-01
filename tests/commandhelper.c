@@ -36,7 +36,7 @@ extern char **environ;
 # define VIR_FROM_THIS VIR_FROM_NONE
 
 struct Arguments {
-    int readfds[3];
+    int *readfds;
     int numreadfds;
     bool daemonize_check;
     bool close_stdin;
@@ -51,12 +51,21 @@ static struct Arguments *parseArguments(int argc, char** argv)
     if (!(args = calloc(1, sizeof(*args))))
         goto cleanup;
 
+    if (!(args->readfds = calloc(1, sizeof(*args->readfds))))
+        goto cleanup;
+
     args->numreadfds = 1;
     args->readfds[0] = STDIN_FILENO;
 
     for (i = 1; i < argc; i++) {
         if (STREQ(argv[i - 1], "--readfd")) {
             char c;
+
+            args->readfds = realloc(args->readfds,
+                                    (args->numreadfds + 1) *
+                                    sizeof(*args->readfds));
+            if (!args->readfds)
+                goto cleanup;
 
             if (1 != sscanf(argv[i], "%u%c",
                             &args->readfds[args->numreadfds++], &c)) {
@@ -76,7 +85,12 @@ static struct Arguments *parseArguments(int argc, char** argv)
     if (ret == 0)
         return args;
 
-    free(args);
+    if (args) {
+        if (args->readfds)
+            free(args->readfds);
+        free(args);
+    }
+
     return NULL;
 }
 
@@ -343,8 +357,11 @@ int main(int argc, char **argv) {
     ret = EXIT_SUCCESS;
 
  cleanup:
-    if (args)
+    if (args) {
+        if (args->readfds)
+            free(args->readfds);
         free(args);
+    }
     if (log)
         fclose(log);
     return ret;
