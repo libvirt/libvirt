@@ -35,6 +35,7 @@
 #include "rbd/librbd.h"
 #include "virsecret.h"
 #include "storage_util.h"
+#include "virsecureerase.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -185,7 +186,7 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     int ret = -1;
     virStoragePoolSourcePtr source = &def->source;
     virStorageAuthDefPtr authdef = source->auth;
-    unsigned char *secret_value = NULL;
+    g_autofree unsigned char *secret_value = NULL;
     size_t secret_value_size = 0;
     VIR_AUTODISPOSE_STR rados_key = NULL;
     g_auto(virBuffer) mon_host = VIR_BUFFER_INITIALIZER;
@@ -215,6 +216,7 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
             goto cleanup;
 
         rados_key = g_base64_encode(secret_value, secret_value_size);
+        virSecureErase(secret_value, secret_value_size);
 
         if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
                                              "key", rados_key) < 0)
@@ -325,8 +327,6 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     ret = 0;
 
  cleanup:
-    VIR_DISPOSE_N(secret_value, secret_value_size);
-
     virObjectUnref(conn);
     return ret;
 }
