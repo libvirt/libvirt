@@ -24,7 +24,9 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#define VIR_NO_GLIB_STDIO /* This file intentionally does not link to libvirt/glib */
+/* This file intentionally does not link to libvirt/glib */
+#define VIR_NO_GLIB_STDIO
+#define cleanup(T, F) __attribute__((cleanup(F))) T
 #include "testutils.h"
 
 #ifndef WIN32
@@ -42,17 +44,27 @@ struct Arguments {
     bool close_stdin;
 };
 
+static void cleanupArguments(struct Arguments **ptr)
+{
+    struct Arguments *args = *ptr;
+
+    if (args)
+        free(args->readfds);
+
+    free(args);
+}
+
 static struct Arguments *parseArguments(int argc, char** argv)
 {
-    struct Arguments* args = NULL;
-    int ret = -1;
+    cleanup(struct Arguments *, cleanupArguments) args = NULL;
+    struct Arguments *ret;
     size_t i;
 
     if (!(args = calloc(1, sizeof(*args))))
-        goto cleanup;
+        return NULL;
 
     if (!(args->readfds = calloc(1, sizeof(*args->readfds))))
-        goto cleanup;
+        return NULL;
 
     args->numreadfds = 1;
     args->readfds[0] = STDIN_FILENO;
@@ -65,12 +77,12 @@ static struct Arguments *parseArguments(int argc, char** argv)
                                     (args->numreadfds + 1) *
                                     sizeof(*args->readfds));
             if (!args->readfds)
-                goto cleanup;
+                return NULL;
 
             if (1 != sscanf(argv[i], "%u%c",
                             &args->readfds[args->numreadfds++], &c)) {
                 printf("Could not parse fd %s\n", argv[i]);
-                goto cleanup;
+                return NULL;
             }
         } else if (STREQ(argv[i], "--check-daemonize")) {
             args->daemonize_check = true;
@@ -79,19 +91,9 @@ static struct Arguments *parseArguments(int argc, char** argv)
         }
     }
 
-    ret = 0;
-
- cleanup:
-    if (ret == 0)
-        return args;
-
-    if (args) {
-        if (args->readfds)
-            free(args->readfds);
-        free(args);
-    }
-
-    return NULL;
+    ret = args;
+    args = NULL;
+    return ret;
 }
 
 static void printArguments(FILE *log, int argc, char** argv)
