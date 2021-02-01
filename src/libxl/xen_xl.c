@@ -359,9 +359,8 @@ xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
 
             graphics->data.spice.port = (int)port;
 
-            if (!graphics->data.spice.tlsPort &&
-                !graphics->data.spice.port)
-            graphics->data.spice.autoport = 1;
+            if (!graphics->data.spice.tlsPort && !graphics->data.spice.port)
+                graphics->data.spice.autoport = 1;
 
             if (xenConfigGetBool(conf, "spicedisable_ticketing", &val, 0) < 0)
                 goto cleanup;
