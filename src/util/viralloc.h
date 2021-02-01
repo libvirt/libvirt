@@ -52,8 +52,6 @@ int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
 int virAllocVar(void *ptrptr, size_t struct_size, size_t element_size, size_t count)
     G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1);
 
-void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countptr)
-    ATTRIBUTE_NONNULL(1);
 void virDisposeString(char **strptr)
     ATTRIBUTE_NONNULL(1);
 
@@ -343,20 +341,6 @@ void virDisposeString(char **strptr)
 
 
 /**
- * VIR_DISPOSE_N:
- * @ptr: pointer holding address to be cleared and freed
- * @count: count of elements in @ptr
- *
- * Clear the memory of the array of elements pointed to by 'ptr' of 'count'
- * elements and free it. Update the pointer/count to NULL/0.
- *
- * This macro is safe to use on arguments with side effects.
- */
-#define VIR_DISPOSE_N(ptr, count) virDispose(1 ? (void *) &(ptr) : (ptr), 0, \
-                                             sizeof(*(ptr)), &(count))
-
-
-/**
  * VIR_DISPOSE_STRING:
  * @ptr: pointer to a string to be cleared and freed
  *
@@ -375,14 +359,3 @@ void virDisposeString(char **strptr)
  */
 #define VIR_AUTODISPOSE_STR \
     __attribute__((cleanup(virDisposeString))) char *
-
-/**
- * VIR_DISPOSE:
- * @ptr: pointer to memory to be cleared and freed
- *
- * Clears and frees the corresponding memory.
- *
- * This macro is safe to be used on arguments with side effects.
- */
-#define VIR_DISPOSE(ptr) virDispose(1 ? (void *) &(ptr) : (ptr), 1, \
-                                    sizeof(*(ptr)), NULL)
