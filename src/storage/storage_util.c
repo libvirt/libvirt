@@ -74,6 +74,7 @@
 #include "virxml.h"
 #include "virfdstream.h"
 #include "virutil.h"
+#include "virsecureerase.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -1314,7 +1315,8 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObjPtr pool,
 
  cleanup:
     virObjectUnref(conn);
-    VIR_DISPOSE_N(secret, secretlen);
+    virSecureErase(secret, secretlen);
+    g_free(secret);
 
     return secretPath;
 
