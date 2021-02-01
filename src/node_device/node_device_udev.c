@@ -1100,7 +1100,7 @@ static int
 udevProcessCCW(struct udev_device *device,
                virNodeDeviceDefPtr def)
 {
-    int online;
+    int online = 0;
 
     /* process only online devices to keep the list sane */
     if (udevGetIntSysfsAttr(device, "online", &online, 0) < 0 || online != 1)
