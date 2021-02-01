@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
     ssize_t got;
 
     if (!log)
-        return ret;
+        goto cleanup;
 
     for (i = 1; i < argc; i++) {
         fprintf(log, "ARG:%s\n", argv[i]);
@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
     }
 
     if (!(newenv = malloc(sizeof(*newenv) * n)))
-        abort();
+        goto cleanup;
 
     for (i = 0; i < n; i++) {
         newenv[i] = environ[i];
@@ -232,8 +232,10 @@ int main(int argc, char **argv) {
  cleanup:
     for (i = 0; i < G_N_ELEMENTS(buffers); i++)
         free(buffers[i]);
-    fclose(log);
-    free(newenv);
+    if (newenv)
+        free(newenv);
+    if (log)
+        fclose(log);
     return ret;
 }
 
