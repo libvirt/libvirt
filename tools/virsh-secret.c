@@ -31,6 +31,7 @@
 #include "virtime.h"
 #include "vsh-table.h"
 #include "virenum.h"
+#include "virsecureerase.h"
 
 static virSecretPtr
 virshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)
@@ -202,10 +203,8 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshSecret) secret = NULL;
     const char *base64 = NULL;
     const char *filename = NULL;
-    char *file_buf = NULL;
-    size_t file_len = 0;
-    unsigned char *value;
-    size_t value_size;
+    g_autofree char *secret_val = NULL;
+    size_t secret_len = 0;
     bool plain = vshCommandOptBool(cmd, "plain");
     bool interactive = vshCommandOptBool(cmd, "interactive");
     int res;
@@ -228,41 +227,41 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     if (base64) {
         /* warn users that the --base64 option passed from command line is wrong */
         vshError(ctl, _("Passing secret value as command-line argument is insecure!"));
+        secret_val = g_strdup(base64);
+        secret_len = strlen(secret_val);
     } else if (filename) {
         ssize_t read_ret;
-        if ((read_ret = virFileReadAll(filename, 1024, &file_buf)) < 0) {
+        if ((read_ret = virFileReadAll(filename, 1024, &secret_val)) < 0) {
             vshSaveLibvirtError();
             return false;
         }
 
-        file_len = read_ret;
-        base64 = file_buf;
+        secret_len = read_ret;
     } else if (interactive) {
         vshPrint(ctl, "%s", _("Enter new value for secret:"));
         fflush(stdout);
 
-        if (!(file_buf = virGetPassword())) {
+        if (!(secret_val = virGetPassword())) {
             vshError(ctl, "%s", _("Failed to read secret"));
             return false;
         }
-        file_len = strlen(file_buf);
+        secret_len = strlen(secret_val);
         plain = true;
     } else {
         vshError(ctl, _("Input secret value is missing"));
         return false;
     }
 
-    if (plain) {
-        value = g_steal_pointer(&file_buf);
-        value_size = file_len;
-        file_len = 0;
-    } else {
-        value = g_base64_decode(base64, &value_size);
+    if (!plain) {
+        g_autofree char *tmp = g_steal_pointer(&secret_val);
+        size_t tmp_len = secret_len;
+
+        secret_val = (char *) g_base64_decode(tmp, &secret_len);
+        virSecureErase(tmp, tmp_len);
     }
 
-    res = virSecretSetValue(secret, value, value_size, 0);
-    VIR_DISPOSE_N(value, value_size);
-    VIR_DISPOSE_N(file_buf, file_len);
+    res = virSecretSetValue(secret, (unsigned char *) secret_val, secret_len, 0);
+    virSecureErase(secret_val, secret_len);
 
     if (res != 0) {
         vshError(ctl, "%s", _("Failed to set secret value"));
