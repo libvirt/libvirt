@@ -66,6 +66,7 @@ int main(int argc, char **argv) {
     size_t buflen[3] = {0, 0, 0};
     char c;
     bool daemonize_check = false;
+    bool close_stdin = false;
     size_t daemonize_retries = 3;
     char buf[1024];
     ssize_t got;
@@ -82,6 +83,8 @@ int main(int argc, char **argv) {
             goto cleanup;
         } else if (STREQ(argv[i], "--check-daemonize")) {
             daemonize_check = true;
+        } else if (STREQ(argv[i], "--close-stdin")) {
+            close_stdin = true;
         }
     }
 
@@ -149,7 +152,7 @@ int main(int argc, char **argv) {
 
     fprintf(log, "UMASK:%04o\n", umask(0));
 
-    if (argc > 1 && STREQ(argv[1], "--close-stdin")) {
+    if (close_stdin) {
         if (freopen("/dev/null", "r", stdin) != stdin)
             goto cleanup;
         usleep(100*1000);
