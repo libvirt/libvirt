@@ -32,6 +32,8 @@
 #include "virtime.h"
 #include "virthread.h"
 
+#include <math.h>
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("util.virhostuptime");
@@ -76,7 +78,7 @@ virHostGetBootTimeProcfs(unsigned long long *btime)
         return -EINVAL;
     }
 
-    *btime = now / 1000 - up + 0.5;
+    *btime = llround(now / 1000 - up);
 
     return 0;
 }
