@@ -562,18 +562,19 @@ int
 qemuDomainMasterKeyCreate(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autofree uint8_t *key = NULL;
 
     /* If we don't have the capability, then do nothing. */
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET))
         return 0;
 
-    priv->masterKey = g_new0(uint8_t, QEMU_DOMAIN_MASTER_KEY_LEN);
-    priv->masterKeyLen = QEMU_DOMAIN_MASTER_KEY_LEN;
+    key = g_new0(uint8_t, QEMU_DOMAIN_MASTER_KEY_LEN);
 
-    if (virRandomBytes(priv->masterKey, priv->masterKeyLen) < 0) {
-        VIR_DISPOSE_N(priv->masterKey, priv->masterKeyLen);
+    if (virRandomBytes(key, QEMU_DOMAIN_MASTER_KEY_LEN) < 0)
         return -1;
-    }
+
+    priv->masterKey = g_steal_pointer(&key);
+    priv->masterKeyLen = QEMU_DOMAIN_MASTER_KEY_LEN;
 
     return 0;
 }
