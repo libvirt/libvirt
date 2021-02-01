@@ -35,6 +35,51 @@ extern char **environ;
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
+struct Arguments {
+    int readfds[3];
+    int numreadfds;
+    bool daemonize_check;
+    bool close_stdin;
+};
+
+static struct Arguments *parseArguments(int argc, char** argv)
+{
+    struct Arguments* args = NULL;
+    int ret = -1;
+    size_t i;
+
+    if (!(args = calloc(1, sizeof(*args))))
+        goto cleanup;
+
+    args->numreadfds = 1;
+    args->readfds[0] = STDIN_FILENO;
+
+    for (i = 1; i < argc; i++) {
+        if (STREQ(argv[i - 1], "--readfd")) {
+            char c;
+
+            if (1 != sscanf(argv[i], "%u%c",
+                            &args->readfds[args->numreadfds++], &c)) {
+                printf("Could not parse fd %s\n", argv[i]);
+                goto cleanup;
+            }
+        } else if (STREQ(argv[i], "--check-daemonize")) {
+            args->daemonize_check = true;
+        } else if (STREQ(argv[i], "--close-stdin")) {
+            args->close_stdin = true;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (ret == 0)
+        return args;
+
+    free(args);
+    return NULL;
+}
+
 static int envsort(const void *a, const void *b)
 {
     const char *astr = *(const char**)a;
@@ -53,38 +98,22 @@ static int envsort(const void *a, const void *b)
 }
 
 int main(int argc, char **argv) {
+    struct Arguments *args = parseArguments(argc, argv);
     size_t i, n;
     int open_max;
     char **newenv = NULL;
     char *cwd;
     FILE *log = fopen(abs_builddir "/commandhelper.log", "w");
     int ret = EXIT_FAILURE;
-    int readfds[3] = { STDIN_FILENO, };
-    int numreadfds = 1;
     struct pollfd fds[3];
     char *buffers[3] = {NULL, NULL, NULL};
     size_t buflen[3] = {0, 0, 0};
-    char c;
-    bool daemonize_check = false;
-    bool close_stdin = false;
     size_t daemonize_retries = 3;
     char buf[1024];
     ssize_t got;
 
-    if (!log)
+    if (!log || !args)
         goto cleanup;
-
-    for (i = 1; i < argc; i++) {
-        if (STREQ(argv[i - 1], "--readfd") &&
-            sscanf(argv[i], "%u%c", &readfds[numreadfds++], &c) != 1) {
-            printf("Could not parse fd %s\n", argv[i]);
-            goto cleanup;
-        } else if (STREQ(argv[i], "--check-daemonize")) {
-            daemonize_check = true;
-        } else if (STREQ(argv[i], "--close-stdin")) {
-            close_stdin = true;
-        }
-    }
 
     for (i = 1; i < argc; i++) {
         fprintf(log, "ARG:%s\n", argv[i]);
@@ -126,7 +155,7 @@ int main(int argc, char **argv) {
     while (true) {
         bool daemonized = getpgrp() != getppid();
 
-        if (daemonize_check && !daemonized && daemonize_retries-- > 0) {
+        if (args->daemonize_check && !daemonized && daemonize_retries-- > 0) {
             usleep(100*1000);
             continue;
         }
@@ -154,7 +183,7 @@ int main(int argc, char **argv) {
 
     fprintf(log, "UMASK:%04o\n", umask(0));
 
-    if (close_stdin) {
+    if (args->close_stdin) {
         if (freopen("/dev/null", "r", stdin) != stdin)
             goto cleanup;
         usleep(100*1000);
@@ -165,8 +194,8 @@ int main(int argc, char **argv) {
     fprintf(stderr, "BEGIN STDERR\n");
     fflush(stderr);
 
-    for (i = 0; i < numreadfds; i++) {
-        fds[i].fd = readfds[i];
+    for (i = 0; i < args->numreadfds; i++) {
+        fds[i].fd = args->readfds[i];
         fds[i].events = POLLIN;
         fds[i].revents = 0;
     }
@@ -174,12 +203,12 @@ int main(int argc, char **argv) {
     for (;;) {
         unsigned ctr = 0;
 
-        if (poll(fds, numreadfds, -1) < 0) {
+        if (poll(fds, args->numreadfds, -1) < 0) {
             printf("poll failed: %s\n", strerror(errno));
             goto cleanup;
         }
 
-        for (i = 0; i < numreadfds; i++) {
+        for (i = 0; i < args->numreadfds; i++) {
             short revents = POLLIN | POLLHUP | POLLERR;
 
 # ifdef __APPLE__
@@ -210,7 +239,7 @@ int main(int argc, char **argv) {
                 }
             }
         }
-        for (i = 0; i < numreadfds; i++) {
+        for (i = 0; i < args->numreadfds; i++) {
             if (fds[i].events) {
                 ctr++;
                 break;
@@ -220,7 +249,7 @@ int main(int argc, char **argv) {
             break;
     }
 
-    for (i = 0; i < numreadfds; i++) {
+    for (i = 0; i < args->numreadfds; i++) {
         if (fwrite(buffers[i], 1, buflen[i], stdout) != buflen[i])
             goto cleanup;
         if (fwrite(buffers[i], 1, buflen[i], stderr) != buflen[i])
@@ -237,6 +266,8 @@ int main(int argc, char **argv) {
  cleanup:
     for (i = 0; i < G_N_ELEMENTS(buffers); i++)
         free(buffers[i]);
+    if (args)
+        free(args);
     if (newenv)
         free(newenv);
     if (log)
