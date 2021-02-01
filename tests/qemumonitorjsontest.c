@@ -718,7 +718,7 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOptionPtr xmlopt,
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_VC };
     CHECK("vc", false,
-          "{'id':'alias','backend':{'type':'null','data':{}}}");
+          "{'id':'alias','backend':{'type':'vc','data':{}}}");
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PTY };
     if (qemuMonitorJSONTestAttachOneChardev(xmlopt, schema, "pty", &chr,

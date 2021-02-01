@@ -7438,8 +7438,11 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
 
     switch ((virDomainChrType)chr->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
-    case VIR_DOMAIN_CHR_TYPE_VC:
         backend_type = "null";
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_VC:
+        backend_type = "vc";
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
