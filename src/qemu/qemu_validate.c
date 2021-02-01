@@ -1381,6 +1381,66 @@ qemuValidateDomainVirtioOptions(const virDomainVirtioOptions *virtio,
 }
 
 
+/**
+ * qemuValidateDomainDefVhostUserRequireSharedMemory:
+ * @def: VM definition
+ * @name: name of the attribute/element
+ * @qemuCaps: capabilities of QEMU binary
+ *
+ * Check if the VM definition contains any form of shared memory
+ * which is required by vhost-user devices to operate properly.
+ *
+ * On success returns 0, on error returns -1 and reports proper error
+ * message.
+ */
+static int
+qemuValidateDomainDefVhostUserRequireSharedMemory(const virDomainDef *def,
+                                                  const char *name,
+                                                  virQEMUCapsPtr qemuCaps)
+{
+    const char *defaultRAMId = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
+                                                                 def->virtType,
+                                                                 def->os.machine);
+    size_t numa_nodes = virDomainNumaGetNodeCount(def->numa);
+    size_t i;
+
+    if (numa_nodes == 0 &&
+        !(defaultRAMId && def->mem.access == VIR_DOMAIN_MEMORY_ACCESS_SHARED)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("'%s' requires shared memory"), name);
+        return -1;
+    }
+
+    for (i = 0; i < numa_nodes; i++) {
+        virDomainMemoryAccess node_access =
+            virDomainNumaGetNodeMemoryAccessMode(def->numa, i);
+
+        switch (node_access) {
+        case VIR_DOMAIN_MEMORY_ACCESS_DEFAULT:
+            if (def->mem.access != VIR_DOMAIN_MEMORY_ACCESS_SHARED) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("'%s' requires shared memory"), name);
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_MEMORY_ACCESS_SHARED:
+            break;
+        case VIR_DOMAIN_MEMORY_ACCESS_PRIVATE:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("'%s' requires shared memory"), name);
+            return -1;
+
+        case VIR_DOMAIN_MEMORY_ACCESS_LAST:
+        default:
+            virReportEnumRangeError(virDomainMemoryAccess, node_access);
+            return -1;
+
+        }
+    }
+    return 0;
+}
+
+
 static int
 qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                                    virQEMUCapsPtr qemuCaps)
@@ -3949,53 +4009,6 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
 
 
 static int
-qemuValidateDomainDefVirtioFSSharedMemory(const virDomainDef *def,
-                                          virQEMUCapsPtr qemuCaps)
-{
-    const char *defaultRAMId = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
-                                                                 def->virtType,
-                                                                 def->os.machine);
-    size_t numa_nodes = virDomainNumaGetNodeCount(def->numa);
-    size_t i;
-
-    if (numa_nodes == 0 &&
-        !(defaultRAMId && def->mem.access == VIR_DOMAIN_MEMORY_ACCESS_SHARED)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("virtiofs requires shared memory"));
-        return -1;
-    }
-
-    for (i = 0; i < numa_nodes; i++) {
-        virDomainMemoryAccess node_access =
-            virDomainNumaGetNodeMemoryAccessMode(def->numa, i);
-
-        switch (node_access) {
-        case VIR_DOMAIN_MEMORY_ACCESS_DEFAULT:
-            if (def->mem.access != VIR_DOMAIN_MEMORY_ACCESS_SHARED) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("virtiofs requires shared memory"));
-                return -1;
-            }
-            break;
-        case VIR_DOMAIN_MEMORY_ACCESS_SHARED:
-            break;
-        case VIR_DOMAIN_MEMORY_ACCESS_PRIVATE:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtiofs requires shared memory"));
-            return -1;
-
-        case VIR_DOMAIN_MEMORY_ACCESS_LAST:
-        default:
-            virReportEnumRangeError(virDomainMemoryAccess, node_access);
-            return -1;
-
-        }
-    }
-    return 0;
-}
-
-
-static int
 qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
                               const virDomainDef *def,
                               virQEMUDriverPtr driver,
@@ -4092,8 +4105,10 @@ qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
                            _("virtiofs does not support fmode and dmode"));
             return -1;
         }
-        if (qemuValidateDomainDefVirtioFSSharedMemory(def, qemuCaps) < 0)
+        if (qemuValidateDomainDefVhostUserRequireSharedMemory(def, "virtiofs",
+                                                              qemuCaps) < 0) {
             return -1;
+        }
         if (fs->info.bootIndex &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOST_USER_FS_BOOTINDEX)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
