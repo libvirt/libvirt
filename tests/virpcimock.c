@@ -233,7 +233,7 @@ pci_read_file(const char *path,
     if ((fd = real_open(newpath, O_RDWR)) < 0)
         goto cleanup;
 
-    bzero(buf, buf_size);
+    memset(buf, 0, buf_size);
     if (saferead(fd, buf, buf_size - 1) < 0) {
         STDERR("Unable to read from %s", newpath);
         goto cleanup;

@@ -120,7 +120,7 @@ virArpTableGet(void)
             table->n = num + 1;
 
             addr = RTA_DATA(tb[NDA_DST]);
-            bzero(&virAddr, sizeof(virAddr));
+            memset(&virAddr, 0, sizeof(virAddr));
             virAddr.len = sizeof(virAddr.data.inet4);
             virAddr.data.inet4.sin_family = AF_INET;
             virAddr.data.inet4.sin_addr = *(struct in_addr *)addr;
