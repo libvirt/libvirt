@@ -204,12 +204,22 @@ static int printCwd(FILE *log)
 static int printInput(struct Arguments *args)
 {
     char buf[1024];
-    struct pollfd fds[3];
-    char *buffers[3] = {NULL, NULL, NULL};
-    size_t buflen[3] = {0, 0, 0};
+    struct pollfd *fds = NULL;
+    char **buffers = NULL;
+    size_t *buflen = NULL;
     int ret = -1;
     size_t i;
     ssize_t got;
+
+    if (!(fds = calloc(args->numreadfds, sizeof(*fds))))
+        goto cleanup;
+
+    /* plus one NULL terminator */
+    if (!(buffers = calloc(args->numreadfds + 1, sizeof(*buffers))))
+        goto cleanup;
+
+    if (!(buflen = calloc(args->numreadfds, sizeof(*buflen))))
+        goto cleanup;
 
     if (args->close_stdin) {
         if (freopen("/dev/null", "r", stdin) != stdin)
@@ -292,8 +302,15 @@ static int printInput(struct Arguments *args)
     ret = 0;
 
  cleanup:
-    for (i = 0; i < G_N_ELEMENTS(buffers); i++)
-        free(buffers[i]);
+    if (buffers) {
+        char **ptr;
+        for (ptr = buffers; *ptr; ptr++)
+            free(*ptr);
+    }
+    free(fds);
+    free(buflen);
+    free(buffers);
+
     return ret;
 }
 
