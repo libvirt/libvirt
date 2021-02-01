@@ -176,10 +176,34 @@ static void printDaemonization(FILE *log, struct Arguments *args)
     fprintf(log, "DAEMON:%s\n", getpgrp() != getppid() ? "yes" : "no");
 }
 
+static int printCwd(FILE *log)
+{
+    char *cwd = NULL;
+    char *display;
+
+    if (!(cwd = getcwd(NULL, 0)))
+        return -1;
+
+    if ((strlen(cwd) > strlen(".../commanddata")) &&
+        (STREQ(cwd + strlen(cwd) - strlen("/commanddata"), "/commanddata"))) {
+        strcpy(cwd, ".../commanddata");
+    }
+
+    display = cwd;
+
+# ifdef __APPLE__
+    if (strstr(cwd, "/private"))
+        display = cwd + strlen("/private");
+# endif
+
+    fprintf(log, "CWD:%s\n", display);
+    free(cwd);
+    return 0;
+}
+
 int main(int argc, char **argv) {
     struct Arguments *args = parseArguments(argc, argv);
     size_t i;
-    char *cwd;
     FILE *log = fopen(abs_builddir "/commandhelper.log", "w");
     int ret = EXIT_FAILURE;
     struct pollfd fds[3];
@@ -201,22 +225,8 @@ int main(int argc, char **argv) {
 
     printDaemonization(log, args);
 
-    if (!(cwd = getcwd(NULL, 0)))
+    if (printCwd(log) != 0)
         goto cleanup;
-    if (strlen(cwd) > strlen(".../commanddata") &&
-        STREQ(cwd + strlen(cwd) - strlen("/commanddata"), "/commanddata"))
-        strcpy(cwd, ".../commanddata");
-# ifdef __APPLE__
-    char *noprivateprefix = NULL;
-    if (strstr(cwd, "/private"))
-        noprivateprefix = cwd + strlen("/private");
-    else
-        noprivateprefix = cwd;
-    fprintf(log, "CWD:%s\n", noprivateprefix);
-# else
-    fprintf(log, "CWD:%s\n", cwd);
-# endif
-    free(cwd);
 
     fprintf(log, "UMASK:%04o\n", umask(0));
 
