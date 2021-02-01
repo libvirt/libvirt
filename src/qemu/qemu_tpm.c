@@ -600,9 +600,11 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
         }
 
         pwdfile_fd = qemuTPMSetupEncryption(tpm->data.emulator.secretuuid, cmd);
-        if (pwdfile_fd)
-        migpwdfile_fd = qemuTPMSetupEncryption(tpm->data.emulator.secretuuid,
-                                               cmd);
+        if (pwdfile_fd) {
+            migpwdfile_fd = qemuTPMSetupEncryption(tpm->data.emulator.secretuuid,
+                                                   cmd);
+        }
+
         if (pwdfile_fd < 0 || migpwdfile_fd < 0)
             goto error;
 
