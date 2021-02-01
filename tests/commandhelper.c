@@ -156,6 +156,9 @@ static int printEnvironment(FILE *log)
     for (length = 0; environ[length]; length++) {
     }
 
+    if (length == 0)
+        return 0;
+
     if (!(newenv = malloc(sizeof(*newenv) * length)))
         return -1;
 
