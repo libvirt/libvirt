@@ -123,13 +123,6 @@ int virStrcpy(char *dest, const char *src, size_t destbytes)
     G_GNUC_WARN_UNUSED_RESULT;
 #define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
 
-/* Don't call these directly - use the macros below */
-int virStrdup(char **dest, const char *src)
-    G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1);
-
-int virStrndup(char **dest, const char *src, ssize_t n)
-    G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1);
-
 size_t virStringListLength(const char * const *strings);
 
 int virStringSortCompare(const void *a, const void *b);
