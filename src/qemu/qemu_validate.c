@@ -2957,6 +2957,19 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
         return -1;
     }
 
+    if (disk->src->type == VIR_STORAGE_TYPE_VHOST_USER) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_BLK)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vhostuser disk is not supported with this QEMU binary"));
+            return -1;
+        }
+
+        if (qemuValidateDomainDefVhostUserRequireSharedMemory(def, "vhostuser",
+                                                              qemuCaps) < 0) {
+            return -1;
+        }
+    }
+
     return 0;
 }
 

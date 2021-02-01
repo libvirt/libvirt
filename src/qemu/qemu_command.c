@@ -1714,9 +1714,16 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         break;
 
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        if (qemuBuildVirtioDevStr(&opt, "virtio-blk", qemuCaps,
-                                  VIR_DOMAIN_DEVICE_DISK, disk) < 0) {
-            return NULL;
+        if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
+            if (qemuBuildVirtioDevStr(&opt, "vhost-user-blk", qemuCaps,
+                                      VIR_DOMAIN_DEVICE_DISK, disk) < 0) {
+                return NULL;
+            }
+        } else {
+            if (qemuBuildVirtioDevStr(&opt, "virtio-blk", qemuCaps,
+                                      VIR_DOMAIN_DEVICE_DISK, disk) < 0) {
+                return NULL;
+            }
         }
 
         if (disk->iothread)
@@ -1775,11 +1782,17 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_SHARE_RW))
         virBufferAddLit(&opt, ",share-rw=on");
 
-    if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
-        return NULL;
+    if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
+        backendAlias = qemuDomainGetVhostUserChrAlias(disk->info.alias);
 
-    if (backendAlias)
-        virBufferAsprintf(&opt, ",drive=%s", backendAlias);
+        virBufferAsprintf(&opt, ",chardev=%s", backendAlias);
+    } else {
+        if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
+            return NULL;
+
+        if (backendAlias)
+            virBufferAsprintf(&opt, ",drive=%s", backendAlias);
+    }
 
     virBufferAsprintf(&opt, ",id=%s", disk->info.alias);
     if (bootindex)
@@ -1989,6 +2002,9 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommandPtr cmd,
     if (data->driveCmd)
         virCommandAddArgList(cmd, "-drive", data->driveCmd, NULL);
 
+    if (data->chardevCmd)
+        virCommandAddArgList(cmd, "-chardev", data->chardevCmd, NULL);
+
     if (data->storageProps) {
         if (!(tmp = virJSONValueToString(data->storageProps, false)))
             return -1;
@@ -2027,7 +2043,10 @@ qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
     g_autofree char *copyOnReadPropsStr = NULL;
     size_t i;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV) &&
+    if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareChardev(disk)))
+            return -1;
+    } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV) &&
         !qemuDiskBusIsSD(disk->bus)) {
         if (virStorageSourceIsEmpty(disk->src))
             return 0;
@@ -10297,6 +10316,39 @@ qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
 
 
 /**
+ * qemuBuildStorageSourceAttachPrepareChardev:
+ * @src: disk source to prepare
+ *
+ * Prepare qemuBlockStorageSourceAttachDataPtr for vhost-user disk
+ * to be used with -chardev.
+ */
+qemuBlockStorageSourceAttachDataPtr
+qemuBuildStorageSourceAttachPrepareChardev(virDomainDiskDefPtr disk)
+{
+    g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
+    g_auto(virBuffer) chardev = VIR_BUFFER_INITIALIZER;
+
+    data = g_new0(qemuBlockStorageSourceAttachData, 1);
+
+    data->chardevDef = disk->src->vhostuser;
+    data->chardevAlias = qemuDomainGetVhostUserChrAlias(disk->info.alias);
+
+    virBufferAddLit(&chardev, "socket");
+    virBufferAsprintf(&chardev, ",id=%s", data->chardevAlias);
+    virBufferAddLit(&chardev, ",path=");
+    virQEMUBuildBufferEscapeComma(&chardev, disk->src->vhostuser->data.nix.path);
+
+    qemuBuildChrChardevReconnectStr(&chardev,
+                                    &disk->src->vhostuser->data.nix.reconnect);
+
+    if (!(data->chardevCmd = virBufferContentAndReset(&chardev)))
+        return NULL;
+
+    return g_steal_pointer(&data);
+}
+
+
+/**
  * qemuBuildStorageSourceAttachPrepareCommon:
  * @src: storage source
  * @data: already initialized data for disk source addition
@@ -10369,6 +10421,31 @@ qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
         return NULL;
 
     if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, elem, qemuCaps) < 0)
+        return NULL;
+
+    if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem) < 0)
+        return NULL;
+
+    return g_steal_pointer(&data);
+}
+
+
+/**
+ * qemuBuildStorageSourceChainAttachPrepareChardev:
+ * @src: disk definition
+ *
+ * Prepares qemuBlockStorageSourceChainDataPtr for attaching a vhost-user
+ * disk's backend via -chardev.
+ */
+qemuBlockStorageSourceChainDataPtr
+qemuBuildStorageSourceChainAttachPrepareChardev(virDomainDiskDefPtr disk)
+{
+    g_autoptr(qemuBlockStorageSourceAttachData) elem = NULL;
+    g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
+
+    data = g_new0(qemuBlockStorageSourceChainData, 1);
+
+    if (!(elem = qemuBuildStorageSourceAttachPrepareChardev(disk)))
         return NULL;
 
     if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem) < 0)

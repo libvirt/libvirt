@@ -714,7 +714,10 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
         goto cleanup;
 
-    if (blockdev) {
+    if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareChardev(disk)))
+            goto cleanup;
+    } else if (blockdev) {
         if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
             if (!(corProps = qemuBlockStorageGetCopyOnReadProps(disk)))
                 goto cleanup;
@@ -4314,8 +4317,13 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
               disk->info.alias, vm, vm->def->name);
 
 
-    if (blockdev &&
-        !qemuDiskBusIsSD(disk->bus)) {
+    if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
+        char *chardevAlias = qemuDomainGetVhostUserChrAlias(disk->info.alias);
+
+        if (!(diskBackend = qemuBlockStorageSourceChainDetachPrepareChardev(chardevAlias)))
+            goto cleanup;
+    } else if (blockdev &&
+               !qemuDiskBusIsSD(disk->bus)) {
         corAlias = g_strdup(diskPriv->nodeCopyOnRead);
 
         if (diskPriv->blockjob) {

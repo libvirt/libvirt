@@ -115,6 +115,10 @@ bool qemuDiskBusIsSD(int bus);
 qemuBlockStorageSourceAttachDataPtr
 qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
                                          virQEMUCapsPtr qemuCaps);
+
+qemuBlockStorageSourceAttachDataPtr
+qemuBuildStorageSourceAttachPrepareChardev(virDomainDiskDefPtr disk);
+
 int
 qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
                                           qemuBlockStorageSourceAttachDataPtr data,
@@ -124,6 +128,10 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
 qemuBlockStorageSourceChainDataPtr
 qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
                                               virQEMUCapsPtr qemuCaps);
+
+
+qemuBlockStorageSourceChainDataPtr
+qemuBuildStorageSourceChainAttachPrepareChardev(virDomainDiskDefPtr disk);
 
 
 qemuBlockStorageSourceChainDataPtr

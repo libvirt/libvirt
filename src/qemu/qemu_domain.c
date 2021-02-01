@@ -10652,6 +10652,11 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
                             qemuDomainObjPrivatePtr priv,
                             virQEMUDriverConfigPtr cfg)
 {
+    /* Nothing to prepare as it will use -chardev instead
+     * of -blockdev/-drive option. */
+    if (disk->src->type == VIR_STORAGE_TYPE_VHOST_USER)
+        return 0;
+
     qemuDomainPrepareDiskCachemode(disk);
 
     /* set default format for storage pool based disks */
@@ -11138,6 +11143,13 @@ qemuDomainDiskBlockJobIsSupported(virDomainObjPtr vm,
     if (disk->transient) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("block jobs are not supported on transient disk '%s'"),
+                       disk->dst);
+        return false;
+    }
+
+    if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("block jobs are not supported on vhostuser disk '%s'"),
                        disk->dst);
         return false;
     }
