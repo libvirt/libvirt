@@ -201,39 +201,20 @@ static int printCwd(FILE *log)
     return 0;
 }
 
-int main(int argc, char **argv) {
-    struct Arguments *args = parseArguments(argc, argv);
-    size_t i;
-    FILE *log = fopen(abs_builddir "/commandhelper.log", "w");
-    int ret = EXIT_FAILURE;
+static int printInput(struct Arguments *args)
+{
+    char buf[1024];
     struct pollfd fds[3];
     char *buffers[3] = {NULL, NULL, NULL};
     size_t buflen[3] = {0, 0, 0};
-    char buf[1024];
+    int ret = -1;
+    size_t i;
     ssize_t got;
-
-    if (!log || !args)
-        goto cleanup;
-
-    printArguments(log, argc, argv);
-
-    if (printEnvironment(log) != 0)
-        goto cleanup;
-
-    if (printFds(log) != 0)
-        goto cleanup;
-
-    printDaemonization(log, args);
-
-    if (printCwd(log) != 0)
-        goto cleanup;
-
-    fprintf(log, "UMASK:%04o\n", umask(0));
 
     if (args->close_stdin) {
         if (freopen("/dev/null", "r", stdin) != stdin)
             goto cleanup;
-        usleep(100*1000);
+        usleep(100 * 1000);
     }
 
     fprintf(stdout, "BEGIN STDOUT\n");
@@ -308,11 +289,43 @@ int main(int argc, char **argv) {
     fprintf(stderr, "END STDERR\n");
     fflush(stderr);
 
-    ret = EXIT_SUCCESS;
+    ret = 0;
 
  cleanup:
     for (i = 0; i < G_N_ELEMENTS(buffers); i++)
         free(buffers[i]);
+    return ret;
+}
+
+int main(int argc, char **argv) {
+    struct Arguments *args = parseArguments(argc, argv);
+    FILE *log = fopen(abs_builddir "/commandhelper.log", "w");
+    int ret = EXIT_FAILURE;
+
+    if (!log || !args)
+        goto cleanup;
+
+    printArguments(log, argc, argv);
+
+    if (printEnvironment(log) != 0)
+        goto cleanup;
+
+    if (printFds(log) != 0)
+        goto cleanup;
+
+    printDaemonization(log, args);
+
+    if (printCwd(log) != 0)
+        goto cleanup;
+
+    fprintf(log, "UMASK:%04o\n", umask(0));
+
+    if (printInput(args) != 0)
+        goto cleanup;
+
+    ret = EXIT_SUCCESS;
+
+ cleanup:
     if (args)
         free(args);
     if (log)
