@@ -60,7 +60,6 @@ static int envsort(const void *a, const void *b)
 int main(int argc, char **argv) {
     size_t i, n;
     int open_max;
-    char **origenv;
     char **newenv = NULL;
     char *cwd;
     FILE *log = fopen(abs_builddir "/commandhelper.log", "w");
@@ -92,23 +91,16 @@ int main(int argc, char **argv) {
         }
     }
 
-    origenv = environ;
-    n = 0;
-    while (*origenv != NULL) {
-        n++;
-        origenv++;
+    for (n = 0; environ[n]; n++) {
     }
 
     if (!(newenv = malloc(sizeof(*newenv) * n)))
         abort();
 
-    origenv = environ;
-    n = i = 0;
-    while (*origenv != NULL) {
-        newenv[i++] = *origenv;
-        n++;
-        origenv++;
+    for (i = 0; i < n; i++) {
+        newenv[i] = environ[i];
     }
+
     qsort(newenv, n, sizeof(newenv[0]), envsort);
 
     for (i = 0; i < n; i++) {
