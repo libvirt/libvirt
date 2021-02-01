@@ -163,6 +163,19 @@ static int printFds(FILE *log)
     return 0;
 }
 
+static void printDaemonization(FILE *log, struct Arguments *args)
+{
+    int retries = 3;
+
+    if (args->daemonize_check) {
+        while ((getpgrp() == getppid()) && (retries-- > 0)) {
+            usleep(100 * 1000);
+        }
+    }
+
+    fprintf(log, "DAEMON:%s\n", getpgrp() != getppid() ? "yes" : "no");
+}
+
 int main(int argc, char **argv) {
     struct Arguments *args = parseArguments(argc, argv);
     size_t i;
@@ -172,7 +185,6 @@ int main(int argc, char **argv) {
     struct pollfd fds[3];
     char *buffers[3] = {NULL, NULL, NULL};
     size_t buflen[3] = {0, 0, 0};
-    size_t daemonize_retries = 3;
     char buf[1024];
     ssize_t got;
 
@@ -187,17 +199,7 @@ int main(int argc, char **argv) {
     if (printFds(log) != 0)
         goto cleanup;
 
-    while (true) {
-        bool daemonized = getpgrp() != getppid();
-
-        if (args->daemonize_check && !daemonized && daemonize_retries-- > 0) {
-            usleep(100*1000);
-            continue;
-        }
-
-        fprintf(log, "DAEMON:%s\n", daemonized ? "yes" : "no");
-        break;
-    }
+    printDaemonization(log, args);
 
     if (!(cwd = getcwd(NULL, 0)))
         goto cleanup;
