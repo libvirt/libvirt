@@ -106,11 +106,44 @@ static int envsort(const void *a, const void *b)
     }
 }
 
+static int printEnvironment(FILE *log)
+{
+    char **newenv;
+    size_t length;
+    size_t i;
+    int ret = -1;
+
+    for (length = 0; environ[length]; length++) {
+    }
+
+    if (!(newenv = malloc(sizeof(*newenv) * length)))
+        goto cleanup;
+
+    for (i = 0; i < length; i++) {
+        newenv[i] = environ[i];
+    }
+
+    qsort(newenv, length, sizeof(newenv[0]), envsort);
+
+    for (i = 0; i < length; i++) {
+        /* Ignore the variables used to instruct the loader into
+         * behaving differently, as they could throw the tests off. */
+        if (!STRPREFIX(newenv[i], "LD_"))
+            fprintf(log, "ENV:%s\n", newenv[i]);
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (newenv)
+        free(newenv);
+    return ret;
+}
+
 int main(int argc, char **argv) {
     struct Arguments *args = parseArguments(argc, argv);
-    size_t i, n;
+    size_t i;
     int open_max;
-    char **newenv = NULL;
     char *cwd;
     FILE *log = fopen(abs_builddir "/commandhelper.log", "w");
     int ret = EXIT_FAILURE;
@@ -126,24 +159,8 @@ int main(int argc, char **argv) {
 
     printArguments(log, argc, argv);
 
-    for (n = 0; environ[n]; n++) {
-    }
-
-    if (!(newenv = malloc(sizeof(*newenv) * n)))
+    if (printEnvironment(log) != 0)
         goto cleanup;
-
-    for (i = 0; i < n; i++) {
-        newenv[i] = environ[i];
-    }
-
-    qsort(newenv, n, sizeof(newenv[0]), envsort);
-
-    for (i = 0; i < n; i++) {
-        /* Ignore the variables used to instruct the loader into
-         * behaving differently, as they could throw the tests off. */
-        if (!STRPREFIX(newenv[i], "LD_"))
-            fprintf(log, "ENV:%s\n", newenv[i]);
-    }
 
     open_max = sysconf(_SC_OPEN_MAX);
     if (open_max < 0)
@@ -275,8 +292,6 @@ int main(int argc, char **argv) {
         free(buffers[i]);
     if (args)
         free(args);
-    if (newenv)
-        free(newenv);
     if (log)
         fclose(log);
     return ret;
