@@ -37,24 +37,19 @@ extern char **environ;
 
 static int envsort(const void *a, const void *b)
 {
-    const char *const*astrptr = a;
-    const char *const*bstrptr = b;
-    const char *astr = *astrptr;
-    const char *bstr = *bstrptr;
-    char *aeq = strchr(astr, '=');
-    char *beq = strchr(bstr, '=');
-    char *akey;
-    char *bkey;
-    int ret;
+    const char *astr = *(const char**)a;
+    const char *bstr = *(const char**)b;
 
-    if (!(akey = strndup(astr, aeq - astr)))
-        abort();
-    if (!(bkey = strndup(bstr, beq - bstr)))
-        abort();
-    ret = strcmp(akey, bkey);
-    free(akey);
-    free(bkey);
-    return ret;
+    while (true) {
+        char achar = (*astr == '=') ? '\0' : *astr;
+        char bchar = (*bstr == '=') ? '\0' : *bstr;
+
+        if ((achar == '\0') || (achar != bchar))
+            return achar - bchar;
+
+        astr++;
+        bstr++;
+    }
 }
 
 int main(int argc, char **argv) {
