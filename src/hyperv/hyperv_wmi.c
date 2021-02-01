@@ -184,8 +184,8 @@ hypervFreeInvokeParams(hypervInvokeParamsListPtr params)
         }
     }
 
-    VIR_DISPOSE_N(params->params, params->nbAvailParams);
-    VIR_FREE(params);
+    g_free(params->params);
+    g_free(params);
 }
 
 
