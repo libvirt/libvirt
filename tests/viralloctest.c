@@ -313,38 +313,6 @@ testInsertArray(const void *opaque G_GNUC_UNUSED)
 
 
 static int
-testDispose(const void *opaque G_GNUC_UNUSED)
-{
-    int *num = NULL;
-    int *nums = NULL;
-    size_t nnums = 0;
-    char *str = NULL;
-
-    VIR_DISPOSE(num);
-    VIR_DISPOSE_N(nums, nnums);
-    VIR_DISPOSE_STRING(str);
-
-    nnums = 10;
-    VIR_DISPOSE_N(nums, nnums);
-
-    num = g_new0(int, 1);
-
-    VIR_DISPOSE(num);
-
-    nnums = 10;
-    nums = g_new0(int, nnums);
-
-    VIR_DISPOSE_N(nums, nnums);
-
-    str = g_strdup("test");
-
-    VIR_DISPOSE_STRING(str);
-
-    return 0;
-}
-
-
-static int
 mymain(void)
 {
     int ret = 0;
@@ -356,8 +324,6 @@ mymain(void)
     if (virTestRun("resize array", testResizeArray, NULL) < 0)
         ret = -1;
     if (virTestRun("insert array", testInsertArray, NULL) < 0)
-        ret = -1;
-    if (virTestRun("dispose tests", testDispose, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
