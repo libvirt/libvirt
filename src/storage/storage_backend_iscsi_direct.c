@@ -34,6 +34,7 @@
 #include "virstring.h"
 #include "virtime.h"
 #include "viruuid.h"
+#include "virsecureerase.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -87,8 +88,9 @@ static int
 virStorageBackendISCSIDirectSetAuth(struct iscsi_context *iscsi,
                                     virStoragePoolSourcePtr source)
 {
-    unsigned char *secret_value = NULL;
+    g_autofree unsigned char *secret_value = NULL;
     size_t secret_size;
+    g_autofree char *secret_str = NULL;
     virStorageAuthDefPtr authdef = source->auth;
     int ret = -1;
     virConnectPtr conn = NULL;
@@ -113,14 +115,13 @@ virStorageBackendISCSIDirectSetAuth(struct iscsi_context *iscsi,
                                  &secret_value, &secret_size) < 0)
         goto cleanup;
 
-    if (VIR_REALLOC_N(secret_value, secret_size + 1) < 0)
-        goto cleanup;
-
-    secret_value[secret_size] = '\0';
+    secret_str = g_new0(char, secret_size + 1);
+    memcpy(secret_str, secret_value, secret_size);
+    virSecureErase(secret_value, secret_size);
+    secret_str[secret_size] = '\0';
 
     if (iscsi_set_initiator_username_pwd(iscsi,
-                                         authdef->username,
-                                         (const char *)secret_value) < 0) {
+                                         authdef->username, secret_str) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to set credential: %s"),
                        iscsi_get_error(iscsi));
@@ -129,7 +130,7 @@ virStorageBackendISCSIDirectSetAuth(struct iscsi_context *iscsi,
 
     ret = 0;
  cleanup:
-    VIR_DISPOSE_N(secret_value, secret_size);
+    virSecureErase(secret_str, secret_size);
     virObjectUnref(conn);
     return ret;
 }

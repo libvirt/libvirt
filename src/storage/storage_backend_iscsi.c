@@ -41,6 +41,7 @@
 #include "virsecret.h"
 #include "storage_util.h"
 #include "virutil.h"
+#include "virsecureerase.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -256,8 +257,9 @@ static int
 virStorageBackendISCSISetAuth(const char *portal,
                               virStoragePoolSourcePtr source)
 {
-    unsigned char *secret_value = NULL;
+    g_autofree unsigned char *secret_value = NULL;
     size_t secret_size;
+    g_autofree char *secret_str = NULL;
     virStorageAuthDefPtr authdef = source->auth;
     int ret = -1;
     virConnectPtr conn = NULL;
@@ -282,10 +284,10 @@ virStorageBackendISCSISetAuth(const char *portal,
                                  &secret_value, &secret_size) < 0)
         goto cleanup;
 
-    if (VIR_REALLOC_N(secret_value, secret_size + 1) < 0)
-        goto cleanup;
-
-    secret_value[secret_size] = '\0';
+    secret_str = g_new0(char, secret_size + 1);
+    memcpy(secret_str, secret_value, secret_size);
+    virSecureErase(secret_value, secret_size);
+    secret_str[secret_size] = '\0';
 
     if (virISCSINodeUpdate(portal,
                            source->devices[0].path,
@@ -298,13 +300,13 @@ virStorageBackendISCSISetAuth(const char *portal,
         virISCSINodeUpdate(portal,
                            source->devices[0].path,
                            "node.session.auth.password",
-                           (const char *)secret_value) < 0)
+                           secret_str) < 0)
         goto cleanup;
 
     ret = 0;
 
  cleanup:
-    VIR_DISPOSE_N(secret_value, secret_size);
+    virSecureErase(secret_str, secret_size);
     virObjectUnref(conn);
     return ret;
 }
