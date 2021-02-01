@@ -2174,7 +2174,7 @@ qemuBuildVHostUserFsCommandLine(virCommandPtr cmd,
     g_autofree char *chardev_alias = NULL;
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
 
-    chardev_alias = g_strdup_printf("chr-vu-%s", fs->info.alias);
+    chardev_alias = qemuDomainGetVhostUserChrAlias(fs->info.alias);
 
     virCommandAddArg(cmd, "-chardev");
     virBufferAddLit(&opt, "socket");
@@ -4168,9 +4168,10 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
                 virBufferAsprintf(&buf, ",max_outputs=%u", video->heads);
         }
     } else if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
+        g_autofree char *alias = qemuDomainGetVhostUserChrAlias(video->info.alias);
         if (video->heads)
             virBufferAsprintf(&buf, ",max_outputs=%u", video->heads);
-        virBufferAsprintf(&buf, ",chardev=chr-vu-%s", video->info.alias);
+        virBufferAsprintf(&buf, ",chardev=%s", alias);
     } else if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS)) {
             if (video->heads)
@@ -4290,6 +4291,7 @@ qemuBuildVhostUserChardevStr(const char *alias,
                              int *fd,
                              virCommandPtr cmd)
 {
+    g_autofree char *chardev_alias = qemuDomainGetVhostUserChrAlias(alias);
     char *chardev = NULL;
 
     if (*fd == -1) {
@@ -4298,7 +4300,7 @@ qemuBuildVhostUserChardevStr(const char *alias,
         return NULL;
     }
 
-    chardev = g_strdup_printf("socket,id=chr-vu-%s,fd=%d", alias, *fd);
+    chardev = g_strdup_printf("socket,id=%s,fd=%d", chardev_alias, *fd);
 
     virCommandPassFD(cmd, *fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
     *fd = -1;

@@ -868,3 +868,9 @@ qemuDomainGetDBusVMStateAlias(void)
 {
     return "dbus-vmstate0";
 }
+
+char *
+qemuDomainGetVhostUserChrAlias(const char *devalias)
+{
+    return g_strdup_printf("chr-vu-%s", devalias);
+}
