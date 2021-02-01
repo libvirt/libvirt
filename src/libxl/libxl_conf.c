@@ -46,6 +46,7 @@
 #include "xen_xl.h"
 #include "virnetdevvportprofile.h"
 #include "virenum.h"
+#include "virsecureerase.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -998,14 +999,15 @@ static int
 libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
 {
     virConnectPtr conn = NULL;
-    uint8_t *secret = NULL;
     VIR_AUTODISPOSE_STR base64secret = NULL;
-    size_t secretlen = 0;
     char *username = NULL;
     int ret = -1;
 
     *srcstr = NULL;
     if (src->auth && src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
+        g_autofree uint8_t *secret = NULL;
+        size_t secretlen = 0;
+
         username = src->auth->username;
         if (!(conn = virConnectOpen("xen:///system")))
             goto cleanup;
@@ -1017,6 +1019,7 @@ libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
 
         /* RBD expects an encoded secret */
         base64secret = g_base64_encode(secret, secretlen);
+        virSecureErase(secret, secretlen);
     }
 
     if (!(*srcstr = libxlMakeNetworkDiskSrcStr(src, username, base64secret)))
@@ -1025,7 +1028,6 @@ libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
     ret = 0;
 
  cleanup:
-    VIR_DISPOSE_N(secret, secretlen);
     virObjectUnref(conn);
     return ret;
 }
