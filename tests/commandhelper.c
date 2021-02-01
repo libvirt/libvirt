@@ -67,6 +67,12 @@ static void cleanupStringList(char ***ptr)
     free(strings);
 }
 
+static void cleanupFile(FILE **ptr)
+{
+    FILE *file = *ptr;
+    fclose(file);
+}
+
 static void cleanupGeneric(void *ptr)
 {
     void **ptrptr = ptr;
@@ -330,42 +336,34 @@ static int printInput(struct Arguments *args)
 }
 
 int main(int argc, char **argv) {
-    struct Arguments *args = parseArguments(argc, argv);
-    FILE *log = fopen(abs_builddir "/commandhelper.log", "w");
-    int ret = EXIT_FAILURE;
+    cleanup(struct Arguments *, cleanupArguments) args = NULL;
+    cleanup(FILE *, cleanupFile) log = NULL;
 
-    if (!log || !args)
-        goto cleanup;
+    if (!(log = fopen(abs_builddir "/commandhelper.log", "w")))
+        return EXIT_FAILURE;
+
+    if (!(args = parseArguments(argc, argv)))
+        return EXIT_FAILURE;
 
     printArguments(log, argc, argv);
 
     if (printEnvironment(log) != 0)
-        goto cleanup;
+        return EXIT_FAILURE;
 
     if (printFds(log) != 0)
-        goto cleanup;
+        return EXIT_FAILURE;
 
     printDaemonization(log, args);
 
     if (printCwd(log) != 0)
-        goto cleanup;
+        return EXIT_FAILURE;
 
     fprintf(log, "UMASK:%04o\n", umask(0));
 
     if (printInput(args) != 0)
-        goto cleanup;
+        return EXIT_FAILURE;
 
-    ret = EXIT_SUCCESS;
-
- cleanup:
-    if (args) {
-        if (args->readfds)
-            free(args->readfds);
-        free(args);
-    }
-    if (log)
-        fclose(log);
-    return ret;
+    return EXIT_SUCCESS;
 }
 
 #else
