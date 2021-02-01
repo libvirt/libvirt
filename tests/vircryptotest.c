@@ -122,7 +122,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    uint8_t secretdata[8];
+    uint8_t secretdata[8] = "letmein";
     uint8_t expected_ciphertext[16] = {0x48, 0x8e, 0x9, 0xb9,
                                        0x6a, 0xa6, 0x24, 0x5f,
                                        0x1b, 0x8c, 0x3f, 0x48,
@@ -165,9 +165,6 @@ mymain(void)
         if (virTestRun("Encrypt " n, testCryptoEncrypt, &data) < 0) \
             ret = -1; \
     } while (0)
-
-    memset(&secretdata, 0, 8);
-    memcpy(&secretdata, "letmein", 7);
 
     VIR_CRYPTO_ENCRYPT(VIR_CRYPTO_CIPHER_AES256CBC, "aes265cbc",
                        secretdata, 7, expected_ciphertext, 16);
