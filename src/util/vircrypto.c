@@ -25,6 +25,7 @@
 #include "virerror.h"
 #include "viralloc.h"
 #include "virrandom.h"
+#include "virsecureerase.h"
 
 #include <gnutls/gnutls.h>
 #include <gnutls/crypto.h>
@@ -206,7 +207,8 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
     return 0;
 
  error:
-    VIR_DISPOSE_N(ciphertext, ciphertextlen);
+    virSecureErase(ciphertext, ciphertextlen);
+    g_free(ciphertext);
     memset(&enc_key, 0, sizeof(gnutls_datum_t));
     memset(&iv_buf, 0, sizeof(gnutls_datum_t));
     return -1;
