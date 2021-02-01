@@ -686,7 +686,6 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         /* NULL-terminate usbdevice_list */
         if (nusbdevice > 0 &&
             VIR_EXPAND_N(b_info->u.hvm.usbdevice_list, nusbdevice, 1) < 0) {
-            VIR_DISPOSE_N(b_info->u.hvm.usbdevice_list, nusbdevice);
             return -1;
         }
 #endif
