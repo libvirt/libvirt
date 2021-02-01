@@ -75,8 +75,6 @@ int main(int argc, char **argv) {
         goto cleanup;
 
     for (i = 1; i < argc; i++) {
-        fprintf(log, "ARG:%s\n", argv[i]);
-
         if (STREQ(argv[i - 1], "--readfd") &&
             sscanf(argv[i], "%u%c", &readfds[numreadfds++], &c) != 1) {
             printf("Could not parse fd %s\n", argv[i]);
@@ -86,6 +84,10 @@ int main(int argc, char **argv) {
         } else if (STREQ(argv[i], "--close-stdin")) {
             close_stdin = true;
         }
+    }
+
+    for (i = 1; i < argc; i++) {
+        fprintf(log, "ARG:%s\n", argv[i]);
     }
 
     for (n = 0; environ[n]; n++) {
