@@ -225,16 +225,10 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "file", &filename) < 0)
         return false;
 
-    if (!base64 && !filename && !interactive) {
-        vshError(ctl, _("Input secret value is missing"));
-        return false;
-    }
-
-    /* warn users that the --base64 option passed from command line is wrong */
-    if (base64)
+    if (base64) {
+        /* warn users that the --base64 option passed from command line is wrong */
         vshError(ctl, _("Passing secret value as command-line argument is insecure!"));
-
-    if (filename) {
+    } else if (filename) {
         ssize_t read_ret;
         if ((read_ret = virFileReadAll(filename, 1024, &file_buf)) < 0) {
             vshSaveLibvirtError();
@@ -243,9 +237,7 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
 
         file_len = read_ret;
         base64 = file_buf;
-    }
-
-    if (interactive) {
+    } else if (interactive) {
         vshPrint(ctl, "%s", _("Enter new value for secret:"));
         fflush(stdout);
 
@@ -255,6 +247,9 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
         }
         file_len = strlen(file_buf);
         plain = true;
+    } else {
+        vshError(ctl, _("Input secret value is missing"));
+        return false;
     }
 
     if (plain) {
