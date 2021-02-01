@@ -54,6 +54,19 @@ static void cleanupArguments(struct Arguments **ptr)
     free(args);
 }
 
+static void cleanupStringList(char ***ptr)
+{
+    char **strings = *ptr;
+
+    if (strings) {
+        char **str;
+        for (str = strings; *str; str++)
+            free(*str);
+    }
+
+    free(strings);
+}
+
 static void cleanupGeneric(void *ptr)
 {
     void **ptrptr = ptr;
@@ -219,26 +232,25 @@ static int printCwd(FILE *log)
 static int printInput(struct Arguments *args)
 {
     char buf[1024];
-    struct pollfd *fds = NULL;
-    char **buffers = NULL;
-    size_t *buflen = NULL;
-    int ret = -1;
+    cleanup(struct pollfd *, cleanupGeneric) fds = NULL;
+    cleanup(char **, cleanupStringList) buffers = NULL;
+    cleanup(size_t *, cleanupGeneric) buflen = NULL;
     size_t i;
     ssize_t got;
 
     if (!(fds = calloc(args->numreadfds, sizeof(*fds))))
-        goto cleanup;
+        return -1;
 
     /* plus one NULL terminator */
     if (!(buffers = calloc(args->numreadfds + 1, sizeof(*buffers))))
-        goto cleanup;
+        return -1;
 
     if (!(buflen = calloc(args->numreadfds, sizeof(*buflen))))
-        goto cleanup;
+        return -1;
 
     if (args->close_stdin) {
         if (freopen("/dev/null", "r", stdin) != stdin)
-            goto cleanup;
+            return -1;
         usleep(100 * 1000);
     }
 
@@ -258,7 +270,7 @@ static int printInput(struct Arguments *args)
 
         if (poll(fds, args->numreadfds, -1) < 0) {
             printf("poll failed: %s\n", strerror(errno));
-            goto cleanup;
+            return -1;
         }
 
         for (i = 0; i < args->numreadfds; i++) {
@@ -277,7 +289,7 @@ static int printInput(struct Arguments *args)
 
                 got = read(fds[i].fd, buf, sizeof(buf));
                 if (got < 0)
-                    goto cleanup;
+                    return -1;
                 if (got == 0) {
                     /* do not want to hear from this fd anymore */
                     fds[i].events = 0;
@@ -285,7 +297,7 @@ static int printInput(struct Arguments *args)
                     buffers[i] = realloc(buffers[i], buflen[i] + got);
                     if (!buf[i]) {
                         fprintf(stdout, "Out of memory!\n");
-                        goto cleanup;
+                        return -1;
                     }
                     memcpy(buffers[i] + buflen[i], buf, got);
                     buflen[i] += got;
@@ -304,9 +316,9 @@ static int printInput(struct Arguments *args)
 
     for (i = 0; i < args->numreadfds; i++) {
         if (fwrite(buffers[i], 1, buflen[i], stdout) != buflen[i])
-            goto cleanup;
+            return -1;
         if (fwrite(buffers[i], 1, buflen[i], stderr) != buflen[i])
-            goto cleanup;
+            return -1;
     }
 
     fprintf(stdout, "END STDOUT\n");
@@ -314,19 +326,7 @@ static int printInput(struct Arguments *args)
     fprintf(stderr, "END STDERR\n");
     fflush(stderr);
 
-    ret = 0;
-
- cleanup:
-    if (buffers) {
-        char **ptr;
-        for (ptr = buffers; *ptr; ptr++)
-            free(*ptr);
-    }
-    free(fds);
-    free(buflen);
-    free(buffers);
-
-    return ret;
+    return 0;
 }
 
 int main(int argc, char **argv) {
