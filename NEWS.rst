@@ -23,6 +23,18 @@ v7.1.0 (unreleased)
     Booting is possible from virtiofs filesystems. Introduce an option
     to control the boot order, like we do for other bootable devices.
 
+  * hyperv: implement new APIs
+
+    The ``virDomainUndefine()``, ``virDomainUndefineFlags()``,
+    ``virDomainDefineXML()``, ``virDomainAttachDevice()``, and
+    ``virDomainAttachDeviceFlags()``, ``virConnectListAllNetworks()``,
+    ``virConnectNumOfNetworks()``, ``virNetworkLookupByName()``,
+    ``virNetworkLookupByUUID()``, ``virConnectNumOfDefinedNetworks()``,
+    ``virConnectListDefinedNetworks()``, ``virNetworkGetAutostart()``,
+    ``virNetworkIsActive()``, ``virNetworkIsPersistent()``,
+    ``virNetworkGetXMLDesc()``, and ``virDomainScreenshot()``, APIs have been
+    implemented in the Hyper-V driver.
+
 * **Improvements**
 
 * **Bug fixes**
