@@ -180,6 +180,29 @@ hypervNetworkLookupByName(virConnectPtr conn, const char *name)
 }
 
 
+static char *
+hypervNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
+{
+    g_autoptr(virNetwork) hypervNetwork = NULL;
+    g_autoptr(virNetworkDef) def = NULL;
+
+    def = g_new0(virNetworkDef, 1);
+
+    hypervNetwork = hypervNetworkLookupByUUID(network->conn, network->uuid);
+    if (!hypervNetwork)
+        return NULL;
+
+    memcpy(def->uuid, network->uuid, VIR_UUID_BUFLEN);
+    def->uuid_specified = true;
+
+    def->name = g_strdup(hypervNetwork->name);
+
+    def->forward.type = VIR_NETWORK_FORWARD_NONE;
+
+    return virNetworkDefFormat(def, NULL, flags);
+}
+
+
 static int
 hypervNetworkGetAutostart(virNetworkPtr network G_GNUC_UNUSED, int *autostart)
 {
@@ -212,6 +235,7 @@ virNetworkDriver hypervNetworkDriver = {
     .connectListAllNetworks = hypervConnectListAllNetworks, /* 7.1.0 */
     .networkLookupByUUID = hypervNetworkLookupByUUID, /* 7.1.0 */
     .networkLookupByName = hypervNetworkLookupByName, /* 7.1.0 */
+    .networkGetXMLDesc = hypervNetworkGetXMLDesc, /* 7.1.0 */
     .networkGetAutostart = hypervNetworkGetAutostart, /* 7.1.0 */
     .networkIsActive = hypervNetworkIsActive, /* 7.1.0 */
     .networkIsPersistent = hypervNetworkIsPersistent, /* 7.1.0 */
