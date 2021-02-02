@@ -3175,6 +3175,10 @@ virSecretLookupFormatSecret;
 virSecretLookupParseSecret;
 
 
+# util/virsecureerase.h
+virSecureErase;
+
+
 # util/virsocket.h
 virSocketRecvFD;
 virSocketSendFD;

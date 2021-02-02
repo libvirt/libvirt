@@ -86,6 +86,7 @@ util_sources = [
   'virscsivhost.c',
   'virseclabel.c',
   'virsecret.c',
+  'virsecureerase.c',
   'virsocket.c',
   'virsocketaddr.c',
   'virstoragefile.c',
