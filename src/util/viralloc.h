@@ -349,13 +349,3 @@ void virDisposeString(char **strptr)
  * This macro is not safe to be used on arguments with side effects.
  */
 #define VIR_DISPOSE_STRING(ptr) virDisposeString(&(ptr))
-
-/**
- * VIR_AUTODISPOSE_STR:
- *
- * Macro to automatically free and clear the memory allocated to
- * the string variable declared with it by calling virDisposeString
- * when the variable goes out of scope.
- */
-#define VIR_AUTODISPOSE_STR \
-    __attribute__((cleanup(virDisposeString))) char *
