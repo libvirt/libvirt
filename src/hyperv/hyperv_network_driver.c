@@ -180,6 +180,31 @@ hypervNetworkLookupByName(virConnectPtr conn, const char *name)
 }
 
 
+static int
+hypervNetworkGetAutostart(virNetworkPtr network G_GNUC_UNUSED, int *autostart)
+{
+    /* Hyper-V networks are always active */
+    *autostart = 1;
+    return 0;
+}
+
+
+static int
+hypervNetworkIsActive(virNetworkPtr network G_GNUC_UNUSED)
+{
+    /* Hyper-V networks are always active */
+    return 1;
+}
+
+
+static int
+hypervNetworkIsPersistent(virNetworkPtr network G_GNUC_UNUSED)
+{
+    /* Hyper-V networks are always persistent */
+    return 1;
+}
+
+
 virNetworkDriver hypervNetworkDriver = {
     .connectNumOfNetworks = hypervConnectNumOfNetworks, /* 7.1.0 */
     .connectNumOfDefinedNetworks = hypervConnectNumOfDefinedNetworks, /* 7.1.0 */
@@ -187,4 +212,7 @@ virNetworkDriver hypervNetworkDriver = {
     .connectListAllNetworks = hypervConnectListAllNetworks, /* 7.1.0 */
     .networkLookupByUUID = hypervNetworkLookupByUUID, /* 7.1.0 */
     .networkLookupByName = hypervNetworkLookupByName, /* 7.1.0 */
+    .networkGetAutostart = hypervNetworkGetAutostart, /* 7.1.0 */
+    .networkIsActive = hypervNetworkIsActive, /* 7.1.0 */
+    .networkIsPersistent = hypervNetworkIsPersistent, /* 7.1.0 */
 };
