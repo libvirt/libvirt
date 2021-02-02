@@ -1181,7 +1181,26 @@ nodeDeviceDestroy(virNodeDevicePtr device)
 
         ret = 0;
     } else if (nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_MDEV)) {
+        /* If this mediated device is in use by a vm, attempting to stop it
+         * will block until the vm closes the device. The nodedev driver
+         * cannot query the hypervisor driver to determine whether the device
+         * is in use by any active domains, since that would introduce circular
+         * dependencies between daemons and add a risk of deadlocks. So we need
+         * to resort to a workaround.  vfio only allows the group for a device
+         * to be opened by one user at a time. So if we get EBUSY when opening
+         * the group, we infer that the device is in use and therefore we
+         * shouldn't try to remove the device. */
+        g_autofree char *vfiogroup =
+            virMediatedDeviceGetIOMMUGroupDev(def->caps->data.mdev.uuid);
+        VIR_AUTOCLOSE fd = open(vfiogroup, O_RDONLY);
         g_autofree char *errmsg = NULL;
+
+        if (fd < 0 && errno == EBUSY) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to destroy '%s': device in use"),
+                           def->name);
+            goto cleanup;
+        }
 
         if (virMdevctlStop(def, &errmsg) < 0) {
             if (errmsg)
