@@ -62,6 +62,14 @@ implpermitted = {
     "vzDomainMigrateConfirm3Params": True,
 }
 
+aclFuncHelpers = {
+    "virDomainDriverNodeDeviceDetachFlags": True,
+    "virDomainDriverNodeDeviceReset": True,
+    "virDomainDriverNodeDeviceReAttach": True,
+}
+
+aclFuncHelperFile = "domain_driver.c"
+
 lastfile = None
 
 
@@ -136,8 +144,14 @@ def process_file(filename):
     maybefunc = None
     intable = False
     table = None
+    aclHelperFileCheck = False
 
-    acls = {}
+    acls = aclFuncHelpers
+
+    if aclFuncHelperFile in filename:
+        acls = {}
+        aclHelperFileCheck = True
+
     aclfilters = {}
     errs = False
     with open(filename, "r") as fh:
@@ -261,6 +275,15 @@ def process_file(filename):
                 brace = brace + 1
             if "}" in line:
                 brace = brace - 1
+
+    if aclHelperFileCheck:
+        for helper in aclFuncHelpers:
+            if helper not in acls:
+                print(("%s:%d Missing ACL check in helper function '%s'") %
+                      (filename, lineno, helper),
+                      file=sys.stderr)
+
+                errs = True
 
     return errs
 

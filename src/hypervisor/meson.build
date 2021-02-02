@@ -5,6 +5,8 @@ hypervisor_sources = [
   'virhostdev.c',
 ]
 
+stateful_driver_source_files += files(hypervisor_sources)
+
 hypervisor_lib = static_library(
   'virt_hypervisor',
   [
