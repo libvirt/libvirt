@@ -1,5 +1,6 @@
 hyperv_sources = [
   'hyperv_driver.c',
+  'hyperv_network_driver.c',
   'hyperv_util.c',
   'hyperv_wmi.c',
   'hyperv_wmi_classes.c',

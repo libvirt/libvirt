@@ -31,6 +31,7 @@
 #include "viruuid.h"
 #include "virutil.h"
 #include "hyperv_driver.h"
+#include "hyperv_network_driver.h"
 #include "hyperv_private.h"
 #include "hyperv_util.h"
 #include "hyperv_wmi.h"
@@ -3549,6 +3550,7 @@ static virConnectDriver hypervConnectDriver = {
     .remoteOnly = true,
     .uriSchemes = (const char *[]){ "hyperv", NULL },
     .hypervisorDriver = &hypervHypervisorDriver,
+    .networkDriver = &hypervNetworkDriver,
 };
 
 int
