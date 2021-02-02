@@ -23,3 +23,6 @@
 
 void
 virSecureErase(void *ptr, size_t size);
+
+void
+virSecureEraseString(char *str);

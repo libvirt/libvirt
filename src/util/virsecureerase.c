@@ -42,3 +42,16 @@ virSecureErase(void *ptr,
 
     memset(ptr, 0, size);
 }
+
+/**
+ * virSecureEraseString:
+ * @str: String to securely erase
+ */
+void
+virSecureEraseString(char *str)
+{
+    if (!str)
+        return;
+
+    virSecureErase(str, strlen(str));
+}

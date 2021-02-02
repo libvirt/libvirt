@@ -3176,6 +3176,7 @@ virSecretLookupParseSecret;
 
 # util/virsecureerase.h
 virSecureErase;
+virSecureEraseString;
 
 
 # util/virsocket.h
