@@ -65,20 +65,6 @@ static int virDomainCapsOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virDomainCaps);
 
 
-static void
-virDomainCapsStringValuesFree(virDomainCapsStringValuesPtr values)
-{
-    size_t i;
-
-    if (!values || !values->values)
-        return;
-
-    for (i = 0; i < values->nvalues; i++)
-        VIR_FREE(values->values[i]);
-    VIR_FREE(values->values);
-}
-
-
 void
 virSEVCapabilitiesFree(virSEVCapability *cap)
 {
@@ -95,6 +81,8 @@ static void
 virDomainCapsDispose(void *obj)
 {
     virDomainCapsPtr caps = obj;
+    virDomainCapsStringValuesPtr values;
+    size_t i;
 
     VIR_FREE(caps->path);
     VIR_FREE(caps->machine);
@@ -102,7 +90,10 @@ virDomainCapsDispose(void *obj)
     virCPUDefFree(caps->cpu.hostModel);
     virSEVCapabilitiesFree(caps->sev);
 
-    virDomainCapsStringValuesFree(&caps->os.loader.values);
+    values = &caps->os.loader.values;
+    for (i = 0; i < values->nvalues; i++)
+        VIR_FREE(values->values[i]);
+    VIR_FREE(values->values);
 }
 
 
