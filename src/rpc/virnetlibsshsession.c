@@ -31,6 +31,7 @@
 #include "virstring.h"
 #include "virauth.h"
 #include "virbuffer.h"
+#include "virsecureerase.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBSSH
 
@@ -613,7 +614,7 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
         /* Try the authenticating the set amount of times. The server breaks the
          * connection if maximum number of bad auth tries is exceeded */
         while (true) {
-            VIR_AUTODISPOSE_STR password = NULL;
+            g_autofree char *password = NULL;
 
             if (!(password = virAuthGetPasswordPath(sess->authPath, sess->cred,
                                                     "ssh", sess->username,
@@ -621,11 +622,12 @@ virNetLibsshAuthenticatePassword(virNetLibsshSessionPtr sess,
                 return SSH_AUTH_ERROR;
 
             /* tunnelled password authentication */
-            if ((rc = ssh_userauth_password(sess->session, NULL,
-                                            password)) == 0)
-                return SSH_AUTH_SUCCESS;
+            rc = ssh_userauth_password(sess->session, NULL, password);
+            virSecureEraseString(password);
 
-            if (rc != SSH_AUTH_DENIED)
+            if (rc == 0)
+                return SSH_AUTH_SUCCESS;
+            else if (rc != SSH_AUTH_DENIED)
                 break;
         }
     }
