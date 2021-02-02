@@ -22,6 +22,8 @@
 
 #include <config.h>
 
+#include <fcntl.h>
+
 #include "internal.h"
 #include "datatypes.h"
 #include "virdomainobjlist.h"
@@ -38,6 +40,8 @@
 #include "virstring.h"
 #include "virkeycode.h"
 #include "domain_conf.h"
+#include "virfdstream.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_HYPERV
 
@@ -293,6 +297,73 @@ hypervCapsInit(hypervPrivate *priv)
     virObjectUnref(caps);
     return NULL;
 }
+
+
+static int
+hypervGetVideoResolution(hypervPrivate *priv,
+                         char *vm_uuid,
+                         int *xRes,
+                         int *yRes,
+                         bool fallback)
+{
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    g_autoptr(Msvm_S3DisplayController) s3Display = NULL;
+    g_autoptr(Msvm_SyntheticDisplayController) synthetic = NULL;
+    g_autoptr(Msvm_VideoHead) heads = NULL;
+    const char *wmiClass = NULL;
+    char *deviceId = NULL;
+    g_autofree char *enabledStateString = NULL;
+
+    if (fallback) {
+        wmiClass = "Msvm_S3DisplayController";
+
+        virBufferEscapeSQL(&query,
+                           MSVM_S3DISPLAYCONTROLLER_WQL_SELECT "WHERE SystemName = '%s'",
+                           vm_uuid);
+
+        if (hypervGetWmiClass(Msvm_S3DisplayController, &s3Display) < 0 || !s3Display)
+            return -1;
+
+        deviceId = s3Display->data->DeviceID;
+    } else {
+        wmiClass = "Msvm_SyntheticDisplayController";
+
+        virBufferEscapeSQL(&query,
+                           MSVM_SYNTHETICDISPLAYCONTROLLER_WQL_SELECT "WHERE SystemName = '%s'",
+                           vm_uuid);
+
+        if (hypervGetWmiClass(Msvm_SyntheticDisplayController, &synthetic) < 0 || !synthetic)
+            return -1;
+
+        deviceId = synthetic->data->DeviceID;
+    }
+
+    virBufferFreeAndReset(&query);
+
+    virBufferAsprintf(&query,
+                      "ASSOCIATORS OF {%s."
+                      "CreationClassName='%s',"
+                      "DeviceID='%s',"
+                      "SystemCreationClassName='Msvm_ComputerSystem',"
+                      "SystemName='%s'"
+                      "} WHERE AssocClass = Msvm_VideoHeadOnController "
+                      "ResultClass = Msvm_VideoHead",
+                      wmiClass, wmiClass, deviceId, vm_uuid);
+
+    if (hypervGetWmiClass(Msvm_VideoHead, &heads) < 0)
+        return -1;
+
+    enabledStateString = g_strdup_printf("%d", CIM_ENABLEDLOGICALELEMENT_ENABLEDSTATE_ENABLED);
+    if (heads && STREQ(heads->data->EnabledState, enabledStateString)) {
+        *xRes = heads->data->CurrentHorizontalResolution;
+        *yRes = heads->data->CurrentVerticalResolution;
+
+        return 0;
+    }
+
+    return -1;
+}
+
 
 /*
  * Virtual device functions
@@ -2311,6 +2382,141 @@ hypervDomainGetState(virDomainPtr domain, int *state, int *reason,
 }
 
 
+static char *
+hypervDomainScreenshot(virDomainPtr domain,
+                       virStreamPtr stream,
+                       unsigned int screen G_GNUC_UNUSED,
+                       unsigned int flags)
+{
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    hypervPrivate *priv = domain->conn->privateData;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    g_autoptr(hypervInvokeParamsList) params = NULL;
+    g_auto(WsXmlDocH) ret_doc = NULL;
+    int xRes = 640;
+    int yRes = 480;
+    g_autofree char *width = NULL;
+    g_autofree char *height = NULL;
+    g_autofree char *imageDataText = NULL;
+    g_autofree unsigned char *imageDataBuffer = NULL;
+    size_t imageDataBufferSize;
+    const char *temporaryDirectory = NULL;
+    g_autofree char *temporaryFile = NULL;
+    g_autofree uint8_t *ppmBuffer = NULL;
+    char *result = NULL;
+    const char *xpath = "/s:Envelope/s:Body/p:GetVirtualSystemThumbnailImage_OUTPUT/p:ImageData";
+    int pixelCount;
+    int pixelByteCount;
+    size_t i = 0;
+    int fd = -1;
+    bool unlinkTemporaryFile = false;
+
+    virCheckFlags(0, NULL);
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    /* Hyper-V Generation 1 VMs use two video heads:
+     *  - S3DisplayController is used for early boot screens.
+     *  - SyntheticDisplayController takes over when the guest OS initializes its video driver.
+     *
+     * This attempts to get the resolution from the SyntheticDisplayController first.
+     * If that fails, it falls back to S3DisplayController. */
+    if (hypervGetVideoResolution(priv, uuid_string, &xRes, &yRes, false) < 0) {
+        if (hypervGetVideoResolution(priv, uuid_string, &xRes, &yRes, true) < 0)
+            goto cleanup;
+    }
+
+    /* prepare params */
+    params = hypervCreateInvokeParamsList("GetVirtualSystemThumbnailImage",
+                                          MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
+                                          Msvm_VirtualSystemManagementService_WmiInfo);
+    if (!params)
+        goto cleanup;
+
+    width = g_strdup_printf("%d", xRes);
+    hypervAddSimpleParam(params, "WidthPixels", width);
+
+    height = g_strdup_printf("%d", yRes);
+    hypervAddSimpleParam(params, "HeightPixels", height);
+
+    virBufferAsprintf(&query,
+                      "ASSOCIATORS OF "
+                      "{Msvm_ComputerSystem.CreationClassName='Msvm_ComputerSystem',Name='%s'} "
+                      "WHERE ResultClass = Msvm_VirtualSystemSettingData",
+                      uuid_string);
+    hypervAddEprParam(params, "TargetSystem", &query, Msvm_VirtualSystemSettingData_WmiInfo);
+
+    /* capture and parse the screenshot */
+    if (hypervInvokeMethod(priv, &params, &ret_doc) < 0)
+        goto cleanup;
+
+    if (!ws_xml_get_soap_envelope(ret_doc)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not retrieve screenshot"));
+        goto cleanup;
+    }
+
+    imageDataText = ws_xml_get_xpath_value(ret_doc, (char *)xpath);
+
+    if (!imageDataText) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Failed to retrieve image data"));
+        goto cleanup;
+    }
+
+    imageDataBuffer = g_base64_decode(imageDataText, &imageDataBufferSize);
+
+    pixelCount = imageDataBufferSize / 2;
+    pixelByteCount = pixelCount * 3;
+
+    ppmBuffer = g_new0(uint8_t, pixelByteCount);
+
+    /* convert rgb565 to rgb888 */
+    for (i = 0; i < pixelCount; i++) {
+        const uint16_t pixel = imageDataBuffer[i * 2] + (imageDataBuffer[i * 2 + 1] << 8);
+        const uint16_t redMask = 0xF800;
+        const uint16_t greenMask = 0x7E0;
+        const uint16_t blueMask = 0x1F;
+        const uint8_t redFive = (pixel & redMask) >> 11;
+        const uint8_t greenSix = (pixel & greenMask) >> 5;
+        const uint8_t blueFive = pixel & blueMask;
+        ppmBuffer[i * 3] = (redFive * 527 + 23) >> 6;
+        ppmBuffer[i * 3 + 1] = (greenSix * 259 + 33) >> 6;
+        ppmBuffer[i * 3 + 2] = (blueFive * 527 + 23) >> 6;
+    }
+
+    temporaryDirectory = getenv("TMPDIR");
+    if (!temporaryDirectory)
+        temporaryDirectory = "/tmp";
+    temporaryFile = g_strdup_printf("%s/libvirt.hyperv.screendump.XXXXXX", temporaryDirectory);
+    if ((fd = g_mkstemp_full(temporaryFile, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
+        virReportSystemError(errno, _("g_mkstemp(\"%s\") failed"), temporaryFile);
+        goto cleanup;
+    }
+    unlinkTemporaryFile = true;
+
+    /* write image data */
+    dprintf(fd, "P6\n%d %d\n255\n", xRes, yRes);
+    if (safewrite(fd, ppmBuffer, pixelByteCount) != pixelByteCount) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Failed to write pixel data"));
+        goto cleanup;
+    }
+
+    if (VIR_CLOSE(fd) < 0)
+        virReportSystemError(errno, "%s", _("failed to close screenshot file"));
+
+    if (virFDStreamOpenFile(stream, temporaryFile, 0, 0, O_RDONLY) < 0)
+        goto cleanup;
+
+    result = g_strdup("image/x-portable-pixmap");
+
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    if (unlinkTemporaryFile)
+        unlink(temporaryFile);
+
+    return result;
+}
+
+
 static int
 hypervDomainSetVcpusFlags(virDomainPtr domain,
                           unsigned int nvcpus,
@@ -3472,6 +3678,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainSetMemoryFlags = hypervDomainSetMemoryFlags, /* 3.6.0 */
     .domainGetInfo = hypervDomainGetInfo, /* 0.9.5 */
     .domainGetState = hypervDomainGetState, /* 0.9.5 */
+    .domainScreenshot = hypervDomainScreenshot, /* 7.1.0 */
     .domainSetVcpus = hypervDomainSetVcpus, /* 6.10.0 */
     .domainSetVcpusFlags = hypervDomainSetVcpusFlags, /* 6.10.0 */
     .domainGetVcpusFlags = hypervDomainGetVcpusFlags, /* 6.10.0 */

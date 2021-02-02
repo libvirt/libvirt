@@ -968,3 +968,166 @@ class Msvm_VirtualEthernetSwitchManagementService
     string   StartMode
     boolean  Started
 end
+
+
+class Msvm_SyntheticDisplayController
+    string   InstanceID
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    string   Name
+    uint16   OperationalStatus[]
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    uint16   CommunicationStatus
+    uint16   DetailedStatus
+    uint16   OperatingStatus
+    uint16   PrimaryStatus
+    string   EnabledState
+    string   OtherEnabledState
+    uint16   RequestedState
+    uint16   EnabledDefault
+    datetime TimeOfLastStateChange
+    uint16   AvailableRequestedStates[]
+    uint16   TransitioningToState
+    string   SystemCreationClassName
+    string   SystemName
+    string   CreationClassName
+    string   DeviceID
+    boolean  PowerManagementSupported
+    uint16   PowerManagementCapabilities[]
+    uint16   Availability
+    uint16   StatusInfo
+    uint32   LastErrorCode
+    string   ErrorDescription
+    boolean  ErrorCleared
+    uint64   PowerOnHours
+    uint64   TotalPowerOnHours
+    string   OtherIdentifyingInfo[]
+    string   IdentifyingDescriptions[]
+    uint16   AdditionalAvailability[]
+    uint64   MaxQuiesceTime
+    datetime TimeOfLastReset
+    uint16   ProtocolSupported
+    uint32   MaxNumberControlled
+    string   ProtocolDescription
+    string   VideoProcessor
+    uint16   VideoMemoryType
+    string   OtherVideoMemoryType
+    uint32   NumberOfVideoPages
+    uint32   MaxMemorySupported
+    uint16   AcceleratorCapabilities[]
+    string   CapabilityDescriptions[]
+    string   OtherVideoArchitecture
+    uint16   VideoArchitecture
+end
+
+
+class Msvm_S3DisplayController
+    string   InstanceID
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    string   Name
+    uint16   OperationalStatus[]
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    uint16   CommunicationStatus
+    uint16   DetailedStatus
+    uint16   OperatingStatus
+    uint16   PrimaryStatus
+    string   EnabledState
+    string   OtherEnabledState
+    uint16   RequestedState
+    uint16   EnabledDefault
+    datetime TimeOfLastStateChange
+    uint16   AvailableRequestedStates[]
+    uint16   TransitioningToState
+    string   SystemCreationClassName
+    string   SystemName
+    string   CreationClassName
+    string   DeviceID
+    boolean  PowerManagementSupported
+    uint16   PowerManagementCapabilities[]
+    uint16   Availability
+    uint16   StatusInfo
+    uint32   LastErrorCode
+    string   ErrorDescription
+    boolean  ErrorCleared
+    string   OtherIdentifyingInfo[]
+    uint64   PowerOnHours
+    uint64   TotalPowerOnHours
+    string   IdentifyingDescriptions[]
+    uint16   AdditionalAvailability[]
+    uint64   MaxQuiesceTime
+    datetime TimeOfLastReset
+    uint16   ProtocolSupported
+    uint32   MaxNumberControlled
+    string   ProtocolDescription
+    string   VideoProcessor
+    uint16   VideoMemoryType
+    string   OtherVideoMemoryType
+    uint32   NumberOfVideoPages
+    uint32   MaxMemorySupported
+    uint16   AcceleratorCapabilities[]
+    string   CapabilityDescriptions[]
+    string   OtherVideoArchitecture
+    uint16   VideoArchitecture
+end
+
+
+class Msvm_VideoHead
+    string   InstanceID
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    string   Name
+    uint16   OperationalStatus[]
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    uint16   CommunicationStatus
+    uint16   DetailedStatus
+    uint16   OperatingStatus
+    uint16   PrimaryStatus
+    string   EnabledState
+    string   OtherEnabledState
+    uint16   RequestedState
+    uint16   EnabledDefault
+    datetime TimeOfLastStateChange
+    uint16   AvailableRequestedStates[]
+    uint16   TransitioningToState
+    string   SystemCreationClassName
+    string   SystemName
+    string   CreationClassName
+    string   DeviceID
+    boolean  PowerManagementSupported
+    uint16   PowerManagementCapabilities[]
+    uint16   Availability
+    uint16   StatusInfo
+    uint32   LastErrorCode
+    string   ErrorDescription
+    boolean  ErrorCleared
+    string   OtherIdentifyingInfo[]
+    uint64   PowerOnHours
+    uint64   TotalPowerOnHours
+    string   IdentifyingDescriptions[]
+    uint16   AdditionalAvailability[]
+    uint64   MaxQuiesceTime
+    uint32   CurrentBitsPerPixel
+    uint32   CurrentHorizontalResolution
+    uint32   CurrentVerticalResolution
+    uint32   MaxRefreshRate
+    uint32   MinRefreshRate
+    uint32   CurrentRefreshRate
+    uint16   CurrentScanMode
+    string   OtherCurrentScanMode
+    uint32   CurrentNumberOfRows
+    uint32   CurrentNumberOfColumns
+    uint64   CurrentNumberOfColors
+end

@@ -134,6 +134,27 @@ enum _Msvm_EthernetPortAllocationSettingData_EnabledState {
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * CIM_EnabledLogicalElement
+ */
+
+/* https://docs.microsoft.com/en-us/windows/win32/hyperv_v2/cim-enabledlogicalelement#Unknown */
+enum _CIM_EnabledLogicalElement_EnabledState {
+    CIM_ENABLEDLOGICALELEMENT_ENABLEDSTATE_UNKNOWN = 0,
+    CIM_ENABLEDLOGICALELEMENT_ENABLEDSTATE_OTHER = 1,
+    CIM_ENABLEDLOGICALELEMENT_ENABLEDSTATE_ENABLED = 2,
+    CIM_ENABLEDLOGICALELEMENT_ENABLEDSTATE_DISABLED = 3,
+    CIM_ENABLEDLOGICALELEMENT_ENABLEDSTATE_SHUTTING_DOWN = 4,
+    CIM_ENABLEDLOGICALELEMENT_ENABLEDSTATE_NOT_APPLICABLE = 5,
+    CIM_ENABLEDLOGICALELEMENT_ENABLEDSTATE_ENABLED_BUT_OFFLINE = 6,
+    CIM_ENABLEDLOGICALELEMENT_ENABLEDSTATE_IN_TEST = 7,
+    CIM_ENABLEDLOGICALELEMENT_ENABLEDSTATE_DEFERRED = 8,
+    CIM_ENABLEDLOGICALELEMENT_ENABLEDSTATE_QUIESCE = 9,
+    CIM_ENABLEDLOGICALELEMENT_ENABLEDSTATE_STARTING = 10,
+};
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * WMI
  */
 
