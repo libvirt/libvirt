@@ -2750,34 +2750,28 @@ vshReadlineParse(const char *text, int state)
 
         if (!cmd) {
             list = vshReadlineCommandGenerator(text);
-        } else {
-            if (!opt || opt->type == VSH_OT_BOOL)
-                list = vshReadlineOptionsGenerator(text, cmd, partial);
+        } else if (!opt || opt->type == VSH_OT_BOOL) {
+            list = vshReadlineOptionsGenerator(text, cmd, partial);
+        } else if (opt && opt->completer) {
+            list = opt->completer(autoCompleteOpaque,
+                                  partial,
+                                  opt->completer_flags);
+        }
 
-            if (opt && opt->completer) {
-                g_auto(GStrv) completer_list = opt->completer(autoCompleteOpaque,
-                                                              partial,
-                                                              opt->completer_flags);
+        /* Escape completions, if needed (i.e. argument
+         * we are completing wasn't started with a quote
+         * character). This also enables filtering done
+         * below to work properly. */
+        if (list &&
+            !rl_completion_quote_character) {
+            size_t i;
 
-                /* Escape completions, if needed (i.e. argument
-                 * we are completing wasn't started with a quote
-                 * character). This also enables filtering done
-                 * below to work properly. */
-                if (completer_list &&
-                    !rl_completion_quote_character) {
-                    size_t i;
+            for (i = 0; list[i]; i++) {
+                g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-                    for (i = 0; completer_list[i]; i++) {
-                        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-
-                        virBufferEscape(&buf, '\\', " ", "%s", completer_list[i]);
-                        VIR_FREE(completer_list[i]);
-                        completer_list[i] = virBufferContentAndReset(&buf);
-                    }
-                }
-
-                if (virStringListMerge(&list, &completer_list) < 0)
-                    goto cleanup;
+                virBufferEscape(&buf, '\\', " ", "%s", list[i]);
+                VIR_FREE(list[i]);
+                list[i] = virBufferContentAndReset(&buf);
             }
         }
 
