@@ -293,20 +293,3 @@ int virAllocVar(void *ptrptr,
     *(void **)ptrptr = g_malloc0(alloc_size);
     return 0;
 }
-
-
-/**
- * virDisposeString:
- * @ptrptr: pointer to pointer for a string which should be sanitized and cleared
- *
- * See virDispose.
- */
-void
-virDisposeString(char **strptr)
-{
-    if (!*strptr)
-        return;
-
-    memset(*strptr, 0, strlen(*strptr));
-    g_clear_pointer(strptr, g_free);
-}

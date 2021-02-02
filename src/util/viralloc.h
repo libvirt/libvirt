@@ -52,9 +52,6 @@ int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
 int virAllocVar(void *ptrptr, size_t struct_size, size_t element_size, size_t count)
     G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1);
 
-void virDisposeString(char **strptr)
-    ATTRIBUTE_NONNULL(1);
-
 /**
  * VIR_REALLOC_N:
  * @ptr: pointer to hold address of allocated memory
@@ -338,14 +335,3 @@ void virDisposeString(char **strptr)
  * This macro is safe to use on arguments with side effects.
  */
 #define VIR_FREE(ptr) g_clear_pointer(&(ptr), g_free)
-
-
-/**
- * VIR_DISPOSE_STRING:
- * @ptr: pointer to a string to be cleared and freed
- *
- * Clears the string and frees the corresponding memory.
- *
- * This macro is not safe to be used on arguments with side effects.
- */
-#define VIR_DISPOSE_STRING(ptr) virDisposeString(&(ptr))
