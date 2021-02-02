@@ -146,7 +146,7 @@
     %define with_firewalld_zone 0%{!?_without_firewalld_zone:1}
 %endif
 
-%if 0%{?fedora} < 34 || 0%{?rhel} < 9
+%if (0%{?fedora} && 0%{?fedora} < 34) || (0%{?rhel} && 0%{?rhel} < 9)
     %define with_netcf 0%{!?_without_netcf:1}
 %endif
 
