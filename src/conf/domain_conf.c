@@ -1106,6 +1106,7 @@ VIR_ENUM_IMPL(virDomainTimerTrack,
               "boot",
               "guest",
               "wall",
+              "realtime",
 );
 
 VIR_ENUM_IMPL(virDomainTimerTickpolicy,

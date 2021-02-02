@@ -1064,6 +1064,7 @@ mymain(void)
     DO_TEST("cpu-host-kvmclock", NONE);
     DO_TEST("kvmclock", QEMU_CAPS_KVM);
     DO_TEST("clock-timer-hyperv-rtc", QEMU_CAPS_KVM);
+    DO_TEST("clock-realtime", NONE);
 
     DO_TEST("cpu-eoi-disabled", NONE);
     DO_TEST("cpu-eoi-enabled", NONE);

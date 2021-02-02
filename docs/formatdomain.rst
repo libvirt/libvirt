@@ -2059,7 +2059,7 @@ Windows, however, expects it to be in so called 'localtime'.
       feature for guests running the Microsoft Windows operating system.
    ``track``
       The ``track`` attribute specifies what the timer tracks, and can be
-      "boot", "guest", or "wall". Only valid for ``name="rtc"`` or
+      "boot", "guest", or "wall", or "realtime". Only valid for ``name="rtc"`` or
       ``name="platform"``.
    ``tickpolicy``
       The ``tickpolicy`` attribute determines what happens when QEMU misses a

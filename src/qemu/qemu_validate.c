@@ -444,6 +444,7 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
             case -1: /* unspecified - use hypervisor default */
             case VIR_DOMAIN_TIMER_TRACK_GUEST:
             case VIR_DOMAIN_TIMER_TRACK_WALL:
+            case VIR_DOMAIN_TIMER_TRACK_REALTIME:
                 break;
             case VIR_DOMAIN_TIMER_TRACK_BOOT:
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

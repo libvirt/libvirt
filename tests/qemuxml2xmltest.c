@@ -233,6 +233,7 @@ mymain(void)
     DO_TEST("kvmclock", NONE);
     DO_TEST("clock-timer-hyperv-rtc", NONE);
     DO_TEST_CAPS_ARCH_LATEST("clock-timer-armvtimer", "aarch64");
+    DO_TEST("clock-realtime", NONE);
 
     DO_TEST("cpu-eoi-disabled", NONE);
     DO_TEST("cpu-eoi-enabled", NONE);
