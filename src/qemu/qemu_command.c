@@ -66,6 +66,7 @@
 #include "logging/log_manager.h"
 #include "logging/log_protocol.h"
 #include "virutil.h"
+#include "virsecureerase.h"
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -776,7 +777,7 @@ static int
 qemuBuildRBDSecinfoURI(virBufferPtr buf,
                        qemuDomainSecretInfoPtr secinfo)
 {
-    VIR_AUTODISPOSE_STR base64secret = NULL;
+    g_autofree char *base64secret = NULL;
 
     if (!secinfo) {
         virBufferAddLit(buf, ":auth_supported=none");
@@ -791,6 +792,7 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
         virBufferEscape(buf, '\\', ":",
                         ":key=%s:auth_supported=cephx\\;none",
                         base64secret);
+        virSecureEraseString(base64secret);
         break;
 
     case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
