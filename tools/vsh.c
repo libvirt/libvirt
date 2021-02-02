@@ -2627,7 +2627,6 @@ vshReadlineOptionsGenerator(const char *text,
         const char *name = cmd->opts[list_index].name;
         bool exists = false;
         vshCmdOpt *opt =  last->opts;
-        size_t name_len;
 
         /* Skip aliases, we do not report them in help output either. */
         if (cmd->opts[list_index].type == VSH_OT_ALIAS)
@@ -2660,9 +2659,7 @@ vshReadlineOptionsGenerator(const char *text,
             return NULL;
         }
 
-        name_len = strlen(name);
-        ret[ret_size] = g_new0(char, name_len + 3);
-        g_snprintf(ret[ret_size], name_len + 3,  "--%s", name);
+        ret[ret_size] = g_strdup_printf("--%s", name);
         ret_size++;
         /* Terminate the string list properly. */
         ret[ret_size] = NULL;
