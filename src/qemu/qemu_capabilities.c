@@ -611,6 +611,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "am53c974",
               "virtio-pmem-pci",
               "vhost-user-fs.bootindex",
+
+              /* 390 */
+              "vhost-user-blk",
     );
 
 
@@ -1331,6 +1334,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "dc390", QEMU_CAPS_SCSI_DC390 },
     { "am53c974", QEMU_CAPS_SCSI_AM53C974 },
     { "virtio-pmem-pci", QEMU_CAPS_DEVICE_VIRTIO_PMEM_PCI },
+    { "vhost-user-blk", QEMU_CAPS_DEVICE_VHOST_USER_BLK },
 };
 
 
