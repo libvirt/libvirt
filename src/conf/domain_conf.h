@@ -3099,6 +3099,7 @@ virDomainVsockDefPtr virDomainVsockDefNew(virDomainXMLOptionPtr xmlopt);
 void virDomainVsockDefFree(virDomainVsockDefPtr vsock);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainVsockDef, virDomainVsockDefFree);
 void virDomainNetDefFree(virDomainNetDefPtr def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainNetDef, virDomainNetDefFree);
 void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainSmartcardDef, virDomainSmartcardDefFree);
 void virDomainChrDefFree(virDomainChrDefPtr def);
