@@ -76,6 +76,24 @@ hypervNetworkLookup(virConnectPtr conn, const char *property, const char *value)
  * Exported API functions
  */
 
+static int
+hypervConnectNumOfDefinedNetworks(virConnectPtr conn G_GNUC_UNUSED)
+{
+    /* Hyper-V networks are always active */
+    return 0;
+}
+
+
+static int
+hypervConnectListDefinedNetworks(virConnectPtr conn G_GNUC_UNUSED,
+                                 char **const names G_GNUC_UNUSED,
+                                 int maxnames G_GNUC_UNUSED)
+{
+    /* Hyper-V networks are always active */
+    return 0;
+}
+
+
 #define MATCH(FLAG) (flags & (FLAG))
 static int
 hypervConnectListAllNetworks(virConnectPtr conn,
@@ -164,6 +182,8 @@ hypervNetworkLookupByName(virConnectPtr conn, const char *name)
 
 virNetworkDriver hypervNetworkDriver = {
     .connectNumOfNetworks = hypervConnectNumOfNetworks, /* 7.1.0 */
+    .connectNumOfDefinedNetworks = hypervConnectNumOfDefinedNetworks, /* 7.1.0 */
+    .connectListDefinedNetworks = hypervConnectListDefinedNetworks, /* 7.1.0 */
     .connectListAllNetworks = hypervConnectListAllNetworks, /* 7.1.0 */
     .networkLookupByUUID = hypervNetworkLookupByUUID, /* 7.1.0 */
     .networkLookupByName = hypervNetworkLookupByName, /* 7.1.0 */
