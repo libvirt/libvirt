@@ -1013,10 +1013,7 @@ virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSessionPtr sess,
                                       const char *keyfile,
                                       const char *password)
 {
-    int ret;
     virNetLibsshAuthMethodPtr auth;
-    VIR_AUTODISPOSE_STR pass = NULL;
-    char *file = NULL;
 
     if (!keyfile) {
         virReportError(VIR_ERR_LIBSSH, "%s",
@@ -1026,28 +1023,18 @@ virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSessionPtr sess,
 
     virObjectLock(sess);
 
-    file = g_strdup(keyfile);
-    pass = g_strdup(password);
-
     if (!(auth = virNetLibsshSessionAuthMethodNew(sess))) {
-        ret = -1;
-        goto error;
+        virObjectUnlock(sess);
+        return -1;
     }
 
-    auth->password = g_steal_pointer(&pass);
-    auth->filename = file;
+    auth->password = g_strdup(password);
+    auth->filename = g_strdup(keyfile);
     auth->method = VIR_NET_LIBSSH_AUTH_PRIVKEY;
     auth->ssh_flags = SSH_AUTH_METHOD_PUBLICKEY;
 
-    ret = 0;
-
- cleanup:
     virObjectUnlock(sess);
-    return ret;
-
- error:
-    VIR_FREE(file);
-    goto cleanup;
+    return 0;
 }
 
 int
