@@ -2703,7 +2703,7 @@ vshCompleterFilter(char ***list,
     size_t i;
 
     if (!list || !*list)
-        return -1;
+        return 0;
 
     list_len = virStringListLength((const char **) *list);
     newList = g_new0(char *, list_len + 1);
@@ -2802,9 +2802,8 @@ vshReadlineParse(const char *text, int state)
                 /* For string list returned by completer we have to do
                  * filtering based on @text because completer returns all
                  * possible strings. */
-                if (completer_list &&
-                    (vshCompleterFilter(&completer_list, text) < 0 ||
-                     virStringListMerge(&list, &completer_list) < 0)) {
+                if (vshCompleterFilter(&completer_list, text) < 0 ||
+                    virStringListMerge(&list, &completer_list) < 0) {
                     goto cleanup;
                 }
             }
