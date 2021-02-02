@@ -188,7 +188,6 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     virStorageAuthDefPtr authdef = source->auth;
     g_autofree unsigned char *secret_value = NULL;
     size_t secret_value_size = 0;
-    VIR_AUTODISPOSE_STR rados_key = NULL;
     g_auto(virBuffer) mon_host = VIR_BUFFER_INITIALIZER;
     size_t i;
     const char *client_mount_timeout = "30";
@@ -199,6 +198,9 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     g_autofree char *mon_buff = NULL;
 
     if (authdef) {
+        g_autofree char *rados_key = NULL;
+        int rc;
+
         VIR_DEBUG("Using cephx authorization, username: %s", authdef->username);
 
         if (rados_create(&ptr->cluster, authdef->username) < 0) {
@@ -218,8 +220,10 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
         rados_key = g_base64_encode(secret_value, secret_value_size);
         virSecureErase(secret_value, secret_value_size);
 
-        if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
-                                             "key", rados_key) < 0)
+        rc = virStorageBackendRBDRADOSConfSet(ptr->cluster, "key", rados_key);
+        virSecureEraseString(rados_key);
+
+        if (rc < 0)
             goto cleanup;
 
         if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
