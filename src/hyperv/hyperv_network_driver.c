@@ -49,6 +49,29 @@ hypervMsvmVirtualSwitchToNetwork(virConnectPtr conn, Msvm_VirtualEthernetSwitch 
 }
 
 
+static virNetworkPtr
+hypervNetworkLookup(virConnectPtr conn, const char *property, const char *value)
+{
+    hypervPrivate *priv = conn->privateData;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    g_autoptr(Msvm_VirtualEthernetSwitch) virtualSwitch = NULL;
+
+    virBufferAsprintf(&query, MSVM_VIRTUALETHERNETSWITCH_WQL_SELECT "WHERE %s", property);
+    virBufferEscapeSQL(&query, " = '%s'", value);
+
+    if (hypervGetWmiClass(Msvm_VirtualEthernetSwitch, &virtualSwitch) < 0)
+        return NULL;
+
+    if (!virtualSwitch) {
+        virReportError(VIR_ERR_NO_NETWORK,
+                       _("No network found with property '%s' = '%s'"), property, value);
+        return NULL;
+    }
+
+    return hypervMsvmVirtualSwitchToNetwork(conn, virtualSwitch);
+}
+
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Exported API functions
  */
@@ -121,7 +144,27 @@ hypervConnectNumOfNetworks(virConnectPtr conn)
 }
 
 
+static virNetworkPtr
+hypervNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
+{
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+
+    virUUIDFormat(uuid, uuid_string);
+
+    return hypervNetworkLookup(conn, "Name", uuid_string);
+}
+
+
+static virNetworkPtr
+hypervNetworkLookupByName(virConnectPtr conn, const char *name)
+{
+    return hypervNetworkLookup(conn, "ElementName", name);
+}
+
+
 virNetworkDriver hypervNetworkDriver = {
     .connectNumOfNetworks = hypervConnectNumOfNetworks, /* 7.1.0 */
     .connectListAllNetworks = hypervConnectListAllNetworks, /* 7.1.0 */
+    .networkLookupByUUID = hypervNetworkLookupByUUID, /* 7.1.0 */
+    .networkLookupByName = hypervNetworkLookupByName, /* 7.1.0 */
 };
