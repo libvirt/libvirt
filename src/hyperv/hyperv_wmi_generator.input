@@ -827,3 +827,112 @@ class Msvm_StorageAllocationSettingData
     string  IOPSAllocationUnits
     boolean PersistentReservationsSupported
 end
+
+
+class Msvm_SyntheticEthernetPortSettingData
+    string   InstanceID
+    string   Caption
+    string   Description
+    string   ElementName
+    uint16   ResourceType
+    string   OtherResourceType
+    string   ResourceSubType
+    string   PoolID
+    uint16   ConsumerVisibility
+    string   HostResource[]
+    string   AllocationUnits
+    uint64   VirtualQuantity
+    uint64   Reservation
+    uint64   Limit
+    uint32   Weight
+    boolean  AutomaticAllocation
+    boolean  AutomaticDeallocation
+    string   Parent
+    string   Connection[]
+    string   Address
+    uint16   MappingBehavior
+    string   AddressOnParent
+    string   VirtualQuantityUnits
+    uint16   DesiredVLANEndpointMode
+    string   OtherEndpointMode
+    string   VirtualSystemIdentifiers[]
+# DeviceNamingEnabled and AllowPacketDirect are not present in Windows Server 2012R2.
+# They were added in Windows 10 and Windows Server 2016.
+# They have been omitted to retain compatibility with Windows Server 2012R2.
+#   boolean  DeviceNamingEnabled
+#   boolean  AllowPacketDirect
+    boolean  StaticMacAddress
+    boolean  ClusterMonitored
+end
+
+
+class Msvm_EthernetPortAllocationSettingData
+    string   InstanceID
+    string   Caption
+    string   Description
+    string   ElementName
+    uint16   ResourceType
+    string   OtherResourceType
+    string   ResourceSubType
+    string   PoolID
+    uint16   ConsumerVisibility
+    string   HostResource[]
+    string   AllocationUnits
+    uint64   VirtualQuantity
+    uint64   Reservation
+    uint64   Limit
+    uint32   Weight
+    boolean  AutomaticAllocation
+    boolean  AutomaticDeallocation
+    string   Parent
+    string   Connection[]
+    string   Address
+    uint16   MappingBehavior
+    string   AddressOnParent
+    string   VirtualQuantityUnits
+    uint16   DesiredVLANEndpointMode
+    string   OtherEndpointMode
+    uint16   EnabledState
+    string   RequiredFeatures[]
+    string   RequiredFeatureHints[]
+    string   TestReplicaPoolID
+    string   TestReplicaSwitchName
+end
+
+
+class Msvm_VirtualEthernetSwitch
+    string   InstanceID
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    uint16   OperationalStatus[]
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    uint16   CommunicationStatus
+    uint16   DetailedStatus
+    uint16   OperatingStatus
+    uint16   PrimaryStatus
+    uint16   EnabledState
+    string   OtherEnabledState
+    uint16   RequestedState
+    uint16   EnabledDefault
+    datetime TimeOfLastStateChange
+    uint16   AvailableRequestedStates[]
+    uint16   TransitioningToState
+    string   CreationClassName
+    string   Name
+    string   PrimaryOwnerName
+    string   PrimaryOwnerContact
+    string   Roles[]
+    string   NameFormat
+    string   OtherIdentifyingInfo[]
+    string   IdentifyingDescriptions[]
+    uint16   Dedicated[]
+    string   OtherDedicatedDescriptions[]
+    uint16   ResetCapability
+    uint16   PowerManagementCapabilities[]
+    uint32   MaxVMQOffloads
+    uint32   MaxIOVOffloads
+end

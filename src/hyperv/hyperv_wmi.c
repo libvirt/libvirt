@@ -1498,6 +1498,26 @@ hypervGetSerialPortSD(hypervPrivate *priv,
 }
 
 
+int
+hypervGetSyntheticEthernetPortSD(hypervPrivate *priv,
+                                 const char *id,
+                                 Msvm_SyntheticEthernetPortSettingData **data)
+{
+    hypervGetSettingData(Msvm_SyntheticEthernetPortSettingData, id, data);
+    return 0;
+}
+
+
+int
+hypervGetEthernetPortAllocationSD(hypervPrivate *priv,
+                                  const char *id,
+                                  Msvm_EthernetPortAllocationSettingData **data)
+{
+    hypervGetSettingData(Msvm_EthernetPortAllocationSettingData, id, data);
+    return 0;
+}
+
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Msvm_VirtualSystemManagementService
  */

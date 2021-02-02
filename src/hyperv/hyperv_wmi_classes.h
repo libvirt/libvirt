@@ -120,6 +120,18 @@ enum _Msvm_ResourceAllocationSettingData_ResourceType {
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Msvm_EthernetPortAllocationSettingData
+ */
+
+/* https://docs.microsoft.com/en-us/windows/win32/hyperv_v2/msvm-ethernetportallocationsettingdata#enabled */
+enum _Msvm_EthernetPortAllocationSettingData_EnabledState {
+    MSVM_ETHERNETPORTALLOCATIONSETTINGDATA_ENABLEDSTATE_ENABLED = 2,
+    MSVM_ETHERNETPORTALLOCATIONSETTINGDATA_ENABLEDSTATE_DISABLED = 3,
+};
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * WMI
  */
 

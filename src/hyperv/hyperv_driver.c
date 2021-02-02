@@ -1379,6 +1379,105 @@ hypervDomainDefParseSerial(virDomainDefPtr def, Msvm_ResourceAllocationSettingDa
 }
 
 
+static int
+hypervDomainDefParseEthernetAdapter(virDomainDefPtr def,
+                                    Msvm_EthernetPortAllocationSettingData *net,
+                                    hypervPrivate *priv)
+{
+    g_autoptr(virDomainNetDef) ndef = g_new0(virDomainNetDef, 1);
+    g_autoptr(Msvm_SyntheticEthernetPortSettingData) sepsd = NULL;
+    g_autoptr(Msvm_VirtualEthernetSwitch) vSwitch = NULL;
+    char **switchConnection = NULL;
+    g_autofree char *switchConnectionEscaped = NULL;
+    char *sepsdPATH = NULL;
+    g_autofree char *sepsdEscaped = NULL;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+
+    VIR_DEBUG("Parsing ethernet adapter '%s'", net->data->InstanceID);
+
+    ndef->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+
+    /*
+     * If there's no switch port connection or the EnabledState is disabled,
+     * then the adapter isn't hooked up to anything and we don't have to
+     * do anything more.
+     */
+    switchConnection = net->data->HostResource.data;
+    if (net->data->HostResource.count < 1 || !*switchConnection ||
+        net->data->EnabledState == MSVM_ETHERNETPORTALLOCATIONSETTINGDATA_ENABLEDSTATE_DISABLED) {
+        VIR_DEBUG("Adapter not connected to switch");
+        return 0;
+    }
+
+    /*
+     * Now we retrieve the associated Msvm_SyntheticEthernetPortSettingData and
+     * Msvm_VirtualEthernetSwitch objects and use them to build the XML definition.
+     */
+
+    /* begin by getting the Msvm_SyntheticEthernetPortSettingData object */
+    sepsdPATH = net->data->Parent;
+    sepsdEscaped = virStringReplace(sepsdPATH, "\\", "\\\\");
+    virBufferAsprintf(&query,
+                      MSVM_SYNTHETICETHERNETPORTSETTINGDATA_WQL_SELECT "WHERE __PATH = '%s'",
+                      sepsdEscaped);
+
+    if (hypervGetWmiClass(Msvm_SyntheticEthernetPortSettingData, &sepsd) < 0)
+        return -1;
+
+    if (!sepsd) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not retrieve NIC settings"));
+        return -1;
+    }
+
+    /* set mac address */
+    if (virMacAddrParseHex(sepsd->data->Address, &ndef->mac) < 0)
+        return -1;
+
+    /* now we get the Msvm_VirtualEthernetSwitch */
+    virBufferFreeAndReset(&query);
+    switchConnectionEscaped = virStringReplace(*switchConnection, "\\", "\\\\");
+    virBufferAsprintf(&query,
+                      MSVM_VIRTUALETHERNETSWITCH_WQL_SELECT "WHERE __PATH = '%s'",
+                      switchConnectionEscaped);
+
+    if (hypervGetWmiClass(Msvm_VirtualEthernetSwitch, &vSwitch) < 0)
+        return -1;
+
+    if (!vSwitch) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not retrieve virtual switch"));
+        return -1;
+    }
+
+    /* get bridge name */
+    ndef->data.bridge.brname = g_strdup(vSwitch->data->Name);
+
+    if (VIR_APPEND_ELEMENT(def->nets, def->nnets, ndef) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not append definition to domain"));
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+hypervDomainDefParseEthernet(virDomainPtr domain,
+                             virDomainDefPtr def,
+                             Msvm_EthernetPortAllocationSettingData *nets)
+{
+    Msvm_EthernetPortAllocationSettingData *entry = nets;
+    hypervPrivate *priv = domain->conn->privateData;
+
+    while (entry) {
+        if (hypervDomainDefParseEthernetAdapter(def, entry, priv) < 0)
+            return -1;
+
+        entry = entry->next;
+    }
+
+    return 0;
+}
+
+
 /*
  * Driver functions
  */
@@ -2240,6 +2339,7 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     g_autoptr(Msvm_StorageAllocationSettingData) sasd = NULL;
     g_autoptr(Msvm_SerialPortSettingData) spsd = NULL;
     Msvm_ResourceAllocationSettingData *serialDevices = NULL;
+    g_autoptr(Msvm_EthernetPortAllocationSettingData) nets = NULL;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
@@ -2279,6 +2379,10 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     }
 
     if (hypervGetSerialPortSD(priv, virtualSystemSettingData->data->InstanceID, &spsd) < 0)
+        return NULL;
+
+    if (hypervGetEthernetPortAllocationSD(priv,
+                                          virtualSystemSettingData->data->InstanceID, &nets) < 0)
         return NULL;
 
     /* Fill struct */
@@ -2342,6 +2446,10 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     def->controllers = g_new0(virDomainControllerDefPtr, 5);
     def->ncontrollers = 0;
 
+    /* 8 synthetic + 4 legacy NICs */
+    def->nets = g_new0(virDomainNetDefPtr, 12);
+    def->nnets = 0;
+
     if (hypervDomainDefParseStorage(priv, def, rasd, sasd) < 0)
         return NULL;
 
@@ -2351,6 +2459,9 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
         serialDevices = (Msvm_ResourceAllocationSettingData *)spsd;
 
     if (hypervDomainDefParseSerial(def, serialDevices) < 0)
+        return NULL;
+
+    if (hypervDomainDefParseEthernet(domain, def, nets) < 0)
         return NULL;
 
     /* XXX xmlopts must be non-NULL */
