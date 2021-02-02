@@ -978,6 +978,132 @@ hypervDomainAttachSerial(virDomainPtr domain, virDomainChrDefPtr serial)
 }
 
 
+static int
+hypervDomainAttachSyntheticEthernetAdapter(virDomainPtr domain,
+                                           virDomainNetDefPtr net,
+                                           char *hostname)
+{
+    hypervPrivate *priv = domain->conn->privateData;
+    g_autofree char *portResourceType = NULL;
+    unsigned char vsiGuid[VIR_UUID_BUFLEN];
+    char guidString[VIR_UUID_STRING_BUFLEN];
+    g_autofree char *virtualSystemIdentifiers = NULL;
+    char macString[VIR_MAC_STRING_BUFLEN];
+    g_autofree char *macAddressNoColons = NULL;
+    g_autoptr(GHashTable) portResource = NULL;
+    g_auto(WsXmlDocH) sepsdResponse = NULL;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    g_autoptr(Msvm_VirtualEthernetSwitch) vSwitch = NULL;
+    g_autofree char *enabledState = NULL;
+    g_autofree char *switch__PATH = NULL;
+    g_autofree char *sepsd__PATH = NULL;
+    g_autofree char *sepsdInstanceID = NULL;
+    g_autofree char *sepsdInstanceEscaped = NULL;
+    g_autofree char *connectionResourceType = NULL;
+    g_autoptr(GHashTable) connectionResource = NULL;
+
+    /*
+     * Step 1: Create the Msvm_SyntheticEthernetPortSettingData object
+     * that holds half the settings for the new adapter we are creating
+     */
+    portResourceType = g_strdup_printf("%d", MSVM_RASD_RESOURCETYPE_ETHERNET_ADAPTER);
+
+    virUUIDGenerate(vsiGuid);
+    virUUIDFormat(vsiGuid, guidString);
+    virtualSystemIdentifiers = g_strdup_printf("{%s}", guidString);
+
+    virMacAddrFormat(&net->mac, macString);
+    macAddressNoColons = virStringReplace(macString, ":", "");
+
+    /* prepare embedded param */
+    portResource = hypervCreateEmbeddedParam(Msvm_SyntheticEthernetPortSettingData_WmiInfo);
+    if (!portResource)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(portResource, "ResourceType", portResourceType) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(portResource, "ResourceSubType",
+                                  "Microsoft:Hyper-V:Synthetic Ethernet Port") < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(portResource,
+                                  "VirtualSystemIdentifiers", virtualSystemIdentifiers) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(portResource, "Address", macAddressNoColons) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(portResource, "StaticMacAddress", "true") < 0)
+        return -1;
+
+    if (hypervMsvmVSMSAddResourceSettings(domain, &portResource,
+                                          Msvm_SyntheticEthernetPortSettingData_WmiInfo,
+                                          &sepsdResponse) < 0)
+        return -1;
+
+    /*
+     * Step 2: Get the Msvm_VirtualEthernetSwitch object
+     */
+    virBufferAsprintf(&query,
+                      MSVM_VIRTUALETHERNETSWITCH_WQL_SELECT "WHERE Name='%s'",
+                      net->data.bridge.brname);
+
+    if (hypervGetWmiClass(Msvm_VirtualEthernetSwitch, &vSwitch) < 0)
+        return -1;
+
+    if (!vSwitch)
+        return -1;
+
+    /*
+     * Step 3: Create the Msvm_EthernetPortAllocationSettingData object that
+     * holds the other half of the network configuration
+     */
+    enabledState = g_strdup_printf("%d", MSVM_ETHERNETPORTALLOCATIONSETTINGDATA_ENABLEDSTATE_ENABLED);
+
+    /* build the two __PATH variables */
+    switch__PATH = g_strdup_printf("\\\\%s\\Root\\Virtualization\\V2:"
+                                   "Msvm_VirtualEthernetSwitch.CreationClassName=\"Msvm_VirtualEthernetSwitch\","
+                                   "Name=\"%s\"",
+                                   hostname, vSwitch->data->Name);
+
+    /* Get the sepsd instance ID out of the XML response */
+    sepsdInstanceID = hypervGetInstanceIDFromXMLResponse(sepsdResponse);
+    sepsdInstanceEscaped = virStringReplace(sepsdInstanceID, "\\", "\\\\");
+    sepsd__PATH = g_strdup_printf("\\\\%s\\root\\virtualization\\v2:"
+                                  "Msvm_SyntheticEthernetPortSettingData.InstanceID=\"%s\"",
+                                  hostname, sepsdInstanceEscaped);
+
+    connectionResourceType = g_strdup_printf("%d", MSVM_RASD_RESOURCETYPE_ETHERNET_CONNECTION);
+
+    connectionResource = hypervCreateEmbeddedParam(Msvm_EthernetPortAllocationSettingData_WmiInfo);
+    if (!connectionResource)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(connectionResource, "EnabledState", enabledState) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(connectionResource, "HostResource", switch__PATH) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(connectionResource, "Parent", sepsd__PATH) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(connectionResource, "ResourceType", connectionResourceType) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(connectionResource,
+                                  "ResourceSubType", "Microsoft:Hyper-V:Ethernet Connection") < 0)
+        return -1;
+
+    if (hypervMsvmVSMSAddResourceSettings(domain, &connectionResource,
+                                          Msvm_EthernetPortAllocationSettingData_WmiInfo, NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /*
  * Functions for deserializing device entries
  */
@@ -2674,6 +2800,14 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
         }
     }
 
+    /* Attach networks */
+    for (i = 0; i < def->nnets; i++) {
+        if (hypervDomainAttachSyntheticEthernetAdapter(domain, def->nets[i], hostname) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not attach network %lu"), i);
+            goto error;
+        }
+    }
+
     return domain;
 
  error:
@@ -2775,6 +2909,10 @@ hypervDomainAttachDeviceFlags(virDomainPtr domain, const char *xml, unsigned int
         break;
     case VIR_DOMAIN_DEVICE_CHR:
         if (hypervDomainAttachSerial(domain, dev->data.chr) < 0)
+            return -1;
+        break;
+    case VIR_DOMAIN_DEVICE_NET:
+        if (hypervDomainAttachSyntheticEthernetAdapter(domain, dev->data.net, hostname) < 0)
             return -1;
         break;
     default:
