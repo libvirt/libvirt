@@ -2614,7 +2614,6 @@ vshReadlineOptionsGenerator(const char *text,
 {
     size_t list_index = 0;
     size_t len = strlen(text);
-    const char *name;
     size_t ret_size = 0;
     char **ret = NULL;
 
@@ -2624,12 +2623,15 @@ vshReadlineOptionsGenerator(const char *text,
     if (!cmd->opts)
         return NULL;
 
-    while ((name = cmd->opts[list_index].name)) {
+    for (list_index = 0; cmd->opts[list_index].name; list_index++) {
+        const char *name = cmd->opts[list_index].name;
         bool exists = false;
         vshCmdOpt *opt =  last->opts;
         size_t name_len;
 
-        list_index++;
+        /* Skip aliases, we do not report them in help output either. */
+        if (cmd->opts[list_index].type == VSH_OT_ALIAS)
+            continue;
 
         if (len > 2) {
             /* provide auto-complete only when the text starts with -- */
