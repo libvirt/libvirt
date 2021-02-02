@@ -2572,7 +2572,7 @@ vshReadlineCommandGenerator(const char *text)
     const vshCmdGrp *grp;
     const vshCmdDef *cmds;
     size_t ret_size = 0;
-    char **ret = NULL;
+    g_auto(GStrv) ret = NULL;
 
     grp = cmdGroups;
 
@@ -2588,10 +2588,9 @@ vshReadlineCommandGenerator(const char *text)
                     continue;
 
                 if (STRPREFIX(name, text)) {
-                    if (VIR_REALLOC_N(ret, ret_size + 2) < 0) {
-                        g_strfreev(ret);
+                    if (VIR_REALLOC_N(ret, ret_size + 2) < 0)
                         return NULL;
-                    }
+
                     ret[ret_size] = g_strdup(name);
                     ret_size++;
                     /* Terminate the string list properly. */
@@ -2604,7 +2603,7 @@ vshReadlineCommandGenerator(const char *text)
         }
     }
 
-    return ret;
+    return g_steal_pointer(&ret);
 }
 
 static char **
@@ -2615,7 +2614,7 @@ vshReadlineOptionsGenerator(const char *text,
     size_t list_index = 0;
     size_t len = strlen(text);
     size_t ret_size = 0;
-    char **ret = NULL;
+    g_auto(GStrv) ret = NULL;
 
     if (!cmd)
         return NULL;
@@ -2654,10 +2653,8 @@ vshReadlineOptionsGenerator(const char *text,
         if (exists)
             continue;
 
-        if (VIR_REALLOC_N(ret, ret_size + 2) < 0) {
-            g_strfreev(ret);
+        if (VIR_REALLOC_N(ret, ret_size + 2) < 0)
             return NULL;
-        }
 
         ret[ret_size] = g_strdup_printf("--%s", name);
         ret_size++;
@@ -2665,7 +2662,7 @@ vshReadlineOptionsGenerator(const char *text,
         ret[ret_size] = NULL;
     }
 
-    return ret;
+    return g_steal_pointer(&ret);
 }
 
 
