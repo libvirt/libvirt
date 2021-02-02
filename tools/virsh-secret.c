@@ -302,7 +302,6 @@ static bool
 cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshSecret) secret = NULL;
-    VIR_AUTODISPOSE_STR base64 = NULL;
     g_autofree unsigned char *value = NULL;
     size_t value_size;
     bool plain = vshCommandOptBool(cmd, "plain");
@@ -320,9 +319,10 @@ cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
             return false;
         }
     } else {
-        base64 = g_base64_encode(value, value_size);
+        g_autofree char *base64 = g_base64_encode(value, value_size);
 
         vshPrint(ctl, "%s", base64);
+        virSecureEraseString(base64);
     }
 
     virSecureErase(value, value_size);
