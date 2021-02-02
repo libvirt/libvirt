@@ -789,9 +789,18 @@ hypervInvokeMethod(hypervPrivate *priv,
 
     returnValue = ws_xml_get_xpath_value(response, returnValue_xpath);
     if (!returnValue) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get return value for %s invocation"),
-                       params->method);
+        g_autofree char *faultReason_xpath = g_strdup("/s:Envelope/s:Body/s:Fault/s:Reason/s:Text");
+        g_autofree char *faultReason = ws_xml_get_xpath_value(response, faultReason_xpath);
+
+        if (faultReason)
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("WS-Management fault during %s invocation: %s"),
+                           params->method, faultReason);
+        else
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not get return value for %s invocation"),
+                           params->method);
+
         return -1;
     }
 
