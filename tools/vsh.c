@@ -2607,12 +2607,11 @@ vshReadlineCommandGenerator(const char *text)
 }
 
 static char **
-vshReadlineOptionsGenerator(const char *text,
+vshReadlineOptionsGenerator(const char *text G_GNUC_UNUSED,
                             const vshCmdDef *cmd,
                             vshCmd *last)
 {
     size_t list_index = 0;
-    size_t len = strlen(text);
     size_t ret_size = 0;
     g_auto(GStrv) ret = NULL;
 
@@ -2630,16 +2629,6 @@ vshReadlineOptionsGenerator(const char *text,
         /* Skip aliases, we do not report them in help output either. */
         if (cmd->opts[list_index].type == VSH_OT_ALIAS)
             continue;
-
-        if (len > 2) {
-            /* provide auto-complete only when the text starts with -- */
-            if (STRNEQLEN(text, "--", 2))
-                return NULL;
-            if (STRNEQLEN(name, text + 2, len - 2))
-                continue;
-        } else if (STRNEQLEN(text, "--", len)) {
-            return NULL;
-        }
 
         while (opt) {
             if (STREQ(opt->def->name, name) && opt->def->type != VSH_OT_ARGV) {
@@ -2790,14 +2779,15 @@ vshReadlineParse(const char *text, int state)
                     }
                 }
 
-                /* For string list returned by completer we have to do
-                 * filtering based on @text because completer returns all
-                 * possible strings. */
-                if (vshCompleterFilter(&completer_list, text) < 0 ||
-                    virStringListMerge(&list, &completer_list) < 0) {
+                if (virStringListMerge(&list, &completer_list) < 0)
                     goto cleanup;
-                }
             }
+
+            /* For string list returned by completers we have to do
+             * filtering based on @text because completers returns all
+             * possible strings. */
+            if (vshCompleterFilter(&list, text) < 0)
+                goto cleanup;
         }
     }
 
