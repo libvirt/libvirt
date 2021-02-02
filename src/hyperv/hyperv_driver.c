@@ -899,6 +899,85 @@ hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def, const char *
 }
 
 
+static int
+hypervDomainAttachSerial(virDomainPtr domain, virDomainChrDefPtr serial)
+{
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    hypervPrivate *priv = domain->conn->privateData;
+    g_autofree char *com_string = g_strdup_printf("COM %d", serial->target.port);
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
+    g_autoptr(Msvm_ResourceAllocationSettingData) rasd = NULL;
+    g_autoptr(Msvm_SerialPortSettingData) spsd = NULL;
+    hypervWmiClassInfoPtr classInfo = NULL;
+    Msvm_ResourceAllocationSettingData *current = NULL;
+    Msvm_ResourceAllocationSettingData *entry = NULL;
+    g_autoptr(GHashTable) serialResource = NULL;
+    const char *connectionValue = NULL;
+    g_autofree const char *resourceType = NULL;
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
+        return -1;
+
+    if (g_str_has_prefix(priv->version, "6.")) {
+        if (hypervGetResourceAllocationSD(priv, vssd->data->InstanceID, &rasd) < 0)
+            return -1;
+
+        current = rasd;
+        classInfo = Msvm_ResourceAllocationSettingData_WmiInfo;
+    } else {
+        if (hypervGetSerialPortSD(priv, vssd->data->InstanceID, &spsd) < 0)
+            return -1;
+
+        current = (Msvm_ResourceAllocationSettingData *)spsd;
+        classInfo = Msvm_SerialPortSettingData_WmiInfo;
+    }
+
+    while (current) {
+        if (current->data->ResourceType == MSVM_RASD_RESOURCETYPE_SERIAL_PORT &&
+            STREQ(current->data->ElementName, com_string)) {
+            /* found our com port */
+            entry = current;
+            break;
+        }
+        current = current->next;
+    }
+
+    if (!entry)
+        return -1;
+
+    if (STRNEQ(serial->source->data.file.path, "-1"))
+        connectionValue = serial->source->data.file.path;
+    else
+        connectionValue = "";
+
+    resourceType = g_strdup_printf("%d", entry->data->ResourceType);
+
+    serialResource = hypervCreateEmbeddedParam(classInfo);
+    if (!serialResource)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(serialResource, "Connection", connectionValue) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(serialResource, "InstanceID", entry->data->InstanceID) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(serialResource, "ResourceType", resourceType) < 0)
+        return -1;
+
+    if (hypervSetEmbeddedProperty(serialResource, "ResourceSubType",
+                                  entry->data->ResourceSubType) < 0)
+        return -1;
+
+    if (hypervMsvmVSMSModifyResourceSettings(priv, &serialResource, classInfo) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /*
  * Functions for deserializing device entries
  */
@@ -2416,6 +2495,7 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainPtr domain = NULL;
     g_autoptr(hypervInvokeParamsList) params = NULL;
     g_autoptr(GHashTable) defineSystemParam = NULL;
+    size_t i = 0;
 
     /* parse xml */
     def = virDomainDefParseString(xml, priv->xmlopt, NULL,
@@ -2474,6 +2554,14 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
     /* attach all storage */
     if (hypervDomainAttachStorage(domain, def, hostname) < 0)
         goto error;
+
+    /* Attach serials */
+    for (i = 0; i < def->nserials; i++) {
+        if (hypervDomainAttachSerial(domain, def->serials[i]) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not attach serial port %lu"), i);
+            goto error;
+        }
+    }
 
     return domain;
 
@@ -2572,6 +2660,10 @@ hypervDomainAttachDeviceFlags(virDomainPtr domain, const char *xml, unsigned int
         }
 
         if (hypervDomainAttachStorageVolume(domain, dev->data.disk, controller, hostname) < 0)
+            return -1;
+        break;
+    case VIR_DOMAIN_DEVICE_CHR:
+        if (hypervDomainAttachSerial(domain, dev->data.chr) < 0)
             return -1;
         break;
     default:
