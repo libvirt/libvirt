@@ -114,7 +114,8 @@ virNetLibsshSessionAuthMethodsFree(virNetLibsshSessionPtr sess)
     size_t i;
 
     for (i = 0; i < sess->nauths; i++) {
-        VIR_DISPOSE_STRING(sess->auths[i]->password);
+        virSecureEraseString(sess->auths[i]->password);
+        g_free(sess->auths[i]->password);
         VIR_FREE(sess->auths[i]->filename);
         VIR_FREE(sess->auths[i]);
     }
@@ -445,7 +446,8 @@ virNetLibsshAuthenticatePrivkeyCb(const char *prompt,
 
     p = virStrncpy(buf, retr_passphrase.result,
                    retr_passphrase.resultlen, len);
-    VIR_DISPOSE_STRING(retr_passphrase.result);
+    virSecureEraseString(retr_passphrase.result);
+    g_free(retr_passphrase.result);
     if (p < 0) {
         virReportError(VIR_ERR_LIBSSH, "%s",
                        _("passphrase is too long for the buffer"));
@@ -739,7 +741,8 @@ virNetLibsshAuthenticateKeyboardInteractive(virNetLibsshSessionPtr sess,
 
             ret = ssh_userauth_kbdint_setanswer(sess->session, iprompt,
                                                 retr_passphrase.result);
-            VIR_DISPOSE_STRING(retr_passphrase.result);
+            virSecureEraseString(retr_passphrase.result);
+            g_free(retr_passphrase.result);
             if (ret < 0) {
                 errmsg = ssh_get_error(sess->session);
                 virReportError(VIR_ERR_AUTH_FAILED,
