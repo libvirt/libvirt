@@ -1020,10 +1020,8 @@ virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSessionPtr sess,
 
     if (!keyfile) {
         virReportError(VIR_ERR_LIBSSH, "%s",
-                       _("Key file path must be provided "
-                         "for private key authentication"));
-        ret = -1;
-        goto error;
+                       _("Key file path must be provided for private key authentication"));
+        return -1;
     }
 
     virObjectLock(sess);
