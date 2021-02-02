@@ -629,6 +629,11 @@ class Msvm_ResourceAllocationSettingData
 end
 
 
+class Msvm_SerialPortSettingData : Msvm_ResourceAllocationSettingData
+    boolean  DebuggerMode
+end
+
+
 class Msvm_Keyboard
     string   InstanceID
     string   Caption

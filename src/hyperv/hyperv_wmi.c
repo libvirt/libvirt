@@ -1488,6 +1488,16 @@ hypervGetStorageAllocationSD(hypervPrivate *priv,
 }
 
 
+int
+hypervGetSerialPortSD(hypervPrivate *priv,
+                      const char *id,
+                      Msvm_SerialPortSettingData **data)
+{
+    hypervGetSettingData(Msvm_SerialPortSettingData, id, data);
+    return 0;
+}
+
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Msvm_VirtualSystemManagementService
  */

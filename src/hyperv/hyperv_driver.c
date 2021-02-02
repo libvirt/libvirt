@@ -1253,6 +1253,52 @@ hypervDomainDefParseStorage(hypervPrivate *priv,
 }
 
 
+static int
+hypervDomainDefParseSerial(virDomainDefPtr def, Msvm_ResourceAllocationSettingData *rasd)
+{
+    for (; rasd; rasd = rasd->next) {
+        int port_num = 0;
+        char **conn = NULL;
+        const char *srcPath = NULL;
+        virDomainChrDefPtr serial = NULL;
+
+        if (rasd->data->ResourceType != MSVM_RASD_RESOURCETYPE_SERIAL_PORT)
+            continue;
+
+        /* get port number */
+        port_num = rasd->data->ElementName[4] - '0';
+        if (port_num < 1) {
+            continue;
+        }
+
+        serial = virDomainChrDefNew(NULL);
+
+        serial->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+        serial->source->type = VIR_DOMAIN_CHR_TYPE_PIPE;
+        serial->target.port = port_num;
+
+        /* set up source */
+        if (rasd->data->Connection.count < 1) {
+            srcPath = "-1";
+        } else {
+            conn = rasd->data->Connection.data;
+            if (!*conn)
+                srcPath = "-1";
+            else
+                srcPath = *conn;
+        }
+
+        serial->source->data.file.path = g_strdup(srcPath);
+
+        if (VIR_APPEND_ELEMENT(def->serials, def->nserials, serial) < 0) {
+            virDomainChrDefFree(serial);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 
 /*
  * Driver functions
@@ -2113,6 +2159,8 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     g_autoptr(Msvm_MemorySettingData) memorySettingData = NULL;
     g_autoptr(Msvm_ResourceAllocationSettingData) rasd = NULL;
     g_autoptr(Msvm_StorageAllocationSettingData) sasd = NULL;
+    g_autoptr(Msvm_SerialPortSettingData) spsd = NULL;
+    Msvm_ResourceAllocationSettingData *serialDevices = NULL;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
@@ -2150,6 +2198,9 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
                                      &sasd) < 0) {
         return NULL;
     }
+
+    if (hypervGetSerialPortSD(priv, virtualSystemSettingData->data->InstanceID, &spsd) < 0)
+        return NULL;
 
     /* Fill struct */
     def->virtType = VIR_DOMAIN_VIRT_HYPERV;
@@ -2213,6 +2264,14 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     def->ncontrollers = 0;
 
     if (hypervDomainDefParseStorage(priv, def, rasd, sasd) < 0)
+        return NULL;
+
+    if (g_str_has_prefix(priv->version, "6."))
+        serialDevices = rasd;
+    else
+        serialDevices = (Msvm_ResourceAllocationSettingData *)spsd;
+
+    if (hypervDomainDefParseSerial(def, serialDevices) < 0)
         return NULL;
 
     /* XXX xmlopts must be non-NULL */
