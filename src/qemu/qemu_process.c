@@ -4604,10 +4604,10 @@ qemuProcessIncomingDefFree(qemuProcessIncomingDefPtr inc)
     if (!inc)
         return;
 
-    VIR_FREE(inc->address);
-    VIR_FREE(inc->launchURI);
-    VIR_FREE(inc->deferredURI);
-    VIR_FREE(inc);
+    g_free(inc->address);
+    g_free(inc->launchURI);
+    g_free(inc->deferredURI);
+    g_free(inc);
 }
 
 
@@ -8713,14 +8713,14 @@ qemuProcessQMPFree(qemuProcessQMPPtr proc)
 
     g_object_unref(proc->eventThread);
 
-    VIR_FREE(proc->binary);
-    VIR_FREE(proc->libDir);
-    VIR_FREE(proc->uniqDir);
-    VIR_FREE(proc->monpath);
-    VIR_FREE(proc->monarg);
-    VIR_FREE(proc->pidfile);
-    VIR_FREE(proc->stdErr);
-    VIR_FREE(proc);
+    g_free(proc->binary);
+    g_free(proc->libDir);
+    g_free(proc->uniqDir);
+    g_free(proc->monpath);
+    g_free(proc->monarg);
+    g_free(proc->pidfile);
+    g_free(proc->stdErr);
+    g_free(proc);
 }
 
 

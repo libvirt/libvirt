@@ -4112,10 +4112,10 @@ virQEMUCapsCachePrivFree(void *privData)
 {
     virQEMUCapsCachePrivPtr priv = privData;
 
-    VIR_FREE(priv->libDir);
-    VIR_FREE(priv->kernelVersion);
-    VIR_FREE(priv->hostCPUSignature);
-    VIR_FREE(priv);
+    g_free(priv->libDir);
+    g_free(priv->kernelVersion);
+    g_free(priv->hostCPUSignature);
+    g_free(priv);
 }
 
 

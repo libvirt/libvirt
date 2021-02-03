@@ -113,7 +113,7 @@ struct _qemuVhostUser {
 static void
 qemuVhostUserGPUFeatureFree(qemuVhostUserGPUFeature *features)
 {
-    VIR_FREE(features);
+    g_free(features);
 }
 
 
@@ -127,11 +127,11 @@ qemuVhostUserFree(qemuVhostUserPtr vu)
         return;
 
     if (vu->type == QEMU_VHOST_USER_TYPE_GPU)
-        VIR_FREE(vu->capabilities.gpu.features);
+        g_free(vu->capabilities.gpu.features);
 
-    VIR_FREE(vu->binary);
+    g_free(vu->binary);
 
-    VIR_FREE(vu);
+    g_free(vu);
 }
 
 

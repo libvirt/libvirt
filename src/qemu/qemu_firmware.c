@@ -180,7 +180,7 @@ struct _qemuFirmware {
 static void
 qemuFirmwareOSInterfaceFree(qemuFirmwareOSInterface *interfaces)
 {
-    VIR_FREE(interfaces);
+    g_free(interfaces);
 }
 
 
@@ -245,7 +245,7 @@ qemuFirmwareTargetFree(qemuFirmwareTargetPtr target)
 
     virStringListFreeCount(target->machines, target->nmachines);
 
-    VIR_FREE(target);
+    g_free(target);
 }
 
 
@@ -255,7 +255,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuFirmwareTarget, qemuFirmwareTargetFree);
 static void
 qemuFirmwareFeatureFree(qemuFirmwareFeature *features)
 {
-    VIR_FREE(features);
+    g_free(features);
 }
 
 
@@ -274,10 +274,10 @@ qemuFirmwareFree(qemuFirmwarePtr fw)
     qemuFirmwareMappingFree(fw->mapping);
     for (i = 0; i < fw->ntargets; i++)
         qemuFirmwareTargetFree(fw->targets[i]);
-    VIR_FREE(fw->targets);
+    g_free(fw->targets);
     qemuFirmwareFeatureFree(fw->features);
 
-    VIR_FREE(fw);
+    g_free(fw);
 }
 
 

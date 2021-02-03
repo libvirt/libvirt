@@ -83,9 +83,9 @@ virQEMUSaveDataFree(virQEMUSaveDataPtr data)
     if (!data)
         return;
 
-    VIR_FREE(data->xml);
-    VIR_FREE(data->cookie);
-    VIR_FREE(data);
+    g_free(data->xml);
+    g_free(data->cookie);
+    g_free(data);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virQEMUSaveData, virQEMUSaveDataFree);

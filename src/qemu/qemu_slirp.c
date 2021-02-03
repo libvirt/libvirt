@@ -58,7 +58,7 @@ qemuSlirpFree(qemuSlirpPtr slirp)
     VIR_FORCE_CLOSE(slirp->fd[0]);
     VIR_FORCE_CLOSE(slirp->fd[1]);
     virBitmapFree(slirp->features);
-    VIR_FREE(slirp);
+    g_free(slirp);
 }
 
 

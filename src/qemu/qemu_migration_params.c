@@ -261,11 +261,11 @@ qemuMigrationParamsFree(qemuMigrationParamsPtr migParams)
 
     for (i = 0; i < QEMU_MIGRATION_PARAM_LAST; i++) {
         if (qemuMigrationParamTypes[i] == QEMU_MIGRATION_PARAM_TYPE_STRING)
-            VIR_FREE(migParams->params[i].value.s);
+            g_free(migParams->params[i].value.s);
     }
 
     virBitmapFree(migParams->caps);
-    VIR_FREE(migParams);
+    g_free(migParams);
 }
 
 

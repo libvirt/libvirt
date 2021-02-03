@@ -77,17 +77,17 @@ qemuBlockNodeNameBackingChainDataFree(qemuBlockNodeNameBackingChainDataPtr data)
     if (!data)
         return;
 
-    VIR_FREE(data->nodeformat);
-    VIR_FREE(data->nodestorage);
+    g_free(data->nodeformat);
+    g_free(data->nodestorage);
 
-    VIR_FREE(data->qemufilename);
+    g_free(data->qemufilename);
 
-    VIR_FREE(data->drvformat);
-    VIR_FREE(data->drvstorage);
+    g_free(data->drvformat);
+    g_free(data->drvstorage);
 
     qemuBlockNodeNameBackingChainDataFree(data->backing);
 
-    VIR_FREE(data);
+    g_free(data);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockNodeNameBackingChainData,
@@ -1635,16 +1635,16 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
     virJSONValueFree(data->encryptsecretProps);
     virJSONValueFree(data->tlsProps);
     virJSONValueFree(data->tlsKeySecretProps);
-    VIR_FREE(data->tlsAlias);
-    VIR_FREE(data->tlsKeySecretAlias);
-    VIR_FREE(data->authsecretAlias);
-    VIR_FREE(data->encryptsecretAlias);
-    VIR_FREE(data->httpcookiesecretAlias);
-    VIR_FREE(data->driveCmd);
-    VIR_FREE(data->driveAlias);
-    VIR_FREE(data->chardevAlias);
-    VIR_FREE(data->chardevCmd);
-    VIR_FREE(data);
+    g_free(data->tlsAlias);
+    g_free(data->tlsKeySecretAlias);
+    g_free(data->authsecretAlias);
+    g_free(data->encryptsecretAlias);
+    g_free(data->httpcookiesecretAlias);
+    g_free(data->driveCmd);
+    g_free(data->driveAlias);
+    g_free(data->chardevAlias);
+    g_free(data->chardevCmd);
+    g_free(data);
 }
 
 
@@ -1960,8 +1960,8 @@ qemuBlockStorageSourceChainDataFree(qemuBlockStorageSourceChainDataPtr data)
     for (i = 0; i < data->nsrcdata; i++)
         qemuBlockStorageSourceAttachDataFree(data->srcdata[i]);
 
-    VIR_FREE(data->srcdata);
-    VIR_FREE(data);
+    g_free(data->srcdata);
+    g_free(data);
 }
 
 

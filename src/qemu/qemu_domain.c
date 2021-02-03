@@ -1803,8 +1803,8 @@ qemuDomainObjPrivateFree(void *data)
 
     virObjectUnref(priv->monConfig);
     qemuDomainObjClearJob(&priv->job);
-    VIR_FREE(priv->lockState);
-    VIR_FREE(priv->origname);
+    g_free(priv->lockState);
+    g_free(priv->origname);
 
     virChrdevFree(priv->devs);
 
@@ -1817,7 +1817,7 @@ qemuDomainObjPrivateFree(void *data)
         VIR_ERROR(_("Unexpected QEMU agent still active during domain deletion"));
         qemuAgentClose(priv->agent);
     }
-    VIR_FREE(priv->cleanupCallbacks);
+    g_free(priv->cleanupCallbacks);
 
     g_clear_pointer(&priv->migSecinfo, qemuDomainSecretInfoFree);
     qemuDomainMasterKeyFree(priv);
@@ -1830,7 +1830,7 @@ qemuDomainObjPrivateFree(void *data)
         g_object_unref(priv->eventThread);
     }
 
-    VIR_FREE(priv);
+    g_free(priv);
 }
 
 
@@ -3238,7 +3238,7 @@ qemuDomainXmlNsDefFree(qemuDomainXmlNsDefPtr def)
     virStringListFreeCount(def->capsadd, def->ncapsadd);
     virStringListFreeCount(def->capsdel, def->ncapsdel);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
@@ -10845,7 +10845,7 @@ qemuProcessEventFree(struct qemuProcessEvent *event)
     case QEMU_PROCESS_EVENT_BLOCK_JOB:
     case QEMU_PROCESS_EVENT_MONITOR_EOF:
     case QEMU_PROCESS_EVENT_GUEST_CRASHLOADED:
-        VIR_FREE(event->data);
+        g_free(event->data);
         break;
     case QEMU_PROCESS_EVENT_JOB_STATUS_CHANGE:
         virObjectUnref(event->data);
@@ -10854,7 +10854,7 @@ qemuProcessEventFree(struct qemuProcessEvent *event)
     case QEMU_PROCESS_EVENT_LAST:
         break;
     }
-    VIR_FREE(event);
+    g_free(event);
 }
 
 

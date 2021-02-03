@@ -1215,8 +1215,8 @@ qemuCgroupEmulatorAllNodesDataFree(qemuCgroupEmulatorAllNodesDataPtr data)
         return;
 
     virCgroupFree(data->emulatorCgroup);
-    VIR_FREE(data->emulatorMemMask);
-    VIR_FREE(data);
+    g_free(data->emulatorMemMask);
+    g_free(data);
 }
 
 

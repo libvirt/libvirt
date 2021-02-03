@@ -1674,7 +1674,7 @@ qemuMonitorCPUInfoFree(qemuMonitorCPUInfoPtr cpus,
 
     qemuMonitorCPUInfoClear(cpus, ncpus);
 
-    VIR_FREE(cpus);
+    g_free(cpus);
 }
 
 void
@@ -1687,9 +1687,9 @@ qemuMonitorQueryCpusFree(struct qemuMonitorQueryCpusEntry *entries,
         return;
 
     for (i = 0; i < nentries; i++)
-        VIR_FREE(entries[i].qom_path);
+        g_free(entries[i].qom_path);
 
-    VIR_FREE(entries);
+    g_free(entries);
 }
 
 
@@ -2085,8 +2085,8 @@ qemuDomainDiskInfoFree(void *value)
 {
     struct qemuDomainDiskInfo *info = value;
 
-    VIR_FREE(info->nodename);
-    VIR_FREE(info);
+    g_free(info->nodename);
+    g_free(info);
 }
 
 
@@ -2871,8 +2871,8 @@ qemuMonitorChardevInfoFree(void *data)
 {
     qemuMonitorChardevInfoPtr info = data;
 
-    VIR_FREE(info->ptyPath);
-    VIR_FREE(info);
+    g_free(info->ptyPath);
+    g_free(info);
 }
 
 
@@ -3603,11 +3603,11 @@ qemuMonitorMachineInfoFree(qemuMonitorMachineInfoPtr machine)
 {
     if (!machine)
         return;
-    VIR_FREE(machine->name);
-    VIR_FREE(machine->alias);
-    VIR_FREE(machine->defaultCPU);
-    VIR_FREE(machine->defaultRAMid);
-    VIR_FREE(machine);
+    g_free(machine->name);
+    g_free(machine->alias);
+    g_free(machine->defaultCPU);
+    g_free(machine->defaultRAMid);
+    g_free(machine);
 }
 
 
@@ -3735,14 +3735,14 @@ qemuMonitorCPUModelInfoFree(qemuMonitorCPUModelInfoPtr model_info)
         return;
 
     for (i = 0; i < model_info->nprops; i++) {
-        VIR_FREE(model_info->props[i].name);
+        g_free(model_info->props[i].name);
         if (model_info->props[i].type == QEMU_MONITOR_CPU_PROPERTY_STRING)
-            VIR_FREE(model_info->props[i].value.string);
+            g_free(model_info->props[i].value.string);
     }
 
-    VIR_FREE(model_info->props);
-    VIR_FREE(model_info->name);
-    VIR_FREE(model_info);
+    g_free(model_info->props);
+    g_free(model_info->name);
+    g_free(model_info);
 }
 
 
@@ -4378,7 +4378,7 @@ qemuMonitorEventPanicInfoFree(qemuMonitorEventPanicInfoPtr info)
 
     switch (info->type) {
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_S390:
-        VIR_FREE(info->data.s390.reason);
+        g_free(info->data.s390.reason);
         break;
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_NONE:
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_HYPERV:
@@ -4386,7 +4386,7 @@ qemuMonitorEventPanicInfoFree(qemuMonitorEventPanicInfoPtr info)
         break;
     }
 
-    VIR_FREE(info);
+    g_free(info);
 }
 
 
@@ -4396,8 +4396,8 @@ qemuMonitorEventRdmaGidStatusFree(qemuMonitorRdmaGidStatusPtr info)
     if (!info)
         return;
 
-    VIR_FREE(info->netdev);
-    VIR_FREE(info);
+    g_free(info->netdev);
+    g_free(info);
 }
 
 
@@ -4588,9 +4588,9 @@ qemuMonitorJobInfoFree(qemuMonitorJobInfoPtr job)
     if (!job)
         return;
 
-    VIR_FREE(job->id);
-    VIR_FREE(job->error);
-    VIR_FREE(job);
+    g_free(job->id);
+    g_free(job->error);
+    g_free(job);
 }
 
 

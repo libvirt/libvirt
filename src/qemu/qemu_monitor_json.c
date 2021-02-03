@@ -591,11 +591,11 @@ qemuMonitorJSONParseKeywordsFree(int nkeywords,
 {
     size_t i;
     for (i = 0; i < nkeywords; i++) {
-        VIR_FREE(keywords[i]);
-        VIR_FREE(values[i]);
+        g_free(keywords[i]);
+        g_free(values[i]);
     }
-    VIR_FREE(keywords);
-    VIR_FREE(values);
+    g_free(keywords);
+    g_free(values);
 }
 
 
@@ -6561,9 +6561,9 @@ void qemuMonitorJSONListPathFree(qemuMonitorJSONListPathPtr paths)
 {
     if (!paths)
         return;
-    VIR_FREE(paths->name);
-    VIR_FREE(paths->type);
-    VIR_FREE(paths);
+    g_free(paths->name);
+    g_free(paths->type);
+    g_free(paths);
 }
 
 
@@ -8576,13 +8576,13 @@ qemuMonitorQueryHotpluggableCpusFree(struct qemuMonitorQueryHotpluggableCpusEntr
     for (i = 0; i < nentries; i++) {
         entry = entries + i;
 
-        VIR_FREE(entry->type);
-        VIR_FREE(entry->qom_path);
-        VIR_FREE(entry->alias);
+        g_free(entry->type);
+        g_free(entry->qom_path);
+        g_free(entry->alias);
         virJSONValueFree(entry->props);
     }
 
-    VIR_FREE(entries);
+    g_free(entries);
 }
 
 

@@ -1579,9 +1579,9 @@ qemuSharedDeviceEntryFree(void *payload)
         return;
 
     for (i = 0; i < entry->ref; i++)
-        VIR_FREE(entry->domains[i]);
-    VIR_FREE(entry->domains);
-    VIR_FREE(entry);
+        g_free(entry->domains[i]);
+    g_free(entry->domains);
+    g_free(entry);
 }
 
 
