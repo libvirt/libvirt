@@ -419,7 +419,7 @@ void virNetServerServiceDispose(void *obj)
 
     for (i = 0; i < svc->nsocks; i++)
        virObjectUnref(svc->socks[i]);
-    VIR_FREE(svc->socks);
+    g_free(svc->socks);
 
     virObjectUnref(svc->tls);
 }

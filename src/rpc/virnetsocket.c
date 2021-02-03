@@ -1356,9 +1356,9 @@ void virNetSocketDispose(void *obj)
 
     virProcessAbort(sock->pid);
 
-    VIR_FREE(sock->localAddrStrSASL);
-    VIR_FREE(sock->remoteAddrStrSASL);
-    VIR_FREE(sock->remoteAddrStrURI);
+    g_free(sock->localAddrStrSASL);
+    g_free(sock->remoteAddrStrSASL);
+    g_free(sock->remoteAddrStrURI);
 }
 
 

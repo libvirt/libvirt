@@ -151,10 +151,10 @@ virNetSSHSessionDispose(void *obj)
 
     virNetSSHSessionAuthMethodsClear(sess);
 
-    VIR_FREE(sess->channelCommand);
-    VIR_FREE(sess->hostname);
-    VIR_FREE(sess->knownHostsFile);
-    VIR_FREE(sess->authPath);
+    g_free(sess->channelCommand);
+    g_free(sess->hostname);
+    g_free(sess->knownHostsFile);
+    g_free(sess->authPath);
 }
 
 static virClassPtr virNetSSHSessionClass;

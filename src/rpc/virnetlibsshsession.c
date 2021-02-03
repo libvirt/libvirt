@@ -132,18 +132,18 @@ virNetLibsshSessionDispose(void *obj)
 
     for (i = 0; i < sess->nauths; i++) {
         virSecureEraseString(sess->auths[i]->password);
-        VIR_FREE(sess->auths[i]->password);
-        VIR_FREE(sess->auths[i]->filename);
-        VIR_FREE(sess->auths[i]);
+        g_free(sess->auths[i]->password);
+        g_free(sess->auths[i]->filename);
+        g_free(sess->auths[i]);
     }
 
-    VIR_FREE(sess->auths);
+    g_free(sess->auths);
 
-    VIR_FREE(sess->channelCommand);
-    VIR_FREE(sess->hostname);
-    VIR_FREE(sess->knownHostsFile);
-    VIR_FREE(sess->authPath);
-    VIR_FREE(sess->username);
+    g_free(sess->channelCommand);
+    g_free(sess->hostname);
+    g_free(sess->knownHostsFile);
+    g_free(sess->authPath);
+    g_free(sess->username);
 }
 
 static virClassPtr virNetLibsshSessionClass;

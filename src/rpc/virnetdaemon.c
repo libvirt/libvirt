@@ -99,9 +99,9 @@ virNetDaemonDispose(void *obj)
 
     for (i = 0; i < dmn->nsignals; i++) {
         sigaction(dmn->signals[i]->signum, &dmn->signals[i]->oldaction, NULL);
-        VIR_FREE(dmn->signals[i]);
+        g_free(dmn->signals[i]);
     }
-    VIR_FREE(dmn->signals);
+    g_free(dmn->signals);
     VIR_FORCE_CLOSE(dmn->sigread);
     VIR_FORCE_CLOSE(dmn->sigwrite);
     if (dmn->sigwatch > 0)
@@ -109,7 +109,7 @@ virNetDaemonDispose(void *obj)
 #endif /* !WIN32 */
 
     VIR_FORCE_CLOSE(dmn->autoShutdownInhibitFd);
-    VIR_FREE(dmn->stateStopThread);
+    g_free(dmn->stateStopThread);
 
     virHashFree(dmn->servers);
 

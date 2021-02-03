@@ -747,12 +747,12 @@ void virNetClientDispose(void *obj)
 
     for (i = 0; i < client->nprograms; i++)
         virObjectUnref(client->programs[i]);
-    VIR_FREE(client->programs);
+    g_free(client->programs);
 
     g_main_loop_unref(client->eventLoop);
     g_main_context_unref(client->eventCtx);
 
-    VIR_FREE(client->hostname);
+    g_free(client->hostname);
 
     if (client->sock)
         virNetSocketRemoveIOCallback(client->sock);

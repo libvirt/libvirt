@@ -699,7 +699,7 @@ void virNetSASLSessionDispose(void *obj)
 
     if (sasl->conn)
         sasl_dispose(&sasl->conn);
-    VIR_FREE(sasl->callbacks);
+    g_free(sasl->callbacks);
 }
 
 #ifdef __APPLE__

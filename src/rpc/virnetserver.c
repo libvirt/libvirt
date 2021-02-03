@@ -909,21 +909,21 @@ void virNetServerDispose(void *obj)
     virNetServerPtr srv = obj;
     size_t i;
 
-    VIR_FREE(srv->name);
+    g_free(srv->name);
 
     virThreadPoolFree(srv->workers);
 
     for (i = 0; i < srv->nservices; i++)
         virObjectUnref(srv->services[i]);
-    VIR_FREE(srv->services);
+    g_free(srv->services);
 
     for (i = 0; i < srv->nprograms; i++)
         virObjectUnref(srv->programs[i]);
-    VIR_FREE(srv->programs);
+    g_free(srv->programs);
 
     for (i = 0; i < srv->nclients; i++)
         virObjectUnref(srv->clients[i]);
-    VIR_FREE(srv->clients);
+    g_free(srv->clients);
 }
 
 void virNetServerClose(virNetServerPtr srv)

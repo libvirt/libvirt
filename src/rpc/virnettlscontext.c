@@ -1146,7 +1146,7 @@ void virNetTLSContextDispose(void *obj)
     PROBE(RPC_TLS_CONTEXT_DISPOSE,
           "ctxt=%p", ctxt);
 
-    VIR_FREE(ctxt->priority);
+    g_free(ctxt->priority);
     gnutls_dh_params_deinit(ctxt->dhParams);
     gnutls_certificate_free_credentials(ctxt->x509cred);
 }
@@ -1415,8 +1415,8 @@ void virNetTLSSessionDispose(void *obj)
     PROBE(RPC_TLS_SESSION_DISPOSE,
           "sess=%p", sess);
 
-    VIR_FREE(sess->x509dname);
-    VIR_FREE(sess->hostname);
+    g_free(sess->x509dname);
+    g_free(sess->hostname);
     gnutls_deinit(sess->session);
 }
 
