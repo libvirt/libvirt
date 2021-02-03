@@ -125,10 +125,10 @@ virDomainSnapshotDefDispose(void *obj)
     virDomainSnapshotDefPtr def = obj;
     size_t i;
 
-    VIR_FREE(def->file);
+    g_free(def->file);
     for (i = 0; i < def->ndisks; i++)
         virDomainSnapshotDiskDefClear(&def->disks[i]);
-    VIR_FREE(def->disks);
+    g_free(def->disks);
     virObjectUnref(def->cookie);
 }
 

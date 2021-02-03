@@ -137,10 +137,10 @@ virSecretObjDispose(void *opaque)
     if (obj->value) {
         /* Wipe before free to ensure we don't leave a secret on the heap */
         memset(obj->value, 0, obj->value_size);
-        VIR_FREE(obj->value);
+        g_free(obj->value);
     }
-    VIR_FREE(obj->configFile);
-    VIR_FREE(obj->base64File);
+    g_free(obj->configFile);
+    g_free(obj->base64File);
 }
 
 

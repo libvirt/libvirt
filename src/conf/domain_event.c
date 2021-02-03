@@ -387,9 +387,9 @@ virDomainEventIOErrorDispose(void *obj)
     virDomainEventIOErrorPtr event = obj;
     VIR_DEBUG("obj=%p", event);
 
-    VIR_FREE(event->srcPath);
-    VIR_FREE(event->devAlias);
-    VIR_FREE(event->reason);
+    g_free(event->srcPath);
+    g_free(event->devAlias);
+    g_free(event->reason);
 }
 
 static void
@@ -399,23 +399,23 @@ virDomainEventGraphicsDispose(void *obj)
     VIR_DEBUG("obj=%p", event);
 
     if (event->local) {
-        VIR_FREE(event->local->node);
-        VIR_FREE(event->local->service);
-        VIR_FREE(event->local);
+        g_free(event->local->node);
+        g_free(event->local->service);
+        g_free(event->local);
     }
     if (event->remote) {
-        VIR_FREE(event->remote->node);
-        VIR_FREE(event->remote->service);
-        VIR_FREE(event->remote);
+        g_free(event->remote->node);
+        g_free(event->remote->service);
+        g_free(event->remote);
     }
-    VIR_FREE(event->authScheme);
+    g_free(event->authScheme);
     if (event->subject) {
         size_t i;
         for (i = 0; i < event->subject->nidentity; i++) {
-            VIR_FREE(event->subject->identities[i].type);
-            VIR_FREE(event->subject->identities[i].name);
+            g_free(event->subject->identities[i].type);
+            g_free(event->subject->identities[i].name);
         }
-        VIR_FREE(event->subject);
+        g_free(event->subject);
     }
 }
 
@@ -425,7 +425,7 @@ virDomainEventBlockJobDispose(void *obj)
     virDomainEventBlockJobPtr event = obj;
     VIR_DEBUG("obj=%p", event);
 
-    VIR_FREE(event->disk);
+    g_free(event->disk);
 }
 
 static void
@@ -434,9 +434,9 @@ virDomainEventDiskChangeDispose(void *obj)
     virDomainEventDiskChangePtr event = obj;
     VIR_DEBUG("obj=%p", event);
 
-    VIR_FREE(event->oldSrcPath);
-    VIR_FREE(event->newSrcPath);
-    VIR_FREE(event->devAlias);
+    g_free(event->oldSrcPath);
+    g_free(event->newSrcPath);
+    g_free(event->devAlias);
 }
 
 static void
@@ -445,7 +445,7 @@ virDomainEventTrayChangeDispose(void *obj)
     virDomainEventTrayChangePtr event = obj;
     VIR_DEBUG("obj=%p", event);
 
-    VIR_FREE(event->devAlias);
+    g_free(event->devAlias);
 }
 
 static void
@@ -461,7 +461,7 @@ virDomainEventDeviceRemovedDispose(void *obj)
     virDomainEventDeviceRemovedPtr event = obj;
     VIR_DEBUG("obj=%p", event);
 
-    VIR_FREE(event->devAlias);
+    g_free(event->devAlias);
 }
 
 static void
@@ -470,7 +470,7 @@ virDomainEventDeviceAddedDispose(void *obj)
     virDomainEventDeviceAddedPtr event = obj;
     VIR_DEBUG("obj=%p", event);
 
-    VIR_FREE(event->devAlias);
+    g_free(event->devAlias);
 }
 
 
@@ -480,7 +480,7 @@ virDomainEventDeviceRemovalFailedDispose(void *obj)
     virDomainEventDeviceRemovalFailedPtr event = obj;
     VIR_DEBUG("obj=%p", event);
 
-    VIR_FREE(event->devAlias);
+    g_free(event->devAlias);
 }
 
 
@@ -497,8 +497,8 @@ virDomainQemuMonitorEventDispose(void *obj)
     virDomainQemuMonitorEventPtr event = obj;
     VIR_DEBUG("obj=%p", event);
 
-    VIR_FREE(event->event);
-    VIR_FREE(event->details);
+    g_free(event->event);
+    g_free(event->details);
 }
 
 static void
@@ -540,7 +540,7 @@ virDomainEventMetadataChangeDispose(void *obj)
     virDomainEventMetadataChangePtr event = obj;
     VIR_DEBUG("obj=%p", event);
 
-    VIR_FREE(event->nsuri);
+    g_free(event->nsuri);
 }
 
 
@@ -550,8 +550,8 @@ virDomainEventBlockThresholdDispose(void *obj)
     virDomainEventBlockThresholdPtr event = obj;
     VIR_DEBUG("obj=%p", event);
 
-    VIR_FREE(event->dev);
-    VIR_FREE(event->path);
+    g_free(event->dev);
+    g_free(event->path);
 }
 
 

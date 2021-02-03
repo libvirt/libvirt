@@ -378,8 +378,8 @@ virStoragePoolObjDispose(void *opaque)
     virStoragePoolDefFree(obj->def);
     virStoragePoolDefFree(obj->newDef);
 
-    VIR_FREE(obj->configFile);
-    VIR_FREE(obj->autostartLink);
+    g_free(obj->configFile);
+    g_free(obj->autostartLink);
 }
 
 

@@ -62,9 +62,9 @@ virDomainMomentDefDispose(void *obj)
 {
     virDomainMomentDefPtr def = obj;
 
-    VIR_FREE(def->name);
-    VIR_FREE(def->description);
-    VIR_FREE(def->parent_name);
+    g_free(def->name);
+    g_free(def->description);
+    g_free(def->parent_name);
     virDomainDefFree(def->dom);
     virDomainDefFree(def->inactiveDom);
 }

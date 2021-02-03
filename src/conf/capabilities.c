@@ -232,39 +232,39 @@ virCapsDispose(void *object)
 
     for (i = 0; i < caps->npools; i++)
         virCapabilitiesFreeStoragePool(caps->pools[i]);
-    VIR_FREE(caps->pools);
+    g_free(caps->pools);
 
     for (i = 0; i < caps->nguests; i++)
         virCapabilitiesFreeGuest(caps->guests[i]);
-    VIR_FREE(caps->guests);
+    g_free(caps->guests);
 
     for (i = 0; i < caps->host.nfeatures; i++)
-        VIR_FREE(caps->host.features[i]);
-    VIR_FREE(caps->host.features);
+        g_free(caps->host.features[i]);
+    g_free(caps->host.features);
 
     if (caps->host.numa)
         virCapabilitiesHostNUMAUnref(caps->host.numa);
 
     for (i = 0; i < caps->host.nmigrateTrans; i++)
-        VIR_FREE(caps->host.migrateTrans[i]);
-    VIR_FREE(caps->host.migrateTrans);
+        g_free(caps->host.migrateTrans[i]);
+    g_free(caps->host.migrateTrans);
 
     for (i = 0; i < caps->host.nsecModels; i++)
         virCapabilitiesClearSecModel(&caps->host.secModels[i]);
-    VIR_FREE(caps->host.secModels);
+    g_free(caps->host.secModels);
 
     for (i = 0; i < caps->host.cache.nbanks; i++)
         virCapsHostCacheBankFree(caps->host.cache.banks[i]);
     virResctrlInfoMonFree(caps->host.cache.monitor);
-    VIR_FREE(caps->host.cache.banks);
+    g_free(caps->host.cache.banks);
 
     for (i = 0; i < caps->host.memBW.nnodes; i++)
         virCapsHostMemBWNodeFree(caps->host.memBW.nodes[i]);
     virResctrlInfoMonFree(caps->host.memBW.monitor);
-    VIR_FREE(caps->host.memBW.nodes);
+    g_free(caps->host.memBW.nodes);
 
-    VIR_FREE(caps->host.netprefix);
-    VIR_FREE(caps->host.pagesSize);
+    g_free(caps->host.netprefix);
+    g_free(caps->host.pagesSize);
     virCPUDefFree(caps->host.cpu);
     virObjectUnref(caps->host.resctrl);
 }

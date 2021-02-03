@@ -87,7 +87,7 @@ virDomainCheckpointDefDispose(void *obj)
 
     for (i = 0; i < def->ndisks; i++)
         virDomainCheckpointDiskDefClear(&def->disks[i]);
-    VIR_FREE(def->disks);
+    g_free(def->disks);
 }
 
 static int

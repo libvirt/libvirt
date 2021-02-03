@@ -123,8 +123,8 @@ virObjectEventDispose(void *obj)
 
     VIR_DEBUG("obj=%p", event);
 
-    VIR_FREE(event->meta.name);
-    VIR_FREE(event->meta.key);
+    g_free(event->meta.name);
+    g_free(event->meta.key);
 }
 
 /**

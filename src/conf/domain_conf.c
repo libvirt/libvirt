@@ -2699,7 +2699,7 @@ virDomainChrSourceDefDispose(void *obj)
     if (def->seclabels) {
         for (i = 0; i < def->nseclabels; i++)
             virSecurityDeviceLabelDefFree(def->seclabels[i]);
-        VIR_FREE(def->seclabels);
+        g_free(def->seclabels);
     }
 }
 

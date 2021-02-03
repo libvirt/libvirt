@@ -84,16 +84,16 @@ virDomainCapsDispose(void *obj)
     virDomainCapsStringValuesPtr values;
     size_t i;
 
-    VIR_FREE(caps->path);
-    VIR_FREE(caps->machine);
+    g_free(caps->path);
+    g_free(caps->machine);
     virObjectUnref(caps->cpu.custom);
     virCPUDefFree(caps->cpu.hostModel);
     virSEVCapabilitiesFree(caps->sev);
 
     values = &caps->os.loader.values;
     for (i = 0; i < values->nvalues; i++)
-        VIR_FREE(values->values[i]);
-    VIR_FREE(values->values);
+        g_free(values->values[i]);
+    g_free(values->values);
 }
 
 
@@ -104,11 +104,11 @@ virDomainCapsCPUModelsDispose(void *obj)
     size_t i;
 
     for (i = 0; i < cpuModels->nmodels; i++) {
-        VIR_FREE(cpuModels->models[i].name);
+        g_free(cpuModels->models[i].name);
         g_strfreev(cpuModels->models[i].blockers);
     }
 
-    VIR_FREE(cpuModels->models);
+    g_free(cpuModels->models);
 }
 
 
