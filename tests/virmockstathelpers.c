@@ -74,42 +74,47 @@
  * The same all applies to lstat()
  */
 
-
-#if !defined(WITH___XSTAT_DECL)
-# if defined(WITH_STAT)
-#  if !defined(WITH___XSTAT) && !defined(WITH_STAT64) || defined(__APPLE__)
-#   define MOCK_STAT
+#if !defined(__APPLE__)
+# if !defined(WITH___XSTAT_DECL)
+#  if defined(WITH_STAT)
+#   if !defined(WITH___XSTAT) && !defined(WITH_STAT64)
+#    define MOCK_STAT
+#   endif
 #  endif
-# endif
-# if defined(WITH_STAT64)
-#  define MOCK_STAT64
-# endif
-#else /* WITH___XSTAT_DECL */
-# if defined(WITH___XSTAT) && !defined(WITH___XSTAT64)
-#  define MOCK___XSTAT
-# endif
-# if defined(WITH___XSTAT64)
-#  define MOCK___XSTAT64
-# endif
-#endif /* WITH___XSTAT_DECL */
-
-#if !defined(WITH___LXSTAT_DECL)
-# if defined(WITH_LSTAT)
-#  if !defined(WITH___LXSTAT) && !defined(WITH_LSTAT64) || defined(__APPLE__)
-#   define MOCK_LSTAT
+#  if defined(WITH_STAT64)
+#   define MOCK_STAT64
 #  endif
-# endif
-# if defined(WITH_LSTAT64)
-#  define MOCK_LSTAT64
-# endif
-#else /* WITH___LXSTAT_DECL */
-# if defined(WITH___LXSTAT) && !defined(WITH___LXSTAT64)
-#  define MOCK___LXSTAT
-# endif
-# if defined(WITH___LXSTAT64)
-#  define MOCK___LXSTAT64
-# endif
-#endif /* WITH___LXSTAT_DECL */
+# else /* WITH___XSTAT_DECL */
+#  if defined(WITH___XSTAT) && !defined(WITH___XSTAT64)
+#   define MOCK___XSTAT
+#  endif
+#  if defined(WITH___XSTAT64)
+#   define MOCK___XSTAT64
+#  endif
+# endif /* WITH___XSTAT_DECL */
+# if !defined(WITH___LXSTAT_DECL)
+#  if defined(WITH_LSTAT)
+#   if !defined(WITH___LXSTAT) && !defined(WITH_LSTAT64)
+#    define MOCK_LSTAT
+#   endif
+#  endif
+#  if defined(WITH_LSTAT64)
+#   define MOCK_LSTAT64
+#  endif
+# else /* WITH___LXSTAT_DECL */
+#  if defined(WITH___LXSTAT) && !defined(WITH___LXSTAT64)
+#   define MOCK___LXSTAT
+#  endif
+#  if defined(WITH___LXSTAT64)
+#   define MOCK___LXSTAT64
+#  endif
+# endif /* WITH___LXSTAT_DECL */
+#else /* __APPLE__ */
+# define MOCK_STAT
+# define MOCK_STAT64
+# define MOCK_LSTAT
+# define MOCK_LSTAT64
+#endif
 
 #ifdef MOCK_STAT
 static int (*real_stat)(const char *path, struct stat *sb);
