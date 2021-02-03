@@ -1159,6 +1159,7 @@ virCgroupEnableMissingControllers(char *path,
         if (virCgroupMakeGroup(parent, tmp, true, VIR_CGROUP_SYSTEMD) < 0)
             return -1;
 
+        virCgroupFree(parent);
         parent = g_steal_pointer(&tmp);
     }
 
