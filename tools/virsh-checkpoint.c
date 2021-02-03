@@ -552,11 +552,11 @@ virshCheckpointListFree(virshCheckpointListPtr checkpointlist)
     if (checkpointlist->chks) {
         for (i = 0; i < checkpointlist->nchks; i++) {
             virshDomainCheckpointFree(checkpointlist->chks[i].chk);
-            VIR_FREE(checkpointlist->chks[i].parent);
+            g_free(checkpointlist->chks[i].parent);
         }
-        VIR_FREE(checkpointlist->chks);
+        g_free(checkpointlist->chks);
     }
-    VIR_FREE(checkpointlist);
+    g_free(checkpointlist);
 }
 
 

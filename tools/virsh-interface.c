@@ -176,9 +176,9 @@ virshInterfaceListFree(virshInterfaceListPtr list)
             if (list->ifaces[i])
                 virInterfaceFree(list->ifaces[i]);
         }
-        VIR_FREE(list->ifaces);
+        g_free(list->ifaces);
     }
-    VIR_FREE(list);
+    g_free(list);
 }
 
 static virshInterfaceListPtr

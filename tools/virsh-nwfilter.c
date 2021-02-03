@@ -234,9 +234,9 @@ virshNWFilterListFree(virshNWFilterListPtr list)
             if (list->filters[i])
                 virNWFilterFree(list->filters[i]);
         }
-        VIR_FREE(list->filters);
+        g_free(list->filters);
     }
-    VIR_FREE(list);
+    g_free(list);
 }
 
 static virshNWFilterListPtr
@@ -654,9 +654,9 @@ virshNWFilterBindingListFree(virshNWFilterBindingListPtr list)
             if (list->bindings[i])
                 virNWFilterBindingFree(list->bindings[i]);
         }
-        VIR_FREE(list->bindings);
+        g_free(list->bindings);
     }
-    VIR_FREE(list);
+    g_free(list);
 }
 
 

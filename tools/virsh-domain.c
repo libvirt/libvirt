@@ -1796,7 +1796,7 @@ virshBlockJobWaitFree(virshBlockJobWaitDataPtr data)
     if (data->cb_id2 >= 0)
         virConnectDomainEventDeregisterAny(priv->conn, data->cb_id2);
 
-    VIR_FREE(data);
+    g_free(data);
 }
 
 

@@ -1609,9 +1609,9 @@ virshDomainListFree(virshDomainListPtr domlist)
     if (domlist && domlist->domains) {
         for (i = 0; i < domlist->ndomains; i++)
             virshDomainFree(domlist->domains[i]);
-        VIR_FREE(domlist->domains);
+        g_free(domlist->domains);
     }
-    VIR_FREE(domlist);
+    g_free(domlist);
 }
 
 static virshDomainListPtr

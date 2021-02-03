@@ -1273,9 +1273,9 @@ virshStorageVolListFree(virshStorageVolListPtr list)
             if (list->vols[i])
                 virStorageVolFree(list->vols[i]);
         }
-        VIR_FREE(list->vols);
+        g_free(list->vols);
     }
-    VIR_FREE(list);
+    g_free(list);
 }
 
 static virshStorageVolListPtr

@@ -719,8 +719,8 @@ vshCommandOptFree(vshCmdOpt * arg)
 
         a = a->next;
 
-        VIR_FREE(tmp->data);
-        VIR_FREE(tmp);
+        g_free(tmp->data);
+        g_free(tmp);
     }
 }
 
@@ -735,7 +735,7 @@ vshCommandFree(vshCmd *cmd)
         c = c->next;
 
         vshCommandOptFree(tmp->opts);
-        VIR_FREE(tmp);
+        g_free(tmp);
     }
 }
 

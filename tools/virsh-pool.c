@@ -850,9 +850,9 @@ virshStoragePoolListFree(virshStoragePoolListPtr list)
             if (list->pools[i])
                 virStoragePoolFree(list->pools[i]);
         }
-        VIR_FREE(list->pools);
+        g_free(list->pools);
     }
-    VIR_FREE(list);
+    g_free(list);
 }
 
 static virshStoragePoolListPtr

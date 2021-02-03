@@ -52,10 +52,10 @@ vshTableRowFree(vshTableRowPtr row)
         return;
 
     for (i = 0; i < row->ncells; i++)
-        VIR_FREE(row->cells[i]);
+        g_free(row->cells[i]);
 
-    VIR_FREE(row->cells);
-    VIR_FREE(row);
+    g_free(row->cells);
+    g_free(row);
 }
 
 
@@ -69,8 +69,8 @@ vshTableFree(vshTablePtr table)
 
     for (i = 0; i < table->nrows; i++)
         vshTableRowFree(table->rows[i]);
-    VIR_FREE(table->rows);
-    VIR_FREE(table);
+    g_free(table->rows);
+    g_free(table);
 }
 
 

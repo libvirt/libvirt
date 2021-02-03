@@ -1032,11 +1032,11 @@ virshSnapshotListFree(virshSnapshotListPtr snaplist)
     if (snaplist->snaps) {
         for (i = 0; i < snaplist->nsnaps; i++) {
             virshDomainSnapshotFree(snaplist->snaps[i].snap);
-            VIR_FREE(snaplist->snaps[i].parent);
+            g_free(snaplist->snaps[i].parent);
         }
-        VIR_FREE(snaplist->snaps);
+        g_free(snaplist->snaps);
     }
-    VIR_FREE(snaplist);
+    g_free(snaplist);
 }
 
 static int

@@ -410,9 +410,9 @@ virshSecretListFree(virshSecretListPtr list)
         for (i = 0; i < list->nsecrets; i++)
             virshSecretFree(list->secrets[i]);
 
-        VIR_FREE(list->secrets);
+        g_free(list->secrets);
     }
-    VIR_FREE(list);
+    g_free(list);
 }
 
 static virshSecretListPtr

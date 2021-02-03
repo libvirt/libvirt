@@ -205,9 +205,9 @@ virshNodeDeviceListFree(virshNodeDeviceListPtr list)
             if (list->devices[i])
                 virNodeDeviceFree(list->devices[i]);
         }
-        VIR_FREE(list->devices);
+        g_free(list->devices);
     }
-    VIR_FREE(list);
+    g_free(list);
 }
 
 static virshNodeDeviceListPtr

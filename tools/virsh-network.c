@@ -459,9 +459,9 @@ virshNetworkListFree(virshNetworkListPtr list)
             if (list->nets[i])
                 virNetworkFree(list->nets[i]);
         }
-        VIR_FREE(list->nets);
+        g_free(list->nets);
     }
-    VIR_FREE(list);
+    g_free(list);
 }
 
 static virshNetworkListPtr
@@ -1676,9 +1676,9 @@ virshNetworkPortListFree(virshNetworkPortListPtr list)
             if (list->ports[i])
                 virNetworkPortFree(list->ports[i]);
         }
-        VIR_FREE(list->ports);
+        g_free(list->ports);
     }
-    VIR_FREE(list);
+    g_free(list);
 }
 
 static virshNetworkPortListPtr
