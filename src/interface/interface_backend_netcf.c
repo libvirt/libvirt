@@ -84,7 +84,7 @@ virNetcfDriverStateDispose(void *obj)
     if (_driver->lockFD != -1)
         virPidFileRelease(_driver->stateDir, "driver", _driver->lockFD);
 
-    VIR_FREE(_driver->stateDir);
+    g_free(_driver->stateDir);
 }
 
 
