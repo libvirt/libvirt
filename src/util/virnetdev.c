@@ -3300,9 +3300,8 @@ virNetDevGetEthtoolGFeatures(const char *ifname,
 {
     g_autofree struct ethtool_gfeatures *g_cmd = NULL;
 
-    if (VIR_ALLOC_VAR(g_cmd,
-                      struct ethtool_get_features_block, GFEATURES_SIZE) < 0)
-        return -1;
+    g_cmd = g_malloc0(sizeof(struct ethtool_gfeatures) +
+                      sizeof(struct ethtool_get_features_block) * GFEATURES_SIZE);
 
     g_cmd->cmd = ETHTOOL_GFEATURES;
     g_cmd->size = GFEATURES_SIZE;
