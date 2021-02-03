@@ -109,8 +109,8 @@ bhyveDomainCmdlineDefFree(bhyveDomainCmdlineDefPtr def)
         return;
 
     for (i = 0; i < def->num_args; i++)
-        VIR_FREE(def->args[i]);
+        g_free(def->args[i]);
 
-    VIR_FREE(def->args);
-    VIR_FREE(def);
+    g_free(def->args);
+    g_free(def);
 }

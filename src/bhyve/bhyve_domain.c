@@ -50,7 +50,7 @@ bhyveDomainObjPrivateFree(void *data)
 
     virDomainPCIAddressSetFree(priv->pciaddrs);
 
-    VIR_FREE(priv);
+    g_free(priv);
 }
 
 virDomainXMLPrivateDataCallbacks virBhyveDriverPrivateDataCallbacks = {
