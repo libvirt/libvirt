@@ -68,13 +68,13 @@ virStoragePoolDefRBDNamespaceFree(void *nsdata)
         return;
 
     for (i = 0; i < cmdopts->noptions; i++) {
-        VIR_FREE(cmdopts->names[i]);
-        VIR_FREE(cmdopts->values[i]);
+        g_free(cmdopts->names[i]);
+        g_free(cmdopts->values[i]);
     }
-    VIR_FREE(cmdopts->names);
-    VIR_FREE(cmdopts->values);
+    g_free(cmdopts->names);
+    g_free(cmdopts->values);
 
-    VIR_FREE(cmdopts);
+    g_free(cmdopts);
 }
 
 

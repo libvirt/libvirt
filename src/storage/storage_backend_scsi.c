@@ -95,8 +95,8 @@ virStoragePoolFCRefreshDataFree(void *opaque)
 {
     virStoragePoolFCRefreshInfoPtr cbdata = opaque;
 
-    VIR_FREE(cbdata->fchost_name);
-    VIR_FREE(cbdata);
+    g_free(cbdata->fchost_name);
+    g_free(cbdata);
 }
 
 /**

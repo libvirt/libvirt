@@ -2268,8 +2268,8 @@ virStorageVolPoolRefreshDataFree(void *opaque)
 {
     virStorageVolStreamInfoPtr cbdata = opaque;
 
-    VIR_FREE(cbdata->pool_name);
-    VIR_FREE(cbdata);
+    g_free(cbdata->pool_name);
+    g_free(cbdata);
 }
 
 static int

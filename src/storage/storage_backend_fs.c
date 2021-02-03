@@ -551,10 +551,10 @@ virStoragePoolDefFSNamespaceFree(void *nsdata)
         return;
 
     for (i = 0; i < cmdopts->noptions; i++)
-        VIR_FREE(cmdopts->options[i]);
-    VIR_FREE(cmdopts->options);
+        g_free(cmdopts->options[i]);
+    g_free(cmdopts->options);
 
-    VIR_FREE(cmdopts);
+    g_free(cmdopts);
 }
 
 
