@@ -26528,7 +26528,7 @@ virDomainRNGDefFree(virDomainRNGDefPtr def)
 
     switch ((virDomainRNGBackend) def->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
-        VIR_FREE(def->source.file);
+        g_free(def->source.file);
         break;
     case VIR_DOMAIN_RNG_BACKEND_EGD:
         virObjectUnref(def->source.chardev);
@@ -26539,8 +26539,8 @@ virDomainRNGDefFree(virDomainRNGDefPtr def)
     }
 
     virDomainDeviceInfoClear(&def->info);
-    VIR_FREE(def->virtio);
-    VIR_FREE(def);
+    g_free(def->virtio);
+    g_free(def);
 }
 
 

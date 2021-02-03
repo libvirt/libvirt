@@ -416,15 +416,15 @@ virDomainNumaFree(virDomainNumaPtr numa)
         virBitmapFree(numa->mem_nodes[i].nodeset);
 
         if (numa->mem_nodes[i].ndistances > 0)
-            VIR_FREE(numa->mem_nodes[i].distances);
+            g_free(numa->mem_nodes[i].distances);
 
-        VIR_FREE(numa->mem_nodes[i].caches);
+        g_free(numa->mem_nodes[i].caches);
     }
-    VIR_FREE(numa->mem_nodes);
+    g_free(numa->mem_nodes);
 
-    VIR_FREE(numa->interconnects);
+    g_free(numa->interconnects);
 
-    VIR_FREE(numa);
+    g_free(numa);
 }
 
 /**

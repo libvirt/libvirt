@@ -223,8 +223,8 @@ static void virChrdevFDStreamCloseCbFree(void *opaque)
 {
     virChrdevStreamInfoPtr priv = opaque;
 
-    VIR_FREE(priv->path);
-    VIR_FREE(priv);
+    g_free(priv->path);
+    g_free(priv);
 }
 
 /**
@@ -304,7 +304,7 @@ void virChrdevFree(virChrdevsPtr devs)
     virMutexUnlock(&devs->lock);
     virMutexDestroy(&devs->lock);
 
-    VIR_FREE(devs);
+    g_free(devs);
 }
 
 /**
