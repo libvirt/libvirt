@@ -97,7 +97,7 @@ virBhyveDriverConfigDispose(void *obj)
 {
     virBhyveDriverConfigPtr cfg = obj;
 
-    VIR_FREE(cfg->firmwareDir);
+    g_free(cfg->firmwareDir);
 }
 
 void
