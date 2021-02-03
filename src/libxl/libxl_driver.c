@@ -127,7 +127,7 @@ libxlDomainManagedSaveLoad(virDomainObjPtr vm,
 static void
 libxlOSEventHookInfoFree(void *obj)
 {
-    VIR_FREE(obj);
+    g_free(obj);
 }
 
 static void

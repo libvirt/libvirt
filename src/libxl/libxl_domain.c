@@ -239,7 +239,7 @@ libxlDomainObjPrivateFree(void *data)
 {
     libxlDomainObjPrivatePtr priv = data;
 
-    VIR_FREE(priv->lockState);
+    g_free(priv->lockState);
     virObjectUnref(priv);
 }
 

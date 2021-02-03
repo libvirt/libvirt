@@ -82,9 +82,9 @@ libxlMigrationCookieFree(libxlMigrationCookiePtr mig)
     if (!mig)
         return;
 
-    VIR_FREE(mig->srcHostname);
-    VIR_FREE(mig->name);
-    VIR_FREE(mig);
+    g_free(mig->srcHostname);
+    g_free(mig->name);
+    g_free(mig);
 }
 
 static libxlMigrationCookiePtr
