@@ -141,12 +141,12 @@ virSecurityDACChownListFree(void *opaque)
         return;
 
     for (i = 0; i < list->nItems; i++) {
-        VIR_FREE(list->items[i]->path);
-        VIR_FREE(list->items[i]);
+        g_free(list->items[i]->path);
+        g_free(list->items[i]);
     }
-    VIR_FREE(list->items);
+    g_free(list->items);
     virObjectUnref(list->manager);
-    VIR_FREE(list);
+    g_free(list);
 }
 
 

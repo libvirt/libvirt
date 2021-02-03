@@ -108,9 +108,9 @@ virSecuritySELinuxContextItemFree(virSecuritySELinuxContextItemPtr item)
     if (!item)
         return;
 
-    VIR_FREE(item->path);
-    VIR_FREE(item->tcon);
-    VIR_FREE(item);
+    g_free(item->path);
+    g_free(item->tcon);
+    g_free(item);
 }
 
 static int
@@ -152,9 +152,9 @@ virSecuritySELinuxContextListFree(void *opaque)
     for (i = 0; i < list->nItems; i++)
         virSecuritySELinuxContextItemFree(list->items[i]);
 
-    VIR_FREE(list->items);
+    g_free(list->items);
     virObjectUnref(list->manager);
-    VIR_FREE(list);
+    g_free(list);
 }
 
 
