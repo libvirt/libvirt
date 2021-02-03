@@ -260,36 +260,3 @@ virDeleteElementsN(void *ptrptr, size_t size, size_t at,
         virShrinkN(ptrptr, size, countptr, toremove);
     return 0;
 }
-
-/**
- * virAllocVar:
- * @ptrptr: pointer to hold address of allocated memory
- * @struct_size: size of initial struct
- * @element_size: size of array elements
- * @count: number of array elements to allocate
- *
- * Allocate struct_size bytes plus an array of 'count' elements, each
- * of size element_size.  This sort of allocation is useful for
- * receiving the data of certain ioctls and other APIs which return a
- * struct in which the last element is an array of undefined length.
- * The caller of this type of API is expected to know the length of
- * the array that will be returned and allocate a suitable buffer to
- * contain the returned data.  C99 refers to these variable length
- * objects as structs containing flexible array members.
- *
- * Returns -1 on failure, 0 on success
- */
-int virAllocVar(void *ptrptr,
-                size_t struct_size,
-                size_t element_size,
-                size_t count)
-{
-    size_t alloc_size = 0;
-
-    if (VIR_ALLOC_VAR_OVERSIZED(struct_size, count, element_size))
-        abort();
-
-    alloc_size = struct_size + (element_size * count);
-    *(void **)ptrptr = g_malloc0(alloc_size);
-    return 0;
-}

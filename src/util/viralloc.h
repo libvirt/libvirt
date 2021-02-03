@@ -49,8 +49,6 @@ int virInsertElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
 int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
                        size_t toremove, bool inPlace)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
-int virAllocVar(void *ptrptr, size_t struct_size, size_t element_size, size_t count)
-    G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1);
 
 /**
  * VIR_REALLOC_N:
@@ -291,39 +289,6 @@ int virAllocVar(void *ptrptr, size_t struct_size, size_t element_size, size_t co
     virDeleteElementsN(&(ptr), sizeof(*(ptr)), at, &(count), 1, false)
 #define VIR_DELETE_ELEMENT_INPLACE(ptr, at, count) \
     virDeleteElementsN(&(ptr), sizeof(*(ptr)), at, &(count), 1, true)
-
-/**
- * VIR_ALLOC_VAR_OVERSIZED:
- * @M: size of base structure
- * @N: number of array elements in trailing array
- * @S: size of trailing array elements
- *
- * Check to make sure that the requested allocation will not cause
- * arithmetic overflow in the allocation size.
- */
-#define VIR_ALLOC_VAR_OVERSIZED(M, N, S) ((((size_t)-1) - (M)) / (S) < (N))
-
-/**
- * VIR_ALLOC_VAR:
- * @ptr: pointer to hold address of allocated memory
- * @type: element type of trailing array
- * @count: number of array elements to allocate
- *
- * Allocate sizeof(*ptr) bytes plus an array of 'count' elements, each
- * sizeof('type').  This sort of allocation is useful for receiving
- * the data of certain ioctls and other APIs which return a struct in
- * which the last element is an array of undefined length.  The caller
- * of this type of API is expected to know the length of the array
- * that will be returned and allocate a suitable buffer to contain the
- * returned data.  C99 refers to these variable length objects as
- * structs containing flexible array members.
- *
- * This macro is safe to use on arguments with side effects.
- *
- * Returns 0 on success, aborts on OOM
- */
-#define VIR_ALLOC_VAR(ptr, type, count) \
-    virAllocVar(&(ptr), sizeof(*(ptr)), sizeof(type), (count))
 
 /**
  * VIR_FREE:
