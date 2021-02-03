@@ -190,7 +190,7 @@ static void virAccessManagerDispose(void *object)
 
     if (mgr->drv->cleanup)
         mgr->drv->cleanup(mgr);
-    VIR_FREE(mgr->privateData);
+    g_free(mgr->privateData);
 }
 
 
