@@ -55,7 +55,7 @@ void virSecurityManagerDispose(void *obj)
 
     if (mgr->drv->close)
         mgr->drv->close(mgr);
-    VIR_FREE(mgr->privateData);
+    g_free(mgr->privateData);
 }
 
 
