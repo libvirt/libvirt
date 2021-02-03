@@ -5614,7 +5614,7 @@ static void remoteStreamCallbackFree(void *opaque)
         (cbdata->ff)(cbdata->opaque);
 
     virObjectUnref(cbdata->st);
-    VIR_FREE(opaque);
+    g_free(opaque);
 }
 
 

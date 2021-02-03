@@ -173,53 +173,53 @@ daemonConfigFree(struct daemonConfig *data)
         return;
 
 #ifdef WITH_IP
-    VIR_FREE(data->listen_addr);
-    VIR_FREE(data->tls_port);
-    VIR_FREE(data->tcp_port);
+    g_free(data->listen_addr);
+    g_free(data->tls_port);
+    g_free(data->tcp_port);
 #endif /* ! WITH_IP */
 
     tmp = data->access_drivers;
     while (tmp && *tmp) {
-        VIR_FREE(*tmp);
+        g_free(*tmp);
         tmp++;
     }
-    VIR_FREE(data->access_drivers);
+    g_free(data->access_drivers);
 
-    VIR_FREE(data->unix_sock_admin_perms);
-    VIR_FREE(data->unix_sock_ro_perms);
-    VIR_FREE(data->unix_sock_rw_perms);
-    VIR_FREE(data->unix_sock_group);
-    VIR_FREE(data->unix_sock_dir);
+    g_free(data->unix_sock_admin_perms);
+    g_free(data->unix_sock_ro_perms);
+    g_free(data->unix_sock_rw_perms);
+    g_free(data->unix_sock_group);
+    g_free(data->unix_sock_dir);
 
     tmp = data->sasl_allowed_username_list;
     while (tmp && *tmp) {
-        VIR_FREE(*tmp);
+        g_free(*tmp);
         tmp++;
     }
-    VIR_FREE(data->sasl_allowed_username_list);
+    g_free(data->sasl_allowed_username_list);
 
 #ifdef WITH_IP
     tmp = data->tls_allowed_dn_list;
     while (tmp && *tmp) {
-        VIR_FREE(*tmp);
+        g_free(*tmp);
         tmp++;
     }
-    VIR_FREE(data->tls_allowed_dn_list);
+    g_free(data->tls_allowed_dn_list);
 
-    VIR_FREE(data->tls_priority);
+    g_free(data->tls_priority);
 
-    VIR_FREE(data->key_file);
-    VIR_FREE(data->ca_file);
-    VIR_FREE(data->cert_file);
-    VIR_FREE(data->crl_file);
+    g_free(data->key_file);
+    g_free(data->ca_file);
+    g_free(data->cert_file);
+    g_free(data->crl_file);
 #endif /* ! WITH_IP */
 
-    VIR_FREE(data->host_uuid);
-    VIR_FREE(data->host_uuid_source);
-    VIR_FREE(data->log_filters);
-    VIR_FREE(data->log_outputs);
+    g_free(data->host_uuid);
+    g_free(data->host_uuid_source);
+    g_free(data->log_filters);
+    g_free(data->log_outputs);
 
-    VIR_FREE(data);
+    g_free(data);
 }
 
 static int

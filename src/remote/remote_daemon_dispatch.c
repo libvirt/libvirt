@@ -150,7 +150,7 @@ remoteEventCallbackFree(void *opaque)
         return;
     virObjectUnref(callback->program);
     virObjectUnref(callback->client);
-    VIR_FREE(callback);
+    g_free(callback);
 }
 
 
@@ -1742,7 +1742,7 @@ void remoteClientFree(void *data)
     if (priv->storageConn)
         virConnectClose(priv->storageConn);
 
-    VIR_FREE(priv);
+    g_free(priv);
 }
 
 
