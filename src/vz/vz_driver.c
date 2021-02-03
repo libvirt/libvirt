@@ -2729,10 +2729,10 @@ vzMigrationCookieFree(vzMigrationCookiePtr mig)
     if (!mig)
         return;
 
-    VIR_FREE(mig->session_uuid);
-    VIR_FREE(mig->uuid);
-    VIR_FREE(mig->name);
-    VIR_FREE(mig);
+    g_free(mig->session_uuid);
+    g_free(mig->uuid);
+    g_free(mig->name);
+    g_free(mig);
 }
 
 static int

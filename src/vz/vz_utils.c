@@ -582,7 +582,7 @@ vzDomObjFree(void* p)
     PrlHandle_Free(pdom->sdkdom);
     PrlHandle_Free(pdom->stats);
     virCondDestroy(&pdom->job.cond);
-    VIR_FREE(pdom);
+    g_free(pdom);
 };
 
 #define VZ_JOB_WAIT_TIME (1000 * 30)
