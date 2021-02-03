@@ -92,7 +92,7 @@ virLockDaemonFree(virLockDaemonPtr lockd)
     virHashFree(lockd->lockspaces);
     virLockSpaceFree(lockd->defaultLockspace);
 
-    VIR_FREE(lockd);
+    g_free(lockd);
 }
 
 static inline void
@@ -435,8 +435,8 @@ virLockDaemonClientFree(void *opaque)
     }
 
     g_mutex_clear(&priv->lock);
-    VIR_FREE(priv->ownerName);
-    VIR_FREE(priv);
+    g_free(priv->ownerName);
+    g_free(priv);
 }
 
 

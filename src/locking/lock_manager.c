@@ -387,7 +387,7 @@ int virLockManagerFree(virLockManagerPtr lock)
 
     lock->driver->drvFree(lock);
 
-    VIR_FREE(lock);
+    g_free(lock);
 
     return 0;
 }

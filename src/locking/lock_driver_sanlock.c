@@ -513,10 +513,10 @@ static void virLockManagerSanlockFree(virLockManagerPtr lock)
     if (!priv)
         return;
 
-    VIR_FREE(priv->vm_name);
+    g_free(priv->vm_name);
     for (i = 0; i < priv->res_count; i++)
-        VIR_FREE(priv->res_args[i]);
-    VIR_FREE(priv);
+        g_free(priv->res_args[i]);
+    g_free(priv);
     lock->privateData = NULL;
 }
 

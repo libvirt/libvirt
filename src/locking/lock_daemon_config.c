@@ -71,10 +71,10 @@ virLockDaemonConfigFree(virLockDaemonConfigPtr data)
     if (!data)
         return;
 
-    VIR_FREE(data->log_filters);
-    VIR_FREE(data->log_outputs);
+    g_free(data->log_filters);
+    g_free(data->log_outputs);
 
-    VIR_FREE(data);
+    g_free(data);
 }
 
 static int

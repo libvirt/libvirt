@@ -369,13 +369,13 @@ virLockManagerLockDaemonPrivateFree(virLockManagerLockDaemonPrivatePtr priv)
         return;
 
     for (i = 0; i < priv->nresources; i++) {
-        VIR_FREE(priv->resources[i].lockspace);
-        VIR_FREE(priv->resources[i].name);
+        g_free(priv->resources[i].lockspace);
+        g_free(priv->resources[i].name);
     }
-    VIR_FREE(priv->resources);
+    g_free(priv->resources);
 
-    VIR_FREE(priv->name);
-    VIR_FREE(priv);
+    g_free(priv->name);
+    g_free(priv);
 }
 
 static void virLockManagerLockDaemonFree(virLockManagerPtr lock)
