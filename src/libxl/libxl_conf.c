@@ -76,16 +76,16 @@ libxlDriverConfigDispose(void *obj)
     if (cfg->logger)
         libxlLoggerFree(cfg->logger);
 
-    VIR_FREE(cfg->configBaseDir);
-    VIR_FREE(cfg->configDir);
-    VIR_FREE(cfg->autostartDir);
-    VIR_FREE(cfg->logDir);
-    VIR_FREE(cfg->stateDir);
-    VIR_FREE(cfg->libDir);
-    VIR_FREE(cfg->saveDir);
-    VIR_FREE(cfg->autoDumpDir);
-    VIR_FREE(cfg->lockManagerName);
-    VIR_FREE(cfg->channelDir);
+    g_free(cfg->configBaseDir);
+    g_free(cfg->configDir);
+    g_free(cfg->autostartDir);
+    g_free(cfg->logDir);
+    g_free(cfg->stateDir);
+    g_free(cfg->libDir);
+    g_free(cfg->saveDir);
+    g_free(cfg->autoDumpDir);
+    g_free(cfg->lockManagerName);
+    g_free(cfg->channelDir);
     virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
 }
 

@@ -228,7 +228,7 @@ libxlMigrationDstArgsDispose(void *obj)
     libxlMigrationDstArgs *args = obj;
 
     libxlMigrationCookieFree(args->migcookie);
-    VIR_FREE(args->socks);
+    g_free(args->socks);
     virObjectUnref(args->conn);
     virObjectUnref(args->vm);
 }
