@@ -502,14 +502,14 @@ virVboxSnapshotConfHardDiskFree(virVBoxSnapshotConfHardDiskPtr disk)
     if (!disk)
         return;
 
-    VIR_FREE(disk->uuid);
-    VIR_FREE(disk->location);
-    VIR_FREE(disk->format);
-    VIR_FREE(disk->type);
+    g_free(disk->uuid);
+    g_free(disk->location);
+    g_free(disk->format);
+    g_free(disk->type);
     for (i = 0; i < disk->nchildren; i++)
         virVboxSnapshotConfHardDiskFree(disk->children[i]);
-    VIR_FREE(disk->children);
-    VIR_FREE(disk);
+    g_free(disk->children);
+    g_free(disk);
 }
 
 
@@ -523,11 +523,11 @@ virVBoxSnapshotConfMediaRegistryFree(virVBoxSnapshotConfMediaRegistryPtr mediaRe
 
     for (i = 0; i < mediaRegistry->ndisks; i++)
         virVboxSnapshotConfHardDiskFree(mediaRegistry->disks[i]);
-    VIR_FREE(mediaRegistry->disks);
+    g_free(mediaRegistry->disks);
     for (i = 0; i < mediaRegistry->notherMedia; i++)
-        VIR_FREE(mediaRegistry->otherMedia[i]);
-    VIR_FREE(mediaRegistry->otherMedia);
-    VIR_FREE(mediaRegistry);
+        g_free(mediaRegistry->otherMedia[i]);
+    g_free(mediaRegistry->otherMedia);
+    g_free(mediaRegistry);
 }
 
 void
@@ -538,16 +538,16 @@ virVBoxSnapshotConfSnapshotFree(virVBoxSnapshotConfSnapshotPtr snapshot)
     if (!snapshot)
         return;
 
-    VIR_FREE(snapshot->uuid);
-    VIR_FREE(snapshot->name);
-    VIR_FREE(snapshot->timeStamp);
-    VIR_FREE(snapshot->description);
-    VIR_FREE(snapshot->hardware);
-    VIR_FREE(snapshot->storageController);
+    g_free(snapshot->uuid);
+    g_free(snapshot->name);
+    g_free(snapshot->timeStamp);
+    g_free(snapshot->description);
+    g_free(snapshot->hardware);
+    g_free(snapshot->storageController);
     for (i = 0; i < snapshot->nchildren; i++)
         virVBoxSnapshotConfSnapshotFree(snapshot->children[i]);
-    VIR_FREE(snapshot->children);
-    VIR_FREE(snapshot);
+    g_free(snapshot->children);
+    g_free(snapshot);
 }
 
 void
@@ -556,17 +556,17 @@ virVBoxSnapshotConfMachineFree(virVBoxSnapshotConfMachinePtr machine)
     if (!machine)
         return;
 
-    VIR_FREE(machine->uuid);
-    VIR_FREE(machine->name);
-    VIR_FREE(machine->currentSnapshot);
-    VIR_FREE(machine->snapshotFolder);
-    VIR_FREE(machine->lastStateChange);
+    g_free(machine->uuid);
+    g_free(machine->name);
+    g_free(machine->currentSnapshot);
+    g_free(machine->snapshotFolder);
+    g_free(machine->lastStateChange);
     virVBoxSnapshotConfMediaRegistryFree(machine->mediaRegistry);
-    VIR_FREE(machine->hardware);
-    VIR_FREE(machine->extraData);
+    g_free(machine->hardware);
+    g_free(machine->extraData);
     virVBoxSnapshotConfSnapshotFree(machine->snapshot);
-    VIR_FREE(machine->storageController);
-    VIR_FREE(machine);
+    g_free(machine->storageController);
+    g_free(machine);
 }
 
 #define VBOX_SETTINGS_NS "http://www.innotek.de/VirtualBox-settings"
