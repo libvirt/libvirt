@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-01-08 17:11+0000\n"
-"PO-Revision-Date: 2021-01-31 19:40+0000\n"
+"PO-Revision-Date: 2021-02-03 18:40+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -1244,9 +1244,8 @@ msgstr ""
 msgid "(_migration_cookie)"
 msgstr ""
 
-#, fuzzy
 msgid "(bridge interface definition)"
-msgstr "Liitännän tietojen haku epäonnistui"
+msgstr "(siltaliitännän määritelmä)"
 
 msgid "(capabilities)"
 msgstr "(kyvyt)"
@@ -1260,9 +1259,8 @@ msgstr ""
 msgid "(disk_definition)"
 msgstr ""
 
-#, fuzzy
 msgid "(domainCapabilities)"
-msgstr "ominaisuudet"
+msgstr "(toimialueominaisuudet)"
 
 msgid "(domain_backup)"
 msgstr ""
@@ -1270,13 +1268,11 @@ msgstr ""
 msgid "(domain_checkpoint)"
 msgstr ""
 
-#, fuzzy
 msgid "(domain_definition)"
-msgstr "toimialueen tiedot"
+msgstr "(toimialueen määritelmä)"
 
-#, fuzzy
 msgid "(domain_snapshot)"
-msgstr "toimialueen tila"
+msgstr "(toimialueen tilannevedos)"
 
 msgid "(esx execute response)"
 msgstr ""
@@ -1297,9 +1293,8 @@ msgstr ""
 msgid "(metadata_xml)"
 msgstr ""
 
-#, fuzzy
 msgid "(network status)"
-msgstr "verkon nimi"
+msgstr "(verkon tila)"
 
 msgid "(network_definition)"
 msgstr ""
@@ -1322,9 +1317,8 @@ msgstr ""
 msgid "(nwfilterbinding_status)"
 msgstr ""
 
-#, fuzzy
 msgid "(pool state)"
-msgstr "ei tilaa"
+msgstr "(varannon tila)"
 
 msgid "(qemu_migration_cookie)"
 msgstr ""
@@ -1514,9 +1508,8 @@ msgid ""
 "configuration"
 msgstr ""
 
-#, fuzzy
 msgid "? - print this help"
-msgstr "näytä ohje"
+msgstr "? - tulosta tämä ohje"
 
 msgid "A close callback is already registered"
 msgstr ""
@@ -1528,17 +1521,14 @@ msgstr ""
 msgid "A domain definition can have no more than one cipher node with name %s"
 msgstr ""
 
-#, fuzzy
 msgid "A interface driver is already registered"
-msgstr "liian monta rekisteröityä ajuria"
+msgstr "Liitäntäajuri on jo rekisteröity"
 
-#, fuzzy
 msgid "A network driver is already registered"
-msgstr "liian monta rekisteröityä ajuria"
+msgstr "Verkkoajuri on jo rekisteröity"
 
-#, fuzzy
 msgid "A network filter driver is already registered"
-msgstr "liian monta rekisteröityä ajuria"
+msgstr "Verkkosuodatinajuri on jo rekisteröity"
 
 #, c-format
 msgid ""
@@ -1546,22 +1536,19 @@ msgid ""
 "but not both (network '%s')"
 msgstr ""
 
-#, fuzzy
 msgid "A node device driver is already registered"
-msgstr "liian monta rekisteröityä ajuria"
+msgstr "Noodilaiteajuri on jo rekisteröity"
 
-#, fuzzy
 msgid "A secret driver is already registered"
-msgstr "liian monta rekisteröityä ajuria"
+msgstr "Salainen ajuri on jo rekisteröity"
 
 msgid ""
 "A single <secret type='passphrase'...> element is expected in encryption "
 "description"
 msgstr ""
 
-#, fuzzy
 msgid "A storage driver is already registered"
-msgstr "liian monta rekisteröityä ajuria"
+msgstr "Tallennustilan ajuri on jo rekisteröity"
 
 msgid "ACPI requires UEFI on this architecture"
 msgstr ""
@@ -1574,9 +1561,8 @@ msgstr ""
 msgid "AES256CBC initialization vector invalid len=%zu"
 msgstr ""
 
-#, fuzzy
 msgid "API error"
-msgstr "RPC-virhe"
+msgstr "API-virhe"
 
 msgid "Aborts the currently running domain job"
 msgstr ""
@@ -1615,9 +1601,8 @@ msgstr "Aktiivinen:"
 msgid "Actual interface '%s' hostdev was not a PCI device"
 msgstr ""
 
-#, fuzzy
 msgid "Add an IOThread to the guest domain."
-msgstr "Aja uudelleenkäynnistyskomento kohdetoimialueella."
+msgstr "Lisää IO-säie vieraaseen toimialueeseen."
 
 msgid "Add or remove vcpus"
 msgstr ""
@@ -1833,9 +1818,8 @@ msgstr ""
 msgid "Backup Dump XML"
 msgstr ""
 
-#, fuzzy
 msgid "Backup started\n"
-msgstr "Toimialue %s käynnistetty\n"
+msgstr "Varmistus käynnistetty\n"
 
 #, c-format
 msgid "Bad $%s value."
@@ -1929,9 +1913,9 @@ msgstr ""
 msgid "Bridge generation exceeded max id %d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Bridge interface %s started\n"
-msgstr "Verkko %s käynnistetty\n"
+msgstr "Siltaliittymä %s käynnistetty\n"
 
 #, c-format
 msgid "Bridge name %s too long for destination"
@@ -2067,9 +2051,8 @@ msgstr ""
 msgid "CPU frequency:"
 msgstr "Prosessorin taajuus:"
 
-#, fuzzy
 msgid "CPU map:"
-msgstr "Prosessoriaika:"
+msgstr "Prosessorikartta:"
 
 #, c-format
 msgid ""
@@ -2354,9 +2337,8 @@ msgstr ""
 msgid "Can't read %s"
 msgstr "Ei voida lukea %s"
 
-#, fuzzy
 msgid "Can't rename domain to itself"
-msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
+msgstr "Toimialuetta ei voi uudelleennimetä samaksi, kuin se jo on"
 
 msgid "Can't set 0 processors for a VM"
 msgstr ""
@@ -2470,9 +2452,8 @@ msgstr ""
 msgid "Cannot complete within timeout period"
 msgstr ""
 
-#, fuzzy
 msgid "Cannot convert domain name to wide character string"
-msgstr "muunna toimialueen nimi tai tunnus UUID:ksi"
+msgstr "Toimialueen nimeä ei voi muuttaa leveäksi merkkijonoksi"
 
 #, c-format
 msgid "Cannot convert socket address to string: %s"
@@ -2652,9 +2633,9 @@ msgstr ""
 msgid "Cannot find security driver '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot find start time in %s"
-msgstr "Toimialueen %s käynnistys epäonnistui"
+msgstr "Aloitusaikaa %s ei löytynyt"
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr ""
@@ -2669,20 +2650,17 @@ msgstr ""
 msgid "Cannot get cbm_mask from resctrl cache info"
 msgstr ""
 
-#, fuzzy
 msgid "Cannot get device slot"
-msgstr "kohdelaitetyyppi"
+msgstr "Laiteaukkoa ei saatu"
 
-#, fuzzy
 msgid "Cannot get disk location"
-msgstr "Levytietojen haku epäonnistui"
+msgstr "Levyn paikan haku epäonnistui"
 
 msgid "Cannot get hard disk by location"
 msgstr ""
 
-#, fuzzy
 msgid "Cannot get host interface addresses"
-msgstr "Liitäntätilastojen haku epäonnistui %s %s"
+msgstr "Isännän liitäntäosoitteen haku epäonnistui"
 
 #, c-format
 msgid "Cannot get interface MAC on '%s'"
@@ -36113,7 +36091,7 @@ msgstr "tuntematon"
 
 #, c-format
 msgid "unknown %s action: %s"
-msgstr "tuntematon  %s toiminto: %s"
+msgstr "tuntematon %s toiminto: %s"
 
 #, fuzzy, c-format
 msgid "unknown 'unknown' value '%s'"
@@ -36416,7 +36394,7 @@ msgstr "tuntematon arkkitehtuuri: %s"
 
 #, c-format
 msgid "unknown drm type '%s' for '%s'"
-msgstr "tuntematon drm tyyppi '%s'  '%s':lle"
+msgstr "tuntematon drm tyyppi '%s' '%s':lle"
 
 #, c-format
 msgid "unknown dumpformat '%d'"
@@ -37244,17 +37222,17 @@ msgstr "ei tuettu tiedon tyyppi '%c' argumentille '%s'"
 msgid "unsupported device type %s 0%o"
 msgstr "laitetyyppi %s 0%o ei tuettu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported device type in network %s interface pool"
-msgstr "verkkoliitännän lähde"
+msgstr "ei tuettu laitetyyppi verkon %s liitäntävarannossa"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported disk backup type '%s'"
-msgstr "levytyyppi ei tuettu"
+msgstr "ei tuettu levy varmistus tyyppi %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported disk bus '%s' with device setup"
-msgstr "levylaite ei tuettu"
+msgstr "ei tuettu levy väylä %s laitetta asennettaessa"
 
 msgid "unsupported disk device"
 msgstr "levylaite ei tuettu"
@@ -37286,9 +37264,9 @@ msgstr ""
 msgid "unsupported element '%s' of 'origstates'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported event ID %d"
-msgstr "levylaite ei tuettu"
+msgstr "ei tuettu tapaus-ID %d"
 
 #, c-format
 msgid "unsupported failure action: '%s'\n"
@@ -37336,13 +37314,13 @@ msgstr ""
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported flags (0x%x)"
-msgstr "levytyyppi ei tuettu"
+msgstr "ei tuettuja lippuja (0x%x)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported flags: (0x%x)"
-msgstr "levytyyppi ei tuettu"
+msgstr "ei tuettuja lippuja: (0x%x)"
 
 #, fuzzy, c-format
 msgid "unsupported flash format '%s'"
@@ -37368,9 +37346,9 @@ msgstr "ei tuettu arkkitehtuuri: %s"
 msgid "unsupported input device configuration"
 msgstr "levylaite ei tuettu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported input storage vol type %d"
-msgstr "levytyyppi ei tuettu"
+msgstr "ei tuettu sisääntulon tallennusvolyymityyppi %d"
 
 #, fuzzy, c-format
 msgid "unsupported interface type %s"
@@ -37384,25 +37362,25 @@ msgstr "ei tuettu arkkitehtuuri: %s"
 msgid "unsupported mode '%s' for Xen passthrough feature"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported monitor type '%s'"
-msgstr "levytyyppi ei tuettu"
+msgstr "ei tuettu monitorin tyyppi %s"
 
 #, c-format
 msgid "unsupported nested HVM setting for %s machine on this Xen version"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported network event ID %d"
-msgstr "levylaite ei tuettu"
+msgstr "ei tuettu verkkotapaus ID %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported node device event ID %d"
-msgstr "levylaite ei tuettu"
+msgstr "ei tuettu noodilaitteen tapahtuma-ID %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported numatune mode: '%d'"
-msgstr "ei tuettu arkkitehtuuri: %s"
+msgstr "ei tuettu numatune moodi: %d"
 
 #, fuzzy, c-format
 msgid "unsupported nvram template format '%s'"
@@ -37420,9 +37398,9 @@ msgstr "valitsinta '%s' ei tueta. Katso '--help'."
 msgid "unsupported option '-%c'. See --help."
 msgstr "valitsinta ”-%c” ei tueta. Katso --help."
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported pit tickpolicy '%s'"
-msgstr "levytyyppi ei tuettu"
+msgstr "ei tuettu pit tickpolicy %s"
 
 #, fuzzy, c-format
 msgid "unsupported protocol family '%s'"
@@ -37447,9 +37425,9 @@ msgstr "ei tuettu arkkitehtuuri: %s"
 msgid "unsupported scheme %s in migration URI %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported secret event ID %d"
-msgstr "levylaite ei tuettu"
+msgstr "ei tuettu salainen tapahtuma-ID %d"
 
 #, c-format
 msgid "unsupported source type '%s'"
@@ -37463,9 +37441,9 @@ msgstr "levylaite ei tuettu"
 msgid "unsupported storage pool event ID %d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported timer type (name) '%s'"
-msgstr "levytyyppi ei tuettu"
+msgstr "ei tuettu ajastintyyppi (nimi) %s"
 
 #, c-format
 msgid "unsupported type '%s' in interface's <actual> element"
