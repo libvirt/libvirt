@@ -304,7 +304,7 @@ lxcAddFstabLine(virDomainDefPtr def, lxcFstabPtr fstab)
         type = VIR_DOMAIN_FS_TYPE_BLOCK;
 
     /* Do we have ro in options? */
-    readonly = virStringListHasString((const char **)options, "ro");
+    readonly = g_strv_contains((const char **)options, "ro");
 
     if (lxcAddFSDef(def, type, src, dst, readonly, usage) < 0)
         goto cleanup;
@@ -1108,7 +1108,7 @@ lxcSetCapDrop(virDomainDefPtr def, virConfPtr properties)
     for (i = 0; i < VIR_DOMAIN_PROCES_CAPS_FEATURE_LAST; i++) {
         capString = virDomainProcessCapsFeatureTypeToString(i);
         if (toDrop != NULL &&
-            virStringListHasString((const char **)toDrop, capString))
+            g_strv_contains((const char **)toDrop, capString))
             def->caps_features[i] = VIR_TRISTATE_SWITCH_OFF;
     }
 

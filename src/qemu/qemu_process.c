@@ -3808,7 +3808,7 @@ qemuProcessUpdateDevices(virQEMUDriverPtr driver,
         return 0;
 
     for (tmp = old; *tmp; tmp++) {
-        if (!virStringListHasString((const char **) priv->qemuDevices, *tmp) &&
+        if (!g_strv_contains((const char **) priv->qemuDevices, *tmp) &&
             virDomainDefFindDevice(vm->def, *tmp, &dev, false) == 0 &&
             qemuDomainRemoveDevice(driver, vm, &dev))
             return -1;
@@ -6098,7 +6098,7 @@ qemuProcessDropUnknownCPUFeatures(const char *name,
         policy != VIR_CPU_FEATURE_FORBID)
         return true;
 
-    if (virStringListHasString(features, name))
+    if (g_strv_contains(features, name))
         return true;
 
     /* Features unknown to QEMU are implicitly disabled, we can just drop them

@@ -2192,10 +2192,10 @@ virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefsPtr defs,
     for (i = 0; i < defs->ncpus; i++) {
         qemuMonitorCPUDefInfoPtr cpu = defs->cpus + i;
 
-        if (modelAllowed && !virStringListHasString(modelAllowed, cpu->name))
+        if (modelAllowed && !g_strv_contains(modelAllowed, cpu->name))
             continue;
 
-        if (modelForbidden && virStringListHasString(modelForbidden, cpu->name))
+        if (modelForbidden && g_strv_contains(modelForbidden, cpu->name))
             continue;
 
         if (virDomainCapsCPUModelsAdd(cpuModels, cpu->name, cpu->usable,
@@ -3214,7 +3214,7 @@ virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
         for (i = 0; i < G_N_ELEMENTS(virQEMUCapsTPMModelsToCaps); i++) {
             const char *needle = virDomainTPMModelTypeToString(
                 virQEMUCapsTPMModelsToCaps[i].type);
-            if (virStringListHasString((const char **)entries, needle))
+            if (g_strv_contains((const char **)entries, needle))
                 virQEMUCapsSet(qemuCaps,
                                virQEMUCapsTPMModelsToCaps[i].caps);
         }
@@ -3228,7 +3228,7 @@ virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
         for (i = 0; i < G_N_ELEMENTS(virQEMUCapsTPMTypesToCaps); i++) {
             const char *needle = virDomainTPMBackendTypeToString(
                 virQEMUCapsTPMTypesToCaps[i].type);
-            if (virStringListHasString((const char **)entries, needle))
+            if (g_strv_contains((const char **)entries, needle))
                 virQEMUCapsSet(qemuCaps, virQEMUCapsTPMTypesToCaps[i].caps);
         }
     }

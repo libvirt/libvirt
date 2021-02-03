@@ -114,7 +114,8 @@ virshCommaStringListComplete(const char *input,
     ret = g_new0(char *, optionsLen + 1);
 
     for (i = 0; i < optionsLen; i++) {
-        if (virStringListHasString((const char **)inputList, options[i]))
+        if (inputList &&
+            g_strv_contains((const char **)inputList, options[i]))
             continue;
 
         if (inputCopy)

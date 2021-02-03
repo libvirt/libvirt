@@ -1057,13 +1057,13 @@ testQemuMonitorJSONGetDeviceAliases(const void *opaque)
 
     ret = 0;
     for (alias = (const char **) aliases; *alias; alias++) {
-        if (!virStringListHasString(expected, *alias)) {
+        if (!g_strv_contains(expected, *alias)) {
             fprintf(stderr, "got unexpected device alias '%s'\n", *alias);
             ret = -1;
         }
     }
     for (alias = expected; *alias; alias++) {
-        if (!virStringListHasString((const char **) aliases, *alias)) {
+        if (!g_strv_contains((const char **) aliases, *alias)) {
             fprintf(stderr, "missing expected alias '%s'\n", *alias);
             ret = -1;
         }
@@ -2079,7 +2079,7 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *opaque)
         return -1;
 
     cap = qemuMigrationCapabilityTypeToString(QEMU_MIGRATION_CAP_XBZRLE);
-    if (!virStringListHasString((const char **) caps, cap)) {
+    if (!g_strv_contains((const char **) caps, cap)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Expected capability %s is missing", cap);
         return -1;
