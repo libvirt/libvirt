@@ -43,7 +43,7 @@ static void
 testFileCacheObjDispose(void *opaque)
 {
     testFileCacheObjPtr obj = opaque;
-    VIR_FREE(obj->data);
+    g_free(obj->data);
 }
 
 
