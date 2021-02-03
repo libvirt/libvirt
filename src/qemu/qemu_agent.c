@@ -177,7 +177,7 @@ static void qemuAgentDispose(void *obj)
     if (agent->cb && agent->cb->destroy)
         (agent->cb->destroy)(agent, agent->vm);
     virCondDestroy(&agent->notify);
-    VIR_FREE(agent->buffer);
+    g_free(agent->buffer);
     g_main_context_unref(agent->context);
     virResetError(&agent->lastError);
 }

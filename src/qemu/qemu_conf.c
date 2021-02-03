@@ -306,78 +306,78 @@ static void virQEMUDriverConfigDispose(void *obj)
     virBitmapFree(cfg->namespaces);
 
     g_strfreev(cfg->cgroupDeviceACL);
-    VIR_FREE(cfg->uri);
+    g_free(cfg->uri);
 
-    VIR_FREE(cfg->configBaseDir);
-    VIR_FREE(cfg->configDir);
-    VIR_FREE(cfg->autostartDir);
-    VIR_FREE(cfg->logDir);
-    VIR_FREE(cfg->swtpmLogDir);
-    VIR_FREE(cfg->stateDir);
-    VIR_FREE(cfg->swtpmStateDir);
-    VIR_FREE(cfg->slirpStateDir);
-    VIR_FREE(cfg->dbusStateDir);
+    g_free(cfg->configBaseDir);
+    g_free(cfg->configDir);
+    g_free(cfg->autostartDir);
+    g_free(cfg->logDir);
+    g_free(cfg->swtpmLogDir);
+    g_free(cfg->stateDir);
+    g_free(cfg->swtpmStateDir);
+    g_free(cfg->slirpStateDir);
+    g_free(cfg->dbusStateDir);
 
-    VIR_FREE(cfg->libDir);
-    VIR_FREE(cfg->cacheDir);
-    VIR_FREE(cfg->saveDir);
-    VIR_FREE(cfg->snapshotDir);
-    VIR_FREE(cfg->checkpointDir);
-    VIR_FREE(cfg->channelTargetDir);
-    VIR_FREE(cfg->nvramDir);
+    g_free(cfg->libDir);
+    g_free(cfg->cacheDir);
+    g_free(cfg->saveDir);
+    g_free(cfg->snapshotDir);
+    g_free(cfg->checkpointDir);
+    g_free(cfg->channelTargetDir);
+    g_free(cfg->nvramDir);
 
-    VIR_FREE(cfg->defaultTLSx509certdir);
-    VIR_FREE(cfg->defaultTLSx509secretUUID);
+    g_free(cfg->defaultTLSx509certdir);
+    g_free(cfg->defaultTLSx509secretUUID);
 
-    VIR_FREE(cfg->vncTLSx509certdir);
-    VIR_FREE(cfg->vncTLSx509secretUUID);
-    VIR_FREE(cfg->vncListen);
-    VIR_FREE(cfg->vncPassword);
-    VIR_FREE(cfg->vncSASLdir);
+    g_free(cfg->vncTLSx509certdir);
+    g_free(cfg->vncTLSx509secretUUID);
+    g_free(cfg->vncListen);
+    g_free(cfg->vncPassword);
+    g_free(cfg->vncSASLdir);
 
-    VIR_FREE(cfg->spiceTLSx509certdir);
-    VIR_FREE(cfg->spiceListen);
-    VIR_FREE(cfg->spicePassword);
-    VIR_FREE(cfg->spiceSASLdir);
+    g_free(cfg->spiceTLSx509certdir);
+    g_free(cfg->spiceListen);
+    g_free(cfg->spicePassword);
+    g_free(cfg->spiceSASLdir);
 
-    VIR_FREE(cfg->chardevTLSx509certdir);
-    VIR_FREE(cfg->chardevTLSx509secretUUID);
+    g_free(cfg->chardevTLSx509certdir);
+    g_free(cfg->chardevTLSx509secretUUID);
 
-    VIR_FREE(cfg->vxhsTLSx509certdir);
-    VIR_FREE(cfg->vxhsTLSx509secretUUID);
+    g_free(cfg->vxhsTLSx509certdir);
+    g_free(cfg->vxhsTLSx509secretUUID);
 
-    VIR_FREE(cfg->nbdTLSx509certdir);
-    VIR_FREE(cfg->nbdTLSx509secretUUID);
+    g_free(cfg->nbdTLSx509certdir);
+    g_free(cfg->nbdTLSx509secretUUID);
 
-    VIR_FREE(cfg->migrateTLSx509certdir);
-    VIR_FREE(cfg->migrateTLSx509secretUUID);
+    g_free(cfg->migrateTLSx509certdir);
+    g_free(cfg->migrateTLSx509secretUUID);
 
-    VIR_FREE(cfg->backupTLSx509certdir);
-    VIR_FREE(cfg->backupTLSx509secretUUID);
+    g_free(cfg->backupTLSx509certdir);
+    g_free(cfg->backupTLSx509secretUUID);
 
     while (cfg->nhugetlbfs) {
         cfg->nhugetlbfs--;
-        VIR_FREE(cfg->hugetlbfs[cfg->nhugetlbfs].mnt_dir);
+        g_free(cfg->hugetlbfs[cfg->nhugetlbfs].mnt_dir);
     }
-    VIR_FREE(cfg->hugetlbfs);
-    VIR_FREE(cfg->bridgeHelperName);
-    VIR_FREE(cfg->prHelperName);
-    VIR_FREE(cfg->slirpHelperName);
-    VIR_FREE(cfg->dbusDaemonName);
+    g_free(cfg->hugetlbfs);
+    g_free(cfg->bridgeHelperName);
+    g_free(cfg->prHelperName);
+    g_free(cfg->slirpHelperName);
+    g_free(cfg->dbusDaemonName);
 
-    VIR_FREE(cfg->saveImageFormat);
-    VIR_FREE(cfg->dumpImageFormat);
-    VIR_FREE(cfg->snapshotImageFormat);
-    VIR_FREE(cfg->autoDumpPath);
+    g_free(cfg->saveImageFormat);
+    g_free(cfg->dumpImageFormat);
+    g_free(cfg->snapshotImageFormat);
+    g_free(cfg->autoDumpPath);
 
     g_strfreev(cfg->securityDriverNames);
 
-    VIR_FREE(cfg->lockManagerName);
+    g_free(cfg->lockManagerName);
 
     virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
 
-    VIR_FREE(cfg->memoryBackingDir);
-    VIR_FREE(cfg->swtpmStorageDir);
+    g_free(cfg->memoryBackingDir);
+    g_free(cfg->swtpmStorageDir);
 
     g_strfreev(cfg->capabilityfilters);
 }

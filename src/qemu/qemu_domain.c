@@ -681,8 +681,8 @@ qemuDomainDiskPrivateDispose(void *obj)
     qemuDomainDiskPrivatePtr priv = obj;
 
     virObjectUnref(priv->migrSource);
-    VIR_FREE(priv->qomName);
-    VIR_FREE(priv->nodeCopyOnRead);
+    g_free(priv->qomName);
+    g_free(priv->nodeCopyOnRead);
     virObjectUnref(priv->blockjob);
 }
 
@@ -771,8 +771,8 @@ qemuDomainVcpuPrivateDispose(void *obj)
 {
     qemuDomainVcpuPrivatePtr priv = obj;
 
-    VIR_FREE(priv->type);
-    VIR_FREE(priv->alias);
+    g_free(priv->type);
+    g_free(priv->alias);
     virJSONValueFree(priv->props);
     return;
 }
@@ -890,7 +890,7 @@ qemuDomainGraphicsPrivateDispose(void *obj)
 {
     qemuDomainGraphicsPrivatePtr priv = obj;
 
-    VIR_FREE(priv->tlsAlias);
+    g_free(priv->tlsAlias);
     g_clear_pointer(&priv->secinfo, qemuDomainSecretInfoFree);
 }
 

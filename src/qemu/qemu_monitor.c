@@ -236,8 +236,8 @@ qemuMonitorDispose(void *obj)
     g_main_context_unref(mon->context);
     virResetError(&mon->lastError);
     virCondDestroy(&mon->notify);
-    VIR_FREE(mon->buffer);
-    VIR_FREE(mon->balloonpath);
+    g_free(mon->buffer);
+    g_free(mon->balloonpath);
 }
 
 

@@ -1982,12 +1982,12 @@ void virQEMUCapsDispose(void *obj)
 
     virBitmapFree(qemuCaps->flags);
 
-    VIR_FREE(qemuCaps->package);
-    VIR_FREE(qemuCaps->kernelVersion);
-    VIR_FREE(qemuCaps->binary);
-    VIR_FREE(qemuCaps->hostCPUSignature);
+    g_free(qemuCaps->package);
+    g_free(qemuCaps->kernelVersion);
+    g_free(qemuCaps->binary);
+    g_free(qemuCaps->hostCPUSignature);
 
-    VIR_FREE(qemuCaps->gicCapabilities);
+    g_free(qemuCaps->gicCapabilities);
 
     virSEVCapabilitiesFree(qemuCaps->sevCapabilities);
 
