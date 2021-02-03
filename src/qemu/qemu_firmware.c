@@ -188,47 +188,47 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuFirmwareOSInterface, qemuFirmwareOSInterfaceFr
 
 
 static void
-qemuFirmwareFlashFileFreeContent(qemuFirmwareFlashFile flash)
+qemuFirmwareFlashFileFreeContent(qemuFirmwareFlashFilePtr flash)
 {
-    VIR_FREE(flash.filename);
-    VIR_FREE(flash.format);
+    VIR_FREE(flash->filename);
+    VIR_FREE(flash->format);
 }
 
 
 static void
-qemuFirmwareMappingFlashFreeContent(qemuFirmwareMappingFlash flash)
+qemuFirmwareMappingFlashFreeContent(qemuFirmwareMappingFlashPtr flash)
 {
-    qemuFirmwareFlashFileFreeContent(flash.executable);
-    qemuFirmwareFlashFileFreeContent(flash.nvram_template);
+    qemuFirmwareFlashFileFreeContent(&flash->executable);
+    qemuFirmwareFlashFileFreeContent(&flash->nvram_template);
 }
 
 
 static void
-qemuFirmwareMappingKernelFreeContent(qemuFirmwareMappingKernel kernel)
+qemuFirmwareMappingKernelFreeContent(qemuFirmwareMappingKernelPtr kernel)
 {
-    VIR_FREE(kernel.filename);
+    VIR_FREE(kernel->filename);
 }
 
 
 static void
-qemuFirmwareMappingMemoryFreeContent(qemuFirmwareMappingMemory memory)
+qemuFirmwareMappingMemoryFreeContent(qemuFirmwareMappingMemoryPtr memory)
 {
-    VIR_FREE(memory.filename);
+    VIR_FREE(memory->filename);
 }
 
 
 static void
-qemuFirmwareMappingFreeContent(qemuFirmwareMapping mapping)
+qemuFirmwareMappingFreeContent(qemuFirmwareMappingPtr mapping)
 {
-    switch (mapping.device) {
+    switch (mapping->device) {
     case QEMU_FIRMWARE_DEVICE_FLASH:
-        qemuFirmwareMappingFlashFreeContent(mapping.data.flash);
+        qemuFirmwareMappingFlashFreeContent(&mapping->data.flash);
         break;
     case QEMU_FIRMWARE_DEVICE_KERNEL:
-        qemuFirmwareMappingKernelFreeContent(mapping.data.kernel);
+        qemuFirmwareMappingKernelFreeContent(&mapping->data.kernel);
         break;
     case QEMU_FIRMWARE_DEVICE_MEMORY:
-        qemuFirmwareMappingMemoryFreeContent(mapping.data.memory);
+        qemuFirmwareMappingMemoryFreeContent(&mapping->data.memory);
         break;
     case QEMU_FIRMWARE_DEVICE_NONE:
     case QEMU_FIRMWARE_DEVICE_LAST:
@@ -271,7 +271,7 @@ qemuFirmwareFree(qemuFirmwarePtr fw)
         return;
 
     qemuFirmwareOSInterfaceFree(fw->interfaces);
-    qemuFirmwareMappingFreeContent(fw->mapping);
+    qemuFirmwareMappingFreeContent(&fw->mapping);
     for (i = 0; i < fw->ntargets; i++)
         qemuFirmwareTargetFree(fw->targets[i]);
     g_free(fw->targets);
