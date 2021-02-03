@@ -7789,8 +7789,8 @@ virDomainIOThreadInfoFree(virDomainIOThreadInfoPtr info)
     if (!info)
         return;
 
-    VIR_FREE(info->cpumap);
-    VIR_FREE(info);
+    g_free(info->cpumap);
+    g_free(info);
 }
 
 
@@ -12084,10 +12084,10 @@ virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats)
     for (next = stats; *next; next++) {
         virTypedParamsFree((*next)->params, (*next)->nparams);
         virDomainFree((*next)->dom);
-        VIR_FREE(*next);
+        g_free(*next);
     }
 
-    VIR_FREE(stats);
+    g_free(stats);
 }
 
 
@@ -12281,14 +12281,14 @@ virDomainInterfaceFree(virDomainInterfacePtr iface)
     if (!iface)
         return;
 
-    VIR_FREE(iface->name);
-    VIR_FREE(iface->hwaddr);
+    g_free(iface->name);
+    g_free(iface->hwaddr);
 
     for (i = 0; i < iface->naddrs; i++)
-        VIR_FREE(iface->addrs[i].addr);
-    VIR_FREE(iface->addrs);
+        g_free(iface->addrs[i].addr);
+    g_free(iface->addrs);
 
-    VIR_FREE(iface);
+    g_free(iface);
 }
 
 

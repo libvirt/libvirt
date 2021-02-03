@@ -1240,13 +1240,13 @@ virNetworkDHCPLeaseFree(virNetworkDHCPLeasePtr lease)
 {
     if (!lease)
         return;
-    VIR_FREE(lease->iface);
-    VIR_FREE(lease->mac);
-    VIR_FREE(lease->iaid);
-    VIR_FREE(lease->ipaddr);
-    VIR_FREE(lease->hostname);
-    VIR_FREE(lease->clientid);
-    VIR_FREE(lease);
+    g_free(lease->iface);
+    g_free(lease->mac);
+    g_free(lease->iaid);
+    g_free(lease->ipaddr);
+    g_free(lease->hostname);
+    g_free(lease->clientid);
+    g_free(lease);
 }
 
 
