@@ -3241,7 +3241,6 @@ virStringHasSuffix;
 virStringIsEmpty;
 virStringIsPrintable;
 virStringListFreeCount;
-virStringListHasString;
 virStringListJoin;
 virStringListLength;
 virStringListMerge;

@@ -221,23 +221,6 @@ virStringListFreeCount(char **strings,
 }
 
 
-bool
-virStringListHasString(const char **strings,
-                       const char *needle)
-{
-    size_t i = 0;
-
-    if (!strings)
-        return false;
-
-    while (strings[i]) {
-        if (STREQ(strings[i++], needle))
-            return true;
-    }
-
-    return false;
-}
-
 /* Like strtol, but produce an "int" result, and check more carefully.
    Return 0 upon success;  return -1 to indicate failure.
    When END_PTR is NULL, the byte after the final valid digit must be NUL.

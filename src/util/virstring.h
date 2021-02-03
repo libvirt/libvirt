@@ -43,9 +43,6 @@ int virStringListMerge(char ***dst,
 void virStringListFreeCount(char **strings,
                             size_t count);
 
-bool virStringListHasString(const char **strings,
-                            const char *needle);
-
 int virStrToLong_i(char const *s,
                    char **end_ptr,
                    int base,
