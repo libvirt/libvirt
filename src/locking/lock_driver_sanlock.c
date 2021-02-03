@@ -528,12 +528,11 @@ static int virLockManagerSanlockAddLease(virLockManagerPtr lock,
                                          bool shared)
 {
     virLockManagerSanlockPrivatePtr priv = lock->privateData;
-    int ret = -1;
-    struct sanlk_resource *res = NULL;
+    g_autofree struct sanlk_resource *res = NULL;
     size_t i;
 
     if (VIR_ALLOC_VAR(res, struct sanlk_disk, 1) < 0)
-        goto cleanup;
+        return -1;
 
     res->flags = shared ? SANLK_RES_SHARED : 0;
     res->num_disks = 1;
@@ -541,7 +540,7 @@ static int virLockManagerSanlockAddLease(virLockManagerPtr lock,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Resource name '%s' exceeds %d characters"),
                        name, SANLK_NAME_LEN);
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < nparams; i++) {
@@ -550,7 +549,7 @@ static int virLockManagerSanlockAddLease(virLockManagerPtr lock,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Lease path '%s' exceeds %d characters"),
                                params[i].value.str, SANLK_PATH_LEN);
-                goto cleanup;
+                return -1;
             }
         } else if (STREQ(params[i].key, "offset")) {
             res->disks[0].offset = params[i].value.ul;
@@ -559,20 +558,15 @@ static int virLockManagerSanlockAddLease(virLockManagerPtr lock,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Resource lockspace '%s' exceeds %d characters"),
                                params[i].value.str, SANLK_NAME_LEN);
-                goto cleanup;
+                return -1;
             }
         }
     }
 
-    priv->res_args[priv->res_count] = res;
+    priv->res_args[priv->res_count] = g_steal_pointer(&res);
     priv->res_count++;
 
-    ret = 0;
-
- cleanup:
-    if (ret == -1)
-        VIR_FREE(res);
-    return ret;
+    return 0;
 }
 
 
