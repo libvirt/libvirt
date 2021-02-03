@@ -137,7 +137,7 @@ typedef virNWFilterVarCombIter *virNWFilterVarCombIterPtr;
 struct _virNWFilterVarCombIter {
     GHashTable *hashTable;
     size_t nIter;
-    virNWFilterVarCombIterEntry iter[0];
+    virNWFilterVarCombIterEntryPtr iter;
 };
 virNWFilterVarCombIterPtr virNWFilterVarCombIterCreate(
                              GHashTable *hash,

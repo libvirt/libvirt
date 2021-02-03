@@ -304,6 +304,8 @@ virNWFilterVarCombIterFree(virNWFilterVarCombIterPtr ci)
     for (i = 0; i < ci->nIter; i++)
         g_free(ci->iter[i].varNames);
 
+    g_free(ci->iter);
+
     g_free(ci);
 }
 
@@ -465,8 +467,8 @@ virNWFilterVarCombIterCreate(GHashTable *hash,
     int iterIndex = -1;
     unsigned int nextIntIterId = VIR_NWFILTER_MAX_ITERID + 1;
 
-    if (VIR_ALLOC_VAR(res, virNWFilterVarCombIterEntry, 1 + nVarAccess) < 0)
-        return NULL;
+    res = g_new0(virNWFilterVarCombIter, 1);
+    res->iter = g_new0(virNWFilterVarCombIterEntry, nVarAccess + 1);
 
     res->hashTable = hash;
 
