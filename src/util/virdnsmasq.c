@@ -604,7 +604,7 @@ dnsmasqCapsDispose(void *obj)
     dnsmasqCapsPtr caps = obj;
 
     virBitmapFree(caps->flags);
-    VIR_FREE(caps->binaryPath);
+    g_free(caps->binaryPath);
 }
 
 static int dnsmasqCapsOnceInit(void)

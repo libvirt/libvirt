@@ -210,18 +210,18 @@ virResctrlInfoDispose(void *obj)
 
         if (level->types) {
             for (j = 0; j < VIR_CACHE_TYPE_LAST; j++)
-                VIR_FREE(level->types[j]);
+                g_free(level->types[j]);
         }
-        VIR_FREE(level->types);
-        VIR_FREE(level);
+        g_free(level->types);
+        g_free(level);
     }
 
     if (resctrl->monitor_info)
         g_strfreev(resctrl->monitor_info->features);
 
-    VIR_FREE(resctrl->membw_info);
-    VIR_FREE(resctrl->levels);
-    VIR_FREE(resctrl->monitor_info);
+    g_free(resctrl->membw_info);
+    g_free(resctrl->levels);
+    g_free(resctrl->monitor_info);
 }
 
 
@@ -396,30 +396,30 @@ virResctrlAllocDispose(void *obj)
                 continue;
 
             for (k = 0; k < type->nsizes; k++)
-                VIR_FREE(type->sizes[k]);
+                g_free(type->sizes[k]);
 
             for (k = 0; k < type->nmasks; k++)
                 virBitmapFree(type->masks[k]);
 
-            VIR_FREE(type->sizes);
-            VIR_FREE(type->masks);
-            VIR_FREE(type);
+            g_free(type->sizes);
+            g_free(type->masks);
+            g_free(type);
         }
-        VIR_FREE(level->types);
-        VIR_FREE(level);
+        g_free(level->types);
+        g_free(level);
     }
 
     if (alloc->mem_bw) {
         virResctrlAllocMemBWPtr mem_bw = alloc->mem_bw;
         for (i = 0; i < mem_bw->nbandwidths; i++)
-            VIR_FREE(mem_bw->bandwidths[i]);
-        VIR_FREE(alloc->mem_bw->bandwidths);
-        VIR_FREE(alloc->mem_bw);
+            g_free(mem_bw->bandwidths[i]);
+        g_free(alloc->mem_bw->bandwidths);
+        g_free(alloc->mem_bw);
     }
 
-    VIR_FREE(alloc->id);
-    VIR_FREE(alloc->path);
-    VIR_FREE(alloc->levels);
+    g_free(alloc->id);
+    g_free(alloc->path);
+    g_free(alloc->levels);
 }
 
 
@@ -429,8 +429,8 @@ virResctrlMonitorDispose(void *obj)
     virResctrlMonitorPtr monitor = obj;
 
     virObjectUnref(monitor->alloc);
-    VIR_FREE(monitor->id);
-    VIR_FREE(monitor->path);
+    g_free(monitor->id);
+    g_free(monitor->path);
 }
 
 

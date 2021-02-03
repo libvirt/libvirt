@@ -434,7 +434,7 @@ virUSBDeviceListDispose(void *obj)
     for (i = 0; i < list->count; i++)
         virUSBDeviceFree(list->devs[i]);
 
-    VIR_FREE(list->devs);
+    g_free(list->devs);
 }
 
 int

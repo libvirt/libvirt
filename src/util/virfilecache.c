@@ -74,8 +74,8 @@ virFileCacheDispose(void *obj)
 {
     virFileCachePtr cache = obj;
 
-    VIR_FREE(cache->dir);
-    VIR_FREE(cache->suffix);
+    g_free(cache->dir);
+    g_free(cache->suffix);
 
     virHashFree(cache->table);
 

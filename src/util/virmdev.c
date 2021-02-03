@@ -297,7 +297,7 @@ virMediatedDeviceListDispose(void *obj)
     }
 
     list->count = 0;
-    VIR_FREE(list->devs);
+    g_free(list->devs);
 }
 
 
