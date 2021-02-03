@@ -3798,32 +3798,23 @@ qemuProcessUpdateDevices(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDeviceDef dev;
-    const char **qemuDevices;
-    char **old;
-    char **tmp;
-    int ret = -1;
+    g_auto(GStrv) old = g_steal_pointer(&priv->qemuDevices);
+    GStrv tmp;
 
-    old = priv->qemuDevices;
-    priv->qemuDevices = NULL;
     if (qemuDomainUpdateDeviceList(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
-        goto cleanup;
+        return -1;
 
-    qemuDevices = (const char **)priv->qemuDevices;
-    if ((tmp = old)) {
-        while (*tmp) {
-            if (!virStringListHasString(qemuDevices, *tmp) &&
-                virDomainDefFindDevice(vm->def, *tmp, &dev, false) == 0 &&
-                qemuDomainRemoveDevice(driver, vm, &dev) < 0) {
-                goto cleanup;
-            }
-            tmp++;
-        }
+    if (!old)
+        return 0;
+
+    for (tmp = old; *tmp; tmp++) {
+        if (!virStringListHasString((const char **) priv->qemuDevices, *tmp) &&
+            virDomainDefFindDevice(vm->def, *tmp, &dev, false) == 0 &&
+            qemuDomainRemoveDevice(driver, vm, &dev))
+            return -1;
     }
-    ret = 0;
 
- cleanup:
-    g_strfreev(old);
-    return ret;
+    return 0;
 }
 
 static int
