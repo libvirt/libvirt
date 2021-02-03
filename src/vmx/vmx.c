@@ -650,10 +650,10 @@ virVMXDomainDefNamespaceFree(void *nsdata)
     struct virVMXDomainDefNamespaceData *data = nsdata;
 
     if (data) {
-        VIR_FREE(data->datacenterPath);
-        VIR_FREE(data->moref);
+        g_free(data->datacenterPath);
+        g_free(data->moref);
     }
-    VIR_FREE(data);
+    g_free(data);
 }
 
 static int
