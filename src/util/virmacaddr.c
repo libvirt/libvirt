@@ -250,5 +250,5 @@ virMacAddrIsBroadcastRaw(const unsigned char s[VIR_MAC_BUFLEN])
 void
 virMacAddrFree(virMacAddrPtr addr)
 {
-    VIR_FREE(addr);
+    g_free(addr);
 }

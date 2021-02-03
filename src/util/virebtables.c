@@ -73,8 +73,8 @@ ebtablesContextFree(ebtablesContext *ctx)
 {
     if (!ctx)
         return;
-    VIR_FREE(ctx->chain);
-    VIR_FREE(ctx);
+    g_free(ctx->chain);
+    g_free(ctx);
 }
 
 

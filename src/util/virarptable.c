@@ -172,9 +172,9 @@ virArpTableFree(virArpTablePtr table)
         return;
 
     for (i = 0; i < table->n; i++) {
-        VIR_FREE(table->t[i].ipaddr);
-        VIR_FREE(table->t[i].mac);
+        g_free(table->t[i].ipaddr);
+        g_free(table->t[i].mac);
     }
-    VIR_FREE(table->t);
-    VIR_FREE(table);
+    g_free(table->t);
+    g_free(table);
 }

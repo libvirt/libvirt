@@ -80,7 +80,7 @@ virRotatingFileWriterEntryFree(virRotatingFileWriterEntryPtr entry)
         return;
 
     VIR_FORCE_CLOSE(entry->fd);
-    VIR_FREE(entry);
+    g_free(entry);
 }
 
 
@@ -90,9 +90,9 @@ virRotatingFileReaderEntryFree(virRotatingFileReaderEntryPtr entry)
     if (!entry)
         return;
 
-    VIR_FREE(entry->path);
+    g_free(entry->path);
     VIR_FORCE_CLOSE(entry->fd);
-    VIR_FREE(entry);
+    g_free(entry);
 }
 
 
@@ -610,8 +610,8 @@ virRotatingFileWriterFree(virRotatingFileWriterPtr file)
         return;
 
     virRotatingFileWriterEntryFree(file->entry);
-    VIR_FREE(file->basepath);
-    VIR_FREE(file);
+    g_free(file->basepath);
+    g_free(file);
 }
 
 
@@ -631,6 +631,6 @@ virRotatingFileReaderFree(virRotatingFileReaderPtr file)
 
     for (i = 0; i < file->nentries; i++)
         virRotatingFileReaderEntryFree(file->entries[i]);
-    VIR_FREE(file->entries);
-    VIR_FREE(file);
+    g_free(file->entries);
+    g_free(file);
 }

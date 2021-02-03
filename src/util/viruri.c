@@ -279,20 +279,20 @@ void virURIFree(virURIPtr uri)
     if (!uri)
         return;
 
-    VIR_FREE(uri->scheme);
-    VIR_FREE(uri->server);
-    VIR_FREE(uri->user);
-    VIR_FREE(uri->path);
-    VIR_FREE(uri->query);
-    VIR_FREE(uri->fragment);
+    g_free(uri->scheme);
+    g_free(uri->server);
+    g_free(uri->user);
+    g_free(uri->path);
+    g_free(uri->query);
+    g_free(uri->fragment);
 
     for (i = 0; i < uri->paramsCount; i++) {
-        VIR_FREE(uri->params[i].name);
-        VIR_FREE(uri->params[i].value);
+        g_free(uri->params[i].name);
+        g_free(uri->params[i].value);
     }
-    VIR_FREE(uri->params);
+    g_free(uri->params);
 
-    VIR_FREE(uri);
+    g_free(uri);
 }
 
 

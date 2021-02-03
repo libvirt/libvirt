@@ -880,5 +880,5 @@ virTypedParamsFree(virTypedParameterPtr params,
                    int nparams)
 {
     virTypedParamsClear(params, nparams);
-    VIR_FREE(params);
+    g_free(params);
 }

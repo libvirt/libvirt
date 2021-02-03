@@ -1520,11 +1520,11 @@ virPCIDeviceFree(virPCIDevicePtr dev)
     if (!dev)
         return;
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
-    VIR_FREE(dev->name);
-    VIR_FREE(dev->path);
-    VIR_FREE(dev->used_by_drvname);
-    VIR_FREE(dev->used_by_domname);
-    VIR_FREE(dev);
+    g_free(dev->name);
+    g_free(dev->path);
+    g_free(dev->used_by_drvname);
+    g_free(dev->used_by_domname);
+    g_free(dev);
 }
 
 /**
@@ -2819,13 +2819,13 @@ virPCIEDeviceInfoFree(virPCIEDeviceInfoPtr dev)
     if (!dev)
         return;
 
-    VIR_FREE(dev->link_cap);
-    VIR_FREE(dev->link_sta);
-    VIR_FREE(dev);
+    g_free(dev->link_cap);
+    g_free(dev->link_sta);
+    g_free(dev);
 }
 
 void
 virPCIDeviceAddressFree(virPCIDeviceAddressPtr address)
 {
-    VIR_FREE(address);
+    g_free(address);
 }

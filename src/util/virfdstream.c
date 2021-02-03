@@ -198,14 +198,14 @@ virFDStreamMsgFree(virFDStreamMsgPtr msg)
 
     switch (msg->type) {
     case VIR_FDSTREAM_MSG_TYPE_DATA:
-        VIR_FREE(msg->stream.data.buf);
+        g_free(msg->stream.data.buf);
         break;
     case VIR_FDSTREAM_MSG_TYPE_HOLE:
         /* nada */
         break;
     }
 
-    VIR_FREE(msg);
+    g_free(msg);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virFDStreamMsg, virFDStreamMsgFree);
@@ -413,9 +413,9 @@ virFDStreamThreadDataFree(virFDStreamThreadDataPtr data)
         return;
 
     virObjectUnref(data->st);
-    VIR_FREE(data->fdinname);
-    VIR_FREE(data->fdoutname);
-    VIR_FREE(data);
+    g_free(data->fdinname);
+    g_free(data->fdoutname);
+    g_free(data);
 }
 
 

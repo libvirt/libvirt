@@ -268,9 +268,9 @@ virSCSIVHostDeviceFree(virSCSIVHostDevicePtr dev)
     if (!dev)
         return;
     VIR_DEBUG("%s: freeing", dev->name);
-    VIR_FREE(dev->name);
-    VIR_FREE(dev->path);
-    VIR_FREE(dev->used_by_drvname);
-    VIR_FREE(dev->used_by_domname);
-    VIR_FREE(dev);
+    g_free(dev->name);
+    g_free(dev->path);
+    g_free(dev->used_by_drvname);
+    g_free(dev->used_by_domname);
+    g_free(dev);
 }

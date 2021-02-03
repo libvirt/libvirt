@@ -34,9 +34,9 @@ virNetDevBandwidthFree(virNetDevBandwidthPtr def)
     if (!def)
         return;
 
-    VIR_FREE(def->in);
-    VIR_FREE(def->out);
-    VIR_FREE(def);
+    g_free(def->in);
+    g_free(def->out);
+    g_free(def);
 }
 
 static void

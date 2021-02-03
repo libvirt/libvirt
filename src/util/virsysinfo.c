@@ -68,11 +68,11 @@ void virSysinfoBIOSDefFree(virSysinfoBIOSDefPtr def)
     if (def == NULL)
         return;
 
-    VIR_FREE(def->vendor);
-    VIR_FREE(def->version);
-    VIR_FREE(def->date);
-    VIR_FREE(def->release);
-    VIR_FREE(def);
+    g_free(def->vendor);
+    g_free(def->version);
+    g_free(def->date);
+    g_free(def->release);
+    g_free(def);
 }
 
 void virSysinfoSystemDefFree(virSysinfoSystemDefPtr def)
@@ -80,14 +80,14 @@ void virSysinfoSystemDefFree(virSysinfoSystemDefPtr def)
     if (def == NULL)
         return;
 
-    VIR_FREE(def->manufacturer);
-    VIR_FREE(def->product);
-    VIR_FREE(def->version);
-    VIR_FREE(def->serial);
-    VIR_FREE(def->uuid);
-    VIR_FREE(def->sku);
-    VIR_FREE(def->family);
-    VIR_FREE(def);
+    g_free(def->manufacturer);
+    g_free(def->product);
+    g_free(def->version);
+    g_free(def->serial);
+    g_free(def->uuid);
+    g_free(def->sku);
+    g_free(def->family);
+    g_free(def);
 }
 
 void virSysinfoBaseBoardDefClear(virSysinfoBaseBoardDefPtr def)
@@ -109,12 +109,12 @@ void virSysinfoChassisDefFree(virSysinfoChassisDefPtr def)
     if (def == NULL)
         return;
 
-    VIR_FREE(def->manufacturer);
-    VIR_FREE(def->version);
-    VIR_FREE(def->serial);
-    VIR_FREE(def->asset);
-    VIR_FREE(def->sku);
-    VIR_FREE(def);
+    g_free(def->manufacturer);
+    g_free(def->version);
+    g_free(def->serial);
+    g_free(def->asset);
+    g_free(def->sku);
+    g_free(def);
 }
 
 
@@ -126,10 +126,10 @@ void virSysinfoOEMStringsDefFree(virSysinfoOEMStringsDefPtr def)
         return;
 
     for (i = 0; i < def->nvalues; i++)
-        VIR_FREE(def->values[i]);
-    VIR_FREE(def->values);
+        g_free(def->values[i]);
+    g_free(def->values);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 
@@ -164,45 +164,45 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
 
     for (i = 0; i < def->nbaseBoard; i++)
         virSysinfoBaseBoardDefClear(def->baseBoard + i);
-    VIR_FREE(def->baseBoard);
+    g_free(def->baseBoard);
 
     virSysinfoChassisDefFree(def->chassis);
 
     for (i = 0; i < def->nprocessor; i++) {
-        VIR_FREE(def->processor[i].processor_socket_destination);
-        VIR_FREE(def->processor[i].processor_type);
-        VIR_FREE(def->processor[i].processor_family);
-        VIR_FREE(def->processor[i].processor_manufacturer);
-        VIR_FREE(def->processor[i].processor_signature);
-        VIR_FREE(def->processor[i].processor_version);
-        VIR_FREE(def->processor[i].processor_external_clock);
-        VIR_FREE(def->processor[i].processor_max_speed);
-        VIR_FREE(def->processor[i].processor_status);
-        VIR_FREE(def->processor[i].processor_serial_number);
-        VIR_FREE(def->processor[i].processor_part_number);
+        g_free(def->processor[i].processor_socket_destination);
+        g_free(def->processor[i].processor_type);
+        g_free(def->processor[i].processor_family);
+        g_free(def->processor[i].processor_manufacturer);
+        g_free(def->processor[i].processor_signature);
+        g_free(def->processor[i].processor_version);
+        g_free(def->processor[i].processor_external_clock);
+        g_free(def->processor[i].processor_max_speed);
+        g_free(def->processor[i].processor_status);
+        g_free(def->processor[i].processor_serial_number);
+        g_free(def->processor[i].processor_part_number);
     }
-    VIR_FREE(def->processor);
+    g_free(def->processor);
     for (i = 0; i < def->nmemory; i++) {
-        VIR_FREE(def->memory[i].memory_size);
-        VIR_FREE(def->memory[i].memory_form_factor);
-        VIR_FREE(def->memory[i].memory_locator);
-        VIR_FREE(def->memory[i].memory_bank_locator);
-        VIR_FREE(def->memory[i].memory_type);
-        VIR_FREE(def->memory[i].memory_type_detail);
-        VIR_FREE(def->memory[i].memory_speed);
-        VIR_FREE(def->memory[i].memory_manufacturer);
-        VIR_FREE(def->memory[i].memory_serial_number);
-        VIR_FREE(def->memory[i].memory_part_number);
+        g_free(def->memory[i].memory_size);
+        g_free(def->memory[i].memory_form_factor);
+        g_free(def->memory[i].memory_locator);
+        g_free(def->memory[i].memory_bank_locator);
+        g_free(def->memory[i].memory_type);
+        g_free(def->memory[i].memory_type_detail);
+        g_free(def->memory[i].memory_speed);
+        g_free(def->memory[i].memory_manufacturer);
+        g_free(def->memory[i].memory_serial_number);
+        g_free(def->memory[i].memory_part_number);
     }
-    VIR_FREE(def->memory);
+    g_free(def->memory);
 
     virSysinfoOEMStringsDefFree(def->oemStrings);
 
     for (i = 0; i < def->nfw_cfgs; i++)
         virSysinfoFWCfgDefClear(&def->fw_cfgs[i]);
-    VIR_FREE(def->fw_cfgs);
+    g_free(def->fw_cfgs);
 
-    VIR_FREE(def);
+    g_free(def);
 }
 
 

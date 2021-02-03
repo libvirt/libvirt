@@ -632,7 +632,7 @@ virObjectListFree(void *list)
     for (next = (void **) list; *next; next++)
         virObjectUnref(*next);
 
-    VIR_FREE(list);
+    g_free(list);
 }
 
 

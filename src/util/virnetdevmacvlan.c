@@ -563,11 +563,11 @@ static void
 virNetlinkCallbackDataFree(virNetlinkCallbackDataPtr calld)
 {
     if (calld) {
-        VIR_FREE(calld->cr_ifname);
-        VIR_FREE(calld->virtPortProfile);
-        VIR_FREE(calld->linkdev);
+        g_free(calld->cr_ifname);
+        g_free(calld->virtPortProfile);
+        g_free(calld->linkdev);
     }
-    VIR_FREE(calld);
+    g_free(calld);
 }
 
 /**

@@ -117,8 +117,8 @@ virPortAllocatorRangeFree(virPortAllocatorRangePtr range)
     if (!range)
         return;
 
-    VIR_FREE(range->name);
-    VIR_FREE(range);
+    g_free(range->name);
+    g_free(range);
 }
 
 static int

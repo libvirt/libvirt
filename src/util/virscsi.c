@@ -222,9 +222,9 @@ virSCSIDeviceNew(const char *sysfs_prefix,
 static void
 virSCSIDeviceUsedByInfoFree(virUsedByInfoPtr used_by)
 {
-    VIR_FREE(used_by->drvname);
-    VIR_FREE(used_by->domname);
-    VIR_FREE(used_by);
+    g_free(used_by->drvname);
+    g_free(used_by->domname);
+    g_free(used_by);
 }
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virUsedByInfo, virSCSIDeviceUsedByInfoFree);
 
@@ -236,13 +236,13 @@ virSCSIDeviceFree(virSCSIDevicePtr dev)
     if (!dev)
         return;
 
-    VIR_FREE(dev->id);
-    VIR_FREE(dev->name);
-    VIR_FREE(dev->sg_path);
+    g_free(dev->id);
+    g_free(dev->name);
+    g_free(dev->sg_path);
     for (i = 0; i < dev->n_used_by; i++)
         virSCSIDeviceUsedByInfoFree(dev->used_by[i]);
-    VIR_FREE(dev->used_by);
-    VIR_FREE(dev);
+    g_free(dev->used_by);
+    g_free(dev);
 }
 
 int

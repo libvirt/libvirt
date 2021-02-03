@@ -775,8 +775,8 @@ virNetDevIPRouteFree(virNetDevIPRoutePtr def)
 {
     if (!def)
         return;
-    VIR_FREE(def->family);
-    VIR_FREE(def);
+    g_free(def->family);
+    g_free(def);
 }
 
 virSocketAddrPtr
@@ -913,5 +913,5 @@ virNetDevIPInfoAddToDev(const char *ifname,
 void
 virNetDevIPAddrFree(virNetDevIPAddrPtr ip)
 {
-    VIR_FREE(ip);
+    g_free(ip);
 }

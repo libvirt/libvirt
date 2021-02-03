@@ -339,8 +339,8 @@ virLogFilterFree(virLogFilterPtr filter)
     if (!filter)
         return;
 
-    VIR_FREE(filter->match);
-    VIR_FREE(filter);
+    g_free(filter->match);
+    g_free(filter);
 }
 
 
@@ -361,7 +361,7 @@ virLogFilterListFree(virLogFilterPtr *list, int count)
 
     for (i = 0; i < count; i++)
         virLogFilterFree(list[i]);
-    VIR_FREE(list);
+    g_free(list);
 }
 
 
@@ -387,8 +387,8 @@ virLogOutputFree(virLogOutputPtr output)
 
     if (output->c)
         output->c(output->data);
-    VIR_FREE(output->name);
-    VIR_FREE(output);
+    g_free(output->name);
+    g_free(output);
 
 }
 
@@ -410,7 +410,7 @@ virLogOutputListFree(virLogOutputPtr *list, int count)
 
     for (i = 0; i < count; i++)
         virLogOutputFree(list[i]);
-    VIR_FREE(list);
+    g_free(list);
 }
 
 

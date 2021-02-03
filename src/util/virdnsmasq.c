@@ -75,14 +75,14 @@ addnhostsFree(dnsmasqAddnHostsfile *addnhostsfile)
         for (i = 0; i < addnhostsfile->nhosts; i++)
             addnhostFree(&addnhostsfile->hosts[i]);
 
-        VIR_FREE(addnhostsfile->hosts);
+        g_free(addnhostsfile->hosts);
 
         addnhostsfile->nhosts = 0;
     }
 
-    VIR_FREE(addnhostsfile->path);
+    g_free(addnhostsfile->path);
 
-    VIR_FREE(addnhostsfile);
+    g_free(addnhostsfile);
 }
 
 static int
@@ -272,14 +272,14 @@ hostsfileFree(dnsmasqHostsfile *hostsfile)
         for (i = 0; i < hostsfile->nhosts; i++)
             dhcphostFree(&hostsfile->hosts[i]);
 
-        VIR_FREE(hostsfile->hosts);
+        g_free(hostsfile->hosts);
 
         hostsfile->nhosts = 0;
     }
 
-    VIR_FREE(hostsfile->path);
+    g_free(hostsfile->path);
 
-    VIR_FREE(hostsfile);
+    g_free(hostsfile);
 }
 
 /* Note:  There are many additional dhcp-host specifications
@@ -465,14 +465,14 @@ dnsmasqContextFree(dnsmasqContext *ctx)
     if (!ctx)
         return;
 
-    VIR_FREE(ctx->config_dir);
+    g_free(ctx->config_dir);
 
     if (ctx->hostsfile)
         hostsfileFree(ctx->hostsfile);
     if (ctx->addnhostsfile)
         addnhostsFree(ctx->addnhostsfile);
 
-    VIR_FREE(ctx);
+    g_free(ctx);
 }
 
 /**

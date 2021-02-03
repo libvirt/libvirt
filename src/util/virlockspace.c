@@ -102,11 +102,11 @@ static void virLockSpaceResourceFree(virLockSpaceResourcePtr res)
         }
     }
 
-    VIR_FREE(res->owners);
+    g_free(res->owners);
     VIR_FORCE_CLOSE(res->fd);
-    VIR_FREE(res->path);
-    VIR_FREE(res->name);
-    VIR_FREE(res);
+    g_free(res->path);
+    g_free(res->name);
+    g_free(res);
 }
 
 
@@ -499,9 +499,9 @@ void virLockSpaceFree(virLockSpacePtr lockspace)
         return;
 
     virHashFree(lockspace->resources);
-    VIR_FREE(lockspace->dir);
+    g_free(lockspace->dir);
     virMutexDestroy(&lockspace->lock);
-    VIR_FREE(lockspace);
+    g_free(lockspace);
 }
 
 

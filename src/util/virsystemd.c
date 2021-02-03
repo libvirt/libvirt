@@ -640,8 +640,8 @@ virSystemdActivationEntryFree(void *data)
         VIR_FORCE_CLOSE(ent->fds[i]);
     }
 
-    VIR_FREE(ent->fds);
-    VIR_FREE(ent);
+    g_free(ent->fds);
+    g_free(ent);
 }
 
 
@@ -1048,5 +1048,5 @@ virSystemdActivationFree(virSystemdActivationPtr act)
 
     virHashFree(act->fds);
 
-    VIR_FREE(act);
+    g_free(act);
 }

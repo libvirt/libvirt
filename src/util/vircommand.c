@@ -3028,25 +3028,25 @@ virCommandFree(virCommandPtr cmd)
             VIR_FORCE_CLOSE(cmd->passfd[i].fd);
     }
     cmd->npassfd = 0;
-    VIR_FREE(cmd->passfd);
+    g_free(cmd->passfd);
 
     if (cmd->asyncioThread) {
         virThreadJoin(cmd->asyncioThread);
-        VIR_FREE(cmd->asyncioThread);
+        g_free(cmd->asyncioThread);
     }
-    VIR_FREE(cmd->inbuf);
+    g_free(cmd->inbuf);
     VIR_FORCE_CLOSE(cmd->outfd);
     VIR_FORCE_CLOSE(cmd->errfd);
 
     for (i = 0; i < cmd->nargs; i++)
-        VIR_FREE(cmd->args[i]);
-    VIR_FREE(cmd->args);
+        g_free(cmd->args[i]);
+    g_free(cmd->args);
 
     for (i = 0; i < cmd->nenv; i++)
-        VIR_FREE(cmd->env[i]);
-    VIR_FREE(cmd->env);
+        g_free(cmd->env[i]);
+    g_free(cmd->env);
 
-    VIR_FREE(cmd->pwd);
+    g_free(cmd->pwd);
 
     if (cmd->handshake) {
         /* The other 2 fds in these arrays are closed
@@ -3056,21 +3056,21 @@ virCommandFree(virCommandPtr cmd)
         VIR_FORCE_CLOSE(cmd->handshakeNotify[1]);
     }
 
-    VIR_FREE(cmd->pidfile);
+    g_free(cmd->pidfile);
 
     if (cmd->reap)
         virCommandAbort(cmd);
 
 #if defined(WITH_SECDRIVER_SELINUX)
-    VIR_FREE(cmd->seLinuxLabel);
+    g_free(cmd->seLinuxLabel);
 #endif
 #if defined(WITH_SECDRIVER_APPARMOR)
-    VIR_FREE(cmd->appArmorProfile);
+    g_free(cmd->appArmorProfile);
 #endif
 
     virCommandFreeSendBuffers(cmd);
 
-    VIR_FREE(cmd);
+    g_free(cmd);
 }
 
 /**

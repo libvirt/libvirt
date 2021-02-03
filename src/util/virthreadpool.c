@@ -305,14 +305,14 @@ void virThreadPoolFree(virThreadPoolPtr pool)
     virMutexLock(&pool->mutex);
     virThreadPoolDrainLocked(pool);
 
-    VIR_FREE(pool->workers);
+    g_free(pool->workers);
     virMutexUnlock(&pool->mutex);
     virMutexDestroy(&pool->mutex);
     virCondDestroy(&pool->quit_cond);
     virCondDestroy(&pool->cond);
-    VIR_FREE(pool->prioWorkers);
+    g_free(pool->prioWorkers);
     virCondDestroy(&pool->prioCond);
-    VIR_FREE(pool);
+    g_free(pool);
 }
 
 

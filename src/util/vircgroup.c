@@ -3581,15 +3581,15 @@ virCgroupFree(virCgroupPtr group)
         return;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        VIR_FREE(group->legacy[i].mountPoint);
-        VIR_FREE(group->legacy[i].linkPoint);
-        VIR_FREE(group->legacy[i].placement);
+        g_free(group->legacy[i].mountPoint);
+        g_free(group->legacy[i].linkPoint);
+        g_free(group->legacy[i].placement);
     }
 
-    VIR_FREE(group->unified.mountPoint);
-    VIR_FREE(group->unified.placement);
+    g_free(group->unified.mountPoint);
+    g_free(group->unified.placement);
 
-    VIR_FREE(group);
+    g_free(group);
 }
 
 

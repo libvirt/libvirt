@@ -232,7 +232,7 @@ virResctrlInfoMonFree(virResctrlInfoMonPtr mon)
         return;
 
     g_strfreev(mon->features);
-    VIR_FREE(mon);
+    g_free(mon);
 }
 
 
@@ -2752,6 +2752,6 @@ virResctrlMonitorStatsFree(virResctrlMonitorStatsPtr stat)
         return;
 
     g_strfreev(stat->features);
-    VIR_FREE(stat->vals);
-    VIR_FREE(stat);
+    g_free(stat->vals);
+    g_free(stat);
 }

@@ -196,9 +196,9 @@ virFirewallRuleFree(virFirewallRulePtr rule)
         return;
 
     for (i = 0; i < rule->argsLen; i++)
-        VIR_FREE(rule->args[i]);
-    VIR_FREE(rule->args);
-    VIR_FREE(rule);
+        g_free(rule->args[i]);
+    g_free(rule->args);
+    g_free(rule);
 }
 
 
@@ -212,13 +212,13 @@ virFirewallGroupFree(virFirewallGroupPtr group)
 
     for (i = 0; i < group->naction; i++)
         virFirewallRuleFree(group->action[i]);
-    VIR_FREE(group->action);
+    g_free(group->action);
 
     for (i = 0; i < group->nrollback; i++)
         virFirewallRuleFree(group->rollback[i]);
-    VIR_FREE(group->rollback);
+    g_free(group->rollback);
 
-    VIR_FREE(group);
+    g_free(group);
 }
 
 
@@ -237,9 +237,9 @@ void virFirewallFree(virFirewallPtr firewall)
 
     for (i = 0; i < firewall->ngroups; i++)
         virFirewallGroupFree(firewall->groups[i]);
-    VIR_FREE(firewall->groups);
+    g_free(firewall->groups);
 
-    VIR_FREE(firewall);
+    g_free(firewall);
 }
 
 #define VIR_FIREWALL_RETURN_IF_ERROR(firewall) \

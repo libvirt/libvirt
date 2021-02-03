@@ -88,8 +88,8 @@ void virAuthConfigFree(virAuthConfigPtr auth)
         return;
 
     g_key_file_free(auth->keyfile);
-    VIR_FREE(auth->path);
-    VIR_FREE(auth);
+    g_free(auth->path);
+    g_free(auth);
 }
 
 

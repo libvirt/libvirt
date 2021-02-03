@@ -1307,5 +1307,5 @@ virSocketAddrPTRDomain(const virSocketAddr *addr,
 void
 virSocketAddrFree(virSocketAddrPtr addr)
 {
-    VIR_FREE(addr);
+    g_free(addr);
 }

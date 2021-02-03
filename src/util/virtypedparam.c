@@ -485,11 +485,11 @@ virTypedParamsRemoteFree(virTypedParameterRemotePtr remote_params_val,
         return;
 
     for (i = 0; i < remote_params_len; i++) {
-        VIR_FREE(remote_params_val[i].field);
+        g_free(remote_params_val[i].field);
         if (remote_params_val[i].value.type == VIR_TYPED_PARAM_STRING)
-            VIR_FREE(remote_params_val[i].value.remote_typed_param_value.s);
+            g_free(remote_params_val[i].value.remote_typed_param_value.s);
     }
-    VIR_FREE(remote_params_val);
+    g_free(remote_params_val);
 }
 
 
@@ -724,7 +724,7 @@ virTypedParamListFree(virTypedParamListPtr list)
         return;
 
     virTypedParamsFree(list->par, list->npar);
-    VIR_FREE(list);
+    g_free(list);
 }
 
 

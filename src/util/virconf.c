@@ -788,15 +788,15 @@ virConfFree(virConfPtr conf)
     tmp = conf->entries;
     while (tmp) {
         virConfEntryPtr next;
-        VIR_FREE(tmp->name);
+        g_free(tmp->name);
         virConfFreeValue(tmp->value);
-        VIR_FREE(tmp->comment);
+        g_free(tmp->comment);
         next = tmp->next;
-        VIR_FREE(tmp);
+        g_free(tmp);
         tmp = next;
     }
-    VIR_FREE(conf->filename);
-    VIR_FREE(conf);
+    g_free(conf->filename);
+    g_free(conf);
     return 0;
 }
 

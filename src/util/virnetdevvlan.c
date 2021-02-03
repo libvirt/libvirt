@@ -39,7 +39,7 @@ virNetDevVlanFree(virNetDevVlanPtr vlan)
 {
     if (vlan)
         virNetDevVlanClear(vlan);
-    VIR_FREE(vlan);
+    g_free(vlan);
 }
 
 int

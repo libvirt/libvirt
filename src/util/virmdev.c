@@ -183,10 +183,10 @@ virMediatedDeviceFree(virMediatedDevicePtr dev)
 {
     if (!dev)
         return;
-    VIR_FREE(dev->path);
-    VIR_FREE(dev->used_by_drvname);
-    VIR_FREE(dev->used_by_domname);
-    VIR_FREE(dev);
+    g_free(dev->path);
+    g_free(dev->used_by_drvname);
+    g_free(dev->used_by_domname);
+    g_free(dev);
 }
 
 
@@ -476,10 +476,10 @@ virMediatedDeviceTypeFree(virMediatedDeviceTypePtr type)
     if (!type)
         return;
 
-    VIR_FREE(type->id);
-    VIR_FREE(type->name);
-    VIR_FREE(type->device_api);
-    VIR_FREE(type);
+    g_free(type->id);
+    g_free(type->name);
+    g_free(type->device_api);
+    g_free(type);
 }
 
 

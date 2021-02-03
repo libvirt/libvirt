@@ -394,5 +394,5 @@ virPerfFree(virPerfPtr perf)
             virPerfEventDisable(perf, i);
     }
 
-    VIR_FREE(perf);
+    g_free(perf);
 }

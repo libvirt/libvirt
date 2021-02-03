@@ -398,28 +398,28 @@ virJSONValueFree(virJSONValuePtr value)
     switch ((virJSONType) value->type) {
     case VIR_JSON_TYPE_OBJECT:
         for (i = 0; i < value->data.object.npairs; i++) {
-            VIR_FREE(value->data.object.pairs[i].key);
+            g_free(value->data.object.pairs[i].key);
             virJSONValueFree(value->data.object.pairs[i].value);
         }
-        VIR_FREE(value->data.object.pairs);
+        g_free(value->data.object.pairs);
         break;
     case VIR_JSON_TYPE_ARRAY:
         for (i = 0; i < value->data.array.nvalues; i++)
             virJSONValueFree(value->data.array.values[i]);
-        VIR_FREE(value->data.array.values);
+        g_free(value->data.array.values);
         break;
     case VIR_JSON_TYPE_STRING:
-        VIR_FREE(value->data.string);
+        g_free(value->data.string);
         break;
     case VIR_JSON_TYPE_NUMBER:
-        VIR_FREE(value->data.number);
+        g_free(value->data.number);
         break;
     case VIR_JSON_TYPE_BOOLEAN:
     case VIR_JSON_TYPE_NULL:
         break;
     }
 
-    VIR_FREE(value);
+    g_free(value);
 }
 
 

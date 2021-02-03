@@ -86,7 +86,7 @@ virNVMeDeviceFree(virNVMeDevicePtr dev)
         return;
 
     virNVMeDeviceUsedByClear(dev);
-    VIR_FREE(dev);
+    g_free(dev);
 }
 
 

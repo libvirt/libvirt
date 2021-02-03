@@ -127,7 +127,7 @@ struct _virNetDevMcastEntry  {
 static void
 virNetDevMcastEntryFree(virNetDevMcastEntryPtr entry)
 {
-    VIR_FREE(entry);
+    g_free(entry);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetDevMcastEntry, virNetDevMcastEntryFree);
@@ -2868,11 +2868,11 @@ void
 virNetDevRxFilterFree(virNetDevRxFilterPtr filter)
 {
     if (filter) {
-        VIR_FREE(filter->name);
-        VIR_FREE(filter->unicast.table);
-        VIR_FREE(filter->multicast.table);
-        VIR_FREE(filter->vlan.table);
-        VIR_FREE(filter);
+        g_free(filter->name);
+        g_free(filter->unicast.table);
+        g_free(filter->multicast.table);
+        g_free(filter->vlan.table);
+        g_free(filter);
     }
 }
 

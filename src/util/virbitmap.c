@@ -94,8 +94,8 @@ void
 virBitmapFree(virBitmapPtr bitmap)
 {
     if (bitmap) {
-        VIR_FREE(bitmap->map);
-        VIR_FREE(bitmap);
+        g_free(bitmap->map);
+        g_free(bitmap);
     }
 }
 

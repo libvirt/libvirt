@@ -382,9 +382,9 @@ virFileWrapperFdFree(virFileWrapperFdPtr wfd)
     if (!wfd)
         return;
 
-    VIR_FREE(wfd->err_msg);
+    g_free(wfd->err_msg);
     virCommandFree(wfd->cmd);
-    VIR_FREE(wfd);
+    g_free(wfd);
 }
 
 

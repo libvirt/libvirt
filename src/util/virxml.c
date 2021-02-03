@@ -1312,12 +1312,12 @@ virXMLValidatorFree(virXMLValidatorPtr validator)
     if (!validator)
         return;
 
-    VIR_FREE(validator->schemafile);
+    g_free(validator->schemafile);
     virBufferFreeAndReset(&validator->buf);
     xmlRelaxNGFreeParserCtxt(validator->rngParser);
     xmlRelaxNGFreeValidCtxt(validator->rngValid);
     xmlRelaxNGFree(validator->rng);
-    VIR_FREE(validator);
+    g_free(validator);
 }
 
 

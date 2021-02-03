@@ -37,9 +37,9 @@ virFirmwareFree(virFirmwarePtr firmware)
     if (!firmware)
         return;
 
-    VIR_FREE(firmware->name);
-    VIR_FREE(firmware->nvram);
-    VIR_FREE(firmware);
+    g_free(firmware->name);
+    g_free(firmware->nvram);
+    g_free(firmware);
 }
 
 
@@ -51,7 +51,7 @@ virFirmwareFreeList(virFirmwarePtr *firmwares, size_t nfirmwares)
     for (i = 0; i < nfirmwares; i++)
         virFirmwareFree(firmwares[i]);
 
-    VIR_FREE(firmwares);
+    g_free(firmwares);
 }
 
 

@@ -34,11 +34,11 @@ virSecurityLabelDefFree(virSecurityLabelDefPtr def)
 {
     if (!def)
         return;
-    VIR_FREE(def->model);
-    VIR_FREE(def->label);
-    VIR_FREE(def->imagelabel);
-    VIR_FREE(def->baselabel);
-    VIR_FREE(def);
+    g_free(def->model);
+    g_free(def->label);
+    g_free(def->imagelabel);
+    g_free(def->baselabel);
+    g_free(def);
 }
 
 
@@ -47,9 +47,9 @@ virSecurityDeviceLabelDefFree(virSecurityDeviceLabelDefPtr def)
 {
     if (!def)
         return;
-    VIR_FREE(def->model);
-    VIR_FREE(def->label);
-    VIR_FREE(def);
+    g_free(def->model);
+    g_free(def->label);
+    g_free(def);
 }
 
 
