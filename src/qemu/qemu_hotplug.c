@@ -1924,18 +1924,16 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     bool chardevAdded = false;
     g_autofree char *tlsAlias = NULL;
     const char *secAlias = NULL;
-    bool need_release = false;
     virErrorPtr orig_err;
 
     if (qemuAssignDeviceRedirdevAlias(def, redirdev, -1) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(charAlias = qemuAliasChardevFromDevAlias(redirdev->info.alias)))
-        goto cleanup;
+        return -1;
 
     if ((virDomainUSBAddressEnsure(priv->usbaddrs, &redirdev->info)) < 0)
-        goto cleanup;
-    need_release = true;
+        return -1;
 
     if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, priv->qemuCaps)))
         goto cleanup;
@@ -1967,7 +1965,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
  audit:
     virDomainAuditRedirdev(vm, redirdev, "attach", ret == 0);
  cleanup:
-    if (ret < 0 && need_release)
+    if (ret < 0)
         qemuDomainReleaseDeviceAddress(vm, &redirdev->info);
     return ret;
 
