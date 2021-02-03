@@ -581,10 +581,9 @@ virLockManagerSanlockAddDisk(virLockManagerSanlockDriverPtr driver,
                              bool shared)
 {
     virLockManagerSanlockPrivatePtr priv = lock->privateData;
-    int ret = -1;
-    struct sanlk_resource *res = NULL;
-    char *path = NULL;
-    char *hash = NULL;
+    g_autofree struct sanlk_resource *res = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *hash = NULL;
 
     if (nparams) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -593,17 +592,17 @@ virLockManagerSanlockAddDisk(virLockManagerSanlockDriverPtr driver,
     }
 
     if (VIR_ALLOC_VAR(res, struct sanlk_disk, 1) < 0)
-        goto cleanup;
+        return -1;
 
     res->flags = shared ? SANLK_RES_SHARED : 0;
     res->num_disks = 1;
     if (virCryptoHashString(VIR_CRYPTO_HASH_MD5, name, &hash) < 0)
-        goto cleanup;
+        return -1;
     if (virStrcpy(res->name, hash, SANLK_NAME_LEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("MD5 hash '%s' unexpectedly larger than %d characters"),
                        hash, (SANLK_NAME_LEN - 1));
-        goto cleanup;
+        return -1;
     }
 
     path = g_strdup_printf("%s/%s", driver->autoDiskLeasePath, res->name);
@@ -611,7 +610,7 @@ virLockManagerSanlockAddDisk(virLockManagerSanlockDriverPtr driver,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Lease path '%s' exceeds %d characters"),
                        path, SANLK_PATH_LEN);
-        goto cleanup;
+        return -1;
     }
 
     if (virStrcpy(res->lockspace_name,
@@ -620,20 +619,13 @@ virLockManagerSanlockAddDisk(virLockManagerSanlockDriverPtr driver,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Resource lockspace '%s' exceeds %d characters"),
                        VIR_LOCK_MANAGER_SANLOCK_AUTO_DISK_LOCKSPACE, SANLK_NAME_LEN);
-        goto cleanup;
+        return -1;
     }
 
-    priv->res_args[priv->res_count] = res;
+    priv->res_args[priv->res_count] = g_steal_pointer(&res);
     priv->res_count++;
 
-    ret = 0;
-
- cleanup:
-    if (ret == -1)
-        VIR_FREE(res);
-    VIR_FREE(path);
-    VIR_FREE(hash);
-    return ret;
+    return 0;
 }
 
 
