@@ -2561,11 +2561,10 @@ vshTreePrint(vshControl *ctl, vshTreeLookup lookup, void *opaque,
  *
  * Generator function for command completion.
  *
- * Returns a string list of commands with @text prefix,
- * NULL if there's no such command.
+ * Returns a string list of all commands, or NULL on failure.
  */
 static char **
-vshReadlineCommandGenerator(const char *text)
+vshReadlineCommandGenerator(const char *text G_GNUC_UNUSED)
 {
     size_t grp_list_index = 0, cmd_list_index = 0;
     const char *name;
@@ -2587,15 +2586,13 @@ vshReadlineCommandGenerator(const char *text)
                 if (cmds[cmd_list_index++].flags & VSH_CMD_FLAG_ALIAS)
                     continue;
 
-                if (STRPREFIX(name, text)) {
-                    if (VIR_REALLOC_N(ret, ret_size + 2) < 0)
-                        return NULL;
+                if (VIR_REALLOC_N(ret, ret_size + 2) < 0)
+                    return NULL;
 
-                    ret[ret_size] = g_strdup(name);
-                    ret_size++;
-                    /* Terminate the string list properly. */
-                    ret[ret_size] = NULL;
-                }
+                ret[ret_size] = g_strdup(name);
+                ret_size++;
+                /* Terminate the string list properly. */
+                ret[ret_size] = NULL;
             }
         } else {
             cmd_list_index = 0;
@@ -2782,13 +2779,13 @@ vshReadlineParse(const char *text, int state)
                 if (virStringListMerge(&list, &completer_list) < 0)
                     goto cleanup;
             }
-
-            /* For string list returned by completers we have to do
-             * filtering based on @text because completers returns all
-             * possible strings. */
-            if (vshCompleterFilter(&list, text) < 0)
-                goto cleanup;
         }
+
+        /* For string list returned by completers we have to do
+         * filtering based on @text because completers returns all
+         * possible strings. */
+        if (vshCompleterFilter(&list, text) < 0)
+            goto cleanup;
     }
 
     if (list) {
