@@ -198,8 +198,8 @@ testDomainDefNamespaceFree(void *data)
     for (i = 0; i < nsdata->num_snap_nodes; i++)
         xmlFreeNode(nsdata->snap_nodes[i]);
 
-    VIR_FREE(nsdata->snap_nodes);
-    VIR_FREE(nsdata);
+    g_free(nsdata->snap_nodes);
+    g_free(nsdata);
 }
 
 static int
@@ -428,7 +428,7 @@ static void
 testDomainObjPrivateFree(void *data)
 {
     testDomainObjPrivatePtr priv = data;
-    VIR_FREE(priv);
+    g_free(priv);
 }
 
 
