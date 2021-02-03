@@ -352,7 +352,7 @@ virLogHandlerDispose(void *obj)
         handler->inhibitor(false, handler->opaque);
         virLogHandlerLogFileFree(handler->files[i]);
     }
-    VIR_FREE(handler->files);
+    g_free(handler->files);
 }
 
 
