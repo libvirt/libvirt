@@ -57,7 +57,9 @@
  *
  * On macOS stat() and lstat() are resolved to _stat$INODE64 and
  * _lstat$INODE64, respectively. stat(2) man page also declares that
- * stat64(), lstat64() and fstat64() are deprecated.
+ * stat64(), lstat64() and fstat64() are deprecated, and when
+ * building on Apple Silicon (aarch64) those functions are missing
+ * from the header altogether and should not be mocked.
  *
  * With all this in mind the list of functions we have to mock will depend
  * on several factors
@@ -111,9 +113,13 @@
 # endif /* WITH___LXSTAT_DECL */
 #else /* __APPLE__ */
 # define MOCK_STAT
-# define MOCK_STAT64
+# if defined(WITH_STAT64_DECL)
+#  define MOCK_STAT64
+# endif
 # define MOCK_LSTAT
-# define MOCK_LSTAT64
+# if defined(WITH_LSTAT64_DECL)
+#  define MOCK_LSTAT64
+# endif
 #endif
 
 #ifdef MOCK_STAT
