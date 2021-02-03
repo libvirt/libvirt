@@ -98,9 +98,9 @@ virLogHandlerLogFileFree(virLogHandlerLogFilePtr file)
     if (file->watch != -1)
         virEventRemoveHandle(file->watch);
 
-    VIR_FREE(file->driver);
-    VIR_FREE(file->domname);
-    VIR_FREE(file);
+    g_free(file->driver);
+    g_free(file->domname);
+    g_free(file);
 }
 
 

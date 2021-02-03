@@ -89,7 +89,7 @@ virLogDaemonFree(virLogDaemonPtr logd)
     g_mutex_clear(&logd->lock);
     virObjectUnref(logd->dmn);
 
-    VIR_FREE(logd);
+    g_free(logd);
 }
 
 
@@ -314,7 +314,7 @@ virLogDaemonClientFree(void *opaque)
               (unsigned long long)priv->clientPid);
 
     g_mutex_clear(&priv->lock);
-    VIR_FREE(priv);
+    g_free(priv);
 }
 
 

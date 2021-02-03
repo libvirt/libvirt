@@ -137,7 +137,7 @@ virLogManagerFree(virLogManagerPtr mgr)
     virObjectUnref(mgr->program);
     virObjectUnref(mgr->client);
 
-    VIR_FREE(mgr);
+    g_free(mgr);
 }
 
 
