@@ -57,7 +57,7 @@ remoteAdmClientFree(void *data)
 
     virMutexDestroy(&priv->lock);
     virObjectUnref(priv->dmn);
-    VIR_FREE(priv);
+    g_free(priv);
 }
 
 void *
