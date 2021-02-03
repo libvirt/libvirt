@@ -531,8 +531,7 @@ static int virLockManagerSanlockAddLease(virLockManagerPtr lock,
     g_autofree struct sanlk_resource *res = NULL;
     size_t i;
 
-    if (VIR_ALLOC_VAR(res, struct sanlk_disk, 1) < 0)
-        return -1;
+    res = g_malloc0(sizeof(struct sanlk_resource) + sizeof(struct sanlk_disk));
 
     res->flags = shared ? SANLK_RES_SHARED : 0;
     res->num_disks = 1;
@@ -591,8 +590,7 @@ virLockManagerSanlockAddDisk(virLockManagerSanlockDriverPtr driver,
         return -1;
     }
 
-    if (VIR_ALLOC_VAR(res, struct sanlk_disk, 1) < 0)
-        return -1;
+    res = g_malloc0(sizeof(struct sanlk_resource) + sizeof(struct sanlk_disk));
 
     res->flags = shared ? SANLK_RES_SHARED : 0;
     res->num_disks = 1;
