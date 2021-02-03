@@ -152,8 +152,8 @@ nodedevTestDriverFree(virNodeDeviceDriverStatePtr drv)
     virNodeDeviceObjListFree(drv->devs);
     virCondDestroy(&drv->initCond);
     virMutexDestroy(&drv->lock);
-    VIR_FREE(drv->stateDir);
-    VIR_FREE(drv);
+    g_free(drv->stateDir);
+    g_free(drv);
 }
 
 /* Add a fake root 'computer' device */

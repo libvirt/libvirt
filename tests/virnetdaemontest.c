@@ -76,7 +76,7 @@ testClientNewPostExec(virNetServerClientPtr client,
 static void
 testClientFree(void *opaque)
 {
-    VIR_FREE(opaque);
+    g_free(opaque);
 }
 
 

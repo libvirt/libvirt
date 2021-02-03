@@ -99,7 +99,7 @@ qemuMonitorTestItemFree(qemuMonitorTestItemPtr item)
     if (item->freecb)
         (item->freecb)(item->opaque);
 
-    VIR_FREE(item);
+    g_free(item);
 }
 
 
@@ -423,8 +423,8 @@ qemuMonitorTestFree(qemuMonitorTestPtr test)
     if (timer != -1)
         virEventRemoveTimeout(timer);
 
-    VIR_FREE(test->incoming);
-    VIR_FREE(test->outgoing);
+    g_free(test->incoming);
+    g_free(test->outgoing);
 
     for (i = 0; i < test->nitems; i++) {
         if (!test->allowUnusedCommands) {
@@ -435,12 +435,12 @@ qemuMonitorTestFree(qemuMonitorTestPtr test)
 
         qemuMonitorTestItemFree(test->items[i]);
     }
-    VIR_FREE(test->items);
+    g_free(test->items);
 
     if (test->tmpdir && rmdir(test->tmpdir) < 0)
         VIR_WARN("Failed to remove tempdir: %s", g_strerror(errno));
 
-    VIR_FREE(test->tmpdir);
+    g_free(test->tmpdir);
 
     if (!test->allowUnusedCommands &&
         test->nitems != 0) {
@@ -448,7 +448,7 @@ qemuMonitorTestFree(qemuMonitorTestPtr test)
     }
 
     virMutexDestroy(&test->lock);
-    VIR_FREE(test);
+    g_free(test);
 }
 
 
@@ -518,16 +518,16 @@ qemuMonitorTestHandlerDataFree(void *opaque)
         return;
 
     for (i = 0; i < data->nargs; i++) {
-        VIR_FREE(data->args[i].argname);
-        VIR_FREE(data->args[i].argval);
+        g_free(data->args[i].argname);
+        g_free(data->args[i].argval);
     }
 
-    VIR_FREE(data->command_name);
-    VIR_FREE(data->cmderr);
-    VIR_FREE(data->response);
-    VIR_FREE(data->args);
-    VIR_FREE(data->expectArgs);
-    VIR_FREE(data);
+    g_free(data->command_name);
+    g_free(data->cmderr);
+    g_free(data->response);
+    g_free(data->args);
+    g_free(data->expectArgs);
+    g_free(data);
 }
 
 

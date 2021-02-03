@@ -174,7 +174,7 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
         return;
 
     virHashFree(inst->vars);
-    VIR_FREE(inst);
+    g_free(inst);
 }
 
 

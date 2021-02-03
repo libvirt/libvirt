@@ -383,12 +383,12 @@ testQemuHotplugCpuDataFree(struct testQemuHotplugCpuData *data)
     if (!data)
         return;
 
-    VIR_FREE(data->file_xml_dom);
-    VIR_FREE(data->file_xml_res_live);
-    VIR_FREE(data->file_xml_res_conf);
-    VIR_FREE(data->file_json_monitor);
+    g_free(data->file_xml_dom);
+    g_free(data->file_xml_res_live);
+    g_free(data->file_xml_res_conf);
+    g_free(data->file_json_monitor);
 
-    VIR_FREE(data->xml_dom);
+    g_free(data->xml_dom);
 
     if (data->vm) {
         priv = data->vm->privateData;
@@ -402,7 +402,7 @@ testQemuHotplugCpuDataFree(struct testQemuHotplugCpuData *data)
         virObjectLock(mon);
         qemuMonitorTestFree(data->mon);
     }
-    VIR_FREE(data);
+    g_free(data);
 }
 
 

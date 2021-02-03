@@ -41,7 +41,7 @@ testClientNew(virNetServerClientPtr client G_GNUC_UNUSED,
 static void
 testClientFree(void *opaque)
 {
-    VIR_FREE(opaque);
+    g_free(opaque);
 }
 
 static int testIdentity(const void *opaque G_GNUC_UNUSED)
