@@ -88,7 +88,7 @@ void virNetMessageFree(virNetMessagePtr msg)
         msg->cb(msg, msg->opaque);
 
     virNetMessageClearPayload(msg);
-    VIR_FREE(msg);
+    g_free(msg);
 }
 
 void virNetMessageQueuePush(virNetMessagePtr *queue, virNetMessagePtr msg)
