@@ -135,7 +135,7 @@ virHostdevManagerDispose(void *obj)
     virObjectUnref(hostdevMgr->activeSCSIVHostHostdevs);
     virObjectUnref(hostdevMgr->activeMediatedHostdevs);
     virObjectUnref(hostdevMgr->activeNVMeHostdevs);
-    VIR_FREE(hostdevMgr->stateDir);
+    g_free(hostdevMgr->stateDir);
 }
 
 static virHostdevManagerPtr
