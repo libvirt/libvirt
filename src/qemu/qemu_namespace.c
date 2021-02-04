@@ -40,6 +40,7 @@
 #include "virlog.h"
 #include "virstring.h"
 #include "virdevmapper.h"
+#include "virglibutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -190,7 +191,7 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfigPtr cfg,
 
 static int
 qemuDomainPopulateDevices(virQEMUDriverConfigPtr cfg,
-                          char ***paths)
+                          GSList **paths)
 {
     const char *const *devices = (const char *const *) cfg->cgroupDeviceACL;
     size_t i;
@@ -199,8 +200,7 @@ qemuDomainPopulateDevices(virQEMUDriverConfigPtr cfg,
         devices = defaultDeviceACL;
 
     for (i = 0; devices[i]; i++) {
-        if (virStringListAdd(paths, devices[i]) < 0)
-            return -1;
+        *paths = g_slist_prepend(*paths, g_strdup(devices[i]));
     }
 
     return 0;
@@ -237,7 +237,7 @@ qemuDomainSetupDev(virSecurityManagerPtr mgr,
 
 static int
 qemuDomainSetupDisk(virStorageSourcePtr src,
-                    char ***paths)
+                    GSList **paths)
 {
     virStorageSourcePtr next;
     bool hasNVMe = false;
@@ -252,6 +252,7 @@ qemuDomainSetupDisk(virStorageSourcePtr src,
                 return -1;
         } else {
             g_auto(GStrv) targetPaths = NULL;
+            GStrv tmp;
 
             if (virStorageSourceIsEmpty(next) ||
                 !virStorageSourceIsLocalStorage(next)) {
@@ -269,22 +270,21 @@ qemuDomainSetupDisk(virStorageSourcePtr src,
                 return -1;
             }
 
-            if (virStringListMerge(paths, &targetPaths) < 0)
-                return -1;
+            if (targetPaths) {
+                for (tmp = targetPaths; *tmp; tmp++)
+                    *paths = g_slist_prepend(*paths, g_steal_pointer(tmp));
+            }
         }
 
-        if (virStringListAdd(paths, tmpPath) < 0)
-            return -1;
+        *paths = g_slist_prepend(*paths, g_steal_pointer(&tmpPath));
     }
 
     /* qemu-pr-helper might require access to /dev/mapper/control. */
-    if (src->pr &&
-        virStringListAdd(paths, QEMU_DEVICE_MAPPER_CONTROL_PATH) < 0)
-        return -1;
+    if (src->pr)
+        *paths = g_slist_prepend(*paths, g_strdup(QEMU_DEVICE_MAPPER_CONTROL_PATH));
 
-    if (hasNVMe &&
-        virStringListAdd(paths, QEMU_DEV_VFIO) < 0)
-        return -1;
+    if (hasNVMe)
+        *paths = g_slist_prepend(*paths, g_strdup(QEMU_DEV_VFIO));
 
     return 0;
 }
@@ -292,7 +292,7 @@ qemuDomainSetupDisk(virStorageSourcePtr src,
 
 static int
 qemuDomainSetupAllDisks(virDomainObjPtr vm,
-                        char ***paths)
+                        GSList **paths)
 {
     size_t i;
 
@@ -313,20 +313,19 @@ static int
 qemuDomainSetupHostdev(virDomainObjPtr vm,
                        virDomainHostdevDefPtr hostdev,
                        bool hotplug,
-                       char ***paths)
+                       GSList **paths)
 {
     g_autofree char *path = NULL;
 
     if (qemuDomainGetHostdevPath(hostdev, &path, NULL) < 0)
         return -1;
 
-    if (path && virStringListAdd(paths, path) < 0)
-        return -1;
+    if (path)
+        *paths = g_slist_prepend(*paths, g_steal_pointer(&path));
 
     if (qemuHostdevNeedsVFIO(hostdev) &&
-        (!hotplug || !qemuDomainNeedsVFIO(vm->def)) &&
-        virStringListAdd(paths, QEMU_DEV_VFIO) < 0)
-        return -1;
+        (!hotplug || !qemuDomainNeedsVFIO(vm->def)))
+        *paths = g_slist_prepend(*paths, g_strdup(QEMU_DEV_VFIO));
 
     return 0;
 }
@@ -334,7 +333,7 @@ qemuDomainSetupHostdev(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupAllHostdevs(virDomainObjPtr vm,
-                           char ***paths)
+                           GSList **paths)
 {
     size_t i;
 
@@ -353,19 +352,21 @@ qemuDomainSetupAllHostdevs(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupMemory(virDomainMemoryDefPtr mem,
-                      char ***paths)
+                      GSList **paths)
 {
     if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
         mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM)
         return 0;
 
-    return virStringListAdd(paths, mem->nvdimmPath);
+    *paths = g_slist_prepend(*paths, g_strdup(mem->nvdimmPath));
+
+    return 0;
 }
 
 
 static int
 qemuDomainSetupAllMemories(virDomainObjPtr vm,
-                           char ***paths)
+                           GSList **paths)
 {
     size_t i;
 
@@ -385,7 +386,7 @@ qemuDomainSetupChardev(virDomainDefPtr def G_GNUC_UNUSED,
                        virDomainChrDefPtr dev,
                        void *opaque)
 {
-    char ***paths = opaque;
+    GSList **paths = opaque;
     const char *path = NULL;
 
     if (!(path = virDomainChrSourceDefGetPath(dev->source)))
@@ -396,13 +397,14 @@ qemuDomainSetupChardev(virDomainDefPtr def G_GNUC_UNUSED,
         dev->source->data.nix.listen)
         return 0;
 
-    return virStringListAdd(paths, path);
+    *paths = g_slist_prepend(*paths, g_strdup(path));
+    return 0;
 }
 
 
 static int
 qemuDomainSetupAllChardevs(virDomainObjPtr vm,
-                           char ***paths)
+                           GSList **paths)
 {
     VIR_DEBUG("Setting up chardevs");
 
@@ -419,12 +421,11 @@ qemuDomainSetupAllChardevs(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupTPM(virDomainTPMDefPtr dev,
-                   char ***paths)
+                   GSList **paths)
 {
     switch (dev->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        if (virStringListAdd(paths, dev->data.passthrough.source.data.file.path) < 0)
-            return -1;
+        *paths = g_slist_prepend(*paths, g_strdup(dev->data.passthrough.source.data.file.path));
         break;
 
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
@@ -439,7 +440,7 @@ qemuDomainSetupTPM(virDomainTPMDefPtr dev,
 
 static int
 qemuDomainSetupAllTPMs(virDomainObjPtr vm,
-                       char ***paths)
+                       GSList **paths)
 {
     size_t i;
 
@@ -457,20 +458,21 @@ qemuDomainSetupAllTPMs(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupGraphics(virDomainGraphicsDefPtr gfx,
-                        char ***paths)
+                        GSList **paths)
 {
     const char *rendernode = virDomainGraphicsGetRenderNode(gfx);
 
     if (!rendernode)
         return 0;
 
-    return virStringListAdd(paths, rendernode);
+    *paths = g_slist_prepend(*paths, g_strdup(rendernode));
+    return 0;
 }
 
 
 static int
 qemuDomainSetupAllGraphics(virDomainObjPtr vm,
-                           char ***paths)
+                           GSList **paths)
 {
     size_t i;
 
@@ -488,12 +490,14 @@ qemuDomainSetupAllGraphics(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupInput(virDomainInputDefPtr input,
-                     char ***paths)
+                     GSList **paths)
 {
     const char *path = virDomainInputDefGetPath(input);
 
-    if (path && virStringListAdd(paths, path) < 0)
-        return -1;
+    if (!path)
+        return 0;
+
+    *paths = g_slist_prepend(*paths, g_strdup(path));
 
     return 0;
 }
@@ -501,7 +505,7 @@ qemuDomainSetupInput(virDomainInputDefPtr input,
 
 static int
 qemuDomainSetupAllInputs(virDomainObjPtr vm,
-                         char ***paths)
+                         GSList **paths)
 {
     size_t i;
 
@@ -518,12 +522,11 @@ qemuDomainSetupAllInputs(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupRNG(virDomainRNGDefPtr rng,
-                   char ***paths)
+                   GSList **paths)
 {
     switch ((virDomainRNGBackend) rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
-        if (virStringListAdd(paths, rng->source.file) < 0)
-            return -1;
+        *paths = g_slist_prepend(*paths, g_strdup(rng->source.file));
         break;
 
     case VIR_DOMAIN_RNG_BACKEND_EGD:
@@ -539,7 +542,7 @@ qemuDomainSetupRNG(virDomainRNGDefPtr rng,
 
 static int
 qemuDomainSetupAllRNGs(virDomainObjPtr vm,
-                       char ***paths)
+                       GSList **paths)
 {
     size_t i;
 
@@ -557,7 +560,7 @@ qemuDomainSetupAllRNGs(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupLoader(virDomainObjPtr vm,
-                      char ***paths)
+                      GSList **paths)
 {
     virDomainLoaderDefPtr loader = vm->def->os.loader;
 
@@ -566,17 +569,14 @@ qemuDomainSetupLoader(virDomainObjPtr vm,
     if (loader) {
         switch ((virDomainLoader) loader->type) {
         case VIR_DOMAIN_LOADER_TYPE_ROM:
-            if (virStringListAdd(paths, loader->path) < 0)
-                return -1;
+            *paths = g_slist_prepend(*paths, g_strdup(loader->path));
             break;
 
         case VIR_DOMAIN_LOADER_TYPE_PFLASH:
-            if (virStringListAdd(paths, loader->path) < 0)
-                return -1;
+            *paths = g_slist_prepend(*paths, g_strdup(loader->path));
 
-            if (loader->nvram &&
-                virStringListAdd(paths, loader->nvram) < 0)
-                return -1;
+            if (loader->nvram)
+                *paths = g_slist_prepend(*paths, g_strdup(loader->nvram));
             break;
 
         case VIR_DOMAIN_LOADER_TYPE_NONE:
@@ -592,7 +592,7 @@ qemuDomainSetupLoader(virDomainObjPtr vm,
 
 static int
 qemuDomainSetupLaunchSecurity(virDomainObjPtr vm,
-                              char ***paths)
+                              GSList **paths)
 {
     virDomainSEVDefPtr sev = vm->def->sev;
 
@@ -601,8 +601,7 @@ qemuDomainSetupLaunchSecurity(virDomainObjPtr vm,
 
     VIR_DEBUG("Setting up launch security");
 
-    if (virStringListAdd(paths, QEMU_DEV_SEV) < 0)
-        return -1;
+    *paths = g_slist_prepend(*paths, g_strdup(QEMU_DEV_SEV));
 
     VIR_DEBUG("Set up launch security");
     return 0;
@@ -611,14 +610,14 @@ qemuDomainSetupLaunchSecurity(virDomainObjPtr vm,
 
 static int
 qemuNamespaceMknodPaths(virDomainObjPtr vm,
-                        const char **paths);
+                        GSList *paths);
 
 
 int
 qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
                          virDomainObjPtr vm)
 {
-    g_auto(GStrv) paths = NULL;
+    g_autoptr(virGSListString) paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT)) {
         VIR_DEBUG("namespaces disabled for domain %s", vm->def->name);
@@ -658,7 +657,7 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
     if (qemuDomainSetupLaunchSecurity(vm, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
+    if (qemuNamespaceMknodPaths(vm, paths) < 0)
         return -1;
 
     return 0;
@@ -1228,20 +1227,19 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodDataPtr data,
 
 static int
 qemuNamespaceMknodPaths(virDomainObjPtr vm,
-                        const char **paths)
+                        GSList *paths)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     char **devMountsPath = NULL;
     size_t ndevMountsPath = 0;
-    size_t npaths = 0;
     qemuNamespaceMknodData data = { 0 };
     size_t i;
     int ret = -1;
+    GSList *next;
 
-    npaths = virStringListLength(paths);
-    if (npaths == 0)
+    if (!paths)
         return 0;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -1253,8 +1251,10 @@ qemuNamespaceMknodPaths(virDomainObjPtr vm,
     data.driver = driver;
     data.vm = vm;
 
-    for (i = 0; i < npaths; i++) {
-        if (qemuNamespacePrepareOneItem(&data, cfg, vm, paths[i],
+    for (next = paths; next; next = next->next) {
+        const char *path = next->data;
+
+        if (qemuNamespacePrepareOneItem(&data, cfg, vm, path,
                                         devMountsPath, ndevMountsPath) < 0)
             goto cleanup;
     }
@@ -1299,7 +1299,7 @@ qemuNamespaceMknodPaths(virDomainObjPtr vm,
 
 static int
 qemuNamespaceMknodPaths(virDomainObjPtr vm G_GNUC_UNUSED,
-                        const char **paths G_GNUC_UNUSED)
+                        GSList *paths G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Namespaces are not supported on this platform."));
@@ -1314,11 +1314,11 @@ static int
 qemuNamespaceUnlinkHelper(pid_t pid G_GNUC_UNUSED,
                           void *opaque)
 {
-    char **paths = opaque;
-    size_t i;
+    g_autoptr(virGSListString) paths = opaque;
+    GSList *next;
 
-    for (i = 0; paths[i]; i++) {
-        const char *path = paths[i];
+    for (next = paths; next; next = next->next) {
+        const char *path = next->data;
 
         VIR_DEBUG("Unlinking %s", path);
         if (unlink(path) < 0 && errno != ENOENT) {
@@ -1328,25 +1328,22 @@ qemuNamespaceUnlinkHelper(pid_t pid G_GNUC_UNUSED,
         }
     }
 
-    g_strfreev(paths);
     return 0;
 }
 
 
 static int
 qemuNamespaceUnlinkPaths(virDomainObjPtr vm,
-                         const char **paths)
+                         GSList *paths)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    g_auto(GStrv) unlinkPaths = NULL;
     g_auto(GStrv) devMountsPath = NULL;
-    size_t npaths;
-    size_t i;
+    g_autoptr(virGSListString) unlinkPaths = NULL;
+    GSList *next;
 
-    npaths = virStringListLength(paths);
-    if (!npaths)
+    if (!paths)
         return 0;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -1354,10 +1351,10 @@ qemuNamespaceUnlinkPaths(virDomainObjPtr vm,
     if (qemuDomainGetPreservedMounts(cfg, vm, &devMountsPath, NULL, NULL) < 0)
         return -1;
 
-    for (i = 0; i < npaths; i++) {
-        const char *file = paths[i];
+    for (next = paths; next; next = next->next) {
+        const char *path = next->data;
 
-        if (STRPREFIX(file, QEMU_DEVPREFIX)) {
+        if (STRPREFIX(path, QEMU_DEVPREFIX)) {
             GStrv mount;
             bool inSubmount = false;
 
@@ -1365,15 +1362,14 @@ qemuNamespaceUnlinkPaths(virDomainObjPtr vm,
                 if (STREQ(*mount, "/dev"))
                     continue;
 
-                if (STRPREFIX(file, *mount)) {
+                if (STRPREFIX(path, *mount)) {
                     inSubmount = true;
                     break;
                 }
             }
 
-            if (!inSubmount &&
-                virStringListAdd(&unlinkPaths, file) < 0)
-                return -1;
+            if (!inSubmount)
+                unlinkPaths = g_slist_prepend(unlinkPaths, g_strdup(path));
         }
     }
 
@@ -1391,7 +1387,7 @@ int
 qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
                              virStorageSourcePtr src)
 {
-    g_auto(GStrv) paths = NULL;
+    g_autoptr(virGSListString) paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1399,7 +1395,7 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
     if (qemuDomainSetupDisk(src, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
+    if (qemuNamespaceMknodPaths(vm, paths) < 0)
         return -1;
 
     return 0;
@@ -1435,7 +1431,7 @@ int
 qemuDomainNamespaceSetupHostdev(virDomainObjPtr vm,
                                 virDomainHostdevDefPtr hostdev)
 {
-    g_auto(GStrv) paths = NULL;
+    g_autoptr(virGSListString) paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1446,7 +1442,7 @@ qemuDomainNamespaceSetupHostdev(virDomainObjPtr vm,
                                &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
+    if (qemuNamespaceMknodPaths(vm, paths) < 0)
         return -1;
 
     return 0;
@@ -1468,7 +1464,7 @@ int
 qemuDomainNamespaceTeardownHostdev(virDomainObjPtr vm,
                                    virDomainHostdevDefPtr hostdev)
 {
-    g_auto(GStrv) paths = NULL;
+    g_autoptr(virGSListString) paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1479,7 +1475,7 @@ qemuDomainNamespaceTeardownHostdev(virDomainObjPtr vm,
                                &paths) < 0)
         return -1;
 
-    if (qemuNamespaceUnlinkPaths(vm, (const char **) paths) < 0)
+    if (qemuNamespaceUnlinkPaths(vm, paths) < 0)
         return -1;
 
     return 0;
@@ -1490,7 +1486,7 @@ int
 qemuDomainNamespaceSetupMemory(virDomainObjPtr vm,
                                virDomainMemoryDefPtr mem)
 {
-    g_auto(GStrv) paths = NULL;
+    g_autoptr(virGSListString) paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1498,7 +1494,7 @@ qemuDomainNamespaceSetupMemory(virDomainObjPtr vm,
     if (qemuDomainSetupMemory(mem, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
+    if (qemuNamespaceMknodPaths(vm, paths) < 0)
         return -1;
 
     return 0;
@@ -1509,7 +1505,7 @@ int
 qemuDomainNamespaceTeardownMemory(virDomainObjPtr vm,
                                   virDomainMemoryDefPtr mem)
 {
-    g_auto(GStrv) paths = NULL;
+    g_autoptr(virGSListString) paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1517,7 +1513,7 @@ qemuDomainNamespaceTeardownMemory(virDomainObjPtr vm,
     if (qemuDomainSetupMemory(mem, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceUnlinkPaths(vm, (const char **) paths) < 0)
+    if (qemuNamespaceUnlinkPaths(vm, paths) < 0)
         return -1;
 
     return 0;
@@ -1528,7 +1524,7 @@ int
 qemuDomainNamespaceSetupChardev(virDomainObjPtr vm,
                                 virDomainChrDefPtr chr)
 {
-    g_auto(GStrv) paths = NULL;
+    g_autoptr(virGSListString) paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1536,7 +1532,7 @@ qemuDomainNamespaceSetupChardev(virDomainObjPtr vm,
     if (qemuDomainSetupChardev(vm->def, chr, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
+    if (qemuNamespaceMknodPaths(vm, paths) < 0)
         return -1;
 
     return 0;
@@ -1547,7 +1543,7 @@ int
 qemuDomainNamespaceTeardownChardev(virDomainObjPtr vm,
                                    virDomainChrDefPtr chr)
 {
-    g_auto(GStrv) paths = NULL;
+    g_autoptr(virGSListString) paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1555,7 +1551,7 @@ qemuDomainNamespaceTeardownChardev(virDomainObjPtr vm,
     if (qemuDomainSetupChardev(vm->def, chr, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceUnlinkPaths(vm, (const char **) paths) < 0)
+    if (qemuNamespaceUnlinkPaths(vm, paths) < 0)
         return -1;
 
     return 0;
@@ -1566,7 +1562,7 @@ int
 qemuDomainNamespaceSetupRNG(virDomainObjPtr vm,
                             virDomainRNGDefPtr rng)
 {
-    g_auto(GStrv) paths = NULL;
+    g_autoptr(virGSListString) paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1574,7 +1570,7 @@ qemuDomainNamespaceSetupRNG(virDomainObjPtr vm,
     if (qemuDomainSetupRNG(rng, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
+    if (qemuNamespaceMknodPaths(vm, paths) < 0)
         return -1;
 
     return 0;
@@ -1585,7 +1581,7 @@ int
 qemuDomainNamespaceTeardownRNG(virDomainObjPtr vm,
                                virDomainRNGDefPtr rng)
 {
-    g_auto(GStrv) paths = NULL;
+    g_autoptr(virGSListString) paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1593,7 +1589,7 @@ qemuDomainNamespaceTeardownRNG(virDomainObjPtr vm,
     if (qemuDomainSetupRNG(rng, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceUnlinkPaths(vm, (const char **) paths) < 0)
+    if (qemuNamespaceUnlinkPaths(vm, paths) < 0)
         return -1;
 
     return 0;
@@ -1604,7 +1600,7 @@ int
 qemuDomainNamespaceSetupInput(virDomainObjPtr vm,
                               virDomainInputDefPtr input)
 {
-    g_auto(GStrv) paths = NULL;
+    g_autoptr(virGSListString) paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1612,7 +1608,7 @@ qemuDomainNamespaceSetupInput(virDomainObjPtr vm,
     if (qemuDomainSetupInput(input, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, (const char **) paths) < 0)
+    if (qemuNamespaceMknodPaths(vm, paths) < 0)
         return -1;
     return 0;
 }
@@ -1622,7 +1618,7 @@ int
 qemuDomainNamespaceTeardownInput(virDomainObjPtr vm,
                                  virDomainInputDefPtr input)
 {
-    g_auto(GStrv) paths = NULL;
+    g_autoptr(virGSListString) paths = NULL;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1630,7 +1626,7 @@ qemuDomainNamespaceTeardownInput(virDomainObjPtr vm,
     if (qemuDomainSetupInput(input, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceUnlinkPaths(vm, (const char **) paths) < 0)
+    if (qemuNamespaceUnlinkPaths(vm, paths) < 0)
         return -1;
 
     return 0;
