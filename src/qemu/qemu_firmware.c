@@ -190,8 +190,8 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuFirmwareOSInterface, qemuFirmwareOSInterfaceFr
 static void
 qemuFirmwareFlashFileFreeContent(qemuFirmwareFlashFilePtr flash)
 {
-    VIR_FREE(flash->filename);
-    VIR_FREE(flash->format);
+    g_free(flash->filename);
+    g_free(flash->format);
 }
 
 
@@ -206,14 +206,14 @@ qemuFirmwareMappingFlashFreeContent(qemuFirmwareMappingFlashPtr flash)
 static void
 qemuFirmwareMappingKernelFreeContent(qemuFirmwareMappingKernelPtr kernel)
 {
-    VIR_FREE(kernel->filename);
+    g_free(kernel->filename);
 }
 
 
 static void
 qemuFirmwareMappingMemoryFreeContent(qemuFirmwareMappingMemoryPtr memory)
 {
-    VIR_FREE(memory->filename);
+    g_free(memory->filename);
 }
 
 
