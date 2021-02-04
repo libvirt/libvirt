@@ -1341,11 +1341,9 @@ qemuNamespaceUnlinkPaths(virDomainObjPtr vm,
     virQEMUDriverPtr driver = priv->driver;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     g_auto(GStrv) unlinkPaths = NULL;
-    char **devMountsPath = NULL;
-    size_t ndevMountsPath = 0;
+    g_auto(GStrv) devMountsPath = NULL;
     size_t npaths;
     size_t i;
-    int ret = -1;
 
     npaths = virStringListLength(paths);
     if (!npaths)
@@ -1353,10 +1351,8 @@ qemuNamespaceUnlinkPaths(virDomainObjPtr vm,
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    if (qemuDomainGetPreservedMounts(cfg, vm,
-                                     &devMountsPath, NULL,
-                                     &ndevMountsPath) < 0)
-        goto cleanup;
+    if (qemuDomainGetPreservedMounts(cfg, vm, &devMountsPath, NULL, NULL) < 0)
+        return -1;
 
     for (i = 0; i < npaths; i++) {
         const char *file = paths[i];
@@ -1387,10 +1383,7 @@ qemuNamespaceUnlinkPaths(virDomainObjPtr vm,
                                       unlinkPaths) < 0)
         return -1;
 
-    ret = 0;
- cleanup:
-    virStringListFreeCount(devMountsPath, ndevMountsPath);
-    return ret;
+    return 0;
 }
 
 
