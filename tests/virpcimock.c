@@ -936,7 +936,7 @@ init_syms(void)
     VIR_MOCK_REAL_INIT(__open_2);
 # endif /* ! __GLIBC__ */
     VIR_MOCK_REAL_INIT(close);
-# ifdef __APPLE__
+# if defined(__APPLE__) && defined(__x86_64__)
     VIR_MOCK_REAL_INIT_ALIASED(opendir, "opendir$INODE64");
 # else
     VIR_MOCK_REAL_INIT(opendir);

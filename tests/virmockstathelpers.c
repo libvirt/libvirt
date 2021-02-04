@@ -161,7 +161,7 @@ static void virMockStatInit(void)
     debug = getenv("VIR_MOCK_STAT_DEBUG");
 
 #ifdef MOCK_STAT
-# ifdef __APPLE__
+# if defined(__APPLE__) && defined(__x86_64__)
     VIR_MOCK_REAL_INIT_ALIASED(stat, "stat$INODE64");
 # else
     VIR_MOCK_REAL_INIT(stat);
@@ -181,7 +181,7 @@ static void virMockStatInit(void)
     fdebug("real __xstat64 %p\n", real___xstat64);
 #endif
 #ifdef MOCK_LSTAT
-# ifdef __APPLE__
+# if defined(__APPLE__) && defined(__x86_64__)
     VIR_MOCK_REAL_INIT_ALIASED(lstat, "lstat$INODE64");
 # else
     VIR_MOCK_REAL_INIT(lstat);
