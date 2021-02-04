@@ -34,6 +34,7 @@
 #include "configmake.h"
 #include "vircommand.h"
 #include "virstring.h"
+#include "virglibutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_HOOK
 
@@ -343,11 +344,11 @@ virHookCall(int driver,
     struct dirent *entry;
     g_autofree char *path = NULL;
     g_autofree char *dir_path = NULL;
-    g_auto(GStrv) entries = NULL;
+    g_autoptr(virGSListString) entries = NULL;
     const char *drvstr;
     const char *opstr;
     const char *subopstr;
-    size_t i, nentries;
+    GSList *next;
 
     if (output)
         *output = NULL;
@@ -433,7 +434,7 @@ virHookCall(int driver,
         if (!virFileIsExecutable(entry_path))
             continue;
 
-        virStringListAdd(&entries, entry_path);
+        entries = g_slist_prepend(entries, g_steal_pointer(&entry_path));
     }
 
     if (ret < 0)
@@ -442,18 +443,18 @@ virHookCall(int driver,
     if (!entries)
         return script_ret;
 
-    nentries = virStringListLength((const char **)entries);
-    qsort(entries, nentries, sizeof(*entries), virStringSortCompare);
+    entries = g_slist_sort(entries, (GCompareFunc) strcmp);
 
-    for (i = 0; i < nentries; i++) {
+    for (next = entries; next; next = next->next) {
         int entry_ret;
         const char *entry_input;
         g_autofree char *entry_output = NULL;
+        const char *filename = next->data;
 
         /* Get input from previous output */
         entry_input = (!script_ret && output &&
                        !virStringIsEmpty(*output)) ? *output : input;
-        entry_ret = virRunScript(entries[i], id, opstr,
+        entry_ret = virRunScript(filename, id, opstr,
                                  subopstr, extra, entry_input,
                                  (output) ? &entry_output : NULL);
         if (entry_ret < script_ret)
