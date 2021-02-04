@@ -215,12 +215,7 @@ static int virMockStatRedirect(const char *path, char **newpath);
 #endif
 
 #ifdef MOCK_STAT
-# ifdef __APPLE__
-int _stat(const char *path, struct stat *sb) __asm("_stat$INODE64");
-int _stat(const char *path, struct stat *sb)
-# else
 int stat(const char *path, struct stat *sb)
-# endif
 {
     g_autofree char *newpath = NULL;
 
@@ -290,13 +285,8 @@ __xstat64(int ver, const char *path, struct stat64 *sb)
 #endif
 
 #ifdef MOCK_LSTAT
-# ifdef __APPLE__
-int _lstat(const char *path, struct stat *sb) __asm("_lstat$INODE64");
-int _lstat(const char *path, struct stat *sb)
-# else
 int
 lstat(const char *path, struct stat *sb)
-# endif
 {
     g_autofree char *newpath = NULL;
 
