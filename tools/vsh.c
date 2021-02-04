@@ -2557,14 +2557,13 @@ vshTreePrint(vshControl *ctl, vshTreeLookup lookup, void *opaque,
 
 /**
  * vshReadlineCommandGenerator:
- * @text: optional command prefix
  *
  * Generator function for command completion.
  *
  * Returns a string list of all commands, or NULL on failure.
  */
 static char **
-vshReadlineCommandGenerator(const char *text G_GNUC_UNUSED)
+vshReadlineCommandGenerator(void)
 {
     size_t grp_list_index = 0;
     const vshCmdGrp *grp;
@@ -2597,8 +2596,7 @@ vshReadlineCommandGenerator(const char *text G_GNUC_UNUSED)
 }
 
 static char **
-vshReadlineOptionsGenerator(const char *text G_GNUC_UNUSED,
-                            const vshCmdDef *cmd,
+vshReadlineOptionsGenerator(const vshCmdDef *cmd,
                             vshCmd *last)
 {
     size_t list_index = 0;
@@ -2742,9 +2740,9 @@ vshReadlineParse(const char *text, int state)
         opt = vshReadlineCommandFindOpt(partial);
 
         if (!cmd) {
-            list = vshReadlineCommandGenerator(text);
+            list = vshReadlineCommandGenerator();
         } else if (!opt || opt->type == VSH_OT_BOOL) {
-            list = vshReadlineOptionsGenerator(text, cmd, partial);
+            list = vshReadlineOptionsGenerator(cmd, partial);
         } else if (opt && opt->completer) {
             list = opt->completer(autoCompleteOpaque,
                                   partial,
