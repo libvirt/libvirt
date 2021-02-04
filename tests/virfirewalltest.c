@@ -102,6 +102,7 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
     } else if (STREQ(bus_name, VIR_FIREWALL_FIREWALLD_SERVICE) &&
                STREQ(method_name, "passthrough")) {
         g_autoptr(GVariantIter) iter = NULL;
+        static const size_t maxargs = 5;
         g_auto(GStrv) args = NULL;
         size_t nargs = 0;
         char *type = NULL;
@@ -111,7 +112,7 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
 
         g_variant_get(params, "(&sas)", &type, &iter);
 
-        nargs = g_variant_iter_n_children(iter);
+        args = g_new0(char *, maxargs);
 
         if (fwBuf) {
             if (STREQ(type, "ipv4"))
@@ -130,7 +131,9 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
                 doError = true;
             }
 
-            virStringListAdd(&args, item);
+            if (nargs < maxargs)
+                args[nargs] = g_strdup(item);
+            nargs++;
 
             if (fwBuf) {
                 virBufferAddLit(fwBuf, " ");
