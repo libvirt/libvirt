@@ -6353,11 +6353,10 @@ types have different ``target`` attributes.
 ``xen``
    Paravirtualized Xen channel. Channel is exposed in the guest as a Xen console
    but identified with a name. Setup and consumption of a Xen channel depends on
-   software and configuration in the guest (for more info, please see
-   http://xenbits.xen.org/docs/unstable/misc/channel.txt). Channel source path
-   semantics are the same as the virtio target type. The ``state`` attribute is
-   not supported since Xen channels lack the necessary probing mechanism.
-   :since:`Since 2.3.0`
+   software and configuration in the guest. See the xen-pv-channel(7) man page
+   for more information. Channel source path semantics are the same as the virtio
+   target type. The ``state`` attribute is not supported since Xen channels lack
+   the necessary probing mechanism. :since:`Since 2.3.0`
 ``spicevmc``
    Paravirtualized SPICE channel. The domain must also have a SPICE server as a
    `graphics device <#elementsGraphics>`__, at which point the host piggy-backs
