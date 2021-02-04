@@ -35,6 +35,7 @@ util_sources = [
   'virgdbus.c',
   'virgettext.c',
   'virgic.c',
+  'virglibutil.c',
   'virhash.c',
   'virhashcode.c',
   'virhook.c',

@@ -2304,6 +2304,10 @@ virGICVersionTypeFromString;
 virGICVersionTypeToString;
 
 
+# util/virglibutil.h
+virGSListStringFree;
+
+
 # util/virhash.h
 virHashAddEntry;
 virHashAtomicNew;
