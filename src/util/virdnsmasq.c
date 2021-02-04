@@ -50,20 +50,20 @@ VIR_LOG_INIT("util.dnsmasq");
 #define DNSMASQ_ADDNHOSTSFILE_SUFFIX "addnhosts"
 
 static void
-dhcphostFree(dnsmasqDhcpHost *host)
+dhcphostFreeContent(dnsmasqDhcpHost *host)
 {
-    VIR_FREE(host->host);
+    g_free(host->host);
 }
 
 static void
-addnhostFree(dnsmasqAddnHost *host)
+addnhostFreeContent(dnsmasqAddnHost *host)
 {
     size_t i;
 
     for (i = 0; i < host->nhostnames; i++)
-        VIR_FREE(host->hostnames[i]);
-    VIR_FREE(host->hostnames);
-    VIR_FREE(host->ip);
+        g_free(host->hostnames[i]);
+    g_free(host->hostnames);
+    g_free(host->ip);
 }
 
 static void
@@ -73,7 +73,7 @@ addnhostsFree(dnsmasqAddnHostsfile *addnhostsfile)
 
     if (addnhostsfile->hosts) {
         for (i = 0; i < addnhostsfile->nhosts; i++)
-            addnhostFree(&addnhostsfile->hosts[i]);
+            addnhostFreeContent(&addnhostsfile->hosts[i]);
 
         g_free(addnhostsfile->hosts);
 
@@ -270,7 +270,7 @@ hostsfileFree(dnsmasqHostsfile *hostsfile)
 
     if (hostsfile->hosts) {
         for (i = 0; i < hostsfile->nhosts; i++)
-            dhcphostFree(&hostsfile->hosts[i]);
+            dhcphostFreeContent(&hostsfile->hosts[i]);
 
         g_free(hostsfile->hosts);
 
