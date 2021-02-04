@@ -1150,33 +1150,36 @@ static int
 xenParseXLNamespaceData(virConfPtr conf, virDomainDefPtr def)
 {
     virConfValuePtr list = virConfGetValue(conf, "device_model_args");
-    g_auto(GStrv) args = NULL;
-    size_t nargs;
+    virConfValuePtr next;
+    size_t nargs = 0;
     libxlDomainXmlNsDefPtr nsdata = NULL;
+    size_t n = 0;
 
-    if (list && list->type == VIR_CONF_LIST) {
-        list = list->list;
-        while (list) {
-            if ((list->type != VIR_CONF_STRING) || (list->str == NULL)) {
-                list = list->next;
-                continue;
-            }
-
-            virStringListAdd(&args, list->str);
-            list = list->next;
-        }
-    }
-
-    if (!args)
+    if (!list || list->type != VIR_CONF_LIST)
         return 0;
 
-    nargs = g_strv_length(args);
-    if (nargs > 0) {
-        nsdata = g_new0(libxlDomainXmlNsDef, 1);
+    list = list->list;
 
-        nsdata->args = g_steal_pointer(&args);
-        nsdata->num_args = nargs;
-        def->namespaceData = nsdata;
+    for (next = list; next; next = next->next) {
+        if (next->type != VIR_CONF_STRING || !next->str)
+            continue;
+
+        nargs++;
+    }
+
+    if (nargs == 0)
+        return 0;
+
+    nsdata = g_new0(libxlDomainXmlNsDef, 1);
+    def->namespaceData = nsdata;
+    nsdata->args = g_new0(char *, nargs + 1);
+    nsdata->num_args = nargs;
+
+    for (next = list; next; next = next->next) {
+        if (next->type != VIR_CONF_STRING || !next->str)
+            continue;
+
+        nsdata->args[n++] = g_strdup(next->str);
     }
 
     return 0;
