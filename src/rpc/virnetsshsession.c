@@ -113,7 +113,7 @@ struct _virNetSSHSession {
 };
 
 static void
-virNetSSHSessionAuthMethodsFree(virNetSSHSessionPtr sess)
+virNetSSHSessionAuthMethodsClear(virNetSSHSessionPtr sess)
 {
     size_t i;
 
@@ -149,7 +149,7 @@ virNetSSHSessionDispose(void *obj)
         libssh2_session_free(sess->session);
     }
 
-    virNetSSHSessionAuthMethodsFree(sess);
+    virNetSSHSessionAuthMethodsClear(sess);
 
     VIR_FREE(sess->channelCommand);
     VIR_FREE(sess->hostname);
@@ -971,7 +971,7 @@ void
 virNetSSHSessionAuthReset(virNetSSHSessionPtr sess)
 {
     virObjectLock(sess);
-    virNetSSHSessionAuthMethodsFree(sess);
+    virNetSSHSessionAuthMethodsClear(sess);
     virObjectUnlock(sess);
 }
 
