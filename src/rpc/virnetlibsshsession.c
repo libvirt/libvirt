@@ -109,25 +109,11 @@ struct _virNetLibsshSession {
 };
 
 static void
-virNetLibsshSessionAuthMethodsFree(virNetLibsshSessionPtr sess)
-{
-    size_t i;
-
-    for (i = 0; i < sess->nauths; i++) {
-        virSecureEraseString(sess->auths[i]->password);
-        g_free(sess->auths[i]->password);
-        VIR_FREE(sess->auths[i]->filename);
-        VIR_FREE(sess->auths[i]);
-    }
-
-    VIR_FREE(sess->auths);
-    sess->nauths = 0;
-}
-
-static void
 virNetLibsshSessionDispose(void *obj)
 {
     virNetLibsshSessionPtr sess = obj;
+    size_t i;
+
     VIR_DEBUG("sess=0x%p", sess);
 
     if (!sess)
@@ -144,7 +130,14 @@ virNetLibsshSessionDispose(void *obj)
         ssh_free(sess->session);
     }
 
-    virNetLibsshSessionAuthMethodsFree(sess);
+    for (i = 0; i < sess->nauths; i++) {
+        virSecureEraseString(sess->auths[i]->password);
+        VIR_FREE(sess->auths[i]->password);
+        VIR_FREE(sess->auths[i]->filename);
+        VIR_FREE(sess->auths[i]);
+    }
+
+    VIR_FREE(sess->auths);
 
     VIR_FREE(sess->channelCommand);
     VIR_FREE(sess->hostname);
