@@ -108,7 +108,7 @@ qemuDomainGetPreservedMountPath(virQEMUDriverConfigPtr cfg,
  * a) save all FSs mounted under /dev to @devPath
  * b) generate backup path for all the entries in a)
  *
- * Any of the return pointers can be NULL.
+ * Any of the return pointers can be NULL. Both arrays are NULL-terminated.
  *
  * Returns 0 on success, -1 otherwise (with error reported)
  */
@@ -119,18 +119,20 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfigPtr cfg,
                              char ***devSavePath,
                              size_t *ndevPath)
 {
-    char **paths = NULL, **mounts = NULL;
-    size_t i, j, nmounts;
+    g_auto(GStrv) mounts = NULL;
+    size_t nmounts = 0;
+    g_auto(GStrv) paths = NULL;
+    g_auto(GStrv) savePaths = NULL;
+    size_t i;
 
-    if (virFileGetMountSubtree(QEMU_PROC_MOUNTS, "/dev",
-                               &mounts, &nmounts) < 0)
-        goto error;
+    if (ndevPath)
+        *ndevPath = 0;
 
-    if (!nmounts) {
-        if (ndevPath)
-            *ndevPath = 0;
+    if (virFileGetMountSubtree(QEMU_PROC_MOUNTS, "/dev", &mounts, &nmounts) < 0)
+        return -1;
+
+    if (nmounts == 0)
         return 0;
-    }
 
     /* There can be nested mount points. For instance
      * /dev/shm/blah can be a mount point and /dev/shm too. It
@@ -142,7 +144,8 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfigPtr cfg,
      * just the first element. Think about it.
      */
     for (i = 1; i < nmounts; i++) {
-        j = i + 1;
+        size_t j = i + 1;
+
         while (j < nmounts) {
             char *c = STRSKIP(mounts[j], mounts[i]);
 
@@ -155,32 +158,33 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfigPtr cfg,
         }
     }
 
-    paths = g_new0(char *, nmounts);
+    /* mounts may not be NULL-terminated at this point, but we convert it into
+     * 'paths' which is NULL-terminated */
 
-    for (i = 0; i < nmounts; i++) {
-        if (!(paths[i] = qemuDomainGetPreservedMountPath(cfg, vm, mounts[i])))
-            goto error;
+    paths = g_new0(char *, nmounts + 1);
+
+    for (i = 0; i < nmounts; i++)
+        paths[i] = g_steal_pointer(&mounts[i]);
+
+    if (devSavePath) {
+        savePaths = g_new0(char *, nmounts + 1);
+
+        for (i = 0; i < nmounts; i++) {
+            if (!(savePaths[i] = qemuDomainGetPreservedMountPath(cfg, vm, paths[i])))
+                return -1;
+        }
     }
 
     if (devPath)
-        *devPath = mounts;
-    else
-        virStringListFreeCount(mounts, nmounts);
+        *devPath = g_steal_pointer(&paths);
 
     if (devSavePath)
-        *devSavePath = paths;
-    else
-        virStringListFreeCount(paths, nmounts);
+        *devSavePath = g_steal_pointer(&savePaths);
 
     if (ndevPath)
         *ndevPath = nmounts;
 
     return 0;
-
- error:
-    virStringListFreeCount(mounts, nmounts);
-    virStringListFreeCount(paths, nmounts);
-    return -1;
 }
 
 
