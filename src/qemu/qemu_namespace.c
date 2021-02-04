@@ -1362,14 +1362,20 @@ qemuNamespaceUnlinkPaths(virDomainObjPtr vm,
         const char *file = paths[i];
 
         if (STRPREFIX(file, QEMU_DEVPREFIX)) {
-            for (i = 0; i < ndevMountsPath; i++) {
-                if (STREQ(devMountsPath[i], "/dev"))
+            GStrv mount;
+            bool inSubmount = false;
+
+            for (mount = devMountsPath; *mount; mount++) {
+                if (STREQ(*mount, "/dev"))
                     continue;
-                if (STRPREFIX(file, devMountsPath[i]))
+
+                if (STRPREFIX(file, *mount)) {
+                    inSubmount = true;
                     break;
+                }
             }
 
-            if (i == ndevMountsPath &&
+            if (!inSubmount &&
                 virStringListAdd(&unlinkPaths, file) < 0)
                 return -1;
         }
