@@ -747,17 +747,6 @@ virStringIsEmpty(const char *str)
 }
 
 
-size_t virStringListLength(const char * const *strings)
-{
-    size_t i = 0;
-
-    while (strings && strings[i])
-        i++;
-
-    return i;
-}
-
-
 /**
  * virStringSortCompare:
  *

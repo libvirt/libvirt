@@ -112,8 +112,6 @@ int virStrcpy(char *dest, const char *src, size_t destbytes)
     G_GNUC_WARN_UNUSED_RESULT;
 #define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
 
-size_t virStringListLength(const char * const *strings);
-
 int virStringSortCompare(const void *a, const void *b);
 int virStringSortRevCompare(const void *a, const void *b);
 int virStringToUpper(char **dst, const char *src);

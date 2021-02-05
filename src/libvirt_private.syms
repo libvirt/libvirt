@@ -3242,7 +3242,6 @@ virStringIsEmpty;
 virStringIsPrintable;
 virStringListFreeCount;
 virStringListJoin;
-virStringListLength;
 virStringListMerge;
 virStringMatch;
 virStringMatchesNameSuffix;
