@@ -28,10 +28,6 @@ char **virStringSplitCount(const char *string,
                            size_t *tokcount)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
-char *virStringListJoin(const char **strings,
-                        const char *delim)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
 int virStringListMerge(char ***dst,
                        char ***src);
 

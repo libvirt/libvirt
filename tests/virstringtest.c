@@ -82,12 +82,6 @@ struct testSplitData {
 };
 
 
-struct testJoinData {
-    const char *string;
-    const char *delim;
-    const char **tokens;
-};
-
 static int testSplit(const void *args)
 {
     const struct testSplitData *data = args;
@@ -135,29 +129,6 @@ static int testSplit(const void *args)
     ret = 0;
  cleanup:
     g_strfreev(got);
-
-    return ret;
-}
-
-
-static int testJoin(const void *args)
-{
-    const struct testJoinData *data = args;
-    char *got;
-    int ret = -1;
-
-    if (!(got = virStringListJoin(data->tokens, data->delim))) {
-        VIR_DEBUG("Got no result");
-        return -1;
-    }
-    if (STRNEQ(got, data->string)) {
-        fprintf(stderr, "Mismatch '%s' vs '%s'\n", got, data->string);
-        goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    VIR_FREE(got);
 
     return ret;
 }
@@ -606,14 +577,7 @@ mymain(void)
             .max_tokens = max, \
             .tokens = toks, \
         }; \
-        struct testJoinData joinData = { \
-            .string = str, \
-            .delim = del, \
-            .tokens = toks, \
-        }; \
         if (virTestRun("Split " #str, testSplit, &splitData) < 0) \
-            ret = -1; \
-        if (virTestRun("Join " #str, testJoin, &joinData) < 0) \
             ret = -1; \
     } while (0)
 

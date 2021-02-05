@@ -35,12 +35,6 @@
 
 VIR_LOG_INIT("util.string");
 
-/*
- * The following virStringSplit & virStringListJoin methods
- * are derived from g_strsplit / g_strjoin in glib2,
- * also available under the LGPLv2+ license terms
- */
-
 /**
  * virStringSplitCount:
  *
@@ -57,36 +51,6 @@ virStringSplitCount(const char *string,
 
     *tokcount = g_strv_length(ret);
 
-    return ret;
-}
-
-
-/**
- * virStringListJoin:
- * @strings: a NULL-terminated array of strings to join
- * @delim: a string to insert between each of the strings
- *
- * Joins a number of strings together to form one long string, with the
- * @delim inserted between each of them. The returned string
- * should be freed with VIR_FREE().
- *
- * Returns: a newly-allocated string containing all of the strings joined
- *     together, with @delim between them
- */
-char *virStringListJoin(const char **strings,
-                        const char *delim)
-{
-    char *ret;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    while (*strings) {
-        virBufferAdd(&buf, *strings, -1);
-        if (*(strings+1))
-            virBufferAdd(&buf, delim, -1);
-        strings++;
-    }
-    ret = virBufferContentAndReset(&buf);
-    if (!ret)
-        ret = g_strdup("");
     return ret;
 }
 
