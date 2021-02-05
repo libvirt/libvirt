@@ -193,6 +193,7 @@
   <flag name='fsdev.createmode'/>
   <flag name='dc390'/>
   <flag name='am53c974'/>
+  <flag name='cpu-max'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100287</microcodeVersion>

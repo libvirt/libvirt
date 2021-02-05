@@ -30,7 +30,12 @@
         <value>off</value>
       </enum>
     </mode>
-    <mode name='maximum' supported='no'/>
+    <mode name='maximum' supported='yes'>
+      <enum name='maximumMigratable'>
+        <value>on</value>
+        <value>off</value>
+      </enum>
+    </mode>
     <mode name='host-model' supported='yes'>
       <model fallback='forbid'>gen15a-base</model>
       <feature policy='require' name='aen'/>

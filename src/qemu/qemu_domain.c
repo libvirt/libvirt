@@ -4049,12 +4049,14 @@ qemuDomainDefCPUPostParse(virDomainDefPtr def,
             break;
 
         case VIR_CPU_CACHE_MODE_PASSTHROUGH:
-            if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+            if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
+                def->cpu->mode != VIR_CPU_MODE_MAXIMUM) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("CPU cache mode '%s' can only be used with "
-                                 "'%s' CPUs"),
+                                 "'%s' / '%s' CPUs"),
                                virCPUCacheModeTypeToString(cache->mode),
-                               virCPUModeTypeToString(VIR_CPU_MODE_HOST_PASSTHROUGH));
+                               virCPUModeTypeToString(VIR_CPU_MODE_HOST_PASSTHROUGH),
+                               virCPUModeTypeToString(VIR_CPU_MODE_MAXIMUM));
                 return -1;
             }
 
@@ -4136,6 +4138,7 @@ qemuDomainDefCPUPostParse(virDomainDefPtr def,
 
     switch ((virCPUMode) def->cpu->mode) {
     case VIR_CPU_MODE_HOST_PASSTHROUGH:
+    case VIR_CPU_MODE_MAXIMUM:
         def->cpu->check = VIR_CPU_CHECK_NONE;
         break;
 
@@ -4151,7 +4154,6 @@ qemuDomainDefCPUPostParse(virDomainDefPtr def,
             def->cpu->check = VIR_CPU_CHECK_PARTIAL;
         break;
 
-    case VIR_CPU_MODE_MAXIMUM:
     case VIR_CPU_MODE_LAST:
         break;
     }
@@ -6304,6 +6306,7 @@ qemuDomainObjCheckCPUTaint(virQEMUDriverPtr driver,
 
     switch (obj->def->cpu->mode) {
     case VIR_CPU_MODE_HOST_PASSTHROUGH:
+    case VIR_CPU_MODE_MAXIMUM:
         if (incomingMigration)
             qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HOST_CPU, logCtxt);
         break;

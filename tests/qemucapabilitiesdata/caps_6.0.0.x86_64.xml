@@ -253,6 +253,7 @@
   <flag name='virtio-pmem-pci'/>
   <flag name='vhost-user-fs.bootindex'/>
   <flag name='vhost-user-blk'/>
+  <flag name='cpu-max'/>
   <version>5002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

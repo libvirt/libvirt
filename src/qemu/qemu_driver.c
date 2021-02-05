@@ -12314,6 +12314,8 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
         if (!cpu->model) {
             if (cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) {
                 cpu->model = g_strdup("host");
+            } else if (cpu->mode == VIR_CPU_MODE_MAXIMUM) {
+                cpu->model = g_strdup("max");
             } else {
                 virReportError(VIR_ERR_INVALID_ARG, "%s",
                                _("cpu parameter is missing a model name"));

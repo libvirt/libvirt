@@ -170,6 +170,7 @@
   <flag name='dc390'/>
   <flag name='am53c974'/>
   <flag name='vhost-user-blk'/>
+  <flag name='cpu-max'/>
   <version>2012050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900239</microcodeVersion>

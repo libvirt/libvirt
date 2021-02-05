@@ -6316,7 +6316,11 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
 
     switch ((virCPUMode) cpu->mode) {
     case VIR_CPU_MODE_HOST_PASSTHROUGH:
-        virBufferAddLit(buf, "host");
+    case VIR_CPU_MODE_MAXIMUM:
+        if (cpu->mode == VIR_CPU_MODE_MAXIMUM)
+            virBufferAddLit(buf, "max");
+        else
+            virBufferAddLit(buf, "host");
 
         if (def->os.arch == VIR_ARCH_ARMV7L &&
             driver->hostarch == VIR_ARCH_AARCH64) {
@@ -6356,7 +6360,6 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         virBufferAdd(buf, cpu->model, -1);
         break;
 
-    case VIR_CPU_MODE_MAXIMUM:
     case VIR_CPU_MODE_LAST:
         break;
     }
@@ -6601,7 +6604,8 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
         }
 
         if (hostOff &&
-            def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH &&
+            (def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH ||
+             def->cpu->mode == VIR_CPU_MODE_MAXIMUM) &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_CACHE))
             virBufferAddLit(&buf, ",host-cache-info=off");
 

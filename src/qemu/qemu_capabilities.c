@@ -2336,6 +2336,8 @@ virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
         return cpus && cpus->ncpus > 0;
 
     case VIR_CPU_MODE_MAXIMUM:
+        return virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MAX);
+
     case VIR_CPU_MODE_LAST:
         break;
     }
@@ -5980,6 +5982,18 @@ virQEMUCapsFillDomainCPUCaps(virQEMUCapsPtr qemuCaps,
                                      VIR_TRISTATE_SWITCH_ON);
         }
         VIR_DOMAIN_CAPS_ENUM_SET(domCaps->cpu.hostPassthroughMigratable,
+                                 VIR_TRISTATE_SWITCH_OFF);
+    }
+
+    if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
+                                      VIR_CPU_MODE_MAXIMUM,
+                                      domCaps->machine)) {
+        domCaps->cpu.maximum = true;
+
+        domCaps->cpu.maximumMigratable.report = true;
+        VIR_DOMAIN_CAPS_ENUM_SET(domCaps->cpu.maximumMigratable,
+                                 VIR_TRISTATE_SWITCH_ON);
+        VIR_DOMAIN_CAPS_ENUM_SET(domCaps->cpu.maximumMigratable,
                                  VIR_TRISTATE_SWITCH_OFF);
     }
 

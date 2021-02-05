@@ -252,6 +252,7 @@
   <flag name='am53c974'/>
   <flag name='virtio-pmem-pci'/>
   <flag name='vhost-user-blk'/>
+  <flag name='cpu-max'/>
   <version>5002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>

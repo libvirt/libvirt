@@ -255,10 +255,11 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
 
         case VIR_DOMAIN_FEATURE_KVM:
             if (def->kvm_features[VIR_DOMAIN_KVM_DEDICATED] == VIR_TRISTATE_SWITCH_ON &&
-                (!def->cpu || def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH)) {
+                (!def->cpu || (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
+                               def->cpu->mode != VIR_CPU_MODE_MAXIMUM))) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("kvm-hint-dedicated=on is only applicable "
-                                 "for cpu host-passthrough"));
+                                 "for cpu host-passthrough / maximum"));
                 return -1;
             }
             break;
@@ -383,7 +384,7 @@ qemuValidateDomainDefCpu(virQEMUDriverPtr driver,
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MIGRATABLE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Migratable attribute for host-passthrough "
-                             "CPU is not supported by QEMU binary"));
+                             "CPU is not supported by this QEMU binary"));
             return -1;
         }
         break;
@@ -396,7 +397,15 @@ qemuValidateDomainDefCpu(virQEMUDriverPtr driver,
          * CUSTOM.
          */
         break;
+
     case VIR_CPU_MODE_MAXIMUM:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MAX)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("maximum CPU is not supported by QEMU binary"));
+            return -1;
+        }
+        break;
+
     case VIR_CPU_MODE_CUSTOM:
     case VIR_CPU_MODE_LAST:
         break;

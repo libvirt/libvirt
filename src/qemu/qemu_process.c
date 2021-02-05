@@ -6156,8 +6156,9 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
     if (virCPUConvertLegacy(hostarch, def->cpu) < 0)
         return -1;
 
-    /* nothing to update for host-passthrough */
-    if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+    /* nothing to update for host-passthrough / maximum */
+    if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
+        def->cpu->mode != VIR_CPU_MODE_MAXIMUM) {
         g_autoptr(virDomainCapsCPUModels) cpuModels = NULL;
 
         if (def->cpu->check == VIR_CPU_CHECK_PARTIAL &&
@@ -8055,7 +8056,8 @@ qemuProcessRefreshCPUMigratability(virQEMUDriverPtr driver,
     bool migratable;
     int rc;
 
-    if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH)
+    if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
+        def->cpu->mode != VIR_CPU_MODE_MAXIMUM)
         return 0;
 
     /* If the cpu.migratable capability is present, the migratable attribute

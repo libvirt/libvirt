@@ -145,6 +145,7 @@
   <flag name='migration-param.xbzrle-cache-size'/>
   <flag name='fsdev.createmode'/>
   <flag name='vhost-user-blk'/>
+  <flag name='cpu-max'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100240</microcodeVersion>

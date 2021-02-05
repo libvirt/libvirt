@@ -1,1 +1,1 @@
-unsupported configuration: CPU cache mode 'passthrough' can only be used with 'host-passthrough' CPUs
+unsupported configuration: CPU cache mode 'passthrough' can only be used with 'host-passthrough' / 'maximum' CPUs
