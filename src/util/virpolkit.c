@@ -75,7 +75,7 @@ int virPolkitCheckAuth(const char *actionid,
     gboolean is_authorized;
     gboolean is_challenge;
     bool is_dismissed = false;
-    size_t i;
+    const char **next;
 
     if (!(sysbus = virGDBusGetSystemBus()))
         return -1;
@@ -90,8 +90,15 @@ int virPolkitCheckAuth(const char *actionid,
     gprocess = g_variant_builder_end(&builder);
 
     g_variant_builder_init(&builder, G_VARIANT_TYPE("a{ss}"));
-    for (i = 0; i < virStringListLength(details); i += 2)
-        g_variant_builder_add(&builder, "{ss}", details[i], details[i + 1]);
+
+    if (details) {
+        for (next = details; *next; next++) {
+            const char *detail1 = *(next++);
+            const char *detail2 = *next;
+            g_variant_builder_add(&builder, "{ss}", detail1, detail2);
+        }
+    }
+
     gdetails = g_variant_builder_end(&builder);
 
     message = g_variant_new("((s@a{sv})s@a{ss}us)",
