@@ -37,11 +37,6 @@ char *virStringListJoin(const char **strings,
                         const char *delim)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int virStringListAdd(char ***strings,
-                     const char *item);
-void virStringListRemove(char ***strings,
-                         const char *item);
-
 int virStringListMerge(char ***dst,
                        char ***src);
 

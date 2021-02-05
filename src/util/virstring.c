@@ -163,67 +163,6 @@ char *virStringListJoin(const char **strings,
 
 
 /**
- * virStringListAdd:
- * @strings: a NULL-terminated array of strings
- * @item: string to add
- *
- * Appends @item into string list @strings. If *@strings is not
- * allocated yet new string list is created.
- *
- * Returns: 0 on success,
- *         -1 otherwise
- */
-int
-virStringListAdd(char ***strings,
-                 const char *item)
-{
-    size_t i = virStringListLength((const char **) *strings);
-
-    if (VIR_EXPAND_N(*strings, i, 2) < 0)
-        return -1;
-
-    (*strings)[i - 2] = g_strdup(item);
-
-    return 0;
-}
-
-
-/**
- * virStringListRemove:
- * @strings: a NULL-terminated array of strings
- * @item: string to remove
- *
- * Remove every occurrence of @item in list of @strings.
- */
-void
-virStringListRemove(char ***strings,
-                    const char *item)
-{
-    size_t r, w = 0;
-
-    if (!strings || !*strings)
-        return;
-
-    for (r = 0; (*strings)[r]; r++) {
-        if (STREQ((*strings)[r], item)) {
-            VIR_FREE((*strings)[r]);
-            continue;
-        }
-        if (r != w)
-            (*strings)[w] = (*strings)[r];
-        w++;
-    }
-
-    if (w == 0) {
-        VIR_FREE(*strings);
-    } else {
-        (*strings)[w] = NULL;
-        ignore_value(VIR_REALLOC_N(*strings, w + 1));
-    }
-}
-
-
-/**
  * virStringListMerge:
  * @dst: a NULL-terminated array of strings to expand
  * @src: a NULL-terminated array of strings

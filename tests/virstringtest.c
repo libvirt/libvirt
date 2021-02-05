@@ -163,74 +163,6 @@ static int testJoin(const void *args)
 }
 
 
-static int testAdd(const void *args)
-{
-    const struct testJoinData *data = args;
-    char **list = NULL;
-    char *got = NULL;
-    int ret = -1;
-    size_t i;
-
-    for (i = 0; data->tokens[i]; i++) {
-        if (virStringListAdd(&list, data->tokens[i]) < 0)
-            goto cleanup;
-    }
-
-    if (!list)
-        list = g_new0(char *, 1);
-
-    if (!(got = virStringListJoin((const char **)list, data->delim))) {
-        VIR_DEBUG("Got no result");
-        goto cleanup;
-    }
-
-    if (STRNEQ(got, data->string)) {
-        fprintf(stderr, "Mismatch '%s' vs '%s'\n", got, data->string);
-        goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    g_strfreev(list);
-    VIR_FREE(got);
-    return ret;
-}
-
-
-static int testRemove(const void *args)
-{
-    const struct testSplitData *data = args;
-    char **list = NULL;
-    size_t ntokens;
-    size_t i;
-    int ret = -1;
-
-    if (!(list = virStringSplitCount(data->string, data->delim,
-                                     data->max_tokens, &ntokens))) {
-        VIR_DEBUG("Got no tokens at all");
-        return -1;
-    }
-
-    for (i = 0; data->tokens[i]; i++) {
-        virStringListRemove(&list, data->tokens[i]);
-        if (virStringListHasString((const char **) list, data->tokens[i])) {
-            fprintf(stderr, "Not removed %s", data->tokens[i]);
-            goto cleanup;
-        }
-    }
-
-    if (list && list[0]) {
-        fprintf(stderr, "Not removed all tokens: %s", list[0]);
-        goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    g_strfreev(list);
-    return ret;
-}
-
-
 static int
 testStringSortCompare(const void *opaque G_GNUC_UNUSED)
 {
@@ -682,10 +614,6 @@ mymain(void)
         if (virTestRun("Split " #str, testSplit, &splitData) < 0) \
             ret = -1; \
         if (virTestRun("Join " #str, testJoin, &joinData) < 0) \
-            ret = -1; \
-        if (virTestRun("Add " #str, testAdd, &joinData) < 0) \
-            ret = -1; \
-        if (virTestRun("Remove " #str, testRemove, &splitData) < 0) \
             ret = -1; \
     } while (0)
 
