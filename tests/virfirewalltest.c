@@ -108,22 +108,10 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
         char *item = NULL;
         bool isAdd = false;
         bool doError = false;
-        size_t i;
 
         g_variant_get(params, "(&sas)", &type, &iter);
 
         nargs = g_variant_iter_n_children(iter);
-
-        while (g_variant_iter_loop(iter, "s", &item)) {
-            /* Fake failure on the command with this IP addr */
-            if (STREQ(item, "-A")) {
-                isAdd = true;
-            } else if (isAdd && STREQ(item, "192.168.122.255")) {
-                doError = true;
-            }
-
-            virStringListAdd(&args, item);
-        }
 
         if (fwBuf) {
             if (STREQ(type, "ipv4"))
@@ -134,10 +122,19 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
                 virBufferAddLit(fwBuf, EBTABLES_PATH);
         }
 
-        for (i = 0; i < nargs; i++) {
+        while (g_variant_iter_loop(iter, "s", &item)) {
+            /* Fake failure on the command with this IP addr */
+            if (STREQ(item, "-A")) {
+                isAdd = true;
+            } else if (isAdd && STREQ(item, "192.168.122.255")) {
+                doError = true;
+            }
+
+            virStringListAdd(&args, item);
+
             if (fwBuf) {
                 virBufferAddLit(fwBuf, " ");
-                virBufferEscapeShell(fwBuf, args[i]);
+                virBufferEscapeShell(fwBuf, item);
             }
         }
 
