@@ -103,7 +103,7 @@ static int virLoginShellGetShellArgv(virConfPtr conf,
         (*shargv)[0] = g_strdup("/bin/sh");
         *shargvlen = 1;
     } else {
-        *shargvlen = virStringListLength((const char *const *)*shargv);
+        *shargvlen = g_strv_length(*shargv);
     }
     return 0;
 }

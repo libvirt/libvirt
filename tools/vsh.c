@@ -2676,7 +2676,7 @@ vshCompleterFilter(char ***list,
     if (!list || !*list)
         return 0;
 
-    list_len = virStringListLength((const char **) *list);
+    list_len = g_strv_length(*list);
     newList = g_new0(char *, list_len + 1);
 
     for (i = 0; i < list_len; i++) {

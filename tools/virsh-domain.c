@@ -14391,7 +14391,7 @@ cmdSetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
         if (!(keys = virStringSplit(buffer, "\n", -1)))
             goto cleanup;
 
-        nkeys = virStringListLength((const char **) keys);
+        nkeys = g_strv_length(keys);
         if (nkeys == 0) {
             vshError(ctl, _("File %s contains no keys"), from);
             goto cleanup;

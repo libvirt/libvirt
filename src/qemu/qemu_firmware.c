@@ -1191,7 +1191,10 @@ qemuFirmwareFetchParsedConfigs(bool privileged,
     if (qemuFirmwareFetchConfigs(&paths, privileged) < 0)
         return -1;
 
-    npaths = virStringListLength((const char **)paths);
+    if (!paths)
+        return 0;
+
+    npaths = g_strv_length(paths);
 
     firmwares = g_new0(qemuFirmwarePtr, npaths);
 

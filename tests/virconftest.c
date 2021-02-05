@@ -394,7 +394,7 @@ static int testConfParseStringList(const void *opaque G_GNUC_UNUSED)
     if (virConfGetValueStringList(conf, "string_list", false, &str) < 0)
         goto cleanup;
 
-    if (virStringListLength((const char *const*)str) != 2) {
+    if (!str || g_strv_length(str) != 2) {
         fprintf(stderr, "expected a 2 element list\n");
         goto cleanup;
     }
@@ -418,7 +418,7 @@ static int testConfParseStringList(const void *opaque G_GNUC_UNUSED)
     if (virConfGetValueStringList(conf, "string", true, &str) < 0)
         goto cleanup;
 
-    if (virStringListLength((const char *const*)str) != 1) {
+    if (!str || g_strv_length(str) != 1) {
         fprintf(stderr, "expected a 1 element list\n");
         goto cleanup;
     }

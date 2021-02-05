@@ -1325,7 +1325,7 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     result = virConnectBaselineCPU(priv->conn, (const char **)list,
-                                   virStringListLength((const char **)list),
+                                   g_strv_length(list),
                                    flags);
 
     if (result) {
@@ -1798,7 +1798,7 @@ cmdHypervisorCPUBaseline(vshControl *ctl,
     result = virConnectBaselineHypervisorCPU(priv->conn, emulator, arch,
                                              machine, virttype,
                                              (const char **)list,
-                                             virStringListLength((const char **)list),
+                                             g_strv_length(list),
                                              flags);
 
     if (result) {

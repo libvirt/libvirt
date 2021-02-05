@@ -182,8 +182,8 @@ virStringListMerge(char ***dst,
     if (!src || !*src)
         return 0;
 
-    dst_len = virStringListLength((const char **) *dst);
-    src_len = virStringListLength((const char **) *src);
+    dst_len = g_strv_length(*dst);
+    src_len = g_strv_length(*src);
 
     if (VIR_REALLOC_N(*dst, dst_len + src_len + 1) < 0)
         return -1;

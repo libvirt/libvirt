@@ -648,7 +648,7 @@ virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfigPtr cfg,
         }
         VIR_FREE(cfg->hugetlbfs);
 
-        cfg->nhugetlbfs = virStringListLength((const char *const *)hugetlbfs);
+        cfg->nhugetlbfs = g_strv_length(hugetlbfs);
         if (hugetlbfs[0])
             cfg->hugetlbfs = g_new0(virHugeTLBFS, cfg->nhugetlbfs);
 
@@ -847,7 +847,7 @@ virQEMUDriverConfigLoadNVRAMEntry(virQEMUDriverConfigPtr cfg,
             return 0;
         }
 
-        cfg->nfirmwares = virStringListLength((const char *const *)nvram);
+        cfg->nfirmwares = g_strv_length(nvram);
         cfg->firmwares = g_new0(virFirmwarePtr, cfg->nfirmwares);
 
         for (i = 0; nvram[i] != NULL; i++) {

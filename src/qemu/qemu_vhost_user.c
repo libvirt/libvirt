@@ -250,8 +250,10 @@ qemuVhostUserFetchParsedConfigs(bool privileged,
     if (qemuVhostUserFetchConfigs(&paths, privileged) < 0)
         return -1;
 
-    npaths = virStringListLength((const char **)paths);
+    if (!paths)
+        return 0;
 
+    npaths = g_strv_length(paths);
     vus = g_new0(qemuVhostUserPtr, npaths);
 
     for (i = 0; i < npaths; i++) {

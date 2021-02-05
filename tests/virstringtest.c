@@ -243,10 +243,10 @@ testStringSearch(const void *opaque)
             goto cleanup;
         }
 
-        if (virStringListLength((const char * const *)matches) != nmatches) {
-            fprintf(stderr, "expected %zu matches on %s but got %zd matches\n",
+        if (g_strv_length(matches) != nmatches) {
+            fprintf(stderr, "expected %zu matches on %s but got %u matches\n",
                     data->expectNMatches, data->str,
-                    virStringListLength((const char * const *)matches));
+                    g_strv_length(matches));
             goto cleanup;
         }
 

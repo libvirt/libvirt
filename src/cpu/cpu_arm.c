@@ -635,7 +635,7 @@ virCPUarmDecode(virCPUDefPtr cpu,
         cpu->vendor = g_strdup(vendor->name);
 
     if (cpuData->features) {
-        cpu->nfeatures = virStringListLength((const char **)cpuData->features);
+        cpu->nfeatures = g_strv_length(cpuData->features);
         cpu->features = g_new0(virCPUFeatureDef, cpu->nfeatures);
 
         for (i = 0; i < cpu->nfeatures; i++) {
