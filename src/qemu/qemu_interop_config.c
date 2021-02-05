@@ -94,7 +94,9 @@ qemuInteropFetchConfigs(const char *name,
     g_autofree char *sysLocation = virFileBuildPath(QEMU_SYSTEM_LOCATION, name, NULL);
     g_autofree char *etcLocation = virFileBuildPath(QEMU_ETC_LOCATION, name, NULL);
     g_autofree virHashKeyValuePairPtr pairs = NULL;
+    size_t npairs;
     virHashKeyValuePairPtr tmp = NULL;
+    size_t nconfigs = 0;
 
     *configs = NULL;
 
@@ -132,11 +134,13 @@ qemuInteropFetchConfigs(const char *name,
      * where each filename (as key) has the highest priority full pathname
      * associated with it. */
 
-    if (virHashSize(files) == 0)
+    if (!(pairs = virHashGetItems(files, &npairs, true)))
+        return -1;
+
+    if (npairs == 0)
         return 0;
 
-    if (!(pairs = virHashGetItems(files, NULL, true)))
-        return -1;
+    *configs = g_new0(char *, npairs + 1);
 
     for (tmp = pairs; tmp->key; tmp++) {
         const char *path = tmp->value;
@@ -158,8 +162,7 @@ qemuInteropFetchConfigs(const char *name,
             continue;
         }
 
-        if (virStringListAdd(configs, path) < 0)
-            return -1;
+        (*configs)[nconfigs++] = g_strdup(path);
     }
 
     return 0;
