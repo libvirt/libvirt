@@ -575,6 +575,7 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
         return 0;
     }
 
+    virStringTrimOptionalNewline(*ifname);
     if (virNetDevOpenvswitchMaybeUnescapeReply(*ifname) < 0) {
         VIR_FREE(*ifname);
         return -1;
