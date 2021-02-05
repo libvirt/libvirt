@@ -330,7 +330,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
     esxVI_##_type##_Deserialize(xmlNodePtr node, esxVI_##_type **number) \
     { \
         int result = -1; \
-        char *string; \
+        g_autofree char *string = NULL; \
         long long value; \
  \
         if (!number || *number) { \
@@ -374,8 +374,6 @@ VIR_LOG_INIT("esx.esx_vi_types");
         if (result < 0) { \
             esxVI_##_type##_Free(number); \
         } \
- \
-        VIR_FREE(string); \
  \
         return result; \
     }
@@ -703,7 +701,7 @@ esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
                           esxVI_Type *actualType)
 {
     int result = -1;
-    char *type = NULL;
+    g_autofree char *type = NULL;
 
     if (!actualType || *actualType != esxVI_Type_Undefined) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -732,8 +730,6 @@ esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
     result = 0;
 
  cleanup:
-    VIR_FREE(type);
-
     return result;
 }
 

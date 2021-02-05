@@ -207,7 +207,7 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
                            char **directoryName, char **directoryAndFileName)
 {
     int result = -1;
-    char *copyOfDatastorePath = NULL;
+    g_autofree char *copyOfDatastorePath = NULL;
     char *tmp = NULL;
     char *saveptr = NULL;
     char *preliminaryDatastoreName = NULL;
@@ -269,8 +269,6 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
         if (directoryAndFileName)
             VIR_FREE(*directoryAndFileName);
     }
-
-    VIR_FREE(copyOfDatastorePath);
 
     return result;
 }
@@ -429,8 +427,8 @@ esxUtil_ReplaceSpecialWindowsPathChars(char *string)
 char *
 esxUtil_EscapeDatastoreItem(const char *string)
 {
-    char *replaced;
-    char *escaped1;
+    g_autofree char *replaced = NULL;
+    g_autofree char *escaped1 = NULL;
     char *escaped2 = NULL;
 
     replaced = g_strdup(string);
@@ -445,9 +443,6 @@ esxUtil_EscapeDatastoreItem(const char *string)
     escaped2 = esxUtil_EscapeBase64(escaped1);
 
  cleanup:
-    VIR_FREE(replaced);
-    VIR_FREE(escaped1);
-
     return escaped2;
 }
 

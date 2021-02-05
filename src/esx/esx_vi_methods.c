@@ -106,7 +106,7 @@
         int result = -1; \
         const char *methodName = #_name; \
         g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER; \
-        char *request = NULL; \
+        g_autofree char *request = NULL; \
         esxVI_Response *response = NULL; \
  \
         ESX_VI__METHOD__PARAMETER__THIS__##_this_from_service \
@@ -136,7 +136,6 @@
         result = 0; \
  \
       cleanup: \
-        VIR_FREE(request); \
         esxVI_Response_Free(&response); \
  \
         return result; \

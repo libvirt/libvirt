@@ -672,8 +672,8 @@ esxStorageVolLookupByName(virStoragePoolPtr pool,
 {
     virStorageVolPtr volume = NULL;
     esxPrivate *priv = pool->conn->privateData;
-    char *datastorePath = NULL;
-    char *key = NULL;
+    g_autofree char *datastorePath = NULL;
+    g_autofree char *key = NULL;
 
     datastorePath = g_strdup_printf("[%s] %s", pool->name, name);
 
@@ -686,9 +686,6 @@ esxStorageVolLookupByName(virStoragePoolPtr pool,
                               &esxStorageBackendVMFS, NULL);
 
  cleanup:
-    VIR_FREE(datastorePath);
-    VIR_FREE(key);
-
     return volume;
 }
 
@@ -699,9 +696,9 @@ esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
 {
     virStorageVolPtr volume = NULL;
     esxPrivate *priv = conn->privateData;
-    char *datastoreName = NULL;
-    char *directoryAndFileName = NULL;
-    char *key = NULL;
+    g_autofree char *datastoreName = NULL;
+    g_autofree char *directoryAndFileName = NULL;
+    g_autofree char *key = NULL;
 
     if (esxUtil_ParseDatastorePath(path, &datastoreName, NULL,
                                    &directoryAndFileName) < 0) {
@@ -717,10 +714,6 @@ esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
                               &esxStorageBackendVMFS, NULL);
 
  cleanup:
-    VIR_FREE(datastoreName);
-    VIR_FREE(directoryAndFileName);
-    VIR_FREE(key);
-
     return volume;
 }
 
@@ -864,20 +857,20 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
     esxPrivate *priv = pool->conn->privateData;
     virStoragePoolDef poolDef;
     char *tmp;
-    char *unescapedDatastorePath = NULL;
-    char *unescapedDirectoryName = NULL;
-    char *unescapedDirectoryAndFileName = NULL;
-    char *directoryName = NULL;
-    char *fileName = NULL;
-    char *datastorePathWithoutFileName = NULL;
-    char *datastorePath = NULL;
+    g_autofree char *unescapedDatastorePath = NULL;
+    g_autofree char *unescapedDirectoryName = NULL;
+    g_autofree char *unescapedDirectoryAndFileName = NULL;
+    g_autofree char *directoryName = NULL;
+    g_autofree char *fileName = NULL;
+    g_autofree char *datastorePathWithoutFileName = NULL;
+    g_autofree char *datastorePath = NULL;
     esxVI_FileInfo *fileInfo = NULL;
     esxVI_FileBackedVirtualDiskSpec *virtualDiskSpec = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
-    char *uuid_string = NULL;
-    char *key = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
+    g_autofree char *uuid_string = NULL;
+    g_autofree char *key = NULL;
     g_autoptr(virStorageVolDef) def = NULL;
 
     virCheckFlags(0, NULL);
@@ -1045,20 +1038,9 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
         virtualDiskSpec->adapterType = NULL;
     }
 
-    VIR_FREE(unescapedDatastorePath);
-    VIR_FREE(unescapedDirectoryName);
-    VIR_FREE(unescapedDirectoryAndFileName);
-    VIR_FREE(directoryName);
-    VIR_FREE(fileName);
-    VIR_FREE(datastorePathWithoutFileName);
-    VIR_FREE(datastorePath);
     esxVI_FileInfo_Free(&fileInfo);
     esxVI_FileBackedVirtualDiskSpec_Free(&virtualDiskSpec);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-    VIR_FREE(uuid_string);
-    VIR_FREE(key);
-
     return volume;
 }
 
@@ -1073,21 +1055,21 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     virStorageVolPtr volume = NULL;
     esxPrivate *priv = pool->conn->privateData;
     virStoragePoolDef poolDef;
-    char *sourceDatastorePath = NULL;
+    g_autofree char *sourceDatastorePath = NULL;
     char *tmp;
-    char *unescapedDatastorePath = NULL;
-    char *unescapedDirectoryName = NULL;
-    char *unescapedDirectoryAndFileName = NULL;
-    char *directoryName = NULL;
-    char *fileName = NULL;
-    char *datastorePathWithoutFileName = NULL;
-    char *datastorePath = NULL;
+    g_autofree char *unescapedDatastorePath = NULL;
+    g_autofree char *unescapedDirectoryName = NULL;
+    g_autofree char *unescapedDirectoryAndFileName = NULL;
+    g_autofree char *directoryName = NULL;
+    g_autofree char *fileName = NULL;
+    g_autofree char *datastorePathWithoutFileName = NULL;
+    g_autofree char *datastorePath = NULL;
     esxVI_FileInfo *fileInfo = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
-    char *uuid_string = NULL;
-    char *key = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
+    g_autofree char *uuid_string = NULL;
+    g_autofree char *key = NULL;
     g_autoptr(virStorageVolDef) def = NULL;
 
     virCheckFlags(0, NULL);
@@ -1219,20 +1201,8 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
                               &esxStorageBackendVMFS, NULL);
 
  cleanup:
-    VIR_FREE(sourceDatastorePath);
-    VIR_FREE(unescapedDatastorePath);
-    VIR_FREE(unescapedDirectoryName);
-    VIR_FREE(unescapedDirectoryAndFileName);
-    VIR_FREE(directoryName);
-    VIR_FREE(fileName);
-    VIR_FREE(datastorePathWithoutFileName);
-    VIR_FREE(datastorePath);
     esxVI_FileInfo_Free(&fileInfo);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-    VIR_FREE(uuid_string);
-    VIR_FREE(key);
-
     return volume;
 }
 
@@ -1243,10 +1213,10 @@ esxStorageVolDelete(virStorageVolPtr volume, unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = volume->conn->privateData;
-    char *datastorePath = NULL;
+    g_autofree char *datastorePath = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
 
     virCheckFlags(0, -1);
 
@@ -1271,10 +1241,7 @@ esxStorageVolDelete(virStorageVolPtr volume, unsigned int flags)
     result = 0;
 
  cleanup:
-    VIR_FREE(datastorePath);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return result;
 }
 
@@ -1285,10 +1252,10 @@ esxStorageVolWipe(virStorageVolPtr volume, unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = volume->conn->privateData;
-    char *datastorePath = NULL;
+    g_autofree char *datastorePath = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
 
     virCheckFlags(0, -1);
 
@@ -1313,10 +1280,7 @@ esxStorageVolWipe(virStorageVolPtr volume, unsigned int flags)
     result = 0;
 
  cleanup:
-    VIR_FREE(datastorePath);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return result;
 }
 
@@ -1328,7 +1292,7 @@ esxStorageVolGetInfo(virStorageVolPtr volume,
 {
     int result = -1;
     esxPrivate *priv = volume->conn->privateData;
-    char *datastorePath = NULL;
+    g_autofree char *datastorePath = NULL;
     esxVI_FileInfo *fileInfo = NULL;
     esxVI_VmDiskFileInfo *vmDiskFileInfo = NULL;
 
@@ -1358,7 +1322,6 @@ esxStorageVolGetInfo(virStorageVolPtr volume,
     result = 0;
 
  cleanup:
-    VIR_FREE(datastorePath);
     esxVI_FileInfo_Free(&fileInfo);
 
     return result;
@@ -1372,7 +1335,7 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
 {
     esxPrivate *priv = volume->conn->privateData;
     virStoragePoolDef pool;
-    char *datastorePath = NULL;
+    g_autofree char *datastorePath = NULL;
     esxVI_FileInfo *fileInfo = NULL;
     esxVI_VmDiskFileInfo *vmDiskFileInfo = NULL;
     esxVI_IsoImageFileInfo *isoImageFileInfo = NULL;
@@ -1438,7 +1401,6 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
     xml = virStorageVolDefFormat(&pool, &def);
 
  cleanup:
-    VIR_FREE(datastorePath);
     esxVI_FileInfo_Free(&fileInfo);
     VIR_FREE(def.key);
 

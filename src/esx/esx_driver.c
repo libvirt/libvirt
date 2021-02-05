@@ -139,8 +139,8 @@ esxParseVMXFileName(const char *fileName,
     char *datastoreName;
     char *tmp;
     char *saveptr;
-    char *strippedFileName = NULL;
-    char *copyOfFileName = NULL;
+    g_autofree char *strippedFileName = NULL;
+    g_autofree char *copyOfFileName = NULL;
     char *directoryAndFileName;
     int ret = -1;
 
@@ -253,8 +253,6 @@ esxParseVMXFileName(const char *fileName,
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&datastoreList);
     esxVI_DatastoreHostMount_Free(&hostMount);
-    VIR_FREE(strippedFileName);
-    VIR_FREE(copyOfFileName);
 
     return ret;
 }
@@ -280,8 +278,8 @@ esxFormatVMXFileName(const char *fileName, void *opaque)
     bool success = false;
     char *result = NULL;
     esxVMX_Data *data = opaque;
-    char *datastoreName = NULL;
-    char *directoryAndFileName = NULL;
+    g_autofree char *datastoreName = NULL;
+    g_autofree char *directoryAndFileName = NULL;
     esxVI_ObjectContent *datastore = NULL;
     esxVI_DatastoreHostMount *hostMount = NULL;
     char separator = '/';
@@ -349,8 +347,6 @@ esxFormatVMXFileName(const char *fileName, void *opaque)
     if (! success)
         VIR_FREE(result);
 
-    VIR_FREE(datastoreName);
-    VIR_FREE(directoryAndFileName);
     esxVI_ObjectContent_Free(&datastore);
     esxVI_DatastoreHostMount_Free(&hostMount);
 
@@ -613,9 +609,9 @@ esxConnectToHost(esxPrivate *priv,
 {
     int result = -1;
     g_autofree char *ipAddress = NULL;
-    char *username = NULL;
-    char *password = NULL;
-    char *url = NULL;
+    g_autofree char *username = NULL;
+    g_autofree char *password = NULL;
+    g_autofree char *url = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_Boolean inMaintenanceMode = esxVI_Boolean_Undefined;
@@ -683,9 +679,6 @@ esxConnectToHost(esxPrivate *priv,
     result = 0;
 
  cleanup:
-    VIR_FREE(username);
-    VIR_FREE(password);
-    VIR_FREE(url);
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&hostSystem);
 
@@ -703,9 +696,9 @@ esxConnectToVCenter(esxPrivate *priv,
 {
     int result = -1;
     g_autofree char *ipAddress = NULL;
-    char *username = NULL;
-    char *password = NULL;
-    char *url = NULL;
+    g_autofree char *username = NULL;
+    g_autofree char *password = NULL;
+    g_autofree char *url = NULL;
 
     if (!hostSystemIPAddress &&
         (!priv->parsedUri->path || STREQ(priv->parsedUri->path, "/"))) {
@@ -761,10 +754,6 @@ esxConnectToVCenter(esxPrivate *priv,
     result = 0;
 
  cleanup:
-    VIR_FREE(username);
-    VIR_FREE(password);
-    VIR_FREE(url);
-
     return result;
 }
 
@@ -822,7 +811,7 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
 {
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
     esxPrivate *priv = NULL;
-    char *potentialVCenterIPAddress = NULL;
+    g_autofree char *potentialVCenterIPAddress = NULL;
     g_autofree char *vCenterIPAddress = NULL;
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -938,8 +927,6 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
 
  cleanup:
     esxFreePrivate(&priv);
-    VIR_FREE(potentialVCenterIPAddress);
-
     return result;
 }
 
@@ -1472,7 +1459,7 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachinePowerState powerState;
     int id = -1;
-    char *name = NULL;
+    g_autofree char *name = NULL;
     virDomainPtr domain = NULL;
 
     if (esxVI_EnsureSession(priv->primary) < 0)
@@ -1498,8 +1485,6 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
-    VIR_FREE(name);
-
     return domain;
 }
 
@@ -1559,7 +1544,7 @@ esxDomainSuspend(virDomainPtr domain)
     esxVI_VirtualMachinePowerState powerState;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return -1;
@@ -1599,8 +1584,6 @@ esxDomainSuspend(virDomainPtr domain)
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return result;
 }
 
@@ -1616,7 +1599,7 @@ esxDomainResume(virDomainPtr domain)
     esxVI_VirtualMachinePowerState powerState;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return -1;
@@ -1656,8 +1639,6 @@ esxDomainResume(virDomainPtr domain)
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return result;
 }
 
@@ -1767,7 +1748,7 @@ esxDomainDestroyFlags(virDomainPtr domain,
     esxVI_VirtualMachinePowerState powerState;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
 
     virCheckFlags(0, -1);
 
@@ -1816,8 +1797,6 @@ esxDomainDestroyFlags(virDomainPtr domain,
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return result;
 }
 
@@ -1902,7 +1881,7 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     esxVI_VirtualMachineConfigSpec *spec = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return -1;
@@ -1954,8 +1933,6 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineConfigSpec_Free(&spec);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return result;
 }
 
@@ -1972,7 +1949,7 @@ esxDomainSetMemoryFlags(virDomainPtr domain,
     esxVI_VirtualMachineConfigSpec *spec = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
 
     virCheckFlags(0, -1);
 
@@ -2013,8 +1990,6 @@ esxDomainSetMemoryFlags(virDomainPtr domain,
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineConfigSpec_Free(&spec);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return result;
 }
 
@@ -2434,7 +2409,7 @@ esxDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
     esxVI_VirtualMachineConfigSpec *spec = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE, -1);
 
@@ -2492,8 +2467,6 @@ esxDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineConfigSpec_Free(&spec);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return result;
 }
 
@@ -2574,14 +2547,14 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachinePowerState powerState;
     int id;
-    char *moref = NULL;
+    g_autofree char *moref = NULL;
     char *vmPathName = NULL;
-    char *datastoreName = NULL;
-    char *directoryName = NULL;
-    char *directoryAndFileName = NULL;
+    g_autofree char *datastoreName = NULL;
+    g_autofree char *directoryName = NULL;
+    g_autofree char *directoryAndFileName = NULL;
     g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
-    char *url = NULL;
-    char *vmx = NULL;
+    g_autofree char *url = NULL;
+    g_autofree char *vmx = NULL;
     virVMXContext ctx;
     esxVMX_Data data;
     virDomainDefPtr def = NULL;
@@ -2655,13 +2628,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
  cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
-    VIR_FREE(moref);
-    VIR_FREE(datastoreName);
-    VIR_FREE(directoryName);
-    VIR_FREE(directoryAndFileName);
-    VIR_FREE(url);
     VIR_FREE(data.datastorePathWithoutFileName);
-    VIR_FREE(vmx);
     virDomainDefFree(def);
 
     return xml;
@@ -2858,7 +2825,7 @@ esxDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
     int id = -1;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
 
     virCheckFlags(0, -1);
 
@@ -2903,7 +2870,6 @@ esxDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
 
     return result;
 }
@@ -2923,25 +2889,25 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     esxPrivate *priv = conn->privateData;
     virDomainDefPtr def = NULL;
-    char *vmx = NULL;
+    g_autofree char *vmx = NULL;
     size_t i;
     virDomainDiskDefPtr disk = NULL;
     esxVI_ObjectContent *virtualMachine = NULL;
     int virtualHW_version;
     virVMXContext ctx;
     esxVMX_Data data;
-    char *datastoreName = NULL;
-    char *directoryName = NULL;
-    char *escapedName = NULL;
+    g_autofree char *datastoreName = NULL;
+    g_autofree char *directoryName = NULL;
+    g_autofree char *escapedName = NULL;
     g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
-    char *url = NULL;
+    g_autofree char *url = NULL;
     char *datastoreRelatedPath = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_ManagedObjectReference *resourcePool = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
     virDomainPtr domain = NULL;
     const char *src;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
@@ -3122,19 +3088,11 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 
  cleanup:
     virDomainDefFree(def);
-    VIR_FREE(vmx);
-    VIR_FREE(datastoreName);
-    VIR_FREE(directoryName);
-    VIR_FREE(escapedName);
-    VIR_FREE(url);
-    VIR_FREE(datastoreRelatedPath);
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&hostSystem);
     esxVI_ManagedObjectReference_Free(&resourcePool);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return domain;
 }
 
@@ -3554,7 +3512,7 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
     esxVI_SharesInfo *sharesInfo = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
     size_t i;
 
     virCheckFlags(0, -1);
@@ -3670,8 +3628,6 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineConfigSpec_Free(&spec);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return result;
 }
 
@@ -3735,7 +3691,7 @@ esxDomainMigratePerform(virDomainPtr domain,
     esxVI_Event *eventList = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
 
     virCheckFlags(ESX_MIGRATION_FLAGS, -1);
 
@@ -3850,8 +3806,6 @@ esxDomainMigratePerform(virDomainPtr domain,
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_Event_Free(&eventList);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return result;
 }
 
@@ -4049,7 +4003,7 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
     esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     bool diskOnly = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) != 0;
     bool quiesce = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) != 0;
@@ -4122,8 +4076,6 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return snapshot;
 }
 
@@ -4563,7 +4515,7 @@ esxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot, unsigned int flags)
     esxVI_VirtualMachineSnapshotTree *snapshotTree = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
 
     virCheckFlags(0, -1);
 
@@ -4599,8 +4551,6 @@ esxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot, unsigned int flags)
  cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return result;
 }
 
@@ -4616,7 +4566,7 @@ esxDomainSnapshotDelete(virDomainSnapshotPtr snapshot, unsigned int flags)
     esxVI_Boolean removeChildren = esxVI_Boolean_False;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
                   VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY, -1);
@@ -4663,8 +4613,6 @@ esxDomainSnapshotDelete(virDomainSnapshotPtr snapshot, unsigned int flags)
  cleanup:
     esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotList);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return result;
 }
 
@@ -4680,7 +4628,7 @@ esxDomainSetMemoryParameters(virDomainPtr domain, virTypedParameterPtr params,
     esxVI_VirtualMachineConfigSpec *spec = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
     size_t i;
 
     virCheckFlags(0, -1);
@@ -4733,8 +4681,6 @@ esxDomainSetMemoryParameters(virDomainPtr domain, virTypedParameterPtr params,
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_VirtualMachineConfigSpec_Free(&spec);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
-
     return result;
 }
 

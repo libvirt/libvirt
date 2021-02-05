@@ -395,8 +395,8 @@ esxStreamOpen(virStreamPtr stream, esxPrivate *priv, const char *url,
 {
     int result = -1;
     esxStreamPrivate *streamPriv;
-    char *range = NULL;
-    char *userpwd = NULL;
+    g_autofree char *range = NULL;
+    g_autofree char *userpwd = NULL;
     esxVI_MultiCURL *multi = NULL;
 
     /* FIXME: Although there is already some code in place to deal with
@@ -466,9 +466,6 @@ esxStreamOpen(virStreamPtr stream, esxPrivate *priv, const char *url,
 
         esxFreeStreamPrivate(&streamPriv);
     }
-
-    VIR_FREE(range);
-    VIR_FREE(userpwd);
 
     return result;
 }

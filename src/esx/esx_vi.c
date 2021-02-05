@@ -169,7 +169,7 @@ static int
 esxVI_CURL_Debug(CURL *curl G_GNUC_UNUSED, curl_infotype type,
                  char *info, size_t size, void *userdata G_GNUC_UNUSED)
 {
-    char *buffer = NULL;
+    g_autofree char *buffer = NULL;
 
     /*
      * The libcurl documentation says:
@@ -220,8 +220,6 @@ esxVI_CURL_Debug(CURL *curl G_GNUC_UNUSED, curl_infotype type,
         VIR_DEBUG("unknown");
         break;
     }
-
-    VIR_FREE(buffer);
 
     return 0;
 }
@@ -833,7 +831,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                       const char *password, esxUtil_ParsedUri *parsedUri)
 {
     int result = -1;
-    char *escapedPassword = NULL;
+    g_autofree char *escapedPassword = NULL;
 
     if (!ctx || !url || !ipAddress || !username ||
         !password || ctx->url || ctx->service || ctx->curl) {
@@ -965,8 +963,6 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
     result = 0;
 
  cleanup:
-    VIR_FREE(escapedPassword);
-
     return result;
 }
 
@@ -1013,7 +1009,7 @@ int
 esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
 {
     int result = -1;
-    char *tmp = NULL;
+    g_autofree char *tmp = NULL;
     char *saveptr = NULL;
     char *previousItem = NULL;
     char *item = NULL;
@@ -1181,7 +1177,6 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
         esxVI_ManagedObjectReference_Free(&root);
     }
 
-    VIR_FREE(tmp);
     esxVI_Folder_Free(&folder);
 
     return result;
@@ -1239,7 +1234,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
     int result = -1;
     g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     esxVI_Fault *fault = NULL;
-    char *xpathExpression = NULL;
+    g_autofree char *xpathExpression = NULL;
     xmlXPathContextPtr xpathContext = NULL;
     xmlNodePtr responseNode = NULL;
 
@@ -1401,7 +1396,6 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
         esxVI_Fault_Free(&fault);
     }
 
-    VIR_FREE(xpathExpression);
     xmlXPathFreeContext(xpathContext);
 
     return result;
@@ -1509,7 +1503,7 @@ esxVI_Enumeration_Deserialize(const esxVI_Enumeration *enumeration,
 {
     size_t i;
     int result = -1;
-    char *name = NULL;
+    g_autofree char *name = NULL;
 
     if (!value) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -1533,8 +1527,6 @@ esxVI_Enumeration_Deserialize(const esxVI_Enumeration *enumeration,
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Unknown value '%s' for %s"),
                        name, esxVI_Type_ToString(enumeration->type));
     }
-
-    VIR_FREE(name);
 
     return result;
 }
@@ -1895,7 +1887,7 @@ esxVI_EnsureSession(esxVI_Context *ctx)
     esxVI_ObjectContent *sessionManager = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_UserSession *currentSession = NULL;
-    char *escapedPassword = NULL;
+    g_autofree char *escapedPassword = NULL;
 
     if (!ctx->sessionLock) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call, no mutex"));
@@ -1959,7 +1951,6 @@ esxVI_EnsureSession(esxVI_Context *ctx)
  cleanup:
     virMutexUnlock(ctx->sessionLock);
 
-    VIR_FREE(escapedPassword);
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&sessionManager);
     esxVI_UserSession_Free(&currentSession);
@@ -3378,12 +3369,12 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
                                     esxVI_Occurrence occurrence)
 {
     int result = -1;
-    char *datastoreName = NULL;
-    char *directoryName = NULL;
-    char *directoryAndFileName = NULL;
-    char *fileName = NULL;
+    g_autofree char *datastoreName = NULL;
+    g_autofree char *directoryName = NULL;
+    g_autofree char *directoryAndFileName = NULL;
+    g_autofree char *fileName = NULL;
     size_t length;
-    char *datastorePathWithoutFileName = NULL;
+    g_autofree char *datastorePathWithoutFileName = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *datastore = NULL;
     esxVI_ManagedObjectReference *hostDatastoreBrowser = NULL;
@@ -3394,7 +3385,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
     esxVI_FloppyImageFileQuery *floppyImageFileQuery = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
     esxVI_TaskInfo *taskInfo = NULL;
     esxVI_HostDatastoreBrowserSearchResults *searchResults = NULL;
 
@@ -3544,17 +3535,11 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
     if (searchSpec && searchSpec->matchPattern)
         searchSpec->matchPattern->value = NULL;
 
-    VIR_FREE(datastoreName);
-    VIR_FREE(directoryName);
-    VIR_FREE(directoryAndFileName);
-    VIR_FREE(fileName);
-    VIR_FREE(datastorePathWithoutFileName);
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&datastore);
     esxVI_ManagedObjectReference_Free(&hostDatastoreBrowser);
     esxVI_HostDatastoreBrowserSearchSpec_Free(&searchSpec);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
     esxVI_TaskInfo_Free(&taskInfo);
     esxVI_HostDatastoreBrowserSearchResults_Free(&searchResults);
     esxVI_FolderFileQuery_Free(&folderFileQuery);
@@ -3580,10 +3565,10 @@ esxVI_LookupDatastoreContentByDatastoreName
     esxVI_VmDiskFileQuery *vmDiskFileQuery = NULL;
     esxVI_IsoImageFileQuery *isoImageFileQuery = NULL;
     esxVI_FloppyImageFileQuery *floppyImageFileQuery = NULL;
-    char *datastorePath = NULL;
+    g_autofree char *datastorePath = NULL;
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
-    char *taskInfoErrorMessage = NULL;
+    g_autofree char *taskInfoErrorMessage = NULL;
     esxVI_TaskInfo *taskInfo = NULL;
 
     ESX_VI_CHECK_ARG_LIST(searchResultsList);
@@ -3672,9 +3657,7 @@ esxVI_LookupDatastoreContentByDatastoreName
     esxVI_ObjectContent_Free(&datastore);
     esxVI_ManagedObjectReference_Free(&hostDatastoreBrowser);
     esxVI_HostDatastoreBrowserSearchSpec_Free(&searchSpec);
-    VIR_FREE(datastorePath);
     esxVI_ManagedObjectReference_Free(&task);
-    VIR_FREE(taskInfoErrorMessage);
     esxVI_TaskInfo_Free(&taskInfo);
     esxVI_VmDiskFileQuery_Free(&vmDiskFileQuery);
     esxVI_IsoImageFileQuery_Free(&isoImageFileQuery);
@@ -3692,7 +3675,7 @@ esxVI_LookupStorageVolumeKeyByDatastorePath(esxVI_Context *ctx,
 {
     int result = -1;
     esxVI_FileInfo *fileInfo = NULL;
-    char *uuid_string = NULL;
+    g_autofree char *uuid_string = NULL;
 
     ESX_VI_CHECK_ARG_LIST(key);
 
@@ -3727,8 +3710,6 @@ esxVI_LookupStorageVolumeKeyByDatastorePath(esxVI_Context *ctx,
 
  cleanup:
     esxVI_FileInfo_Free(&fileInfo);
-    VIR_FREE(uuid_string);
-
     return result;
 }
 
@@ -4120,7 +4101,7 @@ esxVI_HandleVirtualMachineQuestion
     g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     esxVI_ElementDescription *answerChoice = NULL;
     int answerIndex = 0;
-    char *possibleAnswers = NULL;
+    g_autofree char *possibleAnswers = NULL;
 
     if (!blocked) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -4199,8 +4180,6 @@ esxVI_HandleVirtualMachineQuestion
     result = 0;
 
  cleanup:
-    VIR_FREE(possibleAnswers);
-
     return result;
 }
 
