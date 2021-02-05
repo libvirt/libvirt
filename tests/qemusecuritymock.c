@@ -398,7 +398,7 @@ int virFileUnlock(int fd G_GNUC_UNUSED,
 
 typedef struct _checkOwnerData checkOwnerData;
 struct _checkOwnerData {
-    const char **paths;
+    GHashTable *paths;
     bool chown_fail;
     bool selinux_fail;
 };
@@ -413,7 +413,7 @@ checkSELinux(void *payload,
     char *label = payload;
 
     if (STRNEQ(label, DEFAULT_SELINUX_LABEL) &&
-        !virStringListHasString(data->paths, name)) {
+        !g_hash_table_contains(data->paths, name)) {
         fprintf(stderr,
                 "Path %s wasn't restored back to its original SELinux label\n",
                 name);
@@ -434,7 +434,7 @@ checkOwner(void *payload,
 
     if ((owner % 16 != DEFAULT_UID ||
          owner >> 16 != DEFAULT_GID) &&
-        !virStringListHasString(data->paths, name)) {
+        !g_hash_table_contains(data->paths, name)) {
         fprintf(stderr,
                 "Path %s wasn't restored back to its original owner\n",
                 name);
@@ -473,19 +473,22 @@ printXATTR(void *payload,
  * can be passed in @paths argument. If a path is not restored
  * but it's on the list no error is indicated.
  */
-int checkPaths(const char **paths)
+int checkPaths(GHashTable *paths)
 {
     int ret = -1;
     checkOwnerData data = { .paths = paths, .chown_fail = false, .selinux_fail = false };
     bool xattr_fail = false;
-    size_t i;
+    GHashTableIter htitr;
+    void *key;
 
     virMutexLock(&m);
     init_hash();
 
-    for (i = 0; paths && paths[i]; i++) {
-        if (!virHashLookup(chown_paths, paths[i])) {
-            fprintf(stderr, "Unexpected path restored: %s\n", paths[i]);
+    g_hash_table_iter_init(&htitr, paths);
+
+    while (g_hash_table_iter_next(&htitr, &key, NULL)) {
+        if (!virHashLookup(chown_paths, key)) {
+            fprintf(stderr, "Unexpected path restored: %s\n", (const char *) key);
             goto cleanup;
         }
     }

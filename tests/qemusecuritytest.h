@@ -20,6 +20,8 @@
 
 #define ENVVAR "LIBVIRT_QEMU_SECURITY_TEST"
 
-extern int checkPaths(const char **paths);
+#include "internal.h"
+
+extern int checkPaths(GHashTable *paths);
 
 extern void freePaths(void);

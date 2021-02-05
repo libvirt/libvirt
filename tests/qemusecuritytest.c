@@ -87,7 +87,7 @@ testDomain(const void *opaque)
 {
     const struct testData *data = opaque;
     g_autoptr(virDomainObj) vm = NULL;
-    g_auto(GStrv) notRestored = NULL;
+    g_autoptr(GHashTable) notRestored = virHashNew(NULL);
     size_t i;
     int ret = -1;
 
@@ -102,14 +102,12 @@ testDomain(const void *opaque)
             continue;
 
         if (virStorageSourceIsLocalStorage(src) && src->path &&
-            (src->shared || src->readonly) &&
-            virStringListAdd(&notRestored, src->path) < 0)
-            return -1;
+            (src->shared || src->readonly))
+            g_hash_table_insert(notRestored, g_strdup(src->path), NULL);
 
         for (n = src->backingStore; virStorageSourceIsBacking(n); n = n->backingStore) {
-            if (virStorageSourceIsLocalStorage(n) && n->path &&
-                virStringListAdd(&notRestored, n->path) < 0)
-                return -1;
+            if (virStorageSourceIsLocalStorage(n) && n->path)
+                g_hash_table_insert(notRestored, g_strdup(n->path), NULL);
         }
     }
 
@@ -123,7 +121,7 @@ testDomain(const void *opaque)
 
     qemuSecurityRestoreAllLabel(data->driver, vm, false);
 
-    if (checkPaths((const char **) notRestored) < 0)
+    if (checkPaths(notRestored) < 0)
         goto cleanup;
 
     ret = 0;
