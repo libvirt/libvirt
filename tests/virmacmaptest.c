@@ -36,7 +36,8 @@ testMACLookup(const void *opaque)
 {
     const struct testData *data = opaque;
     virMacMapPtr mgr = NULL;
-    const char * const * macs;
+    GSList *macs;
+    GSList *next;
     size_t i, j;
     char *file = NULL;
     int ret = -1;
@@ -48,26 +49,27 @@ testMACLookup(const void *opaque)
 
     macs = virMacMapLookup(mgr, data->domain);
 
-    for (i = 0; macs && macs[i]; i++) {
+    for (next = macs; next; next = next->next) {
         for (j = 0; data->macs && data->macs[j]; j++) {
-            if (STREQ(macs[i], data->macs[j]))
+            if (STREQ((const char *) next->data, data->macs[j]))
                 break;
         }
 
         if (!data->macs || !data->macs[j]) {
             fprintf(stderr,
-                    "Unexpected %s in the returned list of MACs\n", macs[i]);
+                    "Unexpected %s in the returned list of MACs\n",
+                    (const char *) next->data);
             goto cleanup;
         }
     }
 
     for (i = 0; data->macs && data->macs[i]; i++) {
-        for (j = 0; macs && macs[j]; j++) {
-            if (STREQ(data->macs[i], macs[j]))
+        for (next = macs; next; next = next->next) {
+            if (STREQ(data->macs[i], (const char *) next->data))
                 break;
         }
 
-        if (!macs || !macs[j]) {
+        if (!next) {
             fprintf(stderr,
                     "Expected %s in the returned list of MACs\n", data->macs[i]);
             goto cleanup;
@@ -87,7 +89,7 @@ testMACRemove(const void *opaque)
 {
     const struct testData *data = opaque;
     virMacMapPtr mgr = NULL;
-    const char * const * macs;
+    GSList *macs;
     size_t i;
     char *file = NULL;
     int ret = -1;
@@ -107,7 +109,8 @@ testMACRemove(const void *opaque)
 
     if ((macs = virMacMapLookup(mgr, data->domain))) {
         fprintf(stderr,
-                "Not removed all MACs for domain %s: %s\n", data->domain, macs[0]);
+                "Not removed all MACs for domain %s: %s\n",
+                data->domain, (const char *) macs->data);
         goto cleanup;
     }
 

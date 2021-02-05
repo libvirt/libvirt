@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include "internal.h"
+
 typedef struct virMacMap virMacMap;
 typedef virMacMap *virMacMapPtr;
 
@@ -37,8 +39,8 @@ int virMacMapRemove(virMacMapPtr mgr,
                     const char *domain,
                     const char *mac);
 
-const char *const *virMacMapLookup(virMacMapPtr mgr,
-                                   const char *domain);
+GSList *virMacMapLookup(virMacMapPtr mgr,
+                        const char *domain);
 
 int virMacMapWriteFile(virMacMapPtr mgr,
                        const char *filename);
