@@ -600,21 +600,21 @@ virCgroupGetValueForBlkDev(const char *str,
                            char **value)
 {
     g_autofree char *prefix = NULL;
-    char **lines = NULL;
-    int ret = -1;
+    g_auto(GStrv) lines = NULL;
+    GStrv tmp;
 
     if (!(prefix = virCgroupGetBlockDevString(path)))
-        goto error;
+        return -1;
 
     if (!(lines = virStringSplit(str, "\n", -1)))
-        goto error;
+        return -1;
 
-    *value = g_strdup(virStringListGetFirstWithPrefix(lines, prefix));
+    for (tmp = lines; *tmp; tmp++) {
+        if ((*value = g_strdup(STRSKIP(*tmp, prefix))))
+            break;
+    }
 
-    ret = 0;
- error:
-    g_strfreev(lines);
-    return ret;
+    return 0;
 }
 
 
