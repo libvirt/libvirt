@@ -322,26 +322,6 @@ virDomainDiskVhostUserValidate(const virDomainDiskDef *disk)
 
     /* Unsupported driver elements */
 
-    if (disk->virtio) {
-        if (disk->virtio->iommu != VIR_TRISTATE_SWITCH_ABSENT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("iommu is not supported with vhostuser disk"));
-            return -1;
-        }
-
-        if (disk->virtio->ats != VIR_TRISTATE_SWITCH_ABSENT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("ats is not supported with vhostuser disk"));
-            return -1;
-        }
-
-        if (disk->virtio->packed != VIR_TRISTATE_SWITCH_ABSENT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("packed is not supported with vhostuser disk"));
-            return -1;
-        }
-    }
-
     if (disk->src->metadataCacheMaxSize > 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("metadata_cache is not supported with vhostuser disk"));

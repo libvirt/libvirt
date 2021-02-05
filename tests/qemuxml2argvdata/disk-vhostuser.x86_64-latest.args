@@ -33,8 +33,8 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -device vhost-user-blk-pci,bus=pci.0,addr=0x2,chardev=chr-vu-virtio-disk0,\
 id=virtio-disk0,bootindex=1 \
 -chardev socket,id=chr-vu-virtio-disk1,path=/tmp/vhost1.sock,reconnect=10 \
--device vhost-user-blk-pci,bus=pci.0,addr=0x3,chardev=chr-vu-virtio-disk1,\
-id=virtio-disk1 \
+-device vhost-user-blk-pci,iommu_platform=on,ats=on,packed=on,bus=pci.0,\
+addr=0x3,chardev=chr-vu-virtio-disk1,id=virtio-disk1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
