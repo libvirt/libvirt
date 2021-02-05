@@ -614,6 +614,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 390 */
               "vhost-user-blk",
+              "cpu-max",
     );
 
 
@@ -2984,11 +2985,22 @@ virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                   virQEMUCapsAccelPtr accel,
                                   qemuMonitorPtr mon)
 {
+    qemuMonitorCPUDefsPtr defs;
+    size_t i;
+
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_DEFINITIONS))
         return 0;
 
     if (virQEMUCapsFetchCPUDefinitions(mon, qemuCaps->arch, &accel->cpuModels) < 0)
         return -1;
+
+    defs = accel->cpuModels;
+    for (i = 0; i < defs->ncpus; i++) {
+        if (STREQ_NULLABLE(defs->cpus[i].name, "max")) {
+            virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_MAX);
+            break;
+        }
+    }
 
     return 0;
 }
