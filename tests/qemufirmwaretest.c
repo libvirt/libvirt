@@ -57,16 +57,16 @@ testFWPrecedence(const void *opaque G_GNUC_UNUSED)
 {
     g_autofree char *fakehome = NULL;
     g_auto(GStrv) fwList = NULL;
-    size_t nfwList;
-    size_t i;
     const char *expected[] = {
         PREFIX "/share/qemu/firmware/40-bios.json",
         SYSCONFDIR "/qemu/firmware/40-ovmf-sb-keys.json",
         PREFIX "/share/qemu/firmware/50-ovmf-sb-keys.json",
         PREFIX "/share/qemu/firmware/61-ovmf.json",
         PREFIX "/share/qemu/firmware/70-aavmf.json",
+        NULL
     };
-    const size_t nexpected = G_N_ELEMENTS(expected);
+    const char **e;
+    GStrv f;
 
     fakehome = g_strdup(abs_srcdir "/qemufirmwaredata/home/user/.config");
 
@@ -80,18 +80,18 @@ testFWPrecedence(const void *opaque G_GNUC_UNUSED)
         return -1;
     }
 
-    nfwList = virStringListLength((const char **)fwList);
-
-    for (i = 0; i < MAX(nfwList, nexpected); i++) {
-        const char *e = i < nexpected ? expected[i] : NULL;
-        const char *f = i < nfwList ? fwList[i] : NULL;
-
-        if (STRNEQ_NULLABLE(e, f)) {
+    for (e = expected, f = fwList; *f || *e;) {
+        if (STRNEQ_NULLABLE(*f, *e)) {
             fprintf(stderr,
-                    "Unexpected path (i=%zu). Expected %s got %s \n",
-                    i, NULLSTR(e), NULLSTR(f));
+                    "Unexpected path. Expected %s got %s \n",
+                    NULLSTR(*e), NULLSTR(*f));
             return -1;
         }
+
+        if (*f)
+            f++;
+        if (*e)
+            e++;
     }
 
     return 0;
