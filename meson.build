@@ -690,6 +690,7 @@ headers = [
   'net/if.h',
   'pty.h',
   'pwd.h',
+  'sys/auxv.h',
   'sys/ioctl.h',
   'sys/mount.h',
   'sys/syscall.h',

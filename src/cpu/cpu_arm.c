@@ -25,7 +25,9 @@
 # if defined(WITH_ASM_HWCAP_H)
 #  include <asm/hwcap.h>
 # endif
-# include <sys/auxv.h>
+# if defined(WITH_SYS_AUXV_H)
+#  include <sys/auxv.h>
+# endif
 #endif
 
 #include "viralloc.h"
