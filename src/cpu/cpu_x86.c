@@ -3050,7 +3050,8 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
                     virCPUDataPtr dataEnabled,
                     virCPUDataPtr dataDisabled)
 {
-    bool hostPassthrough = cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH;
+    bool hostPassthrough = (cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH ||
+                            cpu->mode == VIR_CPU_MODE_MAXIMUM);
     virCPUx86MapPtr map;
     g_autoptr(virCPUx86Model) model = NULL;
     g_autoptr(virCPUx86Model) modelDisabled = NULL;

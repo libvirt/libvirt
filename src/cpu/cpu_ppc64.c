@@ -474,8 +474,14 @@ ppc64Compute(virCPUDefPtr host,
             G_GNUC_FALLTHROUGH;
 
         case VIR_CPU_MODE_HOST_PASSTHROUGH:
-            /* host-model and host-passthrough:
-             * the guest CPU is the same as the host */
+        case VIR_CPU_MODE_MAXIMUM:
+            /* host-model, host-passthrough & maximum:
+             * the guest CPU is the same as the host.
+             *
+             * Note for maximum, with non hardware virt
+             * the guest CPU is actually arbitrarily defined by
+             * the emulator, so this isn't strictly correct.
+             */
             guest_model = ppc64ModelCopy(host_model);
             break;
 

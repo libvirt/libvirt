@@ -884,7 +884,8 @@ virCPUTranslate(virArch arch,
         return -1;
 
     if (cpu->mode == VIR_CPU_MODE_HOST_MODEL ||
-        cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
+        cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH ||
+        cpu->mode == VIR_CPU_MODE_MAXIMUM)
         return 0;
 
     if (virCPUModelIsAllowed(cpu->model, models))
