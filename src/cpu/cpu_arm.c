@@ -529,7 +529,7 @@ virCPUarmValidateFeatures(virCPUDefPtr cpu)
     return 0;
 }
 
-#if defined(__aarch64__)
+#if defined(__aarch64__) && (defined(WITH_GETAUXVAL) || defined(WITH_ELF_AUX_INFO))
 /* Generate human readable flag list according to the order of */
 /* AT_HWCAP bit map */
 const char *aarch64_cpu_flags[MAX_CPU_FLAGS] = {
@@ -560,8 +560,6 @@ virCPUarmCpuDataFromRegs(virCPUarmData *data)
     hwcaps = getauxval(AT_HWCAP);
 # elif defined(WITH_ELF_AUX_INFO)
     elf_aux_info(AT_HWCAP, &hwcaps, sizeof(u_long));
-# else
-#  error No routines to retrieve a value from the auxiliary vector
 # endif
     VIR_DEBUG("CPU flags read from register:  0x%016lx", hwcaps);
 
@@ -674,7 +672,7 @@ struct cpuArchDriver cpuDriverArm = {
     .arch = archs,
     .narch = G_N_ELEMENTS(archs),
     .compare = virCPUarmCompare,
-#if defined(__aarch64__)
+#if defined(__aarch64__) && (defined(WITH_GETAUXVAL) || defined(WITH_ELF_AUX_INFO))
     .getHost = virCPUarmGetHost,
 #endif
     .decode = NULL,
