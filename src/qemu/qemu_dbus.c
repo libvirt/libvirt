@@ -287,15 +287,28 @@ qemuDBusStart(virQEMUDriverPtr driver,
 }
 
 
-int
+void
 qemuDBusVMStateAdd(virDomainObjPtr vm, const char *id)
 {
-    return virStringListAdd(&QEMU_DOMAIN_PRIVATE(vm)->dbusVMStateIds, id);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    priv->dbusVMStateIds = g_slist_append(priv->dbusVMStateIds, g_strdup(id));
 }
 
 
 void
 qemuDBusVMStateRemove(virDomainObjPtr vm, const char *id)
 {
-    virStringListRemove(&QEMU_DOMAIN_PRIVATE(vm)->dbusVMStateIds, id);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    GSList *next;
+
+    for (next = priv->dbusVMStateIds; next; next = next->next) {
+        const char *elem = next->data;
+
+        if (STREQ(id, elem)) {
+            priv->dbusVMStateIds = g_slist_remove_link(priv->dbusVMStateIds, next);
+            g_slist_free_full(next, g_free);
+            break;
+        }
+    }
 }

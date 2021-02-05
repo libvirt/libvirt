@@ -1785,8 +1785,8 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
 
     priv->dbusDaemonRunning = false;
 
-    g_strfreev(priv->dbusVMStateIds);
-    priv->dbusVMStateIds = NULL;
+    if (priv->dbusVMStateIds)
+        g_slist_free_full(g_steal_pointer(&priv->dbusVMStateIds), g_free);
 
     priv->dbusVMState = false;
 

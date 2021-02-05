@@ -320,11 +320,8 @@ qemuSlirpStart(qemuSlirpPtr slirp,
         virCommandAddArgFormat(cmd, "--dbus-address=%s", dbus_addr);
 
         if (qemuSlirpHasFeature(slirp, QEMU_SLIRP_FEATURE_MIGRATE)) {
-            if (qemuDBusVMStateAdd(vm, id) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Failed to register slirp migration"));
-                goto error;
-            }
+            qemuDBusVMStateAdd(vm, id);
+
             if (incoming)
                 virCommandAddArg(cmd, "--dbus-incoming");
         }

@@ -699,7 +699,7 @@ qemuMonitorJSONTransactionBackup(virJSONValuePtr actions,
 
 int qemuMonitorJSONSetDBusVMStateIdList(qemuMonitorPtr mon,
                                         const char *vmstatepath,
-                                        const char **list)
+                                        const char *idstr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int

@@ -1408,7 +1408,7 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
             }
         }
 
-        if (virStringListLength((const char **)priv->dbusVMStateIds) > 0 &&
+        if (priv->dbusVMStateIds &&
             !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("cannot migrate this domain without dbus-vmstate support"));
@@ -2091,8 +2091,7 @@ qemuMigrationDstRun(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    rv = qemuMonitorSetDBusVMStateIdList(priv->mon,
-                                         (const char **)priv->dbusVMStateIds);
+    rv = qemuMonitorSetDBusVMStateIdList(priv->mon, priv->dbusVMStateIds);
     if (rv < 0)
         goto exit_monitor;
 
@@ -3602,7 +3601,7 @@ qemuMigrationSetDBusVMState(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (virStringListLength((const char **)priv->dbusVMStateIds) > 0) {
+    if (priv->dbusVMStateIds) {
         int rv;
 
         if (qemuHotplugAttachDBusVMState(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
@@ -3611,8 +3610,7 @@ qemuMigrationSetDBusVMState(virQEMUDriverPtr driver,
         if (qemuDomainObjEnterMonitorAsync(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
             return -1;
 
-        rv = qemuMonitorSetDBusVMStateIdList(priv->mon,
-                                             (const char **)priv->dbusVMStateIds);
+        rv = qemuMonitorSetDBusVMStateIdList(priv->mon, priv->dbusVMStateIds);
 
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             rv = -1;

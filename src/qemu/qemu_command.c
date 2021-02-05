@@ -9637,7 +9637,7 @@ qemuBuildDBusVMStateCommandLine(virCommandPtr cmd,
     g_autoptr(virJSONValue) props = NULL;
     qemuDomainObjPrivatePtr priv = QEMU_DOMAIN_PRIVATE(vm);
 
-    if (virStringListLength((const char **)priv->dbusVMStateIds) == 0)
+    if (!priv->dbusVMStateIds)
         return 0;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {

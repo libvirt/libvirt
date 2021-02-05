@@ -2385,21 +2385,28 @@ qemuMonitorSavePhysicalMemory(qemuMonitorPtr mon,
 
 int
 qemuMonitorSetDBusVMStateIdList(qemuMonitorPtr mon,
-                                const char **list)
+                                GSList *list)
 {
     g_autofree char *path = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    GSList *next;
 
     VIR_DEBUG("list=%p", list);
 
-    if (virStringListLength(list) == 0)
-        return 0;
-
-    path = g_strdup_printf("/objects/%s",
-                           qemuDomainGetDBusVMStateAlias());
-
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONSetDBusVMStateIdList(mon, path, list);
+    if (!list)
+        return 0;
+
+    for (next = list; next; next = next->next)
+        virBufferAsprintf(&buf, "%s,", (const char *) next->data);
+
+    virBufferTrim(&buf, ",");
+
+    path = g_strdup_printf("/objects/%s", qemuDomainGetDBusVMStateAlias());
+
+    return qemuMonitorJSONSetDBusVMStateIdList(mon, path,
+                                               virBufferCurrentContent(&buf));
 }
 
 

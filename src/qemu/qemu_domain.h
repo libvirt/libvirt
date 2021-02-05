@@ -260,7 +260,7 @@ struct _qemuDomainObjPrivate {
     bool dbusDaemonRunning;
 
     /* list of Ids to migrate */
-    char **dbusVMStateIds;
+    GSList *dbusVMStateIds;
     /* true if -object dbus-vmstate was added */
     bool dbusVMState;
 
