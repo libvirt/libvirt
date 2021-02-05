@@ -123,15 +123,6 @@ virStringSplitCount(const char *string,
 }
 
 
-char **
-virStringSplit(const char *string,
-               const char *delim,
-               size_t max_tokens)
-{
-    return virStringSplitCount(string, delim, max_tokens, NULL);
-}
-
-
 /**
  * virStringListJoin:
  * @strings: a NULL-terminated array of strings to join
