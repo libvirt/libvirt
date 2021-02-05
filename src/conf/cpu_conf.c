@@ -990,21 +990,21 @@ virCPUDefCheckFeatures(virCPUDefPtr cpu,
                        void *opaque,
                        char ***features)
 {
-    g_auto(GStrv) list = NULL;
     size_t n = 0;
     size_t i;
 
     *features = NULL;
 
+    if (cpu->nfeatures == 0)
+        return 0;
+
+    *features = g_new0(char *, cpu->nfeatures + 1);
+
     for (i = 0; i < cpu->nfeatures; i++) {
-        if (filter(cpu->features[i].name, cpu->features[i].policy, opaque)) {
-            if (virStringListAdd(&list, cpu->features[i].name) < 0)
-                return -1;
-            n++;
-        }
+        if (filter(cpu->features[i].name, cpu->features[i].policy, opaque))
+            (*features)[n++] = g_strdup(cpu->features[i].name);
     }
 
-    *features = g_steal_pointer(&list);
     return n;
 }
 
