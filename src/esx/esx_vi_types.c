@@ -900,8 +900,8 @@ ESX_VI__TEMPLATE__ALLOC(AnyType)
 ESX_VI__TEMPLATE__FREE(AnyType,
 {
     xmlFreeNode(item->node);
-    VIR_FREE(item->other);
-    VIR_FREE(item->value);
+    g_free(item->other);
+    g_free(item->value);
 })
 
 const char *
@@ -1117,7 +1117,7 @@ ESX_VI__TEMPLATE__FREE(String,
 {
     esxVI_String_Free(&item->_next);
 
-    VIR_FREE(item->value);
+    g_free(item->value);
 })
 
 /* esxVI_String_Validate */
@@ -1421,7 +1421,7 @@ ESX_VI__TEMPLATE__ALLOC(DateTime)
 /* esxVI_DateTime_Free */
 ESX_VI__TEMPLATE__FREE(DateTime,
 {
-    VIR_FREE(item->value);
+    g_free(item->value);
 })
 
 /* esxVI_DateTime_Validate */
@@ -1564,8 +1564,8 @@ ESX_VI__TEMPLATE__ALLOC(Fault);
 /* esxVI_Fault_Free */
 ESX_VI__TEMPLATE__FREE(Fault,
 {
-    VIR_FREE(item->faultcode);
-    VIR_FREE(item->faultstring);
+    g_free(item->faultcode);
+    g_free(item->faultstring);
 })
 
 /* esxVI_Fault_Validate */
@@ -1595,7 +1595,7 @@ ESX_VI__TEMPLATE__ALLOC(MethodFault);
 /* esxVI_MethodFault_Free */
 ESX_VI__TEMPLATE__FREE(MethodFault,
 {
-    VIR_FREE(item->_actualType);
+    g_free(item->_actualType);
 })
 
 int
@@ -1638,8 +1638,8 @@ ESX_VI__TEMPLATE__FREE(ManagedObjectReference,
 {
     esxVI_ManagedObjectReference_Free(&item->_next);
 
-    VIR_FREE(item->type);
-    VIR_FREE(item->value);
+    g_free(item->type);
+    g_free(item->value);
 })
 
 /* esxVI_ManagedObjectReference_DeepCopy */
@@ -1732,17 +1732,17 @@ ESX_VI__TEMPLATE__ALLOC(Event)
 ESX_VI__TEMPLATE__FREE(Event,
 {
     esxVI_Event_Free(&item->_next);
-    VIR_FREE(item->_actualType);
+    g_free(item->_actualType);
 
     esxVI_Int_Free(&item->key);
     esxVI_Int_Free(&item->chainId);
     esxVI_DateTime_Free(&item->createdTime);
-    VIR_FREE(item->userName);
+    g_free(item->userName);
     /* FIXME: datacenter is currently ignored */
     /* FIXME: computeResource is currently ignored */
     /* FIXME: host is currently ignored */
     esxVI_VmEventArgument_Free(&item->vm);
-    VIR_FREE(item->fullFormattedMessage);
+    g_free(item->fullFormattedMessage);
 })
 
 /* esxVI_Event_Validate */

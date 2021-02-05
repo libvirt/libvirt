@@ -805,19 +805,19 @@ ESX_VI__TEMPLATE__FREE(Context,
         virMutexDestroy(item->sessionLock);
 
     esxVI_CURL_Free(&item->curl);
-    VIR_FREE(item->url);
-    VIR_FREE(item->ipAddress);
-    VIR_FREE(item->username);
-    VIR_FREE(item->password);
+    g_free(item->url);
+    g_free(item->ipAddress);
+    g_free(item->username);
+    g_free(item->password);
     esxVI_ServiceContent_Free(&item->service);
     esxVI_UserSession_Free(&item->session);
-    VIR_FREE(item->sessionLock);
+    g_free(item->sessionLock);
     esxVI_Datacenter_Free(&item->datacenter);
-    VIR_FREE(item->datacenterPath);
+    g_free(item->datacenterPath);
     esxVI_ComputeResource_Free(&item->computeResource);
-    VIR_FREE(item->computeResourcePath);
+    g_free(item->computeResourcePath);
     esxVI_HostSystem_Free(&item->hostSystem);
-    VIR_FREE(item->hostSystemName);
+    g_free(item->hostSystemName);
     esxVI_SelectionSpec_Free(&item->selectSet_folderToChildEntity);
     esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToParent);
     esxVI_SelectionSpec_Free(&item->selectSet_hostSystemToVm);
@@ -1419,7 +1419,7 @@ ESX_VI__TEMPLATE__ALLOC(Response)
 /* esxVI_Response_Free */
 ESX_VI__TEMPLATE__FREE(Response,
 {
-    VIR_FREE(item->content);
+    g_free(item->content);
 
     xmlFreeDoc(item->document);
 })
