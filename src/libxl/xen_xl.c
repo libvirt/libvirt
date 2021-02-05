@@ -1421,9 +1421,7 @@ xenFormatXLCPUID(virConfPtr conf, virDomainDefPtr def)
     cpuid_pairs[j] = NULL;
 
     if (j > 1) {
-        cpuid_string = virStringListJoin((const char **)cpuid_pairs, ",");
-        if (!cpuid_string)
-            goto cleanup;
+        cpuid_string = g_strjoinv(",", cpuid_pairs);
 
         if (xenConfigSetString(conf, "cpuid", cpuid_string) < 0)
             goto cleanup;

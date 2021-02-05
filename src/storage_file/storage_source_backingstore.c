@@ -168,9 +168,7 @@ virStorageSourceRBDAddHost(virStorageSourcePtr src,
     parts = g_strsplit(hostport, "\\:", 0);
     if (!parts)
         goto error;
-    src->hosts[src->nhosts-1].name = virStringListJoin((const char **)parts, ":");
-    if (!src->hosts[src->nhosts-1].name)
-        goto error;
+    src->hosts[src->nhosts-1].name = g_strjoinv(":", parts);
 
     src->hosts[src->nhosts-1].transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
     src->hosts[src->nhosts-1].socket = NULL;

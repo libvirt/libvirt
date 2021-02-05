@@ -923,7 +923,7 @@ bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
         /* Set os.bootloader since virDomainDefFormatInternal will only format
          * the bootloader arguments if os->bootloader is set. */
         def->os.bootloader = g_strdup(argv[0]);
-        def->os.bootloaderArgs = virStringListJoin((const char**) &argv[1], " ");
+        def->os.bootloaderArgs = g_strjoinv(" ", &argv[1]);
     }
 
     if (def->name == NULL) {
@@ -950,7 +950,7 @@ bhyveParseCustomLoaderCommandLine(virDomainDefPtr def,
         return -1;
 
     def->os.bootloader = g_strdup(argv[0]);
-    def->os.bootloaderArgs = virStringListJoin((const char**) &argv[1], " ");
+    def->os.bootloaderArgs = g_strjoinv(" ", &argv[1]);
 
     return 0;
 }

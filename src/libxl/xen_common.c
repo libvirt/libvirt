@@ -1659,7 +1659,7 @@ xenMakeIPList(virNetDevIPInfoPtr guestIP)
         if (!address_array[i])
             goto cleanup;
     }
-    ret = virStringListJoin((const char**)address_array, " ");
+    ret = g_strjoinv(" ", address_array);
 
  cleanup:
     g_strfreev(address_array);

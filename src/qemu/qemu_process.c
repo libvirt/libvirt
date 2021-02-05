@@ -5489,7 +5489,7 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
             if (n > 0) {
                 g_autofree char *str = NULL;
 
-                str = virStringListJoin((const char **)features, ", ");
+                str = g_strjoinv(", ", features);
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Some features cannot be reliably used "
                                  "with this QEMU: %s"), str);

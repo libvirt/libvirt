@@ -881,7 +881,7 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
             goto cleanup;
     }
 
-    if (!(*res = virStringListJoin((const char **)tokens, "/")))
+    if (!(*res = g_strjoinv("/", tokens)))
         goto cleanup;
 
     ret = 0;
