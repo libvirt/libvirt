@@ -17739,7 +17739,7 @@ qemuDomainGetResctrlMonData(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (virStringListLength((const char * const *)features) == 0)
+    if (!features || !*features)
         return 0;
 
     for (i = 0; i < dom->def->nresctrls; i++) {

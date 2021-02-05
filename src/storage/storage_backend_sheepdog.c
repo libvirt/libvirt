@@ -157,8 +157,7 @@ virStorageBackendSheepdogRefreshAllVol(virStoragePoolObjPtr pool)
 
         cells = virStringSplit(lines[i], " ", 0);
 
-        if (cells != NULL &&
-            virStringListLength((const char * const *)cells) > 2) {
+        if (cells != NULL && cells[0] && cells[1]) {
             if (virStorageBackendSheepdogAddVolume(pool, cells[1]) < 0)
                 return -1;
         }
