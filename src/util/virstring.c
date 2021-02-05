@@ -238,24 +238,6 @@ virStringListHasString(const char **strings,
     return false;
 }
 
-char *
-virStringListGetFirstWithPrefix(char **strings,
-                                const char *prefix)
-{
-    size_t i = 0;
-
-    if (!strings)
-        return NULL;
-
-    while (strings[i]) {
-        if (STRPREFIX(strings[i], prefix))
-            return strings[i] + strlen(prefix);
-        i++;
-    }
-
-    return NULL;
-}
-
 /* Like strtol, but produce an "int" result, and check more carefully.
    Return 0 upon success;  return -1 to indicate failure.
    When END_PTR is NULL, the byte after the final valid digit must be NUL.

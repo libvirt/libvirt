@@ -45,9 +45,6 @@ void virStringListFreeCount(char **strings,
 
 bool virStringListHasString(const char **strings,
                             const char *needle);
-char *virStringListGetFirstWithPrefix(char **strings,
-                                      const char *prefix)
-    ATTRIBUTE_NONNULL(2);
 
 int virStrToLong_i(char const *s,
                    char **end_ptr,
