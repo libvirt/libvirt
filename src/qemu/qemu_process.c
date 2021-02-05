@@ -3938,13 +3938,25 @@ qemuProcessNeedMemoryBackingPath(virDomainDef *def,
             return true;
     }
 
-    if (mem &&
-        mem->model == VIR_DOMAIN_MEMORY_MODEL_DIMM &&
-        (mem->access != VIR_DOMAIN_MEMORY_ACCESS_DEFAULT ||
-         (mem->targetNode >= 0 &&
-          virDomainNumaGetNodeMemoryAccessMode(def->numa, mem->targetNode)
-          != VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)))
-        return true;
+    if (mem) {
+        switch (mem->model) {
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+            if (mem->access != VIR_DOMAIN_MEMORY_ACCESS_DEFAULT) {
+                /* No need to check for access mode on the target node,
+                 * it was checked for in the previous loop. */
+                return true;
+            }
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
+            /* Backed by user provided path. Not stored in memory
+             * backing dir anyway. */
+            break;
+        }
+    }
 
     return false;
 }
