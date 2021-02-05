@@ -130,7 +130,7 @@ virMacMapLoadFile(virMacMapPtr mgr,
                   const char *file)
 {
     g_autofree char *map_str = NULL;
-    virJSONValuePtr map = NULL;
+    g_autoptr(virJSONValue) map = NULL;
     int map_str_len = 0;
     size_t i;
     int ret = -1;
@@ -189,7 +189,6 @@ virMacMapLoadFile(virMacMapPtr mgr,
 
     ret = 0;
  cleanup:
-    virJSONValueFree(map);
     return ret;
 }
 
@@ -199,13 +198,11 @@ virMACMapHashDumper(void *payload,
                     const char *name,
                     void *data)
 {
-    virJSONValuePtr obj = virJSONValueNewObject();
-    virJSONValuePtr arr = NULL;
+    g_autoptr(virJSONValue) obj = virJSONValueNewObject();
+    g_autoptr(virJSONValue) arr = virJSONValueNewArray();
     const char **macs = payload;
     size_t i;
     int ret = -1;
-
-    arr = virJSONValueNewArray();
 
     for (i = 0; macs[i]; i++) {
         virJSONValuePtr m = virJSONValueNewString(macs[i]);
@@ -228,8 +225,6 @@ virMACMapHashDumper(void *payload,
 
     ret = 0;
  cleanup:
-    virJSONValueFree(obj);
-    virJSONValueFree(arr);
     return ret;
 }
 
@@ -238,10 +233,8 @@ static int
 virMacMapDumpStrLocked(virMacMapPtr mgr,
                        char **str)
 {
-    virJSONValuePtr arr;
+    g_autoptr(virJSONValue) arr = virJSONValueNewArray();
     int ret = -1;
-
-    arr = virJSONValueNewArray();
 
     if (virHashForEachSorted(mgr->macs, virMACMapHashDumper, arr) < 0)
         goto cleanup;
@@ -251,7 +244,6 @@ virMacMapDumpStrLocked(virMacMapPtr mgr,
 
     ret = 0;
  cleanup:
-    virJSONValueFree(arr);
     return ret;
 }
 
