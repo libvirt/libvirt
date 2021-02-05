@@ -23,7 +23,7 @@ testFilterXML(char *xml)
     char **xmlLine;
     char *ret = NULL;
 
-    if (!(xmlLines = virStringSplit(xml, "\n", 0))) {
+    if (!(xmlLines = g_strsplit(xml, "\n", 0))) {
         VIR_FREE(xml);
         goto cleanup;
     }

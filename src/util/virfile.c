@@ -1711,7 +1711,7 @@ virFindFileInPath(const char *file)
      * it. return it if found.
      */
 
-    if (!(paths = virStringSplit(origpath, ":", 0)))
+    if (!(paths = g_strsplit(origpath, ":", 0)))
         return NULL;
 
     for (pathiter = paths; *pathiter; pathiter++) {

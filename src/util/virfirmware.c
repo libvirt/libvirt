@@ -61,7 +61,7 @@ virFirmwareParse(const char *str, virFirmwarePtr firmware)
     int ret = -1;
     char **token;
 
-    if (!(token = virStringSplit(str, ":", 0)))
+    if (!(token = g_strsplit(str, ":", 0)))
         goto cleanup;
 
     if (token[0]) {
@@ -98,7 +98,7 @@ virFirmwareParseList(const char *list,
     char **token;
     size_t i, j;
 
-    if (!(token = virStringSplit(list, ":", 0)))
+    if (!(token = g_strsplit(list, ":", 0)))
         goto cleanup;
 
     for (i = 0; token[i]; i += 2) {

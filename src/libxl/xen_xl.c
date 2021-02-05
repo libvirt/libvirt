@@ -268,7 +268,7 @@ xenParseXLCPUID(virConfPtr conf, virDomainDefPtr def)
         def->cpu->nfeatures_max = 0;
     }
 
-    cpuid_pairs = virStringSplit(cpuid_str, ",", 0);
+    cpuid_pairs = g_strsplit(cpuid_str, ",", 0);
     if (!cpuid_pairs)
         goto cleanup;
 
@@ -285,7 +285,7 @@ xenParseXLCPUID(virConfPtr conf, virDomainDefPtr def)
     }
 
     for (i = 1; cpuid_pairs[i]; i++) {
-        name_and_value = virStringSplit(cpuid_pairs[i], "=", 2);
+        name_and_value = g_strsplit(cpuid_pairs[i], "=", 2);
         if (!name_and_value)
             goto cleanup;
         if (!name_and_value[0] || !name_and_value[1]) {

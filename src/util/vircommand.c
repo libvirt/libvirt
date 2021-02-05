@@ -3230,7 +3230,7 @@ virCommandRunRegex(virCommandPtr cmd,
         goto cleanup;
     }
 
-    if (!(lines = virStringSplit(outbuf, "\n", 0)))
+    if (!(lines = g_strsplit(outbuf, "\n", 0)))
         goto cleanup;
 
     for (k = 0; lines[k]; k++) {

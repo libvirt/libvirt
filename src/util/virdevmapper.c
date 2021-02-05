@@ -63,7 +63,7 @@ virDevMapperGetMajor(unsigned int *major)
     if (virFileReadAll(PROC_DEVICES, BUF_SIZE, &buf) < 0)
         return -1;
 
-    lines = virStringSplit(buf, "\n", 0);
+    lines = g_strsplit(buf, "\n", 0);
     if (!lines)
         return -1;
 

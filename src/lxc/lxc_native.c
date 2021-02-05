@@ -119,7 +119,7 @@ static char ** lxcStringSplit(const char *string)
             tmp[i] = ' ';
     }
 
-    if (!(parts = virStringSplit(tmp, " ", 0)))
+    if (!(parts = g_strsplit(tmp, " ", 0)))
         goto error;
 
     /* Append NULL element */
@@ -257,7 +257,7 @@ lxcAddFstabLine(virDomainDefPtr def, lxcFstabPtr fstab)
 {
     const char *src = NULL;
     g_autofree char *dst = NULL;
-    char **options = virStringSplit(fstab->options, ",", 0);
+    char **options = g_strsplit(fstab->options, ",", 0);
     bool readonly;
     int type = VIR_DOMAIN_FS_TYPE_MOUNT;
     unsigned long long usage = 0;
@@ -567,7 +567,7 @@ lxcNetworkParseDataIPs(const char *name,
     if (STREQ(name, "ipv6") || STREQ(name, "ipv6.address"))
         family = AF_INET6;
 
-    ipparts = virStringSplit(value->str, "/", 2);
+    ipparts = g_strsplit(value->str, "/", 2);
     if (!ipparts || !ipparts[0] || !ipparts[1] ||
         virSocketAddrParse(&ip->address, ipparts[0], family) < 0 ||
         virStrToLong_ui(ipparts[1], NULL, 10, &ip->prefix) < 0) {
@@ -1103,7 +1103,7 @@ lxcSetCapDrop(virDomainDefPtr def, virConfPtr properties)
     size_t i;
 
     if (virConfGetValueString(properties, "lxc.cap.drop", &value) > 0)
-        toDrop = virStringSplit(value, " ", 0);
+        toDrop = g_strsplit(value, " ", 0);
 
     for (i = 0; i < VIR_DOMAIN_PROCES_CAPS_FEATURE_LAST; i++) {
         capString = virDomainProcessCapsFeatureTypeToString(i);

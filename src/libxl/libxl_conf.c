@@ -698,7 +698,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         b_info->bootloader = g_strdup(def->os.bootloader);
         if (def->os.bootloaderArgs) {
             if (!(b_info->bootloader_args =
-                  virStringSplit(def->os.bootloaderArgs, " \t\n", 0)))
+                  g_strsplit(def->os.bootloaderArgs, " \t\n", 0)))
                 return -1;
         }
 #endif
@@ -714,7 +714,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         }
         if (def->os.bootloaderArgs) {
             if (!(b_info->u.pv.bootloader_args =
-                  virStringSplit(def->os.bootloaderArgs, " \t\n", 0)))
+                  g_strsplit(def->os.bootloaderArgs, " \t\n", 0)))
                 return -1;
         }
         b_info->u.pv.cmdline = g_strdup(def->os.cmdline);
@@ -1896,14 +1896,14 @@ libxlDriverGetDom0MaxmemConf(libxlDriverConfigPtr cfg,
     int ret = -1;
 
     if (cfg->verInfo->commandline == NULL ||
-        !(cmd_tokens = virStringSplit(cfg->verInfo->commandline, " ", 0)))
+        !(cmd_tokens = g_strsplit(cfg->verInfo->commandline, " ", 0)))
         goto physmem;
 
     for (i = 0; cmd_tokens[i] != NULL; i++) {
         if (!STRPREFIX(cmd_tokens[i], "dom0_mem="))
             continue;
 
-        if (!(mem_tokens = virStringSplit(cmd_tokens[i], ",", 0)))
+        if (!(mem_tokens = g_strsplit(cmd_tokens[i], ",", 0)))
             break;
         for (j = 0; mem_tokens[j] != NULL; j++) {
             if (STRPREFIX(mem_tokens[j], "max:")) {

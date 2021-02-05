@@ -606,7 +606,7 @@ virCgroupGetValueForBlkDev(const char *str,
     if (!(prefix = virCgroupGetBlockDevString(path)))
         return -1;
 
-    if (!(lines = virStringSplit(str, "\n", -1)))
+    if (!(lines = g_strsplit(str, "\n", -1)))
         return -1;
 
     for (tmp = lines; *tmp; tmp++) {
@@ -855,7 +855,7 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
     size_t i;
     int ret = -1;
 
-    if (!(tokens = virStringSplit(path, "/", 0)))
+    if (!(tokens = g_strsplit(path, "/", 0)))
         return ret;
 
     for (i = 0; tokens[i] != NULL; i++) {
@@ -1226,7 +1226,7 @@ virCgroupEnableMissingControllers(char *path,
                                   virCgroupPtr *group)
 {
     g_autoptr(virCgroup) parent = NULL;
-    g_auto(GStrv) tokens = virStringSplit(path, "/", 0);
+    g_auto(GStrv) tokens = g_strsplit(path, "/", 0);
     size_t i;
 
     if (virCgroupNew("/", controllers, &parent) < 0)

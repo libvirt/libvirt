@@ -1011,7 +1011,7 @@ int virProcessGetStartTime(pid_t pid,
         return -1;
     }
 
-    tokens = virStringSplit(tmp, " ", 0);
+    tokens = g_strsplit(tmp, " ", 0);
 
     if (!tokens ||
         g_strv_length(tokens) < 20) {

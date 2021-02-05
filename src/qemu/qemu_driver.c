@@ -1365,7 +1365,7 @@ qemuGetSchedInfo(unsigned long long *cpuWait,
     if (virFileReadAll(proc, (1<<16), &data) < 0)
         goto cleanup;
 
-    lines = virStringSplit(data, "\n", 0);
+    lines = g_strsplit(data, "\n", 0);
     if (!lines)
         goto cleanup;
 

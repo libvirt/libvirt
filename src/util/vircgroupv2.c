@@ -285,7 +285,7 @@ virCgroupV2ParseControllersFile(virCgroupPtr group,
 
     virTrimSpaces(contStr, NULL);
 
-    contList = virStringSplit(contStr, " ", 20);
+    contList = g_strsplit(contStr, " ", 20);
     if (!contList)
         return -1;
 

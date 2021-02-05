@@ -148,14 +148,14 @@ virStorageBackendSheepdogRefreshAllVol(virStoragePoolObjPtr pool)
     if (virCommandRun(cmd, NULL) < 0)
         return -1;
 
-    lines = virStringSplit(output, "\n", 0);
+    lines = g_strsplit(output, "\n", 0);
     if (lines == NULL)
         return -1;
 
     for (i = 0; lines[i]; i++) {
         g_auto(GStrv) cells = NULL;
 
-        cells = virStringSplit(lines[i], " ", 0);
+        cells = g_strsplit(lines[i], " ", 0);
 
         if (cells != NULL && cells[0] && cells[1]) {
             if (virStorageBackendSheepdogAddVolume(pool, cells[1]) < 0)

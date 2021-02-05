@@ -195,7 +195,7 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
     if (virCommandRun(cmd, NULL) < 0)
         return -1;
 
-    if (!(lines = virStringSplit(volumes_list, "\n", 0)))
+    if (!(lines = g_strsplit(volumes_list, "\n", 0)))
         return -1;
 
     for (i = 0; lines[i]; i++) {
@@ -230,7 +230,7 @@ virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool G_GNUC_UNUSED)
      *
      * Here we just provide a list of properties we want to see
      */
-    if (!(name_tokens = virStringSplit(def->source.name, "/", 0)))
+    if (!(name_tokens = g_strsplit(def->source.name, "/", 0)))
         goto cleanup;
 
     cmd = virCommandNewArgList(ZPOOL,
@@ -242,7 +242,7 @@ virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool G_GNUC_UNUSED)
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
-    if (!(lines = virStringSplit(zpool_props, "\n", 0)))
+    if (!(lines = g_strsplit(zpool_props, "\n", 0)))
         goto cleanup;
 
     for (i = 0; lines[i]; i++) {

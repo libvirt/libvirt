@@ -961,7 +961,7 @@ virNetSocketNewConnectLibSSH2(const char *host,
 
     virNetSSHSessionSetChannelCommand(sess, command);
 
-    if (!(authMethodList = virStringSplit(authMethods, ",", 0)))
+    if (!(authMethodList = g_strsplit(authMethods, ",", 0)))
         goto error;
 
     for (authMethodNext = authMethodList; *authMethodNext; authMethodNext++) {
@@ -1092,7 +1092,7 @@ virNetSocketNewConnectLibssh(const char *host,
 
     virNetLibsshSessionSetChannelCommand(sess, command);
 
-    if (!(authMethodList = virStringSplit(authMethods, ",", 0)))
+    if (!(authMethodList = g_strsplit(authMethods, ",", 0)))
         goto error;
 
     for (authMethodNext = authMethodList; *authMethodNext; authMethodNext++) {

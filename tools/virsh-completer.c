@@ -108,7 +108,7 @@ virshCommaStringListComplete(const char *input,
             g_clear_pointer(&inputCopy, g_free);
     }
 
-    if (inputCopy && !(inputList = virStringSplit(inputCopy, ",", 0)))
+    if (inputCopy && !(inputList = g_strsplit(inputCopy, ",", 0)))
         return NULL;
 
     ret = g_new0(char *, optionsLen + 1);

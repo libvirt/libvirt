@@ -54,7 +54,7 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
     src->hosts = g_new0(virStorageNetHostDef, 1);
     src->nhosts = 1;
 
-    if (!(scheme = virStringSplit(uri->scheme, "+", 2)))
+    if (!(scheme = g_strsplit(uri->scheme, "+", 2)))
         return -1;
 
     if (!scheme[0] ||
@@ -165,7 +165,7 @@ virStorageSourceRBDAddHost(virStorageSourcePtr src,
             goto error;
     }
 
-    parts = virStringSplit(hostport, "\\:", 0);
+    parts = g_strsplit(hostport, "\\:", 0);
     if (!parts)
         goto error;
     src->hosts[src->nhosts-1].name = virStringListJoin((const char **)parts, ":");

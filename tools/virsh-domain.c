@@ -4057,7 +4057,7 @@ cmdStartGetFDs(vshControl *ctl,
     if (vshCommandOptStringQuiet(ctl, cmd, "pass-fds", &fdopt) <= 0)
         return 0;
 
-    if (!(fdlist = virStringSplit(fdopt, ",", -1))) {
+    if (!(fdlist = g_strsplit(fdopt, ",", -1))) {
         vshError(ctl, _("Unable to split FD list '%s'"), fdopt);
         return -1;
     }
@@ -5929,7 +5929,7 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "mode", &mode) < 0)
         return false;
 
-    if (mode && !(modes = virStringSplit(mode, ",", 0))) {
+    if (mode && !(modes = g_strsplit(mode, ",", 0))) {
         vshError(ctl, "%s", _("Cannot parse mode string"));
         return false;
     }
@@ -6013,7 +6013,7 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "mode", &mode) < 0)
         return false;
 
-    if (mode && !(modes = virStringSplit(mode, ",", 0))) {
+    if (mode && !(modes = g_strsplit(mode, ",", 0))) {
         vshError(ctl, "%s", _("Cannot parse mode string"));
         return false;
     }
@@ -10784,7 +10784,7 @@ doMigrate(void *opaque)
     if (opt) {
         char **val = NULL;
 
-        val = virStringSplit(opt, ",", 0);
+        val = g_strsplit(opt, ",", 0);
 
         if (virTypedParamsAddStringList(&params,
                                         &nparams,
@@ -10801,7 +10801,7 @@ doMigrate(void *opaque)
     if (vshCommandOptStringReq(ctl, cmd, "comp-methods", &opt) < 0)
         goto out;
     if (opt) {
-        char **val = virStringSplit(opt, ",", 0);
+        char **val = g_strsplit(opt, ",", 0);
 
         if (virTypedParamsAddStringList(&params,
                                         &nparams,
@@ -14388,7 +14388,7 @@ cmdSetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
 
-        if (!(keys = virStringSplit(buffer, "\n", -1)))
+        if (!(keys = g_strsplit(buffer, "\n", -1)))
             goto cleanup;
 
         nkeys = g_strv_length(keys);

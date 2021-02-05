@@ -719,7 +719,7 @@ virFirewallApplyRule(virFirewallPtr firewall,
     }
 
     if (rule->queryCB && output) {
-        if (!(lines = virStringSplit(output, "\n", -1)))
+        if (!(lines = g_strsplit(output, "\n", -1)))
             return -1;
 
         VIR_DEBUG("Invoking query %p with '%s'", rule->queryCB, output);

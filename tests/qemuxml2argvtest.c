@@ -149,7 +149,7 @@ fakeStorageVolLookupByName(virStoragePoolPtr pool,
     if (!strchr(name, '+'))
         goto fallback;
 
-    if (!(volinfo = virStringSplit(name, "+", 2)))
+    if (!(volinfo = g_strsplit(name, "+", 2)))
         return NULL;
 
     if (!volinfo[1])

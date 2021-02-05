@@ -440,7 +440,7 @@ virQEMUQAPISchemaPathGet(const char *query,
     if (entry)
         *entry = NULL;
 
-    if (!(elems = virStringSplit(query, "/", 0)))
+    if (!(elems = g_strsplit(query, "/", 0)))
         return -1;
 
     if (!*elems) {

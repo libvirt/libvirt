@@ -420,7 +420,7 @@ xenParsePCI(char *entry)
         return NULL;
 
     str = nextstr;
-    if (str && (options = virStringSplit(str, ",", 0))) {
+    if (str && (options = g_strsplit(str, ",", 0))) {
         size_t i;
 
         for (i = 0; options[i] != NULL; i++) {
@@ -1051,7 +1051,7 @@ xenParseVifBridge(virDomainNetDefPtr net, char *bridge)
         /* 'bridge' string contains a bridge name and one or more vlan trunks */
         size_t i;
         size_t nvlans = 0;
-        char **vlanstr_list = virStringSplit(bridge, ":", 0);
+        char **vlanstr_list = g_strsplit(bridge, ":", 0);
 
         if (!vlanstr_list)
             return -1;
@@ -1258,7 +1258,7 @@ xenParseVif(char *entry, const char *vif_typename)
             goto cleanup;
     }
     if (ip[0]) {
-        char **ip_list = virStringSplit(ip, " ", 0);
+        char **ip_list = g_strsplit(ip, " ", 0);
         size_t i;
 
         if (!ip_list)

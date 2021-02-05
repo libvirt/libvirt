@@ -806,7 +806,7 @@ virAppendBootloaderArgs(virCommandPtr cmd, virDomainDefPtr def)
     char **blargs;
 
     /* XXX: Handle quoted? */
-    blargs = virStringSplit(def->os.bootloaderArgs, " ", 0);
+    blargs = g_strsplit(def->os.bootloaderArgs, " ", 0);
     virCommandAddArgSet(cmd, (const char * const *)blargs);
     g_strfreev(blargs);
 }

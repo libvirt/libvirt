@@ -1305,7 +1305,7 @@ virStorageCheckCompat(const char *compat)
     if (!compat)
         return 0;
 
-    version = virStringSplit(compat, ".", 2);
+    version = g_strsplit(compat, ".", 2);
     if (!version || !version[1] ||
         virStrToLong_ui(version[0], NULL, 10, &result) < 0 ||
         virStrToLong_ui(version[1], NULL, 10, &result) < 0) {
