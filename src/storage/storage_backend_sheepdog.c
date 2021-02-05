@@ -140,7 +140,6 @@ virStorageBackendSheepdogRefreshAllVol(virStoragePoolObjPtr pool)
     size_t i;
     g_autofree char *output = NULL;
     g_auto(GStrv) lines = NULL;
-    g_auto(GStrv) cells = NULL;
     g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(SHEEPDOGCLI, "vdi", "list", "-r", NULL);
@@ -154,20 +153,15 @@ virStorageBackendSheepdogRefreshAllVol(virStoragePoolObjPtr pool)
         return -1;
 
     for (i = 0; lines[i]; i++) {
-        const char *line = lines[i];
-        if (line == NULL)
-            break;
+        g_auto(GStrv) cells = NULL;
 
-        cells = virStringSplit(line, " ", 0);
+        cells = virStringSplit(lines[i], " ", 0);
 
         if (cells != NULL &&
             virStringListLength((const char * const *)cells) > 2) {
             if (virStorageBackendSheepdogAddVolume(pool, cells[1]) < 0)
                 return -1;
         }
-
-        g_strfreev(cells);
-        cells = NULL;
     }
 
     return 0;
