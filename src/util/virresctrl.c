@@ -2662,6 +2662,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
     char *filepath = NULL;
     struct dirent *ent = NULL;
     virResctrlMonitorStatsPtr stat = NULL;
+    size_t nresources = g_strv_length((char **) resources);
 
     if (!monitor) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2705,6 +2706,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
             continue;
 
         stat = g_new0(virResctrlMonitorStats, 1);
+        stat->features = g_new0(char *, nresources + 1);
 
         /* The node ID number should be here, parsing it. */
         if (virStrToLong_uip(node_id, NULL, 0, &stat->id) < 0)
@@ -2724,8 +2726,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
             if (VIR_APPEND_ELEMENT(stat->vals, stat->nvals, val) < 0)
                 goto cleanup;
 
-            if (virStringListAdd(&stat->features, resources[i]) < 0)
-                goto cleanup;
+            stat->features[i] = g_strdup(resources[i]);
         }
 
         if (VIR_APPEND_ELEMENT(*stats, *nstats, stat) < 0)
