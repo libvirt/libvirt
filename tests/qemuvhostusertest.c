@@ -57,14 +57,14 @@ testVUPrecedence(const void *opaque G_GNUC_UNUSED)
 {
     g_autofree char *fakehome = NULL;
     g_auto(GStrv) vuList = NULL;
-    size_t nvuList;
-    size_t i;
     const char *expected[] = {
         PREFIX "/share/qemu/vhost-user/30-gpu.json",
         SYSCONFDIR "/qemu/vhost-user/40-gpu.json",
         PREFIX "/share/qemu/vhost-user/60-gpu.json",
+        NULL
     };
-    const size_t nexpected = G_N_ELEMENTS(expected);
+    const char **e;
+    GStrv f;
 
     fakehome = g_strdup(abs_srcdir "/qemuvhostuserdata/home/user/.config");
 
@@ -78,18 +78,18 @@ testVUPrecedence(const void *opaque G_GNUC_UNUSED)
         return -1;
     }
 
-    nvuList = virStringListLength((const char **)vuList);
-
-    for (i = 0; i < MAX(nvuList, nexpected); i++) {
-        const char *e = i < nexpected ? expected[i] : NULL;
-        const char *f = i < nvuList ? vuList[i] : NULL;
-
-        if (STRNEQ_NULLABLE(e, f)) {
+    for (e = expected, f = vuList; *f || *e;) {
+        if (STRNEQ_NULLABLE(*f, *e)) {
             fprintf(stderr,
-                    "Unexpected path (i=%zu). Expected %s got %s \n",
-                    i, NULLSTR(e), NULLSTR(f));
+                    "Unexpected path. Expected %s got %s \n",
+                     NULLSTR(*e), NULLSTR(*f));
             return -1;
         }
+
+        if (*f)
+            f++;
+        if (*e)
+            e++;
     }
 
     return 0;
