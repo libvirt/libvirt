@@ -946,7 +946,6 @@ virCgroupV1SetBlkioWeight(virCgroupPtr group,
                           unsigned int weight)
 {
     g_autofree char *path = NULL;
-    g_autofree char *value = NULL;
 
     if (virCgroupV1PathOfController(group, VIR_CGROUP_CONTROLLER_BLKIO,
                                     "blkio.bfq.weight", &path) < 0) {
@@ -968,9 +967,15 @@ virCgroupV1SetBlkioWeight(virCgroupPtr group,
         return -1;
     }
 
-    value = g_strdup_printf("%u", weight);
+    if (group->unitName) {
+        GVariant *value = g_variant_new("t", weight);
 
-    return virCgroupSetValueRaw(path, value);
+        return virCgroupSetValueDBus(group->unitName, "BlockIOWeight", value);
+    } else {
+        g_autofree char *value = g_strdup_printf("%u", weight);
+
+        return virCgroupSetValueRaw(path, value);
+    }
 }
 
 
@@ -1203,14 +1208,7 @@ virCgroupV1SetBlkioDeviceWeight(virCgroupPtr group,
                                 const char *devPath,
                                 unsigned int weight)
 {
-    g_autofree char *str = NULL;
-    g_autofree char *blkstr = NULL;
     g_autofree char *path = NULL;
-
-    if (!(blkstr = virCgroupGetBlockDevString(devPath)))
-        return -1;
-
-    str = g_strdup_printf("%s%d", blkstr, weight);
 
     if (virCgroupV1PathOfController(group, VIR_CGROUP_CONTROLLER_BLKIO,
                                     "blkio.weight_device", &path) < 0) {
@@ -1223,7 +1221,23 @@ virCgroupV1SetBlkioDeviceWeight(virCgroupPtr group,
         return -1;
     }
 
-    return virCgroupSetValueRaw(path, str);
+    if (group->unitName) {
+        GVariant *value = NULL;
+
+        value = g_variant_new_parsed("[(%s, uint64 %u)]", path, weight);
+
+        return virCgroupSetValueDBus(group->unitName, "BlockIODeviceWeight", value);
+    } else {
+        g_autofree char *str = NULL;
+        g_autofree char *blkstr = NULL;
+
+        if (!(blkstr = virCgroupGetBlockDevString(devPath)))
+            return -1;
+
+        str = g_strdup_printf("%s%d", blkstr, weight);
+
+        return virCgroupSetValueRaw(path, str);
+    }
 }
 
 
@@ -1862,9 +1876,15 @@ static int
 virCgroupV1SetCpuShares(virCgroupPtr group,
                         unsigned long long shares)
 {
-    return virCgroupSetValueU64(group,
-                                VIR_CGROUP_CONTROLLER_CPU,
-                                "cpu.shares", shares);
+    if (group->unitName) {
+        GVariant *value = g_variant_new("t", shares);
+
+        return virCgroupSetValueDBus(group->unitName, "CPUShares", value);
+    } else {
+        return virCgroupSetValueU64(group,
+                                    VIR_CGROUP_CONTROLLER_CPU,
+                                    "cpu.shares", shares);
+    }
 }
 
 

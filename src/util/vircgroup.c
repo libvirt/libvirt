@@ -41,6 +41,7 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "virfile.h"
+#include "virgdbus.h"
 #include "virhash.h"
 #include "virstring.h"
 #include "virsystemd.h"
@@ -481,6 +482,37 @@ virCgroupGetBlockDevString(const char *path)
     /* Automatically append space after the string since all callers
      * use it anyway */
     return g_strdup_printf("%d:%d ", major(sb.st_rdev), minor(sb.st_rdev));
+}
+
+
+int
+virCgroupSetValueDBus(const char *unitName,
+                      const char *key,
+                      GVariant *value)
+{
+    GDBusConnection *conn;
+    g_autoptr(GVariant) message = NULL;
+    GVariantBuilder builder;
+    GVariant *props = NULL;
+
+    g_variant_builder_init(&builder, G_VARIANT_TYPE("a(sv)"));
+    g_variant_builder_add(&builder, "(sv)", key, value);
+    props = g_variant_builder_end(&builder);
+
+    message = g_variant_new("(sb@a(sv))", unitName, true, props);
+
+    if (!(conn = virGDBusGetSystemBus()))
+        return -1;
+
+    return virGDBusCallMethod(conn,
+                              NULL,
+                              NULL,
+                              NULL,
+                              "org.freedesktop.systemd1",
+                              "/org/freedesktop/systemd1",
+                              "org.freedesktop.systemd1.Manager",
+                              "SetUnitProperties",
+                              message);
 }
 
 
@@ -1129,6 +1161,10 @@ virCgroupNewDetectMachine(const char *name,
         }
     }
 
+    newGroup->unitName = virSystemdGetMachineUnitByPID(pid);
+    if (virSystemdHasMachined() == 0 && !newGroup->unitName)
+        return -1;
+
     *group = g_steal_pointer(&newGroup);
     return 0;
 }
@@ -1227,6 +1263,10 @@ virCgroupNewMachineSystemd(const char *name,
     }
 
     if (virCgroupEnableMissingControllers(path, controllers, &newGroup) < 0)
+        return -1;
+
+    newGroup->unitName = virSystemdGetMachineUnitByPID(pidleader);
+    if (!newGroup->unitName)
         return -1;
 
     if (virCgroupAddProcess(newGroup, pidleader) < 0) {
@@ -3588,6 +3628,7 @@ virCgroupFree(virCgroupPtr group)
 
     g_free(group->unified.mountPoint);
     g_free(group->unified.placement);
+    g_free(group->unitName);
 
     g_free(group);
 }

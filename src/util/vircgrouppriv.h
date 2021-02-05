@@ -64,7 +64,13 @@ struct _virCgroup {
 
     virCgroupV1Controller legacy[VIR_CGROUP_CONTROLLER_LAST];
     virCgroupV2Controller unified;
+
+    char *unitName;
 };
+
+int virCgroupSetValueDBus(const char *unitName,
+                          const char *key,
+                          GVariant *value);
 
 int virCgroupSetValueRaw(const char *path,
                          const char *value);
