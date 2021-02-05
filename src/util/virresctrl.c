@@ -1009,14 +1009,14 @@ virResctrlInfoGetMonitorPrefix(virResctrlInfoPtr resctrl,
         mon->cache_level = mongrp_info->cache_level;
     }
 
+    mon->features = g_new0(char *, mongrp_info->nfeatures + 1);
+
     for (i = 0; i < mongrp_info->nfeatures; i++) {
-        if (STRPREFIX(mongrp_info->features[i], prefix)) {
-            if (virStringListAdd(&mon->features,
-                                 mongrp_info->features[i]) < 0)
-                goto cleanup;
-            mon->nfeatures++;
-        }
+        if (STRPREFIX(mongrp_info->features[i], prefix))
+            mon->features[mon->nfeatures++] = g_strdup(mongrp_info->features[i]);
     }
+
+    mon->features = g_renew(char *, mon->features, mon->nfeatures + 1);
 
     ret = 0;
 
