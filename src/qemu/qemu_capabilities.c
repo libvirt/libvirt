@@ -2334,6 +2334,7 @@ virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
         cpus = virQEMUCapsGetAccel(qemuCaps, type)->cpuModels;
         return cpus && cpus->ncpus > 0;
 
+    case VIR_CPU_MODE_MAXIMUM:
     case VIR_CPU_MODE_LAST:
         break;
     }

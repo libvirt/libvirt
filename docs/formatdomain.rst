@@ -1226,6 +1226,13 @@ following collection of elements. :since:`Since 0.7.5`
      <feature policy='disable' name='lahf_lm'/>
    ...
 
+::
+
+   <cpu mode='maximum' migratable='off'>
+     <cache mode='passthrough'/>
+     <feature policy='disable' name='lahf_lm'/>
+   ...
+
 In case no restrictions need to be put on CPU model and its features, a simpler
 ``cpu`` element can be used. :since:`Since 0.7.6`
 
@@ -1351,6 +1358,18 @@ In case no restrictions need to be put on CPU model and its features, a simpler
       another host safer: even with ``migratable='on'`` migration will be
       dangerous unless both hosts are identical as described above.
 
+   ``maximum``
+      When running a guest with hardware virtualization this CPU model is
+      functionally identical to ``host-passthrough``, so refer to the docs
+      above.
+
+      When running a guest with CPU emulation, this CPU model will enable
+      the maximum set of features that the emulation engine is able to support.
+      Note that even with ``migratable='on'`` migration will be dangerous
+      unless both hosts are running identical versions of the emulation code.
+
+      :since:`Since 7.1.0` with the QEMU driver.
+
    Both ``host-model`` and ``host-passthrough`` modes make sense when a domain
    can run directly on the host CPUs (for example, domains with type ``kvm``).
    The actual host CPU is irrelevant for domains with emulated virtual CPUs
@@ -1358,6 +1377,11 @@ In case no restrictions need to be put on CPU model and its features, a simpler
    ``host-model`` may be implemented even for domains running on emulated CPUs
    in which case the best CPU the hypervisor is able to emulate may be used
    rather then trying to mimic the host CPU model.
+
+   If an application does not care about a specific CPU, just wants the
+   best featureset without a need for migration compatibility, the
+   ``maximum`` model is a good choice on hypervisors where it is available.
+
 ``model``
    The content of the ``model`` element specifies CPU model requested by the
    guest. The list of available CPU models and their definition can be found in

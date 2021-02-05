@@ -6356,6 +6356,7 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         virBufferAdd(buf, cpu->model, -1);
         break;
 
+    case VIR_CPU_MODE_MAXIMUM:
     case VIR_CPU_MODE_LAST:
         break;
     }

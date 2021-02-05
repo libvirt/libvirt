@@ -4151,6 +4151,7 @@ qemuDomainDefCPUPostParse(virDomainDefPtr def,
             def->cpu->check = VIR_CPU_CHECK_PARTIAL;
         break;
 
+    case VIR_CPU_MODE_MAXIMUM:
     case VIR_CPU_MODE_LAST:
         break;
     }

@@ -396,6 +396,7 @@ qemuValidateDomainDefCpu(virQEMUDriverPtr driver,
          * CUSTOM.
          */
         break;
+    case VIR_CPU_MODE_MAXIMUM:
     case VIR_CPU_MODE_CUSTOM:
     case VIR_CPU_MODE_LAST:
         break;

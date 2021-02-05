@@ -563,6 +563,7 @@ virCPUUpdate(virArch arch,
 
     switch ((virCPUMode) guest->mode) {
     case VIR_CPU_MODE_HOST_PASSTHROUGH:
+    case VIR_CPU_MODE_MAXIMUM:
         return 0;
 
     case VIR_CPU_MODE_HOST_MODEL:

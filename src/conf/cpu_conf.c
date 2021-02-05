@@ -44,6 +44,7 @@ VIR_ENUM_IMPL(virCPUMode,
               "custom",
               "host-model",
               "host-passthrough",
+              "maximum",
 );
 
 VIR_ENUM_IMPL(virCPUMatch,
@@ -402,10 +403,11 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     if ((migratable = virXMLPropString(ctxt->node, "migratable"))) {
         int val;
 
-        if (def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+        if (def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
+            def->mode != VIR_CPU_MODE_MAXIMUM) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Attribute migratable is only allowed for "
-                             "host-passthrough CPU"));
+                             "'host-passthrough' / 'maximum' CPU mode"));
             return -1;
         }
 
@@ -500,7 +502,8 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     }
 
     if (def->type == VIR_CPU_TYPE_GUEST &&
-        def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+        def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
+        def->mode != VIR_CPU_MODE_MAXIMUM) {
 
         if ((fallback = virXPathString("string(./model[1]/@fallback)", ctxt))) {
             if ((def->fallback = virCPUFallbackTypeFromString(fallback)) < 0) {
@@ -727,7 +730,9 @@ virCPUDefFormatBufFull(virBufferPtr buf,
                               virCPUCheckTypeToString(def->check));
         }
 
-        if (def->mode == VIR_CPU_MODE_HOST_PASSTHROUGH && def->migratable) {
+        if ((def->mode == VIR_CPU_MODE_HOST_PASSTHROUGH ||
+             def->mode == VIR_CPU_MODE_MAXIMUM) &&
+            def->migratable) {
             virBufferAsprintf(&attributeBuf, " migratable='%s'",
                               virTristateSwitchTypeToString(def->migratable));
         }
