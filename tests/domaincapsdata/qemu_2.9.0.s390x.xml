@@ -30,6 +30,7 @@
         <value>off</value>
       </enum>
     </mode>
+    <mode name='maximum' supported='no'/>
     <mode name='host-model' supported='yes'>
       <model fallback='forbid'>z13.2-base</model>
       <feature policy='require' name='aefsi'/>

@@ -166,6 +166,8 @@ typedef virDomainCapsCPU *virDomainCapsCPUPtr;
 struct _virDomainCapsCPU {
     bool hostPassthrough;
     virDomainCapsEnum hostPassthroughMigratable;
+    bool maximum;
+    virDomainCapsEnum maximumMigratable;
     virCPUDefPtr hostModel;
     virDomainCapsCPUModelsPtr custom;
 };

@@ -88,6 +88,7 @@
   <define name="cpu">
     <element name="cpu">
       <ref name="cpuHost"/>
+      <ref name="cpuMax"/>
       <ref name="cpuHostModel"/>
       <ref name="cpuCustom"/>
     </element>
@@ -97,6 +98,18 @@
     <element name="mode">
       <attribute name="name">
         <value>host-passthrough</value>
+      </attribute>
+      <ref name="supported"/>
+      <optional>
+        <ref name="enum"/>
+      </optional>
+    </element>
+  </define>
+
+  <define name="cpuMax">
+    <element name="mode">
+      <attribute name="name">
+        <value>maximum</value>
       </attribute>
       <ref name="supported"/>
       <optional>

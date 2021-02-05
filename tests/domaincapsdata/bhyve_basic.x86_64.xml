@@ -8,6 +8,7 @@
   </os>
   <cpu>
     <mode name='host-passthrough' supported='no'/>
+    <mode name='maximum' supported='no'/>
     <mode name='host-model' supported='no'/>
     <mode name='custom' supported='no'/>
   </cpu>

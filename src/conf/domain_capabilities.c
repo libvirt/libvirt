@@ -415,6 +415,21 @@ virDomainCapsCPUFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
+    virBufferAsprintf(buf, "<mode name='%s' supported='%s'",
+                      virCPUModeTypeToString(VIR_CPU_MODE_MAXIMUM),
+                      cpu->maximum ? "yes" : "no");
+
+    if (cpu->maximum && cpu->maximumMigratable.report) {
+        virBufferAddLit(buf, ">\n");
+        virBufferAdjustIndent(buf, 2);
+        ENUM_PROCESS(cpu, maximumMigratable,
+                     virTristateSwitchTypeToString);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</mode>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
+
     virBufferAsprintf(buf, "<mode name='%s' ",
                       virCPUModeTypeToString(VIR_CPU_MODE_HOST_MODEL));
     if (cpu->hostModel) {
