@@ -133,31 +133,28 @@ virMacMapLoadFile(virMacMapPtr mgr,
     g_autoptr(virJSONValue) map = NULL;
     int map_str_len = 0;
     size_t i;
-    int ret = -1;
 
     if (virFileExists(file) &&
         (map_str_len = virFileReadAll(file,
                                       VIR_MAC_MAP_FILE_SIZE_MAX,
                                       &map_str)) < 0)
-        goto cleanup;
+        return -1;
 
-    if (map_str_len == 0) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (map_str_len == 0)
+        return 0;
 
     if (!(map = virJSONValueFromString(map_str))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid json in file: %s"),
                        file);
-        goto cleanup;
+        return -1;
     }
 
     if (!virJSONValueIsArray(map)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Malformed file structure: %s"),
                        file);
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < virJSONValueArraySize(map); i++) {
@@ -169,13 +166,13 @@ virMacMapLoadFile(virMacMapPtr mgr,
         if (!(domain = virJSONValueObjectGetString(tmp, "domain"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing domain"));
-            goto cleanup;
+            return -1;
         }
 
         if (!(macs = virJSONValueObjectGetArray(tmp, "macs"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing macs"));
-            goto cleanup;
+            return -1;
         }
 
         for (j = 0; j < virJSONValueArraySize(macs); j++) {
@@ -183,13 +180,11 @@ virMacMapLoadFile(virMacMapPtr mgr,
             const char *mac = virJSONValueGetString(macJSON);
 
             if (virMacMapAddLocked(mgr, domain, mac) < 0)
-                goto cleanup;
+                return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -202,7 +197,6 @@ virMACMapHashDumper(void *payload,
     g_autoptr(virJSONValue) arr = virJSONValueNewArray();
     const char **macs = payload;
     size_t i;
-    int ret = -1;
 
     for (i = 0; macs[i]; i++) {
         virJSONValuePtr m = virJSONValueNewString(macs[i]);
@@ -210,22 +204,20 @@ virMACMapHashDumper(void *payload,
         if (!m ||
             virJSONValueArrayAppend(arr, m) < 0) {
             virJSONValueFree(m);
-            goto cleanup;
+            return -1;
         }
     }
 
     if (virJSONValueObjectAppendString(obj, "domain", name) < 0 ||
         virJSONValueObjectAppend(obj, "macs", arr) < 0)
-        goto cleanup;
+        return -1;
     arr = NULL;
 
     if (virJSONValueArrayAppend(data, obj) < 0)
-        goto cleanup;
+        return -1;
     obj = NULL;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -234,17 +226,14 @@ virMacMapDumpStrLocked(virMacMapPtr mgr,
                        char **str)
 {
     g_autoptr(virJSONValue) arr = virJSONValueNewArray();
-    int ret = -1;
 
     if (virHashForEachSorted(mgr->macs, virMACMapHashDumper, arr) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(*str = virJSONValueToString(arr, true)))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
