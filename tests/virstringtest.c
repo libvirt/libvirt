@@ -74,65 +74,6 @@ static int testStreq(const void *args)
     return 0;
 }
 
-struct testSplitData {
-    const char *string;
-    const char *delim;
-    size_t max_tokens;
-    const char **tokens;
-};
-
-
-static int testSplit(const void *args)
-{
-    const struct testSplitData *data = args;
-    char **got;
-    size_t ntokens;
-    size_t exptokens = 0;
-    char **tmp1;
-    const char **tmp2;
-    int ret = -1;
-
-    if (!(got = virStringSplitCount(data->string, data->delim,
-                                    data->max_tokens, &ntokens))) {
-        VIR_DEBUG("Got no tokens at all");
-        return -1;
-    }
-
-    tmp1 = got;
-    tmp2 = data->tokens;
-    while (*tmp1 && *tmp2) {
-        if (STRNEQ(*tmp1, *tmp2)) {
-            fprintf(stderr, "Mismatch '%s' vs '%s'\n", *tmp1, *tmp2);
-            goto cleanup;
-        }
-        tmp1++;
-        tmp2++;
-        exptokens++;
-    }
-    if (*tmp1) {
-        fprintf(stderr, "Too many pieces returned\n");
-        goto cleanup;
-    }
-    if (*tmp2) {
-        fprintf(stderr, "Too few pieces returned\n");
-        goto cleanup;
-    }
-
-    if (ntokens != exptokens) {
-        fprintf(stderr,
-                "Returned token count (%zu) doesn't match "
-                "expected count (%zu)",
-                ntokens, exptokens);
-        goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    g_strfreev(got);
-
-    return ret;
-}
-
 
 static int
 testStringSortCompare(const void *opaque G_GNUC_UNUSED)
@@ -568,44 +509,6 @@ mymain(void)
     TEST_STREQ("", NULL);
     TEST_STREQ("", "");
     TEST_STREQ("hello", "hello");
-
-#define TEST_SPLIT(str, del, max, toks) \
-    do { \
-        struct testSplitData splitData = { \
-            .string = str, \
-            .delim = del, \
-            .max_tokens = max, \
-            .tokens = toks, \
-        }; \
-        if (virTestRun("Split " #str, testSplit, &splitData) < 0) \
-            ret = -1; \
-    } while (0)
-
-    VIR_WARNINGS_NO_DECLARATION_AFTER_STATEMENT
-    const char *tokens1[] = { NULL };
-    TEST_SPLIT("", " ", 0, tokens1);
-
-    const char *tokens2[] = { "", "", NULL };
-    TEST_SPLIT(" ", " ", 0, tokens2);
-
-    const char *tokens3[] = { "", "", "", NULL };
-    TEST_SPLIT("  ", " ", 0, tokens3);
-
-    const char *tokens4[] = { "The", "quick", "brown", "fox", NULL };
-    TEST_SPLIT("The quick brown fox", " ", 0, tokens4);
-
-    const char *tokens5[] = { "The quick ", " fox", NULL };
-    TEST_SPLIT("The quick brown fox", "brown", 0, tokens5);
-
-    const char *tokens6[] = { "", "The", "quick", "brown", "fox", NULL };
-    TEST_SPLIT(" The quick brown fox", " ", 0, tokens6);
-
-    const char *tokens7[] = { "The", "quick", "brown", "fox", "", NULL };
-    TEST_SPLIT("The quick brown fox ", " ", 0, tokens7);
-
-    const char *tokens8[] = { "gluster", "rdma", NULL };
-    TEST_SPLIT("gluster+rdma", "+", 2, tokens8);
-    VIR_WARNINGS_RESET
 
     if (virTestRun("virStringSortCompare", testStringSortCompare, NULL) < 0)
         ret = -1;
