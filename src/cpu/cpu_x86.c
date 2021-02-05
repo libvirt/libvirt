@@ -1604,10 +1604,13 @@ x86ModelParseFeatures(virCPUx86ModelPtr model,
 {
     g_autofree xmlNodePtr *nodes = NULL;
     size_t i;
+    size_t nremoved = 0;
     int n;
 
     if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) <= 0)
         return n;
+
+    model->removedFeatures = g_new0(char *, n + 1);
 
     for (i = 0; i < n; i++) {
         g_autofree char *ftname = NULL;
@@ -1640,8 +1643,7 @@ x86ModelParseFeatures(virCPUx86ModelPtr model,
             }
 
             if (rem == VIR_TRISTATE_BOOL_YES) {
-                if (virStringListAdd(&model->removedFeatures, ftname) < 0)
-                    return -1;
+                model->removedFeatures[nremoved++] = g_strdup(ftname);
                 continue;
             }
         }
@@ -1649,6 +1651,8 @@ x86ModelParseFeatures(virCPUx86ModelPtr model,
         if (x86DataAdd(&model->data, &feature->data))
             return -1;
     }
+
+    model->removedFeatures = g_renew(char *, model->removedFeatures, nremoved + 1);
 
     return 0;
 }
