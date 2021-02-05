@@ -557,12 +557,19 @@ virCPUarmCpuDataFromRegs(virCPUarmData *data)
     size_t i;
 
 # if defined(WITH_GETAUXVAL)
-    if (!(getauxval(AT_HWCAP) & HWCAP_CPUID)) {
+    hwcaps = getauxval(AT_HWCAP);
+# elif defined(WITH_ELF_AUX_INFO)
+    elf_aux_info(AT_HWCAP, &hwcaps, sizeof(u_long));
+# else
+#  error No routines to retrieve a value from the auxiliary vector
+# endif
+    VIR_DEBUG("CPU flags read from register:  0x%016lx", hwcaps);
+
+    if (!(hwcaps & HWCAP_CPUID)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("CPUID registers unavailable"));
             return -1;
     }
-# endif
 
     /* read the cpuid data from MIDR_EL1 register */
     asm("mrs %0, MIDR_EL1" : "=r" (cpuid));
@@ -572,15 +579,6 @@ virCPUarmCpuDataFromRegs(virCPUarmData *data)
     data->pvr = (cpuid >> 4) & 0xfff;
     /* parse the corresponding vendor_id bits */
     data->vendor_id = (cpuid >> 24) & 0xff;
-
-# if defined(WITH_GETAUXVAL)
-    hwcaps = getauxval(AT_HWCAP);
-# elif defined(WITH_ELF_AUX_INFO)
-    elf_aux_info(AT_HWCAP, &hwcaps, sizeof(u_long));
-# else
-#  error No routines to retrieve a value from the auxiliary vector
-# endif
-    VIR_DEBUG("CPU flags read from register:  0x%016lx", hwcaps);
 
     features = g_new0(char *, MAX_CPU_FLAGS + 1);
 
