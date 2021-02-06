@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-01-08 17:11+0000\n"
-"PO-Revision-Date: 2021-02-03 18:40+0000\n"
+"PO-Revision-Date: 2021-02-06 19:40+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -470,7 +470,7 @@ msgstr ""
 
 #, c-format
 msgid "%s is not an executable"
-msgstr ""
+msgstr "%s ei pystytä suorittamaan"
 
 #, c-format
 msgid "%s is not available with this QEMU binary"
@@ -8791,7 +8791,7 @@ msgid "Hostdev source %s must be a block device"
 msgstr ""
 
 msgid "Hostname"
-msgstr ""
+msgstr "Koneen nimi"
 
 msgid "Hostname is needed for host key verification"
 msgstr ""
@@ -16252,9 +16252,9 @@ msgstr ""
 msgid "Unable to add lockspace %s"
 msgstr "Lukotilaa %s ei voi lisätä"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to add lockspace %s: %s"
-msgstr "Lohkotilastojen haku epäonnistui %s %s"
+msgstr "Lukkotilaa %s: %s ei voi lisätä"
 
 msgid "Unable to add media registry other media"
 msgstr ""
@@ -18253,7 +18253,7 @@ msgstr ""
 
 #, c-format
 msgid "Unexpected hostdev mode %d"
-msgstr ""
+msgstr "odottamaton hostdev moodi %d"
 
 msgid "Unexpected lock parameters for disk resource"
 msgstr ""
@@ -19026,7 +19026,7 @@ msgstr ""
 
 #, c-format
 msgid "Unsupported numatune mode '%d'"
-msgstr ""
+msgstr "ei tuettu numatune moodi %d"
 
 #, c-format
 msgid "Unsupported numatune placement '%d'"
@@ -19677,7 +19677,7 @@ msgid "add a column showing parent snapshot"
 msgstr ""
 
 msgid "add an IOThread to the guest domain"
-msgstr ""
+msgstr "lisää IO-säie vieras toimialueeseen"
 
 msgid "add backing chain information to block stats"
 msgstr ""
@@ -20771,7 +20771,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot create config directory %s"
-msgstr ""
+msgstr "Asetushakemistoa '%s' ei voitu luoda"
 
 #, c-format
 msgid "cannot create config directory '%s'"
@@ -21058,9 +21058,8 @@ msgstr ""
 msgid "cannot get current time"
 msgstr ""
 
-#, fuzzy
 msgid "cannot get disk location"
-msgstr "Levytietojen haku epäonnistui"
+msgstr "Levyn paikan haku epäonnistui"
 
 msgid "cannot get feature flags on macvtap tap"
 msgstr ""
@@ -21563,7 +21562,7 @@ msgstr ""
 msgid "cannot read %s value"
 msgstr "Ei voida lukea %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot read '%s'"
 msgstr "Ei voida lukea %s"
 
@@ -29260,9 +29259,8 @@ msgstr ""
 msgid "migration statistics are available only on the source host"
 msgstr ""
 
-#, fuzzy
 msgid "migration successfully aborted"
-msgstr "siirto-URI, voidaan yleensä jättää pois"
+msgstr "migraatio keskeytetty onnistuneesti"
 
 #, c-format
 msgid "migration successfully aborted: %s"
@@ -37178,9 +37176,9 @@ msgstr "merkkilaite '%s' ei tuettu"
 msgid "unsupported clock adjustment='reset'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported clock offset '%s'"
-msgstr "ei tuettu arkkitehtuuri: %s"
+msgstr "ei tuettu kellon siirtymä %s"
 
 #, c-format
 msgid "unsupported clock offset='%s'"
