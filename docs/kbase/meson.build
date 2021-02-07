@@ -10,6 +10,7 @@ docs_kbase_files = [
   'locking-lockd',
   'locking',
   'locking-sanlock',
+  'memorydevices',
   'merging_disk_image_chains',
   'migrationinternals',
   'qemu-core-dump',
