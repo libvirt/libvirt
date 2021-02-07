@@ -88,6 +88,7 @@ mymain(void)
     DO_TEST_DIFFERENT("bhyveload-bootorder4");
     DO_TEST_DIFFERENT("bhyveload-explicitargs");
     DO_TEST_DIFFERENT("console");
+    DO_TEST_DIFFERENT("console-master-slave-not-specified");
     DO_TEST_DIFFERENT("custom-loader");
     DO_TEST_DIFFERENT("disk-cdrom");
     DO_TEST_DIFFERENT("disk-cdrom-grub");

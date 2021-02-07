@@ -170,6 +170,20 @@ bhyveDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_GOP;
     }
 
+    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
+        dev->data.chr->source->type == VIR_DOMAIN_CHR_TYPE_NMDM) {
+        virDomainChrDefPtr chr = dev->data.chr;
+
+        if (!chr->source->data.nmdm.master) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+            virUUIDFormat(def->uuid, uuidstr);
+
+            chr->source->data.nmdm.master = g_strdup_printf("/dev/nmdm%sA", uuidstr);
+            chr->source->data.nmdm.slave = g_strdup_printf("/dev/nmdm%sB", uuidstr);
+        }
+    }
+
     return 0;
 }
 

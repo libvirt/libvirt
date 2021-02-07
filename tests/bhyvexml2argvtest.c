@@ -177,6 +177,7 @@ mymain(void)
     DO_TEST("macaddr");
     DO_TEST("serial");
     DO_TEST("console");
+    DO_TEST("console-master-slave-not-specified");
     DO_TEST("grub-defaults");
     DO_TEST("grub-bootorder");
     DO_TEST("grub-bootorder2");

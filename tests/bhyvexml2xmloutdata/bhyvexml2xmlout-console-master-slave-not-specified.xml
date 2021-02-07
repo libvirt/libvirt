@@ -1,0 +1,44 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>df3be7e7-a104-11e3-aeb0-50e5492bd3dc</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='hda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='2' unit='0'/>
+    </disk>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='isa' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </controller>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </controller>
+    <interface type='bridge'>
+      <mac address='52:54:00:b1:42:eb'/>
+      <source bridge='virbr0'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </interface>
+    <serial type='nmdm'>
+      <source master='/dev/nmdmdf3be7e7-a104-11e3-aeb0-50e5492bd3dcA' slave='/dev/nmdmdf3be7e7-a104-11e3-aeb0-50e5492bd3dcB'/>
+      <target port='0'/>
+    </serial>
+    <console type='nmdm'>
+      <source master='/dev/nmdmdf3be7e7-a104-11e3-aeb0-50e5492bd3dcA' slave='/dev/nmdmdf3be7e7-a104-11e3-aeb0-50e5492bd3dcB'/>
+      <target type='serial' port='0'/>
+    </console>
+  </devices>
+</domain>

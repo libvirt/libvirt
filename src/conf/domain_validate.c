@@ -559,17 +559,14 @@ virDomainChrSourceDefValidate(const virDomainChrSourceDef *src_def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_NMDM:
-        if (!src_def->data.nmdm.master) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing master path attribute for nmdm device"));
-            return -1;
+        if ((src_def->data.nmdm.master && !src_def->data.nmdm.slave) ||
+            (!src_def->data.nmdm.master && src_def->data.nmdm.slave)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Should define both master and slave "
+                                 "path attributes for nmdm device"));
+                return -1;
         }
 
-        if (!src_def->data.nmdm.slave) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing slave path attribute for nmdm device"));
-            return -1;
-        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
