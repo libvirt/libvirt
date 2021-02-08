@@ -4654,6 +4654,19 @@ qemuMonitorTransactionBitmapRemove(virJSONValuePtr actions,
 
 
 int
+qemuMonitorBitmapRemove(qemuMonitorPtr mon,
+                        const char *node,
+                        const char *name)
+{
+    VIR_DEBUG("node='%s', name='%s'", node, name);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONBitmapRemove(mon, node, name);
+}
+
+
+int
 qemuMonitorTransactionBitmapEnable(virJSONValuePtr actions,
                                    const char *node,
                                    const char *name)

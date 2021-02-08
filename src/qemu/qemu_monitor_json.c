@@ -9253,6 +9253,30 @@ qemuMonitorJSONTransactionBitmapRemove(virJSONValuePtr actions,
 
 
 int
+qemuMonitorJSONBitmapRemove(qemuMonitorPtr mon,
+                            const char *node,
+                            const char *name)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("block-dirty-bitmap-remove",
+                                           "s:node", node,
+                                           "s:name", name,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
 qemuMonitorJSONTransactionBitmapEnable(virJSONValuePtr actions,
                                        const char *node,
                                        const char *name)

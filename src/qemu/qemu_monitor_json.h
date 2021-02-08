@@ -659,6 +659,12 @@ int
 qemuMonitorJSONTransactionBitmapRemove(virJSONValuePtr actions,
                                        const char *node,
                                        const char *name);
+
+int
+qemuMonitorJSONBitmapRemove(qemuMonitorPtr mon,
+                            const char *node,
+                            const char *name);
+
 int
 qemuMonitorJSONTransactionBitmapEnable(virJSONValuePtr actions,
                                        const char *node,
