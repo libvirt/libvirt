@@ -487,6 +487,20 @@ struct _qemuDomainXmlNsDef {
     char **capsdel;
 };
 
+
+typedef struct _qemuDomainJobPrivateMigrateTempBitmap qemuDomainJobPrivateMigrateTempBitmap;
+typedef qemuDomainJobPrivateMigrateTempBitmap *qemuDomainJobPrivateMigrateTempBitmapPtr;
+
+struct _qemuDomainJobPrivateMigrateTempBitmap {
+    char *nodename;
+    char *bitmapname;
+};
+
+void
+qemuDomainJobPrivateMigrateTempBitmapFree(qemuDomainJobPrivateMigrateTempBitmapPtr bmp);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuDomainJobPrivateMigrateTempBitmap, qemuDomainJobPrivateMigrateTempBitmapFree);
+
+
 typedef struct _qemuDomainJobPrivate qemuDomainJobPrivate;
 typedef qemuDomainJobPrivate *qemuDomainJobPrivatePtr;
 struct _qemuDomainJobPrivate {
@@ -495,6 +509,7 @@ struct _qemuDomainJobPrivate {
     bool spiceMigrated;                 /* spice migration completed */
     bool dumpCompleted;                 /* dump completed */
     qemuMigrationParamsPtr migParams;
+    GSList *migTempBitmaps;  /* temporary block dirty bitmaps - qemuDomainJobPrivateMigrateTempBitmap */
 };
 
 int qemuDomainObjStartWorker(virDomainObjPtr dom);

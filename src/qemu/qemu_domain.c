@@ -86,6 +86,18 @@ qemuJobAllocPrivate(void)
 }
 
 
+void
+qemuDomainJobPrivateMigrateTempBitmapFree(qemuDomainJobPrivateMigrateTempBitmapPtr bmp)
+{
+    if (!bmp)
+        return;
+
+    g_free(bmp->nodename);
+    g_free(bmp->bitmapname);
+    g_free(bmp);
+}
+
+
 static void
 qemuJobFreePrivate(void *opaque)
 {
@@ -95,6 +107,9 @@ qemuJobFreePrivate(void *opaque)
         return;
 
     qemuMigrationParamsFree(priv->migParams);
+    if (priv->migTempBitmaps)
+        g_slist_free_full(priv->migTempBitmaps,
+                          (GDestroyNotify) qemuDomainJobPrivateMigrateTempBitmapFree);
     g_free(priv);
 }
 
@@ -165,6 +180,28 @@ qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
     return 0;
 }
 
+
+static void
+qemuDomainObjPrivateXMLFormatMigrateTempBitmap(virBufferPtr buf,
+                                               GSList *bitmaps)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    GSList *next;
+
+    for (next = bitmaps; next; next = next->next) {
+        qemuDomainJobPrivateMigrateTempBitmapPtr t = next->data;
+        g_auto(virBuffer) bitmapBuf = VIR_BUFFER_INITIALIZER;
+
+        virBufferAsprintf(&bitmapBuf, " name='%s'", t->bitmapname);
+        virBufferAsprintf(&bitmapBuf, " nodename='%s'", t->nodename);
+
+        virXMLFormatElement(&childBuf, "bitmap", &bitmapBuf, NULL);
+    }
+
+    virXMLFormatElement(buf, "tempBlockDirtyBitmaps", NULL, &childBuf);
+}
+
+
 static int
 qemuDomainFormatJobPrivate(virBufferPtr buf,
                            qemuDomainJobObjPtr job,
@@ -172,9 +209,12 @@ qemuDomainFormatJobPrivate(virBufferPtr buf,
 {
     qemuDomainJobPrivatePtr priv = job->privateData;
 
-    if (job->asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT &&
-        qemuDomainObjPrivateXMLFormatNBDMigration(buf, vm) < 0)
-        return -1;
+    if (job->asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
+        if (qemuDomainObjPrivateXMLFormatNBDMigration(buf, vm) < 0)
+            return -1;
+
+        qemuDomainObjPrivateXMLFormatMigrateTempBitmap(buf, priv->migTempBitmaps);
+    }
 
     if (priv->migParams)
         qemuMigrationParamsFormat(buf, priv->migParams);
@@ -267,6 +307,44 @@ qemuDomainObjPrivateXMLParseJobNBD(virDomainObjPtr vm,
     return 0;
 }
 
+
+static int
+qemuDomainObjPrivateXMLParseMigrateTempBitmap(qemuDomainJobPrivatePtr jobPriv,
+                                              xmlXPathContextPtr ctxt)
+{
+    g_autoslist(qemuDomainJobPrivateMigrateTempBitmap) bitmaps = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
+    size_t i;
+    int n;
+
+    if ((n = virXPathNodeSet("./tempBlockDirtyBitmaps/bitmap", ctxt, &nodes)) < 0)
+        return -1;
+
+    if (n == 0)
+        return 0;
+
+    for (i = 0; i < n; i++) {
+        qemuDomainJobPrivateMigrateTempBitmapPtr bmp;
+
+        bmp = g_new0(qemuDomainJobPrivateMigrateTempBitmap, 1);
+        bmp->nodename = virXMLPropString(nodes[i], "nodename");
+        bmp->bitmapname = virXMLPropString(nodes[i], "name");
+
+        bitmaps = g_slist_prepend(bitmaps, bmp);
+
+        if (!bmp->bitmapname || !bmp->nodename) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("malformed <tempBlockDirtyBitmaps> in status XML"));
+            return -1;
+        }
+
+    }
+
+    jobPriv->migTempBitmaps = g_slist_reverse(g_steal_pointer(&bitmaps));
+    return 0;
+}
+
+
 static int
 qemuDomainParseJobPrivate(xmlXPathContextPtr ctxt,
                           qemuDomainJobObjPtr job,
@@ -275,6 +353,9 @@ qemuDomainParseJobPrivate(xmlXPathContextPtr ctxt,
     qemuDomainJobPrivatePtr priv = job->privateData;
 
     if (qemuDomainObjPrivateXMLParseJobNBD(vm, ctxt) < 0)
+        return -1;
+
+    if (qemuDomainObjPrivateXMLParseMigrateTempBitmap(priv, ctxt) < 0)
         return -1;
 
     if (qemuMigrationParamsParse(ctxt, &priv->migParams) < 0)
