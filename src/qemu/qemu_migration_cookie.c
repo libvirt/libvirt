@@ -1580,3 +1580,118 @@ qemuMigrationCookieParse(virQEMUDriverPtr driver,
 
     return g_steal_pointer(&mig);
 }
+
+
+/**
+ * qemuMigrationCookieBlockDirtyBitmapsMatchDisks:
+ * @def: domain definition
+ * @disks: list of qemuMigrationBlockDirtyBitmapsDiskPtr
+ *
+ * Matches all of the @disks to the actual domain disk definition objects
+ * by looking up the target.
+ */
+int
+qemuMigrationCookieBlockDirtyBitmapsMatchDisks(virDomainDefPtr def,
+                                               GSList *disks)
+{
+    GSList *next;
+
+    for (next = disks; next; next = next->next) {
+        qemuMigrationBlockDirtyBitmapsDiskPtr disk = next->data;
+
+        if (!(disk->disk = virDomainDiskByTarget(def, disk->target))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Can't find disk '%s' in domain definition"),
+                           disk->target);
+            return -1;
+        }
+
+        disk->nodename = disk->disk->src->nodeformat;
+    }
+
+    return 0;
+}
+
+
+/**
+ * qemuMigrationCookieBlockDirtyBitmapsToParams:
+ * @disks: list of qemuMigrationBlockDirtyBitmapsDisk
+ * @mapping: filled with resulting mapping
+ *
+ * Converts @disks into the arguments for 'block-bitmap-mapping' migration
+ * parameter.
+ */
+int
+qemuMigrationCookieBlockDirtyBitmapsToParams(GSList *disks,
+                                             virJSONValuePtr *mapping)
+{
+    g_autoptr(virJSONValue) map = virJSONValueNewArray();
+    bool hasDisks = false;
+    GSList *nextdisk;
+
+    for (nextdisk = disks; nextdisk; nextdisk = nextdisk->next) {
+        qemuMigrationBlockDirtyBitmapsDiskPtr disk = nextdisk->data;
+        g_autoptr(virJSONValue) jsondisk = NULL;
+        g_autoptr(virJSONValue) jsonbitmaps = virJSONValueNewArray();
+        bool hasBitmaps = false;
+        GSList *nextbitmap;
+
+        if (disk->skip || !disk->bitmaps)
+            continue;
+
+        for (nextbitmap = disk->bitmaps; nextbitmap; nextbitmap = nextbitmap->next) {
+            qemuMigrationBlockDirtyBitmapsDiskBitmapPtr bitmap = nextbitmap->data;
+            g_autoptr(virJSONValue) jsonbitmap = NULL;
+            g_autoptr(virJSONValue) transform = NULL;
+            const char *bitmapname = bitmap->sourcebitmap;
+
+            if (bitmap->skip)
+                continue;
+
+            /* if there isn't an override, use the real name */
+            if (!bitmapname)
+                bitmapname = bitmap->bitmapname;
+
+            if (bitmap->persistent == VIR_TRISTATE_BOOL_YES) {
+                if (virJSONValueObjectCreate(&transform,
+                                             "b:persistent", true, NULL) < 0)
+                    return -1;
+            }
+
+            if (virJSONValueObjectCreate(&jsonbitmap,
+                                         "s:name", bitmapname,
+                                         "s:alias", bitmap->alias,
+                                         "A:transform", &transform,
+                                         NULL) < 0)
+                return -1;
+
+            if (virJSONValueArrayAppend(jsonbitmaps, jsonbitmap) < 0)
+                return -1;
+
+            jsonbitmap = NULL;
+            hasBitmaps = true;
+        }
+
+        if (!hasBitmaps)
+            continue;
+
+        if (virJSONValueObjectCreate(&jsondisk,
+                                     "s:node-name", disk->nodename,
+                                     "s:alias", disk->target,
+                                     "a:bitmaps", &jsonbitmaps,
+                                     NULL) < 0)
+            return -1;
+
+        if (virJSONValueArrayAppend(map, jsondisk) < 0)
+            return -1;
+
+        jsondisk = NULL;
+        hasDisks = true;
+    }
+
+    if (!hasDisks)
+        return 0;
+
+    *mapping = g_steal_pointer(&map);
+    return 0;
+}

@@ -226,3 +226,11 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
                              virQEMUCapsPtr qemuCaps,
                              virBufferPtr buf,
                              qemuMigrationCookiePtr mig);
+
+int
+qemuMigrationCookieBlockDirtyBitmapsMatchDisks(virDomainDefPtr def,
+                                               GSList *disks);
+
+int
+qemuMigrationCookieBlockDirtyBitmapsToParams(GSList *disks,
+                                             virJSONValuePtr *mapping);
