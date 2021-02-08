@@ -35,6 +35,7 @@ typedef enum {
     QEMU_MIGRATION_COOKIE_FLAG_CPU,
     QEMU_MIGRATION_COOKIE_FLAG_ALLOW_REBOOT,
     QEMU_MIGRATION_COOKIE_FLAG_CAPS,
+    QEMU_MIGRATION_COOKIE_FLAG_BLOCK_DIRTY_BITMAPS,
 
     QEMU_MIGRATION_COOKIE_FLAG_LAST
 } qemuMigrationCookieFlags;
@@ -53,6 +54,7 @@ typedef enum {
     QEMU_MIGRATION_COOKIE_CPU = (1 << QEMU_MIGRATION_COOKIE_FLAG_CPU),
     QEMU_MIGRATION_COOKIE_ALLOW_REBOOT = (1 << QEMU_MIGRATION_COOKIE_FLAG_ALLOW_REBOOT),
     QEMU_MIGRATION_COOKIE_CAPS = (1 << QEMU_MIGRATION_COOKIE_FLAG_CAPS),
+    QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS = (1 << QEMU_MIGRATION_COOKIE_FLAG_BLOCK_DIRTY_BITMAPS),
 } qemuMigrationCookieFeatures;
 
 typedef struct _qemuMigrationCookieGraphics qemuMigrationCookieGraphics;
@@ -107,6 +109,35 @@ struct _qemuMigrationCookieCaps {
     virBitmapPtr automatic;
 };
 
+typedef struct _qemuMigrationBlockDirtyBitmapsDiskBitmap qemuMigrationBlockDirtyBitmapsDiskBitmap;
+typedef qemuMigrationBlockDirtyBitmapsDiskBitmap *qemuMigrationBlockDirtyBitmapsDiskBitmapPtr;
+struct _qemuMigrationBlockDirtyBitmapsDiskBitmap {
+    /* config */
+    char *bitmapname;
+    char *alias;
+
+    /* runtime */
+    virTristateBool persistent; /* force persisting of the bitmap */
+    char *sourcebitmap; /* optional, actual bitmap to migrate in case we needed
+                           to create a temporary one by merging */
+    bool skip; /* omit this bitmap */
+};
+
+
+typedef struct _qemuMigrationBlockDirtyBitmapsDisk qemuMigrationBlockDirtyBitmapsDisk;
+typedef qemuMigrationBlockDirtyBitmapsDisk *qemuMigrationBlockDirtyBitmapsDiskPtr;
+struct _qemuMigrationBlockDirtyBitmapsDisk {
+    char *target;
+
+    GSList *bitmaps;
+
+    /* runtime data */
+    virDomainDiskDefPtr disk; /* disk object corresponding to 'target' */
+    const char *nodename; /* nodename of the top level source of 'disk' */
+    bool skip; /* omit this disk */
+};
+
+
 typedef struct _qemuMigrationCookie qemuMigrationCookie;
 typedef qemuMigrationCookie *qemuMigrationCookiePtr;
 struct _qemuMigrationCookie {
@@ -150,6 +181,9 @@ struct _qemuMigrationCookie {
 
     /* If flags & QEMU_MIGRATION_COOKIE_CAPS */
     qemuMigrationCookieCapsPtr caps;
+
+    /* If flags & QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS */
+    GSList *blockDirtyBitmaps;
 };
 
 
