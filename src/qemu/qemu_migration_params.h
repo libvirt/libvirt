@@ -39,6 +39,7 @@ typedef enum {
     QEMU_MIGRATION_CAP_PAUSE_BEFORE_SWITCHOVER,
     QEMU_MIGRATION_CAP_LATE_BLOCK_ACTIVATE,
     QEMU_MIGRATION_CAP_MULTIFD,
+    QEMU_MIGRATION_CAP_BLOCK_DIRTY_BITMAPS,
 
     QEMU_MIGRATION_CAP_LAST
 } qemuMigrationCapability;
@@ -131,6 +132,10 @@ int
 qemuMigrationParamsGetULL(qemuMigrationParamsPtr migParams,
                           qemuMigrationParam param,
                           unsigned long long *value);
+
+void
+qemuMigrationParamsSetBlockDirtyBitmapMapping(qemuMigrationParamsPtr migParams,
+                                              virJSONValuePtr *params);
 
 int
 qemuMigrationParamsCheck(virQEMUDriverPtr driver,

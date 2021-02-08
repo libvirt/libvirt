@@ -63,6 +63,7 @@ struct _qemuMigrationParams {
     unsigned long long compMethods; /* bit-wise OR of qemuMigrationCompressMethod */
     virBitmapPtr caps;
     qemuMigrationParamValue params[QEMU_MIGRATION_PARAM_LAST];
+    virJSONValuePtr blockDirtyBitmapMapping;
 };
 
 typedef enum {
@@ -89,6 +90,7 @@ VIR_ENUM_IMPL(qemuMigrationCapability,
               "pause-before-switchover",
               "late-block-activate",
               "multifd",
+              "dirty-bitmaps",
 );
 
 
@@ -265,6 +267,7 @@ qemuMigrationParamsFree(qemuMigrationParamsPtr migParams)
     }
 
     virBitmapFree(migParams->caps);
+    virJSONValueFree(migParams->blockDirtyBitmapMapping);
     g_free(migParams);
 }
 
@@ -524,6 +527,20 @@ qemuMigrationParamsSetCompression(virTypedParameterPtr params,
 }
 
 
+void
+qemuMigrationParamsSetBlockDirtyBitmapMapping(qemuMigrationParamsPtr migParams,
+                                              virJSONValuePtr *params)
+{
+    virJSONValueFree(migParams->blockDirtyBitmapMapping);
+    migParams->blockDirtyBitmapMapping = g_steal_pointer(params);
+
+    if (migParams->blockDirtyBitmapMapping)
+        ignore_value(virBitmapSetBit(migParams->caps, QEMU_MIGRATION_CAP_BLOCK_DIRTY_BITMAPS));
+    else
+        ignore_value(virBitmapClearBit(migParams->caps, QEMU_MIGRATION_CAP_BLOCK_DIRTY_BITMAPS));
+}
+
+
 qemuMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
@@ -745,6 +762,17 @@ qemuMigrationParamsToJSON(qemuMigrationParamsPtr migParams)
 
         if (rc < 0)
             return NULL;
+    }
+
+    if (migParams->blockDirtyBitmapMapping) {
+        g_autoptr(virJSONValue) mapping = virJSONValueCopy(migParams->blockDirtyBitmapMapping);
+
+        if (!mapping)
+            return NULL;
+
+        if (virJSONValueObjectAppend(params, "block-bitmap-mapping", mapping) < 0)
+            return NULL;
+        mapping = NULL;
     }
 
     return g_steal_pointer(&params);
@@ -1202,6 +1230,7 @@ qemuMigrationParamsReset(virQEMUDriverPtr driver,
         goto cleanup;
 
     qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams, apiFlags);
+    /* We don't reset 'block-bitmap-mapping' as it can't be unset */
 
  cleanup:
     virErrorRestore(&err);
