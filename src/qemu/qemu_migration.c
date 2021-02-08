@@ -2205,6 +2205,91 @@ qemuMigrationSrcCleanup(virDomainObjPtr vm,
 }
 
 
+/**
+ * qemuMigrationSrcBeginPhaseBlockDirtyBitmaps:
+ * @mig: migration cookie struct
+ * @vm: domain object
+ * @migrate_disks: disks which are being migrated
+ * @nmigrage_disks: number of @migrate_disks
+ *
+ * Enumerates block dirty bitmaps on disks which will undergo storage migration
+ * and fills them into @mig to be offered to the destination.
+ */
+static int
+qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(qemuMigrationCookiePtr mig,
+                                            virDomainObjPtr vm,
+                                            const char **migrate_disks,
+                                            size_t nmigrate_disks)
+
+{
+    GSList *disks = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    size_t i;
+
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
+
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, priv->job.asyncJob)))
+        return -1;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        qemuMigrationBlockDirtyBitmapsDiskPtr disk;
+        GSList *bitmaps = NULL;
+        virDomainDiskDefPtr diskdef = vm->def->disks[i];
+        qemuBlockNamedNodeDataPtr nodedata = virHashLookup(blockNamedNodeData, diskdef->src->nodeformat);
+        size_t j;
+
+        if (!nodedata)
+            continue;
+
+        if (migrate_disks) {
+            bool migrating = false;
+
+            for (j = 0; j < nmigrate_disks; j++) {
+                if (STREQ(migrate_disks[j], diskdef->dst)) {
+                    migrating = true;
+                    break;
+                }
+            }
+
+            if (!migrating)
+                continue;
+        }
+
+        for (j = 0; j < nodedata->nbitmaps; j++) {
+            qemuMigrationBlockDirtyBitmapsDiskBitmapPtr bitmap;
+
+            if (!qemuBlockBitmapChainIsValid(diskdef->src,
+                                             nodedata->bitmaps[j]->name,
+                                             blockNamedNodeData))
+                continue;
+
+            bitmap = g_new0(qemuMigrationBlockDirtyBitmapsDiskBitmap, 1);
+            bitmap->bitmapname = g_strdup(nodedata->bitmaps[j]->name);
+            bitmap->alias = g_strdup_printf("libvirt-%s-%s",
+                                            diskdef->dst,
+                                            nodedata->bitmaps[j]->name);
+            bitmaps = g_slist_prepend(bitmaps, bitmap);
+        }
+
+        if (!bitmaps)
+            continue;
+
+        disk = g_new0(qemuMigrationBlockDirtyBitmapsDisk, 1);
+        disk->target = g_strdup(diskdef->dst);
+        disk->bitmaps = bitmaps;
+        disks = g_slist_prepend(disks, disk);
+    }
+
+    if (!disks)
+        return 0;
+
+    mig->blockDirtyBitmaps = disks;
+    mig->flags |= QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS;
+
+    return 0;
+}
+
+
 /* The caller is supposed to lock the vm and start a migration job. */
 static char *
 qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
@@ -2315,6 +2400,12 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
         cookieFlags |= QEMU_MIGRATION_COOKIE_CAPS;
 
     if (!(mig = qemuMigrationCookieNew(vm->def, priv->origname)))
+        return NULL;
+
+    if (cookieFlags & QEMU_MIGRATION_COOKIE_NBD &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING) &&
+        qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(mig, vm, migrate_disks,
+                                                    nmigrate_disks) < 0)
         return NULL;
 
     if (qemuMigrationCookieFormat(mig, driver, vm,
@@ -2530,6 +2621,92 @@ qemuMigrationDstPrepare(virDomainObjPtr vm,
                                      migrateFrom, fd, NULL);
 }
 
+
+/**
+ * qemuMigrationDstPrepareAnyBlockDirtyBitmaps:
+ * @vm: domain object
+ * @mig: migration cookie
+ * @migParams: migration parameters
+ * @flags: migration flags
+ *
+ * Checks whether block dirty bitmaps offered by the migration source are
+ * to be migrated (e.g. they don't exist, the destination is compatible etc)
+ * and sets up destination qemu for migrating the bitmaps as well as updates the
+ * list of eligible bitmaps in the migration cookie to be sent back to the
+ * source.
+ */
+static int
+qemuMigrationDstPrepareAnyBlockDirtyBitmaps(virDomainObjPtr vm,
+                                            qemuMigrationCookiePtr mig,
+                                            qemuMigrationParamsPtr migParams,
+                                            unsigned int flags)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autoptr(virJSONValue) mapping = NULL;
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
+    GSList *nextdisk;
+
+    if (!mig->nbd ||
+        !mig->blockDirtyBitmaps ||
+        !(flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) ||
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
+        return 0;
+
+    if (qemuMigrationCookieBlockDirtyBitmapsMatchDisks(vm->def, mig->blockDirtyBitmaps) < 0)
+        return -1;
+
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_MIGRATION_IN)))
+        return -1;
+
+    for (nextdisk = mig->blockDirtyBitmaps; nextdisk; nextdisk = nextdisk->next) {
+        qemuMigrationBlockDirtyBitmapsDiskPtr disk = nextdisk->data;
+        qemuBlockNamedNodeDataPtr nodedata;
+        GSList *nextbitmap;
+
+        if (!(nodedata = virHashLookup(blockNamedNodeData, disk->nodename))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to find data for block node '%s'"),
+                           disk->nodename);
+            return -1;
+        }
+
+        /* Bitmaps can only be migrated to qcow2 v3+ */
+        if (disk->disk->src->format != VIR_STORAGE_FILE_QCOW2 ||
+            nodedata->qcow2v2) {
+            disk->skip = true;
+            continue;
+        }
+
+        for (nextbitmap = disk->bitmaps; nextbitmap; nextbitmap = nextbitmap->next) {
+            qemuMigrationBlockDirtyBitmapsDiskBitmapPtr bitmap = nextbitmap->data;
+            size_t k;
+
+            /* don't migrate into existing bitmaps */
+            for (k = 0; k < nodedata->nbitmaps; k++) {
+                if (STREQ(bitmap->bitmapname, nodedata->bitmaps[k]->name)) {
+                    bitmap->skip = true;
+                    break;
+                }
+            }
+
+            if (bitmap->skip)
+                continue;
+        }
+    }
+
+    if (qemuMigrationCookieBlockDirtyBitmapsToParams(mig->blockDirtyBitmaps,
+                                                     &mapping) < 0)
+        return -1;
+
+    if (!mapping)
+        return 0;
+
+    qemuMigrationParamsSetBlockDirtyBitmapMapping(migParams, &mapping);
+    mig->flags |= QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS;
+    return 0;
+}
+
+
 static int
 qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                            virConnectPtr dconn,
@@ -2679,7 +2856,8 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                                          QEMU_MIGRATION_COOKIE_CPU_HOTPLUG |
                                          QEMU_MIGRATION_COOKIE_CPU |
                                          QEMU_MIGRATION_COOKIE_ALLOW_REBOOT |
-                                         QEMU_MIGRATION_COOKIE_CAPS)))
+                                         QEMU_MIGRATION_COOKIE_CAPS |
+                                         QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS)))
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, *def,
@@ -2771,6 +2949,9 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
         goto stopjob;
     }
+
+    if (qemuMigrationDstPrepareAnyBlockDirtyBitmaps(vm, mig, migParams, flags) < 0)
+        goto stopjob;
 
     if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
                                  migParams, mig->caps->automatic) < 0)
@@ -3654,6 +3835,145 @@ qemuMigrationSetDBusVMState(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuMigrationSrcRunPrepareBlockDirtyBitmapsMerge:
+ * @vm: domain object
+ * @mig: migration cookie
+ *
+ * When migrating full disks, which means that the backing chain of the disk
+ * will be squashed into a single image we need to calculate bitmaps
+ * corresponding to the checkpoints which express the same set of changes
+ * for migration.
+ *
+ * This function prepares temporary bitmaps and corresponding merges, updates
+ * the data so that the temporary bitmaps are used and registers the temporary
+ * bitmaps for deletion on failed migration.
+ */
+static int
+qemuMigrationSrcRunPrepareBlockDirtyBitmapsMerge(virDomainObjPtr vm,
+                                                 qemuMigrationCookiePtr mig)
+{
+    g_autoslist(qemuDomainJobPrivateMigrateTempBitmap) tmpbitmaps = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    g_autoptr(virJSONValue) actions = virJSONValueNewArray();
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
+    GSList *nextdisk;
+    int rc;
+
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_MIGRATION_OUT)))
+        return -1;
+
+    for (nextdisk = mig->blockDirtyBitmaps; nextdisk; nextdisk = nextdisk->next) {
+        qemuMigrationBlockDirtyBitmapsDiskPtr disk = nextdisk->data;
+        GSList *nextbitmap;
+
+        /* if a disk doesn't have a backing chain we don't need the code below */
+        if (!virStorageSourceHasBacking(disk->disk->src))
+            continue;
+
+        for (nextbitmap = disk->bitmaps; nextbitmap; nextbitmap = nextbitmap->next) {
+            qemuMigrationBlockDirtyBitmapsDiskBitmapPtr bitmap = nextbitmap->data;
+            qemuDomainJobPrivateMigrateTempBitmapPtr tmpbmp;
+            virStorageSourcePtr n;
+            unsigned long long granularity = 0;
+            g_autoptr(virJSONValue) merge = virJSONValueNewArray();
+
+            for (n = disk->disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+                qemuBlockNamedNodeDataBitmapPtr b;
+
+                if (!(b = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData, n,
+                                                                bitmap->bitmapname)))
+                    break;
+
+                if (granularity == 0)
+                    granularity = b->granularity;
+
+                if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(merge,
+                                                                     n->nodeformat,
+                                                                     b->name) < 0)
+                    return -1;
+            }
+
+            bitmap->sourcebitmap = g_strdup_printf("libvirt-migration-%s", bitmap->alias);
+            bitmap->persistent = VIR_TRISTATE_BOOL_YES;
+
+            if (qemuMonitorTransactionBitmapAdd(actions,
+                                                disk->disk->src->nodeformat,
+                                                bitmap->sourcebitmap,
+                                                false, false, granularity) < 0)
+                return -1;
+
+            if (qemuMonitorTransactionBitmapMerge(actions,
+                                                  disk->disk->src->nodeformat,
+                                                  bitmap->sourcebitmap,
+                                                  &merge) < 0)
+                return -1;
+
+            tmpbmp = g_new0(qemuDomainJobPrivateMigrateTempBitmap, 1);
+            tmpbmp->nodename = g_strdup(disk->disk->src->nodeformat);
+            tmpbmp->bitmapname = g_strdup(bitmap->sourcebitmap);
+            tmpbitmaps = g_slist_prepend(tmpbitmaps, tmpbmp);
+        }
+    }
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        return -1;
+
+    rc = qemuMonitorTransaction(priv->mon, &actions);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        return -1;
+
+    jobPriv->migTempBitmaps = g_steal_pointer(&tmpbitmaps);
+
+    return 0;
+}
+
+
+/**
+ * qemuMigrationSrcRunPrepareBlockDirtyBitmaps:
+ * @vm: domain object
+ * @mig: migration cookie
+ * @migParams: migration parameters
+ * @flags: migration flags
+ *
+ * Configures the source for bitmap migration when the destination asks
+ * for bitmaps.
+ */
+static int
+qemuMigrationSrcRunPrepareBlockDirtyBitmaps(virDomainObjPtr vm,
+                                            qemuMigrationCookiePtr mig,
+                                            qemuMigrationParamsPtr migParams,
+                                            unsigned int flags)
+
+{
+    g_autoptr(virJSONValue) mapping = NULL;
+
+    if (!mig->blockDirtyBitmaps)
+        return 0;
+
+    if (qemuMigrationCookieBlockDirtyBitmapsMatchDisks(vm->def, mig->blockDirtyBitmaps) < 0)
+        return -1;
+
+    /* For QEMU_MONITOR_MIGRATE_NON_SHARED_INC we can migrate the bitmaps
+     * directly, otherwise we must create merged bitmaps from the whole
+     * chain */
+
+    if (!(flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC) &&
+        qemuMigrationSrcRunPrepareBlockDirtyBitmapsMerge(vm, mig) < 0)
+        return -1;
+
+    if (qemuMigrationCookieBlockDirtyBitmapsToParams(mig->blockDirtyBitmaps,
+                                                     &mapping) < 0)
+        return -1;
+
+    qemuMigrationParamsSetBlockDirtyBitmapMapping(migParams, &mapping);
+    return 0;
+}
+
+
 static int
 qemuMigrationSrcRun(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
@@ -3710,6 +4030,10 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
         cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
     }
 
+    if (cookieFlags & QEMU_MIGRATION_COOKIE_NBD &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
+        cookieFlags |= QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS;
+
     if (virLockManagerPluginUsesState(driver->lockManager) &&
         !cookieout) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3742,12 +4066,17 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
                                    cookiein, cookieinlen,
                                    cookieFlags |
                                    QEMU_MIGRATION_COOKIE_GRAPHICS |
-                                   QEMU_MIGRATION_COOKIE_CAPS);
+                                   QEMU_MIGRATION_COOKIE_CAPS |
+                                   QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS);
     if (!mig)
         goto error;
 
     if (qemuMigrationSrcGraphicsRelocate(driver, vm, mig, graphicsuri) < 0)
         VIR_WARN("unable to provide data for graphics client relocation");
+
+    if (mig->blockDirtyBitmaps &&
+        qemuMigrationSrcRunPrepareBlockDirtyBitmaps(vm, mig, migParams, flags) < 0)
+        goto error;
 
     if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
                                  migParams, mig->caps->automatic) < 0)
