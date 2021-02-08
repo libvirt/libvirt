@@ -332,6 +332,7 @@ virTestRewrapFile(const char *filename)
     g_autoptr(virCommand) cmd = NULL;
 
     if (!(virStringHasSuffix(filename, ".args") ||
+          virStringHasSuffix(filename, ".argv") ||
           virStringHasSuffix(filename, ".ldargs")))
         return 0;
 
