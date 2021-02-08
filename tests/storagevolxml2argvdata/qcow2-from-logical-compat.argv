@@ -1,3 +1,5 @@
-qemu-img convert -f raw -O qcow2 \
--o compat=0.10 \
-/dev/HostVG/Swap /var/lib/libvirt/images/OtherDemo.img
+qemu-img \
+convert \
+-f raw \
+-O qcow2 \
+-o compat=0.10 /dev/HostVG/Swap /var/lib/libvirt/images/OtherDemo.img

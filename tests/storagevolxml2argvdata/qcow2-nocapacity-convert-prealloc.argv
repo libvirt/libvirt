@@ -1,4 +1,7 @@
-qemu-img convert -f raw -O qcow2 \
--o preallocation=falloc,compat=0.10 \
-/var/lib/libvirt/images/sparse.img \
+qemu-img \
+convert \
+-f raw \
+-O qcow2 \
+-o preallocation=falloc,\
+compat=0.10 /var/lib/libvirt/images/sparse.img \
 /var/lib/libvirt/images/OtherDemo.img

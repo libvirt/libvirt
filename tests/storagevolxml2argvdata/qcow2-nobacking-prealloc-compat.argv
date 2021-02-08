@@ -1,3 +1,5 @@
-qemu-img create -f qcow2 \
--o preallocation=metadata,compat=0.10 \
-/var/lib/libvirt/images/OtherDemo.img 5242880K
+qemu-img \
+create \
+-f qcow2 \
+-o preallocation=metadata,\
+compat=0.10 /var/lib/libvirt/images/OtherDemo.img 5242880K

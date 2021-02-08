@@ -1,3 +1,6 @@
-qemu-img create -f qcow2 -b /dev/null \
--o backing_fmt=raw,encryption=on,nocow=on \
-/var/lib/libvirt/images/OtherDemo.img 5242880K
+qemu-img \
+create \
+-f qcow2 \
+-b /dev/null \
+-o backing_fmt=raw,encryption=on,\
+nocow=on /var/lib/libvirt/images/OtherDemo.img 5242880K
