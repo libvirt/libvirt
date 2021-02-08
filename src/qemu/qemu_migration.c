@@ -840,6 +840,29 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuMigrationSrcCancelRemoveTempBitmaps(virDomainObjPtr vm,
+                                        qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
+    GSList *next;
+
+    for (next = jobPriv->migTempBitmaps; next; next = next->next) {
+        qemuDomainJobPrivateMigrateTempBitmapPtr t = next->data;
+
+        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+            return -1;
+        qemuMonitorBitmapRemove(priv->mon, t->nodename, t->bitmapname);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 static virStorageSourcePtr
 qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(virDomainDiskDefPtr disk,
                                                     const char *host,
@@ -4003,6 +4026,8 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
                                           QEMU_ASYNC_JOB_MIGRATION_OUT,
                                           dconn);
 
+        qemuMigrationSrcCancelRemoveTempBitmaps(vm, QEMU_ASYNC_JOB_MIGRATION_OUT);
+
         if (priv->job.current->status != QEMU_DOMAIN_JOB_STATUS_CANCELED)
             priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
     }
@@ -5703,6 +5728,9 @@ qemuMigrationSrcCancel(virQEMUDriverPtr driver,
     if (storage &&
         qemuMigrationSrcNBDCopyCancel(driver, vm, false,
                                       QEMU_ASYNC_JOB_NONE, NULL) < 0)
+        return -1;
+
+    if (qemuMigrationSrcCancelRemoveTempBitmaps(vm, QEMU_ASYNC_JOB_NONE) < 0)
         return -1;
 
     return 0;
