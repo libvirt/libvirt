@@ -3122,6 +3122,29 @@ qemuDomainAssignMemoryDeviceSlot(virQEMUDriverPtr driver,
 }
 
 
+void
+qemuDomainReleaseMemoryDeviceSlot(virDomainObjPtr vm,
+                                  virDomainMemoryDefPtr mem)
+{
+    switch (mem->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        /* We don't need to release anything. Slot map is not
+         * kept around. It's constructed every time when
+         * assigning new slot. */
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+        qemuDomainReleaseDeviceAddress(vm, &mem->info);
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        break;
+    }
+}
+
+
 static int
 qemuDomainAssignMemorySlots(virDomainDefPtr def)
 {

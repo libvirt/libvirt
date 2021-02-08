@@ -60,6 +60,9 @@ int qemuDomainAssignMemoryDeviceSlot(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainMemoryDefPtr mem);
 
+void qemuDomainReleaseMemoryDeviceSlot(virDomainObjPtr vm,
+                                       virDomainMemoryDefPtr mem);
+
 int qemuDomainEnsureVirtioAddress(bool *releaseAddr,
                                   virDomainObjPtr vm,
                                   virDomainDeviceDefPtr dev,

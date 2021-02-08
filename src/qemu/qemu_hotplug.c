@@ -2400,6 +2400,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     g_autofree char *devstr = NULL;
     g_autofree char *objalias = NULL;
     bool objAdded = false;
+    bool releaseaddr = false;
     bool teardownlabel = false;
     bool teardowncgroup = false;
     bool teardowndevice = false;
@@ -2416,6 +2417,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
 
     if (qemuDomainAssignMemoryDeviceSlot(driver, vm, mem) < 0)
         goto cleanup;
+    releaseaddr = true;
 
     /* in cases where we are using a VM with aliases generated according to the
      * index of the memory device we need to keep continue using that scheme */
@@ -2492,6 +2494,8 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
         if (teardowndevice &&
             qemuDomainNamespaceTeardownMemory(vm, mem) <  0)
             VIR_WARN("Unable to remove memory device from /dev");
+        if (releaseaddr)
+            qemuDomainReleaseMemoryDeviceSlot(vm, mem);
     }
 
     virJSONValueFree(props);
@@ -4456,6 +4460,8 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
 
     if (qemuProcessDestroyMemoryBackingPath(driver, vm, mem) < 0)
         VIR_WARN("Unable to destroy memory backing path");
+
+    qemuDomainReleaseMemoryDeviceSlot(vm, mem);
 
     virDomainMemoryDefFree(mem);
 
