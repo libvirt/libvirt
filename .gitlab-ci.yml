@@ -486,7 +486,7 @@ mipsel-debian-10:
 s390x-debian-sid:
   extends: .cross_build_job
   needs:
-    - s390x-debian-10-container
+    - s390x-debian-sid-container
   variables:
     NAME: debian-sid
     CROSS: s390x
@@ -502,7 +502,7 @@ i686-debian-sid:
 ppc64le-debian-sid:
   extends: .cross_build_job
   needs:
-    - ppc64le-debian-10-container
+    - ppc64le-debian-sid-container
   variables:
     NAME: debian-sid
     CROSS: ppc64le
