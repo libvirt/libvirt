@@ -4012,7 +4012,6 @@ virQEMUCapsLoadMachines(virQEMUCapsAccelPtr caps,
 {
     g_autofree char *xpath = g_strdup_printf("./machine[@type='%s']", typeStr);
     g_autofree xmlNodePtr *nodes = NULL;
-    char *str = NULL;
     size_t i;
     int n;
 
@@ -4029,6 +4028,8 @@ virQEMUCapsLoadMachines(virQEMUCapsAccelPtr caps,
     caps->machineTypes = g_new0(virQEMUCapsMachineType, caps->nmachineTypes);
 
     for (i = 0; i < n; i++) {
+        g_autofree char *str = NULL;
+
         if (!(caps->machineTypes[i].name = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing machine name in QEMU capabilities cache"));
