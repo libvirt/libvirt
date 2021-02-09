@@ -711,6 +711,22 @@ virCgroupMakeGroup(virCgroupPtr parent,
 }
 
 
+static bool
+virCgroupExists(virCgroupPtr group)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i] &&
+            !group->backends[i]->exists(group)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 /**
  * virCgroupNew:
  * @path: path for the new group
@@ -764,10 +780,11 @@ virCgroupAddTaskInternal(virCgroupPtr group,
                          unsigned int flags)
 {
     size_t i;
+    virCgroupPtr parent = virCgroupGetNested(group);
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
-        if (group->backends[i] &&
-            group->backends[i]->addTask(group, pid, flags) < 0) {
+        if (parent->backends[i] &&
+            parent->backends[i]->addTask(parent, pid, flags) < 0) {
             return -1;
         }
     }
@@ -980,6 +997,28 @@ virCgroupNewPartition(const char *path,
 }
 
 
+static int
+virCgroupNewNested(virCgroupPtr parent,
+                   int controllers,
+                   bool create,
+                   pid_t pid,
+                   virCgroupPtr *nested)
+{
+    g_autoptr(virCgroup) new = NULL;
+
+    if (virCgroupNewFromParent(parent, "libvirt", controllers, &new) < 0)
+        return -1;
+
+    if (create) {
+        if (virCgroupMakeGroup(parent, new, create, pid, VIR_CGROUP_NONE) < 0)
+            return -1;
+    }
+
+    *nested = g_steal_pointer(&new);
+    return 0;
+}
+
+
 /**
 * virCgroupNewSelf:
 *
@@ -1064,6 +1103,7 @@ virCgroupNewThread(virCgroupPtr domain,
 {
     g_autofree char *name = NULL;
     g_autoptr(virCgroup) newGroup = NULL;
+    virCgroupPtr parent = NULL;
     int controllers;
 
     *group = NULL;
@@ -1088,10 +1128,12 @@ virCgroupNewThread(virCgroupPtr domain,
                    (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
                    (1 << VIR_CGROUP_CONTROLLER_CPUSET));
 
-    if (virCgroupNewFromParent(domain, name, controllers, &newGroup) < 0)
+    parent = virCgroupGetNested(domain);
+
+    if (virCgroupNewFromParent(parent, name, controllers, &newGroup) < 0)
         return -1;
 
-    if (virCgroupMakeGroup(domain, newGroup, create, -1, VIR_CGROUP_THREAD) < 0)
+    if (virCgroupMakeGroup(parent, newGroup, create, -1, VIR_CGROUP_THREAD) < 0)
         return -1;
 
     *group = g_steal_pointer(&newGroup);
@@ -1142,6 +1184,7 @@ virCgroupNewDetectMachine(const char *name,
 {
     size_t i;
     g_autoptr(virCgroup) newGroup = NULL;
+    g_autoptr(virCgroup) nested = NULL;
 
     *group = NULL;
 
@@ -1165,6 +1208,12 @@ virCgroupNewDetectMachine(const char *name,
     newGroup->unitName = virSystemdGetMachineUnitByPID(pid);
     if (virSystemdHasMachined() == 0 && !newGroup->unitName)
         return -1;
+
+    if (virCgroupNewNested(newGroup, controllers, false, -1, &nested) < 0)
+        return -1;
+
+    if (virCgroupExists(nested))
+        newGroup->nested = g_steal_pointer(&nested);
 
     *group = g_steal_pointer(&newGroup);
     return 0;
@@ -1225,6 +1274,7 @@ virCgroupNewMachineSystemd(const char *name,
     int rv;
     g_autoptr(virCgroup) init = NULL;
     g_autoptr(virCgroup) newGroup = NULL;
+    g_autoptr(virCgroup) nested = NULL;
     g_autofree char *path = NULL;
     size_t i;
 
@@ -1269,6 +1319,11 @@ virCgroupNewMachineSystemd(const char *name,
     newGroup->unitName = virSystemdGetMachineUnitByPID(pidleader);
     if (!newGroup->unitName)
         return -1;
+
+    if (virCgroupNewNested(newGroup, controllers, true, pidleader, &nested) < 0)
+        return -1;
+
+    newGroup->nested = g_steal_pointer(&nested);
 
     if (virCgroupAddProcess(newGroup, pidleader) < 0) {
         virErrorPtr saved;
@@ -1457,7 +1512,9 @@ virCgroupGetBlkioIoServiced(virCgroupPtr group,
                             long long *requests_read,
                             long long *requests_write)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             getBlkioIoServiced, -1,
                             bytes_read, bytes_write,
                             requests_read, requests_write);
@@ -1484,7 +1541,9 @@ virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group,
                                   long long *requests_read,
                                   long long *requests_write)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             getBlkioIoDeviceServiced, -1,
                             path, bytes_read, bytes_write,
                             requests_read, requests_write);
@@ -1535,7 +1594,9 @@ virCgroupSetBlkioDeviceReadIops(virCgroupPtr group,
                                 const char *path,
                                 unsigned int riops)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             setBlkioDeviceReadIops, -1, path, riops);
 }
 
@@ -1553,7 +1614,9 @@ virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group,
                                  const char *path,
                                  unsigned int wiops)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             setBlkioDeviceWriteIops, -1, path, wiops);
 }
 
@@ -1571,7 +1634,9 @@ virCgroupSetBlkioDeviceReadBps(virCgroupPtr group,
                                const char *path,
                                unsigned long long rbps)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             setBlkioDeviceReadBps, -1, path, rbps);
 }
 
@@ -1588,7 +1653,9 @@ virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group,
                                 const char *path,
                                 unsigned long long wbps)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             setBlkioDeviceWriteBps, -1, path, wbps);
 }
 
@@ -1624,7 +1691,9 @@ virCgroupGetBlkioDeviceReadIops(virCgroupPtr group,
                                 const char *path,
                                 unsigned int *riops)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             getBlkioDeviceReadIops, -1, path, riops);
 }
 
@@ -1641,7 +1710,9 @@ virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group,
                                  const char *path,
                                  unsigned int *wiops)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             getBlkioDeviceWriteIops, -1, path, wiops);
 }
 
@@ -1658,7 +1729,9 @@ virCgroupGetBlkioDeviceReadBps(virCgroupPtr group,
                                const char *path,
                                unsigned long long *rbps)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             getBlkioDeviceReadBps, -1, path, rbps);
 }
 
@@ -1675,7 +1748,9 @@ virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group,
                                 const char *path,
                                 unsigned long long *wbps)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             getBlkioDeviceWriteBps, -1, path, wbps);
 }
 
@@ -1708,7 +1783,9 @@ virCgroupGetBlkioDeviceWeight(virCgroupPtr group,
 int
 virCgroupSetMemory(virCgroupPtr group, unsigned long long kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             setMemory, -1, kb);
 }
 
@@ -1735,7 +1812,9 @@ virCgroupGetMemoryStat(virCgroupPtr group,
                        unsigned long long *inactiveFile,
                        unsigned long long *unevictable)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             getMemoryStat, -1, cache,
                             activeAnon, inactiveAnon,
                             activeFile, inactiveFile,
@@ -1754,7 +1833,9 @@ virCgroupGetMemoryStat(virCgroupPtr group,
 int
 virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             getMemoryUsage, -1, kb);
 }
 
@@ -1770,7 +1851,9 @@ virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb)
 int
 virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long long kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             setMemoryHardLimit, -1, kb);
 }
 
@@ -1786,7 +1869,9 @@ virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long long kb)
 int
 virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long long *kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             getMemoryHardLimit, -1, kb);
 }
 
@@ -1802,7 +1887,9 @@ virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long long *kb)
 int
 virCgroupSetMemorySoftLimit(virCgroupPtr group, unsigned long long kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             setMemorySoftLimit, -1, kb);
 }
 
@@ -1818,7 +1905,9 @@ virCgroupSetMemorySoftLimit(virCgroupPtr group, unsigned long long kb)
 int
 virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long long *kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             getMemorySoftLimit, -1, kb);
 }
 
@@ -1834,7 +1923,9 @@ virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long long *kb)
 int
 virCgroupSetMemSwapHardLimit(virCgroupPtr group, unsigned long long kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             setMemSwapHardLimit, -1, kb);
 }
 
@@ -1850,7 +1941,9 @@ virCgroupSetMemSwapHardLimit(virCgroupPtr group, unsigned long long kb)
 int
 virCgroupGetMemSwapHardLimit(virCgroupPtr group, unsigned long long *kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             getMemSwapHardLimit, -1, kb);
 }
 
@@ -1866,7 +1959,9 @@ virCgroupGetMemSwapHardLimit(virCgroupPtr group, unsigned long long *kb)
 int
 virCgroupGetMemSwapUsage(virCgroupPtr group, unsigned long long *kb)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_MEMORY,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             getMemSwapUsage, -1, kb);
 }
 
@@ -1882,7 +1977,9 @@ virCgroupGetMemSwapUsage(virCgroupPtr group, unsigned long long *kb)
 int
 virCgroupSetCpusetMems(virCgroupPtr group, const char *mems)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUSET,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUSET,
                             setCpusetMems, -1, mems);
 }
 
@@ -1898,7 +1995,9 @@ virCgroupSetCpusetMems(virCgroupPtr group, const char *mems)
 int
 virCgroupGetCpusetMems(virCgroupPtr group, char **mems)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUSET,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUSET,
                             getCpusetMems, -1, mems);
 }
 
@@ -1914,7 +2013,9 @@ virCgroupGetCpusetMems(virCgroupPtr group, char **mems)
 int
 virCgroupSetCpusetMemoryMigrate(virCgroupPtr group, bool migrate)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUSET,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUSET,
                             setCpusetMemoryMigrate, -1, migrate);
 }
 
@@ -1930,7 +2031,9 @@ virCgroupSetCpusetMemoryMigrate(virCgroupPtr group, bool migrate)
 int
 virCgroupGetCpusetMemoryMigrate(virCgroupPtr group, bool *migrate)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUSET,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUSET,
                             getCpusetMemoryMigrate, -1, migrate);
 }
 
@@ -1946,7 +2049,9 @@ virCgroupGetCpusetMemoryMigrate(virCgroupPtr group, bool *migrate)
 int
 virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUSET,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUSET,
                             setCpusetCpus, -1, cpus);
 }
 
@@ -1962,7 +2067,9 @@ virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus)
 int
 virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUSET,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUSET,
                             getCpusetCpus, -1, cpus);
 }
 
@@ -1977,7 +2084,9 @@ virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus)
 int
 virCgroupDenyAllDevices(virCgroupPtr group)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_DEVICES,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_DEVICES,
                             denyAllDevices, -1);
 }
 
@@ -1998,7 +2107,9 @@ virCgroupDenyAllDevices(virCgroupPtr group)
 int
 virCgroupAllowAllDevices(virCgroupPtr group, int perms)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_DEVICES,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_DEVICES,
                             allowAllDevices, -1, perms);
 }
 
@@ -2018,7 +2129,9 @@ int
 virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor,
                      int perms)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_DEVICES,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_DEVICES,
                             allowDevice, -1, type, major, minor, perms);
 }
 
@@ -2044,6 +2157,7 @@ virCgroupAllowDevicePath(virCgroupPtr group,
                          bool ignoreEacces)
 {
     struct stat sb;
+    virCgroupPtr parent = virCgroupGetNested(group);
 
     if (stat(path, &sb) < 0) {
         if (errno == EACCES && ignoreEacces)
@@ -2058,7 +2172,7 @@ virCgroupAllowDevicePath(virCgroupPtr group,
     if (!S_ISCHR(sb.st_mode) && !S_ISBLK(sb.st_mode))
         return 1;
 
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_DEVICES,
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_DEVICES,
                             allowDevice, -1,
                             S_ISCHR(sb.st_mode) ? 'c' : 'b',
                             major(sb.st_rdev),
@@ -2082,7 +2196,9 @@ int
 virCgroupDenyDevice(virCgroupPtr group, char type, int major, int minor,
                     int perms)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_DEVICES,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_DEVICES,
                             denyDevice, -1, type, major, minor, perms);
 }
 
@@ -2108,6 +2224,7 @@ virCgroupDenyDevicePath(virCgroupPtr group,
                         bool ignoreEacces)
 {
     struct stat sb;
+    virCgroupPtr parent = virCgroupGetNested(group);
 
     if (stat(path, &sb) < 0) {
         if (errno == EACCES && ignoreEacces)
@@ -2122,7 +2239,7 @@ virCgroupDenyDevicePath(virCgroupPtr group,
     if (!S_ISCHR(sb.st_mode) && !S_ISBLK(sb.st_mode))
         return 1;
 
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_DEVICES,
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_DEVICES,
                             denyDevice, -1,
                             S_ISCHR(sb.st_mode) ? 'c' : 'b',
                             major(sb.st_rdev),
@@ -2383,7 +2500,9 @@ virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares)
 int
 virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPU,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPU,
                             setCpuCfsPeriod, -1, cfs_period);
 }
 
@@ -2399,7 +2518,9 @@ virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period)
 int
 virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPU,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPU,
                             getCpuCfsPeriod, -1, cfs_period);
 }
 
@@ -2416,7 +2537,9 @@ virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period)
 int
 virCgroupSetCpuCfsQuota(virCgroupPtr group, long long cfs_quota)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPU,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPU,
                             setCpuCfsQuota, -1, cfs_quota);
 }
 
@@ -2424,7 +2547,9 @@ virCgroupSetCpuCfsQuota(virCgroupPtr group, long long cfs_quota)
 int
 virCgroupGetCpuacctPercpuUsage(virCgroupPtr group, char **usage)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUACCT,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUACCT,
                             getCpuacctPercpuUsage, -1, usage);
 }
 
@@ -2727,7 +2852,9 @@ virCgroupKillPainfully(virCgroupPtr group)
 int
 virCgroupGetCpuCfsQuota(virCgroupPtr group, long long *cfs_quota)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPU,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPU,
                             getCpuCfsQuota, -1, cfs_quota);
 }
 
@@ -2735,7 +2862,9 @@ virCgroupGetCpuCfsQuota(virCgroupPtr group, long long *cfs_quota)
 int
 virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUACCT,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUACCT,
                             getCpuacctUsage, -1, usage);
 }
 
@@ -2744,7 +2873,9 @@ int
 virCgroupGetCpuacctStat(virCgroupPtr group, unsigned long long *user,
                         unsigned long long *sys)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPUACCT,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUACCT,
                             getCpuacctStat, -1, user, sys);
 }
 
@@ -2752,7 +2883,9 @@ virCgroupGetCpuacctStat(virCgroupPtr group, unsigned long long *user,
 int
 virCgroupSetFreezerState(virCgroupPtr group, const char *state)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_FREEZER,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_FREEZER,
                             setFreezerState, -1, state);
 }
 
@@ -2760,7 +2893,9 @@ virCgroupSetFreezerState(virCgroupPtr group, const char *state)
 int
 virCgroupGetFreezerState(virCgroupPtr group, char **state)
 {
-    VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_FREEZER,
+    virCgroupPtr parent = virCgroupGetNested(group);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_FREEZER,
                             getFreezerState, -1, state);
 }
 
@@ -2770,10 +2905,11 @@ virCgroupBindMount(virCgroupPtr group, const char *oldroot,
                    const char *mountopts)
 {
     size_t i;
+    virCgroupPtr parent = virCgroupGetNested(group);
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
-        if (group->backends[i] &&
-            group->backends[i]->bindMount(group, oldroot, mountopts) < 0) {
+        if (parent->backends[i] &&
+            parent->backends[i]->bindMount(parent, oldroot, mountopts) < 0) {
             return -1;
         }
     }
@@ -2788,10 +2924,11 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
                       int controllers)
 {
     size_t i;
+    virCgroupPtr parent = virCgroupGetNested(cgroup);
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
-        if (cgroup->backends[i] &&
-            cgroup->backends[i]->setOwner(cgroup, uid, gid, controllers) < 0) {
+        if (parent->backends[i] &&
+            parent->backends[i]->setOwner(parent, uid, gid, controllers) < 0) {
             return -1;
         }
     }
@@ -2810,7 +2947,9 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
 bool
 virCgroupSupportsCpuBW(virCgroupPtr cgroup)
 {
-    VIR_CGROUP_BACKEND_CALL(cgroup, VIR_CGROUP_CONTROLLER_CPU,
+    virCgroupPtr parent = virCgroupGetNested(cgroup);
+
+    VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPU,
                             supportsCpuBW, false);
 }
 
@@ -2818,10 +2957,11 @@ int
 virCgroupHasEmptyTasks(virCgroupPtr cgroup, int controller)
 {
     size_t i;
+    virCgroupPtr parent = virCgroupGetNested(cgroup);
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
-        if (cgroup->backends[i]) {
-            int rc = cgroup->backends[i]->hasEmptyTasks(cgroup, controller);
+        if (parent->backends[i]) {
+            int rc = parent->backends[i]->hasEmptyTasks(parent, controller);
             if (rc <= 0)
                 return rc;
         }
@@ -3630,6 +3770,7 @@ virCgroupFree(virCgroupPtr group)
     g_free(group->unified.mountPoint);
     g_free(group->unified.placement);
     g_free(group->unitName);
+    g_free(group->nested);
 
     g_free(group);
 }
@@ -3641,9 +3782,12 @@ virCgroupDelThread(virCgroupPtr cgroup,
                    int idx)
 {
     g_autoptr(virCgroup) new_cgroup = NULL;
+    virCgroupPtr parent = NULL;
 
     if (cgroup) {
-        if (virCgroupNewThread(cgroup, nameval, idx, false, &new_cgroup) < 0)
+        parent = virCgroupGetNested(cgroup);
+
+        if (virCgroupNewThread(parent, nameval, idx, false, &new_cgroup) < 0)
             return -1;
 
         /* Remove the offlined cgroup */

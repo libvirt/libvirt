@@ -338,6 +338,8 @@ virCgroupV1DetectPlacement(virCgroupPtr group,
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         const char *typestr = virCgroupV1ControllerTypeToString(i);
+        g_autofree char* placement = NULL;
+        char *tmp = NULL;
 
         if (!virCgroupV1MountOptsMatchController(controllers, typestr))
             continue;
@@ -348,17 +350,24 @@ virCgroupV1DetectPlacement(virCgroupPtr group,
         if (group->legacy[i].placement)
             continue;
 
+        /* On systemd we create a nested cgroup for some cgroup tasks
+         * but the placement should point to the root cgroup. */
+        placement = g_strdup(selfpath);
+        tmp = g_strrstr(placement, "/libvirt");
+        if (tmp)
+            *tmp = '\0';
+
         /*
          * selfpath == "/" + path="" -> "/"
          * selfpath == "/libvirt.service" + path == "" -> "/libvirt.service"
          * selfpath == "/libvirt.service" + path == "foo" -> "/libvirt.service/foo"
          */
         if (i == VIR_CGROUP_CONTROLLER_SYSTEMD) {
-            group->legacy[i].placement = g_strdup(selfpath);
+            group->legacy[i].placement = g_strdup(placement);
         } else {
-            bool delim = STREQ(selfpath, "/") || STREQ(path, "");
+            bool delim = STREQ(placement, "/") || STREQ(path, "");
 
-            group->legacy[i].placement = g_strdup_printf("%s%s%s", selfpath,
+            group->legacy[i].placement = g_strdup_printf("%s%s%s", placement,
                                                          delim ? "" : "/",
                                                          path);
         }

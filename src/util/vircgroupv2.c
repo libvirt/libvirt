@@ -208,6 +208,12 @@ virCgroupV2DetectPlacement(virCgroupPtr group,
     if (tmp)
         *tmp = '\0';
 
+    /* On systemd we create a nested cgroup for some cgroup tasks
+     * but the placement should point to the root cgroup. */
+    tmp = g_strrstr(placement, "/libvirt");
+    if (tmp)
+        *tmp = '\0';
+
     /*
      * selfpath == "/" + path="" -> "/"
      * selfpath == "/libvirt.service" + path == "" -> "/libvirt.service"

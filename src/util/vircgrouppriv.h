@@ -66,7 +66,11 @@ struct _virCgroup {
     virCgroupV2Controller unified;
 
     char *unitName;
+    virCgroupPtr nested;
 };
+
+#define virCgroupGetNested(cgroup) \
+    (cgroup->nested ? cgroup->nested : cgroup)
 
 int virCgroupSetValueDBus(const char *unitName,
                           const char *key,

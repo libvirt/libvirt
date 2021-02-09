@@ -117,21 +117,27 @@ $ROOT
       |
       +- machine-qemu\x2d1\x2dvm1.scope
       |   |
-      |   +- emulator
-      |   +- vcpu0
-      |   +- vcpu1
+      |   +- libvirt
+      |       |
+      |       +- emulator
+      |       +- vcpu0
+      |       +- vcpu1
       |
       +- machine-qemu\x2d2\x2dvm2.scope
       |   |
-      |   +- emulator
-      |   +- vcpu0
-      |   +- vcpu1
+      |   +- libvirt
+      |       |
+      |       +- emulator
+      |       +- vcpu0
+      |       +- vcpu1
       |
       +- machine-qemu\x2d3\x2dvm3.scope
       |   |
-      |   +- emulator
-      |   +- vcpu0
-      |   +- vcpu1
+      |   +- libvirt
+      |       |
+      |       +- emulator
+      |       +- vcpu0
+      |       +- vcpu1
       |
       +- machine-engineering.slice
       |   |
@@ -147,6 +153,11 @@ $ROOT
           |
           +- machine-lxc\x2d33333\x2dcontainer3.scope
     </pre>
+
+    <p>
+      Prior libvirt 7.1.0 the topology doesn't have extra
+      <code>libvirt</code> directory.
+    </p>
 
     <h3><a id="currentLayoutGeneric">Non-systemd cgroups layout</a></h3>
 
