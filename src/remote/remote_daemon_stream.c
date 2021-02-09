@@ -419,7 +419,7 @@ int daemonFreeClientStream(virNetServerClientPtr client,
     }
 
     virObjectUnref(stream->st);
-    VIR_FREE(stream);
+    g_free(stream);
 
     return ret;
 }
