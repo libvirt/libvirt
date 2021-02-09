@@ -1420,7 +1420,6 @@ qemuBlockJobProcessEventFailedActiveCommit(virQEMUDriverPtr driver,
                                            qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    g_autoptr(virJSONValue) actions = virJSONValueNewArray();
     virDomainDiskDefPtr disk = job->disk;
 
     VIR_DEBUG("active commit job '%s' on VM '%s' failed", job->name, vm->def->name);
@@ -1428,13 +1427,12 @@ qemuBlockJobProcessEventFailedActiveCommit(virQEMUDriverPtr driver,
     if (!disk)
         return;
 
-    ignore_value(qemuMonitorTransactionBitmapRemove(actions, disk->mirror->nodeformat,
-                                                    "libvirt-tmp-activewrite"));
-
     if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
         return;
 
-    qemuMonitorTransaction(priv->mon, &actions);
+    qemuMonitorBitmapRemove(priv->mon,
+                            disk->mirror->nodeformat,
+                            "libvirt-tmp-activewrite");
 
     if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
         return;
@@ -1502,7 +1500,6 @@ qemuBlockJobProcessEventConcludedBackup(virQEMUDriverPtr driver,
                                         unsigned long long progressTotal)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) backend = NULL;
-    g_autoptr(virJSONValue) actions = NULL;
 
     qemuBackupNotifyBlockjobEnd(vm, job->disk, newstate, job->errmsg,
                                 progressCurrent, progressTotal, asyncJob);
@@ -1511,23 +1508,16 @@ qemuBlockJobProcessEventConcludedBackup(virQEMUDriverPtr driver,
         !(backend = qemuBlockStorageSourceDetachPrepare(job->data.backup.store, NULL)))
         return;
 
-    if (job->data.backup.bitmap) {
-        actions = virJSONValueNewArray();
-
-        if (qemuMonitorTransactionBitmapRemove(actions,
-                                               job->disk->src->nodeformat,
-                                               job->data.backup.bitmap) < 0)
-            return;
-    }
-
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return;
 
     if (backend)
         qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm), backend);
 
-    if (actions)
-        qemuMonitorTransaction(qemuDomainGetMonitor(vm), &actions);
+    if (job->data.backup.bitmap)
+        qemuMonitorBitmapRemove(qemuDomainGetMonitor(vm),
+                                job->disk->src->nodeformat,
+                                job->data.backup.bitmap);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         return;
