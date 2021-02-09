@@ -245,8 +245,8 @@ void virLockManagerPluginUnref(virLockManagerPluginPtr plugin)
         return;
     }
 
-    VIR_FREE(plugin->name);
-    VIR_FREE(plugin);
+    g_free(plugin->name);
+    g_free(plugin);
 }
 #else /* !WITH_DLFCN_H */
 void virLockManagerPluginUnref(virLockManagerPluginPtr plugin G_GNUC_UNUSED)
