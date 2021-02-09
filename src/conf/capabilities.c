@@ -118,10 +118,10 @@ virCapabilitiesFreeHostNUMACell(virCapsHostNUMACellPtr cell)
 
     virCapabilitiesClearHostNUMACellCPUTopology(cell->cpus, cell->ncpus);
 
-    VIR_FREE(cell->cpus);
-    VIR_FREE(cell->siblings);
-    VIR_FREE(cell->pageinfo);
-    VIR_FREE(cell);
+    g_free(cell->cpus);
+    g_free(cell->siblings);
+    g_free(cell->pageinfo);
+    g_free(cell);
 }
 
 static void
@@ -129,9 +129,9 @@ virCapabilitiesFreeGuestMachine(virCapsGuestMachinePtr machine)
 {
     if (machine == NULL)
         return;
-    VIR_FREE(machine->name);
-    VIR_FREE(machine->canonical);
-    VIR_FREE(machine);
+    g_free(machine->name);
+    g_free(machine->canonical);
+    g_free(machine);
 }
 
 static void
@@ -141,13 +141,13 @@ virCapabilitiesFreeGuestDomain(virCapsGuestDomainPtr dom)
     if (dom == NULL)
         return;
 
-    VIR_FREE(dom->info.emulator);
-    VIR_FREE(dom->info.loader);
+    g_free(dom->info.emulator);
+    g_free(dom->info.loader);
     for (i = 0; i < dom->info.nmachines; i++)
         virCapabilitiesFreeGuestMachine(dom->info.machines[i]);
-    VIR_FREE(dom->info.machines);
+    g_free(dom->info.machines);
 
-    VIR_FREE(dom);
+    g_free(dom);
 }
 
 void
@@ -157,17 +157,17 @@ virCapabilitiesFreeGuest(virCapsGuestPtr guest)
     if (guest == NULL)
         return;
 
-    VIR_FREE(guest->arch.defaultInfo.emulator);
-    VIR_FREE(guest->arch.defaultInfo.loader);
+    g_free(guest->arch.defaultInfo.emulator);
+    g_free(guest->arch.defaultInfo.loader);
     for (i = 0; i < guest->arch.defaultInfo.nmachines; i++)
         virCapabilitiesFreeGuestMachine(guest->arch.defaultInfo.machines[i]);
-    VIR_FREE(guest->arch.defaultInfo.machines);
+    g_free(guest->arch.defaultInfo.machines);
 
     for (i = 0; i < guest->arch.ndomains; i++)
         virCapabilitiesFreeGuestDomain(guest->arch.domains[i]);
-    VIR_FREE(guest->arch.domains);
+    g_free(guest->arch.domains);
 
-    VIR_FREE(guest);
+    g_free(guest);
 }
 
 
@@ -177,7 +177,7 @@ virCapabilitiesFreeStoragePool(virCapsStoragePoolPtr pool)
     if (!pool)
         return;
 
-    VIR_FREE(pool);
+    g_free(pool);
 }
 
 
@@ -190,7 +190,7 @@ virCapabilitiesHostNUMAUnref(virCapsHostNUMAPtr caps)
     if (g_atomic_int_dec_and_test(&caps->refs)) {
         g_ptr_array_unref(caps->cells);
 
-        VIR_FREE(caps);
+        g_free(caps);
     }
 }
 
@@ -409,7 +409,7 @@ virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
         virCapabilitiesFreeGuestMachine(machines[i]);
         machines[i] = NULL;
     }
-    VIR_FREE(machines);
+    g_free(machines);
 }
 
 /**
