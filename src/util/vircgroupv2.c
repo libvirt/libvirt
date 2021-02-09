@@ -499,6 +499,20 @@ virCgroupV2MakeGroup(virCgroupPtr parent,
 }
 
 
+static bool
+virCgroupV2Exists(virCgroupPtr group)
+{
+    g_autofree char *path = NULL;
+    int controller;
+
+    controller = virCgroupV2GetAnyController(group);
+    if (virCgroupV2PathOfController(group, controller, "", &path) < 0)
+        return false;
+
+    return virFileExists(path);
+}
+
+
 static int
 virCgroupV2Remove(virCgroupPtr group)
 {
@@ -1895,6 +1909,7 @@ virCgroupBackend virCgroupV2Backend = {
     .getAnyController = virCgroupV2GetAnyController,
     .pathOfController = virCgroupV2PathOfController,
     .makeGroup = virCgroupV2MakeGroup,
+    .exists = virCgroupV2Exists,
     .remove = virCgroupV2Remove,
     .addTask = virCgroupV2AddTask,
     .hasEmptyTasks = virCgroupV2HasEmptyTasks,

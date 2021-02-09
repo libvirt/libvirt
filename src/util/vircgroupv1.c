@@ -690,6 +690,32 @@ virCgroupV1MakeGroup(virCgroupPtr parent,
 }
 
 
+static bool
+virCgroupV1Exists(virCgroupPtr group)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        g_autofree char *path = NULL;
+
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
+            continue;
+
+        if (!group->legacy[i].mountPoint)
+            continue;
+
+        if (virCgroupV1PathOfController(group, i, "", &path) < 0)
+            return false;
+
+        if (!virFileExists(path)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 static int
 virCgroupV1Remove(virCgroupPtr group)
 {
@@ -2154,6 +2180,7 @@ virCgroupBackend virCgroupV1Backend = {
     .getAnyController = virCgroupV1GetAnyController,
     .pathOfController = virCgroupV1PathOfController,
     .makeGroup = virCgroupV1MakeGroup,
+    .exists = virCgroupV1Exists,
     .remove = virCgroupV1Remove,
     .addTask = virCgroupV1AddTask,
     .hasEmptyTasks = virCgroupV1HasEmptyTasks,

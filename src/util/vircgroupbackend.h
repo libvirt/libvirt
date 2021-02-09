@@ -118,6 +118,9 @@ typedef int
                                const char *key,
                                char **path);
 
+typedef bool
+(*virCgroupExistsCB)(virCgroupPtr group);
+
 typedef int
 (*virCgroupMakeGroupCB)(virCgroupPtr parent,
                         virCgroupPtr group,
@@ -382,6 +385,7 @@ struct _virCgroupBackend {
     virCgroupGetAnyControllerCB getAnyController;
     virCgroupPathOfControllerCB pathOfController;
     virCgroupMakeGroupCB makeGroup;
+    virCgroupExistsCB exists;
     virCgroupRemoveCB remove;
     virCgroupAddTaskCB addTask;
     virCgroupHasEmptyTasksCB hasEmptyTasks;
