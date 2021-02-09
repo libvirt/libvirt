@@ -52,7 +52,6 @@ if conf.has('WITH_VZ')
     'name': 'Libvirt vz',
     'sockprefix': 'virtvzd',
     'sockets': [ 'main', 'ro', 'admin' ],
-    'conflicts': true,
   }
 
   openrc_init_files += {

@@ -56,7 +56,6 @@ if conf.has('WITH_NODE_DEVICES')
     'name': 'Libvirt nodedev',
     'sockprefix': 'virtnodedevd',
     'sockets': [ 'main', 'ro', 'admin' ],
-    'conflicts': true,
   }
 
   openrc_init_files += {

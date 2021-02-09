@@ -168,7 +168,6 @@ if conf.has('WITH_LXC')
     'name': 'Libvirt lxc',
     'sockprefix': 'virtlxcd',
     'sockets': [ 'main', 'ro', 'admin' ],
-    'conflicts': true,
   }
 
   openrc_init_files += {

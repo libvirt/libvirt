@@ -158,7 +158,6 @@ if conf.has('WITH_QEMU')
     'name': 'Libvirt qemu',
     'sockprefix': 'virtqemud',
     'sockets': [ 'main', 'ro', 'admin' ],
-    'conflicts': true,
   }
 
   openrc_init_files += {

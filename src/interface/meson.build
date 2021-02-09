@@ -48,7 +48,6 @@ if conf.has('WITH_INTERFACE')
     'name': 'Libvirt interface',
     'sockprefix': 'virtinterfaced',
     'sockets': [ 'main', 'ro', 'admin' ],
-    'conflicts': true,
   }
 
   openrc_init_files += {

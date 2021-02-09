@@ -54,7 +54,6 @@ if conf.has('WITH_NWFILTER')
     'name': 'Libvirt nwfilter',
     'sockprefix': 'virtnwfilterd',
     'sockets': [ 'main', 'ro', 'admin' ],
-    'conflicts': true,
   }
 
   openrc_init_files += {

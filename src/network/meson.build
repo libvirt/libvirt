@@ -65,7 +65,6 @@ if conf.has('WITH_NETWORK')
     'name': 'Libvirt network',
     'sockprefix': 'virtnetworkd',
     'sockets': [ 'main', 'ro', 'admin' ],
-    'conflicts': true,
   }
 
   openrc_init_files += {
