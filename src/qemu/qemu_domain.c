@@ -95,7 +95,7 @@ qemuJobFreePrivate(void *opaque)
         return;
 
     qemuMigrationParamsFree(priv->migParams);
-    VIR_FREE(priv);
+    g_free(priv);
 }
 
 

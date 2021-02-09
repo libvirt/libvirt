@@ -17677,12 +17677,12 @@ qemuDomainFreeResctrlMonData(virQEMUResctrlMonDataPtr resdata)
 {
     size_t i = 0;
 
-    VIR_FREE(resdata->name);
-    VIR_FREE(resdata->vcpus);
+    g_free(resdata->name);
+    g_free(resdata->vcpus);
     for (i = 0; i < resdata->nstats; i++)
         virResctrlMonitorStatsFree(resdata->stats[i]);
-    VIR_FREE(resdata->stats);
-    VIR_FREE(resdata);
+    g_free(resdata->stats);
+    g_free(resdata);
 }
 
 
