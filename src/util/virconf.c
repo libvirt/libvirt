@@ -151,11 +151,11 @@ virConfFreeValue(virConfValuePtr val)
         return;
     if (val->type == VIR_CONF_STRING &&
         val->str != NULL)
-        VIR_FREE(val->str);
+        g_free(val->str);
     if (val->type == VIR_CONF_LIST &&
         val->list != NULL)
         virConfFreeList(val->list);
-    VIR_FREE(val);
+    g_free(val);
 }
 
 virConfPtr

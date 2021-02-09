@@ -108,9 +108,9 @@ virStringListFreeCount(char **strings,
         return;
 
     for (i = 0; i < count; i++)
-        VIR_FREE(strings[i]);
+        g_free(strings[i]);
 
-    VIR_FREE(strings);
+    g_free(strings);
 }
 
 

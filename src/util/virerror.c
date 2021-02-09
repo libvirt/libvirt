@@ -158,7 +158,7 @@ virLastErrFreeData(void *data)
     if (!err)
         return;
     virResetError(err);
-    VIR_FREE(err);
+    g_free(err);
 }
 
 
@@ -477,7 +477,7 @@ void
 virFreeError(virErrorPtr err)
 {
     virResetError(err);
-    VIR_FREE(err);
+    g_free(err);
 }
 
 /**
