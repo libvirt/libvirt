@@ -4063,7 +4063,11 @@ virQEMUCapsLoadMachines(virQEMUCapsAccelPtr caps,
 
         caps->machineTypes[i].defaultCPU = virXMLPropString(nodes[i], "defaultCPU");
         caps->machineTypes[i].defaultRAMid = virXMLPropString(nodes[i], "defaultRAMid");
-        caps->machineTypes[i].deprecated = virXMLPropString(nodes[i], "deprecated");
+
+        str = virXMLPropString(nodes[i], "deprecated");
+        if (STREQ_NULLABLE(str, "yes"))
+            caps->machineTypes[i].deprecated = true;
+        VIR_FREE(str);
     }
 
     return 0;
