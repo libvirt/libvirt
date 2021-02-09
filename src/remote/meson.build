@@ -230,7 +230,7 @@ if conf.has('WITH_REMOTE')
       'name': 'Libvirt proxy',
       'sockprefix': 'libvirt',
       'sockets': [ 'main', 'ro', 'admin', 'tcp', 'tls' ],
-      'deps': libvirtd_socket_conflicts,
+      'deps': 'Conflicts=' + libvirtd_socket_conflicts,
     }
 
     openrc_init_files += {
