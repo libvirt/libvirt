@@ -478,7 +478,7 @@ openvzFreeDriver(struct openvz_driver *driver)
     virObjectUnref(driver->xmlopt);
     virObjectUnref(driver->domains);
     virObjectUnref(driver->caps);
-    VIR_FREE(driver);
+    g_free(driver);
 }
 
 
