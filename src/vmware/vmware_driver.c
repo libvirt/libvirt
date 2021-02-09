@@ -110,8 +110,8 @@ vmwareDataFreeFunc(void *data)
 {
     vmwareDomainPtr dom = data;
 
-    VIR_FREE(dom->vmxPath);
-    VIR_FREE(dom);
+    g_free(dom->vmxPath);
+    g_free(dom);
 }
 
 static int
