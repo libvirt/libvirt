@@ -4299,6 +4299,12 @@ qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
 
     switch (tpm->model) {
     case VIR_DOMAIN_TPM_MODEL_TIS:
+        if (!ARCH_IS_X86(def->os.arch) && (def->os.arch != VIR_ARCH_AARCH64)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("TPM model '%s' is only available for x86 and aarch64 guests"),
+                          virDomainTPMModelTypeToString(tpm->model));
+            return -1;
+        }
         flag = QEMU_CAPS_DEVICE_TPM_TIS;
         break;
     case VIR_DOMAIN_TPM_MODEL_CRB:
