@@ -9,6 +9,7 @@
         <value>custom</value>
         <value>host-model</value>
         <value>host-passthrough</value>
+        <value>maximum</value>
       </choice>
     </attribute>
   </define>
