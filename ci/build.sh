@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # This script is used to build libvirt inside the container.
 #
 # You can customize it to your liking, or alternatively use a
