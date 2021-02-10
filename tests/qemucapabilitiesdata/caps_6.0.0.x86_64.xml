@@ -259,10 +259,11 @@
   <version>5002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>
-  <package>v5.2.0-1810-g2436651b26</package>
+  <package>v5.2.0-2208-gc79f01c945</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
+    <property name='svme-addr-chk' type='boolean' value='false'/>
     <property name='cmov' type='boolean' value='true' migratable='yes'/>
     <property name='ia64' type='boolean' value='false'/>
     <property name='ssb-no' type='boolean' value='false'/>
@@ -347,6 +348,7 @@
     <property name='vmx-unrestricted-guest' type='boolean' value='false'/>
     <property name='vmx-cr3-store-noexit' type='boolean' value='false'/>
     <property name='pku' type='boolean' value='false'/>
+    <property name='pks' type='boolean' value='false'/>
     <property name='smx' type='boolean' value='false'/>
     <property name='cmp-legacy' type='boolean' value='true' migratable='yes'/>
     <property name='avx512-4fmaps' type='boolean' value='false'/>
@@ -462,6 +464,7 @@
     <property name='kvmclock' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-zero-len-inject' type='boolean' value='false'/>
     <property name='pschange-mc-no' type='boolean' value='true' migratable='yes'/>
+    <property name='v-vmsave-vmload' type='boolean' value='false'/>
     <property name='vmx-rdrand-exit' type='boolean' value='false'/>
     <property name='lwp' type='boolean' value='false'/>
     <property name='amd-ssbd' type='boolean' value='true' migratable='yes'/>
@@ -499,6 +502,7 @@
     <property name='vmx-movdr-exit' type='boolean' value='false'/>
     <property name='pse' type='boolean' value='true' migratable='yes'/>
     <property name='avx2' type='boolean' value='true' migratable='yes'/>
+    <property name='avic' type='boolean' value='false'/>
     <property name='sep' type='boolean' value='true' migratable='yes'/>
     <property name='virt-ssbd' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-cr3-load-noexit' type='boolean' value='false'/>
@@ -515,6 +519,7 @@
     <property name='amd-stibp' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-preemption-timer' type='boolean' value='false'/>
     <property name='clflushopt' type='boolean' value='true' migratable='yes'/>
+    <property name='vmx-entry-load-pkrs' type='boolean' value='false'/>
     <property name='vmx-vnmi-pending' type='boolean' value='false'/>
     <property name='monitor' type='boolean' value='false'/>
     <property name='vmx-vintr-pending' type='boolean' value='false'/>
@@ -524,6 +529,7 @@
     <property name='pcid' type='boolean' value='false'/>
     <property name='taa-no' type='boolean' value='false'/>
     <property name='arch-capabilities' type='boolean' value='true' migratable='yes'/>
+    <property name='vgif' type='boolean' value='false'/>
     <property name='vmx-secondary-ctls' type='boolean' value='false'/>
     <property name='vmx-xsaves' type='boolean' value='false'/>
     <property name='clzero' type='boolean' value='true' migratable='yes'/>
@@ -558,6 +564,7 @@
     <property name='vmx-entry-load-efer' type='boolean' value='false'/>
     <property name='model-id' type='string' value='AMD Ryzen 9 3900X 12-Core Processor            '/>
     <property name='sha-ni' type='boolean' value='true' migratable='yes'/>
+    <property name='vmx-exit-load-pkrs' type='boolean' value='false'/>
     <property name='abm' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-ept-advanced-exitinfo' type='boolean' value='false'/>
     <property name='avx512pf' type='boolean' value='false'/>
@@ -1436,8 +1443,9 @@
   <machine type='kvm' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
-  <machine type='kvm' name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
+  <machine type='kvm' name='x-remote' maxCpus='1'/>
   <machine type='kvm' name='pc-q35-5.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram'/>
+  <machine type='kvm' name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
@@ -1471,6 +1479,7 @@
   <machine type='kvm' name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <hostCPU type='tcg' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
+    <property name='svme-addr-chk' type='boolean' value='false'/>
     <property name='cmov' type='boolean' value='true' migratable='yes'/>
     <property name='ia64' type='boolean' value='false'/>
     <property name='ssb-no' type='boolean' value='false'/>
@@ -1555,6 +1564,7 @@
     <property name='vmx-unrestricted-guest' type='boolean' value='false'/>
     <property name='vmx-cr3-store-noexit' type='boolean' value='false'/>
     <property name='pku' type='boolean' value='true' migratable='yes'/>
+    <property name='pks' type='boolean' value='true' migratable='yes'/>
     <property name='smx' type='boolean' value='false'/>
     <property name='cmp-legacy' type='boolean' value='false'/>
     <property name='avx512-4fmaps' type='boolean' value='false'/>
@@ -1670,6 +1680,7 @@
     <property name='kvmclock' type='boolean' value='false'/>
     <property name='vmx-zero-len-inject' type='boolean' value='false'/>
     <property name='pschange-mc-no' type='boolean' value='false'/>
+    <property name='v-vmsave-vmload' type='boolean' value='false'/>
     <property name='vmx-rdrand-exit' type='boolean' value='false'/>
     <property name='lwp' type='boolean' value='false'/>
     <property name='amd-ssbd' type='boolean' value='false'/>
@@ -1707,6 +1718,7 @@
     <property name='vmx-movdr-exit' type='boolean' value='false'/>
     <property name='pse' type='boolean' value='true' migratable='yes'/>
     <property name='avx2' type='boolean' value='false'/>
+    <property name='avic' type='boolean' value='false'/>
     <property name='sep' type='boolean' value='true' migratable='yes'/>
     <property name='virt-ssbd' type='boolean' value='false'/>
     <property name='vmx-cr3-load-noexit' type='boolean' value='false'/>
@@ -1723,6 +1735,7 @@
     <property name='amd-stibp' type='boolean' value='false'/>
     <property name='vmx-preemption-timer' type='boolean' value='false'/>
     <property name='clflushopt' type='boolean' value='true' migratable='yes'/>
+    <property name='vmx-entry-load-pkrs' type='boolean' value='false'/>
     <property name='vmx-vnmi-pending' type='boolean' value='false'/>
     <property name='monitor' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-vintr-pending' type='boolean' value='false'/>
@@ -1732,6 +1745,7 @@
     <property name='pcid' type='boolean' value='false'/>
     <property name='taa-no' type='boolean' value='false'/>
     <property name='arch-capabilities' type='boolean' value='false'/>
+    <property name='vgif' type='boolean' value='false'/>
     <property name='vmx-secondary-ctls' type='boolean' value='false'/>
     <property name='vmx-xsaves' type='boolean' value='false'/>
     <property name='clzero' type='boolean' value='false'/>
@@ -1766,6 +1780,7 @@
     <property name='vmx-entry-load-efer' type='boolean' value='false'/>
     <property name='model-id' type='string' value='QEMU TCG CPU version 2.5+'/>
     <property name='sha-ni' type='boolean' value='false'/>
+    <property name='vmx-exit-load-pkrs' type='boolean' value='false'/>
     <property name='abm' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-ept-advanced-exitinfo' type='boolean' value='false'/>
     <property name='avx512pf' type='boolean' value='false'/>
@@ -3175,8 +3190,9 @@
   <machine type='tcg' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
-  <machine type='tcg' name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
+  <machine type='tcg' name='x-remote' maxCpus='1'/>
   <machine type='tcg' name='pc-q35-5.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram'/>
+  <machine type='tcg' name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
