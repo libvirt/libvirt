@@ -4345,7 +4345,7 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
     char *uri_out = NULL;
     char *cookiein = NULL;
     char *cookieout = NULL;
-    char *dom_xml = NULL;
+    g_autofree char *dom_xml = NULL;
     int cookieinlen = 0;
     int cookieoutlen = 0;
     int ret = -1;
