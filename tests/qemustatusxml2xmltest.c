@@ -133,6 +133,7 @@ mymain(void)
     DO_TEST_STATUS("migration-in-params");
     DO_TEST_STATUS("migration-out-params");
     DO_TEST_STATUS("migration-out-nbd-tls");
+    DO_TEST_STATUS("migration-out-nbd-bitmaps");
     DO_TEST_STATUS("upgrade");
 
     DO_TEST_STATUS("blockjob-blockdev");
