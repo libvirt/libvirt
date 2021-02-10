@@ -45,15 +45,15 @@ CI_CLEAN = 1
 # preserved env
 CI_REUSE = 0
 
-# We need the container process to run with current host IDs
-# so that it can access the passed in build directory
-CI_UID = $(shell id -u)
-CI_GID = $(shell id -g)
-
-# We also need the user's login and home directory to prepare the
+# We need the user's login and home directory to prepare the
 # environment the way some programs expect it
-CI_USER_LOGIN = $(shell echo "$$USER")
-CI_USER_HOME = $(shell echo "$$HOME")
+CI_USER_LOGIN = $(shell whoami)
+CI_USER_HOME = $(shell eval echo "~$(CI_USER_LOGIN)")
+
+# We also need the container process to run with current host IDs
+# so that it can access the passed in build directory
+CI_UID = $(shell id -u "$(CI_USER_LOGIN)")
+CI_GID = $(shell id -g "$(CI_USER_LOGIN)")
 
 CI_ENGINE = auto
 # Container engine we are going to use, can be overridden per make
@@ -124,14 +124,16 @@ ifeq ($(CI_ENGINE),podman)
 	CI_UID_OTHER_RANGE = $(shell echo $$(($(CI_MAX_UID)-$(CI_UID))))
 	CI_GID_OTHER_RANGE = $(shell echo $$(($(CI_MAX_GID)-$(CI_GID))))
 
-	CI_PODMAN_ARGS = \
-		--uidmap 0:1:$(CI_UID) \
-		--uidmap $(CI_UID):0:1 \
-		--uidmap $(CI_UID_OTHER):$(CI_UID_OTHER):$(CI_UID_OTHER_RANGE) \
-		--gidmap 0:1:$(CI_GID) \
-		--gidmap $(CI_GID):0:1 \
-		--gidmap $(CI_GID_OTHER):$(CI_GID_OTHER):$(CI_GID_OTHER_RANGE) \
-		$(NULL)
+	ifneq ($(CI_UID), 0)
+		CI_PODMAN_ARGS = \
+			--uidmap 0:1:$(CI_UID) \
+			--uidmap $(CI_UID):0:1 \
+			--uidmap $(CI_UID_OTHER):$(CI_UID_OTHER):$(CI_UID_OTHER_RANGE) \
+			--gidmap 0:1:$(CI_GID) \
+			--gidmap $(CI_GID):0:1 \
+			--gidmap $(CI_GID_OTHER):$(CI_GID_OTHER):$(CI_GID_OTHER_RANGE) \
+			$(NULL)
+	endif
 endif
 
 # Args to use when cloning a git repo.
@@ -239,6 +241,7 @@ ci-help:
 	@echo "    CI_CLEAN=0          - do not delete '$(CI_SCRATCHDIR)' after completion"
 	@echo "    CI_REUSE=1          - re-use existing '$(CI_SCRATCHDIR)' content"
 	@echo "    CI_ENGINE=auto      - container engine to use (podman, docker)"
+	@echo "    CI_USER_LOGIN=      - which user should run in the container (default is $$USER)"
 	@echo "    CI_MESON_ARGS=      - extra arguments passed to meson"
 	@echo "    CI_NINJA_ARGS=      - extra arguments passed to ninja"
 	@echo
