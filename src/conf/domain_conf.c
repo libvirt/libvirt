@@ -16431,6 +16431,11 @@ virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
                                             &net->info.addr.ccw))
             continue;
 
+        if (net->info.alias &&
+            STRNEQ_NULLABLE(def->nets[i]->info.alias, net->info.alias)) {
+            continue;
+        }
+
         if (matchidx >= 0) {
             /* there were multiple matches on mac address, and no
              * qualifying guest-side PCI/CCW address was given, so we must
