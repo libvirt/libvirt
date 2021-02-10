@@ -40,8 +40,8 @@ struct _virKeepAlive {
     int interval;
     unsigned int count;
     unsigned int countToDeath;
-    time_t lastPacketReceived;
-    time_t intervalStart;
+    gint64 lastPacketReceived;
+    gint64 intervalStart;
     int timer;
 
     virKeepAliveSendFunc sendCB;
@@ -113,7 +113,7 @@ static bool
 virKeepAliveTimerInternal(virKeepAlivePtr ka,
                           virNetMessagePtr *msg)
 {
-    time_t now = time(NULL);
+    gint64 now = g_get_monotonic_time() / G_USEC_PER_SEC;
     int timeval;
 
     if (ka->interval <= 0 || ka->intervalStart == 0)
@@ -231,9 +231,9 @@ virKeepAliveStart(virKeepAlivePtr ka,
                   unsigned int count)
 {
     int ret = -1;
-    time_t delay;
+    gint64 delay;
     int timeout;
-    time_t now;
+    gint64 now;
 
     virObjectLock(ka);
 
@@ -270,7 +270,7 @@ virKeepAliveStart(virKeepAlivePtr ka,
           "ka=%p client=%p interval=%d count=%u",
           ka, ka->client, interval, count);
 
-    now = time(NULL);
+    now = g_get_monotonic_time() / G_USEC_PER_SEC;
     delay = now - ka->lastPacketReceived;
     if (delay > ka->interval)
         timeout = 0;
@@ -375,7 +375,8 @@ virKeepAliveCheckMessage(virKeepAlivePtr ka,
     virObjectLock(ka);
 
     ka->countToDeath = ka->count;
-    ka->lastPacketReceived = ka->intervalStart = time(NULL);
+    ka->intervalStart = g_get_monotonic_time() / G_USEC_PER_SEC;
+    ka->lastPacketReceived = ka->intervalStart;
 
     if (msg->header.prog == KEEPALIVE_PROGRAM &&
         msg->header.vers == KEEPALIVE_PROTOCOL_VERSION &&
