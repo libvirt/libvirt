@@ -1,0 +1,52 @@
+<qemu-migration>
+  <name>migr</name>
+  <uuid>10b01607-0323-486b-afe2-3014a8a5b98b</uuid>
+  <hostname>sourcehost</hostname>
+  <hostuuid>1f5e0da0-fecf-413f-9bf1-1aa9c21e71e4</hostuuid>
+  <feature name='lockstate'/>
+  <nbd>
+    <disk target='hda' capacity='708837376'/>
+    <disk target='vda' capacity='10485760'/>
+  </nbd>
+  <cpu mode='custom' match='exact' check='full'>
+    <model fallback='forbid'>EPYC-Rome</model>
+    <vendor>AMD</vendor>
+    <feature policy='require' name='x2apic'/>
+    <feature policy='require' name='tsc-deadline'/>
+    <feature policy='require' name='hypervisor'/>
+    <feature policy='require' name='tsc_adjust'/>
+    <feature policy='require' name='stibp'/>
+    <feature policy='require' name='arch-capabilities'/>
+    <feature policy='require' name='ssbd'/>
+    <feature policy='require' name='xsaves'/>
+    <feature policy='require' name='cmp_legacy'/>
+    <feature policy='require' name='amd-ssbd'/>
+    <feature policy='require' name='virt-ssbd'/>
+    <feature policy='require' name='rdctl-no'/>
+    <feature policy='require' name='skip-l1dfl-vmentry'/>
+    <feature policy='require' name='mds-no'/>
+    <feature policy='require' name='pschange-mc-no'/>
+    <feature policy='disable' name='svm'/>
+    <feature policy='disable' name='npt'/>
+    <feature policy='disable' name='nrip-save'/>
+  </cpu>
+  <allowReboot value='yes'/>
+  <capabilities>
+    <cap name='xbzrle' auto='no'/>
+    <cap name='auto-converge' auto='no'/>
+    <cap name='rdma-pin-all' auto='no'/>
+    <cap name='postcopy-ram' auto='no'/>
+    <cap name='compress' auto='no'/>
+    <cap name='pause-before-switchover' auto='yes'/>
+    <cap name='late-block-activate' auto='no'/>
+    <cap name='multifd' auto='no'/>
+    <cap name='dirty-bitmaps' auto='no'/>
+  </capabilities>
+  <blockDirtyBitmaps>
+    <disk target='vda'>
+      <bitmap name='a' alias='libvirt-vda-a'/>
+      <bitmap name='b' alias='libvirt-vda-b'/>
+      <bitmap name='c' alias='libvirt-vda-c'/>
+    </disk>
+  </blockDirtyBitmaps>
+</qemu-migration>

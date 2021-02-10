@@ -25,9 +25,13 @@
 
 #include "internal.h"
 #include "testutilsqemu.h"
+#include "testutilsqemuschema.h"
 #include "configmake.h"
 
+#define LIBVIRT_QEMU_MIGRATION_PARAMSPRIV_H_ALLOW
+
 #include "qemu/qemu_migration_cookie.h"
+#include "qemu/qemu_migration_paramspriv.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -61,11 +65,31 @@ struct testQemuMigrationCookieData {
 
     qemuMigrationParty cookiePopulateParty;
 
+    qemuMigrationCookiePtr cookie;
+
     char *xmlstr;
     int xmlstrlen;
     char *infile;
     char *outfile;
+    char *outmigparamsfile;
 };
+
+
+static void
+testQemuMigrationCookieDataFree(struct testQemuMigrationCookieData *data)
+{
+    if (!data)
+        return;
+
+    qemuMigrationCookieFree(data->cookie);
+    g_free(data->xmlstr);
+    g_free(data->outfile);
+    g_free(data->infile);
+    g_free(data->outmigparamsfile);
+    g_free(data->inStatus);
+    virDomainObjEndAPI(&data->vm);
+    g_free(data);
+}
 
 
 static int
@@ -115,26 +139,25 @@ testQemuMigrationCookieParse(const void *opaque)
     struct testQemuMigrationCookieData *data = (struct testQemuMigrationCookieData *) opaque;
     qemuDomainObjPrivatePtr priv = data->vm->privateData;
     g_auto(virBuffer) actual = VIR_BUFFER_INITIALIZER;
-    g_autoptr(qemuMigrationCookie) cookie = NULL;
 
-    if (!(cookie = qemuMigrationCookieParse(&driver,
-                                            data->vm->def,
-                                            NULL,
-                                            priv,
-                                            data->xmlstr,
-                                            data->xmlstrlen,
-                                            data->cookieParseFlags))) {
+    if (!(data->cookie = qemuMigrationCookieParse(&driver,
+                                                  data->vm->def,
+                                                  NULL,
+                                                  priv,
+                                                  data->xmlstr,
+                                                  data->xmlstrlen,
+                                                  data->cookieParseFlags))) {
         VIR_TEST_DEBUG("\nfailed to parse qemu migration cookie:\n%s\n", data->xmlstr);
         return -1;
     }
 
     /* set all flags so that formatter attempts to format everything */
-    cookie->flags = ~0;
+    data->cookie->flags = ~0;
 
     if (qemuMigrationCookieXMLFormat(&driver,
                                      priv->qemuCaps,
                                      &actual,
-                                     cookie) < 0) {
+                                     data->cookie) < 0) {
         VIR_TEST_DEBUG("\nfailed to format back qemu migration cookie");
         return -1;
     }
@@ -179,21 +202,6 @@ testQemuMigrationCookieXMLLoad(const void *opaque)
 }
 
 
-static void
-testQemuMigrationCookieDataFree(struct testQemuMigrationCookieData *data)
-{
-    if (!data)
-        return;
-
-    g_free(data->xmlstr);
-    g_free(data->outfile);
-    g_free(data->infile);
-    g_free(data->inStatus);
-    virDomainObjEndAPI(&data->vm);
-    g_free(data);
-}
-
-
 static int
 testQemuMigrationCookieDom2XML(const char *namesuffix,
                                const char *domxml,
@@ -207,9 +215,11 @@ testQemuMigrationCookieDom2XML(const char *namesuffix,
         /* flags unsupported by default:
          * - lockstate: internals are NULL in tests, causes crash
          * - nbd: monitor not present
+         * - dirty bitmaps: monitor not present
          */
         unsigned int cookiePopulateFlagMask = QEMU_MIGRATION_COOKIE_LOCKSTATE |
-                                              QEMU_MIGRATION_COOKIE_NBD;
+                                              QEMU_MIGRATION_COOKIE_NBD |
+                                              QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS;
         data->cookiePopulateFlags = ~cookiePopulateFlagMask;
     }
 
@@ -287,6 +297,107 @@ testQemuMigrationCookieXML2XML(const char *name,
 
 
 static int
+testQemuMigrationCookieBlockDirtyBitmaps(const void *opaque)
+{
+    const struct testQemuMigrationCookieData *data = opaque;
+    g_autoptr(virJSONValue) migParamsBitmaps = NULL;
+    g_autofree char *actualJSON = NULL;
+    g_autoptr(virJSONValue) paramsOut = NULL;
+    g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
+    g_autoptr(GHashTable) qmpschema = NULL;
+    GSList *next;
+
+    if (!(qmpschema = testQEMUSchemaLoadLatest("x86_64"))) {
+        VIR_TEST_VERBOSE("failed to load QMP schema");
+        return -1;
+    }
+
+    if (qemuMigrationCookieBlockDirtyBitmapsMatchDisks(data->vm->def,
+                                                       data->cookie->blockDirtyBitmaps) < 0)
+        return -1;
+
+    for (next = data->cookie->blockDirtyBitmaps; next; next = next->next) {
+        qemuMigrationBlockDirtyBitmapsDiskPtr disk = next->data;
+        qemuMigrationBlockDirtyBitmapsDiskBitmapPtr bitmap = disk->bitmaps->data;
+
+        bitmap->persistent = VIR_TRISTATE_BOOL_YES;
+    }
+
+    if (qemuMigrationCookieBlockDirtyBitmapsToParams(data->cookie->blockDirtyBitmaps,
+                                                     &migParamsBitmaps))
+        return -1;
+
+    if (!(migParams = qemuMigrationParamsNew()))
+        return -1;
+
+    qemuMigrationParamsSetBlockDirtyBitmapMapping(migParams, &migParamsBitmaps);
+
+    if (!(paramsOut = qemuMigrationParamsToJSON(migParams)) ||
+        !(actualJSON = virJSONValueToString(paramsOut, true)))
+        return -1;
+
+    if (testQEMUSchemaValidateCommand("migrate-set-parameters",
+                                      paramsOut,
+                                      qmpschema,
+                                      false,
+                                      false,
+                                      &debug) < 0) {
+        VIR_TEST_VERBOSE("failed to validate migration params '%s' against QMP schema: %s",
+                         actualJSON, virBufferCurrentContent(&debug));
+        return -1;
+    }
+
+    if (virTestCompareToFile(actualJSON, data->outmigparamsfile) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/* tests also the conversion to list of migrated bitmaps */
+static int
+testQemuMigrationCookieXML2XMLBitmaps(const char *name,
+                                      const char *statusxml,
+                                      unsigned int cookieParseFlags)
+{
+    struct testQemuMigrationCookieData *data = g_new0(struct testQemuMigrationCookieData, 1);
+    int ret = 0;
+
+    if (cookieParseFlags == 0)
+        data->cookieParseFlags = ~0;
+
+    data->inStatus = g_strconcat(abs_srcdir, "/", statusxml, NULL);
+    data->infile = g_strconcat(abs_srcdir, "/qemumigrationcookiexmldata/",
+                               name, "-xml2xml-in.xml", NULL);
+    data->outfile = g_strconcat(abs_srcdir, "/qemumigrationcookiexmldata/",
+                                name, "-xml2xml-out.xml", NULL);
+    data->outmigparamsfile = g_strconcat(abs_srcdir, "/qemumigrationcookiexmldata/",
+                                         name, "-xml2xml-migparams.json", NULL);
+
+    if (virTestRun(tn("qemumigrationcookieXML2XML-dom-", name, NULL),
+                   testQemuMigrationCookieDomInit, data) < 0)
+        ret = -1;
+
+    if (virTestRun(tn("qemumigrationcookieXML2XML-load-", name, NULL),
+                   testQemuMigrationCookieXMLLoad, data) < 0)
+        ret = -1;
+
+    if (virTestRun(tn("qemumigrationcookieXML2XML-parse-", name, NULL),
+                   testQemuMigrationCookieParse, data) < 0)
+        ret = -1;
+
+    if (virTestRun(tn("qemumigrationcookieXML2XML-migparams-", name, NULL),
+                   testQemuMigrationCookieBlockDirtyBitmaps, data) < 0)
+        ret = -1;
+
+    testQemuMigrationCookieDataFree(data);
+
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -319,6 +430,9 @@ mymain(void)
 
     if (testQemuMigrationCookieXML2XML("basic", "qemustatusxml2xmldata/modern-in.xml", 0) < 0 ||
         testQemuMigrationCookieXML2XML("full", "qemustatusxml2xmldata/modern-in.xml", 0) < 0)
+        ret = -1;
+
+    if (testQemuMigrationCookieXML2XMLBitmaps("nbd-bitmaps", "qemustatusxml2xmldata/migration-out-nbd-bitmaps-in.xml", 0) < 0)
         ret = -1;
 
     virBufferFreeAndReset(&testnamebuf);

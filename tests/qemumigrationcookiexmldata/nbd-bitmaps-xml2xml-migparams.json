@@ -1,0 +1,25 @@
+{
+  "block-bitmap-mapping": [
+    {
+      "node-name": "libvirt-1-format",
+      "alias": "vda",
+      "bitmaps": [
+        {
+          "name": "a",
+          "alias": "libvirt-vda-a",
+          "transform": {
+            "persistent": true
+          }
+        },
+        {
+          "name": "b",
+          "alias": "libvirt-vda-b"
+        },
+        {
+          "name": "c",
+          "alias": "libvirt-vda-c"
+        }
+      ]
+    }
+  ]
+}
