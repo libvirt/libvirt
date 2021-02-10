@@ -82,7 +82,6 @@ CI_HOME_MOUNTS = \
 	$(NULL)
 
 CI_SCRIPT_MOUNTS = \
-	--volume $(CI_SCRATCHDIR)/prepare:$(CI_USER_HOME)/prepare:z \
 	--volume $(CI_SCRATCHDIR)/build:$(CI_USER_HOME)/build:z \
 	$(NULL)
 
@@ -150,6 +149,8 @@ CI_GIT_ARGS = \
 #   --user    we execute as the same user & group account
 #             as dev so that file ownership matches host
 #             instead of root:root
+#   --workdir we change to user's home dir in the container
+#             before running the workload
 #   --volume  to pass in the cloned git repo & config
 #   --ulimit  lower files limit for performance reasons
 #   --interactive
@@ -158,6 +159,11 @@ CI_ENGINE_ARGS = \
 	--rm \
 	--interactive \
 	--tty \
+	--user "$(CI_UID)":"$(CI_GID)" \
+	--workdir "$(CI_USER_HOME)" \
+	--env CI_CONT_SRCDIR="$(CI_CONT_SRCDIR)" \
+	--env CI_MESON_ARGS="$(CI_MESON_ARGS)" \
+	--env CI_NINJA_ARGS="$(CI_NINJA_ARGS)" \
 	$(CI_PODMAN_ARGS) \
 	$(CI_PWDB_MOUNTS) \
 	$(CI_HOME_MOUNTS) \
@@ -178,9 +184,8 @@ ci-prepare-tree: ci-check-engine
 		cp /etc/passwd $(CI_SCRATCHDIR); \
 		cp /etc/group $(CI_SCRATCHDIR); \
 		mkdir -p $(CI_SCRATCHDIR)/home; \
-		cp "$(CI_PREPARE_SCRIPT)" $(CI_SCRATCHDIR)/prepare; \
 		cp "$(CI_BUILD_SCRIPT)" $(CI_SCRATCHDIR)/build; \
-		chmod +x "$(CI_SCRATCHDIR)/prepare" "$(CI_SCRATCHDIR)/build"; \
+		chmod +x "$(CI_SCRATCHDIR)/build"; \
 		echo "Cloning $(CI_GIT_ROOT) to $(CI_HOST_SRCDIR)"; \
 		git clone $(CI_GIT_ARGS) $(CI_GIT_ROOT) $(CI_HOST_SRCDIR) || exit 1; \
 		for mod in $$(git submodule | awk '{ print $$2 }' | sed -E 's,^../,,g') ; \
@@ -192,18 +197,10 @@ ci-prepare-tree: ci-check-engine
 	fi
 
 ci-run-command@%: ci-prepare-tree
-	$(CI_ENGINE) run $(CI_ENGINE_ARGS) $(CI_IMAGE_PREFIX)$*$(CI_IMAGE_TAG) \
-		/bin/bash -c ' \
-		$(CI_USER_HOME)/prepare || exit 1; \
-		sudo \
-		  --login \
-		  --user="#$(CI_UID)" \
-		  --group="#$(CI_GID)" \
-		  MESON_OPTS="$$MESON_OPTS" \
-		  CI_CONT_SRCDIR="$(CI_CONT_SRCDIR)" \
-		  CI_MESON_ARGS="$(CI_MESON_ARGS)" \
-		  CI_NINJA_ARGS="$(CI_NINJA_ARGS)" \
-		  $(CI_COMMAND) || exit 1'
+	$(CI_ENGINE) run \
+		$(CI_ENGINE_ARGS) \
+		$(CI_IMAGE_PREFIX)$*$(CI_IMAGE_TAG) \
+		$(CI_COMMAND)
 	@test "$(CI_CLEAN)" = "1" && rm -rf $(CI_SCRATCHDIR) || :
 
 ci-shell@%:
