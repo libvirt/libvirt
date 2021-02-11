@@ -246,6 +246,9 @@ typedef virDomainNVRAMDef *virDomainNVRAMDefPtr;
 typedef struct _virDomainNetDef virDomainNetDef;
 typedef virDomainNetDef *virDomainNetDefPtr;
 
+typedef struct _virDomainNetTeamingInfo virDomainNetTeamingInfo;
+typedef virDomainNetTeamingInfo *virDomainNetTeamingInfoPtr;
+
 typedef struct _virDomainOSDef virDomainOSDef;
 typedef virDomainOSDef *virDomainOSDefPtr;
 

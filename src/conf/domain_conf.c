@@ -2477,6 +2477,17 @@ virDomainVsockDefFree(virDomainVsockDefPtr vsock)
 
 
 void
+virDomainNetTeamingInfoFree(virDomainNetTeamingInfoPtr teaming)
+{
+    if (!teaming)
+        return;
+
+    g_free(teaming->persistent);
+    g_free(teaming);
+}
+
+
+void
 virDomainNetDefFree(virDomainNetDefPtr def)
 {
     if (!def)

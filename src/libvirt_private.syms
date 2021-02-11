@@ -537,6 +537,7 @@ virDomainNetRemove;
 virDomainNetRemoveHostdev;
 virDomainNetResolveActualType;
 virDomainNetSetModelString;
+virDomainNetTeamingInfoFree;
 virDomainNetTypeFromString;
 virDomainNetTypeSharesHostView;
 virDomainNetTypeToString;

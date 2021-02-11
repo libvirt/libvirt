@@ -956,6 +956,11 @@ typedef enum {
     VIR_DOMAIN_NET_TEAMING_TYPE_LAST
 } virDomainNetTeamingType;
 
+struct _virDomainNetTeamingInfo {
+        virDomainNetTeamingType type;
+        char *persistent; /* alias name of persistent device */
+};
+
 /* link interface states */
 typedef enum {
         VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT = 0, /* Default link state (up) */
@@ -1033,10 +1038,7 @@ struct _virDomainNetDef {
         char *tap;
         char *vhost;
     } backend;
-    struct {
-        virDomainNetTeamingType type;
-        char *persistent; /* alias name of persistent device */
-    } teaming;
+    virDomainNetTeamingInfo teaming;
     union {
         virDomainChrSourceDefPtr vhostuser;
         struct {
@@ -3100,6 +3102,8 @@ void virDomainActualNetDefFree(virDomainActualNetDefPtr def);
 virDomainVsockDefPtr virDomainVsockDefNew(virDomainXMLOptionPtr xmlopt);
 void virDomainVsockDefFree(virDomainVsockDefPtr vsock);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainVsockDef, virDomainVsockDefFree);
+void virDomainNetTeamingInfoFree(virDomainNetTeamingInfoPtr teaming);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainNetTeamingInfo, virDomainNetTeamingInfoFree);
 void virDomainNetDefFree(virDomainNetDefPtr def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainNetDef, virDomainNetDefFree);
 void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def);
