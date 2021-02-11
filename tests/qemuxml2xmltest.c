@@ -438,6 +438,9 @@ mymain(void)
     DO_TEST("net-virtio-teaming-network",
             QEMU_CAPS_VIRTIO_NET_FAILOVER,
             QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST("net-virtio-teaming-hostdev",
+            QEMU_CAPS_VIRTIO_NET_FAILOVER,
+            QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_CAPS_LATEST("net-isolated-port");
     DO_TEST("net-hostdev", NONE);
     DO_TEST("net-hostdev-bootorder", NONE);

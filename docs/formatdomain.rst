@@ -4837,6 +4837,22 @@ support in the hypervisor and the guest network driver).
    </devices>
    ...
 
+The second interface in this example is referencing a network that is
+a pool of SRIOV VFs (i.e. a "hostdev network"). You could instead
+directly reference an SRIOV VF device:
+
+::
+
+   ...
+     <interface type='hostdev'>
+       <source>
+         <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+       </source>
+       <mac address='00:11:22:33:44:55:66'/>
+       <teaming type='transient' persistent='ua-backup0'/>
+     </interface>
+   ...
+
 The ``<teaming>`` element required attribute ``type`` will be set to either
 ``"persistent"`` to indicate a device that should always be present in the
 domain, or ``"transient"`` to indicate a device that may periodically be
@@ -4857,6 +4873,41 @@ automatically unplug the VF from the guest, and then hotplug a similar device
 once migration is completed; while migration is taking place, network traffic
 will use the virtio NIC. (Of course the emulated virtio NIC and the hostdev NIC
 must be connected to the same subnet for bonding to work properly).
+
+:since:`Since 7.1.0` The ``<teaming>`` element can also be added to a
+plain ``<hostdev>`` device.
+
+::
+
+   ...
+     <hostdev mode='subsystem' type='pci' managed='no'>
+       <source>
+         <address domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+       </source>
+       <mac address='00:11:22:33:44:55:66'/>
+       <teaming type='transient' persistent='ua-backup0'/>
+     </interface>
+   ...
+
+This device must be a network device, but not necessarily an SRIOV
+VF. Using plain ``<hostdev>`` rather than ``<interface
+type='hostdev'>`` or ``<interface type='network'>`` is useful if the
+device that will be assigned with VFIO is a standard NIC (not a VF) or
+if libvirt doesn't have the necessary resources and privileges to set
+the VF's MAC address (e.g. if libvirt is running unprivileged, or in a
+container). This of course means that the user (or another
+application) is responsible for setting the MAC address of the device
+in a way such that it will survive guest driver initialization. For
+standard NICs (i.e. not an SRIOV VF) this probably means that the
+NIC's factory-programmed MAC address will need to be used for the
+teaming pair (since any driver init in the guest will reset the MAC
+back to factory). If it is an SRIOV VF, then its MAC address will need
+to be set via the VF's PF, e.g. if you are going to use VF 2 of the PF
+enp2s0f1, you would use something like this command:
+
+::
+
+  ip link set enp2s0f1 vf 2 mac 52:54:00:11:22:33
 
 NB1: Since you must know the alias name of the virtio NIC when configuring the
 hostdev NIC, it will need to be manually set in the virtio NIC's configuration

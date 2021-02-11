@@ -3024,6 +3024,8 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
     if (!def->parentnet)
         virDomainDeviceInfoFree(def->info);
 
+    virDomainNetTeamingInfoFree(def->teaming);
+
     switch (def->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
         switch ((virDomainHostdevCapsType) def->source.caps.type) {
@@ -15014,6 +15016,9 @@ virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt,
             break;
         }
     }
+
+    if (virDomainNetTeamingInfoParseXML(ctxt, &def->teaming) < 0)
+        goto error;
 
     return def;
 
@@ -27432,6 +27437,8 @@ virDomainHostdevDefFormat(virBufferPtr buf,
             return -1;
         break;
     }
+
+    virDomainNetTeamingInfoFormat(def->teaming, buf);
 
     if (def->readonly)
         virBufferAddLit(buf, "<readonly/>\n");

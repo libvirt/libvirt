@@ -1585,6 +1585,25 @@ virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
             break;
         }
     }
+
+    if (hostdev->teaming) {
+        if (hostdev->teaming->type != VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("teaming hostdev devices must have type='transient'"));
+            return -1;
+        }
+        if (!hostdev->teaming->persistent) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("missing required persistent attribute in hostdev teaming element"));
+            return -1;
+        }
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("teaming is only supported for pci hostdev devices"));
+            return -1;
+        }
+    }
     return 0;
 }
 

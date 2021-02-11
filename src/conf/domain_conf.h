@@ -354,6 +354,7 @@ struct _virDomainHostdevDef {
         virDomainHostdevCaps caps;
     } source;
     virDomainHostdevOrigStates origstates;
+    virDomainNetTeamingInfoPtr teaming;
     virDomainDeviceInfoPtr info; /* Guest address */
 };
 

@@ -5156,6 +5156,9 @@
           <empty/>
         </element>
       </optional>
+      <optional>
+        <ref name="teaming"/>
+      </optional>
       <element name="source">
         <optional>
           <ref name="startupPolicy"/>
