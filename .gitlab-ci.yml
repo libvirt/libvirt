@@ -191,7 +191,7 @@ x64-ubuntu-2004-container:
 # Cross-build containers build jobs
 
 aarch64-debian-10-container:
-  extends: .container_job
+  extends: .container_optional_job
   variables:
     NAME: debian-10-cross-aarch64
 
@@ -216,7 +216,7 @@ mips-debian-10-container:
     NAME: debian-10-cross-mips
 
 mips64el-debian-10-container:
-  extends: .container_job
+  extends: .container_optional_job
   variables:
     NAME: debian-10-cross-mips64el
 
@@ -226,7 +226,7 @@ mipsel-debian-10-container:
     NAME: debian-10-cross-mipsel
 
 ppc64le-debian-10-container:
-  extends: .container_optional_job
+  extends: .container_job
   variables:
     NAME: debian-10-cross-ppc64le
 
@@ -236,7 +236,7 @@ s390x-debian-10-container:
     NAME: debian-10-cross-s390x
 
 aarch64-debian-sid-container:
-  extends: .container_optional_job
+  extends: .container_job
   variables:
     NAME: debian-sid-cross-aarch64
 
@@ -256,7 +256,7 @@ i686-debian-sid-container:
     NAME: debian-sid-cross-i686
 
 mips64el-debian-sid-container:
-  extends: .container_optional_job
+  extends: .container_job
   variables:
     NAME: debian-sid-cross-mips64el
 
@@ -266,7 +266,7 @@ mipsel-debian-sid-container:
     NAME: debian-sid-cross-mipsel
 
 ppc64le-debian-sid-container:
-  extends: .container_job
+  extends: .container_optional_job
   variables:
     NAME: debian-sid-cross-ppc64le
 
@@ -435,12 +435,12 @@ x64-macos-1015-build:
 
 # Cross compiled build jobs
 
-aarch64-debian-10:
+aarch64-debian-sid:
   extends: .cross_build_job
   needs:
-    - aarch64-debian-10-container
+    - aarch64-debian-sid-container
   variables:
-    NAME: debian-10
+    NAME: debian-sid
     CROSS: aarch64
 
 armv6l-debian-10:
@@ -475,12 +475,12 @@ mips-debian-10:
     NAME: debian-10
     CROSS: mips
 
-mips64el-debian-10:
+mips64el-debian-sid:
   extends: .cross_build_job
   needs:
-    - mips64el-debian-10-container
+    - mips64el-debian-sid-container
   variables:
-    NAME: debian-10
+    NAME: debian-sid
     CROSS: mips64el
 
 mipsel-debian-10:
@@ -491,12 +491,12 @@ mipsel-debian-10:
     NAME: debian-10
     CROSS: mipsel
 
-ppc64le-debian-sid:
+ppc64le-debian-10:
   extends: .cross_build_job
   needs:
-    - ppc64le-debian-sid-container
+    - ppc64le-debian-10-container
   variables:
-    NAME: debian-sid
+    NAME: debian-10
     CROSS: ppc64le
 
 s390x-debian-sid:
