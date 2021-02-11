@@ -1149,31 +1149,26 @@ static virJSONValuePtr G_GNUC_NULL_TERMINATED
 qemuAgentMakeCommand(const char *cmdname,
                      ...)
 {
-    virJSONValuePtr obj = virJSONValueNewObject();
-    virJSONValuePtr jargs = NULL;
+    g_autoptr(virJSONValue) obj = NULL;
+    g_autoptr(virJSONValue) jargs = NULL;
     va_list args;
 
     va_start(args, cmdname);
 
-    if (virJSONValueObjectAppendString(obj, "execute", cmdname) < 0)
-        goto error;
-
-    if (virJSONValueObjectCreateVArgs(&jargs, args) < 0)
-        goto error;
-
-    if (jargs &&
-        virJSONValueObjectAppend(obj, "arguments", jargs) < 0)
-        goto error;
+    if (virJSONValueObjectCreateVArgs(&jargs, args) < 0) {
+        va_end(args);
+        return NULL;
+    }
 
     va_end(args);
 
-    return obj;
+    if (virJSONValueObjectCreate(&obj,
+                                 "s:execute", cmdname,
+                                 "A:arguments", &jargs,
+                                 NULL) < 0)
+        return NULL;
 
- error:
-    virJSONValueFree(obj);
-    virJSONValueFree(jargs);
-    va_end(args);
-    return NULL;
+    return g_steal_pointer(&obj);
 }
 
 static virJSONValuePtr
