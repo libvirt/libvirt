@@ -418,9 +418,10 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
 
 virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
 {
-    virJSONValuePtr object = virJSONValueNewObject();
-    virJSONValuePtr resources;
-    virHashKeyValuePairPtr pairs = NULL, tmp;
+    g_autoptr(virJSONValue) object = virJSONValueNewObject();
+    g_autoptr(virJSONValue) resources = virJSONValueNewArray();
+    g_autofree virHashKeyValuePairPtr pairs = NULL;
+    virHashKeyValuePairPtr tmp;
 
     virMutexLock(&lockspace->lock);
 
@@ -428,24 +429,13 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
         virJSONValueObjectAppendString(object, "directory", lockspace->dir) < 0)
         goto error;
 
-    resources = virJSONValueNewArray();
-
-    if (virJSONValueObjectAppend(object, "resources", resources) < 0) {
-        virJSONValueFree(resources);
-        goto error;
-    }
 
     tmp = pairs = virHashGetItems(lockspace->resources, NULL, false);
     while (tmp && tmp->value) {
         virLockSpaceResourcePtr res = (virLockSpaceResourcePtr)tmp->value;
-        virJSONValuePtr child = virJSONValueNewObject();
-        virJSONValuePtr owners = NULL;
+        g_autoptr(virJSONValue) child = virJSONValueNewObject();
+        g_autoptr(virJSONValue) owners = virJSONValueNewArray();
         size_t i;
-
-        if (virJSONValueArrayAppend(resources, child) < 0) {
-            virJSONValueFree(child);
-            goto error;
-        }
 
         if (virJSONValueObjectAppendString(child, "name", res->name) < 0 ||
             virJSONValueObjectAppendString(child, "path", res->path) < 0 ||
@@ -460,34 +450,35 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
             goto error;
         }
 
-        owners = virJSONValueNewArray();
-
-        if (virJSONValueObjectAppend(child, "owners", owners) < 0) {
-            virJSONValueFree(owners);
-            goto error;
-        }
-
         for (i = 0; i < res->nOwners; i++) {
-            virJSONValuePtr owner = virJSONValueNewNumberUlong(res->owners[i]);
+            g_autoptr(virJSONValue) owner = virJSONValueNewNumberUlong(res->owners[i]);
             if (!owner)
                 goto error;
 
-            if (virJSONValueArrayAppend(owners, owner) < 0) {
-                virJSONValueFree(owner);
+            if (virJSONValueArrayAppend(owners, owner) < 0)
                 goto error;
-            }
+            owner = NULL;
         }
+
+        if (virJSONValueObjectAppend(child, "owners", owners) < 0)
+            goto error;
+        owners = NULL;
+
+        if (virJSONValueArrayAppend(resources, child) < 0)
+            goto error;
+        child = NULL;
 
         tmp++;
     }
-    VIR_FREE(pairs);
+
+    if (virJSONValueObjectAppend(object, "resources", resources) < 0)
+        goto error;
+    resources = NULL;
 
     virMutexUnlock(&lockspace->lock);
     return object;
 
  error:
-    VIR_FREE(pairs);
-    virJSONValueFree(object);
     virMutexUnlock(&lockspace->lock);
     return NULL;
 }
