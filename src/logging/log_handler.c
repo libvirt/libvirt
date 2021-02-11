@@ -608,56 +608,48 @@ virLogHandlerDomainAppendLogFile(virLogHandlerPtr handler,
 virJSONValuePtr
 virLogHandlerPreExecRestart(virLogHandlerPtr handler)
 {
-    virJSONValuePtr ret = virJSONValueNewObject();
-    virJSONValuePtr files;
+    g_autoptr(virJSONValue) ret = virJSONValueNewObject();
+    g_autoptr(virJSONValue) files = virJSONValueNewArray();
     size_t i;
     char domuuid[VIR_UUID_STRING_BUFLEN];
 
-    files = virJSONValueNewArray();
-
-    if (virJSONValueObjectAppend(ret, "files", files) < 0) {
-        virJSONValueFree(files);
-        goto error;
-    }
-
     for (i = 0; i < handler->nfiles; i++) {
-        virJSONValuePtr file = virJSONValueNewObject();
-
-        if (virJSONValueArrayAppend(files, file) < 0) {
-            virJSONValueFree(file);
-            goto error;
-        }
+        g_autoptr(virJSONValue) file = virJSONValueNewObject();
 
         if (virJSONValueObjectAppendNumberInt(file, "pipefd",
                                               handler->files[i]->pipefd) < 0)
-            goto error;
+            return NULL;
 
         if (virJSONValueObjectAppendString(file, "path",
                                            virRotatingFileWriterGetPath(handler->files[i]->file)) < 0)
-            goto error;
+            return NULL;
 
         if (virJSONValueObjectAppendString(file, "driver",
                                            handler->files[i]->driver) < 0)
-            goto error;
+            return NULL;
 
         if (virJSONValueObjectAppendString(file, "domname",
                                            handler->files[i]->domname) < 0)
-            goto error;
+            return NULL;
 
         virUUIDFormat(handler->files[i]->domuuid, domuuid);
         if (virJSONValueObjectAppendString(file, "domuuid", domuuid) < 0)
-            goto error;
+            return NULL;
 
         if (virSetInherit(handler->files[i]->pipefd, true) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Cannot disable close-on-exec flag"));
-            goto error;
+            return NULL;
         }
+
+        if (virJSONValueArrayAppend(files, file) < 0)
+            return NULL;
+        file = NULL;
     }
 
-    return ret;
+    if (virJSONValueObjectAppend(ret, "files", files) < 0)
+        return NULL;
+    files = NULL;
 
- error:
-    virJSONValueFree(ret);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
