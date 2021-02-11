@@ -10629,6 +10629,34 @@ virDomainChrSourceReconnectDefParseXML(virDomainChrSourceReconnectDefPtr def,
 }
 
 
+static int
+virDomainNetTeamingInfoParseXML(xmlXPathContextPtr ctxt,
+                                virDomainNetTeamingInfoPtr *teaming)
+{
+    g_autofree char *typeStr = virXPathString("string(./teaming/@type)", ctxt);
+    g_autofree char *persistentStr = virXPathString("string(./teaming/@persistent)", ctxt);
+    g_autoptr(virDomainNetTeamingInfo) tmpTeaming = NULL;
+    int tmpType;
+
+    if (!typeStr && !persistentStr)
+        return 0;
+
+    tmpTeaming = g_new0(virDomainNetTeamingInfo, 1);
+
+    if ((tmpType = virDomainNetTeamingTypeFromString(typeStr)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown teaming type '%s'"),
+                           typeStr);
+            return -1;
+    }
+
+    tmpTeaming->type = tmpType;
+    tmpTeaming->persistent = g_steal_pointer(&persistentStr);
+    *teaming = g_steal_pointer(&tmpTeaming);
+    return 0;
+}
+
+
 static virDomainNetDefPtr
 virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                         xmlNodePtr node,
@@ -10683,8 +10711,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     g_autofree char *vhostuser_type = NULL;
     g_autofree char *trustGuestRxFilters = NULL;
     g_autofree char *vhost_path = NULL;
-    g_autofree char *teamingType = NULL;
-    g_autofree char *teamingPersistent = NULL;
     const char *prefix = xmlopt ? xmlopt->config.netPrefix : NULL;
 
     if (!(def = virDomainNetDefNew(xmlopt)))
@@ -10895,10 +10921,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 if (!vhost_path && (tmp = virXMLPropString(cur, "vhost")))
                     vhost_path = virFileSanitizePath(tmp);
                 VIR_FREE(tmp);
-            } else if (virXMLNodeNameEqual(cur, "teaming") &&
-                       !teamingType && !teamingPersistent) {
-                teamingType = virXMLPropString(cur, "type");
-                teamingPersistent =  virXMLPropString(cur, "persistent");
             }
         }
         cur = cur->next;
@@ -11447,23 +11469,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     }
 
-    if (teamingType || teamingPersistent) {
-        def->teaming = g_new0(virDomainNetTeamingInfo, 1);
-
-        if (teamingType) {
-            int tmpTeaming;
-
-            if ((tmpTeaming = virDomainNetTeamingTypeFromString(teamingType)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown teaming type '%s'"),
-                               teamingType);
-                goto error;
-            }
-            def->teaming->type = tmpTeaming;
-        }
-
-        def->teaming->persistent = g_steal_pointer(&teamingPersistent);
-    }
+    if (virDomainNetTeamingInfoParseXML(ctxt, &def->teaming) < 0)
+        goto error;
 
     rv = virXPathULong("string(./tune/sndbuf)", ctxt, &def->tune.sndbuf);
     if (rv >= 0) {
@@ -25513,6 +25520,19 @@ virDomainChrSourceReconnectDefFormat(virBufferPtr buf,
 }
 
 
+static void
+virDomainNetTeamingInfoFormat(virDomainNetTeamingInfoPtr teaming,
+                              virBufferPtr buf)
+{
+    if (teaming && teaming->type != VIR_DOMAIN_NET_TEAMING_TYPE_NONE) {
+        virBufferAsprintf(buf, "<teaming type='%s'",
+                          virDomainNetTeamingTypeToString(teaming->type));
+        virBufferEscapeString(buf, " persistent='%s'", teaming->persistent);
+        virBufferAddLit(buf, "/>\n");
+    }
+}
+
+
 int
 virDomainNetDefFormat(virBufferPtr buf,
                       virDomainNetDefPtr def,
@@ -25830,12 +25850,8 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferAddLit(buf,   "</tune>\n");
     }
 
-    if (def->teaming && def->teaming->type != VIR_DOMAIN_NET_TEAMING_TYPE_NONE) {
-        virBufferAsprintf(buf, "<teaming type='%s'",
-                          virDomainNetTeamingTypeToString(def->teaming->type));
-        virBufferEscapeString(buf, " persistent='%s'", def->teaming->persistent);
-        virBufferAddLit(buf, "/>\n");
-    }
+    virDomainNetTeamingInfoFormat(def->teaming, buf);
+
     if (def->linkstate) {
         virBufferAsprintf(buf, "<link state='%s'/>\n",
                           virDomainNetInterfaceLinkStateTypeToString(def->linkstate));
