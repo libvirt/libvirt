@@ -201,7 +201,7 @@ armv6l-debian-10-container:
     NAME: debian-10-cross-armv6l
 
 armv7l-debian-10-container:
-  extends: .container_optional_job
+  extends: .container_job
   variables:
     NAME: debian-10-cross-armv7l
 
@@ -246,7 +246,7 @@ armv6l-debian-sid-container:
     NAME: debian-sid-cross-armv6l
 
 armv7l-debian-sid-container:
-  extends: .container_job
+  extends: .container_optional_job
   variables:
     NAME: debian-sid-cross-armv7l
 
@@ -271,7 +271,7 @@ ppc64le-debian-sid-container:
     NAME: debian-sid-cross-ppc64le
 
 s390x-debian-sid-container:
-  extends: .container_optional_job
+  extends: .container_job
   variables:
     NAME: debian-sid-cross-s390x
 
