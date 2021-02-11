@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile ubuntu-1804 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/740f5254f607de914a92d664196d045149edb45a
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/891c7d56be1d0eb5adaf78fced7d1d882d6f0b6a
 FROM docker.io/library/ubuntu:18.04
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -26,6 +26,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             git \
             glusterfs-common \
             iproute2 \
+            iptables \
             kmod \
             libacl1-dev \
             libapparmor-dev \

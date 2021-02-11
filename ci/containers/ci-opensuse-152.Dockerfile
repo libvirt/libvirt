@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile opensuse-152 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/740f5254f607de914a92d664196d045149edb45a
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/891c7d56be1d0eb5adaf78fced7d1d882d6f0b6a
 FROM registry.opensuse.org/opensuse/leap:15.2
 
 RUN zypper update -y && \
@@ -32,6 +32,7 @@ RUN zypper update -y && \
            glibc-locale \
            glusterfs-devel \
            iproute2 \
+           iptables \
            kmod \
            libacl-devel \
            libapparmor-devel \

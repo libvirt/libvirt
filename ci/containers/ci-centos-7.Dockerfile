@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile centos-7 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/740f5254f607de914a92d664196d045149edb45a
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/891c7d56be1d0eb5adaf78fced7d1d882d6f0b6a
 FROM docker.io/library/centos:7
 
 RUN yum update -y && \
@@ -65,6 +65,7 @@ WEiJKtQrZDJloqtyi/mmRa1VsV7RYR0VPJjhK/R8EQ7Ysshy\n\
         glusterfs-api-devel \
         gnutls-devel \
         iproute \
+        iptables \
         iscsi-initiator-utils \
         kmod \
         libacl-devel \

@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile centos-8 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/740f5254f607de914a92d664196d045149edb45a
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/891c7d56be1d0eb5adaf78fced7d1d882d6f0b6a
 FROM docker.io/library/centos:8
 
 RUN dnf update -y && \
@@ -37,6 +37,7 @@ RUN dnf update -y && \
         gnutls-devel \
         iproute \
         iproute-tc \
+        iptables \
         iscsi-initiator-utils \
         kmod \
         libacl-devel \
