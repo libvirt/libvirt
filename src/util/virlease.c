@@ -119,7 +119,7 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
         }
 
         /* Move old lease to new array */
-        if (virJSONValueArrayAppend(leases_array_new, lease_tmp) < 0) {
+        if (virJSONValueArrayAppend(leases_array_new, &lease_tmp) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to create json"));
             return -1;

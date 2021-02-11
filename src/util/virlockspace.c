@@ -455,17 +455,15 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
             if (!owner)
                 goto error;
 
-            if (virJSONValueArrayAppend(owners, owner) < 0)
+            if (virJSONValueArrayAppend(owners, &owner) < 0)
                 goto error;
-            owner = NULL;
         }
 
         if (virJSONValueObjectAppend(child, "owners", &owners) < 0)
             goto error;
 
-        if (virJSONValueArrayAppend(resources, child) < 0)
+        if (virJSONValueArrayAppend(resources, &child) < 0)
             goto error;
-        child = NULL;
 
         tmp++;
     }

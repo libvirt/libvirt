@@ -298,8 +298,7 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
                 return -1;
             }
 
-            if ((rc = virJSONValueObjectAppend(obj, key, val)) == 0)
-                *val = NULL;
+            rc = virJSONValueObjectAppend(obj, key, val);
         }   break;
 
         case 'M':
@@ -774,7 +773,7 @@ virJSONValueObjectAppendNull(virJSONValuePtr object,
 
 int
 virJSONValueArrayAppend(virJSONValuePtr array,
-                        virJSONValuePtr value)
+                        virJSONValuePtr *value)
 {
     if (array->type != VIR_JSON_TYPE_ARRAY) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("expecting JSON array"));
@@ -785,7 +784,7 @@ virJSONValueArrayAppend(virJSONValuePtr array,
                       array->data.array.nvalues + 1) < 0)
         return -1;
 
-    array->data.array.values[array->data.array.nvalues] = value;
+    array->data.array.values[array->data.array.nvalues] = g_steal_pointer(value);
     array->data.array.nvalues++;
 
     return 0;
@@ -798,9 +797,8 @@ virJSONValueArrayAppendString(virJSONValuePtr object,
 {
     g_autoptr(virJSONValue) jvalue = virJSONValueNewString(value);
 
-    if (virJSONValueArrayAppend(object, jvalue) < 0)
+    if (virJSONValueArrayAppend(object, &jvalue) < 0)
         return -1;
-    jvalue = NULL;
 
     return 0;
 }
@@ -1243,9 +1241,8 @@ virJSONValueNewArrayFromBitmap(virBitmapPtr bitmap)
     while ((pos = virBitmapNextSetBit(bitmap, pos)) > -1) {
         g_autoptr(virJSONValue) newelem = virJSONValueNewNumberLong(pos);
 
-        if (virJSONValueArrayAppend(ret, newelem) < 0)
+        if (virJSONValueArrayAppend(ret, &newelem) < 0)
             return NULL;
-        newelem = NULL;
     }
 
     return g_steal_pointer(&ret);
@@ -1588,7 +1585,7 @@ virJSONParserInsertValue(virJSONParserPtr parser,
             }
 
             if (virJSONValueArrayAppend(state->value,
-                                        value) < 0)
+                                        &value) < 0)
                 return -1;
         }   break;
 
@@ -2087,8 +2084,6 @@ virJSONValueObjectDeflattenWorker(const char *key,
 
         if (virJSONValueObjectAppend(retobj, key, &newval) < 0)
             return -1;
-
-        newval = NULL;
 
         return 0;
     }

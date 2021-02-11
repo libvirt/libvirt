@@ -10218,9 +10218,8 @@ qemuBuildChannelGuestfwdNetdevProps(virDomainChrDefPtr chr)
                                              chr->info.alias) < 0)
         return NULL;
 
-    if (virJSONValueArrayAppend(guestfwdarr, guestfwdstrobj) < 0)
+    if (virJSONValueArrayAppend(guestfwdarr, &guestfwdstrobj) < 0)
         return NULL;
-    guestfwdstrobj = NULL;
 
     if (virJSONValueObjectCreate(&ret,
                                  "s:type", "user",

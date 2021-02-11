@@ -585,9 +585,8 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
         if (!(child = virNetServerServicePreExecRestart(srv->services[i])))
             goto error;
 
-        if (virJSONValueArrayAppend(services, child) < 0)
+        if (virJSONValueArrayAppend(services, &child) < 0)
             goto error;
-        child = NULL;
     }
 
     if (virJSONValueObjectAppend(object, "services", &services) < 0)
@@ -598,9 +597,8 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
         if (!(child = virNetServerClientPreExecRestart(srv->clients[i])))
             goto error;
 
-        if (virJSONValueArrayAppend(clients, child) < 0)
+        if (virJSONValueArrayAppend(clients, &child) < 0)
             goto error;
-        child = NULL;
     }
 
     if (virJSONValueObjectAppend(object, "clients", &clients) < 0)

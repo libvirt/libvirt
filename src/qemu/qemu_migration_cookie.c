@@ -1665,10 +1665,9 @@ qemuMigrationCookieBlockDirtyBitmapsToParams(GSList *disks,
                                          NULL) < 0)
                 return -1;
 
-            if (virJSONValueArrayAppend(jsonbitmaps, jsonbitmap) < 0)
+            if (virJSONValueArrayAppend(jsonbitmaps, &jsonbitmap) < 0)
                 return -1;
 
-            jsonbitmap = NULL;
             hasBitmaps = true;
         }
 
@@ -1682,10 +1681,9 @@ qemuMigrationCookieBlockDirtyBitmapsToParams(GSList *disks,
                                      NULL) < 0)
             return -1;
 
-        if (virJSONValueArrayAppend(map, jsondisk) < 0)
+        if (virJSONValueArrayAppend(map, &jsondisk) < 0)
             return -1;
 
-        jsondisk = NULL;
         hasDisks = true;
     }
 

@@ -812,10 +812,8 @@ qemuFirmwareTargetFormat(virJSONValuePtr doc,
         if (virJSONValueObjectAppend(target, "machines", &machines) < 0)
             return -1;
 
-        if (virJSONValueArrayAppend(targetsJSON, target) < 0)
+        if (virJSONValueArrayAppend(targetsJSON, &target) < 0)
             return -1;
-
-        target = NULL;
     }
 
     if (virJSONValueObjectAppend(doc, "targets", &targetsJSON) < 0)

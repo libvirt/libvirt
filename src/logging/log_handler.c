@@ -642,9 +642,8 @@ virLogHandlerPreExecRestart(virLogHandlerPtr handler)
             return NULL;
         }
 
-        if (virJSONValueArrayAppend(files, file) < 0)
+        if (virJSONValueArrayAppend(files, &file) < 0)
             return NULL;
-        file = NULL;
     }
 
     if (virJSONValueObjectAppend(ret, "files", &files) < 0)

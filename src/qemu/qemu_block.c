@@ -529,10 +529,8 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
         if (!(server = qemuBlockStorageSourceBuildJSONSocketAddress(host, legacy)))
               return NULL;
 
-        if (virJSONValueArrayAppend(servers, server) < 0)
+        if (virJSONValueArrayAppend(servers, &server) < 0)
             return NULL;
-
-        server = NULL;
     }
 
     return g_steal_pointer(&servers);
@@ -617,10 +615,8 @@ qemuBlockStorageSourceBuildHostsJSONInetSocketAddress(virStorageSourcePtr src)
         if (!(server = qemuBlockStorageSourceBuildJSONInetSocketAddress(host)))
             return NULL;
 
-        if (virJSONValueArrayAppend(servers, server) < 0)
+        if (virJSONValueArrayAppend(servers, &server) < 0)
             return NULL;
-
-        server = NULL;
     }
 
     return g_steal_pointer(&servers);
@@ -907,16 +903,12 @@ qemuBlockStorageSourceGetRBDProps(virStorageSourcePtr src,
         authmodes = virJSONValueNewArray();
 
         if (!(mode = virJSONValueNewString("cephx")) ||
-            virJSONValueArrayAppend(authmodes, mode) < 0)
+            virJSONValueArrayAppend(authmodes, &mode) < 0)
             return NULL;
-
-        mode = NULL;
 
         if (!(mode = virJSONValueNewString("none")) ||
-            virJSONValueArrayAppend(authmodes, mode) < 0)
+            virJSONValueArrayAppend(authmodes, &mode) < 0)
             return NULL;
-
-        mode = NULL;
     }
 
     if (virJSONValueObjectCreate(&ret,

@@ -728,9 +728,8 @@ virLockDaemonPreExecRestart(const char *state_file,
         if (!(child = virLockSpacePreExecRestart(lockspace)))
             return -1;
 
-        if (virJSONValueArrayAppend(lockspaces, child) < 0)
+        if (virJSONValueArrayAppend(lockspaces, &child) < 0)
             return -1;
-        child = NULL;
 
         tmp++;
     }

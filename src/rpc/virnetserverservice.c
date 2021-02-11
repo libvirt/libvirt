@@ -352,9 +352,8 @@ virJSONValuePtr virNetServerServicePreExecRestart(virNetServerServicePtr svc)
         if (!(child = virNetSocketPreExecRestart(svc->socks[i])))
             return NULL;
 
-        if (virJSONValueArrayAppend(socks, child) < 0)
+        if (virJSONValueArrayAppend(socks, &child) < 0)
             return NULL;
-        child = NULL;
     }
 
     if (virJSONValueObjectAppend(object, "socks", &socks) < 0)

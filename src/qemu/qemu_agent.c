@@ -1180,9 +1180,8 @@ qemuAgentMakeStringsArray(const char **strings, unsigned int len)
     for (i = 0; i < len; i++) {
         g_autoptr(virJSONValue) str = virJSONValueNewString(strings[i]);
 
-        if (virJSONValueArrayAppend(ret, str) < 0)
+        if (virJSONValueArrayAppend(ret, &str) < 0)
             return NULL;
-        str = NULL;
     }
 
     return g_steal_pointer(&ret);
@@ -1514,10 +1513,8 @@ qemuAgentSetVCPUsCommand(qemuAgentPtr agent,
         if (virJSONValueObjectAppendBoolean(cpu, "online", in->online) < 0)
             goto cleanup;
 
-        if (virJSONValueArrayAppend(cpus, cpu) < 0)
+        if (virJSONValueArrayAppend(cpus, &cpu) < 0)
             goto cleanup;
-
-        cpu = NULL;
     }
 
     if (*nmodified == 0) {
