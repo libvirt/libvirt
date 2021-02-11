@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-01-08 17:11+0000\n"
-"PO-Revision-Date: 2021-02-06 19:40+0000\n"
+"PO-Revision-Date: 2021-02-11 07:45+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -2775,9 +2775,8 @@ msgstr ""
 msgid "Cannot open log file: '%s'"
 msgstr ""
 
-#, fuzzy
 msgid "Cannot open network interface control socket"
-msgstr "verkkoliitännän tyyppi"
+msgstr "Ei pysty avaamaan verkkoliitännän hallintapistoketta"
 
 msgid "Cannot open resctrl"
 msgstr ""
@@ -3006,16 +3005,15 @@ msgstr ""
 msgid "Cannot read %s '%s'"
 msgstr "%s:ta ei voida lukea '%s'"
 
-#, fuzzy
 msgid "Cannot read cputime for domain"
-msgstr "Tee toimialueen muistivedos"
+msgstr "Ei pysty lukemaan toimialueen cpu-aikaa"
 
 msgid "Cannot recv data"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot recv data: %s"
-msgstr "Ei voida lukea %s"
+msgstr "Ei voida vastaanottaa tietoa: %s"
 
 msgid ""
 "Cannot remove CURL handle from a multi handle when it wasn't added before"
@@ -3056,9 +3054,8 @@ msgstr ""
 msgid "Cannot set an empty mem_nodes set"
 msgstr ""
 
-#, fuzzy
 msgid "Cannot set autostart for transient domain"
-msgstr "käynnistä toimialue automaattisesti"
+msgstr "Ei pysty asettamaan autokäynnistystä ohimenevälle toimialueelle"
 
 #, c-format
 msgid "Cannot set close-on-exec %d"
@@ -3176,9 +3173,8 @@ msgstr "Ei voida statustaa '%s'"
 msgid "Cannot undefine HostVirtualSwitch that has a '%s' port"
 msgstr ""
 
-#, fuzzy
 msgid "Cannot undefine transient domain"
-msgstr "Toimialueen %s määrityksen poistaminen epäonnistui"
+msgstr "Ohimenavän toimialueen määrityksen poistaminen epäonnistui"
 
 msgid "Cannot unlock resctrl"
 msgstr ""
@@ -3290,9 +3286,8 @@ msgstr "Nimiketju sisältää virheellisiä merkkejä"
 msgid "Change bottom limit to number of workers."
 msgstr ""
 
-#, fuzzy
 msgid "Change lifecycle actions for the guest domain."
-msgstr "Muuta nykyistä muistinvarausta vierastoimialueella."
+msgstr "Muuta elinkaaritoimintoja vierastoimialueelle."
 
 msgid "Change media of CD or floppy drive"
 msgstr ""
@@ -3315,9 +3310,8 @@ msgstr "Muuta ensisijaisten työntekijöiden nykyistä määrää"
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "Muuta nykyistä muistinvarauksen enimmäisrajaa vierastoimialueella."
 
-#, fuzzy
 msgid "Change the number of virtual CPUs in the guest domain."
-msgstr "Muuta nykyistä muistinvarausta vierastoimialueella."
+msgstr "Muuta virtuaalisten suorittimien määrä vierastoimialueelle."
 
 msgid ""
 "Change the upper limit to number of clients waiting for authentication to be "
@@ -3428,13 +3422,12 @@ msgstr ""
 msgid "Client ID or DUID"
 msgstr ""
 
-#, fuzzy
 msgid "Client not found"
-msgstr "Toimialuetta ei löytynyt"
+msgstr "Asiakasta ei löytynyt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Client not found: %s"
-msgstr "Toimialuetta ei löytynyt: %s"
+msgstr "Asiakasta ei löytynyt: %s"
 
 msgid "Client socket identity not available"
 msgstr ""
@@ -3473,9 +3466,8 @@ msgstr ""
 msgid "Commit complete, overlay image kept"
 msgstr ""
 
-#, fuzzy
 msgid "Commit failed"
-msgstr "toimenpide epäonnistui"
+msgstr "Toimenpiteen teko epäonnistui"
 
 #, c-format
 msgid "Compiled against library: libvirt %d.%d.%d\n"
@@ -3619,9 +3611,8 @@ msgstr ""
 msgid "Container does not provide an initctl pipe"
 msgstr ""
 
-#, fuzzy
 msgid "Container is not defined"
-msgstr "Toimialue ei ole käynnissä"
+msgstr "Kontti ei ole määritelty"
 
 msgid "Control groups not supported on this platform"
 msgstr ""
@@ -3635,9 +3626,8 @@ msgstr ""
 msgid "Convert domain XML to native config"
 msgstr ""
 
-#, fuzzy
 msgid "Convert native config to domain XML"
-msgstr "muunna toimialueen nimi tai tunnus UUID:ksi"
+msgstr "Muunna alkuperäinen määritys toimialue-XML muotoon"
 
 msgid "Convert native guest configuration format to domain XML format."
 msgstr ""
@@ -3648,9 +3638,8 @@ msgstr ""
 msgid "Copy aborted"
 msgstr ""
 
-#, fuzzy
 msgid "Copy failed"
-msgstr "toimenpide epäonnistui"
+msgstr "Kopiointi epäonnistui"
 
 #, c-format
 msgid "Copying definition of '%d' type is not implemented yet."
@@ -3713,29 +3702,26 @@ msgstr ""
 msgid "Could not change scheduler parameters: %s"
 msgstr "Ajastimen parametreja ei voitu muuttaa: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not chown on swtpm logfile %s"
-msgstr "Xen Storeen %s yhdistäminen epäonnistui"
+msgstr "Chown epäonnistui swtpm logitiedostolle %s"
 
 #, c-format
 msgid "Could not complete transfer: %s (%d)"
 msgstr "Siirtoa ei voitu suorittaa loppuun: %s (%d)"
 
-#, fuzzy
 msgid "Could not configure network"
-msgstr "Xen Storeen yhdistäminen epäonnistui"
+msgstr "Verkon määrittäminen epäonnistui"
 
-#, fuzzy
 msgid "Could not convert domain name to VEID"
-msgstr "muunna toimialueen nimi tai tunnus UUID:ksi"
+msgstr "Toimialueen nimen muuttaminen VEID:ksi epäonnistui"
 
 #, c-format
 msgid "Could not convert from %s to UTF-8 encoding"
 msgstr ""
 
-#, fuzzy
 msgid "Could not copy an XML node"
-msgstr "Xen Storeen yhdistäminen epäonnistui"
+msgstr "XML noodin kopiointi epäonnistui"
 
 msgid "Could not copy default config"
 msgstr ""
@@ -3747,16 +3733,15 @@ msgstr ""
 msgid "Could not create CDATA element"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create TPM directory %s"
-msgstr "Xen Storeen %s yhdistäminen epäonnistui"
+msgstr "TPM hakemiston %s luonti epäonnistui"
 
 msgid "Could not create WQL filter"
 msgstr ""
 
-#, fuzzy
 msgid "Could not create XML document"
-msgstr "XML:n luonti epäonnistui"
+msgstr "XML dokumentin luonti epäonnistui"
 
 #, c-format
 msgid "Could not create base storage, rc=%08x"
@@ -3766,17 +3751,15 @@ msgstr ""
 msgid "Could not create directory %s as %u:%d"
 msgstr ""
 
-#, fuzzy
 msgid "Could not create filter"
-msgstr "Xen Storeen yhdistäminen epäonnistui"
+msgstr "Suodattimen luonti epäonnistui"
 
 #, c-format
 msgid "Could not create harddisk, rc=%08x"
 msgstr ""
 
-#, fuzzy
 msgid "Could not create monitor"
-msgstr "Xen Storeen yhdistäminen epäonnistui"
+msgstr "Monitorin luonti epäonnistui"
 
 msgid "Could not create openwsman client"
 msgstr ""
@@ -3794,26 +3777,26 @@ msgstr ""
 msgid "Could not create thread. QEMU initialization might be incomplete"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create volume: %s"
-msgstr "Xen Storeen %s yhdistäminen epäonnistui"
+msgstr "Volyymi: %s:n luonti epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not define domain: %s"
-msgstr "Toimialueen %s määrityksen poistaminen epäonnistui"
+msgstr "Toimialueen %s määritys epäonnistui"
 
 #, c-format
 msgid "Could not delete snapshot '%s': %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not delete volume: %s"
-msgstr "Xen Storeen %s yhdistäminen epäonnistui"
+msgstr "Volyymin %s poistaminen epäonnistui"
 
 msgid "Could not deserialize pull response item"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not destroy domain: %s"
 msgstr "Toimialueen %s tuhoaminen epäonnistui"
 
@@ -3831,9 +3814,9 @@ msgstr ""
 msgid "Could not extract vzctl version"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find %s"
-msgstr "Toimialuetta ei löytynyt: %s"
+msgstr "Ei löytynyt: %s"
 
 #, c-format
 msgid "Could not find %s controller with index %d required for device"
@@ -3919,9 +3902,9 @@ msgstr ""
 msgid "Could not find datastore with name '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find directory separator in %s"
-msgstr "Xen Storeen %s yhdistäminen epäonnistui"
+msgstr "Hakemisto erotinta %s ei löytynyt"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -3951,9 +3934,9 @@ msgid ""
 "Could not find network device with phys_port_id '%s' under PCI device at %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find parent device for '%s'"
-msgstr "Laitteen irrottaminen tiedostosta %s epäonnistui"
+msgstr "Isäntää laitteelle '%s' ei löytynyt"
 
 #, c-format
 msgid "Could not find physical NIC with MAC address '%s'"
@@ -4063,13 +4046,11 @@ msgstr ""
 msgid "Could not get access to ACL tech driver '%s'"
 msgstr ""
 
-#, fuzzy
 msgid "Could not get checkpoint name"
-msgstr "konenimen haku epäonnistui"
+msgstr "Tarkistuspisteen nimen haku epäonnistui"
 
-#, fuzzy
 msgid "Could not get current time"
-msgstr "Xen Storeen yhdistäminen epäonnistui"
+msgstr "Tämänhetkisen ajan haku epäonnistui"
 
 #, c-format
 msgid "Could not get device port, rc=%08x"
@@ -4103,9 +4084,8 @@ msgid ""
 "'%s'"
 msgstr ""
 
-#, fuzzy
 msgid "Could not get interface list"
-msgstr "Liitännän tietojen haku epäonnistui"
+msgstr "Verkkoliitäntälistan haku epäonnistui"
 
 #, c-format
 msgid "Could not get interface list for '%s'"
@@ -4196,9 +4176,8 @@ msgstr ""
 msgid "Could not get snapshot id"
 msgstr ""
 
-#, fuzzy
 msgid "Could not get snapshot name"
-msgstr "konenimen haku epäonnistui"
+msgstr "Tilannevedoksen nimen haku epäonnistui"
 
 #, c-format
 msgid "Could not get storage controller bus, rc=%08x"
@@ -4208,9 +4187,9 @@ msgstr ""
 msgid "Could not get storage controller by name, rc=%08x"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not get syspath for parent of '%s'"
-msgstr "Xen Storeen %s yhdistäminen epäonnistui"
+msgstr "Isännän syspath saanti %s:lle epäonnistui"
 
 msgid "Could not get temp xml doc root"
 msgstr ""
@@ -4400,9 +4379,9 @@ msgstr ""
 msgid "Could not parse barrier of '%s' from config for container %d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not parse chain priority '%s'"
-msgstr "Xen-hypervisoria %s ei voitu käyttää"
+msgstr "Ketjun prioriteetin %s jäsentäminen epäonnistui"
 
 #, c-format
 msgid "Could not parse positive integer from '%s'"
@@ -4416,9 +4395,9 @@ msgstr ""
 msgid "Could not parse return code from '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not parse usb file %s"
-msgstr "asetustiedoston %s jäsentäminen epäonnistui"
+msgstr "Usb-tiedoston %s jäsentäminen epäonnistui"
 
 #, c-format
 msgid "Could not parse valid disk index from '%s'"
@@ -4469,17 +4448,16 @@ msgstr ""
 msgid "Could not read schemata file for the default group"
 msgstr ""
 
-#, fuzzy
 msgid "Could not read type information"
-msgstr "solmun tiedot"
+msgstr "Tyyppitietojen luku epäonnistui"
 
 #, c-format
 msgid "Could not read typefile '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not resume domain: %s"
-msgstr "Toimialueen %s palautus epäonnistui"
+msgstr "Toimialueen %s jatkaminen epäonnistui"
 
 #, c-format
 msgid "Could not retrieve 'bonding/arp_interval' for '%s'"
@@ -4522,9 +4500,8 @@ msgid "Could not retrieve 'bridge/stp_state' for '%s'"
 msgstr ""
 
 #. Something went wrong retrieving pool info, cope with it
-#, fuzzy
 msgid "Could not retrieve pool information"
-msgstr "solmun tietojen saanti epäonnistui"
+msgstr "Varannon tietojen haku epäonnistui"
 
 msgid "Could not retrieve resource pool"
 msgstr ""
@@ -4569,9 +4546,8 @@ msgstr ""
 msgid "Could not set namespace address for xmlNodeParam"
 msgstr ""
 
-#, fuzzy
 msgid "Could not set number of vCPUs"
-msgstr "muuta virtuaaliprosessorien määrää"
+msgstr "Virtuaaliprosessorien määrän asetus epäonnistui"
 
 #, c-format
 msgid "Could not set number of virtual CPUs to %d: %s"
@@ -4612,7 +4588,7 @@ msgstr ""
 msgid "Could not start dbus-daemon. exitstatus: %d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not start domain: %s"
 msgstr "Toimialueen %s käynnistys epäonnistui"
 
@@ -4620,7 +4596,7 @@ msgstr "Toimialueen %s käynnistys epäonnistui"
 msgid "Could not stat %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not suspend domain: %s"
 msgstr "Toimialueen %s asettaminen keskeytystilaan epäonnistui"
 
@@ -4665,20 +4641,17 @@ msgstr ""
 msgid "Crashed"
 msgstr "kaatui"
 
-#, fuzzy
 msgid "Crashloaded"
-msgstr "kaatui"
+msgstr "Kaatui"
 
-#, fuzzy
 msgid "Create a checkpoint from XML"
-msgstr "luo toimialue XML-tiedostosta"
+msgstr "Luo tarkistuspiste XML-tiedostosta"
 
 msgid "Create a checkpoint from XML for use in future incremental backups"
 msgstr ""
 
-#, fuzzy
 msgid "Create a checkpoint from a set of args"
-msgstr "luo toimialue XML-tiedostosta"
+msgstr "Luo tarkistuspiste asetetuista argumenteista"
 
 msgid ""
 "Create a checkpoint from arguments for use in future incremental backups"
@@ -4692,20 +4665,17 @@ msgstr ""
 msgid "Create a domain."
 msgstr "Luo toimialue."
 
-#, fuzzy
 msgid "Create a network port."
-msgstr "Luo verkko."
+msgstr "Luo verkkoportti."
 
 msgid "Create a network."
 msgstr "Luo verkko."
 
-#, fuzzy
 msgid "Create a new network filter binding."
-msgstr "Luo verkko."
+msgstr "Luo uusi verkkosuodattimen kiinnitys."
 
-#, fuzzy
 msgid "Create a pool."
-msgstr "Luo toimialue."
+msgstr "Luo varanto."
 
 msgid "Create a restore point for interfaces settings"
 msgstr ""
@@ -4716,9 +4686,8 @@ msgstr ""
 msgid "Create a snapshot (disk and RAM) from arguments"
 msgstr ""
 
-#, fuzzy
 msgid "Create a snapshot from XML"
-msgstr "luo verkko XML-tiedostosta"
+msgstr "Luo tilannevedos XML-tiedostosta"
 
 msgid "Create a snapshot from a set of args"
 msgstr ""
@@ -4726,9 +4695,8 @@ msgstr ""
 msgid "Create a vol from an existing volume."
 msgstr "Luo taltio olemassa olevasta taltiosta."
 
-#, fuzzy
 msgid "Create a vol."
-msgstr "Luo toimialue."
+msgstr "Luo volyymi."
 
 msgid "Created"
 msgstr "Luotu"
@@ -4803,9 +4771,9 @@ msgstr ""
 msgid "Data total:"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Datastore has unexpected type '%s'"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "Tietovarastossa on odottamatonta dataa ”%s”"
 
 #, c-format
 msgid "Datastore path '%s' doesn't have expected format '[<datastore>] <path>'"
@@ -4827,9 +4795,8 @@ msgstr "Määritä toimialue."
 msgid "Define a new network filter or update an existing one."
 msgstr ""
 
-#, fuzzy
 msgid "Define a pool."
-msgstr "Määritä toimialue."
+msgstr "Määritä varanto."
 
 msgid "Define or modify a persistent physical host interface."
 msgstr ""
@@ -4928,9 +4895,9 @@ msgstr "Laite"
 msgid "Device %s already exists"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Device %s detached\n"
-msgstr "Toimialue %s tuhottu\n"
+msgstr "Laite %s irrotettu\n"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -4952,9 +4919,9 @@ msgstr ""
 msgid "Device %s re-attached\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Device %s reset\n"
-msgstr "Toimialue %s palautettu\n"
+msgstr "Laite %s nollattu\n"
 
 #, fuzzy, c-format
 msgid "Device %s un-attached from bridge %s\n"
