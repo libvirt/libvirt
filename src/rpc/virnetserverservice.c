@@ -357,9 +357,8 @@ virJSONValuePtr virNetServerServicePreExecRestart(virNetServerServicePtr svc)
         child = NULL;
     }
 
-    if (virJSONValueObjectAppend(object, "socks", socks) < 0)
+    if (virJSONValueObjectAppend(object, "socks", &socks) < 0)
         return NULL;
-    socks = NULL;
 
     return g_steal_pointer(&object);
 }

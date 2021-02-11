@@ -662,10 +662,9 @@ qemuFirmwareInterfaceFormat(virJSONValuePtr doc,
 
     if (virJSONValueObjectAppend(doc,
                                  "interface-types",
-                                 interfacesJSON) < 0)
+                                 &interfacesJSON) < 0)
         return -1;
 
-    interfacesJSON = NULL;
     return 0;
 }
 
@@ -706,17 +705,14 @@ qemuFirmwareMappingFlashFormat(virJSONValuePtr mapping,
 
     if (virJSONValueObjectAppend(mapping,
                                  "executable",
-                                 executable) < 0)
+                                 &executable) < 0)
         return -1;
 
-    executable = NULL;
 
     if (virJSONValueObjectAppend(mapping,
                                  "nvram-template",
-                                 nvram_template) < 0)
+                                 &nvram_template) < 0)
         return -1;
-
-    nvram_template = NULL;
 
     return 0;
 }
@@ -778,10 +774,9 @@ qemuFirmwareMappingFormat(virJSONValuePtr doc,
         break;
     }
 
-    if (virJSONValueObjectAppend(doc, "mapping", mapping) < 0)
+    if (virJSONValueObjectAppend(doc, "mapping", &mapping) < 0)
         return -1;
 
-    mapping = NULL;
     return 0;
 }
 
@@ -814,10 +809,8 @@ qemuFirmwareTargetFormat(virJSONValuePtr doc,
                 return -1;
         }
 
-        if (virJSONValueObjectAppend(target, "machines", machines) < 0)
+        if (virJSONValueObjectAppend(target, "machines", &machines) < 0)
             return -1;
-
-        machines = NULL;
 
         if (virJSONValueArrayAppend(targetsJSON, target) < 0)
             return -1;
@@ -825,10 +818,9 @@ qemuFirmwareTargetFormat(virJSONValuePtr doc,
         target = NULL;
     }
 
-    if (virJSONValueObjectAppend(doc, "targets", targetsJSON) < 0)
+    if (virJSONValueObjectAppend(doc, "targets", &targetsJSON) < 0)
         return -1;
 
-    targetsJSON = NULL;
     return 0;
 }
 
@@ -850,10 +842,9 @@ qemuFirmwareFeatureFormat(virJSONValuePtr doc,
 
     if (virJSONValueObjectAppend(doc,
                                  "features",
-                                 featuresJSON) < 0)
+                                 &featuresJSON) < 0)
         return -1;
 
-    featuresJSON = NULL;
     return 0;
 }
 

@@ -516,9 +516,8 @@ virLogDaemonPreExecRestart(const char *state_file,
     if (!(daemon = virNetDaemonPreExecRestart(dmn)))
         return -1;
 
-    if (virJSONValueObjectAppend(object, "daemon", daemon) < 0)
+    if (virJSONValueObjectAppend(object, "daemon", &daemon) < 0)
         return -1;
-    daemon = NULL;
 
     if (!(magic = virLogDaemonGetExecRestartMagic()))
         return -1;
@@ -529,9 +528,8 @@ virLogDaemonPreExecRestart(const char *state_file,
     if (!(handler = virLogHandlerPreExecRestart(logDaemon->handler)))
         return -1;
 
-    if (virJSONValueObjectAppend(object, "handler", handler) < 0)
+    if (virJSONValueObjectAppend(object, "handler", &handler) < 0)
         return -1;
-    handler = NULL;
 
     if (!(state = virJSONValueToString(object, true)))
         return -1;

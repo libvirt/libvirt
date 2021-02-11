@@ -770,9 +770,8 @@ qemuMigrationParamsToJSON(qemuMigrationParamsPtr migParams)
         if (!mapping)
             return NULL;
 
-        if (virJSONValueObjectAppend(params, "block-bitmap-mapping", mapping) < 0)
+        if (virJSONValueObjectAppend(params, "block-bitmap-mapping", &mapping) < 0)
             return NULL;
-        mapping = NULL;
     }
 
     return g_steal_pointer(&params);

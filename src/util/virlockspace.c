@@ -460,9 +460,8 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
             owner = NULL;
         }
 
-        if (virJSONValueObjectAppend(child, "owners", owners) < 0)
+        if (virJSONValueObjectAppend(child, "owners", &owners) < 0)
             goto error;
-        owners = NULL;
 
         if (virJSONValueArrayAppend(resources, child) < 0)
             goto error;
@@ -471,9 +470,8 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
         tmp++;
     }
 
-    if (virJSONValueObjectAppend(object, "resources", resources) < 0)
+    if (virJSONValueObjectAppend(object, "resources", &resources) < 0)
         goto error;
-    resources = NULL;
 
     virMutexUnlock(&lockspace->lock);
     return object;

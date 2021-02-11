@@ -1092,9 +1092,8 @@ qemuBlockStorageSourceGetBlockdevGetCacheProps(virStorageSourcePtr src,
                                  NULL) < 0)
         return -1;
 
-    if (virJSONValueObjectAppend(props, "cache", cacheobj) < 0)
+    if (virJSONValueObjectAppend(props, "cache", &cacheobj) < 0)
         return -1;
-    cacheobj = NULL;
 
     return 0;
 }

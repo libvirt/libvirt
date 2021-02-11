@@ -610,7 +610,7 @@ nodeDeviceDefToMdevctlConfig(virNodeDeviceDefPtr def, char **buf)
                 return -1;
         }
 
-        if (virJSONValueObjectAppend(json, "attrs", g_steal_pointer(&attributes)) < 0)
+        if (virJSONValueObjectAppend(json, "attrs", &attributes) < 0)
             return -1;
     }
 

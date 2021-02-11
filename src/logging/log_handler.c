@@ -647,9 +647,8 @@ virLogHandlerPreExecRestart(virLogHandlerPtr handler)
         file = NULL;
     }
 
-    if (virJSONValueObjectAppend(ret, "files", files) < 0)
+    if (virJSONValueObjectAppend(ret, "files", &files) < 0)
         return NULL;
-    files = NULL;
 
     return g_steal_pointer(&ret);
 }

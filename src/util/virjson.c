@@ -298,7 +298,7 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
                 return -1;
             }
 
-            if ((rc = virJSONValueObjectAppend(obj, key, *val)) == 0)
+            if ((rc = virJSONValueObjectAppend(obj, key, val)) == 0)
                 *val = NULL;
         }   break;
 
@@ -320,9 +320,8 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
             if (!(jsonMap = virJSONValueNewArrayFromBitmap(map)))
                 return -1;
 
-            if ((rc = virJSONValueObjectAppend(obj, key, jsonMap)) < 0)
+            if ((rc = virJSONValueObjectAppend(obj, key, &jsonMap)) < 0)
                 return -1;
-            jsonMap = NULL;
         } break;
 
         default:
@@ -616,9 +615,9 @@ virJSONValueObjectInsert(virJSONValuePtr object,
 int
 virJSONValueObjectAppend(virJSONValuePtr object,
                          const char *key,
-                         virJSONValuePtr value)
+                         virJSONValuePtr *value)
 {
-    return virJSONValueObjectInsert(object, key, &value, false);
+    return virJSONValueObjectInsert(object, key, value, false);
 }
 
 
@@ -679,9 +678,8 @@ virJSONValueObjectAppendNumberInt(virJSONValuePtr object,
 {
     g_autoptr(virJSONValue) jvalue = virJSONValueNewNumberInt(number);
 
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
+    if (virJSONValueObjectAppend(object, key, &jvalue) < 0)
         return -1;
-    jvalue = NULL;
 
     return 0;
 }
@@ -694,9 +692,8 @@ virJSONValueObjectAppendNumberUint(virJSONValuePtr object,
 {
     g_autoptr(virJSONValue) jvalue = virJSONValueNewNumberUint(number);
 
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
+    if (virJSONValueObjectAppend(object, key, &jvalue) < 0)
         return -1;
-    jvalue = NULL;
 
     return 0;
 }
@@ -709,9 +706,8 @@ virJSONValueObjectAppendNumberLong(virJSONValuePtr object,
 {
     g_autoptr(virJSONValue) jvalue = virJSONValueNewNumberLong(number);
 
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
+    if (virJSONValueObjectAppend(object, key, &jvalue) < 0)
         return -1;
-    jvalue = NULL;
 
     return 0;
 }
@@ -724,9 +720,8 @@ virJSONValueObjectAppendNumberUlong(virJSONValuePtr object,
 {
     g_autoptr(virJSONValue) jvalue = virJSONValueNewNumberUlong(number);
 
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
+    if (virJSONValueObjectAppend(object, key, &jvalue) < 0)
         return -1;
-    jvalue = NULL;
 
     return 0;
 }
@@ -743,9 +738,8 @@ virJSONValueObjectAppendNumberDouble(virJSONValuePtr object,
     if (!jvalue)
         return -1;
 
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
+    if (virJSONValueObjectAppend(object, key, &jvalue) < 0)
         return -1;
-    jvalue = NULL;
 
     return 0;
 }
@@ -758,9 +752,8 @@ virJSONValueObjectAppendBoolean(virJSONValuePtr object,
 {
     g_autoptr(virJSONValue) jvalue = virJSONValueNewBoolean(boolean_);
 
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
+    if (virJSONValueObjectAppend(object, key, &jvalue) < 0)
         return -1;
-    jvalue = NULL;
 
     return 0;
 }
@@ -772,9 +765,8 @@ virJSONValueObjectAppendNull(virJSONValuePtr object,
 {
     g_autoptr(virJSONValue) jvalue = virJSONValueNewNull();
 
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
+    if (virJSONValueObjectAppend(object, key, &jvalue) < 0)
         return -1;
-    jvalue = NULL;
 
     return 0;
 }
@@ -1583,7 +1575,7 @@ virJSONParserInsertValue(virJSONParserPtr parser,
 
             if (virJSONValueObjectAppend(state->value,
                                          state->key,
-                                         value) < 0)
+                                         &value) < 0)
                 return -1;
 
             VIR_FREE(state->key);
@@ -2093,7 +2085,7 @@ virJSONValueObjectDeflattenWorker(const char *key,
             return -1;
         }
 
-        if (virJSONValueObjectAppend(retobj, key, newval) < 0)
+        if (virJSONValueObjectAppend(retobj, key, &newval) < 0)
             return -1;
 
         newval = NULL;
@@ -2111,9 +2103,10 @@ virJSONValueObjectDeflattenWorker(const char *key,
     }
 
     if (!(existobj = virJSONValueObjectGet(retobj, tokens[0]))) {
-        existobj = virJSONValueNewObject();
+        virJSONValuePtr newobj = virJSONValueNewObject();
+        existobj = newobj;
 
-        if (virJSONValueObjectAppend(retobj, tokens[0], existobj) < 0)
+        if (virJSONValueObjectAppend(retobj, tokens[0], &newobj) < 0)
             return -1;
 
     } else {

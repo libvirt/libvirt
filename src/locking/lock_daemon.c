@@ -711,16 +711,14 @@ virLockDaemonPreExecRestart(const char *state_file,
     if (!(daemon = virNetDaemonPreExecRestart(dmn)))
         return -1;
 
-    if (virJSONValueObjectAppend(object, "daemon", daemon) < 0)
+    if (virJSONValueObjectAppend(object, "daemon", &daemon) < 0)
         return -1;
-    daemon = NULL;
 
     if (!(defaultLockspace = virLockSpacePreExecRestart(lockDaemon->defaultLockspace)))
         return -1;
 
-    if (virJSONValueObjectAppend(object, "defaultLockspace", defaultLockspace) < 0)
+    if (virJSONValueObjectAppend(object, "defaultLockspace", &defaultLockspace) < 0)
         return -1;
-    defaultLockspace = NULL;
 
     tmp = pairs = virHashGetItems(lockDaemon->lockspaces, NULL, false);
     while (tmp && tmp->key) {
@@ -737,9 +735,8 @@ virLockDaemonPreExecRestart(const char *state_file,
         tmp++;
     }
 
-    if (virJSONValueObjectAppend(object, "lockspaces", lockspaces) < 0)
+    if (virJSONValueObjectAppend(object, "lockspaces", &lockspaces) < 0)
         return -1;
-    lockspaces = NULL;
 
     if (!(magic = virLockDaemonGetExecRestartMagic()))
         return -1;

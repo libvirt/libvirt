@@ -610,16 +610,14 @@ virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client)
     if (!(sock = virNetSocketPreExecRestart(client->sock)))
         goto error;
 
-    if (virJSONValueObjectAppend(object, "sock", sock) < 0)
+    if (virJSONValueObjectAppend(object, "sock", &sock) < 0)
         goto error;
-    sock = NULL;
 
     if (!(priv = client->privateDataPreExecRestart(client, client->privateData)))
         goto error;
 
-    if (virJSONValueObjectAppend(object, "privateData", priv) < 0)
+    if (virJSONValueObjectAppend(object, "privateData", &priv) < 0)
         goto error;
-    priv = NULL;
 
     virObjectUnlock(client);
     return g_steal_pointer(&object);

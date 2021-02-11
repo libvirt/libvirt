@@ -224,9 +224,8 @@ virMACMapHashDumper(void *payload,
     }
 
     if (virJSONValueObjectAppendString(obj, "domain", name) < 0 ||
-        virJSONValueObjectAppend(obj, "macs", arr) < 0)
+        virJSONValueObjectAppend(obj, "macs", &arr) < 0)
         return -1;
-    arr = NULL;
 
     if (virJSONValueArrayAppend(data, obj) < 0)
         return -1;

@@ -404,16 +404,14 @@ virNetDaemonPreExecRestart(virNetDaemonPtr dmn)
         if (!srvJSON)
             goto error;
 
-        if (virJSONValueObjectAppend(srvObj, srvArray[i].key, srvJSON) < 0)
+        if (virJSONValueObjectAppend(srvObj, srvArray[i].key, &srvJSON) < 0)
             goto error;
-        srvJSON = NULL;
     }
 
     virObjectUnlock(dmn);
 
-    if (virJSONValueObjectAppend(object, "servers", srvObj) < 0)
+    if (virJSONValueObjectAppend(object, "servers", &srvObj) < 0)
         return NULL;
-    srvObj = NULL;
 
     return g_steal_pointer(&object);
 

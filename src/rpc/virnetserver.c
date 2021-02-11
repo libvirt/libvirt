@@ -590,9 +590,8 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
         child = NULL;
     }
 
-    if (virJSONValueObjectAppend(object, "services", services) < 0)
+    if (virJSONValueObjectAppend(object, "services", &services) < 0)
         goto error;
-    services = NULL;
 
     for (i = 0; i < srv->nclients; i++) {
         g_autoptr(virJSONValue) child = NULL;
@@ -604,9 +603,8 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
         child = NULL;
     }
 
-    if (virJSONValueObjectAppend(object, "clients", clients) < 0)
+    if (virJSONValueObjectAppend(object, "clients", &clients) < 0)
         goto error;
-    clients = NULL;
 
     virObjectUnlock(srv);
 
