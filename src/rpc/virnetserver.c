@@ -556,51 +556,29 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
     virObjectLock(srv);
 
     if (virJSONValueObjectAppendNumberUint(object, "min_workers",
-                                           virThreadPoolGetMinWorkers(srv->workers)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set min_workers data in JSON document"));
+                                           virThreadPoolGetMinWorkers(srv->workers)) < 0)
         goto error;
-    }
     if (virJSONValueObjectAppendNumberUint(object, "max_workers",
-                                           virThreadPoolGetMaxWorkers(srv->workers)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set max_workers data in JSON document"));
+                                           virThreadPoolGetMaxWorkers(srv->workers)) < 0)
         goto error;
-    }
     if (virJSONValueObjectAppendNumberUint(object, "priority_workers",
-                                           virThreadPoolGetPriorityWorkers(srv->workers)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set priority_workers data in JSON document"));
+                                           virThreadPoolGetPriorityWorkers(srv->workers)) < 0)
         goto error;
-    }
-    if (virJSONValueObjectAppendNumberUint(object, "max_clients", srv->nclients_max) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set max_clients data in JSON document"));
+
+    if (virJSONValueObjectAppendNumberUint(object, "max_clients", srv->nclients_max) < 0)
         goto error;
-    }
     if (virJSONValueObjectAppendNumberUint(object, "max_anonymous_clients",
-                                           srv->nclients_unauth_max) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set max_anonymous_clients data in JSON document"));
+                                           srv->nclients_unauth_max) < 0)
         goto error;
-    }
-    if (virJSONValueObjectAppendNumberUint(object, "keepaliveInterval", srv->keepaliveInterval) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set keepaliveInterval data in JSON document"));
+
+    if (virJSONValueObjectAppendNumberUint(object, "keepaliveInterval", srv->keepaliveInterval) < 0)
         goto error;
-    }
-    if (virJSONValueObjectAppendNumberUint(object, "keepaliveCount", srv->keepaliveCount) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set keepaliveCount data in JSON document"));
+    if (virJSONValueObjectAppendNumberUint(object, "keepaliveCount", srv->keepaliveCount) < 0)
         goto error;
-    }
 
     if (virJSONValueObjectAppendNumberUlong(object, "next_client_id",
-                                            srv->next_client_id) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set next_client_id data in JSON document"));
+                                            srv->next_client_id) < 0)
         goto error;
-    }
 
     services = virJSONValueNewArray();
 
