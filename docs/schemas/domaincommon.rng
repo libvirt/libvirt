@@ -3529,23 +3529,7 @@
         <ref name="portOptions"/>
       </optional>
       <optional>
-        <element name="teaming">
-          <choice>
-            <group>
-              <attribute name="type">
-                <value>persistent</value>
-              </attribute>
-            </group>
-            <group>
-              <attribute name="type">
-                <value>transient</value>
-              </attribute>
-              <attribute name="persistent">
-                <ref name="aliasName"/>
-              </attribute>
-            </group>
-          </choice>
-        </element>
+        <ref name="teaming"/>
       </optional>
     </interleave>
   </define>
@@ -3581,6 +3565,27 @@
       <ref name="route"/>
     </zeroOrMore>
   </define>
+
+  <define name="teaming">
+    <element name="teaming">
+      <choice>
+        <group>
+          <attribute name="type">
+            <value>persistent</value>
+          </attribute>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>transient</value>
+          </attribute>
+          <attribute name="persistent">
+            <ref name="aliasName"/>
+          </attribute>
+        </group>
+      </choice>
+    </element>
+  </define>
+
   <!--
       An emulator description is just a path to the binary used for the task
     -->
