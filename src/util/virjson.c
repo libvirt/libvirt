@@ -577,10 +577,10 @@ virJSONValueNewObject(void)
 static int
 virJSONValueObjectInsert(virJSONValuePtr object,
                          const char *key,
-                         virJSONValuePtr value,
+                         virJSONValuePtr *value,
                          bool prepend)
 {
-    virJSONObjectPair pair = { NULL, value };
+    virJSONObjectPair pair = { NULL, *value };
     int ret = -1;
 
     if (object->type != VIR_JSON_TYPE_OBJECT) {
@@ -604,6 +604,9 @@ virJSONValueObjectInsert(virJSONValuePtr object,
                                  object->data.object.npairs, pair);
     }
 
+    if (ret == 0)
+        *value = NULL;
+
     VIR_FREE(pair.key);
     return ret;
 }
@@ -614,7 +617,7 @@ virJSONValueObjectAppend(virJSONValuePtr object,
                          const char *key,
                          virJSONValuePtr value)
 {
-    return virJSONValueObjectInsert(object, key, value, false);
+    return virJSONValueObjectInsert(object, key, &value, false);
 }
 
 
@@ -627,10 +630,8 @@ virJSONValueObjectInsertString(virJSONValuePtr object,
     virJSONValuePtr jvalue = virJSONValueNewString(value);
     if (!jvalue)
         return -1;
-    if (virJSONValueObjectInsert(object, key, jvalue, prepend) < 0) {
-        virJSONValueFree(jvalue);
+    if (virJSONValueObjectInsert(object, key, &jvalue, prepend) < 0)
         return -1;
-    }
     return 0;
 }
 
