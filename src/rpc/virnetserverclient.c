@@ -585,15 +585,14 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virNetServerPtr srv,
 
 virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client)
 {
-    virJSONValuePtr object = virJSONValueNewObject();
-    virJSONValuePtr child;
+    g_autoptr(virJSONValue) object = virJSONValueNewObject();
+    g_autoptr(virJSONValue) sock = NULL;
+    g_autoptr(virJSONValue) priv = NULL;
 
     virObjectLock(client);
 
-    if (virJSONValueObjectAppendNumberUlong(object, "id",
-                                            client->id) < 0)
+    if (virJSONValueObjectAppendNumberUlong(object, "id", client->id) < 0)
         goto error;
-
     if (virJSONValueObjectAppendNumberInt(object, "auth", client->auth) < 0)
         goto error;
     if (virJSONValueObjectAppendBoolean(object, "auth_pending", client->auth_pending) < 0)
@@ -608,28 +607,25 @@ virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client)
                                            client->conn_time) < 0)
         goto error;
 
-    if (!(child = virNetSocketPreExecRestart(client->sock)))
+    if (!(sock = virNetSocketPreExecRestart(client->sock)))
         goto error;
 
-    if (virJSONValueObjectAppend(object, "sock", child) < 0) {
-        virJSONValueFree(child);
+    if (virJSONValueObjectAppend(object, "sock", sock) < 0)
         goto error;
-    }
+    sock = NULL;
 
-    if (!(child = client->privateDataPreExecRestart(client, client->privateData)))
+    if (!(priv = client->privateDataPreExecRestart(client, client->privateData)))
         goto error;
 
-    if (virJSONValueObjectAppend(object, "privateData", child) < 0) {
-        virJSONValueFree(child);
+    if (virJSONValueObjectAppend(object, "privateData", priv) < 0)
         goto error;
-    }
+    priv = NULL;
 
     virObjectUnlock(client);
-    return object;
+    return g_steal_pointer(&object);
 
  error:
     virObjectUnlock(client);
-    virJSONValueFree(object);
     return NULL;
 }
 
