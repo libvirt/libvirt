@@ -435,6 +435,14 @@ x64-macos-1015-build:
 
 # Cross compiled build jobs
 
+aarch64-debian-10:
+  extends: .cross_build_job
+  needs:
+    - aarch64-debian-10-container
+  variables:
+    NAME: debian-10
+    CROSS: aarch64
+
 armv6l-debian-10:
   extends: .cross_build_job
   needs:
@@ -451,13 +459,13 @@ armv7l-debian-10:
     NAME: debian-10
     CROSS: armv7l
 
-mips64el-debian-10:
+i686-debian-sid:
   extends: .cross_build_job
   needs:
-    - mips64el-debian-10-container
+    - i686-debian-sid-container
   variables:
-    NAME: debian-10
-    CROSS: mips64el
+    NAME: debian-sid
+    CROSS: i686
 
 mips-debian-10:
   extends: .cross_build_job
@@ -467,13 +475,13 @@ mips-debian-10:
     NAME: debian-10
     CROSS: mips
 
-aarch64-debian-10:
+mips64el-debian-10:
   extends: .cross_build_job
   needs:
-    - aarch64-debian-10-container
+    - mips64el-debian-10-container
   variables:
     NAME: debian-10
-    CROSS: aarch64
+    CROSS: mips64el
 
 mipsel-debian-10:
   extends: .cross_build_job
@@ -483,22 +491,6 @@ mipsel-debian-10:
     NAME: debian-10
     CROSS: mipsel
 
-s390x-debian-sid:
-  extends: .cross_build_job
-  needs:
-    - s390x-debian-sid-container
-  variables:
-    NAME: debian-sid
-    CROSS: s390x
-
-i686-debian-sid:
-  extends: .cross_build_job
-  needs:
-    - i686-debian-sid-container
-  variables:
-    NAME: debian-sid
-    CROSS: i686
-
 ppc64le-debian-sid:
   extends: .cross_build_job
   needs:
@@ -506,6 +498,14 @@ ppc64le-debian-sid:
   variables:
     NAME: debian-sid
     CROSS: ppc64le
+
+s390x-debian-sid:
+  extends: .cross_build_job
+  needs:
+    - s390x-debian-sid-container
+  variables:
+    NAME: debian-sid
+    CROSS: s390x
 
 mingw32-fedora-rawhide:
   extends: .cross_build_job
