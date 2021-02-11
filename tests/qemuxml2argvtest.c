@@ -1503,6 +1503,9 @@ mymain(void)
             QEMU_CAPS_VIRTIO_NET_FAILOVER,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_PARSE_ERROR("net-virtio-teaming", NONE);
+    DO_TEST("net-virtio-teaming-hostdev",
+            QEMU_CAPS_VIRTIO_NET_FAILOVER,
+            QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("net-eth", NONE);
     DO_TEST("net-eth-ifname", NONE);
     DO_TEST("net-eth-names", NONE);

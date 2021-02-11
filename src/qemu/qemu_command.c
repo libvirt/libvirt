@@ -4427,6 +4427,7 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
     int backend = pcisrc->backend;
+    virDomainNetTeamingInfoPtr teaming;
 
     /* caller has to assign proper passthrough backend type */
     switch ((virDomainHostdevSubsysPCIBackendType)backend) {
@@ -4461,11 +4462,15 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
     if (qemuBuildRomStr(&buf, dev->info) < 0)
         return NULL;
 
-    if (dev->parentnet && dev->parentnet->teaming &&
-        dev->parentnet->teaming->type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT &&
-        dev->parentnet->teaming->persistent) {
-        virBufferAsprintf(&buf,  ",failover_pair_id=%s",
-                          dev->parentnet->teaming->persistent);
+    if (dev->parentnet)
+        teaming = dev->parentnet->teaming;
+    else
+        teaming = dev->teaming;
+
+    if (teaming &&
+        teaming->type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT &&
+        teaming->persistent) {
+        virBufferAsprintf(&buf,  ",failover_pair_id=%s", teaming->persistent);
     }
 
     return virBufferContentAndReset(&buf);
