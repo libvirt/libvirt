@@ -384,23 +384,18 @@ virJSONValuePtr
 virNetDaemonPreExecRestart(virNetDaemonPtr dmn)
 {
     size_t i = 0;
-    virJSONValuePtr object = virJSONValueNewObject();
-    virJSONValuePtr srvObj = virJSONValueNewObject();
-    virHashKeyValuePairPtr srvArray = NULL;
+    g_autoptr(virJSONValue) object = virJSONValueNewObject();
+    g_autoptr(virJSONValue) srvObj = virJSONValueNewObject();
+    g_autofree virHashKeyValuePairPtr srvArray = NULL;
 
     virObjectLock(dmn);
-
-    if (virJSONValueObjectAppend(object, "servers", srvObj) < 0) {
-        virJSONValueFree(srvObj);
-        goto error;
-    }
 
     if (!(srvArray = virHashGetItems(dmn->servers, NULL, true)))
         goto error;
 
     for (i = 0; srvArray[i].key; i++) {
         virNetServerPtr server = virHashLookup(dmn->servers, srvArray[i].key);
-        virJSONValuePtr srvJSON;
+        g_autoptr(virJSONValue) srvJSON = NULL;
 
         if (!server)
             goto error;
@@ -409,20 +404,20 @@ virNetDaemonPreExecRestart(virNetDaemonPtr dmn)
         if (!srvJSON)
             goto error;
 
-        if (virJSONValueObjectAppend(srvObj, srvArray[i].key, srvJSON) < 0) {
-            virJSONValueFree(srvJSON);
+        if (virJSONValueObjectAppend(srvObj, srvArray[i].key, srvJSON) < 0)
             goto error;
-        }
+        srvJSON = NULL;
     }
 
-    VIR_FREE(srvArray);
     virObjectUnlock(dmn);
 
-    return object;
+    if (virJSONValueObjectAppend(object, "servers", srvObj) < 0)
+        return NULL;
+    srvObj = NULL;
+
+    return g_steal_pointer(&object);
 
  error:
-    VIR_FREE(srvArray);
-    virJSONValueFree(object);
     virObjectUnlock(dmn);
     return NULL;
 }
