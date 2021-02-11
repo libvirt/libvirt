@@ -336,40 +336,32 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
 
 virJSONValuePtr virNetServerServicePreExecRestart(virNetServerServicePtr svc)
 {
-    virJSONValuePtr object = virJSONValueNewObject();
-    virJSONValuePtr socks;
+    g_autoptr(virJSONValue) object = virJSONValueNewObject();
+    g_autoptr(virJSONValue) socks = virJSONValueNewArray();
     size_t i;
 
     if (virJSONValueObjectAppendNumberInt(object, "auth", svc->auth) < 0)
-        goto error;
+        return NULL;
     if (virJSONValueObjectAppendBoolean(object, "readonly", svc->readonly) < 0)
-        goto error;
+        return NULL;
     if (virJSONValueObjectAppendNumberUint(object, "nrequests_client_max", svc->nrequests_client_max) < 0)
-        goto error;
-
-    socks = virJSONValueNewArray();
-
-    if (virJSONValueObjectAppend(object, "socks", socks) < 0) {
-        virJSONValueFree(socks);
-        goto error;
-    }
+        return NULL;
 
     for (i = 0; i < svc->nsocks; i++) {
-        virJSONValuePtr child;
+        g_autoptr(virJSONValue) child = NULL;
         if (!(child = virNetSocketPreExecRestart(svc->socks[i])))
-            goto error;
+            return NULL;
 
-        if (virJSONValueArrayAppend(socks, child) < 0) {
-            virJSONValueFree(child);
-            goto error;
-        }
+        if (virJSONValueArrayAppend(socks, child) < 0)
+            return NULL;
+        child = NULL;
     }
 
-    return object;
+    if (virJSONValueObjectAppend(object, "socks", socks) < 0)
+        return NULL;
+    socks = NULL;
 
- error:
-    virJSONValueFree(object);
-    return NULL;
+    return g_steal_pointer(&object);
 }
 
 
