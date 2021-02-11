@@ -697,87 +697,76 @@ virLockDaemonPreExecRestart(const char *state_file,
                             virNetDaemonPtr dmn,
                             char **argv)
 {
-    virJSONValuePtr child;
-    char *state = NULL;
-    virJSONValuePtr object = virJSONValueNewObject();
-    char *magic = NULL;
-    virHashKeyValuePairPtr pairs = NULL, tmp;
-    virJSONValuePtr lockspaces;
+    g_autoptr(virJSONValue) object = virJSONValueNewObject();
+    g_autoptr(virJSONValue) lockspaces = virJSONValueNewArray();
+    g_autoptr(virJSONValue) defaultLockspace = NULL;
+    g_autoptr(virJSONValue) daemon = NULL;
+    g_autofree char *state = NULL;
+    g_autofree char *magic = NULL;
+    g_autofree virHashKeyValuePairPtr pairs = NULL;
+    virHashKeyValuePairPtr tmp;
 
     VIR_DEBUG("Running pre-restart exec");
 
-    if (!(child = virNetDaemonPreExecRestart(dmn)))
-        goto cleanup;
+    if (!(daemon = virNetDaemonPreExecRestart(dmn)))
+        return -1;
 
-    if (virJSONValueObjectAppend(object, "daemon", child) < 0) {
-        virJSONValueFree(child);
-        goto cleanup;
-    }
+    if (virJSONValueObjectAppend(object, "daemon", daemon) < 0)
+        return -1;
+    daemon = NULL;
 
-    if (!(child = virLockSpacePreExecRestart(lockDaemon->defaultLockspace)))
-        goto cleanup;
+    if (!(defaultLockspace = virLockSpacePreExecRestart(lockDaemon->defaultLockspace)))
+        return -1;
 
-    if (virJSONValueObjectAppend(object, "defaultLockspace", child) < 0) {
-        virJSONValueFree(child);
-        goto cleanup;
-    }
-
-    lockspaces = virJSONValueNewArray();
-
-    if (virJSONValueObjectAppend(object, "lockspaces", lockspaces) < 0) {
-        virJSONValueFree(lockspaces);
-        goto cleanup;
-    }
-
+    if (virJSONValueObjectAppend(object, "defaultLockspace", defaultLockspace) < 0)
+        return -1;
+    defaultLockspace = NULL;
 
     tmp = pairs = virHashGetItems(lockDaemon->lockspaces, NULL, false);
     while (tmp && tmp->key) {
         virLockSpacePtr lockspace = (virLockSpacePtr)tmp->value;
+        g_autoptr(virJSONValue) child = NULL;
 
         if (!(child = virLockSpacePreExecRestart(lockspace)))
-            goto cleanup;
+            return -1;
 
-        if (virJSONValueArrayAppend(lockspaces, child) < 0) {
-            virJSONValueFree(child);
-            goto cleanup;
-        }
+        if (virJSONValueArrayAppend(lockspaces, child) < 0)
+            return -1;
+        child = NULL;
 
         tmp++;
     }
 
+    if (virJSONValueObjectAppend(object, "lockspaces", lockspaces) < 0)
+        return -1;
+    lockspaces = NULL;
+
     if (!(magic = virLockDaemonGetExecRestartMagic()))
-        goto cleanup;
+        return -1;
 
     if (virJSONValueObjectAppendString(object, "magic", magic) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(state = virJSONValueToString(object, true)))
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Saving state %s", state);
 
-    if (virFileWriteStr(state_file,
-                        state, 0700) < 0) {
+    if (virFileWriteStr(state_file, state, 0700) < 0) {
         virReportSystemError(errno,
-                             _("Unable to save state file %s"),
-                             state_file);
-        goto cleanup;
+                             _("Unable to save state file %s"), state_file);
+        return -1;
     }
 
     if (execvp(argv[0], argv) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to restart self"));
-        goto cleanup;
+        return -1;
     }
 
     abort(); /* This should be impossible to reach */
 
- cleanup:
-    VIR_FREE(magic);
-    VIR_FREE(pairs);
-    VIR_FREE(state);
-    virJSONValueFree(object);
-    return -1;
+    return 0;
 }
 
 
