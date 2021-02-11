@@ -548,9 +548,9 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
 
 virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
 {
-    virJSONValuePtr object = virJSONValueNewObject();
-    virJSONValuePtr clients;
-    virJSONValuePtr services;
+    g_autoptr(virJSONValue) object = virJSONValueNewObject();
+    g_autoptr(virJSONValue) clients = virJSONValueNewArray();
+    g_autoptr(virJSONValue) services = virJSONValueNewArray();
     size_t i;
 
     virObjectLock(srv);
@@ -580,48 +580,39 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
                                             srv->next_client_id) < 0)
         goto error;
 
-    services = virJSONValueNewArray();
-
-    if (virJSONValueObjectAppend(object, "services", services) < 0) {
-        virJSONValueFree(services);
-        goto error;
-    }
-
     for (i = 0; i < srv->nservices; i++) {
-        virJSONValuePtr child;
+        g_autoptr(virJSONValue) child = NULL;
         if (!(child = virNetServerServicePreExecRestart(srv->services[i])))
             goto error;
 
-        if (virJSONValueArrayAppend(services, child) < 0) {
-            virJSONValueFree(child);
+        if (virJSONValueArrayAppend(services, child) < 0)
             goto error;
-        }
+        child = NULL;
     }
 
-    clients = virJSONValueNewArray();
-
-    if (virJSONValueObjectAppend(object, "clients", clients) < 0) {
-        virJSONValueFree(clients);
+    if (virJSONValueObjectAppend(object, "services", services) < 0)
         goto error;
-    }
+    services = NULL;
 
     for (i = 0; i < srv->nclients; i++) {
-        virJSONValuePtr child;
+        g_autoptr(virJSONValue) child = NULL;
         if (!(child = virNetServerClientPreExecRestart(srv->clients[i])))
             goto error;
 
-        if (virJSONValueArrayAppend(clients, child) < 0) {
-            virJSONValueFree(child);
+        if (virJSONValueArrayAppend(clients, child) < 0)
             goto error;
-        }
+        child = NULL;
     }
+
+    if (virJSONValueObjectAppend(object, "clients", clients) < 0)
+        goto error;
+    clients = NULL;
 
     virObjectUnlock(srv);
 
-    return object;
+    return g_steal_pointer(&object);
 
  error:
-    virJSONValueFree(object);
     virObjectUnlock(srv);
     return NULL;
 }
