@@ -1223,8 +1223,8 @@ qemuMigrationSrcIsAllowedHostdev(const virDomainDef *def)
                  * the device will be auto-unplugged by QEMU during
                  * migration.
                  */
-                if (hostdev->parentnet &&
-                    hostdev->parentnet->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT) {
+                if (hostdev->parentnet && hostdev->parentnet->teaming &&
+                    hostdev->parentnet->teaming->type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT) {
                     continue;
                 }
 

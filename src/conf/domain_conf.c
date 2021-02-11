@@ -2542,7 +2542,7 @@ virDomainNetDefFree(virDomainNetDefPtr def)
 
     g_free(def->backend.tap);
     g_free(def->backend.vhost);
-    g_free(def->teaming.persistent);
+    virDomainNetTeamingInfoFree(def->teaming);
     g_free(def->virtPortProfile);
     g_free(def->script);
     g_free(def->downscript);
@@ -11447,18 +11447,23 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     }
 
-    if (teamingType) {
-        int tmpTeaming;
+    if (teamingType || teamingPersistent) {
+        def->teaming = g_new0(virDomainNetTeamingInfo, 1);
 
-        if ((tmpTeaming = virDomainNetTeamingTypeFromString(teamingType)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown teaming type '%s'"),
-                           teamingType);
-            goto error;
+        if (teamingType) {
+            int tmpTeaming;
+
+            if ((tmpTeaming = virDomainNetTeamingTypeFromString(teamingType)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown teaming type '%s'"),
+                               teamingType);
+                goto error;
+            }
+            def->teaming->type = tmpTeaming;
         }
-        def->teaming.type = tmpTeaming;
+
+        def->teaming->persistent = g_steal_pointer(&teamingPersistent);
     }
-    def->teaming.persistent = g_steal_pointer(&teamingPersistent);
 
     rv = virXPathULong("string(./tune/sndbuf)", ctxt, &def->tune.sndbuf);
     if (rv >= 0) {
@@ -25825,10 +25830,10 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferAddLit(buf,   "</tune>\n");
     }
 
-    if (def->teaming.type != VIR_DOMAIN_NET_TEAMING_TYPE_NONE) {
+    if (def->teaming && def->teaming->type != VIR_DOMAIN_NET_TEAMING_TYPE_NONE) {
         virBufferAsprintf(buf, "<teaming type='%s'",
-                          virDomainNetTeamingTypeToString(def->teaming.type));
-        virBufferEscapeString(buf, " persistent='%s'", def->teaming.persistent);
+                          virDomainNetTeamingTypeToString(def->teaming->type));
+        virBufferEscapeString(buf, " persistent='%s'", def->teaming->persistent);
         virBufferAddLit(buf, "/>\n");
     }
     if (def->linkstate) {

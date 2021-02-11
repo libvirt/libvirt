@@ -1038,7 +1038,7 @@ struct _virDomainNetDef {
         char *tap;
         char *vhost;
     } backend;
-    virDomainNetTeamingInfo teaming;
+    virDomainNetTeamingInfoPtr teaming;
     union {
         virDomainChrSourceDefPtr vhostuser;
         struct {

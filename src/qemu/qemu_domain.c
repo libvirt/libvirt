@@ -4458,7 +4458,7 @@ qemuDomainValidateActualNetDef(const virDomainNetDef *net,
         return -1;
     }
 
-    if (net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT &&
+    if (net->teaming && net->teaming->type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT &&
         actualType != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("interface %s - teaming transient device must be type='hostdev', not '%s'"),

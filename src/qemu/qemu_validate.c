@@ -1588,26 +1588,28 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
         return -1;
     }
 
-    if (net->teaming.type != VIR_DOMAIN_NET_TEAMING_TYPE_NONE &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_FAILOVER)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("virtio-net failover (teaming) is not supported with this QEMU binary"));
-        return -1;
-    }
-    if (net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_PERSISTENT
-        && !virDomainNetIsVirtioModel(net)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("virtio-net teaming persistent interface must be <model type='virtio'/>, not '%s'"),
-                       virDomainNetGetModelString(net));
-        return -1;
-    }
-    if (net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT &&
-        net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-        net->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("virtio-net teaming transient interface must be type='hostdev', not '%s'"),
-                       virDomainNetTypeToString(net->type));
-        return -1;
+    if (net->teaming) {
+        if (net->teaming->type != VIR_DOMAIN_NET_TEAMING_TYPE_NONE &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_FAILOVER)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtio-net failover (teaming) is not supported with this QEMU binary"));
+            return -1;
+        }
+        if (net->teaming->type == VIR_DOMAIN_NET_TEAMING_TYPE_PERSISTENT
+            && !virDomainNetIsVirtioModel(net)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("virtio-net teaming persistent interface must be <model type='virtio'/>, not '%s'"),
+                           virDomainNetGetModelString(net));
+            return -1;
+        }
+        if (net->teaming->type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT &&
+            net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+            net->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("virtio-net teaming transient interface must be type='hostdev', not '%s'"),
+                           virDomainNetTypeToString(net->type));
+            return -1;
+        }
     }
 
    if (net->coalesce && !qemuValidateNetSupportsCoalesce(net->type)) {

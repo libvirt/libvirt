@@ -1507,18 +1507,20 @@ virDomainNetDefValidate(const virDomainNetDef *net)
         return -1;
     }
 
-    if (net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT) {
-        if (!net->teaming.persistent) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("teaming persistent attribute must be set if teaming type is 'transient'"));
-            return -1;
-        }
-    } else {
-        if (net->teaming.persistent) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("teaming persistent attribute not allowed if teaming type is '%s'"),
-                           virDomainNetTeamingTypeToString(net->teaming.type));
-            return -1;
+    if (net->teaming) {
+        if (net->teaming->type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT) {
+            if (!net->teaming->persistent) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("teaming persistent attribute must be set if teaming type is 'transient'"));
+                return -1;
+            }
+        } else {
+            if (net->teaming->persistent) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("teaming persistent attribute not allowed if teaming type is '%s'"),
+                               virDomainNetTeamingTypeToString(net->teaming->type));
+                return -1;
+            }
         }
     }
 
