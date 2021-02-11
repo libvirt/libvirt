@@ -35,6 +35,12 @@ v7.1.0 (unreleased)
     ``virNetworkGetXMLDesc()``, and ``virDomainScreenshot()``, APIs have been
     implemented in the Hyper-V driver.
 
+  * Support <teaming> element in plain <hostdev> devices
+
+    This is useful when libvirt doesn't have the privileges necessary
+    to set the hostdev device's MAC address (which is a necessary
+    part of the alternate <interface type='hostdev'>).
+
 * **Improvements**
 
 * **Bug fixes**
