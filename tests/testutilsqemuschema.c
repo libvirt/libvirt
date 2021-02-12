@@ -163,13 +163,14 @@ testQEMUSchemaValidateObjectMergeVariantMember(size_t pos G_GNUC_UNUSED,
                                                void *opaque)
 {
     virJSONValuePtr array = opaque;
-    virJSONValuePtr copy;
+    g_autoptr(virJSONValue) copy = NULL;
 
     if (!(copy = virJSONValueCopy(item)))
         return -1;
 
     if (virJSONValueArrayAppend(array, copy) < 0)
         return -1;
+    copy = NULL;
 
     return 1;
 }
