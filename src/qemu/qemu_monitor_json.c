@@ -510,31 +510,28 @@ qemuMonitorJSONTransactionAdd(virJSONValuePtr actions,
                               const char *cmdname,
                               ...)
 {
-    virJSONValuePtr entry = NULL;
-    virJSONValuePtr data = NULL;
+    g_autoptr(virJSONValue) entry = NULL;
+    g_autoptr(virJSONValue) data = NULL;
     va_list args;
-    int ret = -1;
 
     va_start(args, cmdname);
 
-    if (virJSONValueObjectCreateVArgs(&data, args) < 0)
-        goto cleanup;
+    if (virJSONValueObjectCreateVArgs(&data, args) < 0) {
+        va_end(args);
+        return -1;
+    }
+
+    va_end(args);
 
     if (virJSONValueObjectCreate(&entry,
                                  "s:type", cmdname,
                                  "A:data", &data, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (virJSONValueArrayAppend(actions, &entry) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(entry);
-    virJSONValueFree(data);
-    va_end(args);
-    return ret;
+    return 0;
 }
 
 
