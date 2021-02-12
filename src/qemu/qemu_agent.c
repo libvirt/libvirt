@@ -1175,23 +1175,17 @@ static virJSONValuePtr
 qemuAgentMakeStringsArray(const char **strings, unsigned int len)
 {
     size_t i;
-    virJSONValuePtr ret = virJSONValueNewArray(), str;
+    g_autoptr(virJSONValue) ret = virJSONValueNewArray();
 
     for (i = 0; i < len; i++) {
-        str = virJSONValueNewString(strings[i]);
-        if (!str)
-            goto error;
+        g_autoptr(virJSONValue) str = virJSONValueNewString(strings[i]);
 
-        if (virJSONValueArrayAppend(ret, str) < 0) {
-            virJSONValueFree(str);
-            goto error;
-        }
+        if (virJSONValueArrayAppend(ret, str) < 0)
+            return NULL;
+        str = NULL;
     }
-    return ret;
 
- error:
-    virJSONValueFree(ret);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 void qemuAgentNotifyEvent(qemuAgentPtr agent,
