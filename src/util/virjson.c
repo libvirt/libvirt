@@ -1241,29 +1241,21 @@ virJSONValueGetArrayAsBitmap(const virJSONValue *val,
 virJSONValuePtr
 virJSONValueNewArrayFromBitmap(virBitmapPtr bitmap)
 {
-    virJSONValuePtr ret;
+    g_autoptr(virJSONValue) ret = virJSONValueNewArray();
     ssize_t pos = -1;
 
-    ret = virJSONValueNewArray();
-
     if (!bitmap)
-        return ret;
+        return g_steal_pointer(&ret);
 
     while ((pos = virBitmapNextSetBit(bitmap, pos)) > -1) {
-        virJSONValuePtr newelem;
+        g_autoptr(virJSONValue) newelem = virJSONValueNewNumberLong(pos);
 
-        if (!(newelem = virJSONValueNewNumberLong(pos)) ||
-            virJSONValueArrayAppend(ret, newelem) < 0) {
-            virJSONValueFree(newelem);
-            goto error;
-        }
+        if (virJSONValueArrayAppend(ret, newelem) < 0)
+            return NULL;
+        newelem = NULL;
     }
 
-    return ret;
-
- error:
-    virJSONValueFree(ret);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 
