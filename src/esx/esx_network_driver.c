@@ -914,7 +914,7 @@ esxConnectListAllNetworks(virConnectPtr conn,
         if (nets && *nets) {
             for (i = 0; i < count; ++i)
                 g_free((*nets)[i]);
-            VIR_FREE(*nets);
+            g_clear_pointer(nets, g_free);
         }
     }
 

@@ -95,7 +95,7 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
             /* Expected format: [<type>://]<hostname>[:<port>] */
             (*parsedUri)->proxy = true;
             (*parsedUri)->proxy_type = CURLPROXY_HTTP;
-            VIR_FREE((*parsedUri)->proxy_hostname);
+            g_clear_pointer(&(*parsedUri)->proxy_hostname, g_free);
             (*parsedUri)->proxy_port = 1080;
 
             if ((tmp = STRSKIP(queryParam->value, "http://"))) {
@@ -261,13 +261,13 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
  cleanup:
     if (result < 0) {
         if (datastoreName)
-            VIR_FREE(*datastoreName);
+            g_clear_pointer(datastoreName, g_free);
 
         if (directoryName)
-            VIR_FREE(*directoryName);
+            g_clear_pointer(directoryName, g_free);
 
         if (directoryAndFileName)
-            VIR_FREE(*directoryAndFileName);
+            g_clear_pointer(directoryAndFileName, g_free);
     }
 
     return result;

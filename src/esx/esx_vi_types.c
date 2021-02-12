@@ -67,7 +67,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
  \
         _body \
  \
-        VIR_FREE(*ptrptr); \
+        g_clear_pointer(ptrptr, g_free); \
     }
 
 
