@@ -676,13 +676,12 @@ virJSONValueObjectAppendNumberInt(virJSONValuePtr object,
                                   const char *key,
                                   int number)
 {
-    virJSONValuePtr jvalue = virJSONValueNewNumberInt(number);
-    if (!jvalue)
+    g_autoptr(virJSONValue) jvalue = virJSONValueNewNumberInt(number);
+
+    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
         return -1;
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0) {
-        virJSONValueFree(jvalue);
-        return -1;
-    }
+    jvalue = NULL;
+
     return 0;
 }
 
@@ -692,13 +691,12 @@ virJSONValueObjectAppendNumberUint(virJSONValuePtr object,
                                    const char *key,
                                    unsigned int number)
 {
-    virJSONValuePtr jvalue = virJSONValueNewNumberUint(number);
-    if (!jvalue)
+    g_autoptr(virJSONValue) jvalue = virJSONValueNewNumberUint(number);
+
+    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
         return -1;
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0) {
-        virJSONValueFree(jvalue);
-        return -1;
-    }
+    jvalue = NULL;
+
     return 0;
 }
 
@@ -708,13 +706,12 @@ virJSONValueObjectAppendNumberLong(virJSONValuePtr object,
                                    const char *key,
                                    long long number)
 {
-    virJSONValuePtr jvalue = virJSONValueNewNumberLong(number);
-    if (!jvalue)
+    g_autoptr(virJSONValue) jvalue = virJSONValueNewNumberLong(number);
+
+    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
         return -1;
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0) {
-        virJSONValueFree(jvalue);
-        return -1;
-    }
+    jvalue = NULL;
+
     return 0;
 }
 
@@ -724,13 +721,12 @@ virJSONValueObjectAppendNumberUlong(virJSONValuePtr object,
                                     const char *key,
                                     unsigned long long number)
 {
-    virJSONValuePtr jvalue = virJSONValueNewNumberUlong(number);
-    if (!jvalue)
+    g_autoptr(virJSONValue) jvalue = virJSONValueNewNumberUlong(number);
+
+    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
         return -1;
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0) {
-        virJSONValueFree(jvalue);
-        return -1;
-    }
+    jvalue = NULL;
+
     return 0;
 }
 
@@ -740,13 +736,16 @@ virJSONValueObjectAppendNumberDouble(virJSONValuePtr object,
                                      const char *key,
                                      double number)
 {
-    virJSONValuePtr jvalue = virJSONValueNewNumberDouble(number);
+    g_autoptr(virJSONValue) jvalue = virJSONValueNewNumberDouble(number);
+
+    /* virJSONValueNewNumberDouble may return NULL if locale setting fails */
     if (!jvalue)
         return -1;
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0) {
-        virJSONValueFree(jvalue);
+
+    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
         return -1;
-    }
+    jvalue = NULL;
+
     return 0;
 }
 
@@ -756,13 +755,12 @@ virJSONValueObjectAppendBoolean(virJSONValuePtr object,
                                 const char *key,
                                 int boolean_)
 {
-    virJSONValuePtr jvalue = virJSONValueNewBoolean(boolean_);
-    if (!jvalue)
+    g_autoptr(virJSONValue) jvalue = virJSONValueNewBoolean(boolean_);
+
+    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
         return -1;
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0) {
-        virJSONValueFree(jvalue);
-        return -1;
-    }
+    jvalue = NULL;
+
     return 0;
 }
 
@@ -771,13 +769,12 @@ int
 virJSONValueObjectAppendNull(virJSONValuePtr object,
                              const char *key)
 {
-    virJSONValuePtr jvalue = virJSONValueNewNull();
-    if (!jvalue)
+    g_autoptr(virJSONValue) jvalue = virJSONValueNewNull();
+
+    if (virJSONValueObjectAppend(object, key, jvalue) < 0)
         return -1;
-    if (virJSONValueObjectAppend(object, key, jvalue) < 0) {
-        virJSONValueFree(jvalue);
-        return -1;
-    }
+    jvalue = NULL;
+
     return 0;
 }
 
@@ -806,13 +803,12 @@ int
 virJSONValueArrayAppendString(virJSONValuePtr object,
                               const char *value)
 {
-    virJSONValuePtr jvalue = virJSONValueNewString(value);
-    if (!jvalue)
+    g_autoptr(virJSONValue) jvalue = virJSONValueNewString(value);
+
+    if (virJSONValueArrayAppend(object, jvalue) < 0)
         return -1;
-    if (virJSONValueArrayAppend(object, jvalue) < 0) {
-        virJSONValueFree(jvalue);
-        return -1;
-    }
+    jvalue = NULL;
+
     return 0;
 }
 
