@@ -667,7 +667,6 @@ static virStorageVolPtr
 esxStorageVolLookupByName(virStoragePoolPtr pool,
                           const char *name)
 {
-    virStorageVolPtr volume = NULL;
     esxPrivate *priv = pool->conn->privateData;
     g_autofree char *datastorePath = NULL;
     g_autofree char *key = NULL;
@@ -676,14 +675,11 @@ esxStorageVolLookupByName(virStoragePoolPtr pool,
 
     if (esxVI_LookupStorageVolumeKeyByDatastorePath(priv->primary,
                                                     datastorePath, &key) < 0) {
-        goto cleanup;
+        return NULL;
     }
 
-    volume = virGetStorageVol(pool->conn, pool->name, name, key,
-                              &esxStorageBackendVMFS, NULL);
-
- cleanup:
-    return volume;
+    return virGetStorageVol(pool->conn, pool->name, name, key,
+                            &esxStorageBackendVMFS, NULL);
 }
 
 
@@ -691,7 +687,6 @@ esxStorageVolLookupByName(virStoragePoolPtr pool,
 static virStorageVolPtr
 esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
 {
-    virStorageVolPtr volume = NULL;
     esxPrivate *priv = conn->privateData;
     g_autofree char *datastoreName = NULL;
     g_autofree char *directoryAndFileName = NULL;
@@ -699,19 +694,16 @@ esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
 
     if (esxUtil_ParseDatastorePath(path, &datastoreName, NULL,
                                    &directoryAndFileName) < 0) {
-        goto cleanup;
+        return NULL;
     }
 
     if (esxVI_LookupStorageVolumeKeyByDatastorePath(priv->primary, path,
                                                     &key) < 0) {
-        goto cleanup;
+        return NULL;
     }
 
-    volume = virGetStorageVol(conn, datastoreName, directoryAndFileName, key,
-                              &esxStorageBackendVMFS, NULL);
-
- cleanup:
-    return volume;
+    return virGetStorageVol(conn, datastoreName, directoryAndFileName, key,
+                            &esxStorageBackendVMFS, NULL);
 }
 
 

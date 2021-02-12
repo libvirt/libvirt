@@ -429,7 +429,6 @@ esxUtil_EscapeDatastoreItem(const char *string)
 {
     g_autofree char *replaced = NULL;
     g_autofree char *escaped1 = NULL;
-    char *escaped2 = NULL;
 
     replaced = g_strdup(string);
 
@@ -438,12 +437,9 @@ esxUtil_EscapeDatastoreItem(const char *string)
     escaped1 = virVMXEscapeHexPercent(replaced);
 
     if (!escaped1)
-        goto cleanup;
+        return NULL;
 
-    escaped2 = esxUtil_EscapeBase64(escaped1);
-
- cleanup:
-    return escaped2;
+    return esxUtil_EscapeBase64(escaped1);
 }
 
 

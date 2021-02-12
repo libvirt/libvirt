@@ -700,7 +700,6 @@ static int
 esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
                           esxVI_Type *actualType)
 {
-    int result = -1;
     g_autofree char *type = NULL;
 
     if (!actualType || *actualType != esxVI_Type_Undefined) {
@@ -724,13 +723,10 @@ esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown value '%s' for %s 'type' property"),
                        type, esxVI_Type_ToString(baseType));
-        goto cleanup;
+        return -1;
     }
 
-    result = 0;
-
- cleanup:
-    return result;
+    return 0;
 }
 
 

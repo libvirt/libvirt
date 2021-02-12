@@ -830,7 +830,6 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                       const char *ipAddress, const char *username,
                       const char *password, esxUtil_ParsedUri *parsedUri)
 {
-    int result = -1;
     g_autofree char *escapedPassword = NULL;
 
     if (!ctx || !url || !ipAddress || !username ||
@@ -844,12 +843,12 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
     if (!escapedPassword) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to escape password for XML"));
-        goto cleanup;
+        return -1;
     }
 
     if (esxVI_CURL_Alloc(&ctx->curl) < 0 ||
         esxVI_CURL_Connect(ctx->curl, parsedUri) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     ctx->url = g_strdup(url);
@@ -863,18 +862,18 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
     if (virMutexInit(ctx->sessionLock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not initialize session mutex"));
-        goto cleanup;
+        return -1;
     }
 
     if (esxVI_RetrieveServiceContent(ctx, &ctx->service) < 0)
-        goto cleanup;
+        return -1;
 
     if (STRNEQ(ctx->service->about->apiType, "HostAgent") &&
         STRNEQ(ctx->service->about->apiType, "VirtualCenter")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting VI API type 'HostAgent' or 'VirtualCenter' "
                          "but found '%s'"), ctx->service->about->apiType);
-        goto cleanup;
+        return -1;
     }
 
     if (virParseVersionString(ctx->service->about->apiVersion,
@@ -882,14 +881,14 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse VI API version '%s'"),
                        ctx->service->about->apiVersion);
-        goto cleanup;
+        return -1;
     }
 
     if (ctx->apiVersion < 1000000 * 2 + 1000 * 5 /* 2.5 */) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Minimum supported %s version is %s but found version '%s'"),
                        "VI API", "2.5", ctx->service->about->apiVersion);
-        goto cleanup;
+        return -1;
     }
 
     if (virParseVersionString(ctx->service->about->version,
@@ -897,7 +896,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse product version '%s'"),
                        ctx->service->about->version);
-        goto cleanup;
+        return -1;
     }
 
     if (STREQ(ctx->service->about->productLineId, "gsx")) {
@@ -906,7 +905,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                            _("Minimum supported %s version is %s but found version '%s'"),
                            esxVI_ProductLineToDisplayName(esxVI_ProductLine_GSX),
                            "2.0", ctx->service->about->version);
-            goto cleanup;
+            return -1;
         }
 
         ctx->productLine = esxVI_ProductLine_GSX;
@@ -917,7 +916,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                            _("Minimum supported %s version is %s but found version '%s'"),
                            esxVI_ProductLineToDisplayName(esxVI_ProductLine_ESX),
                            "3.5", ctx->service->about->version);
-            goto cleanup;
+            return -1;
         }
 
         ctx->productLine = esxVI_ProductLine_ESX;
@@ -927,7 +926,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                            _("Minimum supported %s version is %s but found version '%s'"),
                            esxVI_ProductLineToDisplayName(esxVI_ProductLine_VPX),
                            "2.5", ctx->service->about->version);
-            goto cleanup;
+            return -1;
         }
 
         ctx->productLine = esxVI_ProductLine_VPX;
@@ -936,7 +935,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                        _("Expecting product 'gsx' or 'esx' or 'embeddedEsx' "
                          "or 'vpx' but found '%s'"),
                        ctx->service->about->productLineId);
-        goto cleanup;
+        return -1;
     }
 
     if (ctx->productLine == esxVI_ProductLine_ESX) {
@@ -957,13 +956,10 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
 
     if (esxVI_Login(ctx, username, escapedPassword, NULL, &ctx->session) < 0 ||
         esxVI_BuildSelectSetCollection(ctx) < 0) {
-        goto cleanup;
+        return -1;
     }
 
-    result = 0;
-
- cleanup:
-    return result;
+    return 0;
 }
 
 int
@@ -4093,7 +4089,6 @@ esxVI_HandleVirtualMachineQuestion
    esxVI_VirtualMachineQuestionInfo *questionInfo, bool autoAnswer,
    bool *blocked)
 {
-    int result = -1;
     esxVI_ElementDescription *elementDescription = NULL;
     g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     esxVI_ElementDescription *answerChoice = NULL;
@@ -4136,7 +4131,7 @@ esxVI_HandleVirtualMachineQuestion
                            questionInfo->text);
 
             *blocked = true;
-            goto cleanup;
+            return -1;
         } else if (!answerChoice) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Pending question blocks virtual machine execution, "
@@ -4145,7 +4140,7 @@ esxVI_HandleVirtualMachineQuestion
                            possibleAnswers);
 
             *blocked = true;
-            goto cleanup;
+            return -1;
         }
 
         VIR_INFO("Pending question blocks virtual machine execution, "
@@ -4155,7 +4150,7 @@ esxVI_HandleVirtualMachineQuestion
 
         if (esxVI_AnswerVM(ctx, virtualMachine, questionInfo->id,
                            answerChoice->key) < 0) {
-            goto cleanup;
+            return -1;
         }
     } else {
         if (possibleAnswers) {
@@ -4171,13 +4166,11 @@ esxVI_HandleVirtualMachineQuestion
         }
 
         *blocked = true;
-        goto cleanup;
+        return -1;
     }
 
-    result = 0;
+    return 0;
 
- cleanup:
-    return result;
 }
 
 

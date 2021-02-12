@@ -690,7 +690,6 @@ esxConnectToVCenter(esxPrivate *priv,
                     const char *hostname,
                     const char *hostSystemIPAddress)
 {
-    int result = -1;
     g_autofree char *ipAddress = NULL;
     g_autofree char *username = NULL;
     g_autofree char *password = NULL;
@@ -711,11 +710,11 @@ esxConnectToVCenter(esxPrivate *priv,
     } else {
         if (!(username = virAuthGetUsername(conn, auth, "esx", "administrator",
                                             hostname)))
-            goto cleanup;
+            return -1;
     }
 
     if (!(password = virAuthGetPassword(conn, auth, "esx", username, hostname)))
-        goto cleanup;
+        return -1;
 
     url = g_strdup_printf("%s://%s:%d/sdk", priv->parsedUri->transport, hostname,
                           conn->uri->port);
@@ -723,7 +722,7 @@ esxConnectToVCenter(esxPrivate *priv,
     if (esxVI_Context_Alloc(&priv->vCenter) < 0 ||
         esxVI_Context_Connect(priv->vCenter, url, ipAddress, username,
                               password, priv->parsedUri) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     if (priv->vCenter->productLine != esxVI_ProductLine_VPX) {
@@ -732,25 +731,20 @@ esxConnectToVCenter(esxPrivate *priv,
                        hostname,
                        esxVI_ProductLineToDisplayName(esxVI_ProductLine_VPX),
                        esxVI_ProductLineToDisplayName(priv->vCenter->productLine));
-        goto cleanup;
+        return -1;
     }
 
     if (hostSystemIPAddress) {
-        if (esxVI_Context_LookupManagedObjectsByHostSystemIp
-              (priv->vCenter, hostSystemIPAddress) < 0) {
-            goto cleanup;
-        }
+        if (esxVI_Context_LookupManagedObjectsByHostSystemIp(priv->vCenter, hostSystemIPAddress) < 0)
+            return -1;
     } else {
         if (esxVI_Context_LookupManagedObjectsByPath(priv->vCenter,
                                                      priv->parsedUri->path) < 0) {
-            goto cleanup;
+            return -1;
         }
     }
 
-    result = 0;
-
- cleanup:
-    return result;
+    return 0;
 }
 
 
