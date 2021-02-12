@@ -1483,20 +1483,17 @@ qemuAgentSetVCPUsCommand(qemuAgentPtr agent,
                          size_t ninfo,
                          int *nmodified)
 {
-    int ret = -1;
-    virJSONValuePtr cmd = NULL;
-    virJSONValuePtr reply = NULL;
-    virJSONValuePtr cpus = NULL;
-    virJSONValuePtr cpu = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cpus = virJSONValueNewArray();
     size_t i;
+    int ret;
 
     *nmodified = 0;
 
-    /* create the key data array */
-    cpus = virJSONValueNewArray();
-
     for (i = 0; i < ninfo; i++) {
         qemuAgentCPUInfoPtr in = &info[i];
+        g_autoptr(virJSONValue) cpu = virJSONValueNewObject();
 
         /* don't set state for cpus that were not touched */
         if (!in->modified)
@@ -1504,31 +1501,26 @@ qemuAgentSetVCPUsCommand(qemuAgentPtr agent,
 
         (*nmodified)++;
 
-        /* create single cpu object */
-        cpu = virJSONValueNewObject();
-
         if (virJSONValueObjectAppendNumberInt(cpu, "logical-id", in->id) < 0)
-            goto cleanup;
+            return -1;
 
         if (virJSONValueObjectAppendBoolean(cpu, "online", in->online) < 0)
-            goto cleanup;
+            return -1;
 
         if (virJSONValueArrayAppend(cpus, &cpu) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    if (*nmodified == 0) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (*nmodified == 0)
+        return 0;
 
     if (!(cmd = qemuAgentMakeCommand("guest-set-vcpus",
                                      "a:vcpus", &cpus,
                                      NULL)))
-        goto cleanup;
+        return -1;
 
     if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0)
-        goto cleanup;
+        return -1;
 
     /* All negative values are invalid. Return of 0 is bogus since we wouldn't
      * call the guest agent so that 0 cpus would be set successfully. Reporting
@@ -1537,14 +1529,9 @@ qemuAgentSetVCPUsCommand(qemuAgentPtr agent,
         ret <= 0 || ret > *nmodified) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("guest agent returned malformed or invalid return value"));
-        ret = -1;
+        return -1;
     }
 
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    virJSONValueFree(cpu);
-    virJSONValueFree(cpus);
     return ret;
 }
 
