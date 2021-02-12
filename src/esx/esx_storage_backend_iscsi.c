@@ -348,7 +348,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     xml = virStoragePoolDefFormat(&def);
 
  cleanup:
-    VIR_FREE(def.source.hosts);
+    g_free(def.source.hosts);
     esxVI_HostInternetScsiHba_Free(&hostInternetScsiHba);
 
     return xml;
@@ -727,7 +727,7 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
 
  cleanup:
     esxVI_ScsiLun_Free(&scsiLunList);
-    VIR_FREE(def.key);
+    g_free(def.key);
 
     return xml;
 }

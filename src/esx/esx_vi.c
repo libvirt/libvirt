@@ -4280,7 +4280,7 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
         if (esxVI_WaitForUpdates(ctx, version, &updateSet) < 0)
             goto cleanup;
 
-        VIR_FREE(version);
+        g_free(version);
         version = g_strdup(updateSet->version);
 
         if (!updateSet->filterSet)
@@ -4355,7 +4355,7 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
 
     esxVI_PropertyFilterSpec_Free(&propertyFilterSpec);
     esxVI_ManagedObjectReference_Free(&propertyFilter);
-    VIR_FREE(version);
+    g_free(version);
     esxVI_UpdateSet_Free(&updateSet);
     esxVI_TaskInfo_Free(&taskInfo);
 

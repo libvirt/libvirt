@@ -2619,7 +2619,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
  cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
-    VIR_FREE(data.datastorePathWithoutFileName);
+    g_free(data.datastorePathWithoutFileName);
     virDomainDefFree(def);
 
     return xml;
@@ -4946,7 +4946,7 @@ esxConnectListAllDomains(virConnectPtr conn,
         for (id = 0; id < count; id++)
             virObjectUnref(doms[id]);
 
-        VIR_FREE(doms);
+        g_free(doms);
     }
 
     esxVI_AutoStartDefaults_Free(&autoStartDefaults);

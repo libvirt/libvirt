@@ -55,7 +55,7 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
         virURIParamPtr queryParam = &uri->params[i];
 
         if (STRCASEEQ(queryParam->name, "transport")) {
-            VIR_FREE((*parsedUri)->transport);
+            g_free((*parsedUri)->transport);
 
             (*parsedUri)->transport = g_strdup(queryParam->value);
 
@@ -68,7 +68,7 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
                 goto cleanup;
             }
         } else if (STRCASEEQ(queryParam->name, "vcenter")) {
-            VIR_FREE((*parsedUri)->vCenter);
+            g_free((*parsedUri)->vCenter);
 
             (*parsedUri)->vCenter = g_strdup(queryParam->value);
         } else if (STRCASEEQ(queryParam->name, "no_verify")) {

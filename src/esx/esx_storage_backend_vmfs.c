@@ -544,7 +544,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
     xml = virStoragePoolDefFormat(&def);
 
  cleanup:
-    VIR_FREE(def.source.hosts);
+    g_free(def.source.hosts);
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&datastore);
     esxVI_DatastoreHostMount_Free(&hostMount);
@@ -1390,7 +1390,7 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
 
  cleanup:
     esxVI_FileInfo_Free(&fileInfo);
-    VIR_FREE(def.key);
+    g_free(def.key);
 
     return xml;
 }

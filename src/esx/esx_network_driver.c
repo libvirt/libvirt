@@ -913,7 +913,7 @@ esxConnectListAllNetworks(virConnectPtr conn,
     if (ret < 0) {
         if (nets && *nets) {
             for (i = 0; i < count; ++i)
-                VIR_FREE((*nets)[i]);
+                g_free((*nets)[i]);
             VIR_FREE(*nets);
         }
     }
