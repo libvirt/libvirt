@@ -140,7 +140,8 @@ int main(int argc, char **argv)
     g_autofree char *xml = NULL;
     g_autofree char *uri = NULL;
     g_autofree char *suri = NULL;
-    char *root = NULL;
+    const char *root = NULL;
+    g_autofree char *escaped = NULL;
     bool tmproot = false;
     int ret = 1;
     g_autoptr(GError) error = NULL;
@@ -216,6 +217,8 @@ int main(int argc, char **argv)
         }
     }
 
+    escaped = g_uri_escape_string(root, NULL, true);
+
     virFileActivateDirOverrideForProg(argv[0]);
 
     if (verbose)
@@ -242,7 +245,7 @@ int main(int argc, char **argv)
     eventLoopThread = g_thread_new("event-loop", qemuShimEventLoop, NULL);
 
     if (secrets && *secrets) {
-        suri = g_strdup_printf("secret:///embed?root=%s", root);
+        suri = g_strdup_printf("secret:///embed?root=%s", escaped);
 
         if (verbose)
             g_printerr("%s: %lld: opening %s\n",
@@ -303,7 +306,7 @@ int main(int argc, char **argv)
         }
     }
 
-    uri = g_strdup_printf("qemu:///embed?root=%s", root);
+    uri = g_strdup_printf("qemu:///embed?root=%s", escaped);
 
     if (verbose)
         g_printerr("%s: %lld: opening %s\n",
