@@ -1530,27 +1530,23 @@ virJSONValueCopy(const virJSONValue *in)
     switch ((virJSONType) in->type) {
     case VIR_JSON_TYPE_OBJECT:
         out = virJSONValueNewObject();
+
+        out->data.object.pairs = g_new0(virJSONObjectPair, in->data.object.npairs);
+        out->data.object.npairs = in->data.object.npairs;
+
         for (i = 0; i < in->data.object.npairs; i++) {
-            virJSONValuePtr val = NULL;
-            if (!(val = virJSONValueCopy(in->data.object.pairs[i].value)))
-                goto error;
-            if (virJSONValueObjectAppend(out, in->data.object.pairs[i].key,
-                                         val) < 0) {
-                virJSONValueFree(val);
-                goto error;
-            }
+            out->data.object.pairs[i].key = g_strdup(in->data.object.pairs[i].key);
+            out->data.object.pairs[i].value = virJSONValueCopy(in->data.object.pairs[i].value);
         }
         break;
     case VIR_JSON_TYPE_ARRAY:
         out = virJSONValueNewArray();
+
+        out->data.array.values = g_new0(virJSONValuePtr, in->data.array.nvalues);
+        out->data.array.nvalues = in->data.array.nvalues;
+
         for (i = 0; i < in->data.array.nvalues; i++) {
-            virJSONValuePtr val = NULL;
-            if (!(val = virJSONValueCopy(in->data.array.values[i])))
-                goto error;
-            if (virJSONValueArrayAppend(out, val) < 0) {
-                virJSONValueFree(val);
-                goto error;
-            }
+            out->data.array.values[i] = virJSONValueCopy(in->data.array.values[i]);
         }
         break;
 
@@ -1570,10 +1566,6 @@ virJSONValueCopy(const virJSONValue *in)
     }
 
     return out;
-
- error:
-    virJSONValueFree(out);
-    return NULL;
 }
 
 
