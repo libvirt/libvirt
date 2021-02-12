@@ -305,7 +305,7 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
         case 'M':
         case 'm': {
             virBitmapPtr map = va_arg(args, virBitmapPtr);
-            virJSONValuePtr jsonMap;
+            g_autoptr(virJSONValue) jsonMap = NULL;
 
             if (!map) {
                 if (type == 'M')
@@ -321,7 +321,8 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
                 return -1;
 
             if ((rc = virJSONValueObjectAppend(obj, key, jsonMap)) < 0)
-                virJSONValueFree(jsonMap);
+                return -1;
+            jsonMap = NULL;
         } break;
 
         default:
