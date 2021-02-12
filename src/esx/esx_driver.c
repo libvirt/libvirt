@@ -71,7 +71,7 @@ esxFreePrivate(esxPrivate **priv)
     esxUtil_FreeParsedUri(&(*priv)->parsedUri);
     virObjectUnref((*priv)->caps);
     virObjectUnref((*priv)->xmlopt);
-    VIR_FREE(*priv);
+    g_free(*priv);
 }
 
 

@@ -336,8 +336,8 @@ esxFreeStreamPrivate(esxStreamPrivate **priv)
         return;
 
     esxVI_CURL_Free(&(*priv)->curl);
-    VIR_FREE((*priv)->backlog);
-    VIR_FREE(*priv);
+    g_free((*priv)->backlog);
+    g_free(*priv);
 }
 
 static int
