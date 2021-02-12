@@ -1603,17 +1603,13 @@ static int
 virJSONParserHandleNull(void *ctx)
 {
     virJSONParserPtr parser = ctx;
-    virJSONValuePtr value = virJSONValueNewNull();
+    g_autoptr(virJSONValue) value = virJSONValueNewNull();
 
     VIR_DEBUG("parser=%p", parser);
 
-    if (!value)
+    if (virJSONParserInsertValue(parser, value) < 0)
         return 0;
-
-    if (virJSONParserInsertValue(parser, value) < 0) {
-        virJSONValueFree(value);
-        return 0;
-    }
+    value = NULL;
 
     return 1;
 }
@@ -1624,17 +1620,13 @@ virJSONParserHandleBoolean(void *ctx,
                            int boolean_)
 {
     virJSONParserPtr parser = ctx;
-    virJSONValuePtr value = virJSONValueNewBoolean(boolean_);
+    g_autoptr(virJSONValue) value = virJSONValueNewBoolean(boolean_);
 
     VIR_DEBUG("parser=%p boolean=%d", parser, boolean_);
 
-    if (!value)
+    if (virJSONParserInsertValue(parser, value) < 0)
         return 0;
-
-    if (virJSONParserInsertValue(parser, value) < 0) {
-        virJSONValueFree(value);
-        return 0;
-    }
+    value = NULL;
 
     return 1;
 }
@@ -1646,22 +1638,14 @@ virJSONParserHandleNumber(void *ctx,
                           size_t l)
 {
     virJSONParserPtr parser = ctx;
-    char *str;
-    virJSONValuePtr value;
-
-    str = g_strndup(s, l);
-    value = virJSONValueNewNumber(str);
-    VIR_FREE(str);
+    g_autofree char *str = g_strndup(s, l);
+    g_autoptr(virJSONValue) value = virJSONValueNewNumber(str);
 
     VIR_DEBUG("parser=%p str=%s", parser, str);
 
-    if (!value)
+    if (virJSONParserInsertValue(parser, value) < 0)
         return 0;
-
-    if (virJSONParserInsertValue(parser, value) < 0) {
-        virJSONValueFree(value);
-        return 0;
-    }
+    value = NULL;
 
     return 1;
 }
@@ -1673,18 +1657,14 @@ virJSONParserHandleString(void *ctx,
                           size_t stringLen)
 {
     virJSONParserPtr parser = ctx;
-    virJSONValuePtr value = virJSONValueNewStringLen((const char *)stringVal,
-                                                     stringLen);
+    g_autoptr(virJSONValue) value = virJSONValueNewStringLen((const char *)stringVal,
+                                                             stringLen);
 
     VIR_DEBUG("parser=%p str=%p", parser, (const char *)stringVal);
 
-    if (!value)
+    if (virJSONParserInsertValue(parser, value) < 0)
         return 0;
-
-    if (virJSONParserInsertValue(parser, value) < 0) {
-        virJSONValueFree(value);
-        return 0;
-    }
+    value = NULL;
 
     return 1;
 }
@@ -1715,21 +1695,21 @@ static int
 virJSONParserHandleStartMap(void *ctx)
 {
     virJSONParserPtr parser = ctx;
-    virJSONValuePtr value = virJSONValueNewObject();
+    g_autoptr(virJSONValue) value = virJSONValueNewObject();
+    virJSONValuePtr tmp = value;
 
     VIR_DEBUG("parser=%p", parser);
 
-    if (virJSONParserInsertValue(parser, value) < 0) {
-        virJSONValueFree(value);
+    if (virJSONParserInsertValue(parser, value) < 0)
         return 0;
-    }
+    value = NULL;
 
     if (VIR_REALLOC_N(parser->state,
                       parser->nstate + 1) < 0) {
         return 0;
     }
 
-    parser->state[parser->nstate].value = value;
+    parser->state[parser->nstate].value = tmp;
     parser->state[parser->nstate].key = NULL;
     parser->nstate++;
 
@@ -1764,20 +1744,20 @@ static int
 virJSONParserHandleStartArray(void *ctx)
 {
     virJSONParserPtr parser = ctx;
-    virJSONValuePtr value = virJSONValueNewArray();
+    g_autoptr(virJSONValue) value = virJSONValueNewArray();
+    virJSONValuePtr tmp = value;
 
     VIR_DEBUG("parser=%p", parser);
 
-    if (virJSONParserInsertValue(parser, value) < 0) {
-        virJSONValueFree(value);
+    if (virJSONParserInsertValue(parser, value) < 0)
         return 0;
-    }
+    value = NULL;
 
     if (VIR_REALLOC_N(parser->state,
                       parser->nstate + 1) < 0)
         return 0;
 
-    parser->state[parser->nstate].value = value;
+    parser->state[parser->nstate].value = tmp;
     parser->state[parser->nstate].key = NULL;
     parser->nstate++;
 
