@@ -1391,7 +1391,6 @@ esxDomainLookupByID(virConnectPtr conn, int id)
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachinePowerState powerState;
     int id_candidate = -1;
-    char *name_candidate = NULL;
     unsigned char uuid_candidate[VIR_UUID_BUFLEN];
     virDomainPtr domain = NULL;
 
@@ -1410,6 +1409,8 @@ esxDomainLookupByID(virConnectPtr conn, int id)
 
     for (virtualMachine = virtualMachineList; virtualMachine;
          virtualMachine = virtualMachine->_next) {
+        g_autofree char *name_candidate = NULL;
+
         if (esxVI_GetVirtualMachinePowerState(virtualMachine,
                                               &powerState) < 0) {
             goto cleanup;
@@ -1418,8 +1419,6 @@ esxDomainLookupByID(virConnectPtr conn, int id)
         /* Only running/suspended domains have an ID != -1 */
         if (powerState == esxVI_VirtualMachinePowerState_PoweredOff)
             continue;
-
-        VIR_FREE(name_candidate);
 
         if (esxVI_GetVirtualMachineIdentity(virtualMachine,
                                             &id_candidate, &name_candidate,
@@ -1444,8 +1443,6 @@ esxDomainLookupByID(virConnectPtr conn, int id)
  cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachineList);
-    VIR_FREE(name_candidate);
-
     return domain;
 }
 
@@ -4754,7 +4751,6 @@ esxConnectListAllDomains(virConnectPtr conn,
     esxVI_AutoStartPowerInfo *powerInfoList = NULL;
     esxVI_AutoStartPowerInfo *powerInfo = NULL;
     esxVI_VirtualMachineSnapshotTree *rootSnapshotTreeList = NULL;
-    char *name = NULL;
     int id;
     unsigned char uuid[VIR_UUID_BUFLEN];
     int count = 0;
@@ -4839,9 +4835,9 @@ esxConnectListAllDomains(virConnectPtr conn,
 
     for (virtualMachine = virtualMachineList; virtualMachine;
          virtualMachine = virtualMachine->_next) {
-        if (needIdentity) {
-            VIR_FREE(name);
+        g_autofree char *name = NULL;
 
+        if (needIdentity) {
             if (esxVI_GetVirtualMachineIdentity(virtualMachine, &id,
                                                 &name, uuid) < 0) {
                 goto cleanup;
@@ -4959,7 +4955,6 @@ esxConnectListAllDomains(virConnectPtr conn,
         VIR_FREE(doms);
     }
 
-    VIR_FREE(name);
     esxVI_AutoStartDefaults_Free(&autoStartDefaults);
     esxVI_AutoStartPowerInfo_Free(&powerInfoList);
     esxVI_String_Free(&propertyNameList);

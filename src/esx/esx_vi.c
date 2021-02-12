@@ -2761,7 +2761,6 @@ esxVI_LookupVirtualMachineByName(esxVI_Context *ctx, const char *name,
     esxVI_String *completePropertyNameList = NULL;
     esxVI_ObjectContent *virtualMachineList = NULL;
     esxVI_ObjectContent *candidate = NULL;
-    char *name_candidate = NULL;
 
     ESX_VI_CHECK_ARG_LIST(virtualMachine);
 
@@ -2775,7 +2774,7 @@ esxVI_LookupVirtualMachineByName(esxVI_Context *ctx, const char *name,
 
     for (candidate = virtualMachineList; candidate;
          candidate = candidate->_next) {
-        VIR_FREE(name_candidate);
+        g_autofree char *name_candidate = NULL;
 
         if (esxVI_GetVirtualMachineIdentity(candidate, NULL, &name_candidate,
                                             NULL) < 0) {
@@ -2802,8 +2801,6 @@ esxVI_LookupVirtualMachineByName(esxVI_Context *ctx, const char *name,
  cleanup:
     esxVI_String_Free(&completePropertyNameList);
     esxVI_ObjectContent_Free(&virtualMachineList);
-    VIR_FREE(name_candidate);
-
     return result;
 }
 

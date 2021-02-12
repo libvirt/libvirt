@@ -494,7 +494,6 @@ esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
     esxVI_ScsiLun *scsiLunList = NULL;
     esxVI_ScsiLun *scsiLun;
     esxVI_HostScsiDisk *hostScsiDisk = NULL;
-    char *poolName = NULL;
     /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
     unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5];
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
@@ -503,11 +502,12 @@ esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
         goto cleanup;
 
     for (scsiLun = scsiLunList; scsiLun; scsiLun = scsiLun->_next) {
+        g_autofree char *poolName = NULL;
+
         hostScsiDisk = esxVI_HostScsiDisk_DynamicCast(scsiLun);
 
         if (hostScsiDisk && STREQ(hostScsiDisk->devicePath, path)) {
             /* Found matching device */
-            VIR_FREE(poolName);
 
             if (esxVI_LookupStoragePoolNameByScsiLunKey(priv->primary,
                                                         hostScsiDisk->key,
@@ -527,8 +527,6 @@ esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
 
  cleanup:
     esxVI_ScsiLun_Free(&scsiLunList);
-    VIR_FREE(poolName);
-
     return volume;
 }
 
@@ -539,7 +537,6 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 {
     virStorageVolPtr volume = NULL;
     esxPrivate *priv = conn->privateData;
-    char *poolName = NULL;
     esxVI_ScsiLun *scsiLunList = NULL;
     esxVI_ScsiLun *scsiLun;
     /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
@@ -555,6 +552,8 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 
     for (scsiLun = scsiLunList; scsiLun;
          scsiLun = scsiLun->_next) {
+        g_autofree char *poolName = NULL;
+
         memset(uuid_string, '\0', sizeof(uuid_string));
         memset(md5, '\0', sizeof(md5));
 
@@ -564,7 +563,6 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 
         if (STREQ(key, uuid_string)) {
             /* Found matching UUID */
-            VIR_FREE(poolName);
 
             if (esxVI_LookupStoragePoolNameByScsiLunKey(priv->primary,
                                                         scsiLun->key,
@@ -581,8 +579,6 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 
  cleanup:
     esxVI_ScsiLun_Free(&scsiLunList);
-    VIR_FREE(poolName);
-
     return volume;
 }
 

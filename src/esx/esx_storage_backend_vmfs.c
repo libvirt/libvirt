@@ -598,7 +598,6 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
     esxVI_HostDatastoreBrowserSearchResults *searchResultsList = NULL;
     esxVI_HostDatastoreBrowserSearchResults *searchResults = NULL;
     esxVI_FileInfo *fileInfo = NULL;
-    char *directoryAndFileName = NULL;
     size_t length;
     int count = 0;
     size_t i;
@@ -619,7 +618,7 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
     /* Interpret search result */
     for (searchResults = searchResultsList; searchResults;
          searchResults = searchResults->_next) {
-        VIR_FREE(directoryAndFileName);
+        g_autofree char *directoryAndFileName = NULL;
 
         if (esxUtil_ParseDatastorePath(searchResults->folderPath, NULL, NULL,
                                        &directoryAndFileName) < 0) {
@@ -659,8 +658,6 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
     }
 
     esxVI_HostDatastoreBrowserSearchResults_Free(&searchResultsList);
-    VIR_FREE(directoryAndFileName);
-
     return count;
 }
 
@@ -730,12 +727,9 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
     char *datastoreName = NULL;
     esxVI_HostDatastoreBrowserSearchResults *searchResultsList = NULL;
     esxVI_HostDatastoreBrowserSearchResults *searchResults = NULL;
-    char *directoryAndFileName = NULL;
     size_t length;
-    char *datastorePath = NULL;
     char *volumeName = NULL;
     esxVI_FileInfo *fileInfo = NULL;
-    char *uuid_string = NULL;
     char key_candidate[VIR_UUID_STRING_BUFLEN] = "";
 
     if (STRPREFIX(key, "[")) {
@@ -777,7 +771,7 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
         /* Interpret search result */
         for (searchResults = searchResultsList; searchResults;
              searchResults = searchResults->_next) {
-            VIR_FREE(directoryAndFileName);
+            g_autofree char *directoryAndFileName = NULL;
 
             if (esxUtil_ParseDatastorePath(searchResults->folderPath, NULL,
                                            NULL, &directoryAndFileName) < 0) {
@@ -795,7 +789,8 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
             /* Build datastore path and query the UUID */
             for (fileInfo = searchResults->file; fileInfo;
                  fileInfo = fileInfo->_next) {
-                VIR_FREE(datastorePath);
+                g_autofree char *datastorePath = NULL;
+                g_autofree char *uuid_string = NULL;
 
                 if (length < 1) {
                     volumeName = g_strdup(fileInfo->path);
@@ -810,8 +805,6 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
                     /* Only a VirtualDisk has a UUID */
                     continue;
                 }
-
-                VIR_FREE(uuid_string);
 
                 if (esxVI_QueryVirtualDiskUuid
                       (priv->primary, datastorePath,
@@ -838,10 +831,7 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&datastoreList);
     esxVI_HostDatastoreBrowserSearchResults_Free(&searchResultsList);
-    VIR_FREE(directoryAndFileName);
-    VIR_FREE(datastorePath);
     VIR_FREE(volumeName);
-    VIR_FREE(uuid_string);
 
     return volume;
 }
