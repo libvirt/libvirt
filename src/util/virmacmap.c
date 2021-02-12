@@ -214,13 +214,11 @@ virMACMapHashDumper(void *payload,
     GSList *next;
 
     for (next = macs; next; next = next->next) {
-        virJSONValuePtr m = virJSONValueNewString((const char *) next->data);
+        g_autoptr(virJSONValue) m = virJSONValueNewString((const char *) next->data);
 
-        if (!m ||
-            virJSONValueArrayAppend(arr, m) < 0) {
-            virJSONValueFree(m);
+        if (virJSONValueArrayAppend(arr, m) < 0)
             return -1;
-        }
+        m = NULL;
     }
 
     if (virJSONValueObjectAppendString(obj, "domain", name) < 0 ||
