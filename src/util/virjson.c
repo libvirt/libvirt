@@ -464,15 +464,22 @@ virJSONValueNewStringLen(const char *data,
 }
 
 
+/**
+ * virJSONValueNewNumber:
+ * @data: string representing the number
+ *
+ * Creates a new virJSONValue of VIR_JSON_TYPE_NUMBER type. Note that this
+ * function takes ownership of @data.
+ */
 static virJSONValuePtr
-virJSONValueNewNumber(const char *data)
+virJSONValueNewNumber(char *data)
 {
     virJSONValuePtr val;
 
     val = g_new0(virJSONValue, 1);
 
     val->type = VIR_JSON_TYPE_NUMBER;
-    val->data.number = g_strdup(data);
+    val->data.number = data;
 
     return val;
 }
@@ -481,43 +488,35 @@ virJSONValueNewNumber(const char *data)
 virJSONValuePtr
 virJSONValueNewNumberInt(int data)
 {
-    g_autofree char *str = NULL;
-    str = g_strdup_printf("%i", data);
-    return virJSONValueNewNumber(str);
+    return virJSONValueNewNumber(g_strdup_printf("%i", data));
 }
 
 
 virJSONValuePtr
 virJSONValueNewNumberUint(unsigned int data)
 {
-    g_autofree char *str = NULL;
-    str = g_strdup_printf("%u", data);
-    return virJSONValueNewNumber(str);
+    return virJSONValueNewNumber(g_strdup_printf("%u", data));
 }
 
 
 virJSONValuePtr
 virJSONValueNewNumberLong(long long data)
 {
-    g_autofree char *str = NULL;
-    str = g_strdup_printf("%lld", data);
-    return virJSONValueNewNumber(str);
+    return virJSONValueNewNumber(g_strdup_printf("%lld", data));
 }
 
 
 virJSONValuePtr
 virJSONValueNewNumberUlong(unsigned long long data)
 {
-    g_autofree char *str = NULL;
-    str = g_strdup_printf("%llu", data);
-    return virJSONValueNewNumber(str);
+    return virJSONValueNewNumber(g_strdup_printf("%llu", data));
 }
 
 
 virJSONValuePtr
 virJSONValueNewNumberDouble(double data)
 {
-    g_autofree char *str = NULL;
+    char *str = NULL;
     if (virDoubleToStr(&str, data) < 0)
         return NULL;
     return virJSONValueNewNumber(str);
@@ -1533,7 +1532,7 @@ virJSONValueCopy(const virJSONValue *in)
         out = virJSONValueNewString(in->data.string);
         break;
     case VIR_JSON_TYPE_NUMBER:
-        out = virJSONValueNewNumber(in->data.number);
+        out = virJSONValueNewNumber(g_strdup(in->data.number));
         break;
     case VIR_JSON_TYPE_BOOLEAN:
         out = virJSONValueNewBoolean(in->data.boolean);
@@ -1638,10 +1637,9 @@ virJSONParserHandleNumber(void *ctx,
                           size_t l)
 {
     virJSONParserPtr parser = ctx;
-    g_autofree char *str = g_strndup(s, l);
-    g_autoptr(virJSONValue) value = virJSONValueNewNumber(str);
+    g_autoptr(virJSONValue) value = virJSONValueNewNumber(g_strndup(s, l));
 
-    VIR_DEBUG("parser=%p str=%s", parser, str);
+    VIR_DEBUG("parser=%p str=%s", parser, value->data.number);
 
     if (virJSONParserInsertValue(parser, value) < 0)
         return 0;
