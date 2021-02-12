@@ -728,7 +728,6 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
     esxVI_HostDatastoreBrowserSearchResults *searchResultsList = NULL;
     esxVI_HostDatastoreBrowserSearchResults *searchResults = NULL;
     size_t length;
-    char *volumeName = NULL;
     esxVI_FileInfo *fileInfo = NULL;
     char key_candidate[VIR_UUID_STRING_BUFLEN] = "";
 
@@ -789,6 +788,7 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
             /* Build datastore path and query the UUID */
             for (fileInfo = searchResults->file; fileInfo;
                  fileInfo = fileInfo->_next) {
+                g_autofree char *volumeName = NULL;
                 g_autofree char *datastorePath = NULL;
                 g_autofree char *uuid_string = NULL;
 
@@ -831,8 +831,6 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&datastoreList);
     esxVI_HostDatastoreBrowserSearchResults_Free(&searchResultsList);
-    VIR_FREE(volumeName);
-
     return volume;
 }
 
