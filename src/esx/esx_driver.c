@@ -275,7 +275,7 @@ esxParseVMXFileName(const char *fileName,
 static char *
 esxFormatVMXFileName(const char *fileName, void *opaque)
 {
-    bool success = false;
+    g_autofree char *tmpResult = NULL;
     char *result = NULL;
     esxVMX_Data *data = opaque;
     g_autofree char *datastoreName = NULL;
@@ -329,10 +329,10 @@ esxFormatVMXFileName(const char *fileName, void *opaque)
         virBufferAddChar(&buffer, separator);
         virBufferAdd(&buffer, directoryAndFileName, -1);
 
-        result = virBufferContentAndReset(&buffer);
+        tmpResult = virBufferContentAndReset(&buffer);
     } else if (*fileName == '/') {
         /* FIXME: need to deal with Windows paths here too */
-        result = g_strdup(fileName);
+        tmpResult = g_strdup(fileName);
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not handle file name '%s'"), fileName);
@@ -341,15 +341,11 @@ esxFormatVMXFileName(const char *fileName, void *opaque)
 
     /* FIXME: Check if referenced path/file really exists */
 
-    success = true;
+    result = g_steal_pointer(&tmpResult);
 
  cleanup:
-    if (! success)
-        VIR_FREE(result);
-
     esxVI_ObjectContent_Free(&datastore);
     esxVI_DatastoreHostMount_Free(&hostMount);
-
     return result;
 }
 
