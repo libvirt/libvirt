@@ -2374,12 +2374,10 @@ esxDomainScreenshot(virDomainPtr domain, virStreamPtr stream,
 
     url = virBufferContentAndReset(&buffer);
 
-    mimeType = g_strdup("image/png");
-
-    if (esxStreamOpenDownload(stream, priv, url, 0, 0) < 0) {
-        VIR_FREE(mimeType);
+    if (esxStreamOpenDownload(stream, priv, url, 0, 0) < 0)
         goto cleanup;
-    }
+
+    mimeType = g_strdup("image/png");
 
  cleanup:
 
