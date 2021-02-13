@@ -125,12 +125,12 @@ of the server and clients.  There are two distinct checks involved:
 server.  Checking done by client by matching the certificate that
 the server sends to the server's hostname.  May be disabled by adding
 <code>?no_verify=1</code> to the
-<a href="#Remote_URI_parameters">remote URI</a>.
+<a href="uri.html#Remote_URI_parameters">remote URI</a>.
 </li>
       <li> The server should know that only permitted clients are
 connecting.  This can be done based on client's IP address, or on
 client's IP address and client's certificate.  Checking done by the
-server.  May be enabled and disabled in the <a href="#Remote_libvirtd_configuration">libvirtd.conf file</a>.
+        server.  May be enabled and disabled in the <a href="remote.html#Remote_libvirtd_configuration">libvirtd.conf file</a>.
 </li>
     </ul>
     <p>
@@ -142,7 +142,7 @@ your own CA and tell your server(s) and clients to trust certificates
 issues by your own CA.  Follow the instructions in the next section.
 </p>
     <p>
-Be aware that the <a href="#Remote_libvirtd_configuration">default
+Be aware that the <a href="remote.html#Remote_libvirtd_configuration">default
 configuration for libvirtd</a> allows any client to connect provided
 they have a valid certificate issued by the CA for their own IP
 address.  You may want to change this to make it less (or more)
@@ -236,7 +236,7 @@ include the SAN fields.
 </p>
     <p>
 In the example below, clients will be connecting to the
-server using a <a href="#Remote_URI_reference">URI</a> of
+server using a <a href="uri.html#URI_remote">URI</a> of
 <code>qemu://compute1.libvirt.org/system</code>, so the CN
 must be "<code>compute1.libvirt.org</code>".
 </p>
