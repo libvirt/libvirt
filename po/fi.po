@@ -7,15 +7,15 @@
 # Jiri Grönroos <jiri.gronroos@iki.fi>, 2017
 # Toni Rantala <trantalafilo@gmail.com>, 2017
 # Daniel P. Berrange <berrange@redhat.com>, 2020.
-# Ricky Tigg <ricky.tigg@gmail.com>, 2020.
+# Ricky Tigg <ricky.tigg@gmail.com>, 2020, 2021.
 # Jan Kuparinen <copper_fin@hotmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-01-08 17:11+0000\n"
-"PO-Revision-Date: 2021-02-11 07:45+0000\n"
-"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
+"PO-Revision-Date: 2021-02-13 09:40+0000\n"
+"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
 "Language: fi\n"
@@ -208,18 +208,24 @@ msgid ""
 "\n"
 "Domain '%s' dumped to %s\n"
 msgstr ""
+"\n"
+"Toimialue '%s' tyhjennettiin %s:een\n"
 
 #, c-format
 msgid ""
 "\n"
 "Domain '%s' saved to %s\n"
 msgstr ""
+"\n"
+"Toimialue '%s' tallennettu %s:een\n"
 
 #, c-format
 msgid ""
 "\n"
 "Domain '%s' state saved by libvirt\n"
 msgstr ""
+"\n"
+"Toimialue '%s' tila tallennettiin libvirt:llä\n"
 
 #, c-format
 msgid ""
@@ -1263,16 +1269,16 @@ msgid "(domainCapabilities)"
 msgstr "(toimialueominaisuudet)"
 
 msgid "(domain_backup)"
-msgstr ""
+msgstr "(toimialueen _varmuuskopio)"
 
 msgid "(domain_checkpoint)"
-msgstr ""
+msgstr "(toimialueen _tarkistuskohta)"
 
 msgid "(domain_definition)"
-msgstr "(toimialueen määritelmä)"
+msgstr "(toimialueen _määritelmä)"
 
 msgid "(domain_snapshot)"
-msgstr "(toimialueen tilannevedos)"
+msgstr "(toimialueen _tilannevedos)"
 
 msgid "(esx execute response)"
 msgstr ""
@@ -1449,7 +1455,7 @@ msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr ""
 
 msgid "<domainbackup> must specify TCP port for now"
-msgstr ""
+msgstr "<toimialuevarmuuskopio>:n on määritettävä TCP-portti toistaiseksi"
 
 #, c-format
 msgid "<forward dev='%s'> must match first <interface dev='%s'/> in network %s"
@@ -1520,6 +1526,8 @@ msgstr ""
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
 msgstr ""
+"Toimialueen määrittelyssä voi olla vain yksi salaussarjan solmu, jonka nimi "
+"on %s"
 
 msgid "A interface driver is already registered"
 msgstr "Liitäntäajuri on jo rekisteröity"
@@ -1565,7 +1573,7 @@ msgid "API error"
 msgstr "API-virhe"
 
 msgid "Aborts the currently running domain job"
-msgstr ""
+msgstr "Keskeyttää parhaillaan käynnissä olevan toimialueen työn"
 
 #, c-format
 msgid "Accept SSH host key with hash '%s' for host '%s:%d' (%s/%s)?"
@@ -1589,10 +1597,10 @@ msgid "Active Block Commit started"
 msgstr ""
 
 msgid "Active channel stream exists for this domain"
-msgstr ""
+msgstr "Tälle toimialueelle on olemassa aktiivinen kanavavirta"
 
 msgid "Active console session exists for this domain"
-msgstr ""
+msgstr "Tälle toimialueelle on olemassa aktiivinen konsoli-istunto"
 
 msgid "Active:"
 msgstr "Aktiivinen:"
@@ -1619,6 +1627,8 @@ msgstr ""
 #, c-format
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr ""
+"Ytimen tyhjennyksen jälkeen, toimialueesta '%d' ei voitu jatkaa "
+"libxenlight:lla"
 
 msgid "Ain't nobody heard of that much cache level"
 msgstr ""
@@ -1641,7 +1651,7 @@ msgid "Allocation:"
 msgstr ""
 
 msgid "Allows setting or modifying the description or title of a domain."
-msgstr ""
+msgstr "Sallii toimialueen kuvauksen tai otsikon asettamisen tai muokkaamisen."
 
 msgid "An error occurred, but the cause is unknown"
 msgstr ""
@@ -1658,7 +1668,7 @@ msgstr ""
 
 #, c-format
 msgid "Another close callback is already defined for domain %s"
-msgstr ""
+msgstr "Toimialueelle %s on jo määritetty toinen läheinen takaisinsoitto"
 
 msgid "Another relabel transaction is already started"
 msgstr ""
@@ -1737,6 +1747,8 @@ msgid ""
 "Attaching memory device with size '%llu' would exceed domain's maxMemory "
 "config size '%llu'"
 msgstr ""
+"Muistilaitteen liittäminen, jonka koko on '%llu', ylittäisi toimialueen "
+"maxMemory-kokoonpanokoon '%llu'"
 
 #, c-format
 msgid "Attempt to create %s without specifying mode"
@@ -1846,6 +1858,8 @@ msgstr ""
 #, c-format
 msgid "Before dumping core, failed to suspend domain '%d' with libxenlight"
 msgstr ""
+"Ennen ytimen tyhjennystä, epäonnistui toimialueen '%d' keskeyttämistä "
+"libxenlight:lla"
 
 msgid "Bhyve version does not support framebuffer"
 msgstr ""
@@ -1991,7 +2005,7 @@ msgid "CPU arch %s does not match host arch"
 msgstr ""
 
 msgid "CPU architecture (/domain/os/type/@arch)"
-msgstr ""
+msgstr "CPU-arkkitehtuuri (/toimialue/käyttöjärjestelmä/tyyppi/@arkk)"
 
 #, c-format
 msgid "CPU cache mode '%s' can only be used with '%s' CPUs"
@@ -2058,6 +2072,7 @@ msgstr "Prosessorikartta:"
 msgid ""
 "CPU mode '%s' for %s %s domain on %s host is not supported by hypervisor"
 msgstr ""
+"Hypervisori ei tue suorittimen tilaa '%s' toimialueelle %s %s isännässä %s"
 
 #, c-format
 msgid "CPU model %s already defined"
@@ -2231,18 +2246,21 @@ msgstr ""
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr ""
+"USB-keskitintä ei voi lisätä: USB on poistettu käytöstä tälle toimialueelle"
 
 msgid "Can't add USB input device. USB bus is disabled"
 msgstr ""
 
 msgid "Can't add another USB controller: USB is disabled for this domain"
 msgstr ""
+"Toista USB-ohjainta ei voi lisätä: USB on poistettu käytöstä tälle "
+"toimialueelle"
 
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr ""
 
 msgid "Can't change domain configuration in managed save state"
-msgstr ""
+msgstr "Toimialueen kokoonpanoa ei voi muuttaa hallinnoidussa tallennustilassa"
 
 msgid "Can't change domain state."
 msgstr "Toimialueen tilaa ei voi muuttaa."
@@ -2460,7 +2478,7 @@ msgid "Cannot convert socket address to string: %s"
 msgstr ""
 
 msgid "Cannot convert wide character string back to multi-byte domain name"
-msgstr ""
+msgstr "Laajamerkkijonoa ei voida muuntaa takaisin monitavuiseksi toimialueeksi"
 
 #, c-format
 msgid "Cannot create %s"
@@ -2549,9 +2567,11 @@ msgstr ""
 
 msgid "Cannot enable general autostart option without affecting other domains"
 msgstr ""
+"Ei voida ottaa käyttöön yleistä automaattisen käynnistyksen vaihtoehtoa "
+"vaikuttamatta muihin toimialueisiin"
 
 msgid "Cannot extract CPU definition from domain capabilities XML"
-msgstr ""
+msgstr "CPU-määritelmää ei voida purkaa toimialueen XML-ominaisuuksista"
 
 msgid "Cannot extract cache nodes under cachetune"
 msgstr ""
@@ -2860,7 +2880,7 @@ msgid "Cannot parse <address> 'devno' attribute"
 msgstr ""
 
 msgid "Cannot parse <address> 'domain' attribute"
-msgstr ""
+msgstr "<osoite> 'domain' -attribuuttia ei voi jäsentää"
 
 msgid "Cannot parse <address> 'fid' attribute"
 msgstr ""
@@ -3383,7 +3403,7 @@ msgstr ""
 
 #, c-format
 msgid "Checkpoints have inconsistent relations for domain %s"
-msgstr ""
+msgstr "Tarkistuskohteilla on epäjohdonmukaiset suhteet toimialueelle %s"
 
 #, c-format
 msgid "Child process (%lld) unexpected %s"
@@ -3401,7 +3421,7 @@ msgstr ""
 
 #, c-format
 msgid "Class %s must derive from virDomainEvent"
-msgstr ""
+msgstr "Luokan %s on johdettava virDomainEvent:stä"
 
 #, c-format
 msgid "Class %s must derive from virObjectEvent"
@@ -3449,6 +3469,8 @@ msgstr ""
 msgid ""
 "Close callback for domain %s already registered with another connection %p"
 msgstr ""
+"Sulje-takaisinsoitto toimialueelle %s on jo rekisteröity toisella yhteydellä "
+"%p"
 
 #, c-format
 msgid "Colliding cache allocations for cache level '%u' id '%u', type '%s'"
@@ -3594,7 +3616,7 @@ msgstr ""
 
 #, c-format
 msgid "Connected to domain '%s'\n"
-msgstr ""
+msgstr "Yhdistetty toimialueeseen '%s'\n"
 
 msgid "Connected to the admin server"
 msgstr ""
@@ -3621,16 +3643,16 @@ msgid "Controllers must use the 'ccid' address type"
 msgstr ""
 
 msgid "Convert domain XML config to a native guest configuration format."
-msgstr ""
+msgstr "Muunna toimialueen XML-määritykset natiivivieraiden määritysmuodoksi."
 
 msgid "Convert domain XML to native config"
-msgstr ""
+msgstr "Muunna toimialueen XML alkuperäiseksi kokoonpanoksi"
 
 msgid "Convert native config to domain XML"
 msgstr "Muunna alkuperäinen määritys toimialue-XML muotoon"
 
 msgid "Convert native guest configuration format to domain XML format."
-msgstr ""
+msgstr "Muunna natiivivieraan määritysmuoto toimialueen XML-muodoksi."
 
 msgid "Copy a disk backing image chain to dest."
 msgstr ""
@@ -3908,15 +3930,15 @@ msgstr "Hakemisto erotinta %s ei löytynyt"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
-msgstr ""
+msgstr "Toimialueen tilannevedosta sisäisellä nimellä '%s' ei löydy"
 
 #, c-format
 msgid "Could not find domain with UUID '%s'"
-msgstr ""
+msgstr "Toimialuetta UUID:llä '%s' ei löydy"
 
 #, c-format
 msgid "Could not find domain with name '%s'"
-msgstr ""
+msgstr "Toimialuetta nimellä '%s' ei löydy"
 
 #, c-format
 msgid "Could not find host system specified in '%s'"
@@ -4031,6 +4053,7 @@ msgstr ""
 #, c-format
 msgid "Could not get Msvm_ShutdownComponent for domain with UUID '%s'"
 msgstr ""
+"Msvm_ShutdownComponent:ta ei voitu saada toimialueelle, jolla on UUID '%s'"
 
 msgid "Could not get SOAP body"
 msgstr ""
@@ -4101,15 +4124,15 @@ msgstr ""
 
 #, c-format
 msgid "Could not get list of Defined Domains, rc=%08x"
-msgstr ""
+msgstr "Määritettyjen Toimialueiden luetteloa ei voitu saada, rc=%08x"
 
 #, c-format
 msgid "Could not get list of Domains, rc=%08x"
-msgstr ""
+msgstr "Toimialueiden luetteloa ei voitu saada, rc=%08x"
 
 #, c-format
 msgid "Could not get list of domains, rc=%08x"
-msgstr ""
+msgstr "Toimialueiden luetteloa ei voitu saada, rc=%08x"
 
 #, c-format
 msgid "Could not get list of machines, rc=%08x"
@@ -4137,11 +4160,11 @@ msgstr ""
 
 #, c-format
 msgid "Could not get number of Defined Domains, rc=%08x"
-msgstr ""
+msgstr "Määritettyjen Toimialueiden määrää ei voitu saada, rc=%08x"
 
 #, c-format
 msgid "Could not get number of Domains, rc=%08x"
-msgstr ""
+msgstr "Toimialueiden määrää ei voitu saada, rc=%08x"
 
 msgid "Could not get process id of swtpm"
 msgstr ""
@@ -4292,14 +4315,14 @@ msgstr ""
 
 #, c-format
 msgid "Could not migrate domain, migration task finished with an error: %s"
-msgstr ""
+msgstr "Toimialuetta ei voitu siirtää. siirtotehtävä päättyi virheeseen: %s"
 
 msgid "Could not migrate domain, validation reported a problem"
-msgstr ""
+msgstr "Toimialuetta ei voitu siirtää; vahvistus ilmoitti ongelmasta"
 
 #, c-format
 msgid "Could not migrate domain, validation reported a problem: %s"
-msgstr ""
+msgstr "Toimialuetta ei voitu siirtää; vahvistus ilmoitti ongelmasta: %s"
 
 #, c-format
 msgid "Could not open '%s' to trigger host scan"
@@ -4814,7 +4837,7 @@ msgid "Defined"
 msgstr "Määritelty"
 
 msgid "Delete a domain checkpoint"
-msgstr ""
+msgstr "Poista toimialueen tarkistuskohta"
 
 msgid "Delete a domain snapshot"
 msgstr "Poista toimialueen tilannevedos"
@@ -4829,7 +4852,7 @@ msgid "Delete a given vol."
 msgstr ""
 
 msgid "Delete an IOThread from the guest domain."
-msgstr ""
+msgstr "Poista IOThread vierastoimialueesta."
 
 msgid "Delete the specified network port."
 msgstr ""
@@ -4877,7 +4900,7 @@ msgid "Detach device from an XML <file>"
 msgstr "Irrota laite XML-tiedostosta <tiedosto>"
 
 msgid "Detach device identified by the given alias from a domain"
-msgstr ""
+msgstr "Irrota annetulla aliaksella tunnistettu laite toimialueesta"
 
 msgid "Detach disk device."
 msgstr "Irrota levylaite."
@@ -4886,7 +4909,7 @@ msgid "Detach network interface."
 msgstr "Irrota verkkoliitäntä."
 
 msgid "Detach node device from its device driver before assigning to a domain."
-msgstr ""
+msgstr "Irrota solmulaite laiteohjaimestaan ennen toimialueeseen määrittämistä."
 
 msgid "Device"
 msgstr "Laite"
@@ -4954,6 +4977,7 @@ msgstr ""
 
 msgid "Device configuration is not compatible: Domain has no USB bus support"
 msgstr ""
+"Laitteen kokoonpano ei ole yhteensopiva: Toimialueessa ei ole USB-väylätukea"
 
 msgid "Device detach request sent successfully\n"
 msgstr ""
@@ -5077,7 +5101,7 @@ msgid ""
 msgstr ""
 
 msgid "Display per-CPU and total statistics about the domain's CPUs"
-msgstr ""
+msgstr "Näytä suoritinta kohti ja toimialueen suorittimien kokonaistilastot"
 
 msgid "Display program help"
 msgstr ""
@@ -5118,47 +5142,47 @@ msgstr "Toimialue %s ei ilmestynyt"
 
 #, c-format
 msgid "Domain '%d' has to be running because libxenlight will suspend it"
-msgstr ""
+msgstr "Toimialueen '%d' on oltava käynnissä, koska libxenlight keskeyttää sen"
 
 #, c-format
 msgid "Domain '%s' XML configuration edited.\n"
-msgstr ""
+msgstr "Toimialueen '%s' XML-määritystä muokattu.\n"
 
 #, c-format
 msgid "Domain '%s' XML configuration not changed.\n"
-msgstr ""
+msgstr "Toimialueen '%s' XML-määritystä ei muokattu.\n"
 
 #, c-format
 msgid "Domain '%s' attached to pid %u\n"
-msgstr ""
+msgstr "Toimialue '%s' liitetty pid:hen %u\n"
 
 #, c-format
 msgid "Domain '%s' could not be suspended"
-msgstr ""
+msgstr "Toimialuetta %s ei voitu jäädyttää"
 
 #, c-format
 msgid "Domain '%s' could not be woken up"
-msgstr ""
+msgstr "Toimialuetta %s ei voitu herättää"
 
 #, c-format
 msgid "Domain '%s' created from %s\n"
-msgstr ""
+msgstr "Toimialue '%s' luotu %s:sta\n"
 
 #, c-format
 msgid "Domain '%s' defined from %s\n"
-msgstr ""
+msgstr "Toimialue '%s' määritetty %s:sta\n"
 
 #, c-format
 msgid "Domain '%s' destroyed\n"
-msgstr ""
+msgstr "Toimialue '%s' tuhottu\n"
 
 #, c-format
 msgid "Domain '%s' has been undefined\n"
-msgstr ""
+msgstr "Toimialueen '%s' määritys poistettiin\n"
 
 #, c-format
 msgid "Domain '%s' has no manage save image; removal skipped"
-msgstr ""
+msgstr "Toimialueella '%s' ei ole hallittavaa tallennuskuvaa; poisto ohitettu"
 
 #, c-format
 msgid "Domain '%s' is already running"
@@ -5166,11 +5190,11 @@ msgstr "Toimialue '%s' on jo käynnissä"
 
 #, c-format
 msgid "Domain '%s' is being rebooted\n"
-msgstr ""
+msgstr "Toimialue '%s' käynnistetään uudelleen\n"
 
 #, c-format
 msgid "Domain '%s' is being shutdown\n"
-msgstr ""
+msgstr "Toimialue '%s' sammutetaan\n"
 
 #, c-format
 msgid "Domain '%s' marked as autostarted\n"
