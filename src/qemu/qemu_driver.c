@@ -18932,9 +18932,8 @@ qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent,
 
     if (agent->disks)
         ret->devAlias = g_new0(char *, agent->ndisks);
-    ret->ndevAlias = agent->ndisks;
 
-    for (i = 0; i < ret->ndevAlias; i++) {
+    for (i = 0; i < agent->ndisks; i++) {
         qemuAgentDiskAddressPtr agentdisk = agent->disks[i];
         virDomainDiskDefPtr diskDef;
 
@@ -18945,7 +18944,7 @@ qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent,
                                          agentdisk->target,
                                          agentdisk->unit);
         if (diskDef != NULL)
-            ret->devAlias[i] = g_strdup(diskDef->dst);
+            ret->devAlias[ret->ndevAlias++] = g_strdup(diskDef->dst);
         else
             VIR_DEBUG("Missing target name for '%s'.", ret->mountpoint);
     }
