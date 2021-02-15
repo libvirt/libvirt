@@ -1403,7 +1403,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     virDomainSnapshotDefPtr snapdef = virDomainSnapshotObjGetDef(snap);
     bool memory = snapdef->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
     bool memory_unlink = false;
-    int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
+    bool thaw = false;
     bool pmsuspended = false;
     int compressed;
     g_autoptr(virCommand) compressor = NULL;
@@ -1415,7 +1415,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
      * The command will fail if the guest is paused or the guest agent
      * is not running, or is already quiesced.  */
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) {
-        int freeze;
+        int frozen;
 
         if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_MODIFY) < 0)
             goto cleanup;
@@ -1425,16 +1425,14 @@ qemuSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        freeze = qemuSnapshotFSFreeze(vm, NULL, 0);
+        frozen = qemuSnapshotFSFreeze(vm, NULL, 0);
         qemuDomainObjEndAgentJob(vm);
 
-        if (freeze < 0) {
-            /* the helper reported the error */
-            if (freeze == -2)
-                thaw = -1; /* the command is sent but agent failed */
+        if (frozen < 0)
             goto cleanup;
-        }
-        thaw = 1;
+
+        if (frozen > 0)
+            thaw = true;
     }
 
     /* We need to track what state the guest is in, since taking the
@@ -1527,7 +1525,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
                         QEMU_ASYNC_JOB_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
         resume = false;
-        thaw = 0;
+        thaw = false;
         virObjectEventStateQueue(driver->domainEventState, event);
     } else if (memory && pmsuspended) {
         /* qemu 1.3 is unable to save a domain in pm-suspended (S3)
@@ -1559,14 +1557,12 @@ qemuSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
         ret = -1;
     }
 
-    if (thaw != 0 &&
+    if (thaw &&
         qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_MODIFY) >= 0 &&
         virDomainObjIsActive(vm)) {
-        if (qemuSnapshotFSThaw(vm, ret == 0 && thaw > 0) < 0) {
-            /* helper reported the error, if it was needed */
-            if (thaw > 0)
-                ret = -1;
-        }
+        /* report error only on an otherwise successful snapshot */
+        if (qemuSnapshotFSThaw(vm, ret == 0) < 0)
+            ret = -1;
 
         qemuDomainObjEndAgentJob(vm);
     }
