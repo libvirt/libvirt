@@ -235,10 +235,12 @@ ci-help:
 	@echo
 	@echo "Available make variables:"
 	@echo
-	@echo "    CI_CLEAN=0          - do not delete '$(CI_SCRATCHDIR)' after completion"
-	@echo "    CI_REUSE=1          - re-use existing '$(CI_SCRATCHDIR)' content"
-	@echo "    CI_ENGINE=auto      - container engine to use (podman, docker)"
-	@echo "    CI_USER_LOGIN=      - which user should run in the container (default is $$USER)"
-	@echo "    CI_MESON_ARGS=      - extra arguments passed to meson"
-	@echo "    CI_NINJA_ARGS=      - extra arguments passed to ninja"
+	@echo "    CI_CLEAN=0              - do not delete '$(CI_SCRATCHDIR)' after completion"
+	@echo "    CI_REUSE=1              - re-use existing '$(CI_SCRATCHDIR)' content"
+	@echo "    CI_ENGINE=auto          - container engine to use (podman, docker)"
+	@echo "    CI_USER_LOGIN=          - which user should run in the container (default is $$USER)"
+	@echo "    CI_IMAGE_PREFIX=        - override to prefer a locally built image, (default is $(CI_IMAGE_PREFIX))"
+	@echo "    CI_IMAGE_TAG=:latest    - optionally use in conjunction with 'CI_IMAGE_PREFIX'"
+	@echo "    CI_MESON_ARGS=          - extra arguments passed to meson"
+	@echo "    CI_NINJA_ARGS=          - extra arguments passed to ninja"
 	@echo
