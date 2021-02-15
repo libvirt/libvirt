@@ -3770,7 +3770,8 @@ virCgroupFree(virCgroupPtr group)
     g_free(group->unified.mountPoint);
     g_free(group->unified.placement);
     g_free(group->unitName);
-    g_free(group->nested);
+
+    virCgroupFree(group->nested);
 
     g_free(group);
 }
