@@ -20,9 +20,6 @@ CI_HOST_SRCDIR = $(CI_SCRATCHDIR)/src
 # the $(CI_HOST_SRCDIR) directory from the host
 CI_CONT_SRCDIR = $(CI_USER_HOME)/libvirt
 
-# Script containing environment preparation steps
-CI_PREPARE_SCRIPT = $(CI_ROOTDIR)/prepare.sh
-
 # Script containing build instructions
 CI_BUILD_SCRIPT = $(CI_ROOTDIR)/build.sh
 
