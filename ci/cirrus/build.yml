@@ -12,6 +12,7 @@ env:
 
 build_task:
   install_script:
+    - @UPDATE_COMMAND@
     - @INSTALL_COMMAND@ @PKGS@
     - if test -n "@PYPI_PKGS@" ; then @PIP3@ install @PYPI_PKGS@ ; fi
   clone_script:
