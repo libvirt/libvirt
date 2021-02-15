@@ -18977,13 +18977,14 @@ virDomainFSInfoFormat(qemuAgentFSInfoPtr *agentinfo,
     ret = nagentinfo;
 
  cleanup:
-    for (i = 0; i < nagentinfo; i++) {
-        /* if there was an error, free any memory we've allocated for the
-         * return value */
-        if (info_ret)
+    if (info_ret) {
+        for (i = 0; i < nagentinfo; i++) {
+            /* if there was an error, free any memory we've allocated for the
+             * return value */
             virDomainFSInfoFree(info_ret[i]);
+        }
+        g_free(info_ret);
     }
-    g_free(info_ret);
     return ret;
 }
 
