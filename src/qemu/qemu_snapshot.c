@@ -119,9 +119,6 @@ qemuSnapshotCountExternal(void *payload,
 }
 
 
-/* Return -1 if request is not sent to agent due to misconfig, -2 if request
- * is sent but failed, and number of frozen filesystems on success. If -2 is
- * returned, FSThaw should be called revert the quiesced status. */
 int
 qemuSnapshotFSFreeze(virDomainObjPtr vm,
                      const char **mountpoints,
@@ -136,7 +133,7 @@ qemuSnapshotFSFreeze(virDomainObjPtr vm,
     agent = qemuDomainObjEnterAgent(vm);
     frozen = qemuAgentFSFreeze(agent, mountpoints, nmountpoints);
     qemuDomainObjExitAgent(vm, agent);
-    return frozen < 0 ? -2 : frozen;
+    return frozen;
 }
 
 
