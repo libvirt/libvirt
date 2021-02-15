@@ -11,6 +11,12 @@ For a more fine-grained view, use the `git log`_.
 v7.1.0 (unreleased)
 ===================
 
+* **Portability**
+
+  * Implement Apple Silicon support
+
+    libvirt now runs on the ARM-based Apple Silicon Macs.
+
 * **New features**
 
   * Introduce virtio-pmem ``<memory/>`` model
