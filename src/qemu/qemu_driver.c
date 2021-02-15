@@ -18966,8 +18966,6 @@ virDomainFSInfoFormat(qemuAgentFSInfoPtr *agentinfo,
     virDomainFSInfoPtr *info_ret = NULL;
     size_t i;
 
-    if (nagentinfo < 0)
-        return ret;
     info_ret = g_new0(virDomainFSInfoPtr, nagentinfo);
 
     for (i = 0; i < nagentinfo; i++) {
