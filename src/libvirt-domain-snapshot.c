@@ -174,6 +174,9 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * file systems in use within domain OS. However, if the guest agent
  * is not present, an error is thrown. Moreover, this flag requires
  * VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY to be passed as well.
+ * For better control and error recovery users should invoke virDomainFSFreeze
+ * manually before taking the snapshot and then virDomainFSThaw to restore the
+ * VM rather than using VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE.
  *
  * By default, if the snapshot involves external files, and any of the
  * destination files already exist as a non-empty regular file, the
