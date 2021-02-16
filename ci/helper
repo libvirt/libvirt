@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+#
+# Copyright (C) 2021 Red Hat, Inc.
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
+import argparse
+import pathlib
+
+
+class Parser:
+    def __init__(self):
+        # Main parser
+        self.parser = argparse.ArgumentParser()
+        subparsers = self.parser.add_subparsers(
+            dest="action",
+            metavar="ACTION",
+        )
+        subparsers.required = True
+
+    def parse(self):
+        return self.parser.parse_args()
+
+
+class Application:
+    def __init__(self):
+        self.basedir = pathlib.Path(__file__).resolve().parent
+        self.args = Parser().parse()
+
+    def run(self):
+        self.args.func(self)
+
+
+if __name__ == "__main__":
+    Application().run()
