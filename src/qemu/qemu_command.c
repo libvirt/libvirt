@@ -7700,6 +7700,12 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
         /* TODO: Support ACLs later */
     }
 
+    if (graphics->data.vnc.powerControl != VIR_TRISTATE_BOOL_ABSENT) {
+        virBufferAsprintf(&opt, ",power-control=%s",
+                          graphics->data.vnc.powerControl == VIR_TRISTATE_BOOL_YES ?
+                          "on" : "off");
+    }
+
     virCommandAddArg(cmd, "-vnc");
     virCommandAddArgBuffer(cmd, &opt);
     if (graphics->data.vnc.keymap)

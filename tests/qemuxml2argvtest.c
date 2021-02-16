@@ -1377,6 +1377,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("graphics-vnc-policy", QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_LATEST("graphics-vnc-power");
     DO_TEST("graphics-vnc-no-listen-attr", QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("graphics-vnc-remove-generated-socket", QEMU_CAPS_VNC,
