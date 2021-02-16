@@ -362,7 +362,7 @@ virQEMUBuildDriveCommandlineFromJSON(virJSONValuePtr srcdef)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (virQEMUBuildCommandLineJSON(srcdef, &buf, NULL, false,
+    if (virQEMUBuildCommandLineJSON(srcdef, &buf, NULL, true,
                                     virQEMUBuildCommandLineJSONArrayNumbered) < 0)
         return NULL;
 
