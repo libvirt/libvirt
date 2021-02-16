@@ -26,14 +26,14 @@ server=on,wait=off \
 -no-acpi \
 -usb \
 -object memory-backend-file,id=shmmem-shmem0,mem-path=/dev/shm/shmem0,\
-size=4194304,share=yes \
+size=4194304,share=on \
 -device ivshmem-plain,id=shmem0,memdev=shmmem-shmem0,bus=pci.0,addr=0x3 \
 -object memory-backend-file,id=shmmem-shmem1,mem-path=/dev/shm/shmem1,\
-size=134217728,share=yes \
+size=134217728,share=on \
 -device ivshmem-plain,id=shmem1,memdev=shmmem-shmem1,master=off,bus=pci.0,\
 addr=0x5 \
 -object memory-backend-file,id=shmmem-shmem2,mem-path=/dev/shm/shmem2,\
-size=268435456,share=yes \
+size=268435456,share=on \
 -device ivshmem-plain,id=shmem2,memdev=shmmem-shmem2,master=on,bus=pci.0,\
 addr=0x4 \
 -device ivshmem-doorbell,id=shmem3,chardev=charshmem3,ioeventfd=on,bus=pci.0,\

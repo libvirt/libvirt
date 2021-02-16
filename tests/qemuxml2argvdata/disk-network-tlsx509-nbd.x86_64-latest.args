@@ -33,7 +33,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -object tls-creds-x509,id=objlibvirt-1-storage_tls0,\
-dir=/etc/pki/libvirt-nbd/dummy,,path,endpoint=client,verify-peer=yes,\
+dir=/etc/pki/libvirt-nbd/dummy,,path,endpoint=client,verify-peer=on,\
 passwordid=objlibvirt-1-storage_tls0-secret0 \
 -blockdev '{"driver":"nbd","server":{"type":"inet","host":"example.com",\
 "port":"1234"},"tls-creds":"objlibvirt-1-storage_tls0",\

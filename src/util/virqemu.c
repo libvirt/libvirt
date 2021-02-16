@@ -336,7 +336,7 @@ virQEMUBuildObjectCommandlineFromJSONInternal(virBufferPtr buf,
 
     if (props) {
         virBufferAddLit(buf, ",");
-        if (virQEMUBuildCommandLineJSON(props, buf, NULL, false,
+        if (virQEMUBuildCommandLineJSON(props, buf, NULL, true,
                                 virQEMUBuildCommandLineJSONArrayBitmap) < 0)
             return -1;
     }

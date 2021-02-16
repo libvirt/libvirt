@@ -32,7 +32,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
 keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -object tls-creds-x509,id=objvirtio-disk3_tls0,dir=/etc/pki/libvirt-nbd/dummy,,\
-path,endpoint=client,verify-peer=yes,passwordid=objvirtio-disk3_tls0-secret0 \
+path,endpoint=client,verify-peer=on,passwordid=objvirtio-disk3_tls0-secret0 \
 -drive file.driver=nbd,file.server.type=inet,file.server.host=example.com,\
 file.server.port=1234,file.tls-creds=objvirtio-disk3_tls0,format=raw,if=none,\
 id=drive-virtio-disk3,cache=none \
