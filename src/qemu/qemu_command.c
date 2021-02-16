@@ -7644,8 +7644,12 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
                               graphics->data.vnc.sharePolicy));
     }
 
-    if (graphics->data.vnc.auth.passwd || cfg->vncPassword)
-        virBufferAddLit(&opt, ",password");
+    if (graphics->data.vnc.auth.passwd || cfg->vncPassword) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_OPTS))
+            virBufferAddLit(&opt, ",password=on");
+        else
+            virBufferAddLit(&opt, ",password");
+    }
 
     if (cfg->vncTLS) {
         qemuDomainGraphicsPrivatePtr gfxPriv = QEMU_DOMAIN_GRAPHICS_PRIVATE(graphics);
@@ -7670,7 +7674,10 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
 
             virBufferAsprintf(&opt, ",tls-creds=%s", gfxPriv->tlsAlias);
         } else {
-            virBufferAddLit(&opt, ",tls");
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_OPTS))
+                virBufferAddLit(&opt, ",tls=on");
+            else
+                virBufferAddLit(&opt, ",tls");
             if (cfg->vncTLSx509verify) {
                 virBufferAddLit(&opt, ",x509verify=");
                 virQEMUBuildBufferEscapeComma(&opt, cfg->vncTLSx509certdir);
@@ -7682,7 +7689,10 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
     }
 
     if (cfg->vncSASL) {
-        virBufferAddLit(&opt, ",sasl");
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_OPTS))
+            virBufferAddLit(&opt, ",sasl=on");
+        else
+            virBufferAddLit(&opt, ",sasl");
 
         if (cfg->vncSASLdir)
             virCommandAddEnvPair(cmd, "SASL_CONF_PATH", cfg->vncSASLdir);

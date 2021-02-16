@@ -31,7 +31,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -object tls-creds-x509,id=vnc-tls-creds0,dir=/etc/pki/libvirt-vnc,\
 endpoint=server,verify-peer=yes \
--vnc 127.0.0.1:3,tls-creds=vnc-tls-creds0,sasl \
+-vnc 127.0.0.1:3,tls-creds=vnc-tls-creds0,sasl=on \
 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

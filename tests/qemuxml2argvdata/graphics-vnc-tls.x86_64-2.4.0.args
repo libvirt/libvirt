@@ -26,6 +26,6 @@ server=on,wait=off \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--vnc 127.0.0.1:3,tls,x509verify=/etc/pki/libvirt-vnc,sasl \
+-vnc 127.0.0.1:3,tls=on,x509verify=/etc/pki/libvirt-vnc,sasl=on \
 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
 -msg timestamp=on
