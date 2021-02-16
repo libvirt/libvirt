@@ -4899,12 +4899,12 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
                           charAlias,
                           dev->data.tcp.host,
                           dev->data.tcp.service,
-                          telnet ? ",telnet" : "");
+                          telnet ? ",telnet=on" : "");
 
         if (dev->data.tcp.listen) {
-            virBufferAddLit(&buf, ",server");
+            virBufferAddLit(&buf, ",server=on");
             if (cdevflags & QEMU_BUILD_CHARDEV_TCP_NOWAIT)
-                virBufferAddLit(&buf, ",nowait");
+                virBufferAddLit(&buf, ",wait=off");
         }
 
         qemuBuildChrChardevReconnectStr(&buf, &dev->data.tcp.reconnect);
@@ -4965,9 +4965,9 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
             virQEMUBuildBufferEscapeComma(&buf, dev->data.nix.path);
         }
         if (dev->data.nix.listen) {
-            virBufferAddLit(&buf, ",server");
+            virBufferAddLit(&buf, ",server=on");
             if (cdevflags & QEMU_BUILD_CHARDEV_TCP_NOWAIT)
-                virBufferAddLit(&buf, ",nowait");
+                virBufferAddLit(&buf, ",wait=off");
         }
 
         qemuBuildChrChardevReconnectStr(&buf, &dev->data.nix.reconnect);

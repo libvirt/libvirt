@@ -24,7 +24,7 @@ memory-backend=pc.ram \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,fd=1729,server,nowait \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

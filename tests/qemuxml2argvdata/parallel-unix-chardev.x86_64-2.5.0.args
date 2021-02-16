@@ -19,14 +19,14 @@ QEMU_AUDIO_DRV=none \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server,nowait \
+server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--chardev socket,id=charparallel0,path=/tmp/parport0.socket,server,nowait \
+-chardev socket,id=charparallel0,path=/tmp/parport0.socket,server=on,wait=off \
 -device isa-parallel,chardev=charparallel0,id=parallel0 \
 -chardev socket,id=charparallel1,path=/tmp/parport1.socket \
 -device isa-parallel,chardev=charparallel1,id=parallel1 \

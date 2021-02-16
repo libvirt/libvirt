@@ -27,7 +27,7 @@ x-use-canonical-path-for-ramblock-id=no,prealloc=yes,size=4294967296 \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,fd=1729,server,nowait \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

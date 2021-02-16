@@ -20,7 +20,7 @@ bar=2/master-key.aes \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-foo=1,,\
-bar=2/monitor.sock,server,nowait \
+bar=2/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

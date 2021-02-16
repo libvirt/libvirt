@@ -19,7 +19,7 @@ QEMU_AUDIO_DRV=none \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server,nowait \
+server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=2009-02-15T09:49:06 \
 -no-shutdown \

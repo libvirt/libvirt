@@ -27,7 +27,7 @@ cmm=on \
 -uuid 6ba410c5-1e5c-4d57-bee7-2228e7ffa32f \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,fd=1729,server,nowait \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

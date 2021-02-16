@@ -21,7 +21,7 @@ cap-cfpc=fixed,cap-sbbc=broken,cap-ibs=fixed-ccd \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-guest/monitor.sock,\
-server,nowait \
+server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown

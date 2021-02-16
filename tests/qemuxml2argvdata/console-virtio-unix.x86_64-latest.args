@@ -22,7 +22,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,fd=1729,server,nowait \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -30,7 +30,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x2 \
--chardev socket,id=charconsole0,fd=1729,server,nowait \
+-chardev socket,id=charconsole0,fd=1729,server=on,wait=off \
 -device virtconsole,chardev=charconsole0,id=console0 \
 -chardev socket,id=charconsole1,path=/tmp/connect.socket \
 -device virtconsole,chardev=charconsole1,id=console1 \

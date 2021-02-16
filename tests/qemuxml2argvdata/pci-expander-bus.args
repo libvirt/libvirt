@@ -21,7 +21,7 @@ QEMU_AUDIO_DRV=none \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,\
-path=/tmp/lib/domain--1-expander-test/monitor.sock,server,nowait \
+path=/tmp/lib/domain--1-expander-test/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

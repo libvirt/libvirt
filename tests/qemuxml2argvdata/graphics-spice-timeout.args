@@ -19,8 +19,8 @@ QEMU_AUDIO_DRV=spice \
 -uuid 553effab-b5e1-2d80-dfe3-da4344826c43 \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-f14/monitor.sock,server,\
-nowait \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-f14/monitor.sock,\
+server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

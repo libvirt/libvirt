@@ -22,7 +22,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,fd=1729,server,nowait \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -31,7 +31,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -chardev socket,id=charserial0,path=/tmp/serial.sock \
 -device isa-serial,chardev=charserial0,id=serial0 \
--chardev socket,id=charserial1,fd=1729,server,nowait \
+-chardev socket,id=charserial1,fd=1729,server=on,wait=off \
 -device isa-serial,chardev=charserial1,id=serial1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\

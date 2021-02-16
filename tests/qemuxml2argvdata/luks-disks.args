@@ -21,7 +21,7 @@ file=/tmp/lib/domain--1-encryptdisk/master-key.aes \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,\
-path=/tmp/lib/domain--1-encryptdisk/monitor.sock,server,nowait \
+path=/tmp/lib/domain--1-encryptdisk/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

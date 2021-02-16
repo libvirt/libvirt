@@ -24,7 +24,7 @@ uuid=49545eb3-75e1-2d0a-acdd-f0294406c99e,memdev=memnvdimm0,id=nvdimm0,slot=0 \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server,nowait \
+server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown

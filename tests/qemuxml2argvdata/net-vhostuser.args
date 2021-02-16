@@ -18,13 +18,13 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,fd=1729,server,nowait \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
 -usb \
--chardev socket,id=charnet0,path=/tmp/vhost0.sock,server \
+-chardev socket,id=charnet0,path=/tmp/vhost0.sock,server=on \
 -netdev vhost-user,chardev=charnet0,id=hostnet0 \
 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:ee:96:6b,bus=pci.0,\
 addr=0x3 \

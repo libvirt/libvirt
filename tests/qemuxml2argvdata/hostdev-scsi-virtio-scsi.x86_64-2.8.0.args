@@ -21,7 +21,7 @@ file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest2/monitor.sock,\
-server,nowait \
+server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
