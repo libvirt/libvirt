@@ -28,8 +28,7 @@ do
     debian-*)
         for cross in aarch64 armv6l armv7l i686 mips mips64el mipsel ppc64le s390x
         do
-            if test "$host-cross-$cross" = "debian-9-cross-i686" ||
-               test "$host-cross-$cross" = "debian-sid-cross-mips"
+            if test "$host-cross-$cross" = "debian-sid-cross-mips"
             then
                 continue
             fi
