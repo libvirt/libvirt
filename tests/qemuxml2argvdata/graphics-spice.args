@@ -30,7 +30,7 @@ server=on,wait=off \
 tls-channel=default,tls-channel=main,plaintext-channel=inputs,\
 image-compression=auto_glz,jpeg-wan-compression=auto,\
 zlib-glz-wan-compression=auto,playback-compression=on,streaming-video=filter,\
-disable-copy-paste,disable-agent-file-xfer,seamless-migration=on \
+disable-copy-paste=on,disable-agent-file-xfer=on,seamless-migration=on \
 -vga qxl \
 -global qxl-vga.ram_size=67108864 \
 -global qxl-vga.vram_size=33554432 \

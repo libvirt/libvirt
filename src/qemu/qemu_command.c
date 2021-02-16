@@ -7765,7 +7765,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     }
 
     if (cfg->spiceSASL) {
-        virBufferAddLit(&opt, "sasl,");
+        virBufferAddLit(&opt, "sasl=on,");
 
         if (cfg->spiceSASLdir)
             virCommandAddEnvPair(cmd, "SASL_CONF_PATH",
@@ -7797,7 +7797,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
      * in this bit of the code */
     if (!graphics->data.spice.auth.passwd &&
         !cfg->spicePassword)
-        virBufferAddLit(&opt, "disable-ticketing,");
+        virBufferAddLit(&opt, "disable-ticketing=on,");
 
     if (hasSecure) {
         virBufferAddLit(&opt, "x509-dir=");
@@ -7879,10 +7879,10 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         virBufferAsprintf(&opt, "streaming-video=%s,",
                           virDomainGraphicsSpiceStreamingModeTypeToString(graphics->data.spice.streaming));
     if (graphics->data.spice.copypaste == VIR_TRISTATE_BOOL_NO)
-        virBufferAddLit(&opt, "disable-copy-paste,");
+        virBufferAddLit(&opt, "disable-copy-paste=on,");
 
     if (graphics->data.spice.filetransfer == VIR_TRISTATE_BOOL_NO)
-        virBufferAddLit(&opt, "disable-agent-file-xfer,");
+        virBufferAddLit(&opt, "disable-agent-file-xfer=on,");
 
     if (graphics->data.spice.gl == VIR_TRISTATE_BOOL_YES) {
         /* spice.gl is a TristateBool, but qemu expects on/off: use
