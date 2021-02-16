@@ -3663,6 +3663,11 @@
                   </choice>
                 </attribute>
               </optional>
+              <optional>
+                <attribute name="powerControl">
+                  <ref name="virYesNo"/>
+                </attribute>
+              </optional>
             </group>
             <group>
               <optional>

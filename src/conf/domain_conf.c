@@ -13149,6 +13149,7 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
     g_autofree char *websocketGenerated = virXMLPropString(node, "websocketGenerated");
     g_autofree char *sharePolicy = virXMLPropString(node, "sharePolicy");
     g_autofree char *autoport = virXMLPropString(node, "autoport");
+    g_autofree char *powerControl = virXMLPropString(node, "powerControl");
 
     if (virDomainGraphicsListensParseXML(def, node, ctxt, flags) < 0)
         return -1;
@@ -13203,6 +13204,16 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
         } else {
             def->data.vnc.sharePolicy = policy;
         }
+    }
+
+    if (powerControl) {
+        int powerControlVal = virTristateBoolTypeFromString(powerControl);
+        if (powerControlVal < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse vnc power control '%s'"), powerControl);
+            return -1;
+        }
+        def->data.vnc.powerControl = powerControlVal;
     }
 
     def->data.vnc.keymap = virXMLPropString(node, "keymap");
@@ -27115,6 +27126,10 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " sharePolicy='%s'",
                               virDomainGraphicsVNCSharePolicyTypeToString(
                               def->data.vnc.sharePolicy));
+
+        if (def->data.vnc.powerControl)
+            virBufferAsprintf(buf, " powerControl='%s'",
+                              virTristateBoolTypeToString(def->data.vnc.powerControl));
 
         virDomainGraphicsAuthDefFormatAttr(buf, &def->data.vnc.auth, flags);
         break;

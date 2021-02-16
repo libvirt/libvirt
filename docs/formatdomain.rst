@@ -5791,6 +5791,11 @@ interaction with the admin.
       ``autoport`` having no effect due to security reasons) :since:`Since
       1.0.6` .
 
+      For VNC, the ``powerControl`` attribute can be used to enable VM shutdown,
+      reboot and reset power control features for the VNC client. This is
+      appropriate if the authenticated VNC client user already has administrator
+      privileges in the guest :since:`Since 7.1.0`.
+
       Although VNC doesn't support OpenGL natively, it can be paired with
       graphics type ``egl-headless`` (see below) which will instruct QEMU to
       open and use drm nodes for OpenGL rendering.

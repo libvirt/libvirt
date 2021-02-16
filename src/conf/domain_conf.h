@@ -1712,6 +1712,7 @@ struct _virDomainGraphicsDef {
             char *keymap;
             virDomainGraphicsAuthDef auth;
             int sharePolicy;
+            virTristateBool powerControl;
         } vnc;
         struct {
             char *display;
