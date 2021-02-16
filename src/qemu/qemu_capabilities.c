@@ -618,6 +618,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "memory-backend-file.x-use-canonical-path-for-ramblock-id",
               "vnc-opts",
               "migration-param.block-bitmap-mapping",
+
+              /* 395 */
+              "vnc-power-control",
     );
 
 
@@ -3300,6 +3303,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "fw_cfg", "file", QEMU_CAPS_FW_CFG },
     { "fsdev", "fmode", QEMU_CAPS_FSDEV_CREATEMODE }, /* Could have also checked fsdev->dmode */
     { "vnc", "display", QEMU_CAPS_VNC_OPTS },
+    { "vnc", "power-control", QEMU_CAPS_VNC_POWER_CONTROL },
 };
 
 static int

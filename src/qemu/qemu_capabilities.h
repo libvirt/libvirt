@@ -599,6 +599,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_VNC_OPTS, /* -vnc uses QemuOpts parser instead of custom code */
     QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING, /* block-bitmap-mapping in migrate-set-parameters */
 
+    /* 395 */
+    QEMU_CAPS_VNC_POWER_CONTROL, /* -vnc power-control option */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 
