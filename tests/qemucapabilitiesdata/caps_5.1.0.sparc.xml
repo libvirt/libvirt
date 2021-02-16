@@ -116,6 +116,7 @@
   <flag name='fsdev.createmode'/>
   <flag name='ncr53c90'/>
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
+  <flag name='vnc-opts'/>
   <version>5001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>

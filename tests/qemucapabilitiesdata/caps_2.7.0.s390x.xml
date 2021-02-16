@@ -94,6 +94,7 @@
   <flag name='storage.werror'/>
   <flag name='tcg'/>
   <flag name='fw_cfg'/>
+  <flag name='vnc-opts'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100245</microcodeVersion>

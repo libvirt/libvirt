@@ -176,6 +176,7 @@
   <flag name='am53c974'/>
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>
+  <flag name='vnc-opts'/>
   <version>3000091</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900240</microcodeVersion>

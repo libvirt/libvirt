@@ -168,6 +168,7 @@
   <flag name='migration-param.downtime'/>
   <flag name='dc390'/>
   <flag name='am53c974'/>
+  <flag name='vnc-opts'/>
   <version>2008000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100246</microcodeVersion>

@@ -616,6 +616,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "vhost-user-blk",
               "cpu-max",
               "memory-backend-file.x-use-canonical-path-for-ramblock-id",
+              "vnc-opts",
     );
 
 
@@ -3295,6 +3296,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
     { "fw_cfg", "file", QEMU_CAPS_FW_CFG },
     { "fsdev", "fmode", QEMU_CAPS_FSDEV_CREATEMODE }, /* Could have also checked fsdev->dmode */
+    { "vnc", "display", QEMU_CAPS_VNC_OPTS },
 };
 
 static int

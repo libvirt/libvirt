@@ -134,6 +134,7 @@
   <flag name='migration-param.xbzrle-cache-size'/>
   <flag name='fsdev.createmode'/>
   <flag name='vhost-user-blk'/>
+  <flag name='vnc-opts'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100289</microcodeVersion>

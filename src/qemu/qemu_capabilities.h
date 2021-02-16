@@ -596,6 +596,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_VHOST_USER_BLK, /* -device vhost-user-blk */
     QEMU_CAPS_CPU_MAX, /* -cpu max */
     QEMU_CAPS_X_USE_CANONICAL_PATH_FOR_RAMBLOCK_ID, /* -object memory-backend-file,x-use-canonical-path-for-ramblock-id= */
+    QEMU_CAPS_VNC_OPTS, /* -vnc uses QemuOpts parser instead of custom code */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
