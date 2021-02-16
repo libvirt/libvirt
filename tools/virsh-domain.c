@@ -8791,6 +8791,7 @@ static const vshCmdOptDef opts_send_key[] = {
     {.name = "codeset",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_REQ_OPT,
+     .completer = virshCodesetNameCompleter,
      .help = N_("the codeset of keycodes, default:linux")
     },
     {.name = "holdtime",

@@ -31,6 +31,7 @@
 #include "virxml.h"
 #include "virperf.h"
 #include "virbitmap.h"
+#include "virkeycode.h"
 
 char **
 virshDomainNameCompleter(vshControl *ctl,
@@ -774,6 +775,27 @@ virshDomainLifecycleActionCompleter(vshControl *ctl G_GNUC_UNUSED,
     for (i = 0; i < VIR_DOMAIN_LIFECYCLE_ACTION_LAST; i++) {
         const char *action = virDomainLifecycleActionTypeToString(i);
         tmp[i] = g_strdup(action);
+    }
+
+    return g_steal_pointer(&tmp);
+}
+
+
+char **
+virshCodesetNameCompleter(vshControl *ctl G_GNUC_UNUSED,
+                          const vshCmd *cmd G_GNUC_UNUSED,
+                          unsigned int flags)
+{
+    g_auto(GStrv) tmp = NULL;
+    size_t i = 0;
+
+    virCheckFlags(0, NULL);
+
+    tmp = g_new0(char *, VIR_KEYCODE_SET_LAST + 1);
+
+    for (i = 0; i < VIR_KEYCODE_SET_LAST; i++) {
+        const char *name = virKeycodeSetTypeToString(i);
+        tmp[i] = g_strdup(name);
     }
 
     return g_steal_pointer(&tmp);
