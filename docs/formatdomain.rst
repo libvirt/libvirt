@@ -2615,7 +2615,7 @@ paravirtualized driver is specified via the ``disk`` element.
    ``vhostuser``
       Enables the hypervisor to connect to another process using vhost-user
       protocol. Requires shared memory configured for the VM, for more details
-      see ``access`` mode for `memoryBacking <#elementsMemoryBacking>` element.
+      see ``access`` mode for `memoryBacking <#elementsMemoryBacking>`__ element.
 
       The ``source`` element has following mandatory attributes:
 
