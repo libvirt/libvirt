@@ -1230,14 +1230,10 @@ libxlDomainStart(libxlDriverPrivate *driver,
                  uint32_t restore_ver)
 {
     libxl_domain_config d_config;
-    virDomainDef *def = NULL;
     virObjectEvent *event = NULL;
-    libxlSavefileHeader hdr;
     int ret = -1;
     uint32_t domid = 0;
     g_autofree char *dom_xml = NULL;
-    g_autofree char *managed_save_path = NULL;
-    int managed_save_fd = -1;
     libxlDomainObjPrivate *priv = vm->privateData;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     virHostdevManager *hostdev_mgr = driver->hostdevMgr;
@@ -1249,47 +1245,6 @@ libxlDomainStart(libxlDriverPrivate *driver,
     hostdev_flags |= VIR_HOSTDEV_SP_USB;
 
     libxl_domain_config_init(&d_config);
-
-    /* If there is a managed saved state restore it instead of starting
-     * from scratch. The old state is removed once the restoring succeeded. */
-    if (restore_fd < 0) {
-        managed_save_path = libxlDomainManagedSavePath(driver, vm);
-        if (managed_save_path == NULL)
-            goto cleanup;
-
-        if (virFileExists(managed_save_path)) {
-
-            managed_save_fd = libxlDomainSaveImageOpen(driver, managed_save_path,
-                                                       &def, &hdr);
-            if (managed_save_fd < 0)
-                goto cleanup;
-
-            restore_fd = managed_save_fd;
-            restore_ver = hdr.version;
-
-            if (STRNEQ(vm->def->name, def->name) ||
-                memcmp(vm->def->uuid, def->uuid, VIR_UUID_BUFLEN)) {
-                char vm_uuidstr[VIR_UUID_STRING_BUFLEN];
-                char def_uuidstr[VIR_UUID_STRING_BUFLEN];
-                virUUIDFormat(vm->def->uuid, vm_uuidstr);
-                virUUIDFormat(def->uuid, def_uuidstr);
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("cannot restore domain '%s' uuid %s from a file"
-                                 " which belongs to domain '%s' uuid %s"),
-                               vm->def->name, vm_uuidstr, def->name, def_uuidstr);
-                goto cleanup;
-            }
-
-            virDomainObjAssignDef(vm, def, true, NULL);
-            def = NULL;
-
-            if (unlink(managed_save_path) < 0)
-                VIR_WARN("Failed to remove the managed state %s",
-                         managed_save_path);
-
-            vm->hasManagedSave = false;
-        }
-    }
 
     if (virDomainObjSetDefTransient(driver->xmlopt, vm, NULL) < 0)
         goto cleanup;
@@ -1476,8 +1431,6 @@ libxlDomainStart(libxlDriverPrivate *driver,
 
  cleanup:
     libxl_domain_config_dispose(&d_config);
-    virDomainDefFree(def);
-    VIR_FORCE_CLOSE(managed_save_fd);
     return ret;
 }
 
@@ -1486,7 +1439,55 @@ libxlDomainStartNew(libxlDriverPrivate *driver,
             virDomainObj *vm,
             bool start_paused)
 {
-    return libxlDomainStart(driver, vm, start_paused, -1, LIBXL_SAVE_VERSION);
+    g_autofree char *managed_save_path = NULL;
+    int restore_fd = -1;
+    virDomainDef *def = NULL;
+    libxlSavefileHeader hdr;
+    uint32_t restore_ver = LIBXL_SAVE_VERSION;
+    int ret = -1;
+
+    /* If there is a managed saved state restore it instead of starting
+     * from scratch. The old state is removed once the restoring succeeded. */
+    managed_save_path = libxlDomainManagedSavePath(driver, vm);
+    if (managed_save_path == NULL)
+        return -1;
+
+    if (virFileExists(managed_save_path)) {
+        restore_fd = libxlDomainSaveImageOpen(driver, managed_save_path,
+                                              &def, &hdr);
+        if (restore_fd < 0)
+            goto cleanup;
+
+        restore_ver = hdr.version;
+
+        if (STRNEQ(vm->def->name, def->name) ||
+            memcmp(vm->def->uuid, def->uuid, VIR_UUID_BUFLEN)) {
+            char vm_uuidstr[VIR_UUID_STRING_BUFLEN];
+            char def_uuidstr[VIR_UUID_STRING_BUFLEN];
+            virUUIDFormat(vm->def->uuid, vm_uuidstr);
+            virUUIDFormat(def->uuid, def_uuidstr);
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("cannot restore domain '%s' uuid %s from a file which belongs to domain '%s' uuid %s"),
+                           vm->def->name, vm_uuidstr, def->name, def_uuidstr);
+            goto cleanup;
+        }
+
+        virDomainObjAssignDef(vm, def, true, NULL);
+        def = NULL;
+
+        if (unlink(managed_save_path) < 0)
+            VIR_WARN("Failed to remove the managed state %s",
+                     managed_save_path);
+
+        vm->hasManagedSave = false;
+    }
+
+    ret = libxlDomainStart(driver, vm, start_paused, restore_fd, restore_ver);
+
+ cleanup:
+    virDomainDefFree(def);
+    VIR_FORCE_CLOSE(restore_fd);
+    return ret;
 }
 
 int
