@@ -826,6 +826,33 @@ libxlDomainSaveImageOpen(libxlDriverPrivate *driver,
     return -1;
 }
 
+static void
+libxlNetworkUnwindDevices(virDomainDef *def)
+{
+    if (def->nnets) {
+        size_t i;
+
+        for (i = 0; i < def->nnets; i++) {
+            virDomainNetDef *net = def->nets[i];
+
+            if (net->ifname &&
+                STRPREFIX(net->ifname, LIBXL_GENERATED_PREFIX_XEN))
+                VIR_FREE(net->ifname);
+
+            /* cleanup actual device */
+            virDomainNetRemoveHostdev(def, net);
+            if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+                g_autoptr(virConnect) conn = virGetConnectNetwork();
+
+                if (conn)
+                    virDomainNetReleaseActualDevice(conn, def, net);
+                else
+                    VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
+            }
+        }
+    }
+}
+
 /*
  * Internal domain destroy function.
  *
@@ -870,7 +897,6 @@ libxlDomainCleanup(libxlDriverPrivate *driver,
     char *file;
     virHostdevManager *hostdev_mgr = driver->hostdevMgr;
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
-    g_autoptr(virConnect) conn = NULL;
 
     VIR_DEBUG("Cleaning up domain with id '%d' and name '%s'",
               vm->def->id, vm->def->name);
@@ -923,29 +949,9 @@ libxlDomainCleanup(libxlDriverPrivate *driver,
         }
     }
 
-    if ((vm->def->nnets)) {
-        size_t i;
-
-        for (i = 0; i < vm->def->nnets; i++) {
-            virDomainNetDef *net = vm->def->nets[i];
-
-            if (net->ifname &&
-                STRPREFIX(net->ifname, LIBXL_GENERATED_PREFIX_XEN))
-                VIR_FREE(net->ifname);
-
-            /* cleanup actual device */
-            virDomainNetRemoveHostdev(vm->def, net);
-            if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-                if (conn || (conn = virGetConnectNetwork()))
-                    virDomainNetReleaseActualDevice(conn, vm->def, net);
-                else
-                    VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
-            }
-        }
-    }
+    libxlNetworkUnwindDevices(vm->def);
 
     file = g_strdup_printf("%s/%s.xml", cfg->stateDir, vm->def->name);
-
     if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
         VIR_DEBUG("Failed to remove domain XML for %s", vm->def->name);
     VIR_FREE(file);
