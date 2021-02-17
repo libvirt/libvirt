@@ -103,11 +103,10 @@ libxlDomainManagedSavePath(libxlDriverPrivate *driver,
 
 int
 libxlDomainSaveImageOpen(libxlDriverPrivate *driver,
-                         libxlDriverConfig *cfg,
                          const char *from,
                          virDomainDef **ret_def,
                          libxlSavefileHeader *ret_hdr)
-    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
 int
 libxlDomainDestroyInternal(libxlDriverPrivate *driver,

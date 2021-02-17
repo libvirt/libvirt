@@ -764,7 +764,6 @@ libxlDomainManagedSavePath(libxlDriverPrivate *driver, virDomainObj *vm)
  */
 int
 libxlDomainSaveImageOpen(libxlDriverPrivate *driver,
-                         libxlDriverConfig *cfg G_GNUC_UNUSED,
                          const char *from,
                          virDomainDef **ret_def,
                          libxlSavefileHeader *ret_hdr)
@@ -1260,8 +1259,7 @@ libxlDomainStart(libxlDriverPrivate *driver,
 
         if (virFileExists(managed_save_path)) {
 
-            managed_save_fd = libxlDomainSaveImageOpen(driver, cfg,
-                                                       managed_save_path,
+            managed_save_fd = libxlDomainSaveImageOpen(driver, managed_save_path,
                                                        &def, &hdr);
             if (managed_save_fd < 0)
                 goto cleanup;

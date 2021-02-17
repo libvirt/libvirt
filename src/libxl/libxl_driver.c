@@ -1942,7 +1942,6 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
                         const char *dxml, unsigned int flags)
 {
     libxlDriverPrivate *driver = conn->privateData;
-    libxlDriverConfig *cfg = libxlDriverConfigGet(driver);
     virDomainObj *vm = NULL;
     virDomainDef *def = NULL;
     libxlSavefileHeader hdr;
@@ -1961,7 +1960,7 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
         return -1;
     }
 
-    fd = libxlDomainSaveImageOpen(driver, cfg, from, &def, &hdr);
+    fd = libxlDomainSaveImageOpen(driver, from, &def, &hdr);
     if (fd < 0)
         goto cleanup;
 
@@ -1995,7 +1994,6 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
         virReportSystemError(errno, "%s", _("cannot close file"));
     virDomainDefFree(def);
     virDomainObjEndAPI(&vm);
-    virObjectUnref(cfg);
     return ret;
 }
 
