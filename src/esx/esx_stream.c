@@ -396,7 +396,6 @@ esxStreamOpen(virStreamPtr stream, esxPrivate *priv, const char *url,
     int result = -1;
     esxStreamPrivate *streamPriv;
     g_autofree char *range = NULL;
-    g_autofree char *userpwd = NULL;
     esxVI_MultiCURL *multi = NULL;
 
     /* FIXME: Although there is already some code in place to deal with
@@ -438,17 +437,10 @@ esxStreamOpen(virStreamPtr stream, esxPrivate *priv, const char *url,
     curl_easy_setopt(streamPriv->curl->handle, CURLOPT_URL, url);
     curl_easy_setopt(streamPriv->curl->handle, CURLOPT_RANGE, range);
 
-#if LIBCURL_VERSION_NUM >= 0x071301 /* 7.19.1 */
     curl_easy_setopt(streamPriv->curl->handle, CURLOPT_USERNAME,
                      priv->primary->username);
     curl_easy_setopt(streamPriv->curl->handle, CURLOPT_PASSWORD,
                      priv->primary->password);
-#else
-    userpwd = g_strdup_printf("%s:%s", priv->primary->username,
-                              priv->primary->password);
-
-    curl_easy_setopt(streamPriv->curl->handle, CURLOPT_USERPWD, userpwd);
-#endif
 
     if (esxVI_MultiCURL_Alloc(&multi) < 0 ||
         esxVI_MultiCURL_Add(multi, streamPriv->curl) < 0)

@@ -230,9 +230,7 @@ esxVI_CURL_Perform(esxVI_CURL *curl, const char *url)
 {
     CURLcode errorCode;
     long responseCode = 0;
-#if LIBCURL_VERSION_NUM >= 0x071202 /* 7.18.2 */
     const char *redirectUrl = NULL;
-#endif
 
     errorCode = curl_easy_perform(curl->handle);
 
@@ -262,7 +260,6 @@ esxVI_CURL_Perform(esxVI_CURL *curl, const char *url)
     }
 
     if (responseCode == 301) {
-#if LIBCURL_VERSION_NUM >= 0x071202 /* 7.18.2 */
         errorCode = curl_easy_getinfo(curl->handle, CURLINFO_REDIRECT_URL,
                                       &redirectUrl);
 
@@ -277,10 +274,6 @@ esxVI_CURL_Perform(esxVI_CURL *curl, const char *url)
                            _("The server redirects from '%s' to '%s'"), url,
                            redirectUrl);
         }
-#else
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("The server redirects from '%s'"), url);
-#endif
 
         return -1;
     }

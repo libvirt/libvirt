@@ -1001,7 +1001,7 @@ if capng_dep.found()
   conf.set('WITH_CAPNG', 1)
 endif
 
-curl_version = '7.18.0'
+curl_version = '7.19.1'
 curl_dep = dependency('libcurl', version: '>=' + curl_version, required: get_option('curl'))
 if curl_dep.found()
   # XXX as of libcurl-devel-7.20.1-3.fc13.x86_64, curl ships a version
