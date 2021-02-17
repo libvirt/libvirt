@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2020 Red Hat, Inc.
- * Copyright (C) 2011-2020 Free Software Foundation, Inc.
+ * Copyright (C) 2011-2021 Free Software Foundation, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -457,7 +457,7 @@ virSocketRecvFD(int sock, int fdflags)
     cmsg->cmsg_len = CMSG_LEN(sizeof(fd));
     /* Initialize the payload: */
     memcpy(CMSG_DATA(cmsg), &fd, sizeof(fd));
-    msg.msg_controllen = cmsg->cmsg_len;
+    msg.msg_controllen = CMSG_SPACE(sizeof(fd));
 
     len = recvmsg(sock, &msg, fdflags_recvmsg);
     if (len < 0)
