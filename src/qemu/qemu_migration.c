@@ -180,6 +180,7 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
     char *volStr = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *format = NULL;
+    const char *compat = NULL;
     unsigned int flags = 0;
 
     VIR_DEBUG("Precreate disk type=%s", virStorageTypeToString(disk->src->type));
@@ -212,8 +213,11 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
         if (!(pool = virStoragePoolLookupByTargetPath(*conn, basePath)))
             goto cleanup;
         format = virStorageFileFormatTypeToString(disk->src->format);
-        if (disk->src->format == VIR_STORAGE_FILE_QCOW2)
+        if (disk->src->format == VIR_STORAGE_FILE_QCOW2) {
             flags |= VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
+            /* format qcow2v3 image */
+            compat = "1.1";
+        }
         break;
 
     case VIR_STORAGE_TYPE_VOLUME:
@@ -261,6 +265,8 @@ qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
     virBufferAddLit(&buf, "<target>\n");
     virBufferAdjustIndent(&buf, 2);
     virBufferAsprintf(&buf, "<format type='%s'/>\n", format);
+    if (compat)
+        virBufferAsprintf(&buf, "<compat>%s</compat>\n", compat);
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</target>\n");
     virBufferAdjustIndent(&buf, -2);
