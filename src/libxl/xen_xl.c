@@ -1373,7 +1373,7 @@ static int
 xenFormatXLCPUID(virConfPtr conf, virDomainDefPtr def)
 {
     char **cpuid_pairs = NULL;
-    char *cpuid_string = NULL;
+    g_autofree char *cpuid_string = NULL;
     size_t i, j;
     int ret = -1;
 
@@ -1431,7 +1431,6 @@ xenFormatXLCPUID(virConfPtr conf, virDomainDefPtr def)
 
  cleanup:
     g_strfreev(cpuid_pairs);
-    VIR_FREE(cpuid_string);
     return ret;
 }
 
@@ -1686,7 +1685,7 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
     virConfValuePtr val, tmp;
     int format = virDomainDiskGetFormat(disk);
     const char *driver = virDomainDiskGetDriver(disk);
-    char *target = NULL;
+    g_autofree char *target = NULL;
     int ret = -1;
 
     /* format */
@@ -1772,7 +1771,6 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
     ret = 0;
 
  cleanup:
-    VIR_FREE(target);
     return ret;
 }
 

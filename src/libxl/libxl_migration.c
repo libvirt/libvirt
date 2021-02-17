@@ -150,7 +150,7 @@ libxlMigrationEatCookie(const char *cookiein,
     libxlMigrationCookiePtr mig = NULL;
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    char *uuidstr = NULL;
+    g_autofree char *uuidstr = NULL;
     int ret = -1;
 
     /*
@@ -216,7 +216,6 @@ libxlMigrationEatCookie(const char *cookiein,
     libxlMigrationCookieFree(mig);
 
  cleanup:
-    VIR_FREE(uuidstr);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
     return ret;
@@ -840,7 +839,7 @@ struct _libxlTunnelMigrationThread {
 static void libxlTunnel3MigrationSrcFunc(void *arg)
 {
     libxlTunnelMigrationThread *data = (libxlTunnelMigrationThread *)arg;
-    char *buffer = NULL;
+    g_autofree char *buffer = NULL;
     struct pollfd fds[1];
     int timeout = -1;
 
@@ -858,7 +857,7 @@ static void libxlTunnel3MigrationSrcFunc(void *arg)
                 continue;
             virReportError(errno, "%s",
                            _("poll failed in libxlTunnel3MigrationSrcFunc"));
-            goto cleanup;
+            return;
         }
 
         if (ret == 0) {
@@ -874,13 +873,13 @@ static void libxlTunnel3MigrationSrcFunc(void *arg)
                 /* Write to dest stream */
                 if (virStreamSend(data->st, buffer, nbytes) < 0) {
                     virStreamAbort(data->st);
-                    goto cleanup;
+                    return;
                 }
             } else if (nbytes < 0) {
                 virReportError(errno, "%s",
                                _("tunnelled migration failed to read from xen side"));
                 virStreamAbort(data->st);
-                goto cleanup;
+                return;
             } else {
                 /* EOF; transferred all data */
                 break;
@@ -889,10 +888,6 @@ static void libxlTunnel3MigrationSrcFunc(void *arg)
     }
 
     ignore_value(virStreamFinish(data->st));
-
- cleanup:
-    VIR_FREE(buffer);
-
     return;
 }
 

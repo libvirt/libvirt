@@ -533,7 +533,7 @@ libxlDriverShouldLoad(bool privileged)
 
     if (virFileExists(HYPERVISOR_CAPABILITIES)) {
         int status;
-        char *output = NULL;
+        g_autofree char *output = NULL;
         /*
          * Don't load if not running on a Xen control domain (dom0). It is not
          * sufficient to check for the file to exist as any guest can mount
@@ -542,7 +542,6 @@ libxlDriverShouldLoad(bool privileged)
         status = virFileReadAll(HYPERVISOR_CAPABILITIES, 10, &output);
         if (status >= 0)
             status = strncmp(output, "control_d", 9);
-        VIR_FREE(output);
         if (status) {
             VIR_INFO("No Xen capabilities detected, probably not running "
                      "in a Xen Dom0.  Disabling libxenlight driver");
@@ -1819,7 +1818,7 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver,
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     libxlSavefileHeader hdr;
     virObjectEventPtr event = NULL;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     uint32_t xml_len;
     int fd = -1;
     int ret = -1;
@@ -1889,7 +1888,6 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver,
     ret = 0;
 
  cleanup:
-    VIR_FREE(xml);
     if (VIR_CLOSE(fd) < 0)
         virReportSystemError(errno, "%s", _("cannot close file"));
     virObjectEventStateQueue(driver->domainEventState, event);
@@ -2117,7 +2115,7 @@ libxlDomainManagedSave(virDomainPtr dom, unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
-    char *name = NULL;
+    g_autofree char *name = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -2160,7 +2158,6 @@ libxlDomainManagedSave(virDomainPtr dom, unsigned int flags)
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    VIR_FREE(name);
     return ret;
 }
 
@@ -2213,7 +2210,7 @@ libxlDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     int ret = -1;
-    char *name = NULL;
+    g_autofree char *name = NULL;
 
     virCheckFlags(0, -1);
 
@@ -2231,7 +2228,6 @@ libxlDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
     vm->hasManagedSave = false;
 
  cleanup:
-    VIR_FREE(name);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -2917,7 +2913,7 @@ libxlDomainUndefineFlags(virDomainPtr dom,
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainObjPtr vm;
     virObjectEventPtr event = NULL;
-    char *name = NULL;
+    g_autofree char *name = NULL;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_UNDEFINE_MANAGED_SAVE, -1);
@@ -2967,7 +2963,6 @@ libxlDomainUndefineFlags(virDomainPtr dom,
     ret = 0;
 
  cleanup:
-    VIR_FREE(name);
     virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
@@ -4518,7 +4513,8 @@ libxlDomainSetAutostart(virDomainPtr dom, int autostart)
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainObjPtr vm;
-    char *configFile = NULL, *autostartLink = NULL;
+    g_autofree char *configFile = NULL;
+    g_autofree char *autostartLink = NULL;
     int ret = -1;
 
     if (!(vm = libxlDomObjFromDomain(dom)))
@@ -4577,8 +4573,6 @@ libxlDomainSetAutostart(virDomainPtr dom, int autostart)
     libxlDomainObjEndJob(driver, vm);
 
  cleanup:
-    VIR_FREE(configFile);
-    VIR_FREE(autostartLink);
     virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
@@ -4882,7 +4876,6 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
     virDomainObjPtr vm;
     libxl_bitmap nodemap;
     virBitmapPtr nodes = NULL;
-    char *nodeset = NULL;
     int rc, ret = -1;
     size_t i, j;
 
@@ -4915,6 +4908,7 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
     for (i = 0; i < LIBXL_NUMA_NPARAM && i < *nparams; i++) {
         virMemoryParameterPtr param = &params[i];
         int numnodes;
+        g_autofree char *nodeset = NULL;
 
         switch (i) {
         case 0:
@@ -4981,7 +4975,6 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
     ret = 0;
 
  cleanup:
-    VIR_FREE(nodeset);
     virBitmapFree(nodes);
     libxl_bitmap_dispose(&nodemap);
     virDomainObjEndAPI(&vm);
@@ -5783,7 +5776,7 @@ libxlNodeDeviceDetachFlags(virNodeDevicePtr dev,
     virPCIDeviceAddress devAddr;
     int ret = -1;
     virNodeDeviceDefPtr def = NULL;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     libxlDriverPrivatePtr driver = dev->conn->privateData;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     virConnectPtr nodeconn = NULL;
@@ -5839,7 +5832,6 @@ libxlNodeDeviceDetachFlags(virNodeDevicePtr dev,
     virNodeDeviceDefFree(def);
     virObjectUnref(nodedev);
     virObjectUnref(nodeconn);
-    VIR_FREE(xml);
     return ret;
 }
 
@@ -5856,7 +5848,7 @@ libxlNodeDeviceReAttach(virNodeDevicePtr dev)
     virPCIDeviceAddress devAddr;
     int ret = -1;
     virNodeDeviceDefPtr def = NULL;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     libxlDriverPrivatePtr driver = dev->conn->privateData;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     virConnectPtr nodeconn = NULL;
@@ -5903,7 +5895,6 @@ libxlNodeDeviceReAttach(virNodeDevicePtr dev)
     virNodeDeviceDefFree(def);
     virObjectUnref(nodedev);
     virObjectUnref(nodeconn);
-    VIR_FREE(xml);
     return ret;
 }
 
@@ -5914,7 +5905,7 @@ libxlNodeDeviceReset(virNodeDevicePtr dev)
     virPCIDeviceAddress devAddr;
     int ret = -1;
     virNodeDeviceDefPtr def = NULL;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     libxlDriverPrivatePtr driver = dev->conn->privateData;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     virConnectPtr nodeconn = NULL;
@@ -5961,7 +5952,6 @@ libxlNodeDeviceReset(virNodeDevicePtr dev)
     virNodeDeviceDefFree(def);
     virObjectUnref(nodedev);
     virObjectUnref(nodeconn);
-    VIR_FREE(xml);
     return ret;
 }
 

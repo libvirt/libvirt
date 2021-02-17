@@ -2102,29 +2102,24 @@ xenFormatCharDev(virConfPtr conf, virDomainDefPtr def,
 static int
 xenFormatCPUAllocation(virConfPtr conf, virDomainDefPtr def)
 {
-    int ret = -1;
-    char *cpus = NULL;
+    g_autofree char *cpus = NULL;
 
     if (virDomainDefGetVcpus(def) < virDomainDefGetVcpusMax(def) &&
         xenConfigSetInt(conf, "maxvcpus", virDomainDefGetVcpusMax(def)) < 0)
-        goto cleanup;
+        return -1;
     if (xenConfigSetInt(conf, "vcpus", virDomainDefGetVcpus(def)) < 0)
-        goto cleanup;
+        return -1;
 
     if ((def->cpumask != NULL) &&
         ((cpus = virBitmapFormat(def->cpumask)) == NULL)) {
-        goto cleanup;
+        return -1;
     }
 
     if (cpus &&
         xenConfigSetString(conf, "cpus", cpus) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(cpus);
-    return ret;
+    return 0;
 }
 
 

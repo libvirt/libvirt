@@ -748,7 +748,7 @@ libxlDomainSaveImageOpen(libxlDriverPrivatePtr driver,
     int fd;
     virDomainDefPtr def = NULL;
     libxlSavefileHeader hdr;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
 
     if ((fd = virFileOpenAs(from, O_RDONLY, 0, -1, -1, 0)) < 0) {
         virReportSystemError(-fd,
@@ -792,15 +792,12 @@ libxlDomainSaveImageOpen(libxlDriverPrivatePtr driver,
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;
 
-    VIR_FREE(xml);
-
     *ret_def = def;
     *ret_hdr = hdr;
 
     return fd;
 
  error:
-    VIR_FREE(xml);
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
     return -1;
@@ -951,7 +948,7 @@ libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     g_autoptr(GDateTime) now = g_date_time_new_now_local();
     g_autofree char *nowstr = NULL;
-    char *dumpfile = NULL;
+    g_autofree char *dumpfile = NULL;
 
     nowstr = g_date_time_format(now, "%Y-%m-%d-%H:%M:%S");
 
@@ -963,7 +960,6 @@ libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
     libxl_domain_core_dump(cfg->ctx, vm->def->id, dumpfile, NULL);
     virObjectLock(vm);
 
-    VIR_FREE(dumpfile);
     return 0;
 }
 
@@ -1262,8 +1258,8 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
     libxlSavefileHeader hdr;
     int ret = -1;
     uint32_t domid = 0;
-    char *dom_xml = NULL;
-    char *managed_save_path = NULL;
+    g_autofree char *dom_xml = NULL;
+    g_autofree char *managed_save_path = NULL;
     int managed_save_fd = -1;
     libxlDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
@@ -1271,7 +1267,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
     libxl_asyncprogress_how aop_console_how;
     libxl_domain_restore_params params;
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
-    char *config_json = NULL;
+    g_autofree char *config_json = NULL;
 
 #ifdef LIBXL_HAVE_PVUSB
     hostdev_flags |= VIR_HOSTDEV_SP_USB;
@@ -1319,7 +1315,6 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
 
             vm->hasManagedSave = false;
         }
-        VIR_FREE(managed_save_path);
     }
 
     if (virDomainObjSetDefTransient(driver->xmlopt, vm, NULL) < 0)
@@ -1513,9 +1508,6 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
 
  cleanup:
     libxl_domain_config_dispose(&d_config);
-    VIR_FREE(config_json);
-    VIR_FREE(dom_xml);
-    VIR_FREE(managed_save_path);
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(managed_save_fd);
     return ret;
