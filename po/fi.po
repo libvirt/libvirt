@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-01-08 17:11+0000\n"
-"PO-Revision-Date: 2021-02-13 09:40+0000\n"
+"PO-Revision-Date: 2021-02-18 11:40+0000\n"
 "Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -64,6 +64,18 @@ msgid ""
 "      $XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
 "\n"
 msgstr ""
+"\n"
+"  Oletuspolut:\n"
+"\n"
+"     Kokoonpanotiedosto (ellei '-f' korvaa sitä):\n"
+"      $XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
+"\n"
+"    Pistokkeet:\n"
+"      $XDG_RUNTIME_DIR/libvirt/virtlockd-sock\n"
+"\n"
+"    PID file:\n"
+"      $XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
+"\n"
 
 msgid ""
 "\n"
@@ -79,6 +91,18 @@ msgid ""
 "      $XDG_RUNTIME_DIR/libvirt/virtlogd.pid\n"
 "\n"
 msgstr ""
+"\n"
+"  Oletuspolut:\n"
+"\n"
+"     Kokoonpanotiedosto (ellei '-f' korvaa sitä):\n"
+"      $XDG_CONFIG_HOME/libvirt/virtlogd.conf\n"
+"\n"
+"    Pistokkeet\n"
+"      $XDG_RUNTIME_DIR/libvirt/virtlogd-sock\n"
+"\n"
+"    PID file:\n"
+"      $XDG_RUNTIME_DIR/libvirt/virtlogd.pid\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -95,6 +119,18 @@ msgid ""
 "      %s/virtlockd.pid\n"
 "\n"
 msgstr ""
+"\n"
+"  Oletuspolut:\n"
+"\n"
+"     Kokoonpanotiedosto (ellei '-f' korvaa sitä):\n"
+"      %s/libvirt/virtlockd.conf\n"
+"\n"
+"    Pistokkeet:\n"
+"      %s/libvirt/virtlockd-sock\n"
+"\n"
+"    PID file (unless overridden by -p):\n"
+"      %s/virtlockd.pid\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -111,6 +147,18 @@ msgid ""
 "      %s/virtlogd.pid\n"
 "\n"
 msgstr ""
+"\n"
+"  Oletuspolut:\n"
+"\n"
+"     Kokoonpanotiedosto (ellei '-f' korvaa sitä):\n"
+"      %s/libvirt/virtlogd.conf\n"
+"\n"
+"    Pistokkeet:\n"
+"      %s/libvirt/virtlogd-sock\n"
+"\n"
+"    PID file (unless overridden by -p):\n"
+"      %s/virtlogd.pid\n"
+"\n"
 
 msgid ""
 "\n"
@@ -144,6 +192,21 @@ msgid ""
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
+"\n"
+"%s [valitsimet]... [<command_string>]\n"
+"%s [valitsimet]... <command> [args...]\n"
+"\n"
+"  valitsimet:\n"
+"    -c | --connect=URI      daemon admin connection URI\n"
+"    -d | --debug=NUM        debug level [0-4]\n"
+"    -h | --help             this help\n"
+"    -l | --log=FILE         output logging to file\n"
+"    -q | --quiet            quiet mode\n"
+"    -v                      short version\n"
+"    -V                      long version\n"
+"         --version[=TYPE]   version, TYPE is short or long (default short)\n"
+"  commands (non interactive mode):\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -170,6 +233,28 @@ msgid ""
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
+"\n"
+"%s [valitsimet]... [<command_string>]\n"
+"%s [valitsimet]... <command> [args...]\n"
+"\n"
+"  valitsimet:\n"
+"    -c | --connect=URI      hypervisor connection URI\n"
+"    -d | --debug=NUM        debug level [0-4]\n"
+"    -e | --escape <char>    set escape sequence for console\n"
+"    -h | --help             this help\n"
+"    -k | --keepalive-interval=NUM\n"
+"                            keepalive interval in seconds, 0 for disable\n"
+"    -K | --keepalive-count=NUM\n"
+"                            number of possible missed keepalive messages\n"
+"    -l | --log=FILE         output logging to file\n"
+"    -q | --quiet            quiet mode\n"
+"    -r | --readonly         connect readonly\n"
+"    -t | --timing           print timing information\n"
+"    -v                      short version\n"
+"    -V                      long version\n"
+"         --version[=TYPE]   version, TYPE is short or long (default short)\n"
+"  commands (non interactive mode):\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -192,6 +277,24 @@ msgid ""
 "    -F | --append-file <file>      append file to an existing profile\n"
 "\n"
 msgstr ""
+"\n"
+"%s tilat [valitsimet] [ylimääräinen tiedosto] [< def.xml]\n"
+"\n"
+"  Tilat:\n"
+"    -a | --add                     load profile\n"
+"    -c | --create                  create profile from template\n"
+"    -D | --delete                  unload profile and delete generated "
+"rules\n"
+"    -r | --replace                 reload profile\n"
+"    -R | --remove                  unload profile\n"
+"  Valitsimet:\n"
+"    -d | --dryrun                  dry run\n"
+"    -u | --uuid <uuid>             uuid (profile name)\n"
+"    -h | --help                    this help\n"
+"  Ylimääräinen tiedosto:\n"
+"    -f | --add-file <file>         add file to a profile generated from XML\n"
+"    -F | --append-file <file>      append file to an existing profile\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -258,6 +361,20 @@ msgid ""
 "\n"
 "libvirt lock management daemon:\n"
 msgstr ""
+"\n"
+"Käyttö::\n"
+"  %s [valitsimet]\n"
+"\n"
+"Valitsimet:\n"
+"  -h | --help            Display program help:\n"
+"  -v | --verbose         Verbose messages.\n"
+"  -d | --daemon          Run as a daemon & write PID file.\n"
+"  -t | --timeout <secs>  Exit after timeout period.\n"
+"  -f | --config <file>   Configuration file.\n"
+"  -V | --version         Display version information.\n"
+"  -p | --pid-file <file> Change name of PID file.\n"
+"\n"
+"libvirt lock management daemon:\n"
 
 #, c-format
 msgid ""
@@ -276,6 +393,20 @@ msgid ""
 "\n"
 "libvirt log management daemon:\n"
 msgstr ""
+"\n"
+"Käyttö::\n"
+"  %s [valitsimet]\n"
+"\n"
+"Valitsimet:\n"
+"  -h | --help            Display program help:\n"
+"  -v | --verbose         Verbose messages.\n"
+"  -d | --daemon          Run as a daemon & write PID file.\n"
+"  -t | --timeout <secs>  Exit after timeout period.\n"
+"  -f | --config <file>   Configuration file.\n"
+"  -V | --version         Display version information.\n"
+"  -p | --pid-file <file> Change name of PID file.\n"
+"\n"
+"libvirt log management daemon:\n"
 
 #, c-format
 msgid ""
@@ -294,6 +425,19 @@ msgid ""
 "   -q, --quiet    Don't display progress information\n"
 "\n"
 msgstr ""
+"\n"
+"syntax: %s [valitsimet] [hypervisorin tyypit:\n"
+"\n"
+" Hypervisorin tyypit:\n"
+"   - qemu\n"
+"   - lxc\n"
+"   - bhyve\n"
+"\n"
+" Valitsimet\n"
+"   -h, --help     Display command line help\n"
+"   -v, --version  Display command version\n"
+"   -q, --quiet    Don't display progress information\n"
+"\n"
 
 #, c-format
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
@@ -305,11 +449,11 @@ msgstr "  NIMI\n"
 
 #, c-format
 msgid " %s (help keyword '%s')\n"
-msgstr ""
+msgstr " %s (ohjeen avainsana'%s')\n"
 
 #, c-format
 msgid " %s (help keyword '%s'):\n"
-msgstr ""
+msgstr " %s (ohjeen avainsana '%s'):\n"
 
 msgid " Hypervisors:"
 msgstr " Hypervisor:"
@@ -321,7 +465,7 @@ msgid " Networking:"
 msgstr " Verkko:"
 
 msgid " Storage:"
-msgstr ""
+msgstr " Tallennustila:"
 
 #, c-format
 msgid ""
@@ -330,6 +474,10 @@ msgid ""
 " cur=%llu\n"
 " end=%llu\n"
 msgstr ""
+" tyyppi=%s\n"
+" kaistanleveys=%lu\n"
+" cur=%llu\n"
+"loppu=%llu\n"
 
 #, c-format
 msgid ""
@@ -337,6 +485,10 @@ msgid ""
 "from stored identity. Please verify the new host key '%s' to avoid possible "
 "man in the middle attack. The key is stored in '%s'."
 msgstr ""
+"SSH-ISÄNTÄAVAIMEN VAHVISTUS EPÄONNISTUI!: Isännän '%s:%d' identiteetti eroaa "
+"tallennetusta identiteetistä. Vahvista uusi isäntäavain '%s' välttääksesi "
+"mahdollisen man in the middle -hyökkäyksen välttämiseksi. Avain on "
+"tallennettu . Avain on tallennettu '%s':een."
 
 #, c-format
 msgid "$%s value should be between 0 and %d"
@@ -344,11 +496,11 @@ msgstr ""
 
 #, c-format
 msgid "%6s: Checking %-60s: "
-msgstr ""
+msgstr "%6s: Tarkistetaan %-60s: "
 
 #, c-format
 msgid "%s\n"
-msgstr ""
+msgstr "%s\n"
 
 #, c-format
 msgid "%s %s"
@@ -356,107 +508,110 @@ msgstr "%s %s"
 
 #, c-format
 msgid "%s %s '%s' has an unsupported type '%s'"
-msgstr ""
+msgstr "%s %s '%s' :lla on tyyppiä, jota ei tueta '%s'"
 
 #, c-format
 msgid "%s %s '%s' has unsupported type '%s', expecting '%s' or '%s'"
 msgstr ""
+"%s %s '%s' :lla on tyyppiä, jota ei tueta '%s', odotetaan'%s':ta tai '%s':ta"
 
 #, c-format
 msgid "%s (out of %d)"
-msgstr ""
+msgstr "%s (%d:sta)"
 
 #, c-format
 msgid "%s 3d acceleration is not supported"
-msgstr ""
+msgstr "%s 3D-kiihdytystä ei tueta"
 
 #, c-format
 msgid "%s array element does not contain a string"
-msgstr ""
+msgstr "%staulukkoelementti ei sisällä merkkijonoa"
 
 #, c-format
 msgid "%s array element is missing item %zu"
-msgstr ""
+msgstr "%staulukkoelementistä puuttuu kohde %zu"
 
 #, c-format
 msgid "%s can't be empty"
-msgstr ""
+msgstr "%s ei voi olla tyhjä"
 
 #, c-format
 msgid "%s cannot be set higher than %s "
-msgstr ""
+msgstr "%s:ta ei voida asettaa korkeammaksi kuin %s "
 
 #, c-format
 msgid "%s cannot parse GID '%s'"
-msgstr ""
+msgstr "%s ei voi jäsentää GID:ta '%s'"
 
 #, c-format
 msgid "%s cannot parse UID '%s'"
-msgstr ""
+msgstr "%s ei voi jäsentää UID:ta '%s'"
 
 #, c-format
 msgid "%s does not support passing a passphrase using a file descriptor"
-msgstr ""
+msgstr "%s ei tue salasanan välittämistä tiedostokuvaajan avulla"
 
 #, c-format
 msgid "%s does not support passing passphrase via file descriptor"
-msgstr ""
+msgstr "%s ei tue salasanan välittämistä tiedostokuvaajan kautta"
 
 #, c-format
 msgid "%s expects UID and GID parameters"
-msgstr ""
+msgstr "%s odottaa UID- ja GID-parametreja"
 
 #, c-format
 msgid "%s failed new mode for target '%s' with status '%d'"
-msgstr ""
+msgstr "%s epäonnistui uusi tila kohteelle '%s' tilassa'%d'"
 
 #, c-format
 msgid "%s family specified for non-IPv4 address '%s' in network '%s'"
-msgstr ""
+msgstr "%s määritetty perhe, joka ei ole IPv4-osoite '%s' verkossa '%s'"
 
 #, c-format
 msgid "%s forwarding requested, but no IP address provided for network '%s'"
 msgstr ""
+"%s edelleenlähetystä pyydetään, mutta verkolle '%s' ei ole annettu IP-"
+"osoitetta"
 
 #, c-format
 msgid "%s graphics are not supported with this QEMU"
-msgstr ""
+msgstr "%s grafiikkaa ei tueta tässä QEMU:ssa"
 
 #, c-format
 msgid "%s harddisk '%s' has unsupported cache mode '%s'"
-msgstr ""
+msgstr "%s kiintolevyllä '%s' on välimuistitila, jota ei tueta '%s'"
 
 #, c-format
 msgid "%s has illegal value %s"
-msgstr ""
+msgstr "%s:lla on kelvoton arvo %s"
 
 #, c-format
 msgid "%s has unexpected '*' before last line"
-msgstr ""
+msgstr "%s:lla on odottamaton '*' ennen viimeistä riviä"
 
 #, c-format
 msgid "%s in %s must be NULL"
-msgstr ""
+msgstr "%s:n %s:ssa on oltava NOLLA"
 
 #, c-format
 msgid "%s in %s must be greater than zero"
-msgstr ""
+msgstr "%s:n %s:ssa on oltava suurempi kuin nolla"
 
 #, c-format
 msgid "%s in %s must be zero"
-msgstr ""
+msgstr "%s:n %s:ssa on oltava nolla"
 
 #, c-format
 msgid "%s in %s must be zero or greater"
-msgstr ""
+msgstr "%s:n %s:ssa on oltava nolla tai suurempi"
 
 #, c-format
 msgid "%s in %s must not be NULL"
-msgstr ""
+msgstr "%s %s:ssa ei voi olla NOLLA"
 
 #, c-format
 msgid "%s in %s must not be zero"
-msgstr ""
+msgstr "%s %s:ssa ei voi olla nolla"
 
 #, c-format
 msgid "%s is missing 'type' property"
@@ -4946,9 +5101,9 @@ msgstr ""
 msgid "Device %s reset\n"
 msgstr "Laite %s nollattu\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Device %s un-attached from bridge %s\n"
-msgstr "Toimialue %s luotu tiedostosta %s\n"
+msgstr "Laite %s irrotettu sillasta %s\n"
 
 #, c-format
 msgid "Device '%s' already formatted using '%s'"
@@ -5106,9 +5261,8 @@ msgstr "Näytä suoritinta kohti ja toimialueen suorittimien kokonaistilastot"
 msgid "Display program help"
 msgstr ""
 
-#, fuzzy
 msgid "Display the system and also the daemon version information."
-msgstr "Näytä järjestelmän versiotiedot."
+msgstr "Näytä järjestelmä ja myös daemon-version tiedot."
 
 msgid "Display the system version information."
 msgstr "Näytä järjestelmän versiotiedot."
@@ -5232,9 +5386,8 @@ msgstr "Toimialueen %s automaattisen käynnistyksen merkintä poistettu\n"
 msgid "Domain '%s' was reset\n"
 msgstr ""
 
-#, fuzzy
 msgid "Domain Events"
-msgstr "Toimialuetta ei löytynyt"
+msgstr "Toimialueen tapahtumat"
 
 msgid "Domain UUID is malformed or empty"
 msgstr ""
@@ -5264,13 +5417,12 @@ msgstr ""
 msgid "Domain autodestroy requires a connection handle"
 msgstr ""
 
-#, fuzzy
 msgid "Domain backup job id not found"
-msgstr "Toimialuetta ei löytynyt"
+msgstr "Toimialueen varmuuskopiointityön tunnusta ei löydy"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain backup job id not found: %s"
-msgstr "Toimialuetta ei löytynyt: %s"
+msgstr "Toimialueen varmuuskopiointityön tunnusta ei löydy: %s"
 
 #, c-format
 msgid "Domain checkpoint %s children deleted\n"
@@ -5288,13 +5440,12 @@ msgstr "Toimialueen tarkistuspiste %s luotu tiedostosta '%s'"
 msgid "Domain checkpoint %s deleted\n"
 msgstr "Toimialueen tarkistuspiste %s poistettu\n"
 
-#, fuzzy
 msgid "Domain checkpoint not found"
-msgstr "Toimialuetta ei löytynyt"
+msgstr "Toimialueen tarkistuskohtaa ei löytynyt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain checkpoint not found: %s"
-msgstr "Toimialuetta ei löytynyt: %s"
+msgstr "Toimialueen tarkistuskohtaa ei löytynyt %s"
 
 msgid "Domain description not changed\n"
 msgstr ""
@@ -5326,27 +5477,23 @@ msgstr ""
 msgid "Domain hostdev device"
 msgstr "Toimialueen hostdev-laite"
 
-#, fuzzy
 msgid "Domain information of managed save state file in XML"
-msgstr "toimialuetiedot XML-muodossa"
+msgstr "Hallitun tallennustilan tiedoston toimialuetiedot XML-muodossa"
 
-#, fuzzy
 msgid "Domain interface"
-msgstr "toimialueen tila"
+msgstr "Toimialueen liitäntä"
 
 msgid "Domain is already active"
 msgstr "Toimialue on jo aktiivinen"
 
-#, fuzzy
 msgid "Domain is already active or is in state transition"
-msgstr "Toimialue on jo aktiivinen"
+msgstr "Toimialue on jo aktiivinen tai on tilasiirtymässä"
 
 msgid "Domain is already running"
 msgstr "toimialue on jo käynnissä"
 
-#, fuzzy
 msgid "Domain is not active"
-msgstr "Toimialue on jo aktiivinen"
+msgstr "Toimialue ei ole aktiivinen"
 
 msgid "Domain is not active or in state transition"
 msgstr ""
@@ -5354,17 +5501,14 @@ msgstr ""
 msgid "Domain is not active or is in state transition"
 msgstr ""
 
-#, fuzzy
 msgid "Domain is not paused"
-msgstr "Toimialue ei ole käynnissä"
+msgstr "Toimialue ei ole keskeytettynä"
 
-#, fuzzy
 msgid "Domain is not powered off"
-msgstr "Toimialue ei ole käynnissä"
+msgstr "Toimialue ei ole sammutettuna"
 
-#, fuzzy
 msgid "Domain is not powered on"
-msgstr "Toimialue ei ole käynnissä"
+msgstr "Toimialue ei ole käynnistettynä"
 
 msgid "Domain is not running"
 msgstr "Toimialue ei ole käynnissä"
@@ -5413,17 +5557,16 @@ msgstr "Toimialueen tilannevedos %s luotu"
 msgid "Domain snapshot %s created from '%s'"
 msgstr "Toimialueen tilannevedos %s luotu tiedostosta %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain snapshot %s deleted\n"
-msgstr "Toimialue %s tuhottu\n"
+msgstr "Toimialueen tilannevedos %s tuhottu\n"
 
-#, fuzzy
 msgid "Domain snapshot not found"
-msgstr "Toimialuetta ei löytynyt"
+msgstr "Toimialueen tilannevedosta ei löytynyt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain snapshot not found: %s"
-msgstr "Toimialuetta ei löytynyt: %s"
+msgstr "Toimialueen tilannevedosta ei löytynyt: %s"
 
 msgid "Domain title can't contain newlines"
 msgstr ""
@@ -5437,9 +5580,8 @@ msgstr ""
 msgid "Domain-0 cannot be migrated"
 msgstr ""
 
-#, fuzzy
 msgid "Domain-0 does not support requested operation"
-msgstr "komento ”%s” ei tue valitsinta --%s"
+msgstr "Toimialue-0 ei tue pyydettyä toimintaa"
 
 msgid "Domain:"
 msgstr "Toimialue:"
@@ -5466,9 +5608,8 @@ msgstr ""
 msgid "Driver does not support setting multiple IP addresses"
 msgstr ""
 
-#, fuzzy
 msgid "Driver state initialization failed"
-msgstr "todennus epäonnistui"
+msgstr "Ohjaimen tilan alustus epäonnistui"
 
 msgid "Dump"
 msgstr ""
@@ -5482,13 +5623,15 @@ msgstr ""
 msgid "Dump XML for an ongoing domain block backup job"
 msgstr ""
 
-#, fuzzy
 msgid "Dump XML of domain information for a managed save state file to stdout."
-msgstr "Tulosta toimialuetiedot XML-muodossa oletustulosteeseen."
+msgstr ""
+"Tulosta toimialuetiedot XML-muodossa hallitulle tallennustilan tiedostolle "
+"stdout:een."
 
-#, fuzzy
 msgid "Dump XML of domain information for a saved state file to stdout."
-msgstr "Tulosta toimialuetiedot XML-muodossa oletustulosteeseen."
+msgstr ""
+"Tulosta toimialuetiedot XML-muodossa hallitulle tallennustilan tiedostolle "
+"stdout:een."
 
 msgid "Dump failed"
 msgstr ""
@@ -5554,9 +5697,8 @@ msgstr ""
 msgid "Edit the XML configuration for a storage pool."
 msgstr ""
 
-#, fuzzy
 msgid "Edit the domain XML associated with a saved state file"
-msgstr "palauta toimialue tiedostoon tallennetusta tilasta"
+msgstr "Muokkaa tallennettua tilatiedostoon liittyvää toimialueen XML-tiedostoa"
 
 msgid "Edit the domain XML associated with the managed save state file"
 msgstr ""
@@ -5589,21 +5731,21 @@ msgstr ""
 msgid "Empty response during %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Emulator '%s' does not support arch '%s'"
-msgstr "komento ”%s” ei tue valitsinta --%s"
+msgstr "Emulaattori '%s' ei tue arkkitehtuuria '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Emulator '%s' does not support machine type '%s'"
-msgstr "komento ”%s” ei tue valitsinta --%s"
+msgstr "Emulaattori '%s' ei tue konetyyppiä '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Emulator '%s' does not support os type '%s'"
-msgstr "komento ”%s” ei tue valitsinta --%s"
+msgstr "Emulaattori '%s' ei tue os-tyyppiä '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Emulator '%s' does not support virt type '%s'"
-msgstr "komento ”%s” ei tue valitsinta --%s"
+msgstr "Emulaattori '%s' ei tue virt-tyyppiä '%s'"
 
 msgid "Enabled"
 msgstr "Käytössä"
@@ -5682,9 +5824,9 @@ msgstr "Virheviesti:"
 msgid "Error notify callback must be supplied"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Error opening file %s"
-msgstr "GET-toimenpide epäonnistui: %s"
+msgstr "Virhe tiedoston avaamisessa %s"
 
 #, c-format
 msgid "Error reading secret: %s"
@@ -5736,9 +5878,8 @@ msgstr ""
 msgid "Ethernet controller index %d out of [0..%d] range"
 msgstr ""
 
-#, fuzzy
 msgid "Event thread is already running"
-msgstr "toimialue on jo käynnissä"
+msgstr "Tapahtumaketju on jo käynnissä"
 
 msgid "Event wakeup"
 msgstr ""
@@ -5766,9 +5907,9 @@ msgstr ""
 msgid "Exit after timeout period"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Expected a /dev path for '%s'"
-msgstr "odottamatonta dataa ”%s”"
+msgstr "Odotettu /dev-polku '%s':lle"
 
 #, c-format
 msgid "Expected an interface of type 'network' not '%s'"
@@ -5992,9 +6133,8 @@ msgstr ""
 msgid "FDC unit index %d out of [0..1] range"
 msgstr ""
 
-#, fuzzy
 msgid "Fail to create socket for incoming migration"
-msgstr "Levytietojen haku epäonnistui"
+msgstr "Socketin luominen saapuvaa siirtoa varten epäonnistui"
 
 msgid "Failed"
 msgstr "Epäonnistui"
@@ -6010,25 +6150,23 @@ msgstr ""
 msgid "Failed set TLS x509 credentials: %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed testunitready: %s"
-msgstr "Verkon %s tuhoaminen epäonnistui"
+msgstr "Epäonnistui testunitready: %s"
 
-#, fuzzy
 msgid "Failed to accept migration connection"
-msgstr "Liitännän tietojen haku epäonnistui"
+msgstr "Siirtoyhteyden hyväksyminen epäonnistui"
 
 #, c-format
 msgid "Failed to access '%s'"
 msgstr "'%s':n käyttö epäonnistui"
 
-#, fuzzy
 msgid "Failed to acquire lock"
-msgstr "XML:n luonti epäonnistui"
+msgstr "Lukituksen hankinta epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to acquire lock: %s"
-msgstr "Verkon %s käynnistäminen epäonnistui"
+msgstr "Lukituksen hankinta epäonnistui: %s"
 
 #, c-format
 msgid "Failed to acquire pid file '%s'"
@@ -6069,65 +6207,59 @@ msgstr ""
 msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to allocate PCI device list: %s"
-msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
+msgstr "PCI-laiteluettelon allokointi epäonnistui: %s"
 
-#, fuzzy
 msgid "Failed to allocate XML buffer"
-msgstr "XML:n luonti epäonnistui"
+msgstr "XML-puskurin allokointi epäonnistui"
 
 #, c-format
 msgid "Failed to allocate memory for checkpoint directory for domain %s"
 msgstr ""
 
-#, fuzzy
 msgid "Failed to allocate memory for path"
-msgstr "Verkon luominen tiedostosta %s epäonnistui"
+msgstr "Muistin varaaminen polulle epäonnistui"
 
 #, c-format
 msgid "Failed to allocate memory for snapshot directory for domain %s"
 msgstr ""
 
-#, fuzzy
 msgid "Failed to allocate new source node"
-msgstr "Verkon luominen tiedostosta %s epäonnistui"
+msgstr "Uuden lähdesolmun allokointi epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to allocate slirp for '%s'"
-msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
+msgstr "slirp:n varaaminen '%s':lle epäonnistui"
 
-#, fuzzy
 msgid "Failed to allocate tty"
-msgstr "XML:n luonti epäonnistui"
+msgstr "tty:n varaaminen epäonnistui"
 
 #, c-format
 msgid "Failed to apply capabilities: %d"
 msgstr "Kykyjen käyttäminen epäonnistui: %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to apply firewall rules %s: %s"
-msgstr "Liitäntätilastojen haku epäonnistui %s %s"
+msgstr "Palomuurisääntöjen %s soveltaminen epäonnistui: %s"
 
 #, c-format
 msgid "Failed to attach device from %s"
 msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
 
-#, fuzzy
 msgid "Failed to attach disk"
-msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
+msgstr "Levyn liittäminen epäonnistui"
 
-#, fuzzy
 msgid "Failed to attach interface"
-msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
+msgstr "Liitännän liittäminen epäonnistui"
 
 #, c-format
 msgid "Failed to attach to pid %u"
 msgstr "PID:n %u liittäminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to authenticate as 'none': %s"
-msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
+msgstr "Todentaminen 'none'na epäonnistui: %s"
 
 #, c-format
 msgid "Failed to autostart VM '%s': %s"
@@ -6137,17 +6269,15 @@ msgstr "Virtuaalikoneen '%s' automaattinen käynnistys epäonnistui: %s"
 msgid "Failed to autostart storage pool '%s': %s"
 msgstr "Tallennusvarannon '%s' automaattinen käynnistys epäonnistui: %s"
 
-#, fuzzy
 msgid "Failed to balloon domain0 memory"
-msgstr "Toimialueen %s uudelleenkäynnistys epäonnistui"
+msgstr "Toimialue0-muistin ilmapallo:minen epäonnistui"
 
-#, fuzzy
 msgid "Failed to begin network config change transaction"
-msgstr "Verkon määrittäminen tiedostosta %s epäonnistui"
+msgstr "Verkkokokoonpanon muutostapahtuman aloittaminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bind %s on to %s"
-msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
+msgstr "%s:n liittäminen %s:een epäonnistui"
 
 #, c-format
 msgid "Failed to bind %s to new root %s"
@@ -6161,9 +6291,9 @@ msgstr "cgroup '%s' -sidonta epäonnistui '%s':lla"
 msgid "Failed to bind mount directory %s to %s"
 msgstr "Liitoshakemiston %s sidonta %s:een epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bind socket to '%s'"
-msgstr "Verkkoa ei löytynyt: %s"
+msgstr "Pistokkeen liittäminen '%s':een epäonnistui"
 
 #, fuzzy, c-format
 msgid "Failed to build path for %s hook"
