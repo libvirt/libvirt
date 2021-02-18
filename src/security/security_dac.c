@@ -1430,10 +1430,9 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
         if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
             g_autofree char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
-            if (!vfioGroupDev) {
-                virPCIDeviceFree(pci);
+            if (!vfioGroupDev)
                 return -1;
-            }
+
             ret = virSecurityDACRestoreFileLabelInternal(mgr, NULL,
                                                          vfioGroupDev, false);
         } else {
