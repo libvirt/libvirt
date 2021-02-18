@@ -112,5 +112,5 @@ char ** virshDomainLifecycleActionCompleter(vshControl *ctl,
                                             unsigned int flags);
 
 char ** virshCodesetNameCompleter(vshControl *ctl,
-                              const vshCmd *cmd,
-                              unsigned int flags);
+                                  const vshCmd *cmd,
+                                  unsigned int flags);
