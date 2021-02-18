@@ -2886,7 +2886,7 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     g_autofree char *escapedName = NULL;
     g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     g_autofree char *url = NULL;
-    char *datastoreRelatedPath = NULL;
+    g_autofree char *datastoreRelatedPath = NULL;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *hostSystem = NULL;
     esxVI_ManagedObjectReference *resourcePool = NULL;
