@@ -1661,6 +1661,7 @@ qemuMonitorCPUInfoClear(qemuMonitorCPUInfoPtr cpus,
         VIR_FREE(cpus[i].alias);
         VIR_FREE(cpus[i].type);
         virJSONValueFree(cpus[i].props);
+        cpus[i].props = NULL;
     }
 }
 
