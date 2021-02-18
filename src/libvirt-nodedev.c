@@ -78,35 +78,7 @@ virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
  * objects.
  *
  * Normally, all node devices are returned; however, @flags can be used to
- * filter the results for a smaller list of targeted node devices.  The valid
- * flags are divided into groups, where each group contains bits that
- * describe mutually exclusive attributes of a node device, and where all bits
- * within a group describe all possible node devices.
- *
- * Only one group of the @flags is provided to filter the node devices by
- * capability type, flags include:
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_PCI_DEV
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_DEV
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_INTERFACE
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_NET
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_HOST
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_TARGET
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_FC_HOST
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_DRM
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV_TYPES
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_CSS_DEV
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_CARD
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_QUEUE
- *   VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_MATRIX
- *   VIR_CONNECT_LIST_NODE_DEVICES_ACTIVE
- *   VIR_CONNECT_LIST_NODE_DEVICES_INACTIVE
+ * filter the results for a smaller list of targeted node devices.
  *
  * Returns the number of node devices found or -1 and sets @devices to NULL in
  * case of error.  On success, the array stored into @devices is guaranteed to

@@ -60,8 +60,7 @@ int                     virNodeListDevices      (virConnectPtr conn,
 /*
  * virConnectListAllNodeDevices:
  *
- * Flags used to filter the returned node devices. Flags in each group
- * are exclusive.  */
+ * Flags used to filter the returned node devices.  */
 typedef enum {
     /* filter the devices by cap type */
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM        = 1 << 0,  /* System capability */
