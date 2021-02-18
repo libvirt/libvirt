@@ -1080,7 +1080,9 @@ hypervDomainAttachSyntheticEthernetAdapter(virDomainPtr domain,
      */
     portResourceType = g_strdup_printf("%d", MSVM_RASD_RESOURCETYPE_ETHERNET_ADAPTER);
 
-    virUUIDGenerate(vsiGuid);
+    if (virUUIDGenerate(vsiGuid) < 0)
+        return -1;
+
     virUUIDFormat(vsiGuid, guidString);
     virtualSystemIdentifiers = g_strdup_printf("{%s}", guidString);
 
