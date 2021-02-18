@@ -32,6 +32,9 @@
 #include "virperf.h"
 #include "virbitmap.h"
 #include "virkeycode.h"
+#include "virkeynametable_linux.h"
+#include "virkeynametable_osx.h"
+#include "virkeynametable_win32.h"
 
 char **
 virshDomainNameCompleter(vshControl *ctl,
@@ -797,6 +800,75 @@ virshCodesetNameCompleter(vshControl *ctl G_GNUC_UNUSED,
         const char *name = virKeycodeSetTypeToString(i);
         tmp[i] = g_strdup(name);
     }
+
+    return g_steal_pointer(&tmp);
+}
+
+
+char **
+virshKeycodeNameCompleter(vshControl *ctl,
+                          const vshCmd *cmd,
+                          unsigned int flags)
+{
+    g_auto(GStrv) tmp = NULL;
+    size_t i = 0;
+    size_t j = 0;
+    const char *codeset_option;
+    int codeset;
+    const char **names = NULL;
+    size_t len;
+
+    virCheckFlags(0, NULL);
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "codeset", &codeset_option) <= 0)
+        codeset_option = "linux";
+
+    if (STREQ(codeset_option, "rfb"))
+        codeset_option = "qnum";
+
+    codeset = virKeycodeSetTypeFromString(codeset_option);
+
+    if (codeset < 0)
+        return NULL;
+
+    switch ((virKeycodeSet) codeset) {
+    case VIR_KEYCODE_SET_LINUX:
+        names = virKeyNameTable_linux;
+        len = virKeyNameTable_linux_len;
+        break;
+    case VIR_KEYCODE_SET_OSX:
+        names = virKeyNameTable_osx;
+        len = virKeyNameTable_osx_len;
+        break;
+    case VIR_KEYCODE_SET_WIN32:
+        names = virKeyNameTable_win32;
+        len = virKeyNameTable_win32_len;
+        break;
+    case VIR_KEYCODE_SET_XT:
+    case VIR_KEYCODE_SET_ATSET1:
+    case VIR_KEYCODE_SET_ATSET2:
+    case VIR_KEYCODE_SET_ATSET3:
+    case VIR_KEYCODE_SET_XT_KBD:
+    case VIR_KEYCODE_SET_USB:
+    case VIR_KEYCODE_SET_QNUM:
+    case VIR_KEYCODE_SET_LAST:
+        break;
+    }
+
+    if (!names)
+        return NULL;
+
+    tmp = g_new0(char *, len + 1);
+
+    for (i = 0; i < len; i++) {
+        if (!names[i])
+            continue;
+
+        tmp[j] = g_strdup(names[i]);
+        j++;
+    }
+
+    tmp = g_renew(char *, tmp, j + 1);
 
     return g_steal_pointer(&tmp);
 }

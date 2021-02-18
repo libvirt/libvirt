@@ -8802,6 +8802,7 @@ static const vshCmdOptDef opts_send_key[] = {
     {.name = "keycode",
      .type = VSH_OT_ARGV,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshKeycodeNameCompleter,
      .help = N_("the key code")
     },
     {.name = NULL}
