@@ -105,8 +105,6 @@ virQEMUSaveDataNew(char *domXML,
 
     data = g_new0(virQEMUSaveData, 1);
 
-    data->xml = g_steal_pointer(&domXML);
-
     if (cookieObj &&
         !(data->cookie = virSaveCookieFormat((virObjectPtr) cookieObj,
                                              virDomainXMLOptionGetSaveCookie(xmlopt))))
@@ -118,6 +116,7 @@ virQEMUSaveDataNew(char *domXML,
     header->was_running = running ? 1 : 0;
     header->compressed = compressed;
 
+    data->xml = domXML;
     return data;
 
  error:
