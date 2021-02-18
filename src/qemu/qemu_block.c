@@ -280,25 +280,22 @@ qemuBlockDiskDetectNodes(virDomainDiskDefPtr disk,
     qemuBlockNodeNameBackingChainDataPtr entry = NULL;
     virStorageSourcePtr src = disk->src;
     g_autofree char *alias = NULL;
-    int ret = -1;
 
     /* don't attempt the detection if the top level already has node names */
     if (src->nodeformat || src->nodestorage)
         return 0;
 
     if (!(alias = qemuAliasDiskDriveFromDisk(disk)))
-        goto cleanup;
+        return -1;
 
-    if (!(entry = virHashLookup(disktable, alias))) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!(entry = virHashLookup(disktable, alias)))
+        return 0;
 
     while (virStorageSourceIsBacking(src) && entry) {
         if (src->nodeformat || src->nodestorage) {
             if (STRNEQ_NULLABLE(src->nodeformat, entry->nodeformat) ||
                 STRNEQ_NULLABLE(src->nodestorage, entry->nodestorage))
-                goto cleanup;
+                goto error;
 
             break;
         } else {
@@ -310,13 +307,11 @@ qemuBlockDiskDetectNodes(virDomainDiskDefPtr disk,
         src = src->backingStore;
     }
 
-    ret = 0;
+    return 0;
 
- cleanup:
-    if (ret < 0)
-        qemuBlockDiskClearDetectedNodes(disk);
-
-    return ret;
+ error:
+    qemuBlockDiskClearDetectedNodes(disk);
+    return -1;
 }
 
 
