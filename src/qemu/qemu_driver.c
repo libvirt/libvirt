@@ -11998,7 +11998,6 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
                           unsigned int flags)
 {
     virQEMUDriverPtr driver = dev->conn->privateData;
-    bool vfio = qemuHostdevHostSupportsPassthroughVFIO();
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     virCheckFlags(0, -1);
@@ -12006,22 +12005,27 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
     if (!driverName)
         driverName = "vfio";
 
-    if (STREQ(driverName, "vfio") && !vfio) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("VFIO device assignment is currently not "
-                         "supported on this system"));
-         return -1;
-    } else if (STREQ(driverName, "kvm")) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("KVM device assignment is no longer "
-                         "supported on this system"));
-        return -1;
-    } else {
+    /* Only the 'vfio' driver is supported and a special error message for
+     * the previously supported 'kvm' driver is provided below. */
+    if (STRNEQ(driverName, "vfio") && STRNEQ(driverName, "kvm")) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unknown driver name '%s'"), driverName);
         return -1;
     }
 
+    if (STREQ(driverName, "kvm")) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("KVM device assignment is no longer "
+                         "supported on this system"));
+        return -1;
+    }
+
+    if (!qemuHostdevHostSupportsPassthroughVFIO()) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("VFIO device assignment is currently not "
+                         "supported on this system"));
+         return -1;
+    }
 
     /* virNodeDeviceDetachFlagsEnsureACL() is being called by
      * virDomainDriverNodeDeviceDetachFlags() */
