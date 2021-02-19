@@ -253,17 +253,6 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
             }
             break;
 
-        case VIR_DOMAIN_FEATURE_KVM:
-            if (def->kvm_features[VIR_DOMAIN_KVM_DEDICATED] == VIR_TRISTATE_SWITCH_ON &&
-                (!def->cpu || (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
-                               def->cpu->mode != VIR_CPU_MODE_MAXIMUM))) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("kvm-hint-dedicated=on is only applicable "
-                                 "for cpu host-passthrough / maximum"));
-                return -1;
-            }
-            break;
-
         case VIR_DOMAIN_FEATURE_VMPORT:
             if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
                 !virQEMUCapsSupportsVmport(qemuCaps, def)) {
@@ -336,6 +325,7 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
             }
             break;
 
+        case VIR_DOMAIN_FEATURE_KVM:
         case VIR_DOMAIN_FEATURE_XEN:
         case VIR_DOMAIN_FEATURE_ACPI:
         case VIR_DOMAIN_FEATURE_PAE:
