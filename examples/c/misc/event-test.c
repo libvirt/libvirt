@@ -938,7 +938,7 @@ myDomainEventBlockJobCallback(virConnectPtr conn G_GNUC_UNUSED,
     const char *eventName = opaque;
 
     printf("%s EVENT: Domain %s(%d) block job callback '%s' disk '%s', "
-           "type '%s' status '%s'",
+           "type '%s' status '%s'\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom), eventName,
            disk, blockJobTypeToStr(type), blockJobStatusToStr(status));
     return 0;
@@ -956,7 +956,7 @@ myDomainEventBlockThresholdCallback(virConnectPtr conn G_GNUC_UNUSED,
 {
     /* Casts to uint64_t to work around mingw not knowing %lld */
     printf("%s EVENT: Domain %s(%d) block threshold callback dev '%s'(%s), "
-           "threshold: '%" PRIu64 "', excess: '%" PRIu64 "'",
+           "threshold: '%" PRIu64 "', excess: '%" PRIu64 "'\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom),
            dev, NULLSTR(path), (uint64_t)threshold, (uint64_t)excess);
     return 0;
@@ -972,7 +972,7 @@ myDomainEventMemoryFailureCallback(virConnectPtr conn G_GNUC_UNUSED,
                                    void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) memory failure: recipient '%d', "
-           "aciont '%d', flags '%d'", __func__, virDomainGetName(dom),
+           "aciont '%d', flags '%d'\n", __func__, virDomainGetName(dom),
            virDomainGetID(dom), recipient, action, flags);
     return 0;
 }
