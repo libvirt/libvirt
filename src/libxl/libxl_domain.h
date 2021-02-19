@@ -68,6 +68,7 @@ struct _libxlDomainObjPrivate {
     virThreadPtr migrationDstReceiveThr;
     unsigned short migrationPort;
     char *lockState;
+    bool lockProcessRunning;
 
     struct libxlDomainJobObj job;
 

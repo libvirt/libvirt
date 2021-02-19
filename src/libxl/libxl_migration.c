@@ -1242,9 +1242,12 @@ libxlDomainMigrationSrcPerform(libxlDriverPrivatePtr driver,
     virObjectLock(vm);
 
     if (ret == 0) {
-        if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+        if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) == 0) {
+            priv->lockProcessRunning = false;
+            VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
+        } else {
             VIR_WARN("Unable to release lease on %s", vm->def->name);
-        VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
+        }
     } else {
         /*
          * Confirm phase will not be executed if perform fails. End the
@@ -1377,6 +1380,7 @@ libxlDomainMigrationSrcConfirm(libxlDriverPrivatePtr driver,
                                    "xen:///system",
                                    vm,
                                    priv->lockState);
+        priv->lockProcessRunning = true;
         if (libxl_domain_resume(cfg->ctx, vm->def->id, 1, 0) == 0) {
             ret = 0;
         } else {

@@ -861,10 +861,14 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
     virHostdevReAttachDomainDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                     vm->def, hostdev_flags);
 
-    VIR_FREE(priv->lockState);
-    if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
-        VIR_WARN("Unable to release lease on %s", vm->def->name);
-    VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
+    if (priv->lockProcessRunning) {
+        VIR_FREE(priv->lockState);
+        if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+            VIR_WARN("Unable to release lease on %s", vm->def->name);
+        else
+            priv->lockProcessRunning = false;
+        VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
+    }
 
     libxlLoggerCloseFile(cfg->logger, vm->def->id);
     vm->def->id = -1;
@@ -1426,6 +1430,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
                                   priv->lockState) < 0)
         goto destroy_dom;
     VIR_FREE(priv->lockState);
+    priv->lockProcessRunning = true;
 
     /* Always enable domain death events */
     if (libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW))
