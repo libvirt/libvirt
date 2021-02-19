@@ -779,8 +779,10 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
         if (STREQ(capsver, "latest")) {
             capsfile = g_strdup(virHashLookup(capslatest, capsarch));
             stripmachinealiases = true;
-        } else capsfile = g_strdup_printf("%s/caps_%s.%s.xml",
-                                          TEST_QEMU_CAPS_PATH, capsver, capsarch);
+        } else {
+            capsfile = g_strdup_printf("%s/caps_%s.%s.xml",
+                                       TEST_QEMU_CAPS_PATH, capsver, capsarch);
+        }
 
         if (!(qemuCaps = qemuTestParseCapabilitiesArch(info->arch, capsfile)))
             goto cleanup;
