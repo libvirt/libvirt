@@ -7659,11 +7659,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     /* Do this before we delete the tree and remove pidfile. */
     qemuProcessKillManagedPRDaemon(vm);
 
-    qemuExtDevicesStop(driver, vm);
-
-    virFileDeleteTree(priv->libDir);
-    virFileDeleteTree(priv->channelTargetDir);
-
     ignore_value(virDomainChrDefForeach(vm->def,
                                         false,
                                         qemuProcessCleanupChardevDevice,
@@ -7677,9 +7672,14 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     qemuDomainCleanupRun(driver, vm);
 
+    qemuExtDevicesStop(driver, vm);
+
     qemuDBusStop(driver, vm);
 
     vm->def->id = -1;
+
+    virFileDeleteTree(priv->libDir);
+    virFileDeleteTree(priv->channelTargetDir);
 
     /* Stop autodestroy in case guest is restarted */
     qemuProcessAutoDestroyRemove(driver, vm);
