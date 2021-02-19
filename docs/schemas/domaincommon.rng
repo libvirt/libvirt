@@ -7010,7 +7010,7 @@
   <define name="cpuquota">
     <data type="long">
       <param name="pattern">-?[0-9]+</param>
-      <param name="maxInclusive">18446744073709551</param>
+      <param name="maxInclusive">17592186044415</param>
       <param name="minInclusive">-1</param>
     </data>
   </define>

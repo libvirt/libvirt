@@ -3818,7 +3818,7 @@ XEN_CREDIT scheduler.
 ``Note``: The vcpu_period, emulator_period, and iothread_period parameters
 have a valid value range of 1000-1000000 or 0, and the vcpu_quota,
 emulator_quota, and iothread_quota parameters have a valid value range of
-1000-18446744073709551 or less than 0. The value 0 for
+1000-17592186044415 or less than 0. The value 0 for
 either parameter is the same as not specifying that parameter.
 
 

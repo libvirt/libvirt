@@ -754,7 +754,7 @@ CPU Tuning
    microseconds). A domain with ``quota`` as any negative value indicates that
    the domain has infinite bandwidth for vCPU threads, which means that it is
    not bandwidth controlled. The value should be in range [1000,
-   18446744073709551] or less than 0. A quota with value 0 means no value. You
+   17592186044415] or less than 0. A quota with value 0 means no value. You
    can use this feature to ensure that all vCPUs run at the same speed.
    :since:`Only QEMU driver support since 0.9.4, LXC since 0.9.10`
 ``global_period``
@@ -768,7 +768,7 @@ CPU Tuning
    (unit: microseconds) within a period for the whole domain. A domain with
    ``global_quota`` as any negative value indicates that the domain has infinite
    bandwidth, which means that it is not bandwidth controlled. The value should
-   be in range [1000, 18446744073709551] or less than 0. A ``global_quota`` with
+   be in range [1000, 17592186044415] or less than 0. A ``global_quota`` with
    value 0 means no value. :since:`Only QEMU driver support since 1.3.3`
 ``emulator_period``
    The optional ``emulator_period`` element specifies the enforcement interval
@@ -783,7 +783,7 @@ CPU Tuning
    vCPUs). A domain with ``emulator_quota`` as any negative value indicates that
    the domain has infinite bandwidth for emulator threads (those excluding
    vCPUs), which means that it is not bandwidth controlled. The value should be
-   in range [1000, 18446744073709551] or less than 0. A quota with value 0 means
+   in range [1000, 17592186044415] or less than 0. A quota with value 0 means
    no value. :since:`Only QEMU driver support since 0.10.0`
 ``iothread_period``
    The optional ``iothread_period`` element specifies the enforcement interval
@@ -797,7 +797,7 @@ CPU Tuning
    bandwidth (unit: microseconds) for IOThreads. A domain with
    ``iothread_quota`` as any negative value indicates that the domain IOThreads
    have infinite bandwidth, which means that it is not bandwidth controlled. The
-   value should be in range [1000, 18446744073709551] or less than 0. An
+   value should be in range [1000, 17592186044415] or less than 0. An
    ``iothread_quota`` with value 0 means no value. You can use this feature to
    ensure that all IOThreads run at the same speed. :since:`Only QEMU driver
    support since 2.1.0`
