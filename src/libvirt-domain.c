@@ -11693,6 +11693,10 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *     "vcpu.<num>.halted" - virtual CPU <num> is halted, may indicate the
  *                           processor is idle or even disabled, depending
  *                           on the architecture)
+ *     "vcpu.<num>.delay" - time the vCPU <num> thread was enqueued by the
+ *                          host scheduler, but was waiting in the queue
+ *                          instead of running. Exposed to the VM as a steal
+ *                          time.
  *
  * VIR_DOMAIN_STATS_INTERFACE:
  *     Return network interface statistics (from domain point of view).
