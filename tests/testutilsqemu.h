@@ -66,6 +66,7 @@ struct testQemuInfo {
     unsigned int parseFlags;
     virArch arch;
     char *schemafile;
+    GHashTable *qapiSchemaCache;
 };
 
 virCapsPtr testQemuCapsInit(void);

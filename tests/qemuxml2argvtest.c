@@ -523,13 +523,22 @@ testCompareXMLToArgvValidateSchema(virQEMUDriverPtr drv,
     qemuDomainObjPrivatePtr priv = NULL;
     size_t nargs = 0;
     size_t i;
-    g_autoptr(GHashTable) schema = NULL;
+    GHashTable *schema = NULL;
     g_autoptr(virCommand) cmd = NULL;
     unsigned int parseFlags = info->parseFlags;
     bool netdevQAPIfied = false;
 
-    if (info->schemafile)
-        schema = testQEMUSchemaLoad(info->schemafile);
+    if (info->schemafile) {
+        /* lookup and insert into cache if not found */
+        if (!g_hash_table_lookup_extended(info->qapiSchemaCache,
+                                          info->schemafile,
+                                          NULL, (void **) &schema)) {
+            schema = testQEMUSchemaLoad(info->schemafile);
+            g_hash_table_insert(info->qapiSchemaCache,
+                                g_strdup(info->schemafile),
+                                schema);
+        }
+    }
 
     /* comment out with line comment to enable schema checking for non _CAPS tests
     if (!schema)
@@ -779,6 +788,7 @@ mymain(void)
     int ret = 0;
     g_autofree char *fakerootdir = NULL;
     g_autoptr(GHashTable) capslatest = NULL;
+    g_autoptr(GHashTable) qapiSchemaCache = virHashNew((GDestroyNotify) virHashFree);
 
     fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
@@ -872,6 +882,7 @@ mymain(void)
         static struct testQemuInfo info = { \
             .name = _name, \
         }; \
+        info.qapiSchemaCache = qapiSchemaCache; \
         if (testQemuInfoSetArgs(&info, capslatest, \
                                 __VA_ARGS__, ARG_END) < 0) \
             return EXIT_FAILURE; \
