@@ -528,6 +528,11 @@ testCompareXMLToArgvValidateSchema(virQEMUDriverPtr drv,
     unsigned int parseFlags = info->parseFlags;
     bool netdevQAPIfied = false;
 
+    /* comment out with line comment to enable schema checking for non _CAPS tests
+    if (!info->schemafile)
+        info->schemafile =  testQemuGetLatestCapsForArch(virArchToString(info->arch), "replies");
+    // */
+
     if (info->schemafile) {
         /* lookup and insert into cache if not found */
         if (!g_hash_table_lookup_extended(info->qapiSchemaCache,
@@ -539,11 +544,6 @@ testCompareXMLToArgvValidateSchema(virQEMUDriverPtr drv,
                                 schema);
         }
     }
-
-    /* comment out with line comment to enable schema checking for non _CAPS tests
-    if (!schema)
-        schema = testQEMUSchemaLoadLatest(virArchToString(info->arch));
-    // */
 
     if (!schema)
         return 0;
