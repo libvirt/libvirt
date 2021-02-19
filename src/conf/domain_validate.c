@@ -23,6 +23,7 @@
 #include "domain_validate.h"
 #include "domain_conf.h"
 #include "snapshot_conf.h"
+#include "vircgroup.h"
 #include "virconftypes.h"
 #include "virlog.h"
 #include "virutil.h"
@@ -1200,10 +1201,13 @@ virDomainDefOSValidate(const virDomainDef *def,
 #define CPUTUNE_VALIDATE_PERIOD(name) \
     do { \
         if (def->cputune.name > 0 && \
-            (def->cputune.name < 1000 || def->cputune.name > 1000000)) { \
+            (def->cputune.name < VIR_CGROUP_CPU_PERIOD_MIN || \
+             def->cputune.name > VIR_CGROUP_CPU_PERIOD_MAX)) { \
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
-                           _("Value of cputune '%s' must be in range " \
-                           "[1000, 1000000]"), #name); \
+                           _("Value of cputune '%s' must be in range [%llu, %llu]"), \
+                           #name, \
+                           VIR_CGROUP_CPU_PERIOD_MIN, \
+                           VIR_CGROUP_CPU_PERIOD_MAX); \
             return -1; \
         } \
     } while (0)
@@ -1211,11 +1215,13 @@ virDomainDefOSValidate(const virDomainDef *def,
 #define CPUTUNE_VALIDATE_QUOTA(name) \
     do { \
         if (def->cputune.name > 0 && \
-            (def->cputune.name < 1000 || \
-            def->cputune.name > 18446744073709551LL)) { \
+            (def->cputune.name < VIR_CGROUP_CPU_QUOTA_MIN || \
+             def->cputune.name > VIR_CGROUP_CPU_QUOTA_MAX)) { \
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
-                           _("Value of cputune '%s' must be in range " \
-                           "[1000, 18446744073709551]"), #name); \
+                           _("Value of cputune '%s' must be in range [%llu, %llu]"), \
+                           #name, \
+                           VIR_CGROUP_CPU_QUOTA_MIN, \
+                           VIR_CGROUP_CPU_QUOTA_MAX); \
             return -1; \
         } \
     } while (0)
