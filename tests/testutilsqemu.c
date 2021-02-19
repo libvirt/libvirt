@@ -681,6 +681,7 @@ testQemuCapsIterate(const char *suffix,
 
 int
 testQemuInfoSetArgs(struct testQemuInfo *info,
+                    GHashTable *capscache,
                     GHashTable *capslatest, ...)
 {
     va_list argptr;
@@ -773,6 +774,7 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
 
     if (!qemuCaps && capsarch && capsver) {
         bool stripmachinealiases = false;
+        virQEMUCapsPtr cachedcaps = NULL;
 
         info->arch = virArchFromString(capsarch);
 
@@ -784,11 +786,21 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
                                        TEST_QEMU_CAPS_PATH, capsver, capsarch);
         }
 
-        if (!(qemuCaps = qemuTestParseCapabilitiesArch(info->arch, capsfile)))
+        if (!g_hash_table_lookup_extended(capscache, capsfile, NULL, (void **) &cachedcaps)) {
+            if (!(qemuCaps = qemuTestParseCapabilitiesArch(info->arch, capsfile)))
+                goto cleanup;
+
+            if (stripmachinealiases)
+                virQEMUCapsStripMachineAliases(qemuCaps);
+
+            cachedcaps = qemuCaps;
+
+            g_hash_table_insert(capscache, g_strdup(capsfile), g_steal_pointer(&qemuCaps));
+        }
+
+        if (!(qemuCaps = virQEMUCapsNewCopy(cachedcaps)))
             goto cleanup;
 
-        if (stripmachinealiases)
-            virQEMUCapsStripMachineAliases(qemuCaps);
         info->flags |= FLAG_REAL_CAPS;
 
         /* provide path to the replies file for schema testing */

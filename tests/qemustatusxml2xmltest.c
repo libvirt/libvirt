@@ -73,6 +73,7 @@ mymain(void)
     g_autofree char *fakerootdir = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     g_autoptr(GHashTable) capslatest = NULL;
+    g_autoptr(GHashTable) capscache = virHashNew(virObjectFreeHashData);
     g_autoptr(virConnect) conn = NULL;
 
     capslatest = testQemuGetLatestCaps();
@@ -109,7 +110,7 @@ mymain(void)
         static struct testQemuInfo info = { \
             .name = _name, \
         }; \
-        if (testQemuInfoSetArgs(&info, capslatest, \
+        if (testQemuInfoSetArgs(&info, capscache, capslatest, \
                                 ARG_QEMU_CAPS, QEMU_CAPS_LAST, \
                                 ARG_END) < 0 || \
             qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0) { \

@@ -789,6 +789,7 @@ mymain(void)
     g_autofree char *fakerootdir = NULL;
     g_autoptr(GHashTable) capslatest = NULL;
     g_autoptr(GHashTable) qapiSchemaCache = virHashNew((GDestroyNotify) virHashFree);
+    g_autoptr(GHashTable) capscache = virHashNew(virObjectFreeHashData);
 
     fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
@@ -883,7 +884,7 @@ mymain(void)
             .name = _name, \
         }; \
         info.qapiSchemaCache = qapiSchemaCache; \
-        if (testQemuInfoSetArgs(&info, capslatest, \
+        if (testQemuInfoSetArgs(&info, capscache, capslatest, \
                                 __VA_ARGS__, ARG_END) < 0) \
             return EXIT_FAILURE; \
         testInfoSetPaths(&info, _suffix); \

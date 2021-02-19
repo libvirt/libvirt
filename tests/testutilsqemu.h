@@ -110,6 +110,7 @@ int testQemuCapsIterate(const char *suffix,
                         void *opaque);
 
 int testQemuInfoSetArgs(struct testQemuInfo *info,
+                        GHashTable *capscache,
                         GHashTable *capslatest, ...);
 void testQemuInfoClear(struct testQemuInfo *info);
 
