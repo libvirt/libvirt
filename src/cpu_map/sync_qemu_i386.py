@@ -76,6 +76,7 @@ def translate_feature(name):
         "CPUID_8000_0008_EBX_AMD_SSBD": "amd-ssbd",
         "CPUID_8000_0008_EBX_CLZERO": "clzero",
         "CPUID_8000_0008_EBX_IBPB": "ibpb",
+        "CPUID_8000_0008_EBX_IBRS": "ibrs",
         "CPUID_8000_0008_EBX_STIBP": "amd-stibp",
         "CPUID_8000_0008_EBX_WBNOINVD": "wbnoinvd",
         "CPUID_8000_0008_EBX_XSAVEERPTR": "xsaveerptr",
