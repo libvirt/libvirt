@@ -51,6 +51,20 @@ v7.1.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: Fix disk quiescing rollback when creating external snapshots
+
+   If the qemu guest agent call to freeze filesystems failed when creating
+   an external snapshot with ``VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE`` flag the
+   filesystems would be unconditionally thawed. This could cause problems when
+   the filesystems were frozen by an explicit call to ``virDomainFSFreeze``
+   since the guest agent then rejects any further freeze attempts once are
+   filesystems frozen, an explicit freeze followed by a quiesced snapshot
+   would fail and thaw filesystems.
+
+   Users are also encouraged to use ``virDomainFSFreeze/Thaw`` manually instead
+   of relying on ``VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE`` if they need finer
+   grained control.
+
 
 v7.0.0 (2021-01-15)
 ===================
