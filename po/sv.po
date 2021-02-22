@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-01-08 17:11+0000\n"
+"POT-Creation-Date: 2021-02-22 08:42+0000\n"
 "PO-Revision-Date: 2021-01-22 07:03+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1206,6 +1206,10 @@ msgid "'%s' missing"
 msgstr ""
 
 #, c-format
+msgid "'%s' requires shared memory"
+msgstr ""
+
+#, c-format
 msgid "'%s' scheduler bitmap '%s' is empty"
 msgstr "schemaläggaren ”%s” bitkarta ”%s” är tom"
 
@@ -1997,6 +2001,10 @@ msgid "Attached device %s has no type"
 msgstr "Den anslutna enheten %s har ingen typ"
 
 #, c-format
+msgid "Attaching devices of type %d is not implemented"
+msgstr ""
+
+#, c-format
 msgid ""
 "Attaching memory device with size '%llu' would exceed domain's maxMemory "
 "config size '%llu'"
@@ -2036,8 +2044,10 @@ msgstr "Försök att dubbelanvända PCI-adressen %s"
 msgid "Attempting to use unknown stub driver"
 msgstr "Försök att använda en okänd stubb-drivrutin"
 
-msgid "Attribute migratable is only allowed for host-passthrough CPU"
-msgstr "Attributet migratable är endast tillåtet för värdgenomgångs-CPU"
+msgid ""
+"Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
+"mode"
+msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "Attributet mode är endast tillåtet för en gäst-CPU"
@@ -2270,8 +2280,8 @@ msgid "CPU architecture (/domain/os/type/@arch)"
 msgstr "CPU-arkitektur (/domän/os/typ/@arkitektur)"
 
 #, c-format
-msgid "CPU cache mode '%s' can only be used with '%s' CPUs"
-msgstr "CPU-cacheläget ”%s” kan endast användas med ”%s”-CPU:er"
+msgid "CPU cache mode '%s' can only be used with '%s' / '%s' CPUs"
+msgstr ""
 
 #, c-format
 msgid "CPU cache mode '%s' can only be used with level='3'"
@@ -2352,6 +2362,10 @@ msgstr "CPU-modellen %s stödjs inte av hypervisorn"
 #, c-format
 msgid "CPU model %s too long for destination"
 msgstr "CPU-modellen %s är för lång för destinationen"
+
+#, c-format
+msgid "CPU model '%s'"
+msgstr ""
 
 #, c-format
 msgid "CPU model '%s' not supported by hypervisor"
@@ -2577,6 +2591,10 @@ msgstr "Kan inte hitta startenhet av typen: %d, enhetsindex: %d"
 #, c-format
 msgid "Can't find boot device of type: %s, index: %d"
 msgstr "Kan inte hitta startenhet av typen: %s, index: %d"
+
+#, c-format
+msgid "Can't find disk '%s' in domain definition"
+msgstr ""
 
 #, c-format
 msgid "Can't find network boot device for index: %d"
@@ -3421,29 +3439,8 @@ msgstr "Kan inte sätta gränssnitts-MTU på ”%s”"
 msgid "Cannot set interface flags on '%s'"
 msgstr "Kan inte sätta gränssnittsflaggor på ”%s”"
 
-msgid "Cannot set keepaliveCount data in JSON document"
-msgstr "Kan inte sätta keepaliveCount-data i JSON-dokument"
-
-msgid "Cannot set keepaliveInterval data in JSON document"
-msgstr "Kan inte sätta keepaliveInterval-data i JSON-dokument"
-
-msgid "Cannot set max_anonymous_clients data in JSON document"
-msgstr "Kan inte sätta max_anonymous_clients-data i JSON-dokument"
-
-msgid "Cannot set max_clients data in JSON document"
-msgstr "Kan inte sätta max_clients-data i JSON-dokument"
-
-msgid "Cannot set max_workers data in JSON document"
-msgstr "Kan inte sätta max_workers-data i JSON-dokument"
-
 msgid "Cannot set memory higher than max memory"
 msgstr "Det går inte att sätta minnet högre än maximalt minne"
-
-msgid "Cannot set min_workers data in JSON document"
-msgstr "Kan inte sätta min_workers-data i JSON-dokument"
-
-msgid "Cannot set next_client_id data in JSON document"
-msgstr "Kan inte sätta next_clients_id-data i JSON-dokument"
 
 msgid "Cannot set ownerId data in JSON document"
 msgstr "Kan inte sätta ownerId-data i JSON-dokument"
@@ -3456,9 +3453,6 @@ msgstr "Kan inte sätta ownerPid-data i JSON-dokument"
 
 msgid "Cannot set ownerUUID data in JSON document"
 msgstr "Kan inte sätta ownerUUID-data i JSON-dokument"
-
-msgid "Cannot set priority_workers data in JSON document"
-msgstr "Kan inte sätta priority_workers-data i JSON-dokument"
 
 msgid "Cannot set restricted data in JSON document"
 msgstr "Kan inte sätta restricted-data i JSON-dokument"
@@ -4035,15 +4029,29 @@ msgstr "Kunde inte lägga till en barnnod till methodNode"
 msgid "Could not add child to XML node"
 msgstr "Kunde inte lägga till ett barn till XML-noden"
 
+msgid "Could not add virtual disk parent"
+msgstr ""
+
 msgid "Could not allocate disk def"
 msgstr "Kunde inte allokera diskdefinitionen"
 
 msgid "Could not allocate disk definition"
 msgstr "Kunde inte allokera diskdefinitionen"
 
+msgid "Could not append definition to domain"
+msgstr ""
+
 #, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "Kunde inte tilldela adressen till disken ”%s”"
+
+#, c-format
+msgid "Could not attach network %lu"
+msgstr ""
+
+#, c-format
+msgid "Could not attach serial port %lu"
+msgstr ""
 
 #, c-format
 msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
@@ -4236,6 +4244,10 @@ msgstr "Kunde inte hitta något ”pool”-element i statusfilen"
 msgid "Could not find any mounted v1 controllers"
 msgstr "Kunde inte hitta några monterade v1-styrenheter"
 
+#, c-format
+msgid "Could not find any network device under PCI device at %s"
+msgstr ""
+
 msgid "Could not find any vport capable device"
 msgstr "Kunde inte hitta vport-kapabel enhet"
 
@@ -4290,13 +4302,6 @@ msgid "Could not find matching device '%s'"
 msgstr "Kunde inte hitta en matchande enhet ”%s”"
 
 #, c-format
-msgid ""
-"Could not find network device with phys_port_id '%s' under PCI device at %s"
-msgstr ""
-"Kunde inte hitta någon nätverksenhet med phys_port_id ”%s” under PCI-enheten "
-"vid %s"
-
-#, c-format
 msgid "Could not find parent device for '%s'"
 msgstr "Kunde inte hitta föräldraenheten till ”%s”"
 
@@ -4314,6 +4319,9 @@ msgstr "Kunde inte hitta en placering av v1-styrenheten %s vid %s"
 
 msgid "Could not find placement for v2 controller"
 msgstr "Kunde inte hitta en placering av v2-styrenheten"
+
+msgid "Could not find selectors in method response"
+msgstr ""
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -4389,6 +4397,9 @@ msgstr "Kunde inte få tag i EPR-element"
 #, c-format
 msgid "Could not get IMedium, rc=%08x"
 msgstr "Kunde inte få IMedium, rc=%08x"
+
+msgid "Could not get Msvm_DiskDrive default InstanceID"
+msgstr ""
 
 #, c-format
 msgid "Could not get Msvm_ShutdownComponent for domain with UUID '%s'"
@@ -4877,6 +4888,12 @@ msgstr "Kunde inte hämta ”bridge/forward_delay” för ”%s”"
 msgid "Could not retrieve 'bridge/stp_state' for '%s'"
 msgstr "Kunde inte hämta ”bridge/stp_state” för ”%s”"
 
+msgid "Could not retrieve NIC settings"
+msgstr ""
+
+msgid "Could not retrieve default Msvm_DiskDrive object"
+msgstr ""
+
 #. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "Kunde inte hämta poolinformation"
@@ -4884,8 +4901,14 @@ msgstr "Kunde inte hämta poolinformation"
 msgid "Could not retrieve resource pool"
 msgstr "Kunde inte hämta resurspoolen"
 
+msgid "Could not retrieve screenshot"
+msgstr ""
+
 msgid "Could not retrieve the AutoStartDefaults object"
 msgstr "Kunde inte hämta objektet AutoStartDefaults"
+
+msgid "Could not retrieve virtual switch"
+msgstr ""
 
 #, c-format
 msgid "Could not revert to snapshot '%s': %s"
@@ -5639,6 +5662,10 @@ msgid "Domain already contains a device with the same address"
 msgstr ""
 
 msgid "Domain already contains a disk with that address"
+msgstr ""
+
+#, c-format
+msgid "Domain already exists with UUID '%s'"
 msgstr ""
 
 msgid "Domain already exists, editing existing domains is not supported yet"
@@ -8060,10 +8087,6 @@ msgstr "misslyckades att skriva konfigurationsfilen: %s"
 msgid "Failed to register shutdown timeout"
 msgstr "Misslyckades att skapa uttag"
 
-#, fuzzy
-msgid "Failed to register slirp migration"
-msgstr "misslyckades att få gränssnittsinformation"
-
 #, fuzzy, c-format
 msgid "Failed to register xml namespace '%s'"
 msgstr "Misslyckades med att förstöra gränssnittet %s"
@@ -8196,6 +8219,9 @@ msgstr ""
 #, fuzzy
 msgid "Failed to retrieve current vcpu count"
 msgstr "Misslyckades att skapa uttag"
+
+msgid "Failed to retrieve image data"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to retrieve maximum vcpu count"
@@ -8622,6 +8648,9 @@ msgstr ""
 #, c-format
 msgid "Failed to write '%s'"
 msgstr "Misslyckades att skriva ”%s”"
+
+msgid "Failed to write pixel data"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to write save file header"
@@ -9775,6 +9804,9 @@ msgstr "felaktig UUID-källa: %s"
 msgid "Invalid UUID"
 msgstr "ogiltiga värd-UUID: %s"
 
+msgid "Invalid XML response"
+msgstr ""
+
 #, c-format
 msgid "Invalid adapter name '%s' for SCSI pool"
 msgstr ""
@@ -10016,6 +10048,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Invalid device type supplied: %s"
 msgstr "Ogiltigt diskettenhetsnamn: %s"
+
+msgid "Invalid disk bus in definition"
+msgstr ""
 
 #, c-format
 msgid "Invalid dns enable setting '%s' in network '%s'"
@@ -11202,6 +11237,9 @@ msgstr "Minnesstorlek:"
 msgid "Memory tuning is not available in session mode"
 msgstr "Minnestrimning är inte tillgängligt i sessionsläge"
 
+msgid "Messages:"
+msgstr ""
+
 msgid "Metadata modified"
 msgstr ""
 
@@ -11218,7 +11256,8 @@ msgid "MethodFault is missing 'type' property"
 msgstr ""
 
 msgid ""
-"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+"Migratable attribute for host-passthrough CPU is not supported by this QEMU "
+"binary"
 msgstr ""
 
 msgid "Migrate domain to another host.  Add --live for live migration."
@@ -11662,9 +11701,6 @@ msgstr ""
 msgid "Missing mandatory average or floor attributes"
 msgstr "startordningsattribut saknas"
 
-msgid "Missing master path attribute for nmdm device"
-msgstr "Saknat huvudsökvägsattribut för nmdm-enheten"
-
 msgid "Missing max_clients data in JSON document"
 msgstr ""
 
@@ -11941,9 +11977,6 @@ msgstr ""
 msgid "Missing services data in JSON document"
 msgstr ""
 
-msgid "Missing slave path attribute for nmdm device"
-msgstr "Saknat slavsökvägsattribut för nmdm-enheten"
-
 msgid "Missing sock field in JSON state document"
 msgstr ""
 
@@ -12041,6 +12074,11 @@ msgstr ""
 
 #, c-format
 msgid "Multiple definitions of CPU model '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"Multiple domains exist with the name '%s': repeat the request using a UUID"
 msgstr ""
 
 msgid "Multiple graphics devices are not supported"
@@ -12676,6 +12714,10 @@ msgstr ""
 msgid "No net with mac '%s'"
 msgstr "Kunde inte hitta %s med namnet ”%s”"
 
+#, c-format
+msgid "No network found with property '%s' = '%s'"
+msgstr ""
+
 msgid "No network socket associated with client"
 msgstr ""
 
@@ -12921,6 +12963,10 @@ msgstr ""
 
 #, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
+msgstr ""
+
+#, c-format
+msgid "Number of msgs %d, which exceeds max limit: %d"
 msgstr ""
 
 msgid "Number of shown CPUs at most"
@@ -13467,6 +13513,7 @@ msgstr ""
 msgid "Partition path '%s' must start with '/'"
 msgstr ""
 
+#. warn users that the --base64 option passed from command line is wrong
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr ""
 
@@ -14799,6 +14846,9 @@ msgstr "Delat minne:\n"
 msgid "Shell '%s' should have absolute path"
 msgstr ""
 
+msgid "Should define both master and slave path attributes for nmdm device"
+msgstr ""
+
 #, fuzzy
 msgid "Show block device errors"
 msgstr "blockenhet"
@@ -15306,6 +15356,10 @@ msgstr ""
 msgid "TPM device path %s is invalid"
 msgstr ""
 
+#, c-format
+msgid "TPM model '%s' is only available for x86 and aarch64 guests"
+msgstr ""
+
 msgid "Table row cannot be empty"
 msgstr ""
 
@@ -15547,6 +15601,9 @@ msgstr "Mål-CPU-kärnor %d stämmer inte med källan %d"
 #, fuzzy, c-format
 msgid "Target device packed option '%s' does not match source '%s'"
 msgstr "Mål-CPU-tillverkaren %s stämmer inte med källan %s"
+
+msgid "Target device virtio options don't match the source"
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -16188,10 +16245,6 @@ msgid "The server certificate %s is not yet active"
 msgstr ""
 
 #, c-format
-msgid "The server redirects from '%s'"
-msgstr ""
-
-#, c-format
 msgid "The server redirects from '%s' to '%s'"
 msgstr ""
 
@@ -16711,6 +16764,9 @@ msgstr "UUID"
 #, fuzzy
 msgid "UUID in config file malformed"
 msgstr "ingen konfigurationsfil för %s"
+
+msgid "UUID is not supported for NVDIMM device"
+msgstr ""
 
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr ""
@@ -19462,9 +19518,17 @@ msgstr "OS-typen %s stödjs inte"
 msgid "Unsupported PCI Express root controller"
 msgstr ""
 
+#, c-format
+msgid "Unsupported SCSI controller address type '%d'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported SCSI controller model %s"
 msgstr "Konfigurationstypen stödjs inte %s"
+
+#, c-format
+msgid "Unsupported SCSI controller model '%d'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unsupported SMBIOS mode '%s'"
@@ -19553,6 +19617,9 @@ msgstr "Konfigurationsformatet stödjs inte ”%s”"
 msgid "Unsupported controller model: %s"
 msgstr "Konfigurationstypen stödjs inte %s"
 
+msgid "Unsupported controller type"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported controller type %s"
 msgstr "Konfigurationstypen stödjs inte %s"
@@ -19576,9 +19643,15 @@ msgstr "Enhetstypen ”%s” stödjs inte"
 msgid "Unsupported device-mapper version. Expected %d got %d"
 msgstr ""
 
+msgid "Unsupported disk address type"
+msgstr ""
+
 #, c-format
 msgid "Unsupported disk address type '%s'"
 msgstr "Diskadresstypen ”%s” stödjs inte"
+
+msgid "Unsupported disk bus"
+msgstr ""
 
 #, c-format
 msgid "Unsupported disk bus type %s"
@@ -19587,6 +19660,9 @@ msgstr "Diskbusstypen %s stödjs inte"
 #, c-format
 msgid "Unsupported disk device type '%s'"
 msgstr "Diskenhettypen ”%s” stödjs inte"
+
+msgid "Unsupported disk type"
+msgstr ""
 
 #, c-format
 msgid "Unsupported disk type %d"
@@ -20016,6 +20092,10 @@ msgstr "VxHS-protokollet stödjs inte med denna QEMU-binär"
 msgid "WARN"
 msgstr ""
 
+#, c-format
+msgid "WS-Management fault during %s invocation: %s"
+msgstr ""
+
 #, sh-format
 msgid "Waiting for %d guests to shut down, %d seconds left\\n"
 msgstr ""
@@ -20205,6 +20285,9 @@ msgid ""
 "available, and it cannot be automatically added"
 msgstr ""
 
+msgid "a block I/O throttling is not supported for vhostuser disk"
+msgstr ""
+
 msgid ""
 "a block I/O throttling length parameter is not supported with this QEMU "
 "binary"
@@ -20390,6 +20473,11 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr ""
 
+#.
+#. * we need to use an intermediary pointer to @data as compilers may sometimes
+#. * complain about @data not being a pointer type:
+#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
+#.
 msgid "allocated netlink buffer is too small"
 msgstr ""
 
@@ -20588,6 +20676,9 @@ msgstr ""
 msgid "attempt to merge virtualports with mismatched types (%s and %s)"
 msgstr ""
 
+msgid "auth is not supported with vhostuser disk"
+msgstr ""
+
 msgid "auth secret UUID to be used for underlying storage"
 msgstr ""
 
@@ -20687,6 +20778,9 @@ msgstr ""
 
 #, c-format
 msgid "backing store protocol '%s' is not yet supported"
+msgstr ""
+
+msgid "backingStore is not supported with vhostuser disk"
 msgstr ""
 
 msgid "backingStore of mirror target is not supported by this qemu"
@@ -20827,6 +20921,9 @@ msgstr ""
 msgid "block device"
 msgstr "blockenhet"
 
+msgid "block info is not supported for vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "block job '%s' failed while pivoting"
 msgstr ""
@@ -20852,7 +20949,17 @@ msgid "block jobs are not supported on transient disk '%s'"
 msgstr ""
 
 #, c-format
+msgid "block jobs are not supported on vhostuser disk '%s'"
+msgstr ""
+
+#, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
+msgstr ""
+
+msgid "block resize is not supported for vhostuser disk"
+msgstr ""
+
+msgid "block stats are not supported for vhostuser disk"
 msgstr ""
 
 msgid "block_io_throttle device entry was not in expected format"
@@ -20875,6 +20982,9 @@ msgstr ""
 
 msgid "blocked"
 msgstr "blockerat"
+
+msgid "blockio is not supported with vhostuser disk"
+msgstr ""
 
 msgid "blockstats device entry was not in expected format"
 msgstr ""
@@ -20912,6 +21022,9 @@ msgstr ""
 
 #, c-format
 msgid "boot order '%s' used for more than one device"
+msgstr ""
+
+msgid "boot order is only supported for virtiofs"
 msgstr ""
 
 msgid "booted"
@@ -21013,6 +21126,9 @@ msgstr ""
 
 msgid "bytes"
 msgstr "byte"
+
+msgid "cache is not supported with vhostuser disk"
+msgstr ""
 
 #, fuzzy
 msgid "cache mode of disk device"
@@ -23025,6 +23141,9 @@ msgstr "syntaxfel i konfigurationsfilen"
 msgid "configuration file syntax error: %s"
 msgstr "syntaxfel i konfigurationsfilen: %s"
 
+msgid "configuration potentially modified by hook script"
+msgstr ""
+
 msgid "configuring disks is not supported for vz snapshots"
 msgstr ""
 
@@ -23165,6 +23284,9 @@ msgstr ""
 msgid "copy_on_read is not supported with removable disk '%s'"
 msgstr ""
 
+msgid "copy_on_read is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy
 msgid "corrupted profileid string"
 msgstr "oterminerad sträng"
@@ -23251,7 +23373,7 @@ msgid "could not determine max vcpus for the domain"
 msgstr ""
 
 #, c-format
-msgid "could not find backing store index %u in chain for '%s'"
+msgid "could not find backing store index '%u' in chain for '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -23703,6 +23825,18 @@ msgstr "källa för skivenhet"
 msgid "custom alias name of interface device"
 msgstr ""
 
+msgid "custom configuration parameters specified"
+msgstr ""
+
+msgid "custom device tree blob used"
+msgstr ""
+
+msgid "custom guest agent control commands issued"
+msgstr ""
+
+msgid "custom monitor control commands issued"
+msgstr ""
+
 msgid "daemon"
 msgstr ""
 
@@ -23857,6 +23991,10 @@ msgstr ""
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr ""
 
+#, c-format
+msgid "deprecated configuration: %s"
+msgstr ""
+
 msgid "description"
 msgstr "beskrivning"
 
@@ -23918,6 +24056,9 @@ msgid "detailed domain vcpu information"
 msgstr "domäninformation"
 
 msgid "detect_zeroes is not supported by this QEMU binary"
+msgstr ""
+
+msgid "detect_zeroes is not supported with vhostuser disk"
 msgstr ""
 
 #, c-format
@@ -24070,7 +24211,14 @@ msgstr "avaktiverad"
 msgid "discard is not supported by this QEMU binary"
 msgstr "discard stödjs inte av denna QEMU-binär"
 
+#, c-format
+msgid "discard is not supported for model '%s'"
+msgstr ""
+
 msgid "discard is not supported for nvdimms"
+msgstr ""
+
+msgid "discard is not supported with vhostuser disk"
 msgstr ""
 
 #, c-format
@@ -24734,6 +24882,10 @@ msgstr "Diskenhettypen ”%s” stödjs inte"
 msgid "duplicate cookie '%s'"
 msgstr ""
 
+#, c-format
+msgid "duplicate domain '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "duplicate iothread id '%u' found"
 msgstr "det finns ingen klient som matchar id ”%llu”"
@@ -24899,6 +25051,9 @@ msgstr ""
 msgid "encryption format of inputvol must be LUKS"
 msgstr ""
 
+msgid "encryption is not supported with vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
 msgstr ""
@@ -24971,12 +25126,11 @@ msgstr ""
 msgid "error destroying network device %s"
 msgstr "Misslyckades att förstöra nätverk %s"
 
-#, fuzzy
-msgid "error dumping"
-msgstr "fel: "
-
 #, c-format
 msgid "error dumping %s (%d) interface"
+msgstr ""
+
+msgid "error dumping neighbor table"
 msgstr ""
 
 #, fuzzy, c-format
@@ -25046,6 +25200,9 @@ msgstr "Fel när domännamnet lästes"
 
 msgid "error: "
 msgstr "fel: "
+
+msgid "error_policy is not supported with vhostuser disk"
+msgstr ""
 
 msgid "escape for XML use"
 msgstr ""
@@ -25475,6 +25632,9 @@ msgstr "misslyckades att stänga filen"
 msgid "failed to close or write to profile"
 msgstr "misslyckats med att skapa profil"
 
+msgid "failed to close screenshot file"
+msgstr ""
+
 #, fuzzy
 msgid "failed to collect snapshot list"
 msgstr "Misslyckades att ta ögonblicksbild: %s"
@@ -25681,6 +25841,10 @@ msgstr "Misslyckades att hitta nätverket: %s"
 msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
+msgstr ""
+
+#, c-format
+msgid "failed to find data for block node '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -26090,6 +26254,10 @@ msgstr "Misslyckades med att tolka läget ”%s”"
 #, fuzzy, c-format
 msgid "failed to parse device weight: '%s'"
 msgstr "Misslyckades med att tolka läget ”%s”"
+
+#, c-format
+msgid "failed to parse expiry value '%s'"
+msgstr ""
 
 #, c-format
 msgid "failed to parse int: '%s'"
@@ -26952,6 +27120,9 @@ msgstr ""
 msgid "g_mkstemp_full: failed to create temporary file: %s"
 msgstr "%s: misslyckades att skriva loggfilen: %s"
 
+msgid "geometry is not supported with vhostuser disk"
+msgstr ""
+
 msgid "get active job information for the specified disk"
 msgstr ""
 
@@ -27424,6 +27595,9 @@ msgstr "anslutnings-URI för hypervisor"
 msgid "hypervisor connection not open"
 msgstr "anslutnings-URI för hypervisor"
 
+msgid "hypervisor feature autodetection override"
+msgstr ""
+
 msgid "i - turn off validation and try to redefine again"
 msgstr ""
 
@@ -27861,6 +28035,9 @@ msgstr "ogiltig domänpekare i %s"
 
 #, c-format
 msgid "invalid 'managed' value '%s'"
+msgstr ""
+
+msgid "invalid 'type' attribute for vhostuser disk source"
 msgstr ""
 
 #, c-format
@@ -28395,6 +28572,9 @@ msgstr ""
 msgid "invalid model for video type '%s'"
 msgstr "Okänd modelltyp ”%s”"
 
+msgid "invalid model for virtio-balloon-pci"
+msgstr ""
+
 #, c-format
 msgid "invalid msi ioeventfd setting for shmem: '%s'"
 msgstr ""
@@ -28767,12 +28947,18 @@ msgstr ""
 msgid "invalid watchdog action"
 msgstr "ogiltig vakthundsåtgärd"
 
+msgid "io is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy
 msgid "io policy of disk device"
 msgstr "källa för skivenhet"
 
 msgid "io uring is not supported by this QEMU binary"
 msgstr "io uring stödjs inte av denna QEMU-binär"
+
+msgid "ioeventfd is not supported with vhostuser disk"
+msgstr ""
 
 msgid "iommu driver option is only supported for virtio devices"
 msgstr ""
@@ -28802,12 +28988,18 @@ msgstr ""
 msgid "iothread id of existing IOThread"
 msgstr ""
 
+msgid "iothread is not supported with vhostuser disk"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr ""
 
 #, fuzzy, c-format
 msgid "iothreadid %d not found"
 msgstr "Domän hittades inte"
+
+msgid "iotune is not supported with vhostuser disk"
+msgstr ""
 
 msgid "iowait:"
 msgstr ""
@@ -28879,9 +29071,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "known hosts file '%s' does not exist"
 msgstr "Hyra %s i låsrymden %s finns inte"
-
-msgid "kvm-hint-dedicated=on is only applicable for cpu host-passthrough"
-msgstr ""
 
 msgid "label overrides require relabeling to be enabled at the domain level"
 msgstr ""
@@ -29456,6 +29645,10 @@ msgstr ""
 msgid "machine paused, so can't power it down"
 msgstr ""
 
+#, c-format
+msgid "machine type '%s'"
+msgstr ""
+
 msgid "machine type (/domain/os/type/@machine)"
 msgstr ""
 
@@ -29500,7 +29693,13 @@ msgstr ""
 msgid "malformed 'wwpn' value"
 msgstr ""
 
+msgid "malformed <blockDirtyBitmaps> in migration cookie"
+msgstr ""
+
 msgid "malformed <sysinfo> uuid element"
+msgstr ""
+
+msgid "malformed <tempBlockDirtyBitmaps> in status XML"
 msgstr ""
 
 msgid "malformed GIC version in QEMU capabilities cache"
@@ -29678,6 +29877,9 @@ msgstr ""
 msgid "managed save of a domain state"
 msgstr "spara ett domäntillstånd till en fil"
 
+msgid "managing externally launched configuration"
+msgstr ""
+
 msgid "mandatory attribute 'width' is missing or malformed"
 msgstr ""
 
@@ -29727,6 +29929,9 @@ msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 
 msgid "maximum"
+msgstr ""
+
+msgid "maximum CPU is not supported by QEMU binary"
 msgstr ""
 
 msgid "maximum amount of in-flight data during the copy"
@@ -29913,6 +30118,9 @@ msgid "metadata preallocation only available with qcow2"
 msgstr ""
 
 msgid "metadata title can't contain newlines"
+msgstr ""
+
+msgid "metadata_cache is not supported with vhostuser disk"
 msgstr ""
 
 msgid "metdata cache max size control is not supported with this QEMU binary"
@@ -30142,6 +30350,9 @@ msgstr "saknat namn för källskiva"
 msgid "missing 'nvram-template' in '%s'"
 msgstr ""
 
+msgid "missing 'path' attribute for vhostuser disk source"
+msgstr ""
+
 msgid "missing 'path' attribute in JSON backing definition for NFS volume"
 msgstr ""
 
@@ -30185,6 +30396,9 @@ msgid "missing 'target' in iSCSI backing definition"
 msgstr ""
 
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
+msgstr ""
+
+msgid "missing 'type' attribute for vhostuser disk source"
 msgstr ""
 
 #, fuzzy
@@ -30784,6 +30998,9 @@ msgstr ""
 msgid "missing required name attribute in DNS TXT record of network %s"
 msgstr ""
 
+msgid "missing required persistent attribute in hostdev teaming element"
+msgstr ""
+
 #, c-format
 msgid ""
 "missing required protocol attribute in DNS SRV record '%s' of network '%s'"
@@ -31235,6 +31452,13 @@ msgstr ""
 msgid "multiple matching devices found"
 msgstr ""
 
+msgid "multiple matching domains found"
+msgstr ""
+
+#, c-format
+msgid "multiple matching domains found: %s"
+msgstr ""
+
 msgid "multiple matching interfaces found"
 msgstr ""
 
@@ -31364,6 +31588,9 @@ msgstr ""
 msgid "netdir"
 msgstr ""
 
+msgid "netlink error"
+msgstr ""
+
 msgid "netlink event service not running"
 msgstr ""
 
@@ -31471,6 +31698,9 @@ msgstr ""
 msgid ""
 "network '%s' uses a hostdev mode, but has no forward dev and no interface "
 "pool"
+msgstr ""
+
+msgid "network configuration using opaque shell scripts"
 msgstr ""
 
 #, c-format
@@ -32431,6 +32661,9 @@ msgstr ""
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr ""
 
+msgid "only 'pci' addresses are supported for the virtio-pmem device"
+msgstr ""
+
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless) is supported"
 msgstr ""
@@ -32561,6 +32794,9 @@ msgid "only single USB controller is supported"
 msgstr ""
 
 msgid "only single input device is supported"
+msgstr ""
+
+msgid "only snapshot=no is supported with vhostuser disk"
 msgstr ""
 
 #, fuzzy
@@ -32865,6 +33101,10 @@ msgstr "nätverket %s är inte aktivt"
 msgid "path does not exist, skipping file type checks"
 msgstr "sökvägen finns inte, hoppar över kontroller av filtyp"
 
+#, c-format
+msgid "path is required for model '%s'"
+msgstr ""
+
 msgid "path is required for model 'nvdimm'"
 msgstr ""
 
@@ -32934,6 +33174,9 @@ msgstr ""
 
 msgid ""
 "pcie-expander-bus controllers are only supported on q35-based machinetypes"
+msgstr ""
+
+msgid "peeking is not supported for vhostuser disk"
 msgstr ""
 
 #, c-format
@@ -33144,6 +33387,12 @@ msgstr ""
 msgid "post-copy migration is not supported with non-live or paused migration"
 msgstr ""
 
+msgid "potentially unsafe disk format probing"
+msgstr ""
+
+msgid "potentially unsafe use of host CPU passthrough"
+msgstr ""
+
 msgid "power-of-two granularity to use during the copy"
 msgstr ""
 
@@ -33282,6 +33531,9 @@ msgid "prints specified cpu statistics only."
 msgstr ""
 
 msgid "process exited while connecting to monitor"
+msgstr ""
+
+msgid "product is not supported with vhostuser disk"
 msgstr ""
 
 msgid "profile does not exist"
@@ -33625,6 +33877,9 @@ msgstr ""
 msgid "readonly ide disks are not supported"
 msgstr ""
 
+msgid "readonly is not supported with vhostuser disk"
+msgstr ""
+
 msgid "readonly sata disks are not supported"
 msgstr ""
 
@@ -33702,6 +33957,9 @@ msgid "remoteDomainBlockStatsFlags: returned number of stats exceeds limit"
 msgstr ""
 
 msgid "remoteDomainGetCPUStats: returned number of stats exceeds limit"
+msgstr ""
+
+msgid "remoteDomainGetMessages: returned number of msgs exceeds limit"
 msgstr ""
 
 msgid "remoteNodeGetCPUStats: returned number of stats exceeds limit"
@@ -34063,6 +34321,9 @@ msgstr ""
 msgid "running"
 msgstr "kör"
 
+msgid "running with undesirable elevated privileges"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "runstate '%d' out of range'"
 msgstr "värdet på managerid är utanför intervallet"
@@ -34259,6 +34520,9 @@ msgstr "att öppna skivavbildsfilen misslyckades"
 msgid "sending of PortProfileRequest failed."
 msgstr ""
 
+msgid "serial is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy
 msgid "serial of disk device"
 msgstr "drivrutin för diskenhet"
@@ -34369,6 +34633,9 @@ msgstr ""
 msgid "setting bandwidth on interfaces of type '%s' is not implemented yet"
 msgstr ""
 
+msgid "setting device threshold is not supported for vhostuser disk"
+msgstr ""
+
 msgid ""
 "setting of timer catchup policies is only supported with tickpolicy='catchup'"
 msgstr ""
@@ -34389,6 +34656,9 @@ msgid "setting the panic device address is not supported for model 'pseries'"
 msgstr ""
 
 msgid "setting the panic device address is not supported for model 's390'"
+msgstr ""
+
+msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
 
 msgid "setuid or setgid failed"
@@ -34418,8 +34688,14 @@ msgstr ""
 msgid "shallow copy of disk '%s' into a raw file is not possible"
 msgstr ""
 
+msgid "shareable is not supported with vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "shared access for disk '%s' requires use of supported storage format"
+msgstr ""
+
+msgid "shared access mode required for virtio-pmem device"
 msgstr ""
 
 msgid "sheepdog protocol accepts only one host"
@@ -35057,6 +35333,10 @@ msgstr ""
 msgid "system:"
 msgstr "system:"
 
+#, c-format
+msgid "tainted: %s"
+msgstr ""
+
 msgid "take a live snapshot"
 msgstr ""
 
@@ -35148,6 +35428,12 @@ msgstr ""
 
 msgid "tcp"
 msgstr "tcp"
+
+msgid "teaming hostdev devices must have type='transient'"
+msgstr ""
+
+msgid "teaming is only supported for pci hostdev devices"
+msgstr ""
 
 msgid "teaming persistent attribute must be set if teaming type is 'transient'"
 msgstr ""
@@ -35833,6 +36119,9 @@ msgstr "den här domänen har inte en enhet för att ta ögonblicksbilder"
 msgid "transient domains do not have any persistent config"
 msgstr ""
 
+msgid "transient is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "transport '%s' does not support socket attribute"
 msgstr "lagringspool stödjer inte skapande av volymer"
@@ -35993,6 +36282,9 @@ msgstr "kan inte ansluta till servern på ”%s:%s”"
 
 #, c-format
 msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
+
+msgid "unable to create blockdev props for vhostuser disk type"
 msgstr ""
 
 #, fuzzy, c-format
@@ -37270,10 +37562,6 @@ msgid "unknown eim value: %s"
 msgstr "okänt förfarande: %d"
 
 #, fuzzy, c-format
-msgid "unknown emulator binary: %s"
-msgstr "okänt kommando: '%s'"
-
-#, fuzzy, c-format
 msgid "unknown enable value '%s'"
 msgstr "okän gränssnittstyp ”%s”"
 
@@ -38419,7 +38707,13 @@ msgstr ""
 msgid "use of <server> requires pull mode backup"
 msgstr ""
 
+msgid "use of deprecated configuration settings"
+msgstr ""
+
 msgid "use of flags requires a copy job"
+msgstr ""
+
+msgid "use of host cdrom passthrough"
 msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
@@ -38693,6 +38987,9 @@ msgstr ""
 msgid "vendor id is invalid"
 msgstr ""
 
+msgid "vendor is not supported with vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "vendor_id must be exactly %d characters long"
 msgstr ""
@@ -38735,6 +39032,12 @@ msgid "vhost-user type '%s' not supported"
 msgstr ""
 
 msgid "vhost-user-gpu failed to start"
+msgstr ""
+
+msgid "vhostuser disk is not supported with this QEMU binary"
+msgstr ""
+
+msgid "vhostuser disk supports only virtio bus"
 msgstr ""
 
 msgid "video resolution values must be greater than 0"
@@ -38913,6 +39216,12 @@ msgstr ""
 msgid "virtio-net-pci 'tx' option not supported in this QEMU binary"
 msgstr ""
 
+msgid "virtio-pmem does not support NUMA nodes"
+msgstr ""
+
+msgid "virtio-pmem isn't supported by this QEMU binary"
+msgstr ""
+
 msgid "virtio-s390 bus doesn't have an address"
 msgstr ""
 
@@ -38955,9 +39264,6 @@ msgid "virtiofs is not yet supported in session mode"
 msgstr ""
 
 msgid "virtiofs only supports passthrough accessmode"
-msgstr ""
-
-msgid "virtiofs requires shared memory"
 msgstr ""
 
 msgid "virtiofsd died unexpectedly"
@@ -39308,6 +39614,9 @@ msgstr ""
 msgid "wrong nlmsg len"
 msgstr ""
 
+msgid "wwn is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy
 msgid "wwn of disk device"
 msgstr "drivrutin för diskenhet"
@@ -39346,6 +39655,61 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <sträng>"
+
+#~ msgid "Attribute migratable is only allowed for host-passthrough CPU"
+#~ msgstr "Attributet migratable är endast tillåtet för värdgenomgångs-CPU"
+
+#~ msgid "CPU cache mode '%s' can only be used with '%s' CPUs"
+#~ msgstr "CPU-cacheläget ”%s” kan endast användas med ”%s”-CPU:er"
+
+#~ msgid "Cannot set keepaliveCount data in JSON document"
+#~ msgstr "Kan inte sätta keepaliveCount-data i JSON-dokument"
+
+#~ msgid "Cannot set keepaliveInterval data in JSON document"
+#~ msgstr "Kan inte sätta keepaliveInterval-data i JSON-dokument"
+
+#~ msgid "Cannot set max_anonymous_clients data in JSON document"
+#~ msgstr "Kan inte sätta max_anonymous_clients-data i JSON-dokument"
+
+#~ msgid "Cannot set max_clients data in JSON document"
+#~ msgstr "Kan inte sätta max_clients-data i JSON-dokument"
+
+#~ msgid "Cannot set max_workers data in JSON document"
+#~ msgstr "Kan inte sätta max_workers-data i JSON-dokument"
+
+#~ msgid "Cannot set min_workers data in JSON document"
+#~ msgstr "Kan inte sätta min_workers-data i JSON-dokument"
+
+#~ msgid "Cannot set next_client_id data in JSON document"
+#~ msgstr "Kan inte sätta next_clients_id-data i JSON-dokument"
+
+#~ msgid "Cannot set priority_workers data in JSON document"
+#~ msgstr "Kan inte sätta priority_workers-data i JSON-dokument"
+
+#~ msgid ""
+#~ "Could not find network device with phys_port_id '%s' under PCI device at "
+#~ "%s"
+#~ msgstr ""
+#~ "Kunde inte hitta någon nätverksenhet med phys_port_id ”%s” under PCI-"
+#~ "enheten vid %s"
+
+#, fuzzy
+#~ msgid "Failed to register slirp migration"
+#~ msgstr "misslyckades att få gränssnittsinformation"
+
+#~ msgid "Missing master path attribute for nmdm device"
+#~ msgstr "Saknat huvudsökvägsattribut för nmdm-enheten"
+
+#~ msgid "Missing slave path attribute for nmdm device"
+#~ msgstr "Saknat slavsökvägsattribut för nmdm-enheten"
+
+#, fuzzy
+#~ msgid "error dumping"
+#~ msgstr "fel: "
+
+#, fuzzy
+#~ msgid "unknown emulator binary: %s"
+#~ msgstr "okänt kommando: '%s'"
 
 #~ msgid ""
 #~ "\n"

@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-01-08 17:11+0000\n"
+"POT-Creation-Date: 2021-02-22 08:42+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -1077,6 +1077,10 @@ msgid "'%s' missing"
 msgstr ""
 
 #, c-format
+msgid "'%s' requires shared memory"
+msgstr ""
+
+#, c-format
 msgid "'%s' scheduler bitmap '%s' is empty"
 msgstr ""
 
@@ -1875,6 +1879,10 @@ msgid "Attached device %s has no type"
 msgstr "%s ഉപകരണത്തിന് തരം ഇല്ല"
 
 #, c-format
+msgid "Attaching devices of type %d is not implemented"
+msgstr ""
+
+#, c-format
 msgid ""
 "Attaching memory device with size '%llu' would exceed domain's maxMemory "
 "config size '%llu'"
@@ -1912,7 +1920,9 @@ msgstr "പിസിഐ വിലാസം %s രണ്ടു് തവണ ഉ�
 msgid "Attempting to use unknown stub driver"
 msgstr ""
 
-msgid "Attribute migratable is only allowed for host-passthrough CPU"
+msgid ""
+"Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
+"mode"
 msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
@@ -2155,7 +2165,7 @@ msgid "CPU architecture (/domain/os/type/@arch)"
 msgstr ""
 
 #, c-format
-msgid "CPU cache mode '%s' can only be used with '%s' CPUs"
+msgid "CPU cache mode '%s' can only be used with '%s' / '%s' CPUs"
 msgstr ""
 
 #, c-format
@@ -2232,6 +2242,10 @@ msgstr "സിപിയു മോഡല്‍ %s ഹൈപ്പര്‍വൈ�
 #, c-format
 msgid "CPU model %s too long for destination"
 msgstr "ലക്ഷ്യത്തിലേക്കു് സിപിയു മോഡല്‍ %s വളരെ വലുതു്"
+
+#, c-format
+msgid "CPU model '%s'"
+msgstr ""
 
 #, c-format
 msgid "CPU model '%s' not supported by hypervisor"
@@ -2456,6 +2470,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Can't find boot device of type: %s, index: %d"
 msgstr "അപ്രതീക്ഷിതമായ ബൂട്ട് ഡിവൈസ് രീതി %d"
+
+#, c-format
+msgid "Can't find disk '%s' in domain definition"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Can't find network boot device for index: %d"
@@ -3325,31 +3343,8 @@ msgstr "%s' ല്‍ സമ്പര്‍ക്കമുഖത്തിന്�
 msgid "Cannot set interface flags on '%s'"
 msgstr "'%s' ല്‍ സമ്പര്‍ക്കമുഖത്തെ കൊടികള്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-msgid "Cannot set keepaliveCount data in JSON document"
-msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ keepaliveCount ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
-msgid "Cannot set keepaliveInterval data in JSON document"
-msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ keepaliveInterval ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
-#, fuzzy
-msgid "Cannot set max_anonymous_clients data in JSON document"
-msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ max_clients ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
-msgid "Cannot set max_clients data in JSON document"
-msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ max_clients ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
-msgid "Cannot set max_workers data in JSON document"
-msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ max_workers ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
 msgid "Cannot set memory higher than max memory"
 msgstr "നല്‍കിയിരിക്കുന്ന ഏറ്റവും കൂടുതല്‍ മെമ്മറിയേക്കാള്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
-msgid "Cannot set min_workers data in JSON document"
-msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ min_workers ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
-#, fuzzy
-msgid "Cannot set next_client_id data in JSON document"
-msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ max_clients ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
 msgid "Cannot set ownerId data in JSON document"
 msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ownerId സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
@@ -3362,9 +3357,6 @@ msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്
 
 msgid "Cannot set ownerUUID data in JSON document"
 msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ownerUUID സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
-msgid "Cannot set priority_workers data in JSON document"
-msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ priority_workers ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
 msgid "Cannot set restricted data in JSON document"
 msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
@@ -3936,15 +3928,29 @@ msgstr ""
 msgid "Could not add child to XML node"
 msgstr "ഒരു എക്സ്എംഎല്‍ നോഡ് പകര്‍ത്തുവാന്‍ സാധ്യമല്ല"
 
+msgid "Could not add virtual disk parent"
+msgstr ""
+
 msgid "Could not allocate disk def"
 msgstr ""
 
 msgid "Could not allocate disk definition"
 msgstr ""
 
+msgid "Could not append definition to domain"
+msgstr ""
+
 #, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "വിലാസം '%s' ഡിസ്കിലേക്കു് ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+msgid "Could not attach network %lu"
+msgstr ""
+
+#, c-format
+msgid "Could not attach serial port %lu"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
@@ -4145,6 +4151,10 @@ msgstr "അവസ്ഥ ഫയലില്‍ 'network' എലമെന്റ്
 msgid "Could not find any mounted v1 controllers"
 msgstr "ചേരുന്ന ഡിവൈസ് ലഭ്യമല്ല"
 
+#, c-format
+msgid "Could not find any network device under PCI device at %s"
+msgstr ""
+
 #, fuzzy
 msgid "Could not find any vport capable device"
 msgstr "ചേരുന്ന ഡിവൈസ് ലഭ്യമല്ല"
@@ -4199,12 +4209,6 @@ msgstr "ചേരുന്ന ഡിവൈസ് ലഭ്യമല്ല"
 msgid "Could not find matching device '%s'"
 msgstr "പൊരുത്തപ്പെടുന്ന '%s' ഡിവൈസ് കണ്ടുപിടിയ്ക്കുവാനായില്ല"
 
-#, fuzzy, c-format
-msgid ""
-"Could not find network device with phys_port_id '%s' under PCI device at %s"
-msgstr ""
-"ഡിവൈസിനു് ആവശ്യമുള്ള %u സൂചികയുള്ള പിസിഐ കണ്ട്രോളര്‍ കണ്ടുപിടിയ്ക്കുവാനായില്ല, %s വിലാസത്തില്‍ "
-
 #, c-format
 msgid "Could not find parent device for '%s'"
 msgstr "'%s'-നുള്ള പേരന്റ് ഡിവൈസ് കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
@@ -4224,6 +4228,9 @@ msgstr "ഐറ്ററേറ്ററില്‍ വേരിയബിള്�
 #, fuzzy
 msgid "Could not find placement for v2 controller"
 msgstr "ഐറ്ററേറ്ററില്‍ വേരിയബിള്‍ '%s' ലഭ്യമായില്ല"
+
+msgid "Could not find selectors in method response"
+msgstr ""
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -4303,6 +4310,9 @@ msgstr "ഫില്‍റ്റര്‍ തയ്യാറാക്കുവ�
 #, fuzzy, c-format
 msgid "Could not get IMedium, rc=%08x"
 msgstr "ഡൊമെയിനുകളുടെ പട്ടിക ലഭ്യമായില്ല, rc=%08x"
+
+msgid "Could not get Msvm_DiskDrive default InstanceID"
+msgstr ""
 
 #, c-format
 msgid "Could not get Msvm_ShutdownComponent for domain with UUID '%s'"
@@ -4795,6 +4805,12 @@ msgstr "'%s'-നുള്ള 'bonding/forward_delay' ലഭ്യമാക്ക
 msgid "Could not retrieve 'bridge/stp_state' for '%s'"
 msgstr "'%s'-നുള്ള 'bonding/stp_state' ലഭ്യമാക്കുവാനായില്ല"
 
+msgid "Could not retrieve NIC settings"
+msgstr ""
+
+msgid "Could not retrieve default Msvm_DiskDrive object"
+msgstr ""
+
 #. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "പൂള്‍ സംബന്ധിച്ചുള്ള വിവരം ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
@@ -4802,8 +4818,14 @@ msgstr "പൂള്‍ സംബന്ധിച്ചുള്ള വിവര�
 msgid "Could not retrieve resource pool"
 msgstr "ശ്രോതസ്സിനുള്ള പൂള്‍ ലഭ്യമാക്കുാന്‍ സാധ്യമല്ല"
 
+msgid "Could not retrieve screenshot"
+msgstr ""
+
 msgid "Could not retrieve the AutoStartDefaults object"
 msgstr " AutoStartDefaults വസ്തു ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
+
+msgid "Could not retrieve virtual switch"
+msgstr ""
 
 #, c-format
 msgid "Could not revert to snapshot '%s': %s"
@@ -5575,6 +5597,10 @@ msgstr ""
 #, fuzzy
 msgid "Domain already contains a disk with that address"
 msgstr "ഡൊമെയിന്‍ സജീവമാണു് അല്ലെങ്കില്‍ മാറുന്ന അവസ്ഥയിലാണു്"
+
+#, c-format
+msgid "Domain already exists with UUID '%s'"
+msgstr ""
 
 msgid "Domain already exists, editing existing domains is not supported yet"
 msgstr "ഡൊമെയിന്‍ നിലവിലുണ്ടു്, നിലവിലുള്ള ഡൊമെയിനുകള്‍ ചിട്ടപ്പെടുത്തുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
@@ -7985,10 +8011,6 @@ msgstr "ലോക്ക് പരാജയ പ്രവര്‍ത്തി ര
 msgid "Failed to register shutdown timeout"
 msgstr "അടച്ചുപൂട്ടുന്നതിനുള്ള സമയപരിധി രജിസ്ടര്‍ ചെയ്യുന്നതില്‍ പരാജയം"
 
-#, fuzzy
-msgid "Failed to register slirp migration"
-msgstr "ലോക്ക് പരാജയ പ്രവര്‍ത്തി രജിസ്ടര്‍ ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
-
 #, c-format
 msgid "Failed to register xml namespace '%s'"
 msgstr "xml namespace '%s' രജിസ്ടര്‍ ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -8117,6 +8139,9 @@ msgstr ""
 
 msgid "Failed to retrieve current vcpu count"
 msgstr "നിലവിലുള്ള vcpu എണ്ണം ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
+
+msgid "Failed to retrieve image data"
+msgstr ""
 
 msgid "Failed to retrieve maximum vcpu count"
 msgstr "ഏറ്റവും കൂടിയ vcpu എണ്ണം ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -8545,6 +8570,9 @@ msgstr "%zu ബൈറ്റുകള്‍ പാഥ് '%s'-നൊപ്പമ�
 #, fuzzy, c-format
 msgid "Failed to write '%s'"
 msgstr "'%s' ഫയല്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
+
+msgid "Failed to write pixel data"
+msgstr ""
 
 msgid "Failed to write save file header"
 msgstr "സൂക്ഷിപ്പ് ഫയലിന്റെ തലക്കെട്ട് എഴുതുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -9753,6 +9781,9 @@ msgstr "തെറ്റായ യുഎസ്ബി ക്ലാസ്സ് ക
 msgid "Invalid UUID"
 msgstr "തെറ്റായ യുയുഐഡി"
 
+msgid "Invalid XML response"
+msgstr ""
+
 #, c-format
 msgid "Invalid adapter name '%s' for SCSI pool"
 msgstr "എസ്‌സിഎസ്ഐ പൂളിനുള്ള '%s' എന്ന അഡാപ്ടര്‍ നാമം തെറ്റു്"
@@ -9994,6 +10025,9 @@ msgstr "തെറ്റായ ഡിവൈസ് %s iommu_group ഫയല്‍ 
 #, fuzzy, c-format
 msgid "Invalid device type supplied: %s"
 msgstr "'%s'-നുള്ള തെറ്റായ USB ഡിവൈസ് നംബര്‍ നല്‍കിയിരിക്കുന്നു"
+
+msgid "Invalid disk bus in definition"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid dns enable setting '%s' in network '%s'"
@@ -11207,6 +11241,9 @@ msgstr "മൊത്തം മെമ്മറി:"
 msgid "Memory tuning is not available in session mode"
 msgstr "ഈ ഹോസ്റ്റില്‍ സിപിയു ട്യൂണിങ് ലഭ്യമല്ല"
 
+msgid "Messages:"
+msgstr ""
+
 #, fuzzy
 msgid "Metadata modified"
 msgstr "മെറ്റാഡേറ്റ ലഭ്യമായില്ല"
@@ -11226,7 +11263,8 @@ msgid "MethodFault is missing 'type' property"
 msgstr "MethodFault-ല്‍ 'type' വിശേഷത ലഭ്യമല്ല"
 
 msgid ""
-"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+"Migratable attribute for host-passthrough CPU is not supported by this QEMU "
+"binary"
 msgstr ""
 
 msgid "Migrate domain to another host.  Add --live for live migration."
@@ -11678,10 +11716,6 @@ msgstr "JSON രേഖയില്‍ മാജിക്ക് ഡേറ്റ�
 msgid "Missing mandatory average or floor attributes"
 msgstr "നിര്‍ബന്ധമായ ആവറേജ് അല്ലെങ്കില്‍ ഫ്ലോര്‍ വിശേഷത ലഭ്യമല്ല"
 
-#, fuzzy
-msgid "Missing master path attribute for nmdm device"
-msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ പാഥ് വിശേഷത"
-
 msgid "Missing max_clients data in JSON document"
 msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍  max_clients ഡേറ്റാ ലഭ്യമല്ല"
 
@@ -11963,10 +11997,6 @@ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ സര്‍വ�
 msgid "Missing services data in JSON document"
 msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ സര്‍വീസുകളുടെ ഡേറ്റാ ലഭ്യമല്ല"
 
-#, fuzzy
-msgid "Missing slave path attribute for nmdm device"
-msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ പാഥ് വിശേഷത"
-
 msgid "Missing sock field in JSON state document"
 msgstr "JSON  അവസ്ഥയുടെ രേഖയില്‍ സോക്ക് ഫീള്‍ഡ് ലഭ്യമല്ല"
 
@@ -12071,6 +12101,11 @@ msgstr ""
 
 #, c-format
 msgid "Multiple definitions of CPU model '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"Multiple domains exist with the name '%s': repeat the request using a UUID"
 msgstr ""
 
 #, fuzzy
@@ -12728,6 +12763,10 @@ msgstr "<initarg> എലമെന്റിനു് ഡേറ്റാ നല്
 msgid "No net with mac '%s'"
 msgstr "'%s' എന്ന പേരുള്ള നെറ്റ്‌വര്‍ക്ക് ലഭ്യമല്ല"
 
+#, c-format
+msgid "No network found with property '%s' = '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "No network socket associated with client"
 msgstr "നെറ്റ്‌വര്‍ക്ക് '%s'ന് അനുബന്ധമായി ഒരു ഇന്റര്‍ഫേസോ ബ്രിഡ്ജോ ഇല്ല"
@@ -12985,6 +13024,10 @@ msgstr ""
 
 #, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
+msgstr ""
+
+#, c-format
+msgid "Number of msgs %d, which exceeds max limit: %d"
 msgstr ""
 
 msgid "Number of shown CPUs at most"
@@ -13563,6 +13606,7 @@ msgstr "ല്ലപാര്‍സ് ചെയ്ത JSON മറുപറട�
 msgid "Partition path '%s' must start with '/'"
 msgstr "'%s' എന്ന പാര്‍ട്ടീഷന്‍ പാഥ് '/'-ല്‍ ആരംഭിയ്ക്കണം"
 
+#. warn users that the --base64 option passed from command line is wrong
 #, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "qemu കമാന്‍ഡ്-ലൈന്‍ ആര്‍ഗ്യുമെന്റ് നല്‍കിയിട്ടില്ല"
@@ -14976,6 +15020,9 @@ msgstr "പങ്കിട്ട മെമ്മറി:\n"
 msgid "Shell '%s' should have absolute path"
 msgstr ""
 
+msgid "Should define both master and slave path attributes for nmdm device"
+msgstr ""
+
 msgid "Show block device errors"
 msgstr "ബ്ലോക്ക് ഡിവൈസ് പിശകുകള്‍ കാണിയ്ക്കുക"
 
@@ -15511,6 +15558,10 @@ msgstr ""
 msgid "TPM device path %s is invalid"
 msgstr "ടിപിഎം ഡിവൈസ് പാഥ് %s തെറ്റാണു്"
 
+#, c-format
+msgid "TPM model '%s' is only available for x86 and aarch64 guests"
+msgstr ""
+
 #, fuzzy
 msgid "Table row cannot be empty"
 msgstr "%s കാലിയാകുവാന്‍ പാടില്ല"
@@ -15756,6 +15807,9 @@ msgstr "ലക്ഷ്യമായ ഡിവൈസ് സി.സി.ഐ.ഡി.
 #, fuzzy, c-format
 msgid "Target device packed option '%s' does not match source '%s'"
 msgstr "ലക്ഷ്യമായ ഡിവൈസ് തരം %s ഉറവിടം %s-ഉമായി യോജിക്കുന്നില്ല"
+
+msgid "Target device virtio options don't match the source"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16417,10 +16471,6 @@ msgid "The server certificate %s is not yet active"
 msgstr "സര്‍വര്‍ സമ്മപത്രം %s സജീമല്ല"
 
 #, c-format
-msgid "The server redirects from '%s'"
-msgstr "'%s'-ല്‍ നിന്നും സര്‍വര്‍ തിരിച്ചു് വിടുന്നു"
-
-#, c-format
 msgid "The server redirects from '%s' to '%s'"
 msgstr "'%s'-ല്‍ നിന്നും '%s'-ലേക്കു് സര്‍വര്‍ തിരിച്ചുവിടുന്നു"
 
@@ -16950,6 +17000,9 @@ msgstr "UUID"
 
 msgid "UUID in config file malformed"
 msgstr "ക്രമീകരണ ഫയലിലുള്ള UUID തെറ്റാണു്"
+
+msgid "UUID is not supported for NVDIMM device"
+msgstr ""
 
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "<uuid>, <sysinfo> തമ്മില്‍ യുയുഐഡി പൊരുത്തക്കേടു്"
@@ -19662,9 +19715,17 @@ msgstr "പിന്തുണയില്ലാത്ത ഒഎസ് തരം:
 msgid "Unsupported PCI Express root controller"
 msgstr "പിന്തുണയില്ലാത്ത കണ്ട്രോളര്‍ മോഡല്‍: %s"
 
+#, c-format
+msgid "Unsupported SCSI controller address type '%d'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported SCSI controller model %s"
 msgstr "പിന്തുണയില്ലാത്ത കണ്ട്രോളര്‍ മോഡല്‍: %s"
+
+#, c-format
+msgid "Unsupported SCSI controller model '%d'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported SMBIOS mode '%s'"
@@ -19753,6 +19814,9 @@ msgstr "പിന്തുണയില്ലാത്ത ക്രമീകര�
 msgid "Unsupported controller model: %s"
 msgstr "പിന്തുണയില്ലാത്ത കണ്ട്രോളര്‍ മോഡല്‍: %s"
 
+msgid "Unsupported controller type"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported controller type %s"
 msgstr "പിന്തുണയില്ലാത്ത കണ്ട്രോളര്‍ മോഡല്‍: %s"
@@ -19776,9 +19840,15 @@ msgstr "പിന്തുണയ്ക്കാത്ത ഡിവൈസ് ത�
 msgid "Unsupported device-mapper version. Expected %d got %d"
 msgstr ""
 
+msgid "Unsupported disk address type"
+msgstr ""
+
 #, c-format
 msgid "Unsupported disk address type '%s'"
 msgstr "പിന്തണയ്ക്കാത്ത ഡിവൈസ് വിലാസ തരം '%s'"
+
+msgid "Unsupported disk bus"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unsupported disk bus type %s"
@@ -19787,6 +19857,9 @@ msgstr "പിന്തുണയ്ക്കാത്ത ഡിസ്ക് ത�
 #, c-format
 msgid "Unsupported disk device type '%s'"
 msgstr "പിന്തുണയ്ക്കാത്ത ഡിസ്ക് ഡിവൈസ് തരം '%s'"
+
+msgid "Unsupported disk type"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unsupported disk type %d"
@@ -20223,6 +20296,10 @@ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക�
 msgid "WARN"
 msgstr "WARN"
 
+#, c-format
+msgid "WS-Management fault during %s invocation: %s"
+msgstr ""
+
 #, sh-format
 msgid "Waiting for %d guests to shut down, %d seconds left\\n"
 msgstr "അടച്ചുപൂട്ടുവാന്‍ %d ഗസ്റ്റുകള്‍ക്കായി കാത്തിരിയ്ക്കുന്നു, %d സെക്കന്‍ഡുകള്‍ ബാക്കി\\n"
@@ -20416,6 +20493,9 @@ msgstr ""
 msgid ""
 "a PCI slot is needed to connect a PCI controller model='%s', but none is "
 "available, and it cannot be automatically added"
+msgstr ""
+
+msgid "a block I/O throttling is not supported for vhostuser disk"
 msgstr ""
 
 #, fuzzy
@@ -20615,6 +20695,11 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "വെറുതേ ഇടുന്നതിന് പകരം പുതിയ സ്ഥലം ഉപയോഗിക്കുക"
 
+#.
+#. * we need to use an intermediary pointer to @data as compilers may sometimes
+#. * complain about @data not being a pointer type:
+#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
+#.
 msgid "allocated netlink buffer is too small"
 msgstr "അനുവദിച്ച നെറ്റ്ലിങ്ക് ബഫര്‍ വളരെ ചെറുതാണു്"
 
@@ -20826,6 +20911,9 @@ msgstr ""
 msgid "attempt to merge virtualports with mismatched types (%s and %s)"
 msgstr "പൊരുത്തമില്ലാത്ത തരങ്ങളുള്ള (%s ഉം %s ഉം) വിര്‍ച്ച്വല്‍ പോര്‍ട്ടുകള്‍ കൂട്ടിച്ചേര്‍ക്കാനുള്ള ശ്രമം"
 
+msgid "auth is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy
 msgid "auth secret UUID to be used for underlying storage"
 msgstr "സ്റ്റോറേജിനുള്ള ടാര്‍ഗറ്റ്"
@@ -20931,6 +21019,9 @@ msgstr "നോഡ് സെറ്റ് മെമ്മറി പരാമീറ
 #, fuzzy, c-format
 msgid "backing store protocol '%s' is not yet supported"
 msgstr "സീരിയല്‍ കണ്‍സോള്‍ ചേര്‍ക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "backingStore is not supported with vhostuser disk"
+msgstr ""
 
 #, fuzzy
 msgid "backingStore of mirror target is not supported by this qemu"
@@ -21072,6 +21163,9 @@ msgstr "ബ്ലോക്ക് പകര്‍പ്പ് ഇപ്പോഴ�
 msgid "block device"
 msgstr "ബ്ളോക്ക് ഡിവൈസ്"
 
+msgid "block info is not supported for vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "block job '%s' failed while pivoting"
 msgstr ""
@@ -21097,8 +21191,18 @@ msgid "block jobs are not supported on transient disk '%s'"
 msgstr ""
 
 #, c-format
+msgid "block jobs are not supported on vhostuser disk '%s'"
+msgstr ""
+
+#, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr "റിമോട്ട് പ്രോട്ടോക്കോളിനുള്ള ബ്ലോക്ക് പീക്ക് ആവശ്യം വളരെ വലുതു്, %zi > %d"
+
+msgid "block resize is not supported for vhostuser disk"
+msgstr ""
+
+msgid "block stats are not supported for vhostuser disk"
+msgstr ""
 
 msgid "block_io_throttle device entry was not in expected format"
 msgstr "block_io_throttle ഡിവൈസ് എന്‍ട്രി പ്രതീക്ഷിച്ച രീതിയിലല്ല"
@@ -21121,6 +21225,9 @@ msgstr ""
 #, fuzzy
 msgid "blocked"
 msgstr "ബ്ലോക്ക്"
+
+msgid "blockio is not supported with vhostuser disk"
+msgstr ""
 
 msgid "blockstats device entry was not in expected format"
 msgstr "blockstats ഡിവൈസ് എന്‍ട്രി പ്രതീക്ഷിച്ച ശൈലിയിലല്ല"
@@ -21159,6 +21266,9 @@ msgstr "ഒരു ഡിവസിനേക്കാള്‍ കൂടുതല�
 #, c-format
 msgid "boot order '%s' used for more than one device"
 msgstr "ഒരു ഡിവസിനേക്കാള്‍ കൂടുതല്‍ ഉപയോഗിയ്ക്കുന്ന ബൂട്ട് ക്രമം '%s'"
+
+msgid "boot order is only supported for virtiofs"
+msgstr ""
 
 msgid "booted"
 msgstr "ബൂട്ട് ചെയ്തിരിയ്ക്കുന്നു"
@@ -21262,6 +21372,9 @@ msgid "bypass cache unsupported by this system"
 msgstr "ഈ സിസ്റ്റം ബൈപ്പാസ് കാഷിനെ പിന്തുണയ്ക്കുന്നില്ല"
 
 msgid "bytes"
+msgstr ""
+
+msgid "cache is not supported with vhostuser disk"
 msgstr ""
 
 msgid "cache mode of disk device"
@@ -23333,6 +23446,9 @@ msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയലില്‍ സി�
 msgid "configuration file syntax error: %s"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയലില്‍ സിന്‍റ്റാക്സ് പിശക്: %s"
 
+msgid "configuration potentially modified by hook script"
+msgstr ""
+
 #, fuzzy
 msgid "configuring disks is not supported for vz snapshots"
 msgstr "മൌണ്ട് പോയിന്റ് നല്‍കുന്നതു് ഇപ്പോള്‍ പിന്തുണയ്ക്കുന്നില്ല"
@@ -23480,6 +23596,9 @@ msgstr ""
 msgid "copy_on_read is not supported with removable disk '%s'"
 msgstr ""
 
+msgid "copy_on_read is not supported with vhostuser disk"
+msgstr ""
+
 msgid "corrupted profileid string"
 msgstr "കേടായ പ്രൊഫൈല്‍ഐഡി വാചകം"
 
@@ -23561,9 +23680,9 @@ msgstr "'%s' ഫോള്‍ഡര്‍ വേര്‍പെടുത്തു
 msgid "could not determine max vcpus for the domain"
 msgstr "ഡൊമെയിനുള്ള ഏറ്റവും കൂടുതല്‍ vcpus ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#, fuzzy, c-format
-msgid "could not find backing store index %u in chain for '%s'"
-msgstr "'%s'-നുള്ള പേരന്റ് ഡിവൈസ് കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+#, c-format
+msgid "could not find backing store index '%u' in chain for '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "could not find base image in chain for '%s'"
@@ -24025,6 +24144,18 @@ msgstr "ഡിസ്ക് ഡിവൈസിന്റെ കാഷ് മോഡ
 msgid "custom alias name of interface device"
 msgstr ""
 
+msgid "custom configuration parameters specified"
+msgstr ""
+
+msgid "custom device tree blob used"
+msgstr ""
+
+msgid "custom guest agent control commands issued"
+msgstr ""
+
+msgid "custom monitor control commands issued"
+msgstr ""
+
 msgid "daemon"
 msgstr ""
 
@@ -24183,6 +24314,10 @@ msgstr "ഡ്രൈവ് വെട്ടി നീക്കുന്നതു�
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr "പുറമേയുള്ള ഡിസ്ക് സ്നാപ്പ്ഷോട്ടുകള്‍ %d വെട്ടി നീക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
 
+#, c-format
+msgid "deprecated configuration: %s"
+msgstr ""
+
 #, fuzzy
 msgid "description"
 msgstr "സ്നാപ്പ്ഷോട്ടിന്റെ വിവരണം"
@@ -24245,6 +24380,9 @@ msgstr "വിശദമായ ഡൊമൈന്‍ vpcu വിവരം"
 #, fuzzy
 msgid "detect_zeroes is not supported by this QEMU binary"
 msgstr "ഈ QEMU ബൈനറി discard പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "detect_zeroes is not supported with vhostuser disk"
+msgstr ""
 
 #, c-format
 msgid "dev->id buffer overflow: %d %d"
@@ -24405,9 +24543,16 @@ msgstr "പ്രവര്‍ത്തന രഹിതമാക്കുക"
 msgid "discard is not supported by this QEMU binary"
 msgstr "ഈ QEMU ബൈനറി discard പിന്തുണയ്ക്കുന്നില്ല"
 
+#, c-format
+msgid "discard is not supported for model '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "discard is not supported for nvdimms"
 msgstr "ഈ QEMU ബൈനറി discard പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "discard is not supported with vhostuser disk"
+msgstr ""
 
 #, c-format
 msgid "discarding %llu bytes failed on RBD image %s at offset %llu"
@@ -25075,6 +25220,10 @@ msgid "duplicate cookie '%s'"
 msgstr "'%s' ഫയല്‍ അടയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
+msgid "duplicate domain '%s'"
+msgstr ""
+
+#, c-format
 msgid "duplicate iothread id '%u' found"
 msgstr ""
 
@@ -25244,6 +25393,9 @@ msgstr ""
 msgid "encryption format of inputvol must be LUKS"
 msgstr ""
 
+msgid "encryption is not supported with vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
 msgstr ""
@@ -25316,13 +25468,12 @@ msgstr "%s ഡിവൈസിനുള്ള ഡയറക്ടറി തയ്�
 msgid "error destroying network device %s"
 msgstr "ഇപ്പോഴത്തെ ഒരു നെറ്റ്‌വര്‍ക്ക് ബ്രിഡ്ജ് ചെയ്യുക"
 
-#, fuzzy
-msgid "error dumping"
-msgstr "ഡംപ് ചെയ്യുന്നു"
-
 #, c-format
 msgid "error dumping %s (%d) interface"
 msgstr "%s (%d) ഒന്നിച്ചെടുക്കുന്നതില്‍ പിശക്"
+
+msgid "error dumping neighbor table"
+msgstr ""
 
 #, c-format
 msgid "error during virtual port configuration of ifindex %d"
@@ -25390,6 +25541,9 @@ msgstr "ഡൊമെയിന്‍ സസ്പെന്‍ഡ് ചെയ്�
 
 msgid "error: "
 msgstr "പിശക്: "
+
+msgid "error_policy is not supported with vhostuser disk"
+msgstr ""
 
 msgid "escape for XML use"
 msgstr "എക്സ്എംഎല്‍ ഉപയോഗത്തിനായി പുറത്തു് കടക്കുക"
@@ -25822,6 +25976,9 @@ msgstr "ഫയല്‍ അടയ്ക്കുന്നതില്‍ പര�
 msgid "failed to close or write to profile"
 msgstr "ഫ്രൊഫൈല്‍ അടയ്ക്കുവാന്‍ അല്ലെങ്കില്‍ സൂക്ഷിയ്ക്കുന്നതില്‍ പരാജയം"
 
+msgid "failed to close screenshot file"
+msgstr ""
+
 msgid "failed to collect snapshot list"
 msgstr "സ്നാപ്പ്ഷോട്ട് പട്ടിക ലഭ്യമായില്ല"
 
@@ -26024,6 +26181,10 @@ msgstr "%s-നുള്ള പേരന്റ് ഡിവൈസ് കണ്ട
 msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
+msgstr ""
+
+#, c-format
+msgid "failed to find data for block node '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -26435,6 +26596,10 @@ msgstr "%s പാഴ്സ് ചെയ്യുന്നതില്‍ പര�
 #, fuzzy, c-format
 msgid "failed to parse device weight: '%s'"
 msgstr "'%s' ഡിവൈസ് കണ്ണി റിസോള്‍വ് ചെയ്യുവാന്‍ പരാജയപ്പെട്ടു"
+
+#, c-format
+msgid "failed to parse expiry value '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to parse int: '%s'"
@@ -27299,6 +27464,9 @@ msgstr ""
 msgid "g_mkstemp_full: failed to create temporary file: %s"
 msgstr "%s: താല്‍ക്കാലിക ഫയല്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം: %s"
 
+msgid "geometry is not supported with vhostuser disk"
+msgstr ""
+
 msgid "get active job information for the specified disk"
 msgstr "പറഞ്ഞ ഡിസ്ക്കിലെ സജീവമായ ജോലി വിവരം കാണുക"
 
@@ -27782,6 +27950,9 @@ msgstr "ഹൈപ്പര്‍വൈസര്‍ കണക്ഷനുളള �
 msgid "hypervisor connection not open"
 msgstr "ഹൈപ്പര്‍വൈസര്‍ കണക്ഷനുളള യുഐര്‍ഐ"
 
+msgid "hypervisor feature autodetection override"
+msgstr ""
+
 #, fuzzy
 msgid "i - turn off validation and try to redefine again"
 msgstr "f - നിര്‍ബന്ധിയ്ക്കുക, വീണ്ടും നിഷ്കര്‍ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
@@ -28229,6 +28400,9 @@ msgstr "--%s ഐച്ഛികത്തിനു് ശേഷം തെറ്�
 #, fuzzy, c-format
 msgid "invalid 'managed' value '%s'"
 msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
+
+msgid "invalid 'type' attribute for vhostuser disk source"
+msgstr ""
 
 #, c-format
 msgid "invalid <address> element found in <forward> of network %s"
@@ -28764,6 +28938,9 @@ msgstr ""
 msgid "invalid model for video type '%s'"
 msgstr "തെറ്റായ രഹസ്യ രീതി '%s'"
 
+msgid "invalid model for virtio-balloon-pci"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid msi ioeventfd setting for shmem: '%s'"
 msgstr "'%s'-നു് തെറ്റായ വ്യാപ്തി നല്‍കിയിരിക്കുന്നു"
@@ -29133,6 +29310,9 @@ msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം 
 msgid "invalid watchdog action"
 msgstr "തെറ്റായ watchdog പ്രവര്‍ത്തി"
 
+msgid "io is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy
 msgid "io policy of disk device"
 msgstr "ഡിസ്ക് ഡിവൈസ് സീരിയല്‍"
@@ -29140,6 +29320,9 @@ msgstr "ഡിസ്ക് ഡിവൈസ് സീരിയല്‍"
 #, fuzzy
 msgid "io uring is not supported by this QEMU binary"
 msgstr "ഈ QEMU ബൈനറി discard പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "ioeventfd is not supported with vhostuser disk"
+msgstr ""
 
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
@@ -29174,12 +29357,18 @@ msgstr ""
 msgid "iothread id of existing IOThread"
 msgstr ""
 
+msgid "iothread is not supported with vhostuser disk"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr ""
 
 #, fuzzy, c-format
 msgid "iothreadid %d not found"
 msgstr "ഡിസ്ക് %s ലഭ്യമല്ല"
+
+msgid "iotune is not supported with vhostuser disk"
+msgstr ""
 
 msgid "iowait:"
 msgstr "iowait:"
@@ -29252,9 +29441,6 @@ msgstr "കീകോഡ് %zu തെറ്റാണു്: 0x%X"
 #, c-format
 msgid "known hosts file '%s' does not exist"
 msgstr "known hosts ഫയല്‍ '%s' നിലവിലില്ല"
-
-msgid "kvm-hint-dedicated=on is only applicable for cpu host-passthrough"
-msgstr ""
 
 msgid "label overrides require relabeling to be enabled at the domain level"
 msgstr ""
@@ -29823,6 +30009,10 @@ msgstr "സിസ്റ്റം പ്രവര്‍ത്തിയ്ക്�
 msgid "machine paused, so can't power it down"
 msgstr "സിസ്റ്റം തല്‍ക്കാലത്തേക്ക് നിര്‍ത്തിയിരിയ്ക്കുന്നു, അതിനാല്‍ പവര്‍ ഓഫ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
+#, c-format
+msgid "machine type '%s'"
+msgstr ""
+
 msgid "machine type (/domain/os/type/@machine)"
 msgstr ""
 
@@ -29869,8 +30059,14 @@ msgstr ""
 msgid "malformed 'wwpn' value"
 msgstr "തെറ്റായ തിരികെ ലഭ്യമായ മൂല്ല്യം"
 
+msgid "malformed <blockDirtyBitmaps> in migration cookie"
+msgstr ""
+
 msgid "malformed <sysinfo> uuid element"
 msgstr "തെറ്റായ <sysinfo> uuid എലമെന്റ്"
+
+msgid "malformed <tempBlockDirtyBitmaps> in status XML"
+msgstr ""
 
 msgid "malformed GIC version in QEMU capabilities cache"
 msgstr ""
@@ -30052,6 +30248,9 @@ msgstr ""
 msgid "managed save of a domain state"
 msgstr "ഡൊമെയിന്‍ അവസ്ഥ സൂക്ഷിച്ചത് കൈകാര്യം ചെയ്യുക"
 
+msgid "managing externally launched configuration"
+msgstr ""
+
 msgid "mandatory attribute 'width' is missing or malformed"
 msgstr ""
 
@@ -30102,6 +30301,9 @@ msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
 
 msgid "maximum"
 msgstr "ഏറ്റവും കൂടിയ"
+
+msgid "maximum CPU is not supported by QEMU binary"
+msgstr ""
 
 msgid "maximum amount of in-flight data during the copy"
 msgstr ""
@@ -30283,6 +30485,9 @@ msgstr "മെറ്റാഡേറ്റാ പ്രീഅലോക്കേ�
 #, fuzzy
 msgid "metadata title can't contain newlines"
 msgstr "ഡൊമെയിന്‍ തലക്കെട്ടില്‍ പുതിയവരികള്‍ പാടില്ല"
+
+msgid "metadata_cache is not supported with vhostuser disk"
+msgstr ""
 
 msgid "metdata cache max size control is not supported with this QEMU binary"
 msgstr ""
@@ -30520,6 +30725,9 @@ msgstr "ഡിസ്ക് ശ്രോതസ്സിനുള്ള നാമ�
 msgid "missing 'nvram-template' in '%s'"
 msgstr "%s ല്‍ പേരു് വിവരം ലഭ്യമല്ല"
 
+msgid "missing 'path' attribute for vhostuser disk source"
+msgstr ""
+
 msgid "missing 'path' attribute in JSON backing definition for NFS volume"
 msgstr ""
 
@@ -30566,6 +30774,9 @@ msgstr ""
 
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "offset='timezone' എന്നുള്ള ക്ലോക്കിനു് 'timezone' വിശേഷത ലഭ്യമല്ല"
+
+msgid "missing 'type' attribute for vhostuser disk source"
+msgstr ""
 
 #, fuzzy
 msgid "missing 'type' attribute to disk source"
@@ -31170,6 +31381,9 @@ msgstr ""
 msgid "missing required name attribute in DNS TXT record of network %s"
 msgstr "%s നെറ്റ്‌വര്‍ക്കിലുള്ള DNS TXT റിക്കോര്‍ഡിലുള്ള ആവശ്യമായ നെയിം വിശേഷത ലഭ്യമല്ല"
 
+msgid "missing required persistent attribute in hostdev teaming element"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "missing required protocol attribute in DNS SRV record '%s' of network '%s'"
@@ -31620,6 +31834,13 @@ msgstr "പൊരുത്തപ്പെടുന്ന അനവധി DNS HOS
 msgid "multiple matching devices found"
 msgstr "ചേരുന്ന അനവധി ഇന്റര്‍ഫെയിസുകള്‍ ലഭ്യമായി"
 
+msgid "multiple matching domains found"
+msgstr ""
+
+#, c-format
+msgid "multiple matching domains found: %s"
+msgstr ""
+
 msgid "multiple matching interfaces found"
 msgstr "ചേരുന്ന അനവധി ഇന്റര്‍ഫെയിസുകള്‍ ലഭ്യമായി"
 
@@ -31747,6 +31968,9 @@ msgstr ""
 msgid "netdir"
 msgstr ""
 
+msgid "netlink error"
+msgstr ""
+
 msgid "netlink event service not running"
 msgstr "നെറ്റ്ലിങ്ക് ഈവന്റ് സേവനം പ്രവര്‍ത്തിയ്ക്കുന്നില്ല"
 
@@ -31864,6 +32088,9 @@ msgid ""
 msgstr ""
 "നെറ്റ്‌വര്‍ക്ക് '%s' നേരിട്ടുള്ള രീതിയാണുപയോഗിക്കുന്നത്, പക്ഷേ ഫോര്‍വേഡ് ഉപകരണമോ ഇന്റര്‍ഫേസ് സഞ്ചയമോ "
 "ഇല്ല"
+
+msgid "network configuration using opaque shell scripts"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -32844,6 +33071,9 @@ msgstr ""
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr ""
 
+msgid "only 'pci' addresses are supported for the virtio-pmem device"
+msgstr ""
+
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless) is supported"
 msgstr ""
@@ -32985,6 +33215,9 @@ msgstr "ഒറ്റ ടിപിഎം ഡിവൈസ് മാത്രമേ
 #, fuzzy
 msgid "only single input device is supported"
 msgstr "ഒറ്റ nvram ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
+
+msgid "only snapshot=no is supported with vhostuser disk"
+msgstr ""
 
 msgid "only supports mount filesystem type"
 msgstr "മൌണ്ട് ഫയല്‍സിസ്റ്റം തരം മാത്രം പിന്തുണയ്ക്കുന്നു"
@@ -33297,6 +33530,10 @@ msgstr "പാഥ് '%s' ആബ്സല്യൂട്ടല്ല"
 msgid "path does not exist, skipping file type checks"
 msgstr "പാഥ് നിലവിലില്ല, ഫയല്‍ രീതിയുടെ പരിശോധന വേണ്ടെന്നു് വയ്ക്കുന്നു"
 
+#, c-format
+msgid "path is required for model '%s'"
+msgstr ""
+
 msgid "path is required for model 'nvdimm'"
 msgstr ""
 
@@ -33366,6 +33603,9 @@ msgstr "pci-root, pcie-root കണ്ട്രോളറുകള്‍ക്ക�
 
 msgid ""
 "pcie-expander-bus controllers are only supported on q35-based machinetypes"
+msgstr ""
+
+msgid "peeking is not supported for vhostuser disk"
 msgstr ""
 
 #, fuzzy, c-format
@@ -33583,6 +33823,12 @@ msgstr "MiB/s ല്‍ ഉള്ള മെഗ്രേഷന്‍ ബാന്
 msgid "post-copy migration is not supported with non-live or paused migration"
 msgstr "ലക്ഷ്യസ്ഥാനത്തുള്ള ഹോസ്റ്റ് ഓഫ്‌ലൈന്‍ മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "potentially unsafe disk format probing"
+msgstr ""
+
+msgid "potentially unsafe use of host CPU passthrough"
+msgstr ""
+
 msgid "power-of-two granularity to use during the copy"
 msgstr ""
 
@@ -33727,6 +33973,9 @@ msgid "prints specified cpu statistics only."
 msgstr "പറഞ്ഞിരിക്കുന്ന സിപിയു സ്റ്റാറ്റിസ്റ്റിക്സ് മാത്രം കാണിക്കുന്നു."
 
 msgid "process exited while connecting to monitor"
+msgstr ""
+
+msgid "product is not supported with vhostuser disk"
 msgstr ""
 
 msgid "profile does not exist"
@@ -34091,6 +34340,9 @@ msgstr "ഈ QEMU ബൈനറിയില്‍ vhost-net പിന്തുണ�
 msgid "readonly ide disks are not supported"
 msgstr "ട്രാന്‍സിയന്റ് ഡിസ്കുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "readonly is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy
 msgid "readonly sata disks are not supported"
 msgstr "ട്രാന്‍സിയന്റ് ഡിസ്കുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
@@ -34173,6 +34425,9 @@ msgstr ""
 
 msgid "remoteDomainGetCPUStats: returned number of stats exceeds limit"
 msgstr "remoteDomainGetCPUStats: തിരികെ ലഭ്യമായ സ്റ്റാറ്റ്സ്  പരിധിയില്‍ കൂടുതല്‍"
+
+msgid "remoteDomainGetMessages: returned number of msgs exceeds limit"
+msgstr ""
 
 msgid "remoteNodeGetCPUStats: returned number of stats exceeds limit"
 msgstr "remoteNodeGetCPUStats: തിരികെ ലഭ്യമായ സ്റ്റാറ്റ്സ് എണ്ണം പരിധിയേക്കാള്‍ കൂടുതല്‍"
@@ -34537,6 +34792,9 @@ msgstr ""
 msgid "running"
 msgstr "പ്രവര്‍ത്തിക്കുന്നു"
 
+msgid "running with undesirable elevated privileges"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "runstate '%d' out of range'"
 msgstr "ആരംഭ സെല്‍ %d പരിധി (0-%d)"
@@ -34734,6 +34992,9 @@ msgstr "ഡിസ്ക് ഇമേജ് ഫയല്‍ തുറക്കു
 msgid "sending of PortProfileRequest failed."
 msgstr "PortProfileRequest അയയ്ക്കല്‍ പരാജയപ്പെട്ടു."
 
+msgid "serial is not supported with vhostuser disk"
+msgstr ""
+
 msgid "serial of disk device"
 msgstr "ഡിസ്ക് ഡിവൈസ് സീരിയല്‍"
 
@@ -34850,6 +35111,9 @@ msgstr "ചേരാത്ത NUMA സിപിയു പരിധികള്�
 msgid "setting bandwidth on interfaces of type '%s' is not implemented yet"
 msgstr "'%d' തരത്തിന്റെ നിര്‍വചനം പകര്‍ത്തുന്നതു് ഇതു് വരെ ലഭ്യമാക്കിയിട്ടില്ല."
 
+msgid "setting device threshold is not supported for vhostuser disk"
+msgstr ""
+
 msgid ""
 "setting of timer catchup policies is only supported with tickpolicy='catchup'"
 msgstr ""
@@ -34875,6 +35139,9 @@ msgstr "64-ബിറ്റ് പിസിഐ ഹോള്‍ വ്യാപ്
 #, fuzzy
 msgid "setting the panic device address is not supported for model 's390'"
 msgstr "64-ബിറ്റ് പിസിഐ ഹോള്‍ വ്യാപ്തി സജ്ജീകരിയ്ക്കുന്നതു് '%s' സിസ്റ്റത്തില്‍ പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "setting virtiofs boot order is not supported with this QEMU binary"
+msgstr ""
 
 msgid "setuid or setgid failed"
 msgstr "setuid അല്ലെങ്കില്‍ setgid പരാജയപ്പെട്ടു"
@@ -34904,9 +35171,15 @@ msgstr ""
 msgid "shallow copy of disk '%s' into a raw file is not possible"
 msgstr ""
 
+msgid "shareable is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "shared access for disk '%s' requires use of supported storage format"
 msgstr "'%s' ഫയലിനു്, '%s' ഡിസ്കിനുള്ളതു്,  പുറമേയുള്ള സ്നാപ്പ്ഷോട്ട് മോഡിന്റെ ഉപയോഗമുണ്ടു്"
+
+msgid "shared access mode required for virtio-pmem device"
+msgstr ""
 
 msgid "sheepdog protocol accepts only one host"
 msgstr ""
@@ -35570,6 +35843,10 @@ msgstr ""
 msgid "system:"
 msgstr "സിസ്റ്റം:"
 
+#, c-format
+msgid "tainted: %s"
+msgstr ""
+
 msgid "take a live snapshot"
 msgstr "ഒരു ലൈവ് സ്നാപ്പ്ഷോട്ട് എടുക്കുക"
 
@@ -35660,6 +35937,12 @@ msgid "target vm vcpu granularity does not allow the desired vcpu count"
 msgstr ""
 
 msgid "tcp"
+msgstr ""
+
+msgid "teaming hostdev devices must have type='transient'"
+msgstr ""
+
+msgid "teaming is only supported for pci hostdev devices"
 msgstr ""
 
 msgid "teaming persistent attribute must be set if teaming type is 'transient'"
@@ -36399,6 +36682,9 @@ msgstr ""
 msgid "transient domains do not have any persistent config"
 msgstr "ട്രാന്‍സിയന്റ് ഡൊമെയിനുകള്‍ക്കു് സ്ഥിരമായ ക്രമീകരണമില്ല"
 
+msgid "transient is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "transport '%s' does not support socket attribute"
 msgstr "'%s' പൂള്‍ തരം സോഴ്സ് പിന്തുണയ്ക്കുന്നില്ല"
@@ -36558,6 +36844,9 @@ msgstr "'%s:%s'-ലുള്ള സര്‍വറിലേക്കു് ക�
 
 #, c-format
 msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
+
+msgid "unable to create blockdev props for vhostuser disk type"
 msgstr ""
 
 #, c-format
@@ -37823,10 +38112,6 @@ msgid "unknown eim value: %s"
 msgstr "അപരിചിതമായ പിഎം അവസ്ഥ മൂല്യം %s"
 
 #, fuzzy, c-format
-msgid "unknown emulator binary: %s"
-msgstr "അപരിചിതമായ %s പ്രവര്‍ത്തി: %s"
-
-#, fuzzy, c-format
 msgid "unknown enable value '%s'"
 msgstr "അപിചിതമായ copypaste മൂല്ല്യം '%s'"
 
@@ -38965,7 +39250,13 @@ msgstr "വ്യക്തമാക്കിയ വിലാസത്തില�
 msgid "use of <server> requires pull mode backup"
 msgstr ""
 
+msgid "use of deprecated configuration settings"
+msgstr ""
+
 msgid "use of flags requires a copy job"
+msgstr ""
+
+msgid "use of host cdrom passthrough"
 msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
@@ -39247,6 +39538,9 @@ msgstr "വെന്‍ഡര്‍ 0 ആകാന്‍ പാടില്ല."
 msgid "vendor id is invalid"
 msgstr "വെണ്ടര്‍ ഐഡി തെറ്റാണു്"
 
+msgid "vendor is not supported with vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "vendor_id must be exactly %d characters long"
 msgstr "vendor_id കൃത്യം %d ക്യാരക്ടര്‍ വലിപ്പമുണ്ടായിരിയ്ക്കണം"
@@ -39289,6 +39583,12 @@ msgstr "hostdev subsys രീതി '%s' പിന്തുണയ്ക്കു
 #, fuzzy
 msgid "vhost-user-gpu failed to start"
 msgstr "ഗസ്റ്റ് ആരംഭിയ്ക്കുന്നതില്‍ പരാജയം: %s"
+
+msgid "vhostuser disk is not supported with this QEMU binary"
+msgstr ""
+
+msgid "vhostuser disk supports only virtio bus"
+msgstr ""
 
 msgid "video resolution values must be greater than 0"
 msgstr ""
@@ -39477,6 +39777,12 @@ msgstr ""
 msgid "virtio-net-pci 'tx' option not supported in this QEMU binary"
 msgstr "ഈ QEMU ബൈനറിയില്‍ virtio-net-pci 'tx' ഐച്ഛികം പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "virtio-pmem does not support NUMA nodes"
+msgstr ""
+
+msgid "virtio-pmem isn't supported by this QEMU binary"
+msgstr ""
+
 msgid "virtio-s390 bus doesn't have an address"
 msgstr ""
 
@@ -39526,10 +39832,6 @@ msgstr "QEMU-ന്റെ ഈ പതിപ്പു് യുഎസ്ബി ത
 #, fuzzy
 msgid "virtiofs only supports passthrough accessmode"
 msgstr "ആക്സസ്സ്മോഡിലൂടെ മാത്രം പിന്തുണയ്ക്കുന്നു"
-
-#, fuzzy
-msgid "virtiofs requires shared memory"
-msgstr "മിററിനു് ഫയല്‍ നാമം ആവശ്യമുണ്ടു്"
 
 msgid "virtiofsd died unexpectedly"
 msgstr ""
@@ -39887,6 +40189,9 @@ msgstr ""
 msgid "wrong nlmsg len"
 msgstr ""
 
+msgid "wwn is not supported with vhostuser disk"
+msgstr ""
+
 msgid "wwn of disk device"
 msgstr "ഡിസ്ക് ഡിവൈസിന്റെ wwn"
 
@@ -39925,6 +40230,70 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Cannot set keepaliveCount data in JSON document"
+#~ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ keepaliveCount ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Cannot set keepaliveInterval data in JSON document"
+#~ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ keepaliveInterval ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "Cannot set max_anonymous_clients data in JSON document"
+#~ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ max_clients ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Cannot set max_clients data in JSON document"
+#~ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ max_clients ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Cannot set max_workers data in JSON document"
+#~ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ max_workers ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Cannot set min_workers data in JSON document"
+#~ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ min_workers ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "Cannot set next_client_id data in JSON document"
+#~ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ max_clients ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Cannot set priority_workers data in JSON document"
+#~ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ priority_workers ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid ""
+#~ "Could not find network device with phys_port_id '%s' under PCI device at "
+#~ "%s"
+#~ msgstr ""
+#~ "ഡിവൈസിനു് ആവശ്യമുള്ള %u സൂചികയുള്ള പിസിഐ കണ്ട്രോളര്‍ കണ്ടുപിടിയ്ക്കുവാനായില്ല, %s വിലാസത്തില്‍ "
+
+#, fuzzy
+#~ msgid "Failed to register slirp migration"
+#~ msgstr "ലോക്ക് പരാജയ പ്രവര്‍ത്തി രജിസ്ടര്‍ ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
+
+#, fuzzy
+#~ msgid "Missing master path attribute for nmdm device"
+#~ msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ പാഥ് വിശേഷത"
+
+#, fuzzy
+#~ msgid "Missing slave path attribute for nmdm device"
+#~ msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ പാഥ് വിശേഷത"
+
+#~ msgid "The server redirects from '%s'"
+#~ msgstr "'%s'-ല്‍ നിന്നും സര്‍വര്‍ തിരിച്ചു് വിടുന്നു"
+
+#, fuzzy
+#~ msgid "could not find backing store index %u in chain for '%s'"
+#~ msgstr "'%s'-നുള്ള പേരന്റ് ഡിവൈസ് കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "error dumping"
+#~ msgstr "ഡംപ് ചെയ്യുന്നു"
+
+#, fuzzy
+#~ msgid "unknown emulator binary: %s"
+#~ msgstr "അപരിചിതമായ %s പ്രവര്‍ത്തി: %s"
+
+#, fuzzy
+#~ msgid "virtiofs requires shared memory"
+#~ msgstr "മിററിനു് ഫയല്‍ നാമം ആവശ്യമുണ്ടു്"
 
 #~ msgid ""
 #~ "\n"

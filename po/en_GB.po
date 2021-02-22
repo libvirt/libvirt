@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-01-08 17:11+0000\n"
+"POT-Creation-Date: 2021-02-22 08:42+0000\n"
 "PO-Revision-Date: 2015-02-24 06:05+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
@@ -1068,6 +1068,10 @@ msgid "'%s' missing"
 msgstr ""
 
 #, c-format
+msgid "'%s' requires shared memory"
+msgstr ""
+
+#, c-format
 msgid "'%s' scheduler bitmap '%s' is empty"
 msgstr ""
 
@@ -1872,6 +1876,10 @@ msgid "Attached device %s has no type"
 msgstr "Attached device %s has no type"
 
 #, c-format
+msgid "Attaching devices of type %d is not implemented"
+msgstr ""
+
+#, c-format
 msgid ""
 "Attaching memory device with size '%llu' would exceed domain's maxMemory "
 "config size '%llu'"
@@ -1909,7 +1917,9 @@ msgstr "Attempted double use of PCI Address %s"
 msgid "Attempting to use unknown stub driver"
 msgstr ""
 
-msgid "Attribute migratable is only allowed for host-passthrough CPU"
+msgid ""
+"Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
+"mode"
 msgstr ""
 
 msgid "Attribute mode is only allowed for guest CPU"
@@ -2150,7 +2160,7 @@ msgid "CPU architecture (/domain/os/type/@arch)"
 msgstr ""
 
 #, c-format
-msgid "CPU cache mode '%s' can only be used with '%s' CPUs"
+msgid "CPU cache mode '%s' can only be used with '%s' / '%s' CPUs"
 msgstr ""
 
 #, c-format
@@ -2227,6 +2237,10 @@ msgstr "CPU model %s is not supported by hypervisor"
 #, c-format
 msgid "CPU model %s too long for destination"
 msgstr "CPU model %s too long for destination"
+
+#, c-format
+msgid "CPU model '%s'"
+msgstr ""
 
 #, c-format
 msgid "CPU model '%s' not supported by hypervisor"
@@ -2449,6 +2463,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Can't find boot device of type: %s, index: %d"
 msgstr "unexpected boot device type %d"
+
+#, c-format
+msgid "Can't find disk '%s' in domain definition"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Can't find network boot device for index: %d"
@@ -3317,31 +3335,8 @@ msgstr "Cannot set interface MTU on '%s'"
 msgid "Cannot set interface flags on '%s'"
 msgstr "Cannot set interface flags on '%s'"
 
-msgid "Cannot set keepaliveCount data in JSON document"
-msgstr "Cannot set keepaliveCount data in JSON document"
-
-msgid "Cannot set keepaliveInterval data in JSON document"
-msgstr "Cannot set keepaliveInterval data in JSON document"
-
-#, fuzzy
-msgid "Cannot set max_anonymous_clients data in JSON document"
-msgstr "Cannot set max_clients data in JSON document"
-
-msgid "Cannot set max_clients data in JSON document"
-msgstr "Cannot set max_clients data in JSON document"
-
-msgid "Cannot set max_workers data in JSON document"
-msgstr "Cannot set max_workers data in JSON document"
-
 msgid "Cannot set memory higher than max memory"
 msgstr "Cannot set memory higher than max memory"
-
-msgid "Cannot set min_workers data in JSON document"
-msgstr "Cannot set min_workers data in JSON document"
-
-#, fuzzy
-msgid "Cannot set next_client_id data in JSON document"
-msgstr "Cannot set max_clients data in JSON document"
 
 msgid "Cannot set ownerId data in JSON document"
 msgstr "Cannot set ownerId data in JSON document"
@@ -3354,9 +3349,6 @@ msgstr "Cannot set ownerPid data in JSON document"
 
 msgid "Cannot set ownerUUID data in JSON document"
 msgstr "Cannot set ownerUUID data in JSON document"
-
-msgid "Cannot set priority_workers data in JSON document"
-msgstr "Cannot set priority_workers data in JSON document"
 
 msgid "Cannot set restricted data in JSON document"
 msgstr "Cannot set restricted data in JSON document"
@@ -3930,15 +3922,29 @@ msgstr ""
 msgid "Could not add child to XML node"
 msgstr "Could not copy an XML node"
 
+msgid "Could not add virtual disk parent"
+msgstr ""
+
 msgid "Could not allocate disk def"
 msgstr ""
 
 msgid "Could not allocate disk definition"
 msgstr ""
 
+msgid "Could not append definition to domain"
+msgstr ""
+
 #, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "Could not assign address to disk '%s'"
+
+#, c-format
+msgid "Could not attach network %lu"
+msgstr ""
+
+#, c-format
+msgid "Could not attach serial port %lu"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
@@ -4139,6 +4145,10 @@ msgstr "Could not find any 'network' element in status file"
 msgid "Could not find any mounted v1 controllers"
 msgstr "Could not find matching device"
 
+#, c-format
+msgid "Could not find any network device under PCI device at %s"
+msgstr ""
+
 #, fuzzy
 msgid "Could not find any vport capable device"
 msgstr "Could not find matching device"
@@ -4193,12 +4203,6 @@ msgstr "Could not find matching device"
 msgid "Could not find matching device '%s'"
 msgstr "Could not find matching device '%s'"
 
-#, fuzzy, c-format
-msgid ""
-"Could not find network device with phys_port_id '%s' under PCI device at %s"
-msgstr ""
-"Could not find PCI controller with index %u required for device at address %s"
-
 #, c-format
 msgid "Could not find parent device for '%s'"
 msgstr "Could not find parent device for '%s'"
@@ -4218,6 +4222,9 @@ msgstr "Could not find value for variable '%s'"
 #, fuzzy
 msgid "Could not find placement for v2 controller"
 msgstr "Could not find value for variable '%s'"
+
+msgid "Could not find selectors in method response"
+msgstr ""
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -4297,6 +4304,9 @@ msgstr "Could not create filter"
 #, fuzzy, c-format
 msgid "Could not get IMedium, rc=%08x"
 msgstr "Could not get list of Domains, rc=%08x"
+
+msgid "Could not get Msvm_DiskDrive default InstanceID"
+msgstr ""
 
 #, c-format
 msgid "Could not get Msvm_ShutdownComponent for domain with UUID '%s'"
@@ -4789,6 +4799,12 @@ msgstr "Could not retrieve 'bridge/forward_delay' for '%s'"
 msgid "Could not retrieve 'bridge/stp_state' for '%s'"
 msgstr "Could not retrieve 'bridge/stp_state' for '%s'"
 
+msgid "Could not retrieve NIC settings"
+msgstr ""
+
+msgid "Could not retrieve default Msvm_DiskDrive object"
+msgstr ""
+
 #. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "Could not retrieve pool information"
@@ -4796,8 +4812,14 @@ msgstr "Could not retrieve pool information"
 msgid "Could not retrieve resource pool"
 msgstr "Could not retrieve resource pool"
 
+msgid "Could not retrieve screenshot"
+msgstr ""
+
 msgid "Could not retrieve the AutoStartDefaults object"
 msgstr "Could not retrieve the AutoStartDefaults object"
+
+msgid "Could not retrieve virtual switch"
+msgstr ""
 
 #, c-format
 msgid "Could not revert to snapshot '%s': %s"
@@ -5567,6 +5589,10 @@ msgstr ""
 #, fuzzy
 msgid "Domain already contains a disk with that address"
 msgstr "Domain is already active or is in state transition"
+
+#, c-format
+msgid "Domain already exists with UUID '%s'"
+msgstr ""
 
 msgid "Domain already exists, editing existing domains is not supported yet"
 msgstr "Domain already exists, editing existing domains is not supported yet"
@@ -7957,10 +7983,6 @@ msgstr "Failed to register lock failure action"
 msgid "Failed to register shutdown timeout"
 msgstr "Failed to register shutdown timeout"
 
-#, fuzzy
-msgid "Failed to register slirp migration"
-msgstr "Failed to register lock failure action"
-
 #, c-format
 msgid "Failed to register xml namespace '%s'"
 msgstr "Failed to register xml namespace '%s'"
@@ -8089,6 +8111,9 @@ msgstr ""
 
 msgid "Failed to retrieve current vcpu count"
 msgstr "Failed to retrieve current vcpu count"
+
+msgid "Failed to retrieve image data"
+msgstr ""
 
 msgid "Failed to retrieve maximum vcpu count"
 msgstr "Failed to retrieve maximum vcpu count"
@@ -8507,6 +8532,9 @@ msgstr "Failed to write %zu bytes to storage volume with path '%s'"
 #, fuzzy, c-format
 msgid "Failed to write '%s'"
 msgstr "Failed to read '%s'"
+
+msgid "Failed to write pixel data"
+msgstr ""
 
 msgid "Failed to write save file header"
 msgstr "Failed to write save file header"
@@ -9717,6 +9745,9 @@ msgstr "Invalid USB Class code %s"
 msgid "Invalid UUID"
 msgstr "invalid UUID"
 
+msgid "Invalid XML response"
+msgstr ""
+
 #, c-format
 msgid "Invalid adapter name '%s' for SCSI pool"
 msgstr "Invalid adapter name '%s' for SCSI pool"
@@ -9958,6 +9989,9 @@ msgstr "Invalid device %s iommu_group file %s is not a symlink"
 #, c-format
 msgid "Invalid device type supplied: %s"
 msgstr "Invalid device type supplied: %s"
+
+msgid "Invalid disk bus in definition"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid dns enable setting '%s' in network '%s'"
@@ -11173,6 +11207,9 @@ msgstr "Memory total:"
 msgid "Memory tuning is not available in session mode"
 msgstr "CPU tuning is not available on this host"
 
+msgid "Messages:"
+msgstr ""
+
 msgid "Metadata modified"
 msgstr "Metadata modified"
 
@@ -11189,7 +11226,8 @@ msgid "MethodFault is missing 'type' property"
 msgstr "MethodFault is missing 'type' property"
 
 msgid ""
-"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+"Migratable attribute for host-passthrough CPU is not supported by this QEMU "
+"binary"
 msgstr ""
 
 msgid "Migrate domain to another host.  Add --live for live migration."
@@ -11640,10 +11678,6 @@ msgstr "Missing magic data in JSON document"
 msgid "Missing mandatory average or floor attributes"
 msgstr "Missing mandatory average or floor attributes"
 
-#, fuzzy
-msgid "Missing master path attribute for nmdm device"
-msgstr "Missing source path attribute for char device"
-
 msgid "Missing max_clients data in JSON document"
 msgstr "Missing max_clients data in JSON document"
 
@@ -11926,10 +11960,6 @@ msgstr "Missing service data in JSON document"
 msgid "Missing services data in JSON document"
 msgstr "Missing services data in JSON document"
 
-#, fuzzy
-msgid "Missing slave path attribute for nmdm device"
-msgstr "Missing source path attribute for char device"
-
 msgid "Missing sock field in JSON state document"
 msgstr "Missing sock field in JSON state document"
 
@@ -12035,6 +12065,11 @@ msgstr "Multiple USB devices for %x:%x, use <address> to specify one"
 
 #, c-format
 msgid "Multiple definitions of CPU model '%s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"Multiple domains exist with the name '%s': repeat the request using a UUID"
 msgstr ""
 
 #, fuzzy
@@ -12693,6 +12728,10 @@ msgstr "No data supplied for <initarg> element"
 msgid "No net with mac '%s'"
 msgstr "no network with matching name '%s'"
 
+#, c-format
+msgid "No network found with property '%s' = '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "No network socket associated with client"
 msgstr "network '%s' has no associated interface or bridge"
@@ -12952,6 +12991,10 @@ msgstr ""
 
 #, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
+msgstr ""
+
+#, c-format
+msgid "Number of msgs %d, which exceeds max limit: %d"
 msgstr ""
 
 msgid "Number of shown CPUs at most"
@@ -13527,6 +13570,7 @@ msgstr "Parsed JSON reply '%s' isn't an object"
 msgid "Partition path '%s' must start with '/'"
 msgstr "Partition path '%s' must start with '/'"
 
+#. warn users that the --base64 option passed from command line is wrong
 #, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "No qemu command-line argument specified"
@@ -14935,6 +14979,9 @@ msgstr "Shared memory:\n"
 msgid "Shell '%s' should have absolute path"
 msgstr ""
 
+msgid "Should define both master and slave path attributes for nmdm device"
+msgstr ""
+
 msgid "Show block device errors"
 msgstr "Show block device errors"
 
@@ -15487,6 +15534,10 @@ msgstr ""
 msgid "TPM device path %s is invalid"
 msgstr "TPM device path %s is invalid"
 
+#, c-format
+msgid "TPM model '%s' is only available for x86 and aarch64 guests"
+msgstr ""
+
 #, fuzzy
 msgid "Table row cannot be empty"
 msgstr "%s can't be empty"
@@ -15732,6 +15783,9 @@ msgstr "Target device ccid address %d:%d does not match source %d:%d"
 #, fuzzy, c-format
 msgid "Target device packed option '%s' does not match source '%s'"
 msgstr "Target device address type %s does not match source %s"
+
+msgid "Target device virtio options don't match the source"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16379,10 +16433,6 @@ msgid "The server certificate %s is not yet active"
 msgstr "The server certificate %s is not yet active"
 
 #, c-format
-msgid "The server redirects from '%s'"
-msgstr "The server redirects from '%s'"
-
-#, c-format
 msgid "The server redirects from '%s' to '%s'"
 msgstr "The server redirects from '%s' to '%s'"
 
@@ -16908,6 +16958,9 @@ msgstr "UUID"
 
 msgid "UUID in config file malformed"
 msgstr "UUID in config file malformed"
+
+msgid "UUID is not supported for NVDIMM device"
+msgstr ""
 
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "UUID mismatch between <uuid> and <sysinfo>"
@@ -19611,9 +19664,17 @@ msgstr "Unsupported OS type: %s"
 msgid "Unsupported PCI Express root controller"
 msgstr "Unsupported controller model: %s"
 
+#, c-format
+msgid "Unsupported SCSI controller address type '%d'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported SCSI controller model %s"
 msgstr "Unsupported controller model: %s"
+
+#, c-format
+msgid "Unsupported SCSI controller model '%d'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported SMBIOS mode '%s'"
@@ -19702,6 +19763,9 @@ msgstr "unsupported configuration"
 msgid "Unsupported controller model: %s"
 msgstr "Unsupported controller model: %s"
 
+msgid "Unsupported controller type"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported controller type %s"
 msgstr "Unsupported controller model: %s"
@@ -19725,9 +19789,15 @@ msgstr "Unsupported device type '%s'"
 msgid "Unsupported device-mapper version. Expected %d got %d"
 msgstr ""
 
+msgid "Unsupported disk address type"
+msgstr ""
+
 #, c-format
 msgid "Unsupported disk address type '%s'"
 msgstr "Unsupported disk address type '%s'"
+
+msgid "Unsupported disk bus"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unsupported disk bus type %s"
@@ -19736,6 +19806,9 @@ msgstr "unsupported disk type %s"
 #, c-format
 msgid "Unsupported disk device type '%s'"
 msgstr "Unsupported disk device type '%s'"
+
+msgid "Unsupported disk type"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unsupported disk type %d"
@@ -20172,6 +20245,10 @@ msgstr "SATA is not supported with this QEMU binary"
 msgid "WARN"
 msgstr "WARN"
 
+#, c-format
+msgid "WS-Management fault during %s invocation: %s"
+msgstr ""
+
 #, sh-format
 msgid "Waiting for %d guests to shut down, %d seconds left\\n"
 msgstr "Waiting for %d guests to shut down, %d seconds left\\n"
@@ -20366,6 +20443,9 @@ msgstr ""
 msgid ""
 "a PCI slot is needed to connect a PCI controller model='%s', but none is "
 "available, and it cannot be automatically added"
+msgstr ""
+
+msgid "a block I/O throttling is not supported for vhostuser disk"
 msgstr ""
 
 #, fuzzy
@@ -20565,6 +20645,11 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "allocate the new capacity, rather than leaving it sparse"
 
+#.
+#. * we need to use an intermediary pointer to @data as compilers may sometimes
+#. * complain about @data not being a pointer type:
+#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
+#.
 msgid "allocated netlink buffer is too small"
 msgstr "allocated netlink buffer is too small"
 
@@ -20772,6 +20857,9 @@ msgstr ""
 msgid "attempt to merge virtualports with mismatched types (%s and %s)"
 msgstr "attempt to merge virtualports with mismatched types (%s and %s)"
 
+msgid "auth is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy
 msgid "auth secret UUID to be used for underlying storage"
 msgstr "target for underlying storage"
@@ -20877,6 +20965,9 @@ msgstr "node set memory parameters not implemented on this platform"
 #, fuzzy, c-format
 msgid "backing store protocol '%s' is not yet supported"
 msgstr "attaching serial console is not supported"
+
+msgid "backingStore is not supported with vhostuser disk"
+msgstr ""
 
 #, fuzzy
 msgid "backingStore of mirror target is not supported by this qemu"
@@ -21018,6 +21109,9 @@ msgstr "block copy still active: %s"
 msgid "block device"
 msgstr "block device"
 
+msgid "block info is not supported for vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "block job '%s' failed while pivoting"
 msgstr ""
@@ -21043,8 +21137,18 @@ msgid "block jobs are not supported on transient disk '%s'"
 msgstr ""
 
 #, c-format
+msgid "block jobs are not supported on vhostuser disk '%s'"
+msgstr ""
+
+#, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr "block peek request too large for remote protocol, %zi > %d"
+
+msgid "block resize is not supported for vhostuser disk"
+msgstr ""
+
+msgid "block stats are not supported for vhostuser disk"
+msgstr ""
 
 msgid "block_io_throttle device entry was not in expected format"
 msgstr "block_io_throttle device entry was not in expected format"
@@ -21067,6 +21171,9 @@ msgstr ""
 #, fuzzy
 msgid "blocked"
 msgstr "block"
+
+msgid "blockio is not supported with vhostuser disk"
+msgstr ""
 
 msgid "blockstats device entry was not in expected format"
 msgstr "blockstats device entry was not in expected format"
@@ -21105,6 +21212,9 @@ msgstr "boot order '%s' used for more than one device"
 #, c-format
 msgid "boot order '%s' used for more than one device"
 msgstr "boot order '%s' used for more than one device"
+
+msgid "boot order is only supported for virtiofs"
+msgstr ""
 
 msgid "booted"
 msgstr "booted"
@@ -21208,6 +21318,9 @@ msgid "bypass cache unsupported by this system"
 msgstr "bypass cache unsupported by this system"
 
 msgid "bytes"
+msgstr ""
+
+msgid "cache is not supported with vhostuser disk"
 msgstr ""
 
 msgid "cache mode of disk device"
@@ -23269,6 +23382,9 @@ msgstr "configuration file syntax error"
 msgid "configuration file syntax error: %s"
 msgstr "configuration file syntax error: %s"
 
+msgid "configuration potentially modified by hook script"
+msgstr ""
+
 #, fuzzy
 msgid "configuring disks is not supported for vz snapshots"
 msgstr "Specifying mount point is not supported for now"
@@ -23416,6 +23532,9 @@ msgstr ""
 msgid "copy_on_read is not supported with removable disk '%s'"
 msgstr ""
 
+msgid "copy_on_read is not supported with vhostuser disk"
+msgstr ""
+
 msgid "corrupted profileid string"
 msgstr "corrupted profileid string"
 
@@ -23497,9 +23616,9 @@ msgstr "could not detach shared folder '%s', rc=%08x"
 msgid "could not determine max vcpus for the domain"
 msgstr "could not determine max vcpus for the domain"
 
-#, fuzzy, c-format
-msgid "could not find backing store index %u in chain for '%s'"
-msgstr "Could not find parent device for '%s'"
+#, c-format
+msgid "could not find backing store index '%u' in chain for '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "could not find base image in chain for '%s'"
@@ -23961,6 +24080,18 @@ msgstr "cache mode of disk device"
 msgid "custom alias name of interface device"
 msgstr ""
 
+msgid "custom configuration parameters specified"
+msgstr ""
+
+msgid "custom device tree blob used"
+msgstr ""
+
+msgid "custom guest agent control commands issued"
+msgstr ""
+
+msgid "custom monitor control commands issued"
+msgstr ""
+
 msgid "daemon"
 msgstr ""
 
@@ -24119,6 +24250,10 @@ msgstr ""
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr "deletion of %d external disk snapshots not supported yet"
 
+#, c-format
+msgid "deprecated configuration: %s"
+msgstr ""
+
 #, fuzzy
 msgid "description"
 msgstr "description of snapshot"
@@ -24181,6 +24316,9 @@ msgstr "detailed domain vcpu information"
 #, fuzzy
 msgid "detect_zeroes is not supported by this QEMU binary"
 msgstr "discard is not supported by this QEMU binary"
+
+msgid "detect_zeroes is not supported with vhostuser disk"
+msgstr ""
 
 #, c-format
 msgid "dev->id buffer overflow: %d %d"
@@ -24339,9 +24477,16 @@ msgstr "disable"
 msgid "discard is not supported by this QEMU binary"
 msgstr "discard is not supported by this QEMU binary"
 
+#, c-format
+msgid "discard is not supported for model '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "discard is not supported for nvdimms"
 msgstr "discard is not supported by this QEMU binary"
+
+msgid "discard is not supported with vhostuser disk"
+msgstr ""
 
 #, c-format
 msgid "discarding %llu bytes failed on RBD image %s at offset %llu"
@@ -25008,6 +25153,10 @@ msgid "duplicate cookie '%s'"
 msgstr "cannot close file '%s'"
 
 #, c-format
+msgid "duplicate domain '%s'"
+msgstr ""
+
+#, c-format
 msgid "duplicate iothread id '%u' found"
 msgstr ""
 
@@ -25177,6 +25326,9 @@ msgstr ""
 msgid "encryption format of inputvol must be LUKS"
 msgstr ""
 
+msgid "encryption is not supported with vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
 msgstr ""
@@ -25249,13 +25401,12 @@ msgstr "Failed to create directory for device %s"
 msgid "error destroying network device %s"
 msgstr "bridge an existing network device"
 
-#, fuzzy
-msgid "error dumping"
-msgstr "dumping"
-
 #, c-format
 msgid "error dumping %s (%d) interface"
 msgstr "error dumping %s (%d) interface"
+
+msgid "error dumping neighbor table"
+msgstr ""
 
 #, c-format
 msgid "error during virtual port configuration of ifindex %d"
@@ -25323,6 +25474,9 @@ msgstr "error while suspending the domain"
 
 msgid "error: "
 msgstr "error: "
+
+msgid "error_policy is not supported with vhostuser disk"
+msgstr ""
 
 msgid "escape for XML use"
 msgstr "escape for XML use"
@@ -25758,6 +25912,9 @@ msgstr "failed to close file"
 msgid "failed to close or write to profile"
 msgstr "failed to close or write to profile"
 
+msgid "failed to close screenshot file"
+msgstr ""
+
 msgid "failed to collect snapshot list"
 msgstr "failed to collect snapshot list"
 
@@ -25958,6 +26115,10 @@ msgstr "Failed to find parent device for %s"
 msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
+msgstr ""
+
+#, c-format
+msgid "failed to find data for block node '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -26367,6 +26528,10 @@ msgstr "failed to parse %s"
 #, fuzzy, c-format
 msgid "failed to parse device weight: '%s'"
 msgstr "Failed to resolve device link '%s'"
+
+#, c-format
+msgid "failed to parse expiry value '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to parse int: '%s'"
@@ -27226,6 +27391,9 @@ msgstr ""
 msgid "g_mkstemp_full: failed to create temporary file: %s"
 msgstr "%s: failed to read temporary file: %s"
 
+msgid "geometry is not supported with vhostuser disk"
+msgstr ""
+
 msgid "get active job information for the specified disk"
 msgstr "get active job information for the specified disk"
 
@@ -27710,6 +27878,9 @@ msgstr "hypervisor connection URI"
 msgid "hypervisor connection not open"
 msgstr "hypervisor connection URI"
 
+msgid "hypervisor feature autodetection override"
+msgstr ""
+
 #, fuzzy
 msgid "i - turn off validation and try to redefine again"
 msgstr "f - force, try to redefine again"
@@ -28156,6 +28327,9 @@ msgstr "invalid '=' after option --%s"
 #, fuzzy, c-format
 msgid "invalid 'managed' value '%s'"
 msgstr "invalid translation value '%s'"
+
+msgid "invalid 'type' attribute for vhostuser disk source"
+msgstr ""
 
 #, c-format
 msgid "invalid <address> element found in <forward> of network %s"
@@ -28692,6 +28866,9 @@ msgstr ""
 msgid "invalid model for video type '%s'"
 msgstr "invalid secret type '%s'"
 
+msgid "invalid model for virtio-balloon-pci"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid msi ioeventfd setting for shmem: '%s'"
 msgstr "invalid size supplied for '%s'"
@@ -29060,6 +29237,9 @@ msgstr "invalid translation value '%s'"
 msgid "invalid watchdog action"
 msgstr "invalid watchdog action"
 
+msgid "io is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy
 msgid "io policy of disk device"
 msgstr "serial of disk device"
@@ -29067,6 +29247,9 @@ msgstr "serial of disk device"
 #, fuzzy
 msgid "io uring is not supported by this QEMU binary"
 msgstr "discard is not supported by this QEMU binary"
+
+msgid "ioeventfd is not supported with vhostuser disk"
+msgstr ""
 
 #, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
@@ -29101,12 +29284,18 @@ msgstr ""
 msgid "iothread id of existing IOThread"
 msgstr ""
 
+msgid "iothread is not supported with vhostuser disk"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr ""
 
 #, fuzzy, c-format
 msgid "iothreadid %d not found"
 msgstr "disk %s not found"
+
+msgid "iotune is not supported with vhostuser disk"
+msgstr ""
 
 msgid "iowait:"
 msgstr "iowait:"
@@ -29179,9 +29368,6 @@ msgstr "keycode %zu is invalid: 0x%X"
 #, c-format
 msgid "known hosts file '%s' does not exist"
 msgstr "known hosts file '%s' does not exist"
-
-msgid "kvm-hint-dedicated=on is only applicable for cpu host-passthrough"
-msgstr ""
 
 msgid "label overrides require relabeling to be enabled at the domain level"
 msgstr "label overrides require relabelling to be enabled at the domain level"
@@ -29748,6 +29934,10 @@ msgstr "machine not running, so can't reboot it"
 msgid "machine paused, so can't power it down"
 msgstr "machine paused, so can't power it down"
 
+#, c-format
+msgid "machine type '%s'"
+msgstr ""
+
 msgid "machine type (/domain/os/type/@machine)"
 msgstr ""
 
@@ -29794,8 +29984,14 @@ msgstr ""
 msgid "malformed 'wwpn' value"
 msgstr "malformed return value"
 
+msgid "malformed <blockDirtyBitmaps> in migration cookie"
+msgstr ""
+
 msgid "malformed <sysinfo> uuid element"
 msgstr "malformed <sysinfo> uuid element"
+
+msgid "malformed <tempBlockDirtyBitmaps> in status XML"
+msgstr ""
 
 msgid "malformed GIC version in QEMU capabilities cache"
 msgstr ""
@@ -29977,6 +30173,9 @@ msgstr ""
 msgid "managed save of a domain state"
 msgstr "managed save of a domain state"
 
+msgid "managing externally launched configuration"
+msgstr ""
+
 msgid "mandatory attribute 'width' is missing or malformed"
 msgstr ""
 
@@ -30027,6 +30226,9 @@ msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
 
 msgid "maximum"
 msgstr "maximum"
+
+msgid "maximum CPU is not supported by QEMU binary"
+msgstr ""
 
 msgid "maximum amount of in-flight data during the copy"
 msgstr ""
@@ -30208,6 +30410,9 @@ msgstr "metadata preallocation only available with qcow2"
 #, fuzzy
 msgid "metadata title can't contain newlines"
 msgstr "Domain title can't contain newlines"
+
+msgid "metadata_cache is not supported with vhostuser disk"
+msgstr ""
 
 msgid "metdata cache max size control is not supported with this QEMU binary"
 msgstr ""
@@ -30447,6 +30652,9 @@ msgstr "missing name for disk source"
 msgid "missing 'nvram-template' in '%s'"
 msgstr "missing name information in %s"
 
+msgid "missing 'path' attribute for vhostuser disk source"
+msgstr ""
+
 msgid "missing 'path' attribute in JSON backing definition for NFS volume"
 msgstr ""
 
@@ -30493,6 +30701,9 @@ msgstr ""
 
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "missing 'timezone' attribute for clock with offset='timezone'"
+
+msgid "missing 'type' attribute for vhostuser disk source"
+msgstr ""
 
 #, fuzzy
 msgid "missing 'type' attribute to disk source"
@@ -31097,6 +31308,9 @@ msgstr ""
 msgid "missing required name attribute in DNS TXT record of network %s"
 msgstr "missing required name attribute in DNS TXT record of network %s"
 
+msgid "missing required persistent attribute in hostdev teaming element"
+msgstr ""
+
 #, fuzzy, c-format
 msgid ""
 "missing required protocol attribute in DNS SRV record '%s' of network '%s'"
@@ -31551,6 +31765,13 @@ msgstr "multiple matching DNS HOST records were found in network %s"
 msgid "multiple matching devices found"
 msgstr "multiple matching interfaces found"
 
+msgid "multiple matching domains found"
+msgstr ""
+
+#, c-format
+msgid "multiple matching domains found: %s"
+msgstr ""
+
 msgid "multiple matching interfaces found"
 msgstr "multiple matching interfaces found"
 
@@ -31680,6 +31901,9 @@ msgstr ""
 msgid "netdir"
 msgstr ""
 
+msgid "netlink error"
+msgstr ""
+
 msgid "netlink event service not running"
 msgstr "netlink event service not running"
 
@@ -31795,6 +32019,9 @@ msgid ""
 "pool"
 msgstr ""
 "network '%s' uses a direct mode, but has no forward dev and no interface pool"
+
+msgid "network configuration using opaque shell scripts"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -32775,6 +33002,9 @@ msgstr ""
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr ""
 
+msgid "only 'pci' addresses are supported for the virtio-pmem device"
+msgstr ""
+
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless) is supported"
 msgstr ""
@@ -32916,6 +33146,9 @@ msgstr "only a single TPM device is supported"
 #, fuzzy
 msgid "only single input device is supported"
 msgstr "only a single nvram device is supported"
+
+msgid "only snapshot=no is supported with vhostuser disk"
+msgstr ""
 
 msgid "only supports mount filesystem type"
 msgstr "only supports mount filesystem type"
@@ -33228,6 +33461,10 @@ msgstr "path '%s' is not absolute"
 msgid "path does not exist, skipping file type checks"
 msgstr "path does not exist, skipping file type checks"
 
+#, c-format
+msgid "path is required for model '%s'"
+msgstr ""
+
 msgid "path is required for model 'nvdimm'"
 msgstr ""
 
@@ -33297,6 +33534,9 @@ msgstr "pci-root and pcie-root controllers should not have an address"
 
 msgid ""
 "pcie-expander-bus controllers are only supported on q35-based machinetypes"
+msgstr ""
+
+msgid "peeking is not supported for vhostuser disk"
 msgstr ""
 
 #, fuzzy, c-format
@@ -33514,6 +33754,12 @@ msgstr "migration bandwidth limit in MiB/s"
 msgid "post-copy migration is not supported with non-live or paused migration"
 msgstr "offline migration is not supported by the destination host"
 
+msgid "potentially unsafe disk format probing"
+msgstr ""
+
+msgid "potentially unsafe use of host CPU passthrough"
+msgstr ""
+
 msgid "power-of-two granularity to use during the copy"
 msgstr ""
 
@@ -33658,6 +33904,9 @@ msgid "prints specified cpu statistics only."
 msgstr "prints specified cpu statistics only."
 
 msgid "process exited while connecting to monitor"
+msgstr ""
+
+msgid "product is not supported with vhostuser disk"
 msgstr ""
 
 msgid "profile does not exist"
@@ -34023,6 +34272,9 @@ msgstr "vhost-net is not supported with this QEMU binary"
 msgid "readonly ide disks are not supported"
 msgstr "transient disks not supported yet"
 
+msgid "readonly is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy
 msgid "readonly sata disks are not supported"
 msgstr "transient disks not supported yet"
@@ -34104,6 +34356,9 @@ msgstr "remoteDomainBlockStatsFlags: returned number of stats exceeds limit"
 
 msgid "remoteDomainGetCPUStats: returned number of stats exceeds limit"
 msgstr "remoteDomainGetCPUStats: returned number of stats exceeds limit"
+
+msgid "remoteDomainGetMessages: returned number of msgs exceeds limit"
+msgstr ""
 
 msgid "remoteNodeGetCPUStats: returned number of stats exceeds limit"
 msgstr "remoteNodeGetCPUStats: returned number of stats exceeds limit"
@@ -34469,6 +34724,9 @@ msgstr ""
 msgid "running"
 msgstr "running"
 
+msgid "running with undesirable elevated privileges"
+msgstr ""
+
 #, c-format
 msgid "runstate '%d' out of range'"
 msgstr "runstate '%d' out of range'"
@@ -34666,6 +34924,9 @@ msgstr "open disk image file failed"
 msgid "sending of PortProfileRequest failed."
 msgstr "sending of PortProfileRequest failed."
 
+msgid "serial is not supported with vhostuser disk"
+msgstr ""
+
 msgid "serial of disk device"
 msgstr "serial of disk device"
 
@@ -34782,6 +35043,9 @@ msgstr "disjoint NUMA cpu ranges are not supported with this QEMU"
 msgid "setting bandwidth on interfaces of type '%s' is not implemented yet"
 msgstr "Copying definition of '%d' type is not implemented yet."
 
+msgid "setting device threshold is not supported for vhostuser disk"
+msgstr ""
+
 msgid ""
 "setting of timer catchup policies is only supported with tickpolicy='catchup'"
 msgstr ""
@@ -34807,6 +35071,9 @@ msgstr "Setting the 64-bit PCI hole size is not supported for machine '%s'"
 #, fuzzy
 msgid "setting the panic device address is not supported for model 's390'"
 msgstr "Setting the 64-bit PCI hole size is not supported for machine '%s'"
+
+msgid "setting virtiofs boot order is not supported with this QEMU binary"
+msgstr ""
 
 msgid "setuid or setgid failed"
 msgstr "setuid or setgid failed"
@@ -34835,9 +35102,15 @@ msgstr ""
 msgid "shallow copy of disk '%s' into a raw file is not possible"
 msgstr ""
 
+msgid "shareable is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "shared access for disk '%s' requires use of supported storage format"
 msgstr "file '%s' for disk '%s' requires use of external snapshot mode"
+
+msgid "shared access mode required for virtio-pmem device"
+msgstr ""
 
 msgid "sheepdog protocol accepts only one host"
 msgstr ""
@@ -35498,6 +35771,10 @@ msgstr ""
 msgid "system:"
 msgstr "system:"
 
+#, c-format
+msgid "tainted: %s"
+msgstr ""
+
 msgid "take a live snapshot"
 msgstr "take a live snapshot"
 
@@ -35589,6 +35866,12 @@ msgid "target vm vcpu granularity does not allow the desired vcpu count"
 msgstr ""
 
 msgid "tcp"
+msgstr ""
+
+msgid "teaming hostdev devices must have type='transient'"
+msgstr ""
+
+msgid "teaming is only supported for pci hostdev devices"
 msgstr ""
 
 msgid "teaming persistent attribute must be set if teaming type is 'transient'"
@@ -36333,6 +36616,9 @@ msgstr ""
 msgid "transient domains do not have any persistent config"
 msgstr "transient domains do not have any persistent config"
 
+msgid "transient is not supported with vhostuser disk"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "transport '%s' does not support socket attribute"
 msgstr "pool type '%s' does not support source discovery"
@@ -36492,6 +36778,9 @@ msgstr "unable to connect to server at '%s:%s'"
 
 #, c-format
 msgid "unable to control COW flag on '%s', not btrfs"
+msgstr ""
+
+msgid "unable to create blockdev props for vhostuser disk type"
 msgstr ""
 
 #, c-format
@@ -37756,10 +38045,6 @@ msgid "unknown eim value: %s"
 msgstr "unknown PM state value %s"
 
 #, fuzzy, c-format
-msgid "unknown emulator binary: %s"
-msgstr "unknown %s action: %s"
-
-#, fuzzy, c-format
 msgid "unknown enable value '%s'"
 msgstr "unknown copypaste value '%s'"
 
@@ -38898,7 +39183,13 @@ msgstr "use multifunction pci under specified address"
 msgid "use of <server> requires pull mode backup"
 msgstr ""
 
+msgid "use of deprecated configuration settings"
+msgstr ""
+
 msgid "use of flags requires a copy job"
+msgstr ""
+
+msgid "use of host cdrom passthrough"
 msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
@@ -39180,6 +39471,9 @@ msgstr "vendor cannot be 0."
 msgid "vendor id is invalid"
 msgstr "vendor id is invalid"
 
+msgid "vendor is not supported with vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "vendor_id must be exactly %d characters long"
 msgstr "vendor_id must be exactly %d characters long"
@@ -39222,6 +39516,12 @@ msgstr "hostdev subsys type '%s' not supported"
 #, fuzzy
 msgid "vhost-user-gpu failed to start"
 msgstr "guest failed to start: %s"
+
+msgid "vhostuser disk is not supported with this QEMU binary"
+msgstr ""
+
+msgid "vhostuser disk supports only virtio bus"
+msgstr ""
 
 msgid "video resolution values must be greater than 0"
 msgstr ""
@@ -39409,6 +39709,12 @@ msgstr ""
 msgid "virtio-net-pci 'tx' option not supported in this QEMU binary"
 msgstr "virtio-net-pci 'tx' option not supported in this QEMU binary"
 
+msgid "virtio-pmem does not support NUMA nodes"
+msgstr ""
+
+msgid "virtio-pmem isn't supported by this QEMU binary"
+msgstr ""
+
 msgid "virtio-s390 bus doesn't have an address"
 msgstr ""
 
@@ -39458,10 +39764,6 @@ msgstr "USB redirection is not supported by this version of QEMU"
 #, fuzzy
 msgid "virtiofs only supports passthrough accessmode"
 msgstr "only supports passthrough accessmode"
-
-#, fuzzy
-msgid "virtiofs requires shared memory"
-msgstr "mirror requires file name"
 
 msgid "virtiofsd died unexpectedly"
 msgstr ""
@@ -39821,6 +40123,9 @@ msgstr ""
 msgid "wrong nlmsg len"
 msgstr ""
 
+msgid "wwn is not supported with vhostuser disk"
+msgstr ""
+
 msgid "wwn of disk device"
 msgstr "wwn of disk device"
 
@@ -39859,6 +40164,71 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Cannot set keepaliveCount data in JSON document"
+#~ msgstr "Cannot set keepaliveCount data in JSON document"
+
+#~ msgid "Cannot set keepaliveInterval data in JSON document"
+#~ msgstr "Cannot set keepaliveInterval data in JSON document"
+
+#, fuzzy
+#~ msgid "Cannot set max_anonymous_clients data in JSON document"
+#~ msgstr "Cannot set max_clients data in JSON document"
+
+#~ msgid "Cannot set max_clients data in JSON document"
+#~ msgstr "Cannot set max_clients data in JSON document"
+
+#~ msgid "Cannot set max_workers data in JSON document"
+#~ msgstr "Cannot set max_workers data in JSON document"
+
+#~ msgid "Cannot set min_workers data in JSON document"
+#~ msgstr "Cannot set min_workers data in JSON document"
+
+#, fuzzy
+#~ msgid "Cannot set next_client_id data in JSON document"
+#~ msgstr "Cannot set max_clients data in JSON document"
+
+#~ msgid "Cannot set priority_workers data in JSON document"
+#~ msgstr "Cannot set priority_workers data in JSON document"
+
+#, fuzzy
+#~ msgid ""
+#~ "Could not find network device with phys_port_id '%s' under PCI device at "
+#~ "%s"
+#~ msgstr ""
+#~ "Could not find PCI controller with index %u required for device at "
+#~ "address %s"
+
+#, fuzzy
+#~ msgid "Failed to register slirp migration"
+#~ msgstr "Failed to register lock failure action"
+
+#, fuzzy
+#~ msgid "Missing master path attribute for nmdm device"
+#~ msgstr "Missing source path attribute for char device"
+
+#, fuzzy
+#~ msgid "Missing slave path attribute for nmdm device"
+#~ msgstr "Missing source path attribute for char device"
+
+#~ msgid "The server redirects from '%s'"
+#~ msgstr "The server redirects from '%s'"
+
+#, fuzzy
+#~ msgid "could not find backing store index %u in chain for '%s'"
+#~ msgstr "Could not find parent device for '%s'"
+
+#, fuzzy
+#~ msgid "error dumping"
+#~ msgstr "dumping"
+
+#, fuzzy
+#~ msgid "unknown emulator binary: %s"
+#~ msgstr "unknown %s action: %s"
+
+#, fuzzy
+#~ msgid "virtiofs requires shared memory"
+#~ msgstr "mirror requires file name"
 
 #~ msgid ""
 #~ "\n"

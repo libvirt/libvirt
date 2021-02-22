@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-01-08 17:11+0000\n"
+"POT-Creation-Date: 2021-02-22 08:42+0000\n"
 "PO-Revision-Date: 2021-01-10 11:36+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -1247,6 +1247,10 @@ msgid "'%s' missing"
 msgstr "Пропущено «%s»"
 
 #, c-format
+msgid "'%s' requires shared memory"
+msgstr ""
+
+#, c-format
 msgid "'%s' scheduler bitmap '%s' is empty"
 msgstr "бітова карта планувальника «%s», «%s», є порожньою"
 
@@ -2059,6 +2063,10 @@ msgid "Attached device %s has no type"
 msgstr "Для долученого пристрою %s не визначено типу"
 
 #, c-format
+msgid "Attaching devices of type %d is not implemented"
+msgstr ""
+
+#, c-format
 msgid ""
 "Attaching memory device with size '%llu' would exceed domain's maxMemory "
 "config size '%llu'"
@@ -2099,10 +2107,10 @@ msgstr "Спроба подвійного використання адреси 
 msgid "Attempting to use unknown stub driver"
 msgstr "Спроба використання невідомого фіктивного драйвера"
 
-msgid "Attribute migratable is only allowed for host-passthrough CPU"
+msgid ""
+"Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
+"mode"
 msgstr ""
-"Атрибут migratable можна використовувати лише на процесорах без передавання "
-"до основної системи"
 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr ""
@@ -2349,10 +2357,8 @@ msgid "CPU architecture (/domain/os/type/@arch)"
 msgstr "архітектура процесора (/домен/операційна_система/тип/@архітектура)"
 
 #, c-format
-msgid "CPU cache mode '%s' can only be used with '%s' CPUs"
+msgid "CPU cache mode '%s' can only be used with '%s' / '%s' CPUs"
 msgstr ""
-"режим кешування процесора «%s» можна використовувати лише у поєднанні із "
-"процесорами «%s»"
 
 #, c-format
 msgid "CPU cache mode '%s' can only be used with level='3'"
@@ -2440,6 +2446,10 @@ msgstr "Модель процесора %s не підтримується гі�
 #, c-format
 msgid "CPU model %s too long for destination"
 msgstr "Запис моделі процесора %s є занадто довгим для призначення"
+
+#, c-format
+msgid "CPU model '%s'"
+msgstr ""
 
 #, c-format
 msgid "CPU model '%s' not supported by hypervisor"
@@ -2675,6 +2685,10 @@ msgstr "Не вдалося знайти пристрій завантаженн
 #, c-format
 msgid "Can't find boot device of type: %s, index: %d"
 msgstr "Не вдалося знайти пристрій завантаження типу %s, індекс: %d"
+
+#, c-format
+msgid "Can't find disk '%s' in domain definition"
+msgstr ""
 
 #, c-format
 msgid "Can't find network boot device for index: %d"
@@ -3543,29 +3557,8 @@ msgstr "Не вдалося встановити MTU інтерфейсу на �
 msgid "Cannot set interface flags on '%s'"
 msgstr "Не вдалося встановити прапорці інтерфейсу на «%s»"
 
-msgid "Cannot set keepaliveCount data in JSON document"
-msgstr "Не можна встановлювати дані keepaliveCount у документі JSON"
-
-msgid "Cannot set keepaliveInterval data in JSON document"
-msgstr "Не можна встановлювати дані keepaliveInterval у документі JSON"
-
-msgid "Cannot set max_anonymous_clients data in JSON document"
-msgstr "Не вдалося встановити дані max_anonymous_clients у документі JSON"
-
-msgid "Cannot set max_clients data in JSON document"
-msgstr "Не можна встановлювати дані max_clients у документі JSON"
-
-msgid "Cannot set max_workers data in JSON document"
-msgstr "Не можна встановлювати дані max_workers у документі JSON"
-
 msgid "Cannot set memory higher than max memory"
 msgstr "Не можна визначати об'єм пам'яті, що перевищує максимальний"
-
-msgid "Cannot set min_workers data in JSON document"
-msgstr "Не можна встановлювати дані min_workers у документі JSON"
-
-msgid "Cannot set next_client_id data in JSON document"
-msgstr "Не вдалося встановити дані next_client_id у документі JSON"
 
 msgid "Cannot set ownerId data in JSON document"
 msgstr "Не вдалося встановити дані ownerId у документі JSON"
@@ -3580,9 +3573,6 @@ msgstr "Не вдалося встановити дані ownerPid у докум
 msgid "Cannot set ownerUUID data in JSON document"
 msgstr ""
 "Не вдалося встановити дані щодо UUID власника (ownerUUID) у документі JSON"
-
-msgid "Cannot set priority_workers data in JSON document"
-msgstr "Не можна встановлювати дані priority_workers у документі JSON"
 
 msgid "Cannot set restricted data in JSON document"
 msgstr "Не вдалося встановити дані restricted у документі JSON"
@@ -4197,15 +4187,29 @@ msgstr "Не вдалося додати дочірній вузол до method
 msgid "Could not add child to XML node"
 msgstr "Не вдалося додати дочірній елемент до вузла XML"
 
+msgid "Could not add virtual disk parent"
+msgstr ""
+
 msgid "Could not allocate disk def"
 msgstr "Не вдалося розмістити визначення диска"
 
 msgid "Could not allocate disk definition"
 msgstr "Не вдалося розмістити визначення диска"
 
+msgid "Could not append definition to domain"
+msgstr ""
+
 #, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "Не вдалося прив'язати адресу до диска «%s»"
+
+#, c-format
+msgid "Could not attach network %lu"
+msgstr ""
+
+#, c-format
+msgid "Could not attach serial port %lu"
+msgstr ""
 
 #, c-format
 msgid "Could not attach the file as harddisk/dvd/floppy: %s, rc=%08x"
@@ -4401,6 +4405,10 @@ msgstr "Не вдалося знайти жодного елемента «pool�
 msgid "Could not find any mounted v1 controllers"
 msgstr "Не вдалося знайти жодного змонтованого контролера v1"
 
+#, c-format
+msgid "Could not find any network device under PCI device at %s"
+msgstr ""
+
 msgid "Could not find any vport capable device"
 msgstr "Не вдалося знайти жодного пристрою із можливостями vport"
 
@@ -4455,13 +4463,6 @@ msgid "Could not find matching device '%s'"
 msgstr "Не вдалося знайти відповідний пристрій, «%s»"
 
 #, c-format
-msgid ""
-"Could not find network device with phys_port_id '%s' under PCI device at %s"
-msgstr ""
-"Не вдалося знайти мережевий пристрій із phys_port_id «%s» у записі пристрою "
-"PCI на %s"
-
-#, c-format
 msgid "Could not find parent device for '%s'"
 msgstr "Не вдалося знайти батьківський пристрій для «%s»"
 
@@ -4479,6 +4480,9 @@ msgstr "Не вдалося знайти розташування контрол
 
 msgid "Could not find placement for v2 controller"
 msgstr "Не вдалося визначити розташування для контролера v2"
+
+msgid "Could not find selectors in method response"
+msgstr ""
 
 #, c-format
 msgid "Could not find snapshot with name '%s'"
@@ -4556,6 +4560,9 @@ msgstr "Не вдалося отримати пункти EPR"
 #, c-format
 msgid "Could not get IMedium, rc=%08x"
 msgstr "Не вдалося отримати IMedium, rc=%08x"
+
+msgid "Could not get Msvm_DiskDrive default InstanceID"
+msgstr ""
 
 #, c-format
 msgid "Could not get Msvm_ShutdownComponent for domain with UUID '%s'"
@@ -5045,6 +5052,12 @@ msgstr "Не вдалося отримати запис «bridge/forward_delay»
 msgid "Could not retrieve 'bridge/stp_state' for '%s'"
 msgstr "Не вдалося отримати запис «bridge/stp_state» для «%s»"
 
+msgid "Could not retrieve NIC settings"
+msgstr ""
+
+msgid "Could not retrieve default Msvm_DiskDrive object"
+msgstr ""
+
 #. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "Не вдалося отримати дані щодо буфера"
@@ -5052,8 +5065,14 @@ msgstr "Не вдалося отримати дані щодо буфера"
 msgid "Could not retrieve resource pool"
 msgstr "Не вдалося отримати буфер ресурсів"
 
+msgid "Could not retrieve screenshot"
+msgstr ""
+
 msgid "Could not retrieve the AutoStartDefaults object"
 msgstr "Не вдалося отримати об'єкт AutoStartDefaults"
+
+msgid "Could not retrieve virtual switch"
+msgstr ""
 
 #, c-format
 msgid "Could not revert to snapshot '%s': %s"
@@ -5841,6 +5860,10 @@ msgstr "Домен уже містить пристрій із тією ж ад�
 
 msgid "Domain already contains a disk with that address"
 msgstr "У домені вже є диск із цією адресою"
+
+#, c-format
+msgid "Domain already exists with UUID '%s'"
+msgstr ""
 
 msgid "Domain already exists, editing existing domains is not supported yet"
 msgstr "Домен вже існує, редагування вже створених доменів ще не передбачено"
@@ -8236,9 +8259,6 @@ msgstr "Не вдалося зареєструвати дію, пов'язану
 msgid "Failed to register shutdown timeout"
 msgstr "Помилка при реєстрації затримки вимикання"
 
-msgid "Failed to register slirp migration"
-msgstr "Не вдалося зареєструвати перенесення slirp"
-
 #, c-format
 msgid "Failed to register xml namespace '%s'"
 msgstr "Не вдалося зареєструвати простір назв XML «%s»"
@@ -8373,6 +8393,9 @@ msgstr ""
 
 msgid "Failed to retrieve current vcpu count"
 msgstr "Не вдалося отримати значення поточної кількості віртуальних процесорів"
+
+msgid "Failed to retrieve image data"
+msgstr ""
 
 msgid "Failed to retrieve maximum vcpu count"
 msgstr ""
@@ -8810,6 +8833,9 @@ msgstr "Не вдалося записати %zu байтів до тому сх
 #, c-format
 msgid "Failed to write '%s'"
 msgstr "Не вдалося записати «%s»"
+
+msgid "Failed to write pixel data"
+msgstr ""
 
 msgid "Failed to write save file header"
 msgstr "Не вдалося записати заголовок файла збереження"
@@ -10047,6 +10073,9 @@ msgstr "Некоректний код класу USB, %s"
 msgid "Invalid UUID"
 msgstr "Некоректний UUID"
 
+msgid "Invalid XML response"
+msgstr ""
+
 #, c-format
 msgid "Invalid adapter name '%s' for SCSI pool"
 msgstr "Некоректна назва адаптера «%s» для буфера SCSI"
@@ -10300,6 +10329,9 @@ msgstr ""
 #, c-format
 msgid "Invalid device type supplied: %s"
 msgstr "Надано некоректні дані щодо типу пристрою: %s"
+
+msgid "Invalid disk bus in definition"
+msgstr ""
 
 #, c-format
 msgid "Invalid dns enable setting '%s' in network '%s'"
@@ -11524,6 +11556,9 @@ msgstr "Загалом пам'яті:"
 msgid "Memory tuning is not available in session mode"
 msgstr "У режимі сеансу визначення параметрів пам'яті недоступне"
 
+msgid "Messages:"
+msgstr ""
+
 msgid "Metadata modified"
 msgstr "Метадані змінено"
 
@@ -11540,10 +11575,9 @@ msgid "MethodFault is missing 'type' property"
 msgstr "У MethodFault не вистачає властивості «type»"
 
 msgid ""
-"Migratable attribute for host-passthrough CPU is not supported by QEMU binary"
+"Migratable attribute for host-passthrough CPU is not supported by this QEMU "
+"binary"
 msgstr ""
-"Підтримки атрибута «migratable» для процесорів із передаванням до основної "
-"системи у цьому виконуваному файлі QEMU не передбачено"
 
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr "Міграція домену на інший вузол. Додати --live до живої міграції."
@@ -11981,9 +12015,6 @@ msgstr ""
 "Не вистачає обов'язкових значень атрибутів середнього (average) та нижнього "
 "(floor) рівнів"
 
-msgid "Missing master path attribute for nmdm device"
-msgstr "Не вистачає атрибута основного шляху для пристрою nmdm"
-
 msgid "Missing max_clients data in JSON document"
 msgstr "У документі JSON не вистачає даних max_clients"
 
@@ -12289,9 +12320,6 @@ msgstr "У документі JSON не вистачає даних служби
 msgid "Missing services data in JSON document"
 msgstr "У документі JSON не вистачає даних служб"
 
-msgid "Missing slave path attribute for nmdm device"
-msgstr "Не вказано атрибута підлеглого шляху для пристрою nmdm"
-
 msgid "Missing sock field in JSON state document"
 msgstr "У документі стану JSON не вистачає поля sock"
 
@@ -12401,6 +12429,11 @@ msgstr ""
 #, c-format
 msgid "Multiple definitions of CPU model '%s'"
 msgstr "Декілька визначень моделі CPU «%s»"
+
+#, c-format
+msgid ""
+"Multiple domains exist with the name '%s': repeat the request using a UUID"
+msgstr ""
 
 msgid "Multiple graphics devices are not supported"
 msgstr "Підтримки декількох графічних пристроїв не передбачено"
@@ -13049,6 +13082,10 @@ msgstr "Не вказано назви для елемента <initenv>"
 msgid "No net with mac '%s'"
 msgstr "Немає мережі з MAC «%s»"
 
+#, c-format
+msgid "No network found with property '%s' = '%s'"
+msgstr ""
+
 msgid "No network socket associated with client"
 msgstr "Немає сокета мережі, пов'язаного із клієнтом"
 
@@ -13314,6 +13351,10 @@ msgid "Number of leases is %d, which exceeds max limit: %d"
 msgstr ""
 "Кількість надань дорівнює %d, що перевищує обмеження на максимальну "
 "кількість: %d"
+
+#, c-format
+msgid "Number of msgs %d, which exceeds max limit: %d"
+msgstr ""
 
 msgid "Number of shown CPUs at most"
 msgstr "Максимальна кількість показаних процесорів"
@@ -13911,6 +13952,7 @@ msgstr "Оброблена відповідь JSON «%s» не є об'єкто�
 msgid "Partition path '%s' must start with '/'"
 msgstr "Шлях розділу «%s» має починатися з «/»"
 
+#. warn users that the --base64 option passed from command line is wrong
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "Передавання значення ключа у аргументі рядка команди не є безпечним!"
 
@@ -15370,6 +15412,9 @@ msgstr "Спільна пам'ять:\n"
 msgid "Shell '%s' should have absolute path"
 msgstr "У файла оболонки «%s» має бути абсолютний шлях"
 
+msgid "Should define both master and slave path attributes for nmdm device"
+msgstr ""
+
 msgid "Show block device errors"
 msgstr "Показати помилки на блоковому пристрої"
 
@@ -15926,6 +15971,10 @@ msgstr "Модель проксі TPM %s потребує модуля «Passthr
 msgid "TPM device path %s is invalid"
 msgstr "Некоректний шлях до пристрою TPM %s"
 
+#, c-format
+msgid "TPM model '%s' is only available for x86 and aarch64 guests"
+msgstr ""
+
 msgid "Table row cannot be empty"
 msgstr "Рядок таблиці не може бути порожнім"
 
@@ -16203,6 +16252,9 @@ msgstr ""
 msgid "Target device packed option '%s' does not match source '%s'"
 msgstr ""
 "Параметр packed пристрою призначення, «%s», не відповідає джерелу, «%s»"
+
+msgid "Target device virtio options don't match the source"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -17007,10 +17059,6 @@ msgid "The server certificate %s is not yet active"
 msgstr "Сертифікат сервера %s ще не набув чинності"
 
 #, c-format
-msgid "The server redirects from '%s'"
-msgstr "Сервер переспрямовує з «%s»"
-
-#, c-format
 msgid "The server redirects from '%s' to '%s'"
 msgstr "Сервер переспрямовує з «%s» до «%s»"
 
@@ -17557,6 +17605,9 @@ msgstr "UUID"
 
 msgid "UUID in config file malformed"
 msgstr "Неправильне формулювання UUID у файлі конфігурації"
+
+msgid "UUID is not supported for NVDIMM device"
+msgstr ""
 
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "невідповідність UUID між <uuid> та <sysinfo>"
@@ -20195,8 +20246,16 @@ msgid "Unsupported PCI Express root controller"
 msgstr "Непідтримуваний кореневий контролер PCI Express"
 
 #, c-format
+msgid "Unsupported SCSI controller address type '%d'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported SCSI controller model %s"
 msgstr "Непідтримувана модель контролера SCSI, %s"
+
+#, c-format
+msgid "Unsupported SCSI controller model '%d'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported SMBIOS mode '%s'"
@@ -20282,6 +20341,9 @@ msgstr "Непідтримувані налаштування"
 msgid "Unsupported controller model: %s"
 msgstr "Непідтримувана модель контролера: %s"
 
+msgid "Unsupported controller type"
+msgstr ""
+
 #, c-format
 msgid "Unsupported controller type %s"
 msgstr "Непідтримуваний тип контролера, %s"
@@ -20305,9 +20367,15 @@ msgstr "Непідтримуваний тип пристроїв «%s»"
 msgid "Unsupported device-mapper version. Expected %d got %d"
 msgstr "Непідтримувана версія device-mapper. Мало бути %d, маємо %d"
 
+msgid "Unsupported disk address type"
+msgstr ""
+
 #, c-format
 msgid "Unsupported disk address type '%s'"
 msgstr "Непідтримуваний тип адреси диска «%s»"
+
+msgid "Unsupported disk bus"
+msgstr ""
 
 #, c-format
 msgid "Unsupported disk bus type %s"
@@ -20316,6 +20384,9 @@ msgstr "Непідтримуваний тип каналу роботи з ди�
 #, c-format
 msgid "Unsupported disk device type '%s'"
 msgstr "Непідтримуваний тип дискових пристроїв «%s»"
+
+msgid "Unsupported disk type"
+msgstr ""
 
 #, c-format
 msgid "Unsupported disk type %d"
@@ -20771,6 +20842,10 @@ msgstr ""
 msgid "WARN"
 msgstr "ПОПЕРЕДЖЕННЯ"
 
+#, c-format
+msgid "WS-Management fault during %s invocation: %s"
+msgstr ""
+
 #, sh-format
 msgid "Waiting for %d guests to shut down, %d seconds left\\n"
 msgstr ""
@@ -20977,6 +21052,9 @@ msgstr ""
 "для під'єднання контролера PCI із значенням model='%s' потрібен слот PCI, "
 "але такі слоти недоступні і не можуть бути додані автоматично"
 
+msgid "a block I/O throttling is not supported for vhostuser disk"
+msgstr ""
+
 msgid ""
 "a block I/O throttling length parameter is not supported with this QEMU "
 "binary"
@@ -21178,6 +21256,11 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "отримати всю нову місткість, замість залишення її порожньою"
 
+#.
+#. * we need to use an intermediary pointer to @data as compilers may sometimes
+#. * complain about @data not being a pointer type:
+#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
+#.
 msgid "allocated netlink buffer is too small"
 msgstr "отриманий буфер netlink є занадто малим"
 
@@ -21395,6 +21478,9 @@ msgstr ""
 "спроба об'єднання віртуальних портів, що належать до невідповідних типів (%s "
 "і %s)"
 
+msgid "auth is not supported with vhostuser disk"
+msgstr ""
+
 msgid "auth secret UUID to be used for underlying storage"
 msgstr "UUID реєстраційних даних для розпізнавання на основному сховищі даних"
 
@@ -21502,6 +21588,9 @@ msgstr "для протоколу %s не реалізовано обробни�
 #, c-format
 msgid "backing store protocol '%s' is not yet supported"
 msgstr "підтримки протоколу резервного сховища «%s» ще не передбачено"
+
+msgid "backingStore is not supported with vhostuser disk"
+msgstr ""
 
 msgid "backingStore of mirror target is not supported by this qemu"
 msgstr ""
@@ -21652,6 +21741,9 @@ msgstr "не завершено копіювання блоків: %s"
 msgid "block device"
 msgstr "блоковий пристрій"
 
+msgid "block info is not supported for vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "block job '%s' failed while pivoting"
 msgstr "помилка блокового завдання «%s» під час створення опорного пункту"
@@ -21679,10 +21771,20 @@ msgid "block jobs are not supported on transient disk '%s'"
 msgstr "підтримки блокових завдань на проміжному диску «%s» не передбачено"
 
 #, c-format
+msgid "block jobs are not supported on vhostuser disk '%s'"
+msgstr ""
+
+#, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr ""
 "запитане значення пікового використання блоків є занадто великим для "
 "протоколу віддаленого зв'язку, %zi > %d"
+
+msgid "block resize is not supported for vhostuser disk"
+msgstr ""
+
+msgid "block stats are not supported for vhostuser disk"
+msgstr ""
 
 msgid "block_io_throttle device entry was not in expected format"
 msgstr ""
@@ -21708,6 +21810,9 @@ msgstr "Завдання blockdev-create було скасовано"
 
 msgid "blocked"
 msgstr "заблоковано"
+
+msgid "blockio is not supported with vhostuser disk"
+msgstr ""
 
 msgid "blockstats device entry was not in expected format"
 msgstr "запис «device» blockstats зберігається у неочікуваному форматі"
@@ -21746,6 +21851,9 @@ msgstr "порядок завантаження %u вже використано
 #, c-format
 msgid "boot order '%s' used for more than one device"
 msgstr "порядок завантаження «%s» використано для декількох пристроїв"
+
+msgid "boot order is only supported for virtiofs"
+msgstr ""
 
 msgid "booted"
 msgstr "завантажено"
@@ -21857,6 +21965,9 @@ msgstr "підтримки обходу кешу у цій системі не �
 
 msgid "bytes"
 msgstr "байти"
+
+msgid "cache is not supported with vhostuser disk"
+msgstr ""
 
 msgid "cache mode of disk device"
 msgstr "режим кешування дискового пристрою"
@@ -23960,6 +24071,9 @@ msgstr "синтаксична помилка у файлі налаштуван
 msgid "configuration file syntax error: %s"
 msgstr "синтаксична помилка у файлі налаштувань: %s"
 
+msgid "configuration potentially modified by hook script"
+msgstr ""
+
 msgid "configuring disks is not supported for vz snapshots"
 msgstr "для знімків vz підтримки налаштовування дисків не передбачено"
 
@@ -24099,6 +24213,9 @@ msgstr "copy_on_read є несумісним із придатним лише д
 msgid "copy_on_read is not supported with removable disk '%s'"
 msgstr "із портативним диском «%s» підтримки copy_on_read не передбачено"
 
+msgid "copy_on_read is not supported with vhostuser disk"
+msgstr ""
+
 msgid "corrupted profileid string"
 msgstr "пошкоджений рядок ідентифікатора профілю (profileid("
 
@@ -24183,9 +24300,8 @@ msgid "could not determine max vcpus for the domain"
 msgstr "не вдалося визначити максимальну кількість процесорів для домену"
 
 #, c-format
-msgid "could not find backing store index %u in chain for '%s'"
+msgid "could not find backing store index '%u' in chain for '%s'"
 msgstr ""
-"не вдалося знайти індекс резервного сховища даних %u у ланцюжку для «%s»"
 
 #, c-format
 msgid "could not find base image in chain for '%s'"
@@ -24650,6 +24766,18 @@ msgstr "нетипова альтернативна назва дисковог�
 msgid "custom alias name of interface device"
 msgstr "нетипова альтернативна назва пристрою інтерфейсу"
 
+msgid "custom configuration parameters specified"
+msgstr ""
+
+msgid "custom device tree blob used"
+msgstr ""
+
+msgid "custom guest agent control commands issued"
+msgstr ""
+
+msgid "custom monitor control commands issued"
+msgstr ""
+
 msgid "daemon"
 msgstr "фонова служба"
 
@@ -24816,6 +24944,10 @@ msgstr ""
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr "підтримки вилучення %d зовнішніх знімків дисків ще не передбачено"
 
+#, c-format
+msgid "deprecated configuration: %s"
+msgstr ""
+
 msgid "description"
 msgstr "опис"
 
@@ -24874,6 +25006,9 @@ msgstr "докладні дані щодо віртуальних процесо
 
 msgid "detect_zeroes is not supported by this QEMU binary"
 msgstr "підтримки detect_zeroes у цьому виконуваному файлі QEMU не передбачено"
+
+msgid "detect_zeroes is not supported with vhostuser disk"
+msgstr ""
 
 #, c-format
 msgid "dev->id buffer overflow: %d %d"
@@ -25032,8 +25167,15 @@ msgid "discard is not supported by this QEMU binary"
 msgstr ""
 "у цьому виконуваному файлі QEMU не передбачено підтримки відкидання (discard)"
 
+#, c-format
+msgid "discard is not supported for model '%s'"
+msgstr ""
+
 msgid "discard is not supported for nvdimms"
 msgstr "підтримки відкидання для nvdimm не передбачено"
+
+msgid "discard is not supported with vhostuser disk"
+msgstr ""
 
 #, c-format
 msgid "discarding %llu bytes failed on RBD image %s at offset %llu"
@@ -25692,6 +25834,10 @@ msgid "duplicate cookie '%s'"
 msgstr "дублювання куки «%s»"
 
 #, c-format
+msgid "duplicate domain '%s'"
+msgstr ""
+
+#, c-format
 msgid "duplicate iothread id '%u' found"
 msgstr "виявлено дублювання ідентифікатора потоку введення-виведення «%u»"
 
@@ -25865,6 +26011,9 @@ msgstr "формат шифрування %d не відповідає очік�
 msgid "encryption format of inputvol must be LUKS"
 msgstr "форматом шифрування inputvol має бути LUKS"
 
+msgid "encryption is not supported with vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
 msgstr "кінець діапазону %s - %s у мережі %s/%d є адресою трансляції"
@@ -25936,12 +26085,12 @@ msgstr "помилка під час спроби створити катало�
 msgid "error destroying network device %s"
 msgstr "помилка під час знищення пристрою мережі %s"
 
-msgid "error dumping"
-msgstr "помилка під час спроби створити дамп"
-
 #, c-format
 msgid "error dumping %s (%d) interface"
 msgstr "помилка під час створення дампу інтерфейсу %s (%d)"
+
+msgid "error dumping neighbor table"
+msgstr ""
 
 #, c-format
 msgid "error during virtual port configuration of ifindex %d"
@@ -26007,6 +26156,9 @@ msgstr "помилка під час спроби призупинити роб�
 
 msgid "error: "
 msgstr "помилка: "
+
+msgid "error_policy is not supported with vhostuser disk"
+msgstr ""
 
 msgid "escape for XML use"
 msgstr "екранувати для використання у XML"
@@ -26449,6 +26601,9 @@ msgstr "не вдалося закрити файл"
 msgid "failed to close or write to profile"
 msgstr "не вдалося закрити або записати дані до профілю"
 
+msgid "failed to close screenshot file"
+msgstr ""
+
 msgid "failed to collect snapshot list"
 msgstr "не вдалося зібрати список знімків"
 
@@ -26643,6 +26798,10 @@ msgstr ""
 "Не вдалося знайти відповідні придатні до під'єднання «вгарячу» віртуальні "
 "процесори для досягнення бажаної кількості віртуальних процесорів у системі "
 "призначення"
+
+#, c-format
+msgid "failed to find data for block node '%s'"
+msgstr ""
 
 #, c-format
 msgid "failed to find disk '%s'"
@@ -27032,6 +27191,10 @@ msgstr "не вдалося обробити cpuid[%zu]"
 #, c-format
 msgid "failed to parse device weight: '%s'"
 msgstr "не вдалося обробити вагу пристрою: «%s»"
+
+#, c-format
+msgid "failed to parse expiry value '%s'"
+msgstr ""
 
 #, c-format
 msgid "failed to parse int: '%s'"
@@ -27894,6 +28057,9 @@ msgstr "помилка під час виконання g_mkstemp(\"%s\")"
 msgid "g_mkstemp_full: failed to create temporary file: %s"
 msgstr "g_mkstemp_full: не вдалося створити тимчасовий файл: %s"
 
+msgid "geometry is not supported with vhostuser disk"
+msgstr ""
+
 msgid "get active job information for the specified disk"
 msgstr "отримати дані щодо активного завдання для вказаного диска"
 
@@ -28427,6 +28593,9 @@ msgstr "URI з'єднання гіпервізора"
 msgid "hypervisor connection not open"
 msgstr "з'єднання із гіпервізором не відкрито"
 
+msgid "hypervisor feature autodetection override"
+msgstr ""
+
 msgid "i - turn off validation and try to redefine again"
 msgstr "i - вимкнути перевірку і спробувати визначити все знову"
 
@@ -28907,6 +29076,9 @@ msgstr "помилковий знак «=» після параметра --%s"
 #, c-format
 msgid "invalid 'managed' value '%s'"
 msgstr "некоректне значення «managed», «%s»"
+
+msgid "invalid 'type' attribute for vhostuser disk source"
+msgstr ""
 
 #, c-format
 msgid "invalid <address> element found in <forward> of network %s"
@@ -29448,6 +29620,9 @@ msgstr "некоректна модель для інтерфейсу типу �
 msgid "invalid model for video type '%s'"
 msgstr "некоректна модель для типу відео «%s»"
 
+msgid "invalid model for virtio-balloon-pci"
+msgstr ""
+
 #, c-format
 msgid "invalid msi ioeventfd setting for shmem: '%s'"
 msgstr "некоректний параметр ioeventfd msi для shmem: «%s»"
@@ -29819,11 +29994,17 @@ msgstr "некоректне значення vncdisplay, «%s»"
 msgid "invalid watchdog action"
 msgstr "некоректна дія сторожового пристрою"
 
+msgid "io is not supported with vhostuser disk"
+msgstr ""
+
 msgid "io policy of disk device"
 msgstr "правила введення-виведення дискового пристрою"
 
 msgid "io uring is not supported by this QEMU binary"
 msgstr "у цьому виконуваному файлі QEMU не передбачено підтримки io uring"
+
+msgid "ioeventfd is not supported with vhostuser disk"
+msgstr ""
 
 msgid "iommu driver option is only supported for virtio devices"
 msgstr ""
@@ -29860,12 +30041,18 @@ msgstr "потік для нового потоку введення-вивед�
 msgid "iothread id of existing IOThread"
 msgstr "ідентифікатор iothread наявного IOThread"
 
+msgid "iothread is not supported with vhostuser disk"
+msgstr ""
+
 msgid "iothread_id for the IOThread to delete"
 msgstr "iothread_id для потоку введення-виведення для вилучення"
 
 #, c-format
 msgid "iothreadid %d not found"
 msgstr "ідентифікатор потоку введення-виведення %d не знайдено"
+
+msgid "iotune is not supported with vhostuser disk"
+msgstr ""
 
 msgid "iowait:"
 msgstr "очікування В/В:"
@@ -29938,11 +30125,6 @@ msgstr "код клавіші %zu є некоректним: 0x%X"
 #, c-format
 msgid "known hosts file '%s' does not exist"
 msgstr "файла відомих вузлів, «%s», не існує"
-
-msgid "kvm-hint-dedicated=on is only applicable for cpu host-passthrough"
-msgstr ""
-"kvm-hint-dedicated=on можна застосовувати лише для host-passthrough "
-"процесорів"
 
 msgid "label overrides require relabeling to be enabled at the domain level"
 msgstr ""
@@ -30507,6 +30689,10 @@ msgstr "машину не запущено, отже її не можна пер
 msgid "machine paused, so can't power it down"
 msgstr "роботу машини призупинено, отже її не можна вимикати"
 
+#, c-format
+msgid "machine type '%s'"
+msgstr ""
+
 msgid "machine type (/domain/os/type/@machine)"
 msgstr "тип машини (/домен/система/тип/@машина)"
 
@@ -30555,8 +30741,14 @@ msgstr ""
 msgid "malformed 'wwpn' value"
 msgstr "помилкове форматування значення «wwpn»"
 
+msgid "malformed <blockDirtyBitmaps> in migration cookie"
+msgstr ""
+
 msgid "malformed <sysinfo> uuid element"
 msgstr "помилкове форматування елемента UUID <sysinfo>"
+
+msgid "malformed <tempBlockDirtyBitmaps> in status XML"
+msgstr ""
 
 msgid "malformed GIC version in QEMU capabilities cache"
 msgstr "помилкове форматування запису версії GIC у кеші можливостей QEMU"
@@ -30741,6 +30933,9 @@ msgstr "помилкове форматування слоту у даних щ�
 msgid "managed save of a domain state"
 msgstr "кероване збереження стану домену"
 
+msgid "managing externally launched configuration"
+msgstr ""
+
 msgid "mandatory attribute 'width' is missing or malformed"
 msgstr "пропущено або сформатовано з помилками обов'язковий атрибут «width»"
 
@@ -30789,6 +30984,9 @@ msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
 
 msgid "maximum"
 msgstr "maximum"
+
+msgid "maximum CPU is not supported by QEMU binary"
+msgstr ""
 
 msgid "maximum amount of in-flight data during the copy"
 msgstr "максимальний об'єм транзитних даних під час копіювання"
@@ -30996,6 +31194,9 @@ msgstr ""
 
 msgid "metadata title can't contain newlines"
 msgstr "заголовок метаданих не повинен містити символів розриву рядків"
+
+msgid "metadata_cache is not supported with vhostuser disk"
+msgstr ""
 
 msgid "metdata cache max size control is not supported with this QEMU binary"
 msgstr ""
@@ -31246,6 +31447,9 @@ msgstr "не вказано атрибута «namespace» джерела дис
 msgid "missing 'nvram-template' in '%s'"
 msgstr "пропущено «nvram-template» у «%s»"
 
+msgid "missing 'path' attribute for vhostuser disk source"
+msgstr ""
+
 msgid "missing 'path' attribute in JSON backing definition for NFS volume"
 msgstr "пропущено атрибут «path» у резервному визначенні JSON для тому NFS"
 
@@ -31291,6 +31495,9 @@ msgstr "у визначенні резервного тому iSCSI пропущ
 
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "не вистачає атрибута «timezone» для годинника з відступом=«timezone»"
+
+msgid "missing 'type' attribute for vhostuser disk source"
+msgstr ""
 
 msgid "missing 'type' attribute to disk source"
 msgstr "не вказано атрибута «type» джерела диска"
@@ -31866,6 +32073,9 @@ msgstr ""
 msgid "missing required name attribute in DNS TXT record of network %s"
 msgstr "Не вказано обов'язкового атрибута назви у DNS TXT мережі %s"
 
+msgid "missing required persistent attribute in hostdev teaming element"
+msgstr ""
+
 #, c-format
 msgid ""
 "missing required protocol attribute in DNS SRV record '%s' of network '%s'"
@@ -32306,6 +32516,13 @@ msgstr "у мережі %s знайдено декілька відповідн�
 msgid "multiple matching devices found"
 msgstr "виявлено декілька відповідних пристроїв"
 
+msgid "multiple matching domains found"
+msgstr ""
+
+#, c-format
+msgid "multiple matching domains found: %s"
+msgstr ""
+
 msgid "multiple matching interfaces found"
 msgstr "знайдено декілька відповідних інтерфейсів"
 
@@ -32439,6 +32656,9 @@ msgstr ""
 msgid "netdir"
 msgstr "мережевий каталог"
 
+msgid "netlink error"
+msgstr ""
+
 msgid "netlink event service not running"
 msgstr "службу подій netlink не запущено"
 
@@ -32567,6 +32787,9 @@ msgid ""
 msgstr ""
 "мережа «%s» використовує режим пристрою основної системи (hostdev), але "
 "немає пристрою переспрямування та буфера інтерфейсу"
+
+msgid "network configuration using opaque shell scripts"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -33537,6 +33760,9 @@ msgstr "для пристрою pc-dimm передбачено підтримк�
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "для пристрою спільної пам'яті передбачено підтримку лише адрес «pci»"
 
+msgid "only 'pci' addresses are supported for the virtio-pmem device"
+msgstr ""
+
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless) is supported"
 msgstr ""
@@ -33682,6 +33908,9 @@ msgstr "передбачено підтримку лише одного конт
 
 msgid "only single input device is supported"
 msgstr "передбачено підтримку лише одного пристрою введення даних"
+
+msgid "only snapshot=no is supported with vhostuser disk"
+msgstr ""
 
 msgid "only supports mount filesystem type"
 msgstr "передбачено лише підтримку типів файлових систем mount"
@@ -33990,6 +34219,10 @@ msgstr "шлях «%s» не є абсолютним"
 msgid "path does not exist, skipping file type checks"
 msgstr "шляху не існує, перевірку типів файлів пропущено"
 
+#, c-format
+msgid "path is required for model '%s'"
+msgstr ""
+
 msgid "path is required for model 'nvdimm'"
 msgstr "для моделі «nvdimm» слід вказати шлях"
 
@@ -34066,6 +34299,9 @@ msgid ""
 msgstr ""
 "підтримку контролерів pcie-expander-bus передбачено лише для типів "
 "комп'ютерів на основі q35"
+
+msgid "peeking is not supported for vhostuser disk"
+msgstr ""
 
 #, c-format
 msgid "peeking is only supported for disk with 'raw' format not '%s'"
@@ -34291,6 +34527,12 @@ msgstr ""
 "підтримки перенесення з пост-копіюванням не передбачено для неінтерактивних "
 "або призупинених перенесень"
 
+msgid "potentially unsafe disk format probing"
+msgstr ""
+
+msgid "potentially unsafe use of host CPU passthrough"
+msgstr ""
+
 msgid "power-of-two granularity to use during the copy"
 msgstr ""
 "модульність (степінь двійки), якою слід скористатися під час копіювання"
@@ -34437,6 +34679,9 @@ msgstr "показати лише статистичні дані щодо вк�
 msgid "process exited while connecting to monitor"
 msgstr ""
 "процес завершив роботу під час спроби встановлення з'єднання з монітором"
+
+msgid "product is not supported with vhostuser disk"
+msgstr ""
 
 msgid "profile does not exist"
 msgstr "профілю не існує"
@@ -34812,6 +35057,9 @@ msgstr ""
 msgid "readonly ide disks are not supported"
 msgstr "підтримки придатних лише до читання дисків IDE не передбачено"
 
+msgid "readonly is not supported with vhostuser disk"
+msgstr ""
+
 msgid "readonly sata disks are not supported"
 msgstr "підтримки дисків SATA, призначених лише для читання, не передбачено"
 
@@ -34901,6 +35149,9 @@ msgid "remoteDomainGetCPUStats: returned number of stats exceeds limit"
 msgstr ""
 "remoteDomainGetCPUStats: повернута кількість статистичних запитів перевищує "
 "максимальну припустиму"
+
+msgid "remoteDomainGetMessages: returned number of msgs exceeds limit"
+msgstr ""
 
 msgid "remoteNodeGetCPUStats: returned number of stats exceeds limit"
 msgstr ""
@@ -35264,6 +35515,9 @@ msgstr ""
 msgid "running"
 msgstr "виконання"
 
+msgid "running with undesirable elevated privileges"
+msgstr ""
+
 #, c-format
 msgid "runstate '%d' out of range'"
 msgstr "стан запуску «%d» поза межами припустимого діапазону"
@@ -35458,6 +35712,9 @@ msgstr "помилка надсилання skipHandler"
 msgid "sending of PortProfileRequest failed."
 msgstr "помилка надсилання PortProfileRequest."
 
+msgid "serial is not supported with vhostuser disk"
+msgstr ""
+
 msgid "serial of disk device"
 msgstr "серійний номер дискового пристрою"
 
@@ -35574,6 +35831,9 @@ msgstr "з цим QEMU не передбачено підтримки встан
 msgid "setting bandwidth on interfaces of type '%s' is not implemented yet"
 msgstr "встановлення ширини каналу на інтерфейсах типу «%s» ще не реалізовано"
 
+msgid "setting device threshold is not supported for vhostuser disk"
+msgstr ""
+
 msgid ""
 "setting of timer catchup policies is only supported with tickpolicy='catchup'"
 msgstr ""
@@ -35608,6 +35868,9 @@ msgstr ""
 "для моделі «s390» не передбачено підтримки встановлення адреси пристрою "
 "паніки"
 
+msgid "setting virtiofs boot order is not supported with this QEMU binary"
+msgstr ""
+
 msgid "setuid or setgid failed"
 msgstr "помилка setuid або setgid"
 
@@ -35637,11 +35900,17 @@ msgstr ""
 msgid "shallow copy of disk '%s' into a raw file is not possible"
 msgstr "поверхневе копіювання диска «%s» до файла необроблених даних неможливе"
 
+msgid "shareable is not supported with vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "shared access for disk '%s' requires use of supported storage format"
 msgstr ""
 "спільний доступ до диска «%s» потребує використання підтримуваного формату "
 "зберігання даних"
+
+msgid "shared access mode required for virtio-pmem device"
+msgstr ""
 
 msgid "sheepdog protocol accepts only one host"
 msgstr "протоколом sheepdog передбачено лише один вузол"
@@ -36300,6 +36569,10 @@ msgstr "буфер системних сторінок змінювати не �
 msgid "system:"
 msgstr "система :"
 
+#, c-format
+msgid "tainted: %s"
+msgstr ""
+
 msgid "take a live snapshot"
 msgstr "зробити знімок без призупинення роботи системи"
 
@@ -36392,6 +36665,12 @@ msgstr ""
 
 msgid "tcp"
 msgstr "tcp"
+
+msgid "teaming hostdev devices must have type='transient'"
+msgstr ""
+
+msgid "teaming is only supported for pci hostdev devices"
+msgstr ""
 
 msgid "teaming persistent attribute must be set if teaming type is 'transient'"
 msgstr ""
@@ -37188,6 +37467,9 @@ msgstr ""
 msgid "transient domains do not have any persistent config"
 msgstr "тимчасові домени не мають будь-яких сталих налаштувань"
 
+msgid "transient is not supported with vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "transport '%s' does not support socket attribute"
 msgstr "каналом передавання «%s» не підтримується атрибут сокета"
@@ -37351,6 +37633,9 @@ msgstr "не вдалося встановити з'єднання з серве
 #, c-format
 msgid "unable to control COW flag on '%s', not btrfs"
 msgstr "не вдалося виконати керування прапорцем COW на «%s» — це не BTRFS"
+
+msgid "unable to create blockdev props for vhostuser disk type"
+msgstr ""
 
 #, c-format
 msgid "unable to create hugepage path %s"
@@ -38601,10 +38886,6 @@ msgid "unknown eim value: %s"
 msgstr "невідоме значення eim: %s"
 
 #, c-format
-msgid "unknown emulator binary: %s"
-msgstr "невідомий виконуваний файл емулятора: %s"
-
-#, c-format
 msgid "unknown enable value '%s'"
 msgstr "невідоме значення вмикання, «%s»"
 
@@ -39746,8 +40027,14 @@ msgstr "використовувати багатофункціональний 
 msgid "use of <server> requires pull mode backup"
 msgstr "використання <server> потребує резервного копіювання у режимі pull"
 
+msgid "use of deprecated configuration settings"
+msgstr ""
+
 msgid "use of flags requires a copy job"
 msgstr "використання прапорців вимагає визначення завдання з копіювання"
+
+msgid "use of host cdrom passthrough"
+msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "скористайтеся virDomainMigrateToURI3 для перенесення з вузла на вузол"
@@ -40061,6 +40348,9 @@ msgstr "виробник не може бути 0."
 msgid "vendor id is invalid"
 msgstr "некоректне значення ідентифікатора виробника"
 
+msgid "vendor is not supported with vhostuser disk"
+msgstr ""
+
 #, c-format
 msgid "vendor_id must be exactly %d characters long"
 msgstr "vendor_id має складатися точно з %d символів"
@@ -40103,6 +40393,12 @@ msgstr "підтримки типу vhost-user «%s» не передбачен�
 
 msgid "vhost-user-gpu failed to start"
 msgstr "Не вдалося запустити vhost-user-gpu"
+
+msgid "vhostuser disk is not supported with this QEMU binary"
+msgstr ""
+
+msgid "vhostuser disk supports only virtio bus"
+msgstr ""
 
 msgid "video resolution values must be greater than 0"
 msgstr "значення роздільності відео мають перевищувати 0"
@@ -40296,6 +40592,12 @@ msgstr ""
 msgid "virtio-net-pci 'tx' option not supported in this QEMU binary"
 msgstr "параметр virtio-net-pci «tx» не підтримується цим бінарним файлом QEMU"
 
+msgid "virtio-pmem does not support NUMA nodes"
+msgstr ""
+
+msgid "virtio-pmem isn't supported by this QEMU binary"
+msgstr ""
+
 msgid "virtio-s390 bus doesn't have an address"
 msgstr "канал virtio-s390 не має адреси"
 
@@ -40341,9 +40643,6 @@ msgstr "у virtiofs ще не передбачено підтримки режи
 msgid "virtiofs only supports passthrough accessmode"
 msgstr ""
 "У virtiofs передбачено підтримку лише режиму доступу з передаванням даних"
-
-msgid "virtiofs requires shared memory"
-msgstr "virtiofs потребує спільної пам'яті"
 
 msgid "virtiofsd died unexpectedly"
 msgstr "virtiofsd неочікувано завершила роботу"
@@ -40733,6 +41032,9 @@ msgstr ""
 msgid "wrong nlmsg len"
 msgstr "помилкова довжина nlmsg"
 
+msgid "wwn is not supported with vhostuser disk"
+msgstr ""
+
 msgid "wwn of disk device"
 msgstr "wwn дискового пристрою"
 
@@ -40772,6 +41074,84 @@ msgstr "надійшов запит щодо зони %s для мережі %s,
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <рядок>}..."
+
+#~ msgid "Attribute migratable is only allowed for host-passthrough CPU"
+#~ msgstr ""
+#~ "Атрибут migratable можна використовувати лише на процесорах без "
+#~ "передавання до основної системи"
+
+#~ msgid "CPU cache mode '%s' can only be used with '%s' CPUs"
+#~ msgstr ""
+#~ "режим кешування процесора «%s» можна використовувати лише у поєднанні із "
+#~ "процесорами «%s»"
+
+#~ msgid "Cannot set keepaliveCount data in JSON document"
+#~ msgstr "Не можна встановлювати дані keepaliveCount у документі JSON"
+
+#~ msgid "Cannot set keepaliveInterval data in JSON document"
+#~ msgstr "Не можна встановлювати дані keepaliveInterval у документі JSON"
+
+#~ msgid "Cannot set max_anonymous_clients data in JSON document"
+#~ msgstr "Не вдалося встановити дані max_anonymous_clients у документі JSON"
+
+#~ msgid "Cannot set max_clients data in JSON document"
+#~ msgstr "Не можна встановлювати дані max_clients у документі JSON"
+
+#~ msgid "Cannot set max_workers data in JSON document"
+#~ msgstr "Не можна встановлювати дані max_workers у документі JSON"
+
+#~ msgid "Cannot set min_workers data in JSON document"
+#~ msgstr "Не можна встановлювати дані min_workers у документі JSON"
+
+#~ msgid "Cannot set next_client_id data in JSON document"
+#~ msgstr "Не вдалося встановити дані next_client_id у документі JSON"
+
+#~ msgid "Cannot set priority_workers data in JSON document"
+#~ msgstr "Не можна встановлювати дані priority_workers у документі JSON"
+
+#~ msgid ""
+#~ "Could not find network device with phys_port_id '%s' under PCI device at "
+#~ "%s"
+#~ msgstr ""
+#~ "Не вдалося знайти мережевий пристрій із phys_port_id «%s» у записі "
+#~ "пристрою PCI на %s"
+
+#~ msgid "Failed to register slirp migration"
+#~ msgstr "Не вдалося зареєструвати перенесення slirp"
+
+#~ msgid ""
+#~ "Migratable attribute for host-passthrough CPU is not supported by QEMU "
+#~ "binary"
+#~ msgstr ""
+#~ "Підтримки атрибута «migratable» для процесорів із передаванням до "
+#~ "основної системи у цьому виконуваному файлі QEMU не передбачено"
+
+#~ msgid "Missing master path attribute for nmdm device"
+#~ msgstr "Не вистачає атрибута основного шляху для пристрою nmdm"
+
+#~ msgid "Missing slave path attribute for nmdm device"
+#~ msgstr "Не вказано атрибута підлеглого шляху для пристрою nmdm"
+
+#~ msgid "The server redirects from '%s'"
+#~ msgstr "Сервер переспрямовує з «%s»"
+
+#~ msgid "could not find backing store index %u in chain for '%s'"
+#~ msgstr ""
+#~ "не вдалося знайти індекс резервного сховища даних %u у ланцюжку для «%s»"
+
+#~ msgid "error dumping"
+#~ msgstr "помилка під час спроби створити дамп"
+
+#~ msgid "kvm-hint-dedicated=on is only applicable for cpu host-passthrough"
+#~ msgstr ""
+#~ "kvm-hint-dedicated=on можна застосовувати лише для host-passthrough "
+#~ "процесорів"
+
+#~ msgid "unknown emulator binary: %s"
+#~ msgstr "невідомий виконуваний файл емулятора: %s"
+
+#~ msgid "virtiofs requires shared memory"
+#~ msgstr "virtiofs потребує спільної пам'яті"
 
 #~ msgid ""
 #~ "\n"
