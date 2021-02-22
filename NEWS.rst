@@ -71,6 +71,23 @@ v7.1.0 (unreleased)
    of relying on ``VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE`` if they need finer
    grained control.
 
+  * cgroups: Fix how we setup and configure cgroups on hosts with systemd
+
+    When libvirt is running on host with systemd we register every VM with
+    machined which creates the VM root cgroup for us as well. Before this fix
+    we were directly modifying files in the VM root cgroup which was incorrect
+    because all the files are managed by systemd. The implication was that any
+    change done by libvirt to cgroup attributes supported by systemd could be
+    removed which happens for example by running ``systemctl daemon-reload``.
+
+    To fix the issue libvirt now uses DBus calls for some of the cgroup
+    attributes that distribute the resources proportionally to the cgroup
+    siblings and for the rest we have a new sub-cgroup that libvirt can
+    managed directly.
+
+    For more details why this is necessary see
+    `systemd cgroup <https://systemd.io/CGROUP_DELEGATION/>`_ documentation.
+
 
 v7.0.0 (2021-01-15)
 ===================
