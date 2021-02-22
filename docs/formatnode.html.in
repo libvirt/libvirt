@@ -379,7 +379,10 @@
                 This optional element can occur multiple times. It represents a
                 vendor-specific attribute that is used to configure this
                 mediated device. It has two required attributes:
-                <code>name</code> and <code>value</code>.
+                <code>name</code> and <code>value</code>. Note that the order
+                in which attributes are set may be important for some devices.
+                The order that they appear in the xml definition determines the
+                order that they will be written to the device.
               </dd>
             </dl>
           </dd>
