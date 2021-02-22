@@ -507,6 +507,9 @@
   <feature name='ibpb'>
     <cpuid eax_in='0x80000008' ebx='0x00001000'/>
   </feature>
+  <feature name='ibrs'>
+    <cpuid eax_in='0x80000008' ebx='0x00004000'/>
+  </feature>
   <feature name='amd-stibp'>
     <cpuid eax_in='0x80000008' ebx='0x00008000'/>
   </feature>

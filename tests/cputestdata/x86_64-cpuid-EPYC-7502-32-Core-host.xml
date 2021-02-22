@@ -18,6 +18,7 @@
   <feature name='topoext'/>
   <feature name='perfctr_nb'/>
   <feature name='invtsc'/>
+  <feature name='ibrs'/>
   <feature name='amd-ssbd'/>
   <feature name='lbrv'/>
   <feature name='svm-lock'/>

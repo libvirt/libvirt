@@ -17,6 +17,7 @@
   <feature policy='require' name='topoext'/>
   <feature policy='require' name='perfctr_nb'/>
   <feature policy='require' name='invtsc'/>
+  <feature policy='require' name='ibrs'/>
   <feature policy='require' name='amd-ssbd'/>
   <feature policy='require' name='lbrv'/>
   <feature policy='require' name='svm-lock'/>
