@@ -73,6 +73,7 @@ def translate_feature(name):
         "CPUID_7_0_EDX_SPEC_CTRL_SSBD": "ssbd",
         "CPUID_7_0_EDX_STIBP": "stibp",
         "CPUID_7_1_EAX_AVX512_BF16": "avx512-bf16",
+        "CPUID_8000_0008_EBX_AMD_SSBD": "amd-ssbd",
         "CPUID_8000_0008_EBX_CLZERO": "clzero",
         "CPUID_8000_0008_EBX_IBPB": "ibpb",
         "CPUID_8000_0008_EBX_STIBP": "amd-stibp",
