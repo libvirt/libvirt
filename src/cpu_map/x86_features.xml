@@ -554,6 +554,9 @@
   <feature name='pfthreshold'>
     <cpuid eax_in='0x8000000a' edx='0x00001000'/>
   </feature>
+  <feature name='svme-addr-check'>
+    <cpuid eax_in='0x8000000a' edx='0x10000000'/>
+  </feature>
 
   <!-- IA32_ARCH_CAPABILITIES features -->
   <feature name='rdctl-no'>
