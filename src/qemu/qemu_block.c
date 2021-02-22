@@ -3286,6 +3286,22 @@ qemuBlockBitmapsHandleCommitFinish(virStorageSource *topsrc,
 }
 
 
+static int
+qemuBlockReopenFormatMon(qemuMonitor *mon,
+                         virStorageSource *src)
+{
+    g_autoptr(virJSONValue) reopenprops = NULL;
+
+    if (!(reopenprops = qemuBlockStorageSourceGetBlockdevProps(src, src->backingStore)))
+        return -1;
+
+    if (qemuMonitorBlockdevReopen(mon, &reopenprops) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * qemuBlockReopenFormat:
  * @vm: domain object
@@ -3303,7 +3319,6 @@ qemuBlockReopenFormat(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
-    g_autoptr(virJSONValue) reopenprops = NULL;
     int rc;
 
     /* If we are lacking the object here, qemu might have opened an image with
@@ -3314,13 +3329,10 @@ qemuBlockReopenFormat(virDomainObj *vm,
         return -1;
     }
 
-    if (!(reopenprops = qemuBlockStorageSourceGetBlockdevProps(src, src->backingStore)))
-        return -1;
-
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    rc = qemuMonitorBlockdevReopen(priv->mon, &reopenprops);
+    rc = qemuBlockReopenFormatMon(priv->mon, src);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         return -1;
