@@ -1,12 +1,45 @@
 #include <config.h>
 
+#include <dirent.h>
+
 #include "viralloc.h"
 #include "virstring.h"
 #include "virnetdev.h"
 #include "virnetdevtap.h"
+#include "virmock.h"
 #include "internal.h"
 
 #define VIR_FROM_THIS VIR_FROM_BHYVE
+
+static DIR * (*real_opendir)(const char *name);
+
+static void
+init_syms(void)
+{
+    VIR_MOCK_REAL_INIT(opendir);
+}
+
+#define FAKEFIRMWAREDIR abs_srcdir "/bhyvefirmwaredata/three_firmwares"
+#define FAKEFIRMWAREEMPTYDIR abs_srcdir "/bhyvefirmwaredata/empty"
+
+DIR *
+opendir(const char *path)
+{
+    init_syms();
+
+    g_autofree char *path_override = NULL;
+
+    if (STREQ(path, "fakefirmwaredir")) {
+        path_override = g_strdup(FAKEFIRMWAREDIR);
+    } else if (STREQ(path, "fakefirmwareemptydir")) {
+        path_override = g_strdup(FAKEFIRMWAREEMPTYDIR);
+    }
+
+    if (!path_override)
+        path_override = g_strdup(path);
+
+    return real_opendir(path_override);
+}
 
 void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
                         virMacAddrPtr addr)

@@ -33,6 +33,7 @@
 #include "bhyve_device.h"
 #include "bhyve_driver.h"
 #include "bhyve_command.h"
+#include "bhyve_firmware.h"
 #include "bhyve_monitor.h"
 #include "bhyve_process.h"
 #include "datatypes.h"
@@ -252,6 +253,17 @@ virBhyveProcessStartImpl(bhyveConnPtr driver,
 }
 
 int
+bhyveProcessPrepareDomain(bhyveConnPtr driver,
+                          virDomainObjPtr vm,
+                          unsigned int flags)
+{
+    if (bhyveFirmwareFillDomain(driver, vm->def, flags) < 0)
+        return -1;
+
+    return 0;
+}
+
+int
 virBhyveProcessStart(virConnectPtr conn,
                      virDomainObjPtr vm,
                      virDomainRunningReason reason,
@@ -266,6 +278,9 @@ virBhyveProcessStart(virConnectPtr conn,
     if (flags & VIR_BHYVE_PROCESS_START_AUTODESTROY &&
         virCloseCallbacksSet(driver->closeCallbacks, vm,
                              conn, bhyveProcessAutoDestroy) < 0)
+        return -1;
+
+    if (bhyveProcessPrepareDomain(driver, vm, flags) < 0)
         return -1;
 
     return virBhyveProcessStartImpl(driver, vm, reason);

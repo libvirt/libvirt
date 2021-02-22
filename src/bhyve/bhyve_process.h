@@ -23,6 +23,11 @@
 
 #include "bhyve_utils.h"
 
+int
+bhyveProcessPrepareDomain(bhyveConnPtr driver,
+                          virDomainObjPtr vm,
+                          unsigned int flags);
+
 int virBhyveProcessStart(virConnectPtr conn,
                          virDomainObjPtr vm,
                          virDomainRunningReason reason,

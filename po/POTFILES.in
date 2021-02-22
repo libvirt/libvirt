@@ -14,6 +14,7 @@
 @SRCDIR@src/bhyve/bhyve_command.c
 @SRCDIR@src/bhyve/bhyve_domain.c
 @SRCDIR@src/bhyve/bhyve_driver.c
+@SRCDIR@src/bhyve/bhyve_firmware.c
 @SRCDIR@src/bhyve/bhyve_monitor.c
 @SRCDIR@src/bhyve/bhyve_parse_command.c
 @SRCDIR@src/bhyve/bhyve_process.c

@@ -64,6 +64,9 @@ bhyveDomainDefNeedsISAController(virDomainDefPtr def)
     if (def->os.bootloader == NULL && def->os.loader)
         return true;
 
+    if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI)
+        return true;
+
     if (def->nserials || def->nconsoles)
         return true;
 
@@ -230,6 +233,8 @@ virDomainDefParserConfig virBhyveDriverDomainDefParserConfig = {
     .domainPostParseCallback = bhyveDomainDefPostParse,
     .assignAddressesCallback = bhyveDomainDefAssignAddresses,
     .deviceValidateCallback = bhyveDomainDeviceDefValidate,
+
+    .features = VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT,
 };
 
 static void

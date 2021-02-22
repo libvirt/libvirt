@@ -2,6 +2,7 @@ bhyve_sources = files(
   'bhyve_capabilities.c',
   'bhyve_command.c',
   'bhyve_conf.c',
+  'bhyve_firmware.c',
   'bhyve_parse_command.c',
   'bhyve_device.c',
   'bhyve_domain.c',

@@ -43,6 +43,8 @@ struct _virBhyveDriverConfig {
     char *firmwareDir;
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virBhyveDriverConfig, virObjectUnref);
+
 struct _bhyveConn {
     virMutex lock;
 

@@ -7,17 +7,20 @@
 # include "datatypes.h"
 
 # include "bhyve/bhyve_capabilities.h"
+# include "bhyve/bhyve_conf.h"
 # include "bhyve/bhyve_domain.h"
 # include "bhyve/bhyve_utils.h"
 # include "bhyve/bhyve_command.h"
+# include "bhyve/bhyve_process.h"
 
 # define VIR_FROM_THIS VIR_FROM_BHYVE
 
 static bhyveConn driver;
 
 typedef enum {
-    FLAG_EXPECT_FAILURE     = 1 << 0,
-    FLAG_EXPECT_PARSE_ERROR = 1 << 1,
+    FLAG_EXPECT_FAILURE         = 1 << 0,
+    FLAG_EXPECT_PARSE_ERROR     = 1 << 1,
+    FLAG_EXPECT_PREPARE_ERROR   = 1 << 2,
 } virBhyveXMLToArgvTestFlags;
 
 static int testCompareXMLToArgvFiles(const char *xml,
@@ -29,7 +32,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     g_autofree char *actualargv = NULL;
     g_autofree char *actualld = NULL;
     g_autofree char *actualdm = NULL;
-    g_autoptr(virDomainDef) vmdef = NULL;
+    g_autoptr(virDomainObj) vm = NULL;
     g_autoptr(virCommand) cmd = NULL;
     g_autoptr(virCommand) ldcmd = NULL;
     g_autoptr(virConnect) conn = NULL;
@@ -38,8 +41,11 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (!(conn = virGetConnect()))
         goto out;
 
-    if (!(vmdef = virDomainDefParseFile(xml, driver.xmlopt,
-                                        NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
+    if (!(vm = virDomainObjNew(driver.xmlopt)))
+        return -1;
+
+    if (!(vm->def = virDomainDefParseFile(xml, driver.xmlopt,
+                                          NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
         if (flags & FLAG_EXPECT_PARSE_ERROR) {
             ret = 0;
         } else if (flags & FLAG_EXPECT_FAILURE) {
@@ -54,11 +60,20 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     conn->privateData = &driver;
 
-    cmd = virBhyveProcessBuildBhyveCmd(&driver, vmdef, false);
-    if (vmdef->os.loader)
+    if (bhyveProcessPrepareDomain(&driver, vm, 0) < 0) {
+        if (flags & FLAG_EXPECT_PREPARE_ERROR) {
+            ret = 0;
+            VIR_TEST_DEBUG("Got expected error: %s",
+                    virGetLastErrorMessage());
+        }
+        goto out;
+    }
+
+    cmd = virBhyveProcessBuildBhyveCmd(&driver, vm->def, false);
+    if (vm->def->os.loader)
         ldcmd = virCommandNew("dummy");
     else
-        ldcmd = virBhyveProcessBuildLoadCmd(&driver, vmdef, "<device.map>",
+        ldcmd = virBhyveProcessBuildLoadCmd(&driver, vm->def, "<device.map>",
                                             &actualdm);
 
     if ((cmd == NULL) || (ldcmd == NULL)) {
@@ -94,10 +109,10 @@ static int testCompareXMLToArgvFiles(const char *xml,
     ret = 0;
 
  out:
-    if (vmdef &&
-        vmdef->ngraphics == 1 &&
-        vmdef->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
-        virPortAllocatorRelease(vmdef->graphics[0]->data.vnc.port);
+    if (vm && vm->def &&
+        vm->def->ngraphics == 1 &&
+        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
+        virPortAllocatorRelease(vm->def->graphics[0]->data.vnc.port);
 
     return ret;
 }
@@ -132,6 +147,8 @@ static int
 mymain(void)
 {
     int ret = 0;
+    g_autofree char *fakefirmwaredir = g_strdup("fakefirmwaredir");
+    g_autofree char *fakefirmwareemptydir = g_strdup("fakefirmwareemptydir");
 
     if ((driver.caps = virBhyveCapsBuild()) == NULL)
         return EXIT_FAILURE;
@@ -142,6 +159,10 @@ mymain(void)
     if (!(driver.remotePorts = virPortAllocatorRangeNew("display", 5900, 65535)))
         return EXIT_FAILURE;
 
+    if (!(driver.config = virBhyveDriverConfigNew()))
+        return EXIT_FAILURE;
+
+    driver.config->firmwareDir = fakefirmwaredir;
 
 # define DO_TEST_FULL(name, flags) \
     do { \
@@ -161,6 +182,9 @@ mymain(void)
 
 # define DO_TEST_PARSE_ERROR(name) \
     DO_TEST_FULL(name, FLAG_EXPECT_PARSE_ERROR)
+
+# define DO_TEST_PREPARE_ERROR(name) \
+    DO_TEST_FULL(name, FLAG_EXPECT_PREPARE_ERROR)
 
     driver.grubcaps = BHYVE_GRUB_CAP_CONSDEV;
     driver.bhyvecaps = BHYVE_CAP_RTC_UTC | BHYVE_CAP_AHCI32SLOT | \
@@ -209,6 +233,9 @@ mymain(void)
     DO_TEST("sound");
     DO_TEST("isa-controller");
     DO_TEST_FAILURE("isa-multiple-controllers");
+    DO_TEST("firmware-efi");
+    driver.config->firmwareDir = fakefirmwareemptydir;
+    DO_TEST_PREPARE_ERROR("firmware-efi");
     DO_TEST("fs-9p");
     DO_TEST("fs-9p-readonly");
     DO_TEST_FAILURE("fs-9p-unsupported-type");
@@ -267,6 +294,7 @@ mymain(void)
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
     virPortAllocatorRangeFree(driver.remotePorts);
+    virObjectUnref(driver.config);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
