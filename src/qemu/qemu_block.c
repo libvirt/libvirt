@@ -3291,8 +3291,18 @@ qemuBlockReopenFormatMon(qemuMonitor *mon,
                          virStorageSource *src)
 {
     g_autoptr(virJSONValue) reopenprops = NULL;
+    g_autoptr(virJSONValue) srcprops = NULL;
+    g_autoptr(virJSONValue) reopenoptions = virJSONValueNewArray();
 
-    if (!(reopenprops = qemuBlockStorageSourceGetBlockdevProps(src, src->backingStore)))
+    if (!(srcprops = qemuBlockStorageSourceGetBlockdevProps(src, src->backingStore)))
+        return -1;
+
+    if (virJSONValueArrayAppend(reopenoptions, &srcprops) < 0)
+        return -1;
+
+    if (virJSONValueObjectCreate(&reopenprops,
+                                 "a:options", &reopenoptions,
+                                 NULL) < 0)
         return -1;
 
     if (qemuMonitorBlockdevReopen(mon, &reopenprops) < 0)
