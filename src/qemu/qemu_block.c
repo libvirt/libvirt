@@ -3286,7 +3286,7 @@ qemuBlockBitmapsHandleCommitFinish(virStorageSource *topsrc,
 }
 
 
-static int
+int
 qemuBlockReopenFormatMon(qemuMonitor *mon,
                          virStorageSource *src)
 {

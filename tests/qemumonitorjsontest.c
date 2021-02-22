@@ -2800,6 +2800,33 @@ testQemuMonitorJSONBlockExportAdd(const void *opaque)
     return 0;
 }
 
+
+static int
+testQemuMonitorJSONBlockdevReopen(const void *opaque)
+{
+    const testGenericData *data = opaque;
+    g_autoptr(qemuMonitorTest) test = NULL;
+    g_autoptr(virStorageSource) src = virStorageSourceNew();
+
+    if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
+        return -1;
+
+    src->format = VIR_STORAGE_FILE_QCOW2;
+    src->readonly = true;
+    src->nodeformat = g_strdup("test node");
+    src->nodestorage = g_strdup("backing nodename");
+    src->backingStore = virStorageSourceNew();
+
+    if (qemuMonitorTestAddItem(test, "blockdev-reopen", "{\"return\":{}}") < 0)
+        return -1;
+
+    if (qemuBlockReopenFormatMon(qemuMonitorTestGetMonitor(test), src) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 testQemuMonitorJSONqemuMonitorJSONGetCPUModelComparison(const void *opaque)
 {
@@ -2997,6 +3024,7 @@ mymain(void)
     DO_TEST(GetIOThreads);
     DO_TEST(Transaction);
     DO_TEST(BlockExportAdd);
+    DO_TEST(BlockdevReopen);
     DO_TEST_SIMPLE("qmp_capabilities", qemuMonitorJSONSetCapabilities);
     DO_TEST_SIMPLE("system_powerdown", qemuMonitorJSONSystemPowerdown);
     DO_TEST_SIMPLE("system_reset", qemuMonitorJSONSystemReset);
