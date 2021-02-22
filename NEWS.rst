@@ -47,6 +47,12 @@ v7.1.0 (unreleased)
     to set the hostdev device's MAC address (which is a necessary
     part of the alternate <interface type='hostdev'>).
 
+  * Introduce ``<disk type='vhostuser'>`` support
+
+    Introduces support for QEMU vhost-user-blk device that can be used
+    to access storage exported via the vhost-user protocol by daemons such
+    as the ``qemu-storage-daemon``.
+
 * **Improvements**
 
 * **Bug fixes**
