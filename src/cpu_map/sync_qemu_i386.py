@@ -142,6 +142,7 @@ def translate_feature(name):
         "CPUID_SS": "ss",
         "CPUID_SVM_NPT": "npt",
         "CPUID_SVM_NRIPSAVE": "nrip-save",
+        "CPUID_SVM_SVME_ADDR_CHK": "svme-addr-check",
         "CPUID_TSC": "tsc",
         "CPUID_VME": "vme",
         "CPUID_XSAVE_XGETBV1": "xgetbv1",
