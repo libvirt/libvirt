@@ -28,6 +28,7 @@
 #include "virlog.h"
 #include "virthread.h"
 #include "virstring.h"
+#include "virbuffer.h"
 
 #define LIBVIRT_VIRERRORPRIV_H_ALLOW
 #include "virerrorpriv.h"
@@ -1285,23 +1286,23 @@ void virReportErrorHelper(int domcode,
                           const char *fmt, ...)
 {
     int save_errno = errno;
-    va_list args;
-    char errorMessage[VIR_ERROR_MAX_LENGTH];
-    const char *virerr;
+    g_autofree char *detail = NULL;
+    const char *errormsg;
 
     if (fmt) {
+        va_list args;
+
         va_start(args, fmt);
-        g_vsnprintf(errorMessage, sizeof(errorMessage)-1, fmt, args);
+        detail = g_strdup_vprintf(fmt, args);
         va_end(args);
-    } else {
-        errorMessage[0] = '\0';
     }
 
-    virerr = virErrorMsg(errorcode, (errorMessage[0] ? errorMessage : NULL));
+    errormsg = virErrorMsg(errorcode, detail);
+
     virRaiseErrorFull(filename, funcname, linenr,
                       domcode, errorcode, VIR_ERR_ERROR,
-                      virerr, errorMessage, NULL,
-                      -1, -1, virerr, errorMessage);
+                      errormsg, detail, NULL,
+                      -1, -1, errormsg, detail);
     errno = save_errno;
 }
 
@@ -1325,36 +1326,28 @@ void virReportSystemErrorFull(int domcode,
                               const char *fmt, ...)
 {
     int save_errno = errno;
-    char msgDetailBuf[VIR_ERROR_MAX_LENGTH];
-
-    const char *errnoDetail = g_strerror(theerrno);
-    const char *msg = virErrorMsg(VIR_ERR_SYSTEM_ERROR, fmt);
-    const char *msgDetail = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_autofree char *detail = NULL;
+    const char *errormsg;
 
     if (fmt) {
         va_list args;
-        size_t len;
-        int n;
 
         va_start(args, fmt);
-        n = g_vsnprintf(msgDetailBuf, sizeof(msgDetailBuf), fmt, args);
+        virBufferVasprintf(&buf, fmt, args);
         va_end(args);
 
-        len = strlen(errnoDetail);
-        if (0 <= n && n + 2 + len < sizeof(msgDetailBuf)) {
-          strcpy(msgDetailBuf + n, ": ");
-          n += 2;
-          strcpy(msgDetailBuf + n, errnoDetail);
-          msgDetail = msgDetailBuf;
-        }
+        virBufferAddLit(&buf, ": ");
     }
 
-    if (!msgDetail)
-        msgDetail = errnoDetail;
+    virBufferAdd(&buf, g_strerror(theerrno), -1);
+
+    detail = virBufferContentAndReset(&buf);
+    errormsg = virErrorMsg(VIR_ERR_SYSTEM_ERROR, detail);
 
     virRaiseErrorFull(filename, funcname, linenr,
                       domcode, VIR_ERR_SYSTEM_ERROR, VIR_ERR_ERROR,
-                      msg, msgDetail, NULL, theerrno, -1, msg, msgDetail);
+                      errormsg, detail, NULL, theerrno, -1, errormsg, detail);
     errno = save_errno;
 }
 
