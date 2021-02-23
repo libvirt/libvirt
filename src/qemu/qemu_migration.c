@@ -1247,13 +1247,17 @@ qemuMigrationSrcIsAllowedHostdev(const virDomainDef *def)
 
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
                 /*
-                 * if this is a network interface with <teaming
-                 * type='transient'>, migration *is* allowed because
-                 * the device will be auto-unplugged by QEMU during
-                 * migration.
+                 * if the device has a <teaming type='transient'>
+                 * element, then migration *is* allowed because the
+                 * device will be auto-unplugged by QEMU during
+                 * migration. Generic <hostdev> and <interface
+                 * type='hostdev'> have their teaming configuration
+                 * stored in different places.
                  */
-                if (hostdev->parentnet && hostdev->parentnet->teaming &&
-                    hostdev->parentnet->teaming->type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT) {
+                if ((hostdev->teaming &&
+                     hostdev->teaming->type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT) ||
+                    (hostdev->parentnet && hostdev->parentnet->teaming &&
+                     hostdev->parentnet->teaming->type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT)) {
                     continue;
                 }
 
