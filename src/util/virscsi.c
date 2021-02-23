@@ -37,7 +37,6 @@
 
 #define SYSFS_SCSI_DEVICES "/sys/bus/scsi/devices"
 
-/* For virReportOOMError()  and virReportSystemError() */
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("util.scsi");

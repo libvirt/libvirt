@@ -103,7 +103,6 @@ struct _virPCIDeviceList {
 };
 
 
-/* For virReportOOMError()  and virReportSystemError() */
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 /* Specifications referenced in comments:
