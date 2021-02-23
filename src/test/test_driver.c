@@ -224,7 +224,8 @@ testDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
     for (i = 0; i < n; i++) {
         xmlNodePtr newnode = xmlCopyNode(nodes[i], 1);
         if (!newnode) {
-            virReportOOMError();
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Failed to copy XML node"));
             goto error;
         }
 
@@ -787,7 +788,8 @@ testParseXMLDocFromFile(xmlNodePtr node, const char *file, const char *type)
 
         ret = xmlCopyNode(xmlDocGetRootElement(doc), 1);
         if (!ret) {
-            virReportOOMError();
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Failed to copy XML node"));
             goto error;
         }
         xmlReplaceNode(node, ret);
