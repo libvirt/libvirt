@@ -1431,32 +1431,6 @@ virCommandAddEnvString(virCommandPtr cmd, const char *str)
 
 
 /**
- * virCommandAddEnvBuffer:
- * @cmd: the command to modify
- * @buf: buffer that contains name=value string, which will be reset on return
- *
- * Convert a buffer containing preformatted name=value into an
- * environment variable of the child.
- * Correctly transfers memory errors or contents from buf to cmd.
- */
-void
-virCommandAddEnvBuffer(virCommandPtr cmd, virBufferPtr buf)
-{
-    if (!cmd || cmd->has_error) {
-        virBufferFreeAndReset(buf);
-        return;
-    }
-
-    if (!virBufferUse(buf)) {
-        cmd->has_error = EINVAL;
-        return;
-    }
-
-    virCommandAddEnv(cmd, virBufferContentAndReset(buf));
-}
-
-
-/**
  * virCommandAddEnvPass:
  * @cmd: the command to modify
  * @name: the name to look up in current environment

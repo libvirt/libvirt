@@ -109,9 +109,6 @@ void virCommandAddEnvPair(virCommandPtr cmd,
 void virCommandAddEnvString(virCommandPtr cmd,
                             const char *str) ATTRIBUTE_NONNULL(2);
 
-void virCommandAddEnvBuffer(virCommandPtr cmd,
-                            virBufferPtr buf);
-
 void virCommandAddEnvPass(virCommandPtr cmd,
                           const char *name) ATTRIBUTE_NONNULL(2);
 

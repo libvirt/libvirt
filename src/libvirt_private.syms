@@ -1964,7 +1964,6 @@ virCommandAddArgFormat;
 virCommandAddArgList;
 virCommandAddArgPair;
 virCommandAddArgSet;
-virCommandAddEnvBuffer;
 virCommandAddEnvFormat;
 virCommandAddEnvPair;
 virCommandAddEnvPass;
