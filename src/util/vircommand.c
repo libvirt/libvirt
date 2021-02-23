@@ -1325,8 +1325,10 @@ virCommandRawStatus(virCommandPtr cmd)
  * already set, then it is replaced in the list.
  */
 static void
-virCommandAddEnv(virCommandPtr cmd, char *env)
+virCommandAddEnv(virCommandPtr cmd,
+                 char *envstr)
 {
+    g_autofree char *env = envstr;
     size_t namelen;
     size_t i;
 
@@ -1336,19 +1338,18 @@ virCommandAddEnv(virCommandPtr cmd, char *env)
         /* + 1 because we want to match the '=' character too. */
         if (STREQLEN(cmd->env[i], env, namelen + 1)) {
             VIR_FREE(cmd->env[i]);
-            cmd->env[i] = env;
+            cmd->env[i] = g_steal_pointer(&env);
             return;
         }
     }
 
     /* Arg plus trailing NULL. */
     if (VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 1 + 1) < 0) {
-        VIR_FREE(env);
         cmd->has_error = ENOMEM;
         return;
     }
 
-    cmd->env[cmd->nenv++] = env;
+    cmd->env[cmd->nenv++] = g_steal_pointer(&env);
 }
 
 /**
