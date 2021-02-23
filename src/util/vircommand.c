@@ -216,27 +216,19 @@ virCommandFDIsSet(virCommandPtr cmd,
  * This is practically generalized implementation
  * of FD_SET() as we do not want to be limited
  * by FD_SETSIZE.
- *
- * Returns: 0 on success,
- *          -1 on usage error,
  */
-static int
+static void
 virCommandFDSet(virCommandPtr cmd,
                 int fd,
                 unsigned int flags)
 {
-    if (!cmd || fd < 0)
-        return -1;
-
     if (virCommandFDIsSet(cmd, fd))
-        return 0;
+        return;
 
     ignore_value(VIR_EXPAND_N(cmd->passfd, cmd->npassfd, 1));
 
     cmd->passfd[cmd->npassfd - 1].fd = fd;
     cmd->passfd[cmd->npassfd - 1].flags = flags;
-
-    return 0;
 }
 
 #ifndef WIN32
@@ -1035,8 +1027,6 @@ virCommandNewVAList(const char *binary, va_list list)
 void
 virCommandPassFDIndex(virCommandPtr cmd, int fd, unsigned int flags, size_t *idx)
 {
-    int ret = 0;
-
     if (!cmd) {
         VIR_COMMAND_MAYBE_CLOSE_FD(fd, flags);
         return;
@@ -1050,13 +1040,7 @@ virCommandPassFDIndex(virCommandPtr cmd, int fd, unsigned int flags, size_t *idx
         return;
     }
 
-    if ((ret = virCommandFDSet(cmd, fd, flags)) != 0) {
-        if (!cmd->has_error)
-            cmd->has_error = ret;
-        VIR_DEBUG("cannot preserve %d", fd);
-        VIR_COMMAND_MAYBE_CLOSE_FD(fd, flags);
-        return;
-    }
+    virCommandFDSet(cmd, fd, flags);
 
     if (idx)
         *idx = cmd->npassfd - 1;
