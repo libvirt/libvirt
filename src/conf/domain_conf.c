@@ -13804,6 +13804,11 @@ virDomainSoundDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (audioNode) {
         g_autofree char *tmp = NULL;
         tmp = virXMLPropString(audioNode, "id");
+        if (!tmp) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing audio 'id' attribute"));
+            goto error;
+        }
         if (virStrToLong_ui(tmp, NULL, 10, &def->audioId) < 0 ||
             def->audioId == 0) {
             virReportError(VIR_ERR_XML_ERROR,
@@ -13877,6 +13882,12 @@ virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
     ctxt->node = node;
 
     type = virXMLPropString(node, "type");
+    if (!type) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing audio 'type' attribute"));
+        goto error;
+    }
+
     if ((def->type = virDomainAudioTypeTypeFromString(type)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown audio type '%s'"), type);
@@ -13884,6 +13895,11 @@ virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
     }
 
     tmp = virXMLPropString(node, "id");
+    if (!tmp) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("missing audio 'id' attribute"));
+        goto error;
+    }
     if (virStrToLong_ui(tmp, NULL, 10, &def->id) < 0 ||
         def->id == 0) {
         virReportError(VIR_ERR_XML_ERROR,
