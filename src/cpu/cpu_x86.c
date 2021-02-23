@@ -1856,11 +1856,7 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
  */
 #define virX86CpuIncompatible(MSG, CPU_DEF) \
         do { \
-            g_autofree char *flagsStr = NULL; \
-            if (!(flagsStr = x86FeatureNames(map, ", ", (CPU_DEF)))) { \
-                virReportOOMError(); \
-                return VIR_CPU_COMPARE_ERROR; \
-            } \
+            g_autofree char *flagsStr = x86FeatureNames(map, ", ", (CPU_DEF)); \
             if (message) \
                 *message = g_strdup_printf("%s: %s", _(MSG), flagsStr); \
             VIR_DEBUG("%s: %s", MSG, flagsStr); \
