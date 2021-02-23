@@ -4532,23 +4532,77 @@
       <attribute name="id">
         <ref name="uint8"/>
       </attribute>
-      <attribute name="type">
-        <choice>
-          <value>oss</value>
-        </choice>
-      </attribute>
-      <interleave>
-        <optional>
-          <element name="input">
-            <ref name="audiooss"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="output">
-            <ref name="audiooss"/>
-          </element>
-        </optional>
-      </interleave>
+      <choice>
+        <group>
+          <attribute name="type">
+            <value>none</value>
+          </attribute>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>alsa</value>
+          </attribute>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>coreaudio</value>
+          </attribute>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>jack</value>
+          </attribute>
+        </group>
+        <group>
+          <attribute name="type">
+            <choice>
+              <value>oss</value>
+            </choice>
+          </attribute>
+          <interleave>
+            <optional>
+              <element name="input">
+                <ref name="audiooss"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="output">
+                <ref name="audiooss"/>
+              </element>
+            </optional>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>pulseaudio</value>
+          </attribute>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>sdl</value>
+          </attribute>
+          <optional>
+            <attribute name="driver">
+              <choice>
+                <value>esd</value>
+                <value>alsa</value>
+                <value>arts</value>
+                <value>pulseaudio</value>
+              </choice>
+            </attribute>
+          </optional>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>spice</value>
+          </attribute>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>file</value>
+          </attribute>
+        </group>
+      </choice>
     </element>
   </define>
   <define name="watchdog">

@@ -736,7 +736,24 @@ VIR_ENUM_IMPL(virDomainSoundModel,
 
 VIR_ENUM_IMPL(virDomainAudioType,
               VIR_DOMAIN_AUDIO_TYPE_LAST,
+              "none",
+              "alsa",
+              "coreaudio",
+              "jack",
               "oss",
+              "pulseaudio",
+              "sdl",
+              "spice",
+              "file",
+);
+
+VIR_ENUM_IMPL(virDomainAudioSDLDriver,
+              VIR_DOMAIN_AUDIO_SDL_DRIVER_LAST,
+              "",
+              "esd",
+              "alsa",
+              "arts",
+              "pulseaudio",
 );
 
 VIR_ENUM_IMPL(virDomainKeyWrapCipherName,
@@ -2902,9 +2919,33 @@ virDomainAudioDefFree(virDomainAudioDefPtr def)
         return;
 
     switch ((virDomainAudioType) def->type) {
+    case VIR_DOMAIN_AUDIO_TYPE_NONE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_JACK:
+        break;
+
     case VIR_DOMAIN_AUDIO_TYPE_OSS:
         virDomainAudioIOOSSFree(&def->backend.oss.input);
         virDomainAudioIOOSSFree(&def->backend.oss.output);
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_SDL:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_SPICE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_FILE:
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
@@ -13934,6 +13975,18 @@ virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
     outputNode = virXPathNode("./output", ctxt);
 
     switch ((virDomainAudioType) def->type) {
+    case VIR_DOMAIN_AUDIO_TYPE_NONE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_JACK:
+        break;
+
     case VIR_DOMAIN_AUDIO_TYPE_OSS:
         if (inputNode)
             virDomainAudioOSSParse(&def->backend.oss.input, inputNode);
@@ -13941,7 +13994,28 @@ virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
             virDomainAudioOSSParse(&def->backend.oss.output, outputNode);
         break;
 
+    case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_SDL: {
+        g_autofree char *driver = virXMLPropString(node, "driver");
+        if (driver &&
+            (def->backend.sdl.driver =
+             virDomainAudioSDLDriverTypeFromString(driver)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown SDL driver '%s'"), driver);
+            goto error;
+        }
+        break;
+    }
+
+    case VIR_DOMAIN_AUDIO_TYPE_SPICE:
+    case VIR_DOMAIN_AUDIO_TYPE_FILE:
+        break;
+
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainAudioType, def->type);
         break;
     }
 
@@ -26413,11 +26487,44 @@ virDomainAudioDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "<audio id='%d' type='%s'", def->id, type);
 
-    switch (def->type) {
+    switch ((virDomainAudioType)def->type) {
+    case VIR_DOMAIN_AUDIO_TYPE_NONE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_JACK:
+        break;
+
     case VIR_DOMAIN_AUDIO_TYPE_OSS:
         virDomainAudioOSSFormat(&def->backend.oss.input, &inputBuf);
         virDomainAudioOSSFormat(&def->backend.oss.output, &outputBuf);
         break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_SDL:
+        if (def->backend.sdl.driver)
+            virBufferAsprintf(buf, " driver='%s'",
+                              virDomainAudioSDLDriverTypeToString(
+                                  def->backend.sdl.driver));
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_SPICE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_FILE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainAudioType, def->type);
+        return -1;
     }
 
     virDomainAudioCommonFormat(&childBuf, &inputBuf, "input");

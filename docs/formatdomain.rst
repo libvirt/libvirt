@@ -6827,32 +6827,117 @@ Audio devices
 ~~~~~~~~~~~~~
 
 A virtual audio device corresponds to a host audio backend that is mapped
-to the guest sound device. :since:`Since 6.7.0, bhyve only`
+to the guest sound device.
 
 ``type``
    The required ``type`` attribute specifies audio backend type.
-   Currently, the only supported value is 'oss'.
+   Currently, the supported values are 'none', 'alsa', 'coreaudio',
+   'jack', 'oss', 'pulseaudio', 'sdl', 'spice', 'file'.
 
 ``id``
    Integer id of the audio device. Must be greater than 0.
 
-The 'oss' audio type supports additional configuration:
+None audio backend
+^^^^^^^^^^^^^^^^^^
+
+The 'none' audio backend is a dummy backend that does not connect to
+any host audio framework. It still allows a remote desktop server
+like VNC to send and receive audio though. This is the default backend
+when VNC graphics are enabled in QEMU.
+
+:since:`Since 7.2.0, qemu`
+
+ALSA audio backend
+^^^^^^^^^^^^^^^^^^
+
+The 'alsa' audio type uses the ALSA host audio device framework.
+
+:since:`Since 7.2.0, qemu`
+
+Coreaudio audio backend
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The 'coreaudio' audio backend delegates to a CoreAudio host audio framework
+for input and output on macOS.
+
+:since:`Since 7.2.0, qemu`
+
+Jack audio backend
+^^^^^^^^^^^^^^^^^^
+
+The 'jack' audio backend delegates to a Jack daemon for audio input
+and output.
+
+:since:`Since 7.2.0, qemu`
+
+OSS audio backend
+^^^^^^^^^^^^^^^^^
+
+The 'oss' audio type uses the OSS host audio device framework.
+
+The following additional attributes are permitted on the ``<input>``
+and ``<output>`` elements
+
+* ``dev``
+
+  Path to the host device node to connect the backend to. A hypervisor
+  specific default applies if not specified.
 
 ::
 
-   ...
-   <devices>
-     <audio type='oss' id='1'>
-       <input dev='/dev/dsp0'/>
-       <output dev='/dev/dsp0'/>
-     </audio>
-   </devices>
+   <audio type='oss' id='1'>
+     <input dev='/dev/dsp0'/>
+     <output dev='/dev/dsp0'/>
+   </audio>
 
-``input``
-   Input device. The required ``dev`` attribute specifies device path.
+:since:`Since 6.7.0, bhyve; Since 7.2.0, qemu`
 
-``output``
-   Output device. The required ``dev`` attribute specifies device path.
+PulseAudio audio backend
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+The 'pulseaudio' audio backend delegates to a PulseAudio daemon audio input
+and output.
+
+:since:`Since 7.2.0, qemu`
+
+SDL audio backend
+^^^^^^^^^^^^^^^^^
+
+The 'sdl' audio backend delegates to the SDL library for audio input
+and output.
+
+The following additional attributes are permitted on the ``<audio>``
+element
+
+* ``driver``
+
+  SDL audio driver. The ``name`` attribute specifies SDL driver name,
+  one of 'esd', 'alsa', 'arts', 'pulseaudio'.
+
+::
+
+   <audio type='sdl' id='1' driver='pulseaudio'/>
+
+:since:`Since 7.2.0, qemu`
+
+Spice audio backend
+^^^^^^^^^^^^^^^^^^^
+
+The 'spice' audio backend is similar to the 'none' backend in that
+it does not connect to any host audio framework. It exclusively
+allows a SPICE server to send and receive audio. This is the default
+backend when SPICE graphics are enabled in QEMU.
+
+:since:`Since 7.2.0, qemu`
+
+File audio backend
+^^^^^^^^^^^^^^^^^^
+
+The 'file' audio backend is an output only driver which records
+audio to a file. The file format is implementation defined, and
+defaults to 'WAV' with QEMU.
+
+:since:`Since 7.2.0, qemu`
 
 :anchor:`<a id="elementsWatchdog"/>`
 

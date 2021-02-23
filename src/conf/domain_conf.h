@@ -1446,10 +1446,28 @@ struct _virDomainSoundDef {
 };
 
 typedef enum {
+    VIR_DOMAIN_AUDIO_TYPE_NONE,
+    VIR_DOMAIN_AUDIO_TYPE_ALSA,
+    VIR_DOMAIN_AUDIO_TYPE_COREAUDIO,
+    VIR_DOMAIN_AUDIO_TYPE_JACK,
     VIR_DOMAIN_AUDIO_TYPE_OSS,
+    VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO,
+    VIR_DOMAIN_AUDIO_TYPE_SDL,
+    VIR_DOMAIN_AUDIO_TYPE_SPICE,
+    VIR_DOMAIN_AUDIO_TYPE_FILE,
 
     VIR_DOMAIN_AUDIO_TYPE_LAST
 } virDomainAudioType;
+
+typedef enum {
+    VIR_DOMAIN_AUDIO_SDL_DRIVER_DEFAULT,
+    VIR_DOMAIN_AUDIO_SDL_DRIVER_ESD,
+    VIR_DOMAIN_AUDIO_SDL_DRIVER_ALSA,
+    VIR_DOMAIN_AUDIO_SDL_DRIVER_ARTS,
+    VIR_DOMAIN_AUDIO_SDL_DRIVER_PULSEAUDIO,
+
+    VIR_DOMAIN_AUDIO_SDL_DRIVER_LAST
+} virDomainAudioSDLDriver;
 
 typedef struct _virDomainAudioIOOSS virDomainAudioIOOSS;
 typedef virDomainAudioIOOSS *virDomainAudioIOOSSPtr;
@@ -1467,6 +1485,9 @@ struct _virDomainAudioDef {
             virDomainAudioIOOSS input;
             virDomainAudioIOOSS output;
         } oss;
+        struct {
+            int driver; /* virDomainAudioSDLDriver */
+        } sdl;
     } backend;
 };
 
@@ -3696,6 +3717,7 @@ VIR_ENUM_DECL(virDomainChrSpicevmc);
 VIR_ENUM_DECL(virDomainSoundCodec);
 VIR_ENUM_DECL(virDomainSoundModel);
 VIR_ENUM_DECL(virDomainAudioType);
+VIR_ENUM_DECL(virDomainAudioSDLDriver);
 VIR_ENUM_DECL(virDomainKeyWrapCipherName);
 VIR_ENUM_DECL(virDomainMemballoonModel);
 VIR_ENUM_DECL(virDomainSmbiosMode);

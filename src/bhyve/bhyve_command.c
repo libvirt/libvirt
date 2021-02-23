@@ -524,10 +524,21 @@ bhyveBuildSoundArgStr(const virDomainDef *def G_GNUC_UNUSED,
 
             break;
 
-        case VIR_DOMAIN_AUDIO_TYPE_LAST:
+        case VIR_DOMAIN_AUDIO_TYPE_NONE:
+        case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        case VIR_DOMAIN_AUDIO_TYPE_JACK:
+        case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        case VIR_DOMAIN_AUDIO_TYPE_SDL:
+        case VIR_DOMAIN_AUDIO_TYPE_SPICE:
+        case VIR_DOMAIN_AUDIO_TYPE_FILE:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported audio backend '%s'"),
                            virDomainAudioTypeTypeToString(audio->type));
+            return -1;
+        case VIR_DOMAIN_AUDIO_TYPE_LAST:
+        default:
+            virReportEnumRangeError(virDomainAudioType, audio->type);
             return -1;
         }
     }
