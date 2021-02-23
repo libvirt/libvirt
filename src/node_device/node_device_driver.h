@@ -115,6 +115,8 @@ nodeConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
 
 virCommandPtr
 nodeDeviceGetMdevctlStartCommand(virNodeDeviceDefPtr def,
-                                 char **uuid_out);
+                                 char **uuid_out,
+                                 char **errmsg);
 virCommandPtr
-nodeDeviceGetMdevctlStopCommand(const char *uuid);
+nodeDeviceGetMdevctlStopCommand(const char *uuid,
+                                char **errmsg);

@@ -58,6 +58,7 @@ testMdevctlStart(const char *virt_type,
     const char *actualCmdline = NULL;
     int ret = -1;
     g_autofree char *uuid = NULL;
+    g_autofree char *errmsg = NULL;
     g_autofree char *stdinbuf = NULL;
     g_autoptr(virCommand) cmd = NULL;
 
@@ -66,7 +67,7 @@ testMdevctlStart(const char *virt_type,
 
     /* this function will set a stdin buffer containing the json configuration
      * of the device. The json value is captured in the callback above */
-    cmd = nodeDeviceGetMdevctlStartCommand(def, &uuid);
+    cmd = nodeDeviceGetMdevctlStartCommand(def, &uuid, &errmsg);
 
     if (!cmd)
         goto cleanup;
@@ -117,11 +118,12 @@ testMdevctlStop(const void *data)
     const char *actualCmdline = NULL;
     int ret = -1;
     g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *errmsg = NULL;
     g_autofree char *cmdlinefile =
         g_strdup_printf("%s/nodedevmdevctldata/mdevctl-stop.argv",
                         abs_srcdir);
 
-    cmd = nodeDeviceGetMdevctlStopCommand(uuid);
+    cmd = nodeDeviceGetMdevctlStopCommand(uuid, &errmsg);
 
     if (!cmd)
         goto cleanup;

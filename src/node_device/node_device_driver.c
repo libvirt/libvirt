@@ -700,7 +700,8 @@ nodeDeviceFindAddressByName(const char *name)
 
 virCommandPtr
 nodeDeviceGetMdevctlStartCommand(virNodeDeviceDefPtr def,
-                                 char **uuid_out)
+                                 char **uuid_out,
+                                 char **errmsg)
 {
     virCommandPtr cmd;
     g_autofree char *json = NULL;
@@ -725,15 +726,17 @@ nodeDeviceGetMdevctlStartCommand(virNodeDeviceDefPtr def,
 
     virCommandSetInputBuffer(cmd, json);
     virCommandSetOutputBuffer(cmd, uuid_out);
+    virCommandSetErrorBuffer(cmd, errmsg);
 
     return cmd;
 }
 
 static int
-virMdevctlStart(virNodeDeviceDefPtr def, char **uuid)
+virMdevctlStart(virNodeDeviceDefPtr def, char **uuid, char **errmsg)
 {
     int status;
-    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlStartCommand(def, uuid);
+    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlStartCommand(def, uuid,
+                                                                 errmsg);
     if (!cmd)
         return -1;
 
@@ -754,6 +757,7 @@ nodeDeviceCreateXMLMdev(virConnectPtr conn,
                         virNodeDeviceDefPtr def)
 {
     g_autofree char *uuid = NULL;
+    g_autofree char *errmsg = NULL;
 
     if (!def->parent) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -761,9 +765,11 @@ nodeDeviceCreateXMLMdev(virConnectPtr conn,
         return NULL;
     }
 
-    if (virMdevctlStart(def, &uuid) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to start mediated device"));
+    if (virMdevctlStart(def, &uuid, &errmsg) < 0) {
+        if (errmsg)
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to start mediated device '%s': %s"),
+                           def->name, errmsg);
         return NULL;
     }
 
@@ -828,23 +834,25 @@ nodeDeviceCreateXML(virConnectPtr conn,
 
 
 virCommandPtr
-nodeDeviceGetMdevctlStopCommand(const char *uuid)
+nodeDeviceGetMdevctlStopCommand(const char *uuid, char **errmsg)
 {
-    return virCommandNewArgList(MDEVCTL,
-                                "stop",
-                                "-u",
-                                uuid,
-                                NULL);
+    virCommandPtr cmd = virCommandNewArgList(MDEVCTL,
+                                             "stop",
+                                             "-u",
+                                             uuid,
+                                             NULL);
+    virCommandSetErrorBuffer(cmd, errmsg);
+    return cmd;
 
 }
 
 static int
-virMdevctlStop(virNodeDeviceDefPtr def)
+virMdevctlStop(virNodeDeviceDefPtr def, char **errmsg)
 {
     int status;
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = nodeDeviceGetMdevctlStopCommand(def->caps->data.mdev.uuid);
+    cmd = nodeDeviceGetMdevctlStopCommand(def->caps->data.mdev.uuid, errmsg);
 
     if (virCommandRun(cmd, &status) < 0 || status != 0)
         return -1;
@@ -901,9 +909,13 @@ nodeDeviceDestroy(virNodeDevicePtr device)
 
         ret = 0;
     } else if (nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_MDEV)) {
-        if (virMdevctlStop(def) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unable to stop mediated device"));
+        g_autofree char *errmsg = NULL;
+
+        if (virMdevctlStop(def, &errmsg) < 0) {
+            if (errmsg)
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unable to destroy '%s': %s"), def->name,
+                               errmsg);
             goto cleanup;
         }
         ret = 0;
