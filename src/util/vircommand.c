@@ -90,7 +90,7 @@ struct _virCommandSendBuffer {
 };
 
 struct _virCommand {
-    int has_error; /* ENOMEM on allocation failure, -1 for anything else.  */
+    int has_error; /* 0 on success, -1 on error  */
 
     char **args;
     size_t nargs;
@@ -198,7 +198,6 @@ virCommandFDIsSet(virCommandPtr cmd,
  *
  * Returns: 0 on success,
  *          -1 on usage error,
- *          ENOMEM on OOM
  */
 static int
 virCommandFDSet(virCommandPtr cmd,
@@ -211,8 +210,7 @@ virCommandFDSet(virCommandPtr cmd,
     if (virCommandFDIsSet(cmd, fd))
         return 0;
 
-    if (VIR_EXPAND_N(cmd->passfd, cmd->npassfd, 1) < 0)
-        return ENOMEM;
+    ignore_value(VIR_EXPAND_N(cmd->passfd, cmd->npassfd, 1));
 
     cmd->passfd[cmd->npassfd - 1].fd = fd;
     cmd->passfd[cmd->npassfd - 1].flags = flags;
@@ -1344,10 +1342,7 @@ virCommandAddEnv(virCommandPtr cmd,
     }
 
     /* Arg plus trailing NULL. */
-    if (VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 1 + 1) < 0) {
-        cmd->has_error = ENOMEM;
-        return;
-    }
+    ignore_value(VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 1 + 1));
 
     cmd->env[cmd->nenv++] = g_steal_pointer(&env);
 }
@@ -1474,10 +1469,7 @@ virCommandAddEnvPassCommon(virCommandPtr cmd)
     if (!cmd || cmd->has_error)
         return;
 
-    if (VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 9) < 0) {
-        cmd->has_error = ENOMEM;
-        return;
-    }
+    ignore_value(VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 9));
 
     virCommandAddEnvPair(cmd, "LC_ALL", "C");
 
@@ -1497,10 +1489,7 @@ virCommandAddEnvXDG(virCommandPtr cmd, const char *baseDir)
     if (!cmd || cmd->has_error)
         return;
 
-    if (VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 3) < 0) {
-        cmd->has_error = ENOMEM;
-        return;
-    }
+    ignore_value(VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 3));
 
     virCommandAddEnvFormat(cmd, "XDG_DATA_HOME=%s/%s",
                            baseDir, ".local/share");
@@ -1530,10 +1519,7 @@ virCommandAddArg(virCommandPtr cmd, const char *val)
     }
 
     /* Arg plus trailing NULL. */
-    if (VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1) < 0) {
-        cmd->has_error = ENOMEM;
-        return;
-    }
+    ignore_value(VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1));
 
     cmd->args[cmd->nargs++] = g_strdup(val);
 }
@@ -1559,10 +1545,7 @@ virCommandAddArgBuffer(virCommandPtr cmd, virBufferPtr buf)
         str = g_strdup("");
 
     /* Arg plus trailing NULL. */
-    if (VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1) < 0) {
-        cmd->has_error = ENOMEM;
-        return;
-    }
+    ignore_value(VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1));
 
     cmd->args[cmd->nargs] = g_steal_pointer(&str);
     cmd->nargs++;
@@ -1591,11 +1574,7 @@ virCommandAddArgFormat(virCommandPtr cmd, const char *format, ...)
     va_end(list);
 
     /* Arg plus trailing NULL. */
-    if (VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1) < 0) {
-        VIR_FREE(arg);
-        cmd->has_error = ENOMEM;
-        return;
-    }
+    ignore_value(VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1));
 
     cmd->args[cmd->nargs++] = arg;
 }
@@ -1642,10 +1621,7 @@ virCommandAddArgSet(virCommandPtr cmd, const char *const*vals)
         narg++;
 
     /* narg plus trailing NULL. */
-    if (VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, narg + 1) < 0) {
-        cmd->has_error = ENOMEM;
-        return;
-    }
+    ignore_value(VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, narg + 1));
 
     narg = 0;
     while (vals[narg] != NULL) {
@@ -1678,10 +1654,7 @@ virCommandAddArgList(virCommandPtr cmd, ...)
     va_end(list);
 
     /* narg plus trailing NULL. */
-    if (VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, narg + 1) < 0) {
-        cmd->has_error = ENOMEM;
-        return;
-    }
+    ignore_value(VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, narg + 1));
 
     va_start(list, cmd);
     while (1) {
@@ -1765,10 +1738,7 @@ virCommandSetSendBuffer(virCommandPtr cmd,
     }
 
     i = virCommandGetNumSendBuffers(cmd);
-    if (VIR_REALLOC_N(cmd->sendBuffers, i + 1) < 0) {
-        cmd->has_error = ENOMEM;
-        return -1;
-    }
+    ignore_value(VIR_REALLOC_N(cmd->sendBuffers, i + 1));
 
     cmd->sendBuffers[i].fd = fd;
     cmd->sendBuffers[i].buffer = buffer;
@@ -2099,11 +2069,7 @@ virCommandToString(virCommandPtr cmd, bool linebreaks)
 
     /* Cannot assume virCommandRun will be called; so report the error
      * now.  If virCommandRun is called, it will report the same error. */
-    if (!cmd ||cmd->has_error == ENOMEM) {
-        virReportOOMError();
-        return NULL;
-    }
-    if (cmd->has_error) {
+    if (!cmd || cmd->has_error) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("invalid use of command API"));
         return NULL;
@@ -2339,11 +2305,7 @@ virCommandProcessIO(virCommandPtr cmd)
  */
 int virCommandExec(virCommandPtr cmd, gid_t *groups, int ngroups)
 {
-    if (!cmd ||cmd->has_error == ENOMEM) {
-        virReportOOMError();
-        return -1;
-    }
-    if (cmd->has_error) {
+    if (!cmd || cmd->has_error) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("invalid use of command API"));
         return -1;
@@ -2388,11 +2350,7 @@ virCommandRun(virCommandPtr cmd, int *exitstatus)
     char *str;
     int tmpfd;
 
-    if (!cmd ||cmd->has_error == ENOMEM) {
-        virReportOOMError();
-        return -1;
-    }
-    if (cmd->has_error) {
+    if (!cmd || cmd->has_error) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("invalid use of command API"));
         return -1;
@@ -2539,11 +2497,7 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
     bool synchronous = false;
     int infd[2] = {-1, -1};
 
-    if (!cmd || cmd->has_error == ENOMEM) {
-        virReportOOMError();
-        return -1;
-    }
-    if (cmd->has_error) {
+    if (!cmd || cmd->has_error) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("invalid use of command API"));
         return -1;
@@ -2692,11 +2646,7 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
     int ret;
     int status = 0;
 
-    if (!cmd ||cmd->has_error == ENOMEM) {
-        virReportOOMError();
-        return -1;
-    }
-    if (cmd->has_error) {
+    if (!cmd || cmd->has_error) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("invalid use of command API"));
         return -1;
@@ -2835,11 +2785,8 @@ int virCommandHandshakeWait(virCommandPtr cmd)
 {
     char c;
     int rv;
-    if (!cmd ||cmd->has_error == ENOMEM) {
-        virReportOOMError();
-        return -1;
-    }
-    if (cmd->has_error || !cmd->handshake) {
+
+    if (!cmd || cmd->has_error || !cmd->handshake) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("invalid use of command API"));
         return -1;
@@ -2896,11 +2843,8 @@ int virCommandHandshakeWait(virCommandPtr cmd)
 int virCommandHandshakeNotify(virCommandPtr cmd)
 {
     char c = '1';
-    if (!cmd ||cmd->has_error == ENOMEM) {
-        virReportOOMError();
-        return -1;
-    }
-    if (cmd->has_error || !cmd->handshake) {
+
+    if (!cmd || cmd->has_error || !cmd->handshake) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("invalid use of command API"));
         return -1;
