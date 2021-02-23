@@ -141,10 +141,7 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
             goto fail;
     }
 
-    if (!(actualData = virBufferContentAndReset(&buf))) {
-        virReportOOMError();
-        goto fail;
-    }
+    actualData = virBufferContentAndReset(&buf);
 
     if (virTestCompareToFile(actualData, outfile) < 0)
         goto fail;
