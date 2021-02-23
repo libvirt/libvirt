@@ -789,11 +789,9 @@ virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes)
 }
 #else /* ! (WITH_SETRLIMIT && defined(RLIMIT_MEMLOCK)) */
 int
-virProcessSetMaxMemLock(pid_t pid G_GNUC_UNUSED, unsigned long long bytes)
+virProcessSetMaxMemLock(pid_t pid G_GNUC_UNUSED,
+                        unsigned long long bytes G_GNUC_UNUSED)
 {
-    if (bytes == 0)
-        return 0;
-
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
 }
@@ -850,11 +848,8 @@ virProcessGetMaxMemLock(pid_t pid,
 #else /* ! (WITH_GETRLIMIT && defined(RLIMIT_MEMLOCK)) */
 int
 virProcessGetMaxMemLock(pid_t pid G_GNUC_UNUSED,
-                        unsigned long long *bytes)
+                        unsigned long long *bytes G_GNUC_UNUSED)
 {
-    if (!bytes)
-        return 0;
-
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
 }
@@ -900,11 +895,9 @@ virProcessSetMaxProcesses(pid_t pid, unsigned int procs)
 }
 #else /* ! (WITH_SETRLIMIT && defined(RLIMIT_NPROC)) */
 int
-virProcessSetMaxProcesses(pid_t pid G_GNUC_UNUSED, unsigned int procs)
+virProcessSetMaxProcesses(pid_t pid G_GNUC_UNUSED,
+                          unsigned int procs G_GNUC_UNUSED)
 {
-    if (procs == 0)
-        return 0;
-
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
 }
@@ -957,11 +950,9 @@ virProcessSetMaxFiles(pid_t pid, unsigned int files)
 }
 #else /* ! (WITH_SETRLIMIT && defined(RLIMIT_NOFILE)) */
 int
-virProcessSetMaxFiles(pid_t pid G_GNUC_UNUSED, unsigned int files)
+virProcessSetMaxFiles(pid_t pid G_GNUC_UNUSED,
+                      unsigned int files G_GNUC_UNUSED)
 {
-    if (files == 0)
-        return 0;
-
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
 }
@@ -1004,11 +995,8 @@ virProcessSetMaxCoreSize(pid_t pid, unsigned long long bytes)
 #else /* ! (WITH_SETRLIMIT && defined(RLIMIT_CORE)) */
 int
 virProcessSetMaxCoreSize(pid_t pid G_GNUC_UNUSED,
-                         unsigned long long bytes)
+                         unsigned long long bytes G_GNUC_UNUSED)
 {
-    if (bytes == 0)
-        return 0;
-
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
 }
