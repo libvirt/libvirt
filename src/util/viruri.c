@@ -238,11 +238,9 @@ virURIFormat(virURIPtr uri)
     if (!xmluri.server && !xmluri.port)
         xmluri.port = -1;
 
-    ret = (char *)xmlSaveUri(&xmluri);
-    if (!ret) {
-        virReportOOMError();
-        return NULL;
-    }
+    /* xmlSaveUri can fail only on OOM condition if argument is non-NULL */
+    if (!(ret = (char *)xmlSaveUri(&xmluri)))
+        abort();
 
     return ret;
 }
