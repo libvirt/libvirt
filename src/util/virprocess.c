@@ -462,10 +462,8 @@ int virProcessSetAffinity(pid_t pid, virBitmapPtr map, bool quiet)
     masklen = CPU_ALLOC_SIZE(numcpus);
     mask = CPU_ALLOC(numcpus);
 
-    if (!mask) {
-        virReportOOMError();
-        return -1;
-    }
+    if (!mask)
+        abort();
 
     CPU_ZERO_S(masklen, mask);
     for (i = 0; i < virBitmapSize(map); i++) {
@@ -509,10 +507,8 @@ virProcessGetAffinity(pid_t pid)
     masklen = CPU_ALLOC_SIZE(ncpus);
     mask = CPU_ALLOC(ncpus);
 
-    if (!mask) {
-        virReportOOMError();
-        return NULL;
-    }
+    if (!mask)
+        abort();
 
     CPU_ZERO_S(masklen, mask);
 
