@@ -1228,6 +1228,12 @@ qemuValidateDomainDef(const virDomainDef *def,
         return -1;
     }
 
+    if (def->naudios > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("only one audio backend is supported with this QEMU binary"));
+        return -1;
+    }
+
     return 0;
 }
 
@@ -4166,6 +4172,50 @@ qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
 
 
 static int
+qemuValidateDomainDeviceDefAudio(virDomainAudioDefPtr audio,
+                                 virQEMUCapsPtr qemuCaps G_GNUC_UNUSED)
+{
+    switch ((virDomainAudioType)audio->type) {
+    case VIR_DOMAIN_AUDIO_TYPE_NONE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_JACK:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("'jack' audio backend is not supported with this QEMU"));
+        return -1;
+
+    case VIR_DOMAIN_AUDIO_TYPE_OSS:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_SDL:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_SPICE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_FILE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainAudioType, audio->type);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuSoundCodecTypeToCaps(int type)
 {
     switch (type) {
@@ -4858,9 +4908,12 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
         ret = qemuValidateDomainDeviceDefShmem(dev->data.shmem, qemuCaps);
         break;
 
+    case VIR_DOMAIN_DEVICE_AUDIO:
+        ret = qemuValidateDomainDeviceDefAudio(dev->data.audio, qemuCaps);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_PANIC:
-    case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
         break;

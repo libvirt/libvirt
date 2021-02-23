@@ -177,6 +177,21 @@ VIR_ENUM_IMPL(qemuNumaPolicy,
               "interleave",
 );
 
+VIR_ENUM_DECL(qemuAudioDriver);
+VIR_ENUM_IMPL(qemuAudioDriver,
+              VIR_DOMAIN_AUDIO_TYPE_LAST,
+              "none",
+              "alsa",
+              "coreaudio",
+              "jack",
+              "oss",
+              "pa",
+              "sdl",
+              "spice",
+              "wav",
+);
+
+
 
 /**
  * qemuBuildMasterKeyCommandLine:
@@ -7543,11 +7558,91 @@ qemuBuildMemoryDeviceCommandLine(virCommandPtr cmd,
     return 0;
 }
 
+static void
+qemuBuildAudioOSSEnv(virCommandPtr cmd,
+                     const char *prefix,
+                     virDomainAudioIOOSSPtr def)
+{
+    if (def->dev)
+        virCommandAddEnvFormat(cmd, "%sDEV=%s",
+                               prefix, def->dev);
+}
+
+static int
+qemuBuildAudioCommandLineEnv(virCommandPtr cmd,
+                             virDomainDefPtr def)
+{
+    virDomainAudioDefPtr audio;
+    if (def->naudios != 1)
+        return 0;
+
+    audio = def->audios[0];
+    virCommandAddEnvPair(cmd, "QEMU_AUDIO_DRV",
+                         qemuAudioDriverTypeToString(audio->type));
+
+    switch ((virDomainAudioType)audio->type) {
+    case VIR_DOMAIN_AUDIO_TYPE_NONE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_JACK:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_OSS:
+        qemuBuildAudioOSSEnv(cmd, "QEMU_OSS_ADC_", &audio->backend.oss.input);
+        qemuBuildAudioOSSEnv(cmd, "QEMU_OSS_DAC_", &audio->backend.oss.output);
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_SDL:
+        if (audio->backend.sdl.driver) {
+            /*
+             * Some SDL audio driver names are different on SDL 1.2
+             * vs 2.0.  Given how old SDL 1.2 is, we're not going
+             * make any attempt to support it here as it is unlikely
+             * to have an real world users. We can assume libvirt
+             * driver name strings match SDL 2.0 names.
+             */
+            virCommandAddEnvPair(cmd, "SDL_AUDIODRIVER",
+                                 virDomainAudioSDLDriverTypeToString(
+                                     audio->backend.sdl.driver));
+        }
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_SPICE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_FILE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainAudioType, audio->type);
+        return -1;
+    }
+    return 0;
+}
+
+static int
+qemuBuildAudioCommandLine(virCommandPtr cmd,
+                          virDomainDefPtr def)
+{
+    return qemuBuildAudioCommandLineEnv(cmd, def);
+}
+
 
 static int
 qemuBuildGraphicsSDLCommandLine(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                                 virCommandPtr cmd,
                                 virQEMUCapsPtr qemuCaps G_GNUC_UNUSED,
+                                virDomainDefPtr def,
                                 virDomainGraphicsDefPtr graphics)
 {
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
@@ -7559,12 +7654,14 @@ qemuBuildGraphicsSDLCommandLine(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
     if (graphics->data.sdl.fullscreen)
         virCommandAddArg(cmd, "-full-screen");
 
-    /* If using SDL for video, then we should just let it
-     * use QEMU's host audio drivers, possibly SDL too
-     * User can set these two before starting libvirtd
-     */
-    virCommandAddEnvPass(cmd, "QEMU_AUDIO_DRV");
-    virCommandAddEnvPass(cmd, "SDL_AUDIODRIVER");
+    if (def->naudios == 0) {
+        /* If using SDL for video, then we should just let it
+         * use QEMU's host audio drivers, possibly SDL too
+         * User can set these two before starting libvirtd
+         */
+        virCommandAddEnvPass(cmd, "QEMU_AUDIO_DRV");
+        virCommandAddEnvPass(cmd, "SDL_AUDIODRIVER");
+    }
 
     virCommandAddArg(cmd, "-display");
     virBufferAddLit(&opt, "sdl");
@@ -7583,6 +7680,7 @@ static int
 qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
                                 virCommandPtr cmd,
                                 virQEMUCapsPtr qemuCaps,
+                                virDomainDefPtr def,
                                 virDomainGraphicsDefPtr graphics)
 {
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
@@ -7709,14 +7807,16 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
     if (graphics->data.vnc.keymap)
         virCommandAddArgList(cmd, "-k", graphics->data.vnc.keymap, NULL);
 
-    /* Unless user requested it, set the audio backend to none, to
-     * prevent it opening the host OS audio devices, since that causes
-     * security issues and might not work when using VNC.
-     */
-    if (cfg->vncAllowHostAudio)
-        virCommandAddEnvPass(cmd, "QEMU_AUDIO_DRV");
-    else
-        virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=none");
+    if (def->naudios == 0) {
+        /* Unless user requested it, set the audio backend to none, to
+         * prevent it opening the host OS audio devices, since that causes
+         * security issues and might not work when using VNC.
+         */
+        if (cfg->vncAllowHostAudio)
+            virCommandAddEnvPass(cmd, "QEMU_AUDIO_DRV");
+        else
+            virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=none");
+    }
 
     return 0;
 }
@@ -7725,6 +7825,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
 static int
 qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                                   virCommandPtr cmd,
+                                  virDomainDefPtr def,
                                   virDomainGraphicsDefPtr graphics)
 {
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
@@ -7922,10 +8023,13 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     if (graphics->data.spice.keymap)
         virCommandAddArgList(cmd, "-k",
                              graphics->data.spice.keymap, NULL);
-    /* SPICE includes native support for tunnelling audio, so we
-     * set the audio backend to point at SPICE's own driver
-     */
-    virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=spice");
+
+    if (def->naudios == 0) {
+        /* SPICE includes native support for tunnelling audio, so we
+         * set the audio backend to point at SPICE's own driver
+         */
+        virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=spice");
+    }
 
     return 0;
 }
@@ -7967,19 +8071,19 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
         switch (graphics->type) {
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
             if (qemuBuildGraphicsSDLCommandLine(cfg, cmd,
-                                                qemuCaps, graphics) < 0)
+                                                qemuCaps, def, graphics) < 0)
                 return -1;
 
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
             if (qemuBuildGraphicsVNCCommandLine(cfg, cmd,
-                                                qemuCaps, graphics) < 0)
+                                                qemuCaps, def, graphics) < 0)
                 return -1;
 
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
             if (qemuBuildGraphicsSPICECommandLine(cfg, cmd,
-                                                  graphics) < 0)
+                                                  def, graphics) < 0)
                 return -1;
 
             break;
@@ -9978,10 +10082,12 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         virCommandAddArg(cmd, "-display");
         virCommandAddArg(cmd, "none");
 
-        if (cfg->nogfxAllowHostAudio)
-            virCommandAddEnvPass(cmd, "QEMU_AUDIO_DRV");
-        else
-            virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=none");
+        if (def->naudios == 0) {
+            if (cfg->nogfxAllowHostAudio)
+                virCommandAddEnvPass(cmd, "QEMU_AUDIO_DRV");
+            else
+                virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=none");
+        }
     }
 
     /* Disable global config files and default devices */
@@ -10054,6 +10160,9 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         return NULL;
 
     if (qemuBuildInputCommandLine(cmd, def, qemuCaps) < 0)
+        return NULL;
+
+    if (qemuBuildAudioCommandLine(cmd, def) < 0)
         return NULL;
 
     if (qemuBuildGraphicsCommandLine(cfg, cmd, def, qemuCaps) < 0)

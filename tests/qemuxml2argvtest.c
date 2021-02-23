@@ -1043,6 +1043,24 @@ mymain(void)
             QEMU_CAPS_BOOT_STRICT,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
 
+    /* Simplest possible <audio>, all supported with ENV */
+    DO_TEST("audio-none-minimal", NONE);
+    DO_TEST("audio-alsa-minimal", NONE);
+    DO_TEST("audio-coreaudio-minimal", NONE);
+    DO_TEST_PARSE_ERROR("audio-jack-minimal", NONE);
+    DO_TEST("audio-oss-minimal", NONE);
+    DO_TEST("audio-pulseaudio-minimal", NONE);
+    DO_TEST("audio-sdl-minimal", NONE);
+    DO_TEST("audio-spice-minimal", NONE);
+    DO_TEST("audio-file-minimal", NONE);
+
+    /* Best <audio> still compat with old ENV */
+    DO_TEST("audio-oss-best", NONE);
+    DO_TEST("audio-sdl-best", NONE);
+
+    /* Multiple backends not supported with ENV */
+    DO_TEST_PARSE_ERROR("audio-many-backends", NONE);
+
     DO_TEST("reboot-timeout-disabled", QEMU_CAPS_REBOOT_TIMEOUT);
     DO_TEST("reboot-timeout-enabled", QEMU_CAPS_REBOOT_TIMEOUT);
     DO_TEST_PARSE_ERROR("reboot-timeout-enabled", NONE);

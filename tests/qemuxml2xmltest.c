@@ -1463,6 +1463,20 @@ mymain(void)
     DO_TEST_CAPS_LATEST("virtio-9p-createmode");
     DO_TEST("downscript", NONE);
 
+    /* Simplest possible <audio>, all supported with ENV */
+    DO_TEST("audio-none-minimal", NONE);
+    DO_TEST("audio-alsa-minimal", NONE);
+    DO_TEST("audio-coreaudio-minimal", NONE);
+    DO_TEST("audio-oss-minimal", NONE);
+    DO_TEST("audio-pulseaudio-minimal", NONE);
+    DO_TEST("audio-sdl-minimal", NONE);
+    DO_TEST("audio-spice-minimal", NONE);
+    DO_TEST("audio-file-minimal", NONE);
+
+    /* Best <audio> still compat with old ENV */
+    DO_TEST("audio-oss-best", NONE);
+    DO_TEST("audio-sdl-best", NONE);
+
  cleanup:
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);

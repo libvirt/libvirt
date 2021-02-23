@@ -226,6 +226,8 @@ virDiskNameParse;
 virDiskNameToBusDeviceIndex;
 virDiskNameToIndex;
 virDomainActualNetDefFree;
+virDomainAudioSDLDriverTypeFromString;
+virDomainAudioSDLDriverTypeToString;
 virDomainAudioTypeTypeFromString;
 virDomainAudioTypeTypeToString;
 virDomainBlockedReasonTypeFromString;
