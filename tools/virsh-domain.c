@@ -5187,8 +5187,7 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
         goto cleanup;
 
     ret = nparams;
-    *update_params = params;
-    params = NULL;
+    *update_params = g_steal_pointer(&params);
 
  cleanup:
     VIR_FREE(set_field);

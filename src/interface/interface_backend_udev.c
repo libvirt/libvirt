@@ -394,8 +394,7 @@ udevConnectListAllInterfaces(virConnectPtr conn,
     /* Trim the array to its final size */
     if (ifaces) {
         ignore_value(VIR_REALLOC_N(ifaces_list, count + 1));
-        *ifaces = ifaces_list;
-        ifaces_list = NULL;
+        *ifaces = g_steal_pointer(&ifaces_list);
     }
 
     return count;

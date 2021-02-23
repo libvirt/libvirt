@@ -5097,8 +5097,7 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
         bitmap = NULL;
     }
 
-    *info = info_ret;
-    info_ret = NULL;
+    *info = g_steal_pointer(&info_ret);
     ret = targetDef->niothreadids;
 
  cleanup:
@@ -9133,9 +9132,8 @@ qemuDomainGetPerfEvents(virDomainPtr dom,
             goto endjob;
     }
 
-    *params = par;
     *nparams = npar;
-    par = NULL;
+    *params = g_steal_pointer(&par);
     npar = 0;
     ret = 0;
 
@@ -18729,8 +18727,7 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
         virObjectUnlock(vm);
     }
 
-    *retStats = tmpstats;
-    tmpstats = NULL;
+    *retStats = g_steal_pointer(&tmpstats);
 
     ret = nstats;
 
@@ -19259,9 +19256,8 @@ qemuDomainGetGuestVcpusParams(virTypedParameterPtr *params,
 
 #undef ADD_BITMAP
 
-    *params = par;
     *nparams = npar;
-    par = NULL;
+    *params = g_steal_pointer(&par);
     ret = 0;
 
  cleanup:

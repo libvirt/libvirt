@@ -95,8 +95,7 @@ virMediatedDeviceGetSysfsDeviceAPI(virMediatedDevicePtr dev,
     if ((tmp = strchr(buf, '\n')))
         *tmp = '\0';
 
-    *device_api = buf;
-    buf = NULL;
+    *device_api = g_steal_pointer(&buf);
 
     return 0;
 }

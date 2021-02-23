@@ -5822,8 +5822,7 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
     }
 
     ret = n;
-    *machines = infolist;
-    infolist = NULL;
+    *machines = g_steal_pointer(&infolist);
 
  cleanup:
     if (infolist) {
@@ -6270,8 +6269,7 @@ int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
     }
 
     ret = n;
-    *commands = commandlist;
-    commandlist = NULL;
+    *commands = g_steal_pointer(&commandlist);
 
 
  cleanup:
@@ -6329,8 +6327,7 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
     }
 
     ret = n;
-    *events = eventlist;
-    eventlist = NULL;
+    *events = g_steal_pointer(&eventlist);
 
  cleanup:
     g_strfreev(eventlist);
@@ -6474,8 +6471,7 @@ int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
     }
 
     ret = n;
-    *types = typelist;
-    typelist = NULL;
+    *types = g_steal_pointer(&typelist);
 
  cleanup:
     g_strfreev(typelist);
@@ -6544,8 +6540,7 @@ int qemuMonitorJSONGetObjectListPaths(qemuMonitorPtr mon,
     }
 
     ret = n;
-    *paths = pathlist;
-    pathlist = NULL;
+    *paths = g_steal_pointer(&pathlist);
 
  cleanup:
     if (pathlist) {
@@ -6781,8 +6776,7 @@ qemuMonitorJSONParsePropsList(virJSONValuePtr cmd,
     }
 
     ret = count;
-    *props = proplist;
-    proplist = NULL;
+    *props = g_steal_pointer(&proplist);
 
  cleanup:
     g_strfreev(proplist);
@@ -6964,8 +6958,7 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
     }
 
     ret = n;
-    *capabilities = list;
-    list = NULL;
+    *capabilities = g_steal_pointer(&list);
 
  cleanup:
     g_strfreev(list);
@@ -7093,8 +7086,7 @@ qemuMonitorJSONGetGICCapabilities(qemuMonitorPtr mon,
     }
 
     ret = n;
-    *capabilities = list;
-    list = NULL;
+    *capabilities = g_steal_pointer(&list);
 
  cleanup:
     VIR_FREE(list);
@@ -8155,8 +8147,7 @@ qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
     }
 
     *niothreads = n;
-    *iothreads = infolist;
-    infolist = NULL;
+    *iothreads = g_steal_pointer(&infolist);
     ret = 0;
 
  cleanup:

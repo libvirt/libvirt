@@ -50,8 +50,7 @@ adminConnectListServers(virNetDaemonPtr dmn,
         goto cleanup;
 
     if (servers) {
-        *servers = srvs;
-        srvs = NULL;
+        *servers = g_steal_pointer(&srvs);
     }
  cleanup:
     if (ret > 0)
@@ -179,8 +178,7 @@ adminServerListClients(virNetServerPtr srv,
         return -1;
 
     if (clients) {
-        *clients = clts;
-        clts = NULL;
+        *clients = g_steal_pointer(&clts);
     }
 
     virObjectListFreeCount(clts, ret);

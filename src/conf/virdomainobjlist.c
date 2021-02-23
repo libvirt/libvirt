@@ -1083,8 +1083,7 @@ virDomainObjListExport(virDomainObjListPtr domlist,
                 goto cleanup;
         }
 
-        *domains = doms;
-        doms = NULL;
+        *domains = g_steal_pointer(&doms);
     }
 
     ret = nvms;

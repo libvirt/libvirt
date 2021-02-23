@@ -464,8 +464,7 @@ virNWFilterObjListExport(virConnectPtr conn,
         virNWFilterObjUnlock(obj);
     }
 
-    *filters = tmp_filters;
-    tmp_filters = NULL;
+    *filters = g_steal_pointer(&tmp_filters);
     ret = nfilters;
 
  cleanup:

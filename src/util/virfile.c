@@ -840,8 +840,7 @@ int virFileLoopDeviceAssociate(const char *file,
     }
 
     VIR_DEBUG("Attached loop device  %s %d to %s", file, lofd, loname);
-    *dev = loname;
-    loname = NULL;
+    *dev = g_steal_pointer(&loname);
 
     ret = 0;
 
@@ -3200,8 +3199,7 @@ virFileOpenTty(int *ttyprimary, char **ttyName, int rawmode)
             errno = rc;
             goto cleanup;
         }
-        *ttyName = name;
-        name = NULL;
+        *ttyName = g_steal_pointer(&name);
     }
 
     ret = 0;
@@ -3637,9 +3635,8 @@ virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs,
         tmp->deflt = tmp->size == default_hugepagesz;
     }
 
-    *ret_fs = fs;
     *ret_nfs = nfs;
-    fs = NULL;
+    *ret_fs = g_steal_pointer(&fs);
     nfs = 0;
     ret = 0;
 

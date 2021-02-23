@@ -258,8 +258,7 @@ virSysinfoParsePPCSystem(const char *base, virSysinfoSystemDefPtr *sysdef)
         def = NULL;
     }
 
-    *sysdef = def;
-    def = NULL;
+    *sysdef = g_steal_pointer(&def);
     ret = 0;
     virSysinfoSystemDefFree(def);
     return ret;
@@ -381,8 +380,7 @@ virSysinfoParseARMSystem(const char *base, virSysinfoSystemDefPtr *sysdef)
         def = NULL;
     }
 
-    *sysdef = def;
-    def = NULL;
+    *sysdef = g_steal_pointer(&def);
     ret = 0;
     virSysinfoSystemDefFree(def);
     return ret;
@@ -521,8 +519,7 @@ virSysinfoParseS390System(const char *base, virSysinfoSystemDefPtr *sysdef)
         def = NULL;
     }
 
-    *sysdef = def;
-    def = NULL;
+    *sysdef = g_steal_pointer(&def);
     ret = 0;
  cleanup:
     virSysinfoSystemDefFree(def);
@@ -686,8 +683,7 @@ virSysinfoParseBIOS(const char *base, virSysinfoBIOSDefPtr *bios)
         def = NULL;
     }
 
-    *bios = def;
-    def = NULL;
+    *bios = g_steal_pointer(&def);
     ret = 0;
     virSysinfoBIOSDefFree(def);
     return ret;
@@ -763,8 +759,7 @@ virSysinfoParseX86System(const char *base, virSysinfoSystemDefPtr *sysdef)
         def = NULL;
     }
 
-    *sysdef = def;
-    def = NULL;
+    *sysdef = g_steal_pointer(&def);
     ret = 0;
     virSysinfoSystemDefFree(def);
     return ret;
@@ -845,9 +840,8 @@ virSysinfoParseX86BaseBoard(const char *base,
         ignore_value(VIR_REALLOC_N(boards, nboards));
     }
 
-    *baseBoard = boards;
     *nbaseBoard = nboards;
-    boards = NULL;
+    *baseBoard = g_steal_pointer(&boards);
     nboards = 0;
     ret = 0;
  cleanup:
@@ -915,8 +909,7 @@ virSysinfoParseX86Chassis(const char *base,
         def = NULL;
     }
 
-    *chassisdef = def;
-    def = NULL;
+    *chassisdef = g_steal_pointer(&def);
     ret = 0;
     virSysinfoChassisDefFree(def);
     return ret;

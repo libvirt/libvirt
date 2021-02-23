@@ -1111,8 +1111,7 @@ virNetServerGetClients(virNetServerPtr srv,
         }
     }
 
-    *clts = list;
-    list = NULL;
+    *clts = g_steal_pointer(&list);
     ret = nclients;
 
  cleanup:

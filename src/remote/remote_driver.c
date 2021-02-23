@@ -6299,8 +6299,7 @@ remoteConnectGetCPUModelNames(virConnectPtr conn,
             retmodels[i] = ret.models.models_val[i];
             ret.models.models_val[i] = NULL;
         }
-        *models = retmodels;
-        retmodels = NULL;
+        *models = g_steal_pointer(&retmodels);
     }
 
     rv = ret.ret;
@@ -7464,8 +7463,7 @@ remoteNetworkGetDHCPLeases(virNetworkPtr net,
                 goto cleanup;
         }
 
-        *leases = leases_ret;
-        leases_ret = NULL;
+        *leases = g_steal_pointer(&leases_ret);
     }
 
     rv = ret.ret;
@@ -7555,8 +7553,7 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
         elem = NULL;
     }
 
-    *retStats = tmpret;
-    tmpret = NULL;
+    *retStats = g_steal_pointer(&tmpret);
     rv = ret.retStats.retStats_len;
 
  cleanup:
@@ -7774,8 +7771,7 @@ remoteDomainInterfaceAddresses(virDomainPtr dom,
             }
         }
     }
-    *ifaces = ifaces_ret;
-    ifaces_ret = NULL;
+    *ifaces = g_steal_pointer(&ifaces_ret);
 
     rv = ret.ifaces.ifaces_len;
 

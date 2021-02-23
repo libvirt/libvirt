@@ -706,9 +706,8 @@ virTypedParamsSerialize(virTypedParameterPtr params,
         j++;
     }
 
-    *remote_params_val = params_val;
     *remote_params_len = params_len;
-    params_val = NULL;
+    *remote_params_val = g_steal_pointer(&params_val);
     rv = 0;
 
  cleanup:

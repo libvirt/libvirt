@@ -633,8 +633,7 @@ virshCheckpointListCollect(vshControl *ctl,
         qsort(checkpointlist->chks, checkpointlist->nchks,
               sizeof(*checkpointlist->chks), virshChkSorter);
 
-    ret = checkpointlist;
-    checkpointlist = NULL;
+    ret = g_steal_pointer(&checkpointlist);
 
  cleanup:
     virshCheckpointListFree(checkpointlist);

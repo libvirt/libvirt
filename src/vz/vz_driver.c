@@ -3817,8 +3817,7 @@ vzConnectGetAllDomainStats(virConnectPtr conn,
         tmpstats[nstats++] = tmp;
     }
 
-    *retStats = tmpstats;
-    tmpstats = NULL;
+    *retStats = g_steal_pointer(&tmpstats);
     ret = nstats;
 
  cleanup:

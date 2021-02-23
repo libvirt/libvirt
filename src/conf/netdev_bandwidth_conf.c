@@ -205,8 +205,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
     if (!def->in && !def->out)
         VIR_FREE(def);
 
-    *bandwidth = def;
-    def = NULL;
+    *bandwidth = g_steal_pointer(&def);
     ret = 0;
 
  cleanup:

@@ -1501,9 +1501,8 @@ virCapabilitiesGetNUMASiblingInfo(int node,
     if (VIR_REALLOC_N(tmp, tmp_size) < 0)
         goto cleanup;
 
-    *siblings = tmp;
     *nsiblings = tmp_size;
-    tmp = NULL;
+    *siblings = g_steal_pointer(&tmp);
     tmp_size = 0;
     ret = 0;
  cleanup:

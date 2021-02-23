@@ -116,8 +116,7 @@ static struct Arguments *parseArguments(int argc, char** argv)
         }
     }
 
-    ret = args;
-    args = NULL;
+    ret = g_steal_pointer(&args);
     return ret;
 }
 

@@ -7583,8 +7583,7 @@ vboxConnectListAllDomains(virConnectPtr conn,
         /* safe to ignore, new size will be equal or less than
          * previous allocation */
         ignore_value(VIR_REALLOC_N(doms, count + 1));
-        *domains = doms;
-        doms = NULL;
+        *domains = g_steal_pointer(&doms);
     }
 
     ret = count;

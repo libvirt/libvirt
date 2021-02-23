@@ -1658,8 +1658,7 @@ virLogParseOutputs(const char *src, virLogOutputPtr **outputs)
     }
 
     ret = noutputs;
-    *outputs = list;
-    list = NULL;
+    *outputs = g_steal_pointer(&list);
  cleanup:
     g_strfreev(strings);
     return ret;
@@ -1708,8 +1707,7 @@ virLogParseFilters(const char *src, virLogFilterPtr **filters)
     }
 
     ret = nfilters;
-    *filters = list;
-    list = NULL;
+    *filters = g_steal_pointer(&list);
  cleanup:
     g_strfreev(strings);
     return ret;
