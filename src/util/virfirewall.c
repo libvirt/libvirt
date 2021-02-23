@@ -315,24 +315,17 @@ virFirewallAddRuleFullV(virFirewallPtr firewall,
         ADD_ARG(rule, str);
 
     if (group->addingRollback) {
-        if (VIR_APPEND_ELEMENT_COPY(group->rollback,
-                                    group->nrollback,
-                                    rule) < 0)
-            goto no_memory;
+        ignore_value(VIR_APPEND_ELEMENT_COPY(group->rollback,
+                                             group->nrollback,
+                                             rule));
     } else {
-        if (VIR_APPEND_ELEMENT_COPY(group->action,
-                                    group->naction,
-                                    rule) < 0)
-            goto no_memory;
+        ignore_value(VIR_APPEND_ELEMENT_COPY(group->action,
+                                             group->naction,
+                                             rule));
     }
 
 
     return rule;
-
- no_memory:
-    firewall->err = ENOMEM;
-    virFirewallRuleFree(rule);
-    return NULL;
 }
 
 
