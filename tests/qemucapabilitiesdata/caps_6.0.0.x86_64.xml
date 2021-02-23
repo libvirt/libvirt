@@ -258,6 +258,7 @@
   <flag name='vnc-opts'/>
   <flag name='migration-param.block-bitmap-mapping'/>
   <flag name='vnc-power-control'/>
+  <flag name='audiodev'/>
   <version>5002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

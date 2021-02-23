@@ -621,6 +621,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 395 */
               "vnc-power-control",
+              "audiodev",
     );
 
 
@@ -3304,6 +3305,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "fsdev", "fmode", QEMU_CAPS_FSDEV_CREATEMODE }, /* Could have also checked fsdev->dmode */
     { "vnc", "display", QEMU_CAPS_VNC_OPTS },
     { "vnc", "power-control", QEMU_CAPS_VNC_POWER_CONTROL },
+    { "vnc", "audiodev", QEMU_CAPS_AUDIODEV },
 };
 
 static int
