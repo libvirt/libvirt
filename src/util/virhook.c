@@ -155,12 +155,7 @@ virHookCheck(int no, const char *driver)
         return -1;
     }
 
-    if (virBuildPath(&path, LIBVIRT_HOOK_DIR, driver) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to build path for %s hook"),
-                       driver);
-        return -1;
-    }
+    virBuildPath(&path, LIBVIRT_HOOK_DIR, driver);
 
     if (!virFileExists(path)) {
         VIR_DEBUG("No hook script %s", path);
@@ -405,12 +400,7 @@ virHookCall(int driver,
     if (extra == NULL)
         extra = "-";
 
-    if (virBuildPath(&path, LIBVIRT_HOOK_DIR, drvstr) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to build path for %s hook"),
-                       drvstr);
-        return -1;
-    }
+    virBuildPath(&path, LIBVIRT_HOOK_DIR, drvstr);
 
     script_ret = 1;
 

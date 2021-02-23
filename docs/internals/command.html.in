@@ -568,13 +568,7 @@ int runhook(const char *drvstr, const char *id,
   char *path;
   virCommandPtr cmd;
 
-  ret = virBuildPath(&amp;path, LIBVIRT_HOOK_DIR, drvstr);
-  if ((ret &lt; 0) || (path == NULL)) {
-      virHookReportError(VIR_ERR_INTERNAL_ERROR,
-                         _("Failed to build path for %s hook"),
-                         drvstr);
-      return -1;
-  }
+  virBuildPath(&amp;path, LIBVIRT_HOOK_DIR, drvstr);
 
   cmd = virCommandNew(path);
   VIR_FREE(path);

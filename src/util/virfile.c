@@ -1307,13 +1307,12 @@ virFileFindMountPoint(const char *type G_GNUC_UNUSED)
 
 #endif /* defined WITH_MNTENT_H && defined WITH_GETMNTENT_R */
 
-int
+void
 virBuildPathInternal(char **path, ...)
 {
     char *path_component = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     va_list ap;
-    int ret = 0;
 
     va_start(ap, path);
 
@@ -1328,10 +1327,6 @@ virBuildPathInternal(char **path, ...)
     va_end(ap);
 
     *path = virBufferContentAndReset(&buf);
-    if (*path == NULL)
-        ret = -1;
-
-    return ret;
 }
 
 /* Read no more than the specified maximum number of bytes. */

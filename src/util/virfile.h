@@ -300,7 +300,7 @@ char *virFileFindMountPoint(const char *type);
 /* NB: this should be combined with virFileBuildPath */
 #define virBuildPath(path, ...) \
     virBuildPathInternal(path, __VA_ARGS__, NULL)
-int virBuildPathInternal(char **path, ...) G_GNUC_NULL_TERMINATED;
+void virBuildPathInternal(char **path, ...) G_GNUC_NULL_TERMINATED;
 
 typedef struct _virHugeTLBFS virHugeTLBFS;
 typedef virHugeTLBFS *virHugeTLBFSPtr;

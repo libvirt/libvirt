@@ -2304,10 +2304,7 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path,
 
     *pf = NULL;
 
-    if (virBuildPath(&device_link, vf_sysfs_path, "physfn") == -1) {
-        virReportOOMError();
-        return -1;
-    }
+    virBuildPath(&device_link, vf_sysfs_path, "physfn");
 
     if ((*pf = virPCIGetDeviceAddressFromSysfsLink(device_link))) {
         VIR_DEBUG("PF for VF device '%s': " VIR_PCI_DEVICE_ADDRESS_FMT,
@@ -2481,11 +2478,7 @@ virPCIGetNetName(const char *device_link_sysfs_path,
 
     *netname = NULL;
 
-    if (virBuildPath(&pcidev_sysfs_net_path, device_link_sysfs_path,
-                     "net") == -1) {
-        virReportOOMError();
-        return -1;
-    }
+    virBuildPath(&pcidev_sysfs_net_path, device_link_sysfs_path, "net");
 
     if (virDirOpenQuiet(&dir, pcidev_sysfs_net_path) < 0) {
         /* this *isn't* an error - caller needs to check for netname == NULL */
