@@ -27,6 +27,7 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdlib.h>
 
 #include "virthread.h"
 #include "virfile.h"
@@ -57,10 +58,8 @@ runIO(const char *path, int fd, int oflags)
     off_t end = 0;
 
 #if WITH_POSIX_MEMALIGN
-    if (posix_memalign(&base, alignMask + 1, buflen)) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    if (posix_memalign(&base, alignMask + 1, buflen))
+        abort();
     buf = base;
 #else
     buf = g_new0(char, buflen + alignMask);
