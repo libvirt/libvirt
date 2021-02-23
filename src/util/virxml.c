@@ -941,12 +941,7 @@ char *
 virXMLNodeToString(xmlDocPtr doc,
                    xmlNodePtr node)
 {
-    g_autoptr(xmlBuffer) xmlbuf = NULL;
-
-    if (!(xmlbuf = xmlBufferCreate())) {
-        virReportOOMError();
-        return NULL;
-    }
+    g_autoptr(xmlBuffer) xmlbuf = virXMLBufferCreate();
 
     if (xmlNodeDump(xmlbuf, doc, node, 0, 1) == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1466,4 +1461,16 @@ virParseScaledValue(const char *xpath,
 
     *val = bytes;
     return 1;
+}
+
+
+xmlBufferPtr
+virXMLBufferCreate(void)
+{
+    xmlBufferPtr ret;
+
+    if (!(ret = xmlBufferCreate()))
+        abort();
+
+    return ret;
 }

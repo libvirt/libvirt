@@ -28691,10 +28691,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
          * Thankfully, libxml maps what looks like globals into
          * thread-local uses, so we are thread-safe.  */
         xmlIndentTreeOutput = 1;
-        if (!(xmlbuf = xmlBufferCreate())) {
-            virReportOOMError();
-            return -1;
-        }
+        xmlbuf = virXMLBufferCreate();
 
         if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
                         virBufferGetIndent(buf) / 2, 1) < 0) {

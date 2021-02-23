@@ -771,7 +771,7 @@ virVMXConvertToUTF8(const char *encoding, const char *string)
     char *result = NULL;
     xmlCharEncodingHandlerPtr handler;
     g_autoptr(xmlBuffer) input = NULL;
-    g_autoptr(xmlBuffer) utf8 = NULL;
+    g_autoptr(xmlBuffer) utf8 = virXMLBufferCreate();
 
     handler = xmlFindCharEncodingHandler(encoding);
 
@@ -781,8 +781,7 @@ virVMXConvertToUTF8(const char *encoding, const char *string)
         return NULL;
     }
 
-    if (!(input = xmlBufferCreateStatic((char *)string, strlen(string))) ||
-        !(utf8 = xmlBufferCreate())) {
+    if (!(input = xmlBufferCreateStatic((char *)string, strlen(string)))) {
         virReportOOMError();
         goto cleanup;
     }

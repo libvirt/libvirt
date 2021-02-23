@@ -286,3 +286,6 @@ int virParseScaledValue(const char *xpath,
                         unsigned long long scale,
                         unsigned long long max,
                         bool required);
+
+xmlBufferPtr
+virXMLBufferCreate(void);
