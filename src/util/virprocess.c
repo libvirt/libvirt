@@ -739,6 +739,15 @@ virProcessPrLimit(pid_t pid G_GNUC_UNUSED,
 #endif
 
 #if WITH_SETRLIMIT && defined(RLIMIT_MEMLOCK)
+/**
+ * virProcessSetMaxMemLock:
+ * @pid: process to be changed (0 for the current process)
+ * @bytes: new limit (0 for no change)
+ *
+ * Sets a new limit on the amount of locked memory for a process.
+ *
+ * Returns: 0 on success, <0 on failure.
+ */
 int
 virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes)
 {
@@ -791,6 +800,15 @@ virProcessSetMaxMemLock(pid_t pid G_GNUC_UNUSED, unsigned long long bytes)
 #endif /* ! (WITH_SETRLIMIT && defined(RLIMIT_MEMLOCK)) */
 
 #if WITH_GETRLIMIT && defined(RLIMIT_MEMLOCK)
+/**
+ * virProcessGetMaxMemLock:
+ * @pid: process to be queried (0 for the current process)
+ * @bytes: return location for the limit
+ *
+ * Obtain the current limit on the amount of locked memory for a process.
+ *
+ * Returns: 0 on success, <0 on failure.
+ */
 int
 virProcessGetMaxMemLock(pid_t pid,
                         unsigned long long *bytes)
@@ -843,6 +861,16 @@ virProcessGetMaxMemLock(pid_t pid G_GNUC_UNUSED,
 #endif /* ! (WITH_GETRLIMIT && defined(RLIMIT_MEMLOCK)) */
 
 #if WITH_SETRLIMIT && defined(RLIMIT_NPROC)
+/**
+ * virProcessSetMaxProcesses:
+ * @pid: process to be changed (0 for the current process)
+ * @procs: new limit (0 for no change)
+ *
+ * Sets a new limit on the amount of processes for the user the
+ * process is running as.
+ *
+ * Returns: 0 on success, <0 on failure.
+ */
 int
 virProcessSetMaxProcesses(pid_t pid, unsigned int procs)
 {
@@ -883,6 +911,15 @@ virProcessSetMaxProcesses(pid_t pid G_GNUC_UNUSED, unsigned int procs)
 #endif /* ! (WITH_SETRLIMIT && defined(RLIMIT_NPROC)) */
 
 #if WITH_SETRLIMIT && defined(RLIMIT_NOFILE)
+/**
+ * virProcessSetMaxFiles:
+ * @pid: process to be changed (0 for the current process)
+ * @files: new limit (0 for no change)
+ *
+ * Sets a new limit on the number of opened files for a process.
+ *
+ * Returns: 0 on success, <0 on failure.
+ */
 int
 virProcessSetMaxFiles(pid_t pid, unsigned int files)
 {
@@ -931,6 +968,15 @@ virProcessSetMaxFiles(pid_t pid G_GNUC_UNUSED, unsigned int files)
 #endif /* ! (WITH_SETRLIMIT && defined(RLIMIT_NOFILE)) */
 
 #if WITH_SETRLIMIT && defined(RLIMIT_CORE)
+/**
+ * virProcessSetMaxCoreSize:
+ * @pid: process to be changed (0 for the current process)
+ * @bytes: new limit (0 to disable core dumps)
+ *
+ * Sets a new limit on the size of core dumps for a process.
+ *
+ * Returns: 0 on success, <0 on failure.
+ */
 int
 virProcessSetMaxCoreSize(pid_t pid, unsigned long long bytes)
 {
