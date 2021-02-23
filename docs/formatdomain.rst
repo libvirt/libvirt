@@ -4884,9 +4884,8 @@ plain ``<hostdev>`` device.
        <source>
          <address domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
        </source>
-       <mac address='00:11:22:33:44:55:66'/>
        <teaming type='transient' persistent='ua-backup0'/>
-     </interface>
+     </hostdev>
    ...
 
 This device must be a network device, but not necessarily an SRIOV
