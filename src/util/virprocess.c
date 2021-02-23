@@ -1137,14 +1137,16 @@ virProcessRunInMountNamespace(pid_t pid G_GNUC_UNUSED,
 
 
 #ifndef WIN32
+/* We assume that error messages will fit into 1024 chars */
+# define VIR_PROCESS_ERROR_MAX_LENGTH 1024
 typedef struct {
     int code;
     int domain;
-    char message[VIR_ERROR_MAX_LENGTH];
+    char message[VIR_PROCESS_ERROR_MAX_LENGTH];
     virErrorLevel level;
-    char str1[VIR_ERROR_MAX_LENGTH];
-    char str2[VIR_ERROR_MAX_LENGTH];
-    char str3[VIR_ERROR_MAX_LENGTH];
+    char str1[VIR_PROCESS_ERROR_MAX_LENGTH];
+    char str2[VIR_PROCESS_ERROR_MAX_LENGTH];
+    char str3[VIR_PROCESS_ERROR_MAX_LENGTH];
     int int1;
     int int2;
 } errorData;
