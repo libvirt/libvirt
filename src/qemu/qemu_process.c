@@ -2140,14 +2140,9 @@ qemuProcessReportLogError(qemuDomainLogContextPtr logCtxt,
                           const char *msgprefix)
 {
     g_autofree char *logmsg = NULL;
-    size_t max;
 
-    max = VIR_ERROR_MAX_LENGTH - 1;
-    max -= strlen(msgprefix);
-    /* The length of the formatting string minus two '%s' */
-    max -= strlen(_("%s: %s")) - 4;
-
-    if (qemuProcessReadLog(logCtxt, &logmsg, max) < 0)
+    /* assume that 1024 chars of qemu log is the right balance */
+    if (qemuProcessReadLog(logCtxt, &logmsg, 1024) < 0)
         return -1;
 
     virResetLastError();
