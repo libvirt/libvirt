@@ -698,10 +698,6 @@ virFirewallApplyRule(virFirewallPtr firewall,
         if (rule->queryCB(firewall, rule->layer, (const char *const *)lines, rule->queryOpaque) < 0)
             return -1;
 
-        if (firewall->err == ENOMEM) {
-            virReportOOMError();
-            return -1;
-        }
         if (firewall->err) {
             virReportSystemError(firewall->err, "%s",
                                  _("Unable to create rule"));
@@ -769,11 +765,7 @@ virFirewallApply(virFirewallPtr firewall)
                        _("Failed to initialize a valid firewall backend"));
         goto cleanup;
     }
-    if (!firewall || firewall->err == ENOMEM) {
-        virReportOOMError();
-        goto cleanup;
-    }
-    if (firewall->err) {
+    if (!firewall || firewall->err) {
         virReportSystemError(firewall->err, "%s",
                              _("Unable to create rule"));
         goto cleanup;
