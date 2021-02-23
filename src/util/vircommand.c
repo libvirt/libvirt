@@ -1550,21 +1550,21 @@ virCommandAddArg(virCommandPtr cmd, const char *val)
 void
 virCommandAddArgBuffer(virCommandPtr cmd, virBufferPtr buf)
 {
-    if (!cmd || cmd->has_error) {
-        virBufferFreeAndReset(buf);
+    g_autofree char *str = virBufferContentAndReset(buf);
+
+    if (!cmd || cmd->has_error)
         return;
-    }
+
+    if (!str)
+        str = g_strdup("");
 
     /* Arg plus trailing NULL. */
     if (VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1) < 0) {
         cmd->has_error = ENOMEM;
-        virBufferFreeAndReset(buf);
         return;
     }
 
-    cmd->args[cmd->nargs] = virBufferContentAndReset(buf);
-    if (!cmd->args[cmd->nargs])
-        cmd->args[cmd->nargs] = g_strdup("");
+    cmd->args[cmd->nargs] = g_steal_pointer(&str);
     cmd->nargs++;
 }
 
