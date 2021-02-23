@@ -960,21 +960,14 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
 
     if (virLogGetNbFilters() > 0) {
         filterstr = virLogGetFilters();
-        if (!filterstr) {
-            virReportOOMError();
-            goto error;
-        }
 
         virCommandAddEnvPair(cmd, "LIBVIRT_LOG_FILTERS", filterstr);
     }
 
     if (cfg->log_libvirtd) {
         if (virLogGetNbOutputs() > 0) {
-            outputstr = virLogGetOutputs();
-            if (!outputstr) {
-                virReportOOMError();
+            if (!(outputstr = virLogGetOutputs()))
                 goto error;
-            }
 
             virCommandAddEnvPair(cmd, "LIBVIRT_LOG_OUTPUTS", outputstr);
         }
