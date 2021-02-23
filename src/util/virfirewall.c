@@ -517,18 +517,11 @@ void virFirewallStartTransaction(virFirewallPtr firewall,
 
     VIR_FIREWALL_RETURN_IF_ERROR(firewall);
 
-    if (!(group = virFirewallGroupNew())) {
-        firewall->err = ENOMEM;
-        return;
-    }
+    group = virFirewallGroupNew();
     group->actionFlags = flags;
 
-    if (VIR_EXPAND_N(firewall->groups,
-                     firewall->ngroups, 1) < 0) {
-        firewall->err = ENOMEM;
-        virFirewallGroupFree(group);
-        return;
-    }
+    ignore_value(VIR_EXPAND_N(firewall->groups,
+                              firewall->ngroups, 1));
     firewall->groups[firewall->ngroups - 1] = group;
     firewall->currentGroup = firewall->ngroups - 1;
 }
