@@ -18,7 +18,6 @@
   <flag name='piix4-usb-uhci'/>
   <flag name='usb-ehci'/>
   <flag name='ich9-usb-ehci1'/>
-  <flag name='vt82c686b-usb-uhci'/>
   <flag name='pci-ohci'/>
   <flag name='usb-redir'/>
   <flag name='usb-hub'/>
@@ -263,7 +262,7 @@
   <version>5002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>
-  <package>v5.2.0-2208-gc79f01c945</package>
+  <package>v5.2.0-3205-g92566947b3</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -282,6 +281,7 @@
     <property name='ibrs-all' type='boolean' value='false'/>
     <property name='vmx-desc-exit' type='boolean' value='false'/>
     <property name='pause-filter' type='boolean' value='false'/>
+    <property name='bus-lock-detect' type='boolean' value='false'/>
     <property name='xsavec' type='boolean' value='true' migratable='yes'/>
     <property name='intel-pt' type='boolean' value='false'/>
     <property name='vmx-cr8-store-exit' type='boolean' value='false'/>
@@ -474,6 +474,7 @@
     <property name='amd-ssbd' type='boolean' value='true' migratable='yes'/>
     <property name='xop' type='boolean' value='false'/>
     <property name='ibpb' type='boolean' value='true' migratable='yes'/>
+    <property name='ibrs' type='boolean' value='false'/>
     <property name='avx' type='boolean' value='true' migratable='yes'/>
     <property name='core-capability' type='boolean' value='false'/>
     <property name='vmx-invept-single-context' type='boolean' value='false'/>
@@ -1199,6 +1200,24 @@
   <cpu type='kvm' name='EPYC-v1' typename='EPYC-v1-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='EPYC-Rome-v1' typename='EPYC-Rome-v1-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='EPYC-Rome' typename='EPYC-Rome-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='EPYC-Milan-v1' typename='EPYC-Milan-v1-x86_64-cpu' usable='no'>
+    <blocker name='pcid'/>
+    <blocker name='erms'/>
+    <blocker name='invpcid'/>
+    <blocker name='pku'/>
+    <blocker name='fsrm'/>
+    <blocker name='ibrs'/>
+    <blocker name='pku'/>
+  </cpu>
+  <cpu type='kvm' name='EPYC-Milan' typename='EPYC-Milan-x86_64-cpu' usable='no'>
+    <blocker name='pcid'/>
+    <blocker name='erms'/>
+    <blocker name='invpcid'/>
+    <blocker name='pku'/>
+    <blocker name='fsrm'/>
+    <blocker name='ibrs'/>
+    <blocker name='pku'/>
+  </cpu>
   <cpu type='kvm' name='EPYC-IBPB' typename='EPYC-IBPB-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='EPYC' typename='EPYC-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='Dhyana-v1' typename='Dhyana-v1-x86_64-cpu' usable='yes'/>
@@ -1498,6 +1517,7 @@
     <property name='ibrs-all' type='boolean' value='false'/>
     <property name='vmx-desc-exit' type='boolean' value='false'/>
     <property name='pause-filter' type='boolean' value='false'/>
+    <property name='bus-lock-detect' type='boolean' value='false'/>
     <property name='xsavec' type='boolean' value='false'/>
     <property name='intel-pt' type='boolean' value='false'/>
     <property name='vmx-cr8-store-exit' type='boolean' value='false'/>
@@ -1690,6 +1710,7 @@
     <property name='amd-ssbd' type='boolean' value='false'/>
     <property name='xop' type='boolean' value='false'/>
     <property name='ibpb' type='boolean' value='false'/>
+    <property name='ibrs' type='boolean' value='false'/>
     <property name='avx' type='boolean' value='false'/>
     <property name='core-capability' type='boolean' value='false'/>
     <property name='vmx-invept-single-context' type='boolean' value='false'/>
@@ -2749,6 +2770,66 @@
     <blocker name='ibpb'/>
     <blocker name='amd-stibp'/>
     <blocker name='nrip-save'/>
+    <blocker name='xsavec'/>
+    <blocker name='xsaves'/>
+  </cpu>
+  <cpu type='tcg' name='EPYC-Milan-v1' typename='EPYC-Milan-v1-x86_64-cpu' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='pcid'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='avx2'/>
+    <blocker name='invpcid'/>
+    <blocker name='rdseed'/>
+    <blocker name='sha-ni'/>
+    <blocker name='umip'/>
+    <blocker name='rdpid'/>
+    <blocker name='fsrm'/>
+    <blocker name='fxsr-opt'/>
+    <blocker name='misalignsse'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='osvw'/>
+    <blocker name='topoext'/>
+    <blocker name='perfctr-core'/>
+    <blocker name='clzero'/>
+    <blocker name='xsaveerptr'/>
+    <blocker name='wbnoinvd'/>
+    <blocker name='ibpb'/>
+    <blocker name='ibrs'/>
+    <blocker name='amd-stibp'/>
+    <blocker name='amd-ssbd'/>
+    <blocker name='nrip-save'/>
+    <blocker name='svme-addr-chk'/>
+    <blocker name='xsavec'/>
+    <blocker name='xsaves'/>
+  </cpu>
+  <cpu type='tcg' name='EPYC-Milan' typename='EPYC-Milan-x86_64-cpu' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='pcid'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='avx2'/>
+    <blocker name='invpcid'/>
+    <blocker name='rdseed'/>
+    <blocker name='sha-ni'/>
+    <blocker name='umip'/>
+    <blocker name='rdpid'/>
+    <blocker name='fsrm'/>
+    <blocker name='fxsr-opt'/>
+    <blocker name='misalignsse'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='osvw'/>
+    <blocker name='topoext'/>
+    <blocker name='perfctr-core'/>
+    <blocker name='clzero'/>
+    <blocker name='xsaveerptr'/>
+    <blocker name='wbnoinvd'/>
+    <blocker name='ibpb'/>
+    <blocker name='ibrs'/>
+    <blocker name='amd-stibp'/>
+    <blocker name='amd-ssbd'/>
+    <blocker name='nrip-save'/>
+    <blocker name='svme-addr-chk'/>
     <blocker name='xsavec'/>
     <blocker name='xsaves'/>
   </cpu>

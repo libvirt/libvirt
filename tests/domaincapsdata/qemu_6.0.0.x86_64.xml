@@ -103,6 +103,7 @@
       <model usable='no'>Haswell-IBRS</model>
       <model usable='no'>Haswell</model>
       <model usable='yes'>EPYC-Rome</model>
+      <model usable='no'>EPYC-Milan</model>
       <model usable='yes'>EPYC-IBPB</model>
       <model usable='yes'>EPYC</model>
       <model usable='yes'>Dhyana</model>
