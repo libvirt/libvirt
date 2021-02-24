@@ -781,12 +781,8 @@ virVMXConvertToUTF8(const char *encoding, const char *string)
         return NULL;
     }
 
-    if (!(input = xmlBufferCreateStatic((char *)string, strlen(string)))) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (xmlCharEncInFunc(handler, utf8, input) < 0) {
+    if (!(input = xmlBufferCreateStatic((char *)string, strlen(string))) ||
+        xmlCharEncInFunc(handler, utf8, input) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not convert from %s to UTF-8 encoding"), encoding);
         goto cleanup;
