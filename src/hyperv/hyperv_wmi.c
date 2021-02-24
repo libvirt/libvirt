@@ -92,12 +92,8 @@ hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
     }
 
     if (wsmc_check_for_fault(response)) {
-        fault = wsmc_fault_new();
-
-        if (fault == NULL) {
-            virReportOOMError();
-            return -1;
-        }
+        if (!(fault = wsmc_fault_new()))
+            abort();
 
         wsmc_get_fault_data(response, fault);
 
