@@ -29,6 +29,10 @@
 typedef struct nl_msg virNetlinkMsg;
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetlinkMsg, nlmsg_free);
 
+struct nl_msg *
+virNetlinkMsgNew(int nlmsgtype,
+                 int nlmsgflags);
+
 #else
 
 struct nl_msg;

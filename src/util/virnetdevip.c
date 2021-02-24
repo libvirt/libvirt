@@ -107,11 +107,8 @@ virNetDevCreateNetlinkAddressMessage(int messageType,
     if ((ifindex = if_nametoindex(ifname)) == 0)
         return NULL;
 
-    if (!(nlmsg = nlmsg_alloc_simple(messageType,
-                                     NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL))) {
-        virReportOOMError();
-        return NULL;
-    }
+    nlmsg = virNetlinkMsgNew(messageType,
+                             NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
 
     memset(&ifa, 0, sizeof(ifa));
 
@@ -323,12 +320,8 @@ virNetDevIPRouteAdd(const char *ifname,
     if ((ifindex = if_nametoindex(ifname)) == 0)
         return -1;
 
-    if (!(nlmsg = nlmsg_alloc_simple(RTM_NEWROUTE,
-                                     NLM_F_REQUEST | NLM_F_CREATE |
-                                     NLM_F_EXCL))) {
-        virReportOOMError();
-        return -1;
-    }
+    nlmsg = virNetlinkMsgNew(RTM_NEWROUTE,
+                             NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
 
     memset(&rtmsg, 0, sizeof(rtmsg));
 

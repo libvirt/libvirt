@@ -689,11 +689,7 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
               ? virUUIDFormat(hostUUID, hostUUIDStr)
               : "(unspecified)"));
 
-    nl_msg = nlmsg_alloc_simple(RTM_SETLINK, NLM_F_REQUEST);
-    if (!nl_msg) {
-        virReportOOMError();
-        return rc;
-    }
+    nl_msg = virNetlinkMsgNew(RTM_SETLINK, NLM_F_REQUEST);
 
     if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
         goto buffer_too_small;

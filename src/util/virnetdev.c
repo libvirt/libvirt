@@ -1596,11 +1596,7 @@ virNetDevSetVfConfig(const char *ifname, int vf,
     if (!macaddr && vlanid < 0)
         return -1;
 
-    nl_msg = nlmsg_alloc_simple(RTM_SETLINK, NLM_F_REQUEST);
-    if (!nl_msg) {
-        virReportOOMError();
-        return rc;
-    }
+    nl_msg = virNetlinkMsgNew(RTM_SETLINK, NLM_F_REQUEST);
 
     if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
         goto buffer_too_small;
@@ -3132,11 +3128,7 @@ virNetDevGetFamilyId(const char *family_name,
     unsigned int recvbuflen;
     int ret = -1;
 
-    if (!(nl_msg = nlmsg_alloc_simple(GENL_ID_CTRL,
-                                      NLM_F_REQUEST | NLM_F_ACK))) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    nl_msg = virNetlinkMsgNew(GENL_ID_CTRL, NLM_F_REQUEST | NLM_F_ACK);
 
     if (nlmsg_append(nl_msg, &gmsgh, sizeof(gmsgh), NLMSG_ALIGNTO) < 0)
         goto cleanup;
@@ -3220,11 +3212,7 @@ virNetDevSwitchdevFeature(const char *ifname,
     if ((rv = virNetDevGetFamilyId(DEVLINK_GENL_NAME, &family_id)) <= 0)
         return rv;
 
-    if (!(nl_msg = nlmsg_alloc_simple(family_id,
-                                      NLM_F_REQUEST | NLM_F_ACK))) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    nl_msg = virNetlinkMsgNew(family_id, NLM_F_REQUEST | NLM_F_ACK);
 
     if (nlmsg_append(nl_msg, &gmsgh, sizeof(gmsgh), NLMSG_ALIGNTO) < 0)
         goto cleanup;

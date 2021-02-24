@@ -133,6 +133,18 @@ static virNetlinkHandle *placeholder_nlhandle;
 
 /* Function definitions */
 
+struct nl_msg *
+virNetlinkMsgNew(int nlmsgtype,
+                 int nlmsgflags)
+{
+    struct nl_msg *ret;
+
+    if (!(ret = nlmsg_alloc_simple(nlmsgtype, nlmsgflags)))
+        abort();
+
+    return ret;
+}
+
 /**
  * virNetlinkStartup:
  *
@@ -511,11 +523,7 @@ virNetlinkDumpLink(const char *ifname, int ifindex,
 
     ifinfo.ifi_index = ifindex;
 
-    nl_msg = nlmsg_alloc_simple(RTM_GETLINK, NLM_F_REQUEST);
-    if (!nl_msg) {
-        virReportOOMError();
-        return -1;
-    }
+    nl_msg = virNetlinkMsgNew(RTM_GETLINK, NLM_F_REQUEST);
 
     NETLINK_MSG_APPEND(nl_msg, sizeof(ifinfo), &ifinfo);
 
@@ -595,12 +603,8 @@ virNetlinkNewLink(const char *ifname,
         return -1;
     }
 
-    nl_msg = nlmsg_alloc_simple(RTM_NEWLINK,
-                                NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
-    if (!nl_msg) {
-        virReportOOMError();
-        return -1;
-    }
+    nl_msg = virNetlinkMsgNew(RTM_NEWLINK,
+                              NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
 
     NETLINK_MSG_APPEND(nl_msg, sizeof(ifinfo), &ifinfo);
 
@@ -684,11 +688,7 @@ virNetlinkDelLink(const char *ifname, virNetlinkTalkFallback fallback)
     unsigned int resp_len = 0;
     int error = 0;
 
-    nl_msg = nlmsg_alloc_simple(RTM_DELLINK, NLM_F_REQUEST);
-    if (!nl_msg) {
-        virReportOOMError();
-        return -1;
-    }
+    nl_msg = virNetlinkMsgNew(RTM_DELLINK, NLM_F_REQUEST);
 
     NETLINK_MSG_APPEND(nl_msg, sizeof(ifinfo), &ifinfo);
 
@@ -738,11 +738,7 @@ virNetlinkGetNeighbor(void **nlData, uint32_t src_pid, uint32_t dst_pid)
     unsigned int resp_len = 0;
     int error = 0;
 
-    nl_msg = nlmsg_alloc_simple(RTM_GETNEIGH, NLM_F_DUMP | NLM_F_REQUEST);
-    if (!nl_msg) {
-        virReportOOMError();
-        return -1;
-    }
+    nl_msg = virNetlinkMsgNew(RTM_GETNEIGH, NLM_F_DUMP | NLM_F_REQUEST);
 
     NETLINK_MSG_APPEND(nl_msg, sizeof(ndinfo), &ndinfo);
 
