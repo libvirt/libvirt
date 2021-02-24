@@ -996,10 +996,8 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachinePtr machine,
         goto cleanup;
     }
     xml = xmlNewDoc(BAD_CAST "1.0");
-    if (!xml) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    if (!xml)
+        abort();
 
     cur = virXMLNewNode(NULL, "VirtualBox");
 
@@ -1023,10 +1021,8 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachinePtr machine,
                            "OVERWRITTEN AND LOST.\n"
                            "Changes to this xml configuration should be made using Virtualbox\n"
                            "or other application using the libvirt API");
-    if (!cur) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    if (!cur)
+        abort();
 
     if (!xmlAddPrevSibling(xmlDocGetRootElement(xml), cur)) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
