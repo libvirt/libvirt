@@ -88,6 +88,23 @@ v7.1.0 (unreleased)
     For more details why this is necessary see
     `systemd cgroup <https://systemd.io/CGROUP_DELEGATION/>`_ documentation.
 
+  * qemu: Fix swtpm device with aarch64
+
+    The TPM TIS device name for x86 is ``tpm-tis``, whereas for aarch64 it is
+    ``tpm-tis-device``. Fix the use of TPM TIS device with aarch64 by using
+    the proper device name when building the QEMU command line.
+
+  * libxl: Fix domain shutdown
+
+    Commit fa30ee04a2 introduced the possibility of a race between the
+    shutdown and death threads used to process domain shutdown and death
+    events from libxl. On normal domain shutdown the shutdown thread handles
+    all aspects of shutting down and cleaning up the domain. The death
+    thread is only used to handle out-of-band domain destruction and is
+    inhibited when domain shutdown is under libvirt's control. The race is
+    avoided by also inhibiting the death thread when libvirt starts the
+    shutdown thread.
+
 
 v7.0.0 (2021-01-15)
 ===================
