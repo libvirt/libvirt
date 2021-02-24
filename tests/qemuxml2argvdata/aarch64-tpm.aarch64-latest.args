@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-aarch64test/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-aarch64test/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-aarch64test/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name guest=aarch64test,debug-threads=on \
 -S \
@@ -32,6 +31,7 @@ memory-backend=mach-virt.ram \
 -tpmdev emulator,id=tpm-tpm0,chardev=chrtpm \
 -chardev socket,id=chrtpm,path=/dev/test \
 -device tpm-tis-device,tpmdev=tpm-tpm0,id=tpm0 \
+-audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

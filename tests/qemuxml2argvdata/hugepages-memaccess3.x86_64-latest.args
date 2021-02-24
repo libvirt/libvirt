@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-fedora/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-fedora/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-fedora/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=fedora,debug-threads=on \
 -S \
@@ -34,6 +33,7 @@ x-use-canonical-path-for-ramblock-id=off,prealloc=on,size=4294967296 \
 -no-acpi \
 -boot menu=on,strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

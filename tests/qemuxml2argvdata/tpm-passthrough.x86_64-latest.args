@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-TPM-VM/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-TPM-VM/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-TPM-VM/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=TPM-VM,debug-threads=on \
 -S \
@@ -33,6 +32,7 @@ memory-backend=pc.ram \
 -add-fd set=0,fd=1730 \
 -add-fd set=1,fd=1731 \
 -device tpm-tis,tpmdev=tpm-tpm0,id=tpm0 \
+-audiodev id=audio1,driver=none \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

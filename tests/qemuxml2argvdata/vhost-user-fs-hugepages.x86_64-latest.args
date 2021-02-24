@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-guest/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-guest/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=guest,debug-threads=on \
 -S \
@@ -44,6 +43,7 @@ id=virtio-disk0,bootindex=1 \
 -chardev socket,id=chr-vu-fs0,path=/tmp/lib/domain--1-guest/fs0.vhost-fs.sock \
 -device vhost-user-fs-pci,chardev=chr-vu-fs0,tag=mount_tag,bootindex=2,\
 bus=pci.1,addr=0x0 \
+-audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -48,6 +47,7 @@ bus=pci.2,addr=0x1 \
 mac=00:11:22:33:44:55,bus=pci.2,addr=0x2 \
 -device virtio-input-host-pci-transitional,id=input0,\
 evdev=/dev/input/event1234,bus=pci.2,addr=0x9 \
+-audiodev id=audio1,driver=none \
 -device vhost-scsi-pci-transitional,wwpn=naa.5123456789abcde0,vhostfd=3,\
 id=hostdev0,bus=pci.2,addr=0x6 \
 -device virtio-balloon-pci-transitional,id=balloon0,bus=pci.2,addr=0x7 \

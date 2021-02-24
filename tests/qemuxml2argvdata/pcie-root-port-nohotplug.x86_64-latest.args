@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-guest/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-guest/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=guest,debug-threads=on \
 -S \
@@ -42,6 +41,7 @@ addr=0x1 \
 -device xio3130-downstream,port=0x2,chassis=7,id=pci.7,bus=pci.4,addr=0x2 \
 -device xio3130-downstream,port=0x27,chassis=30,id=pci.8,bus=pci.4,addr=0x3 \
 -device qemu-xhci,id=usb,bus=pci.2,addr=0x0 \
+-audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

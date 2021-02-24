@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -33,6 +32,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 addr=0x4 \
 -device ich9-usb-uhci2,masterbus=usb.0,firstport=2,bus=pci.0,addr=0x4.0x1 \
 -device ich9-usb-uhci3,masterbus=usb.0,firstport=4,bus=pci.0,addr=0x4.0x2 \
+-audiodev id=audio1,driver=none \
 -chardev socket,id=charredir0,path=/tmp/connect.socket \
 -device usb-redir,chardev=charredir0,id=redir0,bus=usb.0,port=1 \
 -chardev socket,id=charredir1,fd=1729,server=on,wait=off \

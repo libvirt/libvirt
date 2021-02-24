@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-test/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-test/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-test/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=test,debug-threads=on \
 -S \
@@ -47,6 +46,7 @@ id=virtio-disk0,bootindex=2 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,tx=bh,netdev=hostnet0,id=net0,mac=52:54:00:e5:48:58,\
 bus=pci.0,addr=0x2 \
+-audiodev id=audio1,driver=none \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

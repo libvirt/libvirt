@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest2/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest2/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest2/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest2,debug-threads=on \
 -S \
@@ -28,7 +27,8 @@ file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--vnc 127.0.0.1:0 \
+-audiodev id=audio1,driver=none \
+-vnc 127.0.0.1:0,audiodev=audio1 \
 -display egl-headless,rendernode=/dev/dri/foo \
 -device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,\
 vram64_size_mb=0,vgamem_mb=16,max_outputs=1,bus=pci.0,addr=0x2 \

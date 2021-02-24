@@ -4030,6 +4030,17 @@ qemuBuildInputCommandLine(virCommandPtr cmd,
     return 0;
 }
 
+static char *
+qemuGetAudioIDString(const virDomainDef *def, int id)
+{
+    virDomainAudioDefPtr audio = virDomainDefFindAudioByID(def, id);
+    if (!audio) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("unable to find audio backend for sound device"));
+        return NULL;
+    }
+    return g_strdup_printf("audio%d", audio->id);
+}
 
 static char *
 qemuBuildSoundDevStr(const virDomainDef *def,
@@ -4066,6 +4077,13 @@ qemuBuildSoundDevStr(const virDomainDef *def,
     }
 
     virBufferAsprintf(&buf, "%s,id=%s", model, sound->info.alias);
+    if (!virDomainSoundModelSupportsCodecs(sound) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
+        g_autofree char *audioid = qemuGetAudioIDString(def, sound->audioId);
+        if (!audioid)
+            return NULL;
+        virBufferAsprintf(&buf, ",audiodev=%s", audioid);
+    }
     if (qemuBuildDeviceAddressStr(&buf, def, &sound->info, qemuCaps) < 0)
         return NULL;
 
@@ -4074,8 +4092,10 @@ qemuBuildSoundDevStr(const virDomainDef *def,
 
 
 static char *
-qemuBuildSoundCodecStr(virDomainSoundDefPtr sound,
-                       virDomainSoundCodecDefPtr codec)
+qemuBuildSoundCodecStr(const virDomainDef *def,
+                       virDomainSoundDefPtr sound,
+                       virDomainSoundCodecDefPtr codec,
+                       virQEMUCapsPtr qemuCaps)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *stype;
@@ -4086,6 +4106,13 @@ qemuBuildSoundCodecStr(virDomainSoundDefPtr sound,
 
     virBufferAsprintf(&buf, "%s,id=%s-codec%d,bus=%s.0,cad=%d",
                       stype, sound->info.alias, codec->cad, sound->info.alias, codec->cad);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
+        g_autofree char *audioid = qemuGetAudioIDString(def, sound->audioId);
+        if (!audioid)
+            return NULL;
+        virBufferAsprintf(&buf, ",audiodev=%s", audioid);
+    }
 
     return virBufferContentAndReset(&buf);
 }
@@ -4121,7 +4148,8 @@ qemuBuildSoundCommandLine(virCommandPtr cmd,
                     g_autofree char *codecstr = NULL;
                     virCommandAddArg(cmd, "-device");
                     if (!(codecstr =
-                          qemuBuildSoundCodecStr(sound, sound->codecs[j]))) {
+                          qemuBuildSoundCodecStr(def, sound,
+                                                 sound->codecs[j], qemuCaps))) {
                         return -1;
 
                     }
@@ -4135,7 +4163,8 @@ qemuBuildSoundCommandLine(virCommandPtr cmd,
                     };
                     virCommandAddArg(cmd, "-device");
                     if (!(codecstr =
-                          qemuBuildSoundCodecStr(sound, &codec))) {
+                          qemuBuildSoundCodecStr(def, sound,
+                                                 &codec, qemuCaps))) {
                         return -1;
 
                     }
@@ -7559,6 +7588,91 @@ qemuBuildMemoryDeviceCommandLine(virCommandPtr cmd,
 }
 
 static void
+qemuBuildAudioOSSArg(virBufferPtr buf,
+                     const char *prefix,
+                     virDomainAudioIOOSSPtr def)
+{
+    if (def->dev)
+        virBufferAsprintf(buf, ",%s.dev=%s", prefix, def->dev);
+}
+
+static int
+qemuBuildAudioCommandLineArg(virCommandPtr cmd,
+                             virDomainAudioDefPtr def)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    virCommandAddArg(cmd, "-audiodev");
+
+    virBufferAsprintf(&buf, "id=audio%d,driver=%s",
+                      def->id,
+                      qemuAudioDriverTypeToString(def->type));
+
+    switch ((virDomainAudioType)def->type) {
+    case VIR_DOMAIN_AUDIO_TYPE_NONE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_JACK:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_OSS:
+        qemuBuildAudioOSSArg(&buf, "in", &def->backend.oss.input);
+        qemuBuildAudioOSSArg(&buf, "out", &def->backend.oss.output);
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_SDL:
+        if (def->backend.sdl.driver) {
+            /*
+             * Some SDL audio driver names are different on SDL 1.2
+             * vs 2.0.  Given how old SDL 1.2 is, we're not going
+             * make any attempt to support it here as it is unlikely
+             * to have an real world users. We can assume libvirt
+             * driver name strings match SDL 2.0 names.
+             */
+            virCommandAddEnvPair(cmd, "SDL_AUDIODRIVER",
+                                 virDomainAudioSDLDriverTypeToString(
+                                     def->backend.sdl.driver));
+        }
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_SPICE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_FILE:
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainAudioType, def->type);
+        return -1;
+    }
+
+    virCommandAddArgBuffer(cmd, &buf);
+    return 0;
+}
+
+static int
+qemuBuildAudioCommandLineArgs(virCommandPtr cmd,
+                              virDomainDefPtr def)
+{
+    size_t i;
+    for (i = 0; i < def->naudios; i++) {
+        if (qemuBuildAudioCommandLineArg(cmd, def->audios[i]) < 0)
+            return -1;
+    }
+    return 0;
+}
+
+static void
 qemuBuildAudioOSSEnv(virCommandPtr cmd,
                      const char *prefix,
                      virDomainAudioIOOSSPtr def)
@@ -7632,9 +7746,13 @@ qemuBuildAudioCommandLineEnv(virCommandPtr cmd,
 
 static int
 qemuBuildAudioCommandLine(virCommandPtr cmd,
-                          virDomainDefPtr def)
+                          virDomainDefPtr def,
+                          virQEMUCapsPtr qemuCaps)
 {
-    return qemuBuildAudioCommandLineEnv(cmd, def);
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV))
+        return qemuBuildAudioCommandLineArgs(cmd, def);
+    else
+        return qemuBuildAudioCommandLineEnv(cmd, def);
 }
 
 
@@ -7668,6 +7786,7 @@ qemuBuildGraphicsSDLCommandLine(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
 
 static int
 qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
+                                const virDomainDef *def,
                                 virCommandPtr cmd,
                                 virQEMUCapsPtr qemuCaps,
                                 virDomainGraphicsDefPtr graphics)
@@ -7789,6 +7908,13 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
         virBufferAsprintf(&opt, ",power-control=%s",
                           graphics->data.vnc.powerControl == VIR_TRISTATE_BOOL_YES ?
                           "on" : "off");
+    }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
+        g_autofree char *audioid = qemuGetAudioIDString(def, graphics->data.vnc.audioId);
+        if (!audioid)
+            return -1;
+        virBufferAsprintf(&opt, ",audiodev=%s", audioid);
     }
 
     virCommandAddArg(cmd, "-vnc");
@@ -8046,7 +8172,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
 
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-            if (qemuBuildGraphicsVNCCommandLine(cfg, cmd,
+            if (qemuBuildGraphicsVNCCommandLine(cfg, def, cmd,
                                                 qemuCaps, graphics) < 0)
                 return -1;
 
@@ -10125,7 +10251,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildInputCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildAudioCommandLine(cmd, def) < 0)
+    if (qemuBuildAudioCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
     if (qemuBuildGraphicsCommandLine(cfg, cmd, def, qemuCaps) < 0)

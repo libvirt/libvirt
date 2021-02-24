@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-test/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-test/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-test/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=test,debug-threads=on \
 -S \
@@ -30,6 +29,7 @@ file=/tmp/lib/domain--1-test/master-key.aes \
 -boot menu=on,strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
+-audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -device vhost-vsock-pci,id=vsock0,guest-cid=4,vhostfd=6789,bus=pci.0,addr=0x7 \

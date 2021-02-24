@@ -1054,31 +1054,49 @@ mymain(void)
     DO_TEST("audio-spice-minimal", NONE);
     DO_TEST("audio-file-minimal", NONE);
 
+    DO_TEST_CAPS_LATEST("audio-none-minimal");
+    DO_TEST_CAPS_LATEST("audio-alsa-minimal");
+    DO_TEST_CAPS_LATEST("audio-coreaudio-minimal");
+    DO_TEST_CAPS_LATEST("audio-jack-minimal");
+    DO_TEST_CAPS_LATEST("audio-oss-minimal");
+    DO_TEST_CAPS_LATEST("audio-pulseaudio-minimal");
+    DO_TEST_CAPS_LATEST("audio-sdl-minimal");
+    DO_TEST_CAPS_LATEST("audio-spice-minimal");
+    DO_TEST_CAPS_LATEST("audio-file-minimal");
+
     /* Best <audio> still compat with old ENV */
     DO_TEST("audio-oss-best", NONE);
     DO_TEST("audio-sdl-best", NONE);
 
+    DO_TEST_CAPS_LATEST("audio-oss-best");
+    DO_TEST_CAPS_LATEST("audio-sdl-best");
+
     /* Multiple backends not supported with ENV */
     DO_TEST_PARSE_ERROR("audio-many-backends", NONE);
+    DO_TEST_CAPS_LATEST("audio-many-backends");
 
     /* Validate auto-creation of <audio> for legacy compat */
     g_setenv("QEMU_AUDIO_DRV", "sdl", TRUE);
     g_setenv("SDL_AUDIODRIVER", "esd", TRUE);
     DO_TEST("audio-default-sdl", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_LATEST("audio-default-sdl");
     g_unsetenv("QEMU_AUDIO_DRV");
     g_unsetenv("SDL_AUDIODRIVER");
 
     g_setenv("QEMU_AUDIO_DRV", "alsa", TRUE);
     driver.config->vncAllowHostAudio = true;
     DO_TEST("audio-default-vnc",  QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_LATEST("audio-default-vnc");
     driver.config->vncAllowHostAudio = false;
     g_unsetenv("QEMU_AUDIO_DRV");
 
     DO_TEST("audio-default-spice",  QEMU_CAPS_SPICE, QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_LATEST("audio-default-spice");
 
     g_setenv("QEMU_AUDIO_DRV", "alsa", TRUE);
     driver.config->nogfxAllowHostAudio = true;
     DO_TEST("audio-default-nographics", NONE);
+    DO_TEST_CAPS_LATEST("audio-default-nographics");
     driver.config->nogfxAllowHostAudio = false;
     g_unsetenv("QEMU_AUDIO_DRV");
 

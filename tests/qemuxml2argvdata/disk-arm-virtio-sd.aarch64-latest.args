@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-armtest/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-armtest/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-armtest/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-arm \
 -name guest=armtest,debug-threads=on \
 -S \
@@ -40,6 +39,7 @@ memory-backend=vexpress.highmem \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2",\
 "file":"libvirt-1-storage"}' \
 -device virtio-blk-device,drive=libvirt-1-format,id=virtio-disk0 \
+-audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

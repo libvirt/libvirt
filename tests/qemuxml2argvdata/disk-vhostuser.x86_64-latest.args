@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -36,6 +35,7 @@ id=virtio-disk0,bootindex=1 \
 -chardev socket,id=chr-vu-virtio-disk1,path=/tmp/vhost1.sock,reconnect=10 \
 -device vhost-user-blk-pci,iommu_platform=on,ats=on,packed=on,bus=pci.0,\
 addr=0x3,chardev=chr-vu-virtio-disk1,id=virtio-disk1 \
+-audiodev id=audio1,driver=none \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

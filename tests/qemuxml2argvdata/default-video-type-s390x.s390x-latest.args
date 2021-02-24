@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-default-video-type-s/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-default-video-type-s/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-default-video-type-s/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
 -name guest=default-video-type-s390x-test,debug-threads=on \
 -S \
@@ -32,7 +31,8 @@ cmm=on \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--vnc 127.0.0.1:0 \
+-audiodev id=audio1,driver=none \
+-vnc 127.0.0.1:0,audiodev=audio1 \
 -device virtio-gpu-ccw,id=video0,max_outputs=1,devno=fe.0.0000 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

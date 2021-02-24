@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -41,6 +40,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -device ide-cd,bus=ide.0,unit=1,drive=libvirt-3-format,id=ide0-0-1 \
 -device ide-cd,bus=ide.1,unit=0,id=ide0-1-0,write-cache=on \
 -device ide-cd,bus=ide.1,unit=1,id=ide0-1-1 \
+-audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

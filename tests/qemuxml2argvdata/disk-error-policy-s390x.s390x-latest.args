@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-guest/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-guest/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
 -name guest=guest,debug-threads=on \
 -S \
@@ -52,6 +51,7 @@ write-cache=on,werror=enospc \
 "file":"libvirt-1-storage"}' \
 -device virtio-blk-ccw,devno=fe.0.0002,drive=libvirt-1-format,id=virtio-disk2,\
 write-cache=on,werror=report,rerror=ignore \
+-audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

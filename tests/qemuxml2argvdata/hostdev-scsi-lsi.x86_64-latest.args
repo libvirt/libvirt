@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest2/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest2/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest2/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest2,debug-threads=on \
 -S \
@@ -35,6 +34,7 @@ file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
 "file":"libvirt-1-storage"}' \
 -device ide-hd,bus=ide.0,unit=0,drive=libvirt-1-format,id=ide0-0-0,bootindex=1 \
+-audiodev id=audio1,driver=none \
 -blockdev '{"driver":"host_device","filename":"/dev/sg0",\
 "node-name":"libvirt-2-backend","read-only":false}' \
 -device scsi-generic,bus=scsi0.0,scsi-id=7,drive=libvirt-2-backend,id=hostdev0 \

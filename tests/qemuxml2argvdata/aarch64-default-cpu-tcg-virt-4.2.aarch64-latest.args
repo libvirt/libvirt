@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-guest/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-guest/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name guest=guest,debug-threads=on \
 -S \
@@ -38,6 +37,7 @@ addr=0x1 \
 "file":"libvirt-1-storage"}' \
 -device virtio-blk-pci,bus=pci.1,addr=0x0,drive=libvirt-1-format,\
 id=virtio-disk0,bootindex=1 \
+-audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

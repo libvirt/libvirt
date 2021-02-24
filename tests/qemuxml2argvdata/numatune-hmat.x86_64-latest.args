@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest,debug-threads=on \
 -S \
@@ -47,6 +46,7 @@ policy=write-back,line=8 \
 -no-shutdown \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-audiodev id=audio1,driver=none \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

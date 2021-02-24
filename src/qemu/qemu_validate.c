@@ -1228,7 +1228,8 @@ qemuValidateDomainDef(const virDomainDef *def,
         return -1;
     }
 
-    if (def->naudios > 1) {
+    if (def->naudios > 1 &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("only one audio backend is supported with this QEMU binary"));
         return -1;
@@ -4186,9 +4187,12 @@ qemuValidateDomainDeviceDefAudio(virDomainAudioDefPtr audio,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_JACK:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("'jack' audio backend is not supported with this QEMU"));
-        return -1;
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'jack' audio backend is not supported with this QEMU"));
+            return -1;
+        }
+        break;
 
     case VIR_DOMAIN_AUDIO_TYPE_OSS:
         break;

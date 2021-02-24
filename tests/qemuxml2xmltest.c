@@ -1477,6 +1477,7 @@ mymain(void)
     DO_TEST("audio-oss-best", NONE);
     DO_TEST("audio-sdl-best", NONE);
 
+    DO_TEST_CAPS_LATEST("audio-many-backends");
 
     /* Validate auto-creation of <audio> for legacy compat */
     g_setenv("QEMU_AUDIO_DRV", "sdl", TRUE);

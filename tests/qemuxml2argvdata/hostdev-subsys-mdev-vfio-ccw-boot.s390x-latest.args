@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -28,6 +27,7 @@ memory-backend=s390.ram \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
+-audiodev id=audio1,driver=none \
 -device vfio-ccw,id=hostdev0,\
 sysfsdev=/sys/bus/mdev/devices/90c6c135-ad44-41d0-b1b7-bae47de48627,\
 devno=fe.0.0000,bootindex=1 \
