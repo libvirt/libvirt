@@ -789,10 +789,8 @@ virXMLParseHelper(int domcode,
 
     /* Set up a parser context so we can catch the details of XML errors. */
     pctxt = xmlNewParserCtxt();
-    if (!pctxt || !pctxt->sax) {
-        virReportOOMError();
-        goto error;
-    }
+    if (!pctxt || !pctxt->sax)
+        abort();
 
     private.domcode = domcode;
     pctxt->_private = &private;
