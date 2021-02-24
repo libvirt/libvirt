@@ -1339,7 +1339,8 @@ virNetDevGetVirtualFunctionIndex(const char *pfname, const char *vfname,
  *
  * @ifname : name of the physical function interface name
  * @pfname : Contains sriov physical function for interface ifname
- *           upon successful return
+ *           upon successful return (might be NULL if the PF has no
+ *           associated netdev. This is *not* an error)
  *
  * Returns 0 on success, -1 on failure
  *
@@ -1358,15 +1359,6 @@ virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
 
     if (virPCIGetNetName(physfn_sysfs_path, 0,
                          vfPhysPortID, pfname) < 0) {
-        return -1;
-    }
-
-    if (!*pfname) {
-        /* The SRIOV standard does not require VF netdevs to have
-         * the netdev assigned to a PF. */
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("The PF device for VF %s has no network device name"),
-                       ifname);
         return -1;
     }
 
@@ -1441,6 +1433,17 @@ virNetDevGetVirtualFunctionInfo(const char *vfname, char **pfname,
 
     if (virNetDevGetPhysicalFunction(vfname, pfname) < 0)
         return -1;
+
+    if (!*pfname) {
+        /* The SRIOV standard does not require VF netdevs to have the
+         * netdev assigned to a PF, but our method of retrieving
+         * VFINFO does.
+         */
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("The PF device for VF %s has no network device name, cannot get virtual function info"),
+                       vfname);
+        return -1;
+    }
 
     if (virNetDevGetVirtualFunctionIndex(*pfname, vfname, vf) < 0)
         goto cleanup;
@@ -3196,12 +3199,8 @@ virNetDevSwitchdevFeature(const char *ifname,
     if ((is_vf = virNetDevIsVirtualFunction(ifname)) < 0)
         return ret;
 
-    if (is_vf == 1) {
-        /* Ignore error if PF does not have netdev assigned.
-         * In that case pfname == NULL. */
-        if (virNetDevGetPhysicalFunction(ifname, &pfname) < 0)
-            virResetLastError();
-    }
+    if (is_vf == 1 && virNetDevGetPhysicalFunction(ifname, &pfname) < 0)
+        return ret;
 
     pci_device_ptr = pfname ? virNetDevGetPCIDevice(pfname) :
                               virNetDevGetPCIDevice(ifname);
