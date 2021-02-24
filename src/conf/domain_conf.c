@@ -30425,7 +30425,6 @@ virDomainDefSetMetadata(virDomainDefPtr def,
     xmlDocPtr doc = NULL;
     xmlNodePtr old;
     xmlNodePtr new = NULL;
-    char *tmp = NULL;
     int ret = -1;
 
     if (type >= VIR_DOMAIN_METADATA_LAST) {
@@ -30436,19 +30435,17 @@ virDomainDefSetMetadata(virDomainDefPtr def,
 
     switch ((virDomainMetadataType) type) {
     case VIR_DOMAIN_METADATA_DESCRIPTION:
-        if (STRNEQ_NULLABLE(metadata, ""))
-            tmp = g_strdup(metadata);
+        g_clear_pointer(&def->description, g_free);
 
-        VIR_FREE(def->description);
-        def->description = tmp;
+        if (STRNEQ_NULLABLE(metadata, ""))
+            def->description = g_strdup(metadata);
         break;
 
     case VIR_DOMAIN_METADATA_TITLE:
-        if (STRNEQ_NULLABLE(metadata, ""))
-            tmp = g_strdup(metadata);
+        g_clear_pointer(&def->title, g_free);
 
-        VIR_FREE(def->title);
-        def->title = tmp;
+        if (STRNEQ_NULLABLE(metadata, ""))
+            def->title = g_strdup(metadata);
         break;
 
     case VIR_DOMAIN_METADATA_ELEMENT:
