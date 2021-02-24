@@ -36,6 +36,7 @@
         <model name='usb-serial'/>
       </target>
     </serial>
+    <audio id='1' type='none'/>
     <memballoon model='none'/>
   </devices>
 </domain>

@@ -33,6 +33,7 @@
       <listen type='none'/>
       <gl enable='yes' rendernode='/dev/dri/foo'/>
     </graphics>
+    <audio id='1' type='spice'/>
     <video>
       <model type='virtio' heads='1' primary='yes'>
         <acceleration accel3d='yes'/>

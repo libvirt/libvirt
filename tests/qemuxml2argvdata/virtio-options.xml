@@ -75,6 +75,7 @@
     </input>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
     <video>
       <driver iommu='on' ats='on' packed='on' name='vhostuser'/>
       <model type='virtio' heads='1' primary='yes'>

@@ -18,6 +18,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-s390x</emulator>
     <controller type='pci' index='0' model='pci-root'/>
+    <audio id='1' type='none'/>
     <memballoon model='virtio'>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0000'/>
     </memballoon>

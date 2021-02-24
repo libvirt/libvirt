@@ -41,6 +41,7 @@
     <graphics type='spice' autoport='yes' listen='0.0.0.0'>
       <listen type='address' address='0.0.0.0'/>
     </graphics>
+    <audio id='1' type='spice'/>
     <video>
       <model type='cirrus' vram='8192' heads='1' primary='yes'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>

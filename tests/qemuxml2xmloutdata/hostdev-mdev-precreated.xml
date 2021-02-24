@@ -23,6 +23,7 @@
     </controller>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
     <hostdev mode='subsystem' type='mdev' managed='no' model='vfio-pci'>
       <source>
         <address uuid='53764d0e-85a0-42b4-af5c-2046b460b1dc'/>

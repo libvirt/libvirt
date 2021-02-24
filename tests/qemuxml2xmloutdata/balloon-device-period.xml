@@ -29,6 +29,7 @@
     </controller>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
     <memballoon model='virtio'>
       <stats period='10'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x12' function='0x0'/>

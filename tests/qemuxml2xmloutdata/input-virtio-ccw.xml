@@ -29,6 +29,7 @@
     <input type='tablet' bus='virtio'>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0004'/>
     </input>
+    <audio id='1' type='none'/>
     <memballoon model='virtio'>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0001'/>
     </memballoon>

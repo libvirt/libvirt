@@ -32,6 +32,7 @@
       <driver iothread='2'/>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0001'/>
     </controller>
+    <audio id='1' type='none'/>
     <memballoon model='virtio'>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x000a'/>
     </memballoon>

@@ -20,6 +20,7 @@
       <target chassisNr='1'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </controller>
+    <audio id='1' type='none'/>
     <hostdev mode='subsystem' type='pci' managed='no'>
       <driver name='vfio'/>
       <source>

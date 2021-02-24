@@ -28,6 +28,7 @@
       <address type='ccw' cssid='0x0' ssid='0x0' devno='0x0007'/>
     </disk>
     <controller type='usb' index='0' model='none'/>
+    <audio id='1' type='none'/>
     <memballoon model='virtio'>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x000a'/>
     </memballoon>

@@ -6,8 +6,8 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 TZ=Europe/Paris \
+QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name QEMUGuest1 \
 -S \

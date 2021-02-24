@@ -119,6 +119,7 @@
       <alias name='sound0'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </sound>
+    <audio id='1' type='none'/>
     <video>
       <model type='cirrus' vram='16384' heads='1' primary='yes'/>
       <alias name='video0'/>

@@ -43,6 +43,7 @@
     <console type='pty'>
       <target type='virtio' port='0'/>
     </console>
+    <audio id='1' type='none'/>
     <memballoon model='virtio'>
       <address type='virtio-mmio'/>
     </memballoon>

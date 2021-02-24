@@ -22,6 +22,7 @@
     <console type='pty'>
       <target type='serial' port='0'/>
     </console>
+    <audio id='1' type='none'/>
     <memballoon model='none'/>
     <panic model='s390'/>
   </devices>

@@ -27,6 +27,7 @@
       <model name='spapr-pci-host-bridge'/>
       <target index='2'/>
     </controller>
+    <audio id='1' type='none'/>
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <driver name='vfio'/>
       <source>

@@ -32,6 +32,7 @@
         <encryption secret='32ee7e76-2178-47a1-ab7b-269e6e348015'/>
       </backend>
     </tpm>
+    <audio id='1' type='none'/>
     <memballoon model='virtio'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </memballoon>

@@ -36,6 +36,7 @@
       <alias name='input1'/>
       <address type='usb' bus='0' port='2'/>
     </input>
+    <audio id='1' type='none'/>
     <memballoon model='none'/>
     <panic model='pseries'/>
   </devices>

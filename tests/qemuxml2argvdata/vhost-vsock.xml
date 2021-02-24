@@ -27,6 +27,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
     <memballoon model='none'/>
     <vsock model='virtio'>
       <cid auto='no' address='4'/>

@@ -1061,6 +1061,27 @@ mymain(void)
     /* Multiple backends not supported with ENV */
     DO_TEST_PARSE_ERROR("audio-many-backends", NONE);
 
+    /* Validate auto-creation of <audio> for legacy compat */
+    g_setenv("QEMU_AUDIO_DRV", "sdl", TRUE);
+    g_setenv("SDL_AUDIODRIVER", "esd", TRUE);
+    DO_TEST("audio-default-sdl", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    g_unsetenv("QEMU_AUDIO_DRV");
+    g_unsetenv("SDL_AUDIODRIVER");
+
+    g_setenv("QEMU_AUDIO_DRV", "alsa", TRUE);
+    driver.config->vncAllowHostAudio = true;
+    DO_TEST("audio-default-vnc",  QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    driver.config->vncAllowHostAudio = false;
+    g_unsetenv("QEMU_AUDIO_DRV");
+
+    DO_TEST("audio-default-spice",  QEMU_CAPS_SPICE, QEMU_CAPS_DEVICE_CIRRUS_VGA);
+
+    g_setenv("QEMU_AUDIO_DRV", "alsa", TRUE);
+    driver.config->nogfxAllowHostAudio = true;
+    DO_TEST("audio-default-nographics", NONE);
+    driver.config->nogfxAllowHostAudio = false;
+    g_unsetenv("QEMU_AUDIO_DRV");
+
     DO_TEST("reboot-timeout-disabled", QEMU_CAPS_REBOOT_TIMEOUT);
     DO_TEST("reboot-timeout-enabled", QEMU_CAPS_REBOOT_TIMEOUT);
     DO_TEST_PARSE_ERROR("reboot-timeout-enabled", NONE);

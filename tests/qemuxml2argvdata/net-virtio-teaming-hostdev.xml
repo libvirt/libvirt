@@ -43,6 +43,7 @@
     </interface>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x03' slot='0x07' function='0x1'/>

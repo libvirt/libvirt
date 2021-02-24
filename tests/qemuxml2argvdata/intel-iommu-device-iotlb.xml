@@ -27,6 +27,7 @@
     </controller>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
     <memballoon model='none'/>
     <iommu model='intel'>
       <driver intremap='on' iotlb='on'/>

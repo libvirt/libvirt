@@ -37,5 +37,6 @@
       <target dev='vda' bus='virtio'/>
       <address type='virtio-mmio'/>
     </disk>
+    <audio id='1' type='none'/>
   </devices>
 </domain>

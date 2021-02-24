@@ -31,6 +31,7 @@
       <target type='serial' port='0'/>
       <address type='spapr-vio' reg='0x30000000'/>
     </console>
+    <audio id='1' type='none'/>
     <memballoon model='none'/>
     <panic model='pseries'/>
   </devices>

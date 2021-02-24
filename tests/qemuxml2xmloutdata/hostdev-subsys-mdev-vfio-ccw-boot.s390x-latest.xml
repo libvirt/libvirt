@@ -17,6 +17,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-s390x</emulator>
     <controller type='pci' index='0' model='pci-root'/>
+    <audio id='1' type='none'/>
     <hostdev mode='subsystem' type='mdev' managed='no' model='vfio-ccw'>
       <source>
         <address uuid='90c6c135-ad44-41d0-b1b7-bae47de48627'/>

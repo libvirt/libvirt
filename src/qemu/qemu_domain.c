@@ -3573,9 +3573,112 @@ qemuDomainDefAddImplicitInputDevice(virDomainDef *def)
     return 0;
 }
 
+static int
+qemuDomainDefAddDefaultAudioBackend(virQEMUDriverPtr driver,
+                                    virDomainDefPtr def)
+{
+    size_t i;
+    bool addAudio = false;
+    bool audioPassthrough = false;
+    int audioBackend = VIR_DOMAIN_AUDIO_TYPE_NONE;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+
+    if (def->naudios > 0) {
+        return 0;
+    }
+
+    for (i = 0; i < def->ngraphics; i++) {
+        virDomainGraphicsDefPtr graph = def->graphics[i];
+
+        switch ((virDomainGraphicsType)graph->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+            if (cfg->vncAllowHostAudio) {
+                audioPassthrough = true;
+            } else {
+                audioPassthrough = false;
+                audioBackend = VIR_DOMAIN_AUDIO_TYPE_NONE;
+            }
+            addAudio = true;
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+            audioPassthrough = false;
+            audioBackend = VIR_DOMAIN_AUDIO_TYPE_SPICE;
+            addAudio = true;
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+            audioPassthrough = true;
+            addAudio = true;
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+        default:
+            virReportEnumRangeError(virDomainGraphicsType, graph->type);
+            return -1;
+        }
+    }
+
+    if (!def->ngraphics) {
+        if (cfg->nogfxAllowHostAudio) {
+            audioPassthrough = true;
+        } else {
+            audioPassthrough = false;
+            audioBackend = VIR_DOMAIN_AUDIO_TYPE_NONE;
+        }
+        addAudio = true;
+    }
+
+    if (addAudio && audioPassthrough) {
+        const char *audioenv = g_getenv("QEMU_AUDIO_DRV");
+        if (audioenv == NULL) {
+            addAudio = false;
+        } else {
+            /*
+             * QEMU audio driver names are mostly the same as
+             * libvirt XML audio backend names
+             */
+            if (STREQ(audioenv, "pa")) {
+                audioBackend = VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO;
+            } else {
+                if ((audioBackend = virDomainAudioTypeTypeFromString(audioenv)) < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown QEMU_AUDIO_DRV setting %s"), audioenv);
+                    return -1;
+                }
+            }
+        }
+    }
+    if (addAudio) {
+        virDomainAudioDefPtr audio = g_new0(virDomainAudioDef, 1);
+
+        audio->type = audioBackend;
+        audio->id = 1;
+
+        def->naudios = 1;
+        def->audios = g_new0(virDomainAudioDefPtr, def->naudios);
+        def->audios[0] = audio;
+
+        if (audioBackend == VIR_DOMAIN_AUDIO_TYPE_SDL) {
+            const char *sdldriver = g_getenv("SDL_AUDIODRIVER");
+            if (sdldriver != NULL &&
+                ((audio->backend.sdl.driver =
+                  virDomainAudioSDLDriverTypeFromString(sdldriver)) <= 0)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown SDL_AUDIODRIVER setting %s"), sdldriver);
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
 
 static int
-qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
+qemuDomainDefAddDefaultDevices(virQEMUDriverPtr driver,
+                               virDomainDefPtr def,
                                virQEMUCapsPtr qemuCaps)
 {
     bool addDefaultUSB = true;
@@ -3826,6 +3929,9 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
             }
         }
     }
+
+    if (qemuDomainDefAddDefaultAudioBackend(driver, def) < 0)
+        return -1;
 
     return 0;
 }
@@ -4419,7 +4525,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
 
     qemuDomainNVRAMPathGenerate(cfg, def);
 
-    if (qemuDomainDefAddDefaultDevices(def, qemuCaps) < 0)
+    if (qemuDomainDefAddDefaultDevices(driver, def, qemuCaps) < 0)
         return -1;
 
     if (qemuCanonicalizeMachine(def, qemuCaps) < 0)

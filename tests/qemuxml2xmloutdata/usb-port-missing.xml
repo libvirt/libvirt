@@ -23,6 +23,7 @@
     </input>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
     <hub type='usb'>
       <address type='usb' bus='0'/>
     </hub>

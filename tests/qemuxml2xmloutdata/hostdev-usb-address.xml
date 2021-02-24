@@ -29,6 +29,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
     <hostdev mode='subsystem' type='usb' managed='no'>
       <source>
         <address bus='14' device='6'/>

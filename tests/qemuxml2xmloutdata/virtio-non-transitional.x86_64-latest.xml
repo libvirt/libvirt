@@ -105,6 +105,7 @@
     </input>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
     <hostdev mode='subsystem' type='scsi_host' managed='no' model='virtio-non-transitional'>
       <source protocol='vhost' wwpn='naa.5123456789abcde0'/>
       <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>

@@ -30,6 +30,7 @@
     <input type='mouse' bus='usb'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <audio id='1' type='none'/>
     <memballoon model='none'/>
   </devices>
 </domain>

@@ -25,6 +25,7 @@
       </target>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </serial>
+    <audio id='1' type='none'/>
     <memballoon model='none'/>
     <panic model='pseries'/>
   </devices>

@@ -66,6 +66,7 @@
     <input type='keyboard' bus='ps2'>
       <alias name='input1'/>
     </input>
+    <audio id='1' type='none'/>
     <memballoon model='none'/>
   </devices>
   <seclabel type='none' model='none'/>

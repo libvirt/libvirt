@@ -1477,6 +1477,28 @@ mymain(void)
     DO_TEST("audio-oss-best", NONE);
     DO_TEST("audio-sdl-best", NONE);
 
+
+    /* Validate auto-creation of <audio> for legacy compat */
+    g_setenv("QEMU_AUDIO_DRV", "sdl", TRUE);
+    g_setenv("SDL_AUDIODRIVER", "esd", TRUE);
+    DO_TEST_CAPS_LATEST("audio-default-sdl");
+    g_unsetenv("QEMU_AUDIO_DRV");
+    g_unsetenv("SDL_AUDIODRIVER");
+
+    g_setenv("QEMU_AUDIO_DRV", "alsa", TRUE);
+    driver.config->vncAllowHostAudio = true;
+    DO_TEST_CAPS_LATEST("audio-default-vnc");
+    driver.config->vncAllowHostAudio = false;
+    g_unsetenv("QEMU_AUDIO_DRV");
+
+    DO_TEST_CAPS_LATEST("audio-default-spice");
+
+    g_setenv("QEMU_AUDIO_DRV", "alsa", TRUE);
+    driver.config->nogfxAllowHostAudio = true;
+    DO_TEST_CAPS_LATEST("audio-default-nographics");
+    driver.config->nogfxAllowHostAudio = false;
+    g_unsetenv("QEMU_AUDIO_DRV");
+
  cleanup:
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);

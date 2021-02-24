@@ -208,6 +208,7 @@
     <graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1' keymap='en-us'>
       <listen type='address' address='127.0.0.1'/>
     </graphics>
+    <audio id='1' type='none'/>
     <video>
       <model type='cirrus' vram='16384' heads='1' primary='yes'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>

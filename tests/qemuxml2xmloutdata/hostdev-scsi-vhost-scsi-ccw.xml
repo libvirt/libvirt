@@ -23,6 +23,7 @@
     <controller type='scsi' index='0' model='virtio-scsi'>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0001'/>
     </controller>
+    <audio id='1' type='none'/>
     <hostdev mode='subsystem' type='scsi_host' managed='no'>
       <source protocol='vhost' wwpn='naa.5123456789abcde0'/>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0002'/>
