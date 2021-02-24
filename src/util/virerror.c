@@ -1358,28 +1358,6 @@ void virReportSystemErrorFull(int domcode,
     errno = save_errno;
 }
 
-/**
- * virReportOOMErrorFull:
- * @domcode: the virErrorDomain indicating where it's coming from
- * @filename: filename where error was raised
- * @funcname: function name where error was raised
- * @linenr: line number where error was raised
- *
- * Convenience internal routine called when an out of memory error is
- * detected
- */
-void virReportOOMErrorFull(int domcode,
-                           const char *filename,
-                           const char *funcname,
-                           size_t linenr)
-{
-    const char *virerr;
-
-    virerr = virErrorMsg(VIR_ERR_NO_MEMORY, NULL);
-    virRaiseErrorFull(filename, funcname, linenr,
-                      domcode, VIR_ERR_NO_MEMORY, VIR_ERR_ERROR,
-                      virerr, NULL, NULL, -1, -1, virerr, NULL);
-}
 
 /**
  * virSetErrorLogPriorityFunc:

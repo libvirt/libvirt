@@ -174,14 +174,6 @@ void virReportSystemErrorFull(int domcode,
                          "Unexpected enum value %d for %s", \
                          value, sizeof((typname)1) != 0 ? #typname : #typname);
 
-void virReportOOMErrorFull(int domcode,
-                           const char *filename,
-                           const char *funcname,
-                           size_t linenr);
-
-#define virReportOOMError() \
-    virReportOOMErrorFull(VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__)
-
 #define virReportError(code, ...) \
     virReportErrorHelper(VIR_FROM_THIS, code, __FILE__, \
                          __FUNCTION__, __LINE__, __VA_ARGS__)

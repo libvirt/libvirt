@@ -490,11 +490,6 @@ sc_prohibit_gettext_noop:
 	halt='use N_, not gettext_noop' \
 	  $(_sc_search_regexp)
 
-sc_prohibit_VIR_ERR_NO_MEMORY:
-	@prohibit='\<VIR_ERR_NO_MEMORY\>' \
-	halt='use virReportOOMError, not VIR_ERR_NO_MEMORY' \
-	  $(_sc_search_regexp)
-
 sc_prohibit_PATH_MAX:
 	@prohibit='\<PATH_MAX\>' \
 	halt='dynamically allocate paths, do not use PATH_MAX' \
@@ -1894,9 +1889,6 @@ exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
   ^(src/rpc/gendispatch\.pl$$|tests/)
 
 exclude_file_name_regexp--sc_po_check = ^(docs/|src/rpc/gendispatch\.pl$$|tests/commandtest.c$$)
-
-exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
-  ^(build-aux/syntax-check\.mk|include/libvirt/virterror\.h|src/remote/remote_daemon_dispatch\.c|src/util/virerror\.c|docs/internals/oomtesting\.html\.in)$$
 
 exclude_file_name_regexp--sc_prohibit_PATH_MAX = \
 	^build-aux/syntax-check\.mk$$
