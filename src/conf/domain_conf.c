@@ -13914,15 +13914,10 @@ virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
         inputDevNode = virXPathNode("./input", ctxt);
         outputDevNode = virXPathNode("./output", ctxt);
 
-        if (!inputDevNode || !outputDevNode) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Audio type OSS requires to have <input> "
-                             "and <output> specified"));
-            goto error;
-        }
-
-        def->backend.oss.inputDev = virXMLPropString(inputDevNode, "dev");
-        def->backend.oss.outputDev = virXMLPropString(outputDevNode, "dev");
+        if (inputDevNode)
+            def->backend.oss.inputDev = virXMLPropString(inputDevNode, "dev");
+        if (outputDevNode)
+            def->backend.oss.outputDev = virXMLPropString(outputDevNode, "dev");
         break;
     }
 
