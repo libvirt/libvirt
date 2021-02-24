@@ -5800,6 +5800,19 @@ interaction with the admin.
       graphics type ``egl-headless`` (see below) which will instruct QEMU to
       open and use drm nodes for OpenGL rendering.
 
+      A VNC server could be optionally mapped to the specific host audio
+      backend using the ``<audio>`` sub-element:
+
+      ::
+
+         <graphics type='vnc' ...>
+           <audio id='1'>
+         </graphics>
+
+      Where ``1`` is an id of the `audio device <#elementsAudio>`__. If no
+      ID is specified, then the default audio backend will be used.
+      :since:`Since 7.2.0, qemu`.
+
    ``spice`` :since:`Since 0.8.6`
       Starts a SPICE server. The ``port`` attribute specifies the TCP port
       number (with -1 as legacy syntax indicating that it should be
@@ -6805,8 +6818,8 @@ Valid values are:
 Each ``sound`` element has an optional sub-element ``<address>`` which can tie
 the device to a particular PCI slot, `documented above <#elementsAddress>`__.
 
-:since:`Since 6.7.0`, a sound device could be optionally mapped to the specific
-host audio backend using the ``<audio>`` sub-element:
+A sound device could be optionally mapped to the specific host audio
+backend using the ``<audio>`` sub-element:
 
 ::
 
@@ -6818,8 +6831,9 @@ host audio backend using the ``<audio>`` sub-element:
    </devices>
    ...
 
-Where ``1`` is an id of the `audio device <#elementsAudio>`__.
-This is supported for bhyve only.
+Where ``1`` is an id of the `audio device <#elementsAudio>`__. If no
+ID is specified, then the default audio backend will be used.
+:since:`Since 6.7.0, bhyve; Since 7.2.0, qemu`.
 
 :anchor:`<a id="elementsAudio"/>`
 

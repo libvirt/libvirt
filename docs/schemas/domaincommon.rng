@@ -3697,7 +3697,16 @@
               <value>keep</value>
             </attribute>
           </optional>
-          <ref name="listenElements"/>
+          <interleave>
+            <optional>
+              <element name="audio">
+                <attribute name="id">
+                  <ref name="uint8"/>
+                </attribute>
+              </element>
+            </optional>
+            <ref name="listenElements"/>
+          </interleave>
         </group>
         <group>
           <attribute name="type">

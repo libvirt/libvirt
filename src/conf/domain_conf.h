@@ -1740,6 +1740,7 @@ struct _virDomainGraphicsDef {
             virDomainGraphicsAuthDef auth;
             int sharePolicy;
             virTristateBool powerControl;
+            unsigned int audioId;
         } vnc;
         struct {
             char *display;
