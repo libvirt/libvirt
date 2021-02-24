@@ -190,7 +190,7 @@ qemuDomainObjResetJob(qemuDomainJobObjPtr job)
 {
     job->active = QEMU_JOB_NONE;
     job->owner = 0;
-    job->ownerAPI = NULL;
+    g_clear_pointer(&job->ownerAPI, g_free);
     job->started = 0;
 }
 
@@ -200,7 +200,7 @@ qemuDomainObjResetAgentJob(qemuDomainJobObjPtr job)
 {
     job->agentActive = QEMU_AGENT_JOB_NONE;
     job->agentOwner = 0;
-    job->agentOwnerAPI = NULL;
+    g_clear_pointer(&job->agentOwnerAPI, g_free);
     job->agentStarted = 0;
 }
 
@@ -210,7 +210,7 @@ qemuDomainObjResetAsyncJob(qemuDomainJobObjPtr job)
 {
     job->asyncJob = QEMU_ASYNC_JOB_NONE;
     job->asyncOwner = 0;
-    job->asyncOwnerAPI = NULL;
+    g_clear_pointer(&job->asyncOwnerAPI, g_free);
     job->asyncStarted = 0;
     job->phase = 0;
     job->mask = QEMU_JOB_DEFAULT_MASK;
@@ -890,7 +890,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
                       obj, obj->def->name);
             priv->job.active = job;
             priv->job.owner = virThreadSelfID();
-            priv->job.ownerAPI = virThreadJobGet();
+            priv->job.ownerAPI = g_strdup(virThreadJobGet());
             priv->job.started = now;
         } else {
             VIR_DEBUG("Started async job: %s (vm=%p name=%s)",
@@ -901,7 +901,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
             priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
             priv->job.asyncJob = asyncJob;
             priv->job.asyncOwner = virThreadSelfID();
-            priv->job.asyncOwnerAPI = virThreadJobGet();
+            priv->job.asyncOwnerAPI = g_strdup(virThreadJobGet());
             priv->job.asyncStarted = now;
             priv->job.current->started = now;
         }
@@ -917,7 +917,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
                   qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
         priv->job.agentActive = agentJob;
         priv->job.agentOwner = virThreadSelfID();
-        priv->job.agentOwnerAPI = virThreadJobGet();
+        priv->job.agentOwnerAPI = g_strdup(virThreadJobGet());
         priv->job.agentStarted = now;
     }
 
