@@ -90,7 +90,7 @@ fix_xattrs() {
 
     for i in $(getfattr -R -d -m ${XATTR_PREFIX} --absolute-names ${DIR} 2>/dev/null | grep "^# file:" | cut -d':' -f 2); do
         if [ ${DRY_RUN} -ne 0 ]; then
-            getfattr -d -m $p --absolute-names $i | grep -v "^# file:"
+            getfattr -d -m ${XATTR_PREFIX} --absolute-names $i
             continue
         fi
 
