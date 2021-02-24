@@ -30455,11 +30455,8 @@ virDomainDefSetMetadata(virDomainDefPtr def,
                 return -1;
 
             /* create the root node if needed */
-            if (!def->metadata &&
-                !(def->metadata = xmlNewNode(NULL, (unsigned char *)"metadata"))) {
-                virReportOOMError();
-                return -1;
-            }
+            if (!def->metadata)
+                def->metadata = virXMLNewNode(NULL, "metadata");
 
             if (!(new = xmlCopyNode(doc->children, 1))) {
                 virReportOOMError();

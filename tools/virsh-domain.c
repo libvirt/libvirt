@@ -12559,10 +12559,7 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
 
     if (new_source) {
         /* create new source subelement */
-        if (!(source = xmlNewNode(NULL, BAD_CAST "source"))) {
-            vshError(NULL, _("Failed to allocate new source node"));
-            goto cleanup;
-        }
+        source = virXMLNewNode(NULL, "source");
 
         if (source_block)
             xmlNewProp(source, BAD_CAST "dev", BAD_CAST new_source);

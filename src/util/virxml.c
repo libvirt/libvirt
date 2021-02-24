@@ -1474,3 +1474,16 @@ virXMLBufferCreate(void)
 
     return ret;
 }
+
+
+xmlNodePtr
+virXMLNewNode(xmlNsPtr ns,
+              const char *name)
+{
+    xmlNodePtr ret;
+
+    if (!(ret = xmlNewNode(ns, BAD_CAST name)))
+        abort();
+
+    return ret;
+}

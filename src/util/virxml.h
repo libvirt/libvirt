@@ -289,3 +289,7 @@ int virParseScaledValue(const char *xpath,
 
 xmlBufferPtr
 virXMLBufferCreate(void);
+
+xmlNodePtr
+virXMLNewNode(xmlNsPtr ns,
+              const char *name);

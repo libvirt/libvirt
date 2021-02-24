@@ -328,7 +328,7 @@ virVBoxSnapshotConfCreateHardDiskNode(virVBoxSnapshotConfHardDiskPtr hardDisk)
     int result = -1;
     size_t i = 0;
     char *uuid = NULL;
-    xmlNodePtr ret = xmlNewNode(NULL, BAD_CAST "HardDisk");
+    xmlNodePtr ret = virXMLNewNode(NULL, "HardDisk");
     uuid = g_strdup_printf("{%s}", hardDisk->uuid);
 
     if (xmlNewProp(ret, BAD_CAST "uuid", BAD_CAST uuid) == NULL)
@@ -404,7 +404,7 @@ virVBoxSnapshotConfSerializeSnapshot(xmlNodePtr node,
 
     /* node description */
     if (snapshot->description != NULL) {
-        descriptionNode = xmlNewNode(NULL, BAD_CAST "Description");
+        descriptionNode = virXMLNewNode(NULL, "Description");
         xmlNodeSetContent(descriptionNode, BAD_CAST snapshot->description);
         xmlAddChild(node, descriptionNode);
     }
@@ -433,10 +433,10 @@ virVBoxSnapshotConfSerializeSnapshot(xmlNodePtr node,
     xmlAddChild(node, storageControllerNode);
 
     if (snapshot->nchildren > 0) {
-        snapshotsNode = xmlNewNode(NULL, BAD_CAST "Snapshots");
+        snapshotsNode = virXMLNewNode(NULL, "Snapshots");
         xmlAddChild(node, snapshotsNode);
         for (i = 0; i < snapshot->nchildren; i++) {
-            xmlNodePtr child = xmlNewNode(NULL, BAD_CAST "Snapshot");
+            xmlNodePtr child = virXMLNewNode(NULL, "Snapshot");
             xmlAddChild(snapshotsNode, child);
             if (virVBoxSnapshotConfSerializeSnapshot(child, snapshot->children[i]) < 0)
                 goto cleanup;
@@ -1001,11 +1001,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachinePtr machine,
         goto cleanup;
     }
 
-    cur = xmlNewNode(NULL, BAD_CAST "VirtualBox");
-    if (!cur) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    cur = virXMLNewNode(NULL, "VirtualBox");
 
     if (!xmlNewProp(cur, BAD_CAST "version", BAD_CAST "1.12-linux")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -1038,11 +1034,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachinePtr machine,
         goto cleanup;
     }
 
-    machineNode = xmlNewNode(NULL, BAD_CAST "Machine");
-    if (!machineNode) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    machineNode = virXMLNewNode(NULL, "Machine");
 
     if (!xmlNewProp(machineNode, BAD_CAST "uuid", BAD_CAST machine->uuid)) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -1101,11 +1093,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachinePtr machine,
     }
     xmlAddChild(xmlDocGetRootElement(xml), machineNode);
 
-    mediaRegistryNode = xmlNewNode(NULL, BAD_CAST "MediaRegistry");
-    if (!mediaRegistryNode) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    mediaRegistryNode = virXMLNewNode(NULL, "MediaRegistry");
 
     xmlAddChild(machineNode, mediaRegistryNode);
     for (i = 0; i < machine->mediaRegistry->notherMedia; i++) {
@@ -1121,11 +1109,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachinePtr machine,
         }
         xmlAddChild(mediaRegistryNode, cur);
     }
-    hardDisksNode = xmlNewNode(NULL, BAD_CAST "HardDisks");
-    if (!hardDisksNode) {
-        virReportOOMError();
-        goto cleanup;
-    }
+    hardDisksNode = virXMLNewNode(NULL, "HardDisks");
     for (i = 0; i < machine->mediaRegistry->ndisks; i++) {
         xmlNodePtr child = virVBoxSnapshotConfCreateHardDiskNode(machine->mediaRegistry->disks[i]);
         if (child != NULL)
@@ -1172,7 +1156,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachinePtr machine,
     xmlAddChild(machineNode, cur);
 
     if (machine->snapshot != NULL) {
-        snapshotNode = xmlNewNode(NULL, BAD_CAST "Snapshot");
+        snapshotNode = virXMLNewNode(NULL, "Snapshot");
         xmlAddChild(machineNode, snapshotNode);
         if (virVBoxSnapshotConfSerializeSnapshot(snapshotNode, machine->snapshot) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
