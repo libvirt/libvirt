@@ -114,7 +114,8 @@ virStorageBackendGlusterOpen(virStoragePoolObjPtr pool)
 
     /* Actually connect to glfs */
     if (!(ret->vol = glfs_new(ret->volname))) {
-        virReportOOMError();
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("failed to create glfs object for '%s'"), ret->volname);
         goto error;
     }
 

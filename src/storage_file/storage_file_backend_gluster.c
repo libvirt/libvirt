@@ -120,7 +120,8 @@ virStorageFileBackendGlusterInit(virStorageSourcePtr src)
               (unsigned int)drv->uid, (unsigned int)drv->gid);
 
     if (!(priv->vol = glfs_new(src->volume))) {
-        virReportOOMError();
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("failed to create glfs object for '%s'"), src->volume);
         goto error;
     }
 
