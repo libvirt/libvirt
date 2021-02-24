@@ -1943,12 +1943,14 @@ virJSONValueToBuffer(virJSONValuePtr object,
     yajl_gen_config(g, yajl_gen_validate_utf8, 1);
 
     if (virJSONValueToStringOne(object, g) < 0) {
-        virReportOOMError();
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to convert virJSONValue to yajl data"));
         goto cleanup;
     }
 
     if (yajl_gen_get_buf(g, &str, &len) != yajl_gen_status_ok) {
-        virReportOOMError();
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                      _("failed to format JSON"));
         goto cleanup;
     }
 
