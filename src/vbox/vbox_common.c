@@ -5465,17 +5465,9 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     }
 
     VBOX_UTF8_TO_UTF16(def->parent.name, &name);
-    if (!name) {
-        virReportOOMError();
-        goto cleanup;
-    }
 
     if (def->parent.description) {
         VBOX_UTF8_TO_UTF16(def->parent.description, &description);
-        if (!description) {
-            virReportOOMError();
-            goto cleanup;
-        }
     }
 
     rc = gVBoxAPI.UIConsole.TakeSnapshot(console, name, description, &progress);
@@ -6475,10 +6467,6 @@ vboxDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
     VBOX_UTF16_TO_UTF8(nameUtf16, &name);
-    if (!name) {
-        virReportOOMError();
-        goto cleanup;
-    }
 
     ret = virGetDomainSnapshot(dom, name);
 
@@ -6533,10 +6521,6 @@ vboxDomainSnapshotCurrent(virDomainPtr dom, unsigned int flags)
     }
 
     VBOX_UTF16_TO_UTF8(nameUtf16, &name);
-    if (!name) {
-        virReportOOMError();
-        goto cleanup;
-    }
 
     ret = virGetDomainSnapshot(dom, name);
 
@@ -6593,10 +6577,6 @@ static int vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
     }
 
     VBOX_UTF16_TO_UTF8(nameUtf16, &name);
-    if (!name) {
-        virReportOOMError();
-        goto cleanup;
-    }
 
     ret = STREQ(snapshot->name, name);
 
