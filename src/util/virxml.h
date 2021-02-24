@@ -255,6 +255,7 @@ G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virXPathContextNodeSave, virXPathContextNodeRes
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(xmlDoc, xmlFreeDoc);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(xmlXPathContext, xmlXPathFreeContext);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(xmlBuffer, xmlBufferFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(xmlNode, xmlFreeNode);
 
 typedef int (*virXMLNamespaceParse)(xmlXPathContextPtr ctxt, void **nsdata);
 typedef void (*virXMLNamespaceFree)(void *nsdata);
