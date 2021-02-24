@@ -30422,15 +30422,14 @@ virDomainDefSetMetadata(virDomainDefPtr def,
                         const char *key,
                         const char *uri)
 {
-    xmlDocPtr doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     xmlNodePtr old;
-    xmlNodePtr new = NULL;
-    int ret = -1;
+    g_autoptr(xmlNode) new = NULL;
 
     if (type >= VIR_DOMAIN_METADATA_LAST) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unknown metadata type '%d'"), type);
-        goto cleanup;
+        return -1;
     }
 
     switch ((virDomainMetadataType) type) {
@@ -30450,23 +30449,24 @@ virDomainDefSetMetadata(virDomainDefPtr def,
 
     case VIR_DOMAIN_METADATA_ELEMENT:
         if (metadata) {
+
             /* parse and modify the xml from the user */
             if (!(doc = virXMLParseString(metadata, _("(metadata_xml)"))))
-                goto cleanup;
+                return -1;
 
             if (virXMLInjectNamespace(doc->children, uri, key) < 0)
-                goto cleanup;
+                return -1;
 
             /* create the root node if needed */
             if (!def->metadata &&
                 !(def->metadata = xmlNewNode(NULL, (unsigned char *)"metadata"))) {
                 virReportOOMError();
-                goto cleanup;
+                return -1;
             }
 
             if (!(new = xmlCopyNode(doc->children, 1))) {
                 virReportOOMError();
-                goto cleanup;
+                return -1;
             }
         }
 
@@ -30476,11 +30476,13 @@ virDomainDefSetMetadata(virDomainDefPtr def,
             xmlFreeNode(old);
         }
 
-        if (new &&
-            !(xmlAddChild(def->metadata, new))) {
-            xmlFreeNode(new);
-            virReportOOMError();
-            goto cleanup;
+        if (new) {
+            if (!(xmlAddChild(def->metadata, new))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to add metadata to XML document"));
+                return -1;
+            }
+            new = NULL;
         }
         break;
 
@@ -30489,11 +30491,7 @@ virDomainDefSetMetadata(virDomainDefPtr def,
         break;
     }
 
-    ret = 0;
-
- cleanup:
-    xmlFreeDoc(doc);
-    return ret;
+    return 0;
 }
 
 
