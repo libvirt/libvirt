@@ -1793,6 +1793,62 @@ virDomainFSDefValidate(const virDomainFSDef *fs)
     return 0;
 }
 
+static int
+virDomainEnsureAudioID(const virDomainDef *def,
+                       unsigned int id)
+{
+    size_t i;
+
+    if (id == 0)
+        return 0;
+
+    for (i = 0; i < def->naudios; i++) {
+        if (def->audios[i]->id == id)
+            return 0;
+    }
+
+    virReportError(VIR_ERR_XML_ERROR,
+                   _("no audio device with ID %u"),
+                   id);
+    return -1;
+}
+
+static int
+virDomainSoundDefValidate(const virDomainDef *def,
+                          const virDomainSoundDef *sound)
+{
+    return virDomainEnsureAudioID(def, sound->audioId);
+}
+
+static int
+virDomainAudioDefValidate(const virDomainDef *def,
+                          const virDomainAudioDef *audio)
+{
+    size_t i;
+
+    for (i = 0; i < def->naudios; i++) {
+        if (def->audios[i] == audio)
+            continue;
+        if (def->audios[i]->id == audio->id) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("audio ID %u is used multiple times"),
+                           audio->id);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+static int
+virDomainGraphicsDefValidate(const virDomainDef *def,
+                             const virDomainGraphicsDef *graphics)
+{
+    if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
+        return virDomainEnsureAudioID(def, graphics->data.vnc.audioId);
+
+    return 0;
+}
 
 static int
 virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
@@ -1842,11 +1898,16 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
         return virDomainFSDefValidate(dev->data.fs);
 
     case VIR_DOMAIN_DEVICE_AUDIO:
-        /* TODO: validate? */
-    case VIR_DOMAIN_DEVICE_LEASE:
+        return virDomainAudioDefValidate(def, dev->data.audio);
+
     case VIR_DOMAIN_DEVICE_SOUND:
-    case VIR_DOMAIN_DEVICE_WATCHDOG:
+        return virDomainSoundDefValidate(def, dev->data.sound);
+
     case VIR_DOMAIN_DEVICE_GRAPHICS:
+        return virDomainGraphicsDefValidate(def, dev->data.graphics);
+
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_HUB:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
