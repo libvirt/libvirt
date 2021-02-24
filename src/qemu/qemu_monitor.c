@@ -850,6 +850,13 @@ qemuMonitorRegister(qemuMonitorPtr mon)
 }
 
 
+/**
+ * qemuMonitorUnregister:
+ * @mon: monitor object
+ *
+ * Unregister monitor from the event loop. The monitor object
+ * must be locked before calling this function.
+ */
 void
 qemuMonitorUnregister(qemuMonitorPtr mon)
 {
