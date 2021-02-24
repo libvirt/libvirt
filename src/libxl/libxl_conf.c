@@ -854,10 +854,8 @@ libxlMakeVnumaList(virDomainDefPtr def,
             goto cleanup;
 
         libxl_bitmap_init(&vcpu_bitmap);
-        if (libxl_cpu_bitmap_alloc(ctx, &vcpu_bitmap, b_info->max_vcpus)) {
-            virReportOOMError();
-            goto cleanup;
-        }
+        if (libxl_cpu_bitmap_alloc(ctx, &vcpu_bitmap, b_info->max_vcpus))
+            abort();
 
         do {
             libxl_bitmap_set(&vcpu_bitmap, cpu);
