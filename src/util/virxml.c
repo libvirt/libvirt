@@ -51,10 +51,8 @@ virXMLXPathContextNew(xmlDocPtr xml)
 {
     xmlXPathContextPtr ctxt;
 
-    if (!(ctxt = xmlXPathNewContext(xml))) {
-        virReportOOMError();
-        return NULL;
-    }
+    if (!(ctxt = xmlXPathNewContext(xml)))
+        abort();
 
     return ctxt;
 }
