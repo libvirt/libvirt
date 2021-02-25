@@ -45,9 +45,9 @@ qemuShimEventLoop(void *opaque G_GNUC_UNUSED)
     while (!quit) {
         g_mutex_lock(&eventLock);
         if (eventQuitFlag && !eventPreventQuitFlag) {
+            quit = true;
             if (dom) {
                 virDomainDestroy(dom);
-                quit = true;
             }
         }
         g_mutex_unlock(&eventLock);
