@@ -560,21 +560,6 @@ qemuBackupJobTerminate(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     size_t i;
 
-    qemuDomainJobInfoUpdateTime(priv->job.current);
-
-    g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
-    priv->job.completed = qemuDomainJobInfoCopy(priv->job.current);
-
-    priv->job.completed->stats.backup.total = priv->backup->push_total;
-    priv->job.completed->stats.backup.transferred = priv->backup->push_transferred;
-    priv->job.completed->stats.backup.tmp_used = priv->backup->pull_tmp_used;
-    priv->job.completed->stats.backup.tmp_total = priv->backup->pull_tmp_total;
-
-    priv->job.completed->status = jobstatus;
-    priv->job.completed->errmsg = g_strdup(priv->backup->errmsg);
-
-    qemuDomainEventEmitJobCompleted(priv->driver, vm);
-
     if (!(priv->job.apiFlags & VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL) &&
         (priv->backup->type == VIR_DOMAIN_BACKUP_TYPE_PULL ||
          (priv->backup->type == VIR_DOMAIN_BACKUP_TYPE_PUSH &&
@@ -597,6 +582,21 @@ qemuBackupJobTerminate(virDomainObjPtr vm,
                          backupdisk->store->path);
         }
     }
+
+    qemuDomainJobInfoUpdateTime(priv->job.current);
+
+    g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
+    priv->job.completed = qemuDomainJobInfoCopy(priv->job.current);
+
+    priv->job.completed->stats.backup.total = priv->backup->push_total;
+    priv->job.completed->stats.backup.transferred = priv->backup->push_transferred;
+    priv->job.completed->stats.backup.tmp_used = priv->backup->pull_tmp_used;
+    priv->job.completed->stats.backup.tmp_total = priv->backup->pull_tmp_total;
+
+    priv->job.completed->status = jobstatus;
+    priv->job.completed->errmsg = g_strdup(priv->backup->errmsg);
+
+    qemuDomainEventEmitJobCompleted(priv->driver, vm);
 
     virDomainBackupDefFree(priv->backup);
     priv->backup = NULL;
