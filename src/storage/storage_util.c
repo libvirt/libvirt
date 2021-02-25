@@ -3435,7 +3435,8 @@ storageBackendProbeTarget(virStorageSourcePtr target,
         return -1;
 
     if (meta->backingStoreRaw) {
-        virStorageSourceNewFromBacking(meta, &target->backingStore);
+        if (virStorageSourceNewFromBacking(meta, &target->backingStore) < 0)
+            return -1;
 
         /* XXX: Remote storage doesn't play nicely with volumes backed by
          * remote storage. To avoid trouble, just fake the backing store is RAW
