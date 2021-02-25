@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-02-22 08:42+0000\n"
-"PO-Revision-Date: 2021-02-18 11:40+0000\n"
+"PO-Revision-Date: 2021-02-25 10:40+0000\n"
 "Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -5914,7 +5914,7 @@ msgid "Event thread is already running"
 msgstr "Tapahtumaketju on jo käynnissä"
 
 msgid "Event wakeup"
-msgstr ""
+msgstr "Tapahtuman herätys"
 
 msgid ""
 "Exactly one 'cell' element per guest NUMA cell allowed, non-contiguous "
@@ -14912,7 +14912,7 @@ msgid "Suspend-to-RAM"
 msgstr ""
 
 msgid "Suspended"
-msgstr ""
+msgstr "Keskeytetty"
 
 #, sh-format
 msgid "Suspending $name: "
@@ -18931,9 +18931,8 @@ msgstr ""
 msgid "Unnkown proxy type '%s'"
 msgstr ""
 
-#, fuzzy
 msgid "Unpaused"
-msgstr "pysäytetty"
+msgstr "Ei keskeytetty"
 
 #, c-format
 msgid "Unrecognized controller type %d"
@@ -19153,7 +19152,7 @@ msgid "Unsupported disk device type '%s'"
 msgstr "Levyn laitetyyppi '%s' ei tuettu"
 
 msgid "Unsupported disk type"
-msgstr ""
+msgstr "Levytyyppi ei tuettu"
 
 #, c-format
 msgid "Unsupported disk type %d"
@@ -19264,9 +19263,8 @@ msgstr "vbox-laitetyyppi ei tuettu: %d"
 msgid "Unsupported video device type '%s'"
 msgstr "Videolaitteen tyyppi '%s' ei tuettu"
 
-#, fuzzy
 msgid "Unsupported virt type"
-msgstr "levytyyppi ei tuettu"
+msgstr "virt-tyyppi ei tuettu"
 
 #, c-format
 msgid "Unsupported volume format '%s'"
@@ -19603,7 +19601,7 @@ msgid "Wakeup a domain that was previously suspended by power management."
 msgstr "Palauta aiemmin keskeytystilaan asetettu toimialue."
 
 msgid "Watchdog"
-msgstr ""
+msgstr "Vahtikoira"
 
 #, fuzzy, c-format
 msgid ""
@@ -21819,11 +21817,11 @@ msgid "cannot read beginning of file '%s'"
 msgstr ""
 
 msgid "cannot read cputime for domain"
-msgstr ""
+msgstr "ei pysty lukemaan toimialueen cpu-aikaa"
 
 #, c-format
 msgid "cannot read cputime for domain %d"
-msgstr ""
+msgstr "ei pysty lukemaan toimialueen %d cpu-aikaa"
 
 #, c-format
 msgid "cannot read dir '%s'"
@@ -21980,9 +21978,8 @@ msgstr ""
 msgid "cannot set CPU affinity on process %d"
 msgstr ""
 
-#, fuzzy
 msgid "cannot set autostart for transient domain"
-msgstr "käynnistä toimialue automaattisesti"
+msgstr "ei pysty asettamaan autokäynnistystä ohimenevälle toimialueelle"
 
 #, fuzzy
 msgid "cannot set autostart for transient network"
@@ -22118,9 +22115,8 @@ msgstr ""
 msgid "cannot undefine domain with nvram"
 msgstr "Toimialueen %s määrityksen poistaminen epäonnistui"
 
-#, fuzzy
 msgid "cannot undefine transient domain"
-msgstr "Toimialueen %s määrityksen poistaminen epäonnistui"
+msgstr "ohimenavän toimialueen määrityksen poistaminen epäonnistui"
 
 #, c-format
 msgid "cannot unlink '%s'"
@@ -22950,9 +22946,8 @@ msgstr ""
 msgid "could not get snapshot count for listed domains"
 msgstr ""
 
-#, fuzzy
 msgid "could not get snapshot name"
-msgstr "konenimen haku epäonnistui"
+msgstr "tilannevedoksen nimen haku epäonnistui"
 
 #, c-format
 msgid "could not get the volume list in the pool: %s, rc=%08x"
@@ -23386,7 +23381,7 @@ msgid "delete a vol"
 msgstr ""
 
 msgid "delete an IOThread from the guest domain"
-msgstr ""
+msgstr "poista IOThread vierastoimialueesta"
 
 msgid "delete checkpoint and all children"
 msgstr ""
@@ -24303,7 +24298,7 @@ msgid "dumpformat '%d' is not supported"
 msgstr ""
 
 msgid "dumping"
-msgstr ""
+msgstr "tyhjennys"
 
 msgid "dup2(stderr) failed"
 msgstr ""
@@ -24797,7 +24792,7 @@ msgid "event loop timed out\n"
 msgstr ""
 
 msgid "event wakeup"
-msgstr ""
+msgstr "tapahtuman herätys"
 
 #, c-format
 msgid "eventID in %s must be less than %d"
@@ -33655,7 +33650,7 @@ msgid "save a domain state to a file"
 msgstr "tallenna toimialueen tila tiedostoon"
 
 msgid "save canceled"
-msgstr ""
+msgstr "tallennus peruutettu"
 
 msgid "save image is incomplete"
 msgstr ""
@@ -37472,9 +37467,8 @@ msgstr ""
 msgid "unmanaged target dev is not supported on interfaces of type '%s'"
 msgstr ""
 
-#, fuzzy
 msgid "unpaused"
-msgstr "pysäytetty"
+msgstr "pois-keskeytetty"
 
 msgid "unplug of device was rejected by the guest"
 msgstr ""
@@ -37948,7 +37942,7 @@ msgid "use backing file of top as base"
 msgstr ""
 
 msgid "use btrfs COW lightweight copy"
-msgstr ""
+msgstr "käytä btrfs COW kevyttä kopiointia"
 
 msgid "use capacity as a delta to current size, rather than the new size"
 msgstr ""
@@ -38751,7 +38745,7 @@ msgid "warning"
 msgstr "varoitus"
 
 msgid "watchdog"
-msgstr ""
+msgstr "vahtikoira"
 
 msgid "watchdog device not present in domain configuration"
 msgstr ""
