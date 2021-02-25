@@ -583,6 +583,9 @@ qemuBackupJobTerminate(virDomainObjPtr vm,
         }
     }
 
+    if (!virDomainObjIsActive(vm))
+        return;
+
     qemuDomainJobInfoUpdateTime(priv->job.current);
 
     g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
