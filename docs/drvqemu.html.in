@@ -73,6 +73,8 @@ qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
       registered &amp; be running an instance of the event loop. To open
       the driver in embedded mode the app use the new URI path and specify
       a virtual root directory under which the driver will create content.
+      The path to the root directory must be absolute. Passing a relative
+      path results in an error.
     </p>
 
     <pre>

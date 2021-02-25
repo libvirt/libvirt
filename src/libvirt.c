@@ -996,6 +996,12 @@ virConnectOpenInternal(const char *name,
             if (!root)
                 goto failed;
 
+            if (!g_path_is_absolute(root)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("root path must be absolute"));
+                goto failed;
+            }
+
             if (virEventRequireImpl() < 0)
                 goto failed;
 
