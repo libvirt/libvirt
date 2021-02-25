@@ -7481,7 +7481,7 @@ virDomainNetIPInfoParseXML(const char *source,
                            xmlXPathContextPtr ctxt,
                            virNetDevIPInfoPtr def)
 {
-    virNetDevIPRoutePtr route = NULL;
+    g_autoptr(virNetDevIPRoute) route = NULL;
     int nnodes;
     int ret = -1;
     size_t i;
@@ -7511,7 +7511,6 @@ virDomainNetIPInfoParseXML(const char *source,
  cleanup:
     if (ret < 0)
         virNetDevIPInfoClear(def);
-    virNetDevIPRouteFree(route);
     return ret;
 }
 

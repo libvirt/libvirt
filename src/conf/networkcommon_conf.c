@@ -41,7 +41,7 @@ virNetDevIPRouteCreate(const char *errorDetail,
                        unsigned int metric,
                        bool hasMetric)
 {
-    virNetDevIPRoutePtr def = NULL;
+    g_autoptr(virNetDevIPRoute) def = NULL;
     virSocketAddr testAddr;
 
     def = g_new0(virNetDevIPRoute, 1);
@@ -209,10 +209,9 @@ virNetDevIPRouteCreate(const char *errorDetail,
         goto error;
     }
 
-    return def;
+    return g_steal_pointer(&def);
 
  error:
-    virNetDevIPRouteFree(def);
     return NULL;
 }
 

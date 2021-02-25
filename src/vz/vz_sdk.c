@@ -974,7 +974,7 @@ prlsdkGetRoutes(PRL_HANDLE sdknet, virDomainNetDefPtr net)
     int ret = -1;
     char *gw = NULL;
     char *gw6 = NULL;
-    virNetDevIPRoutePtr route = NULL;
+    g_autoptr(virNetDevIPRoute) route = NULL;
 
     if (!(gw = prlsdkGetStringParamVar(PrlVmDevNet_GetDefaultGateway, sdknet)))
         goto cleanup;
@@ -1006,7 +1006,6 @@ prlsdkGetRoutes(PRL_HANDLE sdknet, virDomainNetDefPtr net)
     ret = 0;
 
  cleanup:
-    virNetDevIPRouteFree(route);
     VIR_FREE(gw);
     VIR_FREE(gw6);
 

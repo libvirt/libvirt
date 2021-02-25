@@ -441,7 +441,7 @@ lxcAddNetworkRouteDefinition(const char *address,
                              virNetDevIPRoutePtr **routes,
                              size_t *nroutes)
 {
-    virNetDevIPRoutePtr route = NULL;
+    g_autoptr(virNetDevIPRoute) route = NULL;
     g_autofree char *familyStr = NULL;
     g_autofree char *zero = NULL;
 
@@ -460,7 +460,6 @@ lxcAddNetworkRouteDefinition(const char *address,
     return 0;
 
  error:
-    virNetDevIPRouteFree(route);
     return -1;
 }
 
