@@ -452,15 +452,12 @@ lxcAddNetworkRouteDefinition(const char *address,
     if (!(route = virNetDevIPRouteCreate(_("Domain interface"), familyStr,
                                          zero, NULL, address, 0, false,
                                          0, false)))
-        goto error;
+        return -1;
 
     if (VIR_APPEND_ELEMENT(*routes, *nroutes, route) < 0)
-        goto error;
+        return -1;
 
     return 0;
-
- error:
-    return -1;
 }
 
 static int
