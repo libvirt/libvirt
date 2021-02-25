@@ -158,8 +158,10 @@ qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
       in mind, applications must <strong>NEVER</strong> invoke API
       calls from the event loop thread itself, only other threads.
       Not following this rule will lead to deadlocks in the API.
-      This restriction is intended to be lifted in a future release
-      of libvirt, once QMP processing moves to a dedicated thread.
+      This restriction was lifted starting from 6.2.0 release, when
+      QMP processing moved to a dedicated thread. However, it is
+      important to let the event loop run after each API call, even
+      the ones made from the event loop thread itself.
     </p>
 
     <h2><a id="configFiles">Location of configuration files</a></h2>
