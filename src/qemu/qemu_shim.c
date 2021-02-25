@@ -210,11 +210,16 @@ int main(int argc, char **argv)
         }
         tmproot = true;
 
-        if (chmod(root, 0755) < 0) {
-            g_printerr("%s: cannot chown temporary dir: %s\n",
-                       argv[0], g_strerror(errno));
-            goto cleanup;
-        }
+    } else if (g_mkdir_with_parents(root, 0755) < 0) {
+        g_printerr("%s: cannot create dir: %s\n",
+                   argv[0], g_strerror(errno));
+        goto cleanup;
+    }
+
+    if (chmod(root, 0755) < 0) {
+        g_printerr("%s: cannot chmod temporary dir: %s\n",
+                   argv[0], g_strerror(errno));
+        goto cleanup;
     }
 
     escaped = g_uri_escape_string(root, NULL, true);
