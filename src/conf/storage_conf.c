@@ -1643,6 +1643,35 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
 }
 
 
+static void
+virStorageVolDefFormatSourceExtents(virBufferPtr buf,
+                                    virStorageVolDefPtr def)
+{
+    size_t i;
+    const char *thispath = NULL;
+
+    for (i = 0; i < def->source.nextent; i++) {
+        if (thispath == NULL ||
+            STRNEQ(thispath, def->source.extents[i].path)) {
+            if (thispath != NULL)
+                virBufferAddLit(buf, "</device>\n");
+
+            virBufferEscapeString(buf, "<device path='%s'>\n",
+                                  def->source.extents[i].path);
+        }
+
+        virBufferAdjustIndent(buf, 2);
+        virBufferAsprintf(buf, "<extent start='%llu' end='%llu'/>\n",
+                          def->source.extents[i].start,
+                          def->source.extents[i].end);
+        virBufferAdjustIndent(buf, -2);
+        thispath = def->source.extents[i].path;
+    }
+    if (thispath != NULL)
+        virBufferAddLit(buf, "</device>\n");
+}
+
+
 char *
 virStorageVolDefFormat(virStoragePoolDefPtr pool,
                        virStorageVolDefPtr def)
@@ -1663,29 +1692,8 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
     virBufferAddLit(&buf, "<source>\n");
     virBufferAdjustIndent(&buf, 2);
 
-    if (def->source.nextent) {
-        size_t i;
-        const char *thispath = NULL;
-        for (i = 0; i < def->source.nextent; i++) {
-            if (thispath == NULL ||
-                STRNEQ(thispath, def->source.extents[i].path)) {
-                if (thispath != NULL)
-                    virBufferAddLit(&buf, "</device>\n");
-
-                virBufferEscapeString(&buf, "<device path='%s'>\n",
-                                      def->source.extents[i].path);
-            }
-
-            virBufferAdjustIndent(&buf, 2);
-            virBufferAsprintf(&buf, "<extent start='%llu' end='%llu'/>\n",
-                              def->source.extents[i].start,
-                              def->source.extents[i].end);
-            virBufferAdjustIndent(&buf, -2);
-            thispath = def->source.extents[i].path;
-        }
-        if (thispath != NULL)
-            virBufferAddLit(&buf, "</device>\n");
-    }
+    if (def->source.nextent)
+        virStorageVolDefFormatSourceExtents(&buf, def);
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</source>\n");
