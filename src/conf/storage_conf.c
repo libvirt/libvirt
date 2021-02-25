@@ -1678,6 +1678,7 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
 {
     virStorageVolOptionsPtr options;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INITIALIZER;
 
     options = virStorageVolOptionsForPoolType(pool->type);
     if (options == NULL)
@@ -1689,14 +1690,13 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
 
     virBufferEscapeString(&buf, "<name>%s</name>\n", def->name);
     virBufferEscapeString(&buf, "<key>%s</key>\n", def->key);
-    virBufferAddLit(&buf, "<source>\n");
-    virBufferAdjustIndent(&buf, 2);
+
+    virBufferSetIndent(&sourceChildBuf, virBufferGetIndent(&buf) + 2);
 
     if (def->source.nextent)
-        virStorageVolDefFormatSourceExtents(&buf, def);
+        virStorageVolDefFormatSourceExtents(&sourceChildBuf, def);
 
-    virBufferAdjustIndent(&buf, -2);
-    virBufferAddLit(&buf, "</source>\n");
+    virXMLFormatElement(&buf, "source", NULL, &sourceChildBuf);
 
     virBufferAsprintf(&buf, "<capacity unit='bytes'>%llu</capacity>\n",
                       def->target.capacity);

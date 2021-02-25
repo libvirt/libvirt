@@ -1,7 +1,5 @@
 <volume type='file'>
   <name>&lt;sparse&gt;.img</name>
-  <source>
-  </source>
   <capacity unit='bytes'>1099511627776</capacity>
   <allocation unit='bytes'>0</allocation>
   <target>

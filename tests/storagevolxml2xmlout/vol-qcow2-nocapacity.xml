@@ -1,8 +1,6 @@
 <volume type='file'>
   <name>OtherDemo.img</name>
   <key>/var/lib/libvirt/images/OtherDemo.img</key>
-  <source>
-  </source>
   <capacity unit='bytes'>0</capacity>
   <allocation unit='bytes'>0</allocation>
   <target>

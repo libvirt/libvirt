@@ -1,8 +1,6 @@
 <volume type='file'>
   <name>LuksDemo.img</name>
   <key>/var/lib/libvirt/images/LuksDemo.img</key>
-  <source>
-  </source>
   <capacity unit='bytes'>5368709120</capacity>
   <allocation unit='bytes'>294912</allocation>
   <target>

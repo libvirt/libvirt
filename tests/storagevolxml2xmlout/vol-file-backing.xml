@@ -1,8 +1,6 @@
 <volume type='file'>
   <name>sparse.img</name>
   <key>/var/lib/libvirt/images/sparse.img</key>
-  <source>
-  </source>
   <capacity unit='bytes'>10000000000</capacity>
   <allocation unit='bytes'>0</allocation>
   <target>

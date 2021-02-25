@@ -1,8 +1,6 @@
 <volume type='block'>
   <name>Swap</name>
   <key>r4xkCv-MQhr-WKIT-R66x-Epn2-e8hG-1Z5gY0</key>
-  <source>
-  </source>
   <capacity unit='bytes'>2080374784</capacity>
   <allocation unit='bytes'>2080374784</allocation>
   <target>

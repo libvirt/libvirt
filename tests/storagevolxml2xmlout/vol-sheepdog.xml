@@ -1,7 +1,5 @@
 <volume type='network'>
   <name>test2</name>
-  <source>
-  </source>
   <capacity unit='bytes'>1024</capacity>
   <allocation unit='bytes'>0</allocation>
   <target>

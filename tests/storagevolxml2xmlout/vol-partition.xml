@@ -1,8 +1,6 @@
 <volume type='block'>
   <name>sda1</name>
   <key>/dev/sda1</key>
-  <source>
-  </source>
   <capacity unit='bytes'>106896384</capacity>
   <allocation unit='bytes'>106896384</allocation>
   <target>
