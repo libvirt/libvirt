@@ -82,6 +82,21 @@ qemuTPMCreateEmulatorStoragePath(const char *swtpmStorageDir,
 }
 
 
+/**
+ * qemuTPMCreateEmulatorLogPath:
+ * @logDir: directory where swtpm writes its logs into
+ * @vmname: name of the VM
+ *
+ * Create the swtpm's log path.
+ */
+static char*
+qemuTPMCreateEmulatorLogPath(const char *logDir,
+                             const char *vmname)
+{
+    return g_strdup_printf("%s/%s-swtpm.log", logDir, vmname);
+}
+
+
 /*
  * qemuTPMEmulatorInitStorage
  *
@@ -286,7 +301,7 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
 
     /* create logfile name ... */
     if (!tpm->data.emulator.logfile)
-        tpm->data.emulator.logfile = g_strdup_printf("%s/%s-swtpm.log", logDir, vmname);
+        tpm->data.emulator.logfile = qemuTPMCreateEmulatorLogPath(logDir, vmname);
 
     if (!virFileExists(tpm->data.emulator.logfile) &&
         virFileTouch(tpm->data.emulator.logfile, 0644) < 0) {
