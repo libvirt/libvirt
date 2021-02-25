@@ -755,6 +755,70 @@ void virRaiseErrorLog(const char *filename,
                       meta, "%s", err->message);
 }
 
+
+/**
+ * virRaiseErrorInternal:
+ *
+ * Internal helper to assign and raise error. Note that @msgarg, @str1arg,
+ * @str2arg and @str3arg if non-NULL must be heap-allocated strings and are
+ * stolen and freed by this function.
+ */
+static void
+virRaiseErrorInternal(const char *filename,
+                      const char *funcname,
+                      size_t linenr,
+                      int domain,
+                      int code,
+                      virErrorLevel level,
+                      char *msgarg,
+                      char *str1arg,
+                      char *str2arg,
+                      char *str3arg,
+                      int int1,
+                      int int2)
+{
+    g_autofree char *msg = msgarg;
+    g_autofree char *str1 = str1arg;
+    g_autofree char *str2 = str2arg;
+    g_autofree char *str3 = str3arg;
+    virErrorPtr to;
+    virLogMetadata meta[] = {
+        { .key = "LIBVIRT_DOMAIN", .s = NULL, .iv = domain },
+        { .key = "LIBVIRT_CODE", .s = NULL, .iv = code },
+        { .key = NULL },
+    };
+
+    /*
+     * All errors are recorded in thread local storage
+     * For compatibility, public API calls will copy them
+     * to the per-connection error object when necessary
+     */
+    if (!(to = virLastErrorObject()))
+        return;
+
+    virResetError(to);
+
+    if (code == VIR_ERR_OK)
+        return;
+
+    if (!msg)
+        msg = g_strdup(_("No error message provided"));
+
+    /* Deliberately not setting conn, dom & net fields sincethey're utterly unsafe. */
+    to->domain = domain;
+    to->code = code;
+    to->message = g_steal_pointer(&msg);
+    to->level = level;
+    to->str1 = g_steal_pointer(&str1);
+    to->str2 = g_steal_pointer(&str2);
+    to->str3 = g_steal_pointer(&str3);
+    to->int1 = int1;
+    to->int2 = int2;
+
+    virRaiseErrorLog(filename, funcname, linenr, to, meta);
+}
+
+
 /**
  * virRaiseErrorFull:
  * @filename: filename where error was raised
@@ -789,63 +853,20 @@ virRaiseErrorFull(const char *filename,
                   const char *fmt, ...)
 {
     int save_errno = errno;
-    virErrorPtr to;
-    char *str;
-    virLogMetadata meta[] = {
-        { .key = "LIBVIRT_DOMAIN", .s = NULL, .iv = domain },
-        { .key = "LIBVIRT_CODE", .s = NULL, .iv = code },
-        { .key = NULL },
-    };
+    char *msg = NULL;
 
-    /*
-     * All errors are recorded in thread local storage
-     * For compatibility, public API calls will copy them
-     * to the per-connection error object when necessary
-     */
-    to = virLastErrorObject();
-    if (!to) {
-        errno = save_errno;
-        return; /* Hit OOM allocating thread error object, sod all we can do now */
-    }
-
-    virResetError(to);
-
-    if (code == VIR_ERR_OK) {
-        errno = save_errno;
-        return;
-    }
-
-    /*
-     * formats the message; drop message on OOM situations
-     */
-    if (fmt == NULL) {
-        str = g_strdup(_("No error message provided"));
-    } else {
+    if (fmt) {
         va_list ap;
+
         va_start(ap, fmt);
-        str = g_strdup_vprintf(fmt, ap);
+        msg = g_strdup_vprintf(fmt, ap);
         va_end(ap);
     }
 
-    /*
-     * Save the information about the error
-     */
-    /*
-     * Deliberately not setting conn, dom & net fields since
-     * they're utterly unsafe
-     */
-    to->domain = domain;
-    to->code = code;
-    to->message = str;
-    to->level = level;
-    to->str1 = g_strdup(str1);
-    to->str2 = g_strdup(str2);
-    to->str3 = g_strdup(str3);
-    to->int1 = int1;
-    to->int2 = int2;
-
-    virRaiseErrorLog(filename, funcname, linenr,
-                     to, meta);
+    virRaiseErrorInternal(filename, funcname, linenr,
+                          domain, code, level,
+                          msg, g_strdup(str1), g_strdup(str2), g_strdup(str3),
+                          int1, int2);
 
     errno = save_errno;
 }
@@ -1286,8 +1307,9 @@ void virReportErrorHelper(int domcode,
                           const char *fmt, ...)
 {
     int save_errno = errno;
-    g_autofree char *detail = NULL;
-    const char *errormsg;
+    char *detail = NULL;
+    char *errormsg = NULL;
+    char *fullmsg = NULL;
 
     if (fmt) {
         va_list args;
@@ -1297,12 +1319,19 @@ void virReportErrorHelper(int domcode,
         va_end(args);
     }
 
-    errormsg = virErrorMsg(errorcode, detail);
+    errormsg = g_strdup(virErrorMsg(errorcode, detail));
 
-    virRaiseErrorFull(filename, funcname, linenr,
-                      domcode, errorcode, VIR_ERR_ERROR,
-                      errormsg, detail, NULL,
-                      -1, -1, errormsg, detail);
+    if (errormsg) {
+        if (detail)
+            fullmsg = g_strdup_printf(errormsg, detail);
+        else
+            fullmsg = g_strdup(errormsg);
+    }
+
+    virRaiseErrorInternal(filename, funcname, linenr,
+                          domcode, errorcode, VIR_ERR_ERROR,
+                          fullmsg, errormsg, detail, NULL, -1, -1);
+
     errno = save_errno;
 }
 
@@ -1327,8 +1356,9 @@ void virReportSystemErrorFull(int domcode,
 {
     int save_errno = errno;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    g_autofree char *detail = NULL;
-    const char *errormsg;
+    char *detail = NULL;
+    char *errormsg = NULL;
+    char *fullmsg = NULL;
 
     if (fmt) {
         va_list args;
@@ -1343,11 +1373,12 @@ void virReportSystemErrorFull(int domcode,
     virBufferAdd(&buf, g_strerror(theerrno), -1);
 
     detail = virBufferContentAndReset(&buf);
-    errormsg = virErrorMsg(VIR_ERR_SYSTEM_ERROR, detail);
+    errormsg = g_strdup(virErrorMsg(VIR_ERR_SYSTEM_ERROR, detail));
+    fullmsg = g_strdup_printf(errormsg, detail);
 
-    virRaiseErrorFull(filename, funcname, linenr,
-                      domcode, VIR_ERR_SYSTEM_ERROR, VIR_ERR_ERROR,
-                      errormsg, detail, NULL, theerrno, -1, errormsg, detail);
+    virRaiseErrorInternal(filename, funcname, linenr,
+                          domcode, VIR_ERR_SYSTEM_ERROR, VIR_ERR_ERROR,
+                          fullmsg, errormsg, detail, NULL, theerrno, -1);
     errno = save_errno;
 }
 
