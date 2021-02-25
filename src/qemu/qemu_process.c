@@ -2149,7 +2149,8 @@ qemuProcessReportLogError(qemuDomainLogContextPtr logCtxt,
     if (virStringIsEmpty(logmsg))
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", msgprefix);
     else
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("%s: %s"), msgprefix, logmsg);
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s: %s", /* _( silence sc_libvirt_unmarked_diagnostics */
+                       msgprefix, logmsg);
 
     return 0;
 }
