@@ -277,9 +277,6 @@ int virDirRead(DIR *dirp, struct dirent **ent, const char *dirname)
 void virDirClose(DIR *dirp);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(DIR, virDirClose);
 
-int virFileMakePath(const char *path) G_GNUC_WARN_UNUSED_RESULT;
-int virFileMakePathWithMode(const char *path,
-                            mode_t mode) G_GNUC_WARN_UNUSED_RESULT;
 int virFileMakeParentPath(const char *path) G_GNUC_WARN_UNUSED_RESULT;
 
 char *virFileBuildPath(const char *dir,

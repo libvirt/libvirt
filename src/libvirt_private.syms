@@ -2201,8 +2201,6 @@ virFileLinkPointsTo;
 virFileLock;
 virFileLoopDeviceAssociate;
 virFileMakeParentPath;
-virFileMakePath;
-virFileMakePathWithMode;
 virFileMoveMount;
 virFileNBDDeviceAssociate;
 virFileOpenAs;
