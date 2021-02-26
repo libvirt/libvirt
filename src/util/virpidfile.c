@@ -489,7 +489,7 @@ virPidFileConstructPath(bool privileged,
     } else {
         rundir = virGetUserRuntimeDirectory();
 
-        if (virFileMakePathWithMode(rundir, 0700) < 0) {
+        if (g_mkdir_with_parents(rundir, 0700) < 0) {
             virReportSystemError(errno,
                                  _("Cannot create user runtime directory '%s'"),
                                  rundir);

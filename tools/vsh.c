@@ -2870,7 +2870,7 @@ static void
 vshReadlineDeinit(vshControl *ctl)
 {
     if (ctl->historyfile != NULL) {
-        if (virFileMakePathWithMode(ctl->historydir, 0755) < 0 &&
+        if (g_mkdir_with_parents(ctl->historydir, 0755) < 0 &&
             errno != EEXIST) {
             vshError(ctl, _("Failed to create '%s': %s"),
                      ctl->historydir, g_strerror(errno));

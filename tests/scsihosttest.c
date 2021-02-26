@@ -87,7 +87,7 @@ create_scsihost(const char *fakesysfsdir, const char *devicepath,
     }
     spot--;
     *spot = '\0';
-    if (virFileMakePathWithMode(unique_id_path, 0755) < 0) {
+    if (g_mkdir_with_parents(unique_id_path, 0755) < 0) {
         fprintf(stderr, "Unable to make path to '%s'\n", unique_id_path);
         goto cleanup;
     }
@@ -102,7 +102,7 @@ create_scsihost(const char *fakesysfsdir, const char *devicepath,
     }
     spot--;
     *spot = '\0';
-    if (virFileMakePathWithMode(link_path, 0755) < 0) {
+    if (g_mkdir_with_parents(link_path, 0755) < 0) {
         fprintf(stderr, "Unable to make path to '%s'\n", link_path);
         goto cleanup;
     }

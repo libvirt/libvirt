@@ -2031,7 +2031,7 @@ nodeStateInitialize(bool privileged,
         driver->stateDir = g_strdup_printf("%s/nodedev/run", rundir);
     }
 
-    if (virFileMakePathWithMode(driver->stateDir, S_IRWXU) < 0) {
+    if (g_mkdir_with_parents(driver->stateDir, S_IRWXU) < 0) {
         virReportSystemError(errno, _("cannot create state directory '%s'"),
                              driver->stateDir);
         goto cleanup;

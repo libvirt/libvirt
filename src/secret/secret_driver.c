@@ -489,13 +489,13 @@ secretStateInitialize(bool privileged,
         driver->stateDir = g_strdup_printf("%s/secrets/run", rundir);
     }
 
-    if (virFileMakePathWithMode(driver->configDir, S_IRWXU) < 0) {
+    if (g_mkdir_with_parents(driver->configDir, S_IRWXU) < 0) {
         virReportSystemError(errno, _("cannot create config directory '%s'"),
                              driver->configDir);
         goto error;
     }
 
-    if (virFileMakePathWithMode(driver->stateDir, S_IRWXU) < 0) {
+    if (g_mkdir_with_parents(driver->stateDir, S_IRWXU) < 0) {
         virReportSystemError(errno, _("cannot create state directory '%s'"),
                              driver->stateDir);
         goto error;

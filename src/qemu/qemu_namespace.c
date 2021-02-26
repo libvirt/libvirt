@@ -985,7 +985,7 @@ qemuNamespaceMknodOne(qemuNamespaceMknodItemPtr data)
             goto cleanup;
         }
         if ((isReg && virFileTouch(data->file, data->sb.st_mode) < 0) ||
-            (isDir && virFileMakePathWithMode(data->file, data->sb.st_mode) < 0))
+            (isDir && g_mkdir_with_parents(data->file, data->sb.st_mode) < 0))
             goto cleanup;
         delDevice = true;
         /* Just create the file here so that code below sets

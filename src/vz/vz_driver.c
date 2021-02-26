@@ -4115,7 +4115,7 @@ vzStateInitialize(bool privileged,
 
     vz_driver_privileged = privileged;
 
-    if (virFileMakePathWithMode(VZ_STATEDIR, S_IRWXU) < 0) {
+    if (g_mkdir_with_parents(VZ_STATEDIR, S_IRWXU) < 0) {
         virReportSystemError(errno, _("cannot create state directory '%s'"),
                              VZ_STATEDIR);
         return VIR_DRV_STATE_INIT_ERROR;

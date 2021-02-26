@@ -110,7 +110,7 @@ qemuTPMEmulatorInitStorage(const char *swtpmStorageDir)
     int rc = 0;
 
     /* allow others to cd into this dir */
-    if (virFileMakePathWithMode(swtpmStorageDir, 0711) < 0) {
+    if (g_mkdir_with_parents(swtpmStorageDir, 0711) < 0) {
         virReportSystemError(errno,
                              _("Could not create TPM directory %s"),
                              swtpmStorageDir);
@@ -298,7 +298,7 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
         return -1;
 
     /* create log dir ... allow 'tss' user to cd into it */
-    if (virFileMakePathWithMode(logDir, 0711) < 0)
+    if (g_mkdir_with_parents(logDir, 0711) < 0)
         return -1;
 
     /* ... and adjust ownership */

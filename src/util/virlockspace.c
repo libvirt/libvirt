@@ -263,7 +263,7 @@ virLockSpacePtr virLockSpaceNew(const char *directory)
                 goto error;
             }
         } else {
-            if (virFileMakePathWithMode(directory, 0700) < 0) {
+            if (g_mkdir_with_parents(directory, 0700) < 0) {
                 virReportSystemError(errno,
                                      _("Unable to create lockspace %s"),
                                      directory);

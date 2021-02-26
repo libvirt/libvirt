@@ -1811,7 +1811,7 @@ virNWFilterSnoopLeaseFileRefresh(void)
 {
     int tfd;
 
-    if (virFileMakePathWithMode(LEASEFILE_DIR, 0700) < 0) {
+    if (g_mkdir_with_parents(LEASEFILE_DIR, 0700) < 0) {
         virReportError(errno, _("mkdir(\"%s\")"), LEASEFILE_DIR);
         return;
     }

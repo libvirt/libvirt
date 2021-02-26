@@ -3937,7 +3937,7 @@ qemuProcessBuildDestroyMemoryPathsImpl(virQEMUDriverPtr driver,
         if (virFileExists(path))
             return 0;
 
-        if (virFileMakePathWithMode(path, 0700) < 0) {
+        if (g_mkdir_with_parents(path, 0700) < 0) {
             virReportSystemError(errno,
                                  _("Unable to create %s"),
                                  path);
@@ -5164,7 +5164,7 @@ qemuProcessMakeDir(virQEMUDriverPtr driver,
                    virDomainObjPtr vm,
                    const char *path)
 {
-    if (virFileMakePathWithMode(path, 0750) < 0) {
+    if (g_mkdir_with_parents(path, 0750) < 0) {
         virReportSystemError(errno, _("Cannot create directory '%s'"), path);
         return -1;
     }

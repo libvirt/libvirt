@@ -3079,7 +3079,7 @@ virFileMakePathHelper(char *path, mode_t mode)
 int
 virFileMakePath(const char *path)
 {
-    return virFileMakePathWithMode(path, 0777);
+    return g_mkdir_with_parents(path, 0777);
 }
 
 int
