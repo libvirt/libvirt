@@ -83,8 +83,12 @@ mandir = prefix / get_option('mandir')
 sbindir = prefix / get_option('sbindir')
 sharedstatedir = prefix / get_option('sharedstatedir')
 
+docdir = get_option('docdir')
+if docdir == ''
+  docdir = datadir / 'doc' / meson.project_name()
+endif
+
 confdir = sysconfdir / meson.project_name()
-docdir = datadir / 'doc' / meson.project_name()
 pkgdatadir = datadir / meson.project_name()
 
 
