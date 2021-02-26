@@ -864,7 +864,7 @@ virCgroupV1BindMount(virCgroupPtr group,
 
     VIR_DEBUG("Mounting cgroups at '%s'", root);
 
-    if (virFileMakePath(root) < 0) {
+    if (g_mkdir_with_parents(root, 0777) < 0) {
         virReportSystemError(errno,
                              _("Unable to create directory %s"),
                              root);
@@ -890,7 +890,7 @@ virCgroupV1BindMount(virCgroupPtr group,
 
             VIR_DEBUG("Create mount point '%s'",
                       group->legacy[i].mountPoint);
-            if (virFileMakePath(group->legacy[i].mountPoint) < 0) {
+            if (g_mkdir_with_parents(group->legacy[i].mountPoint, 0777) < 0) {
                 virReportSystemError(errno,
                                      _("Unable to create directory %s"),
                                      group->legacy[i].mountPoint);

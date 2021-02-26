@@ -141,11 +141,11 @@ testPrepImages(void)
     absdir = g_strdup_printf("%s/dir", datadir);
     abslink2 = g_strdup_printf("%s/sub/link2", datadir);
 
-    if (virFileMakePath(datadir "/sub") < 0) {
+    if (g_mkdir_with_parents(datadir "/sub", 0777) < 0) {
         fprintf(stderr, "unable to create directory %s\n", datadir "/sub");
         goto cleanup;
     }
-    if (virFileMakePath(datadir "/dir") < 0) {
+    if (g_mkdir_with_parents(datadir "/dir", 0777) < 0) {
         fprintf(stderr, "unable to create directory %s\n", datadir "/dir");
         goto cleanup;
     }

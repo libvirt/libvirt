@@ -2337,7 +2337,7 @@ virResctrlCreateGroupPath(const char *path)
     if (virFileExists(path))
         return 0;
 
-    if (virFileMakePath(path) < 0) {
+    if (g_mkdir_with_parents(path, 0777) < 0) {
         virReportSystemError(errno,
                              _("Cannot create resctrl directory '%s'"),
                              path);

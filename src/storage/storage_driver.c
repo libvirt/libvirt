@@ -291,7 +291,7 @@ storageStateInitialize(bool privileged,
     }
     driver->privileged = privileged;
 
-    if (virFileMakePath(driver->stateDir) < 0) {
+    if (g_mkdir_with_parents(driver->stateDir, 0777) < 0) {
         virReportError(errno,
                        _("cannot create directory %s"),
                        driver->stateDir);
@@ -1398,7 +1398,7 @@ storagePoolSetAutostart(virStoragePoolPtr pool,
     cur_autostart = virStoragePoolObjIsAutostart(obj);
     if (cur_autostart != new_autostart) {
         if (new_autostart) {
-            if (virFileMakePath(driver->autostartDir) < 0) {
+            if (g_mkdir_with_parents(driver->autostartDir, 0777) < 0) {
                 virReportSystemError(errno,
                                      _("cannot create autostart directory %s"),
                                      driver->autostartDir);

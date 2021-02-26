@@ -6713,7 +6713,7 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
     VIR_DEBUG("Ensuring no historical cgroup is lying around");
     qemuRemoveCgroup(vm);
 
-    if (virFileMakePath(cfg->logDir) < 0) {
+    if (g_mkdir_with_parents(cfg->logDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("cannot create log directory %s"),
                              cfg->logDir);

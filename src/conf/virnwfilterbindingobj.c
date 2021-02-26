@@ -160,7 +160,7 @@ virNWFilterBindingObjSave(const virNWFilterBindingObj *obj,
     if (!(xml = virNWFilterBindingObjFormat(obj)))
         goto cleanup;
 
-    if (virFileMakePath(statusDir) < 0) {
+    if (g_mkdir_with_parents(statusDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("cannot create config directory '%s'"),
                              statusDir);

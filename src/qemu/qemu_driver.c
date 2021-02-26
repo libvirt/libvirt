@@ -654,57 +654,57 @@ qemuStateInitialize(bool privileged,
     if (virQEMUDriverConfigSetDefaults(cfg) < 0)
         goto error;
 
-    if (virFileMakePath(cfg->stateDir) < 0) {
+    if (g_mkdir_with_parents(cfg->stateDir, 0777) < 0) {
         virReportSystemError(errno, _("Failed to create state dir %s"),
                              cfg->stateDir);
         goto error;
     }
-    if (virFileMakePath(cfg->libDir) < 0) {
+    if (g_mkdir_with_parents(cfg->libDir, 0777) < 0) {
         virReportSystemError(errno, _("Failed to create lib dir %s"),
                              cfg->libDir);
         goto error;
     }
-    if (virFileMakePath(cfg->cacheDir) < 0) {
+    if (g_mkdir_with_parents(cfg->cacheDir, 0777) < 0) {
         virReportSystemError(errno, _("Failed to create cache dir %s"),
                              cfg->cacheDir);
         goto error;
     }
-    if (virFileMakePath(cfg->saveDir) < 0) {
+    if (g_mkdir_with_parents(cfg->saveDir, 0777) < 0) {
         virReportSystemError(errno, _("Failed to create save dir %s"),
                              cfg->saveDir);
         goto error;
     }
-    if (virFileMakePath(cfg->snapshotDir) < 0) {
+    if (g_mkdir_with_parents(cfg->snapshotDir, 0777) < 0) {
         virReportSystemError(errno, _("Failed to create snapshot dir %s"),
                              cfg->snapshotDir);
         goto error;
     }
-    if (virFileMakePath(cfg->checkpointDir) < 0) {
+    if (g_mkdir_with_parents(cfg->checkpointDir, 0777) < 0) {
         virReportSystemError(errno, _("Failed to create checkpoint dir %s"),
                              cfg->checkpointDir);
         goto error;
     }
-    if (virFileMakePath(cfg->autoDumpPath) < 0) {
+    if (g_mkdir_with_parents(cfg->autoDumpPath, 0777) < 0) {
         virReportSystemError(errno, _("Failed to create dump dir %s"),
                              cfg->autoDumpPath);
         goto error;
     }
-    if (virFileMakePath(cfg->channelTargetDir) < 0) {
+    if (g_mkdir_with_parents(cfg->channelTargetDir, 0777) < 0) {
         virReportSystemError(errno, _("Failed to create channel target dir %s"),
                              cfg->channelTargetDir);
         goto error;
     }
-    if (virFileMakePath(cfg->nvramDir) < 0) {
+    if (g_mkdir_with_parents(cfg->nvramDir, 0777) < 0) {
         virReportSystemError(errno, _("Failed to create nvram dir %s"),
                              cfg->nvramDir);
         goto error;
     }
-    if (virFileMakePath(cfg->memoryBackingDir) < 0) {
+    if (g_mkdir_with_parents(cfg->memoryBackingDir, 0777) < 0) {
         virReportSystemError(errno, _("Failed to create memory backing dir %s"),
                              cfg->memoryBackingDir);
         goto error;
     }
-    if (virFileMakePath(cfg->slirpStateDir) < 0) {
+    if (g_mkdir_with_parents(cfg->slirpStateDir, 0777) < 0) {
         virReportSystemError(errno, _("Failed to create slirp state dir %s"),
                              cfg->slirpStateDir);
         goto error;
@@ -891,7 +891,7 @@ qemuStateInitialize(bool privileged,
         if (!hugepagePath)
             goto error;
 
-        if (virFileMakePath(hugepagePath) < 0) {
+        if (g_mkdir_with_parents(hugepagePath, 0777) < 0) {
             virReportSystemError(errno,
                                  _("unable to create hugepage path %s"),
                                  hugepagePath);
@@ -8265,7 +8265,7 @@ static int qemuDomainSetAutostart(virDomainPtr dom,
             goto endjob;
 
         if (autostart) {
-            if (virFileMakePath(cfg->autostartDir) < 0) {
+            if (g_mkdir_with_parents(cfg->autostartDir, 0777) < 0) {
                 virReportSystemError(errno,
                                      _("cannot create autostart directory %s"),
                                      cfg->autostartDir);

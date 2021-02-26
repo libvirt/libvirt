@@ -385,7 +385,7 @@ bhyveDomainSetAutostart(virDomainPtr domain, int autostart)
             goto cleanup;
 
         if (autostart) {
-            if (virFileMakePath(BHYVE_AUTOSTART_DIR) < 0) {
+            if (g_mkdir_with_parents(BHYVE_AUTOSTART_DIR, 0777) < 0) {
                 virReportSystemError(errno,
                                      _("cannot create autostart directory %s"),
                                      BHYVE_AUTOSTART_DIR);
@@ -1265,14 +1265,14 @@ bhyveStateInitialize(bool privileged,
     if (virBhyveLoadDriverConfig(bhyve_driver->config, SYSCONFDIR "/libvirt/bhyve.conf") < 0)
         goto cleanup;
 
-    if (virFileMakePath(BHYVE_LOG_DIR) < 0) {
+    if (g_mkdir_with_parents(BHYVE_LOG_DIR, 0777) < 0) {
         virReportSystemError(errno,
                              _("Failed to mkdir %s"),
                              BHYVE_LOG_DIR);
         goto cleanup;
     }
 
-    if (virFileMakePath(BHYVE_STATE_DIR) < 0) {
+    if (g_mkdir_with_parents(BHYVE_STATE_DIR, 0777) < 0) {
         virReportSystemError(errno,
                              _("Failed to mkdir %s"),
                              BHYVE_STATE_DIR);

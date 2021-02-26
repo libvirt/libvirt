@@ -371,7 +371,7 @@ static void init_sysfs(void)
     fakesysfscgroupdir = g_strdup_printf("%s%s",
                                          fakerootdir, SYSFS_CGROUP_PREFIX);
 
-    if (virFileMakePath(fakesysfscgroupdir) < 0) {
+    if (g_mkdir_with_parents(fakesysfscgroupdir, 0777) < 0) {
         fprintf(stderr, "Cannot create %s\n", fakesysfscgroupdir);
         abort();
     }

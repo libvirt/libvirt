@@ -720,7 +720,7 @@ qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
         /* At this point, devMountsPath is either:
          * a file (regular or special), or
          * a directory. */
-        if ((S_ISDIR(sb.st_mode) && virFileMakePath(devMountsSavePath[i]) < 0) ||
+        if ((S_ISDIR(sb.st_mode) && g_mkdir_with_parents(devMountsSavePath[i], 0777) < 0) ||
             (!S_ISDIR(sb.st_mode) && virFileTouch(devMountsSavePath[i], sb.st_mode) < 0)) {
             virReportSystemError(errno,
                                  _("Failed to create %s"),
@@ -749,7 +749,7 @@ qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
         }
 
         if (S_ISDIR(sb.st_mode)) {
-            if (virFileMakePath(devMountsPath[i]) < 0) {
+            if (g_mkdir_with_parents(devMountsPath[i], 0777) < 0) {
                 virReportSystemError(errno, _("Cannot create %s"),
                                      devMountsPath[i]);
                 goto cleanup;

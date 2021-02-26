@@ -1777,7 +1777,7 @@ virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
                          virStoragePoolDefPtr def)
 {
     if (!obj->configFile) {
-        if (virFileMakePath(driver->configDir) < 0) {
+        if (g_mkdir_with_parents(driver->configDir, 0777) < 0) {
             virReportSystemError(errno,
                                  _("cannot create config directory %s"),
                                  driver->configDir);

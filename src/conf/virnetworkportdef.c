@@ -443,7 +443,7 @@ virNetworkPortDefSaveStatus(virNetworkPortDef *def,
 
     virUUIDFormat(def->uuid, uuidstr);
 
-    if (virFileMakePath(dir) < 0)
+    if (g_mkdir_with_parents(dir, 0777) < 0)
         return -1;
 
     if (!(path = virNetworkPortDefConfigFile(dir, uuidstr)))

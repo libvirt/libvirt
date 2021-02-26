@@ -93,7 +93,7 @@ int virPidFileWrite(const char *dir,
     if (name == NULL || dir == NULL)
         return -EINVAL;
 
-    if (virFileMakePath(dir) < 0)
+    if (g_mkdir_with_parents(dir, 0777) < 0)
         return -errno;
 
     if (!(pidfile = virPidFileBuildPath(dir, name)))

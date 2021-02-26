@@ -106,7 +106,7 @@ virFileCacheGetFileName(virFileCachePtr cache,
     if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, name, &namehash) < 0)
         return NULL;
 
-    if (virFileMakePath(cache->dir) < 0) {
+    if (g_mkdir_with_parents(cache->dir, 0777) < 0) {
         virReportSystemError(errno,
                              _("Unable to create directory '%s'"),
                              cache->dir);

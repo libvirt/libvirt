@@ -201,7 +201,7 @@ make_dir(const char *path,
 
     dirpath = g_strdup_printf("%s/%s", path, name);
 
-    if (virFileMakePath(dirpath) < 0)
+    if (g_mkdir_with_parents(dirpath, 0777) < 0)
         ABORT("Unable to create: %s", dirpath);
 }
 
@@ -405,7 +405,7 @@ pci_device_create_iommu(const struct pciDevice *dev,
     iommuPath = g_strdup_printf("%s/sys/kernel/iommu_groups/%d/devices/",
                                 fakerootdir, dev->iommuGroup);
 
-    if (virFileMakePath(iommuPath) < 0)
+    if (g_mkdir_with_parents(iommuPath, 0777) < 0)
         ABORT("Unable to create: %s", iommuPath);
 
     if (g_snprintf(tmp, sizeof(tmp),
@@ -473,7 +473,7 @@ pci_device_new_from_stub(const struct pciDevice *data)
     if (!(devpath = pci_device_get_path(dev, NULL, true)))
         ABORT_OOM();
 
-    if (virFileMakePath(devpath) < 0)
+    if (g_mkdir_with_parents(devpath, 0777) < 0)
         ABORT("Unable to create: %s", devpath);
 
     if (stat(configSrc, &sb) == 0)
@@ -693,7 +693,7 @@ pci_driver_new(const char *name, ...)
     if (!(driverpath = pci_driver_get_path(driver, NULL, true)))
         ABORT_OOM();
 
-    if (virFileMakePath(driverpath) < 0)
+    if (g_mkdir_with_parents(driverpath, 0777) < 0)
         ABORT("Unable to create: %s", driverpath);
 
     va_start(args, name);
@@ -954,7 +954,7 @@ init_env(void)
 
     tmp = g_strdup_printf("%s%s", fakerootdir, SYSFS_PCI_PREFIX);
 
-    if (virFileMakePath(tmp) < 0)
+    if (g_mkdir_with_parents(tmp, 0777) < 0)
         ABORT("Unable to create: %s", tmp);
 
     make_dir(tmp, "devices");
@@ -965,7 +965,7 @@ init_env(void)
     VIR_FREE(tmp);
     tmp = g_strdup_printf("%s/dev/vfio", fakerootdir);
 
-    if (virFileMakePath(tmp) < 0)
+    if (g_mkdir_with_parents(tmp, 0777) < 0)
         ABORT("Unable to create: %s", tmp);
 
     make_file(tmp, "vfio", NULL, -1);

@@ -602,7 +602,7 @@ virLockDaemonExecRestartStatePath(bool privileged,
         rundir = virGetUserRuntimeDirectory();
 
         old_umask = umask(077);
-        if (virFileMakePath(rundir) < 0) {
+        if (g_mkdir_with_parents(rundir, 0777) < 0) {
             umask(old_umask);
             return -1;
         }
@@ -993,7 +993,7 @@ int main(int argc, char **argv) {
     else
         old_umask = umask(077);
     VIR_DEBUG("Ensuring run dir '%s' exists", run_dir);
-    if (virFileMakePath(run_dir) < 0) {
+    if (g_mkdir_with_parents(run_dir, 0777) < 0) {
         VIR_ERROR(_("unable to create rundir %s: %s"), run_dir,
                   g_strerror(errno));
         ret = VIR_DAEMON_ERR_RUNDIR;

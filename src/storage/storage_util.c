@@ -2811,7 +2811,7 @@ virStorageBackendBuildLocal(virStoragePoolObjPtr pool)
         /* assure all directories in the path prior to the final dir
          * exist, with default uid/gid/mode. */
         *p = '\0';
-        if (virFileMakePath(parent) < 0) {
+        if (g_mkdir_with_parents(parent, 0777) < 0) {
             virReportSystemError(errno, _("cannot create path '%s'"),
                                  parent);
             return -1;

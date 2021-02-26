@@ -524,7 +524,7 @@ dnsmasqSave(const dnsmasqContext *ctx)
 {
     int ret = 0;
 
-    if (virFileMakePath(ctx->config_dir) < 0) {
+    if (g_mkdir_with_parents(ctx->config_dir, 0777) < 0) {
         virReportSystemError(errno, _("cannot create config directory '%s'"),
                              ctx->config_dir);
         return -1;

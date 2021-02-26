@@ -176,7 +176,7 @@ virLogSetDefaultOutputToFile(const char *binary, bool privileged)
         logdir = virGetUserCacheDirectory();
 
         old_umask = umask(077);
-        if (virFileMakePath(logdir) < 0) {
+        if (g_mkdir_with_parents(logdir, 0777) < 0) {
             umask(old_umask);
             return -1;
         }

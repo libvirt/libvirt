@@ -1608,7 +1608,7 @@ virLXCControllerSetupHostdevSubsysUSB(virDomainDefPtr vmDef,
 
     mode = 0700 | S_IFCHR;
 
-    if (virFileMakePath(dstdir) < 0) {
+    if (g_mkdir_with_parents(dstdir, 0777) < 0) {
         virReportSystemError(errno,
                              _("Unable to create %s"), dstdir);
         return -1;
@@ -2128,7 +2128,7 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
     devpts = g_strdup_printf("%s/%s.devpts", LXC_STATE_DIR, ctrl->def->name);
     ctrl->devptmx = g_strdup_printf("%s/%s.devpts/ptmx", LXC_STATE_DIR, ctrl->def->name);
 
-    if (virFileMakePath(devpts) < 0) {
+    if (g_mkdir_with_parents(devpts, 0777) < 0) {
         virReportSystemError(errno,
                              _("Failed to make path %s"),
                              devpts);

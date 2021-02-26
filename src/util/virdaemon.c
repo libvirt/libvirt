@@ -238,7 +238,7 @@ virDaemonUnixSocketPaths(const char *sock_prefix,
             rundir = virGetUserRuntimeDirectory();
 
             old_umask = umask(077);
-            if (virFileMakePath(rundir) < 0) {
+            if (g_mkdir_with_parents(rundir, 0777) < 0) {
                 umask(old_umask);
                 goto cleanup;
             }

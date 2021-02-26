@@ -62,7 +62,7 @@ testUserXattrEnabled(void)
     char *path = NULL;
     path = g_strdup_printf("%s/securityselinuxlabeldata/testxattr", abs_builddir);
 
-    if (virFileMakePath(abs_builddir "/securityselinuxlabeldata") < 0 ||
+    if (g_mkdir_with_parents(abs_builddir "/securityselinuxlabeldata", 0777) < 0 ||
         virFileTouch(path, 0600) < 0)
         goto cleanup;
 
@@ -221,7 +221,7 @@ testSELinuxCreateDisks(testSELinuxFile *files, size_t nfiles)
 {
     size_t i;
 
-    if (virFileMakePath(abs_builddir "/securityselinuxlabeldata/nfs") < 0)
+    if (g_mkdir_with_parents(abs_builddir "/securityselinuxlabeldata/nfs", 0777) < 0)
         return -1;
 
     for (i = 0; i < nfiles; i++) {

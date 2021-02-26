@@ -665,7 +665,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
 
     oldroot = g_strdup_printf("%s/.oldroot", root->src->path);
 
-    if (virFileMakePath(oldroot) < 0) {
+    if (g_mkdir_with_parents(oldroot, 0777) < 0) {
         virReportSystemError(errno,
                              _("Failed to create %s"),
                              oldroot);
@@ -684,7 +684,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
     /* Create a directory called 'new' in tmpfs */
     newroot = g_strdup_printf("%s/new", oldroot);
 
-    if (virFileMakePath(newroot) < 0) {
+    if (g_mkdir_with_parents(newroot, 0777) < 0) {
         virReportSystemError(errno,
                              _("Failed to create %s"),
                              newroot);
@@ -889,7 +889,7 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
             continue;
         }
 
-        if (virFileMakePath(mnt->dst) < 0) {
+        if (g_mkdir_with_parents(mnt->dst, 0777) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mkdir %s"),
                                  mnt->dst);
@@ -969,7 +969,7 @@ static int lxcContainerMountFSDev(virDomainDefPtr def,
 
     path = g_strdup_printf("/.oldroot/%s/%s.dev", stateDir, def->name);
 
-    if (virFileMakePath("/dev") < 0) {
+    if (g_mkdir_with_parents("/dev", 0777) < 0) {
         virReportSystemError(errno, "%s",
                              _("Cannot create /dev"));
         return -1;
@@ -998,7 +998,7 @@ static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
 
     path = g_strdup_printf("/.oldroot/%s/%s.devpts", stateDir, def->name);
 
-    if (virFileMakePath("/dev/pts") < 0) {
+    if (g_mkdir_with_parents("/dev/pts", 0777) < 0) {
         virReportSystemError(errno, "%s",
                              _("Cannot create /dev/pts"));
         return -1;
@@ -1080,7 +1080,7 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
             return -1;
         }
         if (S_ISDIR(st.st_mode)) {
-            if (virFileMakePath(fs->dst) < 0) {
+            if (g_mkdir_with_parents(fs->dst, 0777) < 0) {
                 virReportSystemError(errno,
                                      _("Failed to create %s"),
                                      fs->dst);
@@ -1349,7 +1349,7 @@ static int lxcContainerMountFSBlockHelper(virDomainFSDefPtr fs,
     if (fs->readonly)
         fsflags |= MS_RDONLY;
 
-    if (virFileMakePath(fs->dst) < 0) {
+    if (g_mkdir_with_parents(fs->dst, 0777) < 0) {
         virReportSystemError(errno,
                              _("Failed to create %s"),
                              fs->dst);
@@ -1403,7 +1403,7 @@ static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs,
 
     data = g_strdup_printf("size=%lld%s", fs->usage, sec_mount_options);
 
-    if (virFileMakePath(fs->dst) < 0) {
+    if (g_mkdir_with_parents(fs->dst, 0777) < 0) {
         virReportSystemError(errno,
                              _("Failed to create %s"),
                              fs->dst);
@@ -1508,7 +1508,7 @@ int lxcContainerSetupHostdevCapsMakePath(const char *dev)
 
     if ((tmp = strrchr(dir, '/'))) {
         *tmp = '\0';
-        if (virFileMakePath(dir) < 0) {
+        if (g_mkdir_with_parents(dir, 0777) < 0) {
             virReportSystemError(errno,
                                  _("Failed to create directory for '%s' dev '%s'"),
                                  dir, dev);

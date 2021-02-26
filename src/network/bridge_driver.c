@@ -737,7 +737,7 @@ networkStateInitialize(bool privileged,
         network_driver->radvdStateDir = g_strdup_printf("%s/radvd/lib", rundir);
     }
 
-    if (virFileMakePath(network_driver->stateDir) < 0) {
+    if (g_mkdir_with_parents(network_driver->stateDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
                              network_driver->stateDir);
@@ -1618,7 +1618,7 @@ networkStartDhcpDaemon(virNetworkDriverStatePtr driver,
     if (!needDnsmasq && def->dns.enable == VIR_TRISTATE_BOOL_NO)
         return 0;
 
-    if (virFileMakePath(driver->pidDir) < 0) {
+    if (g_mkdir_with_parents(driver->pidDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
                              driver->pidDir);
@@ -1628,7 +1628,7 @@ networkStartDhcpDaemon(virNetworkDriverStatePtr driver,
     if (!(pidfile = virPidFileBuildPath(driver->pidDir, def->name)))
         return -1;
 
-    if (virFileMakePath(driver->dnsmasqStateDir) < 0) {
+    if (g_mkdir_with_parents(driver->dnsmasqStateDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
                              driver->dnsmasqStateDir);
@@ -1901,14 +1901,14 @@ networkStartRadvd(virNetworkDriverStatePtr driver,
         return -1;
     }
 
-    if (virFileMakePath(driver->pidDir) < 0) {
+    if (g_mkdir_with_parents(driver->pidDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
                              driver->pidDir);
         return -1;
     }
 
-    if (virFileMakePath(driver->radvdStateDir) < 0) {
+    if (g_mkdir_with_parents(driver->radvdStateDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("cannot create directory %s"),
                              driver->radvdStateDir);
@@ -4003,7 +4003,7 @@ networkSetAutostart(virNetworkPtr net,
             goto cleanup;
 
         if (new_autostart) {
-            if (virFileMakePath(driver->networkAutostartDir) < 0) {
+            if (g_mkdir_with_parents(driver->networkAutostartDir, 0777) < 0) {
                 virReportSystemError(errno,
                                      _("cannot create autostart directory '%s'"),
                                      driver->networkAutostartDir);

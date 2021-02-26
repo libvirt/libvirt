@@ -6786,7 +6786,7 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
         return -1;
 
     snapDir = g_strdup_printf("%s/%s", snapshotDir, vm->def->name);
-    if (virFileMakePath(snapDir) < 0) {
+    if (g_mkdir_with_parents(snapDir, 0777) < 0) {
         virReportSystemError(errno, _("cannot create snapshot directory '%s'"),
                              snapDir);
         return -1;

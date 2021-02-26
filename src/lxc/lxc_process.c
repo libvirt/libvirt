@@ -1250,7 +1250,7 @@ int virLXCProcessStart(virConnectPtr conn,
         }
     }
 
-    if (virFileMakePath(cfg->logDir) < 0) {
+    if (g_mkdir_with_parents(cfg->logDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("Cannot create log directory '%s'"),
                              cfg->logDir);

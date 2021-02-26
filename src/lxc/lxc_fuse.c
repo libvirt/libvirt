@@ -291,7 +291,7 @@ int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def)
 
     fuse->mountpoint = g_strdup_printf("%s/%s.fuse/", LXC_STATE_DIR, def->name);
 
-    if (virFileMakePath(fuse->mountpoint) < 0) {
+    if (g_mkdir_with_parents(fuse->mountpoint, 0777) < 0) {
         virReportSystemError(errno, _("Cannot create %s"),
                              fuse->mountpoint);
         goto cleanup1;

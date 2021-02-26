@@ -162,7 +162,7 @@ myInit(void)
     if ((mgr->activeNVMeHostdevs = virNVMeDeviceListNew()) == NULL)
         goto cleanup;
     mgr->stateDir = g_strdup(TEST_STATE_DIR);
-    if (virFileMakePath(mgr->stateDir) < 0)
+    if (g_mkdir_with_parents(mgr->stateDir, 0777) < 0)
         goto cleanup;
 
     return 0;

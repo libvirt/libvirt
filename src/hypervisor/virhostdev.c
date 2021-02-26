@@ -171,7 +171,7 @@ virHostdevManagerNew(void)
     if (privileged) {
         hostdevMgr->stateDir = g_strdup(HOSTDEV_STATE_DIR);
 
-        if (virFileMakePath(hostdevMgr->stateDir) < 0) {
+        if (g_mkdir_with_parents(hostdevMgr->stateDir, 0777) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("Failed to create state dir '%s'"),
                            hostdevMgr->stateDir);
@@ -187,7 +187,7 @@ virHostdevManagerNew(void)
 
         old_umask = umask(077);
 
-        if (virFileMakePath(hostdevMgr->stateDir) < 0) {
+        if (g_mkdir_with_parents(hostdevMgr->stateDir, 0777) < 0) {
             umask(old_umask);
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("Failed to create state dir '%s'"),

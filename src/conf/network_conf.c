@@ -2759,7 +2759,7 @@ virNetworkSaveXML(const char *configDir,
     if ((configFile = virNetworkConfigFile(configDir, def->name)) == NULL)
         return -1;
 
-    if (virFileMakePath(configDir) < 0) {
+    if (g_mkdir_with_parents(configDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("cannot create config directory '%s'"),
                              configDir);

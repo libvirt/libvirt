@@ -1535,7 +1535,7 @@ static int lxcStateInitialize(bool privileged,
     if (!(lxc_driver->closeCallbacks = virCloseCallbacksNew()))
         goto cleanup;
 
-    if (virFileMakePath(cfg->stateDir) < 0) {
+    if (g_mkdir_with_parents(cfg->stateDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("Failed to mkdir %s"),
                              cfg->stateDir);
@@ -2513,7 +2513,7 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
         goto endjob;
 
     if (autostart) {
-        if (virFileMakePath(cfg->autostartDir) < 0) {
+        if (g_mkdir_with_parents(cfg->autostartDir, 0777) < 0) {
             virReportSystemError(errno,
                                  _("Cannot create autostart directory %s"),
                                  cfg->autostartDir);

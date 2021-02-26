@@ -123,7 +123,7 @@ qemuCheckpointWriteMetadata(virDomainObjPtr vm,
         return -1;
 
     chkDir = g_strdup_printf("%s/%s", checkpointDir, vm->def->name);
-    if (virFileMakePath(chkDir) < 0) {
+    if (g_mkdir_with_parents(chkDir, 0777) < 0) {
         virReportSystemError(errno, _("cannot create checkpoint directory '%s'"),
                              chkDir);
         return -1;

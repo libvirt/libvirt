@@ -595,7 +595,7 @@ virCgroupV2BindMount(virCgroupPtr group,
 
     VIR_DEBUG("Mounting cgroups at '%s'", group->unified.mountPoint);
 
-    if (virFileMakePath(group->unified.mountPoint) < 0) {
+    if (g_mkdir_with_parents(group->unified.mountPoint, 0777) < 0) {
         virReportSystemError(errno, _("Unable to create directory %s"),
                              group->unified.mountPoint);
         return -1;

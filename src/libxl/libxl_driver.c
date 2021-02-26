@@ -721,35 +721,35 @@ libxlStateInitialize(bool privileged,
     libxl_event_register_callbacks(cfg->ctx, &ev_hooks, libxl_driver);
 
     libxl_driver->config = cfg;
-    if (virFileMakePath(cfg->stateDir) < 0) {
+    if (g_mkdir_with_parents(cfg->stateDir, 0777) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to create state dir '%s': %s"),
                        cfg->stateDir,
                        g_strerror(errno));
         goto error;
     }
-    if (virFileMakePath(cfg->libDir) < 0) {
+    if (g_mkdir_with_parents(cfg->libDir, 0777) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to create lib dir '%s': %s"),
                        cfg->libDir,
                        g_strerror(errno));
         goto error;
     }
-    if (virFileMakePath(cfg->saveDir) < 0) {
+    if (g_mkdir_with_parents(cfg->saveDir, 0777) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to create save dir '%s': %s"),
                        cfg->saveDir,
                        g_strerror(errno));
         goto error;
     }
-    if (virFileMakePath(cfg->autoDumpDir) < 0) {
+    if (g_mkdir_with_parents(cfg->autoDumpDir, 0777) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to create dump dir '%s': %s"),
                        cfg->autoDumpDir,
                        g_strerror(errno));
         goto error;
     }
-    if (virFileMakePath(cfg->channelDir) < 0) {
+    if (g_mkdir_with_parents(cfg->channelDir, 0777) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to create channel dir '%s': %s"),
                        cfg->channelDir,
@@ -4543,7 +4543,7 @@ libxlDomainSetAutostart(virDomainPtr dom, int autostart)
             goto endjob;
 
         if (autostart) {
-            if (virFileMakePath(cfg->autostartDir) < 0) {
+            if (g_mkdir_with_parents(cfg->autostartDir, 0777) < 0) {
                 virReportSystemError(errno,
                                      _("cannot create autostart directory %s"),
                                      cfg->autostartDir);
