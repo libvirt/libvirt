@@ -353,14 +353,14 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
  * This function reads the passphrase and writes it into the
  * write-end of a pipe so that the read-end of the pipe can be
  * passed to the emulator for reading the passphrase from.
+ *
+ * Note that the returned FD is owned by @cmd.
  */
 static int
 qemuTPMSetupEncryption(const unsigned char *secretuuid,
                        virCommandPtr cmd)
 {
-    int ret = -1;
-    int pipefd[2] = { -1, -1 };
-    virConnectPtr conn;
+    g_autoptr(virConnect) conn = NULL;
     g_autofree uint8_t *secret = NULL;
     size_t secret_len;
     virSecretLookupTypeDef seclookupdef = {
@@ -375,27 +375,9 @@ qemuTPMSetupEncryption(const unsigned char *secretuuid,
     if (virSecretGetSecretString(conn, &seclookupdef,
                                  VIR_SECRET_USAGE_TYPE_VTPM,
                                  &secret, &secret_len) < 0)
-        goto error;
+        return -1;
 
-    if (virPipe(pipefd) < 0)
-        goto error;
-
-    if (virCommandSetSendBuffer(cmd, pipefd[1], secret, secret_len) < 0)
-        goto error;
-
-    secret = NULL;
-    ret = pipefd[0];
-
- cleanup:
-    virObjectUnref(conn);
-
-    return ret;
-
- error:
-    VIR_FORCE_CLOSE(pipefd[1]);
-    VIR_FORCE_CLOSE(pipefd[0]);
-
-    goto cleanup;
+    return virCommandSetSendBuffer(cmd, g_steal_pointer(&secret), secret_len);
 }
 
 /*
@@ -549,8 +531,8 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
     bool created = false;
     g_autofree char *pidfile = NULL;
     g_autofree char *swtpm = virTPMGetSwtpm();
-    VIR_AUTOCLOSE pwdfile_fd = -1;
-    VIR_AUTOCLOSE migpwdfile_fd = -1;
+    int pwdfile_fd = -1;
+    int migpwdfile_fd = -1;
     const unsigned char *secretuuid = NULL;
 
     if (!swtpm)
@@ -618,25 +600,13 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
         }
 
         pwdfile_fd = qemuTPMSetupEncryption(tpm->data.emulator.secretuuid, cmd);
-        if (pwdfile_fd) {
-            migpwdfile_fd = qemuTPMSetupEncryption(tpm->data.emulator.secretuuid,
-                                                   cmd);
-        }
-
-        if (pwdfile_fd < 0 || migpwdfile_fd < 0)
-            goto error;
+        migpwdfile_fd = qemuTPMSetupEncryption(tpm->data.emulator.secretuuid, cmd);
 
         virCommandAddArg(cmd, "--key");
-        virCommandAddArgFormat(cmd, "pwdfd=%d,mode=aes-256-cbc",
-                               pwdfile_fd);
-        virCommandPassFD(cmd, pwdfile_fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-        pwdfile_fd = -1;
+        virCommandAddArgFormat(cmd, "pwdfd=%d,mode=aes-256-cbc", pwdfile_fd);
 
         virCommandAddArg(cmd, "--migration-key");
-        virCommandAddArgFormat(cmd, "pwdfd=%d,mode=aes-256-cbc",
-                               migpwdfile_fd);
-        virCommandPassFD(cmd, migpwdfile_fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-        migpwdfile_fd = -1;
+        virCommandAddArgFormat(cmd, "pwdfd=%d,mode=aes-256-cbc", migpwdfile_fd);
     }
 
     return g_steal_pointer(&cmd);

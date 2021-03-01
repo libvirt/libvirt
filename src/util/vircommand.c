@@ -1694,39 +1694,55 @@ virCommandFreeSendBuffers(virCommandPtr cmd)
 /**
  * virCommandSetSendBuffer
  * @cmd: the command to modify
+ * @buffer: buffer to pass to the filedescriptror
+ * @buflen: length of @buffer
  *
- * Pass a buffer to virCommand that will be written into the
- * given file descriptor. The buffer will be freed automatically
- * and the file descriptor closed.
+ * Registers @buffer as an input buffer for @cmd which will be accessible via
+ * the returned file descriptor. The returned file descriptor is already
+ * registered to be passed to @cmd, so callers must use it only to format the
+ * appropriate argument of @cmd.
+ *
+ * @buffer is always stolen regardless of the return value. This function
+ * doesn't raise a libvirt error, but rather propagates the error via virCommand.
+ * Thus callers don't need to take a special action if -1 is returned.
  */
 int
 virCommandSetSendBuffer(virCommandPtr cmd,
-                        int fd,
-                        unsigned char *buffer, size_t buflen)
+                        unsigned char *buffer,
+                        size_t buflen)
 {
+    g_autofree unsigned char *localbuf = g_steal_pointer(&buffer);
+    int pipefd[2] = { -1, -1 };
     size_t i;
 
     if (virCommandHasError(cmd))
         return -1;
 
-    if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("fcntl failed to set O_NONBLOCK"));
+    if (virPipeQuiet(pipefd) < 0) {
         cmd->has_error = errno;
+        return -1;
+    }
+
+    if (fcntl(pipefd[1], F_SETFL, O_NONBLOCK) < 0) {
+        cmd->has_error = errno;
+        VIR_FORCE_CLOSE(pipefd[0]);
+        VIR_FORCE_CLOSE(pipefd[1]);
         return -1;
     }
 
     i = virCommandGetNumSendBuffers(cmd);
     ignore_value(VIR_REALLOC_N(cmd->sendBuffers, i + 1));
 
-    cmd->sendBuffers[i].fd = fd;
-    cmd->sendBuffers[i].buffer = buffer;
+    cmd->sendBuffers[i].fd = pipefd[1];
+    cmd->sendBuffers[i].buffer = g_steal_pointer(&localbuf);
     cmd->sendBuffers[i].buflen = buflen;
     cmd->sendBuffers[i].offset = 0;
 
     cmd->numSendBuffers++;
 
-    return 0;
+    virCommandPassFD(cmd, pipefd[0], VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+
+    return pipefd[0];
 }
 
 
@@ -2851,7 +2867,6 @@ int virCommandHandshakeNotify(virCommandPtr cmd)
 #else /* WIN32 */
 int
 virCommandSetSendBuffer(virCommandPtr cmd,
-                        int fd G_GNUC_UNUSED,
                         unsigned char *buffer G_GNUC_UNUSED,
                         size_t buflen G_GNUC_UNUSED)
 {

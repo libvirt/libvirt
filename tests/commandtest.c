@@ -1039,8 +1039,8 @@ static int test26(const void *unused G_GNUC_UNUSED)
 static int test27(const void *unused G_GNUC_UNUSED)
 {
     g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
-    int pipe1[2];
-    int pipe2[2];
+    int buf1fd;
+    int buf2fd;
     int ret = -1;
     size_t buflen = 1024 * 128;
     g_autofree char *buffer0 = NULL;
@@ -1078,30 +1078,14 @@ static int test27(const void *unused G_GNUC_UNUSED)
     errexpect = g_strdup_printf(TEST27_ERREXPECT_TEMP,
                                 buffer0, buffer1, buffer2);
 
-    if (virPipeQuiet(pipe1) < 0 || virPipeQuiet(pipe2) < 0) {
-        printf("Could not create pipe: %s\n", g_strerror(errno));
-        goto cleanup;
-    }
-
-    if (virCommandSetSendBuffer(cmd, pipe1[1],
-            (unsigned char *)buffer1, buflen - 1)  < 0 ||
-        virCommandSetSendBuffer(cmd, pipe2[1],
-            (unsigned char *)buffer2, buflen - 1) < 0) {
-        printf("Could not set send buffers\n");
-        goto cleanup;
-    }
-    pipe1[1] = -1;
-    pipe2[1] = -1;
-    buffer1 = NULL;
-    buffer2 = NULL;
+    buf1fd = virCommandSetSendBuffer(cmd, (unsigned char *) g_steal_pointer(&buffer1), buflen - 1);
+    buf2fd = virCommandSetSendBuffer(cmd, (unsigned char *) g_steal_pointer(&buffer2), buflen - 1);
 
     virCommandAddArg(cmd, "--readfd");
-    virCommandAddArgFormat(cmd, "%d", pipe1[0]);
-    virCommandPassFD(cmd, pipe1[0], 0);
+    virCommandAddArgFormat(cmd, "%d", buf1fd);
 
     virCommandAddArg(cmd, "--readfd");
-    virCommandAddArgFormat(cmd, "%d", pipe2[0]);
-    virCommandPassFD(cmd, pipe2[0], 0);
+    virCommandAddArgFormat(cmd, "%d", buf2fd);
 
     virCommandSetInputBuffer(cmd, buffer0);
     virCommandSetOutputBuffer(cmd, &outactual);
@@ -1130,10 +1114,6 @@ static int test27(const void *unused G_GNUC_UNUSED)
     ret = 0;
 
  cleanup:
-    VIR_FORCE_CLOSE(pipe1[0]);
-    VIR_FORCE_CLOSE(pipe2[0]);
-    VIR_FORCE_CLOSE(pipe1[1]);
-    VIR_FORCE_CLOSE(pipe2[1]);
 
     return ret;
 }
