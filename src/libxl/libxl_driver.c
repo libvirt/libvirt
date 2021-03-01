@@ -5776,7 +5776,10 @@ libxlNodeDeviceDetachFlags(virNodeDevicePtr dev,
 
     virCheckFlags(0, -1);
 
-    if (driverName && STRNEQ(driverName, "xen")) {
+    if (!driverName)
+        driverName = "xen";
+
+    if (STRNEQ(driverName, "xen")) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unsupported driver name '%s'"), driverName);
         return -1;
