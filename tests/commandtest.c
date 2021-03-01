@@ -1041,7 +1041,6 @@ static int test27(const void *unused G_GNUC_UNUSED)
     g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
     int buf1fd;
     int buf2fd;
-    int ret = -1;
     size_t buflen = 1024 * 128;
     g_autofree char *buffer0 = NULL;
     g_autofree char *buffer1 = NULL;
@@ -1093,29 +1092,25 @@ static int test27(const void *unused G_GNUC_UNUSED)
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
-        goto cleanup;
+        return -1;
     }
 
     if (!outactual || !erractual)
-        goto cleanup;
+        return -1;
 
     if (STRNEQ(outactual, outexpect)) {
         virTestDifference(stderr, outexpect, outactual);
-        goto cleanup;
+        return -1;
     }
     if (STRNEQ(erractual, errexpect)) {
         virTestDifference(stderr, errexpect, erractual);
-        goto cleanup;
+        return -1;
     }
 
     if (checkoutput("test27") < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-
-    return ret;
+    return 0;
 }
 
 
