@@ -530,8 +530,8 @@ virNetworkUpdate(virNetworkPtr network,
                  unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("network=%p, section=%d, parentIndex=%d, xml=%s, flags=0x%x",
-              network, section, parentIndex, xml, flags);
+    VIR_DEBUG("network=%p, command=%d, section=%d, parentIndex=%d, xml=%s, flags=0x%x",
+              network, command, section, parentIndex, xml, flags);
 
     virResetLastError();
 
