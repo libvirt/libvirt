@@ -1281,10 +1281,10 @@ nodeDeviceDefineXML(virConnect *conn,
                     unsigned int flags)
 {
     g_autoptr(virNodeDeviceDef) def = NULL;
-    virNodeDevice *device = NULL;
     const char *virt_type = NULL;
     g_autofree char *uuid = NULL;
     g_autofree char *errmsg = NULL;
+    g_autofree char *name = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -1324,9 +1324,19 @@ nodeDeviceDefineXML(virConnect *conn,
     }
 
     mdevGenerateDeviceName(def);
-    device = nodeDeviceFindNewMediatedDevice(conn, def->caps->data.mdev.uuid);
+    name = g_strdup(def->name);
 
-    return device;
+    /* Normally we would call nodeDeviceFindNewMediatedDevice() here to wait
+     * for the new device to appear. But mdevctl can take a while to query
+     * devices, and if nodeDeviceFindNewMediatedDevice() doesn't find the new
+     * device immediately it will wait for 5s before checking again. Since we
+     * have already received the uuid from virMdevctlDefine(), we can simply
+     * add the provisional device to the list and return it immediately and
+     * avoid this long delay. */
+    if (nodeDeviceUpdateMediatedDevice(g_steal_pointer(&def)) < 0)
+        return NULL;
+
+    return virGetNodeDevice(conn, name);
 }
 
 
