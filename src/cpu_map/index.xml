@@ -68,6 +68,7 @@
     <include filename='x86_EPYC.xml'/>
     <include filename='x86_EPYC-IBPB.xml'/>
     <include filename='x86_EPYC-Rome.xml'/>
+    <include filename='x86_EPYC-Milan.xml'/>
 
     <!-- Hygon CPU models -->
     <include filename='x86_Dhyana.xml'/>
