@@ -1924,8 +1924,6 @@ virPipeImpl(int fds[2], bool nonblock, bool errreport)
             if (errreport)
                 virReportSystemError(errno, "%s",
                                      _("Unable to set pipes to non-blocking"));
-            virReportSystemError(errno, "%s",
-                                 _("Unable to create pipes"));
             VIR_FORCE_CLOSE(fds[0]);
             VIR_FORCE_CLOSE(fds[1]);
             return -1;
