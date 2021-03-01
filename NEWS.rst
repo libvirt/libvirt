@@ -8,7 +8,7 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v7.1.0 (unreleased)
+v7.1.0 (2021-03-01)
 ===================
 
 * **Portability**
@@ -52,8 +52,6 @@ v7.1.0 (unreleased)
     Introduces support for QEMU vhost-user-blk device that can be used
     to access storage exported via the vhost-user protocol by daemons such
     as the ``qemu-storage-daemon``.
-
-* **Improvements**
 
 * **Bug fixes**
 
