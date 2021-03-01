@@ -3004,7 +3004,7 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
     /* Attach serials */
     for (i = 0; i < def->nserials; i++) {
         if (hypervDomainAttachSerial(domain, def->serials[i]) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not attach serial port %lu"), i);
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not attach serial port %zu"), i);
             goto error;
         }
     }
@@ -3012,7 +3012,7 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
     /* Attach networks */
     for (i = 0; i < def->nnets; i++) {
         if (hypervDomainAttachSyntheticEthernetAdapter(domain, def->nets[i], hostname) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not attach network %lu"), i);
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not attach network %zu"), i);
             goto error;
         }
     }
