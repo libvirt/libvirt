@@ -793,11 +793,13 @@ virExec(virCommandPtr cmd)
         }
     }
 
+    pid = getpid();
+
     if (cmd->pidfile) {
         int pidfilefd = -1;
         char c;
 
-        pidfilefd = virPidFileAcquirePath(cmd->pidfile, false, getpid());
+        pidfilefd = virPidFileAcquirePath(cmd->pidfile, false, pid);
         if (pidfilefd < 0)
             goto fork_error;
         if (virSetInherit(pidfilefd, true) < 0) {
@@ -817,14 +819,14 @@ virExec(virCommandPtr cmd)
         /* pidfilefd is intentionally leaked. */
     }
 
-    if (virProcessSetMaxMemLock(0, cmd->maxMemLock) < 0)
+    if (virProcessSetMaxMemLock(pid, cmd->maxMemLock) < 0)
         goto fork_error;
-    if (virProcessSetMaxProcesses(0, cmd->maxProcesses) < 0)
+    if (virProcessSetMaxProcesses(pid, cmd->maxProcesses) < 0)
         goto fork_error;
-    if (virProcessSetMaxFiles(0, cmd->maxFiles) < 0)
+    if (virProcessSetMaxFiles(pid, cmd->maxFiles) < 0)
         goto fork_error;
     if (cmd->setMaxCore &&
-        virProcessSetMaxCoreSize(0, cmd->maxCore) < 0)
+        virProcessSetMaxCoreSize(pid, cmd->maxCore) < 0)
         goto fork_error;
 
     if (cmd->hook) {
