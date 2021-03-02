@@ -453,50 +453,6 @@ virDoubleToStr(char **strp, double number)
 
 
 /**
- * virStrncpy:
- *
- * @dest: destination buffer
- * @src: source buffer
- * @n: number of bytes to copy
- * @destbytes: number of bytes the destination can accommodate
- *
- * Copies the first @n bytes of @src to @dest.
- *
- * @src must be NULL-terminated; if successful, @dest is guaranteed to
- * be NULL-terminated as well.
- *
- * @n must be a reasonable value, that is, it must not exceed either
- * the length of @src or the size of @dest. For the latter constraint,
- * the fact that @dest needs to accommodate a NULL byte in addition to
- * the bytes copied from @src must be taken into account.
- *
- * If you want to copy *all* of @src to @dest, use virStrcpy() or
- * virStrcpyStatic() instead.
- *
- * Returns: 0 on success, <0 on failure.
- */
-int
-virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
-{
-    size_t src_len = strlen(src);
-
-    /* As a special case, -1 means "copy the entire string".
-     *
-     * This is to avoid calling strlen() twice, once in the virStrcpy()
-     * wrapper and once here for bound checking purposes. */
-    if (n == -1)
-        n = src_len;
-
-    if (n > src_len || n > (destbytes - 1))
-        return -1;
-
-    memcpy(dest, src, n);
-    dest[n] = '\0';
-
-    return 0;
-}
-
-/**
  * virStrcpy:
  *
  * @dest: destination buffer

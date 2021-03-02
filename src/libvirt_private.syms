@@ -3266,7 +3266,6 @@ virStringStripIPv6Brackets;
 virStringStripSuffix;
 virStringToUpper;
 virStringTrimOptionalNewline;
-virStrncpy;
 virStrToDouble;
 virStrToLong_i;
 virStrToLong_l;

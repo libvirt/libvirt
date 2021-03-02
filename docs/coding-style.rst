@@ -716,19 +716,6 @@ functions provided by libvirt:
 
 ::
 
-  virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
-
-The first two arguments have the same meaning as for strncpy,
-namely the destination and source of the copy operation. Unlike
-strncpy, the function will always copy exactly the number of bytes
-requested and make sure the destination is NULL-terminated, as the
-source is required to be; sanity checks are performed to ensure
-the size of the destination, as specified by the last argument, is
-sufficient for the operation to succeed. On success, 0 is
-returned; on failure, a value <0 is returned instead.
-
-::
-
   virStrcpy(char *dest, const char *src, size_t destbytes)
 
 Use this variant if you know you want to copy the entire src

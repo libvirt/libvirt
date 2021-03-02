@@ -97,8 +97,6 @@ void virSkipSpacesBackwards(const char *str, char **endp)
 
 bool virStringIsEmpty(const char *str);
 
-int virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
-    G_GNUC_WARN_UNUSED_RESULT;
 int virStrcpy(char *dest, const char *src, size_t destbytes);
 #define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
 
