@@ -6929,29 +6929,6 @@ ALSA audio backend
 
 The 'alsa' audio type uses the ALSA host audio device framework.
 
-:since:`Since 7.2.0, qemu`
-
-Coreaudio audio backend
-^^^^^^^^^^^^^^^^^^^^^^^
-
-The 'coreaudio' audio backend delegates to a CoreAudio host audio framework
-for input and output on macOS.
-
-:since:`Since 7.2.0, qemu`
-
-Jack audio backend
-^^^^^^^^^^^^^^^^^^
-
-The 'jack' audio backend delegates to a Jack daemon for audio input
-and output.
-
-:since:`Since 7.2.0, qemu`
-
-OSS audio backend
-^^^^^^^^^^^^^^^^^
-
-The 'oss' audio type uses the OSS host audio device framework.
-
 The following additional attributes are permitted on the ``<input>``
 and ``<output>`` elements
 
@@ -6962,9 +6939,116 @@ and ``<output>`` elements
 
 ::
 
-   <audio type='oss' id='1'>
-     <input dev='/dev/dsp0'/>
-     <output dev='/dev/dsp0'/>
+   <audio id="1" type="alsa">
+     <input dev="/dev/dsp0"/>
+     <output dev="/dev/dsp1"/>
+   </audio>
+
+:since:`Since 7.2.0, qemu`
+
+Coreaudio audio backend
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The 'coreaudio' audio backend delegates to a CoreAudio host audio framework
+for input and output on macOS.
+
+The following additional attributes are permitted on the ``<input>``
+and ``<output>`` elements
+
+* ``bufferCount``
+
+  The number of buffers. It is recommended to set the ``bufferLength``
+  attribute at the same time.
+
+::
+
+   <audio id="1" type="coreaudio">
+     <input bufferCount="50"/>
+     <output bufferCount="42"/>
+   </audio>
+
+:since:`Since 7.2.0, qemu`
+
+Jack audio backend
+^^^^^^^^^^^^^^^^^^
+
+The 'jack' audio backend delegates to a Jack daemon for audio input
+and output.
+
+The following additional attributes are permitted on the ``<input>``
+and ``<output>`` elements
+
+* ``serverName``
+
+  Select the Jack server instance to connect to.
+
+* ``clientName``
+
+  The client name to identify as. The server may modify this to
+  ensure uniqueness unless ``exactName`` is enabled
+
+* ``connectPorts``
+
+  A regular expression of Jack client port names to monitor and
+  connect to.
+
+* ``exactName``
+
+  Use the exact ``clientName`` requested
+
+::
+
+   <audio id="1" type="jack">
+     <input serverName="fish" clientName="food" connectPorts="system:capture_[13]" exactName="yes"/>
+     <output serverName="fish" clientName="food" connectPorts="system:playback_[13]" exactName="yes"/>
+   </audio>
+
+:since:`Since 7.2.0, qemu`
+
+OSS audio backend
+^^^^^^^^^^^^^^^^^
+
+The 'oss' audio type uses the OSS host audio device framework.
+
+The following additional attributes are permitted on the ``<audio>``
+element
+
+* ``tryMMap``
+
+  Attempt to use mmap for data transfer
+
+* ``exclusive``
+
+  Enforce exclusive access to the host device
+
+* ``dspPolicy``
+
+  Set the timing policy of the device, values between -1 and 10.
+  Smaller numbers result in lower latency but higher CPU usage.
+  A negatve value requests use of fragment mode.
+
+The following additional attributes are permitted on the ``<input>``
+and ``<output>`` elements
+
+* ``dev``
+
+  Path to the host device node to connect the backend to. A hypervisor
+  specific default applies if not specified.
+
+* ``bufferCount``
+
+  The number of buffers. It is recommended to set the ``bufferLength``
+  attribute at the same time.
+
+* ``tryPoll``
+
+  Attempt to use polling mode
+
+::
+
+   <audio type='oss' id='1' tryMMap='yes' exclusive='yes' dspPolicy='4'>
+     <input dev='/dev/dsp0' bufferCount='40' tryPoll='yes'/>
+     <output dev='/dev/dsp0' bufferCount='40' tryPoll='yes'/>
    </audio>
 
 :since:`Since 6.7.0, bhyve; Since 7.2.0, qemu`
@@ -6974,6 +7058,35 @@ PulseAudio audio backend
 
 The 'pulseaudio' audio backend delegates to a PulseAudio daemon audio input
 and output.
+
+The following additional attributes are permitted on the ``<audio>``
+element
+
+* ``serverName``
+
+  Hostname of the PulseAudio server
+
+The following additional attributes are permitted on the ``<input>``
+and ``<output>`` elements
+
+* ``name``
+
+  The sink/source name to use
+
+* ``streamName``
+
+  The name to identify the stream associated with the VM
+
+* ``latency``
+
+  Desired latency for the server to target in microseconds
+
+::
+
+   <audio id="1" type="pulseaudio" serverName="acme.example.org">
+     <input name="fish" streamName="food" latency="100"/>
+     <output name="fish" streamName="food" latency="200"/>
+   </audio>
 
 :since:`Since 7.2.0, qemu`
 
@@ -6991,9 +7104,20 @@ element
   SDL audio driver. The ``name`` attribute specifies SDL driver name,
   one of 'esd', 'alsa', 'arts', 'pulseaudio'.
 
+The following additional attributes are permitted on the ``<input>``
+and ``<output>`` elements
+
+* ``bufferCount``
+
+  The number of buffers. It is recommended to set the ``bufferLength``
+  attribute at the same time.
+
 ::
 
-   <audio type='sdl' id='1' driver='pulseaudio'/>
+   <audio type='sdl' id='1' driver='pulseaudio'>
+     <input bufferCount='40'/>
+     <output bufferCount='40'/>
+   </audio>
 
 :since:`Since 7.2.0, qemu`
 
@@ -7005,6 +7129,10 @@ it does not connect to any host audio framework. It exclusively
 allows a SPICE server to send and receive audio. This is the default
 backend when SPICE graphics are enabled in QEMU.
 
+::
+
+   <audio type='spice' id='1'/>
+
 :since:`Since 7.2.0, qemu`
 
 File audio backend
@@ -7013,6 +7141,10 @@ File audio backend
 The 'file' audio backend is an output only driver which records
 audio to a file. The file format is implementation defined, and
 defaults to 'WAV' with QEMU.
+
+::
+
+   <audio id="1" type="file" path="audio.wav"/>
 
 :since:`Since 7.2.0, qemu`
 

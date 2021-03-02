@@ -2919,9 +2919,30 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def)
 }
 
 static void
+virDomainAudioIOALSAFree(virDomainAudioIOALSAPtr def)
+{
+    g_free(def->dev);
+}
+
+static void
+virDomainAudioIOJackFree(virDomainAudioIOJackPtr def)
+{
+    g_free(def->serverName);
+    g_free(def->clientName);
+    g_free(def->connectPorts);
+}
+
+static void
 virDomainAudioIOOSSFree(virDomainAudioIOOSSPtr def)
 {
     g_free(def->dev);
+}
+
+static void
+virDomainAudioIOPulseAudioFree(virDomainAudioIOPulseAudioPtr def)
+{
+    g_free(def->name);
+    g_free(def->streamName);
 }
 
 void
@@ -2935,12 +2956,16 @@ virDomainAudioDefFree(virDomainAudioDefPtr def)
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        virDomainAudioIOALSAFree(&def->backend.alsa.input);
+        virDomainAudioIOALSAFree(&def->backend.alsa.output);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_JACK:
+        virDomainAudioIOJackFree(&def->backend.jack.input);
+        virDomainAudioIOJackFree(&def->backend.jack.output);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_OSS:
@@ -2949,6 +2974,9 @@ virDomainAudioDefFree(virDomainAudioDefPtr def)
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        virDomainAudioIOPulseAudioFree(&def->backend.pulseaudio.input);
+        virDomainAudioIOPulseAudioFree(&def->backend.pulseaudio.output);
+        g_free(def->backend.pulseaudio.serverName);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SDL:
@@ -2958,6 +2986,7 @@ virDomainAudioDefFree(virDomainAudioDefPtr def)
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
+        g_free(def->backend.file.path);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
@@ -14046,11 +14075,117 @@ virDomainAudioCommonParse(virDomainAudioIOCommonPtr def,
 }
 
 
+static void
+virDomainAudioALSAParse(virDomainAudioIOALSAPtr def,
+                        xmlNodePtr node)
+{
+    def->dev = virXMLPropString(node, "dev");
+}
+
+
+static int
+virDomainAudioCoreAudioParse(virDomainAudioIOCoreAudioPtr def,
+                             xmlNodePtr node)
+{
+    g_autofree char *bufferCount = virXMLPropString(node, "bufferCount");
+
+    if (bufferCount &&
+        virStrToLong_ui(bufferCount, NULL, 10,
+                        &def->bufferCount) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("cannot parse 'bufferCount' value '%s'"), bufferCount);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virDomainAudioJackParse(virDomainAudioIOJackPtr def,
+                        xmlNodePtr node)
+{
+    g_autofree char *exactName = virXMLPropString(node, "exactName");
+
+    def->serverName = virXMLPropString(node, "serverName");
+    def->clientName = virXMLPropString(node, "clientName");
+    def->connectPorts = virXMLPropString(node, "connectPorts");
+
+    if (exactName &&
+        ((def->exactName =
+          virTristateBoolTypeFromString(exactName)) <= 0)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown 'exactName' value '%s'"), exactName);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 virDomainAudioOSSParse(virDomainAudioIOOSSPtr def,
                        xmlNodePtr node)
 {
+    g_autofree char *tryPoll = virXMLPropString(node, "tryPoll");
+    g_autofree char *bufferCount = virXMLPropString(node, "bufferCount");
+
     def->dev = virXMLPropString(node, "dev");
+
+    if (tryPoll &&
+        ((def->tryPoll =
+          virTristateBoolTypeFromString(tryPoll)) <= 0)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown 'tryPoll' value '%s'"), tryPoll);
+        return -1;
+    }
+
+    if (bufferCount &&
+        virStrToLong_ui(bufferCount, NULL, 10,
+                        &def->bufferCount) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("cannot parse 'bufferCount' value '%s'"), bufferCount);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virDomainAudioPulseAudioParse(virDomainAudioIOPulseAudioPtr def,
+                              xmlNodePtr node)
+{
+    g_autofree char *latency = virXMLPropString(node, "latency");
+
+    def->name = virXMLPropString(node, "name");
+    def->streamName = virXMLPropString(node, "streamName");
+
+    if (latency &&
+        virStrToLong_ui(latency, NULL, 10,
+                        &def->latency) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("cannot parse 'latency' value '%s'"), latency);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virDomainAudioSDLParse(virDomainAudioIOSDLPtr def,
+                       xmlNodePtr node)
+{
+    g_autofree char *bufferCount = virXMLPropString(node, "bufferCount");
+
+    if (bufferCount &&
+        virStrToLong_ui(bufferCount, NULL, 10,
+                        &def->bufferCount) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("cannot parse 'bufferCount' value '%s'"), bufferCount);
+        return -1;
+    }
 
     return 0;
 }
@@ -14109,22 +14244,69 @@ virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        if (inputNode)
+            virDomainAudioALSAParse(&def->backend.alsa.input, inputNode);
+        if (outputNode)
+            virDomainAudioALSAParse(&def->backend.alsa.output, outputNode);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        if (inputNode)
+            virDomainAudioCoreAudioParse(&def->backend.coreaudio.input, inputNode);
+        if (outputNode)
+            virDomainAudioCoreAudioParse(&def->backend.coreaudio.output, outputNode);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_JACK:
+        if (inputNode)
+            virDomainAudioJackParse(&def->backend.jack.input, inputNode);
+        if (outputNode)
+            virDomainAudioJackParse(&def->backend.jack.output, outputNode);
         break;
 
-    case VIR_DOMAIN_AUDIO_TYPE_OSS:
+    case VIR_DOMAIN_AUDIO_TYPE_OSS: {
+        g_autofree char *tryMMap = virXMLPropString(node, "tryMMap");
+        g_autofree char *exclusive = virXMLPropString(node, "exclusive");
+        g_autofree char *dspPolicy = virXMLPropString(node, "dspPolicy");
+
+        if (tryMMap && ((def->backend.oss.tryMMap =
+                         virTristateBoolTypeFromString(tryMMap)) <= 0)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown 'tryMMap' value '%s'"), tryMMap);
+            goto error;
+        }
+
+        if (exclusive && ((def->backend.oss.exclusive =
+                           virTristateBoolTypeFromString(exclusive)) <= 0)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown 'exclusive' value '%s'"), exclusive);
+            goto error;
+        }
+
+        if (dspPolicy) {
+            if (virStrToLong_i(dspPolicy, NULL, 10,
+                               &def->backend.oss.dspPolicy) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("cannot parse 'dspPolicy' value '%s'"), dspPolicy);
+                goto error;
+            }
+            def->backend.oss.dspPolicySet = true;
+        }
+
         if (inputNode)
             virDomainAudioOSSParse(&def->backend.oss.input, inputNode);
         if (outputNode)
             virDomainAudioOSSParse(&def->backend.oss.output, outputNode);
         break;
+    }
 
     case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        def->backend.pulseaudio.serverName = virXMLPropString(node, "serverName");
+
+        if (inputNode)
+            virDomainAudioPulseAudioParse(&def->backend.pulseaudio.input, inputNode);
+        if (outputNode)
+            virDomainAudioPulseAudioParse(&def->backend.pulseaudio.output, outputNode);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SDL: {
@@ -14136,6 +14318,11 @@ virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
                            _("unknown SDL driver '%s'"), driver);
             goto error;
         }
+
+        if (inputNode)
+            virDomainAudioSDLParse(&def->backend.sdl.input, inputNode);
+        if (outputNode)
+            virDomainAudioSDLParse(&def->backend.sdl.output, outputNode);
         break;
     }
 
@@ -14143,6 +14330,7 @@ virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
+        def->backend.file.path = virXMLPropString(node, "path");
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
@@ -26635,11 +26823,68 @@ virDomainAudioCommonFormat(virDomainAudioIOCommonPtr def,
     }
 }
 
+
+static void
+virDomainAudioALSAFormat(virDomainAudioIOALSAPtr def,
+                         virBufferPtr buf)
+{
+    virBufferEscapeString(buf, " dev='%s'", def->dev);
+}
+
+
+static void
+virDomainAudioCoreAudioFormat(virDomainAudioIOCoreAudioPtr def,
+                              virBufferPtr buf)
+{
+    if (def->bufferCount)
+        virBufferAsprintf(buf, " bufferCount='%u'", def->bufferCount);
+}
+
+
+static void
+virDomainAudioJackFormat(virDomainAudioIOJackPtr def,
+                         virBufferPtr buf)
+{
+    virBufferEscapeString(buf, " serverName='%s'", def->serverName);
+    virBufferEscapeString(buf, " clientName='%s'", def->clientName);
+    virBufferEscapeString(buf, " connectPorts='%s'", def->connectPorts);
+    if (def->exactName)
+        virBufferAsprintf(buf, " exactName='%s'",
+                          virTristateBoolTypeToString(def->exactName));
+}
+
+
 static void
 virDomainAudioOSSFormat(virDomainAudioIOOSSPtr def,
                         virBufferPtr buf)
 {
     virBufferEscapeString(buf, " dev='%s'", def->dev);
+    if (def->bufferCount)
+        virBufferAsprintf(buf, " bufferCount='%u'", def->bufferCount);
+    if (def->tryPoll)
+        virBufferAsprintf(buf, " tryPoll='%s'",
+                          virTristateBoolTypeToString(def->tryPoll));
+}
+
+
+static void
+virDomainAudioPulseAudioFormat(virDomainAudioIOPulseAudioPtr def,
+                               virBufferPtr buf)
+{
+    virBufferEscapeString(buf, " name='%s'", def->name);
+    virBufferEscapeString(buf, " streamName='%s'", def->streamName);
+    if (def->latency)
+        virBufferAsprintf(buf, " latency='%u'", def->latency);
+
+}
+
+
+static void
+virDomainAudioSDLFormat(virDomainAudioIOSDLPtr def,
+                        virBufferPtr buf)
+{
+    if (def->bufferCount)
+        virBufferAsprintf(buf, " bufferCount='%u'", def->bufferCount);
 }
 
 
@@ -26665,20 +26910,40 @@ virDomainAudioDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        virDomainAudioALSAFormat(&def->backend.alsa.input, &inputBuf);
+        virDomainAudioALSAFormat(&def->backend.alsa.output, &outputBuf);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        virDomainAudioCoreAudioFormat(&def->backend.coreaudio.input, &inputBuf);
+        virDomainAudioCoreAudioFormat(&def->backend.coreaudio.output, &outputBuf);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_JACK:
+        virDomainAudioJackFormat(&def->backend.jack.input, &inputBuf);
+        virDomainAudioJackFormat(&def->backend.jack.output, &outputBuf);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_OSS:
+        if (def->backend.oss.tryMMap)
+            virBufferAsprintf(buf, " tryMMap='%s'",
+                              virTristateBoolTypeToString(def->backend.oss.tryMMap));
+        if (def->backend.oss.exclusive)
+            virBufferAsprintf(buf, " exclusive='%s'",
+                              virTristateBoolTypeToString(def->backend.oss.exclusive));
+        if (def->backend.oss.dspPolicySet)
+            virBufferAsprintf(buf, " dspPolicy='%d'", def->backend.oss.dspPolicy);
+
         virDomainAudioOSSFormat(&def->backend.oss.input, &inputBuf);
         virDomainAudioOSSFormat(&def->backend.oss.output, &outputBuf);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        virBufferEscapeString(buf, " serverName='%s'",
+                              def->backend.pulseaudio.serverName);
+
+        virDomainAudioPulseAudioFormat(&def->backend.pulseaudio.input, &inputBuf);
+        virDomainAudioPulseAudioFormat(&def->backend.pulseaudio.output, &outputBuf);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SDL:
@@ -26686,12 +26951,16 @@ virDomainAudioDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " driver='%s'",
                               virDomainAudioSDLDriverTypeToString(
                                   def->backend.sdl.driver));
+
+        virDomainAudioSDLFormat(&def->backend.sdl.input, &inputBuf);
+        virDomainAudioSDLFormat(&def->backend.sdl.output, &outputBuf);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SPICE:
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
+        virBufferEscapeString(buf, " path='%s'", def->backend.file.path);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
