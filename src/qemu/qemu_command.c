@@ -10127,10 +10127,6 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         qemuBuildVsockCommandLine(cmd, def, def->vsock, qemuCaps) < 0)
         return NULL;
 
-    /* In some situations, eg. VFIO passthrough, QEMU might need to lock a
-     * significant amount of memory, so we need to set the limit accordingly */
-    virCommandSetMaxMemLock(cmd, qemuDomainGetMemLockLimitBytes(def, false));
-
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MSG_TIMESTAMP) &&
         cfg->logTimestamp)
         virCommandAddArgList(cmd, "-msg", "timestamp=on", NULL);

@@ -6916,6 +6916,7 @@ qemuProcessLaunch(virConnectPtr conn,
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     size_t nnicindexes = 0;
     g_autofree int *nicindexes = NULL;
+    unsigned long long maxMemLock = 0;
 
     VIR_DEBUG("conn=%p driver=%p vm=%p name=%s if=%d asyncJob=%d "
               "incoming.launchURI=%s incoming.deferredURI=%s "
@@ -7013,6 +7014,11 @@ qemuProcessLaunch(virConnectPtr conn,
 
     VIR_DEBUG("Setting up process limits");
 
+    /* In some situations, eg. VFIO passthrough, QEMU might need to lock a
+     * significant amount of memory, so we need to set the limit accordingly */
+    maxMemLock = qemuDomainGetMemLockLimitBytes(vm->def, false);
+
+    virCommandSetMaxMemLock(cmd, maxMemLock);
     virCommandSetMaxProcesses(cmd, cfg->maxProcesses);
     virCommandSetMaxFiles(cmd, cfg->maxFiles);
     virCommandSetMaxCoreSize(cmd, cfg->maxCore);
