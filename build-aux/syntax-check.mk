@@ -27,7 +27,6 @@ ME := build-aux/syntax-check.mk
 # of the module description. But some packages import this file directly,
 # ignoring the module description.
 AWK ?= awk
-GREP ?= grep
 # FreeBSD (and probably some other OSes too) ships own version of sed(1), not
 # compatible with the GNU sed. GNU sed is available as gsed(1), so use this
 # instead

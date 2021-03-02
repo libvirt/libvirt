@@ -10,17 +10,31 @@ syntax_check_conf.set('flake8_path', flake8_path)
 syntax_check_conf.set('runutf8', ' '.join(runutf8))
 syntax_check_conf.set('PYTHON3', python3_prog.path())
 
+
+grep_prog = find_program('grep')
+
+if host_machine.system() == 'freebsd'
+  make_prog = find_program('gmake')
+
+  grep_cmd = run_command(grep_prog, '--version')
+  if grep_cmd.stdout().startswith('grep (BSD grep')
+    grep_prog = find_program('/usr/local/bin/grep')
+    grep_cmd = run_command(grep_prog, '--version')
+    if grep_cmd.stdout().startswith('grep (BSD grep')
+      error('GNU grep not found')
+    endif
+  endif
+else
+  make_prog = find_program('make')
+endif
+
+syntax_check_conf.set('GREP', grep_prog.path())
+
 configure_file(
   input: 'Makefile.in',
   output: '@BASENAME@',
   configuration: syntax_check_conf,
 )
-
-if host_machine.system() == 'freebsd'
-  make_prog = find_program('gmake')
-else
-  make_prog = find_program('make')
-endif
 
 rc = run_command(
   'sed', '-n',
