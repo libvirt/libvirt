@@ -132,8 +132,11 @@ struct _virCommand {
     bool reap;
     bool rawStatus;
 
+    bool setMaxMemLock;
     unsigned long long maxMemLock;
+    bool setMaxProcesses;
     unsigned int maxProcesses;
+    bool setMaxFiles;
     unsigned int maxFiles;
     bool setMaxCore;
     unsigned long long maxCore;
@@ -819,11 +822,14 @@ virExec(virCommandPtr cmd)
         /* pidfilefd is intentionally leaked. */
     }
 
-    if (virProcessSetMaxMemLock(pid, cmd->maxMemLock) < 0)
+    if (cmd->setMaxMemLock &&
+        virProcessSetMaxMemLock(pid, cmd->maxMemLock) < 0)
         goto fork_error;
-    if (virProcessSetMaxProcesses(pid, cmd->maxProcesses) < 0)
+    if (cmd->setMaxProcesses &&
+        virProcessSetMaxProcesses(pid, cmd->maxProcesses) < 0)
         goto fork_error;
-    if (virProcessSetMaxFiles(pid, cmd->maxFiles) < 0)
+    if (cmd->setMaxFiles &&
+        virProcessSetMaxFiles(pid, cmd->maxFiles) < 0)
         goto fork_error;
     if (cmd->setMaxCore &&
         virProcessSetMaxCoreSize(pid, cmd->maxCore) < 0)
@@ -1154,6 +1160,7 @@ virCommandSetMaxMemLock(virCommandPtr cmd, unsigned long long bytes)
         return;
 
     cmd->maxMemLock = bytes;
+    cmd->setMaxMemLock = true;
 }
 
 void
@@ -1163,6 +1170,7 @@ virCommandSetMaxProcesses(virCommandPtr cmd, unsigned int procs)
         return;
 
     cmd->maxProcesses = procs;
+    cmd->setMaxProcesses = true;
 }
 
 void
@@ -1172,6 +1180,7 @@ virCommandSetMaxFiles(virCommandPtr cmd, unsigned int files)
         return;
 
     cmd->maxFiles = files;
+    cmd->setMaxFiles = true;
 }
 
 void virCommandSetMaxCoreSize(virCommandPtr cmd, unsigned long long bytes)
