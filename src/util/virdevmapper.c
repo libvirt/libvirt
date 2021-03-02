@@ -240,7 +240,7 @@ virDevMapperGetTargetsImpl(int controlFD,
     if (!(sanitizedPath = virDMSanitizepath(path)))
         return 0;
 
-    if (virStrncpy(dm.name, sanitizedPath, -1, DM_TABLE_DEPS) < 0) {
+    if (virStrcpy(dm.name, sanitizedPath, DM_TABLE_DEPS) < 0) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("Resolved device mapper name too long"));
         return -1;
