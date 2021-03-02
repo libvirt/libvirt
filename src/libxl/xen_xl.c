@@ -1070,7 +1070,7 @@ xenParseXLChannel(virConfPtr conf, virDomainDefPtr def)
     if (list && list->type == VIR_CONF_LIST) {
         list = list->list;
         while (list) {
-            char type[10];
+            g_autofree char *type = NULL;
             char *key;
 
             if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
@@ -1087,11 +1087,8 @@ xenParseXLChannel(virConfPtr conf, virDomainDefPtr def)
 
                 if (STRPREFIX(key, "connection=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
-                    if (virStrncpy(type, data, len, sizeof(type)) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("connection %s too big"), data);
-                        goto skipchannel;
-                    }
+                    g_clear_pointer(&type, g_free);
+                    type = g_strndup(data, len);
                 } else if (STRPREFIX(key, "name=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
                     VIR_FREE(name);
