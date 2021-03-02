@@ -924,9 +924,7 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
 
     /* sanlock doesn't use owner_name for anything, so it's safe to take just
      * the first SANLK_NAME_LEN - 1 characters from vm_name */
-    ignore_value(virStrncpy(opt->owner_name, priv->vm_name,
-                            MIN(strlen(priv->vm_name), SANLK_NAME_LEN - 1),
-                            SANLK_NAME_LEN));
+    virStrcpy(opt->owner_name, priv->vm_name, SANLK_NAME_LEN);
 
     if (state && STRNEQ(state, "")) {
         if ((rv = sanlock_state_to_args((char *)state,
