@@ -798,7 +798,7 @@ virProcessSetLimit(pid_t pid,
 /**
  * virProcessSetMaxMemLock:
  * @pid: process to be changed
- * @bytes: new limit (0 for no change)
+ * @bytes: new limit
  *
  * Sets a new limit on the amount of locked memory for a process.
  *
@@ -808,9 +808,6 @@ int
 virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes)
 {
     struct rlimit rlim;
-
-    if (bytes == 0)
-        return 0;
 
     /* We use VIR_DOMAIN_MEMORY_PARAM_UNLIMITED internally to represent
      * unlimited memory amounts, but setrlimit() and prlimit() use
@@ -896,7 +893,7 @@ virProcessGetMaxMemLock(pid_t pid G_GNUC_UNUSED,
 /**
  * virProcessSetMaxProcesses:
  * @pid: process to be changed
- * @procs: new limit (0 for no change)
+ * @procs: new limit
  *
  * Sets a new limit on the amount of processes for the user the
  * process is running as.
@@ -907,9 +904,6 @@ int
 virProcessSetMaxProcesses(pid_t pid, unsigned int procs)
 {
     struct rlimit rlim;
-
-    if (procs == 0)
-        return 0;
 
     rlim.rlim_cur = rlim.rlim_max = procs;
 
@@ -936,7 +930,7 @@ virProcessSetMaxProcesses(pid_t pid G_GNUC_UNUSED,
 /**
  * virProcessSetMaxFiles:
  * @pid: process to be changed
- * @files: new limit (0 for no change)
+ * @files: new limit
  *
  * Sets a new limit on the number of opened files for a process.
  *
@@ -946,9 +940,6 @@ int
 virProcessSetMaxFiles(pid_t pid, unsigned int files)
 {
     struct rlimit rlim;
-
-    if (files == 0)
-        return 0;
 
    /* Max number of opened files is one greater than actual limit. See
     * man setrlimit.
