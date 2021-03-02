@@ -960,13 +960,9 @@ xenParseXLUSB(virConfPtr conf, virDomainDefPtr def)
     if (list && list->type == VIR_CONF_LIST) {
         list = list->list;
         while (list) {
-            char bus[3];
-            char device[3];
             char *key;
             int busNum;
             int devNum;
-
-            bus[0] = device[0] = '\0';
 
             if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
                 goto skipusb;
@@ -982,20 +978,16 @@ xenParseXLUSB(virConfPtr conf, virDomainDefPtr def)
 
                 if (STRPREFIX(key, "hostbus=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
-                    if (virStrncpy(bus, data, len, sizeof(bus)) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("bus %s too big for destination"),
-                                       data);
+                    g_autofree char *tmp = g_strndup(data, len);
+
+                    if (virStrToLong_i(tmp, NULL, 16, &busNum) < 0)
                         goto skipusb;
-                    }
                 } else if (STRPREFIX(key, "hostaddr=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
-                    if (virStrncpy(device, data, len, sizeof(device)) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("device %s too big for destination"),
-                                       data);
+                    g_autofree char *tmp = g_strndup(data, len);
+
+                    if (virStrToLong_i(tmp, NULL, 16, &devNum) < 0)
                         goto skipusb;
-                    }
                 }
 
                 while (nextkey && (nextkey[0] == ',' ||
@@ -1005,10 +997,6 @@ xenParseXLUSB(virConfPtr conf, virDomainDefPtr def)
                 key = nextkey;
             }
 
-            if (virStrToLong_i(bus, NULL, 16, &busNum) < 0)
-                goto skipusb;
-            if (virStrToLong_i(device, NULL, 16, &devNum) < 0)
-                goto skipusb;
             if (!(hostdev = virDomainHostdevDefNew()))
                return -1;
 
