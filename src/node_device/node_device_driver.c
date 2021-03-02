@@ -1220,6 +1220,61 @@ nodeDeviceDestroy(virNodeDevicePtr device)
     return ret;
 }
 
+
+/* takes ownership of @def and potentially frees it. @def should not be used
+ * after returning from this function */
+static int
+nodeDeviceUpdateMediatedDevice(virNodeDeviceDef *def)
+{
+    virNodeDeviceObj *obj;
+    virObjectEvent *event;
+    bool defined = false;
+    g_autoptr(virNodeDeviceDef) owned = def;
+    g_autofree char *name = g_strdup(owned->name);
+
+    owned->driver = g_strdup("vfio_mdev");
+
+    if (!(obj = virNodeDeviceObjListFindByName(driver->devs, owned->name))) {
+        virNodeDeviceDef *d = g_steal_pointer(&owned);
+        if (!(obj = virNodeDeviceObjListAssignDef(driver->devs, d))) {
+            virNodeDeviceDefFree(d);
+            return -1;
+        }
+    } else {
+        bool changed;
+        virNodeDeviceDef *olddef = virNodeDeviceObjGetDef(obj);
+
+        defined = virNodeDeviceObjIsPersistent(obj);
+        /* Active devices contain some additional information (e.g. sysfs
+         * path) that is not provided by mdevctl, so re-use the existing
+         * definition and copy over new mdev data */
+        changed = nodeDeviceDefCopyFromMdevctl(olddef, owned);
+
+        if (defined && !changed) {
+            /* if this device was already defined and the definition
+             * hasn't changed, there's nothing to do for this device */
+            virNodeDeviceObjEndAPI(&obj);
+            return 0;
+        }
+    }
+
+    /* all devices returned by virMdevctlListDefined() are persistent */
+    virNodeDeviceObjSetPersistent(obj, true);
+
+    if (!defined)
+        event = virNodeDeviceEventLifecycleNew(name,
+                                               VIR_NODE_DEVICE_EVENT_DEFINED,
+                                               0);
+    else
+        event = virNodeDeviceEventUpdateNew(name);
+
+    virNodeDeviceObjEndAPI(&obj);
+    virObjectEventStateQueue(driver->nodeDeviceEventState, event);
+
+    return 0;
+}
+
+
 virNodeDevice*
 nodeDeviceDefineXML(virConnect *conn,
                     const char *xmlDesc,
@@ -1533,52 +1588,9 @@ nodeDeviceUpdateMediatedDevices(void)
     virNodeDeviceObjListForEachRemove(driver->devs,
                                       removeMissingPersistentMdev, &data);
 
-    for (i = 0; i < data.ndefs; i++) {
-        virNodeDeviceObj *obj;
-        virObjectEvent *event;
-        g_autoptr(virNodeDeviceDef) def = defs[i];
-        g_autofree char *name = g_strdup(def->name);
-        bool defined = false;
-
-        def->driver = g_strdup("vfio_mdev");
-
-        if (!(obj = virNodeDeviceObjListFindByName(driver->devs, def->name))) {
-            virNodeDeviceDef *d = g_steal_pointer(&def);
-            if (!(obj = virNodeDeviceObjListAssignDef(driver->devs, d))) {
-                virNodeDeviceDefFree(d);
-                return -1;
-            }
-        } else {
-            bool changed;
-            virNodeDeviceDef *olddef = virNodeDeviceObjGetDef(obj);
-
-            defined = virNodeDeviceObjIsPersistent(obj);
-            /* Active devices contain some additional information (e.g. sysfs
-             * path) that is not provided by mdevctl, so re-use the existing
-             * definition and copy over new mdev data */
-            changed = nodeDeviceDefCopyFromMdevctl(olddef, def);
-
-            if (defined && !changed) {
-                /* if this device was already defined and the definition
-                 * hasn't changed, there's nothing to do for this device */
-                virNodeDeviceObjEndAPI(&obj);
-                continue;
-            }
-        }
-
-        /* all devices returned by virMdevctlListDefined() are persistent */
-        virNodeDeviceObjSetPersistent(obj, true);
-
-        if (!defined)
-            event = virNodeDeviceEventLifecycleNew(name,
-                                                   VIR_NODE_DEVICE_EVENT_DEFINED,
-                                                   0);
-        else
-            event = virNodeDeviceEventUpdateNew(name);
-
-        virNodeDeviceObjEndAPI(&obj);
-        virObjectEventStateQueue(driver->nodeDeviceEventState, event);
-    }
+    for (i = 0; i < data.ndefs; i++)
+        if (nodeDeviceUpdateMediatedDevice(defs[i]) < 0)
+            return -1;
 
     return 0;
 }
