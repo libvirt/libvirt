@@ -1376,38 +1376,30 @@ xenParseSxprSound(virDomainDefPtr def,
             def->sounds[def->nsounds++] = sound;
         }
     } else {
-        char model[10];
-        const char *offset = str, *offset2;
+        g_autofree char *sounds = g_strdup(str);
+        char *sound = sounds;
+        int model;
 
-        do {
-            int len;
-            virDomainSoundDefPtr sound;
-            offset2 = strchr(offset, ',');
-            if (offset2)
-                len = (offset2 - offset);
-            else
-                len = strlen(offset);
-            if (virStrncpy(model, offset, len, sizeof(model)) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Sound model %s too big for destination"),
-                               offset);
+        while (*sound != '\0') {
+            char *next = strchr(sound, ',');
+            virDomainSoundDefPtr snddef;
+
+            if (next)
+                *next = '\0';
+
+            if ((model = virDomainSoundModelTypeFromString(sound)) < 0)
                 return -1;
-            }
 
-            sound = g_new0(virDomainSoundDef, 1);
+            snddef = g_new0(virDomainSoundDef, 1);
+            snddef->model = model;
 
-            if ((sound->model = virDomainSoundModelTypeFromString(model)) < 0) {
-                VIR_FREE(sound);
-                return -1;
-            }
+            ignore_value(VIR_APPEND_ELEMENT(def->sounds, def->nsounds, snddef));
 
-            if (VIR_APPEND_ELEMENT(def->sounds, def->nsounds, sound) < 0) {
-                virDomainSoundDefFree(sound);
-                return -1;
-            }
+            if (!next)
+                break;
 
-            offset = offset2 ? offset2 + 1 : NULL;
-        } while (offset);
+            sound = next + 1;
+        }
     }
 
     return 0;
