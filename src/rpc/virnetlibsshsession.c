@@ -437,8 +437,7 @@ virNetLibsshAuthenticatePrivkeyCb(const char *prompt,
         return -1;
     }
 
-    p = virStrncpy(buf, retr_passphrase.result,
-                   retr_passphrase.resultlen, len);
+    p = virStrcpy(buf, retr_passphrase.result, len);
     virSecureEraseString(retr_passphrase.result);
     g_free(retr_passphrase.result);
     if (p < 0) {
