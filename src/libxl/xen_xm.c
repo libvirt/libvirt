@@ -146,14 +146,7 @@ xenParseXMDisk(char *entry, int hvm)
     if (!(offset = strchr(head, ',')))
         goto error;
 
-    disk->dst = g_new0(char, (offset - head) + 1);
-
-    if (virStrncpy(disk->dst, head, offset - head,
-                   (offset - head) + 1) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Dest file %s too big for destination"), head);
-        goto error;
-    }
+    disk->dst = g_strndup(head, offset - head);
 
     head = offset + 1;
     /* Extract source driver type */
