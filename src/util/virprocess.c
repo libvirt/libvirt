@@ -1168,14 +1168,14 @@ virProcessRunInForkHelper(int errfd,
 
             bin->data.code = err->code;
             bin->data.domain = err->domain;
-            ignore_value(virStrcpy(bin->data.message, err->message, sizeof(bin->data.message)));
+            virStrcpyStatic(bin->data.message, err->message);
             bin->data.level = err->level;
             if (err->str1)
-                ignore_value(virStrcpy(bin->data.str1, err->str1, sizeof(bin->data.str1)));
+                virStrcpyStatic(bin->data.str1, err->str1);
             if (err->str2)
-                ignore_value(virStrcpy(bin->data.str2, err->str2, sizeof(bin->data.str2)));
+                virStrcpyStatic(bin->data.str2, err->str2);
             if (err->str3)
-                ignore_value(virStrcpy(bin->data.str3, err->str3, sizeof(bin->data.str3)));
+                virStrcpyStatic(bin->data.str3, err->str3);
             bin->data.int1 = err->int1;
             bin->data.int2 = err->int2;
 
