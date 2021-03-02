@@ -6851,6 +6851,69 @@ to the guest sound device.
 ``id``
    Integer id of the audio device. Must be greater than 0.
 
+All the backends support child element for configuring input and
+output properties
+
+::
+
+   ...
+   <devices>
+     <audio id='1' type='pulseaudio'>
+       <input mixingEngine='yes' fixedSettings='yes' voices='1' bufferLength='100'>
+         <settings frequency='44100' channels='2' format='s16'/>
+       </input>
+       <output mixingEngine='yes' fixedSettings='yes' voices='2' bufferLength='100'>
+         <settings frequency='22050' channels='4' format='f32'/>
+       </output>
+     </audio>
+   </devices>
+   ...
+
+The input and output elements support the same set of attributes and
+elements
+
+* ``mixingEngine``
+
+  Control whether the host mixing engine is used to convert between
+  different audio formats and sampling rates. When the mixing engine
+  is disabled it is possible to make use of improved audio formats
+  such as 5.1/7.1. If not specified, a hypervisor default applies.
+
+* ``fixedSettings``
+
+  Control whether the mixing engine can dynamically choose settings
+  to mimimize format conversion. This is only valid when the
+  mixing engine is explicitly enabled.
+
+* ``voices``
+
+  The number of voices voices to use, usually defaults to 1
+
+* ``bufferLength``
+
+  The length of the audio buffer in microseconds. Default is
+  backend specific.
+
+The ``<input>`` and ``<output>`` elements may also permit backend
+specific options.
+
+When fixed settings are enabled, the ``<settings>`` child element
+is permitted with the following attributes.
+
+* ``frequency``
+
+  The frequency in HZ, usually defaulting to 44100
+
+* ``channels``
+
+  The number of channels, usually defaulting to 2. The permitted
+  max number of channels is hypervisor specific.
+
+* ``format``
+
+  The audio format, one of ``s8``, ``u8``, ``s16``, ``u16``,
+  ``s32``, ``u32``, ``f32``. The defalt is hypervisor specific.
+
 None audio backend
 ^^^^^^^^^^^^^^^^^^
 

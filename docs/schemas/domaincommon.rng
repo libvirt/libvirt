@@ -4528,12 +4528,117 @@
     </element>
   </define>
 
+  <define name="audiocommonattr">
+    <optional>
+      <attribute name="mixingEngine">
+        <ref name="virYesNo"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="fixedSettings">
+        <ref name="virYesNo"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="voices">
+        <ref name="uint32"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="bufferLength">
+        <ref name="uint32"/>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="audiocommonchild">
+    <optional>
+      <element name="settings">
+        <optional>
+          <attribute name="frequency">
+            <ref name="uint32"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="channels">
+            <ref name="uint32"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="format">
+            <choice>
+              <value>s8</value>
+              <value>u8</value>
+              <value>s16</value>
+              <value>u16</value>
+              <value>s32</value>
+              <value>u32</value>
+              <value>f32</value>
+            </choice>
+          </attribute>
+        </optional>
+      </element>
+    </optional>
+  </define>
+
+  <define name="audionone">
+    <ref name="audiocommonattr"/>
+    <ref name="audiocommonchild"/>
+  </define>
+
+  <define name="audioalsa">
+    <ref name="audiocommonattr"/>
+    <optional>
+      <attribute name="dev">
+        <ref name="filePath"/>
+      </attribute>
+    </optional>
+    <ref name="audiocommonchild"/>
+  </define>
+
+  <define name="audiocoreaudio">
+    <ref name="audiocommonattr"/>
+    <optional>
+      <attribute name="bufferCount">
+        <ref name="uint32"/>
+      </attribute>
+    </optional>
+    <ref name="audiocommonchild"/>
+  </define>
+
+  <define name="audiojack">
+    <ref name="audiocommonattr"/>
+    <ref name="audiocommonchild"/>
+  </define>
+
   <define name="audiooss">
+    <ref name="audiocommonattr"/>
     <optional>
       <attribute name="dev">
         <ref name="deviceName"/>
       </attribute>
     </optional>
+    <ref name="audiocommonchild"/>
+  </define>
+
+  <define name="audiopulseaudio">
+    <ref name="audiocommonattr"/>
+    <ref name="audiocommonchild"/>
+  </define>
+
+  <define name="audiosdl">
+    <ref name="audiocommonattr"/>
+    <ref name="audiocommonchild"/>
+  </define>
+
+  <define name="audiospice">
+    <ref name="audiocommonattr"/>
+    <ref name="audiocommonchild"/>
+  </define>
+
+  <define name="audiofile">
+    <ref name="audiocommonattr"/>
+    <ref name="audiocommonchild"/>
   </define>
 
   <define name="audio">
@@ -4546,21 +4651,69 @@
           <attribute name="type">
             <value>none</value>
           </attribute>
+          <interleave>
+            <optional>
+              <element name="input">
+                <ref name="audionone"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="output">
+                <ref name="audionone"/>
+              </element>
+            </optional>
+          </interleave>
         </group>
         <group>
           <attribute name="type">
             <value>alsa</value>
           </attribute>
+          <interleave>
+            <optional>
+              <element name="input">
+                <ref name="audioalsa"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="output">
+                <ref name="audioalsa"/>
+              </element>
+            </optional>
+          </interleave>
         </group>
         <group>
           <attribute name="type">
             <value>coreaudio</value>
           </attribute>
+          <interleave>
+            <optional>
+              <element name="input">
+                <ref name="audiocoreaudio"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="output">
+                <ref name="audiocoreaudio"/>
+              </element>
+            </optional>
+          </interleave>
         </group>
         <group>
           <attribute name="type">
             <value>jack</value>
           </attribute>
+          <interleave>
+            <optional>
+              <element name="input">
+                <ref name="audiojack"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="output">
+                <ref name="audiojack"/>
+              </element>
+            </optional>
+          </interleave>
         </group>
         <group>
           <attribute name="type">
@@ -4585,6 +4738,18 @@
           <attribute name="type">
             <value>pulseaudio</value>
           </attribute>
+          <interleave>
+            <optional>
+              <element name="input">
+                <ref name="audiopulseaudio"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="output">
+                <ref name="audiopulseaudio"/>
+              </element>
+            </optional>
+          </interleave>
         </group>
         <group>
           <attribute name="type">
@@ -4600,16 +4765,52 @@
               </choice>
             </attribute>
           </optional>
+          <interleave>
+            <optional>
+              <element name="input">
+                <ref name="audiosdl"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="output">
+                <ref name="audiosdl"/>
+              </element>
+            </optional>
+          </interleave>
         </group>
         <group>
           <attribute name="type">
             <value>spice</value>
           </attribute>
+          <interleave>
+            <optional>
+              <element name="input">
+                <ref name="audiospice"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="output">
+                <ref name="audiospice"/>
+              </element>
+            </optional>
+          </interleave>
         </group>
         <group>
           <attribute name="type">
             <value>file</value>
           </attribute>
+          <interleave>
+            <optional>
+              <element name="input">
+                <ref name="audiofile"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="output">
+                <ref name="audiofile"/>
+              </element>
+            </optional>
+          </interleave>
         </group>
       </choice>
     </element>

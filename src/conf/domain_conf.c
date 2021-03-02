@@ -756,6 +756,18 @@ VIR_ENUM_IMPL(virDomainAudioSDLDriver,
               "pulseaudio",
 );
 
+VIR_ENUM_IMPL(virDomainAudioFormat,
+              VIR_DOMAIN_AUDIO_FORMAT_LAST,
+              "",
+              "u8",
+              "s8",
+              "u16",
+              "s16",
+              "u32",
+              "s32",
+              "f32",
+);
+
 VIR_ENUM_IMPL(virDomainKeyWrapCipherName,
               VIR_DOMAIN_KEY_WRAP_CIPHER_NAME_LAST,
               "aes",
@@ -13942,6 +13954,99 @@ virDomainSoundDefFind(const virDomainDef *def,
 
 
 static int
+virDomainAudioCommonParse(virDomainAudioIOCommonPtr def,
+                          xmlNodePtr node,
+                          xmlXPathContextPtr ctxt)
+{
+    g_autofree char *mixingEngine = virXMLPropString(node, "mixingEngine");
+    g_autofree char *fixedSettings = virXMLPropString(node, "fixedSettings");
+    g_autofree char *voices = virXMLPropString(node, "voices");
+    g_autofree char *bufferLength = virXMLPropString(node, "bufferLength");
+    xmlNodePtr settings;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+
+    ctxt->node = node;
+    settings = virXPathNode("./settings", ctxt);
+
+    if (mixingEngine &&
+        ((def->mixingEngine =
+          virTristateBoolTypeFromString(mixingEngine)) <= 0)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown 'mixingEngine' value '%s'"), mixingEngine);
+        return -1;
+    }
+
+    if (fixedSettings &&
+        ((def->fixedSettings =
+          virTristateBoolTypeFromString(fixedSettings)) <= 0)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown 'fixedSettings' value '%s'"), fixedSettings);
+        return -1;
+    }
+
+    if (def->fixedSettings == VIR_TRISTATE_BOOL_YES &&
+        def->mixingEngine != VIR_TRISTATE_BOOL_YES) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("fixed audio settings requires mixing engine"));
+        return -1;
+    }
+
+    if (voices &&
+        (virStrToLong_ui(voices, NULL, 10, &def->voices) < 0 ||
+         !def->voices)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("cannot parse 'voices' value '%s'"), voices);
+        return -1;
+    }
+
+    if (bufferLength &&
+        (virStrToLong_ui(bufferLength, NULL, 10, &def->bufferLength) < 0 ||
+         !def->bufferLength)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("cannot parse 'bufferLength' value '%s'"), bufferLength);
+        return -1;
+    }
+
+    if (settings) {
+        g_autofree char *frequency = virXMLPropString(settings, "frequency");
+        g_autofree char *channels = virXMLPropString(settings, "channels");
+        g_autofree char *format = virXMLPropString(settings, "format");
+
+        if (def->fixedSettings != VIR_TRISTATE_BOOL_YES) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("audio settings specified without fixed settings flag"));
+            return -1;
+        }
+
+        if (frequency &&
+            (virStrToLong_ui(frequency, NULL, 10, &def->frequency) < 0 ||
+             !def->frequency)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("cannot parse 'frequency' value '%s'"), frequency);
+            return -1;
+        }
+
+        if (channels &&
+            (virStrToLong_ui(channels, NULL, 10, &def->channels) < 0 ||
+             !def->channels)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("cannot parse 'channels' value '%s'"), channels);
+            return -1;
+        }
+
+        if (format &&
+            (def->format = virDomainAudioFormatTypeFromString(format)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("cannot parse 'format' value '%s'"), format);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainAudioOSSParse(virDomainAudioIOOSSPtr def,
                        xmlNodePtr node)
 {
@@ -13953,8 +14058,8 @@ virDomainAudioOSSParse(virDomainAudioIOOSSPtr def,
 
 static virDomainAudioDefPtr
 virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
-                          xmlNodePtr node G_GNUC_UNUSED,
-                          xmlXPathContextPtr ctxt G_GNUC_UNUSED)
+                          xmlNodePtr node,
+                          xmlXPathContextPtr ctxt)
 {
     virDomainAudioDefPtr def;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
@@ -13994,6 +14099,11 @@ virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
     inputNode = virXPathNode("./input", ctxt);
     outputNode = virXPathNode("./output", ctxt);
 
+    if (inputNode && virDomainAudioCommonParse(&def->input, inputNode, ctxt) < 0)
+        goto error;
+    if (outputNode && virDomainAudioCommonParse(&def->output, outputNode, ctxt) < 0)
+        goto error;
+
     switch ((virDomainAudioType) def->type) {
     case VIR_DOMAIN_AUDIO_TYPE_NONE:
         break;
@@ -14030,6 +14140,8 @@ virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
     }
 
     case VIR_DOMAIN_AUDIO_TYPE_SPICE:
+        break;
+
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
         break;
 
@@ -26470,17 +26582,58 @@ virDomainSoundDefFormat(virBufferPtr buf,
 
 
 static void
-virDomainAudioCommonFormat(virBufferPtr childBuf,
+virDomainAudioCommonFormat(virDomainAudioIOCommonPtr def,
+                           virBufferPtr childBuf,
                            virBufferPtr backendAttrBuf,
                            const char *direction)
 {
-    if (virBufferUse(backendAttrBuf)) {
+    g_auto(virBuffer) settingsBuf = VIR_BUFFER_INITIALIZER;
+
+    if (def->fixedSettings == VIR_TRISTATE_BOOL_YES) {
+        if (def->frequency)
+            virBufferAsprintf(&settingsBuf, " frequency='%u'",
+                              def->frequency);
+        if (def->channels)
+            virBufferAsprintf(&settingsBuf, " channels='%u'",
+                              def->channels);
+        if (def->format)
+            virBufferAsprintf(&settingsBuf, " format='%s'",
+                              virDomainAudioFormatTypeToString(def->format));
+    }
+
+    if (def->mixingEngine || def->fixedSettings ||
+        def->voices || def->bufferLength ||
+        virBufferUse(backendAttrBuf)) {
         virBufferAsprintf(childBuf, "<%s", direction);
-        virBufferAdd(childBuf, virBufferCurrentContent(backendAttrBuf), -1);
-        virBufferAddLit(childBuf, "/>\n");
+        if (def->mixingEngine)
+            virBufferAsprintf(childBuf, " mixingEngine='%s'",
+                              virTristateBoolTypeToString(def->mixingEngine));
+        if (def->fixedSettings)
+            virBufferAsprintf(childBuf, " fixedSettings='%s'",
+                              virTristateBoolTypeToString(def->fixedSettings));
+        if (def->voices)
+            virBufferAsprintf(childBuf, " voices='%u'",
+                              def->voices);
+        if (def->bufferLength)
+            virBufferAsprintf(childBuf, " bufferLength='%u'",
+                              def->bufferLength);
+        if (virBufferUse(backendAttrBuf))
+            virBufferAdd(childBuf, virBufferCurrentContent(backendAttrBuf), -1);
+        if (def->fixedSettings == VIR_TRISTATE_BOOL_YES) {
+            virBufferAddLit(childBuf, ">\n");
+            virBufferAdjustIndent(childBuf, 2);
+            virBufferAddLit(childBuf, "<settings");
+            if (virBufferUse(&settingsBuf)) {
+                virBufferAdd(childBuf, virBufferCurrentContent(&settingsBuf), -1);
+            }
+            virBufferAddLit(childBuf, "/>\n");
+            virBufferAdjustIndent(childBuf, -2);
+            virBufferAsprintf(childBuf, "</%s>\n", direction);
+        } else {
+            virBufferAddLit(childBuf, "/>\n");
+        }
     }
 }
-
 
 static void
 virDomainAudioOSSFormat(virDomainAudioIOOSSPtr def,
@@ -26547,8 +26700,8 @@ virDomainAudioDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virDomainAudioCommonFormat(&childBuf, &inputBuf, "input");
-    virDomainAudioCommonFormat(&childBuf, &outputBuf, "output");
+    virDomainAudioCommonFormat(&def->input, &childBuf, &inputBuf, "input");
+    virDomainAudioCommonFormat(&def->output, &childBuf, &outputBuf, "output");
 
     if (virBufferUse(&childBuf)) {
         virBufferAddLit(buf, ">\n");
@@ -30548,6 +30701,17 @@ virDomainSoundModelSupportsCodecs(virDomainSoundDefPtr def)
         def->model == VIR_DOMAIN_SOUND_MODEL_ICH9;
 }
 
+bool
+virDomainAudioIOCommonIsSet(virDomainAudioIOCommonPtr common)
+{
+    return common->mixingEngine ||
+        common->fixedSettings ||
+        common->frequency ||
+        common->channels ||
+        common->voices ||
+        common->format ||
+        common->bufferLength;
+}
 
 char *
 virDomainObjGetMetadata(virDomainObjPtr vm,

@@ -514,6 +514,13 @@ bhyveBuildSoundArgStr(const virDomainDef *def G_GNUC_UNUSED,
     if (audio) {
         switch ((virDomainAudioType) audio->type) {
         case  VIR_DOMAIN_AUDIO_TYPE_OSS:
+            if (virDomainAudioIOCommonIsSet(&audio->input) ||
+                virDomainAudioIOCommonIsSet(&audio->output)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("cannot set common audio backend settings"));
+                return -1;
+            }
+
             if (audio->backend.oss.input.dev)
                 virBufferAsprintf(&params, ",play=%s",
                                   audio->backend.oss.input.dev);
