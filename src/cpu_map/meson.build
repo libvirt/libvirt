@@ -34,6 +34,7 @@ cpumap_data = [
   'x86_Dhyana.xml',
   'x86_EPYC-IBPB.xml',
   'x86_EPYC.xml',
+  'x86_EPYC-Milan.xml',
   'x86_EPYC-Rome.xml',
   'x86_features.xml',
   'x86_Haswell-IBRS.xml',
