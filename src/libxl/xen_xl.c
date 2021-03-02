@@ -885,15 +885,10 @@ xenParseXLUSBController(virConfPtr conf, virDomainDefPtr def)
     if (list && list->type == VIR_CONF_LIST) {
         list = list->list;
         while (list) {
-            char type[8];
-            char version[4];
-            char ports[4];
             char *key;
             int usbctrl_version = 2; /* by default USB 2.0 */
             int usbctrl_ports = 8; /* by default 8 ports */
             int usbctrl_type = -1;
-
-            type[0] = version[0] = ports[0] = '\0';
 
             if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
                 goto skipusbctrl;
@@ -908,32 +903,19 @@ xenParseXLUSBController(virConfPtr conf, virDomainDefPtr def)
                 data++;
 
                 if (STRPREFIX(key, "type=")) {
-                    int len = nextkey ? (nextkey - data) : strlen(data);
-                    if (virStrncpy(type, data, len, sizeof(type)) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("type %s invalid"),
-                                       data);
+                    if (!STRPREFIX(data, "qusb"))
                         goto skipusbctrl;
-                    }
                 } else if (STRPREFIX(key, "version=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
-                    if (virStrncpy(version, data, len, sizeof(version)) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("version %s invalid"),
-                                       data);
-                        goto skipusbctrl;
-                    }
-                    if (virStrToLong_i(version, NULL, 16, &usbctrl_version) < 0)
+                    g_autofree char *tmp = g_strndup(data, len);
+
+                    if (virStrToLong_i(tmp, NULL, 16, &usbctrl_version) < 0)
                         goto skipusbctrl;
                 } else if (STRPREFIX(key, "ports=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
-                    if (virStrncpy(ports, data, len, sizeof(ports)) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("version %s invalid"),
-                                       data);
-                        goto skipusbctrl;
-                    }
-                    if (virStrToLong_i(ports, NULL, 16, &usbctrl_ports) < 0)
+                    g_autofree char *tmp = g_strndup(data, len);
+
+                    if (virStrToLong_i(tmp, NULL, 16, &usbctrl_ports) < 0)
                         goto skipusbctrl;
                 }
 
@@ -944,21 +926,10 @@ xenParseXLUSBController(virConfPtr conf, virDomainDefPtr def)
                 key = nextkey;
             }
 
-            if (type[0] == '\0') {
-                if (usbctrl_version == 1)
-                    usbctrl_type = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1;
-                else
-                    usbctrl_type = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2;
-            } else {
-                if (STRPREFIX(type, "qusb")) {
-                    if (usbctrl_version == 1)
-                        usbctrl_type = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1;
-                    else
-                        usbctrl_type = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2;
-                } else {
-                    goto skipusbctrl;
-                }
-            }
+            if (usbctrl_version == 1)
+                usbctrl_type = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1;
+            else
+                usbctrl_type = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2;
 
             if (!(controller = virDomainControllerDefNew(VIR_DOMAIN_CONTROLLER_TYPE_USB)))
                 return -1;
