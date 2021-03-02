@@ -514,13 +514,13 @@ bhyveBuildSoundArgStr(const virDomainDef *def G_GNUC_UNUSED,
     if (audio) {
         switch ((virDomainAudioType) audio->type) {
         case  VIR_DOMAIN_AUDIO_TYPE_OSS:
-            if (audio->backend.oss.inputDev)
+            if (audio->backend.oss.input.dev)
                 virBufferAsprintf(&params, ",play=%s",
-                                  audio->backend.oss.inputDev);
+                                  audio->backend.oss.input.dev);
 
-            if (audio->backend.oss.outputDev)
+            if (audio->backend.oss.output.dev)
                 virBufferAsprintf(&params, ",rec=%s",
-                                  audio->backend.oss.outputDev);
+                                  audio->backend.oss.output.dev);
 
             break;
 

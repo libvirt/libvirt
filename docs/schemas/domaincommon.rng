@@ -4518,6 +4518,15 @@
       </interleave>
     </element>
   </define>
+
+  <define name="audiooss">
+    <optional>
+      <attribute name="dev">
+        <ref name="deviceName"/>
+      </attribute>
+    </optional>
+  </define>
+
   <define name="audio">
     <element name="audio">
       <attribute name="id">
@@ -4531,16 +4540,12 @@
       <interleave>
         <optional>
           <element name="input">
-            <attribute name="dev">
-              <ref name="deviceName"/>
-            </attribute>
+            <ref name="audiooss"/>
           </element>
         </optional>
         <optional>
           <element name="output">
-            <attribute name="dev">
-              <ref name="deviceName"/>
-            </attribute>
+            <ref name="audiooss"/>
           </element>
         </optional>
       </interleave>

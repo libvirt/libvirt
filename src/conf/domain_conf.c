@@ -2889,15 +2889,22 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def)
     g_free(def);
 }
 
-void virDomainAudioDefFree(virDomainAudioDefPtr def)
+static void
+virDomainAudioIOOSSFree(virDomainAudioIOOSSPtr def)
+{
+    g_free(def->dev);
+}
+
+void
+virDomainAudioDefFree(virDomainAudioDefPtr def)
 {
     if (!def)
         return;
 
     switch ((virDomainAudioType) def->type) {
     case VIR_DOMAIN_AUDIO_TYPE_OSS:
-        g_free(def->backend.oss.inputDev);
-        g_free(def->backend.oss.outputDev);
+        virDomainAudioIOOSSFree(&def->backend.oss.input);
+        virDomainAudioIOOSSFree(&def->backend.oss.output);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
@@ -13873,6 +13880,16 @@ virDomainSoundDefFind(const virDomainDef *def,
 }
 
 
+static int
+virDomainAudioOSSParse(virDomainAudioIOOSSPtr def,
+                       xmlNodePtr node)
+{
+    def->dev = virXMLPropString(node, "dev");
+
+    return 0;
+}
+
+
 static virDomainAudioDefPtr
 virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
                           xmlNodePtr node G_GNUC_UNUSED,
@@ -13882,6 +13899,7 @@ virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *tmp = NULL;
     g_autofree char *type = NULL;
+    xmlNodePtr inputNode, outputNode;
 
     def = g_new0(virDomainAudioDef, 1);
     ctxt->node = node;
@@ -13912,19 +13930,16 @@ virDomainAudioDefParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
         goto error;
     }
 
+    inputNode = virXPathNode("./input", ctxt);
+    outputNode = virXPathNode("./output", ctxt);
+
     switch ((virDomainAudioType) def->type) {
-    case VIR_DOMAIN_AUDIO_TYPE_OSS: {
-        xmlNodePtr inputDevNode, outputDevNode;
-
-        inputDevNode = virXPathNode("./input", ctxt);
-        outputDevNode = virXPathNode("./output", ctxt);
-
-        if (inputDevNode)
-            def->backend.oss.inputDev = virXMLPropString(inputDevNode, "dev");
-        if (outputDevNode)
-            def->backend.oss.outputDev = virXMLPropString(outputDevNode, "dev");
+    case VIR_DOMAIN_AUDIO_TYPE_OSS:
+        if (inputNode)
+            virDomainAudioOSSParse(&def->backend.oss.input, inputNode);
+        if (outputNode)
+            virDomainAudioOSSParse(&def->backend.oss.output, outputNode);
         break;
-    }
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
         break;
@@ -26360,11 +26375,34 @@ virDomainSoundDefFormat(virBufferPtr buf,
 }
 
 
+static void
+virDomainAudioCommonFormat(virBufferPtr childBuf,
+                           virBufferPtr backendAttrBuf,
+                           const char *direction)
+{
+    if (virBufferUse(backendAttrBuf)) {
+        virBufferAsprintf(childBuf, "<%s", direction);
+        virBufferAdd(childBuf, virBufferCurrentContent(backendAttrBuf), -1);
+        virBufferAddLit(childBuf, "/>\n");
+    }
+}
+
+
+static void
+virDomainAudioOSSFormat(virDomainAudioIOOSSPtr def,
+                        virBufferPtr buf)
+{
+    virBufferEscapeString(buf, " dev='%s'", def->dev);
+}
+
+
 static int
 virDomainAudioDefFormat(virBufferPtr buf,
                         virDomainAudioDefPtr def)
 {
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) inputBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) outputBuf = VIR_BUFFER_INITIALIZER;
     const char *type = virDomainAudioTypeTypeToString(def->type);
 
     if (!type) {
@@ -26377,14 +26415,13 @@ virDomainAudioDefFormat(virBufferPtr buf,
 
     switch (def->type) {
     case VIR_DOMAIN_AUDIO_TYPE_OSS:
-        if (def->backend.oss.inputDev)
-            virBufferAsprintf(&childBuf, "<input dev='%s'/>\n",
-                              def->backend.oss.inputDev);
-        if (def->backend.oss.outputDev)
-            virBufferAsprintf(&childBuf, "<output dev='%s'/>\n",
-                              def->backend.oss.outputDev);
+        virDomainAudioOSSFormat(&def->backend.oss.input, &inputBuf);
+        virDomainAudioOSSFormat(&def->backend.oss.output, &outputBuf);
         break;
     }
+
+    virDomainAudioCommonFormat(&childBuf, &inputBuf, "input");
+    virDomainAudioCommonFormat(&childBuf, &outputBuf, "output");
 
     if (virBufferUse(&childBuf)) {
         virBufferAddLit(buf, ">\n");
