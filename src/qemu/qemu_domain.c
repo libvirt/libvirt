@@ -9259,9 +9259,10 @@ qemuDomainAdjustMaxMemLock(virDomainObjPtr vm,
         vm->original_memlock = 0;
     }
 
-    /* Trying to set the memory locking limit to zero is a no-op */
-    if (virProcessSetMaxMemLock(vm->pid, bytes) < 0)
+    if (bytes > 0 &&
+        virProcessSetMaxMemLock(vm->pid, bytes) < 0) {
         return -1;
+    }
 
     return 0;
 }

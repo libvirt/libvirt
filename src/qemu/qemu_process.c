@@ -7018,9 +7018,18 @@ qemuProcessLaunch(virConnectPtr conn,
      * significant amount of memory, so we need to set the limit accordingly */
     maxMemLock = qemuDomainGetMemLockLimitBytes(vm->def, false);
 
-    virCommandSetMaxMemLock(cmd, maxMemLock);
-    virCommandSetMaxProcesses(cmd, cfg->maxProcesses);
-    virCommandSetMaxFiles(cmd, cfg->maxFiles);
+    /* For all these settings, zero indicates that the limit should
+     * not be set explicitly and the default/inherited limit should
+     * be applied instead */
+    if (maxMemLock > 0)
+        virCommandSetMaxMemLock(cmd, maxMemLock);
+    if (cfg->maxProcesses > 0)
+        virCommandSetMaxProcesses(cmd, cfg->maxProcesses);
+    if (cfg->maxFiles > 0)
+        virCommandSetMaxFiles(cmd, cfg->maxFiles);
+
+    /* In this case, however, zero means that core dumps should be
+     * disabled, and so we always need to set the limit explicitly */
     virCommandSetMaxCoreSize(cmd, cfg->maxCore);
 
     VIR_DEBUG("Setting up security labelling");

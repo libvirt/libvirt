@@ -2950,6 +2950,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     }
 
     if (STREQ_NULLABLE(protocol, "rdma") &&
+        vm->def->mem.hard_limit > 0 &&
         virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
         goto stopjob;
     }
@@ -4199,6 +4200,7 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     switch (spec->destType) {
     case MIGRATION_DEST_HOST:
         if (STREQ(spec->dest.host.protocol, "rdma") &&
+            vm->def->mem.hard_limit > 0 &&
             virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
             goto exit_monitor;
         }
