@@ -4411,6 +4411,12 @@ virDomainDeviceInfoIterateFlags(virDomainDefPtr def,
             if ((rc = cb(def, &device, NULL, opaque)) != 0)
                 return rc;
         }
+        device.type = VIR_DOMAIN_DEVICE_AUDIO;
+        for (i = 0; i < def->naudios; i++) {
+            device.data.audio = def->audios[i];
+            if ((rc = cb(def, &device, NULL, opaque)) != 0)
+                return rc;
+        }
         device.type = VIR_DOMAIN_DEVICE_LEASE;
         for (i = 0; i < def->nleases; i++) {
             device.data.lease = def->leases[i];
