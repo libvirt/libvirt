@@ -230,82 +230,57 @@ openvzReadNetworkConf(virDomainDefPtr def,
                        veid);
         goto error;
     } else if (ret > 0) {
-        token = strtok_r(temp, ";", &saveptr);
-        while (token != NULL) {
-            char *p = token;
-            char cpy_temp[32];
-            int len;
+        g_auto(GStrv) devices = g_strsplit(temp, ";", 0);
+        GStrv device;
 
-            /* add new device to list */
+        for (device = devices; device && *device; device++) {
+            g_auto(GStrv) keyvals = g_strsplit(*device, ",", 0);
+            GStrv keyval;
+
             net = g_new0(virDomainNetDef, 1);
-
             net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
 
-            /* parse string */
-            do {
-                char *next = strchr(p, ',');
-                if (!next)
-                    next = strchr(p, '\0');
-                if (STRPREFIX(p, "ifname=")) {
+            for (keyval = keyvals; keyval && *keyval; keyval++) {
+                char *val = strchr(*keyval, '=');
+
+                if (!val)
+                    continue;
+
+                val++;
+
+                if (STRPREFIX(*keyval, "ifname=")) {
                     /* skip in libvirt */
-                } else if (STRPREFIX(p, "host_ifname=")) {
-                    p += 12;
-                    len = next - p;
-                    if (len > 16) {
+                } else if (STRPREFIX(*keyval, "host_ifname=")) {
+                    if (strlen(val) > 16) {
                         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                        _("Too long network device name"));
                         goto error;
                     }
 
-                    net->ifname = g_new0(char, len+1);
-
-                    if (virStrncpy(net->ifname, p, len, len+1) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("Network ifname %s too long for destination"), p);
-                        goto error;
-                    }
-                } else if (STRPREFIX(p, "bridge=")) {
-                    p += 7;
-                    len = next - p;
-                    if (len > 16) {
+                    net->ifname = g_strdup(val);
+                } else if (STRPREFIX(*keyval, "bridge=")) {
+                    if (strlen(val) > 16) {
                         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                        _("Too long bridge device name"));
                         goto error;
                     }
 
-                    net->data.bridge.brname = g_new0(char, len+1);
-
-                    if (virStrncpy(net->data.bridge.brname, p, len, len+1) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("Bridge name %s too long for destination"), p);
-                        goto error;
-                    }
-                } else if (STRPREFIX(p, "mac=")) {
-                    p += 4;
-                    len = next - p;
-                    if (len != 17) { /* should be 17 */
+                    net->data.bridge.brname = g_strdup(val);
+                } else if (STRPREFIX(*keyval, "mac=")) {
+                    if (strlen(val) != 17) { /* should be 17 */
                         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                        _("Wrong length MAC address"));
                         goto error;
                     }
-                    if (virStrncpy(cpy_temp, p, len, sizeof(cpy_temp)) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("MAC address %s too long for destination"), p);
-                        goto error;
-                    }
-                    if (virMacAddrParse(cpy_temp, &net->mac) < 0) {
+                    if (virMacAddrParse(val, &net->mac) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                        _("Wrong MAC address"));
                         goto error;
                     }
                 }
-                p = ++next;
-            } while (p < token + strlen(token));
+            }
 
-            if (VIR_APPEND_ELEMENT_COPY(def->nets, def->nnets, net) < 0)
-                goto error;
-
-            token = strtok_r(NULL, ";", &saveptr);
+            ignore_value(VIR_APPEND_ELEMENT_COPY(def->nets, def->nnets, net));
         }
     }
 
