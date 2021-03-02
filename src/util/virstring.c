@@ -503,16 +503,18 @@ virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
  * @src: source buffer
  * @destbytes: number of bytes the destination can accommodate
  *
- * Copies @src to @dest.
+ * Copies @src to @dest. @dest is guaranteed to be 'nul' terminated if
+ * destbytes is 1 or more.
  *
- * See virStrncpy() for more information.
- *
- * Returns: 0 on success, <0 on failure.
+ * Returns: 0 on success, -1 if @src doesn't fit into @dest and was truncated.
  */
 int
 virStrcpy(char *dest, const char *src, size_t destbytes)
 {
-    return virStrncpy(dest, src, -1, destbytes);
+    if (g_strlcpy(dest, src, destbytes) >= destbytes)
+        return -1;
+
+    return 0;
 }
 
 /**
