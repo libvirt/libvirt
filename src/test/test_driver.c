@@ -739,32 +739,14 @@ testDomainStartState(testDriverPtr privconn,
 static char *testBuildFilename(const char *relativeTo,
                                const char *filename)
 {
-    char *offset;
-    int baseLen;
-    char *ret;
+    g_autofree char *basename = NULL;
 
-    if (!filename || filename[0] == '\0')
-        return NULL;
-    if (filename[0] == '/') {
-        ret = g_strdup(filename);
-        return ret;
-    }
+    if (g_path_is_absolute(filename))
+        return g_strdup(filename);
 
-    offset = strrchr(relativeTo, '/');
-    if ((baseLen = (offset-relativeTo+1))) {
-        char *absFile;
-        int totalLen = baseLen + strlen(filename) + 1;
-        absFile = g_new0(char, totalLen);
-        if (virStrncpy(absFile, relativeTo, baseLen, totalLen) < 0) {
-            VIR_FREE(absFile);
-            return NULL;
-        }
-        strcat(absFile, filename);
-        return absFile;
-    } else {
-        ret = g_strdup(filename);
-        return ret;
-    }
+    basename = g_path_get_dirname(relativeTo);
+
+    return g_strdup_printf("%s/%s", basename, filename);
 }
 
 static xmlNodePtr
@@ -777,11 +759,6 @@ testParseXMLDocFromFile(xmlNodePtr node, const char *file, const char *type)
 
     if ((relFile = virXMLPropString(node, "file"))) {
         absFile = testBuildFilename(file, relFile);
-        if (!absFile) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("resolving %s filename"), type);
-            return NULL;
-        }
 
         if (!(doc = virXMLParse(absFile, NULL, type)))
             goto error;
