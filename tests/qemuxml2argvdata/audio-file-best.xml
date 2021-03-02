@@ -30,7 +30,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <audio id='1' type='sdl' driver='pulseaudio'>
+    <audio id='1' type='file'>
       <input mixingEngine='yes' fixedSettings='yes' voices='1'>
         <settings frequency='44100' channels='2' format='s16'/>
       </input>

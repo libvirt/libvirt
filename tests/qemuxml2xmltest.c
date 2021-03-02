@@ -1474,8 +1474,25 @@ mymain(void)
     DO_TEST("audio-file-minimal", NONE);
 
     /* Best <audio> still compat with old ENV */
+    DO_TEST("audio-none-best", NONE);
+    DO_TEST("audio-alsa-best", NONE);
+    DO_TEST("audio-coreaudio-best", NONE);
     DO_TEST("audio-oss-best", NONE);
+    DO_TEST("audio-pulseaudio-best", NONE);
     DO_TEST("audio-sdl-best", NONE);
+    DO_TEST("audio-spice-best", NONE);
+    DO_TEST("audio-file-best", NONE);
+
+    /* Full <audio> only compat with new QEMU -audiodev args */
+    DO_TEST("audio-none-full", QEMU_CAPS_AUDIODEV);
+    DO_TEST("audio-alsa-full", QEMU_CAPS_AUDIODEV);
+    DO_TEST("audio-coreaudio-full", QEMU_CAPS_AUDIODEV);
+    DO_TEST("audio-jack-full", QEMU_CAPS_AUDIODEV);
+    DO_TEST("audio-oss-full", QEMU_CAPS_AUDIODEV);
+    DO_TEST("audio-pulseaudio-full", QEMU_CAPS_AUDIODEV);
+    DO_TEST("audio-sdl-full", QEMU_CAPS_AUDIODEV);
+    DO_TEST("audio-spice-full", QEMU_CAPS_AUDIODEV);
+    DO_TEST("audio-file-full", QEMU_CAPS_AUDIODEV);
 
     DO_TEST_CAPS_LATEST("audio-many-backends");
 

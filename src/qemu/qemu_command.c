@@ -7588,6 +7588,34 @@ qemuBuildMemoryDeviceCommandLine(virCommandPtr cmd,
 }
 
 static void
+qemuBuildAudioCommonArg(virBufferPtr buf,
+                        const char *prefix,
+                        virDomainAudioIOCommonPtr def)
+{
+    if (def->mixingEngine)
+        virBufferAsprintf(buf, ",%s.mixing-engine=%s", prefix,
+                          virTristateSwitchTypeToString(def->mixingEngine));
+    if (def->fixedSettings)
+        virBufferAsprintf(buf, ",%s.fixed-settings=%s", prefix,
+                          virTristateSwitchTypeToString(def->fixedSettings));
+
+    if (def->voices)
+        virBufferAsprintf(buf, ",%s.voices=%u", prefix, def->voices);
+    if (def->bufferLength)
+        virBufferAsprintf(buf, ",%s.buffer-length=%u", prefix, def->bufferLength);
+
+    if (def->fixedSettings) {
+        if (def->frequency)
+            virBufferAsprintf(buf, ",%s.frequency=%u", prefix, def->frequency);
+        if (def->channels)
+            virBufferAsprintf(buf, ",%s.channels=%u", prefix, def->channels);
+        if (def->format)
+            virBufferAsprintf(buf, ",%s.format=%s", prefix,
+                              virDomainAudioFormatTypeToString(def->format));
+    }
+}
+
+static void
 qemuBuildAudioOSSArg(virBufferPtr buf,
                      const char *prefix,
                      virDomainAudioIOOSSPtr def)
@@ -7607,6 +7635,9 @@ qemuBuildAudioCommandLineArg(virCommandPtr cmd,
     virBufferAsprintf(&buf, "id=audio%d,driver=%s",
                       def->id,
                       qemuAudioDriverTypeToString(def->type));
+
+    qemuBuildAudioCommonArg(&buf, "in", &def->input);
+    qemuBuildAudioCommonArg(&buf, "out", &def->output);
 
     switch ((virDomainAudioType)def->type) {
     case VIR_DOMAIN_AUDIO_TYPE_NONE:
@@ -7673,6 +7704,34 @@ qemuBuildAudioCommandLineArgs(virCommandPtr cmd,
 }
 
 static void
+qemuBuildAudioCommonEnv(virCommandPtr cmd,
+                        const char *prefix,
+                        virDomainAudioIOCommonPtr def)
+{
+    if (def->fixedSettings)
+        virCommandAddEnvFormat(cmd, "%sFIXED_SETTINGS=%s",
+                               prefix,
+                               virTristateSwitchTypeToString(def->fixedSettings));
+
+    if (def->voices)
+        virCommandAddEnvFormat(cmd, "%sVOICES=%u",
+                               prefix, def->voices);
+
+    if (def->fixedSettings) {
+        if (def->frequency)
+            virCommandAddEnvFormat(cmd, "%sFIXED_FREQ=%u",
+                                   prefix, def->frequency);
+        if (def->channels)
+            virCommandAddEnvFormat(cmd, "%sFIXED_CHANNELS=%u",
+                                   prefix, def->channels);
+        if (def->format)
+            virCommandAddEnvFormat(cmd, "%sFIXED_FMT=%s",
+                                   prefix,
+                                   virDomainAudioFormatTypeToString(def->format));
+    }
+}
+
+static void
 qemuBuildAudioOSSEnv(virCommandPtr cmd,
                      const char *prefix,
                      virDomainAudioIOOSSPtr def)
@@ -7693,6 +7752,9 @@ qemuBuildAudioCommandLineEnv(virCommandPtr cmd,
     audio = def->audios[0];
     virCommandAddEnvPair(cmd, "QEMU_AUDIO_DRV",
                          qemuAudioDriverTypeToString(audio->type));
+
+    qemuBuildAudioCommonEnv(cmd, "QEMU_AUDIO_ADC_", &audio->input);
+    qemuBuildAudioCommonEnv(cmd, "QEMU_AUDIO_DAC_", &audio->output);
 
     switch ((virDomainAudioType)audio->type) {
     case VIR_DOMAIN_AUDIO_TYPE_NONE:

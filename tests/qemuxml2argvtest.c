@@ -1065,11 +1065,44 @@ mymain(void)
     DO_TEST_CAPS_LATEST("audio-file-minimal");
 
     /* Best <audio> still compat with old ENV */
+    DO_TEST("audio-none-best", NONE);
+    DO_TEST("audio-alsa-best", NONE);
+    DO_TEST("audio-coreaudio-best", NONE);
     DO_TEST("audio-oss-best", NONE);
+    DO_TEST("audio-pulseaudio-best", NONE);
     DO_TEST("audio-sdl-best", NONE);
+    DO_TEST("audio-spice-best", NONE);
+    DO_TEST("audio-file-best", NONE);
 
+    DO_TEST_CAPS_LATEST("audio-none-best");
+    DO_TEST_CAPS_LATEST("audio-alsa-best");
+    DO_TEST_CAPS_LATEST("audio-coreaudio-best");
     DO_TEST_CAPS_LATEST("audio-oss-best");
+    DO_TEST_CAPS_LATEST("audio-pulseaudio-best");
     DO_TEST_CAPS_LATEST("audio-sdl-best");
+    DO_TEST_CAPS_LATEST("audio-spice-best");
+    DO_TEST_CAPS_LATEST("audio-file-best");
+
+    /* Full <audio> only compat with new QEMU -audiodev args */
+    DO_TEST_PARSE_ERROR("audio-none-full", NONE);
+    DO_TEST_PARSE_ERROR("audio-alsa-full", NONE);
+    DO_TEST_PARSE_ERROR("audio-coreaudio-full", NONE);
+    DO_TEST_PARSE_ERROR("audio-jack-full", NONE);
+    DO_TEST_PARSE_ERROR("audio-oss-full", NONE);
+    DO_TEST_PARSE_ERROR("audio-pulseaudio-full", NONE);
+    DO_TEST_PARSE_ERROR("audio-sdl-full", NONE);
+    DO_TEST_PARSE_ERROR("audio-spice-full", NONE);
+    DO_TEST_PARSE_ERROR("audio-file-full", NONE);
+
+    DO_TEST_CAPS_LATEST("audio-none-full");
+    DO_TEST_CAPS_LATEST("audio-alsa-full");
+    DO_TEST_CAPS_LATEST("audio-coreaudio-full");
+    DO_TEST_CAPS_LATEST("audio-jack-full");
+    DO_TEST_CAPS_LATEST("audio-oss-full");
+    DO_TEST_CAPS_LATEST("audio-pulseaudio-full");
+    DO_TEST_CAPS_LATEST("audio-sdl-full");
+    DO_TEST_CAPS_LATEST("audio-spice-full");
+    DO_TEST_CAPS_LATEST("audio-file-full");
 
     /* Multiple backends not supported with ENV */
     DO_TEST_PARSE_ERROR("audio-many-backends", NONE);

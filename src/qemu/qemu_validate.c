@@ -4176,6 +4176,25 @@ static int
 qemuValidateDomainDeviceDefAudio(virDomainAudioDefPtr audio,
                                  virQEMUCapsPtr qemuCaps G_GNUC_UNUSED)
 {
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
+        if (audio->input.mixingEngine == VIR_TRISTATE_BOOL_NO ||
+            audio->output.mixingEngine == VIR_TRISTATE_BOOL_NO) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disabling audio mixing engine is not supported with this QEMU"));
+            return -1;
+        }
+
+        if ((audio->input.bufferLength ||
+             audio->output.bufferLength) &&
+            (audio->type != VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO &&
+             audio->type != VIR_DOMAIN_AUDIO_TYPE_COREAUDIO &&
+             audio->type != VIR_DOMAIN_AUDIO_TYPE_SDL)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("setting audio buffer length is not supported with this QEMU"));
+            return -1;
+        }
+    }
+
     switch ((virDomainAudioType)audio->type) {
     case VIR_DOMAIN_AUDIO_TYPE_NONE:
         break;
@@ -4184,6 +4203,13 @@ qemuValidateDomainDeviceDefAudio(virDomainAudioDefPtr audio,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
+            if (audio->input.bufferLength) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("setting audio buffer length is not supported with this QEMU"));
+                return -1;
+            }
+        }
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_JACK:
@@ -4198,9 +4224,23 @@ qemuValidateDomainDeviceDefAudio(virDomainAudioDefPtr audio,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
+            if (audio->input.bufferLength != audio->output.bufferLength) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("setting audio buffer length is not supported with this QEMU"));
+                return -1;
+            }
+        }
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SDL:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
+            if (audio->input.bufferLength) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("setting audio buffer length is not supported with this QEMU"));
+                return -1;
+            }
+        }
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SPICE:
