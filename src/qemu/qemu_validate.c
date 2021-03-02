@@ -4219,8 +4219,7 @@ qemuValidateDomainDeviceDefSound(virDomainSoundDefPtr sound,
         return -1;
     }
 
-    if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6 ||
-        sound->model == VIR_DOMAIN_SOUND_MODEL_ICH9) {
+    if (virDomainSoundModelSupportsCodecs(sound)) {
         for (i = 0; i < sound->ncodecs; i++) {
             const char *stype;
             int type, flags;

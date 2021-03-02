@@ -4101,9 +4101,7 @@ qemuBuildSoundCommandLine(virCommandPtr cmd,
                 return -1;
 
             virCommandAddArg(cmd, str);
-            if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6 ||
-                sound->model == VIR_DOMAIN_SOUND_MODEL_ICH9) {
-
+            if (virDomainSoundModelSupportsCodecs(sound)) {
                 for (j = 0; j < sound->ncodecs; j++) {
                     g_autofree char *codecstr = NULL;
                     virCommandAddArg(cmd, "-device");

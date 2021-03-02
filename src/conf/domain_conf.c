@@ -13774,8 +13774,7 @@ virDomainSoundDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
-    if (def->model == VIR_DOMAIN_SOUND_MODEL_ICH6 ||
-        def->model == VIR_DOMAIN_SOUND_MODEL_ICH9) {
+    if (virDomainSoundModelSupportsCodecs(def)) {
         int ncodecs;
         g_autofree xmlNodePtr *codecNodes = NULL;
 
@@ -30353,6 +30352,14 @@ virDomainDefFindAudioForSound(virDomainDefPtr def,
             return def->audios[i];
 
     return NULL;
+}
+
+
+bool
+virDomainSoundModelSupportsCodecs(virDomainSoundDefPtr def)
+{
+    return def->model == VIR_DOMAIN_SOUND_MODEL_ICH6 ||
+        def->model == VIR_DOMAIN_SOUND_MODEL_ICH9;
 }
 
 

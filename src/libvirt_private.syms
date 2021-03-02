@@ -618,6 +618,7 @@ virDomainSmbiosModeTypeToString;
 virDomainSoundDefFind;
 virDomainSoundDefFree;
 virDomainSoundDefRemove;
+virDomainSoundModelSupportsCodecs;
 virDomainSoundModelTypeFromString;
 virDomainSoundModelTypeToString;
 virDomainStartupPolicyTypeFromString;
