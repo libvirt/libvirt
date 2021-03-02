@@ -37,7 +37,8 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -audiodev id=audio1,driver=sdl,in.mixing-engine=on,in.fixed-settings=on,\
 in.voices=1,in.buffer-length=100,in.frequency=44100,in.channels=2,\
 in.format=s16,out.mixing-engine=on,out.fixed-settings=on,out.voices=2,\
-out.buffer-length=200,out.frequency=22050,out.channels=4,out.format=f32 \
+out.buffer-length=200,out.frequency=22050,out.channels=4,out.format=f32,\
+in.buffer-count=40,out.buffer-count=50 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

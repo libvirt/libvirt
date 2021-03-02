@@ -34,7 +34,7 @@
       <input mixingEngine='yes' fixedSettings='yes' voices='1'>
         <settings frequency='44100' channels='2' format='s16'/>
       </input>
-      <output mixingEngine='yes' fixedSettings='yes' voices='2'>
+      <output mixingEngine='yes' fixedSettings='yes' voices='2' bufferLength='200' bufferCount='42'>
         <settings frequency='22050' channels='4' format='f32'/>
       </output>
     </audio>

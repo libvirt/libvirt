@@ -7616,12 +7616,73 @@ qemuBuildAudioCommonArg(virBufferPtr buf,
 }
 
 static void
+qemuBuildAudioALSAArg(virBufferPtr buf,
+                      const char *prefix,
+                      virDomainAudioIOALSAPtr def)
+{
+    if (def->dev)
+        virBufferAsprintf(buf, ",%s.dev=%s", prefix, def->dev);
+}
+
+static void
+qemuBuildAudioCoreAudioArg(virBufferPtr buf,
+                           const char *prefix,
+                           virDomainAudioIOCoreAudioPtr def)
+{
+    if (def->bufferCount)
+        virBufferAsprintf(buf, ",%s.buffer-count=%u", prefix, def->bufferCount);
+}
+
+static void
+qemuBuildAudioJackArg(virBufferPtr buf,
+                      const char *prefix,
+                      virDomainAudioIOJackPtr def)
+{
+    if (def->serverName)
+        virBufferAsprintf(buf, ",%s.server-name=%s", prefix, def->serverName);
+    if (def->clientName)
+        virBufferAsprintf(buf, ",%s.client-name=%s", prefix, def->clientName);
+    if (def->connectPorts)
+        virBufferAsprintf(buf, ",%s.connect-ports=%s", prefix, def->connectPorts);
+    if (def->exactName)
+        virBufferAsprintf(buf, ",%s.exact-name=%s", prefix,
+                          virTristateSwitchTypeToString(def->exactName));
+}
+
+static void
 qemuBuildAudioOSSArg(virBufferPtr buf,
                      const char *prefix,
                      virDomainAudioIOOSSPtr def)
 {
     if (def->dev)
         virBufferAsprintf(buf, ",%s.dev=%s", prefix, def->dev);
+    if (def->bufferCount)
+        virBufferAsprintf(buf, ",%s.buffer-count=%u", prefix, def->bufferCount);
+    if (def->tryPoll)
+        virBufferAsprintf(buf, ",%s.try-poll=%s", prefix,
+                          virTristateSwitchTypeToString(def->tryPoll));
+}
+
+static void
+qemuBuildAudioPulseAudioArg(virBufferPtr buf,
+                            const char *prefix,
+                            virDomainAudioIOPulseAudioPtr def)
+{
+    if (def->name)
+        virBufferAsprintf(buf, ",%s.name=%s", prefix, def->name);
+    if (def->streamName)
+        virBufferAsprintf(buf, ",%s.stream-name=%s", prefix, def->streamName);
+    if (def->latency)
+        virBufferAsprintf(buf, ",%s.latency=%u", prefix, def->latency);
+}
+
+static void
+qemuBuildAudioSDLArg(virBufferPtr buf,
+                     const char *prefix,
+                     virDomainAudioIOSDLPtr def)
+{
+    if (def->bufferCount)
+        virBufferAsprintf(buf, ",%s.buffer-count=%u", prefix, def->bufferCount);
 }
 
 static int
@@ -7644,23 +7705,46 @@ qemuBuildAudioCommandLineArg(virCommandPtr cmd,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        qemuBuildAudioALSAArg(&buf, "in", &def->backend.alsa.input);
+        qemuBuildAudioALSAArg(&buf, "out", &def->backend.alsa.output);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        qemuBuildAudioCoreAudioArg(&buf, "in", &def->backend.coreaudio.input);
+        qemuBuildAudioCoreAudioArg(&buf, "out", &def->backend.coreaudio.output);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_JACK:
+        qemuBuildAudioJackArg(&buf, "in", &def->backend.jack.input);
+        qemuBuildAudioJackArg(&buf, "out", &def->backend.jack.output);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_OSS:
         qemuBuildAudioOSSArg(&buf, "in", &def->backend.oss.input);
         qemuBuildAudioOSSArg(&buf, "out", &def->backend.oss.output);
+
+        if (def->backend.oss.tryMMap)
+            virBufferAsprintf(&buf, ",try-mmap=%s",
+                              virTristateSwitchTypeToString(def->backend.oss.tryMMap));
+        if (def->backend.oss.exclusive)
+            virBufferAsprintf(&buf, ",exclusive=%s",
+                              virTristateSwitchTypeToString(def->backend.oss.exclusive));
+        if (def->backend.oss.dspPolicySet)
+            virBufferAsprintf(&buf, ",dsp-policy=%d", def->backend.oss.dspPolicy);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        qemuBuildAudioPulseAudioArg(&buf, "in", &def->backend.pulseaudio.input);
+        qemuBuildAudioPulseAudioArg(&buf, "out", &def->backend.pulseaudio.output);
+
+        if (def->backend.pulseaudio.serverName)
+            virBufferAsprintf(&buf, ",server=%s", def->backend.pulseaudio.serverName);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SDL:
+        qemuBuildAudioSDLArg(&buf, "in", &def->backend.sdl.input);
+        qemuBuildAudioSDLArg(&buf, "out", &def->backend.sdl.output);
+
         if (def->backend.sdl.driver) {
             /*
              * Some SDL audio driver names are different on SDL 1.2
@@ -7679,6 +7763,8 @@ qemuBuildAudioCommandLineArg(virCommandPtr cmd,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
+        if (def->backend.file.path)
+            virBufferEscapeString(&buf, ",path=%s", def->backend.file.path);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
@@ -7732,14 +7818,61 @@ qemuBuildAudioCommonEnv(virCommandPtr cmd,
 }
 
 static void
-qemuBuildAudioOSSEnv(virCommandPtr cmd,
-                     const char *prefix,
-                     virDomainAudioIOOSSPtr def)
+qemuBuildAudioALSAEnv(virCommandPtr cmd,
+                      const char *prefix,
+                      virDomainAudioIOALSAPtr def)
 {
     if (def->dev)
         virCommandAddEnvFormat(cmd, "%sDEV=%s",
                                prefix, def->dev);
 }
+
+static void
+qemuBuildAudioCoreAudioEnv(virCommandPtr cmd,
+                           virDomainAudioDefPtr def)
+{
+    if (def->backend.coreaudio.output.bufferCount)
+        virCommandAddEnvFormat(cmd, "QEMU_COREAUDIO_BUFFER_COUNT=%u",
+                               def->backend.coreaudio.output.bufferCount);
+    if (def->output.bufferLength)
+        virCommandAddEnvFormat(cmd, "QEMU_COREAUDIO_BUFFER_SIZE=%u",
+                               def->output.bufferLength);
+}
+
+static void
+qemuBuildAudioOSSEnv(virCommandPtr cmd,
+                     const char *prefix,
+                     const char *prefix2,
+                     virDomainAudioIOOSSPtr def)
+{
+    if (def->dev)
+        virCommandAddEnvFormat(cmd, "%sDEV=%s",
+                               prefix, def->dev);
+    if (def->tryPoll)
+        virCommandAddEnvFormat(cmd, "%sTRY_POLL=%s", prefix2,
+                               virTristateSwitchTypeToString(def->tryPoll));
+}
+
+static void
+qemuBuildAudioPulseAudioEnv(virCommandPtr cmd,
+                            virDomainAudioDefPtr def)
+{
+    if (def->backend.pulseaudio.input.name)
+        virCommandAddEnvPair(cmd, "QEMU_PA_SOURCE",
+                             def->backend.pulseaudio.input.name);
+    if (def->backend.pulseaudio.output.name)
+        virCommandAddEnvPair(cmd, "QEMU_PA_SINK",
+                             def->backend.pulseaudio.output.name);
+
+    if (def->input.bufferLength)
+        virCommandAddEnvFormat(cmd, "QEMU_PA_SAMPLES=%u",
+                               def->input.bufferLength);
+
+    if (def->backend.pulseaudio.serverName)
+        virCommandAddEnvPair(cmd, "QEMU_PA_SERVER=%s",
+                             def->backend.pulseaudio.serverName);
+}
+
 
 static int
 qemuBuildAudioCommandLineEnv(virCommandPtr cmd,
@@ -7761,23 +7894,47 @@ qemuBuildAudioCommandLineEnv(virCommandPtr cmd,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        qemuBuildAudioALSAEnv(cmd, "QEMU_AUDIO_ADC_", &audio->backend.alsa.input);
+        qemuBuildAudioALSAEnv(cmd, "QEMU_AUDIO_DAC_", &audio->backend.alsa.output);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        qemuBuildAudioCoreAudioEnv(cmd, audio);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_JACK:
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_OSS:
-        qemuBuildAudioOSSEnv(cmd, "QEMU_OSS_ADC_", &audio->backend.oss.input);
-        qemuBuildAudioOSSEnv(cmd, "QEMU_OSS_DAC_", &audio->backend.oss.output);
+        qemuBuildAudioOSSEnv(cmd, "QEMU_OSS_ADC_", "QEMU_AUDIO_ADC_",
+                             &audio->backend.oss.input);
+        qemuBuildAudioOSSEnv(cmd, "QEMU_OSS_DAC_", "QEMU_AUDIO_DAC_",
+                             &audio->backend.oss.output);
+
+        if (audio->backend.oss.input.bufferCount)
+            virCommandAddEnvFormat(cmd, "QEMU_OSS_NFRAGS=%u",
+                                   audio->backend.oss.input.bufferCount);
+
+        if (audio->backend.oss.tryMMap)
+            virCommandAddEnvFormat(cmd, "QEMU_OSS_MMAP=%s",
+                                   virTristateSwitchTypeToString(audio->backend.oss.tryMMap));
+        if (audio->backend.oss.exclusive)
+            virCommandAddEnvFormat(cmd, "QEMU_OSS_EXCLUSIVE=%s",
+                                   virTristateSwitchTypeToString(audio->backend.oss.exclusive));
+        if (audio->backend.oss.dspPolicySet)
+            virCommandAddEnvFormat(cmd, "QEMU_OSS_POLICY=%d",
+                                   audio->backend.oss.dspPolicy);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        qemuBuildAudioPulseAudioEnv(cmd, audio);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SDL:
+        if (audio->output.bufferLength)
+            virCommandAddEnvFormat(cmd, "QEMU_SDL_SAMPLES=%u",
+                                   audio->output.bufferLength);
+
         if (audio->backend.sdl.driver) {
             /*
              * Some SDL audio driver names are different on SDL 1.2
@@ -7796,6 +7953,9 @@ qemuBuildAudioCommandLineEnv(virCommandPtr cmd,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
+        if (audio->backend.file.path)
+            virCommandAddEnvFormat(cmd, "QEMU_WAV_PATH=%s",
+                                   audio->backend.file.path);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:

@@ -4209,6 +4209,11 @@ qemuValidateDomainDeviceDefAudio(virDomainAudioDefPtr audio,
                                _("setting audio buffer length is not supported with this QEMU"));
                 return -1;
             }
+            if (audio->backend.coreaudio.input.bufferCount) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("setting audio buffer count is not supported with this QEMU"));
+                return -1;
+            }
         }
         break;
 
@@ -4221,10 +4226,32 @@ qemuValidateDomainDeviceDefAudio(virDomainAudioDefPtr audio,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_OSS:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
+            if (audio->backend.oss.input.bufferCount !=
+                audio->backend.oss.output.bufferCount) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("setting audio buffer count is not supported with this QEMU"));
+                return -1;
+            }
+        }
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
+            if (audio->backend.pulseaudio.input.streamName ||
+                audio->backend.pulseaudio.output.streamName) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("setting audio stream name is not supported with this QEMU"));
+                return -1;
+            }
+
+            if (audio->backend.pulseaudio.input.latency ||
+                audio->backend.pulseaudio.output.latency) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("setting audio latency is not supported with this QEMU"));
+                return -1;
+            }
+
             if (audio->input.bufferLength != audio->output.bufferLength) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("setting audio buffer length is not supported with this QEMU"));
@@ -4238,6 +4265,13 @@ qemuValidateDomainDeviceDefAudio(virDomainAudioDefPtr audio,
             if (audio->input.bufferLength) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("setting audio buffer length is not supported with this QEMU"));
+                return -1;
+            }
+
+            if (audio->backend.sdl.input.bufferCount ||
+                audio->backend.sdl.output.bufferCount) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("setting audio buffer count is not supported with this QEMU"));
                 return -1;
             }
         }

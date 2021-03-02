@@ -31,10 +31,10 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='oss'>
-      <input mixingEngine='yes' fixedSettings='yes' voices='1'>
+      <input mixingEngine='yes' fixedSettings='yes' voices='1' dev='/dev/dsp0' bufferCount='30' tryPoll='yes'>
         <settings frequency='44100' channels='2' format='s16'/>
       </input>
-      <output mixingEngine='yes' fixedSettings='yes' voices='2'>
+      <output mixingEngine='yes' fixedSettings='yes' voices='2' dev='/dev/dsp1' bufferCount='30' tryPoll='no'>
         <settings frequency='22050' channels='4' format='f32'/>
       </output>
     </audio>
