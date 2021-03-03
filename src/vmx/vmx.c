@@ -2217,9 +2217,6 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             (*def)->dst =
                virIndexToDiskName
                  (controllerOrBus * 15 + (unit < 7 ? unit : unit - 1), "sd");
-
-            if ((*def)->dst == NULL)
-                goto cleanup;
         } else if (busType == VIR_DOMAIN_DISK_BUS_SATA) {
             if (controllerOrBus < 0 || controllerOrBus > 3) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2238,9 +2235,6 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             prefix = g_strdup_printf("sata%d:%d", controllerOrBus, unit);
 
             (*def)->dst = virIndexToDiskName(controllerOrBus * 30 + unit, "sd");
-
-            if ((*def)->dst == NULL)
-                goto cleanup;
         } else if (busType == VIR_DOMAIN_DISK_BUS_IDE) {
             if (controllerOrBus < 0 || controllerOrBus > 1) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2258,9 +2252,6 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             prefix = g_strdup_printf("ide%d:%d", controllerOrBus, unit);
 
             (*def)->dst = virIndexToDiskName(controllerOrBus * 2 + unit, "hd");
-
-            if ((*def)->dst == NULL)
-                goto cleanup;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported bus type '%s' for device type '%s'"),
@@ -2287,9 +2278,6 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             prefix = g_strdup_printf("floppy%d", unit);
 
             (*def)->dst = virIndexToDiskName(unit, "fd");
-
-            if ((*def)->dst == NULL)
-                goto cleanup;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported bus type '%s' for device type '%s'"),

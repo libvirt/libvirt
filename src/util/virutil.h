@@ -56,7 +56,7 @@ virFormatIntPretty(unsigned long long val,
 
 int virDiskNameParse(const char *name, int *disk, int *partition);
 int virDiskNameToIndex(const char* str);
-char *virIndexToDiskName(int idx, const char *prefix);
+char *virIndexToDiskName(unsigned int idx, const char *prefix);
 
 /* No-op workarounds for functionality missing in mingw.  */
 #ifndef WITH_GETUID

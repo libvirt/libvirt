@@ -430,18 +430,12 @@ int virDiskNameToIndex(const char *name)
     return idx;
 }
 
-char *virIndexToDiskName(int idx, const char *prefix)
+char *virIndexToDiskName(unsigned int idx, const char *prefix)
 {
     char *name = NULL;
     size_t i;
     int ctr;
     int offset;
-
-    if (idx < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Disk index %d is negative"), idx);
-        return NULL;
-    }
 
     for (i = 0, ctr = idx; ctr >= 0; ++i, ctr = ctr / 26 - 1) { }
 
