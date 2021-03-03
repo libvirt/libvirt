@@ -29,10 +29,10 @@ static int
 virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRatePtr rate)
 {
     int ret = -1;
-    char *average = NULL;
-    char *peak = NULL;
-    char *burst = NULL;
-    char *floor = NULL;
+    g_autofree char *average = NULL;
+    g_autofree char *peak = NULL;
+    g_autofree char *burst = NULL;
+    g_autofree char *floor = NULL;
 
     if (!node || !rate) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -88,11 +88,6 @@ virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRatePtr rate)
     ret = 0;
 
  cleanup:
-    VIR_FREE(average);
-    VIR_FREE(peak);
-    VIR_FREE(burst);
-    VIR_FREE(floor);
-
     return ret;
 }
 
@@ -119,7 +114,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
     virNetDevBandwidthPtr def = NULL;
     xmlNodePtr cur;
     xmlNodePtr in = NULL, out = NULL;
-    char *class_id_prop = NULL;
+    g_autofree char *class_id_prop = NULL;
 
     def = g_new0(virNetDevBandwidth, 1);
 
@@ -209,7 +204,6 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
     ret = 0;
 
  cleanup:
-    VIR_FREE(class_id_prop);
     virNetDevBandwidthFree(def);
     return ret;
 }
