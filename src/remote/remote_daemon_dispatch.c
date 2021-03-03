@@ -2647,8 +2647,7 @@ remoteDispatchDomainGetSecurityLabel(virNetServerPtr server G_GNUC_UNUSED,
         goto cleanup;
 
     ret->label.label_len = strlen(seclabel->label) + 1;
-    ret->label.label_val = g_new0(char, ret->label.label_len);
-    strcpy(ret->label.label_val, seclabel->label);
+    ret->label.label_val = g_strdup(seclabel->label);
     ret->enforcing = seclabel->enforcing;
 
     rv = 0;
@@ -2729,12 +2728,10 @@ remoteDispatchNodeGetSecurityModel(virNetServerPtr server G_GNUC_UNUSED,
         goto cleanup;
 
     ret->model.model_len = strlen(secmodel.model) + 1;
-    ret->model.model_val = g_new0(char, ret->model.model_len);
-    strcpy(ret->model.model_val, secmodel.model);
+    ret->model.model_val = g_strdup(secmodel.model);
 
     ret->doi.doi_len = strlen(secmodel.doi) + 1;
-    ret->doi.doi_val = g_new0(char, ret->doi.doi_len);
-    strcpy(ret->doi.doi_val, secmodel.doi);
+    ret->doi.doi_val = g_strdup(secmodel.doi);
 
     rv = 0;
 
