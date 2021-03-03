@@ -5466,8 +5466,7 @@ networkPortSetParameters(virNetworkPortPtr port,
         goto cleanup;
 
     virNetDevBandwidthFree(portdef->bandwidth);
-    portdef->bandwidth = bandwidth;
-    bandwidth = NULL;
+    portdef->bandwidth = g_steal_pointer(&bandwidth);
 
     if (virNetworkPortDefSaveStatus(portdef, dir) < 0)
         goto cleanup;

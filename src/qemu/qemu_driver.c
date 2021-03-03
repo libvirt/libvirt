@@ -10372,8 +10372,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
 
         virNetDevBandwidthFree(net->bandwidth);
         if (newBandwidth->in || newBandwidth->out) {
-            net->bandwidth = newBandwidth;
-            newBandwidth = NULL;
+            net->bandwidth = g_steal_pointer(&newBandwidth);
         } else {
             net->bandwidth = NULL;
         }
@@ -10391,8 +10390,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
 
     if (persistentNet) {
         if (!persistentNet->bandwidth) {
-            persistentNet->bandwidth = bandwidth;
-            bandwidth = NULL;
+            persistentNet->bandwidth = g_steal_pointer(&bandwidth);
         } else {
             if (bandwidth->in) {
                 VIR_FREE(persistentNet->bandwidth->in);
