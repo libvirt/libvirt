@@ -9324,17 +9324,16 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
         if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CPU_SHARES)) {
             if (def) {
-                unsigned long long val;
-                if (virCgroupSetupCpuShares(priv->cgroup, value_ul, &val) < 0)
+                if (virCgroupSetCpuShares(priv->cgroup, value_ul) < 0)
                     goto endjob;
 
-                def->cputune.shares = val;
+                def->cputune.shares = value_ul;
                 def->cputune.sharesSpecified = true;
 
                 if (virTypedParamsAddULLong(&eventParams, &eventNparams,
                                             &eventMaxNparams,
                                             VIR_DOMAIN_TUNABLE_CPU_CPU_SHARES,
-                                            val) < 0)
+                                            value_ul) < 0)
                     goto endjob;
             }
 

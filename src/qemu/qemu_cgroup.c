@@ -880,10 +880,6 @@ static int
 qemuSetupCpuCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virObjectEventPtr event = NULL;
-    virTypedParameterPtr eventParams = NULL;
-    int eventNparams = 0;
-    int eventMaxparams = 0;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
        if (vm->def->cputune.sharesSpecified) {
@@ -896,23 +892,8 @@ qemuSetupCpuCgroup(virDomainObjPtr vm)
     }
 
     if (vm->def->cputune.sharesSpecified) {
-        unsigned long long val;
-        if (virCgroupSetupCpuShares(priv->cgroup, vm->def->cputune.shares,
-                                    &val) < 0)
+        if (virCgroupSetCpuShares(priv->cgroup, vm->def->cputune.shares) < 0)
             return -1;
-
-        if (vm->def->cputune.shares != val) {
-            vm->def->cputune.shares = val;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_CPU_CPU_SHARES,
-                                        val) < 0)
-                return -1;
-
-            event = virDomainEventTunableNewFromObj(vm, eventParams, eventNparams);
-        }
-
-        virObjectEventStateQueue(priv->driver->domainEventState, event);
     }
 
     return 0;

@@ -39,10 +39,8 @@ static int virLXCCgroupSetupCpuTune(virDomainDefPtr def,
                                     virCgroupPtr cgroup)
 {
     if (def->cputune.sharesSpecified) {
-        unsigned long long val;
-        if (virCgroupSetupCpuShares(cgroup, def->cputune.shares, &val) < 0)
+        if (virCgroupSetCpuShares(cgroup, def->cputune.shares) < 0)
             return -1;
-        def->cputune.shares = val;
     }
 
     return virCgroupSetupCpuPeriodQuota(cgroup, def->cputune.period,
