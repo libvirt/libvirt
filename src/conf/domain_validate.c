@@ -1229,6 +1229,16 @@ virDomainDefOSValidate(const virDomainDef *def,
 static int
 virDomainDefCputuneValidate(const virDomainDef *def)
 {
+    if (def->cputune.shares > 0 &&
+        (def->cputune.shares < VIR_CGROUP_CPU_SHARES_MIN ||
+         def->cputune.shares > VIR_CGROUP_CPU_SHARES_MAX)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Value of cputune 'shares' must be in range [%llu, %llu]"),
+                         VIR_CGROUP_CPU_SHARES_MIN,
+                         VIR_CGROUP_CPU_SHARES_MAX);
+        return -1;
+    }
+
     CPUTUNE_VALIDATE_PERIOD(period);
     CPUTUNE_VALIDATE_PERIOD(global_period);
     CPUTUNE_VALIDATE_PERIOD(emulator_period);

@@ -230,6 +230,8 @@ int virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares);
 int virCgroupSetupCpuShares(virCgroupPtr cgroup, unsigned long long shares,
                             unsigned long long *realValue);
 
+#define VIR_CGROUP_CPU_SHARES_MIN 2LL
+#define VIR_CGROUP_CPU_SHARES_MAX 262144LL
 #define VIR_CGROUP_CPU_PERIOD_MIN 1000LL
 #define VIR_CGROUP_CPU_PERIOD_MAX 1000000LL
 #define VIR_CGROUP_CPU_QUOTA_MIN 1000LL

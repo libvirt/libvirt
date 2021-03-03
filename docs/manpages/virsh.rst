@@ -3807,10 +3807,7 @@ If *--config* is specified, affect the next start of a persistent guest.
 If *--current* is specified, it is equivalent to either *--live* or
 *--config*, depending on the current state of the guest.
 
-``Note``: The cpu_shares parameter has a valid value range of 0-262144; Negative
-values are wrapped to positive, and larger values are capped at the maximum.
-Therefore, -1 is a useful shorthand for 262144. On the Linux kernel, the
-values 0 and 1 are automatically converted to a minimal value of 2.
+``Note``: The cpu_shares parameter has a valid value range of 2-262144.
 
 ``Note``: The weight and cap parameters are defined only for the
 XEN_CREDIT scheduler.

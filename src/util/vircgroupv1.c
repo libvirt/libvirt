@@ -1917,6 +1917,16 @@ static int
 virCgroupV1SetCpuShares(virCgroupPtr group,
                         unsigned long long shares)
 {
+    if (shares < VIR_CGROUP_CPU_SHARES_MIN ||
+        shares > VIR_CGROUP_CPU_SHARES_MAX) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("shares '%llu' must be in range [%llu, %llu]"),
+                       shares,
+                       VIR_CGROUP_CPU_SHARES_MIN,
+                       VIR_CGROUP_CPU_SHARES_MAX);
+        return -1;
+    }
+
     if (group->unitName) {
         GVariant *value = g_variant_new("t", shares);
 
