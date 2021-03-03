@@ -38,6 +38,8 @@ struct _virNetDevBandwidth {
 
 void virNetDevBandwidthFree(virNetDevBandwidthPtr def);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetDevBandwidth, virNetDevBandwidthFree);
+
 int virNetDevBandwidthSet(const char *ifname,
                           const virNetDevBandwidth *bandwidth,
                           bool hierarchical_class,

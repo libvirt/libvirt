@@ -111,7 +111,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
                         bool allowFloor)
 {
     int ret = -1;
-    virNetDevBandwidthPtr def = NULL;
+    g_autoptr(virNetDevBandwidth) def = NULL;
     xmlNodePtr cur;
     xmlNodePtr in = NULL, out = NULL;
     g_autofree char *class_id_prop = NULL;
@@ -197,14 +197,12 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
         }
     }
 
-    if (!def->in && !def->out)
-        VIR_FREE(def);
+    if (def->in || def->out)
+        *bandwidth = g_steal_pointer(&def);
 
-    *bandwidth = g_steal_pointer(&def);
     ret = 0;
 
  cleanup:
-    virNetDevBandwidthFree(def);
     return ret;
 }
 
