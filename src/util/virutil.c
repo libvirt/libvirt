@@ -432,24 +432,15 @@ int virDiskNameToIndex(const char *name)
 
 char *virIndexToDiskName(unsigned int idx, const char *prefix)
 {
-    char *name = NULL;
-    size_t i;
-    int ctr;
-    int offset;
+    GString *str = g_string_new(NULL);
+    long long ctr;
 
-    for (i = 0, ctr = idx; ctr >= 0; ++i, ctr = ctr / 26 - 1) { }
+    for (ctr = idx; ctr >= 0; ctr = ctr / 26 - 1)
+        g_string_prepend_c(str, 'a' + (ctr % 26));
 
-    offset = strlen(prefix);
+    g_string_prepend(str, prefix);
 
-    name = g_new0(char, offset + i + 1);
-
-    strcpy(name, prefix);
-    name[offset + i] = '\0';
-
-    for (i = i - 1, ctr = idx; ctr >= 0; --i, ctr = ctr / 26 - 1)
-        name[offset + i] = 'a' + (ctr % 26);
-
-    return name;
+    return g_string_free(str, false);
 }
 
 #ifndef AI_CANONIDN
