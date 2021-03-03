@@ -9343,27 +9343,29 @@ int
 qemuDomainAdjustMaxMemLock(virDomainObjPtr vm,
                            bool forceVFIO)
 {
-    unsigned long long bytes = 0;
+    unsigned long long currentMemLock = 0;
+    unsigned long long desiredMemLock = 0;
 
-    bytes = qemuDomainGetMemLockLimitBytes(vm->def, forceVFIO);
+    desiredMemLock = qemuDomainGetMemLockLimitBytes(vm->def, forceVFIO);
+    if (virProcessGetMaxMemLock(vm->pid, &currentMemLock) < 0)
+        return -1;
 
-    if (bytes) {
+    if (desiredMemLock > 0) {
         /* If this is the first time adjusting the limit, save the current
          * value so that we can restore it once memory locking is no longer
          * required */
-        if (!vm->originalMemlock) {
-            if (virProcessGetMaxMemLock(vm->pid, &(vm->originalMemlock)) < 0)
-                return -1;
+        if (vm->originalMemlock == 0) {
+            vm->originalMemlock = currentMemLock;
         }
     } else {
         /* Once memory locking is no longer required, we can restore the
          * original, usually very low, limit */
-        bytes = vm->originalMemlock;
+        desiredMemLock = vm->originalMemlock;
         vm->originalMemlock = 0;
     }
 
-    if (bytes > 0 &&
-        virProcessSetMaxMemLock(vm->pid, bytes) < 0) {
+    if (desiredMemLock > 0 &&
+        virProcessSetMaxMemLock(vm->pid, desiredMemLock) < 0) {
         return -1;
     }
 
