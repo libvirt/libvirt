@@ -1581,7 +1581,6 @@ virNodeDevCapPCIDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
     g_autofree char *numberStr = NULL;
     int nAddrNodes, ret = -1;
     size_t i;
-    virPCIDeviceAddressPtr pciAddr = NULL;
 
     ctxt->node = iommuGroupNode;
 
@@ -1603,14 +1602,10 @@ virNodeDevCapPCIDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
         goto cleanup;
 
     for (i = 0; i < nAddrNodes; i++) {
-        virPCIDeviceAddress addr = {0};
-        if (virPCIDeviceAddressParseXML(addrNodes[i], &addr) < 0)
-            goto cleanup;
-        pciAddr = g_new0(virPCIDeviceAddress, 1);
-        pciAddr->domain = addr.domain;
-        pciAddr->bus = addr.bus;
-        pciAddr->slot = addr.slot;
-        pciAddr->function = addr.function;
+        g_autoptr(virPCIDeviceAddress) pciAddr = g_new0(virPCIDeviceAddress, 1);
+
+        if (virPCIDeviceAddressParseXML(addrNodes[i], pciAddr) < 0)
+            return -1;
         if (VIR_APPEND_ELEMENT(pci_dev->iommuGroupDevices,
                                pci_dev->nIommuGroupDevices,
                                pciAddr) < 0)
@@ -1619,7 +1614,6 @@ virNodeDevCapPCIDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
 
     ret = 0;
  cleanup:
-    VIR_FREE(pciAddr);
     return ret;
 }
 
