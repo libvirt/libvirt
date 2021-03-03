@@ -3813,8 +3813,8 @@ int virDomainDefFindDevice(virDomainDefPtr def,
                            bool reportError);
 
 virDomainAudioDefPtr
-virDomainDefFindAudioForSound(virDomainDefPtr def,
-                              virDomainSoundDefPtr sound);
+virDomainDefFindAudioByID(const virDomainDef *def,
+                          int id);
 bool
 virDomainSoundModelSupportsCodecs(virDomainSoundDefPtr def);
 

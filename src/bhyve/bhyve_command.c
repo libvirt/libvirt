@@ -765,7 +765,7 @@ virBhyveProcessBuildBhyveCmd(bhyveConnPtr driver, virDomainDefPtr def,
 
     for (i = 0; i < def->nsounds; i++) {
         if (bhyveBuildSoundArgStr(def, def->sounds[i],
-                                  virDomainDefFindAudioForSound(def, def->sounds[i]),
+                                  virDomainDefFindAudioByID(def, def->sounds[i]->audioId),
                                   driver, cmd) < 0)
             goto error;
     }

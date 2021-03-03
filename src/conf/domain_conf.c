@@ -30525,13 +30525,17 @@ virDomainDefFindDevice(virDomainDefPtr def,
 
 
 virDomainAudioDefPtr
-virDomainDefFindAudioForSound(virDomainDefPtr def,
-                              virDomainSoundDefPtr sound)
+virDomainDefFindAudioByID(const virDomainDef *def,
+                          int id)
 {
     size_t i;
-    for (i = 0; i < def->naudios; i++)
-        if (def->audios[i]->id == sound->audioId)
-            return def->audios[i];
+    if (id != 0) {
+        for (i = 0; i < def->naudios; i++)
+            if (def->audios[i]->id == id)
+                return def->audios[i];
+    } else if (def->naudios) {
+        return def->audios[0];
+    }
 
     return NULL;
 }
