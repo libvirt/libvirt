@@ -28,7 +28,6 @@
 static int
 virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRatePtr rate)
 {
-    int ret = -1;
     g_autofree char *average = NULL;
     g_autofree char *peak = NULL;
     g_autofree char *burst = NULL;
@@ -50,45 +49,42 @@ virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRatePtr rate)
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("could not convert bandwidth average value '%s'"),
                            average);
-            goto cleanup;
+            return -1;
         }
     } else if (!floor) {
         virReportError(VIR_ERR_XML_DETAIL, "%s",
                        _("Missing mandatory average or floor attributes"));
-        goto cleanup;
+        return -1;
     }
 
     if ((peak || burst) && !average) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("'peak' and 'burst' require 'average' attribute"));
-        goto cleanup;
+        return -1;
     }
 
     if (peak && virStrToLong_ullp(peak, NULL, 10, &rate->peak) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("could not convert bandwidth peak value '%s'"),
                        peak);
-        goto cleanup;
+        return -1;
     }
 
     if (burst && virStrToLong_ullp(burst, NULL, 10, &rate->burst) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("could not convert bandwidth burst value '%s'"),
                        burst);
-        goto cleanup;
+        return -1;
     }
 
     if (floor && virStrToLong_ullp(floor, NULL, 10, &rate->floor) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("could not convert bandwidth floor value '%s'"),
                        floor);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 /**
@@ -110,7 +106,6 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
                         xmlNodePtr node,
                         bool allowFloor)
 {
-    int ret = -1;
     g_autoptr(virNetDevBandwidth) def = NULL;
     xmlNodePtr cur;
     xmlNodePtr in = NULL, out = NULL;
@@ -121,7 +116,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
     if (!node || !virXMLNodeNameEqual(node, "bandwidth")) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("invalid argument supplied"));
-        goto cleanup;
+        return -1;
     }
 
     class_id_prop = virXMLPropString(node, "classID");
@@ -130,13 +125,13 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("classID attribute not supported on <bandwidth> "
                              "in this usage context"));
-            goto cleanup;
+            return -1;
         }
         if (virStrToLong_ui(class_id_prop, NULL, 10, class_id) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to parse class id '%s'"),
                            class_id_prop);
-            goto cleanup;
+            return -1;
         }
     }
 
@@ -149,7 +144,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
                     virReportError(VIR_ERR_XML_DETAIL, "%s",
                                    _("Only one child <inbound> "
                                      "element allowed"));
-                    goto cleanup;
+                    return -1;
                 }
                 in = cur;
             } else if (virXMLNodeNameEqual(cur, "outbound")) {
@@ -157,7 +152,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
                     virReportError(VIR_ERR_XML_DETAIL, "%s",
                                    _("Only one child <outbound> "
                                      "element allowed"));
-                    goto cleanup;
+                    return -1;
                 }
                 out = cur;
             }
@@ -171,13 +166,13 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
 
         if (virNetDevBandwidthParseRate(in, def->in) < 0) {
             /* helper reported error for us */
-            goto cleanup;
+            return -1;
         }
 
         if (def->in->floor && !allowFloor) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("floor attribute is not supported for this config"));
-            goto cleanup;
+            return -1;
         }
     }
 
@@ -186,24 +181,21 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
 
         if (virNetDevBandwidthParseRate(out, def->out) < 0) {
             /* helper reported error for us */
-            goto cleanup;
+            return -1;
         }
 
         if (def->out->floor) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("'floor' attribute allowed "
                              "only in <inbound> element"));
-            goto cleanup;
+            return -1;
         }
     }
 
     if (def->in || def->out)
         *bandwidth = g_steal_pointer(&def);
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
