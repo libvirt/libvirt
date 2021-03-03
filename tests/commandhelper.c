@@ -221,9 +221,10 @@ static int printCwd(FILE *log)
     if (!(cwd = getcwd(NULL, 0)))
         return -1;
 
-    if ((strlen(cwd) > strlen(".../commanddata")) &&
-        (STREQ(cwd + strlen(cwd) - strlen("/commanddata"), "/commanddata"))) {
-        strcpy(cwd, ".../commanddata");
+    if ((display = strstr(cwd, "/commanddata")) &&
+        STREQ(display, "/commanddata")) {
+        fprintf(log, "CWD:.../commanddata\n");
+        return 0;
     }
 
     display = cwd;
