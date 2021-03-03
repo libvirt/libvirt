@@ -1229,7 +1229,6 @@ virNodeDevCapSCSITargetParseXML(xmlXPathContextPtr ctxt,
     g_autofree xmlNodePtr *nodes = NULL;
     int ret = -1, n = 0;
     size_t i;
-    char *type = NULL;
 
     ctxt->node = node;
 
@@ -1245,6 +1244,7 @@ virNodeDevCapSCSITargetParseXML(xmlXPathContextPtr ctxt,
         goto out;
 
     for (i = 0; i < n; ++i) {
+        g_autofree char *type = NULL;
         type = virXMLPropString(nodes[i], "type");
 
         if (!type) {
@@ -1280,14 +1280,11 @@ virNodeDevCapSCSITargetParseXML(xmlXPathContextPtr ctxt,
                            type, def->name);
             goto out;
         }
-
-        VIR_FREE(type);
     }
 
     ret = 0;
 
  out:
-    VIR_FREE(type);
     return ret;
 }
 
@@ -1304,7 +1301,6 @@ virNodeDevCapSCSIHostParseXML(xmlXPathContextPtr ctxt,
     g_autofree xmlNodePtr *nodes = NULL;
     int ret = -1, n = 0;
     size_t i;
-    char *type = NULL;
 
     ctxt->node = node;
 
@@ -1328,6 +1324,7 @@ virNodeDevCapSCSIHostParseXML(xmlXPathContextPtr ctxt,
         goto out;
 
     for (i = 0; i < n; i++) {
+        g_autofree char *type = NULL;
         type = virXMLPropString(nodes[i], "type");
 
         if (!type) {
@@ -1381,14 +1378,11 @@ virNodeDevCapSCSIHostParseXML(xmlXPathContextPtr ctxt,
                            type, def->name);
             goto out;
         }
-
-        VIR_FREE(type);
     }
 
     ret = 0;
 
  out:
-    VIR_FREE(type);
     return ret;
 }
 
@@ -1403,7 +1397,7 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
     xmlNodePtr lnk;
     size_t i = -1;
     int ret = -1, n = -1;
-    char *tmp = NULL;
+    g_autofree char *type = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
 
     ctxt->node = node;
@@ -1425,6 +1419,7 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
         net->features = virBitmapNew(VIR_NET_DEV_FEAT_LAST);
 
     for (i = 0; i < n; i++) {
+        g_autofree char *tmp = NULL;
         int val;
         if (!(tmp = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -1439,15 +1434,13 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
             goto out;
         }
         ignore_value(virBitmapSetBit(net->features, val));
-        VIR_FREE(tmp);
     }
 
     net->subtype = VIR_NODE_DEV_CAP_NET_LAST;
 
-    tmp = virXPathString("string(./capability/@type)", ctxt);
-    if (tmp) {
-        int val = virNodeDevNetCapTypeFromString(tmp);
-        VIR_FREE(tmp);
+    type = virXPathString("string(./capability/@type)", ctxt);
+    if (type) {
+        int val = virNodeDevNetCapTypeFromString(type);
         if (val < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("invalid network type supplied for '%s'"),
@@ -1463,7 +1456,6 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
 
     ret = 0;
  out:
-    VIR_FREE(tmp);
     return ret;
 }
 
