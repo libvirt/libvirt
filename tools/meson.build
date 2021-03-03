@@ -186,6 +186,7 @@ executable(
     tools_dep,
     readline_dep,
     thread_dep,
+    keycode_dep,
   ],
   link_args: [
     coverage_flags,

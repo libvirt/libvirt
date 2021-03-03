@@ -168,6 +168,10 @@ foreach name : keyname_list
   )
 endforeach
 
+keycode_dep = declare_dependency(
+  sources: keycode_gen_sources,
+)
+
 io_helper_sources = [
   'iohelper.c',
 ]
