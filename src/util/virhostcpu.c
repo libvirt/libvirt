@@ -787,7 +787,7 @@ virHostCPUGetStatsLinux(FILE *procstat,
     char line[1024];
     unsigned long long usr, ni, sys, idle, iowait;
     unsigned long long irq, softirq, steal, guest, guest_nice;
-    char cpu_header[4 + VIR_INT64_STR_BUFLEN];
+    g_autofree char *cpu_header = NULL;
 
     if ((*nparams) == 0) {
         /* Current number of cpu stats supported by linux */
@@ -803,9 +803,9 @@ virHostCPUGetStatsLinux(FILE *procstat,
     }
 
     if (cpuNum == VIR_NODE_CPU_STATS_ALL_CPUS) {
-        strcpy(cpu_header, "cpu ");
+        cpu_header = g_strdup("cpu ");
     } else {
-        g_snprintf(cpu_header, sizeof(cpu_header), "cpu%d ", cpuNum);
+        cpu_header = g_strdup_printf("cpu%d ", cpuNum);
     }
 
     while (fgets(line, sizeof(line), procstat) != NULL) {
