@@ -98,14 +98,12 @@ vshTableRowNew(const char *arg, va_list ap)
     row = g_new0(vshTableRow, 1);
 
     while (arg) {
-        char *tmp = NULL;
+        g_autofree char *tmp = NULL;
 
         tmp = g_strdup(arg);
 
-        if (VIR_APPEND_ELEMENT(row->cells, row->ncells, tmp) < 0) {
-            VIR_FREE(tmp);
+        if (VIR_APPEND_ELEMENT(row->cells, row->ncells, tmp) < 0)
             goto error;
-        }
 
         arg = va_arg(ap, const char *);
     }
@@ -361,7 +359,7 @@ vshTablePrint(vshTablePtr table, bool header)
 {
     size_t i;
     size_t j;
-    size_t *maxwidths;
+    g_autofree size_t *maxwidths = NULL;
     size_t **widths;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *ret = NULL;
@@ -395,7 +393,6 @@ vshTablePrint(vshTablePtr table, bool header)
     ret = virBufferContentAndReset(&buf);
 
  cleanup:
-    VIR_FREE(maxwidths);
     for (i = 0; i < table->nrows; i++)
         VIR_FREE(widths[i]);
     VIR_FREE(widths);
@@ -416,15 +413,13 @@ void
 vshTablePrintToStdout(vshTablePtr table, vshControl *ctl)
 {
     bool header;
-    char *out;
+    g_autofree char *out = NULL;
 
     header = ctl ? !ctl->quiet : true;
 
     out = vshTablePrintToString(table, header);
     if (out)
         vshPrint(ctl, "%s", out);
-
-    VIR_FREE(out);
 }
 
 
