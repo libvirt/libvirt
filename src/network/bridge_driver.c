@@ -5397,7 +5397,7 @@ networkPortSetParameters(virNetworkPortPtr port,
     virNetworkObjPtr obj;
     virNetworkDefPtr def;
     virNetworkPortDefPtr portdef;
-    virNetDevBandwidthPtr bandwidth = NULL;
+    g_autoptr(virNetDevBandwidth) bandwidth = NULL;
     g_autofree char *dir = NULL;
     int ret = -1;
     size_t i;
@@ -5473,7 +5473,6 @@ networkPortSetParameters(virNetworkPortPtr port,
 
     ret = 0;
  cleanup:
-    virNetDevBandwidthFree(bandwidth);
     virNetworkObjEndAPI(&obj);
     return ret;
 }

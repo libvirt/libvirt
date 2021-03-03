@@ -3448,7 +3448,7 @@ testDomainSetInterfaceParameters(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def;
     virDomainNetDefPtr net = NULL;
-    virNetDevBandwidthPtr bandwidth = NULL;
+    g_autoptr(virNetDevBandwidth) bandwidth = NULL;
     bool inboundSpecified = false;
     bool outboundSpecified = false;
     size_t i;
@@ -3538,7 +3538,6 @@ testDomainSetInterfaceParameters(virDomainPtr dom,
 
     ret = 0;
  cleanup:
-    virNetDevBandwidthFree(bandwidth);
     virDomainObjEndAPI(&vm);
     return ret;
 }
