@@ -227,8 +227,6 @@ virCgroupGetDomainTotalCpuStats(virCgroupPtr group,
 
 int virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares);
 int virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares);
-int virCgroupSetupCpuShares(virCgroupPtr cgroup, unsigned long long shares,
-                            unsigned long long *realValue);
 
 #define VIR_CGROUP_CPU_SHARES_MIN 2LL
 #define VIR_CGROUP_CPU_SHARES_MAX 262144LL

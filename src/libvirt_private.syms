@@ -1934,7 +1934,6 @@ virCgroupSetupBlkioDeviceWriteBps;
 virCgroupSetupBlkioDeviceWriteIops;
 virCgroupSetupCpuPeriodQuota;
 virCgroupSetupCpusetCpus;
-virCgroupSetupCpuShares;
 virCgroupSupportsCpuBW;
 virCgroupTerminateMachine;
 
