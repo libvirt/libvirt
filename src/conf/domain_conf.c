@@ -18156,7 +18156,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                           xmlXPathContextPtr ctxt)
 {
     g_autofree xmlNodePtr *nodes = NULL;
-    xmlNodePtr node = NULL;
     size_t i;
     int n;
 
@@ -18356,7 +18355,7 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
     if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
         int feature;
         int value;
-        node = ctxt->node;
+        xmlNodePtr node = ctxt->node;
         if ((n = virXPathNodeSet("./features/hyperv/*", ctxt, &nodes)) < 0)
             return -1;
 
@@ -18630,6 +18629,7 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
 
     if (def->features[VIR_DOMAIN_FEATURE_MSRS] == VIR_TRISTATE_SWITCH_ON) {
         g_autofree char *tmp = NULL;
+        xmlNodePtr node = NULL;
         if ((node = virXPathNode("./features/msrs", ctxt)) == NULL)
             return -1;
 
