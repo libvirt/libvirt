@@ -156,7 +156,7 @@ mymain(void)
                  TC " filter add dev eth0 parent ffff: protocol all u32 match u32 0 0 "
                  "police rate 5kbps burst 7kb mtu 64kb drop flowid :1\n"));
 
-    return ret;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virnetdevbandwidth"))

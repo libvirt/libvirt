@@ -146,8 +146,7 @@ mymain(void)
                                      "server.2.type=tcp,"
                                      "server.2.host=example.com");
 
-    return ret;
-
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIR_TEST_MAIN(mymain)
