@@ -1282,7 +1282,7 @@ qemuBlockStorageSourceGetBlockdevFormatCommonProps(virStorageSource *src)
                                                             src->detect_zeroes);
     g_autoptr(virJSONValue) props = NULL;
 
-    if (qemuBlockNodeNameValidate(src->nodeformat) < 0)
+    if (qemuBlockNodeNameValidate(qemuBlockStorageSourceGetFormatNodename(src)) < 0)
         return NULL;
 
     if (src->discard)
@@ -1296,7 +1296,7 @@ qemuBlockStorageSourceGetBlockdevFormatCommonProps(virStorageSource *src)
      */
 
     if (virJSONValueObjectAdd(&props,
-                              "s:node-name", src->nodeformat,
+                              "s:node-name", qemuBlockStorageSourceGetFormatNodename(src),
                               "b:read-only", src->readonly,
                               "S:discard", discard,
                               "S:detect-zeroes", detectZeroes,
@@ -1530,7 +1530,7 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSource *src,
         return NULL;
 
     data->storageNodeName = qemuBlockStorageSourceGetStorageNodename(src);
-    data->formatNodeName = src->nodeformat;
+    data->formatNodeName = qemuBlockStorageSourceGetFormatNodename(src);
 
     if (qemuBlockStorageSourceNeedsStorageSliceLayer(src)) {
         if (!(data->storageSliceProps = qemuBlockStorageSourceGetBlockdevStorageSliceProps(src)))
@@ -1748,7 +1748,7 @@ qemuBlockStorageSourceDetachPrepare(virStorageSource *src)
 
     data = g_new0(qemuBlockStorageSourceAttachData, 1);
 
-    data->formatNodeName = src->nodeformat;
+    data->formatNodeName = qemuBlockStorageSourceGetFormatNodename(src);
     data->formatAttached = true;
     data->storageNodeName = qemuBlockStorageSourceGetStorageNodename(src);
     data->storageAttached = true;
@@ -1941,7 +1941,8 @@ qemuBlockStorageSourceDetachOneBlockdev(virDomainObj *vm,
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
-    ret = qemuMonitorBlockdevDel(qemuDomainGetMonitor(vm), src->nodeformat);
+    ret = qemuMonitorBlockdevDel(qemuDomainGetMonitor(vm),
+                                 qemuBlockStorageSourceGetFormatNodename(src));
 
     if (ret == 0)
         ret = qemuMonitorBlockdevDel(qemuDomainGetMonitor(vm),
@@ -1959,8 +1960,8 @@ qemuBlockSnapshotAddBlockdev(virJSONValue *actions,
                              virStorageSource *newsrc)
 {
     return qemuMonitorTransactionSnapshotBlockdev(actions,
-                                                  disk->src->nodeformat,
-                                                  newsrc->nodeformat);
+                                                  qemuBlockStorageSourceGetEffectiveNodename(disk->src),
+                                                  qemuBlockStorageSourceGetFormatNodename(newsrc));
 }
 
 
