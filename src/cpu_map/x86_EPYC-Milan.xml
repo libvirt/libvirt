@@ -76,7 +76,7 @@
     <feature name='sse4a'/>
     <feature name='ssse3'/>
     <feature name='svm'/>
-    <feature name='svme-addr-check'/>
+    <feature name='svme-addr-chk'/>
     <feature name='syscall'/>
     <feature name='tsc'/>
     <feature name='umip'/>
