@@ -162,6 +162,45 @@ qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
       of libvirt, once QMP processing moves to a dedicated thread.
     </p>
 
+    <h2><a id="configFiles">Location of configuration files</a></h2>
+
+    <p>
+      The QEMU driver comes with sane default values. However, during its
+      initialization it reads a configuration file which offers system
+      administrator or an user to override some of that default. The location
+      of the file depends on the connection URI, as follows:
+    </p>
+
+    <table>
+      <tr>
+        <td><code>qemu:///system</code></td>
+        <td><code>/etc/libvirt/qemu.conf</code></td>
+      </tr>
+      <tr>
+        <td><code>qemu:///session</code></td>
+        <td><code>$XDG_CONFIG_HOME/libvirt/qemu.conf</code></td>
+      </tr>
+      <tr>
+        <td><code>qemu:///embed</code></td>
+        <td><code>$rootdir/etc/qemu.conf</code></td>
+      </tr>
+    </table>
+
+    <p>
+      If <code>$XDG_CONFIG_HOME</code> is not set in the environment, it
+      defaults to <code>$HOME/.config</code>. For the embed URI the
+      <code>$rootdir</code> represents the specified root directory from
+      the connection URI.
+    </p>
+
+    <p>
+      Please note, that it is very likely that the only qemu.conf file that
+      will exist after installing libvirt is the
+      <code>/etc/libvirt/qemu.conf</code>, if users of the session daemon or
+      the embed driver want to override a built in value, then they need to
+      create the file before connecting to the respective URI.
+    </p>
+
     <h2><a id="security">Driver security architecture</a></h2>
 
     <p>
