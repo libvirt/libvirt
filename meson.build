@@ -1046,6 +1046,9 @@ if host_machine.system() == 'windows'
 else
   gio_dep = dependency('gio-unix-2.0', version: '>=' + glib_version)
 endif
+# GLib event loop race workaround in glibcompat.h, remove when minimum required
+# glib is >= 2.64.0
+glib_crash_workaround = glib_dep.version().version_compare('<2.64.0')
 glib_dep = declare_dependency(
   dependencies: [ glib_dep, gobject_dep, gio_dep ],
 )

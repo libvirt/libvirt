@@ -185,36 +185,6 @@ virEventGLibHandleFind(int watch)
     return NULL;
 }
 
-/*
- * If the last reference to a GSource is released in a non-main
- * thread we're exposed to a race condition that causes a
- * crash:
- *
- *    https://gitlab.gnome.org/GNOME/glib/-/merge_requests/1358
- *
- * Thus we're using an idle func to release our ref...
- *
- * ...but this imposes a significant performance penalty on
- * I/O intensive workloads which are sensitive to the iterations
- * of the event loop, so avoid the workaround if we know we have
- * new enough glib.
- */
-#if GLIB_CHECK_VERSION(2, 64, 0)
-# define g_vir_source_unref_safe(source) g_source_unref(source)
-#else
-# define g_vir_source_unref_safe(source) g_idle_add(virEventGLibSourceUnrefIdle, source)
-
-static gboolean
-virEventGLibSourceUnrefIdle(gpointer data)
-{
-    GSource *src = data;
-
-    g_source_unref(src);
-
-    return FALSE;
-}
-#endif
-
 
 static void
 virEventGLibHandleUpdate(int watch,

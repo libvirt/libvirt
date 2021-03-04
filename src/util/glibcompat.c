@@ -211,3 +211,36 @@ vir_g_strdup_vprintf(const char *msg, va_list args)
         abort();
     return ret;
 }
+
+
+/*
+ * If the last reference to a GSource is released in a non-main
+ * thread we're exposed to a race condition that causes a
+ * crash:
+ *
+ *    https://gitlab.gnome.org/GNOME/glib/-/merge_requests/1358
+ *
+ * Thus we're using an idle func to release our ref...
+ *
+ * ...but this imposes a significant performance penalty on
+ * I/O intensive workloads which are sensitive to the iterations
+ * of the event loop, so avoid the workaround if we know we have
+ * new enough glib.
+ *
+ * The function below is used from a header file definition.
+ *
+ * Drop when min glib >= 2.64.0
+ */
+#if GLIB_CHECK_VERSION(2, 64, 0) != TRUE
+
+gboolean
+virEventGLibSourceUnrefIdle(gpointer data)
+{
+    GSource *src = data;
+
+    g_source_unref(src);
+
+    return FALSE;
+}
+
+#endif

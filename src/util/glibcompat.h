@@ -84,3 +84,14 @@ char *vir_g_strdup_vprintf(const char *msg, va_list args)
 #define g_canonicalize_filename vir_g_canonicalize_filename
 #undef g_fsync
 #define g_fsync vir_g_fsync
+
+/* Drop when min glib >= 2.64.0 */
+#if GLIB_CHECK_VERSION(2, 64, 0)
+# define g_vir_source_unref_safe(source) g_source_unref(source)
+#else
+# define g_vir_source_unref_safe(source) g_idle_add(virEventGLibSourceUnrefIdle, source)
+
+gboolean
+virEventGLibSourceUnrefIdle(gpointer data);
+
+#endif
