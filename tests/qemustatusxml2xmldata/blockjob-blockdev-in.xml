@@ -238,14 +238,14 @@
     <blockjob name='broken-test' type='broken' state='ready' brokentype='commit'/>
     <blockjob name='commit-vdc-libvirt-9-format' type='commit' state='running' jobflags='0x0'>
       <disk dst='vdc'/>
-      <base node='libvirt-11-format'/>
-      <top node='libvirt-9-format'/>
-      <topparent node='libvirt-2-format'/>
+      <base node='libvirt-11-storage'/>
+      <top node='libvirt-9-storage'/>
+      <topparent node='libvirt-2-storage'/>
     </blockjob>
     <blockjob name='commit-vde-libvirt-17-format' type='active-commit' state='ready'>
       <disk dst='vde'/>
-      <base node='libvirt-19-format'/>
-      <top node='libvirt-17-format'/>
+      <base node='libvirt-19-storage'/>
+      <top node='libvirt-17-storage'/>
       <deleteCommittedImages/>
     </blockjob>
     <blockjob name='copy-vdd-libvirt-4321-format' type='copy' state='ready' jobflags='0x0' shallownew='yes'>
@@ -301,7 +301,7 @@
     </blockjob>
     <blockjob name='pull-vdb-libvirt-3-format' type='pull' state='running'>
       <disk dst='vdb'/>
-      <base node='libvirt-14-format'/>
+      <base node='libvirt-14-storage'/>
     </blockjob>
     <blockjob name='test-orphan-job0' type='copy' state='ready'>
       <chains>

@@ -2288,13 +2288,13 @@ qemuDomainPrivateBlockJobFormatCommit(qemuBlockJobData *job,
     g_auto(virBuffer) disabledBitmapsBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (job->data.commit.base)
-        virBufferAsprintf(buf, "<base node='%s'/>\n", job->data.commit.base->nodeformat);
+        virBufferAsprintf(buf, "<base node='%s'/>\n", job->data.commit.base->nodestorage);
 
     if (job->data.commit.top)
-        virBufferAsprintf(buf, "<top node='%s'/>\n", job->data.commit.top->nodeformat);
+        virBufferAsprintf(buf, "<top node='%s'/>\n", job->data.commit.top->nodestorage);
 
     if (job->data.commit.topparent)
-        virBufferAsprintf(buf, "<topparent node='%s'/>\n", job->data.commit.topparent->nodeformat);
+        virBufferAsprintf(buf, "<topparent node='%s'/>\n", job->data.commit.topparent->nodestorage);
 
     if (job->data.commit.deleteCommittedImages)
         virBufferAddLit(buf, "<deleteCommittedImages/>\n");
@@ -2357,7 +2357,7 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
     switch ((qemuBlockJobType) job->type) {
         case QEMU_BLOCKJOB_TYPE_PULL:
             if (job->data.pull.base)
-                virBufferAsprintf(&childBuf, "<base node='%s'/>\n", job->data.pull.base->nodeformat);
+                virBufferAsprintf(&childBuf, "<base node='%s'/>\n", job->data.pull.base->nodestorage);
             break;
 
         case QEMU_BLOCKJOB_TYPE_COMMIT:
