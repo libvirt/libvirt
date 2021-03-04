@@ -375,6 +375,7 @@ extern const vshCmdOptDef opts_echo[];
 extern const vshCmdInfo info_echo[];
 extern const vshCmdInfo info_pwd[];
 extern const vshCmdInfo info_quit[];
+extern const vshCmdOptDef opts_selftest[];
 extern const vshCmdInfo info_selftest[];
 extern const vshCmdOptDef opts_complete[];
 extern const vshCmdInfo info_complete[];
@@ -445,7 +446,7 @@ bool cmdComplete(vshControl *ctl, const vshCmd *cmd);
     { \
         .name = "self-test", \
         .handler = cmdSelfTest, \
-        .opts = NULL, \
+        .opts = opts_selftest, \
         .info = info_selftest, \
         .flags = VSH_CMD_FLAG_NOCONNECT | VSH_CMD_FLAG_HIDDEN, \
     }

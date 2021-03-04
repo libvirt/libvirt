@@ -261,11 +261,13 @@ vshCmddefGetInfo(const vshCmdDef * cmd, const char *name)
 /* Check if the internal command definitions are correct */
 static int
 vshCmddefCheckInternals(vshControl *ctl,
-                        const vshCmdDef *cmd)
+                        const vshCmdDef *cmd,
+                        bool missingCompleters)
 {
     size_t i;
     const char *help = NULL;
     bool seenOptionalOption = false;
+    g_auto(virBuffer) complbuf = VIR_BUFFER_INITIALIZER;
 
     /* in order to perform the validation resolve the alias first */
     if (cmd->flags & VSH_CMD_FLAG_ALIAS) {
@@ -308,6 +310,11 @@ vshCmddefCheckInternals(vshControl *ctl,
             vshError(ctl, _("command '%s' has too many options"), cmd->name);
             return -1; /* too many options */
         }
+
+        if (missingCompleters &&
+            (opt->type == VSH_OT_STRING || opt->type == VSH_OT_DATA) &&
+            !opt->completer)
+            virBufferStrcat(&complbuf, opt->name, ", ", NULL);
 
         switch (opt->type) {
         case VSH_OT_STRING:
@@ -391,6 +398,12 @@ vshCmddefCheckInternals(vshControl *ctl,
             break;
         }
     }
+
+    virBufferTrim(&complbuf, ", ");
+
+    if (missingCompleters && virBufferUse(&complbuf) > 0)
+        vshPrintExtra(ctl, "%s: %s\n", cmd->name, virBufferCurrentContent(&complbuf));
+
     return 0;
 }
 
@@ -3250,6 +3263,13 @@ cmdQuit(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
  * Command self-test
  * ----------------- */
 
+const vshCmdOptDef opts_selftest[] = {
+    {.name = "completers-missing",
+     .type = VSH_OT_BOOL,
+     .help = N_("output the list of options which are missing completers")
+    },
+    {.name = NULL}
+};
 const vshCmdInfo info_selftest[] = {
     {.name = "help",
      .data = N_("internal command for testing virt shells")
@@ -3261,15 +3281,15 @@ const vshCmdInfo info_selftest[] = {
 };
 
 bool
-cmdSelfTest(vshControl *ctl,
-            const vshCmd *cmd G_GNUC_UNUSED)
+cmdSelfTest(vshControl *ctl, const vshCmd *cmd)
 {
     const vshCmdGrp *grp;
     const vshCmdDef *def;
+    bool completers = vshCommandOptBool(cmd, "completers-missing");
 
     for (grp = cmdGroups; grp->name; grp++) {
         for (def = grp->commands; def->name; def++) {
-            if (vshCmddefCheckInternals(ctl, def) < 0)
+            if (vshCmddefCheckInternals(ctl, def, completers) < 0)
                 return false;
         }
     }
