@@ -33,7 +33,6 @@ docs_assets = [
 docs_html_in_files = [
   '404',
   'architecture',
-  'auth',
   'bugs',
   'cgroups',
   'contact',
@@ -105,6 +104,7 @@ docs_rst_files = [
   'api',
   'apps',
   'auditlog',
+  'auth',
   'bindings',
   'best-practices',
   'ci',
