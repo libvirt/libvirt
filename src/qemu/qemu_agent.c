@@ -533,7 +533,7 @@ qemuAgentUnregister(qemuAgentPtr agent)
 {
     if (agent->watch) {
         g_source_destroy(agent->watch);
-        g_source_unref(agent->watch);
+        g_vir_source_unref_safe(agent->watch);
         agent->watch = NULL;
     }
 }
