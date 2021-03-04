@@ -208,61 +208,30 @@ with libvirtd's TLS or TCP socket listeners. When used with the TCP listener,
 the SASL mechanism is required to provide session encryption in addition to
 authentication. Only a very few SASL mechanisms are able to do this, and of
 those that can do it, only the ``GSSAPI`` plugin is considered acceptably secure
-by modern standards:
-
-* **GSSAPI**:
-
-  *This is the current default mechanism to use with libvirtd*.
-  It uses the Kerberos v5 authentication protocol underneath, and assuming
-  the Kerberos client/server are configured with modern ciphers (AES),
-  it provides strong session encryption capabilities.
-
-* **DIGEST-MD5**:
-
-  This was previously set as the default mechanism to use with libvirtd.
-  It provides a simple username/password based authentication mechanism
-  that includes session encryption.
-  `RFC 6331` <https://tools.ietf.org/html/rfc6331>, however,
-  documents a number of serious security flaws with ``DIGEST-MD5`` and as a
-  result marks it as ``OBSOLETE``. Specific concerns are that
-  it is vulnerable to MITM attacks and the ``MD5`` hash can be brute-forced
-  to reveal the password. A replacement is provided via the ``SCRAM`` mechanism,
-  however, note that this does not provide encryption, so the ``SCRAM``
-  mechanism can only be used on the libvirtd TLS listener.
-
-* **PASSDSS-3DES-1**:
-
-  This provides a simple username/password based authentication
-  mechanism that includes session encryption. The current ``cyrus-sasl``
-  implementation does not provide a way to validate the server's
-  public key identity, thus it is susceptible to a MITM attacker
-  impersonating the server. It is also not enabled in many OS
-  distros when building SASL libraries.
-
-* **KERBEROS_V4**:
-
-  This uses the obsolete Kerberos v4 protocol to provide both authentication
-  and session encryption. Kerberos v4 protocol has been obsolete since the
-  early 1990's and has known security vulnerabilities so this will never be
-  used in practice.
-
-Other SASL mechanisms, not listed above, can only be used when the libvirtd
-TLS or UNIX socket listeners.
+by modern standards. ``GSSAPI`` is the default mechanism enabled in the libvirt
+SASL configuration. It uses the Kerberos v5 authentication protocol underneath,
+and assuming the Kerberos client/server are configured with modern ciphers
+(AES), it provides strong session encryption capabilities. All other SASL
+mechanisms should only be used with the libvirtd TLS or UNIX socket listeners.
 
 Username/password auth
 ~~~~~~~~~~~~~~~~~~~~~~
 
-As noted above, the DIGEST-MD5 mechanism is considered obsolete and should
-not be used anymore. To provide a simple username/password auth scheme on
-the libvirt UNIX socket or TLS listeners, however, it is possible to use
-the SCRAM mechanism. The ``auth_unix_ro``, ``auth_unix_rw``,
-``auth_tls`` config params in ``libvirtd.conf`` can be used
-to turn on SASL auth in these listeners.
+To provide a simple username/password auth scheme on the libvirt UNIX socket
+or TLS listeners, however, it is possible to use the ``SCRAM`` mechanism, in its
+``SCRAM-SHA-256`` variant. The ``auth_unix_ro``, ``auth_unix_rw``, ``auth_tls``
+config params in ``libvirtd.conf`` can be used to turn on SASL auth in these
+listeners.
 
 Since the libvirt SASL config file defaults to using ``GSSAPI`` (Kerberos), a
 config change is required to enable plain password auth. This is done by
 editing ``/etc/sasl2/libvirt.conf`` to set the ``mech_list``
-parameter to ``scram-sha-1``.
+parameter to ``scram-sha-256``.
+
+**Note:** previous versions of libvirt suggested ``DIGEST-MD5`` and
+``SCRAM-SHA-1`` mechanisms. **Use of these is strongly discouraged as they are
+not considered secure by modern standards.** It is possible to replace them with
+use of ``SCRAM-SHA-256``, while still using the same password database.
 
 Out of the box, no user accounts are defined, so no clients will be able to
 authenticate on the TCP socket. Adding users and setting their passwords is
@@ -291,6 +260,10 @@ again:
 ::
 
    # saslpasswd2 -a libvirt -d fred
+
+**Note: the SASL ``passwd.db`` file stores passwords in clear text, so
+care should be taken not to let its contents be disclosed to unauthorized
+users.**
 
 GSSAPI/Kerberos auth
 ~~~~~~~~~~~~~~~~~~~~

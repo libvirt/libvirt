@@ -22,22 +22,23 @@ mech_list: gssapi
 
 # If using a TLS socket or UNIX socket only, it is possible to
 # enable plugins which don't provide session encryption. The
-# 'scram-sha-1' plugin allows plain username/password authentication
+# 'scram-sha-256' plugin allows plain username/password authentication
 # to be performed
 #
-#mech_list: scram-sha-1
+#mech_list: scram-sha-256
 
 #
 # You can also list many mechanisms at once, then the user can choose
 # by adding  '?auth=sasl.gssapi' to their libvirt URI, eg
 #   qemu+tcp://hostname/system?auth=sasl.gssapi
-#mech_list: scram-sha-1 gssapi
+#mech_list: scram-sha-256 gssapi
 
 # File containing the service principal for libvirtd
 #
 keytab: /etc/libvirt/krb5.tab
 
-# If using scram-sha-1 for username/passwds, then this is the file
+# If using scram-sha-256 for username/passwds, then this is the file
 # containing the passwds. Use 'saslpasswd2 -a libvirt [username]'
-# to add entries, and 'sasldblistusers2 -f [sasldb_path]' to browse it
+# to add entries, and 'sasldblistusers2 -f [sasldb_path]' to browse it.
+# Note that this file stores passwords in clear text.
 #sasldb_path: /etc/libvirt/passwd.db
