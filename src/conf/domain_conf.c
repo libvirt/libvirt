@@ -25428,108 +25428,97 @@ virDomainActualNetDefFormat(virBufferPtr buf,
 
 
 static void
-virDomainVirtioNetGuestOptsFormat(char **outstr,
+virDomainVirtioNetGuestOptsFormat(virBufferPtr buf,
                                   virDomainNetDefPtr def)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     if (def->driver.virtio.guest.csum) {
-        virBufferAsprintf(&buf, "csum='%s' ",
+        virBufferAsprintf(buf, " csum='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.guest.csum));
     }
     if (def->driver.virtio.guest.tso4) {
-        virBufferAsprintf(&buf, "tso4='%s' ",
+        virBufferAsprintf(buf, " tso4='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.guest.tso4));
     }
     if (def->driver.virtio.guest.tso6) {
-        virBufferAsprintf(&buf, "tso6='%s' ",
+        virBufferAsprintf(buf, " tso6='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.guest.tso6));
     }
     if (def->driver.virtio.guest.ecn) {
-        virBufferAsprintf(&buf, "ecn='%s' ",
+        virBufferAsprintf(buf, " ecn='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.guest.ecn));
     }
     if (def->driver.virtio.guest.ufo) {
-        virBufferAsprintf(&buf, "ufo='%s' ",
+        virBufferAsprintf(buf, " ufo='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.guest.ufo));
     }
-    virBufferTrim(&buf, " ");
-
-    *outstr = virBufferContentAndReset(&buf);
 }
 
 
 static void
-virDomainVirtioNetHostOptsFormat(char **outstr,
+virDomainVirtioNetHostOptsFormat(virBufferPtr buf,
                                  virDomainNetDefPtr def)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     if (def->driver.virtio.host.csum) {
-        virBufferAsprintf(&buf, "csum='%s' ",
+        virBufferAsprintf(buf, " csum='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.host.csum));
     }
     if (def->driver.virtio.host.gso) {
-        virBufferAsprintf(&buf, "gso='%s' ",
+        virBufferAsprintf(buf, " gso='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.host.gso));
     }
     if (def->driver.virtio.host.tso4) {
-        virBufferAsprintf(&buf, "tso4='%s' ",
+        virBufferAsprintf(buf, " tso4='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.host.tso4));
     }
     if (def->driver.virtio.host.tso6) {
-        virBufferAsprintf(&buf, "tso6='%s' ",
+        virBufferAsprintf(buf, " tso6='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.host.tso6));
     }
     if (def->driver.virtio.host.ecn) {
-        virBufferAsprintf(&buf, "ecn='%s' ",
+        virBufferAsprintf(buf, " ecn='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.host.ecn));
     }
     if (def->driver.virtio.host.ufo) {
-        virBufferAsprintf(&buf, "ufo='%s' ",
+        virBufferAsprintf(buf, " ufo='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.host.ufo));
     }
     if (def->driver.virtio.host.mrg_rxbuf) {
-        virBufferAsprintf(&buf, "mrg_rxbuf='%s' ",
+        virBufferAsprintf(buf, " mrg_rxbuf='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.host.mrg_rxbuf));
     }
-    virBufferTrim(&buf, " ");
-
-    *outstr = virBufferContentAndReset(&buf);
 }
 
 
 static void
-virDomainVirtioNetDriverFormat(char **outstr,
+virDomainVirtioNetDriverFormat(virBufferPtr buf,
                                virDomainNetDefPtr def)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     if (def->driver.virtio.name) {
-        virBufferAsprintf(&buf, " name='%s'",
+        virBufferAsprintf(buf, " name='%s'",
                           virDomainNetBackendTypeToString(def->driver.virtio.name));
     }
     if (def->driver.virtio.txmode) {
-        virBufferAsprintf(&buf, " txmode='%s'",
+        virBufferAsprintf(buf, " txmode='%s'",
                           virDomainNetVirtioTxModeTypeToString(def->driver.virtio.txmode));
     }
     if (def->driver.virtio.ioeventfd) {
-        virBufferAsprintf(&buf, " ioeventfd='%s'",
+        virBufferAsprintf(buf, " ioeventfd='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.ioeventfd));
     }
     if (def->driver.virtio.event_idx) {
-        virBufferAsprintf(&buf, " event_idx='%s'",
+        virBufferAsprintf(buf, " event_idx='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.event_idx));
     }
     if (def->driver.virtio.queues)
-        virBufferAsprintf(&buf, " queues='%u'", def->driver.virtio.queues);
+        virBufferAsprintf(buf, " queues='%u'", def->driver.virtio.queues);
     if (def->driver.virtio.rx_queue_size)
-        virBufferAsprintf(&buf, " rx_queue_size='%u'",
+        virBufferAsprintf(buf, " rx_queue_size='%u'",
                           def->driver.virtio.rx_queue_size);
     if (def->driver.virtio.tx_queue_size)
-        virBufferAsprintf(&buf, " tx_queue_size='%u'",
+        virBufferAsprintf(buf, " tx_queue_size='%u'",
                           def->driver.virtio.tx_queue_size);
 
-    virDomainVirtioOptionsFormat(&buf, def->virtio);
-
-    *outstr = virBufferContentAndReset(&buf);
+    virDomainVirtioOptionsFormat(buf, def->virtio);
 }
 
 
@@ -25834,30 +25823,18 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, "<model type='%s'/>\n",
                               virDomainNetGetModelString(def));
         if (virDomainNetIsVirtioModel(def)) {
-            g_autofree char *str = NULL;
-            g_autofree char *gueststr = NULL;
-            g_autofree char *hoststr = NULL;
+            g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) driverChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+            g_auto(virBuffer) hostAttrBuf = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) guestAttrBuf = VIR_BUFFER_INITIALIZER;
 
-            virDomainVirtioNetDriverFormat(&str, def);
-            virDomainVirtioNetGuestOptsFormat(&gueststr, def);
-            virDomainVirtioNetHostOptsFormat(&hoststr, def);
+            virDomainVirtioNetDriverFormat(&driverAttrBuf, def);
+            virDomainVirtioNetGuestOptsFormat(&guestAttrBuf, def);
+            virDomainVirtioNetHostOptsFormat(&hostAttrBuf, def);
 
-            if (!gueststr && !hoststr) {
-                if (str)
-                    virBufferAsprintf(buf, "<driver%s/>\n", str);
-            } else {
-                if (str)
-                    virBufferAsprintf(buf, "<driver%s>\n", str);
-                else
-                    virBufferAddLit(buf, "<driver>\n");
-                virBufferAdjustIndent(buf, 2);
-                if (hoststr)
-                    virBufferAsprintf(buf, "<host %s/>\n", hoststr);
-                if (gueststr)
-                    virBufferAsprintf(buf, "<guest %s/>\n", gueststr);
-                virBufferAdjustIndent(buf, -2);
-                virBufferAddLit(buf, "</driver>\n");
-            }
+            virXMLFormatElement(&driverChildBuf, "host", &hostAttrBuf, NULL);
+            virXMLFormatElement(&driverChildBuf, "guest", &guestAttrBuf, NULL);
+            virXMLFormatElement(buf, "driver", &driverAttrBuf, &driverChildBuf);
         }
     }
     if (def->backend.tap || def->backend.vhost) {
