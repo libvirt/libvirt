@@ -18157,7 +18157,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
 {
     g_autofree xmlNodePtr *nodes = NULL;
     xmlNodePtr node = NULL;
-    int gic_version;
     size_t i;
     int n;
 
@@ -18230,7 +18229,7 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
 
         case VIR_DOMAIN_FEATURE_GIC:
             if ((tmp = virXMLPropString(nodes[i], "version"))) {
-                gic_version = virGICVersionTypeFromString(tmp);
+                int gic_version = virGICVersionTypeFromString(tmp);
                 if (gic_version < 0 || gic_version == VIR_GIC_VERSION_NONE) {
                     virReportError(VIR_ERR_XML_ERROR,
                                    _("malformed gic version: %s"), tmp);
