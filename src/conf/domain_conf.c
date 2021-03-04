@@ -18460,7 +18460,7 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
         ctxt->node = node;
     }
 
-    if (def->features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
+    if (def->hyperv_features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
         int value;
         if ((n = virXPathNodeSet("./features/hyperv/stimer/*", ctxt, &nodes)) < 0)
             return -1;
