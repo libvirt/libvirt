@@ -18449,6 +18449,7 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                                    _("HyperV vendor_id value is invalid"));
                     return -1;
                 }
+                break;
 
             /* coverity[dead_error_begin] */
             case VIR_DOMAIN_HYPERV_LAST:
