@@ -757,6 +757,107 @@ virProcessSetRLimit(int resource,
 #endif /* WITH_SETRLIMIT */
 
 #if WITH_GETRLIMIT
+static const char*
+virProcessLimitResourceToLabel(int resource)
+{
+    switch (resource) {
+# if defined(RLIMIT_MEMLOCK)
+        case RLIMIT_MEMLOCK:
+            return "Max locked memory";
+# endif /* defined(RLIMIT_MEMLOCK) */
+
+# if defined(RLIMIT_NPROC)
+        case RLIMIT_NPROC:
+            return "Max processes";
+# endif /* defined(RLIMIT_NPROC) */
+
+# if defined(RLIMIT_NOFILE)
+        case RLIMIT_NOFILE:
+            return "Max open files";
+# endif /* defined(RLIMIT_NOFILE) */
+
+# if defined(RLIMIT_CORE)
+        case RLIMIT_CORE:
+            return "Max core file size";
+# endif /* defined(RLIMIT_CORE) */
+
+        default:
+            return NULL;
+    }
+}
+
+# if defined(__linux__)
+static int
+virProcessGetLimitFromProc(pid_t pid,
+                           int resource,
+                           struct rlimit *limit)
+{
+    g_autofree char *procfile = NULL;
+    g_autofree char *buf = NULL;
+    g_auto(GStrv) lines = NULL;
+    const char *label;
+    size_t i;
+
+    if (!(label = virProcessLimitResourceToLabel(resource))) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    procfile = g_strdup_printf("/proc/%lld/limits", (long long)pid);
+
+    if (virFileReadAllQuiet(procfile, 2048, &buf) < 0) {
+        /* virFileReadAllQuiet() already sets errno, so don't overwrite
+         * that and return immediately instead */
+        return -1;
+    }
+
+    lines = g_strsplit(buf, "\n", 0);
+
+    for (i = 0; lines[i]; i++) {
+        g_autofree char *softLimit = NULL;
+        g_autofree char *hardLimit = NULL;
+        char *line = lines[i];
+        unsigned long long tmp;
+
+        if (!(line = STRSKIP(line, label)))
+            continue;
+
+        if (sscanf(line, "%ms %ms %*s", &softLimit, &hardLimit) < 2)
+            goto error;
+
+        if (STREQ(softLimit, "unlimited")) {
+            limit->rlim_cur = RLIM_INFINITY;
+        } else {
+            if (virStrToLong_ull(softLimit, NULL, 10, &tmp) < 0)
+                goto error;
+            limit->rlim_cur = tmp;
+        }
+        if (STREQ(hardLimit, "unlimited")) {
+            limit->rlim_max = RLIM_INFINITY;
+        } else {
+            if (virStrToLong_ull(hardLimit, NULL, 10, &tmp) < 0)
+                goto error;
+            limit->rlim_max = tmp;
+        }
+    }
+
+    return 0;
+
+ error:
+    errno = EIO;
+    return -1;
+}
+# else /* !defined(__linux__) */
+static int
+virProcessGetLimitFromProc(pid_t pid G_GNUC_UNUSED,
+                           int resource G_GNUC_UNUSED,
+                           struct rlimit *limit G_GNUC_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+# endif /* !defined(__linux__) */
+
 static int
 virProcessGetLimit(pid_t pid,
                    int resource,
@@ -766,6 +867,15 @@ virProcessGetLimit(pid_t pid,
     bool same_process = (pid == current_pid);
 
     if (virProcessPrLimit(pid, resource, NULL, old_limit) == 0)
+        return 0;
+
+    /* For whatever reason, using prlimit() on another process - even
+     * when it's just to obtain the current limit rather than changing
+     * it - requires CAP_SYS_RESOURCE, which we might not have in a
+     * containerized environment; on the other hand, no particular
+     * permission is needed to poke around /proc, so try that if going
+     * through the syscall didn't work */
+    if (virProcessGetLimitFromProc(pid, resource, old_limit) == 0)
         return 0;
 
     if (same_process && virProcessGetRLimit(resource, old_limit) == 0)
