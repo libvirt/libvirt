@@ -18156,7 +18156,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                           xmlXPathContextPtr ctxt)
 {
     g_autofree xmlNodePtr *nodes = NULL;
-    g_autofree char *tmp = NULL;
     xmlNodePtr node = NULL;
     int gic_version;
     size_t i;
@@ -18166,6 +18165,7 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
         return -1;
 
     for (i = 0; i < n; i++) {
+        g_autofree char *tmp = NULL;
         int val = virDomainFeatureTypeFromString((const char *)nodes[i]->name);
         if (val < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -18184,7 +18184,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                     return -1;
                 }
                 def->apic_eoi = eoi;
-                VIR_FREE(tmp);
             }
             G_GNUC_FALLTHROUGH;
         case VIR_DOMAIN_FEATURE_ACPI:
@@ -18206,7 +18205,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                                    tmp, virDomainFeatureTypeToString(val));
                     return -1;
                 }
-                VIR_FREE(tmp);
             } else {
                 def->features[val] = VIR_TRISTATE_SWITCH_ABSENT;
             }
@@ -18225,7 +18223,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                                    tmp, virDomainFeatureTypeToString(val));
                     return -1;
                 }
-                VIR_FREE(tmp);
             } else {
                 def->features[val] = VIR_TRISTATE_SWITCH_ON;
             }
@@ -18240,7 +18237,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                     return -1;
                 }
                 def->gic_version = gic_version;
-                VIR_FREE(tmp);
             }
             def->features[val] = VIR_TRISTATE_SWITCH_ON;
             break;
@@ -18256,7 +18252,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                     return -1;
                 }
                 def->features[val] = value;
-                VIR_FREE(tmp);
             }
             break;
 
@@ -18271,7 +18266,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                     return -1;
                 }
                 def->hpt_resizing = (virDomainHPTResizing) value;
-                VIR_FREE(tmp);
             }
 
             if (virParseScaledValue("./features/hpt/maxpagesize",
@@ -18305,7 +18299,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                     return -1;
                 }
                 def->features[val] = value;
-                VIR_FREE(tmp);
             }
             break;
 
@@ -18320,7 +18313,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                     return -1;
                 }
                 def->features[val] = value;
-                VIR_FREE(tmp);
             }
             break;
 
@@ -18335,7 +18327,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                     return -1;
                 }
                 def->features[val] = value;
-                VIR_FREE(tmp);
             }
             break;
 
@@ -18354,7 +18345,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                                tmp, virDomainFeatureTypeToString(val));
                 return -1;
             }
-            VIR_FREE(tmp);
             break;
 
         /* coverity[dead_error_begin] */
@@ -18372,6 +18362,7 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
             return -1;
 
         for (i = 0; i < n; i++) {
+            g_autofree char *tmp = NULL;
             feature = virDomainHypervTypeFromString((const char *)nodes[i]->name);
             if (feature < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -18398,7 +18389,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                 return -1;
             }
 
-            VIR_FREE(tmp);
             def->hyperv_features[feature] = value;
 
             switch ((virDomainHyperv) feature) {
@@ -18477,6 +18467,8 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
             return -1;
 
         for (i = 0; i < n; i++) {
+            g_autofree char *tmp = NULL;
+
             if (STRNEQ((const char *)nodes[i]->name, "direct")) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unsupported Hyper-V stimer feature: %s"),
@@ -18498,7 +18490,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                 return -1;
             }
 
-            VIR_FREE(tmp);
             def->hyperv_stimer_direct = value;
         }
         VIR_FREE(nodes);
@@ -18511,6 +18502,8 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
             return -1;
 
         for (i = 0; i < n; i++) {
+            g_autofree char *tmp = NULL;
+
             feature = virDomainKVMTypeFromString((const char *)nodes[i]->name);
             if (feature < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -18539,7 +18532,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                         return -1;
                     }
 
-                    VIR_FREE(tmp);
                     def->kvm_features[feature] = value;
                     break;
 
@@ -18555,6 +18547,7 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
         int feature;
         int value;
         g_autofree char *ptval = NULL;
+        g_autofree char *tmp = NULL;
 
         if ((n = virXPathNodeSet("./features/xen/*", ctxt, &nodes)) < 0)
             return -1;
@@ -18584,7 +18577,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                 return -1;
             }
 
-            VIR_FREE(tmp);
             def->xen_features[feature] = value;
 
             switch ((virDomainXen) feature) {
@@ -18638,6 +18630,7 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_MSRS] == VIR_TRISTATE_SWITCH_ON) {
+        g_autofree char *tmp = NULL;
         if ((node = virXPathNode("./features/msrs", ctxt)) == NULL)
             return -1;
 
@@ -18654,13 +18647,13 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                            tmp);
             return -1;
         }
-        VIR_FREE(tmp);
     }
 
     if ((n = virXPathNodeSet("./features/capabilities/*", ctxt, &nodes)) < 0)
         return -1;
 
     for (i = 0; i < n; i++) {
+        g_autofree char *tmp = NULL;
         int val = virDomainProcessCapsFeatureTypeFromString((const char *)nodes[i]->name);
         if (val < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -18675,7 +18668,6 @@ virDomainFeaturesDefParse(virDomainDefPtr def,
                                tmp, virDomainProcessCapsFeatureTypeToString(val));
                 return -1;
             }
-            VIR_FREE(tmp);
         } else {
             def->caps_features[val] = VIR_TRISTATE_SWITCH_ON;
         }
