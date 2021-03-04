@@ -156,7 +156,7 @@ virBufferApplyIndent(virBufferPtr buf)
 void
 virBufferAdd(virBufferPtr buf, const char *str, int len)
 {
-    if (!str || !buf || (len == 0 && buf->indent == 0))
+    if (!str || !buf)
         return;
 
     virBufferInitialize(buf);
