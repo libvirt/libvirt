@@ -9248,15 +9248,15 @@ qemuDomainAdjustMaxMemLock(virDomainObjPtr vm,
          * value so that we can restore it once memory locking is no longer
          * required. Failing to obtain the current limit is not a critical
          * failure, it just means we'll be unable to lower it later */
-        if (!vm->original_memlock) {
-            if (virProcessGetMaxMemLock(vm->pid, &(vm->original_memlock)) < 0)
-                vm->original_memlock = 0;
+        if (!vm->originalMemlock) {
+            if (virProcessGetMaxMemLock(vm->pid, &(vm->originalMemlock)) < 0)
+                vm->originalMemlock = 0;
         }
     } else {
         /* Once memory locking is no longer required, we can restore the
          * original, usually very low, limit */
-        bytes = vm->original_memlock;
-        vm->original_memlock = 0;
+        bytes = vm->originalMemlock;
+        vm->originalMemlock = 0;
     }
 
     if (bytes > 0 &&

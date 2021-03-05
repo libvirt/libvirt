@@ -2808,8 +2808,8 @@ struct _virDomainObj {
     size_t ndeprecations;
     char **deprecations;
 
-    unsigned long long original_memlock; /* Original RLIMIT_MEMLOCK, zero if no
-                                          * restore will be required later */
+    unsigned long long originalMemlock; /* Original RLIMIT_MEMLOCK, zero if no
+                                         * restore will be required later */
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainObj, virObjectUnref);
