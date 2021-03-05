@@ -766,8 +766,12 @@ virFirewallApply(virFirewallPtr firewall)
         goto cleanup;
     }
     if (!firewall || firewall->err) {
-        virReportSystemError(firewall->err, "%s",
-                             _("Unable to create rule"));
+        int err = EINVAL;
+
+        if (firewall)
+            err = firewall->err;
+
+        virReportSystemError(err, "%s", _("Unable to create rule"));
         goto cleanup;
     }
 
