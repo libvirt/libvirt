@@ -358,7 +358,17 @@ virNetDevBandwidthSet(const char *ifname,
 
     if (rx) {
         average = g_strdup_printf("%llukbps", rx->average);
-        burst = g_strdup_printf("%llukb", rx->burst ? rx->burst : rx->average);
+
+        if (rx->burst) {
+            burst = g_strdup_printf("%llukb", rx->burst);
+        } else {
+            /* Internally, tc uses uint to store burst size (in bytes).
+             * Therefore, the largest value we can set is UINT_MAX bytes.
+             * We're outputting the vale in KiB though. */
+            unsigned long long avg = MIN(rx->average, UINT_MAX / 1024);
+
+            burst = g_strdup_printf("%llukb", avg);
+        }
 
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
