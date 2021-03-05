@@ -151,6 +151,14 @@ virDomainVideoDefValidate(const virDomainVideoDef *video,
         }
     }
 
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_RAMFB) {
+        if (video->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("address not supported for video type ramfb"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
