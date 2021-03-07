@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-02-22 08:42+0000\n"
-"PO-Revision-Date: 2021-03-02 09:40+0000\n"
+"PO-Revision-Date: 2021-03-07 17:01+0000\n"
 "Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4.2\n"
+"X-Generator: Weblate 4.5.1\n"
 
 msgid ""
 "\n"
@@ -3332,7 +3332,7 @@ msgid "Cannot setup keepalive on connection as requested, disconnecting"
 msgstr ""
 
 msgid "Cannot share CURL handle that is already shared"
-msgstr ""
+msgstr "Jo jaettua CURL-kahvaa ei voi jakaa"
 
 msgid "Cannot share uninitialized CURL handle"
 msgstr ""
@@ -6345,7 +6345,7 @@ msgid "Failed to build pidfile path"
 msgstr "Pidfile-polun rakentaminen epäonnistui"
 
 msgid "Failed to build pidfile path."
-msgstr ""
+msgstr "Pidfile-polun rakentaminen epäonnistui."
 
 #, c-format
 msgid "Failed to build pool %s"
@@ -13170,10 +13170,10 @@ msgid "Perf not supported on this platform"
 msgstr ""
 
 msgid "Persistent"
-msgstr ""
+msgstr "Pysyvä"
 
 msgid "Persistent:"
-msgstr ""
+msgstr "Pysyvä:"
 
 msgid "Physical"
 msgstr "Fyysinen"
@@ -25119,17 +25119,15 @@ msgstr "lokitiedoston kirjoitus epäonnistui"
 msgid "failed to create save dir '%s': %s"
 msgstr "säästöhakemiston '%s' luominen epäonnistui: %s"
 
-#, fuzzy
 msgid "failed to create socket"
-msgstr "XML:n luonti epäonnistui"
+msgstr "pistokkeen luominen epäonnistui"
 
 #, fuzzy, c-format
 msgid "failed to create socket needed for '%s'"
 msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 
-#, fuzzy
 msgid "failed to create socketpair"
-msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
+msgstr "pistokeparin luominen epäonnistui"
 
 #, c-format
 msgid "failed to create state dir '%s': %s"
