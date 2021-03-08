@@ -112,7 +112,7 @@ The default configuration file used by ``virtqemud``, unless overridden on the
 command line using the ``-f`` | ``--config`` option.
 
 In addition to the default configuration file, ``virtqemud`` reads
-configuration for the qemu driver from:
+configuration for the QEMU driver from:
 
 * ``@SYSCONFDIR@/libvirt/qemu.conf``
 
