@@ -103,8 +103,8 @@ On receipt of ``SIGHUP`` ``virtxend`` will reload its configuration.
 FILES
 =====
 
-When run as *root*
-------------------
+The ``virtxend`` program must be ran as root. Trying to start the program under
+a different user results in error.
 
 * ``@SYSCONFDIR@/libvirt/virtxend.conf``
 
@@ -122,31 +122,6 @@ The TLS **Server** private key ``virtxend`` will use.
 * ``@RUNSTATEDIR@/virtxend.pid``
 
 The PID file to use, unless overridden by the ``-p`` | ``--pid-file`` option.
-
-
-When run as *non-root*
-----------------------
-
-* ``$XDG_CONFIG_HOME/libvirt/virtxend.conf``
-
-The default configuration file used by ``virtxend``, unless overridden on the
-command line using the ``-f``|``--config`` option.
-
-* ``$XDG_RUNTIME_DIR/libvirt/virtxend-sock``
-* ``$XDG_RUNTIME_DIR/libvirt/virtxend-admin-sock``
-
-The sockets ``virtxend`` will use.
-
-* ``$XDG_RUNTIME_DIR/libvirt/virtxend.pid``
-
-The PID file to use, unless overridden by the ``-p``|``--pid-file`` option.
-
-
-If ``$XDG_CONFIG_HOME`` is not set in your environment, ``virtxend`` will use
-``$HOME/.config``
-
-If ``$XDG_RUNTIME_DIR`` is not set in your environment, ``virtxend`` will use
-``$HOME/.cache``
 
 
 EXAMPLES
