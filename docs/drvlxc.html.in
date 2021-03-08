@@ -281,6 +281,16 @@ causes libvirt to activate the user namespace feature.
 </p>
 
 
+<h2><a id="configFiles">Location of configuration files</a></h2>
+
+<p>
+The LXC driver comes with sane default values. However, during its
+initialization it reads a configuration file which offers system
+administrator to override some of that default. The file is located
+under <code>/etc/libvirt/lxc.conf</code>
+</p>
+
+
 <h2><a id="activation">Systemd Socket Activation Integration</a></h2>
 
 <p>

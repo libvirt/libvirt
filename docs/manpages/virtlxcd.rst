@@ -111,6 +111,15 @@ a different user results in error.
 The default configuration file used by ``virtlxcd``, unless overridden on the
 command line using the ``-f`` | ``--config`` option.
 
+In addition to the default configuration file, ``virtlxcd`` reads
+configuration for the LXC driver from:
+
+* ``@SYSCONFDIR@/libvirt/lxc.conf``
+
+This file contains various knobs and default values for virtual machines
+created within LXC driver, and offers a way to override the built in defaults,
+Location of this file can't be overridden by any command line switch.
+
 * ``@RUNSTATEDIR@/libvirt/virtlxcd-sock``
 * ``@RUNSTATEDIR@/libvirt/virtlxcd-sock-ro``
 * ``@RUNSTATEDIR@/libvirt/virtlxcd-admin-sock``

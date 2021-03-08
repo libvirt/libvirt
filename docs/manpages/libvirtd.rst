@@ -136,15 +136,17 @@ When run as *root*
 The default configuration file used by ``libvirtd``, unless overridden on the
 command line using the ``-f`` | ``--config`` option.
 
-If QEMU driver is installed, then the following file is also read:
+Depending on what driver is installed, then the following files are also read:
 
-* ``@SYSCONFDIR@/libvirt/qemu.conf``
+* ``@SYSCONFDIR@/libvirt/qemu.conf`` for the QEMU driver
+* ``@SYSCONFDIR@/libvirt/lxc.conf`` for the LXC driver
 
-This file contains various knobs and default values for virtual machines
-created within QEMU driver, and offers a way to override the built in defaults,
-for instance (but not limited to): paths to various supplementary binaries, TLS
-certificates location, graphical consoles configuration and others. Location of
-this file can't be overridden by any command line switch.
+These files contain various knobs and default values for virtual machines
+created within their respective drivers, and offer a way to override the built
+in defaults, for instance (but not limited to): paths to various supplementary
+binaries, TLS certificates location, graphical consoles configuration and
+others. Location of neither of these files can be overridden by any command
+line switch.
 
 * ``@RUNSTATEDIR@/libvirt/libvirt-sock``
 * ``@RUNSTATEDIR@/libvirt/libvirt-sock-ro``
