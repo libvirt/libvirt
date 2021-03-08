@@ -50,6 +50,17 @@ xen+tcp://example.com/system      (remote access, SASl/Kerberos)
 xen+ssh://root@example.com/system (remote access, SSH tunnelled)
 </pre>
 
+
+    <h2><a id="configFiles">Location of configuration files</a></h2>
+
+    <p>
+      The libxl driver comes with sane default values. However, during its
+      initialization it reads a configuration file which offers system
+      administrator to override some of that default. The file is located
+      under <code>/etc/libvirt/libxl.conf</code>
+    </p>
+
+
     <h2><a id="imex">Import and export of libvirt domain XML configs</a></h2>
 
     <p>

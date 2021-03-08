@@ -140,6 +140,7 @@ Depending on what driver is installed, then the following files are also read:
 
 * ``@SYSCONFDIR@/libvirt/qemu.conf`` for the QEMU driver
 * ``@SYSCONFDIR@/libvirt/lxc.conf`` for the LXC driver
+* ``@SYSCONFDIR@/libvirt/libxl.conf`` for the libxl driver
 
 These files contain various knobs and default values for virtual machines
 created within their respective drivers, and offer a way to override the built
