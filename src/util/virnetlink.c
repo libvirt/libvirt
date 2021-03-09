@@ -1231,7 +1231,7 @@ virNetlinkEventRemoveClient(int watch, const virMacAddr *macaddr,
 
 #else
 
-# if defined(__linux)
+# if defined(__linux__)
 static const char *unsupported = N_("libnl was not available at build time");
 # else
 static const char *unsupported = N_("not supported on non-linux platforms");
