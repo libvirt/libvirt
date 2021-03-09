@@ -9351,11 +9351,20 @@ qemuDomainAdjustMaxMemLock(virDomainObjPtr vm,
         return -1;
 
     if (desiredMemLock > 0) {
-        /* If this is the first time adjusting the limit, save the current
-         * value so that we can restore it once memory locking is no longer
-         * required */
-        if (vm->originalMemlock == 0) {
-            vm->originalMemlock = currentMemLock;
+        if (currentMemLock < desiredMemLock) {
+            /* If this is the first time adjusting the limit, save the current
+             * value so that we can restore it once memory locking is no longer
+             * required */
+            if (vm->originalMemlock == 0) {
+                vm->originalMemlock = currentMemLock;
+            }
+        } else {
+            /* If the limit is already high enough, we can assume
+             * that some external process is taking care of managing
+             * process limits and we shouldn't do anything ourselves:
+             * we're probably running in a containerized environment
+             * where we don't have enough privilege anyway */
+            desiredMemLock = 0;
         }
     } else {
         /* Once memory locking is no longer required, we can restore the
