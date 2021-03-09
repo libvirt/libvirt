@@ -1910,7 +1910,7 @@ exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
   (^(src/(util/(vircommand|virdaemon)|lxc/lxc_controller)|tests/testutils)\.c$$)
 
-exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/vir(util|log)\.c$$
+exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/virutil\.c$$
 
 exclude_file_name_regexp--sc_prohibit_internal_functions = \
   ^src/(util/(viralloc|virutil|virfile)\.[hc]|esx/esx_vi\.c)$$
