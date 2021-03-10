@@ -79,6 +79,34 @@ virDomainDefVideoValidate(const virDomainDef *def)
 
 
 static int
+virDomainCheckVirtioOptionsAreAbsent(virDomainVirtioOptionsPtr virtio)
+{
+    if (!virtio)
+        return 0;
+
+    if (virtio->iommu != VIR_TRISTATE_SWITCH_ABSENT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("iommu driver option is only supported "
+                         "for virtio devices"));
+        return -1;
+    }
+    if (virtio->ats != VIR_TRISTATE_SWITCH_ABSENT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("ats driver option is only supported "
+                         "for virtio devices"));
+        return -1;
+    }
+    if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("packed driver option is only supported "
+                         "for virtio devices"));
+        return -1;
+    }
+    return 0;
+}
+
+
+static int
 virDomainVideoDefValidate(const virDomainVideoDef *video,
                           const virDomainDef *def)
 {
@@ -232,34 +260,6 @@ virSecurityDeviceLabelDefValidate(virSecurityDeviceLabelDefPtr *seclabels,
         }
     }
 
-    return 0;
-}
-
-
-static int
-virDomainCheckVirtioOptionsAreAbsent(virDomainVirtioOptionsPtr virtio)
-{
-    if (!virtio)
-        return 0;
-
-    if (virtio->iommu != VIR_TRISTATE_SWITCH_ABSENT) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("iommu driver option is only supported "
-                         "for virtio devices"));
-        return -1;
-    }
-    if (virtio->ats != VIR_TRISTATE_SWITCH_ABSENT) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("ats driver option is only supported "
-                         "for virtio devices"));
-        return -1;
-    }
-    if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("packed driver option is only supported "
-                         "for virtio devices"));
-        return -1;
-    }
     return 0;
 }
 
