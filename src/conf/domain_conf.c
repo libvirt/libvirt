@@ -19565,6 +19565,18 @@ virDomainDefParseBootInitOptions(virDomainDefPtr def,
 }
 
 
+static void
+virDomainDefParseBootKernelOptions(virDomainDefPtr def,
+                                   xmlXPathContextPtr ctxt)
+{
+    def->os.kernel = virXPathString("string(./os/kernel[1])", ctxt);
+    def->os.initrd = virXPathString("string(./os/initrd[1])", ctxt);
+    def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
+    def->os.dtb = virXPathString("string(./os/dtb[1])", ctxt);
+    def->os.root = virXPathString("string(./os/root[1])", ctxt);
+}
+
+
 static int
 virDomainDefParseBootOptions(virDomainDefPtr def,
                              xmlXPathContextPtr ctxt)
@@ -19594,11 +19606,7 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
         g_autofree char *firmware = NULL;
         xmlNodePtr loader_node;
 
-        def->os.kernel = virXPathString("string(./os/kernel[1])", ctxt);
-        def->os.initrd = virXPathString("string(./os/initrd[1])", ctxt);
-        def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
-        def->os.dtb = virXPathString("string(./os/dtb[1])", ctxt);
-        def->os.root = virXPathString("string(./os/root[1])", ctxt);
+        virDomainDefParseBootKernelOptions(def, ctxt);
 
         if (def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
             (firmware = virXPathString("string(./os/@firmware)", ctxt))) {
