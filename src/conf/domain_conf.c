@@ -19603,6 +19603,31 @@ virDomainDefParseBootFirmwareOptions(virDomainDefPtr def,
 
 
 static int
+virDomainDefParseBootLoaderOptions(virDomainDefPtr def,
+                                   xmlXPathContextPtr ctxt)
+{
+    xmlNodePtr loader_node = virXPathNode("./os/loader[1]", ctxt);
+    const bool fwAutoSelect = def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
+
+    if (!loader_node)
+        return 0;
+
+    def->os.loader = g_new0(virDomainLoaderDef, 1);
+
+    if (virDomainLoaderDefParseXML(loader_node,
+                                   def->os.loader,
+                                   fwAutoSelect) < 0)
+        return -1;
+
+    def->os.loader->nvram = virXPathString("string(./os/nvram[1])", ctxt);
+    if (!fwAutoSelect)
+        def->os.loader->templt = virXPathString("string(./os/nvram[1]/@template)", ctxt);
+
+    return 0;
+}
+
+
+static int
 virDomainDefParseBootOptions(virDomainDefPtr def,
                              xmlXPathContextPtr ctxt)
 {
@@ -19628,7 +19653,6 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
         def->os.type == VIR_DOMAIN_OSTYPE_XENPVH ||
         def->os.type == VIR_DOMAIN_OSTYPE_HVM ||
         def->os.type == VIR_DOMAIN_OSTYPE_UML) {
-        xmlNodePtr loader_node;
 
         virDomainDefParseBootKernelOptions(def, ctxt);
 
@@ -19637,20 +19661,8 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
                 return -1;
         }
 
-        if ((loader_node = virXPathNode("./os/loader[1]", ctxt))) {
-            const bool fwAutoSelect = def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
-
-            def->os.loader = g_new0(virDomainLoaderDef, 1);
-
-            if (virDomainLoaderDefParseXML(loader_node,
-                                           def->os.loader,
-                                           fwAutoSelect) < 0)
-                return -1;
-
-            def->os.loader->nvram = virXPathString("string(./os/nvram[1])", ctxt);
-            if (!fwAutoSelect)
-                def->os.loader->templt = virXPathString("string(./os/nvram[1]/@template)", ctxt);
-        }
+        if (virDomainDefParseBootLoaderOptions(def, ctxt) < 0)
+            return -1;
     }
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
