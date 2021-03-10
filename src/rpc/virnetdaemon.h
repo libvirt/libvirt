@@ -75,6 +75,7 @@ void virNetDaemonSetStateStopWorkerThread(virNetDaemonPtr dmn,
 void virNetDaemonRun(virNetDaemonPtr dmn);
 
 void virNetDaemonQuit(virNetDaemonPtr dmn);
+void virNetDaemonQuitExecRestart(virNetDaemon *dmn);
 
 bool virNetDaemonHasClients(virNetDaemonPtr dmn);
 

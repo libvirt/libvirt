@@ -76,6 +76,7 @@ struct _virNetDaemon {
     bool quit;
     bool finished;
     bool graceful;
+    bool execRestart;
 
     unsigned int autoShutdownTimeout;
     size_t autoShutdownInhibitions;
@@ -857,6 +858,10 @@ virNetDaemonRun(virNetDaemonPtr dmn)
 
         virHashForEach(dmn->servers, daemonServerProcessClients, NULL);
 
+        /* don't shutdown services when performing an exec-restart */
+        if (dmn->quit && dmn->execRestart)
+            goto cleanup;
+
         if (dmn->quit && dmn->finishTimer == -1) {
             virHashForEach(dmn->servers, daemonServerClose, NULL);
             if (dmn->shutdownPrepareCb && dmn->shutdownPrepareCb() < 0)
@@ -911,6 +916,20 @@ virNetDaemonQuit(virNetDaemonPtr dmn)
 
     virObjectUnlock(dmn);
 }
+
+
+void
+virNetDaemonQuitExecRestart(virNetDaemon *dmn)
+{
+    virObjectLock(dmn);
+
+    VIR_DEBUG("Exec-restart requested %p", dmn);
+    dmn->quit = true;
+    dmn->execRestart = true;
+
+    virObjectUnlock(dmn);
+}
+
 
 static int
 daemonServerClose(void *payload,
