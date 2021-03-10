@@ -283,7 +283,7 @@ virLogDaemonExecRestartHandler(virNetDaemonPtr dmn,
                                void *opaque G_GNUC_UNUSED)
 {
     execRestart = true;
-    virNetDaemonQuit(dmn);
+    virNetDaemonQuitExecRestart(dmn);
 }
 
 static int
