@@ -519,11 +519,12 @@ int virSystemdCreateMachine(const char *name,
     }
 
     if (maxthreads > 0) {
+        uint64_t max = maxthreads;
+
         if (!(scopename = virSystemdMakeScopeName(name, drivername, false)))
             return -1;
 
-        gprops = g_variant_new_parsed("[('TasksMax', <%llu>)]",
-                                      (uint64_t)maxthreads);
+        gprops = g_variant_new_parsed("[('TasksMax', <%t>)]", max);
 
         message = g_variant_new("(sb@a(sv))",
                                 scopename,
