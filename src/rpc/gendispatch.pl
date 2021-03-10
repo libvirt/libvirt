@@ -113,7 +113,7 @@ sub name_to_TypeName {
 
 sub get_conn_type {
     if ($structprefix eq "admin") {
-        return "virNetDaemonPtr";
+        return "virNetDaemon *";
     } else {
         return "virConnectPtr";
     }
@@ -499,10 +499,10 @@ elsif ($mode eq "server") {
         # First we print out a function declaration for the
         # real dispatcher body
         print "static int ${name}(\n";
-        print "    virNetServerPtr server,\n";
-        print "    virNetServerClientPtr client,\n";
-        print "    virNetMessagePtr msg,\n";
-        print "    virNetMessageErrorPtr rerr";
+        print "    virNetServer *server,\n";
+        print "    virNetServerClient *client,\n";
+        print "    virNetMessage *msg,\n";
+        print "    struct virNetMessageError *rerr";
         if ($argtype ne "void") {
             print ",\n    $argtype *args";
         }
@@ -516,10 +516,10 @@ elsif ($mode eq "server") {
         # fixed function signature, for use in the dispatcher
         # table. This simply callers the real dispatcher method
         print "static int ${name}Helper(\n";
-        print "    virNetServerPtr server,\n";
-        print "    virNetServerClientPtr client,\n";
-        print "    virNetMessagePtr msg,\n";
-        print "    virNetMessageErrorPtr rerr,\n";
+        print "    virNetServer *server,\n";
+        print "    virNetServerClient *client,\n";
+        print "    virNetMessage *msg,\n";
+        print "    struct virNetMessageError *rerr,\n";
         print "    void *args$argann,\n";
         print "    void *ret$retann)\n";
         print "{\n";
@@ -641,7 +641,7 @@ elsif ($mode eq "server") {
                     }
                     push(@args_list, "$1");
                     push(@args_list, "n$1");
-                    push(@getters_list, "    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) args->$1.$1_val,\n" .
+                    push(@getters_list, "    if (virTypedParamsDeserialize((struct _virTypedParameterRemote *) args->$1.$1_val,\n" .
                                         "                                  args->$1.$1_len,\n" .
                                         "                                  $2,\n" .
                                         "                                  &$1,\n" .
@@ -687,7 +687,7 @@ elsif ($mode eq "server") {
                 } elsif ($args_member =~ m/^admin_nonnull_(server) (\S+);/) {
                     my $type_name = name_to_TypeName($1);
 
-                    push(@vars_list, "virNet${type_name}Ptr $2 = NULL");
+                    push(@vars_list, "virNet${type_name} *$2 = NULL");
                     push(@getters_list,
                          "    if (!($2 = get_nonnull_$1($conn_var, args->$2)))\n" .
                          "        goto cleanup;\n");
@@ -697,8 +697,8 @@ elsif ($mode eq "server") {
                 } elsif ($args_member =~ m/^admin_nonnull_(client) (\S+);/) {
                     my $type_name = name_to_TypeName($1);
 
-                    push(@vars_list, "virNetServerPtr srv = NULL");
-                    push(@vars_list, "virNetServer${type_name}Ptr $2 = NULL");
+                    push(@vars_list, "virNetServer *srv = NULL");
+                    push(@vars_list, "virNetServer${type_name} *$2 = NULL");
                     push(@getters_list,
                          "    if (!(srv = get_nonnull_server($conn_var, args->$2.srv)))\n" .
                          "        goto cleanup;\n");
@@ -930,11 +930,11 @@ elsif ($mode eq "server") {
                     my $type_name = name_to_TypeName($1);
 
                     if ($1 eq "client") {
-                        push(@vars_list, "virNetServer${type_name}Ptr $2 = NULL");
+                        push(@vars_list, "virNetServer${type_name} *$2 = NULL");
                         push(@ret_list, "make_nonnull_$1(&ret->$2, $2);\n");
                         push(@ret_list, "make_nonnull_server(&ret->$2.srv, srv);\n");
                     } else {
-                        push(@vars_list, "virNet${type_name}Ptr $2 = NULL");
+                        push(@vars_list, "virNet${type_name} *$2 = NULL");
                         push(@ret_list, "make_nonnull_$1(&ret->$2, $2);");
                     }
 
@@ -955,13 +955,13 @@ elsif ($mode eq "server") {
 
                     push(@ret_list, "if (virTypedParamsSerialize($1, $1_len,\n" .
                                     "                                $2,\n" .
-                                    "                                (virTypedParameterRemotePtr *) &ret->$1.$1_val,\n" .
+                                    "                                (struct _virTypedParameterRemote **) &ret->$1.$1_val,\n" .
                                     "                                &ret->$1.$1_len,\n" .
                                     "                                VIR_TYPED_PARAM_STRING_OKAY) < 0)\n" .
                                     "        goto cleanup;\n");
 
                     push(@free_list, "    virTypedParamsFree($1, $1_len);");
-                    push(@free_list_on_error, "virTypedParamsRemoteFree((virTypedParameterRemotePtr) ret->params.params_val,\n" .
+                    push(@free_list_on_error, "virTypedParamsRemoteFree((struct _virTypedParameterRemote *) ret->params.params_val,\n" .
                                               "                                 ret->params.params_len);\n");
                 } elsif ($ret_member =~ m/^(\/)?\*/) {
                     # ignore comments
@@ -989,7 +989,7 @@ elsif ($mode eq "server") {
                         }
                     }
 
-                    push(@vars_list, "vir${struct_name}Ptr *result = NULL");
+                    push(@vars_list, "vir${struct_name} **result = NULL");
                     push(@vars_list, "int nresults = 0");
 
                     @args_list = grep {!/\bneed_results\b/} @args_list;
@@ -1031,10 +1031,10 @@ elsif ($mode eq "server") {
 
         # print functions signature
         print "static int $name(\n";
-        print "    virNetServerPtr server G_GNUC_UNUSED,\n";
-        print "    virNetServerClientPtr client,\n";
-        print "    virNetMessagePtr msg G_GNUC_UNUSED,\n";
-        print "    virNetMessageErrorPtr rerr";
+        print "    virNetServer *server G_GNUC_UNUSED,\n";
+        print "    virNetServerClient *client,\n";
+        print "    virNetMessage *msg G_GNUC_UNUSED,\n";
+        print "    struct virNetMessageError *rerr";
         if ($argtype ne "void") {
             print ",\n    $argtype *args";
         }
@@ -1057,7 +1057,7 @@ elsif ($mode eq "server") {
 
         if ($call->{streamflag} ne "none") {
             print "    virStreamPtr st = NULL;\n";
-            print "    daemonClientStreamPtr stream = NULL;\n";
+            print "    daemonClientStream *stream = NULL;\n";
             if ($call->{sparseflag} ne "none") {
                 print "    const bool sparse = args->flags & $call->{sparseflag};\n"
             } else {
@@ -1439,13 +1439,13 @@ elsif ($mode eq "client") {
                     push(@args_list, "int n$1");
                     push(@setters_list2, "if (virTypedParamsSerialize($1, n$1,\n" .
                                          "                                $2,\n" .
-                                         "                                (virTypedParameterRemotePtr *) &args.$1.$1_val,\n" .
+                                         "                                (struct _virTypedParameterRemote **) &args.$1.$1_val,\n" .
                                          "                                &args.$1.$1_len,\n" .
                                          "                                VIR_TYPED_PARAM_STRING_OKAY) < 0) {\n" .
                                          "        xdr_free((xdrproc_t)xdr_$call->{args}, (char *)&args);\n" .
                                          "        goto done;\n" .
                                          "    }");
-                    push(@free_list, "    virTypedParamsRemoteFree((virTypedParameterRemotePtr) args.params.params_val,\n" .
+                    push(@free_list, "    virTypedParamsRemoteFree((struct _virTypedParameterRemote *) args.params.params_val,\n" .
                                      "                             args.params.params_len);\n");
                 } elsif ($args_member =~ m/^((?:unsigned )?int) (\S+);\s*\/\*\s*call-by-reference\s*\*\//) {
                     my $type_name = "$1 *";
@@ -1626,7 +1626,7 @@ elsif ($mode eq "client") {
                     push(@vars_list, "virTypedParameterPtr ret_params = NULL");
                     push(@vars_list, "int ret_nparams = 0");
                     # virTypedParamsDeserialize allocates the array if @params is null
-                    push(@ret_list2, "if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.$1.$1_val,\n" .
+                    push(@ret_list2, "if (virTypedParamsDeserialize((struct _virTypedParameterRemote *) ret.$1.$1_val,\n" .
                                      "                                  ret.$1.$1_len,\n" .
                                      "                                  $2,\n" .
                                      "                                  &ret_params,\n" .
@@ -1638,7 +1638,7 @@ elsif ($mode eq "client") {
                     $single_ret_cleanup = 1;
                 } elsif ($ret_member =~ m/^remote_typed_param (\S+)<(\S+)>;\s*\/\*\s*insert@(\d+)\s*\*\//) {
                     splice(@args_list, int($3), 0, ("virTypedParameterPtr $1"));
-                    push(@ret_list2, "if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.$1.$1_val,\n" .
+                    push(@ret_list2, "if (virTypedParamsDeserialize((struct _virTypedParameterRemote *) ret.$1.$1_val,\n" .
                                      "                                  ret.$1.$1_len,\n" .
                                      "                                  $2,\n" .
                                      "                                  &$1,\n" .
@@ -1791,7 +1791,7 @@ elsif ($mode eq "client") {
         print "{\n";
         print "    $single_ret_var;\n";
         if ($structprefix eq "admin") {
-            print "    remoteAdminPrivPtr priv = $priv_src->privateData;\n";
+            print "    remoteAdminPriv *priv = $priv_src->privateData;\n";
         } else {
             print "    struct private_data *priv = $priv_src->privateData;\n";
         }
@@ -1806,7 +1806,7 @@ elsif ($mode eq "client") {
         }
 
         if ($call->{streamflag} ne "none") {
-            print "    virNetClientStreamPtr netst = NULL;\n";
+            print "    virNetClientStream *netst = NULL;\n";
             if ($call->{sparseflag} ne "none") {
                 print "    const bool sparse = flags & $call->{sparseflag};\n"
             } else {
@@ -2140,7 +2140,7 @@ elsif ($mode eq "client") {
             $object =~ s/^(\w)/uc $1/e;
             $object =~ s/_(\w)/uc $1/e;
             $object =~ s/Nwfilter/NWFilter/;
-            my $objecttype = $prefix . $object . "DefPtr";
+            my $objecttype = $prefix . $object . "Def *";
             $apiname .= $action . "ACL";
 
             if ($arg eq "interface") {
@@ -2151,9 +2151,9 @@ elsif ($mode eq "client") {
             push @argdecls, "$connect_ptr conn";
             if ($object ne "Connect") {
                 if ($object eq "StorageVol") {
-                    push @argdecls, "virStoragePoolDefPtr pool";
+                    push @argdecls, "virStoragePoolDef *pool";
                 } elsif ($object eq "NetworkPort") {
-                    push @argdecls, "virNetworkDefPtr net";
+                    push @argdecls, "virNetworkDef *net";
                 }
                 push @argdecls, "$objecttype $arg";
             }
@@ -2195,7 +2195,7 @@ elsif ($mode eq "client") {
                 print "/* Returns: $fail on error/denied, $pass on allowed */\n";
                 print "$ret $apiname(" . join(", ", @argdecls) . ")\n";
                 print "{\n";
-                print "    virAccessManagerPtr mgr;\n";
+                print "    virAccessManager *mgr;\n";
                 print "    int rv;\n";
                 print "\n";
                 print "    if (!(mgr = virAccessManagerGetDefault())) {\n";
