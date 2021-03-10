@@ -19506,11 +19506,69 @@ virDomainVcpuParse(virDomainDefPtr def,
 
 
 static int
-virDomainDefParseBootOptions(virDomainDefPtr def,
-                             xmlXPathContextPtr ctxt)
+virDomainDefParseBootInitOptions(virDomainDefPtr def,
+                                 xmlXPathContextPtr ctxt)
 {
     char *name = NULL;
     size_t i;
+    int n;
+    g_autofree xmlNodePtr *nodes = NULL;
+
+    def->os.init = virXPathString("string(./os/init[1])", ctxt);
+    def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
+    def->os.initdir = virXPathString("string(./os/initdir[1])", ctxt);
+    def->os.inituser = virXPathString("string(./os/inituser[1])", ctxt);
+    def->os.initgroup = virXPathString("string(./os/initgroup[1])", ctxt);
+
+    if ((n = virXPathNodeSet("./os/initarg", ctxt, &nodes)) < 0)
+        return -1;
+
+    def->os.initargv = g_new0(char *, n+1);
+    for (i = 0; i < n; i++) {
+        if (!nodes[i]->children ||
+            !nodes[i]->children->content) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("No data supplied for <initarg> element"));
+            return -1;
+        }
+        def->os.initargv[i] = g_strdup((const char *)nodes[i]->children->content);
+    }
+    def->os.initargv[n] = NULL;
+    VIR_FREE(nodes);
+
+    if ((n = virXPathNodeSet("./os/initenv", ctxt, &nodes)) < 0)
+        return -1;
+
+    def->os.initenv = g_new0(virDomainOSEnvPtr, n+1);
+    for (i = 0; i < n; i++) {
+        if (!(name = virXMLPropString(nodes[i], "name"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("No name supplied for <initenv> element"));
+            return -1;
+        }
+
+        if (!nodes[i]->children ||
+            !nodes[i]->children->content) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("No value supplied for <initenv name='%s'> element"),
+                           name);
+            return -1;
+        }
+
+        def->os.initenv[i] = g_new0(virDomainOSEnv, 1);
+        def->os.initenv[i]->name = name;
+        def->os.initenv[i]->value = g_strdup((const char *)nodes[i]->children->content);
+    }
+    def->os.initenv[n] = NULL;
+
+    return 0;
+}
+
+
+static int
+virDomainDefParseBootOptions(virDomainDefPtr def,
+                             xmlXPathContextPtr ctxt)
+{
     int n;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *tmp = NULL;
@@ -19525,53 +19583,8 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
      */
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_EXE) {
-        def->os.init = virXPathString("string(./os/init[1])", ctxt);
-        def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
-        def->os.initdir = virXPathString("string(./os/initdir[1])", ctxt);
-        def->os.inituser = virXPathString("string(./os/inituser[1])", ctxt);
-        def->os.initgroup = virXPathString("string(./os/initgroup[1])", ctxt);
-
-        if ((n = virXPathNodeSet("./os/initarg", ctxt, &nodes)) < 0)
+        if (virDomainDefParseBootInitOptions(def, ctxt) < 0)
             return -1;
-
-        def->os.initargv = g_new0(char *, n+1);
-        for (i = 0; i < n; i++) {
-            if (!nodes[i]->children ||
-                !nodes[i]->children->content) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("No data supplied for <initarg> element"));
-                return -1;
-            }
-            def->os.initargv[i] = g_strdup((const char *)nodes[i]->children->content);
-        }
-        def->os.initargv[n] = NULL;
-        VIR_FREE(nodes);
-
-        if ((n = virXPathNodeSet("./os/initenv", ctxt, &nodes)) < 0)
-            return -1;
-
-        def->os.initenv = g_new0(virDomainOSEnvPtr, n+1);
-        for (i = 0; i < n; i++) {
-            if (!(name = virXMLPropString(nodes[i], "name"))) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                                _("No name supplied for <initenv> element"));
-                return -1;
-            }
-
-            if (!nodes[i]->children ||
-                !nodes[i]->children->content) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("No value supplied for <initenv name='%s'> element"),
-                               name);
-                return -1;
-            }
-
-            def->os.initenv[i] = g_new0(virDomainOSEnv, 1);
-            def->os.initenv[i]->name = name;
-            def->os.initenv[i]->value = g_strdup((const char *)nodes[i]->children->content);
-        }
-        def->os.initenv[n] = NULL;
-        VIR_FREE(nodes);
     }
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
