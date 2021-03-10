@@ -19628,13 +19628,53 @@ virDomainDefParseBootLoaderOptions(virDomainDefPtr def,
 
 
 static int
-virDomainDefParseBootOptions(virDomainDefPtr def,
-                             xmlXPathContextPtr ctxt)
+virDomainDefParseBootAcpiOptions(virDomainDefPtr def,
+                                 xmlXPathContextPtr ctxt)
 {
     int n;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *tmp = NULL;
 
+    if ((n = virXPathNodeSet("./os/acpi/table", ctxt, &nodes)) < 0)
+        return -1;
+
+    if (n > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Only one acpi table is supported"));
+        return -1;
+    }
+
+    if (n == 1) {
+        tmp = virXMLPropString(nodes[0], "type");
+
+        if (!tmp) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing acpi table type"));
+            return -1;
+        }
+
+        if (STREQ_NULLABLE(tmp, "slic")) {
+            VIR_FREE(tmp);
+            if (!(tmp = virXMLNodeContentString(nodes[0])))
+                return -1;
+
+            def->os.slic_table = virFileSanitizePath(tmp);
+        } else {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Unknown acpi table type: %s"),
+                           tmp);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+virDomainDefParseBootOptions(virDomainDefPtr def,
+                             xmlXPathContextPtr ctxt)
+{
     /*
      * Booting options for different OS types....
      *
@@ -19666,37 +19706,8 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
     }
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
-        if ((n = virXPathNodeSet("./os/acpi/table", ctxt, &nodes)) < 0)
+        if (virDomainDefParseBootAcpiOptions(def, ctxt) < 0)
             return -1;
-
-        if (n > 1) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Only one acpi table is supported"));
-            return -1;
-        }
-
-        if (n == 1) {
-            tmp = virXMLPropString(nodes[0], "type");
-
-            if (!tmp) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Missing acpi table type"));
-                return -1;
-            }
-
-            if (STREQ_NULLABLE(tmp, "slic")) {
-                VIR_FREE(tmp);
-                if (!(tmp = virXMLNodeContentString(nodes[0])))
-                    return -1;
-
-                def->os.slic_table = virFileSanitizePath(tmp);
-            } else {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Unknown acpi table type: %s"),
-                               tmp);
-                return -1;
-            }
-        }
 
         if (virDomainDefParseBootXML(ctxt, def) < 0)
             return -1;
