@@ -19684,33 +19684,43 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
      *   - An init script                             (exe)
      */
 
-    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE) {
-        if (virDomainDefParseBootInitOptions(def, ctxt) < 0)
-            return -1;
-    }
-
-    if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
-        def->os.type == VIR_DOMAIN_OSTYPE_XENPVH ||
-        def->os.type == VIR_DOMAIN_OSTYPE_HVM ||
-        def->os.type == VIR_DOMAIN_OSTYPE_UML) {
-
+    switch ((virDomainOSType) def->os.type) {
+    case VIR_DOMAIN_OSTYPE_HVM:
         virDomainDefParseBootKernelOptions(def, ctxt);
 
-        if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
-            if (virDomainDefParseBootFirmwareOptions(def, ctxt) < 0)
-                return -1;
-        }
+        if (virDomainDefParseBootFirmwareOptions(def, ctxt) < 0)
+            return -1;
 
         if (virDomainDefParseBootLoaderOptions(def, ctxt) < 0)
             return -1;
-    }
 
-    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (virDomainDefParseBootAcpiOptions(def, ctxt) < 0)
             return -1;
 
         if (virDomainDefParseBootXML(ctxt, def) < 0)
             return -1;
+
+        break;
+
+    case VIR_DOMAIN_OSTYPE_XEN:
+    case VIR_DOMAIN_OSTYPE_XENPVH:
+    case VIR_DOMAIN_OSTYPE_UML:
+        virDomainDefParseBootKernelOptions(def, ctxt);
+
+        if (virDomainDefParseBootLoaderOptions(def, ctxt) < 0)
+            return -1;
+
+        break;
+
+    case VIR_DOMAIN_OSTYPE_EXE:
+        if (virDomainDefParseBootInitOptions(def, ctxt) < 0)
+            return -1;
+
+        break;
+
+    case VIR_DOMAIN_OSTYPE_LINUX:
+    case VIR_DOMAIN_OSTYPE_LAST:
+        break;
     }
 
     return 0;
