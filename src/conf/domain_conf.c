@@ -19578,6 +19578,31 @@ virDomainDefParseBootKernelOptions(virDomainDefPtr def,
 
 
 static int
+virDomainDefParseBootFirmwareOptions(virDomainDefPtr def,
+                                     xmlXPathContextPtr ctxt)
+{
+    g_autofree char *firmware = virXPathString("string(./os/@firmware)", ctxt);
+    int fw = 0;
+
+    if (!firmware)
+        return 0;
+
+    fw = virDomainOsDefFirmwareTypeFromString(firmware);
+
+    if (fw <= 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown firmware value %s"),
+                       firmware);
+        return -1;
+    }
+
+    def->os.firmware = fw;
+
+    return 0;
+}
+
+
+static int
 virDomainDefParseBootOptions(virDomainDefPtr def,
                              xmlXPathContextPtr ctxt)
 {
@@ -19603,23 +19628,13 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
         def->os.type == VIR_DOMAIN_OSTYPE_XENPVH ||
         def->os.type == VIR_DOMAIN_OSTYPE_HVM ||
         def->os.type == VIR_DOMAIN_OSTYPE_UML) {
-        g_autofree char *firmware = NULL;
         xmlNodePtr loader_node;
 
         virDomainDefParseBootKernelOptions(def, ctxt);
 
-        if (def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
-            (firmware = virXPathString("string(./os/@firmware)", ctxt))) {
-            int fw = virDomainOsDefFirmwareTypeFromString(firmware);
-
-            if (fw <= 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("unknown firmware value %s"),
-                               firmware);
+        if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
+            if (virDomainDefParseBootFirmwareOptions(def, ctxt) < 0)
                 return -1;
-            }
-
-            def->os.firmware = fw;
         }
 
         if ((loader_node = virXPathNode("./os/loader[1]", ctxt))) {
