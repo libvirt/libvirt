@@ -313,7 +313,7 @@ static int testCreateNetwork(const void *opaque G_GNUC_UNUSED)
                                 123,
                                 true,
                                 nnicindexes, nicindexes,
-                                "highpriority.slice", 0) < 0) {
+                                "highpriority.slice", 2) < 0) {
         fprintf(stderr, "%s", "Failed to create LXC machine\n");
         return -1;
     }
