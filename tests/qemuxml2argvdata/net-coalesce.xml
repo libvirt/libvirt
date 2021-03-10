@@ -55,6 +55,15 @@
         </rx>
       </coalesce>
     </interface>
+    <interface type='network'>
+      <source network='default'/>
+      <mac address='52:54:00:e5:48:60'/>
+      <model type='virtio'/>
+      <coalesce>
+        <rx>
+        </rx>
+      </coalesce>
+    </interface>
     <serial type='pty'>
       <target port='0'/>
     </serial>
