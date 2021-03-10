@@ -5044,23 +5044,18 @@ static int
 virQEMUCapsInitQMPArch(virQEMUCapsPtr qemuCaps,
                             qemuMonitorPtr mon)
 {
-    char *archstr = NULL;
-    int ret = -1;
+    g_autofree char *archstr = NULL;
 
     if (!(archstr = qemuMonitorGetTargetArch(mon)))
-        goto cleanup;
+        return -1;
 
     if ((qemuCaps->arch = virQEMUCapsArchFromString(archstr)) == VIR_ARCH_NONE) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown QEMU arch %s"), archstr);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(archstr);
-    return ret;
+    return 0;
 }
 
 
