@@ -187,6 +187,10 @@ virDomainVideoDefValidate(const virDomainVideoDef *video,
         }
     }
 
+    if (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
+        (virDomainCheckVirtioOptionsAreAbsent(video->virtio) < 0))
+        return -1;
+
     return 0;
 }
 
