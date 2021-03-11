@@ -23,58 +23,56 @@
 #include "conf/domain_conf.h"
 #include "access/viraccessmanager.h"
 
-typedef int (*virAccessDriverCheckConnectDrv)(virAccessManagerPtr manager,
+typedef int (*virAccessDriverCheckConnectDrv)(virAccessManager *manager,
                                               const char *driverName,
                                               virAccessPermConnect av);
-typedef int (*virAccessDriverCheckDomainDrv)(virAccessManagerPtr manager,
+typedef int (*virAccessDriverCheckDomainDrv)(virAccessManager *manager,
                                              const char *driverName,
-                                             virDomainDefPtr domain,
+                                             virDomainDef *domain,
                                              virAccessPermDomain av);
-typedef int (*virAccessDriverCheckInterfaceDrv)(virAccessManagerPtr manager,
+typedef int (*virAccessDriverCheckInterfaceDrv)(virAccessManager *manager,
                                                 const char *driverName,
-                                                virInterfaceDefPtr iface,
+                                                virInterfaceDef *iface,
                                                 virAccessPermInterface av);
-typedef int (*virAccessDriverCheckNetworkDrv)(virAccessManagerPtr manager,
+typedef int (*virAccessDriverCheckNetworkDrv)(virAccessManager *manager,
                                               const char *driverName,
-                                              virNetworkDefPtr network,
+                                              virNetworkDef *network,
                                               virAccessPermNetwork av);
-typedef int (*virAccessDriverCheckNetworkPortDrv)(virAccessManagerPtr manager,
+typedef int (*virAccessDriverCheckNetworkPortDrv)(virAccessManager *manager,
                                                   const char *driverName,
-                                                  virNetworkDefPtr network,
-                                                  virNetworkPortDefPtr port,
+                                                  virNetworkDef *network,
+                                                  virNetworkPortDef *port,
                                                   virAccessPermNetworkPort av);
-typedef int (*virAccessDriverCheckNodeDeviceDrv)(virAccessManagerPtr manager,
+typedef int (*virAccessDriverCheckNodeDeviceDrv)(virAccessManager *manager,
                                                  const char *driverName,
-                                                 virNodeDeviceDefPtr nodedev,
+                                                 virNodeDeviceDef *nodedev,
                                                  virAccessPermNodeDevice av);
-typedef int (*virAccessDriverCheckNWFilterDrv)(virAccessManagerPtr manager,
+typedef int (*virAccessDriverCheckNWFilterDrv)(virAccessManager *manager,
                                                const char *driverName,
-                                               virNWFilterDefPtr nwfilter,
+                                               virNWFilterDef *nwfilter,
                                                virAccessPermNWFilter av);
-typedef int (*virAccessDriverCheckNWFilterBindingDrv)(virAccessManagerPtr manager,
+typedef int (*virAccessDriverCheckNWFilterBindingDrv)(virAccessManager *manager,
                                                       const char *driverName,
-                                                      virNWFilterBindingDefPtr binding,
+                                                      virNWFilterBindingDef *binding,
                                                       virAccessPermNWFilterBinding av);
-typedef int (*virAccessDriverCheckSecretDrv)(virAccessManagerPtr manager,
+typedef int (*virAccessDriverCheckSecretDrv)(virAccessManager *manager,
                                              const char *driverName,
-                                             virSecretDefPtr secret,
+                                             virSecretDef *secret,
                                              virAccessPermSecret av);
-typedef int (*virAccessDriverCheckStoragePoolDrv)(virAccessManagerPtr manager,
+typedef int (*virAccessDriverCheckStoragePoolDrv)(virAccessManager *manager,
                                                   const char *driverName,
-                                                  virStoragePoolDefPtr pool,
+                                                  virStoragePoolDef *pool,
                                                   virAccessPermStoragePool av);
-typedef int (*virAccessDriverCheckStorageVolDrv)(virAccessManagerPtr manager,
+typedef int (*virAccessDriverCheckStorageVolDrv)(virAccessManager *manager,
                                                  const char *driverName,
-                                                 virStoragePoolDefPtr pool,
-                                                 virStorageVolDefPtr vol,
+                                                 virStoragePoolDef *pool,
+                                                 virStorageVolDef *vol,
                                                  virAccessPermStorageVol av);
 
-typedef int (*virAccessDriverSetupDrv)(virAccessManagerPtr manager);
-typedef void (*virAccessDriverCleanupDrv)(virAccessManagerPtr manager);
+typedef int (*virAccessDriverSetupDrv)(virAccessManager *manager);
+typedef void (*virAccessDriverCleanupDrv)(virAccessManager *manager);
 
 typedef struct _virAccessDriver virAccessDriver;
-typedef virAccessDriver *virAccessDriverPtr;
-
 struct _virAccessDriver {
     size_t privateDataLen;
     const char *name;

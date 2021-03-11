@@ -39,7 +39,7 @@
 VIR_LOG_INIT("tests.securityselinuxtest");
 
 struct testSELinuxGenLabelData {
-    virSecurityManagerPtr mgr;
+    virSecurityManager *mgr;
 
     const char *pidcon;
 
@@ -59,19 +59,19 @@ struct testSELinuxGenLabelData {
     int catMax;
 };
 
-static virDomainDefPtr
+static virDomainDef *
 testBuildDomainDef(bool dynamic,
                    const char *label,
                    const char *baselabel)
 {
-    virDomainDefPtr def;
-    virSecurityLabelDefPtr secdef = NULL;
+    virDomainDef *def;
+    virSecurityLabelDef *secdef = NULL;
 
     if (!(def = virDomainDefNew()))
         goto error;
 
     def->virtType = VIR_DOMAIN_VIRT_KVM;
-    def->seclabels = g_new0(virSecurityLabelDefPtr, 1);
+    def->seclabels = g_new0(virSecurityLabelDef *, 1);
 
     secdef = g_new0(virSecurityLabelDef, 1);
 
@@ -211,7 +211,7 @@ testSELinuxGenLabel(const void *opaque)
 {
     const struct testSELinuxGenLabelData *data = opaque;
     int ret = -1;
-    virDomainDefPtr def;
+    virDomainDef *def;
     context_t con = NULL;
     context_t imgcon = NULL;
 
@@ -265,7 +265,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    virSecurityManagerPtr mgr;
+    virSecurityManager *mgr;
 
     if (!(mgr = virSecurityManagerNew("selinux", "QEMU",
                                       VIR_SECURITY_MANAGER_DEFAULT_CONFINED |

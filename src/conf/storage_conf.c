@@ -116,7 +116,6 @@ typedef const char *(*virStoragePoolFormatToString)(int format);
 typedef int (*virStoragePoolFormatFromString)(const char *format);
 
 typedef struct _virStorageVolOptions virStorageVolOptions;
-typedef virStorageVolOptions *virStorageVolOptionsPtr;
 struct _virStorageVolOptions {
     int defaultFormat;
     int lastFormat;
@@ -136,7 +135,6 @@ enum {
 };
 
 typedef struct _virStoragePoolOptions virStoragePoolOptions;
-typedef virStoragePoolOptions *virStoragePoolOptionsPtr;
 struct _virStoragePoolOptions {
     unsigned int flags;
     int defaultFormat;
@@ -149,7 +147,6 @@ struct _virStoragePoolOptions {
 };
 
 typedef struct _virStoragePoolTypeInfo virStoragePoolTypeInfo;
-typedef virStoragePoolTypeInfo *virStoragePoolTypeInfoPtr;
 struct _virStoragePoolTypeInfo {
     int poolType;
     virStoragePoolOptions poolOptions;
@@ -307,7 +304,7 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
 };
 
 
-static virStoragePoolTypeInfoPtr
+static virStoragePoolTypeInfo *
 virStoragePoolTypeInfoLookup(int type)
 {
     size_t i;
@@ -321,10 +318,10 @@ virStoragePoolTypeInfoLookup(int type)
 }
 
 
-static virStoragePoolOptionsPtr
+static virStoragePoolOptions *
 virStoragePoolOptionsForPoolType(int type)
 {
-    virStoragePoolTypeInfoPtr backend = virStoragePoolTypeInfoLookup(type);
+    virStoragePoolTypeInfo *backend = virStoragePoolTypeInfoLookup(type);
     if (backend == NULL)
         return NULL;
     return &backend->poolOptions;
@@ -343,9 +340,9 @@ virStoragePoolOptionsForPoolType(int type)
  */
 int
 virStoragePoolOptionsPoolTypeSetXMLNamespace(int type,
-                                             virXMLNamespacePtr ns)
+                                             virXMLNamespace *ns)
 {
-    virStoragePoolTypeInfoPtr backend = virStoragePoolTypeInfoLookup(type);
+    virStoragePoolTypeInfo *backend = virStoragePoolTypeInfoLookup(type);
 
     if (!backend)
         return -1;
@@ -356,10 +353,10 @@ virStoragePoolOptionsPoolTypeSetXMLNamespace(int type,
 }
 
 
-static virStorageVolOptionsPtr
+static virStorageVolOptions *
 virStorageVolOptionsForPoolType(int type)
 {
-    virStoragePoolTypeInfoPtr backend = virStoragePoolTypeInfoLookup(type);
+    virStoragePoolTypeInfo *backend = virStoragePoolTypeInfoLookup(type);
     if (backend == NULL)
         return NULL;
     return &backend->volOptions;
@@ -367,10 +364,10 @@ virStorageVolOptionsForPoolType(int type)
 
 
 int
-virStoragePoolOptionsFormatPool(virBufferPtr buf,
+virStoragePoolOptionsFormatPool(virBuffer *buf,
                                 int type)
 {
-    virStoragePoolOptionsPtr poolOptions;
+    virStoragePoolOptions *poolOptions;
 
     if (!(poolOptions = virStoragePoolOptionsForPoolType(type)))
         return -1;
@@ -405,11 +402,11 @@ virStoragePoolOptionsFormatPool(virBufferPtr buf,
 
 
 int
-virStoragePoolOptionsFormatVolume(virBufferPtr buf,
+virStoragePoolOptionsFormatVolume(virBuffer *buf,
                                   int type)
 {
     size_t i;
-    virStorageVolOptionsPtr volOptions;
+    virStorageVolOptions *volOptions;
 
     if (!(volOptions = virStorageVolOptionsForPoolType(type)))
         return -1;
@@ -441,7 +438,7 @@ virStoragePoolOptionsFormatVolume(virBufferPtr buf,
 
 
 void
-virStorageVolDefFree(virStorageVolDefPtr def)
+virStorageVolDefFree(virStorageVolDef *def)
 {
     size_t i;
 
@@ -461,7 +458,7 @@ virStorageVolDefFree(virStorageVolDefPtr def)
 
 
 void
-virStoragePoolSourceDeviceClear(virStoragePoolSourceDevicePtr dev)
+virStoragePoolSourceDeviceClear(virStoragePoolSourceDevice *dev)
 {
     VIR_FREE(dev->freeExtents);
     VIR_FREE(dev->path);
@@ -469,7 +466,7 @@ virStoragePoolSourceDeviceClear(virStoragePoolSourceDevicePtr dev)
 
 
 void
-virStoragePoolSourceClear(virStoragePoolSourcePtr source)
+virStoragePoolSourceClear(virStoragePoolSource *source)
 {
     size_t i;
 
@@ -494,7 +491,7 @@ virStoragePoolSourceClear(virStoragePoolSourcePtr source)
 
 
 void
-virStoragePoolSourceFree(virStoragePoolSourcePtr source)
+virStoragePoolSourceFree(virStoragePoolSource *source)
 {
     virStoragePoolSourceClear(source);
     g_free(source);
@@ -502,7 +499,7 @@ virStoragePoolSourceFree(virStoragePoolSourcePtr source)
 
 
 void
-virStoragePoolDefFree(virStoragePoolDefPtr def)
+virStoragePoolDefFree(virStoragePoolDef *def)
 {
     if (!def)
         return;
@@ -522,7 +519,7 @@ virStoragePoolDefFree(virStoragePoolDefPtr def)
 
 static int
 virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
-                             virStoragePoolSourcePtr source,
+                             virStoragePoolSource *source,
                              int pool_type,
                              xmlNodePtr node)
 {
@@ -531,7 +528,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     xmlNodePtr adapternode;
     int nsource;
     size_t i;
-    virStoragePoolOptionsPtr options;
+    virStoragePoolOptions *options;
     int n;
     g_autoptr(virStorageAuthDef) authdef = NULL;
     g_autofree char *port = NULL;
@@ -688,7 +685,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
 }
 
 
-virStoragePoolSourcePtr
+virStoragePoolSource *
 virStoragePoolDefParseSourceString(const char *srcSpec,
                                    int pool_type)
 {
@@ -720,7 +717,7 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
 
 static int
 virStorageDefParsePerms(xmlXPathContextPtr ctxt,
-                        virStoragePermsPtr perms,
+                        virStoragePerms *perms,
                         const char *permxpath)
 {
     long long val;
@@ -794,9 +791,9 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
 
 static int
 virStoragePoolDefRefreshParse(xmlXPathContextPtr ctxt,
-                              virStoragePoolDefPtr def)
+                              virStoragePoolDef *def)
 {
-    g_autofree virStoragePoolDefRefreshPtr refresh = NULL;
+    g_autofree virStoragePoolDefRefresh *refresh = NULL;
     g_autofree char *allocation = NULL;
     int tmp;
 
@@ -821,8 +818,8 @@ virStoragePoolDefRefreshParse(xmlXPathContextPtr ctxt,
 
 
 static void
-virStoragePoolDefRefreshFormat(virBufferPtr buf,
-                               virStoragePoolDefRefreshPtr refresh)
+virStoragePoolDefRefreshFormat(virBuffer *buf,
+                               virStoragePoolDefRefresh *refresh)
 {
     if (!refresh)
         return;
@@ -837,7 +834,7 @@ virStoragePoolDefRefreshFormat(virBufferPtr buf,
 
 
 static int
-virStoragePoolDefParseFeatures(virStoragePoolDefPtr def,
+virStoragePoolDefParseFeatures(virStoragePoolDef *def,
                                xmlXPathContextPtr ctxt)
 {
     g_autofree char *cow = virXPathString("string(./features/cow/@state)", ctxt);
@@ -863,10 +860,10 @@ virStoragePoolDefParseFeatures(virStoragePoolDefPtr def,
 }
 
 
-virStoragePoolDefPtr
+virStoragePoolDef *
 virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 {
-    virStoragePoolOptionsPtr options;
+    virStoragePoolOptions *options;
     xmlNodePtr source_node;
     g_autoptr(virStoragePoolDef) def = NULL;
     g_autofree char *type = NULL;
@@ -1019,7 +1016,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 }
 
 
-virStoragePoolDefPtr
+virStoragePoolDef *
 virStoragePoolDefParseNode(xmlDocPtr xml,
                            xmlNodePtr root)
 {
@@ -1041,11 +1038,11 @@ virStoragePoolDefParseNode(xmlDocPtr xml,
 }
 
 
-static virStoragePoolDefPtr
+static virStoragePoolDef *
 virStoragePoolDefParse(const char *xmlStr,
                        const char *filename)
 {
-    virStoragePoolDefPtr ret = NULL;
+    virStoragePoolDef *ret = NULL;
     xmlDocPtr xml;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(storage_pool_definition)")))) {
@@ -1057,14 +1054,14 @@ virStoragePoolDefParse(const char *xmlStr,
 }
 
 
-virStoragePoolDefPtr
+virStoragePoolDef *
 virStoragePoolDefParseString(const char *xmlStr)
 {
     return virStoragePoolDefParse(xmlStr, NULL);
 }
 
 
-virStoragePoolDefPtr
+virStoragePoolDef *
 virStoragePoolDefParseFile(const char *filename)
 {
     return virStoragePoolDefParse(NULL, filename);
@@ -1072,9 +1069,9 @@ virStoragePoolDefParseFile(const char *filename)
 
 
 static int
-virStoragePoolSourceFormat(virBufferPtr buf,
-                           virStoragePoolOptionsPtr options,
-                           virStoragePoolSourcePtr src)
+virStoragePoolSourceFormat(virBuffer *buf,
+                           virStoragePoolOptions *options,
+                           virStoragePoolSource *src)
 {
     size_t i, j;
 
@@ -1158,8 +1155,8 @@ virStoragePoolSourceFormat(virBufferPtr buf,
 
 
 static void
-virStoragePoolDefFormatFeatures(virBufferPtr buf,
-                                virStoragePoolDefPtr def)
+virStoragePoolDefFormatFeatures(virBuffer *buf,
+                                virStoragePoolDef *def)
 {
     if (def->features.cow == VIR_TRISTATE_BOOL_ABSENT)
         return;
@@ -1175,10 +1172,10 @@ virStoragePoolDefFormatFeatures(virBufferPtr buf,
 
 
 static int
-virStoragePoolDefFormatBuf(virBufferPtr buf,
-                           virStoragePoolDefPtr def)
+virStoragePoolDefFormatBuf(virBuffer *buf,
+                           virStoragePoolDef *def)
 {
-    virStoragePoolOptionsPtr options;
+    virStoragePoolOptions *options;
     char uuid[VIR_UUID_STRING_BUFLEN];
     const char *type;
 
@@ -1266,7 +1263,7 @@ virStoragePoolDefFormatBuf(virBufferPtr buf,
 
 
 char *
-virStoragePoolDefFormat(virStoragePoolDefPtr def)
+virStoragePoolDefFormat(virStoragePoolDef *def)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -1317,12 +1314,12 @@ virStorageCheckCompat(const char *compat)
 }
 
 
-static virStorageVolDefPtr
-virStorageVolDefParseXML(virStoragePoolDefPtr pool,
+static virStorageVolDef *
+virStorageVolDefParseXML(virStoragePoolDef *pool,
                          xmlXPathContextPtr ctxt,
                          unsigned int flags)
 {
-    virStorageVolOptionsPtr options;
+    virStorageVolOptions *options;
     xmlNodePtr node;
     size_t i;
     int n;
@@ -1477,8 +1474,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
 }
 
 
-virStorageVolDefPtr
-virStorageVolDefParseNode(virStoragePoolDefPtr pool,
+virStorageVolDef *
+virStorageVolDefParseNode(virStoragePoolDef *pool,
                           xmlDocPtr xml,
                           xmlNodePtr root,
                           unsigned int flags)
@@ -1501,13 +1498,13 @@ virStorageVolDefParseNode(virStoragePoolDefPtr pool,
 }
 
 
-static virStorageVolDefPtr
-virStorageVolDefParse(virStoragePoolDefPtr pool,
+static virStorageVolDef *
+virStorageVolDefParse(virStoragePoolDef *pool,
                       const char *xmlStr,
                       const char *filename,
                       unsigned int flags)
 {
-    virStorageVolDefPtr ret = NULL;
+    virStorageVolDef *ret = NULL;
     xmlDocPtr xml;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(storage_volume_definition)")))) {
@@ -1519,8 +1516,8 @@ virStorageVolDefParse(virStoragePoolDefPtr pool,
 }
 
 
-virStorageVolDefPtr
-virStorageVolDefParseString(virStoragePoolDefPtr pool,
+virStorageVolDef *
+virStorageVolDefParseString(virStoragePoolDef *pool,
                             const char *xmlStr,
                             unsigned int flags)
 {
@@ -1528,8 +1525,8 @@ virStorageVolDefParseString(virStoragePoolDefPtr pool,
 }
 
 
-virStorageVolDefPtr
-virStorageVolDefParseFile(virStoragePoolDefPtr pool,
+virStorageVolDef *
+virStorageVolDefParseFile(virStoragePoolDef *pool,
                           const char *filename,
                           unsigned int flags)
 {
@@ -1538,7 +1535,7 @@ virStorageVolDefParseFile(virStoragePoolDefPtr pool,
 
 
 static void
-virStorageVolTimestampFormat(virBufferPtr buf, const char *name,
+virStorageVolTimestampFormat(virBuffer *buf, const char *name,
                              struct timespec *ts)
 {
     if (ts->tv_nsec < 0)
@@ -1552,9 +1549,9 @@ virStorageVolTimestampFormat(virBufferPtr buf, const char *name,
 
 
 static int
-virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
-                             virBufferPtr buf,
-                             virStorageSourcePtr def,
+virStorageVolTargetDefFormat(virStorageVolOptions *options,
+                             virBuffer *buf,
+                             virStorageSource *def,
                              const char *type)
 {
     virBufferAsprintf(buf, "<%s>\n", type);
@@ -1644,8 +1641,8 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
 
 
 static void
-virStorageVolDefFormatSourceExtents(virBufferPtr buf,
-                                    virStorageVolDefPtr def)
+virStorageVolDefFormatSourceExtents(virBuffer *buf,
+                                    virStorageVolDef *def)
 {
     size_t i;
     const char *thispath = NULL;
@@ -1673,10 +1670,10 @@ virStorageVolDefFormatSourceExtents(virBufferPtr buf,
 
 
 char *
-virStorageVolDefFormat(virStoragePoolDefPtr pool,
-                       virStorageVolDefPtr def)
+virStorageVolDefFormat(virStoragePoolDef *pool,
+                       virStorageVolDef *def)
 {
-    virStorageVolOptionsPtr options;
+    virStorageVolOptions *options;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) sourceChildBuf = VIR_BUFFER_INITIALIZER;
 
@@ -1728,7 +1725,7 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
 
 static int
 virStoragePoolSaveXML(const char *path,
-                      virStoragePoolDefPtr def,
+                      virStoragePoolDef *def,
                       const char *xml)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -1742,7 +1739,7 @@ virStoragePoolSaveXML(const char *path,
 
 int
 virStoragePoolSaveState(const char *stateFile,
-                        virStoragePoolDefPtr def)
+                        virStoragePoolDef *def)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *xml = NULL;
@@ -1768,7 +1765,7 @@ virStoragePoolSaveState(const char *stateFile,
 
 int
 virStoragePoolSaveConfig(const char *configFile,
-                         virStoragePoolDefPtr def)
+                         virStoragePoolDef *def)
 {
     g_autofree char *xml = NULL;
 
@@ -1782,10 +1779,10 @@ virStoragePoolSaveConfig(const char *configFile,
 }
 
 
-virStoragePoolSourcePtr
-virStoragePoolSourceListNewSource(virStoragePoolSourceListPtr list)
+virStoragePoolSource *
+virStoragePoolSourceListNewSource(virStoragePoolSourceList *list)
 {
-    virStoragePoolSourcePtr source;
+    virStoragePoolSource *source;
 
     VIR_REALLOC_N(list->sources, list->nsources + 1);
 
@@ -1797,9 +1794,9 @@ virStoragePoolSourceListNewSource(virStoragePoolSourceListPtr list)
 
 
 char *
-virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
+virStoragePoolSourceListFormat(virStoragePoolSourceList *def)
 {
-    virStoragePoolOptionsPtr options;
+    virStoragePoolOptions *options;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *type;
     size_t i;

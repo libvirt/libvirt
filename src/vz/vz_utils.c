@@ -63,19 +63,19 @@ static virDomainControllerType vz7ControllerTypes[] = {VIR_DOMAIN_CONTROLLER_TYP
  * vzDomObjFromDomain:
  * @domain: Domain pointer that has to be looked up
  *
- * This function looks up @domain and returns the appropriate virDomainObjPtr
+ * This function looks up @domain and returns the appropriate virDomainObj *
  * that has to be released by calling virDomainObjEndAPI().
  *
  * Returns the domain object with incremented reference counter which is locked
  * on success, NULL otherwise.
  */
-virDomainObjPtr
+virDomainObj *
 vzDomObjFromDomain(virDomainPtr domain)
 {
-    virDomainObjPtr vm;
-    vzConnPtr privconn = domain->conn->privateData;
+    virDomainObj *vm;
+    struct _vzConn *privconn = domain->conn->privateData;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    vzDriverPtr driver = privconn->driver;
+    struct _vzDriver *driver = privconn->driver;
 
     vm = virDomainObjListFindByUUID(driver->domains, domain->uuid);
     if (!vm) {
@@ -92,7 +92,7 @@ vzDomObjFromDomain(virDomainPtr domain)
 static int
 vzDoCmdRun(char **outbuf, const char *binary, va_list list)
 {
-    virCommandPtr cmd = virCommandNewVAList(binary, list);
+    virCommand *cmd = virCommandNewVAList(binary, list);
     int ret = -1;
 
     if (outbuf)
@@ -132,7 +132,7 @@ vzGetOutput(const char *binary, ...)
 }
 
 static void
-vzInitCaps(unsigned long vzVersion, vzCapabilitiesPtr vzCaps)
+vzInitCaps(unsigned long vzVersion, struct _vzCapabilities *vzCaps)
 {
     if (vzVersion < VIRTUOZZO_VER_7) {
         vzCaps->ctDiskFormat = VIR_STORAGE_FILE_PLOOP;
@@ -150,7 +150,7 @@ vzInitCaps(unsigned long vzVersion, vzCapabilitiesPtr vzCaps)
 }
 
 int
-vzInitVersion(vzDriverPtr driver)
+vzInitVersion(struct _vzDriver *driver)
 {
     char *output, *sVer, *tmp;
     const char *searchStr = "prlsrvctl version ";
@@ -197,9 +197,9 @@ vzInitVersion(vzDriverPtr driver)
 }
 
 static int
-vzCheckDiskAddressDriveUnsupportedParams(virDomainDiskDefPtr disk)
+vzCheckDiskAddressDriveUnsupportedParams(virDomainDiskDef *disk)
 {
-    virDomainDeviceDriveAddressPtr drive = &disk->info.addr.drive;
+    virDomainDeviceDriveAddress *drive = &disk->info.addr.drive;
     int devIdx, busIdx;
 
     if (drive->controller > 0) {
@@ -262,7 +262,7 @@ vzCheckDiskAddressDriveUnsupportedParams(virDomainDiskDefPtr disk)
 }
 
 static int
-vzCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
+vzCheckDiskUnsupportedParams(virDomainDiskDef *disk)
 {
     if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK &&
         disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
@@ -388,8 +388,8 @@ vzCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
 
 int
 vzCheckUnsupportedDisk(const virDomainDef *def,
-                       virDomainDiskDefPtr disk,
-                       vzCapabilitiesPtr vzCaps)
+                       virDomainDiskDef *disk,
+                       struct _vzCapabilities *vzCaps)
 {
     size_t i;
     virStorageFileFormat diskFormat;
@@ -434,10 +434,10 @@ vzCheckUnsupportedDisk(const virDomainDef *def,
 }
 
 int
-vzCheckUnsupportedControllers(const virDomainDef *def, vzCapabilitiesPtr vzCaps)
+vzCheckUnsupportedControllers(const virDomainDef *def, struct _vzCapabilities *vzCaps)
 {
     size_t i, j;
-    virDomainControllerDefPtr controller;
+    virDomainControllerDef *controller;
 
     for (i = 0; i < def->ncontrollers; i++) {
         controller = def->controllers[i];
@@ -468,7 +468,7 @@ vzCheckUnsupportedControllers(const virDomainDef *def, vzCapabilitiesPtr vzCaps)
     return 0;
 }
 
-int vzGetDefaultSCSIModel(vzDriverPtr driver,
+int vzGetDefaultSCSIModel(struct _vzDriver *driver,
                           PRL_CLUSTERED_DEVICE_SUBTYPE *scsiModel)
 {
     switch ((int)driver->vzCaps.scsiControllerModel) {
@@ -488,7 +488,7 @@ int vzGetDefaultSCSIModel(vzDriverPtr driver,
     return 0;
 }
 
-int vzCheckUnsupportedGraphics(virDomainGraphicsDefPtr gr)
+int vzCheckUnsupportedGraphics(virDomainGraphicsDef *gr)
 {
     if (gr->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -554,7 +554,7 @@ int vzCheckUnsupportedGraphics(virDomainGraphicsDefPtr gr)
 void*
 vzDomObjAlloc(void *opaque G_GNUC_UNUSED)
 {
-    vzDomObjPtr pdom = NULL;
+    struct vzDomObj *pdom = NULL;
 
     pdom = g_new0(struct vzDomObj, 1);
 
@@ -574,7 +574,7 @@ vzDomObjAlloc(void *opaque G_GNUC_UNUSED)
 void
 vzDomObjFree(void* p)
 {
-    vzDomObjPtr pdom = p;
+    struct vzDomObj *pdom = p;
 
     if (!pdom)
         return;
@@ -588,9 +588,9 @@ vzDomObjFree(void* p)
 #define VZ_JOB_WAIT_TIME (1000 * 30)
 
 int
-vzDomainObjBeginJob(virDomainObjPtr dom)
+vzDomainObjBeginJob(virDomainObj *dom)
 {
-    vzDomObjPtr pdom = dom->privateData;
+    struct vzDomObj *pdom = dom->privateData;
     unsigned long long now;
     unsigned long long then;
 
@@ -624,9 +624,9 @@ vzDomainObjBeginJob(virDomainObjPtr dom)
 }
 
 void
-vzDomainObjEndJob(virDomainObjPtr dom)
+vzDomainObjEndJob(virDomainObj *dom)
 {
-    vzDomObjPtr pdom = dom->privateData;
+    struct vzDomObj *pdom = dom->privateData;
 
     pdom->job.active = false;
     pdom->job.cancelled = false;
@@ -634,7 +634,7 @@ vzDomainObjEndJob(virDomainObjPtr dom)
 }
 
 int
-vzDomainJobUpdateTime(vzDomainJobObjPtr job)
+vzDomainJobUpdateTime(struct _vzDomainJobObj *job)
 {
     unsigned long long now;
 

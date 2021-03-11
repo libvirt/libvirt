@@ -31,8 +31,8 @@
 static const virArch archs[] = { VIR_ARCH_S390, VIR_ARCH_S390X };
 
 static virCPUCompareResult
-virCPUs390Compare(virCPUDefPtr host G_GNUC_UNUSED,
-                  virCPUDefPtr cpu G_GNUC_UNUSED,
+virCPUs390Compare(virCPUDef *host G_GNUC_UNUSED,
+                  virCPUDef *cpu G_GNUC_UNUSED,
                   bool failMessages G_GNUC_UNUSED)
 {
     /* s390 relies on QEMU to perform all runability checking. Return
@@ -42,7 +42,7 @@ virCPUs390Compare(virCPUDefPtr host G_GNUC_UNUSED,
 }
 
 static int
-virCPUs390Update(virCPUDefPtr guest,
+virCPUs390Update(virCPUDef *guest,
                  const virCPUDef *host,
                  bool relative)
 {
@@ -93,7 +93,7 @@ virCPUs390Update(virCPUDefPtr guest,
 
 
 static int
-virCPUs390ValidateFeatures(virCPUDefPtr cpu)
+virCPUs390ValidateFeatures(virCPUDef *cpu)
 {
     size_t i;
 

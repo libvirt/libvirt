@@ -47,13 +47,13 @@ struct virMacMap {
 };
 
 
-static virClassPtr virMacMapClass;
+static virClass *virMacMapClass;
 
 
 static void
 virMacMapDispose(void *obj)
 {
-    virMacMapPtr mgr = obj;
+    virMacMap *mgr = obj;
     GHashTableIter htitr;
     void *value;
 
@@ -78,7 +78,7 @@ VIR_ONCE_GLOBAL_INIT(virMacMap);
 
 
 static void
-virMacMapAddLocked(virMacMapPtr mgr,
+virMacMapAddLocked(virMacMap *mgr,
                    const char *domain,
                    const char *mac)
 {
@@ -101,7 +101,7 @@ virMacMapAddLocked(virMacMapPtr mgr,
 
 
 static void
-virMacMapRemoveLocked(virMacMapPtr mgr,
+virMacMapRemoveLocked(virMacMap *mgr,
                       const char *domain,
                       const char *mac)
 {
@@ -132,7 +132,7 @@ virMacMapRemoveLocked(virMacMapPtr mgr,
 
 
 static int
-virMacMapLoadFile(virMacMapPtr mgr,
+virMacMapLoadFile(virMacMap *mgr,
                   const char *file)
 {
     g_autofree char *map_str = NULL;
@@ -164,8 +164,8 @@ virMacMapLoadFile(virMacMapPtr mgr,
     }
 
     for (i = 0; i < virJSONValueArraySize(map); i++) {
-        virJSONValuePtr tmp = virJSONValueArrayGet(map, i);
-        virJSONValuePtr macs;
+        virJSONValue *tmp = virJSONValueArrayGet(map, i);
+        virJSONValue *macs;
         const char *domain;
         size_t j;
         GSList *vals = NULL;
@@ -190,7 +190,7 @@ virMacMapLoadFile(virMacMapPtr mgr,
         }
 
         for (j = 0; j < virJSONValueArraySize(macs); j++) {
-            virJSONValuePtr macJSON = virJSONValueArrayGet(macs, j);
+            virJSONValue *macJSON = virJSONValueArrayGet(macs, j);
 
             vals = g_slist_prepend(vals, g_strdup(virJSONValueGetString(macJSON)));
         }
@@ -232,7 +232,7 @@ virMACMapHashDumper(void *payload,
 
 
 static int
-virMacMapDumpStrLocked(virMacMapPtr mgr,
+virMacMapDumpStrLocked(virMacMap *mgr,
                        char **str)
 {
     g_autoptr(virJSONValue) arr = virJSONValueNewArray();
@@ -248,7 +248,7 @@ virMacMapDumpStrLocked(virMacMapPtr mgr,
 
 
 static int
-virMacMapWriteFileLocked(virMacMapPtr mgr,
+virMacMapWriteFileLocked(virMacMap *mgr,
                          const char *file)
 {
     g_autofree char *str = NULL;
@@ -277,10 +277,10 @@ virMacMapFileName(const char *dnsmasqStateDir,
 
 #define VIR_MAC_HASH_TABLE_SIZE 10
 
-virMacMapPtr
+virMacMap *
 virMacMapNew(const char *file)
 {
-    virMacMapPtr mgr;
+    virMacMap *mgr;
 
     if (virMacMapInitialize() < 0)
         return NULL;
@@ -307,7 +307,7 @@ virMacMapNew(const char *file)
 
 
 int
-virMacMapAdd(virMacMapPtr mgr,
+virMacMapAdd(virMacMap *mgr,
              const char *domain,
              const char *mac)
 {
@@ -319,7 +319,7 @@ virMacMapAdd(virMacMapPtr mgr,
 
 
 int
-virMacMapRemove(virMacMapPtr mgr,
+virMacMapRemove(virMacMap *mgr,
                 const char *domain,
                 const char *mac)
 {
@@ -332,7 +332,7 @@ virMacMapRemove(virMacMapPtr mgr,
 
 /* note that the returned pointer may be invalidated by other APIs in this module */
 GSList *
-virMacMapLookup(virMacMapPtr mgr,
+virMacMapLookup(virMacMap *mgr,
                 const char *domain)
 {
     GSList *ret;
@@ -345,7 +345,7 @@ virMacMapLookup(virMacMapPtr mgr,
 
 
 int
-virMacMapWriteFile(virMacMapPtr mgr,
+virMacMapWriteFile(virMacMap *mgr,
                    const char *filename)
 {
     int ret;
@@ -358,7 +358,7 @@ virMacMapWriteFile(virMacMapPtr mgr,
 
 
 int
-virMacMapDumpStr(virMacMapPtr mgr,
+virMacMapDumpStr(virMacMap *mgr,
                  char **str)
 {
     int ret;

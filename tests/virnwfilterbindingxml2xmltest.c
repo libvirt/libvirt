@@ -40,7 +40,7 @@ testCompareXMLToXMLFiles(const char *xml)
 {
     char *actual = NULL;
     int ret = -1;
-    virNWFilterBindingDefPtr dev = NULL;
+    virNWFilterBindingDef *dev = NULL;
 
     virResetLastError();
 

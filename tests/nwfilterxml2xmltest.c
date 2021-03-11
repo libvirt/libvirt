@@ -22,7 +22,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
 {
     char *actual = NULL;
     int ret = -1;
-    virNWFilterDefPtr dev = NULL;
+    virNWFilterDef *dev = NULL;
 
     virResetLastError();
 

@@ -34,7 +34,7 @@
 VIR_LOG_INIT("conf.storage_source_conf");
 
 
-static virClassPtr virStorageSourceClass;
+static virClass *virStorageSourceClass;
 
 
 VIR_ENUM_IMPL(virStorage,
@@ -138,7 +138,7 @@ virStorageSourceHasBacking(const virStorageSource *src)
 
 
 void
-virStorageNetHostDefClear(virStorageNetHostDefPtr def)
+virStorageNetHostDefClear(virStorageNetHostDef *def)
 {
     if (!def)
         return;
@@ -150,7 +150,7 @@ virStorageNetHostDefClear(virStorageNetHostDefPtr def)
 
 void
 virStorageNetHostDefFree(size_t nhosts,
-                         virStorageNetHostDefPtr hosts)
+                         virStorageNetHostDef *hosts)
 {
     size_t i;
 
@@ -165,7 +165,7 @@ virStorageNetHostDefFree(size_t nhosts,
 
 
 static void
-virStoragePermsFree(virStoragePermsPtr def)
+virStoragePermsFree(virStoragePerms *def)
 {
     if (!def)
         return;
@@ -175,18 +175,18 @@ virStoragePermsFree(virStoragePermsPtr def)
 }
 
 
-virStorageNetHostDefPtr
+virStorageNetHostDef *
 virStorageNetHostDefCopy(size_t nhosts,
-                         virStorageNetHostDefPtr hosts)
+                         virStorageNetHostDef *hosts)
 {
-    virStorageNetHostDefPtr ret = NULL;
+    virStorageNetHostDef *ret = NULL;
     size_t i;
 
     ret = g_new0(virStorageNetHostDef, nhosts);
 
     for (i = 0; i < nhosts; i++) {
-        virStorageNetHostDefPtr src = &hosts[i];
-        virStorageNetHostDefPtr dst = &ret[i];
+        virStorageNetHostDef *src = &hosts[i];
+        virStorageNetHostDef *dst = &ret[i];
 
         dst->transport = src->transport;
         dst->port = src->port;
@@ -200,7 +200,7 @@ virStorageNetHostDefCopy(size_t nhosts,
 
 
 void
-virStorageAuthDefFree(virStorageAuthDefPtr authdef)
+virStorageAuthDefFree(virStorageAuthDef *authdef)
 {
     if (!authdef)
         return;
@@ -212,7 +212,7 @@ virStorageAuthDefFree(virStorageAuthDefPtr authdef)
 }
 
 
-virStorageAuthDefPtr
+virStorageAuthDef *
 virStorageAuthDefCopy(const virStorageAuthDef *src)
 {
     g_autoptr(virStorageAuthDef) authdef = NULL;
@@ -230,12 +230,12 @@ virStorageAuthDefCopy(const virStorageAuthDef *src)
 }
 
 
-virStorageAuthDefPtr
+virStorageAuthDef *
 virStorageAuthDefParse(xmlNodePtr node,
                        xmlXPathContextPtr ctxt)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    virStorageAuthDefPtr ret = NULL;
+    virStorageAuthDef *ret = NULL;
     xmlNodePtr secretnode = NULL;
     g_autoptr(virStorageAuthDef) authdef = NULL;
     g_autofree char *authtype = NULL;
@@ -290,8 +290,8 @@ virStorageAuthDefParse(xmlNodePtr node,
 
 
 void
-virStorageAuthDefFormat(virBufferPtr buf,
-                        virStorageAuthDefPtr authdef)
+virStorageAuthDefFormat(virBuffer *buf,
+                        virStorageAuthDef *authdef)
 {
     if (authdef->authType == VIR_STORAGE_AUTH_TYPE_NONE) {
         virBufferEscapeString(buf, "<auth username='%s'>\n", authdef->username);
@@ -310,7 +310,7 @@ virStorageAuthDefFormat(virBufferPtr buf,
 
 
 void
-virStoragePRDefFree(virStoragePRDefPtr prd)
+virStoragePRDefFree(virStoragePRDef *prd)
 {
     if (!prd)
         return;
@@ -321,11 +321,11 @@ virStoragePRDefFree(virStoragePRDefPtr prd)
 }
 
 
-virStoragePRDefPtr
+virStoragePRDef *
 virStoragePRDefParseXML(xmlXPathContextPtr ctxt)
 {
-    virStoragePRDefPtr prd;
-    virStoragePRDefPtr ret = NULL;
+    virStoragePRDef *prd;
+    virStoragePRDef *ret = NULL;
     g_autofree char *managed = NULL;
     g_autofree char *type = NULL;
     g_autofree char *path = NULL;
@@ -393,8 +393,8 @@ virStoragePRDefParseXML(xmlXPathContextPtr ctxt)
 
 
 void
-virStoragePRDefFormat(virBufferPtr buf,
-                      virStoragePRDefPtr prd,
+virStoragePRDefFormat(virBuffer *buf,
+                      virStoragePRDef *prd,
                       bool migratable)
 {
     virBufferAsprintf(buf, "<reservations managed='%s'",
@@ -415,8 +415,8 @@ virStoragePRDefFormat(virBufferPtr buf,
 
 
 bool
-virStoragePRDefIsEqual(virStoragePRDefPtr a,
-                       virStoragePRDefPtr b)
+virStoragePRDefIsEqual(virStoragePRDef *a,
+                       virStoragePRDef *b)
 {
     if (!a && !b)
         return true;
@@ -433,16 +433,16 @@ virStoragePRDefIsEqual(virStoragePRDefPtr a,
 
 
 bool
-virStoragePRDefIsManaged(virStoragePRDefPtr prd)
+virStoragePRDefIsManaged(virStoragePRDef *prd)
 {
     return prd && prd->managed == VIR_TRISTATE_BOOL_YES;
 }
 
 
 bool
-virStorageSourceChainHasManagedPR(virStorageSourcePtr src)
+virStorageSourceChainHasManagedPR(virStorageSource *src)
 {
-    virStorageSourcePtr n;
+    virStorageSource *n;
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (virStoragePRDefIsManaged(n->pr))
@@ -453,11 +453,11 @@ virStorageSourceChainHasManagedPR(virStorageSourcePtr src)
 }
 
 
-static virStoragePRDefPtr
-virStoragePRDefCopy(virStoragePRDefPtr src)
+static virStoragePRDef *
+virStoragePRDefCopy(virStoragePRDef *src)
 {
-    virStoragePRDefPtr copy = NULL;
-    virStoragePRDefPtr ret = NULL;
+    virStoragePRDef *copy = NULL;
+    virStoragePRDef *ret = NULL;
 
     copy = g_new0(virStoragePRDef, 1);
 
@@ -473,10 +473,10 @@ virStoragePRDefCopy(virStoragePRDefPtr src)
 }
 
 
-static virStorageSourceNVMeDefPtr
+static virStorageSourceNVMeDef *
 virStorageSourceNVMeDefCopy(const virStorageSourceNVMeDef *src)
 {
-    virStorageSourceNVMeDefPtr ret = NULL;
+    virStorageSourceNVMeDef *ret = NULL;
 
     ret = g_new0(virStorageSourceNVMeDef, 1);
 
@@ -507,7 +507,7 @@ virStorageSourceNVMeDefIsEqual(const virStorageSourceNVMeDef *a,
 
 
 void
-virStorageSourceNVMeDefFree(virStorageSourceNVMeDefPtr def)
+virStorageSourceNVMeDefFree(virStorageSourceNVMeDef *def)
 {
     if (!def)
         return;
@@ -530,8 +530,8 @@ virStorageSourceChainHasNVMe(const virStorageSource *src)
 }
 
 
-virSecurityDeviceLabelDefPtr
-virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
+virSecurityDeviceLabelDef *
+virStorageSourceGetSecurityLabelDef(virStorageSource *src,
                                     const char *model)
 {
     size_t i;
@@ -546,7 +546,7 @@ virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
 
 
 static void
-virStorageSourceSeclabelsClear(virStorageSourcePtr def)
+virStorageSourceSeclabelsClear(virStorageSource *def)
 {
     size_t i;
 
@@ -559,7 +559,7 @@ virStorageSourceSeclabelsClear(virStorageSourcePtr def)
 
 
 static int
-virStorageSourceSeclabelsCopy(virStorageSourcePtr to,
+virStorageSourceSeclabelsCopy(virStorageSource *to,
                               const virStorageSource *from)
 {
     size_t i;
@@ -567,7 +567,7 @@ virStorageSourceSeclabelsCopy(virStorageSourcePtr to,
     if (from->nseclabels == 0)
         return 0;
 
-    to->seclabels = g_new0(virSecurityDeviceLabelDefPtr, from->nseclabels);
+    to->seclabels = g_new0(virSecurityDeviceLabelDef *, from->nseclabels);
     to->nseclabels = from->nseclabels;
 
     for (i = 0; i < to->nseclabels; i++) {
@@ -584,7 +584,7 @@ virStorageSourceSeclabelsCopy(virStorageSourcePtr to,
 
 
 void
-virStorageNetCookieDefFree(virStorageNetCookieDefPtr def)
+virStorageNetCookieDefFree(virStorageNetCookieDef *def)
 {
     if (!def)
         return;
@@ -597,7 +597,7 @@ virStorageNetCookieDefFree(virStorageNetCookieDefPtr def)
 
 
 static void
-virStorageSourceNetCookiesClear(virStorageSourcePtr src)
+virStorageSourceNetCookiesClear(virStorageSource *src)
 {
     size_t i;
 
@@ -613,7 +613,7 @@ virStorageSourceNetCookiesClear(virStorageSourcePtr src)
 
 
 static void
-virStorageSourceNetCookiesCopy(virStorageSourcePtr to,
+virStorageSourceNetCookiesCopy(virStorageSource *to,
                                const virStorageSource *from)
 {
     size_t i;
@@ -621,7 +621,7 @@ virStorageSourceNetCookiesCopy(virStorageSourcePtr to,
     if (from->ncookies == 0)
         return;
 
-    to->cookies = g_new0(virStorageNetCookieDefPtr, from->ncookies);
+    to->cookies = g_new0(virStorageNetCookieDef *, from->ncookies);
     to->ncookies = from->ncookies;
 
     for (i = 0; i < from->ncookies; i++) {
@@ -642,7 +642,7 @@ static const char virStorageSourceCookieNameInvalidChars[] =
  "()<>@:/[]?={}";
 
 static int
-virStorageSourceNetCookieValidate(virStorageNetCookieDefPtr def)
+virStorageSourceNetCookieValidate(virStorageNetCookieDef *def)
 {
     g_autofree char *val = g_strdup(def->value);
     const char *checkval = val;
@@ -690,7 +690,7 @@ virStorageSourceNetCookieValidate(virStorageNetCookieDefPtr def)
 
 
 int
-virStorageSourceNetCookiesValidate(virStorageSourcePtr src)
+virStorageSourceNetCookiesValidate(virStorageSource *src)
 {
     size_t i;
     size_t j;
@@ -712,10 +712,10 @@ virStorageSourceNetCookiesValidate(virStorageSourcePtr src)
 }
 
 
-static virStorageTimestampsPtr
+static virStorageTimestamps *
 virStorageTimestampsCopy(const virStorageTimestamps *src)
 {
-    virStorageTimestampsPtr ret;
+    virStorageTimestamps *ret;
 
     ret = g_new0(virStorageTimestamps, 1);
 
@@ -725,10 +725,10 @@ virStorageTimestampsCopy(const virStorageTimestamps *src)
 }
 
 
-static virStoragePermsPtr
+static virStoragePerms *
 virStoragePermsCopy(const virStoragePerms *src)
 {
-    virStoragePermsPtr ret;
+    virStoragePerms *ret;
 
     ret = g_new0(virStoragePerms, 1);
 
@@ -742,10 +742,10 @@ virStoragePermsCopy(const virStoragePerms *src)
 }
 
 
-static virStorageSourcePoolDefPtr
+static virStorageSourcePoolDef *
 virStorageSourcePoolDefCopy(const virStorageSourcePoolDef *src)
 {
-    virStorageSourcePoolDefPtr ret;
+    virStorageSourcePoolDef *ret;
 
     ret = g_new0(virStorageSourcePoolDef, 1);
 
@@ -761,10 +761,10 @@ virStorageSourcePoolDefCopy(const virStorageSourcePoolDef *src)
 }
 
 
-static virStorageSourceSlicePtr
+static virStorageSourceSlice *
 virStorageSourceSliceCopy(const virStorageSourceSlice *src)
 {
-    virStorageSourceSlicePtr ret = g_new0(virStorageSourceSlice, 1);
+    virStorageSourceSlice *ret = g_new0(virStorageSourceSlice, 1);
 
     ret->offset = src->offset;
     ret->size = src->size;
@@ -775,7 +775,7 @@ virStorageSourceSliceCopy(const virStorageSourceSlice *src)
 
 
 static void
-virStorageSourceSliceFree(virStorageSourceSlicePtr slice)
+virStorageSourceSliceFree(virStorageSourceSlice *slice)
 {
     if (!slice)
         return;
@@ -786,7 +786,7 @@ virStorageSourceSliceFree(virStorageSourceSlicePtr slice)
 
 
 /**
- * virStorageSourcePtr:
+ * virStorageSource *:
  *
  * Deep-copies a virStorageSource structure. If @backing chain is true
  * then also copies the backing chain recursively, otherwise just
@@ -794,7 +794,7 @@ virStorageSourceSliceFree(virStorageSourceSlicePtr slice)
  * storage driver access structure and thus the struct needs to be initialized
  * separately.
  */
-virStorageSourcePtr
+virStorageSource *
 virStorageSourceCopy(const virStorageSource *src,
                      bool backingChain)
 {
@@ -915,8 +915,8 @@ virStorageSourceCopy(const virStorageSource *src,
  * This does not compare any other configuration option
  */
 bool
-virStorageSourceIsSameLocation(virStorageSourcePtr a,
-                               virStorageSourcePtr b)
+virStorageSourceIsSameLocation(virStorageSource *a,
+                               virStorageSource *b)
 {
     size_t i;
 
@@ -971,8 +971,8 @@ virStorageSourceIsSameLocation(virStorageSourcePtr a,
  * Returns 0 on success, -1 on error.
  */
 int
-virStorageSourceInitChainElement(virStorageSourcePtr newelem,
-                                 virStorageSourcePtr old,
+virStorageSourceInitChainElement(virStorageSource *newelem,
+                                 virStorageSource *old,
                                  bool transferLabels)
 {
     if (transferLabels &&
@@ -988,7 +988,7 @@ virStorageSourceInitChainElement(virStorageSourcePtr newelem,
 
 
 void
-virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def)
+virStorageSourcePoolDefFree(virStorageSourcePoolDef *def)
 {
     if (!def)
         return;
@@ -1055,7 +1055,7 @@ virStorageSourceIsLocalStorage(const virStorageSource *src)
  * (such as an empty cdrom drive).
  */
 bool
-virStorageSourceIsEmpty(virStorageSourcePtr src)
+virStorageSourceIsEmpty(virStorageSource *src)
 {
     if (virStorageSourceIsLocalStorage(src) && !src->path)
         return true;
@@ -1093,7 +1093,7 @@ virStorageSourceIsBlockLocal(const virStorageSource *src)
  * Clears information about backing store of the current storage file.
  */
 void
-virStorageSourceBackingStoreClear(virStorageSourcePtr def)
+virStorageSourceBackingStoreClear(virStorageSource *def)
 {
     if (!def)
         return;
@@ -1108,7 +1108,7 @@ virStorageSourceBackingStoreClear(virStorageSourcePtr def)
 
 
 void
-virStorageSourceClear(virStorageSourcePtr def)
+virStorageSourceClear(virStorageSource *def)
 {
     if (!def)
         return;
@@ -1161,7 +1161,7 @@ virStorageSourceClear(virStorageSourcePtr def)
 static void
 virStorageSourceDispose(void *obj)
 {
-    virStorageSourcePtr src = obj;
+    virStorageSource *src = obj;
 
     virStorageSourceClear(src);
 }
@@ -1180,10 +1180,10 @@ virStorageSourceOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virStorageSource);
 
 
-virStorageSourcePtr
+virStorageSource *
 virStorageSourceNew(void)
 {
-    virStorageSourcePtr ret;
+    virStorageSource *ret;
 
     if (virStorageSourceInitialize() < 0)
         abort();
@@ -1202,7 +1202,7 @@ virStorageSourceNew(void)
  * Returns true if given storage source definition is a relative path.
  */
 bool
-virStorageSourceIsRelative(virStorageSourcePtr src)
+virStorageSourceIsRelative(virStorageSource *src)
 {
     virStorageType actual_type = virStorageSourceGetActualType(src);
 
@@ -1283,7 +1283,7 @@ virStorageSourceNetworkDefaultPort(virStorageNetProtocol protocol)
 
 
 void
-virStorageSourceNetworkAssignDefaultPorts(virStorageSourcePtr src)
+virStorageSourceNetworkAssignDefaultPorts(virStorageSource *src)
 {
     size_t i;
 
@@ -1297,7 +1297,7 @@ virStorageSourceNetworkAssignDefaultPorts(virStorageSourcePtr src)
 
 int
 virStorageSourcePrivateDataParseRelPath(xmlXPathContextPtr ctxt,
-                                        virStorageSourcePtr src)
+                                        virStorageSource *src)
 {
     src->relPath = virXPathString("string(./relPath)", ctxt);
     return 0;
@@ -1305,8 +1305,8 @@ virStorageSourcePrivateDataParseRelPath(xmlXPathContextPtr ctxt,
 
 
 int
-virStorageSourcePrivateDataFormatRelPath(virStorageSourcePtr src,
-                                         virBufferPtr buf)
+virStorageSourcePrivateDataFormatRelPath(virStorageSource *src,
+                                         virBuffer *buf)
 {
     if (src->relPath)
         virBufferEscapeString(buf, "<relPath>%s</relPath>\n", src->relPath);
@@ -1317,15 +1317,15 @@ virStorageSourcePrivateDataFormatRelPath(virStorageSourcePtr src,
 
 void
 virStorageSourceInitiatorParseXML(xmlXPathContextPtr ctxt,
-                                  virStorageSourceInitiatorDefPtr initiator)
+                                  virStorageSourceInitiatorDef *initiator)
 {
     initiator->iqn = virXPathString("string(./initiator/iqn/@name)", ctxt);
 }
 
 
 void
-virStorageSourceInitiatorFormatXML(virStorageSourceInitiatorDefPtr initiator,
-                                   virBufferPtr buf)
+virStorageSourceInitiatorFormatXML(virStorageSourceInitiatorDef *initiator,
+                                   virBuffer *buf)
 {
     if (!initiator->iqn)
         return;
@@ -1339,7 +1339,7 @@ virStorageSourceInitiatorFormatXML(virStorageSourceInitiatorDefPtr initiator,
 
 
 int
-virStorageSourceInitiatorCopy(virStorageSourceInitiatorDefPtr dest,
+virStorageSourceInitiatorCopy(virStorageSourceInitiatorDef *dest,
                               const virStorageSourceInitiatorDef *src)
 {
     dest->iqn = g_strdup(src->iqn);
@@ -1348,7 +1348,7 @@ virStorageSourceInitiatorCopy(virStorageSourceInitiatorDefPtr dest,
 
 
 void
-virStorageSourceInitiatorClear(virStorageSourceInitiatorDefPtr initiator)
+virStorageSourceInitiatorClear(virStorageSourceInitiatorDef *initiator)
 {
     VIR_FREE(initiator->iqn);
 }

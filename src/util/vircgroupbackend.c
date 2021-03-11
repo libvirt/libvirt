@@ -37,10 +37,10 @@ VIR_ENUM_IMPL(virCgroupBackend,
 );
 
 static virOnceControl virCgroupBackendOnce = VIR_ONCE_CONTROL_INITIALIZER;
-static virCgroupBackendPtr virCgroupBackends[VIR_CGROUP_BACKEND_TYPE_LAST] = { 0 };
+static virCgroupBackend *virCgroupBackends[VIR_CGROUP_BACKEND_TYPE_LAST] = { 0 };
 
 void
-virCgroupBackendRegister(virCgroupBackendPtr backend)
+virCgroupBackendRegister(virCgroupBackend *backend)
 {
     if (virCgroupBackends[backend->type]) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -61,7 +61,7 @@ virCgroupBackendOnceInit(void)
 }
 
 
-virCgroupBackendPtr *
+virCgroupBackend **
 virCgroupBackendGetAll(void)
 {
     if (virOnce(&virCgroupBackendOnce, virCgroupBackendOnceInit) < 0) {
@@ -73,8 +73,8 @@ virCgroupBackendGetAll(void)
 }
 
 
-virCgroupBackendPtr
-virCgroupBackendForController(virCgroupPtr group,
+virCgroupBackend *
+virCgroupBackendForController(virCgroup *group,
                               unsigned int controller)
 {
     size_t i;

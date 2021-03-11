@@ -55,12 +55,11 @@
 
 VIR_LOG_INIT("storage.storage_driver");
 
-static virStorageDriverStatePtr driver;
+static virStorageDriverState *driver;
 
 static int storageStateCleanup(void);
 
 typedef struct _virStorageVolStreamInfo virStorageVolStreamInfo;
-typedef virStorageVolStreamInfo *virStorageVolStreamInfoPtr;
 struct _virStorageVolStreamInfo {
     char *pool_name;
     char *vol_path;
@@ -77,8 +76,8 @@ static void storageDriverUnlock(void)
 
 
 static void
-storagePoolRefreshFailCleanup(virStorageBackendPtr backend,
-                              virStoragePoolObjPtr obj,
+storagePoolRefreshFailCleanup(virStorageBackend *backend,
+                              virStoragePoolObj *obj,
                               const char *stateFile)
 {
     virErrorPtr orig_err;
@@ -95,8 +94,8 @@ storagePoolRefreshFailCleanup(virStorageBackendPtr backend,
 
 
 static int
-storagePoolRefreshImpl(virStorageBackendPtr backend,
-                       virStoragePoolObjPtr obj,
+storagePoolRefreshImpl(virStorageBackend *backend,
+                       virStoragePoolObj *obj,
                        const char *stateFile)
 {
     virStoragePoolObjClearVols(obj);
@@ -118,7 +117,7 @@ storagePoolRefreshImpl(virStorageBackendPtr backend,
  * pools are removed.
  */
 static void
-virStoragePoolUpdateInactive(virStoragePoolObjPtr obj)
+virStoragePoolUpdateInactive(virStoragePoolObj *obj)
 {
     if (!virStoragePoolObjGetConfigFile(obj)) {
         virStoragePoolObjRemove(driver->pools, obj);
@@ -129,12 +128,12 @@ virStoragePoolUpdateInactive(virStoragePoolObjPtr obj)
 
 
 static void
-storagePoolUpdateStateCallback(virStoragePoolObjPtr obj,
+storagePoolUpdateStateCallback(virStoragePoolObj *obj,
                                const void *opaque G_GNUC_UNUSED)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(obj);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(obj);
     bool active = false;
-    virStorageBackendPtr backend;
+    virStorageBackend *backend;
     g_autofree char *stateFile = NULL;
 
     if ((backend = virStorageBackendForType(def->type)) == NULL) {
@@ -188,11 +187,11 @@ storagePoolUpdateAllState(void)
 
 
 static void
-storageDriverAutostartCallback(virStoragePoolObjPtr obj,
+storageDriverAutostartCallback(virStoragePoolObj *obj,
                                const void *opaque G_GNUC_UNUSED)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(obj);
-    virStorageBackendPtr backend;
+    virStoragePoolDef *def = virStoragePoolObjGetDef(obj);
+    virStorageBackend *backend;
     bool started = false;
 
     if (!(backend = virStorageBackendForType(def->type)))
@@ -399,7 +398,7 @@ storageStateCleanup(void)
 static virDrvOpenStatus
 storageConnectOpen(virConnectPtr conn,
                    virConnectAuthPtr auth G_GNUC_UNUSED,
-                   virConfPtr conf G_GNUC_UNUSED,
+                   virConf *conf G_GNUC_UNUSED,
                    unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -447,11 +446,11 @@ static int storageConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 }
 
 
-static virStoragePoolObjPtr
+static virStoragePoolObj *
 storagePoolObjFindByUUID(const unsigned char *uuid,
                          const char *name)
 {
-    virStoragePoolObjPtr obj;
+    virStoragePoolObj *obj;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!(obj = virStoragePoolObjFindByUUID(driver->pools, uuid))) {
@@ -470,17 +469,17 @@ storagePoolObjFindByUUID(const unsigned char *uuid,
 }
 
 
-static virStoragePoolObjPtr
+static virStoragePoolObj *
 virStoragePoolObjFromStoragePool(virStoragePoolPtr pool)
 {
     return storagePoolObjFindByUUID(pool->uuid, pool->name);
 }
 
 
-static virStoragePoolObjPtr
+static virStoragePoolObj *
 storagePoolObjFindByName(const char *name)
 {
-    virStoragePoolObjPtr obj;
+    virStoragePoolObj *obj;
 
     if (!(obj = virStoragePoolObjFindByName(driver->pools, name)))
         virReportError(VIR_ERR_NO_STORAGE_POOL,
@@ -493,8 +492,8 @@ static virStoragePoolPtr
 storagePoolLookupByUUID(virConnectPtr conn,
                         const unsigned char *uuid)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
     virStoragePoolPtr pool = NULL;
 
     obj = storagePoolObjFindByUUID(uuid, NULL);
@@ -516,8 +515,8 @@ static virStoragePoolPtr
 storagePoolLookupByName(virConnectPtr conn,
                         const char *name)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
     virStoragePoolPtr pool = NULL;
 
     if (!(obj = storagePoolObjFindByName(name)))
@@ -537,8 +536,8 @@ storagePoolLookupByName(virConnectPtr conn,
 static virStoragePoolPtr
 storagePoolLookupByVolume(virStorageVolPtr vol)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
     virStoragePoolPtr pool = NULL;
 
     if (!(obj = storagePoolObjFindByName(vol->pool)))
@@ -624,7 +623,7 @@ storageConnectFindStoragePoolSources(virConnectPtr conn,
                                      unsigned int flags)
 {
     int backend_type;
-    virStorageBackendPtr backend;
+    virStorageBackend *backend;
 
     if (virConnectFindStoragePoolSourcesEnsureACL(conn) < 0)
         return NULL;
@@ -655,7 +654,7 @@ static char *
 storageConnectGetStoragePoolCapabilities(virConnectPtr conn,
                                          unsigned int flags)
 {
-    virStoragePoolCapsPtr caps = NULL;
+    virStoragePoolCaps *caps = NULL;
     char *ret;
 
     virCheckFlags(0, NULL);
@@ -676,8 +675,8 @@ storageConnectGetStoragePoolCapabilities(virConnectPtr conn,
 static int
 storagePoolIsActive(virStoragePoolPtr pool)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
     int ret = -1;
 
     if (!(obj = virStoragePoolObjFromStoragePool(pool)))
@@ -698,8 +697,8 @@ storagePoolIsActive(virStoragePoolPtr pool)
 static int
 storagePoolIsPersistent(virStoragePoolPtr pool)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
     int ret = -1;
 
     if (!(obj = virStoragePoolObjFromStoragePool(pool)))
@@ -722,11 +721,11 @@ storagePoolCreateXML(virConnectPtr conn,
                      const char *xml,
                      unsigned int flags)
 {
-    virStoragePoolObjPtr obj = NULL;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj = NULL;
+    virStoragePoolDef *def;
     virStoragePoolPtr pool = NULL;
-    virStorageBackendPtr backend;
-    virObjectEventPtr event = NULL;
+    virStorageBackend *backend;
+    virObjectEvent *event = NULL;
     unsigned int build_flags = 0;
     g_autoptr(virStoragePoolDef) newDef = NULL;
     g_autofree char *stateFile = NULL;
@@ -811,10 +810,10 @@ storagePoolDefineXML(virConnectPtr conn,
                      const char *xml,
                      unsigned int flags)
 {
-    virStoragePoolObjPtr obj = NULL;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj = NULL;
+    virStoragePoolDef *def;
     virStoragePoolPtr pool = NULL;
-    virObjectEventPtr event = NULL;
+    virObjectEvent *event = NULL;
     g_autoptr(virStoragePoolDef) newDef = NULL;
 
     virCheckFlags(0, NULL);
@@ -859,10 +858,10 @@ storagePoolDefineXML(virConnectPtr conn,
 static int
 storagePoolUndefine(virStoragePoolPtr pool)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
     const char *autostartLink;
-    virObjectEventPtr event = NULL;
+    virObjectEvent *event = NULL;
     int ret = -1;
 
     if (!(obj = storagePoolObjFindByUUID(pool->uuid, pool->name)))
@@ -922,10 +921,10 @@ static int
 storagePoolCreate(virStoragePoolPtr pool,
                   unsigned int flags)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
-    virStorageBackendPtr backend;
-    virObjectEventPtr event = NULL;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
+    virStorageBackend *backend;
+    virObjectEvent *event = NULL;
     int ret = -1;
     unsigned int build_flags = 0;
     g_autofree char *stateFile = NULL;
@@ -1015,10 +1014,10 @@ static int
 storagePoolBuild(virStoragePoolPtr pool,
                  unsigned int flags)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
-    virStorageBackendPtr backend;
-    virObjectEventPtr event = NULL;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
+    virStorageBackend *backend;
+    virObjectEvent *event = NULL;
     bool restoreStarting = false;
     int ret = -1;
 
@@ -1075,10 +1074,10 @@ storagePoolBuild(virStoragePoolPtr pool,
 static int
 storagePoolDestroy(virStoragePoolPtr pool)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
-    virStorageBackendPtr backend;
-    virObjectEventPtr event = NULL;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
+    virStorageBackend *backend;
+    virObjectEvent *event = NULL;
     int ret = -1;
     g_autofree char *stateFile = NULL;
 
@@ -1146,10 +1145,10 @@ static int
 storagePoolDelete(virStoragePoolPtr pool,
                   unsigned int flags)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
-    virStorageBackendPtr backend;
-    virObjectEventPtr event = NULL;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
+    virStorageBackend *backend;
+    virObjectEvent *event = NULL;
     int ret = -1;
     g_autofree char *stateFile = NULL;
 
@@ -1217,12 +1216,12 @@ static int
 storagePoolRefresh(virStoragePoolPtr pool,
                    unsigned int flags)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
-    virStorageBackendPtr backend;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
+    virStorageBackend *backend;
     g_autofree char *stateFile = NULL;
     int ret = -1;
-    virObjectEventPtr event = NULL;
+    virObjectEvent *event = NULL;
 
     virCheckFlags(0, -1);
 
@@ -1284,8 +1283,8 @@ static int
 storagePoolGetInfo(virStoragePoolPtr pool,
                    virStoragePoolInfoPtr info)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
     int ret = -1;
 
     if (!(obj = virStoragePoolObjFromStoragePool(pool)))
@@ -1317,10 +1316,10 @@ static char *
 storagePoolGetXMLDesc(virStoragePoolPtr pool,
                       unsigned int flags)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
-    virStoragePoolDefPtr newDef;
-    virStoragePoolDefPtr curDef;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
+    virStoragePoolDef *newDef;
+    virStoragePoolDef *curDef;
     char *ret = NULL;
 
     virCheckFlags(VIR_STORAGE_XML_INACTIVE, NULL);
@@ -1349,7 +1348,7 @@ static int
 storagePoolGetAutostart(virStoragePoolPtr pool,
                         int *autostart)
 {
-    virStoragePoolObjPtr obj;
+    virStoragePoolObj *obj;
     int ret = -1;
 
     if (!(obj = virStoragePoolObjFromStoragePool(pool)))
@@ -1372,7 +1371,7 @@ static int
 storagePoolSetAutostart(virStoragePoolPtr pool,
                         int autostart)
 {
-    virStoragePoolObjPtr obj;
+    virStoragePoolObj *obj;
     const char *configFile;
     const char *autostartLink;
     bool new_autostart;
@@ -1434,8 +1433,8 @@ storagePoolSetAutostart(virStoragePoolPtr pool,
 static int
 storagePoolNumOfVolumes(virStoragePoolPtr pool)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
     int ret = -1;
 
     if (!(obj = virStoragePoolObjFromStoragePool(pool)))
@@ -1465,8 +1464,8 @@ storagePoolListVolumes(virStoragePoolPtr pool,
                        char **const names,
                        int maxnames)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
     int n = -1;
 
     if (!(obj = virStoragePoolObjFromStoragePool(pool)))
@@ -1496,8 +1495,8 @@ storagePoolListAllVolumes(virStoragePoolPtr pool,
                           virStorageVolPtr **vols,
                           unsigned int flags)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -1529,9 +1528,9 @@ static virStorageVolPtr
 storageVolLookupByName(virStoragePoolPtr pool,
                        const char *name)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
-    virStorageVolDefPtr voldef;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
+    virStorageVolDef *voldef;
     virStorageVolPtr vol = NULL;
 
     if (!(obj = virStoragePoolObjFromStoragePool(pool)))
@@ -1569,11 +1568,11 @@ struct storageVolLookupData {
     const char *key;
     char *cleanpath;
     const char *path;
-    virStorageVolDefPtr voldef;
+    virStorageVolDef *voldef;
 };
 
 static bool
-storageVolLookupByKeyCallback(virStoragePoolObjPtr obj,
+storageVolLookupByKeyCallback(virStoragePoolObj *obj,
                               const void *opaque)
 {
     struct storageVolLookupData *data = (struct storageVolLookupData *)opaque;
@@ -1589,8 +1588,8 @@ static virStorageVolPtr
 storageVolLookupByKey(virConnectPtr conn,
                       const char *key)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
     struct storageVolLookupData data = {
         .key = key, .voldef = NULL };
     virStorageVolPtr vol = NULL;
@@ -1616,11 +1615,11 @@ storageVolLookupByKey(virConnectPtr conn,
 
 
 static bool
-storageVolLookupByPathCallback(virStoragePoolObjPtr obj,
+storageVolLookupByPathCallback(virStoragePoolObj *obj,
                                const void *opaque)
 {
     struct storageVolLookupData *data = (struct storageVolLookupData *)opaque;
-    virStoragePoolDefPtr def;
+    virStoragePoolDef *def;
     g_autofree char *stable_path = NULL;
 
     if (!virStoragePoolObjIsActive(obj))
@@ -1669,8 +1668,8 @@ static virStorageVolPtr
 storageVolLookupByPath(virConnectPtr conn,
                        const char *path)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
     struct storageVolLookupData data = {
         .path = path, .voldef = NULL };
     virStorageVolPtr vol = NULL;
@@ -1708,11 +1707,11 @@ storageVolLookupByPath(virConnectPtr conn,
 
 
 static bool
-storagePoolLookupByTargetPathCallback(virStoragePoolObjPtr obj,
+storagePoolLookupByTargetPathCallback(virStoragePoolObj *obj,
                                       const void *opaque)
 {
     const char *path = opaque;
-    virStoragePoolDefPtr def;
+    virStoragePoolDef *def;
 
     if (!virStoragePoolObjIsActive(obj))
         return false;
@@ -1726,8 +1725,8 @@ virStoragePoolPtr
 storagePoolLookupByTargetPath(virConnectPtr conn,
                               const char *path)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
     virStoragePoolPtr pool = NULL;
     g_autofree char *cleanpath = NULL;
 
@@ -1763,13 +1762,13 @@ storagePoolLookupByTargetPath(virConnectPtr conn,
 
 
 static int
-storageVolDeleteInternal(virStorageBackendPtr backend,
-                         virStoragePoolObjPtr obj,
-                         virStorageVolDefPtr voldef,
+storageVolDeleteInternal(virStorageBackend *backend,
+                         virStoragePoolObj *obj,
+                         virStorageVolDef *voldef,
                          unsigned int flags,
                          bool updateMeta)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(obj);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(obj);
 
     if (!backend->deleteVol) {
         virReportError(VIR_ERR_NO_SUPPORT,
@@ -1802,13 +1801,13 @@ storageVolDeleteInternal(virStorageBackendPtr backend,
 }
 
 
-static virStorageVolDefPtr
+static virStorageVolDef *
 virStorageVolDefFromVol(virStorageVolPtr vol,
-                        virStoragePoolObjPtr *obj,
-                        virStorageBackendPtr *backend)
+                        virStoragePoolObj **obj,
+                        virStorageBackend **backend)
 {
-    virStorageVolDefPtr voldef = NULL;
-    virStoragePoolDefPtr def;
+    virStorageVolDef *voldef = NULL;
+    virStoragePoolDef *def;
 
     if (!(*obj = storagePoolObjFindByName(vol->pool)))
         return NULL;
@@ -1846,9 +1845,9 @@ static int
 storageVolDelete(virStorageVolPtr vol,
                  unsigned int flags)
 {
-    virStoragePoolObjPtr obj;
-    virStorageBackendPtr backend;
-    virStorageVolDefPtr voldef = NULL;
+    virStoragePoolObj *obj;
+    virStorageBackend *backend;
+    virStorageVolDef *voldef = NULL;
     int ret = -1;
 
     if (!(voldef = virStorageVolDefFromVol(vol, &obj, &backend)))
@@ -1888,9 +1887,9 @@ storageVolCreateXML(virStoragePoolPtr pool,
                     const char *xmldesc,
                     unsigned int flags)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
-    virStorageBackendPtr backend;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
+    virStorageBackend *backend;
     virStorageVolPtr vol = NULL, newvol = NULL;
     g_autoptr(virStorageVolDef) voldef = NULL;
 
@@ -1953,7 +1952,7 @@ storageVolCreateXML(virStoragePoolPtr pool,
 
     if (backend->buildVol) {
         int buildret;
-        virStorageVolDefPtr buildvoldef = NULL;
+        virStorageVolDef *buildvoldef = NULL;
 
         buildvoldef = g_new0(virStorageVolDef, 1);
 
@@ -2019,12 +2018,12 @@ storageVolCreateXMLFrom(virStoragePoolPtr pool,
                         virStorageVolPtr volsrc,
                         unsigned int flags)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
-    virStoragePoolObjPtr objsrc = NULL;
-    virStorageBackendPtr backend;
-    virStorageVolDefPtr voldefsrc = NULL;
-    virStorageVolDefPtr shadowvol = NULL;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
+    virStoragePoolObj *objsrc = NULL;
+    virStorageBackend *backend;
+    virStorageVolDef *voldefsrc = NULL;
+    virStorageVolDef *shadowvol = NULL;
     virStorageVolPtr newvol = NULL;
     virStorageVolPtr vol = NULL;
     int buildret;
@@ -2064,7 +2063,7 @@ storageVolCreateXMLFrom(virStoragePoolPtr pool,
     }
 
     if (objsrc && !virStoragePoolObjIsActive(objsrc)) {
-        virStoragePoolDefPtr objsrcdef = virStoragePoolObjGetDef(objsrc);
+        virStoragePoolDef *objsrcdef = virStoragePoolObjGetDef(objsrc);
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("storage pool '%s' is not active"),
                        objsrcdef->name);
@@ -2214,9 +2213,9 @@ storageVolDownload(virStorageVolPtr vol,
                    unsigned long long length,
                    unsigned int flags)
 {
-    virStorageBackendPtr backend;
-    virStoragePoolObjPtr obj = NULL;
-    virStorageVolDefPtr voldef = NULL;
+    virStorageBackend *backend;
+    virStoragePoolObj *obj = NULL;
+    virStorageVolDef *voldef = NULL;
     int ret = -1;
 
     virCheckFlags(VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM, -1);
@@ -2266,7 +2265,7 @@ storageVolDownload(virStorageVolPtr vol,
 static void
 virStorageVolPoolRefreshDataFree(void *opaque)
 {
-    virStorageVolStreamInfoPtr cbdata = opaque;
+    virStorageVolStreamInfo *cbdata = opaque;
 
     g_free(cbdata->pool_name);
     g_free(cbdata);
@@ -2312,11 +2311,11 @@ virStorageBackendPloopRestoreDesc(char *path)
 static void
 virStorageVolPoolRefreshThread(void *opaque)
 {
-    virStorageVolStreamInfoPtr cbdata = opaque;
-    virStoragePoolObjPtr obj = NULL;
-    virStoragePoolDefPtr def;
-    virStorageBackendPtr backend;
-    virObjectEventPtr event = NULL;
+    virStorageVolStreamInfo *cbdata = opaque;
+    virStoragePoolObj *obj = NULL;
+    virStoragePoolDef *def;
+    virStorageBackend *backend;
+    virObjectEvent *event = NULL;
 
     if (cbdata->vol_path) {
         if (virStorageBackendPloopRestoreDesc(cbdata->vol_path) < 0)
@@ -2380,11 +2379,11 @@ storageVolUpload(virStorageVolPtr vol,
                  unsigned long long length,
                  unsigned int flags)
 {
-    virStorageBackendPtr backend;
-    virStoragePoolObjPtr obj = NULL;
-    virStoragePoolDefPtr def;
-    virStorageVolDefPtr voldef = NULL;
-    virStorageVolStreamInfoPtr cbdata = NULL;
+    virStorageBackend *backend;
+    virStoragePoolObj *obj = NULL;
+    virStoragePoolDef *def;
+    virStorageVolDef *voldef = NULL;
+    virStorageVolStreamInfo *cbdata = NULL;
     int rc;
     int ret = -1;
 
@@ -2462,10 +2461,10 @@ storageVolResize(virStorageVolPtr vol,
                  unsigned long long capacity,
                  unsigned int flags)
 {
-    virStorageBackendPtr backend;
-    virStoragePoolObjPtr obj = NULL;
-    virStoragePoolDefPtr def;
-    virStorageVolDefPtr voldef = NULL;
+    virStorageBackend *backend;
+    virStoragePoolObj *obj = NULL;
+    virStoragePoolDef *def;
+    virStorageVolDef *voldef = NULL;
     unsigned long long abs_capacity, delta = 0;
     int ret = -1;
 
@@ -2563,9 +2562,9 @@ storageVolWipePattern(virStorageVolPtr vol,
                       unsigned int algorithm,
                       unsigned int flags)
 {
-    virStorageBackendPtr backend;
-    virStoragePoolObjPtr obj = NULL;
-    virStorageVolDefPtr voldef = NULL;
+    virStorageBackend *backend;
+    virStoragePoolObj *obj = NULL;
+    virStorageVolDef *voldef = NULL;
     int rc;
     int ret = -1;
 
@@ -2652,9 +2651,9 @@ storageVolGetInfoFlags(virStorageVolPtr vol,
                        virStorageVolInfoPtr info,
                        unsigned int flags)
 {
-    virStoragePoolObjPtr obj;
-    virStorageBackendPtr backend;
-    virStorageVolDefPtr voldef;
+    virStoragePoolObj *obj;
+    virStorageBackend *backend;
+    virStorageVolDef *voldef;
     int ret = -1;
 
     virCheckFlags(VIR_STORAGE_VOL_GET_PHYSICAL, -1);
@@ -2698,10 +2697,10 @@ static char *
 storageVolGetXMLDesc(virStorageVolPtr vol,
                      unsigned int flags)
 {
-    virStoragePoolObjPtr obj;
-    virStoragePoolDefPtr def;
-    virStorageBackendPtr backend;
-    virStorageVolDefPtr voldef;
+    virStoragePoolObj *obj;
+    virStoragePoolDef *def;
+    virStorageBackend *backend;
+    virStorageVolDef *voldef;
     char *ret = NULL;
 
     virCheckFlags(0, NULL);
@@ -2728,8 +2727,8 @@ storageVolGetXMLDesc(virStorageVolPtr vol,
 static char *
 storageVolGetPath(virStorageVolPtr vol)
 {
-    virStoragePoolObjPtr obj;
-    virStorageVolDefPtr voldef;
+    virStoragePoolObj *obj;
+    virStorageVolDef *voldef;
     char *ret = NULL;
 
     if (!(voldef = virStorageVolDefFromVol(vol, &obj, NULL)))
@@ -2809,7 +2808,7 @@ storageConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
  *
  * Returns NULL if pool is not found or a locked pool object pointer
  */
-virStoragePoolObjPtr
+virStoragePoolObj *
 virStoragePoolObjFindPoolByUUID(const unsigned char *uuid)
 {
     return virStoragePoolObjFindByUUID(driver->pools, uuid);
@@ -2828,11 +2827,11 @@ virStoragePoolObjFindPoolByUUID(const unsigned char *uuid)
  * Returns a string pointer on success, NULL on failure
  */
 char *
-virStoragePoolObjBuildTempFilePath(virStoragePoolObjPtr obj,
-                                   virStorageVolDefPtr voldef)
+virStoragePoolObjBuildTempFilePath(virStoragePoolObj *obj,
+                                   virStorageVolDef *voldef)
 
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(obj);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(obj);
     return g_strdup_printf("%s/%s.%s.secret.XXXXXX", driver->stateDir,
                            def->name, voldef->name);
 }

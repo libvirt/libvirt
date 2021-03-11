@@ -55,7 +55,7 @@ testVshTableHeader(const void *opaque G_GNUC_UNUSED)
         " 1    fedora28   running\n"
         " 2    rhel7.5    running\n";
 
-    vshTablePtr table = vshTableNew("Id", "Name", "State",
+    vshTable *table = vshTableNew("Id", "Name", "State",
                                     NULL); //to ask about return
     if (!table)
         goto cleanup;
@@ -84,7 +84,7 @@ testVshTableRowAppend(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
 
-    vshTablePtr table = vshTableNew("Id", "Name", NULL);
+    vshTable *table = vshTableNew("Id", "Name", NULL);
     if (!table)
         goto cleanup;
 
@@ -126,7 +126,7 @@ testUnicode(const void *opaque G_GNUC_UNUSED)
         "-----------------------------------------\n"
         " 1    fedora28              running\n"
         " 2    つへソrhel7.5つへソ   running\n";
-    vshTablePtr table;
+    vshTable *table;
 
     table = vshTableNew("Id", "名稱", "государство", NULL);
     if (!table)
@@ -158,7 +158,7 @@ testUnicodeArabic(const void *opaque G_GNUC_UNUSED)
         "-------------------------------------------------------------------------------------------\n"
         " 1              ﻉﺪﻴﻟ ﺎﻠﺜﻘﻴﻟ ﻕﺎﻣ ﻊﻧ, ٣٠ ﻎﻴﻨﻳﺍ ﻮﺘﻧﺎﻤﺗ ﺎﻠﺛﺎﻠﺛ، ﺄﺳﺭ, ﺩﻮﻟ   ﺩﻮﻟ. ﺄﻣﺎﻣ ﺍ ﺎﻧ ﻲﻜﻧ\n"
         " ﺺﻔﺣﺓ           ﺖﻜﺘﻴﻛﺍً ﻊﻟ, ﺎﻠﺠﻧﻭﺩ ﻭﺎﻠﻌﺗﺍﺩ                              ﺵﺭ\n";
-    vshTablePtr table;
+    vshTable *table;
     wchar_t wc;
 
     /* If this char is not classed as printable, the actual
@@ -194,7 +194,7 @@ static int
 testUnicodeZeroWidthChar(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
-    vshTablePtr table = NULL;
+    vshTable *table = NULL;
     const char *exp =
         " I\u200Bd   Name       \u200BStatus\n"
         "--------------------------\n"
@@ -231,7 +231,7 @@ static int
 testUnicodeCombiningChar(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
-    vshTablePtr table = NULL;
+    vshTable *table = NULL;
     const char *exp =
         " Id   Náme       Ⓢtatus\n"
         "--------------------------\n"
@@ -260,7 +260,7 @@ static int
 testUnicodeNonPrintableChar(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
-    vshTablePtr table = NULL;
+    vshTable *table = NULL;
     const char *exp =
         " I\\x09d   Name           Status\n"
         "----------------------------------\n"
@@ -288,9 +288,9 @@ static int
 testNTables(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
-    vshTablePtr table1 = NULL;
-    vshTablePtr table2 = NULL;
-    vshTablePtr table3 = NULL;
+    vshTable *table1 = NULL;
+    vshTable *table2 = NULL;
+    vshTable *table3 = NULL;
     const char *exp1 =
         " Id   Name       Status\n"
         "--------------------------\n"

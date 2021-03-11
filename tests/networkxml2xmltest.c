@@ -29,8 +29,8 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
     char *actual = NULL;
     int ret;
     testCompareNetXML2XMLResult result = TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS;
-    virNetworkDefPtr dev = NULL;
-    virNetworkXMLOptionPtr xmlopt = NULL;
+    virNetworkDef *dev = NULL;
+    virNetworkXMLOption *xmlopt = NULL;
 
     if (!(xmlopt = networkDnsmasqCreateXMLConf()))
         goto cleanup;

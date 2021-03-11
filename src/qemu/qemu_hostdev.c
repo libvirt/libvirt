@@ -43,10 +43,10 @@ VIR_LOG_INIT("qemu.qemu_hostdev");
 
 
 int
-qemuHostdevUpdateActivePCIDevices(virQEMUDriverPtr driver,
-                                  virDomainDefPtr def)
+qemuHostdevUpdateActivePCIDevices(virQEMUDriver *driver,
+                                  virDomainDef *def)
 {
-    virHostdevManagerPtr mgr = driver->hostdevMgr;
+    virHostdevManager *mgr = driver->hostdevMgr;
 
     if (!def->nhostdevs)
         return 0;
@@ -56,10 +56,10 @@ qemuHostdevUpdateActivePCIDevices(virQEMUDriverPtr driver,
 }
 
 int
-qemuHostdevUpdateActiveUSBDevices(virQEMUDriverPtr driver,
-                                  virDomainDefPtr def)
+qemuHostdevUpdateActiveUSBDevices(virQEMUDriver *driver,
+                                  virDomainDef *def)
 {
-    virHostdevManagerPtr mgr = driver->hostdevMgr;
+    virHostdevManager *mgr = driver->hostdevMgr;
 
     if (!def->nhostdevs)
         return 0;
@@ -69,10 +69,10 @@ qemuHostdevUpdateActiveUSBDevices(virQEMUDriverPtr driver,
 }
 
 int
-qemuHostdevUpdateActiveSCSIDevices(virQEMUDriverPtr driver,
-                                   virDomainDefPtr def)
+qemuHostdevUpdateActiveSCSIDevices(virQEMUDriver *driver,
+                                   virDomainDef *def)
 {
-    virHostdevManagerPtr mgr = driver->hostdevMgr;
+    virHostdevManager *mgr = driver->hostdevMgr;
 
     if (!def->nhostdevs)
         return 0;
@@ -83,10 +83,10 @@ qemuHostdevUpdateActiveSCSIDevices(virQEMUDriverPtr driver,
 
 
 int
-qemuHostdevUpdateActiveMediatedDevices(virQEMUDriverPtr driver,
-                                       virDomainDefPtr def)
+qemuHostdevUpdateActiveMediatedDevices(virQEMUDriver *driver,
+                                       virDomainDef *def)
 {
-    virHostdevManagerPtr mgr = driver->hostdevMgr;
+    virHostdevManager *mgr = driver->hostdevMgr;
 
     if (!def->nhostdevs)
         return 0;
@@ -98,8 +98,8 @@ qemuHostdevUpdateActiveMediatedDevices(virQEMUDriverPtr driver,
 
 
 int
-qemuHostdevUpdateActiveNVMeDisks(virQEMUDriverPtr driver,
-                                 virDomainDefPtr def)
+qemuHostdevUpdateActiveNVMeDisks(virQEMUDriver *driver,
+                                 virDomainDef *def)
 {
     return virHostdevUpdateActiveNVMeDevices(driver->hostdevMgr,
                                              QEMU_DRIVER_NAME,
@@ -110,8 +110,8 @@ qemuHostdevUpdateActiveNVMeDisks(virQEMUDriverPtr driver,
 
 
 int
-qemuHostdevUpdateActiveDomainDevices(virQEMUDriverPtr driver,
-                                     virDomainDefPtr def)
+qemuHostdevUpdateActiveDomainDevices(virQEMUDriver *driver,
+                                     virDomainDef *def)
 {
     if (!def->nhostdevs && !def->ndisks)
         return 0;
@@ -159,16 +159,16 @@ qemuHostdevHostSupportsPassthroughVFIO(void)
 
 
 static bool
-qemuHostdevPreparePCIDevicesCheckSupport(virDomainHostdevDefPtr *hostdevs,
+qemuHostdevPreparePCIDevicesCheckSupport(virDomainHostdevDef **hostdevs,
                                          size_t nhostdevs,
-                                         virQEMUCapsPtr qemuCaps)
+                                         virQEMUCaps *qemuCaps)
 {
     bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
     size_t i;
 
     /* assign defaults for hostdev passthrough */
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevDef *hostdev = hostdevs[i];
         int *backend = &hostdev->source.subsys.u.pci.backend;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -213,9 +213,9 @@ qemuHostdevPreparePCIDevicesCheckSupport(virDomainHostdevDefPtr *hostdevs,
 }
 
 int
-qemuHostdevPrepareOneNVMeDisk(virQEMUDriverPtr driver,
+qemuHostdevPrepareOneNVMeDisk(virQEMUDriver *driver,
                               const char *name,
-                              virStorageSourcePtr src)
+                              virStorageSource *src)
 {
     return virHostdevPrepareOneNVMeDevice(driver->hostdevMgr,
                                           QEMU_DRIVER_NAME,
@@ -224,9 +224,9 @@ qemuHostdevPrepareOneNVMeDisk(virQEMUDriverPtr driver,
 }
 
 int
-qemuHostdevPrepareNVMeDisks(virQEMUDriverPtr driver,
+qemuHostdevPrepareNVMeDisks(virQEMUDriver *driver,
                             const char *name,
-                            virDomainDiskDefPtr *disks,
+                            virDomainDiskDef **disks,
                             size_t ndisks)
 {
     return virHostdevPrepareNVMeDevices(driver->hostdevMgr,
@@ -235,15 +235,15 @@ qemuHostdevPrepareNVMeDisks(virQEMUDriverPtr driver,
 }
 
 int
-qemuHostdevPreparePCIDevices(virQEMUDriverPtr driver,
+qemuHostdevPreparePCIDevices(virQEMUDriver *driver,
                              const char *name,
                              const unsigned char *uuid,
-                             virDomainHostdevDefPtr *hostdevs,
+                             virDomainHostdevDef **hostdevs,
                              int nhostdevs,
-                             virQEMUCapsPtr qemuCaps,
+                             virQEMUCaps *qemuCaps,
                              unsigned int flags)
 {
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virHostdevManager *hostdev_mgr = driver->hostdevMgr;
 
     if (!qemuHostdevPreparePCIDevicesCheckSupport(hostdevs, nhostdevs, qemuCaps))
         return -1;
@@ -254,26 +254,26 @@ qemuHostdevPreparePCIDevices(virQEMUDriverPtr driver,
 }
 
 int
-qemuHostdevPrepareUSBDevices(virQEMUDriverPtr driver,
+qemuHostdevPrepareUSBDevices(virQEMUDriver *driver,
                              const char *name,
-                             virDomainHostdevDefPtr *hostdevs,
+                             virDomainHostdevDef **hostdevs,
                              int nhostdevs,
                              unsigned int flags)
 {
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virHostdevManager *hostdev_mgr = driver->hostdevMgr;
 
     return virHostdevPrepareUSBDevices(hostdev_mgr, QEMU_DRIVER_NAME, name,
                                        hostdevs, nhostdevs, flags);
 }
 
 int
-qemuHostdevPrepareSCSIDevices(virQEMUDriverPtr driver,
+qemuHostdevPrepareSCSIDevices(virQEMUDriver *driver,
                               const char *name,
-                              virDomainHostdevDefPtr *hostdevs,
+                              virDomainHostdevDef **hostdevs,
                               int nhostdevs)
 {
     size_t i;
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virHostdevManager *hostdev_mgr = driver->hostdevMgr;
 
     /* Loop 1: Add the shared scsi host device to shared device
      * table.
@@ -299,24 +299,24 @@ qemuHostdevPrepareSCSIDevices(virQEMUDriverPtr driver,
 }
 
 int
-qemuHostdevPrepareSCSIVHostDevices(virQEMUDriverPtr driver,
+qemuHostdevPrepareSCSIVHostDevices(virQEMUDriver *driver,
                                    const char *name,
-                                   virDomainHostdevDefPtr *hostdevs,
+                                   virDomainHostdevDef **hostdevs,
                                    int nhostdevs)
 {
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virHostdevManager *hostdev_mgr = driver->hostdevMgr;
 
     return virHostdevPrepareSCSIVHostDevices(hostdev_mgr, QEMU_DRIVER_NAME,
                                              name, hostdevs, nhostdevs);
 }
 
 int
-qemuHostdevPrepareMediatedDevices(virQEMUDriverPtr driver,
+qemuHostdevPrepareMediatedDevices(virQEMUDriver *driver,
                                   const char *name,
-                                  virDomainHostdevDefPtr *hostdevs,
+                                  virDomainHostdevDef **hostdevs,
                                   int nhostdevs)
 {
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virHostdevManager *hostdev_mgr = driver->hostdevMgr;
     bool supportsVFIO;
     size_t i;
 
@@ -342,9 +342,9 @@ qemuHostdevPrepareMediatedDevices(virQEMUDriverPtr driver,
 }
 
 int
-qemuHostdevPrepareDomainDevices(virQEMUDriverPtr driver,
-                                virDomainDefPtr def,
-                                virQEMUCapsPtr qemuCaps,
+qemuHostdevPrepareDomainDevices(virQEMUDriver *driver,
+                                virDomainDef *def,
+                                virQEMUCaps *qemuCaps,
                                 unsigned int flags)
 {
     if (!def->nhostdevs && !def->ndisks)
@@ -378,9 +378,9 @@ qemuHostdevPrepareDomainDevices(virQEMUDriverPtr driver,
 }
 
 void
-qemuHostdevReAttachOneNVMeDisk(virQEMUDriverPtr driver,
+qemuHostdevReAttachOneNVMeDisk(virQEMUDriver *driver,
                                const char *name,
-                               virStorageSourcePtr src)
+                               virStorageSource *src)
 {
     virHostdevReAttachOneNVMeDevice(driver->hostdevMgr,
                                     QEMU_DRIVER_NAME,
@@ -389,9 +389,9 @@ qemuHostdevReAttachOneNVMeDisk(virQEMUDriverPtr driver,
 }
 
 void
-qemuHostdevReAttachNVMeDisks(virQEMUDriverPtr driver,
+qemuHostdevReAttachNVMeDisks(virQEMUDriver *driver,
                              const char *name,
-                             virDomainDiskDefPtr *disks,
+                             virDomainDiskDef **disks,
                              size_t ndisks)
 {
     virHostdevReAttachNVMeDevices(driver->hostdevMgr,
@@ -400,40 +400,40 @@ qemuHostdevReAttachNVMeDisks(virQEMUDriverPtr driver,
 }
 
 void
-qemuHostdevReAttachPCIDevices(virQEMUDriverPtr driver,
+qemuHostdevReAttachPCIDevices(virQEMUDriver *driver,
                               const char *name,
-                              virDomainHostdevDefPtr *hostdevs,
+                              virDomainHostdevDef **hostdevs,
                               int nhostdevs)
 {
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virHostdevManager *hostdev_mgr = driver->hostdevMgr;
 
     virHostdevReAttachPCIDevices(hostdev_mgr, QEMU_DRIVER_NAME, name,
                                  hostdevs, nhostdevs);
 }
 
 void
-qemuHostdevReAttachUSBDevices(virQEMUDriverPtr driver,
+qemuHostdevReAttachUSBDevices(virQEMUDriver *driver,
                               const char *name,
-                              virDomainHostdevDefPtr *hostdevs,
+                              virDomainHostdevDef **hostdevs,
                               int nhostdevs)
 {
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virHostdevManager *hostdev_mgr = driver->hostdevMgr;
 
     virHostdevReAttachUSBDevices(hostdev_mgr, QEMU_DRIVER_NAME,
                                   name, hostdevs, nhostdevs);
 }
 
 void
-qemuHostdevReAttachSCSIDevices(virQEMUDriverPtr driver,
+qemuHostdevReAttachSCSIDevices(virQEMUDriver *driver,
                                const char *name,
-                               virDomainHostdevDefPtr *hostdevs,
+                               virDomainHostdevDef **hostdevs,
                                int nhostdevs)
 {
     size_t i;
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virHostdevManager *hostdev_mgr = driver->hostdevMgr;
 
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevDef *hostdev = hostdevs[i];
         virDomainDeviceDef dev;
 
         dev.type = VIR_DOMAIN_DEVICE_HOSTDEV;
@@ -447,32 +447,32 @@ qemuHostdevReAttachSCSIDevices(virQEMUDriverPtr driver,
 }
 
 void
-qemuHostdevReAttachSCSIVHostDevices(virQEMUDriverPtr driver,
+qemuHostdevReAttachSCSIVHostDevices(virQEMUDriver *driver,
                                     const char *name,
-                                    virDomainHostdevDefPtr *hostdevs,
+                                    virDomainHostdevDef **hostdevs,
                                     int nhostdevs)
 {
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virHostdevManager *hostdev_mgr = driver->hostdevMgr;
 
     virHostdevReAttachSCSIVHostDevices(hostdev_mgr, QEMU_DRIVER_NAME,
                                        name, hostdevs, nhostdevs);
 }
 
 void
-qemuHostdevReAttachMediatedDevices(virQEMUDriverPtr driver,
+qemuHostdevReAttachMediatedDevices(virQEMUDriver *driver,
                                    const char *name,
-                                   virDomainHostdevDefPtr *hostdevs,
+                                   virDomainHostdevDef **hostdevs,
                                    int nhostdevs)
 {
-    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    virHostdevManager *hostdev_mgr = driver->hostdevMgr;
 
     virHostdevReAttachMediatedDevices(hostdev_mgr, QEMU_DRIVER_NAME,
                                       name, hostdevs, nhostdevs);
 }
 
 void
-qemuHostdevReAttachDomainDevices(virQEMUDriverPtr driver,
-                                 virDomainDefPtr def)
+qemuHostdevReAttachDomainDevices(virQEMUDriver *driver,
+                                 virDomainDef *def)
 {
     if (!def->nhostdevs && !def->ndisks)
         return;

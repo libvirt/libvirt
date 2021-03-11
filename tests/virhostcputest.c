@@ -74,7 +74,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
 
 
 static int
-linuxCPUStatsToBuf(virBufferPtr buf,
+linuxCPUStatsToBuf(virBuffer *buf,
                    int cpu,
                    virNodeCPUStatsPtr param,
                    size_t nparams)

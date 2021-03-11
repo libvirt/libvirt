@@ -25,9 +25,8 @@
 #include "bhyve_utils.h"
 
 typedef struct _bhyveMonitor bhyveMonitor;
-typedef bhyveMonitor *bhyveMonitorPtr;
 
-bhyveMonitorPtr bhyveMonitorOpen(virDomainObjPtr vm, bhyveConnPtr driver);
-void bhyveMonitorClose(bhyveMonitorPtr mon);
+bhyveMonitor *bhyveMonitorOpen(virDomainObj *vm, struct _bhyveConn *driver);
+void bhyveMonitorClose(bhyveMonitor *mon);
 
-void bhyveMonitorSetReboot(bhyveMonitorPtr mon);
+void bhyveMonitorSetReboot(bhyveMonitor *mon);

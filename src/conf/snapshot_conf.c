@@ -53,7 +53,7 @@
 
 VIR_LOG_INIT("conf.snapshot_conf");
 
-static virClassPtr virDomainSnapshotDefClass;
+static virClass *virDomainSnapshotDefClass;
 static void virDomainSnapshotDefDispose(void *obj);
 
 static int
@@ -91,7 +91,7 @@ VIR_ENUM_IMPL(virDomainSnapshotState,
 
 /* Snapshot Def functions */
 static void
-virDomainSnapshotDiskDefClear(virDomainSnapshotDiskDefPtr disk)
+virDomainSnapshotDiskDefClear(virDomainSnapshotDiskDef *disk)
 {
     VIR_FREE(disk->name);
     virObjectUnref(disk->src);
@@ -99,7 +99,7 @@ virDomainSnapshotDiskDefClear(virDomainSnapshotDiskDefPtr disk)
 }
 
 void
-virDomainSnapshotDiskDefFree(virDomainSnapshotDiskDefPtr disk)
+virDomainSnapshotDiskDefFree(virDomainSnapshotDiskDef *disk)
 {
     if (!disk)
         return;
@@ -110,7 +110,7 @@ virDomainSnapshotDiskDefFree(virDomainSnapshotDiskDefPtr disk)
 
 
 /* Allocate a new virDomainSnapshotDef; free with virObjectUnref() */
-virDomainSnapshotDefPtr
+virDomainSnapshotDef *
 virDomainSnapshotDefNew(void)
 {
     if (virDomainSnapshotInitialize() < 0)
@@ -122,7 +122,7 @@ virDomainSnapshotDefNew(void)
 static void
 virDomainSnapshotDefDispose(void *obj)
 {
-    virDomainSnapshotDefPtr def = obj;
+    virDomainSnapshotDef *def = obj;
     size_t i;
 
     g_free(def->file);
@@ -135,9 +135,9 @@ virDomainSnapshotDefDispose(void *obj)
 int
 virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
                                  xmlXPathContextPtr ctxt,
-                                 virDomainSnapshotDiskDefPtr def,
+                                 virDomainSnapshotDiskDef *def,
                                  unsigned int flags,
-                                 virDomainXMLOptionPtr xmlopt)
+                                 virDomainXMLOption *xmlopt)
 {
     int ret = -1;
     char *snapshot = NULL;
@@ -222,15 +222,15 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
  * If flags does not include
  * VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL, then current is ignored.
  */
-static virDomainSnapshotDefPtr
+static virDomainSnapshotDef *
 virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
-                          virDomainXMLOptionPtr xmlopt,
+                          virDomainXMLOption *xmlopt,
                           void *parseOpaque,
                           bool *current,
                           unsigned int flags)
 {
-    virDomainSnapshotDefPtr def = NULL;
-    virDomainSnapshotDefPtr ret = NULL;
+    virDomainSnapshotDef *def = NULL;
+    virDomainSnapshotDef *ret = NULL;
     xmlNodePtr *nodes = NULL;
     xmlNodePtr inactiveDomNode = NULL;
     size_t i;
@@ -241,7 +241,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     char *memorySnapshot = NULL;
     char *memoryFile = NULL;
     bool offline = !!(flags & VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE);
-    virSaveCookieCallbacksPtr saveCookie = virDomainXMLOptionGetSaveCookie(xmlopt);
+    virSaveCookieCallbacks *saveCookie = virDomainXMLOptionGetSaveCookie(xmlopt);
     int domainflags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
                       VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
 
@@ -417,10 +417,10 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     return ret;
 }
 
-virDomainSnapshotDefPtr
+virDomainSnapshotDef *
 virDomainSnapshotDefParseNode(xmlDocPtr xml,
                               xmlNodePtr root,
-                              virDomainXMLOptionPtr xmlopt,
+                              virDomainXMLOption *xmlopt,
                               void *parseOpaque,
                               bool *current,
                               unsigned int flags)
@@ -451,14 +451,14 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
     return virDomainSnapshotDefParse(ctxt, xmlopt, parseOpaque, current, flags);
 }
 
-virDomainSnapshotDefPtr
+virDomainSnapshotDef *
 virDomainSnapshotDefParseString(const char *xmlStr,
-                                virDomainXMLOptionPtr xmlopt,
+                                virDomainXMLOption *xmlopt,
                                 void *parseOpaque,
                                 bool *current,
                                 unsigned int flags)
 {
-    virDomainSnapshotDefPtr ret = NULL;
+    virDomainSnapshotDef *ret = NULL;
     xmlDocPtr xml;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
@@ -479,10 +479,10 @@ virDomainSnapshotDefParseString(const char *xmlStr,
  * @other is non-NULL, this may include swapping def->parent.dom from other
  * into def. */
 int
-virDomainSnapshotRedefineValidate(virDomainSnapshotDefPtr def,
+virDomainSnapshotRedefineValidate(virDomainSnapshotDef *def,
                                   const unsigned char *domain_uuid,
-                                  virDomainMomentObjPtr other,
-                                  virDomainXMLOptionPtr xmlopt,
+                                  virDomainMomentObj *other,
+                                  virDomainXMLOption *xmlopt,
                                   unsigned int flags)
 {
     int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
@@ -509,7 +509,7 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDefPtr def,
     }
 
     if (other) {
-        virDomainSnapshotDefPtr otherdef = virDomainSnapshotObjGetDef(other);
+        virDomainSnapshotDef *otherdef = virDomainSnapshotObjGetDef(other);
 
         if ((otherdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
              otherdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED) !=
@@ -566,7 +566,7 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDefPtr def,
  * success, -1 on error.
  */
 static int
-virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDefPtr def)
+virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def)
 {
     const char *origpath;
     char *tmppath;
@@ -576,7 +576,7 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDefPtr def)
     size_t j;
 
     for (i = 0; i < def->ndisks; i++) {
-        virDomainSnapshotDiskDefPtr disk = &def->disks[i];
+        virDomainSnapshotDiskDef *disk = &def->disks[i];
 
         if (disk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL ||
             disk->src->path)
@@ -641,13 +641,13 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDefPtr def)
  * dom->disks.  If require_match, also ensure that there is no
  * conflicting requests for both internal and external snapshots.  */
 int
-virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
+virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
                             int default_snapshot,
                             bool require_match)
 {
-    virDomainDefPtr domdef = snapdef->parent.dom;
+    virDomainDef *domdef = snapdef->parent.dom;
     g_autoptr(GHashTable) map = virHashNew(NULL);
-    g_autofree virDomainSnapshotDiskDefPtr olddisks = NULL;
+    g_autofree virDomainSnapshotDiskDef *olddisks = NULL;
     size_t i;
 
     if (!domdef) {
@@ -668,8 +668,8 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
 
     /* Double check requested disks.  */
     for (i = 0; i < snapdef->ndisks; i++) {
-        virDomainSnapshotDiskDefPtr snapdisk = &snapdef->disks[i];
-        virDomainDiskDefPtr domdisk = virDomainDiskByName(domdef, snapdisk->name, false);
+        virDomainSnapshotDiskDef *snapdisk = &snapdef->disks[i];
+        virDomainDiskDef *domdisk = virDomainDiskByName(domdef, snapdisk->name, false);
 
         if (!domdisk) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -725,9 +725,9 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapdef,
     snapdef->ndisks = domdef->ndisks;
 
     for (i = 0; i < domdef->ndisks; i++) {
-        virDomainDiskDefPtr domdisk = domdef->disks[i];
-        virDomainSnapshotDiskDefPtr snapdisk = snapdef->disks + i;
-        virDomainSnapshotDiskDefPtr existing;
+        virDomainDiskDef *domdisk = domdef->disks[i];
+        virDomainSnapshotDiskDef *snapdisk = snapdef->disks + i;
+        virDomainSnapshotDiskDef *existing;
 
         /* copy existing disks */
         if ((existing = virHashLookup(map, domdisk->dst))) {
@@ -774,9 +774,9 @@ virDomainSnapshotFormatConvertXMLFlags(unsigned int flags)
 
 
 static int
-virDomainSnapshotDiskDefFormat(virBufferPtr buf,
-                               virDomainSnapshotDiskDefPtr disk,
-                               virDomainXMLOptionPtr xmlopt)
+virDomainSnapshotDiskDefFormat(virBuffer *buf,
+                               virDomainSnapshotDiskDef *disk,
+                               virDomainXMLOption *xmlopt)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
@@ -824,10 +824,10 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
 /* Append XML describing def into buf. Return 0 on success, or -1 on
  * failure with buf cleared. */
 static int
-virDomainSnapshotDefFormatInternal(virBufferPtr buf,
+virDomainSnapshotDefFormatInternal(virBuffer *buf,
                                    const char *uuidstr,
-                                   virDomainSnapshotDefPtr def,
-                                   virDomainXMLOptionPtr xmlopt,
+                                   virDomainSnapshotDef *def,
+                                   virDomainXMLOption *xmlopt,
                                    unsigned int flags)
 {
     size_t i;
@@ -914,8 +914,8 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
 
 char *
 virDomainSnapshotDefFormat(const char *uuidstr,
-                           virDomainSnapshotDefPtr def,
-                           virDomainXMLOptionPtr xmlopt,
+                           virDomainSnapshotDef *def,
+                           virDomainXMLOption *xmlopt,
                            unsigned int flags)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -932,7 +932,7 @@ virDomainSnapshotDefFormat(const char *uuidstr,
 
 
 bool
-virDomainSnapshotDefIsExternal(virDomainSnapshotDefPtr def)
+virDomainSnapshotDefIsExternal(virDomainSnapshotDef *def)
 {
     size_t i;
 
@@ -948,23 +948,23 @@ virDomainSnapshotDefIsExternal(virDomainSnapshotDefPtr def)
 }
 
 bool
-virDomainSnapshotIsExternal(virDomainMomentObjPtr snap)
+virDomainSnapshotIsExternal(virDomainMomentObj *snap)
 {
-    virDomainSnapshotDefPtr def = virDomainSnapshotObjGetDef(snap);
+    virDomainSnapshotDef *def = virDomainSnapshotObjGetDef(snap);
 
     return virDomainSnapshotDefIsExternal(def);
 }
 
 int
-virDomainSnapshotRedefinePrep(virDomainObjPtr vm,
-                              virDomainSnapshotDefPtr *defptr,
-                              virDomainMomentObjPtr *snap,
-                              virDomainXMLOptionPtr xmlopt,
+virDomainSnapshotRedefinePrep(virDomainObj *vm,
+                              virDomainSnapshotDef **defptr,
+                              virDomainMomentObj **snap,
+                              virDomainXMLOption *xmlopt,
                               unsigned int flags)
 {
-    virDomainSnapshotDefPtr def = *defptr;
-    virDomainMomentObjPtr other;
-    virDomainSnapshotDefPtr otherdef = NULL;
+    virDomainSnapshotDef *def = *defptr;
+    virDomainMomentObj *other;
+    virDomainSnapshotDef *otherdef = NULL;
     bool check_if_stolen;
 
     if (virDomainSnapshotCheckCycles(vm->snapshots, def, vm->def->name) < 0)

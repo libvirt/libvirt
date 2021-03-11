@@ -595,7 +595,7 @@ int open(const char *path, int flags, ...)
 }
 
 bool
-virCgroupV2DevicesAvailable(virCgroupPtr group G_GNUC_UNUSED)
+virCgroupV2DevicesAvailable(virCgroup *group G_GNUC_UNUSED)
 {
     return true;
 }

@@ -23,41 +23,40 @@
 #include "virnwfilterbindingobj.h"
 
 typedef struct _virNWFilterBindingObjList virNWFilterBindingObjList;
-typedef virNWFilterBindingObjList *virNWFilterBindingObjListPtr;
 
-virNWFilterBindingObjListPtr
+virNWFilterBindingObjList *
 virNWFilterBindingObjListNew(void);
 
-virNWFilterBindingObjPtr
-virNWFilterBindingObjListFindByPortDev(virNWFilterBindingObjListPtr bindings,
+virNWFilterBindingObj *
+virNWFilterBindingObjListFindByPortDev(virNWFilterBindingObjList *bindings,
                                        const char *name);
 
-virNWFilterBindingObjPtr
-virNWFilterBindingObjListAdd(virNWFilterBindingObjListPtr bindings,
-                             virNWFilterBindingDefPtr def);
+virNWFilterBindingObj *
+virNWFilterBindingObjListAdd(virNWFilterBindingObjList *bindings,
+                             virNWFilterBindingDef *def);
 
 void
-virNWFilterBindingObjListRemove(virNWFilterBindingObjListPtr bindings,
-                                virNWFilterBindingObjPtr binding);
+virNWFilterBindingObjListRemove(virNWFilterBindingObjList *bindings,
+                                virNWFilterBindingObj *binding);
 
 int
-virNWFilterBindingObjListLoadAllConfigs(virNWFilterBindingObjListPtr bindings,
+virNWFilterBindingObjListLoadAllConfigs(virNWFilterBindingObjList *bindings,
                                         const char *configDir);
 
 
-typedef int (*virNWFilterBindingObjListIterator)(virNWFilterBindingObjPtr binding,
+typedef int (*virNWFilterBindingObjListIterator)(virNWFilterBindingObj *binding,
                                                  void *opaque);
 
 int
-virNWFilterBindingObjListForEach(virNWFilterBindingObjListPtr bindings,
+virNWFilterBindingObjListForEach(virNWFilterBindingObjList *bindings,
                                  virNWFilterBindingObjListIterator callback,
                                  void *opaque);
 
 typedef bool (*virNWFilterBindingObjListACLFilter)(virConnectPtr conn,
-                                                   virNWFilterBindingDefPtr def);
+                                                   virNWFilterBindingDef *def);
 
 int
-virNWFilterBindingObjListExport(virNWFilterBindingObjListPtr bindings,
+virNWFilterBindingObjListExport(virNWFilterBindingObjList *bindings,
                                 virConnectPtr conn,
                                 virNWFilterBindingPtr **bindinglist,
                                 virNWFilterBindingObjListACLFilter filter);

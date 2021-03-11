@@ -39,7 +39,7 @@ VIR_LOG_INIT("conf.object_event");
 
 struct _virObjectEventCallback {
     int callbackID;
-    virClassPtr klass;
+    virClass *klass;
     int eventID;
     virConnectPtr conn;
     int remoteID;
@@ -54,35 +54,33 @@ struct _virObjectEventCallback {
     bool legacy; /* true if end user does not know callbackID */
 };
 typedef struct _virObjectEventCallback virObjectEventCallback;
-typedef virObjectEventCallback *virObjectEventCallbackPtr;
 
 struct _virObjectEventCallbackList {
     unsigned int nextID;
     size_t count;
-    virObjectEventCallbackPtr *callbacks;
+    virObjectEventCallback **callbacks;
 };
 
 struct _virObjectEventQueue {
     size_t count;
-    virObjectEventPtr *events;
+    virObjectEvent **events;
 };
 typedef struct _virObjectEventQueue virObjectEventQueue;
-typedef virObjectEventQueue *virObjectEventQueuePtr;
 
 struct _virObjectEventState {
     virObjectLockable parent;
     /* The list of domain event callbacks */
-    virObjectEventCallbackListPtr callbacks;
+    virObjectEventCallbackList *callbacks;
     /* The queue of object events */
-    virObjectEventQueuePtr queue;
+    virObjectEventQueue *queue;
     /* Timer for flushing events queue */
     int timer;
     /* Flag if we're in process of dispatching */
     bool isDispatching;
 };
 
-static virClassPtr virObjectEventClass;
-static virClassPtr virObjectEventStateClass;
+static virClass *virObjectEventClass;
+static virClass *virObjectEventStateClass;
 
 static void virObjectEventDispose(void *obj);
 static void virObjectEventStateDispose(void *obj);
@@ -107,7 +105,7 @@ VIR_ONCE_GLOBAL_INIT(virObjectEvent);
  * Return the class object to be used as a parent when creating an
  * event subclass.
  */
-virClassPtr
+virClass *
 virClassForObjectEvent(void)
 {
     if (virObjectEventInitialize() < 0)
@@ -119,7 +117,7 @@ virClassForObjectEvent(void)
 static void
 virObjectEventDispose(void *obj)
 {
-    virObjectEventPtr event = obj;
+    virObjectEvent *event = obj;
 
     VIR_DEBUG("obj=%p", event);
 
@@ -134,7 +132,7 @@ virObjectEventDispose(void *obj)
  * Free the memory in the domain event callback
  */
 static void
-virObjectEventCallbackFree(virObjectEventCallbackPtr cb)
+virObjectEventCallbackFree(virObjectEventCallback *cb)
 {
     if (!cb)
         return;
@@ -151,7 +149,7 @@ virObjectEventCallbackFree(virObjectEventCallbackPtr cb)
  * Free the memory in the domain event callback list
  */
 static void
-virObjectEventCallbackListFree(virObjectEventCallbackListPtr list)
+virObjectEventCallbackListFree(virObjectEventCallbackList *list)
 {
     size_t i;
     if (!list)
@@ -192,8 +190,8 @@ virObjectEventCallbackListFree(virObjectEventCallbackListPtr list)
  */
 static int
 virObjectEventCallbackListCount(virConnectPtr conn,
-                                virObjectEventCallbackListPtr cbList,
-                                virClassPtr klass,
+                                virObjectEventCallbackList *cbList,
+                                virClass *klass,
                                 int eventID,
                                 const char *key,
                                 bool serverFilter)
@@ -202,7 +200,7 @@ virObjectEventCallbackListCount(virConnectPtr conn,
     int ret = 0;
 
     for (i = 0; i < cbList->count; i++) {
-        virObjectEventCallbackPtr cb = cbList->callbacks[i];
+        virObjectEventCallback *cb = cbList->callbacks[i];
 
         if (cb->filter)
             continue;
@@ -226,18 +224,18 @@ virObjectEventCallbackListCount(virConnectPtr conn,
  * @callback: the callback to remove
  * @doFreeCb: Inhibit calling the freecb
  *
- * Internal function to remove a callback from a virObjectEventCallbackListPtr
+ * Internal function to remove a callback from a virObjectEventCallbackList *
  */
 static int
 virObjectEventCallbackListRemoveID(virConnectPtr conn,
-                                   virObjectEventCallbackListPtr cbList,
+                                   virObjectEventCallbackList *cbList,
                                    int callbackID,
                                    bool doFreeCb)
 {
     size_t i;
 
     for (i = 0; i < cbList->count; i++) {
-        virObjectEventCallbackPtr cb = cbList->callbacks[i];
+        virObjectEventCallback *cb = cbList->callbacks[i];
 
         if (cb->callbackID == callbackID && cb->conn == conn) {
             int ret;
@@ -268,13 +266,13 @@ virObjectEventCallbackListRemoveID(virConnectPtr conn,
 
 static int
 virObjectEventCallbackListMarkDeleteID(virConnectPtr conn,
-                                       virObjectEventCallbackListPtr cbList,
+                                       virObjectEventCallbackList *cbList,
                                        int callbackID)
 {
     size_t i;
 
     for (i = 0; i < cbList->count; i++) {
-        virObjectEventCallbackPtr cb = cbList->callbacks[i];
+        virObjectEventCallback *cb = cbList->callbacks[i];
 
         if (cb->callbackID == callbackID && cb->conn == conn) {
             cb->deleted = true;
@@ -294,7 +292,7 @@ virObjectEventCallbackListMarkDeleteID(virConnectPtr conn,
 
 
 static int
-virObjectEventCallbackListPurgeMarked(virObjectEventCallbackListPtr cbList)
+virObjectEventCallbackListPurgeMarked(virObjectEventCallbackList *cbList)
 {
     size_t n;
     for (n = 0; n < cbList->count; n++) {
@@ -332,9 +330,9 @@ virObjectEventCallbackListPurgeMarked(virObjectEventCallbackListPtr cbList)
  */
 static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 virObjectEventCallbackLookup(virConnectPtr conn,
-                             virObjectEventCallbackListPtr cbList,
+                             virObjectEventCallbackList *cbList,
                              const char *key,
-                             virClassPtr klass,
+                             virClass *klass,
                              int eventID,
                              virConnectObjectEventGenericCallback callback,
                              bool legacy,
@@ -346,7 +344,7 @@ virObjectEventCallbackLookup(virConnectPtr conn,
         *remoteID = -1;
 
     for (i = 0; i < cbList->count; i++) {
-        virObjectEventCallbackPtr cb = cbList->callbacks[i];
+        virObjectEventCallback *cb = cbList->callbacks[i];
 
         if (cb->deleted)
             continue;
@@ -382,15 +380,15 @@ virObjectEventCallbackLookup(virConnectPtr conn,
  * @callbackID: filled with callback ID
  * @serverFilter: true if server supports object filtering
  *
- * Internal function to add a callback from a virObjectEventCallbackListPtr
+ * Internal function to add a callback from a virObjectEventCallbackList *
  */
 static int
 virObjectEventCallbackListAddID(virConnectPtr conn,
-                                virObjectEventCallbackListPtr cbList,
+                                virObjectEventCallbackList *cbList,
                                 const char *key,
                                 virObjectEventCallbackFilter filter,
                                 void *filter_opaque,
-                                virClassPtr klass,
+                                virClass *klass,
                                 int eventID,
                                 virConnectObjectEventGenericCallback callback,
                                 void *opaque,
@@ -399,7 +397,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
                                 int *callbackID,
                                 bool serverFilter)
 {
-    virObjectEventCallbackPtr cb;
+    virObjectEventCallback *cb;
     int ret = -1;
     int remoteID = -1;
 
@@ -469,7 +467,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
  * Removes all elements from the queue
  */
 static void
-virObjectEventQueueClear(virObjectEventQueuePtr queue)
+virObjectEventQueueClear(virObjectEventQueue *queue)
 {
     size_t i;
     if (!queue)
@@ -488,7 +486,7 @@ virObjectEventQueueClear(virObjectEventQueuePtr queue)
  * Free the memory in the queue. We process this like a list here
  */
 static void
-virObjectEventQueueFree(virObjectEventQueuePtr queue)
+virObjectEventQueueFree(virObjectEventQueue *queue)
 {
     if (!queue)
         return;
@@ -497,7 +495,7 @@ virObjectEventQueueFree(virObjectEventQueuePtr queue)
     g_free(queue);
 }
 
-static virObjectEventQueuePtr
+static virObjectEventQueue *
 virObjectEventQueueNew(void)
 {
     return g_new0(virObjectEventQueue, 1);
@@ -506,14 +504,14 @@ virObjectEventQueueNew(void)
 
 /**
  * virObjectEventStateDispose:
- * @list: virObjectEventStatePtr to free
+ * @list: virObjectEventState * to free
  *
- * Free a virObjectEventStatePtr and its members, and unregister the timer.
+ * Free a virObjectEventState * and its members, and unregister the timer.
  */
 static void
 virObjectEventStateDispose(void *obj)
 {
-    virObjectEventStatePtr state = obj;
+    virObjectEventState *state = obj;
 
     VIR_DEBUG("obj=%p", state);
 
@@ -525,7 +523,7 @@ virObjectEventStateDispose(void *obj)
 }
 
 
-static void virObjectEventStateFlush(virObjectEventStatePtr state);
+static void virObjectEventStateFlush(virObjectEventState *state);
 
 
 /**
@@ -540,7 +538,7 @@ static void virObjectEventStateFlush(virObjectEventStatePtr state);
 static void
 virObjectEventTimer(int timer G_GNUC_UNUSED, void *opaque)
 {
-    virObjectEventStatePtr state = opaque;
+    virObjectEventState *state = opaque;
 
     virObjectEventStateFlush(state);
 }
@@ -551,10 +549,10 @@ virObjectEventTimer(int timer G_GNUC_UNUSED, void *opaque)
  *
  * Allocate a new event state object.
  */
-virObjectEventStatePtr
+virObjectEventState *
 virObjectEventStateNew(void)
 {
-    virObjectEventStatePtr state = NULL;
+    virObjectEventState *state = NULL;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
@@ -590,7 +588,7 @@ virObjectEventStateNew(void)
  * Create a new event, with the information common to all events.
  */
 void *
-virObjectEventNew(virClassPtr klass,
+virObjectEventNew(virClass *klass,
                   virObjectEventDispatchFunc dispatcher,
                   int eventID,
                   int id,
@@ -598,7 +596,7 @@ virObjectEventNew(virClassPtr klass,
                   const unsigned char *uuid,
                   const char *key)
 {
-    virObjectEventPtr event;
+    virObjectEvent *event;
 
     if (virObjectEventInitialize() < 0)
         return NULL;
@@ -638,8 +636,8 @@ virObjectEventNew(virClassPtr klass,
  * Returns: 0 on success, -1 on failure
  */
 static int
-virObjectEventQueuePush(virObjectEventQueuePtr evtQueue,
-                        virObjectEventPtr event)
+virObjectEventQueuePush(virObjectEventQueue *evtQueue,
+                        virObjectEvent *event)
 {
     if (!evtQueue)
         return -1;
@@ -651,8 +649,8 @@ virObjectEventQueuePush(virObjectEventQueuePtr evtQueue,
 
 
 static bool
-virObjectEventDispatchMatchCallback(virObjectEventPtr event,
-                                    virObjectEventCallbackPtr cb)
+virObjectEventDispatchMatchCallback(virObjectEvent *event,
+                                    virObjectEventCallback *cb)
 {
     if (!cb)
         return false;
@@ -675,9 +673,9 @@ virObjectEventDispatchMatchCallback(virObjectEventPtr event,
 
 
 static void
-virObjectEventStateDispatchCallbacks(virObjectEventStatePtr state,
-                                     virObjectEventPtr event,
-                                     virObjectEventCallbackListPtr callbacks)
+virObjectEventStateDispatchCallbacks(virObjectEventState *state,
+                                     virObjectEvent *event,
+                                     virObjectEventCallbackList *callbacks)
 {
     size_t i;
     /* Cache this now, since we may be dropping the lock,
@@ -686,7 +684,7 @@ virObjectEventStateDispatchCallbacks(virObjectEventStatePtr state,
     size_t cbCount = callbacks->count;
 
     for (i = 0; i < cbCount; i++) {
-        virObjectEventCallbackPtr cb = callbacks->callbacks[i];
+        virObjectEventCallback *cb = callbacks->callbacks[i];
 
         if (!virObjectEventDispatchMatchCallback(event, cb))
             continue;
@@ -700,9 +698,9 @@ virObjectEventStateDispatchCallbacks(virObjectEventStatePtr state,
 
 
 static void
-virObjectEventStateQueueDispatch(virObjectEventStatePtr state,
-                                 virObjectEventQueuePtr queue,
-                                 virObjectEventCallbackListPtr callbacks)
+virObjectEventStateQueueDispatch(virObjectEventState *state,
+                                 virObjectEventQueue *queue,
+                                 virObjectEventCallbackList *callbacks)
 {
     size_t i;
 
@@ -729,8 +727,8 @@ virObjectEventStateQueueDispatch(virObjectEventStatePtr state,
  * id.
  */
 void
-virObjectEventStateQueueRemote(virObjectEventStatePtr state,
-                               virObjectEventPtr event,
+virObjectEventStateQueueRemote(virObjectEventState *state,
+                               virObjectEvent *event,
                                int remoteID)
 {
     if (!event)
@@ -765,15 +763,15 @@ virObjectEventStateQueueRemote(virObjectEventStatePtr state,
  * call.
  */
 void
-virObjectEventStateQueue(virObjectEventStatePtr state,
-                         virObjectEventPtr event)
+virObjectEventStateQueue(virObjectEventState *state,
+                         virObjectEvent *event)
 {
     virObjectEventStateQueueRemote(state, event, -1);
 }
 
 
 static void
-virObjectEventStateCleanupTimer(virObjectEventStatePtr state, bool clear_queue)
+virObjectEventStateCleanupTimer(virObjectEventState *state, bool clear_queue)
 {
     /* There are still some callbacks, keep the timer. */
     if (state->callbacks->count)
@@ -792,7 +790,7 @@ virObjectEventStateCleanupTimer(virObjectEventStatePtr state, bool clear_queue)
 
 
 static void
-virObjectEventStateFlush(virObjectEventStatePtr state)
+virObjectEventStateFlush(virObjectEventState *state)
 {
     virObjectEventQueue tempQueue;
 
@@ -863,11 +861,11 @@ virObjectEventStateFlush(virObjectEventStatePtr state)
  */
 int
 virObjectEventStateRegisterID(virConnectPtr conn,
-                              virObjectEventStatePtr state,
+                              virObjectEventState *state,
                               const char *key,
                               virObjectEventCallbackFilter filter,
                               void *filter_opaque,
-                              virClassPtr klass,
+                              virClass *klass,
                               int eventID,
                               virConnectObjectEventGenericCallback cb,
                               void *opaque,
@@ -929,7 +927,7 @@ virObjectEventStateRegisterID(virConnectPtr conn,
  */
 int
 virObjectEventStateDeregisterID(virConnectPtr conn,
-                                virObjectEventStatePtr state,
+                                virObjectEventState *state,
                                 int callbackID,
                                 bool doFreeCb)
 {
@@ -966,8 +964,8 @@ virObjectEventStateDeregisterID(virConnectPtr conn,
  */
 int
 virObjectEventStateCallbackID(virConnectPtr conn,
-                              virObjectEventStatePtr state,
-                              virClassPtr klass,
+                              virObjectEventState *state,
+                              virClass *klass,
                               int eventID,
                               virConnectObjectEventGenericCallback callback,
                               int *remoteID)
@@ -1004,17 +1002,17 @@ virObjectEventStateCallbackID(virConnectPtr conn,
  */
 int
 virObjectEventStateEventID(virConnectPtr conn,
-                           virObjectEventStatePtr state,
+                           virObjectEventState *state,
                            int callbackID,
                            int *remoteID)
 {
     int ret = -1;
     size_t i;
-    virObjectEventCallbackListPtr cbList = state->callbacks;
+    virObjectEventCallbackList *cbList = state->callbacks;
 
     virObjectLock(state);
     for (i = 0; i < cbList->count; i++) {
-        virObjectEventCallbackPtr cb = cbList->callbacks[i];
+        virObjectEventCallback *cb = cbList->callbacks[i];
 
         if (cb->deleted)
             continue;
@@ -1050,7 +1048,7 @@ virObjectEventStateEventID(virConnectPtr conn,
  */
 void
 virObjectEventStateSetRemote(virConnectPtr conn,
-                             virObjectEventStatePtr state,
+                             virObjectEventState *state,
                              int callbackID,
                              int remoteID)
 {
@@ -1058,7 +1056,7 @@ virObjectEventStateSetRemote(virConnectPtr conn,
 
     virObjectLock(state);
     for (i = 0; i < state->callbacks->count; i++) {
-        virObjectEventCallbackPtr cb = state->callbacks->callbacks[i];
+        virObjectEventCallback *cb = state->callbacks->callbacks[i];
 
         if (cb->deleted)
             continue;

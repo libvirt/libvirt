@@ -48,7 +48,7 @@ testLogParseOutputs(const void *opaque)
 {
     int ret = -1;
     int noutputs;
-    virLogOutputPtr *outputs = NULL;
+    virLogOutput **outputs = NULL;
     const struct testLogData *data = opaque;
 
     noutputs = virLogParseOutputs(data->str, &outputs);
@@ -80,7 +80,7 @@ testLogParseFilters(const void *opaque)
 {
     int ret = -1;
     int nfilters;
-    virLogFilterPtr *filters = NULL;
+    virLogFilter **filters = NULL;
     const struct testLogData *data = opaque;
 
     nfilters = virLogParseFilters(data->str, &filters);

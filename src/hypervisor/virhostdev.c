@@ -42,14 +42,14 @@ VIR_LOG_INIT("util.hostdev");
 
 #define HOSTDEV_STATE_DIR RUNSTATEDIR "/libvirt/hostdevmgr"
 
-static virHostdevManagerPtr manager; /* global hostdev manager, never freed */
+static virHostdevManager *manager; /* global hostdev manager, never freed */
 
-static virClassPtr virHostdevManagerClass;
+static virClass *virHostdevManagerClass;
 static void virHostdevManagerDispose(void *obj);
-static virHostdevManagerPtr virHostdevManagerNew(void);
+static virHostdevManager *virHostdevManagerNew(void);
 
 struct virHostdevIsPCINodeDeviceUsedData {
-    virHostdevManagerPtr mgr;
+    virHostdevManager *mgr;
     const char *driverName;
     const char *domainName;
     bool usesVFIO;
@@ -76,9 +76,9 @@ struct virHostdevIsPCINodeDeviceUsedData {
  * module usually expect an 'actual'. Even with these conventions in place,
  * adding comments to highlight ownership-related issues is recommended */
 
-static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddressPtr devAddr, void *opaque)
+static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddress *devAddr, void *opaque)
 {
-    virPCIDevicePtr actual;
+    virPCIDevice *actual;
     struct virHostdevIsPCINodeDeviceUsedData *helperData = opaque;
 
     actual = virPCIDeviceListFindByIDs(helperData->mgr->activePCIHostdevs,
@@ -126,7 +126,7 @@ VIR_ONCE_GLOBAL_INIT(virHostdevManager);
 static void
 virHostdevManagerDispose(void *obj)
 {
-    virHostdevManagerPtr hostdevMgr = obj;
+    virHostdevManager *hostdevMgr = obj;
 
     virObjectUnref(hostdevMgr->activePCIHostdevs);
     virObjectUnref(hostdevMgr->inactivePCIHostdevs);
@@ -138,7 +138,7 @@ virHostdevManagerDispose(void *obj)
     g_free(hostdevMgr->stateDir);
 }
 
-static virHostdevManagerPtr
+static virHostdevManager *
 virHostdevManagerNew(void)
 {
     g_autoptr(virHostdevManager) hostdevMgr = NULL;
@@ -200,7 +200,7 @@ virHostdevManagerNew(void)
     return g_steal_pointer(&hostdevMgr);
 }
 
-virHostdevManagerPtr
+virHostdevManager *
 virHostdevManagerGetDefault(void)
 {
     if (virHostdevManagerInitialize() < 0)
@@ -225,7 +225,7 @@ virHostdevManagerGetDefault(void)
  */
 static int
 virHostdevGetPCIHostDevice(const virDomainHostdevDef *hostdev,
-                           virPCIDevicePtr *pci)
+                           virPCIDevice **pci)
 {
     g_autoptr(virPCIDevice) actual = NULL;
     const virDomainHostdevSubsysPCI *pcisrc = &hostdev->source.subsys.u.pci;
@@ -261,8 +261,8 @@ virHostdevGetPCIHostDevice(const virDomainHostdevDef *hostdev,
     return 0;
 }
 
-static virPCIDeviceListPtr
-virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
+static virPCIDeviceList *
+virHostdevGetPCIHostDeviceList(virDomainHostdevDef **hostdevs, int nhostdevs)
 {
     g_autoptr(virPCIDeviceList) pcidevs = NULL;
     size_t i;
@@ -271,7 +271,7 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
         return NULL;
 
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevDef *hostdev = hostdevs[i];
         g_autoptr(virPCIDevice) pci = NULL;
 
         if (virHostdevGetPCIHostDevice(hostdev, &pci) == -1)
@@ -290,7 +290,7 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 
 
 static int
-virHostdevPCISysfsPath(virDomainHostdevDefPtr hostdev,
+virHostdevPCISysfsPath(virDomainHostdevDef *hostdev,
                        char **sysfs_path)
 {
     return virPCIDeviceAddressGetSysfsFile(&hostdev->source.subsys.u.pci.addr, sysfs_path);
@@ -298,7 +298,7 @@ virHostdevPCISysfsPath(virDomainHostdevDefPtr hostdev,
 
 
 static int
-virHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev)
+virHostdevIsVirtualFunction(virDomainHostdevDef *hostdev)
 {
     g_autofree char *sysfs_path = NULL;
 
@@ -310,7 +310,7 @@ virHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev)
 
 
 static int
-virHostdevNetDevice(virDomainHostdevDefPtr hostdev,
+virHostdevNetDevice(virDomainHostdevDef *hostdev,
                     int pfNetDevIdx,
                     char **linkdev,
                     int *vf)
@@ -416,7 +416,7 @@ virHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
  * Returns 0 on success, -1 on failure.
  */
 static int
-virHostdevSaveNetConfig(virDomainHostdevDefPtr hostdev,
+virHostdevSaveNetConfig(virDomainHostdevDef *hostdev,
                         const char *stateDir)
 {
     g_autofree char *linkdev = NULL;
@@ -455,7 +455,7 @@ virHostdevSaveNetConfig(virDomainHostdevDefPtr hostdev,
  * Returns 0 on success, -1 on failure.
  */
 static int
-virHostdevSetNetConfig(virDomainHostdevDefPtr hostdev,
+virHostdevSetNetConfig(virDomainHostdevDef *hostdev,
                        const unsigned char *uuid)
 {
     g_autofree char *linkdev = NULL;
@@ -495,12 +495,12 @@ virHostdevSetNetConfig(virDomainHostdevDefPtr hostdev,
 
 
 static int
-virHostdevRestoreNetConfig(virDomainHostdevDefPtr hostdev,
+virHostdevRestoreNetConfig(virDomainHostdevDef *hostdev,
                            const char *stateDir)
 {
     g_autofree char *linkdev = NULL;
-    g_autofree virMacAddrPtr MAC = NULL;
-    g_autofree virMacAddrPtr adminMAC = NULL;
+    g_autofree virMacAddr *MAC = NULL;
+    g_autofree virMacAddr *adminMAC = NULL;
     g_autoptr(virNetDevVlan) vlan = NULL;
     const virNetDevVPortProfile *virtPort;
     int vf = -1;
@@ -597,14 +597,14 @@ virHostdevRestoreNetConfig(virDomainHostdevDefPtr hostdev,
 }
 
 static int
-virHostdevResetAllPCIDevices(virHostdevManagerPtr mgr,
-                             virPCIDeviceListPtr pcidevs)
+virHostdevResetAllPCIDevices(virHostdevManager *mgr,
+                             virPCIDeviceList *pcidevs)
 {
     int ret = 0;
     size_t i;
 
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
-        virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
+        virPCIDevice *pci = virPCIDeviceListGet(pcidevs, i);
 
         /* We can avoid looking up the actual device here, because performing
          * a PCI reset on a device doesn't require any information other than
@@ -622,14 +622,14 @@ virHostdevResetAllPCIDevices(virHostdevManagerPtr mgr,
 }
 
 static void
-virHostdevReattachAllPCIDevices(virHostdevManagerPtr mgr,
-                                virPCIDeviceListPtr pcidevs)
+virHostdevReattachAllPCIDevices(virHostdevManager *mgr,
+                                virPCIDeviceList *pcidevs)
 {
     size_t i;
 
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
-        virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
-        virPCIDevicePtr actual;
+        virPCIDevice *pci = virPCIDeviceListGet(pcidevs, i);
+        virPCIDevice *actual;
 
         /* We need to look up the actual device because that's what
          * virPCIDeviceReattach() expects as its argument */
@@ -655,19 +655,19 @@ virHostdevReattachAllPCIDevices(virHostdevManagerPtr mgr,
 
 
 static int
-virHostdevPreparePCIDevicesImpl(virHostdevManagerPtr mgr,
+virHostdevPreparePCIDevicesImpl(virHostdevManager *mgr,
                                 const char *drv_name,
                                 const char *dom_name,
                                 const unsigned char *uuid,
-                                virPCIDeviceListPtr pcidevs,
-                                virDomainHostdevDefPtr *hostdevs,
+                                virPCIDeviceList *pcidevs,
+                                virDomainHostdevDef **hostdevs,
                                 int nhostdevs,
                                 unsigned int flags)
 {
     int last_processed_hostdev_vf = -1;
     size_t i;
     int ret = -1;
-    virPCIDeviceAddressPtr devAddr = NULL;
+    virPCIDeviceAddress *devAddr = NULL;
 
     virObjectLock(mgr->activePCIHostdevs);
     virObjectLock(mgr->inactivePCIHostdevs);
@@ -682,7 +682,7 @@ virHostdevPreparePCIDevicesImpl(virHostdevManagerPtr mgr,
 
     /* Step 1: Perform some initial checks on the devices */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
-        virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
+        virPCIDevice *pci = virPCIDeviceListGet(pcidevs, i);
         bool strict_acs_check = !!(flags & VIR_HOSTDEV_STRICT_ACS_CHECK);
         bool usesVFIO = (virPCIDeviceGetStubDriver(pci) == VIR_PCI_STUB_DRIVER_VFIO);
         struct virHostdevIsPCINodeDeviceUsedData data = {mgr, drv_name, dom_name, false};
@@ -733,7 +733,7 @@ virHostdevPreparePCIDevicesImpl(virHostdevManagerPtr mgr,
     /* Step 2: detach managed devices and make sure unmanaged devices
      *         have already been taken care of */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
-        virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
+        virPCIDevice *pci = virPCIDeviceListGet(pcidevs, i);
 
         if (virPCIDeviceGetManaged(pci)) {
 
@@ -817,8 +817,8 @@ virHostdevPreparePCIDevicesImpl(virHostdevManagerPtr mgr,
 
     /* Step 5: Move devices from the inactive list to the active list */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
-        virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
-        virPCIDevicePtr actual;
+        virPCIDevice *pci = virPCIDeviceListGet(pcidevs, i);
+        virPCIDevice *actual;
 
         VIR_DEBUG("Removing PCI device %s from inactive list",
                   virPCIDeviceGetName(pci));
@@ -832,8 +832,8 @@ virHostdevPreparePCIDevicesImpl(virHostdevManagerPtr mgr,
 
     /* Step 6: Set driver and domain information */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
-        virPCIDevicePtr pci;
-        virPCIDevicePtr actual;
+        virPCIDevice *pci;
+        virPCIDevice *actual;
 
         /* We need to look up the actual device and set the information
          * there because 'pci' only contain address information and will
@@ -850,9 +850,9 @@ virHostdevPreparePCIDevicesImpl(virHostdevManagerPtr mgr,
 
     /* Step 7: Now set the original states for hostdev def */
     for (i = 0; i < nhostdevs; i++) {
-        virPCIDevicePtr actual;
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
-        virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
+        virPCIDevice *actual;
+        virDomainHostdevDef *hostdev = hostdevs[i];
+        virDomainHostdevSubsysPCI *pcisrc = &hostdev->source.subsys.u.pci;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
@@ -890,8 +890,8 @@ virHostdevPreparePCIDevicesImpl(virHostdevManagerPtr mgr,
     /* Move devices back to the inactive list so that they can be
      * processed properly below (reattachdevs label) */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
-        virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
-        virPCIDevicePtr actual;
+        virPCIDevice *pci = virPCIDeviceListGet(pcidevs, i);
+        virPCIDevice *actual;
 
         VIR_DEBUG("Removing PCI device %s from active list",
                   virPCIDeviceGetName(pci));
@@ -924,11 +924,11 @@ virHostdevPreparePCIDevicesImpl(virHostdevManagerPtr mgr,
 
 
 int
-virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
+virHostdevPreparePCIDevices(virHostdevManager *mgr,
                             const char *drv_name,
                             const char *dom_name,
                             const unsigned char *uuid,
-                            virDomainHostdevDefPtr *hostdevs,
+                            virDomainHostdevDef **hostdevs,
                             int nhostdevs,
                             unsigned int flags)
 {
@@ -946,11 +946,11 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
 
 
 static void
-virHostdevReAttachPCIDevicesImpl(virHostdevManagerPtr mgr,
+virHostdevReAttachPCIDevicesImpl(virHostdevManager *mgr,
                                  const char *drv_name,
                                  const char *dom_name,
-                                 virPCIDeviceListPtr pcidevs,
-                                 virDomainHostdevDefPtr *hostdevs,
+                                 virPCIDeviceList *pcidevs,
+                                 virDomainHostdevDef **hostdevs,
                                  int nhostdevs)
 {
     size_t i;
@@ -965,8 +965,8 @@ virHostdevReAttachPCIDevicesImpl(virHostdevManagerPtr mgr,
      *         used by the current domain and driver */
     i = 0;
     while (i < virPCIDeviceListCount(pcidevs)) {
-        virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
-        virPCIDevicePtr actual = NULL;
+        virPCIDevice *pci = virPCIDeviceListGet(pcidevs, i);
+        virPCIDevice *actual = NULL;
 
         /* We need to look up the actual device, which is the one containing
          * information such as by which domain and driver it is used. As a
@@ -994,8 +994,8 @@ virHostdevReAttachPCIDevicesImpl(virHostdevManagerPtr mgr,
 
     /* Step 2: Move devices from the active list to the inactive list */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
-        virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
-        virPCIDevicePtr actual;
+        virPCIDevice *pci = virPCIDeviceListGet(pcidevs, i);
+        virPCIDevice *actual;
 
         VIR_DEBUG("Removing PCI device %s from active list",
                   virPCIDeviceGetName(pci));
@@ -1020,11 +1020,11 @@ virHostdevReAttachPCIDevicesImpl(virHostdevManagerPtr mgr,
      * <interface type='hostdev'>
      */
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevDef *hostdev = hostdevs[i];
 
         if (virHostdevIsPCINetDevice(hostdev)) {
-            virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
-            virPCIDevicePtr actual;
+            virDomainHostdevSubsysPCI *pcisrc = &hostdev->source.subsys.u.pci;
+            virPCIDevice *actual;
 
             actual = virPCIDeviceListFindByIDs(mgr->inactivePCIHostdevs,
                                                pcisrc->addr.domain,
@@ -1053,8 +1053,8 @@ virHostdevReAttachPCIDevicesImpl(virHostdevManagerPtr mgr,
 
 
 static void
-virHostdevDeleteMissingPCIDevices(virHostdevManagerPtr mgr,
-                                  virDomainHostdevDefPtr *hostdevs,
+virHostdevDeleteMissingPCIDevices(virHostdevManager *mgr,
+                                  virDomainHostdevDef **hostdevs,
                                   int nhostdevs)
 {
     size_t i;
@@ -1087,10 +1087,10 @@ virHostdevDeleteMissingPCIDevices(virHostdevManagerPtr mgr,
 
 
 void
-virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
+virHostdevReAttachPCIDevices(virHostdevManager *mgr,
                              const char *drv_name,
                              const char *dom_name,
-                             virDomainHostdevDefPtr *hostdevs,
+                             virDomainHostdevDef **hostdevs,
                              int nhostdevs)
 {
     g_autoptr(virPCIDeviceList) pcidevs = NULL;
@@ -1115,8 +1115,8 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
 
 
 int
-virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
-                                 virDomainHostdevDefPtr *hostdevs,
+virHostdevUpdateActivePCIDevices(virHostdevManager *mgr,
+                                 virDomainHostdevDef **hostdevs,
                                  int nhostdevs,
                                  const char *drv_name,
                                  const char *dom_name)
@@ -1161,13 +1161,13 @@ virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
 }
 
 int
-virHostdevUpdateActiveUSBDevices(virHostdevManagerPtr mgr,
-                                 virDomainHostdevDefPtr *hostdevs,
+virHostdevUpdateActiveUSBDevices(virHostdevManager *mgr,
+                                 virDomainHostdevDef **hostdevs,
                                  int nhostdevs,
                                  const char *drv_name,
                                  const char *dom_name)
 {
-    virDomainHostdevDefPtr hostdev = NULL;
+    virDomainHostdevDef *hostdev = NULL;
     size_t i;
     int ret = -1;
 
@@ -1176,7 +1176,7 @@ virHostdevUpdateActiveUSBDevices(virHostdevManagerPtr mgr,
 
     virObjectLock(mgr->activeUSBHostdevs);
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevSubsysUSBPtr usbsrc;
+        virDomainHostdevSubsysUSB *usbsrc;
         g_autoptr(virUSBDevice) usb = NULL;
         hostdev = hostdevs[i];
         usbsrc = &hostdev->source.subsys.u.usb;
@@ -1205,15 +1205,15 @@ virHostdevUpdateActiveUSBDevices(virHostdevManagerPtr mgr,
 }
 
 static int
-virHostdevUpdateActiveSCSIHostDevices(virHostdevManagerPtr mgr,
-                                      virDomainHostdevDefPtr hostdev,
-                                      virDomainHostdevSubsysSCSIPtr scsisrc,
+virHostdevUpdateActiveSCSIHostDevices(virHostdevManager *mgr,
+                                      virDomainHostdevDef *hostdev,
+                                      virDomainHostdevSubsysSCSI *scsisrc,
                                       const char *drv_name,
                                       const char *dom_name)
 {
-    virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
+    virDomainHostdevSubsysSCSIHost *scsihostsrc = &scsisrc->u.host;
     g_autoptr(virSCSIDevice) scsi = NULL;
-    virSCSIDevicePtr tmp = NULL;
+    virSCSIDevice *tmp = NULL;
 
     if (!(scsi = virSCSIDeviceNew(NULL,
                                   scsihostsrc->adapter, scsihostsrc->bus,
@@ -1234,13 +1234,13 @@ virHostdevUpdateActiveSCSIHostDevices(virHostdevManagerPtr mgr,
 }
 
 int
-virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
-                                  virDomainHostdevDefPtr *hostdevs,
+virHostdevUpdateActiveSCSIDevices(virHostdevManager *mgr,
+                                  virDomainHostdevDef **hostdevs,
                                   int nhostdevs,
                                   const char *drv_name,
                                   const char *dom_name)
 {
-    virDomainHostdevDefPtr hostdev = NULL;
+    virDomainHostdevDef *hostdev = NULL;
     size_t i;
     int ret = -1;
 
@@ -1249,7 +1249,7 @@ virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
 
     virObjectLock(mgr->activeSCSIHostdevs);
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevSubsysSCSIPtr scsisrc;
+        virDomainHostdevSubsysSCSI *scsisrc;
         hostdev = hostdevs[i];
         scsisrc = &hostdev->source.subsys.u.scsi;
 
@@ -1273,8 +1273,8 @@ virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
 
 
 int
-virHostdevUpdateActiveMediatedDevices(virHostdevManagerPtr mgr,
-                                      virDomainHostdevDefPtr *hostdevs,
+virHostdevUpdateActiveMediatedDevices(virHostdevManager *mgr,
+                                      virDomainHostdevDef **hostdevs,
                                       int nhostdevs,
                                       const char *drv_name,
                                       const char *dom_name)
@@ -1288,8 +1288,8 @@ virHostdevUpdateActiveMediatedDevices(virHostdevManagerPtr mgr,
 
     virObjectLock(mgr->activeMediatedHostdevs);
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
-        virDomainHostdevSubsysMediatedDevPtr mdevsrc;
+        virDomainHostdevDef *hostdev = hostdevs[i];
+        virDomainHostdevSubsysMediatedDev *mdevsrc;
 
         mdevsrc = &hostdev->source.subsys.u.mdev;
 
@@ -1313,20 +1313,20 @@ virHostdevUpdateActiveMediatedDevices(virHostdevManagerPtr mgr,
 
 
 static int
-virHostdevMarkUSBDevices(virHostdevManagerPtr mgr,
+virHostdevMarkUSBDevices(virHostdevManager *mgr,
                          const char *drv_name,
                          const char *dom_name,
-                         virUSBDeviceListPtr list)
+                         virUSBDeviceList *list)
 {
     size_t i, j;
     unsigned int count;
-    virUSBDevicePtr tmp;
+    virUSBDevice *tmp;
 
     virObjectLock(mgr->activeUSBHostdevs);
     count = virUSBDeviceListCount(list);
 
     for (i = 0; i < count; i++) {
-        virUSBDevicePtr usb = virUSBDeviceListGet(list, i);
+        virUSBDevice *usb = virUSBDeviceListGet(list, i);
         if ((tmp = virUSBDeviceListFind(mgr->activeUSBHostdevs, usb))) {
             const char *other_drvname;
             const char *other_domname;
@@ -1372,11 +1372,11 @@ virHostdevMarkUSBDevices(virHostdevManagerPtr mgr,
 
 
 int
-virHostdevFindUSBDevice(virDomainHostdevDefPtr hostdev,
+virHostdevFindUSBDevice(virDomainHostdevDef *hostdev,
                         bool mandatory,
-                        virUSBDevicePtr *usb)
+                        virUSBDevice **usb)
 {
-    virDomainHostdevSubsysUSBPtr usbsrc = &hostdev->source.subsys.u.usb;
+    virDomainHostdevSubsysUSB *usbsrc = &hostdev->source.subsys.u.usb;
     unsigned vendor = usbsrc->vendor;
     unsigned product = usbsrc->product;
     unsigned bus = usbsrc->bus;
@@ -1455,16 +1455,16 @@ virHostdevFindUSBDevice(virDomainHostdevDefPtr hostdev,
 }
 
 int
-virHostdevPrepareUSBDevices(virHostdevManagerPtr mgr,
+virHostdevPrepareUSBDevices(virHostdevManager *mgr,
                             const char *drv_name,
                             const char *dom_name,
-                            virDomainHostdevDefPtr *hostdevs,
+                            virDomainHostdevDef **hostdevs,
                             int nhostdevs,
                             unsigned int flags)
 {
     size_t i;
     g_autoptr(virUSBDeviceList) list = NULL;
-    virUSBDevicePtr tmp;
+    virUSBDevice *tmp;
     bool coldBoot = !!(flags & VIR_HOSTDEV_COLD_BOOT);
 
     if (!nhostdevs)
@@ -1481,7 +1481,7 @@ virHostdevPrepareUSBDevices(virHostdevManagerPtr mgr,
     /* Loop 1: build temporary list
      */
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevDef *hostdev = hostdevs[i];
         bool required = true;
         g_autoptr(virUSBDevice) usb = NULL;
 
@@ -1523,11 +1523,11 @@ virHostdevPrepareUSBDevices(virHostdevManagerPtr mgr,
 }
 
 static int
-virHostdevPrepareSCSIHostDevices(virDomainHostdevDefPtr hostdev,
-                                 virDomainHostdevSubsysSCSIPtr scsisrc,
-                                 virSCSIDeviceListPtr list)
+virHostdevPrepareSCSIHostDevices(virDomainHostdevDef *hostdev,
+                                 virDomainHostdevSubsysSCSI *scsisrc,
+                                 virSCSIDeviceList *list)
 {
-    virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
+    virDomainHostdevSubsysSCSIHost *scsihostsrc = &scsisrc->u.host;
     g_autoptr(virSCSIDevice) scsi = NULL;
 
     if (hostdev->managed) {
@@ -1550,16 +1550,16 @@ virHostdevPrepareSCSIHostDevices(virDomainHostdevDefPtr hostdev,
 }
 
 int
-virHostdevPrepareSCSIDevices(virHostdevManagerPtr mgr,
+virHostdevPrepareSCSIDevices(virHostdevManager *mgr,
                              const char *drv_name,
                              const char *dom_name,
-                             virDomainHostdevDefPtr *hostdevs,
+                             virDomainHostdevDef **hostdevs,
                              int nhostdevs)
 {
     size_t i, j;
     int count;
     g_autoptr(virSCSIDeviceList) list = NULL;
-    virSCSIDevicePtr tmp;
+    virSCSIDevice *tmp;
 
     if (!nhostdevs)
         return 0;
@@ -1574,8 +1574,8 @@ virHostdevPrepareSCSIDevices(virHostdevManagerPtr mgr,
 
     /* Loop 1: build temporary list */
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
-        virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+        virDomainHostdevDef *hostdev = hostdevs[i];
+        virDomainHostdevSubsysSCSI *scsisrc = &hostdev->source.subsys.u.scsi;
 
         if (!virHostdevIsSCSIDevice(hostdev))
             continue;
@@ -1596,7 +1596,7 @@ virHostdevPrepareSCSIDevices(virHostdevManagerPtr mgr,
     count = virSCSIDeviceListCount(list);
 
     for (i = 0; i < count; i++) {
-        virSCSIDevicePtr scsi = virSCSIDeviceListGet(list, i);
+        virSCSIDevice *scsi = virSCSIDeviceListGet(list, i);
         if ((tmp = virSCSIDeviceListFind(mgr->activeSCSIHostdevs,
                                          scsi))) {
             bool scsi_shareable = virSCSIDeviceGetShareable(scsi);
@@ -1647,14 +1647,14 @@ virHostdevPrepareSCSIDevices(virHostdevManagerPtr mgr,
 }
 
 int
-virHostdevPrepareSCSIVHostDevices(virHostdevManagerPtr mgr,
+virHostdevPrepareSCSIVHostDevices(virHostdevManager *mgr,
                                   const char *drv_name,
                                   const char *dom_name,
-                                  virDomainHostdevDefPtr *hostdevs,
+                                  virDomainHostdevDef **hostdevs,
                                   int nhostdevs)
 {
     g_autoptr(virSCSIVHostDeviceList) list = NULL;
-    virSCSIVHostDevicePtr tmp;
+    virSCSIVHostDevice *tmp;
     size_t i, j;
 
     if (!nhostdevs)
@@ -1670,8 +1670,8 @@ virHostdevPrepareSCSIVHostDevices(virHostdevManagerPtr mgr,
 
     /* Loop 1: build temporary list */
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
-        virDomainHostdevSubsysSCSIVHostPtr hostsrc = &hostdev->source.subsys.u.scsi_host;
+        virDomainHostdevDef *hostdev = hostdevs[i];
+        virDomainHostdevSubsysSCSIVHost *hostsrc = &hostdev->source.subsys.u.scsi_host;
         g_autoptr(virSCSIVHostDevice) host = NULL;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
@@ -1732,10 +1732,10 @@ virHostdevPrepareSCSIVHostDevices(virHostdevManagerPtr mgr,
 
 
 int
-virHostdevPrepareMediatedDevices(virHostdevManagerPtr mgr,
+virHostdevPrepareMediatedDevices(virHostdevManager *mgr,
                                  const char *drv_name,
                                  const char *dom_name,
-                                 virDomainHostdevDefPtr *hostdevs,
+                                 virDomainHostdevDef **hostdevs,
                                  int nhostdevs)
 {
     size_t i;
@@ -1753,8 +1753,8 @@ virHostdevPrepareMediatedDevices(virHostdevManagerPtr mgr,
 
     /* Loop 1: Build a temporary list of ALL mediated devices. */
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
-        virDomainHostdevSubsysMediatedDevPtr src = &hostdev->source.subsys.u.mdev;
+        virDomainHostdevDef *hostdev = hostdevs[i];
+        virDomainHostdevSubsysMediatedDev *src = &hostdev->source.subsys.u.mdev;
         g_autoptr(virMediatedDevice) mdev = NULL;
 
         if (!virHostdevIsMdevDevice(hostdev))
@@ -1780,7 +1780,7 @@ virHostdevPrepareMediatedDevices(virHostdevManagerPtr mgr,
      * in cleanup label.
      */
     while (virMediatedDeviceListCount(list) > 0) {
-        virMediatedDevicePtr tmp = virMediatedDeviceListGet(list, 0);
+        virMediatedDevice *tmp = virMediatedDeviceListGet(list, 0);
         virMediatedDeviceListSteal(list, tmp);
     }
 
@@ -1788,10 +1788,10 @@ virHostdevPrepareMediatedDevices(virHostdevManagerPtr mgr,
 }
 
 void
-virHostdevReAttachUSBDevices(virHostdevManagerPtr mgr,
+virHostdevReAttachUSBDevices(virHostdevManager *mgr,
                              const char *drv_name,
                              const char *dom_name,
-                             virDomainHostdevDefPtr *hostdevs,
+                             virDomainHostdevDef **hostdevs,
                              int nhostdevs)
 {
     size_t i;
@@ -1801,10 +1801,10 @@ virHostdevReAttachUSBDevices(virHostdevManagerPtr mgr,
 
     virObjectLock(mgr->activeUSBHostdevs);
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
-        virDomainHostdevSubsysUSBPtr usbsrc = &hostdev->source.subsys.u.usb;
+        virDomainHostdevDef *hostdev = hostdevs[i];
+        virDomainHostdevSubsysUSB *usbsrc = &hostdev->source.subsys.u.usb;
         g_autoptr(virUSBDevice) usb = NULL;
-        virUSBDevicePtr tmp;
+        virUSBDevice *tmp;
         const char *usedby_drvname;
         const char *usedby_domname;
 
@@ -1848,15 +1848,15 @@ virHostdevReAttachUSBDevices(virHostdevManagerPtr mgr,
 }
 
 static void
-virHostdevReAttachSCSIHostDevices(virHostdevManagerPtr mgr,
-                                  virDomainHostdevDefPtr hostdev,
-                                  virDomainHostdevSubsysSCSIPtr scsisrc,
+virHostdevReAttachSCSIHostDevices(virHostdevManager *mgr,
+                                  virDomainHostdevDef *hostdev,
+                                  virDomainHostdevSubsysSCSI *scsisrc,
                                   const char *drv_name,
                                   const char *dom_name)
 {
-    virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
+    virDomainHostdevSubsysSCSIHost *scsihostsrc = &scsisrc->u.host;
     g_autoptr(virSCSIDevice) scsi = NULL;
-    virSCSIDevicePtr tmp;
+    virSCSIDevice *tmp;
 
     if (!(scsi = virSCSIDeviceNew(NULL,
                                   scsihostsrc->adapter, scsihostsrc->bus,
@@ -1888,10 +1888,10 @@ virHostdevReAttachSCSIHostDevices(virHostdevManagerPtr mgr,
 }
 
 void
-virHostdevReAttachSCSIDevices(virHostdevManagerPtr mgr,
+virHostdevReAttachSCSIDevices(virHostdevManager *mgr,
                               const char *drv_name,
                               const char *dom_name,
-                              virDomainHostdevDefPtr *hostdevs,
+                              virDomainHostdevDef **hostdevs,
                               int nhostdevs)
 {
     size_t i;
@@ -1901,8 +1901,8 @@ virHostdevReAttachSCSIDevices(virHostdevManagerPtr mgr,
 
     virObjectLock(mgr->activeSCSIHostdevs);
     for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
-        virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+        virDomainHostdevDef *hostdev = hostdevs[i];
+        virDomainHostdevSubsysSCSI *scsisrc = &hostdev->source.subsys.u.scsi;
 
         if (!virHostdevIsSCSIDevice(hostdev))
             continue;
@@ -1917,10 +1917,10 @@ virHostdevReAttachSCSIDevices(virHostdevManagerPtr mgr,
 }
 
 void
-virHostdevReAttachSCSIVHostDevices(virHostdevManagerPtr mgr,
+virHostdevReAttachSCSIVHostDevices(virHostdevManager *mgr,
                                    const char *drv_name,
                                    const char *dom_name,
-                                   virDomainHostdevDefPtr *hostdevs,
+                                   virDomainHostdevDef **hostdevs,
                                    int nhostdevs)
 {
     size_t i;
@@ -1931,9 +1931,9 @@ virHostdevReAttachSCSIVHostDevices(virHostdevManagerPtr mgr,
     virObjectLock(mgr->activeSCSIVHostHostdevs);
     for (i = 0; i < nhostdevs; i++) {
         g_autoptr(virSCSIVHostDevice) host = NULL;
-        virSCSIVHostDevicePtr tmp;
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
-        virDomainHostdevSubsysSCSIVHostPtr hostsrc = &hostdev->source.subsys.u.scsi_host;
+        virSCSIVHostDevice *tmp;
+        virDomainHostdevDef *hostdev = hostdevs[i];
+        virDomainHostdevSubsysSCSIVHost *hostsrc = &hostdev->source.subsys.u.scsi_host;
         const char *usedby_drvname;
         const char *usedby_domname;
 
@@ -1984,10 +1984,10 @@ virHostdevReAttachSCSIVHostDevices(virHostdevManagerPtr mgr,
  * list of active host devices.
  */
 void
-virHostdevReAttachMediatedDevices(virHostdevManagerPtr mgr,
+virHostdevReAttachMediatedDevices(virHostdevManager *mgr,
                                   const char *drv_name,
                                   const char *dom_name,
-                                  virDomainHostdevDefPtr *hostdevs,
+                                  virDomainHostdevDef **hostdevs,
                                   int nhostdevs)
 {
     const char *used_by_drvname = NULL;
@@ -2000,9 +2000,9 @@ virHostdevReAttachMediatedDevices(virHostdevManagerPtr mgr,
     virObjectLock(mgr->activeMediatedHostdevs);
     for (i = 0; i < nhostdevs; i++) {
         g_autofree char *sysfspath = NULL;
-        virMediatedDevicePtr tmp;
-        virDomainHostdevSubsysMediatedDevPtr mdevsrc;
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virMediatedDevice *tmp;
+        virDomainHostdevSubsysMediatedDev *mdevsrc;
+        virDomainHostdevDef *hostdev = hostdevs[i];
 
         if (!virHostdevIsMdevDevice(hostdev))
             continue;
@@ -2031,8 +2031,8 @@ virHostdevReAttachMediatedDevices(virHostdevManagerPtr mgr,
 }
 
 int
-virHostdevPCINodeDeviceDetach(virHostdevManagerPtr mgr,
-                              virPCIDevicePtr pci)
+virHostdevPCINodeDeviceDetach(virHostdevManager *mgr,
+                              virPCIDevice *pci)
 {
     struct virHostdevIsPCINodeDeviceUsedData data = {mgr, NULL, NULL, false};
     int ret = -1;
@@ -2057,8 +2057,8 @@ virHostdevPCINodeDeviceDetach(virHostdevManagerPtr mgr,
 }
 
 int
-virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr mgr,
-                                virPCIDevicePtr pci)
+virHostdevPCINodeDeviceReAttach(virHostdevManager *mgr,
+                                virPCIDevice *pci)
 {
     struct virHostdevIsPCINodeDeviceUsedData data = {mgr, NULL, NULL, false};
     int ret = -1;
@@ -2087,8 +2087,8 @@ virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr mgr,
 }
 
 int
-virHostdevPCINodeDeviceReset(virHostdevManagerPtr mgr,
-                             virPCIDevicePtr pci)
+virHostdevPCINodeDeviceReset(virHostdevManager *mgr,
+                             virPCIDevice *pci)
 {
     int ret = -1;
 
@@ -2106,9 +2106,9 @@ virHostdevPCINodeDeviceReset(virHostdevManagerPtr mgr,
 }
 
 int
-virHostdevPrepareDomainDevices(virHostdevManagerPtr mgr,
+virHostdevPrepareDomainDevices(virHostdevManager *mgr,
                                const char *driver,
-                               virDomainDefPtr def,
+                               virDomainDef *def,
                                unsigned int flags)
 {
     if (!def->nhostdevs)
@@ -2146,9 +2146,9 @@ virHostdevPrepareDomainDevices(virHostdevManagerPtr mgr,
 }
 
 void
-virHostdevReAttachDomainDevices(virHostdevManagerPtr mgr,
+virHostdevReAttachDomainDevices(virHostdevManager *mgr,
                                 const char *driver,
-                                virDomainDefPtr def,
+                                virDomainDef *def,
                                 unsigned int flags)
 {
     if (!def->nhostdevs || !mgr)
@@ -2171,9 +2171,9 @@ virHostdevReAttachDomainDevices(virHostdevManagerPtr mgr,
 }
 
 int
-virHostdevUpdateActiveDomainDevices(virHostdevManagerPtr mgr,
+virHostdevUpdateActiveDomainDevices(virHostdevManager *mgr,
                                     const char *driver,
-                                    virDomainDefPtr def,
+                                    virDomainDef *def,
                                     unsigned int flags)
 {
     if (!def->nhostdevs)
@@ -2208,12 +2208,12 @@ virHostdevUpdateActiveDomainDevices(virHostdevManagerPtr mgr,
 
 
 static int
-virHostdevGetNVMeDeviceList(virNVMeDeviceListPtr nvmeDevices,
-                            virStorageSourcePtr src,
+virHostdevGetNVMeDeviceList(virNVMeDeviceList *nvmeDevices,
+                            virStorageSource *src,
                             const char *drv_name,
                             const char *dom_name)
 {
-    virStorageSourcePtr n;
+    virStorageSource *n;
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
         g_autoptr(virNVMeDevice) dev = NULL;
@@ -2238,15 +2238,15 @@ virHostdevGetNVMeDeviceList(virNVMeDeviceListPtr nvmeDevices,
 
 
 int
-virHostdevPrepareOneNVMeDevice(virHostdevManagerPtr hostdev_mgr,
+virHostdevPrepareOneNVMeDevice(virHostdevManager *hostdev_mgr,
                                const char *drv_name,
                                const char *dom_name,
-                               virStorageSourcePtr src)
+                               virStorageSource *src)
 {
     g_autoptr(virNVMeDeviceList) nvmeDevices = NULL;
     g_autoptr(virPCIDeviceList) pciDevices = NULL;
     const unsigned int pciFlags = 0;
-    virNVMeDevicePtr temp = NULL;
+    virNVMeDevice *temp = NULL;
     size_t i;
     ssize_t lastGoodNVMeIdx = -1;
     int ret = -1;
@@ -2292,7 +2292,7 @@ virHostdevPrepareOneNVMeDevice(virHostdevManagerPtr hostdev_mgr,
 
     /* Let's check if all PCI devices are NVMe disks. */
     for (i = 0; i < virPCIDeviceListCount(pciDevices); i++) {
-        virPCIDevicePtr pci = virPCIDeviceListGet(pciDevices, i);
+        virPCIDevice *pci = virPCIDeviceListGet(pciDevices, i);
         g_autofree char *drvPath = NULL;
         g_autofree char *drvName = NULL;
         int stub = VIR_PCI_STUB_DRIVER_NONE;
@@ -2347,10 +2347,10 @@ virHostdevPrepareOneNVMeDevice(virHostdevManagerPtr hostdev_mgr,
 
 
 int
-virHostdevPrepareNVMeDevices(virHostdevManagerPtr hostdev_mgr,
+virHostdevPrepareNVMeDevices(virHostdevManager *hostdev_mgr,
                              const char *drv_name,
                              const char *dom_name,
-                             virDomainDiskDefPtr *disks,
+                             virDomainDiskDef **disks,
                              size_t ndisks)
 {
     size_t i;
@@ -2382,10 +2382,10 @@ virHostdevPrepareNVMeDevices(virHostdevManagerPtr hostdev_mgr,
 
 
 int
-virHostdevReAttachOneNVMeDevice(virHostdevManagerPtr hostdev_mgr,
+virHostdevReAttachOneNVMeDevice(virHostdevManager *hostdev_mgr,
                                 const char *drv_name,
                                 const char *dom_name,
-                                virStorageSourcePtr src)
+                                virStorageSource *src)
 {
     g_autoptr(virNVMeDeviceList) nvmeDevices = NULL;
     g_autoptr(virPCIDeviceList) pciDevices = NULL;
@@ -2411,7 +2411,7 @@ virHostdevReAttachOneNVMeDevice(virHostdevManagerPtr hostdev_mgr,
                                      drv_name, dom_name, pciDevices, NULL, 0);
 
     for (i = 0; i < virNVMeDeviceListCount(nvmeDevices); i++) {
-        virNVMeDevicePtr temp = virNVMeDeviceListGet(nvmeDevices, i);
+        virNVMeDevice *temp = virNVMeDeviceListGet(nvmeDevices, i);
 
         if (virNVMeDeviceListDel(hostdev_mgr->activeNVMeHostdevs, temp) < 0)
             goto cleanup;
@@ -2425,10 +2425,10 @@ virHostdevReAttachOneNVMeDevice(virHostdevManagerPtr hostdev_mgr,
 
 
 int
-virHostdevReAttachNVMeDevices(virHostdevManagerPtr hostdev_mgr,
+virHostdevReAttachNVMeDevices(virHostdevManager *hostdev_mgr,
                               const char *drv_name,
                               const char *dom_name,
-                              virDomainDiskDefPtr *disks,
+                              virDomainDiskDef **disks,
                               size_t ndisks)
 {
     size_t i;
@@ -2451,15 +2451,15 @@ virHostdevReAttachNVMeDevices(virHostdevManagerPtr hostdev_mgr,
 
 
 int
-virHostdevUpdateActiveNVMeDevices(virHostdevManagerPtr hostdev_mgr,
+virHostdevUpdateActiveNVMeDevices(virHostdevManager *hostdev_mgr,
                                   const char *drv_name,
                                   const char *dom_name,
-                                  virDomainDiskDefPtr *disks,
+                                  virDomainDiskDef **disks,
                                   size_t ndisks)
 {
     g_autoptr(virNVMeDeviceList) nvmeDevices = NULL;
     g_autoptr(virPCIDeviceList) pciDevices = NULL;
-    virNVMeDevicePtr temp = NULL;
+    virNVMeDevice *temp = NULL;
     size_t i;
     ssize_t lastGoodNVMeIdx = -1;
     ssize_t lastGoodPCIIdx = -1;
@@ -2494,7 +2494,7 @@ virHostdevUpdateActiveNVMeDevices(virHostdevManagerPtr hostdev_mgr,
     }
 
     for (i = 0; i < virPCIDeviceListCount(pciDevices); i++) {
-        virPCIDevicePtr actual = virPCIDeviceListGet(pciDevices, i);
+        virPCIDevice *actual = virPCIDeviceListGet(pciDevices, i);
 
         /* We must restore some attributes that were lost on daemon restart. */
         virPCIDeviceSetUnbindFromStub(actual, true);
@@ -2523,7 +2523,7 @@ virHostdevUpdateActiveNVMeDevices(virHostdevManagerPtr hostdev_mgr,
         lastGoodNVMeIdx--;
     }
     while (lastGoodPCIIdx >= 0) {
-        virPCIDevicePtr actual = virPCIDeviceListGet(pciDevices, i);
+        virPCIDevice *actual = virPCIDeviceListGet(pciDevices, i);
 
         virPCIDeviceListDel(hostdev_mgr->activePCIHostdevs,
                             virPCIDeviceGetAddress(actual));

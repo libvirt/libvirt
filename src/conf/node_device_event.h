@@ -28,7 +28,7 @@
 
 int
 virNodeDeviceEventStateRegisterID(virConnectPtr conn,
-                                  virObjectEventStatePtr state,
+                                  virObjectEventState *state,
                                   virNodeDevicePtr dev,
                                   int eventID,
                                   virConnectNodeDeviceEventGenericCallback cb,
@@ -40,7 +40,7 @@ virNodeDeviceEventStateRegisterID(virConnectPtr conn,
 
 int
 virNodeDeviceEventStateRegisterClient(virConnectPtr conn,
-                                      virObjectEventStatePtr state,
+                                      virObjectEventState *state,
                                       virNodeDevicePtr dev,
                                       int eventID,
                                       virConnectNodeDeviceEventGenericCallback cb,
@@ -50,10 +50,10 @@ virNodeDeviceEventStateRegisterClient(virConnectPtr conn,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5)
     ATTRIBUTE_NONNULL(8);
 
-virObjectEventPtr
+virObjectEvent *
 virNodeDeviceEventLifecycleNew(const char *name,
                                int type,
                                int detail);
 
-virObjectEventPtr
+virObjectEvent *
 virNodeDeviceEventUpdateNew(const char *name);

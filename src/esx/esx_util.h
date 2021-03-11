@@ -46,7 +46,7 @@ struct _esxUtil_ParsedUri {
     char *path;
 };
 
-int esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri);
+int esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURI *uri);
 
 void esxUtil_FreeParsedUri(esxUtil_ParsedUri **parsedUri);
 

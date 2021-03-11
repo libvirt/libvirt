@@ -39,11 +39,10 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 typedef struct _testQemuMonitorJSONSimpleFuncData testQemuMonitorJSONSimpleFuncData;
-typedef testQemuMonitorJSONSimpleFuncData *testQemuMonitorJSONSimpleFuncDataPtr;
 struct _testQemuMonitorJSONSimpleFuncData {
     const char *cmd;
-    int (* func) (qemuMonitorPtr mon);
-    virDomainXMLOptionPtr xmlopt;
+    int (* func) (qemuMonitor *mon);
+    virDomainXMLOption *xmlopt;
     const char *reply;
     GHashTable *schema;
     bool allowDeprecated;
@@ -52,7 +51,7 @@ struct _testQemuMonitorJSONSimpleFuncData {
 
 typedef struct _testGenericData testGenericData;
 struct _testGenericData {
-    virDomainXMLOptionPtr xmlopt;
+    virDomainXMLOption *xmlopt;
     GHashTable *schema;
 };
 
@@ -153,7 +152,7 @@ static int
 testQemuMonitorJSONGetStatus(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     bool running = false;
     virDomainPausedReason reason = 0;
     g_autoptr(qemuMonitorTest) test = NULL;
@@ -243,7 +242,7 @@ static int
 testQemuMonitorJSONGetVersion(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     int ret = -1;
     int major;
     int minor;
@@ -346,9 +345,9 @@ static int
 testQemuMonitorJSONGetMachines(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     int ret = -1;
-    qemuMonitorMachineInfoPtr *info;
+    qemuMonitorMachineInfo **info;
     int ninfo = 0;
     const char *null = NULL;
     size_t i;
@@ -429,7 +428,7 @@ static int
 testQemuMonitorJSONGetCPUDefinitions(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     g_autoptr(qemuMonitorCPUDefs) defs = NULL;
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -502,7 +501,7 @@ static int
 testQemuMonitorJSONGetCommands(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     int ret = -1;
     char **commands = NULL;
     int ncommands = 0;
@@ -567,7 +566,7 @@ static int
 testQemuMonitorJSONGetTPMModels(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     int ret = -1;
     char **tpmmodels = NULL;
     int ntpmmodels = 0;
@@ -617,8 +616,8 @@ testQemuMonitorJSONGetTPMModels(const void *opaque)
 
 
 struct qemuMonitorJSONTestAttachChardevData {
-    qemuMonitorTestPtr test;
-    virDomainChrSourceDefPtr chr;
+    qemuMonitorTest *test;
+    virDomainChrSourceDef *chr;
     const char *expectPty;
     bool fail;
 };
@@ -654,10 +653,10 @@ testQemuMonitorJSONAttachChardev(const void *opaque)
 
 
 static int
-qemuMonitorJSONTestAttachOneChardev(virDomainXMLOptionPtr xmlopt,
+qemuMonitorJSONTestAttachOneChardev(virDomainXMLOption *xmlopt,
                                     GHashTable *schema,
                                     const char *label,
-                                    virDomainChrSourceDefPtr chr,
+                                    virDomainChrSourceDef *chr,
                                     const char *expectargs,
                                     const char *reply,
                                     const char *expectPty,
@@ -701,7 +700,7 @@ qemuMonitorJSONTestAttachOneChardev(virDomainXMLOptionPtr xmlopt,
 }
 
 static int
-qemuMonitorJSONTestAttachChardev(virDomainXMLOptionPtr xmlopt,
+qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
                                  GHashTable *schema)
 {
     virDomainChrSourceDef chr;
@@ -822,7 +821,7 @@ static int
 testQemuMonitorJSONDetachChardev(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     g_autoptr(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
@@ -851,9 +850,9 @@ static int
 testQemuMonitorJSONGetListPaths(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     int ret = -1;
-    qemuMonitorJSONListPathPtr *paths;
+    qemuMonitorJSONListPath **paths;
     int npaths = 0;
     size_t i;
     g_autoptr(qemuMonitorTest) test = NULL;
@@ -929,7 +928,7 @@ static int
 testQemuMonitorJSONGetObjectProperty(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     qemuMonitorJSONObjectProperty prop;
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -969,7 +968,7 @@ static int
 testQemuMonitorJSONSetObjectProperty(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     qemuMonitorJSONObjectProperty prop;
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -1018,7 +1017,7 @@ static int
 testQemuMonitorJSONGetDeviceAliases(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     int ret = -1;
     char **aliases = NULL;
     const char **alias;
@@ -1078,7 +1077,7 @@ static int
 testQemuMonitorJSONCPU(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     bool running = false;
     virDomainPausedReason reason = 0;
     g_autoptr(qemuMonitorTest) test = NULL;
@@ -1132,9 +1131,9 @@ testQemuMonitorJSONCPU(const void *opaque)
 static int
 testQemuMonitorJSONSimpleFunc(const void *opaque)
 {
-    testQemuMonitorJSONSimpleFuncDataPtr data =
-        (testQemuMonitorJSONSimpleFuncDataPtr) opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    testQemuMonitorJSONSimpleFuncData *data =
+        (testQemuMonitorJSONSimpleFuncData *) opaque;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     const char *reply = data->reply;
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -1158,7 +1157,7 @@ static int \
 testQemuMonitorJSON ## funcName(const void *opaque) \
 { \
     const testQemuMonitorJSONSimpleFuncData *data = opaque; \
-    virDomainXMLOptionPtr xmlopt = data->xmlopt; \
+    virDomainXMLOption *xmlopt = data->xmlopt; \
     const char *reply = data->reply; \
     g_autoptr(qemuMonitorTest) test = NULL; \
  \
@@ -1224,7 +1223,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONNBDServerStart(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     virStorageNetHostDef server_tcp = {
         .name = (char *)"localhost",
         .port = 12345,
@@ -1271,7 +1270,7 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUsEqual(struct qemuMonitorQueryCpusEntr
 
 
 static int
-testQEMUMonitorJSONqemuMonitorJSONQueryCPUsHelper(qemuMonitorTestPtr test,
+testQEMUMonitorJSONqemuMonitorJSONQueryCPUsHelper(qemuMonitorTest *test,
                                                   struct qemuMonitorQueryCpusEntry *expect,
                                                   bool fast,
                                                   size_t num)
@@ -1312,7 +1311,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     struct qemuMonitorQueryCpusEntry expect_slow[] = {
             {0, 17622, (char *) "/machine/unattached/device[0]", true},
             {1, 17624, (char *) "/machine/unattached/device[1]", true},
@@ -1378,7 +1377,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONQueryCPUsFast(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     struct qemuMonitorQueryCpusEntry expect_fast[] = {
             {0, 17629, (char *) "/machine/unattached/device[0]", false},
             {1, 17630, (char *) "/machine/unattached/device[1]", false},
@@ -1418,7 +1417,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONGetBalloonInfo(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     unsigned long long currmem;
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -1474,7 +1473,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     int ret = -1;
     GHashTable *blockDevices = NULL;
     GHashTable *expectedBlockDevices = NULL;
@@ -1550,9 +1549,9 @@ static int
 testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     GHashTable *blockstats = NULL;
-    qemuBlockStatsPtr stats;
+    qemuBlockStats *stats;
     int ret = -1;
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -1712,7 +1711,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONGetMigrationCacheSize(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     unsigned long long cacheSize;
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -1746,7 +1745,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONGetMigrationStats(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     int ret = -1;
     qemuMonitorMigrationStats stats, expectedStats;
     char *error = NULL;
@@ -1841,7 +1840,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     int ret = -1;
     GHashTable *info = NULL;
     GHashTable *expectedInfo = NULL;
@@ -1963,7 +1962,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     int ret = -1;
     virDomainBlockIoTuneInfo info, expectedInfo;
     g_autoptr(qemuMonitorTest) test = NULL;
@@ -2017,7 +2016,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONGetTargetArch(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     g_autofree char *arch = NULL;
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -2050,7 +2049,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     const char *cap;
     g_auto(GStrv) caps = NULL;
     g_autoptr(virBitmap) bitmap = NULL;
@@ -2099,7 +2098,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONSendKey(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     unsigned int keycodes[] = {43, 26, 46, 32};
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -2121,7 +2120,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONSendKeyHoldtime(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     unsigned int keycodes[] = {43, 26, 46, 32};
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -2150,7 +2149,7 @@ static int
 testQemuMonitorJSONqemuMonitorSupportsActiveCommit(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     const char *error1 =
         "{"
         "  \"error\": {"
@@ -2193,7 +2192,7 @@ static int
 testQemuMonitorJSONqemuMonitorJSONGetDumpGuestMemoryCapability(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
+    virDomainXMLOption *xmlopt = data->xmlopt;
     int cap;
     const char *reply =
         "{"
@@ -2231,7 +2230,7 @@ testQemuMonitorJSONqemuMonitorJSONGetDumpGuestMemoryCapability(const void *opaqu
 
 struct testCPUData {
     const char *name;
-    virDomainXMLOptionPtr xmlopt;
+    virDomainXMLOption *xmlopt;
     GHashTable *schema;
 };
 
@@ -2240,7 +2239,7 @@ static int
 testQemuMonitorJSONGetCPUData(const void *opaque)
 {
     const struct testCPUData *data = opaque;
-    virCPUDataPtr cpuData = NULL;
+    virCPUData *cpuData = NULL;
     char *jsonFile = NULL;
     char *dataFile = NULL;
     char *jsonStr = NULL;
@@ -2302,8 +2301,8 @@ static int
 testQemuMonitorJSONGetNonExistingCPUData(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    virCPUDataPtr cpuData = NULL;
+    virDomainXMLOption *xmlopt = data->xmlopt;
+    virCPUData *cpuData = NULL;
     int rv, ret = -1;
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -2345,8 +2344,8 @@ static int
 testQemuMonitorJSONGetIOThreads(const void *opaque)
 {
     const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    qemuMonitorIOThreadInfoPtr *info;
+    virDomainXMLOption *xmlopt = data->xmlopt;
+    qemuMonitorIOThreadInfo **info;
     int ninfo = 0;
     int ret = -1;
     size_t i;
@@ -2414,18 +2413,18 @@ testQemuMonitorJSONGetIOThreads(const void *opaque)
 struct testCPUInfoData {
     const char *name;
     size_t maxvcpus;
-    virDomainXMLOptionPtr xmlopt;
+    virDomainXMLOption *xmlopt;
     bool fast;
     GHashTable *schema;
 };
 
 
 static char *
-testQemuMonitorCPUInfoFormat(qemuMonitorCPUInfoPtr vcpus,
+testQemuMonitorCPUInfoFormat(qemuMonitorCPUInfo *vcpus,
                              size_t nvcpus)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    qemuMonitorCPUInfoPtr vcpu;
+    qemuMonitorCPUInfo *vcpu;
     size_t i;
 
     for (i = 0; i < nvcpus; i++) {
@@ -2487,7 +2486,7 @@ static int
 testQemuMonitorCPUInfo(const void *opaque)
 {
     const struct testCPUInfoData *data = opaque;
-    virDomainObjPtr vm = NULL;
+    virDomainObj *vm = NULL;
     char *queryCpusFile = NULL;
     char *queryHotpluggableFile = NULL;
     char *dataFile = NULL;
@@ -2495,7 +2494,7 @@ testQemuMonitorCPUInfo(const void *opaque)
     char *queryHotpluggableStr = NULL;
     char *actual = NULL;
     const char *queryCpusFunction;
-    qemuMonitorCPUInfoPtr vcpus = NULL;
+    qemuMonitorCPUInfo *vcpus = NULL;
     int rc;
     int ret = -1;
     g_autoptr(qemuMonitorTest) test = NULL;
@@ -2563,9 +2562,9 @@ testBlockNodeNameDetectFormat(void *payload,
                               const char *name,
                               void *opaque)
 {
-    qemuBlockNodeNameBackingChainDataPtr entry = payload;
+    qemuBlockNodeNameBackingChainData *entry = payload;
     const char *diskalias = name;
-    virBufferPtr buf = opaque;
+    virBuffer *buf = opaque;
 
     virBufferSetIndent(buf, 0);
 
@@ -2599,8 +2598,8 @@ testBlockNodeNameDetect(const void *opaque)
     const char *pathprefix = "qemumonitorjsondata/qemumonitorjson-nodename-";
     char *resultFile = NULL;
     char *actual = NULL;
-    virJSONValuePtr namedNodesJson = NULL;
-    virJSONValuePtr blockstatsJson = NULL;
+    virJSONValue *namedNodesJson = NULL;
+    virJSONValue *blockstatsJson = NULL;
     GHashTable *nodedata = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
@@ -2657,7 +2656,7 @@ static int
 testQAPISchemaQuery(const void *opaque)
 {
     const struct testQAPISchemaData *data = opaque;
-    virJSONValuePtr replyobj = NULL;
+    virJSONValue *replyobj = NULL;
     int rc;
 
     rc = virQEMUQAPISchemaPathGet(data->query, data->schema, &replyobj);
@@ -2677,8 +2676,8 @@ testQAPISchemaValidate(const void *opaque)
 {
     const struct testQAPISchemaData *data = opaque;
     g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
-    virJSONValuePtr schemaroot;
-    virJSONValuePtr json = NULL;
+    virJSONValue *schemaroot;
+    virJSONValue *json = NULL;
     int ret = -1;
 
     if (virQEMUQAPISchemaPathGet(data->query, data->schema, &schemaroot) < 0)
@@ -2724,7 +2723,7 @@ static int
 testQAPISchemaObjectDeviceAdd(const void *opaque)
 {
     GHashTable *schema = (GHashTable *) opaque;
-    virJSONValuePtr entry;
+    virJSONValue *entry;
 
     if (virQEMUQAPISchemaPathGet("device_add/arg-type", schema, &entry) < 0) {
         fprintf(stderr, "schema for 'device_add' not found\n");
@@ -2745,8 +2744,8 @@ testQAPISchemaObjectDeviceAdd(const void *opaque)
 
 
 static void
-testQueryJobsPrintJob(virBufferPtr buf,
-                      qemuMonitorJobInfoPtr job)
+testQueryJobsPrintJob(virBuffer *buf,
+                      qemuMonitorJobInfo *job)
 {
     virBufferAddLit(buf, "[job]\n");
     virBufferAsprintf(buf, "id=%s\n", NULLSTR(job->id));
@@ -2759,7 +2758,7 @@ testQueryJobsPrintJob(virBufferPtr buf,
 
 struct testQueryJobsData {
     const char *name;
-    virDomainXMLOptionPtr xmlopt;
+    virDomainXMLOption *xmlopt;
 };
 
 
@@ -2767,12 +2766,12 @@ static int
 testQueryJobs(const void *opaque)
 {
     const struct testQueryJobsData *data = opaque;
-    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(data->xmlopt);
+    qemuMonitorTest *test = qemuMonitorTestNewSimple(data->xmlopt);
     g_autofree char *filenameJSON = NULL;
     g_autofree char *fileJSON = NULL;
     g_autofree char *filenameResult = NULL;
     g_autofree char *actual = NULL;
-    qemuMonitorJobInfoPtr *jobs = NULL;
+    qemuMonitorJobInfo **jobs = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t njobs = 0;
     size_t i;
@@ -2923,7 +2922,7 @@ testQemuMonitorJSONqemuMonitorJSONGetCPUModelBaseline(const void *opaque)
     g_autoptr(qemuMonitorTest) test = NULL;
     g_autoptr(virCPUDef) cpu_a = virCPUDefNew();
     g_autoptr(virCPUDef) cpu_b = virCPUDefNew();
-    qemuMonitorCPUModelInfoPtr baseline = NULL;
+    qemuMonitorCPUModelInfo *baseline = NULL;
     int ret = -1;
 
     if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
@@ -2994,7 +2993,7 @@ mymain(void)
     virQEMUDriver driver;
     testQemuMonitorJSONSimpleFuncData simpleFunc;
     struct testQAPISchemaData qapiData;
-    virJSONValuePtr metaschema = NULL;
+    virJSONValue *metaschema = NULL;
     char *metaschemastr = NULL;
 
     if (qemuTestDriverInit(&driver) < 0)

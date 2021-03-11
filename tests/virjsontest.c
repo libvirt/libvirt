@@ -177,7 +177,7 @@ testJSONLookup(const void *data)
 {
     const struct testInfo *info = data;
     g_autoptr(virJSONValue) json = NULL;
-    virJSONValuePtr value = NULL;
+    virJSONValue *value = NULL;
     g_autofree char *result = NULL;
     int rc;
     int number;

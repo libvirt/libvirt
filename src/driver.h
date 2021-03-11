@@ -72,8 +72,6 @@ typedef enum {
 #undef __VIR_DRIVER_H_INCLUDES___
 
 typedef struct _virConnectDriver virConnectDriver;
-typedef virConnectDriver *virConnectDriverPtr;
-
 struct _virConnectDriver {
     /* Whether driver permits a server in the URI */
     bool localOnly;
@@ -87,25 +85,25 @@ struct _virConnectDriver {
      *  - NULL list indicates wildcard supporting all schemes
      */
     const char **uriSchemes;
-    virHypervisorDriverPtr hypervisorDriver;
-    virInterfaceDriverPtr interfaceDriver;
-    virNetworkDriverPtr networkDriver;
-    virNodeDeviceDriverPtr nodeDeviceDriver;
-    virNWFilterDriverPtr nwfilterDriver;
-    virSecretDriverPtr secretDriver;
-    virStorageDriverPtr storageDriver;
+    virHypervisorDriver *hypervisorDriver;
+    virInterfaceDriver *interfaceDriver;
+    virNetworkDriver *networkDriver;
+    virNodeDeviceDriver *nodeDeviceDriver;
+    virNWFilterDriver *nwfilterDriver;
+    virSecretDriver *secretDriver;
+    virStorageDriver *storageDriver;
 };
 
-int virRegisterConnectDriver(virConnectDriverPtr driver,
+int virRegisterConnectDriver(virConnectDriver *driver,
                              bool setSharedDrivers) G_GNUC_WARN_UNUSED_RESULT;
-int virRegisterStateDriver(virStateDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
+int virRegisterStateDriver(virStateDriver *driver) G_GNUC_WARN_UNUSED_RESULT;
 
-int virSetSharedInterfaceDriver(virInterfaceDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
-int virSetSharedNetworkDriver(virNetworkDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
-int virSetSharedNodeDeviceDriver(virNodeDeviceDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
-int virSetSharedNWFilterDriver(virNWFilterDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
-int virSetSharedSecretDriver(virSecretDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
-int virSetSharedStorageDriver(virStorageDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
+int virSetSharedInterfaceDriver(virInterfaceDriver *driver) G_GNUC_WARN_UNUSED_RESULT;
+int virSetSharedNetworkDriver(virNetworkDriver *driver) G_GNUC_WARN_UNUSED_RESULT;
+int virSetSharedNodeDeviceDriver(virNodeDeviceDriver *driver) G_GNUC_WARN_UNUSED_RESULT;
+int virSetSharedNWFilterDriver(virNWFilterDriver *driver) G_GNUC_WARN_UNUSED_RESULT;
+int virSetSharedSecretDriver(virSecretDriver *driver) G_GNUC_WARN_UNUSED_RESULT;
+int virSetSharedStorageDriver(virStorageDriver *driver) G_GNUC_WARN_UNUSED_RESULT;
 
 bool virHasDriverForURIScheme(const char *scheme);
 

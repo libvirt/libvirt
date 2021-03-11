@@ -38,7 +38,7 @@ struct _virNetworkDriverState {
     int lockFD;
 
     /* Immutable pointer, self-locking APIs */
-    virNetworkObjListPtr networks;
+    virNetworkObjList *networks;
 
     /* Immutable pointers, Immutable objects */
     char *networkConfigDir;
@@ -51,22 +51,21 @@ struct _virNetworkDriverState {
     /* Require lock to get a reference on the object,
      * lockless access thereafter
      */
-    dnsmasqCapsPtr dnsmasqCaps;
+    dnsmasqCaps *dnsmasqCaps;
 
     /* Immutable pointer, self-locking APIs */
-    virObjectEventStatePtr networkEventState;
+    virObjectEventState *networkEventState;
 
-    virNetworkXMLOptionPtr xmlopt;
+    virNetworkXMLOption *xmlopt;
 };
 
 typedef struct _virNetworkDriverState virNetworkDriverState;
-typedef virNetworkDriverState *virNetworkDriverStatePtr;
 
-void networkPreReloadFirewallRules(virNetworkDriverStatePtr driver, bool startup, bool force);
+void networkPreReloadFirewallRules(virNetworkDriverState *driver, bool startup, bool force);
 void networkPostReloadFirewallRules(bool startup);
 
-int networkCheckRouteCollision(virNetworkDefPtr def);
+int networkCheckRouteCollision(virNetworkDef *def);
 
-int networkAddFirewallRules(virNetworkDefPtr def);
+int networkAddFirewallRules(virNetworkDef *def);
 
-void networkRemoveFirewallRules(virNetworkDefPtr def);
+void networkRemoveFirewallRules(virNetworkDef *def);

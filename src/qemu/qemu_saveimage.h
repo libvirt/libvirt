@@ -35,7 +35,6 @@
 G_STATIC_ASSERT(sizeof(QEMU_SAVE_MAGIC) == sizeof(QEMU_SAVE_PARTIAL));
 
 typedef struct _virQEMUSaveHeader virQEMUSaveHeader;
-typedef virQEMUSaveHeader *virQEMUSaveHeaderPtr;
 struct _virQEMUSaveHeader {
     char magic[sizeof(QEMU_SAVE_MAGIC)-1];
     uint32_t version;
@@ -48,7 +47,6 @@ struct _virQEMUSaveHeader {
 
 
 typedef struct _virQEMUSaveData virQEMUSaveData;
-typedef virQEMUSaveData *virQEMUSaveDataPtr;
 struct _virQEMUSaveData {
     virQEMUSaveHeader header;
     char *xml;
@@ -56,61 +54,61 @@ struct _virQEMUSaveData {
 };
 
 
-virDomainDefPtr
-qemuSaveImageUpdateDef(virQEMUDriverPtr driver,
-                       virDomainDefPtr def,
+virDomainDef *
+qemuSaveImageUpdateDef(virQEMUDriver *driver,
+                       virDomainDef *def,
                        const char *newxml);
 
 int
 qemuSaveImageStartVM(virConnectPtr conn,
-                     virQEMUDriverPtr driver,
-                     virDomainObjPtr vm,
+                     virQEMUDriver *driver,
+                     virDomainObj *vm,
                      int *fd,
-                     virQEMUSaveDataPtr data,
+                     virQEMUSaveData *data,
                      const char *path,
                      bool start_paused,
                      qemuDomainAsyncJob asyncJob)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6);
 
 int
-qemuSaveImageOpen(virQEMUDriverPtr driver,
-                  virQEMUCapsPtr qemuCaps,
+qemuSaveImageOpen(virQEMUDriver *driver,
+                  virQEMUCaps *qemuCaps,
                   const char *path,
-                  virDomainDefPtr *ret_def,
-                  virQEMUSaveDataPtr *ret_data,
+                  virDomainDef **ret_def,
+                  virQEMUSaveData **ret_data,
                   bool bypass_cache,
-                  virFileWrapperFdPtr *wrapperFd,
+                  virFileWrapperFd **wrapperFd,
                   bool open_write,
                   bool unlink_corrupt)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
 int
 qemuSaveImageGetCompressionProgram(const char *imageFormat,
-                                   virCommandPtr *compressor,
+                                   virCommand **compressor,
                                    const char *styleFormat,
                                    bool use_raw_on_fail)
     ATTRIBUTE_NONNULL(2);
 
 int
-qemuSaveImageCreate(virQEMUDriverPtr driver,
-                    virDomainObjPtr vm,
+qemuSaveImageCreate(virQEMUDriver *driver,
+                    virDomainObj *vm,
                     const char *path,
-                    virQEMUSaveDataPtr data,
-                    virCommandPtr compressor,
+                    virQEMUSaveData *data,
+                    virCommand *compressor,
                     unsigned int flags,
                     qemuDomainAsyncJob asyncJob);
 
 int
-virQEMUSaveDataWrite(virQEMUSaveDataPtr data,
+virQEMUSaveDataWrite(virQEMUSaveData *data,
                      int fd,
                      const char *path);
 
-virQEMUSaveDataPtr
+virQEMUSaveData *
 virQEMUSaveDataNew(char *domXML,
-                   qemuDomainSaveCookiePtr cookieObj,
+                   qemuDomainSaveCookie *cookieObj,
                    bool running,
                    int compressed,
-                   virDomainXMLOptionPtr xmlopt);
+                   virDomainXMLOption *xmlopt);
 
 void
-virQEMUSaveDataFree(virQEMUSaveDataPtr data);
+virQEMUSaveDataFree(virQEMUSaveData *data);

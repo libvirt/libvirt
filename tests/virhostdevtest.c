@@ -57,11 +57,11 @@ static const char *dom_name = "test_domain";
 static const unsigned char *uuid =
             (unsigned char *)("f92360b0-2541-8791-fb32-d1f838811541");
 static int nhostdevs = 3;
-static virDomainHostdevDefPtr hostdevs[] = {NULL, NULL, NULL};
-static virPCIDevicePtr dev[] = {NULL, NULL, NULL};
-static virHostdevManagerPtr mgr;
+static virDomainHostdevDef *hostdevs[] = {NULL, NULL, NULL};
+static virPCIDevice *dev[] = {NULL, NULL, NULL};
+static virHostdevManager *mgr;
 static const size_t ndisks = 3;
-static virDomainDiskDefPtr disks[] = {NULL, NULL, NULL};
+static virDomainDiskDef *disks[] = {NULL, NULL, NULL};
 static const char *diskXML[] = {
     "<disk type='nvme' device='disk'>"
     "  <driver name='qemu' type='raw'/>"

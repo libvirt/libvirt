@@ -41,13 +41,13 @@ struct URIParseData {
     const char *query;
     const char *fragment;
     const char *user;
-    virURIParamPtr params;
+    virURIParam *params;
 };
 
 static int testURIParse(const void *args)
 {
     int ret = -1;
-    virURIPtr uri = NULL;
+    virURI *uri = NULL;
     const struct URIParseData *data = args;
     char *uristr = NULL;
     size_t i;

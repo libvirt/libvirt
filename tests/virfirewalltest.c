@@ -36,7 +36,7 @@
 # define VIR_FROM_THIS VIR_FROM_FIREWALL
 
 static bool fwDisabled = true;
-static virBufferPtr fwBuf;
+static virBuffer *fwBuf;
 static bool fwError;
 
 # define TEST_FILTER_TABLE_LIST \
@@ -242,7 +242,7 @@ testFirewallRemoveRule(const void *opaque)
         IPTABLES_PATH " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
         IPTABLES_PATH " -w -A INPUT --source '!192.168.122.1' --jump REJECT\n";
     const struct testFirewallData *data = opaque;
-    virFirewallRulePtr fwrule;
+    virFirewallRule *fwrule;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     fwDisabled = data->fwDisabled;
@@ -907,7 +907,7 @@ testFirewallQueryHook(const char *const*args,
 
 
 static int
-testFirewallQueryCallback(virFirewallPtr fw,
+testFirewallQueryCallback(virFirewall *fw,
                           virFirewallLayer layer,
                           const char *const *lines,
                           void *opaque G_GNUC_UNUSED)

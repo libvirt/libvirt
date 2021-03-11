@@ -30,17 +30,17 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 struct testData {
-    virQEMUDriverPtr driver;
+    virQEMUDriver *driver;
     const char *file; /* file name to load VM def XML from; qemuxml2argvdata/ */
 };
 
 
 static int
-prepareObjects(virQEMUDriverPtr driver,
+prepareObjects(virQEMUDriver *driver,
                const char *xmlname,
-               virDomainObjPtr *vm_ret)
+               virDomainObj **vm_ret)
 {
-    qemuDomainObjPrivatePtr priv;
+    qemuDomainObjPrivate *priv;
     g_autoptr(virDomainObj) vm = NULL;
     g_autofree char *filename = NULL;
     g_autofree char *domxml = NULL;
@@ -95,8 +95,8 @@ testDomain(const void *opaque)
         return -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virStorageSourcePtr src = vm->def->disks[i]->src;
-        virStorageSourcePtr n;
+        virStorageSource *src = vm->def->disks[i]->src;
+        virStorageSource *n;
 
         if (!src)
             continue;
@@ -136,10 +136,10 @@ static int
 mymain(void)
 {
     virQEMUDriver driver;
-    virSecurityManagerPtr stack = NULL;
-    virSecurityManagerPtr dac = NULL;
+    virSecurityManager *stack = NULL;
+    virSecurityManager *dac = NULL;
 #ifdef WITH_SELINUX
-    virSecurityManagerPtr selinux = NULL;
+    virSecurityManager *selinux = NULL;
 #endif
     int ret = 0;
 

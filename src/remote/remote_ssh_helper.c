@@ -43,10 +43,9 @@ struct virRemoteSSHHelperBuffer {
 };
 
 typedef struct virRemoteSSHHelper virRemoteSSHHelper;
-typedef virRemoteSSHHelper *virRemoteSSHHelperPtr;
 struct virRemoteSSHHelper {
     bool quit;
-    virNetSocketPtr sock;
+    virNetSocket *sock;
     int sockEvents;
     int stdinWatch;
     int stdinEvents;
@@ -59,7 +58,7 @@ struct virRemoteSSHHelper {
 
 
 static void
-virRemoteSSHHelperShutdown(virRemoteSSHHelperPtr proxy)
+virRemoteSSHHelperShutdown(virRemoteSSHHelper *proxy)
 {
     if (proxy->sock) {
         virNetSocketRemoveIOCallback(proxy->sock);
@@ -81,7 +80,7 @@ virRemoteSSHHelperShutdown(virRemoteSSHHelperPtr proxy)
 
 
 static void
-virRemoteSSHHelperUpdateEvents(virRemoteSSHHelperPtr proxy)
+virRemoteSSHHelperUpdateEvents(virRemoteSSHHelper *proxy)
 {
     int sockEvents = 0;
     int stdinEvents = 0;
@@ -115,11 +114,11 @@ virRemoteSSHHelperUpdateEvents(virRemoteSSHHelperPtr proxy)
 }
 
 static void
-virRemoteSSHHelperEventOnSocket(virNetSocketPtr sock,
+virRemoteSSHHelperEventOnSocket(virNetSocket *sock,
                                 int events,
                                 void *opaque)
 {
-    virRemoteSSHHelperPtr proxy = opaque;
+    virRemoteSSHHelper *proxy = opaque;
 
     /* we got late event after proxy was shutdown */
     if (!proxy->sock)
@@ -189,7 +188,7 @@ virRemoteSSHHelperEventOnStdin(int watch G_GNUC_UNUSED,
                                int events,
                                void *opaque)
 {
-    virRemoteSSHHelperPtr proxy = opaque;
+    virRemoteSSHHelper *proxy = opaque;
 
     /* we got late event after console was shutdown */
     if (!proxy->sock)
@@ -248,7 +247,7 @@ virRemoteSSHHelperEventOnStdout(int watch G_GNUC_UNUSED,
                                 int events,
                                 void *opaque)
 {
-    virRemoteSSHHelperPtr proxy = opaque;
+    virRemoteSSHHelper *proxy = opaque;
 
     /* we got late event after console was shutdown */
     if (!proxy->sock)
@@ -290,7 +289,7 @@ virRemoteSSHHelperEventOnStdout(int watch G_GNUC_UNUSED,
 
 
 static int
-virRemoteSSHHelperRun(virNetSocketPtr sock)
+virRemoteSSHHelperRun(virNetSocket *sock)
 {
     int ret = -1;
     virRemoteSSHHelper proxy = {

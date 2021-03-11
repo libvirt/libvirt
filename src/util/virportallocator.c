@@ -38,10 +38,9 @@
 #define VIR_PORT_ALLOCATOR_NUM_PORTS 65536
 
 typedef struct _virPortAllocator virPortAllocator;
-typedef virPortAllocator *virPortAllocatorPtr;
 struct _virPortAllocator {
     virObjectLockable parent;
-    virBitmapPtr bitmap;
+    virBitmap *bitmap;
 };
 
 struct _virPortAllocatorRange {
@@ -51,21 +50,21 @@ struct _virPortAllocatorRange {
     unsigned short end;
 };
 
-static virClassPtr virPortAllocatorClass;
-static virPortAllocatorPtr virPortAllocatorInstance;
+static virClass *virPortAllocatorClass;
+static virPortAllocator *virPortAllocatorInstance;
 
 static void
 virPortAllocatorDispose(void *obj)
 {
-    virPortAllocatorPtr pa = obj;
+    virPortAllocator *pa = obj;
 
     virBitmapFree(pa->bitmap);
 }
 
-static virPortAllocatorPtr
+static virPortAllocator *
 virPortAllocatorNew(void)
 {
-    virPortAllocatorPtr pa;
+    virPortAllocator *pa;
 
     if (!(pa = virObjectLockableNew(virPortAllocatorClass)))
         return NULL;
@@ -89,12 +88,12 @@ virPortAllocatorOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virPortAllocator);
 
-virPortAllocatorRangePtr
+virPortAllocatorRange *
 virPortAllocatorRangeNew(const char *name,
                          unsigned short start,
                          unsigned short end)
 {
-    virPortAllocatorRangePtr range;
+    virPortAllocatorRange *range;
 
     if (start >= end) {
         virReportInvalidArg(start, "start port %d must be less than end port %d",
@@ -112,7 +111,7 @@ virPortAllocatorRangeNew(const char *name,
 }
 
 void
-virPortAllocatorRangeFree(virPortAllocatorRangePtr range)
+virPortAllocatorRangeFree(virPortAllocatorRange *range)
 {
     if (!range)
         return;
@@ -192,7 +191,7 @@ virPortAllocatorBindToPort(bool *used,
     return ret;
 }
 
-static virPortAllocatorPtr
+static virPortAllocator *
 virPortAllocatorGet(void)
 {
     if (virPortAllocatorInitialize() < 0)
@@ -207,7 +206,7 @@ virPortAllocatorAcquire(const virPortAllocatorRange *range,
 {
     int ret = -1;
     size_t i;
-    virPortAllocatorPtr pa = virPortAllocatorGet();
+    virPortAllocator *pa = virPortAllocatorGet();
 
     *port = 0;
 
@@ -252,7 +251,7 @@ int
 virPortAllocatorRelease(unsigned short port)
 {
     int ret = -1;
-    virPortAllocatorPtr pa = virPortAllocatorGet();
+    virPortAllocator *pa = virPortAllocatorGet();
 
     if (!pa)
         return -1;
@@ -279,7 +278,7 @@ int
 virPortAllocatorSetUsed(unsigned short port)
 {
     int ret = -1;
-    virPortAllocatorPtr pa = virPortAllocatorGet();
+    virPortAllocator *pa = virPortAllocatorGet();
 
     if (!pa)
         return -1;

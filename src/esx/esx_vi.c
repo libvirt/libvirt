@@ -142,7 +142,7 @@ esxVI_CURL_ReadString(char *data, size_t size, size_t nmemb, void *userdata)
 static size_t
 esxVI_CURL_WriteBuffer(char *data, size_t size, size_t nmemb, void *userdata)
 {
-    virBufferPtr buffer = userdata;
+    virBuffer *buffer = userdata;
 
     if (buffer) {
         /*
@@ -1450,7 +1450,7 @@ esxVI_Enumeration_CastFromAnyType(const esxVI_Enumeration *enumeration,
 
 int
 esxVI_Enumeration_Serialize(const esxVI_Enumeration *enumeration,
-                            int value, const char *element, virBufferPtr output)
+                            int value, const char *element, virBuffer *output)
 {
     size_t i;
     const char *name = NULL;
@@ -1638,7 +1638,7 @@ esxVI_List_CastFromAnyType(esxVI_AnyType *anyType, esxVI_List **list,
 
 int
 esxVI_List_Serialize(esxVI_List *list, const char *element,
-                     virBufferPtr output,
+                     virBuffer *output,
                      esxVI_List_SerializeFunc serializeFunc)
 {
     esxVI_List *item = NULL;

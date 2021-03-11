@@ -25,16 +25,16 @@
 #include "domain_conf.h"
 #include "virconftypes.h"
 
-int virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
-                                           virDomainDeviceDefPtr dev,
+int virDomainDeviceValidateAliasForHotplug(virDomainObj *vm,
+                                           virDomainDeviceDef *dev,
                                            unsigned int flags);
-int virDomainDefValidate(virDomainDefPtr def,
+int virDomainDefValidate(virDomainDef *def,
                          unsigned int parseFlags,
-                         virDomainXMLOptionPtr xmlopt,
+                         virDomainXMLOption *xmlopt,
                          void *parseOpaque);
 int virDomainActualNetDefValidate(const virDomainNetDef *net);
 int virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                                const virDomainDef *def,
                                unsigned int parseFlags,
-                               virDomainXMLOptionPtr xmlopt,
+                               virDomainXMLOption *xmlopt,
                                void *parseOpaque);

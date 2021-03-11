@@ -836,7 +836,7 @@ vircommand.h:
 
 ::
 
-  void virCommandAddEnvFormat(virCommandPtr cmd, const char *format, ...)
+  void virCommandAddEnvFormat(virCommand *cmd, const char *format, ...)
       G_GNUC_PRINTF(2, 3);
 
 This makes it so gcc's -Wformat and -Wformat-security options can

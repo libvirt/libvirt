@@ -27,6 +27,6 @@
 int
 virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
                                  xmlXPathContextPtr ctxt,
-                                 virDomainSnapshotDiskDefPtr def,
+                                 virDomainSnapshotDiskDef *def,
                                  unsigned int flags,
-                                 virDomainXMLOptionPtr xmlopt);
+                                 virDomainXMLOption *xmlopt);

@@ -30,7 +30,7 @@ typedef int
 typedef virDrvOpenStatus
 (*virDrvConnectOpen)(virConnectPtr conn,
                      virConnectAuthPtr auth,
-                     virConfPtr conf,
+                     virConf *conf,
                      unsigned int flags);
 
 typedef int
@@ -1411,7 +1411,6 @@ typedef int
                                   unsigned int flags);
 
 typedef struct _virHypervisorDriver virHypervisorDriver;
-typedef virHypervisorDriver *virHypervisorDriverPtr;
 
 /**
  * _virHypervisorDriver:

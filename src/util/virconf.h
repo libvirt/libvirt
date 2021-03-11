@@ -53,77 +53,74 @@ typedef enum {
  * a value from the configuration file
  */
 typedef struct _virConfValue virConfValue;
-typedef virConfValue *virConfValuePtr;
-
 struct _virConfValue {
     virConfType type;           /* the virConfType */
-    virConfValuePtr next;       /* next element if in a list */
+    virConfValue *next;       /* next element if in a list */
     long long  l;               /* very long integer */
     char *str;                  /* pointer to 0 terminated string */
-    virConfValuePtr list;       /* list of a list */
+    virConfValue *list;       /* list of a list */
 };
 
 /**
- * virConfPtr:
+ * virConf *:
  * a pointer to a parsed configuration file
  */
 typedef struct _virConf virConf;
-typedef virConf *virConfPtr;
 
 typedef int (*virConfWalkCallback)(const char* name,
-                                   virConfValuePtr value,
+                                   virConfValue *value,
                                    void *opaque);
 
-virConfPtr virConfNew(void);
-virConfPtr virConfReadFile(const char *filename, unsigned int flags);
-virConfPtr virConfReadString(const char *memory,
+virConf *virConfNew(void);
+virConf *virConfReadFile(const char *filename, unsigned int flags);
+virConf *virConfReadString(const char *memory,
                              unsigned int flags);
-int virConfFree(virConfPtr conf);
+int virConfFree(virConf *conf);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virConf, virConfFree);
-void virConfFreeValue(virConfValuePtr val);
-virConfValuePtr virConfGetValue(virConfPtr conf,
+void virConfFreeValue(virConfValue *val);
+virConfValue *virConfGetValue(virConf *conf,
                                 const char *setting);
 
-virConfType virConfGetValueType(virConfPtr conf,
+virConfType virConfGetValueType(virConf *conf,
                                 const char *setting);
-int virConfGetValueString(virConfPtr conf,
+int virConfGetValueString(virConf *conf,
                           const char *setting,
                           char **value);
-int virConfGetValueStringList(virConfPtr conf,
+int virConfGetValueStringList(virConf *conf,
                               const char *setting,
                               bool compatString,
                               char ***values);
-int virConfGetValueBool(virConfPtr conf,
+int virConfGetValueBool(virConf *conf,
                         const char *setting,
                         bool *value);
-int virConfGetValueInt(virConfPtr conf,
+int virConfGetValueInt(virConf *conf,
                        const char *setting,
                        int *value);
-int virConfGetValueUInt(virConfPtr conf,
+int virConfGetValueUInt(virConf *conf,
                         const char *setting,
                         unsigned int *value);
-int virConfGetValueSizeT(virConfPtr conf,
+int virConfGetValueSizeT(virConf *conf,
                          const char *setting,
                          size_t *value);
-int virConfGetValueSSizeT(virConfPtr conf,
+int virConfGetValueSSizeT(virConf *conf,
                           const char *setting,
                           ssize_t *value);
-int virConfGetValueLLong(virConfPtr conf,
+int virConfGetValueLLong(virConf *conf,
                         const char *setting,
                         long long *value);
-int virConfGetValueULLong(virConfPtr conf,
+int virConfGetValueULLong(virConf *conf,
                           const char *setting,
                           unsigned long long *value);
 
-int virConfSetValue(virConfPtr conf,
+int virConfSetValue(virConf *conf,
                     const char *setting,
-                    virConfValuePtr value);
-int virConfWalk(virConfPtr conf,
+                    virConfValue *value);
+int virConfWalk(virConf *conf,
                 virConfWalkCallback callback,
                 void *opaque);
 int virConfWriteFile(const char *filename,
-                     virConfPtr conf);
+                     virConf *conf);
 int virConfWriteMem(char *memory,
                     int *len,
-                    virConfPtr conf);
-int virConfLoadConfig(virConfPtr *conf, const char *name);
+                    virConf *conf);
+int virConfLoadConfig(virConf **conf, const char *name);

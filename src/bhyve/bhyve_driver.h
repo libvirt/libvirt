@@ -25,8 +25,8 @@
 
 int bhyveRegister(void);
 
-unsigned bhyveDriverGetBhyveCaps(bhyveConnPtr driver);
+unsigned bhyveDriverGetBhyveCaps(struct _bhyveConn *driver);
 
-unsigned bhyveDriverGetGrubCaps(bhyveConnPtr driver);
+unsigned bhyveDriverGetGrubCaps(struct _bhyveConn *driver);
 
-virCapsPtr bhyveDriverGetCapabilities(bhyveConnPtr driver);
+virCaps *bhyveDriverGetCapabilities(struct _bhyveConn *driver);

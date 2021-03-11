@@ -27,7 +27,6 @@
 
 
 typedef struct _testQemuData testQemuData;
-typedef testQemuData *testQemuDataPtr;
 struct _testQemuData {
     const char *inputDir;
     const char *outputDir;
@@ -39,7 +38,7 @@ struct _testQemuData {
 };
 
 static int
-testQemuDataInit(testQemuDataPtr data)
+testQemuDataInit(testQemuData *data)
 {
     data->outputDir = abs_srcdir "/qemucaps2xmloutdata";
 
@@ -48,10 +47,10 @@ testQemuDataInit(testQemuDataPtr data)
     return 0;
 }
 
-static virQEMUCapsPtr
+static virQEMUCaps *
 testQemuGetCaps(char *caps)
 {
-    virQEMUCapsPtr qemuCaps = NULL;
+    virQEMUCaps *qemuCaps = NULL;
     xmlDocPtr xml;
     xmlXPathContextPtr ctxt = NULL;
     ssize_t i, n;
@@ -91,11 +90,11 @@ testQemuGetCaps(char *caps)
     return NULL;
 }
 
-static virCapsPtr
+static virCaps *
 testGetCaps(char *capsData, const testQemuData *data)
 {
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
-    virCapsPtr caps = NULL;
+    virCaps *caps = NULL;
     virArch arch = virArchFromString(data->archName);
     g_autofree char *binary = NULL;
 
@@ -166,7 +165,7 @@ doCapsTest(const char *inputDir,
            const char *suffix,
            void *opaque)
 {
-    testQemuDataPtr data = (testQemuDataPtr) opaque;
+    testQemuData *data = (testQemuData *) opaque;
     g_autofree char *title = NULL;
 
     title = g_strdup_printf("%s (%s)", version, archName);

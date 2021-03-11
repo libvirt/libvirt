@@ -42,11 +42,10 @@
 # endif
 
 typedef struct _virNWFilterInst virNWFilterInst;
-typedef virNWFilterInst *virNWFilterInstPtr;
 struct _virNWFilterInst {
-    virNWFilterDefPtr *filters;
+    virNWFilterDef **filters;
     size_t nfilters;
-    virNWFilterRuleInstPtr *rules;
+    virNWFilterRuleInst **rules;
     size_t nrules;
 };
 
@@ -168,7 +167,7 @@ virNWFilterCreateVarsFrom(GHashTable *vars1,
 
 
 static void
-virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
+virNWFilterRuleInstFree(virNWFilterRuleInst *inst)
 {
     if (!inst)
         return;
@@ -179,7 +178,7 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
 
 
 static void
-virNWFilterInstReset(virNWFilterInstPtr inst)
+virNWFilterInstReset(virNWFilterInst *inst)
 {
     size_t i;
 
@@ -198,15 +197,15 @@ virNWFilterInstReset(virNWFilterInstPtr inst)
 static int
 virNWFilterDefToInst(const char *xml,
                      GHashTable *vars,
-                     virNWFilterInstPtr inst);
+                     virNWFilterInst *inst);
 
 static int
-virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
-                             virNWFilterRuleDefPtr rule,
+virNWFilterRuleDefToRuleInst(virNWFilterDef *def,
+                             virNWFilterRuleDef *rule,
                              GHashTable *vars,
-                             virNWFilterInstPtr inst)
+                             virNWFilterInst *inst)
 {
-    virNWFilterRuleInstPtr ruleinst;
+    virNWFilterRuleInst *ruleinst;
     int ret = -1;
 
     ruleinst = g_new0(virNWFilterRuleInst, 1);
@@ -234,9 +233,9 @@ virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
 
 
 static int
-virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDefPtr inc,
+virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDef *inc,
                                 GHashTable *vars,
-                                virNWFilterInstPtr inst)
+                                virNWFilterInst *inst)
 {
     GHashTable *tmpvars = NULL;
     int ret = -1;
@@ -267,11 +266,11 @@ virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDefPtr inc,
 static int
 virNWFilterDefToInst(const char *xml,
                      GHashTable *vars,
-                     virNWFilterInstPtr inst)
+                     virNWFilterInst *inst)
 {
     size_t i;
     int ret = -1;
-    virNWFilterDefPtr def = virNWFilterDefParseFile(xml);
+    virNWFilterDef *def = virNWFilterDefParseFile(xml);
 
     if (!def)
         return -1;
@@ -326,7 +325,7 @@ static int testSetOneParameter(GHashTable *vars,
                                const char *name,
                                const char *value)
 {
-    virNWFilterVarValuePtr val;
+    virNWFilterVarValue *val;
 
     if ((val = virHashLookup(vars, name)) == NULL) {
         val = virNWFilterVarValueCreateSimpleCopyValue(value);

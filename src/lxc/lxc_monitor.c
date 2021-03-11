@@ -37,14 +37,14 @@ VIR_LOG_INIT("lxc.lxc_monitor");
 struct _virLXCMonitor {
     virObjectLockable parent;
 
-    virDomainObjPtr vm;
+    virDomainObj *vm;
     virLXCMonitorCallbacks cb;
 
-    virNetClientPtr client;
-    virNetClientProgramPtr program;
+    virNetClient *client;
+    virNetClientProgram *program;
 };
 
-static virClassPtr virLXCMonitorClass;
+static virClass *virLXCMonitorClass;
 static void virLXCMonitorDispose(void *obj);
 
 static int virLXCMonitorOnceInit(void)
@@ -58,12 +58,12 @@ static int virLXCMonitorOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virLXCMonitor);
 
 static void
-virLXCMonitorHandleEventExit(virNetClientProgramPtr prog,
-                             virNetClientPtr client,
+virLXCMonitorHandleEventExit(virNetClientProgram *prog,
+                             virNetClient *client,
                              void *evdata, void *opaque);
 static void
-virLXCMonitorHandleEventInit(virNetClientProgramPtr prog,
-                             virNetClientPtr client,
+virLXCMonitorHandleEventInit(virNetClientProgram *prog,
+                             virNetClient *client,
                              void *evdata, void *opaque);
 
 static virNetClientProgramEvent virLXCMonitorEvents[] = {
@@ -79,11 +79,11 @@ static virNetClientProgramEvent virLXCMonitorEvents[] = {
 
 
 static void
-virLXCMonitorHandleEventExit(virNetClientProgramPtr prog G_GNUC_UNUSED,
-                             virNetClientPtr client G_GNUC_UNUSED,
+virLXCMonitorHandleEventExit(virNetClientProgram *prog G_GNUC_UNUSED,
+                             virNetClient *client G_GNUC_UNUSED,
                              void *evdata, void *opaque)
 {
-    virLXCMonitorPtr mon = opaque;
+    virLXCMonitor *mon = opaque;
     virLXCMonitorExitEventMsg *msg = evdata;
 
     VIR_DEBUG("Event exit %d", msg->status);
@@ -93,11 +93,11 @@ virLXCMonitorHandleEventExit(virNetClientProgramPtr prog G_GNUC_UNUSED,
 
 
 static void
-virLXCMonitorHandleEventInit(virNetClientProgramPtr prog G_GNUC_UNUSED,
-                             virNetClientPtr client G_GNUC_UNUSED,
+virLXCMonitorHandleEventInit(virNetClientProgram *prog G_GNUC_UNUSED,
+                             virNetClient *client G_GNUC_UNUSED,
                              void *evdata, void *opaque)
 {
-    virLXCMonitorPtr mon = opaque;
+    virLXCMonitor *mon = opaque;
     virLXCMonitorInitEventMsg *msg = evdata;
 
     VIR_DEBUG("Event init %lld", (long long)msg->initpid);
@@ -106,13 +106,13 @@ virLXCMonitorHandleEventInit(virNetClientProgramPtr prog G_GNUC_UNUSED,
 }
 
 
-static void virLXCMonitorEOFNotify(virNetClientPtr client G_GNUC_UNUSED,
+static void virLXCMonitorEOFNotify(virNetClient *client G_GNUC_UNUSED,
                                    int reason G_GNUC_UNUSED,
                                    void *opaque)
 {
-    virLXCMonitorPtr mon = opaque;
+    virLXCMonitor *mon = opaque;
     virLXCMonitorCallbackEOFNotify eofNotify;
-    virDomainObjPtr vm;
+    virDomainObj *vm;
 
     VIR_DEBUG("EOF notify mon=%p", mon);
     virObjectLock(mon);
@@ -131,16 +131,16 @@ static void virLXCMonitorEOFNotify(virNetClientPtr client G_GNUC_UNUSED,
 
 static void virLXCMonitorCloseFreeCallback(void *opaque)
 {
-    virLXCMonitorPtr mon = opaque;
+    virLXCMonitor *mon = opaque;
     virObjectUnref(mon);
 }
 
 
-virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
+virLXCMonitor *virLXCMonitorNew(virDomainObj *vm,
                                   const char *socketdir,
-                                  virLXCMonitorCallbacksPtr cb)
+                                  virLXCMonitorCallbacks *cb)
 {
-    virLXCMonitorPtr mon;
+    virLXCMonitor *mon;
     g_autofree char *sockpath = NULL;
 
     if (virLXCMonitorInitialize() < 0)
@@ -188,7 +188,7 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
 
 static void virLXCMonitorDispose(void *opaque)
 {
-    virLXCMonitorPtr mon = opaque;
+    virLXCMonitor *mon = opaque;
 
     VIR_DEBUG("mon=%p", mon);
     if (mon->cb.destroy)
@@ -198,10 +198,10 @@ static void virLXCMonitorDispose(void *opaque)
 }
 
 
-void virLXCMonitorClose(virLXCMonitorPtr mon)
+void virLXCMonitorClose(virLXCMonitor *mon)
 {
-    virDomainObjPtr vm;
-    virNetClientPtr client;
+    virDomainObj *vm;
+    virNetClient *client;
 
     VIR_DEBUG("mon=%p", mon);
     if (mon->client) {

@@ -51,16 +51,16 @@ struct qemuHotplugTestData {
     const char *const *mon;
     int action;
     bool keep;
-    virDomainObjPtr vm;
+    virDomainObj *vm;
     bool deviceDeletedEvent;
 };
 
 static int
-qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
-                         virDomainObjPtr *vm,
+qemuHotplugCreateObjects(virDomainXMLOption *xmlopt,
+                         virDomainObj **vm,
                          const char *domxml)
 {
-    qemuDomainObjPrivatePtr priv = NULL;
+    qemuDomainObjPrivate *priv = NULL;
     const unsigned int parseFlags = 0;
 
     if (!(*vm = virDomainObjNew(xmlopt)))
@@ -118,8 +118,8 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
 }
 
 static int
-testQemuHotplugAttach(virDomainObjPtr vm,
-                      virDomainDeviceDefPtr dev)
+testQemuHotplugAttach(virDomainObj *vm,
+                      virDomainDeviceDef *dev)
 {
     int ret = -1;
 
@@ -155,8 +155,8 @@ testQemuHotplugAttach(virDomainObjPtr vm,
 }
 
 static int
-testQemuHotplugDetach(virDomainObjPtr vm,
-                      virDomainDeviceDefPtr dev,
+testQemuHotplugDetach(virDomainObj *vm,
+                      virDomainDeviceDef *dev,
                       bool async)
 {
     int ret = -1;
@@ -180,8 +180,8 @@ testQemuHotplugDetach(virDomainObjPtr vm,
 }
 
 static int
-testQemuHotplugUpdate(virDomainObjPtr vm,
-                      virDomainDeviceDefPtr dev)
+testQemuHotplugUpdate(virDomainObj *vm,
+                      virDomainDeviceDef *dev)
 {
     int ret = -1;
 
@@ -204,7 +204,7 @@ testQemuHotplugUpdate(virDomainObjPtr vm,
 }
 
 static int
-testQemuHotplugCheckResult(virDomainObjPtr vm,
+testQemuHotplugCheckResult(virDomainObj *vm,
                            const char *expected,
                            const char *expectedFile,
                            bool fail)
@@ -248,11 +248,11 @@ testQemuHotplug(const void *data)
     bool fail = test->fail;
     bool keep = test->keep;
     unsigned int device_parse_flags = 0;
-    virDomainObjPtr vm = NULL;
-    virDomainDeviceDefPtr dev = NULL;
+    virDomainObj *vm = NULL;
+    virDomainDeviceDef *dev = NULL;
     g_autoptr(virCaps) caps = NULL;
-    qemuMonitorTestPtr test_mon = NULL;
-    qemuDomainObjPrivatePtr priv = NULL;
+    qemuMonitorTest *test_mon = NULL;
+    qemuDomainObjPrivate *priv = NULL;
 
     domain_filename = g_strdup_printf("%s/qemuhotplugtestdomains/qemuhotplug-%s.xml",
                                       abs_srcdir, test->domain_filename);
@@ -368,8 +368,8 @@ struct testQemuHotplugCpuData {
 
     char *xml_dom;
 
-    virDomainObjPtr vm;
-    qemuMonitorTestPtr mon;
+    virDomainObj *vm;
+    qemuMonitorTest *mon;
     bool modern;
 };
 
@@ -377,8 +377,8 @@ struct testQemuHotplugCpuData {
 static void
 testQemuHotplugCpuDataFree(struct testQemuHotplugCpuData *data)
 {
-    qemuDomainObjPrivatePtr priv;
-    qemuMonitorPtr mon;
+    qemuDomainObjPrivate *priv;
+    qemuMonitor *mon;
 
     if (!data)
         return;
@@ -412,8 +412,8 @@ testQemuHotplugCpuPrepare(const char *test,
                           bool fail,
                           GHashTable *qmpschema)
 {
-    qemuDomainObjPrivatePtr priv = NULL;
-    virCapsPtr caps = NULL;
+    qemuDomainObjPrivate *priv = NULL;
+    virCaps *caps = NULL;
     g_autofree char *prefix = NULL;
     struct testQemuHotplugCpuData *data = NULL;
 

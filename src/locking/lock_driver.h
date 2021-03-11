@@ -25,13 +25,10 @@
 #include "domain_conf.h"
 
 typedef struct _virLockManager virLockManager;
-typedef virLockManager *virLockManagerPtr;
 
 typedef struct _virLockDriver virLockDriver;
-typedef virLockDriver *virLockDriverPtr;
 
 typedef struct _virLockManagerParam virLockManagerParam;
-typedef virLockManagerParam *virLockManagerParamPtr;
 
 typedef enum {
     /* State passing is used to re-acquire existing leases */
@@ -169,10 +166,10 @@ typedef int (*virLockDriverDeinit)(void);
  *
  * Returns 0 if successful initialized a new context, -1 on error
  */
-typedef int (*virLockDriverNew)(virLockManagerPtr man,
+typedef int (*virLockDriverNew)(virLockManager *man,
                                 unsigned int type,
                                 size_t nparams,
-                                virLockManagerParamPtr params,
+                                virLockManagerParam *params,
                                 unsigned int flags);
 
 /**
@@ -182,7 +179,7 @@ typedef int (*virLockDriverNew)(virLockManagerPtr man,
  * Release any resources associated with the lock manager
  * context private data
  */
-typedef void (*virLockDriverFree)(virLockManagerPtr man);
+typedef void (*virLockDriverFree)(virLockManager *man);
 
 /**
  * virLockDriverAddResource:
@@ -216,11 +213,11 @@ typedef void (*virLockDriverFree)(virLockManagerPtr man);
  *
  * Returns 0 on success, or -1 on failure
  */
-typedef int (*virLockDriverAddResource)(virLockManagerPtr man,
+typedef int (*virLockDriverAddResource)(virLockManager *man,
                                         unsigned int type,
                                         const char *name,
                                         size_t nparams,
-                                        virLockManagerParamPtr params,
+                                        virLockManagerParam *params,
                                         unsigned int flags);
 
 /**
@@ -245,7 +242,7 @@ typedef int (*virLockDriverAddResource)(virLockManagerPtr man,
  *
  * Returns 0 on success, or -1 on failure
  */
-typedef int (*virLockDriverAcquire)(virLockManagerPtr man,
+typedef int (*virLockDriverAcquire)(virLockManager *man,
                                     const char *state,
                                     unsigned int flags,
                                     virDomainLockFailureAction action,
@@ -262,7 +259,7 @@ typedef int (*virLockDriverAcquire)(virLockManagerPtr man,
  *
  * Returns 0 on success, or -1 on failure
  */
-typedef int (*virLockDriverRelease)(virLockManagerPtr man,
+typedef int (*virLockDriverRelease)(virLockManager *man,
                                     char **state,
                                     unsigned int flags);
 
@@ -279,13 +276,13 @@ typedef int (*virLockDriverRelease)(virLockManagerPtr man,
  *
  * Returns 0 on success, or -1 on failure.
  */
-typedef int (*virLockDriverInquire)(virLockManagerPtr man,
+typedef int (*virLockDriverInquire)(virLockManager *man,
                                     char **state,
                                     unsigned int flags);
 
 
 struct _virLockManager {
-    virLockDriverPtr driver;
+    virLockDriver *driver;
     void *privateData;
 };
 

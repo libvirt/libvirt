@@ -34,7 +34,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-static libxlDriverPrivatePtr driver;
+static libxlDriverPrivate *driver;
 
 static int
 testCompareParseXML(const char *xmcfg, const char *xml)
@@ -44,7 +44,7 @@ testCompareParseXML(const char *xmcfg, const char *xml)
     int ret = -1;
     virConnectPtr conn = NULL;
     int wrote = 4096;
-    virDomainDefPtr def = NULL;
+    virDomainDef *def = NULL;
 
     gotxmcfgData = g_new0(char, wrote);
 
@@ -87,7 +87,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     char *gotxml = NULL;
     g_autoptr(virConf) conf = NULL;
     int ret = -1;
-    virDomainDefPtr def = NULL;
+    virDomainDef *def = NULL;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     if (virTestLoadFile(xmcfg, &xmcfgData) < 0)

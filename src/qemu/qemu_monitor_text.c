@@ -33,7 +33,7 @@
 
 VIR_LOG_INIT("qemu.qemu_monitor_text");
 
-int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
+int qemuMonitorTextAddDrive(qemuMonitor *mon,
                             const char *drivestr)
 {
     g_autofree char *cmd = NULL;
@@ -85,7 +85,7 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorTextDriveDel(qemuMonitorPtr mon,
+int qemuMonitorTextDriveDel(qemuMonitor *mon,
                             const char *drivestr)
 {
     g_autofree char *cmd = NULL;
@@ -116,7 +116,7 @@ int qemuMonitorTextDriveDel(qemuMonitorPtr mon,
 }
 
 int
-qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon,
+qemuMonitorTextCreateSnapshot(qemuMonitor *mon,
                               const char *name)
 {
     g_autofree char *cmd = NULL;
@@ -144,7 +144,7 @@ qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon,
     return 0;
 }
 
-int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name)
+int qemuMonitorTextLoadSnapshot(qemuMonitor *mon, const char *name)
 {
     g_autofree char *cmd = NULL;
     g_autofree char *reply = NULL;
@@ -180,7 +180,7 @@ int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name)
     return 0;
 }
 
-int qemuMonitorTextDeleteSnapshot(qemuMonitorPtr mon, const char *name)
+int qemuMonitorTextDeleteSnapshot(qemuMonitor *mon, const char *name)
 {
     g_autofree char *cmd = NULL;
     g_autofree char *reply = NULL;

@@ -31,7 +31,7 @@
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
 void
-virNWFilterBindingDefFree(virNWFilterBindingDefPtr def)
+virNWFilterBindingDefFree(virNWFilterBindingDef *def)
 {
     if (!def)
         return;
@@ -46,10 +46,10 @@ virNWFilterBindingDefFree(virNWFilterBindingDefPtr def)
 }
 
 
-virNWFilterBindingDefPtr
-virNWFilterBindingDefCopy(virNWFilterBindingDefPtr src)
+virNWFilterBindingDef *
+virNWFilterBindingDefCopy(virNWFilterBindingDef *src)
 {
-    virNWFilterBindingDefPtr ret;
+    virNWFilterBindingDef *ret;
 
     ret = g_new0(virNWFilterBindingDef, 1);
 
@@ -79,10 +79,10 @@ virNWFilterBindingDefCopy(virNWFilterBindingDefPtr src)
 }
 
 
-static virNWFilterBindingDefPtr
+static virNWFilterBindingDef *
 virNWFilterBindingDefParseXML(xmlXPathContextPtr ctxt)
 {
-    virNWFilterBindingDefPtr ret;
+    virNWFilterBindingDef *ret;
     char *uuid = NULL;
     char *mac = NULL;
     xmlNodePtr node;
@@ -162,12 +162,12 @@ virNWFilterBindingDefParseXML(xmlXPathContextPtr ctxt)
 }
 
 
-virNWFilterBindingDefPtr
+virNWFilterBindingDef *
 virNWFilterBindingDefParseNode(xmlDocPtr xml,
                                xmlNodePtr root)
 {
     xmlXPathContextPtr ctxt = NULL;
-    virNWFilterBindingDefPtr def = NULL;
+    virNWFilterBindingDef *def = NULL;
 
     if (STRNEQ((const char *)root->name, "filterbinding")) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -188,11 +188,11 @@ virNWFilterBindingDefParseNode(xmlDocPtr xml,
 }
 
 
-static virNWFilterBindingDefPtr
+static virNWFilterBindingDef *
 virNWFilterBindingDefParse(const char *xmlStr,
                            const char *filename)
 {
-    virNWFilterBindingDefPtr def = NULL;
+    virNWFilterBindingDef *def = NULL;
     xmlDocPtr xml;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(nwfilterbinding_definition)")))) {
@@ -204,14 +204,14 @@ virNWFilterBindingDefParse(const char *xmlStr,
 }
 
 
-virNWFilterBindingDefPtr
+virNWFilterBindingDef *
 virNWFilterBindingDefParseString(const char *xmlStr)
 {
     return virNWFilterBindingDefParse(xmlStr, NULL);
 }
 
 
-virNWFilterBindingDefPtr
+virNWFilterBindingDef *
 virNWFilterBindingDefParseFile(const char *filename)
 {
     return virNWFilterBindingDefParse(NULL, filename);
@@ -231,7 +231,7 @@ virNWFilterBindingDefFormat(const virNWFilterBindingDef *def)
 
 
 int
-virNWFilterBindingDefFormatBuf(virBufferPtr buf,
+virNWFilterBindingDefFormatBuf(virBuffer *buf,
                                const virNWFilterBindingDef *def)
 {
     char uuid[VIR_UUID_STRING_BUFLEN];

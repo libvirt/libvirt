@@ -60,7 +60,6 @@ int virNetlinkDumpCommand(struct nl_msg *nl_msg,
                           void *opaque);
 
 typedef struct _virNetlinkNewLinkData virNetlinkNewLinkData;
-typedef virNetlinkNewLinkData *virNetlinkNewLinkDataPtr;
 struct _virNetlinkNewLinkData {
     const int *ifindex;             /* The index for the 'link' device */
     const virMacAddr *mac;          /* The MAC address of the device */
@@ -70,7 +69,7 @@ struct _virNetlinkNewLinkData {
 
 int virNetlinkNewLink(const char *ifname,
                       const char *type,
-                      virNetlinkNewLinkDataPtr data,
+                      virNetlinkNewLinkData *data,
                       int *error);
 
 typedef int (*virNetlinkTalkFallback)(const char *ifname);

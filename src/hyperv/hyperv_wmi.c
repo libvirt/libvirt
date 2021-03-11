@@ -48,8 +48,8 @@
 VIR_LOG_INIT("hyperv.hyperv_wmi");
 
 int
-hypervGetWmiClassList(hypervPrivate *priv, hypervWmiClassInfoPtr wmiInfo,
-                      virBufferPtr query, hypervObject **wmiClass)
+hypervGetWmiClassList(hypervPrivate *priv, hypervWmiClassInfo *wmiInfo,
+                      virBuffer *query, hypervObject **wmiClass)
 {
     hypervWqlQuery wqlQuery = HYPERV_WQL_QUERY_INITIALIZER;
 
@@ -126,12 +126,12 @@ hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
  * Returns a pointer to the newly instantiated object on success, which should
  * be freed by hypervInvokeMethod. Otherwise returns NULL.
  */
-hypervInvokeParamsListPtr
+hypervInvokeParamsList *
 hypervCreateInvokeParamsList(const char *method,
                              const char *selector,
-                             hypervWmiClassInfoPtr info)
+                             hypervWmiClassInfo *info)
 {
-    hypervInvokeParamsListPtr params = NULL;
+    hypervInvokeParamsList *params = NULL;
 
     params = g_new0(hypervInvokeParamsList, 1);
 
@@ -154,9 +154,9 @@ hypervCreateInvokeParamsList(const char *method,
  *
  */
 void
-hypervFreeInvokeParams(hypervInvokeParamsListPtr params)
+hypervFreeInvokeParams(hypervInvokeParamsList *params)
 {
-    hypervParamPtr p = NULL;
+    hypervParam *p = NULL;
     size_t i = 0;
 
     if (params == NULL)
@@ -186,7 +186,7 @@ hypervFreeInvokeParams(hypervInvokeParamsListPtr params)
 
 
 static inline int
-hypervCheckParams(hypervInvokeParamsListPtr params)
+hypervCheckParams(hypervInvokeParamsList *params)
 {
     if (params->nbParams + 1 > params->nbAvailParams) {
         VIR_EXPAND_N(params->params, params->nbAvailParams, 5);
@@ -208,10 +208,10 @@ hypervCheckParams(hypervInvokeParamsListPtr params)
  * Returns -1 on failure, 0 on success.
  */
 int
-hypervAddSimpleParam(hypervInvokeParamsListPtr params, const char *name,
+hypervAddSimpleParam(hypervInvokeParamsList *params, const char *name,
                      const char *value)
 {
-    hypervParamPtr p = NULL;
+    hypervParam *p = NULL;
 
     if (hypervCheckParams(params) < 0)
         return -1;
@@ -239,12 +239,12 @@ hypervAddSimpleParam(hypervInvokeParamsListPtr params, const char *name,
  * Adds an EPR param to the params list. Returns -1 on failure, 0 on success.
  */
 int
-hypervAddEprParam(hypervInvokeParamsListPtr params,
+hypervAddEprParam(hypervInvokeParamsList *params,
                   const char *name,
-                  virBufferPtr query,
-                  hypervWmiClassInfoPtr classInfo)
+                  virBuffer *query,
+                  hypervWmiClassInfo *classInfo)
 {
-    hypervParamPtr p = NULL;
+    hypervParam *p = NULL;
 
     if (hypervCheckParams(params) < 0)
         return -1;
@@ -271,7 +271,7 @@ hypervAddEprParam(hypervInvokeParamsListPtr params,
  * Returns a pointer to the GHashTable on success, otherwise NULL.
  */
 GHashTable *
-hypervCreateEmbeddedParam(hypervWmiClassInfoPtr classInfo)
+hypervCreateEmbeddedParam(hypervWmiClassInfo *classInfo)
 {
     size_t i;
     size_t count;
@@ -336,12 +336,12 @@ hypervSetEmbeddedProperty(GHashTable *table,
  * Returns -1 on failure, 0 on success.
  */
 int
-hypervAddEmbeddedParam(hypervInvokeParamsListPtr params,
+hypervAddEmbeddedParam(hypervInvokeParamsList *params,
                        const char *name,
                        GHashTable **table,
-                       hypervWmiClassInfoPtr classInfo)
+                       hypervWmiClassInfo *classInfo)
 {
-    hypervParamPtr p = NULL;
+    hypervParam *p = NULL;
 
     if (hypervCheckParams(params) < 0)
         return -1;
@@ -374,8 +374,8 @@ hypervFreeEmbeddedParam(GHashTable *p)
  * Serializing parameters to XML and invoking methods
  */
 static int
-hypervGetCimTypeInfo(hypervCimTypePtr typemap, const char *name,
-                     hypervCimTypePtr *property)
+hypervGetCimTypeInfo(hypervCimType *typemap, const char *name,
+                     hypervCimType **property)
 {
     size_t i = 0;
     while (typemap[i].name[0] != '\0') {
@@ -391,7 +391,7 @@ hypervGetCimTypeInfo(hypervCimTypePtr typemap, const char *name,
 
 
 static int
-hypervCreateInvokeXmlDoc(hypervInvokeParamsListPtr params, WsXmlDocH *docRoot)
+hypervCreateInvokeXmlDoc(hypervInvokeParamsList *params, WsXmlDocH *docRoot)
 {
     g_autofree char *method = g_strdup_printf("%s_INPUT", params->method);
     g_auto(WsXmlDocH) invokeXmlDocRoot = ws_xml_create_doc(NULL, method);
@@ -418,7 +418,7 @@ hypervCreateInvokeXmlDoc(hypervInvokeParamsListPtr params, WsXmlDocH *docRoot)
 
 
 static int
-hypervSerializeSimpleParam(hypervParamPtr p, const char *resourceUri,
+hypervSerializeSimpleParam(hypervParam *p, const char *resourceUri,
                            WsXmlNodeH *methodNode)
 {
     WsXmlNodeH xmlNodeParam = NULL;
@@ -436,7 +436,7 @@ hypervSerializeSimpleParam(hypervParamPtr p, const char *resourceUri,
 
 
 static int
-hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
+hypervSerializeEprParam(hypervParam *p, hypervPrivate *priv,
                         const char *resourceUri, WsXmlNodeH *methodNode)
 {
     WsXmlNodeH xmlNodeParam = NULL,
@@ -546,7 +546,7 @@ hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
 
 
 static int
-hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
+hypervSerializeEmbeddedParam(hypervParam *p, const char *resourceUri,
                              WsXmlNodeH *methodNode)
 {
     WsXmlNodeH xmlNodeInstance = NULL,
@@ -557,9 +557,9 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
     g_auto(WsXmlDocH) xmlDocCdata = NULL;
     g_autofree char *cdataContent = NULL;
     xmlNodePtr xmlNodeCdata = NULL;
-    hypervWmiClassInfoPtr classInfo = p->embedded.info;
-    g_autofree virHashKeyValuePairPtr items = NULL;
-    hypervCimTypePtr property = NULL;
+    hypervWmiClassInfo *classInfo = p->embedded.info;
+    g_autofree virHashKeyValuePair *items = NULL;
+    hypervCimType *property = NULL;
     ssize_t numKeys = -1;
     int len = 0, i = 0;
 
@@ -702,7 +702,7 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
  */
 int
 hypervInvokeMethod(hypervPrivate *priv,
-                   hypervInvokeParamsListPtr *paramsPtr,
+                   hypervInvokeParamsList **paramsPtr,
                    WsXmlDocH *res)
 {
     g_autoptr(hypervInvokeParamsList) params = *paramsPtr;
@@ -720,7 +720,7 @@ hypervInvokeMethod(hypervPrivate *priv,
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     g_autoptr(Msvm_ConcreteJob) job = NULL;
     int jobState = -1;
-    hypervParamPtr p = NULL;
+    hypervParam *p = NULL;
     int timeout = HYPERV_JOB_TIMEOUT_MS;
 
     *paramsPtr = NULL;
@@ -885,13 +885,13 @@ hypervInvokeMethod(hypervPrivate *priv,
 
 /* This function guarantees that wqlQuery->query is reset, even on failure */
 int
-hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
+hypervEnumAndPull(hypervPrivate *priv, hypervWqlQuery *wqlQuery,
                   hypervObject **list)
 {
     WsSerializerContextH serializerContext;
     g_autoptr(client_opt_t) options = NULL;
     g_autofree char *query_string = NULL;
-    hypervWmiClassInfoPtr wmiInfo = wqlQuery->info;
+    hypervWmiClassInfo *wmiInfo = wqlQuery->info;
     g_autoptr(filter_t) filter = NULL;
     g_auto(WsXmlDocH) response = NULL;
     g_autofree char *enumContext = NULL;
@@ -1529,7 +1529,7 @@ hypervGetEthernetPortAllocationSD(hypervPrivate *priv,
 int
 hypervMsvmVSMSAddResourceSettings(virDomainPtr domain,
                                   GHashTable **resourceSettingsPtr,
-                                  hypervWmiClassInfoPtr wmiInfo,
+                                  hypervWmiClassInfo *wmiInfo,
                                   WsXmlDocH *response)
 {
     hypervPrivate *priv = domain->conn->privateData;
@@ -1576,7 +1576,7 @@ hypervMsvmVSMSAddResourceSettings(virDomainPtr domain,
 int
 hypervMsvmVSMSModifyResourceSettings(hypervPrivate *priv,
                                      GHashTable **resourceSettingsPtr,
-                                     hypervWmiClassInfoPtr wmiInfo)
+                                     hypervWmiClassInfo *wmiInfo)
 {
     g_autoptr(GHashTable) resourceSettings = *resourceSettingsPtr;
     g_autoptr(hypervInvokeParamsList) params = NULL;

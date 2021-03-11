@@ -93,9 +93,9 @@ qemuInteropFetchConfigs(const char *name,
     g_autofree char *xdgConfig = NULL;
     g_autofree char *sysLocation = virFileBuildPath(QEMU_SYSTEM_LOCATION, name, NULL);
     g_autofree char *etcLocation = virFileBuildPath(QEMU_ETC_LOCATION, name, NULL);
-    g_autofree virHashKeyValuePairPtr pairs = NULL;
+    g_autofree virHashKeyValuePair *pairs = NULL;
     size_t npairs;
-    virHashKeyValuePairPtr tmp = NULL;
+    virHashKeyValuePair *tmp = NULL;
     size_t nconfigs = 0;
 
     *configs = NULL;

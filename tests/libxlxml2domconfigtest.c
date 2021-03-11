@@ -41,7 +41,7 @@
 
 # define VIR_FROM_THIS VIR_FROM_LIBXL
 
-static libxlDriverPrivatePtr driver;
+static libxlDriverPrivate *driver;
 
 static int
 testCompareXMLToDomConfig(const char *xmlfile,
@@ -51,8 +51,8 @@ testCompareXMLToDomConfig(const char *xmlfile,
     libxl_domain_config actualconfig;
     libxl_domain_config expectconfig;
     xentoollog_logger *log = NULL;
-    virPortAllocatorRangePtr gports = NULL;
-    virDomainDefPtr vmdef = NULL;
+    virPortAllocatorRange *gports = NULL;
+    virDomainDef *vmdef = NULL;
     char *actualjson = NULL;
     char *tempjson = NULL;
     char *expectjson = NULL;

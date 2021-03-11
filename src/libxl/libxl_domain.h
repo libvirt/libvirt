@@ -55,17 +55,16 @@ struct libxlDomainJobObj {
 };
 
 typedef struct _libxlDomainObjPrivate libxlDomainObjPrivate;
-typedef libxlDomainObjPrivate *libxlDomainObjPrivatePtr;
 struct _libxlDomainObjPrivate {
     virObjectLockable parent;
 
     /* console */
-    virChrdevsPtr devs;
+    virChrdevs *devs;
     libxl_evgen_domain_death *deathW;
     /* Flag to indicate the upcoming LIBXL_EVENT_TYPE_DOMAIN_DEATH is caused
      * by libvirt and should not be handled separately */
     bool ignoreDeathEvent;
-    virThreadPtr migrationDstReceiveThr;
+    virThread *migrationDstReceiveThr;
     unsigned short migrationPort;
     char *lockState;
     bool lockProcessRunning;
@@ -82,41 +81,41 @@ extern virXMLNamespace libxlDriverDomainXMLNamespace;
 extern const struct libxl_event_hooks ev_hooks;
 
 int
-libxlDomainObjPrivateInitCtx(virDomainObjPtr vm);
+libxlDomainObjPrivateInitCtx(virDomainObj *vm);
 
 int
-libxlDomainObjBeginJob(libxlDriverPrivatePtr driver,
-                       virDomainObjPtr obj,
+libxlDomainObjBeginJob(libxlDriverPrivate *driver,
+                       virDomainObj *obj,
                        enum libxlDomainJob job)
     G_GNUC_WARN_UNUSED_RESULT;
 
 void
-libxlDomainObjEndJob(libxlDriverPrivatePtr driver,
-                     virDomainObjPtr obj);
+libxlDomainObjEndJob(libxlDriverPrivate *driver,
+                     virDomainObj *obj);
 
 int
 libxlDomainJobUpdateTime(struct libxlDomainJobObj *job)
     G_GNUC_WARN_UNUSED_RESULT;
 
 char *
-libxlDomainManagedSavePath(libxlDriverPrivatePtr driver,
-                           virDomainObjPtr vm);
+libxlDomainManagedSavePath(libxlDriverPrivate *driver,
+                           virDomainObj *vm);
 
 int
-libxlDomainSaveImageOpen(libxlDriverPrivatePtr driver,
-                         libxlDriverConfigPtr cfg,
+libxlDomainSaveImageOpen(libxlDriverPrivate *driver,
+                         libxlDriverConfig *cfg,
                          const char *from,
-                         virDomainDefPtr *ret_def,
-                         libxlSavefileHeaderPtr ret_hdr)
+                         virDomainDef **ret_def,
+                         libxlSavefileHeader *ret_hdr)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 
 int
-libxlDomainDestroyInternal(libxlDriverPrivatePtr driver,
-                           virDomainObjPtr vm);
+libxlDomainDestroyInternal(libxlDriverPrivate *driver,
+                           virDomainObj *vm);
 
 void
-libxlDomainCleanup(libxlDriverPrivatePtr driver,
-                   virDomainObjPtr vm);
+libxlDomainCleanup(libxlDriverPrivate *driver,
+                   virDomainObj *vm);
 
 /*
  * Note: Xen 4.3 removed the const from the event handler signature.
@@ -134,26 +133,26 @@ libxlDomainEventHandler(void *data,
                         VIR_LIBXL_EVENT_CONST libxl_event *event);
 
 int
-libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
-                        virDomainObjPtr vm);
+libxlDomainAutoCoreDump(libxlDriverPrivate *driver,
+                        virDomainObj *vm);
 
 int
-libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver,
-                             virDomainObjPtr vm);
+libxlDomainSetVcpuAffinities(libxlDriverPrivate *driver,
+                             virDomainObj *vm);
 
 int
-libxlDomainStartNew(libxlDriverPrivatePtr driver,
-                    virDomainObjPtr vm,
+libxlDomainStartNew(libxlDriverPrivate *driver,
+                    virDomainObj *vm,
                     bool start_paused);
 
 int
-libxlDomainStartRestore(libxlDriverPrivatePtr driver,
-                        virDomainObjPtr vm,
+libxlDomainStartRestore(libxlDriverPrivate *driver,
+                        virDomainObj *vm,
                         bool start_paused,
                         int restore_fd,
                         uint32_t restore_ver);
 
 bool
-libxlDomainDefCheckABIStability(libxlDriverPrivatePtr driver,
-                                virDomainDefPtr src,
-                                virDomainDefPtr dst);
+libxlDomainDefCheckABIStability(libxlDriverPrivate *driver,
+                                virDomainDef *src,
+                                virDomainDef *dst);

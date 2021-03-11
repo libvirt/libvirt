@@ -25,12 +25,12 @@
 
 #pragma once
 
-virJSONValuePtr
-qemuMigrationParamsToJSON(qemuMigrationParamsPtr migParams);
+virJSONValue *
+qemuMigrationParamsToJSON(qemuMigrationParams *migParams);
 
-qemuMigrationParamsPtr
-qemuMigrationParamsFromJSON(virJSONValuePtr params);
+qemuMigrationParams *
+qemuMigrationParamsFromJSON(virJSONValue *params);
 
-virJSONValuePtr
-qemuMigrationCapsToJSON(virBitmapPtr caps,
-                        virBitmapPtr states);
+virJSONValue *
+qemuMigrationCapsToJSON(virBitmap *caps,
+                        virBitmap *states);

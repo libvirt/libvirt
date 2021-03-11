@@ -38,7 +38,7 @@
 
 VIR_LOG_INIT("conf.virdomainobjlist");
 
-static virClassPtr virDomainObjListClass;
+static virClass *virDomainObjListClass;
 static void virDomainObjListDispose(void *obj);
 
 
@@ -65,9 +65,9 @@ static int virDomainObjListOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virDomainObjList);
 
-virDomainObjListPtr virDomainObjListNew(void)
+virDomainObjList *virDomainObjListNew(void)
 {
-    virDomainObjListPtr doms;
+    virDomainObjList *doms;
 
     if (virDomainObjListInitialize() < 0)
         return NULL;
@@ -87,7 +87,7 @@ virDomainObjListPtr virDomainObjListNew(void)
 
 static void virDomainObjListDispose(void *obj)
 {
-    virDomainObjListPtr doms = obj;
+    virDomainObjList *doms = obj;
 
     virHashFree(doms->objs);
     virHashFree(doms->objsName);
@@ -98,7 +98,7 @@ static int virDomainObjListSearchID(const void *payload,
                                     const char *name G_GNUC_UNUSED,
                                     const void *data)
 {
-    virDomainObjPtr obj = (virDomainObjPtr)payload;
+    virDomainObj *obj = (virDomainObj *)payload;
     const int *id = data;
     int want = 0;
 
@@ -111,11 +111,11 @@ static int virDomainObjListSearchID(const void *payload,
 }
 
 
-virDomainObjPtr
-virDomainObjListFindByID(virDomainObjListPtr doms,
+virDomainObj *
+virDomainObjListFindByID(virDomainObjList *doms,
                          int id)
 {
-    virDomainObjPtr obj;
+    virDomainObj *obj;
 
     virObjectRWLockRead(doms);
     obj = virHashSearch(doms->objs, virDomainObjListSearchID, &id, NULL);
@@ -134,12 +134,12 @@ virDomainObjListFindByID(virDomainObjListPtr doms,
 }
 
 
-static virDomainObjPtr
-virDomainObjListFindByUUIDLocked(virDomainObjListPtr doms,
+static virDomainObj *
+virDomainObjListFindByUUIDLocked(virDomainObjList *doms,
                                  const unsigned char *uuid)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virDomainObjPtr obj;
+    virDomainObj *obj;
 
     virUUIDFormat(uuid, uuidstr);
     obj = virHashLookup(doms->objs, uuidstr);
@@ -159,11 +159,11 @@ virDomainObjListFindByUUIDLocked(virDomainObjListPtr doms,
  * locked and ref counted domain object if found. Caller is
  * expected to use the virDomainObjEndAPI when done with the object.
  */
-virDomainObjPtr
-virDomainObjListFindByUUID(virDomainObjListPtr doms,
+virDomainObj *
+virDomainObjListFindByUUID(virDomainObjList *doms,
                            const unsigned char *uuid)
 {
-    virDomainObjPtr obj;
+    virDomainObj *obj;
 
     virObjectRWLockRead(doms);
     obj = virDomainObjListFindByUUIDLocked(doms, uuid);
@@ -179,11 +179,11 @@ virDomainObjListFindByUUID(virDomainObjListPtr doms,
 }
 
 
-static virDomainObjPtr
-virDomainObjListFindByNameLocked(virDomainObjListPtr doms,
+static virDomainObj *
+virDomainObjListFindByNameLocked(virDomainObjList *doms,
                                  const char *name)
 {
-    virDomainObjPtr obj;
+    virDomainObj *obj;
 
     obj = virHashLookup(doms->objsName, name);
     if (obj) {
@@ -202,11 +202,11 @@ virDomainObjListFindByNameLocked(virDomainObjListPtr doms,
  * locked and ref counted domain object if found. Caller is expected
  * to use the virDomainObjEndAPI when done with the object.
  */
-virDomainObjPtr
-virDomainObjListFindByName(virDomainObjListPtr doms,
+virDomainObj *
+virDomainObjListFindByName(virDomainObjList *doms,
                            const char *name)
 {
-    virDomainObjPtr obj;
+    virDomainObj *obj;
 
     virObjectRWLockRead(doms);
     obj = virDomainObjListFindByNameLocked(doms, name);
@@ -239,8 +239,8 @@ virDomainObjListFindByName(virDomainObjListPtr doms,
  *        -1 on failure with 1 reference and locked
  */
 static int
-virDomainObjListAddObjLocked(virDomainObjListPtr doms,
-                             virDomainObjPtr vm)
+virDomainObjListAddObjLocked(virDomainObjList *doms,
+                             virDomainObj *vm)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
@@ -274,14 +274,14 @@ virDomainObjListAddObjLocked(virDomainObjListPtr doms,
  * counted. The caller is expected to use virDomainObjEndAPI
  * when it completes usage.
  */
-static virDomainObjPtr
-virDomainObjListAddLocked(virDomainObjListPtr doms,
-                          virDomainDefPtr def,
-                          virDomainXMLOptionPtr xmlopt,
+static virDomainObj *
+virDomainObjListAddLocked(virDomainObjList *doms,
+                          virDomainDef *def,
+                          virDomainXMLOption *xmlopt,
                           unsigned int flags,
-                          virDomainDefPtr *oldDef)
+                          virDomainDef **oldDef)
 {
-    virDomainObjPtr vm;
+    virDomainObj *vm;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (oldDef)
@@ -351,13 +351,14 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
 }
 
 
-virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
-                                    virDomainDefPtr def,
-                                    virDomainXMLOptionPtr xmlopt,
-                                    unsigned int flags,
-                                    virDomainDefPtr *oldDef)
+virDomainObj *
+virDomainObjListAdd(virDomainObjList *doms,
+                    virDomainDef *def,
+                    virDomainXMLOption *xmlopt,
+                    unsigned int flags,
+                    virDomainDef **oldDef)
 {
-    virDomainObjPtr ret;
+    virDomainObj *ret;
 
     virObjectRWLockWrite(doms);
     ret = virDomainObjListAddLocked(doms, def, xmlopt, flags, oldDef);
@@ -373,8 +374,8 @@ virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
  * virDomainObjListForEach
  */
 void
-virDomainObjListRemoveLocked(virDomainObjListPtr doms,
-                             virDomainObjPtr dom)
+virDomainObjListRemoveLocked(virDomainObjList *doms,
+                             virDomainObj *dom)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
@@ -399,8 +400,8 @@ virDomainObjListRemoveLocked(virDomainObjListPtr doms,
  * tables and returned with lock and refcnt that was present upon entry.
  */
 void
-virDomainObjListRemove(virDomainObjListPtr doms,
-                       virDomainObjPtr dom)
+virDomainObjListRemove(virDomainObjList *doms,
+                       virDomainObj *dom)
 {
     dom->removing = true;
     virObjectRef(dom);
@@ -423,8 +424,8 @@ virDomainObjListRemove(virDomainObjListPtr doms,
  * consistency must not rely on this lock solely.
  */
 int
-virDomainObjListRename(virDomainObjListPtr doms,
-                       virDomainObjPtr dom,
+virDomainObjListRename(virDomainObjList *doms,
+                       virDomainObj *dom,
                        const char *new_name,
                        unsigned int flags,
                        virDomainObjListRenameCallback callback,
@@ -481,9 +482,9 @@ virDomainObjListRename(virDomainObjListPtr doms,
 }
 
 
-static virDomainObjPtr
-virDomainObjListLoadConfig(virDomainObjListPtr doms,
-                           virDomainXMLOptionPtr xmlopt,
+static virDomainObj *
+virDomainObjListLoadConfig(virDomainObjList *doms,
+                           virDomainXMLOption *xmlopt,
                            const char *configDir,
                            const char *autostartDir,
                            const char *name,
@@ -491,10 +492,10 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
                            void *opaque)
 {
     char *configFile = NULL, *autostartLink = NULL;
-    virDomainDefPtr def = NULL;
-    virDomainObjPtr dom;
+    virDomainDef *def = NULL;
+    virDomainObj *dom;
     int autostart;
-    virDomainDefPtr oldDef = NULL;
+    virDomainDef *oldDef = NULL;
 
     if ((configFile = virDomainConfigFile(configDir, name)) == NULL)
         goto error;
@@ -531,16 +532,16 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
 }
 
 
-static virDomainObjPtr
-virDomainObjListLoadStatus(virDomainObjListPtr doms,
+static virDomainObj *
+virDomainObjListLoadStatus(virDomainObjList *doms,
                            const char *statusDir,
                            const char *name,
-                           virDomainXMLOptionPtr xmlopt,
+                           virDomainXMLOption *xmlopt,
                            virDomainLoadConfigNotify notify,
                            void *opaque)
 {
     char *statusFile = NULL;
-    virDomainObjPtr obj = NULL;
+    virDomainObj *obj = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if ((statusFile = virDomainConfigFile(statusDir, name)) == NULL)
@@ -580,11 +581,11 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
 
 
 int
-virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
+virDomainObjListLoadAllConfigs(virDomainObjList *doms,
                                const char *configDir,
                                const char *autostartDir,
                                bool liveStatus,
-                               virDomainXMLOptionPtr xmlopt,
+                               virDomainXMLOption *xmlopt,
                                virDomainLoadConfigNotify notify,
                                void *opaque)
 {
@@ -601,7 +602,7 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
     virObjectRWLockWrite(doms);
 
     while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
-        virDomainObjPtr dom;
+        virDomainObj *dom;
 
         if (!virStringStripSuffix(entry->d_name, ".xml"))
             continue;
@@ -651,7 +652,7 @@ virDomainObjListCount(void *payload,
                       const char *name G_GNUC_UNUSED,
                       void *opaque)
 {
-    virDomainObjPtr obj = payload;
+    virDomainObj *obj = payload;
     struct virDomainObjListData *data = opaque;
     virObjectLock(obj);
     if (data->filter &&
@@ -671,7 +672,7 @@ virDomainObjListCount(void *payload,
 
 
 int
-virDomainObjListNumOfDomains(virDomainObjListPtr doms,
+virDomainObjListNumOfDomains(virDomainObjList *doms,
                              bool active,
                              virDomainObjListACLFilter filter,
                              virConnectPtr conn)
@@ -698,7 +699,7 @@ virDomainObjListCopyActiveIDs(void *payload,
                               const char *name G_GNUC_UNUSED,
                               void *opaque)
 {
-    virDomainObjPtr obj = payload;
+    virDomainObj *obj = payload;
     struct virDomainIDData *data = opaque;
     virObjectLock(obj);
     if (data->filter &&
@@ -713,7 +714,7 @@ virDomainObjListCopyActiveIDs(void *payload,
 
 
 int
-virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
+virDomainObjListGetActiveIDs(virDomainObjList *doms,
                              int *ids,
                              int maxids,
                              virDomainObjListACLFilter filter,
@@ -743,7 +744,7 @@ virDomainObjListCopyInactiveNames(void *payload,
                                   const char *name G_GNUC_UNUSED,
                                   void *opaque)
 {
-    virDomainObjPtr obj = payload;
+    virDomainObj *obj = payload;
     struct virDomainNameData *data = opaque;
 
     if (data->oom)
@@ -765,7 +766,7 @@ virDomainObjListCopyInactiveNames(void *payload,
 
 
 int
-virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
+virDomainObjListGetInactiveNames(virDomainObjList *doms,
                                  char **const names,
                                  int maxnames,
                                  virDomainObjListACLFilter filter,
@@ -824,7 +825,7 @@ virDomainObjListHelper(void *payload,
  *         -1 otherwise.
  */
 int
-virDomainObjListForEach(virDomainObjListPtr doms,
+virDomainObjListForEach(virDomainObjList *doms,
                         bool modify,
                         virDomainObjListIterator callback,
                         void *opaque)
@@ -845,7 +846,7 @@ virDomainObjListForEach(virDomainObjListPtr doms,
 
 #define MATCH(FLAG) (filter & (FLAG))
 static bool
-virDomainObjMatchFilter(virDomainObjPtr vm,
+virDomainObjMatchFilter(virDomainObj *vm,
                         unsigned int filter)
 {
     /* filter by active state */
@@ -917,7 +918,7 @@ virDomainObjMatchFilter(virDomainObjPtr vm,
 
 
 struct virDomainListData {
-    virDomainObjPtr *vms;
+    virDomainObj **vms;
     size_t nvms;
 };
 
@@ -935,7 +936,7 @@ virDomainObjListCollectIterator(void *payload,
 
 
 static void
-virDomainObjListFilter(virDomainObjPtr **list,
+virDomainObjListFilter(virDomainObj ***list,
                        size_t *nvms,
                        virConnectPtr conn,
                        virDomainObjListACLFilter filter,
@@ -944,7 +945,7 @@ virDomainObjListFilter(virDomainObjPtr **list,
     size_t i = 0;
 
     while (i < *nvms) {
-        virDomainObjPtr vm = (*list)[i];
+        virDomainObj *vm = (*list)[i];
 
         virObjectLock(vm);
 
@@ -969,9 +970,9 @@ virDomainObjListFilter(virDomainObjPtr **list,
 
 
 int
-virDomainObjListCollect(virDomainObjListPtr domlist,
+virDomainObjListCollect(virDomainObjList *domlist,
                         virConnectPtr conn,
-                        virDomainObjPtr **vms,
+                        virDomainObj ***vms,
                         size_t *nvms,
                         virDomainObjListACLFilter filter,
                         unsigned int flags)
@@ -980,7 +981,7 @@ virDomainObjListCollect(virDomainObjListPtr domlist,
 
     virObjectRWLockRead(domlist);
     sa_assert(domlist->objs);
-    data.vms = g_new0(virDomainObjPtr, virHashSize(domlist->objs));
+    data.vms = g_new0(virDomainObj *, virHashSize(domlist->objs));
 
     virHashForEach(domlist->objs, virDomainObjListCollectIterator, &data);
     virObjectRWUnlock(domlist);
@@ -995,18 +996,18 @@ virDomainObjListCollect(virDomainObjListPtr domlist,
 
 
 int
-virDomainObjListConvert(virDomainObjListPtr domlist,
+virDomainObjListConvert(virDomainObjList *domlist,
                         virConnectPtr conn,
                         virDomainPtr *doms,
                         size_t ndoms,
-                        virDomainObjPtr **vms,
+                        virDomainObj ***vms,
                         size_t *nvms,
                         virDomainObjListACLFilter filter,
                         unsigned int flags,
                         bool skip_missing)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virDomainObjPtr vm;
+    virDomainObj *vm;
     size_t i;
 
     *nvms = 0;
@@ -1054,13 +1055,13 @@ virDomainObjListConvert(virDomainObjListPtr domlist,
 
 
 int
-virDomainObjListExport(virDomainObjListPtr domlist,
+virDomainObjListExport(virDomainObjList *domlist,
                        virConnectPtr conn,
                        virDomainPtr **domains,
                        virDomainObjListACLFilter filter,
                        unsigned int flags)
 {
-    virDomainObjPtr *vms = NULL;
+    virDomainObj **vms = NULL;
     virDomainPtr *doms = NULL;
     size_t nvms = 0;
     size_t i;
@@ -1073,7 +1074,7 @@ virDomainObjListExport(virDomainObjListPtr domlist,
         doms = g_new0(virDomainPtr, nvms + 1);
 
         for (i = 0; i < nvms; i++) {
-            virDomainObjPtr vm = vms[i];
+            virDomainObj *vm = vms[i];
 
             virObjectLock(vm);
             doms[i] = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);

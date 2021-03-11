@@ -58,11 +58,11 @@ struct _virFileCache {
 };
 
 
-static virClassPtr virFileCacheClass;
+static virClass *virFileCacheClass;
 
 
 static void
-virFileCachePrivFree(virFileCachePtr cache)
+virFileCachePrivFree(virFileCache *cache)
 {
     if (cache->priv && cache->handlers.privFree)
         cache->handlers.privFree(cache->priv);
@@ -72,7 +72,7 @@ virFileCachePrivFree(virFileCachePtr cache)
 static void
 virFileCacheDispose(void *obj)
 {
-    virFileCachePtr cache = obj;
+    virFileCache *cache = obj;
 
     g_free(cache->dir);
     g_free(cache->suffix);
@@ -97,7 +97,7 @@ VIR_ONCE_GLOBAL_INIT(virFileCache);
 
 
 static char *
-virFileCacheGetFileName(virFileCachePtr cache,
+virFileCacheGetFileName(virFileCache *cache,
                         const char *name)
 {
     g_autofree char *namehash = NULL;
@@ -123,7 +123,7 @@ virFileCacheGetFileName(virFileCachePtr cache,
 
 
 static int
-virFileCacheLoad(virFileCachePtr cache,
+virFileCacheLoad(virFileCache *cache,
                  const char *name,
                  void **data)
 {
@@ -178,7 +178,7 @@ virFileCacheLoad(virFileCachePtr cache,
 
 
 static int
-virFileCacheSave(virFileCachePtr cache,
+virFileCacheSave(virFileCache *cache,
                  const char *name,
                  void *data)
 {
@@ -195,7 +195,7 @@ virFileCacheSave(virFileCachePtr cache,
 
 
 static void *
-virFileCacheNewData(virFileCachePtr cache,
+virFileCacheNewData(virFileCache *cache,
                     const char *name)
 {
     void *data = NULL;
@@ -229,12 +229,12 @@ virFileCacheNewData(virFileCachePtr cache,
  *
  * Returns new cache object or NULL on error.
  */
-virFileCachePtr
+virFileCache *
 virFileCacheNew(const char *dir,
                 const char *suffix,
                 virFileCacheHandlers *handlers)
 {
-    virFileCachePtr cache;
+    virFileCache *cache;
 
     if (virFileCacheInitialize() < 0)
         return NULL;
@@ -260,7 +260,7 @@ virFileCacheNew(const char *dir,
 
 
 static void
-virFileCacheValidate(virFileCachePtr cache,
+virFileCacheValidate(virFileCache *cache,
                      const char *name,
                      void **data)
 {
@@ -299,7 +299,7 @@ virFileCacheValidate(virFileCachePtr cache,
  * unrefing the data.
  */
 void *
-virFileCacheLookup(virFileCachePtr cache,
+virFileCacheLookup(virFileCache *cache,
                    const char *name)
 {
     void *data = NULL;
@@ -328,7 +328,7 @@ virFileCacheLookup(virFileCachePtr cache,
  * unrefing the data.
  */
 void *
-virFileCacheLookupByFunc(virFileCachePtr cache,
+virFileCacheLookupByFunc(virFileCache *cache,
                          virHashSearcher iter,
                          const void *iterData)
 {
@@ -354,7 +354,7 @@ virFileCacheLookupByFunc(virFileCachePtr cache,
  * Returns private data used by @handlers.
  */
 void *
-virFileCacheGetPriv(virFileCachePtr cache)
+virFileCacheGetPriv(virFileCache *cache)
 {
     void *priv;
 
@@ -377,7 +377,7 @@ virFileCacheGetPriv(virFileCachePtr cache)
  * set, privFree() will be called on the old @priv before setting a new one.
  */
 void
-virFileCacheSetPriv(virFileCachePtr cache,
+virFileCacheSetPriv(virFileCache *cache,
                     void *priv)
 {
     virObjectLock(cache);
@@ -402,7 +402,7 @@ virFileCacheSetPriv(virFileCachePtr cache,
  * Returns 0 on success, -1 on error.
  */
 int
-virFileCacheInsertData(virFileCachePtr cache,
+virFileCacheInsertData(virFileCache *cache,
                        const char *name,
                        void *data)
 {

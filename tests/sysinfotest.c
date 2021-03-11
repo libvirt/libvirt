@@ -41,7 +41,7 @@
 
 struct testSysinfoData {
     const char *name; /* test name, also base name for result files */
-    virSysinfoDefPtr (*func)(void); /* sysinfo gathering function */
+    virSysinfoDef *(*func)(void); /* sysinfo gathering function */
 };
 
 

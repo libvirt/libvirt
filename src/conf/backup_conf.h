@@ -57,7 +57,6 @@ typedef enum {
 
 /* Stores disk-backup information */
 typedef struct _virDomainBackupDiskDef virDomainBackupDiskDef;
-typedef virDomainBackupDiskDef *virDomainBackupDiskDefPtr;
 struct _virDomainBackupDiskDef {
     char *name;     /* name matching the <target dev='...' of the domain */
     virTristateBool backup; /* whether backup is requested */
@@ -67,7 +66,7 @@ struct _virDomainBackupDiskDef {
     char *exportbitmap; /* name of the bitmap exposed in NBD for pull mode backup */
 
     /* details of target for push-mode, or of the scratch file for pull-mode */
-    virStorageSourcePtr store;
+    virStorageSource *store;
 
     /* internal data */
     virDomainBackupDiskState state;
@@ -75,12 +74,11 @@ struct _virDomainBackupDiskDef {
 
 /* Stores the complete backup metadata */
 typedef struct _virDomainBackupDef virDomainBackupDef;
-typedef virDomainBackupDef *virDomainBackupDefPtr;
 struct _virDomainBackupDef {
     /* Public XML.  */
     int type; /* virDomainBackupType */
     char *incremental;
-    virStorageNetHostDefPtr server; /* only when type == PULL */
+    virStorageNetHostDef *server; /* only when type == PULL */
     virTristateBool tls; /* use TLS for NBD */
 
     size_t ndisks; /* should not exceed dom->ndisks */
@@ -107,26 +105,26 @@ typedef enum {
     VIR_DOMAIN_BACKUP_PARSE_INTERNAL = 1 << 0,
 } virDomainBackupParseFlags;
 
-virDomainBackupDefPtr
+virDomainBackupDef *
 virDomainBackupDefParseString(const char *xmlStr,
-                              virDomainXMLOptionPtr xmlopt,
+                              virDomainXMLOption *xmlopt,
                               unsigned int flags);
 
-virDomainBackupDefPtr
+virDomainBackupDef *
 virDomainBackupDefParseNode(xmlDocPtr xml,
                             xmlNodePtr root,
-                            virDomainXMLOptionPtr xmlopt,
+                            virDomainXMLOption *xmlopt,
                             unsigned int flags);
 void
-virDomainBackupDefFree(virDomainBackupDefPtr def);
+virDomainBackupDefFree(virDomainBackupDef *def);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainBackupDef, virDomainBackupDefFree);
 
 int
-virDomainBackupDefFormat(virBufferPtr buf,
-                         virDomainBackupDefPtr def,
+virDomainBackupDefFormat(virBuffer *buf,
+                         virDomainBackupDef *def,
                          bool internal);
 int
-virDomainBackupAlignDisks(virDomainBackupDefPtr backup,
-                          virDomainDefPtr dom,
+virDomainBackupAlignDisks(virDomainBackupDef *backup,
+                          virDomainDef *dom,
                           const char *suffix);

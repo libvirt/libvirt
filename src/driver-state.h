@@ -52,8 +52,6 @@ typedef int
 (*virDrvStateShutdownWait)(void);
 
 typedef struct _virStateDriver virStateDriver;
-typedef virStateDriver *virStateDriverPtr;
-
 struct _virStateDriver {
     const char *name;
     bool initialized;

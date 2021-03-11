@@ -35,8 +35,6 @@
 #define BHYVE_LOG_DIR          LOCALSTATEDIR "/log/libvirt/bhyve"
 
 typedef struct _virBhyveDriverConfig virBhyveDriverConfig;
-typedef struct _virBhyveDriverConfig *virBhyveDriverConfigPtr;
-
 struct _virBhyveDriverConfig {
     virObject parent;
 
@@ -48,34 +46,33 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virBhyveDriverConfig, virObjectUnref);
 struct _bhyveConn {
     virMutex lock;
 
-    virBhyveDriverConfigPtr config;
+    struct _virBhyveDriverConfig *config;
 
     /* pid file FD, ensures two copies of the driver can't use the same root */
     int lockFD;
 
-    virDomainObjListPtr domains;
-    virCapsPtr caps;
-    virDomainXMLOptionPtr xmlopt;
+    virDomainObjList *domains;
+    virCaps *caps;
+    virDomainXMLOption *xmlopt;
     char *pidfile;
-    virSysinfoDefPtr hostsysinfo;
+    virSysinfoDef *hostsysinfo;
 
-    virObjectEventStatePtr domainEventState;
+    virObjectEventState *domainEventState;
 
-    virCloseCallbacksPtr closeCallbacks;
+    virCloseCallbacks *closeCallbacks;
 
-    virPortAllocatorRangePtr remotePorts;
+    virPortAllocatorRange *remotePorts;
 
     unsigned bhyvecaps;
     unsigned grubcaps;
 };
 
 typedef struct _bhyveConn bhyveConn;
-typedef struct _bhyveConn *bhyveConnPtr;
 
 struct bhyveAutostartData {
-    bhyveConnPtr driver;
+    struct _bhyveConn *driver;
     virConnectPtr conn;
 };
 
-void bhyveDriverLock(bhyveConnPtr driver);
-void bhyveDriverUnlock(bhyveConnPtr driver);
+void bhyveDriverLock(struct _bhyveConn *driver);
+void bhyveDriverUnlock(struct _bhyveConn *driver);

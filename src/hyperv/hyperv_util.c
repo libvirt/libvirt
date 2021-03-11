@@ -35,7 +35,7 @@
 VIR_LOG_INIT("hyperv.hyperv_util");
 
 int
-hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri)
+hypervParseUri(hypervParsedUri **parsedUri, virURI *uri)
 {
     int result = -1;
     size_t i;
@@ -48,7 +48,7 @@ hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri)
     *parsedUri = g_new0(hypervParsedUri, 1);
 
     for (i = 0; i < uri->paramsCount; i++) {
-        virURIParamPtr queryParam = &uri->params[i];
+        virURIParam *queryParam = &uri->params[i];
 
         if (STRCASEEQ(queryParam->name, "transport")) {
             VIR_FREE((*parsedUri)->transport);

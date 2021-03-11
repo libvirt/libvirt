@@ -28,8 +28,6 @@
 #include "virxml.h"
 
 typedef struct _virNWFilterBindingDef virNWFilterBindingDef;
-typedef virNWFilterBindingDef *virNWFilterBindingDefPtr;
-
 struct _virNWFilterBindingDef {
     char *ownername;
     unsigned char owneruuid[VIR_UUID_BUFLEN];
@@ -42,23 +40,23 @@ struct _virNWFilterBindingDef {
 
 
 void
-virNWFilterBindingDefFree(virNWFilterBindingDefPtr binding);
-virNWFilterBindingDefPtr
-virNWFilterBindingDefCopy(virNWFilterBindingDefPtr src);
+virNWFilterBindingDefFree(virNWFilterBindingDef *binding);
+virNWFilterBindingDef *
+virNWFilterBindingDefCopy(virNWFilterBindingDef *src);
 
-virNWFilterBindingDefPtr
+virNWFilterBindingDef *
 virNWFilterBindingDefParseNode(xmlDocPtr xml,
                                xmlNodePtr root);
 
-virNWFilterBindingDefPtr
+virNWFilterBindingDef *
 virNWFilterBindingDefParseString(const char *xml);
 
-virNWFilterBindingDefPtr
+virNWFilterBindingDef *
 virNWFilterBindingDefParseFile(const char *filename);
 
 char *
 virNWFilterBindingDefFormat(const virNWFilterBindingDef *def);
 
 int
-virNWFilterBindingDefFormatBuf(virBufferPtr buf,
+virNWFilterBindingDefFormatBuf(virBuffer *buf,
                                const virNWFilterBindingDef *def);

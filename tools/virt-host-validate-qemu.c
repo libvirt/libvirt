@@ -29,7 +29,7 @@
 
 int virHostValidateQEMU(void)
 {
-    virBitmapPtr flags;
+    virBitmap *flags;
     int ret = 0;
     bool hasHwVirt = false;
     bool hasVirtFlag = false;

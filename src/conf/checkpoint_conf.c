@@ -42,7 +42,7 @@
 
 VIR_LOG_INIT("conf.checkpoint_conf");
 
-static virClassPtr virDomainCheckpointDefClass;
+static virClass *virDomainCheckpointDefClass;
 static void virDomainCheckpointDefDispose(void *obj);
 
 static int
@@ -63,14 +63,14 @@ VIR_ENUM_IMPL(virDomainCheckpoint,
 
 /* Checkpoint Def functions */
 static void
-virDomainCheckpointDiskDefClear(virDomainCheckpointDiskDefPtr disk)
+virDomainCheckpointDiskDefClear(virDomainCheckpointDiskDef *disk)
 {
     VIR_FREE(disk->name);
     VIR_FREE(disk->bitmap);
 }
 
 /* Allocate a new virDomainCheckpointDef; free with virObjectUnref() */
-virDomainCheckpointDefPtr
+virDomainCheckpointDef *
 virDomainCheckpointDefNew(void)
 {
     if (virDomainCheckpointInitialize() < 0)
@@ -82,7 +82,7 @@ virDomainCheckpointDefNew(void)
 static void
 virDomainCheckpointDefDispose(void *obj)
 {
-    virDomainCheckpointDefPtr def = obj;
+    virDomainCheckpointDef *def = obj;
     size_t i;
 
     for (i = 0; i < def->ndisks; i++)
@@ -93,7 +93,7 @@ virDomainCheckpointDefDispose(void *obj)
 static int
 virDomainCheckpointDiskDefParseXML(xmlNodePtr node,
                                    xmlXPathContextPtr ctxt,
-                                   virDomainCheckpointDiskDefPtr def)
+                                   virDomainCheckpointDiskDef *def)
 {
     g_autofree char *checkpoint = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
@@ -117,13 +117,13 @@ virDomainCheckpointDiskDefParseXML(xmlNodePtr node,
 
 /* flags is bitwise-or of virDomainCheckpointParseFlags.
  */
-static virDomainCheckpointDefPtr
+static virDomainCheckpointDef *
 virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
-                            virDomainXMLOptionPtr xmlopt,
+                            virDomainXMLOption *xmlopt,
                             void *parseOpaque,
                             unsigned int flags)
 {
-    virDomainCheckpointDefPtr ret = NULL;
+    virDomainCheckpointDef *ret = NULL;
     size_t i;
     int n;
     g_autofree xmlNodePtr *nodes = NULL;
@@ -185,10 +185,10 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
     return ret;
 }
 
-static virDomainCheckpointDefPtr
+static virDomainCheckpointDef *
 virDomainCheckpointDefParseNode(xmlDocPtr xml,
                                 xmlNodePtr root,
-                                virDomainXMLOptionPtr xmlopt,
+                                virDomainXMLOption *xmlopt,
                                 void *parseOpaque,
                                 unsigned int flags)
 {
@@ -216,13 +216,13 @@ virDomainCheckpointDefParseNode(xmlDocPtr xml,
     return virDomainCheckpointDefParse(ctxt, xmlopt, parseOpaque, flags);
 }
 
-virDomainCheckpointDefPtr
+virDomainCheckpointDef *
 virDomainCheckpointDefParseString(const char *xmlStr,
-                                  virDomainXMLOptionPtr xmlopt,
+                                  virDomainXMLOption *xmlopt,
                                   void *parseOpaque,
                                   unsigned int flags)
 {
-    virDomainCheckpointDefPtr ret = NULL;
+    virDomainCheckpointDef *ret = NULL;
     xmlDocPtr xml;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
@@ -246,12 +246,12 @@ virDomainCheckpointDefParseString(const char *xmlStr,
  * success, -1 on error.
  */
 static int
-virDomainCheckpointDefAssignBitmapNames(virDomainCheckpointDefPtr def)
+virDomainCheckpointDefAssignBitmapNames(virDomainCheckpointDef *def)
 {
     size_t i;
 
     for (i = 0; i < def->ndisks; i++) {
-        virDomainCheckpointDiskDefPtr disk = &def->disks[i];
+        virDomainCheckpointDiskDef *disk = &def->disks[i];
 
         if (disk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP ||
             disk->bitmap)
@@ -270,11 +270,11 @@ virDomainCheckpointDefAssignBitmapNames(virDomainCheckpointDefPtr def)
  * if any def->disks[n]->name appears more than once or does not map
  * to dom->disks. */
 int
-virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr chkdef)
+virDomainCheckpointAlignDisks(virDomainCheckpointDef *chkdef)
 {
-    virDomainDefPtr domdef = chkdef->parent.dom;
+    virDomainDef *domdef = chkdef->parent.dom;
     g_autoptr(GHashTable) map = virHashNew(NULL);
-    g_autofree virDomainCheckpointDiskDefPtr olddisks = NULL;
+    g_autofree virDomainCheckpointDiskDef *olddisks = NULL;
     size_t i;
     int checkpoint_default = VIR_DOMAIN_CHECKPOINT_TYPE_NONE;
 
@@ -304,8 +304,8 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr chkdef)
 
     /* Double check requested disks.  */
     for (i = 0; i < chkdef->ndisks; i++) {
-        virDomainCheckpointDiskDefPtr chkdisk = &chkdef->disks[i];
-        virDomainDiskDefPtr domdisk = virDomainDiskByName(domdef, chkdisk->name, false);
+        virDomainCheckpointDiskDef *chkdisk = &chkdef->disks[i];
+        virDomainDiskDef *domdisk = virDomainDiskByName(domdef, chkdisk->name, false);
 
         if (!domdisk) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -343,9 +343,9 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr chkdef)
     chkdef->ndisks = domdef->ndisks;
 
     for (i = 0; i < domdef->ndisks; i++) {
-        virDomainDiskDefPtr domdisk = domdef->disks[i];
-        virDomainCheckpointDiskDefPtr chkdisk = chkdef->disks + i;
-        virDomainCheckpointDiskDefPtr existing;
+        virDomainDiskDef *domdisk = domdef->disks[i];
+        virDomainCheckpointDiskDef *chkdisk = chkdef->disks + i;
+        virDomainCheckpointDiskDef *existing;
 
         /* copy existing disks */
         if ((existing = virHashLookup(map, domdisk->dst))) {
@@ -391,8 +391,8 @@ unsigned int virDomainCheckpointFormatConvertXMLFlags(unsigned int flags)
 
 
 static int
-virDomainCheckpointDiskDefFormat(virBufferPtr buf,
-                                 virDomainCheckpointDiskDefPtr disk,
+virDomainCheckpointDiskDefFormat(virBuffer *buf,
+                                 virDomainCheckpointDiskDef *disk,
                                  unsigned int flags)
 {
     if (!disk->name)
@@ -413,9 +413,9 @@ virDomainCheckpointDiskDefFormat(virBufferPtr buf,
 
 
 static int
-virDomainCheckpointDefFormatInternal(virBufferPtr buf,
-                                     virDomainCheckpointDefPtr def,
-                                     virDomainXMLOptionPtr xmlopt,
+virDomainCheckpointDefFormatInternal(virBuffer *buf,
+                                     virDomainCheckpointDef *def,
+                                     virDomainXMLOption *xmlopt,
                                      unsigned int flags)
 {
     size_t i;
@@ -469,8 +469,8 @@ virDomainCheckpointDefFormatInternal(virBufferPtr buf,
 
 
 char *
-virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
-                             virDomainXMLOptionPtr xmlopt,
+virDomainCheckpointDefFormat(virDomainCheckpointDef *def,
+                             virDomainXMLOption *xmlopt,
                              unsigned int flags)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -487,11 +487,11 @@ virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
 
 
 int
-virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
-                                virDomainCheckpointDefPtr def,
+virDomainCheckpointRedefinePrep(virDomainObj *vm,
+                                virDomainCheckpointDef *def,
                                 bool *update_current)
 {
-    virDomainMomentObjPtr parent = NULL;
+    virDomainMomentObj *parent = NULL;
 
     if (virDomainCheckpointCheckCycles(vm->checkpoints, def, vm->def->name) < 0)
         return -1;
@@ -528,14 +528,14 @@ virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
 }
 
 
-virDomainMomentObjPtr
-virDomainCheckpointRedefineCommit(virDomainObjPtr vm,
-                                  virDomainCheckpointDefPtr *defptr)
+virDomainMomentObj *
+virDomainCheckpointRedefineCommit(virDomainObj *vm,
+                                  virDomainCheckpointDef **defptr)
 {
-    virDomainCheckpointDefPtr def = *defptr;
-    virDomainMomentObjPtr other = NULL;
-    virDomainCheckpointDefPtr otherdef = NULL;
-    virDomainMomentObjPtr chk = NULL;
+    virDomainCheckpointDef *def = *defptr;
+    virDomainMomentObj *other = NULL;
+    virDomainCheckpointDef *otherdef = NULL;
+    virDomainMomentObj *chk = NULL;
 
     other = virDomainCheckpointFindByName(vm->checkpoints, def->parent.name);
     if (other) {

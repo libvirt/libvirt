@@ -29,7 +29,7 @@
 
 typedef struct _virVMXContext virVMXContext;
 
-virDomainXMLOptionPtr virVMXDomainXMLConfInit(virCapsPtr caps);
+virDomainXMLOption *virVMXDomainXMLConfInit(virCaps *caps);
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -41,7 +41,7 @@ typedef int (*virVMXParseFileName)(const char *fileName,
                                    char **src,
                                    bool allow_missing);
 typedef char * (*virVMXFormatFileName)(const char *src, void *opaque);
-typedef int (*virVMXAutodetectSCSIControllerModel)(virDomainDiskDefPtr def,
+typedef int (*virVMXAutodetectSCSIControllerModel)(virDomainDiskDef *def,
                                                    int *model, void *opaque);
 
 /*
@@ -86,9 +86,9 @@ char *virVMXConvertToUTF8(const char *encoding, const char *string);
  * VMX -> Domain XML
  */
 
-virDomainDefPtr virVMXParseConfig(virVMXContext *ctx,
-                                  virDomainXMLOptionPtr xmlopt,
-                                  virCapsPtr caps,
+virDomainDef *virVMXParseConfig(virVMXContext *ctx,
+                                  virDomainXMLOption *xmlopt,
+                                  virCaps *caps,
                                   const char *vmx);
 
 
@@ -97,5 +97,5 @@ virDomainDefPtr virVMXParseConfig(virVMXContext *ctx,
  * Domain XML -> VMX
  */
 
-char *virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt,
-                         virDomainDefPtr def, int virtualHW_version);
+char *virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOption *xmlopt,
+                         virDomainDef *def, int virtualHW_version);

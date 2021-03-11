@@ -24,36 +24,34 @@
 #include "internal.h"
 
 typedef struct virRotatingFileWriter virRotatingFileWriter;
-typedef virRotatingFileWriter *virRotatingFileWriterPtr;
 
 typedef struct virRotatingFileReader virRotatingFileReader;
-typedef virRotatingFileReader *virRotatingFileReaderPtr;
 
-virRotatingFileWriterPtr virRotatingFileWriterNew(const char *path,
+virRotatingFileWriter *virRotatingFileWriterNew(const char *path,
                                                   off_t maxlen,
                                                   size_t maxbackup,
                                                   bool trunc,
                                                   mode_t mode);
 
-virRotatingFileReaderPtr virRotatingFileReaderNew(const char *path,
+virRotatingFileReader *virRotatingFileReaderNew(const char *path,
                                                   size_t maxbackup);
 
-const char *virRotatingFileWriterGetPath(virRotatingFileWriterPtr file);
+const char *virRotatingFileWriterGetPath(virRotatingFileWriter *file);
 
-ino_t virRotatingFileWriterGetINode(virRotatingFileWriterPtr file);
-off_t virRotatingFileWriterGetOffset(virRotatingFileWriterPtr file);
+ino_t virRotatingFileWriterGetINode(virRotatingFileWriter *file);
+off_t virRotatingFileWriterGetOffset(virRotatingFileWriter *file);
 
-ssize_t virRotatingFileWriterAppend(virRotatingFileWriterPtr file,
+ssize_t virRotatingFileWriterAppend(virRotatingFileWriter *file,
                                     const char *buf,
                                     size_t len);
 
-int virRotatingFileReaderSeek(virRotatingFileReaderPtr file,
+int virRotatingFileReaderSeek(virRotatingFileReader *file,
                               ino_t inode,
                               off_t offset);
 
-ssize_t virRotatingFileReaderConsume(virRotatingFileReaderPtr file,
+ssize_t virRotatingFileReaderConsume(virRotatingFileReader *file,
                                      char *buf,
                                      size_t len);
 
-void virRotatingFileWriterFree(virRotatingFileWriterPtr file);
-void virRotatingFileReaderFree(virRotatingFileReaderPtr file);
+void virRotatingFileWriterFree(virRotatingFileWriter *file);
+void virRotatingFileReaderFree(virRotatingFileReader *file);

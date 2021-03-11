@@ -26,10 +26,10 @@
 #include "domain_conf.h"
 #include "xen_common.h"
 
-virDomainDefPtr xenParseXL(virConfPtr conn,
-                           virCapsPtr caps,
-                           virDomainXMLOptionPtr xmlopt);
+virDomainDef *xenParseXL(virConf *conn,
+                           virCaps *caps,
+                           virDomainXMLOption *xmlopt);
 
-virConfPtr xenFormatXL(virDomainDefPtr def, virConnectPtr);
+virConf *xenFormatXL(virDomainDef *def, virConnectPtr);
 
 const char *xenTranslateCPUFeature(const char *feature_name, bool from_libxl);

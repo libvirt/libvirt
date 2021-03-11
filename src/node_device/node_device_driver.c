@@ -45,12 +45,12 @@
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
-virNodeDeviceDriverStatePtr driver;
+virNodeDeviceDriverState *driver;
 
 virDrvOpenStatus
 nodeConnectOpen(virConnectPtr conn,
                 virConnectAuthPtr auth G_GNUC_UNUSED,
-                virConfPtr conf G_GNUC_UNUSED,
+                virConf *conf G_GNUC_UNUSED,
                 unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -106,7 +106,7 @@ int nodeConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
  * the driver name for a device each time its entry is used.
  */
 static int
-nodeDeviceUpdateDriverName(virNodeDeviceDefPtr def)
+nodeDeviceUpdateDriverName(virNodeDeviceDef *def)
 {
     g_autofree char *driver_link = NULL;
     g_autofree char *devpath = NULL;
@@ -136,7 +136,7 @@ nodeDeviceUpdateDriverName(virNodeDeviceDefPtr def)
 #else
 /* XXX: Implement me for non-linux */
 static int
-nodeDeviceUpdateDriverName(virNodeDeviceDefPtr def G_GNUC_UNUSED)
+nodeDeviceUpdateDriverName(virNodeDeviceDef *def G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -231,10 +231,10 @@ nodeConnectListAllNodeDevices(virConnectPtr conn,
 }
 
 
-static virNodeDeviceObjPtr
+static virNodeDeviceObj *
 nodeDeviceObjFindByName(const char *name)
 {
-    virNodeDeviceObjPtr obj;
+    virNodeDeviceObj *obj;
 
     if (!(obj = virNodeDeviceObjListFindByName(driver->devs, name))) {
         virReportError(VIR_ERR_NO_NODE_DEVICE,
@@ -250,8 +250,8 @@ virNodeDevicePtr
 nodeDeviceLookupByName(virConnectPtr conn,
                        const char *name)
 {
-    virNodeDeviceObjPtr obj;
-    virNodeDeviceDefPtr def;
+    virNodeDeviceObj *obj;
+    virNodeDeviceDef *def;
     virNodeDevicePtr device = NULL;
 
     if (nodeDeviceWaitInit() < 0)
@@ -279,8 +279,8 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
                               const char *wwpn,
                               unsigned int flags)
 {
-    virNodeDeviceObjPtr obj = NULL;
-    virNodeDeviceDefPtr def;
+    virNodeDeviceObj *obj = NULL;
+    virNodeDeviceDef *def;
     virNodeDevicePtr device = NULL;
 
     virCheckFlags(0, NULL);
@@ -310,8 +310,8 @@ nodeDeviceLookupMediatedDeviceByUUID(virConnectPtr conn,
                                      const char *uuid,
                                      unsigned int flags)
 {
-    virNodeDeviceObjPtr obj = NULL;
-    virNodeDeviceDefPtr def;
+    virNodeDeviceObj *obj = NULL;
+    virNodeDeviceDef *def;
     virNodeDevicePtr device = NULL;
 
     virCheckFlags(0, NULL);
@@ -334,8 +334,8 @@ char *
 nodeDeviceGetXMLDesc(virNodeDevicePtr device,
                      unsigned int flags)
 {
-    virNodeDeviceObjPtr obj;
-    virNodeDeviceDefPtr def;
+    virNodeDeviceObj *obj;
+    virNodeDeviceDef *def;
     char *ret = NULL;
 
     virCheckFlags(0, NULL);
@@ -364,8 +364,8 @@ nodeDeviceGetXMLDesc(virNodeDevicePtr device,
 char *
 nodeDeviceGetParent(virNodeDevicePtr device)
 {
-    virNodeDeviceObjPtr obj;
-    virNodeDeviceDefPtr def;
+    virNodeDeviceObj *obj;
+    virNodeDeviceDef *def;
     char *ret = NULL;
 
     if (!(obj = nodeDeviceObjFindByName(device->name)))
@@ -391,8 +391,8 @@ nodeDeviceGetParent(virNodeDevicePtr device)
 int
 nodeDeviceNumOfCaps(virNodeDevicePtr device)
 {
-    virNodeDeviceObjPtr obj;
-    virNodeDeviceDefPtr def;
+    virNodeDeviceObj *obj;
+    virNodeDeviceDef *def;
     int ret = -1;
 
     if (!(obj = nodeDeviceObjFindByName(device->name)))
@@ -416,8 +416,8 @@ nodeDeviceListCaps(virNodeDevicePtr device,
                    char **const names,
                    int maxnames)
 {
-    virNodeDeviceObjPtr obj;
-    virNodeDeviceDefPtr def;
+    virNodeDeviceObj *obj;
+    virNodeDeviceDef *def;
     virNodeDevCapType *list = NULL;
     int ncaps = 0;
     int ret = -1;
@@ -567,9 +567,9 @@ nodeDeviceFindNewSCSIHost(virConnectPtr conn,
 
 
 static bool
-nodeDeviceHasCapability(virNodeDeviceDefPtr def, virNodeDevCapType type)
+nodeDeviceHasCapability(virNodeDeviceDef *def, virNodeDevCapType type)
 {
-    virNodeDevCapsDefPtr cap = def->caps;
+    virNodeDevCapsDef *cap = def->caps;
 
     while (cap != NULL) {
         if (cap->data.type == type)
@@ -584,10 +584,10 @@ nodeDeviceHasCapability(virNodeDeviceDefPtr def, virNodeDevCapType type)
 /* format a json string that provides configuration information about this mdev
  * to the mdevctl utility */
 static int
-nodeDeviceDefToMdevctlConfig(virNodeDeviceDefPtr def, char **buf)
+nodeDeviceDefToMdevctlConfig(virNodeDeviceDef *def, char **buf)
 {
     size_t i;
-    virNodeDevCapMdevPtr mdev = &def->caps->data.mdev;
+    virNodeDevCapMdev *mdev = &def->caps->data.mdev;
     g_autoptr(virJSONValue) json = virJSONValueNewObject();
 
     if (virJSONValueObjectAppendString(json, "mdev_type", mdev->type) < 0)
@@ -600,7 +600,7 @@ nodeDeviceDefToMdevctlConfig(virNodeDeviceDefPtr def, char **buf)
         g_autoptr(virJSONValue) attributes = virJSONValueNewArray();
 
         for (i = 0; i < mdev->nattributes; i++) {
-            virMediatedDeviceAttrPtr attr = mdev->attributes[i];
+            virMediatedDeviceAttr *attr = mdev->attributes[i];
             g_autoptr(virJSONValue) jsonattr = virJSONValueNewObject();
 
             if (virJSONValueObjectAppendString(jsonattr, attr->name, attr->value) < 0)
@@ -625,10 +625,10 @@ nodeDeviceDefToMdevctlConfig(virNodeDeviceDefPtr def, char **buf)
 static char *
 nodeDeviceFindAddressByName(const char *name)
 {
-    virNodeDeviceDefPtr def = NULL;
-    virNodeDevCapsDefPtr caps = NULL;
+    virNodeDeviceDef *def = NULL;
+    virNodeDevCapsDef *caps = NULL;
     char *addr = NULL;
-    virNodeDeviceObjPtr dev = virNodeDeviceObjListFindByName(driver->devs, name);
+    virNodeDeviceObj *dev = virNodeDeviceObjListFindByName(driver->devs, name);
 
     if (!dev) {
         virReportError(VIR_ERR_NO_NODE_DEVICE,
@@ -707,7 +707,7 @@ nodeDeviceGetMdevctlDefineStartCommand(virNodeDeviceDef *def,
                                        char **uuid_out,
                                        char **errmsg)
 {
-    virCommandPtr cmd;
+    virCommand *cmd;
     g_autofree char *json = NULL;
     g_autofree char *parent_addr = nodeDeviceFindAddressByName(def->parent);
 
@@ -760,7 +760,7 @@ nodeDeviceGetMdevctlDefineCommand(virNodeDeviceDef *def,
 
 
 static int
-virMdevctlStart(virNodeDeviceDefPtr def, char **uuid, char **errmsg)
+virMdevctlStart(virNodeDeviceDef *def, char **uuid, char **errmsg)
 {
     int status;
     g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlStartCommand(def, uuid,
@@ -781,7 +781,7 @@ virMdevctlStart(virNodeDeviceDefPtr def, char **uuid, char **errmsg)
 
 
 static int
-virMdevctlDefine(virNodeDeviceDefPtr def, char **uuid, char **errmsg)
+virMdevctlDefine(virNodeDeviceDef *def, char **uuid, char **errmsg)
 {
     int status;
     g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlDefineCommand(def, uuid, errmsg);
@@ -803,7 +803,7 @@ virMdevctlDefine(virNodeDeviceDefPtr def, char **uuid, char **errmsg)
 
 static virNodeDevicePtr
 nodeDeviceCreateXMLMdev(virConnectPtr conn,
-                        virNodeDeviceDefPtr def)
+                        virNodeDeviceDef *def)
 {
     g_autofree char *uuid = NULL;
     g_autofree char *errmsg = NULL;
@@ -887,14 +887,14 @@ nodeDeviceCreateXML(virConnectPtr conn,
 }
 
 
-virCommandPtr
+virCommand *
 nodeDeviceGetMdevctlStopCommand(const char *uuid, char **errmsg)
 {
-    virCommandPtr cmd = virCommandNewArgList(MDEVCTL,
-                                             "stop",
-                                             "-u",
-                                             uuid,
-                                             NULL);
+    virCommand *cmd = virCommandNewArgList(MDEVCTL,
+                                           "stop",
+                                           "-u",
+                                           uuid,
+                                           NULL);
     virCommandSetErrorBuffer(cmd, errmsg);
     return cmd;
 
@@ -912,7 +912,7 @@ nodeDeviceGetMdevctlUndefineCommand(const char *uuid, char **errmsg)
     return cmd;
 }
 
-virCommand*
+virCommand *
 nodeDeviceGetMdevctlCreateCommand(const char *uuid, char **errmsg)
 {
     virCommand *cmd = virCommandNewArgList(MDEVCTL,
@@ -925,7 +925,7 @@ nodeDeviceGetMdevctlCreateCommand(const char *uuid, char **errmsg)
 }
 
 static int
-virMdevctlStop(virNodeDeviceDefPtr def, char **errmsg)
+virMdevctlStop(virNodeDeviceDef *def, char **errmsg)
 {
     int status;
     g_autoptr(virCommand) cmd = NULL;
@@ -1137,8 +1137,8 @@ int
 nodeDeviceDestroy(virNodeDevicePtr device)
 {
     int ret = -1;
-    virNodeDeviceObjPtr obj = NULL;
-    virNodeDeviceDefPtr def;
+    virNodeDeviceObj *obj = NULL;
+    virNodeDeviceDef *def;
     g_autofree char *parent = NULL;
     g_autofree char *wwnn = NULL;
     g_autofree char *wwpn = NULL;

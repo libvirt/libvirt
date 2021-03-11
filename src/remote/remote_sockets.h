@@ -51,7 +51,7 @@ typedef enum {
 VIR_ENUM_DECL(remoteDriverMode);
 
 int
-remoteSplitURIScheme(virURIPtr uri,
+remoteSplitURIScheme(virURI *uri,
                      char **driver,
                      remoteDriverTransport *transport);
 
@@ -64,7 +64,7 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
                     char **daemon);
 
 void
-remoteGetURIDaemonInfo(virURIPtr uri,
+remoteGetURIDaemonInfo(virURI *uri,
                        remoteDriverTransport transport,
                        bool *session,
                        bool *autostart);

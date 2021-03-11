@@ -128,7 +128,7 @@ libvirt_destroy(xentoollog_logger *logger_in)
 }
 
 
-libxlLoggerPtr
+libxlLogger *
 libxlLoggerNew(const char *logDir, virLogPriority minLevel)
 {
     xentoollog_logger_libvirt logger;
@@ -164,7 +164,7 @@ libxlLoggerNew(const char *logDir, virLogPriority minLevel)
 }
 
 void
-libxlLoggerFree(libxlLoggerPtr logger)
+libxlLoggerFree(libxlLogger *logger)
 {
     xentoollog_logger *xtl_logger = (xentoollog_logger*)logger;
     if (logger->defaultLogFile)
@@ -174,7 +174,7 @@ libxlLoggerFree(libxlLoggerPtr logger)
 }
 
 void
-libxlLoggerOpenFile(libxlLoggerPtr logger,
+libxlLoggerOpenFile(libxlLogger *logger,
                     int id,
                     const char *name,
                     const char *domain_config)
@@ -201,7 +201,7 @@ libxlLoggerOpenFile(libxlLoggerPtr logger,
 }
 
 void
-libxlLoggerCloseFile(libxlLoggerPtr logger, int id)
+libxlLoggerCloseFile(libxlLogger *logger, int id)
 {
     g_autofree char *domidstr = NULL;
     domidstr = g_strdup_printf("%d", id);

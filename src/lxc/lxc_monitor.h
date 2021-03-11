@@ -25,23 +25,21 @@
 #include "lxc_monitor_protocol.h"
 
 typedef struct _virLXCMonitor virLXCMonitor;
-typedef virLXCMonitor *virLXCMonitorPtr;
 
 typedef struct _virLXCMonitorCallbacks virLXCMonitorCallbacks;
-typedef virLXCMonitorCallbacks *virLXCMonitorCallbacksPtr;
 
-typedef void (*virLXCMonitorCallbackDestroy)(virLXCMonitorPtr mon,
-                                             virDomainObjPtr vm);
-typedef void (*virLXCMonitorCallbackEOFNotify)(virLXCMonitorPtr mon,
-                                               virDomainObjPtr vm);
+typedef void (*virLXCMonitorCallbackDestroy)(virLXCMonitor *mon,
+                                             virDomainObj *vm);
+typedef void (*virLXCMonitorCallbackEOFNotify)(virLXCMonitor *mon,
+                                               virDomainObj *vm);
 
-typedef void (*virLXCMonitorCallbackExitNotify)(virLXCMonitorPtr mon,
+typedef void (*virLXCMonitorCallbackExitNotify)(virLXCMonitor *mon,
                                                 virLXCMonitorExitStatus status,
-                                                virDomainObjPtr vm);
+                                                virDomainObj *vm);
 
-typedef void (*virLXCMonitorCallbackInitNotify)(virLXCMonitorPtr mon,
+typedef void (*virLXCMonitorCallbackInitNotify)(virLXCMonitor *mon,
                                                 pid_t pid,
-                                                virDomainObjPtr vm);
+                                                virDomainObj *vm);
 
 struct _virLXCMonitorCallbacks {
     virLXCMonitorCallbackDestroy destroy;
@@ -50,11 +48,11 @@ struct _virLXCMonitorCallbacks {
     virLXCMonitorCallbackInitNotify initNotify;
 };
 
-virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
+virLXCMonitor *virLXCMonitorNew(virDomainObj *vm,
                                   const char *socketdir,
-                                  virLXCMonitorCallbacksPtr cb);
+                                  virLXCMonitorCallbacks *cb);
 
-void virLXCMonitorClose(virLXCMonitorPtr mon);
+void virLXCMonitorClose(virLXCMonitor *mon);
 
-void virLXCMonitorLock(virLXCMonitorPtr mon);
-void virLXCMonitorUnlock(virLXCMonitorPtr mon);
+void virLXCMonitorLock(virLXCMonitor *mon);
+void virLXCMonitorUnlock(virLXCMonitor *mon);

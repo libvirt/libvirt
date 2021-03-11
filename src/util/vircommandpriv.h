@@ -42,7 +42,7 @@ void virCommandDryRunTokenFree(virCommandDryRunToken *token);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCommandDryRunToken, virCommandDryRunTokenFree);
 
 void virCommandSetDryRun(virCommandDryRunToken *tok,
-                         virBufferPtr buf,
+                         virBuffer *buf,
                          bool bufArgLinebreaks,
                          bool bufCommandStripPath,
                          virCommandDryRunCallback cb,

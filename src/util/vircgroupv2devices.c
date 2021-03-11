@@ -44,7 +44,7 @@ VIR_LOG_INIT("util.cgroup");
 
 #if WITH_DECL_BPF_CGROUP_DEVICE
 bool
-virCgroupV2DevicesAvailable(virCgroupPtr group)
+virCgroupV2DevicesAvailable(virCgroup *group)
 {
     VIR_AUTOCLOSE cgroupfd = -1;
     unsigned int progCnt = 0;
@@ -276,7 +276,7 @@ virCgroupV2DevicesLoadProg(int mapfd)
 
 
 static int
-virCgroupV2DevicesAttachProg(virCgroupPtr group,
+virCgroupV2DevicesAttachProg(virCgroup *group,
                              int mapfd,
                              size_t max)
 {
@@ -353,7 +353,7 @@ virCgroupV2DevicesCountMapEntries(int mapfd)
 # define MAX_PROG_IDS 10
 
 int
-virCgroupV2DevicesDetectProg(virCgroupPtr group)
+virCgroupV2DevicesDetectProg(virCgroup *group)
 {
     g_autofree char *path = NULL;
     VIR_AUTOCLOSE cgroupfd = -1;
@@ -506,7 +506,7 @@ virCgroupV2DevicesReallocMap(int mapfd,
 
 
 int
-virCgroupV2DevicesCreateProg(virCgroupPtr group)
+virCgroupV2DevicesCreateProg(virCgroup *group)
 {
     int mapfd = -1;
 
@@ -523,7 +523,7 @@ virCgroupV2DevicesCreateProg(virCgroupPtr group)
 
 
 int
-virCgroupV2DevicesPrepareProg(virCgroupPtr group)
+virCgroupV2DevicesPrepareProg(virCgroup *group)
 {
     if (virCgroupV2DevicesDetectProg(group) < 0)
         return -1;
@@ -548,7 +548,7 @@ virCgroupV2DevicesPrepareProg(virCgroupPtr group)
 
 
 int
-virCgroupV2DevicesRemoveProg(virCgroupPtr group)
+virCgroupV2DevicesRemoveProg(virCgroup *group)
 {
     if (virCgroupV2DevicesDetectProg(group) < 0)
         return -1;
@@ -592,14 +592,14 @@ virCgroupV2DevicesGetPerms(int perms,
 }
 #else /* !WITH_DECL_BPF_CGROUP_DEVICE */
 bool
-virCgroupV2DevicesAvailable(virCgroupPtr group G_GNUC_UNUSED)
+virCgroupV2DevicesAvailable(virCgroup *group G_GNUC_UNUSED)
 {
     return false;
 }
 
 
 int
-virCgroupV2DevicesDetectProg(virCgroupPtr group G_GNUC_UNUSED)
+virCgroupV2DevicesDetectProg(virCgroup *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("cgroups v2 BPF devices not supported "
@@ -609,7 +609,7 @@ virCgroupV2DevicesDetectProg(virCgroupPtr group G_GNUC_UNUSED)
 
 
 int
-virCgroupV2DevicesCreateProg(virCgroupPtr group G_GNUC_UNUSED)
+virCgroupV2DevicesCreateProg(virCgroup *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("cgroups v2 BPF devices not supported "
@@ -619,7 +619,7 @@ virCgroupV2DevicesCreateProg(virCgroupPtr group G_GNUC_UNUSED)
 
 
 int
-virCgroupV2DevicesPrepareProg(virCgroupPtr group G_GNUC_UNUSED)
+virCgroupV2DevicesPrepareProg(virCgroup *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("cgroups v2 BPF devices not supported "
@@ -629,7 +629,7 @@ virCgroupV2DevicesPrepareProg(virCgroupPtr group G_GNUC_UNUSED)
 
 
 int
-virCgroupV2DevicesRemoveProg(virCgroupPtr group G_GNUC_UNUSED)
+virCgroupV2DevicesRemoveProg(virCgroup *group G_GNUC_UNUSED)
 {
     return 0;
 }

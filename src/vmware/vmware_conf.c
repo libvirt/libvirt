@@ -61,11 +61,11 @@ vmwareFreeDriver(struct vmware_driver *driver)
 }
 
 
-virCapsPtr
+virCaps *
 vmwareCapsInit(void)
 {
-    virCapsPtr caps = NULL;
-    virCapsGuestPtr guest = NULL;
+    virCaps *caps = NULL;
+    virCapsGuest *guest = NULL;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    false, false)) == NULL)
@@ -127,8 +127,8 @@ vmwareCapsInit(void)
 int
 vmwareLoadDomains(struct vmware_driver *driver)
 {
-    virDomainDefPtr vmdef = NULL;
-    virDomainObjPtr vm = NULL;
+    virDomainDef *vmdef = NULL;
+    virDomainObj *vm = NULL;
     char *vmxPath = NULL;
     char *vmx = NULL;
     vmwareDomainPtr pDomain;
@@ -137,7 +137,7 @@ vmwareLoadDomains(struct vmware_driver *driver)
     char *outbuf = NULL;
     char *str;
     char *saveptr = NULL;
-    virCommandPtr cmd;
+    virCommand *cmd;
 
     ctx.parseFileName = vmwareParseVMXFileName;
     ctx.formatFileName = NULL;
@@ -261,7 +261,7 @@ int
 vmwareExtractVersion(struct vmware_driver *driver)
 {
     int ret = -1;
-    virCommandPtr cmd = NULL;
+    virCommand *cmd = NULL;
     char * outbuf = NULL;
     char *bin = NULL;
     char *vmwarePath = NULL;
@@ -308,7 +308,7 @@ vmwareExtractVersion(struct vmware_driver *driver)
 }
 
 int
-vmwareDomainConfigDisplay(vmwareDomainPtr pDomain, virDomainDefPtr def)
+vmwareDomainConfigDisplay(vmwareDomainPtr pDomain, virDomainDef *def)
 {
     size_t i;
 
@@ -363,9 +363,9 @@ vmwareConstructVmxPath(char *directoryName, char *name, char **vmxPath)
 }
 
 int
-vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath)
+vmwareVmxPath(virDomainDef *vmdef, char **vmxPath)
 {
-    virDomainDiskDefPtr disk = NULL;
+    virDomainDiskDef *disk = NULL;
     char *directoryName = NULL;
     char *fileName = NULL;
     int ret = -1;

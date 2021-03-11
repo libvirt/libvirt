@@ -68,7 +68,6 @@ virshStreamSink(virStreamPtr st,
                 void *opaque);
 
 typedef struct _virshStreamCallbackData virshStreamCallbackData;
-typedef virshStreamCallbackData *virshStreamCallbackDataPtr;
 struct _virshStreamCallbackData {
     vshControl *ctl;
     int fd;

@@ -26,53 +26,53 @@
 #include "virdomainmomentobjlist.h"
 #include "virbuffer.h"
 
-virDomainCheckpointObjListPtr
+virDomainCheckpointObjList *
 virDomainCheckpointObjListNew(void);
 
 void
-virDomainCheckpointObjListFree(virDomainCheckpointObjListPtr checkpoints);
+virDomainCheckpointObjListFree(virDomainCheckpointObjList *checkpoints);
 
-virDomainMomentObjPtr
-virDomainCheckpointAssignDef(virDomainCheckpointObjListPtr checkpoints,
-                             virDomainCheckpointDefPtr def);
+virDomainMomentObj *
+virDomainCheckpointAssignDef(virDomainCheckpointObjList *checkpoints,
+                             virDomainCheckpointDef *def);
 
-virDomainMomentObjPtr
-virDomainCheckpointFindByName(virDomainCheckpointObjListPtr checkpoints,
+virDomainMomentObj *
+virDomainCheckpointFindByName(virDomainCheckpointObjList *checkpoints,
                               const char *name);
 
-virDomainMomentObjPtr
-virDomainCheckpointGetCurrent(virDomainCheckpointObjListPtr checkpoints);
+virDomainMomentObj *
+virDomainCheckpointGetCurrent(virDomainCheckpointObjList *checkpoints);
 
 const char *
-virDomainCheckpointGetCurrentName(virDomainCheckpointObjListPtr checkpoints);
+virDomainCheckpointGetCurrentName(virDomainCheckpointObjList *checkpoints);
 
 void
-virDomainCheckpointSetCurrent(virDomainCheckpointObjListPtr checkpoints,
-                              virDomainMomentObjPtr checkpoint);
+virDomainCheckpointSetCurrent(virDomainCheckpointObjList *checkpoints,
+                              virDomainMomentObj *checkpoint);
 
 bool
-virDomainCheckpointObjListRemove(virDomainCheckpointObjListPtr checkpoints,
-                                 virDomainMomentObjPtr checkpoint);
+virDomainCheckpointObjListRemove(virDomainCheckpointObjList *checkpoints,
+                                 virDomainMomentObj *checkpoint);
 
 void
-virDomainCheckpointObjListRemoveAll(virDomainCheckpointObjListPtr checkpoints);
+virDomainCheckpointObjListRemoveAll(virDomainCheckpointObjList *checkpoints);
 
 int
-virDomainCheckpointForEach(virDomainCheckpointObjListPtr checkpoints,
+virDomainCheckpointForEach(virDomainCheckpointObjList *checkpoints,
                            virHashIterator iter,
                            void *data);
 
 void
-virDomainCheckpointLinkParent(virDomainCheckpointObjListPtr checkpoints,
-                              virDomainMomentObjPtr chk);
+virDomainCheckpointLinkParent(virDomainCheckpointObjList *checkpoints,
+                              virDomainMomentObj *chk);
 
 int
-virDomainCheckpointUpdateRelations(virDomainCheckpointObjListPtr checkpoints,
-                                   virDomainMomentObjPtr *leaf);
+virDomainCheckpointUpdateRelations(virDomainCheckpointObjList *checkpoints,
+                                   virDomainMomentObj **leaf);
 
 int
-virDomainCheckpointCheckCycles(virDomainCheckpointObjListPtr checkpoints,
-                               virDomainCheckpointDefPtr def,
+virDomainCheckpointCheckCycles(virDomainCheckpointObjList *checkpoints,
+                               virDomainCheckpointDef *def,
                                const char *domname);
 
 #define VIR_DOMAIN_CHECKPOINT_FILTERS_LEAVES \
@@ -83,14 +83,14 @@ virDomainCheckpointCheckCycles(virDomainCheckpointObjListPtr checkpoints,
                (VIR_DOMAIN_CHECKPOINT_FILTERS_LEAVES)
 
 int
-virDomainListCheckpoints(virDomainCheckpointObjListPtr checkpoints,
-                         virDomainMomentObjPtr from,
+virDomainListCheckpoints(virDomainCheckpointObjList *checkpoints,
+                         virDomainMomentObj *from,
                          virDomainPtr dom,
                          virDomainCheckpointPtr **objs,
                          unsigned int flags);
 
-static inline virDomainCheckpointDefPtr
-virDomainCheckpointObjGetDef(virDomainMomentObjPtr obj)
+static inline virDomainCheckpointDef *
+virDomainCheckpointObjGetDef(virDomainMomentObj *obj)
 {
-    return (virDomainCheckpointDefPtr) obj->def;
+    return (virDomainCheckpointDef *) obj->def;
 }

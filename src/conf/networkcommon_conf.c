@@ -30,7 +30,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
-virNetDevIPRoutePtr
+virNetDevIPRoute *
 virNetDevIPRouteCreate(const char *errorDetail,
                        const char *family,
                        const char *address,
@@ -212,7 +212,7 @@ virNetDevIPRouteCreate(const char *errorDetail,
     return g_steal_pointer(&def);
 }
 
-virNetDevIPRoutePtr
+virNetDevIPRoute *
 virNetDevIPRouteParseXML(const char *errorDetail,
                          xmlNodePtr node,
                          xmlXPathContextPtr ctxt)
@@ -273,7 +273,7 @@ virNetDevIPRouteParseXML(const char *errorDetail,
 }
 
 int
-virNetDevIPRouteFormat(virBufferPtr buf,
+virNetDevIPRouteFormat(virBuffer *buf,
                        const virNetDevIPRoute *def)
 {
     g_autofree char *address = NULL;

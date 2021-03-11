@@ -196,7 +196,7 @@ virFileDirectFdFlag(void)
  * read-write is not supported, just a single direction.  */
 struct _virFileWrapperFd {
     bool closed; /* Whether virFileWrapperFdClose() has been already called */
-    virCommandPtr cmd; /* Child iohelper process to do the I/O.  */
+    virCommand *cmd; /* Child iohelper process to do the I/O.  */
     char *err_msg; /* stderr of @cmd */
 };
 
@@ -228,10 +228,10 @@ struct _virFileWrapperFd {
  * freed with virFileWrapperFdFree().  On failure, @fd is unchanged, an
  * error message is output, and NULL is returned.
  */
-virFileWrapperFdPtr
+virFileWrapperFd *
 virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
 {
-    virFileWrapperFdPtr ret = NULL;
+    virFileWrapperFd *ret = NULL;
     bool output = false;
     int pipefd[2] = { -1, -1 };
     int mode = -1;
@@ -318,7 +318,7 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
     return NULL;
 }
 #else /* WIN32 */
-virFileWrapperFdPtr
+virFileWrapperFd *
 virFileWrapperFdNew(int *fd G_GNUC_UNUSED,
                     const char *name G_GNUC_UNUSED,
                     unsigned int fdflags G_GNUC_UNUSED)
@@ -344,7 +344,7 @@ virFileWrapperFdNew(int *fd G_GNUC_UNUSED,
  * This function can be safely called multiple times on the same @wfd.
  */
 int
-virFileWrapperFdClose(virFileWrapperFdPtr wfd)
+virFileWrapperFdClose(virFileWrapperFd *wfd)
 {
     int ret;
 
@@ -377,7 +377,7 @@ virFileWrapperFdClose(virFileWrapperFdPtr wfd)
  * closing the fd resulting from virFileWrapperFdNew().
  */
 void
-virFileWrapperFdFree(virFileWrapperFdPtr wfd)
+virFileWrapperFdFree(virFileWrapperFd *wfd)
 {
     if (!wfd)
         return;
@@ -3514,14 +3514,14 @@ virFileGetDefaultHugepageSize(unsigned long long *size)
 }
 
 int
-virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs,
+virFileFindHugeTLBFS(virHugeTLBFS **ret_fs,
                      size_t *ret_nfs)
 {
     int ret = -1;
     FILE *f = NULL;
     struct mntent mb;
     char mntbuf[1024];
-    virHugeTLBFSPtr fs = NULL;
+    virHugeTLBFS *fs = NULL;
     size_t nfs = 0;
     unsigned long long default_hugepagesz = 0;
 
@@ -3533,7 +3533,7 @@ virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs,
     }
 
     while (getmntent_r(f, &mb, mntbuf, sizeof(mntbuf))) {
-        virHugeTLBFSPtr tmp;
+        virHugeTLBFS *tmp;
 
         if (STRNEQ(mb.mnt_type, "hugetlbfs"))
             continue;
@@ -3586,7 +3586,7 @@ virFileGetHugepageSize(const char *path G_GNUC_UNUSED,
 }
 
 int
-virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs G_GNUC_UNUSED,
+virFileFindHugeTLBFS(virHugeTLBFS **ret_fs G_GNUC_UNUSED,
                      size_t *ret_nfs G_GNUC_UNUSED)
 {
     /* XXX implement me :-) */
@@ -3606,8 +3606,8 @@ virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs G_GNUC_UNUSED,
  * Returns: default hugepage, or
  *          NULL if none found
  */
-virHugeTLBFSPtr
-virFileGetDefaultHugepage(virHugeTLBFSPtr fs,
+virHugeTLBFS *
+virFileGetDefaultHugepage(virHugeTLBFS *fs,
                           size_t nfs)
 {
     size_t i;
@@ -4166,7 +4166,7 @@ virFileReadValueScaledInt(unsigned long long *value, const char *format, ...)
 
 /**
  * virFileReadValueBitmap:
- * @value: pointer to virBitmapPtr to be allocated and filled in with the value
+ * @value: pointer to virBitmap * to be allocated and filled in with the value
  * @format, ...: file to read from
  *
  * Read int from @format and put it into @value.
@@ -4175,7 +4175,7 @@ virFileReadValueScaledInt(unsigned long long *value, const char *format, ...)
  * fine.
  */
 int
-virFileReadValueBitmap(virBitmapPtr *value, const char *format, ...)
+virFileReadValueBitmap(virBitmap **value, const char *format, ...)
 {
     g_autofree char *str = NULL;
     g_autofree char *path = NULL;

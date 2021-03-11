@@ -27,125 +27,124 @@
 
 
 typedef struct _virBitmap virBitmap;
-typedef virBitmap *virBitmapPtr;
 
 /*
  * Allocate a bitmap capable of containing @size bits.
  */
-virBitmapPtr virBitmapNew(size_t size);
+virBitmap *virBitmapNew(size_t size);
 
 /*
  * Free previously allocated bitmap
  */
-void virBitmapFree(virBitmapPtr bitmap);
+void virBitmapFree(virBitmap *bitmap);
 
 /*
  * Set bit position @b in @bitmap
  */
-int virBitmapSetBit(virBitmapPtr bitmap, size_t b)
+int virBitmapSetBit(virBitmap *bitmap, size_t b)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
-int virBitmapSetBitExpand(virBitmapPtr bitmap, size_t b)
+int virBitmapSetBitExpand(virBitmap *bitmap, size_t b)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 
 /*
  * Clear bit position @b in @bitmap
  */
-int virBitmapClearBit(virBitmapPtr bitmap, size_t b)
+int virBitmapClearBit(virBitmap *bitmap, size_t b)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
-int virBitmapClearBitExpand(virBitmapPtr bitmap, size_t b)
+int virBitmapClearBitExpand(virBitmap *bitmap, size_t b)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 /*
  * Get bit @b in @bitmap. Returns false if b is out of range.
  */
-bool virBitmapIsBitSet(virBitmapPtr bitmap, size_t b)
+bool virBitmapIsBitSet(virBitmap *bitmap, size_t b)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 /*
  * Get setting of bit position @b in @bitmap and store in @result
  */
-int virBitmapGetBit(virBitmapPtr bitmap, size_t b, bool *result)
+int virBitmapGetBit(virBitmap *bitmap, size_t b, bool *result)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) G_GNUC_WARN_UNUSED_RESULT;
 
-virBitmapPtr
+virBitmap *
 virBitmapNewString(const char *string)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
-char *virBitmapToString(virBitmapPtr bitmap)
+char *virBitmapToString(virBitmap *bitmap)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
-char *virBitmapFormat(virBitmapPtr bitmap);
+char *virBitmapFormat(virBitmap *bitmap);
 
 int virBitmapParse(const char *str,
-                   virBitmapPtr *bitmap,
+                   virBitmap **bitmap,
                    size_t bitmapSize)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int
 virBitmapParseSeparator(const char *str,
                         char terminator,
-                        virBitmapPtr *bitmap,
+                        virBitmap **bitmap,
                         size_t bitmapSize);
-virBitmapPtr
+virBitmap *
 virBitmapParseUnlimited(const char *str);
 
-virBitmapPtr virBitmapNewCopy(virBitmapPtr src) ATTRIBUTE_NONNULL(1);
+virBitmap *virBitmapNewCopy(virBitmap *src) ATTRIBUTE_NONNULL(1);
 
-virBitmapPtr virBitmapNewData(const void *data, int len) ATTRIBUTE_NONNULL(1);
+virBitmap *virBitmapNewData(const void *data, int len) ATTRIBUTE_NONNULL(1);
 
-int virBitmapToData(virBitmapPtr bitmap, unsigned char **data, int *dataLen)
+int virBitmapToData(virBitmap *bitmap, unsigned char **data, int *dataLen)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
-void virBitmapToDataBuf(virBitmapPtr bitmap, unsigned char *data, size_t len)
+void virBitmapToDataBuf(virBitmap *bitmap, unsigned char *data, size_t len)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-bool virBitmapEqual(virBitmapPtr b1, virBitmapPtr b2);
+bool virBitmapEqual(virBitmap *b1, virBitmap *b2);
 
-size_t virBitmapSize(virBitmapPtr bitmap)
+size_t virBitmapSize(virBitmap *bitmap)
     ATTRIBUTE_NONNULL(1);
 
-void virBitmapSetAll(virBitmapPtr bitmap)
+void virBitmapSetAll(virBitmap *bitmap)
     ATTRIBUTE_NONNULL(1);
 
-void virBitmapClearAll(virBitmapPtr bitmap)
+void virBitmapClearAll(virBitmap *bitmap)
     ATTRIBUTE_NONNULL(1);
 
-bool virBitmapIsAllSet(virBitmapPtr bitmap)
+bool virBitmapIsAllSet(virBitmap *bitmap)
     ATTRIBUTE_NONNULL(1);
 
-bool virBitmapIsAllClear(virBitmapPtr bitmap)
+bool virBitmapIsAllClear(virBitmap *bitmap)
     ATTRIBUTE_NONNULL(1);
 
-ssize_t virBitmapNextSetBit(virBitmapPtr bitmap, ssize_t pos)
+ssize_t virBitmapNextSetBit(virBitmap *bitmap, ssize_t pos)
     ATTRIBUTE_NONNULL(1);
 
-ssize_t virBitmapLastSetBit(virBitmapPtr bitmap)
+ssize_t virBitmapLastSetBit(virBitmap *bitmap)
     ATTRIBUTE_NONNULL(1);
 
-ssize_t virBitmapNextClearBit(virBitmapPtr bitmap, ssize_t pos)
+ssize_t virBitmapNextClearBit(virBitmap *bitmap, ssize_t pos)
     ATTRIBUTE_NONNULL(1);
 
-size_t virBitmapCountBits(virBitmapPtr bitmap)
+size_t virBitmapCountBits(virBitmap *bitmap)
     ATTRIBUTE_NONNULL(1);
 
 char *virBitmapDataFormat(const void *data,
                           int len)
     ATTRIBUTE_NONNULL(1);
-bool virBitmapOverlaps(virBitmapPtr b1,
-                       virBitmapPtr b2)
+bool virBitmapOverlaps(virBitmap *b1,
+                       virBitmap *b2)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-void virBitmapIntersect(virBitmapPtr a, virBitmapPtr b)
+void virBitmapIntersect(virBitmap *a, virBitmap *b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int virBitmapUnion(virBitmapPtr a,
+int virBitmapUnion(virBitmap *a,
                    const virBitmap *b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-void virBitmapSubtract(virBitmapPtr a, virBitmapPtr b)
+void virBitmapSubtract(virBitmap *a, virBitmap *b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-void virBitmapShrink(virBitmapPtr map, size_t b);
+void virBitmapShrink(virBitmap *map, size_t b);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virBitmap, virBitmapFree);

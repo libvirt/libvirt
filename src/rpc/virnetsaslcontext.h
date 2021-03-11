@@ -26,10 +26,8 @@
 #include "virobject.h"
 
 typedef struct _virNetSASLContext virNetSASLContext;
-typedef virNetSASLContext *virNetSASLContextPtr;
 
 typedef struct _virNetSASLSession virNetSASLSession;
-typedef virNetSASLSession *virNetSASLSessionPtr;
 
 enum {
     VIR_NET_SASL_COMPLETE,
@@ -37,73 +35,73 @@ enum {
     VIR_NET_SASL_INTERACT,
 };
 
-virNetSASLContextPtr virNetSASLContextNewClient(void);
-virNetSASLContextPtr virNetSASLContextNewServer(const char *const *usernameACL);
+virNetSASLContext *virNetSASLContextNewClient(void);
+virNetSASLContext *virNetSASLContextNewServer(const char *const *usernameACL);
 
-int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
+int virNetSASLContextCheckIdentity(virNetSASLContext *ctxt,
                                    const char *identity);
 
-virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt,
+virNetSASLSession *virNetSASLSessionNewClient(virNetSASLContext *ctxt,
                                                 const char *service,
                                                 const char *hostname,
                                                 const char *localAddr,
                                                 const char *remoteAddr,
                                                 sasl_callback_t *cbs);
-virNetSASLSessionPtr virNetSASLSessionNewServer(virNetSASLContextPtr ctxt,
+virNetSASLSession *virNetSASLSessionNewServer(virNetSASLContext *ctxt,
                                                 const char *service,
                                                 const char *localAddr,
                                                 const char *remoteAddr);
 
-char *virNetSASLSessionListMechanisms(virNetSASLSessionPtr sasl);
+char *virNetSASLSessionListMechanisms(virNetSASLSession *sasl);
 
-int virNetSASLSessionExtKeySize(virNetSASLSessionPtr sasl,
+int virNetSASLSessionExtKeySize(virNetSASLSession *sasl,
                                 int ssf);
 
-int virNetSASLSessionGetKeySize(virNetSASLSessionPtr sasl);
+int virNetSASLSessionGetKeySize(virNetSASLSession *sasl);
 
-const char *virNetSASLSessionGetIdentity(virNetSASLSessionPtr sasl);
+const char *virNetSASLSessionGetIdentity(virNetSASLSession *sasl);
 
-int virNetSASLSessionSecProps(virNetSASLSessionPtr sasl,
+int virNetSASLSessionSecProps(virNetSASLSession *sasl,
                               int minSSF,
                               int maxSSF,
                               bool allowAnonymous);
 
-int virNetSASLSessionClientStart(virNetSASLSessionPtr sasl,
+int virNetSASLSessionClientStart(virNetSASLSession *sasl,
                                  const char *mechlist,
                                  sasl_interact_t **prompt_need,
                                  const char **clientout,
                                  size_t *clientoutlen,
                                  const char **mech);
 
-int virNetSASLSessionClientStep(virNetSASLSessionPtr sasl,
+int virNetSASLSessionClientStep(virNetSASLSession *sasl,
                                 const char *serverin,
                                 size_t serverinlen,
                                 sasl_interact_t **prompt_need,
                                 const char **clientout,
                                 size_t *clientoutlen);
 
-int virNetSASLSessionServerStart(virNetSASLSessionPtr sasl,
+int virNetSASLSessionServerStart(virNetSASLSession *sasl,
                                  const char *mechname,
                                  const char *clientin,
                                  size_t clientinlen,
                                  const char **serverout,
                                  size_t *serveroutlen);
 
-int virNetSASLSessionServerStep(virNetSASLSessionPtr sasl,
+int virNetSASLSessionServerStep(virNetSASLSession *sasl,
                                 const char *clientin,
                                 size_t clientinlen,
                                 const char **serverout,
                                 size_t *serveroutlen);
 
-size_t virNetSASLSessionGetMaxBufSize(virNetSASLSessionPtr sasl);
+size_t virNetSASLSessionGetMaxBufSize(virNetSASLSession *sasl);
 
-ssize_t virNetSASLSessionEncode(virNetSASLSessionPtr sasl,
+ssize_t virNetSASLSessionEncode(virNetSASLSession *sasl,
                                 const char *input,
                                 size_t inputLen,
                                 const char **output,
                                 size_t *outputlen);
 
-ssize_t virNetSASLSessionDecode(virNetSASLSessionPtr sasl,
+ssize_t virNetSASLSessionDecode(virNetSASLSession *sasl,
                                 const char *input,
                                 size_t inputLen,
                                 const char **output,

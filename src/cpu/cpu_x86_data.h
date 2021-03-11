@@ -21,7 +21,6 @@
 #pragma once
 
 typedef struct _virCPUx86CPUID virCPUx86CPUID;
-typedef virCPUx86CPUID *virCPUx86CPUIDPtr;
 struct _virCPUx86CPUID {
     uint32_t eax_in;
     uint32_t ecx_in;
@@ -32,7 +31,6 @@ struct _virCPUx86CPUID {
 };
 
 typedef struct _virCPUx86MSR virCPUx86MSR;
-typedef virCPUx86MSR *virCPUx86MSRPtr;
 struct _virCPUx86MSR {
     uint32_t index;
     uint32_t eax;
@@ -76,7 +74,6 @@ typedef enum {
 } virCPUx86DataType;
 
 typedef struct _virCPUx86DataItem virCPUx86DataItem;
-typedef virCPUx86DataItem *virCPUx86DataItemPtr;
 struct _virCPUx86DataItem {
     virCPUx86DataType type;
     union {

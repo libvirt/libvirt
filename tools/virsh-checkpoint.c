@@ -158,7 +158,7 @@ cmdCheckpointCreate(vshControl *ctl,
  */
 static int
 virshParseCheckpointDiskspec(vshControl *ctl,
-                             virBufferPtr buf,
+                             virBuffer *buf,
                              const char *str)
 {
     int ret = -1;
@@ -540,10 +540,9 @@ struct virshCheckpointList {
     struct virshChk *chks;
     int nchks;
 };
-typedef struct virshCheckpointList *virshCheckpointListPtr;
 
 static void
-virshCheckpointListFree(virshCheckpointListPtr checkpointlist)
+virshCheckpointListFree(struct virshCheckpointList *checkpointlist)
 {
     size_t i;
 
@@ -581,7 +580,7 @@ virshChkSorter(const void *a,
  * list is limited to descendants of the given checkpoint.  If FLAGS is
  * given, the list is filtered.  If TREE is specified, then all but
  * FROM or the roots will also have parent information.  */
-static virshCheckpointListPtr
+static struct virshCheckpointList *
 virshCheckpointListCollect(vshControl *ctl,
                            virDomainPtr dom,
                            virDomainCheckpointPtr from,
@@ -591,8 +590,8 @@ virshCheckpointListCollect(vshControl *ctl,
     size_t i;
     int count = -1;
     virDomainCheckpointPtr *chks;
-    virshCheckpointListPtr checkpointlist = NULL;
-    virshCheckpointListPtr ret = NULL;
+    struct virshCheckpointList *checkpointlist = NULL;
+    struct virshCheckpointList *ret = NULL;
     unsigned int flags = orig_flags;
 
     checkpointlist = g_new0(struct virshCheckpointList, 1);
@@ -646,7 +645,7 @@ virshCheckpointListLookup(int id,
                           bool parent,
                           void *opaque)
 {
-    virshCheckpointListPtr checkpointlist = opaque;
+    struct virshCheckpointList *checkpointlist = opaque;
     if (parent)
         return checkpointlist->chks[id].parent;
     return virDomainCheckpointGetName(checkpointlist->chks[id].chk);
@@ -731,8 +730,8 @@ cmdCheckpointList(vshControl *ctl,
     const char *from_chk = NULL;
     char *parent_chk = NULL;
     virDomainCheckpointPtr start = NULL;
-    virshCheckpointListPtr checkpointlist = NULL;
-    vshTablePtr table = NULL;
+    struct virshCheckpointList *checkpointlist = NULL;
+    vshTable *table = NULL;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(tree, name);
     VSH_EXCLUSIVE_OPTIONS_VAR(parent, roots);

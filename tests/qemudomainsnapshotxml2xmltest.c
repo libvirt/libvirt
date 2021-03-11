@@ -91,7 +91,7 @@ struct testInfo {
 static long long mocktime;
 
 static int
-testSnapshotPostParse(virDomainMomentDefPtr def)
+testSnapshotPostParse(virDomainMomentDef *def)
 {
     if (!mocktime)
         return 0;

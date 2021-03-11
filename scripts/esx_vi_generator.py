@@ -690,14 +690,14 @@ class Object(GenericObject):
             header += ((
                 "int esxVI_%s_Serialize(esxVI_%s *item, "
                 "                       const char *element, "
-                "                       virBufferPtr output);\n") %
+                "                       virBuffer *output);\n") %
                 (self.name, self.name))
 
             if self.features & Object.FEATURE__LIST:
                 header += ((
                     "int esxVI_%s_SerializeList(esxVI_%s *list, "
                     "                           const char *element, "
-                    "                           virBufferPtr output);\n") %
+                    "                           virBuffer *output);\n") %
                     (self.name, self.name))
 
         if self.features & Object.FEATURE__DESERIALIZE:
@@ -1083,7 +1083,7 @@ class Enum(Type):
 
         if self.features & Enum.FEATURE__SERIALIZE:
             header += ("int esxVI_%s_Serialize(esxVI_%s item, const char *element, "
-                       "                       virBufferPtr output);\n") \
+                       "                       virBuffer *output);\n") \
                 % (self.name, self.name)
 
         if self.features & Enum.FEATURE__DESERIALIZE:

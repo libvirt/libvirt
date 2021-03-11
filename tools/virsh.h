@@ -128,7 +128,6 @@
     VIRSH_COMMON_OPT_DOMAIN_OT_ARGV(N_("domain name, id or uuid"), cflags)
 
 typedef struct _virshControl virshControl;
-typedef virshControl *virshControlPtr;
 
 typedef struct _virshCtrlData virshCtrlData;
 

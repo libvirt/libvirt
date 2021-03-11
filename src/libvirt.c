@@ -89,17 +89,17 @@ VIR_LOG_INIT("libvirt");
 
 #define MAX_DRIVERS 21
 
-static virConnectDriverPtr virConnectDriverTab[MAX_DRIVERS];
+static virConnectDriver *virConnectDriverTab[MAX_DRIVERS];
 static int virConnectDriverTabCount;
-static virStateDriverPtr virStateDriverTab[MAX_DRIVERS];
+static virStateDriver *virStateDriverTab[MAX_DRIVERS];
 static int virStateDriverTabCount;
 
-static virNetworkDriverPtr virSharedNetworkDriver;
-static virInterfaceDriverPtr virSharedInterfaceDriver;
-static virStorageDriverPtr virSharedStorageDriver;
-static virNodeDeviceDriverPtr virSharedNodeDeviceDriver;
-static virSecretDriverPtr virSharedSecretDriver;
-static virNWFilterDriverPtr virSharedNWFilterDriver;
+static virNetworkDriver *virSharedNetworkDriver;
+static virInterfaceDriver *virSharedInterfaceDriver;
+static virStorageDriver *virSharedStorageDriver;
+static virNodeDeviceDriver *virSharedNodeDeviceDriver;
+static virSecretDriver *virSharedSecretDriver;
+static virNWFilterDriver *virSharedNWFilterDriver;
 
 
 static int
@@ -357,7 +357,7 @@ DllMain(HINSTANCE instance G_GNUC_UNUSED,
  * Returns 0 on success, or -1 in case of error.
  */
 int
-virSetSharedNetworkDriver(virNetworkDriverPtr driver)
+virSetSharedNetworkDriver(virNetworkDriver *driver)
 {
     virCheckNonNullArgReturn(driver, -1);
 
@@ -383,7 +383,7 @@ virSetSharedNetworkDriver(virNetworkDriverPtr driver)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virSetSharedInterfaceDriver(virInterfaceDriverPtr driver)
+virSetSharedInterfaceDriver(virInterfaceDriver *driver)
 {
     virCheckNonNullArgReturn(driver, -1);
 
@@ -409,7 +409,7 @@ virSetSharedInterfaceDriver(virInterfaceDriverPtr driver)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virSetSharedStorageDriver(virStorageDriverPtr driver)
+virSetSharedStorageDriver(virStorageDriver *driver)
 {
     virCheckNonNullArgReturn(driver, -1);
 
@@ -435,7 +435,7 @@ virSetSharedStorageDriver(virStorageDriverPtr driver)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virSetSharedNodeDeviceDriver(virNodeDeviceDriverPtr driver)
+virSetSharedNodeDeviceDriver(virNodeDeviceDriver *driver)
 {
     virCheckNonNullArgReturn(driver, -1);
 
@@ -461,7 +461,7 @@ virSetSharedNodeDeviceDriver(virNodeDeviceDriverPtr driver)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virSetSharedSecretDriver(virSecretDriverPtr driver)
+virSetSharedSecretDriver(virSecretDriver *driver)
 {
     virCheckNonNullArgReturn(driver, -1);
 
@@ -487,7 +487,7 @@ virSetSharedSecretDriver(virSecretDriverPtr driver)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virSetSharedNWFilterDriver(virNWFilterDriverPtr driver)
+virSetSharedNWFilterDriver(virNWFilterDriver *driver)
 {
     virCheckNonNullArgReturn(driver, -1);
 
@@ -515,7 +515,7 @@ virSetSharedNWFilterDriver(virNWFilterDriverPtr driver)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virRegisterConnectDriver(virConnectDriverPtr driver,
+virRegisterConnectDriver(virConnectDriver *driver,
                          bool setSharedDrivers)
 {
     VIR_DEBUG("driver=%p name=%s", driver,
@@ -588,7 +588,7 @@ virHasDriverForURIScheme(const char *scheme)
  * Returns the driver priority or -1 in case of error.
  */
 int
-virRegisterStateDriver(virStateDriverPtr driver)
+virRegisterStateDriver(virStateDriver *driver)
 {
     virCheckNonNullArgReturn(driver, -1);
 
@@ -829,7 +829,7 @@ virGetVersion(unsigned long *libVer, const char *type G_GNUC_UNUSED,
 
 
 static int
-virConnectGetDefaultURI(virConfPtr conf,
+virConnectGetDefaultURI(virConf *conf,
                         char **name)
 {
     const char *defname = getenv("LIBVIRT_DEFAULT_URI");
@@ -853,7 +853,7 @@ virConnectGetDefaultURI(virConfPtr conf,
  * offer the suggested fix.
  */
 static int
-virConnectCheckURIMissingSlash(const char *uristr, virURIPtr uri)
+virConnectCheckURIMissingSlash(const char *uristr, virURI *uri)
 {
     if (!uri->path || !uri->server)
         return 0;
@@ -1011,7 +1011,7 @@ virConnectOpenInternal(const char *name,
                 goto failed;
 
             if (virAccessManagerGetDefault() == NULL) {
-                virAccessManagerPtr acl;
+                virAccessManager *acl;
 
                 virResetLastError();
 

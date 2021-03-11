@@ -19,7 +19,7 @@
 
 #include <config.h>
 
-void networkPreReloadFirewallRules(virNetworkDriverStatePtr driver G_GNUC_UNUSED,
+void networkPreReloadFirewallRules(virNetworkDriverState *driver G_GNUC_UNUSED,
                                    bool startup G_GNUC_UNUSED,
                                    bool force G_GNUC_UNUSED)
 {
@@ -31,16 +31,16 @@ void networkPostReloadFirewallRules(bool startup G_GNUC_UNUSED)
 }
 
 
-int networkCheckRouteCollision(virNetworkDefPtr def G_GNUC_UNUSED)
+int networkCheckRouteCollision(virNetworkDef *def G_GNUC_UNUSED)
 {
     return 0;
 }
 
-int networkAddFirewallRules(virNetworkDefPtr def G_GNUC_UNUSED)
+int networkAddFirewallRules(virNetworkDef *def G_GNUC_UNUSED)
 {
     return 0;
 }
 
-void networkRemoveFirewallRules(virNetworkDefPtr def G_GNUC_UNUSED)
+void networkRemoveFirewallRules(virNetworkDef *def G_GNUC_UNUSED)
 {
 }

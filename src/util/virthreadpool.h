@@ -24,35 +24,34 @@
 #include "internal.h"
 
 typedef struct _virThreadPool virThreadPool;
-typedef virThreadPool *virThreadPoolPtr;
 
 typedef void (*virThreadPoolJobFunc)(void *jobdata, void *opaque);
 
-virThreadPoolPtr virThreadPoolNewFull(size_t minWorkers,
+virThreadPool *virThreadPoolNewFull(size_t minWorkers,
                                       size_t maxWorkers,
                                       size_t prioWorkers,
                                       virThreadPoolJobFunc func,
                                       const char *name,
                                       void *opaque) ATTRIBUTE_NONNULL(4);
 
-size_t virThreadPoolGetMinWorkers(virThreadPoolPtr pool);
-size_t virThreadPoolGetMaxWorkers(virThreadPoolPtr pool);
-size_t virThreadPoolGetPriorityWorkers(virThreadPoolPtr pool);
-size_t virThreadPoolGetCurrentWorkers(virThreadPoolPtr pool);
-size_t virThreadPoolGetFreeWorkers(virThreadPoolPtr pool);
-size_t virThreadPoolGetJobQueueDepth(virThreadPoolPtr pool);
+size_t virThreadPoolGetMinWorkers(virThreadPool *pool);
+size_t virThreadPoolGetMaxWorkers(virThreadPool *pool);
+size_t virThreadPoolGetPriorityWorkers(virThreadPool *pool);
+size_t virThreadPoolGetCurrentWorkers(virThreadPool *pool);
+size_t virThreadPoolGetFreeWorkers(virThreadPool *pool);
+size_t virThreadPoolGetJobQueueDepth(virThreadPool *pool);
 
-void virThreadPoolFree(virThreadPoolPtr pool);
+void virThreadPoolFree(virThreadPool *pool);
 
-int virThreadPoolSendJob(virThreadPoolPtr pool,
+int virThreadPoolSendJob(virThreadPool *pool,
                          unsigned int priority,
                          void *jobdata) ATTRIBUTE_NONNULL(1)
                                         G_GNUC_WARN_UNUSED_RESULT;
 
-int virThreadPoolSetParameters(virThreadPoolPtr pool,
+int virThreadPoolSetParameters(virThreadPool *pool,
                                long long int minWorkers,
                                long long int maxWorkers,
                                long long int prioWorkers);
 
-void virThreadPoolStop(virThreadPoolPtr pool);
-void virThreadPoolDrain(virThreadPoolPtr pool);
+void virThreadPoolStop(virThreadPool *pool);
+void virThreadPoolDrain(virThreadPool *pool);

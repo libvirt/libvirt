@@ -41,7 +41,7 @@ virshDomainNameCompleter(vshControl *ctl,
                          const vshCmd *cmd G_GNUC_UNUSED,
                          unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virDomainPtr *domains = NULL;
     int ndomains = 0;
     size_t i = 0;
@@ -88,7 +88,7 @@ virshDomainUUIDCompleter(vshControl *ctl,
                          const vshCmd *cmd G_GNUC_UNUSED,
                          unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virDomainPtr *domains = NULL;
     int ndomains = 0;
     size_t i = 0;
@@ -139,7 +139,7 @@ virshDomainInterfaceCompleter(vshControl *ctl,
                               const vshCmd *cmd,
                               unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     g_autoptr(xmlDoc) xmldoc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     int ninterfaces;
@@ -187,7 +187,7 @@ virshDomainDiskTargetCompleter(vshControl *ctl,
                                const vshCmd *cmd,
                                unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     g_autoptr(xmlDoc) xmldoc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autofree xmlNodePtr *disks = NULL;
@@ -243,7 +243,7 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
                                    const vshCmd *cmd,
                                    unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     const char *iface = NULL;
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
@@ -300,7 +300,7 @@ virshDomainDeviceAliasCompleter(vshControl *ctl,
                                 const vshCmd *cmd,
                                 unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     g_autoptr(xmlDoc) xmldoc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     int naliases;
@@ -563,7 +563,7 @@ virshDomainCpulistCompleter(vshControl *ctl,
                             const vshCmd *cmd,
                             unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     size_t i;
     int cpunum;
     g_autofree unsigned char *cpumap = NULL;
@@ -672,7 +672,7 @@ virshDomainConsoleCompleter(vshControl *ctl,
                             const vshCmd *cmd,
                             unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     g_autoptr(xmlDoc) xmldoc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     int nserials;

@@ -31,7 +31,7 @@ virshCheckpointNameCompleter(vshControl *ctl,
                              const vshCmd *cmd,
                              unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virDomainPtr dom = NULL;
     virDomainCheckpointPtr *checkpoints = NULL;
     int ncheckpoints = 0;

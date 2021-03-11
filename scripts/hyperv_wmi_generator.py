@@ -54,7 +54,7 @@ class WmiClass:
         header += "#define %s_WQL_SELECT \\\n" % name_upper
         header += "    \"SELECT * FROM %s \"\n" % self.name
         header += "\n"
-        header += "extern hypervWmiClassInfoPtr %s_WmiInfo;\n\n" % self.name
+        header += "extern hypervWmiClassInfo *%s_WmiInfo;\n\n" % self.name
 
         header += self._declare_data_structs()
         header += self._declare_hypervObject_struct()
@@ -128,7 +128,7 @@ class WmiClass:
         header = "\n/* must match hypervObject */\n"
         header += "struct _%s {\n" % self.name
         header += "    %s_Data *data;\n" % self.name
-        header += "    hypervWmiClassInfoPtr info;\n"
+        header += "    hypervWmiClassInfo *info;\n"
         header += "    %s *next;\n" % self.name
         header += "};\n"
 
@@ -142,7 +142,7 @@ class WmiClass:
         This struct holds info with meta-data needed to make wsman requests for the WMI class.
         """
 
-        source = "hypervWmiClassInfoPtr %s_WmiInfo = &(hypervWmiClassInfo) {\n" % self.name
+        source = "hypervWmiClassInfo *%s_WmiInfo = &(hypervWmiClassInfo) {\n" % self.name
         source += "    .name = \"%s\",\n" % self.name
         source += "    .rootUri = %s,\n" % self.uri_info.rootUri
         source += "    .resourceUri = %s_RESOURCE_URI,\n" % self.name.upper()

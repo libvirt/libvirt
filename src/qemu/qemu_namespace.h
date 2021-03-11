@@ -31,56 +31,56 @@ typedef enum {
 } qemuDomainNamespace;
 VIR_ENUM_DECL(qemuDomainNamespace);
 
-int qemuDomainEnableNamespace(virDomainObjPtr vm,
+int qemuDomainEnableNamespace(virDomainObj *vm,
                               qemuDomainNamespace ns);
 
-bool qemuDomainNamespaceEnabled(virDomainObjPtr vm,
+bool qemuDomainNamespaceEnabled(virDomainObj *vm,
                                 qemuDomainNamespace ns);
 
-int qemuDomainUnshareNamespace(virQEMUDriverConfigPtr cfg,
-                               virSecurityManagerPtr mgr,
-                               virDomainObjPtr vm);
+int qemuDomainUnshareNamespace(virQEMUDriverConfig *cfg,
+                               virSecurityManager *mgr,
+                               virDomainObj *vm);
 
-int qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
-                             virDomainObjPtr vm);
+int qemuDomainBuildNamespace(virQEMUDriverConfig *cfg,
+                             virDomainObj *vm);
 
-void qemuDomainDestroyNamespace(virQEMUDriverPtr driver,
-                                virDomainObjPtr vm);
+void qemuDomainDestroyNamespace(virQEMUDriver *driver,
+                                virDomainObj *vm);
 
 bool qemuDomainNamespaceAvailable(qemuDomainNamespace ns);
 
-int qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
-                                 virStorageSourcePtr src);
+int qemuDomainNamespaceSetupDisk(virDomainObj *vm,
+                                 virStorageSource *src);
 
-int qemuDomainNamespaceTeardownDisk(virDomainObjPtr vm,
-                                    virStorageSourcePtr src);
+int qemuDomainNamespaceTeardownDisk(virDomainObj *vm,
+                                    virStorageSource *src);
 
-int qemuDomainNamespaceSetupHostdev(virDomainObjPtr vm,
-                                    virDomainHostdevDefPtr hostdev);
+int qemuDomainNamespaceSetupHostdev(virDomainObj *vm,
+                                    virDomainHostdevDef *hostdev);
 
-int qemuDomainNamespaceTeardownHostdev(virDomainObjPtr vm,
-                                       virDomainHostdevDefPtr hostdev);
+int qemuDomainNamespaceTeardownHostdev(virDomainObj *vm,
+                                       virDomainHostdevDef *hostdev);
 
-int qemuDomainNamespaceSetupMemory(virDomainObjPtr vm,
-                                   virDomainMemoryDefPtr memory);
+int qemuDomainNamespaceSetupMemory(virDomainObj *vm,
+                                   virDomainMemoryDef *memory);
 
-int qemuDomainNamespaceTeardownMemory(virDomainObjPtr vm,
-                                      virDomainMemoryDefPtr memory);
+int qemuDomainNamespaceTeardownMemory(virDomainObj *vm,
+                                      virDomainMemoryDef *memory);
 
-int qemuDomainNamespaceSetupChardev(virDomainObjPtr vm,
-                                    virDomainChrDefPtr chr);
+int qemuDomainNamespaceSetupChardev(virDomainObj *vm,
+                                    virDomainChrDef *chr);
 
-int qemuDomainNamespaceTeardownChardev(virDomainObjPtr vm,
-                                       virDomainChrDefPtr chr);
+int qemuDomainNamespaceTeardownChardev(virDomainObj *vm,
+                                       virDomainChrDef *chr);
 
-int qemuDomainNamespaceSetupRNG(virDomainObjPtr vm,
-                                virDomainRNGDefPtr rng);
+int qemuDomainNamespaceSetupRNG(virDomainObj *vm,
+                                virDomainRNGDef *rng);
 
-int qemuDomainNamespaceTeardownRNG(virDomainObjPtr vm,
-                                   virDomainRNGDefPtr rng);
+int qemuDomainNamespaceTeardownRNG(virDomainObj *vm,
+                                   virDomainRNGDef *rng);
 
-int qemuDomainNamespaceSetupInput(virDomainObjPtr vm,
-                                  virDomainInputDefPtr input);
+int qemuDomainNamespaceSetupInput(virDomainObj *vm,
+                                  virDomainInputDef *input);
 
-int qemuDomainNamespaceTeardownInput(virDomainObjPtr vm,
-                                     virDomainInputDefPtr input);
+int qemuDomainNamespaceTeardownInput(virDomainObj *vm,
+                                     virDomainInputDef *input);

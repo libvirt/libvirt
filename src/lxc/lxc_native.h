@@ -44,6 +44,6 @@ typedef enum {
 
 VIR_ENUM_DECL(virLXCNetworkConfigEntry);
 
-virDomainDefPtr lxcParseConfigString(const char *config,
-                                     virCapsPtr caps,
-                                     virDomainXMLOptionPtr xmlopt);
+virDomainDef *lxcParseConfigString(const char *config,
+                                     virCaps *caps,
+                                     virDomainXMLOption *xmlopt);

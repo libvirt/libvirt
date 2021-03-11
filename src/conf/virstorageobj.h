@@ -26,21 +26,17 @@
 #include "capabilities.h"
 
 typedef struct _virStoragePoolObj virStoragePoolObj;
-typedef virStoragePoolObj *virStoragePoolObjPtr;
 
 typedef struct _virStoragePoolObjList virStoragePoolObjList;
-typedef virStoragePoolObjList *virStoragePoolObjListPtr;
 
 typedef struct _virStorageDriverState virStorageDriverState;
-typedef virStorageDriverState *virStorageDriverStatePtr;
-
 struct _virStorageDriverState {
     virMutex lock;
 
     /* pid file FD, ensures two copies of the driver can't use the same root */
     int lockFD;
 
-    virStoragePoolObjListPtr pools;
+    virStoragePoolObjList *pools;
 
     char *configDir;
     char *autostartDir;
@@ -48,147 +44,147 @@ struct _virStorageDriverState {
     bool privileged;
 
     /* Immutable pointer, self-locking APIs */
-    virObjectEventStatePtr storageEventState;
+    virObjectEventState *storageEventState;
 
     /* Immutable pointer, read only after initialized */
-    virCapsPtr caps;
+    virCaps *caps;
 };
 
 typedef bool
 (*virStoragePoolObjListFilter)(virConnectPtr conn,
-                               virStoragePoolDefPtr def);
+                               virStoragePoolDef *def);
 
-virStoragePoolObjPtr
+virStoragePoolObj *
 virStoragePoolObjNew(void);
 
 void
-virStoragePoolObjEndAPI(virStoragePoolObjPtr *obj);
+virStoragePoolObjEndAPI(virStoragePoolObj **obj);
 
-virStoragePoolDefPtr
-virStoragePoolObjGetDef(virStoragePoolObjPtr obj);
-
-void
-virStoragePoolObjSetDef(virStoragePoolObjPtr obj,
-                        virStoragePoolDefPtr def);
-
-virStoragePoolDefPtr
-virStoragePoolObjGetNewDef(virStoragePoolObjPtr obj);
+virStoragePoolDef *
+virStoragePoolObjGetDef(virStoragePoolObj *obj);
 
 void
-virStoragePoolObjDefUseNewDef(virStoragePoolObjPtr obj);
+virStoragePoolObjSetDef(virStoragePoolObj *obj,
+                        virStoragePoolDef *def);
+
+virStoragePoolDef *
+virStoragePoolObjGetNewDef(virStoragePoolObj *obj);
+
+void
+virStoragePoolObjDefUseNewDef(virStoragePoolObj *obj);
 
 const char *
-virStoragePoolObjGetConfigFile(virStoragePoolObjPtr obj);
+virStoragePoolObjGetConfigFile(virStoragePoolObj *obj);
 
 void
-virStoragePoolObjSetConfigFile(virStoragePoolObjPtr obj,
+virStoragePoolObjSetConfigFile(virStoragePoolObj *obj,
                                char *configFile);
 
 const char *
-virStoragePoolObjGetAutostartLink(virStoragePoolObjPtr obj);
+virStoragePoolObjGetAutostartLink(virStoragePoolObj *obj);
 
 bool
-virStoragePoolObjIsActive(virStoragePoolObjPtr obj);
+virStoragePoolObjIsActive(virStoragePoolObj *obj);
 
 void
-virStoragePoolObjSetActive(virStoragePoolObjPtr obj,
+virStoragePoolObjSetActive(virStoragePoolObj *obj,
                            bool active);
 
 void
-virStoragePoolObjSetStarting(virStoragePoolObjPtr obj,
+virStoragePoolObjSetStarting(virStoragePoolObj *obj,
                              bool starting);
 bool
-virStoragePoolObjIsStarting(virStoragePoolObjPtr obj);
+virStoragePoolObjIsStarting(virStoragePoolObj *obj);
 
 bool
-virStoragePoolObjIsAutostart(virStoragePoolObjPtr obj);
+virStoragePoolObjIsAutostart(virStoragePoolObj *obj);
 
 void
-virStoragePoolObjSetAutostart(virStoragePoolObjPtr obj,
+virStoragePoolObjSetAutostart(virStoragePoolObj *obj,
                               bool autostart);
 
 unsigned int
-virStoragePoolObjGetAsyncjobs(virStoragePoolObjPtr obj);
+virStoragePoolObjGetAsyncjobs(virStoragePoolObj *obj);
 
 void
-virStoragePoolObjIncrAsyncjobs(virStoragePoolObjPtr obj);
+virStoragePoolObjIncrAsyncjobs(virStoragePoolObj *obj);
 
 void
-virStoragePoolObjDecrAsyncjobs(virStoragePoolObjPtr obj);
+virStoragePoolObjDecrAsyncjobs(virStoragePoolObj *obj);
 
 int
-virStoragePoolObjLoadAllConfigs(virStoragePoolObjListPtr pools,
+virStoragePoolObjLoadAllConfigs(virStoragePoolObjList *pools,
                                 const char *configDir,
                                 const char *autostartDir);
 
 int
-virStoragePoolObjLoadAllState(virStoragePoolObjListPtr pools,
+virStoragePoolObjLoadAllState(virStoragePoolObjList *pools,
                               const char *stateDir);
 
-virStoragePoolObjPtr
-virStoragePoolObjFindByUUID(virStoragePoolObjListPtr pools,
+virStoragePoolObj *
+virStoragePoolObjFindByUUID(virStoragePoolObjList *pools,
                             const unsigned char *uuid);
 
-virStoragePoolObjPtr
-virStoragePoolObjFindByName(virStoragePoolObjListPtr pools,
+virStoragePoolObj *
+virStoragePoolObjFindByName(virStoragePoolObjList *pools,
                             const char *name);
 
 int
-virStoragePoolObjAddVol(virStoragePoolObjPtr obj,
-                        virStorageVolDefPtr voldef);
+virStoragePoolObjAddVol(virStoragePoolObj *obj,
+                        virStorageVolDef *voldef);
 
 void
-virStoragePoolObjRemoveVol(virStoragePoolObjPtr obj,
-                           virStorageVolDefPtr voldef);
+virStoragePoolObjRemoveVol(virStoragePoolObj *obj,
+                           virStorageVolDef *voldef);
 
 size_t
-virStoragePoolObjGetVolumesCount(virStoragePoolObjPtr obj);
+virStoragePoolObjGetVolumesCount(virStoragePoolObj *obj);
 
 typedef int
-(*virStorageVolObjListIterator)(virStorageVolDefPtr voldef,
+(*virStorageVolObjListIterator)(virStorageVolDef *voldef,
                                 const void *opaque);
 
 int
-virStoragePoolObjForEachVolume(virStoragePoolObjPtr obj,
+virStoragePoolObjForEachVolume(virStoragePoolObj *obj,
                                virStorageVolObjListIterator iter,
                                const void *opaque);
 
 typedef bool
-(*virStorageVolObjListSearcher)(virStorageVolDefPtr voldef,
+(*virStorageVolObjListSearcher)(virStorageVolDef *voldef,
                                 const void *opaque);
 
-virStorageVolDefPtr
-virStoragePoolObjSearchVolume(virStoragePoolObjPtr obj,
+virStorageVolDef *
+virStoragePoolObjSearchVolume(virStoragePoolObj *obj,
                               virStorageVolObjListSearcher iter,
                               const void *opaque);
 
-virStorageVolDefPtr
-virStorageVolDefFindByKey(virStoragePoolObjPtr obj,
+virStorageVolDef *
+virStorageVolDefFindByKey(virStoragePoolObj *obj,
                           const char *key);
 
-virStorageVolDefPtr
-virStorageVolDefFindByPath(virStoragePoolObjPtr obj,
+virStorageVolDef *
+virStorageVolDefFindByPath(virStoragePoolObj *obj,
                            const char *path);
 
-virStorageVolDefPtr
-virStorageVolDefFindByName(virStoragePoolObjPtr obj,
+virStorageVolDef *
+virStorageVolDefFindByName(virStoragePoolObj *obj,
                            const char *name);
 
 void
-virStoragePoolObjClearVols(virStoragePoolObjPtr obj);
+virStoragePoolObjClearVols(virStoragePoolObj *obj);
 
 typedef bool
 (*virStoragePoolVolumeACLFilter)(virConnectPtr conn,
-                                 virStoragePoolDefPtr pool,
-                                 virStorageVolDefPtr def);
+                                 virStoragePoolDef *pool,
+                                 virStorageVolDef *def);
 
 int
-virStoragePoolObjNumOfVolumes(virStoragePoolObjPtr obj,
+virStoragePoolObjNumOfVolumes(virStoragePoolObj *obj,
                               virConnectPtr conn,
                               virStoragePoolVolumeACLFilter filter);
 
 int
-virStoragePoolObjVolumeGetNames(virStoragePoolObjPtr obj,
+virStoragePoolObjVolumeGetNames(virStoragePoolObj *obj,
                                 virConnectPtr conn,
                                 virStoragePoolVolumeACLFilter filter,
                                 char **const names,
@@ -196,7 +192,7 @@ virStoragePoolObjVolumeGetNames(virStoragePoolObjPtr obj,
 
 int
 virStoragePoolObjVolumeListExport(virConnectPtr conn,
-                                  virStoragePoolObjPtr obj,
+                                  virStoragePoolObj *obj,
                                   virStorageVolPtr **vols,
                                   virStoragePoolVolumeACLFilter filter);
 
@@ -205,30 +201,30 @@ typedef enum {
     VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE = (1 << 1),
 } virStoragePoolObjListFlags;
 
-virStoragePoolObjPtr
-virStoragePoolObjListAdd(virStoragePoolObjListPtr pools,
-                         virStoragePoolDefPtr def,
+virStoragePoolObj *
+virStoragePoolObjListAdd(virStoragePoolObjList *pools,
+                         virStoragePoolDef *def,
                          unsigned int flags);
 
 int
-virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
-                         virStoragePoolObjPtr obj,
-                         virStoragePoolDefPtr def);
+virStoragePoolObjSaveDef(virStorageDriverState *driver,
+                         virStoragePoolObj *obj,
+                         virStoragePoolDef *def);
 
 int
-virStoragePoolObjDeleteDef(virStoragePoolObjPtr obj);
+virStoragePoolObjDeleteDef(virStoragePoolObj *obj);
 
 typedef bool (*virStoragePoolObjListACLFilter)(virConnectPtr conn,
-                                               virStoragePoolDefPtr def);
+                                               virStoragePoolDef *def);
 
 int
-virStoragePoolObjNumOfStoragePools(virStoragePoolObjListPtr pools,
+virStoragePoolObjNumOfStoragePools(virStoragePoolObjList *pools,
                                    virConnectPtr conn,
                                    bool wantActive,
                                    virStoragePoolObjListACLFilter filter);
 
 int
-virStoragePoolObjGetNames(virStoragePoolObjListPtr pools,
+virStoragePoolObjGetNames(virStoragePoolObjList *pools,
                           virConnectPtr conn,
                           bool wantActive,
                           virStoragePoolObjListACLFilter filter,
@@ -236,36 +232,36 @@ virStoragePoolObjGetNames(virStoragePoolObjListPtr pools,
                           int maxnames);
 
 void
-virStoragePoolObjFree(virStoragePoolObjPtr obj);
+virStoragePoolObjFree(virStoragePoolObj *obj);
 
 typedef void
-(*virStoragePoolObjListIterator)(virStoragePoolObjPtr obj,
+(*virStoragePoolObjListIterator)(virStoragePoolObj *obj,
                                  const void *opaque);
 
 void
-virStoragePoolObjListForEach(virStoragePoolObjListPtr pools,
+virStoragePoolObjListForEach(virStoragePoolObjList *pools,
                              virStoragePoolObjListIterator iter,
                              const void *opaque);
 
 typedef bool
-(*virStoragePoolObjListSearcher)(virStoragePoolObjPtr obj,
+(*virStoragePoolObjListSearcher)(virStoragePoolObj *obj,
                                  const void *opaque);
 
-virStoragePoolObjPtr
-virStoragePoolObjListSearch(virStoragePoolObjListPtr pools,
+virStoragePoolObj *
+virStoragePoolObjListSearch(virStoragePoolObjList *pools,
                             virStoragePoolObjListSearcher searcher,
                             const void *opaque);
 
-virStoragePoolObjListPtr
+virStoragePoolObjList *
 virStoragePoolObjListNew(void);
 
 void
-virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
-                        virStoragePoolObjPtr obj);
+virStoragePoolObjRemove(virStoragePoolObjList *pools,
+                        virStoragePoolObj *obj);
 
 int
 virStoragePoolObjListExport(virConnectPtr conn,
-                            virStoragePoolObjListPtr poolobjs,
+                            virStoragePoolObjList *poolobjs,
                             virStoragePoolPtr **pools,
                             virStoragePoolObjListFilter filter,
                             unsigned int flags);

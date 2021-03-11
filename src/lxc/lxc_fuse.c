@@ -44,7 +44,7 @@ static int lxcProcGetattr(const char *path, struct stat *stbuf)
     g_autofree char *mempath = NULL;
     struct stat sb;
     struct fuse_context *context = fuse_get_context();
-    virDomainDefPtr def = (virDomainDefPtr)context->private_data;
+    virDomainDef *def = (virDomainDef *)context->private_data;
 
     memset(stbuf, 0, sizeof(struct stat));
     mempath = g_strdup_printf("/proc/%s", path);
@@ -116,7 +116,7 @@ static int lxcProcHostRead(char *path, char *buf, size_t size, off_t offset)
     return res;
 }
 
-static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
+static int lxcProcReadMeminfo(char *hostpath, virDomainDef *def,
                               char *buf, size_t size, off_t offset)
 {
     int res;
@@ -125,7 +125,7 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
     size_t n;
     struct virLXCMeminfo meminfo;
     g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
-    virBufferPtr new_meminfo = &buffer;
+    virBuffer *new_meminfo = &buffer;
 
     if (virLXCCgroupGetMeminfo(&meminfo) < 0) {
         virErrorSetErrnoFromLastError();
@@ -236,12 +236,12 @@ static int lxcProcRead(const char *path G_GNUC_UNUSED,
     int res = -ENOENT;
     g_autofree char *hostpath = NULL;
     struct fuse_context *context = NULL;
-    virDomainDefPtr def = NULL;
+    virDomainDef *def = NULL;
 
     hostpath = g_strdup_printf("/proc/%s", path);
 
     context = fuse_get_context();
-    def = (virDomainDefPtr)context->private_data;
+    def = (virDomainDef *)context->private_data;
 
     if (STREQ(path, fuse_meminfo_path)) {
         if ((res = lxcProcReadMeminfo(hostpath, def, buf, size, offset)) < 0)
@@ -258,7 +258,7 @@ static struct fuse_operations lxcProcOper = {
     .read    = lxcProcRead,
 };
 
-static void lxcFuseDestroy(virLXCFusePtr fuse)
+static void lxcFuseDestroy(struct virLXCFuse *fuse)
 {
     virMutexLock(&fuse->lock);
     fuse_unmount(fuse->mountpoint, fuse->ch);
@@ -269,7 +269,7 @@ static void lxcFuseDestroy(virLXCFusePtr fuse)
 
 static void lxcFuseRun(void *opaque)
 {
-    virLXCFusePtr fuse = opaque;
+    struct virLXCFuse *fuse = opaque;
 
     if (fuse_loop(fuse->fuse) < 0)
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -278,11 +278,11 @@ static void lxcFuseRun(void *opaque)
     lxcFuseDestroy(fuse);
 }
 
-int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def)
+int lxcSetupFuse(struct virLXCFuse **f, virDomainDef *def)
 {
     int ret = -1;
     struct fuse_args args = FUSE_ARGS_INIT(0, NULL);
-    virLXCFusePtr fuse = g_new0(virLXCFuse, 1);
+    struct virLXCFuse *fuse = g_new0(virLXCFuse, 1);
 
     fuse->def = def;
 
@@ -328,7 +328,7 @@ int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def)
     goto cleanup;
 }
 
-int lxcStartFuse(virLXCFusePtr fuse)
+int lxcStartFuse(struct virLXCFuse *fuse)
 {
     if (virThreadCreateFull(&fuse->thread, false, lxcFuseRun,
                             "lxc-fuse", false, (void *)fuse) < 0) {
@@ -339,9 +339,9 @@ int lxcStartFuse(virLXCFusePtr fuse)
     return 0;
 }
 
-void lxcFreeFuse(virLXCFusePtr *f)
+void lxcFreeFuse(struct virLXCFuse **f)
 {
-    virLXCFusePtr fuse = *f;
+    struct virLXCFuse *fuse = *f;
     /* lxcFuseRun thread create success */
     if (fuse) {
         /* exit fuse_loop, lxcFuseRun thread may try to destroy
@@ -356,18 +356,18 @@ void lxcFreeFuse(virLXCFusePtr *f)
     }
 }
 #else
-int lxcSetupFuse(virLXCFusePtr *f G_GNUC_UNUSED,
-                  virDomainDefPtr def G_GNUC_UNUSED)
+int lxcSetupFuse(struct virLXCFuse **f G_GNUC_UNUSED,
+                  virDomainDef *def G_GNUC_UNUSED)
 {
     return 0;
 }
 
-int lxcStartFuse(virLXCFusePtr f G_GNUC_UNUSED)
+int lxcStartFuse(struct virLXCFuse *f G_GNUC_UNUSED)
 {
     return 0;
 }
 
-void lxcFreeFuse(virLXCFusePtr *f G_GNUC_UNUSED)
+void lxcFreeFuse(struct virLXCFuse **f G_GNUC_UNUSED)
 {
 }
 #endif

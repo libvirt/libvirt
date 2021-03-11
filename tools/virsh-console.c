@@ -58,7 +58,6 @@ struct virConsoleBuffer {
 
 
 typedef struct virConsole virConsole;
-typedef virConsole *virConsolePtr;
 struct virConsole {
     virObjectLockable parent;
 
@@ -76,7 +75,7 @@ struct virConsole {
     virError error;
 };
 
-static virClassPtr virConsoleClass;
+static virClass *virConsoleClass;
 static void virConsoleDispose(void *obj);
 
 static int
@@ -97,7 +96,7 @@ virConsoleHandleSignal(int sig G_GNUC_UNUSED)
 
 
 static void
-virConsoleShutdown(virConsolePtr con,
+virConsoleShutdown(virConsole *con,
                    bool graceful)
 {
     virErrorPtr err = virGetLastError();
@@ -139,7 +138,7 @@ virConsoleShutdown(virConsolePtr con,
 static void
 virConsoleDispose(void *obj)
 {
-    virConsolePtr con = obj;
+    virConsole *con = obj;
 
     if (con->st)
         virStreamFree(con->st);
@@ -153,7 +152,7 @@ static void
 virConsoleEventOnStream(virStreamPtr st,
                         int events, void *opaque)
 {
-    virConsolePtr con = opaque;
+    virConsole *con = opaque;
 
     virObjectLock(con);
 
@@ -234,7 +233,7 @@ virConsoleEventOnStdin(int watch G_GNUC_UNUSED,
                        int events,
                        void *opaque)
 {
-    virConsolePtr con = opaque;
+    virConsole *con = opaque;
 
     virObjectLock(con);
 
@@ -305,7 +304,7 @@ virConsoleEventOnStdout(int watch G_GNUC_UNUSED,
                         int events,
                         void *opaque)
 {
-    virConsolePtr con = opaque;
+    virConsole *con = opaque;
 
     virObjectLock(con);
 
@@ -360,10 +359,10 @@ virConsoleEventOnStdout(int watch G_GNUC_UNUSED,
 }
 
 
-static virConsolePtr
+static virConsole *
 virConsoleNew(void)
 {
-    virConsolePtr con;
+    virConsole *con;
 
     if (virConsoleInitialize() < 0)
         return NULL;
@@ -405,8 +404,8 @@ virshRunConsole(vshControl *ctl,
                 const char *dev_name,
                 unsigned int flags)
 {
-    virConsolePtr con = NULL;
-    virshControlPtr priv = ctl->privData;
+    virConsole *con = NULL;
+    virshControl *priv = ctl->privData;
     int ret = -1;
 
     struct sigaction old_sigquit;

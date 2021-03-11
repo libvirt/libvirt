@@ -20,6 +20,6 @@
 
 #include "internal.h"
 
-virHypervisorDriverPtr vboxGetHypervisorDriver(uint32_t uVersion);
-virNetworkDriverPtr vboxGetNetworkDriver(uint32_t uVersion);
-virStorageDriverPtr vboxGetStorageDriver(uint32_t uVersion);
+virHypervisorDriver *vboxGetHypervisorDriver(uint32_t uVersion);
+virNetworkDriver *vboxGetNetworkDriver(uint32_t uVersion);
+virStorageDriver *vboxGetStorageDriver(uint32_t uVersion);

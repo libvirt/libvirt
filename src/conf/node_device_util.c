@@ -75,7 +75,7 @@ virNodeDeviceGetParentName(virConnectPtr conn,
  * Returns vHBA name on success, NULL on failure with an error message set
  */
 char *
-virNodeDeviceCreateVport(virStorageAdapterFCHostPtr fchost)
+virNodeDeviceCreateVport(virStorageAdapterFCHost *fchost)
 {
     unsigned int parent_host;
     char *name = NULL;
@@ -159,7 +159,7 @@ virNodeDeviceCreateVport(virStorageAdapterFCHostPtr fchost)
  */
 int
 virNodeDeviceDeleteVport(virConnectPtr conn,
-                         virStorageAdapterFCHostPtr fchost)
+                         virStorageAdapterFCHost *fchost)
 {
     char *name = NULL;
     char *scsi_host_name = NULL;

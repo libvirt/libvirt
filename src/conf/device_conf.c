@@ -50,7 +50,7 @@ VIR_ENUM_IMPL(virDomainDeviceAddress,
 
 static int
 virZPCIDeviceAddressParseXML(xmlNodePtr node,
-                             virPCIDeviceAddressPtr addr)
+                             virPCIDeviceAddress *addr)
 {
     virZPCIDeviceAddress def = { .uid = { 0 }, .fid = { 0 } };
     g_autofree char *uid = NULL;
@@ -83,7 +83,7 @@ virZPCIDeviceAddressParseXML(xmlNodePtr node,
 }
 
 void
-virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
+virDomainDeviceInfoClear(virDomainDeviceInfo *info)
 {
     VIR_FREE(info->alias);
     memset(&info->addr, 0, sizeof(info->addr));
@@ -95,7 +95,7 @@ virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
 }
 
 void
-virDomainDeviceInfoFree(virDomainDeviceInfoPtr info)
+virDomainDeviceInfoFree(virDomainDeviceInfo *info)
 {
     if (info) {
         virDomainDeviceInfoClear(info);
@@ -206,7 +206,7 @@ virDeviceInfoPCIAddressExtensionIsPresent(const virDomainDeviceInfo *info)
 
 int
 virPCIDeviceAddressParseXML(xmlNodePtr node,
-                            virPCIDeviceAddressPtr addr)
+                            virPCIDeviceAddress *addr)
 {
     xmlNodePtr cur;
     xmlNodePtr zpci = NULL;
@@ -273,7 +273,7 @@ virPCIDeviceAddressParseXML(xmlNodePtr node,
 }
 
 void
-virPCIDeviceAddressFormat(virBufferPtr buf,
+virPCIDeviceAddressFormat(virBuffer *buf,
                           virPCIDeviceAddress addr,
                           bool includeTypeInAddr)
 {
@@ -287,7 +287,7 @@ virPCIDeviceAddressFormat(virBufferPtr buf,
 }
 
 bool
-virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddressPtr addr)
+virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddress *addr)
 {
     return addr->cssid <= VIR_DOMAIN_DEVICE_CCW_MAX_CSSID &&
            addr->ssid <= VIR_DOMAIN_DEVICE_CCW_MAX_SSID &&
@@ -296,7 +296,7 @@ virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddressPtr addr)
 
 int
 virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
-                                  virDomainDeviceCCWAddressPtr addr)
+                                  virDomainDeviceCCWAddress *addr)
 {
     g_autofree char *cssid = virXMLPropString(node, "cssid");
     g_autofree char *ssid = virXMLPropString(node, "ssid");
@@ -342,8 +342,8 @@ virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
 }
 
 bool
-virDomainDeviceCCWAddressEqual(virDomainDeviceCCWAddressPtr addr1,
-                               virDomainDeviceCCWAddressPtr addr2)
+virDomainDeviceCCWAddressEqual(virDomainDeviceCCWAddress *addr1,
+                               virDomainDeviceCCWAddress *addr2)
 {
     if (addr1->cssid == addr2->cssid &&
         addr1->ssid == addr2->ssid &&
@@ -355,7 +355,7 @@ virDomainDeviceCCWAddressEqual(virDomainDeviceCCWAddressPtr addr1,
 
 int
 virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
-                                    virDomainDeviceDriveAddressPtr addr)
+                                    virDomainDeviceDriveAddress *addr)
 {
     g_autofree char *controller = virXMLPropString(node, "controller");
     g_autofree char *bus = virXMLPropString(node, "bus");
@@ -397,7 +397,7 @@ virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
 
 int
 virDomainDeviceVirtioSerialAddressParseXML(xmlNodePtr node,
-                                           virDomainDeviceVirtioSerialAddressPtr addr)
+                                           virDomainDeviceVirtioSerialAddress *addr)
 {
     g_autofree char *controller = virXMLPropString(node, "controller");
     g_autofree char *bus = virXMLPropString(node, "bus");
@@ -431,7 +431,7 @@ virDomainDeviceVirtioSerialAddressParseXML(xmlNodePtr node,
 
 int
 virDomainDeviceCcidAddressParseXML(xmlNodePtr node,
-                                   virDomainDeviceCcidAddressPtr addr)
+                                   virDomainDeviceCcidAddress *addr)
 {
     g_autofree char *controller = virXMLPropString(node, "controller");
     g_autofree char *slot = virXMLPropString(node, "slot");
@@ -456,7 +456,7 @@ virDomainDeviceCcidAddressParseXML(xmlNodePtr node,
 }
 
 static int
-virDomainDeviceUSBAddressParsePort(virDomainDeviceUSBAddressPtr addr,
+virDomainDeviceUSBAddressParsePort(virDomainDeviceUSBAddress *addr,
                                    char *port)
 {
     char *tmp = port;
@@ -480,7 +480,7 @@ virDomainDeviceUSBAddressParsePort(virDomainDeviceUSBAddressPtr addr,
 
 int
 virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
-                                  virDomainDeviceUSBAddressPtr addr)
+                                  virDomainDeviceUSBAddress *addr)
 {
     g_autofree char *port = virXMLPropString(node, "port");
     g_autofree char *bus = virXMLPropString(node, "bus");
@@ -501,7 +501,7 @@ virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
 
 int
 virDomainDeviceSpaprVioAddressParseXML(xmlNodePtr node,
-                                      virDomainDeviceSpaprVioAddressPtr addr)
+                                      virDomainDeviceSpaprVioAddress *addr)
 {
     g_autofree char *reg = virXMLPropString(node, "reg");
 
@@ -520,7 +520,7 @@ virDomainDeviceSpaprVioAddressParseXML(xmlNodePtr node,
 }
 
 bool
-virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
+virDomainDeviceAddressIsValid(virDomainDeviceInfo *info,
                               int type)
 {
     if (info->type != type)
@@ -549,7 +549,7 @@ virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
 
 int
 virInterfaceLinkParseXML(xmlNodePtr node,
-                         virNetDevIfLinkPtr lnk)
+                         virNetDevIfLink *lnk)
 {
     int state;
 
@@ -577,7 +577,7 @@ virInterfaceLinkParseXML(xmlNodePtr node,
 }
 
 int
-virInterfaceLinkFormat(virBufferPtr buf,
+virInterfaceLinkFormat(virBuffer *buf,
                        const virNetDevIfLink *lnk)
 {
     if (!lnk->speed && !lnk->state) {

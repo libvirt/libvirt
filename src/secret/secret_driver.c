@@ -52,13 +52,12 @@ enum { SECRET_MAX_XML_FILE = 10*1024*1024 };
 /* Internal driver state */
 
 typedef struct _virSecretDriverState virSecretDriverState;
-typedef virSecretDriverState *virSecretDriverStatePtr;
 struct _virSecretDriverState {
     virMutex lock;
     bool privileged; /* readonly */
     char *embeddedRoot; /* readonly */
     int embeddedRefs;
-    virSecretObjListPtr secrets;
+    virSecretObjList *secrets;
     char *stateDir;
     char *configDir;
 
@@ -66,10 +65,10 @@ struct _virSecretDriverState {
     int lockFD;
 
     /* Immutable pointer, self-locking APIs */
-    virObjectEventStatePtr secretEventState;
+    virObjectEventState *secretEventState;
 };
 
-static virSecretDriverStatePtr driver;
+static virSecretDriverState *driver;
 
 static void
 secretDriverLock(void)
@@ -85,10 +84,10 @@ secretDriverUnlock(void)
 }
 
 
-static virSecretObjPtr
+static virSecretObj *
 secretObjFromSecret(virSecretPtr secret)
 {
-    virSecretObjPtr obj;
+    virSecretObj *obj;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(secret->uuid, uuidstr);
@@ -151,8 +150,8 @@ secretLookupByUUID(virConnectPtr conn,
                    const unsigned char *uuid)
 {
     virSecretPtr ret = NULL;
-    virSecretObjPtr obj;
-    virSecretDefPtr def;
+    virSecretObj *obj;
+    virSecretDef *def;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(uuid, uuidstr);
@@ -183,8 +182,8 @@ secretLookupByUsage(virConnectPtr conn,
                     const char *usageID)
 {
     virSecretPtr ret = NULL;
-    virSecretObjPtr obj;
-    virSecretDefPtr def;
+    virSecretObj *obj;
+    virSecretDef *def;
 
     if (!(obj = virSecretObjListFindByUsage(driver->secrets,
                                             usageType, usageID))) {
@@ -214,11 +213,11 @@ secretDefineXML(virConnectPtr conn,
                 unsigned int flags)
 {
     virSecretPtr ret = NULL;
-    virSecretObjPtr obj = NULL;
-    virSecretDefPtr objDef;
-    virSecretDefPtr backup = NULL;
-    virSecretDefPtr def;
-    virObjectEventPtr event = NULL;
+    virSecretObj *obj = NULL;
+    virSecretDef *objDef;
+    virSecretDef *backup = NULL;
+    virSecretDef *def;
+    virObjectEvent *event = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -293,8 +292,8 @@ secretGetXMLDesc(virSecretPtr secret,
                  unsigned int flags)
 {
     char *ret = NULL;
-    virSecretObjPtr obj;
-    virSecretDefPtr def;
+    virSecretObj *obj;
+    virSecretDef *def;
 
     virCheckFlags(0, NULL);
 
@@ -321,9 +320,9 @@ secretSetValue(virSecretPtr secret,
                unsigned int flags)
 {
     int ret = -1;
-    virSecretObjPtr obj;
-    virSecretDefPtr def;
-    virObjectEventPtr event = NULL;
+    virSecretObj *obj;
+    virSecretDef *def;
+    virObjectEvent *event = NULL;
 
     virCheckFlags(0, -1);
 
@@ -357,8 +356,8 @@ secretGetValue(virSecretPtr secret,
                unsigned int internalFlags)
 {
     unsigned char *ret = NULL;
-    virSecretObjPtr obj;
-    virSecretDefPtr def;
+    virSecretObj *obj;
+    virSecretDef *def;
 
     virCheckFlags(0, NULL);
 
@@ -392,9 +391,9 @@ static int
 secretUndefine(virSecretPtr secret)
 {
     int ret = -1;
-    virSecretObjPtr obj;
-    virSecretDefPtr def;
-    virObjectEventPtr event = NULL;
+    virSecretObj *obj;
+    virSecretDef *def;
+    virObjectEvent *event = NULL;
 
     if (!(obj = secretObjFromSecret(secret)))
         goto cleanup;
@@ -539,7 +538,7 @@ secretStateReload(void)
 static virDrvOpenStatus
 secretConnectOpen(virConnectPtr conn,
                   virConnectAuthPtr auth G_GNUC_UNUSED,
-                  virConfPtr conf G_GNUC_UNUSED,
+                  virConf *conf G_GNUC_UNUSED,
                   unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);

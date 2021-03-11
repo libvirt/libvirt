@@ -40,11 +40,11 @@
 VIR_LOG_INIT("bhyve.bhyve_capabilities");
 
 
-virCapsPtr
+virCaps *
 virBhyveCapsBuild(void)
 {
-    virCapsPtr caps;
-    virCapsGuestPtr guest;
+    virCaps *caps;
+    virCapsGuest *guest;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    false, false)) == NULL)
@@ -71,9 +71,9 @@ virBhyveCapsBuild(void)
 }
 
 int
-virBhyveDomainCapsFill(virDomainCapsPtr caps,
+virBhyveDomainCapsFill(virDomainCaps *caps,
                        unsigned int bhyvecaps,
-                       virDomainCapsStringValuesPtr firmwares)
+                       virDomainCapsStringValues *firmwares)
 {
     caps->disk.supported = VIR_TRISTATE_BOOL_YES;
     caps->disk.diskDevice.report = true;
@@ -125,21 +125,21 @@ virBhyveDomainCapsFill(virDomainCapsPtr caps,
 }
 
 
-virDomainCapsPtr
-virBhyveDomainCapsBuild(bhyveConnPtr conn,
+virDomainCaps *
+virBhyveDomainCapsBuild(struct _bhyveConn *conn,
                         const char *emulatorbin,
                         const char *machine,
                         virArch arch,
                         virDomainVirtType virttype)
 {
-    virDomainCapsPtr caps = NULL;
+    virDomainCaps *caps = NULL;
     unsigned int bhyve_caps = 0;
     g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     size_t firmwares_alloc = 0;
-    virBhyveDriverConfigPtr cfg = virBhyveDriverGetConfig(conn);
+    struct _virBhyveDriverConfig *cfg = virBhyveDriverGetConfig(conn);
     const char *firmware_dir = cfg->firmwareDir;
-    virDomainCapsStringValuesPtr firmwares = NULL;
+    virDomainCapsStringValues *firmwares = NULL;
 
     if (!(caps = virDomainCapsNew(emulatorbin, machine, arch, virttype)))
         goto cleanup;
@@ -176,7 +176,7 @@ int
 virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps)
 {
     char *binary, *help;
-    virCommandPtr cmd;
+    virCommand *cmd;
     int ret, exit;
 
     ret = 0;
@@ -215,7 +215,7 @@ bhyveProbeCapsDeviceHelper(unsigned int *caps,
                            unsigned int flag)
 {
     char *error;
-    virCommandPtr cmd = NULL;
+    virCommand *cmd = NULL;
     int ret = -1, exit;
 
     cmd = virCommandNew(binary);
@@ -238,7 +238,7 @@ static int
 bhyveProbeCapsFromHelp(unsigned int *caps, char *binary)
 {
     char *help;
-    virCommandPtr cmd = NULL;
+    virCommand *cmd = NULL;
     int ret = 0, exit;
 
     cmd = virCommandNew(binary);

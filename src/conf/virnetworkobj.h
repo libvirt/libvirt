@@ -25,233 +25,231 @@
 #include "virnetworkportdef.h"
 
 typedef struct _virNetworkObj virNetworkObj;
-typedef virNetworkObj *virNetworkObjPtr;
 
-virNetworkObjPtr
+virNetworkObj *
 virNetworkObjNew(void);
 
-virNetworkDefPtr
-virNetworkObjGetDef(virNetworkObjPtr obj);
+virNetworkDef *
+virNetworkObjGetDef(virNetworkObj *obj);
 
 void
-virNetworkObjSetDef(virNetworkObjPtr obj,
-                    virNetworkDefPtr def);
+virNetworkObjSetDef(virNetworkObj *obj,
+                    virNetworkDef *def);
 
-virNetworkDefPtr
-virNetworkObjGetNewDef(virNetworkObjPtr obj);
+virNetworkDef *
+virNetworkObjGetNewDef(virNetworkObj *obj);
 
 bool
-virNetworkObjIsActive(virNetworkObjPtr obj);
+virNetworkObjIsActive(virNetworkObj *obj);
 
 void
-virNetworkObjSetActive(virNetworkObjPtr obj,
+virNetworkObjSetActive(virNetworkObj *obj,
                        bool active);
 
 bool
-virNetworkObjIsPersistent(virNetworkObjPtr obj);
+virNetworkObjIsPersistent(virNetworkObj *obj);
 
 bool
-virNetworkObjIsAutostart(virNetworkObjPtr obj);
+virNetworkObjIsAutostart(virNetworkObj *obj);
 
 void
-virNetworkObjSetAutostart(virNetworkObjPtr obj,
+virNetworkObjSetAutostart(virNetworkObj *obj,
                           bool autostart);
 
-virMacMapPtr
-virNetworkObjGetMacMap(virNetworkObjPtr obj);
+virMacMap *
+virNetworkObjGetMacMap(virNetworkObj *obj);
 
 pid_t
-virNetworkObjGetDnsmasqPid(virNetworkObjPtr obj);
+virNetworkObjGetDnsmasqPid(virNetworkObj *obj);
 
 void
-virNetworkObjSetDnsmasqPid(virNetworkObjPtr obj,
+virNetworkObjSetDnsmasqPid(virNetworkObj *obj,
                            pid_t dnsmasqPid);
 
 pid_t
-virNetworkObjGetRadvdPid(virNetworkObjPtr obj);
+virNetworkObjGetRadvdPid(virNetworkObj *obj);
 
 void
-virNetworkObjSetRadvdPid(virNetworkObjPtr obj,
+virNetworkObjSetRadvdPid(virNetworkObj *obj,
                          pid_t radvdPid);
 
-virBitmapPtr
-virNetworkObjGetClassIdMap(virNetworkObjPtr obj);
+virBitmap *
+virNetworkObjGetClassIdMap(virNetworkObj *obj);
 
 unsigned long long
-virNetworkObjGetFloorSum(virNetworkObjPtr obj);
+virNetworkObjGetFloorSum(virNetworkObj *obj);
 
 void
-virNetworkObjSetFloorSum(virNetworkObjPtr obj,
+virNetworkObjSetFloorSum(virNetworkObj *obj,
                          unsigned long long floor_sum);
 
 void
-virNetworkObjSetMacMap(virNetworkObjPtr obj,
-                       virMacMapPtr macmap);
+virNetworkObjSetMacMap(virNetworkObj *obj,
+                       virMacMap *macmap);
 
 void
-virNetworkObjUnrefMacMap(virNetworkObjPtr obj);
+virNetworkObjUnrefMacMap(virNetworkObj *obj);
 
 int
-virNetworkObjMacMgrAdd(virNetworkObjPtr obj,
+virNetworkObjMacMgrAdd(virNetworkObj *obj,
                        const char *dnsmasqStateDir,
                        const char *domain,
                        const virMacAddr *mac);
 
 int
-virNetworkObjMacMgrDel(virNetworkObjPtr obj,
+virNetworkObjMacMgrDel(virNetworkObj *obj,
                        const char *dnsmasqStateDir,
                        const char *domain,
                        const virMacAddr *mac);
 
 void
-virNetworkObjEndAPI(virNetworkObjPtr *net);
+virNetworkObjEndAPI(virNetworkObj **net);
 
 typedef struct _virNetworkObjList virNetworkObjList;
-typedef virNetworkObjList *virNetworkObjListPtr;
 
-virNetworkObjListPtr
+virNetworkObjList *
 virNetworkObjListNew(void);
 
-virNetworkObjPtr
-virNetworkObjFindByUUID(virNetworkObjListPtr nets,
+virNetworkObj *
+virNetworkObjFindByUUID(virNetworkObjList *nets,
                         const unsigned char *uuid);
 
-virNetworkObjPtr
-virNetworkObjFindByName(virNetworkObjListPtr nets,
+virNetworkObj *
+virNetworkObjFindByName(virNetworkObjList *nets,
                         const char *name);
 
 bool
-virNetworkObjTaint(virNetworkObjPtr obj,
+virNetworkObjTaint(virNetworkObj *obj,
                    virNetworkTaintFlags taint);
 
 typedef bool
 (*virNetworkObjListFilter)(virConnectPtr conn,
-                           virNetworkDefPtr def);
+                           virNetworkDef *def);
 
-virNetworkObjPtr
-virNetworkObjAssignDef(virNetworkObjListPtr nets,
-                       virNetworkDefPtr def,
+virNetworkObj *
+virNetworkObjAssignDef(virNetworkObjList *nets,
+                       virNetworkDef *def,
                        unsigned int flags);
 
 void
-virNetworkObjUpdateAssignDef(virNetworkObjPtr network,
-                             virNetworkDefPtr def,
+virNetworkObjUpdateAssignDef(virNetworkObj *network,
+                             virNetworkDef *def,
                              bool live);
 
 int
-virNetworkObjSetDefTransient(virNetworkObjPtr network,
+virNetworkObjSetDefTransient(virNetworkObj *network,
                              bool live,
-                             virNetworkXMLOptionPtr xmlopt);
+                             virNetworkXMLOption *xmlopt);
 
 void
-virNetworkObjUnsetDefTransient(virNetworkObjPtr network);
+virNetworkObjUnsetDefTransient(virNetworkObj *network);
 
-virNetworkDefPtr
-virNetworkObjGetPersistentDef(virNetworkObjPtr network);
+virNetworkDef *
+virNetworkObjGetPersistentDef(virNetworkObj *network);
 
 int
-virNetworkObjReplacePersistentDef(virNetworkObjPtr network,
-                                  virNetworkDefPtr def);
+virNetworkObjReplacePersistentDef(virNetworkObj *network,
+                                  virNetworkDef *def);
 
 void
-virNetworkObjRemoveInactive(virNetworkObjListPtr nets,
-                            virNetworkObjPtr net);
+virNetworkObjRemoveInactive(virNetworkObjList *nets,
+                            virNetworkObj *net);
 
 int
-virNetworkObjAddPort(virNetworkObjPtr net,
-                     virNetworkPortDefPtr portdef,
+virNetworkObjAddPort(virNetworkObj *net,
+                     virNetworkPortDef *portdef,
                      const char *stateDir);
 
 char *
-virNetworkObjGetPortStatusDir(virNetworkObjPtr net,
+virNetworkObjGetPortStatusDir(virNetworkObj *net,
                               const char *stateDir);
 
-virNetworkPortDefPtr
-virNetworkObjLookupPort(virNetworkObjPtr net,
+virNetworkPortDef *
+virNetworkObjLookupPort(virNetworkObj *net,
                         const unsigned char *uuid);
 
 int
-virNetworkObjDeletePort(virNetworkObjPtr net,
+virNetworkObjDeletePort(virNetworkObj *net,
                         const unsigned char *uuid,
                         const char *stateDir);
 
 int
-virNetworkObjDeleteAllPorts(virNetworkObjPtr net,
+virNetworkObjDeleteAllPorts(virNetworkObj *net,
                             const char *stateDir);
 
 typedef bool
 (*virNetworkPortListFilter)(virConnectPtr conn,
-                            virNetworkDefPtr def,
-                            virNetworkPortDefPtr portdef);
+                            virNetworkDef *def,
+                            virNetworkPortDef *portdef);
 
 int
 virNetworkObjPortListExport(virNetworkPtr net,
-                            virNetworkObjPtr obj,
+                            virNetworkObj *obj,
                             virNetworkPortPtr **ports,
                             virNetworkPortListFilter filter);
 
 typedef bool
-(*virNetworkPortListIter)(virNetworkPortDefPtr portdef,
+(*virNetworkPortListIter)(virNetworkPortDef *portdef,
                           void *opaque);
 
 int
-virNetworkObjPortForEach(virNetworkObjPtr obj,
+virNetworkObjPortForEach(virNetworkObj *obj,
                          virNetworkPortListIter iter,
                          void *opaque);
 
 int
 virNetworkObjSaveStatus(const char *statusDir,
-                        virNetworkObjPtr net,
-                        virNetworkXMLOptionPtr xmlopt) G_GNUC_WARN_UNUSED_RESULT;
+                        virNetworkObj *net,
+                        virNetworkXMLOption *xmlopt) G_GNUC_WARN_UNUSED_RESULT;
 
 int
-virNetworkObjLoadAllConfigs(virNetworkObjListPtr nets,
+virNetworkObjLoadAllConfigs(virNetworkObjList *nets,
                             const char *configDir,
                             const char *autostartDir,
-                            virNetworkXMLOptionPtr xmlopt);
+                            virNetworkXMLOption *xmlopt);
 
 int
-virNetworkObjLoadAllState(virNetworkObjListPtr nets,
+virNetworkObjLoadAllState(virNetworkObjList *nets,
                           const char *stateDir,
-                          virNetworkXMLOptionPtr xmlopt);
+                          virNetworkXMLOption *xmlopt);
 
 int
 virNetworkObjDeleteConfig(const char *configDir,
                           const char *autostartDir,
-                          virNetworkObjPtr net);
+                          virNetworkObj *net);
 
 bool
-virNetworkObjBridgeInUse(virNetworkObjListPtr nets,
+virNetworkObjBridgeInUse(virNetworkObjList *nets,
                          const char *bridge,
                          const char *skipname);
 
 int
-virNetworkObjUpdate(virNetworkObjPtr obj,
+virNetworkObjUpdate(virNetworkObj *obj,
                     unsigned int command, /* virNetworkUpdateCommand */
                     unsigned int section, /* virNetworkUpdateSection */
                     int parentIndex,
                     const char *xml,
-                    virNetworkXMLOptionPtr xmlopt,
+                    virNetworkXMLOption *xmlopt,
                     unsigned int flags);  /* virNetworkUpdateFlags */
 
 int
 virNetworkObjListExport(virConnectPtr conn,
-                        virNetworkObjListPtr netobjs,
+                        virNetworkObjList *netobjs,
                         virNetworkPtr **nets,
                         virNetworkObjListFilter filter,
                         unsigned int flags);
 
 typedef int
-(*virNetworkObjListIterator)(virNetworkObjPtr net,
+(*virNetworkObjListIterator)(virNetworkObj *net,
                              void *opaque);
 
 int
-virNetworkObjListForEach(virNetworkObjListPtr nets,
+virNetworkObjListForEach(virNetworkObjList *nets,
                          virNetworkObjListIterator callback,
                          void *opaque);
 
 int
-virNetworkObjListGetNames(virNetworkObjListPtr nets,
+virNetworkObjListGetNames(virNetworkObjList *nets,
                           bool active,
                           char **names,
                           int maxnames,
@@ -259,11 +257,11 @@ virNetworkObjListGetNames(virNetworkObjListPtr nets,
                           virConnectPtr conn);
 
 int
-virNetworkObjListNumOfNetworks(virNetworkObjListPtr nets,
+virNetworkObjListNumOfNetworks(virNetworkObjList *nets,
                                bool active,
                                virNetworkObjListFilter filter,
                                virConnectPtr conn);
 
 void
-virNetworkObjListPrune(virNetworkObjListPtr nets,
+virNetworkObjListPrune(virNetworkObjList *nets,
                        unsigned int flags);

@@ -83,7 +83,6 @@ typedef int
 
 
 typedef struct _virNWFilterDriver virNWFilterDriver;
-typedef virNWFilterDriver *virNWFilterDriverPtr;
 
 /**
  * _virNWFilterDriver:

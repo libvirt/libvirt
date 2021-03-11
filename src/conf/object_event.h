@@ -31,13 +31,11 @@
  * in a call / response rpc
  */
 typedef struct _virObjectEvent virObjectEvent;
-typedef virObjectEvent *virObjectEventPtr;
 
 typedef struct _virObjectEventState virObjectEventState;
-typedef virObjectEventState *virObjectEventStatePtr;
 
 
-virObjectEventStatePtr
+virObjectEventState *
 virObjectEventStateNew(void);
 
 /**
@@ -57,33 +55,33 @@ typedef void (*virConnectObjectEventGenericCallback)(virConnectPtr conn,
     ((virConnectObjectEventGenericCallback)(cb))
 
 void
-virObjectEventStateQueue(virObjectEventStatePtr state,
-                         virObjectEventPtr event)
+virObjectEventStateQueue(virObjectEventState *state,
+                         virObjectEvent *event)
     ATTRIBUTE_NONNULL(1);
 
 void
-virObjectEventStateQueueRemote(virObjectEventStatePtr state,
-                               virObjectEventPtr event,
+virObjectEventStateQueueRemote(virObjectEventState *state,
+                               virObjectEvent *event,
                                int remoteID)
     ATTRIBUTE_NONNULL(1);
 
 int
 virObjectEventStateDeregisterID(virConnectPtr conn,
-                                virObjectEventStatePtr state,
+                                virObjectEventState *state,
                                 int callbackID,
                                 bool doFreeCb)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int
 virObjectEventStateEventID(virConnectPtr conn,
-                           virObjectEventStatePtr state,
+                           virObjectEventState *state,
                            int callbackID,
                            int *remoteID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void
 virObjectEventStateSetRemote(virConnectPtr conn,
-                             virObjectEventStatePtr state,
+                             virObjectEventState *state,
                              int callbackID,
                              int remoteID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

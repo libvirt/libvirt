@@ -28,43 +28,43 @@
 
 int prlsdkInit(void);
 void prlsdkDeinit(void);
-int prlsdkConnect(vzDriverPtr driver);
-void prlsdkDisconnect(vzDriverPtr driver);
+int prlsdkConnect(struct _vzDriver *driver);
+void prlsdkDisconnect(struct _vzDriver *driver);
 int
-prlsdkLoadDomains(vzDriverPtr driver);
-virDomainObjPtr
-prlsdkAddDomainByUUID(vzDriverPtr driver, const unsigned char *uuid);
-virDomainObjPtr
-prlsdkAddDomainByName(vzDriverPtr driver, const char *name);
-int prlsdkUpdateDomain(vzDriverPtr driver, virDomainObjPtr dom);
+prlsdkLoadDomains(struct _vzDriver *driver);
+virDomainObj *
+prlsdkAddDomainByUUID(struct _vzDriver *driver, const unsigned char *uuid);
+virDomainObj *
+prlsdkAddDomainByName(struct _vzDriver *driver, const char *name);
+int prlsdkUpdateDomain(struct _vzDriver *driver, virDomainObj *dom);
 
-int prlsdkStart(virDomainObjPtr dom);
-int prlsdkKill(virDomainObjPtr dom);
-int prlsdkStop(virDomainObjPtr dom);
-int prlsdkPause(virDomainObjPtr dom);
-int prlsdkResume(virDomainObjPtr dom);
-int prlsdkSuspend(virDomainObjPtr dom);
-int prlsdkRestart(virDomainObjPtr dom);
-int prlsdkReset(virDomainObjPtr dom);
+int prlsdkStart(virDomainObj *dom);
+int prlsdkKill(virDomainObj *dom);
+int prlsdkStop(virDomainObj *dom);
+int prlsdkPause(virDomainObj *dom);
+int prlsdkResume(virDomainObj *dom);
+int prlsdkSuspend(virDomainObj *dom);
+int prlsdkRestart(virDomainObj *dom);
+int prlsdkReset(virDomainObj *dom);
 
 int
-prlsdkApplyConfig(vzDriverPtr driver,
-                  virDomainObjPtr dom,
-                  virDomainDefPtr new);
-int prlsdkCreateVm(vzDriverPtr driver, virDomainDefPtr def);
-int prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def);
+prlsdkApplyConfig(struct _vzDriver *driver,
+                  virDomainObj *dom,
+                  virDomainDef *new);
+int prlsdkCreateVm(struct _vzDriver *driver, virDomainDef *def);
+int prlsdkCreateCt(virConnectPtr conn, virDomainDef *def);
 int
-prlsdkUnregisterDomain(vzDriverPtr driver, virDomainObjPtr dom, unsigned int flags);
+prlsdkUnregisterDomain(struct _vzDriver *driver, virDomainObj *dom, unsigned int flags);
 int
-prlsdkDomainManagedSaveRemove(virDomainObjPtr dom);
+prlsdkDomainManagedSaveRemove(virDomainObj *dom);
 int
-prlsdkAttachDevice(vzDriverPtr driver, virDomainObjPtr dom, virDomainDeviceDefPtr dev);
+prlsdkAttachDevice(struct _vzDriver *driver, virDomainObj *dom, virDomainDeviceDef *dev);
 int
-prlsdkDetachDevice(vzDriverPtr driver, virDomainObjPtr dom, virDomainDeviceDefPtr dev);
+prlsdkDetachDevice(struct _vzDriver *driver, virDomainObj *dom, virDomainDeviceDef *dev);
 int
-prlsdkUpdateDevice(vzDriverPtr driver, virDomainObjPtr dom, virDomainDeviceDefPtr dev);
+prlsdkUpdateDevice(struct _vzDriver *driver, virDomainObj *dom, virDomainDeviceDef *dev);
 int
-prlsdkGetBlockStats(PRL_HANDLE sdkstats, virDomainDiskDefPtr disk, virDomainBlockStatsPtr stats, bool isCt);
+prlsdkGetBlockStats(PRL_HANDLE sdkstats, virDomainDiskDef *disk, virDomainBlockStatsPtr stats, bool isCt);
 int
 prlsdkGetNetStats(PRL_HANDLE sdkstas, PRL_HANDLE sdkdom, const char *path, virDomainInterfaceStatsPtr stats);
 int
@@ -72,24 +72,24 @@ prlsdkGetVcpuStats(PRL_HANDLE sdkstas, int idx, unsigned long long *time);
 int
 prlsdkGetMemoryStats(PRL_HANDLE sdkstas, virDomainMemoryStatPtr stats, unsigned int nr_stats);
 /* memsize is in MiB */
-int prlsdkSetMemsize(virDomainObjPtr dom, unsigned int memsize);
-int prlsdkSetCpuCount(virDomainObjPtr dom, unsigned int count);
+int prlsdkSetMemsize(virDomainObj *dom, unsigned int memsize);
+int prlsdkSetCpuCount(virDomainObj *dom, unsigned int count);
 int
-prlsdkDomainSetUserPassword(virDomainObjPtr dom,
+prlsdkDomainSetUserPassword(virDomainObj *dom,
                             const char *user,
                             const char *password);
-virDomainSnapshotObjListPtr prlsdkLoadSnapshots(virDomainObjPtr dom);
-int prlsdkCreateSnapshot(virDomainObjPtr dom, const char *description);
-int prlsdkDeleteSnapshot(virDomainObjPtr dom, const char *uuid, bool children);
-int prlsdkSwitchToSnapshot(virDomainObjPtr dom, const char *uuid, bool paused);
+virDomainSnapshotObjList *prlsdkLoadSnapshots(virDomainObj *dom);
+int prlsdkCreateSnapshot(virDomainObj *dom, const char *description);
+int prlsdkDeleteSnapshot(virDomainObj *dom, const char *uuid, bool children);
+int prlsdkSwitchToSnapshot(virDomainObj *dom, const char *uuid, bool paused);
 int
-prlsdkMigrate(virDomainObjPtr dom,
-              virURIPtr uri,
+prlsdkMigrate(virDomainObj *dom,
+              virURI *uri,
               const char unsigned *session_uuid,
               const char *dname,
               unsigned int flags);
 
 PRL_HANDLE
-prlsdkSdkDomainLookupByName(vzDriverPtr driver, const char *name);
-int prlsdkCancelJob(virDomainObjPtr dom);
-int prlsdkResizeImage(virDomainObjPtr dom, virDomainDiskDefPtr disk, unsigned long long newsize);
+prlsdkSdkDomainLookupByName(struct _vzDriver *driver, const char *name);
+int prlsdkCancelJob(virDomainObj *dom);
+int prlsdkResizeImage(virDomainObj *dom, virDomainDiskDef *disk, unsigned long long newsize);

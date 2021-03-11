@@ -24,5 +24,5 @@
 
 #include "virresctrl.h"
 
-virResctrlAllocPtr
-virResctrlAllocGetUnused(virResctrlInfoPtr resctrl);
+virResctrlAlloc *
+virResctrlAllocGetUnused(virResctrlInfo *resctrl);

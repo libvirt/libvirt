@@ -78,7 +78,7 @@ virStorageSourceBackinStoreStringIsRelative(const char *backing)
 }
 
 
-static virStorageSourcePtr
+static virStorageSource *
 virStorageSourceMetadataNew(const char *path,
                             int format)
 {
@@ -115,13 +115,13 @@ virStorageSourceMetadataNew(const char *path,
  *
  * Caller MUST free the result after use via virObjectUnref.
  */
-virStorageSourcePtr
+virStorageSource *
 virStorageSourceGetMetadataFromBuf(const char *path,
                                    char *buf,
                                    size_t len,
                                    int format)
 {
-    virStorageSourcePtr ret = NULL;
+    virStorageSource *ret = NULL;
 
     if (!(ret = virStorageSourceMetadataNew(path, format)))
         return NULL;
@@ -148,7 +148,7 @@ virStorageSourceGetMetadataFromBuf(const char *path,
  *
  * Caller MUST free the result after use via virObjectUnref.
  */
-virStorageSourcePtr
+virStorageSource *
 virStorageSourceGetMetadataFromFD(const char *path,
                                   int fd,
                                   int format)
@@ -218,14 +218,14 @@ virStorageSourceGetMetadataFromFD(const char *path,
  *  - "/path/to/file": Literal path is matched. Symlink resolution is attempted
  *                     if the filename doesn't string-match with the path.
  */
-virStorageSourcePtr
-virStorageSourceChainLookup(virStorageSourcePtr chain,
-                            virStorageSourcePtr startFrom,
+virStorageSource *
+virStorageSourceChainLookup(virStorageSource *chain,
+                            virStorageSource *startFrom,
                             const char *name,
                             const char *diskTarget,
-                            virStorageSourcePtr *parent)
+                            virStorageSource **parent)
 {
-    virStorageSourcePtr prev;
+    virStorageSource *prev;
     const char *start = chain->path;
     bool nameIsFile = virStorageSourceBackinStoreStringIsFile(name);
     g_autofree char *target = NULL;
@@ -324,8 +324,8 @@ virStorageSourceChainLookup(virStorageSourcePtr chain,
 }
 
 
-static virStorageSourcePtr
-virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
+static virStorageSource *
+virStorageSourceNewFromBackingRelative(virStorageSource *parent,
                                        const char *rel)
 {
     g_autofree char *dirname = NULL;
@@ -377,7 +377,7 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
  */
 int
 virStorageSourceNewFromBackingAbsolute(const char *path,
-                                       virStorageSourcePtr *src)
+                                       virStorageSource **src)
 {
     const char *json;
     const char *dirpath;
@@ -448,9 +448,9 @@ virStorageSourceNewFromBackingAbsolute(const char *path,
  * error is reported.
  */
 static int
-virStorageSourceNewFromChild(virStorageSourcePtr parent,
+virStorageSourceNewFromChild(virStorageSource *parent,
                              const char *parentRaw,
-                             virStorageSourcePtr *child)
+                             virStorageSource **child)
 {
     struct stat st;
     g_autoptr(virStorageSource) def = NULL;
@@ -490,8 +490,8 @@ virStorageSourceNewFromChild(virStorageSourcePtr parent,
 
 
 int
-virStorageSourceNewFromBacking(virStorageSourcePtr parent,
-                               virStorageSourcePtr *backing)
+virStorageSourceNewFromBacking(virStorageSource *parent,
+                               virStorageSource **backing)
 {
     int rc;
 
@@ -518,7 +518,7 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent,
  * Returns 0 on success, -1 on error. No libvirt errors are reported.
  */
 int
-virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
+virStorageSourceUpdatePhysicalSize(virStorageSource *src,
                                    int fd,
                                    struct stat const *sb)
 {
@@ -567,7 +567,7 @@ virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
  * Returns 0 on success, -1 on error.
  */
 int
-virStorageSourceUpdateBackingSizes(virStorageSourcePtr src,
+virStorageSourceUpdateBackingSizes(virStorageSource *src,
                                    int fd,
                                    struct stat const *sb)
 {
@@ -630,7 +630,7 @@ virStorageSourceUpdateBackingSizes(virStorageSourcePtr src,
  * Returns 0 on success, -1 on error.
  */
 int
-virStorageSourceUpdateCapacity(virStorageSourcePtr src,
+virStorageSourceUpdateCapacity(virStorageSource *src,
                                char *buf,
                                ssize_t len)
 {
@@ -696,11 +696,11 @@ virStorageSourceRemoveLastPathComponent(const char *path)
  * Returns 0 on success; 1 if backing chain isn't relative and -1 on error.
  */
 int
-virStorageSourceGetRelativeBackingPath(virStorageSourcePtr top,
-                                       virStorageSourcePtr base,
+virStorageSourceGetRelativeBackingPath(virStorageSource *top,
+                                       virStorageSource *base,
                                        char **relpath)
 {
-    virStorageSourcePtr next;
+    virStorageSource *next;
     g_autofree char *tmp = NULL;
     g_autofree char *path = NULL;
 
@@ -747,7 +747,7 @@ virStorageSourceGetRelativeBackingPath(virStorageSourcePtr top,
  * path between two images.
  */
 int
-virStorageSourceFetchRelativeBackingPath(virStorageSourcePtr src,
+virStorageSourceFetchRelativeBackingPath(virStorageSource *src,
                                          char **relPath)
 {
     ssize_t headerLen;
@@ -806,7 +806,7 @@ virStorageSourceIsInitialized(const virStorageSource *src)
  */
 static int
 virStorageSourceGetBackendForSupportCheck(const virStorageSource *src,
-                                          virStorageFileBackendPtr *backend)
+                                          virStorageFileBackend **backend)
 {
     int actualType;
 
@@ -817,7 +817,7 @@ virStorageSourceGetBackendForSupportCheck(const virStorageSource *src,
     }
 
     if (src->drv) {
-        virStorageDriverDataPtr drv = src->drv;
+        virStorageDriverData *drv = src->drv;
         *backend = drv->backend;
         return 1;
     }
@@ -837,7 +837,7 @@ virStorageSourceGetBackendForSupportCheck(const virStorageSource *src,
 int
 virStorageSourceSupportsBackingChainTraversal(const virStorageSource *src)
 {
-    virStorageFileBackendPtr backend;
+    virStorageFileBackend *backend;
     int rv;
 
     if ((rv = virStorageSourceGetBackendForSupportCheck(src, &backend)) < 1)
@@ -859,7 +859,7 @@ virStorageSourceSupportsBackingChainTraversal(const virStorageSource *src)
 int
 virStorageSourceSupportsSecurityDriver(const virStorageSource *src)
 {
-    virStorageFileBackendPtr backend;
+    virStorageFileBackend *backend;
     int rv;
 
     if ((rv = virStorageSourceGetBackendForSupportCheck(src, &backend)) < 1)
@@ -880,7 +880,7 @@ virStorageSourceSupportsSecurityDriver(const virStorageSource *src)
 int
 virStorageSourceSupportsAccess(const virStorageSource *src)
 {
-    virStorageFileBackendPtr backend;
+    virStorageFileBackend *backend;
     int rv;
 
     if ((rv = virStorageSourceGetBackendForSupportCheck(src, &backend)) < 1)
@@ -900,7 +900,7 @@ virStorageSourceSupportsAccess(const virStorageSource *src)
 int
 virStorageSourceSupportsCreate(const virStorageSource *src)
 {
-    virStorageFileBackendPtr backend;
+    virStorageFileBackend *backend;
     int rv;
 
     if ((rv = virStorageSourceGetBackendForSupportCheck(src, &backend)) < 1)
@@ -911,9 +911,9 @@ virStorageSourceSupportsCreate(const virStorageSource *src)
 
 
 void
-virStorageSourceDeinit(virStorageSourcePtr src)
+virStorageSourceDeinit(virStorageSource *src)
 {
-    virStorageDriverDataPtr drv = NULL;
+    virStorageDriverData *drv = NULL;
 
     if (!virStorageSourceIsInitialized(src))
         return;
@@ -942,11 +942,11 @@ virStorageSourceDeinit(virStorageSourcePtr src)
  * initialization failed. Libvirt error is reported.
  */
 int
-virStorageSourceInitAs(virStorageSourcePtr src,
+virStorageSourceInitAs(virStorageSource *src,
                        uid_t uid, gid_t gid)
 {
     int actualType = virStorageSourceGetActualType(src);
-    virStorageDriverDataPtr drv = g_new0(virStorageDriverData, 1);
+    virStorageDriverData *drv = g_new0(virStorageDriverData, 1);
 
     src->drv = drv;
 
@@ -985,7 +985,7 @@ virStorageSourceInitAs(virStorageSourcePtr src,
  * current user.
  */
 int
-virStorageSourceInit(virStorageSourcePtr src)
+virStorageSourceInit(virStorageSource *src)
 {
     return virStorageSourceInitAs(src, -1, -1);
 }
@@ -1000,9 +1000,9 @@ virStorageSourceInit(virStorageSourcePtr src)
  * -1 on other failure. Errno is set in case of failure.
  */
 int
-virStorageSourceCreate(virStorageSourcePtr src)
+virStorageSourceCreate(virStorageSource *src)
 {
-    virStorageDriverDataPtr drv = NULL;
+    virStorageDriverData *drv = NULL;
     int ret;
 
     if (!virStorageSourceIsInitialized(src)) {
@@ -1037,9 +1037,9 @@ virStorageSourceCreate(virStorageSourcePtr src)
  * -1 on other failure. Errno is set in case of failure.
  */
 int
-virStorageSourceUnlink(virStorageSourcePtr src)
+virStorageSourceUnlink(virStorageSource *src)
 {
-    virStorageDriverDataPtr drv = NULL;
+    virStorageDriverData *drv = NULL;
     int ret;
 
     if (!virStorageSourceIsInitialized(src)) {
@@ -1073,10 +1073,10 @@ virStorageSourceUnlink(virStorageSourcePtr src)
  * -1 on other failure. Errno is set in case of failure.
 */
 int
-virStorageSourceStat(virStorageSourcePtr src,
+virStorageSourceStat(virStorageSource *src,
                      struct stat *st)
 {
-    virStorageDriverDataPtr drv = NULL;
+    virStorageDriverData *drv = NULL;
     int ret;
 
     if (!virStorageSourceIsInitialized(src)) {
@@ -1113,12 +1113,12 @@ virStorageSourceStat(virStorageSourcePtr src,
  * Libvirt error is reported on failure.
  */
 ssize_t
-virStorageSourceRead(virStorageSourcePtr src,
+virStorageSourceRead(virStorageSource *src,
                      size_t offset,
                      size_t len,
                      char **buf)
 {
-    virStorageDriverDataPtr drv = NULL;
+    virStorageDriverData *drv = NULL;
     ssize_t ret;
 
     if (!virStorageSourceIsInitialized(src)) {
@@ -1152,10 +1152,10 @@ virStorageSourceRead(virStorageSourcePtr src,
  * by libvirt storage backend.
  */
 int
-virStorageSourceAccess(virStorageSourcePtr src,
+virStorageSourceAccess(virStorageSource *src,
                        int mode)
 {
-    virStorageDriverDataPtr drv = NULL;
+    virStorageDriverData *drv = NULL;
 
     if (!virStorageSourceIsInitialized(src)) {
         errno = ENOSYS;
@@ -1189,7 +1189,7 @@ virStorageSourceChown(const virStorageSource *src,
                       uid_t uid,
                       gid_t gid)
 {
-    virStorageDriverDataPtr drv = NULL;
+    virStorageDriverData *drv = NULL;
 
     if (!virStorageSourceIsInitialized(src)) {
         errno = ENOSYS;
@@ -1222,11 +1222,11 @@ virStorageSourceChown(const virStorageSource *src,
  */
 void
 virStorageSourceReportBrokenChain(int errcode,
-                                  virStorageSourcePtr src,
-                                  virStorageSourcePtr parent)
+                                  virStorageSource *src,
+                                  virStorageSource *parent)
 {
     if (src->drv) {
-        virStorageDriverDataPtr drv = src->drv;
+        virStorageDriverData *drv = src->drv;
         unsigned int access_user = drv->uid;
         unsigned int access_group = drv->gid;
 
@@ -1257,8 +1257,8 @@ virStorageSourceReportBrokenChain(int errcode,
 
 
 static int
-virStorageSourceGetMetadataRecurseReadHeader(virStorageSourcePtr src,
-                                             virStorageSourcePtr parent,
+virStorageSourceGetMetadataRecurseReadHeader(virStorageSource *src,
+                                             virStorageSource *parent,
                                              uid_t uid,
                                              gid_t gid,
                                              char **buf,
@@ -1289,8 +1289,8 @@ virStorageSourceGetMetadataRecurseReadHeader(virStorageSourcePtr src,
 
 /* Recursive workhorse for virStorageSourceGetMetadata.  */
 static int
-virStorageSourceGetMetadataRecurse(virStorageSourcePtr src,
-                                   virStorageSourcePtr parent,
+virStorageSourceGetMetadataRecurse(virStorageSource *src,
+                                   virStorageSource *parent,
                                    uid_t uid, gid_t gid,
                                    bool report_broken,
                                    size_t max_depth,
@@ -1400,7 +1400,7 @@ virStorageSourceGetMetadataRecurse(virStorageSourcePtr src,
  * Caller MUST free result after use via virObjectUnref.
  */
 int
-virStorageSourceGetMetadata(virStorageSourcePtr src,
+virStorageSourceGetMetadata(virStorageSource *src,
                             uid_t uid, gid_t gid,
                             size_t max_depth,
                             bool report_broken)

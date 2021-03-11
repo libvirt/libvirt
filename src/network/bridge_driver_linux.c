@@ -91,14 +91,14 @@ static void networkSetupPrivateChains(void)
 
 
 static int
-networkHasRunningNetworksWithFWHelper(virNetworkObjPtr obj,
+networkHasRunningNetworksWithFWHelper(virNetworkObj *obj,
                                 void *opaque)
 {
     bool *activeWithFW = opaque;
 
     virObjectLock(obj);
     if (virNetworkObjIsActive(obj)) {
-        virNetworkDefPtr def = virNetworkObjGetDef(obj);
+        virNetworkDef *def = virNetworkObjGetDef(obj);
 
         switch ((virNetworkForwardType) def->forward.type) {
         case VIR_NETWORK_FORWARD_NONE:
@@ -132,7 +132,7 @@ networkHasRunningNetworksWithFWHelper(virNetworkObjPtr obj,
 
 
 static bool
-networkHasRunningNetworksWithFW(virNetworkDriverStatePtr driver)
+networkHasRunningNetworksWithFW(virNetworkDriverState *driver)
 {
     bool activeWithFW = false;
 
@@ -144,7 +144,7 @@ networkHasRunningNetworksWithFW(virNetworkDriverStatePtr driver)
 
 
 void
-networkPreReloadFirewallRules(virNetworkDriverStatePtr driver,
+networkPreReloadFirewallRules(virNetworkDriverState *driver,
                               bool startup,
                               bool force)
 {
@@ -215,7 +215,7 @@ void networkPostReloadFirewallRules(bool startup G_GNUC_UNUSED)
  *      other scenarios where we can ruin host network connectivity.
  * XXX: Using a proper library is preferred over parsing /proc
  */
-int networkCheckRouteCollision(virNetworkDefPtr def)
+int networkCheckRouteCollision(virNetworkDef *def)
 {
     int len;
     char *cur;
@@ -244,8 +244,8 @@ int networkCheckRouteCollision(virNetworkDefPtr def)
     while (cur) {
         char iface[17], dest[128], mask[128];
         unsigned int addr_val, mask_val;
-        virNetworkIPDefPtr ipdef;
-        virNetDevIPRoutePtr routedef;
+        virNetworkIPDef *ipdef;
+        virNetDevIPRoute *routedef;
         int num;
         size_t i;
 
@@ -305,7 +305,7 @@ int networkCheckRouteCollision(virNetworkDefPtr def)
              i++) {
 
             virSocketAddr r_mask, r_addr;
-            virSocketAddrPtr tmp_addr = virNetDevIPRouteGetAddress(routedef);
+            virSocketAddr *tmp_addr = virNetDevIPRouteGetAddress(routedef);
             int r_prefix = virNetDevIPRouteGetPrefix(routedef);
 
             if (!tmp_addr ||
@@ -335,9 +335,9 @@ static const char networkLocalMulticastIPv6[] = "ff02::/16";
 static const char networkLocalBroadcast[] = "255.255.255.255/32";
 
 static int
-networkAddMasqueradingFirewallRules(virFirewallPtr fw,
-                                    virNetworkDefPtr def,
-                                    virNetworkIPDefPtr ipdef)
+networkAddMasqueradingFirewallRules(virFirewall *fw,
+                                    virNetworkDef *def,
+                                    virNetworkIPDef *ipdef)
 {
     int prefix = virNetworkIPDefPrefix(ipdef);
     const char *forwardIf = virNetworkDefForwardIf(def, 0);
@@ -452,9 +452,9 @@ networkAddMasqueradingFirewallRules(virFirewallPtr fw,
 }
 
 static int
-networkRemoveMasqueradingFirewallRules(virFirewallPtr fw,
-                                       virNetworkDefPtr def,
-                                       virNetworkIPDefPtr ipdef)
+networkRemoveMasqueradingFirewallRules(virFirewall *fw,
+                                       virNetworkDef *def,
+                                       virNetworkIPDef *ipdef)
 {
     int prefix = virNetworkIPDefPrefix(ipdef);
     const char *forwardIf = virNetworkDefForwardIf(def, 0);
@@ -525,9 +525,9 @@ networkRemoveMasqueradingFirewallRules(virFirewallPtr fw,
 
 
 static int
-networkAddRoutingFirewallRules(virFirewallPtr fw,
-                               virNetworkDefPtr def,
-                               virNetworkIPDefPtr ipdef)
+networkAddRoutingFirewallRules(virFirewall *fw,
+                               virNetworkDef *def,
+                               virNetworkIPDef *ipdef)
 {
     int prefix = virNetworkIPDefPrefix(ipdef);
     const char *forwardIf = virNetworkDefForwardIf(def, 0);
@@ -560,9 +560,9 @@ networkAddRoutingFirewallRules(virFirewallPtr fw,
 
 
 static int
-networkRemoveRoutingFirewallRules(virFirewallPtr fw,
-                                  virNetworkDefPtr def,
-                                  virNetworkIPDefPtr ipdef)
+networkRemoveRoutingFirewallRules(virFirewall *fw,
+                                  virNetworkDef *def,
+                                  virNetworkIPDef *ipdef)
 {
     int prefix = virNetworkIPDefPrefix(ipdef);
     const char *forwardIf = virNetworkDefForwardIf(def, 0);
@@ -589,11 +589,11 @@ networkRemoveRoutingFirewallRules(virFirewallPtr fw,
 
 
 static void
-networkAddGeneralIPv4FirewallRules(virFirewallPtr fw,
-                                   virNetworkDefPtr def)
+networkAddGeneralIPv4FirewallRules(virFirewall *fw,
+                                   virNetworkDef *def)
 {
     size_t i;
-    virNetworkIPDefPtr ipv4def;
+    virNetworkIPDef *ipv4def;
 
     /* First look for first IPv4 address that has dhcp or tftpboot defined. */
     /* We support dhcp config on 1 IPv4 interface only. */
@@ -631,11 +631,11 @@ networkAddGeneralIPv4FirewallRules(virFirewallPtr fw,
 }
 
 static void
-networkRemoveGeneralIPv4FirewallRules(virFirewallPtr fw,
-                                      virNetworkDefPtr def)
+networkRemoveGeneralIPv4FirewallRules(virFirewall *fw,
+                                      virNetworkDef *def)
 {
     size_t i;
-    virNetworkIPDefPtr ipv4def;
+    virNetworkIPDef *ipv4def;
 
     for (i = 0;
          (ipv4def = virNetworkDefGetIPByIndex(def, AF_INET, i));
@@ -671,8 +671,8 @@ networkRemoveGeneralIPv4FirewallRules(virFirewallPtr fw,
  * If any IPv6 addresses are defined, then add the rules for regular operation.
  */
 static void
-networkAddGeneralIPv6FirewallRules(virFirewallPtr fw,
-                                   virNetworkDefPtr def)
+networkAddGeneralIPv6FirewallRules(virFirewall *fw,
+                                   virNetworkDef *def)
 {
     if (!virNetworkDefGetIPByIndex(def, AF_INET6, 0) &&
         !def->ipv6nogw) {
@@ -699,8 +699,8 @@ networkAddGeneralIPv6FirewallRules(virFirewallPtr fw,
 }
 
 static void
-networkRemoveGeneralIPv6FirewallRules(virFirewallPtr fw,
-                                      virNetworkDefPtr def)
+networkRemoveGeneralIPv6FirewallRules(virFirewall *fw,
+                                      virNetworkDef *def)
 {
     if (!virNetworkDefGetIPByIndex(def, AF_INET6, 0) &&
         !def->ipv6nogw) {
@@ -726,8 +726,8 @@ networkRemoveGeneralIPv6FirewallRules(virFirewallPtr fw,
 
 
 static void
-networkAddGeneralFirewallRules(virFirewallPtr fw,
-                               virNetworkDefPtr def)
+networkAddGeneralFirewallRules(virFirewall *fw,
+                               virNetworkDef *def)
 {
     networkAddGeneralIPv4FirewallRules(fw, def);
     networkAddGeneralIPv6FirewallRules(fw, def);
@@ -735,19 +735,19 @@ networkAddGeneralFirewallRules(virFirewallPtr fw,
 
 
 static void
-networkRemoveGeneralFirewallRules(virFirewallPtr fw,
-                                  virNetworkDefPtr def)
+networkRemoveGeneralFirewallRules(virFirewall *fw,
+                                  virNetworkDef *def)
 {
     networkRemoveGeneralIPv4FirewallRules(fw, def);
     networkRemoveGeneralIPv6FirewallRules(fw, def);
 }
 
 static void
-networkAddChecksumFirewallRules(virFirewallPtr fw,
-                                virNetworkDefPtr def)
+networkAddChecksumFirewallRules(virFirewall *fw,
+                                virNetworkDef *def)
 {
     size_t i;
-    virNetworkIPDefPtr ipv4def;
+    virNetworkIPDef *ipv4def;
 
     /* First look for first IPv4 address that has dhcp or tftpboot defined. */
     /* We support dhcp config on 1 IPv4 interface only. */
@@ -769,11 +769,11 @@ networkAddChecksumFirewallRules(virFirewallPtr fw,
 
 
 static void
-networkRemoveChecksumFirewallRules(virFirewallPtr fw,
-                                   virNetworkDefPtr def)
+networkRemoveChecksumFirewallRules(virFirewall *fw,
+                                   virNetworkDef *def)
 {
     size_t i;
-    virNetworkIPDefPtr ipv4def;
+    virNetworkIPDef *ipv4def;
 
     /* First look for first IPv4 address that has dhcp or tftpboot defined. */
     /* We support dhcp config on 1 IPv4 interface only. */
@@ -790,9 +790,9 @@ networkRemoveChecksumFirewallRules(virFirewallPtr fw,
 
 
 static int
-networkAddIPSpecificFirewallRules(virFirewallPtr fw,
-                                  virNetworkDefPtr def,
-                                  virNetworkIPDefPtr ipdef)
+networkAddIPSpecificFirewallRules(virFirewall *fw,
+                                  virNetworkDef *def,
+                                  virNetworkIPDef *ipdef)
 {
     /* NB: in the case of IPv6, routing rules are added when the
      * forward mode is NAT. This is because IPv6 has no NAT.
@@ -812,9 +812,9 @@ networkAddIPSpecificFirewallRules(virFirewallPtr fw,
 
 
 static int
-networkRemoveIPSpecificFirewallRules(virFirewallPtr fw,
-                                     virNetworkDefPtr def,
-                                     virNetworkIPDefPtr ipdef)
+networkRemoveIPSpecificFirewallRules(virFirewall *fw,
+                                     virNetworkDef *def,
+                                     virNetworkIPDef *ipdef)
 {
     if (def->forward.type == VIR_NETWORK_FORWARD_NAT) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET) ||
@@ -830,10 +830,10 @@ networkRemoveIPSpecificFirewallRules(virFirewallPtr fw,
 
 
 /* Add all rules for all ip addresses (and general rules) on a network */
-int networkAddFirewallRules(virNetworkDefPtr def)
+int networkAddFirewallRules(virNetworkDef *def)
 {
     size_t i;
-    virNetworkIPDefPtr ipdef;
+    virNetworkIPDef *ipdef;
     g_autoptr(virFirewall) fw = virFirewallNew();
 
     if (virOnce(&createdOnce, networkSetupPrivateChains) < 0)
@@ -948,10 +948,10 @@ int networkAddFirewallRules(virNetworkDefPtr def)
 }
 
 /* Remove all rules for all ip addresses (and general rules) on a network */
-void networkRemoveFirewallRules(virNetworkDefPtr def)
+void networkRemoveFirewallRules(virNetworkDef *def)
 {
     size_t i;
-    virNetworkIPDefPtr ipdef;
+    virNetworkIPDef *ipdef;
     g_autoptr(virFirewall) fw = virFirewallNew();
 
     virFirewallStartTransaction(fw, VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);

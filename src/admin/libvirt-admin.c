@@ -97,7 +97,7 @@ virAdmInitialize(void)
 }
 
 static char *
-getSocketPath(virURIPtr uri)
+getSocketPath(virURI *uri)
 {
     g_autofree char *rundir = virGetUserRuntimeDirectory();
     g_autofree char *sock_path = NULL;
@@ -108,7 +108,7 @@ getSocketPath(virURIPtr uri)
 
 
     for (i = 0; i < uri->paramsCount; i++) {
-        virURIParamPtr param = &uri->params[i];
+        virURIParam *param = &uri->params[i];
 
         if (STREQ(param->name, "socket")) {
             g_free(sock_path);
@@ -160,7 +160,7 @@ getSocketPath(virURIPtr uri)
 }
 
 static int
-virAdmGetDefaultURI(virConfPtr conf, char **uristr)
+virAdmGetDefaultURI(virConf *conf, char **uristr)
 {
     const char *defname = getenv("LIBVIRT_ADMIN_DEFAULT_URI");
     if (defname && *defname) {
@@ -381,7 +381,7 @@ int
 virAdmConnectIsAlive(virAdmConnectPtr conn)
 {
     bool ret;
-    remoteAdminPrivPtr priv = NULL;
+    remoteAdminPriv *priv = NULL;
 
     VIR_DEBUG("conn=%p", conn);
 

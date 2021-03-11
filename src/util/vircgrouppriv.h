@@ -39,7 +39,6 @@ struct _virCgroupV1Controller {
     char *placement;
 };
 typedef struct _virCgroupV1Controller virCgroupV1Controller;
-typedef virCgroupV1Controller *virCgroupV1ControllerPtr;
 
 struct _virCgroupV2Devices {
     int mapfd;
@@ -48,7 +47,6 @@ struct _virCgroupV2Devices {
     ssize_t max;
 };
 typedef struct _virCgroupV2Devices virCgroupV2Devices;
-typedef virCgroupV2Devices *virCgroupV2DevicesPtr;
 
 struct _virCgroupV2Controller {
     int controllers;
@@ -57,16 +55,15 @@ struct _virCgroupV2Controller {
     virCgroupV2Devices devices;
 };
 typedef struct _virCgroupV2Controller virCgroupV2Controller;
-typedef virCgroupV2Controller *virCgroupV2ControllerPtr;
 
 struct _virCgroup {
-    virCgroupBackendPtr backends[VIR_CGROUP_BACKEND_TYPE_LAST];
+    virCgroupBackend *backends[VIR_CGROUP_BACKEND_TYPE_LAST];
 
     virCgroupV1Controller legacy[VIR_CGROUP_CONTROLLER_LAST];
     virCgroupV2Controller unified;
 
     char *unitName;
-    virCgroupPtr nested;
+    virCgroup *nested;
 };
 
 #define virCgroupGetNested(cgroup) \
@@ -82,32 +79,32 @@ int virCgroupSetValueRaw(const char *path,
 int virCgroupGetValueRaw(const char *path,
                          char **value);
 
-int virCgroupSetValueStr(virCgroupPtr group,
+int virCgroupSetValueStr(virCgroup *group,
                          int controller,
                          const char *key,
                          const char *value);
 
-int virCgroupGetValueStr(virCgroupPtr group,
+int virCgroupGetValueStr(virCgroup *group,
                          int controller,
                          const char *key,
                          char **value);
 
-int virCgroupSetValueU64(virCgroupPtr group,
+int virCgroupSetValueU64(virCgroup *group,
                          int controller,
                          const char *key,
                          unsigned long long int value);
 
-int virCgroupGetValueU64(virCgroupPtr group,
+int virCgroupGetValueU64(virCgroup *group,
                          int controller,
                          const char *key,
                          unsigned long long int *value);
 
-int virCgroupSetValueI64(virCgroupPtr group,
+int virCgroupSetValueI64(virCgroup *group,
                          int controller,
                          const char *key,
                          long long int value);
 
-int virCgroupGetValueI64(virCgroupPtr group,
+int virCgroupGetValueI64(virCgroup *group,
                          int controller,
                          const char *key,
                          long long int *value);
@@ -123,19 +120,19 @@ int virCgroupGetValueForBlkDev(const char *str,
 int virCgroupNewPartition(const char *path,
                           bool create,
                           int controllers,
-                          virCgroupPtr *group)
+                          virCgroup **group)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 
-int virCgroupNewDomainPartition(virCgroupPtr partition,
+int virCgroupNewDomainPartition(virCgroup *partition,
                                 const char *driver,
                                 const char *name,
-                                virCgroupPtr *group)
+                                virCgroup **group)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
 int virCgroupRemoveRecursively(char *grppath);
 
 
-int virCgroupKillRecursiveInternal(virCgroupPtr group,
+int virCgroupKillRecursiveInternal(virCgroup *group,
                                    int signum,
                                    GHashTable *pids,
                                    int controller,

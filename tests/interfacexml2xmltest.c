@@ -19,7 +19,7 @@ testCompareXMLToXMLFiles(const char *xml)
     char *xmlData = NULL;
     char *actual = NULL;
     int ret = -1;
-    virInterfaceDefPtr dev = NULL;
+    virInterfaceDef *dev = NULL;
 
     if (virTestLoadFile(xml, &xmlData) < 0)
         goto fail;

@@ -33,7 +33,7 @@ typedef struct _hypervPrivate hypervPrivate;
 struct _hypervPrivate {
     hypervParsedUri *parsedUri;
     WsManClient *client;
-    virCapsPtr caps;
-    virDomainXMLOptionPtr xmlopt;
+    virCaps *caps;
+    virDomainXMLOption *xmlopt;
     char *version;
 };

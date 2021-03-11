@@ -60,7 +60,6 @@ VIR_ENUM_IMPL(qemuFirmwareOSInterface,
 
 
 typedef struct _qemuFirmwareFlashFile qemuFirmwareFlashFile;
-typedef qemuFirmwareFlashFile *qemuFirmwareFlashFilePtr;
 struct _qemuFirmwareFlashFile {
     char *filename;
     char *format;
@@ -68,7 +67,6 @@ struct _qemuFirmwareFlashFile {
 
 
 typedef struct _qemuFirmwareMappingFlash qemuFirmwareMappingFlash;
-typedef qemuFirmwareMappingFlash *qemuFirmwareMappingFlashPtr;
 struct _qemuFirmwareMappingFlash {
     qemuFirmwareFlashFile executable;
     qemuFirmwareFlashFile nvram_template;
@@ -76,14 +74,12 @@ struct _qemuFirmwareMappingFlash {
 
 
 typedef struct _qemuFirmwareMappingKernel qemuFirmwareMappingKernel;
-typedef qemuFirmwareMappingKernel *qemuFirmwareMappingKernelPtr;
 struct _qemuFirmwareMappingKernel {
     char *filename;
 };
 
 
 typedef struct _qemuFirmwareMappingMemory qemuFirmwareMappingMemory;
-typedef qemuFirmwareMappingMemory *qemuFirmwareMappingMemoryPtr;
 struct _qemuFirmwareMappingMemory {
     char *filename;
 };
@@ -109,7 +105,6 @@ VIR_ENUM_IMPL(qemuFirmwareDevice,
 
 
 typedef struct _qemuFirmwareMapping qemuFirmwareMapping;
-typedef qemuFirmwareMapping *qemuFirmwareMappingPtr;
 struct _qemuFirmwareMapping {
     qemuFirmwareDevice device;
 
@@ -122,7 +117,6 @@ struct _qemuFirmwareMapping {
 
 
 typedef struct _qemuFirmwareTarget qemuFirmwareTarget;
-typedef qemuFirmwareTarget *qemuFirmwareTargetPtr;
 struct _qemuFirmwareTarget {
     virArch architecture;
     size_t nmachines;
@@ -168,7 +162,7 @@ struct _qemuFirmware {
     qemuFirmwareMapping mapping;
 
     size_t ntargets;
-    qemuFirmwareTargetPtr *targets;
+    qemuFirmwareTarget **targets;
 
     size_t nfeatures;
     qemuFirmwareFeature *features;
@@ -188,7 +182,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuFirmwareOSInterface, qemuFirmwareOSInterfaceFr
 
 
 static void
-qemuFirmwareFlashFileFreeContent(qemuFirmwareFlashFilePtr flash)
+qemuFirmwareFlashFileFreeContent(qemuFirmwareFlashFile *flash)
 {
     g_free(flash->filename);
     g_free(flash->format);
@@ -196,7 +190,7 @@ qemuFirmwareFlashFileFreeContent(qemuFirmwareFlashFilePtr flash)
 
 
 static void
-qemuFirmwareMappingFlashFreeContent(qemuFirmwareMappingFlashPtr flash)
+qemuFirmwareMappingFlashFreeContent(qemuFirmwareMappingFlash *flash)
 {
     qemuFirmwareFlashFileFreeContent(&flash->executable);
     qemuFirmwareFlashFileFreeContent(&flash->nvram_template);
@@ -204,21 +198,21 @@ qemuFirmwareMappingFlashFreeContent(qemuFirmwareMappingFlashPtr flash)
 
 
 static void
-qemuFirmwareMappingKernelFreeContent(qemuFirmwareMappingKernelPtr kernel)
+qemuFirmwareMappingKernelFreeContent(qemuFirmwareMappingKernel *kernel)
 {
     g_free(kernel->filename);
 }
 
 
 static void
-qemuFirmwareMappingMemoryFreeContent(qemuFirmwareMappingMemoryPtr memory)
+qemuFirmwareMappingMemoryFreeContent(qemuFirmwareMappingMemory *memory)
 {
     g_free(memory->filename);
 }
 
 
 static void
-qemuFirmwareMappingFreeContent(qemuFirmwareMappingPtr mapping)
+qemuFirmwareMappingFreeContent(qemuFirmwareMapping *mapping)
 {
     switch (mapping->device) {
     case QEMU_FIRMWARE_DEVICE_FLASH:
@@ -238,7 +232,7 @@ qemuFirmwareMappingFreeContent(qemuFirmwareMappingPtr mapping)
 
 
 static void
-qemuFirmwareTargetFree(qemuFirmwareTargetPtr target)
+qemuFirmwareTargetFree(qemuFirmwareTarget *target)
 {
     if (!target)
         return;
@@ -263,7 +257,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuFirmwareFeature, qemuFirmwareFeatureFree);
 
 
 void
-qemuFirmwareFree(qemuFirmwarePtr fw)
+qemuFirmwareFree(qemuFirmware *fw)
 {
     size_t i;
 
@@ -283,10 +277,10 @@ qemuFirmwareFree(qemuFirmwarePtr fw)
 
 static int
 qemuFirmwareInterfaceParse(const char *path,
-                           virJSONValuePtr doc,
-                           qemuFirmwarePtr fw)
+                           virJSONValue *doc,
+                           qemuFirmware *fw)
 {
-    virJSONValuePtr interfacesJSON;
+    virJSONValue *interfacesJSON;
     g_autoptr(qemuFirmwareOSInterface) interfaces = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t ninterfaces;
@@ -304,7 +298,7 @@ qemuFirmwareInterfaceParse(const char *path,
     interfaces = g_new0(qemuFirmwareOSInterface, ninterfaces);
 
     for (i = 0; i < ninterfaces; i++) {
-        virJSONValuePtr item = virJSONValueArrayGet(interfacesJSON, i);
+        virJSONValue *item = virJSONValueArrayGet(interfacesJSON, i);
         const char *tmpStr = virJSONValueGetString(item);
         int tmp;
 
@@ -330,8 +324,8 @@ qemuFirmwareInterfaceParse(const char *path,
 
 static int
 qemuFirmwareFlashFileParse(const char *path,
-                           virJSONValuePtr doc,
-                           qemuFirmwareFlashFilePtr flash)
+                           virJSONValue *doc,
+                           qemuFirmwareFlashFile *flash)
 {
     const char *filename;
     const char *format;
@@ -360,11 +354,11 @@ qemuFirmwareFlashFileParse(const char *path,
 
 static int
 qemuFirmwareMappingFlashParse(const char *path,
-                              virJSONValuePtr doc,
-                              qemuFirmwareMappingFlashPtr flash)
+                              virJSONValue *doc,
+                              qemuFirmwareMappingFlash *flash)
 {
-    virJSONValuePtr executable;
-    virJSONValuePtr nvram_template;
+    virJSONValue *executable;
+    virJSONValue *nvram_template;
 
     if (!(executable = virJSONValueObjectGet(doc, "executable"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -392,8 +386,8 @@ qemuFirmwareMappingFlashParse(const char *path,
 
 static int
 qemuFirmwareMappingKernelParse(const char *path,
-                               virJSONValuePtr doc,
-                               qemuFirmwareMappingKernelPtr kernel)
+                               virJSONValue *doc,
+                               qemuFirmwareMappingKernel *kernel)
 {
     const char *filename;
 
@@ -411,8 +405,8 @@ qemuFirmwareMappingKernelParse(const char *path,
 
 static int
 qemuFirmwareMappingMemoryParse(const char *path,
-                               virJSONValuePtr doc,
-                               qemuFirmwareMappingMemoryPtr memory)
+                               virJSONValue *doc,
+                               qemuFirmwareMappingMemory *memory)
 {
     const char *filename;
 
@@ -430,10 +424,10 @@ qemuFirmwareMappingMemoryParse(const char *path,
 
 static int
 qemuFirmwareMappingParse(const char *path,
-                         virJSONValuePtr doc,
-                         qemuFirmwarePtr fw)
+                         virJSONValue *doc,
+                         qemuFirmware *fw)
 {
-    virJSONValuePtr mapping;
+    virJSONValue *mapping;
     const char *deviceStr;
     int tmp;
 
@@ -485,11 +479,11 @@ qemuFirmwareMappingParse(const char *path,
 
 static int
 qemuFirmwareTargetParse(const char *path,
-                        virJSONValuePtr doc,
-                        qemuFirmwarePtr fw)
+                        virJSONValue *doc,
+                        qemuFirmware *fw)
 {
-    virJSONValuePtr targetsJSON;
-    qemuFirmwareTargetPtr *targets = NULL;
+    virJSONValue *targetsJSON;
+    qemuFirmwareTarget **targets = NULL;
     size_t ntargets;
     size_t i;
     int ret = -1;
@@ -503,11 +497,11 @@ qemuFirmwareTargetParse(const char *path,
 
     ntargets = virJSONValueArraySize(targetsJSON);
 
-    targets = g_new0(qemuFirmwareTargetPtr, ntargets);
+    targets = g_new0(qemuFirmwareTarget *, ntargets);
 
     for (i = 0; i < ntargets; i++) {
-        virJSONValuePtr item = virJSONValueArrayGet(targetsJSON, i);
-        virJSONValuePtr machines;
+        virJSONValue *item = virJSONValueArrayGet(targetsJSON, i);
+        virJSONValue *machines;
         g_autoptr(qemuFirmwareTarget) t = NULL;
         const char *architectureStr = NULL;
         size_t nmachines;
@@ -541,7 +535,7 @@ qemuFirmwareTargetParse(const char *path,
         t->machines = g_new0(char *, nmachines);
 
         for (j = 0; j < nmachines; j++) {
-            virJSONValuePtr machine = virJSONValueArrayGet(machines, j);
+            virJSONValue *machine = virJSONValueArrayGet(machines, j);
             g_autofree char *machineStr = NULL;
 
             machineStr = g_strdup(virJSONValueGetString(machine));
@@ -567,10 +561,10 @@ qemuFirmwareTargetParse(const char *path,
 
 static int
 qemuFirmwareFeatureParse(const char *path,
-                         virJSONValuePtr doc,
-                         qemuFirmwarePtr fw)
+                         virJSONValue *doc,
+                         qemuFirmware *fw)
 {
-    virJSONValuePtr featuresJSON;
+    virJSONValue *featuresJSON;
     g_autoptr(qemuFirmwareFeature) features = NULL;
     size_t nfeatures;
     size_t i;
@@ -587,7 +581,7 @@ qemuFirmwareFeatureParse(const char *path,
     features = g_new0(qemuFirmwareFeature, nfeatures);
 
     for (i = 0; i < nfeatures; i++) {
-        virJSONValuePtr item = virJSONValueArrayGet(featuresJSON, i);
+        virJSONValue *item = virJSONValueArrayGet(featuresJSON, i);
         const char *tmpStr = virJSONValueGetString(item);
         int tmp;
 
@@ -610,7 +604,7 @@ qemuFirmwareFeatureParse(const char *path,
 /* 1MiB should be enough for everybody (TM) */
 #define DOCUMENT_SIZE (1024 * 1024)
 
-qemuFirmwarePtr
+qemuFirmware *
 qemuFirmwareParse(const char *path)
 {
     g_autofree char *cont = NULL;
@@ -646,8 +640,8 @@ qemuFirmwareParse(const char *path)
 
 
 static int
-qemuFirmwareInterfaceFormat(virJSONValuePtr doc,
-                            qemuFirmwarePtr fw)
+qemuFirmwareInterfaceFormat(virJSONValue *doc,
+                            qemuFirmware *fw)
 {
     g_autoptr(virJSONValue) interfacesJSON = NULL;
     size_t i;
@@ -669,11 +663,11 @@ qemuFirmwareInterfaceFormat(virJSONValuePtr doc,
 }
 
 
-static virJSONValuePtr
+static virJSONValue *
 qemuFirmwareFlashFileFormat(qemuFirmwareFlashFile flash)
 {
     g_autoptr(virJSONValue) json = virJSONValueNewObject();
-    virJSONValuePtr ret;
+    virJSONValue *ret;
 
     if (virJSONValueObjectAppendString(json,
                                        "filename",
@@ -691,8 +685,8 @@ qemuFirmwareFlashFileFormat(qemuFirmwareFlashFile flash)
 
 
 static int
-qemuFirmwareMappingFlashFormat(virJSONValuePtr mapping,
-                               qemuFirmwareMappingFlashPtr flash)
+qemuFirmwareMappingFlashFormat(virJSONValue *mapping,
+                               qemuFirmwareMappingFlash *flash)
 {
     g_autoptr(virJSONValue) executable = NULL;
     g_autoptr(virJSONValue) nvram_template = NULL;
@@ -719,8 +713,8 @@ qemuFirmwareMappingFlashFormat(virJSONValuePtr mapping,
 
 
 static int
-qemuFirmwareMappingKernelFormat(virJSONValuePtr mapping,
-                                qemuFirmwareMappingKernelPtr kernel)
+qemuFirmwareMappingKernelFormat(virJSONValue *mapping,
+                                qemuFirmwareMappingKernel *kernel)
 {
     if (virJSONValueObjectAppendString(mapping,
                                        "filename",
@@ -732,8 +726,8 @@ qemuFirmwareMappingKernelFormat(virJSONValuePtr mapping,
 
 
 static int
-qemuFirmwareMappingMemoryFormat(virJSONValuePtr mapping,
-                                qemuFirmwareMappingMemoryPtr memory)
+qemuFirmwareMappingMemoryFormat(virJSONValue *mapping,
+                                qemuFirmwareMappingMemory *memory)
 {
     if (virJSONValueObjectAppendString(mapping,
                                        "filename",
@@ -745,8 +739,8 @@ qemuFirmwareMappingMemoryFormat(virJSONValuePtr mapping,
 
 
 static int
-qemuFirmwareMappingFormat(virJSONValuePtr doc,
-                          qemuFirmwarePtr fw)
+qemuFirmwareMappingFormat(virJSONValue *doc,
+                          qemuFirmware *fw)
 {
     g_autoptr(virJSONValue) mapping = virJSONValueNewObject();
 
@@ -782,8 +776,8 @@ qemuFirmwareMappingFormat(virJSONValuePtr doc,
 
 
 static int
-qemuFirmwareTargetFormat(virJSONValuePtr doc,
-                         qemuFirmwarePtr fw)
+qemuFirmwareTargetFormat(virJSONValue *doc,
+                         qemuFirmware *fw)
 {
     g_autoptr(virJSONValue) targetsJSON = NULL;
     size_t i;
@@ -791,7 +785,7 @@ qemuFirmwareTargetFormat(virJSONValuePtr doc,
     targetsJSON = virJSONValueNewArray();
 
     for (i = 0; i < fw->ntargets; i++) {
-        qemuFirmwareTargetPtr t = fw->targets[i];
+        qemuFirmwareTarget *t = fw->targets[i];
         g_autoptr(virJSONValue) target = virJSONValueNewObject();
         g_autoptr(virJSONValue) machines = NULL;
         size_t j;
@@ -824,8 +818,8 @@ qemuFirmwareTargetFormat(virJSONValuePtr doc,
 
 
 static int
-qemuFirmwareFeatureFormat(virJSONValuePtr doc,
-                          qemuFirmwarePtr fw)
+qemuFirmwareFeatureFormat(virJSONValue *doc,
+                          qemuFirmware *fw)
 {
     g_autoptr(virJSONValue) featuresJSON = NULL;
     size_t i;
@@ -848,7 +842,7 @@ qemuFirmwareFeatureFormat(virJSONValuePtr doc,
 
 
 char *
-qemuFirmwareFormat(qemuFirmwarePtr fw)
+qemuFirmwareFormat(qemuFirmware *fw)
 {
     g_autoptr(virJSONValue) doc = virJSONValueNewObject();
 
@@ -1061,8 +1055,8 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
 
 
 static int
-qemuFirmwareEnableFeatures(virQEMUDriverPtr driver,
-                           virDomainDefPtr def,
+qemuFirmwareEnableFeatures(virQEMUDriver *driver,
+                           virDomainDef *def,
                            const qemuFirmware *fw)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -1209,12 +1203,12 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
 
 static ssize_t
 qemuFirmwareFetchParsedConfigs(bool privileged,
-                               qemuFirmwarePtr **firmwaresRet,
+                               qemuFirmware ***firmwaresRet,
                                char ***pathsRet)
 {
     g_auto(GStrv) paths = NULL;
     size_t npaths;
-    qemuFirmwarePtr *firmwares = NULL;
+    qemuFirmware **firmwares = NULL;
     size_t i;
 
     if (qemuFirmwareFetchConfigs(&paths, privileged) < 0)
@@ -1225,7 +1219,7 @@ qemuFirmwareFetchParsedConfigs(bool privileged,
 
     npaths = g_strv_length(paths);
 
-    firmwares = g_new0(qemuFirmwarePtr, npaths);
+    firmwares = g_new0(qemuFirmware *, npaths);
 
     for (i = 0; i < npaths; i++) {
         if (!(firmwares[i] = qemuFirmwareParse(paths[i])))
@@ -1246,12 +1240,12 @@ qemuFirmwareFetchParsedConfigs(bool privileged,
 
 
 int
-qemuFirmwareFillDomain(virQEMUDriverPtr driver,
-                       virDomainDefPtr def,
+qemuFirmwareFillDomain(virQEMUDriver *driver,
+                       virDomainDef *def,
                        unsigned int flags)
 {
     g_auto(GStrv) paths = NULL;
-    qemuFirmwarePtr *firmwares = NULL;
+    qemuFirmware **firmwares = NULL;
     ssize_t nfirmwares = 0;
     const qemuFirmware *theone = NULL;
     bool needResult = true;
@@ -1362,10 +1356,10 @@ qemuFirmwareGetSupported(const char *machine,
                          bool privileged,
                          uint64_t *supported,
                          bool *secure,
-                         virFirmwarePtr **fws,
+                         virFirmware ***fws,
                          size_t *nfws)
 {
-    qemuFirmwarePtr *firmwares = NULL;
+    qemuFirmware **firmwares = NULL;
     ssize_t nfirmwares = 0;
     size_t i;
 
@@ -1382,7 +1376,7 @@ qemuFirmwareGetSupported(const char *machine,
         return -1;
 
     for (i = 0; i < nfirmwares; i++) {
-        qemuFirmwarePtr fw = firmwares[i];
+        qemuFirmware *fw = firmwares[i];
         const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
         const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
         const char *fwpath = NULL;

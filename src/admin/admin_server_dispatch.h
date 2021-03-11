@@ -29,9 +29,9 @@ extern virNetServerProgramProc adminProcs[];
 extern size_t adminNProcs;
 
 void remoteAdmClientFree(void *data);
-void *remoteAdmClientNew(virNetServerClientPtr client, void *opaque);
-void *remoteAdmClientNewPostExecRestart(virNetServerClientPtr client,
-                                        virJSONValuePtr object,
+void *remoteAdmClientNew(virNetServerClient *client, void *opaque);
+void *remoteAdmClientNewPostExecRestart(virNetServerClient *client,
+                                        virJSONValue *object,
                                         void *opaque);
-virJSONValuePtr remoteAdmClientPreExecRestart(virNetServerClientPtr client,
+virJSONValue *remoteAdmClientPreExecRestart(virNetServerClient *client,
                                               void *data);

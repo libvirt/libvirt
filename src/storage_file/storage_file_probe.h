@@ -34,7 +34,7 @@
 #define VIR_STORAGE_MAX_HEADER 0x8200
 
 int
-virStorageFileProbeGetMetadata(virStorageSourcePtr meta,
+virStorageFileProbeGetMetadata(virStorageSource *meta,
                                char *buf,
                                size_t len);
 

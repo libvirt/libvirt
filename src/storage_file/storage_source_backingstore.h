@@ -24,17 +24,17 @@
 #include "storage_source_conf.h"
 
 int
-virStorageSourceParseBackingURI(virStorageSourcePtr src,
+virStorageSourceParseBackingURI(virStorageSource *src,
                                 const char *uristr);
 
 int
 virStorageSourceParseRBDColonString(const char *rbdstr,
-                                    virStorageSourcePtr src);
+                                    virStorageSource *src);
 
 int
-virStorageSourceParseBackingColon(virStorageSourcePtr src,
+virStorageSourceParseBackingColon(virStorageSource *src,
                                   const char *path);
 
 int
-virStorageSourceParseBackingJSON(virStorageSourcePtr src,
+virStorageSourceParseBackingJSON(virStorageSource *src,
                                  const char *json);

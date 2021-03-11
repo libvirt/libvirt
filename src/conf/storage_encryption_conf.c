@@ -48,7 +48,7 @@ VIR_ENUM_IMPL(virStorageEncryptionFormat,
 );
 
 static void
-virStorageEncryptionInfoDefClear(virStorageEncryptionInfoDefPtr def)
+virStorageEncryptionInfoDefClear(virStorageEncryptionInfoDef *def)
 {
     VIR_FREE(def->cipher_name);
     VIR_FREE(def->cipher_mode);
@@ -59,7 +59,7 @@ virStorageEncryptionInfoDefClear(virStorageEncryptionInfoDefPtr def)
 
 
 static void
-virStorageEncryptionSecretFree(virStorageEncryptionSecretPtr secret)
+virStorageEncryptionSecretFree(virStorageEncryptionSecret *secret)
 {
     if (!secret)
         return;
@@ -68,7 +68,7 @@ virStorageEncryptionSecretFree(virStorageEncryptionSecretPtr secret)
 }
 
 void
-virStorageEncryptionFree(virStorageEncryptionPtr enc)
+virStorageEncryptionFree(virStorageEncryption *enc)
 {
     size_t i;
 
@@ -82,10 +82,10 @@ virStorageEncryptionFree(virStorageEncryptionPtr enc)
     g_free(enc);
 }
 
-static virStorageEncryptionSecretPtr
+static virStorageEncryptionSecret *
 virStorageEncryptionSecretCopy(const virStorageEncryptionSecret *src)
 {
-    virStorageEncryptionSecretPtr ret = g_new0(virStorageEncryptionSecret, 1);
+    virStorageEncryptionSecret *ret = g_new0(virStorageEncryptionSecret, 1);
 
     ret->type = src->type;
     virSecretLookupDefCopy(&ret->seclookupdef, &src->seclookupdef);
@@ -96,7 +96,7 @@ virStorageEncryptionSecretCopy(const virStorageEncryptionSecret *src)
 
 static int
 virStorageEncryptionInfoDefCopy(const virStorageEncryptionInfoDef *src,
-                                virStorageEncryptionInfoDefPtr dst)
+                                virStorageEncryptionInfoDef *dst)
 {
     dst->cipher_size = src->cipher_size;
     dst->cipher_name = g_strdup(src->cipher_name);
@@ -109,15 +109,15 @@ virStorageEncryptionInfoDefCopy(const virStorageEncryptionInfoDef *src,
 }
 
 
-virStorageEncryptionPtr
+virStorageEncryption *
 virStorageEncryptionCopy(const virStorageEncryption *src)
 {
-    virStorageEncryptionPtr ret;
+    virStorageEncryption *ret;
     size_t i;
 
     ret = g_new0(virStorageEncryption, 1);
 
-    ret->secrets = g_new0(virStorageEncryptionSecretPtr, src->nsecrets);
+    ret->secrets = g_new0(virStorageEncryptionSecret *, src->nsecrets);
     ret->nsecrets = src->nsecrets;
     ret->format = src->format;
 
@@ -136,12 +136,12 @@ virStorageEncryptionCopy(const virStorageEncryption *src)
     return NULL;
 }
 
-static virStorageEncryptionSecretPtr
+static virStorageEncryptionSecret *
 virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
                                 xmlNodePtr node)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    virStorageEncryptionSecretPtr ret;
+    virStorageEncryptionSecret *ret;
     g_autofree char *type_str = NULL;
 
     ret = g_new0(virStorageEncryptionSecret, 1);
@@ -174,7 +174,7 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
 
 static int
 virStorageEncryptionInfoParseCipher(xmlNodePtr info_node,
-                                    virStorageEncryptionInfoDefPtr info)
+                                    virStorageEncryptionInfoDef *info)
 {
     g_autofree char *size_str = NULL;
 
@@ -207,7 +207,7 @@ virStorageEncryptionInfoParseCipher(xmlNodePtr info_node,
 
 static int
 virStorageEncryptionInfoParseIvgen(xmlNodePtr info_node,
-                                   virStorageEncryptionInfoDefPtr info)
+                                   virStorageEncryptionInfoDef *info)
 {
     if (!(info->ivgen_name = virXMLPropString(info_node, "name"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -221,14 +221,14 @@ virStorageEncryptionInfoParseIvgen(xmlNodePtr info_node,
 }
 
 
-virStorageEncryptionPtr
+virStorageEncryption *
 virStorageEncryptionParseNode(xmlNodePtr node,
                               xmlXPathContextPtr ctxt)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr *nodes = NULL;
-    virStorageEncryptionPtr encdef = NULL;
-    virStorageEncryptionPtr ret = NULL;
+    virStorageEncryption *encdef = NULL;
+    virStorageEncryption *ret = NULL;
     g_autofree char *format_str = NULL;
     int n;
     size_t i;
@@ -255,7 +255,7 @@ virStorageEncryptionParseNode(xmlNodePtr node,
         goto cleanup;
 
     if (n > 0) {
-        encdef->secrets = g_new0(virStorageEncryptionSecretPtr, n);
+        encdef->secrets = g_new0(virStorageEncryptionSecret *, n);
         encdef->nsecrets = n;
 
         for (i = 0; i < n; i++) {
@@ -297,8 +297,8 @@ virStorageEncryptionParseNode(xmlNodePtr node,
 
 
 static int
-virStorageEncryptionSecretFormat(virBufferPtr buf,
-                                 virStorageEncryptionSecretPtr secret)
+virStorageEncryptionSecretFormat(virBuffer *buf,
+                                 virStorageEncryptionSecret *secret)
 {
     const char *type;
 
@@ -315,7 +315,7 @@ virStorageEncryptionSecretFormat(virBufferPtr buf,
 
 
 static void
-virStorageEncryptionInfoDefFormat(virBufferPtr buf,
+virStorageEncryptionInfoDefFormat(virBuffer *buf,
                                   const virStorageEncryptionInfoDef *enc)
 {
     virBufferEscapeString(buf, "<cipher name='%s'", enc->cipher_name);
@@ -336,8 +336,8 @@ virStorageEncryptionInfoDefFormat(virBufferPtr buf,
 
 
 int
-virStorageEncryptionFormat(virBufferPtr buf,
-                           virStorageEncryptionPtr enc)
+virStorageEncryptionFormat(virBuffer *buf,
+                           virStorageEncryption *enc)
 {
     const char *format;
     size_t i;

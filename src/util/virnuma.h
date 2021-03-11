@@ -29,10 +29,10 @@ char *virNumaGetAutoPlacementAdvice(unsigned short vcpus,
                                     unsigned long long balloon);
 
 int virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode,
-                             virBitmapPtr nodeset);
+                             virBitmap *nodeset);
 
-virBitmapPtr virNumaGetHostMemoryNodeset(void);
-bool virNumaNodesetIsAvailable(virBitmapPtr nodeset) G_GNUC_NO_INLINE;
+virBitmap *virNumaGetHostMemoryNodeset(void);
+bool virNumaNodesetIsAvailable(virBitmap *nodeset) G_GNUC_NO_INLINE;
 bool virNumaIsAvailable(void) G_GNUC_NO_INLINE;
 int virNumaGetMaxNode(void) G_GNUC_NO_INLINE;
 bool virNumaNodeIsAvailable(int node) G_GNUC_NO_INLINE;
@@ -45,9 +45,9 @@ int virNumaGetNodeMemory(int node,
 
 unsigned int virNumaGetMaxCPUs(void);
 
-int virNumaGetNodeCPUs(int node, virBitmapPtr *cpus) G_GNUC_NO_INLINE;
-int virNumaNodesetToCPUset(virBitmapPtr nodeset,
-                           virBitmapPtr *cpuset);
+int virNumaGetNodeCPUs(int node, virBitmap **cpus) G_GNUC_NO_INLINE;
+int virNumaNodesetToCPUset(virBitmap *nodeset,
+                           virBitmap **cpuset);
 
 int virNumaGetPageInfo(int node,
                        unsigned int page_size,

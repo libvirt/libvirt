@@ -39,7 +39,7 @@ VIR_ENUM_IMPL(virSecretUsage,
 );
 
 void
-virSecretLookupDefClear(virSecretLookupTypeDefPtr def)
+virSecretLookupDefClear(virSecretLookupTypeDef *def)
 {
     if (def->type == VIR_SECRET_LOOKUP_TYPE_USAGE)
         VIR_FREE(def->u.usage);
@@ -49,7 +49,7 @@ virSecretLookupDefClear(virSecretLookupTypeDefPtr def)
 
 
 void
-virSecretLookupDefCopy(virSecretLookupTypeDefPtr dst,
+virSecretLookupDefCopy(virSecretLookupTypeDef *dst,
                        const virSecretLookupTypeDef *src)
 {
     dst->type = src->type;
@@ -63,7 +63,7 @@ virSecretLookupDefCopy(virSecretLookupTypeDefPtr dst,
 
 int
 virSecretLookupParseSecret(xmlNodePtr secretnode,
-                           virSecretLookupTypeDefPtr def)
+                           virSecretLookupTypeDef *def)
 {
     g_autofree char *uuid = NULL;
     g_autofree char *usage = NULL;
@@ -98,9 +98,9 @@ virSecretLookupParseSecret(xmlNodePtr secretnode,
 
 
 void
-virSecretLookupFormatSecret(virBufferPtr buf,
+virSecretLookupFormatSecret(virBuffer *buf,
                             const char *secrettype,
-                            virSecretLookupTypeDefPtr def)
+                            virSecretLookupTypeDef *def)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
@@ -135,7 +135,7 @@ virSecretLookupFormatSecret(virBufferPtr buf,
  */
 int
 virSecretGetSecretString(virConnectPtr conn,
-                         virSecretLookupTypeDefPtr seclookupdef,
+                         virSecretLookupTypeDef *seclookupdef,
                          virSecretUsageType secretUsageType,
                          uint8_t **secret,
                          size_t *secret_size)

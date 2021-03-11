@@ -263,7 +263,7 @@ Implement common handling
 If the new API is applicable to more than one driver, it may make sense
 to provide some utility routines, or to factor some of the work into the
 dispatcher, to avoid reimplementing the same code in every driver. In
-the example code, this involved adding a member to the virDomainDefPtr
+the example code, this involved adding a member to the virDomainDef
 struct for mapping between the XML API addition and the in-memory
 representation of a domain, along with updating all clients to use the
 new member. Up to this point, there have been no changes to existing

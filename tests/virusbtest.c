@@ -45,7 +45,7 @@ struct findTestInfo {
     bool expectFailure;
 };
 
-static int testDeviceFileActor(virUSBDevicePtr dev,
+static int testDeviceFileActor(virUSBDevice *dev,
                                const char *path,
                                void *opaque G_GNUC_UNUSED)
 {
@@ -69,8 +69,8 @@ static int testDeviceFind(const void *opaque)
 {
     const struct findTestInfo *info = opaque;
     int ret = -1;
-    virUSBDevicePtr dev = NULL;
-    virUSBDeviceListPtr devs = NULL;
+    virUSBDevice *dev = NULL;
+    virUSBDeviceList *devs = NULL;
     int rv = 0;
     size_t i, ndevs = 0;
 
@@ -113,7 +113,7 @@ static int testDeviceFind(const void *opaque)
         ndevs = virUSBDeviceListCount(devs);
 
         for (i = 0; i < ndevs; i++) {
-            virUSBDevicePtr device = virUSBDeviceListGet(devs, i);
+            virUSBDevice *device = virUSBDeviceListGet(devs, i);
             if (virUSBDeviceFileIterate(device, testDeviceFileActor, NULL) < 0)
                 goto cleanup;
         }
@@ -147,9 +147,9 @@ testCheckNdevs(const char* occasion,
 static int
 testUSBList(const void *opaque G_GNUC_UNUSED)
 {
-    virUSBDeviceListPtr list = NULL;
-    virUSBDeviceListPtr devlist = NULL;
-    virUSBDevicePtr dev = NULL;
+    virUSBDeviceList *list = NULL;
+    virUSBDeviceList *devlist = NULL;
+    virUSBDevice *dev = NULL;
     int ret = -1;
     size_t i, ndevs;
 

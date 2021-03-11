@@ -12,8 +12,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-static virCapsPtr caps;
-static virDomainXMLOptionPtr xmlopt;
+static virCaps *caps;
+static virDomainXMLOption *xmlopt;
 
 struct testInfo {
     const char *name;
@@ -51,10 +51,10 @@ struct testCompareBackupXMLData {
 };
 
 
-static virDomainDiskDefPtr
+static virDomainDiskDef *
 testCompareBackupXMLGetFakeDomdisk(const char *dst)
 {
-    virDomainDiskDefPtr domdisk = NULL;
+    virDomainDiskDef *domdisk = NULL;
 
     if (!(domdisk = virDomainDiskDefNew(NULL)))
         abort();
@@ -104,7 +104,7 @@ testCompareBackupXML(const void *opaque)
         return -1;
 
     fakedef->ndisks = backup->ndisks + 1;
-    fakedef->disks = g_new0(virDomainDiskDefPtr, fakedef->ndisks);
+    fakedef->disks = g_new0(virDomainDiskDef *, fakedef->ndisks);
 
     for (i = 0; i < backup->ndisks; i++)
         fakedef->disks[i] = testCompareBackupXMLGetFakeDomdisk(backup->disks[i].name);

@@ -59,7 +59,7 @@ struct testQemuInfo {
     char *infile;
     char *outfile;
     char *errfile;
-    virQEMUCapsPtr qemuCaps;
+    virQEMUCaps *qemuCaps;
     const char *migrateFrom;
     int migrateFd;
     unsigned int flags;
@@ -69,30 +69,30 @@ struct testQemuInfo {
     GHashTable *qapiSchemaCache;
 };
 
-virCapsPtr testQemuCapsInit(void);
-virDomainXMLOptionPtr testQemuXMLConfInit(void);
+virCaps *testQemuCapsInit(void);
+virDomainXMLOption *testQemuXMLConfInit(void);
 
 
-virQEMUCapsPtr qemuTestParseCapabilitiesArch(virArch arch,
+virQEMUCaps *qemuTestParseCapabilitiesArch(virArch arch,
                                              const char *capsFile);
 
-extern virCPUDefPtr cpuDefault;
-extern virCPUDefPtr cpuHaswell;
-extern virCPUDefPtr cpuPower8;
-extern virCPUDefPtr cpuPower9;
+extern virCPUDef *cpuDefault;
+extern virCPUDef *cpuHaswell;
+extern virCPUDef *cpuPower8;
+extern virCPUDef *cpuPower9;
 
-void qemuTestSetHostArch(virQEMUDriverPtr driver,
+void qemuTestSetHostArch(virQEMUDriver *driver,
                          virArch arch);
-void qemuTestSetHostCPU(virQEMUDriverPtr driver,
+void qemuTestSetHostCPU(virQEMUDriver *driver,
                         virArch arch,
-                        virCPUDefPtr cpu);
+                        virCPUDef *cpu);
 
 int qemuTestDriverInit(virQEMUDriver *driver);
 void qemuTestDriverFree(virQEMUDriver *driver);
-int qemuTestCapsCacheInsert(virFileCachePtr cache,
-                            virQEMUCapsPtr caps);
+int qemuTestCapsCacheInsert(virFileCache *cache,
+                            virQEMUCaps *caps);
 
-int testQemuCapsSetGIC(virQEMUCapsPtr qemuCaps,
+int testQemuCapsSetGIC(virQEMUCaps *qemuCaps,
                        int gic);
 
 char *testQemuGetLatestCapsForArch(const char *arch,

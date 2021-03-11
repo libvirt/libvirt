@@ -35,5 +35,5 @@ extern virNetServerProgramProc qemuProcs[];
 extern size_t qemuNProcs;
 
 void remoteClientFree(void *data);
-void *remoteClientNew(virNetServerClientPtr client,
+void *remoteClientNew(virNetServerClient *client,
                       void *opaque);

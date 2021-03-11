@@ -35,13 +35,11 @@ VIR_LOG_INIT("cpu.cpu_ppc64");
 static const virArch archs[] = { VIR_ARCH_PPC64, VIR_ARCH_PPC64LE };
 
 typedef struct _ppc64_vendor virCPUppc64Vendor;
-typedef struct _ppc64_vendor *virCPUppc64VendorPtr;
 struct _ppc64_vendor {
     char *name;
 };
 
 typedef struct _ppc64_model virCPUppc64Model;
-typedef struct _ppc64_model *virCPUppc64ModelPtr;
 struct _ppc64_model {
     char *name;
     const virCPUppc64Vendor *vendor;
@@ -49,12 +47,11 @@ struct _ppc64_model {
 };
 
 typedef struct _ppc64_map virCPUppc64Map;
-typedef struct _ppc64_map *virCPUppc64MapPtr;
 struct _ppc64_map {
     size_t nvendors;
-    virCPUppc64VendorPtr *vendors;
+    struct _ppc64_vendor **vendors;
     size_t nmodels;
-    virCPUppc64ModelPtr *models;
+    struct _ppc64_model **models;
 };
 
 /* Convert a legacy CPU definition by transforming
@@ -64,7 +61,7 @@ struct _ppc64_map {
  *   POWER7+_v2.1 => POWER7
  *   POWER8_v1.0  => POWER8 */
 static int
-virCPUppc64ConvertLegacy(virCPUDefPtr cpu)
+virCPUppc64ConvertLegacy(virCPUDef *cpu)
 {
     if (cpu->model &&
         (STREQ(cpu->model, "POWER7_v2.1") ||
@@ -146,7 +143,7 @@ ppc64DataCopy(virCPUppc64Data *dst, const virCPUppc64Data *src)
 }
 
 static void
-ppc64VendorFree(virCPUppc64VendorPtr vendor)
+ppc64VendorFree(struct _ppc64_vendor *vendor)
 {
     if (!vendor)
         return;
@@ -156,7 +153,7 @@ ppc64VendorFree(virCPUppc64VendorPtr vendor)
 }
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUppc64Vendor, ppc64VendorFree);
 
-static virCPUppc64VendorPtr
+static struct _ppc64_vendor *
 ppc64VendorFind(const virCPUppc64Map *map,
                 const char *name)
 {
@@ -171,7 +168,7 @@ ppc64VendorFind(const virCPUppc64Map *map,
 }
 
 static void
-ppc64ModelFree(virCPUppc64ModelPtr model)
+ppc64ModelFree(struct _ppc64_model *model)
 {
     if (!model)
         return;
@@ -182,7 +179,7 @@ ppc64ModelFree(virCPUppc64ModelPtr model)
 }
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUppc64Model, ppc64ModelFree);
 
-static virCPUppc64ModelPtr
+static struct _ppc64_model *
 ppc64ModelCopy(const virCPUppc64Model *model)
 {
     g_autoptr(virCPUppc64Model) copy = NULL;
@@ -198,7 +195,7 @@ ppc64ModelCopy(const virCPUppc64Model *model)
     return g_steal_pointer(&copy);
 }
 
-static virCPUppc64ModelPtr
+static struct _ppc64_model *
 ppc64ModelFind(const virCPUppc64Map *map,
                const char *name)
 {
@@ -212,7 +209,7 @@ ppc64ModelFind(const virCPUppc64Map *map,
     return NULL;
 }
 
-static virCPUppc64ModelPtr
+static struct _ppc64_model *
 ppc64ModelFindPVR(const virCPUppc64Map *map,
                   uint32_t pvr)
 {
@@ -220,7 +217,7 @@ ppc64ModelFindPVR(const virCPUppc64Map *map,
     size_t j;
 
     for (i = 0; i < map->nmodels; i++) {
-        virCPUppc64ModelPtr model = map->models[i];
+        struct _ppc64_model *model = map->models[i];
         for (j = 0; j < model->data.len; j++) {
             if ((pvr & model->data.pvr[j].mask) == model->data.pvr[j].value)
                 return model;
@@ -230,11 +227,11 @@ ppc64ModelFindPVR(const virCPUppc64Map *map,
     return NULL;
 }
 
-static virCPUppc64ModelPtr
+static struct _ppc64_model *
 ppc64ModelFromCPU(const virCPUDef *cpu,
                   const virCPUppc64Map *map)
 {
-    virCPUppc64ModelPtr model;
+    struct _ppc64_model *model;
 
     if (!cpu->model) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -252,7 +249,7 @@ ppc64ModelFromCPU(const virCPUDef *cpu,
 }
 
 static void
-ppc64MapFree(virCPUppc64MapPtr map)
+ppc64MapFree(struct _ppc64_map *map)
 {
     size_t i;
 
@@ -276,7 +273,7 @@ ppc64VendorParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                  const char *name,
                  void *data)
 {
-    virCPUppc64MapPtr map = data;
+    struct _ppc64_map *map = data;
     g_autoptr(virCPUppc64Vendor) vendor = NULL;
 
     vendor = g_new0(virCPUppc64Vendor, 1);
@@ -300,7 +297,7 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
                 const char *name,
                 void *data)
 {
-    virCPUppc64MapPtr map = data;
+    struct _ppc64_map *map = data;
     g_autoptr(virCPUppc64Model) model = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *vendor = NULL;
@@ -371,7 +368,7 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
 }
 
 
-static virCPUppc64MapPtr
+static struct _ppc64_map *
 ppc64LoadMap(void)
 {
     g_autoptr(virCPUppc64Map) map = NULL;
@@ -384,7 +381,7 @@ ppc64LoadMap(void)
     return g_steal_pointer(&map);
 }
 
-static virCPUDataPtr
+static virCPUData *
 ppc64MakeCPUData(virArch arch,
                  virCPUppc64Data *data)
 {
@@ -400,9 +397,9 @@ ppc64MakeCPUData(virArch arch,
 }
 
 static virCPUCompareResult
-ppc64Compute(virCPUDefPtr host,
+ppc64Compute(virCPUDef *host,
              const virCPUDef *other,
-             virCPUDataPtr *guestData,
+             virCPUData **guestData,
              char **message)
 {
     g_autoptr(virCPUppc64Map) map = NULL;
@@ -519,8 +516,8 @@ ppc64Compute(virCPUDefPtr host,
 }
 
 static virCPUCompareResult
-virCPUppc64Compare(virCPUDefPtr host,
-                   virCPUDefPtr cpu,
+virCPUppc64Compare(virCPUDef *host,
+                   virCPUDef *cpu,
                    bool failIncompatible)
 {
     virCPUCompareResult ret;
@@ -552,9 +549,9 @@ virCPUppc64Compare(virCPUDefPtr host,
 }
 
 static int
-ppc64DriverDecode(virCPUDefPtr cpu,
+ppc64DriverDecode(virCPUDef *cpu,
                   const virCPUData *data,
-                  virDomainCapsCPUModelsPtr models)
+                  virDomainCapsCPUModels *models)
 {
     g_autoptr(virCPUppc64Map) map = NULL;
     const virCPUppc64Model *model;
@@ -584,7 +581,7 @@ ppc64DriverDecode(virCPUDefPtr cpu,
 }
 
 static void
-virCPUppc64DataFree(virCPUDataPtr data)
+virCPUppc64DataFree(virCPUData *data)
 {
     if (!data)
         return;
@@ -595,8 +592,8 @@ virCPUppc64DataFree(virCPUDataPtr data)
 
 
 static int
-virCPUppc64GetHost(virCPUDefPtr cpu,
-                   virDomainCapsCPUModelsPtr models)
+virCPUppc64GetHost(virCPUDef *cpu,
+                   virDomainCapsCPUModels *models)
 {
     g_autoptr(virCPUData) cpuData = NULL;
     virCPUppc64Data *data;
@@ -619,7 +616,7 @@ virCPUppc64GetHost(virCPUDefPtr cpu,
 
 
 static int
-virCPUppc64Update(virCPUDefPtr guest,
+virCPUppc64Update(virCPUDef *guest,
                   const virCPUDef *host G_GNUC_UNUSED,
                   bool relative G_GNUC_UNUSED)
 {
@@ -637,10 +634,10 @@ virCPUppc64Update(virCPUDefPtr guest,
     return 0;
 }
 
-static virCPUDefPtr
-virCPUppc64Baseline(virCPUDefPtr *cpus,
+static virCPUDef *
+virCPUppc64Baseline(virCPUDef **cpus,
                     unsigned int ncpus,
-                    virDomainCapsCPUModelsPtr models G_GNUC_UNUSED,
+                    virDomainCapsCPUModels *models G_GNUC_UNUSED,
                     const char **features G_GNUC_UNUSED,
                     bool migratable G_GNUC_UNUSED)
 {

@@ -57,8 +57,6 @@ typedef enum {
 } virLogDestination;
 
 typedef struct _virLogSource virLogSource;
-typedef virLogSource *virLogSourcePtr;
-
 struct _virLogSource {
     const char *name;
     unsigned int priority;
@@ -103,13 +101,10 @@ struct _virLogMetadata {
 };
 
 typedef struct _virLogMetadata virLogMetadata;
-typedef struct _virLogMetadata *virLogMetadataPtr;
 
 typedef struct _virLogOutput virLogOutput;
-typedef virLogOutput *virLogOutputPtr;
 
 typedef struct _virLogFilter virLogFilter;
-typedef virLogFilter *virLogFilterPtr;
 
 /**
  * virLogOutputFunc:
@@ -126,13 +121,13 @@ typedef virLogFilter *virLogFilterPtr;
  *
  * Callback function used to output messages
  */
-typedef void (*virLogOutputFunc) (virLogSourcePtr src,
+typedef void (*virLogOutputFunc) (virLogSource *src,
                                   virLogPriority priority,
                                   const char *filename,
                                   int linenr,
                                   const char *funcname,
                                   const char *timestamp,
-                                  virLogMetadataPtr metadata,
+                                  struct _virLogMetadata *metadata,
                                   const char *rawstr,
                                   const char *str,
                                   void *data);
@@ -152,10 +147,10 @@ char *virLogGetOutputs(void);
 virLogPriority virLogGetDefaultPriority(void);
 int virLogSetDefaultPriority(virLogPriority priority);
 void virLogSetFromEnv(void);
-void virLogOutputFree(virLogOutputPtr output);
-void virLogOutputListFree(virLogOutputPtr *list, int count);
-void virLogFilterFree(virLogFilterPtr filter);
-void virLogFilterListFree(virLogFilterPtr *list, int count);
+void virLogOutputFree(virLogOutput *output);
+void virLogOutputListFree(virLogOutput **list, int count);
+void virLogFilterFree(virLogFilter *filter);
+void virLogFilterListFree(virLogFilter **list, int count);
 int virLogSetOutputs(const char *outputs);
 int virLogSetFilters(const char *filters);
 char *virLogGetDefaultOutput(void);
@@ -170,31 +165,31 @@ void virLogUnlock(void);
 int virLogReset(void);
 int virLogParseDefaultPriority(const char *priority);
 int virLogPriorityFromSyslog(int priority);
-void virLogMessage(virLogSourcePtr source,
+void virLogMessage(virLogSource *source,
                    virLogPriority priority,
                    const char *filename,
                    int linenr,
                    const char *funcname,
-                   virLogMetadataPtr metadata,
+                   struct _virLogMetadata *metadata,
                    const char *fmt, ...) G_GNUC_PRINTF(7, 8);
 
 bool virLogProbablyLogMessage(const char *str);
-virLogOutputPtr virLogOutputNew(virLogOutputFunc f,
+virLogOutput *virLogOutputNew(virLogOutputFunc f,
                                 virLogCloseFunc c,
                                 void *data,
                                 virLogPriority priority,
                                 virLogDestination dest,
                                 const char *name) ATTRIBUTE_NONNULL(1);
-virLogFilterPtr virLogFilterNew(const char *match,
+virLogFilter *virLogFilterNew(const char *match,
                                 virLogPriority priority) ATTRIBUTE_NONNULL(1);
-int virLogFindOutput(virLogOutputPtr *outputs, size_t noutputs,
+int virLogFindOutput(virLogOutput **outputs, size_t noutputs,
                      virLogDestination dest, const void *opaque);
-int virLogDefineOutputs(virLogOutputPtr *outputs,
+int virLogDefineOutputs(virLogOutput **outputs,
                         size_t noutputs) ATTRIBUTE_NONNULL(1);
-int virLogDefineFilters(virLogFilterPtr *filters, size_t nfilters);
-virLogOutputPtr virLogParseOutput(const char *src) ATTRIBUTE_NONNULL(1);
-virLogFilterPtr virLogParseFilter(const char *src) ATTRIBUTE_NONNULL(1);
+int virLogDefineFilters(virLogFilter **filters, size_t nfilters);
+virLogOutput *virLogParseOutput(const char *src) ATTRIBUTE_NONNULL(1);
+virLogFilter *virLogParseFilter(const char *src) ATTRIBUTE_NONNULL(1);
 int virLogParseOutputs(const char *src,
-                       virLogOutputPtr **outputs) ATTRIBUTE_NONNULL(1);
+                       virLogOutput ***outputs) ATTRIBUTE_NONNULL(1);
 int virLogParseFilters(const char *src,
-                       virLogFilterPtr **filters) ATTRIBUTE_NONNULL(1);
+                       virLogFilter ***filters) ATTRIBUTE_NONNULL(1);

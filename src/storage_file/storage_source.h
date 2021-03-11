@@ -27,88 +27,88 @@
 # define DEV_BSIZE 512
 #endif
 
-virStorageSourcePtr
+virStorageSource *
 virStorageSourceGetMetadataFromFD(const char *path,
                                   int fd,
                                   int format);
 
-virStorageSourcePtr
+virStorageSource *
 virStorageSourceGetMetadataFromBuf(const char *path,
                                    char *buf,
                                    size_t len,
                                    int format)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-virStorageSourcePtr
-virStorageSourceChainLookup(virStorageSourcePtr chain,
-                            virStorageSourcePtr startFrom,
+virStorageSource *
+virStorageSourceChainLookup(virStorageSource *chain,
+                            virStorageSource *startFrom,
                             const char *name,
                             const char *diskTarget,
-                            virStorageSourcePtr *parent)
+                            virStorageSource **parent)
     ATTRIBUTE_NONNULL(1);
 
 int
-virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
+virStorageSourceUpdatePhysicalSize(virStorageSource *src,
                                    int fd,
                                    struct stat const *sb);
 
 int
-virStorageSourceUpdateBackingSizes(virStorageSourcePtr src,
+virStorageSourceUpdateBackingSizes(virStorageSource *src,
                                    int fd,
                                    struct stat const *sb);
 
 int
-virStorageSourceUpdateCapacity(virStorageSourcePtr src,
+virStorageSourceUpdateCapacity(virStorageSource *src,
                                char *buf,
                                ssize_t len);
 
 int
-virStorageSourceNewFromBacking(virStorageSourcePtr parent,
-                               virStorageSourcePtr *backing);
+virStorageSourceNewFromBacking(virStorageSource *parent,
+                               virStorageSource **backing);
 
 int
 virStorageSourceParseRBDColonString(const char *rbdstr,
-                                    virStorageSourcePtr src)
+                                    virStorageSource *src)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int
-virStorageSourceGetRelativeBackingPath(virStorageSourcePtr top,
-                                       virStorageSourcePtr base,
+virStorageSourceGetRelativeBackingPath(virStorageSource *top,
+                                       virStorageSource *base,
                                        char **relpath)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int
 virStorageSourceNewFromBackingAbsolute(const char *path,
-                                       virStorageSourcePtr *src);
+                                       virStorageSource **src);
 
 int
-virStorageSourceInit(virStorageSourcePtr src);
+virStorageSourceInit(virStorageSource *src);
 
 int
-virStorageSourceInitAs(virStorageSourcePtr src,
+virStorageSourceInitAs(virStorageSource *src,
                        uid_t uid, gid_t gid);
 
 void
-virStorageSourceDeinit(virStorageSourcePtr src);
+virStorageSourceDeinit(virStorageSource *src);
 
 int
-virStorageSourceCreate(virStorageSourcePtr src);
+virStorageSourceCreate(virStorageSource *src);
 
 int
-virStorageSourceUnlink(virStorageSourcePtr src);
+virStorageSourceUnlink(virStorageSource *src);
 
 int
-virStorageSourceStat(virStorageSourcePtr src,
+virStorageSourceStat(virStorageSource *src,
                      struct stat *st);
 
 ssize_t
-virStorageSourceRead(virStorageSourcePtr src,
+virStorageSourceRead(virStorageSource *src,
                      size_t offset,
                      size_t len,
                      char **buf);
 
 int
-virStorageSourceAccess(virStorageSourcePtr src,
+virStorageSourceAccess(virStorageSource *src,
                        int mode);
 
 int
@@ -129,18 +129,18 @@ int
 virStorageSourceSupportsBackingChainTraversal(const virStorageSource *src);
 
 int
-virStorageSourceGetMetadata(virStorageSourcePtr src,
+virStorageSourceGetMetadata(virStorageSource *src,
                             uid_t uid, gid_t gid,
                             size_t max_depth,
                             bool report_broken)
     ATTRIBUTE_NONNULL(1);
 
 int
-virStorageSourceFetchRelativeBackingPath(virStorageSourcePtr src,
+virStorageSourceFetchRelativeBackingPath(virStorageSource *src,
                                          char **relPath)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void
 virStorageSourceReportBrokenChain(int errcode,
-                                  virStorageSourcePtr src,
-                                  virStorageSourcePtr parent);
+                                  virStorageSource *src,
+                                  virStorageSource *parent);

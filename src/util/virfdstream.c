@@ -53,9 +53,8 @@ typedef enum {
 } virFDStreamMsgType;
 
 typedef struct _virFDStreamMsg virFDStreamMsg;
-typedef virFDStreamMsg *virFDStreamMsgPtr;
 struct _virFDStreamMsg {
-    virFDStreamMsgPtr next;
+    virFDStreamMsg *next;
 
     virFDStreamMsgType type;
 
@@ -74,7 +73,6 @@ struct _virFDStreamMsg {
 
 /* Tunnelled migration stream support */
 typedef struct virFDStreamData virFDStreamData;
-typedef virFDStreamData *virFDStreamDataPtr;
 struct virFDStreamData {
     virObjectLockable parent;
 
@@ -102,24 +100,24 @@ struct virFDStreamData {
     void *icbOpaque;
 
     /* Thread data */
-    virThreadPtr thread;
+    virThread *thread;
     virCond threadCond;
     virErrorPtr threadErr;
     bool threadQuit;
     bool threadAbort;
     bool threadDoRead;
-    virFDStreamMsgPtr msg;
+    virFDStreamMsg *msg;
 };
 
-static virClassPtr virFDStreamDataClass;
+static virClass *virFDStreamDataClass;
 static __thread bool virFDStreamDataDisposed;
 
-static void virFDStreamMsgQueueFree(virFDStreamMsgPtr *queue);
+static void virFDStreamMsgQueueFree(virFDStreamMsg **queue);
 
 static void
 virFDStreamDataDispose(void *obj)
 {
-    virFDStreamDataPtr fdst = obj;
+    virFDStreamData *fdst = obj;
 
     VIR_DEBUG("obj=%p", fdst);
     virFDStreamDataDisposed = true;
@@ -139,12 +137,12 @@ VIR_ONCE_GLOBAL_INIT(virFDStreamData);
 
 
 static int
-virFDStreamMsgQueuePush(virFDStreamDataPtr fdst,
-                        virFDStreamMsgPtr *msg,
+virFDStreamMsgQueuePush(virFDStreamData *fdst,
+                        virFDStreamMsg **msg,
                         int fd,
                         const char *fdname)
 {
-    virFDStreamMsgPtr *tmp = &fdst->msg;
+    virFDStreamMsg **tmp = &fdst->msg;
     char c = '1';
 
     while (*tmp)
@@ -164,12 +162,12 @@ virFDStreamMsgQueuePush(virFDStreamDataPtr fdst,
 }
 
 
-static virFDStreamMsgPtr
-virFDStreamMsgQueuePop(virFDStreamDataPtr fdst,
+static virFDStreamMsg *
+virFDStreamMsgQueuePop(virFDStreamData *fdst,
                        int fd,
                        const char *fdname)
 {
-    virFDStreamMsgPtr tmp = fdst->msg;
+    virFDStreamMsg *tmp = fdst->msg;
     char c;
 
     if (tmp) {
@@ -190,7 +188,7 @@ virFDStreamMsgQueuePop(virFDStreamDataPtr fdst,
 
 
 static void
-virFDStreamMsgFree(virFDStreamMsgPtr msg)
+virFDStreamMsgFree(virFDStreamMsg *msg)
 {
     if (!msg)
         return;
@@ -211,12 +209,12 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virFDStreamMsg, virFDStreamMsgFree);
 
 
 static void
-virFDStreamMsgQueueFree(virFDStreamMsgPtr *queue)
+virFDStreamMsgQueueFree(virFDStreamMsg **queue)
 {
-    virFDStreamMsgPtr tmp = *queue;
+    virFDStreamMsg *tmp = *queue;
 
     while (tmp) {
-        virFDStreamMsgPtr next = tmp->next;
+        virFDStreamMsg *next = tmp->next;
         virFDStreamMsgFree(tmp);
         tmp = next;
     }
@@ -227,7 +225,7 @@ virFDStreamMsgQueueFree(virFDStreamMsgPtr *queue)
 
 static int virFDStreamRemoveCallback(virStreamPtr stream)
 {
-    virFDStreamDataPtr fdst = stream->privateData;
+    virFDStreamData *fdst = stream->privateData;
     int ret = -1;
 
     if (!fdst) {
@@ -264,7 +262,7 @@ static int virFDStreamRemoveCallback(virStreamPtr stream)
 
 static int virFDStreamUpdateCallback(virStreamPtr stream, int events)
 {
-    virFDStreamDataPtr fdst = stream->privateData;
+    virFDStreamData *fdst = stream->privateData;
     int ret = -1;
 
     if (!fdst) {
@@ -296,7 +294,7 @@ static void virFDStreamEvent(int watch G_GNUC_UNUSED,
                              void *opaque)
 {
     virStreamPtr stream = opaque;
-    virFDStreamDataPtr fdst = stream->privateData;
+    virFDStreamData *fdst = stream->privateData;
     virStreamEventCallback cb;
     void *cbopaque;
     virFreeCallback ff;
@@ -348,7 +346,7 @@ virFDStreamAddCallback(virStreamPtr st,
                        void *opaque,
                        virFreeCallback ff)
 {
-    virFDStreamDataPtr fdst = st->privateData;
+    virFDStreamData *fdst = st->privateData;
     int ret = -1;
 
     if (!fdst) {
@@ -391,7 +389,6 @@ virFDStreamAddCallback(virStreamPtr st,
 
 
 typedef struct _virFDStreamThreadData virFDStreamThreadData;
-typedef virFDStreamThreadData *virFDStreamThreadDataPtr;
 struct _virFDStreamThreadData {
     virStreamPtr st;
     size_t length;
@@ -406,7 +403,7 @@ struct _virFDStreamThreadData {
 
 
 static void
-virFDStreamThreadDataFree(virFDStreamThreadDataPtr data)
+virFDStreamThreadDataFree(virFDStreamThreadData *data)
 {
     if (!data)
         return;
@@ -419,7 +416,7 @@ virFDStreamThreadDataFree(virFDStreamThreadDataPtr data)
 
 
 static ssize_t
-virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
+virFDStreamThreadDoRead(virFDStreamData *fdst,
                         bool sparse,
                         bool isBlock,
                         const int fdin,
@@ -509,7 +506,7 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
 
 
 static ssize_t
-virFDStreamThreadDoWrite(virFDStreamDataPtr fdst,
+virFDStreamThreadDoWrite(virFDStreamData *fdst,
                          bool sparse,
                          bool isBlock,
                          const int fdin,
@@ -518,7 +515,7 @@ virFDStreamThreadDoWrite(virFDStreamDataPtr fdst,
                          const char *fdoutname)
 {
     ssize_t got = 0;
-    virFDStreamMsgPtr msg = fdst->msg;
+    virFDStreamMsg *msg = fdst->msg;
     bool pop = false;
 
     switch (msg->type) {
@@ -606,7 +603,7 @@ virFDStreamThreadDoWrite(virFDStreamDataPtr fdst,
 static void
 virFDStreamThread(void *opaque)
 {
-    virFDStreamThreadDataPtr data = opaque;
+    virFDStreamThreadData *data = opaque;
     virStreamPtr st = data->st;
     size_t length = data->length;
     bool sparse = data->sparse;
@@ -615,7 +612,7 @@ virFDStreamThread(void *opaque)
     char *fdinname = data->fdinname;
     VIR_AUTOCLOSE fdout = data->fdout;
     char *fdoutname = data->fdoutname;
-    virFDStreamDataPtr fdst = st->privateData;
+    virFDStreamData *fdst = st->privateData;
     bool doRead = fdst->threadDoRead;
     size_t buflen = 256 * 1024;
     size_t total = 0;
@@ -683,7 +680,7 @@ virFDStreamThread(void *opaque)
 
 
 static int
-virFDStreamJoinWorker(virFDStreamDataPtr fdst,
+virFDStreamJoinWorker(virFDStreamData *fdst,
                       bool streamAbort)
 {
     int ret = -1;
@@ -715,7 +712,7 @@ virFDStreamJoinWorker(virFDStreamDataPtr fdst,
 static int
 virFDStreamCloseInt(virStreamPtr st, bool streamAbort)
 {
-    virFDStreamDataPtr fdst;
+    virFDStreamData *fdst;
     virStreamEventCallback cb;
     void *opaque;
     int ret;
@@ -797,7 +794,7 @@ virFDStreamAbort(virStreamPtr st)
 
 static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
 {
-    virFDStreamDataPtr fdst = st->privateData;
+    virFDStreamData *fdst = st->privateData;
     g_autoptr(virFDStreamMsg) msg = NULL;
     int ret = -1;
 
@@ -880,7 +877,7 @@ static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
 
 static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
 {
-    virFDStreamDataPtr fdst = st->privateData;
+    virFDStreamData *fdst = st->privateData;
     int ret = -1;
 
     if (nbytes > INT_MAX) {
@@ -908,7 +905,7 @@ static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
     }
 
     if (fdst->thread) {
-        virFDStreamMsgPtr msg = NULL;
+        virFDStreamMsg *msg = NULL;
 
         while (!(msg = fdst->msg)) {
             if (fdst->threadQuit || fdst->threadErr) {
@@ -994,7 +991,7 @@ virFDStreamSendHole(virStreamPtr st,
                     long long length,
                     unsigned int flags)
 {
-    virFDStreamDataPtr fdst = st->privateData;
+    virFDStreamData *fdst = st->privateData;
     g_autoptr(virFDStreamMsg) msg = NULL;
     off_t off;
     int ret = -1;
@@ -1071,13 +1068,13 @@ virFDStreamInData(virStreamPtr st,
                   int *inData,
                   long long *length)
 {
-    virFDStreamDataPtr fdst = st->privateData;
+    virFDStreamData *fdst = st->privateData;
     int ret = -1;
 
     virObjectLock(fdst);
 
     if (fdst->thread) {
-        virFDStreamMsgPtr msg;
+        virFDStreamMsg *msg;
 
         if (fdst->threadErr)
             goto cleanup;
@@ -1126,10 +1123,10 @@ static virStreamDriver virFDStreamDrv = {
 
 static int virFDStreamOpenInternal(virStreamPtr st,
                                    int fd,
-                                   virFDStreamThreadDataPtr threadData,
+                                   virFDStreamThreadData *threadData,
                                    unsigned long long length)
 {
-    virFDStreamDataPtr fdst;
+    virFDStreamData *fdst;
 
     VIR_DEBUG("st=%p fd=%d threadData=%p length=%llu",
               st, fd, threadData, length);
@@ -1256,7 +1253,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
     int pipefds[2] = { -1, -1 };
     int tmpfd = -1;
     struct stat sb;
-    virFDStreamThreadDataPtr threadData = NULL;
+    virFDStreamThreadData *threadData = NULL;
 
     VIR_DEBUG("st=%p path=%s oflags=0x%x offset=%llu length=%llu mode=0%o",
               st, path, oflags, offset, length, mode);
@@ -1384,7 +1381,7 @@ int virFDStreamOpenPTY(virStreamPtr st,
                        unsigned long long length,
                        int oflags)
 {
-    virFDStreamDataPtr fdst = NULL;
+    virFDStreamData *fdst = NULL;
     struct termios rawattr;
 
     if (virFDStreamOpenFileInternal(st, path,
@@ -1435,7 +1432,7 @@ int virFDStreamSetInternalCloseCb(virStreamPtr st,
                                   void *opaque,
                                   virFDStreamInternalCloseCbFreeOpaque fcb)
 {
-    virFDStreamDataPtr fdst = st->privateData;
+    virFDStreamData *fdst = st->privateData;
 
     virObjectLock(fdst);
 

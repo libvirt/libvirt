@@ -61,13 +61,13 @@ parse_rtattr(struct rtattr *tb[], int max, struct rtattr *rta, int len)
 }
 
 
-virArpTablePtr
+virArpTable *
 virArpTableGet(void)
 {
     int num = 0;
     int msglen;
     g_autofree void *nlData = NULL;
-    virArpTablePtr table = NULL;
+    virArpTable *table = NULL;
     struct nlmsghdr* nh;
     struct rtattr * tb[NDA_MAX+1];
 
@@ -152,7 +152,7 @@ virArpTableGet(void)
 
 #else
 
-virArpTablePtr
+virArpTable *
 virArpTableGet(void)
 {
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
@@ -163,7 +163,7 @@ virArpTableGet(void)
 #endif /* __linux__ */
 
 void
-virArpTableFree(virArpTablePtr table)
+virArpTableFree(virArpTable *table)
 {
     size_t i;
 

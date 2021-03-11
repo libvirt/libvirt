@@ -24,41 +24,39 @@
 #include "virobject.h"
 
 typedef struct _virSCSIVHostDevice virSCSIVHostDevice;
-typedef virSCSIVHostDevice *virSCSIVHostDevicePtr;
 typedef struct _virSCSIVHostDeviceList virSCSIVHostDeviceList;
-typedef virSCSIVHostDeviceList *virSCSIVHostDeviceListPtr;
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSCSIVHostDeviceList, virObjectUnref);
 
 
-typedef int (*virSCSIVHostDeviceFileActor)(virSCSIVHostDevicePtr dev,
+typedef int (*virSCSIVHostDeviceFileActor)(virSCSIVHostDevice *dev,
                                            const char *name, void *opaque);
 
-int virSCSIVHostDeviceFileIterate(virSCSIVHostDevicePtr dev,
+int virSCSIVHostDeviceFileIterate(virSCSIVHostDevice *dev,
                                   virSCSIVHostDeviceFileActor actor,
                                   void *opaque);
-const char *virSCSIVHostDeviceGetName(virSCSIVHostDevicePtr dev);
-const char *virSCSIVHostDeviceGetPath(virSCSIVHostDevicePtr dev);
-virSCSIVHostDevicePtr virSCSIVHostDeviceListGet(virSCSIVHostDeviceListPtr list,
+const char *virSCSIVHostDeviceGetName(virSCSIVHostDevice *dev);
+const char *virSCSIVHostDeviceGetPath(virSCSIVHostDevice *dev);
+virSCSIVHostDevice *virSCSIVHostDeviceListGet(virSCSIVHostDeviceList *list,
                                                 int idx);
-size_t virSCSIVHostDeviceListCount(virSCSIVHostDeviceListPtr list);
-virSCSIVHostDevicePtr virSCSIVHostDeviceListSteal(virSCSIVHostDeviceListPtr list,
-                                                  virSCSIVHostDevicePtr dev);
-virSCSIVHostDevicePtr virSCSIVHostDeviceListFind(virSCSIVHostDeviceListPtr list,
-                                                 virSCSIVHostDevicePtr dev);
-int  virSCSIVHostDeviceListAdd(virSCSIVHostDeviceListPtr list,
-                               virSCSIVHostDevicePtr dev);
-void virSCSIVHostDeviceListDel(virSCSIVHostDeviceListPtr list,
-                               virSCSIVHostDevicePtr dev);
-virSCSIVHostDeviceListPtr virSCSIVHostDeviceListNew(void);
-virSCSIVHostDevicePtr virSCSIVHostDeviceNew(const char *name);
-int virSCSIVHostDeviceSetUsedBy(virSCSIVHostDevicePtr dev,
+size_t virSCSIVHostDeviceListCount(virSCSIVHostDeviceList *list);
+virSCSIVHostDevice *virSCSIVHostDeviceListSteal(virSCSIVHostDeviceList *list,
+                                                  virSCSIVHostDevice *dev);
+virSCSIVHostDevice *virSCSIVHostDeviceListFind(virSCSIVHostDeviceList *list,
+                                                 virSCSIVHostDevice *dev);
+int  virSCSIVHostDeviceListAdd(virSCSIVHostDeviceList *list,
+                               virSCSIVHostDevice *dev);
+void virSCSIVHostDeviceListDel(virSCSIVHostDeviceList *list,
+                               virSCSIVHostDevice *dev);
+virSCSIVHostDeviceList *virSCSIVHostDeviceListNew(void);
+virSCSIVHostDevice *virSCSIVHostDeviceNew(const char *name);
+int virSCSIVHostDeviceSetUsedBy(virSCSIVHostDevice *dev,
                                 const char *drvname,
                                 const char *domname);
-void virSCSIVHostDeviceGetUsedBy(virSCSIVHostDevicePtr dev,
+void virSCSIVHostDeviceGetUsedBy(virSCSIVHostDevice *dev,
                                  const char **drv_name,
                                  const char **dom_name);
-void virSCSIVHostDeviceFree(virSCSIVHostDevicePtr dev);
+void virSCSIVHostDeviceFree(virSCSIVHostDevice *dev);
 int virSCSIVHostOpenVhostSCSI(int *vhostfd) G_GNUC_NO_INLINE;
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSCSIVHostDevice, virSCSIVHostDeviceFree);

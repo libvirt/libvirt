@@ -52,7 +52,6 @@ VIR_ENUM_DECL(virNetDevVPortProfileOp);
 
 /* profile data for macvtap (VEPA) and openvswitch */
 typedef struct _virNetDevVPortProfile virNetDevVPortProfile;
-typedef virNetDevVPortProfile *virNetDevVPortProfilePtr;
 struct _virNetDevVPortProfile {
     int           virtPortType; /* enum virNetDevVPortProfile */
     /* these members are used when virtPortType == 802.1Qbg */
@@ -78,14 +77,14 @@ struct _virNetDevVPortProfile {
 
 bool virNetDevVPortProfileEqual(const virNetDevVPortProfile *a,
                                 const virNetDevVPortProfile *b);
-int virNetDevVPortProfileCopy(virNetDevVPortProfilePtr *dst,
+int virNetDevVPortProfileCopy(virNetDevVPortProfile **dst,
                               const virNetDevVPortProfile *src);
 
-int virNetDevVPortProfileCheckComplete(virNetDevVPortProfilePtr virtport,
+int virNetDevVPortProfileCheckComplete(virNetDevVPortProfile *virtport,
                                        bool generateMissing);
 int virNetDevVPortProfileCheckNoExtras(const virNetDevVPortProfile *virtport);
 
-int virNetDevVPortProfileMerge3(virNetDevVPortProfilePtr *result,
+int virNetDevVPortProfileMerge3(virNetDevVPortProfile **result,
                                 const virNetDevVPortProfile *fromInterface,
                                 const virNetDevVPortProfile *fromNetwork,
                                 const virNetDevVPortProfile *fromPortgroup);

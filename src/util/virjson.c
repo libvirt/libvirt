@@ -45,28 +45,25 @@
 VIR_LOG_INIT("util.json");
 
 typedef struct _virJSONObject virJSONObject;
-typedef virJSONObject *virJSONObjectPtr;
 
 typedef struct _virJSONObjectPair virJSONObjectPair;
-typedef virJSONObjectPair *virJSONObjectPairPtr;
 
 typedef struct _virJSONArray virJSONArray;
-typedef virJSONArray *virJSONArrayPtr;
 
 
 struct _virJSONObjectPair {
     char *key;
-    virJSONValuePtr value;
+    virJSONValue *value;
 };
 
 struct _virJSONObject {
     size_t npairs;
-    virJSONObjectPairPtr pairs;
+    virJSONObjectPair *pairs;
 };
 
 struct _virJSONArray {
     size_t nvalues;
-    virJSONValuePtr *values;
+    virJSONValue **values;
 };
 
 struct _virJSONValue {
@@ -83,17 +80,15 @@ struct _virJSONValue {
 
 
 typedef struct _virJSONParserState virJSONParserState;
-typedef virJSONParserState *virJSONParserStatePtr;
 struct _virJSONParserState {
-    virJSONValuePtr value;
+    virJSONValue *value;
     char *key;
 };
 
 typedef struct _virJSONParser virJSONParser;
-typedef virJSONParser *virJSONParserPtr;
 struct _virJSONParser {
-    virJSONValuePtr head;
-    virJSONParserStatePtr state;
+    virJSONValue *head;
+    virJSONParserState *state;
     size_t nstate;
     int wrap;
 };
@@ -142,8 +137,8 @@ virJSONValueGetType(const virJSONValue *value)
  * d: double precision floating point number
  * n: json null value
  *
- * The following two cases take a pointer to a pointer to a virJSONValuePtr. The
- * pointer is cleared when the virJSONValuePtr is stolen into the object.
+ * The following two cases take a pointer to a pointer to a virJSONValue *. The
+ * pointer is cleared when the virJSONValue *is stolen into the object.
  * a: json object, must be non-NULL
  * A: json object, omitted if NULL
  *
@@ -156,7 +151,7 @@ virJSONValueGetType(const virJSONValue *value)
  * in case of no error but nothing was filled.
  */
 int
-virJSONValueObjectAddVArgs(virJSONValuePtr obj,
+virJSONValueObjectAddVArgs(virJSONValue *obj,
                            va_list args)
 {
     char type;
@@ -287,7 +282,7 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
 
         case 'A':
         case 'a': {
-            virJSONValuePtr *val = va_arg(args, virJSONValuePtr *);
+            virJSONValue **val = va_arg(args, virJSONValue **);
 
             if (!(*val)) {
                 if (type == 'A')
@@ -304,7 +299,7 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
 
         case 'M':
         case 'm': {
-            virBitmapPtr map = va_arg(args, virBitmapPtr);
+            virBitmap *map = va_arg(args, virBitmap *);
             g_autoptr(virJSONValue) jsonMap = virJSONValueNewArray();
             ssize_t pos = -1;
 
@@ -348,7 +343,7 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
 
 
 int
-virJSONValueObjectAdd(virJSONValuePtr obj, ...)
+virJSONValueObjectAdd(virJSONValue *obj, ...)
 {
     va_list args;
     int ret;
@@ -362,7 +357,7 @@ virJSONValueObjectAdd(virJSONValuePtr obj, ...)
 
 
 int
-virJSONValueObjectCreateVArgs(virJSONValuePtr *obj,
+virJSONValueObjectCreateVArgs(virJSONValue **obj,
                               va_list args)
 {
     int ret;
@@ -380,7 +375,7 @@ virJSONValueObjectCreateVArgs(virJSONValuePtr *obj,
 
 
 int
-virJSONValueObjectCreate(virJSONValuePtr *obj, ...)
+virJSONValueObjectCreate(virJSONValue **obj, ...)
 {
     va_list args;
     int ret;
@@ -394,7 +389,7 @@ virJSONValueObjectCreate(virJSONValuePtr *obj, ...)
 
 
 void
-virJSONValueFree(virJSONValuePtr value)
+virJSONValueFree(virJSONValue *value)
 {
     size_t i;
     if (!value)
@@ -435,10 +430,10 @@ virJSONValueHashFree(void *opaque)
 }
 
 
-virJSONValuePtr
+virJSONValue *
 virJSONValueNewString(const char *data)
 {
-    virJSONValuePtr val;
+    virJSONValue *val;
 
     if (!data)
         return virJSONValueNewNull();
@@ -452,11 +447,11 @@ virJSONValueNewString(const char *data)
 }
 
 
-virJSONValuePtr
+virJSONValue *
 virJSONValueNewStringLen(const char *data,
                          size_t length)
 {
-    virJSONValuePtr val;
+    virJSONValue *val;
 
     if (!data)
         return virJSONValueNewNull();
@@ -477,10 +472,10 @@ virJSONValueNewStringLen(const char *data,
  * Creates a new virJSONValue of VIR_JSON_TYPE_NUMBER type. Note that this
  * function takes ownership of @data.
  */
-static virJSONValuePtr
+static virJSONValue *
 virJSONValueNewNumber(char *data)
 {
-    virJSONValuePtr val;
+    virJSONValue *val;
 
     val = g_new0(virJSONValue, 1);
 
@@ -491,35 +486,35 @@ virJSONValueNewNumber(char *data)
 }
 
 
-virJSONValuePtr
+virJSONValue *
 virJSONValueNewNumberInt(int data)
 {
     return virJSONValueNewNumber(g_strdup_printf("%i", data));
 }
 
 
-virJSONValuePtr
+virJSONValue *
 virJSONValueNewNumberUint(unsigned int data)
 {
     return virJSONValueNewNumber(g_strdup_printf("%u", data));
 }
 
 
-virJSONValuePtr
+virJSONValue *
 virJSONValueNewNumberLong(long long data)
 {
     return virJSONValueNewNumber(g_strdup_printf("%lld", data));
 }
 
 
-virJSONValuePtr
+virJSONValue *
 virJSONValueNewNumberUlong(unsigned long long data)
 {
     return virJSONValueNewNumber(g_strdup_printf("%llu", data));
 }
 
 
-virJSONValuePtr
+virJSONValue *
 virJSONValueNewNumberDouble(double data)
 {
     char *str = NULL;
@@ -529,10 +524,10 @@ virJSONValueNewNumberDouble(double data)
 }
 
 
-virJSONValuePtr
+virJSONValue *
 virJSONValueNewBoolean(int boolean_)
 {
-    virJSONValuePtr val;
+    virJSONValue *val;
 
     val = g_new0(virJSONValue, 1);
 
@@ -543,10 +538,10 @@ virJSONValueNewBoolean(int boolean_)
 }
 
 
-virJSONValuePtr
+virJSONValue *
 virJSONValueNewNull(void)
 {
-    virJSONValuePtr val;
+    virJSONValue *val;
 
     val = g_new0(virJSONValue, 1);
 
@@ -556,10 +551,10 @@ virJSONValueNewNull(void)
 }
 
 
-virJSONValuePtr
+virJSONValue *
 virJSONValueNewArray(void)
 {
-    virJSONValuePtr val = g_new0(virJSONValue, 1);
+    virJSONValue *val = g_new0(virJSONValue, 1);
 
     val->type = VIR_JSON_TYPE_ARRAY;
 
@@ -567,10 +562,10 @@ virJSONValueNewArray(void)
 }
 
 
-virJSONValuePtr
+virJSONValue *
 virJSONValueNewObject(void)
 {
-    virJSONValuePtr val = g_new0(virJSONValue, 1);
+    virJSONValue *val = g_new0(virJSONValue, 1);
 
     val->type = VIR_JSON_TYPE_OBJECT;
 
@@ -579,9 +574,9 @@ virJSONValueNewObject(void)
 
 
 static int
-virJSONValueObjectInsert(virJSONValuePtr object,
+virJSONValueObjectInsert(virJSONValue *object,
                          const char *key,
-                         virJSONValuePtr *value,
+                         virJSONValue **value,
                          bool prepend)
 {
     virJSONObjectPair pair = { NULL, *value };
@@ -617,21 +612,21 @@ virJSONValueObjectInsert(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectAppend(virJSONValuePtr object,
+virJSONValueObjectAppend(virJSONValue *object,
                          const char *key,
-                         virJSONValuePtr *value)
+                         virJSONValue **value)
 {
     return virJSONValueObjectInsert(object, key, value, false);
 }
 
 
 static int
-virJSONValueObjectInsertString(virJSONValuePtr object,
+virJSONValueObjectInsertString(virJSONValue *object,
                                const char *key,
                                const char *value,
                                bool prepend)
 {
-    virJSONValuePtr jvalue = virJSONValueNewString(value);
+    virJSONValue *jvalue = virJSONValueNewString(value);
     if (!jvalue)
         return -1;
     if (virJSONValueObjectInsert(object, key, &jvalue, prepend) < 0)
@@ -641,7 +636,7 @@ virJSONValueObjectInsertString(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectAppendString(virJSONValuePtr object,
+virJSONValueObjectAppendString(virJSONValue *object,
                                const char *key,
                                const char *value)
 {
@@ -650,7 +645,7 @@ virJSONValueObjectAppendString(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectAppendStringPrintf(virJSONValuePtr object,
+virJSONValueObjectAppendStringPrintf(virJSONValue *object,
                                      const char *key,
                                      const char *fmt,
                                      ...)
@@ -667,7 +662,7 @@ virJSONValueObjectAppendStringPrintf(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectPrependString(virJSONValuePtr object,
+virJSONValueObjectPrependString(virJSONValue *object,
                                 const char *key,
                                 const char *value)
 {
@@ -676,7 +671,7 @@ virJSONValueObjectPrependString(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectAppendNumberInt(virJSONValuePtr object,
+virJSONValueObjectAppendNumberInt(virJSONValue *object,
                                   const char *key,
                                   int number)
 {
@@ -690,7 +685,7 @@ virJSONValueObjectAppendNumberInt(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectAppendNumberUint(virJSONValuePtr object,
+virJSONValueObjectAppendNumberUint(virJSONValue *object,
                                    const char *key,
                                    unsigned int number)
 {
@@ -704,7 +699,7 @@ virJSONValueObjectAppendNumberUint(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectAppendNumberLong(virJSONValuePtr object,
+virJSONValueObjectAppendNumberLong(virJSONValue *object,
                                    const char *key,
                                    long long number)
 {
@@ -718,7 +713,7 @@ virJSONValueObjectAppendNumberLong(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectAppendNumberUlong(virJSONValuePtr object,
+virJSONValueObjectAppendNumberUlong(virJSONValue *object,
                                     const char *key,
                                     unsigned long long number)
 {
@@ -732,7 +727,7 @@ virJSONValueObjectAppendNumberUlong(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectAppendNumberDouble(virJSONValuePtr object,
+virJSONValueObjectAppendNumberDouble(virJSONValue *object,
                                      const char *key,
                                      double number)
 {
@@ -750,7 +745,7 @@ virJSONValueObjectAppendNumberDouble(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectAppendBoolean(virJSONValuePtr object,
+virJSONValueObjectAppendBoolean(virJSONValue *object,
                                 const char *key,
                                 int boolean_)
 {
@@ -764,7 +759,7 @@ virJSONValueObjectAppendBoolean(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectAppendNull(virJSONValuePtr object,
+virJSONValueObjectAppendNull(virJSONValue *object,
                              const char *key)
 {
     g_autoptr(virJSONValue) jvalue = virJSONValueNewNull();
@@ -777,8 +772,8 @@ virJSONValueObjectAppendNull(virJSONValuePtr object,
 
 
 int
-virJSONValueArrayAppend(virJSONValuePtr array,
-                        virJSONValuePtr *value)
+virJSONValueArrayAppend(virJSONValue *array,
+                        virJSONValue **value)
 {
     if (array->type != VIR_JSON_TYPE_ARRAY) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("expecting JSON array"));
@@ -795,7 +790,7 @@ virJSONValueArrayAppend(virJSONValuePtr array,
 
 
 int
-virJSONValueArrayAppendString(virJSONValuePtr object,
+virJSONValueArrayAppendString(virJSONValue *object,
                               const char *value)
 {
     g_autoptr(virJSONValue) jvalue = virJSONValueNewString(value);
@@ -815,8 +810,8 @@ virJSONValueArrayAppendString(virJSONValuePtr object,
  * Merges the members of @c array into @a. The values are stolen from @c.
  */
 int
-virJSONValueArrayConcat(virJSONValuePtr a,
-                        virJSONValuePtr c)
+virJSONValueArrayConcat(virJSONValue *a,
+                        virJSONValue *c)
 {
     size_t i;
 
@@ -826,7 +821,7 @@ virJSONValueArrayConcat(virJSONValuePtr a,
         return -1;
     }
 
-    a->data.array.values = g_renew(virJSONValuePtr, a->data.array.values,
+    a->data.array.values = g_renew(virJSONValue *, a->data.array.values,
                                    a->data.array.nvalues + c->data.array.nvalues);
 
     for (i = 0; i < c->data.array.nvalues; i++)
@@ -839,7 +834,7 @@ virJSONValueArrayConcat(virJSONValuePtr a,
 
 
 int
-virJSONValueObjectHasKey(virJSONValuePtr object,
+virJSONValueObjectHasKey(virJSONValue *object,
                          const char *key)
 {
     size_t i;
@@ -856,8 +851,8 @@ virJSONValueObjectHasKey(virJSONValuePtr object,
 }
 
 
-virJSONValuePtr
-virJSONValueObjectGet(virJSONValuePtr object,
+virJSONValue *
+virJSONValueObjectGet(virJSONValue *object,
                       const char *key)
 {
     size_t i;
@@ -876,12 +871,12 @@ virJSONValueObjectGet(virJSONValuePtr object,
 
 /* Return the value associated with KEY within OBJECT, but return NULL
  * if the key is missing or if value is not the correct TYPE.  */
-virJSONValuePtr
-virJSONValueObjectGetByType(virJSONValuePtr object,
+virJSONValue *
+virJSONValueObjectGetByType(virJSONValue *object,
                             const char *key,
                             virJSONType type)
 {
-    virJSONValuePtr value = virJSONValueObjectGet(object, key);
+    virJSONValue *value = virJSONValueObjectGet(object, key);
 
     if (value && value->type == type)
         return value;
@@ -891,12 +886,12 @@ virJSONValueObjectGetByType(virJSONValuePtr object,
 
 /* Steal the value associated with KEY within OBJECT, but return NULL
  * if the key is missing or if value is not the correct TYPE.  */
-static virJSONValuePtr
-virJSONValueObjectStealByType(virJSONValuePtr object,
+static virJSONValue *
+virJSONValueObjectStealByType(virJSONValue *object,
                               const char *key,
                               virJSONType type)
 {
-    virJSONValuePtr value;
+    virJSONValue *value;
 
     if (virJSONValueObjectRemoveKey(object, key, &value) <= 0)
         return NULL;
@@ -908,7 +903,7 @@ virJSONValueObjectStealByType(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectKeysNumber(virJSONValuePtr object)
+virJSONValueObjectKeysNumber(virJSONValue *object)
 {
     if (object->type != VIR_JSON_TYPE_OBJECT)
         return -1;
@@ -918,7 +913,7 @@ virJSONValueObjectKeysNumber(virJSONValuePtr object)
 
 
 const char *
-virJSONValueObjectGetKey(virJSONValuePtr object,
+virJSONValueObjectGetKey(virJSONValue *object,
                          unsigned int n)
 {
     if (object->type != VIR_JSON_TYPE_OBJECT)
@@ -935,9 +930,9 @@ virJSONValueObjectGetKey(virJSONValuePtr object,
  * not NULL, the dropped value object is returned instead of freed.
  * Returns 1 on success, 0 if no key was found, and -1 on error.  */
 int
-virJSONValueObjectRemoveKey(virJSONValuePtr object,
+virJSONValueObjectRemoveKey(virJSONValue *object,
                             const char *key,
-                            virJSONValuePtr *value)
+                            virJSONValue **value)
 {
     size_t i;
 
@@ -964,8 +959,8 @@ virJSONValueObjectRemoveKey(virJSONValuePtr object,
 }
 
 
-virJSONValuePtr
-virJSONValueObjectGetValue(virJSONValuePtr object,
+virJSONValue *
+virJSONValueObjectGetValue(virJSONValue *object,
                            unsigned int n)
 {
     if (object->type != VIR_JSON_TYPE_OBJECT)
@@ -979,7 +974,7 @@ virJSONValueObjectGetValue(virJSONValuePtr object,
 
 
 bool
-virJSONValueIsObject(virJSONValuePtr object)
+virJSONValueIsObject(virJSONValue *object)
 {
     if (object)
         return object->type == VIR_JSON_TYPE_OBJECT;
@@ -989,7 +984,7 @@ virJSONValueIsObject(virJSONValuePtr object)
 
 
 bool
-virJSONValueIsArray(virJSONValuePtr array)
+virJSONValueIsArray(virJSONValue *array)
 {
     return array->type == VIR_JSON_TYPE_ARRAY;
 }
@@ -1002,8 +997,8 @@ virJSONValueArraySize(const virJSONValue *array)
 }
 
 
-virJSONValuePtr
-virJSONValueArrayGet(virJSONValuePtr array,
+virJSONValue *
+virJSONValueArrayGet(virJSONValue *array,
                      unsigned int element)
 {
     if (array->type != VIR_JSON_TYPE_ARRAY)
@@ -1016,11 +1011,11 @@ virJSONValueArrayGet(virJSONValuePtr array,
 }
 
 
-virJSONValuePtr
-virJSONValueArraySteal(virJSONValuePtr array,
+virJSONValue *
+virJSONValueArraySteal(virJSONValue *array,
                        unsigned int element)
 {
-    virJSONValuePtr ret = NULL;
+    virJSONValue *ret = NULL;
 
     if (array->type != VIR_JSON_TYPE_ARRAY)
         return NULL;
@@ -1057,7 +1052,7 @@ virJSONValueArraySteal(virJSONValuePtr array,
  * The rest of the members stay in possession of the array and it's condensed.
  */
 int
-virJSONValueArrayForeachSteal(virJSONValuePtr array,
+virJSONValueArrayForeachSteal(virJSONValue *array,
                               virJSONArrayIteratorFunc cb,
                               void *opaque)
 {
@@ -1094,7 +1089,7 @@ virJSONValueArrayForeachSteal(virJSONValuePtr array,
 
 
 const char *
-virJSONValueGetString(virJSONValuePtr string)
+virJSONValueGetString(virJSONValue *string)
 {
     if (string->type != VIR_JSON_TYPE_STRING)
         return NULL;
@@ -1104,7 +1099,7 @@ virJSONValueGetString(virJSONValuePtr string)
 
 
 const char *
-virJSONValueGetNumberString(virJSONValuePtr number)
+virJSONValueGetNumberString(virJSONValue *number)
 {
     if (number->type != VIR_JSON_TYPE_NUMBER)
         return NULL;
@@ -1114,7 +1109,7 @@ virJSONValueGetNumberString(virJSONValuePtr number)
 
 
 int
-virJSONValueGetNumberInt(virJSONValuePtr number,
+virJSONValueGetNumberInt(virJSONValue *number,
                          int *value)
 {
     if (number->type != VIR_JSON_TYPE_NUMBER)
@@ -1125,7 +1120,7 @@ virJSONValueGetNumberInt(virJSONValuePtr number,
 
 
 int
-virJSONValueGetNumberUint(virJSONValuePtr number,
+virJSONValueGetNumberUint(virJSONValue *number,
                           unsigned int *value)
 {
     if (number->type != VIR_JSON_TYPE_NUMBER)
@@ -1136,7 +1131,7 @@ virJSONValueGetNumberUint(virJSONValuePtr number,
 
 
 int
-virJSONValueGetNumberLong(virJSONValuePtr number,
+virJSONValueGetNumberLong(virJSONValue *number,
                           long long *value)
 {
     if (number->type != VIR_JSON_TYPE_NUMBER)
@@ -1147,7 +1142,7 @@ virJSONValueGetNumberLong(virJSONValuePtr number,
 
 
 int
-virJSONValueGetNumberUlong(virJSONValuePtr number,
+virJSONValueGetNumberUlong(virJSONValue *number,
                            unsigned long long *value)
 {
     if (number->type != VIR_JSON_TYPE_NUMBER)
@@ -1158,7 +1153,7 @@ virJSONValueGetNumberUlong(virJSONValuePtr number,
 
 
 int
-virJSONValueGetNumberDouble(virJSONValuePtr number,
+virJSONValueGetNumberDouble(virJSONValue *number,
                             double *value)
 {
     if (number->type != VIR_JSON_TYPE_NUMBER)
@@ -1169,7 +1164,7 @@ virJSONValueGetNumberDouble(virJSONValuePtr number,
 
 
 int
-virJSONValueGetBoolean(virJSONValuePtr val,
+virJSONValueGetBoolean(virJSONValue *val,
                        bool *value)
 {
     if (val->type != VIR_JSON_TYPE_BOOLEAN)
@@ -1181,17 +1176,17 @@ virJSONValueGetBoolean(virJSONValuePtr val,
 
 
 bool
-virJSONValueIsNull(virJSONValuePtr val)
+virJSONValueIsNull(virJSONValue *val)
 {
     return val->type == VIR_JSON_TYPE_NULL;
 }
 
 
 const char *
-virJSONValueObjectGetString(virJSONValuePtr object,
+virJSONValueObjectGetString(virJSONValue *object,
                             const char *key)
 {
-    virJSONValuePtr val = virJSONValueObjectGet(object, key);
+    virJSONValue *val = virJSONValueObjectGet(object, key);
 
     if (!val)
         return NULL;
@@ -1210,10 +1205,10 @@ virJSONValueObjectGetString(virJSONValuePtr object,
  * is not present or is not a string or number NULL is returned.
  */
 const char *
-virJSONValueObjectGetStringOrNumber(virJSONValuePtr object,
+virJSONValueObjectGetStringOrNumber(virJSONValue *object,
                                     const char *key)
 {
-    virJSONValuePtr val = virJSONValueObjectGet(object, key);
+    virJSONValue *val = virJSONValueObjectGet(object, key);
 
     if (!val)
         return NULL;
@@ -1228,11 +1223,11 @@ virJSONValueObjectGetStringOrNumber(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectGetNumberInt(virJSONValuePtr object,
+virJSONValueObjectGetNumberInt(virJSONValue *object,
                                const char *key,
                                int *value)
 {
-    virJSONValuePtr val = virJSONValueObjectGet(object, key);
+    virJSONValue *val = virJSONValueObjectGet(object, key);
 
     if (!val)
         return -1;
@@ -1242,11 +1237,11 @@ virJSONValueObjectGetNumberInt(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectGetNumberUint(virJSONValuePtr object,
+virJSONValueObjectGetNumberUint(virJSONValue *object,
                                 const char *key,
                                 unsigned int *value)
 {
-    virJSONValuePtr val = virJSONValueObjectGet(object, key);
+    virJSONValue *val = virJSONValueObjectGet(object, key);
 
     if (!val)
         return -1;
@@ -1256,11 +1251,11 @@ virJSONValueObjectGetNumberUint(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectGetNumberLong(virJSONValuePtr object,
+virJSONValueObjectGetNumberLong(virJSONValue *object,
                                 const char *key,
                                 long long *value)
 {
-    virJSONValuePtr val = virJSONValueObjectGet(object, key);
+    virJSONValue *val = virJSONValueObjectGet(object, key);
 
     if (!val)
         return -1;
@@ -1270,11 +1265,11 @@ virJSONValueObjectGetNumberLong(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectGetNumberUlong(virJSONValuePtr object,
+virJSONValueObjectGetNumberUlong(virJSONValue *object,
                                  const char *key,
                                  unsigned long long *value)
 {
-    virJSONValuePtr val = virJSONValueObjectGet(object, key);
+    virJSONValue *val = virJSONValueObjectGet(object, key);
 
     if (!val)
         return -1;
@@ -1284,11 +1279,11 @@ virJSONValueObjectGetNumberUlong(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectGetNumberDouble(virJSONValuePtr object,
+virJSONValueObjectGetNumberDouble(virJSONValue *object,
                                   const char *key,
                                   double *value)
 {
-    virJSONValuePtr val = virJSONValueObjectGet(object, key);
+    virJSONValue *val = virJSONValueObjectGet(object, key);
 
     if (!val)
         return -1;
@@ -1298,11 +1293,11 @@ virJSONValueObjectGetNumberDouble(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectGetBoolean(virJSONValuePtr object,
+virJSONValueObjectGetBoolean(virJSONValue *object,
                              const char *key,
                              bool *value)
 {
-    virJSONValuePtr val = virJSONValueObjectGet(object, key);
+    virJSONValue *val = virJSONValueObjectGet(object, key);
 
     if (!val)
         return -1;
@@ -1311,29 +1306,29 @@ virJSONValueObjectGetBoolean(virJSONValuePtr object,
 }
 
 
-virJSONValuePtr
-virJSONValueObjectGetObject(virJSONValuePtr object, const char *key)
+virJSONValue *
+virJSONValueObjectGetObject(virJSONValue *object, const char *key)
 {
     return virJSONValueObjectGetByType(object, key, VIR_JSON_TYPE_OBJECT);
 }
 
 
-virJSONValuePtr
-virJSONValueObjectGetArray(virJSONValuePtr object, const char *key)
+virJSONValue *
+virJSONValueObjectGetArray(virJSONValue *object, const char *key)
 {
     return virJSONValueObjectGetByType(object, key, VIR_JSON_TYPE_ARRAY);
 }
 
 
-virJSONValuePtr
-virJSONValueObjectStealArray(virJSONValuePtr object, const char *key)
+virJSONValue *
+virJSONValueObjectStealArray(virJSONValue *object, const char *key)
 {
     return virJSONValueObjectStealByType(object, key, VIR_JSON_TYPE_ARRAY);
 }
 
 
-virJSONValuePtr
-virJSONValueObjectStealObject(virJSONValuePtr object,
+virJSONValue *
+virJSONValueObjectStealObject(virJSONValue *object,
                               const char *key)
 {
     return virJSONValueObjectStealByType(object, key, VIR_JSON_TYPE_OBJECT);
@@ -1341,10 +1336,10 @@ virJSONValueObjectStealObject(virJSONValuePtr object,
 
 
 int
-virJSONValueObjectIsNull(virJSONValuePtr object,
+virJSONValueObjectIsNull(virJSONValue *object,
                          const char *key)
 {
-    virJSONValuePtr val = virJSONValueObjectGet(object, key);
+    virJSONValue *val = virJSONValueObjectGet(object, key);
 
     if (!val)
         return -1;
@@ -1353,10 +1348,10 @@ virJSONValueObjectIsNull(virJSONValuePtr object,
 }
 
 char **
-virJSONValueObjectGetStringArray(virJSONValuePtr object, const char *key)
+virJSONValueObjectGetStringArray(virJSONValue *object, const char *key)
 {
     g_auto(GStrv) ret = NULL;
-    virJSONValuePtr data;
+    virJSONValue *data;
     size_t n;
     size_t i;
 
@@ -1371,7 +1366,7 @@ virJSONValueObjectGetStringArray(virJSONValuePtr object, const char *key)
     n = virJSONValueArraySize(data);
     ret = g_new0(char *, n + 1);
     for (i = 0; i < n; i++) {
-        virJSONValuePtr child = virJSONValueArrayGet(data, i);
+        virJSONValue *child = virJSONValueArrayGet(data, i);
         const char *tmp;
 
         if (!child) {
@@ -1407,7 +1402,7 @@ virJSONValueObjectGetStringArray(virJSONValuePtr object, const char *key)
  * during iteration and -1 on generic errors.
  */
 int
-virJSONValueObjectForeachKeyValue(virJSONValuePtr object,
+virJSONValueObjectForeachKeyValue(virJSONValue *object,
                                   virJSONValueObjectIteratorFunc cb,
                                   void *opaque)
 {
@@ -1417,7 +1412,7 @@ virJSONValueObjectForeachKeyValue(virJSONValuePtr object,
         return -1;
 
     for (i = 0; i < object->data.object.npairs; i++) {
-        virJSONObjectPairPtr elem = object->data.object.pairs + i;
+        virJSONObjectPair *elem = object->data.object.pairs + i;
 
         if (cb(elem->key, elem->value, opaque) < 0)
             return -2;
@@ -1427,11 +1422,11 @@ virJSONValueObjectForeachKeyValue(virJSONValuePtr object,
 }
 
 
-virJSONValuePtr
+virJSONValue *
 virJSONValueCopy(const virJSONValue *in)
 {
     size_t i;
-    virJSONValuePtr out = NULL;
+    virJSONValue *out = NULL;
 
     if (!in)
         return NULL;
@@ -1451,7 +1446,7 @@ virJSONValueCopy(const virJSONValue *in)
     case VIR_JSON_TYPE_ARRAY:
         out = virJSONValueNewArray();
 
-        out->data.array.values = g_new0(virJSONValuePtr, in->data.array.nvalues);
+        out->data.array.values = g_new0(virJSONValue *, in->data.array.nvalues);
         out->data.array.nvalues = in->data.array.nvalues;
 
         for (i = 0; i < in->data.array.nvalues; i++) {
@@ -1480,13 +1475,13 @@ virJSONValueCopy(const virJSONValue *in)
 
 #if WITH_YAJL
 static int
-virJSONParserInsertValue(virJSONParserPtr parser,
-                         virJSONValuePtr *value)
+virJSONParserInsertValue(virJSONParser *parser,
+                         virJSONValue **value)
 {
     if (!parser->head) {
         parser->head = g_steal_pointer(value);
     } else {
-        virJSONParserStatePtr state;
+        virJSONParserState *state;
         if (!parser->nstate) {
             VIR_DEBUG("got a value to insert without a container");
             return -1;
@@ -1533,7 +1528,7 @@ virJSONParserInsertValue(virJSONParserPtr parser,
 static int
 virJSONParserHandleNull(void *ctx)
 {
-    virJSONParserPtr parser = ctx;
+    virJSONParser *parser = ctx;
     g_autoptr(virJSONValue) value = virJSONValueNewNull();
 
     VIR_DEBUG("parser=%p", parser);
@@ -1549,7 +1544,7 @@ static int
 virJSONParserHandleBoolean(void *ctx,
                            int boolean_)
 {
-    virJSONParserPtr parser = ctx;
+    virJSONParser *parser = ctx;
     g_autoptr(virJSONValue) value = virJSONValueNewBoolean(boolean_);
 
     VIR_DEBUG("parser=%p boolean=%d", parser, boolean_);
@@ -1566,7 +1561,7 @@ virJSONParserHandleNumber(void *ctx,
                           const char *s,
                           size_t l)
 {
-    virJSONParserPtr parser = ctx;
+    virJSONParser *parser = ctx;
     g_autoptr(virJSONValue) value = virJSONValueNewNumber(g_strndup(s, l));
 
     VIR_DEBUG("parser=%p str=%s", parser, value->data.number);
@@ -1583,7 +1578,7 @@ virJSONParserHandleString(void *ctx,
                           const unsigned char *stringVal,
                           size_t stringLen)
 {
-    virJSONParserPtr parser = ctx;
+    virJSONParser *parser = ctx;
     g_autoptr(virJSONValue) value = virJSONValueNewStringLen((const char *)stringVal,
                                                              stringLen);
 
@@ -1601,8 +1596,8 @@ virJSONParserHandleMapKey(void *ctx,
                           const unsigned char *stringVal,
                           size_t stringLen)
 {
-    virJSONParserPtr parser = ctx;
-    virJSONParserStatePtr state;
+    virJSONParser *parser = ctx;
+    virJSONParserState *state;
 
     VIR_DEBUG("parser=%p key=%p", parser, (const char *)stringVal);
 
@@ -1620,9 +1615,9 @@ virJSONParserHandleMapKey(void *ctx,
 static int
 virJSONParserHandleStartMap(void *ctx)
 {
-    virJSONParserPtr parser = ctx;
+    virJSONParser *parser = ctx;
     g_autoptr(virJSONValue) value = virJSONValueNewObject();
-    virJSONValuePtr tmp = value;
+    virJSONValue *tmp = value;
 
     VIR_DEBUG("parser=%p", parser);
 
@@ -1642,8 +1637,8 @@ virJSONParserHandleStartMap(void *ctx)
 static int
 virJSONParserHandleEndMap(void *ctx)
 {
-    virJSONParserPtr parser = ctx;
-    virJSONParserStatePtr state;
+    virJSONParser *parser = ctx;
+    virJSONParserState *state;
 
     VIR_DEBUG("parser=%p", parser);
 
@@ -1665,9 +1660,9 @@ virJSONParserHandleEndMap(void *ctx)
 static int
 virJSONParserHandleStartArray(void *ctx)
 {
-    virJSONParserPtr parser = ctx;
+    virJSONParser *parser = ctx;
     g_autoptr(virJSONValue) value = virJSONValueNewArray();
-    virJSONValuePtr tmp = value;
+    virJSONValue *tmp = value;
 
     VIR_DEBUG("parser=%p", parser);
 
@@ -1687,8 +1682,8 @@ virJSONParserHandleStartArray(void *ctx)
 static int
 virJSONParserHandleEndArray(void *ctx)
 {
-    virJSONParserPtr parser = ctx;
-    virJSONParserStatePtr state;
+    virJSONParser *parser = ctx;
+    virJSONParserState *state;
 
     VIR_DEBUG("parser=%p", parser);
 
@@ -1723,12 +1718,12 @@ static const yajl_callbacks parserCallbacks = {
 
 
 /* XXX add an incremental streaming parser - yajl trivially supports it */
-virJSONValuePtr
+virJSONValue *
 virJSONValueFromString(const char *jsonstring)
 {
     yajl_handle hand;
     virJSONParser parser = { NULL, NULL, 0, 0 };
-    virJSONValuePtr ret = NULL;
+    virJSONValue *ret = NULL;
     int rc;
     size_t len = strlen(jsonstring);
 
@@ -1783,7 +1778,7 @@ virJSONValueFromString(const char *jsonstring)
 
 
 static int
-virJSONValueToStringOne(virJSONValuePtr object,
+virJSONValueToStringOne(virJSONValue *object,
                         yajl_gen g)
 {
     size_t i;
@@ -1848,8 +1843,8 @@ virJSONValueToStringOne(virJSONValuePtr object,
 
 
 int
-virJSONValueToBuffer(virJSONValuePtr object,
-                     virBufferPtr buf,
+virJSONValueToBuffer(virJSONValue *object,
+                     virBuffer *buf,
                      bool pretty)
 {
     yajl_gen g;
@@ -1892,7 +1887,7 @@ virJSONValueToBuffer(virJSONValuePtr object,
 
 
 #else
-virJSONValuePtr
+virJSONValue *
 virJSONValueFromString(const char *jsonstring G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1902,8 +1897,8 @@ virJSONValueFromString(const char *jsonstring G_GNUC_UNUSED)
 
 
 int
-virJSONValueToBuffer(virJSONValuePtr object G_GNUC_UNUSED,
-                     virBufferPtr buf G_GNUC_UNUSED,
+virJSONValueToBuffer(virJSONValue *object G_GNUC_UNUSED,
+                     virBuffer *buf G_GNUC_UNUSED,
                      bool pretty G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1914,7 +1909,7 @@ virJSONValueToBuffer(virJSONValuePtr object G_GNUC_UNUSED,
 
 
 char *
-virJSONValueToString(virJSONValuePtr object,
+virJSONValueToString(virJSONValue *object,
                      bool pretty)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -1951,18 +1946,18 @@ virJSONStringReformat(const char *jsonstr,
 }
 
 
-static virJSONValuePtr
-virJSONValueObjectDeflattenKeys(virJSONValuePtr json);
+static virJSONValue *
+virJSONValueObjectDeflattenKeys(virJSONValue *json);
 
 
 static int
 virJSONValueObjectDeflattenWorker(const char *key,
-                                  virJSONValuePtr value,
+                                  virJSONValue *value,
                                   void *opaque)
 {
-    virJSONValuePtr retobj = opaque;
+    virJSONValue *retobj = opaque;
     g_autoptr(virJSONValue) newval = NULL;
-    virJSONValuePtr existobj;
+    virJSONValue *existobj;
     g_auto(GStrv) tokens = NULL;
 
     /* non-nested keys only need to be copied */
@@ -1998,7 +1993,7 @@ virJSONValueObjectDeflattenWorker(const char *key,
     }
 
     if (!(existobj = virJSONValueObjectGet(retobj, tokens[0]))) {
-        virJSONValuePtr newobj = virJSONValueNewObject();
+        virJSONValue *newobj = virJSONValueNewObject();
         existobj = newobj;
 
         if (virJSONValueObjectAppend(retobj, tokens[0], &newobj) < 0)
@@ -2017,8 +2012,8 @@ virJSONValueObjectDeflattenWorker(const char *key,
 }
 
 
-static virJSONValuePtr
-virJSONValueObjectDeflattenKeys(virJSONValuePtr json)
+static virJSONValue *
+virJSONValueObjectDeflattenKeys(virJSONValue *json)
 {
     g_autoptr(virJSONValue) deflattened = virJSONValueNewObject();
 
@@ -2038,10 +2033,10 @@ virJSONValueObjectDeflattenKeys(virJSONValuePtr json)
  * keys starting from 0.
  */
 static void
-virJSONValueObjectDeflattenArrays(virJSONValuePtr json)
+virJSONValueObjectDeflattenArrays(virJSONValue *json)
 {
-    g_autofree virJSONValuePtr *arraymembers = NULL;
-    virJSONObjectPtr obj;
+    g_autofree virJSONValue **arraymembers = NULL;
+    virJSONObject *obj;
     size_t i;
 
     if (!json ||
@@ -2050,13 +2045,13 @@ virJSONValueObjectDeflattenArrays(virJSONValuePtr json)
 
     obj = &json->data.object;
 
-    arraymembers = g_new0(virJSONValuePtr, obj->npairs);
+    arraymembers = g_new0(virJSONValue *, obj->npairs);
 
     for (i = 0; i < obj->npairs; i++)
         virJSONValueObjectDeflattenArrays(obj->pairs[i].value);
 
     for (i = 0; i < obj->npairs; i++) {
-        virJSONObjectPairPtr pair = obj->pairs + i;
+        virJSONObjectPair *pair = obj->pairs + i;
         unsigned int keynum;
 
         if (virStrToLong_uip(pair->key, NULL, 10, &keynum) < 0)
@@ -2095,10 +2090,10 @@ virJSONValueObjectDeflattenArrays(virJSONValuePtr json)
  * hierarchy so that the parsers can be kept simple and we still can use the
  * weird syntax some users might use.
  */
-virJSONValuePtr
-virJSONValueObjectDeflatten(virJSONValuePtr json)
+virJSONValue *
+virJSONValueObjectDeflatten(virJSONValue *json)
 {
-    virJSONValuePtr deflattened;
+    virJSONValue *deflattened;
 
     if (!(deflattened = virJSONValueObjectDeflattenKeys(json)))
         return NULL;

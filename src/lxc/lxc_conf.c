@@ -41,7 +41,7 @@
 
 VIR_LOG_INIT("lxc.lxc_conf");
 
-static virClassPtr virLXCDriverConfigClass;
+static virClass *virLXCDriverConfigClass;
 static void virLXCDriverConfigDispose(void *obj);
 
 static int virLXCConfigOnceInit(void)
@@ -56,10 +56,10 @@ VIR_ONCE_GLOBAL_INIT(virLXCConfig);
 
 
 /* Functions */
-virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
+virCaps *virLXCDriverCapsInit(virLXCDriver *driver)
 {
-    virCapsPtr caps;
-    virCapsGuestPtr guest;
+    virCaps *caps;
+    virCapsGuest *guest;
     virArch altArch;
     g_autofree char *lxc_path = NULL;
 
@@ -171,20 +171,20 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
 /**
  * virLXCDriverGetCapabilities:
  *
- * Get a reference to the virCapsPtr instance for the
+ * Get a reference to the virCaps *instance for the
  * driver. If @refresh is true, the capabilities will be
  * rebuilt first
  *
  * The caller must release the reference with virObjetUnref
  *
- * Returns: a reference to a virCapsPtr instance or NULL
+ * Returns: a reference to a virCaps *instance or NULL
  */
-virCapsPtr virLXCDriverGetCapabilities(virLXCDriverPtr driver,
+virCaps *virLXCDriverGetCapabilities(virLXCDriver *driver,
                                        bool refresh)
 {
-    virCapsPtr ret;
+    virCaps *ret;
     if (refresh) {
-        virCapsPtr caps = NULL;
+        virCaps *caps = NULL;
         if ((caps = virLXCDriverCapsInit(driver)) == NULL)
             return NULL;
 
@@ -208,8 +208,8 @@ virCapsPtr virLXCDriverGetCapabilities(virLXCDriverPtr driver,
 }
 
 
-virDomainXMLOptionPtr
-lxcDomainXMLConfInit(virLXCDriverPtr driver, const char *defsecmodel)
+virDomainXMLOption *
+lxcDomainXMLConfInit(virLXCDriver *driver, const char *defsecmodel)
 {
     virLXCDriverDomainDefParserConfig.priv = driver;
     virLXCDriverDomainDefParserConfig.defSecModel = defsecmodel;
@@ -220,10 +220,10 @@ lxcDomainXMLConfInit(virLXCDriverPtr driver, const char *defsecmodel)
 }
 
 
-virLXCDriverConfigPtr
+virLXCDriverConfig *
 virLXCDriverConfigNew(void)
 {
-    virLXCDriverConfigPtr cfg;
+    virLXCDriverConfig *cfg;
 
     if (virLXCConfigInitialize() < 0)
         return NULL;
@@ -244,7 +244,7 @@ virLXCDriverConfigNew(void)
 }
 
 int
-virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
+virLXCLoadDriverConfig(virLXCDriverConfig *cfg,
                        const char *filename)
 {
     g_autoptr(virConf) conf = NULL;
@@ -272,9 +272,9 @@ virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
     return 0;
 }
 
-virLXCDriverConfigPtr virLXCDriverGetConfig(virLXCDriverPtr driver)
+virLXCDriverConfig *virLXCDriverGetConfig(virLXCDriver *driver)
 {
-    virLXCDriverConfigPtr cfg;
+    virLXCDriverConfig *cfg;
     lxcDriverLock(driver);
     cfg = virObjectRef(driver->config);
     lxcDriverUnlock(driver);
@@ -284,7 +284,7 @@ virLXCDriverConfigPtr virLXCDriverGetConfig(virLXCDriverPtr driver)
 static void
 virLXCDriverConfigDispose(void *obj)
 {
-    virLXCDriverConfigPtr cfg = obj;
+    virLXCDriverConfig *cfg = obj;
 
     g_free(cfg->configDir);
     g_free(cfg->autostartDir);

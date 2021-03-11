@@ -22,7 +22,7 @@ testCompareXMLToXMLFiles(const char *netxml, const char *updatexml,
     char *updateXmlData = NULL;
     char *actual = NULL;
     int ret = -1;
-    virNetworkDefPtr def = NULL;
+    virNetworkDef *def = NULL;
 
     if (virTestLoadFile(updatexml, &updateXmlData) < 0)
         goto error;

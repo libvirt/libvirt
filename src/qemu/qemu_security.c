@@ -31,13 +31,13 @@ VIR_LOG_INIT("qemu.qemu_security");
 
 
 int
-qemuSecuritySetAllLabel(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm,
+qemuSecuritySetAllLabel(virQEMUDriver *driver,
+                        virDomainObj *vm,
                         const char *incomingPath,
                         bool migrated)
 {
     int ret = -1;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     pid_t pid = -1;
 
     if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
@@ -65,11 +65,11 @@ qemuSecuritySetAllLabel(virQEMUDriverPtr driver,
 
 
 void
-qemuSecurityRestoreAllLabel(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
+qemuSecurityRestoreAllLabel(virQEMUDriver *driver,
+                            virDomainObj *vm,
                             bool migrated)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     bool transactionStarted = false;
 
     /* In contrast to qemuSecuritySetAllLabel, do not use vm->pid
@@ -96,13 +96,13 @@ qemuSecurityRestoreAllLabel(virQEMUDriverPtr driver,
 
 
 int
-qemuSecuritySetImageLabel(virQEMUDriverPtr driver,
-                          virDomainObjPtr vm,
-                          virStorageSourcePtr src,
+qemuSecuritySetImageLabel(virQEMUDriver *driver,
+                          virDomainObj *vm,
+                          virStorageSource *src,
                           bool backingChain,
                           bool chainTop)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     pid_t pid = -1;
     int ret = -1;
     virSecurityDomainImageLabelFlags labelFlags = 0;
@@ -135,12 +135,12 @@ qemuSecuritySetImageLabel(virQEMUDriverPtr driver,
 
 
 int
-qemuSecurityRestoreImageLabel(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
-                              virStorageSourcePtr src,
+qemuSecurityRestoreImageLabel(virQEMUDriver *driver,
+                              virDomainObj *vm,
+                              virStorageSource *src,
                               bool backingChain)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     pid_t pid = -1;
     int ret = -1;
     virSecurityDomainImageLabelFlags labelFlags = 0;
@@ -170,12 +170,12 @@ qemuSecurityRestoreImageLabel(virQEMUDriverPtr driver,
 
 
 int
-qemuSecurityMoveImageMetadata(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
-                              virStorageSourcePtr src,
-                              virStorageSourcePtr dst)
+qemuSecurityMoveImageMetadata(virQEMUDriver *driver,
+                              virDomainObj *vm,
+                              virStorageSource *src,
+                              virStorageSource *dst)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     pid_t pid = -1;
 
     if (!priv->rememberOwner)
@@ -189,11 +189,11 @@ qemuSecurityMoveImageMetadata(virQEMUDriverPtr driver,
 
 
 int
-qemuSecuritySetHostdevLabel(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
-                            virDomainHostdevDefPtr hostdev)
+qemuSecuritySetHostdevLabel(virQEMUDriver *driver,
+                            virDomainObj *vm,
+                            virDomainHostdevDef *hostdev)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     pid_t pid = -1;
     int ret = -1;
 
@@ -221,11 +221,11 @@ qemuSecuritySetHostdevLabel(virQEMUDriverPtr driver,
 
 
 int
-qemuSecurityRestoreHostdevLabel(virQEMUDriverPtr driver,
-                                virDomainObjPtr vm,
-                                virDomainHostdevDefPtr hostdev)
+qemuSecurityRestoreHostdevLabel(virQEMUDriver *driver,
+                                virDomainObj *vm,
+                                virDomainHostdevDef *hostdev)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     pid_t pid = -1;
     int ret = -1;
 
@@ -253,11 +253,11 @@ qemuSecurityRestoreHostdevLabel(virQEMUDriverPtr driver,
 
 
 int
-qemuSecuritySetMemoryLabel(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
-                           virDomainMemoryDefPtr mem)
+qemuSecuritySetMemoryLabel(virQEMUDriver *driver,
+                           virDomainObj *vm,
+                           virDomainMemoryDef *mem)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     pid_t pid = -1;
     int ret = -1;
 
@@ -284,11 +284,11 @@ qemuSecuritySetMemoryLabel(virQEMUDriverPtr driver,
 
 
 int
-qemuSecurityRestoreMemoryLabel(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
-                               virDomainMemoryDefPtr mem)
+qemuSecurityRestoreMemoryLabel(virQEMUDriver *driver,
+                               virDomainObj *vm,
+                               virDomainMemoryDef *mem)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     pid_t pid = -1;
     int ret = -1;
 
@@ -315,11 +315,11 @@ qemuSecurityRestoreMemoryLabel(virQEMUDriverPtr driver,
 
 
 int
-qemuSecuritySetInputLabel(virDomainObjPtr vm,
-                          virDomainInputDefPtr input)
+qemuSecuritySetInputLabel(virDomainObj *vm,
+                          virDomainInputDef *input)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverPtr driver = priv->driver;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
     pid_t pid = -1;
     int ret = -1;
 
@@ -346,11 +346,11 @@ qemuSecuritySetInputLabel(virDomainObjPtr vm,
 
 
 int
-qemuSecurityRestoreInputLabel(virDomainObjPtr vm,
-                              virDomainInputDefPtr input)
+qemuSecurityRestoreInputLabel(virDomainObj *vm,
+                              virDomainInputDef *input)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverPtr driver = priv->driver;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
     pid_t pid = -1;
     int ret = -1;
 
@@ -377,12 +377,12 @@ qemuSecurityRestoreInputLabel(virDomainObjPtr vm,
 
 
 int
-qemuSecuritySetChardevLabel(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
-                            virDomainChrDefPtr chr)
+qemuSecuritySetChardevLabel(virQEMUDriver *driver,
+                            virDomainObj *vm,
+                            virDomainChrDef *chr)
 {
     int ret = -1;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     pid_t pid = -1;
 
     if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
@@ -409,12 +409,12 @@ qemuSecuritySetChardevLabel(virQEMUDriverPtr driver,
 
 
 int
-qemuSecurityRestoreChardevLabel(virQEMUDriverPtr driver,
-                                virDomainObjPtr vm,
-                                virDomainChrDefPtr chr)
+qemuSecurityRestoreChardevLabel(virQEMUDriver *driver,
+                                virDomainObj *vm,
+                                virDomainChrDef *chr)
 {
     int ret = -1;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     pid_t pid = -1;
 
     if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
@@ -456,9 +456,9 @@ qemuSecurityRestoreChardevLabel(virQEMUDriverPtr driver,
  * exitstatus also set.
  */
 int
-qemuSecurityStartVhostUserGPU(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
-                              virCommandPtr cmd,
+qemuSecurityStartVhostUserGPU(virQEMUDriver *driver,
+                              virDomainObj *vm,
+                              virCommand *cmd,
                               int *exitstatus,
                               int *cmdret)
 {
@@ -499,15 +499,15 @@ qemuSecurityStartVhostUserGPU(virQEMUDriverPtr driver,
  * exitstatus also set.
  */
 int
-qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             virCommandPtr cmd,
+qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
+                             virDomainObj *vm,
+                             virCommand *cmd,
                              uid_t uid,
                              gid_t gid,
                              int *exitstatus,
                              int *cmdret)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int ret = -1;
     bool transactionStarted = false;
 
@@ -555,10 +555,10 @@ qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
 
 
 void
-qemuSecurityCleanupTPMEmulator(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm)
+qemuSecurityCleanupTPMEmulator(virQEMUDriver *driver,
+                               virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     bool transactionStarted = false;
 
     if (virSecurityManagerTransactionStart(driver->securityManager) >= 0)
@@ -576,12 +576,12 @@ qemuSecurityCleanupTPMEmulator(virQEMUDriverPtr driver,
 
 
 int
-qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
+qemuSecurityDomainSetPathLabel(virQEMUDriver *driver,
+                               virDomainObj *vm,
                                const char *path,
                                bool allowSubtree)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     pid_t pid = -1;
     int ret = -1;
 
@@ -609,11 +609,11 @@ qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
 
 
 int
-qemuSecurityDomainRestorePathLabel(virQEMUDriverPtr driver,
-                                   virDomainObjPtr vm,
+qemuSecurityDomainRestorePathLabel(virQEMUDriver *driver,
+                                   virDomainObj *vm,
                                    const char *path)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     pid_t pid = -1;
     int ret = -1;
 
@@ -656,9 +656,9 @@ qemuSecurityDomainRestorePathLabel(virQEMUDriverPtr driver,
  *         -1 otherwise.
  */
 int
-qemuSecurityCommandRun(virQEMUDriverPtr driver,
-                       virDomainObjPtr vm,
-                       virCommandPtr cmd,
+qemuSecurityCommandRun(virQEMUDriver *driver,
+                       virDomainObj *vm,
+                       virCommand *cmd,
                        uid_t uid,
                        gid_t gid,
                        int *exitstatus,

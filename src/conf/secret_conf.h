@@ -23,7 +23,6 @@
 #include "internal.h"
 
 typedef struct _virSecretDef virSecretDef;
-typedef virSecretDef *virSecretDefPtr;
 struct _virSecretDef {
     bool isephemeral;
     bool isprivate;
@@ -33,11 +32,11 @@ struct _virSecretDef {
     char *usage_id; /* May be NULL */
 };
 
-void virSecretDefFree(virSecretDefPtr def);
+void virSecretDefFree(virSecretDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSecretDef, virSecretDefFree);
 
-virSecretDefPtr virSecretDefParseString(const char *xml);
-virSecretDefPtr virSecretDefParseFile(const char *filename);
+virSecretDef *virSecretDefParseString(const char *xml);
+virSecretDef *virSecretDefParseFile(const char *filename);
 char *virSecretDefFormat(const virSecretDef *def);
 
 #define VIR_CONNECT_LIST_SECRETS_FILTERS_EPHEMERAL \

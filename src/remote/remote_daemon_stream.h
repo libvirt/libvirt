@@ -23,21 +23,21 @@
 #include "remote_daemon.h"
 
 daemonClientStream *
-daemonCreateClientStream(virNetServerClientPtr client,
+daemonCreateClientStream(virNetServerClient *client,
                          virStreamPtr st,
-                         virNetServerProgramPtr prog,
-                         virNetMessageHeaderPtr hdr,
+                         virNetServerProgram *prog,
+                         struct virNetMessageHeader *hdr,
                          bool allowSkip);
 
-int daemonFreeClientStream(virNetServerClientPtr client,
+int daemonFreeClientStream(virNetServerClient *client,
                            daemonClientStream *stream);
 
-int daemonAddClientStream(virNetServerClientPtr client,
+int daemonAddClientStream(virNetServerClient *client,
                           daemonClientStream *stream,
                           bool transmit);
 
 int
-daemonRemoveClientStream(virNetServerClientPtr client,
+daemonRemoveClientStream(virNetServerClient *client,
                          daemonClientStream *stream);
 
 void

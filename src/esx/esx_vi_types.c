@@ -157,7 +157,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
 #define ESX_VI__TEMPLATE__LIST__SERIALIZE(_type) \
     int \
     esxVI_##_type##_SerializeList(esxVI_##_type *list, const char *element, \
-                                  virBufferPtr output) \
+                                  virBuffer *output) \
     { \
         return esxVI_List_Serialize((esxVI_List *)list, element, output, \
                                     (esxVI_List_SerializeFunc) \
@@ -235,7 +235,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
 #define ESX_VI__TEMPLATE__SERIALIZE_EXTRA(_type, _extra, _serialize) \
     int \
     esxVI_##_type##_Serialize(esxVI_##_type *item, \
-                              const char *element, virBufferPtr output) \
+                              const char *element, virBuffer *output) \
     { \
         if (!element || !output) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
@@ -509,7 +509,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
 #define ESX_VI__TEMPLATE__ENUMERATION__SERIALIZE(_type) \
     int \
     esxVI_##_type##_Serialize(esxVI_##_type value, const char *element, \
-                              virBufferPtr output) \
+                              virBuffer *output) \
     { \
         return esxVI_Enumeration_Serialize(&_esxVI_##_type##_Enumeration, \
                                            value, element, output); \
@@ -1206,7 +1206,7 @@ ESX_VI__TEMPLATE__CAST_VALUE_FROM_ANY_TYPE(String, char)
 
 int
 esxVI_String_Serialize(esxVI_String *string, const char *element,
-                       virBufferPtr output)
+                       virBuffer *output)
 {
     return esxVI_String_SerializeValue(string ? string->value : NULL,
                                        element, output);
@@ -1217,7 +1217,7 @@ ESX_VI__TEMPLATE__LIST__SERIALIZE(String)
 
 int
 esxVI_String_SerializeValue(const char *value, const char *element,
-                            virBufferPtr output)
+                            virBuffer *output)
 {
     if (!element || !output) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -1653,7 +1653,7 @@ ESX_VI__TEMPLATE__LIST__CAST_FROM_ANY_TYPE(ManagedObjectReference)
 int
 esxVI_ManagedObjectReference_Serialize
   (esxVI_ManagedObjectReference *managedObjectReference,
-   const char *element, virBufferPtr output)
+   const char *element, virBuffer *output)
 {
     if (!element || !output) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));

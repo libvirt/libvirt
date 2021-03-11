@@ -26,7 +26,7 @@
 
 int virNWFilterDHCPSnoopInit(void);
 void virNWFilterDHCPSnoopShutdown(void);
-int virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
-                            virNWFilterBindingDefPtr binding,
-                            virNWFilterDriverStatePtr driver);
+int virNWFilterDHCPSnoopReq(virNWFilterTechDriver *techdriver,
+                            virNWFilterBindingDef *binding,
+                            virNWFilterDriverState *driver);
 void virNWFilterDHCPSnoopEnd(const char *ifname);

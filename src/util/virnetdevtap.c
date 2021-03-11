@@ -591,7 +591,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    const virNetDevVPortProfile *virtPortProfile,
                                    const virNetDevVlan *virtVlan,
                                    virTristateBool isolatedPort,
-                                   virNetDevCoalescePtr coalesce,
+                                   virNetDevCoalesce *coalesce,
                                    unsigned int mtu,
                                    unsigned int *actualMTU,
                                    unsigned int flags)

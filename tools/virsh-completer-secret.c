@@ -32,7 +32,7 @@ virshSecretUUIDCompleter(vshControl *ctl,
                          const vshCmd *cmd G_GNUC_UNUSED,
                          unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virSecretPtr *secrets = NULL;
     int nsecrets = 0;
     size_t i = 0;

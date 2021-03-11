@@ -25,24 +25,22 @@
 /*Stores VirtualBox xml hard disk information
 A hard disk can have a parent and children*/
 typedef struct _virVBoxSnapshotConfHardDisk virVBoxSnapshotConfHardDisk;
-typedef virVBoxSnapshotConfHardDisk *virVBoxSnapshotConfHardDiskPtr;
 struct _virVBoxSnapshotConfHardDisk {
-    virVBoxSnapshotConfHardDiskPtr parent;
+    virVBoxSnapshotConfHardDisk *parent;
     char *uuid;
     char *location;
     char *format;
     char *type;
     size_t nchildren;
-    virVBoxSnapshotConfHardDiskPtr *children;
+    virVBoxSnapshotConfHardDisk **children;
 };
 
 /*Stores Virtualbox xml media registry information
 We separate disks from other media to manipulate them*/
 typedef struct _virVBoxSnapshotConfMediaRegistry virVBoxSnapshotConfMediaRegistry;
-typedef virVBoxSnapshotConfMediaRegistry *virVBoxSnapshotConfMediaRegistryPtr;
 struct _virVBoxSnapshotConfMediaRegistry {
     size_t ndisks;
-    virVBoxSnapshotConfHardDiskPtr *disks;
+    virVBoxSnapshotConfHardDisk **disks;
     size_t notherMedia;
     char **otherMedia;
 };
@@ -50,9 +48,8 @@ struct _virVBoxSnapshotConfMediaRegistry {
 /*Stores VirtualBox xml snapshot information
 A snapshot can have a parent and children*/
 typedef struct _virVBoxSnapshotConfSnapshot virVBoxSnapshotConfSnapshot;
-typedef virVBoxSnapshotConfSnapshot *virVBoxSnapshotConfSnapshotPtr;
 struct _virVBoxSnapshotConfSnapshot {
-    virVBoxSnapshotConfSnapshotPtr parent;
+    virVBoxSnapshotConfSnapshot *parent;
     char *uuid;
     char *name;
     char *timeStamp;
@@ -60,12 +57,11 @@ struct _virVBoxSnapshotConfSnapshot {
     char *hardware;
     char *storageController;
     size_t nchildren;
-    virVBoxSnapshotConfSnapshotPtr *children;
+    virVBoxSnapshotConfSnapshot **children;
 };
 
 /*Stores VirtualBox xml Machine information*/
 typedef struct _virVBoxSnapshotConfMachine virVBoxSnapshotConfMachine;
-typedef virVBoxSnapshotConfMachine *virVBoxSnapshotConfMachinePtr;
 struct _virVBoxSnapshotConfMachine {
     char *uuid;
     char *name;
@@ -73,44 +69,44 @@ struct _virVBoxSnapshotConfMachine {
     char *snapshotFolder;
     int currentStateModified;
     char *lastStateChange;
-    virVBoxSnapshotConfMediaRegistryPtr mediaRegistry;
+    virVBoxSnapshotConfMediaRegistry *mediaRegistry;
     char *hardware;
     char *extraData;
-    virVBoxSnapshotConfSnapshotPtr snapshot;
+    virVBoxSnapshotConfSnapshot *snapshot;
     char *storageController;
 };
 
 void
-virVboxSnapshotConfHardDiskFree(virVBoxSnapshotConfHardDiskPtr disk);
+virVboxSnapshotConfHardDiskFree(virVBoxSnapshotConfHardDisk *disk);
 void
-virVBoxSnapshotConfMediaRegistryFree(virVBoxSnapshotConfMediaRegistryPtr mediaRegistry);
+virVBoxSnapshotConfMediaRegistryFree(virVBoxSnapshotConfMediaRegistry *mediaRegistry);
 void
-virVBoxSnapshotConfSnapshotFree(virVBoxSnapshotConfSnapshotPtr snapshot);
+virVBoxSnapshotConfSnapshotFree(virVBoxSnapshotConfSnapshot *snapshot);
 void
-virVBoxSnapshotConfMachineFree(virVBoxSnapshotConfMachinePtr machine);
+virVBoxSnapshotConfMachineFree(virVBoxSnapshotConfMachine *machine);
 
-virVBoxSnapshotConfMachinePtr
+virVBoxSnapshotConfMachine *
 virVBoxSnapshotConfLoadVboxFile(const char *filePath,
                                 const char *machineLocation);
 int
-virVBoxSnapshotConfAddSnapshotToXmlMachine(virVBoxSnapshotConfSnapshotPtr snapshot,
-                                           virVBoxSnapshotConfMachinePtr machine,
+virVBoxSnapshotConfAddSnapshotToXmlMachine(virVBoxSnapshotConfSnapshot *snapshot,
+                                           virVBoxSnapshotConfMachine *machine,
                                            const char *snapshotParentName);
 int
-virVBoxSnapshotConfAddHardDiskToMediaRegistry(virVBoxSnapshotConfHardDiskPtr hardDisk,
-                                              virVBoxSnapshotConfMediaRegistryPtr mediaRegistry,
+virVBoxSnapshotConfAddHardDiskToMediaRegistry(virVBoxSnapshotConfHardDisk *hardDisk,
+                                              virVBoxSnapshotConfMediaRegistry *mediaRegistry,
                                               const char *parentHardDiskId);
 int
-virVBoxSnapshotConfRemoveSnapshot(virVBoxSnapshotConfMachinePtr machine,
+virVBoxSnapshotConfRemoveSnapshot(virVBoxSnapshotConfMachine *machine,
                                   const char *snapshotName);
 int
-virVBoxSnapshotConfRemoveHardDisk(virVBoxSnapshotConfMediaRegistryPtr mediaRegistry,
+virVBoxSnapshotConfRemoveHardDisk(virVBoxSnapshotConfMediaRegistry *mediaRegistry,
                                   const char *uuid);
 int
-virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachinePtr machine,
+virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachine *machine,
                                 const char *filePath);
 int
-virVBoxSnapshotConfIsCurrentSnapshot(virVBoxSnapshotConfMachinePtr machine,
+virVBoxSnapshotConfIsCurrentSnapshot(virVBoxSnapshotConfMachine *machine,
                                      const char *snapshotName);
 int
 virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(const char *filePath,
@@ -119,20 +115,20 @@ int
 virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(const char *filePath,
                                                  char ***realReadOnlyDisksPath);
 const char *
-virVBoxSnapshotConfHardDiskUuidByLocation(virVBoxSnapshotConfMachinePtr machine,
+virVBoxSnapshotConfHardDiskUuidByLocation(virVBoxSnapshotConfMachine *machine,
                                           const char *location);
 size_t
-virVBoxSnapshotConfDiskListToOpen(virVBoxSnapshotConfMachinePtr machine,
-                                  virVBoxSnapshotConfHardDiskPtr **hardDiskToOpen,
+virVBoxSnapshotConfDiskListToOpen(virVBoxSnapshotConfMachine *machine,
+                                  virVBoxSnapshotConfHardDisk ***hardDiskToOpen,
                                   const char *location);
 int
-virVBoxSnapshotConfRemoveFakeDisks(virVBoxSnapshotConfMachinePtr machine);
+virVBoxSnapshotConfRemoveFakeDisks(virVBoxSnapshotConfMachine *machine);
 int
-virVBoxSnapshotConfDiskIsInMediaRegistry(virVBoxSnapshotConfMachinePtr machine,
+virVBoxSnapshotConfDiskIsInMediaRegistry(virVBoxSnapshotConfMachine *machine,
                                          const char *location);
-virVBoxSnapshotConfHardDiskPtr
-virVBoxSnapshotConfHardDiskPtrByLocation(virVBoxSnapshotConfMachinePtr machine,
+virVBoxSnapshotConfHardDisk *
+virVBoxSnapshotConfHardDiskPtrByLocation(virVBoxSnapshotConfMachine *machine,
                                          const char *location);
-virVBoxSnapshotConfSnapshotPtr
-virVBoxSnapshotConfSnapshotByName(virVBoxSnapshotConfSnapshotPtr snapshot,
+virVBoxSnapshotConfSnapshot *
+virVBoxSnapshotConfSnapshotByName(virVBoxSnapshotConfSnapshot *snapshot,
                                   const char *snapshotName);

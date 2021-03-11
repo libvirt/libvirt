@@ -30,23 +30,19 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 typedef struct _virThreadPoolJob virThreadPoolJob;
-typedef virThreadPoolJob *virThreadPoolJobPtr;
-
 struct _virThreadPoolJob {
-    virThreadPoolJobPtr prev;
-    virThreadPoolJobPtr next;
+    virThreadPoolJob *prev;
+    virThreadPoolJob *next;
     unsigned int priority;
 
     void *data;
 };
 
 typedef struct _virThreadPoolJobList virThreadPoolJobList;
-typedef virThreadPoolJobList *virThreadPoolJobListPtr;
-
 struct _virThreadPoolJobList {
-    virThreadPoolJobPtr head;
-    virThreadPoolJobPtr tail;
-    virThreadPoolJobPtr firstPrio;
+    virThreadPoolJob *head;
+    virThreadPoolJob *tail;
+    virThreadPoolJob *firstPrio;
 };
 
 
@@ -67,17 +63,17 @@ struct _virThreadPool {
     size_t minWorkers;
     size_t freeWorkers;
     size_t nWorkers;
-    virThreadPtr workers;
+    virThread *workers;
 
     size_t maxPrioWorkers;
     size_t nPrioWorkers;
-    virThreadPtr prioWorkers;
+    virThread *prioWorkers;
     virCond prioCond;
 };
 
 struct virThreadPoolWorkerData {
-    virThreadPoolPtr pool;
-    virCondPtr cond;
+    virThreadPool *pool;
+    virCond *cond;
     bool priority;
 };
 
@@ -92,12 +88,12 @@ static inline bool virThreadPoolWorkerQuitHelper(size_t count, size_t limit)
 static void virThreadPoolWorker(void *opaque)
 {
     struct virThreadPoolWorkerData *data = opaque;
-    virThreadPoolPtr pool = data->pool;
-    virCondPtr cond = data->cond;
+    virThreadPool *pool = data->pool;
+    virCond *cond = data->cond;
     bool priority = data->priority;
     size_t *curWorkers = priority ? &pool->nPrioWorkers : &pool->nWorkers;
     size_t *maxLimit = priority ? &pool->maxPrioWorkers : &pool->maxWorkers;
-    virThreadPoolJobPtr job = NULL;
+    virThreadPoolJob *job = NULL;
 
     VIR_FREE(data);
 
@@ -139,7 +135,7 @@ static void virThreadPoolWorker(void *opaque)
         }
 
         if (job == pool->jobList.firstPrio) {
-            virThreadPoolJobPtr tmp = job->next;
+            virThreadPoolJob *tmp = job->next;
             while (tmp) {
                 if (tmp->priority)
                     break;
@@ -176,9 +172,9 @@ static void virThreadPoolWorker(void *opaque)
 }
 
 static int
-virThreadPoolExpand(virThreadPoolPtr pool, size_t gain, bool priority)
+virThreadPoolExpand(virThreadPool *pool, size_t gain, bool priority)
 {
-    virThreadPtr *workers = priority ? &pool->prioWorkers : &pool->workers;
+    virThread **workers = priority ? &pool->prioWorkers : &pool->workers;
     size_t *curWorkers = priority ? &pool->nPrioWorkers : &pool->nWorkers;
     size_t i = 0;
     struct virThreadPoolWorkerData *data = NULL;
@@ -217,7 +213,7 @@ virThreadPoolExpand(virThreadPoolPtr pool, size_t gain, bool priority)
     return -1;
 }
 
-virThreadPoolPtr
+virThreadPool *
 virThreadPoolNewFull(size_t minWorkers,
                      size_t maxWorkers,
                      size_t prioWorkers,
@@ -225,7 +221,7 @@ virThreadPoolNewFull(size_t minWorkers,
                      const char *name,
                      void *opaque)
 {
-    virThreadPoolPtr pool;
+    virThreadPool *pool;
 
     if (minWorkers > maxWorkers)
         minWorkers = maxWorkers;
@@ -267,7 +263,7 @@ virThreadPoolNewFull(size_t minWorkers,
 
 
 static void
-virThreadPoolStopLocked(virThreadPoolPtr pool)
+virThreadPoolStopLocked(virThreadPool *pool)
 {
     if (pool->quit)
         return;
@@ -281,9 +277,9 @@ virThreadPoolStopLocked(virThreadPoolPtr pool)
 
 
 static void
-virThreadPoolDrainLocked(virThreadPoolPtr pool)
+virThreadPoolDrainLocked(virThreadPool *pool)
 {
-    virThreadPoolJobPtr job;
+    virThreadPoolJob *job;
 
     virThreadPoolStopLocked(pool);
 
@@ -296,7 +292,7 @@ virThreadPoolDrainLocked(virThreadPoolPtr pool)
     }
 }
 
-void virThreadPoolFree(virThreadPoolPtr pool)
+void virThreadPoolFree(virThreadPool *pool)
 {
     if (!pool)
         return;
@@ -315,7 +311,7 @@ void virThreadPoolFree(virThreadPoolPtr pool)
 }
 
 
-size_t virThreadPoolGetMinWorkers(virThreadPoolPtr pool)
+size_t virThreadPoolGetMinWorkers(virThreadPool *pool)
 {
     size_t ret;
 
@@ -326,7 +322,7 @@ size_t virThreadPoolGetMinWorkers(virThreadPoolPtr pool)
     return ret;
 }
 
-size_t virThreadPoolGetMaxWorkers(virThreadPoolPtr pool)
+size_t virThreadPoolGetMaxWorkers(virThreadPool *pool)
 {
     size_t ret;
 
@@ -337,7 +333,7 @@ size_t virThreadPoolGetMaxWorkers(virThreadPoolPtr pool)
     return ret;
 }
 
-size_t virThreadPoolGetPriorityWorkers(virThreadPoolPtr pool)
+size_t virThreadPoolGetPriorityWorkers(virThreadPool *pool)
 {
     size_t ret;
 
@@ -348,7 +344,7 @@ size_t virThreadPoolGetPriorityWorkers(virThreadPoolPtr pool)
     return ret;
 }
 
-size_t virThreadPoolGetCurrentWorkers(virThreadPoolPtr pool)
+size_t virThreadPoolGetCurrentWorkers(virThreadPool *pool)
 {
     size_t ret;
 
@@ -359,7 +355,7 @@ size_t virThreadPoolGetCurrentWorkers(virThreadPoolPtr pool)
     return ret;
 }
 
-size_t virThreadPoolGetFreeWorkers(virThreadPoolPtr pool)
+size_t virThreadPoolGetFreeWorkers(virThreadPool *pool)
 {
     size_t ret;
 
@@ -370,7 +366,7 @@ size_t virThreadPoolGetFreeWorkers(virThreadPoolPtr pool)
     return ret;
 }
 
-size_t virThreadPoolGetJobQueueDepth(virThreadPoolPtr pool)
+size_t virThreadPoolGetJobQueueDepth(virThreadPool *pool)
 {
     size_t ret;
 
@@ -385,11 +381,11 @@ size_t virThreadPoolGetJobQueueDepth(virThreadPoolPtr pool)
  * @priority - job priority
  * Return: 0 on success, -1 otherwise
  */
-int virThreadPoolSendJob(virThreadPoolPtr pool,
+int virThreadPoolSendJob(virThreadPool *pool,
                          unsigned int priority,
                          void *jobData)
 {
-    virThreadPoolJobPtr job;
+    virThreadPoolJob *job;
 
     virMutexLock(&pool->mutex);
     if (pool->quit)
@@ -431,7 +427,7 @@ int virThreadPoolSendJob(virThreadPoolPtr pool,
 }
 
 int
-virThreadPoolSetParameters(virThreadPoolPtr pool,
+virThreadPoolSetParameters(virThreadPool *pool,
                            long long int minWorkers,
                            long long int maxWorkers,
                            long long int prioWorkers)
@@ -490,7 +486,7 @@ virThreadPoolSetParameters(virThreadPoolPtr pool,
 }
 
 void
-virThreadPoolStop(virThreadPoolPtr pool)
+virThreadPoolStop(virThreadPool *pool)
 {
     virMutexLock(&pool->mutex);
     virThreadPoolStopLocked(pool);
@@ -498,7 +494,7 @@ virThreadPoolStop(virThreadPoolPtr pool)
 }
 
 void
-virThreadPoolDrain(virThreadPoolPtr pool)
+virThreadPoolDrain(virThreadPool *pool)
 {
     virMutexLock(&pool->mutex);
     virThreadPoolDrainLocked(pool);

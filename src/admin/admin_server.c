@@ -37,12 +37,12 @@
 VIR_LOG_INIT("daemon.admin_server");
 
 int
-adminConnectListServers(virNetDaemonPtr dmn,
-                        virNetServerPtr **servers,
+adminConnectListServers(virNetDaemon *dmn,
+                        virNetServer ***servers,
                         unsigned int flags)
 {
     int ret = -1;
-    virNetServerPtr *srvs = NULL;
+    virNetServer **srvs = NULL;
 
     virCheckFlags(0, -1);
 
@@ -58,8 +58,8 @@ adminConnectListServers(virNetDaemonPtr dmn,
     return ret;
 }
 
-virNetServerPtr
-adminConnectLookupServer(virNetDaemonPtr dmn,
+virNetServer *
+adminConnectLookupServer(virNetDaemon *dmn,
                          const char *name,
                          unsigned int flags)
 {
@@ -69,7 +69,7 @@ adminConnectLookupServer(virNetDaemonPtr dmn,
 }
 
 int
-adminServerGetThreadPoolParameters(virNetServerPtr srv,
+adminServerGetThreadPoolParameters(virNetServer *srv,
                                    virTypedParameterPtr *params,
                                    int *nparams,
                                    unsigned int flags)
@@ -123,7 +123,7 @@ adminServerGetThreadPoolParameters(virNetServerPtr srv,
 }
 
 int
-adminServerSetThreadPoolParameters(virNetServerPtr srv,
+adminServerSetThreadPoolParameters(virNetServer *srv,
                                    virTypedParameterPtr params,
                                    int nparams,
                                    unsigned int flags)
@@ -165,12 +165,12 @@ adminServerSetThreadPoolParameters(virNetServerPtr srv,
 }
 
 int
-adminServerListClients(virNetServerPtr srv,
-                       virNetServerClientPtr **clients,
+adminServerListClients(virNetServer *srv,
+                       virNetServerClient ***clients,
                        unsigned int flags)
 {
     int ret = -1;
-    virNetServerClientPtr *clts;
+    virNetServerClient **clts;
 
     virCheckFlags(0, -1);
 
@@ -185,8 +185,8 @@ adminServerListClients(virNetServerPtr srv,
     return ret;
 }
 
-virNetServerClientPtr
-adminServerLookupClient(virNetServerPtr srv,
+virNetServerClient *
+adminServerLookupClient(virNetServer *srv,
                         unsigned long long id,
                         unsigned int flags)
 {
@@ -196,7 +196,7 @@ adminServerLookupClient(virNetServerPtr srv,
 }
 
 int
-adminClientGetInfo(virNetServerClientPtr client,
+adminClientGetInfo(virNetServerClient *client,
                    virTypedParameterPtr *params,
                    int *nparams,
                    unsigned int flags)
@@ -287,7 +287,7 @@ adminClientGetInfo(virNetServerClientPtr client,
     return 0;
 }
 
-int adminClientClose(virNetServerClientPtr client,
+int adminClientClose(virNetServerClient *client,
                      unsigned int flags)
 {
     virCheckFlags(0, -1);
@@ -297,7 +297,7 @@ int adminClientClose(virNetServerClientPtr client,
 }
 
 int
-adminServerGetClientLimits(virNetServerPtr srv,
+adminServerGetClientLimits(virNetServer *srv,
                            virTypedParameterPtr *params,
                            int *nparams,
                            unsigned int flags)
@@ -332,7 +332,7 @@ adminServerGetClientLimits(virNetServerPtr srv,
 }
 
 int
-adminServerSetClientLimits(virNetServerPtr srv,
+adminServerSetClientLimits(virNetServer *srv,
                            virTypedParameterPtr params,
                            int nparams,
                            unsigned int flags)
@@ -367,7 +367,7 @@ adminServerSetClientLimits(virNetServerPtr srv,
 }
 
 int
-adminServerUpdateTlsFiles(virNetServerPtr srv,
+adminServerUpdateTlsFiles(virNetServer *srv,
                           unsigned int flags)
 {
     virCheckFlags(0, -1);

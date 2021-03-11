@@ -23,19 +23,19 @@
 
 struct testQEMUSchemaValidateCtxt {
     GHashTable *schema;
-    virBufferPtr debug;
+    virBuffer *debug;
     bool allowDeprecated;
 };
 
 
 static int
-testQEMUSchemaValidateRecurse(virJSONValuePtr obj,
-                              virJSONValuePtr root,
+testQEMUSchemaValidateRecurse(virJSONValue *obj,
+                              virJSONValue *root,
                               struct testQEMUSchemaValidateCtxt *ctxt);
 
 static int
-testQEMUSchemaValidateBuiltin(virJSONValuePtr obj,
-                              virJSONValuePtr root,
+testQEMUSchemaValidateBuiltin(virJSONValue *obj,
+                              virJSONValue *root,
                               struct testQEMUSchemaValidateCtxt *ctxt)
 {
     const char *t = virJSONValueObjectGetString(root, "json-type");
@@ -95,18 +95,18 @@ testQEMUSchemaValidateBuiltin(virJSONValuePtr obj,
 }
 
 struct testQEMUSchemaValidateObjectMemberData {
-    virJSONValuePtr rootmembers;
+    virJSONValue *rootmembers;
     struct testQEMUSchemaValidateCtxt *ctxt;
     bool missingMandatory;
 };
 
 
-static virJSONValuePtr
+static virJSONValue *
 testQEMUSchemaStealObjectMemberByName(const char *name,
-                                      virJSONValuePtr members)
+                                      virJSONValue *members)
 {
-    virJSONValuePtr member;
-    virJSONValuePtr ret = NULL;
+    virJSONValue *member;
+    virJSONValue *ret = NULL;
     size_t i;
 
     for (i = 0; i < virJSONValueArraySize(members); i++) {
@@ -124,13 +124,13 @@ testQEMUSchemaStealObjectMemberByName(const char *name,
 
 static int
 testQEMUSchemaValidateObjectMember(const char *key,
-                                   virJSONValuePtr value,
+                                   virJSONValue *value,
                                    void *opaque)
 {
     struct testQEMUSchemaValidateObjectMemberData *data = opaque;
     g_autoptr(virJSONValue) keymember = NULL;
     const char *keytype;
-    virJSONValuePtr keyschema = NULL;
+    virJSONValue *keyschema = NULL;
     int rc;
 
     virBufferStrcat(data->ctxt->debug, key, ": ", NULL);
@@ -159,10 +159,10 @@ testQEMUSchemaValidateObjectMember(const char *key,
 
 static int
 testQEMUSchemaValidateObjectMergeVariantMember(size_t pos G_GNUC_UNUSED,
-                                               virJSONValuePtr item,
+                                               virJSONValue *item,
                                                void *opaque)
 {
-    virJSONValuePtr array = opaque;
+    virJSONValue *array = opaque;
     g_autoptr(virJSONValue) copy = NULL;
 
     if (!(copy = virJSONValueCopy(item)))
@@ -182,17 +182,17 @@ testQEMUSchemaValidateObjectMergeVariantMember(size_t pos G_GNUC_UNUSED,
  * 'variants' array from @root.
  */
 static int
-testQEMUSchemaValidateObjectMergeVariant(virJSONValuePtr root,
+testQEMUSchemaValidateObjectMergeVariant(virJSONValue *root,
                                          const char *variantfield,
                                          const char *variantname,
                                          struct testQEMUSchemaValidateCtxt *ctxt)
 {
     size_t i;
     g_autoptr(virJSONValue) variants = NULL;
-    virJSONValuePtr variant;
-    virJSONValuePtr variantschema;
-    virJSONValuePtr variantschemamembers;
-    virJSONValuePtr rootmembers;
+    virJSONValue *variant;
+    virJSONValue *variantschema;
+    virJSONValue *variantschemamembers;
+    virJSONValue *rootmembers;
     const char *varianttype = NULL;
 
     if (!(variants = virJSONValueObjectStealArray(root, "variants"))) {
@@ -238,7 +238,7 @@ testQEMUSchemaValidateObjectMergeVariant(virJSONValuePtr root,
 
 static int
 testQEMUSchemaValidateObjectMandatoryMember(size_t pos G_GNUC_UNUSED,
-                                            virJSONValuePtr item,
+                                            virJSONValue *item,
                                             void *opaque G_GNUC_UNUSED)
 {
     struct testQEMUSchemaValidateObjectMemberData *data = opaque;
@@ -254,8 +254,8 @@ testQEMUSchemaValidateObjectMandatoryMember(size_t pos G_GNUC_UNUSED,
 
 
 static int
-testQEMUSchemaValidateObject(virJSONValuePtr obj,
-                             virJSONValuePtr root,
+testQEMUSchemaValidateObject(virJSONValue *obj,
+                             virJSONValue *root,
                              struct testQEMUSchemaValidateCtxt *ctxt)
 {
     struct testQEMUSchemaValidateObjectMemberData data = { NULL, ctxt, false };
@@ -313,13 +313,13 @@ testQEMUSchemaValidateObject(virJSONValuePtr obj,
 
 
 static int
-testQEMUSchemaValidateEnum(virJSONValuePtr obj,
-                           virJSONValuePtr root,
+testQEMUSchemaValidateEnum(virJSONValue *obj,
+                           virJSONValue *root,
                            struct testQEMUSchemaValidateCtxt *ctxt)
 {
     const char *objstr;
-    virJSONValuePtr values = NULL;
-    virJSONValuePtr value;
+    virJSONValue *values = NULL;
+    virJSONValue *value;
     size_t i;
 
     if (virJSONValueGetType(obj) != VIR_JSON_TYPE_STRING) {
@@ -351,13 +351,13 @@ testQEMUSchemaValidateEnum(virJSONValuePtr obj,
 
 
 static int
-testQEMUSchemaValidateArray(virJSONValuePtr objs,
-                            virJSONValuePtr root,
+testQEMUSchemaValidateArray(virJSONValue *objs,
+                            virJSONValue *root,
                             struct testQEMUSchemaValidateCtxt *ctxt)
 {
     const char *elemtypename = virJSONValueObjectGetString(root, "element-type");
-    virJSONValuePtr elementschema;
-    virJSONValuePtr obj;
+    virJSONValue *elementschema;
+    virJSONValue *obj;
     size_t i;
 
     if (virJSONValueGetType(objs) != VIR_JSON_TYPE_ARRAY) {
@@ -389,16 +389,16 @@ testQEMUSchemaValidateArray(virJSONValuePtr objs,
 }
 
 static int
-testQEMUSchemaValidateAlternate(virJSONValuePtr obj,
-                                virJSONValuePtr root,
+testQEMUSchemaValidateAlternate(virJSONValue *obj,
+                                virJSONValue *root,
                                 struct testQEMUSchemaValidateCtxt *ctxt)
 {
-    virJSONValuePtr members;
-    virJSONValuePtr member;
+    virJSONValue *members;
+    virJSONValue *member;
     size_t i;
     size_t n;
     const char *membertype;
-    virJSONValuePtr memberschema;
+    virJSONValue *memberschema;
     int indent;
     int rc;
 
@@ -446,11 +446,11 @@ testQEMUSchemaValidateAlternate(virJSONValuePtr obj,
 
 
 static int
-testQEMUSchemaValidateDeprecated(virJSONValuePtr root,
+testQEMUSchemaValidateDeprecated(virJSONValue *root,
                                  const char *name,
                                  struct testQEMUSchemaValidateCtxt *ctxt)
 {
-    virJSONValuePtr features = virJSONValueObjectGetArray(root, "features");
+    virJSONValue *features = virJSONValueObjectGetArray(root, "features");
     size_t nfeatures;
     size_t i;
 
@@ -460,7 +460,7 @@ testQEMUSchemaValidateDeprecated(virJSONValuePtr root,
     nfeatures = virJSONValueArraySize(features);
 
     for (i = 0; i < nfeatures; i++) {
-        virJSONValuePtr cur = virJSONValueArrayGet(features, i);
+        virJSONValue *cur = virJSONValueArrayGet(features, i);
         const char *curstr;
 
         if (!cur ||
@@ -487,8 +487,8 @@ testQEMUSchemaValidateDeprecated(virJSONValuePtr root,
 
 
 static int
-testQEMUSchemaValidateRecurse(virJSONValuePtr obj,
-                              virJSONValuePtr root,
+testQEMUSchemaValidateRecurse(virJSONValue *obj,
+                              virJSONValue *root,
                               struct testQEMUSchemaValidateCtxt *ctxt)
 {
     const char *n = virJSONValueObjectGetString(root, "name");
@@ -531,11 +531,11 @@ testQEMUSchemaValidateRecurse(virJSONValuePtr obj,
  * @debug is filled with information regarding the validation process
  */
 int
-testQEMUSchemaValidate(virJSONValuePtr obj,
-                       virJSONValuePtr root,
+testQEMUSchemaValidate(virJSONValue *obj,
+                       virJSONValue *root,
                        GHashTable *schema,
                        bool allowDeprecated,
-                       virBufferPtr debug)
+                       virBuffer *debug)
 {
     struct testQEMUSchemaValidateCtxt ctxt = { .schema = schema,
                                                .debug = debug,
@@ -567,19 +567,19 @@ testQEMUSchemaValidate(virJSONValuePtr obj,
  */
 int
 testQEMUSchemaValidateCommand(const char *command,
-                              virJSONValuePtr arguments,
+                              virJSONValue *arguments,
                               GHashTable *schema,
                               bool allowDeprecated,
                               bool allowRemoved,
-                              virBufferPtr debug)
+                              virBuffer *debug)
 {
     struct testQEMUSchemaValidateCtxt ctxt = { .schema = schema,
                                                .debug = debug,
                                                .allowDeprecated = allowDeprecated };
     g_autofree char *schemapatharguments = g_strdup_printf("%s/arg-type", command);
     g_autoptr(virJSONValue) emptyargs = NULL;
-    virJSONValuePtr schemarootcommand;
-    virJSONValuePtr schemarootarguments;
+    virJSONValue *schemarootcommand;
+    virJSONValue *schemarootarguments;
     int rc;
 
     if (virQEMUQAPISchemaPathGet(command, schema, &schemarootcommand) < 0 ||
@@ -629,7 +629,7 @@ testQEMUSchemaValidateCommand(const char *command,
  * members.
  */
 int
-testQEMUSchemaEntryMatchTemplate(virJSONValuePtr schemaentry,
+testQEMUSchemaEntryMatchTemplate(virJSONValue *schemaentry,
                                  ...)
 {
     g_autoptr(virJSONValue) members = NULL;
@@ -675,7 +675,7 @@ testQEMUSchemaEntryMatchTemplate(virJSONValuePtr schemaentry,
         }
 
         for (i = 0; i < virJSONValueArraySize(members); i++) {
-            virJSONValuePtr member = virJSONValueArrayGet(members, i);
+            virJSONValue *member = virJSONValueArrayGet(members, i);
             const char *membername = virJSONValueObjectGetString(member, "name");
             const char *membertype = virJSONValueObjectGetString(member, "type");
 
@@ -722,14 +722,14 @@ testQEMUSchemaEntryMatchTemplate(virJSONValuePtr schemaentry,
 }
 
 
-static virJSONValuePtr
+static virJSONValue *
 testQEMUSchemaLoadReplies(const char *filename)
 {
     g_autofree char *caps = NULL;
     char *schemaReply;
     char *end;
     g_autoptr(virJSONValue) reply = NULL;
-    virJSONValuePtr schema = NULL;
+    virJSONValue *schema = NULL;
 
     if (virTestLoadFile(filename, &caps) < 0)
         return NULL;
@@ -767,7 +767,7 @@ testQEMUSchemaLoadReplies(const char *filename)
  * Returns the schema data as the qemu monitor would reply from the latest
  * replies file used for qemucapabilitiestest for the x86_64 architecture.
  */
-virJSONValuePtr
+virJSONValue *
 testQEMUSchemaGetLatest(const char *arch)
 {
     g_autofree char *capsLatestFile = NULL;
@@ -786,7 +786,7 @@ testQEMUSchemaGetLatest(const char *arch)
 GHashTable *
 testQEMUSchemaLoadLatest(const char *arch)
 {
-    virJSONValuePtr schema;
+    virJSONValue *schema;
 
     if (!(schema = testQEMUSchemaGetLatest(arch)))
         return NULL;
@@ -798,7 +798,7 @@ testQEMUSchemaLoadLatest(const char *arch)
 GHashTable *
 testQEMUSchemaLoad(const char *filename)
 {
-    virJSONValuePtr schema;
+    virJSONValue *schema;
 
     if (!(schema = testQEMUSchemaLoadReplies(filename)))
         return NULL;

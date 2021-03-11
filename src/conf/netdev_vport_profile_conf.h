@@ -36,9 +36,9 @@ typedef enum {
     VIR_VPORT_XML_REQUIRE_TYPE              = (1<<2),
 } virNetDevVPortXMLFlags;
 
-virNetDevVPortProfilePtr
+virNetDevVPortProfile *
 virNetDevVPortProfileParse(xmlNodePtr node, unsigned int flags);
 
 int
 virNetDevVPortProfileFormat(const virNetDevVPortProfile *virtPort,
-                            virBufferPtr buf);
+                            virBuffer *buf);

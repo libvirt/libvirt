@@ -8,7 +8,7 @@
 static int
 mymain(void)
 {
-    virSecurityManagerPtr mgr;
+    virSecurityManager *mgr;
     const char *doi, *model;
 
     mgr = virSecurityManagerNew(NULL, "QEMU", VIR_SECURITY_MANAGER_DEFAULT_CONFINED);

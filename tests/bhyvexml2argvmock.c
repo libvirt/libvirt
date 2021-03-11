@@ -42,7 +42,7 @@ opendir(const char *path)
 }
 
 void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
-                        virMacAddrPtr addr)
+                        virMacAddr *addr)
 {
     addr->addr[0] = prefix[0];
     addr->addr[1] = prefix[1];
@@ -62,7 +62,7 @@ int virNetDevTapCreateInBridgePort(const char *brname G_GNUC_UNUSED,
                                    const virNetDevVPortProfile *virtPortProfile G_GNUC_UNUSED,
                                    const virNetDevVlan *virtVlan G_GNUC_UNUSED,
                                    virTristateBool isolatedPort G_GNUC_UNUSED,
-                                   virNetDevCoalescePtr coalesce G_GNUC_UNUSED,
+                                   virNetDevCoalesce *coalesce G_GNUC_UNUSED,
                                    unsigned int mtu G_GNUC_UNUSED,
                                    unsigned int *actualMTU G_GNUC_UNUSED,
                                    unsigned int fakeflags G_GNUC_UNUSED)

@@ -27,14 +27,14 @@ void
 virSysinfoSetup(const char *sysinfo,
                 const char *cpuinfo);
 
-virSysinfoDefPtr
+virSysinfoDef *
 virSysinfoReadPPC(void);
 
-virSysinfoDefPtr
+virSysinfoDef *
 virSysinfoReadARM(void);
 
-virSysinfoDefPtr
+virSysinfoDef *
 virSysinfoReadS390(void);
 
-virSysinfoDefPtr
+virSysinfoDef *
 virSysinfoReadDMI(void);

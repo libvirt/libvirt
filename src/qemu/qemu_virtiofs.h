@@ -20,27 +20,27 @@
 
 
 char *
-qemuVirtioFSCreatePidFilename(virDomainObjPtr vm,
+qemuVirtioFSCreatePidFilename(virDomainObj *vm,
                               const char *alias);
 char *
-qemuVirtioFSCreateSocketFilename(virDomainObjPtr vm,
+qemuVirtioFSCreateSocketFilename(virDomainObj *vm,
                                  const char *alias);
 
 int
-qemuVirtioFSStart(virLogManagerPtr logManager,
-                  virQEMUDriverPtr driver,
-                  virDomainObjPtr vm,
-                  virDomainFSDefPtr fs);
+qemuVirtioFSStart(virLogManager *logManager,
+                  virQEMUDriver *driver,
+                  virDomainObj *vm,
+                  virDomainFSDef *fs);
 void
-qemuVirtioFSStop(virQEMUDriverPtr driver,
-                 virDomainObjPtr vm,
-                 virDomainFSDefPtr fs);
+qemuVirtioFSStop(virQEMUDriver *driver,
+                 virDomainObj *vm,
+                 virDomainFSDef *fs);
 
 int
-qemuVirtioFSSetupCgroup(virDomainObjPtr vm,
-                        virDomainFSDefPtr fs,
-                        virCgroupPtr cgroup);
+qemuVirtioFSSetupCgroup(virDomainObj *vm,
+                        virDomainFSDef *fs,
+                        virCgroup *cgroup);
 
 int
-qemuVirtioFSPrepareDomain(virQEMUDriverPtr driver,
-                          virDomainFSDefPtr fs);
+qemuVirtioFSPrepareDomain(virQEMUDriver *driver,
+                          virDomainFSDef *fs);

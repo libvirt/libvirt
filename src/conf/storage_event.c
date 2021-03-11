@@ -37,7 +37,6 @@ struct _virStoragePoolEvent {
     bool dummy;
 };
 typedef struct _virStoragePoolEvent virStoragePoolEvent;
-typedef virStoragePoolEvent *virStoragePoolEventPtr;
 
 struct _virStoragePoolEventLifecycle {
     virStoragePoolEvent parent;
@@ -46,7 +45,6 @@ struct _virStoragePoolEventLifecycle {
     int detail;
 };
 typedef struct _virStoragePoolEventLifecycle virStoragePoolEventLifecycle;
-typedef virStoragePoolEventLifecycle *virStoragePoolEventLifecyclePtr;
 
 struct _virStoragePoolEventRefresh {
     virStoragePoolEvent parent;
@@ -54,11 +52,10 @@ struct _virStoragePoolEventRefresh {
     bool dummy;
 };
 typedef struct _virStoragePoolEventRefresh virStoragePoolEventRefresh;
-typedef virStoragePoolEventRefresh *virStoragePoolEventRefreshPtr;
 
-static virClassPtr virStoragePoolEventClass;
-static virClassPtr virStoragePoolEventLifecycleClass;
-static virClassPtr virStoragePoolEventRefreshClass;
+static virClass *virStoragePoolEventClass;
+static virClass *virStoragePoolEventLifecycleClass;
+static virClass *virStoragePoolEventRefreshClass;
 static void virStoragePoolEventDispose(void *obj);
 static void virStoragePoolEventLifecycleDispose(void *obj);
 static void virStoragePoolEventRefreshDispose(void *obj);
@@ -83,7 +80,7 @@ VIR_ONCE_GLOBAL_INIT(virStoragePoolEvents);
 static void
 virStoragePoolEventDispose(void *obj)
 {
-    virStoragePoolEventPtr event = obj;
+    virStoragePoolEvent *event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
@@ -91,7 +88,7 @@ virStoragePoolEventDispose(void *obj)
 static void
 virStoragePoolEventLifecycleDispose(void *obj)
 {
-    virStoragePoolEventLifecyclePtr event = obj;
+    virStoragePoolEventLifecycle *event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
@@ -99,14 +96,14 @@ virStoragePoolEventLifecycleDispose(void *obj)
 static void
 virStoragePoolEventRefreshDispose(void *obj)
 {
-    virStoragePoolEventRefreshPtr event = obj;
+    virStoragePoolEventRefresh *event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
 
 static void
 virStoragePoolEventDispatchDefaultFunc(virConnectPtr conn,
-                                       virObjectEventPtr event,
+                                       virObjectEvent *event,
                                        virConnectObjectEventGenericCallback cb,
                                        void *cbopaque)
 {
@@ -120,9 +117,9 @@ virStoragePoolEventDispatchDefaultFunc(virConnectPtr conn,
     switch ((virStoragePoolEventID)event->eventID) {
     case VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE:
         {
-            virStoragePoolEventLifecyclePtr storagePoolLifecycleEvent;
+            virStoragePoolEventLifecycle *storagePoolLifecycleEvent;
 
-            storagePoolLifecycleEvent = (virStoragePoolEventLifecyclePtr)event;
+            storagePoolLifecycleEvent = (virStoragePoolEventLifecycle *)event;
             ((virConnectStoragePoolEventLifecycleCallback)cb)(conn, pool,
                                                               storagePoolLifecycleEvent->type,
                                                               storagePoolLifecycleEvent->detail,
@@ -166,7 +163,7 @@ virStoragePoolEventDispatchDefaultFunc(virConnectPtr conn,
  */
 int
 virStoragePoolEventStateRegisterID(virConnectPtr conn,
-                                   virObjectEventStatePtr state,
+                                   virObjectEventState *state,
                                    virStoragePoolPtr pool,
                                    int eventID,
                                    virConnectStoragePoolEventGenericCallback cb,
@@ -210,7 +207,7 @@ virStoragePoolEventStateRegisterID(virConnectPtr conn,
  */
 int
 virStoragePoolEventStateRegisterClient(virConnectPtr conn,
-                                       virObjectEventStatePtr state,
+                                       virObjectEventState *state,
                                        virStoragePoolPtr pool,
                                        int eventID,
                                        virConnectStoragePoolEventGenericCallback cb,
@@ -243,13 +240,13 @@ virStoragePoolEventStateRegisterClient(virConnectPtr conn,
  *
  * Create a new storage pool lifecycle event.
  */
-virObjectEventPtr
+virObjectEvent *
 virStoragePoolEventLifecycleNew(const char *name,
                                 const unsigned char *uuid,
                                 int type,
                                 int detail)
 {
-    virStoragePoolEventLifecyclePtr event;
+    virStoragePoolEventLifecycle *event;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (virStoragePoolEventsInitialize() < 0)
@@ -265,7 +262,7 @@ virStoragePoolEventLifecycleNew(const char *name,
     event->type = type;
     event->detail = detail;
 
-    return (virObjectEventPtr)event;
+    return (virObjectEvent *)event;
 }
 
 
@@ -276,11 +273,11 @@ virStoragePoolEventLifecycleNew(const char *name,
  *
  * Create a new storage pool refresh event.
  */
-virObjectEventPtr
+virObjectEvent *
 virStoragePoolEventRefreshNew(const char *name,
                               const unsigned char *uuid)
 {
-    virStoragePoolEventRefreshPtr event;
+    virStoragePoolEventRefresh *event;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (virStoragePoolEventsInitialize() < 0)
@@ -293,5 +290,5 @@ virStoragePoolEventRefreshNew(const char *name,
                                     0, name, uuid, uuidstr)))
         return NULL;
 
-    return (virObjectEventPtr)event;
+    return (virObjectEvent *)event;
 }

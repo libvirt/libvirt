@@ -34,7 +34,7 @@ VIR_LOG_INIT("qemu.dbus");
 
 
 static char *
-qemuDBusCreatePidFilename(virQEMUDriverConfigPtr cfg,
+qemuDBusCreatePidFilename(virQEMUDriverConfig *cfg,
                           const char *shortName)
 {
     g_autofree char *name = g_strdup_printf("%s-dbus", shortName);
@@ -55,7 +55,7 @@ qemuDBusCreateFilename(const char *stateDir,
 
 
 static char *
-qemuDBusCreateSocketPath(virQEMUDriverConfigPtr cfg,
+qemuDBusCreateSocketPath(virQEMUDriverConfig *cfg,
                          const char *shortName)
 {
     return qemuDBusCreateFilename(cfg->dbusStateDir, shortName, ".sock");
@@ -63,7 +63,7 @@ qemuDBusCreateSocketPath(virQEMUDriverConfigPtr cfg,
 
 
 static char *
-qemuDBusCreateConfPath(virQEMUDriverConfigPtr cfg,
+qemuDBusCreateConfPath(virQEMUDriverConfig *cfg,
                        const char *shortName)
 {
     return qemuDBusCreateFilename(cfg->dbusStateDir, shortName, ".conf");
@@ -71,8 +71,8 @@ qemuDBusCreateConfPath(virQEMUDriverConfigPtr cfg,
 
 
 char *
-qemuDBusGetAddress(virQEMUDriverPtr driver,
-                   virDomainObjPtr vm)
+qemuDBusGetAddress(virQEMUDriver *driver,
+                   virDomainObj *vm)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortName = virDomainDefGetShortName(vm->def);
@@ -125,11 +125,11 @@ qemuDBusWriteConfig(const char *filename, const char *path)
 
 
 void
-qemuDBusStop(virQEMUDriverPtr driver,
-             virDomainObjPtr vm)
+qemuDBusStop(virQEMUDriver *driver,
+             virDomainObj *vm)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *shortName = NULL;
     g_autofree char *pidfile = NULL;
 
@@ -147,12 +147,12 @@ qemuDBusStop(virQEMUDriverPtr driver,
 
 
 int
-qemuDBusSetupCgroup(virQEMUDriverPtr driver,
-                    virDomainObjPtr vm,
-                    virCgroupPtr cgroup)
+qemuDBusSetupCgroup(virQEMUDriver *driver,
+                    virDomainObj *vm,
+                    virCgroup *cgroup)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *shortName = NULL;
     g_autofree char *pidfile = NULL;
     pid_t cpid = -1;
@@ -172,11 +172,11 @@ qemuDBusSetupCgroup(virQEMUDriverPtr driver,
 }
 
 int
-qemuDBusStart(virQEMUDriverPtr driver,
-              virDomainObjPtr vm)
+qemuDBusStart(virQEMUDriver *driver,
+              virDomainObj *vm)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *shortName = NULL;
     g_autofree char *pidfile = NULL;
@@ -288,18 +288,18 @@ qemuDBusStart(virQEMUDriverPtr driver,
 
 
 void
-qemuDBusVMStateAdd(virDomainObjPtr vm, const char *id)
+qemuDBusVMStateAdd(virDomainObj *vm, const char *id)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     priv->dbusVMStateIds = g_slist_append(priv->dbusVMStateIds, g_strdup(id));
 }
 
 
 void
-qemuDBusVMStateRemove(virDomainObjPtr vm, const char *id)
+qemuDBusVMStateRemove(virDomainObj *vm, const char *id)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     GSList *next;
 
     for (next = priv->dbusVMStateIds; next; next = next->next) {

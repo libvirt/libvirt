@@ -19,7 +19,7 @@ static int
 testCompareStatusXMLToXMLFiles(const void *opaque)
 {
     const struct testQemuInfo *data = opaque;
-    virDomainObjPtr obj = NULL;
+    virDomainObj *obj = NULL;
     g_autofree char *actual = NULL;
     int ret = -1;
 

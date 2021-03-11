@@ -42,7 +42,6 @@
 VIR_LOG_INIT("rpc.netclient");
 
 typedef struct _virNetClientCall virNetClientCall;
-typedef virNetClientCall *virNetClientCallPtr;
 
 enum {
     VIR_NET_CLIENT_MODE_WAIT_TX,
@@ -57,34 +56,34 @@ VIR_ENUM_IMPL(virNetClientProxy,
 struct _virNetClientCall {
     int mode;
 
-    virNetMessagePtr msg;
+    virNetMessage *msg;
     bool expectReply;
     bool nonBlock;
     bool haveThread;
 
     virCond cond;
 
-    virNetClientCallPtr next;
+    virNetClientCall *next;
 };
 
 
 struct _virNetClient {
     virObjectLockable parent;
 
-    virNetSocketPtr sock;
+    virNetSocket *sock;
     bool asyncIO;
 
-    virNetTLSSessionPtr tls;
+    virNetTLSSession *tls;
     char *hostname;
 
-    virNetClientProgramPtr *programs;
+    virNetClientProgram **programs;
     size_t nprograms;
 
     /* For incoming message packets */
     virNetMessage msg;
 
 #if WITH_SASL
-    virNetSASLSessionPtr sasl;
+    virNetSASLSession *sasl;
 #endif
 
     GMainLoop *eventLoop;
@@ -96,14 +95,14 @@ struct _virNetClient {
      * them, except possibly the first call in the list
      * which might be a partially sent non-blocking call.
      */
-    virNetClientCallPtr waitDispatch;
+    virNetClientCall *waitDispatch;
     /* True if a thread holds the buck */
     bool haveTheBuck;
 
     size_t nstreams;
-    virNetClientStreamPtr *streams;
+    virNetClientStream **streams;
 
-    virKeepAlivePtr keepalive;
+    virKeepAlive *keepalive;
     bool wantClose;
     int closeReason;
     virErrorPtr error;
@@ -114,7 +113,7 @@ struct _virNetClient {
 };
 
 
-static virClassPtr virNetClientClass;
+static virClass *virNetClientClass;
 static void virNetClientDispose(void *obj);
 
 static int virNetClientOnceInit(void)
@@ -127,15 +126,15 @@ static int virNetClientOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virNetClient);
 
-static void virNetClientIOEventLoopPassTheBuck(virNetClientPtr client,
-                                               virNetClientCallPtr thiscall);
-static int virNetClientQueueNonBlocking(virNetClientPtr client,
-                                        virNetMessagePtr msg);
-static void virNetClientCloseInternal(virNetClientPtr client,
+static void virNetClientIOEventLoopPassTheBuck(virNetClient *client,
+                                               virNetClientCall *thiscall);
+static int virNetClientQueueNonBlocking(virNetClient *client,
+                                        virNetMessage *msg);
+static void virNetClientCloseInternal(virNetClient *client,
                                       int reason);
 
 
-void virNetClientSetCloseCallback(virNetClientPtr client,
+void virNetClientSetCloseCallback(virNetClient *client,
                                   virNetClientCloseFunc cb,
                                   void *opaque,
                                   virFreeCallback ff)
@@ -148,15 +147,15 @@ void virNetClientSetCloseCallback(virNetClientPtr client,
 }
 
 
-static void virNetClientIncomingEvent(virNetSocketPtr sock,
+static void virNetClientIncomingEvent(virNetSocket *sock,
                                       int events,
                                       void *opaque);
 
 /* Append a call to the end of the list */
-static void virNetClientCallQueue(virNetClientCallPtr *head,
-                                  virNetClientCallPtr call)
+static void virNetClientCallQueue(virNetClientCall **head,
+                                  virNetClientCall *call)
 {
-    virNetClientCallPtr tmp = *head;
+    virNetClientCall *tmp = *head;
     while (tmp && tmp->next)
         tmp = tmp->next;
     if (tmp)
@@ -168,9 +167,9 @@ static void virNetClientCallQueue(virNetClientCallPtr *head,
 
 #if 0
 /* Obtain a call from the head of the list */
-static virNetClientCallPtr virNetClientCallServe(virNetClientCallPtr *head)
+static virNetClientCall *virNetClientCallServe(virNetClientCall **head)
 {
-    virNetClientCallPtr tmp = *head;
+    virNetClientCall *tmp = *head;
     if (tmp)
         *head = tmp->next;
     else
@@ -181,11 +180,11 @@ static virNetClientCallPtr virNetClientCallServe(virNetClientCallPtr *head)
 #endif
 
 /* Remove a call from anywhere in the list */
-static void virNetClientCallRemove(virNetClientCallPtr *head,
-                                   virNetClientCallPtr call)
+static void virNetClientCallRemove(virNetClientCall **head,
+                                   virNetClientCall *call)
 {
-    virNetClientCallPtr tmp = *head;
-    virNetClientCallPtr prev = NULL;
+    virNetClientCall *tmp = *head;
+    virNetClientCall *prev = NULL;
     while (tmp) {
         if (tmp == call) {
             if (prev)
@@ -200,17 +199,17 @@ static void virNetClientCallRemove(virNetClientCallPtr *head,
 }
 
 /* Predicate returns true if matches */
-typedef bool (*virNetClientCallPredicate)(virNetClientCallPtr call, void *opaque);
+typedef bool (*virNetClientCallPredicate)(virNetClientCall *call, void *opaque);
 
 /* Remove a list of calls from the list based on a predicate */
-static void virNetClientCallRemovePredicate(virNetClientCallPtr *head,
+static void virNetClientCallRemovePredicate(virNetClientCall **head,
                                             virNetClientCallPredicate pred,
                                             void *opaque)
 {
-    virNetClientCallPtr tmp = *head;
-    virNetClientCallPtr prev = NULL;
+    virNetClientCall *tmp = *head;
+    virNetClientCall *prev = NULL;
     while (tmp) {
-        virNetClientCallPtr next = tmp->next;
+        virNetClientCall *next = tmp->next;
         tmp->next = NULL; /* Temp unlink */
         if (pred(tmp, opaque)) {
             if (prev)
@@ -226,11 +225,11 @@ static void virNetClientCallRemovePredicate(virNetClientCallPtr *head,
 }
 
 /* Returns true if the predicate matches at least one call in the list */
-static bool virNetClientCallMatchPredicate(virNetClientCallPtr head,
+static bool virNetClientCallMatchPredicate(virNetClientCall *head,
                                            virNetClientCallPredicate pred,
                                            void *opaque)
 {
-    virNetClientCallPtr tmp = head;
+    virNetClientCall *tmp = head;
     while (tmp) {
         if (pred(tmp, opaque))
             return true;
@@ -241,7 +240,7 @@ static bool virNetClientCallMatchPredicate(virNetClientCallPtr head,
 
 
 bool
-virNetClientKeepAliveIsSupported(virNetClientPtr client)
+virNetClientKeepAliveIsSupported(virNetClient *client)
 {
     bool supported;
 
@@ -253,7 +252,7 @@ virNetClientKeepAliveIsSupported(virNetClientPtr client)
 }
 
 int
-virNetClientKeepAliveStart(virNetClientPtr client,
+virNetClientKeepAliveStart(virNetClient *client,
                            int interval,
                            unsigned int count)
 {
@@ -267,7 +266,7 @@ virNetClientKeepAliveStart(virNetClientPtr client,
 }
 
 void
-virNetClientKeepAliveStop(virNetClientPtr client)
+virNetClientKeepAliveStop(virNetClient *client)
 {
     virObjectLock(client);
     virKeepAliveStop(client->keepalive);
@@ -282,7 +281,7 @@ virNetClientKeepAliveDeadCB(void *opaque)
 
 static int
 virNetClientKeepAliveSendCB(void *opaque,
-                            virNetMessagePtr msg)
+                            virNetMessage *msg)
 {
     int ret;
 
@@ -292,10 +291,10 @@ virNetClientKeepAliveSendCB(void *opaque,
     return ret;
 }
 
-static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
+static virNetClient *virNetClientNew(virNetSocket *sock,
                                        const char *hostname)
 {
-    virNetClientPtr client = NULL;
+    virNetClient *client = NULL;
 
     if (virNetClientInitialize() < 0)
         goto error;
@@ -366,11 +365,11 @@ virNetClientFindDefaultSshKey(const char *homedir, char **retPath)
 }
 
 
-virNetClientPtr virNetClientNewUNIX(const char *path,
+virNetClient *virNetClientNewUNIX(const char *path,
                                     bool spawnDaemon,
                                     const char *binary)
 {
-    virNetSocketPtr sock;
+    virNetSocket *sock;
 
     if (virNetSocketNewConnectUNIX(path, spawnDaemon, binary, &sock) < 0)
         return NULL;
@@ -379,11 +378,11 @@ virNetClientPtr virNetClientNewUNIX(const char *path,
 }
 
 
-virNetClientPtr virNetClientNewTCP(const char *nodename,
+virNetClient *virNetClientNewTCP(const char *nodename,
                                    const char *service,
                                    int family)
 {
-    virNetSocketPtr sock;
+    virNetSocket *sock;
 
     if (virNetSocketNewConnectTCP(nodename, service,
                                   family,
@@ -481,7 +480,7 @@ virNetClientSSHHelperCommand(virNetClientProxy proxy,
     if (!VAR) \
         VAR = VAL;
 
-virNetClientPtr virNetClientNewSSH(const char *nodename,
+virNetClient *virNetClientNewSSH(const char *nodename,
                                    const char *service,
                                    const char *binary,
                                    const char *username,
@@ -494,7 +493,7 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
                                    const char *driverURI,
                                    bool readonly)
 {
-    virNetSocketPtr sock;
+    virNetSocket *sock;
     g_autofree char *command = NULL;
 
     if (!(command = virNetClientSSHHelperCommand(proxy, netcatPath, socketPath,
@@ -508,7 +507,7 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
     return virNetClientNew(sock, NULL);
 }
 
-virNetClientPtr virNetClientNewLibSSH2(const char *host,
+virNetClient *virNetClientNewLibSSH2(const char *host,
                                        const char *port,
                                        int family,
                                        const char *username,
@@ -522,9 +521,9 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
                                        const char *driverURI,
                                        bool readonly,
                                        virConnectAuthPtr authPtr,
-                                       virURIPtr uri)
+                                       virURI *uri)
 {
-    virNetSocketPtr sock = NULL;
+    virNetSocket *sock = NULL;
     g_autofree char *command = NULL;
     g_autofree char *homedir = NULL;
     g_autofree char *confdir = NULL;
@@ -573,7 +572,7 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
    return virNetClientNew(sock, NULL);
 }
 
-virNetClientPtr virNetClientNewLibssh(const char *host,
+virNetClient *virNetClientNewLibssh(const char *host,
                                       const char *port,
                                       int family,
                                       const char *username,
@@ -587,9 +586,9 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
                                       const char *driverURI,
                                       bool readonly,
                                       virConnectAuthPtr authPtr,
-                                      virURIPtr uri)
+                                      virURI *uri)
 {
-    virNetSocketPtr sock = NULL;
+    virNetSocket *sock = NULL;
     g_autofree char *command = NULL;
     g_autofree char *homedir = NULL;
     g_autofree char *confdir = NULL;
@@ -639,9 +638,9 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
 }
 #undef DEFAULT_VALUE
 
-virNetClientPtr virNetClientNewExternal(const char **cmdargv)
+virNetClient *virNetClientNewExternal(const char **cmdargv)
 {
-    virNetSocketPtr sock;
+    virNetSocket *sock;
 
     if (virNetSocketNewConnectExternal(cmdargv, &sock) < 0)
         return NULL;
@@ -650,7 +649,7 @@ virNetClientPtr virNetClientNewExternal(const char **cmdargv)
 }
 
 
-int virNetClientRegisterAsyncIO(virNetClientPtr client)
+int virNetClientRegisterAsyncIO(virNetClient *client)
 {
     if (client->asyncIO)
         return 0;
@@ -673,9 +672,9 @@ int virNetClientRegisterAsyncIO(virNetClientPtr client)
 }
 
 
-int virNetClientRegisterKeepAlive(virNetClientPtr client)
+int virNetClientRegisterKeepAlive(virNetClient *client)
 {
-    virKeepAlivePtr ka;
+    virKeepAlive *ka;
 
     if (client->keepalive)
         return 0;
@@ -702,7 +701,7 @@ int virNetClientRegisterKeepAlive(virNetClientPtr client)
 }
 
 
-int virNetClientGetFD(virNetClientPtr client)
+int virNetClientGetFD(virNetClient *client)
 {
     int fd;
     virObjectLock(client);
@@ -712,7 +711,7 @@ int virNetClientGetFD(virNetClientPtr client)
 }
 
 
-int virNetClientDupFD(virNetClientPtr client, bool cloexec)
+int virNetClientDupFD(virNetClient *client, bool cloexec)
 {
     int fd;
     virObjectLock(client);
@@ -722,7 +721,7 @@ int virNetClientDupFD(virNetClientPtr client, bool cloexec)
 }
 
 
-bool virNetClientHasPassFD(virNetClientPtr client)
+bool virNetClientHasPassFD(virNetClient *client)
 {
     bool hasPassFD;
     virObjectLock(client);
@@ -734,7 +733,7 @@ bool virNetClientHasPassFD(virNetClientPtr client)
 
 void virNetClientDispose(void *obj)
 {
-    virNetClientPtr client = obj;
+    virNetClient *client = obj;
     size_t i;
 
     PROBE(RPC_CLIENT_DISPOSE,
@@ -765,7 +764,7 @@ void virNetClientDispose(void *obj)
 
 
 static void
-virNetClientMarkClose(virNetClientPtr client,
+virNetClientMarkClose(virNetClient *client,
                       int reason)
 {
     VIR_DEBUG("client=%p, reason=%d", client, reason);
@@ -784,9 +783,9 @@ virNetClientMarkClose(virNetClientPtr client,
 
 
 static void
-virNetClientCloseLocked(virNetClientPtr client)
+virNetClientCloseLocked(virNetClient *client)
 {
-    virKeepAlivePtr ka;
+    virKeepAlive *ka;
 
     VIR_DEBUG("client=%p, sock=%p, reason=%d", client, client->sock, client->closeReason);
 
@@ -827,7 +826,7 @@ virNetClientCloseLocked(virNetClientPtr client)
 }
 
 
-static void virNetClientCloseInternal(virNetClientPtr client,
+static void virNetClientCloseInternal(virNetClient *client,
                                       int reason)
 {
     VIR_DEBUG("client=%p wantclose=%d", client, client ? client->wantClose : false);
@@ -858,15 +857,15 @@ static void virNetClientCloseInternal(virNetClientPtr client,
 }
 
 
-void virNetClientClose(virNetClientPtr client)
+void virNetClientClose(virNetClient *client)
 {
     virNetClientCloseInternal(client, VIR_CONNECT_CLOSE_REASON_CLIENT);
 }
 
 
 #if WITH_SASL
-void virNetClientSetSASLSession(virNetClientPtr client,
-                                virNetSASLSessionPtr sasl)
+void virNetClientSetSASLSession(virNetClient *client,
+                                virNetSASLSession *sasl)
 {
     virObjectLock(client);
     client->sasl = virObjectRef(sasl);
@@ -882,7 +881,7 @@ virNetClientIOEventTLS(int fd,
                        gpointer opaque);
 
 static gboolean
-virNetClientTLSHandshake(virNetClientPtr client)
+virNetClientTLSHandshake(virNetClient *client)
 {
     g_autoptr(GSource) source = NULL;
     GIOCondition ev;
@@ -913,7 +912,7 @@ virNetClientIOEventTLS(int fd G_GNUC_UNUSED,
                        GIOCondition ev G_GNUC_UNUSED,
                        gpointer opaque)
 {
-    virNetClientPtr client = opaque;
+    virNetClient *client = opaque;
 
     if (!virNetClientTLSHandshake(client))
         g_main_loop_quit(client->eventLoop);
@@ -927,7 +926,7 @@ virNetClientIOEventTLSConfirm(int fd G_GNUC_UNUSED,
                               GIOCondition ev G_GNUC_UNUSED,
                               gpointer opaque)
 {
-    virNetClientPtr client = opaque;
+    virNetClient *client = opaque;
 
     g_main_loop_quit(client->eventLoop);
 
@@ -935,8 +934,8 @@ virNetClientIOEventTLSConfirm(int fd G_GNUC_UNUSED,
 }
 
 
-int virNetClientSetTLSSession(virNetClientPtr client,
-                              virNetTLSContextPtr tls)
+int virNetClientSetTLSSession(virNetClient *client,
+                              virNetTLSContext *tls)
 {
     int ret;
     char buf[1];
@@ -1033,7 +1032,7 @@ int virNetClientSetTLSSession(virNetClientPtr client,
     return -1;
 }
 
-bool virNetClientIsEncrypted(virNetClientPtr client)
+bool virNetClientIsEncrypted(virNetClient *client)
 {
     bool ret = false;
     virObjectLock(client);
@@ -1048,7 +1047,7 @@ bool virNetClientIsEncrypted(virNetClientPtr client)
 }
 
 
-bool virNetClientIsOpen(virNetClientPtr client)
+bool virNetClientIsOpen(virNetClient *client)
 {
     bool ret;
 
@@ -1062,8 +1061,8 @@ bool virNetClientIsOpen(virNetClientPtr client)
 }
 
 
-int virNetClientAddProgram(virNetClientPtr client,
-                           virNetClientProgramPtr prog)
+int virNetClientAddProgram(virNetClient *client,
+                           virNetClientProgram *prog)
 {
     virObjectLock(client);
 
@@ -1075,8 +1074,8 @@ int virNetClientAddProgram(virNetClientPtr client,
 }
 
 
-int virNetClientAddStream(virNetClientPtr client,
-                          virNetClientStreamPtr st)
+int virNetClientAddStream(virNetClient *client,
+                          virNetClientStream *st)
 {
     virObjectLock(client);
 
@@ -1088,8 +1087,8 @@ int virNetClientAddStream(virNetClientPtr client,
 }
 
 
-void virNetClientRemoveStream(virNetClientPtr client,
-                              virNetClientStreamPtr st)
+void virNetClientRemoveStream(virNetClient *client,
+                              virNetClientStream *st)
 {
     size_t i;
 
@@ -1110,17 +1109,17 @@ void virNetClientRemoveStream(virNetClientPtr client,
 }
 
 
-const char *virNetClientLocalAddrStringSASL(virNetClientPtr client)
+const char *virNetClientLocalAddrStringSASL(virNetClient *client)
 {
     return virNetSocketLocalAddrStringSASL(client->sock);
 }
 
-const char *virNetClientRemoteAddrStringSASL(virNetClientPtr client)
+const char *virNetClientRemoteAddrStringSASL(virNetClient *client)
 {
     return virNetSocketRemoteAddrStringSASL(client->sock);
 }
 
-int virNetClientGetTLSKeySize(virNetClientPtr client)
+int virNetClientGetTLSKeySize(virNetClient *client)
 {
     int ret = 0;
     virObjectLock(client);
@@ -1131,9 +1130,9 @@ int virNetClientGetTLSKeySize(virNetClientPtr client)
 }
 
 static int
-virNetClientCallDispatchReply(virNetClientPtr client)
+virNetClientCallDispatchReply(virNetClient *client)
 {
-    virNetClientCallPtr thecall;
+    virNetClientCall *thecall;
 
     /* Ok, definitely got an RPC reply now find
        out which waiting call is associated with it */
@@ -1167,10 +1166,10 @@ virNetClientCallDispatchReply(virNetClientPtr client)
     return 0;
 }
 
-static int virNetClientCallDispatchMessage(virNetClientPtr client)
+static int virNetClientCallDispatchMessage(virNetClient *client)
 {
     size_t i;
-    virNetClientProgramPtr prog = NULL;
+    virNetClientProgram *prog = NULL;
 
     for (i = 0; i < client->nprograms; i++) {
         if (virNetClientProgramMatches(client->programs[i],
@@ -1190,9 +1189,9 @@ static int virNetClientCallDispatchMessage(virNetClientPtr client)
     return 0;
 }
 
-static void virNetClientCallCompleteAllWaitingReply(virNetClientPtr client)
+static void virNetClientCallCompleteAllWaitingReply(virNetClient *client)
 {
-    virNetClientCallPtr call;
+    virNetClientCall *call;
 
     for (call = client->waitDispatch; call; call = call->next) {
         if (call->msg->header.prog == client->msg.header.prog &&
@@ -1203,11 +1202,11 @@ static void virNetClientCallCompleteAllWaitingReply(virNetClientPtr client)
     }
 }
 
-static int virNetClientCallDispatchStream(virNetClientPtr client)
+static int virNetClientCallDispatchStream(virNetClient *client)
 {
     size_t i;
-    virNetClientStreamPtr st = NULL;
-    virNetClientCallPtr thecall;
+    virNetClientStream *st = NULL;
+    virNetClientCall *thecall;
 
     /* First identify what stream this packet is directed at */
     for (i = 0; i < client->nstreams; i++) {
@@ -1300,9 +1299,9 @@ static int virNetClientCallDispatchStream(virNetClientPtr client)
 
 
 static int
-virNetClientCallDispatch(virNetClientPtr client)
+virNetClientCallDispatch(virNetClient *client)
 {
-    virNetMessagePtr response = NULL;
+    virNetMessage *response = NULL;
 
     PROBE(RPC_CLIENT_MSG_RX,
           "client=%p len=%zu prog=%u vers=%u proc=%u type=%u status=%u serial=%u",
@@ -1344,8 +1343,8 @@ virNetClientCallDispatch(virNetClientPtr client)
 
 
 static ssize_t
-virNetClientIOWriteMessage(virNetClientPtr client,
-                           virNetClientCallPtr thecall)
+virNetClientIOWriteMessage(virNetClient *client,
+                           virNetClientCall *thecall)
 {
     ssize_t ret = 0;
 
@@ -1381,9 +1380,9 @@ virNetClientIOWriteMessage(virNetClientPtr client,
 
 
 static ssize_t
-virNetClientIOHandleOutput(virNetClientPtr client)
+virNetClientIOHandleOutput(virNetClient *client)
 {
-    virNetClientCallPtr thecall = client->waitDispatch;
+    virNetClientCall *thecall = client->waitDispatch;
 
     while (thecall &&
            thecall->mode != VIR_NET_CLIENT_MODE_WAIT_TX)
@@ -1410,7 +1409,7 @@ virNetClientIOHandleOutput(virNetClientPtr client)
 }
 
 static ssize_t
-virNetClientIOReadMessage(virNetClientPtr client)
+virNetClientIOReadMessage(virNetClient *client)
 {
     size_t wantData;
     ssize_t ret;
@@ -1436,7 +1435,7 @@ virNetClientIOReadMessage(virNetClientPtr client)
 
 
 static ssize_t
-virNetClientIOHandleInput(virNetClientPtr client)
+virNetClientIOHandleInput(virNetClient *client)
 {
     /* Read as much data as is available, until we get
      * EAGAIN
@@ -1523,7 +1522,7 @@ virNetClientIOHandleInput(virNetClientPtr client)
 }
 
 
-static bool virNetClientIOEventLoopPollEvents(virNetClientCallPtr call,
+static bool virNetClientIOEventLoopPollEvents(virNetClientCall *call,
                                               void *opaque)
 {
     GIOCondition *ev = opaque;
@@ -1537,10 +1536,10 @@ static bool virNetClientIOEventLoopPollEvents(virNetClientCallPtr call,
 }
 
 
-static bool virNetClientIOEventLoopRemoveDone(virNetClientCallPtr call,
+static bool virNetClientIOEventLoopRemoveDone(virNetClientCall *call,
                                               void *opaque)
 {
-    virNetClientCallPtr thiscall = opaque;
+    virNetClientCall *thiscall = opaque;
 
     if (call == thiscall)
         return false;
@@ -1575,7 +1574,7 @@ static bool virNetClientIOEventLoopRemoveDone(virNetClientCallPtr call,
 
 
 static void
-virNetClientIODetachNonBlocking(virNetClientCallPtr call)
+virNetClientIODetachNonBlocking(virNetClientCall *call)
 {
     VIR_DEBUG("Keeping unfinished non-blocking call %p in the queue", call);
     call->haveThread = false;
@@ -1583,10 +1582,10 @@ virNetClientIODetachNonBlocking(virNetClientCallPtr call)
 
 
 static bool
-virNetClientIOEventLoopRemoveAll(virNetClientCallPtr call,
+virNetClientIOEventLoopRemoveAll(virNetClientCall *call,
                                  void *opaque)
 {
-    virNetClientCallPtr thiscall = opaque;
+    virNetClientCall *thiscall = opaque;
 
     if (call == thiscall)
         return false;
@@ -1600,10 +1599,10 @@ virNetClientIOEventLoopRemoveAll(virNetClientCallPtr call,
 
 
 static void
-virNetClientIOEventLoopPassTheBuck(virNetClientPtr client,
-                                   virNetClientCallPtr thiscall)
+virNetClientIOEventLoopPassTheBuck(virNetClient *client,
+                                   virNetClientCall *thiscall)
 {
-    virNetClientCallPtr tmp = client->waitDispatch;
+    virNetClientCall *tmp = client->waitDispatch;
 
     VIR_DEBUG("Giving up the buck %p", thiscall);
 
@@ -1630,7 +1629,7 @@ virNetClientIOEventLoopPassTheBuck(virNetClientPtr client,
 
 
 struct virNetClientIOEventData {
-    virNetClientPtr client;
+    virNetClient *client;
     GIOCondition rev;
 };
 
@@ -1654,8 +1653,8 @@ virNetClientIOEventFD(int fd G_GNUC_UNUSED,
  * Returns 1 if the call was queued and will be completed later (only
  * for nonBlock == true), 0 if the call was completed and -1 on error.
  */
-static int virNetClientIOEventLoop(virNetClientPtr client,
-                                   virNetClientCallPtr thiscall)
+static int virNetClientIOEventLoop(virNetClient *client,
+                                   virNetClientCall *thiscall)
 {
     bool error = false;
     int closeReason;
@@ -1665,7 +1664,7 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         sigset_t oldmask, blockedsigs;
 #endif /* !WIN32 */
         int timeout = -1;
-        virNetMessagePtr msg = NULL;
+        virNetMessage *msg = NULL;
         g_autoptr(GSource) source = NULL;
         GIOCondition ev = 0;
         struct virNetClientIOEventData data = {
@@ -1826,7 +1825,7 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
 
 
 static bool
-virNetClientIOUpdateEvents(virNetClientCallPtr call,
+virNetClientIOUpdateEvents(virNetClientCall *call,
                            void *opaque)
 {
     int *events = opaque;
@@ -1838,7 +1837,7 @@ virNetClientIOUpdateEvents(virNetClientCallPtr call,
 }
 
 
-static void virNetClientIOUpdateCallback(virNetClientPtr client,
+static void virNetClientIOUpdateCallback(virNetClient *client,
                                          bool enableCallback)
 {
     int events = 0;
@@ -1914,8 +1913,8 @@ static void virNetClientIOUpdateCallback(virNetClientPtr client,
  * Returns 1 if the call was queued and will be completed later (only
  * for nonBlock == true), 0 if the call was completed and -1 on error.
  */
-static int virNetClientIO(virNetClientPtr client,
-                          virNetClientCallPtr thiscall)
+static int virNetClientIO(virNetClient *client,
+                          virNetClientCall *thiscall)
 {
     int rv = -1;
 
@@ -2008,11 +2007,11 @@ static int virNetClientIO(virNetClientPtr client,
 }
 
 
-void virNetClientIncomingEvent(virNetSocketPtr sock,
+void virNetClientIncomingEvent(virNetSocket *sock,
                                int events,
                                void *opaque)
 {
-    virNetClientPtr client = opaque;
+    virNetClient *client = opaque;
     int closeReason;
 
     virObjectLock(client);
@@ -2066,12 +2065,12 @@ void virNetClientIncomingEvent(virNetSocketPtr sock,
 }
 
 
-static virNetClientCallPtr
-virNetClientCallNew(virNetMessagePtr msg,
+static virNetClientCall *
+virNetClientCallNew(virNetMessage *msg,
                     bool expectReply,
                     bool nonBlock)
 {
-    virNetClientCallPtr call = NULL;
+    virNetClientCall *call = NULL;
 
     if (expectReply &&
         (msg->bufferLength != 0) &&
@@ -2118,10 +2117,10 @@ virNetClientCallNew(virNetMessagePtr msg,
 
 
 static int
-virNetClientQueueNonBlocking(virNetClientPtr client,
-                             virNetMessagePtr msg)
+virNetClientQueueNonBlocking(virNetClient *client,
+                             virNetMessage *msg)
 {
-    virNetClientCallPtr call;
+    virNetClientCall *call;
 
     PROBE(RPC_CLIENT_MSG_TX_QUEUE,
           "client=%p len=%zu prog=%u vers=%u proc=%u"
@@ -2142,12 +2141,12 @@ virNetClientQueueNonBlocking(virNetClientPtr client,
  * Returns 1 if the call was queued and will be completed later (only
  * for nonBlock == true), 0 if the call was completed and -1 on error.
  */
-static int virNetClientSendInternal(virNetClientPtr client,
-                                    virNetMessagePtr msg,
+static int virNetClientSendInternal(virNetClient *client,
+                                    virNetMessage *msg,
                                     bool expectReply,
                                     bool nonBlock)
 {
-    virNetClientCallPtr call;
+    virNetClientCall *call;
     int ret = -1;
 
     PROBE(RPC_CLIENT_MSG_TX_QUEUE,
@@ -2189,8 +2188,8 @@ static int virNetClientSendInternal(virNetClientPtr client,
  *
  * Returns 0 on success, -1 on failure
  */
-int virNetClientSendWithReply(virNetClientPtr client,
-                              virNetMessagePtr msg)
+int virNetClientSendWithReply(virNetClient *client,
+                              virNetMessage *msg)
 {
     int ret;
     virObjectLock(client);
@@ -2213,8 +2212,8 @@ int virNetClientSendWithReply(virNetClientPtr client,
  * Returns 1 if the message was queued and will be completed later (only
  * for nonBlock == true), 0 if the message was completed and -1 on error.
  */
-int virNetClientSendNonBlock(virNetClientPtr client,
-                             virNetMessagePtr msg)
+int virNetClientSendNonBlock(virNetClient *client,
+                             virNetMessage *msg)
 {
     int ret;
     virObjectLock(client);
@@ -2234,9 +2233,9 @@ int virNetClientSendNonBlock(virNetClientPtr client,
  *
  * Returns 0 on success, -1 on failure
  */
-int virNetClientSendStream(virNetClientPtr client,
-                           virNetMessagePtr msg,
-                           virNetClientStreamPtr st)
+int virNetClientSendStream(virNetClient *client,
+                           virNetMessage *msg,
+                           virNetClientStream *st)
 {
     int ret = -1;
     bool expectReply = !msg->bufferLength ||

@@ -50,7 +50,7 @@ VIR_ENUM_IMPL(qemuSlirpFeature,
 
 
 void
-qemuSlirpFree(qemuSlirpPtr slirp)
+qemuSlirpFree(qemuSlirp *slirp)
 {
     if (!slirp)
         return;
@@ -63,7 +63,7 @@ qemuSlirpFree(qemuSlirpPtr slirp)
 
 
 void
-qemuSlirpSetFeature(qemuSlirpPtr slirp,
+qemuSlirpSetFeature(qemuSlirp *slirp,
                     qemuSlirpFeature feature)
 {
     ignore_value(virBitmapSetBit(slirp->features, feature));
@@ -78,7 +78,7 @@ qemuSlirpHasFeature(const qemuSlirp *slirp,
 }
 
 
-qemuSlirpPtr
+qemuSlirp *
 qemuSlirpNew(void)
 {
     g_autoptr(qemuSlirp) slirp = g_new0(qemuSlirp, 1);
@@ -91,14 +91,14 @@ qemuSlirpNew(void)
 }
 
 
-qemuSlirpPtr
+qemuSlirp *
 qemuSlirpNewForHelper(const char *helper)
 {
     g_autoptr(qemuSlirp) slirp = NULL;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *output = NULL;
     g_autoptr(virJSONValue) doc = NULL;
-    virJSONValuePtr featuresJSON;
+    virJSONValue *featuresJSON;
     size_t i, nfeatures;
 
     slirp = qemuSlirpNew();
@@ -123,7 +123,7 @@ qemuSlirpNewForHelper(const char *helper)
 
     nfeatures = virJSONValueArraySize(featuresJSON);
     for (i = 0; i < nfeatures; i++) {
-        virJSONValuePtr item = virJSONValueArrayGet(featuresJSON, i);
+        virJSONValue *item = virJSONValueArrayGet(featuresJSON, i);
         const char *tmpStr = virJSONValueGetString(item);
         int tmp;
 
@@ -140,7 +140,7 @@ qemuSlirpNewForHelper(const char *helper)
 
 
 static char *
-qemuSlirpCreatePidFilename(virQEMUDriverConfigPtr cfg,
+qemuSlirpCreatePidFilename(virQEMUDriverConfig *cfg,
                            const virDomainDef *def,
                            const char *alias)
 {
@@ -157,9 +157,9 @@ qemuSlirpCreatePidFilename(virQEMUDriverConfigPtr cfg,
 
 
 int
-qemuSlirpOpen(qemuSlirpPtr slirp,
-              virQEMUDriverPtr driver,
-              virDomainDefPtr def)
+qemuSlirpOpen(qemuSlirp *slirp,
+              virQEMUDriver *driver,
+              virDomainDef *def)
 {
     int rc, pair[2] = { -1, -1 };
 
@@ -189,7 +189,7 @@ qemuSlirpOpen(qemuSlirpPtr slirp,
 
 
 int
-qemuSlirpGetFD(qemuSlirpPtr slirp)
+qemuSlirpGetFD(qemuSlirp *slirp)
 {
     int fd = slirp->fd[0];
     slirp->fd[0] = -1;
@@ -198,7 +198,7 @@ qemuSlirpGetFD(qemuSlirpPtr slirp)
 
 
 static char *
-qemuSlirpGetDBusVMStateId(virDomainNetDefPtr net)
+qemuSlirpGetDBusVMStateId(virDomainNetDef *net)
 {
     char macstr[VIR_MAC_STRING_BUFLEN] = "";
 
@@ -208,10 +208,10 @@ qemuSlirpGetDBusVMStateId(virDomainNetDefPtr net)
 
 
 void
-qemuSlirpStop(qemuSlirpPtr slirp,
-              virDomainObjPtr vm,
-              virQEMUDriverPtr driver,
-              virDomainNetDefPtr net)
+qemuSlirpStop(qemuSlirp *slirp,
+              virDomainObj *vm,
+              virQEMUDriver *driver,
+              virDomainNetDef *net)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *id = qemuSlirpGetDBusVMStateId(net);
@@ -237,18 +237,18 @@ qemuSlirpStop(qemuSlirpPtr slirp,
 
 
 int
-qemuSlirpSetupCgroup(qemuSlirpPtr slirp,
-                     virCgroupPtr cgroup)
+qemuSlirpSetupCgroup(qemuSlirp *slirp,
+                     virCgroup *cgroup)
 {
     return virCgroupAddProcess(cgroup, slirp->pid);
 }
 
 
 int
-qemuSlirpStart(qemuSlirpPtr slirp,
-               virDomainObjPtr vm,
-               virQEMUDriverPtr driver,
-               virDomainNetDefPtr net,
+qemuSlirpStart(qemuSlirp *slirp,
+               virDomainObj *vm,
+               virQEMUDriver *driver,
+               virDomainNetDef *net,
                bool incoming)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);

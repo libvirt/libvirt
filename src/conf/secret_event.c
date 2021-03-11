@@ -37,7 +37,6 @@ struct _virSecretEvent {
     bool dummy;
 };
 typedef struct _virSecretEvent virSecretEvent;
-typedef virSecretEvent *virSecretEventPtr;
 
 struct _virSecretEventLifecycle {
     virSecretEvent parent;
@@ -46,18 +45,16 @@ struct _virSecretEventLifecycle {
     int detail;
 };
 typedef struct _virSecretEventLifecycle virSecretEventLifecycle;
-typedef virSecretEventLifecycle *virSecretEventLifecyclePtr;
 
 struct _virSecretEventValueChanged {
     virSecretEvent parent;
     bool dummy;
 };
 typedef struct _virSecretEventValueChanged virSecretEventValueChanged;
-typedef virSecretEventValueChanged *virSecretEventValueChangedPtr;
 
-static virClassPtr virSecretEventClass;
-static virClassPtr virSecretEventLifecycleClass;
-static virClassPtr virSecretEventValueChangedClass;
+static virClass *virSecretEventClass;
+static virClass *virSecretEventLifecycleClass;
+static virClass *virSecretEventValueChangedClass;
 static void virSecretEventDispose(void *obj);
 static void virSecretEventLifecycleDispose(void *obj);
 static void virSecretEventValueChangedDispose(void *obj);
@@ -82,7 +79,7 @@ VIR_ONCE_GLOBAL_INIT(virSecretEvents);
 static void
 virSecretEventDispose(void *obj)
 {
-    virSecretEventPtr event = obj;
+    virSecretEvent *event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
@@ -90,7 +87,7 @@ virSecretEventDispose(void *obj)
 static void
 virSecretEventLifecycleDispose(void *obj)
 {
-    virSecretEventLifecyclePtr event = obj;
+    virSecretEventLifecycle *event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
@@ -98,14 +95,14 @@ virSecretEventLifecycleDispose(void *obj)
 static void
 virSecretEventValueChangedDispose(void *obj)
 {
-    virSecretEventValueChangedPtr event = obj;
+    virSecretEventValueChanged *event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
 
 static void
 virSecretEventDispatchDefaultFunc(virConnectPtr conn,
-                                  virObjectEventPtr event,
+                                  virObjectEvent *event,
                                   virConnectObjectEventGenericCallback cb,
                                   void *cbopaque)
 {
@@ -120,9 +117,9 @@ virSecretEventDispatchDefaultFunc(virConnectPtr conn,
     switch ((virSecretEventID)event->eventID) {
     case VIR_SECRET_EVENT_ID_LIFECYCLE:
         {
-            virSecretEventLifecyclePtr secretLifecycleEvent;
+            virSecretEventLifecycle *secretLifecycleEvent;
 
-            secretLifecycleEvent = (virSecretEventLifecyclePtr)event;
+            secretLifecycleEvent = (virSecretEventLifecycle *)event;
             ((virConnectSecretEventLifecycleCallback)cb)(conn, secret,
                                                          secretLifecycleEvent->type,
                                                          secretLifecycleEvent->detail,
@@ -166,7 +163,7 @@ virSecretEventDispatchDefaultFunc(virConnectPtr conn,
  */
 int
 virSecretEventStateRegisterID(virConnectPtr conn,
-                              virObjectEventStatePtr state,
+                              virObjectEventState *state,
                               virSecretPtr secret,
                               int eventID,
                               virConnectSecretEventGenericCallback cb,
@@ -210,7 +207,7 @@ virSecretEventStateRegisterID(virConnectPtr conn,
  */
 int
 virSecretEventStateRegisterClient(virConnectPtr conn,
-                                  virObjectEventStatePtr state,
+                                  virObjectEventState *state,
                                   virSecretPtr secret,
                                   int eventID,
                                   virConnectSecretEventGenericCallback cb,
@@ -245,14 +242,14 @@ virSecretEventStateRegisterClient(virConnectPtr conn,
  *
  * Create a new secret lifecycle event.
  */
-virObjectEventPtr
+virObjectEvent *
 virSecretEventLifecycleNew(const unsigned char *uuid,
                            int usage_type,
                            const char *usage_id,
                            int type,
                            int detail)
 {
-    virSecretEventLifecyclePtr event;
+    virSecretEventLifecycle *event;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (virSecretEventsInitialize() < 0)
@@ -269,7 +266,7 @@ virSecretEventLifecycleNew(const unsigned char *uuid,
     event->type = type;
     event->detail = detail;
 
-    return (virObjectEventPtr)event;
+    return (virObjectEvent *)event;
 }
 
 
@@ -279,12 +276,12 @@ virSecretEventLifecycleNew(const unsigned char *uuid,
  *
  * Create a new secret lifecycle event.
  */
-virObjectEventPtr
+virObjectEvent *
 virSecretEventValueChangedNew(const unsigned char *uuid,
                               int usage_type,
                               const char *usage_id)
 {
-    virSecretEventValueChangedPtr event;
+    virSecretEventValueChanged *event;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (virSecretEventsInitialize() < 0)
@@ -298,5 +295,5 @@ virSecretEventValueChangedNew(const unsigned char *uuid,
                                     usage_type, usage_id, uuid, uuidstr)))
         return NULL;
 
-    return (virObjectEventPtr)event;
+    return (virObjectEvent *)event;
 }

@@ -24,7 +24,7 @@
 
 #include "conf/storage_conf.h"
 
-int virStorageBackendSheepdogParseNodeInfo(virStoragePoolDefPtr pool,
+int virStorageBackendSheepdogParseNodeInfo(virStoragePoolDef *pool,
                                            char *output);
-int virStorageBackendSheepdogParseVdiList(virStorageVolDefPtr vol,
+int virStorageBackendSheepdogParseVdiList(virStorageVolDef *vol,
                                           char *output);

@@ -132,7 +132,7 @@ if (strUtf16) {\
 #define VBOX_RDP_AUTOPORT_RANGE "3389-3689"
 
 static void
-_vboxIIDUnalloc(vboxDriverPtr data, vboxIID *iid)
+_vboxIIDUnalloc(struct _vboxDriver *data, vboxIID *iid)
 {
     if (iid->value != NULL && iid->owner)
         data->pFuncs->pfnUtf16Free(iid->value);
@@ -142,7 +142,7 @@ _vboxIIDUnalloc(vboxDriverPtr data, vboxIID *iid)
 }
 
 static void
-_vboxIIDToUUID(vboxDriverPtr data, vboxIID *iid,
+_vboxIIDToUUID(struct _vboxDriver *data, vboxIID *iid,
                unsigned char *uuid)
 {
     char *utf8 = NULL;
@@ -155,7 +155,7 @@ _vboxIIDToUUID(vboxDriverPtr data, vboxIID *iid,
 }
 
 static void
-_vboxIIDFromUUID(vboxDriverPtr data, vboxIID *iid,
+_vboxIIDFromUUID(struct _vboxDriver *data, vboxIID *iid,
                  const unsigned char *uuid)
 {
     char utf8[VIR_UUID_STRING_BUFLEN];
@@ -168,7 +168,7 @@ _vboxIIDFromUUID(vboxDriverPtr data, vboxIID *iid,
 }
 
 static bool
-_vboxIIDIsEqual(vboxDriverPtr data, vboxIID *iid1,
+_vboxIIDIsEqual(struct _vboxDriver *data, vboxIID *iid1,
                 vboxIID *iid2)
 {
     unsigned char uuid1[VIR_UUID_BUFLEN];
@@ -186,7 +186,7 @@ _vboxIIDIsEqual(vboxDriverPtr data, vboxIID *iid1,
 }
 
 static void
-_vboxIIDFromArrayItem(vboxDriverPtr data, vboxIID *iid,
+_vboxIIDFromArrayItem(struct _vboxDriver *data, vboxIID *iid,
                       vboxArray *array, int idx)
 {
     _vboxIIDUnalloc(data, iid);
@@ -292,7 +292,7 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
                           IMachine *machine,
                           ISnapshot *snapshot)
 {
-    vboxDriverPtr data = dom->conn->privateData;
+    struct _vboxDriver *data = dom->conn->privateData;
     IProgress *progress = NULL;
     PRUint32 state;
     nsresult rc;
@@ -364,7 +364,7 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
 }
 
 static nsresult
-_unregisterMachine(vboxDriverPtr data, vboxIID *iid, IMachine **machine)
+_unregisterMachine(struct _vboxDriver *data, vboxIID *iid, IMachine **machine)
 {
     nsresult rc;
     vboxArray media = VBOX_ARRAY_INITIALIZER;
@@ -428,7 +428,7 @@ _deleteConfig(IMachine *machine)
     }
 }
 
-static int _pfnInitialize(vboxDriverPtr driver)
+static int _pfnInitialize(struct _vboxDriver *driver)
 {
     nsresult rc;
 
@@ -448,7 +448,7 @@ static int _pfnInitialize(vboxDriverPtr driver)
     return 0;
 }
 
-static void _pfnUninitialize(vboxDriverPtr data)
+static void _pfnUninitialize(struct _vboxDriver *data)
 {
     if (data->pFuncs) {
         VBOX_RELEASE(data->vboxObj);
@@ -490,13 +490,13 @@ static void _vboxIIDInitialize(vboxIID *iid)
     iid->owner = true;
 }
 
-static void _DEBUGIID(vboxDriverPtr data, const char *msg, vboxIID *iid)
+static void _DEBUGIID(struct _vboxDriver *data, const char *msg, vboxIID *iid)
 {
     DEBUGPRUnichar(msg, iid->value);
 }
 
 static void
-_vboxIIDToUtf8(vboxDriverPtr data G_GNUC_UNUSED,
+_vboxIIDToUtf8(struct _vboxDriver *data G_GNUC_UNUSED,
                vboxIID *iid G_GNUC_UNUSED,
                char **utf8 G_GNUC_UNUSED)
 {
@@ -605,7 +605,7 @@ _virtualboxGetHost(IVirtualBox *vboxObj, IHost **host)
 }
 
 static nsresult
-_virtualboxCreateMachine(vboxDriverPtr data, virDomainDefPtr def, IMachine **machine, char *uuidstr G_GNUC_UNUSED)
+_virtualboxCreateMachine(struct _vboxDriver *data, virDomainDef *def, IMachine **machine, char *uuidstr G_GNUC_UNUSED)
 {
     vboxIID iid = VBOX_IID_INITIALIZER;
     PRUnichar *machineNameUtf16 = NULL;
@@ -745,7 +745,7 @@ _machineRemoveSharedFolder(IMachine *machine, PRUnichar *name)
 }
 
 static nsresult
-_machineLaunchVMProcess(vboxDriverPtr data,
+_machineLaunchVMProcess(struct _vboxDriver *data,
                         IMachine *machine G_GNUC_UNUSED,
                         vboxIID *iid G_GNUC_UNUSED,
                         PRUnichar *sessionType, PRUnichar *env,
@@ -1062,13 +1062,13 @@ _machineSaveSettings(IMachine *machine)
 }
 
 static nsresult
-_sessionOpen(vboxDriverPtr data, vboxIID *iid G_GNUC_UNUSED, IMachine *machine)
+_sessionOpen(struct _vboxDriver *data, vboxIID *iid G_GNUC_UNUSED, IMachine *machine)
 {
     return machine->vtbl->LockMachine(machine, data->vboxSession, LockType_Write);
 }
 
 static nsresult
-_sessionOpenExisting(vboxDriverPtr data, vboxIID *iid G_GNUC_UNUSED, IMachine *machine)
+_sessionOpenExisting(struct _vboxDriver *data, vboxIID *iid G_GNUC_UNUSED, IMachine *machine)
 {
     return machine->vtbl->LockMachine(machine, data->vboxSession, LockType_Shared);
 }
@@ -1540,8 +1540,8 @@ _vrdeServerSetEnabled(IVRDEServer *VRDEServer, PRBool enabled)
 }
 
 static nsresult
-_vrdeServerGetPorts(vboxDriverPtr data, IVRDEServer *VRDEServer,
-                    IMachine *machine, virDomainGraphicsDefPtr graphics)
+_vrdeServerGetPorts(struct _vboxDriver *data, IVRDEServer *VRDEServer,
+                    IMachine *machine, virDomainGraphicsDef *graphics)
 {
     nsresult rc;
     PRUnichar *VRDEPortsKey = NULL;
@@ -1605,8 +1605,8 @@ _vrdeServerGetPorts(vboxDriverPtr data, IVRDEServer *VRDEServer,
 }
 
 static nsresult
-_vrdeServerSetPorts(vboxDriverPtr data, IVRDEServer *VRDEServer,
-                    virDomainGraphicsDefPtr graphics)
+_vrdeServerSetPorts(struct _vboxDriver *data, IVRDEServer *VRDEServer,
+                    virDomainGraphicsDef *graphics)
 {
     nsresult rc = 0;
     PRUnichar *VRDEPortsKey = NULL;
@@ -1653,7 +1653,7 @@ _vrdeServerSetAllowMultiConnection(IVRDEServer *VRDEServer, PRBool enabled)
 }
 
 static nsresult
-_vrdeServerGetNetAddress(vboxDriverPtr data G_GNUC_UNUSED,
+_vrdeServerGetNetAddress(struct _vboxDriver *data G_GNUC_UNUSED,
                          IVRDEServer *VRDEServer, PRUnichar **netAddress)
 {
     PRUnichar *VRDENetAddressKey = NULL;
@@ -1667,7 +1667,7 @@ _vrdeServerGetNetAddress(vboxDriverPtr data G_GNUC_UNUSED,
 }
 
 static nsresult
-_vrdeServerSetNetAddress(vboxDriverPtr data G_GNUC_UNUSED,
+_vrdeServerSetNetAddress(struct _vboxDriver *data G_GNUC_UNUSED,
                          IVRDEServer *VRDEServer, PRUnichar *netAddress)
 {
     PRUnichar *netAddressKey = NULL;
@@ -2006,7 +2006,7 @@ _hostFindHostNetworkInterfaceByName(IHost *host, PRUnichar *name,
 }
 
 static nsresult
-_hostCreateHostOnlyNetworkInterface(vboxDriverPtr data G_GNUC_UNUSED,
+_hostCreateHostOnlyNetworkInterface(struct _vboxDriver *data G_GNUC_UNUSED,
                                     IHost *host, char *name G_GNUC_UNUSED,
                                     IHostNetworkInterface **networkInterface)
 {

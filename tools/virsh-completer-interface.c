@@ -34,7 +34,7 @@ virshInterfaceStringHelper(vshControl *ctl,
                            unsigned int flags,
                            virInterfaceStringCallback cb)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virInterfacePtr *ifaces = NULL;
     int nifaces = 0;
     size_t i = 0;

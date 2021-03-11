@@ -66,7 +66,7 @@ int virHostValidateDeviceAccessible(const char *hvname,
                                     virHostValidateLevel level,
                                     const char *hint);
 
-virBitmapPtr virHostValidateGetCPUFlags(void);
+virBitmap *virHostValidateGetCPUFlags(void);
 
 int virHostValidateLinuxKernel(const char *hvname,
                                int version,

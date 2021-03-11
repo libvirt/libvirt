@@ -184,7 +184,7 @@ struct _esxVI_Context {
     esxVI_ProductLine productLine;
     unsigned long productVersion; /* = 1000000 * major + 1000 * minor + micro */
     esxVI_UserSession *session; /* ... except the session ... */
-    virMutexPtr sessionLock; /* ... that is protected by this mutex */
+    virMutex *sessionLock; /* ... that is protected by this mutex */
     esxVI_Datacenter *datacenter;
     char *datacenterPath; /* including folders */
     esxVI_ComputeResource *computeResource;
@@ -251,7 +251,7 @@ int esxVI_Enumeration_CastFromAnyType(const esxVI_Enumeration *enumeration,
                                       esxVI_AnyType *anyType, int *value);
 int esxVI_Enumeration_Serialize(const esxVI_Enumeration *enumeration,
                                 int value, const char *element,
-                                virBufferPtr output);
+                                virBuffer *output);
 int esxVI_Enumeration_Deserialize(const esxVI_Enumeration *enumeration,
                                   xmlNodePtr node, int *value);
 
@@ -270,7 +270,7 @@ typedef int (*esxVI_List_DeepCopyFunc) (esxVI_List **dest, esxVI_List *src);
 typedef int (*esxVI_List_CastFromAnyTypeFunc) (esxVI_AnyType *anyType,
                                                esxVI_List **item);
 typedef int (*esxVI_List_SerializeFunc) (esxVI_List *item, const char *element,
-                                         virBufferPtr output);
+                                         virBuffer *output);
 typedef int (*esxVI_List_DeserializeFunc) (xmlNodePtr node, esxVI_List **item);
 
 int esxVI_List_Append(esxVI_List **list, esxVI_List *item);
@@ -281,7 +281,7 @@ int esxVI_List_CastFromAnyType(esxVI_AnyType *anyType, esxVI_List **list,
                                esxVI_List_CastFromAnyTypeFunc castFromAnyTypeFunc,
                                esxVI_List_FreeFunc freeFunc);
 int esxVI_List_Serialize(esxVI_List *list, const char *element,
-                         virBufferPtr output,
+                         virBuffer *output,
                          esxVI_List_SerializeFunc serializeFunc);
 int esxVI_List_Deserialize(xmlNodePtr node, esxVI_List **list,
                            esxVI_List_DeserializeFunc deserializeFunc,

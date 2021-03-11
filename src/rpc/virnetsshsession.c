@@ -68,7 +68,6 @@ typedef enum {
 
 
 typedef struct _virNetSSHAuthMethod virNetSSHAuthMethod;
-typedef virNetSSHAuthMethod *virNetSSHAuthMethodPtr;
 
 struct _virNetSSHAuthMethod {
     virNetSSHAuthMethods method;
@@ -100,7 +99,7 @@ struct _virNetSSHSession {
     char *authPath;
     virNetSSHAuthCallbackError authCbErr;
     size_t nauths;
-    virNetSSHAuthMethodPtr *auths;
+    virNetSSHAuthMethod **auths;
 
     /* channel stuff */
     char *channelCommand;
@@ -113,7 +112,7 @@ struct _virNetSSHSession {
 };
 
 static void
-virNetSSHSessionAuthMethodsClear(virNetSSHSessionPtr sess)
+virNetSSHSessionAuthMethodsClear(virNetSSHSession *sess)
 {
     size_t i;
 
@@ -131,7 +130,7 @@ virNetSSHSessionAuthMethodsClear(virNetSSHSessionPtr sess)
 static void
 virNetSSHSessionDispose(void *obj)
 {
-    virNetSSHSessionPtr sess = obj;
+    virNetSSHSession *sess = obj;
     VIR_DEBUG("sess=0x%p", sess);
 
     if (sess->channel) {
@@ -157,7 +156,7 @@ virNetSSHSessionDispose(void *obj)
     g_free(sess->authPath);
 }
 
-static virClassPtr virNetSSHSessionClass;
+static virClass *virNetSSHSessionClass;
 static int
 virNetSSHSessionOnceInit(void)
 {
@@ -168,10 +167,10 @@ virNetSSHSessionOnceInit(void)
 }
 VIR_ONCE_GLOBAL_INIT(virNetSSHSession);
 
-static virNetSSHAuthMethodPtr
-virNetSSHSessionAuthMethodNew(virNetSSHSessionPtr sess)
+static virNetSSHAuthMethod *
+virNetSSHSessionAuthMethodNew(virNetSSHSession *sess)
 {
-    virNetSSHAuthMethodPtr auth;
+    virNetSSHAuthMethod *auth;
 
     auth = g_new0(virNetSSHAuthMethod, 1);
 
@@ -192,7 +191,7 @@ virNetSSHKbIntCb(const char *name G_GNUC_UNUSED,
                  LIBSSH2_USERAUTH_KBDINT_RESPONSE *responses,
                  void **opaque)
 {
-    virNetSSHSessionPtr priv = *opaque;
+    virNetSSHSession *priv = *opaque;
     virConnectCredentialPtr askcred = NULL;
     size_t i;
     int credtype_echo = -1;
@@ -266,7 +265,7 @@ virNetSSHKbIntCb(const char *name G_GNUC_UNUSED,
  * return value: 0 on success, -1 on error
  */
 static int
-virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
+virNetSSHCheckHostKey(virNetSSHSession *sess)
 {
     int ret;
     const char *key;
@@ -478,8 +477,8 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
  *         -1 on error
  */
 static int
-virNetSSHAuthenticateAgent(virNetSSHSessionPtr sess,
-                           virNetSSHAuthMethodPtr priv)
+virNetSSHAuthenticateAgent(virNetSSHSession *sess,
+                           virNetSSHAuthMethod *priv)
 {
     struct libssh2_agent_publickey *agent_identity = NULL;
     bool no_identity = true;
@@ -552,8 +551,8 @@ virNetSSHAuthenticateAgent(virNetSSHSessionPtr sess,
  *         -1 on error
  */
 static int
-virNetSSHAuthenticatePrivkey(virNetSSHSessionPtr sess,
-                             virNetSSHAuthMethodPtr priv)
+virNetSSHAuthenticatePrivkey(virNetSSHSession *sess,
+                             virNetSSHAuthMethod *priv)
 {
     virConnectCredential retr_passphrase;
     size_t i;
@@ -659,8 +658,8 @@ virNetSSHAuthenticatePrivkey(virNetSSHSessionPtr sess,
  *         -1 on error
  */
 static int
-virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
-                              virNetSSHAuthMethodPtr priv)
+virNetSSHAuthenticatePassword(virNetSSHSession *sess,
+                              virNetSSHAuthMethod *priv)
 {
     char *password = NULL;
     char *errmsg;
@@ -733,8 +732,8 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
  *         -1 on error
  */
 static int
-virNetSSHAuthenticateKeyboardInteractive(virNetSSHSessionPtr sess,
-                                         virNetSSHAuthMethodPtr priv)
+virNetSSHAuthenticateKeyboardInteractive(virNetSSHSession *sess,
+                                         virNetSSHAuthMethod *priv)
 {
     char *errmsg;
     int ret;
@@ -798,9 +797,9 @@ virNetSSHAuthenticateKeyboardInteractive(virNetSSHSessionPtr sess,
 
 /* select auth method and authenticate */
 static int
-virNetSSHAuthenticate(virNetSSHSessionPtr sess)
+virNetSSHAuthenticate(virNetSSHSession *sess)
 {
-    virNetSSHAuthMethodPtr auth;
+    virNetSSHAuthMethod *auth;
     bool no_method = false;
     bool auth_failed = false;
     char *auth_list;
@@ -891,7 +890,7 @@ virNetSSHAuthenticate(virNetSSHSessionPtr sess)
 
 /* open channel */
 static int
-virNetSSHOpenChannel(virNetSSHSessionPtr sess)
+virNetSSHOpenChannel(virNetSSHSession *sess)
 {
     char *errmsg;
 
@@ -922,7 +921,7 @@ virNetSSHOpenChannel(virNetSSHSessionPtr sess)
 
 /* validate if all required parameters are configured */
 static int
-virNetSSHValidateConfig(virNetSSHSessionPtr sess)
+virNetSSHValidateConfig(virNetSSHSession *sess)
 {
     if (sess->nauths == 0) {
         virReportError(VIR_ERR_SSH, "%s",
@@ -951,7 +950,7 @@ virNetSSHValidateConfig(virNetSSHSessionPtr sess)
 
 /* ### PUBLIC API ### */
 int
-virNetSSHSessionAuthSetCallback(virNetSSHSessionPtr sess,
+virNetSSHSessionAuthSetCallback(virNetSSHSession *sess,
                                 virConnectAuthPtr auth)
 {
     virObjectLock(sess);
@@ -961,7 +960,7 @@ virNetSSHSessionAuthSetCallback(virNetSSHSessionPtr sess,
 }
 
 void
-virNetSSHSessionAuthReset(virNetSSHSessionPtr sess)
+virNetSSHSessionAuthReset(virNetSSHSession *sess)
 {
     virObjectLock(sess);
     virNetSSHSessionAuthMethodsClear(sess);
@@ -969,11 +968,11 @@ virNetSSHSessionAuthReset(virNetSSHSessionPtr sess)
 }
 
 int
-virNetSSHSessionAuthAddPasswordAuth(virNetSSHSessionPtr sess,
-                                    virURIPtr uri,
+virNetSSHSessionAuthAddPasswordAuth(virNetSSHSession *sess,
+                                    virURI *uri,
                                     const char *username)
 {
-    virNetSSHAuthMethodPtr auth;
+    virNetSSHAuthMethod *auth;
     char *user = NULL;
 
     if (uri) {
@@ -1009,10 +1008,10 @@ virNetSSHSessionAuthAddPasswordAuth(virNetSSHSessionPtr sess,
 }
 
 int
-virNetSSHSessionAuthAddAgentAuth(virNetSSHSessionPtr sess,
+virNetSSHSessionAuthAddAgentAuth(virNetSSHSession *sess,
                                  const char *username)
 {
-    virNetSSHAuthMethodPtr auth;
+    virNetSSHAuthMethod *auth;
     char *user = NULL;
 
     if (!username) {
@@ -1042,12 +1041,12 @@ virNetSSHSessionAuthAddAgentAuth(virNetSSHSessionPtr sess,
 }
 
 int
-virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSessionPtr sess,
+virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSession *sess,
                                    const char *username,
                                    const char *keyfile,
                                    const char *password)
 {
-    virNetSSHAuthMethodPtr auth;
+    virNetSSHAuthMethod *auth;
 
     char *user = NULL;
     char *pass = NULL;
@@ -1086,11 +1085,11 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSessionPtr sess,
 }
 
 int
-virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSessionPtr sess,
+virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSession *sess,
                                     const char *username,
                                     int tries)
 {
-    virNetSSHAuthMethodPtr auth;
+    virNetSSHAuthMethod *auth;
     char *user = NULL;
 
     if (!username) {
@@ -1122,7 +1121,7 @@ virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSessionPtr sess,
 }
 
 void
-virNetSSHSessionSetChannelCommand(virNetSSHSessionPtr sess,
+virNetSSHSessionSetChannelCommand(virNetSSHSession *sess,
                                   const char *command)
 {
     virObjectLock(sess);
@@ -1135,7 +1134,7 @@ virNetSSHSessionSetChannelCommand(virNetSSHSessionPtr sess,
 }
 
 int
-virNetSSHSessionSetHostKeyVerification(virNetSSHSessionPtr sess,
+virNetSSHSessionSetHostKeyVerification(virNetSSHSession *sess,
                                        const char *hostname,
                                        int port,
                                        const char *hostsfile,
@@ -1188,9 +1187,9 @@ virNetSSHSessionSetHostKeyVerification(virNetSSHSessionPtr sess,
 }
 
 /* allocate and initialize a ssh session object */
-virNetSSHSessionPtr virNetSSHSessionNew(void)
+virNetSSHSession *virNetSSHSessionNew(void)
 {
-    virNetSSHSessionPtr sess = NULL;
+    virNetSSHSession *sess = NULL;
 
     if (virNetSSHSessionInitialize() < 0)
         goto error;
@@ -1221,7 +1220,7 @@ virNetSSHSessionPtr virNetSSHSessionNew(void)
         goto error;
     }
 
-    VIR_DEBUG("virNetSSHSessionPtr: %p, LIBSSH2_SESSION: %p",
+    VIR_DEBUG("virNetSSHSession *: %p, LIBSSH2_SESSION: %p",
               sess, sess->session);
 
     /* set blocking mode for libssh2 until handshake is complete */
@@ -1239,7 +1238,7 @@ virNetSSHSessionPtr virNetSSHSessionNew(void)
 }
 
 int
-virNetSSHSessionConnect(virNetSSHSessionPtr sess,
+virNetSSHSessionConnect(virNetSSHSession *sess,
                         int sock)
 {
     int ret;
@@ -1249,7 +1248,7 @@ virNetSSHSessionConnect(virNetSSHSessionPtr sess,
 
     if (!sess || sess->state != VIR_NET_SSH_STATE_NEW) {
         virReportError(VIR_ERR_SSH, "%s",
-                       _("Invalid virNetSSHSessionPtr"));
+                       _("Invalid virNetSSHSession *"));
         return -1;
     }
 
@@ -1298,7 +1297,7 @@ virNetSSHSessionConnect(virNetSSHSessionPtr sess,
 
 /* do a read from a ssh channel, used instead of normal read on socket */
 ssize_t
-virNetSSHChannelRead(virNetSSHSessionPtr sess,
+virNetSSHChannelRead(virNetSSHSession *sess,
                      char *buf,
                      size_t len)
 {
@@ -1410,7 +1409,7 @@ virNetSSHChannelRead(virNetSSHSessionPtr sess,
 }
 
 ssize_t
-virNetSSHChannelWrite(virNetSSHSessionPtr sess,
+virNetSSHChannelWrite(virNetSSHSession *sess,
                       const char *buf,
                       size_t len)
 {
@@ -1467,7 +1466,7 @@ virNetSSHChannelWrite(virNetSSHSessionPtr sess,
 }
 
 bool
-virNetSSHSessionHasCachedData(virNetSSHSessionPtr sess)
+virNetSSHSessionHasCachedData(virNetSSHSession *sess)
 {
     bool ret;
 

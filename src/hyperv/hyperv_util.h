@@ -30,6 +30,6 @@ struct _hypervParsedUri {
     char *transport;
 };
 
-int hypervParseUri(hypervParsedUri **parsedUri, virURIPtr uri);
+int hypervParseUri(hypervParsedUri **parsedUri, virURI *uri);
 
 void hypervFreeParsedUri(hypervParsedUri **parsedUri);

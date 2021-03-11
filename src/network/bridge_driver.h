@@ -27,16 +27,16 @@
 #include "virdnsmasq.h"
 #include "virnetworkobj.h"
 
-virNetworkXMLOptionPtr
+virNetworkXMLOption *
 networkDnsmasqCreateXMLConf(void);
 
 int
 networkRegister(void);
 
 int
-networkDnsmasqConfContents(virNetworkObjPtr obj,
+networkDnsmasqConfContents(virNetworkObj *obj,
                            const char *pidfile,
                            char **configstr,
                            char **hostsfilestr,
                            dnsmasqContext *dctx,
-                           dnsmasqCapsPtr caps);
+                           dnsmasqCaps *caps);

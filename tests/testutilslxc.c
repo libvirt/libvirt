@@ -8,11 +8,11 @@
 
 # define VIR_FROM_THIS VIR_FROM_LXC
 
-virCapsPtr
+virCaps *
 testLXCCapsInit(void)
 {
-    virCapsPtr caps;
-    virCapsGuestPtr guest;
+    virCaps *caps;
+    virCapsGuest *guest;
 
     if ((caps = virCapabilitiesNew(VIR_ARCH_X86_64,
                                    false, false)) == NULL)
@@ -58,10 +58,10 @@ testLXCCapsInit(void)
 }
 
 
-virLXCDriverPtr
+virLXCDriver *
 testLXCDriverInit(void)
 {
-    virLXCDriverPtr driver = g_new0(virLXCDriver, 1);
+    virLXCDriver *driver = g_new0(virLXCDriver, 1);
 
     if (virMutexInit(&driver->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -78,7 +78,7 @@ testLXCDriverInit(void)
 
 
 void
-testLXCDriverFree(virLXCDriverPtr driver)
+testLXCDriverFree(virLXCDriver *driver)
 {
     virObjectUnref(driver->xmlopt);
     virObjectUnref(driver->caps);

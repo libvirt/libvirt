@@ -25,7 +25,6 @@
 #include "virstoragefile.h"
 
 typedef struct _virSecurityManager virSecurityManager;
-typedef virSecurityManager *virSecurityManagerPtr;
 
 typedef enum {
     VIR_SECURITY_MANAGER_DEFAULT_CONFINED   = 1 << 1,
@@ -40,13 +39,13 @@ typedef enum {
      VIR_SECURITY_MANAGER_REQUIRE_CONFINED  | \
      VIR_SECURITY_MANAGER_PRIVILEGED)
 
-virSecurityManagerPtr virSecurityManagerNew(const char *name,
+virSecurityManager *virSecurityManagerNew(const char *name,
                                             const char *virtDriver,
                                             unsigned int flags);
 
-virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary);
-int virSecurityManagerStackAddNested(virSecurityManagerPtr stack,
-                                     virSecurityManagerPtr nested);
+virSecurityManager *virSecurityManagerNewStack(virSecurityManager *primary);
+int virSecurityManagerStackAddNested(virSecurityManager *stack,
+                                     virSecurityManager *nested);
 
 /**
  * virSecurityManagerDACChownCallback:
@@ -63,91 +62,91 @@ typedef int
                                       gid_t gid);
 
 
-virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
+virSecurityManager *virSecurityManagerNewDAC(const char *virtDriver,
                                                uid_t user,
                                                gid_t group,
                                                unsigned int flags,
                                                virSecurityManagerDACChownCallback chownCallback);
 
-int virSecurityManagerPreFork(virSecurityManagerPtr mgr);
-void virSecurityManagerPostFork(virSecurityManagerPtr mgr);
+int virSecurityManagerPreFork(virSecurityManager *mgr);
+void virSecurityManagerPostFork(virSecurityManager *mgr);
 
-int virSecurityManagerTransactionStart(virSecurityManagerPtr mgr);
-int virSecurityManagerTransactionCommit(virSecurityManagerPtr mgr,
+int virSecurityManagerTransactionStart(virSecurityManager *mgr);
+int virSecurityManagerTransactionCommit(virSecurityManager *mgr,
                                         pid_t pid,
                                         bool lock);
-void virSecurityManagerTransactionAbort(virSecurityManagerPtr mgr);
+void virSecurityManagerTransactionAbort(virSecurityManager *mgr);
 
-void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr);
+void *virSecurityManagerGetPrivateData(virSecurityManager *mgr);
 
-const char *virSecurityManagerGetDriver(virSecurityManagerPtr mgr);
-const char *virSecurityManagerGetVirtDriver(virSecurityManagerPtr mgr);
-const char *virSecurityManagerGetDOI(virSecurityManagerPtr mgr);
-const char *virSecurityManagerGetModel(virSecurityManagerPtr mgr);
-const char *virSecurityManagerGetBaseLabel(virSecurityManagerPtr mgr, int virtType);
+const char *virSecurityManagerGetDriver(virSecurityManager *mgr);
+const char *virSecurityManagerGetVirtDriver(virSecurityManager *mgr);
+const char *virSecurityManagerGetDOI(virSecurityManager *mgr);
+const char *virSecurityManagerGetModel(virSecurityManager *mgr);
+const char *virSecurityManagerGetBaseLabel(virSecurityManager *mgr, int virtType);
 
-bool virSecurityManagerGetDefaultConfined(virSecurityManagerPtr mgr);
-bool virSecurityManagerGetRequireConfined(virSecurityManagerPtr mgr);
-bool virSecurityManagerGetPrivileged(virSecurityManagerPtr mgr);
+bool virSecurityManagerGetDefaultConfined(virSecurityManager *mgr);
+bool virSecurityManagerGetRequireConfined(virSecurityManager *mgr);
+bool virSecurityManagerGetPrivileged(virSecurityManager *mgr);
 
-int virSecurityManagerSetDaemonSocketLabel(virSecurityManagerPtr mgr,
-                                           virDomainDefPtr vm);
-int virSecurityManagerSetSocketLabel(virSecurityManagerPtr mgr,
-                                     virDomainDefPtr def);
-int virSecurityManagerClearSocketLabel(virSecurityManagerPtr mgr,
-                                       virDomainDefPtr def);
-int virSecurityManagerRestoreHostdevLabel(virSecurityManagerPtr mgr,
-                                          virDomainDefPtr def,
-                                          virDomainHostdevDefPtr dev,
+int virSecurityManagerSetDaemonSocketLabel(virSecurityManager *mgr,
+                                           virDomainDef *vm);
+int virSecurityManagerSetSocketLabel(virSecurityManager *mgr,
+                                     virDomainDef *def);
+int virSecurityManagerClearSocketLabel(virSecurityManager *mgr,
+                                       virDomainDef *def);
+int virSecurityManagerRestoreHostdevLabel(virSecurityManager *mgr,
+                                          virDomainDef *def,
+                                          virDomainHostdevDef *dev,
                                           const char *vroot);
-int virSecurityManagerSetHostdevLabel(virSecurityManagerPtr mgr,
-                                      virDomainDefPtr def,
-                                      virDomainHostdevDefPtr dev,
+int virSecurityManagerSetHostdevLabel(virSecurityManager *mgr,
+                                      virDomainDef *def,
+                                      virDomainHostdevDef *dev,
                                       const char *vroot);
-int virSecurityManagerSetSavedStateLabel(virSecurityManagerPtr mgr,
-                                         virDomainDefPtr def,
+int virSecurityManagerSetSavedStateLabel(virSecurityManager *mgr,
+                                         virDomainDef *def,
                                          const char *savefile);
-int virSecurityManagerRestoreSavedStateLabel(virSecurityManagerPtr mgr,
-                                             virDomainDefPtr def,
+int virSecurityManagerRestoreSavedStateLabel(virSecurityManager *mgr,
+                                             virDomainDef *def,
                                              const char *savefile);
-int virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
-                               virDomainDefPtr sec);
-int virSecurityManagerReserveLabel(virSecurityManagerPtr mgr,
-                                   virDomainDefPtr sec,
+int virSecurityManagerGenLabel(virSecurityManager *mgr,
+                               virDomainDef *sec);
+int virSecurityManagerReserveLabel(virSecurityManager *mgr,
+                                   virDomainDef *sec,
                                    pid_t pid);
-int virSecurityManagerReleaseLabel(virSecurityManagerPtr mgr,
-                                   virDomainDefPtr sec);
-int virSecurityManagerCheckAllLabel(virSecurityManagerPtr mgr,
-                                    virDomainDefPtr sec);
-int virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
-                                  virDomainDefPtr sec,
+int virSecurityManagerReleaseLabel(virSecurityManager *mgr,
+                                   virDomainDef *sec);
+int virSecurityManagerCheckAllLabel(virSecurityManager *mgr,
+                                    virDomainDef *sec);
+int virSecurityManagerSetAllLabel(virSecurityManager *mgr,
+                                  virDomainDef *sec,
                                   const char *incomingPath,
                                   bool chardevStdioLogd,
                                   bool migrated);
-int virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,
-                                      virDomainDefPtr def,
+int virSecurityManagerRestoreAllLabel(virSecurityManager *mgr,
+                                      virDomainDef *def,
                                       bool migrated,
                                       bool chardevStdioLogd);
-int virSecurityManagerGetProcessLabel(virSecurityManagerPtr mgr,
-                                      virDomainDefPtr def,
+int virSecurityManagerGetProcessLabel(virSecurityManager *mgr,
+                                      virDomainDef *def,
                                       pid_t pid,
                                       virSecurityLabelPtr sec);
-int virSecurityManagerSetProcessLabel(virSecurityManagerPtr mgr,
-                                      virDomainDefPtr def);
-int virSecurityManagerSetChildProcessLabel(virSecurityManagerPtr mgr,
-                                           virDomainDefPtr def,
-                                           virCommandPtr cmd);
-int virSecurityManagerVerify(virSecurityManagerPtr mgr,
-                             virDomainDefPtr def);
-int virSecurityManagerSetImageFDLabel(virSecurityManagerPtr mgr,
-                                      virDomainDefPtr def,
+int virSecurityManagerSetProcessLabel(virSecurityManager *mgr,
+                                      virDomainDef *def);
+int virSecurityManagerSetChildProcessLabel(virSecurityManager *mgr,
+                                           virDomainDef *def,
+                                           virCommand *cmd);
+int virSecurityManagerVerify(virSecurityManager *mgr,
+                             virDomainDef *def);
+int virSecurityManagerSetImageFDLabel(virSecurityManager *mgr,
+                                      virDomainDef *def,
                                       int fd);
-int virSecurityManagerSetTapFDLabel(virSecurityManagerPtr mgr,
-                                    virDomainDefPtr vm,
+int virSecurityManagerSetTapFDLabel(virSecurityManager *mgr,
+                                    virDomainDef *vm,
                                     int fd);
-char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
-                                        virDomainDefPtr vm);
-virSecurityManagerPtr* virSecurityManagerGetNested(virSecurityManagerPtr mgr);
+char *virSecurityManagerGetMountOptions(virSecurityManager *mgr,
+                                        virDomainDef *vm);
+virSecurityManager ** virSecurityManagerGetNested(virSecurityManager *mgr);
 
 typedef enum {
     VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN = 1 << 0,
@@ -157,65 +156,64 @@ typedef enum {
     VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP = 1 << 1,
 } virSecurityDomainImageLabelFlags;
 
-int virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,
-                                    virDomainDefPtr vm,
-                                    virStorageSourcePtr src,
+int virSecurityManagerSetImageLabel(virSecurityManager *mgr,
+                                    virDomainDef *vm,
+                                    virStorageSource *src,
                                     virSecurityDomainImageLabelFlags flags);
-int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
-                                        virDomainDefPtr vm,
-                                        virStorageSourcePtr src,
+int virSecurityManagerRestoreImageLabel(virSecurityManager *mgr,
+                                        virDomainDef *vm,
+                                        virStorageSource *src,
                                         virSecurityDomainImageLabelFlags flags);
-int virSecurityManagerMoveImageMetadata(virSecurityManagerPtr mgr,
+int virSecurityManagerMoveImageMetadata(virSecurityManager *mgr,
                                         pid_t pid,
-                                        virStorageSourcePtr src,
-                                        virStorageSourcePtr dst);
+                                        virStorageSource *src,
+                                        virStorageSource *dst);
 
-int virSecurityManagerSetMemoryLabel(virSecurityManagerPtr mgr,
-                                     virDomainDefPtr vm,
-                                     virDomainMemoryDefPtr mem);
-int virSecurityManagerRestoreMemoryLabel(virSecurityManagerPtr mgr,
-                                        virDomainDefPtr vm,
-                                        virDomainMemoryDefPtr mem);
+int virSecurityManagerSetMemoryLabel(virSecurityManager *mgr,
+                                     virDomainDef *vm,
+                                     virDomainMemoryDef *mem);
+int virSecurityManagerRestoreMemoryLabel(virSecurityManager *mgr,
+                                        virDomainDef *vm,
+                                        virDomainMemoryDef *mem);
 
-int virSecurityManagerSetInputLabel(virSecurityManagerPtr mgr,
-                                    virDomainDefPtr vm,
-                                    virDomainInputDefPtr input);
-int virSecurityManagerRestoreInputLabel(virSecurityManagerPtr mgr,
-                                        virDomainDefPtr vm,
-                                        virDomainInputDefPtr input);
+int virSecurityManagerSetInputLabel(virSecurityManager *mgr,
+                                    virDomainDef *vm,
+                                    virDomainInputDef *input);
+int virSecurityManagerRestoreInputLabel(virSecurityManager *mgr,
+                                        virDomainDef *vm,
+                                        virDomainInputDef *input);
 
-int virSecurityManagerDomainSetPathLabel(virSecurityManagerPtr mgr,
-                                         virDomainDefPtr vm,
+int virSecurityManagerDomainSetPathLabel(virSecurityManager *mgr,
+                                         virDomainDef *vm,
                                          const char *path,
                                          bool allowSubtree);
 
-int virSecurityManagerDomainSetPathLabelRO(virSecurityManagerPtr mgr,
-                                           virDomainDefPtr vm,
+int virSecurityManagerDomainSetPathLabelRO(virSecurityManager *mgr,
+                                           virDomainDef *vm,
                                            const char *path);
 
-int virSecurityManagerDomainRestorePathLabel(virSecurityManagerPtr mgr,
-                                             virDomainDefPtr def,
+int virSecurityManagerDomainRestorePathLabel(virSecurityManager *mgr,
+                                             virDomainDef *def,
                                              const char *path);
 
 
-int virSecurityManagerSetChardevLabel(virSecurityManagerPtr mgr,
-                                      virDomainDefPtr def,
-                                      virDomainChrSourceDefPtr dev_source,
+int virSecurityManagerSetChardevLabel(virSecurityManager *mgr,
+                                      virDomainDef *def,
+                                      virDomainChrSourceDef *dev_source,
                                       bool chardevStdioLogd);
 
-int virSecurityManagerRestoreChardevLabel(virSecurityManagerPtr mgr,
-                                          virDomainDefPtr def,
-                                          virDomainChrSourceDefPtr dev_source,
+int virSecurityManagerRestoreChardevLabel(virSecurityManager *mgr,
+                                          virDomainDef *def,
+                                          virDomainChrSourceDef *dev_source,
                                           bool chardevStdioLogd);
 
-int virSecurityManagerSetTPMLabels(virSecurityManagerPtr mgr,
-                                   virDomainDefPtr vm);
+int virSecurityManagerSetTPMLabels(virSecurityManager *mgr,
+                                   virDomainDef *vm);
 
-int virSecurityManagerRestoreTPMLabels(virSecurityManagerPtr mgr,
-                                       virDomainDefPtr vm);
+int virSecurityManagerRestoreTPMLabels(virSecurityManager *mgr,
+                                       virDomainDef *vm);
 
 typedef struct _virSecurityManagerMetadataLockState virSecurityManagerMetadataLockState;
-typedef virSecurityManagerMetadataLockState *virSecurityManagerMetadataLockStatePtr;
 struct _virSecurityManagerMetadataLockState {
     size_t nfds; /* Captures size of both @fds and @paths */
     int *fds;
@@ -223,11 +221,11 @@ struct _virSecurityManagerMetadataLockState {
 };
 
 
-virSecurityManagerMetadataLockStatePtr
-virSecurityManagerMetadataLock(virSecurityManagerPtr mgr,
+virSecurityManagerMetadataLockState *
+virSecurityManagerMetadataLock(virSecurityManager *mgr,
                                const char **paths,
                                size_t npaths);
 
 void
-virSecurityManagerMetadataUnlock(virSecurityManagerPtr mgr,
-                                 virSecurityManagerMetadataLockStatePtr *state);
+virSecurityManagerMetadataUnlock(virSecurityManager *mgr,
+                                 virSecurityManagerMetadataLockState **state);

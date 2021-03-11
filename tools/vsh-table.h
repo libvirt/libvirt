@@ -24,11 +24,9 @@
 
 typedef struct _vshTable vshTable;
 typedef struct _vshTableRow vshTableRow;
-typedef vshTable *vshTablePtr;
-typedef vshTableRow *vshTableRowPtr;
 
-void vshTableFree(vshTablePtr table);
-vshTablePtr vshTableNew(const char *format, ...);
-int vshTableRowAppend(vshTablePtr table, const char *arg, ...);
-void vshTablePrintToStdout(vshTablePtr table, vshControl *ctl);
-char *vshTablePrintToString(vshTablePtr table, bool header);
+void vshTableFree(vshTable *table);
+vshTable *vshTableNew(const char *format, ...);
+int vshTableRowAppend(vshTable *table, const char *arg, ...);
+void vshTablePrintToStdout(vshTable *table, vshControl *ctl);
+char *vshTablePrintToString(vshTable *table, bool header);

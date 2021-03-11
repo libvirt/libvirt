@@ -18,7 +18,7 @@ struct testBufAddStrData {
 static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
 {
     g_auto(virBuffer) bufinit = VIR_BUFFER_INITIALIZER;
-    virBufferPtr buf = &bufinit;
+    virBuffer *buf = &bufinit;
     const char expected[] =
         "  1\n  2\n  3\n  4\n  5\n  6\n  7\n  &amp;\n  8\n  9\n  10\n  ' 11'\n";
     g_autofree char *result = NULL;
@@ -97,7 +97,7 @@ static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
 static int testBufTrim(const void *data G_GNUC_UNUSED)
 {
     g_auto(virBuffer) bufinit = VIR_BUFFER_INITIALIZER;
-    virBufferPtr buf = NULL;
+    virBuffer *buf = NULL;
     g_autofree char *result = NULL;
     const char *expected = "a,b";
 

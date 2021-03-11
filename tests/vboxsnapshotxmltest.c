@@ -50,7 +50,7 @@ testCompareXMLtoXMLFiles(const char *xml)
     char *actual = NULL;
     char *pathResult = NULL;
     int ret = -1;
-    virVBoxSnapshotConfMachinePtr machine = NULL;
+    virVBoxSnapshotConfMachine *machine = NULL;
 
     pathResult = g_strdup(abs_builddir "/vboxsnapshotxmldata/testResult.vbox");
 

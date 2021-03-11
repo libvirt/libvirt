@@ -82,42 +82,42 @@ VIR_ENUM_IMPL(qemuMigrationJobPhase,
 );
 
 static int
-qemuMigrationJobStart(virQEMUDriverPtr driver,
-                      virDomainObjPtr vm,
+qemuMigrationJobStart(virQEMUDriver *driver,
+                      virDomainObj *vm,
                       qemuDomainAsyncJob job,
                       unsigned long apiFlags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 static void
-qemuMigrationJobSetPhase(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm,
+qemuMigrationJobSetPhase(virQEMUDriver *driver,
+                         virDomainObj *vm,
                          qemuMigrationJobPhase phase)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 static void
-qemuMigrationJobStartPhase(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
+qemuMigrationJobStartPhase(virQEMUDriver *driver,
+                           virDomainObj *vm,
                            qemuMigrationJobPhase phase)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 static void
-qemuMigrationJobContinue(virDomainObjPtr obj)
+qemuMigrationJobContinue(virDomainObj *obj)
     ATTRIBUTE_NONNULL(1);
 
 static bool
-qemuMigrationJobIsActive(virDomainObjPtr vm,
+qemuMigrationJobIsActive(virDomainObj *vm,
                          qemuDomainAsyncJob job)
     ATTRIBUTE_NONNULL(1);
 
 static void
-qemuMigrationJobFinish(virQEMUDriverPtr driver,
-                       virDomainObjPtr obj)
+qemuMigrationJobFinish(virQEMUDriver *driver,
+                       virDomainObj *obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 static void
-qemuMigrationSrcStoreDomainState(virDomainObjPtr vm)
+qemuMigrationSrcStoreDomainState(virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     priv->preMigrationState = virDomainObjGetState(vm, NULL);
 
     VIR_DEBUG("Storing pre-migration state=%d domain=%p",
@@ -126,9 +126,9 @@ qemuMigrationSrcStoreDomainState(virDomainObjPtr vm)
 
 /* Returns true if the domain was resumed, false otherwise */
 static bool
-qemuMigrationSrcRestoreDomainState(virQEMUDriverPtr driver, virDomainObjPtr vm)
+qemuMigrationSrcRestoreDomainState(virQEMUDriver *driver, virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int reason;
     virDomainState state = virDomainObjGetState(vm, &reason);
     bool ret = false;
@@ -170,7 +170,7 @@ qemuMigrationSrcRestoreDomainState(virQEMUDriverPtr driver, virDomainObjPtr vm)
 
 static int
 qemuMigrationDstPrecreateDisk(virConnectPtr *conn,
-                              virDomainDiskDefPtr disk,
+                              virDomainDiskDef *disk,
                               unsigned long long capacity)
 {
     int ret = -1;
@@ -313,8 +313,8 @@ qemuMigrationAnyCopyDisk(virDomainDiskDef const *disk,
 
 
 static int
-qemuMigrationDstPrecreateStorage(virDomainObjPtr vm,
-                                 qemuMigrationCookieNBDPtr nbd,
+qemuMigrationDstPrecreateStorage(virDomainObj *vm,
+                                 qemuMigrationCookieNBD *nbd,
                                  size_t nmigrate_disks,
                                  const char **migrate_disks,
                                  bool incremental)
@@ -327,7 +327,7 @@ qemuMigrationDstPrecreateStorage(virDomainObjPtr vm,
         return 0;
 
     for (i = 0; i < nbd->ndisks; i++) {
-        virDomainDiskDefPtr disk;
+        virDomainDiskDef *disk;
         const char *diskSrcPath;
         g_autofree char *nvmePath = NULL;
 
@@ -388,8 +388,8 @@ qemuMigrationDstPrecreateStorage(virDomainObjPtr vm,
  * Returns 0 on success, -1 otherwise.
  */
 static int
-qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
+qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
+                               virDomainObj *vm,
                                const char *listenAddr,
                                size_t nmigrate_disks,
                                const char **migrate_disks,
@@ -398,7 +398,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
                                const char *tls_alias)
 {
     int ret = -1;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     size_t i;
     virStorageNetHostDef server = {
         .name = (char *)listenAddr, /* cast away const */
@@ -455,7 +455,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
     }
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
+        virDomainDiskDef *disk = vm->def->disks[i];
         g_autofree char *diskAlias = NULL;
 
         /* check whether disk should be migrated */
@@ -520,11 +520,11 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationDstStopNBDServer(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
-                              qemuMigrationCookiePtr mig)
+qemuMigrationDstStopNBDServer(virQEMUDriver *driver,
+                              virDomainObj *vm,
+                              qemuMigrationCookie *mig)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     if (!mig->nbd)
         return 0;
@@ -545,7 +545,7 @@ qemuMigrationDstStopNBDServer(virQEMUDriverPtr driver,
 
 
 static void
-qemuMigrationNBDReportMirrorError(qemuBlockJobDataPtr job,
+qemuMigrationNBDReportMirrorError(qemuBlockJobData *job,
                                   const char *diskdst)
 {
     if (job->errmsg) {
@@ -571,16 +571,16 @@ qemuMigrationNBDReportMirrorError(qemuBlockJobDataPtr job,
  *        -1 on error.
  */
 static int
-qemuMigrationSrcNBDStorageCopyReady(virDomainObjPtr vm,
+qemuMigrationSrcNBDStorageCopyReady(virDomainObj *vm,
                                     qemuDomainAsyncJob asyncJob)
 {
     size_t i;
     size_t notReady = 0;
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
-        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        qemuBlockJobDataPtr job;
+        virDomainDiskDef *disk = vm->def->disks[i];
+        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        qemuBlockJobData *job;
 
         if (!diskPriv->migrating)
             continue;
@@ -625,7 +625,7 @@ qemuMigrationSrcNBDStorageCopyReady(virDomainObjPtr vm,
  *         -2 all mirrors are gone but some of them failed.
  */
 static int
-qemuMigrationSrcNBDCopyCancelled(virDomainObjPtr vm,
+qemuMigrationSrcNBDCopyCancelled(virDomainObj *vm,
                                  qemuDomainAsyncJob asyncJob,
                                  bool check)
 {
@@ -636,9 +636,9 @@ qemuMigrationSrcNBDCopyCancelled(virDomainObjPtr vm,
 
  retry:
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
-        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        qemuBlockJobDataPtr job;
+        virDomainDiskDef *disk = vm->def->disks[i];
+        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        qemuBlockJobData *job;
 
         if (!diskPriv->migrating)
             continue;
@@ -706,14 +706,14 @@ qemuMigrationSrcNBDCopyCancelled(virDomainObjPtr vm,
  *         -1 on error or when job failed and failNoJob is true.
  */
 static int
-qemuMigrationSrcNBDCopyCancelOne(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
-                                 virDomainDiskDefPtr disk,
-                                 qemuBlockJobDataPtr job,
+qemuMigrationSrcNBDCopyCancelOne(virQEMUDriver *driver,
+                                 virDomainObj *vm,
+                                 virDomainDiskDef *disk,
+                                 qemuBlockJobData *job,
                                  bool failNoJob,
                                  qemuDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int rv;
 
     qemuBlockJobUpdate(vm, job, asyncJob);
@@ -755,8 +755,8 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriverPtr driver,
  * Returns 0 on success, -1 otherwise.
  */
 static int
-qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
+qemuMigrationSrcNBDCopyCancel(virQEMUDriver *driver,
+                              virDomainObj *vm,
                               bool check,
                               qemuDomainAsyncJob asyncJob,
                               virConnectPtr dconn)
@@ -770,9 +770,9 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
     VIR_DEBUG("Cancelling drive mirrors for domain %s", vm->def->name);
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
-        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        qemuBlockJobDataPtr job;
+        virDomainDiskDef *disk = vm->def->disks[i];
+        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        qemuBlockJobData *job;
 
         if (!(job = qemuBlockJobDiskGetJob(disk)) ||
             !qemuBlockJobIsRunning(job))
@@ -820,8 +820,8 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
     }
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
-        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        virDomainDiskDef *disk = vm->def->disks[i];
+        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
         if (!diskPriv->migrSource)
             continue;
@@ -841,16 +841,16 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationSrcCancelRemoveTempBitmaps(virDomainObjPtr vm,
+qemuMigrationSrcCancelRemoveTempBitmaps(virDomainObj *vm,
                                         qemuDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverPtr driver = priv->driver;
-    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
     GSList *next;
 
     for (next = jobPriv->migTempBitmaps; next; next = next->next) {
-        qemuDomainJobPrivateMigrateTempBitmapPtr t = next->data;
+        qemuDomainJobPrivateMigrateTempBitmap *t = next->data;
 
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
             return -1;
@@ -863,8 +863,8 @@ qemuMigrationSrcCancelRemoveTempBitmaps(virDomainObjPtr vm,
 }
 
 
-static virStorageSourcePtr
-qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(virDomainDiskDefPtr disk,
+static virStorageSource *
+qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(virDomainDiskDef *disk,
                                                     const char *host,
                                                     int port,
                                                     const char *socket,
@@ -904,9 +904,9 @@ qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(virDomainDiskDefPtr disk,
 
 
 static int
-qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
-                                       virDomainObjPtr vm,
-                                       virDomainDiskDefPtr disk,
+qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriver *driver,
+                                       virDomainObj *vm,
+                                       virDomainDiskDef *disk,
                                        const char *jobname,
                                        const char *sourcename,
                                        bool persistjob,
@@ -918,7 +918,7 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
                                        const char *tlsAlias)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
-    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     int mon_ret = 0;
     g_autoptr(virStorageSource) copysrc = NULL;
 
@@ -958,8 +958,8 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationSrcNBDStorageCopyDriveMirror(virQEMUDriverPtr driver,
-                                          virDomainObjPtr vm,
+qemuMigrationSrcNBDStorageCopyDriveMirror(virQEMUDriver *driver,
+                                          virDomainObj *vm,
                                           const char *diskAlias,
                                           const char *host,
                                           int port,
@@ -997,9 +997,9 @@ qemuMigrationSrcNBDStorageCopyDriveMirror(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virDomainDiskDefPtr disk,
+qemuMigrationSrcNBDStorageCopyOne(virQEMUDriver *driver,
+                                  virDomainObj *vm,
+                                  virDomainDiskDef *disk,
                                   const char *host,
                                   int port,
                                   const char *socket,
@@ -1008,9 +1008,9 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
                                   const char *tlsAlias,
                                   unsigned int flags)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    qemuBlockJobDataPtr job = NULL;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    qemuBlockJobData *job = NULL;
     char *diskAlias = NULL;
     const char *jobname = NULL;
     const char *sourcename = NULL;
@@ -1087,9 +1087,9 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
  *        -1 otherwise.
  */
 static int
-qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
-                               qemuMigrationCookiePtr mig,
+qemuMigrationSrcNBDStorageCopy(virQEMUDriver *driver,
+                               virDomainObj *vm,
+                               qemuMigrationCookie *mig,
                                const char *host,
                                unsigned long speed,
                                unsigned int *migrate_flags,
@@ -1100,7 +1100,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
                                const char *nbdURI,
                                unsigned int flags)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int port;
     size_t i;
     unsigned long long mirror_speed = speed;
@@ -1158,7 +1158,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
     }
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
+        virDomainDiskDef *disk = vm->def->disks[i];
 
         /* check whether disk should be migrated */
         if (!qemuMigrationAnyCopyDisk(disk, nmigrate_disks, migrate_disks))
@@ -1224,7 +1224,7 @@ qemuMigrationSrcIsAllowedHostdev(const virDomainDef *def)
     /* Migration with USB host devices is allowed, all other devices are
      * forbidden. */
     for (i = 0; i < def->nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+        virDomainHostdevDef *hostdev = def->hostdevs[i];
         switch ((virDomainHostdevMode)hostdev->mode) {
         case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -1300,12 +1300,12 @@ qemuMigrationSrcIsAllowedHostdev(const virDomainDef *def)
  * false otherwise.
  */
 bool
-qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
-                          virDomainObjPtr vm,
+qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
+                          virDomainObj *vm,
                           bool remote,
                           unsigned int flags)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int nsnapshots;
     int pauseReason;
     size_t i;
@@ -1362,7 +1362,7 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
                 bool block = true;
 
                 for (i = 0; i < vm->def->clock.ntimers; i++) {
-                    virDomainTimerDefPtr timer = vm->def->clock.timers[i];
+                    virDomainTimerDef *timer = vm->def->clock.timers[i];
 
                     if (timer->name == VIR_DOMAIN_TIMER_NAME_TSC &&
                         timer->frequency > 0) {
@@ -1382,7 +1382,7 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
 
         /* Verify that memory device config can be transferred reliably */
         for (i = 0; i < vm->def->nmems; i++) {
-            virDomainMemoryDefPtr mem = vm->def->mems[i];
+            virDomainMemoryDef *mem = vm->def->mems[i];
 
             if (mem->model == VIR_DOMAIN_MEMORY_MODEL_DIMM &&
                 mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
@@ -1395,7 +1395,7 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
         }
 
         for (i = 0; i < vm->def->nshmems; i++) {
-            virDomainShmemDefPtr shmem = vm->def->shmems[i];
+            virDomainShmemDef *shmem = vm->def->shmems[i];
 
             if (shmem->model == VIR_DOMAIN_SHMEM_MODEL_IVSHMEM) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -1413,8 +1413,8 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
         }
 
         for (i = 0; i < vm->def->nnets; i++) {
-            virDomainNetDefPtr net = vm->def->nets[i];
-            qemuSlirpPtr slirp;
+            virDomainNetDef *net = vm->def->nets[i];
+            qemuSlirp *slirp;
 
             if (net->type == VIR_DOMAIN_NET_TYPE_VDPA) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -1432,7 +1432,7 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
         }
 
         for (i = 0; i < vm->def->nfss; i++) {
-            virDomainFSDefPtr fs = vm->def->fss[i];
+            virDomainFSDef *fs = vm->def->fss[i];
 
             if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -1449,7 +1449,7 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
         }
 
         for (i = 0; i < vm->def->ndisks; i++) {
-            virDomainDiskDefPtr disk = vm->def->disks[i];
+            virDomainDiskDef *disk = vm->def->disks[i];
 
             if (disk->transient) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -1463,8 +1463,8 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
 }
 
 static bool
-qemuMigrationSrcIsSafe(virDomainDefPtr def,
-                       virQEMUCapsPtr qemuCaps,
+qemuMigrationSrcIsSafe(virDomainDef *def,
+                       virQEMUCaps *qemuCaps,
                        size_t nmigrate_disks,
                        const char **migrate_disks,
                        unsigned int flags)
@@ -1476,7 +1476,7 @@ qemuMigrationSrcIsSafe(virDomainDefPtr def,
     int rc;
 
     for (i = 0; i < def->ndisks; i++) {
-        virDomainDiskDefPtr disk = def->disks[i];
+        virDomainDiskDef *disk = def->disks[i];
         const char *src = virDomainDiskGetSource(disk);
         int actualType = virStorageSourceGetActualType(disk->src);
         bool unsafe = false;
@@ -1551,8 +1551,8 @@ qemuMigrationSrcIsSafe(virDomainDefPtr def,
 
 
 void
-qemuMigrationAnyPostcopyFailed(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm)
+qemuMigrationAnyPostcopyFailed(virQEMUDriver *driver,
+                               virDomainObj *vm)
 {
     virDomainState state;
     int reason;
@@ -1583,10 +1583,10 @@ qemuMigrationAnyPostcopyFailed(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationSrcWaitForSpice(virDomainObjPtr vm)
+qemuMigrationSrcWaitForSpice(virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
 
     if (!jobPriv->spiceMigration)
         return 0;
@@ -1601,7 +1601,7 @@ qemuMigrationSrcWaitForSpice(virDomainObjPtr vm)
 
 
 static void
-qemuMigrationUpdateJobType(qemuDomainJobInfoPtr jobInfo)
+qemuMigrationUpdateJobType(qemuDomainJobInfo *jobInfo)
 {
     switch ((qemuMonitorMigrationStatus) jobInfo->stats.mig.status) {
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY:
@@ -1643,13 +1643,13 @@ qemuMigrationUpdateJobType(qemuDomainJobInfoPtr jobInfo)
 
 
 int
-qemuMigrationAnyFetchStats(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
+qemuMigrationAnyFetchStats(virQEMUDriver *driver,
+                           virDomainObj *vm,
                            qemuDomainAsyncJob asyncJob,
-                           qemuDomainJobInfoPtr jobInfo,
+                           qemuDomainJobInfo *jobInfo,
                            char **error)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     qemuMonitorMigrationStats stats;
     int rv;
 
@@ -1668,9 +1668,9 @@ qemuMigrationAnyFetchStats(virQEMUDriverPtr driver,
 
 
 static const char *
-qemuMigrationJobName(virDomainObjPtr vm)
+qemuMigrationJobName(virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     switch (priv->job.asyncJob) {
     case QEMU_ASYNC_JOB_MIGRATION_OUT:
@@ -1697,12 +1697,12 @@ qemuMigrationJobName(virDomainObjPtr vm)
 
 
 static int
-qemuMigrationJobCheckStatus(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
+qemuMigrationJobCheckStatus(virQEMUDriver *driver,
+                            virDomainObj *vm,
                             qemuDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuDomainJobInfoPtr jobInfo = priv->job.current;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobInfo *jobInfo = priv->job.current;
     g_autofree char *error = NULL;
     bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
 
@@ -1760,14 +1760,14 @@ enum qemuMigrationCompletedFlags {
  *         -2 something else failed, we need to cancel migration.
  */
 static int
-qemuMigrationAnyCompleted(virQEMUDriverPtr driver,
-                          virDomainObjPtr vm,
+qemuMigrationAnyCompleted(virQEMUDriver *driver,
+                          virDomainObj *vm,
                           qemuDomainAsyncJob asyncJob,
                           virConnectPtr dconn,
                           unsigned int flags)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuDomainJobInfoPtr jobInfo = priv->job.current;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobInfo *jobInfo = priv->job.current;
     int pauseReason;
 
     if (qemuMigrationJobCheckStatus(driver, vm, asyncJob) < 0)
@@ -1851,14 +1851,14 @@ qemuMigrationAnyCompleted(virQEMUDriverPtr driver,
  * QEMU reports failed migration.
  */
 static int
-qemuMigrationSrcWaitForCompletion(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
+qemuMigrationSrcWaitForCompletion(virQEMUDriver *driver,
+                                  virDomainObj *vm,
                                   qemuDomainAsyncJob asyncJob,
                                   virConnectPtr dconn,
                                   unsigned int flags)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuDomainJobInfoPtr jobInfo = priv->job.current;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobInfo *jobInfo = priv->job.current;
     bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
     int rv;
 
@@ -1903,12 +1903,12 @@ qemuMigrationSrcWaitForCompletion(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationDstWaitForCompletion(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
+qemuMigrationDstWaitForCompletion(virQEMUDriver *driver,
+                                  virDomainObj *vm,
                                   qemuDomainAsyncJob asyncJob,
                                   bool postcopy)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     unsigned int flags = 0;
     int rv;
 
@@ -1931,16 +1931,16 @@ qemuMigrationDstWaitForCompletion(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationSrcGraphicsRelocate(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
-                                 qemuMigrationCookiePtr cookie,
+qemuMigrationSrcGraphicsRelocate(virQEMUDriver *driver,
+                                 virDomainObj *vm,
+                                 qemuMigrationCookie *cookie,
                                  const char *graphicsuri)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int ret = -1;
     const char *listenAddress = NULL;
     virSocketAddr addr;
-    virURIPtr uri = NULL;
+    virURI *uri = NULL;
     int type = -1;
     int port = -1;
     int tlsPort = -1;
@@ -1982,7 +1982,7 @@ qemuMigrationSrcGraphicsRelocate(virQEMUDriverPtr driver,
             port = uri->port;
 
         for (i = 0; i < uri->paramsCount; i++) {
-            virURIParamPtr param = uri->params + i;
+            virURIParam *param = uri->params + i;
 
             if (STRCASEEQ(param->name, "tlsPort")) {
                 if (virStrToLong_i(param->value, NULL, 10, &tlsPort) < 0) {
@@ -2016,7 +2016,7 @@ qemuMigrationSrcGraphicsRelocate(virQEMUDriverPtr driver,
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
-        qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
+        qemuDomainJobPrivate *jobPriv = priv->job.privateData;
 
         ret = qemuMonitorGraphicsRelocate(priv->mon, type, listenAddress,
                                           port, tlsPort, tlsSubject);
@@ -2032,11 +2032,11 @@ qemuMigrationSrcGraphicsRelocate(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationDstOPDRelocate(virQEMUDriverPtr driver G_GNUC_UNUSED,
-                            virDomainObjPtr vm,
-                            qemuMigrationCookiePtr cookie)
+qemuMigrationDstOPDRelocate(virQEMUDriver *driver G_GNUC_UNUSED,
+                            virDomainObj *vm,
+                            qemuMigrationCookie *cookie)
 {
-    virDomainNetDefPtr netptr;
+    virDomainNetDef *netptr;
     size_t i;
 
     for (i = 0; i < cookie->network->nnets; i++) {
@@ -2066,7 +2066,7 @@ qemuMigrationDstOPDRelocate(virQEMUDriverPtr driver G_GNUC_UNUSED,
 
 
 int
-qemuMigrationDstCheckProtocol(virQEMUCapsPtr qemuCaps,
+qemuMigrationDstCheckProtocol(virQEMUCaps *qemuCaps,
                               const char *migrateFrom)
 {
     if (STRPREFIX(migrateFrom, "rdma")) {
@@ -2106,12 +2106,12 @@ qemuMigrationDstGetURI(const char *migrateFrom,
 
 
 int
-qemuMigrationDstRun(virQEMUDriverPtr driver,
-                    virDomainObjPtr vm,
+qemuMigrationDstRun(virQEMUDriver *driver,
+                    virDomainObj *vm,
                     const char *uri,
                     qemuDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int rv;
 
     VIR_DEBUG("Setting up incoming migration with URI %s", uri);
@@ -2148,13 +2148,13 @@ qemuMigrationDstRun(virQEMUDriverPtr driver,
  * qemuDomainMigratePerform3 and qemuDomainMigrateConfirm3.
  */
 static void
-qemuMigrationSrcCleanup(virDomainObjPtr vm,
+qemuMigrationSrcCleanup(virDomainObj *vm,
                         virConnectPtr conn,
                         void *opaque)
 {
-    virQEMUDriverPtr driver = opaque;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
+    virQEMUDriver *driver = opaque;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
 
     VIR_DEBUG("vm=%s, conn=%p, asyncJob=%s, phase=%s",
               vm->def->name, conn,
@@ -2215,14 +2215,14 @@ qemuMigrationSrcCleanup(virDomainObjPtr vm,
  * and fills them into @mig to be offered to the destination.
  */
 static int
-qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(qemuMigrationCookiePtr mig,
-                                            virDomainObjPtr vm,
+qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(qemuMigrationCookie *mig,
+                                            virDomainObj *vm,
                                             const char **migrate_disks,
                                             size_t nmigrate_disks)
 
 {
     GSList *disks = NULL;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     size_t i;
 
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
@@ -2231,10 +2231,10 @@ qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(qemuMigrationCookiePtr mig,
         return -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        qemuMigrationBlockDirtyBitmapsDiskPtr disk;
+        qemuMigrationBlockDirtyBitmapsDisk *disk;
         GSList *bitmaps = NULL;
-        virDomainDiskDefPtr diskdef = vm->def->disks[i];
-        qemuBlockNamedNodeDataPtr nodedata = virHashLookup(blockNamedNodeData, diskdef->src->nodeformat);
+        virDomainDiskDef *diskdef = vm->def->disks[i];
+        qemuBlockNamedNodeData *nodedata = virHashLookup(blockNamedNodeData, diskdef->src->nodeformat);
         size_t j;
 
         if (!nodedata)
@@ -2255,7 +2255,7 @@ qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(qemuMigrationCookiePtr mig,
         }
 
         for (j = 0; j < nodedata->nbitmaps; j++) {
-            qemuMigrationBlockDirtyBitmapsDiskBitmapPtr bitmap;
+            qemuMigrationBlockDirtyBitmapsDiskBitmap *bitmap;
 
             if (!qemuBlockBitmapChainIsValid(diskdef->src,
                                              nodedata->bitmaps[j]->name,
@@ -2291,8 +2291,8 @@ qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(qemuMigrationCookiePtr mig,
 
 /* The caller is supposed to lock the vm and start a migration job. */
 static char *
-qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
+qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
+                           virDomainObj *vm,
                            const char *xmlin,
                            const char *dname,
                            char **cookieout,
@@ -2303,7 +2303,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
 {
     g_autoptr(qemuMigrationCookie) mig = NULL;
     g_autoptr(virDomainDef) def = NULL;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     unsigned int cookieFlags = QEMU_MIGRATION_COOKIE_LOCKSTATE;
 
     VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, dname=%s,"
@@ -2453,7 +2453,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
 
 char *
 qemuMigrationSrcBegin(virConnectPtr conn,
-                      virDomainObjPtr vm,
+                      virDomainObj *vm,
                       const char *xmlin,
                       const char *dname,
                       char **cookieout,
@@ -2462,7 +2462,7 @@ qemuMigrationSrcBegin(virConnectPtr conn,
                       const char **migrate_disks,
                       unsigned long flags)
 {
-    virQEMUDriverPtr driver = conn->privateData;
+    virQEMUDriver *driver = conn->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     char *xml = NULL;
     qemuDomainAsyncJob asyncJob;
@@ -2535,10 +2535,10 @@ qemuMigrationSrcBegin(virConnectPtr conn,
  */
 
 static void
-qemuMigrationDstPrepareCleanup(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm)
+qemuMigrationDstPrepareCleanup(virQEMUDriver *driver,
+                               virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     VIR_DEBUG("driver=%p, vm=%s, job=%s, asyncJob=%s",
               driver,
@@ -2554,15 +2554,15 @@ qemuMigrationDstPrepareCleanup(virQEMUDriverPtr driver,
     qemuDomainObjDiscardAsyncJob(driver, vm);
 }
 
-static qemuProcessIncomingDefPtr
-qemuMigrationDstPrepare(virDomainObjPtr vm,
+static qemuProcessIncomingDef *
+qemuMigrationDstPrepare(virDomainObj *vm,
                         bool tunnel,
                         const char *protocol,
                         const char *listenAddress,
                         unsigned short port,
                         int fd)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *migrateFrom = NULL;
 
     if (tunnel) {
@@ -2635,12 +2635,12 @@ qemuMigrationDstPrepare(virDomainObjPtr vm,
  * source.
  */
 static int
-qemuMigrationDstPrepareAnyBlockDirtyBitmaps(virDomainObjPtr vm,
-                                            qemuMigrationCookiePtr mig,
-                                            qemuMigrationParamsPtr migParams,
+qemuMigrationDstPrepareAnyBlockDirtyBitmaps(virDomainObj *vm,
+                                            qemuMigrationCookie *mig,
+                                            qemuMigrationParams *migParams,
                                             unsigned int flags)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virJSONValue) mapping = NULL;
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
     GSList *nextdisk;
@@ -2658,8 +2658,8 @@ qemuMigrationDstPrepareAnyBlockDirtyBitmaps(virDomainObjPtr vm,
         return -1;
 
     for (nextdisk = mig->blockDirtyBitmaps; nextdisk; nextdisk = nextdisk->next) {
-        qemuMigrationBlockDirtyBitmapsDiskPtr disk = nextdisk->data;
-        qemuBlockNamedNodeDataPtr nodedata;
+        qemuMigrationBlockDirtyBitmapsDisk *disk = nextdisk->data;
+        qemuBlockNamedNodeData *nodedata;
         GSList *nextbitmap;
 
         if (!(nodedata = virHashLookup(blockNamedNodeData, disk->nodename))) {
@@ -2677,7 +2677,7 @@ qemuMigrationDstPrepareAnyBlockDirtyBitmaps(virDomainObjPtr vm,
         }
 
         for (nextbitmap = disk->bitmaps; nextbitmap; nextbitmap = nextbitmap->next) {
-            qemuMigrationBlockDirtyBitmapsDiskBitmapPtr bitmap = nextbitmap->data;
+            qemuMigrationBlockDirtyBitmapsDiskBitmap *bitmap = nextbitmap->data;
             size_t k;
 
             /* don't migrate into existing bitmaps */
@@ -2707,13 +2707,13 @@ qemuMigrationDstPrepareAnyBlockDirtyBitmaps(virDomainObjPtr vm,
 
 
 static int
-qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
+qemuMigrationDstPrepareAny(virQEMUDriver *driver,
                            virConnectPtr dconn,
                            const char *cookiein,
                            int cookieinlen,
                            char **cookieout,
                            int *cookieoutlen,
-                           virDomainDefPtr *def,
+                           virDomainDef **def,
                            const char *origname,
                            virStreamPtr st,
                            const char *protocol,
@@ -2724,23 +2724,23 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                            const char **migrate_disks,
                            int nbdPort,
                            const char *nbdURI,
-                           qemuMigrationParamsPtr migParams,
+                           qemuMigrationParams *migParams,
                            unsigned long flags)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    virDomainObjPtr vm = NULL;
-    virObjectEventPtr event = NULL;
+    virDomainObj *vm = NULL;
+    virObjectEvent *event = NULL;
     virErrorPtr origErr;
     int ret = -1;
     int dataFD[2] = { -1, -1 };
-    qemuDomainObjPrivatePtr priv = NULL;
-    qemuMigrationCookiePtr mig = NULL;
-    qemuDomainJobPrivatePtr jobPriv = NULL;
+    qemuDomainObjPrivate *priv = NULL;
+    qemuMigrationCookie *mig = NULL;
+    qemuDomainJobPrivate *jobPriv = NULL;
     bool tunnel = !!st;
     g_autofree char *xmlout = NULL;
     unsigned int cookieFlags;
     unsigned int startFlags;
-    qemuProcessIncomingDefPtr incoming = NULL;
+    qemuProcessIncomingDef *incoming = NULL;
     bool taint_hook = false;
     bool stopProcess = false;
     bool relabel = false;
@@ -3100,16 +3100,16 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
  * sets up the corresponding virStream to handle the incoming data.
  */
 int
-qemuMigrationDstPrepareTunnel(virQEMUDriverPtr driver,
+qemuMigrationDstPrepareTunnel(virQEMUDriver *driver,
                               virConnectPtr dconn,
                               const char *cookiein,
                               int cookieinlen,
                               char **cookieout,
                               int *cookieoutlen,
                               virStreamPtr st,
-                              virDomainDefPtr *def,
+                              virDomainDef **def,
                               const char *origname,
-                              qemuMigrationParamsPtr migParams,
+                              qemuMigrationParams *migParams,
                               unsigned long flags)
 {
     VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
@@ -3131,11 +3131,11 @@ qemuMigrationDstPrepareTunnel(virQEMUDriverPtr driver,
 }
 
 
-static virURIPtr
+static virURI *
 qemuMigrationAnyParseURI(const char *uri, bool *wellFormed)
 {
     char *tmp = NULL;
-    virURIPtr parsed;
+    virURI *parsed;
 
     /* For compatibility reasons tcp://... URIs are sent as tcp:...
      * We need to transform them to a well-formed URI before parsing. */
@@ -3154,7 +3154,7 @@ qemuMigrationAnyParseURI(const char *uri, bool *wellFormed)
 
 
 int
-qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
+qemuMigrationDstPrepareDirect(virQEMUDriver *driver,
                               virConnectPtr dconn,
                               const char *cookiein,
                               int cookieinlen,
@@ -3162,14 +3162,14 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
                               int *cookieoutlen,
                               const char *uri_in,
                               char **uri_out,
-                              virDomainDefPtr *def,
+                              virDomainDef **def,
                               const char *origname,
                               const char *listenAddress,
                               size_t nmigrate_disks,
                               const char **migrate_disks,
                               int nbdPort,
                               const char *nbdURI,
-                              qemuMigrationParamsPtr migParams,
+                              qemuMigrationParams *migParams,
                               unsigned long flags)
 {
     unsigned short port = 0;
@@ -3309,14 +3309,14 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
 }
 
 
-virDomainDefPtr
-qemuMigrationAnyPrepareDef(virQEMUDriverPtr driver,
-                           virQEMUCapsPtr qemuCaps,
+virDomainDef *
+qemuMigrationAnyPrepareDef(virQEMUDriver *driver,
+                           virQEMUCaps *qemuCaps,
                            const char *dom_xml,
                            const char *dname,
                            char **origname)
 {
-    virDomainDefPtr def;
+    virDomainDef *def;
     char *name = NULL;
 
     if (!dom_xml) {
@@ -3346,19 +3346,19 @@ qemuMigrationAnyPrepareDef(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationSrcConfirmPhase(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
+qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
+                             virDomainObj *vm,
                              const char *cookiein,
                              int cookieinlen,
                              unsigned int flags,
                              int retcode)
 {
     g_autoptr(qemuMigrationCookie) mig = NULL;
-    virObjectEventPtr event;
+    virObjectEvent *event;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
-    qemuDomainJobInfoPtr jobInfo = NULL;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
+    qemuDomainJobInfo *jobInfo = NULL;
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "flags=0x%x, retcode=%d",
@@ -3453,8 +3453,8 @@ qemuMigrationSrcConfirmPhase(virQEMUDriverPtr driver,
 }
 
 int
-qemuMigrationSrcConfirm(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm,
+qemuMigrationSrcConfirm(virQEMUDriver *driver,
+                        virDomainObj *vm,
                         const char *cookiein,
                         int cookieinlen,
                         unsigned int flags,
@@ -3509,7 +3509,6 @@ enum qemuMigrationForwardType {
 };
 
 typedef struct _qemuMigrationSpec qemuMigrationSpec;
-typedef qemuMigrationSpec *qemuMigrationSpecPtr;
 struct _qemuMigrationSpec {
     enum qemuMigrationDestinationType destType;
     union {
@@ -3538,7 +3537,6 @@ struct _qemuMigrationSpec {
 #define TUNNEL_SEND_BUF_SIZE 65536
 
 typedef struct _qemuMigrationIOThread qemuMigrationIOThread;
-typedef qemuMigrationIOThread *qemuMigrationIOThreadPtr;
 struct _qemuMigrationIOThread {
     virThread thread;
     virStreamPtr st;
@@ -3550,7 +3548,7 @@ struct _qemuMigrationIOThread {
 
 static void qemuMigrationSrcIOFunc(void *arg)
 {
-    qemuMigrationIOThreadPtr data = arg;
+    qemuMigrationIOThread *data = arg;
     char *buffer = NULL;
     struct pollfd fds[2];
     int timeout = -1;
@@ -3653,11 +3651,11 @@ static void qemuMigrationSrcIOFunc(void *arg)
 }
 
 
-static qemuMigrationIOThreadPtr
+static qemuMigrationIOThread *
 qemuMigrationSrcStartTunnel(virStreamPtr st,
                             int sock)
 {
-    qemuMigrationIOThreadPtr io = NULL;
+    qemuMigrationIOThread *io = NULL;
     int wakeupFD[2] = { -1, -1 };
 
     if (virPipe(wakeupFD) < 0)
@@ -3690,7 +3688,7 @@ qemuMigrationSrcStartTunnel(virStreamPtr st,
 }
 
 static int
-qemuMigrationSrcStopTunnel(qemuMigrationIOThreadPtr io, bool error)
+qemuMigrationSrcStopTunnel(qemuMigrationIOThread *io, bool error)
 {
     int rv = -1;
     char stop = error ? 1 : 0;
@@ -3724,11 +3722,11 @@ qemuMigrationSrcStopTunnel(qemuMigrationIOThreadPtr io, bool error)
 }
 
 static int
-qemuMigrationSrcConnect(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm,
-                        qemuMigrationSpecPtr spec)
+qemuMigrationSrcConnect(virQEMUDriver *driver,
+                        virDomainObj *vm,
+                        qemuMigrationSpec *spec)
 {
-    virNetSocketPtr sock;
+    virNetSocket *sock;
     g_autofree char *port = NULL;
     int fd_qemu = -1;
     int ret = -1;
@@ -3785,12 +3783,12 @@ qemuMigrationSrcConnect(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationSrcContinue(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm,
+qemuMigrationSrcContinue(virQEMUDriver *driver,
+                         virDomainObj *vm,
                          qemuMonitorMigrationStatus status,
                          qemuDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int ret;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -3806,10 +3804,10 @@ qemuMigrationSrcContinue(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationSetDBusVMState(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm)
+qemuMigrationSetDBusVMState(virQEMUDriver *driver,
+                            virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     if (priv->dbusVMStateIds) {
         int rv;
@@ -3850,13 +3848,13 @@ qemuMigrationSetDBusVMState(virQEMUDriverPtr driver,
  * bitmaps for deletion on failed migration.
  */
 static int
-qemuMigrationSrcRunPrepareBlockDirtyBitmapsMerge(virDomainObjPtr vm,
-                                                 qemuMigrationCookiePtr mig)
+qemuMigrationSrcRunPrepareBlockDirtyBitmapsMerge(virDomainObj *vm,
+                                                 qemuMigrationCookie *mig)
 {
     g_autoslist(qemuDomainJobPrivateMigrateTempBitmap) tmpbitmaps = NULL;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
-    virQEMUDriverPtr driver = priv->driver;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
+    virQEMUDriver *driver = priv->driver;
     g_autoptr(virJSONValue) actions = virJSONValueNewArray();
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
     GSList *nextdisk;
@@ -3866,7 +3864,7 @@ qemuMigrationSrcRunPrepareBlockDirtyBitmapsMerge(virDomainObjPtr vm,
         return -1;
 
     for (nextdisk = mig->blockDirtyBitmaps; nextdisk; nextdisk = nextdisk->next) {
-        qemuMigrationBlockDirtyBitmapsDiskPtr disk = nextdisk->data;
+        qemuMigrationBlockDirtyBitmapsDisk *disk = nextdisk->data;
         GSList *nextbitmap;
 
         /* if a disk doesn't have a backing chain we don't need the code below */
@@ -3874,14 +3872,14 @@ qemuMigrationSrcRunPrepareBlockDirtyBitmapsMerge(virDomainObjPtr vm,
             continue;
 
         for (nextbitmap = disk->bitmaps; nextbitmap; nextbitmap = nextbitmap->next) {
-            qemuMigrationBlockDirtyBitmapsDiskBitmapPtr bitmap = nextbitmap->data;
-            qemuDomainJobPrivateMigrateTempBitmapPtr tmpbmp;
-            virStorageSourcePtr n;
+            qemuMigrationBlockDirtyBitmapsDiskBitmap *bitmap = nextbitmap->data;
+            qemuDomainJobPrivateMigrateTempBitmap *tmpbmp;
+            virStorageSource *n;
             unsigned long long granularity = 0;
             g_autoptr(virJSONValue) merge = virJSONValueNewArray();
 
             for (n = disk->disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
-                qemuBlockNamedNodeDataBitmapPtr b;
+                qemuBlockNamedNodeDataBitmap *b;
 
                 if (!(b = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData, n,
                                                                 bitmap->bitmapname)))
@@ -3943,9 +3941,9 @@ qemuMigrationSrcRunPrepareBlockDirtyBitmapsMerge(virDomainObjPtr vm,
  * for bitmaps.
  */
 static int
-qemuMigrationSrcRunPrepareBlockDirtyBitmaps(virDomainObjPtr vm,
-                                            qemuMigrationCookiePtr mig,
-                                            qemuMigrationParamsPtr migParams,
+qemuMigrationSrcRunPrepareBlockDirtyBitmaps(virDomainObj *vm,
+                                            qemuMigrationCookie *mig,
+                                            qemuMigrationParams *migParams,
                                             unsigned int flags)
 
 {
@@ -3975,8 +3973,8 @@ qemuMigrationSrcRunPrepareBlockDirtyBitmaps(virDomainObjPtr vm,
 
 
 static int
-qemuMigrationSrcRun(virQEMUDriverPtr driver,
-                    virDomainObjPtr vm,
+qemuMigrationSrcRun(virQEMUDriver *driver,
+                    virDomainObj *vm,
                     const char *persist_xml,
                     const char *cookiein,
                     int cookieinlen,
@@ -3984,20 +3982,20 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
                     int *cookieoutlen,
                     unsigned long flags,
                     unsigned long resource,
-                    qemuMigrationSpecPtr spec,
+                    qemuMigrationSpec *spec,
                     virConnectPtr dconn,
                     const char *graphicsuri,
                     size_t nmigrate_disks,
                     const char **migrate_disks,
-                    qemuMigrationParamsPtr migParams,
+                    qemuMigrationParams *migParams,
                     const char *nbdURI)
 {
     int ret = -1;
     unsigned int migrate_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(qemuMigrationCookie) mig = NULL;
     g_autofree char *tlsAlias = NULL;
-    qemuMigrationIOThreadPtr iothread = NULL;
+    qemuMigrationIOThread *iothread = NULL;
     VIR_AUTOCLOSE fd = -1;
     unsigned long migrate_speed = resource ? resource : priv->migMaxBandwidth;
     virErrorPtr orig_err = NULL;
@@ -4054,7 +4052,7 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
                                                           NULL, NULL)))
                 goto error;
         } else {
-            virDomainDefPtr def = vm->newDef ? vm->newDef : vm->def;
+            virDomainDef *def = vm->newDef ? vm->newDef : vm->def;
             if (!(persistDef = qemuDomainDefCopy(driver, priv->qemuCaps, def,
                                                  VIR_DOMAIN_XML_SECURE |
                                                  VIR_DOMAIN_XML_MIGRATABLE)))
@@ -4304,7 +4302,7 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     }
 
     if (iothread) {
-        qemuMigrationIOThreadPtr io;
+        qemuMigrationIOThread *io;
 
         io = g_steal_pointer(&iothread);
         if (qemuMigrationSrcStopTunnel(io, false) < 0)
@@ -4376,8 +4374,8 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
  * not encrypted obviously
  */
 static int
-qemuMigrationSrcPerformNative(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
+qemuMigrationSrcPerformNative(virQEMUDriver *driver,
+                              virDomainObj *vm,
                               const char *persist_xml,
                               const char *uri,
                               const char *cookiein,
@@ -4390,10 +4388,10 @@ qemuMigrationSrcPerformNative(virQEMUDriverPtr driver,
                               const char *graphicsuri,
                               size_t nmigrate_disks,
                               const char **migrate_disks,
-                              qemuMigrationParamsPtr migParams,
+                              qemuMigrationParams *migParams,
                               const char *nbdURI)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virURI) uribits = NULL;
     int ret = -1;
     qemuMigrationSpec spec;
@@ -4474,8 +4472,8 @@ qemuMigrationSrcPerformNative(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationSrcPerformTunnel(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
+qemuMigrationSrcPerformTunnel(virQEMUDriver *driver,
+                              virDomainObj *vm,
                               virStreamPtr st,
                               const char *persist_xml,
                               const char *cookiein,
@@ -4488,7 +4486,7 @@ qemuMigrationSrcPerformTunnel(virQEMUDriverPtr driver,
                               const char *graphicsuri,
                               size_t nmigrate_disks,
                               const char **migrate_disks,
-                              qemuMigrationParamsPtr migParams)
+                              qemuMigrationParams *migParams)
 {
     int ret = -1;
     qemuMigrationSpec spec;
@@ -4541,15 +4539,15 @@ qemuMigrationSrcPerformTunnel(virQEMUDriverPtr driver,
  * instead of client app context & also adding in tunnel
  * handling */
 static int
-qemuMigrationSrcPerformPeer2Peer2(virQEMUDriverPtr driver,
+qemuMigrationSrcPerformPeer2Peer2(virQEMUDriver *driver,
                                   virConnectPtr sconn,
                                   virConnectPtr dconn,
-                                  virDomainObjPtr vm,
+                                  virDomainObj *vm,
                                   const char *dconnuri,
                                   unsigned long flags,
                                   const char *dname,
                                   unsigned long resource,
-                                  qemuMigrationParamsPtr migParams)
+                                  qemuMigrationParams *migParams)
 {
     virDomainPtr ddomain = NULL;
     char *uri_out = NULL;
@@ -4682,11 +4680,11 @@ qemuMigrationSrcPerformPeer2Peer2(virQEMUDriverPtr driver,
  * instead of client app context & also adding in tunnel
  * handling */
 static int
-qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
+qemuMigrationSrcPerformPeer2Peer3(virQEMUDriver *driver,
                                   virConnectPtr sconn,
                                   virConnectPtr dconn,
                                   const char *dconnuri,
-                                  virDomainObjPtr vm,
+                                  virDomainObj *vm,
                                   const char *xmlin,
                                   const char *persist_xml,
                                   const char *dname,
@@ -4697,7 +4695,7 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
                                   const char **migrate_disks,
                                   int nbdPort,
                                   const char *nbdURI,
-                                  qemuMigrationParamsPtr migParams,
+                                  qemuMigrationParams *migParams,
                                   unsigned long long bandwidth,
                                   bool useParams,
                                   unsigned long flags)
@@ -5026,7 +5024,7 @@ qemuMigrationSrcConnectionClosed(virConnectPtr conn,
                                  int reason,
                                  void *opaque)
 {
-    virDomainObjPtr vm = opaque;
+    virDomainObj *vm = opaque;
 
     VIR_DEBUG("conn=%p, reason=%d, vm=%s", conn, reason, vm->def->name);
     virDomainObjBroadcast(vm);
@@ -5046,9 +5044,9 @@ static virConnectAuth virConnectAuthConfig = {
 
 
 static int
-qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
+qemuMigrationSrcPerformPeer2Peer(virQEMUDriver *driver,
                                  virConnectPtr sconn,
-                                 virDomainObjPtr vm,
+                                 virDomainObj *vm,
                                  const char *xmlin,
                                  const char *persist_xml,
                                  const char *dconnuri,
@@ -5059,7 +5057,7 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
                                  const char **migrate_disks,
                                  int nbdPort,
                                  const char *nbdURI,
-                                 qemuMigrationParamsPtr migParams,
+                                 qemuMigrationParams *migParams,
                                  unsigned long flags,
                                  const char *dname,
                                  unsigned long resource,
@@ -5214,9 +5212,9 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
  * perform phase of v2 non-peer2peer migration.
  */
 static int
-qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
+qemuMigrationSrcPerformJob(virQEMUDriver *driver,
                            virConnectPtr conn,
-                           virDomainObjPtr vm,
+                           virDomainObj *vm,
                            const char *xmlin,
                            const char *persist_xml,
                            const char *dconnuri,
@@ -5227,7 +5225,7 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
                            const char **migrate_disks,
                            int nbdPort,
                            const char *nbdURI,
-                           qemuMigrationParamsPtr migParams,
+                           qemuMigrationParams *migParams,
                            const char *cookiein,
                            int cookieinlen,
                            char **cookieout,
@@ -5237,12 +5235,12 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
                            unsigned long resource,
                            bool v3proto)
 {
-    virObjectEventPtr event = NULL;
+    virObjectEvent *event = NULL;
     int ret = -1;
     virErrorPtr orig_err = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
 
     if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
                               flags) < 0)
@@ -5325,15 +5323,15 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
  * This implements perform phase of v3 migration protocol.
  */
 static int
-qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
+qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
                              virConnectPtr conn,
-                             virDomainObjPtr vm,
+                             virDomainObj *vm,
                              const char *persist_xml,
                              const char *uri,
                              const char *graphicsuri,
                              size_t nmigrate_disks,
                              const char **migrate_disks,
-                             qemuMigrationParamsPtr migParams,
+                             qemuMigrationParams *migParams,
                              const char *cookiein,
                              int cookieinlen,
                              char **cookieout,
@@ -5342,8 +5340,8 @@ qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
                              unsigned long resource,
                              const char *nbdURI)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
     int ret = -1;
 
     /* If we didn't start the job in the begin phase, start it now. */
@@ -5391,9 +5389,9 @@ qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
 }
 
 int
-qemuMigrationSrcPerform(virQEMUDriverPtr driver,
+qemuMigrationSrcPerform(virQEMUDriver *driver,
                         virConnectPtr conn,
-                        virDomainObjPtr vm,
+                        virDomainObj *vm,
                         const char *xmlin,
                         const char *persist_xml,
                         const char *dconnuri,
@@ -5404,7 +5402,7 @@ qemuMigrationSrcPerform(virQEMUDriverPtr driver,
                         const char **migrate_disks,
                         int nbdPort,
                         const char *nbdURI,
-                        qemuMigrationParamsPtr migParams,
+                        qemuMigrationParams *migParams,
                         const char *cookiein,
                         int cookieinlen,
                         char **cookieout,
@@ -5478,11 +5476,11 @@ qemuMigrationSrcPerform(virQEMUDriverPtr driver,
 }
 
 static int
-qemuMigrationDstVPAssociatePortProfiles(virDomainDefPtr def)
+qemuMigrationDstVPAssociatePortProfiles(virDomainDef *def)
 {
     size_t i;
     int last_good_net = -1;
-    virDomainNetDefPtr net;
+    virDomainNetDef *net;
 
     for (i = 0; i < def->nnets; i++) {
         net = def->nets[i];
@@ -5530,17 +5528,17 @@ qemuMigrationDstVPAssociatePortProfiles(virDomainDefPtr def)
 
 
 static int
-qemuMigrationDstPersist(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm,
-                        qemuMigrationCookiePtr mig,
+qemuMigrationDstPersist(virQEMUDriver *driver,
+                        virDomainObj *vm,
+                        qemuMigrationCookie *mig,
                         bool ignoreSaveError)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainDefPtr vmdef;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virDomainDef *vmdef;
     g_autoptr(virDomainDef) oldDef = NULL;
     unsigned int oldPersist = vm->persistent;
-    virObjectEventPtr event;
+    virObjectEvent *event;
 
     vm->persistent = 1;
     oldDef = vm->newDef;
@@ -5576,9 +5574,9 @@ qemuMigrationDstPersist(virQEMUDriverPtr driver,
 
 
 virDomainPtr
-qemuMigrationDstFinish(virQEMUDriverPtr driver,
+qemuMigrationDstFinish(virQEMUDriver *driver,
                        virConnectPtr dconn,
-                       virDomainObjPtr vm,
+                       virDomainObj *vm,
                        const char *cookiein,
                        int cookieinlen,
                        char **cookieout,
@@ -5591,13 +5589,13 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
     g_autoptr(qemuMigrationCookie) mig = NULL;
     virErrorPtr orig_err = NULL;
     int cookie_flags = 0;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuDomainJobPrivatePtr jobPriv = priv->job.privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned short port;
     unsigned long long timeReceived = 0;
-    virObjectEventPtr event;
-    qemuDomainJobInfoPtr jobInfo = NULL;
+    virObjectEvent *event;
+    qemuDomainJobInfo *jobInfo = NULL;
     bool inPostCopy = false;
     bool doKill = true;
 
@@ -5872,12 +5870,12 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
 
 /* Helper function called while vm is active.  */
 int
-qemuMigrationSrcToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
+qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
                        int fd,
-                       virCommandPtr compressor,
+                       virCommand *compressor,
                        qemuDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     bool bwParam = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH);
     int rc;
     int ret = -1;
@@ -6023,10 +6021,10 @@ qemuMigrationSrcToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
 
 
 int
-qemuMigrationSrcCancel(virQEMUDriverPtr driver,
-                       virDomainObjPtr vm)
+qemuMigrationSrcCancel(virQEMUDriver *driver,
+                       virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     bool storage = false;
     size_t i;
 
@@ -6039,9 +6037,9 @@ qemuMigrationSrcCancel(virQEMUDriverPtr driver,
         return -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
-        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        qemuBlockJobDataPtr job;
+        virDomainDiskDef *disk = vm->def->disks[i];
+        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        qemuBlockJobData *job;
 
         if (!(job = qemuBlockJobDiskGetJob(disk)) ||
             !qemuBlockJobIsRunning(job))
@@ -6068,12 +6066,12 @@ qemuMigrationSrcCancel(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationJobStart(virQEMUDriverPtr driver,
-                      virDomainObjPtr vm,
+qemuMigrationJobStart(virQEMUDriver *driver,
+                      virDomainObj *vm,
                       qemuDomainAsyncJob job,
                       unsigned long apiFlags)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     virDomainJobOperation op;
     unsigned long long mask;
 
@@ -6097,11 +6095,11 @@ qemuMigrationJobStart(virQEMUDriverPtr driver,
 }
 
 static void
-qemuMigrationJobSetPhase(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm,
+qemuMigrationJobSetPhase(virQEMUDriver *driver,
+                         virDomainObj *vm,
                          qemuMigrationJobPhase phase)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     if (phase < priv->job.phase) {
         VIR_ERROR(_("migration protocol going backwards %s => %s"),
@@ -6114,24 +6112,24 @@ qemuMigrationJobSetPhase(virQEMUDriverPtr driver,
 }
 
 static void
-qemuMigrationJobStartPhase(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
+qemuMigrationJobStartPhase(virQEMUDriver *driver,
+                           virDomainObj *vm,
                            qemuMigrationJobPhase phase)
 {
     qemuMigrationJobSetPhase(driver, vm, phase);
 }
 
 static void
-qemuMigrationJobContinue(virDomainObjPtr vm)
+qemuMigrationJobContinue(virDomainObj *vm)
 {
     qemuDomainObjReleaseAsyncJob(vm);
 }
 
 static bool
-qemuMigrationJobIsActive(virDomainObjPtr vm,
+qemuMigrationJobIsActive(virDomainObj *vm,
                          qemuDomainAsyncJob job)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     if (priv->job.asyncJob != job) {
         const char *msg;
@@ -6148,7 +6146,7 @@ qemuMigrationJobIsActive(virDomainObjPtr vm,
 }
 
 static void
-qemuMigrationJobFinish(virQEMUDriverPtr driver, virDomainObjPtr vm)
+qemuMigrationJobFinish(virQEMUDriver *driver, virDomainObj *vm)
 {
     qemuDomainObjEndAsyncJob(driver, vm);
 }
@@ -6162,7 +6160,7 @@ qemuMigrationDstErrorFree(void *data)
 }
 
 int
-qemuMigrationDstErrorInit(virQEMUDriverPtr driver)
+qemuMigrationDstErrorInit(virQEMUDriver *driver)
 {
     driver->migrationErrors = virHashAtomicNew(qemuMigrationDstErrorFree);
     if (driver->migrationErrors)
@@ -6176,7 +6174,7 @@ qemuMigrationDstErrorInit(virQEMUDriverPtr driver)
  * invalid after calling this function.
  */
 void
-qemuMigrationDstErrorSave(virQEMUDriverPtr driver,
+qemuMigrationDstErrorSave(virQEMUDriver *driver,
                           const char *name,
                           virErrorPtr err)
 {
@@ -6192,7 +6190,7 @@ qemuMigrationDstErrorSave(virQEMUDriverPtr driver,
 }
 
 void
-qemuMigrationDstErrorReport(virQEMUDriverPtr driver,
+qemuMigrationDstErrorReport(virQEMUDriver *driver,
                             const char *name)
 {
     virErrorPtr err;
@@ -6207,19 +6205,19 @@ qemuMigrationDstErrorReport(virQEMUDriverPtr driver,
 
 
 int
-qemuMigrationSrcFetchMirrorStats(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
+qemuMigrationSrcFetchMirrorStats(virQEMUDriver *driver,
+                                 virDomainObj *vm,
                                  qemuDomainAsyncJob asyncJob,
-                                 qemuDomainJobInfoPtr jobInfo)
+                                 qemuDomainJobInfo *jobInfo)
 {
     size_t i;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     bool nbd = false;
     GHashTable *blockinfo = NULL;
-    qemuDomainMirrorStatsPtr stats = &jobInfo->mirrorStats;
+    qemuDomainMirrorStats *stats = &jobInfo->mirrorStats;
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
+        virDomainDiskDef *disk = vm->def->disks[i];
         if (QEMU_DOMAIN_DISK_PRIVATE(disk)->migrating) {
             nbd = true;
             break;
@@ -6240,9 +6238,9 @@ qemuMigrationSrcFetchMirrorStats(virQEMUDriverPtr driver,
     memset(stats, 0, sizeof(*stats));
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
-        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        qemuMonitorBlockJobInfoPtr data;
+        virDomainDiskDef *disk = vm->def->disks[i];
+        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        qemuMonitorBlockJobInfo *data;
 
         if (!diskPriv->migrating ||
             !(data = virHashLookup(blockinfo, disk->info.alias)))

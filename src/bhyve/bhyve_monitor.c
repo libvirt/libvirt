@@ -41,19 +41,19 @@ VIR_LOG_INIT("bhyve.bhyve_monitor");
 struct _bhyveMonitor {
     virObject parent;
 
-    bhyveConnPtr driver;
-    virDomainObjPtr vm;
+    struct _bhyveConn *driver;
+    virDomainObj *vm;
     int kq;
     int watch;
     bool reboot;
 };
 
-static virClassPtr bhyveMonitorClass;
+static virClass *bhyveMonitorClass;
 
 static void
 bhyveMonitorDispose(void *obj)
 {
-    bhyveMonitorPtr mon = obj;
+    bhyveMonitor *mon = obj;
 
     VIR_FORCE_CLOSE(mon->kq);
     virObjectUnref(mon->vm);
@@ -73,7 +73,7 @@ VIR_ONCE_GLOBAL_INIT(bhyveMonitor);
 static void bhyveMonitorIO(int, int, int, void *);
 
 static bool
-bhyveMonitorRegister(bhyveMonitorPtr mon)
+bhyveMonitorRegister(bhyveMonitor *mon)
 {
     virObjectRef(mon);
     mon->watch = virEventAddHandle(mon->kq,
@@ -92,7 +92,7 @@ bhyveMonitorRegister(bhyveMonitorPtr mon)
 }
 
 static void
-bhyveMonitorUnregister(bhyveMonitorPtr mon)
+bhyveMonitorUnregister(bhyveMonitor *mon)
 {
     if (mon->watch < 0)
         return;
@@ -102,7 +102,7 @@ bhyveMonitorUnregister(bhyveMonitorPtr mon)
 }
 
 void
-bhyveMonitorSetReboot(bhyveMonitorPtr mon)
+bhyveMonitorSetReboot(bhyveMonitor *mon)
 {
     mon->reboot = true;
 }
@@ -111,9 +111,9 @@ static void
 bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
 {
     const struct timespec zerowait = { 0, 0 };
-    bhyveMonitorPtr mon = opaque;
-    virDomainObjPtr vm = mon->vm;
-    bhyveConnPtr driver = mon->driver;
+    bhyveMonitor *mon = opaque;
+    virDomainObj *vm = mon->vm;
+    struct _bhyveConn *driver = mon->driver;
     const char *name;
     struct kevent kev;
     int rc, status;
@@ -172,10 +172,10 @@ bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
     }
 }
 
-static bhyveMonitorPtr
-bhyveMonitorOpenImpl(virDomainObjPtr vm, bhyveConnPtr driver)
+static bhyveMonitor *
+bhyveMonitorOpenImpl(virDomainObj *vm, struct _bhyveConn *driver)
 {
-    bhyveMonitorPtr mon;
+    bhyveMonitor *mon;
     struct kevent kev;
 
     if (bhyveMonitorInitialize() < 0)
@@ -217,10 +217,10 @@ bhyveMonitorOpenImpl(virDomainObjPtr vm, bhyveConnPtr driver)
     return NULL;
 }
 
-bhyveMonitorPtr
-bhyveMonitorOpen(virDomainObjPtr vm, bhyveConnPtr driver)
+bhyveMonitor *
+bhyveMonitorOpen(virDomainObj *vm, struct _bhyveConn *driver)
 {
-    bhyveMonitorPtr mon;
+    bhyveMonitor *mon;
 
     virObjectRef(vm);
     mon = bhyveMonitorOpenImpl(vm, driver);
@@ -230,7 +230,7 @@ bhyveMonitorOpen(virDomainObjPtr vm, bhyveConnPtr driver)
 }
 
 void
-bhyveMonitorClose(bhyveMonitorPtr mon)
+bhyveMonitorClose(bhyveMonitor *mon)
 {
     if (mon == NULL)
         return;

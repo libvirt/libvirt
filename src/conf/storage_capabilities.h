@@ -23,18 +23,17 @@
 #include "internal.h"
 
 typedef struct _virStoragePoolCaps virStoragePoolCaps;
-typedef virStoragePoolCaps *virStoragePoolCapsPtr;
 struct _virStoragePoolCaps {
     virObjectLockable parent;
 
-    virCapsPtr driverCaps;
+    virCaps *driverCaps;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStoragePoolCaps, virObjectUnref);
 
 
-virStoragePoolCapsPtr
-virStoragePoolCapsNew(virCapsPtr driverCaps);
+virStoragePoolCaps *
+virStoragePoolCapsNew(virCaps *driverCaps);
 
 char *
 virStoragePoolCapsFormat(const virStoragePoolCaps *caps);

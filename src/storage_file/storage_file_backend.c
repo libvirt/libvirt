@@ -39,7 +39,7 @@ VIR_LOG_INIT("storage.storage_source_backend");
 
 #define VIR_STORAGE_BACKENDS_MAX 20
 
-static virStorageFileBackendPtr virStorageFileBackends[VIR_STORAGE_BACKENDS_MAX];
+static virStorageFileBackend *virStorageFileBackends[VIR_STORAGE_BACKENDS_MAX];
 static size_t virStorageFileBackendsCount;
 
 #if WITH_STORAGE_DIR || WITH_STORAGE_FS || WITH_STORAGE_GLUSTER
@@ -84,7 +84,7 @@ static int virStorageFileBackendOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virStorageFileBackend);
 
 int
-virStorageFileBackendRegister(virStorageFileBackendPtr backend)
+virStorageFileBackendRegister(virStorageFileBackend *backend)
 {
     VIR_DEBUG("Registering storage file backend '%s' protocol '%s'",
               virStorageTypeToString(backend->type),
@@ -107,7 +107,7 @@ int
 virStorageFileBackendForType(int type,
                              int protocol,
                              bool required,
-                             virStorageFileBackendPtr *backend)
+                             virStorageFileBackend **backend)
 {
     size_t i;
 

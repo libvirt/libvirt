@@ -30,7 +30,7 @@ virshNWFilterNameCompleter(vshControl *ctl,
                            const vshCmd *cmd G_GNUC_UNUSED,
                            unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virNWFilterPtr *nwfilters = NULL;
     int nnwfilters = 0;
     size_t i = 0;
@@ -67,7 +67,7 @@ virshNWFilterBindingNameCompleter(vshControl *ctl,
                                   const vshCmd *cmd G_GNUC_UNUSED,
                                   unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virNWFilterBindingPtr *bindings = NULL;
     int nbindings = 0;
     size_t i = 0;

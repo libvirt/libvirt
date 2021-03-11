@@ -41,7 +41,7 @@ VIR_LOG_INIT("storage.storage_backend_fs");
 
 
 static void
-virStorageFileBackendFileDeinit(virStorageSourcePtr src)
+virStorageFileBackendFileDeinit(virStorageSource *src)
 {
     VIR_DEBUG("deinitializing FS storage file %p (%s:%s)", src,
               virStorageTypeToString(virStorageSourceGetActualType(src)),
@@ -50,9 +50,9 @@ virStorageFileBackendFileDeinit(virStorageSourcePtr src)
 
 
 static int
-virStorageFileBackendFileInit(virStorageSourcePtr src)
+virStorageFileBackendFileInit(virStorageSource *src)
 {
-    virStorageDriverDataPtr drv = src->drv;
+    virStorageDriverData *drv = src->drv;
 
     VIR_DEBUG("initializing FS storage file %p (%s:%s)[%u:%u]", src,
               virStorageTypeToString(virStorageSourceGetActualType(src)),
@@ -64,9 +64,9 @@ virStorageFileBackendFileInit(virStorageSourcePtr src)
 
 
 static int
-virStorageFileBackendFileCreate(virStorageSourcePtr src)
+virStorageFileBackendFileCreate(virStorageSource *src)
 {
-    virStorageDriverDataPtr drv = src->drv;
+    virStorageDriverData *drv = src->drv;
     VIR_AUTOCLOSE fd = -1;
 
     if ((fd = virFileOpenAs(src->path, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR,
@@ -80,14 +80,14 @@ virStorageFileBackendFileCreate(virStorageSourcePtr src)
 
 
 static int
-virStorageFileBackendFileUnlink(virStorageSourcePtr src)
+virStorageFileBackendFileUnlink(virStorageSource *src)
 {
     return unlink(src->path);
 }
 
 
 static int
-virStorageFileBackendFileStat(virStorageSourcePtr src,
+virStorageFileBackendFileStat(virStorageSource *src,
                               struct stat *st)
 {
     return stat(src->path, st);
@@ -95,12 +95,12 @@ virStorageFileBackendFileStat(virStorageSourcePtr src,
 
 
 static ssize_t
-virStorageFileBackendFileRead(virStorageSourcePtr src,
+virStorageFileBackendFileRead(virStorageSource *src,
                               size_t offset,
                               size_t len,
                               char **buf)
 {
-    virStorageDriverDataPtr drv = src->drv;
+    virStorageDriverData *drv = src->drv;
     ssize_t ret = -1;
     VIR_AUTOCLOSE fd = -1;
 
@@ -128,10 +128,10 @@ virStorageFileBackendFileRead(virStorageSourcePtr src,
 
 
 static int
-virStorageFileBackendFileAccess(virStorageSourcePtr src,
+virStorageFileBackendFileAccess(virStorageSource *src,
                                 int mode)
 {
-    virStorageDriverDataPtr drv = src->drv;
+    virStorageDriverData *drv = src->drv;
 
     return virFileAccessibleAs(src->path, mode,
                                drv->uid, drv->gid);

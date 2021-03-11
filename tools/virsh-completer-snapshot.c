@@ -31,7 +31,7 @@ virshSnapshotNameCompleter(vshControl *ctl,
                            const vshCmd *cmd,
                            unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virDomainPtr dom = NULL;
     virDomainSnapshotPtr *snapshots = NULL;
     int rc;

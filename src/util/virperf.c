@@ -61,7 +61,6 @@ struct virPerfEvent {
         } cmt;
     } efields;
 };
-typedef struct virPerfEvent *virPerfEventPtr;
 
 struct _virPerf {
     struct virPerfEvent events[VIR_PERF_EVENT_LAST];
@@ -172,7 +171,6 @@ static struct virPerfEventAttr attrs[] = {
     },
 };
 G_STATIC_ASSERT(G_N_ELEMENTS(attrs) == VIR_PERF_EVENT_LAST);
-typedef struct virPerfEventAttr *virPerfEventAttrPtr;
 
 
 static int
@@ -203,13 +201,13 @@ virPerfRdtAttrInit(void)
 
 
 int
-virPerfEventEnable(virPerfPtr perf,
+virPerfEventEnable(virPerf *perf,
                    virPerfEventType type,
                    pid_t pid)
 {
     struct perf_event_attr attr;
-    virPerfEventPtr event = &(perf->events[type]);
-    virPerfEventAttrPtr event_attr = &attrs[type];
+    struct virPerfEvent *event = &(perf->events[type]);
+    struct virPerfEventAttr *event_attr = &attrs[type];
 
     if (event->enabled)
         return 0;
@@ -269,10 +267,10 @@ virPerfEventEnable(virPerfPtr perf,
 }
 
 int
-virPerfEventDisable(virPerfPtr perf,
+virPerfEventDisable(virPerf *perf,
                     virPerfEventType type)
 {
-    virPerfEventPtr event = &(perf->events[type]);
+    struct virPerfEvent *event = &(perf->events[type]);
 
     if (!event->enabled)
         return 0;
@@ -289,18 +287,18 @@ virPerfEventDisable(virPerfPtr perf,
     return 0;
 }
 
-bool virPerfEventIsEnabled(virPerfPtr perf,
+bool virPerfEventIsEnabled(virPerf *perf,
                            virPerfEventType type)
 {
     return perf && perf->events[type].enabled;
 }
 
 int
-virPerfReadEvent(virPerfPtr perf,
+virPerfReadEvent(virPerf *perf,
                  virPerfEventType type,
                  uint64_t *value)
 {
-    virPerfEventPtr event = &perf->events[type];
+    struct virPerfEvent *event = &perf->events[type];
     if (!event->enabled)
         return -1;
 
@@ -325,7 +323,7 @@ virPerfRdtAttrInit(void)
 
 
 int
-virPerfEventEnable(virPerfPtr perf G_GNUC_UNUSED,
+virPerfEventEnable(virPerf *perf G_GNUC_UNUSED,
                    virPerfEventType type G_GNUC_UNUSED,
                    pid_t pid G_GNUC_UNUSED)
 {
@@ -335,7 +333,7 @@ virPerfEventEnable(virPerfPtr perf G_GNUC_UNUSED,
 }
 
 int
-virPerfEventDisable(virPerfPtr perf G_GNUC_UNUSED,
+virPerfEventDisable(virPerf *perf G_GNUC_UNUSED,
                     virPerfEventType type G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
@@ -344,14 +342,14 @@ virPerfEventDisable(virPerfPtr perf G_GNUC_UNUSED,
 }
 
 bool
-virPerfEventIsEnabled(virPerfPtr perf G_GNUC_UNUSED,
+virPerfEventIsEnabled(virPerf *perf G_GNUC_UNUSED,
                       virPerfEventType type G_GNUC_UNUSED)
 {
     return false;
 }
 
 int
-virPerfReadEvent(virPerfPtr perf G_GNUC_UNUSED,
+virPerfReadEvent(virPerf *perf G_GNUC_UNUSED,
                  virPerfEventType type G_GNUC_UNUSED,
                  uint64_t *value G_GNUC_UNUSED)
 {
@@ -362,11 +360,11 @@ virPerfReadEvent(virPerfPtr perf G_GNUC_UNUSED,
 
 #endif
 
-virPerfPtr
+virPerf *
 virPerfNew(void)
 {
     size_t i;
-    virPerfPtr perf;
+    virPerf *perf;
 
     perf = g_new0(virPerf, 1);
 
@@ -382,7 +380,7 @@ virPerfNew(void)
 }
 
 void
-virPerfFree(virPerfPtr perf)
+virPerfFree(virPerf *perf)
 {
     size_t i;
 

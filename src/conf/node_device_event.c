@@ -37,7 +37,6 @@ struct _virNodeDeviceEvent {
     bool dummy;
 };
 typedef struct _virNodeDeviceEvent virNodeDeviceEvent;
-typedef virNodeDeviceEvent *virNodeDeviceEventPtr;
 
 struct _virNodeDeviceEventLifecycle {
     virNodeDeviceEvent parent;
@@ -46,7 +45,6 @@ struct _virNodeDeviceEventLifecycle {
     int detail;
 };
 typedef struct _virNodeDeviceEventLifecycle virNodeDeviceEventLifecycle;
-typedef virNodeDeviceEventLifecycle *virNodeDeviceEventLifecyclePtr;
 
 struct _virNodeDeviceEventUpdate {
     virNodeDeviceEvent parent;
@@ -54,11 +52,10 @@ struct _virNodeDeviceEventUpdate {
     bool dummy;
 };
 typedef struct _virNodeDeviceEventUpdate virNodeDeviceEventUpdate;
-typedef virNodeDeviceEventUpdate *virNodeDeviceEventUpdatePtr;
 
-static virClassPtr virNodeDeviceEventClass;
-static virClassPtr virNodeDeviceEventLifecycleClass;
-static virClassPtr virNodeDeviceEventUpdateClass;
+static virClass *virNodeDeviceEventClass;
+static virClass *virNodeDeviceEventLifecycleClass;
+static virClass *virNodeDeviceEventUpdateClass;
 static void virNodeDeviceEventDispose(void *obj);
 static void virNodeDeviceEventLifecycleDispose(void *obj);
 static void virNodeDeviceEventUpdateDispose(void *obj);
@@ -83,7 +80,7 @@ VIR_ONCE_GLOBAL_INIT(virNodeDeviceEvents);
 static void
 virNodeDeviceEventDispose(void *obj)
 {
-    virNodeDeviceEventPtr event = obj;
+    virNodeDeviceEvent *event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
@@ -91,7 +88,7 @@ virNodeDeviceEventDispose(void *obj)
 static void
 virNodeDeviceEventLifecycleDispose(void *obj)
 {
-    virNodeDeviceEventLifecyclePtr event = obj;
+    virNodeDeviceEventLifecycle *event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
@@ -99,14 +96,14 @@ virNodeDeviceEventLifecycleDispose(void *obj)
 static void
 virNodeDeviceEventUpdateDispose(void *obj)
 {
-    virNodeDeviceEventUpdatePtr event = obj;
+    virNodeDeviceEventUpdate *event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
 
 static void
 virNodeDeviceEventDispatchDefaultFunc(virConnectPtr conn,
-                                      virObjectEventPtr event,
+                                      virObjectEvent *event,
                                       virConnectObjectEventGenericCallback cb,
                                       void *cbopaque)
 {
@@ -119,9 +116,9 @@ virNodeDeviceEventDispatchDefaultFunc(virConnectPtr conn,
     switch ((virNodeDeviceEventID)event->eventID) {
     case VIR_NODE_DEVICE_EVENT_ID_LIFECYCLE:
         {
-            virNodeDeviceEventLifecyclePtr nodeDeviceLifecycleEvent;
+            virNodeDeviceEventLifecycle *nodeDeviceLifecycleEvent;
 
-            nodeDeviceLifecycleEvent = (virNodeDeviceEventLifecyclePtr)event;
+            nodeDeviceLifecycleEvent = (virNodeDeviceEventLifecycle *)event;
             ((virConnectNodeDeviceEventLifecycleCallback)cb)(conn, dev,
                                                              nodeDeviceLifecycleEvent->type,
                                                              nodeDeviceLifecycleEvent->detail,
@@ -165,7 +162,7 @@ virNodeDeviceEventDispatchDefaultFunc(virConnectPtr conn,
  */
 int
 virNodeDeviceEventStateRegisterID(virConnectPtr conn,
-                                  virObjectEventStatePtr state,
+                                  virObjectEventState *state,
                                   virNodeDevicePtr dev,
                                   int eventID,
                                   virConnectNodeDeviceEventGenericCallback cb,
@@ -205,7 +202,7 @@ virNodeDeviceEventStateRegisterID(virConnectPtr conn,
  */
 int
 virNodeDeviceEventStateRegisterClient(virConnectPtr conn,
-                                      virObjectEventStatePtr state,
+                                      virObjectEventState *state,
                                       virNodeDevicePtr dev,
                                       int eventID,
                                       virConnectNodeDeviceEventGenericCallback cb,
@@ -233,12 +230,12 @@ virNodeDeviceEventStateRegisterClient(virConnectPtr conn,
  *
  * Create a new node device lifecycle event.
  */
-virObjectEventPtr
+virObjectEvent *
 virNodeDeviceEventLifecycleNew(const char *name,
                                int type,
                                int detail)
 {
-    virNodeDeviceEventLifecyclePtr event;
+    virNodeDeviceEventLifecycle *event;
 
     if (virNodeDeviceEventsInitialize() < 0)
         return NULL;
@@ -252,7 +249,7 @@ virNodeDeviceEventLifecycleNew(const char *name,
     event->type = type;
     event->detail = detail;
 
-    return (virObjectEventPtr)event;
+    return (virObjectEvent *)event;
 }
 
 
@@ -262,10 +259,10 @@ virNodeDeviceEventLifecycleNew(const char *name,
  *
  * Create a new node device update event.
  */
-virObjectEventPtr
+virObjectEvent *
 virNodeDeviceEventUpdateNew(const char *name)
 {
-    virNodeDeviceEventUpdatePtr event;
+    virNodeDeviceEventUpdate *event;
 
     if (virNodeDeviceEventsInitialize() < 0)
         return NULL;
@@ -276,5 +273,5 @@ virNodeDeviceEventUpdateNew(const char *name)
                                     0, name, NULL, name)))
         return NULL;
 
-    return (virObjectEventPtr)event;
+    return (virObjectEvent *)event;
 }

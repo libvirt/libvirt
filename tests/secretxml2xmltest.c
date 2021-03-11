@@ -12,7 +12,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
 {
     char *actual = NULL;
     int ret = -1;
-    virSecretDefPtr secret = NULL;
+    virSecretDef *secret = NULL;
 
     if (!(secret = virSecretDefParseFile(inxml)))
         goto fail;

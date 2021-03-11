@@ -133,7 +133,7 @@ virConnectCacheOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virConnectCache);
 
 static virConnectPtr
-virGetConnectGeneric(virThreadLocalPtr threadPtr, const char *name)
+virGetConnectGeneric(virThreadLocal *threadPtr, const char *name)
 {
     virConnectPtr conn;
 

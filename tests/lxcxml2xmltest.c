@@ -16,7 +16,7 @@
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
-static virLXCDriverPtr driver;
+static virLXCDriver *driver;
 
 struct testInfo {
     const char *name;

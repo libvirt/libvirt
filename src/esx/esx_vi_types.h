@@ -126,7 +126,7 @@ enum _esxVI_Boolean {
 };
 
 int esxVI_Boolean_Serialize(esxVI_Boolean boolean_, const char *element,
-                            virBufferPtr output);
+                            virBuffer *output);
 int esxVI_Boolean_Deserialize(xmlNodePtr node, esxVI_Boolean *boolean_);
 
 
@@ -188,11 +188,11 @@ int esxVI_String_DeepCopyValue(char **dest, const char *src);
 int esxVI_String_CastFromAnyType(esxVI_AnyType *anyType, esxVI_String **string);
 int esxVI_String_CastValueFromAnyType(esxVI_AnyType *anyType, char **string);
 int esxVI_String_Serialize(esxVI_String *string, const char *element,
-                           virBufferPtr output);
+                           virBuffer *output);
 int esxVI_String_SerializeList(esxVI_String *stringList, const char *element,
-                               virBufferPtr output);
+                               virBuffer *output);
 int esxVI_String_SerializeValue(const char *value, const char *element,
-                                virBufferPtr output);
+                                virBuffer *output);
 int esxVI_String_Deserialize(xmlNodePtr node, esxVI_String **string);
 int esxVI_String_DeserializeList(xmlNodePtr node, esxVI_String **stringList);
 int esxVI_String_DeserializeValue(xmlNodePtr node, char **value);
@@ -217,9 +217,9 @@ int esxVI_Byte_AppendToList(esxVI_Byte **numberList, esxVI_Byte *number);
 int esxVI_Byte_DeepCopy(esxVI_Byte **dest, esxVI_Byte *src);
 int esxVI_Byte_DeepCopyList(esxVI_Byte **destList, esxVI_Byte *srcList);
 int esxVI_Byte_Serialize(esxVI_Byte *number, const char *element,
-                         virBufferPtr output);
+                         virBuffer *output);
 int esxVI_Byte_SerializeList(esxVI_Byte *numberList, const char *element,
-                             virBufferPtr output);
+                             virBuffer *output);
 int esxVI_Byte_Deserialize(xmlNodePtr node, esxVI_Byte **number);
 
 
@@ -242,9 +242,9 @@ int esxVI_Int_AppendToList(esxVI_Int **numberList, esxVI_Int *number);
 int esxVI_Int_DeepCopy(esxVI_Int **dest, esxVI_Int *src);
 int esxVI_Int_CastFromAnyType(esxVI_AnyType *anyType, esxVI_Int **number);
 int esxVI_Int_Serialize(esxVI_Int *number, const char *element,
-                        virBufferPtr output);
+                        virBuffer *output);
 int esxVI_Int_SerializeList(esxVI_Int *numberList, const char *element,
-                            virBufferPtr output);
+                            virBuffer *output);
 int esxVI_Int_Deserialize(xmlNodePtr node, esxVI_Int **number);
 
 
@@ -267,9 +267,9 @@ int esxVI_Long_AppendToList(esxVI_Long **numberList, esxVI_Long *number);
 int esxVI_Long_DeepCopy(esxVI_Long **dest, esxVI_Long *src);
 int esxVI_Long_CastFromAnyType(esxVI_AnyType *anyType, esxVI_Long **number);
 int esxVI_Long_Serialize(esxVI_Long *number, const char *element,
-                         virBufferPtr output);
+                         virBuffer *output);
 int esxVI_Long_SerializeList(esxVI_Long *numberList, const char *element,
-                             virBufferPtr output);
+                             virBuffer *output);
 int esxVI_Long_Deserialize(xmlNodePtr node, esxVI_Long **number);
 
 
@@ -290,7 +290,7 @@ void esxVI_DateTime_Free(esxVI_DateTime **dateTime);
 int esxVI_DateTime_Validate(esxVI_DateTime *dateTime);
 int esxVI_DateTime_DeepCopy(esxVI_DateTime **dest, esxVI_DateTime *src);
 int esxVI_DateTime_Serialize(esxVI_DateTime *dateTime, const char *element,
-                             virBufferPtr output);
+                             virBuffer *output);
 int esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime);
 int esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
                                          long long *secondsSinceEpoch);
@@ -368,10 +368,10 @@ int esxVI_ManagedObjectReference_CastListFromAnyType
        esxVI_ManagedObjectReference **managedObjectReferenceList);
 int esxVI_ManagedObjectReference_Serialize
       (esxVI_ManagedObjectReference *managedObjectReference,
-       const char *element, virBufferPtr output);
+       const char *element, virBuffer *output);
 int esxVI_ManagedObjectReference_SerializeList
       (esxVI_ManagedObjectReference *managedObjectReference,
-       const char *element, virBufferPtr output);
+       const char *element, virBuffer *output);
 int esxVI_ManagedObjectReference_Deserialize
       (xmlNodePtr node, esxVI_ManagedObjectReference **managedObjectReference);
 

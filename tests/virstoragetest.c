@@ -80,7 +80,7 @@ testCleanupImages(void)
 }
 
 
-static virStorageSourcePtr
+static virStorageSource *
 testStorageFileGetMetadata(const char *path,
                            int format,
                            uid_t uid, gid_t gid)
@@ -269,7 +269,7 @@ static int
 testStorageChain(const void *args)
 {
     const struct testChainData *data = args;
-    virStorageSourcePtr elt;
+    virStorageSource *elt;
     size_t i = 0;
     g_autoptr(virStorageSource) meta = NULL;
 
@@ -337,14 +337,14 @@ testStorageChain(const void *args)
 
 struct testLookupData
 {
-    virStorageSourcePtr chain;
+    virStorageSource *chain;
     const char *target;
-    virStorageSourcePtr from;
+    virStorageSource *from;
     const char *name;
     unsigned int expIndex;
     const char *expResult;
-    virStorageSourcePtr expMeta;
-    virStorageSourcePtr expParent;
+    virStorageSource *expMeta;
+    virStorageSource *expParent;
 };
 
 static int
@@ -352,8 +352,8 @@ testStorageLookup(const void *args)
 {
     const struct testLookupData *data = args;
     int ret = 0;
-    virStorageSourcePtr result;
-    virStorageSourcePtr actualParent;
+    virStorageSource *result;
+    virStorageSource *actualParent;
 
     result = virStorageSourceChainLookup(data->chain, data->from,
                                          data->name, data->target, &actualParent);
@@ -455,8 +455,8 @@ testPathRelativePrepare(void)
 
 struct testPathRelativeBacking
 {
-    virStorageSourcePtr top;
-    virStorageSourcePtr base;
+    virStorageSource *top;
+    virStorageSource *base;
 
     const char *expect;
 };
@@ -548,8 +548,8 @@ mymain(void)
     struct testLookupData data2;
     struct testPathRelativeBacking data4;
     struct testBackingParseData data5;
-    virStorageSourcePtr chain2; /* short for chain->backingStore */
-    virStorageSourcePtr chain3; /* short for chain2->backingStore */
+    virStorageSource *chain2; /* short for chain->backingStore */
+    virStorageSource *chain3; /* short for chain2->backingStore */
     g_autoptr(virCommand) cmd = NULL;
     g_autoptr(virStorageSource) chain = NULL;
 

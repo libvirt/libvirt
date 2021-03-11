@@ -72,7 +72,7 @@ void virAuditLog(bool logging)
 }
 
 
-void virAuditSend(virLogSourcePtr source,
+void virAuditSend(virLogSource *source,
                   const char *filename,
                   size_t linenr,
                   const char *funcname,

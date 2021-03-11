@@ -149,9 +149,9 @@ static char chainprefixes_host_temp[3] = {
 };
 
 static int
-printVar(virNWFilterVarCombIterPtr vars,
+printVar(virNWFilterVarCombIter *vars,
          char *buf, int bufsize,
-         nwItemDescPtr item,
+         nwItemDesc *item,
          bool *done)
 {
     *done = false;
@@ -182,9 +182,9 @@ printVar(virNWFilterVarCombIterPtr vars,
 
 
 static int
-_printDataType(virNWFilterVarCombIterPtr vars,
+_printDataType(virNWFilterVarCombIter *vars,
                char *buf, int bufsize,
-               nwItemDescPtr item,
+               nwItemDesc *item,
                bool asHex, bool directionIn)
 {
     bool done;
@@ -325,35 +325,35 @@ _printDataType(virNWFilterVarCombIterPtr vars,
 
 
 static int
-printDataType(virNWFilterVarCombIterPtr vars,
+printDataType(virNWFilterVarCombIter *vars,
               char *buf, int bufsize,
-              nwItemDescPtr item)
+              nwItemDesc *item)
 {
     return _printDataType(vars, buf, bufsize, item, 0, 0);
 }
 
 static int
-printDataTypeDirection(virNWFilterVarCombIterPtr vars,
+printDataTypeDirection(virNWFilterVarCombIter *vars,
                        char *buf, int bufsize,
-                       nwItemDescPtr item, bool directionIn)
+                       nwItemDesc *item, bool directionIn)
 {
     return _printDataType(vars, buf, bufsize, item, 0, directionIn);
 }
 
 static int
-printDataTypeAsHex(virNWFilterVarCombIterPtr vars,
+printDataTypeAsHex(virNWFilterVarCombIter *vars,
                    char *buf, int bufsize,
-                   nwItemDescPtr item)
+                   nwItemDesc *item)
 {
     return _printDataType(vars, buf, bufsize, item, 1, 0);
 }
 
 
 static int
-ebtablesHandleEthHdr(virFirewallPtr fw,
-                     virFirewallRulePtr fwrule,
-                     virNWFilterVarCombIterPtr vars,
-                     ethHdrDataDefPtr ethHdr,
+ebtablesHandleEthHdr(virFirewall *fw,
+                     virFirewallRule *fwrule,
+                     virNWFilterVarCombIter *vars,
+                     ethHdrDataDef *ethHdr,
                      bool reverse)
 {
     char macaddr[VIR_MAC_STRING_BUFLEN];
@@ -417,7 +417,7 @@ ebtablesHandleEthHdr(virFirewallPtr fw,
 
 
 static void
-iptablesCreateBaseChainsFW(virFirewallPtr fw,
+iptablesCreateBaseChainsFW(virFirewall *fw,
                            virFirewallLayer layer)
 {
     virFirewallAddRuleFull(fw, layer,
@@ -456,7 +456,7 @@ iptablesCreateBaseChainsFW(virFirewallPtr fw,
 
 
 static void
-iptablesCreateTmpRootChainFW(virFirewallPtr fw,
+iptablesCreateTmpRootChainFW(virFirewall *fw,
                              virFirewallLayer layer,
                              char prefix,
                              bool incoming, const char *ifname)
@@ -476,7 +476,7 @@ iptablesCreateTmpRootChainFW(virFirewallPtr fw,
 
 
 static void
-iptablesCreateTmpRootChainsFW(virFirewallPtr fw,
+iptablesCreateTmpRootChainsFW(virFirewall *fw,
                               virFirewallLayer layer,
                               const char *ifname)
 {
@@ -487,7 +487,7 @@ iptablesCreateTmpRootChainsFW(virFirewallPtr fw,
 
 
 static void
-_iptablesRemoveRootChainFW(virFirewallPtr fw,
+_iptablesRemoveRootChainFW(virFirewall *fw,
                            virFirewallLayer layer,
                            char prefix,
                            bool incoming, const char *ifname,
@@ -517,7 +517,7 @@ _iptablesRemoveRootChainFW(virFirewallPtr fw,
 
 
 static void
-iptablesRemoveRootChainFW(virFirewallPtr fw,
+iptablesRemoveRootChainFW(virFirewall *fw,
                           virFirewallLayer layer,
                           char prefix,
                           bool incoming,
@@ -528,7 +528,7 @@ iptablesRemoveRootChainFW(virFirewallPtr fw,
 
 
 static void
-iptablesRemoveTmpRootChainFW(virFirewallPtr fw,
+iptablesRemoveTmpRootChainFW(virFirewall *fw,
                              virFirewallLayer layer,
                              char prefix,
                              bool incoming,
@@ -540,7 +540,7 @@ iptablesRemoveTmpRootChainFW(virFirewallPtr fw,
 
 
 static void
-iptablesRemoveTmpRootChainsFW(virFirewallPtr fw,
+iptablesRemoveTmpRootChainsFW(virFirewall *fw,
                               virFirewallLayer layer,
                               const char *ifname)
 {
@@ -551,7 +551,7 @@ iptablesRemoveTmpRootChainsFW(virFirewallPtr fw,
 
 
 static void
-iptablesRemoveRootChainsFW(virFirewallPtr fw,
+iptablesRemoveRootChainsFW(virFirewall *fw,
                            virFirewallLayer layer,
                            const char *ifname)
 {
@@ -562,7 +562,7 @@ iptablesRemoveRootChainsFW(virFirewallPtr fw,
 
 
 static void
-iptablesLinkTmpRootChainFW(virFirewallPtr fw,
+iptablesLinkTmpRootChainFW(virFirewall *fw,
                            virFirewallLayer layer,
                            const char *basechain,
                            char prefix,
@@ -593,7 +593,7 @@ iptablesLinkTmpRootChainFW(virFirewallPtr fw,
 
 
 static void
-iptablesLinkTmpRootChainsFW(virFirewallPtr fw,
+iptablesLinkTmpRootChainsFW(virFirewall *fw,
                             virFirewallLayer layer,
                             const char *ifname)
 {
@@ -604,7 +604,7 @@ iptablesLinkTmpRootChainsFW(virFirewallPtr fw,
 
 
 static void
-iptablesSetupVirtInPostFW(virFirewallPtr fw G_GNUC_UNUSED,
+iptablesSetupVirtInPostFW(virFirewall *fw G_GNUC_UNUSED,
                           virFirewallLayer layer G_GNUC_UNUSED,
                           const char *ifname G_GNUC_UNUSED)
 {
@@ -621,7 +621,7 @@ iptablesSetupVirtInPostFW(virFirewallPtr fw G_GNUC_UNUSED,
 
 
 static void
-iptablesClearVirtInPostFW(virFirewallPtr fw,
+iptablesClearVirtInPostFW(virFirewall *fw,
                           virFirewallLayer layer,
                           const char *ifname)
 {
@@ -634,7 +634,7 @@ iptablesClearVirtInPostFW(virFirewallPtr fw,
 
 
 static void
-_iptablesUnlinkRootChainFW(virFirewallPtr fw,
+_iptablesUnlinkRootChainFW(virFirewall *fw,
                            virFirewallLayer layer,
                            const char *basechain,
                            char prefix,
@@ -685,7 +685,7 @@ _iptablesUnlinkRootChainFW(virFirewallPtr fw,
 
 
 static void
-iptablesUnlinkRootChainFW(virFirewallPtr fw,
+iptablesUnlinkRootChainFW(virFirewall *fw,
                           virFirewallLayer layer,
                           const char *basechain,
                           char prefix,
@@ -697,7 +697,7 @@ iptablesUnlinkRootChainFW(virFirewallPtr fw,
 
 
 static void
-iptablesUnlinkTmpRootChainFW(virFirewallPtr fw,
+iptablesUnlinkTmpRootChainFW(virFirewall *fw,
                              virFirewallLayer layer,
                              const char *basechain,
                              char prefix,
@@ -709,7 +709,7 @@ iptablesUnlinkTmpRootChainFW(virFirewallPtr fw,
 
 
 static void
-iptablesUnlinkRootChainsFW(virFirewallPtr fw,
+iptablesUnlinkRootChainsFW(virFirewall *fw,
                            virFirewallLayer layer,
                            const char *ifname)
 {
@@ -720,7 +720,7 @@ iptablesUnlinkRootChainsFW(virFirewallPtr fw,
 
 
 static void
-iptablesUnlinkTmpRootChainsFW(virFirewallPtr fw,
+iptablesUnlinkTmpRootChainsFW(virFirewall *fw,
                               virFirewallLayer layer,
                               const char *ifname)
 {
@@ -731,7 +731,7 @@ iptablesUnlinkTmpRootChainsFW(virFirewallPtr fw,
 
 
 static void
-iptablesRenameTmpRootChainFW(virFirewallPtr fw,
+iptablesRenameTmpRootChainFW(virFirewall *fw,
                              virFirewallLayer layer,
                              char prefix,
                              bool incoming,
@@ -758,7 +758,7 @@ iptablesRenameTmpRootChainFW(virFirewallPtr fw,
 
 
 static void
-iptablesRenameTmpRootChainsFW(virFirewallPtr fw,
+iptablesRenameTmpRootChainsFW(virFirewall *fw,
                               virFirewallLayer layer,
                               const char *ifname)
 {
@@ -769,10 +769,10 @@ iptablesRenameTmpRootChainsFW(virFirewallPtr fw,
 
 
 static int
-iptablesHandleSrcMacAddr(virFirewallPtr fw,
-                         virFirewallRulePtr fwrule,
-                         virNWFilterVarCombIterPtr vars,
-                         nwItemDescPtr srcMacAddr,
+iptablesHandleSrcMacAddr(virFirewall *fw,
+                         virFirewallRule *fwrule,
+                         virNWFilterVarCombIter *vars,
+                         nwItemDesc *srcMacAddr,
                          bool directionIn,
                          bool *srcmacskipped)
 {
@@ -807,10 +807,10 @@ iptablesHandleSrcMacAddr(virFirewallPtr fw,
 
 
 static int
-iptablesHandleIPHdr(virFirewallPtr fw,
-                    virFirewallRulePtr fwrule,
-                    virNWFilterVarCombIterPtr vars,
-                    ipHdrDataDefPtr ipHdr,
+iptablesHandleIPHdr(virFirewall *fw,
+                    virFirewallRule *fwrule,
+                    virNWFilterVarCombIter *vars,
+                    ipHdrDataDef *ipHdr,
                     bool directionIn,
                     bool *skipRule, bool *skipMatch)
 {
@@ -955,10 +955,10 @@ iptablesHandleIPHdr(virFirewallPtr fw,
 
 
 static int
-iptablesHandleIPHdrAfterStateMatch(virFirewallPtr fw,
-                                   virFirewallRulePtr fwrule,
-                                   virNWFilterVarCombIterPtr vars,
-                                   ipHdrDataDefPtr ipHdr,
+iptablesHandleIPHdrAfterStateMatch(virFirewall *fw,
+                                   virFirewallRule *fwrule,
+                                   virNWFilterVarCombIter *vars,
+                                   ipHdrDataDef *ipHdr,
                                    bool directionIn)
 {
     char number[VIR_INT64_STR_BUFLEN];
@@ -1019,10 +1019,10 @@ iptablesHandleIPHdrAfterStateMatch(virFirewallPtr fw,
 
 
 static int
-iptablesHandlePortData(virFirewallPtr fw,
-                       virFirewallRulePtr fwrule,
-                       virNWFilterVarCombIterPtr vars,
-                       portDataDefPtr portData,
+iptablesHandlePortData(virFirewall *fw,
+                       virFirewallRule *fwrule,
+                       virNWFilterVarCombIter *vars,
+                       portDataDef *portData,
                        bool directionIn)
 {
     char portstr[20];
@@ -1085,10 +1085,10 @@ iptablesHandlePortData(virFirewallPtr fw,
 
 
 static void
-iptablesEnforceDirection(virFirewallPtr fw,
-                         virFirewallRulePtr fwrule,
+iptablesEnforceDirection(virFirewall *fw,
+                         virFirewallRule *fwrule,
                          bool directionIn,
-                         virNWFilterRuleDefPtr rule)
+                         virNWFilterRuleDef *rule)
 {
     switch (iptables_ctdir_corrected) {
     case CTDIR_STATUS_UNKNOWN:
@@ -1132,13 +1132,13 @@ iptablesEnforceDirection(virFirewallPtr fw,
  * pointed to by res, != 0 otherwise.
  */
 static int
-_iptablesCreateRuleInstance(virFirewallPtr fw,
+_iptablesCreateRuleInstance(virFirewall *fw,
                             virFirewallLayer layer,
                             bool directionIn,
                             const char *chainPrefix,
-                            virNWFilterRuleDefPtr rule,
+                            virNWFilterRuleDef *rule,
                             const char *ifname,
-                            virNWFilterVarCombIterPtr vars,
+                            virNWFilterVarCombIter *vars,
                             const char *match, bool defMatch,
                             const char *accept_target,
                             bool maySkipICMP)
@@ -1151,7 +1151,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
     bool skipRule = false;
     bool skipMatch = false;
     bool hasICMPType = false;
-    virFirewallRulePtr fwrule;
+    virFirewallRule *fwrule;
     size_t fwruleargs;
 
     PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
@@ -1532,11 +1532,11 @@ printStateMatchFlags(int32_t flags, char **bufptr)
 }
 
 static int
-iptablesCreateRuleInstanceStateCtrl(virFirewallPtr fw,
+iptablesCreateRuleInstanceStateCtrl(virFirewall *fw,
                                     virFirewallLayer layer,
-                                    virNWFilterRuleDefPtr rule,
+                                    virNWFilterRuleDef *rule,
                                     const char *ifname,
-                                    virNWFilterVarCombIterPtr vars)
+                                    virNWFilterVarCombIter *vars)
 {
     int rc = 0;
     bool directionIn = false;
@@ -1649,11 +1649,11 @@ iptablesCreateRuleInstanceStateCtrl(virFirewallPtr fw,
 
 
 static int
-iptablesCreateRuleInstance(virFirewallPtr fw,
+iptablesCreateRuleInstance(virFirewall *fw,
                            virFirewallLayer layer,
-                           virNWFilterRuleDefPtr rule,
+                           virNWFilterRuleDef *rule,
                            const char *ifname,
-                           virNWFilterVarCombIterPtr vars)
+                           virNWFilterVarCombIter *vars)
 {
     int rc;
     bool directionIn = false;
@@ -1767,12 +1767,12 @@ iptablesCreateRuleInstance(virFirewallPtr fw,
  * pointed to by res, != 0 otherwise.
  */
 static int
-ebtablesCreateRuleInstance(virFirewallPtr fw,
+ebtablesCreateRuleInstance(virFirewall *fw,
                            char chainPrefix,
                            const char *chainSuffix,
-                           virNWFilterRuleDefPtr rule,
+                           virNWFilterRuleDef *rule,
                            const char *ifname,
-                           virNWFilterVarCombIterPtr vars,
+                           virNWFilterVarCombIter *vars,
                            bool reverse)
 {
     char macaddr[VIR_MAC_STRING_BUFLEN];
@@ -1786,7 +1786,7 @@ ebtablesCreateRuleInstance(virFirewallPtr fw,
     char chain[MAX_CHAINNAME_LENGTH];
     const char *target;
     bool hasMask = false;
-    virFirewallRulePtr fwrule;
+    virFirewallRule *fwrule;
 
     if (STREQ(chainSuffix,
               virNWFilterChainSuffixTypeToString(
@@ -2427,11 +2427,11 @@ ebtablesCreateRuleInstance(virFirewallPtr fw,
  * pointed to by res, -1 otherwise
  */
 static int
-ebiptablesCreateRuleInstance(virFirewallPtr fw,
+ebiptablesCreateRuleInstance(virFirewall *fw,
                              const char *chainSuffix,
-                             virNWFilterRuleDefPtr rule,
+                             virNWFilterRuleDef *rule,
                              const char *ifname,
-                             virNWFilterVarCombIterPtr vars)
+                             virNWFilterVarCombIter *vars)
 {
     if (virNWFilterRuleIsProtocolEthernet(rule)) {
         if (rule->tt == VIR_NWFILTER_RULE_DIRECTION_OUT ||
@@ -2482,7 +2482,7 @@ ebiptablesCreateRuleInstance(virFirewallPtr fw,
 
 
 static void
-ebtablesCreateTmpRootChainFW(virFirewallPtr fw,
+ebtablesCreateTmpRootChainFW(virFirewall *fw,
                              int incoming, const char *ifname)
 {
     char chain[MAX_CHAINNAME_LENGTH];
@@ -2497,7 +2497,7 @@ ebtablesCreateTmpRootChainFW(virFirewallPtr fw,
 
 
 static void
-ebtablesLinkTmpRootChainFW(virFirewallPtr fw,
+ebtablesLinkTmpRootChainFW(virFirewall *fw,
                            int incoming, const char *ifname)
 {
     char chain[MAX_CHAINNAME_LENGTH];
@@ -2515,7 +2515,7 @@ ebtablesLinkTmpRootChainFW(virFirewallPtr fw,
 
 
 static void
-_ebtablesRemoveRootChainFW(virFirewallPtr fw,
+_ebtablesRemoveRootChainFW(virFirewall *fw,
                            bool incoming, const char *ifname,
                            int isTempChain)
 {
@@ -2540,7 +2540,7 @@ _ebtablesRemoveRootChainFW(virFirewallPtr fw,
 
 
 static void
-ebtablesRemoveRootChainFW(virFirewallPtr fw,
+ebtablesRemoveRootChainFW(virFirewall *fw,
                           bool incoming, const char *ifname)
 {
     _ebtablesRemoveRootChainFW(fw, incoming, ifname, false);
@@ -2548,7 +2548,7 @@ ebtablesRemoveRootChainFW(virFirewallPtr fw,
 
 
 static void
-ebtablesRemoveTmpRootChainFW(virFirewallPtr fw,
+ebtablesRemoveTmpRootChainFW(virFirewall *fw,
                              bool incoming, const char *ifname)
 {
     _ebtablesRemoveRootChainFW(fw, incoming, ifname, 1);
@@ -2556,7 +2556,7 @@ ebtablesRemoveTmpRootChainFW(virFirewallPtr fw,
 
 
 static void
-_ebtablesUnlinkRootChainFW(virFirewallPtr fw,
+_ebtablesUnlinkRootChainFW(virFirewall *fw,
                            bool incoming, const char *ifname,
                            int isTempChain)
 {
@@ -2583,7 +2583,7 @@ _ebtablesUnlinkRootChainFW(virFirewallPtr fw,
 
 
 static void
-ebtablesUnlinkRootChainFW(virFirewallPtr fw,
+ebtablesUnlinkRootChainFW(virFirewall *fw,
                           bool incoming, const char *ifname)
 {
     _ebtablesUnlinkRootChainFW(fw, incoming, ifname, false);
@@ -2591,14 +2591,14 @@ ebtablesUnlinkRootChainFW(virFirewallPtr fw,
 
 
 static void
-ebtablesUnlinkTmpRootChainFW(virFirewallPtr fw,
+ebtablesUnlinkTmpRootChainFW(virFirewall *fw,
                              int incoming, const char *ifname)
 {
     _ebtablesUnlinkRootChainFW(fw, incoming, ifname, 1);
 }
 
 static void
-ebtablesCreateTmpSubChainFW(virFirewallPtr fw,
+ebtablesCreateTmpSubChainFW(virFirewall *fw,
                             bool incoming,
                             const char *ifname,
                             enum l3_proto_idx protoidx,
@@ -2607,7 +2607,7 @@ ebtablesCreateTmpSubChainFW(virFirewallPtr fw,
     char rootchain[MAX_CHAINNAME_LENGTH], chain[MAX_CHAINNAME_LENGTH];
     char chainPrefix = incoming ? CHAINPREFIX_HOST_IN_TEMP
                                 : CHAINPREFIX_HOST_OUT_TEMP;
-    virFirewallRulePtr fwrule;
+    virFirewallRule *fwrule;
 
     PRINT_ROOT_CHAIN(rootchain, chainPrefix, ifname);
     PRINT_CHAIN(chain, chainPrefix, ifname,
@@ -2646,7 +2646,7 @@ ebtablesCreateTmpSubChainFW(virFirewallPtr fw,
 
 
 static int
-ebtablesRemoveSubChainsQuery(virFirewallPtr fw,
+ebtablesRemoveSubChainsQuery(virFirewall *fw,
                              virFirewallLayer layer,
                              const char *const *lines,
                              void *opaque)
@@ -2685,7 +2685,7 @@ ebtablesRemoveSubChainsQuery(virFirewallPtr fw,
 
 
 static void
-_ebtablesRemoveSubChainsFW(virFirewallPtr fw,
+_ebtablesRemoveSubChainsFW(virFirewall *fw,
                            const char *ifname,
                            const char *chainprefixes)
 {
@@ -2702,7 +2702,7 @@ _ebtablesRemoveSubChainsFW(virFirewallPtr fw,
 }
 
 static void
-ebtablesRemoveSubChainsFW(virFirewallPtr fw,
+ebtablesRemoveSubChainsFW(virFirewall *fw,
                           const char *ifname)
 {
     _ebtablesRemoveSubChainsFW(fw, ifname, chainprefixes_host);
@@ -2710,14 +2710,14 @@ ebtablesRemoveSubChainsFW(virFirewallPtr fw,
 
 
 static void
-ebtablesRemoveTmpSubChainsFW(virFirewallPtr fw,
+ebtablesRemoveTmpSubChainsFW(virFirewall *fw,
                              const char *ifname)
 {
     _ebtablesRemoveSubChainsFW(fw, ifname, chainprefixes_host_temp);
 }
 
 static void
-ebtablesRenameTmpSubChainFW(virFirewallPtr fw,
+ebtablesRenameTmpSubChainFW(virFirewall *fw,
                             int incoming,
                             const char *ifname,
                             const char *protocol)
@@ -2741,7 +2741,7 @@ ebtablesRenameTmpSubChainFW(virFirewallPtr fw,
 }
 
 static void
-ebtablesRenameTmpRootChainFW(virFirewallPtr fw,
+ebtablesRenameTmpRootChainFW(virFirewall *fw,
                              bool incoming,
                              const char *ifname)
 {
@@ -2750,7 +2750,7 @@ ebtablesRenameTmpRootChainFW(virFirewallPtr fw,
 
 
 static int
-ebtablesRenameTmpSubAndRootChainsQuery(virFirewallPtr fw,
+ebtablesRenameTmpSubAndRootChainsQuery(virFirewall *fw,
                                        virFirewallLayer layer,
                                        const char *const *lines,
                                        void *opaque G_GNUC_UNUSED)
@@ -2797,7 +2797,7 @@ ebtablesRenameTmpSubAndRootChainsQuery(virFirewallPtr fw,
 
 
 static void
-ebtablesRenameTmpSubAndRootChainsFW(virFirewallPtr fw,
+ebtablesRenameTmpSubAndRootChainsFW(virFirewall *fw,
                                     const char *ifname)
 {
     char rootchain[MAX_CHAINNAME_LENGTH];
@@ -2915,7 +2915,7 @@ ebtablesApplyBasicRules(const char *ifname,
 static int
 ebtablesApplyDHCPOnlyRules(const char *ifname,
                            const virMacAddr *macaddr,
-                           virNWFilterVarValuePtr dhcpsrvrs,
+                           virNWFilterVarValue *dhcpsrvrs,
                            bool leaveTemporary)
 {
     char chain_in [MAX_CHAINNAME_LENGTH],
@@ -3195,12 +3195,12 @@ ebtablesGetProtoIdxByFiltername(const char *filtername)
 
 
 static int
-iptablesRuleInstCommand(virFirewallPtr fw,
+iptablesRuleInstCommand(virFirewall *fw,
                         const char *ifname,
-                        virNWFilterRuleInstPtr rule)
+                        virNWFilterRuleInst *rule)
 {
-    virNWFilterVarCombIterPtr vciter;
-    virNWFilterVarCombIterPtr tmp;
+    virNWFilterVarCombIter *vciter;
+    virNWFilterVarCombIter *tmp;
     int ret = -1;
 
     /* rule->vars holds all the variables names that this rule will access.
@@ -3231,12 +3231,12 @@ iptablesRuleInstCommand(virFirewallPtr fw,
 
 
 static int
-ebtablesRuleInstCommand(virFirewallPtr fw,
+ebtablesRuleInstCommand(virFirewall *fw,
                         const char *ifname,
-                        virNWFilterRuleInstPtr rule)
+                        virNWFilterRuleInst *rule)
 {
-    virNWFilterVarCombIterPtr vciter;
-    virNWFilterVarCombIterPtr tmp;
+    virNWFilterVarCombIter *vciter;
+    virNWFilterVarCombIter *tmp;
     int ret = -1;
 
     /* rule->vars holds all the variables names that this rule will access.
@@ -3266,7 +3266,6 @@ ebtablesRuleInstCommand(virFirewallPtr fw,
 }
 
 typedef struct _ebtablesSubChainInst ebtablesSubChainInst;
-typedef ebtablesSubChainInst *ebtablesSubChainInstPtr;
 struct _ebtablesSubChainInst {
     virNWFilterChainPriority priority;
     bool incoming;
@@ -3289,10 +3288,10 @@ ebtablesSubChainInstSort(const void *a, const void *b)
 static int
 ebtablesGetSubChainInsts(GHashTable *chains,
                          bool incoming,
-                         ebtablesSubChainInstPtr **insts,
+                         ebtablesSubChainInst ***insts,
                          size_t *ninsts)
 {
-    g_autofree virHashKeyValuePairPtr filter_names = NULL;
+    g_autofree virHashKeyValuePair *filter_names = NULL;
     size_t nfilter_names;
     size_t i;
 
@@ -3303,7 +3302,7 @@ ebtablesGetSubChainInsts(GHashTable *chains,
     qsort(filter_names, nfilter_names, sizeof(*filter_names), ebiptablesFilterOrderSort);
 
     for (i = 0; filter_names[i].key; i++) {
-        g_autofree ebtablesSubChainInstPtr inst = NULL;
+        g_autofree ebtablesSubChainInst *inst = NULL;
         enum l3_proto_idx idx = ebtablesGetProtoIdxByFiltername(
                                   filter_names[i].key);
 
@@ -3325,7 +3324,7 @@ ebtablesGetSubChainInsts(GHashTable *chains,
 
 static int
 ebiptablesApplyNewRules(const char *ifname,
-                        virNWFilterRuleInstPtr *rules,
+                        virNWFilterRuleInst **rules,
                         size_t nrules)
 {
     size_t i, j;
@@ -3335,7 +3334,7 @@ ebiptablesApplyNewRules(const char *ifname,
     bool haveEbtables = false;
     bool haveIptables = false;
     bool haveIp6tables = false;
-    g_autofree ebtablesSubChainInstPtr *subchains = NULL;
+    g_autofree ebtablesSubChainInst **subchains = NULL;
     size_t nsubchains = 0;
     int ret = -1;
 
@@ -3535,7 +3534,7 @@ ebiptablesApplyNewRules(const char *ifname,
 
 
 static void
-ebiptablesTearNewRulesFW(virFirewallPtr fw, const char *ifname)
+ebiptablesTearNewRulesFW(virFirewall *fw, const char *ifname)
 {
     iptablesUnlinkTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
     iptablesRemoveTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
@@ -3674,7 +3673,7 @@ ebiptablesDriverProbeCtdir(void)
 
 
 static int
-ebiptablesDriverProbeStateMatchQuery(virFirewallPtr fw G_GNUC_UNUSED,
+ebiptablesDriverProbeStateMatchQuery(virFirewall *fw G_GNUC_UNUSED,
                                      virFirewallLayer layer G_GNUC_UNUSED,
                                      const char *const *lines,
                                      void *opaque)

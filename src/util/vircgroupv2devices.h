@@ -25,20 +25,20 @@
 #include "vircgroup.h"
 
 bool
-virCgroupV2DevicesAvailable(virCgroupPtr group)
+virCgroupV2DevicesAvailable(virCgroup *group)
     G_GNUC_NO_INLINE;
 
 int
-virCgroupV2DevicesDetectProg(virCgroupPtr group);
+virCgroupV2DevicesDetectProg(virCgroup *group);
 
 int
-virCgroupV2DevicesCreateProg(virCgroupPtr group);
+virCgroupV2DevicesCreateProg(virCgroup *group);
 
 int
-virCgroupV2DevicesPrepareProg(virCgroupPtr group);
+virCgroupV2DevicesPrepareProg(virCgroup *group);
 
 int
-virCgroupV2DevicesRemoveProg(virCgroupPtr group);
+virCgroupV2DevicesRemoveProg(virCgroup *group);
 
 uint32_t
 virCgroupV2DevicesGetPerms(int perms,

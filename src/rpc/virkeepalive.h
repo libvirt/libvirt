@@ -23,15 +23,14 @@
 #include "virnetmessage.h"
 #include "virobject.h"
 
-typedef int (*virKeepAliveSendFunc)(void *client, virNetMessagePtr msg);
+typedef int (*virKeepAliveSendFunc)(void *client, virNetMessage *msg);
 typedef void (*virKeepAliveDeadFunc)(void *client);
 typedef void (*virKeepAliveFreeFunc)(void *client);
 
 typedef struct _virKeepAlive virKeepAlive;
-typedef virKeepAlive *virKeepAlivePtr;
 
 
-virKeepAlivePtr virKeepAliveNew(int interval,
+virKeepAlive *virKeepAliveNew(int interval,
                                 unsigned int count,
                                 void *client,
                                 virKeepAliveSendFunc sendCB,
@@ -40,14 +39,14 @@ virKeepAlivePtr virKeepAliveNew(int interval,
                                 ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
                                 ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6);
 
-int virKeepAliveStart(virKeepAlivePtr ka,
+int virKeepAliveStart(virKeepAlive *ka,
                       int interval,
                       unsigned int count);
-void virKeepAliveStop(virKeepAlivePtr ka);
+void virKeepAliveStop(virKeepAlive *ka);
 
-int virKeepAliveTimeout(virKeepAlivePtr ka);
-bool virKeepAliveTrigger(virKeepAlivePtr ka,
-                         virNetMessagePtr *msg);
-bool virKeepAliveCheckMessage(virKeepAlivePtr ka,
-                              virNetMessagePtr msg,
-                              virNetMessagePtr *response);
+int virKeepAliveTimeout(virKeepAlive *ka);
+bool virKeepAliveTrigger(virKeepAlive *ka,
+                         virNetMessage **msg);
+bool virKeepAliveCheckMessage(virKeepAlive *ka,
+                              virNetMessage *msg,
+                              virNetMessage **response);

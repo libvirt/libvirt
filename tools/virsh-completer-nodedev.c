@@ -32,7 +32,7 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
                              const vshCmd *cmd G_GNUC_UNUSED,
                              unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virNodeDevicePtr *devs = NULL;
     int ndevs = 0;
     size_t i = 0;

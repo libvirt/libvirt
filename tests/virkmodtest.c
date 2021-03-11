@@ -32,7 +32,7 @@
 # define VIR_FROM_THIS VIR_FROM_NONE
 
 static int
-checkOutput(virBufferPtr buf, const char *exp_cmd)
+checkOutput(virBuffer *buf, const char *exp_cmd)
 {
     int ret = -1;
     char *actual_cmd = NULL;

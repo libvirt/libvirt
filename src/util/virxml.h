@@ -199,13 +199,12 @@ struct _virXMLValidator {
     char *schemafile;
 };
 typedef struct _virXMLValidator virXMLValidator;
-typedef virXMLValidator *virXMLValidatorPtr;
 
-virXMLValidatorPtr
+virXMLValidator *
 virXMLValidatorInit(const char *schemafile);
 
 int
-virXMLValidatorValidate(virXMLValidatorPtr validator,
+virXMLValidatorValidate(virXMLValidator *validator,
                         xmlDocPtr doc);
 
 int
@@ -218,24 +217,23 @@ virXMLValidateNodeAgainstSchema(const char *schemafile,
                                 xmlNodePtr node);
 
 void
-virXMLValidatorFree(virXMLValidatorPtr validator);
+virXMLValidatorFree(virXMLValidator *validator);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virXMLValidator, virXMLValidatorFree);
 
 void
-virXMLFormatElement(virBufferPtr buf,
+virXMLFormatElement(virBuffer *buf,
                     const char *name,
-                    virBufferPtr attrBuf,
-                    virBufferPtr childBuf);
+                    virBuffer *attrBuf,
+                    virBuffer *childBuf);
 
 struct _virXPathContextNodeSave {
     xmlXPathContextPtr ctxt;
     xmlNodePtr node;
 };
 typedef struct _virXPathContextNodeSave virXPathContextNodeSave;
-typedef virXPathContextNodeSave *virXPathContextNodeSavePtr;
 
 void
-virXPathContextNodeRestore(virXPathContextNodeSavePtr save);
+virXPathContextNodeRestore(virXPathContextNodeSave *save);
 
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virXPathContextNodeSave, virXPathContextNodeRestore);
 
@@ -259,7 +257,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(xmlNode, xmlFreeNode);
 
 typedef int (*virXMLNamespaceParse)(xmlXPathContextPtr ctxt, void **nsdata);
 typedef void (*virXMLNamespaceFree)(void *nsdata);
-typedef int (*virXMLNamespaceFormat)(virBufferPtr buf, void *nsdata);
+typedef int (*virXMLNamespaceFormat)(virBuffer *buf, void *nsdata);
 typedef const char *(*virXMLNamespaceHref)(void);
 
 struct _virXMLNamespace {
@@ -270,10 +268,9 @@ struct _virXMLNamespace {
     const char *uri;
 };
 typedef struct _virXMLNamespace virXMLNamespace;
-typedef virXMLNamespace *virXMLNamespacePtr;
 
 void
-virXMLNamespaceFormatNS(virBufferPtr buf,
+virXMLNamespaceFormatNS(virBuffer *buf,
                         virXMLNamespace const *ns);
 int
 virXMLNamespaceRegister(xmlXPathContextPtr ctxt,

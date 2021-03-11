@@ -33,8 +33,8 @@ static int
 test_virCapabilitiesGetCpusForNodemask(const void *data G_GNUC_UNUSED)
 {
     const char *nodestr = "3,4,5,6";
-    virBitmapPtr nodemask = NULL;
-    virBitmapPtr cpumap = NULL;
+    virBitmap *nodemask = NULL;
+    virBitmap *cpumap = NULL;
     g_autoptr(virCapsHostNUMA) caps = NULL;
     int mask_size = 8;
     int ret = -1;
@@ -59,14 +59,14 @@ test_virCapabilitiesGetCpusForNodemask(const void *data G_GNUC_UNUSED)
 
 
 static bool G_GNUC_UNUSED
-doCapsExpectFailure(virCapsPtr caps,
+doCapsExpectFailure(virCaps *caps,
                     int ostype,
                     virArch arch,
                     int domaintype,
                     const char *emulator,
                     const char *machinetype)
 {
-    virCapsDomainDataPtr data = virCapabilitiesDomainDataLookup(caps, ostype,
+    virCapsDomainData *data = virCapabilitiesDomainDataLookup(caps, ostype,
         arch, domaintype, emulator, machinetype);
 
     if (data) {
@@ -78,7 +78,7 @@ doCapsExpectFailure(virCapsPtr caps,
 }
 
 static bool G_GNUC_UNUSED
-doCapsCompare(virCapsPtr caps,
+doCapsCompare(virCaps *caps,
               int ostype,
               virArch arch,
               int domaintype,
@@ -91,7 +91,7 @@ doCapsCompare(virCapsPtr caps,
               const char *expect_machinetype)
 {
     bool ret = false;
-    virCapsDomainDataPtr data = virCapabilitiesDomainDataLookup(caps, ostype,
+    virCapsDomainData *data = virCapabilitiesDomainDataLookup(caps, ostype,
         arch, domaintype, emulator, machinetype);
 
     if (!data)
@@ -151,7 +151,7 @@ static int
 test_virCapsDomainDataLookupQEMU(const void *data G_GNUC_UNUSED)
 {
     int ret = 0;
-    virCapsPtr caps = NULL;
+    virCaps *caps = NULL;
 
     if (!(caps = testQemuCapsInit())) {
         ret = -1;
@@ -210,7 +210,7 @@ static int
 test_virCapsDomainDataLookupLXC(const void *data G_GNUC_UNUSED)
 {
     int ret = 0;
-    virCapsPtr caps = NULL;
+    virCaps *caps = NULL;
 
     if (!(caps = testLXCCapsInit())) {
         ret = -1;

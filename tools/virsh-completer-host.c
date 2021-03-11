@@ -54,7 +54,7 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
                                  unsigned int flags)
 {
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     int npages = 0;
     g_autofree xmlNodePtr *pages = NULL;
     g_autoptr(xmlDoc) doc = NULL;
@@ -104,7 +104,7 @@ virshCellnoCompleter(vshControl *ctl,
                      unsigned int flags)
 {
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     int ncells = 0;
     g_autofree xmlNodePtr *cells = NULL;
     g_autoptr(xmlDoc) doc = NULL;
@@ -143,7 +143,7 @@ virshNodeCpuCompleter(vshControl *ctl,
                       const vshCmd *cmd G_GNUC_UNUSED,
                       unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     g_auto(GStrv) tmp = NULL;
     size_t i;
     int cpunum;

@@ -52,10 +52,10 @@ virNetDevOpenvswitchSetTimeout(unsigned int timeout)
     virNetDevOpenvswitchTimeout = timeout;
 }
 
-static virCommandPtr
+static virCommand *
 virNetDevOpenvswitchCreateCmd(void)
 {
-    virCommandPtr cmd = virCommandNew(OVS_VSCTL);
+    virCommand *cmd = virCommandNew(OVS_VSCTL);
     virCommandAddArgFormat(cmd, "--timeout=%u", virNetDevOpenvswitchTimeout);
     return cmd;
 }
@@ -69,7 +69,7 @@ virNetDevOpenvswitchCreateCmd(void)
  * ovs-vsctl command.
  */
 static void
-virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, const virNetDevVlan *virtVlan)
+virNetDevOpenvswitchConstructVlans(virCommand *cmd, const virNetDevVlan *virtVlan)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -297,7 +297,7 @@ virNetDevOpenvswitchInterfaceParseStats(const char *json,
                                         virDomainInterfaceStatsPtr stats)
 {
     g_autoptr(virJSONValue) jsonStats = NULL;
-    virJSONValuePtr jsonMap = NULL;
+    virJSONValue *jsonMap = NULL;
     size_t i;
 
     stats->rx_bytes = stats->rx_packets = stats->rx_errs = stats->rx_drop = -1;
@@ -312,9 +312,9 @@ virNetDevOpenvswitchInterfaceParseStats(const char *json,
     }
 
     for (i = 0; i < virJSONValueArraySize(jsonMap); i++) {
-        virJSONValuePtr item = virJSONValueArrayGet(jsonMap, i);
-        virJSONValuePtr jsonKey;
-        virJSONValuePtr jsonVal;
+        virJSONValue *item = virJSONValueArrayGet(jsonMap, i);
+        virJSONValue *jsonKey;
+        virJSONValue *jsonVal;
         const char *key;
         long long val;
 

@@ -57,30 +57,30 @@ VIR_LOG_INIT("logging.log_daemon");
 
 struct _virLogDaemon {
     GMutex lock;
-    virNetDaemonPtr dmn;
-    virLogHandlerPtr handler;
+    virNetDaemon *dmn;
+    virLogHandler *handler;
 };
 
-virLogDaemonPtr logDaemon = NULL;
+virLogDaemon *logDaemon = NULL;
 
 static bool execRestart;
 
 static void *
-virLogDaemonClientNew(virNetServerClientPtr client,
+virLogDaemonClientNew(virNetServerClient *client,
                       void *opaque);
 static void
 virLogDaemonClientFree(void *opaque);
 
 static void *
-virLogDaemonClientNewPostExecRestart(virNetServerClientPtr client,
-                                     virJSONValuePtr object,
+virLogDaemonClientNewPostExecRestart(virNetServerClient *client,
+                                     virJSONValue *object,
                                      void *opaque);
-static virJSONValuePtr
-virLogDaemonClientPreExecRestart(virNetServerClientPtr client,
+static virJSONValue *
+virLogDaemonClientPreExecRestart(virNetServerClient *client,
                                  void *opaque);
 
 static void
-virLogDaemonFree(virLogDaemonPtr logd)
+virLogDaemonFree(virLogDaemon *logd)
 {
     if (!logd)
         return;
@@ -96,7 +96,7 @@ virLogDaemonFree(virLogDaemonPtr logd)
 static void
 virLogDaemonInhibitor(bool inhibit, void *opaque)
 {
-    virLogDaemonPtr dmn = opaque;
+    virLogDaemon *dmn = opaque;
 
     /* virtlogd uses inhibition only to stop session daemon being killed after
      * the specified timeout, for the system daemon this is taken care of by
@@ -110,11 +110,11 @@ virLogDaemonInhibitor(bool inhibit, void *opaque)
         virNetDaemonRemoveShutdownInhibition(dmn->dmn);
 }
 
-static virLogDaemonPtr
-virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
+static virLogDaemon *
+virLogDaemonNew(virLogDaemonConfig *config, bool privileged)
 {
-    virLogDaemonPtr logd;
-    virNetServerPtr srv = NULL;
+    virLogDaemon *logd;
+    virNetServer *srv = NULL;
 
     logd = g_new0(virLogDaemon, 1);
 
@@ -167,17 +167,17 @@ virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
 }
 
 
-virLogHandlerPtr
-virLogDaemonGetHandler(virLogDaemonPtr dmn)
+virLogHandler *
+virLogDaemonGetHandler(virLogDaemon *dmn)
 {
     return dmn->handler;
 }
 
 
-static virNetServerPtr
-virLogDaemonNewServerPostExecRestart(virNetDaemonPtr dmn,
+static virNetServer *
+virLogDaemonNewServerPostExecRestart(virNetDaemon *dmn,
                                      const char *name,
-                                     virJSONValuePtr object,
+                                     virJSONValue *object,
                                      void *opaque)
 {
     if (STREQ(name, "virtlogd")) {
@@ -205,12 +205,12 @@ virLogDaemonNewServerPostExecRestart(virNetDaemonPtr dmn,
 }
 
 
-static virLogDaemonPtr
-virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged,
-                               virLogDaemonConfigPtr config)
+static virLogDaemon *
+virLogDaemonNewPostExecRestart(virJSONValue *object, bool privileged,
+                               virLogDaemonConfig *config)
 {
-    virLogDaemonPtr logd;
-    virJSONValuePtr child;
+    virLogDaemon *logd;
+    virJSONValue *child;
     const char *serverNames[] = { "virtlogd" };
 
     logd = g_new0(virLogDaemon, 1);
@@ -270,7 +270,7 @@ virLogDaemonVersion(const char *argv0)
 }
 
 static void
-virLogDaemonShutdownHandler(virNetDaemonPtr dmn,
+virLogDaemonShutdownHandler(virNetDaemon *dmn,
                             siginfo_t *sig G_GNUC_UNUSED,
                             void *opaque G_GNUC_UNUSED)
 {
@@ -278,7 +278,7 @@ virLogDaemonShutdownHandler(virNetDaemonPtr dmn,
 }
 
 static void
-virLogDaemonExecRestartHandler(virNetDaemonPtr dmn,
+virLogDaemonExecRestartHandler(virNetDaemon *dmn,
                                siginfo_t *sig G_GNUC_UNUSED,
                                void *opaque G_GNUC_UNUSED)
 {
@@ -287,7 +287,7 @@ virLogDaemonExecRestartHandler(virNetDaemonPtr dmn,
 }
 
 static int
-virLogDaemonSetupSignals(virNetDaemonPtr dmn)
+virLogDaemonSetupSignals(virNetDaemon *dmn)
 {
     if (virNetDaemonAddSignalHandler(dmn, SIGINT, virLogDaemonShutdownHandler, NULL) < 0)
         return -1;
@@ -304,7 +304,7 @@ virLogDaemonSetupSignals(virNetDaemonPtr dmn)
 static void
 virLogDaemonClientFree(void *opaque)
 {
-    virLogDaemonClientPtr priv = opaque;
+    virLogDaemonClient *priv = opaque;
 
     if (!priv)
         return;
@@ -319,10 +319,10 @@ virLogDaemonClientFree(void *opaque)
 
 
 static void *
-virLogDaemonClientNew(virNetServerClientPtr client,
+virLogDaemonClientNew(virNetServerClient *client,
                       void *opaque)
 {
-    virLogDaemonClientPtr priv;
+    virLogDaemonClient *priv;
     uid_t clientuid;
     gid_t clientgid;
     unsigned long long timestamp;
@@ -371,11 +371,11 @@ virLogDaemonClientNew(virNetServerClientPtr client,
 
 
 static void *
-virLogDaemonClientNewPostExecRestart(virNetServerClientPtr client,
-                                     virJSONValuePtr object G_GNUC_UNUSED,
+virLogDaemonClientNewPostExecRestart(virNetServerClient *client,
+                                     virJSONValue *object G_GNUC_UNUSED,
                                      void *opaque)
 {
-    virLogDaemonClientPtr priv = virLogDaemonClientNew(client, opaque);
+    virLogDaemonClient *priv = virLogDaemonClientNew(client, opaque);
 
     if (!priv)
         return NULL;
@@ -384,11 +384,11 @@ virLogDaemonClientNewPostExecRestart(virNetServerClientPtr client,
 }
 
 
-static virJSONValuePtr
-virLogDaemonClientPreExecRestart(virNetServerClientPtr client G_GNUC_UNUSED,
+static virJSONValue *
+virLogDaemonClientPreExecRestart(virNetServerClient *client G_GNUC_UNUSED,
                                  void *opaque G_GNUC_UNUSED)
 {
-    virJSONValuePtr object = virJSONValueNewObject();
+    virJSONValue *object = virJSONValueNewObject();
 
     return object;
 }
@@ -435,13 +435,13 @@ virLogDaemonPostExecRestart(const char *state_file,
                             const char *pid_file,
                             int *pid_file_fd,
                             bool privileged,
-                            virLogDaemonConfigPtr config)
+                            virLogDaemonConfig *config)
 {
     const char *gotmagic;
     char *wantmagic = NULL;
     int ret = -1;
     char *state = NULL;
-    virJSONValuePtr object = NULL;
+    virJSONValue *object = NULL;
 
     VIR_DEBUG("Running post-restart exec");
 
@@ -502,7 +502,7 @@ virLogDaemonPostExecRestart(const char *state_file,
 
 static int
 virLogDaemonPreExecRestart(const char *state_file,
-                           virNetDaemonPtr dmn,
+                           virNetDaemon *dmn,
                            char **argv)
 {
     g_autoptr(virJSONValue) object = virJSONValueNewObject();
@@ -608,10 +608,10 @@ virLogDaemonUsage(const char *argv0, bool privileged)
 }
 
 int main(int argc, char **argv) {
-    virNetServerPtr logSrv = NULL;
-    virNetServerPtr adminSrv = NULL;
-    virNetServerProgramPtr logProgram = NULL;
-    virNetServerProgramPtr adminProgram = NULL;
+    virNetServer *logSrv = NULL;
+    virNetServer *adminSrv = NULL;
+    virNetServerProgram *logProgram = NULL;
+    virNetServerProgram *adminProgram = NULL;
     char *remote_config_file = NULL;
     int statuswrite = -1;
     int ret = 1;
@@ -627,7 +627,7 @@ int main(int argc, char **argv) {
     bool implicit_conf = false;
     mode_t old_umask;
     bool privileged = false;
-    virLogDaemonConfigPtr config = NULL;
+    virLogDaemonConfig *config = NULL;
     int rv;
 
     struct option opts[] = {

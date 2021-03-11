@@ -27,58 +27,56 @@
 #define VIR_TYPE_IDENTITY vir_identity_get_type()
 G_DECLARE_FINAL_TYPE(virIdentity, vir_identity, VIR, IDENTITY, GObject);
 
-typedef virIdentity *virIdentityPtr;
+virIdentity *virIdentityGetCurrent(void);
+int virIdentitySetCurrent(virIdentity *ident);
 
-virIdentityPtr virIdentityGetCurrent(void);
-int virIdentitySetCurrent(virIdentityPtr ident);
+virIdentity *virIdentityGetSystem(void);
 
-virIdentityPtr virIdentityGetSystem(void);
+virIdentity *virIdentityNew(void);
 
-virIdentityPtr virIdentityNew(void);
-
-int virIdentityGetUserName(virIdentityPtr ident,
+int virIdentityGetUserName(virIdentity *ident,
                            const char **username);
-int virIdentityGetUNIXUserID(virIdentityPtr ident,
+int virIdentityGetUNIXUserID(virIdentity *ident,
                              uid_t *uid);
-int virIdentityGetGroupName(virIdentityPtr ident,
+int virIdentityGetGroupName(virIdentity *ident,
                             const char **groupname);
-int virIdentityGetUNIXGroupID(virIdentityPtr ident,
+int virIdentityGetUNIXGroupID(virIdentity *ident,
                               gid_t *gid);
-int virIdentityGetProcessID(virIdentityPtr ident,
+int virIdentityGetProcessID(virIdentity *ident,
                             pid_t *pid);
-int virIdentityGetProcessTime(virIdentityPtr ident,
+int virIdentityGetProcessTime(virIdentity *ident,
                               unsigned long long *timestamp);
-int virIdentityGetSASLUserName(virIdentityPtr ident,
+int virIdentityGetSASLUserName(virIdentity *ident,
                                const char **username);
-int virIdentityGetX509DName(virIdentityPtr ident,
+int virIdentityGetX509DName(virIdentity *ident,
                             const char **dname);
-int virIdentityGetSELinuxContext(virIdentityPtr ident,
+int virIdentityGetSELinuxContext(virIdentity *ident,
                                  const char **context);
 
 
-int virIdentitySetUserName(virIdentityPtr ident,
+int virIdentitySetUserName(virIdentity *ident,
                            const char *username);
-int virIdentitySetUNIXUserID(virIdentityPtr ident,
+int virIdentitySetUNIXUserID(virIdentity *ident,
                              uid_t uid);
-int virIdentitySetGroupName(virIdentityPtr ident,
+int virIdentitySetGroupName(virIdentity *ident,
                             const char *groupname);
-int virIdentitySetUNIXGroupID(virIdentityPtr ident,
+int virIdentitySetUNIXGroupID(virIdentity *ident,
                               gid_t gid);
-int virIdentitySetProcessID(virIdentityPtr ident,
+int virIdentitySetProcessID(virIdentity *ident,
                             pid_t pid);
-int virIdentitySetProcessTime(virIdentityPtr ident,
+int virIdentitySetProcessTime(virIdentity *ident,
                               unsigned long long timestamp);
-int virIdentitySetSASLUserName(virIdentityPtr ident,
+int virIdentitySetSASLUserName(virIdentity *ident,
                                const char *username);
-int virIdentitySetX509DName(virIdentityPtr ident,
+int virIdentitySetX509DName(virIdentity *ident,
                             const char *dname);
-int virIdentitySetSELinuxContext(virIdentityPtr ident,
+int virIdentitySetSELinuxContext(virIdentity *ident,
                                  const char *context);
 
-int virIdentitySetParameters(virIdentityPtr ident,
+int virIdentitySetParameters(virIdentity *ident,
                              virTypedParameterPtr params,
                              int nparams);
 
-int virIdentityGetParameters(virIdentityPtr ident,
+int virIdentityGetParameters(virIdentity *ident,
                              virTypedParameterPtr *params,
                              int *nparams);

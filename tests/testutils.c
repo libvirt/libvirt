@@ -52,8 +52,8 @@ static unsigned int testRegenerate = -1;
 
 
 static size_t testCounter;
-static virBitmapPtr testBitmap;
-static virBitmapPtr failedTests;
+static virBitmap *testBitmap;
+static virBitmap *failedTests;
 
 virArch virTestHostArch = VIR_ARCH_X86_64;
 
@@ -300,10 +300,10 @@ virTestLoadFilePath(const char *p, ...)
  * Constructs the test file path from variable arguments and loads and parses
  * the JSON file. 'abs_srcdir' is automatically prepended to the path.
  */
-virJSONValuePtr
+virJSONValue *
 virTestLoadFileJSON(const char *p, ...)
 {
-    virJSONValuePtr ret = NULL;
+    virJSONValue *ret = NULL;
     g_autofree char *jsonstr = NULL;
     g_autofree char *path = NULL;
     va_list ap;
@@ -649,13 +649,13 @@ struct virtTestLogData {
 static struct virtTestLogData testLog = { VIR_BUFFER_INITIALIZER };
 
 static void
-virtTestLogOutput(virLogSourcePtr source G_GNUC_UNUSED,
+virtTestLogOutput(virLogSource *source G_GNUC_UNUSED,
                   virLogPriority priority G_GNUC_UNUSED,
                   const char *filename G_GNUC_UNUSED,
                   int lineno G_GNUC_UNUSED,
                   const char *funcname G_GNUC_UNUSED,
                   const char *timestamp,
-                  virLogMetadataPtr metadata G_GNUC_UNUSED,
+                  struct _virLogMetadata *metadata G_GNUC_UNUSED,
                   const char *rawstr G_GNUC_UNUSED,
                   const char *str,
                   void *data)
@@ -748,8 +748,8 @@ int virTestMain(int argc,
     int ret;
     char *testRange = NULL;
     size_t noutputs = 0;
-    virLogOutputPtr output = NULL;
-    virLogOutputPtr *outputs = NULL;
+    virLogOutput *output = NULL;
+    virLogOutput **outputs = NULL;
     g_autofree char *baseprogname = NULL;
     const char *progname;
     g_autofree const char **preloads = NULL;
@@ -851,10 +851,11 @@ int virTestMain(int argc,
 }
 
 
-virCapsPtr virTestGenericCapsInit(void)
+virCaps *
+virTestGenericCapsInit(void)
 {
     g_autoptr(virCaps) caps = NULL;
-    virCapsGuestPtr guest;
+    virCapsGuest *guest;
 
     if ((caps = virCapabilitiesNew(VIR_ARCH_X86_64,
                                    false, false)) == NULL)
@@ -911,11 +912,11 @@ virCapsPtr virTestGenericCapsInit(void)
  * Build NUMA topology with cell id starting from (0 + seq)
  * for testing
  */
-virCapsHostNUMAPtr
+virCapsHostNUMA *
 virTestCapsBuildNUMATopology(int seq)
 {
     g_autoptr(virCapsHostNUMA) caps = virCapabilitiesHostNUMANew();
-    virCapsHostNUMACellCPUPtr cell_cpus = NULL;
+    virCapsHostNUMACellCPU *cell_cpus = NULL;
     int core_id, cell_id;
     int id;
 
@@ -948,7 +949,7 @@ static virDomainDefParserConfig virTestGenericDomainDefParserConfig = {
     .features = VIR_DOMAIN_DEF_FEATURE_INDIVIDUAL_VCPUS,
 };
 
-virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void)
+virDomainXMLOption *virTestGenericDomainXMLConfInit(void)
 {
     return virDomainXMLOptionNew(&virTestGenericDomainDefParserConfig,
                                  NULL, NULL, NULL, NULL);
@@ -956,8 +957,8 @@ virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void)
 
 
 int
-testCompareDomXML2XMLFiles(virCapsPtr caps G_GNUC_UNUSED,
-                           virDomainXMLOptionPtr xmlopt,
+testCompareDomXML2XMLFiles(virCaps *caps G_GNUC_UNUSED,
+                           virDomainXMLOption *xmlopt,
                            const char *infile, const char *outfile, bool live,
                            unsigned int parseFlags,
                            testCompareDomXML2XMLResult expectResult)
@@ -965,7 +966,7 @@ testCompareDomXML2XMLFiles(virCapsPtr caps G_GNUC_UNUSED,
     g_autofree char *actual = NULL;
     int ret = -1;
     testCompareDomXML2XMLResult result;
-    virDomainDefPtr def = NULL;
+    virDomainDef *def = NULL;
     unsigned int parse_flags = live ? 0 : VIR_DOMAIN_DEF_PARSE_INACTIVE;
     unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
 

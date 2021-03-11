@@ -159,7 +159,6 @@ enum _CIM_EnabledLogicalElement_EnabledState {
  */
 
 typedef struct _hypervCimType hypervCimType;
-typedef hypervCimType *hypervCimTypePtr;
 struct _hypervCimType {
     /* Parameter name */
     const char *name;
@@ -170,7 +169,6 @@ struct _hypervCimType {
 };
 
 typedef struct _hypervWmiClassInfo hypervWmiClassInfo;
-typedef hypervWmiClassInfo *hypervWmiClassInfoPtr;
 struct _hypervWmiClassInfo {
     /* The WMI class name */
     const char *name;
@@ -181,7 +179,7 @@ struct _hypervWmiClassInfo {
     /* The wsman serializer info - one of the *_TypeInfo structs */
     XmlSerializerInfo *serializerInfo;
     /* Property type information */
-    hypervCimTypePtr propertyInfo;
+    hypervCimType *propertyInfo;
 };
 
 #include "hyperv_wmi_classes.generated.h"

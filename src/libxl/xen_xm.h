@@ -26,7 +26,7 @@
 #include "virconf.h"
 #include "domain_conf.h"
 
-virConfPtr xenFormatXM(virConnectPtr conn, virDomainDefPtr def);
+virConf *xenFormatXM(virConnectPtr conn, virDomainDef *def);
 
-virDomainDefPtr xenParseXM(virConfPtr conf,
-                           virCapsPtr caps, virDomainXMLOptionPtr xmlopt);
+virDomainDef *xenParseXM(virConf *conf,
+                           virCaps *caps, virDomainXMLOption *xmlopt);

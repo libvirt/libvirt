@@ -10,7 +10,6 @@
 #pragma once
 
 typedef struct _virHashAtomic virHashAtomic;
-typedef virHashAtomic *virHashAtomicPtr;
 
 /*
  * function types:
@@ -52,7 +51,7 @@ typedef int (*virHashSearcher) (const void *payload, const char *name,
  * Constructor and destructor.
  */
 GHashTable *virHashNew(virHashDataFree dataFree);
-virHashAtomicPtr virHashAtomicNew(virHashDataFree dataFree);
+virHashAtomic *virHashAtomicNew(virHashDataFree dataFree);
 void virHashFree(GHashTable *table);
 ssize_t virHashSize(GHashTable *table);
 
@@ -64,7 +63,7 @@ int virHashAddEntry(GHashTable *table,
 int virHashUpdateEntry(GHashTable *table,
                        const char *name,
                        void *userdata);
-int virHashAtomicUpdate(virHashAtomicPtr table,
+int virHashAtomicUpdate(virHashAtomic *table,
                         const char *name,
                         void *userdata);
 
@@ -89,7 +88,7 @@ bool virHashHasEntry(GHashTable *table, const char *name);
  * Retrieve & remove the userdata.
  */
 void *virHashSteal(GHashTable *table, const char *name);
-void *virHashAtomicSteal(virHashAtomicPtr table,
+void *virHashAtomicSteal(virHashAtomic *table,
                          const char *name);
 
 /*
@@ -105,12 +104,11 @@ void *virHashAtomicSteal(virHashAtomicPtr table,
  * to be used somewhere else.
  */
 typedef struct _virHashKeyValuePair virHashKeyValuePair;
-typedef virHashKeyValuePair *virHashKeyValuePairPtr;
 struct _virHashKeyValuePair {
     const void *key;
     const void *value;
 };
-virHashKeyValuePairPtr virHashGetItems(GHashTable *table,
+virHashKeyValuePair *virHashGetItems(GHashTable *table,
                                        size_t *nitems,
                                        bool sortedKeys);
 

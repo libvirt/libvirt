@@ -34,7 +34,6 @@ int virPolkitCheckAuth(const char *actionid,
                        bool allowInteraction);
 
 typedef struct _virPolkitAgent virPolkitAgent;
-typedef virPolkitAgent *virPolkitAgentPtr;
 
-void virPolkitAgentDestroy(virPolkitAgentPtr cmd);
-virPolkitAgentPtr virPolkitAgentCreate(void);
+void virPolkitAgentDestroy(virPolkitAgent *cmd);
+virPolkitAgent *virPolkitAgentCreate(void);

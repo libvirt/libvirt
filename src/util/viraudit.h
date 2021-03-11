@@ -34,7 +34,7 @@ int virAuditOpen(unsigned int audit_level);
 
 void virAuditLog(bool enabled);
 
-void virAuditSend(virLogSourcePtr source,
+void virAuditSend(virLogSource *source,
                   const char *filename, size_t linenr, const char *funcname,
                   const char *clienttty, const char *clientaddr,
                   virAuditRecordType type, bool success,

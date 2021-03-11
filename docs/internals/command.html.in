@@ -83,7 +83,7 @@
     </p>
 
 <pre>
-virCommandPtr cmd = virCommandNew("/usr/bin/dnsmasq");
+virCommand *cmd = virCommandNew("/usr/bin/dnsmasq");
 </pre>
 
     <p>
@@ -136,7 +136,7 @@ virCommandAddArgList(cmd, "--domain", "localdomain", NULL);
 
     <p>
       This can also be done at the time of initial construction of
-      the <code>virCommandPtr</code> object:
+      the <code>virCommand *</code> object:
     </p>
 
 <pre>
@@ -145,8 +145,8 @@ const char *const args[] = {
     "--strict-order", "--except-interface",
     "lo", "--domain", "localdomain", NULL
 };
-virCommandPtr cmd1 = virCommandNewArgs(cmd, args);
-virCommandPtr cmd2 = virCommandNewArgList("/usr/bin/dnsmasq",
+virCommand *cmd1 = virCommandNewArgs(cmd, args);
+virCommand *cmd2 = virCommandNewArgList("/usr/bin/dnsmasq",
                                           "--domain", "localdomain", NULL);
 </pre>
 
@@ -537,7 +537,7 @@ if (WEXITSTATUS(status)...) {
     <p>
       Once the command has been executed, or if execution
       has been abandoned, it is necessary to release
-      resources associated with the <code>virCommandPtr</code>
+      resources associated with the <code>virCommand *</code>
       object. This is done with:
     </p>
 
@@ -566,7 +566,7 @@ int runhook(const char *drvstr, const char *id,
 {
   int ret;
   char *path;
-  virCommandPtr cmd;
+  virCommand *cmd;
 
   virBuildPath(&amp;path, LIBVIRT_HOOK_DIR, drvstr);
 

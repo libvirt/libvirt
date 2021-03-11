@@ -31,7 +31,7 @@ vshAdmServerCompleter(vshControl *ctl,
                       const vshCmd *cmd G_GNUC_UNUSED,
                       unsigned int flags)
 {
-    vshAdmControlPtr priv = ctl->privData;
+    vshAdmControl *priv = ctl->privData;
     virAdmServerPtr *srvs = NULL;
     int nsrvs = 0;
     size_t i = 0;

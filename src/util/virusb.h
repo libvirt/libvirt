@@ -26,14 +26,12 @@
 #define USB_DEVFS "/dev/bus/usb/"
 
 typedef struct _virUSBDevice virUSBDevice;
-typedef virUSBDevice *virUSBDevicePtr;
 typedef struct _virUSBDeviceList virUSBDeviceList;
-typedef virUSBDeviceList *virUSBDeviceListPtr;
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virUSBDeviceList, virObjectUnref);
 
 
-virUSBDevicePtr virUSBDeviceNew(unsigned int bus,
+virUSBDevice *virUSBDeviceNew(unsigned int bus,
                                 unsigned int devno,
                                 const char *vroot);
 
@@ -41,13 +39,13 @@ int virUSBDeviceFindByBus(unsigned int bus,
                           unsigned int devno,
                           const char *vroot,
                           bool mandatory,
-                          virUSBDevicePtr *usb);
+                          virUSBDevice **usb);
 
 int virUSBDeviceFindByVendor(unsigned int vendor,
                              unsigned int product,
                              const char *vroot,
                              bool mandatory,
-                             virUSBDeviceListPtr *devices);
+                             virUSBDeviceList **devices);
 
 int virUSBDeviceFind(unsigned int vendor,
                      unsigned int product,
@@ -55,20 +53,20 @@ int virUSBDeviceFind(unsigned int vendor,
                      unsigned int devno,
                      const char *vroot,
                      bool mandatory,
-                     virUSBDevicePtr *usb);
+                     virUSBDevice **usb);
 
-void virUSBDeviceFree(virUSBDevicePtr dev);
-int virUSBDeviceSetUsedBy(virUSBDevicePtr dev,
+void virUSBDeviceFree(virUSBDevice *dev);
+int virUSBDeviceSetUsedBy(virUSBDevice *dev,
                           const char *drv_name,
                           const char *dom_name);
-void virUSBDeviceGetUsedBy(virUSBDevicePtr dev,
+void virUSBDeviceGetUsedBy(virUSBDevice *dev,
                            const char **drv_name,
                            const char **dom_name);
-const char *virUSBDeviceGetName(virUSBDevicePtr dev);
-const char *virUSBDeviceGetPath(virUSBDevicePtr usb);
+const char *virUSBDeviceGetName(virUSBDevice *dev);
+const char *virUSBDeviceGetPath(virUSBDevice *usb);
 
-unsigned int virUSBDeviceGetBus(virUSBDevicePtr dev);
-unsigned int virUSBDeviceGetDevno(virUSBDevicePtr dev);
+unsigned int virUSBDeviceGetBus(virUSBDevice *dev);
+unsigned int virUSBDeviceGetDevno(virUSBDevice *dev);
 
 /*
  * Callback that will be invoked once for each file
@@ -77,24 +75,24 @@ unsigned int virUSBDeviceGetDevno(virUSBDevicePtr dev);
  * Should return 0 if successfully processed, or
  * -1 to indicate error and abort iteration
  */
-typedef int (*virUSBDeviceFileActor)(virUSBDevicePtr dev,
+typedef int (*virUSBDeviceFileActor)(virUSBDevice *dev,
                                      const char *path, void *opaque);
 
-int virUSBDeviceFileIterate(virUSBDevicePtr dev,
+int virUSBDeviceFileIterate(virUSBDevice *dev,
                             virUSBDeviceFileActor actor,
                             void *opaque);
 
-virUSBDeviceListPtr virUSBDeviceListNew(void);
-int virUSBDeviceListAdd(virUSBDeviceListPtr list,
-                        virUSBDevicePtr *dev);
-virUSBDevicePtr virUSBDeviceListGet(virUSBDeviceListPtr list,
+virUSBDeviceList *virUSBDeviceListNew(void);
+int virUSBDeviceListAdd(virUSBDeviceList *list,
+                        virUSBDevice **dev);
+virUSBDevice *virUSBDeviceListGet(virUSBDeviceList *list,
                                     int idx);
-size_t virUSBDeviceListCount(virUSBDeviceListPtr list);
-virUSBDevicePtr virUSBDeviceListSteal(virUSBDeviceListPtr list,
-                                      virUSBDevicePtr dev);
-void virUSBDeviceListDel(virUSBDeviceListPtr list,
-                         virUSBDevicePtr dev);
-virUSBDevicePtr virUSBDeviceListFind(virUSBDeviceListPtr list,
-                                     virUSBDevicePtr dev);
+size_t virUSBDeviceListCount(virUSBDeviceList *list);
+virUSBDevice *virUSBDeviceListSteal(virUSBDeviceList *list,
+                                      virUSBDevice *dev);
+void virUSBDeviceListDel(virUSBDeviceList *list,
+                         virUSBDevice *dev);
+virUSBDevice *virUSBDeviceListFind(virUSBDeviceList *list,
+                                     virUSBDevice *dev);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virUSBDevice, virUSBDeviceFree);

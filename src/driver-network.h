@@ -152,7 +152,6 @@ typedef int
                              unsigned int flags);
 
 typedef struct _virNetworkDriver virNetworkDriver;
-typedef virNetworkDriver *virNetworkDriverPtr;
 
 /**
  * _virNetworkDriver:

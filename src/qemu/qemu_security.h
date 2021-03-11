@@ -24,98 +24,98 @@
 #include "domain_conf.h"
 #include "security/security_manager.h"
 
-int qemuSecuritySetAllLabel(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
+int qemuSecuritySetAllLabel(virQEMUDriver *driver,
+                            virDomainObj *vm,
                             const char *incomingPath,
                             bool migrated);
 
-void qemuSecurityRestoreAllLabel(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
+void qemuSecurityRestoreAllLabel(virQEMUDriver *driver,
+                                 virDomainObj *vm,
                                  bool migrated);
 
-int qemuSecuritySetImageLabel(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
-                              virStorageSourcePtr src,
+int qemuSecuritySetImageLabel(virQEMUDriver *driver,
+                              virDomainObj *vm,
+                              virStorageSource *src,
                               bool backingChain,
                               bool chainTop);
 
-int qemuSecurityRestoreImageLabel(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virStorageSourcePtr src,
+int qemuSecurityRestoreImageLabel(virQEMUDriver *driver,
+                                  virDomainObj *vm,
+                                  virStorageSource *src,
                                   bool backingChain);
 
-int qemuSecurityMoveImageMetadata(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virStorageSourcePtr src,
-                                  virStorageSourcePtr dst);
+int qemuSecurityMoveImageMetadata(virQEMUDriver *driver,
+                                  virDomainObj *vm,
+                                  virStorageSource *src,
+                                  virStorageSource *dst);
 
-int qemuSecuritySetHostdevLabel(virQEMUDriverPtr driver,
-                                virDomainObjPtr vm,
-                                virDomainHostdevDefPtr hostdev);
+int qemuSecuritySetHostdevLabel(virQEMUDriver *driver,
+                                virDomainObj *vm,
+                                virDomainHostdevDef *hostdev);
 
-int qemuSecurityRestoreHostdevLabel(virQEMUDriverPtr driver,
-                                    virDomainObjPtr vm,
-                                    virDomainHostdevDefPtr hostdev);
+int qemuSecurityRestoreHostdevLabel(virQEMUDriver *driver,
+                                    virDomainObj *vm,
+                                    virDomainHostdevDef *hostdev);
 
-int qemuSecuritySetMemoryLabel(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
-                               virDomainMemoryDefPtr mem);
+int qemuSecuritySetMemoryLabel(virQEMUDriver *driver,
+                               virDomainObj *vm,
+                               virDomainMemoryDef *mem);
 
-int qemuSecurityRestoreMemoryLabel(virQEMUDriverPtr driver,
-                                   virDomainObjPtr vm,
-                                   virDomainMemoryDefPtr mem);
+int qemuSecurityRestoreMemoryLabel(virQEMUDriver *driver,
+                                   virDomainObj *vm,
+                                   virDomainMemoryDef *mem);
 
-int qemuSecuritySetInputLabel(virDomainObjPtr vm,
-                              virDomainInputDefPtr input);
+int qemuSecuritySetInputLabel(virDomainObj *vm,
+                              virDomainInputDef *input);
 
-int qemuSecurityRestoreInputLabel(virDomainObjPtr vm,
-                                  virDomainInputDefPtr input);
+int qemuSecurityRestoreInputLabel(virDomainObj *vm,
+                                  virDomainInputDef *input);
 
-int qemuSecuritySetChardevLabel(virQEMUDriverPtr driver,
-                                virDomainObjPtr vm,
-                                virDomainChrDefPtr chr);
+int qemuSecuritySetChardevLabel(virQEMUDriver *driver,
+                                virDomainObj *vm,
+                                virDomainChrDef *chr);
 
-int qemuSecurityRestoreChardevLabel(virQEMUDriverPtr driver,
-                                    virDomainObjPtr vm,
-                                    virDomainChrDefPtr chr);
+int qemuSecurityRestoreChardevLabel(virQEMUDriver *driver,
+                                    virDomainObj *vm,
+                                    virDomainChrDef *chr);
 
-int qemuSecurityStartVhostUserGPU(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virCommandPtr cmd,
+int qemuSecurityStartVhostUserGPU(virQEMUDriver *driver,
+                                  virDomainObj *vm,
+                                  virCommand *cmd,
                                   int *exitstatus,
                                   int *cmdret);
 
-int qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
-                                 virCommandPtr cmd,
+int qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
+                                 virDomainObj *vm,
+                                 virCommand *cmd,
                                  uid_t uid,
                                  gid_t gid,
                                  int *exitstatus,
                                  int *cmdret);
 
-void qemuSecurityCleanupTPMEmulator(virQEMUDriverPtr driver,
-                                    virDomainObjPtr vm);
+void qemuSecurityCleanupTPMEmulator(virQEMUDriver *driver,
+                                    virDomainObj *vm);
 
-int qemuSecuritySetSavedStateLabel(virQEMUDriverPtr driver,
-                                   virDomainObjPtr vm,
+int qemuSecuritySetSavedStateLabel(virQEMUDriver *driver,
+                                   virDomainObj *vm,
                                    const char *savefile);
 
-int qemuSecurityRestoreSavedStateLabel(virQEMUDriverPtr driver,
-                                       virDomainObjPtr vm,
+int qemuSecurityRestoreSavedStateLabel(virQEMUDriver *driver,
+                                       virDomainObj *vm,
                                        const char *savefile);
 
-int qemuSecurityDomainSetPathLabel(virQEMUDriverPtr driver,
-                                   virDomainObjPtr vm,
+int qemuSecurityDomainSetPathLabel(virQEMUDriver *driver,
+                                   virDomainObj *vm,
                                    const char *path,
                                    bool allowSubtree);
 
-int qemuSecurityDomainRestorePathLabel(virQEMUDriverPtr driver,
-                                       virDomainObjPtr vm,
+int qemuSecurityDomainRestorePathLabel(virQEMUDriver *driver,
+                                       virDomainObj *vm,
                                        const char *path);
 
-int qemuSecurityCommandRun(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
-                           virCommandPtr cmd,
+int qemuSecurityCommandRun(virQEMUDriver *driver,
+                           virDomainObj *vm,
+                           virCommand *cmd,
                            uid_t uid,
                            gid_t gid,
                            int *exitstatus,

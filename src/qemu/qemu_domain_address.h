@@ -28,42 +28,42 @@
 
 int qemuDomainGetSCSIControllerModel(const virDomainDef *def,
                                      const virDomainControllerDef *cont,
-                                     virQEMUCapsPtr qemuCaps);
+                                     virQEMUCaps *qemuCaps);
 
 int qemuDomainSetSCSIControllerModel(const virDomainDef *def,
-                                     virDomainControllerDefPtr cont,
-                                     virQEMUCapsPtr qemuCaps);
+                                     virDomainControllerDef *cont,
+                                     virQEMUCaps *qemuCaps);
 
 int qemuDomainFindSCSIControllerModel(const virDomainDef *def,
-                                      virDomainDeviceInfoPtr info);
+                                      virDomainDeviceInfo *info);
 
-int qemuDomainAssignAddresses(virDomainDefPtr def,
-                              virQEMUCapsPtr qemuCaps,
-                              virQEMUDriverPtr driver,
-                              virDomainObjPtr obj,
+int qemuDomainAssignAddresses(virDomainDef *def,
+                              virQEMUCaps *qemuCaps,
+                              virQEMUDriver *driver,
+                              virDomainObj *obj,
                               bool newDomain)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
-int qemuDomainEnsurePCIAddress(virDomainObjPtr obj,
-                               virDomainDeviceDefPtr dev,
-                               virQEMUDriverPtr driver)
+int qemuDomainEnsurePCIAddress(virDomainObj *obj,
+                               virDomainDeviceDef *dev,
+                               virQEMUDriver *driver)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
-void qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
-                                       virDomainDeviceDefPtr dev)
+void qemuDomainFillDeviceIsolationGroup(virDomainDef *def,
+                                       virDomainDeviceDef *dev)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-void qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
-                                    virDomainDeviceInfoPtr info);
+void qemuDomainReleaseDeviceAddress(virDomainObj *vm,
+                                    virDomainDeviceInfo *info);
 
-int qemuDomainAssignMemoryDeviceSlot(virQEMUDriverPtr driver,
-                                     virDomainObjPtr vm,
-                                     virDomainMemoryDefPtr mem);
+int qemuDomainAssignMemoryDeviceSlot(virQEMUDriver *driver,
+                                     virDomainObj *vm,
+                                     virDomainMemoryDef *mem);
 
-void qemuDomainReleaseMemoryDeviceSlot(virDomainObjPtr vm,
-                                       virDomainMemoryDefPtr mem);
+void qemuDomainReleaseMemoryDeviceSlot(virDomainObj *vm,
+                                       virDomainMemoryDef *mem);
 
 int qemuDomainEnsureVirtioAddress(bool *releaseAddr,
-                                  virDomainObjPtr vm,
-                                  virDomainDeviceDefPtr dev,
+                                  virDomainObj *vm,
+                                  virDomainDeviceDef *dev,
                                   const char *devicename);

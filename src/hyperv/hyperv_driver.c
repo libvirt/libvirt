@@ -259,11 +259,11 @@ hypervLookupHostSystemBiosUuid(hypervPrivate *priv, unsigned char *uuid)
 }
 
 
-static virCapsPtr
+static virCaps *
 hypervCapsInit(hypervPrivate *priv)
 {
-    virCapsPtr caps = NULL;
-    virCapsGuestPtr guest = NULL;
+    virCaps *caps = NULL;
+    virCapsGuest *guest = NULL;
 
     caps = virCapabilitiesNew(VIR_ARCH_X86_64, 1, 1);
 
@@ -424,7 +424,7 @@ hypervGetInstanceIDFromXMLResponse(WsXmlDocH response)
 
 
 static int
-hypervDomainCreateSCSIController(virDomainPtr domain, virDomainControllerDefPtr def)
+hypervDomainCreateSCSIController(virDomainPtr domain, virDomainControllerDef *def)
 {
     g_autoptr(GHashTable) scsiResource = NULL;
     g_autofree char *resourceType = NULL;
@@ -469,7 +469,7 @@ hypervDomainCreateSCSIController(virDomainPtr domain, virDomainControllerDefPtr 
 
 static int
 hypervDomainAddVirtualDiskParent(virDomainPtr domain,
-                                 virDomainDiskDefPtr disk,
+                                 virDomainDiskDef *disk,
                                  Msvm_ResourceAllocationSettingData *controller,
                                  const char *hostname,
                                  WsXmlDocH *response)
@@ -517,7 +517,7 @@ hypervDomainAddVirtualDiskParent(virDomainPtr domain,
 
 static int
 hypervDomainAddVirtualHardDisk(virDomainPtr domain,
-                               virDomainDiskDefPtr disk,
+                               virDomainDiskDef *disk,
                                const char *hostname,
                                char *parentInstanceID)
 {
@@ -564,7 +564,7 @@ hypervDomainAddVirtualHardDisk(virDomainPtr domain,
 
 static int
 hypervDomainAttachVirtualDisk(virDomainPtr domain,
-                              virDomainDiskDefPtr disk,
+                              virDomainDiskDef *disk,
                               Msvm_ResourceAllocationSettingData *controller,
                               const char *hostname)
 {
@@ -595,7 +595,7 @@ hypervDomainAttachVirtualDisk(virDomainPtr domain,
 
 static int
 hypervDomainAttachPhysicalDisk(virDomainPtr domain,
-                               virDomainDiskDefPtr disk,
+                               virDomainDiskDef *disk,
                                Msvm_ResourceAllocationSettingData *controller,
                                const char *hostname)
 {
@@ -698,7 +698,7 @@ hypervDomainAttachPhysicalDisk(virDomainPtr domain,
 
 static int
 hypervDomainAddOpticalDrive(virDomainPtr domain,
-                            virDomainDiskDefPtr disk,
+                            virDomainDiskDef *disk,
                             Msvm_ResourceAllocationSettingData *controller,
                             const char *hostname,
                             WsXmlDocH *response)
@@ -745,7 +745,7 @@ hypervDomainAddOpticalDrive(virDomainPtr domain,
 
 static int
 hypervDomainAddOpticalDisk(virDomainPtr domain,
-                           virDomainDiskDefPtr disk,
+                           virDomainDiskDef *disk,
                            const char *hostname,
                            char *driveInstanceID)
 {
@@ -790,7 +790,7 @@ hypervDomainAddOpticalDisk(virDomainPtr domain,
 
 static int
 hypervDomainAttachCDROM(virDomainPtr domain,
-                        virDomainDiskDefPtr disk,
+                        virDomainDiskDef *disk,
                         Msvm_ResourceAllocationSettingData *controller,
                         const char *hostname)
 {
@@ -817,7 +817,7 @@ hypervDomainAttachCDROM(virDomainPtr domain,
 
 static int
 hypervDomainAttachFloppy(virDomainPtr domain,
-                         virDomainDiskDefPtr disk,
+                         virDomainDiskDef *disk,
                          Msvm_ResourceAllocationSettingData *driveSettings,
                          const char *hostname)
 {
@@ -864,7 +864,7 @@ hypervDomainAttachFloppy(virDomainPtr domain,
 
 static int
 hypervDomainAttachStorageVolume(virDomainPtr domain,
-                                virDomainDiskDefPtr disk,
+                                virDomainDiskDef *disk,
                                 Msvm_ResourceAllocationSettingData *controller,
                                 const char *hostname)
 {
@@ -896,7 +896,7 @@ hypervDomainAttachStorageVolume(virDomainPtr domain,
 
 
 static int
-hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def, const char *hostname)
+hypervDomainAttachStorage(virDomainPtr domain, virDomainDef *def, const char *hostname)
 {
     hypervPrivate *priv = domain->conn->privateData;
     size_t i = 0;
@@ -972,7 +972,7 @@ hypervDomainAttachStorage(virDomainPtr domain, virDomainDefPtr def, const char *
 
 
 static int
-hypervDomainAttachSerial(virDomainPtr domain, virDomainChrDefPtr serial)
+hypervDomainAttachSerial(virDomainPtr domain, virDomainChrDef *serial)
 {
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     hypervPrivate *priv = domain->conn->privateData;
@@ -980,7 +980,7 @@ hypervDomainAttachSerial(virDomainPtr domain, virDomainChrDefPtr serial)
     g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
     g_autoptr(Msvm_ResourceAllocationSettingData) rasd = NULL;
     g_autoptr(Msvm_SerialPortSettingData) spsd = NULL;
-    hypervWmiClassInfoPtr classInfo = NULL;
+    hypervWmiClassInfo *classInfo = NULL;
     Msvm_ResourceAllocationSettingData *current = NULL;
     Msvm_ResourceAllocationSettingData *entry = NULL;
     g_autoptr(GHashTable) serialResource = NULL;
@@ -1052,7 +1052,7 @@ hypervDomainAttachSerial(virDomainPtr domain, virDomainChrDefPtr serial)
 
 static int
 hypervDomainAttachSyntheticEthernetAdapter(virDomainPtr domain,
-                                           virDomainNetDefPtr net,
+                                           virDomainNetDef *net,
                                            char *hostname)
 {
     hypervPrivate *priv = domain->conn->privateData;
@@ -1182,11 +1182,11 @@ hypervDomainAttachSyntheticEthernetAdapter(virDomainPtr domain,
  * Functions for deserializing device entries
  */
 static int
-hypervDomainDefAppendController(virDomainDefPtr def,
+hypervDomainDefAppendController(virDomainDef *def,
                                 int idx,
                                 virDomainControllerType controllerType)
 {
-    virDomainControllerDefPtr controller = NULL;
+    virDomainControllerDef *controller = NULL;
 
     if (!(controller = virDomainControllerDefNew(controllerType)))
         return -1;
@@ -1201,22 +1201,22 @@ hypervDomainDefAppendController(virDomainDefPtr def,
 
 
 static int
-hypervDomainDefAppendIDEController(virDomainDefPtr def)
+hypervDomainDefAppendIDEController(virDomainDef *def)
 {
     return hypervDomainDefAppendController(def, 0, VIR_DOMAIN_CONTROLLER_TYPE_IDE);
 }
 
 
 static int
-hypervDomainDefAppendSCSIController(virDomainDefPtr def, int idx)
+hypervDomainDefAppendSCSIController(virDomainDef *def, int idx)
 {
     return hypervDomainDefAppendController(def, idx, VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
 }
 
 
 static int
-hypervDomainDefAppendDisk(virDomainDefPtr def,
-                          virDomainDiskDefPtr disk,
+hypervDomainDefAppendDisk(virDomainDef *def,
+                          virDomainDiskDef *disk,
                           virDomainDiskBus busType,
                           int diskNameOffset,
                           const char *diskNamePrefix,
@@ -1268,7 +1268,7 @@ hypervDomainDefAppendDisk(virDomainDefPtr def,
 
 
 static int
-hypervDomainDefParseFloppyStorageExtent(virDomainDefPtr def, virDomainDiskDefPtr disk)
+hypervDomainDefParseFloppyStorageExtent(virDomainDef *def, virDomainDiskDef *disk)
 {
     disk->bus = VIR_DOMAIN_DISK_BUS_FDC;
     disk->dst = g_strdup("fda");
@@ -1282,7 +1282,7 @@ hypervDomainDefParseFloppyStorageExtent(virDomainDefPtr def, virDomainDiskDefPtr
 
 static int
 hypervDomainDefParseVirtualExtent(hypervPrivate *priv,
-                                  virDomainDefPtr def,
+                                  virDomainDef *def,
                                   Msvm_StorageAllocationSettingData *disk_entry,
                                   Msvm_ResourceAllocationSettingData *rasd,
                                   Msvm_ResourceAllocationSettingData **ideChannels,
@@ -1290,7 +1290,7 @@ hypervDomainDefParseVirtualExtent(hypervPrivate *priv,
 {
     Msvm_ResourceAllocationSettingData *diskParent = NULL;
     Msvm_ResourceAllocationSettingData *controller = NULL;
-    virDomainDiskDefPtr disk = NULL;
+    virDomainDiskDef *disk = NULL;
     int result = -1;
 
     if (disk_entry->data->HostResource.count < 1)
@@ -1359,7 +1359,7 @@ hypervDomainDefParseVirtualExtent(hypervPrivate *priv,
 
 static int
 hypervDomainDefParsePhysicalDisk(hypervPrivate *priv,
-                                 virDomainDefPtr def,
+                                 virDomainDef *def,
                                  Msvm_ResourceAllocationSettingData *entry,
                                  Msvm_ResourceAllocationSettingData *rasd,
                                  Msvm_ResourceAllocationSettingData **ideChannels,
@@ -1368,7 +1368,7 @@ hypervDomainDefParsePhysicalDisk(hypervPrivate *priv,
     int result = -1;
     Msvm_ResourceAllocationSettingData *controller = NULL;
     g_autoptr(Msvm_DiskDrive) diskdrive = NULL;
-    virDomainDiskDefPtr disk = NULL;
+    virDomainDiskDef *disk = NULL;
     char **hostResource = entry->data->HostResource.data;
     g_autofree char *hostEscaped = NULL;
     g_autofree char *driveNumberStr = NULL;
@@ -1461,7 +1461,7 @@ hypervDomainDefParsePhysicalDisk(hypervPrivate *priv,
 
 static int
 hypervDomainDefParseStorage(hypervPrivate *priv,
-                            virDomainDefPtr def,
+                            virDomainDef *def,
                             Msvm_ResourceAllocationSettingData *rasd,
                             Msvm_StorageAllocationSettingData *sasd)
 {
@@ -1533,13 +1533,13 @@ hypervDomainDefParseStorage(hypervPrivate *priv,
 
 
 static int
-hypervDomainDefParseSerial(virDomainDefPtr def, Msvm_ResourceAllocationSettingData *rasd)
+hypervDomainDefParseSerial(virDomainDef *def, Msvm_ResourceAllocationSettingData *rasd)
 {
     for (; rasd; rasd = rasd->next) {
         int port_num = 0;
         char **conn = NULL;
         const char *srcPath = NULL;
-        virDomainChrDefPtr serial = NULL;
+        virDomainChrDef *serial = NULL;
 
         if (rasd->data->ResourceType != MSVM_RASD_RESOURCETYPE_SERIAL_PORT)
             continue;
@@ -1580,7 +1580,7 @@ hypervDomainDefParseSerial(virDomainDefPtr def, Msvm_ResourceAllocationSettingDa
 
 
 static int
-hypervDomainDefParseEthernetAdapter(virDomainDefPtr def,
+hypervDomainDefParseEthernetAdapter(virDomainDef *def,
                                     Msvm_EthernetPortAllocationSettingData *net,
                                     hypervPrivate *priv)
 {
@@ -1661,7 +1661,7 @@ hypervDomainDefParseEthernetAdapter(virDomainDefPtr def,
 
 static int
 hypervDomainDefParseEthernet(virDomainPtr domain,
-                             virDomainDefPtr def,
+                             virDomainDef *def,
                              Msvm_EthernetPortAllocationSettingData *nets)
 {
     Msvm_EthernetPortAllocationSettingData *entry = nets;
@@ -1736,7 +1736,7 @@ virDomainDefParserConfig hypervDomainDefParserConfig;
 
 static virDrvOpenStatus
 hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
-                  virConfPtr conf G_GNUC_UNUSED,
+                  virConf *conf G_GNUC_UNUSED,
                   unsigned int flags)
 {
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
@@ -2772,17 +2772,17 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     /* Allocate space for all potential devices */
 
     /* 256 scsi drives + 4 ide drives */
-    def->disks = g_new0(virDomainDiskDefPtr,
+    def->disks = g_new0(virDomainDiskDef *,
                         HYPERV_MAX_SCSI_CONTROLLERS * HYPERV_MAX_DRIVES_PER_SCSI_CONTROLLER +
                         HYPERV_MAX_IDE_CHANNELS * HYPERV_MAX_DRIVES_PER_IDE_CHANNEL);
     def->ndisks = 0;
 
     /* 1 ide & 4 scsi controllers */
-    def->controllers = g_new0(virDomainControllerDefPtr, 5);
+    def->controllers = g_new0(virDomainControllerDef *, 5);
     def->ncontrollers = 0;
 
     /* 8 synthetic + 4 legacy NICs */
-    def->nets = g_new0(virDomainNetDefPtr, 12);
+    def->nets = g_new0(virDomainNetDef *, 12);
     def->nnets = 0;
 
     if (hypervDomainDefParseStorage(priv, def, rasd, sasd) < 0)

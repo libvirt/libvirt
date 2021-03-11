@@ -39,7 +39,6 @@ typedef enum {
 } virGICImplementation;
 
 typedef struct _virGICCapability virGICCapability;
-typedef virGICCapability *virGICCapabilityPtr;
 struct _virGICCapability {
     virGICVersion version;
     virGICImplementation implementation;

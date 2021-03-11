@@ -24,15 +24,15 @@
 #include "lxc_conf.h"
 #include "domain_conf.h"
 
-int virLXCUpdateActiveUSBHostdevs(virLXCDriverPtr driver,
-                                  virDomainDefPtr def);
-int virLXCFindHostdevUSBDevice(virDomainHostdevDefPtr hostdev,
+int virLXCUpdateActiveUSBHostdevs(virLXCDriver *driver,
+                                  virDomainDef *def);
+int virLXCFindHostdevUSBDevice(virDomainHostdevDef *hostdev,
                                bool mandatory,
-                               virUSBDevicePtr *usb);
-int virLXCPrepareHostdevUSBDevices(virLXCDriverPtr driver,
+                               virUSBDevice **usb);
+int virLXCPrepareHostdevUSBDevices(virLXCDriver *driver,
                                    const char *name,
-                                   virUSBDeviceListPtr list);
-int virLXCPrepareHostDevices(virLXCDriverPtr driver,
-                             virDomainDefPtr def);
-void virLXCDomainReAttachHostDevices(virLXCDriverPtr driver,
-                                     virDomainDefPtr def);
+                                   virUSBDeviceList *list);
+int virLXCPrepareHostDevices(virLXCDriver *driver,
+                             virDomainDef *def);
+void virLXCDomainReAttachHostDevices(virLXCDriver *driver,
+                                     virDomainDef *def);

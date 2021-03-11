@@ -26,14 +26,14 @@
 
 typedef char * (*virStorageBackendFindPoolSources)(const char *srcSpec,
                                                    unsigned int flags);
-typedef int (*virStorageBackendCheckPool)(virStoragePoolObjPtr pool,
+typedef int (*virStorageBackendCheckPool)(virStoragePoolObj *pool,
                                           bool *active);
-typedef int (*virStorageBackendStartPool)(virStoragePoolObjPtr pool);
-typedef int (*virStorageBackendBuildPool)(virStoragePoolObjPtr pool,
+typedef int (*virStorageBackendStartPool)(virStoragePoolObj *pool);
+typedef int (*virStorageBackendBuildPool)(virStoragePoolObj *pool,
                                           unsigned int flags);
-typedef int (*virStorageBackendRefreshPool)(virStoragePoolObjPtr pool);
-typedef int (*virStorageBackendStopPool)(virStoragePoolObjPtr pool);
-typedef int (*virStorageBackendDeletePool)(virStoragePoolObjPtr pool,
+typedef int (*virStorageBackendRefreshPool)(virStoragePoolObj *pool);
+typedef int (*virStorageBackendStopPool)(virStoragePoolObj *pool);
+typedef int (*virStorageBackendDeletePool)(virStoragePoolObj *pool,
                                            unsigned int flags);
 
 /* A 'buildVol' backend must remove any volume created on error since
@@ -45,30 +45,30 @@ typedef int (*virStorageBackendDeletePool)(virStoragePoolObjPtr pool,
  * was not aware of between checking the pool and the create attempt. It
  * also avoids extra round trips to just delete a file.
  */
-typedef int (*virStorageBackendBuildVol)(virStoragePoolObjPtr pool,
-                                         virStorageVolDefPtr vol,
+typedef int (*virStorageBackendBuildVol)(virStoragePoolObj *pool,
+                                         virStorageVolDef *vol,
                                          unsigned int flags);
-typedef int (*virStorageBackendCreateVol)(virStoragePoolObjPtr pool,
-                                          virStorageVolDefPtr vol);
-typedef int (*virStorageBackendRefreshVol)(virStoragePoolObjPtr pool,
-                                           virStorageVolDefPtr vol);
-typedef int (*virStorageBackendDeleteVol)(virStoragePoolObjPtr pool,
-                                          virStorageVolDefPtr vol,
+typedef int (*virStorageBackendCreateVol)(virStoragePoolObj *pool,
+                                          virStorageVolDef *vol);
+typedef int (*virStorageBackendRefreshVol)(virStoragePoolObj *pool,
+                                           virStorageVolDef *vol);
+typedef int (*virStorageBackendDeleteVol)(virStoragePoolObj *pool,
+                                          virStorageVolDef *vol,
                                           unsigned int flags);
-typedef int (*virStorageBackendBuildVolFrom)(virStoragePoolObjPtr pool,
-                                             virStorageVolDefPtr origvol,
-                                             virStorageVolDefPtr newvol,
+typedef int (*virStorageBackendBuildVolFrom)(virStoragePoolObj *pool,
+                                             virStorageVolDef *origvol,
+                                             virStorageVolDef *newvol,
                                              unsigned int flags);
-typedef int (*virStorageBackendVolumeResize)(virStoragePoolObjPtr pool,
-                                             virStorageVolDefPtr vol,
+typedef int (*virStorageBackendVolumeResize)(virStoragePoolObj *pool,
+                                             virStorageVolDef *vol,
                                              unsigned long long capacity,
                                              unsigned int flags);
 
 /* Upon entering this callback passed @obj is unlocked. However,
  * the pool's asyncjobs counter has been incremented and volume's
  * in_use has been adjusted to ensure singular usage. */
-typedef int (*virStorageBackendVolumeDownload)(virStoragePoolObjPtr obj,
-                                               virStorageVolDefPtr vol,
+typedef int (*virStorageBackendVolumeDownload)(virStoragePoolObj *obj,
+                                               virStorageVolDef *vol,
                                                virStreamPtr stream,
                                                unsigned long long offset,
                                                unsigned long long length,
@@ -77,8 +77,8 @@ typedef int (*virStorageBackendVolumeDownload)(virStoragePoolObjPtr obj,
 /* Upon entering this callback passed @obj is unlocked. However,
  * the pool's asyncjobs counter has been incremented and volume's
  * in_use has been adjusted to ensure singular usage. */
-typedef int (*virStorageBackendVolumeUpload)(virStoragePoolObjPtr obj,
-                                             virStorageVolDefPtr vol,
+typedef int (*virStorageBackendVolumeUpload)(virStoragePoolObj *obj,
+                                             virStorageVolDef *vol,
                                              virStreamPtr stream,
                                              unsigned long long offset,
                                              unsigned long long len,
@@ -87,13 +87,12 @@ typedef int (*virStorageBackendVolumeUpload)(virStoragePoolObjPtr obj,
 /* Upon entering this callback passed @obj is unlocked. However,
  * the pool's asyncjobs counter has been incremented and volume's
  * in_use has been adjusted to ensure singular usage. */
-typedef int (*virStorageBackendVolumeWipe)(virStoragePoolObjPtr pool,
-                                           virStorageVolDefPtr vol,
+typedef int (*virStorageBackendVolumeWipe)(virStoragePoolObj *pool,
+                                           virStorageVolDef *vol,
                                            unsigned int algorithm,
                                            unsigned int flags);
 
 typedef struct _virStorageBackend virStorageBackend;
-typedef virStorageBackend *virStorageBackendPtr;
 
 /* Callbacks are optional unless documented otherwise; but adding more
  * callbacks provides better pool support.  */
@@ -119,11 +118,11 @@ struct _virStorageBackend {
     virStorageBackendVolumeWipe wipeVol;
 };
 
-virStorageBackendPtr virStorageBackendForType(int type);
+virStorageBackend *virStorageBackendForType(int type);
 
 int virStorageBackendDriversRegister(bool allmodules);
 
-int virStorageBackendRegister(virStorageBackendPtr backend);
+int virStorageBackendRegister(virStorageBackend *backend);
 
-virCapsPtr
+virCaps *
 virStorageBackendGetCapabilities(void);

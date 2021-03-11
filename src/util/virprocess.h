@@ -58,9 +58,9 @@ int virProcessKillPainfullyDelay(pid_t pid,
                                  bool force,
                                  unsigned int extradelay);
 
-int virProcessSetAffinity(pid_t pid, virBitmapPtr map, bool quiet);
+int virProcessSetAffinity(pid_t pid, virBitmap *map, bool quiet);
 
-virBitmapPtr virProcessGetAffinity(pid_t pid);
+virBitmap *virProcessGetAffinity(pid_t pid);
 
 int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids);
 

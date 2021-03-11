@@ -31,7 +31,7 @@ virshNetworkNameCompleter(vshControl *ctl,
                           const vshCmd *cmd G_GNUC_UNUSED,
                           unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virNetworkPtr *nets = NULL;
     int nnets = 0;
     size_t i = 0;
@@ -90,7 +90,7 @@ virshNetworkPortUUIDCompleter(vshControl *ctl,
                               const vshCmd *cmd G_GNUC_UNUSED,
                               unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virNetworkPtr net = NULL;
     virNetworkPortPtr *ports = NULL;
     int nports = 0;
@@ -140,7 +140,7 @@ virshNetworkUUIDCompleter(vshControl *ctl,
                           const vshCmd *cmd G_GNUC_UNUSED,
                           unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virNetworkPtr *nets = NULL;
     int nnets = 0;
     size_t i = 0;
@@ -181,7 +181,7 @@ virshNetworkDhcpMacCompleter(vshControl *ctl,
                              const vshCmd *cmd,
                              unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virNetworkDHCPLeasePtr *leases = NULL;
     virNetworkPtr network = NULL;
     int nleases;

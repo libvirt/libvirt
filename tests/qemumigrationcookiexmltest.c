@@ -58,14 +58,14 @@ tn(const char *str, ...)
 struct testQemuMigrationCookieData {
     const char *name;
     char *inStatus;
-    virDomainObjPtr vm;
+    virDomainObj *vm;
 
     unsigned int cookiePopulateFlags;
     unsigned int cookieParseFlags;
 
     qemuMigrationParty cookiePopulateParty;
 
-    qemuMigrationCookiePtr cookie;
+    qemuMigrationCookie *cookie;
 
     char *xmlstr;
     int xmlstrlen;
@@ -137,7 +137,7 @@ static int
 testQemuMigrationCookieParse(const void *opaque)
 {
     struct testQemuMigrationCookieData *data = (struct testQemuMigrationCookieData *) opaque;
-    qemuDomainObjPrivatePtr priv = data->vm->privateData;
+    qemuDomainObjPrivate *priv = data->vm->privateData;
     g_auto(virBuffer) actual = VIR_BUFFER_INITIALIZER;
 
     if (!(data->cookie = qemuMigrationCookieParse(&driver,
@@ -318,8 +318,8 @@ testQemuMigrationCookieBlockDirtyBitmaps(const void *opaque)
         return -1;
 
     for (next = data->cookie->blockDirtyBitmaps; next; next = next->next) {
-        qemuMigrationBlockDirtyBitmapsDiskPtr disk = next->data;
-        qemuMigrationBlockDirtyBitmapsDiskBitmapPtr bitmap = disk->bitmaps->data;
+        qemuMigrationBlockDirtyBitmapsDisk *disk = next->data;
+        qemuMigrationBlockDirtyBitmapsDiskBitmap *bitmap = disk->bitmaps->data;
 
         bitmap->persistent = VIR_TRISTATE_BOOL_YES;
     }

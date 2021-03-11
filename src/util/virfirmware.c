@@ -32,7 +32,7 @@ VIR_LOG_INIT("util.firmware");
 
 
 void
-virFirmwareFree(virFirmwarePtr firmware)
+virFirmwareFree(virFirmware *firmware)
 {
     if (!firmware)
         return;
@@ -44,7 +44,7 @@ virFirmwareFree(virFirmwarePtr firmware)
 
 
 void
-virFirmwareFreeList(virFirmwarePtr *firmwares, size_t nfirmwares)
+virFirmwareFreeList(virFirmware **firmwares, size_t nfirmwares)
 {
     size_t i;
 
@@ -56,7 +56,7 @@ virFirmwareFreeList(virFirmwarePtr *firmwares, size_t nfirmwares)
 
 
 int
-virFirmwareParse(const char *str, virFirmwarePtr firmware)
+virFirmwareParse(const char *str, virFirmware *firmware)
 {
     int ret = -1;
     char **token;
@@ -91,7 +91,7 @@ virFirmwareParse(const char *str, virFirmwarePtr firmware)
 
 int
 virFirmwareParseList(const char *list,
-                     virFirmwarePtr **firmwares,
+                     virFirmware ***firmwares,
                      size_t *nfirmwares)
 {
     int ret = -1;
@@ -112,11 +112,11 @@ virFirmwareParseList(const char *list,
     }
 
     if (i) {
-        *firmwares = g_new0(virFirmwarePtr, i / 2);
+        *firmwares = g_new0(virFirmware *, i / 2);
         *nfirmwares = i / 2;
 
         for (j = 0; j < i / 2; j++) {
-            virFirmwarePtr *fws = *firmwares;
+            virFirmware **fws = *firmwares;
 
             fws[j] = g_new0(virFirmware, 1);
             fws[j]->name = g_strdup(token[2 * j]);

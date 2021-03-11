@@ -50,7 +50,7 @@ VIR_LOG_INIT("vbox.vbox_driver");
 #if defined(VBOX_DRIVER)
 static virDrvOpenStatus dummyConnectOpen(virConnectPtr conn,
                                          virConnectAuthPtr auth G_GNUC_UNUSED,
-                                         virConfPtr conf G_GNUC_UNUSED,
+                                         virConf *conf G_GNUC_UNUSED,
                                          unsigned int flags)
 {
     uid_t uid = geteuid();

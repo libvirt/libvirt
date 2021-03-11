@@ -38,8 +38,8 @@ virQEMUDriver driver;
 static int
 testQemuAgentSSHKeys(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
     char **keys = NULL;
     int nkeys = 0;
     int ret = -1;
@@ -116,8 +116,8 @@ testQemuAgentSSHKeys(const void *data)
 static int
 testQemuAgentFSFreeze(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
     const char *mountpoints[] = {"/fs1", "/fs2", "/fs3", "/fs4", "/fs5"};
     int ret = -1;
 
@@ -168,8 +168,8 @@ testQemuAgentFSFreeze(const void *data)
 static int
 testQemuAgentFSThaw(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
     int ret = -1;
 
     if (!test)
@@ -218,8 +218,8 @@ testQemuAgentFSThaw(const void *data)
 static int
 testQemuAgentFSTrim(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
     int ret = -1;
 
     if (!test)
@@ -246,13 +246,13 @@ testQemuAgentFSTrim(const void *data)
 
 
 static int
-testQemuAgentGetFSInfoCommon(virDomainXMLOptionPtr xmlopt,
-                             qemuMonitorTestPtr *test,
-                             virDomainDefPtr *def)
+testQemuAgentGetFSInfoCommon(virDomainXMLOption *xmlopt,
+                             qemuMonitorTest **test,
+                             virDomainDef **def)
 {
     int ret = -1;
     g_autofree char *domain_filename = NULL;
-    qemuMonitorTestPtr ret_test = NULL;
+    qemuMonitorTest *ret_test = NULL;
     g_autoptr(virDomainDef) ret_def = NULL;
 
     if (!test || !def)
@@ -319,10 +319,10 @@ testQemuAgentGetFSInfoCommon(virDomainXMLOptionPtr xmlopt,
 static int
 testQemuAgentGetFSInfo(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = NULL;
-    virDomainDefPtr def = NULL;
-    qemuAgentFSInfoPtr *info = NULL;
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = NULL;
+    virDomainDef *def = NULL;
+    qemuAgentFSInfo **info = NULL;
     int ret = -1, ninfo = 0, i;
 
     if (testQemuAgentGetFSInfoCommon(xmlopt, &test, &def) < 0)
@@ -421,8 +421,8 @@ testQemuAgentGetFSInfo(const void *data)
 static int
 testQemuAgentSuspend(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
     int ret = -1;
     size_t i;
 
@@ -471,13 +471,13 @@ struct qemuAgentShutdownTestData {
 
 
 static int
-qemuAgentShutdownTestMonitorHandler(qemuMonitorTestPtr test,
-                                    qemuMonitorTestItemPtr item,
+qemuAgentShutdownTestMonitorHandler(qemuMonitorTest *test,
+                                    qemuMonitorTestItem *item,
                                     const char *cmdstr)
 {
     struct qemuAgentShutdownTestData *data;
     g_autoptr(virJSONValue) val = NULL;
-    virJSONValuePtr args;
+    virJSONValue *args;
     const char *cmdname;
     const char *mode;
     int ret = -1;
@@ -531,8 +531,8 @@ qemuAgentShutdownTestMonitorHandler(qemuMonitorTestPtr test,
 static int
 testQemuAgentShutdown(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
     struct qemuAgentShutdownTestData priv;
     int ret = -1;
 
@@ -651,9 +651,9 @@ static const char testQemuAgentCPUArguments3[] =
 static int
 testQemuAgentCPU(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
-    qemuAgentCPUInfoPtr cpuinfo = NULL;
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
+    qemuAgentCPUInfo *cpuinfo = NULL;
     int nvcpus;
     int ret = -1;
 
@@ -735,8 +735,8 @@ static const char testQemuAgentArbitraryCommandResponse[] =
 static int
 testQemuAgentArbitraryCommand(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
     int ret = -1;
     g_autofree char *reply = NULL;
 
@@ -773,8 +773,8 @@ testQemuAgentArbitraryCommand(const void *data)
 
 
 static int
-qemuAgentTimeoutTestMonitorHandler(qemuMonitorTestPtr test G_GNUC_UNUSED,
-                                   qemuMonitorTestItemPtr item G_GNUC_UNUSED,
+qemuAgentTimeoutTestMonitorHandler(qemuMonitorTest *test G_GNUC_UNUSED,
+                                   qemuMonitorTestItem *item G_GNUC_UNUSED,
                                    const char *cmdstr G_GNUC_UNUSED)
 {
     return 0;
@@ -784,8 +784,8 @@ qemuAgentTimeoutTestMonitorHandler(qemuMonitorTestPtr test G_GNUC_UNUSED,
 static int
 testQemuAgentTimeout(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
     g_autofree char *reply = NULL;
     int ret = -1;
 
@@ -910,8 +910,8 @@ static const char testQemuAgentGetInterfacesResponse[] =
 static int
 testQemuAgentGetInterfaces(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
     size_t i;
     int ret = -1;
     int ifaces_count = 0;
@@ -1059,12 +1059,12 @@ static const char testQemuAgentGetDisksResponse[] =
 static int
 testQemuAgentGetDisks(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
     size_t i;
     int ret = -1;
     int disks_count = 0;
-    qemuAgentDiskInfoPtr *disks = NULL;
+    qemuAgentDiskInfo **disks = NULL;
 
     if (!test)
         return -1;
@@ -1209,8 +1209,8 @@ checkUserInfo(virTypedParameterPtr params,
 static int
 testQemuAgentUsers(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int maxparams = 0;
@@ -1309,8 +1309,8 @@ static const char testQemuAgentOSInfoResponse2[] =
 static int
 testQemuAgentOSInfo(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int maxparams = 0;
@@ -1413,8 +1413,8 @@ static const char testQemuAgentTimezoneResponse4[] =
 static int
 testQemuAgentTimezone(const void *data)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
     int ret = -1;
 
     if (!test)

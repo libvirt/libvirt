@@ -24,7 +24,6 @@
 #include "virobject.h"
 
 typedef struct _virNetClientStream virNetClientStream;
-typedef virNetClientStream *virNetClientStreamPtr;
 
 typedef enum {
     VIR_NET_CLIENT_STREAM_CLOSED_NOT = 0,
@@ -32,62 +31,62 @@ typedef enum {
     VIR_NET_CLIENT_STREAM_CLOSED_ABORTED,
 } virNetClientStreamClosed;
 
-typedef void (*virNetClientStreamEventCallback)(virNetClientStreamPtr stream,
+typedef void (*virNetClientStreamEventCallback)(virNetClientStream *stream,
                                                 int events, void *opaque);
 
-virNetClientStreamPtr virNetClientStreamNew(virNetClientProgramPtr prog,
+virNetClientStream *virNetClientStreamNew(virNetClientProgram *prog,
                                             int proc,
                                             unsigned serial,
                                             bool allowSkip);
 
-int virNetClientStreamCheckState(virNetClientStreamPtr st);
+int virNetClientStreamCheckState(virNetClientStream *st);
 
-int virNetClientStreamCheckSendStatus(virNetClientStreamPtr st,
-                                      virNetMessagePtr msg);
+int virNetClientStreamCheckSendStatus(virNetClientStream *st,
+                                      virNetMessage *msg);
 
-int virNetClientStreamSetError(virNetClientStreamPtr st,
-                               virNetMessagePtr msg);
+int virNetClientStreamSetError(virNetClientStream *st,
+                               virNetMessage *msg);
 
-void virNetClientStreamSetClosed(virNetClientStreamPtr st,
+void virNetClientStreamSetClosed(virNetClientStream *st,
                                  virNetClientStreamClosed closed);
 
-bool virNetClientStreamMatches(virNetClientStreamPtr st,
-                               virNetMessagePtr msg);
+bool virNetClientStreamMatches(virNetClientStream *st,
+                               virNetMessage *msg);
 
-int virNetClientStreamQueuePacket(virNetClientStreamPtr st,
-                                  virNetMessagePtr msg);
+int virNetClientStreamQueuePacket(virNetClientStream *st,
+                                  virNetMessage *msg);
 
-int virNetClientStreamSendPacket(virNetClientStreamPtr st,
-                                 virNetClientPtr client,
+int virNetClientStreamSendPacket(virNetClientStream *st,
+                                 virNetClient *client,
                                  int status,
                                  const char *data,
                                  size_t nbytes);
 
-int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
-                                 virNetClientPtr client,
+int virNetClientStreamRecvPacket(virNetClientStream *st,
+                                 virNetClient *client,
                                  char *data,
                                  size_t nbytes,
                                  bool nonblock,
                                  unsigned int flags);
 
-int virNetClientStreamSendHole(virNetClientStreamPtr st,
-                               virNetClientPtr client,
+int virNetClientStreamSendHole(virNetClientStream *st,
+                               virNetClient *client,
                                long long length,
                                unsigned int flags);
 
-int virNetClientStreamRecvHole(virNetClientPtr client,
-                               virNetClientStreamPtr st,
+int virNetClientStreamRecvHole(virNetClient *client,
+                               virNetClientStream *st,
                                long long *length);
 
-int virNetClientStreamEventAddCallback(virNetClientStreamPtr st,
+int virNetClientStreamEventAddCallback(virNetClientStream *st,
                                        int events,
                                        virNetClientStreamEventCallback cb,
                                        void *opaque,
                                        virFreeCallback ff);
 
-int virNetClientStreamEventUpdateCallback(virNetClientStreamPtr st,
+int virNetClientStreamEventUpdateCallback(virNetClientStream *st,
                                           int events);
-int virNetClientStreamEventRemoveCallback(virNetClientStreamPtr st);
+int virNetClientStreamEventRemoveCallback(virNetClientStream *st);
 
-bool virNetClientStreamEOF(virNetClientStreamPtr st)
+bool virNetClientStreamEOF(virNetClientStream *st)
     ATTRIBUTE_NONNULL(1);

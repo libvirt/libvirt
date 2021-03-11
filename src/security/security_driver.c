@@ -35,7 +35,7 @@
 
 VIR_LOG_INIT("security.security_driver");
 
-static virSecurityDriverPtr security_drivers[] = {
+static virSecurityDriver *security_drivers[] = {
 #ifdef WITH_SECDRIVER_SELINUX
     &virSecurityDriverSELinux,
 #endif
@@ -45,16 +45,16 @@ static virSecurityDriverPtr security_drivers[] = {
     &virSecurityDriverNop, /* Must always be last, since it will always probe */
 };
 
-virSecurityDriverPtr virSecurityDriverLookup(const char *name,
+virSecurityDriver *virSecurityDriverLookup(const char *name,
                                              const char *virtDriver)
 {
-    virSecurityDriverPtr drv = NULL;
+    virSecurityDriver *drv = NULL;
     size_t i;
 
     VIR_DEBUG("name=%s", NULLSTR(name));
 
     for (i = 0; i < G_N_ELEMENTS(security_drivers) && !drv; i++) {
-        virSecurityDriverPtr tmp = security_drivers[i];
+        virSecurityDriver *tmp = security_drivers[i];
 
         if (name &&
             STRNEQ(tmp->name, name))

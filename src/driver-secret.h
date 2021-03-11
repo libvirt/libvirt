@@ -89,7 +89,6 @@ typedef int
                                          int callbackID);
 
 typedef struct _virSecretDriver virSecretDriver;
-typedef virSecretDriver *virSecretDriverPtr;
 
 /**
  * _virSecretDriver:

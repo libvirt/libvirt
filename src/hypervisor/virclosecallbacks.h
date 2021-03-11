@@ -23,28 +23,27 @@
 #include "conf/virdomainobjlist.h"
 
 typedef struct _virCloseCallbacks virCloseCallbacks;
-typedef virCloseCallbacks *virCloseCallbacksPtr;
 
-typedef void (*virCloseCallback)(virDomainObjPtr vm,
+typedef void (*virCloseCallback)(virDomainObj *vm,
                                  virConnectPtr conn,
                                  void *opaque);
-virCloseCallbacksPtr virCloseCallbacksNew(void);
-int virCloseCallbacksSet(virCloseCallbacksPtr closeCallbacks,
-                         virDomainObjPtr vm,
+virCloseCallbacks *virCloseCallbacksNew(void);
+int virCloseCallbacksSet(virCloseCallbacks *closeCallbacks,
+                         virDomainObj *vm,
                          virConnectPtr conn,
                          virCloseCallback cb);
-int virCloseCallbacksUnset(virCloseCallbacksPtr closeCallbacks,
-                           virDomainObjPtr vm,
+int virCloseCallbacksUnset(virCloseCallbacks *closeCallbacks,
+                           virDomainObj *vm,
                            virCloseCallback cb);
 virCloseCallback
-virCloseCallbacksGet(virCloseCallbacksPtr closeCallbacks,
-                     virDomainObjPtr vm,
+virCloseCallbacksGet(virCloseCallbacks *closeCallbacks,
+                     virDomainObj *vm,
                      virConnectPtr conn);
 virConnectPtr
-virCloseCallbacksGetConn(virCloseCallbacksPtr closeCallbacks,
-                         virDomainObjPtr vm);
+virCloseCallbacksGetConn(virCloseCallbacks *closeCallbacks,
+                         virDomainObj *vm);
 void
-virCloseCallbacksRun(virCloseCallbacksPtr closeCallbacks,
+virCloseCallbacksRun(virCloseCallbacks *closeCallbacks,
                      virConnectPtr conn,
-                     virDomainObjListPtr domains,
+                     virDomainObjList *domains,
                      void *opaque);

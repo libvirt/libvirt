@@ -30,7 +30,6 @@
  */
 
 typedef struct _vshAdmControl vshAdmControl;
-typedef vshAdmControl *vshAdmControlPtr;
 
 /*
  * adminControl

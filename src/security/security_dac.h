@@ -24,15 +24,15 @@
 
 extern virSecurityDriver virSecurityDriverDAC;
 
-int virSecurityDACSetUserAndGroup(virSecurityManagerPtr mgr,
+int virSecurityDACSetUserAndGroup(virSecurityManager *mgr,
                                   uid_t user,
                                   gid_t group);
 
-void virSecurityDACSetDynamicOwnership(virSecurityManagerPtr mgr,
+void virSecurityDACSetDynamicOwnership(virSecurityManager *mgr,
                                        bool dynamic);
 
-void virSecurityDACSetMountNamespace(virSecurityManagerPtr mgr,
+void virSecurityDACSetMountNamespace(virSecurityManager *mgr,
                                      bool mountNamespace);
 
-void virSecurityDACSetChownCallback(virSecurityManagerPtr mgr,
+void virSecurityDACSetChownCallback(virSecurityManager *mgr,
                                     virSecurityManagerDACChownCallback chownCallback);

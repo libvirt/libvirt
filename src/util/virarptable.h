@@ -23,9 +23,7 @@
 #include "internal.h"
 
 typedef struct _virArpTableEntry virArpTableEntry;
-typedef virArpTableEntry *virArpTableEntryPtr;
 typedef struct _virArpTable virArpTable;
-typedef virArpTable *virArpTablePtr;
 
 struct _virArpTableEntry{
     char *ipaddr;
@@ -34,8 +32,8 @@ struct _virArpTableEntry{
 
 struct _virArpTable {
     int n;
-    virArpTableEntryPtr t;
+    virArpTableEntry *t;
 };
 
-virArpTablePtr virArpTableGet(void);
-void virArpTableFree(virArpTablePtr table);
+virArpTable *virArpTableGet(void);
+void virArpTableFree(virArpTable *table);

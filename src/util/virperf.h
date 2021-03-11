@@ -60,23 +60,22 @@ VIR_ENUM_DECL(virPerfEvent);
 
 struct _virPerf;
 typedef struct _virPerf virPerf;
-typedef virPerf *virPerfPtr;
 
-virPerfPtr virPerfNew(void);
+virPerf *virPerfNew(void);
 
-void virPerfFree(virPerfPtr perf);
+void virPerfFree(virPerf *perf);
 
-int virPerfEventEnable(virPerfPtr perf,
+int virPerfEventEnable(virPerf *perf,
                        virPerfEventType type,
                        pid_t pid);
 
-int virPerfEventDisable(virPerfPtr perf,
+int virPerfEventDisable(virPerf *perf,
                         virPerfEventType type);
 
-bool virPerfEventIsEnabled(virPerfPtr perf,
+bool virPerfEventIsEnabled(virPerf *perf,
                            virPerfEventType type);
 
-int virPerfReadEvent(virPerfPtr perf,
+int virPerfReadEvent(virPerf *perf,
                      virPerfEventType type,
                      uint64_t *value);
 

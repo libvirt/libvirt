@@ -25,9 +25,9 @@
 
 #pragma once
 
-virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps);
+virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps);
 
-virQEMUCapsPtr
+virQEMUCaps *
 virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 const char *binary,
                                 const char *libDir,
@@ -38,80 +38,80 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 const char *kernelVersion);
 
 int virQEMUCapsLoadCache(virArch hostArch,
-                         virQEMUCapsPtr qemuCaps,
+                         virQEMUCaps *qemuCaps,
                          const char *filename,
                          bool skipInvalidation);
-char *virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps);
+char *virQEMUCapsFormatCache(virQEMUCaps *qemuCaps);
 
 int
-virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
-                          qemuMonitorPtr mon);
+virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
+                          qemuMonitor *mon);
 
 int
-virQEMUCapsInitQMPMonitorTCG(virQEMUCapsPtr qemuCaps,
-                             qemuMonitorPtr mon);
+virQEMUCapsInitQMPMonitorTCG(virQEMUCaps *qemuCaps,
+                             qemuMonitor *mon);
 
 void
-virQEMUCapsSetArch(virQEMUCapsPtr qemuCaps,
+virQEMUCapsSetArch(virQEMUCaps *qemuCaps,
                    virArch arch);
 
 void
-virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
+virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
                             virArch hostArch,
                             virDomainVirtType type);
 
 int
-virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
+virQEMUCapsInitCPUModel(virQEMUCaps *qemuCaps,
                         virDomainVirtType type,
-                        virCPUDefPtr cpu,
+                        virCPUDef *cpu,
                         bool migratable);
 
 void
-virQEMUCapsInitQMPBasicArch(virQEMUCapsPtr qemuCaps);
+virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps);
 
-qemuMonitorCPUModelInfoPtr
-virQEMUCapsGetCPUModelInfo(virQEMUCapsPtr qemuCaps,
+qemuMonitorCPUModelInfo *
+virQEMUCapsGetCPUModelInfo(virQEMUCaps *qemuCaps,
                            virDomainVirtType type);
 
 void
-virQEMUCapsSetCPUModelInfo(virQEMUCapsPtr qemuCaps,
+virQEMUCapsSetCPUModelInfo(virQEMUCaps *qemuCaps,
                            virDomainVirtType type,
-                           qemuMonitorCPUModelInfoPtr modelInfo);
+                           qemuMonitorCPUModelInfo *modelInfo);
 
-virCPUDataPtr
-virQEMUCapsGetCPUModelX86Data(virQEMUCapsPtr qemuCaps,
-                              qemuMonitorCPUModelInfoPtr model,
+virCPUData *
+virQEMUCapsGetCPUModelX86Data(virQEMUCaps *qemuCaps,
+                              qemuMonitorCPUModelInfo *model,
                               bool migratable);
 
-virCPUDefPtr
+virCPUDef *
 virQEMUCapsProbeHostCPU(virArch hostArch,
-                        virDomainCapsCPUModelsPtr models) G_GNUC_NO_INLINE;
+                        virDomainCapsCPUModels *models) G_GNUC_NO_INLINE;
 
 void
-virQEMUCapsSetGICCapabilities(virQEMUCapsPtr qemuCaps,
+virQEMUCapsSetGICCapabilities(virQEMUCaps *qemuCaps,
                               virGICCapability *capabilities,
                               size_t ncapabilities);
 
 void
-virQEMUCapsSetSEVCapabilities(virQEMUCapsPtr qemuCaps,
+virQEMUCapsSetSEVCapabilities(virQEMUCaps *qemuCaps,
                               virSEVCapability *capabilities);
 
 int
-virQEMUCapsProbeCPUDefinitionsTest(virQEMUCapsPtr qemuCaps,
-                                   qemuMonitorPtr mon);
+virQEMUCapsProbeCPUDefinitionsTest(virQEMUCaps *qemuCaps,
+                                   qemuMonitor *mon);
 
 void
-virQEMUCapsSetMicrocodeVersion(virQEMUCapsPtr qemuCaps,
+virQEMUCapsSetMicrocodeVersion(virQEMUCaps *qemuCaps,
                                unsigned int microcodeVersion);
 
 void
-virQEMUCapsStripMachineAliases(virQEMUCapsPtr qemuCaps);
+virQEMUCapsStripMachineAliases(virQEMUCaps *qemuCaps);
 
 bool
-virQEMUCapsHasMachines(virQEMUCapsPtr qemuCaps);
+virQEMUCapsHasMachines(virQEMUCaps *qemuCaps);
 
 void
-virQEMUCapsAddMachine(virQEMUCapsPtr qemuCaps,
+virQEMUCapsAddMachine(virQEMUCaps *qemuCaps,
                       virDomainVirtType virtType,
                       const char *name,
                       const char *alias,

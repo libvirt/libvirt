@@ -35,8 +35,6 @@
 G_STATIC_ASSERT(!(VIR_TYPED_PARAM_LAST & VIR_TYPED_PARAM_MULTIPLE));
 
 typedef struct _virTypedParameterRemoteValue virTypedParameterRemoteValue;
-typedef struct virTypedParameterRemoteValue *virTypedParameterRemoteValuePtr;
-
 struct _virTypedParameterRemoteValue {
     int type;
     union {
@@ -50,7 +48,6 @@ struct _virTypedParameterRemoteValue {
     } remote_typed_param_value;
 };
 
-typedef struct _virTypedParameterRemote *virTypedParameterRemotePtr;
 
 struct _virTypedParameterRemote {
     char *field;
@@ -95,10 +92,10 @@ int virTypedParamsCopy(virTypedParameterPtr *dst,
 
 char *virTypedParameterToString(virTypedParameterPtr param);
 
-void virTypedParamsRemoteFree(virTypedParameterRemotePtr remote_params_val,
+void virTypedParamsRemoteFree(struct _virTypedParameterRemote *remote_params_val,
                               unsigned int remote_params_len);
 
-int virTypedParamsDeserialize(virTypedParameterRemotePtr remote_params,
+int virTypedParamsDeserialize(struct _virTypedParameterRemote *remote_params,
                               unsigned int remote_params_len,
                               int limit,
                               virTypedParameterPtr *params,
@@ -107,7 +104,7 @@ int virTypedParamsDeserialize(virTypedParameterRemotePtr remote_params,
 int virTypedParamsSerialize(virTypedParameterPtr params,
                             int nparams,
                             int limit,
-                            virTypedParameterRemotePtr *remote_params_val,
+                            struct _virTypedParameterRemote **remote_params_val,
                             unsigned int *remote_params_len,
                             unsigned int flags);
 
@@ -129,51 +126,49 @@ VIR_ENUM_DECL(virTypedParameter);
     } while (0)
 
 typedef struct _virTypedParamList virTypedParamList;
-typedef virTypedParamList *virTypedParamListPtr;
-
 struct _virTypedParamList {
     virTypedParameterPtr par;
     size_t npar;
     size_t par_alloc;
 };
 
-void virTypedParamListFree(virTypedParamListPtr list);
+void virTypedParamListFree(virTypedParamList *list);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virTypedParamList, virTypedParamListFree);
 
-size_t virTypedParamListStealParams(virTypedParamListPtr list,
+size_t virTypedParamListStealParams(virTypedParamList *list,
                                     virTypedParameterPtr *params);
 
-int virTypedParamListAddInt(virTypedParamListPtr list,
+int virTypedParamListAddInt(virTypedParamList *list,
                             int value,
                             const char *namefmt,
                             ...)
     G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
-int virTypedParamListAddUInt(virTypedParamListPtr list,
+int virTypedParamListAddUInt(virTypedParamList *list,
                              unsigned int value,
                              const char *namefmt,
                              ...)
     G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
-int virTypedParamListAddLLong(virTypedParamListPtr list,
+int virTypedParamListAddLLong(virTypedParamList *list,
                               long long value,
                               const char *namefmt,
                               ...)
     G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
-int virTypedParamListAddULLong(virTypedParamListPtr list,
+int virTypedParamListAddULLong(virTypedParamList *list,
                                unsigned long long value,
                                const char *namefmt,
                                ...)
     G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
-int virTypedParamListAddString(virTypedParamListPtr list,
+int virTypedParamListAddString(virTypedParamList *list,
                                const char *value,
                                const char *namefmt,
                                ...)
     G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
-int virTypedParamListAddBoolean(virTypedParamListPtr list,
+int virTypedParamListAddBoolean(virTypedParamList *list,
                                 bool value,
                                 const char *namefmt,
                                 ...)
     G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
-int virTypedParamListAddDouble(virTypedParamListPtr list,
+int virTypedParamListAddDouble(virTypedParamList *list,
                                double value,
                                const char *namefmt,
                                ...)

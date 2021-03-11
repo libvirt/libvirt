@@ -33,7 +33,7 @@ VIR_LOG_INIT("tests.netmessagetest");
 
 static int testMessageHeaderEncode(const void *args G_GNUC_UNUSED)
 {
-    virNetMessagePtr msg = virNetMessageNew(true);
+    virNetMessage *msg = virNetMessageNew(true);
     static const char expect[] = {
         0x00, 0x00, 0x00, 0x1c,  /* Length */
         0x11, 0x22, 0x33, 0x44,  /* Program */
@@ -86,7 +86,7 @@ static int testMessageHeaderEncode(const void *args G_GNUC_UNUSED)
 
 static int testMessageHeaderDecode(const void *args G_GNUC_UNUSED)
 {
-    virNetMessagePtr msg = virNetMessageNew(true);
+    virNetMessage *msg = virNetMessageNew(true);
     static char input_buf [] =  {
         0x00, 0x00, 0x00, 0x1c,  /* Length */
         0x11, 0x22, 0x33, 0x44,  /* Program */
@@ -182,7 +182,7 @@ static int testMessageHeaderDecode(const void *args G_GNUC_UNUSED)
 static int testMessagePayloadEncode(const void *args G_GNUC_UNUSED)
 {
     virNetMessageError err;
-    virNetMessagePtr msg = virNetMessageNew(true);
+    virNetMessage *msg = virNetMessageNew(true);
     int ret = -1;
     static const char expect[] = {
         0x00, 0x00, 0x00, 0x74,  /* Length */
@@ -290,7 +290,7 @@ static int testMessagePayloadEncode(const void *args G_GNUC_UNUSED)
 static int testMessagePayloadDecode(const void *args G_GNUC_UNUSED)
 {
     virNetMessageError err;
-    virNetMessagePtr msg = virNetMessageNew(true);
+    virNetMessage *msg = virNetMessageNew(true);
     static char input_buffer[] = {
         0x00, 0x00, 0x00, 0x74,  /* Length */
         0x11, 0x22, 0x33, 0x44,  /* Program */
@@ -453,7 +453,7 @@ static int testMessagePayloadDecode(const void *args G_GNUC_UNUSED)
 static int testMessagePayloadStreamEncode(const void *args G_GNUC_UNUSED)
 {
     char stream[] = "The quick brown fox jumps over the lazy dog";
-    virNetMessagePtr msg = virNetMessageNew(true);
+    virNetMessage *msg = virNetMessageNew(true);
     static const char expect[] = {
         0x00, 0x00, 0x00, 0x47,  /* Length */
         0x11, 0x22, 0x33, 0x44,  /* Program */

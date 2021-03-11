@@ -23,7 +23,7 @@
 #include "access/viraccessdriver.h"
 
 
-int virAccessDriverStackAppend(virAccessManagerPtr manager,
-                               virAccessManagerPtr child);
+int virAccessDriverStackAppend(virAccessManager *manager,
+                               virAccessManager *child);
 
 extern virAccessDriver accessDriverStack;

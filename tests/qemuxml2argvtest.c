@@ -281,7 +281,7 @@ static virNWFilterDriver fakeNWFilterDriver = {
 
 
 static int
-testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
+testAddCPUModels(virQEMUCaps *caps, bool skipLegacy)
 {
     virArch arch = virQEMUCapsGetArch(caps);
     const char *x86Models[] = {
@@ -354,7 +354,7 @@ testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
 static int
 testUpdateQEMUCaps(const struct testQemuInfo *info,
                    virArch arch,
-                   virCapsPtr caps)
+                   virCaps *caps)
 {
     if (!caps)
         return -1;
@@ -392,15 +392,15 @@ testCheckExclusiveFlags(int flags)
 }
 
 
-static virCommandPtr
-testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
-                               virDomainObjPtr vm,
+static virCommand *
+testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
+                               virDomainObj *vm,
                                const char *migrateURI,
                                struct testQemuInfo *info,
                                unsigned int flags,
                                bool jsonPropsValidation)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     bool enableFips = !!(flags & FLAG_FIPS_HOST);
     size_t i;
 
@@ -409,7 +409,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
         return NULL;
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
+        virDomainDiskDef *disk = vm->def->disks[i];
 
         /* host cdrom requires special treatment in qemu, mock it */
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
@@ -420,7 +420,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
     }
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
+        virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
 
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
@@ -429,7 +429,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
         }
 
         if (virHostdevIsSCSIDevice(hostdev)) {
-            virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+            virDomainHostdevSubsysSCSI *scsisrc = &hostdev->source.subsys.u.scsi;
 
             switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
             case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
@@ -448,7 +448,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
     }
 
     for (i = 0; i < vm->def->nfss; i++) {
-        virDomainFSDefPtr fs = vm->def->fss[i];
+        virDomainFSDef *fs = vm->def->fss[i];
         char *s;
 
         if (fs->fsdriver != VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS ||
@@ -460,9 +460,9 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
     }
 
     if (vm->def->vsock) {
-        virDomainVsockDefPtr vsock = vm->def->vsock;
-        qemuDomainVsockPrivatePtr vsockPriv =
-            (qemuDomainVsockPrivatePtr)vsock->privateData;
+        virDomainVsockDef *vsock = vm->def->vsock;
+        qemuDomainVsockPrivate *vsockPriv =
+            (qemuDomainVsockPrivate *)vsock->privateData;
 
         if (vsock->auto_cid == VIR_TRISTATE_BOOL_YES)
             vsock->guest_cid = 42;
@@ -480,10 +480,10 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
     }
 
     for (i = 0; i < vm->def->nvideos; i++) {
-        virDomainVideoDefPtr video = vm->def->videos[i];
+        virDomainVideoDef *video = vm->def->videos[i];
 
         if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
-            qemuDomainVideoPrivatePtr vpriv = QEMU_DOMAIN_VIDEO_PRIVATE(video);
+            qemuDomainVideoPrivate *vpriv = QEMU_DOMAIN_VIDEO_PRIVATE(video);
 
             vpriv->vhost_user_fd = 1729;
         }
@@ -491,11 +491,11 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
 
     if (flags & FLAG_SLIRP_HELPER) {
         for (i = 0; i < vm->def->nnets; i++) {
-            virDomainNetDefPtr net = vm->def->nets[i];
+            virDomainNetDef *net = vm->def->nets[i];
 
             if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
                 virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
-                qemuSlirpPtr slirp = qemuSlirpNew();
+                qemuSlirp *slirp = qemuSlirpNew();
                 slirp->fd[0] = 42;
                 QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp = slirp;
             }
@@ -513,14 +513,14 @@ testCompareXMLToArgvCreateArgs(virQEMUDriverPtr drv,
 
 
 static int
-testCompareXMLToArgvValidateSchema(virQEMUDriverPtr drv,
+testCompareXMLToArgvValidateSchema(virQEMUDriver *drv,
                                    const char *migrateURI,
                                    struct testQemuInfo *info,
                                    unsigned int flags)
 {
     g_auto(GStrv) args = NULL;
     g_autoptr(virDomainObj) vm = NULL;
-    qemuDomainObjPrivatePtr priv = NULL;
+    qemuDomainObjPrivate *priv = NULL;
     size_t nargs = 0;
     size_t i;
     GHashTable *schema = NULL;
@@ -638,13 +638,13 @@ testCompareXMLToArgv(const void *data)
     unsigned int flags = info->flags;
     unsigned int parseFlags = info->parseFlags;
     int ret = -1;
-    virDomainObjPtr vm = NULL;
+    virDomainObj *vm = NULL;
     virDomainChrSourceDef monitor_chr;
     g_autoptr(virConnect) conn = NULL;
     virError *err = NULL;
     char *log = NULL;
     g_autoptr(virCommand) cmd = NULL;
-    qemuDomainObjPrivatePtr priv = NULL;
+    qemuDomainObjPrivate *priv = NULL;
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr root;

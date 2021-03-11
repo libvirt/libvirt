@@ -166,7 +166,7 @@ qemuTPMCreateEmulatorStorage(const char *storagepath,
 
 
 static void
-qemuTPMDeleteEmulatorStorage(virDomainTPMDefPtr tpm)
+qemuTPMDeleteEmulatorStorage(virDomainTPMDef *tpm)
 {
     g_autofree char *path =  g_path_get_dirname(tpm->data.emulator.storagepath);
 
@@ -201,7 +201,7 @@ qemuTPMCreateEmulatorSocket(const char *swtpmStateDir,
  * @uuid: the UUID of the VM
  */
 static int
-qemuTPMEmulatorInitPaths(virDomainTPMDefPtr tpm,
+qemuTPMEmulatorInitPaths(virDomainTPMDef *tpm,
                          const char *swtpmStorageDir,
                          const char *logDir,
                          const char *vmname,
@@ -286,7 +286,7 @@ qemuTPMEmulatorGetPid(const char *swtpmStateDir,
  * the socket between tss and qemu users.
  */
 static int
-qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
+qemuTPMEmulatorPrepareHost(virDomainTPMDef *tpm,
                            const char *logDir,
                            uid_t swtpm_user,
                            gid_t swtpm_group,
@@ -358,7 +358,7 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
  */
 static int
 qemuTPMSetupEncryption(const unsigned char *secretuuid,
-                       virCommandPtr cmd)
+                       virCommand *cmd)
 {
     g_autoptr(virConnect) conn = NULL;
     g_autofree uint8_t *secret = NULL;
@@ -516,8 +516,8 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
  * Do some initializations on the way, such as creation of storage
  * and emulator setup.
  */
-static virCommandPtr
-qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
+static virCommand *
+qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
                             const char *vmname,
                             const unsigned char *vmuuid,
                             bool privileged,
@@ -630,7 +630,7 @@ static void
 qemuTPMEmulatorStop(const char *swtpmStateDir,
                     const char *shortName)
 {
-    virCommandPtr cmd;
+    virCommand *cmd;
     g_autofree char *pathname = NULL;
     g_autofree char *errbuf = NULL;
     g_autofree char *swtpm_ioctl = virTPMGetSwtpmIoctl();
@@ -665,8 +665,8 @@ qemuTPMEmulatorStop(const char *swtpmStateDir,
 
 
 int
-qemuExtTPMInitPaths(virQEMUDriverPtr driver,
-                    virDomainDefPtr def)
+qemuExtTPMInitPaths(virQEMUDriver *driver,
+                    virDomainDef *def)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     size_t i;
@@ -687,8 +687,8 @@ qemuExtTPMInitPaths(virQEMUDriverPtr driver,
 
 
 int
-qemuExtTPMPrepareHost(virQEMUDriverPtr driver,
-                      virDomainDefPtr def)
+qemuExtTPMPrepareHost(virQEMUDriver *driver,
+                      virDomainDef *def)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortName = NULL;
@@ -714,7 +714,7 @@ qemuExtTPMPrepareHost(virQEMUDriverPtr driver,
 
 
 void
-qemuExtTPMCleanupHost(virDomainDefPtr def)
+qemuExtTPMCleanupHost(virDomainDef *def)
 {
     size_t i;
 
@@ -740,9 +740,9 @@ qemuExtTPMCleanupHost(virDomainDefPtr def)
  * - start the external TPM Emulator and sync with it before QEMU start
  */
 static int
-qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm,
-                        virDomainTPMDefPtr tpm,
+qemuExtTPMStartEmulator(virQEMUDriver *driver,
+                        virDomainObj *vm,
+                        virDomainTPMDef *tpm,
                         bool incomingMigration)
 {
     g_autoptr(virCommand) cmd = NULL;
@@ -812,8 +812,8 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
 
 
 int
-qemuExtTPMStart(virQEMUDriverPtr driver,
-                virDomainObjPtr vm,
+qemuExtTPMStart(virQEMUDriver *driver,
+                virDomainObj *vm,
                 bool incomingMigration)
 {
     size_t i;
@@ -831,8 +831,8 @@ qemuExtTPMStart(virQEMUDriverPtr driver,
 
 
 void
-qemuExtTPMStop(virQEMUDriverPtr driver,
-               virDomainObjPtr vm)
+qemuExtTPMStop(virQEMUDriver *driver,
+               virDomainObj *vm)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     size_t i;
@@ -856,9 +856,9 @@ qemuExtTPMStop(virQEMUDriverPtr driver,
 
 
 int
-qemuExtTPMSetupCgroup(virQEMUDriverPtr driver,
-                      virDomainDefPtr def,
-                      virCgroupPtr cgroup)
+qemuExtTPMSetupCgroup(virQEMUDriver *driver,
+                      virDomainDef *def,
+                      virCgroup *cgroup)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int rc;

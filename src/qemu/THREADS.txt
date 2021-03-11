@@ -14,7 +14,7 @@ Basic locking primitives
 
 There are a number of locks on various objects
 
-  * virQEMUDriverPtr
+  * virQEMUDriver *
 
     The qemu_conf.h file has inline comments describing the locking
     needs for each field. Any field marked immutable, self-locking
@@ -23,14 +23,14 @@ There are a number of locks on various objects
     access to the data. No code outside qemu_conf.c should ever
     acquire this lock
 
-  * virDomainObjPtr
+  * virDomainObj *
 
     Will be locked and the reference counter will be increased after calling
     any of the virDomainObjListFindBy{ID,Name,UUID} methods. The preferred way
     of decrementing the reference counter and unlocking the domain is using the
     virDomainObjEndAPI() function.
 
-    Lock must be held when changing/reading any variable in the virDomainObjPtr
+    Lock must be held when changing/reading any variable in the virDomainObj *
 
     This lock must not be held for anything which sleeps/waits (i.e. monitor
     commands).
@@ -38,7 +38,7 @@ There are a number of locks on various objects
 
   * qemuMonitorPrivatePtr: Job conditions
 
-    Since virDomainObjPtr lock must not be held during sleeps, the job
+    Since virDomainObj *lock must not be held during sleeps, the job
     conditions provide additional protection for code making updates.
 
     QEMU driver uses three kinds of job conditions: asynchronous, agent
@@ -68,23 +68,23 @@ There are a number of locks on various objects
     depends whether caller wishes to communicate only with agent socket, or
     only with qemu monitor socket.
 
-    Immediately after acquiring the virDomainObjPtr lock, any method
+    Immediately after acquiring the virDomainObj *lock, any method
     which intends to update state must acquire asynchronous, normal or
-    agent job . The virDomainObjPtr lock is released while blocking on
+    agent job . The virDomainObj *lock is released while blocking on
     these condition variables.  Once the job condition is acquired, a
-    method can safely release the virDomainObjPtr lock whenever it hits
+    method can safely release the virDomainObj *lock whenever it hits
     a piece of code which may sleep/wait, and re-acquire it after the
     sleep/wait.  Whenever an asynchronous job wants to talk to the
     monitor, it needs to acquire nested job (a special kind of normal
     job) to obtain exclusive access to the monitor.
 
-    Since the virDomainObjPtr lock was dropped while waiting for the
+    Since the virDomainObj *lock was dropped while waiting for the
     job condition, it is possible that the domain is no longer active
     when the condition is finally obtained.  The monitor lock is only
     safe to grab after verifying that the domain is still active.
 
 
-  * qemuMonitorPtr:  Mutex
+  * qemuMonitor *:  Mutex
 
     Lock to be used when invoking any monitor command to ensure safety
     wrt any asynchronous events that may be dispatched from the monitor.
@@ -92,23 +92,23 @@ There are a number of locks on various objects
 
     The job condition *MUST* be held before acquiring the monitor lock
 
-    The virDomainObjPtr lock *MUST* be held before acquiring the monitor
+    The virDomainObj *lock *MUST* be held before acquiring the monitor
     lock.
 
-    The virDomainObjPtr lock *MUST* then be released when invoking the
+    The virDomainObj *lock *MUST* then be released when invoking the
     monitor command.
 
 
 Helper methods
 --------------
 
-To lock the virDomainObjPtr
+To lock the virDomainObj *
 
   virObjectLock()
-    - Acquires the virDomainObjPtr lock
+    - Acquires the virDomainObj *lock
 
   virObjectUnlock()
-    - Releases the virDomainObjPtr lock
+    - Releases the virDomainObj *lock
 
 
 
@@ -117,7 +117,7 @@ To acquire the normal job condition
   qemuDomainObjBeginJob()
     - Waits until the job is compatible with current async job or no
       async job is running
-    - Waits for job.cond condition 'job.active != 0' using virDomainObjPtr
+    - Waits for job.cond condition 'job.active != 0' using virDomainObj *
       mutex
     - Rechecks if the job is still compatible and repeats waiting if it
       isn't
@@ -146,7 +146,7 @@ To acquire the asynchronous job condition
 
   qemuDomainObjBeginAsyncJob()
     - Waits until no async job is running
-    - Waits for job.cond condition 'job.active != 0' using virDomainObjPtr
+    - Waits for job.cond condition 'job.active != 0' using virDomainObj *
       mutex
     - Rechecks if any async job was started while waiting on job.cond
       and repeats waiting in that case
@@ -163,11 +163,11 @@ To acquire the QEMU monitor lock
 
   qemuDomainObjEnterMonitor()
     - Acquires the qemuMonitorObjPtr lock
-    - Releases the virDomainObjPtr lock
+    - Releases the virDomainObj *lock
 
   qemuDomainObjExitMonitor()
     - Releases the qemuMonitorObjPtr lock
-    - Acquires the virDomainObjPtr lock
+    - Acquires the virDomainObj *lock
 
   These functions must not be used by an asynchronous job.
   Note that the virDomainObj is unlocked during the time in
@@ -182,12 +182,12 @@ To acquire the QEMU monitor lock as part of an asynchronous job
   qemuDomainObjEnterMonitorAsync()
     - Validates that the right async job is still running
     - Acquires the qemuMonitorObjPtr lock
-    - Releases the virDomainObjPtr lock
+    - Releases the virDomainObj *lock
     - Validates that the VM is still active
 
   qemuDomainObjExitMonitor()
     - Releases the qemuMonitorObjPtr lock
-    - Acquires the virDomainObjPtr lock
+    - Acquires the virDomainObj *lock
 
   These functions are for use inside an asynchronous job; the caller
   must check for a return of -1 (VM not running, so nothing to exit).
@@ -198,19 +198,19 @@ To acquire the QEMU monitor lock as part of an asynchronous job
 To keep a domain alive while waiting on a remote command
 
   qemuDomainObjEnterRemote()
-    - Releases the virDomainObjPtr lock
+    - Releases the virDomainObj *lock
 
   qemuDomainObjExitRemote()
-    - Acquires the virDomainObjPtr lock
+    - Acquires the virDomainObj *lock
 
 
 Design patterns
 ---------------
 
 
- * Accessing something directly to do with a virDomainObjPtr
+ * Accessing something directly to do with a virDomainObj *
 
-     virDomainObjPtr obj;
+     virDomainObj *obj;
 
      obj = qemuDomObjFromDomain(dom);
 
@@ -219,9 +219,9 @@ Design patterns
      virDomainObjEndAPI(&obj);
 
 
- * Updating something directly to do with a virDomainObjPtr
+ * Updating something directly to do with a virDomainObj *
 
-     virDomainObjPtr obj;
+     virDomainObj *obj;
 
      obj = qemuDomObjFromDomain(dom);
 
@@ -234,10 +234,10 @@ Design patterns
      virDomainObjEndAPI(&obj);
 
 
- * Invoking a monitor command on a virDomainObjPtr
+ * Invoking a monitor command on a virDomainObj *
 
-     virDomainObjPtr obj;
-     qemuDomainObjPrivatePtr priv;
+     virDomainObj *obj;
+     qemuDomainObjPrivate *priv;
 
      obj = qemuDomObjFromDomain(dom);
 
@@ -257,10 +257,10 @@ Design patterns
      virDomainObjEndAPI(&obj);
 
 
- * Invoking an agent command on a virDomainObjPtr
+ * Invoking an agent command on a virDomainObj *
 
-     virDomainObjPtr obj;
-     qemuAgentPtr agent;
+     virDomainObj *obj;
+     qemuAgent *agent;
 
      obj = qemuDomObjFromDomain(dom);
 
@@ -283,8 +283,8 @@ Design patterns
 
  * Running asynchronous job
 
-     virDomainObjPtr obj;
-     qemuDomainObjPrivatePtr priv;
+     virDomainObj *obj;
+     qemuDomainObjPrivate *priv;
 
      obj = qemuDomObjFromDomain(dom);
 
@@ -323,8 +323,8 @@ Design patterns
 
  * Coordinating with a remote server for migration
 
-     virDomainObjPtr obj;
-     qemuDomainObjPrivatePtr priv;
+     virDomainObj *obj;
+     qemuDomainObjPrivate *priv;
 
      obj = qemuDomObjFromDomain(dom);
 

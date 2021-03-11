@@ -26,12 +26,10 @@
 
 /* ------- virStorageFile backends ------------ */
 typedef struct _virStorageFileBackend virStorageFileBackend;
-typedef virStorageFileBackend *virStorageFileBackendPtr;
 
 typedef struct _virStorageDriverData virStorageDriverData;
-typedef virStorageDriverData *virStorageDriverDataPtr;
 struct _virStorageDriverData {
-    virStorageFileBackendPtr backend;
+    virStorageFileBackend *backend;
     void *priv;
 
     uid_t uid;
@@ -39,29 +37,29 @@ struct _virStorageDriverData {
 };
 
 typedef int
-(*virStorageFileBackendInit)(virStorageSourcePtr src);
+(*virStorageFileBackendInit)(virStorageSource *src);
 
 typedef void
-(*virStorageFileBackendDeinit)(virStorageSourcePtr src);
+(*virStorageFileBackendDeinit)(virStorageSource *src);
 
 typedef int
-(*virStorageFileBackendCreate)(virStorageSourcePtr src);
+(*virStorageFileBackendCreate)(virStorageSource *src);
 
 typedef int
-(*virStorageFileBackendUnlink)(virStorageSourcePtr src);
+(*virStorageFileBackendUnlink)(virStorageSource *src);
 
 typedef int
-(*virStorageFileBackendStat)(virStorageSourcePtr src,
+(*virStorageFileBackendStat)(virStorageSource *src,
                              struct stat *st);
 
 typedef ssize_t
-(*virStorageFileBackendRead)(virStorageSourcePtr src,
+(*virStorageFileBackendRead)(virStorageSource *src,
                              size_t offset,
                              size_t len,
                              char **buf);
 
 typedef int
-(*virStorageFileBackendAccess)(virStorageSourcePtr src,
+(*virStorageFileBackendAccess)(virStorageSource *src,
                                int mode);
 
 typedef int
@@ -72,7 +70,7 @@ typedef int
 int virStorageFileBackendForType(int type,
                                  int protocol,
                                  bool required,
-                                 virStorageFileBackendPtr *backend);
+                                 virStorageFileBackend **backend);
 
 struct _virStorageFileBackend {
     int type;
@@ -95,4 +93,4 @@ struct _virStorageFileBackend {
     virStorageFileBackendChown  storageFileChown;
 };
 
-int virStorageFileBackendRegister(virStorageFileBackendPtr backend);
+int virStorageFileBackendRegister(virStorageFileBackend *backend);

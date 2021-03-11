@@ -32,93 +32,93 @@ virSecurityDriverProbeNop(const char *virtDriver G_GNUC_UNUSED)
 }
 
 static int
-virSecurityDriverOpenNop(virSecurityManagerPtr mgr G_GNUC_UNUSED)
+virSecurityDriverOpenNop(virSecurityManager *mgr G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDriverCloseNop(virSecurityManagerPtr mgr G_GNUC_UNUSED)
+virSecurityDriverCloseNop(virSecurityManager *mgr G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static const char *
-virSecurityDriverGetModelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED)
+virSecurityDriverGetModelNop(virSecurityManager *mgr G_GNUC_UNUSED)
 {
     return "none";
 }
 
 static const char *
-virSecurityDriverGetDOINop(virSecurityManagerPtr mgr G_GNUC_UNUSED)
+virSecurityDriverGetDOINop(virSecurityManager *mgr G_GNUC_UNUSED)
 {
     return "0";
 }
 
 static int
-virSecurityDomainSetDaemonSocketLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                         virDomainDefPtr vm G_GNUC_UNUSED)
+virSecurityDomainSetDaemonSocketLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                         virDomainDef *vm G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainSetSocketLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                   virDomainDefPtr vm G_GNUC_UNUSED)
+virSecurityDomainSetSocketLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                   virDomainDef *vm G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainClearSocketLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                     virDomainDefPtr vm G_GNUC_UNUSED)
+virSecurityDomainClearSocketLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                     virDomainDef *vm G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainRestoreHostdevLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                        virDomainDefPtr vm G_GNUC_UNUSED,
-                                        virDomainHostdevDefPtr dev G_GNUC_UNUSED,
+virSecurityDomainRestoreHostdevLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                        virDomainDef *vm G_GNUC_UNUSED,
+                                        virDomainHostdevDef *dev G_GNUC_UNUSED,
                                         const char *vroot G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainSetHostdevLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                    virDomainDefPtr vm G_GNUC_UNUSED,
-                                    virDomainHostdevDefPtr dev G_GNUC_UNUSED,
+virSecurityDomainSetHostdevLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                    virDomainDef *vm G_GNUC_UNUSED,
+                                    virDomainHostdevDef *dev G_GNUC_UNUSED,
                                     const char *vroot G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainGenLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                             virDomainDefPtr sec G_GNUC_UNUSED)
+virSecurityDomainGenLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                             virDomainDef *sec G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainReserveLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                 virDomainDefPtr sec G_GNUC_UNUSED,
+virSecurityDomainReserveLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                 virDomainDef *sec G_GNUC_UNUSED,
                                  pid_t pid G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainReleaseLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                 virDomainDefPtr sec G_GNUC_UNUSED)
+virSecurityDomainReleaseLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                 virDomainDef *sec G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainSetAllLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                virDomainDefPtr sec G_GNUC_UNUSED,
+virSecurityDomainSetAllLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                virDomainDef *sec G_GNUC_UNUSED,
                                 const char *incomingPath G_GNUC_UNUSED,
                                 bool chardevStdioLogd G_GNUC_UNUSED,
                                 bool migrated G_GNUC_UNUSED)
@@ -127,8 +127,8 @@ virSecurityDomainSetAllLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
 }
 
 static int
-virSecurityDomainRestoreAllLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                    virDomainDefPtr vm G_GNUC_UNUSED,
+virSecurityDomainRestoreAllLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                    virDomainDef *vm G_GNUC_UNUSED,
                                     bool migrated G_GNUC_UNUSED,
                                     bool chardevStdioLogd G_GNUC_UNUSED)
 {
@@ -136,8 +136,8 @@ virSecurityDomainRestoreAllLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
 }
 
 static int
-virSecurityDomainGetProcessLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                    virDomainDefPtr vm G_GNUC_UNUSED,
+virSecurityDomainGetProcessLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                    virDomainDef *vm G_GNUC_UNUSED,
                                     pid_t pid G_GNUC_UNUSED,
                                     virSecurityLabelPtr sec G_GNUC_UNUSED)
 {
@@ -145,38 +145,38 @@ virSecurityDomainGetProcessLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
 }
 
 static int
-virSecurityDomainSetProcessLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                    virDomainDefPtr vm G_GNUC_UNUSED)
+virSecurityDomainSetProcessLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                    virDomainDef *vm G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainSetChildProcessLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                         virDomainDefPtr vm G_GNUC_UNUSED,
-                                         virCommandPtr cmd G_GNUC_UNUSED)
+virSecurityDomainSetChildProcessLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                         virDomainDef *vm G_GNUC_UNUSED,
+                                         virCommand *cmd G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainVerifyNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                           virDomainDefPtr def G_GNUC_UNUSED)
+virSecurityDomainVerifyNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                           virDomainDef *def G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainSetFDLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                               virDomainDefPtr sec G_GNUC_UNUSED,
+virSecurityDomainSetFDLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                               virDomainDef *sec G_GNUC_UNUSED,
                                int fd G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static char *
-virSecurityDomainGetMountOptionsNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                    virDomainDefPtr vm G_GNUC_UNUSED)
+virSecurityDomainGetMountOptionsNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                    virDomainDef *vm G_GNUC_UNUSED)
 {
     char *opts;
 
@@ -185,76 +185,76 @@ virSecurityDomainGetMountOptionsNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
 }
 
 static const char *
-virSecurityGetBaseLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+virSecurityGetBaseLabel(virSecurityManager *mgr G_GNUC_UNUSED,
                         int virtType G_GNUC_UNUSED)
 {
     return NULL;
 }
 
 static int
-virSecurityDomainRestoreImageLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                      virDomainDefPtr def G_GNUC_UNUSED,
-                                      virStorageSourcePtr src G_GNUC_UNUSED,
+virSecurityDomainRestoreImageLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                      virDomainDef *def G_GNUC_UNUSED,
+                                      virStorageSource *src G_GNUC_UNUSED,
                                       virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainSetImageLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                  virDomainDefPtr def G_GNUC_UNUSED,
-                                  virStorageSourcePtr src G_GNUC_UNUSED,
+virSecurityDomainSetImageLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                  virDomainDef *def G_GNUC_UNUSED,
+                                  virStorageSource *src G_GNUC_UNUSED,
                                   virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainMoveImageMetadataNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+virSecurityDomainMoveImageMetadataNop(virSecurityManager *mgr G_GNUC_UNUSED,
                                       pid_t pid G_GNUC_UNUSED,
-                                      virStorageSourcePtr src G_GNUC_UNUSED,
-                                      virStorageSourcePtr dst G_GNUC_UNUSED)
+                                      virStorageSource *src G_GNUC_UNUSED,
+                                      virStorageSource *dst G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainSetMemoryLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                   virDomainDefPtr def G_GNUC_UNUSED,
-                                   virDomainMemoryDefPtr mem G_GNUC_UNUSED)
+virSecurityDomainSetMemoryLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                   virDomainDef *def G_GNUC_UNUSED,
+                                   virDomainMemoryDef *mem G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainRestoreMemoryLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                       virDomainDefPtr def G_GNUC_UNUSED,
-                                       virDomainMemoryDefPtr mem G_GNUC_UNUSED)
+virSecurityDomainRestoreMemoryLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                       virDomainDef *def G_GNUC_UNUSED,
+                                       virDomainMemoryDef *mem G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainInputLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                               virDomainDefPtr def G_GNUC_UNUSED,
-                               virDomainInputDefPtr input G_GNUC_UNUSED)
+virSecurityDomainInputLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                               virDomainDef *def G_GNUC_UNUSED,
+                               virDomainInputDef *input G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainSetChardevLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                    virDomainDefPtr def G_GNUC_UNUSED,
-                                    virDomainChrSourceDefPtr dev_source G_GNUC_UNUSED,
+virSecurityDomainSetChardevLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                    virDomainDef *def G_GNUC_UNUSED,
+                                    virDomainChrSourceDef *dev_source G_GNUC_UNUSED,
                                     bool chardevStdioLogd G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDomainRestoreChardevLabelNop(virSecurityManagerPtr mgr G_GNUC_UNUSED,
-                                        virDomainDefPtr def G_GNUC_UNUSED,
-                                        virDomainChrSourceDefPtr dev_source G_GNUC_UNUSED,
+virSecurityDomainRestoreChardevLabelNop(virSecurityManager *mgr G_GNUC_UNUSED,
+                                        virDomainDef *def G_GNUC_UNUSED,
+                                        virDomainChrSourceDef *dev_source G_GNUC_UNUSED,
                                         bool chardevStdioLogd G_GNUC_UNUSED)
 {
     return 0;

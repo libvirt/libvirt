@@ -34,8 +34,8 @@
 #define VIR_FROM_THIS VIR_FROM_LOGGING
 
 struct _virLogManager {
-    virNetClientPtr client;
-    virNetClientProgramPtr program;
+    virNetClient *client;
+    virNetClientProgram *program;
     unsigned int serial;
 };
 
@@ -57,11 +57,11 @@ virLogManagerDaemonPath(bool privileged)
 }
 
 
-static virNetClientPtr
+static virNetClient *
 virLogManagerConnect(bool privileged,
-                     virNetClientProgramPtr *prog)
+                     virNetClientProgram **prog)
 {
-    virNetClientPtr client = NULL;
+    virNetClient *client = NULL;
     char *logdpath;
     char *daemonPath = NULL;
 
@@ -108,10 +108,10 @@ virLogManagerConnect(bool privileged,
 }
 
 
-virLogManagerPtr
+virLogManager *
 virLogManagerNew(bool privileged)
 {
-    virLogManagerPtr mgr;
+    virLogManager *mgr;
 
     mgr = g_new0(virLogManager, 1);
 
@@ -127,7 +127,7 @@ virLogManagerNew(bool privileged)
 
 
 void
-virLogManagerFree(virLogManagerPtr mgr)
+virLogManagerFree(virLogManager *mgr)
 {
     if (!mgr)
         return;
@@ -142,7 +142,7 @@ virLogManagerFree(virLogManagerPtr mgr)
 
 
 int
-virLogManagerDomainOpenLogFile(virLogManagerPtr mgr,
+virLogManagerDomainOpenLogFile(virLogManager *mgr,
                                const char *driver,
                                const unsigned char *domuuid,
                                const char *domname,
@@ -204,7 +204,7 @@ virLogManagerDomainOpenLogFile(virLogManagerPtr mgr,
 
 
 int
-virLogManagerDomainGetLogFilePosition(virLogManagerPtr mgr,
+virLogManagerDomainGetLogFilePosition(virLogManager *mgr,
                                       const char *path,
                                       unsigned int flags,
                                       ino_t *inode,
@@ -236,7 +236,7 @@ virLogManagerDomainGetLogFilePosition(virLogManagerPtr mgr,
 
 
 char *
-virLogManagerDomainReadLogFile(virLogManagerPtr mgr,
+virLogManagerDomainReadLogFile(virLogManager *mgr,
                                const char *path,
                                ino_t inode,
                                off_t offset,
@@ -269,7 +269,7 @@ virLogManagerDomainReadLogFile(virLogManagerPtr mgr,
 
 
 int
-virLogManagerDomainAppendMessage(virLogManagerPtr mgr,
+virLogManagerDomainAppendMessage(virLogManager *mgr,
                                  const char *driver,
                                  const unsigned char *domuuid,
                                  const char *domname,

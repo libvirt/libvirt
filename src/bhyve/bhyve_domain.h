@@ -26,15 +26,14 @@
 #include "bhyve_monitor.h"
 
 typedef struct _bhyveDomainObjPrivate bhyveDomainObjPrivate;
-typedef bhyveDomainObjPrivate *bhyveDomainObjPrivatePtr;
 struct _bhyveDomainObjPrivate {
-    virDomainPCIAddressSetPtr pciaddrs;
+    virDomainPCIAddressSet *pciaddrs;
     bool persistentAddrs;
 
-    bhyveMonitorPtr mon;
+    bhyveMonitor *mon;
 };
 
-virDomainXMLOptionPtr virBhyveDriverCreateXMLConf(bhyveConnPtr);
+virDomainXMLOption *virBhyveDriverCreateXMLConf(struct _bhyveConn *);
 
 extern virDomainXMLPrivateDataCallbacks virBhyveDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virBhyveDriverDomainDefParserConfig;

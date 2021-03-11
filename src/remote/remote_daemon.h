@@ -36,33 +36,30 @@
 #include "virnetserverprogram.h"
 
 typedef struct daemonClientStream daemonClientStream;
-typedef daemonClientStream *daemonClientStreamPtr;
 typedef struct daemonClientPrivate daemonClientPrivate;
-typedef daemonClientPrivate *daemonClientPrivatePtr;
 typedef struct daemonClientEventCallback daemonClientEventCallback;
-typedef daemonClientEventCallback *daemonClientEventCallbackPtr;
 
 /* Stores the per-client connection state */
 struct daemonClientPrivate {
     /* Hold while accessing any data except conn */
     virMutex lock;
 
-    daemonClientEventCallbackPtr *domainEventCallbacks;
+    daemonClientEventCallback **domainEventCallbacks;
     size_t ndomainEventCallbacks;
-    daemonClientEventCallbackPtr *networkEventCallbacks;
+    daemonClientEventCallback **networkEventCallbacks;
     size_t nnetworkEventCallbacks;
-    daemonClientEventCallbackPtr *qemuEventCallbacks;
+    daemonClientEventCallback **qemuEventCallbacks;
     size_t nqemuEventCallbacks;
-    daemonClientEventCallbackPtr *storageEventCallbacks;
+    daemonClientEventCallback **storageEventCallbacks;
     size_t nstorageEventCallbacks;
-    daemonClientEventCallbackPtr *nodeDeviceEventCallbacks;
+    daemonClientEventCallback **nodeDeviceEventCallbacks;
     size_t nnodeDeviceEventCallbacks;
-    daemonClientEventCallbackPtr *secretEventCallbacks;
+    daemonClientEventCallback **secretEventCallbacks;
     size_t nsecretEventCallbacks;
     bool closeRegistered;
 
 #if WITH_SASL
-    virNetSASLSessionPtr sasl;
+    virNetSASLSession *sasl;
 #endif
 
     /* This is only valid if a remote open call has been made on this
@@ -90,12 +87,12 @@ struct daemonClientPrivate {
     const char *storageURI;
     bool readonly;
 
-    daemonClientStreamPtr streams;
+    daemonClientStream *streams;
 };
 
 
 #if WITH_SASL
-extern virNetSASLContextPtr saslCtxt;
+extern virNetSASLContext *saslCtxt;
 #endif
-extern virNetServerProgramPtr remoteProgram;
-extern virNetServerProgramPtr qemuProgram;
+extern virNetServerProgram *remoteProgram;
+extern virNetServerProgram *qemuProgram;

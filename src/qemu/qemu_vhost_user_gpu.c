@@ -83,8 +83,8 @@ qemuVhostUserGPUGetPid(const char *binPath,
 }
 
 
-int qemuExtVhostUserGPUPrepareDomain(virQEMUDriverPtr driver,
-                                     virDomainVideoDefPtr video)
+int qemuExtVhostUserGPUPrepareDomain(virQEMUDriver *driver,
+                                     virDomainVideoDef *video)
 {
     return qemuVhostUserFillDomainGPU(driver, video);
 }
@@ -101,9 +101,9 @@ int qemuExtVhostUserGPUPrepareDomain(virQEMUDriverPtr driver,
  * - have the command line built
  * - start the external process and sync with it before QEMU start
  */
-int qemuExtVhostUserGPUStart(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             virDomainVideoDefPtr video)
+int qemuExtVhostUserGPUStart(virQEMUDriver *driver,
+                             virDomainObj *vm,
+                             virDomainVideoDef *video)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortname = NULL;
@@ -205,9 +205,9 @@ int qemuExtVhostUserGPUStart(virQEMUDriverPtr driver,
  * Check if vhost-user process pidfile is around, kill the process,
  * and remove the pidfile.
  */
-void qemuExtVhostUserGPUStop(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             virDomainVideoDefPtr video)
+void qemuExtVhostUserGPUStop(virQEMUDriver *driver,
+                             virDomainObj *vm,
+                             virDomainVideoDef *video)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *pidfile = NULL;
@@ -239,10 +239,10 @@ void qemuExtVhostUserGPUStop(virQEMUDriverPtr driver,
  * Add the vhost-user-gpu PID to the given cgroup.
  */
 int
-qemuExtVhostUserGPUSetupCgroup(virQEMUDriverPtr driver,
-                               virDomainDefPtr def,
-                               virDomainVideoDefPtr video,
-                               virCgroupPtr cgroup)
+qemuExtVhostUserGPUSetupCgroup(virQEMUDriver *driver,
+                               virDomainDef *def,
+                               virDomainVideoDef *video,
+                               virCgroup *cgroup)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortname = NULL;

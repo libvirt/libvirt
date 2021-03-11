@@ -47,7 +47,6 @@ VIR_ENUM_DECL(virResctrlMonitorPrefix);
 
 
 typedef struct _virResctrlInfoPerCache virResctrlInfoPerCache;
-typedef virResctrlInfoPerCache *virResctrlInfoPerCachePtr;
 struct _virResctrlInfoPerCache {
     /* Smallest possible increase of the allocation size in bytes */
     unsigned long long granularity;
@@ -60,7 +59,6 @@ struct _virResctrlInfoPerCache {
 };
 
 typedef struct _virResctrlInfoMemBWPerNode virResctrlInfoMemBWPerNode;
-typedef virResctrlInfoMemBWPerNode *virResctrlInfoMemBWPerNodePtr;
 struct _virResctrlInfoMemBWPerNode {
     /* Smallest possible increase of the allocation bandwidth in percentage */
     unsigned int granularity;
@@ -71,7 +69,6 @@ struct _virResctrlInfoMemBWPerNode {
 };
 
 typedef struct _virResctrlInfoMon virResctrlInfoMon;
-typedef virResctrlInfoMon *virResctrlInfoMonPtr;
 struct _virResctrlInfoMon {
     /* Maximum number of simultaneous monitors */
     unsigned int max_monitor;
@@ -94,25 +91,23 @@ struct _virResctrlInfoMon {
 };
 
 typedef struct _virResctrlInfo virResctrlInfo;
-typedef virResctrlInfo *virResctrlInfoPtr;
 
-virResctrlInfoPtr
+virResctrlInfo *
 virResctrlInfoNew(void);
 
 int
-virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
+virResctrlInfoGetCache(virResctrlInfo *resctrl,
                        unsigned int level,
                        unsigned long long size,
                        size_t *ncontrols,
-                       virResctrlInfoPerCachePtr **controls);
+                       virResctrlInfoPerCache ***controls);
 
 int
-virResctrlInfoGetMemoryBandwidth(virResctrlInfoPtr resctrl,
+virResctrlInfoGetMemoryBandwidth(virResctrlInfo *resctrl,
                                  unsigned int level,
-                                 virResctrlInfoMemBWPerNodePtr control);
+                                 virResctrlInfoMemBWPerNode *control);
 /* Alloc-related things */
 typedef struct _virResctrlAlloc virResctrlAlloc;
-typedef virResctrlAlloc *virResctrlAllocPtr;
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virResctrlAlloc, virObjectUnref);
 
@@ -127,74 +122,72 @@ typedef int virResctrlAllocForeachMemoryCallback(unsigned int id,
                                                  unsigned int size,
                                                  void *opaque);
 
-virResctrlAllocPtr
+virResctrlAlloc *
 virResctrlAllocNew(void);
 
 bool
-virResctrlAllocIsEmpty(virResctrlAllocPtr alloc);
+virResctrlAllocIsEmpty(virResctrlAlloc *alloc);
 
 int
-virResctrlAllocSetCacheSize(virResctrlAllocPtr alloc,
+virResctrlAllocSetCacheSize(virResctrlAlloc *alloc,
                             unsigned int level,
                             virCacheType type,
                             unsigned int cache,
                             unsigned long long size);
 
 int
-virResctrlAllocForeachCache(virResctrlAllocPtr alloc,
+virResctrlAllocForeachCache(virResctrlAlloc *alloc,
                             virResctrlAllocForeachCacheCallback cb,
                             void *opaque);
 
 int
-virResctrlAllocSetMemoryBandwidth(virResctrlAllocPtr alloc,
+virResctrlAllocSetMemoryBandwidth(virResctrlAlloc *alloc,
                                   unsigned int id,
                                   unsigned int memory_bandwidth);
 
 int
-virResctrlAllocForeachMemory(virResctrlAllocPtr alloc,
+virResctrlAllocForeachMemory(virResctrlAlloc *alloc,
                              virResctrlAllocForeachMemoryCallback cb,
                              void *opaque);
 
 int
-virResctrlAllocSetID(virResctrlAllocPtr alloc,
+virResctrlAllocSetID(virResctrlAlloc *alloc,
                      const char *id);
 const char *
-virResctrlAllocGetID(virResctrlAllocPtr alloc);
+virResctrlAllocGetID(virResctrlAlloc *alloc);
 
 char *
-virResctrlAllocFormat(virResctrlAllocPtr alloc);
+virResctrlAllocFormat(virResctrlAlloc *alloc);
 
 int
-virResctrlAllocDeterminePath(virResctrlAllocPtr alloc,
+virResctrlAllocDeterminePath(virResctrlAlloc *alloc,
                              const char *machinename);
 
 int
-virResctrlAllocCreate(virResctrlInfoPtr r_info,
-                      virResctrlAllocPtr alloc,
+virResctrlAllocCreate(virResctrlInfo *r_info,
+                      virResctrlAlloc *alloc,
                       const char *machinename);
 
 int
-virResctrlAllocAddPID(virResctrlAllocPtr alloc,
+virResctrlAllocAddPID(virResctrlAlloc *alloc,
                       pid_t pid);
 
 int
-virResctrlAllocRemove(virResctrlAllocPtr alloc);
+virResctrlAllocRemove(virResctrlAlloc *alloc);
 
 void
-virResctrlInfoMonFree(virResctrlInfoMonPtr mon);
+virResctrlInfoMonFree(virResctrlInfoMon *mon);
 
 int
-virResctrlInfoGetMonitorPrefix(virResctrlInfoPtr resctrl,
+virResctrlInfoGetMonitorPrefix(virResctrlInfo *resctrl,
                                const char *prefix,
-                               virResctrlInfoMonPtr *monitor);
+                               virResctrlInfoMon **monitor);
 
 /* Monitor-related things */
 
 typedef struct _virResctrlMonitor virResctrlMonitor;
-typedef virResctrlMonitor *virResctrlMonitorPtr;
 
 typedef struct _virResctrlMonitorStats virResctrlMonitorStats;
-typedef virResctrlMonitorStats *virResctrlMonitorStatsPtr;
 struct _virResctrlMonitorStats {
     /* The system assigned cache ID associated with statistical record */
      unsigned int id;
@@ -208,40 +201,40 @@ struct _virResctrlMonitorStats {
     size_t nvals;
 };
 
-virResctrlMonitorPtr
+virResctrlMonitor *
 virResctrlMonitorNew(void);
 
 int
-virResctrlMonitorDeterminePath(virResctrlMonitorPtr monitor,
+virResctrlMonitorDeterminePath(virResctrlMonitor *monitor,
                                const char *machinename);
 
 int
-virResctrlMonitorAddPID(virResctrlMonitorPtr monitor,
+virResctrlMonitorAddPID(virResctrlMonitor *monitor,
                         pid_t pid);
 
 int
-virResctrlMonitorCreate(virResctrlMonitorPtr monitor,
+virResctrlMonitorCreate(virResctrlMonitor *monitor,
                         const char *machinename);
 
 int
-virResctrlMonitorSetID(virResctrlMonitorPtr monitor,
+virResctrlMonitorSetID(virResctrlMonitor *monitor,
                        const char *id);
 
 const char *
-virResctrlMonitorGetID(virResctrlMonitorPtr monitor);
+virResctrlMonitorGetID(virResctrlMonitor *monitor);
 
 void
-virResctrlMonitorSetAlloc(virResctrlMonitorPtr monitor,
-                          virResctrlAllocPtr alloc);
+virResctrlMonitorSetAlloc(virResctrlMonitor *monitor,
+                          virResctrlAlloc *alloc);
 
 int
-virResctrlMonitorRemove(virResctrlMonitorPtr monitor);
+virResctrlMonitorRemove(virResctrlMonitor *monitor);
 
 int
-virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
+virResctrlMonitorGetStats(virResctrlMonitor *monitor,
                           const char **resources,
-                          virResctrlMonitorStatsPtr **stats,
+                          virResctrlMonitorStats ***stats,
                           size_t *nstats);
 
 void
-virResctrlMonitorStatsFree(virResctrlMonitorStatsPtr stats);
+virResctrlMonitorStatsFree(virResctrlMonitorStats *stats);

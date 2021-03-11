@@ -77,7 +77,7 @@ VIR_LOG_INIT("storage.storage_backend");
 
 #define VIR_STORAGE_BACKENDS_MAX 20
 
-static virStorageBackendPtr virStorageBackends[VIR_STORAGE_BACKENDS_MAX];
+static virStorageBackend *virStorageBackends[VIR_STORAGE_BACKENDS_MAX];
 static size_t virStorageBackendsCount;
 
 #define STORAGE_BACKEND_MODULE_DIR LIBDIR "/libvirt/storage-backend"
@@ -151,7 +151,7 @@ virStorageBackendDriversRegister(bool allbackends G_GNUC_UNUSED)
 
 
 int
-virStorageBackendRegister(virStorageBackendPtr backend)
+virStorageBackendRegister(virStorageBackend *backend)
 {
     VIR_DEBUG("Registering storage backend '%s'",
               virStoragePoolTypeToString(backend->type));
@@ -169,7 +169,7 @@ virStorageBackendRegister(virStorageBackendPtr backend)
 }
 
 
-virStorageBackendPtr
+virStorageBackend *
 virStorageBackendForType(int type)
 {
     size_t i;
@@ -184,10 +184,10 @@ virStorageBackendForType(int type)
 }
 
 
-virCapsPtr
+virCaps *
 virStorageBackendGetCapabilities(void)
 {
-    virCapsPtr caps;
+    virCaps *caps;
     size_t i;
 
     if (!(caps = virCapabilitiesNew(VIR_ARCH_NONE, false, false)))

@@ -13,15 +13,15 @@
 
 # define VIR_FROM_THIS VIR_FROM_VMWARE
 
-static virCapsPtr caps;
-static virDomainXMLOptionPtr xmlopt;
+static virCaps *caps;
+static virDomainXMLOption *xmlopt;
 static virVMXContext ctx;
 
 
 static void
 testCapsInit(void)
 {
-    virCapsGuestPtr guest = NULL;
+    virCapsGuest *guest = NULL;
 
     caps = virCapabilitiesNew(VIR_ARCH_I686, true, true);
 
@@ -71,7 +71,7 @@ testCompareFiles(const char *vmx, const char *xml, bool should_fail_parse)
     int ret = -1;
     char *vmxData = NULL;
     char *formatted = NULL;
-    virDomainDefPtr def = NULL;
+    virDomainDef *def = NULL;
 
     if (virTestLoadFile(vmx, &vmxData) < 0)
         return -1;

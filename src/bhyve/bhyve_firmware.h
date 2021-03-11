@@ -25,6 +25,6 @@
 #include "bhyve_utils.h"
 
 int
-bhyveFirmwareFillDomain(bhyveConnPtr driver,
-                        virDomainDefPtr def,
+bhyveFirmwareFillDomain(bhyveConn *driver,
+                        virDomainDef *def,
                         unsigned int flags);

@@ -25,8 +25,8 @@ virNodeDeviceGetParentName(virConnectPtr conn,
                            const char *nodedev_name);
 
 char *
-virNodeDeviceCreateVport(virStorageAdapterFCHostPtr fchost);
+virNodeDeviceCreateVport(virStorageAdapterFCHost *fchost);
 
 int
 virNodeDeviceDeleteVport(virConnectPtr conn,
-                         virStorageAdapterFCHostPtr fchost);
+                         virStorageAdapterFCHost *fchost);

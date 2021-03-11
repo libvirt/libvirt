@@ -42,11 +42,11 @@
 VIR_LOG_INIT("storage.storage_backend_mpath");
 
 static int
-virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
+virStorageBackendMpathNewVol(virStoragePoolObj *pool,
                              const int devnum,
                              const char *dev)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     g_autoptr(virStorageVolDef) vol = NULL;
 
     vol = g_new0(virStorageVolDef, 1);
@@ -147,7 +147,7 @@ virStorageBackendGetMinorNumber(const char *dev_name, uint32_t *minor)
 
 
 static int
-virStorageBackendCreateVols(virStoragePoolObjPtr pool,
+virStorageBackendCreateVols(virStoragePoolObj *pool,
                             struct dm_names *names)
 {
     uint32_t minor = -1;
@@ -191,7 +191,7 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
 
 
 static int
-virStorageBackendGetMaps(virStoragePoolObjPtr pool)
+virStorageBackendGetMaps(virStoragePoolObj *pool)
 {
     int retval = 0;
     struct dm_task *dmt = NULL;
@@ -228,7 +228,7 @@ virStorageBackendGetMaps(virStoragePoolObjPtr pool)
 }
 
 static int
-virStorageBackendMpathCheckPool(virStoragePoolObjPtr pool G_GNUC_UNUSED,
+virStorageBackendMpathCheckPool(virStoragePoolObj *pool G_GNUC_UNUSED,
                                 bool *isActive)
 {
     *isActive = virFileExists("/dev/mapper") ||
@@ -239,9 +239,9 @@ virStorageBackendMpathCheckPool(virStoragePoolObjPtr pool G_GNUC_UNUSED,
 
 
 static int
-virStorageBackendMpathRefreshPool(virStoragePoolObjPtr pool)
+virStorageBackendMpathRefreshPool(virStoragePoolObj *pool)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
 
     VIR_DEBUG("pool=%p", pool);
 

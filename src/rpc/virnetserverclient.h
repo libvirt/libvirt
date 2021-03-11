@@ -28,56 +28,54 @@
 #include "virjson.h"
 
 typedef struct _virNetServer virNetServer;
-typedef virNetServer *virNetServerPtr;
 
 typedef struct _virNetServerClient virNetServerClient;
-typedef virNetServerClient *virNetServerClientPtr;
 
 /* This function owns the "msg" pointer it is passed and
  * must arrange for virNetMessageFree to be called on it
  */
-typedef void (*virNetServerClientDispatchFunc)(virNetServerClientPtr client,
-                                               virNetMessagePtr msg,
+typedef void (*virNetServerClientDispatchFunc)(virNetServerClient *client,
+                                               virNetMessage *msg,
                                                void *opaque);
 
 /*
  * @client is locked when this callback is called
  */
-typedef int (*virNetServerClientFilterFunc)(virNetServerClientPtr client,
-                                            virNetMessagePtr msg,
+typedef int (*virNetServerClientFilterFunc)(virNetServerClient *client,
+                                            virNetMessage *msg,
                                             void *opaque);
 
 /*
  * @data: value allocated by virNetServerClintPrivNew(PostExecRestart) callback
  */
-typedef virJSONValuePtr (*virNetServerClientPrivPreExecRestart)(virNetServerClientPtr client,
+typedef virJSONValue *(*virNetServerClientPrivPreExecRestart)(virNetServerClient *client,
                                                                 void *data);
 /*
  * @opaque: value of @privOpaque from virNetServerClientNewPostExecRestart
  */
-typedef void *(*virNetServerClientPrivNewPostExecRestart)(virNetServerClientPtr client,
-                                                          virJSONValuePtr object,
+typedef void *(*virNetServerClientPrivNewPostExecRestart)(virNetServerClient *client,
+                                                          virJSONValue *object,
                                                           void *opaque);
 /*
  * @opaque: value of @privOpaque from virNetServerClientNew
  */
-typedef void *(*virNetServerClientPrivNew)(virNetServerClientPtr client,
+typedef void *(*virNetServerClientPrivNew)(virNetServerClient *client,
                                            void *opaque);
 
-virNetServerClientPtr virNetServerClientNew(unsigned long long id,
-                                            virNetSocketPtr sock,
+virNetServerClient *virNetServerClientNew(unsigned long long id,
+                                            virNetSocket *sock,
                                             int auth,
                                             bool readonly,
                                             size_t nrequests_max,
-                                            virNetTLSContextPtr tls,
+                                            virNetTLSContext *tls,
                                             virNetServerClientPrivNew privNew,
                                             virNetServerClientPrivPreExecRestart privPreExecRestart,
                                             virFreeCallback privFree,
                                             void *privOpaque)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(7) ATTRIBUTE_NONNULL(9);
 
-virNetServerClientPtr virNetServerClientNewPostExecRestart(virNetServerPtr srv,
-                                                           virJSONValuePtr object,
+virNetServerClient *virNetServerClientNewPostExecRestart(virNetServer *srv,
+                                                           virJSONValue *object,
                                                            virNetServerClientPrivNewPostExecRestart privNew,
                                                            virNetServerClientPrivPreExecRestart privPreExecRestart,
                                                            virFreeCallback privFree,
@@ -85,91 +83,91 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virNetServerPtr srv,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 
-virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client);
+virJSONValue *virNetServerClientPreExecRestart(virNetServerClient *client);
 
-int virNetServerClientAddFilter(virNetServerClientPtr client,
+int virNetServerClientAddFilter(virNetServerClient *client,
                                 virNetServerClientFilterFunc func,
                                 void *opaque);
 
-void virNetServerClientRemoveFilter(virNetServerClientPtr client,
+void virNetServerClientRemoveFilter(virNetServerClient *client,
                                     int filterID);
 
-int virNetServerClientGetAuth(virNetServerClientPtr client);
-void virNetServerClientSetAuthLocked(virNetServerClientPtr client, int auth);
-bool virNetServerClientGetReadonly(virNetServerClientPtr client);
-void virNetServerClientSetReadonly(virNetServerClientPtr client, bool readonly);
-unsigned long long virNetServerClientGetID(virNetServerClientPtr client);
-long long virNetServerClientGetTimestamp(virNetServerClientPtr client);
+int virNetServerClientGetAuth(virNetServerClient *client);
+void virNetServerClientSetAuthLocked(virNetServerClient *client, int auth);
+bool virNetServerClientGetReadonly(virNetServerClient *client);
+void virNetServerClientSetReadonly(virNetServerClient *client, bool readonly);
+unsigned long long virNetServerClientGetID(virNetServerClient *client);
+long long virNetServerClientGetTimestamp(virNetServerClient *client);
 
-bool virNetServerClientHasTLSSession(virNetServerClientPtr client);
-virNetTLSSessionPtr virNetServerClientGetTLSSession(virNetServerClientPtr client);
-int virNetServerClientGetTLSKeySize(virNetServerClientPtr client);
+bool virNetServerClientHasTLSSession(virNetServerClient *client);
+virNetTLSSession *virNetServerClientGetTLSSession(virNetServerClient *client);
+int virNetServerClientGetTLSKeySize(virNetServerClient *client);
 
 #ifdef WITH_SASL
-bool virNetServerClientHasSASLSession(virNetServerClientPtr client);
-void virNetServerClientSetSASLSession(virNetServerClientPtr client,
-                                      virNetSASLSessionPtr sasl);
-virNetSASLSessionPtr virNetServerClientGetSASLSession(virNetServerClientPtr client);
+bool virNetServerClientHasSASLSession(virNetServerClient *client);
+void virNetServerClientSetSASLSession(virNetServerClient *client,
+                                      virNetSASLSession *sasl);
+virNetSASLSession *virNetServerClientGetSASLSession(virNetServerClient *client);
 #endif
 
-int virNetServerClientGetFD(virNetServerClientPtr client);
+int virNetServerClientGetFD(virNetServerClient *client);
 
-bool virNetServerClientIsSecure(virNetServerClientPtr client);
+bool virNetServerClientIsSecure(virNetServerClient *client);
 
-bool virNetServerClientIsLocal(virNetServerClientPtr client);
+bool virNetServerClientIsLocal(virNetServerClient *client);
 
-int virNetServerClientGetUNIXIdentity(virNetServerClientPtr client,
+int virNetServerClientGetUNIXIdentity(virNetServerClient *client,
                                       uid_t *uid, gid_t *gid, pid_t *pid,
                                       unsigned long long *timestamp);
 
-int virNetServerClientGetSELinuxContext(virNetServerClientPtr client,
+int virNetServerClientGetSELinuxContext(virNetServerClient *client,
                                         char **context);
 
-virIdentityPtr virNetServerClientGetIdentity(virNetServerClientPtr client);
-void virNetServerClientSetIdentity(virNetServerClientPtr client,
-                                   virIdentityPtr identity);
+virIdentity *virNetServerClientGetIdentity(virNetServerClient *client);
+void virNetServerClientSetIdentity(virNetServerClient *client,
+                                   virIdentity *identity);
 
-void *virNetServerClientGetPrivateData(virNetServerClientPtr client);
+void *virNetServerClientGetPrivateData(virNetServerClient *client);
 
-typedef void (*virNetServerClientCloseFunc)(virNetServerClientPtr client);
+typedef void (*virNetServerClientCloseFunc)(virNetServerClient *client);
 
-void virNetServerClientSetCloseHook(virNetServerClientPtr client,
+void virNetServerClientSetCloseHook(virNetServerClient *client,
                                     virNetServerClientCloseFunc cf);
 
-void virNetServerClientSetDispatcher(virNetServerClientPtr client,
+void virNetServerClientSetDispatcher(virNetServerClient *client,
                                      virNetServerClientDispatchFunc func,
                                      void *opaque);
-void virNetServerClientClose(virNetServerClientPtr client);
-void virNetServerClientCloseLocked(virNetServerClientPtr client);
-bool virNetServerClientIsClosedLocked(virNetServerClientPtr client);
+void virNetServerClientClose(virNetServerClient *client);
+void virNetServerClientCloseLocked(virNetServerClient *client);
+bool virNetServerClientIsClosedLocked(virNetServerClient *client);
 
-void virNetServerClientDelayedClose(virNetServerClientPtr client);
-void virNetServerClientImmediateClose(virNetServerClientPtr client);
-bool virNetServerClientWantCloseLocked(virNetServerClientPtr client);
+void virNetServerClientDelayedClose(virNetServerClient *client);
+void virNetServerClientImmediateClose(virNetServerClient *client);
+bool virNetServerClientWantCloseLocked(virNetServerClient *client);
 
-int virNetServerClientInit(virNetServerClientPtr client);
+int virNetServerClientInit(virNetServerClient *client);
 
-int virNetServerClientInitKeepAlive(virNetServerClientPtr client,
+int virNetServerClientInitKeepAlive(virNetServerClient *client,
                                     int interval,
                                     unsigned int count);
-bool virNetServerClientCheckKeepAlive(virNetServerClientPtr client,
-                                      virNetMessagePtr msg);
-int virNetServerClientStartKeepAlive(virNetServerClientPtr client);
+bool virNetServerClientCheckKeepAlive(virNetServerClient *client,
+                                      virNetMessage *msg);
+int virNetServerClientStartKeepAlive(virNetServerClient *client);
 
-const char *virNetServerClientLocalAddrStringSASL(virNetServerClientPtr client);
-const char *virNetServerClientRemoteAddrStringSASL(virNetServerClientPtr client);
-const char *virNetServerClientRemoteAddrStringURI(virNetServerClientPtr client);
+const char *virNetServerClientLocalAddrStringSASL(virNetServerClient *client);
+const char *virNetServerClientRemoteAddrStringSASL(virNetServerClient *client);
+const char *virNetServerClientRemoteAddrStringURI(virNetServerClient *client);
 
-int virNetServerClientSendMessage(virNetServerClientPtr client,
-                                  virNetMessagePtr msg);
+int virNetServerClientSendMessage(virNetServerClient *client,
+                                  virNetMessage *msg);
 
-bool virNetServerClientIsAuthenticated(virNetServerClientPtr client);
-bool virNetServerClientIsAuthPendingLocked(virNetServerClientPtr client);
-void virNetServerClientSetAuthPendingLocked(virNetServerClientPtr client, bool auth_pending);
+bool virNetServerClientIsAuthenticated(virNetServerClient *client);
+bool virNetServerClientIsAuthPendingLocked(virNetServerClient *client);
+void virNetServerClientSetAuthPendingLocked(virNetServerClient *client, bool auth_pending);
 
-int virNetServerClientGetTransport(virNetServerClientPtr client);
-int virNetServerClientGetInfo(virNetServerClientPtr client,
+int virNetServerClientGetTransport(virNetServerClient *client);
+int virNetServerClientGetInfo(virNetServerClient *client,
                               bool *readonly, char **sock_addr,
-                              virIdentityPtr *identity);
+                              virIdentity **identity);
 
-void virNetServerClientSetQuietEOF(virNetServerClientPtr client);
+void virNetServerClientSetQuietEOF(virNetServerClient *client);

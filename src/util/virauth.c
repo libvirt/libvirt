@@ -38,7 +38,7 @@
 VIR_LOG_INIT("util.auth");
 
 int
-virAuthGetConfigFilePathURI(virURIPtr uri,
+virAuthGetConfigFilePathURI(virURI *uri,
                             char **path)
 {
     size_t i;

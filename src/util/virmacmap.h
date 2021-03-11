@@ -23,27 +23,26 @@
 #include "internal.h"
 
 typedef struct virMacMap virMacMap;
-typedef virMacMap *virMacMapPtr;
 
 char *
 virMacMapFileName(const char *dnsmasqStateDir,
                   const char *bridge);
 
-virMacMapPtr virMacMapNew(const char *file);
+virMacMap *virMacMapNew(const char *file);
 
-int virMacMapAdd(virMacMapPtr mgr,
+int virMacMapAdd(virMacMap *mgr,
                  const char *domain,
                  const char *mac);
 
-int virMacMapRemove(virMacMapPtr mgr,
+int virMacMapRemove(virMacMap *mgr,
                     const char *domain,
                     const char *mac);
 
-GSList *virMacMapLookup(virMacMapPtr mgr,
+GSList *virMacMapLookup(virMacMap *mgr,
                         const char *domain);
 
-int virMacMapWriteFile(virMacMapPtr mgr,
+int virMacMapWriteFile(virMacMap *mgr,
                        const char *filename);
 
-int virMacMapDumpStr(virMacMapPtr mgr,
+int virMacMapDumpStr(virMacMap *mgr,
                      char **str);

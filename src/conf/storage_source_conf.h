@@ -94,7 +94,6 @@ VIR_ENUM_DECL(virStorageFileFeature);
 
 
 typedef struct _virStoragePerms virStoragePerms;
-typedef virStoragePerms *virStoragePermsPtr;
 struct _virStoragePerms {
     mode_t mode;
     uid_t uid;
@@ -104,7 +103,6 @@ struct _virStoragePerms {
 
 
 typedef struct _virStorageTimestamps virStorageTimestamps;
-typedef virStorageTimestamps *virStorageTimestampsPtr;
 struct _virStorageTimestamps {
     struct timespec atime;
     struct timespec btime; /* birth time unknown if btime.tv_nsec == -1 */
@@ -148,7 +146,6 @@ VIR_ENUM_DECL(virStorageNetHostTransport);
 
 
 typedef struct _virStorageNetHostDef virStorageNetHostDef;
-typedef virStorageNetHostDef *virStorageNetHostDefPtr;
 struct _virStorageNetHostDef {
     char *name;
     unsigned int port;
@@ -158,7 +155,6 @@ struct _virStorageNetHostDef {
 
 
 typedef struct _virStorageNetCookieDef virStorageNetCookieDef;
-typedef virStorageNetCookieDef *virStorageNetCookieDefPtr;
 struct _virStorageNetCookieDef {
     char *name;
     char *value;
@@ -166,7 +162,7 @@ struct _virStorageNetCookieDef {
 
 
 void
-virStorageNetCookieDefFree(virStorageNetCookieDefPtr def);
+virStorageNetCookieDefFree(virStorageNetCookieDef *def);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageNetCookieDef, virStorageNetCookieDefFree);
 
@@ -197,7 +193,6 @@ VIR_ENUM_DECL(virStorageSourcePoolMode);
 
 
 typedef struct _virStorageSourcePoolDef virStorageSourcePoolDef;
-typedef virStorageSourcePoolDef *virStorageSourcePoolDefPtr;
 struct _virStorageSourcePoolDef {
     char *pool; /* pool name */
     char *volume; /* volume name */
@@ -220,7 +215,6 @@ VIR_ENUM_DECL(virStorageAuth);
 
 
 typedef struct _virStorageAuthDef virStorageAuthDef;
-typedef virStorageAuthDef *virStorageAuthDefPtr;
 struct _virStorageAuthDef {
     char *username;
     char *secrettype; /* <secret type='%s' for disk source */
@@ -230,7 +224,6 @@ struct _virStorageAuthDef {
 
 
 typedef struct _virStoragePRDef virStoragePRDef;
-typedef virStoragePRDef *virStoragePRDefPtr;
 struct _virStoragePRDef {
     int managed; /* enum virTristateBool */
     char *path;
@@ -241,14 +234,12 @@ struct _virStoragePRDef {
 
 
 typedef struct _virStorageSourceInitiatorDef virStorageSourceInitiatorDef;
-typedef virStorageSourceInitiatorDef *virStorageSourceInitiatorDefPtr;
 struct _virStorageSourceInitiatorDef {
     char *iqn; /* Initiator IQN */
 };
 
 
 typedef struct _virStorageSourceNVMeDef virStorageSourceNVMeDef;
-typedef virStorageSourceNVMeDef *virStorageSourceNVMeDefPtr;
 struct _virStorageSourceNVMeDef {
     unsigned long long namespc;
     int managed; /* enum virTristateBool */
@@ -259,7 +250,6 @@ struct _virStorageSourceNVMeDef {
 
 
 typedef struct _virStorageSourceSlice virStorageSourceSlice;
-typedef virStorageSourceSlice *virStorageSourceSlicePtr;
 struct _virStorageSourceSlice {
     unsigned long long offset;
     unsigned long long size;
@@ -268,7 +258,6 @@ struct _virStorageSourceSlice {
 
 
 typedef struct _virStorageSource virStorageSource;
-typedef virStorageSource *virStorageSourcePtr;
 
 /* Stores information related to a host resource.  In the case of backing
  * chains, multiple source disks join to form a single guest view.
@@ -288,37 +277,37 @@ struct _virStorageSource {
                          the source definition */
     char *query; /* query string for HTTP based protocols */
     size_t nhosts;
-    virStorageNetHostDefPtr hosts;
+    virStorageNetHostDef *hosts;
     size_t ncookies;
-    virStorageNetCookieDefPtr *cookies;
-    virStorageSourcePoolDefPtr srcpool;
-    virStorageAuthDefPtr auth;
-    virStorageEncryptionPtr encryption;
-    virStoragePRDefPtr pr;
+    virStorageNetCookieDef **cookies;
+    virStorageSourcePoolDef *srcpool;
+    virStorageAuthDef *auth;
+    virStorageEncryption *encryption;
+    virStoragePRDef *pr;
     virTristateBool sslverify;
     /* both values below have 0 as default value */
     unsigned long long readahead; /* size of the readahead buffer in bytes */
     unsigned long long timeout; /* connection timeout in seconds */
 
-    virStorageSourceNVMeDefPtr nvme; /* type == VIR_STORAGE_TYPE_NVME */
+    virStorageSourceNVMeDef *nvme; /* type == VIR_STORAGE_TYPE_NVME */
 
-    virDomainChrSourceDefPtr vhostuser; /* type == VIR_STORAGE_TYPE_VHOST_USER */
+    virDomainChrSourceDef *vhostuser; /* type == VIR_STORAGE_TYPE_VHOST_USER */
 
     virStorageSourceInitiatorDef initiator;
 
-    virObjectPtr privateData;
+    virObject *privateData;
 
     int format; /* virStorageFileFormat in domain backing chains, but
                  * pool-specific enum for storage volumes */
-    virBitmapPtr features;
+    virBitmap *features;
     char *compat;
     bool nocow;
     bool sparse;
 
-    virStorageSourceSlicePtr sliceStorage;
+    virStorageSourceSlice *sliceStorage;
 
-    virStoragePermsPtr perms;
-    virStorageTimestampsPtr timestamps;
+    virStoragePerms *perms;
+    virStorageTimestamps *timestamps;
     unsigned long long capacity; /* in bytes, 0 if unknown */
     unsigned long long allocation; /* in bytes, 0 if unknown */
     unsigned long long physical; /* in bytes, 0 if unknown */
@@ -328,7 +317,7 @@ struct _virStorageSource {
     unsigned long long metadataCacheMaxSize; /* size of the metadata cache in bytes */
 
     size_t nseclabels;
-    virSecurityDeviceLabelDefPtr *seclabels;
+    virSecurityDeviceLabelDef **seclabels;
 
     /* Don't ever write to the image */
     bool readonly;
@@ -337,7 +326,7 @@ struct _virStorageSource {
     bool shared;
 
     /* backing chain of the storage source */
-    virStorageSourcePtr backingStore;
+    virStorageSource *backingStore;
 
     /* metadata for storage driver access to remote and local volumes */
     void *drv;
@@ -403,73 +392,73 @@ struct _virStorageSource {
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageSource, virObjectUnref);
 
 void
-virStorageAuthDefFree(virStorageAuthDefPtr def);
+virStorageAuthDefFree(virStorageAuthDef *def);
 
-virStorageAuthDefPtr
+virStorageAuthDef *
 virStorageAuthDefCopy(const virStorageAuthDef *src);
 
-virStorageAuthDefPtr
+virStorageAuthDef *
 virStorageAuthDefParse(xmlNodePtr node,
                        xmlXPathContextPtr ctxt);
 
 void
-virStorageAuthDefFormat(virBufferPtr buf,
-                        virStorageAuthDefPtr authdef);
+virStorageAuthDefFormat(virBuffer *buf,
+                        virStorageAuthDef *authdef);
 
 void
-virStoragePRDefFree(virStoragePRDefPtr prd);
+virStoragePRDefFree(virStoragePRDef *prd);
 
-virStoragePRDefPtr
+virStoragePRDef *
 virStoragePRDefParseXML(xmlXPathContextPtr ctxt);
 
 void
-virStoragePRDefFormat(virBufferPtr buf,
-                      virStoragePRDefPtr prd,
+virStoragePRDefFormat(virBuffer *buf,
+                      virStoragePRDef *prd,
                       bool migratable);
 
 bool
-virStoragePRDefIsEqual(virStoragePRDefPtr a,
-                       virStoragePRDefPtr b);
+virStoragePRDefIsEqual(virStoragePRDef *a,
+                       virStoragePRDef *b);
 
 bool
-virStoragePRDefIsManaged(virStoragePRDefPtr prd);
+virStoragePRDefIsManaged(virStoragePRDef *prd);
 
 bool
-virStorageSourceChainHasManagedPR(virStorageSourcePtr src);
+virStorageSourceChainHasManagedPR(virStorageSource *src);
 
 void
-virStorageSourceNVMeDefFree(virStorageSourceNVMeDefPtr def);
+virStorageSourceNVMeDefFree(virStorageSourceNVMeDef *def);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageSourceNVMeDef, virStorageSourceNVMeDefFree);
 
 bool
 virStorageSourceChainHasNVMe(const virStorageSource *src);
 
-virSecurityDeviceLabelDefPtr
-virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
+virSecurityDeviceLabelDef *
+virStorageSourceGetSecurityLabelDef(virStorageSource *src,
                                     const char *model);
 
 void
-virStorageNetHostDefClear(virStorageNetHostDefPtr def);
+virStorageNetHostDefClear(virStorageNetHostDef *def);
 
 void
 virStorageNetHostDefFree(size_t nhosts,
-                         virStorageNetHostDefPtr hosts);
+                         virStorageNetHostDef *hosts);
 
-virStorageNetHostDefPtr
+virStorageNetHostDef *
 virStorageNetHostDefCopy(size_t nhosts,
-                         virStorageNetHostDefPtr hosts);
+                         virStorageNetHostDef *hosts);
 
 int
-virStorageSourceInitChainElement(virStorageSourcePtr newelem,
-                                 virStorageSourcePtr old,
+virStorageSourceInitChainElement(virStorageSource *newelem,
+                                 virStorageSource *old,
                                  bool force);
 
 void
-virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def);
+virStorageSourcePoolDefFree(virStorageSourcePoolDef *def);
 
 void
-virStorageSourceClear(virStorageSourcePtr def);
+virStorageSourceClear(virStorageSource *def);
 
 int
 virStorageSourceGetActualType(const virStorageSource *def);
@@ -478,35 +467,35 @@ bool
 virStorageSourceIsLocalStorage(const virStorageSource *src);
 
 bool
-virStorageSourceIsEmpty(virStorageSourcePtr src);
+virStorageSourceIsEmpty(virStorageSource *src);
 
 bool
 virStorageSourceIsBlockLocal(const virStorageSource *src);
 
-virStorageSourcePtr
+virStorageSource *
 virStorageSourceNew(void);
 
 void
-virStorageSourceBackingStoreClear(virStorageSourcePtr def);
+virStorageSourceBackingStoreClear(virStorageSource *def);
 
 int
-virStorageSourceNetCookiesValidate(virStorageSourcePtr src);
+virStorageSourceNetCookiesValidate(virStorageSource *src);
 
-virStorageSourcePtr
+virStorageSource *
 virStorageSourceCopy(const virStorageSource *src,
                      bool backingChain)
     ATTRIBUTE_NONNULL(1);
 
 bool
-virStorageSourceIsSameLocation(virStorageSourcePtr a,
-                               virStorageSourcePtr b)
+virStorageSourceIsSameLocation(virStorageSource *a,
+                               virStorageSource *b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 bool
-virStorageSourceIsRelative(virStorageSourcePtr src);
+virStorageSourceIsRelative(virStorageSource *src);
 
 void
-virStorageSourceNetworkAssignDefaultPorts(virStorageSourcePtr src)
+virStorageSourceNetworkAssignDefaultPorts(virStorageSource *src)
     ATTRIBUTE_NONNULL(1);
 
 bool
@@ -517,25 +506,25 @@ virStorageSourceHasBacking(const virStorageSource *src);
 
 int
 virStorageSourcePrivateDataParseRelPath(xmlXPathContextPtr ctxt,
-                                        virStorageSourcePtr src);
+                                        virStorageSource *src);
 
 int
-virStorageSourcePrivateDataFormatRelPath(virStorageSourcePtr src,
-                                         virBufferPtr buf);
+virStorageSourcePrivateDataFormatRelPath(virStorageSource *src,
+                                         virBuffer *buf);
 
 void
 virStorageSourceInitiatorParseXML(xmlXPathContextPtr ctxt,
-                                  virStorageSourceInitiatorDefPtr initiator);
+                                  virStorageSourceInitiatorDef *initiator);
 
 void
-virStorageSourceInitiatorFormatXML(virStorageSourceInitiatorDefPtr initiator,
-                                   virBufferPtr buf);
+virStorageSourceInitiatorFormatXML(virStorageSourceInitiatorDef *initiator,
+                                   virBuffer *buf);
 
 int
-virStorageSourceInitiatorCopy(virStorageSourceInitiatorDefPtr dest,
+virStorageSourceInitiatorCopy(virStorageSourceInitiatorDef *dest,
                               const virStorageSourceInitiatorDef *src);
 
 void
-virStorageSourceInitiatorClear(virStorageSourceInitiatorDefPtr initiator);
+virStorageSourceInitiatorClear(virStorageSourceInitiatorDef *initiator);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageAuthDef, virStorageAuthDefFree);

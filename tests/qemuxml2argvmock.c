@@ -81,7 +81,7 @@ virNumaNodeIsAvailable(int node)
 }
 
 bool
-virNumaNodesetIsAvailable(virBitmapPtr nodeset)
+virNumaNodesetIsAvailable(virBitmap *nodeset)
 {
     ssize_t bit = -1;
 
@@ -193,12 +193,12 @@ virHostGetDRMRenderNode(void)
     return g_strdup("/dev/dri/foo");
 }
 
-static void (*real_virCommandPassFD)(virCommandPtr cmd, int fd, unsigned int flags);
+static void (*real_virCommandPassFD)(virCommand *cmd, int fd, unsigned int flags);
 
 static const int testCommandPassSafeFDs[] = { 1730, 1731, 1732 };
 
 void
-virCommandPassFD(virCommandPtr cmd,
+virCommandPassFD(virCommand *cmd,
                  int fd,
                  unsigned int flags)
 {
@@ -225,8 +225,8 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path G_GNUC_UNUSED,
 }
 
 int
-qemuInterfaceOpenVhostNet(virDomainDefPtr def G_GNUC_UNUSED,
-                          virDomainNetDefPtr net,
+qemuInterfaceOpenVhostNet(virDomainDef *def G_GNUC_UNUSED,
+                          virDomainNetDef *net,
                           int *vhostfd,
                           size_t *vhostfdSize)
 {
@@ -285,7 +285,7 @@ virNetDevSetRootQDisc(const char *ifname G_GNUC_UNUSED,
 
 
 int
-qemuInterfaceVDPAConnect(virDomainNetDefPtr net G_GNUC_UNUSED)
+qemuInterfaceVDPAConnect(virDomainNetDef *net G_GNUC_UNUSED)
 {
     if (fcntl(1732, F_GETFD) != -1)
         abort();

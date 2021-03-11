@@ -50,7 +50,7 @@ VIR_LOG_INIT("storage.storage_backend_iscsi");
 #define ISCSI_DEFAULT_TARGET_PORT 3260
 
 static char *
-virStorageBackendISCSIPortal(virStoragePoolSourcePtr source)
+virStorageBackendISCSIPortal(virStoragePoolSource *source)
 {
     char *portal = NULL;
 
@@ -78,10 +78,10 @@ virStorageBackendISCSIPortal(virStoragePoolSourcePtr source)
 
 
 static char *
-virStorageBackendISCSISession(virStoragePoolObjPtr pool,
+virStorageBackendISCSISession(virStoragePoolObj *pool,
                               bool probe)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     return virISCSIGetSession(def->source.devices[0].path, probe);
 }
 
@@ -127,7 +127,7 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
 }
 
 static int
-virStorageBackendISCSIFindLUs(virStoragePoolObjPtr pool,
+virStorageBackendISCSIFindLUs(virStoragePoolObj *pool,
                               const char *session)
 {
     uint32_t host;
@@ -220,10 +220,10 @@ virStorageBackendISCSIFindPoolSources(const char *srcSpec,
 }
 
 static int
-virStorageBackendISCSICheckPool(virStoragePoolObjPtr pool,
+virStorageBackendISCSICheckPool(virStoragePoolObj *pool,
                                 bool *isActive)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     g_autofree char *session = NULL;
 
     *isActive = false;
@@ -255,12 +255,12 @@ virStorageBackendISCSICheckPool(virStoragePoolObjPtr pool,
 
 static int
 virStorageBackendISCSISetAuth(const char *portal,
-                              virStoragePoolSourcePtr source)
+                              virStoragePoolSource *source)
 {
     g_autofree unsigned char *secret_value = NULL;
     size_t secret_size;
     g_autofree char *secret_str = NULL;
-    virStorageAuthDefPtr authdef = source->auth;
+    virStorageAuthDef *authdef = source->auth;
     int ret = -1;
     virConnectPtr conn = NULL;
 
@@ -312,9 +312,9 @@ virStorageBackendISCSISetAuth(const char *portal,
 }
 
 static int
-virStorageBackendISCSIStartPool(virStoragePoolObjPtr pool)
+virStorageBackendISCSIStartPool(virStoragePoolObj *pool)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     g_autofree char *portal = NULL;
     g_autofree char *session = NULL;
 
@@ -358,9 +358,9 @@ virStorageBackendISCSIStartPool(virStoragePoolObjPtr pool)
 }
 
 static int
-virStorageBackendISCSIRefreshPool(virStoragePoolObjPtr pool)
+virStorageBackendISCSIRefreshPool(virStoragePoolObj *pool)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     g_autofree char *session = NULL;
 
     def->allocation = def->capacity = def->available = 0;
@@ -377,9 +377,9 @@ virStorageBackendISCSIRefreshPool(virStoragePoolObjPtr pool)
 
 
 static int
-virStorageBackendISCSIStopPool(virStoragePoolObjPtr pool)
+virStorageBackendISCSIStopPool(virStoragePoolObj *pool)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     g_autofree char *portal = NULL;
     g_autofree char *session = NULL;
 

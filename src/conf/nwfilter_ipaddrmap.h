@@ -28,4 +28,4 @@ void virNWFilterIPAddrMapShutdown(void);
 int virNWFilterIPAddrMapAddIPAddr(const char *ifname, char *addr);
 int virNWFilterIPAddrMapDelIPAddr(const char *ifname,
                                   const char *ipaddr);
-virNWFilterVarValuePtr virNWFilterIPAddrMapGetIPAddr(const char *ifname);
+virNWFilterVarValue *virNWFilterIPAddrMapGetIPAddr(const char *ifname);

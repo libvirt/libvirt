@@ -27,50 +27,50 @@
 #include "qemu_domain.h"
 #include "qemu_domain_address.h"
 
-int qemuAssignDeviceChrAlias(virDomainDefPtr def,
-                             virDomainChrDefPtr chr,
+int qemuAssignDeviceChrAlias(virDomainDef *def,
+                             virDomainChrDef *chr,
                              ssize_t idx);
 
-int qemuAssignDeviceControllerAlias(virDomainDefPtr domainDef,
-                                    virQEMUCapsPtr qemuCaps,
-                                    virDomainControllerDefPtr controller);
+int qemuAssignDeviceControllerAlias(virDomainDef *domainDef,
+                                    virQEMUCaps *qemuCaps,
+                                    virDomainControllerDef *controller);
 
-int qemuAssignDeviceDiskAlias(virDomainDefPtr def,
-                              virDomainDiskDefPtr disk,
-                              virQEMUCapsPtr qemuCaps);
+int qemuAssignDeviceDiskAlias(virDomainDef *def,
+                              virDomainDiskDef *disk,
+                              virQEMUCaps *qemuCaps);
 
-int qemuAssignDeviceHostdevAlias(virDomainDefPtr def,
+int qemuAssignDeviceHostdevAlias(virDomainDef *def,
                                  char **alias,
                                  int idx);
 
-int qemuAssignDeviceNetAlias(virDomainDefPtr def,
-                             virDomainNetDefPtr net,
+int qemuAssignDeviceNetAlias(virDomainDef *def,
+                             virDomainNetDef *net,
                              int idx);
 
-int qemuAssignDeviceRedirdevAlias(virDomainDefPtr def,
-                                  virDomainRedirdevDefPtr redirdev,
+int qemuAssignDeviceRedirdevAlias(virDomainDef *def,
+                                  virDomainRedirdevDef *redirdev,
                                   int idx);
 
-int qemuAssignDeviceRNGAlias(virDomainDefPtr def,
-                             virDomainRNGDefPtr rng);
+int qemuAssignDeviceRNGAlias(virDomainDef *def,
+                             virDomainRNGDef *rng);
 
-int qemuAssignDeviceMemoryAlias(virDomainDefPtr def,
-                                virDomainMemoryDefPtr mems,
+int qemuAssignDeviceMemoryAlias(virDomainDef *def,
+                                virDomainMemoryDef *mems,
                                 bool oldAlias);
 
-int qemuAssignDeviceShmemAlias(virDomainDefPtr def,
-                               virDomainShmemDefPtr shmem,
+int qemuAssignDeviceShmemAlias(virDomainDef *def,
+                               virDomainShmemDef *shmem,
                                int idx);
 
-int qemuAssignDeviceWatchdogAlias(virDomainWatchdogDefPtr watchdog);
+int qemuAssignDeviceWatchdogAlias(virDomainWatchdogDef *watchdog);
 
-int qemuAssignDeviceInputAlias(virDomainDefPtr def,
-                               virDomainInputDefPtr input,
+int qemuAssignDeviceInputAlias(virDomainDef *def,
+                               virDomainInputDef *input,
                                int idx);
 
-int qemuAssignDeviceVsockAlias(virDomainVsockDefPtr vsock);
+int qemuAssignDeviceVsockAlias(virDomainVsockDef *vsock);
 
-int qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps);
+int qemuAssignDeviceAliases(virDomainDef *def, virQEMUCaps *qemuCaps);
 
 int qemuDomainDeviceAliasIndex(const virDomainDeviceInfo *info,
                                const char *prefix);

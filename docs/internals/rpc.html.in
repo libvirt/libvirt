@@ -444,21 +444,21 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
     </p>
 
     <dl>
-      <dt><code>virNetSASLContextPtr</code> (virnetsaslcontext.h)</dt>
+      <dt><code>virNetSASLContext *</code> (virnetsaslcontext.h)</dt>
       <dd>The virNetSASLContext APIs maintain SASL state for a network
         service (server or client). This is primarily used on the server
         to provide an access control list of SASL usernames permitted as
         clients.
       </dd>
 
-      <dt><code>virNetSASLSessionPtr</code> (virnetsaslcontext.h)</dt>
+      <dt><code>virNetSASLSession *</code> (virnetsaslcontext.h)</dt>
       <dd>The virNetSASLSession APIs maintain SASL state for a single
         network connection (socket). This is used to perform the multi-step
         SASL handshake and perform encryption/decryption of data once
         authenticated, via integration with virNetSocket.
       </dd>
 
-      <dt><code>virNetTLSContextPtr</code> (virnettlscontext.h)</dt>
+      <dt><code>virNetTLSContext *</code> (virnettlscontext.h)</dt>
       <dd>The virNetTLSContext APIs maintain TLS state for a network
         service (server or client). This is primarily used on the server
         to provide an access control list of x509 distinguished names, as
@@ -467,29 +467,29 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
         to improve detection of configuration errors.
       </dd>
 
-      <dt><code>virNetTLSSessionPtr</code> (virnettlscontext.h)</dt>
+      <dt><code>virNetTLSSession *</code> (virnettlscontext.h)</dt>
       <dd>The virNetTLSSession APIs maintain TLS state for a single
         network connection (socket). This is used to perform the multi-step
         TLS handshake and perform encryption/decryption of data once
         authenticated, via integration with virNetSocket.
       </dd>
 
-      <dt><code>virNetSocketPtr</code> (virnetsocket.h)</dt>
+      <dt><code>virNetSocket *</code> (virnetsocket.h)</dt>
       <dd>The virNetSocket APIs provide a higher level wrapper around
         the raw BSD sockets and getaddrinfo APIs. They allow for creation
         of both server and client sockets. Data transports supported are
         TCP, UNIX, SSH tunnel or external command tunnel. Internally the
         TCP socket impl uses the getaddrinfo info APIs to ensure correct
         protocol-independent behaviour, thus supporting both IPv4 and IPv6.
-        The socket APIs can be associated with a virNetSASLSessionPtr or
-        virNetTLSSessionPtr object to allow seamless encryption/decryption
+        The socket APIs can be associated with a virNetSASLSession *or
+        virNetTLSSession *object to allow seamless encryption/decryption
         of all writes and reads. For UNIX sockets it is possible to obtain
         the remote client user ID and process ID. Integration with the
         libvirt event loop also allows use of callbacks for notification
         of various I/O conditions
       </dd>
 
-      <dt><code>virNetMessagePtr</code> (virnetmessage.h)</dt>
+      <dt><code>virNetMessage *</code> (virnetmessage.h)</dt>
       <dd>The virNetMessage APIs provide a wrapper around the libxdr
         API calls, to facilitate processing and creation of RPC
         packets. There are convenience APIs for encoding/encoding the
@@ -498,7 +498,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
         encoding a virErrorPtr object. There is also a means to
         add to/serve from a linked-list queue of messages.</dd>
 
-      <dt><code>virNetClientPtr</code> (virnetclient.h)</dt>
+      <dt><code>virNetClient *</code> (virnetclient.h)</dt>
       <dd>The virNetClient APIs provide a way to connect to a
         remote server and run one or more RPC protocols over
         the connection. Connections can be made over TCP, UNIX
@@ -510,7 +510,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
         being interleaved on the wire as required.
       </dd>
 
-      <dt><code>virNetClientProgramPtr</code> (virnetclientprogram.h)</dt>
+      <dt><code>virNetClientProgram *</code> (virnetclientprogram.h)</dt>
       <dd>The virNetClientProgram APIs are used to register a
         program+version with the connection. This then enables
         invocation of method calls, receipt of asynchronous
@@ -519,42 +519,42 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
         care of dispatching any incoming asynchronous events.
       </dd>
 
-      <dt><code>virNetClientStreamPtr</code> (virnetclientstream.h)</dt>
+      <dt><code>virNetClientStream *</code> (virnetclientstream.h)</dt>
       <dd>The virNetClientStream APIs are used to control transmission and
         receipt of data over a stream active on a client. Streams provide
         a low latency, unlimited length, bi-directional raw data exchange
         mechanism layered over the RPC connection
       </dd>
 
-      <dt><code>virNetServerPtr</code> (virnetserver.h)</dt>
+      <dt><code>virNetServer *</code> (virnetserver.h)</dt>
       <dd>The virNetServer APIs are used to manage a network server. A
         server exposed one or more programs, over one or more services.
         It manages multiple client connections invoking multiple RPC
         calls in parallel, with dispatch across multiple worker threads.
       </dd>
 
-      <dt><code>virNetDaemonPtr</code> (virnetdaemon.h)</dt>
+      <dt><code>virNetDaemon *</code> (virnetdaemon.h)</dt>
       <dd>The virNetDaemon APIs are used to manage a daemon process. A
         daemon is a process that might expose one or more servers.  It
         handles most process-related details, network-related should
         be part of the underlying server.
       </dd>
 
-      <dt><code>virNetServerClientPtr</code> (virnetserverclient.h)</dt>
+      <dt><code>virNetServerClient *</code> (virnetserverclient.h)</dt>
       <dd>The virNetServerClient APIs are used to manage I/O related
         to a single client network connection. It handles initial
         validation and routing of incoming RPC packets, and transmission
         of outgoing packets.
       </dd>
 
-      <dt><code>virNetServerProgramPtr</code> (virnetserverprogram.h)</dt>
+      <dt><code>virNetServerProgram *</code> (virnetserverprogram.h)</dt>
       <dd>The virNetServerProgram APIs are used to provide the implementation
         of a single program/version set. Primarily this includes a set of
         callbacks used to actually invoke the APIs corresponding to
         program procedure numbers. It is responsible for all the serialization
         of payloads to/from XDR.</dd>
 
-      <dt><code>virNetServerServicePtr</code> (virnetserverservice.h)</dt>
+      <dt><code>virNetServerService *</code> (virnetserverservice.h)</dt>
       <dd>The virNetServerService APIs are used to connect the server to
         one or more network protocols. A single service may involve multiple
         sockets (ie both IPv4 and IPv6). A service also has an associated

@@ -37,7 +37,7 @@
 
 VIR_LOG_INIT("tests.cgrouptest");
 
-static int validateCgroup(virCgroupPtr cgroup,
+static int validateCgroup(virCgroup *cgroup,
                           const char **expectMountPoint,
                           const char **expectLinkPoint,
                           const char **expectPlacement,

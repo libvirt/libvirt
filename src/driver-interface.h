@@ -89,7 +89,6 @@ typedef int
                                  unsigned int flags);
 
 typedef struct _virInterfaceDriver virInterfaceDriver;
-typedef virInterfaceDriver *virInterfaceDriverPtr;
 
 /**
  * _virInterfaceDriver:

@@ -100,7 +100,6 @@ typedef struct nl_sock virNetlinkHandle;
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetlinkHandle, virNetlinkFree);
 
 typedef struct _virNetlinkEventSrvPrivate virNetlinkEventSrvPrivate;
-typedef virNetlinkEventSrvPrivate *virNetlinkEventSrvPrivatePtr;
 struct _virNetlinkEventSrvPrivate {
     /* Server */
     virMutex lock;
@@ -128,7 +127,7 @@ static int nextWatch = 1;
 
 /* Linux kernel supports up to MAX_LINKS (32 at the time) individual
  * netlink protocols. */
-static virNetlinkEventSrvPrivatePtr server[MAX_LINKS] = {NULL};
+static virNetlinkEventSrvPrivate *server[MAX_LINKS] = {NULL};
 static virNetlinkHandle *placeholder_nlhandle;
 
 /* Function definitions */
@@ -583,7 +582,7 @@ virNetlinkDumpLink(const char *ifname, int ifindex,
 int
 virNetlinkNewLink(const char *ifname,
                   const char *type,
-                  virNetlinkNewLinkDataPtr extra_args,
+                  virNetlinkNewLinkData *extra_args,
                   int *error)
 {
     struct nlattr *linkinfo = NULL;
@@ -802,13 +801,13 @@ virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen)
 
 
 static void
-virNetlinkEventServerLock(virNetlinkEventSrvPrivatePtr driver)
+virNetlinkEventServerLock(virNetlinkEventSrvPrivate *driver)
 {
     virMutexLock(&driver->lock);
 }
 
 static void
-virNetlinkEventServerUnlock(virNetlinkEventSrvPrivatePtr driver)
+virNetlinkEventServerUnlock(virNetlinkEventSrvPrivate *driver)
 {
     virMutexUnlock(&driver->lock);
 }
@@ -852,7 +851,7 @@ virNetlinkEventCallback(int watch,
                         int events G_GNUC_UNUSED,
                         void *opaque)
 {
-    virNetlinkEventSrvPrivatePtr srv = opaque;
+    virNetlinkEventSrvPrivate *srv = opaque;
     struct sockaddr_nl peer;
     struct ucred *creds = NULL;
     size_t i;
@@ -905,7 +904,7 @@ virNetlinkEventCallback(int watch,
 int
 virNetlinkEventServiceStop(unsigned int protocol)
 {
-    virNetlinkEventSrvPrivatePtr srv;
+    virNetlinkEventSrvPrivate *srv;
     size_t i;
 
     if (protocol >= MAX_LINKS)
@@ -1016,7 +1015,7 @@ int virNetlinkEventServiceLocalPid(unsigned int protocol)
 int
 virNetlinkEventServiceStart(unsigned int protocol, unsigned int groups)
 {
-    virNetlinkEventSrvPrivatePtr srv;
+    virNetlinkEventSrvPrivate *srv;
     int fd;
     int ret = -1;
 
@@ -1117,7 +1116,7 @@ virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
 {
     size_t i;
     int r, ret = -1;
-    virNetlinkEventSrvPrivatePtr srv = NULL;
+    virNetlinkEventSrvPrivate *srv = NULL;
 
     if (protocol >= MAX_LINKS)
         return -EINVAL;
@@ -1190,7 +1189,7 @@ virNetlinkEventRemoveClient(int watch, const virMacAddr *macaddr,
 {
     size_t i;
     int ret = -1;
-    virNetlinkEventSrvPrivatePtr srv = NULL;
+    virNetlinkEventSrvPrivate *srv = NULL;
 
     if (protocol >= MAX_LINKS)
         return -EINVAL;
@@ -1299,7 +1298,7 @@ virNetlinkDelLink(const char *ifname G_GNUC_UNUSED,
 int
 virNetlinkNewLink(const char *ifname G_GNUC_UNUSED,
                   const char *type G_GNUC_UNUSED,
-                  virNetlinkNewLinkDataPtr extra_args G_GNUC_UNUSED,
+                  virNetlinkNewLinkData *extra_args G_GNUC_UNUSED,
                   int *error G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));

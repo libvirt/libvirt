@@ -70,7 +70,7 @@ openvzExtractVersionInfo(const char *cmdstr, int *retversion)
     unsigned long version;
     char *help = NULL;
     char *tmp;
-    virCommandPtr cmd = virCommandNewArgList(cmdstr, "--help", NULL);
+    virCommand *cmd = virCommandNewArgList(cmdstr, "--help", NULL);
 
     if (retversion)
         *retversion = 0;
@@ -141,10 +141,10 @@ openvzParseBarrierLimit(const char* value,
 }
 
 
-virCapsPtr openvzCapsInit(void)
+virCaps *openvzCapsInit(void)
 {
     g_autoptr(virCaps) caps = NULL;
-    virCapsGuestPtr guest;
+    virCapsGuest *guest;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    false, false)) == NULL)
@@ -178,11 +178,11 @@ virCapsPtr openvzCapsInit(void)
 
 
 int
-openvzReadNetworkConf(virDomainDefPtr def,
+openvzReadNetworkConf(virDomainDef *def,
                       int veid)
 {
     int ret;
-    virDomainNetDefPtr net = NULL;
+    virDomainNetDef *net = NULL;
     char *temp = NULL;
     char *token, *saveptr = NULL;
 
@@ -291,11 +291,11 @@ openvzReadNetworkConf(virDomainDefPtr def,
 
 
 static int
-openvzReadFSConf(virDomainDefPtr def,
+openvzReadFSConf(virDomainDef *def,
                  int veid)
 {
     int ret;
-    virDomainFSDefPtr fs = NULL;
+    virDomainFSDef *fs = NULL;
     g_autofree char *veid_str = NULL;
     char *temp = NULL;
     const char *param;
@@ -370,7 +370,7 @@ openvzReadFSConf(virDomainDefPtr def,
 
 
 static int
-openvzReadMemConf(virDomainDefPtr def, int veid)
+openvzReadMemConf(virDomainDef *def, int veid)
 {
     int ret = -1;
     char *temp = NULL;
@@ -458,12 +458,12 @@ int openvzLoadDomains(struct openvz_driver *driver)
     int veid, ret;
     char *status;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virDomainObjPtr dom = NULL;
-    virDomainDefPtr def = NULL;
+    virDomainObj *dom = NULL;
+    virDomainDef *def = NULL;
     char *temp = NULL;
     char *outbuf = NULL;
     char *line;
-    virCommandPtr cmd = NULL;
+    virCommand *cmd = NULL;
     unsigned int vcpus = 0;
 
     if (openvzAssignUUIDs() < 0)
@@ -1010,7 +1010,7 @@ static int openvzAssignUUIDs(void)
 
 int openvzGetVEID(const char *name)
 {
-    virCommandPtr cmd;
+    virCommand *cmd;
     char *outbuf;
     char *temp;
     int veid;
@@ -1038,7 +1038,7 @@ int openvzGetVEID(const char *name)
 
 
 static int
-openvzDomainDefPostParse(virDomainDefPtr def,
+openvzDomainDefPostParse(virDomainDef *def,
                          unsigned int parseFlags G_GNUC_UNUSED,
                          void *opaque,
                          void *parseOpaque G_GNUC_UNUSED)
@@ -1058,7 +1058,7 @@ openvzDomainDefPostParse(virDomainDefPtr def,
 
 
 static int
-openvzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
+openvzDomainDeviceDefPostParse(virDomainDeviceDef *dev,
                                const virDomainDef *def G_GNUC_UNUSED,
                                unsigned int parseFlags G_GNUC_UNUSED,
                                void *opaque G_GNUC_UNUSED,
@@ -1097,7 +1097,7 @@ virDomainDefParserConfig openvzDomainDefParserConfig = {
     .features = VIR_DOMAIN_DEF_FEATURE_NAME_SLASH,
 };
 
-virDomainXMLOptionPtr openvzXMLOption(struct openvz_driver *driver)
+virDomainXMLOption *openvzXMLOption(struct openvz_driver *driver)
 {
     openvzDomainDefParserConfig.priv = driver;
     return virDomainXMLOptionNew(&openvzDomainDefParserConfig,

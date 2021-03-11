@@ -21,7 +21,6 @@
 #include "virpci.h"
 
 typedef struct _virNVMeDevice virNVMeDevice;
-typedef virNVMeDevice *virNVMeDevicePtr;
 
 /* Note that this list is lockable, and in fact, it is caller's
  * responsibility to acquire the lock and release it. The reason
@@ -29,28 +28,27 @@ typedef virNVMeDevice *virNVMeDevicePtr;
  * API calls and therefore only caller knows when it is safe to
  * finally release the lock. */
 typedef struct _virNVMeDeviceList virNVMeDeviceList;
-typedef virNVMeDeviceList *virNVMeDeviceListPtr;
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNVMeDeviceList, virObjectUnref);
 
-virNVMeDevicePtr
+virNVMeDevice *
 virNVMeDeviceNew(const virPCIDeviceAddress *address,
                  unsigned long namespace,
                  bool managed);
 
 void
-virNVMeDeviceFree(virNVMeDevicePtr dev);
+virNVMeDeviceFree(virNVMeDevice *dev);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNVMeDevice, virNVMeDeviceFree);
 
-virNVMeDevicePtr
+virNVMeDevice *
 virNVMeDeviceCopy(const virNVMeDevice *dev);
 
 const virPCIDeviceAddress *
 virNVMeDeviceAddressGet(const virNVMeDevice *dev);
 
 void
-virNVMeDeviceUsedByClear(virNVMeDevicePtr dev);
+virNVMeDeviceUsedByClear(virNVMeDevice *dev);
 
 void
 virNVMeDeviceUsedByGet(const virNVMeDevice *dev,
@@ -58,40 +56,40 @@ virNVMeDeviceUsedByGet(const virNVMeDevice *dev,
                        const char **dom);
 
 void
-virNVMeDeviceUsedBySet(virNVMeDevicePtr dev,
+virNVMeDeviceUsedBySet(virNVMeDevice *dev,
                        const char *drv,
                        const char *dom);
 
-virNVMeDeviceListPtr
+virNVMeDeviceList *
 virNVMeDeviceListNew(void);
 
 size_t
 virNVMeDeviceListCount(const virNVMeDeviceList *list);
 
 int
-virNVMeDeviceListAdd(virNVMeDeviceListPtr list,
+virNVMeDeviceListAdd(virNVMeDeviceList *list,
                      const virNVMeDevice *dev);
 
 int
-virNVMeDeviceListDel(virNVMeDeviceListPtr list,
+virNVMeDeviceListDel(virNVMeDeviceList *list,
                      const virNVMeDevice *dev);
 
-virNVMeDevicePtr
-virNVMeDeviceListGet(virNVMeDeviceListPtr list,
+virNVMeDevice *
+virNVMeDeviceListGet(virNVMeDeviceList *list,
                      size_t i);
 
-virNVMeDevicePtr
-virNVMeDeviceListLookup(virNVMeDeviceListPtr list,
+virNVMeDevice *
+virNVMeDeviceListLookup(virNVMeDeviceList *list,
                         const virNVMeDevice *dev);
 
 ssize_t
-virNVMeDeviceListLookupIndex(virNVMeDeviceListPtr list,
+virNVMeDeviceListLookupIndex(virNVMeDeviceList *list,
                              const virNVMeDevice *dev);
 
-virPCIDeviceListPtr
-virNVMeDeviceListCreateDetachList(virNVMeDeviceListPtr activeList,
-                                  virNVMeDeviceListPtr toDetachList);
+virPCIDeviceList *
+virNVMeDeviceListCreateDetachList(virNVMeDeviceList *activeList,
+                                  virNVMeDeviceList *toDetachList);
 
-virPCIDeviceListPtr
-virNVMeDeviceListCreateReAttachList(virNVMeDeviceListPtr activeList,
-                                    virNVMeDeviceListPtr toReAttachList);
+virPCIDeviceList *
+virNVMeDeviceListCreateReAttachList(virNVMeDeviceList *activeList,
+                                    virNVMeDeviceList *toReAttachList);

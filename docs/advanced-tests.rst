@@ -105,7 +105,7 @@ of leak:
   ==5414==    by 0x34D9021734: (below main) (in /usr/lib64/libc-2.15.so)
 
 In this example, the ``virDomainDefParseXML()`` had an error
-path where the ``virDomainVideoDefPtr video`` pointer was not
+path where the ``virDomainVideoDef *video`` pointer was not
 properly disposed. By simply adding a
 ``virDomainVideoDefFree(video);`` in the error path, the issue
 was resolved.

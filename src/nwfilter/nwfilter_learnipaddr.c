@@ -118,7 +118,6 @@ static virMutex ifaceMapLock = VIR_MUTEX_INITIALIZER;
 static GHashTable *ifaceLockMap;
 
 typedef struct _virNWFilterIfaceLock virNWFilterIfaceLock;
-typedef virNWFilterIfaceLock *virNWFilterIfaceLockPtr;
 struct _virNWFilterIfaceLock {
     char ifname[IF_NAMESIZE];
     virMutex lock;
@@ -126,12 +125,11 @@ struct _virNWFilterIfaceLock {
 };
 
 typedef struct _virNWFilterIPAddrLearnReq virNWFilterIPAddrLearnReq;
-typedef virNWFilterIPAddrLearnReq *virNWFilterIPAddrLearnReqPtr;
 struct _virNWFilterIPAddrLearnReq {
-    virNWFilterTechDriverPtr techdriver;
+    virNWFilterTechDriver *techdriver;
     int ifindex;
-    virNWFilterBindingDefPtr binding;
-    virNWFilterDriverStatePtr driver;
+    virNWFilterBindingDef *binding;
+    virNWFilterDriverState *driver;
     int howDetect; /* bitmask of enum howDetect */
 
     int status;
@@ -145,7 +143,7 @@ static bool threadsTerminate;
 int
 virNWFilterLockIface(const char *ifname)
 {
-    virNWFilterIfaceLockPtr ifaceLock;
+    virNWFilterIfaceLock *ifaceLock;
 
     virMutexLock(&ifaceMapLock);
 
@@ -195,7 +193,7 @@ virNWFilterLockIface(const char *ifname)
 void
 virNWFilterUnlockIface(const char *ifname)
 {
-    virNWFilterIfaceLockPtr ifaceLock;
+    virNWFilterIfaceLock *ifaceLock;
 
     virMutexLock(&ifaceMapLock);
 
@@ -214,7 +212,7 @@ virNWFilterUnlockIface(const char *ifname)
 
 
 static void
-virNWFilterIPAddrLearnReqFree(virNWFilterIPAddrLearnReqPtr req)
+virNWFilterIPAddrLearnReqFree(virNWFilterIPAddrLearnReq *req)
 {
     if (!req)
         return;
@@ -228,7 +226,7 @@ virNWFilterIPAddrLearnReqFree(virNWFilterIPAddrLearnReqPtr req)
 #if WITH_LIBPCAP
 
 static int
-virNWFilterRegisterLearnReq(virNWFilterIPAddrLearnReqPtr req)
+virNWFilterRegisterLearnReq(virNWFilterIPAddrLearnReq *req)
 {
     int res = -1;
     g_autofree char *ifindex_str = g_strdup_printf("%d", req->ifindex);
@@ -251,7 +249,7 @@ virNWFilterTerminateLearnReq(const char *ifname)
 {
     int rc = -1;
     int ifindex;
-    virNWFilterIPAddrLearnReqPtr req;
+    virNWFilterIPAddrLearnReq *req;
     g_autofree char *ifindex_str = NULL;
 
     /* It's possible that it's already been removed as a result of
@@ -308,10 +306,10 @@ freeLearnReqEntry(void *payload)
 
 #ifdef WITH_LIBPCAP
 
-static virNWFilterIPAddrLearnReqPtr
+static virNWFilterIPAddrLearnReq *
 virNWFilterDeregisterLearnReq(int ifindex)
 {
-    virNWFilterIPAddrLearnReqPtr res;
+    virNWFilterIPAddrLearnReq *res;
     g_autofree char *ifindex_str = g_strdup_printf("%d", ifindex);
 
     virMutexLock(&pendingLearnReqLock);
@@ -388,7 +386,7 @@ learnIPAddressThread(void *arg)
     const u_char *packet;
     struct ether_header *ether_hdr;
     struct ether_vlan_header *vlan_hdr;
-    virNWFilterIPAddrLearnReqPtr req = arg;
+    virNWFilterIPAddrLearnReq *req = arg;
     uint32_t vmaddr = 0, bcastaddr = 0;
     unsigned int ethHdrSize;
     char *listen_if = (req->binding->linkdevname ?
@@ -401,7 +399,7 @@ learnIPAddressThread(void *arg)
     uint16_t etherType;
     bool showError = true;
     enum howDetect howDetected = 0;
-    virNWFilterTechDriverPtr techdriver = req->techdriver;
+    virNWFilterTechDriver *techdriver = req->techdriver;
     struct pollfd fds[1];
 
     if (virNWFilterLockIface(req->binding->portdevname) < 0)
@@ -693,15 +691,15 @@ learnIPAddressThread(void *arg)
  * firewall rules on the interface.
  */
 int
-virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
-                          virNWFilterBindingDefPtr binding,
+virNWFilterLearnIPAddress(virNWFilterTechDriver *techdriver,
+                          virNWFilterBindingDef *binding,
                           int ifindex,
-                          virNWFilterDriverStatePtr driver,
+                          virNWFilterDriverState *driver,
                           int howDetect)
 {
     int rc;
     virThread thread;
-    virNWFilterIPAddrLearnReqPtr req = NULL;
+    virNWFilterIPAddrLearnReq *req = NULL;
 
     if (howDetect == 0)
         return -1;
@@ -749,10 +747,10 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
 #else
 
 int
-virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver G_GNUC_UNUSED,
-                          virNWFilterBindingDefPtr binding G_GNUC_UNUSED,
+virNWFilterLearnIPAddress(virNWFilterTechDriver *techdriver G_GNUC_UNUSED,
+                          virNWFilterBindingDef *binding G_GNUC_UNUSED,
                           int ifindex G_GNUC_UNUSED,
-                          virNWFilterDriverStatePtr driver G_GNUC_UNUSED,
+                          virNWFilterDriverState *driver G_GNUC_UNUSED,
                           int howDetect G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

@@ -63,9 +63,9 @@ typedef struct {
                                  * 'r'   replace
                                  * 'R'   remove */
     char *files;                /* list of files */
-    virDomainDefPtr def;        /* VM definition */
-    virCapsPtr caps;            /* VM capabilities */
-    virDomainXMLOptionPtr xmlopt; /* XML parser data */
+    virDomainDef *def;        /* VM definition */
+    virCaps *caps;            /* VM capabilities */
+    virDomainXMLOption *xmlopt; /* XML parser data */
     char *virtType;                  /* type of hypervisor (eg qemu, xen, lxc) */
     char *os;                   /* type of os (eg hvm, xen, exe) */
     virArch arch;               /* machine architecture */
@@ -562,7 +562,7 @@ verify_xpath_context(xmlXPathContextPtr ctxt)
  * ctl->os
  * ctl->arch
  *
- * These are suitable for setting up a virCapsPtr
+ * These are suitable for setting up a virCaps *
  */
 static int
 caps_mockup(vahControl * ctl, const char *xmlStr)
@@ -624,7 +624,7 @@ static int
 get_definition(vahControl * ctl, const char *xmlStr)
 {
     int ostype, virtType;
-    virCapsGuestPtr guest;  /* this is freed when caps is freed */
+    virCapsGuest *guest;  /* this is freed when caps is freed */
 
     /*
      * mock up some capabilities. We don't currently use these explicitly,
@@ -703,7 +703,7 @@ get_definition(vahControl * ctl, const char *xmlStr)
   * read with no explicit deny rule.
   */
 static int
-vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursive)
+vah_add_path(virBuffer *buf, const char *path, const char *perms, bool recursive)
 {
     char *tmp = NULL;
     int rc = -1;
@@ -802,13 +802,13 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
 }
 
 static int
-vah_add_file(virBufferPtr buf, const char *path, const char *perms)
+vah_add_file(virBuffer *buf, const char *path, const char *perms)
 {
     return vah_add_path(buf, path, perms, false);
 }
 
 static int
-vah_add_file_chardev(virBufferPtr buf,
+vah_add_file_chardev(virBuffer *buf,
                      const char *path,
                      const char *perms,
                      const int type)
@@ -846,25 +846,25 @@ vah_add_file_chardev(virBufferPtr buf,
 }
 
 static int
-file_iterate_hostdev_cb(virUSBDevicePtr dev G_GNUC_UNUSED,
+file_iterate_hostdev_cb(virUSBDevice *dev G_GNUC_UNUSED,
                         const char *file, void *opaque)
 {
-    virBufferPtr buf = opaque;
+    virBuffer *buf = opaque;
     return vah_add_file(buf, file, "rw");
 }
 
 static int
-file_iterate_pci_cb(virPCIDevicePtr dev G_GNUC_UNUSED,
+file_iterate_pci_cb(virPCIDevice *dev G_GNUC_UNUSED,
                     const char *file, void *opaque)
 {
-    virBufferPtr buf = opaque;
+    virBuffer *buf = opaque;
     return vah_add_file(buf, file, "rw");
 }
 
 static int
-add_file_path(virStorageSourcePtr src,
+add_file_path(virStorageSource *src,
               size_t depth,
-              virBufferPtr buf)
+              virBuffer *buf)
 {
     int ret;
 
@@ -889,11 +889,11 @@ add_file_path(virStorageSourcePtr src,
 
 
 static int
-storage_source_add_files(virStorageSourcePtr src,
-                         virBufferPtr buf,
+storage_source_add_files(virStorageSource *src,
+                         virBuffer *buf,
                          size_t depth)
 {
-    virStorageSourcePtr tmp;
+    virStorageSource *tmp;
 
     for (tmp = src; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
         if (add_file_path(tmp, depth, buf) < 0)
@@ -931,7 +931,7 @@ get_files(vahControl * ctl)
 #endif
 
     for (i = 0; i < ctl->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = ctl->def->disks[i];
+        virDomainDiskDef *disk = ctl->def->disks[i];
 
         if (virStorageSourceIsEmpty(disk->src))
             continue;
@@ -1033,7 +1033,7 @@ get_files(vahControl * ctl)
             goto cleanup;
 
     for (i = 0; i < ctl->def->ngraphics; i++) {
-        virDomainGraphicsDefPtr graphics = ctl->def->graphics[i];
+        virDomainGraphicsDef *graphics = ctl->def->graphics[i];
         size_t n;
         const char *rendernode = virDomainGraphicsGetRenderNode(graphics);
 
@@ -1070,11 +1070,11 @@ get_files(vahControl * ctl)
 
     for (i = 0; i < ctl->def->nhostdevs; i++)
         if (ctl->def->hostdevs[i]) {
-            virDomainHostdevDefPtr dev = ctl->def->hostdevs[i];
-            virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
+            virDomainHostdevDef *dev = ctl->def->hostdevs[i];
+            virDomainHostdevSubsysUSB *usbsrc = &dev->source.subsys.u.usb;
             switch (dev->source.subsys.type) {
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-                virUSBDevicePtr usb =
+                virUSBDevice *usb =
                     virUSBDeviceNew(usbsrc->bus, usbsrc->device, NULL);
 
                 if (usb == NULL)
@@ -1091,7 +1091,7 @@ get_files(vahControl * ctl)
             }
 
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV: {
-                virDomainHostdevSubsysMediatedDevPtr mdevsrc = &dev->source.subsys.u.mdev;
+                virDomainHostdevSubsysMediatedDev *mdevsrc = &dev->source.subsys.u.mdev;
                 switch ((virMediatedDeviceModelType) mdevsrc->model) {
                     case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
                     case VIR_MDEV_MODEL_TYPE_VFIO_AP:
@@ -1108,7 +1108,7 @@ get_files(vahControl * ctl)
             }
 
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-                virPCIDevicePtr pci = virPCIDeviceNew(&dev->source.subsys.u.pci.addr);
+                virPCIDevice *pci = virPCIDeviceNew(&dev->source.subsys.u.pci.addr);
 
                 virDomainHostdevSubsysPCIBackendType backend = dev->source.subsys.u.pci.backend;
                 if (backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO ||
@@ -1137,7 +1137,7 @@ get_files(vahControl * ctl)
                 (ctl->def->fss[i]->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_PATH ||
                  ctl->def->fss[i]->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT) &&
                 ctl->def->fss[i]->src) {
-            virDomainFSDefPtr fs = ctl->def->fss[i];
+            virDomainFSDef *fs = ctl->def->fss[i];
 
             /* We don't need to add deny rw rules for readonly mounts,
              * this can only lead to troubles when mounting / readonly.
@@ -1159,7 +1159,7 @@ get_files(vahControl * ctl)
         if (ctl->def->nets[i] &&
                 ctl->def->nets[i]->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
                 ctl->def->nets[i]->data.vhostuser) {
-            virDomainChrSourceDefPtr vhu = ctl->def->nets[i]->data.vhostuser;
+            virDomainChrSourceDef *vhu = ctl->def->nets[i]->data.vhostuser;
 
             if (vah_add_file_chardev(&buf, vhu->data.nix.path, "rw",
                        vhu->type) != 0)
@@ -1179,7 +1179,7 @@ get_files(vahControl * ctl)
         size_t j;
 
         for (j = 0; j < ctl->def->sysinfo[i]->nfw_cfgs; j++) {
-            virSysinfoFWCfgDefPtr f = &ctl->def->sysinfo[i]->fw_cfgs[j];
+            virSysinfoFWCfgDef *f = &ctl->def->sysinfo[i]->fw_cfgs[j];
 
             if (f->file &&
                 vah_add_file(&buf, f->file, "r") != 0)
@@ -1262,7 +1262,7 @@ get_files(vahControl * ctl)
     }
 
     for (i = 0; i < ctl->def->nsmartcards; i++) {
-        virDomainSmartcardDefPtr sc = ctl->def->smartcards[i];
+        virDomainSmartcardDef *sc = ctl->def->smartcards[i];
         virDomainSmartcardType sc_type = sc->type;
         char *sc_db = (char *)VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE;
         if (sc->data.cert.database)
@@ -1296,7 +1296,7 @@ get_files(vahControl * ctl)
 
     if (ctl->def->virtType == VIR_DOMAIN_VIRT_KVM) {
         for (i = 0; i < ctl->def->nnets; i++) {
-            virDomainNetDefPtr net = ctl->def->nets[i];
+            virDomainNetDef *net = ctl->def->nets[i];
             if (net && virDomainNetGetModelString(net)) {
                 if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_QEMU)
                     continue;

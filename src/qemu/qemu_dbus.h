@@ -21,19 +21,19 @@
 #include "qemu_conf.h"
 #include "qemu_domain.h"
 
-char *qemuDBusGetAddress(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm);
+char *qemuDBusGetAddress(virQEMUDriver *driver,
+                         virDomainObj *vm);
 
-int qemuDBusStart(virQEMUDriverPtr driver,
-                  virDomainObjPtr vm);
+int qemuDBusStart(virQEMUDriver *driver,
+                  virDomainObj *vm);
 
-void qemuDBusStop(virQEMUDriverPtr driver,
-                  virDomainObjPtr vm);
+void qemuDBusStop(virQEMUDriver *driver,
+                  virDomainObj *vm);
 
-void qemuDBusVMStateAdd(virDomainObjPtr vm, const char *id);
+void qemuDBusVMStateAdd(virDomainObj *vm, const char *id);
 
-void qemuDBusVMStateRemove(virDomainObjPtr vm, const char *id);
+void qemuDBusVMStateRemove(virDomainObj *vm, const char *id);
 
-int qemuDBusSetupCgroup(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm,
-                        virCgroupPtr cgroup);
+int qemuDBusSetupCgroup(virQEMUDriver *driver,
+                        virDomainObj *vm,
+                        virCgroup *cgroup);

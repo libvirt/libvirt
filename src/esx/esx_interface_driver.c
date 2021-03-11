@@ -165,10 +165,10 @@ esxInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
     esxVI_PhysicalNic *physicalNic = NULL;
     virInterfaceDef def;
     bool hasAddress = false;
-    virInterfaceProtocolDefPtr protocols;
+    virInterfaceProtocolDef *protocols;
     virInterfaceProtocolDef protocol;
     virSocketAddr socketAddress;
-    virInterfaceIPDefPtr ips;
+    virInterfaceIPDef *ips;
     virInterfaceIPDef ip;
 
     virCheckFlags(VIR_INTERFACE_XML_INACTIVE, NULL);

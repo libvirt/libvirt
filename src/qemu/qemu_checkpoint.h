@@ -22,66 +22,66 @@
 #include "datatypes.h"
 #include "qemu_conf.h"
 
-virDomainObjPtr
+virDomainObj *
 qemuDomObjFromCheckpoint(virDomainCheckpointPtr checkpoint);
 
-virDomainMomentObjPtr
-qemuCheckpointObjFromCheckpoint(virDomainObjPtr vm,
+virDomainMomentObj *
+qemuCheckpointObjFromCheckpoint(virDomainObj *vm,
                                 virDomainCheckpointPtr checkpoint);
 
-virDomainMomentObjPtr
-qemuCheckpointObjFromName(virDomainObjPtr vm,
+virDomainMomentObj *
+qemuCheckpointObjFromName(virDomainObj *vm,
                           const char *name);
 
 int
-qemuCheckpointDiscardAllMetadata(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm);
+qemuCheckpointDiscardAllMetadata(virQEMUDriver *driver,
+                                 virDomainObj *vm);
 
 virDomainCheckpointPtr
 qemuCheckpointCreateXML(virDomainPtr domain,
-                        virDomainObjPtr vm,
+                        virDomainObj *vm,
                         const char *xmlDesc,
                         unsigned int flags);
 
 
 char *
-qemuCheckpointGetXMLDesc(virDomainObjPtr vm,
+qemuCheckpointGetXMLDesc(virDomainObj *vm,
                          virDomainCheckpointPtr checkpoint,
                          unsigned int flags);
 
 int
-qemuCheckpointDelete(virDomainObjPtr vm,
+qemuCheckpointDelete(virDomainObj *vm,
                      virDomainCheckpointPtr checkpoint,
                      unsigned int flags);
 
 int
-qemuCheckpointCreateCommon(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
-                           virDomainCheckpointDefPtr *def,
-                           virJSONValuePtr *actions,
-                           virDomainMomentObjPtr *chk);
+qemuCheckpointCreateCommon(virQEMUDriver *driver,
+                           virDomainObj *vm,
+                           virDomainCheckpointDef **def,
+                           virJSONValue **actions,
+                           virDomainMomentObj **chk);
 
 int
-qemuCheckpointCreateFinalize(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             virQEMUDriverConfigPtr cfg,
-                             virDomainMomentObjPtr chk,
+qemuCheckpointCreateFinalize(virQEMUDriver *driver,
+                             virDomainObj *vm,
+                             virQEMUDriverConfig *cfg,
+                             virDomainMomentObj *chk,
                              bool update_current);
 
 void
-qemuCheckpointRollbackMetadata(virDomainObjPtr vm,
-                               virDomainMomentObjPtr chk);
+qemuCheckpointRollbackMetadata(virDomainObj *vm,
+                               virDomainMomentObj *chk);
 
 int
-qemuCheckpointDiscardDiskBitmaps(virStorageSourcePtr src,
+qemuCheckpointDiscardDiskBitmaps(virStorageSource *src,
                                  GHashTable *blockNamedNodeData,
                                  const char *delbitmap,
-                                 virJSONValuePtr actions,
+                                 virJSONValue *actions,
                                  const char *diskdst,
                                  GSList **reopenimages);
 
 int
-qemuCheckpointWriteMetadata(virDomainObjPtr vm,
-                            virDomainMomentObjPtr checkpoint,
-                            virDomainXMLOptionPtr xmlopt,
+qemuCheckpointWriteMetadata(virDomainObj *vm,
+                            virDomainMomentObj *checkpoint,
+                            virDomainXMLOption *xmlopt,
                             const char *checkpointDir);

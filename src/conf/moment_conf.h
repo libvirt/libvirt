@@ -41,15 +41,15 @@ struct _virDomainMomentDef {
      * guest and the inactive domain definition in case of
      * offline guest
      */
-    virDomainDefPtr dom;
+    virDomainDef *dom;
 
     /*
      * Store the inactive domain definition in case of online
      * guest and leave NULL in case of offline guest
      */
-    virDomainDefPtr inactiveDom;
+    virDomainDef *inactiveDom;
 };
 
-virClassPtr virClassForDomainMomentDef(void);
+virClass *virClassForDomainMomentDef(void);
 
-int virDomainMomentDefPostParse(virDomainMomentDefPtr def);
+int virDomainMomentDefPostParse(virDomainMomentDef *def);

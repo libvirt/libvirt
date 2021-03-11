@@ -29,7 +29,7 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 void
-virNetDevBandwidthFree(virNetDevBandwidthPtr def)
+virNetDevBandwidthFree(virNetDevBandwidth *def)
 {
     if (!def)
         return;
@@ -40,7 +40,7 @@ virNetDevBandwidthFree(virNetDevBandwidthPtr def)
 }
 
 static void
-virNetDevBandwidthCmdAddOptimalQuantum(virCommandPtr cmd,
+virNetDevBandwidthCmdAddOptimalQuantum(virCommand *cmd,
                                        const virNetDevBandwidthRate *rate)
 {
     const unsigned long long mtu = 1500;
@@ -103,7 +103,7 @@ virNetDevBandwidthManipulateFilter(const char *ifname,
 {
     int ret = -1;
     char *filter_id = NULL;
-    virCommandPtr cmd = NULL;
+    virCommand *cmd = NULL;
     unsigned char ifmac[VIR_MAC_BUFLEN];
     char *mac[2] = {NULL, NULL};
 
@@ -193,9 +193,9 @@ virNetDevBandwidthSet(const char *ifname,
                       bool swapped)
 {
     int ret = -1;
-    virNetDevBandwidthRatePtr rx = NULL; /* From domain POV */
-    virNetDevBandwidthRatePtr tx = NULL; /* From domain POV */
-    virCommandPtr cmd = NULL;
+    virNetDevBandwidthRate *rx = NULL; /* From domain POV */
+    virNetDevBandwidthRate *tx = NULL; /* From domain POV */
+    virCommand *cmd = NULL;
     char *average = NULL;
     char *peak = NULL;
     char *burst = NULL;
@@ -417,7 +417,7 @@ virNetDevBandwidthClear(const char *ifname)
 {
     int ret = 0;
     int dummy; /* for ignoring the exit status */
-    virCommandPtr cmd = NULL;
+    virCommand *cmd = NULL;
 
     if (!ifname)
        return 0;
@@ -450,7 +450,7 @@ virNetDevBandwidthClear(const char *ifname)
  * 0 otherwise.
  */
 int
-virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest,
+virNetDevBandwidthCopy(virNetDevBandwidth **dest,
                        const virNetDevBandwidth *src)
 {
     *dest = NULL;
@@ -537,13 +537,13 @@ virNetDevBandwidthEqual(const virNetDevBandwidth *a,
  */
 int
 virNetDevBandwidthPlug(const char *brname,
-                       virNetDevBandwidthPtr net_bandwidth,
+                       virNetDevBandwidth *net_bandwidth,
                        const virMacAddr *ifmac_ptr,
-                       virNetDevBandwidthPtr bandwidth,
+                       virNetDevBandwidth *bandwidth,
                        unsigned int id)
 {
     int ret = -1;
-    virCommandPtr cmd = NULL;
+    virCommand *cmd = NULL;
     char *class_id = NULL;
     char *qdisc_id = NULL;
     char *floor = NULL;
@@ -620,7 +620,7 @@ virNetDevBandwidthUnplug(const char *brname,
 {
     int ret = -1;
     int cmd_ret = 0;
-    virCommandPtr cmd = NULL;
+    virCommand *cmd = NULL;
     char *class_id = NULL;
     char *qdisc_id = NULL;
 
@@ -679,11 +679,11 @@ virNetDevBandwidthUnplug(const char *brname,
 int
 virNetDevBandwidthUpdateRate(const char *ifname,
                              unsigned int id,
-                             virNetDevBandwidthPtr bandwidth,
+                             virNetDevBandwidth *bandwidth,
                              unsigned long long new_rate)
 {
     int ret = -1;
-    virCommandPtr cmd = NULL;
+    virCommand *cmd = NULL;
     char *class_id = NULL;
     char *rate = NULL;
     char *ceil = NULL;

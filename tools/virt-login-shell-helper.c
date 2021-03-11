@@ -39,7 +39,7 @@
 
 static const char *conf_file = SYSCONFDIR "/libvirt/virt-login-shell.conf";
 
-static int virLoginShellAllowedUser(virConfPtr conf,
+static int virLoginShellAllowedUser(virConf *conf,
                                     const char *name,
                                     gid_t *groups,
                                     size_t ngroups)
@@ -89,7 +89,7 @@ static int virLoginShellAllowedUser(virConfPtr conf,
 }
 
 
-static int virLoginShellGetShellArgv(virConfPtr conf,
+static int virLoginShellGetShellArgv(virConf *conf,
                                      char ***shargv,
                                      size_t *shargvlen)
 {

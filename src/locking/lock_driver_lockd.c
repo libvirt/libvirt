@@ -44,13 +44,10 @@
 VIR_LOG_INIT("locking.lock_driver_lockd");
 
 typedef struct _virLockManagerLockDaemonPrivate virLockManagerLockDaemonPrivate;
-typedef virLockManagerLockDaemonPrivate *virLockManagerLockDaemonPrivatePtr;
 
 typedef struct _virLockManagerLockDaemonResource virLockManagerLockDaemonResource;
-typedef virLockManagerLockDaemonResource *virLockManagerLockDaemonResourcePtr;
 
 typedef struct _virLockManagerLockDaemonDriver virLockManagerLockDaemonDriver;
-typedef virLockManagerLockDaemonDriver *virLockManagerLockDaemonDriverPtr;
 
 struct _virLockManagerLockDaemonResource {
     char *lockspace;
@@ -65,7 +62,7 @@ struct _virLockManagerLockDaemonPrivate {
     pid_t pid;
 
     size_t nresources;
-    virLockManagerLockDaemonResourcePtr resources;
+    virLockManagerLockDaemonResource *resources;
 
     bool hasRWDisks;
 };
@@ -80,7 +77,7 @@ struct _virLockManagerLockDaemonDriver {
     char *scsiLockSpaceDir;
 };
 
-static virLockManagerLockDaemonDriverPtr driver;
+static virLockManagerLockDaemonDriver *driver;
 
 static int virLockManagerLockDaemonLoadConfig(const char *configFile)
 {
@@ -136,12 +133,12 @@ static char *virLockManagerLockDaemonPath(bool privileged)
 
 
 static int
-virLockManagerLockDaemonConnectionRegister(virLockManagerPtr lock,
-                                           virNetClientPtr client,
-                                           virNetClientProgramPtr program,
+virLockManagerLockDaemonConnectionRegister(virLockManager *lock,
+                                           virNetClient *client,
+                                           virNetClientProgram *program,
                                            int *counter)
 {
-    virLockManagerLockDaemonPrivatePtr priv = lock->privateData;
+    virLockManagerLockDaemonPrivate *priv = lock->privateData;
     virLockSpaceProtocolRegisterArgs args;
 
     memset(&args, 0, sizeof(args));
@@ -166,9 +163,9 @@ virLockManagerLockDaemonConnectionRegister(virLockManagerPtr lock,
 
 
 static int
-virLockManagerLockDaemonConnectionRestrict(virLockManagerPtr lock G_GNUC_UNUSED,
-                                           virNetClientPtr client,
-                                           virNetClientProgramPtr program,
+virLockManagerLockDaemonConnectionRestrict(virLockManager *lock G_GNUC_UNUSED,
+                                           virNetClient *client,
+                                           virNetClientProgram *program,
                                            int *counter)
 {
     virLockSpaceProtocolRestrictArgs args;
@@ -190,10 +187,10 @@ virLockManagerLockDaemonConnectionRestrict(virLockManagerPtr lock G_GNUC_UNUSED,
 }
 
 
-static virNetClientPtr virLockManagerLockDaemonConnectionNew(bool privileged,
-                                                             virNetClientProgramPtr *prog)
+static virNetClient *virLockManagerLockDaemonConnectionNew(bool privileged,
+                                                             virNetClientProgram **prog)
 {
-    virNetClientPtr client = NULL;
+    virNetClient *client = NULL;
     char *lockdpath;
     char *daemonPath = NULL;
 
@@ -240,12 +237,12 @@ static virNetClientPtr virLockManagerLockDaemonConnectionNew(bool privileged,
 }
 
 
-static virNetClientPtr
-virLockManagerLockDaemonConnect(virLockManagerPtr lock,
-                                virNetClientProgramPtr *program,
+static virNetClient *
+virLockManagerLockDaemonConnect(virLockManager *lock,
+                                virNetClientProgram **program,
                                 int *counter)
 {
-    virNetClientPtr client;
+    virNetClient *client;
 
     if (!(client = virLockManagerLockDaemonConnectionNew(geteuid() == 0, program)))
         return NULL;
@@ -267,8 +264,8 @@ virLockManagerLockDaemonConnect(virLockManagerPtr lock,
 
 static int virLockManagerLockDaemonSetupLockspace(const char *path)
 {
-    virNetClientPtr client;
-    virNetClientProgramPtr program = NULL;
+    virNetClient *client;
+    virNetClientProgram *program = NULL;
     virLockSpaceProtocolCreateLockSpaceArgs args;
     int rv = -1;
     int counter = 0;
@@ -361,7 +358,7 @@ static int virLockManagerLockDaemonDeinit(void)
 }
 
 static void
-virLockManagerLockDaemonPrivateFree(virLockManagerLockDaemonPrivatePtr priv)
+virLockManagerLockDaemonPrivateFree(virLockManagerLockDaemonPrivate *priv)
 {
     size_t i;
 
@@ -378,7 +375,7 @@ virLockManagerLockDaemonPrivateFree(virLockManagerLockDaemonPrivatePtr priv)
     g_free(priv);
 }
 
-static void virLockManagerLockDaemonFree(virLockManagerPtr lock)
+static void virLockManagerLockDaemonFree(virLockManager *lock)
 {
     if (!lock)
         return;
@@ -388,13 +385,13 @@ static void virLockManagerLockDaemonFree(virLockManagerPtr lock)
 }
 
 
-static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
+static int virLockManagerLockDaemonNew(virLockManager *lock,
                                        unsigned int type,
                                        size_t nparams,
-                                       virLockManagerParamPtr params,
+                                       virLockManagerParam *params,
                                        unsigned int flags)
 {
-    virLockManagerLockDaemonPrivatePtr priv = NULL;
+    virLockManagerLockDaemonPrivate *priv = NULL;
     size_t i;
     int ret = -1;
 
@@ -522,14 +519,14 @@ virLockManagerGetLVMKey(const char *path,
 #endif
 
 
-static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
+static int virLockManagerLockDaemonAddResource(virLockManager *lock,
                                                unsigned int type,
                                                const char *name,
                                                size_t nparams,
-                                               virLockManagerParamPtr params,
+                                               virLockManagerParam *params,
                                                unsigned int flags)
 {
-    virLockManagerLockDaemonPrivatePtr priv = lock->privateData;
+    virLockManagerLockDaemonPrivate *priv = lock->privateData;
     char *newName = NULL;
     char *newLockspace = NULL;
     bool autoCreate = false;
@@ -661,17 +658,17 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
 }
 
 
-static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
+static int virLockManagerLockDaemonAcquire(virLockManager *lock,
                                            const char *state G_GNUC_UNUSED,
                                            unsigned int flags,
                                            virDomainLockFailureAction action G_GNUC_UNUSED,
                                            int *fd)
 {
-    virNetClientPtr client = NULL;
-    virNetClientProgramPtr program = NULL;
+    virNetClient *client = NULL;
+    virNetClientProgram *program = NULL;
     int counter = 0;
     int rv = -1;
-    virLockManagerLockDaemonPrivatePtr priv = lock->privateData;
+    virLockManagerLockDaemonPrivate *priv = lock->privateData;
 
     virCheckFlags(VIR_LOCK_MANAGER_ACQUIRE_REGISTER_ONLY |
                   VIR_LOCK_MANAGER_ACQUIRE_RESTRICT, -1);
@@ -729,16 +726,16 @@ static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
     return rv;
 }
 
-static int virLockManagerLockDaemonRelease(virLockManagerPtr lock,
+static int virLockManagerLockDaemonRelease(virLockManager *lock,
                                            char **state,
                                            unsigned int flags)
 {
-    virNetClientPtr client = NULL;
-    virNetClientProgramPtr program = NULL;
+    virNetClient *client = NULL;
+    virNetClientProgram *program = NULL;
     int counter = 0;
     int rv = -1;
     size_t i;
-    virLockManagerLockDaemonPrivatePtr priv = lock->privateData;
+    virLockManagerLockDaemonPrivate *priv = lock->privateData;
 
     virCheckFlags(0, -1);
 
@@ -783,7 +780,7 @@ static int virLockManagerLockDaemonRelease(virLockManagerPtr lock,
 }
 
 
-static int virLockManagerLockDaemonInquire(virLockManagerPtr lock G_GNUC_UNUSED,
+static int virLockManagerLockDaemonInquire(virLockManager *lock G_GNUC_UNUSED,
                                            char **state,
                                            unsigned int flags)
 {

@@ -17,17 +17,17 @@
 
 static int
 testCompareXMLToConfFiles(const char *inxml, const char *outconf,
-                          char *outhostsfile, dnsmasqCapsPtr caps)
+                          char *outhostsfile, dnsmasqCaps *caps)
 {
     char *confactual = NULL;
     char *hostsfileactual = NULL;
     int ret = -1;
-    virNetworkDefPtr def = NULL;
-    virNetworkObjPtr obj = NULL;
-    virCommandPtr cmd = NULL;
+    virNetworkDef *def = NULL;
+    virNetworkObj *obj = NULL;
+    virCommand *cmd = NULL;
     char *pidfile = NULL;
     dnsmasqContext *dctx = NULL;
-    virNetworkXMLOptionPtr xmlopt = NULL;
+    virNetworkXMLOption *xmlopt = NULL;
 
     if (!(xmlopt = networkDnsmasqCreateXMLConf()))
         goto fail;
@@ -93,7 +93,7 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf,
 
 typedef struct {
     const char *name;
-    dnsmasqCapsPtr caps;
+    dnsmasqCaps *caps;
 } testInfo;
 
 static int
@@ -122,11 +122,11 @@ static int
 mymain(void)
 {
     int ret = 0;
-    dnsmasqCapsPtr restricted
+    dnsmasqCaps *restricted
         = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.48", DNSMASQ);
-    dnsmasqCapsPtr full
+    dnsmasqCaps *full
         = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.63\n--bind-dynamic", DNSMASQ);
-    dnsmasqCapsPtr dhcpv6
+    dnsmasqCaps *dhcpv6
         = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.64\n--bind-dynamic", DNSMASQ);
 
 #define DO_TEST(xname, xcaps) \

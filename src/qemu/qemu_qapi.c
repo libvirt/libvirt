@@ -40,14 +40,14 @@ VIR_LOG_INIT("qemu.qemu_qapi");
  * Helper that selects the type of a QMP schema object member or it's variant
  * member. Returns the QMP entry on success or NULL on error.
  */
-static virJSONValuePtr
+static virJSONValue *
 virQEMUQAPISchemaObjectGet(const char *field,
                            const char *name,
                            const char *namefield,
-                           virJSONValuePtr elem)
+                           virJSONValue *elem)
 {
-    virJSONValuePtr arr;
-    virJSONValuePtr cur;
+    virJSONValue *arr;
+    virJSONValue *cur;
     const char *curname;
     size_t i;
 
@@ -71,7 +71,7 @@ struct virQEMUQAPISchemaTraverseContext {
     const char *prevquery;
     GHashTable *schema;
     char **queries;
-    virJSONValuePtr returnType;
+    virJSONValue *returnType;
     size_t depth;
 };
 
@@ -132,10 +132,10 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  */
 static int
 virQEMUQAPISchemaTraverseHasObjectFeature(const char *featurename,
-                                          virJSONValuePtr elem)
+                                          virJSONValue *elem)
 {
-    virJSONValuePtr featuresarray;
-    virJSONValuePtr cur;
+    virJSONValue *featuresarray;
+    virJSONValue *cur;
     const char *curstr;
     size_t i;
 
@@ -156,10 +156,10 @@ virQEMUQAPISchemaTraverseHasObjectFeature(const char *featurename,
 
 
 static int
-virQEMUQAPISchemaTraverseObject(virJSONValuePtr cur,
+virQEMUQAPISchemaTraverseObject(virJSONValue *cur,
                                 struct virQEMUQAPISchemaTraverseContext *ctxt)
 {
-    virJSONValuePtr obj;
+    virJSONValue *obj;
     const char *query = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
     char modifier = *query;
 
@@ -195,7 +195,7 @@ virQEMUQAPISchemaTraverseObject(virJSONValuePtr cur,
 
 
 static int
-virQEMUQAPISchemaTraverseArray(virJSONValuePtr cur,
+virQEMUQAPISchemaTraverseArray(virJSONValue *cur,
                                struct virQEMUQAPISchemaTraverseContext *ctxt)
 {
     const char *querytype;
@@ -209,7 +209,7 @@ virQEMUQAPISchemaTraverseArray(virJSONValuePtr cur,
 
 
 static int
-virQEMUQAPISchemaTraverseCommand(virJSONValuePtr cur,
+virQEMUQAPISchemaTraverseCommand(virJSONValue *cur,
                                  struct virQEMUQAPISchemaTraverseContext *ctxt)
 {
     const char *query = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
@@ -238,12 +238,12 @@ virQEMUQAPISchemaTraverseCommand(virJSONValuePtr cur,
 
 
 static int
-virQEMUQAPISchemaTraverseEnum(virJSONValuePtr cur,
+virQEMUQAPISchemaTraverseEnum(virJSONValue *cur,
                               struct virQEMUQAPISchemaTraverseContext *ctxt)
 {
     const char *query = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
-    virJSONValuePtr values;
-    virJSONValuePtr enumval;
+    virJSONValue *values;
+    virJSONValue *enumval;
     const char *value;
     size_t i;
 
@@ -272,7 +272,7 @@ virQEMUQAPISchemaTraverseEnum(virJSONValuePtr cur,
 
 
 static int
-virQEMUQAPISchemaTraverseBuiltin(virJSONValuePtr cur,
+virQEMUQAPISchemaTraverseBuiltin(virJSONValue *cur,
                                  struct virQEMUQAPISchemaTraverseContext *ctxt)
 {
     const char *query = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
@@ -297,12 +297,12 @@ virQEMUQAPISchemaTraverseBuiltin(virJSONValuePtr cur,
 
 
 static int
-virQEMUQAPISchemaTraverseAlternate(virJSONValuePtr cur,
+virQEMUQAPISchemaTraverseAlternate(virJSONValue *cur,
                                    struct virQEMUQAPISchemaTraverseContext *ctxt)
 {
     struct virQEMUQAPISchemaTraverseContext savectxt = *ctxt;
-    virJSONValuePtr members;
-    virJSONValuePtr member;
+    virJSONValue *members;
+    virJSONValue *member;
     const char *membertype;
     int rc;
     size_t i;
@@ -328,7 +328,7 @@ virQEMUQAPISchemaTraverseAlternate(virJSONValuePtr cur,
 /* The function must return 1 on successful query, 0 if the query was not found
  * -1 when a libvirt error is reported, -2 if the schema is invalid and -3 if
  *  the query component is malformed. */
-typedef int (*virQEMUQAPISchemaTraverseFunc)(virJSONValuePtr cur,
+typedef int (*virQEMUQAPISchemaTraverseFunc)(virJSONValue *cur,
                                              struct virQEMUQAPISchemaTraverseContext *ctxt);
 
 struct virQEMUQAPISchemaTraverseMetaType {
@@ -352,7 +352,7 @@ static int
 virQEMUQAPISchemaTraverse(const char *baseName,
                           struct virQEMUQAPISchemaTraverseContext *ctxt)
 {
-    virJSONValuePtr cur;
+    virJSONValue *cur;
     const char *metatype;
     size_t i;
 
@@ -430,7 +430,7 @@ virQEMUQAPISchemaTraverse(const char *baseName,
 int
 virQEMUQAPISchemaPathGet(const char *query,
                          GHashTable *schema,
-                         virJSONValuePtr *entry)
+                         virJSONValue **entry)
 {
     g_auto(GStrv) elems = NULL;
     struct virQEMUQAPISchemaTraverseContext ctxt;
@@ -485,7 +485,7 @@ virQEMUQAPISchemaPathExists(const char *query,
 
 static int
 virQEMUQAPISchemaEntryProcess(size_t pos G_GNUC_UNUSED,
-                              virJSONValuePtr item,
+                              virJSONValue *item,
                               void *opaque)
 {
     const char *name;
@@ -512,7 +512,7 @@ virQEMUQAPISchemaEntryProcess(size_t pos G_GNUC_UNUSED,
  * the schema. @schemareply is consumed and freed.
  */
 GHashTable *
-virQEMUQAPISchemaConvert(virJSONValuePtr schemareply)
+virQEMUQAPISchemaConvert(virJSONValue *schemareply)
 {
     g_autoptr(GHashTable) schema = NULL;
     g_autoptr(virJSONValue) schemajson = schemareply;

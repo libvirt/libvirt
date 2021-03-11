@@ -51,12 +51,12 @@ printLineSkipEmpty(const char *line,
 }
 
 
-static int (*realQemuMonitorSend)(qemuMonitorPtr mon,
-                                  qemuMonitorMessagePtr msg);
+static int (*realQemuMonitorSend)(qemuMonitor *mon,
+                                  qemuMonitorMessage *msg);
 
 int
-qemuMonitorSend(qemuMonitorPtr mon,
-                qemuMonitorMessagePtr msg)
+qemuMonitorSend(qemuMonitor *mon,
+                qemuMonitorMessage *msg)
 {
     char *reformatted;
 
@@ -79,16 +79,16 @@ qemuMonitorSend(qemuMonitorPtr mon,
 }
 
 
-static int (*realQemuMonitorJSONIOProcessLine)(qemuMonitorPtr mon,
+static int (*realQemuMonitorJSONIOProcessLine)(qemuMonitor *mon,
                                                const char *line,
-                                               qemuMonitorMessagePtr msg);
+                                               qemuMonitorMessage *msg);
 
 int
-qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
+qemuMonitorJSONIOProcessLine(qemuMonitor *mon,
                              const char *line,
-                             qemuMonitorMessagePtr msg)
+                             qemuMonitorMessage *msg)
 {
-    virJSONValuePtr value = NULL;
+    virJSONValue *value = NULL;
     char *json = NULL;
     int ret;
 

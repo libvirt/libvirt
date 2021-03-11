@@ -53,7 +53,7 @@ virDomainDriverGenerateRootHash(const char *drivername,
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-"
 
 static void
-virDomainMachineNameAppendValid(virBufferPtr buf,
+virDomainMachineNameAppendValid(virBuffer *buf,
                                 const char *name)
 {
     bool skip = true;
@@ -121,15 +121,15 @@ virDomainDriverGenerateMachineName(const char *drivername,
 /* Modify dest_array to reflect all blkio device changes described in
  * src_array.  */
 int
-virDomainDriverMergeBlkioDevice(virBlkioDevicePtr *dest_array,
+virDomainDriverMergeBlkioDevice(virBlkioDevice **dest_array,
                                 size_t *dest_size,
-                                virBlkioDevicePtr src_array,
+                                virBlkioDevice *src_array,
                                 size_t src_size,
                                 const char *type)
 {
     size_t i, j;
-    virBlkioDevicePtr dest;
-    virBlkioDevicePtr src;
+    virBlkioDevice *dest;
+    virBlkioDevice *src;
 
     for (i = 0; i < src_size; i++) {
         bool found = false;
@@ -192,13 +192,13 @@ virDomainDriverMergeBlkioDevice(virBlkioDevicePtr *dest_array,
  */
 int
 virDomainDriverParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
-                                   virBlkioDevicePtr *dev, size_t *size)
+                                   virBlkioDevice **dev, size_t *size)
 {
     char *temp;
     int ndevices = 0;
     int nsep = 0;
     size_t i;
-    virBlkioDevicePtr result = NULL;
+    virBlkioDevice *result = NULL;
 
     *dev = NULL;
     *size = 0;
@@ -298,7 +298,7 @@ virDomainDriverParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
 
 
 int
-virDomainDriverSetupPersistentDefBlkioParams(virDomainDefPtr persistentDef,
+virDomainDriverSetupPersistentDefBlkioParams(virDomainDef *persistentDef,
                                              virTypedParameterPtr params,
                                              int nparams)
 {
@@ -315,7 +315,7 @@ virDomainDriverSetupPersistentDefBlkioParams(virDomainDefPtr persistentDef,
                    STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS) ||
                    STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_READ_BPS) ||
                    STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS)) {
-            virBlkioDevicePtr devices = NULL;
+            virBlkioDevice *devices = NULL;
             size_t ndevices;
 
             if (virDomainDriverParseBlkioDeviceStr(param->value.s,
@@ -342,10 +342,10 @@ virDomainDriverSetupPersistentDefBlkioParams(virDomainDefPtr persistentDef,
 
 
 int
-virDomainDriverNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
-                                    virPCIDeviceAddressPtr devAddr)
+virDomainDriverNodeDeviceGetPCIInfo(virNodeDeviceDef *def,
+                                    virPCIDeviceAddress *devAddr)
 {
-    virNodeDevCapsDefPtr cap;
+    virNodeDevCapsDef *cap;
 
     cap = def->caps;
     while (cap) {
@@ -372,7 +372,7 @@ virDomainDriverNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
 
 int
 virDomainDriverNodeDeviceReset(virNodeDevicePtr dev,
-                               virHostdevManagerPtr hostdevMgr)
+                               virHostdevManager *hostdevMgr)
 {
     g_autoptr(virPCIDevice) pci = NULL;
     virPCIDeviceAddress devAddr;
@@ -417,7 +417,7 @@ virDomainDriverNodeDeviceReset(virNodeDevicePtr dev,
 
 int
 virDomainDriverNodeDeviceReAttach(virNodeDevicePtr dev,
-                                  virHostdevManagerPtr hostdevMgr)
+                                  virHostdevManager *hostdevMgr)
 {
     g_autoptr(virPCIDevice) pci = NULL;
     virPCIDeviceAddress devAddr;
@@ -461,7 +461,7 @@ virDomainDriverNodeDeviceReAttach(virNodeDevicePtr dev,
 
 int
 virDomainDriverNodeDeviceDetachFlags(virNodeDevicePtr dev,
-                                     virHostdevManagerPtr hostdevMgr,
+                                     virHostdevManager *hostdevMgr,
                                      const char *driverName)
 {
     g_autoptr(virPCIDevice) pci = NULL;

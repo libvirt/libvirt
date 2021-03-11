@@ -38,7 +38,7 @@
 VIR_LOG_INIT("conf.secret_conf");
 
 void
-virSecretDefFree(virSecretDefPtr def)
+virSecretDefFree(virSecretDef *def)
 {
     if (def == NULL)
         return;
@@ -50,7 +50,7 @@ virSecretDefFree(virSecretDefPtr def)
 
 static int
 virSecretDefParseUsage(xmlXPathContextPtr ctxt,
-                       virSecretDefPtr def)
+                       virSecretDef *def)
 {
     g_autofree char *type_str = NULL;
     int type;
@@ -126,7 +126,7 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
     return 0;
 }
 
-static virSecretDefPtr
+static virSecretDef *
 secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
 {
     g_autoptr(xmlXPathContext) ctxt = NULL;
@@ -189,12 +189,12 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
     return g_steal_pointer(&def);
 }
 
-static virSecretDefPtr
+static virSecretDef *
 virSecretDefParse(const char *xmlStr,
                   const char *filename)
 {
     xmlDocPtr xml;
-    virSecretDefPtr ret = NULL;
+    virSecretDef *ret = NULL;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(definition_of_secret)")))) {
         ret = secretXMLParseNode(xml, xmlDocGetRootElement(xml));
@@ -204,20 +204,20 @@ virSecretDefParse(const char *xmlStr,
     return ret;
 }
 
-virSecretDefPtr
+virSecretDef *
 virSecretDefParseString(const char *xmlStr)
 {
     return virSecretDefParse(xmlStr, NULL);
 }
 
-virSecretDefPtr
+virSecretDef *
 virSecretDefParseFile(const char *filename)
 {
     return virSecretDefParse(NULL, filename);
 }
 
 static int
-virSecretDefFormatUsage(virBufferPtr buf,
+virSecretDefFormatUsage(virBuffer *buf,
                         const virSecretDef *def)
 {
     const char *type;

@@ -54,7 +54,7 @@ VIR_ENUM_IMPL(virCapsHostPMTarget,
               "suspend_mem", "suspend_disk", "suspend_hybrid",
 );
 
-static virClassPtr virCapsClass;
+static virClass *virCapsClass;
 static void virCapsDispose(void *obj);
 
 static int virCapabilitiesOnceInit(void)
@@ -75,12 +75,12 @@ VIR_ONCE_GLOBAL_INIT(virCapabilities);
  *
  * Allocate a new capabilities object
  */
-virCapsPtr
+virCaps *
 virCapabilitiesNew(virArch hostarch,
                    bool offlineMigrate,
                    bool liveMigrate)
 {
-    virCapsPtr caps;
+    virCaps *caps;
 
     if (virCapabilitiesInitialize() < 0)
         return NULL;
@@ -96,7 +96,7 @@ virCapabilitiesNew(virArch hostarch,
 }
 
 void
-virCapabilitiesClearHostNUMACellCPUTopology(virCapsHostNUMACellCPUPtr cpus,
+virCapabilitiesClearHostNUMACellCPUTopology(virCapsHostNUMACellCPU *cpus,
                                             size_t ncpus)
 {
     size_t i;
@@ -111,7 +111,7 @@ virCapabilitiesClearHostNUMACellCPUTopology(virCapsHostNUMACellCPUPtr cpus,
 }
 
 static void
-virCapabilitiesFreeHostNUMACell(virCapsHostNUMACellPtr cell)
+virCapabilitiesFreeHostNUMACell(virCapsHostNUMACell *cell)
 {
     if (cell == NULL)
         return;
@@ -125,7 +125,7 @@ virCapabilitiesFreeHostNUMACell(virCapsHostNUMACellPtr cell)
 }
 
 static void
-virCapabilitiesFreeGuestMachine(virCapsGuestMachinePtr machine)
+virCapabilitiesFreeGuestMachine(virCapsGuestMachine *machine)
 {
     if (machine == NULL)
         return;
@@ -135,7 +135,7 @@ virCapabilitiesFreeGuestMachine(virCapsGuestMachinePtr machine)
 }
 
 static void
-virCapabilitiesFreeGuestDomain(virCapsGuestDomainPtr dom)
+virCapabilitiesFreeGuestDomain(virCapsGuestDomain *dom)
 {
     size_t i;
     if (dom == NULL)
@@ -151,7 +151,7 @@ virCapabilitiesFreeGuestDomain(virCapsGuestDomainPtr dom)
 }
 
 void
-virCapabilitiesFreeGuest(virCapsGuestPtr guest)
+virCapabilitiesFreeGuest(virCapsGuest *guest)
 {
     size_t i;
     if (guest == NULL)
@@ -172,7 +172,7 @@ virCapabilitiesFreeGuest(virCapsGuestPtr guest)
 
 
 static void
-virCapabilitiesFreeStoragePool(virCapsStoragePoolPtr pool)
+virCapabilitiesFreeStoragePool(virCapsStoragePool *pool)
 {
     if (!pool)
         return;
@@ -182,7 +182,7 @@ virCapabilitiesFreeStoragePool(virCapsStoragePoolPtr pool)
 
 
 void
-virCapabilitiesHostNUMAUnref(virCapsHostNUMAPtr caps)
+virCapabilitiesHostNUMAUnref(virCapsHostNUMA *caps)
 {
     if (!caps)
         return;
@@ -195,13 +195,13 @@ virCapabilitiesHostNUMAUnref(virCapsHostNUMAPtr caps)
 }
 
 void
-virCapabilitiesHostNUMARef(virCapsHostNUMAPtr caps)
+virCapabilitiesHostNUMARef(virCapsHostNUMA *caps)
 {
     g_atomic_int_inc(&caps->refs);
 }
 
 static void
-virCapsHostMemBWNodeFree(virCapsHostMemBWNodePtr ptr)
+virCapsHostMemBWNodeFree(virCapsHostMemBWNode *ptr)
 {
     if (!ptr)
         return;
@@ -211,7 +211,7 @@ virCapsHostMemBWNodeFree(virCapsHostMemBWNodePtr ptr)
 }
 
 static void
-virCapabilitiesClearSecModel(virCapsHostSecModelPtr secmodel)
+virCapabilitiesClearSecModel(virCapsHostSecModel *secmodel)
 {
     size_t i;
     for (i = 0; i < secmodel->nlabels; i++) {
@@ -227,7 +227,7 @@ virCapabilitiesClearSecModel(virCapsHostSecModelPtr secmodel)
 static void
 virCapsDispose(void *object)
 {
-    virCapsPtr caps = object;
+    virCaps *caps = object;
     size_t i;
 
     for (i = 0; i < caps->npools; i++)
@@ -277,7 +277,7 @@ virCapsDispose(void *object)
  * Registers a new host CPU feature, eg 'pae', or 'vmx'
  */
 int
-virCapabilitiesAddHostFeature(virCapsPtr caps,
+virCapabilitiesAddHostFeature(virCaps *caps,
                               const char *name)
 {
     VIR_RESIZE_N(caps->host.features, caps->host.nfeatures_max,
@@ -296,7 +296,7 @@ virCapabilitiesAddHostFeature(virCapsPtr caps,
  * Registers a new domain migration transport URI
  */
 int
-virCapabilitiesAddHostMigrateTransport(virCapsPtr caps,
+virCapabilitiesAddHostMigrateTransport(virCaps *caps,
                                        const char *name)
 {
     VIR_RESIZE_N(caps->host.migrateTrans, caps->host.nmigrateTrans_max,
@@ -315,7 +315,7 @@ virCapabilitiesAddHostMigrateTransport(virCapsPtr caps,
  * Registers the prefix that is used for generated network interfaces
  */
 int
-virCapabilitiesSetNetPrefix(virCapsPtr caps,
+virCapabilitiesSetNetPrefix(virCaps *caps,
                             const char *prefix)
 {
     caps->host.netprefix = g_strdup(prefix);
@@ -340,17 +340,17 @@ virCapabilitiesSetNetPrefix(virCapsPtr caps,
  * array of CPU IDs belonging to the cell
  */
 void
-virCapabilitiesHostNUMAAddCell(virCapsHostNUMAPtr caps,
+virCapabilitiesHostNUMAAddCell(virCapsHostNUMA *caps,
                                int num,
                                unsigned long long mem,
                                int ncpus,
-                               virCapsHostNUMACellCPUPtr cpus,
+                               virCapsHostNUMACellCPU *cpus,
                                int nsiblings,
-                               virCapsHostNUMACellSiblingInfoPtr siblings,
+                               virCapsHostNUMACellSiblingInfo *siblings,
                                int npageinfo,
-                               virCapsHostNUMACellPageInfoPtr pageinfo)
+                               virCapsHostNUMACellPageInfo *pageinfo)
 {
-    virCapsHostNUMACellPtr cell = g_new0(virCapsHostNUMACell, 1);
+    virCapsHostNUMACell *cell = g_new0(virCapsHostNUMACell, 1);
 
     cell->num = num;
     cell->mem = mem;
@@ -369,16 +369,16 @@ virCapabilitiesHostNUMAAddCell(virCapsHostNUMAPtr caps,
  * @machines: machine variants for emulator ('pc', or 'isapc', etc)
  * @nmachines: number of machine variants for emulator
  *
- * Allocate a table of virCapsGuestMachinePtr from the supplied table
+ * Allocate a table of virCapsGuestMachine *from the supplied table
  * of machine names.
  */
-virCapsGuestMachinePtr *
+virCapsGuestMachine **
 virCapabilitiesAllocMachines(const char *const *names, int nnames)
 {
-    virCapsGuestMachinePtr *machines;
+    virCapsGuestMachine **machines;
     size_t i;
 
-    machines = g_new0(virCapsGuestMachinePtr, nnames);
+    machines = g_new0(virCapsGuestMachine *, nnames);
 
     for (i = 0; i < nnames; i++) {
         machines[i] = g_new0(virCapsGuestMachine, 1);
@@ -392,10 +392,10 @@ virCapabilitiesAllocMachines(const char *const *names, int nnames)
  * virCapabilitiesFreeMachines:
  * @machines: table of vircapsGuestMachinePtr
  *
- * Free a table of virCapsGuestMachinePtr
+ * Free a table of virCapsGuestMachine *
  */
 void
-virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
+virCapabilitiesFreeMachines(virCapsGuestMachine **machines,
                             int nmachines)
 {
     size_t i;
@@ -423,16 +423,16 @@ virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
  * followed by registration of at least one domain for
  * running the guest
  */
-virCapsGuestPtr
-virCapabilitiesAddGuest(virCapsPtr caps,
+virCapsGuest *
+virCapabilitiesAddGuest(virCaps *caps,
                         int ostype,
                         virArch arch,
                         const char *emulator,
                         const char *loader,
                         int nmachines,
-                        virCapsGuestMachinePtr *machines)
+                        virCapsGuestMachine **machines)
 {
-    virCapsGuestPtr guest;
+    virCapsGuest *guest;
 
     guest = g_new0(virCapsGuest, 1);
 
@@ -467,15 +467,15 @@ virCapabilitiesAddGuest(virCapsPtr caps,
  * Registers a virtual domain capable of running a
  * guest operating system
  */
-virCapsGuestDomainPtr
-virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
+virCapsGuestDomain *
+virCapabilitiesAddGuestDomain(virCapsGuest *guest,
                               int hvtype,
                               const char *emulator,
                               const char *loader,
                               int nmachines,
-                              virCapsGuestMachinePtr *machines)
+                              virCapsGuestMachine **machines)
 {
-    virCapsGuestDomainPtr dom;
+    virCapsGuestDomain *dom;
 
     dom = g_new0(virCapsGuestDomain, 1);
 
@@ -516,7 +516,7 @@ static const struct virCapsGuestFeatureInfo virCapsGuestFeatureInfos[VIR_CAPS_GU
 
 
 static void
-virCapabilitiesAddGuestFeatureInternal(virCapsGuestPtr guest,
+virCapabilitiesAddGuestFeatureInternal(virCapsGuest *guest,
                                        virCapsGuestFeatureType feature,
                                        bool defaultOn,
                                        bool toggle)
@@ -538,7 +538,7 @@ virCapabilitiesAddGuestFeatureInternal(virCapsGuestPtr guest,
  * Registers a feature for a guest domain.
  */
 void
-virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
+virCapabilitiesAddGuestFeature(virCapsGuest *guest,
                                virCapsGuestFeatureType feature)
 {
     virCapabilitiesAddGuestFeatureInternal(guest, feature, false, false);
@@ -555,7 +555,7 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
  * Registers a feature with toggles for a guest domain.
  */
 void
-virCapabilitiesAddGuestFeatureWithToggle(virCapsGuestPtr guest,
+virCapabilitiesAddGuestFeatureWithToggle(virCapsGuest *guest,
                                          virCapsGuestFeatureType feature,
                                          bool defaultOn,
                                          bool toggle)
@@ -573,7 +573,7 @@ virCapabilitiesAddGuestFeatureWithToggle(virCapsGuestPtr guest,
  * Returns non-zero on error.
  */
 extern int
-virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModelPtr secmodel,
+virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModel *secmodel,
                                         const char *type,
                                         const char *label)
 {
@@ -588,24 +588,24 @@ virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModelPtr secmodel,
 }
 
 
-static virCapsDomainDataPtr
-virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
+static virCapsDomainData *
+virCapabilitiesDomainDataLookupInternal(virCaps *caps,
                                         int ostype,
                                         virArch arch,
                                         virDomainVirtType domaintype,
                                         const char *emulator,
                                         const char *machinetype)
 {
-    virCapsGuestPtr foundguest = NULL;
-    virCapsGuestDomainPtr founddomain = NULL;
-    virCapsGuestMachinePtr foundmachine = NULL;
-    virCapsDomainDataPtr ret = NULL;
+    virCapsGuest *foundguest = NULL;
+    virCapsGuestDomain *founddomain = NULL;
+    virCapsGuestMachine *foundmachine = NULL;
+    virCapsDomainData *ret = NULL;
     size_t i, j, k;
 
     VIR_DEBUG("Lookup ostype=%d arch=%d domaintype=%d emulator=%s machine=%s",
               ostype, arch, domaintype, NULLSTR(emulator), NULLSTR(machinetype));
     for (i = 0; i < caps->nguests; i++) {
-        virCapsGuestPtr guest = caps->guests[i];
+        virCapsGuest *guest = caps->guests[i];
 
         if (ostype != -1 && guest->ostype != ostype) {
             VIR_DEBUG("Skip os type want=%d vs got=%d", ostype, guest->ostype);
@@ -620,8 +620,8 @@ virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
         VIR_DEBUG("Match arch %d", arch);
 
         for (j = 0; j < guest->arch.ndomains; j++) {
-            virCapsGuestDomainPtr domain = guest->arch.domains[j];
-            virCapsGuestMachinePtr *machinelist;
+            virCapsGuestDomain *domain = guest->arch.domains[j];
+            virCapsGuestMachine **machinelist;
             int nmachines;
             const char *check_emulator = NULL;
 
@@ -651,7 +651,7 @@ virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
             }
 
             for (k = 0; k < nmachines; k++) {
-                virCapsGuestMachinePtr machine = machinelist[k];
+                virCapsGuestMachine *machine = machinelist[k];
 
                 if (machinetype &&
                     STRNEQ(machine->name, machinetype) &&
@@ -733,15 +733,15 @@ virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
  * Search capabilities for the passed values, and if found return
  * virCapabilitiesDomainDataLookup filled in with the default values
  */
-virCapsDomainDataPtr
-virCapabilitiesDomainDataLookup(virCapsPtr caps,
+virCapsDomainData *
+virCapabilitiesDomainDataLookup(virCaps *caps,
                                 int ostype,
                                 virArch arch,
                                 int domaintype,
                                 const char *emulator,
                                 const char *machinetype)
 {
-    virCapsDomainDataPtr ret;
+    virCapsDomainData *ret;
 
     if (arch == VIR_ARCH_NONE) {
         /* Prefer host arch if its available */
@@ -760,12 +760,12 @@ virCapabilitiesDomainDataLookup(virCapsPtr caps,
 
 
 bool
-virCapabilitiesDomainSupported(virCapsPtr caps,
+virCapabilitiesDomainSupported(virCaps *caps,
                                int ostype,
                                virArch arch,
                                int virttype)
 {
-    g_autofree virCapsDomainDataPtr capsdata = NULL;
+    g_autofree virCapsDomainData *capsdata = NULL;
 
     capsdata = virCapabilitiesDomainDataLookup(caps, ostype,
                                                arch,
@@ -777,10 +777,10 @@ virCapabilitiesDomainSupported(virCapsPtr caps,
 
 
 int
-virCapabilitiesAddStoragePool(virCapsPtr caps,
+virCapabilitiesAddStoragePool(virCaps *caps,
                               int poolType)
 {
-    virCapsStoragePoolPtr pool;
+    virCapsStoragePool *pool;
 
     pool = g_new0(virCapsStoragePool, 1);
 
@@ -794,8 +794,8 @@ virCapabilitiesAddStoragePool(virCapsPtr caps,
 
 
 static int
-virCapabilitiesHostNUMAFormat(virCapsHostNUMAPtr caps,
-                              virBufferPtr buf)
+virCapabilitiesHostNUMAFormat(virCapsHostNUMA *caps,
+                              virBuffer *buf)
 {
     size_t i;
     size_t j;
@@ -806,7 +806,7 @@ virCapabilitiesHostNUMAFormat(virCapsHostNUMAPtr caps,
     virBufferAsprintf(buf, "<cells num='%d'>\n", caps->cells->len);
     virBufferAdjustIndent(buf, 2);
     for (i = 0; i < caps->cells->len; i++) {
-        virCapsHostNUMACellPtr cell = g_ptr_array_index(caps->cells, i);
+        virCapsHostNUMACell *cell = g_ptr_array_index(caps->cells, i);
         virBufferAsprintf(buf, "<cell id='%d'>\n", cell->num);
         virBufferAdjustIndent(buf, 2);
 
@@ -866,8 +866,8 @@ virCapabilitiesHostNUMAFormat(virCapsHostNUMAPtr caps,
 
 
 static int
-virCapabilitiesFormatResctrlMonitor(virBufferPtr buf,
-                                    virResctrlInfoMonPtr monitor)
+virCapabilitiesFormatResctrlMonitor(virBuffer *buf,
+                                    virResctrlInfoMon *monitor)
 {
     size_t i = 0;
     g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
@@ -905,8 +905,8 @@ virCapabilitiesFormatResctrlMonitor(virBufferPtr buf,
 }
 
 static int
-virCapabilitiesFormatCaches(virBufferPtr buf,
-                            virCapsHostCachePtr cache)
+virCapabilitiesFormatCaches(virBuffer *buf,
+                            virCapsHostCache *cache)
 {
     size_t i = 0;
     size_t j = 0;
@@ -920,7 +920,7 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
     for (i = 0; i < cache->nbanks; i++) {
         g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
         g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
-        virCapsHostCacheBankPtr bank = cache->banks[i];
+        virCapsHostCacheBank *bank = cache->banks[i];
         g_autofree char *cpus_str = virBitmapFormat(bank->cpus);
         const char *unit = NULL;
         unsigned long long short_size = virFormatIntPretty(bank->size, &unit);
@@ -941,7 +941,7 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
 
         for (j = 0; j < bank->ncontrols; j++) {
             const char *min_unit;
-            virResctrlInfoPerCachePtr controls = bank->controls[j];
+            virResctrlInfoPerCache *controls = bank->controls[j];
             unsigned long long gran_short_size = controls->granularity;
             unsigned long long min_short_size = controls->min;
 
@@ -991,8 +991,8 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
 }
 
 static int
-virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
-                                     virCapsHostMemBWPtr memBW)
+virCapabilitiesFormatMemoryBandwidth(virBuffer *buf,
+                                     virCapsHostMemBW *memBW)
 {
     size_t i = 0;
 
@@ -1005,8 +1005,8 @@ virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
     for (i = 0; i < memBW->nnodes; i++) {
         g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
         g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
-        virCapsHostMemBWNodePtr node = memBW->nodes[i];
-        virResctrlInfoMemBWPerNodePtr control = &node->control;
+        virCapsHostMemBWNode *node = memBW->nodes[i];
+        virResctrlInfoMemBWPerNode *control = &node->control;
         g_autofree char *cpus_str = virBitmapFormat(node->cpus);
 
         if (!cpus_str)
@@ -1036,8 +1036,8 @@ virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
 
 
 static int
-virCapabilitiesFormatHostXML(virCapsHostPtr host,
-                             virBufferPtr buf)
+virCapabilitiesFormatHostXML(virCapsHost *host,
+                             virBuffer *buf)
 {
     size_t i, j;
     char host_uuid[VIR_UUID_STRING_BUFLEN];
@@ -1159,14 +1159,14 @@ virCapabilitiesFormatHostXML(virCapsHostPtr host,
 
 
 static void
-virCapabilitiesFormatGuestFeatures(virCapsGuestPtr guest,
-                                   virBufferPtr buf)
+virCapabilitiesFormatGuestFeatures(virCapsGuest *guest,
+                                   virBuffer *buf)
 {
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     size_t i;
 
     for (i = 0; i < VIR_CAPS_GUEST_FEATURE_TYPE_LAST; i++) {
-        virCapsGuestFeaturePtr feature = guest->features + i;
+        virCapsGuestFeature *feature = guest->features + i;
 
         if (!feature->present)
             continue;
@@ -1191,9 +1191,9 @@ virCapabilitiesFormatGuestFeatures(virCapsGuestPtr guest,
 
 
 static void
-virCapabilitiesFormatGuestXML(virCapsGuestPtr *guests,
+virCapabilitiesFormatGuestXML(virCapsGuest **guests,
                               size_t nguests,
-                              virBufferPtr buf)
+                              virBuffer *buf)
 {
     size_t i, j, k;
 
@@ -1216,7 +1216,7 @@ virCapabilitiesFormatGuestXML(virCapsGuestPtr *guests,
                               guests[i]->arch.defaultInfo.loader);
 
         for (j = 0; j < guests[i]->arch.defaultInfo.nmachines; j++) {
-            virCapsGuestMachinePtr machine = guests[i]->arch.defaultInfo.machines[j];
+            virCapsGuestMachine *machine = guests[i]->arch.defaultInfo.machines[j];
             virBufferAddLit(buf, "<machine");
             if (machine->canonical)
                 virBufferAsprintf(buf, " canonical='%s'", machine->canonical);
@@ -1246,7 +1246,7 @@ virCapabilitiesFormatGuestXML(virCapsGuestPtr *guests,
                                   guests[i]->arch.domains[j]->info.loader);
 
             for (k = 0; k < guests[i]->arch.domains[j]->info.nmachines; k++) {
-                virCapsGuestMachinePtr machine = guests[i]->arch.domains[j]->info.machines[k];
+                virCapsGuestMachine *machine = guests[i]->arch.domains[j]->info.machines[k];
                 virBufferAddLit(buf, "<machine");
                 if (machine->canonical)
                     virBufferAsprintf(buf, " canonical='%s'", machine->canonical);
@@ -1270,9 +1270,9 @@ virCapabilitiesFormatGuestXML(virCapsGuestPtr *guests,
 
 
 static void
-virCapabilitiesFormatStoragePoolXML(virCapsStoragePoolPtr *pools,
+virCapabilitiesFormatStoragePoolXML(virCapsStoragePool **pools,
                                     size_t npools,
-                                    virBufferPtr buf)
+                                    virBuffer *buf)
 {
     size_t i;
 
@@ -1304,7 +1304,7 @@ virCapabilitiesFormatStoragePoolXML(virCapsStoragePoolPtr *pools,
  * Returns the XML document as a string
  */
 char *
-virCapabilitiesFormatXML(virCapsPtr caps)
+virCapabilitiesFormatXML(virCaps *caps)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -1326,15 +1326,14 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
 /* get the maximum ID of cpus in the host */
 static unsigned int
-virCapabilitiesHostNUMAGetMaxcpu(virCapsHostNUMAPtr caps)
+virCapabilitiesHostNUMAGetMaxcpu(virCapsHostNUMA *caps)
 {
     unsigned int maxcpu = 0;
     size_t node;
     size_t cpu;
 
     for (node = 0; node < caps->cells->len; node++) {
-        virCapsHostNUMACellPtr cell =
-            g_ptr_array_index(caps->cells, node);
+        virCapsHostNUMACell *cell = g_ptr_array_index(caps->cells, node);
 
         for (cpu = 0; cpu < cell->ncpus; cpu++) {
             if (cell->cpus[cpu].id > maxcpu)
@@ -1347,11 +1346,11 @@ virCapabilitiesHostNUMAGetMaxcpu(virCapsHostNUMAPtr caps)
 
 /* set cpus of a numa node in the bitmask */
 static int
-virCapabilitiesHostNUMAGetCellCpus(virCapsHostNUMAPtr caps,
+virCapabilitiesHostNUMAGetCellCpus(virCapsHostNUMA *caps,
                                    size_t node,
-                                   virBitmapPtr cpumask)
+                                   virBitmap *cpumask)
 {
-    virCapsHostNUMACellPtr cell = NULL;
+    virCapsHostNUMACell *cell = NULL;
     size_t cpu;
     size_t i;
     /* The numa node numbers can be non-contiguous. Ex: 0,1,16,17. */
@@ -1375,11 +1374,11 @@ virCapabilitiesHostNUMAGetCellCpus(virCapsHostNUMAPtr caps,
     return 0;
 }
 
-virBitmapPtr
-virCapabilitiesHostNUMAGetCpus(virCapsHostNUMAPtr caps,
-                               virBitmapPtr nodemask)
+virBitmap *
+virCapabilitiesHostNUMAGetCpus(virCapsHostNUMA *caps,
+                               virBitmap *nodemask)
 {
-    virBitmapPtr ret = NULL;
+    virBitmap *ret = NULL;
     unsigned int maxcpu = virCapabilitiesHostNUMAGetMaxcpu(caps);
     ssize_t node = -1;
 
@@ -1423,7 +1422,7 @@ virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo)
 /* returns 1 on success, 0 if the detection failed and -1 on hard error */
 static int
 virCapabilitiesFillCPUInfo(int cpu_id G_GNUC_UNUSED,
-                           virCapsHostNUMACellCPUPtr cpu G_GNUC_UNUSED)
+                           virCapsHostNUMACellCPU *cpu G_GNUC_UNUSED)
 {
 #ifdef __linux__
     cpu->id = cpu_id;
@@ -1446,10 +1445,10 @@ virCapabilitiesFillCPUInfo(int cpu_id G_GNUC_UNUSED,
 
 static int
 virCapabilitiesGetNUMASiblingInfo(int node,
-                                  virCapsHostNUMACellSiblingInfoPtr *siblings,
+                                  virCapsHostNUMACellSiblingInfo **siblings,
                                   int *nsiblings)
 {
-    virCapsHostNUMACellSiblingInfoPtr tmp = NULL;
+    virCapsHostNUMACellSiblingInfo *tmp = NULL;
     int tmp_size = 0;
     int ret = -1;
     int *distances = NULL;
@@ -1490,7 +1489,7 @@ virCapabilitiesGetNUMASiblingInfo(int node,
 
 static int
 virCapabilitiesGetNUMAPagesInfo(int node,
-                                virCapsHostNUMACellPageInfoPtr *pageinfo,
+                                virCapsHostNUMACellPageInfo **pageinfo,
                                 int *npageinfo)
 {
     int ret = -1;
@@ -1519,10 +1518,10 @@ virCapabilitiesGetNUMAPagesInfo(int node,
 
 
 static int
-virCapabilitiesHostNUMAInitFake(virCapsHostNUMAPtr caps)
+virCapabilitiesHostNUMAInitFake(virCapsHostNUMA *caps)
 {
     virNodeInfo nodeinfo;
-    virCapsHostNUMACellCPUPtr cpus;
+    virCapsHostNUMACellCPU *cpus;
     int ncpus;
     int n, s, c, t;
     int id, cid;
@@ -1583,15 +1582,15 @@ virCapabilitiesHostNUMAInitFake(virCapsHostNUMAPtr caps)
 
 
 static int
-virCapabilitiesHostNUMAInitReal(virCapsHostNUMAPtr caps)
+virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
 {
     int n;
     unsigned long long memory;
-    virCapsHostNUMACellCPUPtr cpus = NULL;
-    virBitmapPtr cpumap = NULL;
-    virCapsHostNUMACellSiblingInfoPtr siblings = NULL;
+    virCapsHostNUMACellCPU *cpus = NULL;
+    virBitmap *cpumap = NULL;
+    virCapsHostNUMACellSiblingInfo *siblings = NULL;
     int nsiblings = 0;
-    virCapsHostNUMACellPageInfoPtr pageinfo = NULL;
+    virCapsHostNUMACellPageInfo *pageinfo = NULL;
     int npageinfo;
     int ret = -1;
     int ncpus = 0;
@@ -1654,10 +1653,10 @@ virCapabilitiesHostNUMAInitReal(virCapsHostNUMAPtr caps)
 }
 
 
-virCapsHostNUMAPtr
+virCapsHostNUMA *
 virCapabilitiesHostNUMANew(void)
 {
-    virCapsHostNUMAPtr caps = NULL;
+    virCapsHostNUMA *caps = NULL;
 
     caps = g_new0(virCapsHostNUMA, 1);
     caps->refs = 1;
@@ -1668,10 +1667,10 @@ virCapabilitiesHostNUMANew(void)
 }
 
 
-virCapsHostNUMAPtr
+virCapsHostNUMA *
 virCapabilitiesHostNUMANewHost(void)
 {
-    virCapsHostNUMAPtr caps = virCapabilitiesHostNUMANew();
+    virCapsHostNUMA *caps = virCapabilitiesHostNUMANew();
 
     if (virNumaIsAvailable()) {
         if (virCapabilitiesHostNUMAInitReal(caps) == 0)
@@ -1692,7 +1691,7 @@ virCapabilitiesHostNUMANewHost(void)
 
 
 int
-virCapabilitiesInitPages(virCapsPtr caps)
+virCapabilitiesInitPages(virCaps *caps)
 {
     int ret = -1;
     unsigned int *pages_size = NULL;
@@ -1714,8 +1713,8 @@ virCapabilitiesInitPages(virCapsPtr caps)
 
 
 bool
-virCapsHostCacheBankEquals(virCapsHostCacheBankPtr a,
-                           virCapsHostCacheBankPtr b)
+virCapsHostCacheBankEquals(virCapsHostCacheBank *a,
+                           virCapsHostCacheBank *b)
 {
     return (a->id == b->id &&
             a->level == b->level &&
@@ -1725,7 +1724,7 @@ virCapsHostCacheBankEquals(virCapsHostCacheBankPtr a,
 }
 
 void
-virCapsHostCacheBankFree(virCapsHostCacheBankPtr ptr)
+virCapsHostCacheBankFree(virCapsHostCacheBank *ptr)
 {
     size_t i;
 
@@ -1744,8 +1743,8 @@ static int
 virCapsHostCacheBankSorter(const void *a,
                            const void *b)
 {
-    virCapsHostCacheBankPtr ca = *(virCapsHostCacheBankPtr *)a;
-    virCapsHostCacheBankPtr cb = *(virCapsHostCacheBankPtr *)b;
+    virCapsHostCacheBank *ca = *(virCapsHostCacheBank **)a;
+    virCapsHostCacheBank *cb = *(virCapsHostCacheBank **)b;
 
     if (ca->level < cb->level)
         return -1;
@@ -1757,7 +1756,7 @@ virCapsHostCacheBankSorter(const void *a,
 
 
 static int
-virCapabilitiesInitResctrl(virCapsPtr caps)
+virCapabilitiesInitResctrl(virCaps *caps)
 {
     if (caps->host.resctrl)
         return 0;
@@ -1771,16 +1770,16 @@ virCapabilitiesInitResctrl(virCapsPtr caps)
 
 
 static int
-virCapabilitiesInitResctrlMemory(virCapsPtr caps)
+virCapabilitiesInitResctrlMemory(virCaps *caps)
 {
-    virCapsHostMemBWNodePtr node = NULL;
+    virCapsHostMemBWNode *node = NULL;
     size_t i = 0;
     int ret = -1;
     const virResctrlMonitorType montype = VIR_RESCTRL_MONITOR_TYPE_MEMBW;
     const char *prefix = virResctrlMonitorPrefixTypeToString(montype);
 
     for (i = 0; i < caps->host.cache.nbanks; i++) {
-        virCapsHostCacheBankPtr bank = caps->host.cache.banks[i];
+        virCapsHostCacheBank *bank = caps->host.cache.banks[i];
         node = g_new0(virCapsHostMemBWNode, 1);
 
         if (virResctrlInfoGetMemoryBandwidth(caps->host.resctrl,
@@ -1809,16 +1808,16 @@ virCapabilitiesInitResctrlMemory(virCapsPtr caps)
 
 
 int
-virCapabilitiesInitCaches(virCapsPtr caps)
+virCapabilitiesInitCaches(virCaps *caps)
 {
     size_t i = 0;
-    virBitmapPtr cpus = NULL;
+    virBitmap *cpus = NULL;
     ssize_t pos = -1;
     int ret = -1;
     char *path = NULL;
     char *type = NULL;
     struct dirent *ent = NULL;
-    virCapsHostCacheBankPtr bank = NULL;
+    virCapsHostCacheBank *bank = NULL;
     const virResctrlMonitorType montype = VIR_RESCTRL_MONITOR_TYPE_CACHE;
     const char *prefix = virResctrlMonitorPrefixTypeToString(montype);
 
@@ -1952,7 +1951,7 @@ virCapabilitiesInitCaches(virCapsPtr caps)
 
 
 void
-virCapabilitiesHostInitIOMMU(virCapsPtr caps)
+virCapabilitiesHostInitIOMMU(virCaps *caps)
 {
     caps->host.iommu = virHostHasIOMMU();
 }

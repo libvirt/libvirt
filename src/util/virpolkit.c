@@ -40,7 +40,7 @@ VIR_LOG_INIT("util.polkit");
 # include <poll.h>
 
 struct _virPolkitAgent {
-    virCommandPtr cmd;
+    virCommand *cmd;
 };
 
 /*
@@ -150,12 +150,12 @@ int virPolkitCheckAuth(const char *actionid,
 
 
 /* virPolkitAgentDestroy:
- * @cmd: Pointer to the virCommandPtr created during virPolkitAgentCreate
+ * @cmd: Pointer to the virCommand * created during virPolkitAgentCreate
  *
  * Destroy resources used by Polkit Agent
  */
 void
-virPolkitAgentDestroy(virPolkitAgentPtr agent)
+virPolkitAgentDestroy(virPolkitAgent *agent)
 {
     if (!agent)
         return;
@@ -168,12 +168,12 @@ virPolkitAgentDestroy(virPolkitAgentPtr agent)
  *
  * Allocate and setup a polkit agent
  *
- * Returns a virCommandPtr on success and NULL on failure
+ * Returns a virCommand *on success and NULL on failure
  */
-virPolkitAgentPtr
+virPolkitAgent *
 virPolkitAgentCreate(void)
 {
-    virPolkitAgentPtr agent = NULL;
+    virPolkitAgent *agent = NULL;
     int pipe_fd[2] = {-1, -1};
     struct pollfd pollfd;
     int outfd = STDOUT_FILENO;
@@ -234,13 +234,13 @@ int virPolkitCheckAuth(const char *actionid G_GNUC_UNUSED,
 
 
 void
-virPolkitAgentDestroy(virPolkitAgentPtr agent G_GNUC_UNUSED)
+virPolkitAgentDestroy(virPolkitAgent *agent G_GNUC_UNUSED)
 {
     return; /* do nothing */
 }
 
 
-virPolkitAgentPtr
+virPolkitAgent *
 virPolkitAgentCreate(void)
 {
     virReportError(VIR_ERR_AUTH_FAILED, "%s",

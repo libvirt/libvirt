@@ -28,7 +28,7 @@ VIR_LOG_INIT("storage.storage_backend_vstorage");
  * Returns 0 on success, -1 on error
  */
 static int
-virStorageBackendVzPoolBuild(virStoragePoolObjPtr pool,
+virStorageBackendVzPoolBuild(virStoragePoolObj *pool,
                              unsigned int flags)
 {
     virCheckFlags(0, -1);
@@ -38,9 +38,9 @@ virStorageBackendVzPoolBuild(virStoragePoolObjPtr pool,
 
 
 static int
-virStorageBackendVzPoolStart(virStoragePoolObjPtr pool)
+virStorageBackendVzPoolStart(virStoragePoolObj *pool)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     g_autofree char *grp_name = NULL;
     g_autofree char *usr_name = NULL;
     g_autofree char *mode = NULL;
@@ -83,10 +83,10 @@ virStorageBackendVzPoolStart(virStoragePoolObjPtr pool)
 
 
 static int
-virStorageBackendVzIsMounted(virStoragePoolObjPtr pool)
+virStorageBackendVzIsMounted(virStoragePoolObj *pool)
 {
     int ret = -1;
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     FILE *mtab;
     struct mntent ent;
     char buf[1024];
@@ -119,9 +119,9 @@ virStorageBackendVzIsMounted(virStoragePoolObjPtr pool)
 
 
 static int
-virStorageBackendVzPoolStop(virStoragePoolObjPtr pool)
+virStorageBackendVzPoolStop(virStoragePoolObj *pool)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     int rc;
     g_autoptr(virCommand) cmd = NULL;
 
@@ -138,7 +138,7 @@ virStorageBackendVzPoolStop(virStoragePoolObjPtr pool)
  * Check whether the cluster is mounted
  */
 static int
-virStorageBackendVzCheck(virStoragePoolObjPtr pool,
+virStorageBackendVzCheck(virStoragePoolObj *pool,
                          bool *isActive)
 {
     int ret = -1;

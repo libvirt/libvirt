@@ -26,93 +26,91 @@
 #include "virobject.h"
 
 typedef struct _virSecretObj virSecretObj;
-typedef virSecretObj *virSecretObjPtr;
 
 void
-virSecretObjEndAPI(virSecretObjPtr *obj);
+virSecretObjEndAPI(virSecretObj **obj);
 
 typedef struct _virSecretObjList virSecretObjList;
-typedef virSecretObjList *virSecretObjListPtr;
 
-virSecretObjListPtr
+virSecretObjList *
 virSecretObjListNew(void);
 
-virSecretObjPtr
-virSecretObjListFindByUUID(virSecretObjListPtr secrets,
+virSecretObj *
+virSecretObjListFindByUUID(virSecretObjList *secrets,
                            const char *uuidstr);
 
-virSecretObjPtr
-virSecretObjListFindByUsage(virSecretObjListPtr secrets,
+virSecretObj *
+virSecretObjListFindByUsage(virSecretObjList *secrets,
                             int usageType,
                             const char *usageID);
 
 void
-virSecretObjListRemove(virSecretObjListPtr secrets,
-                       virSecretObjPtr obj);
+virSecretObjListRemove(virSecretObjList *secrets,
+                       virSecretObj *obj);
 
-virSecretObjPtr
-virSecretObjListAdd(virSecretObjListPtr secrets,
-                    virSecretDefPtr newdef,
+virSecretObj *
+virSecretObjListAdd(virSecretObjList *secrets,
+                    virSecretDef *newdef,
                     const char *configDir,
-                    virSecretDefPtr *oldDef);
+                    virSecretDef **oldDef);
 
 typedef bool
 (*virSecretObjListACLFilter)(virConnectPtr conn,
-                             virSecretDefPtr def);
+                             virSecretDef *def);
 
 int
-virSecretObjListNumOfSecrets(virSecretObjListPtr secrets,
+virSecretObjListNumOfSecrets(virSecretObjList *secrets,
                              virSecretObjListACLFilter filter,
                              virConnectPtr conn);
 
 int
 virSecretObjListExport(virConnectPtr conn,
-                       virSecretObjListPtr secretobjs,
+                       virSecretObjList *secretobjs,
                        virSecretPtr **secrets,
                        virSecretObjListACLFilter filter,
                        unsigned int flags);
 
 int
-virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
+virSecretObjListGetUUIDs(virSecretObjList *secrets,
                          char **uuids,
                          int maxuuids,
                          virSecretObjListACLFilter filter,
                          virConnectPtr conn);
 
 int
-virSecretObjDeleteConfig(virSecretObjPtr obj);
+virSecretObjDeleteConfig(virSecretObj *obj);
 
 void
-virSecretObjDeleteData(virSecretObjPtr obj);
+virSecretObjDeleteData(virSecretObj *obj);
 
 int
-virSecretObjSaveConfig(virSecretObjPtr obj);
+virSecretObjSaveConfig(virSecretObj *obj);
 
 int
-virSecretObjSaveData(virSecretObjPtr obj);
+virSecretObjSaveData(virSecretObj *obj);
 
-virSecretDefPtr
-virSecretObjGetDef(virSecretObjPtr obj);
+virSecretDef *
+virSecretObjGetDef(virSecretObj *obj);
 
 void
-virSecretObjSetDef(virSecretObjPtr obj,
-                   virSecretDefPtr def);
+virSecretObjSetDef(virSecretObj *obj,
+                   virSecretDef *def);
 
 unsigned char *
-virSecretObjGetValue(virSecretObjPtr obj);
+virSecretObjGetValue(virSecretObj *obj);
 
 int
-virSecretObjSetValue(virSecretObjPtr obj,
+virSecretObjSetValue(virSecretObj *obj,
                      const unsigned char *value,
                      size_t value_size);
 
 size_t
-virSecretObjGetValueSize(virSecretObjPtr obj);
+virSecretObjGetValueSize(virSecretObj *obj);
 
 void
-virSecretObjSetValueSize(virSecretObjPtr obj,
+virSecretObjSetValueSize(virSecretObj *obj,
                          size_t value_size);
 
 int
-virSecretLoadAllConfigs(virSecretObjListPtr secrets,
+virSecretLoadAllConfigs(virSecretObjList *secrets,
                         const char *configDir);

@@ -62,7 +62,7 @@ extern int xlu_disk_parse(XLU_Config *cfg,
                           libxl_device_disk *disk);
 #endif
 
-static int xenParseCmdline(virConfPtr conf, char **r_cmdline)
+static int xenParseCmdline(virConf *conf, char **r_cmdline)
 {
     char *cmdline = NULL;
     g_autofree char *root = NULL;
@@ -97,7 +97,7 @@ static int xenParseCmdline(virConfPtr conf, char **r_cmdline)
 }
 
 static int
-xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
+xenParseXLOS(virConf *conf, virDomainDef *def, virCaps *caps)
 {
     size_t i;
 
@@ -175,7 +175,7 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
             }
 
             if (!def->cpu) {
-                virCPUDefPtr cpu = virCPUDefNew();
+                virCPUDef *cpu = virCPUDefNew();
                 cpu->mode = VIR_CPU_MODE_HOST_PASSTHROUGH;
                 cpu->type = VIR_CPU_TYPE_GUEST;
                 cpu->nfeatures = 0;
@@ -245,7 +245,7 @@ xenTranslateCPUFeature(const char *feature_name, bool from_libxl)
 }
 
 static int
-xenParseXLCPUID(virConfPtr conf, virDomainDefPtr def)
+xenParseXLCPUID(virConf *conf, virDomainDef *def)
 {
     g_autofree char *cpuid_str = NULL;
     char **cpuid_pairs = NULL;
@@ -330,9 +330,9 @@ xenParseXLCPUID(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
+xenParseXLSpice(virConf *conf, virDomainDef *def)
 {
-    virDomainGraphicsDefPtr graphics = NULL;
+    virDomainGraphicsDef *graphics = NULL;
     unsigned long port;
     char *listenAddr = NULL;
     int val;
@@ -388,7 +388,7 @@ xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
             else
                 graphics->data.spice.copypaste = VIR_TRISTATE_BOOL_NO;
 
-            def->graphics = g_new0(virDomainGraphicsDefPtr, 1);
+            def->graphics = g_new0(virDomainGraphicsDef *, 1);
             def->graphics[0] = graphics;
             def->ngraphics = 1;
         }
@@ -404,8 +404,8 @@ xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
 
 #ifdef LIBXL_HAVE_VNUMA
 static int
-xenParseXLVnuma(virConfPtr conf,
-                virDomainDefPtr def)
+xenParseXLVnuma(virConf *conf,
+                virDomainDef *def)
 {
     int ret = -1;
     char *tmp = NULL;
@@ -413,10 +413,10 @@ xenParseXLVnuma(virConfPtr conf,
     size_t vcpus = 0;
     size_t nr_nodes = 0;
     size_t vnodeCnt = 0;
-    virCPUDefPtr cpu = NULL;
-    virConfValuePtr list;
-    virConfValuePtr vnode;
-    virDomainNumaPtr numa;
+    virCPUDef *cpu = NULL;
+    virConfValue *list;
+    virConfValue *vnode;
+    virDomainNuma *numa;
 
     numa = def->numa;
     if (numa == NULL)
@@ -440,7 +440,7 @@ xenParseXLVnuma(virConfPtr conf,
     list = list->list;
     while (list) {
         int pnode = -1;
-        virBitmapPtr cpumask = NULL;
+        virBitmap *cpumask = NULL;
         unsigned long long kbsize = 0;
 
         /* Is there a sublist (vnode)? */
@@ -594,10 +594,10 @@ xenParseXLVnuma(virConfPtr conf,
 #endif
 
 static int
-xenParseXLXenbusLimits(virConfPtr conf, virDomainDefPtr def)
+xenParseXLXenbusLimits(virConf *conf, virDomainDef *def)
 {
     int ctlr_idx;
-    virDomainControllerDefPtr xenbus_ctlr;
+    virDomainControllerDef *xenbus_ctlr;
     unsigned long limit;
 
     ctlr_idx = virDomainControllerFindByType(def, VIR_DOMAIN_CONTROLLER_TYPE_XENBUS);
@@ -625,7 +625,7 @@ xenParseXLXenbusLimits(virConfPtr conf, virDomainDefPtr def)
 }
 
 static int
-xenParseXLDiskSrc(virDomainDiskDefPtr disk, char *srcstr)
+xenParseXLDiskSrc(virDomainDiskDef *disk, char *srcstr)
 {
     char *tmpstr = NULL;
     int ret = -1;
@@ -688,13 +688,13 @@ xenParseXLDiskSrc(virDomainDiskDefPtr disk, char *srcstr)
  *
  */
 static int
-xenParseXLDisk(virConfPtr conf, virDomainDefPtr def)
+xenParseXLDisk(virConf *conf, virDomainDef *def)
 {
     int ret = -1;
-    virConfValuePtr list = virConfGetValue(conf, "disk");
+    virConfValue *list = virConfGetValue(conf, "disk");
     XLU_Config *xluconf;
     libxl_device_disk *libxldisk;
-    virDomainDiskDefPtr disk = NULL;
+    virDomainDiskDef *disk = NULL;
 
     libxldisk = g_new0(libxl_device_disk, 1);
 
@@ -825,10 +825,10 @@ xenParseXLDisk(virConfPtr conf, virDomainDefPtr def)
 }
 
 static int
-xenParseXLInputDevs(virConfPtr conf, virDomainDefPtr def)
+xenParseXLInputDevs(virConf *conf, virDomainDef *def)
 {
     const char *str;
-    virConfValuePtr val;
+    virConfValue *val;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         val = virConfGetValue(conf, "usbdevice");
@@ -856,7 +856,7 @@ xenParseXLInputDevs(virConfPtr conf, virDomainDefPtr def)
                     (STREQ(str, "tablet") ||
                      STREQ(str, "mouse") ||
                      STREQ(str, "keyboard"))) {
-                virDomainInputDefPtr input;
+                virDomainInputDef *input;
                 input = g_new0(virDomainInputDef,
                                1);
 
@@ -879,10 +879,10 @@ xenParseXLInputDevs(virConfPtr conf, virDomainDefPtr def)
 }
 
 static int
-xenParseXLUSBController(virConfPtr conf, virDomainDefPtr def)
+xenParseXLUSBController(virConf *conf, virDomainDef *def)
 {
-    virConfValuePtr list = virConfGetValue(conf, "usbctrl");
-    virDomainControllerDefPtr controller = NULL;
+    virConfValue *list = virConfGetValue(conf, "usbctrl");
+    virDomainControllerDef *controller = NULL;
 
     if (list && list->type == VIR_CONF_LIST) {
         list = list->list;
@@ -954,10 +954,10 @@ xenParseXLUSBController(virConfPtr conf, virDomainDefPtr def)
 }
 
 static int
-xenParseXLUSB(virConfPtr conf, virDomainDefPtr def)
+xenParseXLUSB(virConf *conf, virDomainDef *def)
 {
-    virConfValuePtr list = virConfGetValue(conf, "usbdev");
-    virDomainHostdevDefPtr hostdev = NULL;
+    virConfValue *list = virConfGetValue(conf, "usbdev");
+    virDomainHostdevDef *hostdev = NULL;
 
     if (list && list->type == VIR_CONF_LIST) {
         list = list->list;
@@ -1021,10 +1021,10 @@ xenParseXLUSB(virConfPtr conf, virDomainDefPtr def)
 }
 
 static int
-xenParseXLChannel(virConfPtr conf, virDomainDefPtr def)
+xenParseXLChannel(virConf *conf, virDomainDef *def)
 {
-    virConfValuePtr list = virConfGetValue(conf, "channel");
-    virDomainChrDefPtr channel = NULL;
+    virConfValue *list = virConfGetValue(conf, "channel");
+    virDomainChrDef *channel = NULL;
     char *name = NULL;
     char *path = NULL;
 
@@ -1103,12 +1103,12 @@ xenParseXLChannel(virConfPtr conf, virDomainDefPtr def)
 }
 
 static int
-xenParseXLNamespaceData(virConfPtr conf, virDomainDefPtr def)
+xenParseXLNamespaceData(virConf *conf, virDomainDef *def)
 {
-    virConfValuePtr list = virConfGetValue(conf, "device_model_args");
-    virConfValuePtr next;
+    virConfValue *list = virConfGetValue(conf, "device_model_args");
+    virConfValue *next;
     size_t nargs = 0;
-    libxlDomainXmlNsDefPtr nsdata = NULL;
+    libxlDomainXmlNsDef *nsdata = NULL;
     size_t n = 0;
 
     if (!list || list->type != VIR_CONF_LIST)
@@ -1141,12 +1141,12 @@ xenParseXLNamespaceData(virConfPtr conf, virDomainDefPtr def)
     return 0;
 }
 
-virDomainDefPtr
-xenParseXL(virConfPtr conf,
-           virCapsPtr caps,
-           virDomainXMLOptionPtr xmlopt)
+virDomainDef *
+xenParseXL(virConf *conf,
+           virCaps *caps,
+           virDomainXMLOption *xmlopt)
 {
-    virDomainDefPtr def = NULL;
+    virDomainDef *def = NULL;
 
     if (!(def = virDomainDefNew()))
         return NULL;
@@ -1207,7 +1207,7 @@ xenParseXL(virConfPtr conf,
 
 
 static int
-xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
+xenFormatXLOS(virConf *conf, virDomainDef *def)
 {
     size_t i;
 
@@ -1326,7 +1326,7 @@ xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
 }
 
 static int
-xenFormatXLCPUID(virConfPtr conf, virDomainDefPtr def)
+xenFormatXLCPUID(virConf *conf, virDomainDef *def)
 {
     char **cpuid_pairs = NULL;
     g_autofree char *cpuid_string = NULL;
@@ -1392,11 +1392,11 @@ xenFormatXLCPUID(virConfPtr conf, virDomainDefPtr def)
 
 #ifdef LIBXL_HAVE_VNUMA
 static int
-xenFormatXLVnode(virConfValuePtr list,
-                 virBufferPtr buf)
+xenFormatXLVnode(virConfValue *list,
+                 virBuffer *buf)
 {
-    virConfValuePtr numaPnode;
-    virConfValuePtr tmp;
+    virConfValue *numaPnode;
+    virConfValue *tmp;
 
     numaPnode = g_new0(virConfValue, 1);
 
@@ -1416,17 +1416,17 @@ xenFormatXLVnode(virConfValuePtr list,
 }
 
 static int
-xenFormatXLVnuma(virConfValuePtr list,
-                 virDomainNumaPtr numa,
+xenFormatXLVnuma(virConfValue *list,
+                 virDomainNuma *numa,
                  size_t node,
                  size_t nr_nodes)
 {
     int ret = -1;
     size_t i;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virConfValuePtr numaVnode;
-    virConfValuePtr tmp;
-    virBitmapPtr cpumask = virDomainNumaGetNodeCpumask(numa, node);
+    virConfValue *numaVnode;
+    virConfValue *tmp;
+    virBitmap *cpumask = virDomainNumaGetNodeCpumask(numa, node);
     size_t nodeSize = virDomainNumaGetNodeMemorySize(numa, node) / 1024;
     g_autofree char *nodeVcpus = NULL;
 
@@ -1475,11 +1475,11 @@ xenFormatXLVnuma(virConfValuePtr list,
 }
 
 static int
-xenFormatXLDomainVnuma(virConfPtr conf,
-                       virDomainDefPtr def)
+xenFormatXLDomainVnuma(virConf *conf,
+                       virDomainDef *def)
 {
-    virDomainNumaPtr numa = def->numa;
-    virConfValuePtr vnumaVal;
+    virDomainNuma *numa = def->numa;
+    virConfValue *vnumaVal;
     size_t i;
     size_t nr_nodes;
 
@@ -1514,7 +1514,7 @@ xenFormatXLDomainVnuma(virConfPtr conf,
 #endif
 
 static int
-xenFormatXLXenbusLimits(virConfPtr conf, virDomainDefPtr def)
+xenFormatXLXenbusLimits(virConf *conf, virDomainDef *def)
 {
     size_t i;
 
@@ -1540,7 +1540,7 @@ xenFormatXLXenbusLimits(virConfPtr conf, virDomainDefPtr def)
 }
 
 static char *
-xenFormatXLDiskSrcNet(virStorageSourcePtr src)
+xenFormatXLDiskSrcNet(virStorageSource *src)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
@@ -1603,7 +1603,7 @@ xenFormatXLDiskSrcNet(virStorageSourcePtr src)
 
 
 static int
-xenFormatXLDiskSrc(virStorageSourcePtr src, char **srcstr)
+xenFormatXLDiskSrc(virStorageSource *src, char **srcstr)
 {
     int actualType = virStorageSourceGetActualType(src);
 
@@ -1637,11 +1637,11 @@ xenFormatXLDiskSrc(virStorageSourcePtr src, char **srcstr)
 
 
 static int
-xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
+xenFormatXLDisk(virConfValue *list, virDomainDiskDef *disk)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virConfValuePtr val;
-    virConfValuePtr tmp;
+    virConfValue *val;
+    virConfValue *tmp;
     int format = virDomainDiskGetFormat(disk);
     const char *driver = virDomainDiskGetDriver(disk);
     g_autofree char *target = NULL;
@@ -1735,9 +1735,9 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
 
 
 static int
-xenFormatXLDomainDisks(virConfPtr conf, virDomainDefPtr def)
+xenFormatXLDomainDisks(virConf *conf, virDomainDef *def)
 {
-    virConfValuePtr diskVal;
+    virConfValue *diskVal;
     size_t i;
 
     diskVal = g_new0(virConfValue, 1);
@@ -1770,10 +1770,10 @@ xenFormatXLDomainDisks(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
+xenFormatXLSpice(virConf *conf, virDomainDef *def)
 {
-    virDomainGraphicsListenDefPtr glisten;
-    virDomainGraphicsDefPtr graphics;
+    virDomainGraphicsListenDef *glisten;
+    virDomainGraphicsDef *graphics;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM && def->graphics) {
         graphics = def->graphics[0];
@@ -1857,12 +1857,12 @@ xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
 }
 
 static int
-xenFormatXLInputDevs(virConfPtr conf, virDomainDefPtr def)
+xenFormatXLInputDevs(virConf *conf, virDomainDef *def)
 {
     size_t i;
     const char *devtype;
-    virConfValuePtr usbdevices = NULL;
-    virConfValuePtr lastdev;
+    virConfValue *usbdevices = NULL;
+    virConfValue *lastdev;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         usbdevices = g_new0(virConfValue, 1);
@@ -1921,10 +1921,10 @@ xenFormatXLInputDevs(virConfPtr conf, virDomainDefPtr def)
 }
 
 static int
-xenFormatXLUSBController(virConfPtr conf,
-                         virDomainDefPtr def)
+xenFormatXLUSBController(virConf *conf,
+                         virDomainDef *def)
 {
-    virConfValuePtr usbctrlVal = NULL;
+    virConfValue *usbctrlVal = NULL;
     int hasUSBCtrl = 0;
     size_t i;
 
@@ -1945,8 +1945,8 @@ xenFormatXLUSBController(virConfPtr conf,
 
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
-            virConfValuePtr val;
-            virConfValuePtr tmp;
+            virConfValue *val;
+            virConfValue *tmp;
             g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
             if (def->controllers[i]->model != -1) {
@@ -1998,10 +1998,10 @@ xenFormatXLUSBController(virConfPtr conf,
 
 
 static int
-xenFormatXLUSB(virConfPtr conf,
-               virDomainDefPtr def)
+xenFormatXLUSB(virConf *conf,
+               virDomainDef *def)
 {
-    virConfValuePtr usbVal = NULL;
+    virConfValue *usbVal = NULL;
     int hasUSB = 0;
     size_t i;
 
@@ -2024,8 +2024,8 @@ xenFormatXLUSB(virConfPtr conf,
     for (i = 0; i < def->nhostdevs; i++) {
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-            virConfValuePtr val;
-            virConfValuePtr tmp;
+            virConfValue *val;
+            virConfValue *tmp;
             char *buf;
 
             buf = g_strdup_printf("hostbus=%x,hostaddr=%x",
@@ -2057,12 +2057,12 @@ xenFormatXLUSB(virConfPtr conf,
 }
 
 static int
-xenFormatXLChannel(virConfValuePtr list, virDomainChrDefPtr channel)
+xenFormatXLChannel(virConfValue *list, virDomainChrDef *channel)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int sourceType = channel->source->type;
-    virConfValuePtr val;
-    virConfValuePtr tmp;
+    virConfValue *val;
+    virConfValue *tmp;
 
     /* connection */
     virBufferAddLit(&buf, "connection=");
@@ -2098,9 +2098,9 @@ xenFormatXLChannel(virConfValuePtr list, virDomainChrDefPtr channel)
 }
 
 static int
-xenFormatXLDomainChannels(virConfPtr conf, virDomainDefPtr def)
+xenFormatXLDomainChannels(virConf *conf, virDomainDef *def)
 {
-    virConfValuePtr channelVal = NULL;
+    virConfValue *channelVal = NULL;
     size_t i;
 
     channelVal = g_new0(virConfValue, 1);
@@ -2109,7 +2109,7 @@ xenFormatXLDomainChannels(virConfPtr conf, virDomainDefPtr def)
     channelVal->list = NULL;
 
     for (i = 0; i < def->nchannels; i++) {
-        virDomainChrDefPtr chr = def->channels[i];
+        virDomainChrDef *chr = def->channels[i];
 
         if (chr->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN)
             continue;
@@ -2134,10 +2134,10 @@ xenFormatXLDomainChannels(virConfPtr conf, virDomainDefPtr def)
 }
 
 static int
-xenFormatXLDomainNamespaceData(virConfPtr conf, virDomainDefPtr def)
+xenFormatXLDomainNamespaceData(virConf *conf, virDomainDef *def)
 {
-    libxlDomainXmlNsDefPtr nsdata = def->namespaceData;
-    virConfValuePtr args = NULL;
+    libxlDomainXmlNsDef *nsdata = def->namespaceData;
+    virConfValue *args = NULL;
     size_t i;
 
     if (!nsdata)
@@ -2152,8 +2152,8 @@ xenFormatXLDomainNamespaceData(virConfPtr conf, virDomainDefPtr def)
     args->list = NULL;
 
     for (i = 0; i < nsdata->num_args; i++) {
-        virConfValuePtr val;
-        virConfValuePtr tmp;
+        virConfValue *val;
+        virConfValue *tmp;
 
         val = g_new0(virConfValue, 1);
 
@@ -2179,8 +2179,8 @@ xenFormatXLDomainNamespaceData(virConfPtr conf, virDomainDefPtr def)
     return -1;
 }
 
-virConfPtr
-xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
+virConf *
+xenFormatXL(virDomainDef *def, virConnectPtr conn)
 {
     g_autoptr(virConf) conf = NULL;
 

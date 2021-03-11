@@ -69,7 +69,7 @@ virshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
     virNetworkPtr network = NULL;
     const char *n = NULL;
     const char *optname = "network";
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     virCheckFlags(VIRSH_BYUUID | VIRSH_BYNAME, NULL);
 
@@ -207,7 +207,7 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     char *buffer;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -255,7 +255,7 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     char *buffer;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -447,10 +447,9 @@ struct virshNetworkList {
     virNetworkPtr *nets;
     size_t nnets;
 };
-typedef struct virshNetworkList *virshNetworkListPtr;
 
 static void
-virshNetworkListFree(virshNetworkListPtr list)
+virshNetworkListFree(struct virshNetworkList *list)
 {
     size_t i;
 
@@ -464,11 +463,11 @@ virshNetworkListFree(virshNetworkListPtr list)
     g_free(list);
 }
 
-static virshNetworkListPtr
+static struct virshNetworkList *
 virshNetworkListCollect(vshControl *ctl,
                         unsigned int flags)
 {
-    virshNetworkListPtr list = g_new0(struct virshNetworkList, 1);
+    struct virshNetworkList *list = g_new0(struct virshNetworkList, 1);
     size_t i;
     int ret;
     char **names = NULL;
@@ -480,7 +479,7 @@ virshNetworkListCollect(vshControl *ctl,
     int nActiveNets = 0;
     int nInactiveNets = 0;
     int nAllNets = 0;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     /* try the list with flags support (0.10.2 and later) */
     if ((ret = virConnectListAllNetworks(priv->conn,
@@ -704,7 +703,7 @@ static const vshCmdOptDef opts_network_list[] = {
 static bool
 cmdNetworkList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
-    virshNetworkListPtr list = NULL;
+    struct virshNetworkList *list = NULL;
     size_t i;
     bool ret = false;
     bool optName = vshCommandOptBool(cmd, "name");
@@ -712,7 +711,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     bool optUUID = vshCommandOptBool(cmd, "uuid");
     char uuid[VIR_UUID_STRING_BUFLEN];
     unsigned int flags = VIR_CONNECT_LIST_NETWORKS_ACTIVE;
-    vshTablePtr table = NULL;
+    vshTable *table = NULL;
 
     if (vshCommandOptBool(cmd, "inactive"))
         flags = VIR_CONNECT_LIST_NETWORKS_INACTIVE;
@@ -1142,7 +1141,7 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     virNetworkPtr network = NULL;
     virNetworkPtr network_edited = NULL;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     network = virshCommandOptNetwork(ctl, cmd, NULL);
     if (network == NULL)
@@ -1290,7 +1289,7 @@ cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
     virshNetEventData data;
     const char *eventName = NULL;
     int event;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptBool(cmd, "list")) {
         size_t i;
@@ -1408,7 +1407,7 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
     size_t i;
     unsigned int flags = 0;
     virNetworkPtr network = NULL;
-    vshTablePtr table = NULL;
+    vshTable *table = NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, "mac", &mac) < 0)
         return false;
@@ -1664,10 +1663,9 @@ struct virshNetworkPortList {
     virNetworkPortPtr *ports;
     size_t nports;
 };
-typedef struct virshNetworkPortList *virshNetworkPortListPtr;
 
 static void
-virshNetworkPortListFree(virshNetworkPortListPtr list)
+virshNetworkPortListFree(struct virshNetworkPortList *list)
 {
     size_t i;
 
@@ -1681,12 +1679,12 @@ virshNetworkPortListFree(virshNetworkPortListPtr list)
     g_free(list);
 }
 
-static virshNetworkPortListPtr
+static struct virshNetworkPortList *
 virshNetworkPortListCollect(vshControl *ctl,
                             const vshCmd *cmd,
                             unsigned int flags)
 {
-    virshNetworkPortListPtr list = g_new0(struct virshNetworkPortList, 1);
+    struct virshNetworkPortList *list = g_new0(struct virshNetworkPortList, 1);
     int ret;
     virNetworkPtr network = NULL;
     bool success = false;
@@ -1749,14 +1747,14 @@ static const vshCmdOptDef opts_network_port_list[] = {
 static bool
 cmdNetworkPortList(vshControl *ctl, const vshCmd *cmd)
 {
-    virshNetworkPortListPtr list = NULL;
+    struct virshNetworkPortList *list = NULL;
     size_t i;
     bool ret = false;
     bool optTable = vshCommandOptBool(cmd, "table");
     bool optUUID = vshCommandOptBool(cmd, "uuid");
     char uuid[VIR_UUID_STRING_BUFLEN];
     unsigned int flags = 0;
-    vshTablePtr table = NULL;
+    vshTable *table = NULL;
 
     if (optTable + optUUID > 1) {
         vshError(ctl, "%s",

@@ -16,10 +16,10 @@
 
 # define VIR_FROM_THIS VIR_FROM_QEMU
 
-virCPUDefPtr cpuDefault;
-virCPUDefPtr cpuHaswell;
-virCPUDefPtr cpuPower8;
-virCPUDefPtr cpuPower9;
+virCPUDef *cpuDefault;
+virCPUDef *cpuHaswell;
+virCPUDef *cpuPower8;
+virCPUDef *cpuPower9;
 
 
 static const char *qemu_emulators[VIR_ARCH_LAST] = {
@@ -133,7 +133,7 @@ virFindFileInPath(const char *file)
 }
 
 
-virCapsHostNUMAPtr
+virCapsHostNUMA *
 virCapabilitiesHostNUMANewHost(void)
 {
     /*
@@ -145,12 +145,12 @@ virCapabilitiesHostNUMANewHost(void)
 
 
 static int
-testQemuAddGuest(virCapsPtr caps,
+testQemuAddGuest(virCaps *caps,
                  virArch arch)
 {
     size_t nmachines;
-    virCapsGuestMachinePtr *machines = NULL;
-    virCapsGuestPtr guest;
+    virCapsGuestMachine **machines = NULL;
+    virCapsGuest *guest;
     virArch emu_arch = arch;
 
     if (arch_alias[arch] != VIR_ARCH_NONE)
@@ -213,9 +213,9 @@ testQemuAddGuest(virCapsPtr caps,
 }
 
 
-virCapsPtr testQemuCapsInit(void)
+virCaps *testQemuCapsInit(void)
 {
-    virCapsPtr caps;
+    virCaps *caps;
     size_t i;
 
     if (!(caps = virCapabilitiesNew(VIR_ARCH_X86_64, false, false)))
@@ -257,7 +257,7 @@ virCapsPtr testQemuCapsInit(void)
 
 
 void
-qemuTestSetHostArch(virQEMUDriverPtr driver,
+qemuTestSetHostArch(virQEMUDriver *driver,
                     virArch arch)
 {
     if (arch == VIR_ARCH_NONE)
@@ -271,9 +271,9 @@ qemuTestSetHostArch(virQEMUDriverPtr driver,
 
 
 void
-qemuTestSetHostCPU(virQEMUDriverPtr driver,
+qemuTestSetHostCPU(virQEMUDriver *driver,
                    virArch arch,
-                   virCPUDefPtr cpu)
+                   virCPUDef *cpu)
 {
     if (!cpu) {
         if (ARCH_IS_X86(arch))
@@ -300,11 +300,11 @@ qemuTestSetHostCPU(virQEMUDriverPtr driver,
 }
 
 
-virQEMUCapsPtr
+virQEMUCaps *
 qemuTestParseCapabilitiesArch(virArch arch,
                               const char *capsFile)
 {
-    virQEMUCapsPtr qemuCaps = NULL;
+    virQEMUCaps *qemuCaps = NULL;
     g_autofree char *binary = g_strdup_printf("/usr/bin/qemu-system-%s",
                                               virArchToString(arch));
 
@@ -334,13 +334,13 @@ void qemuTestDriverFree(virQEMUDriver *driver)
     virObjectUnref(driver->securityManager);
 }
 
-int qemuTestCapsCacheInsert(virFileCachePtr cache,
-                            virQEMUCapsPtr caps)
+int qemuTestCapsCacheInsert(virFileCache *cache,
+                            virQEMUCaps *caps)
 {
     size_t i, j;
 
     for (i = 0; i < G_N_ELEMENTS(qemu_emulators); i++) {
-        virQEMUCapsPtr tmpCaps;
+        virQEMUCaps *tmpCaps;
         if (qemu_emulators[i] == NULL)
             continue;
         if (caps) {
@@ -410,7 +410,7 @@ int qemuTestCapsCacheInsert(virFileCachePtr cache,
 
 int qemuTestDriverInit(virQEMUDriver *driver)
 {
-    virSecurityManagerPtr mgr = NULL;
+    virSecurityManager *mgr = NULL;
     char statedir[] = STATEDIRTEMPLATE;
     char configdir[] = CONFIGDIRTEMPLATE;
 
@@ -489,7 +489,7 @@ int qemuTestDriverInit(virQEMUDriver *driver)
 }
 
 int
-testQemuCapsSetGIC(virQEMUCapsPtr qemuCaps,
+testQemuCapsSetGIC(virQEMUCaps *qemuCaps,
                    int gic)
 {
     virGICCapability *gicCapabilities = NULL;
@@ -686,7 +686,7 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
 {
     va_list argptr;
     testQemuInfoArgName argname;
-    virQEMUCapsPtr qemuCaps = NULL;
+    virQEMUCaps *qemuCaps = NULL;
     int gic = GIC_NONE;
     char *capsarch = NULL;
     char *capsver = NULL;
@@ -774,7 +774,7 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
 
     if (!qemuCaps && capsarch && capsver) {
         bool stripmachinealiases = false;
-        virQEMUCapsPtr cachedcaps = NULL;
+        virQEMUCaps *cachedcaps = NULL;
 
         info->arch = virArchFromString(capsarch);
 

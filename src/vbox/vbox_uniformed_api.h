@@ -76,9 +76,9 @@ typedef union {
 struct _vboxDriver {
     virObjectLockable parent;
 
-    virCapsPtr caps;
-    virDomainXMLOptionPtr xmlopt;
-    virObjectEventStatePtr domainEventState;
+    virCaps *caps;
+    virDomainXMLOption *xmlopt;
+    virObjectEventState *domainEventState;
 
     /* vbox API initialization members */
     PCVBOXXPCOM pFuncs;
@@ -95,7 +95,6 @@ struct _vboxDriver {
 };
 
 typedef struct _vboxDriver vboxDriver;
-typedef struct _vboxDriver *vboxDriverPtr;
 
 /* vboxUniformedAPI gives vbox_common.c a uniformed layer to see
  * vbox API.
@@ -103,8 +102,8 @@ typedef struct _vboxDriver *vboxDriverPtr;
 
 /* Functions for pFuncs */
 typedef struct {
-    int (*Initialize)(vboxDriverPtr driver);
-    void (*Uninitialize)(vboxDriverPtr driver);
+    int (*Initialize)(struct _vboxDriver *driver);
+    void (*Uninitialize)(struct _vboxDriver *driver);
     void (*ComUnallocMem)(PCVBOXXPCOM pFuncs, void *pv);
     void (*Utf16Free)(PCVBOXXPCOM pFuncs, PRUnichar *pwszString);
     void (*Utf8Free)(PCVBOXXPCOM pFuncs, char *pszString);
@@ -115,13 +114,13 @@ typedef struct {
 /* Functions for vboxIID */
 typedef struct {
     void (*vboxIIDInitialize)(vboxIID *iid);
-    void (*vboxIIDUnalloc)(vboxDriverPtr driver, vboxIID *iid);
-    void (*vboxIIDToUUID)(vboxDriverPtr driver, vboxIID *iid, unsigned char *uuid);
-    void (*vboxIIDFromUUID)(vboxDriverPtr driver, vboxIID *iid, const unsigned char *uuid);
-    bool (*vboxIIDIsEqual)(vboxDriverPtr driver, vboxIID *iid1, vboxIID *iid2);
-    void (*vboxIIDFromArrayItem)(vboxDriverPtr driver, vboxIID *iid, vboxArray *array, int idx);
-    void (*vboxIIDToUtf8)(vboxDriverPtr driver, vboxIID *iid, char **utf8);
-    void (*DEBUGIID)(vboxDriverPtr driver, const char *msg, vboxIID *iid);
+    void (*vboxIIDUnalloc)(struct _vboxDriver *driver, vboxIID *iid);
+    void (*vboxIIDToUUID)(struct _vboxDriver *driver, vboxIID *iid, unsigned char *uuid);
+    void (*vboxIIDFromUUID)(struct _vboxDriver *driver, vboxIID *iid, const unsigned char *uuid);
+    bool (*vboxIIDIsEqual)(struct _vboxDriver *driver, vboxIID *iid1, vboxIID *iid2);
+    void (*vboxIIDFromArrayItem)(struct _vboxDriver *driver, vboxIID *iid, vboxArray *array, int idx);
+    void (*vboxIIDToUtf8)(struct _vboxDriver *driver, vboxIID *iid, char **utf8);
+    void (*DEBUGIID)(struct _vboxDriver *driver, const char *msg, vboxIID *iid);
 } vboxUniformedIID;
 
 /* Functions for vboxArray */
@@ -157,7 +156,7 @@ typedef struct {
     nsresult (*OpenMachine)(IVirtualBox *vboxObj, PRUnichar *settingsFile, IMachine **machine);
     nsresult (*GetSystemProperties)(IVirtualBox *vboxObj, ISystemProperties **systemProperties);
     nsresult (*GetHost)(IVirtualBox *vboxObj, IHost **host);
-    nsresult (*CreateMachine)(vboxDriverPtr driver, virDomainDefPtr def, IMachine **machine, char *uuidstr);
+    nsresult (*CreateMachine)(struct _vboxDriver *driver, virDomainDef *def, IMachine **machine, char *uuidstr);
     nsresult (*CreateHardDisk)(IVirtualBox *vboxObj, PRUnichar *format, PRUnichar *location, IMedium **medium);
     nsresult (*RegisterMachine)(IVirtualBox *vboxObj, IMachine *machine);
     nsresult (*FindHardDisk)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType,
@@ -182,7 +181,7 @@ typedef struct {
                                    PRUnichar *hostPath, PRBool writable,
                                    PRBool automount);
     nsresult (*RemoveSharedFolder)(IMachine *machine, PRUnichar *name);
-    nsresult (*LaunchVMProcess)(vboxDriverPtr driver, IMachine *machine,
+    nsresult (*LaunchVMProcess)(struct _vboxDriver *driver, IMachine *machine,
                                 vboxIID *iid,
                                 PRUnichar *sessionType, PRUnichar *env,
                                 IProgress **progress);
@@ -229,8 +228,8 @@ typedef struct {
 
 /* Functions for ISession */
 typedef struct {
-    nsresult (*Open)(vboxDriverPtr driver, vboxIID *iid, IMachine *machine);
-    nsresult (*OpenExisting)(vboxDriverPtr driver, vboxIID *iid, IMachine *machine);
+    nsresult (*Open)(struct _vboxDriver *driver, vboxIID *iid, IMachine *machine);
+    nsresult (*OpenExisting)(struct _vboxDriver *driver, vboxIID *iid, IMachine *machine);
     nsresult (*GetConsole)(ISession *session, IConsole **console);
     nsresult (*GetMachine)(ISession *session, IMachine **machine);
     nsresult (*Close)(ISession *session);
@@ -340,17 +339,17 @@ typedef struct {
 typedef struct {
     nsresult (*GetEnabled)(IVRDEServer *VRDEServer, PRBool *enabled);
     nsresult (*SetEnabled)(IVRDEServer *VRDEServer, PRBool enabled);
-    nsresult (*GetPorts)(vboxDriverPtr driver, IVRDEServer *VRDEServer,
-                         IMachine *machine, virDomainGraphicsDefPtr graphics);
-    nsresult (*SetPorts)(vboxDriverPtr driver, IVRDEServer *VRDEServer,
-                         virDomainGraphicsDefPtr graphics);
+    nsresult (*GetPorts)(struct _vboxDriver *driver, IVRDEServer *VRDEServer,
+                         IMachine *machine, virDomainGraphicsDef *graphics);
+    nsresult (*SetPorts)(struct _vboxDriver *driver, IVRDEServer *VRDEServer,
+                         virDomainGraphicsDef *graphics);
     nsresult (*GetReuseSingleConnection)(IVRDEServer *VRDEServer, PRBool *enabled);
     nsresult (*SetReuseSingleConnection)(IVRDEServer *VRDEServer, PRBool enabled);
     nsresult (*GetAllowMultiConnection)(IVRDEServer *VRDEServer, PRBool *enabled);
     nsresult (*SetAllowMultiConnection)(IVRDEServer *VRDEServer, PRBool enabled);
-    nsresult (*GetNetAddress)(vboxDriverPtr driver, IVRDEServer *VRDEServer,
+    nsresult (*GetNetAddress)(struct _vboxDriver *driver, IVRDEServer *VRDEServer,
                               PRUnichar **netAddress);
-    nsresult (*SetNetAddress)(vboxDriverPtr driver, IVRDEServer *VRDEServer,
+    nsresult (*SetNetAddress)(struct _vboxDriver *driver, IVRDEServer *VRDEServer,
                               PRUnichar *netAddress);
 } vboxUniformedIVRDEServer;
 
@@ -455,7 +454,7 @@ typedef struct {
                                              IHostNetworkInterface **networkInterface);
     nsresult (*FindHostNetworkInterfaceByName)(IHost *host, PRUnichar *name,
                                                IHostNetworkInterface **networkInterface);
-    nsresult (*CreateHostOnlyNetworkInterface)(vboxDriverPtr driver,
+    nsresult (*CreateHostOnlyNetworkInterface)(struct _vboxDriver *driver,
                                                IHost *host, char *name,
                                                IHostNetworkInterface **networkInterface);
     nsresult (*RemoveHostOnlyNetworkInterface)(IHost *host, vboxIID *iid,
@@ -512,9 +511,9 @@ typedef struct {
     uint32_t APIVersion;
     uint32_t XPCOMCVersion;
     /* vbox APIs */
-    nsresult (*unregisterMachine)(vboxDriverPtr driver, vboxIID *iid, IMachine **machine);
+    nsresult (*unregisterMachine)(struct _vboxDriver *driver, vboxIID *iid, IMachine **machine);
     void (*deleteConfig)(IMachine *machine);
-    void (*vboxAttachDrivesOld)(virDomainDefPtr def, vboxDriverPtr driver, IMachine *machine);
+    void (*vboxAttachDrivesOld)(virDomainDef *def, struct _vboxDriver *driver, IMachine *machine);
     virDomainState (*vboxConvertState)(PRUint32 state);
     int (*snapshotRestore)(virDomainPtr dom, IMachine *machine, ISnapshot *snapshot);
     vboxUniformedPFN UPFN;

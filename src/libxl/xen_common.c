@@ -40,12 +40,12 @@
  * Convenience method to grab a long int from the config file object
  */
 int
-xenConfigGetBool(virConfPtr conf,
+xenConfigGetBool(virConf *conf,
                  const char *name,
                  int *value,
                  int def)
 {
-    virConfValuePtr val;
+    virConfValue *val;
 
     *value = 0;
     if (!(val = virConfGetValue(conf, name))) {
@@ -70,12 +70,12 @@ xenConfigGetBool(virConfPtr conf,
  * Convenience method to grab a int from the config file object
  */
 int
-xenConfigGetULong(virConfPtr conf,
+xenConfigGetULong(virConf *conf,
                   const char *name,
                   unsigned long *value,
                   unsigned long def)
 {
-    virConfValuePtr val;
+    virConfValue *val;
 
     *value = 0;
     if (!(val = virConfGetValue(conf, name))) {
@@ -104,12 +104,12 @@ xenConfigGetULong(virConfPtr conf,
  * Convenience method to grab a int from the config file object
  */
 static int
-xenConfigGetULongLong(virConfPtr conf,
+xenConfigGetULongLong(virConf *conf,
                       const char *name,
                       unsigned long long *value,
                       unsigned long long def)
 {
-    virConfValuePtr val;
+    virConfValue *val;
 
     *value = 0;
     if (!(val = virConfGetValue(conf, name))) {
@@ -135,7 +135,7 @@ xenConfigGetULongLong(virConfPtr conf,
 
 
 static int
-xenConfigCopyStringInternal(virConfPtr conf,
+xenConfigCopyStringInternal(virConf *conf,
                             const char *name,
                             char **value,
                             int allowMissing)
@@ -159,14 +159,14 @@ xenConfigCopyStringInternal(virConfPtr conf,
 
 
 int
-xenConfigCopyString(virConfPtr conf, const char *name, char **value)
+xenConfigCopyString(virConf *conf, const char *name, char **value)
 {
     return xenConfigCopyStringInternal(conf, name, value, 0);
 }
 
 
 int
-xenConfigCopyStringOpt(virConfPtr conf, const char *name, char **value)
+xenConfigCopyStringOpt(virConf *conf, const char *name, char **value)
 {
     return xenConfigCopyStringInternal(conf, name, value, 1);
 }
@@ -176,7 +176,7 @@ xenConfigCopyStringOpt(virConfPtr conf, const char *name, char **value)
  * Convenience method to grab a string UUID from the config file object
  */
 static int
-xenConfigGetUUID(virConfPtr conf, const char *name, unsigned char *uuid)
+xenConfigGetUUID(virConf *conf, const char *name, unsigned char *uuid)
 {
     g_autofree char *string = NULL;
     int rc;
@@ -221,7 +221,7 @@ xenConfigGetUUID(virConfPtr conf, const char *name, unsigned char *uuid)
  * Convenience method to grab a string from the config file object
  */
 int
-xenConfigGetString(virConfPtr conf,
+xenConfigGetString(virConf *conf,
                    const char *name,
                    char **value,
                    const char *def)
@@ -244,9 +244,9 @@ xenConfigGetString(virConfPtr conf,
 
 
 int
-xenConfigSetInt(virConfPtr conf, const char *setting, long long l)
+xenConfigSetInt(virConf *conf, const char *setting, long long l)
 {
-    virConfValuePtr value = NULL;
+    virConfValue *value = NULL;
 
     if ((long)l != l) {
         virReportError(VIR_ERR_OVERFLOW, _("failed to store %lld to %s"),
@@ -264,9 +264,9 @@ xenConfigSetInt(virConfPtr conf, const char *setting, long long l)
 
 
 int
-xenConfigSetString(virConfPtr conf, const char *setting, const char *str)
+xenConfigSetString(virConf *conf, const char *setting, const char *str)
 {
-    virConfValuePtr value = NULL;
+    virConfValue *value = NULL;
 
     value = g_new0(virConfValue, 1);
 
@@ -279,7 +279,7 @@ xenConfigSetString(virConfPtr conf, const char *setting, const char *str)
 
 
 static int
-xenParseMem(virConfPtr conf, virDomainDefPtr def)
+xenParseMem(virConf *conf, virDomainDef *def)
 {
     unsigned long long memory;
 
@@ -299,7 +299,7 @@ xenParseMem(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenParseTimeOffset(virConfPtr conf, virDomainDefPtr def)
+xenParseTimeOffset(virConf *conf, virDomainDef *def)
 {
     int vmlocaltime;
 
@@ -329,7 +329,7 @@ xenParseTimeOffset(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenParseEventsActions(virConfPtr conf, virDomainDefPtr def)
+xenParseEventsActions(virConf *conf, virDomainDef *def)
 {
     g_autofree char *on_poweroff = NULL;
     g_autofree char *on_reboot = NULL;
@@ -366,10 +366,10 @@ xenParseEventsActions(virConfPtr conf, virDomainDefPtr def)
 }
 
 
-static virDomainHostdevDefPtr
+static virDomainHostdevDef *
 xenParsePCI(char *entry)
 {
-    virDomainHostdevDefPtr hostdev = NULL;
+    virDomainHostdevDef *hostdev = NULL;
     g_auto(GStrv) tokens = NULL;
     g_auto(GStrv) options = NULL;
     size_t nexttoken = 0;
@@ -479,7 +479,7 @@ xenHandleConfGetValueStringListErrors(int ret)
 
 
 static int
-xenParsePCIList(virConfPtr conf, virDomainDefPtr def)
+xenParsePCIList(virConf *conf, virDomainDef *def)
 {
     g_auto(GStrv) pcis = NULL;
     char **entries = NULL;
@@ -490,7 +490,7 @@ xenParsePCIList(virConfPtr conf, virDomainDefPtr def)
 
     for (entries = pcis; *entries; entries++) {
         char *entry = *entries;
-        virDomainHostdevDefPtr hostdev;
+        virDomainHostdevDef *hostdev;
 
         if (!(hostdev = xenParsePCI(entry)))
             return -1;
@@ -506,9 +506,9 @@ xenParsePCIList(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenParseCPU(virConfPtr conf,
-            virDomainDefPtr def,
-            virDomainXMLOptionPtr xmlopt)
+xenParseCPU(virConf *conf,
+            virDomainDef *def,
+            virDomainXMLOption *xmlopt)
 {
     unsigned long count = 0;
     g_autofree char *cpus = NULL;
@@ -541,10 +541,10 @@ xenParseCPU(virConfPtr conf,
 
 
 static int
-xenParseHypervisorFeatures(virConfPtr conf, virDomainDefPtr def)
+xenParseHypervisorFeatures(virConf *conf, virDomainDef *def)
 {
     g_autofree char *strval = NULL;
-    virDomainTimerDefPtr timer;
+    virDomainTimerDef *timer;
     int val = 0;
 
     if (xenConfigGetString(conf, "tsc_mode", &strval, NULL) < 0)
@@ -650,12 +650,12 @@ xenParseHypervisorFeatures(virConfPtr conf, virDomainDefPtr def)
 #define MAX_VFB 1024
 
 static int
-xenParseVfb(virConfPtr conf, virDomainDefPtr def)
+xenParseVfb(virConf *conf, virDomainDef *def)
 {
     int val;
     char *listenAddr = NULL;
     int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
-    virDomainGraphicsDefPtr graphics = NULL;
+    virDomainGraphicsDef *graphics = NULL;
 
     if (hvm) {
         if (xenConfigGetBool(conf, "vnc", &val, 0) < 0)
@@ -683,7 +683,7 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
                 goto cleanup;
             if (xenConfigCopyStringOpt(conf, "keymap", &graphics->data.vnc.keymap) < 0)
                 goto cleanup;
-            def->graphics = g_new0(virDomainGraphicsDefPtr, 1);
+            def->graphics = g_new0(virDomainGraphicsDef *, 1);
             def->graphics[0] = graphics;
             def->ngraphics = 1;
             graphics = NULL;
@@ -697,7 +697,7 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
                     goto cleanup;
                 if (xenConfigCopyStringOpt(conf, "xauthority", &graphics->data.sdl.xauth) < 0)
                     goto cleanup;
-                def->graphics = g_new0(virDomainGraphicsDefPtr, 1);
+                def->graphics = g_new0(virDomainGraphicsDef *, 1);
                 def->graphics[0] = graphics;
                 def->ngraphics = 1;
                 graphics = NULL;
@@ -775,7 +775,7 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
                     goto cleanup;
                 VIR_FREE(listenAddr);
             }
-            def->graphics = g_new0(virDomainGraphicsDefPtr, 1);
+            def->graphics = g_new0(virDomainGraphicsDef *, 1);
             def->graphics[0] = graphics;
             def->ngraphics = 1;
             graphics = NULL;
@@ -803,13 +803,13 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
   *
   * Returns a character device object or NULL in case of failure.
   */
-static virDomainChrDefPtr
+static virDomainChrDef *
 xenParseSxprChar(const char *value,
                  const char *tty)
 {
     const char *prefix;
     char *tmp;
-    virDomainChrDefPtr def;
+    virDomainChrDef *def;
 
     if (!(def = virDomainChrDefNew(NULL)))
         return NULL;
@@ -936,10 +936,10 @@ xenParseSxprChar(const char *value,
 
 
 static int
-xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
+xenParseCharDev(virConf *conf, virDomainDef *def, const char *nativeFormat)
 {
     g_auto(GStrv) serials = NULL;
-    virDomainChrDefPtr chr = NULL;
+    virDomainChrDef *chr = NULL;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         g_autofree char *parallel = NULL;
@@ -951,7 +951,7 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
             !(chr = xenParseSxprChar(parallel, NULL)))
             goto cleanup;
         if (chr) {
-            def->parallels = g_new0(virDomainChrDefPtr, 1);
+            def->parallels = g_new0(virDomainChrDef *, 1);
 
             chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
             chr->target.port = 0;
@@ -998,7 +998,7 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
                 !(chr = xenParseSxprChar(serial, NULL)))
                 goto cleanup;
             if (chr) {
-                def->serials = g_new0(virDomainChrDefPtr, 1);
+                def->serials = g_new0(virDomainChrDef *, 1);
                 chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
                 chr->target.port = 0;
                 def->serials[0] = chr;
@@ -1006,7 +1006,7 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
             }
         }
     } else {
-        def->consoles = g_new0(virDomainChrDefPtr, 1);
+        def->consoles = g_new0(virDomainChrDef *, 1);
         def->nconsoles = 1;
         if (!(def->consoles[0] = xenParseSxprChar("pty", NULL)))
             goto cleanup;
@@ -1024,7 +1024,7 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
 
 
 static int
-xenParseVifBridge(virDomainNetDefPtr net, const char *bridge)
+xenParseVifBridge(virDomainNetDef *net, const char *bridge)
 {
     char *vlanstr;
     unsigned int tag;
@@ -1133,11 +1133,11 @@ xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
 }
 
 
-static virDomainNetDefPtr
+static virDomainNetDef *
 xenParseVif(char *entry, const char *vif_typename)
 {
-    virDomainNetDefPtr net = NULL;
-    virDomainNetDefPtr ret = NULL;
+    virDomainNetDef *net = NULL;
+    virDomainNetDef *ret = NULL;
     g_auto(GStrv) keyvals = NULL;
     GStrv keyval;
     const char *script = NULL;
@@ -1234,7 +1234,7 @@ xenParseVif(char *entry, const char *vif_typename)
         net->ifname = g_strdup(vifname);
 
     if (rate) {
-        virNetDevBandwidthPtr bandwidth;
+        virNetDevBandwidth *bandwidth;
         unsigned long long kbytes_per_sec;
 
         if (xenParseSxprVifRate(rate, &kbytes_per_sec) < 0)
@@ -1255,15 +1255,15 @@ xenParseVif(char *entry, const char *vif_typename)
 
 
 static int
-xenParseVifList(virConfPtr conf, virDomainDefPtr def, const char *vif_typename)
+xenParseVifList(virConf *conf, virDomainDef *def, const char *vif_typename)
 {
-    virConfValuePtr list = virConfGetValue(conf, "vif");
+    virConfValue *list = virConfGetValue(conf, "vif");
 
     if (!list || list->type != VIR_CONF_LIST)
         return 0;
 
     for (list = list->list; list; list = list->next) {
-        virDomainNetDefPtr net = NULL;
+        virDomainNetDef *net = NULL;
         int rc;
 
         if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
@@ -1293,7 +1293,7 @@ xenParseVifList(virConfPtr conf, virDomainDefPtr def, const char *vif_typename)
  * Returns 0 if successful or -1 if failed.
  */
 static int
-xenParseSxprSound(virDomainDefPtr def,
+xenParseSxprSound(virDomainDef *def,
                   const char *str)
 {
     if (STREQ(str, "all")) {
@@ -1312,11 +1312,11 @@ xenParseSxprSound(virDomainDefPtr def,
          * Hence use of MODEL_ES1370 + 1, instead of MODEL_LAST
          */
 
-        def->sounds = g_new0(virDomainSoundDefPtr,
+        def->sounds = g_new0(virDomainSoundDef *,
                              VIR_DOMAIN_SOUND_MODEL_ES1370 + 1);
 
         for (i = 0; i < (VIR_DOMAIN_SOUND_MODEL_ES1370 + 1); i++) {
-            virDomainSoundDefPtr sound = g_new0(virDomainSoundDef, 1);
+            virDomainSoundDef *sound = g_new0(virDomainSoundDef, 1);
             sound->model = i;
             def->sounds[def->nsounds++] = sound;
         }
@@ -1327,7 +1327,7 @@ xenParseSxprSound(virDomainDefPtr def,
 
         while (*sound != '\0') {
             char *next = strchr(sound, ',');
-            virDomainSoundDefPtr snddef;
+            virDomainSoundDef *snddef;
 
             if (next)
                 *next = '\0';
@@ -1352,7 +1352,7 @@ xenParseSxprSound(virDomainDefPtr def,
 
 
 static int
-xenParseEmulatedDevices(virConfPtr conf, virDomainDefPtr def)
+xenParseEmulatedDevices(virConf *conf, virDomainDef *def)
 {
     g_autofree char *str = NULL;
 
@@ -1370,9 +1370,9 @@ xenParseEmulatedDevices(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
+xenParseGeneralMeta(virConf *conf, virDomainDef *def, virCaps *caps)
 {
-    virCapsDomainDataPtr capsdata = NULL;
+    virCapsDomainData *capsdata = NULL;
     g_autofree char *str = NULL;
     int ret = -1;
 
@@ -1421,11 +1421,11 @@ xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
  * A convenience function for parsing all config common to both XM and XL
  */
 int
-xenParseConfigCommon(virConfPtr conf,
-                     virDomainDefPtr def,
-                     virCapsPtr caps,
+xenParseConfigCommon(virConf *conf,
+                     virDomainDef *def,
+                     virCaps *caps,
                      const char *nativeFormat,
-                     virDomainXMLOptionPtr xmlopt)
+                     virDomainXMLOption *xmlopt)
 {
     if (xenParseGeneralMeta(conf, def, caps) < 0)
         return -1;
@@ -1487,8 +1487,8 @@ xenParseConfigCommon(virConfPtr conf,
  * Returns 0 in case of success, -1 in case of error
  */
 static int
-xenFormatSxprChr(virDomainChrDefPtr def,
-                 virBufferPtr buf)
+xenFormatSxprChr(virDomainChrDef *def,
+                 virBuffer *buf)
 {
     const char *type = virDomainChrTypeToString(def->source->type);
 
@@ -1553,11 +1553,11 @@ xenFormatSxprChr(virDomainChrDefPtr def,
 
 
 static int
-xenFormatSerial(virConfValuePtr list, virDomainChrDefPtr serial)
+xenFormatSerial(virConfValue *list, virDomainChrDef *serial)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virConfValuePtr val;
-    virConfValuePtr tmp;
+    virConfValue *val;
+    virConfValue *tmp;
     int ret;
 
     if (serial) {
@@ -1584,7 +1584,7 @@ xenFormatSerial(virConfValuePtr list, virDomainChrDefPtr serial)
 }
 
 char *
-xenMakeIPList(virNetDevIPInfoPtr guestIP)
+xenMakeIPList(virNetDevIPInfo *guestIP)
 {
     size_t i;
     char **address_array;
@@ -1606,14 +1606,14 @@ xenMakeIPList(virNetDevIPInfoPtr guestIP)
 
 static int
 xenFormatNet(virConnectPtr conn,
-             virConfValuePtr list,
-             virDomainNetDefPtr net,
+             virConfValue *list,
+             virDomainNetDef *net,
              int hvm,
              const char *vif_typename)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virConfValuePtr val;
-    virConfValuePtr tmp;
+    virConfValue *val;
+    virConfValue *tmp;
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
     virBufferAsprintf(&buf, "mac=%s", virMacAddrFormat(&net->mac, macaddr));
@@ -1745,9 +1745,9 @@ xenFormatNet(virConnectPtr conn,
 
 
 static int
-xenFormatPCI(virConfPtr conf, virDomainDefPtr def)
+xenFormatPCI(virConf *conf, virDomainDef *def)
 {
-    virConfValuePtr pciVal = NULL;
+    virConfValue *pciVal = NULL;
     int hasPCI = 0;
     size_t i;
 
@@ -1767,8 +1767,8 @@ xenFormatPCI(virConfPtr conf, virDomainDefPtr def)
     for (i = 0; i < def->nhostdevs; i++) {
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-            virConfValuePtr val;
-            virConfValuePtr tmp;
+            virConfValue *val;
+            virConfValue *tmp;
             char *buf;
             const char *permissive_str = NULL;
 
@@ -1819,7 +1819,7 @@ xenFormatPCI(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenFormatGeneralMeta(virConfPtr conf, virDomainDefPtr def)
+xenFormatGeneralMeta(virConf *conf, virDomainDef *def)
 {
     char uuid[VIR_UUID_STRING_BUFLEN];
 
@@ -1835,7 +1835,7 @@ xenFormatGeneralMeta(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenFormatMem(virConfPtr conf, virDomainDefPtr def)
+xenFormatMem(virConf *conf, virDomainDef *def)
 {
     if (xenConfigSetInt(conf, "maxmem",
                         VIR_DIV_UP(virDomainDefGetMemoryTotal(def), 1024)) < 0)
@@ -1850,7 +1850,7 @@ xenFormatMem(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenFormatTimeOffset(virConfPtr conf, virDomainDefPtr def)
+xenFormatTimeOffset(virConf *conf, virDomainDef *def)
 {
     int vmlocaltime;
 
@@ -1914,7 +1914,7 @@ xenFormatTimeOffset(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenFormatEventActions(virConfPtr conf, virDomainDefPtr def)
+xenFormatEventActions(virConf *conf, virDomainDef *def)
 {
     const char *lifecycle = NULL;
 
@@ -1949,7 +1949,7 @@ xenFormatEventActions(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenFormatCharDev(virConfPtr conf, virDomainDefPtr def,
+xenFormatCharDev(virConf *conf, virDomainDef *def,
                  const char *nativeFormat)
 {
     size_t i;
@@ -1988,7 +1988,7 @@ xenFormatCharDev(virConfPtr conf, virDomainDefPtr def,
             } else {
                 size_t j = 0;
                 int maxport = -1, port;
-                virConfValuePtr serialVal = NULL;
+                virConfValue *serialVal = NULL;
 
                 if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XM)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -2005,7 +2005,7 @@ xenFormatCharDev(virConfPtr conf, virDomainDefPtr def,
                         maxport = def->serials[i]->target.port;
 
                 for (port = 0; port <= maxport; port++) {
-                    virDomainChrDefPtr chr = NULL;
+                    virDomainChrDef *chr = NULL;
 
                     for (j = 0; j < def->nserials; j++) {
                         if (def->serials[j]->target.port == port) {
@@ -2040,7 +2040,7 @@ xenFormatCharDev(virConfPtr conf, virDomainDefPtr def,
 
 
 static int
-xenFormatCPUAllocation(virConfPtr conf, virDomainDefPtr def)
+xenFormatCPUAllocation(virConf *conf, virDomainDef *def)
 {
     g_autofree char *cpus = NULL;
 
@@ -2064,7 +2064,7 @@ xenFormatCPUAllocation(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenFormatHypervisorFeatures(virConfPtr conf, virDomainDefPtr def)
+xenFormatHypervisorFeatures(virConf *conf, virDomainDef *def)
 {
     size_t i;
     bool hvm = !!(def->os.type == VIR_DOMAIN_OSTYPE_HVM);
@@ -2174,7 +2174,7 @@ xenFormatHypervisorFeatures(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenFormatEmulator(virConfPtr conf, virDomainDefPtr def)
+xenFormatEmulator(virConf *conf, virDomainDef *def)
 {
     if (def->emulator &&
         xenConfigSetString(conf, "device_model_override", def->emulator) < 0)
@@ -2185,7 +2185,7 @@ xenFormatEmulator(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
+xenFormatVfb(virConf *conf, virDomainDef *def)
 {
     int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM ? 1 : 0;
 
@@ -2209,7 +2209,7 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
                                        def->graphics[0]->data.sdl.xauth) < 0)
                     return -1;
             } else {
-                virDomainGraphicsListenDefPtr glisten;
+                virDomainGraphicsListenDef *glisten;
 
                 if (xenConfigSetInt(conf, "sdl", 0) < 0)
                     return -1;
@@ -2242,8 +2242,8 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
                     return -1;
             }
         } else {
-            virConfValuePtr vfb;
-            virConfValuePtr disp;
+            virConfValue *vfb;
+            virConfValue *disp;
             char *vfbstr = NULL;
             g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -2256,7 +2256,7 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
                     virBufferAsprintf(&buf, ",xauthority=%s",
                                       def->graphics[0]->data.sdl.xauth);
             } else {
-                virDomainGraphicsListenDefPtr glisten
+                virDomainGraphicsListenDef *glisten
                     = virDomainGraphicsGetListen(def->graphics[0], 0);
 
                 virBufferAddLit(&buf, "type=vnc");
@@ -2295,7 +2295,7 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenFormatSound(virConfPtr conf, virDomainDefPtr def)
+xenFormatSound(virConf *conf, virDomainDef *def)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char * model;
@@ -2325,12 +2325,12 @@ xenFormatSound(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenFormatVif(virConfPtr conf,
+xenFormatVif(virConf *conf,
              virConnectPtr conn,
-             virDomainDefPtr def,
+             virDomainDef *def,
              const char *vif_typename)
 {
-    virConfValuePtr netVal = NULL;
+    virConfValue *netVal = NULL;
     size_t i;
     int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
 
@@ -2364,8 +2364,8 @@ xenFormatVif(virConfPtr conf,
  * A convenience function for formatting all config common to both XM and XL
  */
 int
-xenFormatConfigCommon(virConfPtr conf,
-                      virDomainDefPtr def,
+xenFormatConfigCommon(virConf *conf,
+                      virDomainDef *def,
                       virConnectPtr conn,
                       const char *nativeFormat)
 {
@@ -2419,7 +2419,7 @@ xenFormatConfigCommon(virConfPtr conf,
 
 
 int
-xenDomainDefAddImplicitInputDevice(virDomainDefPtr def)
+xenDomainDefAddImplicitInputDevice(virDomainDef *def)
 {
     virDomainInputBus implicitInputBus = VIR_DOMAIN_INPUT_BUS_XEN;
 

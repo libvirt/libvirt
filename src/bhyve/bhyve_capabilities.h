@@ -26,15 +26,15 @@
 
 #include "bhyve_utils.h"
 
-virCapsPtr virBhyveCapsBuild(void);
-int virBhyveDomainCapsFill(virDomainCapsPtr caps,
+virCaps *virBhyveCapsBuild(void);
+int virBhyveDomainCapsFill(virDomainCaps *caps,
                            unsigned int bhyvecaps,
-                           virDomainCapsStringValuesPtr firmwares);
-virDomainCapsPtr virBhyveDomainCapsBuild(bhyveConnPtr,
-                                         const char *emulatorbin,
-                                         const char *machine,
-                                         virArch arch,
-                                         virDomainVirtType virttype);
+                           virDomainCapsStringValues *firmwares);
+virDomainCaps *virBhyveDomainCapsBuild(bhyveConn *conn,
+                                       const char *emulatorbin,
+                                       const char *machine,
+                                       virArch arch,
+                                       virDomainVirtType virttype);
 
 /* These are bit flags: */
 typedef enum {

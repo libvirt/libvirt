@@ -33,21 +33,21 @@
 
 VIR_LOG_INIT("datatypes");
 
-virClassPtr virConnectClass;
-virClassPtr virConnectCloseCallbackDataClass;
-virClassPtr virDomainClass;
-virClassPtr virDomainCheckpointClass;
-virClassPtr virDomainSnapshotClass;
-virClassPtr virInterfaceClass;
-virClassPtr virNetworkClass;
-virClassPtr virNetworkPortClass;
-virClassPtr virNodeDeviceClass;
-virClassPtr virNWFilterClass;
-virClassPtr virNWFilterBindingClass;
-virClassPtr virSecretClass;
-virClassPtr virStreamClass;
-virClassPtr virStorageVolClass;
-virClassPtr virStoragePoolClass;
+virClass *virConnectClass;
+virClass *virConnectCloseCallbackDataClass;
+virClass *virDomainClass;
+virClass *virDomainCheckpointClass;
+virClass *virDomainSnapshotClass;
+virClass *virInterfaceClass;
+virClass *virNetworkClass;
+virClass *virNetworkPortClass;
+virClass *virNodeDeviceClass;
+virClass *virNWFilterClass;
+virClass *virNWFilterBindingClass;
+virClass *virSecretClass;
+virClass *virStreamClass;
+virClass *virStorageVolClass;
+virClass *virStoragePoolClass;
 
 static void virConnectDispose(void *obj);
 static void virConnectCloseCallbackDataDispose(void *obj);
@@ -65,14 +65,14 @@ static void virStreamDispose(void *obj);
 static void virStorageVolDispose(void *obj);
 static void virStoragePoolDispose(void *obj);
 
-virClassPtr virAdmConnectClass;
-virClassPtr virAdmConnectCloseCallbackDataClass;
+virClass *virAdmConnectClass;
+virClass *virAdmConnectCloseCallbackDataClass;
 
 static void virAdmConnectDispose(void *obj);
 static void virAdmConnectCloseCallbackDataDispose(void *obj);
 
-virClassPtr virAdmServerClass;
-virClassPtr virAdmClientClass;
+virClass *virAdmServerClass;
+virClass *virAdmClientClass;
 static void virAdmServerDispose(void *obj);
 static void virAdmClientDispose(void *obj);
 
@@ -180,7 +180,7 @@ virConnectDispose(void *obj)
 
 
 static void
-virConnectCloseCallbackDataReset(virConnectCloseCallbackDataPtr closeData)
+virConnectCloseCallbackDataReset(virConnectCloseCallbackData *closeData)
 {
     if (closeData->freeCallback)
         closeData->freeCallback(closeData->opaque);
@@ -203,7 +203,7 @@ virConnectCloseCallbackDataDispose(void *obj)
     virConnectCloseCallbackDataReset(obj);
 }
 
-virConnectCloseCallbackDataPtr
+virConnectCloseCallbackData *
 virNewConnectCloseCallbackData(void)
 {
     if (virDataTypesInitialize() < 0)
@@ -212,7 +212,7 @@ virNewConnectCloseCallbackData(void)
     return virObjectLockableNew(virConnectCloseCallbackDataClass);
 }
 
-void virConnectCloseCallbackDataRegister(virConnectCloseCallbackDataPtr closeData,
+void virConnectCloseCallbackDataRegister(virConnectCloseCallbackData *closeData,
                                          virConnectPtr conn,
                                          virConnectCloseFunc cb,
                                          void *opaque,
@@ -236,7 +236,7 @@ void virConnectCloseCallbackDataRegister(virConnectCloseCallbackDataPtr closeDat
     virObjectUnlock(closeData);
 }
 
-void virConnectCloseCallbackDataUnregister(virConnectCloseCallbackDataPtr closeData,
+void virConnectCloseCallbackDataUnregister(virConnectCloseCallbackData *closeData,
                                            virConnectCloseFunc cb)
 {
     virObjectLock(closeData);
@@ -255,7 +255,7 @@ void virConnectCloseCallbackDataUnregister(virConnectCloseCallbackDataPtr closeD
     virObjectUnlock(closeData);
 }
 
-void virConnectCloseCallbackDataCall(virConnectCloseCallbackDataPtr closeData,
+void virConnectCloseCallbackDataCall(virConnectCloseCallbackData *closeData,
                                      int reason)
 {
     virObjectLock(closeData);
@@ -274,7 +274,7 @@ void virConnectCloseCallbackDataCall(virConnectCloseCallbackDataPtr closeData,
 }
 
 virConnectCloseFunc
-virConnectCloseCallbackDataGetCallback(virConnectCloseCallbackDataPtr closeData)
+virConnectCloseCallbackDataGetCallback(virConnectCloseCallbackData *closeData)
 {
     virConnectCloseFunc cb;
 
@@ -1128,7 +1128,7 @@ virAdmConnectDispose(void *obj)
 static void
 virAdmConnectCloseCallbackDataDispose(void *obj)
 {
-    virAdmConnectCloseCallbackDataPtr cb_data = obj;
+    virAdmConnectCloseCallbackData *cb_data = obj;
 
     virObjectLock(cb_data);
     virAdmConnectCloseCallbackDataReset(cb_data);
@@ -1136,7 +1136,7 @@ virAdmConnectCloseCallbackDataDispose(void *obj)
 }
 
 void
-virAdmConnectCloseCallbackDataReset(virAdmConnectCloseCallbackDataPtr cbdata)
+virAdmConnectCloseCallbackDataReset(virAdmConnectCloseCallbackData *cbdata)
 {
     if (cbdata->freeCallback)
         cbdata->freeCallback(cbdata->opaque);
@@ -1149,7 +1149,7 @@ virAdmConnectCloseCallbackDataReset(virAdmConnectCloseCallbackDataPtr cbdata)
 }
 
 int
-virAdmConnectCloseCallbackDataUnregister(virAdmConnectCloseCallbackDataPtr cbdata,
+virAdmConnectCloseCallbackDataUnregister(virAdmConnectCloseCallbackData *cbdata,
                                          virAdmConnectCloseFunc cb)
 {
     int ret = -1;
@@ -1169,7 +1169,7 @@ virAdmConnectCloseCallbackDataUnregister(virAdmConnectCloseCallbackDataPtr cbdat
 }
 
 int
-virAdmConnectCloseCallbackDataRegister(virAdmConnectCloseCallbackDataPtr cbdata,
+virAdmConnectCloseCallbackDataRegister(virAdmConnectCloseCallbackData *cbdata,
                                        virAdmConnectPtr conn,
                                        virAdmConnectCloseFunc cb,
                                        void *opaque,

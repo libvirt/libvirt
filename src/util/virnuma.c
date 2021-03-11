@@ -90,7 +90,7 @@ virNumaGetAutoPlacementAdvice(unsigned short vcpus G_GNUC_UNUSED,
 #if WITH_NUMACTL
 int
 virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode,
-                         virBitmapPtr nodeset)
+                         virBitmap *nodeset)
 {
     nodemask_t mask;
     int node = -1;
@@ -249,7 +249,7 @@ virNumaGetNodeMemory(int node,
   (((mask)[((cpu) / n_bits(*(mask)))] >> ((cpu) % n_bits(*(mask)))) & 1)
 int
 virNumaGetNodeCPUs(int node,
-                   virBitmapPtr *cpus)
+                   virBitmap **cpus)
 {
     int ncpus = 0;
     int max_n_cpus = virNumaGetMaxCPUs();
@@ -297,8 +297,8 @@ virNumaGetNodeCPUs(int node,
  * Returns 0 on success, <0 on failure.
  */
 int
-virNumaNodesetToCPUset(virBitmapPtr nodeset,
-                       virBitmapPtr *cpuset)
+virNumaNodesetToCPUset(virBitmap *nodeset,
+                       virBitmap **cpuset)
 {
     g_autoptr(virBitmap) allNodesCPUs = NULL;
     size_t nodesetSize;
@@ -343,7 +343,7 @@ virNumaNodesetToCPUset(virBitmapPtr nodeset,
 
 int
 virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode G_GNUC_UNUSED,
-                         virBitmapPtr nodeset)
+                         virBitmap *nodeset)
 {
     if (!virNumaNodesetIsAvailable(nodeset))
         return -1;
@@ -385,7 +385,7 @@ virNumaGetNodeMemory(int node G_GNUC_UNUSED,
 
 int
 virNumaGetNodeCPUs(int node G_GNUC_UNUSED,
-                   virBitmapPtr *cpus)
+                   virBitmap **cpus)
 {
     *cpus = NULL;
 
@@ -395,8 +395,8 @@ virNumaGetNodeCPUs(int node G_GNUC_UNUSED,
 }
 
 int
-virNumaNodesetToCPUset(virBitmapPtr nodeset G_GNUC_UNUSED,
-                       virBitmapPtr *cpuset)
+virNumaNodesetToCPUset(virBitmap *nodeset G_GNUC_UNUSED,
+                       virBitmap **cpuset)
 {
     *cpuset = NULL;
 
@@ -982,7 +982,7 @@ virNumaSetPagePoolSize(int node G_GNUC_UNUSED,
 #endif /* #ifdef __linux__ */
 
 bool
-virNumaNodesetIsAvailable(virBitmapPtr nodeset)
+virNumaNodesetIsAvailable(virBitmap *nodeset)
 {
     ssize_t bit = -1;
 
@@ -1006,13 +1006,13 @@ virNumaNodesetIsAvailable(virBitmapPtr nodeset)
  *
  * Returns a bitmap of guest numa node ids that contain memory.
  */
-virBitmapPtr
+virBitmap *
 virNumaGetHostMemoryNodeset(void)
 {
     int maxnode = virNumaGetMaxNode();
     unsigned long long nodesize;
     size_t i = 0;
-    virBitmapPtr nodeset = NULL;
+    virBitmap *nodeset = NULL;
 
     if (maxnode < 0)
         return NULL;

@@ -441,7 +441,7 @@ int virProcessKillPainfully(pid_t pid, bool force)
 
 #if WITH_SCHED_GETAFFINITY
 
-int virProcessSetAffinity(pid_t pid, virBitmapPtr map, bool quiet)
+int virProcessSetAffinity(pid_t pid, virBitmap *map, bool quiet)
 {
     size_t i;
     int numcpus = 1024;
@@ -493,14 +493,14 @@ int virProcessSetAffinity(pid_t pid, virBitmapPtr map, bool quiet)
     return 0;
 }
 
-virBitmapPtr
+virBitmap *
 virProcessGetAffinity(pid_t pid)
 {
     size_t i;
     cpu_set_t *mask;
     size_t masklen;
     size_t ncpus;
-    virBitmapPtr ret = NULL;
+    virBitmap *ret = NULL;
 
     /* 262144 cpus ought to be enough for anyone */
     ncpus = 1024 << 8;
@@ -535,7 +535,7 @@ virProcessGetAffinity(pid_t pid)
 #elif defined(WITH_BSD_CPU_AFFINITY)
 
 int virProcessSetAffinity(pid_t pid,
-                          virBitmapPtr map,
+                          virBitmap *map,
                           bool quiet)
 {
     size_t i;
@@ -562,12 +562,12 @@ int virProcessSetAffinity(pid_t pid,
     return 0;
 }
 
-virBitmapPtr
+virBitmap *
 virProcessGetAffinity(pid_t pid)
 {
     size_t i;
     cpuset_t mask;
-    virBitmapPtr ret = NULL;
+    virBitmap *ret = NULL;
 
     CPU_ZERO(&mask);
     if (cpuset_getaffinity(CPU_LEVEL_WHICH, CPU_WHICH_PID, pid,
@@ -589,7 +589,7 @@ virProcessGetAffinity(pid_t pid)
 #else /* WITH_SCHED_GETAFFINITY */
 
 int virProcessSetAffinity(pid_t pid G_GNUC_UNUSED,
-                          virBitmapPtr map G_GNUC_UNUSED,
+                          virBitmap *map G_GNUC_UNUSED,
                           bool quiet G_GNUC_UNUSED)
 {
     /* The @quiet parameter is ignored here, it is used only for silencing
@@ -599,7 +599,7 @@ int virProcessSetAffinity(pid_t pid G_GNUC_UNUSED,
     return -1;
 }
 
-virBitmapPtr
+virBitmap *
 virProcessGetAffinity(pid_t pid G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",

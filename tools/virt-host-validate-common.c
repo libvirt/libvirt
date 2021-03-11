@@ -188,10 +188,10 @@ int virHostValidateNamespace(const char *hvname,
 }
 
 
-virBitmapPtr virHostValidateGetCPUFlags(void)
+virBitmap *virHostValidateGetCPUFlags(void)
 {
     FILE *fp;
-    virBitmapPtr flags = NULL;
+    virBitmap *flags = NULL;
 
     if (!(fp = fopen("/proc/cpuinfo", "r")))
         return NULL;
@@ -327,7 +327,7 @@ int virHostValidateCGroupControllers(const char *hvname G_GNUC_UNUSED,
 int virHostValidateIOMMU(const char *hvname,
                          virHostValidateLevel level)
 {
-    virBitmapPtr flags;
+    virBitmap *flags;
     struct stat sb;
     const char *bootarg = NULL;
     bool isAMD = false, isIntel = false;
@@ -441,7 +441,7 @@ bool virHostKernelModuleIsLoaded(const char *module)
 int virHostValidateSecureGuests(const char *hvname,
                                 virHostValidateLevel level)
 {
-    virBitmapPtr flags;
+    virBitmap *flags;
     bool hasFac158 = false;
     bool hasAMDSev = false;
     virArch arch = virArchFromHost();

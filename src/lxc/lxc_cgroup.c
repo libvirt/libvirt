@@ -35,8 +35,8 @@
 
 VIR_LOG_INIT("lxc.lxc_cgroup");
 
-static int virLXCCgroupSetupCpuTune(virDomainDefPtr def,
-                                    virCgroupPtr cgroup)
+static int virLXCCgroupSetupCpuTune(virDomainDef *def,
+                                    virCgroup *cgroup)
 {
     if (def->cputune.sharesSpecified) {
         if (virCgroupSetCpuShares(cgroup, def->cputune.shares) < 0)
@@ -48,9 +48,9 @@ static int virLXCCgroupSetupCpuTune(virDomainDefPtr def,
 }
 
 
-static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
-                                       virCgroupPtr cgroup,
-                                       virBitmapPtr nodemask)
+static int virLXCCgroupSetupCpusetTune(virDomainDef *def,
+                                       virCgroup *cgroup,
+                                       virBitmap *nodemask)
 {
     g_autofree char *mask = NULL;
     virDomainNumatuneMemMode mode;
@@ -77,15 +77,15 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
 }
 
 
-static int virLXCCgroupSetupBlkioTune(virDomainDefPtr def,
-                                      virCgroupPtr cgroup)
+static int virLXCCgroupSetupBlkioTune(virDomainDef *def,
+                                      virCgroup *cgroup)
 {
     return virDomainCgroupSetupBlkio(cgroup, def->blkio);
 }
 
 
-static int virLXCCgroupSetupMemTune(virDomainDefPtr def,
-                                    virCgroupPtr cgroup)
+static int virLXCCgroupSetupMemTune(virDomainDef *def,
+                                    virCgroup *cgroup)
 {
     if (virCgroupSetMemory(cgroup, virDomainDefGetMemoryInitial(def)) < 0)
         return -1;
@@ -94,22 +94,22 @@ static int virLXCCgroupSetupMemTune(virDomainDefPtr def,
 }
 
 
-static int virLXCCgroupGetMemSwapUsage(virCgroupPtr cgroup,
-                                       virLXCMeminfoPtr meminfo)
+static int virLXCCgroupGetMemSwapUsage(virCgroup *cgroup,
+                                       struct virLXCMeminfo *meminfo)
 {
     return virCgroupGetMemSwapUsage(cgroup, &meminfo->swapusage);
 }
 
 
-static int virLXCCgroupGetMemSwapTotal(virCgroupPtr cgroup,
-                                       virLXCMeminfoPtr meminfo)
+static int virLXCCgroupGetMemSwapTotal(virCgroup *cgroup,
+                                       struct virLXCMeminfo *meminfo)
 {
     return virCgroupGetMemSwapHardLimit(cgroup, &meminfo->swaptotal);
 }
 
 
-static int virLXCCgroupGetMemUsage(virCgroupPtr cgroup,
-                                   virLXCMeminfoPtr meminfo)
+static int virLXCCgroupGetMemUsage(virCgroup *cgroup,
+                                   struct virLXCMeminfo *meminfo)
 {
     int ret;
     unsigned long memUsage;
@@ -121,15 +121,15 @@ static int virLXCCgroupGetMemUsage(virCgroupPtr cgroup,
 }
 
 
-static int virLXCCgroupGetMemTotal(virCgroupPtr cgroup,
-                                   virLXCMeminfoPtr meminfo)
+static int virLXCCgroupGetMemTotal(virCgroup *cgroup,
+                                   struct virLXCMeminfo *meminfo)
 {
     return virCgroupGetMemoryHardLimit(cgroup, &meminfo->memtotal);
 }
 
 
-static int virLXCCgroupGetMemStat(virCgroupPtr cgroup,
-                                  virLXCMeminfoPtr meminfo)
+static int virLXCCgroupGetMemStat(virCgroup *cgroup,
+                                  struct virLXCMeminfo *meminfo)
 {
     return virCgroupGetMemoryStat(cgroup,
                                   &meminfo->cached,
@@ -141,7 +141,7 @@ static int virLXCCgroupGetMemStat(virCgroupPtr cgroup,
 }
 
 
-int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo)
+int virLXCCgroupGetMeminfo(struct virLXCMeminfo *meminfo)
 {
     g_autoptr(virCgroup) cgroup = NULL;
 
@@ -169,8 +169,6 @@ int virLXCCgroupGetMeminfo(virLXCMeminfoPtr meminfo)
 
 
 typedef struct _virLXCCgroupDevicePolicy virLXCCgroupDevicePolicy;
-typedef virLXCCgroupDevicePolicy *virLXCCgroupDevicePolicyPtr;
-
 struct _virLXCCgroupDevicePolicy {
     char type;
     int major;
@@ -179,11 +177,11 @@ struct _virLXCCgroupDevicePolicy {
 
 
 int
-virLXCSetupHostUSBDeviceCgroup(virUSBDevicePtr dev G_GNUC_UNUSED,
+virLXCSetupHostUSBDeviceCgroup(virUSBDevice *dev G_GNUC_UNUSED,
                                const char *path,
                                void *opaque)
 {
-    virCgroupPtr cgroup = opaque;
+    virCgroup *cgroup = opaque;
 
     VIR_DEBUG("Process path '%s' for USB device", path);
     if (virCgroupAllowDevicePath(cgroup, path,
@@ -195,11 +193,11 @@ virLXCSetupHostUSBDeviceCgroup(virUSBDevicePtr dev G_GNUC_UNUSED,
 
 
 int
-virLXCTeardownHostUSBDeviceCgroup(virUSBDevicePtr dev G_GNUC_UNUSED,
+virLXCTeardownHostUSBDeviceCgroup(virUSBDevice *dev G_GNUC_UNUSED,
                                   const char *path,
                                   void *opaque)
 {
-    virCgroupPtr cgroup = opaque;
+    virCgroup *cgroup = opaque;
 
     VIR_DEBUG("Process path '%s' for USB device", path);
     if (virCgroupDenyDevicePath(cgroup, path,
@@ -210,8 +208,8 @@ virLXCTeardownHostUSBDeviceCgroup(virUSBDevicePtr dev G_GNUC_UNUSED,
 }
 
 
-static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
-                                      virCgroupPtr cgroup)
+static int virLXCCgroupSetupDeviceACL(virDomainDef *def,
+                                      virCgroup *cgroup)
 {
     int capMknod = def->caps_features[VIR_DOMAIN_PROCES_CAPS_FEATURE_MKNOD];
     size_t i;
@@ -237,7 +235,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
     }
 
     for (i = 0; devices[i].type != 0; i++) {
-        virLXCCgroupDevicePolicyPtr dev = &devices[i];
+        virLXCCgroupDevicePolicy *dev = &devices[i];
         if (virCgroupAllowDevice(cgroup,
                                  dev->type,
                                  dev->major,
@@ -276,9 +274,9 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
 
     VIR_DEBUG("Allowing any hostdev block devs");
     for (i = 0; i < def->nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
-        virDomainHostdevSubsysUSBPtr usbsrc = &hostdev->source.subsys.u.usb;
-        virUSBDevicePtr usb;
+        virDomainHostdevDef *hostdev = def->hostdevs[i];
+        virDomainHostdevSubsysUSB *usbsrc = &hostdev->source.subsys.u.usb;
+        virUSBDevice *usb;
 
         switch (hostdev->mode) {
         case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
@@ -330,7 +328,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
 
     /* Sync'ed with Host clock */
     for (i = 0; i < def->clock.ntimers; i++) {
-        virDomainTimerDefPtr timer = def->clock.timers[i];
+        virDomainTimerDef *timer = def->clock.timers[i];
         const char *dev = NULL;
 
         /* Check if "present" is set to "no" otherwise enable it. */
@@ -374,12 +372,12 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
 }
 
 
-virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
+virCgroup *virLXCCgroupCreate(virDomainDef *def,
                                 pid_t initpid,
                                 size_t nnicindexes,
                                 int *nicindexes)
 {
-    virCgroupPtr cgroup = NULL;
+    virCgroup *cgroup = NULL;
     g_autofree char *machineName = virLXCDomainGetMachineName(def, 0);
 
     if (!machineName)
@@ -420,9 +418,9 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
 }
 
 
-int virLXCCgroupSetup(virDomainDefPtr def,
-                      virCgroupPtr cgroup,
-                      virBitmapPtr nodemask)
+int virLXCCgroupSetup(virDomainDef *def,
+                      virCgroup *cgroup,
+                      virBitmap *nodemask)
 {
     if (virLXCCgroupSetupCpuTune(def, cgroup) < 0)
         return -1;

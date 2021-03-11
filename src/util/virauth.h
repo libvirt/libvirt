@@ -28,7 +28,7 @@
 int virAuthGetConfigFilePath(virConnectPtr conn,
                              char **path);
 
-int virAuthGetConfigFilePathURI(virURIPtr uri,
+int virAuthGetConfigFilePathURI(virURI *uri,
                                 char **path);
 
 

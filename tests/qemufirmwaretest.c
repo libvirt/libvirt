@@ -115,9 +115,9 @@ testSupportedFW(const void *opaque)
     uint64_t actualInterfaces;
     uint64_t expectedInterfaces = 0;
     bool actualSecure;
-    virFirmwarePtr *expFWs = NULL;
+    virFirmware **expFWs = NULL;
     size_t nexpFWs = 0;
-    virFirmwarePtr *actFWs = NULL;
+    virFirmware **actFWs = NULL;
     size_t nactFWs = 0;
     size_t i;
     int ret = -1;
@@ -134,7 +134,7 @@ testSupportedFW(const void *opaque)
      * Well, some images don't have a NVRAM store. In that case NULL was passed:
      * ${FW}:NULL. Now iterate over expected firmwares and fix this. */
     for (i = 0; i < nexpFWs; i++) {
-        virFirmwarePtr tmp = expFWs[i];
+        virFirmware *tmp = expFWs[i];
 
         if (STREQ(tmp->nvram, "NULL"))
             VIR_FREE(tmp->nvram);
@@ -163,8 +163,8 @@ testSupportedFW(const void *opaque)
     }
 
     for (i = 0; i < nactFWs; i++) {
-        virFirmwarePtr actFW = actFWs[i];
-        virFirmwarePtr expFW = NULL;
+        virFirmware *actFW = actFWs[i];
+        virFirmware *expFW = NULL;
 
         if (i >= nexpFWs) {
             fprintf(stderr, "Unexpected FW image: %s NVRAM: %s\n",

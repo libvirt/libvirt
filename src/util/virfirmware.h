@@ -23,8 +23,6 @@
 #include "internal.h"
 
 typedef struct _virFirmware virFirmware;
-typedef virFirmware *virFirmwarePtr;
-
 struct _virFirmware {
     char *name;
     char *nvram;
@@ -32,19 +30,19 @@ struct _virFirmware {
 
 
 void
-virFirmwareFree(virFirmwarePtr firmware);
+virFirmwareFree(virFirmware *firmware);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virFirmware, virFirmwareFree);
 
 void
-virFirmwareFreeList(virFirmwarePtr *firmwares, size_t nfirmwares);
+virFirmwareFreeList(virFirmware **firmwares, size_t nfirmwares);
 
 int
-virFirmwareParse(const char *str, virFirmwarePtr firmware)
+virFirmwareParse(const char *str, virFirmware *firmware)
     ATTRIBUTE_NONNULL(2);
 
 int
 virFirmwareParseList(const char *list,
-                     virFirmwarePtr **firmwares,
+                     virFirmware ***firmwares,
                      size_t *nfirmwares)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);

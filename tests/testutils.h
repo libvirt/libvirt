@@ -43,7 +43,7 @@ int virTestRun(const char *title,
 int virTestLoadFile(const char *file, char **buf);
 char *virTestLoadFilePath(const char *p, ...)
     G_GNUC_NULL_TERMINATED;
-virJSONValuePtr virTestLoadFileJSON(const char *p, ...)
+virJSONValue *virTestLoadFileJSON(const char *p, ...)
     G_GNUC_NULL_TERMINATED;
 
 int virTestDifference(FILE *stream,
@@ -143,9 +143,9 @@ int virTestMain(int argc,
 
 #define VIR_TEST_MOCK(mock) (abs_builddir "/lib" mock "mock" MOCK_EXT)
 
-virCapsPtr virTestGenericCapsInit(void);
-virCapsHostNUMAPtr virTestCapsBuildNUMATopology(int seq);
-virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void);
+virCaps *virTestGenericCapsInit(void);
+virCapsHostNUMA *virTestCapsBuildNUMATopology(int seq);
+virDomainXMLOption *virTestGenericDomainXMLConfInit(void);
 
 typedef enum {
     TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS,
@@ -155,8 +155,8 @@ typedef enum {
     TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_COMPARE,
 } testCompareDomXML2XMLResult;
 
-int testCompareDomXML2XMLFiles(virCapsPtr caps,
-                               virDomainXMLOptionPtr xmlopt,
+int testCompareDomXML2XMLFiles(virCaps *caps,
+                               virDomainXMLOption *xmlopt,
                                const char *inxml,
                                const char *outfile,
                                bool live,

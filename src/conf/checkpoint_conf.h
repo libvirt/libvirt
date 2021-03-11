@@ -39,7 +39,6 @@ typedef enum {
 
 /* Stores disk-checkpoint information */
 typedef struct _virDomainCheckpointDiskDef virDomainCheckpointDiskDef;
-typedef virDomainCheckpointDiskDef *virDomainCheckpointDiskDefPtr;
 struct _virDomainCheckpointDiskDef {
     char *name;     /* name matching the <target dev='...' of the domain */
     int type;       /* virDomainCheckpointType */
@@ -72,30 +71,30 @@ typedef enum {
 unsigned int
 virDomainCheckpointFormatConvertXMLFlags(unsigned int flags);
 
-virDomainCheckpointDefPtr
+virDomainCheckpointDef *
 virDomainCheckpointDefParseString(const char *xmlStr,
-                                  virDomainXMLOptionPtr xmlopt,
+                                  virDomainXMLOption *xmlopt,
                                   void *parseOpaque,
                                   unsigned int flags);
 
-virDomainCheckpointDefPtr
+virDomainCheckpointDef *
 virDomainCheckpointDefNew(void);
 
 char *
-virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
-                             virDomainXMLOptionPtr xmlopt,
+virDomainCheckpointDefFormat(virDomainCheckpointDef *def,
+                             virDomainXMLOption *xmlopt,
                              unsigned int flags);
 
 int
-virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr checkpoint);
+virDomainCheckpointAlignDisks(virDomainCheckpointDef *checkpoint);
 
 int
-virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
-                                virDomainCheckpointDefPtr def,
+virDomainCheckpointRedefinePrep(virDomainObj *vm,
+                                virDomainCheckpointDef *def,
                                 bool *update_current);
 
-virDomainMomentObjPtr
-virDomainCheckpointRedefineCommit(virDomainObjPtr vm,
-                                  virDomainCheckpointDefPtr *defptr);
+virDomainMomentObj *
+virDomainCheckpointRedefineCommit(virDomainObj *vm,
+                                  virDomainCheckpointDef **defptr);
 
 VIR_ENUM_DECL(virDomainCheckpoint);

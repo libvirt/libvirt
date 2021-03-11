@@ -36,7 +36,7 @@ VIR_LOG_INIT("qemu.qemu_validate");
 
 static int
 qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
-                                    virQEMUCapsPtr qemuCaps,
+                                    virQEMUCaps *qemuCaps,
                                     int feature)
 {
     const char *str;
@@ -175,7 +175,7 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
 
 static int
 qemuValidateDomainDefFeatures(const virDomainDef *def,
-                              virQEMUCapsPtr qemuCaps)
+                              virQEMUCaps *qemuCaps)
 {
     size_t i;
 
@@ -344,11 +344,11 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
 
 
 static int
-qemuValidateDomainDefCpu(virQEMUDriverPtr driver,
+qemuValidateDomainDefCpu(virQEMUDriver *driver,
                          const virDomainDef *def,
-                         virQEMUCapsPtr qemuCaps)
+                         virQEMUCaps *qemuCaps)
 {
-    virCPUDefPtr cpu = def->cpu;
+    virCPUDef *cpu = def->cpu;
 
     if (!cpu)
         return 0;
@@ -407,12 +407,12 @@ qemuValidateDomainDefCpu(virQEMUDriverPtr driver,
 
 static int
 qemuValidateDomainDefClockTimers(const virDomainDef *def,
-                                 virQEMUCapsPtr qemuCaps)
+                                 virQEMUCaps *qemuCaps)
 {
     size_t i;
 
     for (i = 0; i < def->clock.ntimers; i++) {
-        virDomainTimerDefPtr timer = def->clock.timers[i];
+        virDomainTimerDef *timer = def->clock.timers[i];
 
         switch ((virDomainTimerNameType)timer->name) {
         case VIR_DOMAIN_TIMER_NAME_PLATFORM:
@@ -558,7 +558,7 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
 
 static int
 qemuValidateDomainDefPM(const virDomainDef *def,
-                        virQEMUCapsPtr qemuCaps)
+                        virQEMUCaps *qemuCaps)
 {
     bool q35Dom = qemuDomainIsQ35(def);
 
@@ -590,7 +590,7 @@ qemuValidateDomainDefPM(const virDomainDef *def,
 
 static int
 qemuValidateDomainDefBoot(const virDomainDef *def,
-                          virQEMUCapsPtr qemuCaps)
+                          virQEMUCaps *qemuCaps)
 {
     if (def->os.loader &&
         def->os.loader->secure == VIR_TRISTATE_BOOL_YES) {
@@ -674,7 +674,7 @@ qemuValidateDefGetVcpuHotplugGranularity(const virDomainDef *def)
 
 
 static int
-qemuValidateDomainVCpuTopology(const virDomainDef *def, virQEMUCapsPtr qemuCaps)
+qemuValidateDomainVCpuTopology(const virDomainDef *def, virQEMUCaps *qemuCaps)
 {
     unsigned int maxCpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, def->virtType,
                                                         def->os.machine);
@@ -753,7 +753,7 @@ qemuValidateDomainVCpuTopology(const virDomainDef *def, virQEMUCapsPtr qemuCaps)
 
 static int
 qemuValidateDomainDefMemory(const virDomainDef *def,
-                            virQEMUCapsPtr qemuCaps)
+                            virQEMUCaps *qemuCaps)
 {
     const char *defaultRAMid = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
                                                                  def->virtType,
@@ -812,7 +812,7 @@ qemuValidateDomainDefMemory(const virDomainDef *def,
 
 static int
 qemuValidateDomainDefNuma(const virDomainDef *def,
-                          virQEMUCapsPtr qemuCaps)
+                          virQEMUCaps *qemuCaps)
 {
     const long system_page_size = virGetSystemPageSizeKB();
     size_t ncells = virDomainNumaGetNodeCount(def->numa);
@@ -839,7 +839,7 @@ qemuValidateDomainDefNuma(const virDomainDef *def,
     }
 
     for (i = 0; i < ncells; i++) {
-        virBitmapPtr cpumask = virDomainNumaGetNodeCpumask(def->numa, i);
+        virBitmap *cpumask = virDomainNumaGetNodeCpumask(def->numa, i);
 
         if (!hasMemoryCap &&
             virDomainNumaGetNodeMemoryAccessMode(def->numa, i)) {
@@ -901,13 +901,13 @@ qemuValidateDomainDefNuma(const virDomainDef *def,
 
 static int
 qemuValidateDomainDefConsole(const virDomainDef *def,
-                             virQEMUCapsPtr qemuCaps)
+                             virQEMUCaps *qemuCaps)
 {
     size_t i;
 
     /* Explicit console devices */
     for (i = 0; i < def->nconsoles; i++) {
-        virDomainChrDefPtr console = def->consoles[i];
+        virDomainChrDef *console = def->consoles[i];
 
         switch (console->targetType) {
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
@@ -944,7 +944,7 @@ qemuValidateDomainDefConsole(const virDomainDef *def,
 
 static int
 qemuValidateDomainDefSysinfo(const virSysinfoDef *def,
-                             virQEMUCapsPtr qemuCaps)
+                             virQEMUCaps *qemuCaps)
 {
     size_t i;
 
@@ -978,7 +978,7 @@ qemuValidateDomainDefSysinfo(const virSysinfoDef *def,
 
 static int
 qemuValidateDomainDefPanic(const virDomainDef *def,
-                           virQEMUCapsPtr qemuCaps)
+                           virQEMUCaps *qemuCaps)
 {
     size_t i;
 
@@ -1070,12 +1070,12 @@ qemuValidateDomainDefPanic(const virDomainDef *def,
 
 
 static int
-qemuValidateDomainDeviceInfo(virDomainDefPtr def G_GNUC_UNUSED,
-                             virDomainDeviceDefPtr dev G_GNUC_UNUSED,
-                             virDomainDeviceInfoPtr info,
+qemuValidateDomainDeviceInfo(virDomainDef *def G_GNUC_UNUSED,
+                             virDomainDeviceDef *dev G_GNUC_UNUSED,
+                             virDomainDeviceInfo *info,
                              void *opaque)
 {
-    virQEMUCapsPtr qemuCaps = opaque;
+    virQEMUCaps *qemuCaps = opaque;
 
     if (info->acpiIndex) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_ACPI_INDEX)) {
@@ -1100,10 +1100,10 @@ qemuValidateDomainDef(const virDomainDef *def,
                       void *opaque,
                       void *parseOpaque)
 {
-    virQEMUDriverPtr driver = opaque;
+    virQEMUDriver *driver = opaque;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virQEMUCaps) qemuCapsLocal = NULL;
-    virQEMUCapsPtr qemuCaps = parseOpaque;
+    virQEMUCaps *qemuCaps = parseOpaque;
     size_t i;
 
     if (!qemuCaps) {
@@ -1265,7 +1265,7 @@ qemuValidateDomainDef(const virDomainDef *def,
      * we know our callback qemuValidateDomainDeviceInfo will
      * not modify it
      */
-    if (virDomainDeviceInfoIterate((virDomainDefPtr)def,
+    if (virDomainDeviceInfoIterate((virDomainDef *)def,
                                    qemuValidateDomainDeviceInfo,
                                    qemuCaps) < 0)
         return -1;
@@ -1275,10 +1275,10 @@ qemuValidateDomainDef(const virDomainDef *def,
 
 
 static int
-qemuValidateDomainDeviceDefZPCIAddress(virDomainDeviceInfoPtr info,
-                                       virQEMUCapsPtr qemuCaps)
+qemuValidateDomainDeviceDefZPCIAddress(virDomainDeviceInfo *info,
+                                       virQEMUCaps *qemuCaps)
 {
-    virZPCIDeviceAddressPtr zpci = &info->addr.pci.zpci;
+    virZPCIDeviceAddress *zpci = &info->addr.pci.zpci;
 
     if (virZPCIDeviceAddressIsPresent(zpci) &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_ZPCI)) {
@@ -1308,9 +1308,9 @@ qemuValidateDomainDeviceDefZPCIAddress(virDomainDeviceInfoPtr info,
 
 static int
 qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
-                                   virQEMUCapsPtr qemuCaps)
+                                   virQEMUCaps *qemuCaps)
 {
-    virDomainDeviceInfoPtr info;
+    virDomainDeviceInfo *info;
 
     if (!(info = virDomainDeviceGetInfo((virDomainDeviceDef *)dev)))
         return 0;
@@ -1328,7 +1328,7 @@ qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO: {
-        virDomainDeviceSpaprVioAddressPtr addr = &(info->addr.spaprvio);
+        virDomainDeviceSpaprVioAddress *addr = &(info->addr.spaprvio);
 
         if (addr->has_reg && addr->reg > 0xffffffff) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1391,7 +1391,7 @@ qemuValidateNetSupportsCoalesce(virDomainNetType type)
 
 static int
 qemuValidateDomainVirtioOptions(const virDomainVirtioOptions *virtio,
-                                virQEMUCapsPtr qemuCaps)
+                                virQEMUCaps *qemuCaps)
 {
     if (!virtio)
         return 0;
@@ -1438,7 +1438,7 @@ qemuValidateDomainVirtioOptions(const virDomainVirtioOptions *virtio,
 static int
 qemuValidateDomainDefVhostUserRequireSharedMemory(const virDomainDef *def,
                                                   const char *name,
-                                                  virQEMUCapsPtr qemuCaps)
+                                                  virQEMUCaps *qemuCaps)
 {
     const char *defaultRAMId = virQEMUCapsGetMachineDefaultRAMid(qemuCaps,
                                                                  def->virtType,
@@ -1485,7 +1485,7 @@ qemuValidateDomainDefVhostUserRequireSharedMemory(const virDomainDef *def,
 
 static int
 qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
-                                   virQEMUCapsPtr qemuCaps)
+                                   virQEMUCaps *qemuCaps)
 {
     bool hasIPv4 = false;
     bool hasIPv6 = false;
@@ -1804,7 +1804,7 @@ qemuValidateDomainChrTargetDef(const virDomainChrDef *chr)
 
 static int
 qemuValidateDomainChrSourceDef(const virDomainChrSourceDef *def,
-                               virQEMUCapsPtr qemuCaps)
+                               virQEMUCaps *qemuCaps)
 {
     switch ((virDomainChrType)def->type) {
     case VIR_DOMAIN_CHR_TYPE_TCP:
@@ -1855,7 +1855,7 @@ qemuValidateDomainChrSourceDef(const virDomainChrSourceDef *def,
 static int
 qemuValidateDomainChrDef(const virDomainChrDef *dev,
                          const virDomainDef *def,
-                         virQEMUCapsPtr qemuCaps)
+                         virQEMUCaps *qemuCaps)
 {
     if (qemuValidateDomainChrSourceDef(dev->source, qemuCaps) < 0)
         return -1;
@@ -1914,7 +1914,7 @@ qemuValidateDomainChrDef(const virDomainChrDef *dev,
 
 static int
 qemuValidateDomainSmartcardDef(const virDomainSmartcardDef *def,
-                               virQEMUCapsPtr qemuCaps)
+                               virQEMUCaps *qemuCaps)
 {
     switch (def->type) {
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
@@ -1959,7 +1959,7 @@ qemuValidateDomainSmartcardDef(const virDomainSmartcardDef *def,
 
 static int
 qemuValidateDomainRNGDef(const virDomainRNGDef *def,
-                         virQEMUCapsPtr qemuCaps)
+                         virQEMUCaps *qemuCaps)
 {
     virDomainCapsDeviceRNG rngCaps = { 0 };
 
@@ -2020,7 +2020,7 @@ qemuValidateDomainRNGDef(const virDomainRNGDef *def,
 static int
 qemuValidateDomainRedirdevDef(const virDomainRedirdevDef *dev,
                               const virDomainDef *def,
-                              virQEMUCapsPtr qemuCaps)
+                              virQEMUCaps *qemuCaps)
 {
     if (qemuValidateDomainChrSourceDef(dev->source, qemuCaps) < 0)
         return -1;
@@ -2101,7 +2101,7 @@ qemuValidateDomainWatchdogDef(const virDomainWatchdogDef *dev,
 static int
 qemuValidateDomainMdevDefVFIOPCI(const virDomainHostdevDef *hostdev,
                                  const virDomainDef *def,
-                                 virQEMUCapsPtr qemuCaps)
+                                 virQEMUCaps *qemuCaps)
 {
     const virDomainHostdevSubsysMediatedDev *dev;
 
@@ -2156,7 +2156,7 @@ qemuValidateDomainMdevDefVFIOPCI(const virDomainHostdevDef *hostdev,
 static int
 qemuValidateDomainMdevDefVFIOAP(const virDomainHostdevDef *hostdev,
                                 const virDomainDef *def,
-                                virQEMUCapsPtr qemuCaps)
+                                virQEMUCaps *qemuCaps)
 {
     size_t i;
     bool vfioap_found = false;
@@ -2179,7 +2179,7 @@ qemuValidateDomainMdevDefVFIOAP(const virDomainHostdevDef *hostdev,
 
     /* VFIO-AP is restricted to a single mediated device only */
     for (i = 0; i < def->nhostdevs; i++) {
-        virDomainHostdevDefPtr hdev = def->hostdevs[i];
+        virDomainHostdevDef *hdev = def->hostdevs[i];
 
         if (virHostdevIsMdevDevice(hdev) &&
             hdev->source.subsys.u.mdev.model == VIR_MDEV_MODEL_TYPE_VFIO_AP) {
@@ -2200,7 +2200,7 @@ qemuValidateDomainMdevDefVFIOAP(const virDomainHostdevDef *hostdev,
 static int
 qemuValidateDomainMdevDef(const virDomainHostdevDef *hostdev,
                           const virDomainDef *def,
-                          virQEMUCapsPtr qemuCaps)
+                          virQEMUCaps *qemuCaps)
 {
     const virDomainHostdevSubsysMediatedDev *mdevsrc;
 
@@ -2232,7 +2232,7 @@ qemuValidateDomainMdevDef(const virDomainHostdevDef *hostdev,
 static int
 qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
                                    const virDomainDef *def,
-                                   virQEMUCapsPtr qemuCaps)
+                                   virQEMUCaps *qemuCaps)
 {
     int backend;
 
@@ -2303,7 +2303,7 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
 
 static int
 qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
-                                 virQEMUCapsPtr qemuCaps)
+                                 virQEMUCaps *qemuCaps)
 {
     virDomainCapsDeviceVideo videoCaps = { 0 };
 
@@ -2439,9 +2439,9 @@ qemuValidateDomainDeviceDefDiskSerial(const char *value)
 static int
 qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
                                         const virDomainDef *def,
-                                        virQEMUCapsPtr qemuCaps)
+                                        virQEMUCaps *qemuCaps)
 {
-    virDomainDeviceInfoPtr diskInfo;
+    virDomainDeviceInfo *diskInfo;
     int cModel;
 
     if (disk->geometry.cylinders > 0 &&
@@ -2606,7 +2606,7 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
 
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_SCSI:
-        diskInfo = (virDomainDeviceInfoPtr)&disk->info;
+        diskInfo = (virDomainDeviceInfo *)&disk->info;
         cModel = qemuDomainFindSCSIControllerModel(def, diskInfo);
 
         if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
@@ -2834,7 +2834,7 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
 static int
 qemuValidateDomainDeviceDefDiskBlkdeviotune(const virDomainDiskDef *disk,
                                             const virDomainDef *def,
-                                            virQEMUCapsPtr qemuCaps)
+                                            virQEMUCaps *qemuCaps)
 {
     /* group_name by itself is ignored by qemu */
     if (disk->blkdeviotune.group_name &&
@@ -2850,7 +2850,7 @@ qemuValidateDomainDeviceDefDiskBlkdeviotune(const virDomainDiskDef *disk,
         size_t i;
 
         for (i = 0; i < def->ndisks; i++) {
-            virDomainDiskDefPtr d = def->disks[i];
+            virDomainDiskDef *d = def->disks[i];
 
             if (STREQ(d->dst, disk->dst) ||
                 STRNEQ_NULLABLE(d->blkdeviotune.group_name,
@@ -2919,7 +2919,7 @@ qemuValidateDomainDeviceDefDiskBlkdeviotune(const virDomainDiskDef *disk,
 
 static int
 qemuValidateDomainDeviceDefDiskTransient(const virDomainDiskDef *disk,
-                                         virQEMUCapsPtr qemuCaps)
+                                         virQEMUCaps *qemuCaps)
 
 {
     virStorageType actualType = virStorageSourceGetActualType(disk->src);
@@ -2967,11 +2967,11 @@ qemuValidateDomainDeviceDefDiskTransient(const virDomainDiskDef *disk,
 int
 qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
                                 const virDomainDef *def,
-                                virQEMUCapsPtr qemuCaps)
+                                virQEMUCaps *qemuCaps)
 {
     const char *driverName = virDomainDiskGetDriver(disk);
     bool isSD = qemuDiskBusIsSD(disk->bus);
-    virStorageSourcePtr n;
+    virStorageSource *n;
     int idx;
     int partition;
 
@@ -3049,7 +3049,7 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
  * Returns true if acceptable, false otherwise with error message set.
  */
 static bool
-qemuValidateCheckSCSIControllerModel(virQEMUCapsPtr qemuCaps,
+qemuValidateCheckSCSIControllerModel(virQEMUCaps *qemuCaps,
                                     int model)
 {
     switch ((virDomainControllerModelSCSI) model) {
@@ -3141,7 +3141,7 @@ qemuValidateCheckSCSIControllerModel(virQEMUCapsPtr qemuCaps,
 static int
 qemuValidateDomainDeviceDefControllerSATA(const virDomainControllerDef *controller,
                                           const virDomainDef *def,
-                                          virQEMUCapsPtr qemuCaps)
+                                          virQEMUCaps *qemuCaps)
 {
     /* first SATA controller on Q35 machines is implicit */
     if (controller->idx == 0 && qemuDomainIsQ35(def))
@@ -3310,7 +3310,7 @@ virValidateControllerPCIModelNameToQEMUCaps(int modelName)
 
 static int
 qemuValidateDomainDeviceDefControllerAttributes(const virDomainControllerDef *controller,
-                                                virQEMUCapsPtr qemuCaps)
+                                                virQEMUCaps *qemuCaps)
 {
     if (!(controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
           (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI ||
@@ -3374,7 +3374,7 @@ qemuValidateDomainDeviceDefControllerAttributes(const virDomainControllerDef *co
 static int
 qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
                                          const virDomainDef *def,
-                                         virQEMUCapsPtr qemuCaps)
+                                         virQEMUCaps *qemuCaps)
 
 {
     const virDomainPCIControllerOpts *pciopts = &cont->opts.pciopts;
@@ -3878,7 +3878,7 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
 static int
 qemuValidateDomainDeviceDefController(const virDomainControllerDef *controller,
                                       const virDomainDef *def,
-                                      virQEMUCapsPtr qemuCaps)
+                                      virQEMUCaps *qemuCaps)
 {
     int ret = 0;
 
@@ -3928,14 +3928,14 @@ qemuValidateDomainDeviceDefController(const virDomainControllerDef *controller,
 
 static int
 qemuValidateDomainDeviceDefSPICEGraphics(const virDomainGraphicsDef *graphics,
-                                         virQEMUDriverPtr driver,
-                                         virQEMUCapsPtr qemuCaps)
+                                         virQEMUDriver *driver,
+                                         virQEMUCaps *qemuCaps)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    virDomainGraphicsListenDefPtr glisten = NULL;
+    virDomainGraphicsListenDef *glisten = NULL;
     int tlsPort = graphics->data.spice.tlsPort;
 
-    glisten = virDomainGraphicsGetListen((virDomainGraphicsDefPtr)graphics, 0);
+    glisten = virDomainGraphicsGetListen((virDomainGraphicsDef *)graphics, 0);
     if (!glisten) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing listen element"));
@@ -3996,7 +3996,7 @@ qemuValidateDomainDeviceDefSPICEGraphics(const virDomainGraphicsDef *graphics,
 
 static int
 qemuValidateDomainDeviceDefVNCGraphics(const virDomainGraphicsDef *graphics,
-                                       virQEMUCapsPtr qemuCaps)
+                                       virQEMUCaps *qemuCaps)
 {
     if (graphics->data.vnc.powerControl != VIR_TRISTATE_BOOL_ABSENT &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_POWER_CONTROL)) {
@@ -4012,8 +4012,8 @@ qemuValidateDomainDeviceDefVNCGraphics(const virDomainGraphicsDef *graphics,
 static int
 qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
                                     const virDomainDef *def,
-                                    virQEMUDriverPtr driver,
-                                    virQEMUCapsPtr qemuCaps)
+                                    virQEMUDriver *driver,
+                                    virQEMUCaps *qemuCaps)
 {
     virDomainCapsDeviceGraphics graphicsCaps = { 0 };
     bool have_egl_headless = false;
@@ -4108,10 +4108,10 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
 
 
 static int
-qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
+qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
                               const virDomainDef *def,
-                              virQEMUDriverPtr driver,
-                              virQEMUCapsPtr qemuCaps)
+                              virQEMUDriver *driver,
+                              virQEMUCaps *qemuCaps)
 {
     if (fs->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4230,8 +4230,8 @@ qemuValidateDomainDeviceDefFS(virDomainFSDefPtr fs,
 
 
 static int
-qemuValidateDomainDeviceDefAudio(virDomainAudioDefPtr audio,
-                                 virQEMUCapsPtr qemuCaps G_GNUC_UNUSED)
+qemuValidateDomainDeviceDefAudio(virDomainAudioDef *audio,
+                                 virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
         if (audio->input.mixingEngine == VIR_TRISTATE_BOOL_NO ||
@@ -4367,8 +4367,8 @@ qemuSoundCodecTypeToCaps(int type)
 
 
 static int
-qemuValidateDomainDeviceDefSound(virDomainSoundDefPtr sound,
-                                 virQEMUCapsPtr qemuCaps)
+qemuValidateDomainDeviceDefSound(virDomainSoundDef *sound,
+                                 virQEMUCaps *qemuCaps)
 {
     size_t i;
 
@@ -4428,7 +4428,7 @@ qemuValidateDomainDeviceDefSound(virDomainSoundDefPtr sound,
 static int
 qemuValidateDomainDeviceDefVsock(const virDomainVsockDef *vsock,
                                  const virDomainDef *def,
-                                 virQEMUCapsPtr qemuCaps)
+                                 virQEMUCaps *qemuCaps)
 {
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_VSOCK)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4451,7 +4451,7 @@ qemuValidateDomainDeviceDefVsock(const virDomainVsockDef *vsock,
 static int
 qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
                                const virDomainDef *def,
-                               virQEMUCapsPtr qemuCaps)
+                               virQEMUCaps *qemuCaps)
 {
     virQEMUCapsFlags flag;
 
@@ -4558,7 +4558,7 @@ qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
 static int
 qemuValidateDomainDeviceDefInput(const virDomainInputDef *input,
                                  const virDomainDef *def,
-                                 virQEMUCapsPtr qemuCaps)
+                                 virQEMUCaps *qemuCaps)
 {
     const char *baseName;
     int cap;
@@ -4662,7 +4662,7 @@ qemuValidateDomainDeviceDefInput(const virDomainInputDef *input,
 
 static int
 qemuValidateDomainDeviceDefMemballoon(const virDomainMemballoonDef *memballoon,
-                                      virQEMUCapsPtr qemuCaps)
+                                      virQEMUCaps *qemuCaps)
 {
     if (!memballoon ||
         memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
@@ -4702,7 +4702,7 @@ qemuValidateDomainDeviceDefMemballoon(const virDomainMemballoonDef *memballoon,
 static int
 qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
                                  const virDomainDef *def,
-                                 virQEMUCapsPtr qemuCaps)
+                                 virQEMUCaps *qemuCaps)
 {
     switch (iommu->model) {
     case VIR_DOMAIN_IOMMU_MODEL_INTEL:
@@ -4792,9 +4792,9 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
 
 
 static int
-qemuValidateDomainDeviceDefNVRAM(virDomainNVRAMDefPtr nvram,
+qemuValidateDomainDeviceDefNVRAM(virDomainNVRAMDef *nvram,
                                  const virDomainDef *def,
-                                 virQEMUCapsPtr qemuCaps)
+                                 virQEMUCaps *qemuCaps)
 {
     if (!nvram)
         return 0;
@@ -4825,8 +4825,8 @@ qemuValidateDomainDeviceDefNVRAM(virDomainNVRAMDefPtr nvram,
 
 
 static int
-qemuValidateDomainDeviceDefHub(virDomainHubDefPtr hub,
-                               virQEMUCapsPtr qemuCaps)
+qemuValidateDomainDeviceDefHub(virDomainHubDef *hub,
+                               virQEMUCaps *qemuCaps)
 {
     if (hub->type != VIR_DOMAIN_HUB_TYPE_USB) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -4846,8 +4846,8 @@ qemuValidateDomainDeviceDefHub(virDomainHubDefPtr hub,
 
 
 static int
-qemuValidateDomainDeviceDefMemory(virDomainMemoryDefPtr mem,
-                                  virQEMUCapsPtr qemuCaps)
+qemuValidateDomainDeviceDefMemory(virDomainMemoryDef *mem,
+                                  virQEMUCaps *qemuCaps)
 {
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
@@ -4892,8 +4892,8 @@ qemuValidateDomainDeviceDefMemory(virDomainMemoryDefPtr mem,
 
 
 static int
-qemuValidateDomainDeviceDefShmem(virDomainShmemDefPtr shmem,
-                                 virQEMUCapsPtr qemuCaps)
+qemuValidateDomainDeviceDefShmem(virDomainShmemDef *shmem,
+                                 virQEMUCaps *qemuCaps)
 {
     switch (shmem->model) {
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM:
@@ -4936,9 +4936,9 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
                             void *parseOpaque)
 {
     int ret = 0;
-    virQEMUDriverPtr driver = opaque;
+    virQEMUDriver *driver = opaque;
     g_autoptr(virQEMUCaps) qemuCapsLocal = NULL;
-    virQEMUCapsPtr qemuCaps = parseOpaque;
+    virQEMUCaps *qemuCaps = parseOpaque;
 
     if (!qemuCaps) {
         if (!(qemuCapsLocal = virQEMUCapsCacheLookup(driver->qemuCapsCache,

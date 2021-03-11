@@ -36,11 +36,11 @@ struct _virNWFilterBindingObj {
     virObjectLockable parent;
 
     bool removing;
-    virNWFilterBindingDefPtr def;
+    virNWFilterBindingDef *def;
 };
 
 
-static virClassPtr virNWFilterBindingObjClass;
+static virClass *virNWFilterBindingObjClass;
 static void virNWFilterBindingObjDispose(void *obj);
 
 static int
@@ -54,7 +54,7 @@ virNWFilterBindingObjOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virNWFilterBindingObj);
 
-virNWFilterBindingObjPtr
+virNWFilterBindingObj *
 virNWFilterBindingObjNew(void)
 {
     if (virNWFilterBindingObjInitialize() < 0)
@@ -67,44 +67,44 @@ virNWFilterBindingObjNew(void)
 static void
 virNWFilterBindingObjDispose(void *obj)
 {
-    virNWFilterBindingObjPtr bobj = obj;
+    virNWFilterBindingObj *bobj = obj;
 
     virNWFilterBindingDefFree(bobj->def);
 }
 
 
-virNWFilterBindingDefPtr
-virNWFilterBindingObjGetDef(virNWFilterBindingObjPtr obj)
+virNWFilterBindingDef *
+virNWFilterBindingObjGetDef(virNWFilterBindingObj *obj)
 {
     return obj->def;
 }
 
 
 void
-virNWFilterBindingObjSetDef(virNWFilterBindingObjPtr obj,
-                            virNWFilterBindingDefPtr def)
+virNWFilterBindingObjSetDef(virNWFilterBindingObj *obj,
+                            virNWFilterBindingDef *def)
 {
     virNWFilterBindingDefFree(obj->def);
     obj->def = def;
 }
 
 
-virNWFilterBindingDefPtr
-virNWFilterBindingObjStealDef(virNWFilterBindingObjPtr obj)
+virNWFilterBindingDef *
+virNWFilterBindingObjStealDef(virNWFilterBindingObj *obj)
 {
     return g_steal_pointer(&obj->def);
 }
 
 
 bool
-virNWFilterBindingObjGetRemoving(virNWFilterBindingObjPtr obj)
+virNWFilterBindingObjGetRemoving(virNWFilterBindingObj *obj)
 {
     return obj->removing;
 }
 
 
 void
-virNWFilterBindingObjSetRemoving(virNWFilterBindingObjPtr obj,
+virNWFilterBindingObjSetRemoving(virNWFilterBindingObj *obj,
                                  bool removing)
 {
     obj->removing = removing;
@@ -123,7 +123,7 @@ virNWFilterBindingObjSetRemoving(virNWFilterBindingObjPtr obj,
  * the object, the pointer is cleared.
  */
 void
-virNWFilterBindingObjEndAPI(virNWFilterBindingObjPtr *obj)
+virNWFilterBindingObjEndAPI(virNWFilterBindingObj **obj)
 {
     if (!*obj)
         return;
@@ -205,11 +205,11 @@ virNWFilterBindingObjDelete(const virNWFilterBindingObj *obj,
 }
 
 
-static virNWFilterBindingObjPtr
+static virNWFilterBindingObj *
 virNWFilterBindingObjParseXML(xmlDocPtr doc,
                               xmlXPathContextPtr ctxt)
 {
-    virNWFilterBindingObjPtr ret;
+    virNWFilterBindingObj *ret;
     xmlNodePtr node;
 
     if (!(ret = virNWFilterBindingObjNew()))
@@ -232,12 +232,12 @@ virNWFilterBindingObjParseXML(xmlDocPtr doc,
 }
 
 
-static virNWFilterBindingObjPtr
+static virNWFilterBindingObj *
 virNWFilterBindingObjParseNode(xmlDocPtr doc,
                                xmlNodePtr root)
 {
     xmlXPathContextPtr ctxt = NULL;
-    virNWFilterBindingObjPtr obj = NULL;
+    virNWFilterBindingObj *obj = NULL;
 
     if (STRNEQ((const char *)root->name, "filterbindingstatus")) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -258,11 +258,11 @@ virNWFilterBindingObjParseNode(xmlDocPtr doc,
 }
 
 
-static virNWFilterBindingObjPtr
+static virNWFilterBindingObj *
 virNWFilterBindingObjParse(const char *xmlStr,
                            const char *filename)
 {
-    virNWFilterBindingObjPtr obj = NULL;
+    virNWFilterBindingObj *obj = NULL;
     xmlDocPtr xml;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(nwfilterbinding_status)")))) {
@@ -274,7 +274,7 @@ virNWFilterBindingObjParse(const char *xmlStr,
 }
 
 
-virNWFilterBindingObjPtr
+virNWFilterBindingObj *
 virNWFilterBindingObjParseFile(const char *filename)
 {
     return virNWFilterBindingObjParse(NULL, filename);

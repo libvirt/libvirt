@@ -36,7 +36,6 @@ struct _virNetworkEvent {
     bool dummy;
 };
 typedef struct _virNetworkEvent virNetworkEvent;
-typedef virNetworkEvent *virNetworkEventPtr;
 
 struct _virNetworkEventLifecycle {
     virNetworkEvent parent;
@@ -45,10 +44,9 @@ struct _virNetworkEventLifecycle {
     int detail;
 };
 typedef struct _virNetworkEventLifecycle virNetworkEventLifecycle;
-typedef virNetworkEventLifecycle *virNetworkEventLifecyclePtr;
 
-static virClassPtr virNetworkEventClass;
-static virClassPtr virNetworkEventLifecycleClass;
+static virClass *virNetworkEventClass;
+static virClass *virNetworkEventLifecycleClass;
 static void virNetworkEventDispose(void *obj);
 static void virNetworkEventLifecycleDispose(void *obj);
 
@@ -69,7 +67,7 @@ VIR_ONCE_GLOBAL_INIT(virNetworkEvents);
 static void
 virNetworkEventDispose(void *obj)
 {
-    virNetworkEventPtr event = obj;
+    virNetworkEvent *event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
@@ -77,14 +75,14 @@ virNetworkEventDispose(void *obj)
 static void
 virNetworkEventLifecycleDispose(void *obj)
 {
-    virNetworkEventLifecyclePtr event = obj;
+    virNetworkEventLifecycle *event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
 
 static void
 virNetworkEventDispatchDefaultFunc(virConnectPtr conn,
-                                   virObjectEventPtr event,
+                                   virObjectEvent *event,
                                    virConnectObjectEventGenericCallback cb,
                                    void *cbopaque)
 {
@@ -95,9 +93,9 @@ virNetworkEventDispatchDefaultFunc(virConnectPtr conn,
     switch ((virNetworkEventID)event->eventID) {
     case VIR_NETWORK_EVENT_ID_LIFECYCLE:
         {
-            virNetworkEventLifecyclePtr networkLifecycleEvent;
+            virNetworkEventLifecycle *networkLifecycleEvent;
 
-            networkLifecycleEvent = (virNetworkEventLifecyclePtr)event;
+            networkLifecycleEvent = (virNetworkEventLifecycle *)event;
             ((virConnectNetworkEventLifecycleCallback)cb)(conn, net,
                                                           networkLifecycleEvent->type,
                                                           networkLifecycleEvent->detail,
@@ -134,7 +132,7 @@ virNetworkEventDispatchDefaultFunc(virConnectPtr conn,
  */
 int
 virNetworkEventStateRegisterID(virConnectPtr conn,
-                               virObjectEventStatePtr state,
+                               virObjectEventState *state,
                                virNetworkPtr net,
                                int eventID,
                                virConnectNetworkEventGenericCallback cb,
@@ -178,7 +176,7 @@ virNetworkEventStateRegisterID(virConnectPtr conn,
  */
 int
 virNetworkEventStateRegisterClient(virConnectPtr conn,
-                                   virObjectEventStatePtr state,
+                                   virObjectEventState *state,
                                    virNetworkPtr net,
                                    int eventID,
                                    virConnectNetworkEventGenericCallback cb,
@@ -211,13 +209,13 @@ virNetworkEventStateRegisterClient(virConnectPtr conn,
  *
  * Create a new network lifecycle event.
  */
-virObjectEventPtr
+virObjectEvent *
 virNetworkEventLifecycleNew(const char *name,
                             const unsigned char *uuid,
                             int type,
                             int detail)
 {
-    virNetworkEventLifecyclePtr event;
+    virNetworkEventLifecycle *event;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (virNetworkEventsInitialize() < 0)
@@ -233,5 +231,5 @@ virNetworkEventLifecycleNew(const char *name,
     event->type = type;
     event->detail = detail;
 
-    return (virObjectEventPtr)event;
+    return (virObjectEvent *)event;
 }

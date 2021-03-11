@@ -58,7 +58,6 @@ struct _vzCapabilities {
     virDomainControllerModelSCSI scsiControllerModel;
 };
 typedef struct _vzCapabilities vzCapabilities;
-typedef struct _vzCapabilities *vzCapabilitiesPtr;
 
 /* +2 to keep enclosing { and } */
 #define VIR_UUID_STRING_BRACED_BUFLEN (VIR_UUID_STRING_BUFLEN + 2)
@@ -67,30 +66,28 @@ struct _vzDriver {
     virObjectLockable parent;
 
     /* Immutable pointer, self-locking APIs */
-    virDomainObjListPtr domains;
+    virDomainObjList *domains;
     unsigned char session_uuid[VIR_UUID_BUFLEN];
     PRL_HANDLE server;
-    virCapsPtr caps;
-    virDomainXMLOptionPtr xmlopt;
-    virObjectEventStatePtr domainEventState;
-    virSysinfoDefPtr hostsysinfo;
+    virCaps *caps;
+    virDomainXMLOption *xmlopt;
+    virObjectEventState *domainEventState;
+    virSysinfoDef *hostsysinfo;
     unsigned long vzVersion;
     vzCapabilities vzCaps;
 };
 
 typedef struct _vzDriver vzDriver;
-typedef struct _vzDriver *vzDriverPtr;
 
 struct _vzConn {
     struct _vzConn* next;
 
-    vzDriverPtr driver;
+    struct _vzDriver *driver;
     /* Immutable pointer, self-locking APIs */
-    virConnectCloseCallbackDataPtr closeCallback;
+    virConnectCloseCallbackData *closeCallback;
 };
 
 typedef struct _vzConn vzConn;
-typedef struct _vzConn *vzConnPtr;
 
 struct _vzDomainJobObj {
     virCond cond;
@@ -105,7 +102,6 @@ struct _vzDomainJobObj {
 };
 
 typedef struct _vzDomainJobObj vzDomainJobObj;
-typedef struct _vzDomainJobObj *vzDomainJobObjPtr;
 
 struct vzDomObj {
     int id;
@@ -114,36 +110,34 @@ struct vzDomObj {
     vzDomainJobObj job;
 };
 
-typedef struct vzDomObj *vzDomObjPtr;
-
 void* vzDomObjAlloc(void *opaque);
 void vzDomObjFree(void *p);
 
-virDomainObjPtr vzDomObjFromDomain(virDomainPtr domain);
+virDomainObj *vzDomObjFromDomain(virDomainPtr domain);
 
 char * vzGetOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) G_GNUC_NULL_TERMINATED;
 
-vzDriverPtr
+struct _vzDriver *
 vzGetDriverConnection(void);
 
 void
 vzDestroyDriverConnection(void);
 
 int
-vzInitVersion(vzDriverPtr driver);
+vzInitVersion(struct _vzDriver *driver);
 int
 vzCheckUnsupportedDisk(const virDomainDef *def,
-                       virDomainDiskDefPtr disk,
-                       vzCapabilitiesPtr vzCaps);
+                       virDomainDiskDef *disk,
+                       struct _vzCapabilities *vzCaps);
 int
 vzCheckUnsupportedControllers(const virDomainDef *def,
-                              vzCapabilitiesPtr vzCaps);
+                              struct _vzCapabilities *vzCaps);
 int
-vzGetDefaultSCSIModel(vzDriverPtr driver,
+vzGetDefaultSCSIModel(struct _vzDriver *driver,
                       PRL_CLUSTERED_DEVICE_SUBTYPE *scsiModel);
 
-int vzCheckUnsupportedGraphics(virDomainGraphicsDefPtr gr);
+int vzCheckUnsupportedGraphics(virDomainGraphicsDef *gr);
 
 #define PARALLELS_BLOCK_STATS_FOREACH(OP) \
     OP(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ, "read_requests") \
@@ -152,8 +146,8 @@ int vzCheckUnsupportedGraphics(virDomainGraphicsDefPtr gr);
     OP(wr_bytes, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES, "write_total")
 
 int
-vzDomainObjBeginJob(virDomainObjPtr dom);
+vzDomainObjBeginJob(virDomainObj *dom);
 void
-vzDomainObjEndJob(virDomainObjPtr dom);
+vzDomainObjEndJob(virDomainObj *dom);
 int
-vzDomainJobUpdateTime(vzDomainJobObjPtr job);
+vzDomainJobUpdateTime(struct _vzDomainJobObj *job);

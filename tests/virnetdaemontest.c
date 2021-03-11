@@ -33,7 +33,7 @@ struct testClientPriv {
 
 
 static void *
-testClientNew(virNetServerClientPtr client G_GNUC_UNUSED,
+testClientNew(virNetServerClient *client G_GNUC_UNUSED,
               void *opaque G_GNUC_UNUSED)
 {
     struct testClientPriv *priv;
@@ -46,8 +46,8 @@ testClientNew(virNetServerClientPtr client G_GNUC_UNUSED,
 }
 
 
-static virJSONValuePtr
-testClientPreExec(virNetServerClientPtr client G_GNUC_UNUSED,
+static virJSONValue *
+testClientPreExec(virNetServerClient *client G_GNUC_UNUSED,
                   void *data)
 {
     struct testClientPriv *priv = data;
@@ -57,8 +57,8 @@ testClientPreExec(virNetServerClientPtr client G_GNUC_UNUSED,
 
 
 static void *
-testClientNewPostExec(virNetServerClientPtr client,
-                      virJSONValuePtr object,
+testClientNewPostExec(virNetServerClient *client,
+                      virJSONValue *object,
                       void *opaque)
 {
     int magic;
@@ -80,16 +80,16 @@ testClientFree(void *opaque)
 }
 
 
-static virNetServerPtr
+static virNetServer *
 testCreateServer(const char *server_name, const char *host, int family)
 {
-    virNetServerPtr srv = NULL;
-    virNetServerServicePtr svc1 = NULL;
-    virNetServerServicePtr svc2 = NULL;
-    virNetServerClientPtr cln1 = NULL;
-    virNetServerClientPtr cln2 = NULL;
-    virNetSocketPtr sk1 = NULL;
-    virNetSocketPtr sk2 = NULL;
+    virNetServer *srv = NULL;
+    virNetServerService *svc1 = NULL;
+    virNetServerService *svc2 = NULL;
+    virNetServerClient *cln1 = NULL;
+    virNetServerClient *cln2 = NULL;
+    virNetSocket *sk1 = NULL;
+    virNetSocket *sk2 = NULL;
     int fdclient[2];
 
     if (socketpair(PF_UNIX, SOCK_STREAM, 0, fdclient) < 0) {
@@ -186,9 +186,9 @@ testCreateServer(const char *server_name, const char *host, int family)
 
 static char *testGenerateJSON(const char *server_name)
 {
-    virNetDaemonPtr dmn = NULL;
-    virNetServerPtr srv = NULL;
-    virJSONValuePtr json = NULL;
+    virNetDaemon *dmn = NULL;
+    virNetServer *srv = NULL;
+    virJSONValue *json = NULL;
     char *jsonstr = NULL;
     bool has_ipv4, has_ipv6;
 
@@ -240,10 +240,10 @@ struct testExecRestartData {
     bool pass;
 };
 
-static virNetServerPtr
-testNewServerPostExecRestart(virNetDaemonPtr dmn G_GNUC_UNUSED,
+static virNetServer *
+testNewServerPostExecRestart(virNetDaemon *dmn G_GNUC_UNUSED,
                              const char *name,
-                             virJSONValuePtr object,
+                             virJSONValue *object,
                              void *opaque)
 {
     struct testExecRestartData *data = opaque;
@@ -268,12 +268,12 @@ static int testExecRestart(const void *opaque)
 {
     size_t i;
     int ret = -1;
-    virNetDaemonPtr dmn = NULL;
+    virNetDaemon *dmn = NULL;
     const struct testExecRestartData *data = opaque;
     char *infile = NULL, *outfile = NULL;
     char *injsonstr = NULL, *outjsonstr = NULL;
-    virJSONValuePtr injson = NULL;
-    virJSONValuePtr outjson = NULL;
+    virJSONValue *injson = NULL;
+    virJSONValue *outjson = NULL;
     int fdclient[2] = { -1, -1 }, fdserver[2] = { -1, -1 };
 
     if (socketpair(PF_UNIX, SOCK_STREAM, 0, fdclient) < 0) {

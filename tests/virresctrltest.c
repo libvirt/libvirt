@@ -21,10 +21,10 @@ test_virResctrlGetUnused(const void *opaque)
     char *system_dir = NULL;
     char *resctrl_dir = NULL;
     int ret = -1;
-    virResctrlAllocPtr alloc = NULL;
+    virResctrlAlloc *alloc = NULL;
     char *schemata_str = NULL;
     char *schemata_file;
-    virCapsPtr caps = NULL;
+    virCaps *caps = NULL;
 
     system_dir = g_strdup_printf("%s/vircaps2xmldata/linux-%s/system", abs_srcdir,
                                  data->filename);

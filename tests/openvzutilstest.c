@@ -71,7 +71,7 @@ static int
 testReadNetworkConf(const void *data G_GNUC_UNUSED)
 {
     int result = -1;
-    virDomainDefPtr def = NULL;
+    virDomainDef *def = NULL;
     char *actual = NULL;
     const char *expected =
         "<domain type='openvz'>\n"

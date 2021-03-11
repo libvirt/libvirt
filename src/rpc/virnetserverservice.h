@@ -30,51 +30,51 @@ typedef enum {
     VIR_NET_SERVER_SERVICE_AUTH_POLKIT,
 } virNetServerServiceAuthMethods;
 
-typedef int (*virNetServerServiceDispatchFunc)(virNetServerServicePtr svc,
-                                               virNetSocketPtr sock,
+typedef int (*virNetServerServiceDispatchFunc)(virNetServerService *svc,
+                                               virNetSocket *sock,
                                                void *opaque);
 
-virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
+virNetServerService *virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
                                                  int family,
                                                  int auth,
-                                                 virNetTLSContextPtr tls,
+                                                 virNetTLSContext *tls,
                                                  bool readonly,
                                                  size_t max_queued_clients,
                                                  size_t nrequests_client_max);
-virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
+virNetServerService *virNetServerServiceNewUNIX(const char *path,
                                                   mode_t mask,
                                                   gid_t grp,
                                                   int auth,
-                                                  virNetTLSContextPtr tls,
+                                                  virNetTLSContext *tls,
                                                   bool readonly,
                                                   size_t max_queued_clients,
                                                   size_t nrequests_client_max);
-virNetServerServicePtr virNetServerServiceNewFDs(int *fd,
+virNetServerService *virNetServerServiceNewFDs(int *fd,
                                                  size_t nfds,
                                                  bool unlinkUNIX,
                                                  int auth,
-                                                 virNetTLSContextPtr tls,
+                                                 virNetTLSContext *tls,
                                                  bool readonly,
                                                  size_t max_queued_clients,
                                                  size_t nrequests_client_max);
 
-virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr object);
+virNetServerService *virNetServerServiceNewPostExecRestart(virJSONValue *object);
 
-virJSONValuePtr virNetServerServicePreExecRestart(virNetServerServicePtr service);
+virJSONValue *virNetServerServicePreExecRestart(virNetServerService *service);
 
-int virNetServerServiceGetPort(virNetServerServicePtr svc);
+int virNetServerServiceGetPort(virNetServerService *svc);
 
-int virNetServerServiceGetAuth(virNetServerServicePtr svc);
-bool virNetServerServiceIsReadonly(virNetServerServicePtr svc);
-size_t virNetServerServiceGetMaxRequests(virNetServerServicePtr svc);
-virNetTLSContextPtr virNetServerServiceGetTLSContext(virNetServerServicePtr svc);
+int virNetServerServiceGetAuth(virNetServerService *svc);
+bool virNetServerServiceIsReadonly(virNetServerService *svc);
+size_t virNetServerServiceGetMaxRequests(virNetServerService *svc);
+virNetTLSContext *virNetServerServiceGetTLSContext(virNetServerService *svc);
 
-void virNetServerServiceSetDispatcher(virNetServerServicePtr svc,
+void virNetServerServiceSetDispatcher(virNetServerService *svc,
                                       virNetServerServiceDispatchFunc func,
                                       void *opaque);
 
-void virNetServerServiceToggle(virNetServerServicePtr svc,
+void virNetServerServiceToggle(virNetServerService *svc,
                                bool enabled);
 
-void virNetServerServiceClose(virNetServerServicePtr svc);
+void virNetServerServiceClose(virNetServerService *svc);

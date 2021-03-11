@@ -35,7 +35,6 @@ typedef enum {
 VIR_ENUM_DECL(virStorageEncryptionSecret);
 
 typedef struct _virStorageEncryptionSecret virStorageEncryptionSecret;
-typedef virStorageEncryptionSecret *virStorageEncryptionSecretPtr;
 struct _virStorageEncryptionSecret {
     int type; /* virStorageEncryptionSecretType */
     virSecretLookupTypeDef seclookupdef;
@@ -43,7 +42,6 @@ struct _virStorageEncryptionSecret {
 
 /* It's possible to dictate the cipher and if necessary iv */
 typedef struct _virStorageEncryptionInfoDef virStorageEncryptionInfoDef;
-typedef virStorageEncryptionInfoDef *virStorageEncryptionInfoDefPtr;
 struct _virStorageEncryptionInfoDef {
     unsigned int cipher_size;
     char *cipher_name;
@@ -64,27 +62,26 @@ typedef enum {
 VIR_ENUM_DECL(virStorageEncryptionFormat);
 
 typedef struct _virStorageEncryption virStorageEncryption;
-typedef virStorageEncryption *virStorageEncryptionPtr;
 struct _virStorageEncryption {
     int format; /* virStorageEncryptionFormatType */
     int payload_offset;
 
     size_t nsecrets;
-    virStorageEncryptionSecretPtr *secrets;
+    virStorageEncryptionSecret **secrets;
 
     virStorageEncryptionInfoDef encinfo;
 };
 
-virStorageEncryptionPtr virStorageEncryptionCopy(const virStorageEncryption *src)
+virStorageEncryption *virStorageEncryptionCopy(const virStorageEncryption *src)
     ATTRIBUTE_NONNULL(1);
 
-void virStorageEncryptionFree(virStorageEncryptionPtr enc);
+void virStorageEncryptionFree(virStorageEncryption *enc);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageEncryption, virStorageEncryptionFree);
 
-virStorageEncryptionPtr virStorageEncryptionParseNode(xmlNodePtr node,
+virStorageEncryption *virStorageEncryptionParseNode(xmlNodePtr node,
                                                       xmlXPathContextPtr ctxt);
-int virStorageEncryptionFormat(virBufferPtr buf,
-                               virStorageEncryptionPtr enc);
+int virStorageEncryptionFormat(virBuffer *buf,
+                               virStorageEncryption *enc);
 
 /* A helper for VIR_STORAGE_ENCRYPTION_FORMAT_QCOW */
 enum {

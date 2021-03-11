@@ -24,27 +24,26 @@
 #include "virjson.h"
 
 typedef struct _virLogHandler virLogHandler;
-typedef virLogHandler *virLogHandlerPtr;
 
 
 typedef void (*virLogHandlerShutdownInhibitor)(bool inhibit,
                                                void *opaque);
 
-virLogHandlerPtr virLogHandlerNew(bool privileged,
+virLogHandler *virLogHandlerNew(bool privileged,
                                   size_t max_size,
                                   size_t max_backups,
                                   virLogHandlerShutdownInhibitor inhibitor,
                                   void *opaque);
-virLogHandlerPtr virLogHandlerNewPostExecRestart(virJSONValuePtr child,
+virLogHandler *virLogHandlerNewPostExecRestart(virJSONValue *child,
                                                  bool privileged,
                                                  size_t max_size,
                                                  size_t max_backups,
                                                  virLogHandlerShutdownInhibitor inhibitor,
                                                  void *opaque);
 
-void virLogHandlerFree(virLogHandlerPtr handler);
+void virLogHandlerFree(virLogHandler *handler);
 
-int virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
+int virLogHandlerDomainOpenLogFile(virLogHandler *handler,
                                    const char *driver,
                                    const unsigned char *domuuid,
                                    const char *domname,
@@ -53,20 +52,20 @@ int virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
                                    ino_t *inode,
                                    off_t *offset);
 
-int virLogHandlerDomainGetLogFilePosition(virLogHandlerPtr handler,
+int virLogHandlerDomainGetLogFilePosition(virLogHandler *handler,
                                           const char *path,
                                           unsigned int flags,
                                           ino_t *inode,
                                           off_t *offset);
 
-char *virLogHandlerDomainReadLogFile(virLogHandlerPtr handler,
+char *virLogHandlerDomainReadLogFile(virLogHandler *handler,
                                      const char *path,
                                      ino_t inode,
                                      off_t offset,
                                      size_t maxlen,
                                      unsigned int flags);
 
-int virLogHandlerDomainAppendLogFile(virLogHandlerPtr handler,
+int virLogHandlerDomainAppendLogFile(virLogHandler *handler,
                                      const char *driver,
                                      const unsigned char *domuuid,
                                      const char *domname,
@@ -74,4 +73,4 @@ int virLogHandlerDomainAppendLogFile(virLogHandlerPtr handler,
                                      const char *message,
                                      unsigned int flags);
 
-virJSONValuePtr virLogHandlerPreExecRestart(virLogHandlerPtr handler);
+virJSONValue *virLogHandlerPreExecRestart(virLogHandler *handler);

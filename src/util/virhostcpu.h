@@ -28,7 +28,6 @@
 
 
 typedef struct _virHostCPUTscInfo virHostCPUTscInfo;
-typedef virHostCPUTscInfo *virHostCPUTscInfoPtr;
 struct _virHostCPUTscInfo {
     unsigned long long frequency;
     virTristateBool scaling;
@@ -41,9 +40,9 @@ int virHostCPUGetStats(int cpuNum,
                        unsigned int flags);
 
 bool virHostCPUHasBitmap(void);
-virBitmapPtr virHostCPUGetPresentBitmap(void);
-virBitmapPtr virHostCPUGetOnlineBitmap(void);
-virBitmapPtr virHostCPUGetAvailableCPUsBitmap(void);
+virBitmap *virHostCPUGetPresentBitmap(void);
+virBitmap *virHostCPUGetOnlineBitmap(void);
+virBitmap *virHostCPUGetAvailableCPUsBitmap(void);
 
 int virHostCPUGetCount(void);
 int virHostCPUGetThreadsPerSubcore(virArch arch) G_GNUC_NO_INLINE;
@@ -70,7 +69,7 @@ int virHostCPUGetSocket(unsigned int cpu, unsigned int *socket);
 int virHostCPUGetDie(unsigned int cpu, unsigned int *die);
 int virHostCPUGetCore(unsigned int cpu, unsigned int *core);
 
-virBitmapPtr virHostCPUGetSiblingsList(unsigned int cpu);
+virBitmap *virHostCPUGetSiblingsList(unsigned int cpu);
 #endif
 
 int virHostCPUGetOnline(unsigned int cpu, bool *online);
@@ -81,6 +80,6 @@ virHostCPUGetMicrocodeVersion(virArch hostArch) G_GNUC_NO_INLINE;
 int virHostCPUGetMSR(unsigned long index,
                      uint64_t *msr);
 
-virHostCPUTscInfoPtr virHostCPUGetTscInfo(void);
+virHostCPUTscInfo *virHostCPUGetTscInfo(void);
 
 int virHostCPUGetSignature(char **signature);

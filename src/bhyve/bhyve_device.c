@@ -31,16 +31,16 @@
 VIR_LOG_INIT("bhyve.bhyve_device");
 
 static int
-bhyveCollectPCIAddress(virDomainDefPtr def G_GNUC_UNUSED,
-                       virDomainDeviceDefPtr device G_GNUC_UNUSED,
-                       virDomainDeviceInfoPtr info,
+bhyveCollectPCIAddress(virDomainDef *def G_GNUC_UNUSED,
+                       virDomainDeviceDef *device G_GNUC_UNUSED,
+                       virDomainDeviceInfo *info,
                        void *opaque)
 {
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
         return 0;
 
-    virDomainPCIAddressSetPtr addrs = opaque;
-    virPCIDeviceAddressPtr addr = &info->addr.pci;
+    virDomainPCIAddressSet *addrs = opaque;
+    virPCIDeviceAddress *addr = &info->addr.pci;
 
     if (addr->domain == 0 && addr->bus == 0 && addr->slot == 0) {
             return 0;
@@ -54,10 +54,10 @@ bhyveCollectPCIAddress(virDomainDefPtr def G_GNUC_UNUSED,
     return 0;
 }
 
-virDomainPCIAddressSetPtr
-bhyveDomainPCIAddressSetCreate(virDomainDefPtr def, unsigned int nbuses)
+virDomainPCIAddressSet *
+bhyveDomainPCIAddressSetCreate(virDomainDef *def, unsigned int nbuses)
 {
-    virDomainPCIAddressSetPtr addrs;
+    virDomainPCIAddressSet *addrs;
 
     if ((addrs = virDomainPCIAddressSetAlloc(nbuses,
                                              VIR_PCI_ADDRESS_EXTENSION_NONE)) == NULL)
@@ -79,8 +79,8 @@ bhyveDomainPCIAddressSetCreate(virDomainDefPtr def, unsigned int nbuses)
 }
 
 static int
-bhyveAssignDevicePCISlots(virDomainDefPtr def,
-                          virDomainPCIAddressSetPtr addrs)
+bhyveAssignDevicePCISlots(virDomainDef *def,
+                          virDomainPCIAddressSet *addrs)
 {
     size_t i;
     virPCIDeviceAddress lpc_addr;
@@ -188,11 +188,11 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
     return 0;
 }
 
-int bhyveDomainAssignPCIAddresses(virDomainDefPtr def,
-                                  virDomainObjPtr obj)
+int bhyveDomainAssignPCIAddresses(virDomainDef *def,
+                                  virDomainObj *obj)
 {
-    virDomainPCIAddressSetPtr addrs = NULL;
-    bhyveDomainObjPrivatePtr priv = NULL;
+    virDomainPCIAddressSet *addrs = NULL;
+    bhyveDomainObjPrivate *priv = NULL;
 
     if (!(addrs = bhyveDomainPCIAddressSetCreate(def, 1)))
         return -1;
@@ -214,7 +214,7 @@ int bhyveDomainAssignPCIAddresses(virDomainDefPtr def,
     return 0;
 }
 
-int bhyveDomainAssignAddresses(virDomainDefPtr def, virDomainObjPtr obj)
+int bhyveDomainAssignAddresses(virDomainDef *def, virDomainObj *obj)
 {
     return bhyveDomainAssignPCIAddresses(def, obj);
 }

@@ -40,10 +40,9 @@ struct virLXCMeminfo {
     unsigned long long swaptotal;
     unsigned long long swapusage;
 };
-typedef struct virLXCMeminfo *virLXCMeminfoPtr;
 
 struct virLXCFuse {
-    virDomainDefPtr def;
+    virDomainDef *def;
     virThread thread;
     char *mountpoint;
     struct fuse *fuse;
@@ -51,8 +50,7 @@ struct virLXCFuse {
     virMutex lock;
 };
 typedef struct virLXCFuse virLXCFuse;
-typedef struct virLXCFuse *virLXCFusePtr;
 
-int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def);
-int lxcStartFuse(virLXCFusePtr f);
-void lxcFreeFuse(virLXCFusePtr *f);
+int lxcSetupFuse(struct virLXCFuse **f, virDomainDef *def);
+int lxcStartFuse(struct virLXCFuse *f);
+void lxcFreeFuse(struct virLXCFuse **f);

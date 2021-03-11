@@ -51,7 +51,7 @@
 VIR_LOG_INIT("nwfilter.nwfilter_driver");
 
 
-static virNWFilterDriverStatePtr driver;
+static virNWFilterDriverState *driver;
 
 static int nwfilterStateCleanup(void);
 
@@ -142,7 +142,7 @@ nwfilterDriverInstallDBusMatches(GDBusConnection *sysbus G_GNUC_UNUSED)
 static int
 virNWFilterTriggerRebuildImpl(void *opaque)
 {
-    virNWFilterDriverStatePtr nwdriver = opaque;
+    virNWFilterDriverState *nwdriver = opaque;
 
     return virNWFilterBuildAll(nwdriver, true);
 }
@@ -353,7 +353,7 @@ nwfilterStateCleanup(void)
 static virDrvOpenStatus
 nwfilterConnectOpen(virConnectPtr conn,
                     virConnectAuthPtr auth G_GNUC_UNUSED,
-                    virConfPtr conf G_GNUC_UNUSED,
+                    virConf *conf G_GNUC_UNUSED,
                     unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -403,10 +403,10 @@ static int nwfilterConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 }
 
 
-static virNWFilterObjPtr
+static virNWFilterObj *
 nwfilterObjFromNWFilter(const unsigned char *uuid)
 {
-    virNWFilterObjPtr obj;
+    virNWFilterObj *obj;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!(obj = virNWFilterObjListFindByUUID(driver->nwfilters, uuid))) {
@@ -422,8 +422,8 @@ static virNWFilterPtr
 nwfilterLookupByUUID(virConnectPtr conn,
                      const unsigned char *uuid)
 {
-    virNWFilterObjPtr obj;
-    virNWFilterDefPtr def;
+    virNWFilterObj *obj;
+    virNWFilterDef *def;
     virNWFilterPtr nwfilter = NULL;
 
     nwfilterDriverLock();
@@ -449,8 +449,8 @@ static virNWFilterPtr
 nwfilterLookupByName(virConnectPtr conn,
                      const char *name)
 {
-    virNWFilterObjPtr obj;
-    virNWFilterDefPtr def;
+    virNWFilterObj *obj;
+    virNWFilterDef *def;
     virNWFilterPtr nwfilter = NULL;
 
     nwfilterDriverLock();
@@ -529,9 +529,9 @@ static virNWFilterPtr
 nwfilterDefineXML(virConnectPtr conn,
                   const char *xml)
 {
-    virNWFilterDefPtr def;
-    virNWFilterObjPtr obj = NULL;
-    virNWFilterDefPtr objdef;
+    virNWFilterDef *def;
+    virNWFilterObj *obj = NULL;
+    virNWFilterDef *objdef;
     virNWFilterPtr nwfilter = NULL;
 
     if (!driver->privileged) {
@@ -575,8 +575,8 @@ nwfilterDefineXML(virConnectPtr conn,
 static int
 nwfilterUndefine(virNWFilterPtr nwfilter)
 {
-    virNWFilterObjPtr obj;
-    virNWFilterDefPtr def;
+    virNWFilterObj *obj;
+    virNWFilterDef *def;
     int ret = -1;
 
     nwfilterDriverLock();
@@ -617,8 +617,8 @@ static char *
 nwfilterGetXMLDesc(virNWFilterPtr nwfilter,
                    unsigned int flags)
 {
-    virNWFilterObjPtr obj;
-    virNWFilterDefPtr def;
+    virNWFilterObj *obj;
+    virNWFilterDef *def;
     char *ret = NULL;
 
     virCheckFlags(0, NULL);
@@ -647,8 +647,8 @@ nwfilterBindingLookupByPortDev(virConnectPtr conn,
                                const char *portdev)
 {
     virNWFilterBindingPtr ret = NULL;
-    virNWFilterBindingObjPtr obj;
-    virNWFilterBindingDefPtr def;
+    virNWFilterBindingObj *obj;
+    virNWFilterBindingDef *def;
 
     obj = virNWFilterBindingObjListFindByPortDev(driver->bindings,
                                                  portdev);
@@ -689,8 +689,8 @@ static char *
 nwfilterBindingGetXMLDesc(virNWFilterBindingPtr binding,
                           unsigned int flags)
 {
-    virNWFilterBindingObjPtr obj;
-    virNWFilterBindingDefPtr def;
+    virNWFilterBindingObj *obj;
+    virNWFilterBindingDef *def;
     char *ret = NULL;
 
     virCheckFlags(0, NULL);
@@ -720,8 +720,8 @@ nwfilterBindingCreateXML(virConnectPtr conn,
                          const char *xml,
                          unsigned int flags)
 {
-    virNWFilterBindingDefPtr def;
-    virNWFilterBindingObjPtr obj = NULL;
+    virNWFilterBindingDef *def;
+    virNWFilterBindingObj *obj = NULL;
     virNWFilterBindingPtr ret = NULL;
 
     virCheckFlags(0, NULL);
@@ -774,8 +774,8 @@ nwfilterBindingCreateXML(virConnectPtr conn,
 static int
 nwfilterBindingDelete(virNWFilterBindingPtr binding)
 {
-    virNWFilterBindingObjPtr obj;
-    virNWFilterBindingDefPtr def;
+    virNWFilterBindingObj *obj;
+    virNWFilterBindingDef *def;
     int ret = -1;
 
     obj = virNWFilterBindingObjListFindByPortDev(driver->bindings, binding->portdev);

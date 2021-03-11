@@ -37,7 +37,7 @@ VIR_LOG_INIT("storage_source_backingstore");
 
 
 int
-virStorageSourceParseBackingURI(virStorageSourcePtr src,
+virStorageSourceParseBackingURI(virStorageSource *src,
                                 const char *uristr)
 {
     g_autoptr(virURI) uri = NULL;
@@ -139,7 +139,7 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceRBDAddHost(virStorageSourcePtr src,
+virStorageSourceRBDAddHost(virStorageSource *src,
                            char *hostport)
 {
     char *port;
@@ -182,7 +182,7 @@ virStorageSourceRBDAddHost(virStorageSourcePtr src,
 
 int
 virStorageSourceParseRBDColonString(const char *rbdstr,
-                                    virStorageSourcePtr src)
+                                    virStorageSource *src)
 {
     char *p, *e, *next;
     g_autofree char *options = NULL;
@@ -286,7 +286,7 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
 
 static int
 virStorageSourceParseNBDColonString(const char *nbdstr,
-                                    virStorageSourcePtr src)
+                                    virStorageSource *src)
 {
     g_autofree char *nbd = g_strdup(nbdstr);
     char *export_name;
@@ -363,7 +363,7 @@ virStorageSourceParseNBDColonString(const char *nbdstr,
 
 
 int
-virStorageSourceParseBackingColon(virStorageSourcePtr src,
+virStorageSourceParseBackingColon(virStorageSource *src,
                                   const char *path)
 {
     const char *p;
@@ -425,15 +425,15 @@ virStorageSourceParseBackingColon(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
-                                         virJSONValuePtr json,
+virStorageSourceParseBackingJSONInternal(virStorageSource *src,
+                                         virJSONValue *json,
                                          const char *jsonstr,
                                          bool allowformat);
 
 
 static int
-virStorageSourceParseBackingJSONPath(virStorageSourcePtr src,
-                                     virJSONValuePtr json,
+virStorageSourceParseBackingJSONPath(virStorageSource *src,
+                                     virJSONValue *json,
                                      const char *jsonstr G_GNUC_UNUSED,
                                      int type)
 {
@@ -454,7 +454,7 @@ virStorageSourceParseBackingJSONPath(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONUriStr(virStorageSourcePtr src,
+virStorageSourceParseBackingJSONUriStr(virStorageSource *src,
                                        const char *uri,
                                        int protocol)
 {
@@ -477,8 +477,8 @@ virStorageSourceParseBackingJSONUriStr(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONUriCookies(virStorageSourcePtr src,
-                                           virJSONValuePtr json,
+virStorageSourceParseBackingJSONUriCookies(virStorageSource *src,
+                                           virJSONValue *json,
                                            const char *jsonstr)
 {
     const char *cookiestr;
@@ -499,7 +499,7 @@ virStorageSourceParseBackingJSONUriCookies(virStorageSourcePtr src,
         return -1;
 
     src->ncookies = g_strv_length(cookies);
-    src->cookies = g_new0(virStorageNetCookieDefPtr, src->ncookies);
+    src->cookies = g_new0(virStorageNetCookieDef *, src->ncookies);
 
     for (i = 0; i < src->ncookies; i++) {
         char *cookiename = cookies[i];
@@ -527,8 +527,8 @@ virStorageSourceParseBackingJSONUriCookies(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONUri(virStorageSourcePtr src,
-                                    virJSONValuePtr json,
+virStorageSourceParseBackingJSONUri(virStorageSource *src,
+                                    virJSONValue *json,
                                     const char *jsonstr,
                                     int protocol)
 {
@@ -590,8 +590,8 @@ virStorageSourceParseBackingJSONUri(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONInetSocketAddress(virStorageNetHostDefPtr host,
-                                                  virJSONValuePtr json)
+virStorageSourceParseBackingJSONInetSocketAddress(virStorageNetHostDef *host,
+                                                  virJSONValue *json)
 {
     const char *hostname;
     const char *port;
@@ -624,8 +624,8 @@ virStorageSourceParseBackingJSONInetSocketAddress(virStorageNetHostDefPtr host,
 
 
 static int
-virStorageSourceParseBackingJSONSocketAddress(virStorageNetHostDefPtr host,
-                                              virJSONValuePtr json)
+virStorageSourceParseBackingJSONSocketAddress(virStorageNetHostDef *host,
+                                              virJSONValue *json)
 {
     const char *type;
     const char *socket;
@@ -676,15 +676,15 @@ virStorageSourceParseBackingJSONSocketAddress(virStorageNetHostDefPtr host,
 
 
 static int
-virStorageSourceParseBackingJSONGluster(virStorageSourcePtr src,
-                                        virJSONValuePtr json,
+virStorageSourceParseBackingJSONGluster(virStorageSource *src,
+                                        virJSONValue *json,
                                         const char *jsonstr G_GNUC_UNUSED,
                                         int opaque G_GNUC_UNUSED)
 {
     const char *uri = virJSONValueObjectGetString(json, "filename");
     const char *volume = virJSONValueObjectGetString(json, "volume");
     const char *path = virJSONValueObjectGetString(json, "path");
-    virJSONValuePtr server = virJSONValueObjectGetArray(json, "server");
+    virJSONValue *server = virJSONValueObjectGetArray(json, "server");
     size_t nservers;
     size_t i;
 
@@ -729,8 +729,8 @@ virStorageSourceParseBackingJSONGluster(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONiSCSI(virStorageSourcePtr src,
-                                      virJSONValuePtr json,
+virStorageSourceParseBackingJSONiSCSI(virStorageSource *src,
+                                      virJSONValue *json,
                                       const char *jsonstr G_GNUC_UNUSED,
                                       int opaque G_GNUC_UNUSED)
 {
@@ -797,8 +797,8 @@ virStorageSourceParseBackingJSONiSCSI(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONNbd(virStorageSourcePtr src,
-                                    virJSONValuePtr json,
+virStorageSourceParseBackingJSONNbd(virStorageSource *src,
+                                    virJSONValue *json,
                                     const char *jsonstr G_GNUC_UNUSED,
                                     int opaque G_GNUC_UNUSED)
 {
@@ -806,7 +806,7 @@ virStorageSourceParseBackingJSONNbd(virStorageSourcePtr src,
     const char *host = virJSONValueObjectGetString(json, "host");
     const char *port = virJSONValueObjectGetString(json, "port");
     const char *export = virJSONValueObjectGetString(json, "export");
-    virJSONValuePtr server = virJSONValueObjectGetObject(json, "server");
+    virJSONValue *server = virJSONValueObjectGetObject(json, "server");
 
     if (!path && !host && !server) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -844,14 +844,14 @@ virStorageSourceParseBackingJSONNbd(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONSheepdog(virStorageSourcePtr src,
-                                         virJSONValuePtr json,
+virStorageSourceParseBackingJSONSheepdog(virStorageSource *src,
+                                         virJSONValue *json,
                                          const char *jsonstr G_GNUC_UNUSED,
                                          int opaque G_GNUC_UNUSED)
 {
     const char *filename;
     const char *vdi = virJSONValueObjectGetString(json, "vdi");
-    virJSONValuePtr server = virJSONValueObjectGetObject(json, "server");
+    virJSONValue *server = virJSONValueObjectGetObject(json, "server");
 
     /* legacy URI based syntax passed via 'filename' option */
     if ((filename = virJSONValueObjectGetString(json, "filename"))) {
@@ -886,8 +886,8 @@ virStorageSourceParseBackingJSONSheepdog(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONSSH(virStorageSourcePtr src,
-                                    virJSONValuePtr json,
+virStorageSourceParseBackingJSONSSH(virStorageSource *src,
+                                    virJSONValue *json,
                                     const char *jsonstr G_GNUC_UNUSED,
                                     int opaque G_GNUC_UNUSED)
 {
@@ -896,7 +896,7 @@ virStorageSourceParseBackingJSONSSH(virStorageSourcePtr src,
     const char *port = virJSONValueObjectGetString(json, "port");
     const char *user = virJSONValueObjectGetString(json, "user");
     const char *host_key_check = virJSONValueObjectGetString(json, "host_key_check");
-    virJSONValuePtr server = virJSONValueObjectGetObject(json, "server");
+    virJSONValue *server = virJSONValueObjectGetObject(json, "server");
 
     if (!(host || server) || !path) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -935,8 +935,8 @@ virStorageSourceParseBackingJSONSSH(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
-                                    virJSONValuePtr json,
+virStorageSourceParseBackingJSONRBD(virStorageSource *src,
+                                    virJSONValue *json,
                                     const char *jsonstr G_GNUC_UNUSED,
                                     int opaque G_GNUC_UNUSED)
 {
@@ -945,7 +945,7 @@ virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
     const char *image = virJSONValueObjectGetString(json, "image");
     const char *conf = virJSONValueObjectGetString(json, "conf");
     const char *snapshot = virJSONValueObjectGetString(json, "snapshot");
-    virJSONValuePtr servers = virJSONValueObjectGetArray(json, "server");
+    virJSONValue *servers = virJSONValueObjectGetArray(json, "server");
     size_t nservers;
     size_t i;
 
@@ -985,14 +985,14 @@ virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
 }
 
 static int
-virStorageSourceParseBackingJSONRaw(virStorageSourcePtr src,
-                                    virJSONValuePtr json,
+virStorageSourceParseBackingJSONRaw(virStorageSource *src,
+                                    virJSONValue *json,
                                     const char *jsonstr,
                                     int opaque G_GNUC_UNUSED)
 {
     bool has_offset = virJSONValueObjectHasKey(json, "offset");
     bool has_size = virJSONValueObjectHasKey(json, "size");
-    virJSONValuePtr file;
+    virJSONValue *file;
 
     if (has_offset || has_size) {
         src->sliceStorage = g_new0(virStorageSourceSlice, 1);
@@ -1025,13 +1025,13 @@ virStorageSourceParseBackingJSONRaw(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONVxHS(virStorageSourcePtr src,
-                                     virJSONValuePtr json,
+virStorageSourceParseBackingJSONVxHS(virStorageSource *src,
+                                     virJSONValue *json,
                                      const char *jsonstr G_GNUC_UNUSED,
                                      int opaque G_GNUC_UNUSED)
 {
     const char *vdisk_id = virJSONValueObjectGetString(json, "vdisk-id");
-    virJSONValuePtr server = virJSONValueObjectGetObject(json, "server");
+    virJSONValue *server = virJSONValueObjectGetObject(json, "server");
 
     if (!vdisk_id || !server) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1057,12 +1057,12 @@ virStorageSourceParseBackingJSONVxHS(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONNFS(virStorageSourcePtr src,
-                                    virJSONValuePtr json,
+virStorageSourceParseBackingJSONNFS(virStorageSource *src,
+                                    virJSONValue *json,
                                     const char *jsonstr G_GNUC_UNUSED,
                                     int opaque G_GNUC_UNUSED)
 {
-    virJSONValuePtr server = virJSONValueObjectGetObject(json, "server");
+    virJSONValue *server = virJSONValueObjectGetObject(json, "server");
     int uidStore = -1;
     int gidStore = -1;
     int gotUID = virJSONValueObjectGetNumberInt(json, "user", &uidStore);
@@ -1105,8 +1105,8 @@ virStorageSourceParseBackingJSONNFS(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONNVMe(virStorageSourcePtr src,
-                                     virJSONValuePtr json,
+virStorageSourceParseBackingJSONNVMe(virStorageSource *src,
+                                     virJSONValue *json,
                                      const char *jsonstr G_GNUC_UNUSED,
                                      int opaque G_GNUC_UNUSED)
 {
@@ -1143,7 +1143,7 @@ struct virStorageSourceJSONDriverParser {
      * can't be converted to libvirt's configuration (e.g. inline authentication
      * credentials are present).
      */
-    int (*func)(virStorageSourcePtr src, virJSONValuePtr json, const char *jsonstr, int opaque);
+    int (*func)(virStorageSource *src, virJSONValue *json, const char *jsonstr, int opaque);
     int opaque;
 };
 
@@ -1171,8 +1171,8 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
 
 
 static int
-virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
-                                         virJSONValuePtr json,
+virStorageSourceParseBackingJSONInternal(virStorageSource *src,
+                                         virJSONValue *json,
                                          const char *jsonstr,
                                          bool allowformat)
 {
@@ -1208,12 +1208,12 @@ virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
 
 
 int
-virStorageSourceParseBackingJSON(virStorageSourcePtr src,
+virStorageSourceParseBackingJSON(virStorageSource *src,
                                  const char *json)
 {
     g_autoptr(virJSONValue) root = NULL;
     g_autoptr(virJSONValue) deflattened = NULL;
-    virJSONValuePtr file = NULL;
+    virJSONValue *file = NULL;
 
     if (!(root = virJSONValueFromString(json)))
         return -1;

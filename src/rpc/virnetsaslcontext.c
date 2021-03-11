@@ -48,8 +48,8 @@ struct _virNetSASLSession {
 };
 
 
-static virClassPtr virNetSASLContextClass;
-static virClassPtr virNetSASLSessionClass;
+static virClass *virNetSASLContextClass;
+static virClass *virNetSASLSessionClass;
 static void virNetSASLContextDispose(void *obj);
 static void virNetSASLSessionDispose(void *obj);
 
@@ -107,9 +107,9 @@ static int virNetSASLContextServerOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virNetSASLContextServer);
 
 
-virNetSASLContextPtr virNetSASLContextNewClient(void)
+virNetSASLContext *virNetSASLContextNewClient(void)
 {
-    virNetSASLContextPtr ctxt;
+    virNetSASLContext *ctxt;
 
     if (virNetSASLContextInitialize() < 0 ||
         virNetSASLContextClientInitialize() < 0)
@@ -121,9 +121,9 @@ virNetSASLContextPtr virNetSASLContextNewClient(void)
     return ctxt;
 }
 
-virNetSASLContextPtr virNetSASLContextNewServer(const char *const *usernameACL)
+virNetSASLContext *virNetSASLContextNewServer(const char *const *usernameACL)
 {
-    virNetSASLContextPtr ctxt;
+    virNetSASLContext *ctxt;
 
     if (virNetSASLContextInitialize() < 0 ||
         virNetSASLContextServerInitialize() < 0)
@@ -137,7 +137,7 @@ virNetSASLContextPtr virNetSASLContextNewServer(const char *const *usernameACL)
     return ctxt;
 }
 
-int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
+int virNetSASLContextCheckIdentity(virNetSASLContext *ctxt,
                                    const char *identity)
 {
     const char *const*wildcards;
@@ -175,14 +175,14 @@ int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
 }
 
 
-virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt G_GNUC_UNUSED,
+virNetSASLSession *virNetSASLSessionNewClient(virNetSASLContext *ctxt G_GNUC_UNUSED,
                                                 const char *service,
                                                 const char *hostname,
                                                 const char *localAddr,
                                                 const char *remoteAddr,
                                                 sasl_callback_t *cbs)
 {
-    virNetSASLSessionPtr sasl = NULL;
+    virNetSASLSession *sasl = NULL;
     int err;
 
     if (!(sasl = virObjectLockableNew(virNetSASLSessionClass)))
@@ -213,12 +213,12 @@ virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt G_GNUC
     return NULL;
 }
 
-virNetSASLSessionPtr virNetSASLSessionNewServer(virNetSASLContextPtr ctxt G_GNUC_UNUSED,
+virNetSASLSession *virNetSASLSessionNewServer(virNetSASLContext *ctxt G_GNUC_UNUSED,
                                                 const char *service,
                                                 const char *localAddr,
                                                 const char *remoteAddr)
 {
-    virNetSASLSessionPtr sasl = NULL;
+    virNetSASLSession *sasl = NULL;
     int err;
 
     if (!(sasl = virObjectLockableNew(virNetSASLSessionClass)))
@@ -249,7 +249,7 @@ virNetSASLSessionPtr virNetSASLSessionNewServer(virNetSASLContextPtr ctxt G_GNUC
     return NULL;
 }
 
-int virNetSASLSessionExtKeySize(virNetSASLSessionPtr sasl,
+int virNetSASLSessionExtKeySize(virNetSASLSession *sasl,
                                 int ssf)
 {
     int err;
@@ -271,7 +271,7 @@ int virNetSASLSessionExtKeySize(virNetSASLSessionPtr sasl,
     return ret;
 }
 
-const char *virNetSASLSessionGetIdentity(virNetSASLSessionPtr sasl)
+const char *virNetSASLSessionGetIdentity(virNetSASLSession *sasl)
 {
     const void *val = NULL;
     int err;
@@ -298,7 +298,7 @@ const char *virNetSASLSessionGetIdentity(virNetSASLSessionPtr sasl)
 }
 
 
-int virNetSASLSessionGetKeySize(virNetSASLSessionPtr sasl)
+int virNetSASLSessionGetKeySize(virNetSASLSession *sasl)
 {
     int err;
     int ssf;
@@ -320,7 +320,7 @@ int virNetSASLSessionGetKeySize(virNetSASLSessionPtr sasl)
     return ssf;
 }
 
-int virNetSASLSessionSecProps(virNetSASLSessionPtr sasl,
+int virNetSASLSessionSecProps(virNetSASLSession *sasl,
                               int minSSF,
                               int maxSSF,
                               bool allowAnonymous)
@@ -357,7 +357,7 @@ int virNetSASLSessionSecProps(virNetSASLSessionPtr sasl,
 }
 
 
-static int virNetSASLSessionUpdateBufSize(virNetSASLSessionPtr sasl)
+static int virNetSASLSessionUpdateBufSize(virNetSASLSession *sasl)
 {
     union {
         unsigned *maxbufsize;
@@ -379,7 +379,7 @@ static int virNetSASLSessionUpdateBufSize(virNetSASLSessionPtr sasl)
     return 0;
 }
 
-char *virNetSASLSessionListMechanisms(virNetSASLSessionPtr sasl)
+char *virNetSASLSessionListMechanisms(virNetSASLSession *sasl)
 {
     const char *mechlist;
     char *ret = NULL;
@@ -414,7 +414,7 @@ char *virNetSASLSessionListMechanisms(virNetSASLSessionPtr sasl)
 }
 
 
-int virNetSASLSessionClientStart(virNetSASLSessionPtr sasl,
+int virNetSASLSessionClientStart(virNetSASLSession *sasl,
                                  const char *mechlist,
                                  sasl_interact_t **prompt_need,
                                  const char **clientout,
@@ -463,7 +463,7 @@ int virNetSASLSessionClientStart(virNetSASLSessionPtr sasl,
 }
 
 
-int virNetSASLSessionClientStep(virNetSASLSessionPtr sasl,
+int virNetSASLSessionClientStep(virNetSASLSession *sasl,
                                 const char *serverin,
                                 size_t serverinlen,
                                 sasl_interact_t **prompt_need,
@@ -511,7 +511,7 @@ int virNetSASLSessionClientStep(virNetSASLSessionPtr sasl,
     return ret;
 }
 
-int virNetSASLSessionServerStart(virNetSASLSessionPtr sasl,
+int virNetSASLSessionServerStart(virNetSASLSession *sasl,
                                  const char *mechname,
                                  const char *clientin,
                                  size_t clientinlen,
@@ -558,7 +558,7 @@ int virNetSASLSessionServerStart(virNetSASLSessionPtr sasl,
 }
 
 
-int virNetSASLSessionServerStep(virNetSASLSessionPtr sasl,
+int virNetSASLSessionServerStep(virNetSASLSession *sasl,
                                 const char *clientin,
                                 size_t clientinlen,
                                 const char **serverout,
@@ -602,7 +602,7 @@ int virNetSASLSessionServerStep(virNetSASLSessionPtr sasl,
     return ret;
 }
 
-size_t virNetSASLSessionGetMaxBufSize(virNetSASLSessionPtr sasl)
+size_t virNetSASLSessionGetMaxBufSize(virNetSASLSession *sasl)
 {
     size_t ret;
     virObjectLock(sasl);
@@ -611,7 +611,7 @@ size_t virNetSASLSessionGetMaxBufSize(virNetSASLSessionPtr sasl)
     return ret;
 }
 
-ssize_t virNetSASLSessionEncode(virNetSASLSessionPtr sasl,
+ssize_t virNetSASLSessionEncode(virNetSASLSession *sasl,
                                 const char *input,
                                 size_t inputLen,
                                 const char **output,
@@ -650,7 +650,7 @@ ssize_t virNetSASLSessionEncode(virNetSASLSessionPtr sasl,
     return ret;
 }
 
-ssize_t virNetSASLSessionDecode(virNetSASLSessionPtr sasl,
+ssize_t virNetSASLSessionDecode(virNetSASLSession *sasl,
                                 const char *input,
                                 size_t inputLen,
                                 const char **output,
@@ -695,7 +695,7 @@ void virNetSASLContextDispose(void *obj G_GNUC_UNUSED)
 
 void virNetSASLSessionDispose(void *obj)
 {
-    virNetSASLSessionPtr sasl = obj;
+    virNetSASLSession *sasl = obj;
 
     if (sasl->conn)
         sasl_dispose(&sasl->conn);

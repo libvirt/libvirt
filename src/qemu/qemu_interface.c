@@ -51,7 +51,7 @@ VIR_LOG_INIT("qemu.qemu_interface");
  * the rest of the network.
  */
 int
-qemuInterfaceStartDevice(virDomainNetDefPtr net)
+qemuInterfaceStartDevice(virDomainNetDef *net)
 {
     virDomainNetType actualType = virDomainNetGetActualType(net);
 
@@ -134,7 +134,7 @@ qemuInterfaceStartDevice(virDomainNetDefPtr net)
  * Set all ifaces associated with this domain to the online state.
  */
 int
-qemuInterfaceStartDevices(virDomainDefPtr def)
+qemuInterfaceStartDevices(virDomainDef *def)
 {
     size_t i;
 
@@ -155,7 +155,7 @@ qemuInterfaceStartDevices(virDomainDefPtr def)
  * it from the rest of the network.
  */
 int
-qemuInterfaceStopDevice(virDomainNetDefPtr net)
+qemuInterfaceStopDevice(virDomainNetDef *net)
 {
     virDomainNetType actualType = virDomainNetGetActualType(net);
 
@@ -221,7 +221,7 @@ qemuInterfaceStopDevice(virDomainNetDefPtr net)
  * the rest of the network.
  */
 int
-qemuInterfaceStopDevices(virDomainDefPtr def)
+qemuInterfaceStopDevices(virDomainDef *def)
 {
     size_t i;
 
@@ -254,9 +254,9 @@ qemuInterfaceIsVnetCompatModel(const virDomainNetDef *net)
  * Returns 0 on success or -1 in case of error.
  */
 int
-qemuInterfaceDirectConnect(virDomainDefPtr def,
-                           virQEMUDriverPtr driver,
-                           virDomainNetDefPtr net,
+qemuInterfaceDirectConnect(virDomainDef *def,
+                           virQEMUDriver *driver,
+                           virDomainNetDef *net,
                            int *tapfd,
                            size_t tapfdSize,
                            virNetDevVPortProfileOp vmop)
@@ -314,13 +314,13 @@ qemuInterfaceDirectConnect(virDomainDefPtr def,
  * Returns 0 in case of success or -1 on failure
  */
 static int
-qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
+qemuCreateInBridgePortWithHelper(virQEMUDriverConfig *cfg,
                                  const char *brname,
                                  char **ifname,
                                  int *tapfd,
                                  unsigned int flags)
 {
-    virCommandPtr cmd;
+    virCommand *cmd;
     char *errbuf = NULL, *cmdstr = NULL;
     int pair[2] = { -1, -1 };
 
@@ -404,9 +404,9 @@ qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
  * (i.e. if the connection is made with a tap device)
  */
 int
-qemuInterfaceEthernetConnect(virDomainDefPtr def,
-                           virQEMUDriverPtr driver,
-                           virDomainNetDefPtr net,
+qemuInterfaceEthernetConnect(virDomainDef *def,
+                           virQEMUDriver *driver,
+                           virDomainNetDef *net,
                            int *tapfd,
                            size_t tapfdSize)
 {
@@ -528,9 +528,9 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
  * device connecting to a bridge device)
  */
 int
-qemuInterfaceBridgeConnect(virDomainDefPtr def,
-                           virQEMUDriverPtr driver,
-                           virDomainNetDefPtr net,
+qemuInterfaceBridgeConnect(virDomainDef *def,
+                           virQEMUDriver *driver,
+                           virDomainNetDef *net,
                            int *tapfd,
                            size_t *tapfdSize)
 {
@@ -636,7 +636,7 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
  * Called *only* called if actualType is VIR_DOMAIN_NET_TYPE_VDPA
  */
 int
-qemuInterfaceVDPAConnect(virDomainNetDefPtr net)
+qemuInterfaceVDPAConnect(virDomainNetDef *net)
 {
     int fd;
 
@@ -655,9 +655,9 @@ qemuInterfaceVDPAConnect(virDomainNetDefPtr net)
  * Returns: -1 on error, 0 if slirp isn't available, 1 on succcess
  */
 int
-qemuInterfacePrepareSlirp(virQEMUDriverPtr driver,
-                          virDomainNetDefPtr net,
-                          qemuSlirpPtr *slirpret)
+qemuInterfacePrepareSlirp(virQEMUDriver *driver,
+                          virDomainNetDef *net,
+                          qemuSlirp **slirpret)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(qemuSlirp) slirp = NULL;
@@ -703,8 +703,8 @@ qemuInterfacePrepareSlirp(virQEMUDriverPtr driver,
  *         -1 on failure
  */
 int
-qemuInterfaceOpenVhostNet(virDomainDefPtr def,
-                          virDomainNetDefPtr net,
+qemuInterfaceOpenVhostNet(virDomainDef *def,
+                          virDomainNetDef *net,
                           int *vhostfd,
                           size_t *vhostfdSize)
 {

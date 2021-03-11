@@ -76,8 +76,6 @@ typedef int
 (*virDrvStreamAbort)(virStreamPtr st);
 
 typedef struct _virStreamDriver virStreamDriver;
-typedef virStreamDriver *virStreamDriverPtr;
-
 struct _virStreamDriver {
     virDrvStreamSend streamSend;
     virDrvStreamRecv streamRecv;

@@ -25,14 +25,13 @@
 #include "virobject.h"
 
 typedef struct _virPortAllocatorRange virPortAllocatorRange;
-typedef virPortAllocatorRange *virPortAllocatorRangePtr;
 
-virPortAllocatorRangePtr
+virPortAllocatorRange *
 virPortAllocatorRangeNew(const char *name,
                          unsigned short start,
                          unsigned short end);
 
-void virPortAllocatorRangeFree(virPortAllocatorRangePtr range);
+void virPortAllocatorRangeFree(virPortAllocatorRange *range);
 
 int virPortAllocatorAcquire(const virPortAllocatorRange *range,
                             unsigned short *port);

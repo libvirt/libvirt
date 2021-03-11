@@ -23,6 +23,6 @@
 #define FAKEDEVDIR0 "/fakedevdir0/bla/fasl"
 #define FAKEDEVDIR1 "/fakedevdir1/bla/fasl"
 
-virCapsPtr testLXCCapsInit(void);
-virLXCDriverPtr testLXCDriverInit(void);
-void testLXCDriverFree(virLXCDriverPtr driver);
+virCaps *testLXCCapsInit(void);
+virLXCDriver *testLXCDriverInit(void);
+void testLXCDriverFree(virLXCDriver *driver);

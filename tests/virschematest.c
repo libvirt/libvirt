@@ -41,7 +41,7 @@ struct testSchemaEntry {
 
 
 struct testSchemaData {
-    virXMLValidatorPtr validator;
+    virXMLValidator *validator;
     const char *xml_path;
 };
 
@@ -65,7 +65,7 @@ testSchemaValidateXML(const void *args)
 
 static int
 testSchemaFile(const char *schema,
-               virXMLValidatorPtr validator,
+               virXMLValidator *validator,
                const char *path)
 {
     g_autofree char *test_name = NULL;
@@ -82,7 +82,7 @@ testSchemaFile(const char *schema,
 
 static int
 testSchemaDir(const char *schema,
-              virXMLValidatorPtr validator,
+              virXMLValidator *validator,
               const char *dir_path,
               const char *filterstr)
 {
@@ -150,12 +150,12 @@ testSchemaGrammarReport(const void *opaque)
     return 0;
 }
 
-static virXMLValidatorPtr
+static virXMLValidator *
 testSchemaGrammarLoad(const char *schema)
 {
     g_autofree char *schema_path = NULL;
     g_autofree char *testname = NULL;
-    virXMLValidatorPtr ret;
+    virXMLValidator *ret;
 
     schema_path = g_strdup_printf("%s/%s", abs_top_srcdir, schema);
 

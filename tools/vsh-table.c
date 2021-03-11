@@ -38,13 +38,13 @@ struct _vshTableRow {
 
 
 struct _vshTable {
-    vshTableRowPtr *rows;
+    vshTableRow **rows;
     size_t nrows;
 };
 
 
 static void
-vshTableRowFree(vshTableRowPtr row)
+vshTableRowFree(vshTableRow *row)
 {
     size_t i;
 
@@ -60,7 +60,7 @@ vshTableRowFree(vshTableRowPtr row)
 
 
 void
-vshTableFree(vshTablePtr table)
+vshTableFree(vshTable *table)
 {
     size_t i;
 
@@ -82,12 +82,12 @@ vshTableFree(vshTablePtr table)
  * Create a new row in the table. Each argument passed
  * represents a cell in the row.
  *
- * Return: pointer to vshTableRowPtr row or NULL.
+ * Return: pointer to vshTableRow *row or NULL.
  */
-static vshTableRowPtr
+static vshTableRow *
 vshTableRowNew(const char *arg, va_list ap)
 {
-    vshTableRowPtr row = NULL;
+    vshTableRow *row = NULL;
 
     if (!arg) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -124,11 +124,11 @@ vshTableRowNew(const char *arg, va_list ap)
  *
  * Returns: pointer to table or NULL.
  */
-vshTablePtr
+vshTable *
 vshTableNew(const char *arg, ...)
 {
-    vshTablePtr table = NULL;
-    vshTableRowPtr header = NULL;
+    vshTable *table = NULL;
+    vshTableRow *header = NULL;
     va_list ap;
 
     table = g_new0(vshTable, 1);
@@ -162,9 +162,9 @@ vshTableNew(const char *arg, ...)
  * Returns: 0 if succeeded, -1 if failed.
  */
 int
-vshTableRowAppend(vshTablePtr table, const char *arg, ...)
+vshTableRowAppend(vshTable *table, const char *arg, ...)
 {
-    vshTableRowPtr row = NULL;
+    vshTableRow *row = NULL;
     size_t ncolumns = table->rows[0]->ncells;
     va_list ap;
     int ret = -1;
@@ -279,7 +279,7 @@ vshTableSafeEncode(const char *s, size_t *width)
  * Return 0 in case of success, -1 otherwise.
  */
 static int
-vshTableGetColumnsWidths(vshTablePtr table,
+vshTableGetColumnsWidths(vshTable *table,
                          size_t *maxwidths,
                          size_t **widths,
                          bool header)
@@ -288,7 +288,7 @@ vshTableGetColumnsWidths(vshTablePtr table,
 
     i = header? 0 : 1;
     for (; i < table->nrows; i++) {
-        vshTableRowPtr row = table->rows[i];
+        vshTableRow *row = table->rows[i];
         size_t j;
 
         for (j = 0; j < row->ncells; j++) {
@@ -321,10 +321,10 @@ vshTableGetColumnsWidths(vshTablePtr table,
  * @buf: buffer to store table (only if @toStdout == true)
  */
 static void
-vshTableRowPrint(vshTableRowPtr row,
+vshTableRowPrint(vshTableRow *row,
                  size_t *maxwidths,
                  size_t *widths,
-                 virBufferPtr buf)
+                 virBuffer *buf)
 {
     size_t i;
     size_t j;
@@ -355,7 +355,7 @@ vshTableRowPrint(vshTableRowPtr row,
  * Return string containing table, or NULL
  */
 static char *
-vshTablePrint(vshTablePtr table, bool header)
+vshTablePrint(vshTable *table, bool header)
 {
     size_t i;
     size_t j;
@@ -410,7 +410,7 @@ vshTablePrint(vshTablePtr table, bool header)
  * (apart from quiet mode) this code may need update
  */
 void
-vshTablePrintToStdout(vshTablePtr table, vshControl *ctl)
+vshTablePrintToStdout(vshTable *table, vshControl *ctl)
 {
     bool header;
     g_autofree char *out = NULL;
@@ -432,7 +432,7 @@ vshTablePrintToStdout(vshTablePtr table, vshControl *ctl)
  * stdout. User will have to free returned string.
  */
 char *
-vshTablePrintToString(vshTablePtr table, bool header)
+vshTablePrintToString(vshTable *table, bool header)
 {
     return vshTablePrint(table, header);
 }

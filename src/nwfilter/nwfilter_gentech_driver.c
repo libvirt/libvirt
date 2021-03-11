@@ -50,17 +50,17 @@ VIR_LOG_INIT("nwfilter.nwfilter_gentech_driver");
 static int _virNWFilterTeardownFilter(const char *ifname);
 
 
-static virNWFilterTechDriverPtr filter_tech_drivers[] = {
+static virNWFilterTechDriver *filter_tech_drivers[] = {
     &ebiptables_driver,
     NULL
 };
 
 /* Serializes instantiation of filters. This is necessary
  * to avoid lock ordering deadlocks. eg virNWFilterInstantiateFilterUpdate
- * will hold a lock on a virNWFilterObjPtr. This in turn invokes
+ * will hold a lock on a virNWFilterObj *. This in turn invokes
  * virNWFilterDoInstantiate which invokes virNWFilterDetermineMissingVarsRec
  * which invokes virNWFilterObjListFindInstantiateFilter. This iterates over
- * every single virNWFilterObjPtr in the list. So if 2 threads try to
+ * every single virNWFilterObj *in the list. So if 2 threads try to
  * instantiate a filter in parallel, they'll both hold 1 lock at the top level
  * in virNWFilterInstantiateFilterUpdate which will cause the other thread
  * to deadlock in virNWFilterObjListFindInstantiateFilter.
@@ -99,7 +99,7 @@ void virNWFilterTechDriversShutdown(void)
 }
 
 
-virNWFilterTechDriverPtr
+virNWFilterTechDriver *
 virNWFilterTechDriverForName(const char *name)
 {
     size_t i = 0;
@@ -116,7 +116,7 @@ virNWFilterTechDriverForName(const char *name)
 
 
 static void
-virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
+virNWFilterRuleInstFree(virNWFilterRuleInst *inst)
 {
     if (!inst)
         return;
@@ -218,17 +218,16 @@ virNWFilterCreateVarsFrom(GHashTable *vars1,
 
 
 typedef struct _virNWFilterInst virNWFilterInst;
-typedef virNWFilterInst *virNWFilterInstPtr;
 struct _virNWFilterInst {
-    virNWFilterObjPtr *filters;
+    virNWFilterObj **filters;
     size_t nfilters;
-    virNWFilterRuleInstPtr *rules;
+    virNWFilterRuleInst **rules;
     size_t nrules;
 };
 
 
 static void
-virNWFilterInstReset(virNWFilterInstPtr inst)
+virNWFilterInstReset(virNWFilterInst *inst)
 {
     size_t i;
 
@@ -246,20 +245,20 @@ virNWFilterInstReset(virNWFilterInstPtr inst)
 
 
 static int
-virNWFilterDefToInst(virNWFilterDriverStatePtr driver,
-                     virNWFilterDefPtr def,
+virNWFilterDefToInst(virNWFilterDriverState *driver,
+                     virNWFilterDef *def,
                      GHashTable *vars,
                      enum instCase useNewFilter,
                      bool *foundNewFilter,
-                     virNWFilterInstPtr inst);
+                     virNWFilterInst *inst);
 
 static int
-virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
-                             virNWFilterRuleDefPtr rule,
+virNWFilterRuleDefToRuleInst(virNWFilterDef *def,
+                             virNWFilterRuleDef *rule,
                              GHashTable *vars,
-                             virNWFilterInstPtr inst)
+                             virNWFilterInst *inst)
 {
-    virNWFilterRuleInstPtr ruleinst;
+    virNWFilterRuleInst *ruleinst;
     int ret = -1;
 
     ruleinst = g_new0(virNWFilterRuleInst, 1);
@@ -286,17 +285,17 @@ virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
 
 
 static int
-virNWFilterIncludeDefToRuleInst(virNWFilterDriverStatePtr driver,
-                                virNWFilterIncludeDefPtr inc,
+virNWFilterIncludeDefToRuleInst(virNWFilterDriverState *driver,
+                                virNWFilterIncludeDef *inc,
                                 GHashTable *vars,
                                 enum instCase useNewFilter,
                                 bool *foundNewFilter,
-                                virNWFilterInstPtr inst)
+                                virNWFilterInst *inst)
 {
-    virNWFilterObjPtr obj;
+    virNWFilterObj *obj;
     GHashTable *tmpvars = NULL;
-    virNWFilterDefPtr childdef;
-    virNWFilterDefPtr newChilddef;
+    virNWFilterDef *childdef;
+    virNWFilterDef *newChilddef;
     int ret = -1;
 
     VIR_DEBUG("Instantiating filter %s", inc->filterref);
@@ -367,12 +366,12 @@ virNWFilterIncludeDefToRuleInst(virNWFilterDriverStatePtr driver,
  * Returns 0 on success, -1 on error
  */
 static int
-virNWFilterDefToInst(virNWFilterDriverStatePtr driver,
-                     virNWFilterDefPtr def,
+virNWFilterDefToInst(virNWFilterDriverState *driver,
+                     virNWFilterDef *def,
                      GHashTable *vars,
                      enum instCase useNewFilter,
                      bool *foundNewFilter,
-                     virNWFilterInstPtr inst)
+                     virNWFilterInst *inst)
 {
     size_t i;
     int ret = -1;
@@ -403,22 +402,22 @@ virNWFilterDefToInst(virNWFilterDriverStatePtr driver,
 
 
 static int
-virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
+virNWFilterDetermineMissingVarsRec(virNWFilterDef *filter,
                                    GHashTable *vars,
                                    GHashTable *missing_vars,
                                    int useNewFilter,
-                                   virNWFilterDriverStatePtr driver)
+                                   virNWFilterDriverState *driver)
 {
-    virNWFilterObjPtr obj;
+    virNWFilterObj *obj;
     int rc = 0;
     size_t i, j;
-    virNWFilterDefPtr next_filter;
-    virNWFilterDefPtr newNext_filter;
-    virNWFilterVarValuePtr val;
+    virNWFilterDef *next_filter;
+    virNWFilterDef *newNext_filter;
+    virNWFilterVarValue *val;
 
     for (i = 0; i < filter->nentries; i++) {
-        virNWFilterRuleDefPtr    rule = filter->filterEntries[i]->rule;
-        virNWFilterIncludeDefPtr inc  = filter->filterEntries[i]->include;
+        virNWFilterRuleDef *   rule = filter->filterEntries[i]->rule;
+        virNWFilterIncludeDef *inc  = filter->filterEntries[i]->include;
         if (rule) {
             /* check all variables of this rule */
             for (j = 0; j < rule->nVarAccess; j++) {
@@ -498,21 +497,21 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
  * Call this function while holding the NWFilter filter update lock
  */
 static int
-virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
-                         virNWFilterBindingDefPtr binding,
-                         virNWFilterDefPtr filter,
+virNWFilterDoInstantiate(virNWFilterTechDriver *techdriver,
+                         virNWFilterBindingDef *binding,
+                         virNWFilterDef *filter,
                          int ifindex,
                          enum instCase useNewFilter,
                          bool *foundNewFilter,
                          bool teardownOld,
-                         virNWFilterDriverStatePtr driver,
+                         virNWFilterDriverState *driver,
                          bool forceWithPendingReq)
 {
     int rc;
     virNWFilterInst inst;
     bool instantiate = true;
     g_autofree char *buf = NULL;
-    virNWFilterVarValuePtr lv;
+    virNWFilterVarValue *lv;
     const char *learning;
     bool reportIP = false;
 
@@ -664,9 +663,9 @@ virNWFilterVarHashmapAddStdValue(GHashTable *table,
  * Call this function while holding the NWFilter filter update lock
  */
 static int
-virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
+virNWFilterInstantiateFilterUpdate(virNWFilterDriverState *driver,
                                    bool teardownOld,
-                                   virNWFilterBindingDefPtr binding,
+                                   virNWFilterBindingDef *binding,
                                    int ifindex,
                                    enum instCase useNewFilter,
                                    bool forceWithPendingReq,
@@ -674,12 +673,12 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
 {
     int rc = -1;
     const char *drvname = EBIPTABLES_DRIVER_ID;
-    virNWFilterTechDriverPtr techdriver;
-    virNWFilterObjPtr obj;
-    virNWFilterDefPtr filter;
-    virNWFilterDefPtr newFilter;
+    virNWFilterTechDriver *techdriver;
+    virNWFilterObj *obj;
+    virNWFilterDef *filter;
+    virNWFilterDef *newFilter;
     char vmmacaddr[VIR_MAC_STRING_BUFLEN] = {0};
-    virNWFilterVarValuePtr ipaddr;
+    virNWFilterVarValue *ipaddr;
 
     techdriver = virNWFilterTechDriverForName(drvname);
 
@@ -739,8 +738,8 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
 
 
 static int
-virNWFilterInstantiateFilterInternal(virNWFilterDriverStatePtr driver,
-                                     virNWFilterBindingDefPtr binding,
+virNWFilterInstantiateFilterInternal(virNWFilterDriverState *driver,
+                                     virNWFilterBindingDef *binding,
                                      bool teardownOld,
                                      enum instCase useNewFilter,
                                      bool *foundNewFilter)
@@ -776,8 +775,8 @@ virNWFilterInstantiateFilterInternal(virNWFilterDriverStatePtr driver,
 
 
 int
-virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
-                                 virNWFilterBindingDefPtr binding,
+virNWFilterInstantiateFilterLate(virNWFilterDriverState *driver,
+                                 virNWFilterBindingDef *binding,
                                  int ifindex)
 {
     int rc;
@@ -808,8 +807,8 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
 
 
 int
-virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
-                             virNWFilterBindingDefPtr binding)
+virNWFilterInstantiateFilter(virNWFilterDriverState *driver,
+                             virNWFilterBindingDef *binding)
 {
     bool foundNewFilter = false;
 
@@ -821,8 +820,8 @@ virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
 
 
 int
-virNWFilterUpdateInstantiateFilter(virNWFilterDriverStatePtr driver,
-                                   virNWFilterBindingDefPtr binding,
+virNWFilterUpdateInstantiateFilter(virNWFilterDriverState *driver,
+                                   virNWFilterBindingDef *binding,
                                    bool *skipIface)
 {
     bool foundNewFilter = false;
@@ -837,11 +836,11 @@ virNWFilterUpdateInstantiateFilter(virNWFilterDriverStatePtr driver,
 }
 
 static int
-virNWFilterRollbackUpdateFilter(virNWFilterBindingDefPtr binding)
+virNWFilterRollbackUpdateFilter(virNWFilterBindingDef *binding)
 {
     const char *drvname = EBIPTABLES_DRIVER_ID;
     int ifindex;
-    virNWFilterTechDriverPtr techdriver;
+    virNWFilterTechDriver *techdriver;
 
     techdriver = virNWFilterTechDriverForName(drvname);
     if (!techdriver) {
@@ -863,11 +862,11 @@ virNWFilterRollbackUpdateFilter(virNWFilterBindingDefPtr binding)
 
 
 static int
-virNWFilterTearOldFilter(virNWFilterBindingDefPtr binding)
+virNWFilterTearOldFilter(virNWFilterBindingDef *binding)
 {
     const char *drvname = EBIPTABLES_DRIVER_ID;
     int ifindex;
-    virNWFilterTechDriverPtr techdriver;
+    virNWFilterTechDriver *techdriver;
 
     techdriver = virNWFilterTechDriverForName(drvname);
     if (!techdriver) {
@@ -892,7 +891,7 @@ static int
 _virNWFilterTeardownFilter(const char *ifname)
 {
     const char *drvname = EBIPTABLES_DRIVER_ID;
-    virNWFilterTechDriverPtr techdriver;
+    virNWFilterTechDriver *techdriver;
     techdriver = virNWFilterTechDriverForName(drvname);
 
     if (!techdriver) {
@@ -921,7 +920,7 @@ _virNWFilterTeardownFilter(const char *ifname)
 
 
 int
-virNWFilterTeardownFilter(virNWFilterBindingDefPtr binding)
+virNWFilterTeardownFilter(virNWFilterBindingDef *binding)
 {
     int ret;
     virMutexLock(&updateMutex);
@@ -938,8 +937,8 @@ enum {
 };
 
 static int
-virNWFilterBuildOne(virNWFilterDriverStatePtr driver,
-                    virNWFilterBindingDefPtr binding,
+virNWFilterBuildOne(virNWFilterDriverState *driver,
+                    virNWFilterBindingDef *binding,
                     GHashTable *skipInterfaces,
                     int step)
 {
@@ -981,23 +980,23 @@ virNWFilterBuildOne(virNWFilterDriverStatePtr driver,
 
 
 struct virNWFilterBuildData {
-    virNWFilterDriverStatePtr driver;
+    virNWFilterDriverState *driver;
     GHashTable *skipInterfaces;
     int step;
 };
 
 static int
-virNWFilterBuildIter(virNWFilterBindingObjPtr binding, void *opaque)
+virNWFilterBuildIter(virNWFilterBindingObj *binding, void *opaque)
 {
     struct virNWFilterBuildData *data = opaque;
-    virNWFilterBindingDefPtr def = virNWFilterBindingObjGetDef(binding);
+    virNWFilterBindingDef *def = virNWFilterBindingObjGetDef(binding);
 
     return virNWFilterBuildOne(data->driver, def,
                                data->skipInterfaces, data->step);
 }
 
 int
-virNWFilterBuildAll(virNWFilterDriverStatePtr driver,
+virNWFilterBuildAll(virNWFilterDriverState *driver,
                     bool newFilters)
 {
     struct virNWFilterBuildData data = {

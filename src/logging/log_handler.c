@@ -44,10 +44,8 @@ VIR_LOG_INIT("logging.log_handler");
 #define DEFAULT_MODE 0600
 
 typedef struct _virLogHandlerLogFile virLogHandlerLogFile;
-typedef virLogHandlerLogFile *virLogHandlerLogFilePtr;
-
 struct _virLogHandlerLogFile {
-    virRotatingFileWriterPtr file;
+    virRotatingFileWriter *file;
     int watch;
     int pipefd; /* Read from QEMU via this */
     bool drained;
@@ -64,14 +62,14 @@ struct _virLogHandler {
     size_t max_size;
     size_t max_backups;
 
-    virLogHandlerLogFilePtr *files;
+    virLogHandlerLogFile **files;
     size_t nfiles;
 
     virLogHandlerShutdownInhibitor inhibitor;
     void *opaque;
 };
 
-static virClassPtr virLogHandlerClass;
+static virClass *virLogHandlerClass;
 static void virLogHandlerDispose(void *obj);
 
 static int
@@ -87,7 +85,7 @@ VIR_ONCE_GLOBAL_INIT(virLogHandler);
 
 
 static void
-virLogHandlerLogFileFree(virLogHandlerLogFilePtr file)
+virLogHandlerLogFileFree(virLogHandlerLogFile *file)
 {
     if (!file)
         return;
@@ -105,8 +103,8 @@ virLogHandlerLogFileFree(virLogHandlerLogFilePtr file)
 
 
 static void
-virLogHandlerLogFileClose(virLogHandlerPtr handler,
-                          virLogHandlerLogFilePtr file)
+virLogHandlerLogFileClose(virLogHandler *handler,
+                          virLogHandlerLogFile *file)
 {
     size_t i;
 
@@ -120,8 +118,8 @@ virLogHandlerLogFileClose(virLogHandlerPtr handler,
 }
 
 
-static virLogHandlerLogFilePtr
-virLogHandlerGetLogFileFromWatch(virLogHandlerPtr handler,
+static virLogHandlerLogFile *
+virLogHandlerGetLogFileFromWatch(virLogHandler *handler,
                                  int watch)
 {
     size_t i;
@@ -141,8 +139,8 @@ virLogHandlerDomainLogFileEvent(int watch,
                                 int events G_GNUC_UNUSED,
                                 void *opaque)
 {
-    virLogHandlerPtr handler = opaque;
-    virLogHandlerLogFilePtr logfile;
+    virLogHandler *handler = opaque;
+    virLogHandlerLogFile *logfile;
     char buf[1024];
     ssize_t len;
 
@@ -186,14 +184,14 @@ virLogHandlerDomainLogFileEvent(int watch,
 }
 
 
-virLogHandlerPtr
+virLogHandler *
 virLogHandlerNew(bool privileged,
                  size_t max_size,
                  size_t max_backups,
                  virLogHandlerShutdownInhibitor inhibitor,
                  void *opaque)
 {
-    virLogHandlerPtr handler;
+    virLogHandler *handler;
 
     if (virLogHandlerInitialize() < 0)
         return NULL;
@@ -211,11 +209,11 @@ virLogHandlerNew(bool privileged,
 }
 
 
-static virLogHandlerLogFilePtr
-virLogHandlerLogFilePostExecRestart(virLogHandlerPtr handler,
-                                    virJSONValuePtr object)
+static virLogHandlerLogFile *
+virLogHandlerLogFilePostExecRestart(virLogHandler *handler,
+                                    virJSONValue *object)
 {
-    virLogHandlerLogFilePtr file;
+    virLogHandlerLogFile *file;
     const char *path;
     const char *domuuid;
     const char *tmp;
@@ -282,16 +280,16 @@ virLogHandlerLogFilePostExecRestart(virLogHandlerPtr handler,
 }
 
 
-virLogHandlerPtr
-virLogHandlerNewPostExecRestart(virJSONValuePtr object,
+virLogHandler *
+virLogHandlerNewPostExecRestart(virJSONValue *object,
                                 bool privileged,
                                 size_t max_size,
                                 size_t max_backups,
                                 virLogHandlerShutdownInhibitor inhibitor,
                                 void *opaque)
 {
-    virLogHandlerPtr handler;
-    virJSONValuePtr files;
+    virLogHandler *handler;
+    virJSONValue *files;
     size_t i;
 
     if (!(handler = virLogHandlerNew(privileged,
@@ -314,8 +312,8 @@ virLogHandlerNewPostExecRestart(virJSONValuePtr object,
     }
 
     for (i = 0; i < virJSONValueArraySize(files); i++) {
-        virLogHandlerLogFilePtr file;
-        virJSONValuePtr child = virJSONValueArrayGet(files, i);
+        virLogHandlerLogFile *file;
+        virJSONValue *child = virJSONValueArrayGet(files, i);
 
         if (!(file = virLogHandlerLogFilePostExecRestart(handler, child)))
             goto error;
@@ -345,7 +343,7 @@ virLogHandlerNewPostExecRestart(virJSONValuePtr object,
 static void
 virLogHandlerDispose(void *obj)
 {
-    virLogHandlerPtr handler = obj;
+    virLogHandler *handler = obj;
     size_t i;
 
     for (i = 0; i < handler->nfiles; i++) {
@@ -357,7 +355,7 @@ virLogHandlerDispose(void *obj)
 
 
 int
-virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
+virLogHandlerDomainOpenLogFile(virLogHandler *handler,
                                const char *driver,
                                const unsigned char *domuuid,
                                const char *domname,
@@ -367,7 +365,7 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
                                off_t *offset)
 {
     size_t i;
-    virLogHandlerLogFilePtr file = NULL;
+    virLogHandlerLogFile *file = NULL;
     int pipefd[2] = { -1, -1 };
 
     virObjectLock(handler);
@@ -432,7 +430,7 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
 
 
 static void
-virLogHandlerDomainLogFileDrain(virLogHandlerLogFilePtr file)
+virLogHandlerDomainLogFileDrain(virLogHandlerLogFile *file)
 {
     char buf[1024];
     ssize_t len;
@@ -472,13 +470,13 @@ virLogHandlerDomainLogFileDrain(virLogHandlerLogFilePtr file)
 
 
 int
-virLogHandlerDomainGetLogFilePosition(virLogHandlerPtr handler,
+virLogHandlerDomainGetLogFilePosition(virLogHandler *handler,
                                       const char *path,
                                       unsigned int flags,
                                       ino_t *inode,
                                       off_t *offset)
 {
-    virLogHandlerLogFilePtr file = NULL;
+    virLogHandlerLogFile *file = NULL;
     int ret = -1;
     size_t i;
 
@@ -515,14 +513,14 @@ virLogHandlerDomainGetLogFilePosition(virLogHandlerPtr handler,
 
 
 char *
-virLogHandlerDomainReadLogFile(virLogHandlerPtr handler,
+virLogHandlerDomainReadLogFile(virLogHandler *handler,
                                const char *path,
                                ino_t inode,
                                off_t offset,
                                size_t maxlen,
                                unsigned int flags)
 {
-    virRotatingFileReaderPtr file = NULL;
+    virRotatingFileReader *file = NULL;
     char *data = NULL;
     ssize_t got;
 
@@ -556,7 +554,7 @@ virLogHandlerDomainReadLogFile(virLogHandlerPtr handler,
 
 
 int
-virLogHandlerDomainAppendLogFile(virLogHandlerPtr handler,
+virLogHandlerDomainAppendLogFile(virLogHandler *handler,
                                  const char *driver G_GNUC_UNUSED,
                                  const unsigned char *domuuid G_GNUC_UNUSED,
                                  const char *domname G_GNUC_UNUSED,
@@ -565,8 +563,8 @@ virLogHandlerDomainAppendLogFile(virLogHandlerPtr handler,
                                  unsigned int flags)
 {
     size_t i;
-    virRotatingFileWriterPtr writer = NULL;
-    virRotatingFileWriterPtr newwriter = NULL;
+    virRotatingFileWriter *writer = NULL;
+    virRotatingFileWriter *newwriter = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -605,8 +603,8 @@ virLogHandlerDomainAppendLogFile(virLogHandlerPtr handler,
 }
 
 
-virJSONValuePtr
-virLogHandlerPreExecRestart(virLogHandlerPtr handler)
+virJSONValue *
+virLogHandlerPreExecRestart(virLogHandler *handler)
 {
     g_autoptr(virJSONValue) ret = virJSONValueNewObject();
     g_autoptr(virJSONValue) files = virJSONValueNewArray();

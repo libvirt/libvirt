@@ -39,7 +39,7 @@ VIR_LOG_INIT("tests.lockspacetest");
 
 static int testLockSpaceCreate(const void *args G_GNUC_UNUSED)
 {
-    virLockSpacePtr lockspace;
+    virLockSpace *lockspace;
     int ret = -1;
 
     rmdir(LOCKSPACE_DIR);
@@ -61,7 +61,7 @@ static int testLockSpaceCreate(const void *args G_GNUC_UNUSED)
 
 static int testLockSpaceResourceLifecycle(const void *args G_GNUC_UNUSED)
 {
-    virLockSpacePtr lockspace;
+    virLockSpace *lockspace;
     int ret = -1;
 
     rmdir(LOCKSPACE_DIR);
@@ -95,7 +95,7 @@ static int testLockSpaceResourceLifecycle(const void *args G_GNUC_UNUSED)
 
 static int testLockSpaceResourceLockExcl(const void *args G_GNUC_UNUSED)
 {
-    virLockSpacePtr lockspace;
+    virLockSpace *lockspace;
     int ret = -1;
 
     rmdir(LOCKSPACE_DIR);
@@ -141,7 +141,7 @@ static int testLockSpaceResourceLockExcl(const void *args G_GNUC_UNUSED)
 
 static int testLockSpaceResourceLockExclAuto(const void *args G_GNUC_UNUSED)
 {
-    virLockSpacePtr lockspace;
+    virLockSpace *lockspace;
     int ret = -1;
 
     rmdir(LOCKSPACE_DIR);
@@ -179,7 +179,7 @@ static int testLockSpaceResourceLockExclAuto(const void *args G_GNUC_UNUSED)
 
 static int testLockSpaceResourceLockShr(const void *args G_GNUC_UNUSED)
 {
-    virLockSpacePtr lockspace;
+    virLockSpace *lockspace;
     int ret = -1;
 
     rmdir(LOCKSPACE_DIR);
@@ -233,7 +233,7 @@ static int testLockSpaceResourceLockShr(const void *args G_GNUC_UNUSED)
 
 static int testLockSpaceResourceLockShrAuto(const void *args G_GNUC_UNUSED)
 {
-    virLockSpacePtr lockspace;
+    virLockSpace *lockspace;
     int ret = -1;
 
     rmdir(LOCKSPACE_DIR);
@@ -293,7 +293,7 @@ static int testLockSpaceResourceLockShrAuto(const void *args G_GNUC_UNUSED)
 
 static int testLockSpaceResourceLockPath(const void *args G_GNUC_UNUSED)
 {
-    virLockSpacePtr lockspace;
+    virLockSpace *lockspace;
     int ret = -1;
 
     rmdir(LOCKSPACE_DIR);

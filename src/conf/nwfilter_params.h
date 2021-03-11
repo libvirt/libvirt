@@ -34,7 +34,6 @@ typedef enum {
 } virNWFilterVarValueType;
 
 typedef struct _virNWFilterVarValue virNWFilterVarValue;
-typedef virNWFilterVarValue *virNWFilterVarValuePtr;
 struct _virNWFilterVarValue {
     virNWFilterVarValueType valType;
     union {
@@ -48,10 +47,10 @@ struct _virNWFilterVarValue {
     } u;
 };
 
-virNWFilterVarValuePtr virNWFilterVarValueCreateSimple(char *);
-virNWFilterVarValuePtr virNWFilterVarValueCreateSimpleCopyValue(const char *);
-virNWFilterVarValuePtr virNWFilterVarValueCopy(const virNWFilterVarValue *);
-void virNWFilterVarValueFree(virNWFilterVarValuePtr val);
+virNWFilterVarValue *virNWFilterVarValueCreateSimple(char *);
+virNWFilterVarValue *virNWFilterVarValueCreateSimpleCopyValue(const char *);
+virNWFilterVarValue *virNWFilterVarValueCopy(const virNWFilterVarValue *);
+void virNWFilterVarValueFree(virNWFilterVarValue *val);
 void virNWFilterVarValueHashFree(void *payload);
 const char *virNWFilterVarValueGetSimple(const virNWFilterVarValue *val);
 const char *virNWFilterVarValueGetNthValue(const virNWFilterVarValue *val,
@@ -59,12 +58,12 @@ const char *virNWFilterVarValueGetNthValue(const virNWFilterVarValue *val,
 unsigned int virNWFilterVarValueGetCardinality(const virNWFilterVarValue *);
 bool virNWFilterVarValueEqual(const virNWFilterVarValue *a,
                               const virNWFilterVarValue *b);
-int virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value);
-int virNWFilterVarValueAddValueCopy(virNWFilterVarValuePtr val, const char *value);
-int virNWFilterVarValueDelValue(virNWFilterVarValuePtr val, const char *value);
+int virNWFilterVarValueAddValue(virNWFilterVarValue *val, char *value);
+int virNWFilterVarValueAddValueCopy(virNWFilterVarValue *val, const char *value);
+int virNWFilterVarValueDelValue(virNWFilterVarValue *val, const char *value);
 
 GHashTable *virNWFilterParseParamAttributes(xmlNodePtr cur);
-int virNWFilterFormatParamAttributes(virBufferPtr buf,
+int virNWFilterFormatParamAttributes(virBuffer *buf,
                                      GHashTable *table,
                                      const char *filterref);
 
@@ -92,7 +91,6 @@ typedef enum {
 } virNWFilterVarAccessType;
 
 typedef struct _virNWFilterVarAccess virNWFilterVarAccess;
-typedef virNWFilterVarAccess *virNWFilterVarAccessPtr;
 struct  _virNWFilterVarAccess {
     virNWFilterVarAccessType accessType;
     union {
@@ -107,12 +105,12 @@ struct  _virNWFilterVarAccess {
 
 #define VIR_NWFILTER_MAX_ITERID   1000
 
-void virNWFilterVarAccessFree(virNWFilterVarAccessPtr varAccess);
+void virNWFilterVarAccessFree(virNWFilterVarAccess *varAccess);
 bool virNWFilterVarAccessEqual(const virNWFilterVarAccess *a,
                                const virNWFilterVarAccess *b);
-virNWFilterVarAccessPtr virNWFilterVarAccessParse(const char *varAccess);
-void virNWFilterVarAccessPrint(virNWFilterVarAccessPtr vap,
-                               virBufferPtr buf);
+virNWFilterVarAccess *virNWFilterVarAccessParse(const char *varAccess);
+void virNWFilterVarAccessPrint(virNWFilterVarAccess *vap,
+                               virBuffer *buf);
 const char *virNWFilterVarAccessGetVarName(const virNWFilterVarAccess *vap);
 virNWFilterVarAccessType virNWFilterVarAccessGetType(
                                            const virNWFilterVarAccess *vap);
@@ -122,7 +120,6 @@ bool virNWFilterVarAccessIsAvailable(const virNWFilterVarAccess *vap,
                                      GHashTable *hash);
 
 typedef struct _virNWFilterVarCombIterEntry virNWFilterVarCombIterEntry;
-typedef virNWFilterVarCombIterEntry *virNWFilterVarCombIterEntryPtr;
 struct _virNWFilterVarCombIterEntry {
     unsigned int iterId;
     const char **varNames;
@@ -133,19 +130,18 @@ struct _virNWFilterVarCombIterEntry {
 };
 
 typedef struct _virNWFilterVarCombIter virNWFilterVarCombIter;
-typedef virNWFilterVarCombIter *virNWFilterVarCombIterPtr;
 struct _virNWFilterVarCombIter {
     GHashTable *hashTable;
     size_t nIter;
-    virNWFilterVarCombIterEntryPtr iter;
+    virNWFilterVarCombIterEntry *iter;
 };
-virNWFilterVarCombIterPtr virNWFilterVarCombIterCreate(
+virNWFilterVarCombIter *virNWFilterVarCombIterCreate(
                              GHashTable *hash,
-                             virNWFilterVarAccessPtr *vars,
+                             virNWFilterVarAccess **vars,
                              size_t nVars);
 
-void virNWFilterVarCombIterFree(virNWFilterVarCombIterPtr ci);
-virNWFilterVarCombIterPtr virNWFilterVarCombIterNext(
-                                virNWFilterVarCombIterPtr ci);
-const char *virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIterPtr ci,
+void virNWFilterVarCombIterFree(virNWFilterVarCombIter *ci);
+virNWFilterVarCombIter *virNWFilterVarCombIterNext(
+                                virNWFilterVarCombIter *ci);
+const char *virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIter *ci,
                                               const virNWFilterVarAccess *);

@@ -122,7 +122,7 @@ virNetDevVPortProfileEqual(const virNetDevVPortProfile *a, const virNetDevVPortP
 }
 
 
-int virNetDevVPortProfileCopy(virNetDevVPortProfilePtr *dst, const virNetDevVPortProfile *src)
+int virNetDevVPortProfileCopy(virNetDevVPortProfile **dst, const virNetDevVPortProfile *src)
 {
     if (!src) {
         *dst = NULL;
@@ -144,7 +144,7 @@ int virNetDevVPortProfileCopy(virNetDevVPortProfilePtr *dst, const virNetDevVPor
  * and -1 is returned.
  */
 int
-virNetDevVPortProfileCheckComplete(virNetDevVPortProfilePtr virtport,
+virNetDevVPortProfileCheckComplete(virNetDevVPortProfile *virtport,
                                    bool generateMissing)
 {
     const char *missing = NULL;
@@ -274,7 +274,7 @@ virNetDevVPortProfileCheckNoExtras(const virNetDevVPortProfile *virtport)
  * *and doesn't match*, log an error and return -1, otherwise return 0.
  */
 static int
-virNetDevVPortProfileMerge(virNetDevVPortProfilePtr orig,
+virNetDevVPortProfileMerge(virNetDevVPortProfile *orig,
                            const virNetDevVPortProfile *mods)
 {
     enum virNetDevVPortProfile otype;
@@ -414,7 +414,7 @@ virNetDevVPortProfileMerge(virNetDevVPortProfilePtr orig,
  * change it, that is an error.
  */
 
-int virNetDevVPortProfileMerge3(virNetDevVPortProfilePtr *result,
+int virNetDevVPortProfileMerge3(virNetDevVPortProfile **result,
                                 const virNetDevVPortProfile *fromInterface,
                                 const virNetDevVPortProfile *fromNetwork,
                                 const virNetDevVPortProfile *fromPortgroup)

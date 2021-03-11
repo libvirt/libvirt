@@ -78,8 +78,8 @@ struct _virNetTLSSession {
     char *x509dname;
 };
 
-static virClassPtr virNetTLSContextClass;
-static virClassPtr virNetTLSSessionClass;
+static virClass *virNetTLSContextClass;
+static virClass *virNetTLSSessionClass;
 static void virNetTLSContextDispose(void *obj);
 static void virNetTLSSessionDispose(void *obj);
 
@@ -593,7 +593,7 @@ static int virNetTLSContextSanityCheckCredentials(bool isServer,
 }
 
 
-static int virNetTLSContextLoadCredentials(virNetTLSContextPtr ctxt,
+static int virNetTLSContextLoadCredentials(virNetTLSContext *ctxt,
                                            bool isServer,
                                            const char *cacert,
                                            const char *cacrl,
@@ -669,7 +669,7 @@ static int virNetTLSContextLoadCredentials(virNetTLSContextPtr ctxt,
 }
 
 
-static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
+static virNetTLSContext *virNetTLSContextNew(const char *cacert,
                                                const char *cacrl,
                                                const char *cert,
                                                const char *key,
@@ -679,7 +679,7 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
                                                bool requireValidCert,
                                                bool isServer)
 {
-    virNetTLSContextPtr ctxt;
+    virNetTLSContext *ctxt;
     int err;
 
     if (virNetTLSContextInitialize() < 0)
@@ -851,7 +851,7 @@ static int virNetTLSContextLocateCredentials(const char *pkipath,
 }
 
 
-static virNetTLSContextPtr virNetTLSContextNewPath(const char *pkipath,
+static virNetTLSContext *virNetTLSContextNewPath(const char *pkipath,
                                                    bool tryUserPkiPath,
                                                    const char *const *x509dnACL,
                                                    const char *priority,
@@ -860,7 +860,7 @@ static virNetTLSContextPtr virNetTLSContextNewPath(const char *pkipath,
                                                    bool isServer)
 {
     char *cacert = NULL, *cacrl = NULL, *key = NULL, *cert = NULL;
-    virNetTLSContextPtr ctxt = NULL;
+    virNetTLSContext *ctxt = NULL;
 
     if (virNetTLSContextLocateCredentials(pkipath, tryUserPkiPath, isServer,
                                           &cacert, &cacrl, &cert, &key) < 0)
@@ -878,7 +878,7 @@ static virNetTLSContextPtr virNetTLSContextNewPath(const char *pkipath,
     return ctxt;
 }
 
-virNetTLSContextPtr virNetTLSContextNewServerPath(const char *pkipath,
+virNetTLSContext *virNetTLSContextNewServerPath(const char *pkipath,
                                                   bool tryUserPkiPath,
                                                   const char *const *x509dnACL,
                                                   const char *priority,
@@ -889,7 +889,7 @@ virNetTLSContextPtr virNetTLSContextNewServerPath(const char *pkipath,
                                    sanityCheckCert, requireValidCert, true);
 }
 
-virNetTLSContextPtr virNetTLSContextNewClientPath(const char *pkipath,
+virNetTLSContext *virNetTLSContextNewClientPath(const char *pkipath,
                                                   bool tryUserPkiPath,
                                                   const char *priority,
                                                   bool sanityCheckCert,
@@ -900,7 +900,7 @@ virNetTLSContextPtr virNetTLSContextNewClientPath(const char *pkipath,
 }
 
 
-virNetTLSContextPtr virNetTLSContextNewServer(const char *cacert,
+virNetTLSContext *virNetTLSContextNewServer(const char *cacert,
                                               const char *cacrl,
                                               const char *cert,
                                               const char *key,
@@ -914,7 +914,7 @@ virNetTLSContextPtr virNetTLSContextNewServer(const char *cacert,
 }
 
 
-int virNetTLSContextReloadForServer(virNetTLSContextPtr ctxt,
+int virNetTLSContextReloadForServer(virNetTLSContext *ctxt,
                                     bool tryUserPkiPath)
 {
     gnutls_certificate_credentials_t x509credBak;
@@ -959,7 +959,7 @@ int virNetTLSContextReloadForServer(virNetTLSContextPtr ctxt,
 }
 
 
-virNetTLSContextPtr virNetTLSContextNewClient(const char *cacert,
+virNetTLSContext *virNetTLSContextNewClient(const char *cacert,
                                               const char *cacrl,
                                               const char *cert,
                                               const char *key,
@@ -972,8 +972,8 @@ virNetTLSContextPtr virNetTLSContextNewClient(const char *cacert,
 }
 
 
-static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
-                                            virNetTLSSessionPtr sess)
+static int virNetTLSContextValidCertificate(virNetTLSContext *ctxt,
+                                            virNetTLSSession *sess)
 {
     int ret;
     unsigned int status;
@@ -1111,8 +1111,8 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
     return -1;
 }
 
-int virNetTLSContextCheckCertificate(virNetTLSContextPtr ctxt,
-                                     virNetTLSSessionPtr sess)
+int virNetTLSContextCheckCertificate(virNetTLSContext *ctxt,
+                                     virNetTLSSession *sess)
 {
     int ret = -1;
 
@@ -1140,7 +1140,7 @@ int virNetTLSContextCheckCertificate(virNetTLSContextPtr ctxt,
 
 void virNetTLSContextDispose(void *obj)
 {
-    virNetTLSContextPtr ctxt = obj;
+    virNetTLSContext *ctxt = obj;
 
     PROBE(RPC_TLS_CONTEXT_DISPOSE,
           "ctxt=%p", ctxt);
@@ -1154,7 +1154,7 @@ void virNetTLSContextDispose(void *obj)
 static ssize_t
 virNetTLSSessionPush(void *opaque, const void *buf, size_t len)
 {
-    virNetTLSSessionPtr sess = opaque;
+    virNetTLSSession *sess = opaque;
     if (!sess->writeFunc) {
         VIR_WARN("TLS session push with missing write function");
         errno = EIO;
@@ -1168,7 +1168,7 @@ virNetTLSSessionPush(void *opaque, const void *buf, size_t len)
 static ssize_t
 virNetTLSSessionPull(void *opaque, void *buf, size_t len)
 {
-    virNetTLSSessionPtr sess = opaque;
+    virNetTLSSession *sess = opaque;
     if (!sess->readFunc) {
         VIR_WARN("TLS session pull with missing read function");
         errno = EIO;
@@ -1179,10 +1179,10 @@ virNetTLSSessionPull(void *opaque, void *buf, size_t len)
 }
 
 
-virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
+virNetTLSSession *virNetTLSSessionNew(virNetTLSContext *ctxt,
                                         const char *hostname)
 {
-    virNetTLSSessionPtr sess;
+    virNetTLSSession *sess;
     int err;
     const char *priority;
 
@@ -1253,7 +1253,7 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
 }
 
 
-void virNetTLSSessionSetIOCallbacks(virNetTLSSessionPtr sess,
+void virNetTLSSessionSetIOCallbacks(virNetTLSSession *sess,
                                     virNetTLSSessionWriteFunc writeFunc,
                                     virNetTLSSessionReadFunc readFunc,
                                     void *opaque)
@@ -1266,7 +1266,7 @@ void virNetTLSSessionSetIOCallbacks(virNetTLSSessionPtr sess,
 }
 
 
-ssize_t virNetTLSSessionWrite(virNetTLSSessionPtr sess,
+ssize_t virNetTLSSessionWrite(virNetTLSSession *sess,
                               const char *buf, size_t len)
 {
     ssize_t ret;
@@ -1299,7 +1299,7 @@ ssize_t virNetTLSSessionWrite(virNetTLSSessionPtr sess,
     return ret;
 }
 
-ssize_t virNetTLSSessionRead(virNetTLSSessionPtr sess,
+ssize_t virNetTLSSessionRead(virNetTLSSession *sess,
                              char *buf, size_t len)
 {
     ssize_t ret;
@@ -1329,7 +1329,7 @@ ssize_t virNetTLSSessionRead(virNetTLSSessionPtr sess,
     return ret;
 }
 
-int virNetTLSSessionHandshake(virNetTLSSessionPtr sess)
+int virNetTLSSessionHandshake(virNetTLSSession *sess)
 {
     int ret;
     VIR_DEBUG("sess=%p", sess);
@@ -1362,7 +1362,7 @@ int virNetTLSSessionHandshake(virNetTLSSessionPtr sess)
 }
 
 virNetTLSSessionHandshakeStatus
-virNetTLSSessionGetHandshakeStatus(virNetTLSSessionPtr sess)
+virNetTLSSessionGetHandshakeStatus(virNetTLSSession *sess)
 {
     virNetTLSSessionHandshakeStatus ret;
     virObjectLock(sess);
@@ -1376,7 +1376,7 @@ virNetTLSSessionGetHandshakeStatus(virNetTLSSessionPtr sess)
     return ret;
 }
 
-int virNetTLSSessionGetKeySize(virNetTLSSessionPtr sess)
+int virNetTLSSessionGetKeySize(virNetTLSSession *sess)
 {
     gnutls_cipher_algorithm_t cipher;
     int ssf;
@@ -1394,7 +1394,7 @@ int virNetTLSSessionGetKeySize(virNetTLSSessionPtr sess)
     return ssf;
 }
 
-const char *virNetTLSSessionGetX509DName(virNetTLSSessionPtr sess)
+const char *virNetTLSSessionGetX509DName(virNetTLSSession *sess)
 {
     const char *ret = NULL;
 
@@ -1409,7 +1409,7 @@ const char *virNetTLSSessionGetX509DName(virNetTLSSessionPtr sess)
 
 void virNetTLSSessionDispose(void *obj)
 {
-    virNetTLSSessionPtr sess = obj;
+    virNetTLSSession *sess = obj;
 
     PROBE(RPC_TLS_SESSION_DISPOSE,
           "sess=%p", sess);

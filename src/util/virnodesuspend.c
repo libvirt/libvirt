@@ -73,7 +73,7 @@ static void virNodeSuspendUnlock(void)
  */
 static int virNodeSuspendSetNodeWakeup(unsigned long long alarmTime)
 {
-    virCommandPtr setAlarmCmd;
+    virCommand *setAlarmCmd;
     int ret = -1;
 
     if (alarmTime < MIN_TIME_REQ_FOR_SUSPEND) {
@@ -110,7 +110,7 @@ static int virNodeSuspendSetNodeWakeup(unsigned long long alarmTime)
  */
 static void virNodeSuspendHelper(void *cmdString)
 {
-    virCommandPtr suspendCmd = virCommandNew((const char *)cmdString);
+    virCommand *suspendCmd = virCommandNew((const char *)cmdString);
 
     /*
      * Delay for sometime so that the function virNodeSuspend()

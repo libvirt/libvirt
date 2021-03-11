@@ -23,40 +23,40 @@
 #include "qemu_conf.h"
 #include "qemu_domain.h"
 
-int qemuExtDeviceLogCommand(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
-                            virCommandPtr cmd,
+int qemuExtDeviceLogCommand(virQEMUDriver *driver,
+                            virDomainObj *vm,
+                            virCommand *cmd,
                             const char *info)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
     G_GNUC_WARN_UNUSED_RESULT;
 
-int qemuExtDevicesPrepareDomain(virQEMUDriverPtr driver,
-                                virDomainObjPtr vm)
+int qemuExtDevicesPrepareDomain(virQEMUDriver *driver,
+                                virDomainObj *vm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     G_GNUC_WARN_UNUSED_RESULT;
 
-int qemuExtDevicesPrepareHost(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm)
+int qemuExtDevicesPrepareHost(virQEMUDriver *driver,
+                              virDomainObj *vm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     G_GNUC_WARN_UNUSED_RESULT;
 
-void qemuExtDevicesCleanupHost(virQEMUDriverPtr driver,
-                               virDomainDefPtr def)
+void qemuExtDevicesCleanupHost(virQEMUDriver *driver,
+                               virDomainDef *def)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int qemuExtDevicesStart(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm,
-                        virLogManagerPtr logManager,
+int qemuExtDevicesStart(virQEMUDriver *driver,
+                        virDomainObj *vm,
+                        virLogManager *logManager,
                         bool incomingMigration)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     G_GNUC_WARN_UNUSED_RESULT;
 
-void qemuExtDevicesStop(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm)
+void qemuExtDevicesStop(virQEMUDriver *driver,
+                        virDomainObj *vm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-bool qemuExtDevicesHasDevice(virDomainDefPtr def);
+bool qemuExtDevicesHasDevice(virDomainDef *def);
 
-int qemuExtDevicesSetupCgroup(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
-                              virCgroupPtr cgroup);
+int qemuExtDevicesSetupCgroup(virQEMUDriver *driver,
+                              virDomainObj *vm,
+                              virCgroup *cgroup);

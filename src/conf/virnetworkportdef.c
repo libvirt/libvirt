@@ -40,7 +40,7 @@ VIR_ENUM_IMPL(virNetworkPortPlug,
               "none", "network", "bridge", "direct", "hostdev-pci");
 
 void
-virNetworkPortDefFree(virNetworkPortDefPtr def)
+virNetworkPortDefFree(virNetworkPortDef *def)
 {
     if (!def)
         return;
@@ -78,7 +78,7 @@ virNetworkPortDefFree(virNetworkPortDefPtr def)
 
 
 
-static virNetworkPortDefPtr
+static virNetworkPortDef *
 virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
 {
     g_autoptr(virNetworkPortDef) def = NULL;
@@ -264,12 +264,12 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
 }
 
 
-virNetworkPortDefPtr
+virNetworkPortDef *
 virNetworkPortDefParseNode(xmlDocPtr xml,
                            xmlNodePtr root)
 {
     xmlXPathContextPtr ctxt = NULL;
-    virNetworkPortDefPtr def = NULL;
+    virNetworkPortDef *def = NULL;
 
     if (STRNEQ((const char *)root->name, "networkport")) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -290,11 +290,11 @@ virNetworkPortDefParseNode(xmlDocPtr xml,
 }
 
 
-static virNetworkPortDefPtr
+static virNetworkPortDef *
 virNetworkPortDefParse(const char *xmlStr,
                        const char *filename)
 {
-    virNetworkPortDefPtr def = NULL;
+    virNetworkPortDef *def = NULL;
     xmlDocPtr xml;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(networkport_definition)")))) {
@@ -306,14 +306,14 @@ virNetworkPortDefParse(const char *xmlStr,
 }
 
 
-virNetworkPortDefPtr
+virNetworkPortDef *
 virNetworkPortDefParseString(const char *xmlStr)
 {
     return virNetworkPortDefParse(xmlStr, NULL);
 }
 
 
-virNetworkPortDefPtr
+virNetworkPortDef *
 virNetworkPortDefParseFile(const char *filename)
 {
     return virNetworkPortDefParse(NULL, filename);
@@ -333,7 +333,7 @@ virNetworkPortDefFormat(const virNetworkPortDef *def)
 
 
 int
-virNetworkPortDefFormatBuf(virBufferPtr buf,
+virNetworkPortDefFormatBuf(virBuffer *buf,
                            const virNetworkPortDef *def)
 {
     char uuid[VIR_UUID_STRING_BUFLEN];

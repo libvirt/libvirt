@@ -33,16 +33,15 @@
 #include "access/viraccessperm.h"
 
 typedef struct _virAccessManager virAccessManager;
-typedef virAccessManager *virAccessManagerPtr;
 
-virAccessManagerPtr virAccessManagerGetDefault(void);
-void virAccessManagerSetDefault(virAccessManagerPtr manager);
+virAccessManager *virAccessManagerGetDefault(void);
+void virAccessManagerSetDefault(virAccessManager *manager);
 
-virAccessManagerPtr virAccessManagerNew(const char *name);
-virAccessManagerPtr virAccessManagerNewStack(const char **names);
+virAccessManager *virAccessManagerNew(const char *name);
+virAccessManager *virAccessManagerNewStack(const char **names);
 
 
-void *virAccessManagerGetPrivateData(virAccessManagerPtr manager);
+void *virAccessManagerGetPrivateData(virAccessManager *manager);
 
 
 /*
@@ -51,48 +50,48 @@ void *virAccessManagerGetPrivateData(virAccessManagerPtr manager);
  * Return 0 on auth deny
  * Return 1 on auth allow
  */
-int virAccessManagerCheckConnect(virAccessManagerPtr manager,
+int virAccessManagerCheckConnect(virAccessManager *manager,
                                  const char *driverName,
                                  virAccessPermConnect perm);
-int virAccessManagerCheckDomain(virAccessManagerPtr manager,
+int virAccessManagerCheckDomain(virAccessManager *manager,
                                 const char *driverName,
-                                virDomainDefPtr domain,
+                                virDomainDef *domain,
                                 virAccessPermDomain perm);
-int virAccessManagerCheckInterface(virAccessManagerPtr manager,
+int virAccessManagerCheckInterface(virAccessManager *manager,
                                    const char *driverName,
-                                   virInterfaceDefPtr iface,
+                                   virInterfaceDef *iface,
                                    virAccessPermInterface perm);
-int virAccessManagerCheckNetwork(virAccessManagerPtr manager,
+int virAccessManagerCheckNetwork(virAccessManager *manager,
                                  const char *driverName,
-                                 virNetworkDefPtr network,
+                                 virNetworkDef *network,
                                  virAccessPermNetwork perm);
-int virAccessManagerCheckNetworkPort(virAccessManagerPtr manager,
+int virAccessManagerCheckNetworkPort(virAccessManager *manager,
                                      const char *driverName,
-                                     virNetworkDefPtr network,
-                                     virNetworkPortDefPtr port,
+                                     virNetworkDef *network,
+                                     virNetworkPortDef *port,
                                      virAccessPermNetworkPort perm);
-int virAccessManagerCheckNodeDevice(virAccessManagerPtr manager,
+int virAccessManagerCheckNodeDevice(virAccessManager *manager,
                                     const char *driverName,
-                                    virNodeDeviceDefPtr nodedev,
+                                    virNodeDeviceDef *nodedev,
                                     virAccessPermNodeDevice perm);
-int virAccessManagerCheckNWFilter(virAccessManagerPtr manager,
+int virAccessManagerCheckNWFilter(virAccessManager *manager,
                                   const char *driverName,
-                                  virNWFilterDefPtr nwfilter,
+                                  virNWFilterDef *nwfilter,
                                   virAccessPermNWFilter perm);
-int virAccessManagerCheckNWFilterBinding(virAccessManagerPtr manager,
+int virAccessManagerCheckNWFilterBinding(virAccessManager *manager,
                                          const char *driverName,
-                                         virNWFilterBindingDefPtr binding,
+                                         virNWFilterBindingDef *binding,
                                          virAccessPermNWFilterBinding perm);
-int virAccessManagerCheckSecret(virAccessManagerPtr manager,
+int virAccessManagerCheckSecret(virAccessManager *manager,
                                 const char *driverName,
-                                virSecretDefPtr secret,
+                                virSecretDef *secret,
                                 virAccessPermSecret perm);
-int virAccessManagerCheckStoragePool(virAccessManagerPtr manager,
+int virAccessManagerCheckStoragePool(virAccessManager *manager,
                                      const char *driverName,
-                                     virStoragePoolDefPtr pool,
+                                     virStoragePoolDef *pool,
                                      virAccessPermStoragePool perm);
-int virAccessManagerCheckStorageVol(virAccessManagerPtr manager,
+int virAccessManagerCheckStorageVol(virAccessManager *manager,
                                     const char *driverName,
-                                    virStoragePoolDefPtr pool,
-                                    virStorageVolDefPtr vol,
+                                    virStoragePoolDef *pool,
+                                    virStorageVolDef *vol,
                                     virAccessPermStorageVol perm);

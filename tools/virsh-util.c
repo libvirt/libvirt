@@ -33,7 +33,7 @@ virshLookupDomainInternal(vshControl *ctl,
 {
     virDomainPtr dom = NULL;
     int id;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     virCheckFlags(VIRSH_BYID | VIRSH_BYUUID | VIRSH_BYNAME, NULL);
 
@@ -117,7 +117,7 @@ virshDomainState(vshControl *ctl,
                  int *reason)
 {
     virDomainInfo info;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (reason)
         *reason = -1;
@@ -148,7 +148,7 @@ virshStreamSink(virStreamPtr st G_GNUC_UNUSED,
                 size_t nbytes,
                 void *opaque)
 {
-    virshStreamCallbackDataPtr cbData = opaque;
+    virshStreamCallbackData *cbData = opaque;
 
     return safewrite(cbData->fd, bytes, nbytes);
 }
@@ -160,7 +160,7 @@ virshStreamSource(virStreamPtr st G_GNUC_UNUSED,
                   size_t nbytes,
                   void *opaque)
 {
-    virshStreamCallbackDataPtr cbData = opaque;
+    virshStreamCallbackData *cbData = opaque;
     int fd = cbData->fd;
 
     return saferead(fd, bytes, nbytes);
@@ -172,7 +172,7 @@ virshStreamSourceSkip(virStreamPtr st G_GNUC_UNUSED,
                       long long offset,
                       void *opaque)
 {
-    virshStreamCallbackDataPtr cbData = opaque;
+    virshStreamCallbackData *cbData = opaque;
     int fd = cbData->fd;
 
     if (lseek(fd, offset, SEEK_CUR) == (off_t) -1)
@@ -187,7 +187,7 @@ virshStreamSkip(virStreamPtr st G_GNUC_UNUSED,
                 long long offset,
                 void *opaque)
 {
-    virshStreamCallbackDataPtr cbData = opaque;
+    virshStreamCallbackData *cbData = opaque;
     off_t cur;
 
     if (cbData->isBlock) {
@@ -228,7 +228,7 @@ virshStreamInData(virStreamPtr st G_GNUC_UNUSED,
                   long long *offset,
                   void *opaque)
 {
-    virshStreamCallbackDataPtr cbData = opaque;
+    virshStreamCallbackData *cbData = opaque;
     vshControl *ctl = cbData->ctl;
     int fd = cbData->fd;
 

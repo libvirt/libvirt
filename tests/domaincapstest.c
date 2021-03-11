@@ -28,7 +28,7 @@
 
 #if WITH_QEMU || WITH_BHYVE
 static int G_GNUC_NULL_TERMINATED
-fillStringValues(virDomainCapsStringValuesPtr values, ...)
+fillStringValues(virDomainCapsStringValues *values, ...)
 {
     va_list list;
     const char *str;
@@ -67,16 +67,16 @@ fakeHostCPU(virArch arch)
 }
 
 static int
-fillQemuCaps(virDomainCapsPtr domCaps,
+fillQemuCaps(virDomainCaps *domCaps,
              const char *name,
              const char *arch,
              const char *machine,
-             virQEMUDriverConfigPtr cfg)
+             virQEMUDriverConfig *cfg)
 {
     int ret = -1;
     char *path = NULL;
-    virQEMUCapsPtr qemuCaps = NULL;
-    virDomainCapsLoaderPtr loader = &domCaps->os.loader;
+    virQEMUCaps *qemuCaps = NULL;
+    virDomainCapsLoader *loader = &domCaps->os.loader;
     virDomainVirtType virtType;
 
     if (fakeHostCPU(domCaps->arch) < 0)
@@ -138,12 +138,12 @@ fillQemuCaps(virDomainCapsPtr domCaps,
 # include "testutilsxen.h"
 
 static int
-fillXenCaps(virDomainCapsPtr domCaps)
+fillXenCaps(virDomainCaps *domCaps)
 {
-    virFirmwarePtr *firmwares;
+    virFirmware **firmwares;
     int ret = -1;
 
-    firmwares = g_new0(virFirmwarePtr, 2);
+    firmwares = g_new0(virFirmware *, 2);
 
     firmwares[0] = g_new0(virFirmware, 1);
     firmwares[1] = g_new0(virFirmware, 1);
@@ -166,9 +166,9 @@ fillXenCaps(virDomainCapsPtr domCaps)
 # include "bhyve/bhyve_capabilities.h"
 
 static int
-fillBhyveCaps(virDomainCapsPtr domCaps, unsigned int *bhyve_caps)
+fillBhyveCaps(virDomainCaps *domCaps, unsigned int *bhyve_caps)
 {
-    virDomainCapsStringValuesPtr firmwares = NULL;
+    virDomainCapsStringValues *firmwares = NULL;
     int ret = -1;
 
     firmwares = g_new0(virDomainCapsStringValues, 1);
@@ -208,7 +208,7 @@ static int
 test_virDomainCapsFormat(const void *opaque)
 {
     const struct testData *data = opaque;
-    virDomainCapsPtr domCaps = NULL;
+    virDomainCaps *domCaps = NULL;
     char *path = NULL;
     char *domCapsXML = NULL;
     int ret = -1;

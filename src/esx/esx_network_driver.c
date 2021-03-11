@@ -212,7 +212,7 @@ esxNetworkLookupByName(virConnectPtr conn, const char *name)
 
 
 static int
-esxBandwidthToShapingPolicy(virNetDevBandwidthPtr bandwidth,
+esxBandwidthToShapingPolicy(virNetDevBandwidth *bandwidth,
                             esxVI_HostNetworkTrafficShapingPolicy **shapingPolicy)
 {
     int result = -1;
@@ -278,7 +278,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
 {
     virNetworkPtr network = NULL;
     esxPrivate *priv = conn->privateData;
-    virNetworkDefPtr def = NULL;
+    virNetworkDef *def = NULL;
     esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
     esxVI_HostPortGroup *hostPortGroupList = NULL;
     esxVI_HostPortGroup *hostPortGroup = NULL;
@@ -597,7 +597,7 @@ esxNetworkUndefine(virNetworkPtr network)
 
 static int
 esxShapingPolicyToBandwidth(esxVI_HostNetworkTrafficShapingPolicy *shapingPolicy,
-                            virNetDevBandwidthPtr *bandwidth)
+                            virNetDevBandwidth **bandwidth)
 {
     ESX_VI_CHECK_ARG_LIST(bandwidth);
 
@@ -649,7 +649,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
     esxVI_String *networkNameList = NULL;
     esxVI_String *hostPortGroupKey = NULL;
     esxVI_String *networkName = NULL;
-    virNetworkDefPtr def;
+    virNetworkDef *def;
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return NULL;

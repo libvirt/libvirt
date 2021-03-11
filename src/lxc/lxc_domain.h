@@ -47,7 +47,6 @@ VIR_ENUM_DECL(virLXCDomainNamespace);
 VIR_ENUM_DECL(virLXCDomainNamespaceSource);
 
 typedef struct _lxcDomainDef lxcDomainDef;
-typedef lxcDomainDef *lxcDomainDefPtr;
 struct _lxcDomainDef {
     int ns_source[VIR_LXC_DOMAIN_NAMESPACE_LAST]; /* virLXCDomainNamespaceSource */
     char *ns_val[VIR_LXC_DOMAIN_NAMESPACE_LAST];
@@ -76,16 +75,15 @@ struct virLXCDomainJobObj {
 
 
 typedef struct _virLXCDomainObjPrivate virLXCDomainObjPrivate;
-typedef virLXCDomainObjPrivate *virLXCDomainObjPrivatePtr;
 struct _virLXCDomainObjPrivate {
-    virLXCMonitorPtr monitor;
+    virLXCMonitor *monitor;
     bool doneStopEvent;
     int stopReason;
     bool wantReboot;
 
     pid_t initpid;
 
-    virCgroupPtr cgroup;
+    virCgroup *cgroup;
     char *machineName;
 
     struct virLXCDomainJobObj job;
@@ -96,19 +94,19 @@ extern virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virLXCDriverDomainDefParserConfig;
 
 int
-virLXCDomainObjBeginJob(virLXCDriverPtr driver,
-                       virDomainObjPtr obj,
+virLXCDomainObjBeginJob(virLXCDriver *driver,
+                       virDomainObj *obj,
                        enum virLXCDomainJob job)
     G_GNUC_WARN_UNUSED_RESULT;
 
 void
-virLXCDomainObjEndJob(virLXCDriverPtr driver,
-                     virDomainObjPtr obj);
+virLXCDomainObjEndJob(virLXCDriver *driver,
+                     virDomainObj *obj);
 
 
 char *
-virLXCDomainGetMachineName(virDomainDefPtr def, pid_t pid);
+virLXCDomainGetMachineName(virDomainDef *def, pid_t pid);
 
 int
-virLXCDomainSetRunlevel(virDomainObjPtr vm,
+virLXCDomainSetRunlevel(virDomainObj *vm,
                         int runlevel);

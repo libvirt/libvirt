@@ -67,7 +67,7 @@ VIR_ENUM_IMPL(qemuSaveCompression,
 );
 
 static inline void
-qemuSaveImageBswapHeader(virQEMUSaveHeaderPtr hdr)
+qemuSaveImageBswapHeader(virQEMUSaveHeader *hdr)
 {
     hdr->version = GUINT32_SWAP_LE_BE(hdr->version);
     hdr->data_len = GUINT32_SWAP_LE_BE(hdr->data_len);
@@ -78,7 +78,7 @@ qemuSaveImageBswapHeader(virQEMUSaveHeaderPtr hdr)
 
 
 void
-virQEMUSaveDataFree(virQEMUSaveDataPtr data)
+virQEMUSaveDataFree(virQEMUSaveData *data)
 {
     if (!data)
         return;
@@ -93,20 +93,20 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virQEMUSaveData, virQEMUSaveDataFree);
 /**
  * This function steals @domXML on success.
  */
-virQEMUSaveDataPtr
+virQEMUSaveData *
 virQEMUSaveDataNew(char *domXML,
-                   qemuDomainSaveCookiePtr cookieObj,
+                   qemuDomainSaveCookie *cookieObj,
                    bool running,
                    int compressed,
-                   virDomainXMLOptionPtr xmlopt)
+                   virDomainXMLOption *xmlopt)
 {
-    virQEMUSaveDataPtr data = NULL;
-    virQEMUSaveHeaderPtr header;
+    virQEMUSaveData *data = NULL;
+    virQEMUSaveHeader *header;
 
     data = g_new0(virQEMUSaveData, 1);
 
     if (cookieObj &&
-        !(data->cookie = virSaveCookieFormat((virObjectPtr) cookieObj,
+        !(data->cookie = virSaveCookieFormat((virObject *) cookieObj,
                                              virDomainXMLOptionGetSaveCookie(xmlopt))))
         goto error;
 
@@ -135,11 +135,11 @@ virQEMUSaveDataNew(char *domXML,
  * Returns -1 on failure, or 0 on success.
  */
 int
-virQEMUSaveDataWrite(virQEMUSaveDataPtr data,
+virQEMUSaveDataWrite(virQEMUSaveData *data,
                      int fd,
                      const char *path)
 {
-    virQEMUSaveHeaderPtr header = &data->header;
+    virQEMUSaveHeader *header = &data->header;
     size_t len;
     size_t xml_len;
     size_t cookie_len = 0;
@@ -206,11 +206,11 @@ virQEMUSaveDataWrite(virQEMUSaveDataPtr data,
 
 
 static int
-virQEMUSaveDataFinish(virQEMUSaveDataPtr data,
+virQEMUSaveDataFinish(virQEMUSaveData *data,
                       int *fd,
                       const char *path)
 {
-    virQEMUSaveHeaderPtr header = &data->header;
+    virQEMUSaveHeader *header = &data->header;
 
     memcpy(header->magic, QEMU_SAVE_MAGIC, sizeof(header->magic));
 
@@ -226,10 +226,10 @@ virQEMUSaveDataFinish(virQEMUSaveDataPtr data,
 }
 
 
-static virCommandPtr
+static virCommand *
 qemuSaveImageGetCompressionCommand(virQEMUSaveFormat compression)
 {
-    virCommandPtr ret = NULL;
+    virCommand *ret = NULL;
     const char *prog = qemuSaveCompressionTypeToString(compression);
 
     if (!prog) {
@@ -253,11 +253,11 @@ qemuSaveImageGetCompressionCommand(virQEMUSaveFormat compression)
  * the caller needs to make sure that the processors are stopped and do all other
  * actions besides saving memory */
 int
-qemuSaveImageCreate(virQEMUDriverPtr driver,
-                    virDomainObjPtr vm,
+qemuSaveImageCreate(virQEMUDriver *driver,
+                    virDomainObj *vm,
                     const char *path,
-                    virQEMUSaveDataPtr data,
-                    virCommandPtr compressor,
+                    virQEMUSaveData *data,
+                    virCommand *compressor,
                     unsigned int flags,
                     qemuDomainAsyncJob asyncJob)
 {
@@ -266,7 +266,7 @@ qemuSaveImageCreate(virQEMUDriverPtr driver,
     int ret = -1;
     int fd = -1;
     int directFlag = 0;
-    virFileWrapperFdPtr wrapperFd = NULL;
+    virFileWrapperFd *wrapperFd = NULL;
     unsigned int wrapperFlags = VIR_FILE_WRAPPER_NON_BLOCKING;
 
     /* Obtain the file handle.  */
@@ -353,7 +353,7 @@ qemuSaveImageCreate(virQEMUDriverPtr driver,
  */
 int
 qemuSaveImageGetCompressionProgram(const char *imageFormat,
-                                   virCommandPtr *compressor,
+                                   virCommand **compressor,
                                    const char *styleFormat,
                                    bool use_raw_on_fail)
 {
@@ -430,20 +430,20 @@ qemuSaveImageGetCompressionProgram(const char *imageFormat,
  * unlinked (no error raised).
  */
 int
-qemuSaveImageOpen(virQEMUDriverPtr driver,
-                  virQEMUCapsPtr qemuCaps,
+qemuSaveImageOpen(virQEMUDriver *driver,
+                  virQEMUCaps *qemuCaps,
                   const char *path,
-                  virDomainDefPtr *ret_def,
-                  virQEMUSaveDataPtr *ret_data,
+                  virDomainDef **ret_def,
+                  virQEMUSaveData **ret_data,
                   bool bypass_cache,
-                  virFileWrapperFdPtr *wrapperFd,
+                  virFileWrapperFd **wrapperFd,
                   bool open_write,
                   bool unlink_corrupt)
 {
     VIR_AUTOCLOSE fd = -1;
     int ret = -1;
     g_autoptr(virQEMUSaveData) data = NULL;
-    virQEMUSaveHeaderPtr header;
+    virQEMUSaveHeader *header;
     g_autoptr(virDomainDef) def = NULL;
     int oflags = open_write ? O_RDWR : O_RDONLY;
     size_t xml_len;
@@ -570,27 +570,27 @@ qemuSaveImageOpen(virQEMUDriverPtr driver,
 
 int
 qemuSaveImageStartVM(virConnectPtr conn,
-                     virQEMUDriverPtr driver,
-                     virDomainObjPtr vm,
+                     virQEMUDriver *driver,
+                     virDomainObj *vm,
                      int *fd,
-                     virQEMUSaveDataPtr data,
+                     virQEMUSaveData *data,
                      const char *path,
                      bool start_paused,
                      qemuDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int ret = -1;
     bool started = false;
-    virObjectEventPtr event;
+    virObjectEvent *event;
     VIR_AUTOCLOSE intermediatefd = -1;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *errbuf = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    virQEMUSaveHeaderPtr header = &data->header;
+    virQEMUSaveHeader *header = &data->header;
     g_autoptr(qemuDomainSaveCookie) cookie = NULL;
     int rc = 0;
 
-    if (virSaveCookieParseString(data->cookie, (virObjectPtr *)&cookie,
+    if (virSaveCookieParseString(data->cookie, (virObject **)&cookie,
                                  virDomainXMLOptionGetSaveCookie(driver->xmlopt)) < 0)
         goto cleanup;
 
@@ -712,14 +712,14 @@ qemuSaveImageStartVM(virConnectPtr conn,
  * Returns the new domain definition in case @newxml is ABI compatible with the
  * guest.
  */
-virDomainDefPtr
-qemuSaveImageUpdateDef(virQEMUDriverPtr driver,
-                       virDomainDefPtr def,
+virDomainDef *
+qemuSaveImageUpdateDef(virQEMUDriver *driver,
+                       virDomainDef *def,
                        const char *newxml)
 {
-    virDomainDefPtr ret = NULL;
-    virDomainDefPtr newdef_migr = NULL;
-    virDomainDefPtr newdef = NULL;
+    virDomainDef *ret = NULL;
+    virDomainDef *newdef_migr = NULL;
+    virDomainDef *newdef = NULL;
 
     if (!(newdef = virDomainDefParseString(newxml, driver->xmlopt, NULL,
                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))

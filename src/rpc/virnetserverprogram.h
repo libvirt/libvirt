@@ -26,21 +26,17 @@
 #include "virobject.h"
 
 typedef struct _virNetDaemon virNetDaemon;
-typedef virNetDaemon *virNetDaemonPtr;
 
 typedef struct _virNetServerService virNetServerService;
-typedef virNetServerService *virNetServerServicePtr;
 
 typedef struct _virNetServerProgram virNetServerProgram;
-typedef virNetServerProgram *virNetServerProgramPtr;
 
 typedef struct _virNetServerProgramProc virNetServerProgramProc;
-typedef virNetServerProgramProc *virNetServerProgramProcPtr;
 
-typedef int (*virNetServerProgramDispatchFunc)(virNetServerPtr server,
-                                               virNetServerClientPtr client,
-                                               virNetMessagePtr msg,
-                                               virNetMessageErrorPtr rerr,
+typedef int (*virNetServerProgramDispatchFunc)(virNetServer *server,
+                                               virNetServerClient *client,
+                                               virNetMessage *msg,
+                                               struct virNetMessageError *rerr,
                                                void *args,
                                                void *ret);
 
@@ -54,53 +50,53 @@ struct _virNetServerProgramProc {
     unsigned int priority;
 };
 
-virNetServerProgramPtr virNetServerProgramNew(unsigned program,
+virNetServerProgram *virNetServerProgramNew(unsigned program,
                                               unsigned version,
-                                              virNetServerProgramProcPtr procs,
+                                              virNetServerProgramProc *procs,
                                               size_t nprocs);
 
-int virNetServerProgramGetID(virNetServerProgramPtr prog);
-int virNetServerProgramGetVersion(virNetServerProgramPtr prog);
+int virNetServerProgramGetID(virNetServerProgram *prog);
+int virNetServerProgramGetVersion(virNetServerProgram *prog);
 
-unsigned int virNetServerProgramGetPriority(virNetServerProgramPtr prog,
+unsigned int virNetServerProgramGetPriority(virNetServerProgram *prog,
                                             int procedure);
 
-int virNetServerProgramMatches(virNetServerProgramPtr prog,
-                               virNetMessagePtr msg);
+int virNetServerProgramMatches(virNetServerProgram *prog,
+                               virNetMessage *msg);
 
-int virNetServerProgramDispatch(virNetServerProgramPtr prog,
-                                virNetServerPtr server,
-                                virNetServerClientPtr client,
-                                virNetMessagePtr msg);
+int virNetServerProgramDispatch(virNetServerProgram *prog,
+                                virNetServer *server,
+                                virNetServerClient *client,
+                                virNetMessage *msg);
 
-int virNetServerProgramSendReplyError(virNetServerProgramPtr prog,
-                                      virNetServerClientPtr client,
-                                      virNetMessagePtr msg,
-                                      virNetMessageErrorPtr rerr,
-                                      virNetMessageHeaderPtr req);
+int virNetServerProgramSendReplyError(virNetServerProgram *prog,
+                                      virNetServerClient *client,
+                                      virNetMessage *msg,
+                                      struct virNetMessageError *rerr,
+                                      struct virNetMessageHeader *req);
 
-int virNetServerProgramSendStreamError(virNetServerProgramPtr prog,
-                                       virNetServerClientPtr client,
-                                       virNetMessagePtr msg,
-                                       virNetMessageErrorPtr rerr,
+int virNetServerProgramSendStreamError(virNetServerProgram *prog,
+                                       virNetServerClient *client,
+                                       virNetMessage *msg,
+                                       struct virNetMessageError *rerr,
                                        int procedure,
                                        unsigned int serial);
 
-int virNetServerProgramUnknownError(virNetServerClientPtr client,
-                                    virNetMessagePtr msg,
-                                    virNetMessageHeaderPtr req);
+int virNetServerProgramUnknownError(virNetServerClient *client,
+                                    virNetMessage *msg,
+                                    struct virNetMessageHeader *req);
 
-int virNetServerProgramSendStreamData(virNetServerProgramPtr prog,
-                                      virNetServerClientPtr client,
-                                      virNetMessagePtr msg,
+int virNetServerProgramSendStreamData(virNetServerProgram *prog,
+                                      virNetServerClient *client,
+                                      virNetMessage *msg,
                                       int procedure,
                                       unsigned int serial,
                                       const char *data,
                                       size_t len);
 
-int virNetServerProgramSendStreamHole(virNetServerProgramPtr prog,
-                                      virNetServerClientPtr client,
-                                      virNetMessagePtr msg,
+int virNetServerProgramSendStreamHole(virNetServerProgram *prog,
+                                      virNetServerClient *client,
+                                      virNetMessage *msg,
                                       int procedure,
                                       unsigned int serial,
                                       long long length,

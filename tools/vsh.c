@@ -2406,7 +2406,7 @@ int
 vshEditFile(vshControl *ctl, const char *filename)
 {
     const char *editor;
-    virCommandPtr cmd;
+    virCommand *cmd;
     int ret = -1;
     int outfd = STDOUT_FILENO;
     int errfd = STDERR_FILENO;
@@ -2479,7 +2479,7 @@ vshTreePrintInternal(vshControl *ctl,
                      int devid,
                      int lastdev,
                      bool root,
-                     virBufferPtr indent)
+                     virBuffer *indent)
 {
     size_t i;
     int nextlastdev = -1;

@@ -37,7 +37,7 @@ static int
 testQemuCommandBuildFromJSON(const void *opaque)
 {
     const testQemuCommandBuildObjectFromJSONData *data = opaque;
-    virJSONValuePtr val = NULL;
+    virJSONValue *val = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *result = NULL;
     int ret = -1;

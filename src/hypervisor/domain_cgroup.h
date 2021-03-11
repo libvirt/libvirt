@@ -24,15 +24,15 @@
 #include "domain_conf.h"
 
 
-int virDomainCgroupSetupBlkio(virCgroupPtr cgroup, virDomainBlkiotune blkio);
-int virDomainCgroupSetupMemtune(virCgroupPtr cgroup, virDomainMemtune mem);
-int virDomainCgroupSetupDomainBlkioParameters(virCgroupPtr cgroup,
-                                              virDomainDefPtr def,
+int virDomainCgroupSetupBlkio(virCgroup *cgroup, virDomainBlkiotune blkio);
+int virDomainCgroupSetupMemtune(virCgroup *cgroup, virDomainMemtune mem);
+int virDomainCgroupSetupDomainBlkioParameters(virCgroup *cgroup,
+                                              virDomainDef *def,
                                               virTypedParameterPtr params,
                                               int nparams);
-int virDomainCgroupSetMemoryLimitParameters(virCgroupPtr cgroup,
-                                            virDomainObjPtr vm,
-                                            virDomainDefPtr liveDef,
-                                            virDomainDefPtr persistentDef,
+int virDomainCgroupSetMemoryLimitParameters(virCgroup *cgroup,
+                                            virDomainObj *vm,
+                                            virDomainDef *liveDef,
+                                            virDomainDef *persistentDef,
                                             virTypedParameterPtr params,
                                             int nparams);

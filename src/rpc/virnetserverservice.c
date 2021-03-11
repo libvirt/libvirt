@@ -38,20 +38,20 @@ struct _virNetServerService {
     virObject parent;
 
     size_t nsocks;
-    virNetSocketPtr *socks;
+    virNetSocket **socks;
 
     int auth;
     bool readonly;
     size_t nrequests_client_max;
 
-    virNetTLSContextPtr tls;
+    virNetTLSContext *tls;
 
     virNetServerServiceDispatchFunc dispatchFunc;
     void *dispatchOpaque;
 };
 
 
-static virClassPtr virNetServerServiceClass;
+static virClass *virNetServerServiceClass;
 static void virNetServerServiceDispose(void *obj);
 
 static int virNetServerServiceOnceInit(void)
@@ -65,12 +65,12 @@ static int virNetServerServiceOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virNetServerService);
 
 
-static void virNetServerServiceAccept(virNetSocketPtr sock,
+static void virNetServerServiceAccept(virNetSocket *sock,
                                       int events G_GNUC_UNUSED,
                                       void *opaque)
 {
-    virNetServerServicePtr svc = opaque;
-    virNetSocketPtr clientsock = NULL;
+    virNetServerService *svc = opaque;
+    virNetSocket *clientsock = NULL;
 
     if (virNetSocketAccept(sock, &clientsock) < 0)
         goto cleanup;
@@ -88,16 +88,16 @@ static void virNetServerServiceAccept(virNetSocketPtr sock,
 }
 
 
-static virNetServerServicePtr
-virNetServerServiceNewSocket(virNetSocketPtr *socks,
+static virNetServerService *
+virNetServerServiceNewSocket(virNetSocket **socks,
                              size_t nsocks,
                              int auth,
-                             virNetTLSContextPtr tls,
+                             virNetTLSContext *tls,
                              bool readonly,
                              size_t max_queued_clients,
                              size_t nrequests_client_max)
 {
-    virNetServerServicePtr svc;
+    virNetServerService *svc;
     size_t i;
 
     if (virNetServerServiceInitialize() < 0)
@@ -106,7 +106,7 @@ virNetServerServiceNewSocket(virNetSocketPtr *socks,
     if (!(svc = virObjectNew(virNetServerServiceClass)))
         return NULL;
 
-    svc->socks = g_new0(virNetSocketPtr, nsocks);
+    svc->socks = g_new0(virNetSocket *, nsocks);
     svc->nsocks = nsocks;
     for (i = 0; i < svc->nsocks; i++) {
         svc->socks[i] = socks[i];
@@ -143,18 +143,18 @@ virNetServerServiceNewSocket(virNetSocketPtr *socks,
 }
 
 
-virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
+virNetServerService *virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
                                                  int family,
                                                  int auth,
-                                                 virNetTLSContextPtr tls,
+                                                 virNetTLSContext *tls,
                                                  bool readonly,
                                                  size_t max_queued_clients,
                                                  size_t nrequests_client_max)
 {
-    virNetServerServicePtr svc;
+    virNetServerService *svc;
     size_t i;
-    virNetSocketPtr *socks;
+    virNetSocket **socks;
     size_t nsocks;
 
     VIR_DEBUG("Creating new TCP server nodename='%s' service='%s'",
@@ -182,17 +182,17 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
 }
 
 
-virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
+virNetServerService *virNetServerServiceNewUNIX(const char *path,
                                                   mode_t mask,
                                                   gid_t grp,
                                                   int auth,
-                                                  virNetTLSContextPtr tls,
+                                                  virNetTLSContext *tls,
                                                   bool readonly,
                                                   size_t max_queued_clients,
                                                   size_t nrequests_client_max)
 {
-    virNetServerServicePtr svc;
-    virNetSocketPtr sock;
+    virNetServerService *svc;
+    virNetSocket *sock;
 
     VIR_DEBUG("Creating new UNIX server path='%s' mask=%o gid=%u",
               path, mask, grp);
@@ -216,20 +216,20 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
     return svc;
 }
 
-virNetServerServicePtr virNetServerServiceNewFDs(int *fds,
+virNetServerService *virNetServerServiceNewFDs(int *fds,
                                                  size_t nfds,
                                                  bool unlinkUNIX,
                                                  int auth,
-                                                 virNetTLSContextPtr tls,
+                                                 virNetTLSContext *tls,
                                                  bool readonly,
                                                  size_t max_queued_clients,
                                                  size_t nrequests_client_max)
 {
-    virNetServerServicePtr svc = NULL;
-    virNetSocketPtr *socks;
+    virNetServerService *svc = NULL;
+    virNetSocket **socks;
     size_t i;
 
-    socks = g_new0(virNetSocketPtr, nfds);
+    socks = g_new0(virNetSocket *, nfds);
 
     for (i = 0; i < nfds; i++) {
         if (virNetSocketNewListenFD(fds[i],
@@ -254,10 +254,10 @@ virNetServerServicePtr virNetServerServiceNewFDs(int *fds,
 }
 
 
-virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr object)
+virNetServerService *virNetServerServiceNewPostExecRestart(virJSONValue *object)
 {
-    virNetServerServicePtr svc;
-    virJSONValuePtr socks;
+    virNetServerService *svc;
+    virJSONValue *socks;
     size_t i;
     size_t n;
     unsigned int max;
@@ -299,12 +299,12 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
     }
 
     n = virJSONValueArraySize(socks);
-    svc->socks = g_new0(virNetSocketPtr, n);
+    svc->socks = g_new0(virNetSocket *, n);
     svc->nsocks = n;
 
     for (i = 0; i < svc->nsocks; i++) {
-        virJSONValuePtr child = virJSONValueArrayGet(socks, i);
-        virNetSocketPtr sock;
+        virJSONValue *child = virJSONValueArrayGet(socks, i);
+        virNetSocket *sock;
 
         if (!(sock = virNetSocketNewPostExecRestart(child))) {
             virObjectUnref(sock);
@@ -334,7 +334,7 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
 }
 
 
-virJSONValuePtr virNetServerServicePreExecRestart(virNetServerServicePtr svc)
+virJSONValue *virNetServerServicePreExecRestart(virNetServerService *svc)
 {
     g_autoptr(virJSONValue) object = virJSONValueNewObject();
     g_autoptr(virJSONValue) socks = virJSONValueNewArray();
@@ -363,7 +363,7 @@ virJSONValuePtr virNetServerServicePreExecRestart(virNetServerServicePtr svc)
 }
 
 
-int virNetServerServiceGetPort(virNetServerServicePtr svc)
+int virNetServerServiceGetPort(virNetServerService *svc)
 {
     /* We're assuming if there are multiple sockets
      * for IPv4 & 6, then they are all on same port */
@@ -371,29 +371,29 @@ int virNetServerServiceGetPort(virNetServerServicePtr svc)
 }
 
 
-int virNetServerServiceGetAuth(virNetServerServicePtr svc)
+int virNetServerServiceGetAuth(virNetServerService *svc)
 {
     return svc->auth;
 }
 
 
-bool virNetServerServiceIsReadonly(virNetServerServicePtr svc)
+bool virNetServerServiceIsReadonly(virNetServerService *svc)
 {
     return svc->readonly;
 }
 
 
-size_t virNetServerServiceGetMaxRequests(virNetServerServicePtr svc)
+size_t virNetServerServiceGetMaxRequests(virNetServerService *svc)
 {
     return svc->nrequests_client_max;
 }
 
-virNetTLSContextPtr virNetServerServiceGetTLSContext(virNetServerServicePtr svc)
+virNetTLSContext *virNetServerServiceGetTLSContext(virNetServerService *svc)
 {
     return svc->tls;
 }
 
-void virNetServerServiceSetDispatcher(virNetServerServicePtr svc,
+void virNetServerServiceSetDispatcher(virNetServerService *svc,
                                       virNetServerServiceDispatchFunc func,
                                       void *opaque)
 {
@@ -404,7 +404,7 @@ void virNetServerServiceSetDispatcher(virNetServerServicePtr svc,
 
 void virNetServerServiceDispose(void *obj)
 {
-    virNetServerServicePtr svc = obj;
+    virNetServerService *svc = obj;
     size_t i;
 
     for (i = 0; i < svc->nsocks; i++)
@@ -414,7 +414,7 @@ void virNetServerServiceDispose(void *obj)
     virObjectUnref(svc->tls);
 }
 
-void virNetServerServiceToggle(virNetServerServicePtr svc,
+void virNetServerServiceToggle(virNetServerService *svc,
                                bool enabled)
 {
     size_t i;
@@ -426,7 +426,7 @@ void virNetServerServiceToggle(virNetServerServicePtr svc,
                                      0);
 }
 
-void virNetServerServiceClose(virNetServerServicePtr svc)
+void virNetServerServiceClose(virNetServerService *svc)
 {
     size_t i;
 

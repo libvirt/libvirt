@@ -24,28 +24,26 @@
 #include "virobject.h"
 
 typedef struct _virNetTLSContext virNetTLSContext;
-typedef virNetTLSContext *virNetTLSContextPtr;
 
 typedef struct _virNetTLSSession virNetTLSSession;
-typedef virNetTLSSession *virNetTLSSessionPtr;
 
 
 void virNetTLSInit(void);
 
-virNetTLSContextPtr virNetTLSContextNewServerPath(const char *pkipath,
+virNetTLSContext *virNetTLSContextNewServerPath(const char *pkipath,
                                                   bool tryUserPkiPath,
                                                   const char *const *x509dnACL,
                                                   const char *priority,
                                                   bool sanityCheckCert,
                                                   bool requireValidCert);
 
-virNetTLSContextPtr virNetTLSContextNewClientPath(const char *pkipath,
+virNetTLSContext *virNetTLSContextNewClientPath(const char *pkipath,
                                                   bool tryUserPkiPath,
                                                   const char *priority,
                                                   bool sanityCheckCert,
                                                   bool requireValidCert);
 
-virNetTLSContextPtr virNetTLSContextNewServer(const char *cacert,
+virNetTLSContext *virNetTLSContextNewServer(const char *cacert,
                                               const char *cacrl,
                                               const char *cert,
                                               const char *key,
@@ -54,7 +52,7 @@ virNetTLSContextPtr virNetTLSContextNewServer(const char *cacert,
                                               bool sanityCheckCert,
                                               bool requireValidCert);
 
-virNetTLSContextPtr virNetTLSContextNewClient(const char *cacert,
+virNetTLSContext *virNetTLSContextNewClient(const char *cacert,
                                               const char *cacrl,
                                               const char *cert,
                                               const char *key,
@@ -62,11 +60,11 @@ virNetTLSContextPtr virNetTLSContextNewClient(const char *cacert,
                                               bool sanityCheckCert,
                                               bool requireValidCert);
 
-int virNetTLSContextReloadForServer(virNetTLSContextPtr ctxt,
+int virNetTLSContextReloadForServer(virNetTLSContext *ctxt,
                                     bool tryUserPkiPath);
 
-int virNetTLSContextCheckCertificate(virNetTLSContextPtr ctxt,
-                                     virNetTLSSessionPtr sess);
+int virNetTLSContextCheckCertificate(virNetTLSContext *ctxt,
+                                     virNetTLSSession *sess);
 
 
 typedef ssize_t (*virNetTLSSessionWriteFunc)(const char *buf, size_t len,
@@ -74,20 +72,20 @@ typedef ssize_t (*virNetTLSSessionWriteFunc)(const char *buf, size_t len,
 typedef ssize_t (*virNetTLSSessionReadFunc)(char *buf, size_t len,
                                             void *opaque);
 
-virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
+virNetTLSSession *virNetTLSSessionNew(virNetTLSContext *ctxt,
                                         const char *hostname);
 
-void virNetTLSSessionSetIOCallbacks(virNetTLSSessionPtr sess,
+void virNetTLSSessionSetIOCallbacks(virNetTLSSession *sess,
                                     virNetTLSSessionWriteFunc writeFunc,
                                     virNetTLSSessionReadFunc readFunc,
                                     void *opaque);
 
-ssize_t virNetTLSSessionWrite(virNetTLSSessionPtr sess,
+ssize_t virNetTLSSessionWrite(virNetTLSSession *sess,
                               const char *buf, size_t len);
-ssize_t virNetTLSSessionRead(virNetTLSSessionPtr sess,
+ssize_t virNetTLSSessionRead(virNetTLSSession *sess,
                              char *buf, size_t len);
 
-int virNetTLSSessionHandshake(virNetTLSSessionPtr sess);
+int virNetTLSSessionHandshake(virNetTLSSession *sess);
 
 typedef enum {
     VIR_NET_TLS_HANDSHAKE_COMPLETE,
@@ -96,8 +94,8 @@ typedef enum {
 } virNetTLSSessionHandshakeStatus;
 
 virNetTLSSessionHandshakeStatus
-virNetTLSSessionGetHandshakeStatus(virNetTLSSessionPtr sess);
+virNetTLSSessionGetHandshakeStatus(virNetTLSSession *sess);
 
-int virNetTLSSessionGetKeySize(virNetTLSSessionPtr sess);
+int virNetTLSSessionGetKeySize(virNetTLSSession *sess);
 
-const char *virNetTLSSessionGetX509DName(virNetTLSSessionPtr sess);
+const char *virNetTLSSessionGetX509DName(virNetTLSSession *sess);

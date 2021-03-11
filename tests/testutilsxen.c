@@ -8,12 +8,12 @@
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
-static virCapsPtr
+static virCaps *
 testXLInitCaps(void)
 {
-    virCapsPtr caps;
-    virCapsGuestPtr guest;
-    virCapsGuestMachinePtr *machines;
+    virCaps *caps;
+    virCapsGuest *guest;
+    virCapsGuestMachine **machines;
     int nmachines;
     static const char *const x86_machines[] = {
         "xenfv"
@@ -83,9 +83,9 @@ testXLInitCaps(void)
 }
 
 
-libxlDriverPrivatePtr testXLInitDriver(void)
+libxlDriverPrivate *testXLInitDriver(void)
 {
-    libxlDriverPrivatePtr driver = g_new0(libxlDriverPrivate, 1);
+    libxlDriverPrivate *driver = g_new0(libxlDriverPrivate, 1);
 
     if (virMutexInit(&driver->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -110,7 +110,7 @@ libxlDriverPrivatePtr testXLInitDriver(void)
     return driver;
 }
 
-void testXLFreeDriver(libxlDriverPrivatePtr driver)
+void testXLFreeDriver(libxlDriverPrivate *driver)
 {
     virObjectUnref(driver->config);
     virObjectUnref(driver->xmlopt);

@@ -23,17 +23,15 @@
 #include "internal.h"
 
 typedef struct _virAuthConfig virAuthConfig;
-typedef virAuthConfig *virAuthConfigPtr;
 
-
-virAuthConfigPtr virAuthConfigNew(const char *path);
-virAuthConfigPtr virAuthConfigNewData(const char *path,
+virAuthConfig *virAuthConfigNew(const char *path);
+virAuthConfig *virAuthConfigNewData(const char *path,
                                       const char *data,
                                       size_t len);
 
-void virAuthConfigFree(virAuthConfigPtr auth);
+void virAuthConfigFree(virAuthConfig *auth);
 
-int virAuthConfigLookup(virAuthConfigPtr auth,
+int virAuthConfigLookup(virAuthConfig *auth,
                         const char *service,
                         const char *hostname,
                         const char *credname,

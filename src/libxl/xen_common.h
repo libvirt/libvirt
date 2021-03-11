@@ -28,42 +28,42 @@
 #define XEN_CONFIG_FORMAT_XM    "xen-xm"
 #define XEN_CONFIG_FORMAT_SEXPR "xen-sxpr"
 
-int xenConfigGetString(virConfPtr conf,
+int xenConfigGetString(virConf *conf,
                        const char *name,
                        char **value,
                        const char *def);
 
-int xenConfigGetBool(virConfPtr conf, const char *name, int *value, int def);
+int xenConfigGetBool(virConf *conf, const char *name, int *value, int def);
 
-int xenConfigSetInt(virConfPtr conf, const char *name, long long value);
+int xenConfigSetInt(virConf *conf, const char *name, long long value);
 
-int xenConfigSetString(virConfPtr conf, const char *setting, const char *value);
+int xenConfigSetString(virConf *conf, const char *setting, const char *value);
 
-int xenConfigGetULong(virConfPtr conf,
+int xenConfigGetULong(virConf *conf,
                       const char *name,
                       unsigned long *value,
                       unsigned long def);
 
 int
-xenConfigCopyString(virConfPtr conf,
+xenConfigCopyString(virConf *conf,
                     const char *name,
                     char **value);
 
-int xenConfigCopyStringOpt(virConfPtr conf,
+int xenConfigCopyStringOpt(virConf *conf,
                            const char *name,
                            char **value);
 
-int xenParseConfigCommon(virConfPtr conf,
-                         virDomainDefPtr def,
-                         virCapsPtr caps,
+int xenParseConfigCommon(virConf *conf,
+                         virDomainDef *def,
+                         virCaps *caps,
                          const char *nativeFormat,
-                         virDomainXMLOptionPtr xmlopt);
+                         virDomainXMLOption *xmlopt);
 
-int xenFormatConfigCommon(virConfPtr conf,
-                          virDomainDefPtr def,
+int xenFormatConfigCommon(virConf *conf,
+                          virDomainDef *def,
                           virConnectPtr conn,
                           const char *nativeFormat);
 
-char *xenMakeIPList(virNetDevIPInfoPtr guestIP);
+char *xenMakeIPList(virNetDevIPInfo *guestIP);
 
-int xenDomainDefAddImplicitInputDevice(virDomainDefPtr def);
+int xenDomainDefAddImplicitInputDevice(virDomainDef *def);

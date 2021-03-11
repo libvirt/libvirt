@@ -44,7 +44,6 @@ struct _virNetworkXMLOption {
     virXMLNamespace ns;
 };
 typedef struct _virNetworkXMLOption virNetworkXMLOption;
-typedef virNetworkXMLOption *virNetworkXMLOptionPtr;
 
 
 typedef enum {
@@ -105,38 +104,33 @@ typedef enum {
 VIR_ENUM_DECL(virNetworkForwardDriverName);
 
 typedef struct _virNetworkDHCPLeaseTimeDef virNetworkDHCPLeaseTimeDef;
-typedef virNetworkDHCPLeaseTimeDef *virNetworkDHCPLeaseTimeDefPtr;
 struct _virNetworkDHCPLeaseTimeDef {
     unsigned long expiry;
     virNetworkDHCPLeaseTimeUnitType unit;
 };
 
 typedef struct _virNetworkDHCPRangeDef virNetworkDHCPRangeDef;
-typedef virNetworkDHCPRangeDef *virNetworkDHCPRangeDefPtr;
 struct _virNetworkDHCPRangeDef {
     virSocketAddrRange addr;
-    virNetworkDHCPLeaseTimeDefPtr lease;
+    virNetworkDHCPLeaseTimeDef *lease;
 };
 
 typedef struct _virNetworkDHCPHostDef virNetworkDHCPHostDef;
-typedef virNetworkDHCPHostDef *virNetworkDHCPHostDefPtr;
 struct _virNetworkDHCPHostDef {
     char *mac;
     char *id;
     char *name;
     virSocketAddr ip;
-    virNetworkDHCPLeaseTimeDefPtr lease;
+    virNetworkDHCPLeaseTimeDef *lease;
 };
 
 typedef struct _virNetworkDNSTxtDef virNetworkDNSTxtDef;
-typedef virNetworkDNSTxtDef *virNetworkDNSTxtDefPtr;
 struct _virNetworkDNSTxtDef {
     char *name;
     char *value;
 };
 
 typedef struct _virNetworkDNSSrvDef virNetworkDNSSrvDef;
-typedef virNetworkDNSSrvDef *virNetworkDNSSrvDefPtr;
 struct _virNetworkDNSSrvDef {
     char *domain;
     char *service;
@@ -148,7 +142,6 @@ struct _virNetworkDNSSrvDef {
 };
 
 typedef struct _virNetworkDNSHostDef virNetworkDNSHostDef;
-typedef virNetworkDNSHostDef *virNetworkDNSHostDefPtr;
 struct _virNetworkDNSHostDef {
     virSocketAddr ip;
     size_t nnames;
@@ -157,29 +150,26 @@ struct _virNetworkDNSHostDef {
 
 
 typedef struct _virNetworkDNSForwarder virNetworkDNSForwarder;
-typedef virNetworkDNSForwarder *virNetworkDNSForwarderPtr;
 struct _virNetworkDNSForwarder {
     virSocketAddr addr;
     char *domain;
 };
 
 typedef struct _virNetworkDNSDef virNetworkDNSDef;
-typedef virNetworkDNSDef *virNetworkDNSDefPtr;
 struct _virNetworkDNSDef {
     int enable;            /* enum virTristateBool */
     int forwardPlainNames; /* enum virTristateBool */
     size_t ntxts;
-    virNetworkDNSTxtDefPtr txts;
+    virNetworkDNSTxtDef *txts;
     size_t nhosts;
-    virNetworkDNSHostDefPtr hosts;
+    virNetworkDNSHostDef *hosts;
     size_t nsrvs;
-    virNetworkDNSSrvDefPtr srvs;
+    virNetworkDNSSrvDef *srvs;
     size_t nfwds;
-    virNetworkDNSForwarderPtr forwarders;
+    virNetworkDNSForwarder *forwarders;
 };
 
 typedef struct _virNetworkIPDef virNetworkIPDef;
-typedef virNetworkIPDef *virNetworkIPDefPtr;
 struct _virNetworkIPDef {
     char *family;               /* ipv4 or ipv6 - default is ipv4 */
     virSocketAddr address;      /* Bridge IP address */
@@ -196,10 +186,10 @@ struct _virNetworkIPDef {
     int localPTR; /* virTristateBool */
 
     size_t nranges;             /* Zero or more dhcp ranges */
-    virNetworkDHCPRangeDefPtr ranges;
+    virNetworkDHCPRangeDef *ranges;
 
     size_t nhosts;              /* Zero or more dhcp hosts */
-    virNetworkDHCPHostDefPtr hosts;
+    virNetworkDHCPHostDef *hosts;
 
     char *tftproot;
     char *bootfile;
@@ -207,7 +197,6 @@ struct _virNetworkIPDef {
    };
 
 typedef struct _virNetworkForwardIfDef virNetworkForwardIfDef;
-typedef virNetworkForwardIfDef *virNetworkForwardIfDefPtr;
 struct _virNetworkForwardIfDef {
     int type;
     union {
@@ -219,14 +208,12 @@ struct _virNetworkForwardIfDef {
 };
 
 typedef struct _virNetworkForwardPfDef virNetworkForwardPfDef;
-typedef virNetworkForwardPfDef *virNetworkForwardPfDefPtr;
 struct _virNetworkForwardPfDef {
     char *dev;      /* name of device */
     int connections; /* how many guest interfaces are connected to this device? */
 };
 
 typedef struct _virNetworkForwardDef virNetworkForwardDef;
-typedef virNetworkForwardDef *virNetworkForwardDefPtr;
 struct _virNetworkForwardDef {
     int type;     /* One of virNetworkForwardType constants */
     bool managed;  /* managed attribute for hostdev mode */
@@ -236,10 +223,10 @@ struct _virNetworkForwardDef {
      * interfaces), they will be listed here.
      */
     size_t npfs;
-    virNetworkForwardPfDefPtr pfs;
+    virNetworkForwardPfDef *pfs;
 
     size_t nifs;
-    virNetworkForwardIfDefPtr ifs;
+    virNetworkForwardIfDef *ifs;
 
     /* ranges for NAT */
     virSocketAddrRange addr;
@@ -249,18 +236,16 @@ struct _virNetworkForwardDef {
 };
 
 typedef struct _virPortGroupDef virPortGroupDef;
-typedef virPortGroupDef *virPortGroupDefPtr;
 struct _virPortGroupDef {
     char *name;
     bool isDefault;
-    virNetDevVPortProfilePtr virtPortProfile;
-    virNetDevBandwidthPtr bandwidth;
+    virNetDevVPortProfile *virtPortProfile;
+    virNetDevBandwidth *bandwidth;
     virNetDevVlan vlan;
     int trustGuestRxFilters; /* enum virTristateBool */
 };
 
 typedef struct _virNetworkDef virNetworkDef;
-typedef virNetworkDef *virNetworkDefPtr;
 struct _virNetworkDef {
     unsigned char uuid[VIR_UUID_BUFLEN];
     bool uuid_specified;
@@ -286,17 +271,17 @@ struct _virNetworkDef {
     virNetworkForwardDef forward;
 
     size_t nips;
-    virNetworkIPDefPtr ips; /* ptr to array of IP addresses on this network */
+    virNetworkIPDef *ips; /* ptr to array of IP addresses on this network */
 
     size_t nroutes;
-    virNetDevIPRoutePtr *routes; /* ptr to array of static routes on this interface */
+    virNetDevIPRoute **routes; /* ptr to array of static routes on this interface */
 
     virNetworkDNSDef dns;   /* dns related configuration */
-    virNetDevVPortProfilePtr virtPortProfile;
+    virNetDevVPortProfile *virtPortProfile;
 
     size_t nPortGroups;
-    virPortGroupDefPtr portGroups;
-    virNetDevBandwidthPtr bandwidth;
+    virPortGroupDef *portGroups;
+    virNetDevBandwidth *bandwidth;
     virNetDevVlan vlan;
     int trustGuestRxFilters; /* enum virTristateBool */
     virTristateBool isolatedPort;
@@ -320,7 +305,7 @@ typedef enum {
     VIR_NETWORK_TAINT_LAST
 } virNetworkTaintFlags;
 
-void virNetworkDefFree(virNetworkDefPtr def);
+void virNetworkDefFree(virNetworkDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetworkDef, virNetworkDefFree);
 
 enum {
@@ -328,56 +313,56 @@ enum {
     VIR_NETWORK_OBJ_LIST_ADD_CHECK_LIVE = (1 << 1),
 };
 
-virNetworkXMLOptionPtr
-virNetworkXMLOptionNew(virXMLNamespacePtr xmlns);
+virNetworkXMLOption *
+virNetworkXMLOptionNew(virXMLNamespace *xmlns);
 
-virNetworkDefPtr
-virNetworkDefCopy(virNetworkDefPtr def,
-                  virNetworkXMLOptionPtr xmlopt,
+virNetworkDef *
+virNetworkDefCopy(virNetworkDef *def,
+                  virNetworkXMLOption *xmlopt,
                   unsigned int flags);
 
-virNetworkDefPtr
+virNetworkDef *
 virNetworkDefParseXML(xmlXPathContextPtr ctxt,
-                      virNetworkXMLOptionPtr xmlopt);
+                      virNetworkXMLOption *xmlopt);
 
-virNetworkDefPtr
+virNetworkDef *
 virNetworkDefParseString(const char *xmlStr,
-                         virNetworkXMLOptionPtr xmlopt);
+                         virNetworkXMLOption *xmlopt);
 
-virNetworkDefPtr
+virNetworkDef *
 virNetworkDefParseFile(const char *filename,
-                       virNetworkXMLOptionPtr xmlopt);
+                       virNetworkXMLOption *xmlopt);
 
-virNetworkDefPtr
+virNetworkDef *
 virNetworkDefParseNode(xmlDocPtr xml,
                        xmlNodePtr root,
-                       virNetworkXMLOptionPtr xmlopt);
+                       virNetworkXMLOption *xmlopt);
 
 char *
 virNetworkDefFormat(const virNetworkDef *def,
-                    virNetworkXMLOptionPtr xmlopt,
+                    virNetworkXMLOption *xmlopt,
                     unsigned int flags);
 
 int
-virNetworkDefFormatBuf(virBufferPtr buf,
+virNetworkDefFormatBuf(virBuffer *buf,
                        const virNetworkDef *def,
-                       virNetworkXMLOptionPtr xmlopt,
+                       virNetworkXMLOption *xmlopt,
                        unsigned int flags);
 
 const char *
 virNetworkDefForwardIf(const virNetworkDef *def,
                        size_t n);
 
-virPortGroupDefPtr
-virPortGroupFindByName(virNetworkDefPtr net,
+virPortGroupDef *
+virPortGroupFindByName(virNetworkDef *net,
                        const char *portgroup);
 
-virNetworkIPDefPtr
+virNetworkIPDef *
 virNetworkDefGetIPByIndex(const virNetworkDef *def,
                           int family,
                           size_t n);
 
-virNetDevIPRoutePtr
+virNetDevIPRoute *
 virNetworkDefGetRouteByIndex(const virNetworkDef *def,
                              int family,
                              size_t n);
@@ -387,24 +372,24 @@ virNetworkIPDefPrefix(const virNetworkIPDef *def);
 
 int
 virNetworkIPDefNetmask(const virNetworkIPDef *def,
-                       virSocketAddrPtr netmask);
+                       virSocketAddr *netmask);
 
 int
 virNetworkSaveXML(const char *configDir,
-                  virNetworkDefPtr def,
+                  virNetworkDef *def,
                   const char *xml);
 
 int
 virNetworkSaveConfig(const char *configDir,
-                     virNetworkDefPtr def,
-                     virNetworkXMLOptionPtr xmlopt);
+                     virNetworkDef *def,
+                     virNetworkXMLOption *xmlopt);
 
 char *
 virNetworkConfigFile(const char *dir,
                      const char *name);
 
 void
-virNetworkSetBridgeMacAddr(virNetworkDefPtr def);
+virNetworkSetBridgeMacAddr(virNetworkDef *def);
 
 int
 virNetworkPortOptionsParseXML(xmlXPathContextPtr ctxt,
@@ -412,7 +397,7 @@ virNetworkPortOptionsParseXML(xmlXPathContextPtr ctxt,
 
 void
 virNetworkPortOptionsFormat(virTristateBool isolatedPort,
-                            virBufferPtr buf);
+                            virBuffer *buf);
 
 VIR_ENUM_DECL(virNetworkForward);
 
@@ -435,7 +420,7 @@ VIR_ENUM_DECL(virNetworkForward);
 
 /* for testing */
 int
-virNetworkDefUpdateSection(virNetworkDefPtr def,
+virNetworkDefUpdateSection(virNetworkDef *def,
                            unsigned int command, /* virNetworkUpdateCommand */
                            unsigned int section, /* virNetworkUpdateSection */
                            int parentIndex,

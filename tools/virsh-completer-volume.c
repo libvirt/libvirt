@@ -31,7 +31,7 @@ virshStorageVolNameCompleter(vshControl *ctl,
                              const vshCmd *cmd,
                              unsigned int flags)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virStoragePoolPtr pool = NULL;
     virStorageVolPtr *vols = NULL;
     int rc;

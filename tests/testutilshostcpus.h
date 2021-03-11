@@ -138,7 +138,7 @@ static virCPUDef cpuSparcData = {
     .threads = 1,
 };
 
-static inline virCPUDefPtr
+static inline virCPUDef *
 testUtilsHostCpusGetDefForModel(const char *model)
 {
     if (!model)
@@ -158,7 +158,7 @@ testUtilsHostCpusGetDefForModel(const char *model)
     return NULL;
 }
 
-static inline virCPUDefPtr
+static inline virCPUDef *
 testUtilsHostCpusGetDefForArch(virArch arch)
 {
     if (ARCH_IS_X86(arch))

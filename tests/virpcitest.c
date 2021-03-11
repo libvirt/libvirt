@@ -30,7 +30,7 @@
 # define VIR_FROM_THIS VIR_FROM_NONE
 
 static int
-testVirPCIDeviceCheckDriver(virPCIDevicePtr dev, const char *expected)
+testVirPCIDeviceCheckDriver(virPCIDevice *dev, const char *expected)
 {
     char *path = NULL;
     char *driver = NULL;
@@ -58,7 +58,7 @@ static int
 testVirPCIDeviceNew(const void *opaque G_GNUC_UNUSED)
 {
     int ret = -1;
-    virPCIDevicePtr dev;
+    virPCIDevice *dev;
     const char *devName;
     virPCIDeviceAddress devAddr = {.domain = 0, .bus = 0, .slot = 0, .function = 0};
 
@@ -91,10 +91,10 @@ static int
 testVirPCIDeviceDetach(const void *opaque G_GNUC_UNUSED)
 {
     int ret = -1;
-    virPCIDevicePtr dev[] = {NULL, NULL, NULL};
+    virPCIDevice *dev[] = {NULL, NULL, NULL};
     size_t i, nDev = G_N_ELEMENTS(dev);
-    virPCIDeviceListPtr activeDevs = NULL;
-    virPCIDeviceListPtr inactiveDevs = NULL;
+    virPCIDeviceList *activeDevs = NULL;
+    virPCIDeviceList *inactiveDevs = NULL;
     int count;
 
     if (!(activeDevs = virPCIDeviceListNew()) ||
@@ -135,10 +135,10 @@ static int
 testVirPCIDeviceReset(const void *opaque G_GNUC_UNUSED)
 {
     int ret = -1;
-    virPCIDevicePtr dev[] = {NULL, NULL, NULL};
+    virPCIDevice *dev[] = {NULL, NULL, NULL};
     size_t i, nDev = G_N_ELEMENTS(dev);
-    virPCIDeviceListPtr activeDevs = NULL;
-    virPCIDeviceListPtr inactiveDevs = NULL;
+    virPCIDeviceList *activeDevs = NULL;
+    virPCIDeviceList *inactiveDevs = NULL;
     int count;
 
     if (!(activeDevs = virPCIDeviceListNew()) ||
@@ -173,10 +173,10 @@ static int
 testVirPCIDeviceReattach(const void *opaque G_GNUC_UNUSED)
 {
     int ret = -1;
-    virPCIDevicePtr dev[] = {NULL, NULL, NULL};
+    virPCIDevice *dev[] = {NULL, NULL, NULL};
     size_t i, nDev = G_N_ELEMENTS(dev);
-    virPCIDeviceListPtr activeDevs = NULL;
-    virPCIDeviceListPtr inactiveDevs = NULL;
+    virPCIDeviceList *activeDevs = NULL;
+    virPCIDeviceList *inactiveDevs = NULL;
     int count;
 
     if (!(activeDevs = virPCIDeviceListNew()) ||
@@ -231,7 +231,7 @@ testVirPCIDeviceIsAssignable(const void *opaque)
 {
     const struct testPCIDevData *data = opaque;
     int ret = -1;
-    virPCIDevicePtr dev;
+    virPCIDevice *dev;
     virPCIDeviceAddress devAddr = {.domain = data->domain, .bus = data->bus,
                                    .slot = data->slot, .function = data->function};
 
@@ -250,7 +250,7 @@ testVirPCIDeviceDetachSingle(const void *opaque)
 {
     const struct testPCIDevData *data = opaque;
     int ret = -1;
-    virPCIDevicePtr dev;
+    virPCIDevice *dev;
     virPCIDeviceAddress devAddr = {.domain = data->domain, .bus = data->bus,
                                    .slot = data->slot, .function = data->function};
 
@@ -274,7 +274,7 @@ testVirPCIDeviceReattachSingle(const void *opaque)
 {
     const struct testPCIDevData *data = opaque;
     int ret = -1;
-    virPCIDevicePtr dev;
+    virPCIDevice *dev;
     virPCIDeviceAddress devAddr = {.domain = data->domain, .bus = data->bus,
                                    .slot = data->slot, .function = data->function};
 
@@ -300,7 +300,7 @@ testVirPCIDeviceCheckDriverTest(const void *opaque)
 {
     const struct testPCIDevData *data = opaque;
     int ret = -1;
-    virPCIDevicePtr dev;
+    virPCIDevice *dev;
     virPCIDeviceAddress devAddr = {.domain = data->domain, .bus = data->bus,
                                    .slot = data->slot, .function = data->function};
 
@@ -322,7 +322,7 @@ testVirPCIDeviceUnbind(const void *opaque)
 {
     const struct testPCIDevData *data = opaque;
     int ret = -1;
-    virPCIDevicePtr dev;
+    virPCIDevice *dev;
     virPCIDeviceAddress devAddr = {.domain = data->domain, .bus = data->bus,
                                    .slot = data->slot, .function = data->function};
 

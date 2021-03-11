@@ -30,7 +30,7 @@ int virEventAddTimeout(int frequency G_GNUC_UNUSED,
     return 0;
 }
 
-int virNetSocketGetUNIXIdentity(virNetSocketPtr sock G_GNUC_UNUSED,
+int virNetSocketGetUNIXIdentity(virNetSocket *sock G_GNUC_UNUSED,
                                 uid_t *uid,
                                 gid_t *gid,
                                 pid_t *pid,
@@ -53,7 +53,7 @@ char *virGetGroupName(gid_t gid G_GNUC_UNUSED)
     return strdup("fictionalusers");
 }
 
-int virNetSocketGetSELinuxContext(virNetSocketPtr sock G_GNUC_UNUSED,
+int virNetSocketGetSELinuxContext(virNetSocket *sock G_GNUC_UNUSED,
                                   char **context)
 {
     if (!(*context = strdup("foo_u:bar_r:wizz_t:s0-s0:c0.c1023")))

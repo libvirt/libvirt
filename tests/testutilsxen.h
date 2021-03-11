@@ -20,8 +20,8 @@
 #ifdef WITH_LIBXL
 # include "libxl/libxl_conf.h"
 
-libxlDriverPrivatePtr testXLInitDriver(void);
+libxlDriverPrivate *testXLInitDriver(void);
 
-void testXLFreeDriver(libxlDriverPrivatePtr driver);
+void testXLFreeDriver(libxlDriverPrivate *driver);
 
 #endif /* WITH_LIBXL */

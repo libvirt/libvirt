@@ -37,7 +37,6 @@ typedef enum {
 } virSecretLookupType;
 
 typedef struct _virSecretLookupTypeDef virSecretLookupTypeDef;
-typedef virSecretLookupTypeDef *virSecretLookupTypeDefPtr;
 struct _virSecretLookupTypeDef {
     int type;   /* virSecretLookupType */
     union {
@@ -47,17 +46,17 @@ struct _virSecretLookupTypeDef {
 
 };
 
-void virSecretLookupDefClear(virSecretLookupTypeDefPtr def);
-void virSecretLookupDefCopy(virSecretLookupTypeDefPtr dst,
+void virSecretLookupDefClear(virSecretLookupTypeDef *def);
+void virSecretLookupDefCopy(virSecretLookupTypeDef *dst,
                             const virSecretLookupTypeDef *src);
 int virSecretLookupParseSecret(xmlNodePtr secretnode,
-                               virSecretLookupTypeDefPtr def);
-void virSecretLookupFormatSecret(virBufferPtr buf,
+                               virSecretLookupTypeDef *def);
+void virSecretLookupFormatSecret(virBuffer *buf,
                                  const char *secrettype,
-                                 virSecretLookupTypeDefPtr def);
+                                 virSecretLookupTypeDef *def);
 
 int virSecretGetSecretString(virConnectPtr conn,
-                             virSecretLookupTypeDefPtr seclookupdef,
+                             virSecretLookupTypeDef *seclookupdef,
                              virSecretUsageType secretUsageType,
                              uint8_t **ret_secret,
                              size_t *ret_secret_size)

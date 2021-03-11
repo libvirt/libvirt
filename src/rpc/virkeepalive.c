@@ -51,7 +51,7 @@ struct _virKeepAlive {
 };
 
 
-static virClassPtr virKeepAliveClass;
+static virClass *virKeepAliveClass;
 static void virKeepAliveDispose(void *obj);
 
 static int virKeepAliveOnceInit(void)
@@ -64,10 +64,10 @@ static int virKeepAliveOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virKeepAlive);
 
-static virNetMessagePtr
-virKeepAliveMessage(virKeepAlivePtr ka, int proc)
+static virNetMessage *
+virKeepAliveMessage(virKeepAlive *ka, int proc)
 {
-    virNetMessagePtr msg;
+    virNetMessage *msg;
     const char *procstr = NULL;
 
     switch (proc) {
@@ -110,8 +110,8 @@ virKeepAliveMessage(virKeepAlivePtr ka, int proc)
 
 
 static bool
-virKeepAliveTimerInternal(virKeepAlivePtr ka,
-                          virNetMessagePtr *msg)
+virKeepAliveTimerInternal(virKeepAlive *ka,
+                          virNetMessage **msg)
 {
     gint64 now = g_get_monotonic_time() / G_USEC_PER_SEC;
     int timeval;
@@ -150,8 +150,8 @@ virKeepAliveTimerInternal(virKeepAlivePtr ka,
 static void
 virKeepAliveTimer(int timer G_GNUC_UNUSED, void *opaque)
 {
-    virKeepAlivePtr ka = opaque;
-    virNetMessagePtr msg = NULL;
+    virKeepAlive *ka = opaque;
+    virNetMessage *msg = NULL;
     bool dead;
     void *client;
 
@@ -178,7 +178,7 @@ virKeepAliveTimer(int timer G_GNUC_UNUSED, void *opaque)
 }
 
 
-virKeepAlivePtr
+virKeepAlive *
 virKeepAliveNew(int interval,
                 unsigned int count,
                 void *client,
@@ -186,7 +186,7 @@ virKeepAliveNew(int interval,
                 virKeepAliveDeadFunc deadCB,
                 virKeepAliveFreeFunc freeCB)
 {
-    virKeepAlivePtr ka;
+    virKeepAlive *ka;
 
     VIR_DEBUG("client=%p, interval=%d, count=%u", client, interval, count);
 
@@ -216,7 +216,7 @@ virKeepAliveNew(int interval,
 void
 virKeepAliveDispose(void *obj)
 {
-    virKeepAlivePtr ka = obj;
+    virKeepAlive *ka = obj;
 
     PROBE(RPC_KEEPALIVE_DISPOSE,
           "ka=%p", ka);
@@ -226,7 +226,7 @@ virKeepAliveDispose(void *obj)
 
 
 int
-virKeepAliveStart(virKeepAlivePtr ka,
+virKeepAliveStart(virKeepAlive *ka,
                   int interval,
                   unsigned int count)
 {
@@ -293,7 +293,7 @@ virKeepAliveStart(virKeepAlivePtr ka,
 
 
 void
-virKeepAliveStop(virKeepAlivePtr ka)
+virKeepAliveStop(virKeepAlive *ka)
 {
     virObjectLock(ka);
 
@@ -311,7 +311,7 @@ virKeepAliveStop(virKeepAlivePtr ka)
 
 
 int
-virKeepAliveTimeout(virKeepAlivePtr ka)
+virKeepAliveTimeout(virKeepAlive *ka)
 {
     int timeout;
 
@@ -341,8 +341,8 @@ virKeepAliveTimeout(virKeepAlivePtr ka)
 
 
 bool
-virKeepAliveTrigger(virKeepAlivePtr ka,
-                    virNetMessagePtr *msg)
+virKeepAliveTrigger(virKeepAlive *ka,
+                    virNetMessage **msg)
 {
     bool dead;
 
@@ -359,9 +359,9 @@ virKeepAliveTrigger(virKeepAlivePtr ka,
 
 
 bool
-virKeepAliveCheckMessage(virKeepAlivePtr ka,
-                         virNetMessagePtr msg,
-                         virNetMessagePtr *response)
+virKeepAliveCheckMessage(virKeepAlive *ka,
+                         virNetMessage *msg,
+                         virNetMessage **response)
 {
     bool ret = false;
 

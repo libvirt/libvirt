@@ -25,4 +25,4 @@
 #include "qemu_monitor.h"
 
 void
-qemuMonitorResetCommandID(qemuMonitorPtr mon);
+qemuMonitorResetCommandID(qemuMonitor *mon);

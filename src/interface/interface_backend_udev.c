@@ -165,7 +165,7 @@ udevNumOfInterfacesByStatus(virConnectPtr conn, virUdevStatus status,
     udev_list_entry_foreach(dev_entry, devices) {
         struct udev_device *dev;
         const char *path;
-        virInterfaceDefPtr def;
+        virInterfaceDef *def;
 
         path = udev_list_entry_get_name(dev_entry);
         dev = udev_device_new_from_syspath(udev, path);
@@ -218,7 +218,7 @@ udevListInterfacesByStatus(virConnectPtr conn,
     udev_list_entry_foreach(dev_entry, devices) {
         struct udev_device *dev;
         const char *path;
-        virInterfaceDefPtr def;
+        virInterfaceDef *def;
 
         /* Ensure we won't exceed the size of our array */
         if (count > names_len)
@@ -355,7 +355,7 @@ udevConnectListAllInterfaces(virConnectPtr conn,
         const char *path;
         const char *name;
         const char *macaddr;
-        virInterfaceDefPtr def;
+        virInterfaceDef *def;
 
         path = udev_list_entry_get_name(dev_entry);
         dev = udev_device_new_from_syspath(udev, path);
@@ -413,7 +413,7 @@ udevInterfaceLookupByName(virConnectPtr conn, const char *name)
     struct udev *udev = udev_ref(driver->udev);
     struct udev_device *dev;
     virInterfacePtr ret = NULL;
-    virInterfaceDefPtr def = NULL;
+    virInterfaceDef *def = NULL;
 
     /* get a device reference based on the device name */
     dev = udev_device_new_from_subsystem_sysname(udev, "net", name);
@@ -447,7 +447,7 @@ udevInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
     struct udev_enumerate *enumerate = NULL;
     struct udev_list_entry *dev_entry;
     struct udev_device *dev;
-    virInterfaceDefPtr def = NULL;
+    virInterfaceDef *def = NULL;
     virInterfacePtr ret = NULL;
 
     enumerate = udevGetDevices(udev, VIR_UDEV_IFACE_ALL);
@@ -1085,7 +1085,7 @@ udevInterfaceIsActive(virInterfacePtr ifinfo)
 {
     struct udev *udev = udev_ref(driver->udev);
     struct udev_device *dev;
-    virInterfaceDefPtr def = NULL;
+    virInterfaceDef *def = NULL;
     int status = -1;
 
     dev = udev_device_new_from_subsystem_sysname(udev, "net",
@@ -1193,7 +1193,7 @@ udevStateCleanup(void)
 static virDrvOpenStatus
 udevConnectOpen(virConnectPtr conn,
                 virConnectAuthPtr auth G_GNUC_UNUSED,
-                virConfPtr conf G_GNUC_UNUSED,
+                virConf *conf G_GNUC_UNUSED,
                 unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);

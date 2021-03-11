@@ -56,7 +56,6 @@ typedef enum {
 VIR_ENUM_DECL(virNetDevRxFilterMode);
 
 typedef struct _virNetDevRxFilter virNetDevRxFilter;
-typedef virNetDevRxFilter *virNetDevRxFilterPtr;
 struct _virNetDevRxFilter {
     char *name; /* the alias used by qemu, *not* name used by guest */
     virMacAddr mac;
@@ -66,13 +65,13 @@ struct _virNetDevRxFilter {
     struct {
         int mode; /* enum virNetDevRxFilterMode */
         bool overflow;
-        virMacAddrPtr table;
+        virMacAddr *table;
         size_t nTable;
     } unicast;
     struct {
         int mode; /* enum virNetDevRxFilterMode */
         bool overflow;
-        virMacAddrPtr table;
+        virMacAddr *table;
         size_t nTable;
     } multicast;
     struct {
@@ -96,7 +95,6 @@ typedef enum {
 VIR_ENUM_DECL(virNetDevIfState);
 
 typedef struct _virNetDevIfLink virNetDevIfLink;
-typedef virNetDevIfLink *virNetDevIfLinkPtr;
 struct _virNetDevIfLink {
     virNetDevIfState state; /* link state */
     unsigned int speed;      /* link speed in Mbits per second */
@@ -125,7 +123,6 @@ VIR_ENUM_DECL(virNetDevFeature);
 /* Modeled after struct ethtool_coalesce, see linux/ethtool.h for explanations
  * of particular fields */
 typedef struct _virNetDevCoalesce virNetDevCoalesce;
-typedef virNetDevCoalesce *virNetDevCoalescePtr;
 struct _virNetDevCoalesce {
     uint32_t rx_coalesce_usecs;
     uint32_t rx_max_coalesced_frames;
@@ -159,7 +156,6 @@ typedef enum {
 } virNetDevGenNameType;
 
 typedef struct _virNetDevGenName virNetDevGenName;
-typedef virNetDevGenName *virNetDevGenNamePtr;
 struct _virNetDevGenName {
     int lastID;         /* not "unsigned" because callers use %d */
     const char *prefix;
@@ -186,7 +182,7 @@ int virNetDevSetMAC(const char *ifname,
                     const virMacAddr *macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
 int virNetDevGetMAC(const char *ifname,
-                    virMacAddrPtr macaddr)
+                    virMacAddr *macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevReplaceMacAddress(const char *linkdev,
@@ -200,7 +196,7 @@ int virNetDevRestoreMacAddress(const char *linkdev,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevSetCoalesce(const char *ifname,
-                         virNetDevCoalescePtr coalesce,
+                         virNetDevCoalesce *coalesce,
                          bool update)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
@@ -257,7 +253,7 @@ int virNetDevGetPhysPortName(const char *ifname,
 
 int virNetDevGetVirtualFunctions(const char *pfname,
                                  char ***vfname,
-                                 virPCIDeviceAddressPtr **virt_fns,
+                                 virPCIDeviceAddress ***virt_fns,
                                  size_t *n_vfname,
                                  unsigned int *max_vfs)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
@@ -271,9 +267,9 @@ int virNetDevSaveNetConfig(const char *linkdev, int vf,
 int
 virNetDevReadNetConfig(const char *linkdev, int vf,
                        const char *stateDir,
-                       virMacAddrPtr *adminMAC,
-                       virNetDevVlanPtr *vlan,
-                       virMacAddrPtr *MAC)
+                       virMacAddr **adminMAC,
+                       virNetDevVlan **vlan,
+                       virMacAddr **MAC)
    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
    ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6) G_GNUC_WARN_UNUSED_RESULT;
 
@@ -290,25 +286,25 @@ int virNetDevGetVirtualFunctionInfo(const char *vfname, char **pfname,
     ATTRIBUTE_NONNULL(1);
 
 int virNetDevGetFeatures(const char *ifname,
-                         virBitmapPtr *out)
+                         virBitmap **out)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevGetLinkInfo(const char *ifname,
-                         virNetDevIfLinkPtr lnk)
+                         virNetDevIfLink *lnk)
     ATTRIBUTE_NONNULL(1);
 
-virNetDevRxFilterPtr virNetDevRxFilterNew(void)
+virNetDevRxFilter *virNetDevRxFilterNew(void)
    G_GNUC_WARN_UNUSED_RESULT;
-void virNetDevRxFilterFree(virNetDevRxFilterPtr filter);
+void virNetDevRxFilterFree(virNetDevRxFilter *filter);
 int virNetDevGetRxFilter(const char *ifname,
-                         virNetDevRxFilterPtr *filter)
+                         virNetDevRxFilter **filter)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevAddMulti(const char *ifname,
-                      virMacAddrPtr macaddr)
+                      virMacAddr *macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 int virNetDevDelMulti(const char *ifname,
-                      virMacAddrPtr macaddr)
+                      virMacAddr *macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevSetPromiscuous(const char *ifname, bool promiscuous)
@@ -341,7 +337,7 @@ int virNetDevSetRootQDisc(const char *ifname,
                           const char *qdisc)
     G_GNUC_NO_INLINE;
 
-int virNetDevVFInterfaceStats(virPCIDeviceAddressPtr vfAddr,
+int virNetDevVFInterfaceStats(virPCIDeviceAddress *vfAddr,
                               virDomainInterfaceStatsPtr stats)
 ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 

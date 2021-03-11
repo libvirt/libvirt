@@ -495,8 +495,8 @@ static int testPMSupportSystemdNotRunning(const void *opaque)
 
 
 static int
-testActivationCreateFDs(virNetSocketPtr *sockUNIX,
-                        virNetSocketPtr **sockIP,
+testActivationCreateFDs(virNetSocket **sockUNIX,
+                        virNetSocket ***sockIP,
                         size_t *nsockIP)
 {
     *sockUNIX = NULL;
@@ -526,8 +526,8 @@ testActivationCreateFDs(virNetSocketPtr *sockUNIX,
 static int
 testActivation(bool useNames)
 {
-    virNetSocketPtr sockUNIX;
-    virNetSocketPtr *sockIP;
+    virNetSocket *sockUNIX;
+    virNetSocket **sockIP;
     size_t nsockIP;
     int ret = -1;
     size_t i;
@@ -624,7 +624,7 @@ testActivation(bool useNames)
 static int
 testActivationEmpty(const void *opaque G_GNUC_UNUSED)
 {
-    virSystemdActivationPtr act;
+    virSystemdActivation *act;
 
     g_unsetenv("LISTEN_FDS");
 

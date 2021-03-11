@@ -119,7 +119,7 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
     int interval = 5; /* Default */
     int count = 6;    /* Default */
     bool keepalive_forced = false;
-    virPolkitAgentPtr pkagent = NULL;
+    virPolkitAgent *pkagent = NULL;
     int authfail = 0;
     bool agentCreated = false;
 
@@ -194,7 +194,7 @@ static int
 virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
 {
     bool connected = false;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     /* If the flag was not specified, then it depends on whether we are
      * reconnecting to the current URI (in which case we want to keep the
@@ -314,7 +314,7 @@ virshConnectionUsability(vshControl *ctl, virConnectPtr conn)
 static void *
 virshConnectionHandler(vshControl *ctl)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if ((!priv->conn || disconnected) &&
         virshReconnect(ctl, NULL, false, false) < 0)
@@ -333,7 +333,7 @@ virshConnectionHandler(vshControl *ctl)
 static bool
 virshInit(vshControl *ctl)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     /* Since we have the commandline arguments parsed, we need to
      * reload our initial settings to make debugging and readline
@@ -391,7 +391,7 @@ virshDeinitTimer(int timer G_GNUC_UNUSED, void *opaque G_GNUC_UNUSED)
 static bool
 virshDeinit(vshControl *ctl)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     vshDeinit(ctl);
     VIR_FREE(ctl->connname);
@@ -637,7 +637,7 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
     int arg, len, debug, keepalive;
     size_t i;
     int longindex = -1;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     struct option opt[] = {
         {"connect", required_argument, NULL, 'c'},
         {"debug", required_argument, NULL, 'd'},

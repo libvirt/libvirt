@@ -38,7 +38,7 @@ VIR_ENUM_IMPL(virStorageAdapter,
 );
 
 static void
-virStorageAdapterClearFCHost(virStorageAdapterFCHostPtr fchost)
+virStorageAdapterClearFCHost(virStorageAdapterFCHost *fchost)
 {
     VIR_FREE(fchost->wwnn);
     VIR_FREE(fchost->wwpn);
@@ -50,7 +50,7 @@ virStorageAdapterClearFCHost(virStorageAdapterFCHostPtr fchost)
 
 
 void
-virStorageAdapterClear(virStorageAdapterPtr adapter)
+virStorageAdapterClear(virStorageAdapter *adapter)
 {
     if (adapter->type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST)
         virStorageAdapterClearFCHost(&adapter->data.fchost);
@@ -62,7 +62,7 @@ virStorageAdapterClear(virStorageAdapterPtr adapter)
 
 static int
 virStorageAdapterParseXMLFCHost(xmlNodePtr node,
-                                virStorageAdapterFCHostPtr fchost)
+                                virStorageAdapterFCHost *fchost)
 {
     char *managed = NULL;
 
@@ -91,7 +91,7 @@ virStorageAdapterParseXMLFCHost(xmlNodePtr node,
 static int
 virStorageAdapterParseXMLSCSIHost(xmlNodePtr node,
                                   xmlXPathContextPtr ctxt,
-                                  virStorageAdapterSCSIHostPtr scsi_host)
+                                  virStorageAdapterSCSIHost *scsi_host)
 {
     scsi_host->name = virXMLPropString(node, "name");
     if (virXPathNode("./parentaddr", ctxt)) {
@@ -135,7 +135,7 @@ virStorageAdapterParseXMLSCSIHost(xmlNodePtr node,
 static int
 virStorageAdapterParseXMLLegacy(xmlNodePtr node,
                                 xmlXPathContextPtr ctxt,
-                                virStorageAdapterPtr adapter)
+                                virStorageAdapter *adapter)
 {
     char *wwnn = virXMLPropString(node, "wwnn");
     char *wwpn = virXMLPropString(node, "wwpn");
@@ -173,7 +173,7 @@ virStorageAdapterParseXMLLegacy(xmlNodePtr node,
 
 
 int
-virStorageAdapterParseXML(virStorageAdapterPtr adapter,
+virStorageAdapterParseXML(virStorageAdapter *adapter,
                           xmlNodePtr node,
                           xmlXPathContextPtr ctxt)
 {
@@ -214,7 +214,7 @@ virStorageAdapterParseXML(virStorageAdapterPtr adapter,
 
 
 static int
-virStorageAdapterValidateFCHost(virStorageAdapterFCHostPtr fchost)
+virStorageAdapterValidateFCHost(virStorageAdapterFCHost *fchost)
 {
     if (!fchost->wwnn || !fchost->wwpn) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -256,7 +256,7 @@ virStorageAdapterValidateFCHost(virStorageAdapterFCHostPtr fchost)
 
 
 static int
-virStorageAdapterValidateSCSIHost(virStorageAdapterSCSIHostPtr scsi_host)
+virStorageAdapterValidateSCSIHost(virStorageAdapterSCSIHost *scsi_host)
 {
     if (!scsi_host->name && !scsi_host->has_parent) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -277,7 +277,7 @@ virStorageAdapterValidateSCSIHost(virStorageAdapterSCSIHostPtr scsi_host)
 
 
 int
-virStorageAdapterValidate(virStorageAdapterPtr adapter)
+virStorageAdapterValidate(virStorageAdapter *adapter)
 {
     if (!adapter->type) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -296,8 +296,8 @@ virStorageAdapterValidate(virStorageAdapterPtr adapter)
 
 
 static void
-virStorageAdapterFormatFCHost(virBufferPtr buf,
-                              virStorageAdapterFCHostPtr fchost)
+virStorageAdapterFormatFCHost(virBuffer *buf,
+                              virStorageAdapterFCHost *fchost)
 {
     virBufferEscapeString(buf, " parent='%s'", fchost->parent);
     virBufferEscapeString(buf, " parent_wwnn='%s'", fchost->parent_wwnn);
@@ -314,8 +314,8 @@ virStorageAdapterFormatFCHost(virBufferPtr buf,
 
 
 static void
-virStorageAdapterFormatSCSIHost(virBufferPtr buf,
-                                virStorageAdapterSCSIHostPtr scsi_host)
+virStorageAdapterFormatSCSIHost(virBuffer *buf,
+                                virStorageAdapterSCSIHost *scsi_host)
 {
     if (scsi_host->name) {
         virBufferAsprintf(buf, " name='%s'/>\n", scsi_host->name);
@@ -336,8 +336,8 @@ virStorageAdapterFormatSCSIHost(virBufferPtr buf,
 
 
 void
-virStorageAdapterFormat(virBufferPtr buf,
-                        virStorageAdapterPtr adapter)
+virStorageAdapterFormat(virBuffer *buf,
+                        virStorageAdapter *adapter)
 {
     virBufferAsprintf(buf, "<adapter type='%s'",
                       virStorageAdapterTypeToString(adapter->type));

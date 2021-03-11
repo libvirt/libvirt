@@ -565,48 +565,48 @@ VIR_ENUM_IMPL(virVMXControllerModelSCSI,
               "UNUSED am53c974",
 );
 
-static int virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def);
-static int virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
+static int virVMXParseVNC(virConf *conf, virDomainGraphicsDef **def);
+static int virVMXParseSCSIController(virConf *conf, int controller, bool *present,
                                      int *virtualDev);
-static int virVMXParseSATAController(virConfPtr conf, int controller, bool *present);
-static int virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt,
-                           virConfPtr conf, int device, int busType,
-                           int controllerOrBus, int unit, virDomainDiskDefPtr *def,
-                           virDomainDefPtr vmdef);
-static int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def);
-static int virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def);
-static int virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
-                             virDomainChrDefPtr *def);
-static int virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
-                               virDomainChrDefPtr *def);
-static int virVMXParseSVGA(virConfPtr conf, virDomainVideoDefPtr *def);
+static int virVMXParseSATAController(virConf *conf, int controller, bool *present);
+static int virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt,
+                           virConf *conf, int device, int busType,
+                           int controllerOrBus, int unit, virDomainDiskDef **def,
+                           virDomainDef *vmdef);
+static int virVMXParseFileSystem(virConf *conf, int number, virDomainFSDef **def);
+static int virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def);
+static int virVMXParseSerial(virVMXContext *ctx, virConf *conf, int port,
+                             virDomainChrDef **def);
+static int virVMXParseParallel(virVMXContext *ctx, virConf *conf, int port,
+                               virDomainChrDef **def);
+static int virVMXParseSVGA(virConf *conf, virDomainVideoDef **def);
 
-static int virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer);
-static int virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
-                                   virBufferPtr buffer);
-static int virVMXFormatFloppy(virVMXContext *ctx, virDomainDiskDefPtr def,
-                              virBufferPtr buffer, bool floppy_present[2]);
-static int virVMXFormatFileSystem(virDomainFSDefPtr def, int number,
-                                  virBufferPtr buffer);
-static int virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
-                                virBufferPtr buffer, int virtualHW_version);
-static int virVMXFormatSerial(virVMXContext *ctx, virDomainChrDefPtr def,
-                              virBufferPtr buffer);
-static int virVMXFormatParallel(virVMXContext *ctx, virDomainChrDefPtr def,
-                                virBufferPtr buffer);
-static int virVMXFormatSVGA(virDomainVideoDefPtr def, virBufferPtr buffer);
+static int virVMXFormatVNC(virDomainGraphicsDef *def, virBuffer *buffer);
+static int virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDef *def,
+                                   virBuffer *buffer);
+static int virVMXFormatFloppy(virVMXContext *ctx, virDomainDiskDef *def,
+                              virBuffer *buffer, bool floppy_present[2]);
+static int virVMXFormatFileSystem(virDomainFSDef *def, int number,
+                                  virBuffer *buffer);
+static int virVMXFormatEthernet(virDomainNetDef *def, int controller,
+                                virBuffer *buffer, int virtualHW_version);
+static int virVMXFormatSerial(virVMXContext *ctx, virDomainChrDef *def,
+                              virBuffer *buffer);
+static int virVMXFormatParallel(virVMXContext *ctx, virDomainChrDef *def,
+                                virBuffer *buffer);
+static int virVMXFormatSVGA(virDomainVideoDef *def, virBuffer *buffer);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Helpers
  */
 
 static int
-virVMXDomainDefPostParse(virDomainDefPtr def,
+virVMXDomainDefPostParse(virDomainDef *def,
                          unsigned int parseFlags G_GNUC_UNUSED,
                          void *opaque,
                          void *parseOpaque G_GNUC_UNUSED)
 {
-    virCapsPtr caps = opaque;
+    virCaps *caps = opaque;
     if (!virCapabilitiesDomainSupported(caps, def->os.type,
                                         def->os.arch,
                                         def->virtType))
@@ -616,7 +616,7 @@ virVMXDomainDefPostParse(virDomainDefPtr def,
 }
 
 static int
-virVMXDomainDevicesDefPostParse(virDomainDeviceDefPtr dev G_GNUC_UNUSED,
+virVMXDomainDevicesDefPostParse(virDomainDeviceDef *dev G_GNUC_UNUSED,
                                 const virDomainDef *def G_GNUC_UNUSED,
                                 unsigned int parseFlags G_GNUC_UNUSED,
                                 void *opaque G_GNUC_UNUSED,
@@ -657,7 +657,7 @@ virVMXDomainDefNamespaceFree(void *nsdata)
 }
 
 static int
-virVMXDomainDefNamespaceFormatXML(virBufferPtr buf, void *nsdata)
+virVMXDomainDefNamespaceFormatXML(virBuffer *buf, void *nsdata)
 {
     struct virVMXDomainDefNamespaceData *data = nsdata;
 
@@ -686,8 +686,8 @@ static virXMLNamespace virVMXDomainXMLNamespace = {
     .uri = "http://libvirt.org/schemas/domain/vmware/1.0",
 };
 
-virDomainXMLOptionPtr
-virVMXDomainXMLConfInit(virCapsPtr caps)
+virDomainXMLOption *
+virVMXDomainXMLConfInit(virCaps *caps)
 {
     virVMXDomainDefParserConfig.priv = caps;
     return virDomainXMLOptionNew(&virVMXDomainDefParserConfig, NULL,
@@ -798,7 +798,7 @@ virVMXConvertToUTF8(const char *encoding, const char *string)
 
 
 static int
-virVMXGetConfigStringHelper(virConfPtr conf, const char *name, char **string,
+virVMXGetConfigStringHelper(virConf *conf, const char *name, char **string,
                             bool optional)
 {
     int rc;
@@ -819,7 +819,7 @@ virVMXGetConfigStringHelper(virConfPtr conf, const char *name, char **string,
 
 
 static int
-virVMXGetConfigString(virConfPtr conf, const char *name, char **string,
+virVMXGetConfigString(virConf *conf, const char *name, char **string,
                       bool optional)
 {
     *string = NULL;
@@ -833,7 +833,7 @@ virVMXGetConfigString(virConfPtr conf, const char *name, char **string,
 
 
 static int
-virVMXGetConfigUUID(virConfPtr conf, const char *name, unsigned char *uuid,
+virVMXGetConfigUUID(virConf *conf, const char *name, unsigned char *uuid,
                     bool optional)
 {
     char *string = NULL;
@@ -861,7 +861,7 @@ virVMXGetConfigUUID(virConfPtr conf, const char *name, unsigned char *uuid,
 
 
 static int
-virVMXGetConfigLong(virConfPtr conf, const char *name, long long *number,
+virVMXGetConfigLong(virConf *conf, const char *name, long long *number,
                     long long default_, bool optional)
 {
     char *string = NULL;
@@ -893,7 +893,7 @@ virVMXGetConfigLong(virConfPtr conf, const char *name, long long *number,
 
 
 static int
-virVMXGetConfigBoolean(virConfPtr conf, const char *name, bool *boolean_,
+virVMXGetConfigBoolean(virConf *conf, const char *name, bool *boolean_,
                        bool default_, bool optional)
 {
     char *string = NULL;
@@ -1035,12 +1035,12 @@ virVMXFloppyDiskNameToUnit(const char *name, int *unit)
 
 
 static int
-virVMXVerifyDiskAddress(virDomainXMLOptionPtr xmlopt,
-                        virDomainDiskDefPtr disk,
-                        virDomainDefPtr vmdef)
+virVMXVerifyDiskAddress(virDomainXMLOption *xmlopt,
+                        virDomainDiskDef *disk,
+                        virDomainDef *vmdef)
 {
     virDomainDiskDef def;
-    virDomainDeviceDriveAddressPtr drive;
+    virDomainDeviceDriveAddress *drive;
 
     memset(&def, 0, sizeof(def));
 
@@ -1148,13 +1148,13 @@ virVMXVerifyDiskAddress(virDomainXMLOptionPtr xmlopt,
 
 
 static int
-virVMXHandleLegacySCSIDiskDriverName(virDomainDefPtr def,
-                                     virDomainDiskDefPtr disk)
+virVMXHandleLegacySCSIDiskDriverName(virDomainDef *def,
+                                     virDomainDiskDef *disk)
 {
     char *tmp;
     int model;
     size_t i;
-    virDomainControllerDefPtr controller = NULL;
+    virDomainControllerDef *controller = NULL;
     const char *driver = virDomainDiskGetDriver(disk);
     char *copy;
 
@@ -1207,13 +1207,13 @@ virVMXHandleLegacySCSIDiskDriverName(virDomainDefPtr def,
 
 
 static int
-virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDefPtr def,
+virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDef *def,
                             int virtualDev[4], bool present[4])
 {
     int result = -1;
     size_t i, k;
-    virDomainDiskDefPtr disk;
-    virDomainControllerDefPtr controller;
+    virDomainDiskDef *disk;
+    virDomainControllerDef *controller;
     bool controllerHasDisksAttached;
     int count = 0;
     int *autodetectedModels;
@@ -1312,7 +1312,7 @@ struct virVMXConfigScanResults {
 
 static int
 virVMXConfigScanResultsCollector(const char* name,
-                                 virConfValuePtr value G_GNUC_UNUSED,
+                                 virConfValue *value G_GNUC_UNUSED,
                                  void *opaque)
 {
     struct virVMXConfigScanResults *results = opaque;
@@ -1342,17 +1342,17 @@ virVMXConfigScanResultsCollector(const char* name,
  * VMX -> Domain XML
  */
 
-virDomainDefPtr
+virDomainDef *
 virVMXParseConfig(virVMXContext *ctx,
-                  virDomainXMLOptionPtr xmlopt,
-                  virCapsPtr caps G_GNUC_UNUSED,
+                  virDomainXMLOption *xmlopt,
+                  virCaps *caps G_GNUC_UNUSED,
                   const char *vmx)
 {
     bool success = false;
     g_autoptr(virConf) conf = NULL;
     char *encoding = NULL;
     char *utf8;
-    virDomainDefPtr def = NULL;
+    virDomainDef *def = NULL;
     long long config_version = 0;
     long long virtualHW_version = 0;
     long long memsize = 0;
@@ -1373,7 +1373,7 @@ virVMXParseConfig(virVMXContext *ctx,
     long long sharedFolder_maxNum = 0;
     struct virVMXConfigScanResults results = { -1 };
     long long coresPerSocket = 0;
-    virCPUDefPtr cpu = NULL;
+    virCPUDef *cpu = NULL;
     char *firmware = NULL;
     size_t saved_ndisks = 0;
 
@@ -1676,7 +1676,7 @@ virVMXParseConfig(virVMXContext *ctx,
     /* FIXME */
 
     /* def:graphics */
-    def->graphics = g_new0(virDomainGraphicsDefPtr, 1);
+    def->graphics = g_new0(virDomainGraphicsDef *, 1);
     def->ngraphics = 0;
 
     if (virVMXParseVNC(conf, &def->graphics[def->ngraphics]) < 0)
@@ -1686,7 +1686,7 @@ virVMXParseConfig(virVMXContext *ctx,
         ++def->ngraphics;
 
     /* def:disks: 4 * 15 scsi + 4 * 30 sata + 2 * 2 ide + 2 floppy = 186 */
-    def->disks = g_new0(virDomainDiskDefPtr, 186);
+    def->disks = g_new0(virDomainDiskDef *, 186);
     def->ndisks = 0;
 
     /* def:disks (scsi) */
@@ -1734,7 +1734,7 @@ virVMXParseConfig(virVMXContext *ctx,
     /* add all the SCSI controllers we've seen, up until the last one that is
      * currently used by a disk */
     if (def->ndisks != 0) {
-        virDomainDeviceInfoPtr info = &def->disks[def->ndisks - 1]->info;
+        virDomainDeviceInfo *info = &def->disks[def->ndisks - 1]->info;
         for (controller = 0; controller <= info->addr.drive.controller; controller++) {
             if (!virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
                                            controller, scsi_virtualDev[controller]))
@@ -1779,7 +1779,7 @@ virVMXParseConfig(virVMXContext *ctx,
     /* add all the SATA controllers we've seen, up until the last one that is
      * currently used by a disk */
     if (def->ndisks - saved_ndisks != 0) {
-        virDomainDeviceInfoPtr info = &def->disks[def->ndisks - 1]->info;
+        virDomainDeviceInfo *info = &def->disks[def->ndisks - 1]->info;
         for (controller = 0; controller <= info->addr.drive.controller; controller++) {
             if (!virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SATA,
                                            controller, -1))
@@ -1839,7 +1839,7 @@ virVMXParseConfig(virVMXContext *ctx,
         if (sharedFolder_maxNum > 0) {
             int number;
 
-            def->fss = g_new0(virDomainFSDefPtr, sharedFolder_maxNum);
+            def->fss = g_new0(virDomainFSDef *, sharedFolder_maxNum);
             def->nfss = 0;
 
             for (number = 0; number < sharedFolder_maxNum; ++number) {
@@ -1856,7 +1856,7 @@ virVMXParseConfig(virVMXContext *ctx,
 
     /* def:nets */
     for (controller = 0; controller <= results.networks_max_index; ++controller) {
-        virDomainNetDefPtr net = NULL;
+        virDomainNetDef *net = NULL;
         if (virVMXParseEthernet(conf, controller, &net) < 0)
             goto cleanup;
 
@@ -1871,7 +1871,7 @@ virVMXParseConfig(virVMXContext *ctx,
     /* FIXME */
 
     /* def:videos */
-    def->videos = g_new0(virDomainVideoDefPtr, 1);
+    def->videos = g_new0(virDomainVideoDef *, 1);
     def->nvideos = 0;
 
     if (virVMXParseSVGA(conf, &def->videos[def->nvideos]) < 0)
@@ -1886,7 +1886,7 @@ virVMXParseConfig(virVMXContext *ctx,
     /* FIXME */
 
     /* def:serials */
-    def->serials = g_new0(virDomainChrDefPtr, 4);
+    def->serials = g_new0(virDomainChrDef *, 4);
     def->nserials = 0;
 
     for (port = 0; port < 4; ++port) {
@@ -1900,7 +1900,7 @@ virVMXParseConfig(virVMXContext *ctx,
     }
 
     /* def:parallels */
-    def->parallels = g_new0(virDomainChrDefPtr, 3);
+    def->parallels = g_new0(virDomainChrDef *, 3);
     def->nparallels = 0;
 
     for (port = 0; port < 3; ++port) {
@@ -1967,7 +1967,7 @@ virVMXParseConfig(virVMXContext *ctx,
 
 
 static int
-virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
+virVMXParseVNC(virConf *conf, virDomainGraphicsDef **def)
 {
     bool enabled = false;
     long long port = 0;
@@ -2031,7 +2031,7 @@ virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
 
 
 static int
-virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
+virVMXParseSCSIController(virConf *conf, int controller, bool *present,
                           int *virtualDev)
 {
     int result = -1;
@@ -2101,7 +2101,7 @@ virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
 
 
 static int
-virVMXParseSATAController(virConfPtr conf, int controller, bool *present)
+virVMXParseSATAController(virConf *conf, int controller, bool *present)
 {
     char present_name[32];
 
@@ -2123,9 +2123,9 @@ virVMXParseSATAController(virConfPtr conf, int controller, bool *present)
 
 
 static int
-virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr conf,
+virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt, virConf *conf,
                 int device, int busType, int controllerOrBus, int unit,
-                virDomainDiskDefPtr *def, virDomainDefPtr vmdef)
+                virDomainDiskDef **def, virDomainDef *vmdef)
 {
     /*
      *          device = {VIR_DOMAIN_DISK_DEVICE_DISK,
@@ -2550,7 +2550,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
 
 
 static int
-virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
+virVMXParseFileSystem(virConf *conf, int number, virDomainFSDef **def)
 {
     int result = -1;
     char prefix[48] = "";
@@ -2636,7 +2636,7 @@ virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
 
 
 static int
-virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
+virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
 {
     int result = -1;
     char prefix[48] = "";
@@ -2858,8 +2858,8 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
 
 
 static int
-virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
-                  virDomainChrDefPtr *def)
+virVMXParseSerial(virVMXContext *ctx, virConf *conf, int port,
+                  virDomainChrDef **def)
 {
     int result = -1;
     char prefix[48] = "";
@@ -2879,7 +2879,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
     char network_endPoint_name[48] = "";
     char *network_endPoint = NULL;
 
-    virURIPtr parsedUri = NULL;
+    virURI *parsedUri = NULL;
 
     if (def == NULL || *def != NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -3036,8 +3036,8 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
 
 
 static int
-virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
-                    virDomainChrDefPtr *def)
+virVMXParseParallel(virVMXContext *ctx, virConf *conf, int port,
+                    virDomainChrDef **def)
 {
     int result = -1;
     char prefix[48] = "";
@@ -3136,7 +3136,7 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
 
 
 static int
-virVMXParseSVGA(virConfPtr conf, virDomainVideoDefPtr *def)
+virVMXParseSVGA(virConf *conf, virDomainVideoDef **def)
 {
     int result = -1;
     long long svga_vramSize = 0;
@@ -3175,7 +3175,7 @@ virVMXParseSVGA(virConfPtr conf, virDomainVideoDefPtr *def)
  */
 
 char *
-virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDefPtr def,
+virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOption *xmlopt, virDomainDef *def,
                    int virtualHW_version)
 {
     char *vmx = NULL;
@@ -3577,9 +3577,9 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
 
 static int
-virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer)
+virVMXFormatVNC(virDomainGraphicsDef *def, virBuffer *buffer)
 {
-    virDomainGraphicsListenDefPtr glisten;
+    virDomainGraphicsListenDef *glisten;
 
     if (def->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -3621,8 +3621,8 @@ virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer)
 }
 
 static int
-virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
-                 virBufferPtr buffer)
+virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDef *def,
+                 virBuffer *buffer)
 {
     int controllerOrBus, unit;
     const char *vmxDeviceType = NULL;
@@ -3768,8 +3768,8 @@ virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
 }
 
 static int
-virVMXFormatFloppy(virVMXContext *ctx, virDomainDiskDefPtr def,
-                   virBufferPtr buffer, bool floppy_present[2])
+virVMXFormatFloppy(virVMXContext *ctx, virDomainDiskDef *def,
+                   virBuffer *buffer, bool floppy_present[2])
 {
     int unit;
     char *fileName = NULL;
@@ -3825,7 +3825,7 @@ virVMXFormatFloppy(virVMXContext *ctx, virDomainDiskDefPtr def,
 
 
 static int
-virVMXFormatFileSystem(virDomainFSDefPtr def, int number, virBufferPtr buffer)
+virVMXFormatFileSystem(virDomainFSDef *def, int number, virBuffer *buffer)
 {
     if (def->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -3850,8 +3850,8 @@ virVMXFormatFileSystem(virDomainFSDefPtr def, int number, virBufferPtr buffer)
 
 
 static int
-virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
-                     virBufferPtr buffer, int virtualHW_version)
+virVMXFormatEthernet(virDomainNetDef *def, int controller,
+                     virBuffer *buffer, int virtualHW_version)
 {
     char mac_string[VIR_MAC_STRING_BUFLEN];
     virDomainNetMacType mac_type = VIR_DOMAIN_NET_MAC_TYPE_DEFAULT;
@@ -4006,8 +4006,8 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
 
 
 static int
-virVMXFormatSerial(virVMXContext *ctx, virDomainChrDefPtr def,
-                   virBufferPtr buffer)
+virVMXFormatSerial(virVMXContext *ctx, virDomainChrDef *def,
+                   virBuffer *buffer)
 {
     char *fileName = NULL;
     const char *protocol;
@@ -4112,8 +4112,8 @@ virVMXFormatSerial(virVMXContext *ctx, virDomainChrDefPtr def,
 
 
 static int
-virVMXFormatParallel(virVMXContext *ctx, virDomainChrDefPtr def,
-                     virBufferPtr buffer)
+virVMXFormatParallel(virVMXContext *ctx, virDomainChrDef *def,
+                     virBuffer *buffer)
 {
     char *fileName = NULL;
 
@@ -4164,7 +4164,7 @@ virVMXFormatParallel(virVMXContext *ctx, virDomainChrDefPtr def,
 
 
 static int
-virVMXFormatSVGA(virDomainVideoDefPtr def, virBufferPtr buffer)
+virVMXFormatSVGA(virDomainVideoDef *def, virBuffer *buffer)
 {
     unsigned long long vram;
 

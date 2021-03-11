@@ -44,7 +44,7 @@ VIR_LOG_INIT("tests.securityselinuxlabeltest");
 
 static virQEMUDriver driver;
 
-static virSecurityManagerPtr mgr;
+static virSecurityManager *mgr;
 
 typedef struct testSELinuxFile testSELinuxFile;
 
@@ -159,11 +159,11 @@ testSELinuxLoadFileList(const char *testname,
 }
 
 
-static virDomainDefPtr
+static virDomainDef *
 testSELinuxLoadDef(const char *testname)
 {
     char *xmlfile = NULL;
-    virDomainDefPtr def = NULL;
+    virDomainDef *def = NULL;
     size_t i;
 
     xmlfile = g_strdup_printf("%s/securityselinuxlabeldata/%s.xml", abs_srcdir,
@@ -282,7 +282,7 @@ testSELinuxLabeling(const void *opaque)
     testSELinuxFile *files = NULL;
     size_t nfiles = 0;
     size_t i;
-    virDomainDefPtr def = NULL;
+    virDomainDef *def = NULL;
 
     if (testSELinuxLoadFileList(testname, &files, &nfiles) < 0)
         goto cleanup;

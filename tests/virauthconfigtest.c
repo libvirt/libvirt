@@ -32,7 +32,7 @@
 VIR_LOG_INIT("tests.authconfigtest");
 
 struct ConfigLookupData {
-    virAuthConfigPtr config;
+    virAuthConfig *config;
     const char *hostname;
     const char *service;
     const char *credname;
@@ -82,7 +82,7 @@ mymain(void)
 {
     int ret = 0;
 
-    virAuthConfigPtr config;
+    virAuthConfig *config;
 
     const char *confdata =
         "[credentials-test]\n"

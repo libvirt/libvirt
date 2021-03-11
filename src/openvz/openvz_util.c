@@ -60,7 +60,7 @@ openvzVEGetStringParam(virDomainPtr domain, const char* param)
     int len;
     char *output = NULL;
 
-    virCommandPtr cmd = virCommandNewArgList(VZLIST,
+    virCommand *cmd = virCommandNewArgList(VZLIST,
                                              "-o",
                                              param,
                                              domain->name,

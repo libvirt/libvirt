@@ -56,7 +56,7 @@ struct data {
     virArch arch;
     const char *host;
     const char *name;
-    virDomainCapsCPUModelsPtr models;
+    virDomainCapsCPUModels *models;
     const char *modelsName;
     unsigned int flags;
     int result;
@@ -67,13 +67,13 @@ static virQEMUDriver driver;
 #endif
 
 
-static virCPUDefPtr
+static virCPUDef *
 cpuTestLoadXML(virArch arch, const char *name)
 {
     char *xml = NULL;
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    virCPUDefPtr cpu = NULL;
+    virCPUDef *cpu = NULL;
 
     xml = g_strdup_printf("%s/cputestdata/%s-%s.xml", abs_srcdir,
                           virArchToString(arch), name);
@@ -91,7 +91,7 @@ cpuTestLoadXML(virArch arch, const char *name)
 }
 
 
-static virCPUDefPtr *
+static virCPUDef **
 cpuTestLoadMultiXML(virArch arch,
                     const char *name,
                     unsigned int *count)
@@ -100,7 +100,7 @@ cpuTestLoadMultiXML(virArch arch,
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr *nodes = NULL;
-    virCPUDefPtr *cpus = NULL;
+    virCPUDef **cpus = NULL;
     int n;
     size_t i;
 
@@ -116,7 +116,7 @@ cpuTestLoadMultiXML(virArch arch,
         goto cleanup;
     }
 
-    cpus = g_new0(virCPUDefPtr, n);
+    cpus = g_new0(virCPUDef *, n);
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
@@ -202,8 +202,8 @@ cpuTestCompare(const void *arg)
 {
     const struct data *data = arg;
     int ret = -1;
-    virCPUDefPtr host = NULL;
-    virCPUDefPtr cpu = NULL;
+    virCPUDef *host = NULL;
+    virCPUDef *cpu = NULL;
     virCPUCompareResult result;
 
     if (!(host = cpuTestLoadXML(data->arch, data->host)) ||
@@ -237,8 +237,8 @@ cpuTestGuestCPU(const void *arg)
 {
     const struct data *data = arg;
     int ret = -2;
-    virCPUDefPtr host = NULL;
-    virCPUDefPtr cpu = NULL;
+    virCPUDef *host = NULL;
+    virCPUDef *cpu = NULL;
     virCPUCompareResult cmpResult;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *result = NULL;
@@ -302,8 +302,8 @@ cpuTestBaseline(const void *arg)
 {
     const struct data *data = arg;
     int ret = -1;
-    virCPUDefPtr *cpus = NULL;
-    virCPUDefPtr baseline = NULL;
+    virCPUDef **cpus = NULL;
+    virCPUDef *baseline = NULL;
     unsigned int ncpus = 0;
     char *result = NULL;
     const char *suffix;
@@ -379,9 +379,9 @@ cpuTestUpdate(const void *arg)
 {
     const struct data *data = arg;
     int ret = -1;
-    virCPUDefPtr host = NULL;
-    virCPUDefPtr migHost = NULL;
-    virCPUDefPtr cpu = NULL;
+    virCPUDef *host = NULL;
+    virCPUDef *migHost = NULL;
+    virCPUDef *cpu = NULL;
     char *result = NULL;
 
     if (!(host = cpuTestLoadXML(data->arch, data->host)) ||
@@ -412,8 +412,8 @@ cpuTestHasFeature(const void *arg)
 {
     const struct data *data = arg;
     int ret = -1;
-    virCPUDefPtr host = NULL;
-    virCPUDataPtr hostData = NULL;
+    virCPUDef *host = NULL;
+    virCPUData *hostData = NULL;
     int result;
 
     if (!(host = cpuTestLoadXML(data->arch, data->host)))
@@ -469,13 +469,13 @@ typedef enum {
 } cpuTestCPUIDJson;
 
 #if WITH_QEMU
-static virQEMUCapsPtr
+static virQEMUCaps *
 cpuTestMakeQEMUCaps(const struct data *data)
 {
-    virQEMUCapsPtr qemuCaps = NULL;
-    qemuMonitorTestPtr testMon = NULL;
-    qemuMonitorCPUModelInfoPtr model = NULL;
-    virCPUDefPtr cpu = NULL;
+    virQEMUCaps *qemuCaps = NULL;
+    qemuMonitorTest *testMon = NULL;
+    qemuMonitorCPUModelInfo *model = NULL;
+    virCPUDef *cpu = NULL;
     bool fail_no_props = true;
     char *json = NULL;
 
@@ -532,9 +532,9 @@ cpuTestMakeQEMUCaps(const struct data *data)
 
 static int
 cpuTestGetCPUModels(const struct data *data,
-                    virDomainCapsCPUModelsPtr *models)
+                    virDomainCapsCPUModels **models)
 {
-    virQEMUCapsPtr qemuCaps;
+    virQEMUCaps *qemuCaps;
 
     *models = NULL;
 
@@ -556,7 +556,7 @@ cpuTestGetCPUModels(const struct data *data,
 
 static int
 cpuTestGetCPUModels(const struct data *data,
-                    virDomainCapsCPUModelsPtr *models)
+                    virDomainCapsCPUModels **models)
 {
     *models = NULL;
 
@@ -574,12 +574,12 @@ cpuTestCPUID(bool guest, const void *arg)
 {
     const struct data *data = arg;
     int ret = -1;
-    virCPUDataPtr hostData = NULL;
+    virCPUData *hostData = NULL;
     char *hostFile = NULL;
     char *host = NULL;
-    virCPUDefPtr cpu = NULL;
+    virCPUDef *cpu = NULL;
     char *result = NULL;
-    virDomainCapsCPUModelsPtr models = NULL;
+    virDomainCapsCPUModels *models = NULL;
 
     hostFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s.xml", abs_srcdir,
                                virArchToString(data->arch), data->host);
@@ -642,7 +642,7 @@ cpuTestGuestCPUID(const void *arg)
 
 static int
 cpuTestCompareSignature(const struct data *data,
-                        virCPUDataPtr hostData)
+                        virCPUData *hostData)
 {
     g_autofree char *result = NULL;
     g_autofree char *sigStr = NULL;
@@ -668,7 +668,7 @@ static int
 cpuTestCPUIDSignature(const void *arg)
 {
     const struct data *data = arg;
-    virCPUDataPtr hostData = NULL;
+    virCPUData *hostData = NULL;
     char *hostFile = NULL;
     char *host = NULL;
     int ret = -1;
@@ -692,8 +692,8 @@ cpuTestCPUIDSignature(const void *arg)
 
 static int
 cpuTestUpdateLiveCompare(virArch arch,
-                         virCPUDefPtr actual,
-                         virCPUDefPtr expected)
+                         virCPUDef *actual,
+                         virCPUDef *expected)
 {
     size_t i, j;
     int ret = 0;
@@ -710,8 +710,8 @@ cpuTestUpdateLiveCompare(virArch arch,
 
     i = j = 0;
     while (i < actual->nfeatures || j < expected->nfeatures) {
-        virCPUFeatureDefPtr featAct = NULL;
-        virCPUFeatureDefPtr featExp = NULL;
+        virCPUFeatureDef *featAct = NULL;
+        virCPUFeatureDef *featExp = NULL;
         int cmp;
 
         if (i < actual->nfeatures)
@@ -784,17 +784,17 @@ cpuTestUpdateLive(const void *arg)
 {
     const struct data *data = arg;
     char *cpuFile = NULL;
-    virCPUDefPtr cpu = NULL;
+    virCPUDef *cpu = NULL;
     char *enabledFile = NULL;
     char *enabled = NULL;
-    virCPUDataPtr enabledData = NULL;
+    virCPUData *enabledData = NULL;
     char *disabledFile = NULL;
     char *disabled = NULL;
-    virCPUDataPtr disabledData = NULL;
+    virCPUData *disabledData = NULL;
     char *expectedFile = NULL;
-    virCPUDefPtr expected = NULL;
-    virDomainCapsCPUModelsPtr hvModels = NULL;
-    virDomainCapsCPUModelsPtr models = NULL;
+    virCPUDef *expected = NULL;
+    virDomainCapsCPUModels *hvModels = NULL;
+    virDomainCapsCPUModels *models = NULL;
     int ret = -1;
 
     cpuFile = g_strdup_printf("cpuid-%s-guest", data->host);
@@ -824,7 +824,7 @@ cpuTestUpdateLive(const void *arg)
      * use the CPU model from 'expected'.
      */
     if (STRNEQ(cpu->model, expected->model)) {
-        virDomainCapsCPUModelPtr hvModel;
+        virDomainCapsCPUModel *hvModel;
         char **blockers = NULL;
         virDomainCapsCPUUsable usable = VIR_DOMCAPS_CPU_USABLE_UNKNOWN;
         int rc;
@@ -881,8 +881,8 @@ static int
 cpuTestJSONCPUID(const void *arg)
 {
     const struct data *data = arg;
-    virQEMUCapsPtr qemuCaps = NULL;
-    virCPUDefPtr cpu = NULL;
+    virQEMUCaps *qemuCaps = NULL;
+    virCPUDef *cpu = NULL;
     char *result = NULL;
     int ret = -1;
 
@@ -914,9 +914,9 @@ static int
 cpuTestJSONSignature(const void *arg)
 {
     const struct data *data = arg;
-    virQEMUCapsPtr qemuCaps = NULL;
-    virCPUDataPtr hostData = NULL;
-    qemuMonitorCPUModelInfoPtr modelInfo;
+    virQEMUCaps *qemuCaps = NULL;
+    virCPUData *hostData = NULL;
+    qemuMonitorCPUModelInfo *modelInfo;
     int ret = -1;
 
     if (!(qemuCaps = cpuTestMakeQEMUCaps(data)))
@@ -942,10 +942,10 @@ static const char *models_list[]     = { "qemu64", "core2duo", "Nehalem", NULL }
 static const char *haswell_list[]    = { "SandyBridge", "Haswell", NULL };
 static const char *ppc_models_list[] = { "POWER6", "POWER7", "POWER8", NULL };
 
-static virDomainCapsCPUModelsPtr
+static virDomainCapsCPUModels *
 cpuTestInitModels(const char **list)
 {
-    virDomainCapsCPUModelsPtr cpus;
+    virDomainCapsCPUModels *cpus;
     const char **model;
 
     if (!(cpus = virDomainCapsCPUModelsNew(0)))
@@ -968,11 +968,11 @@ cpuTestInitModels(const char **list)
 static int
 mymain(void)
 {
-    virDomainCapsCPUModelsPtr model486 = NULL;
-    virDomainCapsCPUModelsPtr nomodel = NULL;
-    virDomainCapsCPUModelsPtr models = NULL;
-    virDomainCapsCPUModelsPtr haswell = NULL;
-    virDomainCapsCPUModelsPtr ppc_models = NULL;
+    virDomainCapsCPUModels *model486 = NULL;
+    virDomainCapsCPUModels *nomodel = NULL;
+    virDomainCapsCPUModels *models = NULL;
+    virDomainCapsCPUModels *haswell = NULL;
+    virDomainCapsCPUModels *ppc_models = NULL;
     int ret = 0;
 
 #if WITH_QEMU

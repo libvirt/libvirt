@@ -76,7 +76,6 @@ typedef enum {
 } dnsmasqCapsFlags;
 
 typedef struct _dnsmasqCaps dnsmasqCaps;
-typedef dnsmasqCaps *dnsmasqCapsPtr;
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(dnsmasqCaps, virObjectUnref);
 
@@ -100,15 +99,15 @@ int              dnsmasqSave(const dnsmasqContext *ctx);
 int              dnsmasqDelete(const dnsmasqContext *ctx);
 int              dnsmasqReload(pid_t pid);
 
-dnsmasqCapsPtr dnsmasqCapsNewFromBuffer(const char *buf,
+dnsmasqCaps *dnsmasqCapsNewFromBuffer(const char *buf,
                                         const char *binaryPath);
-dnsmasqCapsPtr dnsmasqCapsNewFromFile(const char *dataPath,
+dnsmasqCaps *dnsmasqCapsNewFromFile(const char *dataPath,
                                       const char *binaryPath);
-dnsmasqCapsPtr dnsmasqCapsNewFromBinary(const char *binaryPath);
-int dnsmasqCapsRefresh(dnsmasqCapsPtr *caps, const char *binaryPath);
-bool dnsmasqCapsGet(dnsmasqCapsPtr caps, dnsmasqCapsFlags flag);
-const char *dnsmasqCapsGetBinaryPath(dnsmasqCapsPtr caps);
-unsigned long dnsmasqCapsGetVersion(dnsmasqCapsPtr caps);
+dnsmasqCaps *dnsmasqCapsNewFromBinary(const char *binaryPath);
+int dnsmasqCapsRefresh(dnsmasqCaps **caps, const char *binaryPath);
+bool dnsmasqCapsGet(dnsmasqCaps *caps, dnsmasqCapsFlags flag);
+const char *dnsmasqCapsGetBinaryPath(dnsmasqCaps *caps);
+unsigned long dnsmasqCapsGetVersion(dnsmasqCaps *caps);
 char *dnsmasqDhcpHostsToString(dnsmasqDhcpHost *hosts,
                                unsigned int nhosts);
 

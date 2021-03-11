@@ -39,9 +39,9 @@
 struct openvz_driver {
     virMutex lock;
 
-    virCapsPtr caps;
-    virDomainXMLOptionPtr xmlopt;
-    virDomainObjListPtr domains;
+    virCaps *caps;
+    virDomainXMLOption *xmlopt;
+    virDomainObjList *domains;
     int version;
 };
 
@@ -56,11 +56,11 @@ int openvzReadVPSConfigParam(int vpsid, const char *param, char **value);
 int openvzWriteVPSConfigParam(int vpsid, const char *param, const char *value);
 int openvzReadConfigParam(const char *conf_file, const char *param, char **value);
 int openvzCopyDefaultConfig(int vpsid);
-virCapsPtr openvzCapsInit(void);
+virCaps *openvzCapsInit(void);
 int openvzLoadDomains(struct openvz_driver *driver);
 void openvzFreeDriver(struct openvz_driver *driver);
 int strtoI(const char *str);
 int openvzSetDefinedUUID(int vpsid, unsigned char *uuid);
 int openvzGetVEID(const char *name);
-int openvzReadNetworkConf(virDomainDefPtr def, int veid);
-virDomainXMLOptionPtr openvzXMLOption(struct openvz_driver *driver);
+int openvzReadNetworkConf(virDomainDef *def, int veid);
+virDomainXMLOption *openvzXMLOption(struct openvz_driver *driver);

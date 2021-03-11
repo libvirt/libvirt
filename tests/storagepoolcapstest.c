@@ -28,11 +28,11 @@
 
 struct test_virStoragePoolCapsFormatData {
     const char *filename;
-    virCapsPtr driverCaps;
+    virCaps *driverCaps;
 };
 
 static void
-test_virCapabilitiesAddFullStoragePool(virCapsPtr caps)
+test_virCapabilitiesAddFullStoragePool(virCaps *caps)
 {
     size_t i;
 
@@ -42,7 +42,7 @@ test_virCapabilitiesAddFullStoragePool(virCapsPtr caps)
 
 
 static void
-test_virCapabilitiesAddFSStoragePool(virCapsPtr caps)
+test_virCapabilitiesAddFSStoragePool(virCaps *caps)
 {
     virCapabilitiesAddStoragePool(caps, VIR_STORAGE_POOL_FS);
 }
@@ -53,7 +53,7 @@ test_virStoragePoolCapsFormat(const void *opaque)
 {
     struct test_virStoragePoolCapsFormatData *data =
         (struct test_virStoragePoolCapsFormatData *) opaque;
-    virCapsPtr driverCaps = data->driverCaps;
+    virCaps *driverCaps = data->driverCaps;
     g_autoptr(virStoragePoolCaps) poolCaps = NULL;
     g_autofree char *path = NULL;
     g_autofree char *poolCapsXML = NULL;

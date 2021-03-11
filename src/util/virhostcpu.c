@@ -253,10 +253,10 @@ virHostCPUGetCore(unsigned int cpu, unsigned int *core)
     return 0;
 }
 
-virBitmapPtr
+virBitmap *
 virHostCPUGetSiblingsList(unsigned int cpu)
 {
-    virBitmapPtr ret = NULL;
+    virBitmap *ret = NULL;
     int rv = -1;
 
     rv = virFileReadValueBitmap(&ret,
@@ -274,7 +274,7 @@ virHostCPUGetSiblingsList(unsigned int cpu)
 static unsigned long
 virHostCPUCountThreadSiblings(unsigned int cpu)
 {
-    virBitmapPtr siblings_map;
+    virBitmap *siblings_map;
     unsigned long ret = 0;
 
     if (!(siblings_map = virHostCPUGetSiblingsList(cpu)))
@@ -296,8 +296,8 @@ ATTRIBUTE_NONNULL(7) ATTRIBUTE_NONNULL(8)
 ATTRIBUTE_NONNULL(9)
 virHostCPUParseNode(const char *node,
                     virArch arch,
-                    virBitmapPtr present_cpus_map,
-                    virBitmapPtr online_cpus_map,
+                    virBitmap *present_cpus_map,
+                    virBitmap *online_cpus_map,
                     int threads_per_subcore,
                     int *sockets,
                     int *cores,
@@ -308,9 +308,9 @@ virHostCPUParseNode(const char *node,
     int processors = 0;
     g_autoptr(DIR) cpudir = NULL;
     struct dirent *cpudirent = NULL;
-    virBitmapPtr node_cpus_map = NULL;
-    virBitmapPtr sockets_map = NULL;
-    virBitmapPtr *cores_maps = NULL;
+    virBitmap *node_cpus_map = NULL;
+    virBitmap *sockets_map = NULL;
+    virBitmap **cores_maps = NULL;
     int npresent_cpus = virBitmapSize(present_cpus_map);
     unsigned int sock_max = 0;
     unsigned int sock;
@@ -363,7 +363,7 @@ virHostCPUParseNode(const char *node,
     sock_max++;
 
     /* allocate cores maps for each socket */
-    cores_maps = g_new0(virBitmapPtr, sock_max);
+    cores_maps = g_new0(virBitmap *, sock_max);
 
     for (i = 0; i < sock_max; i++)
         cores_maps[i] = virBitmapNew(0);
@@ -458,7 +458,7 @@ virHostCPUParseNode(const char *node,
 static bool
 virHostCPUHasValidSubcoreConfiguration(int threads_per_subcore)
 {
-    virBitmapPtr online_cpus = NULL;
+    virBitmap *online_cpus = NULL;
     int cpu = -1;
     bool ret = false;
 
@@ -606,8 +606,8 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
                                unsigned int *cores,
                                unsigned int *threads)
 {
-    virBitmapPtr present_cpus_map = NULL;
-    virBitmapPtr online_cpus_map = NULL;
+    virBitmap *present_cpus_map = NULL;
+    virBitmap *online_cpus_map = NULL;
     g_autoptr(DIR) nodedir = NULL;
     struct dirent *nodedirent = NULL;
     int nodecpus, nodecores, nodesockets, nodethreads, offline = 0;
@@ -1027,11 +1027,11 @@ virHostCPUHasBitmap(void)
 #endif
 }
 
-virBitmapPtr
+virBitmap *
 virHostCPUGetPresentBitmap(void)
 {
 #ifdef __linux__
-    virBitmapPtr ret = NULL;
+    virBitmap *ret = NULL;
 
     virFileReadValueBitmap(&ret, "%s/cpu/present", SYSFS_SYSTEM_PATH);
 
@@ -1043,11 +1043,11 @@ virHostCPUGetPresentBitmap(void)
 #endif
 }
 
-virBitmapPtr
+virBitmap *
 virHostCPUGetOnlineBitmap(void)
 {
 #ifdef __linux__
-    virBitmapPtr ret = NULL;
+    virBitmap *ret = NULL;
 
     virFileReadValueBitmap(&ret, "%s/cpu/online", SYSFS_SYSTEM_PATH);
 
@@ -1100,7 +1100,7 @@ virHostCPUGetMap(unsigned char **cpumap,
  * the caller having to handle it outside the function, returns
  * a virBitmap with all the possible CPUs in the host, up to
  * virHostCPUGetCount(). */
-virBitmapPtr
+virBitmap *
 virHostCPUGetAvailableCPUsBitmap(void)
 {
     g_autoptr(virBitmap) bitmap = NULL;
@@ -1346,10 +1346,10 @@ virHostCPUGetMSR(unsigned long index,
  * Returns pointer to the TSC info structure on success,
  *         NULL when TSC cannot be probed otherwise.
  */
-virHostCPUTscInfoPtr
+virHostCPUTscInfo *
 virHostCPUGetTscInfo(void)
 {
-    virHostCPUTscInfoPtr info;
+    virHostCPUTscInfo *info;
     VIR_AUTOCLOSE kvmFd = -1;
     VIR_AUTOCLOSE vmFd = -1;
     VIR_AUTOCLOSE vcpuFd = -1;
@@ -1408,7 +1408,7 @@ virHostCPUGetMSR(unsigned long index G_GNUC_UNUSED,
     return -1;
 }
 
-virHostCPUTscInfoPtr
+virHostCPUTscInfo *
 virHostCPUGetTscInfo(void)
 {
     virReportSystemError(ENOSYS, "%s",

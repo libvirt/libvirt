@@ -40,7 +40,7 @@ VIR_LOG_INIT("daemon.libvirtd-config");
 
 
 static int
-remoteConfigGetAuth(virConfPtr conf,
+remoteConfigGetAuth(virConf *conf,
                     const char *filename,
                     const char *key,
                     int *auth)
@@ -225,7 +225,7 @@ daemonConfigFree(struct daemonConfig *data)
 static int
 daemonConfigLoadOptions(struct daemonConfig *data,
                         const char *filename,
-                        virConfPtr conf)
+                        virConf *conf)
 {
 #ifdef WITH_IP
     if (virConfGetValueBool(conf, "listen_tcp", &data->listen_tcp) < 0)

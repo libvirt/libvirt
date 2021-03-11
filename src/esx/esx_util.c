@@ -39,7 +39,7 @@
 VIR_LOG_INIT("esx.esx_util");
 
 int
-esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
+esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURI *uri)
 {
     int result = -1;
     size_t i;
@@ -52,7 +52,7 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
     *parsedUri = g_new0(esxUtil_ParsedUri, 1);
 
     for (i = 0; i < uri->paramsCount; i++) {
-        virURIParamPtr queryParam = &uri->params[i];
+        virURIParam *queryParam = &uri->params[i];
 
         if (STRCASEEQ(queryParam->name, "transport")) {
             g_free((*parsedUri)->transport);

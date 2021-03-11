@@ -71,7 +71,7 @@ virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
     virStorageVolPtr vol = NULL;
     virStoragePoolPtr pool = NULL;
     const char *n = NULL, *p = NULL;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     virCheckFlags(VIRSH_BYUUID | VIRSH_BYNAME, NULL);
 
@@ -226,7 +226,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     unsigned long long capacity, allocation = 0;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     unsigned long flags = 0;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     bool ret = false;
 
     if (vshCommandOptBool(cmd, "prealloc-metadata"))
@@ -674,7 +674,7 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
     virStreamPtr st = NULL;
     const char *name = NULL;
     unsigned long long offset = 0, length = 0;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     unsigned int flags = 0;
     virshStreamCallbackData cbData;
     struct stat sb;
@@ -797,7 +797,7 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     unsigned long long offset = 0, length = 0;
     bool created = false;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     virshStreamCallbackData cbData;
     unsigned int flags = 0;
     struct stat sb;
@@ -1261,10 +1261,9 @@ struct virshStorageVolList {
     virStorageVolPtr *vols;
     size_t nvols;
 };
-typedef struct virshStorageVolList *virshStorageVolListPtr;
 
 static void
-virshStorageVolListFree(virshStorageVolListPtr list)
+virshStorageVolListFree(struct virshStorageVolList *list)
 {
     size_t i;
 
@@ -1278,12 +1277,12 @@ virshStorageVolListFree(virshStorageVolListPtr list)
     g_free(list);
 }
 
-static virshStorageVolListPtr
+static struct virshStorageVolList *
 virshStorageVolListCollect(vshControl *ctl,
                            virStoragePoolPtr pool,
                            unsigned int flags)
 {
-    virshStorageVolListPtr list = g_new0(struct virshStorageVolList, 1);
+    struct virshStorageVolList *list = g_new0(struct virshStorageVolList, 1);
     size_t i;
     char **names = NULL;
     virStorageVolPtr vol = NULL;
@@ -1404,8 +1403,8 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         char *type;
     };
     struct volInfoText *volInfoTexts = NULL;
-    virshStorageVolListPtr list = NULL;
-    vshTablePtr table = NULL;
+    struct virshStorageVolList *list = NULL;
+    vshTable *table = NULL;
 
     /* Look up the pool information given to us by the user */
     if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))

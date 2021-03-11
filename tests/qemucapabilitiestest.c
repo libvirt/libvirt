@@ -32,7 +32,6 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 typedef struct _testQemuData testQemuData;
-typedef testQemuData *testQemuDataPtr;
 struct _testQemuData {
     virQEMUDriver driver;
     const char *inputDir;
@@ -46,7 +45,7 @@ struct _testQemuData {
 
 
 static int
-testQemuDataInit(testQemuDataPtr data)
+testQemuDataInit(testQemuData *data)
 {
     if (qemuTestDriverInit(&data->driver) < 0)
         return -1;
@@ -60,7 +59,7 @@ testQemuDataInit(testQemuDataPtr data)
 
 
 static void
-testQemuDataReset(testQemuDataPtr data)
+testQemuDataReset(testQemuData *data)
 {
     qemuTestDriverFree(&data->driver);
 }
@@ -73,7 +72,7 @@ testQemuCaps(const void *opaque)
     testQemuData *data = (void *) opaque;
     g_autofree char *repliesFile = NULL;
     g_autofree char *capsFile = NULL;
-    qemuMonitorTestPtr mon = NULL;
+    qemuMonitorTest *mon = NULL;
     g_autoptr(virQEMUCaps) capsActual = NULL;
     g_autofree char *binary = NULL;
     g_autofree char *actual = NULL;
@@ -176,7 +175,7 @@ doCapsTest(const char *inputDir,
            const char *suffix,
            void *opaque)
 {
-    testQemuDataPtr data = (testQemuDataPtr) opaque;
+    testQemuData *data = (testQemuData *) opaque;
     g_autofree char *title = NULL;
     g_autofree char *copyTitle = NULL;
 

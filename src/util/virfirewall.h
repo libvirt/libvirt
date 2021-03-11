@@ -23,10 +23,8 @@
 #include "internal.h"
 
 typedef struct _virFirewall virFirewall;
-typedef virFirewall *virFirewallPtr;
 
 typedef struct _virFirewallRule virFirewallRule;
-typedef virFirewallRule *virFirewallRulePtr;
 
 typedef enum {
     VIR_FIREWALL_LAYER_ETHERNET,
@@ -36,9 +34,9 @@ typedef enum {
     VIR_FIREWALL_LAYER_LAST,
 } virFirewallLayer;
 
-virFirewallPtr virFirewallNew(void);
+virFirewall *virFirewallNew(void);
 
-void virFirewallFree(virFirewallPtr firewall);
+void virFirewallFree(virFirewall *firewall);
 
 /**
  * virFirewallAddRule:
@@ -53,12 +51,12 @@ void virFirewallFree(virFirewallPtr firewall);
 #define virFirewallAddRule(firewall, layer, ...) \
          virFirewallAddRuleFull(firewall, layer, false, NULL, NULL, __VA_ARGS__)
 
-typedef int (*virFirewallQueryCallback)(virFirewallPtr firewall,
+typedef int (*virFirewallQueryCallback)(virFirewall *firewall,
                                         virFirewallLayer layer,
                                         const char *const *lines,
                                         void *opaque);
 
-virFirewallRulePtr virFirewallAddRuleFull(virFirewallPtr firewall,
+virFirewallRule *virFirewallAddRuleFull(virFirewall *firewall,
                                           virFirewallLayer layer,
                                           bool ignoreErrors,
                                           virFirewallQueryCallback cb,
@@ -66,30 +64,30 @@ virFirewallRulePtr virFirewallAddRuleFull(virFirewallPtr firewall,
                                           ...)
     G_GNUC_NULL_TERMINATED;
 
-void virFirewallRemoveRule(virFirewallPtr firewall,
-                           virFirewallRulePtr rule);
+void virFirewallRemoveRule(virFirewall *firewall,
+                           virFirewallRule *rule);
 
-void virFirewallRuleAddArg(virFirewallPtr firewall,
-                           virFirewallRulePtr rule,
+void virFirewallRuleAddArg(virFirewall *firewall,
+                           virFirewallRule *rule,
                            const char *arg)
     ATTRIBUTE_NONNULL(3);
 
-void virFirewallRuleAddArgFormat(virFirewallPtr firewall,
-                                 virFirewallRulePtr rule,
+void virFirewallRuleAddArgFormat(virFirewall *firewall,
+                                 virFirewallRule *rule,
                                  const char *fmt, ...)
     ATTRIBUTE_NONNULL(3) G_GNUC_PRINTF(3, 4);
 
-void virFirewallRuleAddArgSet(virFirewallPtr firewall,
-                              virFirewallRulePtr rule,
+void virFirewallRuleAddArgSet(virFirewall *firewall,
+                              virFirewallRule *rule,
                               const char *const *args)
     ATTRIBUTE_NONNULL(3);
 
-void virFirewallRuleAddArgList(virFirewallPtr firewall,
-                               virFirewallRulePtr rule,
+void virFirewallRuleAddArgList(virFirewall *firewall,
+                               virFirewallRule *rule,
                                ...)
     G_GNUC_NULL_TERMINATED;
 
-size_t virFirewallRuleGetArgCount(virFirewallRulePtr rule);
+size_t virFirewallRuleGetArgCount(virFirewallRule *rule);
 
 typedef enum {
     /* Ignore all errors when applying rules, so no
@@ -97,7 +95,7 @@ typedef enum {
     VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS = (1 << 0),
 } virFirewallTransactionFlags;
 
-void virFirewallStartTransaction(virFirewallPtr firewall,
+void virFirewallStartTransaction(virFirewall *firewall,
                                  unsigned int flags);
 
 typedef enum {
@@ -106,10 +104,10 @@ typedef enum {
     VIR_FIREWALL_ROLLBACK_INHERIT_PREVIOUS = (1 << 0),
 } virFirewallRollbackFlags;
 
-void virFirewallStartRollback(virFirewallPtr firewall,
+void virFirewallStartRollback(virFirewall *firewall,
                               unsigned int flags);
 
-int virFirewallApply(virFirewallPtr firewall);
+int virFirewallApply(virFirewall *firewall);
 
 void virFirewallBackendSynchronize(void);
 

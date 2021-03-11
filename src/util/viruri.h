@@ -24,11 +24,8 @@
 #include "virconf.h"
 
 typedef struct _virURI virURI;
-typedef virURI *virURIPtr;
 
 typedef struct _virURIParam virURIParam;
-typedef virURIParam *virURIParamPtr;
-
 struct _virURIParam {
     char *name;  /* Name (unescaped). */
     char *value; /* Value (unescaped). */
@@ -46,22 +43,22 @@ struct _virURI {
 
     size_t paramsCount;
     size_t paramsAlloc;
-    virURIParamPtr params;
+    virURIParam *params;
 };
 
-virURIPtr virURIParse(const char *uri)
+virURI *virURIParse(const char *uri)
     ATTRIBUTE_NONNULL(1);
-char *virURIFormat(virURIPtr uri)
+char *virURIFormat(virURI *uri)
     ATTRIBUTE_NONNULL(1);
 
-char *virURIFormatParams(virURIPtr uri);
+char *virURIFormatParams(virURI *uri);
 
-void virURIFree(virURIPtr uri);
+void virURIFree(virURI *uri);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virURI, virURIFree);
-int virURIResolveAlias(virConfPtr conf, const char *alias, char **uri);
+int virURIResolveAlias(virConf *conf, const char *alias, char **uri);
 
-const char *virURIGetParam(virURIPtr uri, const char *name);
+const char *virURIGetParam(virURI *uri, const char *name);
 
-bool virURICheckUnixSocket(virURIPtr uri);
+bool virURICheckUnixSocket(virURI *uri);
 
 #define VIR_URI_SERVER(uri) ((uri) && (uri)->server ? (uri)->server : "localhost")

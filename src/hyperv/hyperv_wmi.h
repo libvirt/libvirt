@@ -48,19 +48,18 @@ int hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
 typedef struct _hypervObject hypervObject;
 struct _hypervObject {
     XML_TYPE_PTR data; /* Unserialized data from wsman response */
-    hypervWmiClassInfoPtr info; /* The info used to make wsman request */
+    hypervWmiClassInfo *info; /* The info used to make wsman request */
     hypervObject *next;
     hypervPrivate *priv;
 };
 
 typedef struct _hypervWqlQuery hypervWqlQuery;
-typedef hypervWqlQuery *hypervWqlQueryPtr;
 struct _hypervWqlQuery {
-    virBufferPtr query;
-    hypervWmiClassInfoPtr info;
+    virBuffer *query;
+    hypervWmiClassInfo *info;
 };
 
-int hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
+int hypervEnumAndPull(hypervPrivate *priv, hypervWqlQuery *wqlQuery,
                       hypervObject **list);
 
 void hypervFreeObject(void *object);
@@ -85,15 +84,15 @@ typedef struct _hypervSimpleParam hypervSimpleParam;
 
 struct _hypervEprParam {
     const char *name;
-    virBufferPtr query;
-    hypervWmiClassInfoPtr info; /* info of the object this param represents */
+    virBuffer *query;
+    hypervWmiClassInfo *info; /* info of the object this param represents */
 };
 typedef struct _hypervEprParam hypervEprParam;
 
 struct _hypervEmbeddedParam {
     const char *name;
     GHashTable *table;
-    hypervWmiClassInfoPtr info; /* info of the object this param represents */
+    hypervWmiClassInfo *info; /* info of the object this param represents */
 };
 typedef struct _hypervEmbeddedParam hypervEmbeddedParam;
 
@@ -106,51 +105,49 @@ struct _hypervParam {
     };
 };
 typedef struct _hypervParam hypervParam;
-typedef hypervParam *hypervParamPtr;
 
 struct _hypervInvokeParamsList {
     const char *method;
     const char *ns;
     const char *resourceUri;
     const char *selector;
-    hypervParamPtr params;
+    hypervParam *params;
     size_t nbParams;
     size_t nbAvailParams;
 };
 typedef struct _hypervInvokeParamsList hypervInvokeParamsList;
-typedef hypervInvokeParamsList *hypervInvokeParamsListPtr;
 
 
-hypervInvokeParamsListPtr hypervCreateInvokeParamsList(const char *method,
+hypervInvokeParamsList *hypervCreateInvokeParamsList(const char *method,
                                                        const char *selector,
-                                                       hypervWmiClassInfoPtr obj);
+                                                       hypervWmiClassInfo *obj);
 
-void hypervFreeInvokeParams(hypervInvokeParamsListPtr params);
+void hypervFreeInvokeParams(hypervInvokeParamsList *params);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(hypervInvokeParamsList, hypervFreeInvokeParams);
 
-int hypervAddSimpleParam(hypervInvokeParamsListPtr params, const char *name,
+int hypervAddSimpleParam(hypervInvokeParamsList *params, const char *name,
                          const char *value);
 
-int hypervAddEprParam(hypervInvokeParamsListPtr params,
+int hypervAddEprParam(hypervInvokeParamsList *params,
                       const char *name,
-                      virBufferPtr query,
-                      hypervWmiClassInfoPtr eprInfo);
+                      virBuffer *query,
+                      hypervWmiClassInfo *eprInfo);
 
-GHashTable *hypervCreateEmbeddedParam(hypervWmiClassInfoPtr info);
+GHashTable *hypervCreateEmbeddedParam(hypervWmiClassInfo *info);
 
 int hypervSetEmbeddedProperty(GHashTable *table,
                               const char *name,
                               const char *value);
 
-int hypervAddEmbeddedParam(hypervInvokeParamsListPtr params,
+int hypervAddEmbeddedParam(hypervInvokeParamsList *params,
                            const char *name,
                            GHashTable **table,
-                           hypervWmiClassInfoPtr info);
+                           hypervWmiClassInfo *info);
 
 void hypervFreeEmbeddedParam(GHashTable *p);
 
 int hypervInvokeMethod(hypervPrivate *priv,
-                       hypervInvokeParamsListPtr *paramsPtr,
+                       hypervInvokeParamsList **paramsPtr,
                        WsXmlDocH *res);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -190,8 +187,8 @@ const char *hypervReturnCodeToString(int returnCode);
 
 
 int hypervGetWmiClassList(hypervPrivate *priv,
-                          hypervWmiClassInfoPtr wmiInfo,
-                          virBufferPtr query,
+                          hypervWmiClassInfo *wmiInfo,
+                          virBuffer *query,
                           hypervObject **wmiClass);
 
 /**
@@ -272,9 +269,9 @@ int hypervGetEthernetPortAllocationSD(hypervPrivate *priv,
 
 int hypervMsvmVSMSAddResourceSettings(virDomainPtr domain,
                                       GHashTable **resourceSettingsPtr,
-                                      hypervWmiClassInfoPtr wmiInfo,
+                                      hypervWmiClassInfo *wmiInfo,
                                       WsXmlDocH *response);
 
 int hypervMsvmVSMSModifyResourceSettings(hypervPrivate *priv,
                                          GHashTable **resourceSettingsPtr,
-                                         hypervWmiClassInfoPtr wmiInfo);
+                                         hypervWmiClassInfo *wmiInfo);

@@ -30,63 +30,63 @@
 #include "virnetserverservice.h"
 #include "virnetserver.h"
 
-virNetDaemonPtr virNetDaemonNew(void);
+virNetDaemon *virNetDaemonNew(void);
 
-int virNetDaemonAddServer(virNetDaemonPtr dmn,
-                          virNetServerPtr srv);
+int virNetDaemonAddServer(virNetDaemon *dmn,
+                          virNetServer *srv);
 
-typedef virNetServerPtr (*virNetDaemonNewServerPostExecRestart)(virNetDaemonPtr dmn,
+typedef virNetServer *(*virNetDaemonNewServerPostExecRestart)(virNetDaemon *dmn,
                                                                 const char *name,
-                                                                virJSONValuePtr object,
+                                                                virJSONValue *object,
                                                                 void *opaque);
-virNetDaemonPtr virNetDaemonNewPostExecRestart(virJSONValuePtr object,
+virNetDaemon *virNetDaemonNewPostExecRestart(virJSONValue *object,
                                                size_t nDefServerNames,
                                                const char **defServerNames,
                                                virNetDaemonNewServerPostExecRestart cb,
                                                void *opaque);
 
-virJSONValuePtr virNetDaemonPreExecRestart(virNetDaemonPtr dmn);
+virJSONValue *virNetDaemonPreExecRestart(virNetDaemon *dmn);
 
-bool virNetDaemonIsPrivileged(virNetDaemonPtr dmn);
+bool virNetDaemonIsPrivileged(virNetDaemon *dmn);
 
-void virNetDaemonAutoShutdown(virNetDaemonPtr dmn,
+void virNetDaemonAutoShutdown(virNetDaemon *dmn,
                               unsigned int timeout);
 
-void virNetDaemonAddShutdownInhibition(virNetDaemonPtr dmn);
-void virNetDaemonRemoveShutdownInhibition(virNetDaemonPtr dmn);
+void virNetDaemonAddShutdownInhibition(virNetDaemon *dmn);
+void virNetDaemonRemoveShutdownInhibition(virNetDaemon *dmn);
 
 #ifdef WIN32
 # define siginfo_t void
 #endif
 
-typedef void (*virNetDaemonSignalFunc)(virNetDaemonPtr dmn, siginfo_t *info, void *opaque);
+typedef void (*virNetDaemonSignalFunc)(virNetDaemon *dmn, siginfo_t *info, void *opaque);
 
-int virNetDaemonAddSignalHandler(virNetDaemonPtr dmn,
+int virNetDaemonAddSignalHandler(virNetDaemon *dmn,
                                  int signum,
                                  virNetDaemonSignalFunc func,
                                  void *opaque);
 
-void virNetDaemonUpdateServices(virNetDaemonPtr dmn,
+void virNetDaemonUpdateServices(virNetDaemon *dmn,
                                 bool enabled);
 
-void virNetDaemonSetStateStopWorkerThread(virNetDaemonPtr dmn,
-                                          virThreadPtr *thr);
+void virNetDaemonSetStateStopWorkerThread(virNetDaemon *dmn,
+                                          virThread **thr);
 
-void virNetDaemonRun(virNetDaemonPtr dmn);
+void virNetDaemonRun(virNetDaemon *dmn);
 
-void virNetDaemonQuit(virNetDaemonPtr dmn);
+void virNetDaemonQuit(virNetDaemon *dmn);
 void virNetDaemonQuitExecRestart(virNetDaemon *dmn);
 
-bool virNetDaemonHasClients(virNetDaemonPtr dmn);
+bool virNetDaemonHasClients(virNetDaemon *dmn);
 
-virNetServerPtr virNetDaemonGetServer(virNetDaemonPtr dmn,
+virNetServer *virNetDaemonGetServer(virNetDaemon *dmn,
                                       const char *serverName);
-ssize_t virNetDaemonGetServers(virNetDaemonPtr dmn, virNetServerPtr **servers);
-bool virNetDaemonHasServer(virNetDaemonPtr dmn,
+ssize_t virNetDaemonGetServers(virNetDaemon *dmn, virNetServer ***servers);
+bool virNetDaemonHasServer(virNetDaemon *dmn,
                            const char *serverName);
 
 typedef int (*virNetDaemonShutdownCallback)(void);
 
-void virNetDaemonSetShutdownCallbacks(virNetDaemonPtr dmn,
+void virNetDaemonSetShutdownCallbacks(virNetDaemon *dmn,
                                       virNetDaemonShutdownCallback prepareCb,
                                       virNetDaemonShutdownCallback waitCb);

@@ -19,8 +19,8 @@ testCompareXMLToXMLFiles(const char *xml)
     char *xmlData = NULL;
     char *actual = NULL;
     int ret = -1;
-    virNodeDeviceDefPtr dev = NULL;
-    virNodeDevCapsDefPtr caps;
+    virNodeDeviceDef *dev = NULL;
+    virNodeDevCapsDef *caps;
 
     if (virTestLoadFile(xml, &xmlData) < 0)
         goto fail;
@@ -30,7 +30,7 @@ testCompareXMLToXMLFiles(const char *xml)
 
     /* Calculate some things that are not read in */
     for (caps = dev->caps; caps; caps = caps->next) {
-        virNodeDevCapDataPtr data = &caps->data;
+        virNodeDevCapData *data = &caps->data;
 
         if (caps->data.type == VIR_NODE_DEV_CAP_STORAGE) {
             if (data->storage.flags & VIR_NODE_DEV_CAP_STORAGE_REMOVABLE) {

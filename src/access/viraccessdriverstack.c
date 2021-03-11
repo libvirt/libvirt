@@ -27,18 +27,16 @@
 #define VIR_FROM_THIS VIR_FROM_ACCESS
 
 typedef struct _virAccessDriverStackPrivate virAccessDriverStackPrivate;
-typedef virAccessDriverStackPrivate *virAccessDriverStackPrivatePtr;
-
 struct _virAccessDriverStackPrivate {
-    virAccessManagerPtr *managers;
+    virAccessManager **managers;
     size_t managersLen;
 };
 
 
-int virAccessDriverStackAppend(virAccessManagerPtr manager,
-                               virAccessManagerPtr child)
+int virAccessDriverStackAppend(virAccessManager *manager,
+                               virAccessManager *child)
 {
-    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
 
     VIR_EXPAND_N(priv->managers, priv->managersLen, 1);
 
@@ -48,9 +46,9 @@ int virAccessDriverStackAppend(virAccessManagerPtr manager,
 }
 
 
-static void virAccessDriverStackCleanup(virAccessManagerPtr manager)
+static void virAccessDriverStackCleanup(virAccessManager *manager)
 {
-    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
     size_t i;
 
     for (i = 0; i < priv->managersLen; i++)
@@ -60,11 +58,11 @@ static void virAccessDriverStackCleanup(virAccessManagerPtr manager)
 
 
 static int
-virAccessDriverStackCheckConnect(virAccessManagerPtr manager,
+virAccessDriverStackCheckConnect(virAccessManager *manager,
                                  const char *driverName,
                                  virAccessPermConnect perm)
 {
-    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
     int ret = 1;
     size_t i;
 
@@ -82,12 +80,12 @@ virAccessDriverStackCheckConnect(virAccessManagerPtr manager,
 }
 
 static int
-virAccessDriverStackCheckDomain(virAccessManagerPtr manager,
+virAccessDriverStackCheckDomain(virAccessManager *manager,
                                 const char *driverName,
-                                virDomainDefPtr domain,
+                                virDomainDef *domain,
                                 virAccessPermDomain perm)
 {
-    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
     int ret = 1;
     size_t i;
 
@@ -105,12 +103,12 @@ virAccessDriverStackCheckDomain(virAccessManagerPtr manager,
 }
 
 static int
-virAccessDriverStackCheckInterface(virAccessManagerPtr manager,
+virAccessDriverStackCheckInterface(virAccessManager *manager,
                                    const char *driverName,
-                                   virInterfaceDefPtr iface,
+                                   virInterfaceDef *iface,
                                    virAccessPermInterface perm)
 {
-    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
     int ret = 1;
     size_t i;
 
@@ -128,12 +126,12 @@ virAccessDriverStackCheckInterface(virAccessManagerPtr manager,
 }
 
 static int
-virAccessDriverStackCheckNetwork(virAccessManagerPtr manager,
+virAccessDriverStackCheckNetwork(virAccessManager *manager,
                                  const char *driverName,
-                                 virNetworkDefPtr network,
+                                 virNetworkDef *network,
                                  virAccessPermNetwork perm)
 {
-    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
     int ret = 1;
     size_t i;
 
@@ -151,13 +149,13 @@ virAccessDriverStackCheckNetwork(virAccessManagerPtr manager,
 }
 
 static int
-virAccessDriverStackCheckNetworkPort(virAccessManagerPtr manager,
+virAccessDriverStackCheckNetworkPort(virAccessManager *manager,
                                      const char *driverName,
-                                     virNetworkDefPtr network,
-                                     virNetworkPortDefPtr port,
+                                     virNetworkDef *network,
+                                     virNetworkPortDef *port,
                                      virAccessPermNetworkPort perm)
 {
-    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
     int ret = 1;
     size_t i;
 
@@ -175,12 +173,12 @@ virAccessDriverStackCheckNetworkPort(virAccessManagerPtr manager,
 }
 
 static int
-virAccessDriverStackCheckNodeDevice(virAccessManagerPtr manager,
+virAccessDriverStackCheckNodeDevice(virAccessManager *manager,
                                     const char *driverName,
-                                    virNodeDeviceDefPtr nodedev,
+                                    virNodeDeviceDef *nodedev,
                                     virAccessPermNodeDevice perm)
 {
-    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
     int ret = 1;
     size_t i;
 
@@ -198,12 +196,12 @@ virAccessDriverStackCheckNodeDevice(virAccessManagerPtr manager,
 }
 
 static int
-virAccessDriverStackCheckNWFilter(virAccessManagerPtr manager,
+virAccessDriverStackCheckNWFilter(virAccessManager *manager,
                                   const char *driverName,
-                                  virNWFilterDefPtr nwfilter,
+                                  virNWFilterDef *nwfilter,
                                   virAccessPermNWFilter perm)
 {
-    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
     int ret = 1;
     size_t i;
 
@@ -221,12 +219,12 @@ virAccessDriverStackCheckNWFilter(virAccessManagerPtr manager,
 }
 
 static int
-virAccessDriverStackCheckNWFilterBinding(virAccessManagerPtr manager,
+virAccessDriverStackCheckNWFilterBinding(virAccessManager *manager,
                                          const char *driverName,
-                                         virNWFilterBindingDefPtr binding,
+                                         virNWFilterBindingDef *binding,
                                          virAccessPermNWFilterBinding perm)
 {
-    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
     int ret = 1;
     size_t i;
 
@@ -244,12 +242,12 @@ virAccessDriverStackCheckNWFilterBinding(virAccessManagerPtr manager,
 }
 
 static int
-virAccessDriverStackCheckSecret(virAccessManagerPtr manager,
+virAccessDriverStackCheckSecret(virAccessManager *manager,
                                 const char *driverName,
-                                virSecretDefPtr secret,
+                                virSecretDef *secret,
                                 virAccessPermSecret perm)
 {
-    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
     int ret = 1;
     size_t i;
 
@@ -267,12 +265,12 @@ virAccessDriverStackCheckSecret(virAccessManagerPtr manager,
 }
 
 static int
-virAccessDriverStackCheckStoragePool(virAccessManagerPtr manager,
+virAccessDriverStackCheckStoragePool(virAccessManager *manager,
                                      const char *driverName,
-                                     virStoragePoolDefPtr pool,
+                                     virStoragePoolDef *pool,
                                      virAccessPermStoragePool perm)
 {
-    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
     int ret = 1;
     size_t i;
 
@@ -290,13 +288,13 @@ virAccessDriverStackCheckStoragePool(virAccessManagerPtr manager,
 }
 
 static int
-virAccessDriverStackCheckStorageVol(virAccessManagerPtr manager,
+virAccessDriverStackCheckStorageVol(virAccessManager *manager,
                                     const char *driverName,
-                                    virStoragePoolDefPtr pool,
-                                    virStorageVolDefPtr vol,
+                                    virStoragePoolDef *pool,
+                                    virStorageVolDef *vol,
                                     virAccessPermStorageVol perm)
 {
-    virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
+    virAccessDriverStackPrivate *priv = virAccessManagerGetPrivateData(manager);
     int ret = 1;
     size_t i;
 

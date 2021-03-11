@@ -36,7 +36,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-static libxlDriverPrivatePtr driver;
+static libxlDriverPrivate *driver;
 
 /*
  * This function provides a mechanism to replace variables in test
@@ -70,7 +70,7 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
     virConnectPtr conn = NULL;
     int wrote = 4096;
     int ret = -1;
-    virDomainDefPtr def = NULL;
+    virDomainDef *def = NULL;
     char *replacedXML = NULL;
 
     gotxlcfgData = g_new0(char, wrote);
@@ -128,7 +128,7 @@ testCompareFormatXML(const char *xlcfg, const char *xml, bool replaceVars)
     g_autoptr(virConf) conf = NULL;
     int ret = -1;
     virConnectPtr conn;
-    virDomainDefPtr def = NULL;
+    virDomainDef *def = NULL;
     char *replacedXML = NULL;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 

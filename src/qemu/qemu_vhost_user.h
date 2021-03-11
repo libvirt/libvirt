@@ -25,27 +25,26 @@
 #include "virarch.h"
 
 typedef struct _qemuVhostUser qemuVhostUser;
-typedef qemuVhostUser *qemuVhostUserPtr;
 
 void
-qemuVhostUserFree(qemuVhostUserPtr fw);
+qemuVhostUserFree(qemuVhostUser *fw);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuVhostUser, qemuVhostUserFree);
 
-qemuVhostUserPtr
+qemuVhostUser *
 qemuVhostUserParse(const char *path);
 
 char *
-qemuVhostUserFormat(qemuVhostUserPtr fw);
+qemuVhostUserFormat(qemuVhostUser *fw);
 
 int
 qemuVhostUserFetchConfigs(char ***configs,
                          bool privileged);
 
 int
-qemuVhostUserFillDomainGPU(virQEMUDriverPtr driver,
-                           virDomainVideoDefPtr video);
+qemuVhostUserFillDomainGPU(virQEMUDriver *driver,
+                           virDomainVideoDef *video);
 
 int
-qemuVhostUserFillDomainFS(virQEMUDriverPtr driver,
-                          virDomainFSDefPtr fs);
+qemuVhostUserFillDomainFS(virQEMUDriver *driver,
+                          virDomainFSDef *fs);

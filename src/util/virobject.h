@@ -27,16 +27,12 @@
 #include <glib-object.h>
 
 typedef struct _virClass virClass;
-typedef virClass *virClassPtr;
 
 typedef struct _virObject virObject;
-typedef virObject *virObjectPtr;
 
 typedef struct _virObjectLockable virObjectLockable;
-typedef virObjectLockable *virObjectLockablePtr;
 
 typedef struct _virObjectRWLockable virObjectRWLockable;
-typedef virObjectRWLockable *virObjectRWLockablePtr;
 
 typedef void (*virObjectDisposeCallback)(void *obj);
 
@@ -57,9 +53,9 @@ struct _virObjectRWLockable {
     virRWLock lock;
 };
 
-virClassPtr virClassForObject(void);
-virClassPtr virClassForObjectLockable(void);
-virClassPtr virClassForObjectRWLockable(void);
+virClass *virClassForObject(void);
+virClass *virClassForObjectLockable(void);
+virClass *virClassForObjectRWLockable(void);
 
 #ifndef VIR_PARENT_REQUIRED
 # define VIR_PARENT_REQUIRED ATTRIBUTE_NONNULL(1)
@@ -76,8 +72,8 @@ virClassPtr virClassForObjectRWLockable(void);
                                 sizeof(((name *)NULL)->parent), \
                                 name##Dispose)))
 
-virClassPtr
-virClassNew(virClassPtr parent,
+virClass *
+virClassNew(virClass *parent,
             const char *name,
             size_t objectSize,
             size_t parentSize,
@@ -85,16 +81,16 @@ virClassNew(virClassPtr parent,
     VIR_PARENT_REQUIRED ATTRIBUTE_NONNULL(2);
 
 const char *
-virClassName(virClassPtr klass)
+virClassName(virClass *klass)
     ATTRIBUTE_NONNULL(1);
 
 bool
-virClassIsDerivedFrom(virClassPtr klass,
-                      virClassPtr parent)
+virClassIsDerivedFrom(virClass *klass,
+                      virClass *parent)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void *
-virObjectNew(virClassPtr klass)
+virObjectNew(virClass *klass)
     ATTRIBUTE_NONNULL(1);
 
 void
@@ -105,7 +101,7 @@ virObjectRef(void *obj);
 
 bool
 virObjectIsClass(void *obj,
-                 virClassPtr klass)
+                 virClass *klass)
     ATTRIBUTE_NONNULL(2);
 
 void
@@ -115,11 +111,11 @@ void
 virObjectFreeHashData(void *opaque);
 
 void *
-virObjectLockableNew(virClassPtr klass)
+virObjectLockableNew(virClass *klass)
     ATTRIBUTE_NONNULL(1);
 
 void *
-virObjectRWLockableNew(virClassPtr klass)
+virObjectRWLockableNew(virClass *klass)
     ATTRIBUTE_NONNULL(1);
 
 void

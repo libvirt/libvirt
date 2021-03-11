@@ -62,7 +62,7 @@ struct guest_arch {
 #define XEN_CAP_REGEX "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(aarch64|armv7l|x86_32|x86_64|ia64|powerpc64)(p|be)?"
 
 static int
-libxlCapsAddCPUID(virCPUDataPtr data, virCPUx86CPUID *cpuid, ssize_t ncaps)
+libxlCapsAddCPUID(virCPUData *data, virCPUx86CPUID *cpuid, ssize_t ncaps)
 {
     virCPUx86DataItem item = { 0 };
     size_t i;
@@ -106,12 +106,12 @@ libxlCapsAddCPUID(virCPUDataPtr data, virCPUx86CPUID *cpuid, ssize_t ncaps)
  *       word 8 | - Non existent -   | CPUID.80000008.EBX   |
  *
  */
-static virCPUDataPtr
-libxlCapsNodeData(virCPUDefPtr cpu, libxl_hwcap hwcap,
+static virCPUData *
+libxlCapsNodeData(virCPUDef *cpu, libxl_hwcap hwcap,
                   enum libxlHwcapVersion version)
 {
     ssize_t ncaps;
-    virCPUDataPtr cpudata = NULL;
+    virCPUData *cpudata = NULL;
     virCPUx86CPUID cpuid[] = {
         { .eax_in = 0x00000001,
           .edx = hwcap[0] },
@@ -155,11 +155,11 @@ libxlCapsNodeData(virCPUDefPtr cpu, libxl_hwcap hwcap,
  * the X'th 32-bit word of hw_cap.
  */
 static int
-libxlCapsInitCPU(virCapsPtr caps, libxl_physinfo *phy_info,
+libxlCapsInitCPU(virCaps *caps, libxl_physinfo *phy_info,
                  enum libxlHwcapVersion version)
 {
-    virCPUDataPtr data = NULL;
-    virCPUDefPtr cpu = NULL;
+    virCPUData *data = NULL;
+    virCPUDef *cpu = NULL;
     int ret = -1;
     int host_pae;
     int host_lm;
@@ -208,7 +208,7 @@ libxlCapsInitCPU(virCapsPtr caps, libxl_physinfo *phy_info,
 }
 
 static int
-libxlCapsInitHost(libxl_ctx *ctx, virCapsPtr caps)
+libxlCapsInitHost(libxl_ctx *ctx, virCaps *caps)
 {
     const libxl_version_info *ver_info;
     enum libxlHwcapVersion version;
@@ -243,13 +243,13 @@ libxlCapsInitHost(libxl_ctx *ctx, virCapsPtr caps)
 }
 
 static int
-libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
+libxlCapsInitNuma(libxl_ctx *ctx, virCaps *caps)
 {
     libxl_numainfo *numa_info = NULL;
     libxl_cputopology *cpu_topo = NULL;
     int nr_nodes = 0, nr_cpus = 0, nr_siblings = 0;
-    virCapsHostNUMACellCPUPtr *cpus = NULL;
-    virCapsHostNUMACellSiblingInfoPtr siblings = NULL;
+    virCapsHostNUMACellCPU **cpus = NULL;
+    virCapsHostNUMACellSiblingInfo *siblings = NULL;
     int *nr_cpus_node = NULL;
     size_t i;
     int ret = -1;
@@ -269,7 +269,7 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
         }
     }
 
-    cpus = g_new0(virCapsHostNUMACellCPUPtr, nr_nodes);
+    cpus = g_new0(virCapsHostNUMACellCPU *, nr_nodes);
 
     nr_cpus_node = g_new0(int, nr_nodes);
 
@@ -360,7 +360,7 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
 }
 
 static int
-libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
+libxlCapsInitGuests(libxl_ctx *ctx, virCaps *caps)
 {
     const libxl_version_info *ver_info;
     g_autoptr(GRegex) regex = NULL;
@@ -504,11 +504,11 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
     }
 
     for (i = 0; i < nr_guest_archs; ++i) {
-        virCapsGuestPtr guest;
+        virCapsGuest *guest;
         char const *const xen_machines[] = {
             guest_archs[i].hvm ? "xenfv" :
                 (guest_archs[i].pvh ? "xenpvh" : "xenpv")};
-        virCapsGuestMachinePtr *machines;
+        virCapsGuestMachine **machines;
 
         if ((machines = virCapabilitiesAllocMachines(xen_machines, 1)) == NULL)
             return -1;
@@ -565,11 +565,11 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
 
 static int
 libxlMakeDomainOSCaps(const char *machine,
-                      virDomainCapsOSPtr os,
-                      virFirmwarePtr *firmwares,
+                      virDomainCapsOS *os,
+                      virFirmware **firmwares,
                       size_t nfirmwares)
 {
-    virDomainCapsLoaderPtr capsLoader = &os->loader;
+    virDomainCapsLoader *capsLoader = &os->loader;
     size_t i;
 
     os->supported = VIR_TRISTATE_BOOL_YES;
@@ -598,7 +598,7 @@ libxlMakeDomainOSCaps(const char *machine,
 }
 
 static int
-libxlMakeDomainDeviceDiskCaps(virDomainCapsDeviceDiskPtr dev)
+libxlMakeDomainDeviceDiskCaps(virDomainCapsDeviceDisk *dev)
 {
     dev->supported = VIR_TRISTATE_BOOL_YES;
     dev->diskDevice.report = true;
@@ -618,7 +618,7 @@ libxlMakeDomainDeviceDiskCaps(virDomainCapsDeviceDiskPtr dev)
 }
 
 static int
-libxlMakeDomainDeviceGraphicsCaps(virDomainCapsDeviceGraphicsPtr dev)
+libxlMakeDomainDeviceGraphicsCaps(virDomainCapsDeviceGraphics *dev)
 {
     dev->supported = VIR_TRISTATE_BOOL_YES;
     dev->type.report = true;
@@ -632,7 +632,7 @@ libxlMakeDomainDeviceGraphicsCaps(virDomainCapsDeviceGraphicsPtr dev)
 }
 
 static int
-libxlMakeDomainDeviceVideoCaps(virDomainCapsDeviceVideoPtr dev)
+libxlMakeDomainDeviceVideoCaps(virDomainCapsDeviceVideo *dev)
 {
     dev->supported = VIR_TRISTATE_BOOL_YES;
     dev->modelType.report = true;
@@ -655,7 +655,7 @@ bool libxlCapsHasPVUSB(void)
 }
 
 static int
-libxlMakeDomainDeviceHostdevCaps(virDomainCapsDeviceHostdevPtr dev)
+libxlMakeDomainDeviceHostdevCaps(virDomainCapsDeviceHostdev *dev)
 {
     dev->supported = VIR_TRISTATE_BOOL_YES;
     dev->mode.report = true;
@@ -690,10 +690,10 @@ libxlMakeDomainDeviceHostdevCaps(virDomainCapsDeviceHostdevPtr dev)
     return 0;
 }
 
-virCapsPtr
+virCaps *
 libxlMakeCapabilities(libxl_ctx *ctx)
 {
-    virCapsPtr caps;
+    virCaps *caps;
 
 #ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
     if ((caps = virCapabilitiesNew(virArchFromHost(), false, false)) == NULL)
@@ -729,15 +729,15 @@ libxlMakeCapabilities(libxl_ctx *ctx)
 #define PV_MAX_VCPUS  512
 
 int
-libxlMakeDomainCapabilities(virDomainCapsPtr domCaps,
-                            virFirmwarePtr *firmwares,
+libxlMakeDomainCapabilities(virDomainCaps *domCaps,
+                            virFirmware **firmwares,
                             size_t nfirmwares)
 {
-    virDomainCapsOSPtr os = &domCaps->os;
-    virDomainCapsDeviceDiskPtr disk = &domCaps->disk;
-    virDomainCapsDeviceGraphicsPtr graphics = &domCaps->graphics;
-    virDomainCapsDeviceVideoPtr video = &domCaps->video;
-    virDomainCapsDeviceHostdevPtr hostdev = &domCaps->hostdev;
+    virDomainCapsOS *os = &domCaps->os;
+    virDomainCapsDeviceDisk *disk = &domCaps->disk;
+    virDomainCapsDeviceGraphics *graphics = &domCaps->graphics;
+    virDomainCapsDeviceVideo *video = &domCaps->video;
+    virDomainCapsDeviceHostdev *hostdev = &domCaps->hostdev;
 
     if (STREQ(domCaps->machine, "xenfv"))
         domCaps->maxvcpus = HVM_MAX_VCPUS;
@@ -767,7 +767,7 @@ int
 libxlDomainGetEmulatorType(const virDomainDef *def)
 {
     int ret = LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN;
-    virCommandPtr cmd = NULL;
+    virCommand *cmd = NULL;
     g_autofree char *output = NULL;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {

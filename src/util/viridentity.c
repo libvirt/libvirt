@@ -97,9 +97,9 @@ static void vir_identity_class_init(virIdentityClass *klass)
  *
  * Returns: a reference to the current identity, or NULL
  */
-virIdentityPtr virIdentityGetCurrent(void)
+virIdentity *virIdentityGetCurrent(void)
 {
-    virIdentityPtr ident;
+    virIdentity *ident;
 
     if (virIdentityInitialize() < 0)
         return NULL;
@@ -120,7 +120,7 @@ virIdentityPtr virIdentityGetCurrent(void)
  *
  * Returns 0 on success, or -1 on error
  */
-int virIdentitySetCurrent(virIdentityPtr ident)
+int virIdentitySetCurrent(virIdentity *ident)
 {
     g_autoptr(virIdentity) old = NULL;
 
@@ -150,7 +150,7 @@ int virIdentitySetCurrent(virIdentityPtr ident)
  *
  * Returns a reference to the system identity, or NULL
  */
-virIdentityPtr virIdentityGetSystem(void)
+virIdentity *virIdentityGetSystem(void)
 {
     g_autofree char *username = NULL;
     g_autofree char *groupname = NULL;
@@ -213,7 +213,7 @@ virIdentityPtr virIdentityGetSystem(void)
  *
  * Returns: a new empty identity
  */
-virIdentityPtr virIdentityNew(void)
+virIdentity *virIdentityNew(void)
 {
     return VIR_IDENTITY(g_object_new(VIR_TYPE_IDENTITY, NULL));
 }
@@ -221,7 +221,7 @@ virIdentityPtr virIdentityNew(void)
 
 static void virIdentityFinalize(GObject *object)
 {
-    virIdentityPtr ident = VIR_IDENTITY(object);
+    virIdentity *ident = VIR_IDENTITY(object);
 
     virTypedParamsFree(ident->params, ident->nparams);
 
@@ -232,7 +232,7 @@ static void virIdentityFinalize(GObject *object)
 /*
  * Returns: 0 if not present, 1 if present, -1 on error
  */
-int virIdentityGetUserName(virIdentityPtr ident,
+int virIdentityGetUserName(virIdentity *ident,
                            const char **username)
 {
     *username = NULL;
@@ -246,7 +246,7 @@ int virIdentityGetUserName(virIdentityPtr ident,
 /*
  * Returns: 0 if not present, 1 if present, -1 on error
  */
-int virIdentityGetUNIXUserID(virIdentityPtr ident,
+int virIdentityGetUNIXUserID(virIdentity *ident,
                              uid_t *uid)
 {
     unsigned long long val;
@@ -269,7 +269,7 @@ int virIdentityGetUNIXUserID(virIdentityPtr ident,
 /*
  * Returns: 0 if not present, 1 if present, -1 on error
  */
-int virIdentityGetGroupName(virIdentityPtr ident,
+int virIdentityGetGroupName(virIdentity *ident,
                             const char **groupname)
 {
     *groupname = NULL;
@@ -283,7 +283,7 @@ int virIdentityGetGroupName(virIdentityPtr ident,
 /*
  * Returns: 0 if not present, 1 if present, -1 on error
  */
-int virIdentityGetUNIXGroupID(virIdentityPtr ident,
+int virIdentityGetUNIXGroupID(virIdentity *ident,
                               gid_t *gid)
 {
     unsigned long long val;
@@ -306,7 +306,7 @@ int virIdentityGetUNIXGroupID(virIdentityPtr ident,
 /*
  * Returns: 0 if not present, 1 if present, -1 on error
  */
-int virIdentityGetProcessID(virIdentityPtr ident,
+int virIdentityGetProcessID(virIdentity *ident,
                             pid_t *pid)
 {
     long long val;
@@ -329,7 +329,7 @@ int virIdentityGetProcessID(virIdentityPtr ident,
 /*
  * Returns: 0 if not present, 1 if present, -1 on error
  */
-int virIdentityGetProcessTime(virIdentityPtr ident,
+int virIdentityGetProcessTime(virIdentity *ident,
                               unsigned long long *timestamp)
 {
     *timestamp = 0;
@@ -343,7 +343,7 @@ int virIdentityGetProcessTime(virIdentityPtr ident,
 /*
  * Returns: 0 if not present, 1 if present, -1 on error
  */
-int virIdentityGetSASLUserName(virIdentityPtr ident,
+int virIdentityGetSASLUserName(virIdentity *ident,
                                const char **username)
 {
     *username = NULL;
@@ -357,7 +357,7 @@ int virIdentityGetSASLUserName(virIdentityPtr ident,
 /*
  * Returns: 0 if not present, 1 if present, -1 on error
  */
-int virIdentityGetX509DName(virIdentityPtr ident,
+int virIdentityGetX509DName(virIdentity *ident,
                             const char **dname)
 {
     *dname = NULL;
@@ -371,7 +371,7 @@ int virIdentityGetX509DName(virIdentityPtr ident,
 /*
  * Returns: 0 if not present, 1 if present, -1 on error
  */
-int virIdentityGetSELinuxContext(virIdentityPtr ident,
+int virIdentityGetSELinuxContext(virIdentity *ident,
                                  const char **context)
 {
     *context = NULL;
@@ -382,7 +382,7 @@ int virIdentityGetSELinuxContext(virIdentityPtr ident,
 }
 
 
-int virIdentitySetUserName(virIdentityPtr ident,
+int virIdentitySetUserName(virIdentity *ident,
                            const char *username)
 {
     if (virTypedParamsGet(ident->params,
@@ -401,7 +401,7 @@ int virIdentitySetUserName(virIdentityPtr ident,
 }
 
 
-int virIdentitySetUNIXUserID(virIdentityPtr ident,
+int virIdentitySetUNIXUserID(virIdentity *ident,
                              uid_t uid)
 {
     if (virTypedParamsGet(ident->params,
@@ -420,7 +420,7 @@ int virIdentitySetUNIXUserID(virIdentityPtr ident,
 }
 
 
-int virIdentitySetGroupName(virIdentityPtr ident,
+int virIdentitySetGroupName(virIdentity *ident,
                             const char *groupname)
 {
     if (virTypedParamsGet(ident->params,
@@ -439,7 +439,7 @@ int virIdentitySetGroupName(virIdentityPtr ident,
 }
 
 
-int virIdentitySetUNIXGroupID(virIdentityPtr ident,
+int virIdentitySetUNIXGroupID(virIdentity *ident,
                               gid_t gid)
 {
     if (virTypedParamsGet(ident->params,
@@ -458,7 +458,7 @@ int virIdentitySetUNIXGroupID(virIdentityPtr ident,
 }
 
 
-int virIdentitySetProcessID(virIdentityPtr ident,
+int virIdentitySetProcessID(virIdentity *ident,
                             pid_t pid)
 {
     if (virTypedParamsGet(ident->params,
@@ -477,7 +477,7 @@ int virIdentitySetProcessID(virIdentityPtr ident,
 }
 
 
-int virIdentitySetProcessTime(virIdentityPtr ident,
+int virIdentitySetProcessTime(virIdentity *ident,
                               unsigned long long timestamp)
 {
     if (virTypedParamsGet(ident->params,
@@ -497,7 +497,7 @@ int virIdentitySetProcessTime(virIdentityPtr ident,
 
 
 
-int virIdentitySetSASLUserName(virIdentityPtr ident,
+int virIdentitySetSASLUserName(virIdentity *ident,
                                const char *username)
 {
     if (virTypedParamsGet(ident->params,
@@ -516,7 +516,7 @@ int virIdentitySetSASLUserName(virIdentityPtr ident,
 }
 
 
-int virIdentitySetX509DName(virIdentityPtr ident,
+int virIdentitySetX509DName(virIdentity *ident,
                             const char *dname)
 {
     if (virTypedParamsGet(ident->params,
@@ -535,7 +535,7 @@ int virIdentitySetX509DName(virIdentityPtr ident,
 }
 
 
-int virIdentitySetSELinuxContext(virIdentityPtr ident,
+int virIdentitySetSELinuxContext(virIdentity *ident,
                                  const char *context)
 {
     if (virTypedParamsGet(ident->params,
@@ -554,7 +554,7 @@ int virIdentitySetSELinuxContext(virIdentityPtr ident,
 }
 
 
-int virIdentitySetParameters(virIdentityPtr ident,
+int virIdentitySetParameters(virIdentity *ident,
                              virTypedParameterPtr params,
                              int nparams)
 {
@@ -593,7 +593,7 @@ int virIdentitySetParameters(virIdentityPtr ident,
 }
 
 
-int virIdentityGetParameters(virIdentityPtr ident,
+int virIdentityGetParameters(virIdentity *ident,
                              virTypedParameterPtr *params,
                              int *nparams)
 {

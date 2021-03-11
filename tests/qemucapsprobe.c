@@ -45,7 +45,7 @@ int
 main(int argc, char **argv)
 {
     virThread thread;
-    virQEMUCapsPtr caps;
+    virQEMUCaps *caps;
     virArch host;
     virArch guest;
     const char *mock = VIR_TEST_MOCK("qemucapsprobe");

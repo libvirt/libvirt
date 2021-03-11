@@ -77,10 +77,10 @@ static ssize_t testRead(char *buf, size_t len, void *opaque)
 static int testTLSSessionInit(const void *opaque)
 {
     struct testTLSSessionData *data = (struct testTLSSessionData *)opaque;
-    virNetTLSContextPtr clientCtxt = NULL;
-    virNetTLSContextPtr serverCtxt = NULL;
-    virNetTLSSessionPtr clientSess = NULL;
-    virNetTLSSessionPtr serverSess = NULL;
+    virNetTLSContext *clientCtxt = NULL;
+    virNetTLSContext *serverCtxt = NULL;
+    virNetTLSSession *clientSess = NULL;
+    virNetTLSSession *serverSess = NULL;
     int ret = -1;
     int channel[2];
     bool clientShake = false;

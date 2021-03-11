@@ -36,17 +36,17 @@ VIR_LOG_INIT("locking.lock_daemon_dispatch");
 #include "lock_daemon_dispatch_stubs.h"
 
 static int
-virLockSpaceProtocolDispatchAcquireResource(virNetServerPtr server G_GNUC_UNUSED,
-                                            virNetServerClientPtr client,
-                                            virNetMessagePtr msg G_GNUC_UNUSED,
-                                            virNetMessageErrorPtr rerr,
+virLockSpaceProtocolDispatchAcquireResource(virNetServer *server G_GNUC_UNUSED,
+                                            virNetServerClient *client,
+                                            virNetMessage *msg G_GNUC_UNUSED,
+                                            struct virNetMessageError *rerr,
                                             virLockSpaceProtocolAcquireResourceArgs *args)
 {
     int rv = -1;
     unsigned int flags = args->flags;
-    virLockDaemonClientPtr priv =
+    virLockDaemonClient *priv =
         virNetServerClientGetPrivateData(client);
-    virLockSpacePtr lockspace;
+    virLockSpace *lockspace;
     unsigned int newFlags;
 
     g_mutex_lock(&priv->lock);
@@ -96,17 +96,17 @@ virLockSpaceProtocolDispatchAcquireResource(virNetServerPtr server G_GNUC_UNUSED
 
 
 static int
-virLockSpaceProtocolDispatchCreateResource(virNetServerPtr server G_GNUC_UNUSED,
-                                           virNetServerClientPtr client,
-                                           virNetMessagePtr msg G_GNUC_UNUSED,
-                                           virNetMessageErrorPtr rerr,
+virLockSpaceProtocolDispatchCreateResource(virNetServer *server G_GNUC_UNUSED,
+                                           virNetServerClient *client,
+                                           virNetMessage *msg G_GNUC_UNUSED,
+                                           struct virNetMessageError *rerr,
                                            virLockSpaceProtocolCreateResourceArgs *args)
 {
     int rv = -1;
     unsigned int flags = args->flags;
-    virLockDaemonClientPtr priv =
+    virLockDaemonClient *priv =
         virNetServerClientGetPrivateData(client);
-    virLockSpacePtr lockspace;
+    virLockSpace *lockspace;
 
     g_mutex_lock(&priv->lock);
 
@@ -145,17 +145,17 @@ virLockSpaceProtocolDispatchCreateResource(virNetServerPtr server G_GNUC_UNUSED,
 
 
 static int
-virLockSpaceProtocolDispatchDeleteResource(virNetServerPtr server G_GNUC_UNUSED,
-                                           virNetServerClientPtr client,
-                                           virNetMessagePtr msg G_GNUC_UNUSED,
-                                           virNetMessageErrorPtr rerr,
+virLockSpaceProtocolDispatchDeleteResource(virNetServer *server G_GNUC_UNUSED,
+                                           virNetServerClient *client,
+                                           virNetMessage *msg G_GNUC_UNUSED,
+                                           struct virNetMessageError *rerr,
                                            virLockSpaceProtocolDeleteResourceArgs *args)
 {
     int rv = -1;
     unsigned int flags = args->flags;
-    virLockDaemonClientPtr priv =
+    virLockDaemonClient *priv =
         virNetServerClientGetPrivateData(client);
-    virLockSpacePtr lockspace;
+    virLockSpace *lockspace;
 
     g_mutex_lock(&priv->lock);
 
@@ -194,17 +194,17 @@ virLockSpaceProtocolDispatchDeleteResource(virNetServerPtr server G_GNUC_UNUSED,
 
 
 static int
-virLockSpaceProtocolDispatchNew(virNetServerPtr server G_GNUC_UNUSED,
-                                virNetServerClientPtr client,
-                                virNetMessagePtr msg G_GNUC_UNUSED,
-                                virNetMessageErrorPtr rerr,
+virLockSpaceProtocolDispatchNew(virNetServer *server G_GNUC_UNUSED,
+                                virNetServerClient *client,
+                                virNetMessage *msg G_GNUC_UNUSED,
+                                struct virNetMessageError *rerr,
                                 virLockSpaceProtocolNewArgs *args)
 {
     int rv = -1;
     unsigned int flags = args->flags;
-    virLockDaemonClientPtr priv =
+    virLockDaemonClient *priv =
         virNetServerClientGetPrivateData(client);
-    virLockSpacePtr lockspace;
+    virLockSpace *lockspace;
 
     g_mutex_lock(&priv->lock);
 
@@ -250,15 +250,15 @@ virLockSpaceProtocolDispatchNew(virNetServerPtr server G_GNUC_UNUSED,
 
 
 static int
-virLockSpaceProtocolDispatchRegister(virNetServerPtr server G_GNUC_UNUSED,
-                                     virNetServerClientPtr client,
-                                     virNetMessagePtr msg G_GNUC_UNUSED,
-                                     virNetMessageErrorPtr rerr,
+virLockSpaceProtocolDispatchRegister(virNetServer *server G_GNUC_UNUSED,
+                                     virNetServerClient *client,
+                                     virNetMessage *msg G_GNUC_UNUSED,
+                                     struct virNetMessageError *rerr,
                                      virLockSpaceProtocolRegisterArgs *args)
 {
     int rv = -1;
     unsigned int flags = args->flags;
-    virLockDaemonClientPtr priv =
+    virLockDaemonClient *priv =
         virNetServerClientGetPrivateData(client);
 
     g_mutex_lock(&priv->lock);
@@ -295,17 +295,17 @@ virLockSpaceProtocolDispatchRegister(virNetServerPtr server G_GNUC_UNUSED,
 
 
 static int
-virLockSpaceProtocolDispatchReleaseResource(virNetServerPtr server G_GNUC_UNUSED,
-                                            virNetServerClientPtr client,
-                                            virNetMessagePtr msg G_GNUC_UNUSED,
-                                            virNetMessageErrorPtr rerr,
+virLockSpaceProtocolDispatchReleaseResource(virNetServer *server G_GNUC_UNUSED,
+                                            virNetServerClient *client,
+                                            virNetMessage *msg G_GNUC_UNUSED,
+                                            struct virNetMessageError *rerr,
                                             virLockSpaceProtocolReleaseResourceArgs *args)
 {
     int rv = -1;
     unsigned int flags = args->flags;
-    virLockDaemonClientPtr priv =
+    virLockDaemonClient *priv =
         virNetServerClientGetPrivateData(client);
-    virLockSpacePtr lockspace;
+    virLockSpace *lockspace;
 
     g_mutex_lock(&priv->lock);
 
@@ -346,15 +346,15 @@ virLockSpaceProtocolDispatchReleaseResource(virNetServerPtr server G_GNUC_UNUSED
 
 
 static int
-virLockSpaceProtocolDispatchRestrict(virNetServerPtr server G_GNUC_UNUSED,
-                                     virNetServerClientPtr client,
-                                     virNetMessagePtr msg G_GNUC_UNUSED,
-                                     virNetMessageErrorPtr rerr,
+virLockSpaceProtocolDispatchRestrict(virNetServer *server G_GNUC_UNUSED,
+                                     virNetServerClient *client,
+                                     virNetMessage *msg G_GNUC_UNUSED,
+                                     struct virNetMessageError *rerr,
                                      virLockSpaceProtocolRestrictArgs *args)
 {
     int rv = -1;
     unsigned int flags = args->flags;
-    virLockDaemonClientPtr priv =
+    virLockDaemonClient *priv =
         virNetServerClientGetPrivateData(client);
 
     g_mutex_lock(&priv->lock);
@@ -385,16 +385,16 @@ virLockSpaceProtocolDispatchRestrict(virNetServerPtr server G_GNUC_UNUSED,
 
 
 static int
-virLockSpaceProtocolDispatchCreateLockSpace(virNetServerPtr server G_GNUC_UNUSED,
-                                            virNetServerClientPtr client,
-                                            virNetMessagePtr msg G_GNUC_UNUSED,
-                                            virNetMessageErrorPtr rerr,
+virLockSpaceProtocolDispatchCreateLockSpace(virNetServer *server G_GNUC_UNUSED,
+                                            virNetServerClient *client,
+                                            virNetMessage *msg G_GNUC_UNUSED,
+                                            struct virNetMessageError *rerr,
                                             virLockSpaceProtocolCreateLockSpaceArgs *args)
 {
     int rv = -1;
-    virLockDaemonClientPtr priv =
+    virLockDaemonClient *priv =
         virNetServerClientGetPrivateData(client);
-    virLockSpacePtr lockspace;
+    virLockSpace *lockspace;
 
     g_mutex_lock(&priv->lock);
 

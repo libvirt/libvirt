@@ -429,7 +429,7 @@ static int test12(const void *unused G_GNUC_UNUSED)
  */
 static int test13(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    virCommand *cmd = virCommandNew(abs_builddir "/commandhelper");
     g_autofree char *outactual = NULL;
     const char *outexpect = "BEGIN STDOUT\n"
         "Hello World\n"
@@ -467,7 +467,7 @@ static int test13(const void *unused G_GNUC_UNUSED)
  */
 static int test14(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
+    virCommand *cmd = virCommandNew(abs_builddir "/commandhelper");
     g_autofree char *outactual = NULL;
     const char *outexpect = "BEGIN STDOUT\n"
         "Hello World\n"
@@ -646,7 +646,7 @@ static int test17(const void *unused G_GNUC_UNUSED)
  */
 static int test18(const void *unused G_GNUC_UNUSED)
 {
-    virCommandPtr cmd = virCommandNewArgList("sleep", "100", NULL);
+    virCommand *cmd = virCommandNewArgList("sleep", "100", NULL);
     g_autofree char *pidfile = virPidFileBuildPath(abs_builddir, "commandhelper");
     pid_t pid;
     int ret = -1;
@@ -806,7 +806,7 @@ static int
 test22(const void *unused G_GNUC_UNUSED)
 {
     int ret = -1;
-    virCommandPtr cmd;
+    virCommand *cmd;
     int status = -1;
 
     cmd = virCommandNewArgList("/bin/sh", "-c", "exit 3", NULL);

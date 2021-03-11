@@ -45,7 +45,7 @@ struct testBackingXMLjsonXMLdata {
     const char *xml;
     bool legacy;
     GHashTable *schema;
-    virJSONValuePtr schemaroot;
+    virJSONValue *schemaroot;
 };
 
 static int
@@ -135,7 +135,7 @@ static const char *testJSONtoJSONPath = abs_srcdir "/qemublocktestdata/jsontojso
 struct testJSONtoJSONData {
     const char *name;
     GHashTable *schema;
-    virJSONValuePtr schemaroot;
+    virJSONValue *schemaroot;
 };
 
 static int
@@ -184,24 +184,24 @@ testJSONtoJSON(const void *args)
 
 
 struct testQemuDiskXMLToJSONImageData {
-    virJSONValuePtr formatprops;
-    virJSONValuePtr storageprops;
-    virJSONValuePtr storagepropssrc;
+    virJSONValue *formatprops;
+    virJSONValue *storageprops;
+    virJSONValue *storagepropssrc;
     char *backingstore;
 };
 
 
 struct testQemuDiskXMLToJSONData {
-    virQEMUDriverPtr driver;
+    virQEMUDriver *driver;
     GHashTable *schema;
-    virJSONValuePtr schemaroot;
+    virJSONValue *schemaroot;
     const char *name;
     bool fail;
 
     struct testQemuDiskXMLToJSONImageData *images;
     size_t nimages;
 
-    virQEMUCapsPtr qemuCaps;
+    virQEMUCaps *qemuCaps;
 };
 
 
@@ -222,9 +222,9 @@ testQemuDiskXMLToPropsClear(struct testQemuDiskXMLToJSONData *data)
 
 
 static int
-testQemuDiskXMLToJSONFakeSecrets(virStorageSourcePtr src)
+testQemuDiskXMLToJSONFakeSecrets(virStorageSource *src)
 {
-    qemuDomainStorageSourcePrivatePtr srcpriv;
+    qemuDomainStorageSourcePrivate *srcpriv;
 
     if (!src->privateData &&
         !(src->privateData = qemuDomainStorageSourcePrivateNew()))
@@ -261,8 +261,8 @@ testQemuDiskXMLToProps(const void *opaque)
 {
     struct testQemuDiskXMLToJSONData *data = (void *) opaque;
     g_autoptr(virDomainDef) vmdef = NULL;
-    virDomainDiskDefPtr disk = NULL;
-    virStorageSourcePtr n;
+    virDomainDiskDef *disk = NULL;
+    virStorageSource *n;
     g_autoptr(virJSONValue) formatProps = NULL;
     g_autoptr(virJSONValue) storageProps = NULL;
     g_autoptr(virJSONValue) storageSrcOnlyProps = NULL;
@@ -461,24 +461,24 @@ struct testQemuImageCreateData {
     const char *name;
     const char *backingname;
     GHashTable *schema;
-    virJSONValuePtr schemaroot;
-    virQEMUDriverPtr driver;
-    virQEMUCapsPtr qemuCaps;
+    virJSONValue *schemaroot;
+    virQEMUDriver *driver;
+    virQEMUCaps *qemuCaps;
 };
 
 static const char *testQemuImageCreatePath = abs_srcdir "/qemublocktestdata/imagecreate/";
 
-static virStorageSourcePtr
+static virStorageSource *
 testQemuImageCreateLoadDiskXML(const char *name,
-                               virDomainXMLOptionPtr xmlopt)
+                               virDomainXMLOption *xmlopt)
 
 {
-    virDomainSnapshotDiskDefPtr diskdef = NULL;
+    virDomainSnapshotDiskDef *diskdef = NULL;
     g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr node;
     g_autofree char *xmlpath = NULL;
-    virStorageSourcePtr ret = NULL;
+    virStorageSource *ret = NULL;
 
     xmlpath = g_strdup_printf("%s%s.xml", testQemuImageCreatePath, name);
 
@@ -589,9 +589,9 @@ static const char *bitmapDetectPrefix = "qemublocktestdata/bitmap/";
 static void
 testQemuDetectBitmapsWorker(GHashTable *nodedata,
                             const char *nodename,
-                            virBufferPtr buf)
+                            virBuffer *buf)
 {
-    qemuBlockNamedNodeDataPtr data;
+    qemuBlockNamedNodeData *data;
     size_t i;
 
     if (!(data = virHashLookup(nodedata, nodename)))
@@ -603,7 +603,7 @@ testQemuDetectBitmapsWorker(GHashTable *nodedata,
     virBufferAdjustIndent(buf, 1);
 
     for (i = 0; i < data->nbitmaps; i++) {
-        qemuBlockNamedNodeDataBitmapPtr bitmap = data->bitmaps[i];
+        qemuBlockNamedNodeDataBitmap *bitmap = data->bitmaps[i];
 
         virBufferAsprintf(buf, "%8s: record:%d busy:%d persist:%d inconsist:%d gran:%llu dirty:%llu\n",
                           bitmap->name, bitmap->recording, bitmap->busy,
@@ -654,7 +654,7 @@ testQemuDetectBitmaps(const void *opaque)
 static void
 testQemuBitmapListPrint(const char *title,
                         GSList *next,
-                        virBufferPtr buf)
+                        virBuffer *buf)
 {
     if (!next)
         return;
@@ -662,16 +662,16 @@ testQemuBitmapListPrint(const char *title,
     virBufferAsprintf(buf, "%s\n", title);
 
     for (; next; next = next->next) {
-        virStorageSourcePtr src = next->data;
+        virStorageSource *src = next->data;
         virBufferAsprintf(buf, "%s\n", src->nodeformat);
     }
 }
 
 
-static virStorageSourcePtr
+static virStorageSource *
 testQemuBackupIncrementalBitmapCalculateGetFakeImage(size_t idx)
 {
-   virStorageSourcePtr ret = virStorageSourceNew();
+   virStorageSource *ret = virStorageSourceNew();
 
    ret->id = idx;
    ret->type = VIR_STORAGE_TYPE_FILE;
@@ -684,11 +684,11 @@ testQemuBackupIncrementalBitmapCalculateGetFakeImage(size_t idx)
 }
 
 
-static virStorageSourcePtr
+static virStorageSource *
 testQemuBackupIncrementalBitmapCalculateGetFakeChain(void)
 {
-    virStorageSourcePtr ret;
-    virStorageSourcePtr n;
+    virStorageSource *ret;
+    virStorageSource *n;
     size_t i;
 
     n = ret = testQemuBackupIncrementalBitmapCalculateGetFakeImage(1);
@@ -702,11 +702,11 @@ testQemuBackupIncrementalBitmapCalculateGetFakeChain(void)
 }
 
 
-static virStorageSourcePtr
-testQemuBitmapGetFakeChainEntry(virStorageSourcePtr src,
+static virStorageSource *
+testQemuBitmapGetFakeChainEntry(virStorageSource *src,
                                 size_t idx)
 {
-    virStorageSourcePtr n;
+    virStorageSource *n;
 
     for (n = src; n; n = n->backingStore) {
         if (n->id == idx)
@@ -721,7 +721,7 @@ static const char *backupDataPrefix = "qemublocktestdata/backupmerge/";
 
 struct testQemuBackupIncrementalBitmapCalculateData {
     const char *name;
-    virStorageSourcePtr chain;
+    virStorageSource *chain;
     const char *incremental;
     const char *nodedatafile;
 };
@@ -773,7 +773,7 @@ static const char *checkpointDeletePrefix = "qemublocktestdata/checkpointdelete/
 
 struct testQemuCheckpointDeleteData {
     const char *name;
-    virStorageSourcePtr chain;
+    virStorageSource *chain;
     const char *deletebitmap;
     const char *nodedatafile;
 };
@@ -828,7 +828,7 @@ testQemuCheckpointDelete(const void *opaque)
 struct testQemuBlockBitmapValidateData {
     const char *name;
     const char *bitmapname;
-    virStorageSourcePtr chain;
+    virStorageSource *chain;
     bool expect;
 };
 
@@ -865,7 +865,7 @@ static const char *blockcopyPrefix = "qemublocktestdata/bitmapblockcopy/";
 struct testQemuBlockBitmapBlockcopyData {
     const char *name;
     bool shallow;
-    virStorageSourcePtr chain;
+    virStorageSource *chain;
     const char *nodedatafile;
 };
 
@@ -914,9 +914,9 @@ static const char *blockcommitPrefix = "qemublocktestdata/bitmapblockcommit/";
 
 struct testQemuBlockBitmapBlockcommitData {
     const char *name;
-    virStorageSourcePtr top;
-    virStorageSourcePtr base;
-    virStorageSourcePtr chain;
+    virStorageSource *top;
+    virStorageSource *base;
+    virStorageSource *chain;
     const char *nodedatafile;
 };
 
@@ -979,7 +979,7 @@ mymain(void)
     char *capslatest_x86_64 = NULL;
     g_autoptr(virQEMUCaps) caps_x86_64 = NULL;
     g_autoptr(GHashTable) qmp_schema_x86_64 = NULL;
-    virJSONValuePtr qmp_schemaroot_x86_64_blockdev_add = NULL;
+    virJSONValue *qmp_schemaroot_x86_64_blockdev_add = NULL;
     g_autoptr(virStorageSource) bitmapSourceChain = NULL;
 
     if (qemuTestDriverInit(&driver) < 0)

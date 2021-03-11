@@ -19,24 +19,24 @@
 #pragma once
 
 int
-qemuBackupBegin(virDomainObjPtr vm,
+qemuBackupBegin(virDomainObj *vm,
                 const char *backupXML,
                 const char *checkpointXML,
                 unsigned int flags);
 
 char *
-qemuBackupGetXMLDesc(virDomainObjPtr vm,
+qemuBackupGetXMLDesc(virDomainObj *vm,
                      unsigned int flags);
 
 void
-qemuBackupJobCancelBlockjobs(virDomainObjPtr vm,
-                             virDomainBackupDefPtr backup,
+qemuBackupJobCancelBlockjobs(virDomainObj *vm,
+                             virDomainBackupDef *backup,
                              bool terminatebackup,
                              int asyncJob);
 
 void
-qemuBackupNotifyBlockjobEnd(virDomainObjPtr vm,
-                            virDomainDiskDefPtr disk,
+qemuBackupNotifyBlockjobEnd(virDomainObj *vm,
+                            virDomainDiskDef *disk,
                             qemuBlockjobState state,
                             const char *errmsg,
                             unsigned long long cur,
@@ -44,19 +44,19 @@ qemuBackupNotifyBlockjobEnd(virDomainObjPtr vm,
                             int asyncJob);
 
 void
-qemuBackupJobTerminate(virDomainObjPtr vm,
+qemuBackupJobTerminate(virDomainObj *vm,
                        qemuDomainJobStatus jobstatus);
 
 int
-qemuBackupGetJobInfoStats(virQEMUDriverPtr driver,
-                          virDomainObjPtr vm,
-                          qemuDomainJobInfoPtr jobInfo);
+qemuBackupGetJobInfoStats(virQEMUDriver *driver,
+                          virDomainObj *vm,
+                          qemuDomainJobInfo *jobInfo);
 
 /* exported for testing */
 int
-qemuBackupDiskPrepareOneBitmapsChain(virStorageSourcePtr backingChain,
-                                     virStorageSourcePtr targetsrc,
+qemuBackupDiskPrepareOneBitmapsChain(virStorageSource *backingChain,
+                                     virStorageSource *targetsrc,
                                      const char *targetbitmap,
                                      const char *incremental,
-                                     virJSONValuePtr actions,
+                                     virJSONValue *actions,
                                      GHashTable *blockNamedNodeData);

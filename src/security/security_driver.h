@@ -34,130 +34,129 @@ typedef enum {
 } virSecurityDriverStatus;
 
 typedef struct _virSecurityDriver virSecurityDriver;
-typedef virSecurityDriver *virSecurityDriverPtr;
 
 typedef virSecurityDriverStatus (*virSecurityDriverProbe) (const char *virtDriver);
-typedef int (*virSecurityDriverOpen) (virSecurityManagerPtr mgr);
-typedef int (*virSecurityDriverClose) (virSecurityManagerPtr mgr);
+typedef int (*virSecurityDriverOpen) (virSecurityManager *mgr);
+typedef int (*virSecurityDriverClose) (virSecurityManager *mgr);
 
-typedef const char *(*virSecurityDriverGetModel) (virSecurityManagerPtr mgr);
-typedef const char *(*virSecurityDriverGetDOI) (virSecurityManagerPtr mgr);
-typedef const char *(*virSecurityDriverGetBaseLabel) (virSecurityManagerPtr mgr,
+typedef const char *(*virSecurityDriverGetModel) (virSecurityManager *mgr);
+typedef const char *(*virSecurityDriverGetDOI) (virSecurityManager *mgr);
+typedef const char *(*virSecurityDriverGetBaseLabel) (virSecurityManager *mgr,
                                                       int virtType);
 
-typedef int (*virSecurityDriverPreFork) (virSecurityManagerPtr mgr);
+typedef int (*virSecurityDriverPreFork) (virSecurityManager *mgr);
 
-typedef int (*virSecurityDriverTransactionStart) (virSecurityManagerPtr mgr);
-typedef int (*virSecurityDriverTransactionCommit) (virSecurityManagerPtr mgr,
+typedef int (*virSecurityDriverTransactionStart) (virSecurityManager *mgr);
+typedef int (*virSecurityDriverTransactionCommit) (virSecurityManager *mgr,
                                                    pid_t pid,
                                                    bool lock);
-typedef void (*virSecurityDriverTransactionAbort) (virSecurityManagerPtr mgr);
+typedef void (*virSecurityDriverTransactionAbort) (virSecurityManager *mgr);
 
-typedef int (*virSecurityDomainSetDaemonSocketLabel)(virSecurityManagerPtr mgr,
-                                                     virDomainDefPtr vm);
-typedef int (*virSecurityDomainSetSocketLabel) (virSecurityManagerPtr mgr,
-                                                virDomainDefPtr def);
-typedef int (*virSecurityDomainClearSocketLabel)(virSecurityManagerPtr mgr,
-                                                virDomainDefPtr def);
-typedef int (*virSecurityDomainRestoreHostdevLabel) (virSecurityManagerPtr mgr,
-                                                     virDomainDefPtr def,
-                                                     virDomainHostdevDefPtr dev,
+typedef int (*virSecurityDomainSetDaemonSocketLabel)(virSecurityManager *mgr,
+                                                     virDomainDef *vm);
+typedef int (*virSecurityDomainSetSocketLabel) (virSecurityManager *mgr,
+                                                virDomainDef *def);
+typedef int (*virSecurityDomainClearSocketLabel)(virSecurityManager *mgr,
+                                                virDomainDef *def);
+typedef int (*virSecurityDomainRestoreHostdevLabel) (virSecurityManager *mgr,
+                                                     virDomainDef *def,
+                                                     virDomainHostdevDef *dev,
                                                      const char *vroot);
-typedef int (*virSecurityDomainSetHostdevLabel) (virSecurityManagerPtr mgr,
-                                                 virDomainDefPtr def,
-                                                 virDomainHostdevDefPtr dev,
+typedef int (*virSecurityDomainSetHostdevLabel) (virSecurityManager *mgr,
+                                                 virDomainDef *def,
+                                                 virDomainHostdevDef *dev,
                                                  const char *vroot);
-typedef int (*virSecurityDomainSetSavedStateLabel) (virSecurityManagerPtr mgr,
-                                                    virDomainDefPtr def,
+typedef int (*virSecurityDomainSetSavedStateLabel) (virSecurityManager *mgr,
+                                                    virDomainDef *def,
                                                     const char *savefile);
-typedef int (*virSecurityDomainRestoreSavedStateLabel) (virSecurityManagerPtr mgr,
-                                                        virDomainDefPtr def,
+typedef int (*virSecurityDomainRestoreSavedStateLabel) (virSecurityManager *mgr,
+                                                        virDomainDef *def,
                                                         const char *savefile);
-typedef int (*virSecurityDomainGenLabel) (virSecurityManagerPtr mgr,
-                                          virDomainDefPtr sec);
-typedef int (*virSecurityDomainReserveLabel) (virSecurityManagerPtr mgr,
-                                              virDomainDefPtr sec,
+typedef int (*virSecurityDomainGenLabel) (virSecurityManager *mgr,
+                                          virDomainDef *sec);
+typedef int (*virSecurityDomainReserveLabel) (virSecurityManager *mgr,
+                                              virDomainDef *sec,
                                               pid_t pid);
-typedef int (*virSecurityDomainReleaseLabel) (virSecurityManagerPtr mgr,
-                                              virDomainDefPtr sec);
-typedef int (*virSecurityDomainSetAllLabel) (virSecurityManagerPtr mgr,
-                                             virDomainDefPtr sec,
+typedef int (*virSecurityDomainReleaseLabel) (virSecurityManager *mgr,
+                                              virDomainDef *sec);
+typedef int (*virSecurityDomainSetAllLabel) (virSecurityManager *mgr,
+                                             virDomainDef *sec,
                                              const char *incomingPath,
                                              bool chardevStdioLogd,
                                              bool migrated);
-typedef int (*virSecurityDomainRestoreAllLabel) (virSecurityManagerPtr mgr,
-                                                 virDomainDefPtr def,
+typedef int (*virSecurityDomainRestoreAllLabel) (virSecurityManager *mgr,
+                                                 virDomainDef *def,
                                                  bool migrated,
                                                  bool chardevStdioLogd);
-typedef int (*virSecurityDomainGetProcessLabel) (virSecurityManagerPtr mgr,
-                                                 virDomainDefPtr def,
+typedef int (*virSecurityDomainGetProcessLabel) (virSecurityManager *mgr,
+                                                 virDomainDef *def,
                                                  pid_t pid,
                                                  virSecurityLabelPtr sec);
-typedef int (*virSecurityDomainSetProcessLabel) (virSecurityManagerPtr mgr,
-                                                 virDomainDefPtr def);
-typedef int (*virSecurityDomainSetChildProcessLabel) (virSecurityManagerPtr mgr,
-                                                      virDomainDefPtr def,
-                                                      virCommandPtr cmd);
-typedef int (*virSecurityDomainSecurityVerify) (virSecurityManagerPtr mgr,
-                                                virDomainDefPtr def);
-typedef int (*virSecurityDomainSetImageFDLabel) (virSecurityManagerPtr mgr,
-                                                 virDomainDefPtr def,
+typedef int (*virSecurityDomainSetProcessLabel) (virSecurityManager *mgr,
+                                                 virDomainDef *def);
+typedef int (*virSecurityDomainSetChildProcessLabel) (virSecurityManager *mgr,
+                                                      virDomainDef *def,
+                                                      virCommand *cmd);
+typedef int (*virSecurityDomainSecurityVerify) (virSecurityManager *mgr,
+                                                virDomainDef *def);
+typedef int (*virSecurityDomainSetImageFDLabel) (virSecurityManager *mgr,
+                                                 virDomainDef *def,
                                                  int fd);
-typedef int (*virSecurityDomainSetTapFDLabel) (virSecurityManagerPtr mgr,
-                                               virDomainDefPtr def,
+typedef int (*virSecurityDomainSetTapFDLabel) (virSecurityManager *mgr,
+                                               virDomainDef *def,
                                                int fd);
-typedef char *(*virSecurityDomainGetMountOptions) (virSecurityManagerPtr mgr,
-                                                   virDomainDefPtr def);
-typedef int (*virSecurityDomainSetHugepages) (virSecurityManagerPtr mgr,
-                                              virDomainDefPtr def,
+typedef char *(*virSecurityDomainGetMountOptions) (virSecurityManager *mgr,
+                                                   virDomainDef *def);
+typedef int (*virSecurityDomainSetHugepages) (virSecurityManager *mgr,
+                                              virDomainDef *def,
                                               const char *path);
 
-typedef int (*virSecurityDomainSetImageLabel) (virSecurityManagerPtr mgr,
-                                               virDomainDefPtr def,
-                                               virStorageSourcePtr src,
+typedef int (*virSecurityDomainSetImageLabel) (virSecurityManager *mgr,
+                                               virDomainDef *def,
+                                               virStorageSource *src,
                                                virSecurityDomainImageLabelFlags flags);
-typedef int (*virSecurityDomainRestoreImageLabel) (virSecurityManagerPtr mgr,
-                                                   virDomainDefPtr def,
-                                                   virStorageSourcePtr src,
+typedef int (*virSecurityDomainRestoreImageLabel) (virSecurityManager *mgr,
+                                                   virDomainDef *def,
+                                                   virStorageSource *src,
                                                    virSecurityDomainImageLabelFlags flags);
-typedef int (*virSecurityDomainMoveImageMetadata) (virSecurityManagerPtr mgr,
+typedef int (*virSecurityDomainMoveImageMetadata) (virSecurityManager *mgr,
                                                    pid_t pid,
-                                                   virStorageSourcePtr src,
-                                                   virStorageSourcePtr dst);
-typedef int (*virSecurityDomainSetMemoryLabel) (virSecurityManagerPtr mgr,
-                                                virDomainDefPtr def,
-                                                virDomainMemoryDefPtr mem);
-typedef int (*virSecurityDomainRestoreMemoryLabel) (virSecurityManagerPtr mgr,
-                                                    virDomainDefPtr def,
-                                                    virDomainMemoryDefPtr mem);
-typedef int (*virSecurityDomainSetInputLabel) (virSecurityManagerPtr mgr,
-                                               virDomainDefPtr def,
-                                               virDomainInputDefPtr input);
-typedef int (*virSecurityDomainRestoreInputLabel) (virSecurityManagerPtr mgr,
-                                                   virDomainDefPtr def,
-                                                   virDomainInputDefPtr input);
-typedef int (*virSecurityDomainSetPathLabel) (virSecurityManagerPtr mgr,
-                                              virDomainDefPtr def,
+                                                   virStorageSource *src,
+                                                   virStorageSource *dst);
+typedef int (*virSecurityDomainSetMemoryLabel) (virSecurityManager *mgr,
+                                                virDomainDef *def,
+                                                virDomainMemoryDef *mem);
+typedef int (*virSecurityDomainRestoreMemoryLabel) (virSecurityManager *mgr,
+                                                    virDomainDef *def,
+                                                    virDomainMemoryDef *mem);
+typedef int (*virSecurityDomainSetInputLabel) (virSecurityManager *mgr,
+                                               virDomainDef *def,
+                                               virDomainInputDef *input);
+typedef int (*virSecurityDomainRestoreInputLabel) (virSecurityManager *mgr,
+                                                   virDomainDef *def,
+                                                   virDomainInputDef *input);
+typedef int (*virSecurityDomainSetPathLabel) (virSecurityManager *mgr,
+                                              virDomainDef *def,
                                               const char *path,
                                               bool allowSubtree);
-typedef int (*virSecurityDomainSetPathLabelRO) (virSecurityManagerPtr mgr,
-                                                virDomainDefPtr def,
+typedef int (*virSecurityDomainSetPathLabelRO) (virSecurityManager *mgr,
+                                                virDomainDef *def,
                                                 const char *path);
-typedef int (*virSecurityDomainRestorePathLabel) (virSecurityManagerPtr mgr,
-                                                  virDomainDefPtr def,
+typedef int (*virSecurityDomainRestorePathLabel) (virSecurityManager *mgr,
+                                                  virDomainDef *def,
                                                   const char *path);
-typedef int (*virSecurityDomainSetChardevLabel) (virSecurityManagerPtr mgr,
-                                                 virDomainDefPtr def,
-                                                 virDomainChrSourceDefPtr dev_source,
+typedef int (*virSecurityDomainSetChardevLabel) (virSecurityManager *mgr,
+                                                 virDomainDef *def,
+                                                 virDomainChrSourceDef *dev_source,
                                                  bool chardevStdioLogd);
-typedef int (*virSecurityDomainRestoreChardevLabel) (virSecurityManagerPtr mgr,
-                                                     virDomainDefPtr def,
-                                                     virDomainChrSourceDefPtr dev_source,
+typedef int (*virSecurityDomainRestoreChardevLabel) (virSecurityManager *mgr,
+                                                     virDomainDef *def,
+                                                     virDomainChrSourceDef *dev_source,
                                                      bool chardevStdioLogd);
-typedef int (*virSecurityDomainSetTPMLabels) (virSecurityManagerPtr mgr,
-                                              virDomainDefPtr def);
-typedef int (*virSecurityDomainRestoreTPMLabels) (virSecurityManagerPtr mgr,
-                                                  virDomainDefPtr def);
+typedef int (*virSecurityDomainSetTPMLabels) (virSecurityManager *mgr,
+                                              virDomainDef *def);
+typedef int (*virSecurityDomainRestoreTPMLabels) (virSecurityManager *mgr,
+                                                  virDomainDef *def);
 
 
 struct _virSecurityDriver {
@@ -227,5 +226,5 @@ struct _virSecurityDriver {
     virSecurityDomainRestoreTPMLabels domainRestoreSecurityTPMLabels;
 };
 
-virSecurityDriverPtr virSecurityDriverLookup(const char *name,
+virSecurityDriver *virSecurityDriverLookup(const char *name,
                                              const char *virtDriver);

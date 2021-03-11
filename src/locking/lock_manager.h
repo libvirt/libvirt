@@ -25,43 +25,42 @@
 #include "lock_driver.h"
 
 typedef struct _virLockManagerPlugin virLockManagerPlugin;
-typedef virLockManagerPlugin *virLockManagerPluginPtr;
 
-virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
+virLockManagerPlugin *virLockManagerPluginNew(const char *name,
                                                 const char *driverName,
                                                 const char *configDir,
                                                 unsigned int flags);
-void virLockManagerPluginRef(virLockManagerPluginPtr plugin);
-void virLockManagerPluginUnref(virLockManagerPluginPtr plugin);
+void virLockManagerPluginRef(virLockManagerPlugin *plugin);
+void virLockManagerPluginUnref(virLockManagerPlugin *plugin);
 
-const char *virLockManagerPluginGetName(virLockManagerPluginPtr plugin);
-bool virLockManagerPluginUsesState(virLockManagerPluginPtr plugin);
+const char *virLockManagerPluginGetName(virLockManagerPlugin *plugin);
+bool virLockManagerPluginUsesState(virLockManagerPlugin *plugin);
 
-virLockDriverPtr virLockManagerPluginGetDriver(virLockManagerPluginPtr plugin);
+virLockDriver *virLockManagerPluginGetDriver(virLockManagerPlugin *plugin);
 
-virLockManagerPtr virLockManagerNew(virLockDriverPtr driver,
+virLockManager *virLockManagerNew(virLockDriver *driver,
                                     unsigned int type,
                                     size_t nparams,
-                                    virLockManagerParamPtr params,
+                                    virLockManagerParam *params,
                                     unsigned int flags);
 
-int virLockManagerAddResource(virLockManagerPtr manager,
+int virLockManagerAddResource(virLockManager *manager,
                               unsigned int type,
                               const char *name,
                               size_t nparams,
-                              virLockManagerParamPtr params,
+                              virLockManagerParam *params,
                               unsigned int flags);
 
-int virLockManagerAcquire(virLockManagerPtr manager,
+int virLockManagerAcquire(virLockManager *manager,
                           const char *state,
                           unsigned int flags,
                           virDomainLockFailureAction action,
                           int *fd);
-int virLockManagerRelease(virLockManagerPtr manager,
+int virLockManagerRelease(virLockManager *manager,
                           char **state,
                           unsigned int flags);
-int virLockManagerInquire(virLockManagerPtr manager,
+int virLockManagerInquire(virLockManager *manager,
                           char **state,
                           unsigned int flags);
 
-int virLockManagerFree(virLockManagerPtr manager);
+int virLockManagerFree(virLockManager *manager);

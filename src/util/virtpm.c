@@ -95,11 +95,11 @@ virTPMCreateCancelPath(const char *devpath)
 static virMutex swtpm_tools_lock = VIR_MUTEX_INITIALIZER;
 static char *swtpm_path;
 static struct stat swtpm_stat;
-static virBitmapPtr swtpm_caps;
+static virBitmap *swtpm_caps;
 
 static char *swtpm_setup;
 static struct stat swtpm_setup_stat;
-static virBitmapPtr swtpm_setup_caps;
+static virBitmap *swtpm_setup_caps;
 
 static char *swtpm_ioctl;
 static struct stat swtpm_ioctl_stat;
@@ -166,16 +166,16 @@ virTPMGetSwtpmIoctl(void)
  *  ]
  * }
  */
-static virBitmapPtr
-virTPMExecGetCaps(virCommandPtr cmd,
+static virBitmap *
+virTPMExecGetCaps(virCommand *cmd,
                   TypeFromStringFn typeFromStringFn)
 {
     int exitstatus;
-    virBitmapPtr bitmap;
+    virBitmap *bitmap;
     g_autofree char *outbuf = NULL;
     g_autoptr(virJSONValue) json = NULL;
-    virJSONValuePtr featureList;
-    virJSONValuePtr item;
+    virJSONValue *featureList;
+    virJSONValue *item;
     size_t idx;
     const char *str;
     int typ;
@@ -227,7 +227,7 @@ virTPMExecGetCaps(virCommandPtr cmd,
     return bitmap;
 }
 
-static virBitmapPtr
+static virBitmap *
 virTPMGetCaps(TypeFromStringFn typeFromStringFn,
                   const char *exec, const char *param1)
 {
@@ -259,7 +259,7 @@ virTPMEmulatorInit(void)
         char **path;
         struct stat *stat;
         const char *parm;
-        virBitmapPtr *caps;
+        virBitmap **caps;
         TypeFromStringFn typeFromStringFn;
     } prgs[] = {
         {

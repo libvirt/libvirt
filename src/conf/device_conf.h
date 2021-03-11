@@ -52,7 +52,6 @@ typedef enum {
 VIR_ENUM_DECL(virDomainDeviceAddress);
 
 typedef struct _virDomainDeviceDriveAddress virDomainDeviceDriveAddress;
-typedef virDomainDeviceDriveAddress *virDomainDeviceDriveAddressPtr;
 struct _virDomainDeviceDriveAddress {
     unsigned int controller;
     unsigned int bus;
@@ -61,7 +60,6 @@ struct _virDomainDeviceDriveAddress {
 };
 
 typedef struct _virDomainDeviceVirtioSerialAddress virDomainDeviceVirtioSerialAddress;
-typedef virDomainDeviceVirtioSerialAddress *virDomainDeviceVirtioSerialAddressPtr;
 struct _virDomainDeviceVirtioSerialAddress {
     unsigned int controller;
     unsigned int bus;
@@ -73,7 +71,6 @@ struct _virDomainDeviceVirtioSerialAddress {
 #define VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO  65535
 
 typedef struct _virDomainDeviceCCWAddress virDomainDeviceCCWAddress;
-typedef virDomainDeviceCCWAddress *virDomainDeviceCCWAddressPtr;
 struct _virDomainDeviceCCWAddress {
     unsigned int cssid;
     unsigned int ssid;
@@ -82,7 +79,6 @@ struct _virDomainDeviceCCWAddress {
 };
 
 typedef struct _virDomainDeviceCcidAddress virDomainDeviceCcidAddress;
-typedef virDomainDeviceCcidAddress *virDomainDeviceCcidAddressPtr;
 struct _virDomainDeviceCcidAddress {
     unsigned int controller;
     unsigned int slot;
@@ -91,14 +87,12 @@ struct _virDomainDeviceCcidAddress {
 #define VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH 4
 
 typedef struct _virDomainDeviceUSBAddress virDomainDeviceUSBAddress;
-typedef virDomainDeviceUSBAddress *virDomainDeviceUSBAddressPtr;
 struct _virDomainDeviceUSBAddress {
     unsigned int bus;
     unsigned int port[VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH];
 };
 
 typedef struct _virDomainDeviceSpaprVioAddress virDomainDeviceSpaprVioAddress;
-typedef virDomainDeviceSpaprVioAddress *virDomainDeviceSpaprVioAddressPtr;
 struct _virDomainDeviceSpaprVioAddress {
     unsigned long long reg;
     bool has_reg;
@@ -112,27 +106,23 @@ typedef enum {
 } virDomainControllerMaster;
 
 typedef struct _virDomainDeviceUSBMaster virDomainDeviceUSBMaster;
-typedef virDomainDeviceUSBMaster *virDomainDeviceUSBMasterPtr;
 struct _virDomainDeviceUSBMaster {
     unsigned int startport;
 };
 
 typedef struct _virDomainDeviceISAAddress virDomainDeviceISAAddress;
-typedef virDomainDeviceISAAddress *virDomainDeviceISAAddressPtr;
 struct _virDomainDeviceISAAddress {
     unsigned int iobase;
     unsigned int irq;
 };
 
 typedef struct _virDomainDeviceDimmAddress virDomainDeviceDimmAddress;
-typedef virDomainDeviceDimmAddress *virDomainDeviceDimmAddressPtr;
 struct _virDomainDeviceDimmAddress {
     unsigned int slot;
     unsigned long long base;
 };
 
 typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
-typedef virDomainDeviceInfo *virDomainDeviceInfoPtr;
 struct _virDomainDeviceInfo {
     char *alias;
     int type; /* virDomainDeviceAddressType */
@@ -184,14 +174,14 @@ struct _virDomainDeviceInfo {
     bool isolationGroupLocked;
 };
 
-void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
-void virDomainDeviceInfoFree(virDomainDeviceInfoPtr info);
+void virDomainDeviceInfoClear(virDomainDeviceInfo *info);
+void virDomainDeviceInfoFree(virDomainDeviceInfo *info);
 
 bool virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
                                        const virDomainDeviceInfo *b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
-bool virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
+bool virDomainDeviceAddressIsValid(virDomainDeviceInfo *info,
                                    int type);
 
 bool virDeviceInfoPCIAddressIsWanted(const virDomainDeviceInfo *info);
@@ -201,36 +191,36 @@ bool virDeviceInfoPCIAddressExtensionIsWanted(const virDomainDeviceInfo *info);
 bool virDeviceInfoPCIAddressExtensionIsPresent(const virDomainDeviceInfo *info);
 
 int virPCIDeviceAddressParseXML(xmlNodePtr node,
-                                virPCIDeviceAddressPtr addr);
+                                virPCIDeviceAddress *addr);
 
-void virPCIDeviceAddressFormat(virBufferPtr buf,
+void virPCIDeviceAddressFormat(virBuffer *buf,
                                virPCIDeviceAddress addr,
                                bool includeTypeInAddr);
 
-bool virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddressPtr addr);
+bool virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddress *addr);
 int virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
-                                      virDomainDeviceCCWAddressPtr addr);
-bool virDomainDeviceCCWAddressEqual(virDomainDeviceCCWAddressPtr addr1,
-                                    virDomainDeviceCCWAddressPtr addr2);
+                                      virDomainDeviceCCWAddress *addr);
+bool virDomainDeviceCCWAddressEqual(virDomainDeviceCCWAddress *addr1,
+                                    virDomainDeviceCCWAddress *addr2);
 #define VIR_CCW_DEVICE_ADDRESS_FMT "%x.%x.%04x"
 
 int virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
-                                        virDomainDeviceDriveAddressPtr addr);
+                                        virDomainDeviceDriveAddress *addr);
 
 int virDomainDeviceVirtioSerialAddressParseXML(xmlNodePtr node,
-                                               virDomainDeviceVirtioSerialAddressPtr addr);
+                                               virDomainDeviceVirtioSerialAddress *addr);
 
 int virDomainDeviceCcidAddressParseXML(xmlNodePtr node,
-                                       virDomainDeviceCcidAddressPtr addr);
+                                       virDomainDeviceCcidAddress *addr);
 
 int virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
-                                      virDomainDeviceUSBAddressPtr addr);
+                                      virDomainDeviceUSBAddress *addr);
 
 int virDomainDeviceSpaprVioAddressParseXML(xmlNodePtr node,
-                                           virDomainDeviceSpaprVioAddressPtr addr);
+                                           virDomainDeviceSpaprVioAddress *addr);
 
 int virInterfaceLinkParseXML(xmlNodePtr node,
-                             virNetDevIfLinkPtr lnk);
+                             virNetDevIfLink *lnk);
 
-int virInterfaceLinkFormat(virBufferPtr buf,
+int virInterfaceLinkFormat(virBuffer *buf,
                            const virNetDevIfLink *lnk);

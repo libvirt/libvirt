@@ -31,14 +31,12 @@ struct _virObjectMeta {
     char *key;
 };
 typedef struct _virObjectMeta virObjectMeta;
-typedef virObjectMeta *virObjectMetaPtr;
 
 typedef struct _virObjectEventCallbackList virObjectEventCallbackList;
-typedef virObjectEventCallbackList *virObjectEventCallbackListPtr;
 
 typedef void
 (*virObjectEventDispatchFunc)(virConnectPtr conn,
-                              virObjectEventPtr event,
+                              virObjectEvent *event,
                               virConnectObjectEventGenericCallback cb,
                               void *cbopaque);
 
@@ -61,19 +59,19 @@ struct  __attribute__((aligned(8))) _virObjectEvent {
  * be sent to @conn.
  */
 typedef bool (*virObjectEventCallbackFilter)(virConnectPtr conn,
-                                             virObjectEventPtr event,
+                                             virObjectEvent *event,
                                              void *opaque);
 
-virClassPtr
+virClass *
 virClassForObjectEvent(void);
 
 int
 virObjectEventStateRegisterID(virConnectPtr conn,
-                              virObjectEventStatePtr state,
+                              virObjectEventState *state,
                               const char *key,
                               virObjectEventCallbackFilter filter,
                               void *filter_opaque,
-                              virClassPtr klass,
+                              virClass *klass,
                               int eventID,
                               virConnectObjectEventGenericCallback cb,
                               void *opaque,
@@ -86,8 +84,8 @@ virObjectEventStateRegisterID(virConnectPtr conn,
 
 int
 virObjectEventStateCallbackID(virConnectPtr conn,
-                              virObjectEventStatePtr state,
-                              virClassPtr klass,
+                              virObjectEventState *state,
+                              virClass *klass,
                               int eventID,
                               virConnectObjectEventGenericCallback callback,
                               int *remoteID)
@@ -95,7 +93,7 @@ virObjectEventStateCallbackID(virConnectPtr conn,
     ATTRIBUTE_NONNULL(5);
 
 void *
-virObjectEventNew(virClassPtr klass,
+virObjectEventNew(virClass *klass,
                   virObjectEventDispatchFunc dispatcher,
                   int eventID,
                   int id,

@@ -128,7 +128,7 @@ testSocketClient(void *opaque)
 {
     struct testClientData *data = opaque;
     char c;
-    virNetSocketPtr csock = NULL;
+    virNetSocket *csock = NULL;
 
     if (data->path) {
         if (virNetSocketNewConnectUNIX(data->path, false,
@@ -158,11 +158,11 @@ testSocketClient(void *opaque)
 
 
 static void
-testSocketIncoming(virNetSocketPtr sock,
+testSocketIncoming(virNetSocket *sock,
                    int events G_GNUC_UNUSED,
                    void *opaque)
 {
-    virNetSocketPtr *retsock = opaque;
+    virNetSocket **retsock = opaque;
     VIR_DEBUG("Incoming sock=%p events=%d", sock, events);
     *retsock = sock;
 }
@@ -178,10 +178,10 @@ struct testSocketData {
 static int
 testSocketAccept(const void *opaque)
 {
-    virNetSocketPtr *lsock = NULL; /* Listen socket */
+    virNetSocket **lsock = NULL; /* Listen socket */
     size_t nlsock = 0, i;
-    virNetSocketPtr ssock = NULL; /* Server socket */
-    virNetSocketPtr rsock = NULL; /* Incoming client socket */
+    virNetSocket *ssock = NULL; /* Server socket */
+    virNetSocket *rsock = NULL; /* Incoming client socket */
     const struct testSocketData *data = opaque;
     int ret = -1;
     char portstr[100];
@@ -195,7 +195,7 @@ testSocketAccept(const void *opaque)
     char b = '\0';
 
     if (!data) {
-        virNetSocketPtr usock;
+        virNetSocket *usock;
         tmpdir = g_mkdtemp(template);
         if (tmpdir == NULL) {
             VIR_WARN("Failed to create temporary directory");
@@ -206,7 +206,7 @@ testSocketAccept(const void *opaque)
         if (virNetSocketNewListenUNIX(path, 0700, -1, getegid(), &usock) < 0)
             goto cleanup;
 
-        lsock = g_new0(virNetSocketPtr, 1);
+        lsock = g_new0(virNetSocket *, 1);
         lsock[0] = usock;
         nlsock = 1;
 
@@ -307,9 +307,9 @@ testSocketAccept(const void *opaque)
 #ifndef WIN32
 static int testSocketUNIXAddrs(const void *data G_GNUC_UNUSED)
 {
-    virNetSocketPtr lsock = NULL; /* Listen socket */
-    virNetSocketPtr ssock = NULL; /* Server socket */
-    virNetSocketPtr csock = NULL; /* Client socket */
+    virNetSocket *lsock = NULL; /* Listen socket */
+    virNetSocket *ssock = NULL; /* Server socket */
+    virNetSocket *csock = NULL; /* Client socket */
     int ret = -1;
 
     char *path = NULL;
@@ -394,11 +394,11 @@ static int testSocketUNIXAddrs(const void *data G_GNUC_UNUSED)
 
 static int testSocketCommandNormal(const void *data G_GNUC_UNUSED)
 {
-    virNetSocketPtr csock = NULL; /* Client socket */
+    virNetSocket *csock = NULL; /* Client socket */
     char buf[100];
     size_t i;
     int ret = -1;
-    virCommandPtr cmd = virCommandNewArgList("/bin/cat", "/dev/zero", NULL);
+    virCommand *cmd = virCommandNewArgList("/bin/cat", "/dev/zero", NULL);
     virCommandAddEnvPassCommon(cmd);
 
     if (virNetSocketNewConnectCommand(cmd, &csock) < 0)
@@ -422,10 +422,10 @@ static int testSocketCommandNormal(const void *data G_GNUC_UNUSED)
 
 static int testSocketCommandFail(const void *data G_GNUC_UNUSED)
 {
-    virNetSocketPtr csock = NULL; /* Client socket */
+    virNetSocket *csock = NULL; /* Client socket */
     char buf[100];
     int ret = -1;
-    virCommandPtr cmd = virCommandNewArgList("/bin/cat", "/dev/does-not-exist", NULL);
+    virCommand *cmd = virCommandNewArgList("/bin/cat", "/dev/does-not-exist", NULL);
     virCommandAddEnvPassCommon(cmd);
 
     if (virNetSocketNewConnectCommand(cmd, &csock) < 0)
@@ -462,7 +462,7 @@ struct testSSHData {
 static int testSocketSSH(const void *opaque)
 {
     const struct testSSHData *data = opaque;
-    virNetSocketPtr csock = NULL; /* Client socket */
+    virNetSocket *csock = NULL; /* Client socket */
     int ret = -1;
     char buf[1024];
     g_autofree char *command = virNetClientSSHHelperCommand(VIR_NET_CLIENT_PROXY_AUTO,

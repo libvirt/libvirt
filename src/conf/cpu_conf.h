@@ -94,7 +94,6 @@ typedef enum {
 VIR_ENUM_DECL(virCPUFeaturePolicy);
 
 typedef struct _virCPUFeatureDef virCPUFeatureDef;
-typedef virCPUFeatureDef *virCPUFeatureDefPtr;
 struct _virCPUFeatureDef {
     char *name;
     int policy;         /* enum virCPUFeaturePolicy */
@@ -112,7 +111,6 @@ typedef enum {
 VIR_ENUM_DECL(virCPUCacheMode);
 
 typedef struct _virCPUCacheDef virCPUCacheDef;
-typedef virCPUCacheDef *virCPUCacheDefPtr;
 struct _virCPUCacheDef {
     int level;          /* -1 for unspecified */
     virCPUCacheMode mode;
@@ -120,7 +118,6 @@ struct _virCPUCacheDef {
 
 
 typedef struct _virCPUDef virCPUDef;
-typedef virCPUDef *virCPUDefPtr;
 struct _virCPUDef {
     int refs;
     int type;           /* enum virCPUType */
@@ -139,28 +136,28 @@ struct _virCPUDef {
     unsigned int threads;
     size_t nfeatures;
     size_t nfeatures_max;
-    virCPUFeatureDefPtr features;
-    virCPUCacheDefPtr cache;
-    virHostCPUTscInfoPtr tsc;
+    virCPUFeatureDef *features;
+    virCPUCacheDef *cache;
+    virHostCPUTscInfo *tsc;
     virTristateSwitch migratable; /* for host-passthrough mode */
 };
 
-virCPUDefPtr virCPUDefNew(void);
+virCPUDef *virCPUDefNew(void);
 
 void ATTRIBUTE_NONNULL(1)
-virCPUDefFreeFeatures(virCPUDefPtr def);
+virCPUDefFreeFeatures(virCPUDef *def);
 
 void ATTRIBUTE_NONNULL(1)
-virCPUDefFreeModel(virCPUDefPtr def);
+virCPUDefFreeModel(virCPUDef *def);
 
 void
-virCPUDefRef(virCPUDefPtr def);
+virCPUDefRef(virCPUDef *def);
 void
-virCPUDefFree(virCPUDefPtr def);
+virCPUDefFree(virCPUDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUDef, virCPUDefFree);
 
 int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-virCPUDefCopyModel(virCPUDefPtr dst,
+virCPUDefCopyModel(virCPUDef *dst,
                    const virCPUDef *src,
                    bool resetPolicy);
 
@@ -172,7 +169,7 @@ typedef bool (*virCPUDefFeatureFilter)(const char *name,
                                        void *opaque);
 
 int
-virCPUDefCopyModelFilter(virCPUDefPtr dst,
+virCPUDefCopyModelFilter(virCPUDef *dst,
                          const virCPUDef *src,
                          bool resetPolicy,
                          virCPUDefFeatureFilter filter,
@@ -180,79 +177,79 @@ virCPUDefCopyModelFilter(virCPUDefPtr dst,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void
-virCPUDefStealModel(virCPUDefPtr dst,
-                    virCPUDefPtr src,
+virCPUDefStealModel(virCPUDef *dst,
+                    virCPUDef *src,
                     bool keepVendor);
 
-virCPUDefPtr
+virCPUDef *
 virCPUDefCopy(const virCPUDef *cpu);
 
-virCPUDefPtr
+virCPUDef *
 virCPUDefCopyWithoutModel(const virCPUDef *cpu);
 
 int
 virCPUDefParseXMLString(const char *xml,
                         virCPUType type,
-                        virCPUDefPtr *cpu,
+                        virCPUDef **cpu,
                         bool validateXML);
 
 int
 virCPUDefParseXML(xmlXPathContextPtr ctxt,
                   const char *xpath,
                   virCPUType mode,
-                  virCPUDefPtr *cpu,
+                  virCPUDef **cpu,
                   bool validateXML);
 
 bool
-virCPUDefIsEqual(virCPUDefPtr src,
-                 virCPUDefPtr dst,
+virCPUDefIsEqual(virCPUDef *src,
+                 virCPUDef *dst,
                  bool reportError);
 
 char *
-virCPUDefFormat(virCPUDefPtr def,
-                virDomainNumaPtr numa);
+virCPUDefFormat(virCPUDef *def,
+                virDomainNuma *numa);
 
 int
-virCPUDefFormatBuf(virBufferPtr buf,
-                   virCPUDefPtr def);
+virCPUDefFormatBuf(virBuffer *buf,
+                   virCPUDef *def);
 int
-virCPUDefFormatBufFull(virBufferPtr buf,
-                       virCPUDefPtr def,
-                       virDomainNumaPtr numa);
+virCPUDefFormatBufFull(virBuffer *buf,
+                       virCPUDef *def,
+                       virDomainNuma *numa);
 
 int
-virCPUDefAddFeature(virCPUDefPtr cpu,
+virCPUDefAddFeature(virCPUDef *cpu,
                     const char *name,
                     int policy);
 
 int
-virCPUDefUpdateFeature(virCPUDefPtr cpu,
+virCPUDefUpdateFeature(virCPUDef *cpu,
                        const char *name,
                        int policy);
 
 int
-virCPUDefAddFeatureIfMissing(virCPUDefPtr def,
+virCPUDefAddFeatureIfMissing(virCPUDef *def,
                              const char *name,
                              int policy);
 
-virCPUFeatureDefPtr
+virCPUFeatureDef *
 virCPUDefFindFeature(const virCPUDef *def,
                      const char *name);
 
 int
-virCPUDefFilterFeatures(virCPUDefPtr cpu,
+virCPUDefFilterFeatures(virCPUDef *cpu,
                         virCPUDefFeatureFilter filter,
                         void *opaque);
 
 int
-virCPUDefCheckFeatures(virCPUDefPtr cpu,
+virCPUDefCheckFeatures(virCPUDef *cpu,
                        virCPUDefFeatureFilter filter,
                        void *opaque,
                        char ***features);
 
-virCPUDefPtr *
+virCPUDef **
 virCPUDefListParse(const char **xmlCPUs,
                    unsigned int ncpus,
                    virCPUType cpuType);
 void
-virCPUDefListFree(virCPUDefPtr *cpus);
+virCPUDefListFree(virCPUDef **cpus);

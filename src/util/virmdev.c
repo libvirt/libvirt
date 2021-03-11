@@ -43,7 +43,7 @@ struct _virMediatedDeviceList {
     virObjectLockable parent;
 
     size_t count;
-    virMediatedDevicePtr *devs;
+    virMediatedDevice **devs;
 };
 
 VIR_ENUM_IMPL(virMediatedDeviceModel,
@@ -53,7 +53,7 @@ VIR_ENUM_IMPL(virMediatedDeviceModel,
               "vfio-ap",
 );
 
-static virClassPtr virMediatedDeviceListClass;
+static virClass *virMediatedDeviceListClass;
 
 static void
 virMediatedDeviceListDispose(void *obj);
@@ -72,7 +72,7 @@ VIR_ONCE_GLOBAL_INIT(virMediated);
 #ifdef __linux__
 
 static int
-virMediatedDeviceGetSysfsDeviceAPI(virMediatedDevicePtr dev,
+virMediatedDeviceGetSysfsDeviceAPI(virMediatedDevice *dev,
                                    char **device_api)
 {
     g_autofree char *buf = NULL;
@@ -102,7 +102,7 @@ virMediatedDeviceGetSysfsDeviceAPI(virMediatedDevicePtr dev,
 
 
 static int
-virMediatedDeviceCheckModel(virMediatedDevicePtr dev,
+virMediatedDeviceCheckModel(virMediatedDevice *dev,
                             virMediatedDeviceModelType model)
 {
     g_autofree char *dev_api = NULL;
@@ -134,7 +134,7 @@ virMediatedDeviceCheckModel(virMediatedDevicePtr dev,
 }
 
 
-virMediatedDevicePtr
+virMediatedDevice *
 virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
 {
     g_autoptr(virMediatedDevice) dev = NULL;
@@ -165,7 +165,7 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
 
 #else
 
-virMediatedDevicePtr
+virMediatedDevice *
 virMediatedDeviceNew(const char *uuidstr G_GNUC_UNUSED,
                      virMediatedDeviceModelType model G_GNUC_UNUSED)
 {
@@ -178,7 +178,7 @@ virMediatedDeviceNew(const char *uuidstr G_GNUC_UNUSED,
 #endif /* __linux__ */
 
 void
-virMediatedDeviceFree(virMediatedDevicePtr dev)
+virMediatedDeviceFree(virMediatedDevice *dev)
 {
     if (!dev)
         return;
@@ -190,7 +190,7 @@ virMediatedDeviceFree(virMediatedDevicePtr dev)
 
 
 const char *
-virMediatedDeviceGetPath(virMediatedDevicePtr dev)
+virMediatedDeviceGetPath(virMediatedDevice *dev)
 {
     return dev->path;
 }
@@ -247,7 +247,7 @@ virMediatedDeviceGetIOMMUGroupNum(const char *uuidstr)
 
 
 void
-virMediatedDeviceGetUsedBy(virMediatedDevicePtr dev,
+virMediatedDeviceGetUsedBy(virMediatedDevice *dev,
                            const char **drvname, const char **domname)
 {
     *drvname = dev->used_by_drvname;
@@ -256,7 +256,7 @@ virMediatedDeviceGetUsedBy(virMediatedDevicePtr dev,
 
 
 int
-virMediatedDeviceSetUsedBy(virMediatedDevicePtr dev,
+virMediatedDeviceSetUsedBy(virMediatedDevice *dev,
                            const char *drvname,
                            const char *domname)
 {
@@ -269,10 +269,10 @@ virMediatedDeviceSetUsedBy(virMediatedDevicePtr dev,
 }
 
 
-virMediatedDeviceListPtr
+virMediatedDeviceList *
 virMediatedDeviceListNew(void)
 {
-    virMediatedDeviceListPtr list;
+    virMediatedDeviceList *list;
 
     if (virMediatedInitialize() < 0)
         return NULL;
@@ -287,7 +287,7 @@ virMediatedDeviceListNew(void)
 static void
 virMediatedDeviceListDispose(void *obj)
 {
-    virMediatedDeviceListPtr list = obj;
+    virMediatedDeviceList *list = obj;
     size_t i;
 
     for (i = 0; i < list->count; i++) {
@@ -304,8 +304,8 @@ virMediatedDeviceListDispose(void *obj)
  * the pointer and we need to clear the original not a copy on the stack
  */
 int
-virMediatedDeviceListAdd(virMediatedDeviceListPtr list,
-                         virMediatedDevicePtr *dev)
+virMediatedDeviceListAdd(virMediatedDeviceList *list,
+                         virMediatedDevice **dev)
 {
     if (virMediatedDeviceListFind(list, (*dev)->path)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -316,8 +316,8 @@ virMediatedDeviceListAdd(virMediatedDeviceListPtr list,
 }
 
 
-virMediatedDevicePtr
-virMediatedDeviceListGet(virMediatedDeviceListPtr list,
+virMediatedDevice *
+virMediatedDeviceListGet(virMediatedDeviceList *list,
                          ssize_t idx)
 {
     if (idx < 0 || idx >= list->count)
@@ -328,17 +328,17 @@ virMediatedDeviceListGet(virMediatedDeviceListPtr list,
 
 
 size_t
-virMediatedDeviceListCount(virMediatedDeviceListPtr list)
+virMediatedDeviceListCount(virMediatedDeviceList *list)
 {
     return list->count;
 }
 
 
-virMediatedDevicePtr
-virMediatedDeviceListStealIndex(virMediatedDeviceListPtr list,
+virMediatedDevice *
+virMediatedDeviceListStealIndex(virMediatedDeviceList *list,
                                 ssize_t idx)
 {
-    virMediatedDevicePtr ret;
+    virMediatedDevice *ret;
 
     if (idx < 0 || idx >= list->count)
         return NULL;
@@ -349,9 +349,9 @@ virMediatedDeviceListStealIndex(virMediatedDeviceListPtr list,
 }
 
 
-virMediatedDevicePtr
-virMediatedDeviceListSteal(virMediatedDeviceListPtr list,
-                           virMediatedDevicePtr dev)
+virMediatedDevice *
+virMediatedDeviceListSteal(virMediatedDeviceList *list,
+                           virMediatedDevice *dev)
 {
     int idx = -1;
 
@@ -365,21 +365,21 @@ virMediatedDeviceListSteal(virMediatedDeviceListPtr list,
 
 
 void
-virMediatedDeviceListDel(virMediatedDeviceListPtr list,
-                         virMediatedDevicePtr dev)
+virMediatedDeviceListDel(virMediatedDeviceList *list,
+                         virMediatedDevice *dev)
 {
     virMediatedDeviceFree(virMediatedDeviceListSteal(list, dev));
 }
 
 
 int
-virMediatedDeviceListFindIndex(virMediatedDeviceListPtr list,
+virMediatedDeviceListFindIndex(virMediatedDeviceList *list,
                                const char *sysfspath)
 {
     size_t i;
 
     for (i = 0; i < list->count; i++) {
-        virMediatedDevicePtr dev = list->devs[i];
+        virMediatedDevice *dev = list->devs[i];
         if (STREQ(sysfspath, dev->path))
             return i;
     }
@@ -387,8 +387,8 @@ virMediatedDeviceListFindIndex(virMediatedDeviceListPtr list,
 }
 
 
-virMediatedDevicePtr
-virMediatedDeviceListFind(virMediatedDeviceListPtr list,
+virMediatedDevice *
+virMediatedDeviceListFind(virMediatedDeviceList *list,
                           const char *sysfspath)
 {
     int idx;
@@ -401,11 +401,11 @@ virMediatedDeviceListFind(virMediatedDeviceListPtr list,
 
 
 bool
-virMediatedDeviceIsUsed(virMediatedDevicePtr dev,
-                        virMediatedDeviceListPtr list)
+virMediatedDeviceIsUsed(virMediatedDevice *dev,
+                        virMediatedDeviceList *list)
 {
     const char *drvname, *domname;
-    virMediatedDevicePtr tmp = NULL;
+    virMediatedDevice *tmp = NULL;
 
     if ((tmp = virMediatedDeviceListFind(list, dev->path))) {
         virMediatedDeviceGetUsedBy(tmp, &drvname, &domname);
@@ -427,8 +427,8 @@ virMediatedDeviceGetSysfsPath(const char *uuidstr)
 
 
 int
-virMediatedDeviceListMarkDevices(virMediatedDeviceListPtr dst,
-                                 virMediatedDeviceListPtr src,
+virMediatedDeviceListMarkDevices(virMediatedDeviceList *dst,
+                                 virMediatedDeviceList *src,
                                  const char *drvname,
                                  const char *domname)
 {
@@ -438,7 +438,7 @@ virMediatedDeviceListMarkDevices(virMediatedDeviceListPtr dst,
 
     virObjectLock(dst);
     for (i = 0; i < count; i++) {
-        virMediatedDevicePtr mdev = virMediatedDeviceListGet(src, i);
+        virMediatedDevice *mdev = virMediatedDeviceListGet(src, i);
 
         if (virMediatedDeviceIsUsed(mdev, dst) ||
             virMediatedDeviceSetUsedBy(mdev, drvname, domname) < 0)
@@ -462,7 +462,7 @@ virMediatedDeviceListMarkDevices(virMediatedDeviceListPtr dst,
 
  rollback:
     for (j = 0; j < i; j++) {
-        virMediatedDevicePtr tmp = virMediatedDeviceListGet(src, j);
+        virMediatedDevice *tmp = virMediatedDeviceListGet(src, j);
         virMediatedDeviceListSteal(dst, tmp);
     }
     goto cleanup;
@@ -470,7 +470,7 @@ virMediatedDeviceListMarkDevices(virMediatedDeviceListPtr dst,
 
 
 void
-virMediatedDeviceTypeFree(virMediatedDeviceTypePtr type)
+virMediatedDeviceTypeFree(virMediatedDeviceType *type)
 {
     if (!type)
         return;
@@ -484,7 +484,7 @@ virMediatedDeviceTypeFree(virMediatedDeviceTypePtr type)
 
 int
 virMediatedDeviceTypeReadAttrs(const char *sysfspath,
-                               virMediatedDeviceTypePtr *type)
+                               virMediatedDeviceType **type)
 {
     g_autoptr(virMediatedDeviceType) tmp = NULL;
 
@@ -515,12 +515,12 @@ virMediatedDeviceTypeReadAttrs(const char *sysfspath,
     return 0;
 }
 
-virMediatedDeviceAttrPtr virMediatedDeviceAttrNew(void)
+virMediatedDeviceAttr *virMediatedDeviceAttrNew(void)
 {
     return g_new0(virMediatedDeviceAttr, 1);
 }
 
-void virMediatedDeviceAttrFree(virMediatedDeviceAttrPtr attr)
+void virMediatedDeviceAttrFree(virMediatedDeviceAttr *attr)
 {
     g_free(attr->name);
     g_free(attr->value);
@@ -532,7 +532,7 @@ void virMediatedDeviceAttrFree(virMediatedDeviceAttrPtr attr)
 
 ssize_t
 virMediatedDeviceGetMdevTypes(const char *sysfspath,
-                              virMediatedDeviceTypePtr **types,
+                              virMediatedDeviceType ***types,
                               size_t *ntypes)
 {
     ssize_t ret = -1;
@@ -541,7 +541,7 @@ virMediatedDeviceGetMdevTypes(const char *sysfspath,
     struct dirent *entry;
     g_autofree char *types_path = NULL;
     g_autoptr(virMediatedDeviceType) mdev_type = NULL;
-    virMediatedDeviceTypePtr *mdev_types = NULL;
+    virMediatedDeviceType **mdev_types = NULL;
     size_t nmdev_types = 0;
     size_t i;
 
@@ -586,7 +586,7 @@ static const char *unsupported = N_("not supported on non-linux platforms");
 
 ssize_t
 virMediatedDeviceGetMdevTypes(const char *sysfspath G_GNUC_UNUSED,
-                              virMediatedDeviceTypePtr **types G_GNUC_UNUSED,
+                              virMediatedDeviceType ***types G_GNUC_UNUSED,
                               size_t *ntypes G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));

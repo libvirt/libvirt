@@ -41,7 +41,7 @@ init_syms(void)
 }
 
 unsigned long long
-qemuDomainGetUnplugTimeout(virDomainObjPtr vm)
+qemuDomainGetUnplugTimeout(virDomainObj *vm)
 {
     /* Wait only 100ms for DEVICE_DELETED event. Give a greater
      * timeout in case of PSeries guest to be consistent with the
@@ -98,19 +98,19 @@ virFileExists(const char *path)
 
 
 int
-qemuProcessStartManagedPRDaemon(virDomainObjPtr vm G_GNUC_UNUSED)
+qemuProcessStartManagedPRDaemon(virDomainObj *vm G_GNUC_UNUSED)
 {
     return 0;
 }
 
 
 void
-qemuProcessKillManagedPRDaemon(virDomainObjPtr vm G_GNUC_UNUSED)
+qemuProcessKillManagedPRDaemon(virDomainObj *vm G_GNUC_UNUSED)
 {
 }
 
 int
-qemuInterfaceVDPAConnect(virDomainNetDefPtr net G_GNUC_UNUSED)
+qemuInterfaceVDPAConnect(virDomainNetDef *net G_GNUC_UNUSED)
 {
     /* need a valid fd or sendmsg won't work. Just open /dev/null */
     return open("/dev/null", O_RDONLY);

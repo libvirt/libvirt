@@ -22,7 +22,6 @@
 #include "virmacaddr.h"
 
 typedef struct _virNetDevBandwidthRate virNetDevBandwidthRate;
-typedef virNetDevBandwidthRate *virNetDevBandwidthRatePtr;
 struct _virNetDevBandwidthRate {
     unsigned long long average;  /* kbytes/s */
     unsigned long long peak;     /* kbytes/s */
@@ -31,13 +30,12 @@ struct _virNetDevBandwidthRate {
 };
 
 typedef struct _virNetDevBandwidth virNetDevBandwidth;
-typedef virNetDevBandwidth *virNetDevBandwidthPtr;
 struct _virNetDevBandwidth {
-    virNetDevBandwidthRatePtr in;
-    virNetDevBandwidthRatePtr out;
+    virNetDevBandwidthRate *in;
+    virNetDevBandwidthRate *out;
 };
 
-void virNetDevBandwidthFree(virNetDevBandwidthPtr def);
+void virNetDevBandwidthFree(virNetDevBandwidth *def);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetDevBandwidth, virNetDevBandwidthFree);
 
@@ -47,16 +45,16 @@ int virNetDevBandwidthSet(const char *ifname,
                           bool swapped)
     G_GNUC_WARN_UNUSED_RESULT;
 int virNetDevBandwidthClear(const char *ifname);
-int virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest,
+int virNetDevBandwidthCopy(virNetDevBandwidth **dest,
                            const virNetDevBandwidth *src)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 bool virNetDevBandwidthEqual(const virNetDevBandwidth *a, const virNetDevBandwidth *b);
 
 int virNetDevBandwidthPlug(const char *brname,
-                           virNetDevBandwidthPtr net_bandwidth,
+                           virNetDevBandwidth *net_bandwidth,
                            const virMacAddr *ifmac_ptr,
-                           virNetDevBandwidthPtr bandwidth,
+                           virNetDevBandwidth *bandwidth,
                            unsigned int id)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
     G_GNUC_WARN_UNUSED_RESULT;
@@ -67,7 +65,7 @@ int virNetDevBandwidthUnplug(const char *brname,
 
 int virNetDevBandwidthUpdateRate(const char *ifname,
                                  unsigned int id,
-                                 virNetDevBandwidthPtr bandwidth,
+                                 virNetDevBandwidth *bandwidth,
                                  unsigned long long new_rate)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 

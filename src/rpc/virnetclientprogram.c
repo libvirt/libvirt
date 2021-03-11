@@ -42,12 +42,12 @@ struct _virNetClientProgram {
 
     unsigned program;
     unsigned version;
-    virNetClientProgramEventPtr events;
+    virNetClientProgramEvent *events;
     size_t nevents;
     void *eventOpaque;
 };
 
-static virClassPtr virNetClientProgramClass;
+static virClass *virNetClientProgramClass;
 static void virNetClientProgramDispose(void *obj);
 
 static int virNetClientProgramOnceInit(void)
@@ -61,13 +61,13 @@ static int virNetClientProgramOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virNetClientProgram);
 
 
-virNetClientProgramPtr virNetClientProgramNew(unsigned program,
+virNetClientProgram *virNetClientProgramNew(unsigned program,
                                               unsigned version,
-                                              virNetClientProgramEventPtr events,
+                                              virNetClientProgramEvent *events,
                                               size_t nevents,
                                               void *eventOpaque)
 {
-    virNetClientProgramPtr prog;
+    virNetClientProgram *prog;
 
     if (virNetClientProgramInitialize() < 0)
         return NULL;
@@ -90,20 +90,20 @@ void virNetClientProgramDispose(void *obj G_GNUC_UNUSED)
 }
 
 
-unsigned virNetClientProgramGetProgram(virNetClientProgramPtr prog)
+unsigned virNetClientProgramGetProgram(virNetClientProgram *prog)
 {
     return prog->program;
 }
 
 
-unsigned virNetClientProgramGetVersion(virNetClientProgramPtr prog)
+unsigned virNetClientProgramGetVersion(virNetClientProgram *prog)
 {
     return prog->version;
 }
 
 
-int virNetClientProgramMatches(virNetClientProgramPtr prog,
-                               virNetMessagePtr msg)
+int virNetClientProgramMatches(virNetClientProgram *prog,
+                               virNetMessage *msg)
 {
     if (prog->program == msg->header.prog &&
         prog->version == msg->header.vers)
@@ -113,8 +113,8 @@ int virNetClientProgramMatches(virNetClientProgramPtr prog,
 
 
 static int
-virNetClientProgramDispatchError(virNetClientProgramPtr prog G_GNUC_UNUSED,
-                                 virNetMessagePtr msg)
+virNetClientProgramDispatchError(virNetClientProgram *prog G_GNUC_UNUSED,
+                                 virNetMessage *msg)
 {
     virNetMessageError err;
     int ret = -1;
@@ -189,7 +189,7 @@ virNetClientProgramDispatchError(virNetClientProgramPtr prog G_GNUC_UNUSED,
 }
 
 
-static virNetClientProgramEventPtr virNetClientProgramGetEvent(virNetClientProgramPtr prog,
+static virNetClientProgramEvent *virNetClientProgramGetEvent(virNetClientProgram *prog,
                                                                int procedure)
 {
     size_t i;
@@ -203,11 +203,11 @@ static virNetClientProgramEventPtr virNetClientProgramGetEvent(virNetClientProgr
 }
 
 
-int virNetClientProgramDispatch(virNetClientProgramPtr prog,
-                                virNetClientPtr client,
-                                virNetMessagePtr msg)
+int virNetClientProgramDispatch(virNetClientProgram *prog,
+                                virNetClient *client,
+                                virNetMessage *msg)
 {
-    virNetClientProgramEventPtr event;
+    virNetClientProgramEvent *event;
     char *evdata;
 
     VIR_DEBUG("prog=%d ver=%d type=%d status=%d serial=%d proc=%d",
@@ -262,8 +262,8 @@ int virNetClientProgramDispatch(virNetClientProgramPtr prog,
 }
 
 
-int virNetClientProgramCall(virNetClientProgramPtr prog,
-                            virNetClientPtr client,
+int virNetClientProgramCall(virNetClientProgram *prog,
+                            virNetClient *client,
                             unsigned serial,
                             int proc,
                             size_t noutfds,
@@ -273,7 +273,7 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
                             xdrproc_t args_filter, void *args,
                             xdrproc_t ret_filter, void *ret)
 {
-    virNetMessagePtr msg;
+    virNetMessage *msg;
     size_t i;
 
     if (infds)

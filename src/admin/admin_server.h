@@ -23,50 +23,50 @@
 #include "rpc/virnetdaemon.h"
 #include "rpc/virnetserver.h"
 
-int adminConnectListServers(virNetDaemonPtr dmn,
-                            virNetServerPtr **servers,
+int adminConnectListServers(virNetDaemon *dmn,
+                            virNetServer ***servers,
                             unsigned int flags);
 
-virNetServerPtr adminConnectLookupServer(virNetDaemonPtr dmn,
+virNetServer *adminConnectLookupServer(virNetDaemon *dmn,
                                          const char *name,
                                          unsigned int flags);
 
 int
-adminServerGetThreadPoolParameters(virNetServerPtr srv,
+adminServerGetThreadPoolParameters(virNetServer *srv,
                                    virTypedParameterPtr *params,
                                    int *nparams,
                                    unsigned int flags);
 int
-adminServerSetThreadPoolParameters(virNetServerPtr srv,
+adminServerSetThreadPoolParameters(virNetServer *srv,
                                    virTypedParameterPtr params,
                                    int nparams,
                                    unsigned int flags);
 
-int adminServerListClients(virNetServerPtr srv,
-                           virNetServerClientPtr **clients,
+int adminServerListClients(virNetServer *srv,
+                           virNetServerClient ***clients,
                            unsigned int flags);
 
-virNetServerClientPtr adminServerLookupClient(virNetServerPtr srv,
+virNetServerClient *adminServerLookupClient(virNetServer *srv,
                                               unsigned long long id,
                                               unsigned int flags);
 
-int adminClientGetInfo(virNetServerClientPtr client,
+int adminClientGetInfo(virNetServerClient *client,
                        virTypedParameterPtr *params,
                        int *nparams,
                        unsigned int flags);
 
-int adminClientClose(virNetServerClientPtr client,
+int adminClientClose(virNetServerClient *client,
                      unsigned int flags);
 
-int adminServerGetClientLimits(virNetServerPtr srv,
+int adminServerGetClientLimits(virNetServer *srv,
                                virTypedParameterPtr *params,
                                int *nparams,
                                unsigned int flags);
 
-int adminServerSetClientLimits(virNetServerPtr srv,
+int adminServerSetClientLimits(virNetServer *srv,
                                virTypedParameterPtr params,
                                int nparams,
                                unsigned int flags);
 
-int adminServerUpdateTlsFiles(virNetServerPtr srv,
+int adminServerUpdateTlsFiles(virNetServer *srv,
                               unsigned int flags);

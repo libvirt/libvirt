@@ -30,7 +30,7 @@ VIR_ENUM_IMPL(virNativeVlanMode,
 );
 
 int
-virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr def)
+virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
 {
     int ret = -1;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
@@ -135,7 +135,7 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr de
 }
 
 int
-virNetDevVlanFormat(const virNetDevVlan *def, virBufferPtr buf)
+virNetDevVlanFormat(const virNetDevVlan *def, virBuffer *buf)
 {
     size_t i;
 

@@ -59,7 +59,7 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     char *buffer;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -117,7 +117,7 @@ vshFindNodeDevice(vshControl *ctl, const char *value)
     virNodeDevicePtr dev = NULL;
     char **arr = NULL;
     int narr;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (strchr(value, ',')) {
         narr = vshStringToArray(value, &arr);
@@ -206,10 +206,9 @@ struct virshNodeDeviceList {
     virNodeDevicePtr *devices;
     size_t ndevices;
 };
-typedef struct virshNodeDeviceList *virshNodeDeviceListPtr;
 
 static void
-virshNodeDeviceListFree(virshNodeDeviceListPtr list)
+virshNodeDeviceListFree(struct virshNodeDeviceList *list)
 {
     size_t i;
 
@@ -223,13 +222,13 @@ virshNodeDeviceListFree(virshNodeDeviceListPtr list)
     g_free(list);
 }
 
-static virshNodeDeviceListPtr
+static struct virshNodeDeviceList *
 virshNodeDeviceListCollect(vshControl *ctl,
                          char **capnames,
                          int ncapnames,
                          unsigned int flags)
 {
-    virshNodeDeviceListPtr list = g_new0(struct virshNodeDeviceList, 1);
+    struct virshNodeDeviceList *list = g_new0(struct virshNodeDeviceList, 1);
     size_t i;
     int ret;
     virNodeDevicePtr device;
@@ -237,7 +236,7 @@ virshNodeDeviceListCollect(vshControl *ctl,
     size_t deleted = 0;
     int ndevices = 0;
     char **names = NULL;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     /* try the list with flags support (0.10.2 and later) */
     if ((ret = virConnectListAllNodeDevices(priv->conn,
@@ -412,7 +411,7 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     unsigned int flags = 0;
     char **caps = NULL;
     int ncaps = 0;
-    virshNodeDeviceListPtr list = NULL;
+    struct virshNodeDeviceList *list = NULL;
     int cap_type = -1;
     bool inactive = vshCommandOptBool(cmd, "inactive");
     bool all = vshCommandOptBool(cmd, "all");
@@ -649,7 +648,7 @@ cmdNodeDeviceDetach(vshControl *ctl, const vshCmd *cmd)
     const char *driverName = NULL;
     virNodeDevicePtr device;
     bool ret = true;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
@@ -711,7 +710,7 @@ cmdNodeDeviceReAttach(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     virNodeDevicePtr device;
     bool ret = true;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
@@ -762,7 +761,7 @@ cmdNodeDeviceReset(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     virNodeDevicePtr device;
     bool ret = true;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
@@ -931,7 +930,7 @@ cmdNodeDeviceEvent(vshControl *ctl, const vshCmd *cmd)
     const char *eventName = NULL;
     const char *device_value = NULL;
     int event;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptBool(cmd, "list")) {
         size_t i;

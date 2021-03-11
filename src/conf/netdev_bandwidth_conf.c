@@ -26,7 +26,7 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 static int
-virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRatePtr rate)
+virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRate *rate)
 {
     g_autofree char *average = NULL;
     g_autofree char *peak = NULL;
@@ -101,7 +101,7 @@ virNetDevBandwidthParseRate(xmlNodePtr node, virNetDevBandwidthRatePtr rate)
  * Returns !NULL on success, NULL on error.
  */
 int
-virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
+virNetDevBandwidthParse(virNetDevBandwidth **bandwidth,
                         unsigned int *class_id,
                         xmlNodePtr node,
                         bool allowFloor)
@@ -199,8 +199,8 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
 }
 
 static int
-virNetDevBandwidthRateFormat(virNetDevBandwidthRatePtr def,
-                             virBufferPtr buf,
+virNetDevBandwidthRateFormat(virNetDevBandwidthRate *def,
+                             virBuffer *buf,
                              const char *elem_name)
 {
     if (!buf || !elem_name)
@@ -242,7 +242,7 @@ virNetDevBandwidthRateFormat(virNetDevBandwidthRatePtr def,
 int
 virNetDevBandwidthFormat(const virNetDevBandwidth *def,
                          unsigned int class_id,
-                         virBufferPtr buf)
+                         virBuffer *buf)
 {
     if (!buf)
         return -1;
@@ -265,7 +265,7 @@ virNetDevBandwidthFormat(const virNetDevBandwidth *def,
 }
 
 void
-virDomainClearNetBandwidth(virDomainDefPtr def)
+virDomainClearNetBandwidth(virDomainDef *def)
 {
     size_t i;
     virDomainNetType type;

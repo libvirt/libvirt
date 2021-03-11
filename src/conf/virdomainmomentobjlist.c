@@ -45,7 +45,7 @@ struct _virDomainMomentObjList {
     GHashTable *objs;
 
     virDomainMomentObj metaroot; /* Special parent of all root moments */
-    virDomainMomentObjPtr current; /* The current moment, if any */
+    virDomainMomentObj *current; /* The current moment, if any */
 };
 
 
@@ -53,14 +53,14 @@ struct _virDomainMomentObjList {
  * other entries in moments.  Return the number of children
  * visited.  No particular ordering is guaranteed.  */
 int
-virDomainMomentForEachChild(virDomainMomentObjPtr moment,
+virDomainMomentForEachChild(virDomainMomentObj *moment,
                             virHashIterator iter,
                             void *data)
 {
-    virDomainMomentObjPtr child = moment->first_child;
+    virDomainMomentObj *child = moment->first_child;
 
     while (child) {
-        virDomainMomentObjPtr next = child->sibling;
+        virDomainMomentObj *next = child->sibling;
         (iter)(child, child->def->name, data);
         child = next;
     }
@@ -79,7 +79,7 @@ virDomainMomentActOnDescendant(void *payload,
                                const char *name,
                                void *data)
 {
-    virDomainMomentObjPtr obj = payload;
+    virDomainMomentObj *obj = payload;
     struct moment_act_on_descendant *curr = data;
     virDomainMomentObj tmp = *obj;
 
@@ -96,7 +96,7 @@ virDomainMomentActOnDescendant(void *payload,
  * visited.  The visit is guaranteed to be topological, but no
  * particular order between siblings is guaranteed.  */
 int
-virDomainMomentForEachDescendant(virDomainMomentObjPtr moment,
+virDomainMomentForEachDescendant(virDomainMomentObj *moment,
                                  virHashIterator iter,
                                  void *data)
 {
@@ -117,10 +117,10 @@ virDomainMomentForEachDescendant(virDomainMomentObjPtr moment,
  * of a parent, it is faster to just 0 the count rather than calling
  * this function on each child.  */
 void
-virDomainMomentDropParent(virDomainMomentObjPtr moment)
+virDomainMomentDropParent(virDomainMomentObj *moment)
 {
-    virDomainMomentObjPtr prev = NULL;
-    virDomainMomentObjPtr curr = NULL;
+    virDomainMomentObj *prev = NULL;
+    virDomainMomentObj *curr = NULL;
 
     moment->parent->nchildren--;
     curr = moment->parent->first_child;
@@ -142,7 +142,7 @@ virDomainMomentDropParent(virDomainMomentObjPtr moment)
 
 /* Update @moment to no longer have children. */
 void
-virDomainMomentDropChildren(virDomainMomentObjPtr moment)
+virDomainMomentDropChildren(virDomainMomentObj *moment)
 {
     moment->nchildren = 0;
     moment->first_child = NULL;
@@ -151,8 +151,8 @@ virDomainMomentDropChildren(virDomainMomentObjPtr moment)
 
 /* Add @moment to @parent's list of children. */
 static void
-virDomainMomentSetParent(virDomainMomentObjPtr moment,
-                         virDomainMomentObjPtr parent)
+virDomainMomentSetParent(virDomainMomentObj *moment,
+                         virDomainMomentObj *parent)
 {
     moment->parent = parent;
     parent->nchildren++;
@@ -166,10 +166,10 @@ virDomainMomentSetParent(virDomainMomentObjPtr moment,
  * (for a new root) or set to an existing moment already in the
  * list. */
 void
-virDomainMomentLinkParent(virDomainMomentObjListPtr moments,
-                          virDomainMomentObjPtr moment)
+virDomainMomentLinkParent(virDomainMomentObjList *moments,
+                          virDomainMomentObj *moment)
 {
-    virDomainMomentObjPtr parent;
+    virDomainMomentObj *parent;
 
     parent = virDomainMomentFindByName(moments, moment->def->parent_name);
     if (!parent) {
@@ -184,10 +184,10 @@ virDomainMomentLinkParent(virDomainMomentObjListPtr moments,
 
 /* Take all children of @from and convert them into children of @to. */
 void
-virDomainMomentMoveChildren(virDomainMomentObjPtr from,
-                            virDomainMomentObjPtr to)
+virDomainMomentMoveChildren(virDomainMomentObj *from,
+                            virDomainMomentObj *to)
 {
-    virDomainMomentObjPtr child = from->first_child;
+    virDomainMomentObj *child = from->first_child;
 
     if (!from->nchildren)
         return;
@@ -205,10 +205,10 @@ virDomainMomentMoveChildren(virDomainMomentObjPtr from,
 }
 
 
-static virDomainMomentObjPtr
+static virDomainMomentObj *
 virDomainMomentObjNew(void)
 {
-    virDomainMomentObjPtr moment;
+    virDomainMomentObj *moment;
 
     moment = g_new0(virDomainMomentObj, 1);
 
@@ -219,7 +219,7 @@ virDomainMomentObjNew(void)
 
 
 static void
-virDomainMomentObjFree(virDomainMomentObjPtr moment)
+virDomainMomentObjFree(virDomainMomentObj *moment)
 {
     if (!moment)
         return;
@@ -232,11 +232,11 @@ virDomainMomentObjFree(virDomainMomentObjPtr moment)
 
 
 /* Add def to the list and return a matching object, or NULL on error */
-virDomainMomentObjPtr
-virDomainMomentAssignDef(virDomainMomentObjListPtr moments,
-                         virDomainMomentDefPtr def)
+virDomainMomentObj *
+virDomainMomentAssignDef(virDomainMomentObjList *moments,
+                         virDomainMomentDef *def)
 {
-    virDomainMomentObjPtr moment;
+    virDomainMomentObj *moment;
 
     if (virHashLookup(moments->objs, def->name) != NULL) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -261,16 +261,16 @@ virDomainMomentAssignDef(virDomainMomentObjListPtr moments,
 static void
 virDomainMomentObjListDataFree(void *payload)
 {
-    virDomainMomentObjPtr obj = payload;
+    virDomainMomentObj *obj = payload;
 
     virDomainMomentObjFree(obj);
 }
 
 
-virDomainMomentObjListPtr
+virDomainMomentObjList *
 virDomainMomentObjListNew(void)
 {
-    virDomainMomentObjListPtr moments;
+    virDomainMomentObjList *moments;
 
     moments = g_new0(virDomainMomentObjList, 1);
     moments->objs = virHashNew(virDomainMomentObjListDataFree);
@@ -282,7 +282,7 @@ virDomainMomentObjListNew(void)
 }
 
 void
-virDomainMomentObjListFree(virDomainMomentObjListPtr moments)
+virDomainMomentObjListFree(virDomainMomentObjList *moments)
 {
     if (!moments)
         return;
@@ -308,7 +308,7 @@ static int virDomainMomentObjListCopyNames(void *payload,
                                            const char *name G_GNUC_UNUSED,
                                            void *opaque)
 {
-    virDomainMomentObjPtr obj = payload;
+    virDomainMomentObj *obj = payload;
     struct virDomainMomentNameData *data = opaque;
 
     if (data->error)
@@ -331,8 +331,8 @@ static int virDomainMomentObjListCopyNames(void *payload,
 
 
 int
-virDomainMomentObjListGetNames(virDomainMomentObjListPtr moments,
-                               virDomainMomentObjPtr from,
+virDomainMomentObjListGetNames(virDomainMomentObjList *moments,
+                               virDomainMomentObj *from,
                                char **const names,
                                int maxnames,
                                unsigned int flags,
@@ -399,8 +399,8 @@ virDomainMomentObjListGetNames(virDomainMomentObjListPtr moments,
 }
 
 
-virDomainMomentObjPtr
-virDomainMomentFindByName(virDomainMomentObjListPtr moments,
+virDomainMomentObj *
+virDomainMomentFindByName(virDomainMomentObjList *moments,
                           const char *name)
 {
     if (name)
@@ -410,8 +410,8 @@ virDomainMomentFindByName(virDomainMomentObjListPtr moments,
 
 
 /* Return the current moment, or NULL */
-virDomainMomentObjPtr
-virDomainMomentGetCurrent(virDomainMomentObjListPtr moments)
+virDomainMomentObj *
+virDomainMomentGetCurrent(virDomainMomentObjList *moments)
 {
     return moments->current;
 }
@@ -419,7 +419,7 @@ virDomainMomentGetCurrent(virDomainMomentObjListPtr moments)
 
 /* Return the current moment's name, or NULL */
 const char *
-virDomainMomentGetCurrentName(virDomainMomentObjListPtr moments)
+virDomainMomentGetCurrentName(virDomainMomentObjList *moments)
 {
     if (moments->current)
         return moments->current->def->name;
@@ -429,8 +429,8 @@ virDomainMomentGetCurrentName(virDomainMomentObjListPtr moments)
 
 /* Update the current moment, using NULL if no current remains */
 void
-virDomainMomentSetCurrent(virDomainMomentObjListPtr moments,
-                          virDomainMomentObjPtr moment)
+virDomainMomentSetCurrent(virDomainMomentObjList *moments,
+                          virDomainMomentObj *moment)
 {
     moments->current = moment;
 }
@@ -438,7 +438,7 @@ virDomainMomentSetCurrent(virDomainMomentObjListPtr moments,
 
 /* Return the number of moments in the list */
 int
-virDomainMomentObjListSize(virDomainMomentObjListPtr moments)
+virDomainMomentObjListSize(virDomainMomentObjList *moments)
 {
     return virHashSize(moments->objs);
 }
@@ -446,8 +446,8 @@ virDomainMomentObjListSize(virDomainMomentObjListPtr moments)
 
 /* Remove moment from the list; return true if it was current */
 bool
-virDomainMomentObjListRemove(virDomainMomentObjListPtr moments,
-                             virDomainMomentObjPtr moment)
+virDomainMomentObjListRemove(virDomainMomentObjList *moments,
+                             virDomainMomentObj *moment)
 {
     bool ret = moments->current == moment;
 
@@ -460,7 +460,7 @@ virDomainMomentObjListRemove(virDomainMomentObjListPtr moments,
 
 /* Remove all moments tracked in the list */
 void
-virDomainMomentObjListRemoveAll(virDomainMomentObjListPtr moments)
+virDomainMomentObjListRemoveAll(virDomainMomentObjList *moments)
 {
     virHashRemoveAll(moments->objs);
     virDomainMomentDropChildren(&moments->metaroot);
@@ -469,7 +469,7 @@ virDomainMomentObjListRemoveAll(virDomainMomentObjListPtr moments)
 
 /* Call iter on each member of the list, in unspecified order */
 int
-virDomainMomentForEach(virDomainMomentObjListPtr moments,
+virDomainMomentForEach(virDomainMomentObjList *moments,
                        virHashIterator iter,
                        void *data)
 {
@@ -484,7 +484,7 @@ virDomainMomentForEach(virDomainMomentObjListPtr moments,
  * indicator gets set if a parent is missing or a requested parent would
  * cause a circular parent chain.  */
 struct moment_set_relation {
-    virDomainMomentObjListPtr moments;
+    virDomainMomentObjList *moments;
     int err;
 };
 static int
@@ -492,10 +492,10 @@ virDomainMomentSetRelations(void *payload,
                             const char *name G_GNUC_UNUSED,
                             void *data)
 {
-    virDomainMomentObjPtr obj = payload;
+    virDomainMomentObj *obj = payload;
     struct moment_set_relation *curr = data;
-    virDomainMomentObjPtr tmp;
-    virDomainMomentObjPtr parent;
+    virDomainMomentObj *tmp;
+    virDomainMomentObj *parent;
 
     parent = virDomainMomentFindByName(curr->moments, obj->def->parent_name);
     if (!parent) {
@@ -527,7 +527,7 @@ virDomainMomentSetRelations(void *payload,
  * success, -1 if a parent is missing or if a circular relationship
  * was requested. */
 int
-virDomainMomentUpdateRelations(virDomainMomentObjListPtr moments)
+virDomainMomentUpdateRelations(virDomainMomentObjList *moments)
 {
     struct moment_set_relation act = { moments, 0 };
 
@@ -544,11 +544,11 @@ virDomainMomentUpdateRelations(virDomainMomentObjListPtr moments)
  * on success, or report an error on behalf of domname before
  * returning -1. */
 int
-virDomainMomentCheckCycles(virDomainMomentObjListPtr list,
-                           virDomainMomentDefPtr def,
+virDomainMomentCheckCycles(virDomainMomentObjList *list,
+                           virDomainMomentDef *def,
                            const char *domname)
 {
-    virDomainMomentObjPtr other;
+    virDomainMomentObj *other;
 
     if (def->parent_name) {
         if (STREQ(def->name, def->parent_name)) {
@@ -583,10 +583,10 @@ virDomainMomentCheckCycles(virDomainMomentObjListPtr list,
 }
 
 /* If there is exactly one leaf node, return that node. */
-virDomainMomentObjPtr
-virDomainMomentFindLeaf(virDomainMomentObjListPtr list)
+virDomainMomentObj *
+virDomainMomentFindLeaf(virDomainMomentObjList *list)
 {
-    virDomainMomentObjPtr moment = &list->metaroot;
+    virDomainMomentObj *moment = &list->metaroot;
 
     if (moment->nchildren != 1)
         return NULL;

@@ -39,27 +39,27 @@
 
 char *
 libxlDomainMigrationSrcBegin(virConnectPtr conn,
-                             virDomainObjPtr vm,
+                             virDomainObj *vm,
                              const char *xmlin,
                              char **cookieout,
                              int *cookieoutlen);
 
-virDomainDefPtr
-libxlDomainMigrationDstPrepareDef(libxlDriverPrivatePtr driver,
+virDomainDef *
+libxlDomainMigrationDstPrepareDef(libxlDriverPrivate *driver,
                                   const char *dom_xml,
                                   const char *dname);
 
 int
 libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
                                       virStreamPtr st,
-                                      virDomainDefPtr *def,
+                                      virDomainDef **def,
                                       const char *cookiein,
                                       int cookieinlen,
                                       unsigned int flags);
 
 int
 libxlDomainMigrationDstPrepare(virConnectPtr dconn,
-                               virDomainDefPtr *def,
+                               virDomainDef **def,
                                const char *uri_in,
                                char **uri_out,
                                const char *cookiein,
@@ -67,8 +67,8 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
                                unsigned int flags);
 
 int
-libxlDomainMigrationSrcPerformP2P(libxlDriverPrivatePtr driver,
-                                  virDomainObjPtr vm,
+libxlDomainMigrationSrcPerformP2P(libxlDriverPrivate *driver,
+                                  virDomainObj *vm,
                                   virConnectPtr sconn,
                                   const char *dom_xml,
                                   const char *dconnuri,
@@ -77,8 +77,8 @@ libxlDomainMigrationSrcPerformP2P(libxlDriverPrivatePtr driver,
                                   unsigned int flags);
 
 int
-libxlDomainMigrationSrcPerform(libxlDriverPrivatePtr driver,
-                               virDomainObjPtr vm,
+libxlDomainMigrationSrcPerform(libxlDriverPrivate *driver,
+                               virDomainObj *vm,
                                const char *dom_xml,
                                const char *dconnuri,
                                const char *uri_str,
@@ -87,12 +87,12 @@ libxlDomainMigrationSrcPerform(libxlDriverPrivatePtr driver,
 
 virDomainPtr
 libxlDomainMigrationDstFinish(virConnectPtr dconn,
-                              virDomainObjPtr vm,
+                              virDomainObj *vm,
                               unsigned int flags,
                               int cancelled);
 
 int
-libxlDomainMigrationSrcConfirm(libxlDriverPrivatePtr driver,
-                               virDomainObjPtr vm,
+libxlDomainMigrationSrcConfirm(libxlDriverPrivate *driver,
+                               virDomainObj *vm,
                                unsigned int flags,
                                int cancelled);

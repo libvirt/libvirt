@@ -23,5 +23,5 @@
 #include "virbuffer.h"
 #include "virxml.h"
 
-int virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlanPtr def);
-int virNetDevVlanFormat(const virNetDevVlan *def, virBufferPtr buf);
+int virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def);
+int virNetDevVlanFormat(const virNetDevVlan *def, virBuffer *buf);

@@ -23,38 +23,38 @@
 #include "qemu_conf.h"
 #include "qemu_domainjob.h"
 
-virDomainMomentObjPtr
-qemuSnapObjFromName(virDomainObjPtr vm,
+virDomainMomentObj *
+qemuSnapObjFromName(virDomainObj *vm,
                     const char *name);
 
-virDomainMomentObjPtr
-qemuSnapObjFromSnapshot(virDomainObjPtr vm,
+virDomainMomentObj *
+qemuSnapObjFromSnapshot(virDomainObj *vm,
                         virDomainSnapshotPtr snapshot);
 
 int
-qemuSnapshotFSFreeze(virDomainObjPtr vm,
+qemuSnapshotFSFreeze(virDomainObj *vm,
                      const char **mountpoints,
                      unsigned int nmountpoints);
 int
-qemuSnapshotFSThaw(virDomainObjPtr vm,
+qemuSnapshotFSThaw(virDomainObj *vm,
                    bool report);
 
 virDomainSnapshotPtr
 qemuSnapshotCreateXML(virDomainPtr domain,
-                      virDomainObjPtr vm,
+                      virDomainObj *vm,
                       const char *xmlDesc,
                       unsigned int flags);
 
 int
-qemuSnapshotRevert(virDomainObjPtr vm,
+qemuSnapshotRevert(virDomainObj *vm,
                    virDomainSnapshotPtr snapshot,
                    unsigned int flags);
 
 int
-qemuSnapshotDelete(virDomainObjPtr vm,
+qemuSnapshotDelete(virDomainObj *vm,
                    virDomainSnapshotPtr snapshot,
                    unsigned int flags);
 
 int
-qemuSnapshotCreateDisksTransient(virDomainObjPtr vm,
+qemuSnapshotCreateDisksTransient(virDomainObj *vm,
                                  qemuDomainAsyncJob asyncJob);

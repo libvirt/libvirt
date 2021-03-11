@@ -49,7 +49,7 @@ virshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
     const char *n = NULL;
     bool is_mac = false;
     virMacAddr dummy;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     virCheckFlags(VIRSH_BYNAME | VIRSH_BYMAC, NULL);
 
@@ -112,7 +112,7 @@ cmdInterfaceEdit(vshControl *ctl, const vshCmd *cmd)
     virInterfacePtr iface = NULL;
     virInterfacePtr iface_edited = NULL;
     unsigned int flags = VIR_INTERFACE_XML_INACTIVE;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     iface = virshCommandOptInterface(ctl, cmd, NULL);
     if (iface == NULL)
@@ -164,10 +164,9 @@ struct virshInterfaceList {
     virInterfacePtr *ifaces;
     size_t nifaces;
 };
-typedef struct virshInterfaceList *virshInterfaceListPtr;
 
 static void
-virshInterfaceListFree(virshInterfaceListPtr list)
+virshInterfaceListFree(struct virshInterfaceList *list)
 {
     size_t i;
 
@@ -181,11 +180,11 @@ virshInterfaceListFree(virshInterfaceListPtr list)
     g_free(list);
 }
 
-static virshInterfaceListPtr
+static struct virshInterfaceList *
 virshInterfaceListCollect(vshControl *ctl,
                           unsigned int flags)
 {
-    virshInterfaceListPtr list = g_new0(struct virshInterfaceList, 1);
+    struct virshInterfaceList *list = g_new0(struct virshInterfaceList, 1);
     size_t i;
     int ret;
     char **activeNames = NULL;
@@ -196,7 +195,7 @@ virshInterfaceListCollect(vshControl *ctl,
     int nActiveIfaces = 0;
     int nInactiveIfaces = 0;
     int nAllIfaces = 0;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     /* try the list with flags support (0.10.2 and later) */
     if ((ret = virConnectListAllInterfaces(priv->conn,
@@ -346,10 +345,10 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     bool inactive = vshCommandOptBool(cmd, "inactive");
     bool all = vshCommandOptBool(cmd, "all");
     unsigned int flags = VIR_CONNECT_LIST_INTERFACES_ACTIVE;
-    virshInterfaceListPtr list = NULL;
+    struct virshInterfaceList *list = NULL;
     size_t i;
     bool ret = false;
-    vshTablePtr table = NULL;
+    vshTable *table = NULL;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(all, inactive);
 
@@ -536,7 +535,7 @@ cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     char *buffer;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -697,7 +696,7 @@ static const vshCmdOptDef opts_interface_begin[] = {
 static bool
 cmdInterfaceBegin(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (virInterfaceChangeBegin(priv->conn, 0) < 0) {
         vshError(ctl, "%s", _("Failed to begin network config change transaction"));
@@ -728,7 +727,7 @@ static const vshCmdOptDef opts_interface_commit[] = {
 static bool
 cmdInterfaceCommit(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (virInterfaceChangeCommit(priv->conn, 0) < 0) {
         vshError(ctl, "%s", _("Failed to commit network config change transaction"));
@@ -759,7 +758,7 @@ static const vshCmdOptDef opts_interface_rollback[] = {
 static bool
 cmdInterfaceRollback(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (virInterfaceChangeRollback(priv->conn, 0) < 0) {
         vshError(ctl, "%s", _("Failed to rollback network config change transaction"));
@@ -825,7 +824,7 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
     xmlDocPtr xml_doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr top_node, br_node, if_node, cur;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     /* Get a handle to the original device */
     if (!(if_handle = virshCommandOptInterfaceBy(ctl, cmd, "interface",
@@ -1047,7 +1046,7 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
     xmlDocPtr xml_doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr top_node, if_node, cur;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     /* Get a handle to the original device */
     if (!(br_handle = virshCommandOptInterfaceBy(ctl, cmd, "bridge",

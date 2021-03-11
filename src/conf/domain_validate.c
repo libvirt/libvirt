@@ -79,7 +79,7 @@ virDomainDefVideoValidate(const virDomainDef *def)
 
 
 static int
-virDomainCheckVirtioOptionsAreAbsent(virDomainVirtioOptionsPtr virtio)
+virDomainCheckVirtioOptionsAreAbsent(virDomainVirtioOptions *virtio)
 {
     if (!virtio)
         return 0;
@@ -238,12 +238,12 @@ virDomainDiskAddressDiskBusCompatibility(virDomainDiskBus bus,
 
 
 static int
-virSecurityDeviceLabelDefValidate(virSecurityDeviceLabelDefPtr *seclabels,
+virSecurityDeviceLabelDefValidate(virSecurityDeviceLabelDef **seclabels,
                                   size_t nseclabels,
-                                  virSecurityLabelDefPtr *vmSeclabels,
+                                  virSecurityLabelDef **vmSeclabels,
                                   size_t nvmSeclabels)
 {
-    virSecurityDeviceLabelDefPtr seclabel;
+    virSecurityDeviceLabelDef *seclabel;
     size_t i;
     size_t j;
 
@@ -437,7 +437,7 @@ static int
 virDomainDiskDefValidate(const virDomainDef *def,
                          const virDomainDiskDef *disk)
 {
-    virStorageSourcePtr next;
+    virStorageSource *next;
 
     /* Validate LUN configuration */
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
@@ -884,15 +884,15 @@ virDomainDefDuplicateDriveAddressesValidate(const virDomainDef *def)
     size_t j;
 
     for (i = 0; i < def->ndisks; i++) {
-        virDomainDiskDefPtr disk_i = def->disks[i];
-        virDomainDeviceInfoPtr disk_info_i = &disk_i->info;
+        virDomainDiskDef *disk_i = def->disks[i];
+        virDomainDeviceInfo *disk_info_i = &disk_i->info;
 
         if (disk_info_i->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
             continue;
 
         for (j = i + 1; j < def->ndisks; j++) {
-            virDomainDiskDefPtr disk_j = def->disks[j];
-            virDomainDeviceInfoPtr disk_info_j = &disk_j->info;
+            virDomainDiskDef *disk_j = def->disks[j];
+            virDomainDeviceInfo *disk_info_j = &disk_j->info;
 
             if (disk_i->bus != disk_j->bus)
                 continue;
@@ -921,9 +921,9 @@ virDomainDefDuplicateDriveAddressesValidate(const virDomainDef *def)
     }
 
     for (i = 0; i < def->nhostdevs; i++) {
-        virDomainHostdevDefPtr hdev_i = def->hostdevs[i];
-        virDomainDeviceInfoPtr hdev_info_i = hdev_i->info;
-        virDomainDeviceDriveAddressPtr hdev_addr_i;
+        virDomainHostdevDef *hdev_i = def->hostdevs[i];
+        virDomainDeviceInfo *hdev_info_i = hdev_i->info;
+        virDomainDeviceDriveAddress *hdev_addr_i;
 
         if (!virHostdevIsSCSIDevice(hdev_i))
             continue;
@@ -933,8 +933,8 @@ virDomainDefDuplicateDriveAddressesValidate(const virDomainDef *def)
 
         hdev_addr_i = &hdev_info_i->addr.drive;
         for (j = i + 1; j < def->nhostdevs; j++) {
-            virDomainHostdevDefPtr hdev_j = def->hostdevs[j];
-            virDomainDeviceInfoPtr hdev_info_j = hdev_j->info;
+            virDomainHostdevDef *hdev_j = def->hostdevs[j];
+            virDomainDeviceInfo *hdev_info_j = hdev_j->info;
 
             if (!virHostdevIsSCSIDevice(hdev_j))
                 continue;
@@ -980,9 +980,9 @@ struct virDomainDefValidateAliasesData {
 
 
 static int
-virDomainDeviceDefValidateAliasesIterator(virDomainDefPtr def,
-                                          virDomainDeviceDefPtr dev,
-                                          virDomainDeviceInfoPtr info,
+virDomainDeviceDefValidateAliasesIterator(virDomainDef *def,
+                                          virDomainDeviceDef *dev,
+                                          virDomainDeviceInfo *info,
                                           void *opaque)
 {
     struct virDomainDefValidateAliasesData *data = opaque;
@@ -1043,7 +1043,7 @@ virDomainDefValidateAliases(const virDomainDef *def,
     if (!(data.aliases = virHashNew(NULL)))
         goto cleanup;
 
-    if (virDomainDeviceInfoIterateFlags((virDomainDefPtr) def,
+    if (virDomainDeviceInfoIterateFlags((virDomainDef *) def,
                                         virDomainDeviceDefValidateAliasesIterator,
                                         DOMAIN_DEVICE_ITERATE_ALL_CONSOLES,
                                         &data) < 0)
@@ -1061,10 +1061,10 @@ virDomainDefValidateAliases(const virDomainDef *def,
 
 static int
 virDomainDeviceValidateAliasImpl(const virDomainDef *def,
-                                 virDomainDeviceDefPtr dev)
+                                 virDomainDeviceDef *dev)
 {
     GHashTable *aliases = NULL;
-    virDomainDeviceInfoPtr info = virDomainDeviceGetInfo(dev);
+    virDomainDeviceInfo *info = virDomainDeviceGetInfo(dev);
     int ret = -1;
 
     if (!info || !info->alias)
@@ -1089,12 +1089,12 @@ virDomainDeviceValidateAliasImpl(const virDomainDef *def,
 
 
 int
-virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
-                                       virDomainDeviceDefPtr dev,
+virDomainDeviceValidateAliasForHotplug(virDomainObj *vm,
+                                       virDomainDeviceDef *dev,
                                        unsigned int flags)
 {
-    virDomainDefPtr persDef = NULL;
-    virDomainDefPtr liveDef = NULL;
+    virDomainDef *persDef = NULL;
+    virDomainDef *liveDef = NULL;
 
     if (virDomainObjGetDefs(vm, flags, &liveDef, &persDef) < 0)
         return -1;
@@ -1187,7 +1187,7 @@ virDomainDefMemtuneValidate(const virDomainDef *def)
 
 static int
 virDomainDefOSValidate(const virDomainDef *def,
-                       virDomainXMLOptionPtr xmlopt)
+                       virDomainXMLOption *xmlopt)
 {
     if (!def->os.loader)
         return 0;
@@ -1294,7 +1294,7 @@ virDomainDefIOMMUValidate(const virDomainDef *def)
 
 static int
 virDomainDefValidateInternal(const virDomainDef *def,
-                             virDomainXMLOptionPtr xmlopt)
+                             virDomainXMLOption *xmlopt)
 {
     if (virDomainDefDuplicateDiskInfoValidate(def) < 0)
         return -1;
@@ -1343,9 +1343,9 @@ virDomainDefValidateInternal(const virDomainDef *def,
 
 
 static int
-virDomainDefValidateDeviceIterator(virDomainDefPtr def,
-                                   virDomainDeviceDefPtr dev,
-                                   virDomainDeviceInfoPtr info G_GNUC_UNUSED,
+virDomainDefValidateDeviceIterator(virDomainDef *def,
+                                   virDomainDeviceDef *dev,
+                                   virDomainDeviceInfo *info G_GNUC_UNUSED,
                                    void *opaque)
 {
     struct virDomainDefPostParseDeviceIteratorData *data = opaque;
@@ -1372,9 +1372,9 @@ virDomainDefValidateDeviceIterator(virDomainDefPtr def,
  * appropriate message.
  */
 int
-virDomainDefValidate(virDomainDefPtr def,
+virDomainDefValidate(virDomainDef *def,
                      unsigned int parseFlags,
-                     virDomainXMLOptionPtr xmlopt,
+                     virDomainXMLOption *xmlopt,
                      void *parseOpaque)
 {
     struct virDomainDefPostParseDeviceIteratorData data = {
@@ -1939,7 +1939,7 @@ int
 virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                            const virDomainDef *def,
                            unsigned int parseFlags,
-                           virDomainXMLOptionPtr xmlopt,
+                           virDomainXMLOption *xmlopt,
                            void *parseOpaque)
 {
     /* validate configuration only in certain places */

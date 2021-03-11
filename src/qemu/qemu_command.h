@@ -47,12 +47,12 @@ typedef enum {
     QEMU_BUILD_COMMANDLINE_VALIDATE_KEEP_JSON = 1 << 0,
 } qemuBuildCommandLineFlags;
 
-virCommandPtr qemuBuildCommandLine(virQEMUDriverPtr driver,
-                                   virLogManagerPtr logManager,
-                                   virSecurityManagerPtr secManager,
-                                   virDomainObjPtr vm,
+virCommand *qemuBuildCommandLine(virQEMUDriver *driver,
+                                   virLogManager *logManager,
+                                   virSecurityManager *secManager,
+                                   virDomainObj *vm,
                                    const char *migrateURI,
-                                   virDomainMomentObjPtr snapshot,
+                                   virDomainMomentObj *snapshot,
                                    virNetDevVPortProfileOp vmop,
                                    bool standalone,
                                    bool enableFips,
@@ -61,15 +61,15 @@ virCommandPtr qemuBuildCommandLine(virQEMUDriverPtr driver,
                                    unsigned int flags);
 
 /* Generate the object properties for pr-manager */
-virJSONValuePtr qemuBuildPRManagerInfoProps(virStorageSourcePtr src);
-virJSONValuePtr qemuBuildPRManagedManagerInfoProps(qemuDomainObjPrivatePtr priv);
+virJSONValue *qemuBuildPRManagerInfoProps(virStorageSource *src);
+virJSONValue *qemuBuildPRManagedManagerInfoProps(qemuDomainObjPrivate *priv);
 
-virJSONValuePtr qemuBuildDBusVMStateInfoProps(virQEMUDriverPtr driver,
-                                              virDomainObjPtr vm);
+virJSONValue *qemuBuildDBusVMStateInfoProps(virQEMUDriver *driver,
+                                              virDomainObj *vm);
 
 /* Generate the object properties for a secret */
-int qemuBuildSecretInfoProps(qemuDomainSecretInfoPtr secinfo,
-                             virJSONValuePtr *propsret);
+int qemuBuildSecretInfoProps(qemuDomainSecretInfo *secinfo,
+                             virJSONValue **propsret);
 
 /* Generate the object properties for a tls-creds-x509 */
 int qemuBuildTLSx509BackendProps(const char *tlspath,
@@ -77,8 +77,8 @@ int qemuBuildTLSx509BackendProps(const char *tlspath,
                                  bool verifypeer,
                                  const char *alias,
                                  const char *secalias,
-                                 virQEMUCapsPtr qemuCaps,
-                                 virJSONValuePtr *propsret);
+                                 virQEMUCaps *qemuCaps,
+                                 virJSONValue **propsret);
 
 /* Open a UNIX socket for chardev FD passing */
 int
@@ -88,13 +88,13 @@ qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev) G_GNUC_NO_INLINE;
 int
 qemuBuildChrDeviceStr(char **deviceStr,
                       const virDomainDef *vmdef,
-                      virDomainChrDefPtr chr,
-                      virQEMUCapsPtr qemuCaps);
+                      virDomainChrDef *chr,
+                      virQEMUCaps *qemuCaps);
 
-virJSONValuePtr
-qemuBuildChannelGuestfwdNetdevProps(virDomainChrDefPtr chr);
+virJSONValue *
+qemuBuildChannelGuestfwdNetdevProps(virDomainChrDef *chr);
 
-virJSONValuePtr qemuBuildHostNetStr(virDomainNetDefPtr net,
+virJSONValue *qemuBuildHostNetStr(virDomainNetDef *net,
                                     char **tapfd,
                                     size_t tapfdSize,
                                     char **vhostfd,
@@ -103,62 +103,62 @@ virJSONValuePtr qemuBuildHostNetStr(virDomainNetDefPtr net,
                                     const char *vdpadev);
 
 /* Current, best practice */
-char *qemuBuildNicDevStr(virDomainDefPtr def,
-                         virDomainNetDefPtr net,
+char *qemuBuildNicDevStr(virDomainDef *def,
+                         virDomainNetDef *net,
                          unsigned int bootindex,
                          size_t vhostfdSize,
-                         virQEMUCapsPtr qemuCaps);
+                         virQEMUCaps *qemuCaps);
 
-char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk);
+char *qemuDeviceDriveHostAlias(virDomainDiskDef *disk);
 bool qemuDiskBusIsSD(int bus);
 
-qemuBlockStorageSourceAttachDataPtr
-qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
-                                         virQEMUCapsPtr qemuCaps);
+qemuBlockStorageSourceAttachData *
+qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDef *disk,
+                                         virQEMUCaps *qemuCaps);
 
-qemuBlockStorageSourceAttachDataPtr
-qemuBuildStorageSourceAttachPrepareChardev(virDomainDiskDefPtr disk);
+qemuBlockStorageSourceAttachData *
+qemuBuildStorageSourceAttachPrepareChardev(virDomainDiskDef *disk);
 
 int
-qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
-                                          qemuBlockStorageSourceAttachDataPtr data,
-                                          virQEMUCapsPtr qemuCaps);
+qemuBuildStorageSourceAttachPrepareCommon(virStorageSource *src,
+                                          qemuBlockStorageSourceAttachData *data,
+                                          virQEMUCaps *qemuCaps);
 
 
-qemuBlockStorageSourceChainDataPtr
-qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
-                                              virQEMUCapsPtr qemuCaps);
+qemuBlockStorageSourceChainData *
+qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDef *disk,
+                                              virQEMUCaps *qemuCaps);
 
 
-qemuBlockStorageSourceChainDataPtr
-qemuBuildStorageSourceChainAttachPrepareChardev(virDomainDiskDefPtr disk);
+qemuBlockStorageSourceChainData *
+qemuBuildStorageSourceChainAttachPrepareChardev(virDomainDiskDef *disk);
 
 
-qemuBlockStorageSourceChainDataPtr
-qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
-                                                 virQEMUCapsPtr qemuCaps);
+qemuBlockStorageSourceChainData *
+qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSource *top,
+                                                 virQEMUCaps *qemuCaps);
 
-qemuBlockStorageSourceChainDataPtr
-qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSourcePtr top,
-                                                    virStorageSourcePtr backingStore,
-                                                    virQEMUCapsPtr qemuCaps);
+qemuBlockStorageSourceChainData *
+qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSource *top,
+                                                    virStorageSource *backingStore,
+                                                    virQEMUCaps *qemuCaps);
 
 char
 *qemuBuildDiskDeviceStr(const virDomainDef *def,
-                        virDomainDiskDefPtr disk,
+                        virDomainDiskDef *disk,
                         unsigned int bootindex,
-                        virQEMUCapsPtr qemuCaps);
+                        virQEMUCaps *qemuCaps);
 
 /* Current, best practice */
 int qemuBuildControllerDevStr(const virDomainDef *domainDef,
-                              virDomainControllerDefPtr def,
-                              virQEMUCapsPtr qemuCaps,
+                              virDomainControllerDef *def,
+                              virQEMUCaps *qemuCaps,
                               char **devstr);
 
-int qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
+int qemuBuildMemoryBackendProps(virJSONValue **backendProps,
                                 const char *alias,
-                                virQEMUDriverConfigPtr cfg,
-                                qemuDomainObjPrivatePtr priv,
+                                virQEMUDriverConfig *cfg,
+                                qemuDomainObjPrivate *priv,
                                 const virDomainDef *def,
                                 const virDomainMemoryDef *mem,
                                 bool force,
@@ -166,94 +166,94 @@ int qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
 
 char *
 qemuBuildMemoryDeviceStr(const virDomainDef *def,
-                         virDomainMemoryDefPtr mem,
-                         virQEMUCapsPtr qemuCaps);
+                         virDomainMemoryDef *mem,
+                         virQEMUCaps *qemuCaps);
 
 /* Current, best practice */
 char *qemuBuildPCIHostdevDevStr(const virDomainDef *def,
-                                virDomainHostdevDefPtr dev,
+                                virDomainHostdevDef *dev,
                                 unsigned int bootIndex,
-                                virQEMUCapsPtr qemuCaps);
+                                virQEMUCaps *qemuCaps);
 
 char *qemuBuildRNGDevStr(const virDomainDef *def,
-                         virDomainRNGDefPtr dev,
-                         virQEMUCapsPtr qemuCaps);
-int qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
-                             virJSONValuePtr *props);
+                         virDomainRNGDef *dev,
+                         virQEMUCaps *qemuCaps);
+int qemuBuildRNGBackendProps(virDomainRNGDef *rng,
+                             virJSONValue **props);
 
 /* Current, best practice */
 char *qemuBuildUSBHostdevDevStr(const virDomainDef *def,
-                                virDomainHostdevDefPtr dev,
-                                virQEMUCapsPtr qemuCaps);
+                                virDomainHostdevDef *dev,
+                                virQEMUCaps *qemuCaps);
 
 char *qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
-                                 virDomainHostdevDefPtr dev,
+                                 virDomainHostdevDef *dev,
                                  const char *backendAlias);
 
 qemuBlockStorageSourceAttachData *
-qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDefPtr hostdev,
+qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDef *hostdev,
                                   const char **backendAlias,
-                                  virQEMUCapsPtr qemuCaps);
+                                  virQEMUCaps *qemuCaps);
 qemuBlockStorageSourceAttachData *
-qemuBuildHostdevSCSIDetachPrepare(virDomainHostdevDefPtr hostdev,
-                                  virQEMUCapsPtr qemuCaps);
+qemuBuildHostdevSCSIDetachPrepare(virDomainHostdevDef *hostdev,
+                                  virQEMUCaps *qemuCaps);
 
 char *
 qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
-                                virDomainHostdevDefPtr dev,
-                                virQEMUCapsPtr qemuCaps,
+                                virDomainHostdevDef *dev,
+                                virQEMUCaps *qemuCaps,
                                 char *vhostfdName);
 
 char *
 qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
-                               virDomainHostdevDefPtr dev,
-                               virQEMUCapsPtr qemuCaps);
+                               virDomainHostdevDef *dev,
+                               virQEMUCaps *qemuCaps);
 
 char *qemuBuildRedirdevDevStr(const virDomainDef *def,
-                              virDomainRedirdevDefPtr dev,
-                              virQEMUCapsPtr qemuCaps);
+                              virDomainRedirdevDef *dev,
+                              virQEMUCaps *qemuCaps);
 
-char *qemuBuildZPCIDevStr(virDomainDeviceInfoPtr dev);
+char *qemuBuildZPCIDevStr(virDomainDeviceInfo *dev);
 
-int qemuNetworkPrepareDevices(virDomainDefPtr def);
+int qemuNetworkPrepareDevices(virDomainDef *def);
 
-int qemuGetDriveSourceString(virStorageSourcePtr src,
-                             qemuDomainSecretInfoPtr secinfo,
+int qemuGetDriveSourceString(virStorageSource *src,
+                             qemuDomainSecretInfo *secinfo,
                              char **source);
 
 bool
-qemuDiskConfigBlkdeviotuneEnabled(virDomainDiskDefPtr disk);
+qemuDiskConfigBlkdeviotuneEnabled(virDomainDiskDef *disk);
 
 
 bool
-qemuCheckFips(virDomainObjPtr vm);
+qemuCheckFips(virDomainObj *vm);
 
-virJSONValuePtr qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
+virJSONValue *qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
     ATTRIBUTE_NONNULL(1);
 
-virJSONValuePtr qemuBuildShmemBackendMemProps(virDomainShmemDefPtr shmem)
+virJSONValue *qemuBuildShmemBackendMemProps(virDomainShmemDef *shmem)
     ATTRIBUTE_NONNULL(1);
 
-char *qemuBuildShmemDevStr(virDomainDefPtr def,
-                           virDomainShmemDefPtr shmem,
-                           virQEMUCapsPtr qemuCaps)
+char *qemuBuildShmemDevStr(virDomainDef *def,
+                           virDomainShmemDef *shmem,
+                           virQEMUCaps *qemuCaps)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 char *qemuBuildWatchdogDevStr(const virDomainDef *def,
-                              virDomainWatchdogDefPtr dev,
-                              virQEMUCapsPtr qemuCaps);
+                              virDomainWatchdogDef *dev,
+                              virQEMUCaps *qemuCaps);
 
 int qemuBuildInputDevStr(char **devstr,
                          const virDomainDef *def,
-                         virDomainInputDefPtr input,
-                         virQEMUCapsPtr qemuCaps)
+                         virDomainInputDef *input,
+                         virQEMUCaps *qemuCaps)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4);
 
 char *
-qemuBuildVsockDevStr(virDomainDefPtr def,
-                     virDomainVsockDefPtr vsock,
-                     virQEMUCapsPtr qemuCaps,
+qemuBuildVsockDevStr(virDomainDef *def,
+                     virDomainVsockDef *vsock,
+                     virQEMUCaps *qemuCaps,
                      const char *fdprefix)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4);

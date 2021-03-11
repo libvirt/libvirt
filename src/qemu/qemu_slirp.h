@@ -39,43 +39,42 @@ typedef enum {
 VIR_ENUM_DECL(qemuSlirpFeature);
 
 typedef struct _qemuSlirp qemuSlirp;
-typedef qemuSlirp *qemuSlirpPtr;
 struct _qemuSlirp {
     int fd[2];
-    virBitmapPtr features;
+    virBitmap *features;
     pid_t pid;
 };
 
-qemuSlirpPtr qemuSlirpNew(void);
+qemuSlirp *qemuSlirpNew(void);
 
-qemuSlirpPtr qemuSlirpNewForHelper(const char *helper);
+qemuSlirp *qemuSlirpNewForHelper(const char *helper);
 
-void qemuSlirpFree(qemuSlirpPtr slirp);
+void qemuSlirpFree(qemuSlirp *slirp);
 
-void qemuSlirpSetFeature(qemuSlirpPtr slirp,
+void qemuSlirpSetFeature(qemuSlirp *slirp,
                          qemuSlirpFeature feature);
 
 bool qemuSlirpHasFeature(const qemuSlirp *slirp,
                          qemuSlirpFeature feature);
 
-int qemuSlirpOpen(qemuSlirpPtr slirp,
-                  virQEMUDriverPtr driver,
-                  virDomainDefPtr def);
+int qemuSlirpOpen(qemuSlirp *slirp,
+                  virQEMUDriver *driver,
+                  virDomainDef *def);
 
-int qemuSlirpStart(qemuSlirpPtr slirp,
-                   virDomainObjPtr vm,
-                   virQEMUDriverPtr driver,
-                   virDomainNetDefPtr net,
+int qemuSlirpStart(qemuSlirp *slirp,
+                   virDomainObj *vm,
+                   virQEMUDriver *driver,
+                   virDomainNetDef *net,
                    bool incoming);
 
-void qemuSlirpStop(qemuSlirpPtr slirp,
-                   virDomainObjPtr vm,
-                   virQEMUDriverPtr driver,
-                   virDomainNetDefPtr net);
+void qemuSlirpStop(qemuSlirp *slirp,
+                   virDomainObj *vm,
+                   virQEMUDriver *driver,
+                   virDomainNetDef *net);
 
-int qemuSlirpGetFD(qemuSlirpPtr slirp);
+int qemuSlirpGetFD(qemuSlirp *slirp);
 
-int qemuSlirpSetupCgroup(qemuSlirpPtr slirp,
-                         virCgroupPtr cgroup);
+int qemuSlirpSetupCgroup(qemuSlirp *slirp,
+                         virCgroup *cgroup);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuSlirp, qemuSlirpFree);

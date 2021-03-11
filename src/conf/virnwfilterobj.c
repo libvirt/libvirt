@@ -38,20 +38,20 @@ struct _virNWFilterObj {
 
     bool wantRemoved;
 
-    virNWFilterDefPtr def;
-    virNWFilterDefPtr newDef;
+    virNWFilterDef *def;
+    virNWFilterDef *newDef;
 };
 
 struct _virNWFilterObjList {
     size_t count;
-    virNWFilterObjPtr *objs;
+    virNWFilterObj **objs;
 };
 
 
-static virNWFilterObjPtr
+static virNWFilterObj *
 virNWFilterObjNew(void)
 {
-    virNWFilterObjPtr obj;
+    virNWFilterObj *obj;
 
     obj = g_new0(virNWFilterObj, 1);
 
@@ -67,29 +67,29 @@ virNWFilterObjNew(void)
 }
 
 
-virNWFilterDefPtr
-virNWFilterObjGetDef(virNWFilterObjPtr obj)
+virNWFilterDef *
+virNWFilterObjGetDef(virNWFilterObj *obj)
 {
     return obj->def;
 }
 
 
-virNWFilterDefPtr
-virNWFilterObjGetNewDef(virNWFilterObjPtr obj)
+virNWFilterDef *
+virNWFilterObjGetNewDef(virNWFilterObj *obj)
 {
     return obj->newDef;
 }
 
 
 bool
-virNWFilterObjWantRemoved(virNWFilterObjPtr obj)
+virNWFilterObjWantRemoved(virNWFilterObj *obj)
 {
     return obj->wantRemoved;
 }
 
 
 static void
-virNWFilterObjFree(virNWFilterObjPtr obj)
+virNWFilterObjFree(virNWFilterObj *obj)
 {
     if (!obj)
         return;
@@ -104,7 +104,7 @@ virNWFilterObjFree(virNWFilterObjPtr obj)
 
 
 void
-virNWFilterObjListFree(virNWFilterObjListPtr nwfilters)
+virNWFilterObjListFree(virNWFilterObjList *nwfilters)
 {
     size_t i;
     for (i = 0; i < nwfilters->count; i++)
@@ -114,10 +114,10 @@ virNWFilterObjListFree(virNWFilterObjListPtr nwfilters)
 }
 
 
-virNWFilterObjListPtr
+virNWFilterObjList *
 virNWFilterObjListNew(void)
 {
-    virNWFilterObjListPtr nwfilters;
+    virNWFilterObjList *nwfilters;
 
     nwfilters = g_new0(virNWFilterObjList, 1);
     return nwfilters;
@@ -125,8 +125,8 @@ virNWFilterObjListNew(void)
 
 
 void
-virNWFilterObjListRemove(virNWFilterObjListPtr nwfilters,
-                         virNWFilterObjPtr obj)
+virNWFilterObjListRemove(virNWFilterObjList *nwfilters,
+                         virNWFilterObj *obj)
 {
     size_t i;
 
@@ -146,13 +146,13 @@ virNWFilterObjListRemove(virNWFilterObjListPtr nwfilters,
 }
 
 
-virNWFilterObjPtr
-virNWFilterObjListFindByUUID(virNWFilterObjListPtr nwfilters,
+virNWFilterObj *
+virNWFilterObjListFindByUUID(virNWFilterObjList *nwfilters,
                              const unsigned char *uuid)
 {
     size_t i;
-    virNWFilterObjPtr obj;
-    virNWFilterDefPtr def;
+    virNWFilterObj *obj;
+    virNWFilterDef *def;
 
     for (i = 0; i < nwfilters->count; i++) {
         obj = nwfilters->objs[i];
@@ -167,13 +167,13 @@ virNWFilterObjListFindByUUID(virNWFilterObjListPtr nwfilters,
 }
 
 
-virNWFilterObjPtr
-virNWFilterObjListFindByName(virNWFilterObjListPtr nwfilters,
+virNWFilterObj *
+virNWFilterObjListFindByName(virNWFilterObjList *nwfilters,
                              const char *name)
 {
     size_t i;
-    virNWFilterObjPtr obj;
-    virNWFilterDefPtr def;
+    virNWFilterObj *obj;
+    virNWFilterDef *def;
 
     for (i = 0; i < nwfilters->count; i++) {
         obj = nwfilters->objs[i];
@@ -188,11 +188,11 @@ virNWFilterObjListFindByName(virNWFilterObjListPtr nwfilters,
 }
 
 
-virNWFilterObjPtr
-virNWFilterObjListFindInstantiateFilter(virNWFilterObjListPtr nwfilters,
+virNWFilterObj *
+virNWFilterObjListFindInstantiateFilter(virNWFilterObjList *nwfilters,
                                         const char *filtername)
 {
-    virNWFilterObjPtr obj;
+    virNWFilterObj *obj;
 
     if (!(obj = virNWFilterObjListFindByName(nwfilters, filtername))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -212,14 +212,14 @@ virNWFilterObjListFindInstantiateFilter(virNWFilterObjListPtr nwfilters,
 
 
 static int
-_virNWFilterObjListDefLoopDetect(virNWFilterObjListPtr nwfilters,
-                                 virNWFilterDefPtr def,
+_virNWFilterObjListDefLoopDetect(virNWFilterObjList *nwfilters,
+                                 virNWFilterDef *def,
                                  const char *filtername)
 {
     int rc = 0;
     size_t i;
-    virNWFilterEntryPtr entry;
-    virNWFilterObjPtr obj;
+    virNWFilterEntry *entry;
+    virNWFilterObj *obj;
 
     if (!def)
         return 0;
@@ -260,15 +260,15 @@ _virNWFilterObjListDefLoopDetect(virNWFilterObjListPtr nwfilters,
  * Returns 0 in case no loop was detected, -1 otherwise.
  */
 static int
-virNWFilterObjListDefLoopDetect(virNWFilterObjListPtr nwfilters,
-                                virNWFilterDefPtr def)
+virNWFilterObjListDefLoopDetect(virNWFilterObjList *nwfilters,
+                                virNWFilterDef *def)
 {
     return _virNWFilterObjListDefLoopDetect(nwfilters, def, def->name);
 }
 
 
 int
-virNWFilterObjTestUnassignDef(virNWFilterObjPtr obj)
+virNWFilterObjTestUnassignDef(virNWFilterObj *obj)
 {
     int rc = 0;
 
@@ -285,7 +285,7 @@ virNWFilterObjTestUnassignDef(virNWFilterObjPtr obj)
 
 static bool
 virNWFilterDefEqual(const virNWFilterDef *def1,
-                    virNWFilterDefPtr def2)
+                    virNWFilterDef *def2)
 {
     bool ret = false;
     char *xml1 = NULL;
@@ -305,12 +305,12 @@ virNWFilterDefEqual(const virNWFilterDef *def1,
 }
 
 
-virNWFilterObjPtr
-virNWFilterObjListAssignDef(virNWFilterObjListPtr nwfilters,
-                            virNWFilterDefPtr def)
+virNWFilterObj *
+virNWFilterObjListAssignDef(virNWFilterObjList *nwfilters,
+                            virNWFilterDef *def)
 {
-    virNWFilterObjPtr obj;
-    virNWFilterDefPtr objdef;
+    virNWFilterObj *obj;
+    virNWFilterDef *objdef;
 
     if ((obj = virNWFilterObjListFindByUUID(nwfilters, def->uuid))) {
         objdef = obj->def;
@@ -384,7 +384,7 @@ virNWFilterObjListAssignDef(virNWFilterObjListPtr nwfilters,
 
 
 int
-virNWFilterObjListNumOfNWFilters(virNWFilterObjListPtr nwfilters,
+virNWFilterObjListNumOfNWFilters(virNWFilterObjList *nwfilters,
                                  virConnectPtr conn,
                                  virNWFilterObjListFilter filter)
 {
@@ -392,7 +392,7 @@ virNWFilterObjListNumOfNWFilters(virNWFilterObjListPtr nwfilters,
     int nfilters = 0;
 
     for (i = 0; i < nwfilters->count; i++) {
-        virNWFilterObjPtr obj = nwfilters->objs[i];
+        virNWFilterObj *obj = nwfilters->objs[i];
         virNWFilterObjLock(obj);
         if (!filter || filter(conn, obj->def))
             nfilters++;
@@ -404,7 +404,7 @@ virNWFilterObjListNumOfNWFilters(virNWFilterObjListPtr nwfilters,
 
 
 int
-virNWFilterObjListGetNames(virNWFilterObjListPtr nwfilters,
+virNWFilterObjListGetNames(virNWFilterObjList *nwfilters,
                            virConnectPtr conn,
                            virNWFilterObjListFilter filter,
                            char **const names,
@@ -412,10 +412,10 @@ virNWFilterObjListGetNames(virNWFilterObjListPtr nwfilters,
 {
     int nnames = 0;
     size_t i;
-    virNWFilterDefPtr def;
+    virNWFilterDef *def;
 
     for (i = 0; i < nwfilters->count && nnames < maxnames; i++) {
-        virNWFilterObjPtr obj = nwfilters->objs[i];
+        virNWFilterObj *obj = nwfilters->objs[i];
         virNWFilterObjLock(obj);
         def = obj->def;
         if (!filter || filter(conn, def)) {
@@ -431,15 +431,15 @@ virNWFilterObjListGetNames(virNWFilterObjListPtr nwfilters,
 
 int
 virNWFilterObjListExport(virConnectPtr conn,
-                         virNWFilterObjListPtr nwfilters,
+                         virNWFilterObjList *nwfilters,
                          virNWFilterPtr **filters,
                          virNWFilterObjListFilter filter)
 {
     virNWFilterPtr *tmp_filters = NULL;
     int nfilters = 0;
     virNWFilterPtr nwfilter = NULL;
-    virNWFilterObjPtr obj = NULL;
-    virNWFilterDefPtr def;
+    virNWFilterObj *obj = NULL;
+    virNWFilterDef *def;
     size_t i;
     int ret = -1;
 
@@ -478,13 +478,13 @@ virNWFilterObjListExport(virConnectPtr conn,
 }
 
 
-static virNWFilterObjPtr
-virNWFilterObjListLoadConfig(virNWFilterObjListPtr nwfilters,
+static virNWFilterObj *
+virNWFilterObjListLoadConfig(virNWFilterObjList *nwfilters,
                              const char *configDir,
                              const char *name)
 {
-    virNWFilterDefPtr def = NULL;
-    virNWFilterObjPtr obj;
+    virNWFilterDef *def = NULL;
+    virNWFilterObj *obj;
     char *configFile = NULL;
 
     if (!(configFile = virFileBuildPath(configDir, name, ".xml")))
@@ -520,7 +520,7 @@ virNWFilterObjListLoadConfig(virNWFilterObjListPtr nwfilters,
 
 
 int
-virNWFilterObjListLoadAllConfigs(virNWFilterObjListPtr nwfilters,
+virNWFilterObjListLoadAllConfigs(virNWFilterObjList *nwfilters,
                                  const char *configDir)
 {
     g_autoptr(DIR) dir = NULL;
@@ -532,7 +532,7 @@ virNWFilterObjListLoadAllConfigs(virNWFilterObjListPtr nwfilters,
         return rc;
 
     while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
-        virNWFilterObjPtr obj;
+        virNWFilterObj *obj;
 
         if (!virStringStripSuffix(entry->d_name, ".xml"))
             continue;
@@ -547,14 +547,14 @@ virNWFilterObjListLoadAllConfigs(virNWFilterObjListPtr nwfilters,
 
 
 void
-virNWFilterObjLock(virNWFilterObjPtr obj)
+virNWFilterObjLock(virNWFilterObj *obj)
 {
     virMutexLock(&obj->lock);
 }
 
 
 void
-virNWFilterObjUnlock(virNWFilterObjPtr obj)
+virNWFilterObjUnlock(virNWFilterObj *obj)
 {
     virMutexUnlock(&obj->lock);
 }

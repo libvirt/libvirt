@@ -28,7 +28,7 @@
 
 int
 virSecretEventStateRegisterID(virConnectPtr conn,
-                              virObjectEventStatePtr state,
+                              virObjectEventState *state,
                               virSecretPtr secret,
                               int eventID,
                               virConnectSecretEventGenericCallback cb,
@@ -40,7 +40,7 @@ virSecretEventStateRegisterID(virConnectPtr conn,
 
 int
 virSecretEventStateRegisterClient(virConnectPtr conn,
-                                  virObjectEventStatePtr state,
+                                  virObjectEventState *state,
                                   virSecretPtr secret,
                                   int eventID,
                                   virConnectSecretEventGenericCallback cb,
@@ -50,13 +50,13 @@ virSecretEventStateRegisterClient(virConnectPtr conn,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5)
     ATTRIBUTE_NONNULL(8);
 
-virObjectEventPtr
+virObjectEvent *
 virSecretEventLifecycleNew(const unsigned char *uuid,
                            int usage_type,
                            const char *usage_id,
                            int type,
                            int detail);
-virObjectEventPtr
+virObjectEvent *
 virSecretEventValueChangedNew(const unsigned char *uuid,
                               int usage_type,
                               const char *usage_id);

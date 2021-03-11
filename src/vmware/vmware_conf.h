@@ -42,10 +42,10 @@ VIR_ENUM_DECL(vmwareDriver);
 
 struct vmware_driver {
     virMutex lock;
-    virCapsPtr caps;
-    virDomainXMLOptionPtr xmlopt;
+    virCaps *caps;
+    virDomainXMLOption *xmlopt;
 
-    virDomainObjListPtr domains;
+    virDomainObjList *domains;
     unsigned long version;
     int type;
     char *vmrun;
@@ -59,7 +59,7 @@ typedef struct _vmwareDomain {
 
 void vmwareFreeDriver(struct vmware_driver *driver);
 
-virCapsPtr vmwareCapsInit(void);
+virCaps *vmwareCapsInit(void);
 
 int vmwareLoadDomains(struct vmware_driver *driver);
 
@@ -69,12 +69,12 @@ int vmwareExtractVersion(struct vmware_driver *driver);
 
 int vmwareParseVersionStr(int type, const char *buf, unsigned long *version);
 
-int vmwareDomainConfigDisplay(vmwareDomainPtr domain, virDomainDefPtr vmdef);
+int vmwareDomainConfigDisplay(vmwareDomainPtr domain, virDomainDef *vmdef);
 
 void  vmwareConstructVmxPath(char *directoryName, char *name,
                              char **vmxPath);
 
-int vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath);
+int vmwareVmxPath(virDomainDef *vmdef, char **vmxPath);
 
 int vmwareMoveFile(char *srcFile, char *dstFile);
 

@@ -13,15 +13,15 @@
 
 # define VIR_FROM_THIS VIR_FROM_VMWARE
 
-static virCapsPtr caps;
+static virCaps *caps;
 static virVMXContext ctx;
-static virDomainXMLOptionPtr xmlopt;
+static virDomainXMLOption *xmlopt;
 
 
 static void
 testCapsInit(void)
 {
-    virCapsGuestPtr guest = NULL;
+    virCapsGuest *guest = NULL;
 
     caps = virCapabilitiesNew(VIR_ARCH_I686, true, true);
 
@@ -72,7 +72,7 @@ testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
 {
     int result = -1;
     char *formatted = NULL;
-    virDomainDefPtr def = NULL;
+    virDomainDef *def = NULL;
 
     def = virDomainDefParseFile(xml, xmlopt, NULL,
                                 VIR_DOMAIN_DEF_PARSE_INACTIVE);
@@ -129,7 +129,7 @@ testCompareHelper(const void *data)
 }
 
 static int
-testAutodetectSCSIControllerModel(virDomainDiskDefPtr def G_GNUC_UNUSED,
+testAutodetectSCSIControllerModel(virDomainDiskDef *def G_GNUC_UNUSED,
                                   int *model, void *opaque G_GNUC_UNUSED)
 {
     *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;

@@ -43,12 +43,12 @@ VIR_LOG_INIT("access.accessmanager");
 struct _virAccessManager {
     virObjectLockable parent;
 
-    virAccessDriverPtr drv;
+    virAccessDriver *drv;
     void *privateData;
 };
 
-static virClassPtr virAccessManagerClass;
-static virAccessManagerPtr virAccessManagerDefault;
+static virClass *virAccessManagerClass;
+static virAccessManager *virAccessManagerDefault;
 
 static void virAccessManagerDispose(void *obj);
 
@@ -63,7 +63,7 @@ static int virAccessManagerOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virAccessManager);
 
 
-virAccessManagerPtr virAccessManagerGetDefault(void)
+virAccessManager *virAccessManagerGetDefault(void)
 {
     if (virAccessManagerDefault == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -75,7 +75,7 @@ virAccessManagerPtr virAccessManagerGetDefault(void)
 }
 
 
-void virAccessManagerSetDefault(virAccessManagerPtr mgr)
+void virAccessManagerSetDefault(virAccessManager *mgr)
 {
     virObjectUnref(virAccessManagerDefault);
 
@@ -83,9 +83,9 @@ void virAccessManagerSetDefault(virAccessManagerPtr mgr)
 }
 
 
-static virAccessManagerPtr virAccessManagerNewDriver(virAccessDriverPtr drv)
+static virAccessManager *virAccessManagerNewDriver(virAccessDriver *drv)
 {
-    virAccessManagerPtr mgr;
+    virAccessManager *mgr;
     char *privateData;
 
     if (virAccessManagerInitialize() < 0)
@@ -112,7 +112,7 @@ static virAccessManagerPtr virAccessManagerNewDriver(virAccessDriverPtr drv)
 }
 
 
-static virAccessDriverPtr accessDrivers[] = {
+static virAccessDriver *accessDrivers[] = {
     &accessDriverNop,
 #if WITH_POLKIT
     &accessDriverPolkit,
@@ -120,7 +120,7 @@ static virAccessDriverPtr accessDrivers[] = {
 };
 
 
-static virAccessDriverPtr virAccessManagerFindDriver(const char *name)
+static virAccessDriver *virAccessManagerFindDriver(const char *name)
 {
     size_t i;
     for (i = 0; i < G_N_ELEMENTS(accessDrivers); i++) {
@@ -132,9 +132,9 @@ static virAccessDriverPtr virAccessManagerFindDriver(const char *name)
 }
 
 
-virAccessManagerPtr virAccessManagerNew(const char *name)
+virAccessManager *virAccessManagerNew(const char *name)
 {
-    virAccessDriverPtr drv;
+    virAccessDriver *drv;
 
     if (virAccessManagerInitialize() < 0)
         return NULL;
@@ -150,16 +150,16 @@ virAccessManagerPtr virAccessManagerNew(const char *name)
 }
 
 
-virAccessManagerPtr virAccessManagerNewStack(const char **names)
+virAccessManager *virAccessManagerNewStack(const char **names)
 {
-    virAccessManagerPtr manager = virAccessManagerNewDriver(&accessDriverStack);
+    virAccessManager *manager = virAccessManagerNewDriver(&accessDriverStack);
     size_t i;
 
     if (!manager)
         return NULL;
 
     for (i = 0; names[i] != NULL; i++) {
-        virAccessManagerPtr child = virAccessManagerNew(names[i]);
+        virAccessManager *child = virAccessManagerNew(names[i]);
 
         if (!child)
             goto error;
@@ -178,7 +178,7 @@ virAccessManagerPtr virAccessManagerNewStack(const char **names)
 }
 
 
-void *virAccessManagerGetPrivateData(virAccessManagerPtr mgr)
+void *virAccessManagerGetPrivateData(virAccessManager *mgr)
 {
     return mgr->privateData;
 }
@@ -186,7 +186,7 @@ void *virAccessManagerGetPrivateData(virAccessManagerPtr mgr)
 
 static void virAccessManagerDispose(void *object)
 {
-    virAccessManagerPtr mgr = object;
+    virAccessManager *mgr = object;
 
     if (mgr->drv->cleanup)
         mgr->drv->cleanup(mgr);
@@ -213,7 +213,7 @@ virAccessManagerSanitizeError(int ret,
     return ret;
 }
 
-int virAccessManagerCheckConnect(virAccessManagerPtr manager,
+int virAccessManagerCheckConnect(virAccessManager *manager,
                                  const char *driverName,
                                  virAccessPermConnect perm)
 {
@@ -228,9 +228,9 @@ int virAccessManagerCheckConnect(virAccessManagerPtr manager,
 }
 
 
-int virAccessManagerCheckDomain(virAccessManagerPtr manager,
+int virAccessManagerCheckDomain(virAccessManager *manager,
                                 const char *driverName,
-                                virDomainDefPtr domain,
+                                virDomainDef *domain,
                                 virAccessPermDomain perm)
 {
     int ret = 0;
@@ -243,9 +243,9 @@ int virAccessManagerCheckDomain(virAccessManagerPtr manager,
     return virAccessManagerSanitizeError(ret, driverName);
 }
 
-int virAccessManagerCheckInterface(virAccessManagerPtr manager,
+int virAccessManagerCheckInterface(virAccessManager *manager,
                                    const char *driverName,
-                                   virInterfaceDefPtr iface,
+                                   virInterfaceDef *iface,
                                    virAccessPermInterface perm)
 {
     int ret = 0;
@@ -258,9 +258,9 @@ int virAccessManagerCheckInterface(virAccessManagerPtr manager,
     return virAccessManagerSanitizeError(ret, driverName);
 }
 
-int virAccessManagerCheckNetwork(virAccessManagerPtr manager,
+int virAccessManagerCheckNetwork(virAccessManager *manager,
                                  const char *driverName,
-                                 virNetworkDefPtr network,
+                                 virNetworkDef *network,
                                  virAccessPermNetwork perm)
 {
     int ret = 0;
@@ -273,10 +273,10 @@ int virAccessManagerCheckNetwork(virAccessManagerPtr manager,
     return virAccessManagerSanitizeError(ret, driverName);
 }
 
-int virAccessManagerCheckNetworkPort(virAccessManagerPtr manager,
+int virAccessManagerCheckNetworkPort(virAccessManager *manager,
                                      const char *driverName,
-                                     virNetworkDefPtr network,
-                                     virNetworkPortDefPtr port,
+                                     virNetworkDef *network,
+                                     virNetworkPortDef *port,
                                      virAccessPermNetworkPort perm)
 {
     int ret = 0;
@@ -289,9 +289,9 @@ int virAccessManagerCheckNetworkPort(virAccessManagerPtr manager,
     return virAccessManagerSanitizeError(ret, driverName);
 }
 
-int virAccessManagerCheckNodeDevice(virAccessManagerPtr manager,
+int virAccessManagerCheckNodeDevice(virAccessManager *manager,
                                     const char *driverName,
-                                    virNodeDeviceDefPtr nodedev,
+                                    virNodeDeviceDef *nodedev,
                                     virAccessPermNodeDevice perm)
 {
     int ret = 0;
@@ -304,9 +304,9 @@ int virAccessManagerCheckNodeDevice(virAccessManagerPtr manager,
     return virAccessManagerSanitizeError(ret, driverName);
 }
 
-int virAccessManagerCheckNWFilter(virAccessManagerPtr manager,
+int virAccessManagerCheckNWFilter(virAccessManager *manager,
                                   const char *driverName,
-                                  virNWFilterDefPtr nwfilter,
+                                  virNWFilterDef *nwfilter,
                                   virAccessPermNWFilter perm)
 {
     int ret = 0;
@@ -319,9 +319,9 @@ int virAccessManagerCheckNWFilter(virAccessManagerPtr manager,
     return virAccessManagerSanitizeError(ret, driverName);
 }
 
-int virAccessManagerCheckNWFilterBinding(virAccessManagerPtr manager,
+int virAccessManagerCheckNWFilterBinding(virAccessManager *manager,
                                          const char *driverName,
-                                         virNWFilterBindingDefPtr binding,
+                                         virNWFilterBindingDef *binding,
                                          virAccessPermNWFilterBinding perm)
 {
     int ret = 0;
@@ -334,9 +334,9 @@ int virAccessManagerCheckNWFilterBinding(virAccessManagerPtr manager,
     return virAccessManagerSanitizeError(ret, driverName);
 }
 
-int virAccessManagerCheckSecret(virAccessManagerPtr manager,
+int virAccessManagerCheckSecret(virAccessManager *manager,
                                 const char *driverName,
-                                virSecretDefPtr secret,
+                                virSecretDef *secret,
                                 virAccessPermSecret perm)
 {
     int ret = 0;
@@ -349,9 +349,9 @@ int virAccessManagerCheckSecret(virAccessManagerPtr manager,
     return virAccessManagerSanitizeError(ret, driverName);
 }
 
-int virAccessManagerCheckStoragePool(virAccessManagerPtr manager,
+int virAccessManagerCheckStoragePool(virAccessManager *manager,
                                      const char *driverName,
-                                     virStoragePoolDefPtr pool,
+                                     virStoragePoolDef *pool,
                                      virAccessPermStoragePool perm)
 {
     int ret = 0;
@@ -364,10 +364,10 @@ int virAccessManagerCheckStoragePool(virAccessManagerPtr manager,
     return virAccessManagerSanitizeError(ret, driverName);
 }
 
-int virAccessManagerCheckStorageVol(virAccessManagerPtr manager,
+int virAccessManagerCheckStorageVol(virAccessManager *manager,
                                     const char *driverName,
-                                    virStoragePoolDefPtr pool,
-                                    virStorageVolDefPtr vol,
+                                    virStoragePoolDef *pool,
+                                    virStorageVolDef *vol,
                                     virAccessPermStorageVol perm)
 {
     int ret = 0;

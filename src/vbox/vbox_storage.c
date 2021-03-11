@@ -87,7 +87,7 @@ vboxStoragePoolLookupByName(virConnectPtr conn, const char *name)
 
 static int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
 {
-    vboxDriverPtr data = pool->conn->privateData;
+    struct _vboxDriver *data = pool->conn->privateData;
     vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
     PRUint32 hardDiskAccessible = 0;
     nsresult rc;
@@ -125,7 +125,7 @@ static int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
 static int
 vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nnames)
 {
-    vboxDriverPtr data = pool->conn->privateData;
+    struct _vboxDriver *data = pool->conn->privateData;
     vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
     PRUint32 numActive = 0;
     nsresult rc;
@@ -178,7 +178,7 @@ vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nname
 static virStorageVolPtr
 vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name)
 {
-    vboxDriverPtr data = pool->conn->privateData;
+    struct _vboxDriver *data = pool->conn->privateData;
     vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
     nsresult rc;
     size_t i;
@@ -251,7 +251,7 @@ vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name)
 static virStorageVolPtr
 vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 {
-    vboxDriverPtr data = conn->privateData;
+    struct _vboxDriver *data = conn->privateData;
     vboxIID hddIID;
     unsigned char uuid[VIR_UUID_BUFLEN];
     IMedium *hardDisk = NULL;
@@ -318,7 +318,7 @@ vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 static virStorageVolPtr
 vboxStorageVolLookupByPath(virConnectPtr conn, const char *path)
 {
-    vboxDriverPtr data = conn->privateData;
+    struct _vboxDriver *data = conn->privateData;
     PRUnichar *hddPathUtf16 = NULL;
     IMedium *hardDisk = NULL;
     PRUnichar *hddNameUtf16 = NULL;
@@ -396,7 +396,7 @@ static virStorageVolPtr
 vboxStorageVolCreateXML(virStoragePoolPtr pool,
                         const char *xml, unsigned int flags)
 {
-    vboxDriverPtr data = pool->conn->privateData;
+    struct _vboxDriver *data = pool->conn->privateData;
     PRUnichar *hddFormatUtf16 = NULL;
     PRUnichar *hddNameUtf16 = NULL;
     virStoragePoolDef poolDef;
@@ -504,7 +504,7 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
 
 static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
 {
-    vboxDriverPtr data = vol->conn->privateData;
+    struct _vboxDriver *data = vol->conn->privateData;
     unsigned char uuid[VIR_UUID_BUFLEN];
     IMedium *hardDisk = NULL;
     int deregister = 0;
@@ -657,7 +657,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
 
 static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info)
 {
-    vboxDriverPtr data = vol->conn->privateData;
+    struct _vboxDriver *data = vol->conn->privateData;
     IMedium *hardDisk = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     PRUint32 hddstate;
@@ -712,7 +712,7 @@ static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info
 
 static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 {
-    vboxDriverPtr data = vol->conn->privateData;
+    struct _vboxDriver *data = vol->conn->privateData;
     IMedium *hardDisk = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     PRUnichar *hddFormatUtf16 = NULL;
@@ -802,7 +802,7 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 
 static char *vboxStorageVolGetPath(virStorageVolPtr vol)
 {
-    vboxDriverPtr data = vol->conn->privateData;
+    struct _vboxDriver *data = vol->conn->privateData;
     IMedium *hardDisk = NULL;
     PRUnichar *hddLocationUtf16 = NULL;
     char *hddLocationUtf8 = NULL;
@@ -875,7 +875,7 @@ virStorageDriver vboxStorageDriver = {
     .storageVolGetPath = vboxStorageVolGetPath /* 0.7.1 */
 };
 
-virStorageDriverPtr vboxGetStorageDriver(uint32_t uVersion)
+virStorageDriver *vboxGetStorageDriver(uint32_t uVersion)
 {
     /* Install gVBoxAPI according to the vbox API version.
      * Return -1 for unsupported version.

@@ -36,15 +36,15 @@
 
 typedef struct _qemuMigParamsData qemuMigParamsData;
 struct _qemuMigParamsData {
-    virDomainXMLOptionPtr xmlopt;
+    virDomainXMLOption *xmlopt;
     const char *name;
     GHashTable *qmpschema;
 };
 
 
 static void
-qemuMigParamsTestFormatXML(virBufferPtr buf,
-                           qemuMigrationParamsPtr migParams)
+qemuMigParamsTestFormatXML(virBuffer *buf,
+                           qemuMigrationParams *migParams)
 {
     virBufferAddLit(buf, "<test>\n");
     virBufferAdjustIndent(buf, 2);
@@ -96,7 +96,7 @@ qemuMigParamsTestXML(const void *opaque)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *replyFile = NULL;
     g_autofree char *xmlFile = NULL;
-    qemuMonitorTestPtr mon = NULL;
+    qemuMonitorTest *mon = NULL;
     g_autoptr(virJSONValue) params = NULL;
     g_autoptr(qemuMigrationParams) migParams = NULL;
     g_autofree char *actualXML = NULL;
@@ -139,7 +139,7 @@ qemuMigParamsTestJSON(const void *opaque)
     const qemuMigParamsData *data = opaque;
     g_autofree char *replyFile = NULL;
     g_autofree char *jsonFile = NULL;
-    qemuMonitorTestPtr mon = NULL;
+    qemuMonitorTest *mon = NULL;
     g_autoptr(virJSONValue) paramsIn = NULL;
     g_autoptr(virJSONValue) paramsOut = NULL;
     g_autoptr(qemuMigrationParams) migParams = NULL;

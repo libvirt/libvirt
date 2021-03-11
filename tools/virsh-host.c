@@ -50,7 +50,7 @@ static bool
 cmdCapabilities(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     char *caps;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if ((caps = virConnectGetCapabilities(priv->conn)) == NULL) {
         vshError(ctl, "%s", _("failed to get capabilities"));
@@ -105,7 +105,7 @@ cmdDomCapabilities(vshControl *ctl, const vshCmd *cmd)
     const char *arch = NULL;
     const char *machine = NULL;
     const unsigned int flags = 0; /* No flags so far */
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "virttype", &virttype) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "emulatorbin", &emulatorbin) < 0 ||
@@ -169,7 +169,7 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     char *cap_xml = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(all, cellno);
 
@@ -312,7 +312,7 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
     bool all = vshCommandOptBool(cmd, "all");
     bool cellno = vshCommandOptBool(cmd, "cellno");
     bool pagesz = vshCommandOptBool(cmd, "pagesize");
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(all, cellno);
 
@@ -509,7 +509,7 @@ cmdAllocpages(vshControl *ctl, const vshCmd *cmd)
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr *nodes = NULL;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(all, cellno);
 
@@ -608,7 +608,7 @@ cmdMaxvcpus(vshControl *ctl, const vshCmd *cmd)
     char *caps = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
     bool ret = false;
 
     if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
@@ -654,7 +654,7 @@ static bool
 cmdNodeinfo(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     virNodeInfo info;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (virNodeGetInfo(priv->conn, &info) < 0) {
         vshError(ctl, "%s", _("failed to get node information"));
@@ -703,7 +703,7 @@ cmdNodeCpuMap(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     unsigned int online;
     bool pretty = vshCommandOptBool(cmd, "pretty");
     bool ret = false;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     cpunum = virNodeGetCPUMap(priv->conn, &cpumap, &online, 0);
     if (cpunum < 0) {
@@ -801,7 +801,7 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     unsigned long long cpu_stats[VIRSH_CPU_LAST] = { 0 };
     bool present[VIRSH_CPU_LAST] = { false };
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptInt(ctl, cmd, "cpu", &cpuNum) < 0)
         return false;
@@ -912,7 +912,7 @@ cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
     int cellNum = VIR_NODE_MEMORY_STATS_ALL_CELLS;
     virNodeMemoryStatsPtr params = NULL;
     bool ret = false;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptInt(ctl, cmd, "cell", &cellNum) < 0)
         return false;
@@ -982,7 +982,7 @@ cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
     const char *target = NULL;
     unsigned int suspendTarget;
     long long duration;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "target", &target) < 0)
         return false;
@@ -1030,7 +1030,7 @@ static bool
 cmdSysinfo(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     char *sysinfo;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     sysinfo = virConnectGetSysinfo(priv->conn, 0);
     if (sysinfo == NULL) {
@@ -1061,7 +1061,7 @@ static bool
 cmdHostname(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     char *hostname;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     hostname = virConnectGetHostname(priv->conn);
     if (hostname == NULL) {
@@ -1092,7 +1092,7 @@ static bool
 cmdURI(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     char *uri;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     uri = virConnectGetURI(priv->conn);
     if (uri == NULL) {
@@ -1230,7 +1230,7 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     int result;
     char **cpus = NULL;
     unsigned int flags = 0;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptBool(cmd, "error"))
         flags |= VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE;
@@ -1311,7 +1311,7 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     char *result = NULL;
     char **list = NULL;
     unsigned int flags = 0;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptBool(cmd, "features"))
         flags |= VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES;
@@ -1367,7 +1367,7 @@ cmdCPUModelNames(vshControl *ctl, const vshCmd *cmd)
     size_t i;
     int nmodels;
     const char *arch = NULL;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0)
         return false;
@@ -1425,7 +1425,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     unsigned int major;
     unsigned int minor;
     unsigned int rel;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     hvType = virConnectGetType(priv->conn);
     if (hvType == NULL) {
@@ -1532,7 +1532,7 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     int rc = -1;
     size_t i;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if ((rc = vshCommandOptUInt(ctl, cmd, "shm-pages-to-scan", &value)) < 0) {
         goto cleanup;
@@ -1664,7 +1664,7 @@ cmdHypervisorCPUCompare(vshControl *ctl,
     int result;
     char **cpus = NULL;
     unsigned int flags = 0;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptBool(cmd, "error"))
         flags |= VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE;
@@ -1778,7 +1778,7 @@ cmdHypervisorCPUBaseline(vshControl *ctl,
     char *result = NULL;
     char **list = NULL;
     unsigned int flags = 0;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptBool(cmd, "features"))
         flags |= VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES;

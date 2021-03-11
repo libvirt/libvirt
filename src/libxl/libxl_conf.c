@@ -54,7 +54,7 @@
 VIR_LOG_INIT("libxl.libxl_conf");
 
 
-static virClassPtr libxlDriverConfigClass;
+static virClass *libxlDriverConfigClass;
 static void libxlDriverConfigDispose(void *obj);
 
 static int libxlConfigOnceInit(void)
@@ -70,7 +70,7 @@ VIR_ONCE_GLOBAL_INIT(libxlConfig);
 static void
 libxlDriverConfigDispose(void *obj)
 {
-    libxlDriverConfigPtr cfg = obj;
+    libxlDriverConfig *cfg = obj;
 
     virObjectUnref(cfg->caps);
     libxl_ctx_free(cfg->ctx);
@@ -123,7 +123,7 @@ libxlActionFromVirLifecycle(virDomainLifecycleAction action)
 
 static int
 libxlMakeDomCreateInfo(libxl_ctx *ctx,
-                       virDomainDefPtr def,
+                       virDomainDef *def,
                        libxl_domain_create_info *c_info)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -210,9 +210,9 @@ libxlMakeDomCreateInfo(libxl_ctx *ctx,
 }
 
 static int
-libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
+libxlMakeChrdevStr(virDomainChrDef *def, char **buf)
 {
-    virDomainChrSourceDefPtr srcdef = def->source;
+    virDomainChrSourceDef *srcdef = def->source;
     const char *type = virDomainChrTypeToString(srcdef->type);
 
     if (!type) {
@@ -284,9 +284,9 @@ libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
 }
 
 static int
-libxlMakeDomBuildInfo(virDomainDefPtr def,
-                      libxlDriverConfigPtr cfg,
-                      virCapsPtr caps,
+libxlMakeDomBuildInfo(virDomainDef *def,
+                      libxlDriverConfig *cfg,
+                      virCaps *caps,
                       libxl_domain_config *d_config)
 {
     virDomainClockDef clock = def->clock;
@@ -539,7 +539,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
              * Use first sound device.  man xl.cfg(5) describes soundhw as
              * a single device.  From the man page: soundhw=DEVICE
              */
-            virDomainSoundDefPtr snd = def->sounds[0];
+            virDomainSoundDef *snd = def->sounds[0];
 
             b_info->u.hvm.soundhw = g_strdup(virDomainSoundModelTypeToString(snd->model));
         }
@@ -770,7 +770,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                                          b_info->max_vcpus);
 
     if (def->namespaceData) {
-        libxlDomainXmlNsDefPtr nsdata = def->namespaceData;
+        libxlDomainXmlNsDef *nsdata = def->namespaceData;
 
         if (nsdata->num_args > 0)
             b_info->extra = g_strdupv(nsdata->args);
@@ -781,7 +781,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
 
 #ifdef LIBXL_HAVE_VNUMA
 static int
-libxlMakeVnumaList(virDomainDefPtr def,
+libxlMakeVnumaList(virDomainDef *def,
                    libxl_ctx *ctx,
                    libxl_domain_config *d_config)
 {
@@ -790,8 +790,8 @@ libxlMakeVnumaList(virDomainDefPtr def,
     size_t nr_nodes;
     size_t num_vnuma;
     bool simulate = false;
-    virBitmapPtr bitmap = NULL;
-    virDomainNumaPtr numa = def->numa;
+    virBitmap *bitmap = NULL;
+    virDomainNuma *numa = def->numa;
     libxl_domain_build_info *b_info = &d_config->b_info;
     libxl_physinfo physinfo;
     libxl_vnode_info *vnuma_nodes = NULL;
@@ -918,7 +918,7 @@ libxlDiskSetDiscard(libxl_device_disk *x_disk, int discard)
 }
 
 static char *
-libxlMakeNetworkDiskSrcStr(virStorageSourcePtr src,
+libxlMakeNetworkDiskSrcStr(virStorageSource *src,
                            const char *username,
                            const char *secret)
 {
@@ -992,7 +992,7 @@ libxlMakeNetworkDiskSrcStr(virStorageSourcePtr src,
 }
 
 static int
-libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
+libxlMakeNetworkDiskSrc(virStorageSource *src, char **srcstr)
 {
     virConnectPtr conn = NULL;
     g_autofree char *base64secret = NULL;
@@ -1032,7 +1032,7 @@ libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
 }
 
 int
-libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
+libxlMakeDisk(virDomainDiskDef *l_disk, libxl_device_disk *x_disk)
 {
     const char *driver = virDomainDiskGetDriver(l_disk);
     int format = virDomainDiskGetFormat(l_disk);
@@ -1183,9 +1183,9 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
 }
 
 static int
-libxlMakeDiskList(virDomainDefPtr def, libxl_domain_config *d_config)
+libxlMakeDiskList(virDomainDef *def, libxl_domain_config *d_config)
 {
-    virDomainDiskDefPtr *l_disks = def->disks;
+    virDomainDiskDef **l_disks = def->disks;
     int ndisks = def->ndisks;
     libxl_device_disk *x_disks;
     size_t i;
@@ -1217,7 +1217,7 @@ libxlMakeDiskList(virDomainDefPtr def, libxl_domain_config *d_config)
  * libxl when not explicitly specified by the user.
  */
 void
-libxlUpdateDiskDef(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
+libxlUpdateDiskDef(virDomainDiskDef *l_disk, libxl_device_disk *x_disk)
 {
     const char *driver = NULL;
 
@@ -1242,8 +1242,8 @@ libxlUpdateDiskDef(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
 }
 
 int
-libxlMakeNic(virDomainDefPtr def,
-             virDomainNetDefPtr l_nic,
+libxlMakeNic(virDomainDef *def,
+             virDomainNetDef *l_nic,
              libxl_device_nic *x_nic,
              bool attach)
 {
@@ -1454,9 +1454,9 @@ libxlMakeNic(virDomainDefPtr def,
 }
 
 static int
-libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
+libxlMakeNicList(virDomainDef *def,  libxl_domain_config *d_config)
 {
-    virDomainNetDefPtr *l_nics = def->nets;
+    virDomainNetDef **l_nics = def->nets;
     size_t nnics = def->nnets;
     libxl_device_nic *x_nics;
     size_t i, nvnics = 0;
@@ -1494,12 +1494,12 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
 }
 
 int
-libxlMakeVfb(virPortAllocatorRangePtr graphicsports,
-             virDomainGraphicsDefPtr l_vfb,
+libxlMakeVfb(virPortAllocatorRange *graphicsports,
+             virDomainGraphicsDef *l_vfb,
              libxl_device_vfb *x_vfb)
 {
     unsigned short port;
-    virDomainGraphicsListenDefPtr glisten = NULL;
+    virDomainGraphicsListenDef *glisten = NULL;
 
     libxl_device_vfb_init(x_vfb);
 
@@ -1550,11 +1550,11 @@ libxlMakeVfb(virPortAllocatorRangePtr graphicsports,
 }
 
 static int
-libxlMakeVfbList(virPortAllocatorRangePtr graphicsports,
-                 virDomainDefPtr def,
+libxlMakeVfbList(virPortAllocatorRange *graphicsports,
+                 virDomainDef *def,
                  libxl_domain_config *d_config)
 {
-    virDomainGraphicsDefPtr *l_vfbs = def->graphics;
+    virDomainGraphicsDef **l_vfbs = def->graphics;
     int nvfbs = def->ngraphics;
     libxl_device_vfb *x_vfbs;
     libxl_device_vkb *x_vkbs;
@@ -1595,8 +1595,8 @@ libxlMakeVfbList(virPortAllocatorRangePtr graphicsports,
  * populate libxl_domain_config->vfbs.
  */
 static int
-libxlMakeBuildInfoVfb(virPortAllocatorRangePtr graphicsports,
-                      virDomainDefPtr def,
+libxlMakeBuildInfoVfb(virPortAllocatorRange *graphicsports,
+                      virDomainDef *def,
                       libxl_domain_config *d_config)
 {
     libxl_domain_build_info *b_info = &d_config->b_info;
@@ -1614,9 +1614,9 @@ libxlMakeBuildInfoVfb(virPortAllocatorRangePtr graphicsports,
      * libxl_domain_config->vfbs. Prior to calling this function,
      */
     for (i = 0; i < def->ngraphics; i++) {
-        virDomainGraphicsDefPtr l_vfb = def->graphics[i];
+        virDomainGraphicsDef *l_vfb = def->graphics[i];
         unsigned short port;
-        virDomainGraphicsListenDefPtr glisten = NULL;
+        virDomainGraphicsListenDef *glisten = NULL;
 
         if (l_vfb->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE)
             continue;
@@ -1703,8 +1703,8 @@ libxlMakeBuildInfoVfb(virPortAllocatorRangePtr graphicsports,
  * Otherwise autoballooning is enabled.
  */
 static int
-libxlGetAutoballoonConf(libxlDriverConfigPtr cfg,
-                        virConfPtr conf)
+libxlGetAutoballoonConf(libxlDriverConfig *cfg,
+                        virConf *conf)
 {
     g_autoptr(GRegex) regex = NULL;
     g_autoptr(GError) err = NULL;
@@ -1728,10 +1728,10 @@ libxlGetAutoballoonConf(libxlDriverConfigPtr cfg,
     return 0;
 }
 
-libxlDriverConfigPtr
+libxlDriverConfig *
 libxlDriverConfigNew(void)
 {
-    libxlDriverConfigPtr cfg;
+    libxlDriverConfig *cfg;
 
     if (libxlConfigInitialize() < 0)
         return NULL;
@@ -1757,7 +1757,7 @@ libxlDriverConfigNew(void)
         return NULL;
     }
 #else
-    cfg->firmwares = g_new0(virFirmwarePtr, 1);
+    cfg->firmwares = g_new0(virFirmware *, 1);
     cfg->nfirmwares = 1;
     cfg->firmwares[0] = g_new0(virFirmware, 1);
     cfg->firmwares[0]->name = g_strdup(LIBXL_FIRMWARE_DIR "/ovmf.bin");
@@ -1777,7 +1777,7 @@ libxlDriverConfigNew(void)
 }
 
 int
-libxlDriverConfigInit(libxlDriverConfigPtr cfg)
+libxlDriverConfigInit(libxlDriverConfig *cfg)
 {
     uint64_t free_mem;
 
@@ -1819,10 +1819,10 @@ libxlDriverConfigInit(libxlDriverConfigPtr cfg)
     return 0;
 }
 
-libxlDriverConfigPtr
-libxlDriverConfigGet(libxlDriverPrivatePtr driver)
+libxlDriverConfig *
+libxlDriverConfigGet(libxlDriverPrivate *driver)
 {
-    libxlDriverConfigPtr cfg;
+    libxlDriverConfig *cfg;
 
     libxlDriverLock(driver);
     cfg = virObjectRef(driver->config);
@@ -1830,7 +1830,7 @@ libxlDriverConfigGet(libxlDriverPrivatePtr driver)
     return cfg;
 }
 
-int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
+int libxlDriverConfigLoadFile(libxlDriverConfig *cfg,
                               const char *filename)
 {
     g_autoptr(virConf) conf = NULL;
@@ -1877,7 +1877,7 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
  * either the user-specified value or total physical memory as a default.
  */
 int
-libxlDriverGetDom0MaxmemConf(libxlDriverConfigPtr cfg,
+libxlDriverGetDom0MaxmemConf(libxlDriverConfig *cfg,
                              unsigned long long *maxmem)
 {
     char **cmd_tokens = NULL;
@@ -1951,7 +1951,7 @@ libxlDriverGetDom0MaxmemConf(libxlDriverConfigPtr cfg,
 
 #ifdef LIBXL_HAVE_DEVICE_CHANNEL
 static int
-libxlPrepareChannel(virDomainChrDefPtr channel,
+libxlPrepareChannel(virDomainChrDef *channel,
                     const char *channelDir,
                     const char *domainName)
 {
@@ -1972,7 +1972,7 @@ libxlPrepareChannel(virDomainChrDefPtr channel,
 }
 
 static int
-libxlMakeChannel(virDomainChrDefPtr l_channel,
+libxlMakeChannel(virDomainChrDef *l_channel,
                  libxl_device_channel *x_channel)
 {
     libxl_device_channel_init(x_channel);
@@ -2010,10 +2010,10 @@ libxlMakeChannel(virDomainChrDefPtr l_channel,
 
 static int
 libxlMakeChannelList(const char *channelDir,
-                     virDomainDefPtr def,
+                     virDomainDef *def,
                      libxl_domain_config *d_config)
 {
-    virDomainChrDefPtr *l_channels = def->channels;
+    virDomainChrDef **l_channels = def->channels;
     size_t nchannels = def->nchannels;
     libxl_device_channel *x_channels;
     size_t i, nvchannels = 0;
@@ -2049,7 +2049,7 @@ libxlMakeChannelList(const char *channelDir,
 
 #ifdef LIBXL_HAVE_PVUSB
 int
-libxlMakeUSBController(virDomainControllerDefPtr controller,
+libxlMakeUSBController(virDomainControllerDef *controller,
                        libxl_device_usbctrl *usbctrl)
 {
     usbctrl->devid = controller->idx;
@@ -2088,10 +2088,10 @@ libxlMakeUSBController(virDomainControllerDefPtr controller,
 }
 
 static int
-libxlMakeDefaultUSBControllers(virDomainDefPtr def,
+libxlMakeDefaultUSBControllers(virDomainDef *def,
                                libxl_domain_config *d_config)
 {
-    virDomainControllerDefPtr l_controller = NULL;
+    virDomainControllerDef *l_controller = NULL;
     libxl_device_usbctrl *x_controllers = NULL;
     size_t nusbdevs = 0;
     size_t ncontrollers;
@@ -2142,9 +2142,9 @@ libxlMakeDefaultUSBControllers(virDomainDefPtr def,
 }
 
 static int
-libxlMakeUSBControllerList(virDomainDefPtr def, libxl_domain_config *d_config)
+libxlMakeUSBControllerList(virDomainDef *def, libxl_domain_config *d_config)
 {
-    virDomainControllerDefPtr *l_controllers = def->controllers;
+    virDomainControllerDef **l_controllers = def->controllers;
     size_t ncontrollers = def->ncontrollers;
     size_t nusbctrls = 0;
     libxl_device_usbctrl *x_usbctrls;
@@ -2187,10 +2187,10 @@ libxlMakeUSBControllerList(virDomainDefPtr def, libxl_domain_config *d_config)
 }
 
 int
-libxlMakeUSB(virDomainHostdevDefPtr hostdev, libxl_device_usbdev *usbdev)
+libxlMakeUSB(virDomainHostdevDef *hostdev, libxl_device_usbdev *usbdev)
 {
-    virDomainHostdevSubsysUSBPtr usbsrc = &hostdev->source.subsys.u.usb;
-    virUSBDevicePtr usb = NULL;
+    virDomainHostdevSubsysUSB *usbsrc = &hostdev->source.subsys.u.usb;
+    virUSBDevice *usb = NULL;
     int ret = -1;
 
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -2223,9 +2223,9 @@ libxlMakeUSB(virDomainHostdevDefPtr hostdev, libxl_device_usbdev *usbdev)
 }
 
 static int
-libxlMakeUSBList(virDomainDefPtr def, libxl_domain_config *d_config)
+libxlMakeUSBList(virDomainDef *def, libxl_domain_config *d_config)
 {
-    virDomainHostdevDefPtr *l_hostdevs = def->hostdevs;
+    virDomainHostdevDef **l_hostdevs = def->hostdevs;
     size_t nhostdevs = def->nhostdevs;
     size_t nusbdevs = 0;
     libxl_device_usbdev *x_usbdevs;
@@ -2267,9 +2267,9 @@ libxlMakeUSBList(virDomainDefPtr def, libxl_domain_config *d_config)
 #endif
 
 int
-libxlMakePCI(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev)
+libxlMakePCI(virDomainHostdevDef *hostdev, libxl_device_pci *pcidev)
 {
-    virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
+    virDomainHostdevSubsysPCI *pcisrc = &hostdev->source.subsys.u.pci;
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
         return -1;
     if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
@@ -2285,9 +2285,9 @@ libxlMakePCI(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev)
 }
 
 static int
-libxlMakePCIList(virDomainDefPtr def, libxl_domain_config *d_config)
+libxlMakePCIList(virDomainDef *def, libxl_domain_config *d_config)
 {
-    virDomainHostdevDefPtr *l_hostdevs = def->hostdevs;
+    virDomainHostdevDef **l_hostdevs = def->hostdevs;
     size_t nhostdevs = def->nhostdevs;
     size_t npcidevs = 0;
     libxl_device_pci *x_pcidevs;
@@ -2328,7 +2328,7 @@ libxlMakePCIList(virDomainDefPtr def, libxl_domain_config *d_config)
 }
 
 static int
-libxlMakeVideo(virDomainDefPtr def, libxl_domain_config *d_config)
+libxlMakeVideo(virDomainDef *def, libxl_domain_config *d_config)
 
 {
     libxl_domain_build_info *b_info = &d_config->b_info;
@@ -2406,11 +2406,11 @@ libxlMakeVideo(virDomainDefPtr def, libxl_domain_config *d_config)
 }
 
 int
-libxlDriverNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
+libxlDriverNodeGetInfo(libxlDriverPrivate *driver, virNodeInfoPtr info)
 {
     libxl_physinfo phy_info;
     virArch hostarch = virArchFromHost();
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    libxlDriverConfig *cfg = libxlDriverConfigGet(driver);
     int ret = -1;
 
     libxl_physinfo_init(&phy_info);
@@ -2444,12 +2444,12 @@ libxlDriverNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
 }
 
 int
-libxlBuildDomainConfig(virPortAllocatorRangePtr graphicsports,
-                       virDomainDefPtr def,
-                       libxlDriverConfigPtr cfg,
+libxlBuildDomainConfig(virPortAllocatorRange *graphicsports,
+                       virDomainDef *def,
+                       libxlDriverConfig *cfg,
                        libxl_domain_config *d_config)
 {
-    virCapsPtr caps = cfg->caps;
+    virCaps *caps = cfg->caps;
     libxl_ctx *ctx = cfg->ctx;
     libxl_domain_config_init(d_config);
 
@@ -2507,8 +2507,8 @@ libxlBuildDomainConfig(virPortAllocatorRangePtr graphicsports,
     return 0;
 }
 
-virDomainXMLOptionPtr
-libxlCreateXMLConf(libxlDriverPrivatePtr driver)
+virDomainXMLOption *
+libxlCreateXMLConf(libxlDriverPrivate *driver)
 {
     libxlDomainDefParserConfig.priv = driver;
     return virDomainXMLOptionNew(&libxlDomainDefParserConfig,

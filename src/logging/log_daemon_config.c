@@ -53,10 +53,10 @@ virLogDaemonConfigFilePath(bool privileged, char **configfile)
 }
 
 
-virLogDaemonConfigPtr
+virLogDaemonConfig *
 virLogDaemonConfigNew(bool privileged G_GNUC_UNUSED)
 {
-    virLogDaemonConfigPtr data;
+    virLogDaemonConfig *data;
 
     data = g_new0(virLogDaemonConfig, 1);
 
@@ -69,7 +69,7 @@ virLogDaemonConfigNew(bool privileged G_GNUC_UNUSED)
 }
 
 void
-virLogDaemonConfigFree(virLogDaemonConfigPtr data)
+virLogDaemonConfigFree(virLogDaemonConfig *data)
 {
     if (!data)
         return;
@@ -81,8 +81,8 @@ virLogDaemonConfigFree(virLogDaemonConfigPtr data)
 }
 
 static int
-virLogDaemonConfigLoadOptions(virLogDaemonConfigPtr data,
-                              virConfPtr conf)
+virLogDaemonConfigLoadOptions(virLogDaemonConfig *data,
+                              virConf *conf)
 {
     if (virConfGetValueUInt(conf, "log_level", &data->log_level) < 0)
         return -1;
@@ -106,7 +106,7 @@ virLogDaemonConfigLoadOptions(virLogDaemonConfigPtr data,
 /* Read the config file if it exists.
  */
 int
-virLogDaemonConfigLoadFile(virLogDaemonConfigPtr data,
+virLogDaemonConfigLoadFile(virLogDaemonConfig *data,
                            const char *filename,
                            bool allow_missing)
 {

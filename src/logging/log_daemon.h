@@ -23,17 +23,14 @@
 #include "log_handler.h"
 
 typedef struct _virLogDaemon virLogDaemon;
-typedef virLogDaemon *virLogDaemonPtr;
 
 typedef struct _virLogDaemonClient virLogDaemonClient;
-typedef virLogDaemonClient *virLogDaemonClientPtr;
-
 struct _virLogDaemonClient {
     GMutex lock;
 
     pid_t clientPid;
 };
 
-extern virLogDaemonPtr logDaemon;
+extern virLogDaemon *logDaemon;
 
-virLogHandlerPtr virLogDaemonGetHandler(virLogDaemonPtr dmn);
+virLogHandler *virLogDaemonGetHandler(virLogDaemon *dmn);

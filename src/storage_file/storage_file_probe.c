@@ -97,7 +97,7 @@ struct FileTypeInfo {
     const struct FileEncryptionInfo *cryptInfo; /* Encryption info */
     int (*getBackingStore)(char **res, int *format,
                            const char *buf, size_t buf_size);
-    int (*getFeatures)(virBitmapPtr *features, int format,
+    int (*getFeatures)(virBitmap **features, int format,
                        char *buf, ssize_t len);
 };
 
@@ -106,7 +106,7 @@ static int cowGetBackingStore(char **, int *,
                               const char *, size_t);
 static int qcowXGetBackingStore(char **, int *,
                                 const char *, size_t);
-static int qcow2GetFeatures(virBitmapPtr *features, int format,
+static int qcow2GetFeatures(virBitmap **features, int format,
                             char *buf, ssize_t len);
 static int vmdk4GetBackingStore(char **, int *,
                                 const char *, size_t);
@@ -724,13 +724,13 @@ virStorageFileProbeFormatFromBuf(const char *path,
 
 
 static int
-qcow2GetFeatures(virBitmapPtr *features,
+qcow2GetFeatures(virBitmap **features,
                  int format,
                  char *buf,
                  ssize_t len)
 {
     int version = -1;
-    virBitmapPtr feat = NULL;
+    virBitmap *feat = NULL;
     uint64_t bits;
     size_t i;
 
@@ -823,7 +823,7 @@ virStorageFileGetEncryptionPayloadOffset(const struct FileEncryptionInfo *info,
  * clean up any existing allocated memory which would be overwritten.
  */
 int
-virStorageFileProbeGetMetadata(virStorageSourcePtr meta,
+virStorageFileProbeGetMetadata(virStorageSource *meta,
                                char *buf,
                                size_t len)
 {

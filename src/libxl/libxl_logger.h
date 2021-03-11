@@ -23,12 +23,11 @@
 #include "util/virlog.h"
 
 typedef struct xentoollog_logger_libvirt libxlLogger;
-typedef libxlLogger *libxlLoggerPtr;
 
-libxlLoggerPtr libxlLoggerNew(const char *logDir,
+libxlLogger *libxlLoggerNew(const char *logDir,
                               virLogPriority minLevel);
-void libxlLoggerFree(libxlLoggerPtr logger);
+void libxlLoggerFree(libxlLogger *logger);
 
-void libxlLoggerOpenFile(libxlLoggerPtr logger, int id, const char *name,
+void libxlLoggerOpenFile(libxlLogger *logger, int id, const char *name,
                          const char *domain_config);
-void libxlLoggerCloseFile(libxlLoggerPtr logger, int id);
+void libxlLoggerCloseFile(libxlLogger *logger, int id);

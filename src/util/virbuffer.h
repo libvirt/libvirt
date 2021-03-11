@@ -31,7 +31,6 @@
  * A buffer structure.
  */
 typedef struct _virBuffer virBuffer;
-typedef virBuffer *virBufferPtr;
 
 #define VIR_BUFFER_INITIALIZER { NULL, 0 }
 
@@ -49,49 +48,49 @@ struct _virBuffer {
     int indent;
 };
 
-const char *virBufferCurrentContent(virBufferPtr buf);
-char *virBufferContentAndReset(virBufferPtr buf);
-void virBufferFreeAndReset(virBufferPtr buf);
+const char *virBufferCurrentContent(virBuffer *buf);
+char *virBufferContentAndReset(virBuffer *buf);
+void virBufferFreeAndReset(virBuffer *buf);
 
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virBuffer, virBufferFreeAndReset);
 
 size_t virBufferUse(const virBuffer *buf);
-void virBufferAdd(virBufferPtr buf, const char *str, int len);
-void virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd);
-void virBufferAddChar(virBufferPtr buf, char c);
-void virBufferAsprintf(virBufferPtr buf, const char *format, ...)
+void virBufferAdd(virBuffer *buf, const char *str, int len);
+void virBufferAddBuffer(virBuffer *buf, virBuffer *toadd);
+void virBufferAddChar(virBuffer *buf, char c);
+void virBufferAsprintf(virBuffer *buf, const char *format, ...)
   G_GNUC_PRINTF(2, 3);
-void virBufferVasprintf(virBufferPtr buf, const char *format, va_list ap)
+void virBufferVasprintf(virBuffer *buf, const char *format, va_list ap)
   G_GNUC_PRINTF(2, 0);
-void virBufferStrcat(virBufferPtr buf, ...)
+void virBufferStrcat(virBuffer *buf, ...)
   G_GNUC_NULL_TERMINATED;
-void virBufferStrcatVArgs(virBufferPtr buf, va_list ap);
+void virBufferStrcatVArgs(virBuffer *buf, va_list ap);
 
-void virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
+void virBufferEscape(virBuffer *buf, char escape, const char *toescape,
                      const char *format, const char *str);
-void virBufferEscapeString(virBufferPtr buf, const char *format,
+void virBufferEscapeString(virBuffer *buf, const char *format,
                            const char *str);
-void virBufferEscapeSexpr(virBufferPtr buf, const char *format,
+void virBufferEscapeSexpr(virBuffer *buf, const char *format,
                           const char *str);
-void virBufferEscapeRegex(virBufferPtr buf,
+void virBufferEscapeRegex(virBuffer *buf,
                           const char *format,
                           const char *str);
-void virBufferEscapeSQL(virBufferPtr buf,
+void virBufferEscapeSQL(virBuffer *buf,
                         const char *format,
                         const char *str);
-void virBufferEscapeShell(virBufferPtr buf, const char *str);
-void virBufferURIEncodeString(virBufferPtr buf, const char *str);
+void virBufferEscapeShell(virBuffer *buf, const char *str);
+void virBufferURIEncodeString(virBuffer *buf, const char *str);
 
 #define virBufferAddLit(buf_, literal_string_) \
     virBufferAdd(buf_, "" literal_string_ "", sizeof(literal_string_) - 1)
 
-void virBufferAdjustIndent(virBufferPtr buf, int indent);
-void virBufferSetIndent(virBufferPtr, int indent);
+void virBufferAdjustIndent(virBuffer *buf, int indent);
+void virBufferSetIndent(virBuffer *, int indent);
 
 size_t virBufferGetIndent(const virBuffer *buf);
 size_t virBufferGetEffectiveIndent(const virBuffer *buf);
 
-void virBufferTrim(virBufferPtr buf, const char *trim);
-void virBufferTrimChars(virBufferPtr buf, const char *trim);
-void virBufferTrimLen(virBufferPtr buf, int len);
-void virBufferAddStr(virBufferPtr buf, const char *str);
+void virBufferTrim(virBuffer *buf, const char *trim);
+void virBufferTrimChars(virBuffer *buf, const char *trim);
+void virBufferTrimLen(virBuffer *buf, int len);
+void virBufferAddStr(virBuffer *buf, const char *str);

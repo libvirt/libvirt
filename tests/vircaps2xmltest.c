@@ -38,7 +38,7 @@ test_virCapabilities(const void *opaque)
 {
     struct virCapabilitiesData *data = (struct virCapabilitiesData *) opaque;
     const char *archStr = virArchToString(data->arch);
-    virCapsPtr caps = NULL;
+    virCaps *caps = NULL;
     char *capsXML = NULL;
     char *path = NULL;
     char *system = NULL;

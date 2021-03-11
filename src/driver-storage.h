@@ -222,7 +222,6 @@ typedef int
 
 
 typedef struct _virStorageDriver virStorageDriver;
-typedef virStorageDriver *virStorageDriverPtr;
 
 /**
  * _virStorageDriver:

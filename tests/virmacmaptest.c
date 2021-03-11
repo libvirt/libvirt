@@ -27,7 +27,7 @@ struct testData {
     const char *file;
     const char *domain;
     const char * const * macs;
-    virMacMapPtr mgr;
+    virMacMap *mgr;
 };
 
 
@@ -35,7 +35,7 @@ static int
 testMACLookup(const void *opaque)
 {
     const struct testData *data = opaque;
-    virMacMapPtr mgr = NULL;
+    virMacMap *mgr = NULL;
     GSList *macs;
     GSList *next;
     size_t i, j;
@@ -88,7 +88,7 @@ static int
 testMACRemove(const void *opaque)
 {
     const struct testData *data = opaque;
-    virMacMapPtr mgr = NULL;
+    virMacMap *mgr = NULL;
     GSList *macs;
     size_t i;
     char *file = NULL;
@@ -150,7 +150,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    virMacMapPtr mgr = NULL;
+    virMacMap *mgr = NULL;
 
 #define DO_TEST_BASIC(f, d, ...) \
     do { \

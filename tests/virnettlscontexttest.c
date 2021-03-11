@@ -53,13 +53,13 @@ struct testTLSContextData {
  *
  * This code is done when libvirtd starts up, or before
  * a libvirt client connects. The test is ensuring that
- * the creation of virNetTLSContextPtr fails if we
+ * the creation of virNetTLSContext *fails if we
  * give bogus certs, or succeeds for good certs
  */
 static int testTLSContextInit(const void *opaque)
 {
     struct testTLSContextData *data = (struct testTLSContextData *)opaque;
-    virNetTLSContextPtr ctxt = NULL;
+    virNetTLSContext *ctxt = NULL;
     int ret = -1;
 
     if (data->isServer) {

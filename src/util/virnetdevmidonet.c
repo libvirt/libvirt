@@ -40,7 +40,7 @@ virNetDevMidonetBindPort(const char *ifname,
                          const virNetDevVPortProfile *virtualport)
 {
     int ret = -1;
-    virCommandPtr cmd = NULL;
+    virCommand *cmd = NULL;
     char virtportuuid[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(virtualport->interfaceID, virtportuuid);
@@ -74,7 +74,7 @@ int
 virNetDevMidonetUnbindPort(const virNetDevVPortProfile *virtualport)
 {
     int ret = -1;
-    virCommandPtr cmd = NULL;
+    virCommand *cmd = NULL;
     char virtportuuid[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(virtualport->interfaceID, virtportuuid);

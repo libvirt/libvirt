@@ -37,13 +37,13 @@
 #include "virthreadjob.h"
 
 
-int virOnce(virOnceControlPtr once, virOnceFunc init)
+int virOnce(virOnceControl *once, virOnceFunc init)
 {
     return pthread_once(&once->once, init);
 }
 
 
-int virMutexInit(virMutexPtr m)
+int virMutexInit(virMutex *m)
 {
     int ret;
     pthread_mutexattr_t attr;
@@ -58,7 +58,7 @@ int virMutexInit(virMutexPtr m)
     return 0;
 }
 
-int virMutexInitRecursive(virMutexPtr m)
+int virMutexInitRecursive(virMutex *m)
 {
     int ret;
     pthread_mutexattr_t attr;
@@ -73,23 +73,23 @@ int virMutexInitRecursive(virMutexPtr m)
     return 0;
 }
 
-void virMutexDestroy(virMutexPtr m)
+void virMutexDestroy(virMutex *m)
 {
     pthread_mutex_destroy(&m->lock);
 }
 
-void virMutexLock(virMutexPtr m)
+void virMutexLock(virMutex *m)
 {
     pthread_mutex_lock(&m->lock);
 }
 
-void virMutexUnlock(virMutexPtr m)
+void virMutexUnlock(virMutex *m)
 {
     pthread_mutex_unlock(&m->lock);
 }
 
 
-int virRWLockInit(virRWLockPtr m)
+int virRWLockInit(virRWLock *m)
 {
     int ret;
     ret = pthread_rwlock_init(&m->lock, NULL);
@@ -100,29 +100,29 @@ int virRWLockInit(virRWLockPtr m)
     return 0;
 }
 
-void virRWLockDestroy(virRWLockPtr m)
+void virRWLockDestroy(virRWLock *m)
 {
     pthread_rwlock_destroy(&m->lock);
 }
 
 
-void virRWLockRead(virRWLockPtr m)
+void virRWLockRead(virRWLock *m)
 {
     pthread_rwlock_rdlock(&m->lock);
 }
 
-void virRWLockWrite(virRWLockPtr m)
+void virRWLockWrite(virRWLock *m)
 {
     pthread_rwlock_wrlock(&m->lock);
 }
 
 
-void virRWLockUnlock(virRWLockPtr m)
+void virRWLockUnlock(virRWLock *m)
 {
     pthread_rwlock_unlock(&m->lock);
 }
 
-int virCondInit(virCondPtr c)
+int virCondInit(virCond *c)
 {
     int ret;
     if ((ret = pthread_cond_init(&c->cond, NULL)) != 0) {
@@ -132,7 +132,7 @@ int virCondInit(virCondPtr c)
     return 0;
 }
 
-int virCondDestroy(virCondPtr c)
+int virCondDestroy(virCond *c)
 {
     int ret;
     if ((ret = pthread_cond_destroy(&c->cond)) != 0) {
@@ -142,7 +142,7 @@ int virCondDestroy(virCondPtr c)
     return 0;
 }
 
-int virCondWait(virCondPtr c, virMutexPtr m)
+int virCondWait(virCond *c, virMutex *m)
 {
     int ret;
     if ((ret = pthread_cond_wait(&c->cond, &m->lock)) != 0) {
@@ -152,7 +152,7 @@ int virCondWait(virCondPtr c, virMutexPtr m)
     return 0;
 }
 
-int virCondWaitUntil(virCondPtr c, virMutexPtr m, unsigned long long whenms)
+int virCondWaitUntil(virCond *c, virMutex *m, unsigned long long whenms)
 {
     int ret;
     struct timespec ts;
@@ -167,12 +167,12 @@ int virCondWaitUntil(virCondPtr c, virMutexPtr m, unsigned long long whenms)
     return 0;
 }
 
-void virCondSignal(virCondPtr c)
+void virCondSignal(virCond *c)
 {
     pthread_cond_signal(&c->cond);
 }
 
-void virCondBroadcast(virCondPtr c)
+void virCondBroadcast(virCond *c)
 {
     pthread_cond_broadcast(&c->cond);
 }
@@ -239,7 +239,7 @@ static void *virThreadHelper(void *data)
     return NULL;
 }
 
-int virThreadCreateFull(virThreadPtr thread,
+int virThreadCreateFull(virThread *thread,
                         bool joinable,
                         virThreadFunc func,
                         const char *name,
@@ -279,12 +279,12 @@ int virThreadCreateFull(virThreadPtr thread,
     return ret;
 }
 
-void virThreadSelf(virThreadPtr thread)
+void virThreadSelf(virThread *thread)
 {
     thread->thread = pthread_self();
 }
 
-bool virThreadIsSelf(virThreadPtr thread)
+bool virThreadIsSelf(virThread *thread)
 {
     return pthread_equal(pthread_self(), thread->thread) ? true : false;
 }
@@ -310,7 +310,7 @@ unsigned long long virThreadSelfID(void)
 /* For debugging use only; this result is not guaranteed unique if
  * pthread_t is larger than a 64-bit pointer, nor does it always match
  * the thread id of virThreadSelfID on Linux.  */
-unsigned long long virThreadID(virThreadPtr thread)
+unsigned long long virThreadID(virThread *thread)
 {
     union {
         unsigned long long l;
@@ -320,17 +320,17 @@ unsigned long long virThreadID(virThreadPtr thread)
     return u.l;
 }
 
-void virThreadJoin(virThreadPtr thread)
+void virThreadJoin(virThread *thread)
 {
     pthread_join(thread->thread, NULL);
 }
 
-void virThreadCancel(virThreadPtr thread)
+void virThreadCancel(virThread *thread)
 {
     pthread_cancel(thread->thread);
 }
 
-int virThreadLocalInit(virThreadLocalPtr l,
+int virThreadLocalInit(virThreadLocal *l,
                        virThreadLocalCleanup c)
 {
     int ret;
@@ -341,12 +341,12 @@ int virThreadLocalInit(virThreadLocalPtr l,
     return 0;
 }
 
-void *virThreadLocalGet(virThreadLocalPtr l)
+void *virThreadLocalGet(virThreadLocal *l)
 {
     return pthread_getspecific(l->key);
 }
 
-int virThreadLocalSet(virThreadLocalPtr l, void *val)
+int virThreadLocalSet(virThreadLocal *l, void *val)
 {
     int err = pthread_setspecific(l->key, val);
     if (err) {

@@ -26,36 +26,36 @@
 #include "virdomainmomentobjlist.h"
 #include "virbuffer.h"
 
-virDomainSnapshotObjListPtr virDomainSnapshotObjListNew(void);
-void virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots);
+virDomainSnapshotObjList *virDomainSnapshotObjListNew(void);
+void virDomainSnapshotObjListFree(virDomainSnapshotObjList *snapshots);
 
-virDomainMomentObjPtr virDomainSnapshotAssignDef(virDomainSnapshotObjListPtr snapshots,
-                                                 virDomainSnapshotDefPtr def);
+virDomainMomentObj *virDomainSnapshotAssignDef(virDomainSnapshotObjList *snapshots,
+                                               virDomainSnapshotDef *def);
 
-int virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
-                                     virDomainMomentObjPtr from,
+int virDomainSnapshotObjListGetNames(virDomainSnapshotObjList *snapshots,
+                                     virDomainMomentObj *from,
                                      char **const names, int maxnames,
                                      unsigned int flags);
-int virDomainSnapshotObjListNum(virDomainSnapshotObjListPtr snapshots,
-                                virDomainMomentObjPtr from,
+int virDomainSnapshotObjListNum(virDomainSnapshotObjList *snapshots,
+                                virDomainMomentObj *from,
                                 unsigned int flags);
-virDomainMomentObjPtr virDomainSnapshotFindByName(virDomainSnapshotObjListPtr snapshots,
+virDomainMomentObj *virDomainSnapshotFindByName(virDomainSnapshotObjList *snapshots,
                                                   const char *name);
-virDomainMomentObjPtr virDomainSnapshotGetCurrent(virDomainSnapshotObjListPtr snapshots);
-const char *virDomainSnapshotGetCurrentName(virDomainSnapshotObjListPtr snapshots);
-void virDomainSnapshotSetCurrent(virDomainSnapshotObjListPtr snapshots,
-                                 virDomainMomentObjPtr snapshot);
-bool virDomainSnapshotObjListRemove(virDomainSnapshotObjListPtr snapshots,
-                                    virDomainMomentObjPtr snapshot);
-void virDomainSnapshotObjListRemoveAll(virDomainSnapshotObjListPtr snapshots);
-int virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
+virDomainMomentObj *virDomainSnapshotGetCurrent(virDomainSnapshotObjList *snapshots);
+const char *virDomainSnapshotGetCurrentName(virDomainSnapshotObjList *snapshots);
+void virDomainSnapshotSetCurrent(virDomainSnapshotObjList *snapshots,
+                                 virDomainMomentObj *snapshot);
+bool virDomainSnapshotObjListRemove(virDomainSnapshotObjList *snapshots,
+                                    virDomainMomentObj *snapshot);
+void virDomainSnapshotObjListRemoveAll(virDomainSnapshotObjList *snapshots);
+int virDomainSnapshotForEach(virDomainSnapshotObjList *snapshots,
                              virHashIterator iter,
                              void *data);
-void virDomainSnapshotLinkParent(virDomainSnapshotObjListPtr snapshots,
-                                 virDomainMomentObjPtr moment);
-int virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots);
-int virDomainSnapshotCheckCycles(virDomainSnapshotObjListPtr snapshots,
-                                 virDomainSnapshotDefPtr def,
+void virDomainSnapshotLinkParent(virDomainSnapshotObjList *snapshots,
+                                 virDomainMomentObj *moment);
+int virDomainSnapshotUpdateRelations(virDomainSnapshotObjList *snapshots);
+int virDomainSnapshotCheckCycles(virDomainSnapshotObjList *snapshots,
+                                 virDomainSnapshotDef *def,
                                  const char *domname);
 
 #define VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA \
@@ -81,15 +81,15 @@ int virDomainSnapshotCheckCycles(virDomainSnapshotObjListPtr snapshots,
                 VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS    | \
                 VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION)
 
-int virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
-                           virDomainMomentObjPtr from,
+int virDomainListSnapshots(virDomainSnapshotObjList *snapshots,
+                           virDomainMomentObj *from,
                            virDomainPtr dom,
                            virDomainSnapshotPtr **snaps,
                            unsigned int flags);
 
 /* Access the snapshot-specific definition from a given list member. */
-static inline virDomainSnapshotDefPtr
-virDomainSnapshotObjGetDef(virDomainMomentObjPtr obj)
+static inline virDomainSnapshotDef *
+virDomainSnapshotObjGetDef(virDomainMomentObj *obj)
 {
-    return (virDomainSnapshotDefPtr) obj->def;
+    return (virDomainSnapshotDef *) obj->def;
 }

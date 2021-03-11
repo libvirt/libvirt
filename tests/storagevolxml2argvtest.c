@@ -13,8 +13,8 @@ const char create_tool[] = "qemu-img";
 
 /* createVol sets this on volume creation */
 static void
-testSetVolumeType(virStorageVolDefPtr vol,
-                  virStoragePoolDefPtr pool)
+testSetVolumeType(virStorageVolDef *vol,
+                  virStoragePoolDef *pool)
 {
     if (!vol || !pool)
         return;
@@ -44,8 +44,8 @@ testCompareXMLToArgvFiles(bool shouldFail,
 {
     virStorageVolEncryptConvertStep convertStep = VIR_STORAGE_VOL_ENCRYPT_NONE;
     int ret = -1;
-    virStoragePoolDefPtr def = NULL;
-    virStoragePoolObjPtr obj = NULL;
+    virStoragePoolDef *def = NULL;
+    virStoragePoolObj *obj = NULL;
     g_autofree char *actualCmdline = NULL;
     g_autoptr(virStorageVolDef) vol = NULL;
     g_autoptr(virStorageVolDef) inputvol = NULL;

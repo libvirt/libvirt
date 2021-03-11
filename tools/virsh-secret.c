@@ -39,7 +39,7 @@ virshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)
     virSecretPtr secret = NULL;
     const char *n = NULL;
     const char *optname = "secret";
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
         return NULL;
@@ -84,7 +84,7 @@ cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
     virSecretPtr res;
     char uuid[VIR_UUID_STRING_BUFLEN];
     bool ret = false;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -399,10 +399,9 @@ struct virshSecretList {
     virSecretPtr *secrets;
     size_t nsecrets;
 };
-typedef struct virshSecretList *virshSecretListPtr;
 
 static void
-virshSecretListFree(virshSecretListPtr list)
+virshSecretListFree(struct virshSecretList *list)
 {
     size_t i;
 
@@ -415,11 +414,11 @@ virshSecretListFree(virshSecretListPtr list)
     g_free(list);
 }
 
-static virshSecretListPtr
+static struct virshSecretList *
 virshSecretListCollect(vshControl *ctl,
                        unsigned int flags)
 {
-    virshSecretListPtr list = g_new0(struct virshSecretList, 1);
+    struct virshSecretList *list = g_new0(struct virshSecretList, 1);
     size_t i;
     int ret;
     virSecretPtr secret;
@@ -427,7 +426,7 @@ virshSecretListCollect(vshControl *ctl,
     size_t deleted = 0;
     int nsecrets = 0;
     char **uuids = NULL;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     /* try the list with flags support (0.10.2 and later) */
     if ((ret = virConnectListAllSecrets(priv->conn,
@@ -549,10 +548,10 @@ static bool
 cmdSecretList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     size_t i;
-    virshSecretListPtr list = NULL;
+    struct virshSecretList *list = NULL;
     bool ret = false;
     unsigned int flags = 0;
-    vshTablePtr table = NULL;
+    vshTable *table = NULL;
 
     if (vshCommandOptBool(cmd, "ephemeral"))
         flags |= VIR_CONNECT_LIST_SECRETS_EPHEMERAL;
@@ -759,7 +758,7 @@ cmdSecretEvent(vshControl *ctl, const vshCmd *cmd)
     virshSecretEventData data;
     const char *eventName = NULL;
     int event;
-    virshControlPtr priv = ctl->privData;
+    virshControl *priv = ctl->privData;
 
     if (vshCommandOptBool(cmd, "list")) {
         size_t i;

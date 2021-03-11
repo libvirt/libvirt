@@ -78,10 +78,10 @@ virStorageBackendZFSVolModeNeeded(void)
 }
 
 static int
-virStorageBackendZFSCheckPool(virStoragePoolObjPtr pool G_GNUC_UNUSED,
+virStorageBackendZFSCheckPool(virStoragePoolObj *pool G_GNUC_UNUSED,
                               bool *isActive)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     g_autofree char *devpath = NULL;
 
     devpath = g_strdup_printf("/dev/zvol/%s", def->source.name);
@@ -91,15 +91,15 @@ virStorageBackendZFSCheckPool(virStoragePoolObjPtr pool G_GNUC_UNUSED,
 }
 
 static int
-virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
-                             virStorageVolDefPtr vol,
+virStorageBackendZFSParseVol(virStoragePoolObj *pool,
+                             virStorageVolDef *vol,
                              const char *volume_string)
 {
     int ret = -1;
     char *vol_name;
     bool is_new_vol = false;
-    virStorageVolDefPtr volume = NULL;
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStorageVolDef *volume = NULL;
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     g_auto(GStrv) tokens = NULL;
     char *tmp;
 
@@ -162,10 +162,10 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
 }
 
 static int
-virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
-                             virStorageVolDefPtr vol)
+virStorageBackendZFSFindVols(virStoragePoolObj *pool,
+                             virStorageVolDef *vol)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     size_t i;
     g_auto(GStrv) lines = NULL;
     g_autoptr(virCommand) cmd = NULL;
@@ -208,9 +208,9 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
 }
 
 static int
-virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool G_GNUC_UNUSED)
+virStorageBackendZFSRefreshPool(virStoragePoolObj *pool G_GNUC_UNUSED)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     char *zpool_props = NULL;
     size_t i;
     g_autoptr(virCommand) cmd = NULL;
@@ -284,10 +284,10 @@ virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool G_GNUC_UNUSED)
 }
 
 static int
-virStorageBackendZFSCreateVol(virStoragePoolObjPtr pool,
-                              virStorageVolDefPtr vol)
+virStorageBackendZFSCreateVol(virStoragePoolObj *pool,
+                              virStorageVolDef *vol)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     int volmode_needed = -1;
     g_autoptr(virCommand) cmd = NULL;
 
@@ -347,11 +347,11 @@ virStorageBackendZFSCreateVol(virStoragePoolObjPtr pool,
 }
 
 static int
-virStorageBackendZFSDeleteVol(virStoragePoolObjPtr pool,
-                              virStorageVolDefPtr vol,
+virStorageBackendZFSDeleteVol(virStoragePoolObj *pool,
+                              virStorageVolDef *vol,
                               unsigned int flags)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     g_autoptr(virCommand) destroy_cmd = NULL;
 
     virCheckFlags(0, -1);
@@ -365,10 +365,10 @@ virStorageBackendZFSDeleteVol(virStoragePoolObjPtr pool,
 }
 
 static int
-virStorageBackendZFSBuildPool(virStoragePoolObjPtr pool,
+virStorageBackendZFSBuildPool(virStoragePoolObj *pool,
                               unsigned int flags)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     size_t i;
     g_autoptr(virCommand) cmd = NULL;
     int ret = -1;
@@ -402,10 +402,10 @@ virStorageBackendZFSBuildPool(virStoragePoolObjPtr pool,
 }
 
 static int
-virStorageBackendZFSDeletePool(virStoragePoolObjPtr pool,
+virStorageBackendZFSDeletePool(virStoragePoolObj *pool,
                                unsigned int flags)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     g_autoptr(virCommand) cmd = NULL;
     char *tmp;
 

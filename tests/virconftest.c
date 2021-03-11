@@ -68,7 +68,7 @@ static int testConfMemoryNoNewline(const void *opaque G_GNUC_UNUSED)
 
     g_autoptr(virConf) conf = virConfReadString(srcdata, 0);
     int ret = -1;
-    virConfValuePtr val;
+    virConfValue *val;
     unsigned long long llvalue;
     char *str = NULL;
     int uintvalue;

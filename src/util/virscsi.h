@@ -24,10 +24,8 @@
 #include "virobject.h"
 
 typedef struct _virSCSIDevice virSCSIDevice;
-typedef virSCSIDevice *virSCSIDevicePtr;
 
 typedef struct _virSCSIDeviceList virSCSIDeviceList;
-typedef virSCSIDeviceList *virSCSIDeviceListPtr;
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSCSIDeviceList, virObjectUnref);
 
@@ -43,7 +41,7 @@ char *virSCSIDeviceGetDevName(const char *sysfs_prefix,
                               unsigned int target,
                               unsigned long long unit);
 
-virSCSIDevicePtr virSCSIDeviceNew(const char *sysfs_prefix,
+virSCSIDevice *virSCSIDeviceNew(const char *sysfs_prefix,
                                   const char *adapter,
                                   unsigned int bus,
                                   unsigned int target,
@@ -51,19 +49,19 @@ virSCSIDevicePtr virSCSIDeviceNew(const char *sysfs_prefix,
                                   bool readonly,
                                   bool shareable);
 
-void virSCSIDeviceFree(virSCSIDevicePtr dev);
-int virSCSIDeviceSetUsedBy(virSCSIDevicePtr dev,
+void virSCSIDeviceFree(virSCSIDevice *dev);
+int virSCSIDeviceSetUsedBy(virSCSIDevice *dev,
                            const char *drvname,
                            const char *domname);
-bool virSCSIDeviceIsAvailable(virSCSIDevicePtr dev);
-const char *virSCSIDeviceGetName(virSCSIDevicePtr dev);
-const char *virSCSIDeviceGetPath(virSCSIDevicePtr dev);
-unsigned int virSCSIDeviceGetAdapter(virSCSIDevicePtr dev);
-unsigned int virSCSIDeviceGetBus(virSCSIDevicePtr dev);
-unsigned int virSCSIDeviceGetTarget(virSCSIDevicePtr dev);
-unsigned long long virSCSIDeviceGetUnit(virSCSIDevicePtr dev);
-bool virSCSIDeviceGetReadonly(virSCSIDevicePtr dev);
-bool virSCSIDeviceGetShareable(virSCSIDevicePtr dev);
+bool virSCSIDeviceIsAvailable(virSCSIDevice *dev);
+const char *virSCSIDeviceGetName(virSCSIDevice *dev);
+const char *virSCSIDeviceGetPath(virSCSIDevice *dev);
+unsigned int virSCSIDeviceGetAdapter(virSCSIDevice *dev);
+unsigned int virSCSIDeviceGetBus(virSCSIDevice *dev);
+unsigned int virSCSIDeviceGetTarget(virSCSIDevice *dev);
+unsigned long long virSCSIDeviceGetUnit(virSCSIDevice *dev);
+bool virSCSIDeviceGetReadonly(virSCSIDevice *dev);
+bool virSCSIDeviceGetShareable(virSCSIDevice *dev);
 
 /*
  * Callback that will be invoked once for each file
@@ -72,26 +70,26 @@ bool virSCSIDeviceGetShareable(virSCSIDevicePtr dev);
  * Should return 0 if successfully processed, or
  * -1 to indicate error and abort iteration
  */
-typedef int (*virSCSIDeviceFileActor)(virSCSIDevicePtr dev,
+typedef int (*virSCSIDeviceFileActor)(virSCSIDevice *dev,
                                       const char *path, void *opaque);
 
-int virSCSIDeviceFileIterate(virSCSIDevicePtr dev,
+int virSCSIDeviceFileIterate(virSCSIDevice *dev,
                              virSCSIDeviceFileActor actor,
                              void *opaque);
 
-virSCSIDeviceListPtr virSCSIDeviceListNew(void);
-int virSCSIDeviceListAdd(virSCSIDeviceListPtr list,
-                         virSCSIDevicePtr dev);
-virSCSIDevicePtr virSCSIDeviceListGet(virSCSIDeviceListPtr list,
+virSCSIDeviceList *virSCSIDeviceListNew(void);
+int virSCSIDeviceListAdd(virSCSIDeviceList *list,
+                         virSCSIDevice *dev);
+virSCSIDevice *virSCSIDeviceListGet(virSCSIDeviceList *list,
                                       int idx);
-size_t virSCSIDeviceListCount(virSCSIDeviceListPtr list);
-virSCSIDevicePtr virSCSIDeviceListSteal(virSCSIDeviceListPtr list,
-                                        virSCSIDevicePtr dev);
-void virSCSIDeviceListDel(virSCSIDeviceListPtr list,
-                          virSCSIDevicePtr dev,
+size_t virSCSIDeviceListCount(virSCSIDeviceList *list);
+virSCSIDevice *virSCSIDeviceListSteal(virSCSIDeviceList *list,
+                                        virSCSIDevice *dev);
+void virSCSIDeviceListDel(virSCSIDeviceList *list,
+                          virSCSIDevice *dev,
                           const char *drvname,
                           const char *domname);
-virSCSIDevicePtr virSCSIDeviceListFind(virSCSIDeviceListPtr list,
-                                       virSCSIDevicePtr dev);
+virSCSIDevice *virSCSIDeviceListFind(virSCSIDeviceList *list,
+                                       virSCSIDevice *dev);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSCSIDevice, virSCSIDeviceFree);

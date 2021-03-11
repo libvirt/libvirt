@@ -54,11 +54,11 @@ const char *const defaultDeviceACL[] = {
 
 
 static int
-qemuSetupImagePathCgroup(virDomainObjPtr vm,
+qemuSetupImagePathCgroup(virDomainObj *vm,
                          const char *path,
                          bool readonly)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int perms = VIR_CGROUP_DEVICE_READ;
     g_auto(GStrv) targetPaths = NULL;
     size_t i;
@@ -109,8 +109,8 @@ qemuSetupImagePathCgroup(virDomainObjPtr vm,
 
 
 static int
-qemuSetupImageCgroupInternal(virDomainObjPtr vm,
-                             virStorageSourcePtr src,
+qemuSetupImageCgroupInternal(virDomainObj *vm,
+                             virStorageSource *src,
                              bool forceReadonly)
 {
     g_autofree char *path = NULL;
@@ -148,18 +148,18 @@ qemuSetupImageCgroupInternal(virDomainObjPtr vm,
 
 
 int
-qemuSetupImageCgroup(virDomainObjPtr vm,
-                     virStorageSourcePtr src)
+qemuSetupImageCgroup(virDomainObj *vm,
+                     virStorageSource *src)
 {
     return qemuSetupImageCgroupInternal(vm, src, false);
 }
 
 
 int
-qemuTeardownImageCgroup(virDomainObjPtr vm,
-                        virStorageSourcePtr src)
+qemuTeardownImageCgroup(virDomainObj *vm,
+                        virStorageSource *src)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *path = NULL;
     int perms = VIR_CGROUP_DEVICE_RWM;
     bool hasPR = false;
@@ -172,7 +172,7 @@ qemuTeardownImageCgroup(virDomainObjPtr vm,
         return 0;
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virStorageSourcePtr diskSrc = vm->def->disks[i]->src;
+        virStorageSource *diskSrc = vm->def->disks[i]->src;
 
         if (src == diskSrc)
             continue;
@@ -239,10 +239,10 @@ qemuTeardownImageCgroup(virDomainObjPtr vm,
 
 
 int
-qemuSetupImageChainCgroup(virDomainObjPtr vm,
-                          virStorageSourcePtr src)
+qemuSetupImageChainCgroup(virDomainObj *vm,
+                          virStorageSource *src)
 {
-    virStorageSourcePtr next;
+    virStorageSource *next;
     bool forceReadonly = false;
 
     for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
@@ -258,10 +258,10 @@ qemuSetupImageChainCgroup(virDomainObjPtr vm,
 
 
 int
-qemuTeardownImageChainCgroup(virDomainObjPtr vm,
-                             virStorageSourcePtr src)
+qemuTeardownImageChainCgroup(virDomainObj *vm,
+                             virStorageSource *src)
 {
-    virStorageSourcePtr next;
+    virStorageSource *next;
 
     for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
         if (qemuTeardownImageCgroup(vm, next) < 0)
@@ -273,10 +273,10 @@ qemuTeardownImageChainCgroup(virDomainObjPtr vm,
 
 
 static int
-qemuSetupChrSourceCgroup(virDomainObjPtr vm,
-                         virDomainChrSourceDefPtr source)
+qemuSetupChrSourceCgroup(virDomainObj *vm,
+                         virDomainChrSourceDef *source)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int ret;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
@@ -297,10 +297,10 @@ qemuSetupChrSourceCgroup(virDomainObjPtr vm,
 
 
 static int
-qemuTeardownChrSourceCgroup(virDomainObjPtr vm,
-                            virDomainChrSourceDefPtr source)
+qemuTeardownChrSourceCgroup(virDomainObj *vm,
+                            virDomainChrSourceDef *source)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int ret;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
@@ -321,19 +321,19 @@ qemuTeardownChrSourceCgroup(virDomainObjPtr vm,
 
 
 static int
-qemuSetupChardevCgroupCB(virDomainDefPtr def G_GNUC_UNUSED,
-                         virDomainChrDefPtr dev,
+qemuSetupChardevCgroupCB(virDomainDef *def G_GNUC_UNUSED,
+                         virDomainChrDef *dev,
                          void *opaque)
 {
-    virDomainObjPtr vm = opaque;
+    virDomainObj *vm = opaque;
 
     return qemuSetupChrSourceCgroup(vm, dev->source);
 }
 
 
 static int
-qemuSetupTPMCgroup(virDomainObjPtr vm,
-                   virDomainTPMDefPtr dev)
+qemuSetupTPMCgroup(virDomainObj *vm,
+                   virDomainTPMDef *dev)
 {
     int ret = 0;
 
@@ -351,10 +351,10 @@ qemuSetupTPMCgroup(virDomainObjPtr vm,
 
 
 int
-qemuSetupInputCgroup(virDomainObjPtr vm,
-                     virDomainInputDefPtr dev)
+qemuSetupInputCgroup(virDomainObj *vm,
+                     virDomainInputDef *dev)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int ret = 0;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
@@ -374,10 +374,10 @@ qemuSetupInputCgroup(virDomainObjPtr vm,
 
 
 int
-qemuTeardownInputCgroup(virDomainObjPtr vm,
-                        virDomainInputDefPtr dev)
+qemuTeardownInputCgroup(virDomainObj *vm,
+                        virDomainInputDef *dev)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int ret = 0;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
@@ -407,10 +407,10 @@ qemuTeardownInputCgroup(virDomainObjPtr vm,
  *         -1 otherwise.
  */
 int
-qemuSetupHostdevCgroup(virDomainObjPtr vm,
-                       virDomainHostdevDefPtr dev)
+qemuSetupHostdevCgroup(virDomainObj *vm,
+                       virDomainHostdevDef *dev)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *path = NULL;
     int perms;
     int rv;
@@ -457,10 +457,10 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
  *         -1 otherwise.
  */
 int
-qemuTeardownHostdevCgroup(virDomainObjPtr vm,
-                          virDomainHostdevDefPtr dev)
+qemuTeardownHostdevCgroup(virDomainObj *vm,
+                          virDomainHostdevDef *dev)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *path = NULL;
     int rv;
 
@@ -506,10 +506,10 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
 
 
 int
-qemuSetupMemoryDevicesCgroup(virDomainObjPtr vm,
-                             virDomainMemoryDefPtr mem)
+qemuSetupMemoryDevicesCgroup(virDomainObj *vm,
+                             virDomainMemoryDef *mem)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int rv;
 
     if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
@@ -530,10 +530,10 @@ qemuSetupMemoryDevicesCgroup(virDomainObjPtr vm,
 
 
 int
-qemuTeardownMemoryDevicesCgroup(virDomainObjPtr vm,
-                                virDomainMemoryDefPtr mem)
+qemuTeardownMemoryDevicesCgroup(virDomainObj *vm,
+                                virDomainMemoryDef *mem)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int rv;
 
     if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
@@ -552,10 +552,10 @@ qemuTeardownMemoryDevicesCgroup(virDomainObjPtr vm,
 
 
 static int
-qemuSetupGraphicsCgroup(virDomainObjPtr vm,
-                        virDomainGraphicsDefPtr gfx)
+qemuSetupGraphicsCgroup(virDomainObj *vm,
+                        virDomainGraphicsDef *gfx)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     const char *rendernode = virDomainGraphicsGetRenderNode(gfx);
     int ret;
 
@@ -572,11 +572,11 @@ qemuSetupGraphicsCgroup(virDomainObjPtr vm,
 
 
 static int
-qemuSetupVideoCgroup(virDomainObjPtr vm,
-                     virDomainVideoDefPtr def)
+qemuSetupVideoCgroup(virDomainObj *vm,
+                     virDomainVideoDef *def)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainVideoAccelDefPtr accel = def->accel;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virDomainVideoAccelDef *accel = def->accel;
     int ret;
 
     if (!accel)
@@ -595,9 +595,9 @@ qemuSetupVideoCgroup(virDomainObjPtr vm,
 
 
 static int
-qemuSetupBlkioCgroup(virDomainObjPtr vm)
+qemuSetupBlkioCgroup(virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     if (!virCgroupHasController(priv->cgroup,
                                 VIR_CGROUP_CONTROLLER_BLKIO)) {
@@ -615,9 +615,9 @@ qemuSetupBlkioCgroup(virDomainObjPtr vm)
 
 
 static int
-qemuSetupMemoryCgroup(virDomainObjPtr vm)
+qemuSetupMemoryCgroup(virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
         if (virMemoryLimitIsSet(vm->def->mem.hard_limit) ||
@@ -636,7 +636,7 @@ qemuSetupMemoryCgroup(virDomainObjPtr vm)
 
 
 static int
-qemuSetupFirmwareCgroup(virDomainObjPtr vm)
+qemuSetupFirmwareCgroup(virDomainObj *vm)
 {
     if (!vm->def->os.loader)
         return 0;
@@ -655,10 +655,10 @@ qemuSetupFirmwareCgroup(virDomainObjPtr vm)
 
 
 int
-qemuSetupRNGCgroup(virDomainObjPtr vm,
-                   virDomainRNGDefPtr rng)
+qemuSetupRNGCgroup(virDomainObj *vm,
+                   virDomainRNGDef *rng)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int rv;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
@@ -682,10 +682,10 @@ qemuSetupRNGCgroup(virDomainObjPtr vm,
 
 
 int
-qemuTeardownRNGCgroup(virDomainObjPtr vm,
-                      virDomainRNGDefPtr rng)
+qemuTeardownRNGCgroup(virDomainObj *vm,
+                      virDomainRNGDef *rng)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int rv;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
@@ -709,25 +709,25 @@ qemuTeardownRNGCgroup(virDomainObjPtr vm,
 
 
 int
-qemuSetupChardevCgroup(virDomainObjPtr vm,
-                       virDomainChrDefPtr dev)
+qemuSetupChardevCgroup(virDomainObj *vm,
+                       virDomainChrDef *dev)
 {
     return qemuSetupChrSourceCgroup(vm, dev->source);
 }
 
 
 int
-qemuTeardownChardevCgroup(virDomainObjPtr vm,
-                          virDomainChrDefPtr dev)
+qemuTeardownChardevCgroup(virDomainObj *vm,
+                          virDomainChrDef *dev)
 {
     return qemuTeardownChrSourceCgroup(vm, dev->source);
 }
 
 
 static int
-qemuSetupSEVCgroup(virDomainObjPtr vm)
+qemuSetupSEVCgroup(virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     int ret;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
@@ -741,9 +741,9 @@ qemuSetupSEVCgroup(virDomainObjPtr vm)
 }
 
 static int
-qemuSetupDevicesCgroup(virDomainObjPtr vm)
+qemuSetupDevicesCgroup(virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     const char *const *deviceACL = NULL;
     int rv = -1;
@@ -862,9 +862,9 @@ qemuSetupDevicesCgroup(virDomainObjPtr vm)
 
 
 static int
-qemuSetupCpusetCgroup(virDomainObjPtr vm)
+qemuSetupCpusetCgroup(virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
         return 0;
@@ -877,9 +877,9 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm)
 
 
 static int
-qemuSetupCpuCgroup(virDomainObjPtr vm)
+qemuSetupCpuCgroup(virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
        if (vm->def->cputune.sharesSpecified) {
@@ -901,11 +901,11 @@ qemuSetupCpuCgroup(virDomainObjPtr vm)
 
 
 static int
-qemuInitCgroup(virDomainObjPtr vm,
+qemuInitCgroup(virDomainObj *vm,
                size_t nnicindexes,
                int *nicindexes)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
 
     if (!priv->driver->privileged)
@@ -918,7 +918,7 @@ qemuInitCgroup(virDomainObjPtr vm,
     priv->cgroup = NULL;
 
     if (!vm->def->resource) {
-        virDomainResourceDefPtr res;
+        virDomainResourceDef *res;
 
         res = g_new0(virDomainResourceDef, 1);
 
@@ -955,7 +955,7 @@ qemuInitCgroup(virDomainObjPtr vm,
 }
 
 static int
-qemuRestoreCgroupThread(virCgroupPtr cgroup,
+qemuRestoreCgroupThread(virCgroup *cgroup,
                         virCgroupThreadName thread,
                         int id)
 {
@@ -978,10 +978,10 @@ qemuRestoreCgroupThread(virCgroupPtr cgroup,
 }
 
 static void
-qemuRestoreCgroupState(virDomainObjPtr vm)
+qemuRestoreCgroupState(virDomainObj *vm)
 {
     g_autofree char *mem_mask = NULL;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     size_t i = 0;
     g_autoptr(virBitmap) all_nodes = NULL;
 
@@ -1003,7 +1003,7 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
         goto error;
 
     for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
-        virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(vm->def, i);
+        virDomainVcpuDef *vcpu = virDomainDefGetVcpu(vm->def, i);
 
         if (!vcpu->online)
             continue;
@@ -1032,9 +1032,9 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
 }
 
 int
-qemuConnectCgroup(virDomainObjPtr vm)
+qemuConnectCgroup(virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
 
     if (!priv->driver->privileged)
@@ -1059,11 +1059,11 @@ qemuConnectCgroup(virDomainObjPtr vm)
 }
 
 int
-qemuSetupCgroup(virDomainObjPtr vm,
+qemuSetupCgroup(virDomainObj *vm,
                 size_t nnicindexes,
                 int *nicindexes)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     if (!vm->pid) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1096,7 +1096,7 @@ qemuSetupCgroup(virDomainObjPtr vm,
 }
 
 int
-qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
+qemuSetupCgroupVcpuBW(virCgroup *cgroup,
                       unsigned long long period,
                       long long quota)
 {
@@ -1105,18 +1105,18 @@ qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
 
 
 int
-qemuSetupCgroupCpusetCpus(virCgroupPtr cgroup,
-                          virBitmapPtr cpumask)
+qemuSetupCgroupCpusetCpus(virCgroup *cgroup,
+                          virBitmap *cpumask)
 {
     return virCgroupSetupCpusetCpus(cgroup, cpumask);
 }
 
 
 int
-qemuSetupCgroupForExtDevices(virDomainObjPtr vm,
-                             virQEMUDriverPtr driver)
+qemuSetupCgroupForExtDevices(virDomainObj *vm,
+                             virQEMUDriver *driver)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virCgroup) cgroup_temp = NULL;
 
     if (!qemuExtDevicesHasDevice(vm->def) ||
@@ -1141,9 +1141,9 @@ qemuSetupCgroupForExtDevices(virDomainObjPtr vm,
 
 
 int
-qemuSetupGlobalCpuCgroup(virDomainObjPtr vm)
+qemuSetupGlobalCpuCgroup(virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
     unsigned long long period = vm->def->cputune.global_period;
     long long quota = vm->def->cputune.global_quota;
     g_autofree char *mem_mask = NULL;
@@ -1183,9 +1183,9 @@ qemuSetupGlobalCpuCgroup(virDomainObjPtr vm)
 
 
 int
-qemuRemoveCgroup(virDomainObjPtr vm)
+qemuRemoveCgroup(virDomainObj *vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     if (priv->cgroup == NULL)
         return 0; /* Not supported, so claim success */
@@ -1200,7 +1200,7 @@ qemuRemoveCgroup(virDomainObjPtr vm)
 
 
 static void
-qemuCgroupEmulatorAllNodesDataFree(qemuCgroupEmulatorAllNodesDataPtr data)
+qemuCgroupEmulatorAllNodesDataFree(qemuCgroupEmulatorAllNodesData *data)
 {
     if (!data)
         return;
@@ -1224,10 +1224,10 @@ qemuCgroupEmulatorAllNodesDataFree(qemuCgroupEmulatorAllNodesDataPtr data)
  * Returns 0 on success -1 on error
  */
 int
-qemuCgroupEmulatorAllNodesAllow(virCgroupPtr cgroup,
-                                qemuCgroupEmulatorAllNodesDataPtr *retData)
+qemuCgroupEmulatorAllNodesAllow(virCgroup *cgroup,
+                                qemuCgroupEmulatorAllNodesData **retData)
 {
-    qemuCgroupEmulatorAllNodesDataPtr data = NULL;
+    qemuCgroupEmulatorAllNodesData *data = NULL;
     g_autofree char *all_nodes_str = NULL;
     g_autoptr(virBitmap) all_nodes = NULL;
     int ret = -1;
@@ -1270,7 +1270,7 @@ qemuCgroupEmulatorAllNodesAllow(virCgroupPtr cgroup,
  * associated data.
  */
 void
-qemuCgroupEmulatorAllNodesRestore(qemuCgroupEmulatorAllNodesDataPtr data)
+qemuCgroupEmulatorAllNodesRestore(qemuCgroupEmulatorAllNodesData *data)
 {
     virErrorPtr err;
 

@@ -107,7 +107,7 @@ bool
 virCgroupAvailable(void)
 {
     size_t i;
-    virCgroupBackendPtr *backends = virCgroupBackendGetAll();
+    virCgroupBackend **backends = virCgroupBackendGetAll();
 
     if (!backends)
         return false;
@@ -214,9 +214,9 @@ virCgroupPartitionEscape(char **path)
 
 
 static int
-virCgroupSetBackends(virCgroupPtr group)
+virCgroupSetBackends(virCgroup *group)
 {
-    virCgroupBackendPtr *backends = virCgroupBackendGetAll();
+    virCgroupBackend **backends = virCgroupBackendGetAll();
     bool backendAvailable = false;
     size_t i;
 
@@ -241,8 +241,8 @@ virCgroupSetBackends(virCgroupPtr group)
 
 
 static int
-virCgroupCopyMounts(virCgroupPtr group,
-                    virCgroupPtr parent)
+virCgroupCopyMounts(virCgroup *group,
+                    virCgroup *parent)
 {
     size_t i;
 
@@ -262,7 +262,7 @@ virCgroupCopyMounts(virCgroupPtr group,
  * mounted and where
  */
 static int
-virCgroupDetectMounts(virCgroupPtr group)
+virCgroupDetectMounts(virCgroup *group)
 {
     FILE *mounts = NULL;
     struct mntent entry;
@@ -296,9 +296,9 @@ virCgroupDetectMounts(virCgroupPtr group)
 
 
 static int
-virCgroupCopyPlacement(virCgroupPtr group,
+virCgroupCopyPlacement(virCgroup *group,
                       const char *path,
-                      virCgroupPtr parent)
+                      virCgroup *parent)
 {
     size_t i;
 
@@ -336,7 +336,7 @@ virCgroupCopyPlacement(virCgroupPtr group,
  * It then appends @path to each detected path.
  */
 static int
-virCgroupDetectPlacement(virCgroupPtr group,
+virCgroupDetectPlacement(virCgroup *group,
                          pid_t pid,
                          const char *path)
 {
@@ -395,7 +395,7 @@ virCgroupDetectPlacement(virCgroupPtr group,
 
 
 static int
-virCgroupSetPlacement(virCgroupPtr group,
+virCgroupSetPlacement(virCgroup *group,
                       const char *path)
 {
     size_t i;
@@ -412,7 +412,7 @@ virCgroupSetPlacement(virCgroupPtr group,
 
 
 static int
-virCgroupValidatePlacement(virCgroupPtr group,
+virCgroupValidatePlacement(virCgroup *group,
                            pid_t pid)
 {
     size_t i;
@@ -429,9 +429,9 @@ virCgroupValidatePlacement(virCgroupPtr group,
 
 
 static int
-virCgroupDetectControllers(virCgroupPtr group,
+virCgroupDetectControllers(virCgroup *group,
                            int controllers,
-                           virCgroupPtr parent)
+                           virCgroup *parent)
 {
     size_t i;
     int controllersAvailable = 0;
@@ -565,7 +565,7 @@ virCgroupGetValueRaw(const char *path,
 
 
 int
-virCgroupSetValueStr(virCgroupPtr group,
+virCgroupSetValueStr(virCgroup *group,
                      int controller,
                      const char *key,
                      const char *value)
@@ -580,7 +580,7 @@ virCgroupSetValueStr(virCgroupPtr group,
 
 
 int
-virCgroupGetValueStr(virCgroupPtr group,
+virCgroupGetValueStr(virCgroup *group,
                      int controller,
                      const char *key,
                      char **value)
@@ -619,7 +619,7 @@ virCgroupGetValueForBlkDev(const char *str,
 
 
 int
-virCgroupSetValueU64(virCgroupPtr group,
+virCgroupSetValueU64(virCgroup *group,
                      int controller,
                      const char *key,
                      unsigned long long int value)
@@ -633,7 +633,7 @@ virCgroupSetValueU64(virCgroupPtr group,
 
 
 int
-virCgroupSetValueI64(virCgroupPtr group,
+virCgroupSetValueI64(virCgroup *group,
                      int controller,
                      const char *key,
                      long long int value)
@@ -647,7 +647,7 @@ virCgroupSetValueI64(virCgroupPtr group,
 
 
 int
-virCgroupGetValueI64(virCgroupPtr group,
+virCgroupGetValueI64(virCgroup *group,
                      int controller,
                      const char *key,
                      long long int *value)
@@ -669,7 +669,7 @@ virCgroupGetValueI64(virCgroupPtr group,
 
 
 int
-virCgroupGetValueU64(virCgroupPtr group,
+virCgroupGetValueU64(virCgroup *group,
                      int controller,
                      const char *key,
                      unsigned long long int *value)
@@ -691,8 +691,8 @@ virCgroupGetValueU64(virCgroupPtr group,
 
 
 static int
-virCgroupMakeGroup(virCgroupPtr parent,
-                   virCgroupPtr group,
+virCgroupMakeGroup(virCgroup *parent,
+                   virCgroup *group,
                    bool create,
                    pid_t pid,
                    unsigned int flags)
@@ -712,7 +712,7 @@ virCgroupMakeGroup(virCgroupPtr parent,
 
 
 static bool
-virCgroupExists(virCgroupPtr group)
+virCgroupExists(virCgroup *group)
 {
     size_t i;
 
@@ -739,7 +739,7 @@ virCgroupExists(virCgroupPtr group)
 int
 virCgroupNew(const char *path,
              int controllers,
-             virCgroupPtr *group)
+             virCgroup **group)
 {
     g_autoptr(virCgroup) newGroup = NULL;
 
@@ -775,12 +775,12 @@ virCgroupNew(const char *path,
 
 
 static int
-virCgroupAddTaskInternal(virCgroupPtr group,
+virCgroupAddTaskInternal(virCgroup *group,
                          pid_t pid,
                          unsigned int flags)
 {
     size_t i;
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
         if (parent->backends[i] &&
@@ -805,7 +805,7 @@ virCgroupAddTaskInternal(virCgroupPtr group,
  * Returns: 0 on success, -1 on error
  */
 int
-virCgroupAddProcess(virCgroupPtr group, pid_t pid)
+virCgroupAddProcess(virCgroup *group, pid_t pid)
 {
     return virCgroupAddTaskInternal(group, pid, VIR_CGROUP_TASK_PROCESS);
 }
@@ -822,7 +822,7 @@ virCgroupAddProcess(virCgroupPtr group, pid_t pid)
  * Returns: 0 on success, -1 on error
  */
 int
-virCgroupAddMachineProcess(virCgroupPtr group, pid_t pid)
+virCgroupAddMachineProcess(virCgroup *group, pid_t pid)
 {
     return virCgroupAddTaskInternal(group, pid,
                                     VIR_CGROUP_TASK_PROCESS |
@@ -841,7 +841,7 @@ virCgroupAddMachineProcess(virCgroupPtr group, pid_t pid)
  * Returns: 0 on success, -1 on error
  */
 int
-virCgroupAddThread(virCgroupPtr group,
+virCgroupAddThread(virCgroup *group,
                    pid_t pid)
 {
     return virCgroupAddTaskInternal(group, pid, VIR_CGROUP_TASK_THREAD);
@@ -893,10 +893,10 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
 
 
 static int
-virCgroupNewFromParent(virCgroupPtr parent,
+virCgroupNewFromParent(virCgroup *parent,
                        const char *path,
                        int controllers,
-                       virCgroupPtr *group)
+                       virCgroup **group)
 {
     g_autoptr(virCgroup) new = g_new0(virCgroup, 1);
 
@@ -941,7 +941,7 @@ int
 virCgroupNewPartition(const char *path,
                       bool create,
                       int controllers,
-                      virCgroupPtr *group)
+                      virCgroup **group)
 {
     g_autofree char *newPath = NULL;
     g_autoptr(virCgroup) parent = NULL;
@@ -998,11 +998,11 @@ virCgroupNewPartition(const char *path,
 
 
 static int
-virCgroupNewNested(virCgroupPtr parent,
+virCgroupNewNested(virCgroup *parent,
                    int controllers,
                    bool create,
                    pid_t pid,
-                   virCgroupPtr *nested)
+                   virCgroup **nested)
 {
     g_autoptr(virCgroup) new = NULL;
 
@@ -1022,7 +1022,7 @@ virCgroupNewNested(virCgroupPtr parent,
 /**
 * virCgroupNewSelf:
 *
-* @group: Pointer to returned virCgroupPtr
+* @group: Pointer to returned virCgroup *
 *
 * Obtain a cgroup representing the config of the
 * current process
@@ -1030,7 +1030,7 @@ virCgroupNewNested(virCgroupPtr parent,
 * Returns 0 on success, or -1 on error
 */
 int
-virCgroupNewSelf(virCgroupPtr *group)
+virCgroupNewSelf(virCgroup **group)
 {
     return virCgroupNewDetect(-1, -1, group);
 }
@@ -1042,15 +1042,15 @@ virCgroupNewSelf(virCgroupPtr *group)
  * @partition: partition holding the domain
  * @driver: name of the driver
  * @name: name of the domain
- * @group: Pointer to returned virCgroupPtr
+ * @group: Pointer to returned virCgroup *
  *
  * Returns 0 on success, or -1 on error
  */
 int
-virCgroupNewDomainPartition(virCgroupPtr partition,
+virCgroupNewDomainPartition(virCgroup *partition,
                             const char *driver,
                             const char *name,
-                            virCgroupPtr *group)
+                            virCgroup **group)
 {
     g_autofree char *grpname = NULL;
     g_autoptr(virCgroup) newGroup = NULL;
@@ -1090,20 +1090,20 @@ virCgroupNewDomainPartition(virCgroupPtr partition,
  * @name: enum to generate the name for the new thread
  * @id: id of the vcpu or iothread
  * @create: true to create if not already existing
- * @group: Pointer to returned virCgroupPtr
+ * @group: Pointer to returned virCgroup *
  *
  * Returns 0 on success, or -1 on error
  */
 int
-virCgroupNewThread(virCgroupPtr domain,
+virCgroupNewThread(virCgroup *domain,
                    virCgroupThreadName nameval,
                    int id,
                    bool create,
-                   virCgroupPtr *group)
+                   virCgroup **group)
 {
     g_autofree char *name = NULL;
     g_autoptr(virCgroup) newGroup = NULL;
-    virCgroupPtr parent = NULL;
+    virCgroup *parent = NULL;
     int controllers;
 
     *group = NULL;
@@ -1144,7 +1144,7 @@ virCgroupNewThread(virCgroupPtr domain,
 int
 virCgroupNewDetect(pid_t pid,
                    int controllers,
-                   virCgroupPtr *group)
+                   virCgroup **group)
 {
     g_autoptr(virCgroup) new = g_new0(virCgroup, 1);
 
@@ -1180,7 +1180,7 @@ virCgroupNewDetectMachine(const char *name,
                           pid_t pid,
                           int controllers,
                           char *machinename,
-                          virCgroupPtr *group)
+                          virCgroup **group)
 {
     size_t i;
     g_autoptr(virCgroup) newGroup = NULL;
@@ -1223,7 +1223,7 @@ virCgroupNewDetectMachine(const char *name,
 static int
 virCgroupEnableMissingControllers(char *path,
                                   int controllers,
-                                  virCgroupPtr *group)
+                                  virCgroup **group)
 {
     g_autoptr(virCgroup) parent = NULL;
     g_auto(GStrv) tokens = g_strsplit(path, "/", 0);
@@ -1269,7 +1269,7 @@ virCgroupNewMachineSystemd(const char *name,
                            const char *partition,
                            int controllers,
                            unsigned int maxthreads,
-                           virCgroupPtr *group)
+                           virCgroup **group)
 {
     int rv;
     g_autoptr(virCgroup) init = NULL;
@@ -1354,7 +1354,7 @@ virCgroupNewMachineManual(const char *name,
                           pid_t pidleader,
                           const char *partition,
                           int controllers,
-                          virCgroupPtr *group)
+                          virCgroup **group)
 {
     g_autoptr(virCgroup) parent = NULL;
     g_autoptr(virCgroup) newGroup = NULL;
@@ -1401,7 +1401,7 @@ virCgroupNewMachine(const char *name,
                     const char *partition,
                     int controllers,
                     unsigned int maxthreads,
-                    virCgroupPtr *group)
+                    virCgroup **group)
 {
     int rv;
 
@@ -1457,7 +1457,7 @@ virCgroupNewIgnoreError(void)
  * with this cgroup object.
  */
 bool
-virCgroupHasController(virCgroupPtr cgroup, int controller)
+virCgroupHasController(virCgroup *cgroup, int controller)
 {
     size_t i;
 
@@ -1478,7 +1478,7 @@ virCgroupHasController(virCgroupPtr cgroup, int controller)
 
 
 int
-virCgroupPathOfController(virCgroupPtr group,
+virCgroupPathOfController(virCgroup *group,
                           unsigned int controller,
                           const char *key,
                           char **path)
@@ -1506,13 +1506,13 @@ virCgroupPathOfController(virCgroupPtr group,
  * Returns: 0 on success, -1 on error
  */
 int
-virCgroupGetBlkioIoServiced(virCgroupPtr group,
+virCgroupGetBlkioIoServiced(virCgroup *group,
                             long long *bytes_read,
                             long long *bytes_write,
                             long long *requests_read,
                             long long *requests_write)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             getBlkioIoServiced, -1,
@@ -1534,14 +1534,14 @@ virCgroupGetBlkioIoServiced(virCgroupPtr group,
  * Returns: 0 on success, -1 on error
  */
 int
-virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group,
+virCgroupGetBlkioIoDeviceServiced(virCgroup *group,
                                   const char *path,
                                   long long *bytes_read,
                                   long long *bytes_write,
                                   long long *requests_read,
                                   long long *requests_write)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             getBlkioIoDeviceServiced, -1,
@@ -1559,7 +1559,7 @@ virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group,
  * Returns: 0 on success, -1 on error
  */
 int
-virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight)
+virCgroupSetBlkioWeight(virCgroup *group, unsigned int weight)
 {
     VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
                             setBlkioWeight, -1, weight);
@@ -1575,7 +1575,7 @@ virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight)
  * Returns: 0 on success, -1 on error
  */
 int
-virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight)
+virCgroupGetBlkioWeight(virCgroup *group, unsigned int *weight)
 {
     VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_BLKIO,
                             getBlkioWeight, -1, weight);
@@ -1590,11 +1590,11 @@ virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight)
  * Returns: 0 on success, -1 on error
  */
 static int
-virCgroupSetBlkioDeviceReadIops(virCgroupPtr group,
+virCgroupSetBlkioDeviceReadIops(virCgroup *group,
                                 const char *path,
                                 unsigned int riops)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             setBlkioDeviceReadIops, -1, path, riops);
@@ -1610,11 +1610,11 @@ virCgroupSetBlkioDeviceReadIops(virCgroupPtr group,
  * Returns: 0 on success, -1 on error
  */
 static int
-virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group,
+virCgroupSetBlkioDeviceWriteIops(virCgroup *group,
                                  const char *path,
                                  unsigned int wiops)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             setBlkioDeviceWriteIops, -1, path, wiops);
@@ -1630,11 +1630,11 @@ virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group,
  * Returns: 0 on success, -1 on error
  */
 static int
-virCgroupSetBlkioDeviceReadBps(virCgroupPtr group,
+virCgroupSetBlkioDeviceReadBps(virCgroup *group,
                                const char *path,
                                unsigned long long rbps)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             setBlkioDeviceReadBps, -1, path, rbps);
@@ -1649,11 +1649,11 @@ virCgroupSetBlkioDeviceReadBps(virCgroupPtr group,
  * Returns: 0 on success, -1 on error
  */
 static int
-virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group,
+virCgroupSetBlkioDeviceWriteBps(virCgroup *group,
                                 const char *path,
                                 unsigned long long wbps)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             setBlkioDeviceWriteBps, -1, path, wbps);
@@ -1670,7 +1670,7 @@ virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group,
  * Returns: 0 on success, -1 on error
  */
 static int
-virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
+virCgroupSetBlkioDeviceWeight(virCgroup *group,
                               const char *path,
                               unsigned int weight)
 {
@@ -1687,11 +1687,11 @@ virCgroupSetBlkioDeviceWeight(virCgroupPtr group,
  * Returns: 0 on success, -1 on error
  */
 static int
-virCgroupGetBlkioDeviceReadIops(virCgroupPtr group,
+virCgroupGetBlkioDeviceReadIops(virCgroup *group,
                                 const char *path,
                                 unsigned int *riops)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             getBlkioDeviceReadIops, -1, path, riops);
@@ -1706,11 +1706,11 @@ virCgroupGetBlkioDeviceReadIops(virCgroupPtr group,
  * Returns: 0 on success, -1 on error
  */
 static int
-virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group,
+virCgroupGetBlkioDeviceWriteIops(virCgroup *group,
                                  const char *path,
                                  unsigned int *wiops)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             getBlkioDeviceWriteIops, -1, path, wiops);
@@ -1725,11 +1725,11 @@ virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group,
  * Returns: 0 on success, -1 on error
  */
 static int
-virCgroupGetBlkioDeviceReadBps(virCgroupPtr group,
+virCgroupGetBlkioDeviceReadBps(virCgroup *group,
                                const char *path,
                                unsigned long long *rbps)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             getBlkioDeviceReadBps, -1, path, rbps);
@@ -1744,11 +1744,11 @@ virCgroupGetBlkioDeviceReadBps(virCgroupPtr group,
  * Returns: 0 on success, -1 on error
  */
 static int
-virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group,
+virCgroupGetBlkioDeviceWriteBps(virCgroup *group,
                                 const char *path,
                                 unsigned long long *wbps)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_BLKIO,
                             getBlkioDeviceWriteBps, -1, path, wbps);
@@ -1763,7 +1763,7 @@ virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group,
  * Returns: 0 on success, -1 on error
  */
 static int
-virCgroupGetBlkioDeviceWeight(virCgroupPtr group,
+virCgroupGetBlkioDeviceWeight(virCgroup *group,
                               const char *path,
                               unsigned int *weight)
 {
@@ -1781,9 +1781,9 @@ virCgroupGetBlkioDeviceWeight(virCgroupPtr group,
  * Returns: 0 on success
  */
 int
-virCgroupSetMemory(virCgroupPtr group, unsigned long long kb)
+virCgroupSetMemory(virCgroup *group, unsigned long long kb)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             setMemory, -1, kb);
@@ -1804,7 +1804,7 @@ virCgroupSetMemory(virCgroupPtr group, unsigned long long kb)
  * Returns: 0 on success, -1 on error
  */
 int
-virCgroupGetMemoryStat(virCgroupPtr group,
+virCgroupGetMemoryStat(virCgroup *group,
                        unsigned long long *cache,
                        unsigned long long *activeAnon,
                        unsigned long long *inactiveAnon,
@@ -1812,7 +1812,7 @@ virCgroupGetMemoryStat(virCgroupPtr group,
                        unsigned long long *inactiveFile,
                        unsigned long long *unevictable)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             getMemoryStat, -1, cache,
@@ -1831,9 +1831,9 @@ virCgroupGetMemoryStat(virCgroupPtr group,
  * Returns: 0 on success
  */
 int
-virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb)
+virCgroupGetMemoryUsage(virCgroup *group, unsigned long *kb)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             getMemoryUsage, -1, kb);
@@ -1849,9 +1849,9 @@ virCgroupGetMemoryUsage(virCgroupPtr group, unsigned long *kb)
  * Returns: 0 on success
  */
 int
-virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long long kb)
+virCgroupSetMemoryHardLimit(virCgroup *group, unsigned long long kb)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             setMemoryHardLimit, -1, kb);
@@ -1867,9 +1867,9 @@ virCgroupSetMemoryHardLimit(virCgroupPtr group, unsigned long long kb)
  * Returns: 0 on success
  */
 int
-virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long long *kb)
+virCgroupGetMemoryHardLimit(virCgroup *group, unsigned long long *kb)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             getMemoryHardLimit, -1, kb);
@@ -1885,9 +1885,9 @@ virCgroupGetMemoryHardLimit(virCgroupPtr group, unsigned long long *kb)
  * Returns: 0 on success
  */
 int
-virCgroupSetMemorySoftLimit(virCgroupPtr group, unsigned long long kb)
+virCgroupSetMemorySoftLimit(virCgroup *group, unsigned long long kb)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             setMemorySoftLimit, -1, kb);
@@ -1903,9 +1903,9 @@ virCgroupSetMemorySoftLimit(virCgroupPtr group, unsigned long long kb)
  * Returns: 0 on success
  */
 int
-virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long long *kb)
+virCgroupGetMemorySoftLimit(virCgroup *group, unsigned long long *kb)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             getMemorySoftLimit, -1, kb);
@@ -1921,9 +1921,9 @@ virCgroupGetMemorySoftLimit(virCgroupPtr group, unsigned long long *kb)
  * Returns: 0 on success
  */
 int
-virCgroupSetMemSwapHardLimit(virCgroupPtr group, unsigned long long kb)
+virCgroupSetMemSwapHardLimit(virCgroup *group, unsigned long long kb)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             setMemSwapHardLimit, -1, kb);
@@ -1939,9 +1939,9 @@ virCgroupSetMemSwapHardLimit(virCgroupPtr group, unsigned long long kb)
  * Returns: 0 on success
  */
 int
-virCgroupGetMemSwapHardLimit(virCgroupPtr group, unsigned long long *kb)
+virCgroupGetMemSwapHardLimit(virCgroup *group, unsigned long long *kb)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             getMemSwapHardLimit, -1, kb);
@@ -1957,9 +1957,9 @@ virCgroupGetMemSwapHardLimit(virCgroupPtr group, unsigned long long *kb)
  * Returns: 0 on success
  */
 int
-virCgroupGetMemSwapUsage(virCgroupPtr group, unsigned long long *kb)
+virCgroupGetMemSwapUsage(virCgroup *group, unsigned long long *kb)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_MEMORY,
                             getMemSwapUsage, -1, kb);
@@ -1975,9 +1975,9 @@ virCgroupGetMemSwapUsage(virCgroupPtr group, unsigned long long *kb)
  * Returns: 0 on success
  */
 int
-virCgroupSetCpusetMems(virCgroupPtr group, const char *mems)
+virCgroupSetCpusetMems(virCgroup *group, const char *mems)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUSET,
                             setCpusetMems, -1, mems);
@@ -1993,9 +1993,9 @@ virCgroupSetCpusetMems(virCgroupPtr group, const char *mems)
  * Returns: 0 on success
  */
 int
-virCgroupGetCpusetMems(virCgroupPtr group, char **mems)
+virCgroupGetCpusetMems(virCgroup *group, char **mems)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUSET,
                             getCpusetMems, -1, mems);
@@ -2011,9 +2011,9 @@ virCgroupGetCpusetMems(virCgroupPtr group, char **mems)
  * Returns: 0 on success
  */
 int
-virCgroupSetCpusetMemoryMigrate(virCgroupPtr group, bool migrate)
+virCgroupSetCpusetMemoryMigrate(virCgroup *group, bool migrate)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUSET,
                             setCpusetMemoryMigrate, -1, migrate);
@@ -2029,9 +2029,9 @@ virCgroupSetCpusetMemoryMigrate(virCgroupPtr group, bool migrate)
  * Returns: 0 on success
  */
 int
-virCgroupGetCpusetMemoryMigrate(virCgroupPtr group, bool *migrate)
+virCgroupGetCpusetMemoryMigrate(virCgroup *group, bool *migrate)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUSET,
                             getCpusetMemoryMigrate, -1, migrate);
@@ -2047,9 +2047,9 @@ virCgroupGetCpusetMemoryMigrate(virCgroupPtr group, bool *migrate)
  * Returns: 0 on success
  */
 int
-virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus)
+virCgroupSetCpusetCpus(virCgroup *group, const char *cpus)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUSET,
                             setCpusetCpus, -1, cpus);
@@ -2065,9 +2065,9 @@ virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus)
  * Returns: 0 on success
  */
 int
-virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus)
+virCgroupGetCpusetCpus(virCgroup *group, char **cpus)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUSET,
                             getCpusetCpus, -1, cpus);
@@ -2082,9 +2082,9 @@ virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus)
  * Returns: 0 on success
  */
 int
-virCgroupDenyAllDevices(virCgroupPtr group)
+virCgroupDenyAllDevices(virCgroup *group)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_DEVICES,
                             denyAllDevices, -1);
@@ -2105,9 +2105,9 @@ virCgroupDenyAllDevices(virCgroupPtr group)
  * Returns: 0 on success
  */
 int
-virCgroupAllowAllDevices(virCgroupPtr group, int perms)
+virCgroupAllowAllDevices(virCgroup *group, int perms)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_DEVICES,
                             allowAllDevices, -1, perms);
@@ -2126,10 +2126,10 @@ virCgroupAllowAllDevices(virCgroupPtr group, int perms)
  * Returns: 0 on success
  */
 int
-virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor,
+virCgroupAllowDevice(virCgroup *group, char type, int major, int minor,
                      int perms)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_DEVICES,
                             allowDevice, -1, type, major, minor, perms);
@@ -2151,13 +2151,13 @@ virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor,
  * accessible, or * -1 on error
  */
 int
-virCgroupAllowDevicePath(virCgroupPtr group,
+virCgroupAllowDevicePath(virCgroup *group,
                          const char *path,
                          int perms,
                          bool ignoreEacces)
 {
     struct stat sb;
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     if (stat(path, &sb) < 0) {
         if (errno == EACCES && ignoreEacces)
@@ -2193,10 +2193,10 @@ virCgroupAllowDevicePath(virCgroupPtr group,
  * Returns: 0 on success
  */
 int
-virCgroupDenyDevice(virCgroupPtr group, char type, int major, int minor,
+virCgroupDenyDevice(virCgroup *group, char type, int major, int minor,
                     int perms)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_DEVICES,
                             denyDevice, -1, type, major, minor, perms);
@@ -2218,13 +2218,13 @@ virCgroupDenyDevice(virCgroupPtr group, char type, int major, int minor,
  * accessible, or -1 on error.
  */
 int
-virCgroupDenyDevicePath(virCgroupPtr group,
+virCgroupDenyDevicePath(virCgroup *group,
                         const char *path,
                         int perms,
                         bool ignoreEacces)
 {
     struct stat sb;
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     if (stat(path, &sb) < 0) {
         if (errno == EACCES && ignoreEacces)
@@ -2263,11 +2263,11 @@ virCgroupDenyDevicePath(virCgroupPtr group,
  *   s3 = t03 + t13
  */
 static int
-virCgroupGetPercpuVcpuSum(virCgroupPtr group,
-                          virBitmapPtr guestvcpus,
+virCgroupGetPercpuVcpuSum(virCgroup *group,
+                          virBitmap *guestvcpus,
                           unsigned long long *sum_cpu_time,
                           size_t nsum,
-                          virBitmapPtr cpumap)
+                          virBitmap *cpumap)
 {
     ssize_t i = -1;
 
@@ -2323,12 +2323,12 @@ virCgroupGetPercpuVcpuSum(virCgroupPtr group,
  * Please DON'T use this function anywhere else.
  */
 int
-virCgroupGetPercpuStats(virCgroupPtr group,
+virCgroupGetPercpuStats(virCgroup *group,
                         virTypedParameterPtr params,
                         unsigned int nparams,
                         int start_cpu,
                         unsigned int ncpus,
-                        virBitmapPtr guestvcpus)
+                        virBitmap *guestvcpus)
 {
     int ret = -1;
     size_t i;
@@ -2339,7 +2339,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     virTypedParameterPtr ent;
     int param_idx;
     unsigned long long cpu_time;
-    virBitmapPtr cpumap = NULL;
+    virBitmap *cpumap = NULL;
 
     /* return the number of supported params */
     if (nparams == 0 && ncpus != 0) {
@@ -2425,7 +2425,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
 
 
 int
-virCgroupGetDomainTotalCpuStats(virCgroupPtr group,
+virCgroupGetDomainTotalCpuStats(virCgroup *group,
                                 virTypedParameterPtr params,
                                 int nparams)
 {
@@ -2474,7 +2474,7 @@ virCgroupGetDomainTotalCpuStats(virCgroupPtr group,
 
 
 int
-virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares)
+virCgroupSetCpuShares(virCgroup *group, unsigned long long shares)
 {
     VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPU,
                             setCpuShares, -1, shares);
@@ -2482,7 +2482,7 @@ virCgroupSetCpuShares(virCgroupPtr group, unsigned long long shares)
 
 
 int
-virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares)
+virCgroupGetCpuShares(virCgroup *group, unsigned long long *shares)
 {
     VIR_CGROUP_BACKEND_CALL(group, VIR_CGROUP_CONTROLLER_CPU,
                             getCpuShares, -1, shares);
@@ -2498,9 +2498,9 @@ virCgroupGetCpuShares(virCgroupPtr group, unsigned long long *shares)
  * Returns: 0 on success
  */
 int
-virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period)
+virCgroupSetCpuCfsPeriod(virCgroup *group, unsigned long long cfs_period)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPU,
                             setCpuCfsPeriod, -1, cfs_period);
@@ -2516,9 +2516,9 @@ virCgroupSetCpuCfsPeriod(virCgroupPtr group, unsigned long long cfs_period)
  * Returns: 0 on success
  */
 int
-virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period)
+virCgroupGetCpuCfsPeriod(virCgroup *group, unsigned long long *cfs_period)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPU,
                             getCpuCfsPeriod, -1, cfs_period);
@@ -2535,9 +2535,9 @@ virCgroupGetCpuCfsPeriod(virCgroupPtr group, unsigned long long *cfs_period)
  * Returns: 0 on success
  */
 int
-virCgroupSetCpuCfsQuota(virCgroupPtr group, long long cfs_quota)
+virCgroupSetCpuCfsQuota(virCgroup *group, long long cfs_quota)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPU,
                             setCpuCfsQuota, -1, cfs_quota);
@@ -2545,9 +2545,9 @@ virCgroupSetCpuCfsQuota(virCgroupPtr group, long long cfs_quota)
 
 
 int
-virCgroupGetCpuacctPercpuUsage(virCgroupPtr group, char **usage)
+virCgroupGetCpuacctPercpuUsage(virCgroup *group, char **usage)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUACCT,
                             getCpuacctPercpuUsage, -1, usage);
@@ -2611,7 +2611,7 @@ virCgroupRemoveRecursively(char *grppath)
  * Returns: 0 on success
  */
 int
-virCgroupRemove(virCgroupPtr group)
+virCgroupRemove(virCgroup *group)
 {
     size_t i;
 
@@ -2631,7 +2631,7 @@ virCgroupRemove(virCgroupPtr group)
  * Returns 1 if some PIDs are killed, 0 if none are killed, or -1 on error
  */
 static int
-virCgroupKillInternal(virCgroupPtr group,
+virCgroupKillInternal(virCgroup *group,
                       int signum,
                       GHashTable *pids,
                       int controller,
@@ -2712,7 +2712,7 @@ virCgroupKillInternal(virCgroupPtr group,
 
 
 int
-virCgroupKillRecursiveInternal(virCgroupPtr group,
+virCgroupKillRecursiveInternal(virCgroup *group,
                                int signum,
                                GHashTable *pids,
                                int controller,
@@ -2777,13 +2777,13 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
 
 
 int
-virCgroupKillRecursive(virCgroupPtr group, int signum)
+virCgroupKillRecursive(virCgroup *group, int signum)
 {
     int rc;
     bool success = false;
     size_t i;
     bool backendAvailable = false;
-    virCgroupBackendPtr *backends = virCgroupBackendGetAll();
+    virCgroupBackend **backends = virCgroupBackendGetAll();
     g_autoptr(GHashTable) pids = g_hash_table_new_full(g_int64_hash, g_int64_equal, g_free, NULL);
 
     VIR_DEBUG("group=%p signum=%d", group, signum);
@@ -2813,7 +2813,7 @@ virCgroupKillRecursive(virCgroupPtr group, int signum)
 
 
 int
-virCgroupKillPainfully(virCgroupPtr group)
+virCgroupKillPainfully(virCgroup *group)
 {
     size_t i;
     int ret;
@@ -2850,9 +2850,9 @@ virCgroupKillPainfully(virCgroupPtr group)
  * Returns: 0 on success
  */
 int
-virCgroupGetCpuCfsQuota(virCgroupPtr group, long long *cfs_quota)
+virCgroupGetCpuCfsQuota(virCgroup *group, long long *cfs_quota)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPU,
                             getCpuCfsQuota, -1, cfs_quota);
@@ -2860,9 +2860,9 @@ virCgroupGetCpuCfsQuota(virCgroupPtr group, long long *cfs_quota)
 
 
 int
-virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
+virCgroupGetCpuacctUsage(virCgroup *group, unsigned long long *usage)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUACCT,
                             getCpuacctUsage, -1, usage);
@@ -2870,10 +2870,10 @@ virCgroupGetCpuacctUsage(virCgroupPtr group, unsigned long long *usage)
 
 
 int
-virCgroupGetCpuacctStat(virCgroupPtr group, unsigned long long *user,
+virCgroupGetCpuacctStat(virCgroup *group, unsigned long long *user,
                         unsigned long long *sys)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPUACCT,
                             getCpuacctStat, -1, user, sys);
@@ -2881,9 +2881,9 @@ virCgroupGetCpuacctStat(virCgroupPtr group, unsigned long long *user,
 
 
 int
-virCgroupSetFreezerState(virCgroupPtr group, const char *state)
+virCgroupSetFreezerState(virCgroup *group, const char *state)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_FREEZER,
                             setFreezerState, -1, state);
@@ -2891,9 +2891,9 @@ virCgroupSetFreezerState(virCgroupPtr group, const char *state)
 
 
 int
-virCgroupGetFreezerState(virCgroupPtr group, char **state)
+virCgroupGetFreezerState(virCgroup *group, char **state)
 {
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_FREEZER,
                             getFreezerState, -1, state);
@@ -2901,11 +2901,11 @@ virCgroupGetFreezerState(virCgroupPtr group, char **state)
 
 
 int
-virCgroupBindMount(virCgroupPtr group, const char *oldroot,
+virCgroupBindMount(virCgroup *group, const char *oldroot,
                    const char *mountopts)
 {
     size_t i;
-    virCgroupPtr parent = virCgroupGetNested(group);
+    virCgroup *parent = virCgroupGetNested(group);
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
         if (parent->backends[i] &&
@@ -2918,13 +2918,13 @@ virCgroupBindMount(virCgroupPtr group, const char *oldroot,
 }
 
 
-int virCgroupSetOwner(virCgroupPtr cgroup,
+int virCgroupSetOwner(virCgroup *cgroup,
                       uid_t uid,
                       gid_t gid,
                       int controllers)
 {
     size_t i;
-    virCgroupPtr parent = virCgroupGetNested(cgroup);
+    virCgroup *parent = virCgroupGetNested(cgroup);
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
         if (parent->backends[i] &&
@@ -2945,19 +2945,19 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
  * false when CFS bandwidth is not supported.
  */
 bool
-virCgroupSupportsCpuBW(virCgroupPtr cgroup)
+virCgroupSupportsCpuBW(virCgroup *cgroup)
 {
-    virCgroupPtr parent = virCgroupGetNested(cgroup);
+    virCgroup *parent = virCgroupGetNested(cgroup);
 
     VIR_CGROUP_BACKEND_CALL(parent, VIR_CGROUP_CONTROLLER_CPU,
                             supportsCpuBW, false);
 }
 
 int
-virCgroupHasEmptyTasks(virCgroupPtr cgroup, int controller)
+virCgroupHasEmptyTasks(virCgroup *cgroup, int controller)
 {
     size_t i;
-    virCgroupPtr parent = virCgroupGetNested(cgroup);
+    virCgroup *parent = virCgroupGetNested(cgroup);
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
         if (parent->backends[i]) {
@@ -2994,7 +2994,7 @@ int
 virCgroupNewPartition(const char *path G_GNUC_UNUSED,
                       bool create G_GNUC_UNUSED,
                       int controllers G_GNUC_UNUSED,
-                      virCgroupPtr *group G_GNUC_UNUSED)
+                      virCgroup **group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -3005,7 +3005,7 @@ virCgroupNewPartition(const char *path G_GNUC_UNUSED,
 int
 virCgroupNew(const char *path G_GNUC_UNUSED,
              int controllers G_GNUC_UNUSED,
-             virCgroupPtr *group G_GNUC_UNUSED)
+             virCgroup **group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -3014,7 +3014,7 @@ virCgroupNew(const char *path G_GNUC_UNUSED,
 
 
 int
-virCgroupNewSelf(virCgroupPtr *group G_GNUC_UNUSED)
+virCgroupNewSelf(virCgroup **group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -3023,10 +3023,10 @@ virCgroupNewSelf(virCgroupPtr *group G_GNUC_UNUSED)
 
 
 int
-virCgroupNewDomainPartition(virCgroupPtr partition G_GNUC_UNUSED,
+virCgroupNewDomainPartition(virCgroup *partition G_GNUC_UNUSED,
                             const char *driver G_GNUC_UNUSED,
                             const char *name G_GNUC_UNUSED,
-                            virCgroupPtr *group G_GNUC_UNUSED)
+                            virCgroup **group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -3035,11 +3035,11 @@ virCgroupNewDomainPartition(virCgroupPtr partition G_GNUC_UNUSED,
 
 
 int
-virCgroupNewThread(virCgroupPtr domain G_GNUC_UNUSED,
+virCgroupNewThread(virCgroup *domain G_GNUC_UNUSED,
                    virCgroupThreadName nameval G_GNUC_UNUSED,
                    int id G_GNUC_UNUSED,
                    bool create G_GNUC_UNUSED,
-                   virCgroupPtr *group G_GNUC_UNUSED)
+                   virCgroup **group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -3050,7 +3050,7 @@ virCgroupNewThread(virCgroupPtr domain G_GNUC_UNUSED,
 int
 virCgroupNewDetect(pid_t pid G_GNUC_UNUSED,
                    int controllers G_GNUC_UNUSED,
-                   virCgroupPtr *group G_GNUC_UNUSED)
+                   virCgroup **group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -3064,7 +3064,7 @@ virCgroupNewDetectMachine(const char *name G_GNUC_UNUSED,
                           pid_t pid G_GNUC_UNUSED,
                           int controllers G_GNUC_UNUSED,
                           char *machinename G_GNUC_UNUSED,
-                          virCgroupPtr *group G_GNUC_UNUSED)
+                          virCgroup **group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -3092,7 +3092,7 @@ virCgroupNewMachine(const char *name G_GNUC_UNUSED,
                     const char *partition G_GNUC_UNUSED,
                     int controllers G_GNUC_UNUSED,
                     unsigned int maxthreads G_GNUC_UNUSED,
-                    virCgroupPtr *group G_GNUC_UNUSED)
+                    virCgroup **group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -3109,7 +3109,7 @@ virCgroupNewIgnoreError(void)
 
 
 bool
-virCgroupHasController(virCgroupPtr cgroup G_GNUC_UNUSED,
+virCgroupHasController(virCgroup *cgroup G_GNUC_UNUSED,
                        int controller G_GNUC_UNUSED)
 {
     return false;
@@ -3117,7 +3117,7 @@ virCgroupHasController(virCgroupPtr cgroup G_GNUC_UNUSED,
 
 
 int
-virCgroupPathOfController(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupPathOfController(virCgroup *group G_GNUC_UNUSED,
                           unsigned int controller G_GNUC_UNUSED,
                           const char *key G_GNUC_UNUSED,
                           char **path G_GNUC_UNUSED)
@@ -3129,7 +3129,7 @@ virCgroupPathOfController(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupAddProcess(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupAddProcess(virCgroup *group G_GNUC_UNUSED,
                     pid_t pid G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
@@ -3139,7 +3139,7 @@ virCgroupAddProcess(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupAddMachineProcess(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupAddMachineProcess(virCgroup *group G_GNUC_UNUSED,
                            pid_t pid G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
@@ -3149,7 +3149,7 @@ virCgroupAddMachineProcess(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupAddThread(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupAddThread(virCgroup *group G_GNUC_UNUSED,
                    pid_t pid G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
@@ -3159,7 +3159,7 @@ virCgroupAddThread(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetBlkioIoServiced(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetBlkioIoServiced(virCgroup *group G_GNUC_UNUSED,
                             long long *bytes_read G_GNUC_UNUSED,
                             long long *bytes_write G_GNUC_UNUSED,
                             long long *requests_read G_GNUC_UNUSED,
@@ -3172,7 +3172,7 @@ virCgroupGetBlkioIoServiced(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetBlkioIoDeviceServiced(virCgroup *group G_GNUC_UNUSED,
                                   const char *path G_GNUC_UNUSED,
                                   long long *bytes_read G_GNUC_UNUSED,
                                   long long *bytes_write G_GNUC_UNUSED,
@@ -3186,7 +3186,7 @@ virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupSetBlkioWeight(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetBlkioWeight(virCgroup *group G_GNUC_UNUSED,
                         unsigned int weight G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
@@ -3196,7 +3196,7 @@ virCgroupSetBlkioWeight(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetBlkioWeight(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetBlkioWeight(virCgroup *group G_GNUC_UNUSED,
                         unsigned int *weight G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
@@ -3206,7 +3206,7 @@ virCgroupGetBlkioWeight(virCgroupPtr group G_GNUC_UNUSED,
 
 
 static int
-virCgroupSetBlkioDeviceWeight(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetBlkioDeviceWeight(virCgroup *group G_GNUC_UNUSED,
                               const char *path G_GNUC_UNUSED,
                               unsigned int weight G_GNUC_UNUSED)
 {
@@ -3216,7 +3216,7 @@ virCgroupSetBlkioDeviceWeight(virCgroupPtr group G_GNUC_UNUSED,
 }
 
 static int
-virCgroupSetBlkioDeviceReadIops(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetBlkioDeviceReadIops(virCgroup *group G_GNUC_UNUSED,
                                 const char *path G_GNUC_UNUSED,
                                 unsigned int riops G_GNUC_UNUSED)
 {
@@ -3226,7 +3226,7 @@ virCgroupSetBlkioDeviceReadIops(virCgroupPtr group G_GNUC_UNUSED,
 }
 
 static int
-virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetBlkioDeviceWriteIops(virCgroup *group G_GNUC_UNUSED,
                                  const char *path G_GNUC_UNUSED,
                                  unsigned int wiops G_GNUC_UNUSED)
 {
@@ -3236,7 +3236,7 @@ virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group G_GNUC_UNUSED,
 }
 
 static int
-virCgroupSetBlkioDeviceReadBps(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetBlkioDeviceReadBps(virCgroup *group G_GNUC_UNUSED,
                                const char *path G_GNUC_UNUSED,
                                unsigned long long rbps G_GNUC_UNUSED)
 {
@@ -3246,7 +3246,7 @@ virCgroupSetBlkioDeviceReadBps(virCgroupPtr group G_GNUC_UNUSED,
 }
 
 static int
-virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetBlkioDeviceWriteBps(virCgroup *group G_GNUC_UNUSED,
                                 const char *path G_GNUC_UNUSED,
                                 unsigned long long wbps G_GNUC_UNUSED)
 {
@@ -3256,7 +3256,7 @@ virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group G_GNUC_UNUSED,
 }
 
 static int
-virCgroupGetBlkioDeviceWeight(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetBlkioDeviceWeight(virCgroup *group G_GNUC_UNUSED,
                               const char *path G_GNUC_UNUSED,
                               unsigned int *weight G_GNUC_UNUSED)
 {
@@ -3266,7 +3266,7 @@ virCgroupGetBlkioDeviceWeight(virCgroupPtr group G_GNUC_UNUSED,
 }
 
 static int
-virCgroupGetBlkioDeviceReadIops(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetBlkioDeviceReadIops(virCgroup *group G_GNUC_UNUSED,
                                 const char *path G_GNUC_UNUSED,
                                 unsigned int *riops G_GNUC_UNUSED)
 {
@@ -3276,7 +3276,7 @@ virCgroupGetBlkioDeviceReadIops(virCgroupPtr group G_GNUC_UNUSED,
 }
 
 static int
-virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetBlkioDeviceWriteIops(virCgroup *group G_GNUC_UNUSED,
                                  const char *path G_GNUC_UNUSED,
                                  unsigned int *wiops G_GNUC_UNUSED)
 {
@@ -3286,7 +3286,7 @@ virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group G_GNUC_UNUSED,
 }
 
 static int
-virCgroupGetBlkioDeviceReadBps(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetBlkioDeviceReadBps(virCgroup *group G_GNUC_UNUSED,
                                const char *path G_GNUC_UNUSED,
                                unsigned long long *rbps G_GNUC_UNUSED)
 {
@@ -3296,7 +3296,7 @@ virCgroupGetBlkioDeviceReadBps(virCgroupPtr group G_GNUC_UNUSED,
 }
 
 static int
-virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetBlkioDeviceWriteBps(virCgroup *group G_GNUC_UNUSED,
                                 const char *path G_GNUC_UNUSED,
                                 unsigned long long *wbps G_GNUC_UNUSED)
 {
@@ -3306,7 +3306,7 @@ virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group G_GNUC_UNUSED,
 }
 
 int
-virCgroupSetMemory(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetMemory(virCgroup *group G_GNUC_UNUSED,
                    unsigned long long kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3316,7 +3316,7 @@ virCgroupSetMemory(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetMemoryStat(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetMemoryStat(virCgroup *group G_GNUC_UNUSED,
                        unsigned long long *cache G_GNUC_UNUSED,
                        unsigned long long *activeAnon G_GNUC_UNUSED,
                        unsigned long long *inactiveAnon G_GNUC_UNUSED,
@@ -3331,7 +3331,7 @@ virCgroupGetMemoryStat(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetMemoryUsage(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetMemoryUsage(virCgroup *group G_GNUC_UNUSED,
                         unsigned long *kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3341,7 +3341,7 @@ virCgroupGetMemoryUsage(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupSetMemoryHardLimit(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetMemoryHardLimit(virCgroup *group G_GNUC_UNUSED,
                             unsigned long long kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3351,7 +3351,7 @@ virCgroupSetMemoryHardLimit(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetMemoryHardLimit(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetMemoryHardLimit(virCgroup *group G_GNUC_UNUSED,
                             unsigned long long *kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3361,7 +3361,7 @@ virCgroupGetMemoryHardLimit(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupSetMemorySoftLimit(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetMemorySoftLimit(virCgroup *group G_GNUC_UNUSED,
                             unsigned long long kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3371,7 +3371,7 @@ virCgroupSetMemorySoftLimit(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetMemorySoftLimit(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetMemorySoftLimit(virCgroup *group G_GNUC_UNUSED,
                             unsigned long long *kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3381,7 +3381,7 @@ virCgroupGetMemorySoftLimit(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupSetMemSwapHardLimit(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetMemSwapHardLimit(virCgroup *group G_GNUC_UNUSED,
                              unsigned long long kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3391,7 +3391,7 @@ virCgroupSetMemSwapHardLimit(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetMemSwapHardLimit(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetMemSwapHardLimit(virCgroup *group G_GNUC_UNUSED,
                              unsigned long long *kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3401,7 +3401,7 @@ virCgroupGetMemSwapHardLimit(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetMemSwapUsage(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetMemSwapUsage(virCgroup *group G_GNUC_UNUSED,
                          unsigned long long *kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3411,7 +3411,7 @@ virCgroupGetMemSwapUsage(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupSetCpusetMems(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetCpusetMems(virCgroup *group G_GNUC_UNUSED,
                        const char *mems G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3421,7 +3421,7 @@ virCgroupSetCpusetMems(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetCpusetMems(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetCpusetMems(virCgroup *group G_GNUC_UNUSED,
                        char **mems G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3431,7 +3431,7 @@ virCgroupGetCpusetMems(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupSetCpusetMemoryMigrate(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetCpusetMemoryMigrate(virCgroup *group G_GNUC_UNUSED,
                                 bool migrate G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3441,7 +3441,7 @@ virCgroupSetCpusetMemoryMigrate(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetCpusetMemoryMigrate(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetCpusetMemoryMigrate(virCgroup *group G_GNUC_UNUSED,
                                 bool *migrate G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3451,7 +3451,7 @@ virCgroupGetCpusetMemoryMigrate(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupSetCpusetCpus(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetCpusetCpus(virCgroup *group G_GNUC_UNUSED,
                        const char *cpus G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3461,7 +3461,7 @@ virCgroupSetCpusetCpus(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetCpusetCpus(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetCpusetCpus(virCgroup *group G_GNUC_UNUSED,
                        char **cpus G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3470,7 +3470,7 @@ virCgroupGetCpusetCpus(virCgroupPtr group G_GNUC_UNUSED,
 }
 
 int
-virCgroupAllowAllDevices(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupAllowAllDevices(virCgroup *group G_GNUC_UNUSED,
                          int perms G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3479,7 +3479,7 @@ virCgroupAllowAllDevices(virCgroupPtr group G_GNUC_UNUSED,
 }
 
 int
-virCgroupDenyAllDevices(virCgroupPtr group G_GNUC_UNUSED)
+virCgroupDenyAllDevices(virCgroup *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3488,7 +3488,7 @@ virCgroupDenyAllDevices(virCgroupPtr group G_GNUC_UNUSED)
 
 
 int
-virCgroupAllowDevice(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupAllowDevice(virCgroup *group G_GNUC_UNUSED,
                      char type G_GNUC_UNUSED,
                      int major G_GNUC_UNUSED,
                      int minor G_GNUC_UNUSED,
@@ -3501,7 +3501,7 @@ virCgroupAllowDevice(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupAllowDevicePath(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupAllowDevicePath(virCgroup *group G_GNUC_UNUSED,
                          const char *path G_GNUC_UNUSED,
                          int perms G_GNUC_UNUSED,
                          bool ignoreEaccess G_GNUC_UNUSED)
@@ -3513,7 +3513,7 @@ virCgroupAllowDevicePath(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupDenyDevice(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupDenyDevice(virCgroup *group G_GNUC_UNUSED,
                     char type G_GNUC_UNUSED,
                     int major G_GNUC_UNUSED,
                     int minor G_GNUC_UNUSED,
@@ -3526,7 +3526,7 @@ virCgroupDenyDevice(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupDenyDevicePath(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupDenyDevicePath(virCgroup *group G_GNUC_UNUSED,
                         const char *path G_GNUC_UNUSED,
                         int perms G_GNUC_UNUSED,
                         bool ignoreEacces G_GNUC_UNUSED)
@@ -3538,7 +3538,7 @@ virCgroupDenyDevicePath(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupSetCpuShares(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetCpuShares(virCgroup *group G_GNUC_UNUSED,
                       unsigned long long shares G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3548,7 +3548,7 @@ virCgroupSetCpuShares(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetCpuShares(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetCpuShares(virCgroup *group G_GNUC_UNUSED,
                       unsigned long long *shares G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3558,7 +3558,7 @@ virCgroupGetCpuShares(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupSetCpuCfsPeriod(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetCpuCfsPeriod(virCgroup *group G_GNUC_UNUSED,
                          unsigned long long cfs_period G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3568,7 +3568,7 @@ virCgroupSetCpuCfsPeriod(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetCpuCfsPeriod(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetCpuCfsPeriod(virCgroup *group G_GNUC_UNUSED,
                          unsigned long long *cfs_period G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3578,7 +3578,7 @@ virCgroupGetCpuCfsPeriod(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupSetCpuCfsQuota(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetCpuCfsQuota(virCgroup *group G_GNUC_UNUSED,
                         long long cfs_quota G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3588,7 +3588,7 @@ virCgroupSetCpuCfsQuota(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupRemove(virCgroupPtr group G_GNUC_UNUSED)
+virCgroupRemove(virCgroup *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -3597,7 +3597,7 @@ virCgroupRemove(virCgroupPtr group G_GNUC_UNUSED)
 
 
 int
-virCgroupKillRecursive(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupKillRecursive(virCgroup *group G_GNUC_UNUSED,
                        int signum G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3607,7 +3607,7 @@ virCgroupKillRecursive(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupKillPainfully(virCgroupPtr group G_GNUC_UNUSED)
+virCgroupKillPainfully(virCgroup *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3616,7 +3616,7 @@ virCgroupKillPainfully(virCgroupPtr group G_GNUC_UNUSED)
 
 
 int
-virCgroupGetCpuCfsQuota(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetCpuCfsQuota(virCgroup *group G_GNUC_UNUSED,
                         long long *cfs_quota G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3626,7 +3626,7 @@ virCgroupGetCpuCfsQuota(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetCpuacctUsage(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetCpuacctUsage(virCgroup *group G_GNUC_UNUSED,
                          unsigned long long *usage G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3636,7 +3636,7 @@ virCgroupGetCpuacctUsage(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetCpuacctPercpuUsage(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetCpuacctPercpuUsage(virCgroup *group G_GNUC_UNUSED,
                                char **usage G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3646,7 +3646,7 @@ virCgroupGetCpuacctPercpuUsage(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetCpuacctStat(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetCpuacctStat(virCgroup *group G_GNUC_UNUSED,
                         unsigned long long *user G_GNUC_UNUSED,
                         unsigned long long *sys G_GNUC_UNUSED)
 {
@@ -3657,7 +3657,7 @@ virCgroupGetCpuacctStat(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetDomainTotalCpuStats(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetDomainTotalCpuStats(virCgroup *group G_GNUC_UNUSED,
                                 virTypedParameterPtr params G_GNUC_UNUSED,
                                 int nparams G_GNUC_UNUSED)
 {
@@ -3668,7 +3668,7 @@ virCgroupGetDomainTotalCpuStats(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupSetFreezerState(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupSetFreezerState(virCgroup *group G_GNUC_UNUSED,
                          const char *state G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3678,7 +3678,7 @@ virCgroupSetFreezerState(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupGetFreezerState(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetFreezerState(virCgroup *group G_GNUC_UNUSED,
                          char **state G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3688,7 +3688,7 @@ virCgroupGetFreezerState(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupBindMount(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupBindMount(virCgroup *group G_GNUC_UNUSED,
                    const char *oldroot G_GNUC_UNUSED,
                    const char *mountopts G_GNUC_UNUSED)
 {
@@ -3699,7 +3699,7 @@ virCgroupBindMount(virCgroupPtr group G_GNUC_UNUSED,
 
 
 bool
-virCgroupSupportsCpuBW(virCgroupPtr cgroup G_GNUC_UNUSED)
+virCgroupSupportsCpuBW(virCgroup *cgroup G_GNUC_UNUSED)
 {
     VIR_DEBUG("Control groups not supported on this platform");
     return false;
@@ -3707,12 +3707,12 @@ virCgroupSupportsCpuBW(virCgroupPtr cgroup G_GNUC_UNUSED)
 
 
 int
-virCgroupGetPercpuStats(virCgroupPtr group G_GNUC_UNUSED,
+virCgroupGetPercpuStats(virCgroup *group G_GNUC_UNUSED,
                         virTypedParameterPtr params G_GNUC_UNUSED,
                         unsigned int nparams G_GNUC_UNUSED,
                         int start_cpu G_GNUC_UNUSED,
                         unsigned int ncpus G_GNUC_UNUSED,
-                        virBitmapPtr guestvcpus G_GNUC_UNUSED)
+                        virBitmap *guestvcpus G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3721,7 +3721,7 @@ virCgroupGetPercpuStats(virCgroupPtr group G_GNUC_UNUSED,
 
 
 int
-virCgroupSetOwner(virCgroupPtr cgroup G_GNUC_UNUSED,
+virCgroupSetOwner(virCgroup *cgroup G_GNUC_UNUSED,
                   uid_t uid G_GNUC_UNUSED,
                   gid_t gid G_GNUC_UNUSED,
                   int controllers G_GNUC_UNUSED)
@@ -3732,7 +3732,7 @@ virCgroupSetOwner(virCgroupPtr cgroup G_GNUC_UNUSED,
 }
 
 int
-virCgroupHasEmptyTasks(virCgroupPtr cgroup G_GNUC_UNUSED,
+virCgroupHasEmptyTasks(virCgroup *cgroup G_GNUC_UNUSED,
                        int controller G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
@@ -3754,7 +3754,7 @@ virCgroupControllerAvailable(int controller G_GNUC_UNUSED)
  * @group: The group structure to free
  */
 void
-virCgroupFree(virCgroupPtr group)
+virCgroupFree(virCgroup *group)
 {
     size_t i;
 
@@ -3778,12 +3778,12 @@ virCgroupFree(virCgroupPtr group)
 
 
 int
-virCgroupDelThread(virCgroupPtr cgroup,
+virCgroupDelThread(virCgroup *cgroup,
                    virCgroupThreadName nameval,
                    int idx)
 {
     g_autoptr(virCgroup) new_cgroup = NULL;
-    virCgroupPtr parent = NULL;
+    virCgroup *parent = NULL;
 
     if (cgroup) {
         parent = virCgroupGetNested(cgroup);
@@ -3805,7 +3805,7 @@ virCgroupDelThread(virCgroupPtr cgroup,
  * virCgroupGetBlkioDeviceWeight() in the same @weight pointer.
  */
 int
-virCgroupSetupBlkioDeviceWeight(virCgroupPtr cgroup, const char *path,
+virCgroupSetupBlkioDeviceWeight(virCgroup *cgroup, const char *path,
                                 unsigned int *weight)
 {
     if (virCgroupSetBlkioDeviceWeight(cgroup, path, *weight) < 0 ||
@@ -3822,7 +3822,7 @@ virCgroupSetupBlkioDeviceWeight(virCgroupPtr cgroup, const char *path,
  * virCgroupGetBlkioDeviceReadIops() in the same @riops pointer.
  */
 int
-virCgroupSetupBlkioDeviceReadIops(virCgroupPtr cgroup, const char *path,
+virCgroupSetupBlkioDeviceReadIops(virCgroup *cgroup, const char *path,
                                   unsigned int *riops)
 {
     if (virCgroupSetBlkioDeviceReadIops(cgroup, path, *riops) < 0 ||
@@ -3839,7 +3839,7 @@ virCgroupSetupBlkioDeviceReadIops(virCgroupPtr cgroup, const char *path,
  * virCgroupGetBlkioDeviceWriteIops() in the same @wiops pointer.
  */
 int
-virCgroupSetupBlkioDeviceWriteIops(virCgroupPtr cgroup, const char *path,
+virCgroupSetupBlkioDeviceWriteIops(virCgroup *cgroup, const char *path,
                                    unsigned int *wiops)
 {
     if (virCgroupSetBlkioDeviceWriteIops(cgroup, path, *wiops) < 0 ||
@@ -3856,7 +3856,7 @@ virCgroupSetupBlkioDeviceWriteIops(virCgroupPtr cgroup, const char *path,
  * virCgroupGetBlkioDeviceReadBps() in the same @rbps pointer.
  */
 int
-virCgroupSetupBlkioDeviceReadBps(virCgroupPtr cgroup, const char *path,
+virCgroupSetupBlkioDeviceReadBps(virCgroup *cgroup, const char *path,
                                  unsigned long long *rbps)
 {
     if (virCgroupSetBlkioDeviceReadBps(cgroup, path, *rbps) < 0 ||
@@ -3873,7 +3873,7 @@ virCgroupSetupBlkioDeviceReadBps(virCgroupPtr cgroup, const char *path,
  * virCgroupGetBlkioDeviceWriteBps() in the same @wbps pointer.
  */
 int
-virCgroupSetupBlkioDeviceWriteBps(virCgroupPtr cgroup, const char *path,
+virCgroupSetupBlkioDeviceWriteBps(virCgroup *cgroup, const char *path,
                                   unsigned long long *wbps)
 {
     if (virCgroupSetBlkioDeviceWriteBps(cgroup, path, *wbps) < 0 ||
@@ -3885,7 +3885,7 @@ virCgroupSetupBlkioDeviceWriteBps(virCgroupPtr cgroup, const char *path,
 
 
 int
-virCgroupSetupCpusetCpus(virCgroupPtr cgroup, virBitmapPtr cpumask)
+virCgroupSetupCpusetCpus(virCgroup *cgroup, virBitmap *cpumask)
 {
     g_autofree char *new_cpus = NULL;
 
@@ -3900,7 +3900,7 @@ virCgroupSetupCpusetCpus(virCgroupPtr cgroup, virBitmapPtr cpumask)
 
 
 int
-virCgroupSetupCpuPeriodQuota(virCgroupPtr cgroup,
+virCgroupSetupCpuPeriodQuota(virCgroup *cgroup,
                              unsigned long long period,
                              long long quota)
 {
@@ -3938,7 +3938,7 @@ virCgroupSetupCpuPeriodQuota(virCgroupPtr cgroup,
 
 
 int
-virCgroupGetCpuPeriodQuota(virCgroupPtr cgroup, unsigned long long *period,
+virCgroupGetCpuPeriodQuota(virCgroup *cgroup, unsigned long long *period,
                            long long *quota)
 {
     if (virCgroupGetCpuCfsPeriod(cgroup, period) < 0)

@@ -24,26 +24,26 @@
 #include "qemu_domain.h"
 #include "qemu_security.h"
 
-int qemuExtVhostUserGPUPrepareDomain(virQEMUDriverPtr driver,
-                                     virDomainVideoDefPtr video)
+int qemuExtVhostUserGPUPrepareDomain(virQEMUDriver *driver,
+                                     virDomainVideoDef *video)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     G_GNUC_WARN_UNUSED_RESULT;
 
-int qemuExtVhostUserGPUStart(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             virDomainVideoDefPtr video)
+int qemuExtVhostUserGPUStart(virQEMUDriver *driver,
+                             virDomainObj *vm,
+                             virDomainVideoDef *video)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     G_GNUC_WARN_UNUSED_RESULT;
 
-void qemuExtVhostUserGPUStop(virQEMUDriverPtr driver,
-                             virDomainObjPtr def,
-                             virDomainVideoDefPtr video)
+void qemuExtVhostUserGPUStop(virQEMUDriver *driver,
+                             virDomainObj *def,
+                             virDomainVideoDef *video)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int
-qemuExtVhostUserGPUSetupCgroup(virQEMUDriverPtr driver,
-                               virDomainDefPtr def,
-                               virDomainVideoDefPtr video,
-                               virCgroupPtr cgroup)
+qemuExtVhostUserGPUSetupCgroup(virQEMUDriver *driver,
+                               virDomainDef *def,
+                               virDomainVideoDef *video,
+                               virCgroup *cgroup)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     G_GNUC_WARN_UNUSED_RESULT;

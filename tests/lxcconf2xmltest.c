@@ -10,9 +10,9 @@
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
-static virLXCDriverPtr driver;
+static virLXCDriver *driver;
 
-static int testSanitizeDef(virDomainDefPtr vmdef)
+static int testSanitizeDef(virDomainDef *vmdef)
 {
     /* Remove UUID randomness */
     if (virUUIDParse("c7a5fdbd-edaf-9455-926a-d65c16db1809", vmdef->uuid) < 0)
@@ -28,7 +28,7 @@ testCompareXMLToConfigFiles(const char *xmlfile,
     int ret = -1;
     char *config = NULL;
     char *actualxml = NULL;
-    virDomainDefPtr vmdef = NULL;
+    virDomainDef *vmdef = NULL;
 
     if (virTestLoadFile(configfile, &config) < 0)
         goto fail;

@@ -23,8 +23,8 @@ testCompareXMLToArgvFiles(bool shouldFail,
                           const char *cmdline)
 {
     int ret = -1;
-    virStoragePoolDefPtr def = NULL;
-    virStoragePoolObjPtr pool = NULL;
+    virStoragePoolDef *def = NULL;
+    virStoragePoolObj *pool = NULL;
     const char *defTypeStr;
     g_autofree char *actualCmdline = NULL;
     g_autofree char *src = NULL;
