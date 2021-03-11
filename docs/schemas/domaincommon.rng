@@ -4009,120 +4009,122 @@
    -->
   <define name="video">
     <element name="video">
-      <optional>
-        <element name="driver">
-          <optional>
-            <ref name="virtioOptions"/>
-          </optional>
-          <optional>
-            <attribute name="name">
-              <choice>
-                <value>qemu</value>
-                <value>vhostuser</value>
-              </choice>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="vgaconf">
-              <choice>
-                <value>io</value>
-                <value>on</value>
-                <value>off</value>
-              </choice>
-            </attribute>
-          </optional>
-        </element>
-      </optional>
-      <optional>
-        <element name="model">
-          <choice>
-            <attribute name="type">
-              <choice>
-                <value>vga</value>
-                <value>cirrus</value>
-                <value>vmvga</value>
-                <value>xen</value>
-                <value>vbox</value>
-                <value>virtio</value>
-                <value>gop</value>
-                <value>none</value>
-                <value>bochs</value>
-                <value>ramfb</value>
-              </choice>
-            </attribute>
-            <group>
+      <interleave>
+        <optional>
+          <element name="driver">
+            <optional>
+              <ref name="virtioOptions"/>
+            </optional>
+            <optional>
+              <attribute name="name">
+                <choice>
+                  <value>qemu</value>
+                  <value>vhostuser</value>
+                </choice>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="vgaconf">
+                <choice>
+                  <value>io</value>
+                  <value>on</value>
+                  <value>off</value>
+                </choice>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
+        <optional>
+          <element name="model">
+            <choice>
               <attribute name="type">
-                <value>qxl</value>
+                <choice>
+                  <value>vga</value>
+                  <value>cirrus</value>
+                  <value>vmvga</value>
+                  <value>xen</value>
+                  <value>vbox</value>
+                  <value>virtio</value>
+                  <value>gop</value>
+                  <value>none</value>
+                  <value>bochs</value>
+                  <value>ramfb</value>
+                </choice>
               </attribute>
-              <optional>
-                <attribute name="ram">
-                  <ref name="unsignedInt"/>
+              <group>
+                <attribute name="type">
+                  <value>qxl</value>
                 </attribute>
-              </optional>
-              <optional>
-                <attribute name="vgamem">
-                  <ref name="unsignedInt"/>
-                </attribute>
-              </optional>
-              <optional>
-                <attribute name="vram64">
-                  <ref name="unsignedInt"/>
-                </attribute>
-              </optional>
-            </group>
-          </choice>
-          <optional>
-            <attribute name="vram">
-              <ref name="unsignedInt"/>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="heads">
-              <ref name="unsignedInt"/>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="primary">
-              <ref name="virYesNo"/>
-            </attribute>
-          </optional>
-          <optional>
-            <element name="acceleration">
-              <optional>
-                <attribute name="accel3d">
-                  <ref name="virYesNo"/>
-                </attribute>
-              </optional>
-              <optional>
-                <attribute name="accel2d">
-                  <ref name="virYesNo"/>
-                </attribute>
-              </optional>
-              <optional>
-                <attribute name="rendernode">
-                  <ref name="absFilePath"/>
-                </attribute>
-              </optional>
-            </element>
-          </optional>
-          <optional>
-            <element name="resolution">
-              <attribute name="x">
+                <optional>
+                  <attribute name="ram">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="vgamem">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="vram64">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+              </group>
+            </choice>
+            <optional>
+              <attribute name="vram">
                 <ref name="unsignedInt"/>
               </attribute>
-              <attribute name="y">
+            </optional>
+            <optional>
+              <attribute name="heads">
                 <ref name="unsignedInt"/>
               </attribute>
-            </element>
-          </optional>
-        </element>
-      </optional>
-      <optional>
-        <ref name="alias"/>
-      </optional>
-      <optional>
-        <ref name="address"/>
-      </optional>
+            </optional>
+            <optional>
+              <attribute name="primary">
+                <ref name="virYesNo"/>
+              </attribute>
+            </optional>
+            <optional>
+              <element name="acceleration">
+                <optional>
+                  <attribute name="accel3d">
+                    <ref name="virYesNo"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="accel2d">
+                    <ref name="virYesNo"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="rendernode">
+                    <ref name="absFilePath"/>
+                  </attribute>
+                </optional>
+              </element>
+            </optional>
+            <optional>
+              <element name="resolution">
+                <attribute name="x">
+                  <ref name="unsignedInt"/>
+                </attribute>
+                <attribute name="y">
+                  <ref name="unsignedInt"/>
+                </attribute>
+              </element>
+            </optional>
+          </element>
+        </optional>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+      </interleave>
     </element>
   </define>
   <!--
