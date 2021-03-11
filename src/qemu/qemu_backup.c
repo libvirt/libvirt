@@ -583,27 +583,28 @@ qemuBackupJobTerminate(virDomainObjPtr vm,
         }
     }
 
-    if (!virDomainObjIsActive(vm))
-        return;
+    if (priv->job.current) {
+        qemuDomainJobInfoUpdateTime(priv->job.current);
 
-    qemuDomainJobInfoUpdateTime(priv->job.current);
+        g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
+        priv->job.completed = qemuDomainJobInfoCopy(priv->job.current);
 
-    g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
-    priv->job.completed = qemuDomainJobInfoCopy(priv->job.current);
+        priv->job.completed->stats.backup.total = priv->backup->push_total;
+        priv->job.completed->stats.backup.transferred = priv->backup->push_transferred;
+        priv->job.completed->stats.backup.tmp_used = priv->backup->pull_tmp_used;
+        priv->job.completed->stats.backup.tmp_total = priv->backup->pull_tmp_total;
 
-    priv->job.completed->stats.backup.total = priv->backup->push_total;
-    priv->job.completed->stats.backup.transferred = priv->backup->push_transferred;
-    priv->job.completed->stats.backup.tmp_used = priv->backup->pull_tmp_used;
-    priv->job.completed->stats.backup.tmp_total = priv->backup->pull_tmp_total;
+        priv->job.completed->status = jobstatus;
+        priv->job.completed->errmsg = g_strdup(priv->backup->errmsg);
 
-    priv->job.completed->status = jobstatus;
-    priv->job.completed->errmsg = g_strdup(priv->backup->errmsg);
-
-    qemuDomainEventEmitJobCompleted(priv->driver, vm);
+        qemuDomainEventEmitJobCompleted(priv->driver, vm);
+    }
 
     virDomainBackupDefFree(priv->backup);
     priv->backup = NULL;
-    qemuDomainObjEndAsyncJob(priv->driver, vm);
+
+    if (priv->job.asyncJob == QEMU_ASYNC_JOB_BACKUP)
+        qemuDomainObjEndAsyncJob(priv->driver, vm);
 }
 
 
