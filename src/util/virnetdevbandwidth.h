@@ -33,7 +33,8 @@ struct _virNetDevBandwidthRate {
 typedef struct _virNetDevBandwidth virNetDevBandwidth;
 typedef virNetDevBandwidth *virNetDevBandwidthPtr;
 struct _virNetDevBandwidth {
-    virNetDevBandwidthRatePtr in, out;
+    virNetDevBandwidthRatePtr in;
+    virNetDevBandwidthRatePtr out;
 };
 
 void virNetDevBandwidthFree(virNetDevBandwidthPtr def);

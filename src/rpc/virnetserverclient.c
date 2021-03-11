@@ -263,7 +263,8 @@ int virNetServerClientAddFilter(virNetServerClientPtr client,
 void virNetServerClientRemoveFilter(virNetServerClientPtr client,
                                     int filterID)
 {
-    virNetServerClientFilterPtr tmp, prev;
+    virNetServerClientFilterPtr tmp;
+    virNetServerClientFilterPtr prev;
 
     virObjectLock(client);
 

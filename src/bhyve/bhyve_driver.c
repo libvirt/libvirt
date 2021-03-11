@@ -681,7 +681,8 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bhyveConnPtr privconn = conn->privateData;
     virDomainDefPtr def = NULL;
-    virCommandPtr cmd = NULL, loadcmd = NULL;
+    virCommandPtr cmd = NULL;
+    virCommandPtr loadcmd = NULL;
     char *ret = NULL;
 
     virCheckFlags(0, NULL);

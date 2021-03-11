@@ -3961,9 +3961,12 @@ libxlDomainDetachDeviceLive(libxlDriverPrivatePtr driver,
 static int
 libxlDomainDetachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 {
-    virDomainDiskDefPtr disk, detach;
-    virDomainHostdevDefPtr hostdev, det_hostdev;
-    virDomainControllerDefPtr cont, det_cont;
+    virDomainDiskDefPtr disk;
+    virDomainDiskDefPtr detach;
+    virDomainHostdevDefPtr hostdev;
+    virDomainHostdevDefPtr det_hostdev;
+    virDomainControllerDefPtr cont;
+    virDomainControllerDefPtr det_cont;
     virDomainNetDefPtr net;
     int idx;
 

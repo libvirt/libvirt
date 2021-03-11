@@ -17621,7 +17621,8 @@ virDomainChrDefPtr
 virDomainChrRemove(virDomainDefPtr vmdef,
                    virDomainChrDefPtr chr)
 {
-    virDomainChrDefPtr ret = NULL, **arrPtr = NULL;
+    virDomainChrDefPtr ret = NULL;
+    virDomainChrDefPtr **arrPtr = NULL;
     size_t i, *cntPtr = NULL;
 
     if (virDomainChrGetDomainPtrsInternal(vmdef, chr->deviceType,

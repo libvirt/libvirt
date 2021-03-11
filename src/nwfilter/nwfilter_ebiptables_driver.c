@@ -3199,7 +3199,8 @@ iptablesRuleInstCommand(virFirewallPtr fw,
                         const char *ifname,
                         virNWFilterRuleInstPtr rule)
 {
-    virNWFilterVarCombIterPtr vciter, tmp;
+    virNWFilterVarCombIterPtr vciter;
+    virNWFilterVarCombIterPtr tmp;
     int ret = -1;
 
     /* rule->vars holds all the variables names that this rule will access.
@@ -3234,7 +3235,8 @@ ebtablesRuleInstCommand(virFirewallPtr fw,
                         const char *ifname,
                         virNWFilterRuleInstPtr rule)
 {
-    virNWFilterVarCombIterPtr vciter, tmp;
+    virNWFilterVarCombIterPtr vciter;
+    virNWFilterVarCombIterPtr tmp;
     int ret = -1;
 
     /* rule->vars holds all the variables names that this rule will access.

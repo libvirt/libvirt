@@ -1817,7 +1817,8 @@ openvzUpdateDevice(virDomainDefPtr vmdef,
                    virDomainDeviceDefPtr dev,
                    bool persist)
 {
-    virDomainFSDefPtr fs, cur;
+    virDomainFSDefPtr fs;
+    virDomainFSDefPtr cur;
     int pos;
 
     if (dev->type == VIR_DOMAIN_DEVICE_FS) {

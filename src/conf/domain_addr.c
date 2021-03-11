@@ -2082,7 +2082,8 @@ int
 virDomainUSBAddressSetAddHub(virDomainUSBAddressSetPtr addrs,
                              virDomainHubDefPtr hub)
 {
-    virDomainUSBAddressHubPtr targetHub = NULL, newHub = NULL;
+    virDomainUSBAddressHubPtr targetHub = NULL;
+    virDomainUSBAddressHubPtr newHub = NULL;
     int ret = -1;
     int targetPort;
     g_autofree char *portStr = NULL;

@@ -93,7 +93,8 @@ testVirPCIDeviceDetach(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     virPCIDevicePtr dev[] = {NULL, NULL, NULL};
     size_t i, nDev = G_N_ELEMENTS(dev);
-    virPCIDeviceListPtr activeDevs = NULL, inactiveDevs = NULL;
+    virPCIDeviceListPtr activeDevs = NULL;
+    virPCIDeviceListPtr inactiveDevs = NULL;
     int count;
 
     if (!(activeDevs = virPCIDeviceListNew()) ||
@@ -136,7 +137,8 @@ testVirPCIDeviceReset(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     virPCIDevicePtr dev[] = {NULL, NULL, NULL};
     size_t i, nDev = G_N_ELEMENTS(dev);
-    virPCIDeviceListPtr activeDevs = NULL, inactiveDevs = NULL;
+    virPCIDeviceListPtr activeDevs = NULL;
+    virPCIDeviceListPtr inactiveDevs = NULL;
     int count;
 
     if (!(activeDevs = virPCIDeviceListNew()) ||
@@ -173,7 +175,8 @@ testVirPCIDeviceReattach(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     virPCIDevicePtr dev[] = {NULL, NULL, NULL};
     size_t i, nDev = G_N_ELEMENTS(dev);
-    virPCIDeviceListPtr activeDevs = NULL, inactiveDevs = NULL;
+    virPCIDeviceListPtr activeDevs = NULL;
+    virPCIDeviceListPtr inactiveDevs = NULL;
     int count;
 
     if (!(activeDevs = virPCIDeviceListNew()) ||

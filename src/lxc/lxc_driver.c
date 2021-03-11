@@ -3129,9 +3129,11 @@ lxcDomainDetachDeviceConfig(virDomainDefPtr vmdef,
                             virDomainDeviceDefPtr dev)
 {
     int ret = -1;
-    virDomainDiskDefPtr disk, det_disk;
+    virDomainDiskDefPtr disk;
+    virDomainDiskDefPtr det_disk;
     virDomainNetDefPtr net;
-    virDomainHostdevDefPtr hostdev, det_hostdev;
+    virDomainHostdevDefPtr hostdev;
+    virDomainHostdevDefPtr det_hostdev;
     int idx;
 
     switch (dev->type) {
@@ -4294,7 +4296,8 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
     virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr vmdef = NULL;
-    virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
+    virDomainDeviceDefPtr dev = NULL;
+    virDomainDeviceDefPtr dev_copy = NULL;
     int ret = -1;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
@@ -4468,7 +4471,8 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
     virCapsPtr caps = NULL;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr vmdef = NULL;
-    virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
+    virDomainDeviceDefPtr dev = NULL;
+    virDomainDeviceDefPtr dev_copy = NULL;
     int ret = -1;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 

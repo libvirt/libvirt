@@ -193,7 +193,8 @@ virNetDevBandwidthSet(const char *ifname,
                       bool swapped)
 {
     int ret = -1;
-    virNetDevBandwidthRatePtr rx = NULL, tx = NULL; /* From domain POV */
+    virNetDevBandwidthRatePtr rx = NULL; /* From domain POV */
+    virNetDevBandwidthRatePtr tx = NULL; /* From domain POV */
     virCommandPtr cmd = NULL;
     char *average = NULL;
     char *peak = NULL;

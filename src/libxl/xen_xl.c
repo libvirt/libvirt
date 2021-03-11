@@ -1395,7 +1395,8 @@ static int
 xenFormatXLVnode(virConfValuePtr list,
                  virBufferPtr buf)
 {
-    virConfValuePtr numaPnode, tmp;
+    virConfValuePtr numaPnode;
+    virConfValuePtr tmp;
 
     numaPnode = g_new0(virConfValue, 1);
 
@@ -1423,7 +1424,8 @@ xenFormatXLVnuma(virConfValuePtr list,
     int ret = -1;
     size_t i;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virConfValuePtr numaVnode, tmp;
+    virConfValuePtr numaVnode;
+    virConfValuePtr tmp;
     virBitmapPtr cpumask = virDomainNumaGetNodeCpumask(numa, node);
     size_t nodeSize = virDomainNumaGetNodeMemorySize(numa, node) / 1024;
     g_autofree char *nodeVcpus = NULL;
@@ -1638,7 +1640,8 @@ static int
 xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virConfValuePtr val, tmp;
+    virConfValuePtr val;
+    virConfValuePtr tmp;
     int format = virDomainDiskGetFormat(disk);
     const char *driver = virDomainDiskGetDriver(disk);
     g_autofree char *target = NULL;
@@ -1858,7 +1861,8 @@ xenFormatXLInputDevs(virConfPtr conf, virDomainDefPtr def)
 {
     size_t i;
     const char *devtype;
-    virConfValuePtr usbdevices = NULL, lastdev;
+    virConfValuePtr usbdevices = NULL;
+    virConfValuePtr lastdev;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         usbdevices = g_new0(virConfValue, 1);
@@ -1941,7 +1945,8 @@ xenFormatXLUSBController(virConfPtr conf,
 
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
-            virConfValuePtr val, tmp;
+            virConfValuePtr val;
+            virConfValuePtr tmp;
             g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
             if (def->controllers[i]->model != -1) {
@@ -2019,7 +2024,8 @@ xenFormatXLUSB(virConfPtr conf,
     for (i = 0; i < def->nhostdevs; i++) {
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-            virConfValuePtr val, tmp;
+            virConfValuePtr val;
+            virConfValuePtr tmp;
             char *buf;
 
             buf = g_strdup_printf("hostbus=%x,hostaddr=%x",
@@ -2055,7 +2061,8 @@ xenFormatXLChannel(virConfValuePtr list, virDomainChrDefPtr channel)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int sourceType = channel->source->type;
-    virConfValuePtr val, tmp;
+    virConfValuePtr val;
+    virConfValuePtr tmp;
 
     /* connection */
     virBufferAddLit(&buf, "connection=");
@@ -2145,7 +2152,8 @@ xenFormatXLDomainNamespaceData(virConfPtr conf, virDomainDefPtr def)
     args->list = NULL;
 
     for (i = 0; i < nsdata->num_args; i++) {
-        virConfValuePtr val, tmp;
+        virConfValuePtr val;
+        virConfValuePtr tmp;
 
         val = g_new0(virConfValue, 1);
 

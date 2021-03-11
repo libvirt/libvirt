@@ -4006,7 +4006,8 @@ static int
 qemuMonitorJSONQueryFdsetsParse(virJSONValuePtr msg,
                                 qemuMonitorFdsetsPtr *fdsets)
 {
-    virJSONValuePtr returnArray, entry;
+    virJSONValuePtr returnArray;
+    virJSONValuePtr entry;
     size_t i;
     g_autoptr(qemuMonitorFdsets) sets = g_new0(qemuMonitorFdsets, 1);
     int ninfo;
@@ -4213,7 +4214,10 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValuePtr msg,
 {
     int ret = -1;
     const char *tmp;
-    virJSONValuePtr returnArray, entry, table, element;
+    virJSONValuePtr returnArray;
+    virJSONValuePtr entry;
+    virJSONValuePtr table;
+    virJSONValuePtr element;
     size_t nTable;
     size_t i;
     virNetDevRxFilterPtr fil = virNetDevRxFilterNew();
@@ -5015,7 +5019,8 @@ int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
                               const char *file)
 {
     int ret = -1;
-    virJSONValuePtr cmd, reply = NULL;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("screendump",
                                      "s:filename", file,
@@ -5386,7 +5391,8 @@ int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
                                 bool skipauth)
 {
     int ret = -1;
-    virJSONValuePtr cmd, reply = NULL;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("add_client",
                                      "s:protocol", protocol,

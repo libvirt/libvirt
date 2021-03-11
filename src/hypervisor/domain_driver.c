@@ -128,7 +128,8 @@ virDomainDriverMergeBlkioDevice(virBlkioDevicePtr *dest_array,
                                 const char *type)
 {
     size_t i, j;
-    virBlkioDevicePtr dest, src;
+    virBlkioDevicePtr dest;
+    virBlkioDevicePtr src;
 
     for (i = 0; i < src_size; i++) {
         bool found = false;

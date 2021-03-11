@@ -275,7 +275,8 @@ xenFormatXMDisk(virConfValuePtr list,
                 virDomainDiskDefPtr disk)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virConfValuePtr val, tmp;
+    virConfValuePtr val;
+    virConfValuePtr tmp;
     const char *src = virDomainDiskGetSource(disk);
     int format = virDomainDiskGetFormat(disk);
     const char *driver = virDomainDiskGetDriver(disk);

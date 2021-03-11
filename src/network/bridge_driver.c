@@ -1065,7 +1065,10 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
     size_t i;
     virNetworkDNSDefPtr dns = &def->dns;
     bool wantDNS = dns->enable != VIR_TRISTATE_BOOL_NO;
-    virNetworkIPDefPtr tmpipdef, ipdef, ipv4def, ipv6def;
+    virNetworkIPDefPtr tmpipdef;
+    virNetworkIPDefPtr ipdef;
+    virNetworkIPDefPtr ipv4def;
+    virNetworkIPDefPtr ipv6def;
     bool ipv6SLAAC;
 
     *configstr = NULL;
@@ -1682,7 +1685,9 @@ networkRefreshDhcpDaemon(virNetworkDriverStatePtr driver,
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
     size_t i;
     pid_t dnsmasqPid;
-    virNetworkIPDefPtr ipdef, ipv4def, ipv6def;
+    virNetworkIPDefPtr ipdef;
+    virNetworkIPDefPtr ipv4def;
+    virNetworkIPDefPtr ipv6def;
     g_autoptr(dnsmasqContext) dctx = NULL;
 
     /* if no IP addresses specified, nothing to do */

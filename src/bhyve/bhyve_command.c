@@ -917,7 +917,10 @@ virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
                                  const char *devmap_file,
                                  char **devicesmap_out)
 {
-    virDomainDiskDefPtr hdd, cd, userdef, diskdef;
+    virDomainDiskDefPtr hdd;
+    virDomainDiskDefPtr cd;
+    virDomainDiskDefPtr userdef;
+    virDomainDiskDefPtr diskdef;
     virCommandPtr cmd;
     unsigned int best_idx = UINT_MAX;
     size_t i;

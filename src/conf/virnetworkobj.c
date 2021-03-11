@@ -1254,7 +1254,8 @@ virNetworkObjUpdate(virNetworkObjPtr obj,
                     unsigned int flags)  /* virNetworkUpdateFlags */
 {
     int ret = -1;
-    virNetworkDefPtr livedef = NULL, configdef = NULL;
+    virNetworkDefPtr livedef = NULL;
+    virNetworkDefPtr configdef = NULL;
 
     /* normalize config data, and check for common invalid requests. */
     if (virNetworkObjConfigChangeSetup(obj, xmlopt, flags) < 0)

@@ -7431,12 +7431,16 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
                              unsigned int parse_flags,
                              virDomainXMLOptionPtr xmlopt)
 {
-    virDomainDiskDefPtr disk, det_disk;
+    virDomainDiskDefPtr disk;
+    virDomainDiskDefPtr det_disk;
     virDomainNetDefPtr net;
     virDomainSoundDefPtr sound;
-    virDomainHostdevDefPtr hostdev, det_hostdev;
-    virDomainLeaseDefPtr lease, det_lease;
-    virDomainControllerDefPtr cont, det_cont;
+    virDomainHostdevDefPtr hostdev;
+    virDomainHostdevDefPtr det_hostdev;
+    virDomainLeaseDefPtr lease;
+    virDomainLeaseDefPtr det_lease;
+    virDomainControllerDefPtr cont;
+    virDomainControllerDefPtr det_cont;
     virDomainChrDefPtr chr;
     virDomainFSDefPtr fs;
     virDomainMemoryDefPtr mem;
@@ -10240,7 +10244,8 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     virDomainDefPtr def;
     virDomainDefPtr persistentDef;
     int ret = -1;
-    virDomainNetDefPtr net = NULL, persistentNet = NULL;
+    virDomainNetDefPtr net = NULL;
+    virDomainNetDefPtr persistentNet = NULL;
     g_autoptr(virNetDevBandwidth) bandwidth = NULL;
     g_autoptr(virNetDevBandwidth) newBandwidth = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;

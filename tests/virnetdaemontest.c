@@ -84,9 +84,12 @@ static virNetServerPtr
 testCreateServer(const char *server_name, const char *host, int family)
 {
     virNetServerPtr srv = NULL;
-    virNetServerServicePtr svc1 = NULL, svc2 = NULL;
-    virNetServerClientPtr cln1 = NULL, cln2 = NULL;
-    virNetSocketPtr sk1 = NULL, sk2 = NULL;
+    virNetServerServicePtr svc1 = NULL;
+    virNetServerServicePtr svc2 = NULL;
+    virNetServerClientPtr cln1 = NULL;
+    virNetServerClientPtr cln2 = NULL;
+    virNetSocketPtr sk1 = NULL;
+    virNetSocketPtr sk2 = NULL;
     int fdclient[2];
 
     if (socketpair(PF_UNIX, SOCK_STREAM, 0, fdclient) < 0) {
@@ -269,7 +272,8 @@ static int testExecRestart(const void *opaque)
     const struct testExecRestartData *data = opaque;
     char *infile = NULL, *outfile = NULL;
     char *injsonstr = NULL, *outjsonstr = NULL;
-    virJSONValuePtr injson = NULL, outjson = NULL;
+    virJSONValuePtr injson = NULL;
+    virJSONValuePtr outjson = NULL;
     int fdclient[2] = { -1, -1 }, fdserver[2] = { -1, -1 };
 
     if (socketpair(PF_UNIX, SOCK_STREAM, 0, fdclient) < 0) {

@@ -402,7 +402,8 @@ virNWFilterVarCombIterEntryAreUniqueEntries(virNWFilterVarCombIterEntryPtr cie,
                                             GHashTable *hash)
 {
     size_t i, j;
-    virNWFilterVarValuePtr varValue, tmp;
+    virNWFilterVarValuePtr varValue;
+    virNWFilterVarValuePtr tmp;
     const char *value;
 
     varValue = virHashLookup(hash, cie->varNames[0]);

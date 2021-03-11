@@ -207,7 +207,8 @@ virConfCreate(const char *filename, unsigned int flags)
 static virConfEntryPtr
 virConfAddEntry(virConfPtr conf, char *name, virConfValuePtr value, char *comm)
 {
-    virConfEntryPtr ret, prev;
+    virConfEntryPtr ret;
+    virConfEntryPtr prev;
 
     if (conf == NULL)
         return NULL;
@@ -441,7 +442,10 @@ virConfParseString(virConfParserCtxtPtr ctxt)
 static virConfValuePtr
 virConfParseValue(virConfParserCtxtPtr ctxt)
 {
-    virConfValuePtr ret, lst = NULL, tmp, prev;
+    virConfValuePtr ret;
+    virConfValuePtr lst = NULL;
+    virConfValuePtr tmp;
+    virConfValuePtr prev;
     virConfType type = VIR_CONF_NONE;
     char *str = NULL;
     long long l = 0;
@@ -1332,7 +1336,8 @@ virConfSetValue(virConfPtr conf,
                 const char *setting,
                 virConfValuePtr value)
 {
-    virConfEntryPtr cur, prev = NULL;
+    virConfEntryPtr cur;
+    virConfEntryPtr prev = NULL;
 
     if (value && value->type == VIR_CONF_STRING && value->str == NULL) {
         virConfFreeValue(value);

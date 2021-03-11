@@ -735,7 +735,8 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
 static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
 {
     int hostcpus, maxcpu = CPU_SETSIZE;
-    virBitmapPtr cpumap, cpumapToSet;
+    virBitmapPtr cpumap;
+    virBitmapPtr cpumapToSet;
 
     VIR_DEBUG("Setting CPU affinity");
 

@@ -6172,7 +6172,8 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
     if ((flags & VIR_DOMAIN_XML_MIGRATABLE)) {
         size_t i;
         int toremove = 0;
-        virDomainControllerDefPtr usb = NULL, pci = NULL;
+        virDomainControllerDefPtr usb = NULL;
+        virDomainControllerDefPtr pci = NULL;
 
         /* If only the default USB controller is present, we can remove it
          * and make the XML compatible with older versions of libvirt which

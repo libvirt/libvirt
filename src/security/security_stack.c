@@ -90,7 +90,8 @@ static int
 virSecurityStackClose(virSecurityManagerPtr mgr)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
-    virSecurityStackItemPtr next, item = priv->itemsHead;
+    virSecurityStackItemPtr item = priv->itemsHead;
+    virSecurityStackItemPtr next;
 
     while (item) {
         next = item->next;

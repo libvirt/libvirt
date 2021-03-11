@@ -889,7 +889,8 @@ prlsdkParseNetAddress(char *addr)
     char *maskstr = NULL;
     int nbits;
     virSocketAddr mask;
-    virNetDevIPAddrPtr ip = NULL, ret = NULL;
+    virNetDevIPAddrPtr ip = NULL;
+    virNetDevIPAddrPtr ret = NULL;
 
     if (!(maskstr = strchr(addr, '/')))
         goto cleanup;
@@ -3141,12 +3142,14 @@ static int prlsdkConfigureGateways(PRL_HANDLE sdknet, virDomainNetDefPtr net)
 {
     int ret = -1;
     size_t i;
-    virNetDevIPRoutePtr route4 = NULL, route6 = NULL;
+    virNetDevIPRoutePtr route4 = NULL;
+    virNetDevIPRoutePtr route6 = NULL;
     char *gw4 = NULL, *gw6 = NULL;
     PRL_RESULT pret;
 
     for (i = 0; i < net->guestIP.nroutes; i++) {
-        virSocketAddrPtr addrdst, gateway;
+        virSocketAddrPtr addrdst;
+        virSocketAddrPtr gateway;
         virSocketAddr zero;
 
         addrdst = virNetDevIPRouteGetAddress(net->guestIP.routes[i]);

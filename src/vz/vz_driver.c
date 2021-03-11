@@ -408,7 +408,8 @@ vzConnectOpen(virConnectPtr conn,
 static int
 vzConnectClose(virConnectPtr conn)
 {
-    vzConnPtr curr, *prev = &vz_conn_list;
+    vzConnPtr curr;
+    vzConnPtr *prev = &vz_conn_list;
     vzConnPtr privconn = conn->privateData;
 
     if (!privconn)

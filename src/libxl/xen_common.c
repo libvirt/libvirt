@@ -1559,7 +1559,8 @@ static int
 xenFormatSerial(virConfValuePtr list, virDomainChrDefPtr serial)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virConfValuePtr val, tmp;
+    virConfValuePtr val;
+    virConfValuePtr tmp;
     int ret;
 
     if (serial) {
@@ -1614,7 +1615,8 @@ xenFormatNet(virConnectPtr conn,
              const char *vif_typename)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virConfValuePtr val, tmp;
+    virConfValuePtr val;
+    virConfValuePtr tmp;
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
     virBufferAsprintf(&buf, "mac=%s", virMacAddrFormat(&net->mac, macaddr));
@@ -1768,7 +1770,8 @@ xenFormatPCI(virConfPtr conf, virDomainDefPtr def)
     for (i = 0; i < def->nhostdevs; i++) {
         if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-            virConfValuePtr val, tmp;
+            virConfValuePtr val;
+            virConfValuePtr tmp;
             char *buf;
             const char *permissive_str = NULL;
 
@@ -2242,7 +2245,8 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
                     return -1;
             }
         } else {
-            virConfValuePtr vfb, disp;
+            virConfValuePtr vfb;
+            virConfValuePtr disp;
             char *vfbstr = NULL;
             g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 

@@ -1255,7 +1255,8 @@ int qemuAgentFSFreeze(qemuAgentPtr agent, const char **mountpoints,
                       unsigned int nmountpoints)
 {
     int ret = -1;
-    virJSONValuePtr cmd, arg = NULL;
+    virJSONValuePtr cmd;
+    virJSONValuePtr arg = NULL;
     virJSONValuePtr reply = NULL;
 
     if (mountpoints && nmountpoints) {

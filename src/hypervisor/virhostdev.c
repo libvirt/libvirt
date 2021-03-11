@@ -832,7 +832,8 @@ virHostdevPreparePCIDevicesImpl(virHostdevManagerPtr mgr,
 
     /* Step 6: Set driver and domain information */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
-        virPCIDevicePtr pci, actual;
+        virPCIDevicePtr pci;
+        virPCIDevicePtr actual;
 
         /* We need to look up the actual device and set the information
          * there because 'pci' only contain address information and will

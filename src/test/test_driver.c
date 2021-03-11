@@ -7338,7 +7338,8 @@ testNodeDeviceMockCreateVport(testDriverPtr driver,
 {
     virNodeDeviceDefPtr def = NULL;
     virNodeDevCapsDefPtr caps;
-    virNodeDeviceObjPtr obj = NULL, objcopy = NULL;
+    virNodeDeviceObjPtr obj = NULL;
+    virNodeDeviceObjPtr objcopy = NULL;
     virNodeDeviceDefPtr objdef;
     virObjectEventPtr event = NULL;
     g_autofree char *xml = NULL;

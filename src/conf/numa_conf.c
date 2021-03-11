@@ -780,7 +780,8 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNumaPtr def,
     }
 
     for (i = 0; i < sibling; i++) {
-        virDomainNumaDistancePtr ldist, rdist;
+        virDomainNumaDistancePtr ldist;
+        virDomainNumaDistancePtr rdist;
         unsigned int sibling_id, sibling_value;
 
         /* siblings are in order of parsing or explicitly numbered */
