@@ -96,6 +96,7 @@
 #include "virthreadjob.h"
 #include "virutil.h"
 #include "storage_source.h"
+#include "backup_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -8315,12 +8316,14 @@ qemuProcessReconnect(void *opaque)
     g_clear_object(&data->identity);
     VIR_FREE(data);
 
+    cfg = virQEMUDriverGetConfig(driver);
+    priv = obj->privateData;
+
     qemuDomainObjRestoreJob(obj, &oldjob);
     if (oldjob.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
-
-    cfg = virQEMUDriverGetConfig(driver);
-    priv = obj->privateData;
+    if (oldjob.asyncJob == QEMU_ASYNC_JOB_BACKUP && priv->backup)
+        priv->backup->apiFlags = oldjob.apiFlags;
 
     /* expect that libvirt might have crashed during VM start, so prevent
      * cleanup of transient disks */

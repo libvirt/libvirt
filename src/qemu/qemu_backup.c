@@ -560,7 +560,7 @@ qemuBackupJobTerminate(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     size_t i;
 
-    if (!(priv->job.apiFlags & VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL) &&
+    if (!(priv->backup->apiFlags & VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL) &&
         (priv->backup->type == VIR_DOMAIN_BACKUP_TYPE_PULL ||
          (priv->backup->type == VIR_DOMAIN_BACKUP_TYPE_PUSH &&
           jobstatus != QEMU_DOMAIN_JOB_STATUS_COMPLETED))) {
@@ -765,6 +765,8 @@ qemuBackupBegin(virDomainObjPtr vm,
 
     if (def->type == VIR_DOMAIN_BACKUP_TYPE_PULL)
         pull = true;
+
+    def->apiFlags = flags;
 
     /* we'll treat this kind of backup job as an asyncjob as it uses some of the
      * infrastructure for async jobs. We'll allow standard modify-type jobs

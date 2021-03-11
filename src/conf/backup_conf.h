@@ -99,6 +99,8 @@ struct _virDomainBackupDef {
     unsigned long long pull_tmp_total;
 
     char *errmsg; /* error message of failed sub-blockjob */
+
+    unsigned int apiFlags; /* original flags used when starting the job */
 };
 
 typedef enum {
