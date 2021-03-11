@@ -1049,10 +1049,10 @@ sc_prohibit_sysconf_pagesize:
 	halt='use virGetSystemPageSize[KB] instead of sysconf(_SC_PAGESIZE)' \
 	  $(_sc_search_regexp)
 
-sc_prohibit_virSecurity:
+sc_prohibit_virSecurityManager:
 	@$(VC_LIST_EXCEPT) | $(GREP) 'src/qemu/' | \
 		$(GREP) -v 'src/qemu/qemu_security' | \
-		xargs $(GREP) -Pn 'virSecurityManager(?!Ptr)' /dev/null && \
+		xargs $(GREP) -Pn 'virSecurityManager\S*\(' /dev/null && \
 		{ echo '$(ME): prefer qemuSecurity wrappers' 1>&2; exit 1; } || :
 
 sc_prohibit_pthread_create:
