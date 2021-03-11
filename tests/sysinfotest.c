@@ -91,7 +91,7 @@ testSysinfo(const void *data)
 {
     const struct testSysinfoData *testdata = data;
     const char *sysfsActualData;
-    g_auto(virSysinfoDefPtr) ret = NULL;
+    g_autoptr(virSysinfoDef) ret = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *sysinfo = NULL;
     g_autofree char *cpuinfo = NULL;

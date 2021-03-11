@@ -314,7 +314,7 @@ virSysinfoParsePPCProcessor(const char *base, virSysinfoDefPtr ret)
 virSysinfoDefPtr
 virSysinfoReadPPC(void)
 {
-    g_auto(virSysinfoDefPtr) ret = NULL;
+    g_autoptr(virSysinfoDef) ret = NULL;
     g_autofree char *outbuf = NULL;
 
     ret = g_new0(virSysinfoDef, 1);
@@ -436,7 +436,7 @@ virSysinfoParseARMProcessor(const char *base, virSysinfoDefPtr ret)
 virSysinfoDefPtr
 virSysinfoReadARM(void)
 {
-    g_auto(virSysinfoDefPtr) ret = NULL;
+    g_autoptr(virSysinfoDef) ret = NULL;
     g_autofree char *outbuf = NULL;
 
     /* Some ARM systems have DMI tables available. */
@@ -602,7 +602,7 @@ virSysinfoParseS390Processor(const char *base, virSysinfoDefPtr ret)
 virSysinfoDefPtr
 virSysinfoReadS390(void)
 {
-    g_auto(virSysinfoDefPtr) ret = NULL;
+    g_autoptr(virSysinfoDef) ret = NULL;
     g_autofree char *outbuf = NULL;
 
     ret = g_new0(virSysinfoDef, 1);
@@ -1212,7 +1212,7 @@ virSysinfoParseX86Memory(const char *base, virSysinfoDefPtr ret)
 virSysinfoDefPtr
 virSysinfoReadDMI(void)
 {
-    g_auto(virSysinfoDefPtr) ret = NULL;
+    g_autoptr(virSysinfoDef) ret = NULL;
     g_autofree char *outbuf = NULL;
     g_autoptr(virCommand) cmd = NULL;
 
