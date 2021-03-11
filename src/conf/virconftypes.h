@@ -37,7 +37,7 @@ typedef struct _virCapsGuest virCapsGuest;
 typedef virCapsGuest *virCapsGuestPtr;
 
 typedef struct _virCapsGuestArch virCapsGuestArch;
-typedef virCapsGuestArch *virCapsGuestArchptr;
+typedef virCapsGuestArch *virCapsGuestArchPtr;
 
 typedef struct _virCapsGuestDomain virCapsGuestDomain;
 typedef virCapsGuestDomain *virCapsGuestDomainPtr;
