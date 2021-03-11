@@ -54,7 +54,6 @@ BuildRequires:  libxslt
 BuildRequires:  python3
 BuildRequires:  perl-interpreter
 BuildRequires:  perl(Getopt::Long)
-BuildRequires:  make
 BuildRequires:  meson
 BuildRequires:  ninja-build
 BuildRequires: python3-docutils

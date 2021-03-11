@@ -266,7 +266,6 @@ BuildRequires: python3-docutils
 BuildRequires: gcc
 BuildRequires: meson >= 0.54.0
 BuildRequires: ninja-build
-BuildRequires: make
 BuildRequires: git
 %if 0%{?fedora} || 0%{?rhel} > 7
 BuildRequires: perl-interpreter
