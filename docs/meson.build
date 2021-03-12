@@ -32,7 +32,6 @@ docs_assets = [
 
 docs_html_in_files = [
   '404',
-  'aclpolkit',
   'api_extension',
   'api',
   'apps',
@@ -106,6 +105,7 @@ docs_html_in_files = [
 ]
 
 docs_rst_files = [
+  'aclpolkit',
   'advanced-tests',
   'best-practices',
   'ci',
