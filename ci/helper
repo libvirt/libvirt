@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
 import argparse
+import os
 import pathlib
 import pty
 import shutil
@@ -13,6 +14,34 @@ import sys
 
 class Parser:
     def __init__(self):
+        # Options that are common to all actions that use containers
+        containerparser = argparse.ArgumentParser(add_help=False)
+        containerparser.add_argument(
+            "target",
+            help="perform action on target OS",
+        )
+        containerparser.add_argument(
+            "--engine",
+            choices=["auto", "podman", "docker"],
+            default="auto",
+            help="container engine to use",
+        )
+        containerparser.add_argument(
+            "--login",
+            default=os.getlogin(),  # exempt from syntax-check
+            help="login to use inside the container",
+        )
+        containerparser.add_argument(
+            "--image-prefix",
+            default="registry.gitlab.com/libvirt/libvirt/ci-",
+            help="use container images from non-default location",
+        )
+        containerparser.add_argument(
+            "--image-tag",
+            default=":latest",
+            help="use container images with non-default tags",
+        )
+
         # Options that are common to all actions that use lcitool
         lcitoolparser = argparse.ArgumentParser(add_help=False)
         lcitoolparser.add_argument(
@@ -29,6 +58,14 @@ class Parser:
             metavar="ACTION",
         )
         subparsers.required = True
+
+        # shell action
+        shellparser = subparsers.add_parser(
+            "shell",
+            help="start a shell in a container",
+            parents=[containerparser],
+        )
+        shellparser.set_defaults(func=Application.action_shell)
 
         # list-images action
         listimagesparser = subparsers.add_parser(
@@ -64,6 +101,14 @@ class Application:
             self.basedir,
             target,
         ]
+
+        if self.args.action == "shell":
+            args.extend([
+                f"CI_ENGINE={self.args.engine}",
+                f"CI_USER_LOGIN={self.args.login}",
+                f"CI_IMAGE_PREFIX={self.args.image_prefix}",
+                f"CI_IMAGE_TAG={self.args.image_tag}",
+            ])
 
         if pty.spawn(["make"] + args) != 0:
             sys.exit("error: 'make' failed")
@@ -143,6 +188,9 @@ class Application:
                 continue
 
             self.generate_vars(host)
+
+    def action_shell(self):
+        self.make_run(f"ci-shell@{self.args.target}")
 
     def action_list_images(self):
         self.make_run(f"ci-list-images")
