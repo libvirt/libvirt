@@ -42,6 +42,21 @@ class Parser:
             help="use container images with non-default tags",
         )
 
+        # Options that are common to all actions that call the
+        # project's build system
+        mesonparser = argparse.ArgumentParser(add_help=False)
+        mesonparser.add_argument(
+            "--meson-args",
+            default="",
+            help="additional arguments passed to meson "
+                 "(eg --meson-args='-Dopt1=enabled -Dopt2=disabled')",
+        )
+        mesonparser.add_argument(
+            "--ninja-args",
+            default="",
+            help="additional arguments passed to ninja",
+        )
+
         # Options that are common to all actions that use lcitool
         lcitoolparser = argparse.ArgumentParser(add_help=False)
         lcitoolparser.add_argument(
@@ -58,6 +73,14 @@ class Parser:
             metavar="ACTION",
         )
         subparsers.required = True
+
+        # build action
+        buildparser = subparsers.add_parser(
+            "build",
+            help="run a build in a container",
+            parents=[containerparser, mesonparser],
+        )
+        buildparser.set_defaults(func=Application.action_build)
 
         # shell action
         shellparser = subparsers.add_parser(
@@ -102,12 +125,18 @@ class Application:
             target,
         ]
 
-        if self.args.action == "shell":
+        if self.args.action in ["build", "shell"]:
             args.extend([
                 f"CI_ENGINE={self.args.engine}",
                 f"CI_USER_LOGIN={self.args.login}",
                 f"CI_IMAGE_PREFIX={self.args.image_prefix}",
                 f"CI_IMAGE_TAG={self.args.image_tag}",
+            ])
+
+        if self.args.action == "build":
+            args.extend([
+                f"CI_MESON_ARGS={self.args.meson_args}",
+                f"CI_NINJA_ARGS={self.args.ninja_args}",
             ])
 
         if pty.spawn(["make"] + args) != 0:
@@ -188,6 +217,9 @@ class Application:
                 continue
 
             self.generate_vars(host)
+
+    def action_build(self):
+        self.make_run(f"ci-build@{self.args.target}")
 
     def action_shell(self):
         self.make_run(f"ci-shell@{self.args.target}")
