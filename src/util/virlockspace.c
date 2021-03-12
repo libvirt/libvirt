@@ -324,7 +324,6 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
         const char *tmp;
         virJSONValuePtr owners;
         size_t j;
-        size_t m;
 
         res = g_new0(virLockSpaceResource, 1);
         res->fd = -1;
@@ -384,9 +383,8 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
             goto error;
         }
 
-        m = virJSONValueArraySize(owners);
+        res->nOwners = virJSONValueArraySize(owners);
         res->owners = g_new0(pid_t, res->nOwners);
-        res->nOwners = m;
 
         for (j = 0; j < res->nOwners; j++) {
             unsigned long long int owner;
