@@ -6637,77 +6637,51 @@ virDomainDeviceAliasIsUserAlias(const char *aliasStr)
 static int
 virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt,
                             xmlNodePtr node,
-                            xmlXPathContextPtr ctxt G_GNUC_UNUSED,
+                            xmlXPathContextPtr ctxt,
                             virDomainDeviceInfoPtr info,
                             unsigned int flags)
 {
-    xmlNodePtr cur;
     xmlNodePtr address = NULL;
     xmlNodePtr master = NULL;
-    xmlNodePtr alias = NULL;
     xmlNodePtr boot = NULL;
     xmlNodePtr rom = NULL;
     int ret = -1;
     g_autofree char *romenabled = NULL;
     g_autofree char *rombar = NULL;
     g_autofree char *aliasStr = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     virDomainDeviceInfoClear(info);
+    ctxt->node = node;
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (alias == NULL &&
-                virXMLNodeNameEqual(cur, "alias")) {
-                alias = cur;
-            } else if (address == NULL &&
-                       virXMLNodeNameEqual(cur, "address")) {
-                address = cur;
-            } else if (master == NULL &&
-                       virXMLNodeNameEqual(cur, "master")) {
-                master = cur;
-            } else if (boot == NULL &&
-                       (flags & VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) &&
-                       virXMLNodeNameEqual(cur, "boot")) {
-                boot = cur;
-            } else if (rom == NULL &&
-                       (flags & VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) &&
-                       virXMLNodeNameEqual(cur, "rom")) {
-                rom = cur;
-            }
-        }
-        cur = cur->next;
-    }
-
-    if (alias) {
-        aliasStr = virXMLPropString(alias, "name");
-
+    if ((aliasStr = virXPathString("string(./alias/@name)", ctxt)))
         if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) ||
             (xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_USER_ALIAS &&
              virDomainDeviceAliasIsUserAlias(aliasStr) &&
              strspn(aliasStr, USER_ALIAS_CHARS) == strlen(aliasStr)))
             info->alias = g_steal_pointer(&aliasStr);
-    }
 
-    if (master) {
+    if ((master = virXPathNode("./master", ctxt))) {
         info->mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
         if (virDomainDeviceUSBMasterParseXML(master, &info->master.usb) < 0)
             goto cleanup;
     }
 
-    if (boot) {
+    if (flags & VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT &&
+        (boot = virXPathNode("./boot", ctxt))) {
         if (virDomainDeviceBootParseXML(boot, info))
             goto cleanup;
     }
 
-    if (rom) {
-        if ((romenabled = virXMLPropString(rom, "enabled")) &&
+    if ((flags & VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) &&
+        (rom = virXPathNode("./rom", ctxt))) {
+        if ((romenabled = virXPathString("string(./rom/@enabled)", ctxt)) &&
             ((info->romenabled = virTristateBoolTypeFromString(romenabled)) <= 0)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown rom enabled value '%s'"), romenabled);
             goto cleanup;
         }
-        if ((rombar = virXMLPropString(rom, "bar")) &&
+        if ((rombar = virXPathString("string(./rom/@bar)", ctxt)) &&
             ((info->rombar = virTristateSwitchTypeFromString(rombar)) <= 0)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown rom bar value '%s'"), rombar);
@@ -6723,7 +6697,7 @@ virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt,
         }
     }
 
-    if (address &&
+    if ((address = virXPathNode("./address", ctxt)) &&
         virDomainDeviceAddressParseXML(address, info) < 0)
         goto cleanup;
 
