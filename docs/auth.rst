@@ -80,7 +80,7 @@ the service type and host:
 ::
 
    [auth-$SERVICE-$HOSTNAME]
-   credentials=$CREDENTIALS</pre>
+   credentials=$CREDENTIALS
 
 For example, following the previous example, here is how to
 map some machines. For convenience libvirt supports a default
@@ -242,7 +242,7 @@ a user ``fred``, run
 ::
 
    # saslpasswd2 -a libvirt fred
-    Password: xxxxxx
+   Password: xxxxxx
    Again (for verification): xxxxxx
 
 To see a list of all accounts the ``sasldblistusers2`` command can be used.
