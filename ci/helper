@@ -5,10 +5,22 @@
 
 import argparse
 import pathlib
+import shutil
+import subprocess
+import sys
 
 
 class Parser:
     def __init__(self):
+        # Options that are common to all actions that use lcitool
+        lcitoolparser = argparse.ArgumentParser(add_help=False)
+        lcitoolparser.add_argument(
+            "--lcitool",
+            metavar="PATH",
+            default="lcitool",
+            help="path to lcitool binary",
+        )
+
         # Main parser
         self.parser = argparse.ArgumentParser()
         subparsers = self.parser.add_subparsers(
@@ -16,6 +28,14 @@ class Parser:
             metavar="ACTION",
         )
         subparsers.required = True
+
+        # refresh action
+        refreshparser = subparsers.add_parser(
+            "refresh",
+            help="refresh data generated with lcitool",
+            parents=[lcitoolparser],
+        )
+        refreshparser.set_defaults(func=Application.action_refresh)
 
     def parse(self):
         return self.parser.parse_args()
@@ -25,6 +45,90 @@ class Application:
     def __init__(self):
         self.basedir = pathlib.Path(__file__).resolve().parent
         self.args = Parser().parse()
+
+        if self.args.action == "refresh":
+            if not shutil.which(self.args.lcitool):
+                sys.exit("error: 'lcitool' not installed")
+
+    def lcitool_run(self, args):
+        output = subprocess.check_output([self.args.lcitool] + args)
+        return output.decode("utf-8")
+
+    def lcitool_get_hosts(self):
+        output = self.lcitool_run(["hosts"])
+        return output.splitlines()
+
+    def generate_dockerfile(self, host, cross=None):
+        args = ["dockerfile", host, "libvirt"]
+        outdir = self.basedir.joinpath("containers")
+        outfile = f"ci-{host}.Dockerfile"
+
+        if cross:
+            args.extend(["--cross", cross])
+            outfile = f"ci-{host}-cross-{cross}.Dockerfile"
+
+        outpath = outdir.joinpath(outfile)
+        print(outpath)
+
+        output = self.lcitool_run(args)
+        with open(outpath, "w") as f:
+            f.write(output)
+
+    def generate_vars(self, host):
+        args = ["variables", host, "libvirt"]
+        outdir = self.basedir.joinpath("cirrus")
+        outfile = f"{host}.vars"
+
+        outpath = outdir.joinpath(outfile)
+        print(outpath)
+
+        output = self.lcitool_run(args)
+        with open(outpath, "w") as f:
+            f.write(output)
+
+    def refresh_containers(self):
+        debian_cross = [
+            "aarch64",
+            "armv6l",
+            "armv7l",
+            "i686",
+            "mips",
+            "mips64el",
+            "mipsel",
+            "ppc64le",
+            "s390x",
+        ]
+        fedora_cross = [
+            "mingw32",
+            "mingw64",
+        ]
+
+        for host in self.lcitool_get_hosts():
+            if host.startswith("freebsd-") or host.startswith("macos-"):
+                continue
+
+            self.generate_dockerfile(host)
+
+            if host == "fedora-rawhide":
+                for cross in fedora_cross:
+                    self.generate_dockerfile(host, cross)
+
+            if host.startswith("debian-"):
+                for cross in debian_cross:
+                    if host == "debian-sid" and cross == "mips":
+                        continue
+                    self.generate_dockerfile(host, cross)
+
+    def refresh_cirrus(self):
+        for host in self.lcitool_get_hosts():
+            if not (host.startswith("freebsd-") or host.startswith("macos-")):
+                continue
+
+            self.generate_vars(host)
+
+    def action_refresh(self):
+        self.refresh_containers()
+        self.refresh_cirrus()
 
     def run(self):
         self.args.func(self)
