@@ -32,7 +32,6 @@ docs_assets = [
 
 docs_html_in_files = [
   '404',
-  'api',
   'apps',
   'architecture',
   'auditlog',
@@ -107,6 +106,7 @@ docs_rst_files = [
   'aclpolkit',
   'advanced-tests',
   'api_extension',
+  'api',
   'best-practices',
   'ci',
   'coding-style',
