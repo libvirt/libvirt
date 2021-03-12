@@ -228,7 +228,7 @@ ci-help:
 	@echo "Available targets:"
 	@echo
 	@echo "    ci-build@\$$IMAGE - run a default 'ninja' build"
-	@echo "    ci-check@\$$IMAGE - run a 'ninja test'"
+	@echo "    ci-test@\$$IMAGE  - run a 'ninja test'"
 	@echo "    ci-shell@\$$IMAGE - run an interactive shell"
 	@echo "    ci-list-images  - list available images"
 	@echo "    ci-help         - show this help message"
