@@ -5,6 +5,7 @@
 
 import argparse
 import pathlib
+import pty
 import shutil
 import subprocess
 import sys
@@ -29,6 +30,13 @@ class Parser:
         )
         subparsers.required = True
 
+        # list-images action
+        listimagesparser = subparsers.add_parser(
+            "list-images",
+            help="list known container images",
+        )
+        listimagesparser.set_defaults(func=Application.action_list_images)
+
         # refresh action
         refreshparser = subparsers.add_parser(
             "refresh",
@@ -49,6 +57,16 @@ class Application:
         if self.args.action == "refresh":
             if not shutil.which(self.args.lcitool):
                 sys.exit("error: 'lcitool' not installed")
+
+    def make_run(self, target):
+        args = [
+            "-C",
+            self.basedir,
+            target,
+        ]
+
+        if pty.spawn(["make"] + args) != 0:
+            sys.exit("error: 'make' failed")
 
     def lcitool_run(self, args):
         output = subprocess.check_output([self.args.lcitool] + args)
@@ -125,6 +143,9 @@ class Application:
                 continue
 
             self.generate_vars(host)
+
+    def action_list_images(self):
+        self.make_run(f"ci-list-images")
 
     def action_refresh(self):
         self.refresh_containers()
