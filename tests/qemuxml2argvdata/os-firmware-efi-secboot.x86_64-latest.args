@@ -9,8 +9,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-fedora/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=fedora,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-fedora/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
+"file":"/tmp/lib/domain--1-fedora/master-key.aes"}' \
 -blockdev '{"driver":"file","filename":"/usr/share/OVMF/OVMF_CODE.secboot.fd",\
 "node-name":"libvirt-pflash0-storage","auto-read-only":true,\
 "discard":"unmap"}' \
@@ -28,7 +28,7 @@ memory-backend=pc.ram \
 -cpu qemu64 \
 -global driver=cfi.pflash01,property=secure,value=on \
 -m 8 \
--object memory-backend-ram,id=pc.ram,size=8388608 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":8388608}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 63840878-0deb-4095-97e6-fc444d9bc9fa \

@@ -9,12 +9,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
+"file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pc,accel=kvm,usb=off,dump-guest-core=off,memory-backend=pc.ram \
 -cpu qemu64 \
 -m 214 \
--object memory-backend-ram,id=pc.ram,size=224395264 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
@@ -42,9 +42,9 @@ id=virtio-disk0,bootindex=1 \
 "file":"libvirt-3-storage"}' \
 -device virtio-blk-pci,bus=pci.0,addr=0x3,drive=libvirt-3-format,\
 id=virtio-disk1 \
--object secret,id=libvirt-2-storage-httpcookie-secret0,\
-data=DrPR9NA6GKJb7qi1KbjHaealKEMVtOWUl2h3yvO5lgIh6cyLHemmlg+h9fcgwREA,\
-keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
+-object '{"qom-type":"secret","id":"libvirt-2-storage-httpcookie-secret0",\
+"data":"DrPR9NA6GKJb7qi1KbjHaealKEMVtOWUl2h3yvO5lgIh6cyLHemmlg+h9fcgwREA",\
+"keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -blockdev '{"driver":"http","url":"http://example.org:1234/test3.img",\
 "cookie-secret":"libvirt-2-storage-httpcookie-secret0",\
 "node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
@@ -52,9 +52,9 @@ keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 "file":"libvirt-2-storage"}' \
 -device virtio-blk-pci,bus=pci.0,addr=0x4,drive=libvirt-2-format,\
 id=virtio-disk2 \
--object secret,id=libvirt-1-storage-httpcookie-secret0,\
-data=DrPR9NA6GKJb7qi1KbjHaealKEMVtOWUl2h3yvO5lgIh6cyLHemmlg+h9fcgwREA,\
-keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
+-object '{"qom-type":"secret","id":"libvirt-1-storage-httpcookie-secret0",\
+"data":"DrPR9NA6GKJb7qi1KbjHaealKEMVtOWUl2h3yvO5lgIh6cyLHemmlg+h9fcgwREA",\
+"keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -blockdev '{"driver":"https",\
 "url":"https://example.org:1234/test4.img?par=val&other=ble","sslverify":false,\
 "cookie-secret":"libvirt-1-storage-httpcookie-secret0",\

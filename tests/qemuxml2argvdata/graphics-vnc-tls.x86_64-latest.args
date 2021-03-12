@@ -10,12 +10,12 @@ SASL_CONF_PATH=/root/.sasl2 \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
+"file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off,memory-backend=pc.ram \
 -cpu qemu64 \
 -m 214 \
--object memory-backend-ram,id=pc.ram,size=224395264 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
@@ -29,8 +29,8 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -audiodev id=audio1,driver=none \
--object tls-creds-x509,id=vnc-tls-creds0,dir=/etc/pki/libvirt-vnc,\
-endpoint=server,verify-peer=on \
+-object '{"qom-type":"tls-creds-x509","id":"vnc-tls-creds0",\
+"dir":"/etc/pki/libvirt-vnc","endpoint":"server","verify-peer":true}' \
 -vnc 127.0.0.1:3,tls-creds=vnc-tls-creds0,sasl=on,audiodev=audio1 \
 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\

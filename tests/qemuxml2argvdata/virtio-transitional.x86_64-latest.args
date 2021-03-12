@@ -9,12 +9,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
+"file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine q35,accel=tcg,usb=off,dump-guest-core=off,memory-backend=pc.ram \
 -cpu qemu64 \
 -m 214 \
--object memory-backend-ram,id=pc.ram,size=224395264 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
@@ -51,7 +51,7 @@ evdev=/dev/input/event1234,bus=pci.2,addr=0x9 \
 -device vhost-scsi-pci-transitional,wwpn=naa.5123456789abcde0,vhostfd=3,\
 id=hostdev0,bus=pci.2,addr=0x6 \
 -device virtio-balloon-pci-transitional,id=balloon0,bus=pci.2,addr=0x7 \
--object rng-random,id=objrng0,filename=/dev/urandom \
+-object '{"qom-type":"rng-random","id":"objrng0","filename":"/dev/urandom"}' \
 -device virtio-rng-pci-transitional,rng=objrng0,id=rng0,bus=pci.2,addr=0x8 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \

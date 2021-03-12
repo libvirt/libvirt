@@ -9,17 +9,17 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
+"file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off,nvdimm=on \
 -cpu qemu64 \
 -m size=219136k,slots=16,maxmem=1099511627776k \
 -overcommit mem-lock=off \
 -smp 2,sockets=2,dies=1,cores=1,threads=1 \
--object memory-backend-ram,id=ram-node0,size=224395264 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node0","size":224395264}' \
 -numa node,nodeid=0,cpus=0-1,memdev=ram-node0 \
--object memory-backend-file,id=memnvdimm0,mem-path=/tmp/nvdimm,share=off,\
-prealloc=on,size=536870912 \
+-object '{"qom-type":"memory-backend-file","id":"memnvdimm0",\
+"mem-path":"/tmp/nvdimm","share":false,"prealloc":true,"size":536870912}' \
 -device nvdimm,node=0,memdev=memnvdimm0,id=nvdimm0,slot=0 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \

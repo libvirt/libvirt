@@ -1560,6 +1560,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "migrate-set-parameters/arg-type/block-bitmap-mapping/bitmaps/transform",
       QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING },
     { "blockdev-backup", QEMU_CAPS_BLOCKDEV_BACKUP },
+    { "object-add/arg-type/qom-type/^secret", QEMU_CAPS_OBJECT_QAPIFIED },
 };
 
 typedef struct _virQEMUCapsObjectTypeProps virQEMUCapsObjectTypeProps;
