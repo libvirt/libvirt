@@ -223,6 +223,17 @@ ci-list-images:
 	@echo
 
 ci-help:
+	@echo
+	@echo
+	@echo
+	@echo "      !!!  PLEASE DON'T USE THIS DIRECTLY  !!!"
+	@echo
+	@echo "          Use the ci/helper script instead"
+	@echo
+	@echo "      !!!  PLEASE DON'T USE THIS DIRECTLY  !!!"
+	@echo
+	@echo
+	@echo
 	@echo "Build libvirt inside containers used for CI"
 	@echo
 	@echo "Available targets:"
