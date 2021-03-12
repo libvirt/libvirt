@@ -472,7 +472,7 @@ virJSONValuePtr virLockSpacePreExecRestart(virLockSpacePtr lockspace)
         goto error;
 
     virMutexUnlock(&lockspace->lock);
-    return object;
+    return g_steal_pointer(&object);
 
  error:
     virMutexUnlock(&lockspace->lock);
