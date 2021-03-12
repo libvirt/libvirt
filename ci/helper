@@ -82,6 +82,14 @@ class Parser:
         )
         buildparser.set_defaults(func=Application.action_build)
 
+        # test action
+        testparser = subparsers.add_parser(
+            "test",
+            help="run a build in a container (including tests)",
+            parents=[containerparser, mesonparser],
+        )
+        testparser.set_defaults(func=Application.action_test)
+
         # shell action
         shellparser = subparsers.add_parser(
             "shell",
@@ -125,7 +133,7 @@ class Application:
             target,
         ]
 
-        if self.args.action in ["build", "shell"]:
+        if self.args.action in ["build", "test", "shell"]:
             args.extend([
                 f"CI_ENGINE={self.args.engine}",
                 f"CI_USER_LOGIN={self.args.login}",
@@ -133,7 +141,7 @@ class Application:
                 f"CI_IMAGE_TAG={self.args.image_tag}",
             ])
 
-        if self.args.action == "build":
+        if self.args.action in ["build", "test"]:
             args.extend([
                 f"CI_MESON_ARGS={self.args.meson_args}",
                 f"CI_NINJA_ARGS={self.args.ninja_args}",
@@ -220,6 +228,9 @@ class Application:
 
     def action_build(self):
         self.make_run(f"ci-build@{self.args.target}")
+
+    def action_test(self):
+        self.make_run(f"ci-test@{self.args.target}")
 
     def action_shell(self):
         self.make_run(f"ci-shell@{self.args.target}")
