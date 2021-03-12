@@ -48,9 +48,6 @@ char *
 virQEMUBuildNetdevCommandlineFromJSON(virJSONValuePtr props,
                                       bool rawjson);
 
-int virQEMUBuildObjectCommandlineFromJSON(virBufferPtr buf,
-                                          virJSONValuePtr objprops);
-
 char *virQEMUBuildDriveCommandlineFromJSON(virJSONValuePtr src);
 
 void virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str);
