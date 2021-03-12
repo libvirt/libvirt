@@ -402,7 +402,7 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  *   'subattribute': selects a plain object member named 'subattribute'
  *   '*subattribute': same as above but the selected member must be optional
  *                    (has a property named 'default' in the schema)
- *   '+variant": In the case of unionized objects, select a specific variant of
+ *   '+variant': In the case of unionized objects, select a specific variant of
  *               the previously selected member
  *
  * - Boolean queries - @entry remains NULL, return value indicates success:
