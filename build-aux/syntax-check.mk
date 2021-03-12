@@ -497,6 +497,7 @@ sc_prohibit_PATH_MAX:
 include $(top_srcdir)/build-aux/Makefile.nonreentrant
 sc_prohibit_nonreentrant:
 	@prohibit="\\<(${NON_REENTRANT_RE}) *\\(" \
+	exclude='exempt from syntax-check' \
 	halt="use re-entrant functions (usually ending with _r)" \
 	  $(_sc_search_regexp)
 
