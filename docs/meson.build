@@ -7,7 +7,6 @@ docs_assets = [
   'android-chrome-192x192.png',
   'android-chrome-256x256.png',
   'apple-touch-icon.png',
-  'architecture.gif',
   'browserconfig.xml',
   'favicon.ico',
   'favicon-16x16.png',
@@ -32,7 +31,6 @@ docs_assets = [
 
 docs_html_in_files = [
   '404',
-  'architecture',
   'bugs',
   'cgroups',
   'contact',
