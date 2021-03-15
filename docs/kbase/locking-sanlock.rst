@@ -173,14 +173,14 @@ Domain configuration
 
 In case sanlock loses access to disk locks for some reason, it will kill
 all domains that lost their locks. This default behavior may be changed
-using `on_lockfailure element <formatdomain.html#elementsEvents>`__ in
+using `on_lockfailure element <../formatdomain.html#elementsEvents>`__ in
 domain XML. When this element is present, sanlock will call
 ``sanlock_helper`` (provided by libvirt) with the specified action. This
 helper binary will connect to libvirtd and thus it may need to
 authenticate if libvirtd was configured to require that on the
 read-write UNIX socket. To provide the appropriate credentials to
 sanlock_helper, a `client authentication
-file <auth.html#Auth_client_config>`__ needs to contain something like
+file <../auth.html#client-configuration>`__ needs to contain something like
 the following:
 
 ::
