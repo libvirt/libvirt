@@ -4253,6 +4253,7 @@ processMemoryDeviceSizeChange(virQEMUDriver *driver,
 {
     virDomainMemoryDef *mem = NULL;
     virObjectEvent *event = NULL;
+    unsigned long long balloon;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         return;
@@ -4268,7 +4269,15 @@ processMemoryDeviceSizeChange(virQEMUDriver *driver,
         goto endjob;
     }
 
+    /* If this looks weird it's because it is. The balloon size
+     * as reported by QEMU does not include any of @currentsize.
+     * It really contains just the balloon size. But in domain
+     * definition we want to report also sum of @currentsize. Do
+     * a bit of math to fix the domain definition. */
+    balloon = vm->def->mem.cur_balloon - mem->currentsize;
     mem->currentsize = VIR_DIV_UP(info->size, 1024);
+    balloon += mem->currentsize;
+    vm->def->mem.cur_balloon = balloon;
 
     event = virDomainEventMemoryDeviceSizeChangeNewFromObj(vm,
                                                            info->devAlias,

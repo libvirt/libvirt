@@ -1213,9 +1213,21 @@ qemuProcessHandleBalloonChange(qemuMonitor *mon G_GNUC_UNUSED,
     virQEMUDriver *driver = opaque;
     virObjectEvent *event = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    size_t i;
 
     virObjectLock(vm);
     event = virDomainEventBalloonChangeNewFromObj(vm, actual);
+
+    /* We want the balloon size stored in domain definition to
+     * account for the actual size of virtio-mem too. But the
+     * balloon size as reported by QEMU (@actual) contains just
+     * the balloon size without any virtio-mem. Do a wee bit of
+     * math to fix it. */
+    VIR_DEBUG("balloon size before fix is %lld", actual);
+    for (i = 0; i < vm->def->nmems; i++) {
+        if (vm->def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM)
+            actual += vm->def->mems[i]->currentsize;
+    }
 
     VIR_DEBUG("Updating balloon from %lld to %lld kb",
               vm->def->mem.cur_balloon, actual);
@@ -2343,6 +2355,7 @@ qemuProcessRefreshBalloonState(virQEMUDriver *driver,
                                int asyncJob)
 {
     unsigned long long balloon;
+    size_t i;
     int rc;
 
     /* if no ballooning is available, the current size equals to the current
@@ -2359,6 +2372,18 @@ qemuProcessRefreshBalloonState(virQEMUDriver *driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         return -1;
 
+    /* We want the balloon size stored in domain definition to
+     * account for the actual size of virtio-mem too. But the
+     * balloon size as reported by QEMU (@balloon) contains just
+     * the balloon size without any virtio-mem. Do a wee bit of
+     * math to fix it. */
+    VIR_DEBUG("balloon size before fix is %lld", balloon);
+    for (i = 0; i < vm->def->nmems; i++) {
+        if (vm->def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM)
+            balloon += vm->def->mems[i]->currentsize;
+    }
+    VIR_DEBUG("Updating balloon from %lld to %lld kb",
+              vm->def->mem.cur_balloon, balloon);
     vm->def->mem.cur_balloon = balloon;
 
     return 0;
