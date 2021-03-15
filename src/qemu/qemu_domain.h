@@ -485,6 +485,11 @@ struct _qemuDomainXmlNsDef {
 
     size_t ncapsdel;
     char **capsdel;
+
+    /* We deliberatly keep this as a string so that it's parsed only when
+     * starting the VM to avoid any form of errors in the parser or when
+     * changing qemu versions. The knob is mainly for development/CI purposes */
+    char *deprecationBehavior;
 };
 
 

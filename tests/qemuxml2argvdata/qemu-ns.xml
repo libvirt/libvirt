@@ -32,4 +32,5 @@
     <qemu:add capability="blockdev"/>
     <qemu:del capability="name"/>
   </qemu:capabilities>
+  <qemu:deprecation behavior='crash'/>
 </domain>

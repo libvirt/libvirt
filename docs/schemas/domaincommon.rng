@@ -78,6 +78,9 @@
           <ref name="qemucapabilities"/>
         </optional>
         <optional>
+          <ref name="qemudeprecation"/>
+        </optional>
+        <optional>
           <ref name="lxcsharens"/>
         </optional>
         <optional>
@@ -7267,6 +7270,19 @@
           </element>
         </zeroOrMore>
       </interleave>
+    </element>
+  </define>
+
+  <define name="qemudeprecation">
+    <element name="deprecation" ns="http://libvirt.org/schemas/domain/qemu/1.0">
+      <attribute name="behavior">
+        <choice>
+          <value>none</value>
+          <value>omit</value>
+          <value>reject</value>
+          <value>crash</value>
+        </choice>
+      </attribute>
     </element>
   </define>
 

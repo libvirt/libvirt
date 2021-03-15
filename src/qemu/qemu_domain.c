@@ -3316,6 +3316,8 @@ qemuDomainXmlNsDefFree(qemuDomainXmlNsDefPtr def)
     virStringListFreeCount(def->capsadd, def->ncapsadd);
     virStringListFreeCount(def->capsdel, def->ncapsdel);
 
+    g_free(def->deprecationBehavior);
+
     g_free(def);
 }
 
@@ -3468,8 +3470,11 @@ qemuDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
         qemuDomainDefNamespaceParseCaps(nsdata, ctxt) < 0)
         goto cleanup;
 
+    nsdata->deprecationBehavior = virXPathString("string(./qemu:deprecation/@behavior)", ctxt);
+
     if (nsdata->num_args > 0 || nsdata->num_env > 0 ||
-        nsdata->ncapsadd > 0 || nsdata->ncapsdel > 0)
+        nsdata->ncapsadd > 0 || nsdata->ncapsdel > 0 ||
+        nsdata->deprecationBehavior)
         *data = g_steal_pointer(&nsdata);
 
     ret = 0;
@@ -3538,6 +3543,9 @@ qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
 
     qemuDomainDefNamespaceFormatXMLCommandline(buf, cmd);
     qemuDomainDefNamespaceFormatXMLCaps(buf, cmd);
+
+    virBufferEscapeString(buf, "<qemu:deprecation behavior='%s'/>\n",
+                          cmd->deprecationBehavior);
 
     return 0;
 }
