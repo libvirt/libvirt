@@ -9204,7 +9204,7 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
         virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(vm->def, i);
 
         if (!vcpu->online)
-            return -1;
+            continue;
 
         if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_VCPU, i,
                                false, &cgroup_vcpu) < 0)
