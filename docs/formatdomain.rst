@@ -8099,4 +8099,4 @@ Example configurations for each driver are provide on the driver specific pages
 listed below
 
 -  `Xen examples <drvxen.html#xmlconfig>`__
--  `QEMU/KVM examples <drvqemu.html#xmlconfig>`__
+-  `QEMU/KVM examples <drvqemu.html#example-domain-xml-config>`__
