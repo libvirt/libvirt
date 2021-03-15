@@ -10,6 +10,7 @@ import pty
 import shutil
 import subprocess
 import sys
+import textwrap
 
 import util
 
@@ -130,7 +131,7 @@ class Parser:
         refreshparser = subparsers.add_parser(
             "refresh",
             help="refresh data generated with lcitool",
-            parents=[lcitoolparser],
+            parents=[lcitoolparser, gitlabparser],
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         refreshparser.add_argument(
@@ -138,6 +139,13 @@ class Parser:
             action="store_true",
             default=False,
             help="refresh data silently"
+        )
+        refreshparser.add_argument(
+            "--check-stale",
+            action="store",
+            choices=["yes", "no"],
+            default="yes",
+            help="check for existence of stale images on the GitLab instance"
         )
         refreshparser.set_defaults(func=Application.action_refresh)
 
@@ -256,6 +264,39 @@ class Application:
 
             self.generate_vars(host)
 
+    def check_stale_images(self):
+        namespace = self.args.namespace
+        gitlab_uri = self.args.gitlab_uri
+        registry_uri = util.get_registry_uri(namespace, gitlab_uri)
+        lcitool_hosts = self.lcitool_get_hosts()
+
+        stale_images = util.get_registry_stale_images(registry_uri,
+                                                      lcitool_hosts)
+        if stale_images:
+            spacing = "\n" + 4 * " "
+            stale_fmt = [f"{k} (ID: {v})" for k, v in stale_images.items()]
+            stale_details = spacing.join(stale_fmt)
+            stale_ids = ' '.join([str(id) for id in stale_images.values()])
+            registry_uri = util.get_registry_uri(namespace, gitlab_uri)
+
+            msg = textwrap.dedent(f"""
+                The following images are stale and can be purged from the registry:
+
+                    STALE_DETAILS
+
+                You can delete the images listed above using this shell snippet:
+
+                    $ for image_id in {stale_ids}; do
+                          curl --request DELETE --header "PRIVATE-TOKEN: <access_token>" \\
+                               {registry_uri}/$image_id;
+                      done
+
+                You can generate a personal access token here:
+
+                    {gitlab_uri}/-/profile/personal_access_tokens
+            """)
+            print(msg.replace("STALE_DETAILS", stale_details))
+
     def action_build(self):
         self.make_run(f"ci-build@{self.args.target}")
 
@@ -290,6 +331,9 @@ class Application:
     def action_refresh(self):
         self.refresh_containers()
         self.refresh_cirrus()
+
+        if self.args.check_stale == "yes" and not self.args.quiet:
+            self.check_stale_images()
 
     def run(self):
         self.args.func(self)
