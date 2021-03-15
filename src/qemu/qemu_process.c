@@ -2026,7 +2026,7 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
      * handing them over to qemu. This can be very time
      * consuming. Therefore, add a second to timeout for each
      * 1GiB of guest RAM. */
-    timeout = vm->def->mem.total_memory / (1024 * 1024);
+    timeout = virDomainDefGetMemoryTotal(vm->def) / (1024 * 1024);
 
     ignore_value(virTimeMillisNow(&priv->monStart));
 
