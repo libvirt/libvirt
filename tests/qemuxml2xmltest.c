@@ -279,6 +279,7 @@ mymain(void)
     DO_TEST("restore-v2", NONE);
     DO_TEST("migrate", NONE);
     DO_TEST("qemu-ns-no-env", NONE);
+    DO_TEST_CAPS_LATEST("qemu-ns");
     DO_TEST("disk-aio", NONE);
     DO_TEST_CAPS_LATEST("disk-aio-io_uring");
     DO_TEST("disk-cdrom", NONE);
