@@ -925,7 +925,6 @@ endforeach
 # optional programs
 
 optional_programs = [
-  'addr2line',
   'augparse',
   'dmidecode',
   'dnsmasq',
