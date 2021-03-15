@@ -53,13 +53,10 @@ Struct type names
    All structs should have a 'vir' prefix in their typedef name,
    and each following word should have its first letter in
    uppercase. The struct name should be the same as the typedef
-   name with a leading underscore. A second typedef should be
-   given for a pointer to the struct with a 'Ptr' suffix.
-
+   name with a leading underscore.
    ::
 
      typedef struct _virHashTable virHashTable;
-     typedef virHashTable *virHashTablePtr;
      struct _virHashTable {
          ...
      };
@@ -426,11 +423,11 @@ Conditional expressions
 
 For readability reasons new code should avoid shortening
 comparisons to 0 for numeric types. Boolean and pointer
-comparisions may be shortened. All long forms are okay:
+comparisons may be shortened. All long forms are okay:
 
 ::
 
-  virFooPtr foos = NULL;
+  virFoo *foos = NULL;
   size nfoos = 0;
   bool hasFoos = false;
 
