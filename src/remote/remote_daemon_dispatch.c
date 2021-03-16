@@ -4994,6 +4994,7 @@ static int remoteDispatchConnectSupportsFeature(virNetServerPtr server G_GNUC_UN
     case VIR_DRV_FEATURE_XML_MIGRATABLE:
     case VIR_DRV_FEATURE_MIGRATION_OFFLINE:
     case VIR_DRV_FEATURE_MIGRATION_PARAMS:
+    case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
     default:
         if ((supported = virConnectSupportsFeature(conn, args->feature)) < 0)
             goto cleanup;

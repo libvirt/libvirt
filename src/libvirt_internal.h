@@ -126,6 +126,11 @@ typedef enum {
      * Support for driver close callback rpc
      */
     VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK = 15,
+
+    /*
+     * Whether the virNetworkUpdate() API implementation passes arguments to
+     * the driver's callback in correct order. */
+    VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER = 16,
 } virDrvFeature;
 
 

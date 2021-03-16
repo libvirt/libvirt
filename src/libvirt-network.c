@@ -543,8 +543,28 @@ virNetworkUpdate(virNetworkPtr network,
 
     if (conn->networkDriver && conn->networkDriver->networkUpdate) {
         int ret;
-        ret = conn->networkDriver->networkUpdate(network, section, command,
-                                                 parentIndex, xml, flags);
+        int rc;
+
+        /* Since its introduction in v0.10.2-rc1~9 the @section and @command
+         * arguments were mistakenly swapped when passed to driver's callback.
+         * Detect if the other side is fixed already or not. */
+        rc = VIR_DRV_SUPPORTS_FEATURE(conn->driver, conn,
+                                      VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER);
+
+        VIR_DEBUG("Argument order feature detection returned: %d", rc);
+        if (rc < 0)
+            goto error;
+
+        if (rc == 0) {
+            /* Feature not supported, preserve swapped order */
+            ret = conn->networkDriver->networkUpdate(network, section, command,
+                                                     parentIndex, xml, flags);
+        } else {
+            /* Feature supported, correct order can be used */
+            ret = conn->networkDriver->networkUpdate(network, command, section,
+                                                     parentIndex, xml, flags);
+        }
+
         if (ret < 0)
             goto error;
         return ret;

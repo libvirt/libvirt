@@ -1590,6 +1590,7 @@ testConnectSupportsFeature(virConnectPtr conn G_GNUC_UNUSED,
 {
     switch ((virDrvFeature) feature) {
     case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
+    case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
         return 1;
     case VIR_DRV_FEATURE_MIGRATION_V2:
     case VIR_DRV_FEATURE_MIGRATION_V3:

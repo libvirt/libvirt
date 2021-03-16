@@ -1036,6 +1036,9 @@ esxConnectSupportsFeature(virConnectPtr conn, int feature)
         return priv->vCenter &&
                supportsVMotion == esxVI_Boolean_True ? 1 : 0;
 
+    case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
+        return 1;
+
     case VIR_DRV_FEATURE_FD_PASSING:
     case VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION:
     case VIR_DRV_FEATURE_MIGRATION_DIRECT:

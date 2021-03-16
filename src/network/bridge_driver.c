@@ -951,6 +951,8 @@ networkConnectSupportsFeature(virConnectPtr conn, int feature)
         return -1;
 
     switch ((virDrvFeature) feature) {
+    case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
+        return 1;
     case VIR_DRV_FEATURE_MIGRATION_V2:
     case VIR_DRV_FEATURE_MIGRATION_V3:
     case VIR_DRV_FEATURE_MIGRATION_P2P:

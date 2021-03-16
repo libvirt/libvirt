@@ -1992,6 +1992,7 @@ openvzConnectSupportsFeature(virConnectPtr conn G_GNUC_UNUSED, int feature)
     switch ((virDrvFeature) feature) {
     case VIR_DRV_FEATURE_MIGRATION_PARAMS:
     case VIR_DRV_FEATURE_MIGRATION_V3:
+    case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
         return 1;
     case VIR_DRV_FEATURE_FD_PASSING:
     case VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION:

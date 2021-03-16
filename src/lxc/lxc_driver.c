@@ -1651,6 +1651,7 @@ lxcConnectSupportsFeature(virConnectPtr conn, int feature)
 
     switch ((virDrvFeature) feature) {
     case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
+    case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
         return 1;
     case VIR_DRV_FEATURE_FD_PASSING:
     case VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION:
