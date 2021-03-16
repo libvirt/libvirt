@@ -231,9 +231,14 @@ vir_g_strdup_vprintf(const char *msg, va_list args)
  *
  * Drop when min glib >= 2.64.0
  */
-#if GLIB_CHECK_VERSION(2, 64, 0) != TRUE
+#if GLIB_CHECK_VERSION(2, 64, 0)
+void vir_g_source_unref(GSource *src, GMainContext *ctx G_GNUC_UNUSED)
+{
+    g_source_unref(src);
+}
+#else
 
-gboolean
+static gboolean
 virEventGLibSourceUnrefIdle(gpointer data)
 {
     GSource *src = data;
@@ -241,6 +246,17 @@ virEventGLibSourceUnrefIdle(gpointer data)
     g_source_unref(src);
 
     return FALSE;
+}
+
+void vir_g_source_unref(GSource *src, GMainContext *ctx)
+{
+    GSource *idle = g_idle_source_new();
+
+    g_source_set_callback(idle, virEventGLibSourceUnrefIdle, src, NULL);
+
+    g_source_attach(idle, ctx);
+
+    g_source_unref(idle);
 }
 
 #endif

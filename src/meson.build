@@ -124,13 +124,6 @@ else
   sym_files += 'libvirt_libssh2.syms'
 endif
 
-if glib_crash_workaround
-  used_sym_files += 'libvirt_glib_crash_workaround.syms'
-else
-  sym_files += 'libvirt_glib_crash_workaround.syms'
-endif
-
-
 # variables filled by subdirectories
 
 libvirt_libs = []

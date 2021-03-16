@@ -862,7 +862,7 @@ qemuMonitorUnregister(qemuMonitorPtr mon)
 {
     if (mon->watch) {
         g_source_destroy(mon->watch);
-        g_vir_source_unref_safe(mon->watch);
+        vir_g_source_unref(mon->watch, mon->context);
         mon->watch = NULL;
     }
 }

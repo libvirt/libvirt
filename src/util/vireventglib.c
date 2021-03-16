@@ -214,7 +214,7 @@ virEventGLibHandleUpdate(int watch,
         if (data->source != NULL) {
             VIR_DEBUG("Removed old handle source=%p", data->source);
             g_source_destroy(data->source);
-            g_vir_source_unref_safe(data->source);
+            vir_g_source_unref(data->source, NULL);
         }
 
         data->source = virEventGLibAddSocketWatch(
@@ -228,7 +228,7 @@ virEventGLibHandleUpdate(int watch,
 
         VIR_DEBUG("Removed old handle source=%p", data->source);
         g_source_destroy(data->source);
-        g_vir_source_unref_safe(data->source);
+        vir_g_source_unref(data->source, NULL);
         data->source = NULL;
         data->events = 0;
     }
@@ -277,7 +277,7 @@ virEventGLibHandleRemove(int watch)
 
     if (data->source != NULL) {
         g_source_destroy(data->source);
-        g_vir_source_unref_safe(data->source);
+        vir_g_source_unref(data->source, NULL);
         data->source = NULL;
         data->events = 0;
     }
@@ -410,7 +410,7 @@ virEventGLibTimeoutUpdate(int timer,
     if (interval >= 0) {
         if (data->source != NULL) {
             g_source_destroy(data->source);
-            g_vir_source_unref_safe(data->source);
+            vir_g_source_unref(data->source, NULL);
         }
 
         data->interval = interval;
@@ -420,7 +420,7 @@ virEventGLibTimeoutUpdate(int timer,
             goto cleanup;
 
         g_source_destroy(data->source);
-        g_vir_source_unref_safe(data->source);
+        vir_g_source_unref(data->source, NULL);
         data->source = NULL;
     }
 
@@ -469,7 +469,7 @@ virEventGLibTimeoutRemove(int timer)
 
     if (data->source != NULL) {
         g_source_destroy(data->source);
-        g_vir_source_unref_safe(data->source);
+        vir_g_source_unref(data->source, NULL);
         data->source = NULL;
     }
 
