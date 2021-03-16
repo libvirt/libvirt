@@ -3688,14 +3688,10 @@ qemuBuildWatchdogDevStr(const virDomainDef *def,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    const char *model = virDomainWatchdogModelTypeToString(dev->model);
-    if (!model) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("missing watchdog model"));
-        return NULL;
-    }
+    virBufferAsprintf(&buf, "%s,id=%s",
+                      virDomainWatchdogModelTypeToString(dev->model),
+                      dev->info.alias);
 
-    virBufferAsprintf(&buf, "%s,id=%s", model, dev->info.alias);
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
         return NULL;
 

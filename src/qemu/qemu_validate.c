@@ -2143,7 +2143,9 @@ qemuValidateDomainWatchdogDef(const virDomainWatchdogDef *dev,
         break;
 
     case VIR_DOMAIN_WATCHDOG_MODEL_LAST:
-        break;
+    default:
+        virReportEnumRangeError(virDomainWatchdogModel, dev->model);
+        return -1;
     }
 
     return 0;
