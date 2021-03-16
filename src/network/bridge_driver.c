@@ -944,6 +944,35 @@ static int networkConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 }
 
 
+static int
+networkConnectSupportsFeature(virConnectPtr conn, int feature)
+{
+    if (virConnectSupportsFeatureEnsureACL(conn) < 0)
+        return -1;
+
+    switch ((virDrvFeature) feature) {
+    case VIR_DRV_FEATURE_MIGRATION_V2:
+    case VIR_DRV_FEATURE_MIGRATION_V3:
+    case VIR_DRV_FEATURE_MIGRATION_P2P:
+    case VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION:
+    case VIR_DRV_FEATURE_FD_PASSING:
+    case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
+    case VIR_DRV_FEATURE_XML_MIGRATABLE:
+    case VIR_DRV_FEATURE_MIGRATION_OFFLINE:
+    case VIR_DRV_FEATURE_MIGRATION_PARAMS:
+    case VIR_DRV_FEATURE_MIGRATION_DIRECT:
+    case VIR_DRV_FEATURE_MIGRATION_V1:
+    case VIR_DRV_FEATURE_PROGRAM_KEEPALIVE:
+    case VIR_DRV_FEATURE_REMOTE:
+    case VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK:
+    case VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK:
+    default:
+        return 0;
+    }
+}
+
+
+
 static char *
 networkBuildDnsmasqLeaseTime(virNetworkDHCPLeaseTimeDefPtr lease)
 {
@@ -5630,6 +5659,7 @@ static virHypervisorDriver networkHypervisorDriver = {
     .connectIsEncrypted = networkConnectIsEncrypted, /* 4.1.0 */
     .connectIsSecure = networkConnectIsSecure, /* 4.1.0 */
     .connectIsAlive = networkConnectIsAlive, /* 4.1.0 */
+    .connectSupportsFeature = networkConnectSupportsFeature, /* 7.2.0 */
 };
 
 
