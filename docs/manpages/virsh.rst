@@ -2219,7 +2219,7 @@ domstats
 
    domstats [--raw] [--enforce] [--backing] [--nowait] [--state]
       [--cpu-total] [--balloon] [--vcpu] [--interface]
-      [--block] [--perf] [--iothread] [--memory]
+      [--block] [--perf] [--iothread] [--memory] [--dirtyrate]
       [[--list-active] [--list-inactive]
        [--list-persistent] [--list-transient] [--list-running]y
        [--list-paused] [--list-shutoff] [--list-other]] | [domain ...]
@@ -2238,7 +2238,8 @@ behavior use the *--raw* flag.
 The individual statistics groups are selectable via specific flags. By
 default all supported statistics groups are returned. Supported
 statistics groups flags are: *--state*, *--cpu-total*, *--balloon*,
-*--vcpu*, *--interface*, *--block*, *--perf*, *--iothread*, *--memory*.
+*--vcpu*, *--interface*, *--block*, *--perf*, *--iothread*, *--memory*,
+*--dirtyrate*.
 
 Note that - depending on the hypervisor type and version or the domain state
 - not all of the following statistics may be returned.
@@ -2434,6 +2435,17 @@ not available for statistical purposes.
 * ``memory.bandwidth.monitor.<num>.node.<index>.bytes.total`` - the total
   bytes consumed by @vcpus that passing through all memory controllers, either
   local or remote controller.
+
+*--dirtyrate* returns:
+
+* ``dirtyrate.calc_status`` - the status of last memory dirty rate
+  calculation, returned as number from virDomainDirtyRateStatus enum.
+* ``dirtyrate.calc_start_time`` - the start time of last memory dirty
+  rate calculation.
+* ``dirtyrate.calc_period`` - the period of last memory dirty rate
+  calculation.
+* ``dirtyrate.megabytes_per_second`` - the calculated memory dirty
+  rate in MiB/s.
 
 
 Selecting a specific statistics groups doesn't guarantee that the
