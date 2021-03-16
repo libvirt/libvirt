@@ -443,9 +443,17 @@ virCgroupV2DevicesCreateMap(size_t size)
                                 sizeof(uint32_t), size);
 
     if (mapfd < 0) {
-        virReportSystemError(errno, "%s",
-                             _("failed to initialize device BPF map"));
-        return -1;
+        if (errno == EPERM) {
+            virReportSystemError(errno, "%s",
+                                 _("failed to initialize device BPF map; "
+                                   "locked memory limit for libvirtd probably "
+                                   "needs to be raised"));
+            return -1;
+        } else {
+            virReportSystemError(errno, "%s",
+                                 _("failed to initialize device BPF map"));
+            return -1;
+        }
     }
 
     return mapfd;
