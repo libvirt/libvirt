@@ -18,6 +18,11 @@ the build directory is different from the source directory:
 
 The *meson* script can be given options to change its default behaviour.
 
+**Note:** Please ensure that you have the appropriate minimal ``meson`` version
+installed in your build environment. The minimal version for a specific package
+can be checked in the top level ``meson.build`` file in the ``meson_version``
+field.
+
 To get the complete list of the options run the following command:
 
 ::
