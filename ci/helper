@@ -11,6 +11,8 @@ import shutil
 import subprocess
 import sys
 
+import util
+
 
 class Parser:
     def __init__(self):
@@ -66,6 +68,20 @@ class Parser:
             help="path to lcitool binary",
         )
 
+        # Options that are common to actions communicating with a GitLab
+        # instance
+        gitlabparser = argparse.ArgumentParser(add_help=False)
+        gitlabparser.add_argument(
+            "--namespace",
+            default="libvirt/libvirt",
+            help="GitLab project namespace"
+        )
+        gitlabparser.add_argument(
+            "--gitlab-uri",
+            default="https://gitlab.com",
+            help="base GitLab URI"
+        )
+
         # Main parser
         self.parser = argparse.ArgumentParser()
         subparsers = self.parser.add_subparsers(
@@ -105,6 +121,7 @@ class Parser:
         listimagesparser = subparsers.add_parser(
             "list-images",
             help="list known container images",
+            parents=[gitlabparser],
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         listimagesparser.set_defaults(func=Application.action_list_images)
@@ -249,7 +266,26 @@ class Application:
         self.make_run(f"ci-shell@{self.args.target}")
 
     def action_list_images(self):
-        self.make_run(f"ci-list-images")
+        registry_uri = util.get_registry_uri(self.args.namespace,
+                                             self.args.gitlab_uri)
+        images = util.get_registry_images(registry_uri)
+
+        # skip the "ci-" prefix each of our container images' name has
+        name_prefix = "ci-"
+        names = [i["name"][len(name_prefix):] for i in images]
+        names.sort()
+
+        native = [name for name in names if "-cross-" not in name]
+        cross = [name for name in names if "-cross-" in name]
+
+        spacing = 4 * " "
+        print("Available x86 container images:\n")
+        print(spacing + ("\n" + spacing).join(native))
+
+        if cross:
+            print()
+            print("Available cross-compiler container images:\n")
+            print(spacing + ("\n" + spacing).join(cross))
 
     def action_refresh(self):
         self.refresh_containers()

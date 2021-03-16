@@ -211,17 +211,6 @@ ci-build@%:
 ci-test@%:
 	$(MAKE) -C $(CI_ROOTDIR) ci-build@$* CI_NINJA_ARGS=test
 
-ci-list-images:
-	@echo
-	@echo "Available x86 container images:"
-	@echo
-	@sh list-images.sh "$(CI_IMAGE_PREFIX)" | grep -v cross
-	@echo
-	@echo "Available cross-compiler container images:"
-	@echo
-	@sh list-images.sh "$(CI_IMAGE_PREFIX)" | grep cross
-	@echo
-
 ci-help:
 	@echo
 	@echo
@@ -241,7 +230,6 @@ ci-help:
 	@echo "    ci-build@\$$IMAGE - run a default 'ninja' build"
 	@echo "    ci-test@\$$IMAGE  - run a 'ninja test'"
 	@echo "    ci-shell@\$$IMAGE - run an interactive shell"
-	@echo "    ci-list-images  - list available images"
 	@echo "    ci-help         - show this help message"
 	@echo
 	@echo "Available make variables:"
