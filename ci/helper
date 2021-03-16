@@ -116,6 +116,12 @@ class Parser:
             parents=[lcitoolparser],
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
+        refreshparser.add_argument(
+            "--quiet",
+            action="store_true",
+            default=False,
+            help="refresh data silently"
+        )
         refreshparser.set_defaults(func=Application.action_refresh)
 
     def parse(self):
@@ -173,7 +179,8 @@ class Application:
             outfile = f"ci-{host}-cross-{cross}.Dockerfile"
 
         outpath = outdir.joinpath(outfile)
-        print(outpath)
+        if not self.args.quiet:
+            print(outpath)
 
         output = self.lcitool_run(args)
         with open(outpath, "w") as f:
@@ -185,7 +192,8 @@ class Application:
         outfile = f"{host}.vars"
 
         outpath = outdir.joinpath(outfile)
-        print(outpath)
+        if not self.args.quiet:
+            print(outpath)
 
         output = self.lcitool_run(args)
         with open(outpath, "w") as f:
