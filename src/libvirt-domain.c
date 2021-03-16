@@ -13158,3 +13158,47 @@ virDomainGetMessages(virDomainPtr domain,
     virDispatchError(conn);
     return -1;
 }
+
+
+/**
+ * virDomainStartDirtyRateCalc:
+ * @domain: a domain object
+ * @seconds: specified calculating time in seconds
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Calculate the current domain's memory dirty rate in next @seconds.
+ * The calculated dirty rate information is available by calling
+ * virConnectGetAllDomainStats.
+ *
+ * Returns 0 in case of success, -1 otherwise.
+ */
+int
+virDomainStartDirtyRateCalc(virDomainPtr domain,
+                            int seconds,
+                            unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "seconds=%d, flags=0x%x", seconds, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn->driver->domainStartDirtyRateCalc) {
+        int ret;
+        ret = conn->driver->domainStartDirtyRateCalc(domain, seconds, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}

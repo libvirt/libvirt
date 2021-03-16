@@ -3811,6 +3811,12 @@ struct remote_domain_get_messages_ret {
     remote_nonnull_string msgs<REMOTE_DOMAIN_MESSAGES_MAX>;
 };
 
+struct remote_domain_start_dirty_rate_calc_args {
+    remote_nonnull_domain dom;
+    int seconds;
+    unsigned int flags;
+};
+
 
 /*----- Protocol. -----*/
 
@@ -6733,5 +6739,11 @@ enum remote_procedure {
      * @generate: none
      * @acl: domain:read
      */
-    REMOTE_PROC_DOMAIN_GET_MESSAGES = 426
+    REMOTE_PROC_DOMAIN_GET_MESSAGES = 426,
+
+    /**
+     * @generate: both
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_START_DIRTY_RATE_CALC = 427
 };

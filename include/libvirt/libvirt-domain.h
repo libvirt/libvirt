@@ -5128,4 +5128,8 @@ int virDomainGetMessages(virDomainPtr domain,
                          char ***msgs,
                          unsigned int flags);
 
+int virDomainStartDirtyRateCalc(virDomainPtr domain,
+                                int seconds,
+                                unsigned int flags);
+
 #endif /* LIBVIRT_DOMAIN_H */

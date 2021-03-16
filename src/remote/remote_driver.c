@@ -8571,6 +8571,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainAuthorizedSSHKeysGet = remoteDomainAuthorizedSSHKeysGet, /* 6.10.0 */
     .domainAuthorizedSSHKeysSet = remoteDomainAuthorizedSSHKeysSet, /* 6.10.0 */
     .domainGetMessages = remoteDomainGetMessages, /* 7.1.0 */
+    .domainStartDirtyRateCalc = remoteDomainStartDirtyRateCalc, /* 7.2.0 */
 };
 
 static virNetworkDriver network_driver = {

@@ -1405,6 +1405,11 @@ typedef int
                            char ***msgs,
                            unsigned int flags);
 
+typedef int
+(*virDrvDomainStartDirtyRateCalc)(virDomainPtr domain,
+                                  int seconds,
+                                  unsigned int flags);
+
 typedef struct _virHypervisorDriver virHypervisorDriver;
 typedef virHypervisorDriver *virHypervisorDriverPtr;
 
@@ -1671,4 +1676,5 @@ struct _virHypervisorDriver {
     virDrvDomainAuthorizedSSHKeysGet domainAuthorizedSSHKeysGet;
     virDrvDomainAuthorizedSSHKeysSet domainAuthorizedSSHKeysSet;
     virDrvDomainGetMessages domainGetMessages;
+    virDrvDomainStartDirtyRateCalc domainStartDirtyRateCalc;
 };
