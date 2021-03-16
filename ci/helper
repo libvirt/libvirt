@@ -79,6 +79,7 @@ class Parser:
             "build",
             help="run a build in a container",
             parents=[containerparser, mesonparser],
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         buildparser.set_defaults(func=Application.action_build)
 
@@ -87,6 +88,7 @@ class Parser:
             "test",
             help="run a build in a container (including tests)",
             parents=[containerparser, mesonparser],
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         testparser.set_defaults(func=Application.action_test)
 
@@ -95,6 +97,7 @@ class Parser:
             "shell",
             help="start a shell in a container",
             parents=[containerparser],
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         shellparser.set_defaults(func=Application.action_shell)
 
@@ -102,6 +105,7 @@ class Parser:
         listimagesparser = subparsers.add_parser(
             "list-images",
             help="list known container images",
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         listimagesparser.set_defaults(func=Application.action_list_images)
 
@@ -110,6 +114,7 @@ class Parser:
             "refresh",
             help="refresh data generated with lcitool",
             parents=[lcitoolparser],
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         refreshparser.set_defaults(func=Application.action_refresh)
 
