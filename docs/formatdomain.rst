@@ -167,7 +167,9 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    in the guest memory the file should be mapped. For instance, if the loader
    path points to an UEFI image, ``type`` should be ``pflash``. Moreover, some
    firmwares may implement the Secure boot feature. Attribute ``secure`` can be
-   used then to control it. :since:`Since 2.1.0`
+   used to tell the hypervisor that the firmware is capable of Secure Boot feature.
+   It cannot be used to enable or disable the feature itself in the firmware.
+   :since:`Since 2.1.0`
 ``nvram``
    Some UEFI firmwares may want to use a non-volatile memory to store some
    variables. In the host, this is represented as a file and the absolute path
