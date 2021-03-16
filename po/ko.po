@@ -6,21 +6,22 @@
 # Daniel <veillard@redhat.com>, 2011
 # eukim <eukim@redhat.com>, 2006, 2007, 2009, 2012, 2013, 2014
 # Seong-ho Cho <darkcircle.0426@gmail.com>, 2014
+# simmon <simmon@nplob.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-02-22 08:42+0000\n"
-"PO-Revision-Date: 2015-02-27 07:48+0000\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Korean (http://www.transifex.com/projects/p/libvirt/language/"
-"ko/)\n"
+"PO-Revision-Date: 2021-03-16 18:01+0000\n"
+"Last-Translator: simmon <simmon@nplob.com>\n"
+"Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
+"libvirt/ko/>\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 4.6.2\n"
+"X-Generator: Weblate 4.5.1\n"
 
 msgid ""
 "\n"
@@ -1663,9 +1664,8 @@ msgstr "활성화:"
 msgid "Actual interface '%s' hostdev was not a PCI device"
 msgstr "장치 %s는 PCI 장치가 아닙니다"
 
-#, fuzzy
 msgid "Add an IOThread to the guest domain."
-msgstr "대상 도메인에서 재부팅 명령 실행."
+msgstr "대상 도메인에서 재시작 명령 실행."
 
 msgid "Add or remove vcpus"
 msgstr ""
@@ -6451,9 +6451,8 @@ msgstr "VM '%s'의 autostart 실패: %s"
 msgid "Failed to autostart storage pool '%s': %s"
 msgstr "VM '%s'의 autostart 실패: %s"
 
-#, fuzzy
 msgid "Failed to balloon domain0 memory"
-msgstr "도메인 %s를 재부팅하기 실패"
+msgstr "도메인 %s를 재시작하기 실패"
 
 #, fuzzy
 msgid "Failed to begin network config change transaction"
@@ -7919,9 +7918,9 @@ msgstr "'%s' 파일 읽기 실패"
 msgid "Failed to reattach NVMe for disk target: %s"
 msgstr "바인딩 대상 %s을 생성하는데 실패했습니다 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reboot domain '%d' with libxenlight"
-msgstr "도메인 %s를 재부팅하기 실패"
+msgstr "도메인 %s를 재시작하기 실패"
 
 #, c-format
 msgid "Failed to reboot domain '%s'"
@@ -14393,7 +14392,7 @@ msgid "Route address '%s' conflicts with IP address for '%s'"
 msgstr ""
 
 msgid "Run a reboot command in the target domain."
-msgstr "대상 도메인에서 재부팅 명령 실행."
+msgstr "대상 도메인에서 재시작 명령 실행."
 
 msgid "Run an arbitrary command in a lxc guest namespace; use at your own risk"
 msgstr ""
@@ -24924,9 +24923,9 @@ msgstr "도메인이 '%s'가 이미 실행중입니다"
 msgid "domain '%s' is already defined with uuid %s"
 msgstr "도메인 '%s'가 uuid %s로 이미 정의되어 있습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%s' is not being migrated"
-msgstr "도메인 %s가 재부팅됨\n"
+msgstr "도메인 %s가 이전되지 않음"
 
 #, fuzzy, c-format
 msgid "domain '%s' is not processing incoming migration"
@@ -34466,7 +34465,7 @@ msgid "reattach node device to its device driver"
 msgstr "장치 드라이버에 노드 장치를 재부착"
 
 msgid "reboot a domain"
-msgstr "도메인을 재부팅"
+msgstr "도메인을 재시작"
 
 #, fuzzy
 msgid "reboot timeout is not supported by this QEMU binary"
