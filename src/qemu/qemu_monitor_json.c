@@ -9502,3 +9502,82 @@ qemuMonitorJSONStartDirtyRateCalc(qemuMonitorPtr mon,
 
     return 0;
 }
+
+VIR_ENUM_DECL(qemuMonitorDirtyRateStatus);
+VIR_ENUM_IMPL(qemuMonitorDirtyRateStatus,
+              VIR_DOMAIN_DIRTYRATE_LAST,
+              "unstarted",
+              "measuring",
+              "measured");
+
+static int
+qemuMonitorJSONExtractDirtyRateInfo(virJSONValuePtr data,
+                                    qemuMonitorDirtyRateInfoPtr info)
+{
+    const char *statusstr;
+    int status;
+
+    if (!(statusstr = virJSONValueObjectGetString(data, "status"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-dirty-rate reply was missing 'status' data"));
+        return -1;
+    }
+
+    if ((status = qemuMonitorDirtyRateStatusTypeFromString(statusstr)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown dirty rate status: %s"), statusstr);
+        return -1;
+    }
+    info->status = status;
+
+    /* `query-dirty-rate` replies `dirty-rate` data only if the status of the latest
+     * calculation is `measured`.
+     */
+    if ((info->status == VIR_DOMAIN_DIRTYRATE_MEASURED) &&
+        (virJSONValueObjectGetNumberLong(data, "dirty-rate", &info->dirtyRate) < 0)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-dirty-rate reply was missing 'dirty-rate' data"));
+        return -1;
+    }
+
+    if (virJSONValueObjectGetNumberLong(data, "start-time", &info->startTime) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-dirty-rate reply was missing 'start-time' data"));
+        return -1;
+    }
+
+    if (virJSONValueObjectGetNumberInt(data, "calc-time", &info->calcTime) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-dirty-rate reply was missing 'calc-time' data"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int
+qemuMonitorJSONQueryDirtyRate(qemuMonitorPtr mon,
+                              qemuMonitorDirtyRateInfoPtr info)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    virJSONValuePtr data = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-dirty-rate", NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-dirty-rate reply was missing 'return' data"));
+        return -1;
+    }
+
+    return qemuMonitorJSONExtractDirtyRateInfo(data, info);
+}
