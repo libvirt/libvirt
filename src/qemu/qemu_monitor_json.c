@@ -9480,3 +9480,25 @@ qemuMonitorJSONGetCPUMigratable(qemuMonitorPtr mon,
     return virJSONValueGetBoolean(virJSONValueObjectGet(reply, "return"),
                                   migratable);
 }
+
+
+int
+qemuMonitorJSONStartDirtyRateCalc(qemuMonitorPtr mon,
+                                  int seconds)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("calc-dirty-rate",
+                                           "i:calc-time", seconds,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    return 0;
+}

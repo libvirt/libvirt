@@ -711,3 +711,7 @@ int qemuMonitorJSONSetDBusVMStateIdList(qemuMonitorPtr mon,
 int
 qemuMonitorJSONGetCPUMigratable(qemuMonitorPtr mon,
                                 bool *migratable);
+
+int
+qemuMonitorJSONStartDirtyRateCalc(qemuMonitorPtr mon,
+                                  int seconds);

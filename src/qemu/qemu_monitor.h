@@ -1526,3 +1526,7 @@ qemuMonitorTransactionBackup(virJSONValuePtr actions,
                              const char *target,
                              const char *bitmap,
                              qemuMonitorTransactionBackupSyncMode syncmode);
+
+int
+qemuMonitorStartDirtyRateCalc(qemuMonitorPtr mon,
+                              int seconds);
