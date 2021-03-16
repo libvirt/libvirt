@@ -2235,9 +2235,19 @@ G_STATIC_ASSERT((int)VIR_DOMAIN_OS_DEF_FIRMWARE_LAST == (int)VIR_DOMAIN_LOADER_T
 
 VIR_ENUM_DECL(virDomainOsDefFirmware);
 
+typedef enum {
+    VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_ENROLLED_KEYS,
+    VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT,
+
+    VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_LAST
+} virDomainOsDefFirmwareFeature;
+
+VIR_ENUM_DECL(virDomainOsDefFirmwareFeature);
+
 struct _virDomainOSDef {
     int type;
     virDomainOsDefFirmware firmware;
+    int *firmwareFeatures;
     virArch arch;
     char *machine;
     size_t nBootDevs;

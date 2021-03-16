@@ -155,6 +155,37 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    the host native arch will be chosen. For the ``test``, ``ESX`` and ``VMWare``
    hypervisor drivers, however, the ``i686`` arch will always be chosen even on
    an ``x86_64`` host. :since:`Since 0.0.1`
+``firmware``
+   :since:`Since 7.2.0 QEMU/KVM only`
+
+   When used together with ``firmware`` attribute of ``os`` element the ``type``
+   attribute must have the same value.
+
+   List of mandatory attributes:
+
+   - ``type`` (accepted values are ``bios`` and ``efi``) same as the ``firmware``
+     attribute of ``os`` element.
+
+   When using firmware auto-selection there are different features enabled in
+   the firmwares. The list of features can be used to limit what firmware should
+   be automatically selected for the VM. The list of features can be specified
+   using zero or more ``feature`` elements. Libvirt will take into consideration
+   only the listed features and ignore the rest when selecting the firmware.
+
+   ``feature``
+      The list of mandatory attributes:
+
+      - ``enabled`` (accepted values are ``yes`` and ``no``) is used to tell libvirt
+        if the feature must be enabled or not in the automatically selected firmware
+
+      - ``name`` the name of the feature, the list of the features:
+
+        - ``enrolled-keys`` whether the selected nvram template has default
+          certificate enrolled. Firmware with Secure Boot feature but without
+          enrolled keys will successfully boot non-signed binaries as well.
+          Valid only for firmwares with Secure Boot feature.
+
+        - ``secure-boot`` whether the firmware implements UEFI Secure boot feature.
 ``loader``
    The optional ``loader`` tag refers to a firmware blob, which is specified by
    absolute path, used to assist the domain creation process. It is used by Xen

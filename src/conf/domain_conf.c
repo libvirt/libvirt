@@ -1318,6 +1318,12 @@ VIR_ENUM_IMPL(virDomainOsDefFirmware,
               "efi",
 );
 
+VIR_ENUM_IMPL(virDomainOsDefFirmwareFeature,
+              VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_LAST,
+              "enrolled-keys",
+              "secure-boot",
+);
+
 VIR_ENUM_IMPL(virDomainCFPC,
               VIR_DOMAIN_CFPC_LAST,
               "none",
@@ -19582,21 +19588,66 @@ virDomainDefParseBootFirmwareOptions(virDomainDefPtr def,
                                      xmlXPathContextPtr ctxt)
 {
     g_autofree char *firmware = virXPathString("string(./os/@firmware)", ctxt);
+    g_autofree char *type = virXPathString("string(./os/firmware/@type)", ctxt);
+    g_autofree xmlNodePtr *nodes = NULL;
+    g_autofree int *features = NULL;
     int fw = 0;
+    int n = 0;
+    size_t i;
 
-    if (!firmware)
+    if (!firmware && !type)
         return 0;
 
-    fw = virDomainOsDefFirmwareTypeFromString(firmware);
+    if (firmware && type && STRNEQ(firmware, type)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("firmware attribute and firmware type has to be the same"));
+        return -1;
+    }
+
+    if (!type)
+        type = g_steal_pointer(&firmware);
+
+    fw = virDomainOsDefFirmwareTypeFromString(type);
 
     if (fw <= 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unknown firmware value %s"),
-                       firmware);
+                       type);
         return -1;
     }
 
     def->os.firmware = fw;
+
+    if ((n = virXPathNodeSet("./os/firmware/feature", ctxt, &nodes)) < 0)
+        return -1;
+
+    if (n > 0)
+        features = g_new0(int, VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_LAST);
+
+    for (i = 0; i < n; i++) {
+        g_autofree char *name = virXMLPropString(nodes[i], "name");
+        g_autofree char *enabled = virXMLPropString(nodes[i], "enabled");
+        int feature = virDomainOsDefFirmwareFeatureTypeFromString(name);
+        int val = virTristateBoolTypeFromString(enabled);
+
+        if (feature < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid firmware feature name '%s'"),
+                           name);
+            return -1;
+        }
+
+        if (val < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid firmware feature enabled value '%s'"),
+                           enabled);
+            return -1;
+        }
+
+        features[feature] = val;
+    }
+
+    def->os.firmwareFeatures = g_steal_pointer(&features);
 
     return 0;
 }
@@ -29436,6 +29487,32 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     else
         virBufferAsprintf(buf, ">%s</type>\n",
                           virDomainOSTypeToString(def->os.type));
+
+    if (def->os.firmware) {
+        virBufferAsprintf(buf, "<firmware type='%s'",
+                          virDomainOsDefFirmwareTypeToString(def->os.firmware));
+
+        if (def->os.firmwareFeatures) {
+            virBufferAddLit(buf, ">\n");
+
+            virBufferAdjustIndent(buf, 2);
+
+            for (i = 0; i < VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_LAST; i++) {
+                if (def->os.firmwareFeatures[i] == VIR_TRISTATE_BOOL_ABSENT)
+                    continue;
+
+                virBufferAsprintf(buf, "<feature enabled='%s' name='%s'/>\n",
+                                  virTristateBoolTypeToString(def->os.firmwareFeatures[i]),
+                                  virDomainOsDefFirmwareFeatureTypeToString(i));
+            }
+
+            virBufferAdjustIndent(buf, -2);
+
+            virBufferAddLit(buf, "</firmware>\n");
+        } else {
+            virBufferAddLit(buf, "/>\n");
+        }
+    }
 
     virBufferEscapeString(buf, "<init>%s</init>\n",
                           def->os.init);

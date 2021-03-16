@@ -277,6 +277,29 @@
         </optional>
         <ref name="ostypehvm"/>
         <optional>
+          <element name="firmware">
+            <attribute name="type">
+              <choice>
+                <value>bios</value>
+                <value>efi</value>
+              </choice>
+            </attribute>
+            <zeroOrMore>
+              <element name="feature">
+                <attribute name="enabled">
+                  <ref name="virYesNo"/>
+                </attribute>
+                <attribute name="name">
+                  <choice>
+                    <value>enrolled-keys</value>
+                    <value>secure-boot</value>
+                  </choice>
+                </attribute>
+              </element>
+            </zeroOrMore>
+          </element>
+        </optional>
+        <optional>
           <element name="loader">
             <optional>
               <attribute name="readonly">
