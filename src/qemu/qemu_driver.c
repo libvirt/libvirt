@@ -2381,12 +2381,28 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     } else {
         /* resize the current memory */
         unsigned long oldmax = 0;
+        size_t i;
 
-        if (def)
+        if (def) {
             oldmax = virDomainDefGetMemoryTotal(def);
+
+            /* While virtio-mem is regular mem from guest POV, it can't be
+             * modified through this API. */
+            for (i = 0; i < def->nmems; i++) {
+                if (def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM)
+                    oldmax -= def->mems[i]->size;
+            }
+        }
+
         if (persistentDef) {
-            if (!oldmax || oldmax > virDomainDefGetMemoryTotal(persistentDef))
+            if (!def || oldmax > virDomainDefGetMemoryTotal(persistentDef)) {
                 oldmax = virDomainDefGetMemoryTotal(persistentDef);
+
+                for (i = 0; i < persistentDef->nmems; i++) {
+                    if (persistentDef->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM)
+                        oldmax -= persistentDef->mems[i]->size;
+                }
+            }
         }
 
         if (newmem > oldmax) {
