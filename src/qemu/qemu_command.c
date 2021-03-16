@@ -321,87 +321,104 @@ qemuVirCommandGetDevSet(virCommand *cmd, int fd)
 
 
 static int
-qemuBuildDeviceAddressStr(virBuffer *buf,
-                          const virDomainDef *domainDef,
-                          virDomainDeviceInfo *info)
+qemuBuildDeviceAddressPCIStr(virBuffer *buf,
+                             const virDomainDef *domainDef,
+                             virDomainDeviceInfo *info)
 {
     g_autofree char *devStr = NULL;
     const char *contAlias = NULL;
     bool contIsPHB = false;
     int contTargetIndex = 0;
+    size_t i;
+
+    if (!(devStr = virPCIDeviceAddressAsString(&info->addr.pci)))
+        return -1;
+
+    for (i = 0; i < domainDef->ncontrollers; i++) {
+        virDomainControllerDef *cont = domainDef->controllers[i];
+
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
+            cont->idx == info->addr.pci.bus) {
+            contAlias = cont->info.alias;
+            contIsPHB = virDomainControllerIsPSeriesPHB(cont);
+            contTargetIndex = cont->opts.pciopts.targetIndex;
+
+            if (!contAlias) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Device alias was not set for PCI "
+                                 "controller with index %u required "
+                                 "for device at address %s"),
+                               info->addr.pci.bus, devStr);
+                return -1;
+            }
+
+            if (virDomainDeviceAliasIsUserAlias(contAlias)) {
+                /* When domain has builtin pci-root controller we don't put it
+                 * onto cmd line. Therefore we can't set its alias. In that
+                 * case, use the default one. */
+                if (!qemuDomainIsPSeries(domainDef) &&
+                    cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
+                    if (virQEMUCapsHasPCIMultiBus(domainDef))
+                        contAlias = "pci.0";
+                    else
+                        contAlias = "pci";
+                } else if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
+                    contAlias = "pcie.0";
+                }
+            }
+            break;
+        }
+    }
+
+    if (!contAlias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not find PCI "
+                         "controller with index %u required "
+                         "for device at address %s"),
+                       info->addr.pci.bus, devStr);
+        return -1;
+    }
+
+    if (contIsPHB && contTargetIndex > 0) {
+        /* The PCI bus created by a spapr-pci-host-bridge device with
+         * alias 'x' will be called 'x.0' rather than 'x'; however,
+         * this does not apply to the implicit PHB in a pSeries guest,
+         * which always has the hardcoded name 'pci.0' */
+        virBufferAsprintf(buf, ",bus=%s.0", contAlias);
+    } else {
+        /* For all other controllers, the bus name matches the alias
+         * of the corresponding controller */
+        virBufferAsprintf(buf, ",bus=%s", contAlias);
+    }
+
+    if (info->addr.pci.multi == VIR_TRISTATE_SWITCH_ON)
+        virBufferAddLit(buf, ",multifunction=on");
+    else if (info->addr.pci.multi == VIR_TRISTATE_SWITCH_OFF)
+        virBufferAddLit(buf, ",multifunction=off");
+
+    virBufferAsprintf(buf, ",addr=0x%x", info->addr.pci.slot);
+
+    if (info->addr.pci.function != 0)
+        virBufferAsprintf(buf, ".0x%x", info->addr.pci.function);
+
+    if (info->acpiIndex != 0)
+        virBufferAsprintf(buf, ",acpi-index=%u", info->acpiIndex);
+
+    return 0;
+}
+
+
+static int
+qemuBuildDeviceAddressStr(virBuffer *buf,
+                          const virDomainDef *domainDef,
+                          virDomainDeviceInfo *info)
+{
+    const char *contAlias = NULL;
 
     switch ((virDomainDeviceAddressType)info->type) {
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI: {
-        size_t i;
-
-        if (!(devStr = virPCIDeviceAddressAsString(&info->addr.pci)))
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
+        if (qemuBuildDeviceAddressPCIStr(buf, domainDef, info) < 0)
             return -1;
-        for (i = 0; i < domainDef->ncontrollers; i++) {
-            virDomainControllerDef *cont = domainDef->controllers[i];
-
-            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
-                cont->idx == info->addr.pci.bus) {
-                contAlias = cont->info.alias;
-                contIsPHB = virDomainControllerIsPSeriesPHB(cont);
-                contTargetIndex = cont->opts.pciopts.targetIndex;
-
-                if (!contAlias) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Device alias was not set for PCI "
-                                     "controller with index %u required "
-                                     "for device at address %s"),
-                                   info->addr.pci.bus, devStr);
-                    return -1;
-                }
-
-                if (virDomainDeviceAliasIsUserAlias(contAlias)) {
-                    /* When domain has builtin pci-root controller we don't put it
-                     * onto cmd line. Therefore we can't set its alias. In that
-                     * case, use the default one. */
-                    if (!qemuDomainIsPSeries(domainDef) &&
-                        cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
-                        if (virQEMUCapsHasPCIMultiBus(domainDef))
-                            contAlias = "pci.0";
-                        else
-                            contAlias = "pci";
-                    } else if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
-                        contAlias = "pcie.0";
-                    }
-                }
-                break;
-            }
-        }
-        if (!contAlias) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not find PCI "
-                             "controller with index %u required "
-                             "for device at address %s"),
-                           info->addr.pci.bus, devStr);
-            return -1;
-        }
-
-        if (contIsPHB && contTargetIndex > 0) {
-            /* The PCI bus created by a spapr-pci-host-bridge device with
-             * alias 'x' will be called 'x.0' rather than 'x'; however,
-             * this does not apply to the implicit PHB in a pSeries guest,
-             * which always has the hardcoded name 'pci.0' */
-            virBufferAsprintf(buf, ",bus=%s.0", contAlias);
-        } else {
-            /* For all other controllers, the bus name matches the alias
-             * of the corresponding controller */
-            virBufferAsprintf(buf, ",bus=%s", contAlias);
-        }
-
-        if (info->addr.pci.multi == VIR_TRISTATE_SWITCH_ON)
-            virBufferAddLit(buf, ",multifunction=on");
-        else if (info->addr.pci.multi == VIR_TRISTATE_SWITCH_OFF)
-            virBufferAddLit(buf, ",multifunction=off");
-        virBufferAsprintf(buf, ",addr=0x%x", info->addr.pci.slot);
-        if (info->addr.pci.function != 0)
-            virBufferAsprintf(buf, ".0x%x", info->addr.pci.function);
-        if (info->acpiIndex != 0)
-            virBufferAsprintf(buf, ",acpi-index=%u", info->acpiIndex);
-    }
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
