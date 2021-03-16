@@ -14402,6 +14402,58 @@ cmdSetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
 }
 
 
+/*
+ * "domdirtyrate" command
+ */
+static const vshCmdInfo info_domdirtyrate_calc[] = {
+    {.name = "help",
+     .data = N_("Calculate a vm's memory dirty rate")
+    },
+    {.name = "desc",
+     .data = N_("Calculate memory dirty rate of a domain in order to "
+                "decide whether it's proper to be migrated out or not.\n"
+                "The calculated dirty rate information is available by "
+                "calling 'domstats --dirtyrate'.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_domdirtyrate_calc[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = "seconds",
+     .type = VSH_OT_INT,
+     .help = N_("calculate memory dirty rate within specified seconds, "
+                "the supported value range from 1 to 60, default to 1.")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDomDirtyRateCalc(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    int seconds = 1; /* the default value is 1 */
+    bool ret = false;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptInt(ctl, cmd, "seconds", &seconds) < 0)
+        goto cleanup;
+
+    if (virDomainStartDirtyRateCalc(dom, seconds, 0) < 0)
+        goto cleanup;
+
+    vshPrintExtra(ctl, _("Start to calculate domain's memory "
+                         "dirty rate successfully.\n"));
+    ret = true;
+
+ cleanup:
+    virshDomainFree(dom);
+    return ret;
+}
+
+
 const vshCmdDef domManagementCmds[] = {
     {.name = "attach-device",
      .handler = cmdAttachDevice,
@@ -15039,6 +15091,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdGuestInfo,
      .opts = opts_guestinfo,
      .info = info_guestinfo,
+     .flags = 0
+    },
+    {.name = "domdirtyrate-calc",
+     .handler = cmdDomDirtyRateCalc,
+     .opts = opts_domdirtyrate_calc,
+     .info = info_domdirtyrate_calc,
      .flags = 0
     },
     {.name = NULL}
