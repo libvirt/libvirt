@@ -1123,6 +1123,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("os-firmware-bios");
     DO_TEST_CAPS_LATEST("os-firmware-efi");
     DO_TEST_CAPS_LATEST("os-firmware-efi-secboot");
+    DO_TEST_CAPS_LATEST("os-firmware-efi-no-enrolled-keys");
 
     DO_TEST("aarch64-aavmf-virtio-mmio",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,

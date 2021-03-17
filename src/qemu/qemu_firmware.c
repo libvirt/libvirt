@@ -930,6 +930,10 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
     bool supportsS4 = false;
     bool requiresSMM = false;
     bool supportsSEV = false;
+    bool supportsSecureBoot = false;
+    bool hasEnrolledKeys = false;
+    int reqSecureBoot;
+    int reqEnrolledKeys;
 
     want = qemuFirmwareOSInterfaceTypeFromOsDefFirmware(def->os.firmware);
 
@@ -979,7 +983,13 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
             break;
 
         case QEMU_FIRMWARE_FEATURE_SECURE_BOOT:
+            supportsSecureBoot = true;
+            break;
+
         case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
+            hasEnrolledKeys = true;
+            break;
+
         case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
         case QEMU_FIRMWARE_FEATURE_NONE:
@@ -998,6 +1008,36 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
         !supportsS4) {
         VIR_DEBUG("Domain requires S4, firmware '%s' doesn't support it", path);
         return false;
+    }
+
+    if (def->os.firmwareFeatures) {
+        reqSecureBoot = def->os.firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT];
+        if (reqSecureBoot != VIR_TRISTATE_BOOL_ABSENT) {
+            if (reqSecureBoot == VIR_TRISTATE_BOOL_YES && !supportsSecureBoot) {
+                VIR_DEBUG("User requested Secure Boot, firmware '%s' doesn't support it",
+                          path);
+                return false;
+            }
+
+            if (reqSecureBoot == VIR_TRISTATE_BOOL_NO && supportsSecureBoot) {
+                VIR_DEBUG("User refused Secure Boot, firmware '%s' supports it", path);
+                return false;
+            }
+        }
+
+        reqEnrolledKeys = def->os.firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_ENROLLED_KEYS];
+        if (reqEnrolledKeys != VIR_TRISTATE_BOOL_ABSENT) {
+            if (reqEnrolledKeys == VIR_TRISTATE_BOOL_YES && !hasEnrolledKeys) {
+                VIR_DEBUG("User requested Enrolled keys, firmware '%s' doesn't have them",
+                          path);
+                return false;
+            }
+
+            if (reqEnrolledKeys == VIR_TRISTATE_BOOL_NO && hasEnrolledKeys) {
+                VIR_DEBUG("User refused Enrolled keys, firmware '%s' has them", path);
+                return false;
+            }
+        }
     }
 
     if (def->os.loader &&
