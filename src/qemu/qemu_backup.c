@@ -28,6 +28,7 @@
 #include "qemu_monitor_json.h"
 #include "qemu_checkpoint.h"
 #include "qemu_command.h"
+#include "qemu_security.h"
 
 #include "storage_source.h"
 #include "storage_source_conf.h"
@@ -558,25 +559,40 @@ qemuBackupJobTerminate(virDomainObjPtr vm,
 
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
     size_t i;
 
-    if (!(priv->backup->apiFlags & VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL) &&
-        (priv->backup->type == VIR_DOMAIN_BACKUP_TYPE_PULL ||
-         (priv->backup->type == VIR_DOMAIN_BACKUP_TYPE_PUSH &&
-          jobstatus != QEMU_DOMAIN_JOB_STATUS_COMPLETED))) {
+    for (i = 0; i < priv->backup->ndisks; i++) {
+        virDomainBackupDiskDefPtr backupdisk = priv->backup->disks + i;
 
-        g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+        if (!backupdisk->store)
+            continue;
 
-        for (i = 0; i < priv->backup->ndisks; i++) {
-            virDomainBackupDiskDefPtr backupdisk = priv->backup->disks + i;
+        /* restore security label on the images in case the blockjob finishing
+         * handler didn't do so, such as when the VM was destroyed */
+        if (backupdisk->state == VIR_DOMAIN_BACKUP_DISK_STATE_RUNNING ||
+            backupdisk->state == VIR_DOMAIN_BACKUP_DISK_STATE_NONE) {
+            if (qemuSecurityRestoreImageLabel(priv->driver, vm, backupdisk->store,
+                                              false) < 0)
+                VIR_WARN("Unable to restore security label on %s",
+                         NULLSTR(backupdisk->store->path));
+        }
+
+        /* delete unneeded images created by libvirt */
+        if (backupdisk->store->type == VIR_STORAGE_TYPE_FILE &&
+            !(priv->backup->apiFlags & VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL) &&
+            (priv->backup->type == VIR_DOMAIN_BACKUP_TYPE_PULL ||
+             (priv->backup->type == VIR_DOMAIN_BACKUP_TYPE_PUSH &&
+              jobstatus != QEMU_DOMAIN_JOB_STATUS_COMPLETED))) {
+
             uid_t uid;
             gid_t gid;
 
-            if (!backupdisk->store ||
-                backupdisk->store->type != VIR_STORAGE_TYPE_FILE)
-                continue;
+            if (!cfg)
+                cfg = virQEMUDriverGetConfig(priv->driver);
 
             qemuDomainGetImageIds(cfg, vm, backupdisk->store, NULL, &uid, &gid);
+
             if (virFileRemove(backupdisk->store->path, uid, gid) < 0)
                 VIR_WARN("failed to remove scratch file '%s'",
                          backupdisk->store->path);

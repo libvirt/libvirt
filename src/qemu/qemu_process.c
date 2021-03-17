@@ -7822,10 +7822,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         virResctrlAllocRemove(vm->def->resctrls[i]->alloc);
     }
 
-    /* clean up a possible backup job */
-    if (priv->backup)
-        qemuBackupJobTerminate(vm, QEMU_DOMAIN_JOB_STATUS_CANCELED);
-
     qemuProcessRemoveDomainStatus(driver, vm);
 
     /* Remove VNC and Spice ports from port reservation bitmap, but only if
@@ -7876,6 +7872,10 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     for (i = 0; i < vm->def->niothreadids; i++)
         vm->def->iothreadids[i]->thread_id = 0;
+
+    /* clean up a possible backup job */
+    if (priv->backup)
+        qemuBackupJobTerminate(vm, QEMU_DOMAIN_JOB_STATUS_CANCELED);
 
     /* Do this explicitly after vm->pid is reset so that security drivers don't
      * try to enter the domain's namespace which is non-existent by now as qemu
