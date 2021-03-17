@@ -1710,10 +1710,9 @@ qemuMonitorJSONGetStatus(qemuMonitor *mon,
                          bool *running,
                          virDomainPausedReason *reason)
 {
-    int ret = -1;
     const char *status;
-    virJSONValue *cmd;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValue *data;
 
     if (reason)
@@ -1723,17 +1722,17 @@ qemuMonitorJSONGetStatus(qemuMonitor *mon,
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
-        goto cleanup;
+        return -1;
 
     data = virJSONValueObjectGetObject(reply, "return");
 
     if (virJSONValueObjectGetBoolean(data, "running", running) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("query-status reply was missing running state"));
-        goto cleanup;
+        return -1;
     }
 
     if ((status = virJSONValueObjectGetString(data, "status"))) {
@@ -1743,12 +1742,7 @@ qemuMonitorJSONGetStatus(qemuMonitor *mon,
         VIR_DEBUG("query-status reply was missing status details");
     }
 
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    return 0;
 }
 
 
