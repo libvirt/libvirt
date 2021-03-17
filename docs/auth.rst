@@ -35,7 +35,7 @@ within the group may be:
 
 * ``username``: the user login name to act as. This
   is relevant for ESX, Xen, HyperV and SSH, but probably not
-  the one you want to libvirtd with SASL.
+  the one you want for libvirtd with SASL.
 * ``authname``: the name to authorize as. This is
   what is commonly required for libvirtd with SASL.
 * ``password``: the secret password.
@@ -52,7 +52,8 @@ entry name. Overall the syntax is
 
 
 For example, to define two sets of credentials used for production
-and test machines, using libvirtd, and a further ESX server for dev:
+and test machines, using libvirtd, and a further ESX server for
+development:
 
 ::
 
@@ -178,7 +179,7 @@ when accessing from an active local session:
 
    polkit.addRule(function(action, subject) {
      if (action.id == "org.libvirt.unix.manage" &&
-         subject.local &amp;&amp; subject.active &&; subject.user == "fred") {
+         subject.local && subject.active && subject.user == "fred") {
        return polkit.Result.YES;
      }
    });
@@ -255,7 +256,7 @@ As noted above, the DIGEST-MD5 mechanism is considered obsolete and should
 not be used anymore. To provide a simple username/password auth scheme on
 the libvirt UNIX socket or TLS listeners, however, it is possible to use
 the SCRAM mechanism. The ``auth_unix_ro``, ``auth_unix_rw``,
-``auth_tls`` config params in ``libvirt.conf`` can be used
+``auth_tls`` config params in ``libvirtd.conf`` can be used
 to turn on SASL auth in these listeners.
 
 Since the libvirt SASL config file defaults to using ``GSSAPI`` (Kerberos), a
