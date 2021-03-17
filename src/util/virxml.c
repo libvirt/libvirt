@@ -536,7 +536,7 @@ virXMLPropStringLimit(xmlNodePtr node,
 char *
 virXMLNodeContentString(xmlNodePtr node)
 {
-    char *ret = (char *)xmlNodeGetContent(node);
+    char *ret = NULL;
 
     if (node->type !=  XML_ELEMENT_NODE) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -544,6 +544,8 @@ virXMLNodeContentString(xmlNodePtr node)
                        node->name, node->type);
         return NULL;
     }
+
+    ret = (char *)xmlNodeGetContent(node);
 
     if (!ret) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
