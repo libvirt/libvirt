@@ -24,6 +24,15 @@ v7.2.0 (unreleased)
     The memory dirty rate stats can be obtained through ``virsh domstats
     --dirtyrate`` via the virConnectGetAllDomainStats API.
 
+  * qemu: Full disk backups via ``virDomainBackupBegin``
+
+    The qemu hypervisor driver now allows taking full disk backups via the
+    ``virDomainBackupBegin`` API and the corresponding virsh wrapper.
+
+    In future releases the feature will be extended to also support incremental
+    backups (where only the difference since the last backup is copied) when
+    qemu adds the required functionality.
+
 * **Improvements**
 
 * **Bug fixes**
