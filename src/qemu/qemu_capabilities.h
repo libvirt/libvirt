@@ -602,6 +602,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 395 */
     QEMU_CAPS_VNC_POWER_CONTROL, /* -vnc power-control option */
     QEMU_CAPS_AUDIODEV, /* -audiodev instead of QEMU_AUDIO_DRV */
+    QEMU_CAPS_BLOCKDEV_BACKUP, /* qemu supports the blockdev-backup job */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

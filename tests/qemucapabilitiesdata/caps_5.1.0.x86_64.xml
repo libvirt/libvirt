@@ -255,6 +255,7 @@
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
   <flag name='vnc-opts'/>
   <flag name='audiodev'/>
+  <flag name='blockdev-backup'/>
   <version>5001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

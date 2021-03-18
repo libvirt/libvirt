@@ -622,6 +622,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 395 */
               "vnc-power-control",
               "audiodev",
+              "blockdev-backup",
     );
 
 
@@ -1557,6 +1558,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "netdev_add/arg-type/+vhost-vdpa", QEMU_CAPS_NETDEV_VHOST_VDPA },
     { "migrate-set-parameters/arg-type/block-bitmap-mapping/bitmaps/transform",
       QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING },
+    { "blockdev-backup", QEMU_CAPS_BLOCKDEV_BACKUP },
 };
 
 typedef struct _virQEMUCapsObjectTypeProps virQEMUCapsObjectTypeProps;
@@ -5168,7 +5170,10 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCapsPtr qemuCaps)
 void
 virQEMUCapsInitProcessCapsInterlock(virQEMUCapsPtr qemuCaps)
 {
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV) &&
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
+        virQEMUCapsClear(qemuCaps, QEMU_CAPS_BLOCKDEV_BACKUP);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_BACKUP) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP);
