@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env python3
 # libvirt 'run' programs locally script
-# Copyright (C) 2012-2013 Red Hat, Inc.
+# Copyright (C) 2012-2021 Red Hat, Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -40,35 +40,42 @@
 #
 #----------------------------------------------------------------------
 
+import os
+import os.path
+import random
+import sys
+
 # Function to intelligently prepend a path to an environment variable.
 # See https://stackoverflow.com/a/9631350
-prepend()
-{
-    eval $1="$2\${$1:+:\$$1}"
-}
+def prepend(env, varname, extradir):
+    if varname in os.environ:
+        env[varname] = extradir + ":" + env[varname]
+    else:
+        env[varname] = extradir
 
-# Find this script.
-b=@abs_builddir@
+here = "@abs_builddir@"
 
-prepend LD_LIBRARY_PATH "$b/src"
-export LD_LIBRARY_PATH
+if len(sys.argv) < 2:
+    print("syntax: %s BINARY [ARGS...]" % sys.argv[0], file=sys.stderr)
+    sys.exit(1)
 
-prepend PKG_CONFIG_PATH "$b/src"
-export PKG_CONFIG_PATH
+prog = sys.argv[1]
+args = sys.argv[1:]
+env = os.environ
 
-prepend PATH "$b/tools"
-export PATH
+
+prepend(env, "LD_LIBRARY_PATH", os.path.join(here, "src"))
+prepend(env, "PKG_CONFIG_PATH", os.path.join(here, "src"))
+prepend(env, "PATH", os.path.join(here, "tools"))
 
 # Ensure that any 3rd party apps using libvirt.so from the build tree get
 # files resolved to the build/source tree too. Typically useful for language
 # bindings running tests against non-installed libvirt.
-LIBVIRT_DIR_OVERRIDE=1
-export LIBVIRT_DIR_OVERRIDE
+env["LIBVIRT_DIR_OVERRIDE"] = "1"
 
 # This is a cheap way to find some use-after-free and uninitialized
 # read problems when using glibc.
-random_val="$(awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)"
-export MALLOC_PERTURB_=$random_val
+env["MALLOC_PERTURB_"] = "%d" % random.randint(1, 255)
 
 # Run the program.
-exec "$@"
+os.execvpe(prog, args, env)
