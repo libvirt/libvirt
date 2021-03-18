@@ -84,8 +84,8 @@ class Parser:
         )
 
         # Main parser
-        self.parser = argparse.ArgumentParser()
-        subparsers = self.parser.add_subparsers(
+        self._parser = argparse.ArgumentParser()
+        subparsers = self._parser.add_subparsers(
             dest="action",
             metavar="ACTION",
         )
@@ -98,7 +98,7 @@ class Parser:
             parents=[containerparser, mesonparser],
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        buildparser.set_defaults(func=Application.action_build)
+        buildparser.set_defaults(func=Application._action_build)
 
         # test action
         testparser = subparsers.add_parser(
@@ -107,7 +107,7 @@ class Parser:
             parents=[containerparser, mesonparser],
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        testparser.set_defaults(func=Application.action_test)
+        testparser.set_defaults(func=Application._action_test)
 
         # shell action
         shellparser = subparsers.add_parser(
@@ -116,7 +116,7 @@ class Parser:
             parents=[containerparser],
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        shellparser.set_defaults(func=Application.action_shell)
+        shellparser.set_defaults(func=Application._action_shell)
 
         # list-images action
         listimagesparser = subparsers.add_parser(
@@ -125,7 +125,7 @@ class Parser:
             parents=[gitlabparser],
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        listimagesparser.set_defaults(func=Application.action_list_images)
+        listimagesparser.set_defaults(func=Application._action_list_images)
 
         # refresh action
         refreshparser = subparsers.add_parser(
@@ -147,56 +147,56 @@ class Parser:
             default="yes",
             help="check for existence of stale images on the GitLab instance"
         )
-        refreshparser.set_defaults(func=Application.action_refresh)
+        refreshparser.set_defaults(func=Application._action_refresh)
 
     def parse(self):
-        return self.parser.parse_args()
+        return self._parser.parse_args()
 
 
 class Application:
     def __init__(self):
-        self.basedir = pathlib.Path(__file__).resolve().parent
-        self.args = Parser().parse()
+        self._basedir = pathlib.Path(__file__).resolve().parent
+        self._args = Parser().parse()
 
-        if self.args.action == "refresh":
-            if not shutil.which(self.args.lcitool):
+        if self._args.action == "refresh":
+            if not shutil.which(self._args.lcitool):
                 sys.exit("error: 'lcitool' not installed")
 
-    def make_run(self, target):
+    def _make_run(self, target):
         args = [
             "-C",
-            self.basedir,
+            self._basedir,
             target,
         ]
 
-        if self.args.action in ["build", "test", "shell"]:
+        if self._args.action in ["build", "test", "shell"]:
             args.extend([
-                f"CI_ENGINE={self.args.engine}",
-                f"CI_USER_LOGIN={self.args.login}",
-                f"CI_IMAGE_PREFIX={self.args.image_prefix}",
-                f"CI_IMAGE_TAG={self.args.image_tag}",
+                f"CI_ENGINE={self._args.engine}",
+                f"CI_USER_LOGIN={self._args.login}",
+                f"CI_IMAGE_PREFIX={self._args.image_prefix}",
+                f"CI_IMAGE_TAG={self._args.image_tag}",
             ])
 
-        if self.args.action in ["build", "test"]:
+        if self._args.action in ["build", "test"]:
             args.extend([
-                f"CI_MESON_ARGS={self.args.meson_args}",
-                f"CI_NINJA_ARGS={self.args.ninja_args}",
+                f"CI_MESON_ARGS={self._args.meson_args}",
+                f"CI_NINJA_ARGS={self._args.ninja_args}",
             ])
 
         if pty.spawn(["make"] + args) != 0:
             sys.exit("error: 'make' failed")
 
-    def lcitool_run(self, args):
-        output = subprocess.check_output([self.args.lcitool] + args)
+    def _lcitool_run(self, args):
+        output = subprocess.check_output([self._args.lcitool] + args)
         return output.decode("utf-8")
 
-    def lcitool_get_hosts(self):
-        output = self.lcitool_run(["hosts"])
+    def _lcitool_get_hosts(self):
+        output = self._lcitool_run(["hosts"])
         return output.splitlines()
 
-    def generate_dockerfile(self, host, cross=None):
+    def _generate_dockerfile(self, host, cross=None):
         args = ["dockerfile", host, "libvirt"]
-        outdir = self.basedir.joinpath("containers")
+        outdir = self._basedir.joinpath("containers")
         outfile = f"ci-{host}.Dockerfile"
 
         if cross:
@@ -204,27 +204,27 @@ class Application:
             outfile = f"ci-{host}-cross-{cross}.Dockerfile"
 
         outpath = outdir.joinpath(outfile)
-        if not self.args.quiet:
+        if not self._args.quiet:
             print(outpath)
 
-        output = self.lcitool_run(args)
+        output = self._lcitool_run(args)
         with open(outpath, "w") as f:
             f.write(output)
 
-    def generate_vars(self, host):
+    def _generate_vars(self, host):
         args = ["variables", host, "libvirt"]
-        outdir = self.basedir.joinpath("cirrus")
+        outdir = self._basedir.joinpath("cirrus")
         outfile = f"{host}.vars"
 
         outpath = outdir.joinpath(outfile)
-        if not self.args.quiet:
+        if not self._args.quiet:
             print(outpath)
 
-        output = self.lcitool_run(args)
+        output = self._lcitool_run(args)
         with open(outpath, "w") as f:
             f.write(output)
 
-    def refresh_containers(self):
+    def _refresh_containers(self):
         debian_cross = [
             "aarch64",
             "armv6l",
@@ -241,34 +241,34 @@ class Application:
             "mingw64",
         ]
 
-        for host in self.lcitool_get_hosts():
+        for host in self._lcitool_get_hosts():
             if host.startswith("freebsd-") or host.startswith("macos-"):
                 continue
 
-            self.generate_dockerfile(host)
+            self._generate_dockerfile(host)
 
             if host == "fedora-rawhide":
                 for cross in fedora_cross:
-                    self.generate_dockerfile(host, cross)
+                    self._generate_dockerfile(host, cross)
 
             if host.startswith("debian-"):
                 for cross in debian_cross:
                     if host == "debian-sid" and cross == "mips":
                         continue
-                    self.generate_dockerfile(host, cross)
+                    self._generate_dockerfile(host, cross)
 
-    def refresh_cirrus(self):
-        for host in self.lcitool_get_hosts():
+    def _refresh_cirrus(self):
+        for host in self._lcitool_get_hosts():
             if not (host.startswith("freebsd-") or host.startswith("macos-")):
                 continue
 
-            self.generate_vars(host)
+            self._generate_vars(host)
 
-    def check_stale_images(self):
-        namespace = self.args.namespace
-        gitlab_uri = self.args.gitlab_uri
+    def _check_stale_images(self):
+        namespace = self._args.namespace
+        gitlab_uri = self._args.gitlab_uri
         registry_uri = util.get_registry_uri(namespace, gitlab_uri)
-        lcitool_hosts = self.lcitool_get_hosts()
+        lcitool_hosts = self._lcitool_get_hosts()
 
         stale_images = util.get_registry_stale_images(registry_uri,
                                                       lcitool_hosts)
@@ -297,18 +297,18 @@ class Application:
             """)
             print(msg.replace("STALE_DETAILS", stale_details))
 
-    def action_build(self):
-        self.make_run(f"ci-build@{self.args.target}")
+    def _action_build(self):
+        self._make_run(f"ci-build@{self._args.target}")
 
-    def action_test(self):
-        self.make_run(f"ci-test@{self.args.target}")
+    def _action_test(self):
+        self._make_run(f"ci-test@{self._args.target}")
 
-    def action_shell(self):
-        self.make_run(f"ci-shell@{self.args.target}")
+    def _action_shell(self):
+        self._make_run(f"ci-shell@{self._args.target}")
 
-    def action_list_images(self):
-        registry_uri = util.get_registry_uri(self.args.namespace,
-                                             self.args.gitlab_uri)
+    def _action_list_images(self):
+        registry_uri = util.get_registry_uri(self._args.namespace,
+                                             self._args.gitlab_uri)
         images = util.get_registry_images(registry_uri)
 
         # skip the "ci-" prefix each of our container images' name has
@@ -328,15 +328,15 @@ class Application:
             print("Available cross-compiler container images:\n")
             print(spacing + ("\n" + spacing).join(cross))
 
-    def action_refresh(self):
-        self.refresh_containers()
-        self.refresh_cirrus()
+    def _action_refresh(self):
+        self._refresh_containers()
+        self._refresh_cirrus()
 
-        if self.args.check_stale == "yes" and not self.args.quiet:
-            self.check_stale_images()
+        if self._args.check_stale == "yes" and not self._args.quiet:
+            self._check_stale_images()
 
     def run(self):
-        self.args.func(self)
+        self._args.func(self)
 
 
 if __name__ == "__main__":
