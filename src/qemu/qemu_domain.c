@@ -2322,9 +2322,6 @@ qemuDomainObjPrivateXMLFormatBackups(virBufferPtr buf,
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP))
-        return 0;
-
     if (priv->backup &&
         virDomainBackupDefFormat(&childBuf, priv->backup, true) < 0)
         return -1;
