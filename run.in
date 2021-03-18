@@ -44,6 +44,7 @@ import os
 import os.path
 import random
 import sys
+import subprocess
 
 # Function to intelligently prepend a path to an environment variable.
 # See https://stackoverflow.com/a/9631350
@@ -77,5 +78,86 @@ env["LIBVIRT_DIR_OVERRIDE"] = "1"
 # read problems when using glibc.
 env["MALLOC_PERTURB_"] = "%d" % random.randint(1, 255)
 
-# Run the program.
-os.execvpe(prog, args, env)
+modular_daemons = [
+    "virtinterfaced",
+    "virtlxcd",
+    "virtnetworkd",
+    "virtnodedevd",
+    "virtnwfilterd",
+    "virtproxyd",
+    "virtqemud",
+    "virtsecretd",
+    "virtstoraged",
+    "virtvboxd",
+    "virtvzd",
+    "virtxend",
+]
+
+def is_modular_daemon(name):
+    return name in modular_daemons
+
+def is_monolithic_daemon(name):
+    return name == "libvirtd"
+
+def is_systemd_host():
+    if os.getuid() != 0:
+        return False
+    return os.path.exists("/run/systemd/system")
+
+def daemon_units(name):
+    return [name + suffix for suffix in [
+        ".service", ".socket", "-ro.socket", "-admin.socket"]]
+
+def is_unit_active(name):
+    ret = subprocess.call(["systemctl", "is-active", "-q", name])
+    return ret == 0
+
+def change_unit(name, action):
+    ret = subprocess.call(["systemctl", action, "-q", name])
+    return ret == 0
+
+try_stop_units = []
+if is_systemd_host():
+    name = os.path.basename(prog)
+
+    maybe_stopped_units = []
+    if is_modular_daemon(name):
+        # Only need to stop libvirtd or this specific modular unit
+        maybe_stopped_units += daemon_units("libvirtd")
+        maybe_stopped_units += daemon_units(name)
+    elif is_monolithic_daemon(name):
+        # Need to stop libvirtd and/or all modular units
+        maybe_stopped_units += daemon_units("libvirtd")
+        for entry in modular_daemons:
+            maybe_stopped_units += daemon_units(entry)
+
+    for unit in maybe_stopped_units:
+        if is_unit_active(unit):
+            try_stop_units.append(unit)
+
+if len(try_stop_units) == 0:
+    # Run the program directly, replacing ourselves
+    os.execvpe(prog, args, env)
+else:
+    print("Temporarily stopping systemd units...")
+    stopped_units = []
+
+    try:
+        for unit in try_stop_units:
+            print(" > %s" % unit)
+            if not change_unit(unit, "stop"):
+                raise Exception("Unable to stop '%s'" % unit)
+
+            stopped_units.append(unit)
+
+        print("Running %s..." % prog)
+        ret = subprocess.call([prog] + args, env=env)
+    except KeyboardInterrupt as ex:
+        pass
+    finally:
+        print("Re-starting original systemd units...")
+        stopped_units.reverse()
+        for unit in stopped_units:
+            print(" > %s" % unit)
+            if not change_unit(unit, "start"):
+                print(" ! unable to restart %s" % unit, file=sys.stderr)
