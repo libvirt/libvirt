@@ -13,6 +13,17 @@ v7.2.0 (unreleased)
 
 * **New features**
 
+  * qemu: Implement domain memory dirty rate calculation API
+
+    New API ``virDomainStartDirtyRateCalc()`` and virsh command
+    ``domdirtyrate-calc`` are added to start calculating a live domain's
+    memory dirty rate.
+
+  * qemu: Support reporting memory dirty rate stats
+
+    The memory dirty rate stats can be obtained through ``virsh domstats
+    --dirtyrate`` via the virConnectGetAllDomainStats API.
+
 * **Improvements**
 
 * **Bug fixes**
