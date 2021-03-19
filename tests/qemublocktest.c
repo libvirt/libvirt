@@ -316,8 +316,7 @@ testQemuDiskXMLToProps(const void *opaque)
             return -1;
         }
 
-        if (VIR_REALLOC_N(data->images, data->nimages + 1) < 0)
-            return -1;
+        VIR_REALLOC_N(data->images, data->nimages + 1);
 
         data->images[data->nimages].formatprops = g_steal_pointer(&formatProps);
         data->images[data->nimages].storageprops = g_steal_pointer(&storageProps);

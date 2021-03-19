@@ -795,10 +795,9 @@ virNumaGetPages(int node,
                                    &page_avail, &page_free) < 0)
             return -1;
 
-        if (VIR_REALLOC_N(tmp_size, ntmp + 1) < 0 ||
-            VIR_REALLOC_N(tmp_avail, ntmp + 1) < 0 ||
-            VIR_REALLOC_N(tmp_free, ntmp + 1) < 0)
-            return -1;
+        VIR_REALLOC_N(tmp_size, ntmp + 1);
+        VIR_REALLOC_N(tmp_avail, ntmp + 1);
+        VIR_REALLOC_N(tmp_free, ntmp + 1);
 
         tmp_size[ntmp] = page_size;
         tmp_avail[ntmp] = page_avail;
@@ -814,10 +813,9 @@ virNumaGetPages(int node,
         return -1;
 
     /* Now append the ordinary system pages */
-    if (VIR_REALLOC_N(tmp_size, ntmp + 1) < 0 ||
-        VIR_REALLOC_N(tmp_avail, ntmp + 1) < 0 ||
-        VIR_REALLOC_N(tmp_free, ntmp + 1) < 0)
-        return -1;
+    VIR_REALLOC_N(tmp_size, ntmp + 1);
+    VIR_REALLOC_N(tmp_avail, ntmp + 1);
+    VIR_REALLOC_N(tmp_free, ntmp + 1);
 
     if (virNumaGetPageInfo(node, system_page_size, huge_page_sum,
                            &tmp_avail[ntmp], &tmp_free[ntmp]) < 0)

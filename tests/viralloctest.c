@@ -60,8 +60,7 @@ testReallocArray(const void *opaque G_GNUC_UNUSED)
         t[i].b = 20;
     }
 
-    if (VIR_REALLOC_N(t, nt + 5) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(t, nt + 5);
 
     if (testCheckNonNull(t) < 0)
         goto cleanup;
@@ -74,8 +73,7 @@ testReallocArray(const void *opaque G_GNUC_UNUSED)
         }
     }
 
-    if (VIR_REALLOC_N(t, nt) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(t, nt);
 
     if (testCheckNonNull(t) < 0)
         goto cleanup;
@@ -88,8 +86,7 @@ testReallocArray(const void *opaque G_GNUC_UNUSED)
         }
     }
 
-    if (VIR_REALLOC_N(t, nt - 5) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(t, nt - 5);
 
     if (testCheckNonNull(t) < 0)
         goto cleanup;

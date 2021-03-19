@@ -1154,8 +1154,7 @@ virNetClientCallDispatchReply(virNetClientPtr client)
         return -1;
     }
 
-    if (VIR_REALLOC_N(thecall->msg->buffer, client->msg.bufferLength) < 0)
-        return -1;
+    VIR_REALLOC_N(thecall->msg->buffer, client->msg.bufferLength);
 
     memcpy(thecall->msg->buffer, client->msg.buffer, client->msg.bufferLength);
     memcpy(&thecall->msg->header, &client->msg.header, sizeof(client->msg.header));

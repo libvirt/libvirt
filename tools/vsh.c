@@ -2582,8 +2582,7 @@ vshReadlineCommandGenerator(void)
             if (cmds[cmd_list_index].flags & VSH_CMD_FLAG_ALIAS)
                 continue;
 
-            if (VIR_REALLOC_N(ret, ret_size + 2) < 0)
-                return NULL;
+            VIR_REALLOC_N(ret, ret_size + 2);
 
             ret[ret_size] = g_strdup(name);
             ret_size++;
@@ -2630,8 +2629,7 @@ vshReadlineOptionsGenerator(const vshCmdDef *cmd,
         if (exists)
             continue;
 
-        if (VIR_REALLOC_N(ret, ret_size + 2) < 0)
-            return NULL;
+        VIR_REALLOC_N(ret, ret_size + 2);
 
         ret[ret_size] = g_strdup_printf("--%s", name);
         ret_size++;

@@ -78,8 +78,7 @@ virStringListMerge(char ***dst,
     dst_len = g_strv_length(*dst);
     src_len = g_strv_length(*src);
 
-    if (VIR_REALLOC_N(*dst, dst_len + src_len + 1) < 0)
-        return -1;
+    VIR_REALLOC_N(*dst, dst_len + src_len + 1);
 
     for (i = 0; i <= src_len; i++)
         (*dst)[i + dst_len] = (*src)[i];

@@ -456,9 +456,7 @@ qemuAgentIORead(qemuAgentPtr agent)
                                  QEMU_AGENT_MAX_RESPONSE);
             return -1;
         }
-        if (VIR_REALLOC_N(agent->buffer,
-                          agent->bufferLength + 1024) < 0)
-            return -1;
+        VIR_REALLOC_N(agent->buffer, agent->bufferLength + 1024);
         agent->bufferLength += 1024;
         avail += 1024;
     }

@@ -1428,7 +1428,7 @@ virNetworkObjListExport(virConnectPtr conn,
 
     if (data.nets) {
         /* trim the array to the final size */
-        ignore_value(VIR_REALLOC_N(data.nets, data.nnets + 1));
+        VIR_REALLOC_N(data.nets, data.nnets + 1);
         *nets = data.nets;
         data.nets = NULL;
     }
@@ -1816,7 +1816,7 @@ virNetworkObjPortListExport(virNetworkPtr net,
 
     if (data.ports) {
         /* trim the array to the final size */
-        ignore_value(VIR_REALLOC_N(data.ports, data.nports + 1));
+        VIR_REALLOC_N(data.ports, data.nports + 1);
         *ports = data.ports;
         data.ports = NULL;
     }

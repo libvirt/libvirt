@@ -1742,7 +1742,7 @@ virCommandSetSendBuffer(virCommandPtr cmd,
     }
 
     i = virCommandGetNumSendBuffers(cmd);
-    ignore_value(VIR_REALLOC_N(cmd->sendBuffers, i + 1));
+    VIR_REALLOC_N(cmd->sendBuffers, i + 1);
 
     cmd->sendBuffers[i].fd = pipefd[1];
     cmd->sendBuffers[i].buffer = g_steal_pointer(&localbuf);
@@ -2250,8 +2250,7 @@ virCommandProcessIO(virCommandPtr cmd)
                     else
                         errfd = -1;
                 } else {
-                    if (VIR_REALLOC_N(*buf, *len + done + 1) < 0)
-                        goto cleanup;
+                    VIR_REALLOC_N(*buf, *len + done + 1);
                     memcpy(*buf + *len, data, done);
                     *len += done;
                 }

@@ -3433,8 +3433,7 @@ virDomainIOThreadIDDefArrayInit(virDomainDefPtr def,
                                        def->iothreadids[i]->iothread_id));
 
     /* resize array */
-    if (VIR_REALLOC_N(def->iothreadids, iothreads) < 0)
-        return -1;
+    VIR_REALLOC_N(def->iothreadids, iothreads);
 
     /* Populate iothreadids[] using the set bit number from thrmap */
     while (def->niothreadids < iothreads) {
@@ -17587,7 +17586,8 @@ virDomainChrPreAlloc(virDomainDefPtr vmdef,
                                           &arrPtr, &cntPtr) < 0)
         return -1;
 
-    return VIR_REALLOC_N(*arrPtr, *cntPtr + 1);
+    VIR_REALLOC_N(*arrPtr, *cntPtr + 1);
+    return 0;
 }
 
 void
@@ -21442,8 +21442,9 @@ virDomainDefParseXML(xmlDocPtr xml,
     /* analysis of the host devices */
     if ((n = virXPathNodeSet("./devices/hostdev", ctxt, &nodes)) < 0)
         goto error;
-    if (n && VIR_REALLOC_N(def->hostdevs, def->nhostdevs + n) < 0)
-        goto error;
+    if (n > 0)
+        VIR_REALLOC_N(def->hostdevs, def->nhostdevs + n);
+
     for (i = 0; i < n; i++) {
         virDomainHostdevDefPtr hostdev;
 

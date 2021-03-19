@@ -598,7 +598,7 @@ virSecretObjListExport(virConnectPtr conn,
 
     if (data.secrets) {
         /* trim the array to the final size */
-        ignore_value(VIR_REALLOC_N(data.secrets, data.nsecrets + 1));
+        VIR_REALLOC_N(data.secrets, data.nsecrets + 1);
         *secrets = data.secrets;
     }
 

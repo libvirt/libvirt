@@ -152,8 +152,7 @@ int virNetMessageDecodeLength(virNetMessagePtr msg)
     /* Extend our declared buffer length and carry
        on reading the header + payload */
     msg->bufferLength += len;
-    if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(msg->buffer, msg->bufferLength);
 
     VIR_DEBUG("Got length, now need %zu total (%u more)",
               msg->bufferLength, len);
@@ -229,8 +228,7 @@ int virNetMessageEncodeHeader(virNetMessagePtr msg)
     unsigned int len = 0;
 
     msg->bufferLength = VIR_NET_MESSAGE_INITIAL + VIR_NET_MESSAGE_LEN_MAX;
-    if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0)
-        return ret;
+    VIR_REALLOC_N(msg->buffer, msg->bufferLength);
     msg->bufferOffset = 0;
 
     /* Format the header. */
@@ -370,8 +368,7 @@ int virNetMessageEncodePayload(virNetMessagePtr msg,
 
         msg->bufferLength = newlen + VIR_NET_MESSAGE_LEN_MAX;
 
-        if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0)
-            goto error;
+        VIR_REALLOC_N(msg->buffer, msg->bufferLength);
 
         xdrmem_create(&xdr, msg->buffer + msg->bufferOffset,
                       msg->bufferLength - msg->bufferOffset, XDR_ENCODE);
@@ -454,8 +451,7 @@ int virNetMessageEncodePayloadRaw(virNetMessagePtr msg,
 
         msg->bufferLength = msg->bufferOffset + len;
 
-        if (VIR_REALLOC_N(msg->buffer, msg->bufferLength) < 0)
-            return -1;
+        VIR_REALLOC_N(msg->buffer, msg->bufferLength);
 
         VIR_DEBUG("Increased message buffer length = %zu", msg->bufferLength);
     }

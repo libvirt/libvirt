@@ -2089,7 +2089,7 @@ virStoragePoolObjListExport(virConnectPtr conn,
 
     if (data.pools) {
         /* trim the array to the final size */
-        ignore_value(VIR_REALLOC_N(data.pools, data.nPools + 1));
+        VIR_REALLOC_N(data.pools, data.nPools + 1);
         *pools = data.pools;
     }
 

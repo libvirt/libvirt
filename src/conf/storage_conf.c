@@ -1787,8 +1787,7 @@ virStoragePoolSourceListNewSource(virStoragePoolSourceListPtr list)
 {
     virStoragePoolSourcePtr source;
 
-    if (VIR_REALLOC_N(list->sources, list->nsources + 1) < 0)
-        return NULL;
+    VIR_REALLOC_N(list->sources, list->nsources + 1);
 
     source = &list->sources[list->nsources++];
     memset(source, 0, sizeof(*source));

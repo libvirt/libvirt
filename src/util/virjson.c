@@ -779,9 +779,7 @@ virJSONValueArrayAppend(virJSONValuePtr array,
         return -1;
     }
 
-    if (VIR_REALLOC_N(array->data.array.values,
-                      array->data.array.nvalues + 1) < 0)
-        return -1;
+    VIR_REALLOC_N(array->data.array.values, array->data.array.nvalues + 1);
 
     array->data.array.values[array->data.array.nvalues] = g_steal_pointer(value);
     array->data.array.nvalues++;
@@ -1697,10 +1695,7 @@ virJSONParserHandleStartMap(void *ctx)
     if (virJSONParserInsertValue(parser, &value) < 0)
         return 0;
 
-    if (VIR_REALLOC_N(parser->state,
-                      parser->nstate + 1) < 0) {
-        return 0;
-    }
+    VIR_REALLOC_N(parser->state, parser->nstate + 1);
 
     parser->state[parser->nstate].value = tmp;
     parser->state[parser->nstate].key = NULL;
@@ -1745,9 +1740,7 @@ virJSONParserHandleStartArray(void *ctx)
     if (virJSONParserInsertValue(parser, &value) < 0)
         return 0;
 
-    if (VIR_REALLOC_N(parser->state,
-                      parser->nstate + 1) < 0)
-        return 0;
+    VIR_REALLOC_N(parser->state, parser->nstate + 1);
 
     parser->state[parser->nstate].value = tmp;
     parser->state[parser->nstate].key = NULL;

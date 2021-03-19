@@ -114,9 +114,8 @@ virArpTableGet(void)
         if (tb[NDA_DST]) {
             g_autofree char *ipstr = NULL;
             virSocketAddr virAddr;
-            if (VIR_REALLOC_N(table->t, num + 1) < 0)
-                goto cleanup;
 
+            VIR_REALLOC_N(table->t, num + 1);
             table->n = num + 1;
 
             addr = RTA_DATA(tb[NDA_DST]);

@@ -958,7 +958,7 @@ virNodeDeviceObjListExport(virConnectPtr conn,
         goto cleanup;
 
     if (data.devices) {
-        ignore_value(VIR_REALLOC_N(data.devices, data.ndevices + 1));
+        VIR_REALLOC_N(data.devices, data.ndevices + 1);
         *devices = data.devices;
      }
 

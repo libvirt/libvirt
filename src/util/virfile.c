@@ -1346,10 +1346,7 @@ saferead_lim(int fd, size_t max_len, size_t *length)
             if (alloc < size + BUFSIZ + 1)
                 alloc = size + BUFSIZ + 1;
 
-            if (VIR_REALLOC_N(buf, alloc) < 0) {
-                save_errno = errno;
-                break;
-            }
+            VIR_REALLOC_N(buf, alloc);
         }
 
         /* Ensure that (size + requested <= max_len); */

@@ -1464,9 +1464,8 @@ qemuFirmwareGetSupported(const char *machine,
         }
     }
 
-    if (fws && !*fws && nfirmwares &&
-        VIR_REALLOC_N(*fws, 0) < 0)
-        return -1;
+    if (fws && !*fws && nfirmwares)
+        VIR_REALLOC_N(*fws, 0);
 
     for (i = 0; i < nfirmwares; i++)
         qemuFirmwareFree(firmwares[i]);

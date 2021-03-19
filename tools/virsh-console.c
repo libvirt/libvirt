@@ -167,11 +167,8 @@ virConsoleEventOnStream(virStreamPtr st,
         int got;
 
         if (avail < 1024) {
-            if (VIR_REALLOC_N(con->streamToTerminal.data,
-                              con->streamToTerminal.length + 1024) < 0) {
-                virConsoleShutdown(con, false);
-                goto cleanup;
-            }
+            VIR_REALLOC_N(con->streamToTerminal.data,
+                          con->streamToTerminal.length + 1024);
             con->streamToTerminal.length += 1024;
             avail += 1024;
         }
@@ -212,8 +209,8 @@ virConsoleEventOnStream(virStreamPtr st,
 
         avail = con->terminalToStream.length - con->terminalToStream.offset;
         if (avail > 1024) {
-            ignore_value(VIR_REALLOC_N(con->terminalToStream.data,
-                                       con->terminalToStream.offset + 1024));
+            VIR_REALLOC_N(con->terminalToStream.data,
+                          con->terminalToStream.offset + 1024);
             con->terminalToStream.length = con->terminalToStream.offset + 1024;
         }
     }
@@ -251,11 +248,8 @@ virConsoleEventOnStdin(int watch G_GNUC_UNUSED,
         int got;
 
         if (avail < 1024) {
-            if (VIR_REALLOC_N(con->terminalToStream.data,
-                              con->terminalToStream.length + 1024) < 0) {
-                virConsoleShutdown(con, false);
-                goto cleanup;
-            }
+            VIR_REALLOC_N(con->terminalToStream.data,
+                          con->terminalToStream.length + 1024);
             con->terminalToStream.length += 1024;
             avail += 1024;
         }
@@ -340,8 +334,8 @@ virConsoleEventOnStdout(int watch G_GNUC_UNUSED,
 
         avail = con->streamToTerminal.length - con->streamToTerminal.offset;
         if (avail > 1024) {
-            ignore_value(VIR_REALLOC_N(con->streamToTerminal.data,
-                                       con->streamToTerminal.offset + 1024));
+            VIR_REALLOC_N(con->streamToTerminal.data,
+                          con->streamToTerminal.offset + 1024);
             con->streamToTerminal.length = con->streamToTerminal.offset + 1024;
         }
     }

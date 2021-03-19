@@ -447,8 +447,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
         thisSource->name = g_steal_pointer(&vgname);
     }
 
-    if (VIR_REALLOC_N(thisSource->devices, thisSource->ndevice + 1) != 0)
-        return -1;
+    VIR_REALLOC_N(thisSource->devices, thisSource->ndevice + 1);
 
     dev = &thisSource->devices[thisSource->ndevice];
     thisSource->ndevice++;

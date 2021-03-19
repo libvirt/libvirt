@@ -285,8 +285,7 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
         if (nr_cpus_node[node] == 1) {
             cpus[node] = g_new0(virCapsHostNUMACellCPU, 1);
         } else {
-            if (VIR_REALLOC_N(cpus[node], nr_cpus_node[node]) < 0)
-                goto cleanup;
+            VIR_REALLOC_N(cpus[node], nr_cpus_node[node]);
         }
 
         /* Mapping between what libxl tells and what libvirt wants */

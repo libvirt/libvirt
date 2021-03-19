@@ -335,8 +335,7 @@ main(int argc, char **argv)
     }
 
     if (cmdstr) {
-        if (VIR_REALLOC_N(shargv, shargvlen + 3) < 0)
-            goto cleanup;
+        VIR_REALLOC_N(shargv, shargvlen + 3);
         shargv[shargvlen++] = g_strdup("-c");
         shargv[shargvlen++] = g_strdup(cmdstr);
         shargv[shargvlen] = NULL;

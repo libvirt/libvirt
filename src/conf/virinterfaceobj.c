@@ -329,7 +329,7 @@ virInterfaceObjListExport(virConnectPtr conn,
 
     if (data.ifaces) {
         /* trim the array to the final size */
-        ignore_value(VIR_REALLOC_N(data.ifaces, data.nifaces + 1));
+        VIR_REALLOC_N(data.ifaces, data.nifaces + 1);
         *ifaces = data.ifaces;
         data.ifaces = NULL;
     }

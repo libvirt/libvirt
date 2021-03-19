@@ -737,8 +737,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, 0, priv->qemuCaps)))
         goto cleanup;
 
-    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks + 1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(vm->def->disks, vm->def->ndisks + 1);
 
     if (qemuHotplugAttachManagedPR(driver, vm, disk->src, QEMU_ASYNC_JOB_NONE) < 0)
         goto cleanup;
@@ -880,8 +879,7 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
     if (!devstr)
         goto cleanup;
 
-    if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers+1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers+1);
 
     qemuDomainObjEnterMonitor(driver, vm);
 
@@ -1198,8 +1196,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     virErrorPtr save_err = NULL;
 
     /* preallocate new slot for device */
-    if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1);
 
     /* If appropriate, grab a physical device from the configured
      * network's pool of devices, or resolve bridge device name
@@ -1604,8 +1601,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned int flags = 0;
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
-        return -1;
+    VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1);
 
     if (!cfg->relaxedACS)
         flags |= VIR_HOSTDEV_STRICT_ACS_CHECK;
@@ -1938,8 +1934,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, priv->qemuCaps)))
         goto cleanup;
 
-    if (VIR_REALLOC_N(def->redirdevs, def->nredirdevs+1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(def->redirdevs, def->nredirdevs+1);
 
     if (qemuDomainAddChardevTLSObjects(driver, vm, redirdev->source,
                                        redirdev->info.alias, charAlias,
@@ -2286,8 +2281,7 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
         goto cleanup;
 
     /* preallocate space for the device definition */
-    if (VIR_REALLOC_N(vm->def->rngs, vm->def->nrngs + 1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(vm->def->rngs, vm->def->nrngs + 1);
 
     if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, "rng") < 0)
         return -1;
@@ -2569,8 +2563,7 @@ qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
     if (!(devstr = qemuBuildUSBHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))
         goto cleanup;
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1);
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorAddDevice(priv->mon, devstr);
@@ -2662,8 +2655,7 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
     if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev, backendalias)))
         goto cleanup;
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1);
 
     qemuDomainObjEnterMonitor(driver, vm);
 
@@ -2774,8 +2766,7 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriverPtr driver,
                                                    vhostfdName)))
         goto cleanup;
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1);
 
     qemuDomainObjEnterMonitor(driver, vm);
 
@@ -2877,8 +2868,7 @@ qemuDomainAttachMediatedDevice(virQEMUDriverPtr driver,
                                                   priv->qemuCaps)))
         goto cleanup;
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1);
 
     if (qemuDomainAdjustMaxMemLockHostdev(vm, hostdev) < 0)
         goto cleanup;
@@ -3006,8 +2996,7 @@ qemuDomainAttachShmemDevice(virQEMUDriverPtr driver,
 
     qemuDomainPrepareShmemChardev(shmem);
 
-    if (VIR_REALLOC_N(vm->def->shmems, vm->def->nshmems + 1) < 0)
-        return -1;
+    VIR_REALLOC_N(vm->def->shmems, vm->def->nshmems + 1);
 
     if ((shmem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
          shmem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
@@ -3209,8 +3198,7 @@ qemuDomainAttachInputDevice(virQEMUDriverPtr driver,
         goto cleanup;
     teardownlabel = true;
 
-    if (VIR_REALLOC_N(vm->def->inputs, vm->def->ninputs + 1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(vm->def->inputs, vm->def->ninputs + 1);
 
     qemuDomainObjEnterMonitor(driver, vm);
 

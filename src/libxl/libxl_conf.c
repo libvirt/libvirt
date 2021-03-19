@@ -1751,9 +1751,10 @@ libxlDriverConfigNew(void)
 #ifdef DEFAULT_LOADER_NVRAM
     if (virFirmwareParseList(DEFAULT_LOADER_NVRAM,
                              &cfg->firmwares,
-                             &cfg->nfirmwares) < 0)
-        goto error;
-
+                             &cfg->nfirmwares) < 0) {
+        virObjectUnref(cfg);
+        return NULL;
+    }
 #else
     cfg->firmwares = g_new0(virFirmwarePtr, 1);
     cfg->nfirmwares = 1;
@@ -1762,8 +1763,7 @@ libxlDriverConfigNew(void)
 #endif
 
     /* Always add hvmloader to firmwares */
-    if (VIR_REALLOC_N(cfg->firmwares, cfg->nfirmwares + 1) < 0)
-        goto error;
+    VIR_REALLOC_N(cfg->firmwares, cfg->nfirmwares + 1);
     cfg->nfirmwares++;
     cfg->firmwares[cfg->nfirmwares - 1] = g_new0(virFirmware, 1);
     cfg->firmwares[cfg->nfirmwares - 1]->name = g_strdup(LIBXL_FIRMWARE_DIR "/hvmloader");
@@ -1773,10 +1773,6 @@ libxlDriverConfigNew(void)
     cfg->keepAliveCount = 5;
 
     return cfg;
-
- error:
-    virObjectUnref(cfg);
-    return NULL;
 }
 
 int

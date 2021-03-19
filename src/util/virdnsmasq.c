@@ -105,8 +105,7 @@ addnhostsAdd(dnsmasqAddnHostsfile *addnhostsfile,
     }
 
     if (idx < 0) {
-        if (VIR_REALLOC_N(addnhostsfile->hosts, addnhostsfile->nhosts + 1) < 0)
-            goto error;
+        VIR_REALLOC_N(addnhostsfile->hosts, addnhostsfile->nhosts + 1);
 
         idx = addnhostsfile->nhosts;
         addnhostsfile->hosts[idx].hostnames = g_new0(char *, 1);
@@ -117,8 +116,7 @@ addnhostsAdd(dnsmasqAddnHostsfile *addnhostsfile,
         addnhostsfile->nhosts++;
     }
 
-    if (VIR_REALLOC_N(addnhostsfile->hosts[idx].hostnames, addnhostsfile->hosts[idx].nhostnames + 1) < 0)
-        goto error;
+    VIR_REALLOC_N(addnhostsfile->hosts[idx].hostnames, addnhostsfile->hosts[idx].nhostnames + 1);
 
     addnhostsfile->hosts[idx].hostnames[addnhostsfile->hosts[idx].nhostnames] = g_strdup(name);
 
@@ -127,10 +125,6 @@ addnhostsAdd(dnsmasqAddnHostsfile *addnhostsfile,
     addnhostsfile->hosts[idx].nhostnames++;
 
     return 0;
-
- error:
-    VIR_FREE(ipstr);
-    return -1;
 }
 
 static dnsmasqAddnHostsfile *
@@ -297,8 +291,7 @@ hostsfileAdd(dnsmasqHostsfile *hostsfile,
     g_autofree char *ipstr = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (VIR_REALLOC_N(hostsfile->hosts, hostsfile->nhosts + 1) < 0)
-        return -1;
+    VIR_REALLOC_N(hostsfile->hosts, hostsfile->nhosts + 1);
 
     if (!(ipstr = virSocketAddrFormat(ip)))
         return -1;

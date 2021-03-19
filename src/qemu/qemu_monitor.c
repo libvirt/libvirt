@@ -474,9 +474,7 @@ qemuMonitorIORead(qemuMonitorPtr mon)
                            QEMU_MONITOR_MAX_RESPONSE);
             return -1;
         }
-        if (VIR_REALLOC_N(mon->buffer,
-                          mon->bufferLength + 1024) < 0)
-            return -1;
+        VIR_REALLOC_N(mon->buffer, mon->bufferLength + 1024);
         mon->bufferLength += 1024;
         avail += 1024;
     }

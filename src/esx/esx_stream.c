@@ -136,8 +136,7 @@ esxVI_CURL_WriteStream(char *input, size_t size, size_t nmemb, void *userdata)
         } else if (input_remaining > backlog_remaining) {
             priv->backlog_size += input_remaining - backlog_remaining;
 
-            if (VIR_REALLOC_N(priv->backlog, priv->backlog_size) < 0)
-                return 0;
+            VIR_REALLOC_N(priv->backlog, priv->backlog_size);
         }
 
         memcpy(priv->backlog + priv->backlog_used, input + input_used,

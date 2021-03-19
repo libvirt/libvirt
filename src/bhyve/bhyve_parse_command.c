@@ -219,8 +219,8 @@ bhyveCommandLineToArgv(const char *nativeConfig,
          * Otherwise, later argument lists may be assigned to _argv without
          * freeing the earlier ones. */
         if (!_bhyve_argv && STREQ(arglist[0], "/usr/sbin/bhyve")) {
-            if ((VIR_REALLOC_N(_bhyve_argv, args_count + 1) < 0)
-                || (!bhyve_argc))
+            VIR_REALLOC_N(_bhyve_argv, args_count + 1);
+            if (!bhyve_argc)
                 goto error;
             for (j = 0; j < args_count; j++)
                 _bhyve_argv[j] = arglist[j];
@@ -228,8 +228,8 @@ bhyveCommandLineToArgv(const char *nativeConfig,
             *bhyve_argc = args_count-1;
             VIR_FREE(arglist);
         } else if (!_loader_argv) {
-            if ((VIR_REALLOC_N(_loader_argv, args_count + 1) < 0)
-                || (!loader_argc))
+            VIR_REALLOC_N(_loader_argv, args_count + 1);
+            if (!loader_argc)
                 goto error;
             for (j = 0; j < args_count; j++)
                 _loader_argv[j] = arglist[j];

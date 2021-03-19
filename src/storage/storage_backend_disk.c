@@ -235,9 +235,7 @@ virStorageBackendDiskMakeFreeExtent(virStoragePoolObjPtr pool,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virStoragePoolSourceDevicePtr dev = &def->source.devices[0];
 
-    if (VIR_REALLOC_N(dev->freeExtents,
-                      dev->nfreeExtent + 1) < 0)
-        return -1;
+    VIR_REALLOC_N(dev->freeExtents, dev->nfreeExtent + 1);
 
     memset(dev->freeExtents +
            dev->nfreeExtent, 0,

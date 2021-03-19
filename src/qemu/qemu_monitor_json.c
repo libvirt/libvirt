@@ -659,12 +659,8 @@ qemuMonitorJSONParseKeywords(const char *str,
         }
 
         if (keywordAlloc == keywordCount) {
-            if (VIR_REALLOC_N(keywords, keywordAlloc + 10) < 0 ||
-                VIR_REALLOC_N(values, keywordAlloc + 10) < 0) {
-                VIR_FREE(keyword);
-                VIR_FREE(value);
-                goto error;
-            }
+            VIR_REALLOC_N(keywords, keywordAlloc + 10);
+            VIR_REALLOC_N(values, keywordAlloc + 10);
             keywordAlloc += 10;
         }
 
@@ -679,10 +675,6 @@ qemuMonitorJSONParseKeywords(const char *str,
     *retvalues = values;
     *retnkeywords = keywordCount;
     return 0;
-
- error:
-    qemuMonitorJSONParseKeywordsFree(keywordCount, keywords, values);
-    return -1;
 }
 
 

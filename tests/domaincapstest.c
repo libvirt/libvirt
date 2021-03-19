@@ -30,22 +30,18 @@
 static int G_GNUC_NULL_TERMINATED
 fillStringValues(virDomainCapsStringValuesPtr values, ...)
 {
-    int ret = 0;
     va_list list;
     const char *str;
 
     va_start(list, values);
     while ((str = va_arg(list, const char *))) {
-        if (VIR_REALLOC_N(values->values, values->nvalues + 1) < 0) {
-            ret = -1;
-            break;
-        }
+        VIR_REALLOC_N(values->values, values->nvalues + 1);
         values->values[values->nvalues] = g_strdup(str);
         values->nvalues++;
     }
     va_end(list);
 
-    return ret;
+    return 0;
 }
 #endif /* WITH_QEMU || WITH_BHYVE */
 

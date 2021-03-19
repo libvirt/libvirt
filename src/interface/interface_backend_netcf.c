@@ -714,7 +714,7 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
 
     if (tmp_iface_objs) {
         /* trim the array to the final size */
-        ignore_value(VIR_REALLOC_N(tmp_iface_objs, niface_objs + 1));
+        VIR_REALLOC_N(tmp_iface_objs, niface_objs + 1);
         *ifaces = g_steal_pointer(&tmp_iface_objs);
     }
 

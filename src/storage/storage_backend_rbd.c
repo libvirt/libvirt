@@ -583,8 +583,7 @@ virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
     size_t i;
 
     while (true) {
-        if (VIR_REALLOC_N(images, nimages) < 0)
-            goto error;
+        VIR_REALLOC_N(images, nimages);
 
         rc = rbd_list2(ptr->ioctx, images, &nimages);
         if (rc >= 0)

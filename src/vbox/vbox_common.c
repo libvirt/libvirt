@@ -7560,9 +7560,7 @@ vboxConnectListAllDomains(virConnectPtr conn,
     }
 
     if (doms) {
-        /* safe to ignore, new size will be equal or less than
-         * previous allocation */
-        ignore_value(VIR_REALLOC_N(doms, count + 1));
+        VIR_REALLOC_N(doms, count + 1);
         *domains = g_steal_pointer(&doms);
     }
 

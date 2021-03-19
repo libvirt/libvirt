@@ -3054,8 +3054,7 @@ libxlDomainAttachDeviceDiskLive(virDomainObjPtr vm, virDomainDeviceDefPtr dev)
                     goto cleanup;
                 }
 
-                if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
-                    goto cleanup;
+                VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1);
 
                 if (libxlMakeDisk(l_disk, &x_disk) < 0)
                     goto cleanup;
@@ -3122,8 +3121,7 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
         goto cleanup;
     }
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1);
 
     if (virHostdevPreparePCIDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                     vm->def->name, vm->def->uuid,
@@ -3190,8 +3188,7 @@ libxlDomainAttachControllerDevice(libxlDriverPrivatePtr driver,
         goto cleanup;
     }
 
-    if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers + 1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers + 1);
 
     if (libxlMakeUSBController(controller, &usbctrl) < 0)
         goto cleanup;
@@ -3259,8 +3256,7 @@ libxlDomainAttachHostUSBDevice(libxlDriverPrivatePtr driver,
         }
     }
 
-    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1);
 
     if (virHostdevPrepareUSBDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                     vm->def->name, &hostdev, 1, 0) < 0)
@@ -3403,8 +3399,7 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
     libxl_device_nic_init(&nic);
 
     /* preallocate new slot for device */
-    if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1) < 0)
-        goto cleanup;
+    VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1);
 
     /* If appropriate, grab a physical device from the configured
      * network's pool of devices, or resolve bridge device name
