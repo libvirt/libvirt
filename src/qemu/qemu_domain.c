@@ -5289,7 +5289,6 @@ qemuDomainDeviceDiskDefPostParseRestoreSecAlias(virDomainDiskDefPtr disk,
     g_autofree char *encalias = NULL;
 
     if (!(parseFlags & VIR_DOMAIN_DEF_PARSE_STATUS) ||
-        !qemuCaps ||
         virStorageSourceIsEmpty(disk->src) ||
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_SECRET))
         return 0;
@@ -5475,7 +5474,6 @@ qemuDomainDeviceHostdevDefPostParseRestoreSecAlias(virDomainHostdevDefPtr hostde
     g_autofree char *authalias = NULL;
 
     if (!(parseFlags & VIR_DOMAIN_DEF_PARSE_STATUS) ||
-        !qemuCaps ||
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_SECRET))
         return 0;
 
@@ -5520,8 +5518,7 @@ qemuDomainDeviceHostdevDefPostParseRestoreBackendAlias(virDomainHostdevDefPtr ho
     if (!(parseFlags & VIR_DOMAIN_DEF_PARSE_STATUS))
         return 0;
 
-    if (!qemuCaps ||
-        hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
         hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI ||
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI))
         return 0;
