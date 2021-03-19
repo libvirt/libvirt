@@ -13,6 +13,9 @@
 *.orig
 .git-module-status
 
+# python related ignores
+__pycache__/
+
 # libvirt related ignores
 /build/
 /ci/scratch/
