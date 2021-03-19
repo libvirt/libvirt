@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-02-22 08:42+0000\n"
-"PO-Revision-Date: 2021-03-16 18:01+0000\n"
+"PO-Revision-Date: 2021-03-19 17:01+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -32,14 +32,12 @@ msgstr ""
 "  (명령에 대한 정보를 보기 위해 help <command>를 지정)\n"
 "\n"
 
-#, fuzzy
 msgid ""
 "\n"
 "  (specify help <group> for details about the commands in the group)\n"
 msgstr ""
 "\n"
-"  (명령에 대한 정보를 보기 위해 help <command>를 지정)\n"
-"\n"
+"  (그룹에서 명령에 대한 상세한 정보를 위해 도움 <group>을 지정합니다)\n"
 
 #. Print the description only if it's not empty.
 msgid ""
@@ -63,6 +61,18 @@ msgid ""
 "      $XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
 "\n"
 msgstr ""
+"\n"
+"  기본 경로:\n"
+"\n"
+"Configuration file (unless overridden by -f):\n"
+"$XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
+"\n"
+"Sockets:\n"
+"$XDG_RUNTIME_DIR/libvirt/virtlockd-sock\n"
+"\n"
+"PID file:\n"
+"$XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
+"\n"
 
 msgid ""
 "\n"
@@ -78,6 +88,18 @@ msgid ""
 "      $XDG_RUNTIME_DIR/libvirt/virtlogd.pid\n"
 "\n"
 msgstr ""
+"\n"
+"  기본 경로:\n"
+"\n"
+"Configuration file (unless overridden by -f):\n"
+"$XDG_CONFIG_HOME/libvirt/virtlogd.conf\n"
+"\n"
+"Sockets:\n"
+"$XDG_RUNTIME_DIR/libvirt/virtlogd-sock\n"
+"\n"
+"PID file:\n"
+"$XDG_RUNTIME_DIR/libvirt/virtlogd.pid\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -94,6 +116,18 @@ msgid ""
 "      %s/virtlockd.pid\n"
 "\n"
 msgstr ""
+"\n"
+"  기본 경로:\n"
+"\n"
+"Configuration file (unless overridden by -f):\n"
+"%s/libvirt/virtlockd.conf\n"
+"\n"
+"Sockets:\n"
+"%s/libvirt/virtlockd-sock\n"
+"\n"
+"PID file (unless overridden by -p):\n"
+"%s/virtlockd.pid\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -298,23 +332,23 @@ msgstr "  이름\n"
 
 #, c-format
 msgid " %s (help keyword '%s')\n"
-msgstr ""
+msgstr " %s (도움말 키워드 '%s')\n"
 
 #, c-format
 msgid " %s (help keyword '%s'):\n"
-msgstr ""
+msgstr " %s (도움말 키워드 '%s'):\n"
 
 msgid " Hypervisors:"
-msgstr "하이퍼바이저:"
+msgstr " 하이퍼바이저:"
 
 msgid " Miscellaneous:"
-msgstr ""
+msgstr " 기타:"
 
 msgid " Networking:"
-msgstr "네트워킹:"
+msgstr " 네트워킹:"
 
 msgid " Storage:"
-msgstr "스토리지:"
+msgstr " 저장소:"
 
 #, c-format
 msgid ""
@@ -323,6 +357,10 @@ msgid ""
 " cur=%llu\n"
 " end=%llu\n"
 msgstr ""
+" type=%s\n"
+"bandwidth=%lu\n"
+"cur=%llu\n"
+"end=%llu\n"
 
 #, c-format
 msgid ""
@@ -333,11 +371,11 @@ msgstr ""
 
 #, c-format
 msgid "$%s value should be between 0 and %d"
-msgstr ""
+msgstr "$%s 값은 o과 %d 사이에 있어야 합니다"
 
 #, c-format
 msgid "%6s: Checking %-60s: "
-msgstr ""
+msgstr "%6s: 점검 %-60s: "
 
 #, c-format
 msgid "%s\n"
@@ -345,7 +383,7 @@ msgstr "%s\n"
 
 #, c-format
 msgid "%s %s"
-msgstr ""
+msgstr "%s %s"
 
 #, fuzzy, c-format
 msgid "%s %s '%s' has an unsupported type '%s'"
@@ -357,7 +395,7 @@ msgstr "볼륨 이름 '%s'에 지원되지 않는 접미사가 있습니다, '.v
 
 #, c-format
 msgid "%s (out of %d)"
-msgstr ""
+msgstr "%s (%d 의 밖에)"
 
 #, fuzzy, c-format
 msgid "%s 3d acceleration is not supported"
@@ -365,11 +403,11 @@ msgstr "동작을 지원하지 않습니다"
 
 #, c-format
 msgid "%s array element does not contain a string"
-msgstr ""
+msgstr "%s 배열 요소는 스티링이 포함되지 않아야 합니다"
 
 #, c-format
 msgid "%s array element is missing item %zu"
-msgstr ""
+msgstr "%s 배열 요소는 항목 %zu에서 누락됩니다"
 
 #, c-format
 msgid "%s can't be empty"
@@ -460,9 +498,9 @@ msgstr "%s에는 'type' 속성이 누락되어 있음 "
 msgid "%s is missing or not an array"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s is not a supported cipher name"
-msgstr "%s: 지원되지 않는 하이퍼바이저 이름 %s\n"
+msgstr "%s는 암호 이름을 지원하지 않습니다"
 
 #, fuzzy, c-format
 msgid "%s is not a supported cipher state"
@@ -502,7 +540,7 @@ msgstr ""
 
 #, c-format
 msgid "%s module is not loaded, "
-msgstr ""
+msgstr "%s 모듈은 적재되지 않았습니다, "
 
 #, fuzzy, c-format
 msgid "%s namespace is not available"
@@ -698,11 +736,13 @@ msgid ""
 "%s: Specifying netmask invalid for IPv6 address '%s' in route definition"
 msgstr "네트워크 '%s'에서 IPv6 주소 '%s'에 대해 허용되지 않는 넷마스크"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s: Starting external device: %s\n"
 "%s\n"
-msgstr "대상 장치 %s가 없음"
+msgstr ""
+"%s: 외부 장치를 시작하기: %s\n"
+"%s\n"
 
 #, fuzzy, c-format
 msgid "%s: Unrecognized family '%s' in route definition"
@@ -804,9 +844,9 @@ msgstr "%s: 로그 파일 쓰기 실패: %s"
 msgid "%s: failure with %s: %s"
 msgstr "%s: 로그 파일 쓰기 실패: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: initialization failed"
-msgstr "%s: 초기화 실패\n"
+msgstr "%s: 초기화 실패하였습니다"
 
 #, c-format
 msgid "%s: initialization failed\n"
@@ -836,11 +876,11 @@ msgstr ""
 
 #, c-format
 msgid "%s: must be run as root\n"
-msgstr ""
+msgstr "%s: root에서 실행해야 합니다\n"
 
 #, c-format
 msgid "%s: must not be run setuid root\n"
-msgstr ""
+msgstr "%s: setuid root로 실행하지 않아야 합니다\n"
 
 #, fuzzy, c-format
 msgid "%s: passthrough input device has no source"
@@ -893,9 +933,9 @@ msgstr ""
 msgid "%s: try --help for more details\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: unable to determine access mode of fd %d"
-msgstr "%s: 오류: 데몬이 실행중인지 확인할 수 없음: %s\n"
+msgstr "%s: fd %d 의 접근 방법을 선택 할 수 없습니다"
 
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
@@ -975,7 +1015,7 @@ msgstr "SCSI 컨트롤러는 1 버스만을 지원합니다"
 
 #, c-format
 msgid "'%s' denied access"
-msgstr ""
+msgstr "'%s' 접근이 거부되었습니다"
 
 #, c-format
 msgid "'%s' does not exist"
@@ -987,7 +1027,7 @@ msgstr "'%s' 파일은 메모리에 들어갈 수 없습니다"
 
 #, c-format
 msgid "'%s' is not a VF device"
-msgstr ""
+msgstr "'%s'는 VF 장치가 아닙니다"
 
 #, fuzzy, c-format
 msgid "'%s' is not a known interface"
@@ -1011,7 +1051,7 @@ msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
 
 #, c-format
 msgid "'%s' missing"
-msgstr ""
+msgstr "'%s' 누락"
 
 #, c-format
 msgid "'%s' requires shared memory"
@@ -1314,7 +1354,7 @@ msgid "(esx execute response)"
 msgstr "(esx 실행 결과)"
 
 msgid "(gluster_cli_output)"
-msgstr ""
+msgstr "(gluster_cli_output)"
 
 msgid "(interface definition)"
 msgstr "(인터페이스 정의)"
@@ -1629,9 +1669,9 @@ msgstr "I/O 오류"
 msgid "Aborts the currently running domain job"
 msgstr "현재 실행중인 도메인 작업을 강제 중단합니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Accept SSH host key with hash '%s' for host '%s:%d' (%s/%s)?"
-msgstr "호스트 '%s'의 SSH 호스트 키를 추가할 수 없음: %s"
+msgstr "호스트 %s:%d' (%s/%s)를 위해 hash '%s'를 사용하여 ssh 호스트 키를 받습니다?"
 
 msgid "Access denied"
 msgstr "접근 거부됨"
@@ -3648,9 +3688,8 @@ msgstr ""
 msgid "Compiled with support for:"
 msgstr "오류 없이 완료되었습니다 "
 
-#, fuzzy
 msgid "Compiled with support for:\n"
-msgstr "오류 없이 완료되었습니다 "
+msgstr "다음 지원을 위한 컴파일:\n"
 
 msgid "Completed"
 msgstr ""
@@ -3761,17 +3800,15 @@ msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr "로컬 하이퍼바이저로 연결. 이는 쉘을 시작한 후에 내장된 명령임"
 
-#, fuzzy
 msgid "Connected since"
-msgstr "도메인 %s에 연결되었습니다\n"
+msgstr "이후로 연결되었습니다"
 
 #, c-format
 msgid "Connected to domain '%s'\n"
 msgstr ""
 
-#, fuzzy
 msgid "Connected to the admin server"
-msgstr "도메인 %s에 연결되었습니다\n"
+msgstr "관리용 서버로 연결되었습니다"
 
 msgid "Connections from inside daemon must be direct"
 msgstr ""
@@ -4049,7 +4086,7 @@ msgstr "키 '%s'로 된 HostPortGroup을 찾을 수 없음 "
 
 #, c-format
 msgid "Could not find HostVirtualSwitch with UUID '%s'"
-msgstr " UUID '%s'의 HostVirtualSwitch를 찾을 수 없음 "
+msgstr "UUID '%s'의 HostVirtualSwitch를 찾을 수 없음"
 
 #, c-format
 msgid "Could not find HostVirtualSwitch with name '%s'"
@@ -4976,9 +5013,9 @@ msgstr "볼륨을 생성합니다."
 msgid "Created"
 msgstr "마이그레이션됨"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Created bridge %s with attached device %s\n"
-msgstr "장치 %s 재부착 실패"
+msgstr "부착된 장치 %s 와 함께 브릿지 %s 을 생성합니다\n"
 
 msgid "Creating non-file volumes is not supported"
 msgstr "비파일 볼륨 생성이 지원되지 않음 "
@@ -5212,9 +5249,9 @@ msgstr "장치 %s가 재부착되었습니다\n"
 msgid "Device %s reset\n"
 msgstr "장치 %s가 리셋됨\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Device %s un-attached from bridge %s\n"
-msgstr "브리지 %s에 첨부된 장치 이름이 없습니다"
+msgstr "브리지 %s에서 부착되지 않은 장치 %s\n"
 
 #, fuzzy, c-format
 msgid "Device '%s' already formatted using '%s'"
@@ -5677,9 +5714,8 @@ msgstr ""
 msgid "Domain restored from %s\n"
 msgstr "%s에서 도메인이 복구됨\n"
 
-#, fuzzy
 msgid "Domain should have at least one disk defined"
-msgstr "도메인 %s는 정의되지 않음\n"
+msgstr "도메인에는 적어도 하나의 지정된 디스크를 가져야 합니다"
 
 #, c-format
 msgid "Domain snapshot %s children deleted\n"
@@ -5710,7 +5746,7 @@ msgstr "도메인 제목에는 줄 바꿈을 포함할 수 없습니다"
 
 #, fuzzy
 msgid "Domain title not changed\n"
-msgstr "도메인이 일시 중지되어 있지 않습니다 "
+msgstr "도메인 이름이 변화되지 않았습니다\n"
 
 #, fuzzy
 msgid "Domain title updated successfully"
@@ -8293,9 +8329,8 @@ msgstr "인터페이스 %s의 시작이 실패"
 msgid "Failed to set vcpus for domain '%d' with libxenlight"
 msgstr "새로운 도메인 설명을 설정하는데 실패"
 
-#, fuzzy
 msgid "Failed to setup keepalive on connection\n"
-msgstr "새로운 도메인 설명을 설정하는데 실패"
+msgstr "연결에 연결유지(keepalive) 구성에 실패하였습니다\n"
 
 #, fuzzy, c-format
 msgid "Failed to shutdown domain '%d' with libxenlight"
@@ -10143,9 +10178,9 @@ msgstr ""
 msgid "Invalid libxl cpuid value: %s"
 msgstr "잘못된 fromConfig 값: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid lifecycle action '%s'."
-msgstr "잘못된 오류 동작: '%s'\n"
+msgstr "유효하지 않은 수명주기 동작: '%s'."
 
 #, fuzzy, c-format
 msgid "Invalid lifecycle type '%s'."
@@ -11987,9 +12022,9 @@ msgstr "스토리지 호스트 블록 경로가 누락되어 있음 "
 msgid "Missing storage host block path"
 msgstr "스토리지 호스트 블록 경로가 누락되어 있음 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing storage volume name for disk '%s'"
-msgstr " %s 내부에 잘못된 저장소 볼륨 포인터"
+msgstr "%s 내부에 잘못된 저장소 볼륨 포인터"
 
 #, c-format
 msgid "Missing udev property '%s' on '%s'"
@@ -12558,9 +12593,8 @@ msgstr "인증이 필요합니다"
 msgid "No available USB controller and port, and failed to attach a new one"
 msgstr ""
 
-#, fuzzy
 msgid "No bhyve command-line argument specified"
-msgstr "%s: 너무 많은 명령행 인수\n"
+msgstr "bhyve 명령-줄 인수가 지정되지 않았습니다"
 
 #, fuzzy
 msgid "No bridge name specified"
@@ -12760,9 +12794,8 @@ msgstr "존재하는 콘솔 장치가 없습니다"
 msgid "No process start time available"
 msgstr "구현된 JSON 구문분석기가 없습니다"
 
-#, fuzzy
 msgid "No qemu command-line argument specified"
-msgstr "%s: 너무 많은 명령행 인수\n"
+msgstr "qemu 명령-줄 인수가 지정되지 않았습니다"
 
 msgid "No qemu environment name specified"
 msgstr ""
@@ -14631,9 +14664,8 @@ msgstr "비밀 %s가 생성되었습니다\n"
 msgid "Secret %s deleted\n"
 msgstr "비밀정보 %s가 삭제되었습니다\n"
 
-#, fuzzy
 msgid "Secret Events"
-msgstr "비밀정보 값이 설정됨\n"
+msgstr "비밀 사건"
 
 msgid "Secret not found"
 msgstr "비밀정보를 찾을 수 없음"
@@ -15036,9 +15068,9 @@ msgstr "스냅샷 %s이 %s로 복제되었습니다.\n"
 msgid "Snapshot %s edited.\n"
 msgstr "스냅샷 %s이 편집되었습니다.\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Snapshot %s set as current"
-msgstr "스냅샷 %s이 편집되었습니다.\n"
+msgstr "순간찍기 %s가 현재로 설정되었습니다"
 
 #, c-format
 msgid "Snapshot '%s' already exists"
@@ -16526,9 +16558,9 @@ msgstr "남은 시간:"
 msgid "Time: %lld"
 msgstr "전체 시간:"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Time: %s"
-msgstr "장치: %s\n"
+msgstr "시간: %s"
 
 msgid "Timed out during operation"
 msgstr "동작 중 타임 아웃"
@@ -16702,9 +16734,8 @@ msgstr "이전: 잘못된 다운타임"
 msgid "Total size of memory devices exceeds the total memory size"
 msgstr ""
 
-#, fuzzy
 msgid "Total:\n"
-msgstr "전체"
+msgstr "전체:\n"
 
 #, fuzzy
 msgid "Transient disks are not supported by vz driver."
@@ -18115,9 +18146,9 @@ msgstr "%s를 열 수 없음"
 msgid "Unable to open %s (%d)"
 msgstr "%s를 열 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %s, is tun module loaded?"
-msgstr "세션 리더가 되는 데 실패"
+msgstr "%s 를 열수 없습니다, tun 모듈이 적재 되었습니까?"
 
 #, fuzzy, c-format
 msgid "Unable to open '%s'"
@@ -18901,11 +18932,13 @@ msgstr "장치 %s을 생성할 수 없음 "
 msgid "Unable to update server's tls related files."
 msgstr "상태 파일 %s을 저장할 수 없음 "
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Unable to validate doc against %s\n"
 "%s"
-msgstr "잠금 상태 %s를 구문 분석할 수 없습니다 "
+msgstr ""
+"%s 대한 문서의 유효성을 검사 할 수 없습니다\n"
+"%s"
 
 #, fuzzy, c-format
 msgid "Unable to verify TLS peer: %s"
@@ -22390,7 +22423,7 @@ msgstr "파일 '%s'를 닫을 수 없음"
 
 #, c-format
 msgid "cannot open macvtap tap device %s"
-msgstr " %s macvtap 탭 장치를 열 수 없습니다"
+msgstr "%s macvtap 탭 장치를 열 수 없습니다"
 
 #, c-format
 msgid "cannot open path '%s'"
@@ -23486,9 +23519,8 @@ msgstr ""
 msgid "connect"
 msgstr ""
 
-#, fuzzy
 msgid "connect to daemon's admin server"
-msgstr "도메인 %s에 연결되었습니다\n"
+msgstr "도메인 관리 서버에 접속되었습니다"
 
 msgid "connect to the guest console"
 msgstr "게스트 콘솔로 연결"
@@ -25054,9 +25086,8 @@ msgstr "XML에 있는 도메인 정보"
 msgid "domain is already running"
 msgstr "도메인이 이미 실행중입니다"
 
-#, fuzzy
 msgid "domain is marked for auto destroy"
-msgstr "%s 도메인은 자동 시작으로 표시됨\n"
+msgstr "도메인은 자동 제거로 표시되었습니다"
 
 #, fuzzy
 msgid "domain is no longer running"
@@ -25082,9 +25113,8 @@ msgstr "도메인이 실행 상태가 아닙니다"
 msgid "domain is not transient"
 msgstr "임시 도메인이 아닙니다 "
 
-#, fuzzy
 msgid "domain is pmsuspended"
-msgstr "도메인 %s가 중지됨\n"
+msgstr "도메인이 pmsuspended 되었습니다"
 
 msgid "domain is transient"
 msgstr "임시 도메인입니다 "
@@ -25494,9 +25524,8 @@ msgstr "프로파일 이름 복사 중 오류"
 msgid "error copying profile name"
 msgstr "프로파일 이름 복사 중 오류"
 
-#, fuzzy
 msgid "error count:"
-msgstr "오류 메세지를 찾을 수 없음\n"
+msgstr "오류 수:"
 
 #, fuzzy, c-format
 msgid "error creating %s interface %s@%s (%s)"
@@ -25622,9 +25651,9 @@ msgstr "노드 장치 '%s'가 파괴됨\n"
 msgid "event '%s' for secret %s\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "event '%s' for storage pool %s\n"
-msgstr "알려지지 않은 저장 풀(pool) 유형 %s"
+msgstr "저장소 풀 %s를 위한 사건 '%s'\n"
 
 #, c-format
 msgid "event 'agent-lifecycle' for domain '%s': state: '%s' reason: '%s'\n"
@@ -28126,9 +28155,9 @@ msgstr ""
 msgid "incoming RDMA migration is not supported with this QEMU binary"
 msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "incomplete metadata in '%s'"
-msgstr " '%s' 내의 불완전한 응답 헤더"
+msgstr "'%s' 내의 불완전한 응답 헤더"
 
 msgid "incomplete result, failed to get completed"
 msgstr ""
@@ -28145,7 +28174,7 @@ msgstr ""
 
 #, c-format
 msgid "incomplete save header in '%s'"
-msgstr " '%s' 내의 불완전한 응답 헤더"
+msgstr "'%s' 내의 불완전한 응답 헤더"
 
 #, c-format
 msgid "incorrect boot order '%s', expecting positive integer"
@@ -28823,9 +28852,9 @@ msgstr "VM의 PID %d번이 잘못됨"
 msgid "invalid flag"
 msgstr "잘못된 플래그 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid flag combination: (0x%x)"
-msgstr "잘못된 오류 동작: '%s'\n"
+msgstr "잘못된 플래그 조합: (0x%x)"
 
 #, c-format
 msgid "invalid fmode: '%s'"
@@ -28895,9 +28924,9 @@ msgstr "잘못된 iommuGroup 번호 속성 '%s'"
 msgid "invalid iothread 'id' value '%s'"
 msgstr "잘못된 변환 값 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid iothreads count '%s'"
-msgstr "잘못된 오류 동작: '%s'\n"
+msgstr "잘못된 iothreads 수: '%s'"
 
 #, fuzzy
 msgid "invalid job statistics type"
@@ -28930,9 +28959,9 @@ msgstr "잘못된 키 코드: '%s'"
 msgid "invalid length for new profile"
 msgstr "새 프로파일으리 잘못된 길이 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid lifecycle action '%u'"
-msgstr "잘못된 오류 동작: '%s'\n"
+msgstr "잘못된 수명 동작: '%u'"
 
 #, fuzzy, c-format
 msgid "invalid lifecycle type '%u'"
@@ -29232,16 +29261,16 @@ msgstr "내부에 잘못된 저장소 포인터"
 msgid "invalid storage pool pointer in %s"
 msgstr "%s 내부에 잘못된 저장소 포인터"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid storage source index '%s'"
-msgstr " %s 내부에 잘못된 저장소 볼륨 포인터"
+msgstr "%s 내부에 잘못된 저장소 볼륨 포인터"
 
 msgid "invalid storage volume pointer in"
 msgstr "내부에 잘못된 저장소 볼륨 포인터"
 
 #, c-format
 msgid "invalid storage volume pointer in %s"
-msgstr " %s 내부에 잘못된 저장소 볼륨 포인터"
+msgstr "%s 내부에 잘못된 저장소 볼륨 포인터"
 
 #, fuzzy
 msgid "invalid stream pointer"
@@ -32265,9 +32294,8 @@ msgstr "네트워크 %s가 실행중이 아님"
 msgid "network port has no owner UUID"
 msgstr ""
 
-#, fuzzy
 msgid "network port has no owner name"
-msgstr "%s 네트워크가 정의되지 않음\n"
+msgstr "네트워크 포트는 사용자 이름을 가지지 않습니다"
 
 #, fuzzy
 msgid "network port has no uuid"
@@ -32612,9 +32640,9 @@ msgstr "도메인 설명이 없음: %s"
 msgid "no hostname found: %s"
 msgstr "도메인을 찾을 수 없음: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no iSCSI interface defined for IQN %s"
-msgstr "인터페이스 %s(%s에서 정의됨)\n"
+msgstr "IQN %s 를 위해 정의된 iSCSI 연결장치가 없습니다"
 
 #, fuzzy, c-format
 msgid "no interface with matching mac '%s'"
@@ -33823,9 +33851,8 @@ msgstr "동작을 지원하지 않습니다"
 msgid "ploop"
 msgstr ""
 
-#, fuzzy
 msgid "pmsuspended"
-msgstr "도메인 %s가 중지됨\n"
+msgstr "pmsuspended"
 
 msgid "polkit text authentication agent unavailable"
 msgstr ""
@@ -34185,10 +34212,10 @@ msgid "qemu does not support the accel2d setting"
 msgstr "풀이 풀 삭제를 지원하지 않습니다"
 
 msgid "qemu doesn't support reversion of snapshot taken in PMSUSPENDED state"
-msgstr ""
+msgstr "quem은 PMSUSPENDED 상태에서 스냅샷 복구를 지원하지 않습니다"
 
 msgid "qemu doesn't support taking snapshots of PMSUSPENDED guests"
-msgstr ""
+msgstr "qume는 PMSUSPENDED 게스트의 스냅샷 생성을 지원하지 않습니다"
 
 #, c-format
 msgid "qemu emulator '%s' does not support xen"
@@ -34419,9 +34446,9 @@ msgstr ""
 msgid "read max, as scaled integer (default bytes)"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "read only access prevents %s"
-msgstr "장치 %s에 액세스할 수 없음\n"
+msgstr "읽기 전용 접근으로 %s 막습니다"
 
 #, fuzzy
 msgid "read secret from file"
@@ -36097,13 +36124,12 @@ msgstr ""
 "네트워크 %s에 <address> 또는 <pf> 하위 요소가 있을 때 <forward> 'dev' 속성을 "
 "사용할 수 없습니다 "
 
-#, fuzzy
 msgid "the CPU is incompatible with host CPU"
-msgstr "%s에 묘사된 CPU가 호스트 CPU와 호환되지 않습니다\n"
+msgstr "이 CPU는 호스트 CPU와 호환되지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "the CPU is incompatible with host CPU: %s"
-msgstr "%s에 묘사된 CPU가 호스트 CPU와 호환되지 않습니다\n"
+msgstr "이 CPU는 호스트 CPU: %s 와 호환되지 않습니다."
 
 #, c-format
 msgid "the MAC address '%s' matches multiple interfaces"
@@ -36991,9 +37017,8 @@ msgstr ""
 "네트워크 '%s'에서 인터페이스 '%s'를 삭제할 수 없습니다. 이는 현재 %d 도메인"
 "에 의해 사용되고 있습니다. "
 
-#, fuzzy
 msgid "unable to determine if checkpoint has parent"
-msgstr "%s: 오류: 데몬이 실행중인지 확인할 수 없음: %s\n"
+msgstr "체크포인트가 부모가 있는지 확인 할 수 없습니다"
 
 #, fuzzy
 msgid "unable to determine if snapshot has parent"
@@ -37039,9 +37064,9 @@ msgstr "%s 아키텍쳐에 대한 CPU 맵을 찾을 수 없음"
 msgid "unable to find any master var store for loader: %s"
 msgstr "비밀 저장소 드라이버를 찾는 데 실패: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to find backing name for device %s"
-msgstr "장치 %s에 액세스할 수 없음\n"
+msgstr "장치 %s 를 위해 되돌린 이름을 찾을 수 없습니다"
 
 #, fuzzy, c-format
 msgid "unable to find disk by target: %s"
@@ -40202,9 +40227,8 @@ msgstr ""
 msgid "wait for job to reach mirroring phase"
 msgstr ""
 
-#, fuzzy
 msgid "wakeup a domain from pmsuspended state"
-msgstr "파일에 저장된 상태에서 도메인을 복구"
+msgstr "pmsuspended 상태에서 도메인을 시작합니다"
 
 msgid "warning"
 msgstr "경고"
