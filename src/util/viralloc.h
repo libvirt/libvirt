@@ -35,11 +35,11 @@
 
 /* Don't call these directly - use the macros below */
 int virReallocN(void *ptrptr, size_t size, size_t count)
-    G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1);
+    ATTRIBUTE_NONNULL(1);
 int virExpandN(void *ptrptr, size_t size, size_t *count, size_t add)
-    G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 int virResizeN(void *ptrptr, size_t size, size_t *alloc, size_t count, size_t desired)
-    G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 void virShrinkN(void *ptrptr, size_t size, size_t *count, size_t toremove)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 int virInsertElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
