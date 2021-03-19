@@ -66,12 +66,12 @@ int virReallocN(void *ptrptr,
  * allocated memory. On failure, 'ptrptr' and 'countptr' are not
  * changed. Any newly allocated memory in 'ptrptr' is zero-filled.
  *
- * Returns zero on success, aborts on OOM
+ * Aborts on OOM
  */
-int virExpandN(void *ptrptr,
-               size_t size,
-               size_t *countptr,
-               size_t add)
+void virExpandN(void *ptrptr,
+                size_t size,
+                size_t *countptr,
+                size_t add)
 {
     if (*countptr + add < *countptr)
         abort();
@@ -80,7 +80,6 @@ int virExpandN(void *ptrptr,
         abort();
     memset(*(char **)ptrptr + (size * *countptr), 0, size * add);
     *countptr += add;
-    return 0;
 }
 
 /**
@@ -192,8 +191,7 @@ virInsertElementsN(void *ptrptr, size_t size, size_t at,
     if (inPlace) {
         *countptr += add;
     } else {
-        if (virExpandN(ptrptr, size, countptr, add) < 0)
-            abort();
+        virExpandN(ptrptr, size, countptr, add);
     }
 
     /* memory was successfully re-allocated. Move up all elements from
