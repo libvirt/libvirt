@@ -328,8 +328,7 @@ virTypedParamsReplaceString(virTypedParameterPtr *params,
         }
         old = param->value.s;
     } else {
-        if (VIR_EXPAND_N(*params, n, 1) < 0)
-            return -1;
+        VIR_EXPAND_N(*params, n, 1);
         param = *params + n - 1;
     }
 

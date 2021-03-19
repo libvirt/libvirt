@@ -146,8 +146,7 @@ virStorageSourceRBDAddHost(virStorageSourcePtr src,
     size_t skip;
     g_auto(GStrv) parts = NULL;
 
-    if (VIR_EXPAND_N(src->hosts, src->nhosts, 1) < 0)
-        return -1;
+    VIR_EXPAND_N(src->hosts, src->nhosts, 1);
 
     if ((port = strchr(hostport, ']'))) {
         /* ipv6, strip brackets */

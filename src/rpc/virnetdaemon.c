@@ -657,8 +657,7 @@ virNetDaemonAddSignalHandler(virNetDaemonPtr dmn,
     if (virNetDaemonSignalSetup(dmn) < 0)
         goto error;
 
-    if (VIR_EXPAND_N(dmn->signals, dmn->nsignals, 1) < 0)
-        goto error;
+    VIR_EXPAND_N(dmn->signals, dmn->nsignals, 1);
 
     sigdata = g_new0(virNetDaemonSignal, 1);
 

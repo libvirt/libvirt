@@ -183,8 +183,7 @@ virThreadPoolExpand(virThreadPoolPtr pool, size_t gain, bool priority)
     size_t i = 0;
     struct virThreadPoolWorkerData *data = NULL;
 
-    if (VIR_EXPAND_N(*workers, *curWorkers, gain) < 0)
-        return -1;
+    VIR_EXPAND_N(*workers, *curWorkers, gain);
 
     for (i = 0; i < gain; i++) {
         g_autofree char *name = NULL;

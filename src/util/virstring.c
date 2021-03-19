@@ -691,8 +691,7 @@ virStringSearch(const char *str,
     /* '*matches' must always be NULL terminated in every iteration
      * of the loop, so start by allocating 1 element
      */
-    if (VIR_EXPAND_N(*matches, nmatches, 1) < 0)
-        goto cleanup;
+    VIR_EXPAND_N(*matches, nmatches, 1);
 
     while ((nmatches - 1) < max_matches) {
         g_autoptr(GMatchInfo) info = NULL;
@@ -702,8 +701,7 @@ virStringSearch(const char *str,
         if (!g_regex_match(regex, str, 0, &info))
             break;
 
-        if (VIR_EXPAND_N(*matches, nmatches, 1) < 0)
-            goto cleanup;
+        VIR_EXPAND_N(*matches, nmatches, 1);
 
         match = g_match_info_fetch(info, 1);
 

@@ -117,8 +117,7 @@ qemuMonitorTestAddResponse(qemuMonitorTestPtr test,
 
     if (have < want) {
         size_t need = want - have;
-        if (VIR_EXPAND_N(test->outgoing, test->outgoingCapacity, need) < 0)
-            return -1;
+        VIR_EXPAND_N(test->outgoing, test->outgoingCapacity, need);
     }
 
     want -= 2;
@@ -283,10 +282,7 @@ qemuMonitorTestIO(virNetSocketPtr sock,
         char *t1, *t2;
 
         if ((test->incomingCapacity - test->incomingLength) < 1024) {
-            if (VIR_EXPAND_N(test->incoming, test->incomingCapacity, 1024) < 0) {
-                err = true;
-                goto cleanup;
-            }
+            VIR_EXPAND_N(test->incoming, test->incomingCapacity, 1024);
         }
 
         if ((ret = virNetSocketRead(sock,
@@ -868,9 +864,7 @@ qemuMonitorTestAddItemParams(qemuMonitorTestPtr test,
         }
 
         i = data->nargs;
-        if (VIR_EXPAND_N(data->args, data->nargs, 1))
-            goto error;
-
+        VIR_EXPAND_N(data->args, data->nargs, 1);
         data->args[i].argname = g_strdup(argname);
         data->args[i].argval = g_strdup(argval);
     }

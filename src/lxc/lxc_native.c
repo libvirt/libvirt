@@ -123,16 +123,13 @@ static char ** lxcStringSplit(const char *string)
         goto error;
 
     /* Append NULL element */
-    if (VIR_EXPAND_N(result, ntokens, 1) < 0)
-        goto error;
+    VIR_EXPAND_N(result, ntokens, 1);
 
     for (i = 0; parts[i]; i++) {
         if (STREQ(parts[i], ""))
             continue;
 
-        if (VIR_EXPAND_N(result, ntokens, 1) < 0)
-            goto error;
-
+        VIR_EXPAND_N(result, ntokens, 1);
         result[ntokens - 2] = g_strdup(parts[i]);
     }
 
@@ -189,8 +186,7 @@ lxcAddFSDef(virDomainDefPtr def,
     if (!(fsDef = lxcCreateFSDef(type, src, dst, readonly, usage)))
         goto error;
 
-    if (VIR_EXPAND_N(def->fss, def->nfss, 1) < 0)
-        goto error;
+    VIR_EXPAND_N(def->fss, def->nfss, 1);
     def->fss[def->nfss - 1] = fsDef;
 
     return 0;
@@ -509,8 +505,7 @@ lxcAddNetworkDefinition(virDomainDefPtr def, lxcNetworkParseData *data)
                                          &hostdev->source.caps.u.net.ip.nroutes) < 0)
                 goto error;
 
-        if (VIR_EXPAND_N(def->hostdevs, def->nhostdevs, 1) < 0)
-            goto error;
+        VIR_EXPAND_N(def->hostdevs, def->nhostdevs, 1);
         def->hostdevs[def->nhostdevs - 1] = hostdev;
     } else {
         if (!(net = lxcCreateNetDef(data->type, data->link, data->mac,
@@ -533,8 +528,7 @@ lxcAddNetworkDefinition(virDomainDefPtr def, lxcNetworkParseData *data)
                                          &net->guestIP.nroutes) < 0)
                 goto error;
 
-        if (VIR_EXPAND_N(def->nets, def->nnets, 1) < 0)
-            goto error;
+        VIR_EXPAND_N(def->nets, def->nnets, 1);
         def->nets[def->nnets - 1] = net;
     }
 
@@ -651,9 +645,7 @@ lxcNetworkGetParseDataByIndex(lxcNetworkParseDataArray *networks,
 
     /* Index was not found. So, it is time to add new *
      * interface and return this last position.       */
-    if (VIR_EXPAND_N(networks->parseData, networks->ndata, 1) < 0)
-        return NULL;
-
+    VIR_EXPAND_N(networks->parseData, networks->ndata, 1);
     networks->parseData[ndata] = g_new0(lxcNetworkParseData, 1);
     networks->parseData[ndata]->index = index;
 
@@ -696,9 +688,7 @@ lxcNetworkGetParseDataByIndexLegacy(lxcNetworkParseDataArray *networks,
     if (elem == VIR_LXC_NETWORK_CONFIG_TYPE) {
         /* Index was not found. So, it is time to add new *
          * interface and return this last position.       */
-        if (VIR_EXPAND_N(networks->parseData, networks->ndata, 1) < 0)
-            return NULL;
-
+        VIR_EXPAND_N(networks->parseData, networks->ndata, 1);
         networks->parseData[ndata] = g_new0(lxcNetworkParseData, 1);
         networks->parseData[ndata]->index = networks->ndata;
 
@@ -858,12 +848,10 @@ lxcIdmapWalkCallback(const char *name, virConfValuePtr value, void *data)
     }
 
     if (type == 'u') {
-        if (VIR_EXPAND_N(def->idmap.uidmap, def->idmap.nuidmap, 1) < 0)
-            return -1;
+        VIR_EXPAND_N(def->idmap.uidmap, def->idmap.nuidmap, 1);
         idmap = &def->idmap.uidmap[def->idmap.nuidmap - 1];
     } else if (type == 'g') {
-        if (VIR_EXPAND_N(def->idmap.gidmap, def->idmap.ngidmap, 1) < 0)
-            return -1;
+        VIR_EXPAND_N(def->idmap.gidmap, def->idmap.ngidmap, 1);
         idmap = &def->idmap.gidmap[def->idmap.ngidmap - 1];
     } else {
         return -1;
@@ -1017,8 +1005,7 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValuePtr value, void *data)
             device = &def->blkio.devices[i];
     }
     if (!device) {
-        if (VIR_EXPAND_N(def->blkio.devices, def->blkio.ndevices, 1) < 0)
-            goto cleanup;
+        VIR_EXPAND_N(def->blkio.devices, def->blkio.ndevices, 1);
         device = &def->blkio.devices[def->blkio.ndevices - 1];
         device->path = path;
         path = NULL;

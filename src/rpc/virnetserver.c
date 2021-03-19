@@ -290,8 +290,7 @@ int virNetServerAddClient(virNetServerPtr srv,
     if (virNetServerClientInit(client) < 0)
         goto error;
 
-    if (VIR_EXPAND_N(srv->clients, srv->nclients, 1) < 0)
-        goto error;
+    VIR_EXPAND_N(srv->clients, srv->nclients, 1);
     srv->clients[srv->nclients-1] = virObjectRef(client);
 
     virObjectLock(client);
@@ -620,9 +619,7 @@ int virNetServerAddService(virNetServerPtr srv,
 {
     virObjectLock(srv);
 
-    if (VIR_EXPAND_N(srv->services, srv->nservices, 1) < 0)
-        goto error;
-
+    VIR_EXPAND_N(srv->services, srv->nservices, 1);
     srv->services[srv->nservices-1] = virObjectRef(svc);
 
     virNetServerServiceSetDispatcher(svc,
@@ -631,10 +628,6 @@ int virNetServerAddService(virNetServerPtr srv,
 
     virObjectUnlock(srv);
     return 0;
-
- error:
-    virObjectUnlock(srv);
-    return -1;
 }
 
 
@@ -787,17 +780,11 @@ int virNetServerAddProgram(virNetServerPtr srv,
 {
     virObjectLock(srv);
 
-    if (VIR_EXPAND_N(srv->programs, srv->nprograms, 1) < 0)
-        goto error;
-
+    VIR_EXPAND_N(srv->programs, srv->nprograms, 1);
     srv->programs[srv->nprograms-1] = virObjectRef(prog);
 
     virObjectUnlock(srv);
     return 0;
-
- error:
-    virObjectUnlock(srv);
-    return -1;
 }
 
 int virNetServerSetTLSContext(virNetServerPtr srv,

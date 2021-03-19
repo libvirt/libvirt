@@ -276,8 +276,7 @@ virSysinfoParsePPCProcessor(const char *base, virSysinfoDefPtr ret)
         eol = strchr(base, '\n');
         cur = strchr(base, ':') + 1;
 
-        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0)
-            return -1;
+        VIR_EXPAND_N(ret->processor, ret->nprocessor, 1);
         processor = &ret->processor[ret->nprocessor - 1];
 
         virSkipSpaces(&cur);
@@ -409,8 +408,7 @@ virSysinfoParseARMProcessor(const char *base, virSysinfoDefPtr ret)
         eol = strchr(base, '\n');
         cur = strchr(base, ':') + 1;
 
-        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0)
-            goto error;
+        VIR_EXPAND_N(ret->processor, ret->nprocessor, 1);
         processor = &ret->processor[ret->nprocessor - 1];
 
         virSkipSpaces(&cur);
@@ -425,10 +423,6 @@ virSysinfoParseARMProcessor(const char *base, virSysinfoDefPtr ret)
 
     VIR_FREE(processor_type);
     return 0;
-
- error:
-    VIR_FREE(processor_type);
-    return -1;
 }
 
 /* virSysinfoRead for ARMv7
@@ -544,8 +538,7 @@ virSysinfoParseS390Processor(const char *base, virSysinfoDefPtr ret)
     while ((tmp_base = strstr(tmp_base, "processor "))
            && (tmp_base = virSysinfoParseS390Line(tmp_base, "processor ",
                                                   &procline))) {
-        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0)
-            goto error;
+        VIR_EXPAND_N(ret->processor, ret->nprocessor, 1);
         processor = &ret->processor[ret->nprocessor - 1];
         processor->processor_manufacturer = g_strdup(manufacturer);
         if (!virSysinfoParseS390Delimited(procline, "version",
@@ -770,7 +763,6 @@ virSysinfoParseX86BaseBoard(const char *base,
                             virSysinfoBaseBoardDefPtr *baseBoard,
                             size_t *nbaseBoard)
 {
-    int ret = -1;
     const char *cur;
     char *eol = NULL;
     virSysinfoBaseBoardDefPtr boards = NULL;
@@ -779,8 +771,7 @@ virSysinfoParseX86BaseBoard(const char *base,
     while (base && (cur = strstr(base, "Base Board Information"))) {
         virSysinfoBaseBoardDefPtr def;
 
-        if (VIR_EXPAND_N(boards, nboards, 1) < 0)
-            goto cleanup;
+        VIR_EXPAND_N(boards, nboards, 1);
 
         def = &boards[nboards - 1];
 
@@ -842,13 +833,7 @@ virSysinfoParseX86BaseBoard(const char *base,
 
     *nbaseBoard = nboards;
     *baseBoard = g_steal_pointer(&boards);
-    nboards = 0;
-    ret = 0;
- cleanup:
-    while (nboards--)
-        virSysinfoBaseBoardDefClear(&boards[nboards]);
-    VIR_FREE(boards);
-    return ret;
+    return 0;
 }
 
 
@@ -981,8 +966,7 @@ virSysinfoParseOEMStrings(const char *base,
         if (!eol)
             continue;
 
-        if (VIR_EXPAND_N(strings->values, strings->nvalues, 1) < 0)
-            goto cleanup;
+        VIR_EXPAND_N(strings->values, strings->nvalues, 1);
 
         /* If OEM String contains newline, dmidecode escapes it as a dot.
          * If this is the case then run dmidecode again to get raw string.
@@ -1023,8 +1007,7 @@ virSysinfoParseX86Processor(const char *base, virSysinfoDefPtr ret)
         base = tmp_base;
         eol = NULL;
 
-        if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0)
-            return -1;
+        VIR_EXPAND_N(ret->processor, ret->nprocessor, 1);
         processor = &ret->processor[ret->nprocessor - 1];
 
         if ((cur = strstr(base, "Socket Designation: ")) != NULL) {
@@ -1124,8 +1107,7 @@ virSysinfoParseX86Memory(const char *base, virSysinfoDefPtr ret)
         base = tmp_base;
         eol = NULL;
 
-        if (VIR_EXPAND_N(ret->memory, ret->nmemory, 1) < 0)
-            return -1;
+        VIR_EXPAND_N(ret->memory, ret->nmemory, 1);
         memory = &ret->memory[ret->nmemory - 1];
 
         if ((cur = strstr(base, "Size: ")) != NULL) {

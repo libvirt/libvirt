@@ -554,8 +554,7 @@ virDomainBackupAlignDisks(virDomainBackupDefPtr def,
         backup_all = true;
 
     ndisks = def->ndisks;
-    if (VIR_EXPAND_N(def->disks, def->ndisks, dom->ndisks - def->ndisks) < 0)
-        return -1;
+    VIR_EXPAND_N(def->disks, def->ndisks, dom->ndisks - def->ndisks);
 
     for (i = 0; i < dom->ndisks; i++) {
         virDomainBackupDiskDefPtr backupdisk = NULL;

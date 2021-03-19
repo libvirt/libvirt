@@ -653,7 +653,6 @@ int virProcessGetNamespaces(pid_t pid,
                             size_t *nfdlist,
                             int **fdlist)
 {
-    int ret = -1;
     size_t i = 0;
     const char *ns[] = { "user", "ipc", "uts", "net", "pid", "mnt" };
 
@@ -667,24 +666,12 @@ int virProcessGetNamespaces(pid_t pid,
         nsfile = g_strdup_printf("/proc/%llu/ns/%s", (long long)pid, ns[i]);
 
         if ((fd = open(nsfile, O_RDONLY)) >= 0) {
-            if (VIR_EXPAND_N(*fdlist, *nfdlist, 1) < 0) {
-                VIR_FORCE_CLOSE(fd);
-                goto cleanup;
-            }
-
+            VIR_EXPAND_N(*fdlist, *nfdlist, 1);
             (*fdlist)[(*nfdlist)-1] = fd;
         }
     }
 
-    ret = 0;
-
- cleanup:
-    if (ret < 0) {
-        for (i = 0; i < *nfdlist; i++)
-            VIR_FORCE_CLOSE((*fdlist)[i]);
-        VIR_FREE(*fdlist);
-    }
-    return ret;
+    return 0;
 }
 
 

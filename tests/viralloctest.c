@@ -133,8 +133,7 @@ testExpandArray(const void *opaque G_GNUC_UNUSED)
         t[i].b = 20;
     }
 
-    if (VIR_EXPAND_N(t, nt, 5) < 0)
-        goto cleanup;
+    VIR_EXPAND_N(t, nt, 5);
 
     if (testCheckNonNull(t) < 0)
         goto cleanup;

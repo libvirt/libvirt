@@ -2166,8 +2166,7 @@ virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
     if (defs) {
         start = defs->ncpus;
 
-        if (VIR_EXPAND_N(defs->cpus, defs->ncpus, count) < 0)
-            return -1;
+        VIR_EXPAND_N(defs->cpus, defs->ncpus, count);
     } else {
         start = 0;
 

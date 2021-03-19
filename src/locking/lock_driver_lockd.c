@@ -641,9 +641,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         goto cleanup;
     }
 
-    if (VIR_EXPAND_N(priv->resources, priv->nresources, 1) < 0)
-        goto cleanup;
-
+    VIR_EXPAND_N(priv->resources, priv->nresources, 1);
     priv->resources[priv->nresources-1].lockspace = g_steal_pointer(&newLockspace);
     priv->resources[priv->nresources-1].name = g_steal_pointer(&newName);
 

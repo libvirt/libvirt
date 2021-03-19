@@ -262,7 +262,7 @@ virCloseCallbacksGetOne(void *payload,
     if (data->conn != closeDef->conn || !closeDef->cb)
         return 0;
 
-    ignore_value(VIR_EXPAND_N(data->list->entries, data->list->nentries, 1));
+    VIR_EXPAND_N(data->list->entries, data->list->nentries, 1);
 
     memcpy(data->list->entries[data->list->nentries - 1].uuid,
            uuid, VIR_UUID_BUFLEN);

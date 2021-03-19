@@ -2010,7 +2010,6 @@ virFileGetMountSubtreeImpl(const char *mtabpath,
     FILE *procmnt;
     struct mntent mntent;
     char mntbuf[1024];
-    int ret = -1;
     char **mounts = NULL;
     size_t nmounts = 0;
 
@@ -2031,8 +2030,7 @@ virFileGetMountSubtreeImpl(const char *mtabpath,
                mntent.mnt_dir[strlen(prefix)] == '/')))
             continue;
 
-        if (VIR_EXPAND_N(mounts, nmounts, nmounts ? 1 : 2) < 0)
-            goto cleanup;
+        VIR_EXPAND_N(mounts, nmounts, nmounts ? 1 : 2);
         mounts[nmounts - 2] = g_strdup(mntent.mnt_dir);
     }
 
@@ -2042,13 +2040,8 @@ virFileGetMountSubtreeImpl(const char *mtabpath,
 
     *mountsret = mounts;
     *nmountsret = nmounts ? nmounts - 1 : 0;
-    ret = 0;
-
- cleanup:
-    if (ret < 0)
-        g_strfreev(mounts);
     endmntent(procmnt);
-    return ret;
+    return 0;
 }
 #else /* ! defined WITH_MNTENT_H && defined WITH_GETMNTENT_R */
 static int
@@ -3548,8 +3541,7 @@ virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs,
         if (STRNEQ(mb.mnt_type, "hugetlbfs"))
             continue;
 
-        if (VIR_EXPAND_N(fs, nfs, 1) < 0)
-             goto cleanup;
+        VIR_EXPAND_N(fs, nfs, 1);
 
         tmp = &fs[nfs - 1];
 

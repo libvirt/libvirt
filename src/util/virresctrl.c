@@ -608,10 +608,9 @@ virResctrlGetCacheInfo(virResctrlInfoPtr resctrl,
         if (rv < 0)
             goto cleanup;
 
-        if (resctrl->nlevels <= level &&
+        if (resctrl->nlevels <= level)
             VIR_EXPAND_N(resctrl->levels, resctrl->nlevels,
-                         level - resctrl->nlevels + 1) < 0)
-            goto cleanup;
+                         level - resctrl->nlevels + 1);
 
         if (!resctrl->levels[level]) {
             virResctrlInfoPerTypePtr *types = NULL;
@@ -932,8 +931,7 @@ virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
             i_type->max_cache_id++;
         }
 
-        if (VIR_EXPAND_N(*controls, *ncontrols, 1) < 0)
-            goto error;
+        VIR_EXPAND_N(*controls, *ncontrols, 1);
         (*controls)[*ncontrols - 1] = g_new0(virResctrlInfoPerCache, 1);
         memcpy((*controls)[*ncontrols - 1], &i_type->control, sizeof(i_type->control));
     }
@@ -1098,9 +1096,8 @@ virResctrlAllocGetType(virResctrlAllocPtr alloc,
 {
     virResctrlAllocPerLevelPtr a_level = NULL;
 
-    if (alloc->nlevels <= level &&
-        VIR_EXPAND_N(alloc->levels, alloc->nlevels, level - alloc->nlevels + 1) < 0)
-        return NULL;
+    if (alloc->nlevels <= level)
+        VIR_EXPAND_N(alloc->levels, alloc->nlevels, level - alloc->nlevels + 1);
 
     if (!alloc->levels[level]) {
         virResctrlAllocPerTypePtr *types = NULL;
@@ -1132,10 +1129,9 @@ virResctrlAllocUpdateMask(virResctrlAllocPtr alloc,
     if (!a_type)
         return -1;
 
-    if (a_type->nmasks <= cache &&
+    if (a_type->nmasks <= cache)
         VIR_EXPAND_N(a_type->masks, a_type->nmasks,
-                     cache - a_type->nmasks + 1) < 0)
-        return -1;
+                     cache - a_type->nmasks + 1);
 
     if (!a_type->masks[cache])
         a_type->masks[cache] = virBitmapNewCopy(mask);
@@ -1156,10 +1152,9 @@ virResctrlAllocUpdateSize(virResctrlAllocPtr alloc,
     if (!a_type)
         return -1;
 
-    if (a_type->nsizes <= cache &&
+    if (a_type->nsizes <= cache)
         VIR_EXPAND_N(a_type->sizes, a_type->nsizes,
-                     cache - a_type->nsizes + 1) < 0)
-        return -1;
+                     cache - a_type->nsizes + 1);
 
     if (!a_type->sizes[cache])
         a_type->sizes[cache] = g_new0(unsigned long long, 1);
@@ -1316,10 +1311,9 @@ virResctrlAllocSetMemoryBandwidth(virResctrlAllocPtr alloc,
         alloc->mem_bw = mem_bw;
     }
 
-    if (mem_bw->nbandwidths <= id &&
+    if (mem_bw->nbandwidths <= id)
         VIR_EXPAND_N(mem_bw->bandwidths, mem_bw->nbandwidths,
-                     id - mem_bw->nbandwidths + 1) < 0)
-        return -1;
+                     id - mem_bw->nbandwidths + 1);
 
     if (mem_bw->bandwidths[id]) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -1469,9 +1463,9 @@ virResctrlAllocParseProcessMemoryBandwidth(virResctrlInfoPtr resctrl,
                          "memory bandwidth node '%u'"), id);
         return -1;
     }
-    if (alloc->mem_bw->nbandwidths <= id &&
+    if (alloc->mem_bw->nbandwidths <= id) {
         VIR_EXPAND_N(alloc->mem_bw->bandwidths, alloc->mem_bw->nbandwidths,
-                     id - alloc->mem_bw->nbandwidths + 1) < 0) {
+                     id - alloc->mem_bw->nbandwidths + 1);
         return -1;
     }
     if (!alloc->mem_bw->bandwidths[id])
@@ -1856,9 +1850,8 @@ virResctrlAllocNewFromInfo(virResctrlInfoPtr info)
     if (info->membw_info) {
         ret->mem_bw = g_new0(virResctrlAllocMemBW, 1);
 
-        if (VIR_EXPAND_N(ret->mem_bw->bandwidths, ret->mem_bw->nbandwidths,
-                         info->membw_info->max_id + 1) < 0)
-            goto error;
+        VIR_EXPAND_N(ret->mem_bw->bandwidths, ret->mem_bw->nbandwidths,
+                     info->membw_info->max_id + 1);
 
         for (i = 0; i < ret->mem_bw->nbandwidths; i++) {
             ret->mem_bw->bandwidths[i] = g_new0(unsigned int, 1);
@@ -2146,10 +2139,9 @@ virResctrlAllocCopyMemBW(virResctrlAllocPtr dst,
 
     dst_bw = dst->mem_bw;
 
-    if (src_bw->nbandwidths > dst_bw->nbandwidths &&
+    if (src_bw->nbandwidths > dst_bw->nbandwidths)
         VIR_EXPAND_N(dst_bw->bandwidths, dst_bw->nbandwidths,
-                     src_bw->nbandwidths - dst_bw->nbandwidths) < 0)
-        return -1;
+                     src_bw->nbandwidths - dst_bw->nbandwidths);
 
     for (i = 0; i < src_bw->nbandwidths; i++) {
         if (dst_bw->bandwidths[i])

@@ -510,8 +510,7 @@ void virFirewallStartTransaction(virFirewallPtr firewall,
     group = virFirewallGroupNew();
     group->actionFlags = flags;
 
-    ignore_value(VIR_EXPAND_N(firewall->groups,
-                              firewall->ngroups, 1));
+    VIR_EXPAND_N(firewall->groups, firewall->ngroups, 1);
     firewall->groups[firewall->ngroups - 1] = group;
     firewall->currentGroup = firewall->ngroups - 1;
 }

@@ -1597,11 +1597,7 @@ qemuSharedDeviceEntryInsert(virQEMUDriverPtr driver,
          * recorded in the table.
          */
         if (!qemuSharedDeviceEntryDomainExists(entry, name, NULL)) {
-            if (VIR_EXPAND_N(entry->domains, entry->ref, 1) < 0) {
-                /* entry is owned by the hash table here */
-                entry = NULL;
-                goto error;
-            }
+            VIR_EXPAND_N(entry->domains, entry->ref, 1);
             entry->domains[entry->ref - 1] = g_strdup(name);
         }
     } else {

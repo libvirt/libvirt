@@ -1070,17 +1070,11 @@ int virNetClientAddProgram(virNetClientPtr client,
 {
     virObjectLock(client);
 
-    if (VIR_EXPAND_N(client->programs, client->nprograms, 1) < 0)
-        goto error;
-
+    VIR_EXPAND_N(client->programs, client->nprograms, 1);
     client->programs[client->nprograms-1] = virObjectRef(prog);
 
     virObjectUnlock(client);
     return 0;
-
- error:
-    virObjectUnlock(client);
-    return -1;
 }
 
 
@@ -1089,17 +1083,11 @@ int virNetClientAddStream(virNetClientPtr client,
 {
     virObjectLock(client);
 
-    if (VIR_EXPAND_N(client->streams, client->nstreams, 1) < 0)
-        goto error;
-
+    VIR_EXPAND_N(client->streams, client->nstreams, 1);
     client->streams[client->nstreams-1] = virObjectRef(st);
 
     virObjectUnlock(client);
     return 0;
-
- error:
-    virObjectUnlock(client);
-    return -1;
 }
 
 

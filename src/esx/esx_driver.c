@@ -5144,9 +5144,7 @@ esxDomainInterfaceAddresses(virDomainPtr domain,
             continue;
         }
 
-        if (VIR_EXPAND_N(ifaces_ret, ifaces_count, 1) < 0)
-            goto cleanup;
-
+        VIR_EXPAND_N(ifaces_ret, ifaces_count, 1);
         ifaces_ret[ifaces_count - 1] = g_new0(virDomainInterface, 1);
 
         iface = ifaces_ret[ifaces_count - 1];

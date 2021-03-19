@@ -144,12 +144,7 @@ testSELinuxLoadFileList(const char *testname,
                 *tmp = '\0';
         }
 
-        if (VIR_EXPAND_N(*files, *nfiles, 1) < 0) {
-            VIR_FREE(file);
-            VIR_FREE(context);
-            goto cleanup;
-        }
-
+        VIR_EXPAND_N(*files, *nfiles, 1);
         (*files)[(*nfiles)-1].file = file;
         (*files)[(*nfiles)-1].context = context;
     }

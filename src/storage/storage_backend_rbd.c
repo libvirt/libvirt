@@ -649,8 +649,7 @@ virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
         name += strlen(name) + 1;
     }
 
-    if (VIR_EXPAND_N(names, nnames, 1) < 0)
-        goto error;
+    VIR_EXPAND_N(names, nnames, 1);
 
     return names;
 

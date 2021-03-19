@@ -738,8 +738,7 @@ virSystemdActivationAddFD(virSystemdActivationPtr act,
         return 0;
     }
 
-    if (VIR_EXPAND_N(ent->fds, ent->nfds, 1) < 0)
-        return -1;
+    VIR_EXPAND_N(ent->fds, ent->nfds, 1);
 
     VIR_DEBUG("Record extra FD %d with name %s", fd, name);
     ent->fds[ent->nfds - 1] = fd;

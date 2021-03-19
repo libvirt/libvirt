@@ -182,16 +182,10 @@ virNetLibsshSessionAuthMethodNew(virNetLibsshSessionPtr sess)
 
     auth = g_new0(virNetLibsshAuthMethod, 1);
 
-    if (VIR_EXPAND_N(sess->auths, sess->nauths, 1) < 0)
-        goto error;
-
+    VIR_EXPAND_N(sess->auths, sess->nauths, 1);
     sess->auths[sess->nauths - 1] = auth;
 
     return auth;
-
- error:
-    VIR_FREE(auth);
-    return NULL;
 }
 
 /* string representation of public key of remote server */

@@ -4068,10 +4068,7 @@ cmdStartGetFDs(vshControl *ctl,
             vshError(ctl, _("Unable to parse FD number '%s'"), fdlist[i]);
             goto error;
         }
-        if (VIR_EXPAND_N(fds, nfds, 1) < 0) {
-            vshError(ctl, "%s", _("Unable to allocate FD list"));
-            goto error;
-        }
+        VIR_EXPAND_N(fds, nfds, 1);
         fds[nfds - 1] = fd;
     }
 
@@ -10055,16 +10052,10 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
         setlabel = false;
 
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        if (VIR_EXPAND_N(cmdargv, ncmdargv, 1) < 0) {
-            vshError(ctl, _("%s: %d: failed to allocate argv"),
-                     __FILE__, __LINE__);
-        }
+        VIR_EXPAND_N(cmdargv, ncmdargv, 1);
         cmdargv[ncmdargv-1] = opt->data;
     }
-    if (VIR_EXPAND_N(cmdargv, ncmdargv, 1) < 0) {
-        vshError(ctl, _("%s: %d: failed to allocate argv"),
-                 __FILE__, __LINE__);
-    }
+    VIR_EXPAND_N(cmdargv, ncmdargv, 1);
     cmdargv[ncmdargv - 1] = NULL;
 
     if ((nfdlist = virDomainLxcOpenNamespace(dom, &fdlist, 0)) < 0)
@@ -13956,11 +13947,7 @@ cmdDomFSFreeze(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        if (VIR_EXPAND_N(mountpoints, nmountpoints, 1) < 0) {
-            vshError(ctl, _("%s: %d: failed to allocate mountpoints"),
-                     __FILE__, __LINE__);
-            goto cleanup;
-        }
+        VIR_EXPAND_N(mountpoints, nmountpoints, 1);
         mountpoints[nmountpoints-1] = opt->data;
     }
 
@@ -14009,11 +13996,7 @@ cmdDomFSThaw(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        if (VIR_EXPAND_N(mountpoints, nmountpoints, 1) < 0) {
-            vshError(ctl, _("%s: %d: failed to allocate mountpoints"),
-                     __FILE__, __LINE__);
-            goto cleanup;
-        }
+        VIR_EXPAND_N(mountpoints, nmountpoints, 1);
         mountpoints[nmountpoints-1] = opt->data;
     }
 

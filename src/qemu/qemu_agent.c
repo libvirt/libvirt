@@ -2160,8 +2160,7 @@ qemuAgentGetInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
 
     /* If the hash table doesn't contain this iface, add it */
     if (!iface) {
-        if (VIR_EXPAND_N(*ifaces_ret, *ifaces_count, 1) < 0)
-            return -1;
+        VIR_EXPAND_N(*ifaces_ret, *ifaces_count, 1);
 
         iface = g_new0(virDomainInterface, 1);
         (*ifaces_ret)[*ifaces_count - 1] = iface;
@@ -2191,9 +2190,7 @@ qemuAgentGetInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
     /* If current iface already exists, continue with the count */
     addrs_count = iface->naddrs;
 
-    if (VIR_EXPAND_N(iface->addrs, addrs_count,
-                     virJSONValueArraySize(ip_addr_arr))  < 0)
-        return -1;
+    VIR_EXPAND_N(iface->addrs, addrs_count, virJSONValueArraySize(ip_addr_arr));
 
     for (j = 0; j < virJSONValueArraySize(ip_addr_arr); j++) {
         virJSONValuePtr ip_addr_obj = virJSONValueArrayGet(ip_addr_arr, j);

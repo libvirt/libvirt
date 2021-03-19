@@ -321,8 +321,7 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
 static int virLXCControllerAddConsole(virLXCControllerPtr ctrl,
                                       int hostFd)
 {
-    if (VIR_EXPAND_N(ctrl->consoles, ctrl->nconsoles, 1) < 0)
-        return -1;
+    VIR_EXPAND_N(ctrl->consoles, ctrl->nconsoles, 1);
     ctrl->consoles[ctrl->nconsoles-1].daemon = ctrl->daemon;
     ctrl->consoles[ctrl->nconsoles-1].hostFd = hostFd;
     ctrl->consoles[ctrl->nconsoles-1].hostWatch = -1;
@@ -402,10 +401,7 @@ static int virLXCControllerGetNICIndexes(virLXCControllerPtr ctrl)
             if (virNetDevGetIndex(ctrl->def->nets[i]->ifname,
                                   &nicindex) < 0)
                 return -1;
-            if (VIR_EXPAND_N(ctrl->nicindexes,
-                             ctrl->nnicindexes,
-                             1) < 0)
-                return -1;
+            VIR_EXPAND_N(ctrl->nicindexes, ctrl->nnicindexes, 1);
             VIR_DEBUG("Index %d for %s", nicindex,
                       ctrl->def->nets[i]->ifname);
             ctrl->nicindexes[ctrl->nnicindexes-1] = nicindex;
@@ -636,10 +632,7 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
                 return -1;
 
             VIR_DEBUG("Saving loop fd %d", fd);
-            if (VIR_EXPAND_N(ctrl->loopDevFds, ctrl->nloopDevs, 1) < 0) {
-                VIR_FORCE_CLOSE(fd);
-                return -1;
-            }
+            VIR_EXPAND_N(ctrl->loopDevFds, ctrl->nloopDevs, 1);
             ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
         } else if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_NBD) {
             if (virLXCControllerSetupNBDDeviceFS(fs) < 0)
@@ -694,10 +687,7 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
                 return -1;
 
             VIR_DEBUG("Saving loop fd %d", fd);
-            if (VIR_EXPAND_N(ctrl->loopDevFds, ctrl->nloopDevs, 1) < 0) {
-                VIR_FORCE_CLOSE(fd);
-                return -1;
-            }
+            VIR_EXPAND_N(ctrl->loopDevFds, ctrl->nloopDevs, 1);
             ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
         } else if (!driver || STREQ(driver, "nbd")) {
             if (disk->cachemode != VIR_DOMAIN_DISK_CACHE_DEFAULT &&

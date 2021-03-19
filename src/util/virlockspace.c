@@ -214,9 +214,7 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
     }
     res->lockHeld = true;
 
-    if (VIR_EXPAND_N(res->owners, res->nOwners, 1) < 0)
-        goto error;
-
+    VIR_EXPAND_N(res->owners, res->nOwners, 1);
     res->owners[res->nOwners-1] = owner;
 
     return res;
@@ -583,8 +581,7 @@ int virLockSpaceAcquireResource(virLockSpacePtr lockspace,
         if ((res->flags & VIR_LOCK_SPACE_ACQUIRE_SHARED) &&
             (flags & VIR_LOCK_SPACE_ACQUIRE_SHARED)) {
 
-            if (VIR_EXPAND_N(res->owners, res->nOwners, 1) < 0)
-                goto cleanup;
+            VIR_EXPAND_N(res->owners, res->nOwners, 1);
             res->owners[res->nOwners-1] = owner;
 
             goto done;

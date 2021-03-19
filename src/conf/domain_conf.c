@@ -2001,8 +2001,7 @@ virDomainDefSetVcpusMax(virDomainDefPtr def,
         return 0;
 
     if (def->maxvcpus < maxvcpus) {
-        if (VIR_EXPAND_N(def->vcpus, def->maxvcpus, maxvcpus - def->maxvcpus) < 0)
-            return -1;
+        VIR_EXPAND_N(def->vcpus, def->maxvcpus, maxvcpus - def->maxvcpus);
 
         for (i = oldmax; i < def->maxvcpus; i++) {
             if (!(def->vcpus[i] = virDomainVcpuDefNew(xmlopt)))

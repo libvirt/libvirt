@@ -221,9 +221,7 @@ virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value)
         break;
 
     case NWFILTER_VALUE_TYPE_ARRAY:
-        if (VIR_EXPAND_N(val->u.array.values,
-                         val->u.array.nValues, 1) < 0)
-            return -1;
+        VIR_EXPAND_N(val->u.array.values, val->u.array.nValues, 1);
         val->u.array.values[val->u.array.nValues - 1] = value;
         rc = 0;
         break;
@@ -374,9 +372,7 @@ virNWFilterVarCombIterAddVariable(virNWFilterVarCombIterEntryPtr cie,
         }
     }
 
-    if (VIR_EXPAND_N(cie->varNames, cie->nVarNames, 1) < 0)
-        return -1;
-
+    VIR_EXPAND_N(cie->varNames, cie->nVarNames, 1);
     cie->varNames[cie->nVarNames - 1] = varName;
 
     return 0;

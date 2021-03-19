@@ -728,8 +728,7 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
 
     i = addrs->nbuses;
 
-    if (VIR_EXPAND_N(addrs->buses, addrs->nbuses, add) < 0)
-        return -1;
+    VIR_EXPAND_N(addrs->buses, addrs->nbuses, add);
 
     if (needDMIToPCIBridge) {
         /* first of the new buses is dmi-to-pci-bridge, the
@@ -1985,8 +1984,7 @@ virDomainUSBAddressSetAddController(virDomainUSBAddressSetPtr addrs,
         return 0;
 
     if (addrs->nbuses <= cont->idx) {
-        if (VIR_EXPAND_N(addrs->buses, addrs->nbuses, cont->idx - addrs->nbuses + 1) < 0)
-            goto cleanup;
+        VIR_EXPAND_N(addrs->buses, addrs->nbuses, cont->idx - addrs->nbuses + 1);
     } else if (addrs->buses[cont->idx]) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Duplicate USB controllers with index %u"),

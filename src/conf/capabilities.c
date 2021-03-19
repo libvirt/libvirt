@@ -580,9 +580,7 @@ virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModelPtr secmodel,
     if (type == NULL || label == NULL)
         return -1;
 
-    if (VIR_EXPAND_N(secmodel->labels, secmodel->nlabels, 1) < 0)
-        return -1;
-
+    VIR_EXPAND_N(secmodel->labels, secmodel->nlabels, 1);
     secmodel->labels[secmodel->nlabels - 1].type = g_strdup(type);
     secmodel->labels[secmodel->nlabels - 1].label = g_strdup(label);
 

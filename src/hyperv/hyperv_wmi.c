@@ -189,8 +189,7 @@ static inline int
 hypervCheckParams(hypervInvokeParamsListPtr params)
 {
     if (params->nbParams + 1 > params->nbAvailParams) {
-        if (VIR_EXPAND_N(params->params, params->nbAvailParams, 5) < 0)
-            return -1;
+        VIR_EXPAND_N(params->params, params->nbAvailParams, 5);
     }
 
     return 0;

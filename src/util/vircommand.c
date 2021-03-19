@@ -228,7 +228,7 @@ virCommandFDSet(virCommandPtr cmd,
     if (virCommandFDIsSet(cmd, fd))
         return;
 
-    ignore_value(VIR_EXPAND_N(cmd->passfd, cmd->npassfd, 1));
+    VIR_EXPAND_N(cmd->passfd, cmd->npassfd, 1);
 
     cmd->passfd[cmd->npassfd - 1].fd = fd;
     cmd->passfd[cmd->npassfd - 1].flags = flags;

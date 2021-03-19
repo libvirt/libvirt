@@ -68,8 +68,7 @@ testCompareXMLToXMLFiles(const char *inxml,
     if (flags & TEST_VDA_BITMAP) {
         virDomainCheckpointDiskDefPtr disk;
 
-        if (VIR_EXPAND_N(def->disks, def->ndisks, 1) < 0)
-            return -1;
+        VIR_EXPAND_N(def->disks, def->ndisks, 1);
         disk = &def->disks[0];
         if (disk->bitmap)
             return -1;

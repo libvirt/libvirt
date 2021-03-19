@@ -40,8 +40,7 @@ int virAccessDriverStackAppend(virAccessManagerPtr manager,
 {
     virAccessDriverStackPrivatePtr priv = virAccessManagerGetPrivateData(manager);
 
-    if (VIR_EXPAND_N(priv->managers, priv->managersLen, 1) < 0)
-        return -1;
+    VIR_EXPAND_N(priv->managers, priv->managersLen, 1);
 
     priv->managers[priv->managersLen-1] = child;
 

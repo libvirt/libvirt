@@ -651,8 +651,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                 continue;
 
 #ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
-            if (VIR_EXPAND_N(b_info->u.hvm.usbdevice_list, nusbdevice, 1) < 0)
-                return -1;
+            VIR_EXPAND_N(b_info->u.hvm.usbdevice_list, nusbdevice, 1);
 #else
             nusbdevice++;
             if (nusbdevice > 1) {
@@ -685,10 +684,8 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
 
 #ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
         /* NULL-terminate usbdevice_list */
-        if (nusbdevice > 0 &&
-            VIR_EXPAND_N(b_info->u.hvm.usbdevice_list, nusbdevice, 1) < 0) {
-            return -1;
-        }
+        if (nusbdevice > 0)
+            VIR_EXPAND_N(b_info->u.hvm.usbdevice_list, nusbdevice, 1);
 #endif
     } else if (pvh) {
         b_info->cmdline = g_strdup(def->os.cmdline);

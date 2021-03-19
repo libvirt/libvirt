@@ -440,8 +440,7 @@ int virNetSocketNewListenTCP(const char *nodename,
 
         VIR_DEBUG("%p f=%d f=%d", &addr, runp->ai_family, addr.data.sa.sa_family);
 
-        if (VIR_EXPAND_N(socks, nsocks, 1) < 0)
-            goto error;
+        VIR_EXPAND_N(socks, nsocks, 1);
 
         if (!(socks[nsocks-1] = virNetSocketNew(&addr, NULL, false, fd, -1, 0, false)))
             goto error;

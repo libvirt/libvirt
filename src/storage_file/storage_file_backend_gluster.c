@@ -279,8 +279,7 @@ virStorageFileBackendGlusterReadlinkCallback(const char *path,
         return 1;
 
  realloc:
-    if (VIR_EXPAND_N(buf, bufsiz, 256) < 0)
-        return -1;
+    VIR_EXPAND_N(buf, bufsiz, 256);
 
     if ((ret = glfs_readlink(priv->vol, path, buf, bufsiz)) < 0) {
         virReportSystemError(errno,

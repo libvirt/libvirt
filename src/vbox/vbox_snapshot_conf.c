@@ -472,8 +472,7 @@ virVBoxSnapshotConfAllChildren(virVBoxSnapshotConfHardDiskPtr disk,
 
     for (i = 0; i < disk->nchildren; i++) {
         tempSize = virVBoxSnapshotConfAllChildren(disk->children[i], &tempList);
-        if (VIR_EXPAND_N(ret, returnSize, tempSize) < 0)
-            goto error;
+        VIR_EXPAND_N(ret, returnSize, tempSize);
 
         for (j = 0; j < tempSize; j++)
             ret[returnSize - tempSize + j] = tempList[j];
@@ -481,17 +480,10 @@ virVBoxSnapshotConfAllChildren(virVBoxSnapshotConfHardDiskPtr disk,
         VIR_FREE(tempList);
     }
 
-    if (VIR_EXPAND_N(ret, returnSize, 1) < 0)
-        goto error;
-
+    VIR_EXPAND_N(ret, returnSize, 1);
     ret[returnSize - 1] = disk;
     *list = ret;
     return returnSize;
-
- error:
-    VIR_FREE(tempList);
-    VIR_FREE(ret);
-    return 0;
 }
 
 void
@@ -785,9 +777,7 @@ virVBoxSnapshotConfAddSnapshotToXmlMachine(virVBoxSnapshotConfSnapshotPtr snapsh
                            _("Unable to find the snapshot %s"), snapshotParentName);
             return -1;
         }
-        if (VIR_EXPAND_N(parentSnapshot->children, parentSnapshot->nchildren, 1) < 0)
-            return -1;
-
+        VIR_EXPAND_N(parentSnapshot->children, parentSnapshot->nchildren, 1);
         parentSnapshot->children[parentSnapshot->nchildren - 1] = snapshot;
     }
 
@@ -829,9 +819,7 @@ virVBoxSnapshotConfAddHardDiskToMediaRegistry(virVBoxSnapshotConfHardDiskPtr har
         return -1;
     }
     /* Hard disk found */
-    if (VIR_EXPAND_N(parentDisk->children, parentDisk->nchildren, 1) < 0)
-        return -1;
-
+    VIR_EXPAND_N(parentDisk->children, parentDisk->nchildren, 1);
     parentDisk->children[parentDisk->nchildren - 1] = hardDisk;
     if (hardDisk->parent == NULL)
         hardDisk->parent = parentDisk;
@@ -1395,8 +1383,7 @@ virVBoxSnapshotConfDiskListToOpen(virVBoxSnapshotConfMachinePtr machine,
     ret[returnSize - 1] = hardDisk;
 
     while (hardDisk->parent != NULL) {
-        if (VIR_EXPAND_N(ret, returnSize, 1) < 0)
-            return 0;
+        VIR_EXPAND_N(ret, returnSize, 1);
         ret[returnSize - 1] = hardDisk->parent;
         hardDisk = hardDisk->parent;
     }
@@ -1424,8 +1411,7 @@ virVBoxSnapshotConfRemoveFakeDisks(virVBoxSnapshotConfMachinePtr machine)
 
     for (i = 0; i < machine->mediaRegistry->ndisks; i++) {
         tempSize = virVBoxSnapshotConfAllChildren(machine->mediaRegistry->disks[i], &tempList);
-        if (VIR_EXPAND_N(diskList, diskSize, tempSize) < 0)
-            goto cleanup;
+        VIR_EXPAND_N(diskList, diskSize, tempSize);
 
         for (j = 0; j < tempSize; j++)
             diskList[diskSize - tempSize + j] = tempList[j];
@@ -1475,8 +1461,7 @@ virVBoxSnapshotConfDiskIsInMediaRegistry(virVBoxSnapshotConfMachinePtr machine,
 
     for (i = 0; i < machine->mediaRegistry->ndisks; i++) {
         tempSize = virVBoxSnapshotConfAllChildren(machine->mediaRegistry->disks[i], &tempList);
-        if (VIR_EXPAND_N(diskList, diskSize, tempSize) < 0)
-            goto cleanup;
+        VIR_EXPAND_N(diskList, diskSize, tempSize);
 
         for (j = 0; j < tempSize; j++)
             diskList[diskSize - tempSize + j] = tempList[j];

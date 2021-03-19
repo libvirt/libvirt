@@ -552,8 +552,7 @@ xenParseHypervisorFeatures(virConfPtr conf, virDomainDefPtr def)
         return -1;
 
     if (strval) {
-        if (VIR_EXPAND_N(def->clock.timers, def->clock.ntimers, 1) < 0)
-            return -1;
+        VIR_EXPAND_N(def->clock.timers, def->clock.ntimers, 1);
 
         timer = g_new0(virDomainTimerDef, 1);
         timer->name = VIR_DOMAIN_TIMER_NAME_TSC;
@@ -625,8 +624,7 @@ xenParseHypervisorFeatures(virConfPtr conf, virDomainDefPtr def)
             return -1;
 
         if (val != -1) {
-            if (VIR_EXPAND_N(def->clock.timers, def->clock.ntimers, 1) < 0)
-                return -1;
+            VIR_EXPAND_N(def->clock.timers, def->clock.ntimers, 1);
 
             timer = g_new0(virDomainTimerDef, 1);
             timer->name = VIR_DOMAIN_TIMER_NAME_HPET;

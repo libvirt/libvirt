@@ -161,8 +161,7 @@ virDomainDriverMergeBlkioDevice(virBlkioDevicePtr *dest_array,
         if (!found) {
             if (!src->weight && !src->riops && !src->wiops && !src->rbps && !src->wbps)
                 continue;
-            if (VIR_EXPAND_N(*dest_array, *dest_size, 1) < 0)
-                return -1;
+            VIR_EXPAND_N(*dest_array, *dest_size, 1);
             dest = &(*dest_array)[*dest_size - 1];
 
             if (STREQ(type, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT)) {
