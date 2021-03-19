@@ -45,12 +45,11 @@ VIR_LOG_INIT("util.alloc");
  *
  * Returns zero on success, aborts on OOM
  */
-int virReallocN(void *ptrptr,
-                size_t size,
-                size_t count)
+void virReallocN(void *ptrptr,
+                 size_t size,
+                 size_t count)
 {
     *(void **)ptrptr = g_realloc_n(*(void**)ptrptr, size, count);
-    return 0;
 }
 
 /**
@@ -76,8 +75,7 @@ void virExpandN(void *ptrptr,
     if (*countptr + add < *countptr)
         abort();
 
-    if (virReallocN(ptrptr, size, *countptr + add) < 0)
-        abort();
+    virReallocN(ptrptr, size, *countptr + add);
     memset(*(char **)ptrptr + (size * *countptr), 0, size * add);
     *countptr += add;
 }
@@ -136,8 +134,7 @@ void virResizeN(void *ptrptr,
 void virShrinkN(void *ptrptr, size_t size, size_t *countptr, size_t toremove)
 {
     if (toremove < *countptr) {
-        if (virReallocN(ptrptr, size, *countptr -= toremove) < 0)
-            abort();
+        virReallocN(ptrptr, size, *countptr -= toremove);
     } else {
         g_free(*((void **)ptrptr));
         *((void **)ptrptr) = NULL;

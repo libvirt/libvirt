@@ -34,7 +34,7 @@
  */
 
 /* Don't call these directly - use the macros below */
-int virReallocN(void *ptrptr, size_t size, size_t count)
+void virReallocN(void *ptrptr, size_t size, size_t count)
     ATTRIBUTE_NONNULL(1);
 void virExpandN(void *ptrptr, size_t size, size_t *count, size_t add)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
@@ -61,7 +61,7 @@ int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
  *
  * This macro is safe to use on arguments with side effects.
  *
- * Returns 0 on success, aborts on OOM
+ * Aborts on OOM
  */
 #define VIR_REALLOC_N(ptr, count) virReallocN(&(ptr), sizeof(*(ptr)), (count))
 
