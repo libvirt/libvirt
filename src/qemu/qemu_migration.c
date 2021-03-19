@@ -1703,9 +1703,8 @@ qemuMigrationJobCheckStatus(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
-    char *error = NULL;
+    g_autofree char *error = NULL;
     bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
-    int ret = -1;
 
     if (!events ||
         jobInfo->stats.mig.status == QEMU_MONITOR_MIGRATION_STATUS_ERROR) {
@@ -1719,18 +1718,18 @@ qemuMigrationJobCheckStatus(virQEMUDriverPtr driver,
     case QEMU_DOMAIN_JOB_STATUS_NONE:
         virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
                        qemuMigrationJobName(vm), _("is not active"));
-        goto cleanup;
+        return -1;
 
     case QEMU_DOMAIN_JOB_STATUS_FAILED:
         virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
                        qemuMigrationJobName(vm),
                        error ? error : _("unexpectedly failed"));
-        goto cleanup;
+        return -1;
 
     case QEMU_DOMAIN_JOB_STATUS_CANCELED:
         virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
                        qemuMigrationJobName(vm), _("canceled by client"));
-        goto cleanup;
+        return -1;
 
     case QEMU_DOMAIN_JOB_STATUS_COMPLETED:
     case QEMU_DOMAIN_JOB_STATUS_ACTIVE:
@@ -1741,11 +1740,7 @@ qemuMigrationJobCheckStatus(virQEMUDriverPtr driver,
         break;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(error);
-    return ret;
+    return 0;
 }
 
 
