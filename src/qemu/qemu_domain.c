@@ -4287,10 +4287,8 @@ qemuDomainDefCPUPostParse(virDomainDefPtr def,
                 sveFeature->policy = VIR_CPU_FEATURE_REQUIRE;
             }
         } else {
-            if (VIR_RESIZE_N(def->cpu->features, def->cpu->nfeatures_max,
-                             def->cpu->nfeatures, 1) < 0) {
-                return -1;
-            }
+            VIR_RESIZE_N(def->cpu->features, def->cpu->nfeatures_max,
+                         def->cpu->nfeatures, 1);
 
             def->cpu->features[def->cpu->nfeatures].name = g_strdup("sve");
             def->cpu->features[def->cpu->nfeatures].policy = VIR_CPU_FEATURE_REQUIRE;
@@ -7340,10 +7338,9 @@ qemuDomainCleanupAdd(virDomainObjPtr vm,
             return 0;
     }
 
-    if (VIR_RESIZE_N(priv->cleanupCallbacks,
-                     priv->ncleanupCallbacks_max,
-                     priv->ncleanupCallbacks, 1) < 0)
-        return -1;
+    VIR_RESIZE_N(priv->cleanupCallbacks,
+                 priv->ncleanupCallbacks_max,
+                 priv->ncleanupCallbacks, 1);
 
     priv->cleanupCallbacks[priv->ncleanupCallbacks++] = cb;
     return 0;

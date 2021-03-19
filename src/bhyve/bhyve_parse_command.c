@@ -153,10 +153,7 @@ bhyveCommandLineToArgv(const char *nativeConfig,
         else
             line = g_strdup(curr);
 
-        if (VIR_RESIZE_N(lines, lines_alloc, line_count, 2) < 0) {
-            VIR_FREE(line);
-            goto error;
-        }
+        VIR_RESIZE_N(lines, lines_alloc, line_count, 2);
 
         if (*line)
             lines[line_count++] = line;
@@ -203,11 +200,7 @@ bhyveCommandLineToArgv(const char *nativeConfig,
             if (next && (*next == '\'' || *next == '"'))
                 next++;
 
-            if (VIR_RESIZE_N(arglist, args_alloc, args_count, 2) < 0) {
-                VIR_FREE(arg);
-                goto error;
-            }
-
+            VIR_RESIZE_N(arglist, args_alloc, args_count, 2);
             arglist[args_count++] = arg;
             arglist[args_count] = NULL;
 

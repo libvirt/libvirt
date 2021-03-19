@@ -154,10 +154,7 @@ virBhyveDomainCapsBuild(bhyveConnPtr conn,
 
     if (virDirOpenIfExists(&dir, firmware_dir) > 0) {
         while ((virDirRead(dir, &entry, firmware_dir)) > 0) {
-            if (VIR_RESIZE_N(firmwares->values,
-                firmwares_alloc, firmwares->nvalues, 1) < 0)
-                goto cleanup;
-
+            VIR_RESIZE_N(firmwares->values, firmwares_alloc, firmwares->nvalues, 1);
             firmwares->values[firmwares->nvalues] = g_strdup_printf("%s/%s",
                                                     firmware_dir, entry->d_name);
             firmwares->nvalues++;

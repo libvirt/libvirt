@@ -77,8 +77,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
     name = va_arg(ap, const char *);
     while (name) {
         type = va_arg(ap, int);
-        if (VIR_RESIZE_N(keys, nkeysalloc, nkeys, 1) < 0)
-            goto cleanup;
+        VIR_RESIZE_N(keys, nkeysalloc, nkeys, 1);
 
         if (virStrcpyStatic(keys[nkeys].field, name) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -758,8 +757,7 @@ virTypedParamSetNameVPrintf(virTypedParameterPtr par,
 static virTypedParameterPtr
 virTypedParamListExtend(virTypedParamListPtr list)
 {
-    if (VIR_RESIZE_N(list->par, list->par_alloc, list->npar, 1) < 0)
-        return NULL;
+    VIR_RESIZE_N(list->par, list->par_alloc, list->npar, 1);
 
     list->npar++;
 

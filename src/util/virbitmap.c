@@ -139,9 +139,8 @@ virBitmapExpand(virBitmapPtr map,
 
     /* resize the memory if necessary */
     if (map->map_len < new_len) {
-        if (VIR_RESIZE_N(map->map, map->map_alloc, map->map_len,
-                         new_len - map->map_len) < 0)
-            return -1;
+        VIR_RESIZE_N(map->map, map->map_alloc, map->map_len,
+                     new_len - map->map_len);
     }
 
     map->nbits = b + 1;

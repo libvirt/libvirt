@@ -618,8 +618,7 @@ virGetUserEnt(uid_t uid, char **name, gid_t *group, char **dir, char **shell, bo
      *        The given name or uid was not found.
      */
     while ((rc = getpwuid_r(uid, &pwbuf, strbuf, strbuflen, &pw)) == ERANGE) {
-        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0)
-            goto cleanup;
+        VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen);
     }
 
     if (rc != 0) {
@@ -687,10 +686,7 @@ static char *virGetGroupEnt(gid_t gid)
      *        The given name or gid was not found.
      */
     while ((rc = getgrgid_r(gid, &grbuf, strbuf, strbuflen, &gr)) == ERANGE) {
-        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0) {
-            VIR_FREE(strbuf);
-            return NULL;
-        }
+        VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen);
     }
     if (rc != 0 || gr == NULL) {
         if (rc != 0) {
@@ -765,8 +761,7 @@ virGetUserIDByName(const char *name, uid_t *uid, bool missing_ok)
     strbuf = g_new0(char, strbuflen);
 
     while ((rc = getpwnam_r(name, &pwbuf, strbuf, strbuflen, &pw)) == ERANGE) {
-        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0)
-            goto cleanup;
+        VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen);
     }
 
     if (!pw) {
@@ -846,8 +841,7 @@ virGetGroupIDByName(const char *name, gid_t *gid, bool missing_ok)
     strbuf = g_new0(char, strbuflen);
 
     while ((rc = getgrnam_r(name, &grbuf, strbuf, strbuflen, &gr)) == ERANGE) {
-        if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0)
-            goto cleanup;
+        VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen);
     }
 
     if (!gr) {

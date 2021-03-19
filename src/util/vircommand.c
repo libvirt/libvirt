@@ -1358,7 +1358,7 @@ virCommandAddEnv(virCommandPtr cmd,
     }
 
     /* Arg plus trailing NULL. */
-    ignore_value(VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 1 + 1));
+    VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 1 + 1);
 
     cmd->env[cmd->nenv++] = g_steal_pointer(&env);
 }
@@ -1459,7 +1459,7 @@ virCommandAddEnvPassCommon(virCommandPtr cmd)
     if (virCommandHasError(cmd))
         return;
 
-    ignore_value(VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 9));
+    VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 9);
 
     virCommandAddEnvPair(cmd, "LC_ALL", "C");
 
@@ -1479,7 +1479,7 @@ virCommandAddEnvXDG(virCommandPtr cmd, const char *baseDir)
     if (virCommandHasError(cmd))
         return;
 
-    ignore_value(VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 3));
+    VIR_RESIZE_N(cmd->env, cmd->maxenv, cmd->nenv, 3);
 
     virCommandAddEnvFormat(cmd, "XDG_DATA_HOME=%s/%s",
                            baseDir, ".local/share");
@@ -1509,7 +1509,7 @@ virCommandAddArg(virCommandPtr cmd, const char *val)
     }
 
     /* Arg plus trailing NULL. */
-    ignore_value(VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1));
+    VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1);
 
     cmd->args[cmd->nargs++] = g_strdup(val);
 }
@@ -1535,7 +1535,7 @@ virCommandAddArgBuffer(virCommandPtr cmd, virBufferPtr buf)
         str = g_strdup("");
 
     /* Arg plus trailing NULL. */
-    ignore_value(VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1));
+    VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1);
 
     cmd->args[cmd->nargs] = g_steal_pointer(&str);
     cmd->nargs++;
@@ -1564,7 +1564,7 @@ virCommandAddArgFormat(virCommandPtr cmd, const char *format, ...)
     va_end(list);
 
     /* Arg plus trailing NULL. */
-    ignore_value(VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1));
+    VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1);
 
     cmd->args[cmd->nargs++] = arg;
 }
@@ -1611,7 +1611,7 @@ virCommandAddArgSet(virCommandPtr cmd, const char *const*vals)
         narg++;
 
     /* narg plus trailing NULL. */
-    ignore_value(VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, narg + 1));
+    VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, narg + 1);
 
     narg = 0;
     while (vals[narg] != NULL) {
@@ -1644,7 +1644,7 @@ virCommandAddArgList(virCommandPtr cmd, ...)
     va_end(list);
 
     /* narg plus trailing NULL. */
-    ignore_value(VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, narg + 1));
+    VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, narg + 1);
 
     va_start(list, cmd);
     while (1) {

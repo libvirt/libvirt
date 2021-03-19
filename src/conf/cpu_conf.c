@@ -593,10 +593,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
             return -1;
         }
 
-        if (VIR_RESIZE_N(def->features, def->nfeatures_max,
-                         def->nfeatures, n) < 0)
-            return -1;
-
+        VIR_RESIZE_N(def->features, def->nfeatures_max, def->nfeatures, n);
         def->nfeatures = n;
     }
 
@@ -898,12 +895,8 @@ virCPUDefAddFeatureInternal(virCPUDefPtr def,
         }
     }
 
-    if (VIR_RESIZE_N(def->features, def->nfeatures_max,
-                     def->nfeatures, 1) < 0)
-        return -1;
-
+    VIR_RESIZE_N(def->features, def->nfeatures_max, def->nfeatures, 1);
     def->features[def->nfeatures].name = g_strdup(name);
-
     def->features[def->nfeatures].policy = policy;
     def->nfeatures++;
 

@@ -45,8 +45,7 @@ virURIParamAppend(virURIPtr uri,
     pname = g_strdup(name);
     pvalue = g_strdup(value);
 
-    if (VIR_RESIZE_N(uri->params, uri->paramsAlloc, uri->paramsCount, 1) < 0)
-        goto error;
+    VIR_RESIZE_N(uri->params, uri->paramsAlloc, uri->paramsCount, 1);
 
     uri->params[uri->paramsCount].name = pname;
     uri->params[uri->paramsCount].value = pvalue;
@@ -54,11 +53,6 @@ virURIParamAppend(virURIPtr uri,
     uri->paramsCount++;
 
     return 0;
-
- error:
-    VIR_FREE(pname);
-    VIR_FREE(pvalue);
-    return -1;
 }
 
 

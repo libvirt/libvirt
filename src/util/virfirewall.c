@@ -262,10 +262,7 @@ void virFirewallFree(virFirewallPtr firewall)
 
 #define ADD_ARG(rule, str) \
     do { \
-        ignore_value(VIR_RESIZE_N(rule->args, \
-                                  rule->argsAlloc, \
-                                  rule->argsLen, 1)); \
- \
+        VIR_RESIZE_N(rule->args, rule->argsAlloc, rule->argsLen, 1); \
         rule->args[rule->argsLen++] = g_strdup(str); \
     } while (0)
 

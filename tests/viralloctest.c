@@ -214,8 +214,7 @@ testResizeArray(const void *opaque G_GNUC_UNUSED)
         t[i].b = 20;
     }
 
-    if (VIR_RESIZE_N(t, at, nt, 8) < 0)
-        goto cleanup;
+    VIR_RESIZE_N(t, at, nt, 8);
 
     if (testCheckNonNull(t) < 0)
         goto cleanup;

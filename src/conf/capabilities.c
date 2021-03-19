@@ -280,10 +280,8 @@ int
 virCapabilitiesAddHostFeature(virCapsPtr caps,
                               const char *name)
 {
-    if (VIR_RESIZE_N(caps->host.features, caps->host.nfeatures_max,
-                     caps->host.nfeatures, 1) < 0)
-        return -1;
-
+    VIR_RESIZE_N(caps->host.features, caps->host.nfeatures_max,
+                 caps->host.nfeatures, 1);
     caps->host.features[caps->host.nfeatures] = g_strdup(name);
     caps->host.nfeatures++;
 
@@ -301,10 +299,8 @@ int
 virCapabilitiesAddHostMigrateTransport(virCapsPtr caps,
                                        const char *name)
 {
-    if (VIR_RESIZE_N(caps->host.migrateTrans, caps->host.nmigrateTrans_max,
-                     caps->host.nmigrateTrans, 1) < 0)
-        return -1;
-
+    VIR_RESIZE_N(caps->host.migrateTrans, caps->host.nmigrateTrans_max,
+                 caps->host.nmigrateTrans, 1);
     caps->host.migrateTrans[caps->host.nmigrateTrans] = g_strdup(name);
     caps->host.nmigrateTrans++;
 
@@ -447,9 +443,7 @@ virCapabilitiesAddGuest(virCapsPtr caps,
     guest->arch.defaultInfo.emulator = g_strdup(emulator);
     guest->arch.defaultInfo.loader = g_strdup(loader);
 
-    if (VIR_RESIZE_N(caps->guests, caps->nguests_max,
-                     caps->nguests, 1) < 0)
-        goto error;
+    VIR_RESIZE_N(caps->guests, caps->nguests_max, caps->nguests, 1);
     caps->guests[caps->nguests++] = guest;
 
     if (nmachines) {
@@ -458,10 +452,6 @@ virCapabilitiesAddGuest(virCapsPtr caps,
     }
 
     return guest;
-
- error:
-    virCapabilitiesFreeGuest(guest);
-    return NULL;
 }
 
 
@@ -493,9 +483,8 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
     dom->info.emulator = g_strdup(emulator);
     dom->info.loader = g_strdup(loader);
 
-    if (VIR_RESIZE_N(guest->arch.domains, guest->arch.ndomains_max,
-                     guest->arch.ndomains, 1) < 0)
-        goto error;
+    VIR_RESIZE_N(guest->arch.domains, guest->arch.ndomains_max,
+                 guest->arch.ndomains, 1);
     guest->arch.domains[guest->arch.ndomains] = dom;
     guest->arch.ndomains++;
 
@@ -505,10 +494,6 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
     }
 
     return dom;
-
- error:
-    virCapabilitiesFreeGuestDomain(dom);
-    return NULL;
 }
 
 
@@ -803,15 +788,10 @@ virCapabilitiesAddStoragePool(virCapsPtr caps,
 
     pool->type = poolType;
 
-    if (VIR_RESIZE_N(caps->pools, caps->npools_max, caps->npools, 1) < 0)
-        goto error;
+    VIR_RESIZE_N(caps->pools, caps->npools_max, caps->npools, 1);
     caps->pools[caps->npools++] = pool;
 
     return 0;
-
- error:
-    virCapabilitiesFreeStoragePool(pool);
-    return -1;
 }
 
 

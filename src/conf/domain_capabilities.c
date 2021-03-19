@@ -191,9 +191,8 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
 
     nameCopy = g_strdup(name);
 
-    if (VIR_RESIZE_N(cpuModels->models, cpuModels->nmodels_max,
-                     cpuModels->nmodels, 1) < 0)
-        return -1;
+    VIR_RESIZE_N(cpuModels->models, cpuModels->nmodels_max,
+                 cpuModels->nmodels, 1);
 
     cpu = cpuModels->models + cpuModels->nmodels;
     cpuModels->nmodels++;

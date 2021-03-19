@@ -3524,8 +3524,7 @@ hypervConnectListAllDomains(virConnectPtr conn,
             continue;
         }
 
-        if (VIR_RESIZE_N(doms, ndoms, count, 2) < 0)
-            goto cleanup;
+        VIR_RESIZE_N(doms, ndoms, count, 2);
 
         domain = NULL;
 

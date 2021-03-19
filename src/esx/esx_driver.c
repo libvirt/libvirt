@@ -4917,8 +4917,7 @@ esxConnectListAllDomains(virConnectPtr conn,
             continue;
         }
 
-        if (VIR_RESIZE_N(doms, ndoms, count, 2) < 0)
-            goto cleanup;
+        VIR_RESIZE_N(doms, ndoms, count, 2);
 
         /* Only running/suspended virtual machines have an ID != -1 */
         if (powerState == esxVI_VirtualMachinePowerState_PoweredOff)

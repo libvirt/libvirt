@@ -3123,8 +3123,7 @@ virFileOpenTty(int *ttyprimary, char **ttyName, int rawmode)
         name = g_new0(char, len);
 
         while ((rc = ttyname_r(secondary, name, len)) == ERANGE) {
-            if (VIR_RESIZE_N(name, len, len, len) < 0)
-                goto cleanup;
+            VIR_RESIZE_N(name, len, len, len);
         }
         if (rc != 0) {
             errno = rc;

@@ -1146,9 +1146,8 @@ virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
     if (srv->handlesCount == srv->handlesAlloc) {
         VIR_DEBUG("Used %zu handle slots, adding at least %d more",
                   srv->handlesAlloc, NETLINK_EVENT_ALLOC_EXTENT);
-        if (VIR_RESIZE_N(srv->handles, srv->handlesAlloc,
-                         srv->handlesCount, NETLINK_EVENT_ALLOC_EXTENT) < 0)
-            goto error;
+        VIR_RESIZE_N(srv->handles, srv->handlesAlloc,
+                     srv->handlesCount, NETLINK_EVENT_ALLOC_EXTENT);
     }
     r = srv->handlesCount++;
 
@@ -1167,7 +1166,7 @@ virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
     VIR_DEBUG("added client to loop slot: %d. with macaddr ptr=%p", r, macaddr);
 
     ret = nextWatch++;
- error:
+
     virNetlinkEventServerUnlock(srv);
     return ret;
 }

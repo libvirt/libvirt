@@ -446,8 +446,7 @@ virTypedParamsAddInt(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
-        goto error;
+    VIR_RESIZE_N(*params, max, n, 1);
     *maxparams = max;
 
     if (virTypedParameterAssign(*params + n, name,
@@ -493,8 +492,7 @@ virTypedParamsAddUInt(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
-        goto error;
+    VIR_RESIZE_N(*params, max, n, 1);
     *maxparams = max;
 
     if (virTypedParameterAssign(*params + n, name,
@@ -540,8 +538,7 @@ virTypedParamsAddLLong(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
-        goto error;
+    VIR_RESIZE_N(*params, max, n, 1);
     *maxparams = max;
 
     if (virTypedParameterAssign(*params + n, name,
@@ -587,8 +584,7 @@ virTypedParamsAddULLong(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
-        goto error;
+    VIR_RESIZE_N(*params, max, n, 1);
     *maxparams = max;
 
     if (virTypedParameterAssign(*params + n, name,
@@ -634,8 +630,7 @@ virTypedParamsAddDouble(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
-        goto error;
+    VIR_RESIZE_N(*params, max, n, 1);
     *maxparams = max;
 
     if (virTypedParameterAssign(*params + n, name,
@@ -681,8 +676,7 @@ virTypedParamsAddBoolean(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
-        goto error;
+    VIR_RESIZE_N(*params, max, n, 1);
     *maxparams = max;
 
     if (virTypedParameterAssign(*params + n, name,
@@ -731,8 +725,7 @@ virTypedParamsAddString(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
-        goto error;
+    VIR_RESIZE_N(*params, max, n, 1);
     *maxparams = max;
 
     str = g_strdup(value);
@@ -823,8 +816,7 @@ virTypedParamsAddFromString(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    if (VIR_RESIZE_N(*params, max, n, 1) < 0)
-        goto error;
+    VIR_RESIZE_N(*params, max, n, 1);
     *maxparams = max;
 
     if (virTypedParameterAssignFromStr(*params + n, name, type, value) < 0)
