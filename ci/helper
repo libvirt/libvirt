@@ -197,11 +197,11 @@ class Application:
     def _generate_dockerfile(self, host, cross=None):
         args = ["dockerfile", host, "libvirt"]
         outdir = self._basedir.joinpath("containers")
-        outfile = f"ci-{host}.Dockerfile"
+        outfile = f"{host}.Dockerfile"
 
         if cross:
             args.extend(["--cross", cross])
-            outfile = f"ci-{host}-cross-{cross}.Dockerfile"
+            outfile = f"{host}-cross-{cross}.Dockerfile"
 
         outpath = outdir.joinpath(outfile)
         if not self._args.quiet:
