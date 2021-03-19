@@ -877,8 +877,10 @@ FLAKE8_IGNORE = E501,W504
 
 sc_flake8:
 	@if [ -n "$(FLAKE8)" ]; then \
-		$(VC_LIST_EXCEPT) | $(GREP) '\.py$$' | xargs \
-			$(FLAKE8) --ignore $(FLAKE8_IGNORE) --show-source; \
+		DOT_PY=$$($(VC_LIST_EXCEPT) | $(GREP) '\.py$$'); \
+		BANG_PY=$$($(VC_LIST_EXCEPT) | xargs grep -l '^#!/usr/bin/env python3$$'); \
+		ALL_PY=$$(printf "%s\n%s" "$$DOT_PY" "$$BANG_PY" | sort -u); \
+		echo "$$ALL_PY" | xargs $(FLAKE8) --ignore $(FLAKE8_IGNORE) --show-source; \
 	else \
 		echo '$(ME): skipping test $@: flake8 not installed' 1>&2; \
 	fi
