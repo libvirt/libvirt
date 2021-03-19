@@ -98,13 +98,13 @@ int virExpandN(void *ptrptr,
  * failure, 'ptrptr' and 'allocptr' are not changed. Any newly
  * allocated memory in 'ptrptr' is zero-filled.
  *
- * Returns zero on success, aborts on OOM
+ * Aborts on OOM
  */
-int virResizeN(void *ptrptr,
-               size_t size,
-               size_t *allocptr,
-               size_t count,
-               size_t add)
+void virResizeN(void *ptrptr,
+                size_t size,
+                size_t *allocptr,
+                size_t count,
+                size_t add)
 {
     size_t delta;
 
@@ -112,12 +112,13 @@ int virResizeN(void *ptrptr,
         abort();
 
     if (count + add <= *allocptr)
-        return 0;
+        return;
 
     delta = count + add - *allocptr;
     if (delta < *allocptr / 2)
         delta = *allocptr / 2;
-    return virExpandN(ptrptr, size, allocptr, delta);
+
+    virExpandN(ptrptr, size, allocptr, delta);
 }
 
 /**

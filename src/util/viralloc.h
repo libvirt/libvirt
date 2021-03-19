@@ -38,7 +38,7 @@ int virReallocN(void *ptrptr, size_t size, size_t count)
     ATTRIBUTE_NONNULL(1);
 int virExpandN(void *ptrptr, size_t size, size_t *count, size_t add)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
-int virResizeN(void *ptrptr, size_t size, size_t *alloc, size_t count, size_t desired)
+void virResizeN(void *ptrptr, size_t size, size_t *alloc, size_t count, size_t desired)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 void virShrinkN(void *ptrptr, size_t size, size_t *count, size_t toremove)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
@@ -102,7 +102,7 @@ int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
  *
  * This macro is safe to use on arguments with side effects.
  *
- * Returns 0 on success, aborts on OOM
+ * Aborts on OOM
  */
 #define VIR_RESIZE_N(ptr, alloc, count, add) \
     virResizeN(&(ptr), sizeof(*(ptr)), &(alloc), count, add)
