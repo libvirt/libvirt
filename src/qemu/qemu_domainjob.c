@@ -711,7 +711,9 @@ qemuDomainObjSetJobPhase(virQEMUDriverPtr driver,
               qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
               qemuDomainAsyncJobPhaseToString(priv->job.asyncJob, phase));
 
-    if (priv->job.asyncOwner && me != priv->job.asyncOwner) {
+    if (priv->job.asyncOwner == 0) {
+        priv->job.asyncOwnerAPI = g_strdup(virThreadJobGet());
+    } else if (me != priv->job.asyncOwner) {
         VIR_WARN("'%s' async job is owned by thread %llu",
                  qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
                  priv->job.asyncOwner);
