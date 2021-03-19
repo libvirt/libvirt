@@ -24,11 +24,11 @@ import subprocess
 
 builddir = os.getenv("abs_top_builddir")
 if builddir is None:
-   builddir = os.path.join(os.getcwd(), "..")
+    builddir = os.path.join(os.getcwd(), "..")
 
 srcdir = os.getenv("abs_top_srcdir")
 if srcdir is None:
-   srcdir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    srcdir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 uri = "test://" + os.path.join(srcdir, "tests", "virsh-auth.xml")
 
@@ -43,15 +43,15 @@ proc = subprocess.Popen([virsh, "-c", uri, "uri"],
 out, err = proc.communicate("astrochicken")
 
 if proc.returncode != 0:
-   print("virsh failed with code %d" % proc.returncode, file=sys.stderr)
-   if out != "":
-      print("stdout=%s" % out)
-   if err != "":
-      print("stderr=%s" % err)
-   sys.exit(1)
+    print("virsh failed with code %d" % proc.returncode, file=sys.stderr)
+    if out != "":
+        print("stdout=%s" % out)
+    if err != "":
+        print("stderr=%s" % err)
+    sys.exit(1)
 
 if uri not in out:
-   print("Expected '%s' in '%s'" % (uri, out), file=sys.stderr)
-   sys.exit(1)
+    print("Expected '%s' in '%s'" % (uri, out), file=sys.stderr)
+    sys.exit(1)
 
 sys.exit(0)
