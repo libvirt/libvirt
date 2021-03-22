@@ -206,6 +206,13 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
         if (chkdisk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
             continue;
 
+        if (!chkdisk->bitmap) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("missing bitmap name for disk '%s' of checkpoint '%s'"),
+                           chkdisk->name, chkdef->parent.name);
+            return -1;
+        }
+
         if (qemuCheckpointDiscardDiskBitmaps(domdisk->src, blockNamedNodeData,
                                              chkdisk->bitmap,
                                              actions, domdisk->dst,
