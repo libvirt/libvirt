@@ -508,6 +508,9 @@ virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
 
         if (virDomainCheckpointAlignDisks(def) < 0)
             return -1;
+    } else {
+        if (virDomainCheckpointDefAssignBitmapNames(def) < 0)
+            return -1;
     }
 
     if (def->parent.parent_name &&
