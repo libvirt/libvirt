@@ -1473,7 +1473,7 @@ virLogParseOutput(const char *src)
     if (!(tokens = virStringSplitCount(src, ":", 0, &count)) || count < 2) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Malformed format for output '%s'"), src);
-        goto cleanup;
+        return NULL;
     }
 
     if (virStrToLong_uip(tokens[0], NULL, 10, &prio) < 0 ||
@@ -1481,14 +1481,14 @@ virLogParseOutput(const char *src)
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Invalid priority '%s' for output '%s'"),
                        tokens[0], src);
-        goto cleanup;
+        return NULL;
     }
 
     if ((dest = virLogDestinationTypeFromString(tokens[1])) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Invalid destination '%s' for output '%s'"),
                        tokens[1], src);
-        goto cleanup;
+        return NULL;
     }
 
     if (((dest == VIR_LOG_TO_STDERR ||
@@ -1498,7 +1498,7 @@ virLogParseOutput(const char *src)
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Output '%s' does not meet the format requirements "
                          "for destination type '%s'"), src, tokens[1]);
-        goto cleanup;
+        return NULL;
     }
 
     switch ((virLogDestination) dest) {
@@ -1512,7 +1512,7 @@ virLogParseOutput(const char *src)
         break;
     case VIR_LOG_TO_FILE:
         if (virFileAbsPath(tokens[2], &abspath) < 0)
-            goto cleanup;
+            return NULL;
         ret = virLogNewOutputToFile(prio, abspath);
         VIR_FREE(abspath);
         break;
@@ -1525,7 +1525,6 @@ virLogParseOutput(const char *src)
         break;
     }
 
- cleanup:
     return ret;
 }
 
@@ -1557,7 +1556,6 @@ virLogParseOutput(const char *src)
 virLogFilterPtr
 virLogParseFilter(const char *src)
 {
-    virLogFilterPtr ret = NULL;
     size_t count = 0;
     virLogPriority prio;
     g_auto(GStrv) tokens = NULL;
@@ -1569,7 +1567,7 @@ virLogParseFilter(const char *src)
     if (!(tokens = virStringSplitCount(src, ":", 0, &count)) || count != 2) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Malformed format for filter '%s'"), src);
-        goto cleanup;
+        return NULL;
     }
 
     if (virStrToLong_uip(tokens[0], NULL, 10, &prio) < 0 ||
@@ -1577,7 +1575,7 @@ virLogParseFilter(const char *src)
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Invalid priority '%s' for filter '%s'"),
                        tokens[0], src);
-        goto cleanup;
+        return NULL;
     }
 
     match = tokens[1];
@@ -1592,15 +1590,10 @@ virLogParseFilter(const char *src)
     if (!*match) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Invalid match string '%s'"), tokens[1]);
-
-        goto cleanup;
+        return NULL;
     }
 
-    if (!(ret = virLogFilterNew(match, prio)))
-        goto cleanup;
-
- cleanup:
-    return ret;
+    return virLogFilterNew(match, prio);
 }
 
 /**
@@ -1617,7 +1610,6 @@ virLogParseFilter(const char *src)
 int
 virLogParseOutputs(const char *src, virLogOutputPtr **outputs)
 {
-    int ret = -1;
     int at = -1;
     size_t noutputs = 0;
     size_t i, count;
@@ -1628,7 +1620,7 @@ virLogParseOutputs(const char *src, virLogOutputPtr **outputs)
     VIR_DEBUG("outputs=%s", src);
 
     if (!(strings = virStringSplitCount(src, " ", 0, &count)))
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < count; i++) {
         /* virStringSplit may return empty strings */
@@ -1636,7 +1628,7 @@ virLogParseOutputs(const char *src, virLogOutputPtr **outputs)
             continue;
 
         if (!(output = virLogParseOutput(strings[i])))
-            goto cleanup;
+            return -1;
 
         /* let's check if a duplicate output does not already exist in which
          * case we need to replace it with its last occurrence, however, rather
@@ -1647,7 +1639,7 @@ virLogParseOutputs(const char *src, virLogOutputPtr **outputs)
         at = virLogFindOutput(list, noutputs, output->dest, output->name);
         if (VIR_APPEND_ELEMENT(list, noutputs, output) < 0) {
             virLogOutputFree(output);
-            goto cleanup;
+            return -1;
         }
         if (at >= 0) {
             virLogOutputFree(list[at]);
@@ -1655,10 +1647,8 @@ virLogParseOutputs(const char *src, virLogOutputPtr **outputs)
         }
     }
 
-    ret = noutputs;
     *outputs = g_steal_pointer(&list);
- cleanup:
-    return ret;
+    return noutputs;
 }
 
 /**
@@ -1677,7 +1667,6 @@ virLogParseOutputs(const char *src, virLogOutputPtr **outputs)
 int
 virLogParseFilters(const char *src, virLogFilterPtr **filters)
 {
-    int ret = -1;
     size_t nfilters = 0;
     size_t i, count;
     g_auto(GStrv) strings = NULL;
@@ -1687,7 +1676,7 @@ virLogParseFilters(const char *src, virLogFilterPtr **filters)
     VIR_DEBUG("filters=%s", src);
 
     if (!(strings = virStringSplitCount(src, " ", 0, &count)))
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < count; i++) {
         /* virStringSplit may return empty strings */
@@ -1695,18 +1684,16 @@ virLogParseFilters(const char *src, virLogFilterPtr **filters)
             continue;
 
         if (!(filter = virLogParseFilter(strings[i])))
-            goto cleanup;
+            return -1;
 
         if (VIR_APPEND_ELEMENT(list, nfilters, filter)) {
             virLogFilterFree(filter);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = nfilters;
     *filters = g_steal_pointer(&list);
- cleanup:
-    return ret;
+    return nfilters;
 }
 
 /**
