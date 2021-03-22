@@ -9342,24 +9342,21 @@ virshParseEventStr(const char *event,
                    int *nparams,
                    int *maxparams)
 {
-    char **tok = NULL;
-    size_t i, ntok;
-    int ret = -1;
+    g_auto(GStrv) tok = NULL;
+    GStrv next;
 
-    if (!(tok = virStringSplitCount(event, ",", 0, &ntok)))
+    if (!(tok = g_strsplit(event, ",", 0)))
         return -1;
 
-    for (i = 0; i < ntok; i++) {
-        if ((*tok[i] != '\0') &&
-            virTypedParamsAddBoolean(params, nparams,
-                                     maxparams, tok[i], state) < 0)
-            goto cleanup;
+    for (next = tok; *next; next++) {
+        if (*next[0] == '\0')
+            continue;
+
+        if (virTypedParamsAddBoolean(params, nparams, maxparams, *next, state) < 0)
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    g_strfreev(tok);
-    return ret;
+    return 0;
 }
 
 static void
