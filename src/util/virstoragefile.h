@@ -33,11 +33,3 @@ int virStorageFileGetSCSIKey(const char *path,
                              bool ignoreError);
 int virStorageFileGetNPIVKey(const char *path,
                              char **key);
-
-typedef int
-(*virStorageFileSimplifyPathReadlinkCallback)(const char *path,
-                                              char **link,
-                                              void *data);
-char *virStorageFileCanonicalizePath(const char *path,
-                                     virStorageFileSimplifyPathReadlinkCallback cb,
-                                     void *cbdata);
