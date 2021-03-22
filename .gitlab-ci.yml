@@ -404,16 +404,6 @@ x64-ubuntu-2004:
   variables:
     NAME: ubuntu-2004
 
-x64-freebsd-11-build:
-  extends: .cirrus_build_job
-  variables:
-    NAME: freebsd-11
-    CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
-    CIRRUS_VM_IMAGE_SELECTOR: image_family
-    CIRRUS_VM_IMAGE_NAME: freebsd-11-4
-    UPDATE_COMMAND: pkg update
-    INSTALL_COMMAND: pkg install -y
-
 x64-freebsd-12-build:
   extends: .cirrus_build_job
   variables:
