@@ -32443,6 +32443,20 @@ virDomainDefHasMdevHostdev(const virDomainDef *def)
 
 
 bool
+virDomainDefHasVDPANet(const virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nnets; i++) {
+        if (virDomainNetGetActualType(def->nets[i]) == VIR_DOMAIN_NET_TYPE_VDPA)
+            return true;
+    }
+
+    return false;
+}
+
+
+bool
 virDomainDefHasOldStyleUEFI(const virDomainDef *def)
 {
     return def->os.loader &&

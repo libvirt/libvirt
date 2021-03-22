@@ -4062,6 +4062,9 @@ bool
 virDomainDefHasMdevHostdev(const virDomainDef *def);
 
 bool
+virDomainDefHasVDPANet(const virDomainDef *def);
+
+bool
 virDomainDefHasOldStyleUEFI(const virDomainDef *def);
 
 bool
