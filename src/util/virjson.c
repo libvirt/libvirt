@@ -1964,7 +1964,6 @@ virJSONValueObjectDeflattenWorker(const char *key,
     g_autoptr(virJSONValue) newval = NULL;
     virJSONValuePtr existobj;
     g_auto(GStrv) tokens = NULL;
-    size_t ntokens = 0;
 
     /* non-nested keys only need to be copied */
     if (!strchr(key, '.')) {
@@ -1989,10 +1988,10 @@ virJSONValueObjectDeflattenWorker(const char *key,
         return 0;
     }
 
-    if (!(tokens = virStringSplitCount(key, ".", 2, &ntokens)))
+    if (!(tokens = g_strsplit(key, ".", 2)))
         return -1;
 
-    if (ntokens != 2) {
+    if (!tokens[0] || !tokens[1]) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid nested value key '%s'"), key);
         return -1;
