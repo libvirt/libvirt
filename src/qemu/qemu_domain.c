@@ -7462,6 +7462,8 @@ qemuDomainStorageAlias(const char *device, int depth)
 }
 
 
+#define QEMU_DOMAIN_STORAGE_SOURCE_CHAIN_MAX_DEPTH 200
+
 /**
  * qemuDomainStorageSourceValidateDepth:
  * @src: storage source chain to validate
@@ -7474,8 +7476,9 @@ qemuDomainStorageAlias(const char *device, int depth)
  * when formatted to the XML.
  *
  * This function validates that the storage source chain starting @src is at
- * most 200 layers deep. @add modifies the calculated value to offset the number
- * to allow checking cases when new layers are going to be added to the chain.
+ * most QEMU_DOMAIN_STORAGE_SOURCE_CHAIN_MAX_DEPTH layers deep. @add modifies
+ * the calculated value to offset the number to allow checking cases when new
+ * layers are going to be added to the chain.
  *
  * Returns 0 on success and -1 if the chain is too deep. Error is reported.
  */
@@ -7492,7 +7495,7 @@ qemuDomainStorageSourceValidateDepth(virStorageSourcePtr src,
 
     nlayers += add;
 
-    if (nlayers > 200) {
+    if (nlayers > QEMU_DOMAIN_STORAGE_SOURCE_CHAIN_MAX_DEPTH) {
         if (diskdst)
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                            _("backing chains more than 200 layers deep are not "
