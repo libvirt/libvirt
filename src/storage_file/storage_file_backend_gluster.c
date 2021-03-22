@@ -41,7 +41,6 @@ typedef virStorageFileBackendGlusterPriv *virStorageFileBackendGlusterPrivPtr;
 
 struct _virStorageFileBackendGlusterPriv {
     glfs_t *vol;
-    char *canonpath;
 };
 
 static void
@@ -55,7 +54,6 @@ virStorageFileBackendGlusterDeinit(virStorageSourcePtr src)
 
     if (priv->vol)
         glfs_fini(priv->vol);
-    VIR_FREE(priv->canonpath);
 
     VIR_FREE(priv);
     drv->priv = NULL;
