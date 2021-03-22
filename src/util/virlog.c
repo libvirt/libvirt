@@ -1668,22 +1668,22 @@ int
 virLogParseFilters(const char *src, virLogFilterPtr **filters)
 {
     size_t nfilters = 0;
-    size_t i, count;
     g_auto(GStrv) strings = NULL;
+    GStrv next;
     virLogFilterPtr filter = NULL;
     virLogFilterPtr *list = NULL;
 
     VIR_DEBUG("filters=%s", src);
 
-    if (!(strings = virStringSplitCount(src, " ", 0, &count)))
+    if (!(strings = g_strsplit(src, " ", 0)))
         return -1;
 
-    for (i = 0; i < count; i++) {
-        /* virStringSplit may return empty strings */
-        if (STREQ(strings[i], ""))
+    for (next = strings; *next; next++) {
+        /* g_strsplit may return empty strings */
+        if (STREQ(*next, ""))
             continue;
 
-        if (!(filter = virLogParseFilter(strings[i])))
+        if (!(filter = virLogParseFilter(*next)))
             return -1;
 
         if (VIR_APPEND_ELEMENT(list, nfilters, filter)) {
