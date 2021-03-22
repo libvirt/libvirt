@@ -104,7 +104,8 @@ virDomainCgroupSetupDomainBlkioParameters(virCgroupPtr cgroup,
         virTypedParameterPtr param = &params[i];
 
         if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
-            if (virCgroupSetBlkioWeight(cgroup, params[i].value.ui) < 0)
+            if (virCgroupSetBlkioWeight(cgroup, params[i].value.ui) < 0 ||
+                virCgroupGetBlkioWeight(cgroup, &def->blkio.weight) < 0)
                 ret = -1;
         } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT) ||
                    STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS) ||
