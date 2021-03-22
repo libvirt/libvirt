@@ -1612,22 +1612,22 @@ virLogParseOutputs(const char *src, virLogOutputPtr **outputs)
 {
     int at = -1;
     size_t noutputs = 0;
-    size_t i, count;
     g_auto(GStrv) strings = NULL;
+    GStrv next;
     virLogOutputPtr output = NULL;
     virLogOutputPtr *list = NULL;
 
     VIR_DEBUG("outputs=%s", src);
 
-    if (!(strings = virStringSplitCount(src, " ", 0, &count)))
+    if (!(strings = g_strsplit(src, " ", 0)))
         return -1;
 
-    for (i = 0; i < count; i++) {
-        /* virStringSplit may return empty strings */
-        if (STREQ(strings[i], ""))
+    for (next = strings; *next; next++) {
+        /* g_strsplit may return empty strings */
+        if (STREQ(*next, ""))
             continue;
 
-        if (!(output = virLogParseOutput(strings[i])))
+        if (!(output = virLogParseOutput(*next)))
             return -1;
 
         /* let's check if a duplicate output does not already exist in which
