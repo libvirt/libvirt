@@ -32117,7 +32117,6 @@ virDomainDiskAddISCSIPoolSourceHost(virStorageSourcePtr src,
                                     virStoragePoolDefPtr pooldef)
 {
     g_auto(GStrv) tokens = NULL;
-    size_t ntokens;
 
     /* Only support one host */
     if (pooldef->source.nhost != 1) {
@@ -32138,10 +32137,10 @@ virDomainDiskAddISCSIPoolSourceHost(virStorageSourcePtr src,
         src->hosts[0].port = 3260;
 
     /* iscsi volume has name like "unit:0:0:1" */
-    if (!(tokens = virStringSplitCount(src->srcpool->volume, ":", 0, &ntokens)))
+    if (!(tokens = g_strsplit(src->srcpool->volume, ":", 0)))
         return -1;
 
-    if (ntokens != 4) {
+    if (g_strv_length(tokens) != 4) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected iscsi volume name '%s'"),
                        src->srcpool->volume);
