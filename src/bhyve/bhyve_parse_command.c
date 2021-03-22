@@ -558,10 +558,8 @@ bhyveParsePCIFbuf(virDomainDefPtr def,
 
     virDomainVideoDefPtr video = NULL;
     virDomainGraphicsDefPtr graphics = NULL;
-    char **params = NULL;
-    char *param = NULL, *separator = NULL;
-    size_t nparams = 0;
-    size_t i = 0;
+    g_auto(GStrv) **params = NULL;
+    GStrv next;
 
     if (!(video = virDomainVideoDefNew(xmlopt)))
         goto cleanup;
@@ -579,11 +577,11 @@ bhyveParsePCIFbuf(virDomainDefPtr def,
     if (!config)
         goto error;
 
-    if (!(params = virStringSplitCount(config, ",", 0, &nparams)))
+    if (!(params = g_strsplit(config, ",", 0)))
         goto error;
 
-    for (i = 0; i < nparams; i++) {
-        param = params[i];
+    for (next = params; *next; next++) {
+        char *param = *next;
         if (!video->driver)
             video->driver = g_new0(virDomainVideoDriverDef, 1);
 
@@ -649,13 +647,11 @@ bhyveParsePCIFbuf(virDomainDefPtr def,
     if (VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, graphics) < 0)
         goto error;
 
-    g_strfreev(params);
     return 0;
 
  error:
     virDomainVideoDefFree(video);
     virDomainGraphicsDefFree(graphics);
-    g_strfreev(params);
     return -1;
 }
 
