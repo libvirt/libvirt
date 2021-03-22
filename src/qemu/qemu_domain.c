@@ -7637,7 +7637,9 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
     qemuDomainGetImageIds(cfg, vm, src, disksrc, &uid, &gid);
 
-    if (virStorageSourceGetMetadata(src, uid, gid, report_broken) < 0)
+    if (virStorageSourceGetMetadata(src, uid, gid,
+                                    QEMU_DOMAIN_STORAGE_SOURCE_CHAIN_MAX_DEPTH,
+                                    report_broken) < 0)
         return -1;
 
     for (n = src->backingStore; virStorageSourceIsBacking(n); n = n->backingStore) {

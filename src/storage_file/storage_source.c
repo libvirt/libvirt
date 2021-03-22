@@ -1297,11 +1297,9 @@ virStorageSourceGetMetadataRecurseReadHeader(virStorageSourcePtr src,
                                              uid_t uid,
                                              gid_t gid,
                                              char **buf,
-                                             size_t *headerLen,
-                                             GHashTable *cycle)
+                                             size_t *headerLen)
 {
     int ret = -1;
-    const char *uniqueName;
     ssize_t len;
 
     if (virStorageSourceInitAs(src, uid, gid) < 0)
@@ -1311,19 +1309,6 @@ virStorageSourceGetMetadataRecurseReadHeader(virStorageSourcePtr src,
         virStorageSourceReportBrokenChain(errno, src, parent);
         goto cleanup;
     }
-
-    if (!(uniqueName = virStorageSourceGetUniqueIdentifier(src)))
-        goto cleanup;
-
-    if (virHashHasEntry(cycle, uniqueName)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("backing store for %s (%s) is self-referential"),
-                       NULLSTR(src->path), uniqueName);
-        goto cleanup;
-    }
-
-    if (virHashAddEntry(cycle, uniqueName, NULL) < 0)
-        goto cleanup;
 
     if ((len = virStorageSourceRead(src, 0, VIR_STORAGE_MAX_HEADER, buf)) < 0)
         goto cleanup;
@@ -1343,7 +1328,7 @@ virStorageSourceGetMetadataRecurse(virStorageSourcePtr src,
                                    virStorageSourcePtr parent,
                                    uid_t uid, gid_t gid,
                                    bool report_broken,
-                                   GHashTable *cycle,
+                                   size_t max_depth,
                                    unsigned int depth)
 {
     virStorageFileFormat orig_format = src->format;
@@ -1352,9 +1337,16 @@ virStorageSourceGetMetadataRecurse(virStorageSourcePtr src,
     g_autofree char *buf = NULL;
     g_autoptr(virStorageSource) backingStore = NULL;
 
-    VIR_DEBUG("path=%s format=%d uid=%u gid=%u",
+    VIR_DEBUG("path=%s format=%d uid=%u gid=%u depth=%u",
               NULLSTR(src->path), src->format,
-              (unsigned int)uid, (unsigned int)gid);
+              (unsigned int)uid, (unsigned int)gid, depth);
+
+    if (depth > max_depth) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("backing store for %s is self-referential or too deeply nested"),
+                       NULLSTR(src->path));
+        return -1;
+    }
 
     if (src->format == VIR_STORAGE_FILE_AUTO_SAFE)
         src->format = VIR_STORAGE_FILE_AUTO;
@@ -1369,7 +1361,7 @@ virStorageSourceGetMetadataRecurse(virStorageSourcePtr src,
     }
 
     if (virStorageSourceGetMetadataRecurseReadHeader(src, parent, uid, gid,
-                                                     &buf, &headerLen, cycle) < 0)
+                                                     &buf, &headerLen) < 0)
         return -1;
 
     if (virStorageFileProbeGetMetadata(src, buf, headerLen) < 0)
@@ -1396,7 +1388,7 @@ virStorageSourceGetMetadataRecurse(virStorageSourcePtr src,
         if ((rv = virStorageSourceGetMetadataRecurse(backingStore, parent,
                                                      uid, gid,
                                                      report_broken,
-                                                     cycle, depth + 1)) < 0) {
+                                                     max_depth, depth + 1)) < 0) {
             if (!report_broken)
                 return 0;
 
@@ -1427,7 +1419,7 @@ virStorageSourceGetMetadataRecurse(virStorageSourcePtr src,
  * Extract metadata about the storage volume with the specified
  * image format. If image format is VIR_STORAGE_FILE_AUTO, it
  * will probe to automatically identify the format.  Recurses through
- * the entire chain.
+ * the chain up to @max_depth layers.
  *
  * Open files using UID and GID (or pass -1 for the current user/group).
  * Treat any backing files without explicit type as raw, unless ALLOW_PROBE.
@@ -1445,14 +1437,14 @@ virStorageSourceGetMetadataRecurse(virStorageSourcePtr src,
 int
 virStorageSourceGetMetadata(virStorageSourcePtr src,
                             uid_t uid, gid_t gid,
+                            size_t max_depth,
                             bool report_broken)
 {
-    g_autoptr(GHashTable) cycle = virHashNew(NULL);
     virStorageType actualType = virStorageSourceGetActualType(src);
 
-    VIR_DEBUG("path=%s format=%d uid=%u gid=%u report_broken=%d",
+    VIR_DEBUG("path=%s format=%d uid=%u gid=%u max_depth=%zu report_broken=%d",
               src->path, src->format, (unsigned int)uid, (unsigned int)gid,
-              report_broken);
+              max_depth, report_broken);
 
     if (src->format <= VIR_STORAGE_FILE_NONE) {
         if (actualType == VIR_STORAGE_TYPE_DIR)
@@ -1462,5 +1454,5 @@ virStorageSourceGetMetadata(virStorageSourcePtr src,
     }
 
     return virStorageSourceGetMetadataRecurse(src, src, uid, gid,
-                                              report_broken, cycle, 1);
+                                              report_broken, max_depth, 1);
 }

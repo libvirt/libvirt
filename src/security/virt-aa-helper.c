@@ -937,9 +937,12 @@ get_files(vahControl * ctl)
             continue;
         /* XXX - if we knew the qemu user:group here we could send it in
          *        so that the open could be re-tried as that user:group.
+         *
+         * The maximum depth is limited to 200 layers similarly to the qemu
+         * implementation.
          */
         if (!disk->src->backingStore)
-            virStorageSourceGetMetadata(disk->src, -1, -1, false);
+            virStorageSourceGetMetadata(disk->src, -1, -1, 200, false);
 
          /* XXX should handle open errors more careful than just ignoring them.
          */

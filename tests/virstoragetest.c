@@ -101,7 +101,8 @@ testStorageFileGetMetadata(const char *path,
 
     def->path = g_strdup(path);
 
-    if (virStorageSourceGetMetadata(def, uid, gid, true) < 0)
+    /* 20 is picked as an arbitrary depth, since the chains used here don't exceed it */
+    if (virStorageSourceGetMetadata(def, uid, gid, 20, true) < 0)
         return NULL;
 
     return g_steal_pointer(&def);

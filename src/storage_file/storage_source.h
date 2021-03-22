@@ -134,6 +134,7 @@ virStorageSourceSupportsBackingChainTraversal(const virStorageSource *src);
 int
 virStorageSourceGetMetadata(virStorageSourcePtr src,
                             uid_t uid, gid_t gid,
+                            size_t max_depth,
                             bool report_broken)
     ATTRIBUTE_NONNULL(1);
 
