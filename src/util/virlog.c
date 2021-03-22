@@ -1470,7 +1470,8 @@ virLogParseOutput(const char *src)
     /* split our format prio:destination:additional_data to tokens and parse
      * them individually
      */
-    if (!(tokens = virStringSplitCount(src, ":", 0, &count)) || count < 2) {
+    if (!(tokens = g_strsplit(src, ":", 0)) ||
+        (count = g_strv_length(tokens)) < 2) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Malformed format for output '%s'"), src);
         return NULL;
