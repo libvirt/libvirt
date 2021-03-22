@@ -192,17 +192,16 @@ virStorageFileParseBackingStoreStr(const char *str,
                                    char **target,
                                    unsigned int *chainIndex)
 {
-    size_t nstrings;
     unsigned int idx = 0;
     char *suffix;
     g_auto(GStrv) strings = NULL;
 
     *chainIndex = 0;
 
-    if (!(strings = virStringSplitCount(str, "[", 2, &nstrings)))
+    if (!(strings = g_strsplit(str, "[", 2)))
         return -1;
 
-    if (nstrings == 2) {
+    if (strings[0] && strings[1]) {
         if (virStrToLong_uip(strings[1], &suffix, 10, &idx) < 0 ||
             STRNEQ(suffix, "]"))
             return -1;
