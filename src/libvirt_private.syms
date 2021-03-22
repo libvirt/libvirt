@@ -1719,7 +1719,6 @@ virStorageSourceGetMetadata;
 virStorageSourceGetMetadataFromBuf;
 virStorageSourceGetMetadataFromFD;
 virStorageSourceGetRelativeBackingPath;
-virStorageSourceGetUniqueIdentifier;
 virStorageSourceInit;
 virStorageSourceInitAs;
 virStorageSourceNewFromBacking;

@@ -147,24 +147,6 @@ virStorageFileBackendFileRead(virStorageSourcePtr src,
 }
 
 
-static const char *
-virStorageFileBackendFileGetUniqueIdentifier(virStorageSourcePtr src)
-{
-    virStorageDriverDataPtr drv = src->drv;
-    virStorageFileBackendFsPrivPtr priv = drv->priv;
-
-    if (!priv->canonpath) {
-        if (!(priv->canonpath = virFileCanonicalizePath(src->path))) {
-            virReportSystemError(errno, _("can't canonicalize path '%s'"),
-                                 src->path);
-            return NULL;
-        }
-    }
-
-    return priv->canonpath;
-}
-
-
 static int
 virStorageFileBackendFileAccess(virStorageSourcePtr src,
                                 int mode)
@@ -197,8 +179,6 @@ virStorageFileBackend virStorageFileBackendFile = {
     .storageFileRead = virStorageFileBackendFileRead,
     .storageFileAccess = virStorageFileBackendFileAccess,
     .storageFileChown = virStorageFileBackendFileChown,
-
-    .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
 };
 
 
@@ -212,8 +192,6 @@ virStorageFileBackend virStorageFileBackendBlock = {
     .storageFileRead = virStorageFileBackendFileRead,
     .storageFileAccess = virStorageFileBackendFileAccess,
     .storageFileChown = virStorageFileBackendFileChown,
-
-    .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
 };
 
 
@@ -225,8 +203,6 @@ virStorageFileBackend virStorageFileBackendDir = {
 
     .storageFileAccess = virStorageFileBackendFileAccess,
     .storageFileChown = virStorageFileBackendFileChown,
-
-    .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
 };
 
 

@@ -256,75 +256,6 @@ virStorageFileBackendGlusterAccess(virStorageSourcePtr src,
 }
 
 static int
-virStorageFileBackendGlusterReadlinkCallback(const char *path,
-                                             char **linkpath,
-                                             void *data)
-{
-    virStorageFileBackendGlusterPrivPtr priv = data;
-    size_t bufsiz = 0;
-    ssize_t ret;
-    struct stat st;
-    g_autofree char *buf = NULL;
-
-    *linkpath = NULL;
-
-    if (glfs_stat(priv->vol, path, &st) < 0) {
-        virReportSystemError(errno,
-                             _("failed to stat gluster path '%s'"),
-                             path);
-        return -1;
-    }
-
-    if (!S_ISLNK(st.st_mode))
-        return 1;
-
- realloc:
-    VIR_EXPAND_N(buf, bufsiz, 256);
-
-    if ((ret = glfs_readlink(priv->vol, path, buf, bufsiz)) < 0) {
-        virReportSystemError(errno,
-                             _("failed to read link of gluster file '%s'"),
-                             path);
-        return -1;
-    }
-
-    if (ret == bufsiz)
-        goto realloc;
-
-    buf[ret] = '\0';
-
-    *linkpath = g_steal_pointer(&buf);
-
-    return 0;
-}
-
-
-static const char *
-virStorageFileBackendGlusterGetUniqueIdentifier(virStorageSourcePtr src)
-{
-    virStorageDriverDataPtr drv = src->drv;
-    virStorageFileBackendGlusterPrivPtr priv = drv->priv;
-    g_autofree char *filePath = NULL;
-
-    if (priv->canonpath)
-        return priv->canonpath;
-
-    if (!(filePath = virStorageFileCanonicalizePath(src->path,
-                                                    virStorageFileBackendGlusterReadlinkCallback,
-                                                    priv)))
-        return NULL;
-
-    priv->canonpath = g_strdup_printf("gluster://%s:%u/%s/%s",
-                                      src->hosts->name,
-                                      src->hosts->port,
-                                      src->volume,
-                                      filePath);
-
-    return priv->canonpath;
-}
-
-
-static int
 virStorageFileBackendGlusterChown(const virStorageSource *src,
                                   uid_t uid,
                                   gid_t gid)
@@ -349,8 +280,6 @@ virStorageFileBackend virStorageFileBackendGluster = {
     .storageFileRead = virStorageFileBackendGlusterRead,
     .storageFileAccess = virStorageFileBackendGlusterAccess,
     .storageFileChown = virStorageFileBackendGlusterChown,
-
-    .storageFileGetUniqueIdentifier = virStorageFileBackendGlusterGetUniqueIdentifier,
 };
 
 

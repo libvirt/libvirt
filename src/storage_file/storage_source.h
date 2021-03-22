@@ -107,9 +107,6 @@ virStorageSourceRead(virStorageSourcePtr src,
                      size_t len,
                      char **buf);
 
-const char *
-virStorageSourceGetUniqueIdentifier(virStorageSourcePtr src);
-
 int
 virStorageSourceAccess(virStorageSourcePtr src,
                        int mode);
