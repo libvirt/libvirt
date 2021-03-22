@@ -1556,7 +1556,6 @@ virLogParseOutput(const char *src)
 virLogFilterPtr
 virLogParseFilter(const char *src)
 {
-    size_t count = 0;
     virLogPriority prio;
     g_auto(GStrv) tokens = NULL;
     char *match = NULL;
@@ -1564,7 +1563,8 @@ virLogParseFilter(const char *src)
     VIR_DEBUG("filter=%s", src);
 
     /* split our format prio:match_str to tokens and parse them individually */
-    if (!(tokens = virStringSplitCount(src, ":", 0, &count)) || count != 2) {
+    if (!(tokens = g_strsplit(src, ":", 0)) ||
+        !tokens[0] || !tokens[1]) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Malformed format for filter '%s'"), src);
         return NULL;
