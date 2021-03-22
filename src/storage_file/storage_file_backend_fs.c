@@ -40,27 +40,12 @@
 VIR_LOG_INIT("storage.storage_backend_fs");
 
 
-typedef struct _virStorageFileBackendFsPriv virStorageFileBackendFsPriv;
-typedef virStorageFileBackendFsPriv *virStorageFileBackendFsPrivPtr;
-
-struct _virStorageFileBackendFsPriv {
-    char *canonpath; /* unique file identifier (canonical path) */
-};
-
-
 static void
 virStorageFileBackendFileDeinit(virStorageSourcePtr src)
 {
-    virStorageDriverDataPtr drv = src->drv;
-    virStorageFileBackendFsPrivPtr priv = drv->priv;
-
     VIR_DEBUG("deinitializing FS storage file %p (%s:%s)", src,
               virStorageTypeToString(virStorageSourceGetActualType(src)),
               src->path);
-
-
-    VIR_FREE(priv->canonpath);
-    VIR_FREE(priv);
 }
 
 
@@ -68,16 +53,11 @@ static int
 virStorageFileBackendFileInit(virStorageSourcePtr src)
 {
     virStorageDriverDataPtr drv = src->drv;
-    virStorageFileBackendFsPrivPtr priv = NULL;
 
     VIR_DEBUG("initializing FS storage file %p (%s:%s)[%u:%u]", src,
               virStorageTypeToString(virStorageSourceGetActualType(src)),
               src->path,
               (unsigned int)drv->uid, (unsigned int)drv->gid);
-
-    priv = g_new0(virStorageFileBackendFsPriv, 1);
-
-    drv->priv = priv;
 
     return 0;
 }
