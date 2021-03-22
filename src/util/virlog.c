@@ -1459,7 +1459,7 @@ virLogOutputPtr
 virLogParseOutput(const char *src)
 {
     virLogOutputPtr ret = NULL;
-    char **tokens = NULL;
+    g_auto(GStrv) tokens = NULL;
     char *abspath = NULL;
     size_t count = 0;
     virLogPriority prio;
@@ -1526,7 +1526,6 @@ virLogParseOutput(const char *src)
     }
 
  cleanup:
-    g_strfreev(tokens);
     return ret;
 }
 
@@ -1561,7 +1560,7 @@ virLogParseFilter(const char *src)
     virLogFilterPtr ret = NULL;
     size_t count = 0;
     virLogPriority prio;
-    char **tokens = NULL;
+    g_auto(GStrv) tokens = NULL;
     char *match = NULL;
 
     VIR_DEBUG("filter=%s", src);
@@ -1601,7 +1600,6 @@ virLogParseFilter(const char *src)
         goto cleanup;
 
  cleanup:
-    g_strfreev(tokens);
     return ret;
 }
 
@@ -1623,7 +1621,7 @@ virLogParseOutputs(const char *src, virLogOutputPtr **outputs)
     int at = -1;
     size_t noutputs = 0;
     size_t i, count;
-    char **strings = NULL;
+    g_auto(GStrv) strings = NULL;
     virLogOutputPtr output = NULL;
     virLogOutputPtr *list = NULL;
 
@@ -1660,7 +1658,6 @@ virLogParseOutputs(const char *src, virLogOutputPtr **outputs)
     ret = noutputs;
     *outputs = g_steal_pointer(&list);
  cleanup:
-    g_strfreev(strings);
     return ret;
 }
 
@@ -1683,7 +1680,7 @@ virLogParseFilters(const char *src, virLogFilterPtr **filters)
     int ret = -1;
     size_t nfilters = 0;
     size_t i, count;
-    char **strings = NULL;
+    g_auto(GStrv) strings = NULL;
     virLogFilterPtr filter = NULL;
     virLogFilterPtr *list = NULL;
 
@@ -1709,7 +1706,6 @@ virLogParseFilters(const char *src, virLogFilterPtr **filters)
     ret = nfilters;
     *filters = g_steal_pointer(&list);
  cleanup:
-    g_strfreev(strings);
     return ret;
 }
 
