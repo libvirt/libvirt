@@ -1811,27 +1811,26 @@ static virResctrlAllocPtr
 virResctrlAllocNewFromInfo(virResctrlInfoPtr info)
 {
     size_t i = 0;
-    size_t j = 0;
-    size_t k = 0;
     virResctrlAllocPtr ret = virResctrlAllocNew();
-    virBitmapPtr mask = NULL;
 
     if (!ret)
         return NULL;
 
     for (i = 0; i < info->nlevels; i++) {
         virResctrlInfoPerLevelPtr i_level = info->levels[i];
+        size_t j = 0;
 
         if (!i_level)
             continue;
 
         for (j = 0; j < VIR_CACHE_TYPE_LAST; j++) {
             virResctrlInfoPerTypePtr i_type = i_level->types[j];
+            g_autoptr(virBitmap) mask = NULL;
+            size_t k = 0;
 
             if (!i_type)
                 continue;
 
-            virBitmapFree(mask);
             mask = virBitmapNew(i_type->bits);
             virBitmapSetAll(mask);
 
@@ -1856,7 +1855,6 @@ virResctrlAllocNewFromInfo(virResctrlInfoPtr info)
     }
 
  cleanup:
-    virBitmapFree(mask);
     return ret;
  error:
     virObjectUnref(ret);
