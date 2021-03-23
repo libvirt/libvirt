@@ -483,7 +483,6 @@ virStorageSourceParseBackingJSONUriCookies(virStorageSourcePtr src,
 {
     const char *cookiestr;
     g_auto(GStrv) cookies = NULL;
-    size_t ncookies = 0;
     size_t i;
 
     if (!virJSONValueObjectHasKey(json, "cookie"))
@@ -496,13 +495,13 @@ virStorageSourceParseBackingJSONUriCookies(virStorageSourcePtr src,
         return -1;
     }
 
-    if (!(cookies = virStringSplitCount(cookiestr, ";", 0, &ncookies)))
+    if (!(cookies = g_strsplit(cookiestr, ";", 0)))
         return -1;
 
-    src->cookies = g_new0(virStorageNetCookieDefPtr, ncookies);
-    src->ncookies = ncookies;
+    src->ncookies = g_strv_length(cookies);
+    src->cookies = g_new0(virStorageNetCookieDefPtr, src->ncookies);
 
-    for (i = 0; i < ncookies; i++) {
+    for (i = 0; i < src->ncookies; i++) {
         char *cookiename = cookies[i];
         char *cookievalue;
 
