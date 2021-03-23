@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile fedora-32 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/891c7d56be1d0eb5adaf78fced7d1d882d6f0b6a
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/ceb381dce7c901e180a621951355800d8135ce82
 FROM registry.fedoraproject.org/fedora:32
 
 RUN dnf install -y nosync && \
@@ -42,6 +42,7 @@ exec "$@"' > /usr/bin/nosync && \
         glibc-langpack-en \
         glusterfs-api-devel \
         gnutls-devel \
+        grep \
         iproute \
         iproute-tc \
         iptables \
@@ -89,6 +90,7 @@ exec "$@"' > /usr/bin/nosync && \
         rpm-build \
         sanlock-devel \
         scrub \
+        sed \
         sheepdog \
         systemtap-sdt-devel \
         wireshark-devel \

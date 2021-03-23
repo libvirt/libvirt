@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile centos-7 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/891c7d56be1d0eb5adaf78fced7d1d882d6f0b6a
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/ceb381dce7c901e180a621951355800d8135ce82
 FROM docker.io/library/centos:7
 
 RUN yum update -y && \
@@ -64,6 +64,7 @@ WEiJKtQrZDJloqtyi/mmRa1VsV7RYR0VPJjhK/R8EQ7Ysshy\n\
         glibc-devel \
         glusterfs-api-devel \
         gnutls-devel \
+        grep \
         iproute \
         iptables \
         iscsi-initiator-utils \
@@ -111,6 +112,7 @@ WEiJKtQrZDJloqtyi/mmRa1VsV7RYR0VPJjhK/R8EQ7Ysshy\n\
         rpm-build \
         sanlock-devel \
         scrub \
+        sed \
         systemtap-sdt-devel \
         wireshark-devel \
         xen-devel \
@@ -124,7 +126,7 @@ WEiJKtQrZDJloqtyi/mmRa1VsV7RYR0VPJjhK/R8EQ7Ysshy\n\
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/$(basename /usr/bin/gcc)
 
 RUN pip3 install \
-         meson==0.54.0
+         meson==0.55.3
 
 ENV LANG "en_US.UTF-8"
 ENV MAKE "/usr/bin/make"

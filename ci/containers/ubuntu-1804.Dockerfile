@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile ubuntu-1804 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/891c7d56be1d0eb5adaf78fced7d1d882d6f0b6a
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/ceb381dce7c901e180a621951355800d8135ce82
 FROM docker.io/library/ubuntu:18.04
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -25,6 +25,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             gettext \
             git \
             glusterfs-common \
+            grep \
             iproute2 \
             iptables \
             kmod \
@@ -84,6 +85,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             qemu-utils \
             radvd \
             scrub \
+            sed \
             sheepdog \
             systemtap-sdt-dev \
             wireshark-dev \
@@ -100,7 +102,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/$(basename /usr/bin/gcc)
 
 RUN pip3 install \
-         meson==0.54.0
+         meson==0.55.3
 
 ENV LANG "en_US.UTF-8"
 ENV MAKE "/usr/bin/make"

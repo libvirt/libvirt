@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile centos-8 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/891c7d56be1d0eb5adaf78fced7d1d882d6f0b6a
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/ceb381dce7c901e180a621951355800d8135ce82
 FROM docker.io/library/centos:8
 
 RUN dnf update -y && \
@@ -35,6 +35,7 @@ RUN dnf update -y && \
         glibc-langpack-en \
         glusterfs-api-devel \
         gnutls-devel \
+        grep \
         iproute \
         iproute-tc \
         iptables \
@@ -84,6 +85,7 @@ RUN dnf update -y && \
         rpm-build \
         sanlock-devel \
         scrub \
+        sed \
         systemtap-sdt-devel \
         wireshark-devel \
         xfsprogs-devel \
@@ -96,7 +98,7 @@ RUN dnf update -y && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/$(basename /usr/bin/gcc)
 
 RUN pip3 install \
-         meson==0.54.0
+         meson==0.55.3
 
 ENV LANG "en_US.UTF-8"
 ENV MAKE "/usr/bin/make"

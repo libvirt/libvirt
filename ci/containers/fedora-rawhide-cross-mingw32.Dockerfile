@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile --cross mingw32 fedora-rawhide libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/891c7d56be1d0eb5adaf78fced7d1d882d6f0b6a
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/ceb381dce7c901e180a621951355800d8135ce82
 FROM registry.fedoraproject.org/fedora:rawhide
 
 RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
@@ -30,12 +30,12 @@ exec "$@"' > /usr/bin/nosync && \
         firewalld-filesystem \
         git \
         glibc-langpack-en \
+        grep \
         iproute \
         iproute-tc \
         iptables \
         iscsi-initiator-utils \
         kmod \
-        libwsman-devel \
         libxml2 \
         libxslt \
         lvm2 \
@@ -55,6 +55,7 @@ exec "$@"' > /usr/bin/nosync && \
         rpcgen \
         rpm-build \
         scrub \
+        sed \
         sheepdog \
         zfs-fuse && \
     nosync dnf autoremove -y && \
