@@ -9122,7 +9122,6 @@ getPPC64MemLockLimitBytes(virDomainDefPtr def,
     unsigned long long passthroughLimit = 0;
     size_t i, nPCIHostBridges = 0;
     virPCIDeviceAddressPtr pciAddr;
-    bool usesVFIO = false;
     bool nvlink2Capable = false;
 
     for (i = 0; i < def->ncontrollers; i++) {
@@ -9138,7 +9137,6 @@ getPPC64MemLockLimitBytes(virDomainDefPtr def,
         virDomainHostdevDefPtr dev = def->hostdevs[i];
 
         if (virHostdevIsVFIODevice(dev)) {
-            usesVFIO = true;
 
             pciAddr = &dev->source.subsys.u.pci.addr;
             if (virPCIDeviceAddressIsValid(pciAddr, false)) {
@@ -9152,9 +9150,6 @@ getPPC64MemLockLimitBytes(virDomainDefPtr def,
             }
         }
     }
-
-    if (virDomainDefHasNVMeDisk(def))
-        usesVFIO = true;
 
     memory = virDomainDefGetMemoryTotal(def);
 
@@ -9180,7 +9175,7 @@ getPPC64MemLockLimitBytes(virDomainDefPtr def,
                 8192;
 
     /* NVLink2 support in QEMU is a special case of the passthrough
-     * mechanics explained in the usesVFIO case below. The GPU RAM
+     * mechanics explained in the forceVFIO case below. The GPU RAM
      * is placed with a gap after maxMemory. The current QEMU
      * implementation puts the NVIDIA RAM above the PCI MMIO, which
      * starts at 32TiB and is the MMIO reserved for the guest main RAM.
@@ -9204,7 +9199,7 @@ getPPC64MemLockLimitBytes(virDomainDefPtr def,
         passthroughLimit = maxMemory +
                            128 * (1ULL<<30) / 512 * nPCIHostBridges +
                            8192;
-    } else if (usesVFIO || forceVFIO) {
+    } else if (forceVFIO || qemuDomainNeedsVFIO(def)) {
         /* For regular (non-NVLink2 present) VFIO passthrough, the value
          * of passthroughLimit is:
          *
