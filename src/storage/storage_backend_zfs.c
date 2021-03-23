@@ -96,7 +96,6 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
                              const char *volume_string)
 {
     int ret = -1;
-    size_t count;
     char *vol_name;
     bool is_new_vol = false;
     virStorageVolDefPtr volume = NULL;
@@ -104,10 +103,10 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
     g_auto(GStrv) tokens = NULL;
     char *tmp;
 
-    if (!(tokens = virStringSplitCount(volume_string, "\t", 0, &count)))
+    if (!(tokens = g_strsplit(volume_string, "\t", 0)))
         return -1;
 
-    if (count != 3)
+    if (g_strv_length(tokens) != 3)
         goto cleanup;
 
     vol_name = tokens[0];
@@ -246,16 +245,15 @@ virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool G_GNUC_UNUSED)
 
     for (i = 0; lines[i]; i++) {
         g_auto(GStrv) tokens = NULL;
-        size_t count;
         char *prop_name;
 
         if (STREQ(lines[i], ""))
             continue;
 
-        if (!(tokens = virStringSplitCount(lines[i], "\t", 0, &count)))
+        if (!(tokens = g_strsplit(lines[i], "\t", 0)))
             goto cleanup;
 
-        if (count != 4)
+        if (g_strv_length(tokens) != 4)
             continue;
 
         prop_name = tokens[1];
