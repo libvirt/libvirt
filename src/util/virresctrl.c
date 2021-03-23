@@ -697,8 +697,6 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
 {
     int rv = -1;
     g_autofree char *featurestr = NULL;
-    g_auto(GStrv) features = NULL;
-    size_t nfeatures = 0;
     g_autofree virResctrlInfoMongrpPtr info_monitor = NULL;
 
     info_monitor = g_new0(virResctrlInfoMongrp, 1);
@@ -748,11 +746,10 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
         return -1;
     }
 
-    features = virStringSplitCount(featurestr, "\n", 0, &nfeatures);
-    VIR_DEBUG("Resctrl supported %zd monitoring features", nfeatures);
+    info_monitor->features = g_strsplit(featurestr, "\n", 0);
+    info_monitor->nfeatures = g_strv_length(info_monitor->features);
+    VIR_DEBUG("Resctrl supported %zd monitoring features", info_monitor->nfeatures);
 
-    info_monitor->nfeatures = nfeatures;
-    info_monitor->features = g_steal_pointer(&features);
     resctrl->monitor_info = g_steal_pointer(&info_monitor);
 
     return 0;
@@ -1466,9 +1463,8 @@ virResctrlAllocParseMemoryBandwidthLine(virResctrlInfoPtr resctrl,
                                         char *line)
 {
     g_auto(GStrv) mbs = NULL;
+    GStrv next;
     char *tmp = NULL;
-    size_t nmbs = 0;
-    size_t i;
 
     /* For no reason there can be spaces */
     virSkipSpaces((const char **) &line);
@@ -1493,9 +1489,9 @@ virResctrlAllocParseMemoryBandwidthLine(virResctrlInfoPtr resctrl,
         return 0;
     tmp++;
 
-    mbs = virStringSplitCount(tmp, ";", 0, &nmbs);
-    for (i = 0; i < nmbs; i++) {
-        if (virResctrlAllocParseProcessMemoryBandwidth(resctrl, alloc, mbs[i]) < 0)
+    mbs = g_strsplit(tmp, ";", 0);
+    for (next = mbs; *next; next++) {
+        if (virResctrlAllocParseProcessMemoryBandwidth(resctrl, alloc, *next) < 0)
             return -1;
     }
 
@@ -1620,11 +1616,10 @@ virResctrlAllocParseCacheLine(virResctrlInfoPtr resctrl,
                               char *line)
 {
     g_auto(GStrv) caches = NULL;
+    GStrv next;
     char *tmp = NULL;
     unsigned int level = 0;
     int type = -1;
-    size_t ncaches = 0;
-    size_t i = 0;
 
     /* For no reason there can be spaces */
     virSkipSpaces((const char **) &line);
@@ -1656,12 +1651,12 @@ virResctrlAllocParseCacheLine(virResctrlInfoPtr resctrl,
         return -1;
     }
 
-    caches = virStringSplitCount(tmp, ";", 0, &ncaches);
+    caches = g_strsplit(tmp, ";", 0);
     if (!caches)
         return 0;
 
-    for (i = 0; i < ncaches; i++) {
-        if (virResctrlAllocParseProcessCache(resctrl, alloc, level, type, caches[i]) < 0)
+    for (next = caches; *next; next++) {
+        if (virResctrlAllocParseProcessCache(resctrl, alloc, level, type, *next) < 0)
             return -1;
     }
 
@@ -1675,14 +1670,13 @@ virResctrlAllocParse(virResctrlInfoPtr resctrl,
                      const char *schemata)
 {
     g_auto(GStrv) lines = NULL;
-    size_t nlines = 0;
-    size_t i = 0;
+    GStrv next;
 
-    lines = virStringSplitCount(schemata, "\n", 0, &nlines);
-    for (i = 0; i < nlines; i++) {
-        if (virResctrlAllocParseCacheLine(resctrl, alloc, lines[i]) < 0)
+    lines = g_strsplit(schemata, "\n", 0);
+    for (next = lines; *next; next++) {
+        if (virResctrlAllocParseCacheLine(resctrl, alloc, *next) < 0)
             return -1;
-        if (virResctrlAllocParseMemoryBandwidthLine(resctrl, alloc, lines[i]) < 0)
+        if (virResctrlAllocParseMemoryBandwidthLine(resctrl, alloc, *next) < 0)
             return -1;
     }
 
