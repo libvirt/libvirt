@@ -1874,8 +1874,8 @@ virResctrlAllocNewFromInfo(virResctrlInfoPtr info)
 virResctrlAllocPtr
 virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
 {
-    virResctrlAllocPtr ret = NULL;
-    virResctrlAllocPtr alloc = NULL;
+    g_autoptr(virResctrlAlloc) ret = NULL;
+    g_autoptr(virResctrlAlloc) alloc_default = NULL;
     struct dirent *ent = NULL;
     g_autoptr(DIR) dirp = NULL;
     int rv = -1;
@@ -1890,17 +1890,18 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
     if (!ret)
         return NULL;
 
-    alloc = virResctrlAllocGetDefault(resctrl);
-    if (!alloc)
-        goto error;
+    alloc_default = virResctrlAllocGetDefault(resctrl);
+    if (!alloc_default)
+        return NULL;
 
-    virResctrlAllocSubtract(ret, alloc);
-    virObjectUnref(alloc);
+    virResctrlAllocSubtract(ret, alloc_default);
 
     if (virDirOpen(&dirp, SYSFS_RESCTRL_PATH) < 0)
-        goto error;
+        return NULL;
 
     while ((rv = virDirRead(dirp, &ent, SYSFS_RESCTRL_PATH)) > 0) {
+        g_autoptr(virResctrlAlloc) alloc = NULL;
+
         if (STREQ(ent->d_name, "info"))
             continue;
 
@@ -1912,24 +1913,15 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Could not read schemata file for group %s"),
                            ent->d_name);
-            goto error;
+            return NULL;
         }
 
         virResctrlAllocSubtract(ret, alloc);
-        virObjectUnref(alloc);
-        alloc = NULL;
     }
     if (rv < 0)
-        goto error;
+        return NULL;
 
- cleanup:
-    virObjectUnref(alloc);
-    return ret;
-
- error:
-    virObjectUnref(ret);
-    ret = NULL;
-    goto cleanup;
+    return g_steal_pointer(&ret);
 }
 
 
