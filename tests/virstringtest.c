@@ -392,24 +392,6 @@ testStringToDouble(const void *opaque)
     return ret;
 }
 
-/* The point of this test is to check whether all members of the array are
- * freed. The test has to be checked using valgrind. */
-static int
-testVirStringListFreeCount(const void *opaque G_GNUC_UNUSED)
-{
-    char **list;
-
-    list = g_new0(char *, 4);
-
-    list[0] = g_strdup("test1");
-    list[2] = g_strdup("test2");
-    list[3] = g_strdup("test3");
-
-    virStringListFreeCount(list, 4);
-
-    return 0;
-}
-
 
 struct testStripData {
     const char *string;
@@ -717,11 +699,6 @@ mymain(void)
     TEST_STRTOD("3.141592653589793238462643383279502884197169399375105",
                 NULL,
                 3.141592653589793238462643383279502884197169399375105);
-
-    /* test virStringListFreeCount */
-    if (virTestRun("virStringListFreeCount", testVirStringListFreeCount,
-                   NULL) < 0)
-        ret = -1;
 
 #define TEST_STRIP_IPV6_BRACKETS(str, res) \
     do { \
