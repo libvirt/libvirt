@@ -36,26 +36,6 @@
 VIR_LOG_INIT("util.string");
 
 /**
- * virStringSplitCount:
- *
- * A wrapper for g_strsplit which provides number of elements of the split
- * string.
- */
-char **
-virStringSplitCount(const char *string,
-                    const char *delim,
-                    size_t max_tokens,
-                    size_t *tokcount)
-{
-    GStrv ret = g_strsplit(string, delim, max_tokens);
-
-    *tokcount = g_strv_length(ret);
-
-    return ret;
-}
-
-
-/**
  * virStringListMerge:
  * @dst: a NULL-terminated array of strings to expand
  * @src: a NULL-terminated array of strings

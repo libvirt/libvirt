@@ -3264,7 +3264,6 @@ virStringReplace;
 virStringSearch;
 virStringSortCompare;
 virStringSortRevCompare;
-virStringSplitCount;
 virStringStripControlChars;
 virStringStripIPv6Brackets;
 virStringStripSuffix;

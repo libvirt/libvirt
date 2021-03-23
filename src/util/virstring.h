@@ -22,12 +22,6 @@
 
 #define VIR_INT64_STR_BUFLEN 21
 
-char **virStringSplitCount(const char *string,
-                           const char *delim,
-                           size_t max_tokens,
-                           size_t *tokcount)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
-
 int virStringListMerge(char ***dst,
                        char ***src);
 
