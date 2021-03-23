@@ -6125,6 +6125,16 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
     if (virCPUConvertLegacy(hostarch, def->cpu) < 0)
         return -1;
 
+    if (def->cpu->check != VIR_CPU_CHECK_NONE) {
+        virCPUDefPtr host;
+
+        host = virQEMUCapsGetHostModel(qemuCaps, def->virtType,
+                                       VIR_QEMU_CAPS_HOST_CPU_FULL);
+
+        if (host && virCPUCheckForbiddenFeatures(def->cpu, host) < 0)
+            return -1;
+    }
+
     /* nothing to update for host-passthrough / maximum */
     if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
         def->cpu->mode != VIR_CPU_MODE_MAXIMUM) {
