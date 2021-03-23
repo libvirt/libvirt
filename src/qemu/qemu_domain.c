@@ -9199,7 +9199,7 @@ getPPC64MemLockLimitBytes(virDomainDefPtr def,
         passthroughLimit = maxMemory +
                            128 * (1ULL<<30) / 512 * nPCIHostBridges +
                            8192;
-    } else if (forceVFIO || qemuDomainNeedsVFIO(def)) {
+    } else if (forceVFIO || qemuDomainNeedsVFIO(def) || virDomainDefHasVDPANet(def)) {
         /* For regular (non-NVLink2 present) VFIO passthrough, the value
          * of passthroughLimit is:
          *
@@ -9289,7 +9289,7 @@ qemuDomainGetMemLockLimitBytes(virDomainDefPtr def,
      *
      * Note that this may not be valid for all platforms.
      */
-    if (forceVFIO || qemuDomainNeedsVFIO(def))
+    if (forceVFIO || qemuDomainNeedsVFIO(def) || virDomainDefHasVDPANet(def))
         memKB = virDomainDefGetMemoryTotal(def) + 1024 * 1024;
 
     return memKB << 10;
