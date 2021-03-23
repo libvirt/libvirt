@@ -526,18 +526,19 @@ static int
 virResctrlGetCacheInfo(virResctrlInfoPtr resctrl,
                        DIR *dirp)
 {
-    char *endptr = NULL;
-    char *tmp_str = NULL;
-    int ret = -1;
     int rv = -1;
-    int type = 0;
+    int ret = -1;
     struct dirent *ent = NULL;
-    unsigned int level = 0;
-    virBitmapPtr tmp_map = NULL;
-    virResctrlInfoPerLevelPtr i_level = NULL;
-    virResctrlInfoPerTypePtr i_type = NULL;
 
     while ((rv = virDirRead(dirp, &ent, SYSFS_RESCTRL_PATH "/info")) > 0) {
+        g_autofree char *cbm_mask_str = NULL;
+        g_autoptr(virBitmap) cbm_mask_map = NULL;
+        char *endptr = NULL;
+        int type = 0;
+        unsigned int level = 0;
+        virResctrlInfoPerLevelPtr i_level = NULL;
+        g_autofree virResctrlInfoPerTypePtr i_type = NULL;
+
         VIR_DEBUG("Parsing info type '%s'", ent->d_name);
         if (ent->d_name[0] != 'L')
             continue;
@@ -570,7 +571,7 @@ virResctrlGetCacheInfo(virResctrlInfoPtr resctrl,
             goto cleanup;
         }
 
-        rv = virFileReadValueString(&tmp_str,
+        rv = virFileReadValueString(&cbm_mask_str,
                                     SYSFS_RESCTRL_PATH
                                     "/info/%s/cbm_mask",
                                     ent->d_name);
@@ -585,19 +586,15 @@ virResctrlGetCacheInfo(virResctrlInfoPtr resctrl,
         if (rv < 0)
             goto cleanup;
 
-        virStringTrimOptionalNewline(tmp_str);
+        virStringTrimOptionalNewline(cbm_mask_str);
 
-        tmp_map = virBitmapNewString(tmp_str);
-        VIR_FREE(tmp_str);
-        if (!tmp_map) {
+        if (!(cbm_mask_map = virBitmapNewString(cbm_mask_str))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot parse cbm_mask from resctrl cache info"));
             goto cleanup;
         }
 
-        i_type->bits = virBitmapCountBits(tmp_map);
-        virBitmapFree(tmp_map);
-        tmp_map = NULL;
+        i_type->bits = virBitmapCountBits(cbm_mask_map);
 
         rv = virFileReadValueUint(&i_type->min_cbm_bits,
                                   SYSFS_RESCTRL_PATH "/info/%s/min_cbm_bits",
@@ -635,7 +632,6 @@ virResctrlGetCacheInfo(virResctrlInfoPtr resctrl,
 
     ret = 0;
  cleanup:
-    VIR_FREE(i_type);
     return ret;
 }
 
