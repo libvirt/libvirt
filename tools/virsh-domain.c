@@ -860,10 +860,10 @@ virshParseRateStr(vshControl *ctl,
     g_auto(GStrv) tok = NULL;
     size_t ntok;
 
-    if (!(tok = virStringSplitCount(rateStr, ",", 0, &ntok)))
+    if (!(tok = g_strsplit(rateStr, ",", 0)))
         return -1;
 
-    if (ntok > 4) {
+    if ((ntok = g_strv_length(tok)) > 4) {
         vshError(ctl, _("Rate string '%s' has too many fields"), rateStr);
         return -1;
     }
