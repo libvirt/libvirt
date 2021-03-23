@@ -102,7 +102,7 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
     virStorageVolDefPtr volume = NULL;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     g_auto(GStrv) tokens = NULL;
-    g_auto(GStrv) name_tokens = NULL;
+    char *tmp;
 
     if (!(tokens = virStringSplitCount(volume_string, "\t", 0, &count)))
         return -1;
@@ -110,10 +110,9 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
     if (count != 3)
         goto cleanup;
 
-    if (!(name_tokens = virStringSplitCount(tokens[0], "/", 0, &count)))
-        goto cleanup;
-
-    vol_name = name_tokens[count-1];
+    vol_name = tokens[0];
+    if ((tmp = strrchr(vol_name, '/')))
+        vol_name = tmp + 1;
 
     if (vol == NULL)
         volume = virStorageVolDefFindByName(pool, vol_name);
@@ -218,7 +217,8 @@ virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool G_GNUC_UNUSED)
     g_autoptr(virCommand) cmd = NULL;
     g_auto(GStrv) lines = NULL;
     g_auto(GStrv) tokens = NULL;
-    g_auto(GStrv) name_tokens = NULL;
+    g_autofree char *name = g_strdup(def->source.name);
+    char *tmp;
 
     /**
      * $ zpool get -Hp health,size,free,allocated test
@@ -230,13 +230,13 @@ virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool G_GNUC_UNUSED)
      *
      * Here we just provide a list of properties we want to see
      */
-    if (!(name_tokens = g_strsplit(def->source.name, "/", 0)))
-        goto cleanup;
+    if ((tmp = strchr(name, '/')))
+        *tmp = '\0';
 
     cmd = virCommandNewArgList(ZPOOL,
                                "get", "-Hp",
                                "health,size,free,allocated",
-                               name_tokens[0],
+                               name,
                                NULL);
     virCommandSetOutputBuffer(cmd, &zpool_props);
     if (virCommandRun(cmd, NULL) < 0)
