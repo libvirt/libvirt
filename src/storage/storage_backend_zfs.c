@@ -216,7 +216,6 @@ virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool G_GNUC_UNUSED)
     size_t i;
     g_autoptr(virCommand) cmd = NULL;
     g_auto(GStrv) lines = NULL;
-    g_auto(GStrv) tokens = NULL;
     g_autofree char *name = g_strdup(def->source.name);
     char *tmp;
 
@@ -246,13 +245,13 @@ virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool G_GNUC_UNUSED)
         goto cleanup;
 
     for (i = 0; lines[i]; i++) {
+        g_auto(GStrv) tokens = NULL;
         size_t count;
         char *prop_name;
 
         if (STREQ(lines[i], ""))
             continue;
 
-        g_strfreev(tokens);
         if (!(tokens = virStringSplitCount(lines[i], "\t", 0, &count)))
             goto cleanup;
 
