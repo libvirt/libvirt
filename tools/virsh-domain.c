@@ -848,7 +848,7 @@ static const vshCmdOptDef opts_attach_interface[] = {
             *tok[index] != '\0' && \
             virStrToLong_ullp(tok[index], NULL, 10, &rate->name) < 0) { \
             vshError(ctl, _("field '%s' is malformed"), #name); \
-            goto cleanup; \
+            return -1; \
         } \
     } while (0)
 
@@ -857,16 +857,15 @@ virshParseRateStr(vshControl *ctl,
                   const char *rateStr,
                   virNetDevBandwidthRatePtr rate)
 {
-    char **tok = NULL;
+    g_auto(GStrv) tok = NULL;
     size_t ntok;
-    int ret = -1;
 
     if (!(tok = virStringSplitCount(rateStr, ",", 0, &ntok)))
         return -1;
 
     if (ntok > 4) {
         vshError(ctl, _("Rate string '%s' has too many fields"), rateStr);
-        goto cleanup;
+        return -1;
     }
 
     VIRSH_PARSE_RATE_FIELD(0, average);
@@ -874,10 +873,7 @@ virshParseRateStr(vshControl *ctl,
     VIRSH_PARSE_RATE_FIELD(2, burst);
     VIRSH_PARSE_RATE_FIELD(3, floor);
 
-    ret = 0;
- cleanup:
-    g_strfreev(tok);
-    return ret;
+    return 0;
 }
 
 #undef VIRSH_PARSE_RATE_FIELD
