@@ -933,7 +933,7 @@ virCPUDefAddFeatureIfMissing(virCPUDefPtr def,
 
 
 virCPUFeatureDefPtr
-virCPUDefFindFeature(virCPUDefPtr def,
+virCPUDefFindFeature(const virCPUDef *def,
                      const char *name)
 {
     size_t i;

@@ -236,7 +236,7 @@ virCPUDefAddFeatureIfMissing(virCPUDefPtr def,
                              int policy);
 
 virCPUFeatureDefPtr
-virCPUDefFindFeature(virCPUDefPtr def,
+virCPUDefFindFeature(const virCPUDef *def,
                      const char *name);
 
 int
