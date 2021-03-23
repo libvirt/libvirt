@@ -229,6 +229,12 @@ virCPUCheckFeature(virArch arch,
 
 
 int
+virCPUCheckForbiddenFeatures(virCPUDefPtr guest,
+                             const virCPUDef *host)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+
+int
 virCPUDataCheckFeature(const virCPUData *data,
                        const char *feature)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

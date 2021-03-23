@@ -1421,6 +1421,7 @@ cpuEncode;
 virCPUArchIsSupported;
 virCPUBaseline;
 virCPUCheckFeature;
+virCPUCheckForbiddenFeatures;
 virCPUCompare;
 virCPUCompareXML;
 virCPUConvertLegacy;

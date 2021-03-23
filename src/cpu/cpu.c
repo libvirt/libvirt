@@ -691,6 +691,43 @@ virCPUCheckFeature(virArch arch,
 
 
 /**
+ * virCPUCheckForbiddenFeatures:
+ *
+ * @guest: CPU definition
+ * @host: CPU definition
+ *
+ * Checks that @host enables no feature explicitly disabled by @guest.
+ *
+ * Returns 0 on success or -1 on error.
+ */
+int
+virCPUCheckForbiddenFeatures(virCPUDefPtr guest, const virCPUDef *host)
+{
+    size_t i;
+    for (i = 0; i < guest->nfeatures; ++i) {
+        virCPUFeatureDefPtr feature;
+
+        if (guest->features[i].policy != VIR_CPU_FEATURE_FORBID)
+            continue;
+
+        feature = virCPUDefFindFeature(host, guest->features[i].name);
+        if (!feature)
+            continue;
+
+        if (feature->policy == VIR_CPU_FEATURE_DISABLE)
+            continue;
+
+        virReportError(VIR_ERR_CPU_INCOMPATIBLE,
+                       _("Host CPU provides forbidden feature '%s'"),
+                       guest->features[i].name);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
  * virCPUDataCheckFeature:
  *
  * @data: CPU data
