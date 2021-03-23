@@ -20,7 +20,6 @@ docs_assets = [
 docs_html_in_files = [
   '404',
   'csharp',
-  'dbus',
   'docs',
   'formatcaps',
   'formatdomaincaps',
@@ -57,6 +56,7 @@ docs_rst_files = [
   'contact',
   'contribute',
   'daemons',
+  'dbus',
   'downloads',
   'drivers',
   'drvbhyve',
