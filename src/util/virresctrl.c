@@ -527,7 +527,6 @@ virResctrlGetCacheInfo(virResctrlInfoPtr resctrl,
                        DIR *dirp)
 {
     int rv = -1;
-    int ret = -1;
     struct dirent *ent = NULL;
 
     while ((rv = virDirRead(dirp, &ent, SYSFS_RESCTRL_PATH "/info")) > 0) {
@@ -568,7 +567,7 @@ virResctrlGetCacheInfo(virResctrlInfoPtr resctrl,
                      ent->d_name);
         } else if (rv < 0) {
             /* Other failures are fatal, so just quit */
-            goto cleanup;
+            return -1;
         }
 
         rv = virFileReadValueString(&cbm_mask_str,
@@ -584,14 +583,14 @@ virResctrlGetCacheInfo(virResctrlInfoPtr resctrl,
                            _("Cannot get cbm_mask from resctrl cache info"));
         }
         if (rv < 0)
-            goto cleanup;
+            return -1;
 
         virStringTrimOptionalNewline(cbm_mask_str);
 
         if (!(cbm_mask_map = virBitmapNewString(cbm_mask_str))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot parse cbm_mask from resctrl cache info"));
-            goto cleanup;
+            return -1;
         }
 
         i_type->bits = virBitmapCountBits(cbm_mask_map);
@@ -603,7 +602,7 @@ virResctrlGetCacheInfo(virResctrlInfoPtr resctrl,
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot get min_cbm_bits from resctrl cache info"));
         if (rv < 0)
-            goto cleanup;
+            return -1;
 
         if (resctrl->nlevels <= level)
             VIR_EXPAND_N(resctrl->levels, resctrl->nlevels,
@@ -624,22 +623,19 @@ virResctrlGetCacheInfo(virResctrlInfoPtr resctrl,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Duplicate cache type in resctrl for level %u"),
                            level);
-            goto cleanup;
+            return -1;
         }
 
         i_level->types[type] = g_steal_pointer(&i_type);
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
 static int
 virResctrlGetMemoryBandwidthInfo(virResctrlInfoPtr resctrl)
 {
-    int ret = -1;
     int rv = -1;
     g_autofree virResctrlInfoMemBWPtr i_membw = NULL;
 
@@ -652,11 +648,10 @@ virResctrlGetMemoryBandwidthInfo(virResctrlInfoPtr resctrl)
          * probably memory bandwidth allocation unsupported */
         VIR_INFO("The path '" SYSFS_RESCTRL_PATH "/info/MB/bandwidth_gran'"
                  "does not exist");
-        ret = 0;
-        goto cleanup;
+        return 0;
     } else if (rv < 0) {
         /* Other failures are fatal, so just quit */
-        goto cleanup;
+        return -1;
     }
 
     rv = virFileReadValueUint(&i_membw->min_bandwidth,
@@ -669,7 +664,7 @@ virResctrlGetMemoryBandwidthInfo(virResctrlInfoPtr resctrl)
                        _("Cannot get min bandwidth from resctrl memory info"));
     }
     if (rv < 0)
-        goto cleanup;
+        return -1;
 
     rv = virFileReadValueUint(&i_membw->max_allocation,
                               SYSFS_RESCTRL_PATH "/info/MB/num_closids");
@@ -679,12 +674,10 @@ virResctrlGetMemoryBandwidthInfo(virResctrlInfoPtr resctrl)
                        _("Cannot get max allocation from resctrl memory info"));
     }
     if (rv < 0)
-        goto cleanup;
+        return -1;
 
     resctrl->membw_info = g_steal_pointer(&i_membw);
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -702,7 +695,6 @@ virResctrlGetMemoryBandwidthInfo(virResctrlInfoPtr resctrl)
 static int
 virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
 {
-    int ret = -1;
     int rv = -1;
     g_autofree char *featurestr = NULL;
     g_auto(GStrv) features = NULL;
@@ -721,11 +713,10 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
          * monitor unsupported */
         VIR_INFO("The file '" SYSFS_RESCTRL_PATH "/info/L3_MON/num_rmids' "
                  "does not exist");
-        ret = 0;
-        goto cleanup;
+        return 0;
     } else if (rv < 0) {
         /* Other failures are fatal, so just quit */
-        goto cleanup;
+        return -1;
     }
 
     rv = virFileReadValueUint(&info_monitor->cache_reuse_threshold,
@@ -737,7 +728,7 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
         VIR_DEBUG("File '" SYSFS_RESCTRL_PATH
                   "/info/L3_MON/max_threshold_occupancy' does not exist");
     } else if (rv < 0) {
-        goto cleanup;
+        return -1;
     }
 
     rv = virFileReadValueString(&featurestr,
@@ -747,14 +738,14 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot get mon_features from resctrl"));
     if (rv < 0)
-        goto cleanup;
+        return -1;
 
     if (!*featurestr) {
         /* If no feature found in "/info/L3_MON/mon_features",
          * some error happens */
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Got empty feature list from resctrl"));
-        goto cleanup;
+        return -1;
     }
 
     features = virStringSplitCount(featurestr, "\n", 0, &nfeatures);
@@ -764,9 +755,7 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
     info_monitor->features = g_steal_pointer(&features);
     resctrl->monitor_info = g_steal_pointer(&info_monitor);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1480,7 +1469,6 @@ virResctrlAllocParseMemoryBandwidthLine(virResctrlInfoPtr resctrl,
     char *tmp = NULL;
     size_t nmbs = 0;
     size_t i;
-    int ret = -1;
 
     /* For no reason there can be spaces */
     virSkipSpaces((const char **) &line);
@@ -1508,12 +1496,10 @@ virResctrlAllocParseMemoryBandwidthLine(virResctrlInfoPtr resctrl,
     mbs = virStringSplitCount(tmp, ";", 0, &nmbs);
     for (i = 0; i < nmbs; i++) {
         if (virResctrlAllocParseProcessMemoryBandwidth(resctrl, alloc, mbs[i]) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1591,7 +1577,6 @@ virResctrlAllocParseProcessCache(virResctrlInfoPtr resctrl,
     char *tmp = strchr(cache, '=');
     unsigned int cache_id = 0;
     g_autoptr(virBitmap) mask = NULL;
-    int ret = -1;
 
     if (!tmp)
         return 0;
@@ -1617,17 +1602,15 @@ virResctrlAllocParseProcessCache(virResctrlInfoPtr resctrl,
                        _("Missing or inconsistent resctrl info for "
                          "level '%u' type '%s'"),
                        level, virCacheTypeToString(type));
-        goto cleanup;
+        return -1;
     }
 
     virBitmapShrink(mask, resctrl->levels[level]->types[type]->bits);
 
     if (virResctrlAllocUpdateMask(alloc, level, type, cache_id, mask) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1642,7 +1625,6 @@ virResctrlAllocParseCacheLine(virResctrlInfoPtr resctrl,
     int type = -1;
     size_t ncaches = 0;
     size_t i = 0;
-    int ret = -1;
 
     /* For no reason there can be spaces */
     virSkipSpaces((const char **) &line);
@@ -1680,12 +1662,10 @@ virResctrlAllocParseCacheLine(virResctrlInfoPtr resctrl,
 
     for (i = 0; i < ncaches; i++) {
         if (virResctrlAllocParseProcessCache(resctrl, alloc, level, type, caches[i]) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1697,20 +1677,16 @@ virResctrlAllocParse(virResctrlInfoPtr resctrl,
     g_auto(GStrv) lines = NULL;
     size_t nlines = 0;
     size_t i = 0;
-    int ret = -1;
 
     lines = virStringSplitCount(schemata, "\n", 0, &nlines);
     for (i = 0; i < nlines; i++) {
         if (virResctrlAllocParseCacheLine(resctrl, alloc, lines[i]) < 0)
-            goto cleanup;
+            return -1;
         if (virResctrlAllocParseMemoryBandwidthLine(resctrl, alloc, lines[i]) < 0)
-            goto cleanup;
-
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1943,7 +1919,6 @@ virResctrlAllocFindUnused(virResctrlAllocPtr alloc,
     ssize_t pos = -1;
     ssize_t last_bits = 0;
     ssize_t last_pos = -1;
-    int ret = -1;
 
     if (!size)
         return 0;
@@ -2037,11 +2012,9 @@ virResctrlAllocFindUnused(virResctrlAllocPtr alloc,
         ignore_value(virBitmapSetBit(a_mask, i));
 
     if (virResctrlAllocUpdateMask(alloc, level, type, cache, a_mask) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -2174,7 +2147,6 @@ static int
 virResctrlAllocAssign(virResctrlInfoPtr resctrl,
                       virResctrlAllocPtr alloc)
 {
-    int ret = -1;
     unsigned int level = 0;
     g_autoptr(virResctrlAlloc) alloc_free = NULL;
     g_autoptr(virResctrlAlloc) alloc_default = NULL;
@@ -2185,16 +2157,16 @@ virResctrlAllocAssign(virResctrlInfoPtr resctrl,
 
     alloc_default = virResctrlAllocGetDefault(resctrl);
     if (!alloc_default)
-        goto cleanup;
+        return -1;
 
     if (virResctrlAllocMemoryBandwidth(resctrl, alloc) < 0)
-        goto cleanup;
+        return -1;
 
     if (virResctrlAllocCopyMasks(alloc, alloc_default) < 0)
-        goto cleanup;
+        return -1;
 
     if (virResctrlAllocCopyMemBW(alloc, alloc_default) < 0)
-        goto cleanup;
+        return -1;
 
     for (level = 0; level < alloc->nlevels; level++) {
         virResctrlAllocPerLevelPtr a_level = alloc->levels[level];
@@ -2211,7 +2183,7 @@ virResctrlAllocAssign(virResctrlInfoPtr resctrl,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Cache level %d does not support tuning"),
                            level);
-            goto cleanup;
+            return -1;
         }
 
         for (type = 0; type < VIR_CACHE_TYPE_LAST; type++) {
@@ -2227,7 +2199,7 @@ virResctrlAllocAssign(virResctrlInfoPtr resctrl,
                                _("Cache level %d does not support tuning for "
                                  "scope type '%s'"),
                                level, virCacheTypeToString(type));
-                goto cleanup;
+                return -1;
             }
 
             for (cache = 0; cache < a_type->nsizes; cache++) {
@@ -2235,14 +2207,12 @@ virResctrlAllocAssign(virResctrlInfoPtr resctrl,
                 virResctrlInfoPerTypePtr i_type = i_level->types[type];
 
                 if (virResctrlAllocFindUnused(alloc, i_type, f_type, level, type, cache) < 0)
-                    goto cleanup;
+                    return -1;
             }
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -2376,7 +2346,6 @@ virResctrlAddPID(const char *path,
 {
     g_autofree char *tasks = NULL;
     g_autofree char *pidstr = NULL;
-    int ret = 0;
 
     if (!path) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2392,12 +2361,10 @@ virResctrlAddPID(const char *path,
         virReportSystemError(errno,
                              _("Cannot write pid in tasks file '%s'"),
                              tasks);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
