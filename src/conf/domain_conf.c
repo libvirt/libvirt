@@ -3527,6 +3527,36 @@ virDomainSEVDefFree(virDomainSEVDefPtr def)
     g_free(def);
 }
 
+static void
+virDomainOSDefClear(virDomainOSDef *os)
+{
+    size_t i;
+
+    g_free(os->machine);
+    g_free(os->init);
+    for (i = 0; os->initargv && os->initargv[i]; i++)
+        g_free(os->initargv[i]);
+    g_free(os->initargv);
+    for (i = 0; os->initenv && os->initenv[i]; i++) {
+        g_free(os->initenv[i]->name);
+        g_free(os->initenv[i]->value);
+        g_free(os->initenv[i]);
+    }
+    g_free(os->initdir);
+    g_free(os->inituser);
+    g_free(os->initgroup);
+    g_free(os->initenv);
+    g_free(os->kernel);
+    g_free(os->initrd);
+    g_free(os->cmdline);
+    g_free(os->dtb);
+    g_free(os->root);
+    g_free(os->slic_table);
+    virDomainLoaderDefFree(os->loader);
+    g_free(os->bootloader);
+    g_free(os->bootloaderArgs);
+}
+
 
 void virDomainDefFree(virDomainDefPtr def)
 {
@@ -3640,29 +3670,7 @@ void virDomainDefFree(virDomainDefPtr def)
     g_free(def->idmap.uidmap);
     g_free(def->idmap.gidmap);
 
-    g_free(def->os.machine);
-    g_free(def->os.init);
-    for (i = 0; def->os.initargv && def->os.initargv[i]; i++)
-        g_free(def->os.initargv[i]);
-    g_free(def->os.initargv);
-    for (i = 0; def->os.initenv && def->os.initenv[i]; i++) {
-        g_free(def->os.initenv[i]->name);
-        g_free(def->os.initenv[i]->value);
-        g_free(def->os.initenv[i]);
-    }
-    g_free(def->os.initdir);
-    g_free(def->os.inituser);
-    g_free(def->os.initgroup);
-    g_free(def->os.initenv);
-    g_free(def->os.kernel);
-    g_free(def->os.initrd);
-    g_free(def->os.cmdline);
-    g_free(def->os.dtb);
-    g_free(def->os.root);
-    g_free(def->os.slic_table);
-    virDomainLoaderDefFree(def->os.loader);
-    g_free(def->os.bootloader);
-    g_free(def->os.bootloaderArgs);
+    virDomainOSDefClear(&def->os);
 
     virDomainClockDefClear(&def->clock);
 
