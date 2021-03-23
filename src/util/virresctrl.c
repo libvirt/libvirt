@@ -641,7 +641,7 @@ virResctrlGetMemoryBandwidthInfo(virResctrlInfoPtr resctrl)
 {
     int ret = -1;
     int rv = -1;
-    virResctrlInfoMemBWPtr i_membw = NULL;
+    g_autofree virResctrlInfoMemBWPtr i_membw = NULL;
 
     /* query memory bandwidth allocation info */
     i_membw = g_new0(virResctrlInfoMemBW, 1);
@@ -684,7 +684,6 @@ virResctrlGetMemoryBandwidthInfo(virResctrlInfoPtr resctrl)
     resctrl->membw_info = g_steal_pointer(&i_membw);
     ret = 0;
  cleanup:
-    VIR_FREE(i_membw);
     return ret;
 }
 
@@ -705,10 +704,10 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
 {
     int ret = -1;
     int rv = -1;
-    char *featurestr = NULL;
-    char **features = NULL;
+    g_autofree char *featurestr = NULL;
+    g_auto(GStrv) features = NULL;
     size_t nfeatures = 0;
-    virResctrlInfoMongrpPtr info_monitor = NULL;
+    g_autofree virResctrlInfoMongrpPtr info_monitor = NULL;
 
     info_monitor = g_new0(virResctrlInfoMongrp, 1);
 
@@ -767,9 +766,6 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
 
     ret = 0;
  cleanup:
-    VIR_FREE(featurestr);
-    g_strfreev(features);
-    VIR_FREE(info_monitor);
     return ret;
 }
 
@@ -1480,7 +1476,7 @@ virResctrlAllocParseMemoryBandwidthLine(virResctrlInfoPtr resctrl,
                                         virResctrlAllocPtr alloc,
                                         char *line)
 {
-    char **mbs = NULL;
+    g_auto(GStrv) mbs = NULL;
     char *tmp = NULL;
     size_t nmbs = 0;
     size_t i;
@@ -1517,7 +1513,6 @@ virResctrlAllocParseMemoryBandwidthLine(virResctrlInfoPtr resctrl,
 
     ret = 0;
  cleanup:
-    g_strfreev(mbs);
     return ret;
 }
 
@@ -1595,7 +1590,7 @@ virResctrlAllocParseProcessCache(virResctrlInfoPtr resctrl,
 {
     char *tmp = strchr(cache, '=');
     unsigned int cache_id = 0;
-    virBitmapPtr mask = NULL;
+    g_autoptr(virBitmap) mask = NULL;
     int ret = -1;
 
     if (!tmp)
@@ -1632,7 +1627,6 @@ virResctrlAllocParseProcessCache(virResctrlInfoPtr resctrl,
 
     ret = 0;
  cleanup:
-    virBitmapFree(mask);
     return ret;
 }
 
@@ -1642,7 +1636,7 @@ virResctrlAllocParseCacheLine(virResctrlInfoPtr resctrl,
                               virResctrlAllocPtr alloc,
                               char *line)
 {
-    char **caches = NULL;
+    g_auto(GStrv) caches = NULL;
     char *tmp = NULL;
     unsigned int level = 0;
     int type = -1;
@@ -1691,7 +1685,6 @@ virResctrlAllocParseCacheLine(virResctrlInfoPtr resctrl,
 
     ret = 0;
  cleanup:
-    g_strfreev(caches);
     return ret;
 }
 
@@ -1701,7 +1694,7 @@ virResctrlAllocParse(virResctrlInfoPtr resctrl,
                      virResctrlAllocPtr alloc,
                      const char *schemata)
 {
-    char **lines = NULL;
+    g_auto(GStrv) lines = NULL;
     size_t nlines = 0;
     size_t i = 0;
     int ret = -1;
@@ -1717,7 +1710,6 @@ virResctrlAllocParse(virResctrlInfoPtr resctrl,
 
     ret = 0;
  cleanup:
-    g_strfreev(lines);
     return ret;
 }
 
@@ -1944,7 +1936,7 @@ virResctrlAllocFindUnused(virResctrlAllocPtr alloc,
                           unsigned int cache)
 {
     unsigned long long *size = alloc->levels[level]->types[type]->sizes[cache];
-    virBitmapPtr a_mask = NULL;
+    g_autoptr(virBitmap) a_mask = NULL;
     virBitmapPtr f_mask = NULL;
     unsigned long long need_bits;
     size_t i = 0;
@@ -2049,7 +2041,6 @@ virResctrlAllocFindUnused(virResctrlAllocPtr alloc,
 
     ret = 0;
  cleanup:
-    virBitmapFree(a_mask);
     return ret;
 }
 
@@ -2185,8 +2176,8 @@ virResctrlAllocAssign(virResctrlInfoPtr resctrl,
 {
     int ret = -1;
     unsigned int level = 0;
-    virResctrlAllocPtr alloc_free = NULL;
-    virResctrlAllocPtr alloc_default = NULL;
+    g_autoptr(virResctrlAlloc) alloc_free = NULL;
+    g_autoptr(virResctrlAlloc) alloc_default = NULL;
 
     alloc_free = virResctrlAllocGetUnused(resctrl);
     if (!alloc_free)
@@ -2251,8 +2242,6 @@ virResctrlAllocAssign(virResctrlInfoPtr resctrl,
 
     ret = 0;
  cleanup:
-    virObjectUnref(alloc_free);
-    virObjectUnref(alloc_default);
     return ret;
 }
 
@@ -2328,8 +2317,8 @@ virResctrlAllocCreate(virResctrlInfoPtr resctrl,
                       virResctrlAllocPtr alloc,
                       const char *machinename)
 {
-    char *schemata_path = NULL;
-    char *alloc_str = NULL;
+    g_autofree char *schemata_path = NULL;
+    g_autofree char *alloc_str = NULL;
     int ret = -1;
     int lockfd = -1;
 
@@ -2377,8 +2366,6 @@ virResctrlAllocCreate(virResctrlInfoPtr resctrl,
     ret = 0;
  cleanup:
     virResctrlUnlock(lockfd);
-    VIR_FREE(alloc_str);
-    VIR_FREE(schemata_path);
     return ret;
 }
 
@@ -2387,8 +2374,8 @@ static int
 virResctrlAddPID(const char *path,
                  pid_t pid)
 {
-    char *tasks = NULL;
-    char *pidstr = NULL;
+    g_autofree char *tasks = NULL;
+    g_autofree char *pidstr = NULL;
     int ret = 0;
 
     if (!path) {
@@ -2410,8 +2397,6 @@ virResctrlAddPID(const char *path,
 
     ret = 0;
  cleanup:
-    VIR_FREE(tasks);
-    VIR_FREE(pidstr);
     return ret;
 }
 
@@ -2631,8 +2616,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
     size_t i = 0;
     unsigned long long val = 0;
     g_autoptr(DIR) dirp = NULL;
-    char *datapath = NULL;
-    char *filepath = NULL;
+    g_autofree char *datapath = NULL;
     struct dirent *ent = NULL;
     virResctrlMonitorStatsPtr stat = NULL;
     size_t nresources = g_strv_length((char **) resources);
@@ -2650,9 +2634,8 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
 
     *nstats = 0;
     while (virDirRead(dirp, &ent, datapath) > 0) {
+        g_autofree char *filepath = NULL;
         char *node_id = NULL;
-
-        VIR_FREE(filepath);
 
         /* Looking for directory that contains resource utilization
          * information file. The directory name is arranged in format
@@ -2712,8 +2695,6 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
 
     ret = 0;
  cleanup:
-    VIR_FREE(datapath);
-    VIR_FREE(filepath);
     virResctrlMonitorStatsFree(stat);
     return ret;
 }
