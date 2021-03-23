@@ -9258,8 +9258,6 @@ qemuDomainGetMemLockLimitBytes(virDomainDefPtr def,
                                bool forceVFIO)
 {
     unsigned long long memKB = 0;
-    bool usesVFIO = false;
-    size_t i;
 
     /* prefer the hard limit */
     if (virMemoryLimitIsSet(def->mem.hard_limit)) {
@@ -9296,20 +9294,7 @@ qemuDomainGetMemLockLimitBytes(virDomainDefPtr def,
      *
      * Note that this may not be valid for all platforms.
      */
-    if (!forceVFIO) {
-        for (i = 0; i < def->nhostdevs; i++) {
-            if (virHostdevIsVFIODevice(def->hostdevs[i]) ||
-                virHostdevIsMdevDevice(def->hostdevs[i])) {
-                usesVFIO = true;
-                break;
-            }
-        }
-
-        if (virDomainDefHasNVMeDisk(def))
-            usesVFIO = true;
-    }
-
-    if (usesVFIO || forceVFIO)
+    if (forceVFIO || qemuDomainNeedsVFIO(def))
         memKB = virDomainDefGetMemoryTotal(def) + 1024 * 1024;
 
     return memKB << 10;
