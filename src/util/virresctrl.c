@@ -1811,7 +1811,7 @@ static virResctrlAllocPtr
 virResctrlAllocNewFromInfo(virResctrlInfoPtr info)
 {
     size_t i = 0;
-    virResctrlAllocPtr ret = virResctrlAllocNew();
+    g_autoptr(virResctrlAlloc) ret = virResctrlAllocNew();
 
     if (!ret)
         return NULL;
@@ -1836,7 +1836,7 @@ virResctrlAllocNewFromInfo(virResctrlInfoPtr info)
 
             for (k = 0; k <= i_type->max_cache_id; k++) {
                 if (virResctrlAllocUpdateMask(ret, i, j, k, mask) < 0)
-                    goto error;
+                    return NULL;
             }
         }
     }
@@ -1854,12 +1854,7 @@ virResctrlAllocNewFromInfo(virResctrlInfoPtr info)
         }
     }
 
- cleanup:
-    return ret;
- error:
-    virObjectUnref(ret);
-    ret = NULL;
-    goto cleanup;
+    return g_steal_pointer(&ret);
 }
 
 /*
