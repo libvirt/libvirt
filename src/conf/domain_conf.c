@@ -3532,6 +3532,7 @@ virDomainOSDefClear(virDomainOSDef *os)
 {
     size_t i;
 
+    g_free(os->firmwareFeatures);
     g_free(os->machine);
     g_free(os->init);
     for (i = 0; os->initargv && os->initargv[i]; i++)
