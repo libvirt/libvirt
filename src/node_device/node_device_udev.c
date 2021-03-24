@@ -451,8 +451,7 @@ udevProcessPCI(struct udev_device *device,
                 pci_express->link_sta->port = -1; /* PCIe can't negotiate port. Yet :) */
             }
             pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCIE;
-            pci_dev->pci_express = pci_express;
-            pci_express = NULL;
+            pci_dev->pci_express = g_steal_pointer(&pci_express);
         }
     }
 

@@ -133,11 +133,10 @@ virDomainMomentDropParent(virDomainMomentObjPtr moment)
         curr = curr->sibling;
     }
     if (prev)
-        prev->sibling = moment->sibling;
+        prev->sibling = g_steal_pointer(&moment->sibling);
     else
-        moment->parent->first_child = moment->sibling;
+        moment->parent->first_child = g_steal_pointer(&moment->sibling);
     moment->parent = NULL;
-    moment->sibling = NULL;
 }
 
 
@@ -201,9 +200,8 @@ virDomainMomentMoveChildren(virDomainMomentObjPtr from,
         child = child->sibling;
     }
     to->nchildren += from->nchildren;
-    to->first_child = from->first_child;
+    to->first_child = g_steal_pointer(&from->first_child);
     from->nchildren = 0;
-    from->first_child = NULL;
 }
 
 

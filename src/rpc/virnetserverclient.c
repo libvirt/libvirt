@@ -999,8 +999,7 @@ virNetServerClientCloseLocked(virNetServerClientPtr client)
 
     if (client->keepalive) {
         virKeepAliveStop(client->keepalive);
-        ka = client->keepalive;
-        client->keepalive = NULL;
+        ka = g_steal_pointer(&client->keepalive);
         virObjectRef(client);
         virObjectUnlock(client);
         virObjectUnref(ka);
@@ -1398,8 +1397,7 @@ virNetServerClientDispatchWrite(virNetServerClientPtr client)
                     virNetMessageClear(msg);
                     msg->bufferLength = VIR_NET_MESSAGE_LEN_MAX;
                     msg->buffer = g_new0(char, msg->bufferLength);
-                    client->rx = msg;
-                    msg = NULL;
+                    client->rx = g_steal_pointer(&msg);
                     client->nrequests++;
                 }
             }

@@ -113,8 +113,7 @@ virLXCProcessReboot(virLXCDriverPtr driver,
      * to use the current 'def', and not switch to 'newDef'.
      * So temporarily hide the newDef and then reinstate it
      */
-    savedDef = vm->newDef;
-    vm->newDef = NULL;
+    savedDef = g_steal_pointer(&vm->newDef);
     virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
     vm->newDef = savedDef;
     if (virLXCProcessStart(conn, driver, vm,

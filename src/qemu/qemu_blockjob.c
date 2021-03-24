@@ -1219,8 +1219,7 @@ qemuBlockJobProcessEventCompletedCommit(virQEMUDriverPtr driver,
     job->data.commit.top = NULL;
 
     if (cfgbaseparent) {
-        cfgbase = cfgbaseparent->backingStore;
-        cfgbaseparent->backingStore = NULL;
+        cfgbase = g_steal_pointer(&cfgbaseparent->backingStore);
 
         if (cfgtopparent)
             cfgtopparent->backingStore = cfgbase;
@@ -1289,8 +1288,7 @@ qemuBlockJobProcessEventCompletedActiveCommit(virQEMUDriverPtr driver,
          */
         qemuBlockJobRewriteConfigDiskSource(vm, job->disk, job->data.commit.base);
     } else {
-        cfgbase = cfgbaseparent->backingStore;
-        cfgbaseparent->backingStore = NULL;
+        cfgbase = g_steal_pointer(&cfgbaseparent->backingStore);
         cfgdisk->src = cfgbase;
         cfgdisk->src->readonly = cfgtop->readonly;
         virObjectUnref(cfgtop);

@@ -516,8 +516,7 @@ static int netcfConnectListInterfacesImpl(virConnectPtr conn,
         }
         virInterfaceDefFree(def);
 
-        names[want++] = allnames[i];
-        allnames[i] = NULL;
+        names[want++] = g_steal_pointer(&allnames[i]);
     }
 
     ret = want;

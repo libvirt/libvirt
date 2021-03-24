@@ -7238,7 +7238,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
 
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        disk = dev->data.disk;
+        disk = g_steal_pointer(&dev->data.disk);
         if (virDomainDiskIndexByName(vmdef, disk->dst, true) >= 0) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("target %s already exists"), disk->dst);
@@ -7250,25 +7250,22 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
             return -1;
         virDomainDiskInsert(vmdef, disk);
         /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
-        dev->data.disk = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
-        net = dev->data.net;
+        net = g_steal_pointer(&dev->data.net);
         if (virDomainNetInsert(vmdef, net))
             return -1;
-        dev->data.net = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_SOUND:
-        sound = dev->data.sound;
+        sound = g_steal_pointer(&dev->data.sound);
         if (VIR_APPEND_ELEMENT(vmdef->sounds, vmdef->nsounds, sound) < 0)
             return -1;
-        dev->data.sound = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
-        hostdev = dev->data.hostdev;
+        hostdev = g_steal_pointer(&dev->data.hostdev);
         if (virDomainHostdevFind(vmdef, hostdev, NULL) >= 0) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("device is already in the domain configuration"));
@@ -7276,11 +7273,10 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         }
         if (virDomainHostdevInsert(vmdef, hostdev))
             return -1;
-        dev->data.hostdev = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_LEASE:
-        lease = dev->data.lease;
+        lease = g_steal_pointer(&dev->data.lease);
         if (virDomainLeaseIndex(vmdef, lease) >= 0) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("Lease %s in lockspace %s already exists"),
@@ -7290,11 +7286,10 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         virDomainLeaseInsert(vmdef, lease);
 
         /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
-        dev->data.lease = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_CONTROLLER:
-        controller = dev->data.controller;
+        controller = g_steal_pointer(&dev->data.controller);
         if (controller->idx != -1 &&
             virDomainControllerFind(vmdef, controller->type,
                                     controller->idx) >= 0) {
@@ -7305,7 +7300,6 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         }
 
         virDomainControllerInsert(vmdef, controller);
-        dev->data.controller = NULL;
 
         break;
 
@@ -7316,7 +7310,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         break;
 
     case VIR_DOMAIN_DEVICE_FS:
-        fs = dev->data.fs;
+        fs = g_steal_pointer(&dev->data.fs);
         if (virDomainFSIndexByName(vmdef, fs->dst) >= 0) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                          "%s", _("Target already exists"));
@@ -7325,7 +7319,6 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
 
         if (virDomainFSInsert(vmdef, fs) < 0)
             return -1;
-        dev->data.fs = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_RNG:
@@ -7357,15 +7350,14 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         break;
 
     case VIR_DOMAIN_DEVICE_REDIRDEV:
-        redirdev = dev->data.redirdev;
+        redirdev = g_steal_pointer(&dev->data.redirdev);
 
         if (VIR_APPEND_ELEMENT(vmdef->redirdevs, vmdef->nredirdevs, redirdev) < 0)
             return -1;
-        dev->data.redirdev = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_SHMEM:
-        shmem = dev->data.shmem;
+        shmem = g_steal_pointer(&dev->data.shmem);
         if (virDomainShmemDefFind(vmdef, shmem) >= 0) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("device is already in the domain configuration"));
@@ -7373,7 +7365,6 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         }
         if (virDomainShmemDefInsert(vmdef, shmem) < 0)
             return -1;
-        dev->data.shmem = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_WATCHDOG:
@@ -7645,7 +7636,7 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
 
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        newDisk = dev->data.disk;
+        newDisk = g_steal_pointer(&dev->data.disk);
         if ((pos = virDomainDiskIndexByName(vmdef, newDisk->dst, false)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("target %s doesn't exist."), newDisk->dst);
@@ -7660,11 +7651,10 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
 
         virDomainDiskDefFree(vmdef->disks[pos]);
         vmdef->disks[pos] = newDisk;
-        dev->data.disk = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_GRAPHICS:
-        newGraphics = dev->data.graphics;
+        newGraphics = g_steal_pointer(&dev->data.graphics);
         pos = qemuDomainFindGraphicsIndex(vmdef, newGraphics);
         if (pos < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
@@ -7681,11 +7671,10 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
 
         virDomainGraphicsDefFree(vmdef->graphics[pos]);
         vmdef->graphics[pos] = newGraphics;
-        dev->data.graphics = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
-        net = dev->data.net;
+        net = g_steal_pointer(&dev->data.net);
         if ((pos = virDomainNetFindIdx(vmdef, net)) < 0)
             return -1;
 
@@ -7699,7 +7688,6 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
             return -1;
 
         virDomainNetDefFree(oldDev.data.net);
-        dev->data.net = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_FS:

@@ -270,8 +270,7 @@ void
 virStoragePoolObjDefUseNewDef(virStoragePoolObjPtr obj)
 {
     virStoragePoolDefFree(obj->def);
-    obj->def = obj->newDef;
-    obj->newDef = NULL;
+    obj->def = g_steal_pointer(&obj->newDef);
 }
 
 

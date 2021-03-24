@@ -2644,7 +2644,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
         name_prefix = virNWFilterIsAllowedChain(chain);
         if (name_prefix == NULL)
             goto cleanup;
-        ret->chainsuffix = chain;
+        ret->chainsuffix = g_steal_pointer(&chain);
 
         if (chain_pri_s) {
             ret->chainPriority = chain_priority;
@@ -2656,7 +2656,6 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
                                       NWFILTER_MIN_FILTER_PRIORITY) / 2;
             }
         }
-        chain = NULL;
     } else {
         ret->chainsuffix = g_strdup(virNWFilterChainSuffixTypeToString(VIR_NWFILTER_CHAINSUFFIX_ROOT));
     }

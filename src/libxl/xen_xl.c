@@ -1071,8 +1071,7 @@ xenParseXLChannel(virConfPtr conf, virDomainDefPtr def)
             if (STRPREFIX(type, "socket")) {
                 channel->source->type = VIR_DOMAIN_CHR_TYPE_UNIX;
                 channel->source->data.nix.listen = 1;
-                channel->source->data.nix.path = path;
-                path = NULL;
+                channel->source->data.nix.path = g_steal_pointer(&path);
             } else if (STRPREFIX(type, "pty")) {
                 channel->source->type = VIR_DOMAIN_CHR_TYPE_PTY;
                 VIR_FREE(path);
@@ -1082,8 +1081,7 @@ xenParseXLChannel(virConfPtr conf, virDomainDefPtr def)
 
             channel->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL;
             channel->targetType = VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN;
-            channel->target.name = name;
-            name = NULL;
+            channel->target.name = g_steal_pointer(&name);
 
             if (VIR_APPEND_ELEMENT(def->channels, def->nchannels, channel) < 0)
                 goto cleanup;

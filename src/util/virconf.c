@@ -131,8 +131,7 @@ virConfFreeList(virConfValuePtr list)
     virConfValuePtr next;
 
     while (list != NULL) {
-        next = list->next;
-        list->next = NULL;
+        next = g_steal_pointer(&list->next);
         virConfFreeValue(list);
         list = next;
     }

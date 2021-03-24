@@ -1702,8 +1702,7 @@ virCapabilitiesInitPages(virCapsPtr caps)
                         &pages_size, NULL, NULL, &npages) < 0)
         goto cleanup;
 
-    caps->host.pagesSize = pages_size;
-    pages_size = NULL;
+    caps->host.pagesSize = g_steal_pointer(&pages_size);
     caps->host.nPagesSize = npages;
     npages = 0;
 

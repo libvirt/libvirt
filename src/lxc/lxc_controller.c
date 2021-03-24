@@ -463,8 +463,7 @@ static int virLXCControllerSetupLoopDeviceFS(virDomainFSDefPtr fs)
      */
     fs->type = VIR_DOMAIN_FS_TYPE_BLOCK;
     g_free(fs->src->path);
-    fs->src->path = loname;
-    loname = NULL;
+    fs->src->path = g_steal_pointer(&loname);
 
     return lofd;
 }

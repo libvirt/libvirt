@@ -1866,8 +1866,7 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
         if (virPCIEDeviceInfoParseXML(ctxt, pciExpress, pci_express) < 0)
             goto out;
 
-        pci_dev->pci_express = pci_express;
-        pci_express = NULL;
+        pci_dev->pci_express = g_steal_pointer(&pci_express);
         pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCIE;
     }
 

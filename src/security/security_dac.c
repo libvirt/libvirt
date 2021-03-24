@@ -112,7 +112,7 @@ virSecurityDACChownListAppend(virSecurityDACChownListPtr list,
 
     tmp = g_strdup(path);
 
-    item->path = tmp;
+    item->path = g_steal_pointer(&tmp);
     item->src = src;
     item->uid = uid;
     item->gid = gid;
@@ -121,8 +121,6 @@ virSecurityDACChownListAppend(virSecurityDACChownListPtr list,
 
     if (VIR_APPEND_ELEMENT(list->items, list->nItems, item) < 0)
         goto cleanup;
-
-    tmp = NULL;
 
     ret = 0;
  cleanup:

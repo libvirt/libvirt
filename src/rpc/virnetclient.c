@@ -189,10 +189,9 @@ static void virNetClientCallRemove(virNetClientCallPtr *head,
     while (tmp) {
         if (tmp == call) {
             if (prev)
-                prev->next = tmp->next;
+                prev->next = g_steal_pointer(&tmp->next);
             else
-                *head = tmp->next;
-            tmp->next = NULL;
+                *head = g_steal_pointer(&tmp->next);
             return;
         }
         prev = tmp;
@@ -304,8 +303,7 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
     if (!(client = virObjectLockableNew(virNetClientClass)))
         goto error;
 
-    client->sock = sock;
-    sock = NULL;
+    client->sock = g_steal_pointer(&sock);
 
     client->eventCtx = g_main_context_new();
     client->eventLoop = g_main_loop_new(client->eventCtx, FALSE);
@@ -803,8 +801,7 @@ virNetClientCloseLocked(virNetClientPtr client)
     virObjectUnref(client->sasl);
     client->sasl = NULL;
 #endif
-    ka = client->keepalive;
-    client->keepalive = NULL;
+    ka = g_steal_pointer(&client->keepalive);
     client->wantClose = false;
 
     virFreeError(client->error);
@@ -1162,9 +1159,8 @@ virNetClientCallDispatchReply(virNetClientPtr client)
     thecall->msg->bufferOffset = client->msg.bufferOffset;
 
     thecall->msg->nfds = client->msg.nfds;
-    thecall->msg->fds = client->msg.fds;
+    thecall->msg->fds = g_steal_pointer(&client->msg.fds);
     client->msg.nfds = 0;
-    client->msg.fds = NULL;
 
     thecall->mode = VIR_NET_CLIENT_MODE_COMPLETE;
 

@@ -602,11 +602,10 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
     args->conn = virObjectRef(dconn);
     args->vm = virObjectRef(vm);
     args->flags = flags;
-    args->migcookie = mig;
+    args->migcookie = g_steal_pointer(&mig);
     /* Receive from pipeOut */
     args->recvfd = dataFD[0];
     args->nsocks = 0;
-    mig = NULL;
 
     VIR_FREE(priv->migrationDstReceiveThr);
     priv->migrationDstReceiveThr = g_new0(virThread, 1);
@@ -768,8 +767,7 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
     args->flags = flags;
     args->socks = socks;
     args->nsocks = nsocks;
-    args->migcookie = mig;
-    mig = NULL;
+    args->migcookie = g_steal_pointer(&mig);
 
     for (i = 0; i < nsocks; i++) {
         if (virNetSocketSetBlocking(socks[i], true) < 0)

@@ -1425,8 +1425,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                         if (partial) {
                             vshCmdOpt *arg = g_new0(vshCmdOpt, 1);
                             arg->def = opt;
-                            arg->data = tkdata;
-                            tkdata = NULL;
+                            arg->data = g_steal_pointer(&tkdata);
                             arg->next = NULL;
 
                             if (parser->pos - parser->originalLine == parser->point - 1)
@@ -1479,9 +1478,8 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                 vshCmdOpt *arg = g_new0(vshCmdOpt, 1);
 
                 arg->def = opt;
-                arg->data = tkdata;
+                arg->data = g_steal_pointer(&tkdata);
                 arg->next = NULL;
-                tkdata = NULL;
 
                 if (parser->pos - parser->originalLine == parser->point)
                     arg->completeThis = true;
@@ -1526,10 +1524,9 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                 break;
             }
 
-            c->opts = first;
+            c->opts = g_steal_pointer(&first);
             c->def = cmd;
             c->next = NULL;
-            first = NULL;
 
             if (!partial &&
                 vshCommandCheckOpts(ctl, c, opts_required, opts_seen) < 0) {

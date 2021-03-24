@@ -5829,8 +5829,7 @@ testInterfaceChangeRollback(virConnectPtr conn,
     }
 
     virObjectUnref(privconn->ifaces);
-    privconn->ifaces = privconn->backupIfaces;
-    privconn->backupIfaces = NULL;
+    privconn->ifaces = g_steal_pointer(&privconn->backupIfaces);
 
     privconn->transaction_running = false;
 

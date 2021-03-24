@@ -179,8 +179,7 @@ virDomainDriverMergeBlkioDevice(virBlkioDevicePtr *dest_array,
                 return -1;
             }
 
-            dest->path = src->path;
-            src->path = NULL;
+            dest->path = g_steal_pointer(&src->path);
         }
     }
 

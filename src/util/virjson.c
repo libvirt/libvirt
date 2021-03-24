@@ -944,8 +944,7 @@ virJSONValueObjectRemoveKey(virJSONValuePtr object,
     for (i = 0; i < object->data.object.npairs; i++) {
         if (STREQ(object->data.object.pairs[i].key, key)) {
             if (value) {
-                *value = object->data.object.pairs[i].value;
-                object->data.object.pairs[i].value = NULL;
+                *value = g_steal_pointer(&object->data.object.pairs[i].value);
             }
             VIR_FREE(object->data.object.pairs[i].key);
             virJSONValueFree(object->data.object.pairs[i].value);

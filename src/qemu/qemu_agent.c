@@ -305,9 +305,8 @@ qemuAgentIOProcessLine(qemuAgentPtr agent,
                     goto cleanup;
                 }
             }
-            msg->rxObject = obj;
+            msg->rxObject = g_steal_pointer(&obj);
             msg->finished = true;
-            obj = NULL;
         } else {
             /* we are out of sync */
             VIR_DEBUG("Ignoring delayed reply");

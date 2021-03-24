@@ -3061,8 +3061,7 @@ remoteDispatchDomainMigratePrepare(virNetServerPtr server G_GNUC_UNUSED,
     if (*uri_out == NULL) {
         ret->uri_out = NULL;
     } else {
-        ret->uri_out = uri_out;
-        uri_out = NULL;
+        ret->uri_out = g_steal_pointer(&uri_out);
     }
 
     rv = 0;
@@ -5871,9 +5870,8 @@ remoteDispatchConnectGetCPUModelNames(virNetServerPtr server G_GNUC_UNUSED,
     }
 
     if (len && models) {
-        ret->models.models_val = models;
+        ret->models.models_val = g_steal_pointer(&models);
         ret->models.models_len = len;
-        models = NULL;
     } else {
         ret->models.models_val = NULL;
         ret->models.models_len = 0;

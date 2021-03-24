@@ -211,8 +211,7 @@ void virLXCMonitorClose(virLXCMonitorPtr mon)
          */
         VIR_DEBUG("Clear EOF callback mon=%p", mon);
         vm = mon->vm;
-        client = mon->client;
-        mon->client = NULL;
+        client = g_steal_pointer(&mon->client);
         mon->cb.eofNotify = NULL;
 
         virObjectRef(vm);

@@ -286,22 +286,18 @@ int virNetClientStreamSetError(virNetClientStreamPtr st,
         st->err.code = err.code;
     }
     if (err.message) {
-        st->err.message = *err.message;
-        *err.message = NULL;
+        st->err.message = g_steal_pointer(&*err.message);
     }
     st->err.domain = err.domain;
     st->err.level = err.level;
     if (err.str1) {
-        st->err.str1 = *err.str1;
-        *err.str1 = NULL;
+        st->err.str1 = g_steal_pointer(&*err.str1);
     }
     if (err.str2) {
-        st->err.str2 = *err.str2;
-        *err.str2 = NULL;
+        st->err.str2 = g_steal_pointer(&*err.str2);
     }
     if (err.str3) {
-        st->err.str3 = *err.str3;
-        *err.str3 = NULL;
+        st->err.str3 = g_steal_pointer(&*err.str3);
     }
     st->err.int1 = err.int1;
     st->err.int2 = err.int2;
@@ -343,10 +339,9 @@ int virNetClientStreamQueuePacket(virNetClientStreamPtr st,
     memcpy(&tmp_msg->header, &msg->header, sizeof(msg->header));
 
     /* Steal message buffer */
-    tmp_msg->buffer = msg->buffer;
+    tmp_msg->buffer = g_steal_pointer(&msg->buffer);
     tmp_msg->bufferLength = msg->bufferLength;
     tmp_msg->bufferOffset = msg->bufferOffset;
-    msg->buffer = NULL;
     msg->bufferLength = msg->bufferOffset = 0;
 
     virObjectLock(st);

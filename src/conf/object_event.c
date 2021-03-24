@@ -805,9 +805,8 @@ virObjectEventStateFlush(virObjectEventStatePtr state)
     /* Copy the queue, so we're reentrant safe when dispatchFunc drops the
      * driver lock */
     tempQueue.count = state->queue->count;
-    tempQueue.events = state->queue->events;
+    tempQueue.events = g_steal_pointer(&state->queue->events);
     state->queue->count = 0;
-    state->queue->events = NULL;
     if (state->timer != -1)
         virEventUpdateTimeout(state->timer, -1);
 

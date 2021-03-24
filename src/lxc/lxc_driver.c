@@ -3041,7 +3041,7 @@ lxcDomainAttachDeviceConfig(virDomainDefPtr vmdef,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        disk = dev->data.disk;
+        disk = g_steal_pointer(&dev->data.disk);
         if (virDomainDiskIndexByName(vmdef, disk->dst, true) >= 0) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("target %s already exists."), disk->dst);
@@ -3049,20 +3049,18 @@ lxcDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         }
         virDomainDiskInsert(vmdef, disk);
         /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
-        dev->data.disk = NULL;
         ret = 0;
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
-        net = dev->data.net;
+        net = g_steal_pointer(&dev->data.net);
         if (virDomainNetInsert(vmdef, net) < 0)
             return -1;
-        dev->data.net = NULL;
         ret = 0;
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
-        hostdev = dev->data.hostdev;
+        hostdev = g_steal_pointer(&dev->data.hostdev);
         if (virDomainHostdevFind(vmdef, hostdev, NULL) >= 0) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("device is already in the domain configuration"));
@@ -3070,7 +3068,6 @@ lxcDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         }
         if (virDomainHostdevInsert(vmdef, hostdev) < 0)
             return -1;
-        dev->data.hostdev = NULL;
         ret = 0;
         break;
 
@@ -3095,7 +3092,7 @@ lxcDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_NET:
-        net = dev->data.net;
+        net = g_steal_pointer(&dev->data.net);
         if ((idx = virDomainNetFindIdx(vmdef, net)) < 0)
             return -1;
 
@@ -3109,7 +3106,6 @@ lxcDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
             return -1;
 
         virDomainNetDefFree(oldDev.data.net);
-        dev->data.net = NULL;
         ret = 0;
 
         break;

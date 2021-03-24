@@ -911,8 +911,7 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     if (!(priv->xmlopt = virVMXDomainXMLConfInit(priv->caps)))
         goto cleanup;
 
-    conn->privateData = priv;
-    priv = NULL;
+    conn->privateData = g_steal_pointer(&priv);
     result = VIR_DRV_OPEN_SUCCESS;
 
  cleanup:
@@ -3554,8 +3553,7 @@ esxDomainSetSchedulerParametersFlags(virDomainPtr domain,
                 goto cleanup;
             }
 
-            spec->cpuAllocation->shares = sharesInfo;
-            sharesInfo = NULL;
+            spec->cpuAllocation->shares = g_steal_pointer(&sharesInfo);
 
             if (params[i].value.i >= 0) {
                 spec->cpuAllocation->shares->level = esxVI_SharesLevel_Custom;
@@ -4930,8 +4928,7 @@ esxConnectListAllDomains(virConnectPtr conn,
     }
 
     if (doms) {
-        *domains = doms;
-        doms = NULL;
+        *domains = g_steal_pointer(&doms);
     }
     ret = count;
 

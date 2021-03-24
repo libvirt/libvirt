@@ -924,8 +924,7 @@ int virNetTLSContextReloadForServer(virNetTLSContextPtr ctxt,
     g_autofree char *cert = NULL;
     g_autofree char *key = NULL;
 
-    x509credBak = ctxt->x509cred;
-    ctxt->x509cred = NULL;
+    x509credBak = g_steal_pointer(&ctxt->x509cred);
 
     if (virNetTLSContextLocateCredentials(NULL, tryUserPkiPath, true,
                                           &cacert, &cacrl, &cert, &key))

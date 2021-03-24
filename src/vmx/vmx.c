@@ -2604,15 +2604,13 @@ virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
     if (virVMXGetConfigString(conf, hostPath_name, &hostPath, false) < 0)
         goto cleanup;
 
-    (*def)->src->path = hostPath;
-    hostPath = NULL;
+    (*def)->src->path = g_steal_pointer(&hostPath);
 
     /* vmx:guestName */
     if (virVMXGetConfigString(conf, guestName_name, &guestName, false) < 0)
         goto cleanup;
 
-    (*def)->dst = guestName;
-    guestName = NULL;
+    (*def)->dst = g_steal_pointer(&guestName);
 
     /* vmx:writeAccess */
     if (virVMXGetConfigBoolean(conf, writeAccess_name, &writeAccess, false,
@@ -2819,9 +2817,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     /* Setup virDomainNetDef */
     if (connectionType == NULL || STRCASEEQ(connectionType, "bridged")) {
         (*def)->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
-        (*def)->data.bridge.brname = networkName;
-
-        networkName = NULL;
+        (*def)->data.bridge.brname = g_steal_pointer(&networkName);
     } else if (STRCASEEQ(connectionType, "hostonly")) {
         /* FIXME */
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2833,11 +2829,8 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
 
     } else if (STRCASEEQ(connectionType, "custom")) {
         (*def)->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
-        (*def)->data.bridge.brname = networkName;
-        (*def)->ifname = vnet;
-
-        networkName = NULL;
-        vnet = NULL;
+        (*def)->data.bridge.brname = g_steal_pointer(&networkName);
+        (*def)->ifname = g_steal_pointer(&vnet);
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid value '%s' for VMX entry '%s'"), connectionType,
@@ -2952,9 +2945,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
     if (!fileType || STRCASEEQ(fileType, "device")) {
         (*def)->target.port = port;
         (*def)->source->type = VIR_DOMAIN_CHR_TYPE_DEV;
-        (*def)->source->data.file.path = fileName;
-
-        fileName = NULL;
+        (*def)->source->data.file.path = g_steal_pointer(&fileName);
     } else if (STRCASEEQ(fileType, "file")) {
         (*def)->target.port = port;
         (*def)->source->type = VIR_DOMAIN_CHR_TYPE_FILE;
@@ -2970,9 +2961,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
          */
         (*def)->target.port = port;
         (*def)->source->type = VIR_DOMAIN_CHR_TYPE_PIPE;
-        (*def)->source->data.file.path = fileName;
-
-        fileName = NULL;
+        (*def)->source->data.file.path = g_steal_pointer(&fileName);
     } else if (STRCASEEQ(fileType, "network")) {
         (*def)->target.port = port;
         (*def)->source->type = VIR_DOMAIN_CHR_TYPE_TCP;
@@ -3118,9 +3107,7 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
     if (STRCASEEQ(fileType, "device")) {
         (*def)->target.port = port;
         (*def)->source->type = VIR_DOMAIN_CHR_TYPE_DEV;
-        (*def)->source->data.file.path = fileName;
-
-        fileName = NULL;
+        (*def)->source->data.file.path = g_steal_pointer(&fileName);
     } else if (STRCASEEQ(fileType, "file")) {
         (*def)->target.port = port;
         (*def)->source->type = VIR_DOMAIN_CHR_TYPE_FILE;

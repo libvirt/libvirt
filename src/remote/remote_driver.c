@@ -3472,8 +3472,7 @@ remoteConnectFindStoragePoolSources(virConnectPtr conn,
              (xdrproc_t) xdr_remote_connect_find_storage_pool_sources_ret, (char *) &ret) == -1)
         goto done;
 
-    rv = ret.xml;
-    ret.xml = NULL; /* To stop xdr_free free'ing it */
+    rv = g_steal_pointer(&ret.xml); /* To stop xdr_free free'ing it */
 
     xdr_free((xdrproc_t) xdr_remote_connect_find_storage_pool_sources_ret, (char *) &ret);
 
@@ -6203,9 +6202,8 @@ remoteDomainMigrateFinish3(virConnectPtr dconn,
                            _("caller ignores cookieout or cookieoutlen"));
             goto error;
         }
-        *cookieout = ret.cookie_out.cookie_out_val; /* Caller frees. */
+        *cookieout = g_steal_pointer(&ret.cookie_out.cookie_out_val); /* Caller frees. */
         *cookieoutlen = ret.cookie_out.cookie_out_len;
-        ret.cookie_out.cookie_out_val = NULL;
         ret.cookie_out.cookie_out_len = 0;
     }
 
@@ -6296,8 +6294,7 @@ remoteConnectGetCPUModelNames(virConnectPtr conn,
         retmodels = g_new0(char *, ret.models.models_len + 1);
 
         for (i = 0; i < ret.models.models_len; i++) {
-            retmodels[i] = ret.models.models_val[i];
-            ret.models.models_val[i] = NULL;
+            retmodels[i] = g_steal_pointer(&ret.models.models_val[i]);
         }
         *models = g_steal_pointer(&retmodels);
     }
@@ -7159,9 +7156,8 @@ remoteDomainMigrateFinish3Params(virConnectPtr dconn,
                            _("caller ignores cookieout or cookieoutlen"));
             goto error;
         }
-        *cookieout = ret.cookie_out.cookie_out_val; /* Caller frees. */
+        *cookieout = g_steal_pointer(&ret.cookie_out.cookie_out_val); /* Caller frees. */
         *cookieoutlen = ret.cookie_out.cookie_out_len;
-        ret.cookie_out.cookie_out_val = NULL;
         ret.cookie_out.cookie_out_len = 0;
     }
 
@@ -7549,8 +7545,7 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
                                       &elem->nparams))
             goto cleanup;
 
-        tmpret[i] = elem;
-        elem = NULL;
+        tmpret[i] = g_steal_pointer(&elem);
     }
 
     *retStats = g_steal_pointer(&tmpret);
@@ -7880,8 +7875,7 @@ remoteDomainRename(virDomainPtr dom, const char *new_name, unsigned int flags)
 
     if (rv == 0) {
         VIR_FREE(dom->name);
-        dom->name = tmp;
-        tmp = NULL;
+        dom->name = g_steal_pointer(&tmp);
     }
 
  done:

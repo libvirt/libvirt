@@ -110,8 +110,7 @@ virNetMessagePtr virNetMessageQueueServe(virNetMessagePtr *queue)
     virNetMessagePtr tmp = *queue;
 
     if (tmp) {
-        *queue = tmp->next;
-        tmp->next = NULL;
+        *queue = g_steal_pointer(&tmp->next);
     }
 
     return tmp;

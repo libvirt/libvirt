@@ -3511,8 +3511,7 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
         }
     }
 
-    *fileInfo = searchResults->file;
-    searchResults->file = NULL;
+    *fileInfo = g_steal_pointer(&searchResults->file);
 
     result = 0;
 

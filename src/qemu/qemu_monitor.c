@@ -1069,8 +1069,7 @@ qemuMonitorInitBalloonObjectPath(qemuMonitorPtr mon,
     for (i = 0; i < nprops; i++) {
         if (STREQ(bprops[i]->name, "guest-stats-polling-interval")) {
             VIR_DEBUG("Found Balloon Object Path %s", path);
-            mon->balloonpath = path;
-            path = NULL;
+            mon->balloonpath = g_steal_pointer(&path);
             goto cleanup;
         }
     }

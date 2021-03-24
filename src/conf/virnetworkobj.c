@@ -696,8 +696,7 @@ virNetworkObjUnsetDefTransient(virNetworkObjPtr obj)
 {
     if (obj->newDef) {
         virNetworkDefFree(obj->def);
-        obj->def = obj->newDef;
-        obj->newDef = NULL;
+        obj->def = g_steal_pointer(&obj->newDef);
     }
 }
 
@@ -1309,8 +1308,7 @@ virNetworkObjUpdate(virNetworkObjPtr obj,
     if (livedef) {
         /* successfully modified copy, now replace original */
         virNetworkDefFree(obj->def);
-        obj->def = livedef;
-        livedef = NULL;
+        obj->def = g_steal_pointer(&livedef);
     }
 
     ret = 0;
@@ -1429,8 +1427,7 @@ virNetworkObjListExport(virConnectPtr conn,
     if (data.nets) {
         /* trim the array to the final size */
         VIR_REALLOC_N(data.nets, data.nnets + 1);
-        *nets = data.nets;
-        data.nets = NULL;
+        *nets = g_steal_pointer(&data.nets);
     }
 
     ret = data.nnets;
@@ -1817,8 +1814,7 @@ virNetworkObjPortListExport(virNetworkPtr net,
     if (data.ports) {
         /* trim the array to the final size */
         VIR_REALLOC_N(data.ports, data.nports + 1);
-        *ports = data.ports;
-        data.ports = NULL;
+        *ports = g_steal_pointer(&data.ports);
     }
 
     ret = data.nports;

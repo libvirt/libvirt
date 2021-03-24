@@ -3519,14 +3519,12 @@ vboxDumpDisplay(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 
         if (STREQ_NULLABLE(valueTypeUtf8, "sdl")) {
             graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
-            graphics->data.sdl.display = valueDisplayUtf8;
-            valueDisplayUtf8 = NULL;
+            graphics->data.sdl.display = g_steal_pointer(&valueDisplayUtf8);
         }
 
         if (STREQ_NULLABLE(valueTypeUtf8, "gui")) {
             graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
-            graphics->data.desktop.display = valueDisplayUtf8;
-            valueDisplayUtf8 = NULL;
+            graphics->data.desktop.display = g_steal_pointer(&valueDisplayUtf8);
         }
         VBOX_UTF8_FREE(valueDisplayUtf8);
     } else if (STRNEQ_NULLABLE(valueTypeUtf8, "vrdp")) {

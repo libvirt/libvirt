@@ -3857,10 +3857,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
                 continue;
             }
 
-            vol.source = source;
-            vol.target = target;
-            source = NULL;
-            target = NULL;
+            vol.source = g_steal_pointer(&source);
+            vol.target = g_steal_pointer(&target);
             if (VIR_APPEND_ELEMENT(vols, nvols, vol) < 0)
                 goto cleanup;
         }

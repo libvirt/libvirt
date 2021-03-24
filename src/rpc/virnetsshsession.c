@@ -240,8 +240,7 @@ virNetSSHKbIntCb(const char *name G_GNUC_UNUSED,
 
     /* copy retrieved data back */
     for (i = 0; i < num_prompts; i++) {
-        responses[i].text = askcred[i].result;
-        askcred[i].result = NULL; /* steal the pointer */
+        responses[i].text = g_steal_pointer(&askcred[i].result); /* steal the pointer */
         responses[i].length = askcred[i].resultlen;
     }
 

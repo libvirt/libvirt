@@ -330,8 +330,7 @@ virInterfaceObjListExport(virConnectPtr conn,
     if (data.ifaces) {
         /* trim the array to the final size */
         VIR_REALLOC_N(data.ifaces, data.nifaces + 1);
-        *ifaces = data.ifaces;
-        data.ifaces = NULL;
+        *ifaces = g_steal_pointer(&data.ifaces);
     }
 
     ret = data.nifaces;

@@ -3961,9 +3961,8 @@ virDomainObjRemoveTransientDef(virDomainObjPtr domain)
         return;
 
     virDomainDefFree(domain->def);
-    domain->def = domain->newDef;
+    domain->def = g_steal_pointer(&domain->newDef);
     domain->def->id = -1;
-    domain->newDef = NULL;
 }
 
 

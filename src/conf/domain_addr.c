@@ -1995,8 +1995,7 @@ virDomainUSBAddressSetAddController(virDomainUSBAddressSetPtr addrs,
     if (!(hub = virDomainUSBAddressHubNew(nports)))
         goto cleanup;
 
-    addrs->buses[cont->idx] = hub;
-    hub = NULL;
+    addrs->buses[cont->idx] = g_steal_pointer(&hub);
 
     ret = 0;
  cleanup:
@@ -2112,8 +2111,7 @@ virDomainUSBAddressSetAddHub(virDomainUSBAddressSetPtr addrs,
         goto cleanup;
     }
     ignore_value(virBitmapSetBit(targetHub->portmap, targetPort));
-    targetHub->ports[targetPort] = newHub;
-    newHub = NULL;
+    targetHub->ports[targetPort] = g_steal_pointer(&newHub);
 
     ret = 0;
  cleanup:

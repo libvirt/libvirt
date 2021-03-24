@@ -2920,8 +2920,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
     if (obj && obj->privateData) {
         priv = obj->privateData;
         /* if this is the live domain object, we persist the PCI addresses */
-        priv->pciaddrs = addrs;
-        addrs = NULL;
+        priv->pciaddrs = g_steal_pointer(&addrs);
     }
 
     ret = 0;
@@ -3231,8 +3230,7 @@ qemuDomainAssignUSBAddresses(virDomainDefPtr def,
 
     if (obj && obj->privateData) {
         priv = obj->privateData;
-        priv->usbaddrs = addrs;
-        addrs = NULL;
+        priv->usbaddrs = g_steal_pointer(&addrs);
     }
     ret = 0;
 

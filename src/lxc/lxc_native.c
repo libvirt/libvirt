@@ -1007,8 +1007,7 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValuePtr value, void *data)
     if (!device) {
         VIR_EXPAND_N(def->blkio.devices, def->blkio.ndevices, 1);
         device = &def->blkio.devices[def->blkio.ndevices - 1];
-        device->path = path;
-        path = NULL;
+        device->path = g_steal_pointer(&path);
     }
 
     /* Set the value */

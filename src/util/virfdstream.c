@@ -173,8 +173,7 @@ virFDStreamMsgQueuePop(virFDStreamDataPtr fdst,
     char c;
 
     if (tmp) {
-        fdst->msg = tmp->next;
-        tmp->next = NULL;
+        fdst->msg = g_steal_pointer(&tmp->next);
     }
 
     virCondSignal(&fdst->threadCond);

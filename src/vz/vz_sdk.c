@@ -768,14 +768,12 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
         if (!(buf = prlsdkGetStringParamVar(PrlVmDev_GetImagePath, prldisk)))
             goto cleanup;
 
-        fs->src->path = buf;
-        buf = NULL;
+        fs->src->path = g_steal_pointer(&buf);
     }
     if (!(buf = prlsdkGetStringParamVar(PrlVmDevHd_GetMountPoint, prldisk)))
         goto cleanup;
 
-    fs->dst = buf;
-    buf = NULL;
+    fs->dst = g_steal_pointer(&buf);
 
     ret = 0;
 
@@ -1176,19 +1174,16 @@ prlsdkGetSerialInfo(PRL_HANDLE serialPort, virDomainChrDefPtr chr)
     switch (emulatedType) {
     case PDT_USE_OUTPUT_FILE:
         chr->source->type = VIR_DOMAIN_CHR_TYPE_FILE;
-        chr->source->data.file.path = friendlyName;
-        friendlyName = NULL;
+        chr->source->data.file.path = g_steal_pointer(&friendlyName);
         break;
     case PDT_USE_SERIAL_PORT_SOCKET_MODE:
         chr->source->type = VIR_DOMAIN_CHR_TYPE_UNIX;
-        chr->source->data.nix.path = friendlyName;
+        chr->source->data.nix.path = g_steal_pointer(&friendlyName);
         chr->source->data.nix.listen = socket_mode == PSP_SERIAL_SOCKET_SERVER;
-        friendlyName = NULL;
         break;
     case PDT_USE_REAL_DEVICE:
         chr->source->type = VIR_DOMAIN_CHR_TYPE_DEV;
-        chr->source->data.file.path = friendlyName;
-        friendlyName = NULL;
+        chr->source->data.file.path = g_steal_pointer(&friendlyName);
         break;
     case PDT_USE_TCP:
         chr->source->type = VIR_DOMAIN_CHR_TYPE_TCP;
@@ -1319,8 +1314,7 @@ prlsdkAddVNCInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
         goto error;
 
     if (*passwd != '\0') {
-        gr->data.vnc.auth.passwd = passwd;
-        passwd = NULL;
+        gr->data.vnc.auth.passwd = g_steal_pointer(&passwd);
     }
 
     pret = PrlVmCfg_GetVNCPort(sdkdom, &port);

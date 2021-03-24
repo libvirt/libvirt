@@ -241,9 +241,8 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
         PROBE(QEMU_MONITOR_RECV_REPLY,
               "mon=%p reply=%s", mon, line);
         if (msg) {
-            msg->rxObject = obj;
+            msg->rxObject = g_steal_pointer(&obj);
             msg->finished = 1;
-            obj = NULL;
             ret = 0;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -7670,8 +7669,7 @@ qemuMonitorJSONGetDeviceAliases(qemuMonitorPtr mon,
     alias = *aliases;
     for (i = 0; i < n; i++) {
         if (STRPREFIX(paths[i]->type, "child<")) {
-            *alias = paths[i]->name;
-            paths[i]->name = NULL;
+            *alias = g_steal_pointer(&paths[i]->name);
             alias++;
         }
     }

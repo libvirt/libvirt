@@ -879,9 +879,7 @@ virVBoxSnapshotConfRemoveSnapshot(virVBoxSnapshotConfMachinePtr machine,
 
         return 0;
     }
-    parentSnapshot = snapshot->parent;
-
-    snapshot->parent = NULL;
+    parentSnapshot = g_steal_pointer(&snapshot->parent);
     while (i < parentSnapshot->nchildren && parentSnapshot->children[i] != snapshot)
         ++i;
     if (VIR_DELETE_ELEMENT(parentSnapshot->children, i, parentSnapshot->nchildren) < 0)
@@ -936,11 +934,10 @@ virVBoxSnapshotConfRemoveHardDisk(virVBoxSnapshotConfMediaRegistryPtr mediaRegis
         return 0;
     }
 
-    parentHardDisk = hardDisk->parent;
+    parentHardDisk = g_steal_pointer(&hardDisk->parent);
     i = 0;
     while (i < parentHardDisk->nchildren && parentHardDisk->children[i] != hardDisk)
         ++i;
-    hardDisk->parent = NULL;
     if (VIR_DELETE_ELEMENT(parentHardDisk->children, i, parentHardDisk->nchildren) < 0)
         return -1;
 
