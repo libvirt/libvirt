@@ -6,6 +6,7 @@ FLAKE8 = @flake8_path@
 RUNUTF8 = @runutf8@
 PYTHON = @PYTHON3@
 GREP = @GREP@
+SED = @SED@
 
 # include syntax-check.mk file
 include $(top_srcdir)/build-aux/syntax-check.mk

@@ -12,8 +12,10 @@ syntax_check_conf.set('PYTHON3', python3_prog.path())
 
 if host_machine.system() == 'freebsd'
   make_prog = find_program('gmake')
+  sed_prog = find_program('gsed')
 else
   make_prog = find_program('make')
+  sed_prog = find_program('sed')
 endif
 
 if host_machine.system() == 'freebsd'
@@ -34,6 +36,7 @@ else
 endif
 
 syntax_check_conf.set('GREP', grep_prog.path())
+syntax_check_conf.set('SED', sed_prog.path())
 
 configure_file(
   input: 'Makefile.in',
