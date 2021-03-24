@@ -18,7 +18,10 @@ if host_machine.system() == 'freebsd'
 
   grep_cmd = run_command(grep_prog, '--version')
   if grep_cmd.stdout().startswith('grep (BSD grep')
-    grep_prog = find_program('/usr/local/bin/grep')
+    grep_prog = find_program('/usr/local/bin/grep', required: false)
+    if not grep_prog.found()
+      error('GNU grep not found')
+    endif
     grep_cmd = run_command(grep_prog, '--version')
     if grep_cmd.stdout().startswith('grep (BSD grep')
       error('GNU grep not found')
