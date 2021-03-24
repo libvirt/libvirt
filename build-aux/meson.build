@@ -10,7 +10,7 @@ syntax_check_conf.set('flake8_path', flake8_path)
 syntax_check_conf.set('runutf8', ' '.join(runutf8))
 syntax_check_conf.set('PYTHON3', python3_prog.path())
 
-if host_machine.system() == 'freebsd'
+if host_machine.system() == 'freebsd' or host_machine.system() == 'darwin'
   make_prog = find_program('gmake')
   sed_prog = find_program('gsed')
 else
@@ -31,6 +31,8 @@ if host_machine.system() == 'freebsd'
       error('GNU grep not found')
     endif
   endif
+elif host_machine.system() == 'darwin'
+  grep_prog = find_program('ggrep')
 else
   grep_prog = find_program('grep')
 endif
