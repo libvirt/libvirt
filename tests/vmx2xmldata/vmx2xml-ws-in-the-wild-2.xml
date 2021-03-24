@@ -26,7 +26,7 @@
     <controller type='ide' index='0'/>
     <interface type='bridge'>
       <mac address='00:50:56:2f:d3:46' type='static'/>
-      <source bridge=''/>
+      <source bridge='VMnet0'/>
       <model type='e1000'/>
     </interface>
     <video>

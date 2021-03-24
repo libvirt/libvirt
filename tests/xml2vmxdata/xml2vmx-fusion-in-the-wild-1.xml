@@ -27,11 +27,11 @@
     <controller type='ide' index='0'/>
     <interface type='bridge'>
       <mac address='00:0c:29:3b:64:ea'/>
-      <source bridge=''/>
+      <source bridge='VMnet0'/>
     </interface>
     <interface type='bridge'>
       <mac address='00:0c:29:3b:64:f4'/>
-      <source bridge=''/>
+      <source bridge='VMnet0'/>
     </interface>
     <video>
       <model type='vmvga' vram='4096'/>

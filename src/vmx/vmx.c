@@ -2801,11 +2801,8 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         STRCASEEQ(connectionType, "bridged") ||
         STRCASEEQ(connectionType, "custom")) {
         if (virVMXGetConfigString(conf, networkName_name, &networkName,
-                                  true) < 0)
+                                  false) < 0)
             goto cleanup;
-
-        if (!networkName)
-            networkName = g_strdup("");
     }
 
     /* vmx:vnet -> def:data.ifname */
@@ -3911,9 +3908,8 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
     /* def:type, def:ifname -> vmx:connectionType */
     switch (def->type) {
       case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        if (STRNEQ(def->data.bridge.brname, ""))
-            virBufferAsprintf(buffer, "ethernet%d.networkName = \"%s\"\n",
-                              controller, def->data.bridge.brname);
+        virBufferAsprintf(buffer, "ethernet%d.networkName = \"%s\"\n",
+                          controller, def->data.bridge.brname);
 
         if (def->ifname != NULL) {
             virBufferAsprintf(buffer, "ethernet%d.connectionType = \"custom\"\n",

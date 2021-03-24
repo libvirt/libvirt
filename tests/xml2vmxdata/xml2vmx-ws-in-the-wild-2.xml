@@ -20,7 +20,7 @@
     <controller type='scsi' index='0' model='lsilogic'/>
     <interface type='bridge'>
       <mac address='00:90:b9:dc:ea:81'/>
-      <source bridge=''/>
+      <source bridge='VMnet0'/>
       <model type='e1000'/>
     </interface>
     <video>
