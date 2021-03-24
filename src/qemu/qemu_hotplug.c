@@ -6282,12 +6282,11 @@ qemuDomainHotplugAddVcpu(virQEMUDriver *driver,
                          virDomainObj *vm,
                          unsigned int vcpu)
 {
-    virJSONValue *vcpuprops = NULL;
+    g_autoptr(virJSONValue) vcpuprops = NULL;
     virDomainVcpuDef *vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu);
     qemuDomainVcpuPrivate *vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpuinfo);
     unsigned int nvcpus = vcpupriv->vcpus;
     bool newhotplug = qemuDomainSupportsNewVcpuHotplug(vm);
-    int ret = -1;
     int rc;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
     size_t i;
@@ -6296,7 +6295,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriver *driver,
         vcpupriv->alias = g_strdup_printf("vcpu%u", vcpu);
 
         if (!(vcpuprops = qemuBuildHotpluggableCPUProps(vcpuinfo)))
-            goto cleanup;
+            return -1;
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -6309,19 +6308,19 @@ qemuDomainHotplugAddVcpu(virQEMUDriver *driver,
     }
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto cleanup;
+        return -1;
 
     virDomainAuditVcpu(vm, oldvcpus, oldvcpus + nvcpus, "update", rc == 0);
 
     if (rc < 0)
-        goto cleanup;
+        return -1;
 
     /* start outputting of the new XML element to allow keeping unpluggability */
     if (newhotplug)
         vm->def->individualvcpus = true;
 
     if (qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE, false) < 0)
-        goto cleanup;
+        return -1;
 
     /* validation requires us to set the expected state prior to calling it */
     for (i = vcpu; i < vcpu + nvcpus; i++) {
@@ -6332,22 +6331,18 @@ qemuDomainHotplugAddVcpu(virQEMUDriver *driver,
 
         if (vcpupriv->tid > 0 &&
             qemuProcessSetupVcpu(vm, i) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (qemuDomainValidateVcpuInfo(vm) < 0)
-        goto cleanup;
+        return -1;
 
     qemuDomainVcpuPersistOrder(vm->def);
 
     if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(vcpuprops);
-    return ret;
+    return 0;
 }
 
 
