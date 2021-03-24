@@ -6301,8 +6301,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriver *driver,
     qemuDomainObjEnterMonitor(driver, vm);
 
     if (newhotplug) {
-        rc = qemuMonitorAddDeviceArgs(qemuDomainGetMonitor(vm), vcpuprops);
-        vcpuprops = NULL;
+        rc = qemuMonitorAddDeviceProps(qemuDomainGetMonitor(vm), &vcpuprops);
     } else {
         rc = qemuMonitorSetCPU(qemuDomainGetMonitor(vm), vcpu, true);
     }

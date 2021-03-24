@@ -6085,8 +6085,7 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriver *driver,
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
             goto cleanup;
 
-        rc = qemuMonitorAddDeviceArgs(qemuDomainGetMonitor(vm), vcpuprops);
-        vcpuprops = NULL;
+        rc = qemuMonitorAddDeviceProps(qemuDomainGetMonitor(vm), &vcpuprops);
 
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;

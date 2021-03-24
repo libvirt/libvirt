@@ -2893,20 +2893,21 @@ qemuMonitorAddDevice(qemuMonitor *mon,
 
 
 /**
- * qemuMonitorAddDeviceArgs:
+ * qemuMonitorAddDeviceProps:
  * @mon: monitor object
- * @args: arguments for device add, consumed on success or failure
+ * @props: JSON object describing the device to add, the object is consumed
+ *         and cleared.
  *
- * Adds a device described by @args. Requires JSON monitor.
+ * Adds a device described by @props.
  * Returns 0 on success -1 on error.
  */
 int
-qemuMonitorAddDeviceArgs(qemuMonitor *mon,
-                         virJSONValue *args)
+qemuMonitorAddDeviceProps(qemuMonitor *mon,
+                          virJSONValue **props)
 {
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONAddDeviceArgs(mon, args);
+    return qemuMonitorJSONAddDeviceProps(mon, props);
 }
 
 

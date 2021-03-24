@@ -4554,8 +4554,8 @@ int qemuMonitorJSONDelDevice(qemuMonitor *mon,
 
 
 int
-qemuMonitorJSONAddDeviceArgs(qemuMonitor *mon,
-                             virJSONValue *args)
+qemuMonitorJSONAddDeviceProps(qemuMonitor *mon,
+                              virJSONValue **props)
 {
     int ret = -1;
     virJSONValue *cmd = NULL;
@@ -4564,7 +4564,7 @@ qemuMonitorJSONAddDeviceArgs(qemuMonitor *mon,
     if (!(cmd = qemuMonitorJSONMakeCommand("device_add", NULL)))
         goto cleanup;
 
-    if (virJSONValueObjectAppend(cmd, "arguments", &args) < 0)
+    if (virJSONValueObjectAppend(cmd, "arguments", props) < 0)
         goto cleanup;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
@@ -4575,7 +4575,6 @@ qemuMonitorJSONAddDeviceArgs(qemuMonitor *mon,
 
     ret = 0;
  cleanup:
-    virJSONValueFree(args);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -4586,12 +4585,12 @@ int
 qemuMonitorJSONAddDevice(qemuMonitor *mon,
                          const char *devicestr)
 {
-    virJSONValue *args;
+    g_autoptr(virJSONValue) props = NULL;
 
-    if (!(args = qemuMonitorJSONKeywordStringToJSON(devicestr, "driver")))
+    if (!(props = qemuMonitorJSONKeywordStringToJSON(devicestr, "driver")))
         return -1;
 
-    return qemuMonitorJSONAddDeviceArgs(mon, args);
+    return qemuMonitorJSONAddDeviceProps(mon, &props);
 }
 
 
