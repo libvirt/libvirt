@@ -4929,9 +4929,10 @@ esxConnectListAllDomains(virConnectPtr conn,
         doms[count++] = dom;
     }
 
-    if (doms)
+    if (doms) {
         *domains = doms;
-    doms = NULL;
+        doms = NULL;
+    }
     ret = count;
 
  cleanup:
