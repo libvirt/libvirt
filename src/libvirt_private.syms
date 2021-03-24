@@ -3119,7 +3119,6 @@ virQEMUBuildCommandLineJSON;
 virQEMUBuildCommandLineJSONArrayBitmap;
 virQEMUBuildCommandLineJSONArrayNumbered;
 virQEMUBuildCommandLineJSONArrayObjectsStr;
-virQEMUBuildDriveCommandlineFromJSON;
 
 
 # util/virrandom.h

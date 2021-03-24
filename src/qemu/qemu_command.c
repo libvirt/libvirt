@@ -1252,10 +1252,9 @@ qemuBuildDriveSourceStr(virDomainDiskDef *disk,
         if (qemuBuildDriveSourcePR(buf, disk) < 0)
             return -1;
     } else {
-        if (!(source = virQEMUBuildDriveCommandlineFromJSON(srcprops)))
+        if (virQEMUBuildCommandLineJSON(srcprops, buf, NULL,
+                                        virQEMUBuildCommandLineJSONArrayNumbered) < 0)
             return -1;
-
-        virBufferAdd(buf, source, -1);
     }
     virBufferAddLit(buf, ",");
 
@@ -4533,16 +4532,18 @@ static char *
 qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDef *dev)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    g_autofree char *netsource = NULL;
     g_autoptr(virJSONValue) srcprops = NULL;
     virDomainHostdevSubsysSCSI *scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIiSCSI *iscsisrc = &scsisrc->u.iscsi;
 
     if (!(srcprops = qemuDiskSourceGetProps(iscsisrc->src)))
         return NULL;
-    if (!(netsource = virQEMUBuildDriveCommandlineFromJSON(srcprops)))
+
+    if (virQEMUBuildCommandLineJSON(srcprops, &buf, NULL,
+                                    virQEMUBuildCommandLineJSONArrayNumbered) < 0)
         return NULL;
-    virBufferAsprintf(&buf, "%s,if=none,format=raw", netsource);
+
+    virBufferAddLit(&buf, ",if=none,format=raw");
 
     return virBufferContentAndReset(&buf);
 }
