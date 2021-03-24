@@ -3529,7 +3529,7 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 
     switch (dev->type) {
         case VIR_DOMAIN_DEVICE_DISK:
-            disk = g_steal_pointer(&dev->data.disk);
+            disk = dev->data.disk;
             if (virDomainDiskIndexByName(vmdef, disk->dst, true) >= 0) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("target %s already exists."), disk->dst);
@@ -3537,10 +3537,11 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
             }
             virDomainDiskInsert(vmdef, disk);
             /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
+            dev->data.disk = NULL;
             break;
 
         case VIR_DOMAIN_DEVICE_CONTROLLER:
-            controller = g_steal_pointer(&dev->data.controller);
+            controller = dev->data.controller;
             if (controller->idx != -1 &&
                 virDomainControllerFind(vmdef, controller->type,
                                         controller->idx) >= 0) {
@@ -3550,10 +3551,11 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
             }
 
             virDomainControllerInsert(vmdef, controller);
+            dev->data.controller = NULL;
             break;
 
         case VIR_DOMAIN_DEVICE_NET:
-            net = g_steal_pointer(&dev->data.net);
+            net = dev->data.net;
             if (virDomainHasNet(vmdef, net)) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("network device with mac %s already exists"),
@@ -3562,6 +3564,7 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
             }
             if (virDomainNetInsert(vmdef, net))
                 return -1;
+            dev->data.net = NULL;
             break;
 
         case VIR_DOMAIN_DEVICE_HOSTDEV:
