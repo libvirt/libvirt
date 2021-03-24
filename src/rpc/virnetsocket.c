@@ -2156,9 +2156,10 @@ static void virNetSocketEventFree(void *opaque)
     void *eopaque;
 
     virObjectLock(sock);
-    ff = g_steal_pointer(&sock->ff);
+    ff = sock->ff;
     eopaque = g_steal_pointer(&sock->opaque);
     sock->func = NULL;
+    sock->ff = NULL;
     virObjectUnlock(sock);
 
     if (ff)
