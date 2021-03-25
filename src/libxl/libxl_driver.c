@@ -1308,8 +1308,8 @@ libxlDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     }
 
     if (flags & VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN) {
-        ret = libxl_send_trigger(cfg->ctx, vm->def->id,
-                                 LIBXL_TRIGGER_POWER, 0);
+        ret = libxlSendTriggerWrapper(cfg->ctx, vm->def->id,
+                                      LIBXL_TRIGGER_POWER, 0);
         if (ret == 0)
             goto cleanup;
 
