@@ -1592,8 +1592,13 @@ if not get_option('driver_libxl').disabled() and conf.has('WITH_LIBVIRTD')
       xtl_link_dep = cc.find_library('xenctrl')
     endif
 
+    if libxl_dep.version().version_compare('>=4.13.0')
+      LIBXL_API_VERSION='0x041300'
+    else
+      LIBXL_API_VERSION='0x040500'
+    endif
     libxl_dep = declare_dependency(
-      compile_args: '-DLIBXL_API_VERSION=0x040500',
+      compile_args: '-DLIBXL_API_VERSION=' + LIBXL_API_VERSION,
       dependencies: [
         libxl_dep,
         xtl_link_dep,
