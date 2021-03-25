@@ -32,7 +32,6 @@ docs_html_in_files = [
   'remote',
   'storage',
   'uri',
-  'windows',
 ]
 
 docs_rst_files = [
@@ -109,6 +108,7 @@ docs_rst_files = [
   'testapi',
   'testsuites',
   'testtck',
+  'windows',
 ]
 
 # list of web targets to build for docs/web rule
