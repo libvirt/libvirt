@@ -157,3 +157,17 @@ libxlGetFreeMemoryWrapper(libxl_ctx *ctx, uint64_t *memkb)
 
     return ret;
 }
+
+static inline int
+libxlSetVcpuonlineWrapper(libxl_ctx *ctx, uint32_t domid, libxl_bitmap *cpumap)
+{
+    int ret;
+
+#if LIBXL_API_VERSION < 0x041300
+    ret = libxl_set_vcpuonline(ctx, domid, cpumap);
+#else
+    ret = libxl_set_vcpuonline(ctx, domid, cpumap, NULL);
+#endif
+
+    return ret;
+}
