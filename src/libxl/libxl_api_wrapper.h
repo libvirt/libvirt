@@ -138,3 +138,22 @@ libxlDomainNeedMemoryWrapper(libxl_ctx *ctx,
 
     return ret;
 }
+
+static inline int
+libxlGetFreeMemoryWrapper(libxl_ctx *ctx, uint64_t *memkb)
+{
+    int ret;
+
+#if LIBXL_API_VERSION < 0x040800
+    {
+        uint32_t val32 = 0;
+
+        ret = libxl_get_free_memory(ctx, &val32);
+        *memkb = val32;
+    }
+#else
+    ret = libxl_get_free_memory(ctx, memkb);
+#endif
+
+    return ret;
+}

@@ -36,6 +36,7 @@
 #include "viruuid.h"
 #include "vircommand.h"
 #include "virsocketaddr.h"
+#include "libxl_api_wrapper.h"
 #include "libxl_domain.h"
 #include "libxl_conf.h"
 #include "libxl_utils.h"
@@ -1778,7 +1779,7 @@ libxlDriverConfigNew(void)
 int
 libxlDriverConfigInit(libxlDriverConfigPtr cfg)
 {
-    unsigned int free_mem;
+    uint64_t free_mem;
 
     if (g_mkdir_with_parents(cfg->logDir, 0777) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1810,7 +1811,7 @@ libxlDriverConfigInit(libxlDriverConfigPtr cfg)
 
     /* This will fill xenstore info about free and dom0 memory if missing,
      * should be called before starting first domain */
-    if (libxl_get_free_memory(cfg->ctx, &free_mem)) {
+    if (libxlGetFreeMemoryWrapper(cfg->ctx, &free_mem)) {
         VIR_ERROR(_("Unable to configure libxl's memory management parameters"));
         return -1;
     }

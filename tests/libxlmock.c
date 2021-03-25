@@ -67,7 +67,12 @@ VIR_MOCK_IMPL_RET_ARGS(libxl_get_version_info,
 VIR_MOCK_STUB_RET_ARGS(libxl_get_free_memory,
                        int, 0,
                        libxl_ctx *, ctx,
-                       uint32_t *, memkb);
+# if LIBXL_API_VERSION < 0x040800
+                       uint32_t *,
+# else
+                       uint64_t *,
+# endif
+                       memkb);
 
 VIR_MOCK_STUB_RET_ARGS(xc_interface_close,
                        int, 0,
