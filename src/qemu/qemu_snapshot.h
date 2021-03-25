@@ -79,4 +79,5 @@ int
 qemuSnapshotDiskCreate(qemuSnapshotDiskContext *snapctxt);
 
 virDomainSnapshotDiskDef *
-qemuSnapshotGetTransientDiskDef(virDomainDiskDef *domdisk);
+qemuSnapshotGetTransientDiskDef(virDomainDiskDef *domdisk,
+                                const char *suffix);

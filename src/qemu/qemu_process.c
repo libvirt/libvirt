@@ -6960,7 +6960,7 @@ qemuProcessSetupDisksTransientSnapshot(virDomainObj *vm,
         /* validation code makes sure that we do this only for local disks
          * with a file source */
 
-        if (!(snapdisk = qemuSnapshotGetTransientDiskDef(domdisk)))
+        if (!(snapdisk = qemuSnapshotGetTransientDiskDef(domdisk, vm->def->name)))
             return -1;
 
         if (qemuSnapshotDiskPrepareOne(snapctxt, domdisk, snapdisk,
