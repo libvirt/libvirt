@@ -34,6 +34,7 @@
 #include "virthread.h"
 #include "virhook.h"
 #include "rpc/virnetsocket.h"
+#include "libxl_api_wrapper.h"
 #include "libxl_domain.h"
 #include "libxl_driver.h"
 #include "libxl_conf.h"
@@ -1296,7 +1297,7 @@ libxlDomainMigrationDstFinish(virConnectPtr dconn,
 
     /* Unpause if requested */
     if (!(flags & VIR_MIGRATE_PAUSED)) {
-        if (libxl_domain_unpause(cfg->ctx, vm->def->id) != 0) {
+        if (libxlDomainUnpauseWrapper(cfg->ctx, vm->def->id) != 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("Failed to unpause domain"));
             goto cleanup;

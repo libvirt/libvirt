@@ -1238,7 +1238,7 @@ libxlDomainResume(virDomainPtr dom)
         goto endjob;
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
-        if (libxl_domain_unpause(cfg->ctx, vm->def->id) != 0) {
+        if (libxlDomainUnpauseWrapper(cfg->ctx, vm->def->id) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to resume domain '%d' with libxenlight"),
                            vm->def->id);
@@ -2091,7 +2091,7 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
 
  unpause:
     if (virDomainObjIsActive(vm) && paused) {
-        if (libxl_domain_unpause(cfg->ctx, vm->def->id) != 0) {
+        if (libxlDomainUnpauseWrapper(cfg->ctx, vm->def->id) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("After dumping core, failed to resume domain '%d' with"
                              " libxenlight"), vm->def->id);
