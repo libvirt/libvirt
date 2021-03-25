@@ -1356,7 +1356,7 @@ libxlDomainReboot(virDomainPtr dom, unsigned int flags)
         goto cleanup;
 
     if (flags & VIR_DOMAIN_REBOOT_PARAVIRT) {
-        ret = libxl_domain_reboot(cfg->ctx, vm->def->id);
+        ret = libxlDomainRebootWrapper(cfg->ctx, vm->def->id);
         if (ret == 0)
             goto cleanup;
 

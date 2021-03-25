@@ -72,3 +72,17 @@ libxlDomainShutdownWrapper(libxl_ctx *ctx, uint32_t domid)
 
     return ret;
 }
+
+static inline int
+libxlDomainRebootWrapper(libxl_ctx *ctx, uint32_t domid)
+{
+    int ret;
+
+#if LIBXL_API_VERSION < 0x041300
+    ret = libxl_domain_reboot(ctx, domid);
+#else
+    ret = libxl_domain_reboot(ctx, domid, NULL);
+#endif
+
+    return ret;
+}
