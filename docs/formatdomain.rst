@@ -5845,7 +5845,8 @@ complete details.
 The ``filter`` attribute specifies the name of the nwfilter to use. Optional
 ``<parameter>`` elements may be specified for passing additional info to the
 nwfilter via the ``name`` and ``value`` attributes. See the
-`nwfilter <formatnwfilter.html#nwfconceptsvars>`__ docs for info on parameters.
+`nwfilter <formatnwfilter.html#usage-of-variables-in-filters>`__ docs for info
+on parameters.
 
 :anchor:`<a id="elementsInput"/>`
 

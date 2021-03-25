@@ -250,7 +250,7 @@ source IP address ``!= $IP`` like this:
 
 I'm not going to go into details on all the other protocol matches you can do,
 because it'll take far too much space. You can read about the options
-`here <formatnwfilter.html#nwfelemsRulesProto>`__.
+`here <formatnwfilter.html#supported-protocols>`__.
 
 Out of the box in RHEL6/Fedora rawhide, libvirt ships with a set of default
 useful rules:
