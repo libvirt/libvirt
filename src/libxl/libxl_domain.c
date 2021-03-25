@@ -1008,13 +1008,13 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
 static int
 libxlDomainFreeMem(libxl_ctx *ctx, libxl_domain_config *d_config)
 {
-    uint32_t needed_mem;
+    uint64_t needed_mem;
     uint32_t free_mem;
     int32_t target_mem;
     int tries = 3;
     int wait_secs = 10;
 
-    if (libxl_domain_need_memory(ctx, &d_config->b_info, &needed_mem) < 0)
+    if (libxlDomainNeedMemoryWrapper(ctx, d_config, &needed_mem) < 0)
         goto error;
 
     do {

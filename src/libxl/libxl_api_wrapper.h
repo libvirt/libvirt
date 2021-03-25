@@ -114,3 +114,27 @@ libxlDomainUnpauseWrapper(libxl_ctx *ctx, uint32_t domid)
 
     return ret;
 }
+
+#define INVALID_DOMID ~0
+static inline int
+libxlDomainNeedMemoryWrapper(libxl_ctx *ctx,
+                             libxl_domain_config *d_config,
+                             uint64_t *need_memkb)
+{
+    int ret;
+
+#if LIBXL_API_VERSION < 0x040800
+    {
+        uint32_t val32 = 0;
+
+        ret = libxl_domain_need_memory(ctx, &d_config->b_info, &val32);
+        *need_memkb = val32;
+    }
+#elif LIBXL_API_VERSION < 0x041300
+    ret = libxl_domain_need_memory(ctx, &d_config->b_info, need_memkb);
+#else
+    ret = libxl_domain_need_memory(ctx, d_config, INVALID_DOMID, need_memkb);
+#endif
+
+    return ret;
+}
