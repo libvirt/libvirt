@@ -18,7 +18,7 @@
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
     </disk>
-    <watchdog model='ib700' action='poweroff'/>
+    <watchdog model='i6300esb' action='poweroff'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>
