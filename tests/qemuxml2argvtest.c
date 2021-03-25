@@ -1825,10 +1825,10 @@ mymain(void)
     DO_TEST_PARSE_ERROR_NOCAPS("smbios-uuid-match");
     DO_TEST_NOCAPS("smbios-type-fwcfg");
 
-    DO_TEST_NOCAPS("watchdog");
-    DO_TEST_NOCAPS("watchdog-device");
-    DO_TEST_NOCAPS("watchdog-dump");
-    DO_TEST_NOCAPS("watchdog-injectnmi");
+    DO_TEST_CAPS_LATEST("watchdog");
+    DO_TEST_CAPS_LATEST("watchdog-device");
+    DO_TEST_CAPS_LATEST("watchdog-dump");
+    DO_TEST_CAPS_LATEST("watchdog-injectnmi");
     DO_TEST_CAPS_ARCH_LATEST("watchdog-diag288", "s390x");
     DO_TEST_NOCAPS("balloon-device");
     DO_TEST("balloon-device-deflate",
