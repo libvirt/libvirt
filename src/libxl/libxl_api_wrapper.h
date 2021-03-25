@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <limits.h>
 #include <libxl.h>
 
 static inline int
@@ -184,6 +185,32 @@ libxlSendTriggerWrapper(libxl_ctx *ctx,
     ret = libxl_send_trigger(ctx, domid, trigger, vcpuid);
 #else
     ret = libxl_send_trigger(ctx, domid, trigger, vcpuid, NULL);
+#endif
+
+    return ret;
+}
+
+static inline int
+libxlSetMemoryTargetWrapper(libxl_ctx *ctx,
+                        uint32_t domid,
+                        uint64_t target_memkb,
+                        int relative,
+                        int enforce)
+{
+    int ret = -1;
+
+    /* Technically this guard could be LIBXL_HAVE_MEMKB_64BITS */
+#if LIBXL_API_VERSION < 0x040800
+    if (target_memkb < UINT_MAX) {
+        uint32_t val32 = target_memkb;
+
+        ret = libxl_set_memory_target(ctx, domid, val32, relative, enforce);
+    }
+#else
+    if (target_memkb < LLONG_MAX) {
+        int64_t val64 = target_memkb;
+        ret = libxl_set_memory_target(ctx, domid, val64, relative, enforce);
+    }
 #endif
 
     return ret;

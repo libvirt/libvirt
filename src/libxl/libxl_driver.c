@@ -1695,8 +1695,8 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
 
             /* Unlock virDomainObj while ballooning memory */
             virObjectUnlock(vm);
-            res = libxl_set_memory_target(cfg->ctx, vm->def->id, newmem, 0,
-                                          /* force */ 1);
+            res = libxlSetMemoryTargetWrapper(cfg->ctx, vm->def->id, newmem, 0,
+                                              /* force */ 1);
             virObjectLock(vm);
             if (res < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
