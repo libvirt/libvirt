@@ -42,3 +42,19 @@ libxlDomainCreateRestoreWrapper(libxl_ctx *ctx,
 
     return ret;
 }
+
+static inline int
+libxlRetrieveDomainConfigurationWrapper(libxl_ctx *ctx,
+                                        uint32_t domid,
+                                        libxl_domain_config *d_config)
+{
+    int ret;
+
+#if LIBXL_API_VERSION < 0x041300
+    ret = libxl_retrieve_domain_configuration(ctx, domid, d_config);
+#else
+    ret = libxl_retrieve_domain_configuration(ctx, domid, d_config, NULL);
+#endif
+
+    return ret;
+}

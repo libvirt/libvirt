@@ -572,8 +572,8 @@ libxlDomainShutdownThread(void *opaque)
     } else if (xl_reason == LIBXL_SHUTDOWN_REASON_SOFT_RESET) {
         libxlDomainObjPrivatePtr priv = vm->privateData;
 
-        if (libxl_retrieve_domain_configuration(cfg->ctx, vm->def->id,
-                                                &d_config) != 0) {
+        if (libxlRetrieveDomainConfigurationWrapper(cfg->ctx, vm->def->id,
+                                                    &d_config) != 0) {
             VIR_ERROR(_("Failed to retrieve config for VM '%s'. "
                         "Unable to perform soft reset. Destroying VM"),
                       vm->def->name);
