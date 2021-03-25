@@ -37,6 +37,7 @@
 #include "viruuid.h"
 #include "virhook.h"
 #include "vircommand.h"
+#include "libxl_api_wrapper.h"
 #include "libxl_domain.h"
 #include "libxl_driver.h"
 #include "libxl_conf.h"
@@ -1292,7 +1293,7 @@ libxlDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
         goto cleanup;
 
     if (flags & VIR_DOMAIN_SHUTDOWN_PARAVIRT) {
-        ret = libxl_domain_shutdown(cfg->ctx, vm->def->id);
+        ret = libxlDomainShutdownWrapper(cfg->ctx, vm->def->id);
         if (ret == 0)
             goto cleanup;
 
