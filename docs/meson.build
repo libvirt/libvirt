@@ -31,7 +31,6 @@ docs_html_in_files = [
   'internals',
   'remote',
   'storage',
-  'tlscerts',
   'uri',
   'windows',
 ]
@@ -110,6 +109,7 @@ docs_rst_files = [
   'testapi',
   'testsuites',
   'testtck',
+  'tlscerts',
 ]
 
 # list of web targets to build for docs/web rule
