@@ -10187,24 +10187,35 @@ qemuBuildVMCoreInfoCommandLine(virCommand *cmd,
 
 static int
 qemuBuildPanicCommandLine(virCommand *cmd,
-                          const virDomainDef *def)
+                          const virDomainDef *def,
+                          virQEMUCaps *qemuCaps)
 {
     size_t i;
 
     for (i = 0; i < def->npanics; i++) {
         switch ((virDomainPanicModel) def->panics[i]->model) {
-        case VIR_DOMAIN_PANIC_MODEL_ISA:
-            switch (def->panics[i]->info.type) {
-            case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
-                virCommandAddArg(cmd, "-device");
-                virCommandAddArgFormat(cmd, "pvpanic,ioport=%d",
-                                       def->panics[i]->info.addr.isa.iobase);
-                break;
+        case VIR_DOMAIN_PANIC_MODEL_ISA: {
+            g_autoptr(virJSONValue) props = NULL;
 
-            case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
-                virCommandAddArgList(cmd, "-device", "pvpanic", NULL);
-                break;
+            if (virJSONValueObjectCreate(&props,
+                                         "s:driver", "pvpanic",
+                                         NULL) < 0)
+                return -1;
+
+            /* pvpanic uses 'ioport' instead of 'iobase' so
+             * qemuBuildDeviceAddressProps can't be used */
+            if (def->panics[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA) {
+                if (virJSONValueObjectAdd(props,
+                                          "u:ioport", def->panics[i]->info.addr.isa.iobase,
+                                          NULL) < 0)
+                    return -1;
             }
+
+            if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+                return -1;
+
+            break;
+        }
 
         case VIR_DOMAIN_PANIC_MODEL_S390:
         case VIR_DOMAIN_PANIC_MODEL_HYPERV:
@@ -10870,7 +10881,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     if (qemuBuildSeccompSandboxCommandLine(cmd, cfg, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildPanicCommandLine(cmd, def) < 0)
+    if (qemuBuildPanicCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
     for (i = 0; i < def->nshmems; i++) {
