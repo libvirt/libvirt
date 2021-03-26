@@ -331,6 +331,7 @@ udevGenerateDeviceName(struct udev_device *device,
     return 0;
 }
 
+static virMutex pciaccessMutex = VIR_MUTEX_INITIALIZER;
 
 static int
 udevTranslatePCIIds(unsigned int vendor,
@@ -349,12 +350,14 @@ udevTranslatePCIIds(unsigned int vendor,
     m.device_class_mask = 0;
     m.match_data = 0;
 
-    /* pci_get_strings returns void */
+    /* pci_get_strings returns void and unfortunately is not thread safe. */
+    virMutexLock(&pciaccessMutex);
     pci_get_strings(&m,
                     &device_name,
                     &vendor_name,
                     NULL,
                     NULL);
+    virMutexUnlock(&pciaccessMutex);
 
     *vendor_string = g_strdup(vendor_name);
     *product_string = g_strdup(device_name);
