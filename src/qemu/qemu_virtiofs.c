@@ -131,6 +131,8 @@ qemuVirtioFSBuildCommandLine(virQEMUDriverConfig *cfg,
     virQEMUBuildBufferEscapeComma(&opts, fs->src->path);
     if (fs->cache)
         virBufferAsprintf(&opts, ",cache=%s", virDomainFSCacheModeTypeToString(fs->cache));
+    if (fs->sandbox)
+        virBufferAsprintf(&opts, ",sandbox=%s", virDomainFSSandboxModeTypeToString(fs->sandbox));
 
     if (fs->xattr == VIR_TRISTATE_SWITCH_ON)
         virBufferAddLit(&opts, ",xattr");

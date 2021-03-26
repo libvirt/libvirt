@@ -4141,6 +4141,13 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
         }
     }
 
+    if (fs->fsdriver != VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS &&
+        fs->sandbox != VIR_DOMAIN_FS_SANDBOX_MODE_DEFAULT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("sandbox can only be used with driver=virtiofs"));
+        return -1;
+    }
+
     switch ((virDomainFSDriverType) fs->fsdriver) {
     case VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT:
     case VIR_DOMAIN_FS_DRIVER_TYPE_PATH:
