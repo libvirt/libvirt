@@ -1071,7 +1071,6 @@ mymain(void)
             QEMU_CAPS_Q35_PCI_HOLE64_SIZE);
 
     DO_TEST("panic", QEMU_CAPS_DEVICE_PANIC);
-    DO_TEST("panic-isa", QEMU_CAPS_DEVICE_PANIC);
     DO_TEST("panic-pseries",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST("panic-double", QEMU_CAPS_DEVICE_PANIC);
