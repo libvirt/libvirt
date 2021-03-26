@@ -50,7 +50,7 @@ testXML2XMLInactive(const void *opaque)
 }
 
 
-static int
+static void
 testInfoSetPaths(struct testQemuInfo *info,
                  const char *suffix,
                  int when)
@@ -71,8 +71,6 @@ testInfoSetPaths(struct testQemuInfo *info,
         info->outfile = g_strdup_printf("%s/qemuxml2xmloutdata/%s%s.xml",
                                         abs_srcdir, info->name, suffix);
     }
-
-    return 0;
 }
 
 
@@ -140,20 +138,14 @@ mymain(void)
         } \
  \
         if (when & WHEN_INACTIVE) { \
-            if (testInfoSetPaths(&info, suffix, WHEN_INACTIVE) < 0) { \
-                VIR_TEST_DEBUG("Failed to generate inactive paths for '%s'", _name); \
-                return -1; \
-            } \
+            testInfoSetPaths(&info, suffix, WHEN_INACTIVE); \
             if (virTestRun("QEMU XML-2-XML-inactive " _name, \
                             testXML2XMLInactive, &info) < 0) \
                 ret = -1; \
         } \
  \
         if (when & WHEN_ACTIVE) { \
-            if (testInfoSetPaths(&info, suffix, WHEN_ACTIVE) < 0) { \
-                VIR_TEST_DEBUG("Failed to generate active paths for '%s'", _name); \
-                return -1; \
-            } \
+            testInfoSetPaths(&info, suffix, WHEN_ACTIVE); \
             if (virTestRun("QEMU XML-2-XML-active " _name, \
                             testXML2XMLActive, &info) < 0) \
                 ret = -1; \
