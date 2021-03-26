@@ -134,7 +134,7 @@ mymain(void)
                                 ARG_END) < 0 || \
             qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0) { \
             VIR_TEST_DEBUG("Failed to generate test data for '%s'", _name); \
-            return -1; \
+            ret = -1; \
         } \
  \
         if (when & WHEN_INACTIVE) { \

@@ -904,7 +904,7 @@ mymain(void)
         info.qapiSchemaCache = qapiSchemaCache; \
         if (testQemuInfoSetArgs(&info, capscache, capslatest, \
                                 __VA_ARGS__, ARG_END) < 0) \
-            return EXIT_FAILURE; \
+            ret = -1; \
         testInfoSetPaths(&info, _suffix); \
         if (virTestRun("QEMU XML-2-ARGV " _name _suffix, \
                        testCompareXMLToArgv, &info) < 0) \
