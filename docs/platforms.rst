@@ -34,7 +34,6 @@ distros listed below.
 
 * `libvirt on Repology`_
 * `qemu on Repology`_
-* `qemu-kvm on Repology`_
 
 Linux, FreeBSD and macOS
 ------------------------
@@ -83,4 +82,3 @@ or until the vendor discontinues support, whichever comes first.
 .. _hypervisor drivers: drivers.html
 .. _libvirt on Repology: https://repology.org/metapackage/libvirt/versions
 .. _qemu on Repology: https://repology.org/metapackage/qemu/versions
-.. _qemu-kvm on Repology: https://repology.org/metapackage/qemu-kvm/versions
