@@ -416,7 +416,7 @@ qemuBuildDeviceAddressPCIStr(virBuffer *buf,
 }
 
 
-static int
+static int G_GNUC_UNUSED
 qemuBuildDeviceAddressStr(virBuffer *buf,
                           const virDomainDef *domainDef,
                           virDomainDeviceInfo *info)
@@ -481,6 +481,112 @@ qemuBuildDeviceAddressStr(virBuffer *buf,
     }
 
     return 0;
+}
+
+
+static int G_GNUC_UNUSED
+qemuBuildDeviceAddressProps(virJSONValue *props,
+                            const virDomainDef *domainDef,
+                            virDomainDeviceInfo *info)
+{
+    switch ((virDomainDeviceAddressType) info->type) {
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI: {
+        g_autofree char *pciaddr = NULL;
+        g_autofree char *bus = qemuBuildDeviceAddressPCIGetBus(domainDef, info);
+
+        if (!bus)
+            return -1;
+
+        if (info->addr.pci.function != 0)
+            pciaddr = g_strdup_printf("0x%x.0x%x", info->addr.pci.slot, info->addr.pci.function);
+        else
+            pciaddr = g_strdup_printf("0x%x", info->addr.pci.slot);
+
+        if (virJSONValueObjectAdd(props,
+                                  "s:bus", bus,
+                                  "T:multifunction", info->addr.pci.multi,
+                                  "s:addr", pciaddr,
+                                  "p:acpi-index", info->acpiIndex,
+                                  NULL) < 0)
+            return -1;
+
+        return 0;
+    }
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB: {
+        const char *contAlias = NULL;
+        g_auto(virBuffer) port = VIR_BUFFER_INITIALIZER;
+        g_autofree char *bus = NULL;
+
+        if (!(contAlias = virDomainControllerAliasFind(domainDef,
+                                                       VIR_DOMAIN_CONTROLLER_TYPE_USB,
+                                                       info->addr.usb.bus)))
+            return -1;
+
+        bus = g_strdup_printf("%s.0", contAlias);
+
+        virDomainUSBAddressPortFormatBuf(&port, info->addr.usb.port);
+
+        if (virJSONValueObjectAdd(props,
+                                  "s:bus", bus,
+                                  "S:port", virBufferCurrentContent(&port),
+                                  NULL) < 0)
+            return -1;
+
+        return 0;
+    }
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
+        if (info->addr.spaprvio.has_reg) {
+            if (virJSONValueObjectAdd(props,
+                                      "P:reg", info->addr.spaprvio.reg,
+                                      NULL) < 0)
+                return -1;
+        }
+        return 0;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW: {
+        g_autofree char *devno = g_strdup_printf("%x.%x.%04x",
+                                                 info->addr.ccw.cssid,
+                                                 info->addr.ccw.ssid,
+                                                 info->addr.ccw.devno);
+
+        if (virJSONValueObjectAdd(props, "s:devno", devno, NULL) < 0)
+            return -1;
+
+        return 0;
+    }
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
+        if (virJSONValueObjectAdd(props,
+                                  "u:iobase", info->addr.isa.iobase,
+                                  "p:irq", info->addr.isa.irq,
+                                  NULL) < 0)
+            return -1;
+
+        return 0;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
+        if (virJSONValueObjectAdd(props,
+                                  "u:slot", info->addr.dimm.slot,
+                                  "P:addr", info->addr.dimm.base,
+                                  NULL) < 0)
+            return -1;
+
+        return 0;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
+    default:
+        return 0;
+    }
 }
 
 
