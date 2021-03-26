@@ -20,5 +20,5 @@ build_task:
     - git fetch origin "$CI_COMMIT_REF_NAME"
     - git reset --hard "$CI_COMMIT_SHA"
   build_script:
-    - meson build --prefix=$(pwd)/install-root
+    - meson build
     - ninja -C build dist
