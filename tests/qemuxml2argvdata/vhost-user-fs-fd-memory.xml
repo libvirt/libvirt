@@ -30,6 +30,7 @@
       <driver type='virtiofs' queue='1024'/>
       <binary path='/usr/libexec/virtiofsd' xattr='on'>
         <cache mode='always'/>
+        <sandbox mode='chroot'/>
         <lock posix='off' flock='off'/>
       </binary>
       <source dir='/path'/>

@@ -2985,6 +2985,18 @@
           </element>
         </optional>
         <optional>
+          <element name="sandbox">
+            <optional>
+              <attribute name="mode">
+                <choice>
+                  <value>namespace</value>
+                  <value>chroot</value>
+                </choice>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
+        <optional>
           <element name="lock">
             <optional>
               <attribute name="posix">

@@ -3236,6 +3236,7 @@ A directory on the host that can be accessed directly from the guest.
          <driver type='virtiofs' queue='1024'/>
          <binary path='/usr/libexec/virtiofsd' xattr='on'>
             <cache mode='always'/>
+            <sandbox mode='namespace'/>
             <lock posix='on' flock='on'/>
          </binary>
          <source dir='/path'/>
@@ -3360,6 +3361,11 @@ A directory on the host that can be accessed directly from the guest.
    ``cache`` element, possible ``mode`` values being ``none`` and ``always``.
    Locking can be controlled via the ``lock`` element - attributes ``posix`` and
    ``flock`` both accepting values ``on`` or ``off``. ( :since:`Since 6.2.0` )
+   The sandboxing method used by virtiofsd can be configured with the ``sandbox``
+   element, possible ``mode`` values being ``namespace`` and
+   ``chroot``, see the
+   `virtiofsd documentation <https://qemu.readthedocs.io/en/latest/tools/virtiofsd.html>`__
+   for more details. ( :since:`Since 7.2.0` )
 ``source``
    The resource on the host that is being accessed in the guest. The ``name``
    attribute must be used with ``type='template'``, and the ``dir`` attribute

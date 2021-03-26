@@ -415,6 +415,7 @@ virDomainFSDriverTypeToString;
 virDomainFSIndexByName;
 virDomainFSInsert;
 virDomainFSRemove;
+virDomainFSSandboxModeTypeToString;
 virDomainFSTypeFromString;
 virDomainFSTypeToString;
 virDomainFSWrpolicyTypeFromString;

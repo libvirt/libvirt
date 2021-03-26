@@ -540,6 +540,13 @@ VIR_ENUM_IMPL(virDomainFSCacheMode,
               "always",
 );
 
+VIR_ENUM_IMPL(virDomainFSSandboxMode,
+              VIR_DOMAIN_FS_SANDBOX_MODE_LAST,
+              "default",
+              "namespace",
+              "chroot",
+);
+
 
 VIR_ENUM_IMPL(virDomainNet,
               VIR_DOMAIN_NET_TYPE_LAST,
@@ -10114,6 +10121,7 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
         g_autofree char *binary = virXPathString("string(./binary/@path)", ctxt);
         g_autofree char *xattr = virXPathString("string(./binary/@xattr)", ctxt);
         g_autofree char *cache = virXPathString("string(./binary/cache/@mode)", ctxt);
+        g_autofree char *sandbox = virXPathString("string(./binary/sandbox/@mode)", ctxt);
         g_autofree char *posix_lock = virXPathString("string(./binary/lock/@posix)", ctxt);
         g_autofree char *flock = virXPathString("string(./binary/lock/@flock)", ctxt);
         int val;
@@ -10145,6 +10153,16 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
                 goto error;
             }
             def->cache = val;
+        }
+
+        if (sandbox) {
+            if ((val = virDomainFSSandboxModeTypeFromString(sandbox)) <= 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("cannot parse sandbox mode '%s' for virtiofs"),
+                               sandbox);
+                goto error;
+            }
+            def->sandbox = val;
         }
 
         if (posix_lock) {
@@ -25174,6 +25192,11 @@ virDomainFSDefFormat(virBuffer *buf,
         if (def->cache != VIR_DOMAIN_FS_CACHE_MODE_DEFAULT) {
             virBufferAsprintf(&binaryBuf, "<cache mode='%s'/>\n",
                               virDomainFSCacheModeTypeToString(def->cache));
+        }
+
+        if (def->sandbox != VIR_DOMAIN_FS_SANDBOX_MODE_DEFAULT) {
+            virBufferAsprintf(&binaryBuf, "<sandbox mode='%s'/>\n",
+                              virDomainFSSandboxModeTypeToString(def->sandbox));
         }
 
         if (def->posix_lock != VIR_TRISTATE_SWITCH_ABSENT) {
