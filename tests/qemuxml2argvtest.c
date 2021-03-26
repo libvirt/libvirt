@@ -3022,13 +3022,9 @@ mymain(void)
     DO_TEST("kvm-pit-delay", QEMU_CAPS_KVM_PIT_TICK_POLICY);
     DO_TEST("kvm-pit-discard", QEMU_CAPS_KVM_PIT_TICK_POLICY);
 
-    DO_TEST("panic",
-            QEMU_CAPS_DEVICE_PANIC);
-    DO_TEST("panic-double",
-            QEMU_CAPS_DEVICE_PANIC);
-
-    DO_TEST("panic-no-address",
-            QEMU_CAPS_DEVICE_PANIC);
+    DO_TEST_CAPS_LATEST("panic");
+    DO_TEST_CAPS_LATEST("panic-double");
+    DO_TEST_CAPS_LATEST("panic-no-address");
 
     DO_TEST_CAPS_ARCH_VER_FULL("fips-enabled", "x86_64", "5.1.0", ARG_FLAGS, FLAG_FIPS_HOST);
     DO_TEST_CAPS_ARCH_LATEST_FULL("fips-enabled", "x86_64", ARG_FLAGS, FLAG_FIPS_HOST);
