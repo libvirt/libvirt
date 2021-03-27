@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-02-22 08:42+0000\n"
-"PO-Revision-Date: 2021-03-19 17:01+0000\n"
+"PO-Revision-Date: 2021-03-24 12:15+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -411,7 +411,7 @@ msgstr "%s 배열 요소는 항목 %zu에서 누락됩니다"
 
 #, c-format
 msgid "%s can't be empty"
-msgstr "%s을 비워둘 수 없음 "
+msgstr "%s을 비워둘 수 없음"
 
 #, fuzzy, c-format
 msgid "%s cannot be set higher than %s "
@@ -991,7 +991,7 @@ msgstr ""
 
 #, c-format
 msgid "'%s'"
-msgstr ""
+msgstr "'%s'"
 
 #, fuzzy, c-format
 msgid "'%s' architecture is not supported by CPU driver"
@@ -1001,13 +1001,13 @@ msgstr "SASL 메커니즘 %s가 서버에서 지원되지 않습니다"
 msgid "'%s' attributes '%s' must not overlap"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' controller cannot be hot plugged."
-msgstr "디스크 버스 '%s'가 핫플러그될 수 없습니다"
+msgstr "디스크 버스 '%s'가 핫플러그 될 수 없습니다."
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' controller cannot be hot unplugged."
-msgstr "디스크 버스 '%s'가 핫플러그될 수 없습니다"
+msgstr "디스크 버스 '%s'가 핫 플러그 될 수 없습니다."
 
 #, fuzzy, c-format
 msgid "'%s' controller only supports up to '%u' ports"
@@ -1196,10 +1196,8 @@ msgstr ""
 msgid "'netns' namespace source can only be used with sharenet"
 msgstr ""
 
-#, fuzzy
 msgid "'network' attribute is valid only for listen type 'network'"
-msgstr ""
-"<source> 'network' 속성이  <interface type='network'/>로 지정되지 않았습니다"
+msgstr "'network' 속성은 응답 형태 'network'을 위하여만 유효합니다"
 
 msgid "'nfs' host must use TCP protocol"
 msgstr ""
@@ -1223,7 +1221,7 @@ msgid "'partition' missing in reply of guest-get-disks"
 msgstr ""
 
 msgid "'pci-controller' missing"
-msgstr ""
+msgstr "'pci-controller' 누락"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'peak' 및 'burst'에는 'average' 속성이 필요함 "
@@ -1312,7 +1310,7 @@ msgid "(CPU_definition)"
 msgstr "(CPU 정의)"
 
 msgid "(_migration_cookie)"
-msgstr ""
+msgstr "(_migration_cookie)"
 
 #, fuzzy
 msgid "(bridge interface definition)"
@@ -1348,7 +1346,7 @@ msgid "(domain_definition)"
 msgstr "(도메인 정의)"
 
 msgid "(domain_snapshot)"
-msgstr "(domain_snapshot)"
+msgstr "(도메인_스냅샷)"
 
 msgid "(esx execute response)"
 msgstr "(esx 실행 결과)"
@@ -1363,7 +1361,7 @@ msgid "(interface_definition)"
 msgstr "(인터페이스 정의)"
 
 msgid "(libxl_migration_cookie)"
-msgstr ""
+msgstr "(libxl_migration_cookie)"
 
 #. parse and modify the xml from the user
 #, fuzzy
@@ -1402,13 +1400,13 @@ msgid "(pool state)"
 msgstr "상태 없음"
 
 msgid "(qemu_migration_cookie)"
-msgstr ""
+msgstr "(qemu_migration_cookie)"
 
 msgid "(re)connect to hypervisor"
 msgstr "하이퍼바이저로 (재)연결"
 
 msgid "(save cookie)"
-msgstr ""
+msgstr "(qemu_migration_cookie)"
 
 #, fuzzy
 msgid "(snapshot_tree)"
@@ -1424,7 +1422,7 @@ msgid "(storage_volume_definition)"
 msgstr "(저장소 볼륨 정의)"
 
 msgid "(test driver)"
-msgstr ""
+msgstr "(qemu_migration_cookie)"
 
 msgid "(volume_definition)"
 msgstr "(볼륨 정의)"
@@ -1458,10 +1456,10 @@ msgid "--%s or --current is required"
 msgstr "--%s 또는 --current가 필요함 "
 
 msgid "------------------------------"
-msgstr ""
+msgstr "------------------------------"
 
 msgid "-------------------------------------------------"
-msgstr ""
+msgstr "-------------------------------------------------"
 
 msgid ""
 "--async requires at least one of --timeout, --wait, --pivot, or --finish"
@@ -1744,9 +1742,8 @@ msgstr "할당 "
 msgid "Allocation:"
 msgstr "할당:"
 
-#, fuzzy
 msgid "Allows setting or modifying the description or title of a domain."
-msgstr "도메인의 영구 설정을 변경할 수 없음"
+msgstr "도메인의 영구 설정을 변경 할 수 없음."
 
 msgid "An error occurred, but the cause is unknown"
 msgstr ""
@@ -1833,10 +1830,10 @@ msgid "Attach device from an XML <file>."
 msgstr "XML 파일에서 장치 부착 <file>."
 
 msgid "Attach new disk device."
-msgstr "새 디스크 장치 부착"
+msgstr "새 디스크 장치 부착."
 
 msgid "Attach new network interface."
-msgstr "새 네트워크 인터페이스 부착"
+msgstr "새 네트워크 인터페이스 부착."
 
 #, fuzzy, c-format
 msgid "Attached device %s has no type"
@@ -1931,7 +1928,7 @@ msgid "Available:"
 msgstr "사용가능:"
 
 msgid "Backup"
-msgstr ""
+msgstr "예비저장"
 
 #, fuzzy
 msgid "Backup Dump XML"
@@ -1987,10 +1984,10 @@ msgid "Block Commit started"
 msgstr ""
 
 msgid "Block Copy"
-msgstr ""
+msgstr "블록 복사"
 
 msgid "Block Copy started"
-msgstr ""
+msgstr "블록 복사 시작함"
 
 #, fuzzy
 msgid "Block I/O tuning is not available in session mode"
@@ -2075,7 +2072,7 @@ msgid "Buffer too small to print variable '%s' into"
 msgstr "버퍼가 uint8 유형에 대해 너무 작음 "
 
 msgid "Build a given pool."
-msgstr "주어진 풀을 만듬"
+msgstr "주어진 풀을 만듦."
 
 msgid "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
 msgstr ""
@@ -2083,9 +2080,8 @@ msgstr ""
 msgid "Busy"
 msgstr "약속 있음"
 
-#, fuzzy
 msgid "CA certificate:"
-msgstr "잘못된 인증서"
+msgstr "인증서:"
 
 #, fuzzy
 msgid "CCW address type is not supported by this QEMU"
@@ -2103,9 +2099,8 @@ msgstr ""
 msgid "CPU %d in cpulist '%s' exceed the maxcpu %d"
 msgstr ""
 
-#, fuzzy
 msgid "CPU Affinity"
-msgstr "CPU 동질관계:"
+msgstr "CPU 동질관계"
 
 msgid "CPU Affinity:"
 msgstr "CPU 동질관계:"
@@ -2137,9 +2132,8 @@ msgstr ""
 msgid "CPU cache specification is not supported for '%s' architecture"
 msgstr ""
 
-#, fuzzy
 msgid "CPU data"
-msgstr "CPU map:"
+msgstr "CPU 자료"
 
 #, c-format
 msgid "CPU described in %s is identical to host CPU\n"
@@ -2185,7 +2179,7 @@ msgid "CPU frequency:"
 msgstr "CPU 주파수:"
 
 msgid "CPU map:"
-msgstr "CPU map:"
+msgstr "CPU 지도:"
 
 #, fuzzy, c-format
 msgid ""
@@ -2206,21 +2200,20 @@ msgstr "CPU 모델 %s이 목적지에 대해 너무 깁니다 "
 
 #, c-format
 msgid "CPU model '%s'"
-msgstr ""
+msgstr "CPU종류 '%s'"
 
 #, c-format
 msgid "CPU model '%s' not supported by hypervisor"
-msgstr ""
+msgstr "하이퍼바이저에서 CPU종류 '%s'는 지원하지 않습니다"
 
 msgid "CPU model:"
 msgstr "CPU 모델:"
 
-#, fuzzy
 msgid "CPU models"
-msgstr "CPU 모델:"
+msgstr "CPU 종류"
 
 msgid "CPU socket topology has changed"
-msgstr ""
+msgstr "CPU 소켓 형상이 변경됩니다"
 
 msgid "CPU socket(s):"
 msgstr "CPU 소켓:"
@@ -2287,7 +2280,7 @@ msgid "CPUs online:"
 msgstr "CPU 온라인:"
 
 msgid "CPUs present:"
-msgstr ""
+msgstr "CPU 존재:"
 
 msgid "CURL (multi) mismatch"
 msgstr "CURL (멀티) 불일치"
@@ -2389,9 +2382,8 @@ msgstr ""
 msgid "Can't change domain configuration in managed save state"
 msgstr ""
 
-#, fuzzy
 msgid "Can't change domain state."
-msgstr "도메인 상태 빠짐"
+msgstr "도메인 상태 빠짐."
 
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
@@ -2419,9 +2411,8 @@ msgstr "페이지 크기를 지정할 수 없음"
 msgid "Can't determine pid file path."
 msgstr "pid 파일 경로를 지정할 수 없습니다."
 
-#, fuzzy
 msgid "Can't determine restart state file path"
-msgstr "pid 파일 경로를 지정할 수 없습니다."
+msgstr "pid 파일 경로를 지정 할 수 없습니다"
 
 msgid "Can't determine socket paths"
 msgstr "소켓 경로를 지정할 수 없음 "
@@ -2578,13 +2569,13 @@ msgid ""
 "Cannot automatically add a new PCI bus for a device with connect flags %.2x"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot boot from device %s"
-msgstr "알려지지 않은 부팅 장치 %s  "
+msgstr "장치 %s 에서 재시작 할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot check NBD device %s pid"
-msgstr "장치 %s을(를) 구문 분석할 수 없음  "
+msgstr "NBD 장치 % Pid를 점검 할 수 없습니다"
 
 #, c-format
 msgid "Cannot check QEMU binary %s"
@@ -2984,9 +2975,8 @@ msgstr "sys stat '%s'을(를) 구문 분석할 수 없음"
 msgid "Cannot parse '%s' stat '%s'"
 msgstr "sys stat '%s'을(를) 구문 분석할 수 없음"
 
-#, fuzzy
 msgid "Cannot parse 'memory.stat' cgroup file."
-msgstr "<master> 'startport' 속성을 구문 분석할 수 없습니다 "
+msgstr "<master> 'startport' 속성을 구문 분석 할 수 없습니다."
 
 #, fuzzy
 msgid "Cannot parse <HardDisk> 'format' attribute"
@@ -3124,9 +3114,9 @@ msgstr "네트워크 '%s'에서 MAC 주소 '%s'를 구문 분석할 수 없습�
 msgid "Cannot parse USB Class code %s"
 msgstr "USB 클래스 코드 %s를 구문 분석할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot parse USB device version %s"
-msgstr "장치 %s을(를) 구문 분석할 수 없음  "
+msgstr "장치 %s를 구문 분석 할 수 없음"
 
 #, c-format
 msgid "Cannot parse USB product ID %s"
@@ -3336,9 +3326,8 @@ msgstr "JSON 문서에서 제한된 데이터를 설정할 수 없음 "
 msgid "Cannot set scheduler parameters for pid %lld"
 msgstr "스케줄러 매개 변수 보기/설정"
 
-#, fuzzy
 msgid "Cannot setup CPU affinity until process is started"
-msgstr "프로세스 %d의 CPU 친화도를 지정할 수 없습니다."
+msgstr "프로세스 %d의 CPU 친화도를 지정 할 수 없습니다"
 
 msgid "Cannot setup cgroups until process is started"
 msgstr ""
@@ -3418,9 +3407,9 @@ msgstr "볼륨 '%s'를 열 수 없음"
 msgid "Cannot write data"
 msgstr "스트림에 쓸 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot write device.map '%s'"
-msgstr "장치 %s을(를) 구문 분석할 수 없음  "
+msgstr "장치 %s을 구문 분석 할 수 없음"
 
 #, fuzzy, c-format
 msgid "Cannot write into schemata file '%s'"
@@ -3506,9 +3495,8 @@ msgstr "현재 디렉토리를 변경함."
 msgid "Change the current memory allocation in the guest domain."
 msgstr "게스트 도메인에 있는 현재 메모리 할당을 변경."
 
-#, fuzzy
 msgid "Change the current number of priority workers"
-msgstr "현재 디렉토리를 변경함."
+msgstr "현재 우선순위 작업자 수 변경"
 
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "게스트 도메인에서 최대 메모리 할당 제한 변경."
@@ -3684,9 +3672,8 @@ msgstr "sockpair가 실패했습니다"
 msgid "Compiled against library: libvirt %d.%d.%d\n"
 msgstr ""
 
-#, fuzzy
 msgid "Compiled with support for:"
-msgstr "오류 없이 완료되었습니다 "
+msgstr "지원에 대한 컴파일:"
 
 msgid "Compiled with support for:\n"
 msgstr "다음 지원을 위한 컴파일:\n"
@@ -3762,9 +3749,8 @@ msgstr "장치 유형 '%s'가 정수가 아닙니다"
 msgid "Configuration file"
 msgstr "작업 실패"
 
-#, fuzzy
 msgid "Configuration file (unless overridden by -f):"
-msgstr "설정 파일 구문 오류"
+msgstr "설정 파일 (-f로 재정의되지 않는 한):"
 
 msgid "Configure a domain to be automatically started at boot."
 msgstr "부팅시 자동으로 도메인이 시작되도록 설정함."
@@ -5744,7 +5730,6 @@ msgstr "도메인을 찾을 수 없음: %s"
 msgid "Domain title can't contain newlines"
 msgstr "도메인 제목에는 줄 바꿈을 포함할 수 없습니다"
 
-#, fuzzy
 msgid "Domain title not changed\n"
 msgstr "도메인 이름이 변화되지 않았습니다\n"
 
@@ -5761,16 +5746,16 @@ msgid "Domain-0 does not support requested operation"
 msgstr "저장소 풀이 볼륨 생성을 지원하지 않습니다"
 
 msgid "Domain:"
-msgstr "도메인: "
+msgstr "도메인:"
 
 msgid "Done.\n"
 msgstr ""
 
 msgid "Download length it too large"
-msgstr "다운로드 길이가 너무 큽니다 "
+msgstr "내려받기 길이가 너무 큽니다"
 
 msgid "Download volume contents to a file"
-msgstr "파일에 볼륨 컨텐츠를 다운로드함"
+msgstr "파일에 볼륨 내용을 내려받기 함"
 
 msgid "Downtime w/o network:"
 msgstr ""
@@ -5783,9 +5768,8 @@ msgstr ""
 msgid "Driver does not support embedded mode"
 msgstr "fs 드라이버 %s는 지원되지 않음"
 
-#, fuzzy
 msgid "Driver does not support setting multiple IP addresses"
-msgstr "xen 버스는 %s 입력 장치를 지원하지 않음  "
+msgstr "드라이버는 다중 IP 주소 설정을 지원하지 않습니다"
 
 msgid "Driver state initialization failed"
 msgstr "드라이버 상태 초기화에 실패했습니다 "
@@ -5958,9 +5942,8 @@ msgstr "예전에 볼륨에 있던 데이터는 향후 읽을 수 없다는 것�
 msgid "Enter %s's password for %s"
 msgstr "%s에 대한 %s의 암호를 입력하십시오"
 
-#, fuzzy
 msgid "Enter new value for secret:"
-msgstr "%s에 대한 사용자명을 입력하십시오"
+msgstr "비밀을 위한 새로운 값을 입력합니다:"
 
 #, c-format
 msgid "Enter username for %s"
@@ -6004,9 +5987,8 @@ msgstr ""
 msgid "Error in xmlNewProp"
 msgstr ""
 
-#, fuzzy
 msgid "Error message:"
-msgstr "메세지"
+msgstr "오류 메세지:"
 
 #, fuzzy
 msgid "Error notify callback must be supplied"
@@ -6119,9 +6101,8 @@ msgstr "비-블러킹 파일 디스크립터 플래그를 설정하는 데 실�
 msgid "Expected caps for '%s' but saw '%s'"
 msgstr "유형 '%s'가 필요하지만 '%s'가 검색됨 "
 
-#, fuzzy
 msgid "Expected downtime:"
-msgstr "예기치 못한 도메인 유형 %d"
+msgstr "예상 중단시간:"
 
 msgid "Expected exactly 1 host for the storage pool"
 msgstr ""
@@ -8350,7 +8331,7 @@ msgstr "VM '%s'의 autostart 실패: %s"
 
 #, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
-msgstr "SASL 협상을 시작하는 데 실패:  %d (%s)"
+msgstr "SASL 협상을 시작하는 데 실패: %d (%s)"
 
 #, c-format
 msgid "Failed to start bridge interface %s"
@@ -8396,9 +8377,9 @@ msgstr "풀 %s를 시작하는 데 실패"
 msgid "Failed to stat storage volume with path '%s'"
 msgstr "경로가 '%s'인 저장소 볼륨의 상태를 읽어오는 데 실패했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to step SASL negotiation: %d (%s)"
-msgstr "SASL 협상을 시작하는 데 실패:  %d (%s)"
+msgstr "SASL 협상을 시작하는 데 실패: %d (%s)"
 
 #, fuzzy, c-format
 msgid "Failed to suspend domain '%d'"
@@ -9078,7 +9059,7 @@ msgstr "HTTP 응답 코드 %d ('%s'로의 호출에 해당)입니다. 오류: %s
 
 #, c-format
 msgid "HTTP response code %d for download from '%s'"
-msgstr "HTTP 응답 코드 %d ('%s'에서 다운로드하기 위해) "
+msgstr "HTTP 응답 코드 %d ('%s'에서 내려받기하기 위해)"
 
 #, c-format
 msgid "HTTP response code %d for upload to '%s'"
@@ -11137,9 +11118,8 @@ msgstr ""
 msgid "Mediated host device assignment requires VFIO support"
 msgstr ""
 
-#, fuzzy
 msgid "Memory"
-msgstr "최대 메모리:"
+msgstr "메모리"
 
 #, c-format
 msgid "Memory '%llu' must be less than %llu"
@@ -11222,10 +11202,10 @@ msgid "Metadata removed"
 msgstr "메타데이터: "
 
 msgid "Metadata:"
-msgstr "메타데이터: "
+msgstr "메타데이터:"
 
 msgid "MethodFault is missing 'type' property"
-msgstr "MethodFault에 'type' 속성이 누락되어 있음  "
+msgstr "방법오류에 'type' 속성이 누락되어 있음"
 
 msgid ""
 "Migratable attribute for host-passthrough CPU is not supported by this QEMU "
@@ -12479,54 +12459,43 @@ msgstr "시스템이 사용 불가능합니다 "
 msgid "No <local> 'address' attribute specified with socket interface"
 msgstr "소켓 인터페이스에 지정된 <source> 'address'를 구문 분석 할 수 없습니다"
 
-#, fuzzy
 msgid "No <local> 'port' attribute specified with socket interface"
-msgstr "<source> 'port' 속성이  소켓 인터페이스로 지정되지 않았습니다."
+msgstr "<source> 'port' 속성이 소켓 인터페이스로 지정되지 않았습니다"
 
 msgid "No <source> 'address' attribute specified with socket interface"
 msgstr "소켓 인터페이스에 지정된 <source> 'address'를 구문 분석 할 수 없습니다"
 
 msgid ""
 "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
-msgstr ""
-"<source> 'bridge' 속성이  <interface type='bridge'/>로 지정되지 않았습니다"
+msgstr "<source> 'bridge' 속성이 <interface type='bridge'/>로 지정되지 않았습니다"
 
 msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
-msgstr ""
-"<source> 'dev' 속성이  <interface type='direct'/>로 지정되지 않았습니다"
+msgstr "<source> 'dev' 속성이 <interface type='direct'/>로 지정되지 않았습니다"
 
 msgid "No <source> 'dev' attribute specified with <interface type='vdpa'/>"
 msgstr ""
 
-#, fuzzy
 msgid ""
 "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"<source> 'name' 속성이  <interface type='internal'/>로 지정되지 않았습니다"
+msgstr "<source> 'name' 속성이 <interface type='internal'/>로 지정되지 않았습니다"
 
 msgid ""
 "No <source> 'name' attribute specified with <interface type='internal'/>"
-msgstr ""
-"<source> 'name' 속성이  <interface type='internal'/>로 지정되지 않았습니다"
+msgstr "<source> 'name' 속성이 <interface type='internal'/>로 지정되지 않았습니다"
 
 msgid ""
 "No <source> 'network' attribute specified with <interface type='network'/>"
-msgstr ""
-"<source> 'network' 속성이  <interface type='network'/>로 지정되지 않았습니다"
+msgstr "<source> 'network' 속성이 <interface type='network'/>로 지정되지 않았습니다"
 
-#, fuzzy
 msgid ""
 "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"<source> 'name' 속성이  <interface type='internal'/>로 지정되지 않았습니다"
+msgstr "<source> 'name' 속성이 <interface type='internal'/>로 지정되지 않았습니다"
 
 msgid "No <source> 'port' attribute specified with socket interface"
-msgstr "<source> 'port' 속성이  소켓 인터페이스로 지정되지 않았습니다."
+msgstr "<source> 'port' 속성이 소켓 인터페이스로 지정되지 않았습니다."
 
-#, fuzzy
 msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
-msgstr ""
-"<source> 'name' 속성이  <interface type='internal'/>로 지정되지 않았습니다"
+msgstr "<source> 'name' 속성이 <interface type='internal'/>로 지정되지 않았습니다"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr ""
@@ -13585,9 +13554,8 @@ msgstr ""
 msgid "Parent device %s is not capable of vport operations"
 msgstr "부모 장치 %s는 vport 작업을 할 수 없습니다"
 
-#, fuzzy
 msgid "Parent:"
-msgstr "부모 "
+msgstr "부모:"
 
 #, c-format
 msgid "Parsed JSON reply '%s' isn't an object"
@@ -13798,9 +13766,8 @@ msgstr ""
 msgid "Postcopy requests:"
 msgstr ""
 
-#, fuzzy
 msgid "PowerPC pseries machines do not support floppy device"
-msgstr "ps2 버스는 %s 입력 장치를 지원하지 않음   "
+msgstr "PowerPC pseries 장비에는 플로피 장치를 지원하지 않습니다"
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel이 호출되었지만 TUNNELLED 플래그가 설정되지 않았습니다"
@@ -14766,9 +14733,8 @@ msgstr "typeid 값이 범위를 벗어남"
 msgid "Serial property not supported for drive bus '%s'"
 msgstr ""
 
-#, fuzzy
 msgid "Server certificate:"
-msgstr "잘못된 인증서"
+msgstr "서버 인증서:"
 
 #, c-format
 msgid "Server count %zd greater than default name count %zu"
@@ -14782,9 +14748,8 @@ msgstr "비밀정보를 찾을 수 없음"
 msgid "Server not found: %s"
 msgstr "비밀정보를 찾을 수 없음: %s"
 
-#, fuzzy
 msgid "Server private key:"
-msgstr "비밀정보가 개인용입니다"
+msgstr "서버 개인 키:"
 
 msgid "Server to alter the client-related configuration limits on."
 msgstr ""
@@ -15344,7 +15309,7 @@ msgstr "스토리지 소스 %s는 문자 장치여야 합니다 "
 
 #, c-format
 msgid "Storage source conflict with pool: '%s'"
-msgstr "스토리지 소스가 풀과 충돌합니다:  '%s'"
+msgstr "저장소 소스가 풀과 충돌합니다: '%s'"
 
 #, c-format
 msgid ""
@@ -16423,13 +16388,13 @@ msgstr ""
 msgid "The vbox driver does not support %s bus type"
 msgstr "QEMU 바이너리는 %s을 지원하지 않음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "The vbox driver does not support %s controller type"
-msgstr "xen 버스는 %s 입력 장치를 지원하지 않음  "
+msgstr "vbox 드라이버는 %s 제어 유형을 지원하지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "The vbox driver does not support %s disk device"
-msgstr "xen 버스는 %s 입력 장치를 지원하지 않음  "
+msgstr "vbox 드라이버는 %s 드스크 장치를 지원하지 않습니다"
 
 #, c-format
 msgid ""
@@ -16499,9 +16464,8 @@ msgid ""
 "This QEMU doesn't support the pvscsi (VMware paravirtual SCSI) controller"
 msgstr ""
 
-#, fuzzy
 msgid "This QEMU doesn't support vhost-scsi devices"
-msgstr "ps2 버스는 %s 입력 장치를 지원하지 않음   "
+msgstr "QEMU는 vhost-scsi 장치를 지원하지 않습니다"
 
 msgid "This QEMU doesn't support virtio scsi controller"
 msgstr ""
@@ -16554,9 +16518,9 @@ msgstr "전체 시간:"
 msgid "Time remaining:"
 msgstr "남은 시간:"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Time: %lld"
-msgstr "전체 시간:"
+msgstr "시간: %lld"
 
 #, c-format
 msgid "Time: %s"
@@ -16727,9 +16691,8 @@ msgstr "개체에 대해 리소스 %d가 너무 많습니다 "
 msgid "Total"
 msgstr "전체"
 
-#, fuzzy
 msgid "Total downtime:"
-msgstr "이전: 잘못된 다운타임"
+msgstr "전체 중단시간:"
 
 msgid "Total size of memory devices exceeds the total memory size"
 msgstr ""
@@ -19334,7 +19297,7 @@ msgstr "알 수 없는 TPM 백엔드 유형 '%s'"
 
 #, c-format
 msgid "Unknown TPM frontend model '%s'"
-msgstr "알 수 없는 TPM 프론트엔드 모델 '%s'  "
+msgstr "알 수 없는 TPM 프론트엔드 모델 '%s'"
 
 #, fuzzy, c-format
 msgid "Unknown URI parameter '%s'"
@@ -19456,9 +19419,8 @@ msgstr "알 수 없는 포워드 유형 %d (네트워크 '%s'에서)"
 msgid "Unknown forwardPlainNames type %d in network"
 msgstr "알 수 없는 포워드 유형 %d (네트워크 '%s'에서)"
 
-#, fuzzy
 msgid "Unknown input device type"
-msgstr "알려지지 않은 입력 장치 유형 '%s'  "
+msgstr "알려지지 않은 입력 장치 유형"
 
 #, c-format
 msgid "Unknown interface <driver name='%s'> has been specified"
@@ -19949,9 +19911,8 @@ msgid ""
 "mode='%s'"
 msgstr ""
 
-#, fuzzy
 msgid "Unsupported null storage bus"
-msgstr "지원되지 않는 입력 버스 %s  "
+msgstr "빈 저장소 버스를 지원하지 않습니다"
 
 #, fuzzy, c-format
 msgid "Unsupported numatune mode '%d'"
@@ -20047,9 +20008,8 @@ msgid ""
 "method"
 msgstr ""
 
-#, fuzzy
 msgid "Usage:"
-msgstr "사용법"
+msgstr "사용법:"
 
 #, sh-format
 msgid ""
@@ -20127,9 +20087,8 @@ msgstr ""
 msgid "V1 controller '%s' is not wanted, but '%s' is co-mounted"
 msgstr ""
 
-#, fuzzy
 msgid "VCPU"
-msgstr "VCPU:"
+msgstr "VCPU"
 
 msgid "VCPU:"
 msgstr "VCPU:"
@@ -20351,7 +20310,7 @@ msgstr "이전에 중지된 도메인을 다시 시작함."
 msgid "Watchdog"
 msgstr "와치독"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Welcome to %s, the administrating virtualization interactive terminal.\n"
 "\n"
@@ -20383,11 +20342,9 @@ msgstr "vport 생성/삭제 중 '%s'를 '%s'에 쓰기가 실패했습니다"
 msgid "Write to '%s' to trigger host scan failed"
 msgstr "호스트 스캔을 시작하게 하려고 '%s'를 쓰는 것에 실패했습니다"
 
-#, fuzzy
 msgid ""
 "Wrong <source> 'mode' attribute specified with <interface type='vhostuser'/>"
-msgstr ""
-"<source> 'name' 속성이  <interface type='internal'/>로 지정되지 않았습니다"
+msgstr "잘못된 <source> 'name' 속성이 <interface type='internal'/>로 지정되었습니다"
 
 msgid "Wrong MAC address"
 msgstr "잘못된 MAC 주소"
@@ -20776,7 +20733,7 @@ msgid "always display names and MACs of interfaces"
 msgstr ""
 
 msgid "amount of data to download"
-msgstr "다운로드할 데이터 양 "
+msgstr "내려받기 할 자료량"
 
 msgid "amount of data to upload"
 msgstr "업로드할 데이터 양 "
@@ -21922,7 +21879,7 @@ msgstr "임시 도메인에 대해 autostart를 설정할 수 없음"
 
 #, c-format
 msgid "cannot download from volume %s"
-msgstr "볼륨 %s에서 다운로드할 수 없음 "
+msgstr "볼륨 %s에서 내려받기 할 수 없음"
 
 #, c-format
 msgid "cannot encode CPU data for %s architecture"
@@ -22029,9 +21986,9 @@ msgstr "알 수 없는 아키텍처 %s"
 msgid "cannot find channel %s"
 msgstr "%s을 생성할 수 없음 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot find character device %s"
-msgstr "장치 %s을(를) 구문 분석할 수 없음  "
+msgstr "문자 장치 %s를 찾을 수 없습니다"
 
 #, fuzzy, c-format
 msgid "cannot find console device '%s'"
@@ -22041,9 +21998,9 @@ msgstr "장치 '%s'에 대한 통계를 찾을 수 없음"
 msgid "cannot find device number"
 msgstr "현재 브리지 장치 이름"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot find existing graphics device to modify of type '%s'"
-msgstr "알려지지 않은 그래픽 장치 유형 '%s'  "
+msgstr "형태'%s'의 변경하는 존재하는 그래픽 장치를 찾을 수 없습니다"
 
 #, c-format
 msgid "cannot find existing graphics type '%s' device to modify"
@@ -22484,7 +22441,7 @@ msgstr "user stat '%s'을(를) 구문 분석할 수 없음"
 
 #, c-format
 msgid "cannot parse device %s"
-msgstr "장치 %s을(를) 구문 분석할 수 없음  "
+msgstr "장치 %s를 구문 분석 할 수 없습니다"
 
 msgid "cannot parse device end location"
 msgstr "장치 끝 위치를 구문분석할 수 없음"
@@ -22614,11 +22571,11 @@ msgstr "RAM 파일 시스템의 사용법 '%s'을 구문 분석할 수 없음"
 
 #, c-format
 msgid "cannot parse vnc WebSocket port %s"
-msgstr "vnc WebSocket 포트 %s를 구문 분석할 수 없음  "
+msgstr "vnc WebSocket 포트 %s를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "cannot parse vnc port %s"
-msgstr "vnc 포트 %s을(를) 구문 분석할 수 없음  "
+msgstr "vnc 포트 %s를 구문 분석 할 수 없습니다"
 
 #, fuzzy
 msgid "cannot pass pipe for tunnelled migration"
@@ -24293,7 +24250,7 @@ msgid "define or modify a secret from an XML file"
 msgstr "XML 파일의 비밀 정보를 정의하거나 변경"
 
 msgid "define or update a network filter from an XML file"
-msgstr "XML  파일에서 네트워크 필터 정의 또는 업데이트 "
+msgstr "XML 파일에서 네트워크 필터 정의 또는 업데이트"
 
 #, c-format
 msgid "definition for checkpoint %s must use uuid %s"
@@ -25232,7 +25189,7 @@ msgid "done"
 msgstr "완료 "
 
 msgid "download volume contents to a file"
-msgstr "파일에 볼륨 컨텐츠를 다운로드함"
+msgstr "파일에 볼륨 내용을 내려받기 함"
 
 #, fuzzy
 msgid "drive hotplug is not supported"
@@ -25620,7 +25577,7 @@ msgid "error while suspending the domain"
 msgstr "도메인을 중지함"
 
 msgid "error: "
-msgstr "오류:"
+msgstr "오류: "
 
 msgid "error_policy is not supported with vhostuser disk"
 msgstr ""
@@ -29684,9 +29641,8 @@ msgstr ""
 msgid "libxenlight state driver is not active"
 msgstr "libxenlight 상태 드라이버가 작동 중이 아닙니다"
 
-#, fuzzy
 msgid "libxenlight supports only one input device"
-msgstr "ps2 버스는 %s 입력 장치를 지원하지 않음   "
+msgstr "libxenlight는 하나의 입력 장치만 지원합니다"
 
 #, fuzzy, c-format
 msgid "libxl_domain_info failed for domain '%d'"
@@ -31231,7 +31187,7 @@ msgid "missing gluster volume name for path '%s'"
 msgstr "인증을 위한 사용자 이름이 누락되어 있음"
 
 msgid "missing graphics device type"
-msgstr "그래픽 장치 유형 부재   "
+msgstr "그래픽 장치 유형 부재"
 
 #, c-format
 msgid "missing host CPU model info from QEMU capabilities for binary %s"
@@ -33079,9 +33035,8 @@ msgstr ""
 msgid "number of decompression threads for multithread compression"
 msgstr ""
 
-#, fuzzy
 msgid "number of flush operations:"
-msgstr "동작 중 타임 아웃"
+msgstr "활동 작업 수:"
 
 msgid ""
 "number of millisecs the shared memory service should sleep before next scan"
@@ -33090,9 +33045,8 @@ msgstr ""
 msgid "number of pages to scan before the shared memory service goes to sleep"
 msgstr ""
 
-#, fuzzy
 msgid "number of read operations:"
-msgstr "동작 중 타임 아웃"
+msgstr "읽기 동작 수:"
 
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr ""
@@ -33100,9 +33054,8 @@ msgstr ""
 msgid "number of virtual CPUs"
 msgstr "가상 CPU 수"
 
-#, fuzzy
 msgid "number of write operations:"
-msgstr "동작 중 타임 아웃"
+msgstr "쓰기 동작 수:"
 
 msgid "numbers not allowed in VMX format"
 msgstr "VMX 형식에서 숫자는 허용되지 않습니다"
@@ -33478,9 +33431,8 @@ msgstr "질의를 할 선택적인 포트"
 msgid "optional port to query"
 msgstr "질의를 할 선택적인 포트"
 
-#, fuzzy
 msgid "options"
-msgstr "위치:"
+msgstr "선택"
 
 #, fuzzy
 msgid "os.type is not defined"
@@ -33587,9 +33539,9 @@ msgstr ""
 msgid "parallel ports are not supported"
 msgstr "시리얼 포트 두개 까지만 지원합니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "parallels bus does not support %s input device"
-msgstr "ps2 버스는 %s 입력 장치를 지원하지 않음   "
+msgstr "병렬 버스는 %s 입력 장치를 지원하지 않습니다"
 
 #, c-format
 msgid "parallels containers don't support input bus %s"
@@ -34163,7 +34115,7 @@ msgstr ""
 
 #, c-format
 msgid "ps2 bus does not support %s input device"
-msgstr "ps2 버스는 %s 입력 장치를 지원하지 않음   "
+msgstr "ps2 버스는 %s 입력 장치를 지원하지 않습니다"
 
 #, c-format
 msgid "pull mode backup for disk '%s' requires qcow2 driver"
@@ -35433,7 +35385,7 @@ msgid "signum value %d is out of range"
 msgstr "값 '%s'이 %s 범위를 벗어남 "
 
 msgid "size > maximum buffer size"
-msgstr "크기 > 최대 버퍼 크기  "
+msgstr "크기 > 최대 버퍼 크기"
 
 #, c-format
 msgid "size must be less than %llu"
@@ -36338,9 +36290,8 @@ msgstr "QEMU 바이너리는 %s을 지원하지 않음"
 msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr ""
 
-#, fuzzy
 msgid "this QEMU does not support 'vhost-user' video device"
-msgstr "ps2 버스는 %s 입력 장치를 지원하지 않음   "
+msgstr "QEMU는 'vhost-user'는 비디오 장치를 지원하지 않습니다"
 
 msgid "this QEMU does not support the 'genid' capability"
 msgstr ""
@@ -36387,9 +36338,8 @@ msgstr "플랫폼에 dlopen이 누락되어 있습니다 "
 msgid "this qemu does not support TLS transport for NBD"
 msgstr ""
 
-#, fuzzy
 msgid "this qemu does not support setting device threshold"
-msgstr "ps2 버스는 %s 입력 장치를 지원하지 않음   "
+msgstr "이 qumu는 장치 threshold 설정을 지원하지 않습니다"
 
 #, fuzzy
 msgid "this qemu doesn't support relative block commit"
@@ -36469,9 +36419,9 @@ msgstr ""
 msgid "timer %s doesn't support setting of timer frequency"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "timer %s doesn't support setting of timer mode"
-msgstr "xen 버스는 %s 입력 장치를 지원하지 않음  "
+msgstr "타미머 %s는 시간 방법 설정을 지원하지 않습니다"
 
 #, fuzzy, c-format
 msgid "timer %s doesn't support setting of timer tickpolicy"
@@ -38078,7 +38028,7 @@ msgstr "알려지지 않은 본딩 모드 %s"
 
 #, c-format
 msgid "unknown boot device '%s'"
-msgstr "알려지지 않은 부팅 장치 %s  "
+msgstr "알려지지 않은 부팅 장치 %s"
 
 #, fuzzy, c-format
 msgid "unknown caching_mode value: %s"
@@ -38166,7 +38116,7 @@ msgstr "알려지지 않은 디스크 버스 유형 '%s'"
 
 #, c-format
 msgid "unknown disk cache mode '%s'"
-msgstr "알려지지 않은 디스크 캐시 모드 '%s'  "
+msgstr "알려지지 않은 디스크 캐쉬 모드 '%s'"
 
 #, c-format
 msgid "unknown disk copy_on_read mode '%s'"
@@ -38313,7 +38263,7 @@ msgstr "알려지지 전체화면 값 '%s'"
 
 #, c-format
 msgid "unknown graphics device type '%s'"
-msgstr "알려지지 않은 그래픽 장치 유형 '%s'  "
+msgstr "알려지지 않은 그래픽 장치 유형 '%s'"
 
 #, c-format
 msgid "unknown graphics listen type '%s'"
@@ -38412,11 +38362,11 @@ msgstr "알려지지 않은 입력 버스 유형 '%s' "
 
 #, c-format
 msgid "unknown input device type '%s'"
-msgstr "알려지지 않은 입력 장치 유형 '%s'  "
+msgstr "알려지지 않은 입력 장치 유형 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown input model '%s'"
-msgstr "알려지지 않은 사운드 모델: '%s'  "
+msgstr "알려지지 않은 입력 모형: '%s'"
 
 #, fuzzy, c-format
 msgid "unknown inputvol storage vol type %d"
@@ -38525,9 +38475,9 @@ msgstr "알 수 없는 마우스 모드 값 '%s'"
 msgid "unknown multidevs '%s'"
 msgstr "알 수 없는 형식 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown network device feature '%s'"
-msgstr "알려지지 않은 입력 장치 유형 '%s'  "
+msgstr "알려지지 않은 네트워크 장치 특성 '%s'"
 
 msgid "unknown option"
 msgstr "알 수 없는 옵션"
@@ -38536,9 +38486,9 @@ msgstr "알 수 없는 옵션"
 msgid "unknown panic info type '%s'"
 msgstr "알 수 없는 시스템 정보 유형 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown panic model '%s'"
-msgstr "알려지지 않은 사운드 모델: '%s'  "
+msgstr "알려지지 않은 공황 모형 '%s'"
 
 #, fuzzy, c-format
 msgid "unknown parameter '%s'"
@@ -38671,7 +38621,7 @@ msgstr "알려지지 않은 smbios 모드 '%s'"
 
 #, c-format
 msgid "unknown sound model '%s'"
-msgstr "알려지지 않은 사운드 모델: '%s'  "
+msgstr "알려지지 않은 음향 모형 '%s'"
 
 #, c-format
 msgid "unknown source mode '%s' for volume type disk"
@@ -38731,13 +38681,13 @@ msgstr "알려지지 않은 저장 풀(pool) 유형 %s"
 msgid "unknown storage pool volume refresh allocation type %s"
 msgstr "알려지지 않은 저장 풀(pool) 유형 %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage source format '%s'"
-msgstr "알려지지 않은 usb 소스 유형 '%s'  "
+msgstr "알려지지 않은 저장소 소스 형식 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage source type '%s'"
-msgstr "알려지지 않은 usb 소스 유형 '%s'  "
+msgstr "알려지지 않은 저장소 소스 유형 '%s'"
 
 #, c-format
 msgid "unknown storage vol backing store type %d"
@@ -38809,7 +38759,7 @@ msgstr "알 수 없는 PM 상태 값 %s"
 
 #, c-format
 msgid "unknown usb source type '%s'"
-msgstr "알려지지 않은 usb 소스 유형 '%s'  "
+msgstr "알려지지 않은 usb 소스 유형 '%s'"
 
 #, fuzzy, c-format
 msgid "unknown value '%s' for <hostdev> attribute 'display'"
@@ -38839,13 +38789,13 @@ msgstr "알 수 없는 copypaste 값 '%s'"
 msgid "unknown vhost-user type: '%s'"
 msgstr "알 수 없는 코덱 유형 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown video driver '%s'"
-msgstr "알려지지 않은 비디오 모델: '%s'  "
+msgstr "알려지지 않은 비디오 드라이버 '%s'"
 
 #, c-format
 msgid "unknown video model '%s'"
-msgstr "알려지지 않은 비디오 모델: '%s'  "
+msgstr "알려지지 않은 비디오 모델 '%s'"
 
 #, fuzzy, c-format
 msgid "unknown virttype: %s"
@@ -38889,9 +38839,9 @@ msgstr "알려지지 않은 볼륨 형식 유형 %s"
 msgid "unknown volume type '%s'"
 msgstr "알 수 없는 코덱 유형 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown vsock model: %s"
-msgstr "알려지지 않은 비디오 모델: '%s'  "
+msgstr "알려지지 않은 vsock 모형: '%s'"
 
 #, c-format
 msgid "unknown watchdog action '%s'"
@@ -38899,7 +38849,7 @@ msgstr "알려지지 않은 와치독 동작 '%s'"
 
 #, c-format
 msgid "unknown watchdog model '%s'"
-msgstr "알려지지 않은 와치독 모델: '%s'  "
+msgstr "알려지지 않은 와치독 모형 '%s'"
 
 #, fuzzy, c-format
 msgid "unknown xattr value '%s'"
@@ -39197,7 +39147,7 @@ msgstr "지원되지 않는 인증 유형 %d"
 
 #, c-format
 msgid "unsupported input bus %s"
-msgstr "지원되지 않는 입력 버스 %s  "
+msgstr "지원되지 않는 입력 버스 %s"
 
 #, fuzzy
 msgid "unsupported input device configuration"
@@ -39703,11 +39653,11 @@ msgstr "벤더 ID가 잘못되었습니다"
 
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
-msgstr "버전 불일치 (실제 %x, 기대값 %x)  "
+msgstr "버전 불일치 (실제 %x, 기대값 %x)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "version mismatch in event (actual 0x%x, expected 0x%x)"
-msgstr "버전 불일치 (실제 %x, 기대값 %x)  "
+msgstr "사건에서 버전 불일치 (실제 %x, 기대값 %x)"
 
 #, fuzzy
 msgid "version parsing error"
@@ -40137,7 +40087,7 @@ msgid "volume name or path"
 msgstr "볼륨 이름 또는 경로 "
 
 msgid "volume offset to download from"
-msgstr "다운로드할 볼륨 오프셋"
+msgstr "내려받기 할 볼륨 오프셋"
 
 msgid "volume offset to upload to"
 msgstr "업로드할 볼륨 오프셋"
@@ -40351,7 +40301,7 @@ msgstr "디스크 장치의 wwn"
 
 #, c-format
 msgid "xen bus does not support %s input device"
-msgstr "xen 버스는 %s 입력 장치를 지원하지 않음  "
+msgstr "xen 버스는 %s 입력 장치를 지원하지 않음"
 
 msgid "xml data file to export from"
 msgstr "내보내기 할 xml 데이터 파일"
