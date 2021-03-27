@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-02-22 08:42+0000\n"
+"POT-Creation-Date: 2021-03-26 11:32+0000\n"
 "PO-Revision-Date: 2021-02-21 08:40+0000\n"
 "Last-Translator: Pany <geekpany@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -46,7 +46,6 @@ msgstr ""
 "\n"
 "  (执行help <group>来获取指定组中全部命令的帮助信息)\n"
 
-#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -446,7 +445,6 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr "    带宽限制：%llu 字节/秒（%-.3lf %s/s）"
 
-#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  命令名称\n"
 
@@ -695,16 +693,6 @@ msgstr "这个 QEMU 二进制中不支持 %s"
 msgid "%s object has invalid dynamic type"
 msgstr "%s 对象有一个无效动态类型"
 
-#.
-#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
-#. * enumeration values).
-#. *
-#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
-#.
-#.
-#. * Macros to implement managed objects
-#.
-#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s 对象缺少所需 '%s' 属性"
@@ -747,15 +735,6 @@ msgstr ""
 "%s:\n"
 "%s%c"
 
-#, c-format
-msgid "%s: %d: failed to allocate argv"
-msgstr "%s: %d: 无法分配 argv"
-
-#, fuzzy, c-format
-msgid "%s: %d: failed to allocate mountpoints"
-msgstr "%s: %d: 分配 %d 字节内存失败"
-
-#. The length of the formatting string minus two '%s'
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
@@ -1279,6 +1258,9 @@ msgstr "只有 virtio-scsi 支持 'queues'"
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "只有 virtio-scsi 支持 'queues'"
 
+msgid "'jack' audio backend is not supported with this QEMU"
+msgstr ""
+
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus 回复中缺少 'logical-id'"
 
@@ -1486,7 +1468,6 @@ msgstr "(interface_definition)"
 msgid "(libxl_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
 
-#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
 
@@ -1549,7 +1530,6 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr "(volume_definition)"
 
-#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -1998,9 +1978,6 @@ msgstr ""
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "只有在虚拟机 CPU 中方可使用的属性模式"
 
-msgid "Audio type OSS requires to have <input> and <output> specified"
-msgstr ""
-
 #, fuzzy
 msgid "Audit is not supported by the kernel"
 msgstr "这个内核不支持 unpriv_sgio"
@@ -2135,10 +2112,6 @@ msgid "Bounded"
 msgstr "已捆绑"
 
 #, c-format
-msgid "Bridge %s too big for destination"
-msgstr "对于目的地来说桥接 %s 太大"
-
-#, c-format
 msgid "Bridge '%s' has no QoS set, therefore unable to set 'floor' on '%s'"
 msgstr "桥接 '%s' 没有 QoS 设置，因此无法在 '%s 中设定 'floor'。"
 
@@ -2149,10 +2122,6 @@ msgstr "桥接生成超过最大 id %d"
 #, c-format
 msgid "Bridge interface %s started\n"
 msgstr "已启动桥接接口 %s\n"
-
-#, c-format
-msgid "Bridge name %s too long for destination"
-msgstr "过长的目的桥接名称 %s"
 
 msgid "Bridge:"
 msgstr "桥接："
@@ -2434,14 +2403,20 @@ msgstr ""
 msgid "Cache with id %u does not exists for level %d"
 msgstr ""
 
-#.
-#. * Macros to implement dynamic dispatched functions
-#.
+msgid "Calculate a vm's memory dirty rate"
+msgstr ""
+
+msgid ""
+"Calculate memory dirty rate of a domain in order to decide whether it's "
+"proper to be migrated out or not.\n"
+"The calculated dirty rate information is available by calling 'domstats --"
+"dirtyrate'."
+msgstr ""
+
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "为意外类型 '%s' 调用 %s"
 
-#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "为意外类型 '%s' 调用 %s，应为 '%s'。"
@@ -3986,11 +3961,11 @@ msgid "Could not assign address to disk '%s'"
 msgstr "无法为磁盘 '%s' 分配地址"
 
 #, c-format
-msgid "Could not attach network %lu"
+msgid "Could not attach network %zu"
 msgstr ""
 
 #, c-format
-msgid "Could not attach serial port %lu"
+msgid "Could not attach serial port %zu"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4846,7 +4821,6 @@ msgstr ""
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr ""
 
-#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "无法检索池信息"
 
@@ -5230,10 +5204,6 @@ msgstr ""
 msgid "Descendants:"
 msgstr "降序："
 
-#, c-format
-msgid "Dest file %s too big for destination"
-msgstr "对于目的地来说目的文件 %s 太大"
-
 #, fuzzy
 msgid ""
 "Destination libvirt does not support migration with extensible parameters"
@@ -5434,10 +5404,6 @@ msgstr "成功分离磁盘\n"
 #, c-format
 msgid "Disk device '%s' does not support snapshotting"
 msgstr "磁盘设备 '%s' 不支持快照功能"
-
-#, c-format
-msgid "Disk index %d is negative"
-msgstr "磁盘缩影 %d 为负数"
 
 #, c-format
 msgid "Disk iothread '%u' not defined in iothreadid"
@@ -5679,7 +5645,6 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr "域有 %d 个接口。请使用 --mac 指定要分离的接口。"
 
-#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -6487,10 +6452,6 @@ msgstr "为路径分配内存失败"
 msgid "Failed to allocate memory for snapshot directory for domain %s"
 msgstr "为域 %s 的快照目录分配内存失败"
 
-#, fuzzy
-msgid "Failed to allocate new source node"
-msgstr "分配安全模式失败"
-
 #, fuzzy, c-format
 msgid "Failed to allocate slirp for '%s'"
 msgstr "为文件 '%s' 预先分配空间失败"
@@ -6558,10 +6519,6 @@ msgstr "将挂载目录 %s 捆绑到 %s 失败"
 #, c-format
 msgid "Failed to bind socket to '%s'"
 msgstr "将插槽捆绑到 '%s' 失败"
-
-#, c-format
-msgid "Failed to build path for %s hook"
-msgstr "为 %s hook 构建路径失败"
 
 msgid "Failed to build pidfile path"
 msgstr "构建 pidfile 路径失败"
@@ -6876,20 +6833,13 @@ msgstr "创建 %s 失败"
 msgid "Failed to create thread for receiving migration data"
 msgstr "创建用来接收迁移数据的线程失败"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "创建处理域关闭的线程失败"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "创建处理域关闭的线程失败"
 
-#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "创建处理域关闭的线程失败"
@@ -7445,7 +7395,6 @@ msgstr "列出活跃的网络失败"
 msgid "Failed to list active pools"
 msgstr "列出活跃的池失败"
 
-#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "列出域失败"
 
@@ -7461,28 +7410,22 @@ msgstr "列出不活跃的网络失败"
 msgid "Failed to list inactive pools"
 msgstr "列出不活跃的池失败"
 
-#. there was an error during the first or second call
 msgid "Failed to list interfaces"
 msgstr "列出接口失败"
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "列出网络过滤器失败"
 
-#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "列出网络过滤器失败"
 
-#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "列出网络失败"
 
-#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "列出节点设备失败"
 
-#. there was an error during the call
 msgid "Failed to list node secrets"
 msgstr "列出节点 secret 失败"
 
@@ -7490,7 +7433,6 @@ msgstr "列出节点 secret 失败"
 msgid "Failed to list persistent guests on $uri"
 msgstr "无法在 $uri 中列出持久虚拟机"
 
-#. there was an error during the first or second call
 msgid "Failed to list pools"
 msgstr "列出池失败"
 
@@ -7510,7 +7452,6 @@ msgstr "列出临时虚拟机失败"
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "使用 libxenlight 为域 '%d' 列出 vcpu 失败"
 
-#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "列出卷失败"
 
@@ -8090,9 +8031,6 @@ msgstr "使用 libxenlight 恢复域 '%d' 失败"
 msgid "Failed to resume domain '%s'"
 msgstr ""
 
-#. Hm, we already know we are in error here.  We don't want to
-#. * overwrite the previous error, though, so we just throw something
-#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "失败后恢复虚拟机 %s 失败"
@@ -8686,63 +8624,10 @@ msgid ""
 "for VMX file"
 msgstr "第一个基于文件的硬盘没有源，无法为 VMX 文件推导出数据中心和路径"
 
-#. Macros to help dealing with flag requirements.
-#. *
-#. * VIR_REQUIRE_FLAG_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @RET: Return value.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_REQUIRE_FLAG_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if required flag is not set.
-#.
 #, fuzzy, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr "选项 --%s 也需要输入当输入了选项 --%s 时"
 
-#. Macros to help dealing with mutually exclusive flags.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @RET: Return value.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, fuzzy, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "--%s 和 --%s 选项不能同时使用"
@@ -9101,6 +8986,10 @@ msgstr "主机 CPU 是 %s 中描述的 CPU 超集\n"
 msgid "Host CPU model does not match required CPU vendor %s or(and) model %s"
 msgstr ""
 
+#, c-format
+msgid "Host CPU provides forbidden feature '%s'"
+msgstr ""
+
 msgid "Host CPU provides forbidden features"
 msgstr "主机 CPU 提供被禁止的功能"
 
@@ -9287,10 +9176,6 @@ msgstr ""
 #, fuzzy
 msgid "IOThreads polling is not supported for this QEMU"
 msgstr "这个 QEMU 二进制文件不支持 nvram 设备 "
-
-#, c-format
-msgid "IP %s too big for destination"
-msgstr "对于目的地来说 IP %s 太大"
 
 #, fuzzy
 msgid "IP address"
@@ -9750,15 +9635,6 @@ msgstr "无效允许值，可以是 'yes' 或者 'no'"
 msgid "Invalid append attribute value '%s'"
 msgstr "无效 'memAccess' 属性值 '%s'"
 
-#.
-#. * Don't check for *selectSet != NULL here because selectSet is a list
-#. * and might contain items already. This function appends to selectSet.
-#.
-#. optional
-#. optional
-#. nothing
-#. nothing
-#. nothing
 msgid "Invalid argument"
 msgstr "无效参数"
 
@@ -10830,14 +10706,6 @@ msgstr "MAC 地址"
 
 msgid "MAC address"
 msgstr "MAC 地址"
-
-#, c-format
-msgid "MAC address %s too big for destination"
-msgstr "对于目的地来说 MAC 地址 %s 太大"
-
-#, c-format
-msgid "MAC address %s too long for destination"
-msgstr "过长的目的 MAC 地址 %s"
 
 #, c-format
 msgid "MCS level for existing domain label %s already reserved"
@@ -12175,12 +12043,6 @@ msgstr "这个 QEMU 二进制中不支持 SATA"
 msgid "NVMe namespace can't be zero"
 msgstr "hugepage 大小不能为 0"
 
-#. Output old style header
-#. We only get here if the --details option was selected.
-#. Insert the header into table
-#. The old output format
-#. We only get here if the --details option was selected.
-#. Insert the header into table
 msgid "Name"
 msgstr "名称"
 
@@ -12320,10 +12182,6 @@ msgstr "未找到网络过滤器"
 #, c-format
 msgid "Network filter not found: %s"
 msgstr "未找到网络过滤器：%s"
-
-#, c-format
-msgid "Network ifname %s too long for destination"
-msgstr "过长的目的网络 ifname %s"
 
 #, c-format
 msgid "Network interface name '%s' is too long"
@@ -13196,20 +13054,6 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
-#. Macros to help dealing with required options.
-#. VSH_REQUIRE_OPTION_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable).
-#. * @NAME2: String containing the name of required option.
-#. * @EXPR2: Expression to validate the variable (boolean variable).
-#. *
-#. * Check if required command options in virsh was set.  Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr "选项 --%s 也需要输入当输入了选项 --%s 时"
@@ -13223,20 +13067,6 @@ msgstr "选项参数为空"
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
-#. Macros to help dealing with mutually exclusive options.
-#. VSH_EXCLUSIVE_OPTIONS_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable)
-#. * @NAME2: String containing the name of the option.
-#. * @EXPR2: Expression to validate the variable (boolean variable)
-#. *
-#. * Reject mutually exclusive command options in virsh. Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "--%s 和 --%s 选项不能同时使用"
@@ -13487,7 +13317,6 @@ msgstr "解析的 JSON 回复 '%s' 不是一个对象"
 msgid "Partition path '%s' must start with '/'"
 msgstr "分区路径 '%s' 必须以 '/' 开始"
 
-#. warn users that the --base64 option passed from command line is wrong
 #, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "未指定 qemu 命令行参数"
@@ -14333,7 +14162,6 @@ msgstr "这个域禁用了 S3 状态"
 msgid "S4 state is disabled for this domain"
 msgstr "这个域禁用了 S4 状态"
 
-#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14852,9 +14680,6 @@ msgstr "CPU 时间："
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "这个 QEMU 不支持 spice 图形"
 
-#. XXX: Need to sort the returned params once new parameter
-#. * fields not of shared memory are added.
-#.
 msgid "Shared memory:\n"
 msgstr "共享内存：\n"
 
@@ -14934,7 +14759,6 @@ msgstr "这个 QEMU 二进制中不支持 SATA"
 msgid "Snapshot"
 msgstr "快照列表"
 
-#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr ""
@@ -15014,10 +14838,6 @@ msgstr ""
 msgid "Sound devices emulation is not supported by given bhyve binary"
 msgstr ""
 
-#, c-format
-msgid "Sound model %s too big for destination"
-msgstr "对于目的地来说声音模式 %s 太大"
-
 msgid "Source"
 msgstr "源"
 
@@ -15090,6 +14910,9 @@ msgstr "开始一个网络."
 
 msgid "Start a pool."
 msgstr "启动一个池。"
+
+msgid "Start to calculate domain's memory dirty rate successfully.\n"
+msgstr ""
 
 #, fuzzy
 msgid "Started"
@@ -15404,7 +15227,6 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr "%s 不能为空。"
 
-#. title
 msgid "Target"
 msgstr "目标"
 
@@ -16153,6 +15975,12 @@ msgid "The PF device for VF %s has no network device name"
 msgstr "网络文件名过长"
 
 #, c-format
+msgid ""
+"The PF device for VF %s has no network device name, cannot get virtual "
+"function info"
+msgstr ""
+
+#, c-format
 msgid "The QEMU executable %s does not support TPM backend type %s"
 msgstr "QEMU 可执行 %s 不支持 TPM 后端类型 %s"
 
@@ -16639,11 +16467,9 @@ msgstr "尝试使用 error 状态写入插槽"
 msgid "Try again?"
 msgstr "再次尝试?"
 
-#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "尝试释放仍在使用的多个 CRUL 对象"
 
-#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "尝试释放仍在使用的共享 CURL 对象"
 
@@ -16690,10 +16516,6 @@ msgstr ""
 
 msgid "Type"
 msgstr "类型"
-
-#, c-format
-msgid "Type %s too big for destination"
-msgstr "对于目的地来说类型 %s 太大"
 
 #, c-format
 msgid "Type mismatch for '%s' migration parameter"
@@ -16931,9 +16753,6 @@ msgstr "无法在这个平台中删除 TAP 设备"
 #, fuzzy, c-format
 msgid "Unable to allocate %llu pages. Allocated only %llu"
 msgstr "无法分配租赁 %s"
-
-msgid "Unable to allocate FD list"
-msgstr "无法分配 FD 列表"
 
 #, c-format
 msgid "Unable to allocate lease %s"
@@ -18105,6 +17924,10 @@ msgstr "无法解析配额"
 msgid "Unable to parse sched info value '%s'"
 msgstr "无法解析 FD 数 '%s'"
 
+#, c-format
+msgid "Unable to parse schedstat info at '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to parse secret uuid '%s'"
 msgstr "无法解析等级 id '%s'"
@@ -19166,6 +18989,10 @@ msgid "Unknown data source '%s'"
 msgstr "未知的来源模式类型 '%s'"
 
 #, c-format
+msgid "Unknown dirty rate status: %s"
+msgstr ""
+
+#, c-format
 msgid "Unknown disk bus: %X"
 msgstr "未知磁盘总线：%X"
 
@@ -19196,7 +19023,6 @@ msgstr "网络中的未知 localOnly 类型 %d"
 msgid "Unknown error"
 msgstr "未知错误"
 
-#. should never happen (tm)
 msgid "Unknown error value"
 msgstr "未知错误值"
 
@@ -19966,6 +19792,9 @@ msgstr "VNC"
 msgid "VNC Password authentication not supported by bhyve"
 msgstr ""
 
+msgid "VNC power control is not available"
+msgstr ""
+
 msgid "VNC supports connected='keep' only"
 msgstr "VNC 只支持 connected='keep' "
 
@@ -19977,12 +19806,12 @@ msgstr "值 '%s' 不能作为 %s 使用"
 msgid "Value '%s' is out of %s range"
 msgstr "值 '%s' 在 %s 范围之外 "
 
-#, fuzzy, c-format
-msgid "Value of cputune '%s' must be in range [1000, 1000000]"
-msgstr "cfs_period '%llu' 必须在范围 (1000, 1000000) 中"
+#, c-format
+msgid "Value of cputune '%s' must be in range [%llu, %llu]"
+msgstr ""
 
 #, c-format
-msgid "Value of cputune '%s' must be in range [1000, 18446744073709551]"
+msgid "Value of cputune 'shares' must be in range [%llu, %llu]"
 msgstr ""
 
 msgid "Variable value contains invalid character"
@@ -19996,15 +19825,9 @@ msgid "Video adapters are not supported int containers."
 msgstr "int 容器不支持视频适配器。"
 
 #, c-format
-msgid "Vifname %s too big for destination"
-msgstr "对于目的地来说 vifname %s 太大"
-
-#. FIXME - list a copyright blurb, as in GNU programs?
-#, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr "这是 %s 版本libvirt的命令行工具virsh\n"
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr "这是 %s 版本libvirt的命令行工具virt-admin\n"
@@ -20418,6 +20241,9 @@ msgstr ""
 msgid "additionally display the type and device value"
 msgstr "type 和 device 值的附加显示"
 
+msgid "address not supported for video type ramfb"
+msgstr ""
+
 msgid "address of disk device"
 msgstr "磁盘设备地址"
 
@@ -20481,11 +20307,6 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "分配新容量而不是稀释它"
 
-#.
-#. * we need to use an intermediary pointer to @data as compilers may sometimes
-#. * complain about @data not being a pointer type:
-#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
-#.
 msgid "allocated netlink buffer is too small"
 msgstr "分配的 netlink 缓存太小"
 
@@ -20690,6 +20511,13 @@ msgstr "尝试将虚拟端口与未匹配 typeidversions（%d 和 %d）合并"
 msgid "attempt to merge virtualports with mismatched types (%s and %s)"
 msgstr "尝试将虚拟端口与未匹配类型（%s 和 %s）合并"
 
+#, c-format
+msgid "audio ID %u is used multiple times"
+msgstr ""
+
+msgid "audio settings specified without fixed settings flag"
+msgstr ""
+
 msgid "auth is not supported with vhostuser disk"
 msgstr ""
 
@@ -20813,6 +20641,9 @@ msgid ""
 msgstr ""
 
 msgid "backup TLS directory not configured"
+msgstr ""
+
+msgid "backup is not supported with this QEMU"
 msgstr ""
 
 #, fuzzy
@@ -21140,10 +20971,6 @@ msgstr "建立池"
 msgid "building"
 msgstr "building"
 
-#, fuzzy, c-format
-msgid "bus %s too big for destination"
-msgstr "对于目的地来说总线 %s 太大"
-
 msgid "bus must be 0 for sata controller"
 msgstr ""
 
@@ -21162,6 +20989,11 @@ msgstr "磁盘设备的缓存模式"
 #, fuzzy
 msgid "cachetune is only supported for KVM domains"
 msgstr "原始类型卷不支持元数据预分配"
+
+msgid ""
+"calculate memory dirty rate within specified seconds, the supported value "
+"range from 1 to 60, default to 1."
+msgstr ""
 
 msgid "caller ignores cookie or cookielen"
 msgstr "调度程序忽略 cookie 或者 cookielen"
@@ -21885,10 +21717,6 @@ msgstr "无法获取主机 CPU 功能"
 msgid "cannot get interface flags on macvtap tap"
 msgstr "无法在 macvtap tap 中获得接口标签"
 
-#, fuzzy
-msgid "cannot get locked memory limit"
-msgstr "无法将锁定内存限制到 %llu"
-
 #, fuzzy, c-format
 msgid "cannot get locked memory limit of process %lld"
 msgstr "无法将进程 %lld 的锁定内存限制为 %llu"
@@ -21990,33 +21818,17 @@ msgstr "无法初始化互斥"
 msgid "cannot limit core file size of process %lld to %llu"
 msgstr "无法将进程 %lld 的锁定内存限制为 %llu"
 
-#, fuzzy, c-format
-msgid "cannot limit core file size to %llu"
-msgstr "无法将打开文件数限制为 %u"
-
 #, c-format
 msgid "cannot limit locked memory of process %lld to %llu"
 msgstr "无法将进程 %lld 的锁定内存限制为 %llu"
-
-#, c-format
-msgid "cannot limit locked memory to %llu"
-msgstr "无法将锁定内存限制到 %llu"
 
 #, c-format
 msgid "cannot limit number of open files of process %lld to %u"
 msgstr "无法将进程 %lld 的打开文件数限制为 %u"
 
 #, c-format
-msgid "cannot limit number of open files to %u"
-msgstr "无法将打开文件数限制为 %u"
-
-#, c-format
 msgid "cannot limit number of subprocesses of process %lld to %u"
 msgstr "无法将进程 %lld 子进程数限制为 %u"
-
-#, c-format
-msgid "cannot limit number of subprocesses to %u"
-msgstr "无法将子进程数限制为 %u"
 
 #, fuzzy
 msgid "cannot list IOThreads for an inactive domain"
@@ -22155,7 +21967,6 @@ msgstr "无法打开路径 '%s'"
 msgid "cannot open path '%s' in '%s'"
 msgstr "无法打开路径 '%s'"
 
-#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "无法打开卷 '%s'"
@@ -22167,6 +21978,38 @@ msgstr "无法解析 %s CPU 数据"
 #, c-format
 msgid "cannot parse %s version number in '%.*s'"
 msgstr "无法在 '%s' 中接卸 %.*s 版本号"
+
+#, c-format
+msgid "cannot parse 'bufferCount' value '%s'"
+msgstr ""
+
+#, c-format
+msgid "cannot parse 'bufferLength' value '%s'"
+msgstr ""
+
+#, c-format
+msgid "cannot parse 'channels' value '%s'"
+msgstr ""
+
+#, c-format
+msgid "cannot parse 'dspPolicy' value '%s'"
+msgstr ""
+
+#, c-format
+msgid "cannot parse 'format' value '%s'"
+msgstr ""
+
+#, c-format
+msgid "cannot parse 'frequency' value '%s'"
+msgstr ""
+
+#, c-format
+msgid "cannot parse 'latency' value '%s'"
+msgstr ""
+
+#, c-format
+msgid "cannot parse 'voices' value '%s'"
+msgstr ""
 
 msgid "cannot parse CPU data"
 msgstr "无法解析 CPU 数据"
@@ -22338,6 +22181,10 @@ msgstr "无法解析 vnc WebSocket 端口 %s"
 #, c-format
 msgid "cannot parse vnc port %s"
 msgstr "无法解析 vnc 端口 %s"
+
+#, c-format
+msgid "cannot parse vnc power control '%s'"
+msgstr ""
 
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "无法为管道迁移传递通道"
@@ -22577,6 +22424,9 @@ msgstr "无法为瞬时域设定自动启动"
 #, fuzzy
 msgid "cannot set backing store for raw volume"
 msgstr "无法探测后端卷格式：%s"
+
+msgid "cannot set common audio backend settings"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "cannot set current job to %s"
@@ -22999,7 +22849,6 @@ msgstr "克隆名称"
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
-#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "子目录生成目录 '%s' 失败"
@@ -23234,10 +23083,6 @@ msgstr "连接到客户会话"
 
 msgid "connected"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "connection %s too big"
-msgstr "连接未打开"
 
 msgid ""
 "connection URI of the destination host as seen from the client(normal "
@@ -23830,6 +23675,9 @@ msgid ""
 "supported"
 msgstr ""
 
+msgid "creating checkpoint for incremental backup is not supported yet"
+msgstr ""
+
 msgid "creating snapshot"
 msgstr "正在生成快照"
 
@@ -24154,10 +24002,6 @@ msgid "device %s is not a PCI device"
 msgstr "设备 %s 不是 PCI 设备"
 
 #, fuzzy, c-format
-msgid "device %s too big for destination"
-msgstr "对于目的地来说型号 %s 太大"
-
-#, fuzzy, c-format
 msgid "device '%s' in network '%s' is not an SR-IOV Virtual Function"
 msgstr ""
 "通过 PCI 通道使用 SR-IOV 虚拟功能的网络 '%s' 不支持 <virtualport type='%s'>"
@@ -24277,6 +24121,9 @@ msgstr "这个 QEMU 二进制中不能使用共享内存"
 #, fuzzy
 msgid "disabled"
 msgstr "禁用"
+
+msgid "disabling audio mixing engine is not supported with this QEMU"
+msgstr ""
 
 msgid "discard is not supported by this QEMU binary"
 msgstr "这个 QEMU 二进制不支持弃用"
@@ -25650,6 +25497,9 @@ msgstr "获取 secret '%s' 失败"
 msgid "failed to add device into new map"
 msgstr "解析设备权重 '%s' 失败"
 
+msgid "failed to add metadata to XML document"
+msgstr ""
+
 #, c-format
 msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
@@ -25755,6 +25605,9 @@ msgstr "转换大小失败：'%s'"
 msgid "failed to convert the XML node tree"
 msgstr "节点设备计数失败"
 
+msgid "failed to convert virJSONValue to yajl data"
+msgstr ""
+
 #, fuzzy
 msgid "failed to copy all device rules"
 msgstr "解析 qemu 设备列表失败"
@@ -25794,6 +25647,10 @@ msgstr "生成目录 '%s' 失败"
 #, c-format
 msgid "failed to create dump dir '%s': %s"
 msgstr "创建 dump 目录  '%s' 失败：%s"
+
+#, c-format
+msgid "failed to create glfs object for '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to create image file '%s'"
@@ -25877,6 +25734,9 @@ msgstr "生成卷 '%s/%s' 失败"
 msgid "failed to destroy (stop) interface %s: %s%s%s"
 msgstr "销毁（停止）接口 %s 失败：%s%s%s"
 
+msgid "failed to determine host name"
+msgstr ""
+
 #, c-format
 msgid "failed to determine loop exit status: %s"
 msgstr "无法查询循环的退出状态: %s"
@@ -25940,6 +25800,9 @@ msgstr "无法找到 VLAN 设备 '%s' 的真实设备"
 #, c-format
 msgid "failed to finish job for disk %s"
 msgstr "为磁盘 %s 完成任务失败"
+
+msgid "failed to format JSON"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to format image: '%s'"
@@ -26173,6 +26036,11 @@ msgstr "初始化 netcf 失败"
 #, fuzzy
 msgid "failed to initialize device BPF map"
 msgstr "初始化 netcf 失败"
+
+msgid ""
+"failed to initialize device BPF map; locked memory limit for libvirtd "
+"probably needs to be raised"
+msgstr ""
 
 #, fuzzy
 msgid "failed to initialize domain condition"
@@ -26826,9 +26694,6 @@ msgstr "查询或设置守护进程对日志进行过滤的规则"
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr "查询或设置守护进程输出日志的规则"
 
-#. parse inbound and outbound which are in the format of
-#. * 'average,peak,burst,floor', in which peak and burst are optional,
-#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "config 值 %s 被破坏了"
@@ -27025,9 +26890,15 @@ msgid ""
 "with-firewalld-zone"
 msgstr ""
 
+msgid "firmware attribute and firmware type has to be the same"
+msgstr ""
+
 #, fuzzy
 msgid "firmware auto selection not implemented for this driver"
 msgstr "在这个平台中未采用接口 stats"
+
+msgid "fixed audio settings requires mixing engine"
+msgstr ""
 
 msgid "flag VIR_DOMAIN_BLOCK_REBASE_RELATIVE is valid only with non-null base"
 msgstr ""
@@ -27436,7 +27307,6 @@ msgstr "生成快照后停止域"
 msgid "handler failed to wait on condition"
 msgstr "等待命令失败：%s"
 
-#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr "哈希查询得到 NULL 指针"
 
@@ -27998,25 +27868,6 @@ msgstr "接口名称"
 msgid "interface name %s does not fit into buffer "
 msgstr "接口名称 %s 不适用于缓存"
 
-#.
-#. * virsh-interface.c: Commands to manage host interface
-#. *
-#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
-#. *
-#. * This library is free software; you can redistribute it and/or
-#. * modify it under the terms of the GNU Lesser General Public
-#. * License as published by the Free Software Foundation; either
-#. * version 2.1 of the License, or (at your option) any later version.
-#. *
-#. * This library is distributed in the hope that it will be useful,
-#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
-#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#. * Lesser General Public License for more details.
-#. *
-#. * You should have received a copy of the GNU Lesser General Public
-#. * License along with this library.  If not, see
-#. * <http://www.gnu.org/licenses/>.
-#.
 msgid "interface name or MAC address"
 msgstr "MAC 地址的接口名称"
 
@@ -28467,6 +28318,14 @@ msgstr "无效失败动作：'%s'\n"
 #, c-format
 msgid "invalid fd %d for %s"
 msgstr "%d 的无效 fd %s"
+
+#, c-format
+msgid "invalid firmware feature enabled value '%s'"
+msgstr ""
+
+#, c-format
+msgid "invalid firmware feature name '%s'"
+msgstr ""
 
 msgid "invalid flag"
 msgstr "无效标签"
@@ -30615,6 +30474,12 @@ msgstr "缺少参数"
 msgid "missing array element"
 msgstr "缺少 array 元素"
 
+msgid "missing audio 'id' attribute"
+msgstr ""
+
+msgid "missing audio 'type' attribute"
+msgstr ""
+
 #, c-format
 msgid "missing backend for pool type %d"
 msgstr "缺少池类型 %d 后端"
@@ -30622,6 +30487,10 @@ msgstr "缺少池类型 %d 后端"
 #, fuzzy, c-format
 msgid "missing backend for pool type %d (%s)"
 msgstr "缺少池类型 %d 后端"
+
+#, c-format
+msgid "missing bitmap name for disk '%s' of checkpoint '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "missing block job data for disk '%s'"
@@ -31424,15 +31293,6 @@ msgstr "修改/获得标题而不是描述"
 msgid "monitor failure"
 msgstr "没有监视器路径"
 
-#. *
-#. * QEMU_CHECK_MONITOR_FULL:
-#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
-#. * @exit: statement that is used to exit the function
-#. *
-#. * This macro checks that the monitor is valid for given operation and exits
-#. * the function if not. The macro also adds a debug statement regarding the
-#. * monitor.
-#.
 msgid "monitor must not be NULL"
 msgstr "监控程序不能为空"
 
@@ -31640,7 +31500,6 @@ msgstr "需要 rawio 容量"
 msgid "negative size requires --shrink"
 msgstr ""
 
-#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "协商 SSF %d 不够强大"
@@ -32038,6 +31897,10 @@ msgstr "'%s' 没有 WWPN，且自动生成失败。"
 msgid "no assigned pty for device %s"
 msgstr "没有为设备 %s 分配 pty"
 
+#, c-format
+msgid "no audio device with ID %u"
+msgstr ""
+
 msgid "no autostart"
 msgstr "不自动开始"
 
@@ -32161,6 +32024,10 @@ msgstr "未找到扩展分区或者没有可用主分区"
 #, fuzzy
 msgid "no file descriptor received"
 msgstr "服务访问文件描述符 %d"
+
+#, c-format
+msgid "no firmwares found in %s"
+msgstr ""
 
 #, fuzzy
 msgid "no free memory device slot available"
@@ -32829,6 +32696,9 @@ msgstr "只支持一个 RNG 后端"
 
 msgid "only one TPM backend is supported"
 msgstr "只支持一个 TPM 后端"
+
+msgid "only one audio backend is supported with this QEMU binary"
+msgstr ""
 
 #, fuzzy
 msgid "only one backup job is supported"
@@ -33821,6 +33691,21 @@ msgstr "query-cpu-definitions 回复缺少 'name'"
 msgid "query-cpu-model-comparison reply data was missing 'result'"
 msgstr "query-cpu-definitions 回复缺少 'name'"
 
+msgid "query-dirty-rate reply was missing 'calc-time' data"
+msgstr ""
+
+msgid "query-dirty-rate reply was missing 'dirty-rate' data"
+msgstr ""
+
+msgid "query-dirty-rate reply was missing 'return' data"
+msgstr ""
+
+msgid "query-dirty-rate reply was missing 'start-time' data"
+msgstr ""
+
+msgid "query-dirty-rate reply was missing 'status' data"
+msgstr ""
+
 msgid "query-events reply data was missing 'name'"
 msgstr "query-events 回复缺少 'name'"
 
@@ -33957,10 +33842,6 @@ msgstr ""
 #, c-format
 msgid "range %s - %s start larger than end"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "rate %s too big for destination"
-msgstr "对于目的地来说 stats %s 太大"
 
 msgid "rawio can be used only with device='lun'"
 msgstr ""
@@ -34200,6 +34081,9 @@ msgstr "显示域 cpu 统计数据"
 msgid "report domain block device statistics"
 msgstr "显示域 cpu 统计数据"
 
+msgid "report domain dirty rate information"
+msgstr ""
+
 #, fuzzy
 msgid "report domain memory usage"
 msgstr "只转储域的内存"
@@ -34332,10 +34216,6 @@ msgstr "创新定义卷大小"
 msgid "resize of qcow2 encrypted image is not supported"
 msgstr "不支持 fs 格式 %s"
 
-#, c-format
-msgid "resolving %s filename"
-msgstr ""
-
 msgid "resource busy"
 msgstr "资源忙"
 
@@ -34447,6 +34327,9 @@ msgstr "恢复到之前保存的使用 iface-begin 生成的更改"
 
 msgid "root element was not source"
 msgstr "root 元素不是源"
+
+msgid "root path must be absolute"
+msgstr ""
 
 msgid "rule node requires action attribute"
 msgstr "rule 节点需要 action 属性"
@@ -34567,6 +34450,10 @@ msgstr "启用 spice filetransfer 缺失"
 #, c-format
 msgid "seclabel for model %s is already provided"
 msgstr "已为型号 %s 提供 seclabel"
+
+#, c-format
+msgid "seconds=%d is invalid, please choose value within [%d, %d]."
+msgstr ""
 
 #, c-format
 msgid "secret '%s' does not have a value"
@@ -34777,6 +34664,18 @@ msgstr "不支持网络类型 %d"
 msgid "setting NUMA distances is not supported with this qemu"
 msgstr "这个 QEMU 不支持断开的 NUMA cpu 范围"
 
+msgid "setting audio buffer count is not supported with this QEMU"
+msgstr ""
+
+msgid "setting audio buffer length is not supported with this QEMU"
+msgstr ""
+
+msgid "setting audio latency is not supported with this QEMU"
+msgstr ""
+
+msgid "setting audio stream name is not supported with this QEMU"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "setting bandwidth on interfaces of type '%s' is not implemented yet"
 msgstr "还没有采用复制 '%d' 类型定义的方法"
@@ -34846,6 +34745,10 @@ msgid "shared access for disk '%s' requires use of supported storage format"
 msgstr "磁盘 '%s' 的文件 '%s' 要求使用外部快照模式"
 
 msgid "shared access mode required for virtio-pmem device"
+msgstr ""
+
+#, c-format
+msgid "shares '%llu' must be in range [%llu, %llu]"
 msgstr ""
 
 msgid "sheepdog protocol accepts only one host"
@@ -36392,10 +36295,6 @@ msgid "tx_queue_size has to be a power of two"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "type %s invalid"
-msgstr "销售商 id 无效"
-
-#, fuzzy, c-format
 msgid "type %s is not supported"
 msgstr "不支持集线器类型 %s"
 
@@ -36565,6 +36464,9 @@ msgstr "无法为 %s 架构找到 CPU 映射文件"
 msgid "unable to find any master var store for loader: %s"
 msgstr "查找 secret 存储驱动程序失败：%s"
 
+msgid "unable to find audio backend for sound device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unable to find backing name for device %s"
 msgstr "无法获得设备 '%s' 的次编号"
@@ -36591,7 +36493,6 @@ msgstr "无法初始化互斥"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
-#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "无法 fsync %s"
@@ -37430,14 +37331,36 @@ msgstr ""
 msgid "unix socket for spice graphics are not supported with this QEMU"
 msgstr "这个 QEMU 不支持 spice 图形"
 
-#. Something went wrong retrieving a volume path, cope with it
-#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "未知"
 
 #, c-format
 msgid "unknown %s action: %s"
 msgstr "位置 %s 动作：%s"
+
+#, c-format
+msgid "unknown 'exactName' value '%s'"
+msgstr ""
+
+#, c-format
+msgid "unknown 'exclusive' value '%s'"
+msgstr ""
+
+#, c-format
+msgid "unknown 'fixedSettings' value '%s'"
+msgstr ""
+
+#, c-format
+msgid "unknown 'mixingEngine' value '%s'"
+msgstr ""
+
+#, c-format
+msgid "unknown 'tryMMap' value '%s'"
+msgstr ""
+
+#, c-format
+msgid "unknown 'tryPoll' value '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown 'unknown' value '%s'"
@@ -37479,6 +37402,10 @@ msgid "unknown PM state value %s"
 msgstr "位置 PM 状态值 %s"
 
 #, c-format
+msgid "unknown QEMU_AUDIO_DRV setting %s"
+msgstr ""
+
+#, c-format
 msgid "unknown RNG backend model '%s'"
 msgstr "未知 RNG 后端型号 '%s'"
 
@@ -37493,6 +37420,14 @@ msgstr "用于 '%s' 的未知 SCSI 主机功能类型 '%s'"
 #, fuzzy, c-format
 msgid "unknown SCSI target capability type '%s' for '%s'"
 msgstr "用于 '%s' 的未知 SCSI 主机功能类型 '%s'"
+
+#, c-format
+msgid "unknown SDL driver '%s'"
+msgstr ""
+
+#, c-format
+msgid "unknown SDL_AUDIODRIVER setting %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown accel2d value '%s'"
@@ -38627,28 +38562,6 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
-#. *
-#. * virCheckFlags:
-#. * @supported: an OR'ed set of supported flags
-#. * @retval: return value in case unsupported flags were passed
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Exits the caller function if unsupported flags were
-#. * passed to it.
-#.
-#. *
-#. * virCheckFlagsGoto:
-#. * @supported: an OR'ed set of supported flags
-#. * @label: label to jump to on error
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "标签（0x%lx）在功能 %s 中不支持"
@@ -39181,10 +39094,6 @@ msgstr ""
 #, c-format
 msgid "vendor_id must be exactly %d characters long"
 msgstr "vendor_id 必须是 %d 个字符"
-
-#, fuzzy, c-format
-msgid "version %s invalid"
-msgstr "销售商 id 无效"
 
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
@@ -39863,6 +39772,101 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <字符串>}..."
+
+#~ msgid "%s: %d: failed to allocate argv"
+#~ msgstr "%s: %d: 无法分配 argv"
+
+#, fuzzy
+#~ msgid "%s: %d: failed to allocate mountpoints"
+#~ msgstr "%s: %d: 分配 %d 字节内存失败"
+
+#~ msgid "Bridge %s too big for destination"
+#~ msgstr "对于目的地来说桥接 %s 太大"
+
+#~ msgid "Bridge name %s too long for destination"
+#~ msgstr "过长的目的桥接名称 %s"
+
+#~ msgid "Dest file %s too big for destination"
+#~ msgstr "对于目的地来说目的文件 %s 太大"
+
+#~ msgid "Disk index %d is negative"
+#~ msgstr "磁盘缩影 %d 为负数"
+
+#, fuzzy
+#~ msgid "Failed to allocate new source node"
+#~ msgstr "分配安全模式失败"
+
+#~ msgid "Failed to build path for %s hook"
+#~ msgstr "为 %s hook 构建路径失败"
+
+#~ msgid "IP %s too big for destination"
+#~ msgstr "对于目的地来说 IP %s 太大"
+
+#~ msgid "MAC address %s too big for destination"
+#~ msgstr "对于目的地来说 MAC 地址 %s 太大"
+
+#~ msgid "MAC address %s too long for destination"
+#~ msgstr "过长的目的 MAC 地址 %s"
+
+#~ msgid "Network ifname %s too long for destination"
+#~ msgstr "过长的目的网络 ifname %s"
+
+#~ msgid "Sound model %s too big for destination"
+#~ msgstr "对于目的地来说声音模式 %s 太大"
+
+#~ msgid "Type %s too big for destination"
+#~ msgstr "对于目的地来说类型 %s 太大"
+
+#~ msgid "Unable to allocate FD list"
+#~ msgstr "无法分配 FD 列表"
+
+#, fuzzy
+#~ msgid "Value of cputune '%s' must be in range [1000, 1000000]"
+#~ msgstr "cfs_period '%llu' 必须在范围 (1000, 1000000) 中"
+
+#~ msgid "Vifname %s too big for destination"
+#~ msgstr "对于目的地来说 vifname %s 太大"
+
+#, fuzzy
+#~ msgid "bus %s too big for destination"
+#~ msgstr "对于目的地来说总线 %s 太大"
+
+#, fuzzy
+#~ msgid "cannot get locked memory limit"
+#~ msgstr "无法将锁定内存限制到 %llu"
+
+#, fuzzy
+#~ msgid "cannot limit core file size to %llu"
+#~ msgstr "无法将打开文件数限制为 %u"
+
+#~ msgid "cannot limit locked memory to %llu"
+#~ msgstr "无法将锁定内存限制到 %llu"
+
+#~ msgid "cannot limit number of open files to %u"
+#~ msgstr "无法将打开文件数限制为 %u"
+
+#~ msgid "cannot limit number of subprocesses to %u"
+#~ msgstr "无法将子进程数限制为 %u"
+
+#, fuzzy
+#~ msgid "connection %s too big"
+#~ msgstr "连接未打开"
+
+#, fuzzy
+#~ msgid "device %s too big for destination"
+#~ msgstr "对于目的地来说型号 %s 太大"
+
+#, fuzzy
+#~ msgid "rate %s too big for destination"
+#~ msgstr "对于目的地来说 stats %s 太大"
+
+#, fuzzy
+#~ msgid "type %s invalid"
+#~ msgstr "销售商 id 无效"
+
+#, fuzzy
+#~ msgid "version %s invalid"
+#~ msgstr "销售商 id 无效"
 
 #~ msgid "Cannot set keepaliveCount data in JSON document"
 #~ msgstr "无法在 JSON 文件中设定 keepaliveCount 数据"
