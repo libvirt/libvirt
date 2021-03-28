@@ -388,7 +388,21 @@ virNetSSHCheckHostKey(virNetSSHSession *sess)
         case LIBSSH2_HOSTKEY_TYPE_DSS:
             keyType = LIBSSH2_KNOWNHOST_KEY_SSHDSS;
             break;
-
+#ifdef LIBSSH2_HOSTKEY_TYPE_ED25519
+        /* defs from libssh2 v1.9.0 or later */
+        case LIBSSH2_HOSTKEY_TYPE_ECDSA_256:
+            keyType = LIBSSH2_KNOWNHOST_KEY_ECDSA_256;
+            break;
+        case LIBSSH2_HOSTKEY_TYPE_ECDSA_384:
+            keyType = LIBSSH2_KNOWNHOST_KEY_ECDSA_384;
+            break;
+        case LIBSSH2_HOSTKEY_TYPE_ECDSA_521:
+            keyType = LIBSSH2_KNOWNHOST_KEY_ECDSA_521;
+            break;
+        case LIBSSH2_HOSTKEY_TYPE_ED25519:
+            keyType = LIBSSH2_KNOWNHOST_KEY_ED25519;
+            break;
+#endif
         case LIBSSH2_HOSTKEY_TYPE_UNKNOWN:
         default:
             virReportError(VIR_ERR_SSH, "%s",
