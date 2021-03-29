@@ -6743,7 +6743,7 @@ enum remote_procedure {
 
     /**
      * @generate: both
-     * @acl: domain:read
+     * @acl: domain:write
      */
     REMOTE_PROC_DOMAIN_START_DIRTY_RATE_CALC = 427
 };
