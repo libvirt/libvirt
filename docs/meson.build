@@ -20,7 +20,6 @@ docs_assets = [
 docs_html_in_files = [
   'index',
   'remote',
-  'storage',
   'uri',
 ]
 
@@ -99,6 +98,7 @@ docs_rst_files = [
   'programming-languages',
   'python',
   'securityprocess',
+  'storage',
   'strategy',
   'styleguide',
   'submitting-patches',
