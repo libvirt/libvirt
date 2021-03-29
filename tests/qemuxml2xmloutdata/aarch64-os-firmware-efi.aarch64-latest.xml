@@ -6,7 +6,6 @@
   <vcpu placement='static'>1</vcpu>
   <os firmware='efi'>
     <type arch='aarch64' machine='virt-4.0'>hvm</type>
-    <firmware type='efi'/>
     <kernel>/aarch64.kernel</kernel>
     <initrd>/aarch64.initrd</initrd>
     <cmdline>earlyprintk console=ttyAMA0,115200n8 rw root=/dev/vda rootwait</cmdline>

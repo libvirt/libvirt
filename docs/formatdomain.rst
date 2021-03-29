@@ -158,14 +158,6 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
 ``firmware``
    :since:`Since 7.2.0 QEMU/KVM only`
 
-   When used together with ``firmware`` attribute of ``os`` element the ``type``
-   attribute must have the same value.
-
-   List of mandatory attributes:
-
-   - ``type`` (accepted values are ``bios`` and ``efi``) same as the ``firmware``
-     attribute of ``os`` element.
-
    When using firmware auto-selection there are different features enabled in
    the firmwares. The list of features can be used to limit what firmware should
    be automatically selected for the VM. The list of features can be specified

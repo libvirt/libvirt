@@ -278,13 +278,7 @@
         <ref name="ostypehvm"/>
         <optional>
           <element name="firmware">
-            <attribute name="type">
-              <choice>
-                <value>bios</value>
-                <value>efi</value>
-              </choice>
-            </attribute>
-            <zeroOrMore>
+            <oneOrMore>
               <element name="feature">
                 <attribute name="enabled">
                   <ref name="virYesNo"/>
@@ -296,7 +290,7 @@
                   </choice>
                 </attribute>
               </element>
-            </zeroOrMore>
+            </oneOrMore>
           </element>
         </optional>
         <optional>

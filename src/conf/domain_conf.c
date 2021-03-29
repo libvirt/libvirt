@@ -19590,31 +19590,21 @@ virDomainDefParseBootFirmwareOptions(virDomainDefPtr def,
                                      xmlXPathContextPtr ctxt)
 {
     g_autofree char *firmware = virXPathString("string(./os/@firmware)", ctxt);
-    g_autofree char *type = virXPathString("string(./os/firmware/@type)", ctxt);
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree int *features = NULL;
     int fw = 0;
     int n = 0;
     size_t i;
 
-    if (!firmware && !type)
+    if (!firmware)
         return 0;
 
-    if (firmware && type && STRNEQ(firmware, type)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("firmware attribute and firmware type has to be the same"));
-        return -1;
-    }
-
-    if (!type)
-        type = g_steal_pointer(&firmware);
-
-    fw = virDomainOsDefFirmwareTypeFromString(type);
+    fw = virDomainOsDefFirmwareTypeFromString(firmware);
 
     if (fw <= 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unknown firmware value %s"),
-                       type);
+                       firmware);
         return -1;
     }
 
@@ -29491,30 +29481,22 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
         virBufferAsprintf(buf, ">%s</type>\n",
                           virDomainOSTypeToString(def->os.type));
 
-    if (def->os.firmware) {
-        virBufferAsprintf(buf, "<firmware type='%s'",
-                          virDomainOsDefFirmwareTypeToString(def->os.firmware));
+    if (def->os.firmwareFeatures) {
+        virBufferAddLit(buf, "<firmware>\n");
+        virBufferAdjustIndent(buf, 2);
 
-        if (def->os.firmwareFeatures) {
-            virBufferAddLit(buf, ">\n");
+        for (i = 0; i < VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_LAST; i++) {
+            if (def->os.firmwareFeatures[i] == VIR_TRISTATE_BOOL_ABSENT)
+                continue;
 
-            virBufferAdjustIndent(buf, 2);
-
-            for (i = 0; i < VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_LAST; i++) {
-                if (def->os.firmwareFeatures[i] == VIR_TRISTATE_BOOL_ABSENT)
-                    continue;
-
-                virBufferAsprintf(buf, "<feature enabled='%s' name='%s'/>\n",
-                                  virTristateBoolTypeToString(def->os.firmwareFeatures[i]),
-                                  virDomainOsDefFirmwareFeatureTypeToString(i));
-            }
-
-            virBufferAdjustIndent(buf, -2);
-
-            virBufferAddLit(buf, "</firmware>\n");
-        } else {
-            virBufferAddLit(buf, "/>\n");
+            virBufferAsprintf(buf, "<feature enabled='%s' name='%s'/>\n",
+                              virTristateBoolTypeToString(def->os.firmwareFeatures[i]),
+                              virDomainOsDefFirmwareFeatureTypeToString(i));
         }
+
+        virBufferAdjustIndent(buf, -2);
+
+        virBufferAddLit(buf, "</firmware>\n");
     }
 
     virBufferEscapeString(buf, "<init>%s</init>\n",

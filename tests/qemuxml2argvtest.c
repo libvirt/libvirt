@@ -3582,7 +3582,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("os-firmware-efi");
     DO_TEST_CAPS_LATEST("os-firmware-efi-secboot");
     DO_TEST_CAPS_LATEST("os-firmware-efi-no-enrolled-keys");
-    DO_TEST_CAPS_LATEST_PARSE_ERROR("os-firmware-invalid-type");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-os-firmware-efi", "aarch64");
 
     DO_TEST_CAPS_LATEST("vhost-user-vga");
