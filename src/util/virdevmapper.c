@@ -42,12 +42,13 @@
 VIR_LOG_INIT("util.virdevmapper");
 
 # define PROC_DEVICES "/proc/devices"
+# define PROC_DEVICES_BUF_SIZE (16 * 1024)
 # define DM_NAME "device-mapper"
 # define DEV_DM_DIR "/dev/" DM_DIR
 # define CONTROL_PATH DEV_DM_DIR "/" DM_CONTROL_NODE
-# define BUF_SIZE (16 * 1024)
 
-G_STATIC_ASSERT(BUF_SIZE > sizeof(struct dm_ioctl));
+# define VIR_DEVMAPPER_IOCTL_BUF_SIZE_INCREMENT (16 * 1024)
+G_STATIC_ASSERT(VIR_DEVMAPPER_IOCTL_BUF_SIZE_INCREMENT > sizeof(struct dm_ioctl));
 
 
 static int
@@ -60,7 +61,7 @@ virDevMapperGetMajor(unsigned int *major)
     if (!virFileExists(CONTROL_PATH))
         return -2;
 
-    if (virFileReadAll(PROC_DEVICES, BUF_SIZE, &buf) < 0)
+    if (virFileReadAll(PROC_DEVICES, PROC_DEVICES_BUF_SIZE, &buf) < 0)
         return -1;
 
     lines = g_strsplit(buf, "\n", 0);
@@ -92,7 +93,7 @@ virDevMapperGetMajor(unsigned int *major)
 static void *
 virDMIoctl(int controlFD, int cmd, struct dm_ioctl *dm, char **buf)
 {
-    size_t bufsize = BUF_SIZE;
+    size_t bufsize = VIR_DEVMAPPER_IOCTL_BUF_SIZE_INCREMENT;
 
  reread:
     *buf = g_new0(char, bufsize);
@@ -113,7 +114,7 @@ virDMIoctl(int controlFD, int cmd, struct dm_ioctl *dm, char **buf)
     memcpy(dm, *buf, sizeof(struct dm_ioctl));
 
     if (dm->flags & DM_BUFFER_FULL_FLAG) {
-        bufsize += BUF_SIZE;
+        bufsize += VIR_DEVMAPPER_IOCTL_BUF_SIZE_INCREMENT;
         VIR_FREE(*buf);
         goto reread;
     }
