@@ -96,7 +96,7 @@
       operation can be used to create it.
     </p>
 
-    <h3>Example pool input definition</h3>
+    <h3>Example directory pool input definition</h3>
     <pre>
 &lt;pool type="dir"&gt;
   &lt;name&gt;virtimages&lt;/name&gt;
@@ -105,12 +105,12 @@
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid directory pool format types</h3>
     <p>
       The directory pool does not use the pool format type element.
     </p>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid directory volume format types</h3>
     <p>
       One of the following options:
     </p>
@@ -148,7 +148,7 @@
       required.
     </p>
 
-    <h3>Example pool input</h3>
+    <h3>Example filesystem pool input</h3>
     <pre>
 &lt;pool type="fs"&gt;
   &lt;name&gt;virtimages&lt;/name&gt;
@@ -160,7 +160,7 @@
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid filesystem pool format types</h3>
     <p>
       The filesystem pool supports the following formats:
     </p>
@@ -207,7 +207,7 @@
       </li>
     </ul>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid filesystem volume format types</h3>
     <p>
       The valid volume types are the same as for the <code>directory</code>
       pool type.
@@ -224,7 +224,7 @@
       protocol, which generally tries a mount via NFS first.
     </p>
 
-    <h3>Example pool input</h3>
+    <h3>Example network filesystem pool input</h3>
     <pre>
 &lt;pool type="netfs"&gt;
   &lt;name&gt;virtimages&lt;/name&gt;
@@ -238,7 +238,7 @@
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid network filesystem pool format types</h3>
     <p>
       The network filesystem pool supports the following formats:
     </p>
@@ -261,7 +261,7 @@
       </li>
     </ul>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid network filesystem volume format types</h3>
     <p>
       The valid volume types are the same as for the <code>directory</code>
       pool type.
@@ -278,7 +278,7 @@
       of storage from the volume group.
     </p>
 
-    <h3>Example pool input</h3>
+    <h3>Example logical pool input</h3>
     <pre>
 &lt;pool type="logical"&gt;
   &lt;name&gt;HostVG&lt;/name&gt;
@@ -292,14 +292,14 @@
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid logical pool format types</h3>
     <p>
       The logical volume pool supports only the <code>lvm2</code> format,
       although not supplying a format value will result in automatic
       selection of the<code>lvm2</code> format.
     </p>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid logical volume format types</h3>
     <p>
       The logical volume pool does not use the volume format type element.
     </p>
@@ -315,7 +315,7 @@
       It will default to using <code>dos</code> as the pool source format.
     </p>
 
-    <h3>Example pool input</h3>
+    <h3>Example disk pool input</h3>
     <pre>
 &lt;pool type="disk"&gt;
   &lt;name&gt;sda&lt;/name&gt;
@@ -327,7 +327,7 @@
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid disk pool format types</h3>
     <p>
       The disk volume pool accepts the following pool format types, representing
       the common partition table types:
@@ -374,7 +374,7 @@
       in <code>parted</code>.
     </p>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid disk volume format types</h3>
     <p>
       The disk volume pool accepts the following volume format types, representing
       the common partition entry types:
@@ -423,7 +423,7 @@
       on the same host will fail the duplicate source pool checks.
     </p>
 
-    <h3>Example pool input</h3>
+    <h3>Example iSCSI pool input</h3>
     <pre>
 &lt;pool type="iscsi"&gt;
   &lt;name&gt;virtimages&lt;/name&gt;
@@ -436,12 +436,12 @@
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid iSCSI pool format types</h3>
     <p>
       The iSCSI volume pool does not use the pool format type element.
     </p>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid iSCSI volume format types</h3>
     <p>
       The iSCSI volume pool does not use the volume format type element.
     </p>
@@ -453,7 +453,7 @@
       It requires a host, a path which is the target IQN, and an initiator IQN.
     </p>
 
-    <h3>Example pool input</h3>
+    <h3>Example iSCSI direct pool input</h3>
     <pre>
 &lt;pool type="iscsi-direct"&gt;
   &lt;name&gt;virtimages&lt;/name&gt;
@@ -466,12 +466,12 @@
   &lt;/source&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid iSCSI direct pool format types</h3>
     <p>
       The iSCSI direct volume pool does not use the pool format type element.
     </p>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid iSCSI direct volume format types</h3>
     <p>
       The iSCSI direct volume pool does not use the volume format type element.
     </p>
@@ -486,7 +486,7 @@
       <span class="since">Since 0.6.2</span>
     </p>
 
-    <h3>Example pool input</h3>
+    <h3>Example SCSI pool input</h3>
     <pre>
 &lt;pool type="scsi"&gt;
   &lt;name&gt;virtimages&lt;/name&gt;
@@ -498,12 +498,12 @@
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid SCSI pool format types</h3>
     <p>
       The SCSI volume pool does not use the pool format type element.
     </p>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid SCSI volume format types</h3>
     <p>
       The SCSI volume pool does not use the volume format type element.
     </p>
@@ -522,7 +522,7 @@
       <span class="since">Since 0.7.1</span>
     </p>
 
-    <h3>Example pool input</h3>
+    <h3>Example multipath pool input</h3>
     <pre>
 &lt;pool type="mpath"&gt;
   &lt;name&gt;virtimages&lt;/name&gt;
@@ -531,12 +531,12 @@
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid multipath pool format types</h3>
     <p>
       The Multipath volume pool does not use the pool format type element.
     </p>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid multipath volume format types</h3>
     <p>
       The Multipath volume pool does not use the volume format type element.
     </p>
@@ -562,7 +562,7 @@
       <span class="since">Since 0.9.13</span>
     </p>
 
-    <h3>Example pool input</h3>
+    <h3>Example RBD pool input</h3>
     <pre>
 &lt;pool type="rbd"&gt;
   &lt;name&gt;myrbdpool&lt;/name&gt;
@@ -577,7 +577,7 @@
   &lt;/source&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Example volume output</h3>
+    <h3>Example RBD volume output</h3>
     <pre>
 &lt;volume&gt;
   &lt;name&gt;myvol&lt;/name&gt;
@@ -597,19 +597,19 @@
   &lt;/target&gt;
 &lt;/volume&gt;</pre>
 
-    <h3>Example disk attachment</h3>
+    <h3>Example RBD disk attachment</h3>
     <p>RBD images can be attached to QEMU guests when QEMU is built
     with RBD support. Information about attaching a RBD image to a
     guest can be found
     at <a href="formatdomain.html#elementsDisks">format domain</a>
     page.</p>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid RBD pool format types</h3>
     <p>
       The RBD pool does not use the pool format type element.
     </p>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid RBD volume format types</h3>
     <p>
       Only raw volumes are supported.
     </p>
@@ -626,7 +626,7 @@
       <span class="since">Since 0.9.13</span>
     </p>
 
-    <h3>Example pool input</h3>
+    <h3>Example Sheepdog pool input</h3>
     <pre>
 &lt;pool type="sheepdog"&gt;
   &lt;name&gt;mysheeppool&lt;/name&gt;
@@ -636,7 +636,7 @@
   &lt;/source&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Example volume output</h3>
+    <h3>Example Sheepdog volume output</h3>
     <pre>
 &lt;volume&gt;
   &lt;name&gt;myvol&lt;/name&gt;
@@ -656,19 +656,19 @@
   &lt;/target&gt;
 &lt;/volume&gt;</pre>
 
-    <h3>Example disk attachment</h3>
+    <h3>Example Sheepdog disk attachment</h3>
     <p>Sheepdog images can be attached to QEMU guests.
     Information about attaching a Sheepdog image to a
     guest can be found
     at the <a href="formatdomain.html#elementsDisks">format domain</a>
     page.</p>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid Sheepdog pool format types</h3>
     <p>
       The Sheepdog pool does not use the pool format type element.
     </p>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid Sheepdog volume format types</h3>
     <p>
       The Sheepdog pool does not use the volume format type element.
     </p>
@@ -696,7 +696,7 @@
       <span class="since">Since 1.2.0</span>
     </p>
 
-    <h3>Example pool input</h3>
+    <h3>Example Gluster pool input</h3>
     <p>A gluster volume corresponds to a libvirt storage pool.  If a
       gluster volume could be mounted as <code>mount -t glusterfs
       localhost:/volname /some/path</code>, then the following example
@@ -722,7 +722,7 @@
   &lt;/source&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Example volume output</h3>
+    <h3>Example Gluster volume output</h3>
     <p>Libvirt storage volumes associated with a gluster pool
       correspond to the files that can be found when mounting the
       gluster volume.  The <code>name</code> is the path relative to
@@ -741,19 +741,19 @@
   &lt;allocation unit='bytes'&gt;53687091200&lt;/allocation&gt;
 &lt;/volume&gt;</pre>
 
-    <h3>Example disk attachment</h3>
+    <h3>Example Gluster disk attachment</h3>
     <p>Files within a gluster volume can be attached to QEMU guests.
     Information about attaching a Gluster image to a
     guest can be found
     at the <a href="formatdomain.html#elementsDisks">format domain</a>
     page.</p>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid Gluster pool format types</h3>
     <p>
       The Gluster pool does not use the pool format type element.
     </p>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid Gluster volume format types</h3>
     <p>
       The valid volume types are the same as for the <code>directory</code>
       pool type.
@@ -777,7 +777,7 @@
 
     <p><span class="since">Since 1.2.8</span></p>.
 
-    <h3>Example pool input</h3>
+    <h3>Example ZFS pool input</h3>
     <pre>
 &lt;pool type="zfs"&gt;
   &lt;name&gt;myzfspool&lt;/name&gt;
@@ -788,12 +788,12 @@
   &lt;/source&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid ZFS pool format types</h3>
     <p>
       The ZFS volume pool does not use the pool format type element.
     </p>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid ZFS volume format types</h3>
     <p>
       The ZFS volume pool does not use the volume format type element.
     </p>
@@ -808,7 +808,7 @@
     </p>
     <p>Please refer to the Virtuozzo Storage documentation for details
       on storage management and usage.</p>
-    <h3>Example pool input</h3>
+    <h3>Example vstorage pool input</h3>
     <p>In order to create storage pool with Virtuozzo Storage backend you
     have to provide cluster name and be authorized within the cluster.</p>
      <pre>
@@ -822,12 +822,12 @@
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
-    <h3>Valid pool format types</h3>
+    <h3>Valid vstorage pool format types</h3>
     <p>
       The Vstorage volume pool does not use the pool format type element.
     </p>
 
-    <h3>Valid volume format types</h3>
+    <h3>Valid vstorage volume format types</h3>
     <p>The valid volume types are the same as for the directory pool.</p>
   </body>
 </html>
