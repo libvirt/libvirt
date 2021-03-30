@@ -44,7 +44,7 @@ static const char *const i386_machines[] = {
     "pc", "isapc", NULL
 };
 /**
- * Oldest supported qemu-1.5 supports machine types back to pc-0.10.
+ * Oldest supported qemu-2.11 supports machine types back to pc-0.10.
  */
 static const char *const x86_64_machines[] = {
     "pc", "isapc", "q35",
