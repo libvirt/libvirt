@@ -4372,90 +4372,6 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
 }
 
 
-static int
-qemuBuildVgaVideoCommand(virCommand *cmd,
-                         virDomainVideoDef *video,
-                         virQEMUCaps *qemuCaps)
-{
-    const char *dev;
-    const char *vgastr = qemuVideoTypeToString(video->type);
-
-    if (!vgastr || STREQ(vgastr, "")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid model for video type '%s'"),
-                       virDomainVideoTypeToString(video->type));
-        return -1;
-    }
-
-    virCommandAddArgList(cmd, "-vga", vgastr, NULL);
-
-    /* If we cannot use --device option to specify the video device
-     * in QEMU we will fallback to the old --vga option. To get the
-     * correct device name for the --vga option the 'qemuVideo' is
-     * used, but to set some device attributes we need to use the
-     * --global option and for that we need to specify the device
-     * name the same as for --device option and for that we need to
-     * use 'qemuDeviceVideo'.
-     *
-     * See 'Graphics Devices' section in docs/qdev-device-use.txt in
-     * QEMU repository.
-     */
-    dev = qemuDeviceVideoTypeToString(video->type);
-
-    if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
-        (video->vram || video->ram)) {
-        unsigned int ram = video->ram;
-        unsigned int vram = video->vram;
-        unsigned int vram64 = video->vram64;
-        unsigned int vgamem = video->vgamem;
-        unsigned int heads = video->heads;
-
-        if (ram) {
-            virCommandAddArg(cmd, "-global");
-            virCommandAddArgFormat(cmd, "%s.ram_size=%u",
-                                   dev, ram * 1024);
-        }
-        if (vram) {
-            virCommandAddArg(cmd, "-global");
-            virCommandAddArgFormat(cmd, "%s.vram_size=%u",
-                                   dev, vram * 1024);
-        }
-        if (vram64 &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VRAM64)) {
-            virCommandAddArg(cmd, "-global");
-            virCommandAddArgFormat(cmd, "%s.vram64_size_mb=%u",
-                                   dev, vram64 / 1024);
-        }
-        if (vgamem &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGAMEM)) {
-            virCommandAddArg(cmd, "-global");
-            virCommandAddArgFormat(cmd, "%s.vgamem_mb=%u",
-                                   dev, vgamem / 1024);
-        }
-        if (heads &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_MAX_OUTPUTS)) {
-            virCommandAddArg(cmd, "-global");
-            virCommandAddArgFormat(cmd, "%s.max_outputs=%u",
-                                   dev, heads);
-        }
-    }
-
-    if (video->vram &&
-        ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
-          virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_VGAMEM)) ||
-         (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
-          virQEMUCapsGet(qemuCaps, QEMU_CAPS_VMWARE_SVGA_VGAMEM)))) {
-        unsigned int vram = video->vram;
-
-        virCommandAddArg(cmd, "-global");
-        virCommandAddArgFormat(cmd, "%s.vgamem_mb=%u",
-                               dev, vram / 1024);
-    }
-
-    return 0;
-}
-
-
 static char *
 qemuBuildVhostUserChardevStr(const char *alias,
                              int *fd,
@@ -4507,34 +4423,15 @@ qemuBuildVideoCommandLine(virCommand *cmd,
         if (video->type == VIR_DOMAIN_VIDEO_TYPE_NONE)
             continue;
 
-        if (video->primary) {
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY)) {
+        if (qemuCommandAddExtDevice(cmd, &def->videos[i]->info) < 0)
+            return -1;
 
-                if (qemuCommandAddExtDevice(cmd,
-                                            &def->videos[i]->info) < 0)
-                    return -1;
+        virCommandAddArg(cmd, "-device");
 
-                virCommandAddArg(cmd, "-device");
+        if (!(str = qemuBuildDeviceVideoStr(def, video, qemuCaps)))
+            return -1;
 
-                if (!(str = qemuBuildDeviceVideoStr(def, video, qemuCaps)))
-                    return -1;
-
-                virCommandAddArg(cmd, str);
-            } else {
-                if (qemuBuildVgaVideoCommand(cmd, video, qemuCaps) < 0)
-                    return -1;
-            }
-        } else {
-            if (qemuCommandAddExtDevice(cmd, &def->videos[i]->info) < 0)
-                return -1;
-
-            virCommandAddArg(cmd, "-device");
-
-            if (!(str = qemuBuildDeviceVideoStr(def, video, qemuCaps)))
-                return -1;
-
-            virCommandAddArg(cmd, str);
-        }
+        virCommandAddArg(cmd, str);
     }
 
     return 0;
