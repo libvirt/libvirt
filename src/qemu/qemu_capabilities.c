@@ -5230,23 +5230,6 @@ virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps)
 static void
 virQEMUCapsInitProcessCaps(virQEMUCaps *qemuCaps)
 {
-    /* 'intel-iommu' shows up as a device since 2.2.0, but can
-     * not be used with -device until 2.7.0. Before that it
-     * requires -machine iommu=on. So we must clear the device
-     * capability we detected on older QEMUs
-     */
-    if (qemuCaps->version < 2007000 &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU)) {
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU);
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU);
-    }
-
-    /* Prealloc on NVDIMMs is broken on older QEMUs leading to
-     * user data corruption. If we are dealing with such version
-     * of QEMU pretend we don't know how to NVDIMM. */
-    if (qemuCaps->version < 2009000)
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM);
-
     if (ARCH_IS_X86(qemuCaps->arch) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION)) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_CACHE);
