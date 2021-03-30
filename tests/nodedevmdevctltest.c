@@ -265,13 +265,13 @@ mymain(void)
     }
 
 #define DO_TEST_FULL(desc, func, info) \
-    if (virTestRun(desc, func, &info) < 0) \
+    if (virTestRun(desc, func, info) < 0) \
         ret = -1;
 
 #define DO_TEST_START_FULL(virt_type, create, filename) \
     do { \
         struct startTestInfo info = { virt_type, create, filename }; \
-        DO_TEST_FULL("mdevctl start " filename, testMdevctlStartHelper, info); \
+        DO_TEST_FULL("mdevctl start " filename, testMdevctlStartHelper, &info); \
        } \
     while (0)
 
