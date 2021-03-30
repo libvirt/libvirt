@@ -5053,6 +5053,13 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
 {
     /* Following caps were asserted by a version check for pre 2.11 qemus */
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_VMPORT_OPT);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_SMM_OPT);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL_GL);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_EGL_HEADLESS);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_NUMA_DIST);
 
     switch (qemuCaps->arch) {
     case VIR_ARCH_I686:
@@ -5129,15 +5136,6 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
 static void
 virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps)
 {
-    /* Following caps were asserted by a version check for pre 2.11 qemus */
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_VMPORT_OPT);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_SMM_OPT);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL_GL);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_EGL_HEADLESS);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_NUMA_DIST);
-
     /* -enable-fips is deprecated in QEMU 5.2.0, and QEMU
      * should be built with gcrypt to achieve FIPS compliance
      * automatically / implicitly
