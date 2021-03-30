@@ -344,8 +344,7 @@ qemuVirCommandGetDevSet(virCommand *cmd, int fd)
 static int
 qemuBuildDeviceAddressStr(virBuffer *buf,
                           const virDomainDef *domainDef,
-                          virDomainDeviceInfo *info,
-                          virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+                          virDomainDeviceInfo *info)
 {
     g_autofree char *devStr = NULL;
     const char *contAlias = NULL;
@@ -1833,14 +1832,14 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
 
         qemuBuildVirtioOptionsStr(&opt, disk->virtio);
 
-        if (qemuBuildDeviceAddressStr(&opt, def, &disk->info, qemuCaps) < 0)
+        if (qemuBuildDeviceAddressStr(&opt, def, &disk->info) < 0)
             return NULL;
         break;
 
     case VIR_DOMAIN_DISK_BUS_USB:
         virBufferAddLit(&opt, "usb-storage");
 
-        if (qemuBuildDeviceAddressStr(&opt, def, &disk->info, qemuCaps) < 0)
+        if (qemuBuildDeviceAddressStr(&opt, def, &disk->info) < 0)
             return NULL;
         break;
 
@@ -2311,7 +2310,7 @@ qemuBuildVHostUserFsCommandLine(virCommand *cmd,
     if (fs->info.bootIndex)
         virBufferAsprintf(&opt, ",bootindex=%u", fs->info.bootIndex);
 
-    if (qemuBuildDeviceAddressStr(&opt, def, &fs->info, priv->qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&opt, def, &fs->info) < 0)
         return -1;
 
     virCommandAddArgBuffer(cmd, &opt);
@@ -2386,7 +2385,7 @@ qemuBuildFSDevStr(const virDomainDef *def,
 
     qemuBuildVirtioOptionsStr(&opt, fs->virtio);
 
-    if (qemuBuildDeviceAddressStr(&opt, def, &fs->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&opt, def, &fs->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&opt);
@@ -2780,7 +2779,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
 
     qemuBuildIoEventFdStr(&buf, def->ioeventfd, qemuCaps);
 
-    if (qemuBuildDeviceAddressStr(&buf, domainDef, &def->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, domainDef, &def->info) < 0)
         return -1;
 
     *devstr = virBufferContentAndReset(&buf);
@@ -3429,7 +3428,7 @@ qemuBuildMemoryDimmBackendStr(virBuffer *buf,
 char *
 qemuBuildMemoryDeviceStr(const virDomainDef *def,
                          virDomainMemoryDef *mem,
-                         virQEMUCaps *qemuCaps)
+                         virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *device = NULL;
@@ -3482,7 +3481,7 @@ qemuBuildMemoryDeviceStr(const virDomainDef *def,
     virBufferAsprintf(&buf, "memdev=mem%s,id=%s",
                       mem->info.alias, mem->info.alias);
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &mem->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &mem->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -3642,7 +3641,7 @@ qemuBuildNicDevStr(virDomainDef *def,
     virBufferAsprintf(&buf, ",mac=%s",
                       virMacAddrFormat(&net->mac, macaddr));
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &net->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &net->info) < 0)
         return NULL;
     if (qemuBuildRomStr(&buf, &net->info) < 0)
         return NULL;
@@ -3851,7 +3850,7 @@ qemuBuildHostNetStr(virDomainNetDef *net,
 char *
 qemuBuildWatchdogDevStr(const virDomainDef *def,
                         virDomainWatchdogDef *dev,
-                        virQEMUCaps *qemuCaps)
+                        virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -3863,7 +3862,7 @@ qemuBuildWatchdogDevStr(const virDomainDef *def,
     }
 
     virBufferAsprintf(&buf, "%s,id=%s", model, dev->info.alias);
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -3930,7 +3929,7 @@ qemuBuildMemballoonCommandLine(virCommand *cmd,
     }
 
     virBufferAsprintf(&buf, ",id=%s", def->memballoon->info.alias);
-    if (qemuBuildDeviceAddressStr(&buf, def, &def->memballoon->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &def->memballoon->info) < 0)
         return -1;
 
     if (def->memballoon->autodeflate != VIR_TRISTATE_SWITCH_ABSENT) {
@@ -4031,7 +4030,7 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
         virQEMUBuildBufferEscapeComma(&buf, dev->source.evdev);
     }
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
         return NULL;
 
     qemuBuildVirtioOptionsStr(&buf, dev->virtio);
@@ -4042,7 +4041,7 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
 static char *
 qemuBuildUSBInputDevStr(const virDomainDef *def,
                         virDomainInputDef *dev,
-                        virQEMUCaps *qemuCaps)
+                        virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -4058,7 +4057,7 @@ qemuBuildUSBInputDevStr(const virDomainDef *def,
         break;
     }
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -4166,7 +4165,7 @@ qemuBuildSoundDevStr(const virDomainDef *def,
             return NULL;
         virBufferAsprintf(&buf, ",audiodev=%s", audioid);
     }
-    if (qemuBuildDeviceAddressStr(&buf, def, &sound->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &sound->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -4364,7 +4363,7 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
         virBufferAsprintf(&buf, ",xres=%u,yres=%u", video->res->x, video->res->y);
     }
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &video->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &video->info) < 0)
         return NULL;
 
     qemuBuildVirtioOptionsStr(&buf, video->virtio);
@@ -4546,7 +4545,7 @@ char *
 qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                           virDomainHostdevDef *dev,
                           unsigned int bootIndex, /* used iff dev->info->bootIndex == 0 */
-                          virQEMUCaps *qemuCaps)
+                          virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainHostdevSubsysPCI *pcisrc = &dev->source.subsys.u.pci;
@@ -4581,7 +4580,7 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
         bootIndex = dev->info->bootIndex;
     if (bootIndex)
         virBufferAsprintf(&buf, ",bootindex=%u", bootIndex);
-    if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, dev->info) < 0)
         return NULL;
     if (qemuBuildRomStr(&buf, dev->info) < 0)
         return NULL;
@@ -4629,7 +4628,7 @@ qemuBuildUSBHostdevDevStr(const virDomainDef *def,
     if (dev->info->bootIndex)
         virBufferAsprintf(&buf, ",bootindex=%u", dev->info->bootIndex);
 
-    if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, dev->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -4639,13 +4638,13 @@ qemuBuildUSBHostdevDevStr(const virDomainDef *def,
 static char *
 qemuBuildHubDevStr(const virDomainDef *def,
                    virDomainHubDef *dev,
-                   virQEMUCaps *qemuCaps)
+                   virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&buf, "usb-hub");
     virBufferAsprintf(&buf, ",id=%s", dev->info.alias);
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -4723,7 +4722,7 @@ qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
                       vhostfdName,
                       dev->info->alias);
 
-    if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, dev->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -5142,7 +5141,7 @@ qemuBuildHostdevMdevModelTypeString(virDomainHostdevSubsysMediatedDev *mdev)
 char *
 qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
                                virDomainHostdevDef *dev,
-                               virQEMUCaps *qemuCaps)
+                               virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainHostdevSubsysMediatedDev *mdevsrc = &dev->source.subsys.u.mdev;
@@ -5162,7 +5161,7 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
         virBufferAsprintf(&buf, ",display=%s",
                           virTristateSwitchTypeToString(mdevsrc->display));
 
-    if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, dev->info) < 0)
         return NULL;
 
     if (dev->info->bootIndex)
@@ -5642,7 +5641,7 @@ qemuBuildRNGDevStr(const virDomainDef *def,
 
     qemuBuildVirtioOptionsStr(&buf, dev->virtio);
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -9075,7 +9074,7 @@ qemuBuildSmartcardCommandLine(virLogManager *logManager,
 static char *
 qemuBuildShmemDevLegacyStr(virDomainDef *def,
                            virDomainShmemDef *shmem,
-                           virQEMUCaps *qemuCaps)
+                           virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -9099,7 +9098,7 @@ qemuBuildShmemDevLegacyStr(virDomainDef *def,
         }
     }
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &shmem->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &shmem->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -9108,7 +9107,7 @@ qemuBuildShmemDevLegacyStr(virDomainDef *def,
 char *
 qemuBuildShmemDevStr(virDomainDef *def,
                      virDomainShmemDef *shmem,
-                     virQEMUCaps *qemuCaps)
+                     virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -9140,7 +9139,7 @@ qemuBuildShmemDevStr(virDomainDef *def,
                           virTristateSwitchTypeToString(shmem->msi.ioeventfd));
     }
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &shmem->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &shmem->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -9588,7 +9587,7 @@ qemuBuildConsoleCommandLine(virLogManager *logManager,
 char *
 qemuBuildRedirdevDevStr(const virDomainDef *def,
                         virDomainRedirdevDef *dev,
-                        virQEMUCaps *qemuCaps)
+                        virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     size_t i;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -9631,7 +9630,7 @@ qemuBuildRedirdevDevStr(const virDomainDef *def,
     if (dev->info.bootIndex)
         virBufferAsprintf(&buf, ",bootindex=%u", dev->info.bootIndex);
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -9754,7 +9753,7 @@ qemuBuildDomainLoaderCommandLine(virCommand *cmd,
 static char *
 qemuBuildTPMDevStr(const virDomainDef *def,
                    virDomainTPMDef *tpm,
-                   virQEMUCaps *qemuCaps)
+                   virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *model = virDomainTPMModelTypeToString(tpm->model);
@@ -9765,7 +9764,7 @@ qemuBuildTPMDevStr(const virDomainDef *def,
     virBufferAsprintf(&buf, "%s,tpmdev=tpm-%s,id=%s",
                       model, tpm->info.alias, tpm->info.alias);
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &tpm->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &tpm->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -10335,7 +10334,7 @@ qemuBuildVsockDevStr(virDomainDef *def,
 
     qemuBuildVirtioOptionsStr(&buf, vsock->virtio);
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &vsock->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &vsock->info) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -10773,7 +10772,7 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
                       virDomainChrSerialTargetModelTypeToString(serial->targetModel),
                       serial->info.alias, serial->info.alias);
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &serial->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &serial->info) < 0)
         return -1;
 
     *deviceStr = virBufferContentAndReset(&buf);
