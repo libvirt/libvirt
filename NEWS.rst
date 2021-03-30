@@ -35,7 +35,19 @@ v7.2.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Compatibility with QEMU 6.0 for certain hot-(un)-plug operations
+
+    Libvirt 7.2.0 is required for compatibility with the upcoming QEMU 6.0
+    release for hotplug and hotunplug of certain devices and helpers, such as
+    iothreads, chardevs, RNG devices, disks with secret, ...
+
 * **Bug fixes**
+
+  * virtlogd|virtlockd: Fixed crash when upgrading the daemons in-place
+
+    A bug preventing the in-place upgrade of ``virtlogd`` and ``virtlockd``
+    daemons was fixed, so they can again be upgraded without dropping the log
+    file descriptors or locks on files.
 
 
 v7.1.0 (2021-03-01)
