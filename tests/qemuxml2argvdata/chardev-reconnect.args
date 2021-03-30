@@ -24,7 +24,7 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -no-acpi \
 -device virtio-serial-pci,id=virtio-serial1,bus=pci.0,addr=0xa \
--device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x3 \
+-device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x2 \
 -usb \
 -device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -chardev socket,id=charsmartcard0,path=/tmp/channel/asdf,reconnect=20 \
@@ -37,4 +37,4 @@ QEMU_AUDIO_DRV=none \
 -device usb-redir,chardev=charredir0,id=redir0,bus=usb.0,port=2 \
 -chardev socket,id=charrng0,host=localhost,port=2345,reconnect=5 \
 -object rng-egd,id=objrng0,chardev=charrng0 \
--device virtio-rng-pci,rng=objrng0,id=rng0,bus=pci.0,addr=0x4
+-device virtio-rng-pci,rng=objrng0,id=rng0,bus=pci.0,addr=0x3

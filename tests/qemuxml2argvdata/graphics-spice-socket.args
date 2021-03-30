@@ -24,4 +24,4 @@ QEMU_AUDIO_DRV=spice \
 -no-acpi \
 -usb \
 -spice unix,addr=/tmp/spice.sock,seamless-migration=on \
--vga cirrus
+-device cirrus-vga,id=video0,bus=pci.0,addr=0x2

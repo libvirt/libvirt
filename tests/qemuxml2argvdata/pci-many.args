@@ -81,5 +81,5 @@ QEMU_AUDIO_DRV=none \
 -device virtio-blk-pci,bus=pci.0,addr=0x1e,drive=drive-virtio-disk182,id=virtio-disk182 \
 -drive file=/var/lib/libvirt/images/disk-g-b.img,format=raw,if=none,id=drive-virtio-disk183 \
 -device virtio-blk-pci,bus=pci.0,addr=0x1f,drive=drive-virtio-disk183,id=virtio-disk183 \
--vga cirrus \
+-device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6

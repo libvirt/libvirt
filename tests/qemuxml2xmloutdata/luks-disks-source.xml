@@ -46,7 +46,7 @@
         </encryption>
       </source>
       <target dev='vdc' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </disk>
     <disk type='volume' device='disk'>
       <driver name='qemu' type='raw'/>
@@ -56,7 +56,7 @@
         </encryption>
       </source>
       <target dev='vdd' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
@@ -69,7 +69,7 @@
         </encryption>
       </source>
       <target dev='vde' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </disk>
     <controller type='usb' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>

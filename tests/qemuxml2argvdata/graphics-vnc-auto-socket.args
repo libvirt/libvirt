@@ -24,4 +24,4 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -usb \
 -vnc unix:/tmp/lib/domain--1-QEMUGuest1/vnc.sock \
--vga cirrus
+-device cirrus-vga,id=video0,bus=pci.0,addr=0x2

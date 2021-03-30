@@ -31,7 +31,7 @@
       <source network='default'/>
       <model type='e1000'/>
       <backend tap='/dev/null'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </interface>
     <interface type='network'>
       <mac address='52:54:00:e5:48:59'/>
@@ -39,7 +39,7 @@
       <model type='virtio'/>
       <driver name='vhost'/>
       <backend tap='/dev/null' vhost='/dev/zero'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
     <serial type='pty'>
       <target type='isa-serial' port='0'>
@@ -53,7 +53,7 @@
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
     <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </memballoon>
   </devices>
 </domain>

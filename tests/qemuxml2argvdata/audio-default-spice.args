@@ -26,4 +26,4 @@ QEMU_AUDIO_DRV=spice \
 -drive file=/dev/cdrom,format=raw,if=none,id=drive-ide0-1-0,readonly=on \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \
 -spice port=0,seamless-migration=on \
--vga cirrus
+-device cirrus-vga,id=video0,bus=pci.0,addr=0x2

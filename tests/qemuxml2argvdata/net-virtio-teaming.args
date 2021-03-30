@@ -27,9 +27,9 @@ QEMU_AUDIO_DRV=none \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -netdev user,id=hostua-backup0 \
--device virtio-net-pci,failover=on,netdev=hostua-backup0,id=ua-backup0,mac=00:11:22:33:44:55,bus=pci.0,addr=0x3 \
+-device virtio-net-pci,failover=on,netdev=hostua-backup0,id=ua-backup0,mac=00:11:22:33:44:55,bus=pci.0,addr=0x2 \
 -netdev user,id=hostua-backup1 \
--device virtio-net-pci,failover=on,netdev=hostua-backup1,id=ua-backup1,mac=66:44:33:22:11:00,bus=pci.0,addr=0x4 \
--device vfio-pci,host=0000:03:07.1,id=hostdev0,bus=pci.0,addr=0x5,failover_pair_id=ua-backup0 \
--device vfio-pci,host=0000:03:07.2,id=hostdev1,bus=pci.0,addr=0x6,failover_pair_id=ua-backup1 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x7
+-device virtio-net-pci,failover=on,netdev=hostua-backup1,id=ua-backup1,mac=66:44:33:22:11:00,bus=pci.0,addr=0x3 \
+-device vfio-pci,host=0000:03:07.1,id=hostdev0,bus=pci.0,addr=0x4,failover_pair_id=ua-backup0 \
+-device vfio-pci,host=0000:03:07.2,id=hostdev1,bus=pci.0,addr=0x5,failover_pair_id=ua-backup1 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6

@@ -22,14 +22,14 @@
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
     <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </memballoon>
     <rng model='virtio'>
       <backend model='egd' type='tcp'>
         <source mode='connect' host='1.2.3.4' service='1234'/>
         <protocol type='raw'/>
       </backend>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </rng>
   </devices>
 </domain>

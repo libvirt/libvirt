@@ -32,4 +32,4 @@ QEMU_AUDIO_DRV=none \
 -device usb-mouse,id=input0,bus=usb.0,port=3 \
 -device usb-mouse,id=input1,bus=usb.0,port=4 \
 -device usb-mouse,id=input2,bus=usb.0,port=5 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2

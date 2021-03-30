@@ -32,8 +32,8 @@
     </controller>
     <controller type='pci' index='3' model='pcie-root-port'>
       <model name='ioh3420'/>
-      <target chassis='3' port='0x10'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      <target chassis='3' port='0x8'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </controller>
     <controller type='pci' index='4' model='pcie-switch-upstream-port'>
       <model name='x3130-upstream'/>

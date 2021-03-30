@@ -25,18 +25,18 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -usb \
 -object memory-backend-file,id=shmmem-shmem0,mem-path=/dev/shm/shmem0,size=4194304,share=on \
--device ivshmem-plain,id=shmem0,memdev=shmmem-shmem0,bus=pci.0,addr=0x3 \
+-device ivshmem-plain,id=shmem0,memdev=shmmem-shmem0,bus=pci.0,addr=0x2 \
 -object memory-backend-file,id=shmmem-shmem1,mem-path=/dev/shm/shmem1,size=134217728,share=on \
--device ivshmem-plain,id=shmem1,memdev=shmmem-shmem1,master=off,bus=pci.0,addr=0x5 \
+-device ivshmem-plain,id=shmem1,memdev=shmmem-shmem1,master=off,bus=pci.0,addr=0x3 \
 -object memory-backend-file,id=shmmem-shmem2,mem-path=/dev/shm/shmem2,size=268435456,share=on \
 -device ivshmem-plain,id=shmem2,memdev=shmmem-shmem2,master=on,bus=pci.0,addr=0x4 \
--device ivshmem-doorbell,id=shmem3,chardev=charshmem3,ioeventfd=on,bus=pci.0,addr=0x6 \
+-device ivshmem-doorbell,id=shmem3,chardev=charshmem3,ioeventfd=on,bus=pci.0,addr=0x5 \
 -chardev socket,id=charshmem3,path=/var/lib/libvirt/shmem-shmem3-sock \
--device ivshmem-doorbell,id=shmem4,chardev=charshmem4,ioeventfd=on,bus=pci.0,addr=0x7 \
+-device ivshmem-doorbell,id=shmem4,chardev=charshmem4,ioeventfd=on,bus=pci.0,addr=0x6 \
 -chardev socket,id=charshmem4,path=/tmp/shmem4-sock \
--device ivshmem-doorbell,id=shmem5,chardev=charshmem5,ioeventfd=off,bus=pci.0,addr=0x8 \
+-device ivshmem-doorbell,id=shmem5,chardev=charshmem5,ioeventfd=off,bus=pci.0,addr=0x7 \
 -chardev socket,id=charshmem5,path=/tmp/shmem5-sock \
--device ivshmem-doorbell,id=shmem6,chardev=charshmem6,vectors=16,ioeventfd=on,bus=pci.0,addr=0x9 \
+-device ivshmem-doorbell,id=shmem6,chardev=charshmem6,vectors=16,ioeventfd=on,bus=pci.0,addr=0x8 \
 -chardev socket,id=charshmem6,path=/tmp/shmem6-sock \
--device ivshmem-doorbell,id=shmem7,chardev=charshmem7,vectors=32,ioeventfd=on,bus=pci.0,addr=0xa \
+-device ivshmem-doorbell,id=shmem7,chardev=charshmem7,vectors=32,ioeventfd=on,bus=pci.0,addr=0x9 \
 -chardev socket,id=charshmem7,path=/tmp/shmem7-sock

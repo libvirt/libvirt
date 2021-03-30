@@ -24,11 +24,11 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -no-acpi \
 -usb \
--device vfio-pci,host=0005:90:01.0,id=hostdev0,bus=pci.0,addr=0x3 \
--device vfio-pci,host=0001:01:00.1,id=hostdev1,bus=pci.0,addr=0x4 \
--device vfio-pci,host=0001:01:00.0,id=hostdev2,bus=pci.0,addr=0x5 \
--device vfio-pci,host=0005:90:01.2,id=hostdev3,bus=pci.0,addr=0x6 \
--device vfio-pci,host=0005:90:01.3,id=hostdev4,bus=pci.0,addr=0x7 \
--device vfio-pci,host=0000:06:12.1,id=hostdev5,bus=pci.0,addr=0x8 \
--device vfio-pci,host=0000:06:12.2,id=hostdev6,bus=pci.0,addr=0x9 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0xa
+-device vfio-pci,host=0005:90:01.0,id=hostdev0,bus=pci.0,addr=0x2 \
+-device vfio-pci,host=0001:01:00.1,id=hostdev1,bus=pci.0,addr=0x3 \
+-device vfio-pci,host=0001:01:00.0,id=hostdev2,bus=pci.0,addr=0x4 \
+-device vfio-pci,host=0005:90:01.2,id=hostdev3,bus=pci.0,addr=0x5 \
+-device vfio-pci,host=0005:90:01.3,id=hostdev4,bus=pci.0,addr=0x6 \
+-device vfio-pci,host=0000:06:12.1,id=hostdev5,bus=pci.0,addr=0x7 \
+-device vfio-pci,host=0000:06:12.2,id=hostdev6,bus=pci.0,addr=0x8 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x9

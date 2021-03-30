@@ -33,6 +33,6 @@ QEMU_AUDIO_DRV=spice \
 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:71:70:89,bus=pci.0,addr=0x7 \
 -device usb-tablet,id=input0,bus=usb.0,port=1 \
 -spice port=5900,addr=127.0.0.1,seamless-migration=on \
--vga std \
+-device VGA,id=video0,bus=pci.0,addr=0x2 \
 -device AC97,id=sound0,bus=pci.0,addr=0x3 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5

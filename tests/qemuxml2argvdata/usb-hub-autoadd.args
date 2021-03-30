@@ -29,4 +29,4 @@ QEMU_AUDIO_DRV=none \
 -device usb-mouse,id=input1,bus=usb.0,port=1.1 \
 -device usb-mouse,id=input2,bus=usb.0,port=1.2 \
 -device usb-tablet,id=input3,bus=usb.0,port=1.3 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2

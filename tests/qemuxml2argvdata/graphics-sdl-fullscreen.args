@@ -28,4 +28,4 @@ DISPLAY=:0.1 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -full-screen \
 -display sdl \
--vga cirrus
+-device cirrus-vga,id=video0,bus=pci.0,addr=0x2

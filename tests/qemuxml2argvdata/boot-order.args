@@ -29,10 +29,10 @@ QEMU_AUDIO_DRV=none \
 -drive file=/root/boot.iso,format=raw,if=none,id=drive-ide0-1-0,readonly=on \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \
 -drive file=sheepdog:example.org:6000:image,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=3 \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=3 \
 -drive file=/dev/null,format=raw,if=none,id=drive-fdc0-0-1 \
 -global isa-fdc.driveB=drive-fdc0-0-1 \
 -global isa-fdc.bootindexB=4 \
 -netdev user,id=hostnet0 \
--device virtio-net-pci,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,addr=0x3,bootindex=2 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,addr=0x2,bootindex=2 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4

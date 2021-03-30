@@ -25,12 +25,12 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -usb \
 -drive file=nbd:example.org:6000,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-pci,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+-device virtio-blk-pci,bus=pci.0,addr=0x2,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
 -drive file=nbd:example.org:6000:exportname=bar,format=raw,if=none,id=drive-virtio-disk1 \
--device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,id=virtio-disk1 \
+-device virtio-blk-pci,bus=pci.0,addr=0x3,drive=drive-virtio-disk1,id=virtio-disk1 \
 -drive 'file=nbd://[::1]:6000,format=raw,if=none,id=drive-virtio-disk2' \
--device virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-virtio-disk2,id=virtio-disk2 \
+-device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk2,id=virtio-disk2 \
 -drive 'file=nbd://[::1]:6000/bar,format=raw,if=none,id=drive-virtio-disk3' \
--device virtio-blk-pci,bus=pci.0,addr=0x6,drive=drive-virtio-disk3,id=virtio-disk3 \
+-device virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-virtio-disk3,id=virtio-disk3 \
 -drive file=nbd:unix:/var/run/nbdsock:exportname=bar,format=raw,if=none,id=drive-virtio-disk4 \
--device virtio-blk-pci,bus=pci.0,addr=0x7,drive=drive-virtio-disk4,id=virtio-disk4
+-device virtio-blk-pci,bus=pci.0,addr=0x6,drive=drive-virtio-disk4,id=virtio-disk4

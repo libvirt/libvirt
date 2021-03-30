@@ -31,34 +31,34 @@
     <input type='keyboard' bus='ps2'/>
     <sound model='pcspk'/>
     <sound model='es1370'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </sound>
     <sound model='sb16'/>
     <sound model='ac97'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </sound>
+    <sound model='ich6'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </sound>
     <sound model='ich6'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
-    </sound>
-    <sound model='ich6'>
       <codec type='micro'/>
       <codec type='duplex'/>
       <codec type='output'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </sound>
+    <sound model='ich9'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </sound>
     <sound model='ich9'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
-    </sound>
-    <sound model='ich9'>
       <codec type='micro'/>
       <codec type='duplex'/>
       <codec type='output'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </sound>
     <sound model='usb'/>
     <audio id='1' type='none'/>
     <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
     </memballoon>
   </devices>
 </domain>

@@ -23,5 +23,5 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--device ioh3420,port=0x10,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x2 \
--device ioh3420,port=0x11,chassis=2,id=pci.2,bus=pcie.0,addr=0x2.0x1
+-device ioh3420,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
+-device ioh3420,port=0x9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1

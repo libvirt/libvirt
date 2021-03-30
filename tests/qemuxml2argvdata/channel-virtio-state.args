@@ -33,4 +33,4 @@ QEMU_AUDIO_DRV=none \
 -device virtserialport,bus=virtio-serial1.0,nr=4,chardev=charchannel1,id=channel1,name=org.linux-kvm.port.foo1 \
 -chardev pty,id=charchannel2 \
 -device virtserialport,bus=virtio-serial1.0,nr=5,chardev=charchannel2,id=channel2,name=org.linux-kvm.port.foo2 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2

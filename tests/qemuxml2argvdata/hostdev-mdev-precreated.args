@@ -24,4 +24,4 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -no-acpi \
 -usb \
--device vfio-pci,id=hostdev0,sysfsdev=/sys/bus/mdev/devices/53764d0e-85a0-42b4-af5c-2046b460b1dc,bus=pci.0,addr=0x3
+-device vfio-pci,id=hostdev0,sysfsdev=/sys/bus/mdev/devices/53764d0e-85a0-42b4-af5c-2046b460b1dc,bus=pci.0,addr=0x2

@@ -20,7 +20,7 @@
         <host name='example.org' port='6000'/>
       </source>
       <target dev='vda' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
@@ -28,7 +28,7 @@
         <host name='example.org' port='6000'/>
       </source>
       <target dev='vdb' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
@@ -39,7 +39,7 @@
         <host name='example.org' port='6000'/>
       </source>
       <target dev='vdc' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
@@ -50,7 +50,7 @@
         <host name='example.org' port='6000'/>
       </source>
       <target dev='vdd' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </disk>
     <disk type='network' device='lun'>
       <driver name='qemu' type='raw'/>
@@ -65,7 +65,7 @@
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
     <controller type='scsi' index='0' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </controller>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>

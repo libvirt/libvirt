@@ -28,7 +28,7 @@
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
     <controller type='virtio-serial' index='0'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </controller>
     <serial type='pty'>
       <target type='isa-serial' port='0'>

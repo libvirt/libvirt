@@ -23,8 +23,8 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--device ahci,id=sata0,bus=pci.0,addr=0x3 \
+-device ahci,id=sata0,bus=pci.0,addr=0x2 \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-sata0-0-0 \
 -device ide-hd,bus=sata0.0,drive=drive-sata0-0-0,id=sata0-0-0,bootindex=1 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

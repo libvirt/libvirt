@@ -27,7 +27,5 @@ QEMU_AUDIO_DRV=spice \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -spice port=5903,addr=127.0.0.1,seamless-migration=on \
 -display egl-headless \
--vga qxl \
--global qxl-vga.ram_size=67108864 \
--global qxl-vga.vram_size=33554432 \
+-device qxl-vga,id=video0,ram_size=67108864,vram_size=33554432,bus=pci.0,addr=0x2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

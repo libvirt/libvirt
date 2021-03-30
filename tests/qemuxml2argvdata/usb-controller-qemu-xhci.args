@@ -23,4 +23,4 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--device qemu-xhci,p2=8,p3=8,id=usb,bus=pci.0,addr=0x3
+-device qemu-xhci,p2=8,p3=8,id=usb,bus=pci.0,addr=0x2

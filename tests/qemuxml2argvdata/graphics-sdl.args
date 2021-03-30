@@ -27,4 +27,4 @@ DISPLAY=:0.1 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -display sdl \
--vga std
+-device VGA,id=video0,bus=pci.0,addr=0x2

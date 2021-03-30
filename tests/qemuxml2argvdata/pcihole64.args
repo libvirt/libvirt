@@ -25,4 +25,4 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -global i440FX-pcihost.pci-hole64-size=1048576K \
 -usb \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2

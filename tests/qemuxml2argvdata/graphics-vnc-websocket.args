@@ -24,4 +24,4 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -usb \
 -vnc 127.0.0.1:0,websocket=5700 \
--vga cirrus
+-device cirrus-vga,id=video0,bus=pci.0,addr=0x2

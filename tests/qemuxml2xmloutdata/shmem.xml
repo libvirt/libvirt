@@ -25,12 +25,12 @@
     <shmem name='shmem0'>
       <model type='ivshmem'/>
       <size unit='M'>4</size>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </shmem>
     <shmem name='shmem1'>
       <model type='ivshmem'/>
       <size unit='M'>128</size>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </shmem>
     <shmem name='shmem2'>
       <model type='ivshmem'/>
@@ -41,34 +41,34 @@
       <model type='ivshmem'/>
       <size unit='M'>512</size>
       <server/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </shmem>
     <shmem name='shmem4'>
       <model type='ivshmem'/>
       <size unit='M'>1024</size>
       <server path='/tmp/shmem4-sock'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </shmem>
     <shmem name='shmem5'>
       <model type='ivshmem'/>
       <size unit='M'>2048</size>
       <server path='/tmp/shmem5-sock'/>
       <msi ioeventfd='off'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </shmem>
     <shmem name='shmem6'>
       <model type='ivshmem'/>
       <size unit='M'>4096</size>
       <server path='/tmp/shmem6-sock'/>
       <msi vectors='16'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
     </shmem>
     <shmem name='shmem7'>
       <model type='ivshmem'/>
       <size unit='M'>8192</size>
       <server path='/tmp/shmem7-sock'/>
       <msi vectors='32' ioeventfd='on'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
     </shmem>
   </devices>
 </domain>

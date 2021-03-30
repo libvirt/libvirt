@@ -24,7 +24,7 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -no-acpi \
 -usb \
--device virtio-mouse-pci,id=input0,bus=pci.0,addr=0x4 \
+-device virtio-mouse-pci,id=input0,bus=pci.0,addr=0x3 \
 -device virtio-keyboard-pci,id=input1,bus=pci.0,addr=0xa \
--device virtio-tablet-pci,id=input2,bus=pci.0,addr=0x5 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
+-device virtio-tablet-pci,id=input2,bus=pci.0,addr=0x4 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2

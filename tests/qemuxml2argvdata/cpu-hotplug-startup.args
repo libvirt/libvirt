@@ -24,4 +24,4 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -no-acpi \
 -usb \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2

@@ -31,7 +31,7 @@
       <driver name='qemu' type='raw' iothread='2'/>
       <source file='/var/lib/libvirt/images/iothrtest2.img'/>
       <target dev='vdc' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </disk>
     <controller type='usb' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>

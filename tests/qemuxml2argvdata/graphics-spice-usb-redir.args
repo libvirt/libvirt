@@ -27,7 +27,7 @@ QEMU_AUDIO_DRV=spice \
 -device ich9-usb-uhci2,masterbus=usb.0,firstport=2,bus=pci.0,addr=0x4.0x1 \
 -device ich9-usb-uhci3,masterbus=usb.0,firstport=4,bus=pci.0,addr=0x4.0x2 \
 -spice port=5903,tls-port=5904,addr=127.0.0.1,x509-dir=/etc/pki/libvirt-spice,tls-channel=main,plaintext-channel=inputs,tls-channel=usbredir,image-compression=auto_glz,jpeg-wan-compression=auto,zlib-glz-wan-compression=auto,playback-compression=on,streaming-video=filter,disable-copy-paste=on,seamless-migration=on \
--vga cirrus \
+-device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
 -chardev socket,id=charredir0,host=localhost,port=4000 \
 -device usb-redir,chardev=charredir0,id=redir0,bus=usb.0,port=1 \
 -chardev spicevmc,id=charredir1,name=usbredir \

@@ -24,4 +24,4 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -no-acpi \
 -netdev user,id=hostnet0 \
--device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:24:a5:9f,bus=pci.0,addr=0x3,romfile=
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:24:a5:9f,bus=pci.0,addr=0x2,romfile=

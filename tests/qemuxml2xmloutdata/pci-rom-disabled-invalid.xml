@@ -20,7 +20,7 @@
       <mac address='52:54:00:24:a5:9f'/>
       <model type='virtio'/>
       <rom file=''/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </interface>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>

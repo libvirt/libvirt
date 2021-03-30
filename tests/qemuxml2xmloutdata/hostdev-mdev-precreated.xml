@@ -28,7 +28,7 @@
       <source>
         <address uuid='53764d0e-85a0-42b4-af5c-2046b460b1dc'/>
       </source>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </hostdev>
     <memballoon model='none'/>
   </devices>

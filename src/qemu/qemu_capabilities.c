@@ -5045,11 +5045,15 @@ virQEMUCapsInitQMPArch(virQEMUCaps *qemuCaps,
  * virQEMUCapsInitQMPBasicArch:
  * @qemuCaps: QEMU capabilities
  *
- * Initialize @qemuCaps with basic architecture-dependent capabilities.
+ * Initialize @qemuCaps with basic always present and architecture-dependent
+ * capabilities.
  */
 void
 virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
 {
+    /* Following caps were asserted by a version check for pre 2.11 qemus */
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
+
     switch (qemuCaps->arch) {
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:
@@ -5126,7 +5130,6 @@ static void
 virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps)
 {
     /* Following caps were asserted by a version check for pre 2.11 qemus */
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_VMPORT_OPT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_SMM_OPT);
