@@ -1622,7 +1622,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("net-vhostuser");
     DO_TEST("net-vhostuser-multiq",
             QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
-    DO_TEST_FAILURE("net-vhostuser-multiq", NONE);
     DO_TEST_FAILURE("net-vhostuser-fail",
                     QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
     DO_TEST("net-user", NONE);
