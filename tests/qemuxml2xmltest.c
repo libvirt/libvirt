@@ -308,9 +308,6 @@ mymain(void)
     DO_TEST("disk-boot-cdrom", NONE);
     DO_TEST("disk-error-policy", NONE);
     DO_TEST("disk-fmt-qcow", NONE);
-    DO_TEST_CAPS_VER("disk-cache", "1.5.3");
-    DO_TEST_CAPS_VER("disk-cache", "2.6.0");
-    DO_TEST_CAPS_VER("disk-cache", "2.7.0");
     DO_TEST_CAPS_VER("disk-cache", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cache");
     DO_TEST_CAPS_LATEST("disk-metadata-cache");
@@ -1366,7 +1363,6 @@ mymain(void)
     DO_TEST("video-none-device", QEMU_CAPS_VNC);
 
     DO_TEST_CAPS_LATEST("intel-iommu");
-    DO_TEST_CAPS_VER("intel-iommu", "2.6.0");
     DO_TEST_CAPS_LATEST("intel-iommu-caching-mode");
     DO_TEST_CAPS_LATEST("intel-iommu-eim");
     DO_TEST_CAPS_LATEST("intel-iommu-device-iotlb");
