@@ -122,7 +122,6 @@ qemuAssignDeviceChrAlias(virDomainDef *def,
 
 int
 qemuAssignDeviceControllerAlias(virDomainDef *domainDef,
-                                virQEMUCaps *qemuCaps G_GNUC_UNUSED,
                                 virDomainControllerDef *controller)
 {
     const char *prefix = virDomainControllerTypeToString(controller->type);
@@ -654,7 +653,7 @@ qemuAssignDeviceAliases(virDomainDef *def, virQEMUCaps *qemuCaps)
             return -1;
     }
     for (i = 0; i < def->ncontrollers; i++) {
-        if (qemuAssignDeviceControllerAlias(def, qemuCaps, def->controllers[i]) < 0)
+        if (qemuAssignDeviceControllerAlias(def, def->controllers[i]) < 0)
             return -1;
     }
     for (i = 0; i < def->ninputs; i++) {

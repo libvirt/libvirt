@@ -870,7 +870,7 @@ int qemuDomainAttachControllerDevice(virQEMUDriver *driver,
     if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, "controller") < 0)
         return -1;
 
-    if (qemuAssignDeviceControllerAlias(vm->def, priv->qemuCaps, controller) < 0)
+    if (qemuAssignDeviceControllerAlias(vm->def, controller) < 0)
         goto cleanup;
 
     if (qemuBuildControllerDevStr(vm->def, controller, priv->qemuCaps, &devstr) < 0)

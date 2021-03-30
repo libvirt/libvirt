@@ -32,7 +32,6 @@ int qemuAssignDeviceChrAlias(virDomainDef *def,
                              ssize_t idx);
 
 int qemuAssignDeviceControllerAlias(virDomainDef *domainDef,
-                                    virQEMUCaps *qemuCaps,
                                     virDomainControllerDef *controller);
 
 int qemuAssignDeviceDiskAlias(virDomainDef *def,
