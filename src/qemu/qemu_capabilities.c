@@ -5063,6 +5063,9 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
     case VIR_ARCH_AARCH64:
         /* ACPI only works on x86 and aarch64 */
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_ACPI);
+
+        /* -cpu ...,aarch64=off is not detectable via qmp at this point */
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF);
         break;
 
     case VIR_ARCH_PPC64:
@@ -5125,11 +5128,6 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_EGL_HEADLESS);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NUMA_DIST);
-
-    /* -cpu ...,aarch64=off supported in v2.3.0 and onwards. But it
-       isn't detectable via qmp at this point */
-    if (qemuCaps->arch == VIR_ARCH_AARCH64)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF);
 
     if (ARCH_IS_PPC64(qemuCaps->arch)) {
         /* HPT resizing is supported since QEMU 2.10 on ppc64; unfortunately
