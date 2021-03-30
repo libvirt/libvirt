@@ -3051,8 +3051,6 @@ mymain(void)
     DO_TEST_GIC("aarch64-gic-v2", GIC_BOTH,
             QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-    DO_TEST_FAILURE("aarch64-gic-v3",
-            QEMU_CAPS_KVM, NONE);
     DO_TEST_GIC("aarch64-gic-v3", GIC_NONE,
             QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
@@ -3065,8 +3063,6 @@ mymain(void)
     DO_TEST_GIC("aarch64-gic-v3", GIC_BOTH,
             QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-    DO_TEST_FAILURE("aarch64-gic-host",
-            QEMU_CAPS_KVM, NONE);
     DO_TEST_GIC("aarch64-gic-host", GIC_NONE,
             QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
