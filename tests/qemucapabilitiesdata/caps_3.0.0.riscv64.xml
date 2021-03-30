@@ -38,7 +38,6 @@
   <flag name='vhost-user-multiqueue'/>
   <flag name='migration-event'/>
   <flag name='virtio-net'/>
-  <flag name='gic-version'/>
   <flag name='incoming-defer'/>
   <flag name='virtio-gpu'/>
   <flag name='virtio-keyboard'/>

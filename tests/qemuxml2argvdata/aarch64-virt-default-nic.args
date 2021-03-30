@@ -10,7 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name aarch64-virt-default-nic \
 -S \
--machine virt,accel=tcg,usb=off,dump-guest-core=off \
+-machine virt,accel=tcg,usb=off,dump-guest-core=off,gic-version=2 \
 -cpu cortex-a53 \
 -m 1024 \
 -realtime mlock=off \

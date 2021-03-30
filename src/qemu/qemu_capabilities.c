@@ -5066,6 +5066,9 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
 
         /* -cpu ...,aarch64=off is not detectable via qmp at this point */
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF);
+
+        /* gic is arm specific */
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACH_VIRT_GIC_VERSION);
         break;
 
     case VIR_ARCH_PPC64:
@@ -5128,7 +5131,6 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_SMM_OPT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL_GL);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_EGL_HEADLESS);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NUMA_DIST);

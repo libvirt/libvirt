@@ -10,7 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name QEMUGuest1 \
 -S \
--machine virt,accel=tcg,usb=off,dump-guest-core=off \
+-machine virt,accel=tcg,usb=off,dump-guest-core=off,gic-version=2 \
 -m 214 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

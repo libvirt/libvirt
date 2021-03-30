@@ -37,7 +37,6 @@
   <flag name='dea-key-wrap'/>
   <flag name='vhost-user-multiqueue'/>
   <flag name='migration-event'/>
-  <flag name='gic-version'/>
   <flag name='incoming-defer'/>
   <flag name='chardev-file-append'/>
   <flag name='vserport-change-event'/>

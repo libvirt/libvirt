@@ -10,7 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name guest \
 -S \
--machine virt,accel=tcg,usb=off,dump-guest-core=off \
+-machine virt,accel=tcg,usb=off,dump-guest-core=off,gic-version=2 \
 -cpu cortex-a57 \
 -drive file=/usr/share/AAVMF/AAVMF_CODE.fd,if=pflash,format=raw,unit=0,readonly=on \
 -drive file=/var/lib/libvirt/qemu/nvram/guest_VARS.fd,if=pflash,format=raw,unit=1 \
