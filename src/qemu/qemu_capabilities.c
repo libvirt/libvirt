@@ -2059,53 +2059,17 @@ virQEMUCapsGet(virQEMUCaps *qemuCaps,
 }
 
 
-bool virQEMUCapsHasPCIMultiBus(virQEMUCaps *qemuCaps,
-                               const virDomainDef *def)
+bool virQEMUCapsHasPCIMultiBus(const virDomainDef *def)
 {
     /* x86_64 and i686 support PCI-multibus on all machine types
      * since forever */
     if (ARCH_IS_X86(def->os.arch))
         return true;
 
+    /* PPC supports multibus on all machine types which have pci since qemu-2.0.0 */
     if (def->os.arch == VIR_ARCH_PPC ||
         ARCH_IS_PPC64(def->os.arch)) {
-        /*
-         * Usage of pci.0 naming:
-         *
-         *    ref405ep: no pci
-         *       taihu: no pci
-         *      bamboo: 1.1.0 (<= 1.5.0, so basically forever)
-         *       mac99: 2.0.0
-         *     g3beige: 2.0.0
-         *        prep: 1.4.0 (<= 1.5.0, so basically forever)
-         *     pseries: 2.0.0
-         *   mpc8544ds: forever
-         * virtex-m507: no pci
-         *     ppce500: 1.6.0
-         */
-
-        /* We do not store the qemu version in domain status XML.
-         * Hope the user is using a QEMU new enough to use 'pci.0',
-         * otherwise the results of this function will be wrong
-         * for domains already running at the time of daemon
-         * restart */
-        if (qemuCaps->version == 0)
-            return true;
-
-        if (qemuCaps->version >= 2000000)
-            return true;
-
-        if (qemuCaps->version >= 1006000 &&
-            STREQ(def->os.machine, "ppce500"))
-            return true;
-
-        if (STREQ(def->os.machine, "bamboo") ||
-            STREQ(def->os.machine, "mpc8544ds") ||
-            STREQ(def->os.machine, "prep")) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /* S390 supports PCI-multibus. */

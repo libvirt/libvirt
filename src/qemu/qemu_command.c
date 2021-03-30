@@ -345,7 +345,7 @@ static int
 qemuBuildDeviceAddressStr(virBuffer *buf,
                           const virDomainDef *domainDef,
                           virDomainDeviceInfo *info,
-                          virQEMUCaps *qemuCaps)
+                          virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_autofree char *devStr = NULL;
     const char *contAlias = NULL;
@@ -382,7 +382,7 @@ qemuBuildDeviceAddressStr(virBuffer *buf,
                      * case, use the default one. */
                     if (!qemuDomainIsPSeries(domainDef) &&
                         cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
-                        if (virQEMUCapsHasPCIMultiBus(qemuCaps, domainDef))
+                        if (virQEMUCapsHasPCIMultiBus(domainDef))
                             contAlias = "pci.0";
                         else
                             contAlias = "pci";

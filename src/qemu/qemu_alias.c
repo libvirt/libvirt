@@ -122,7 +122,7 @@ qemuAssignDeviceChrAlias(virDomainDef *def,
 
 int
 qemuAssignDeviceControllerAlias(virDomainDef *domainDef,
-                                virQEMUCaps *qemuCaps,
+                                virQEMUCaps *qemuCaps G_GNUC_UNUSED,
                                 virDomainControllerDef *controller)
 {
     const char *prefix = virDomainControllerTypeToString(controller->type);
@@ -131,7 +131,7 @@ qemuAssignDeviceControllerAlias(virDomainDef *domainDef,
         return 0;
 
     if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-        if (!virQEMUCapsHasPCIMultiBus(qemuCaps, domainDef)) {
+        if (!virQEMUCapsHasPCIMultiBus(domainDef)) {
             /* qemus that don't support multiple PCI buses have
              * hardcoded the name of their single PCI controller as
              * "pci".
