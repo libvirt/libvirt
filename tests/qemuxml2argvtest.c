@@ -1228,19 +1228,14 @@ mymain(void)
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST_CAPS_VER("eoi-disabled", "2.7.0");
     DO_TEST_CAPS_VER("eoi-disabled", "4.0.0");
     DO_TEST_CAPS_LATEST("eoi-disabled");
-    DO_TEST_CAPS_VER("eoi-enabled", "2.7.0");
     DO_TEST_CAPS_VER("eoi-enabled", "4.0.0");
     DO_TEST_CAPS_LATEST("eoi-enabled");
-    DO_TEST_CAPS_VER("pv-spinlock-disabled", "2.7.0");
     DO_TEST_CAPS_VER("pv-spinlock-disabled", "4.0.0");
     DO_TEST_CAPS_LATEST("pv-spinlock-disabled");
-    DO_TEST_CAPS_VER("pv-spinlock-enabled", "2.7.0");
     DO_TEST_CAPS_VER("pv-spinlock-enabled", "4.0.0");
     DO_TEST_CAPS_LATEST("pv-spinlock-enabled");
-    DO_TEST_CAPS_VER("kvmclock+eoi-disabled", "2.7.0");
     DO_TEST_CAPS_VER("kvmclock+eoi-disabled", "4.0.0");
     DO_TEST_CAPS_LATEST("kvmclock+eoi-disabled");
 
@@ -1370,9 +1365,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-error-policy");
     DO_TEST_CAPS_ARCH_VER("disk-error-policy-s390x", "s390x", "2.12.0");
     DO_TEST_CAPS_ARCH_LATEST("disk-error-policy-s390x", "s390x");
-    DO_TEST_CAPS_VER("disk-cache", "1.5.3");
-    DO_TEST_CAPS_VER("disk-cache", "2.6.0");
-    DO_TEST_CAPS_VER("disk-cache", "2.7.0");
     DO_TEST_CAPS_VER("disk-cache", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cache");
     DO_TEST_CAPS_LATEST("disk-metadata-cache");
@@ -1395,7 +1387,6 @@ mymain(void)
             QEMU_CAPS_GLUSTER_DEBUG_LEVEL);
     DO_TEST_CAPS_VER("disk-network-gluster", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-gluster");
-    DO_TEST_CAPS_VER("disk-network-rbd", "2.5.0");
     DO_TEST_CAPS_VER("disk-network-rbd", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd");
     DO_TEST_FAILURE("disk-network-rbd-no-colon", NONE);
@@ -1433,7 +1424,6 @@ mymain(void)
     DO_TEST_PARSE_ERROR("disk-usb-pci",
                         QEMU_CAPS_DEVICE_USB_STORAGE);
     DO_TEST_CAPS_LATEST("disk-scsi");
-    DO_TEST_CAPS_VER("disk-scsi-device-auto", "1.5.3");
     DO_TEST_CAPS_LATEST("disk-scsi-device-auto");
     DO_TEST("disk-scsi-disk-split",
             QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI);
@@ -1541,7 +1531,6 @@ mymain(void)
     driver.config->vncTLS = 1;
     driver.config->vncTLSx509verify = 1;
     DO_TEST("graphics-vnc-tls", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST_CAPS_VER("graphics-vnc-tls", "2.4.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-tls");
     driver.config->vncTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     DO_TEST_CAPS_VER("graphics-vnc-tls-secret", "5.2.0");
@@ -1630,7 +1619,6 @@ mymain(void)
     DO_TEST("misc-uuid", NONE);
     DO_TEST_PARSE_ERROR("vhost_queues-invalid", NONE);
     DO_TEST("net-vhostuser", QEMU_CAPS_CHARDEV_FD_PASS);
-    DO_TEST_CAPS_VER("net-vhostuser", "2.5.0");
     DO_TEST_CAPS_LATEST("net-vhostuser");
     DO_TEST("net-vhostuser-multiq",
             QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
@@ -1752,7 +1740,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("parallel-tcp-chardev", NONE);
     DO_TEST("parallel-parport-chardev", NONE);
-    DO_TEST_CAPS_VER("parallel-unix-chardev", "2.5.0");
     DO_TEST_CAPS_LATEST("parallel-unix-chardev");
     DO_TEST("console-compat-chardev",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
@@ -1760,7 +1747,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCI_SERIAL);
 
     DO_TEST("channel-guestfwd", NONE);
-    DO_TEST_CAPS_VER("channel-unix-guestfwd", "2.5.0");
     DO_TEST_CAPS_LATEST("channel-unix-guestfwd");
     DO_TEST("channel-virtio", NONE);
     DO_TEST("channel-virtio-state", NONE);
@@ -1775,7 +1761,6 @@ mymain(void)
     DO_TEST("console-virtio-ccw",
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_S390);
-    DO_TEST_CAPS_VER("console-virtio-unix", "2.5.0");
     DO_TEST_CAPS_LATEST("console-virtio-unix");
     DO_TEST("console-sclp",
             QEMU_CAPS_VIRTIO_S390,
@@ -1799,7 +1784,6 @@ mymain(void)
             QEMU_CAPS_CCID_PASSTHRU);
     DO_TEST("smartcard-controller",
             QEMU_CAPS_CCID_EMULATED);
-    DO_TEST_CAPS_VER("smartcard-passthrough-unix", "2.5.0");
     DO_TEST_CAPS_LATEST("smartcard-passthrough-unix");
 
     DO_TEST("chardev-reconnect",
@@ -1866,7 +1850,6 @@ mymain(void)
             QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_USB_REDIR_FILTER);
-    DO_TEST_CAPS_VER("usb-redir-unix", "2.5.0");
     DO_TEST_CAPS_LATEST("usb-redir-unix");
     DO_TEST("usb1-usb2",
             QEMU_CAPS_PIIX3_USB_UHCI,
@@ -2579,7 +2562,6 @@ mymain(void)
             QEMU_CAPS_OBJECT_RNG_EGD);
     DO_TEST_CAPS_VER("virtio-rng-builtin", "5.2.0");
     DO_TEST_CAPS_LATEST("virtio-rng-builtin");
-    DO_TEST_CAPS_VER("virtio-rng-egd-unix", "2.5.0");
     DO_TEST_CAPS_VER("virtio-rng-egd-unix", "5.2.0");
     DO_TEST_CAPS_LATEST("virtio-rng-egd-unix");
     DO_TEST("virtio-rng-multiple",
@@ -2938,10 +2920,8 @@ mymain(void)
                         QEMU_CAPS_DEVICE_IOH3420,
                         QEMU_CAPS_DEVICE_PXB_PCIE);
 
-    DO_TEST_CAPS_VER("hostdev-scsi-lsi", "2.8.0");
     DO_TEST_CAPS_VER("hostdev-scsi-lsi", "4.1.0");
     DO_TEST_CAPS_LATEST("hostdev-scsi-lsi");
-    DO_TEST_CAPS_VER("hostdev-scsi-virtio-scsi", "2.8.0");
     DO_TEST_CAPS_VER("hostdev-scsi-virtio-scsi", "4.1.0");
     DO_TEST_CAPS_LATEST("hostdev-scsi-virtio-scsi");
 
@@ -3421,7 +3401,6 @@ mymain(void)
     DO_TEST("acpi-table", NONE);
 
     DO_TEST_CAPS_LATEST("intel-iommu");
-    DO_TEST_CAPS_VER("intel-iommu", "2.6.0");
     DO_TEST_CAPS_LATEST("intel-iommu-caching-mode");
     DO_TEST_CAPS_LATEST("intel-iommu-eim");
     DO_TEST_CAPS_LATEST("intel-iommu-device-iotlb");
@@ -3553,7 +3532,6 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("tseg-explicit-size");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("tseg-i440fx");
-    DO_TEST_CAPS_VER_PARSE_ERROR("tseg-explicit-size", "2.10.0");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("tseg-invalid-size");
 
     DO_TEST("video-virtio-gpu-ccw", QEMU_CAPS_CCW,
