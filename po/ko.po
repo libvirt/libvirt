@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-03-26 11:32+0000\n"
-"PO-Revision-Date: 2021-03-24 12:15+0000\n"
+"PO-Revision-Date: 2021-03-30 07:01+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5.1\n"
+"X-Generator: Weblate 4.5.2\n"
 
 msgid ""
 "\n"
@@ -4089,9 +4089,9 @@ msgstr ""
 msgid "Could not find any vport capable device"
 msgstr "일치하는 장치를 찾을 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find auto-added %s controller with index %zu"
-msgstr "다음 이름으로 된 스토리지 풀을 찾을 수 없습니다: %s"
+msgstr "색인 %zu과 함께 자동 추가된 %s 제어기를 찾을 수 없습니다"
 
 #, c-format
 msgid "Could not find compute resource specified in '%s'"
@@ -4168,19 +4168,19 @@ msgstr "'%s'라는 이름의 스냅샷을 찾을 수 없음 "
 
 #, c-format
 msgid "Could not find storage pool with name '%s'"
-msgstr "'%s'라는 스토리지 풀을 찾을 수 없음"
+msgstr "'%s'라는 저장소 풀을 찾을 수 없음"
 
 #, c-format
 msgid "Could not find storage pool with name: %s"
-msgstr "다음 이름으로 된 스토리지 풀을 찾을 수 없습니다: %s"
+msgstr "다음 이름으로 된 저장소 풀을 찾을 수 없습니다: %s"
 
 #, c-format
 msgid "Could not find storage pool with uuid '%s'"
-msgstr "uuid '%s'의 스토리지 풀을 찾을 수 없음 "
+msgstr "uuid '%s'의 저장소 풀을 찾을 수 없음"
 
 #, c-format
 msgid "Could not find storage volume with key '%s'"
-msgstr "키 '%s'의 스토리지 볼륨을 찾을 수 없음 "
+msgstr "키 '%s'의 저장소 볼륨을 찾을 수 없음"
 
 #, c-format
 msgid "Could not find typefile '%s'"
@@ -4412,9 +4412,9 @@ msgstr "스냅샷 이름을 얻을 수 없음"
 msgid "Could not get storage controller bus, rc=%08x"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not get storage controller by name, rc=%08x"
-msgstr "다음 이름으로 된 스토리지 풀을 찾을 수 없습니다: %s"
+msgstr "이름 rc=%08x으로 저장소 제어기를 가져올 수 없습니다"
 
 #, fuzzy, c-format
 msgid "Could not get syspath for parent of '%s'"
@@ -7251,9 +7251,9 @@ msgstr ""
 msgid "Failed to get snapshot count"
 msgstr "스냅샷 %s 삭제 실패 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get storage controller name, rc=%08x"
-msgstr "스토리지 볼륨 목록 나열 실패 "
+msgstr "저장소 제어기 이름 rc=%08x 가져오기에 실패하였습니다"
 
 #, fuzzy
 msgid "Failed to get the number of active networks"
@@ -7426,7 +7426,7 @@ msgid "Failed to list ssh agent identities"
 msgstr "노드 장치 목록 얻기 실패"
 
 msgid "Failed to list storage volumes"
-msgstr "스토리지 볼륨 목록 나열 실패 "
+msgstr "저장소 볼륨 목록 나열 실패"
 
 msgid "Failed to list transient guests"
 msgstr "임시 게스트 목록 나열 실패 "
@@ -9024,9 +9024,9 @@ msgstr ""
 "HostVirtualSwitch가 이미 존재합니다, 기존의 것을 편집하는 것은 아직 지원되지 "
 "않습니다 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "Hostdev source %s must be a block device"
-msgstr "스토리지 소스 %s는 블록 장치이어야 합니다 "
+msgstr "저장소 소스 %s는 블록 장치이어야 합니다"
 
 msgid "Hostname"
 msgstr ""
@@ -11864,12 +11864,11 @@ msgstr "캐릭터 장치에 대한 소스 경로 특성 빠짐"
 msgid "Missing source service attribute for char device"
 msgstr "캐릭터 장치에 대한 소스 서비스 특성 빠짐"
 
-#, fuzzy
 msgid "Missing storage block path"
-msgstr "스토리지 호스트 블록 경로가 누락되어 있음 "
+msgstr "저장소 호스트 블록 경로가 누락되어 있음"
 
 msgid "Missing storage host block path"
-msgstr "스토리지 호스트 블록 경로가 누락되어 있음 "
+msgstr "저장소 호스트 블록 경로가 누락되어 있음"
 
 #, c-format
 msgid "Missing storage volume name for disk '%s'"
@@ -12662,7 +12661,7 @@ msgstr "이름이 '%s'와 일치하는 노드 디바이스가 없음"
 
 #, c-format
 msgid "No storage volume with key or path '%s'"
-msgstr "키 또는 경로 '%s'로된 스토리지 볼륨이 없음 "
+msgstr "키 또는 경로 '%s'로된 저장소 볼륨이 없음"
 
 #, fuzzy, c-format
 msgid "No stub driver configured for PCI device %s"
@@ -13446,9 +13445,9 @@ msgstr "경로 '%s'는 초과 항목에 종료합니다 "
 msgid "Path '%s' is not accessible"
 msgstr "경로 '%s'가 절대경로가 아닙니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Path '%s' must be a block device"
-msgstr "스토리지 소스 %s는 블록 장치이어야 합니다 "
+msgstr "경로 %s는 블록 장치이어야 합니다"
 
 msgid "Path has to specify the datacenter and compute resource"
 msgstr "경로는 데이터 센터를 지정하고 리소스를 계산합니다"
@@ -13845,9 +13844,7 @@ msgstr "QueryPerf가 예기치 않는 형식 '%s'으로된 객체를 반환했�
 
 msgid ""
 "QueryVirtualDiskUuid not available, cannot lookup storage volume by UUID"
-msgstr ""
-"QueryVirtualDiskUuid는 사용할 수 없습니다, UUID로 스토리지 볼륨을 찾을 수 없"
-"습니다 "
+msgstr "QueryVirtualDiskUuid는 사용 할 수 없습니다, UUID로 저장소 볼륨을 찾을 수 없습니다"
 
 #, fuzzy
 msgid "Querying migration downtime is not supported by QEMU binary"
@@ -15131,11 +15128,11 @@ msgstr "저장 풀(pool) 설정 파일이름 '%s'는 풀 이름 '%s'에 부합�
 
 #, c-format
 msgid "Storage source %s must be a block device"
-msgstr "스토리지 소스 %s는 블록 장치이어야 합니다 "
+msgstr "저장소 소스 %s는 블록 장치이어야 합니다"
 
 #, c-format
 msgid "Storage source %s must be a character device"
-msgstr "스토리지 소스 %s는 문자 장치여야 합니다 "
+msgstr "저장소 소스 %s는 문자 장치여야 합니다"
 
 #, c-format
 msgid "Storage source conflict with pool: '%s'"
@@ -23132,9 +23129,8 @@ msgstr ""
 msgid "cipher info missing 'name' attribute"
 msgstr "vlan 인터페이스에 name 특성이 빠졌습니다"
 
-#, fuzzy
 msgid "cipher info missing 'size' attribute"
-msgstr "스토리지 풀에 type 속성이 누락되어 있습니다 "
+msgstr "저장소 풀에 유형 속성이 누락되어 있습니다"
 
 msgid "classID attribute not supported on <bandwidth> in this usage context"
 msgstr ""
@@ -27888,13 +27884,13 @@ msgid "iSCSI initiator IQN not supported with this QEMU binary"
 msgstr "이 QEMU 바이너리에서는 SATA를 지원하지 않습니다"
 
 msgid "iSCSI storage pool does not support volume creation"
-msgstr "iSCSI 스토리지 풀은 볼륨 생성을 지원하지 않음 "
+msgstr "iSCSI 저장소 풀은 볼륨 생성을 지원하지 않음"
 
 msgid "iSCSI storage pool does not support volume deletion"
-msgstr "iSCSI 스토리지 풀은 볼륨 삭제를 지원하지 않음 "
+msgstr "iSCSI 저장소 풀은 볼륨 삭제를 지원하지 않음"
 
 msgid "iSCSI storage pool does not support volume wiping"
-msgstr "iSCSI 스토리지 풀은 볼륨 완전 삭제를 지원하지 않습니다 "
+msgstr "iSCSI 저장소 풀은 볼륨 완전 삭제를 지원하지 않습니다"
 
 msgid "iSCSI usage specified, but target is missing"
 msgstr "iSCSI 사용이 지정되어 있으나 대상이 누락되어 있습니다 "
@@ -33209,9 +33205,8 @@ msgstr ""
 msgid "only two serial ports are supported"
 msgstr "시리얼 포트 두개 까지만 지원합니다"
 
-#, fuzzy
 msgid "only two source elements are allowed for character device"
-msgstr "스토리지 소스 %s는 문자 장치여야 합니다 "
+msgstr "저장소 소스 %s는 문자 장치여야 합니다"
 
 msgid "open an editor to modify the description"
 msgstr "설명을 수정하기 위해 편집기 열기"
@@ -35670,9 +35665,8 @@ msgstr "저장소 풀이 볼륨 생성을 지원하지 않습니다"
 msgid "storage pool doesn't support volume upload"
 msgstr "저장소 풀이 볼륨 생성을 지원하지 않습니다"
 
-#, fuzzy
 msgid "storage pool doesn't support volume wiping"
-msgstr "iSCSI 스토리지 풀은 볼륨 완전 삭제를 지원하지 않습니다 "
+msgstr "iSCSI 저장소 풀은 볼륨 완전 삭제를 지원하지 않습니다"
 
 #, fuzzy, c-format
 msgid "storage pool event callback %d not registered"
@@ -35684,12 +35678,11 @@ msgstr "저장소 풀 정보"
 msgid "storage pool is not active"
 msgstr "저장소 풀이 동작중이 아닙니다"
 
-#, fuzzy
 msgid "storage pool missing auth type"
-msgstr "스토리지 풀에 type 속성이 누락되어 있습니다 "
+msgstr "저장소 풀에 type 속성이 누락되어 있습니다"
 
 msgid "storage pool missing type attribute"
-msgstr "스토리지 풀에 type 속성이 누락되어 있습니다 "
+msgstr "저장소 풀에 유형 속성이 누락되어 있습니다"
 
 #, fuzzy
 msgid "storage pool only supports LUKS encrypted volumes"
