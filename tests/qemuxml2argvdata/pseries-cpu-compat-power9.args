@@ -10,8 +10,8 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-ppc64 \
 -name QEMUGuest1 \
 -S \
--machine pseries,accel=kvm,usb=off,dump-guest-core=off \
--cpu host,compat=power9 \
+-machine pseries,accel=kvm,usb=off,dump-guest-core=off,max-cpu-compat=power9 \
+-cpu host \
 -m 256 \
 -realtime mlock=off \
 -smp 4,sockets=4,cores=1,threads=1 \

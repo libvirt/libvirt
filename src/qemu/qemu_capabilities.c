@@ -5070,6 +5070,10 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
 
     case VIR_ARCH_PPC64:
     case VIR_ARCH_PPC64LE:
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT);
+        break;
+
     case VIR_ARCH_ALPHA:
     case VIR_ARCH_PPC:
     case VIR_ARCH_PPCEMB:
@@ -5128,15 +5132,6 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_EGL_HEADLESS);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NUMA_DIST);
-
-    if (ARCH_IS_PPC64(qemuCaps->arch)) {
-        /* HPT resizing is supported since QEMU 2.10 on ppc64; unfortunately
-         * there's no sane way to probe for it */
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
-
-        /* no way to query max-cpu-compat */
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT);
-    }
 
     /* -enable-fips is deprecated in QEMU 5.2.0, and QEMU
      * should be built with gcrypt to achieve FIPS compliance
