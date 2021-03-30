@@ -724,7 +724,7 @@ nodeDeviceGetMdevctlDefineStartCommand(virNodeDeviceDef *def,
     g_autofree char *parent_addr = nodeDeviceFindAddressByName(def->parent);
 
     if (!parent_addr) {
-        virReportError(VIR_ERR_NO_NODE_DEVICE,
+        virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to find parent device '%s'"), def->parent);
         return NULL;
     }
