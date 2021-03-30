@@ -5115,65 +5115,30 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
 static void
 virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps)
 {
-    if (qemuCaps->version >= 1006000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
-
-    /* vmport option is supported v2.2.0 onwards */
-    if (qemuCaps->version >= 2002000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_VMPORT_OPT);
+    /* Following caps were asserted by a version check for pre 2.11 qemus */
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_VMPORT_OPT);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_SMM_OPT);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL_GL);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACH_VIRT_GIC_VERSION);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_EGL_HEADLESS);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_NUMA_DIST);
 
     /* -cpu ...,aarch64=off supported in v2.3.0 and onwards. But it
        isn't detectable via qmp at this point */
-    if (qemuCaps->arch == VIR_ARCH_AARCH64 &&
-        qemuCaps->version >= 2003000)
+    if (qemuCaps->arch == VIR_ARCH_AARCH64)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF);
 
-    /* vhost-user supports multi-queue from v2.4.0 onwards,
-     * but there is no way to query for that capability */
-    if (qemuCaps->version >= 2004000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
-
-    /* smm option is supported from v2.4.0 */
-    if (qemuCaps->version >= 2004000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_SMM_OPT);
-
-    /* sdl -gl option is supported from v2.4.0 (qemu commit id 0b71a5d5) */
-    if (qemuCaps->version >= 2004000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL_GL);
-
-    /* Since 2.4.50 ARM virt machine supports gic-version option */
-    if (qemuCaps->version >= 2004050)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-
-    /* no way to query if -machine kernel_irqchip supports split */
-    if (qemuCaps->version >= 2006000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT);
-
-    /* HPT resizing is supported since QEMU 2.10 on ppc64; unfortunately
-     * there's no sane way to probe for it */
-    if (qemuCaps->version >= 2010000 &&
-        ARCH_IS_PPC64(qemuCaps->arch)) {
+    if (ARCH_IS_PPC64(qemuCaps->arch)) {
+        /* HPT resizing is supported since QEMU 2.10 on ppc64; unfortunately
+         * there's no sane way to probe for it */
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
-    }
 
-    /* '-display egl-headless' cmdline option is supported since QEMU 2.10, but
-     * there's no way to probe it */
-    if (qemuCaps->version >= 2010000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_EGL_HEADLESS);
-
-    /* no way to query for -numa dist */
-    if (qemuCaps->version >= 2010000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NUMA_DIST);
-
-    /* no way to query max-cpu-compat */
-    if (qemuCaps->version >= 2010000 &&
-        ARCH_IS_PPC64(qemuCaps->arch)) {
+        /* no way to query max-cpu-compat */
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT);
     }
-
-    /* TCG couldn't be disabled nor queried until QEMU 2.10 */
-    if (qemuCaps->version < 2010000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_TCG);
 
     /* -enable-fips is deprecated in QEMU 5.2.0, and QEMU
      * should be built with gcrypt to achieve FIPS compliance
