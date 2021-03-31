@@ -38,7 +38,7 @@ typedef virCommand* (*MdevctlCmdFunc)(virNodeDeviceDef *, char **, char **);
 static int
 testMdevctlCreateOrDefine(const char *virt_type,
                           int create,
-                          MdevctlCmdFunc mdevctl_cmd_func,
+                          virMdevctlCommand cmd_type,
                           const char *mdevxml,
                           const char *cmdfile,
                           const char *jsonfile)
@@ -59,7 +59,7 @@ testMdevctlCreateOrDefine(const char *virt_type,
 
     /* this function will set a stdin buffer containing the json configuration
      * of the device. The json value is captured in the callback above */
-    cmd = mdevctl_cmd_func(def, &uuid, &errmsg);
+    cmd = nodeDeviceGetMdevctlCommand(def, cmd_type, &uuid, &errmsg);
 
     if (!cmd)
         goto cleanup;
@@ -88,21 +88,10 @@ static int
 testMdevctlCreateOrDefineHelper(const void *data)
 {
     const struct startTestInfo *info = data;
-    const char *cmd;
-    MdevctlCmdFunc func;
+    const char *cmd = virMdevctlCommandTypeToString(info->command);
     g_autofree char *mdevxml = NULL;
     g_autofree char *cmdlinefile = NULL;
     g_autofree char *jsonfile = NULL;
-
-    if (info->command == MDEVCTL_CMD_CREATE) {
-        cmd = "create";
-        func = nodeDeviceGetMdevctlCreateCommand;
-    } else if (info->command == MDEVCTL_CMD_DEFINE) {
-        cmd = "define";
-        func = nodeDeviceGetMdevctlDefineCommand;
-    } else {
-        return -1;
-    }
 
     mdevxml = g_strdup_printf("%s/nodedevschemadata/%s.xml", abs_srcdir,
                               info->filename);
@@ -111,7 +100,7 @@ testMdevctlCreateOrDefineHelper(const void *data)
     jsonfile = g_strdup_printf("%s/nodedevmdevctldata/%s-%s.json", abs_srcdir,
                                info->filename, cmd);
 
-    return testMdevctlCreateOrDefine(info->virt_type, info->create, func,
+    return testMdevctlCreateOrDefine(info->virt_type, info->create, info->command,
                                      mdevxml, cmdlinefile, jsonfile);
 }
 
@@ -122,7 +111,7 @@ struct UuidCommandTestInfo {
 };
 
 static int
-testMdevctlUuidCommand(GetStopUndefineCmdFunc func,
+testMdevctlUuidCommand(virMdevctlCommand command,
                        const char *mdevxml, const char *outfile)
 {
     g_autoptr(virNodeDeviceDef) def = NULL;
@@ -136,7 +125,7 @@ testMdevctlUuidCommand(GetStopUndefineCmdFunc func,
     if (!(def = virNodeDeviceDefParseFile(mdevxml, EXISTING_DEVICE, "QEMU")))
         goto cleanup;
 
-    cmd = func(def, &errmsg);
+    cmd = nodeDeviceGetMdevctlCommand(def, command, NULL, &errmsg);
 
     if (!cmd)
         goto cleanup;
@@ -161,30 +150,16 @@ static int
 testMdevctlUuidCommandHelper(const void *data)
 {
     const struct UuidCommandTestInfo *info = data;
-    GetStopUndefineCmdFunc func;
-    const char *cmd;
+    const char *cmd = virMdevctlCommandTypeToString(info->command);
     g_autofree char *cmdlinefile = NULL;
     g_autofree char *mdevxml = NULL;
-
-    if (info->command == MDEVCTL_CMD_STOP) {
-        cmd = "stop";
-        func = nodeDeviceGetMdevctlStopCommand;
-    } else if (info->command == MDEVCTL_CMD_UNDEFINE) {
-        cmd = "undefine";
-        func = nodeDeviceGetMdevctlUndefineCommand;
-    }else if (info->command == MDEVCTL_CMD_START) {
-        cmd = "start";
-        func = nodeDeviceGetMdevctlStartCommand;
-    } else {
-        return -1;
-    }
 
     mdevxml = g_strdup_printf("%s/nodedevschemadata/%s.xml", abs_srcdir,
                               info->filename);
     cmdlinefile = g_strdup_printf("%s/nodedevmdevctldata/mdevctl-%s.argv",
                                   abs_srcdir, cmd);
 
-    return testMdevctlUuidCommand(func, mdevxml, cmdlinefile);
+    return testMdevctlUuidCommand(info->command, mdevxml, cmdlinefile);
 }
 
 static int

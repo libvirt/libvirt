@@ -717,7 +717,7 @@ nodeDeviceFindAddressByName(const char *name)
 }
 
 
-static virCommand *
+virCommand *
 nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
                             virMdevctlCommand cmd_type,
                             char **outbuf,
@@ -790,30 +790,15 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
     return cmd;
 }
 
-virCommand*
-nodeDeviceGetMdevctlCreateCommand(virNodeDeviceDef *def,
-                                 char **uuid_out,
-                                 char **errmsg)
-{
-    return nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_CREATE, uuid_out, errmsg);
-}
-
-virCommand*
-nodeDeviceGetMdevctlDefineCommand(virNodeDeviceDef *def,
-                                  char **uuid_out,
-                                  char **errmsg)
-{
-    return nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_DEFINE, uuid_out, errmsg);
-}
-
-
 
 static int
 virMdevctlCreate(virNodeDeviceDef *def, char **uuid, char **errmsg)
 {
     int status;
-    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlCreateCommand(def, uuid,
-                                                                  errmsg);
+    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlCommand(def,
+                                                            MDEVCTL_CMD_CREATE,
+                                                            uuid,
+                                                            errmsg);
     if (!cmd)
         return -1;
 
@@ -833,7 +818,9 @@ static int
 virMdevctlDefine(virNodeDeviceDef *def, char **uuid, char **errmsg)
 {
     int status;
-    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlDefineCommand(def, uuid, errmsg);
+    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlCommand(def,
+                                                            MDEVCTL_CMD_DEFINE,
+                                                            uuid, errmsg);
 
     if (!cmd)
         return -1;
@@ -936,34 +923,13 @@ nodeDeviceCreateXML(virConnectPtr conn,
 }
 
 
-virCommand *
-nodeDeviceGetMdevctlStopCommand(virNodeDeviceDef *def,
-                                char **errmsg)
-{
-    return nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_STOP, NULL, errmsg);
-}
-
-virCommand *
-nodeDeviceGetMdevctlUndefineCommand(virNodeDeviceDef *def,
-                                    char **errmsg)
-{
-    return nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_UNDEFINE, NULL, errmsg);
-}
-
-virCommand *
-nodeDeviceGetMdevctlStartCommand(virNodeDeviceDef *def,
-                                 char **errmsg)
-{
-    return nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_START, NULL, errmsg);
-}
-
 static int
 virMdevctlStop(virNodeDeviceDef *def, char **errmsg)
 {
     int status;
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = nodeDeviceGetMdevctlStopCommand(def, errmsg);
+    cmd = nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_STOP, NULL, errmsg);
 
     if (virCommandRun(cmd, &status) < 0 || status != 0)
         return -1;
@@ -978,7 +944,7 @@ virMdevctlUndefine(virNodeDeviceDef *def, char **errmsg)
     int status;
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = nodeDeviceGetMdevctlUndefineCommand(def, errmsg);
+    cmd = nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_UNDEFINE, NULL, errmsg);
 
     if (virCommandRun(cmd, &status) < 0 || status != 0)
         return -1;
@@ -993,7 +959,7 @@ virMdevctlStart(virNodeDeviceDef *def, char **errmsg)
     int status;
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = nodeDeviceGetMdevctlStartCommand(def, errmsg);
+    cmd = nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_START, NULL, errmsg);
 
     if (virCommandRun(cmd, &status) < 0 || status != 0)
         return -1;
