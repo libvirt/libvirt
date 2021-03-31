@@ -9,10 +9,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-test/.config \
 /usr/bin/qemu-system-s390x \
 -name guest=test,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-test/master-key.aes \
--machine s390-ccw-virtio-4.2,accel=tcg,usb=off,dump-guest-core=off,\
-memory-backend=s390.ram \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-test/master-key.aes \
+-machine s390-ccw-virtio-4.2,accel=tcg,usb=off,dump-guest-core=off,memory-backend=s390.ram \
 -cpu qemu \
 -m 256 \
 -object memory-backend-ram,id=s390.ram,size=268435456 \
@@ -29,6 +27,5 @@ memory-backend=s390.ram \
 -boot strict=on \
 -audiodev id=audio1,driver=none \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.0000 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

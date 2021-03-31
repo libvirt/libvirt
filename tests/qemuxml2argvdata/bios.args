@@ -20,8 +20,7 @@ QEMU_AUDIO_DRV=none \
 -no-user-config \
 -nodefaults \
 -device sga \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-test-bios/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-test-bios/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

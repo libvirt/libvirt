@@ -20,8 +20,7 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -29,11 +28,7 @@ server=on,wait=off \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--drive file=/var/lib/libvirt/images/iothrtest1.img,format=raw,if=none,\
-id=drive-virtio-disk1 \
--device virtio-blk-pci,iothread=iothread1,bus=pci.0,addr=0x4,\
-drive=drive-virtio-disk1,id=virtio-disk1 \
--drive file=/var/lib/libvirt/images/iothrtest2.img,format=raw,if=none,\
-id=drive-virtio-disk2 \
--device virtio-blk-pci,iothread=iothread2,bus=pci.0,addr=0x3,\
-drive=drive-virtio-disk2,id=virtio-disk2
+-drive file=/var/lib/libvirt/images/iothrtest1.img,format=raw,if=none,id=drive-virtio-disk1 \
+-device virtio-blk-pci,iothread=iothread1,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,id=virtio-disk1 \
+-drive file=/var/lib/libvirt/images/iothrtest2.img,format=raw,if=none,id=drive-virtio-disk2 \
+-device virtio-blk-pci,iothread=iothread2,bus=pci.0,addr=0x3,drive=drive-virtio-disk2,id=virtio-disk2

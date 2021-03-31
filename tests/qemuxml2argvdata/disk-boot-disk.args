@@ -18,8 +18,7 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -27,6 +26,5 @@ server=on,wait=off \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-ide0-1-0,\
-readonly=on \
+-drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-ide0-1-0,readonly=on \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0

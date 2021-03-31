@@ -9,10 +9,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-s390x \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine s390-ccw-virtio,accel=tcg,usb=off,dump-guest-core=off,\
-memory-backend=s390.ram \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-machine s390-ccw-virtio,accel=tcg,usb=off,dump-guest-core=off,memory-backend=s390.ram \
 -cpu qemu \
 -m 512 \
 -object memory-backend-ram,id=s390.ram,size=536870912 \
@@ -28,10 +26,7 @@ memory-backend=s390.ram \
 -no-shutdown \
 -boot strict=on \
 -audiodev id=audio1,driver=none \
--device vfio-ccw,id=hostdev0,\
-sysfsdev=/sys/bus/mdev/devices/90c6c135-ad44-41d0-b1b7-bae47de48627,\
-devno=fe.0.0000,bootindex=1 \
+-device vfio-ccw,id=hostdev0,sysfsdev=/sys/bus/mdev/devices/90c6c135-ad44-41d0-b1b7-bae47de48627,devno=fe.0.0000,bootindex=1 \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

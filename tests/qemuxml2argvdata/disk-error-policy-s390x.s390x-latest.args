@@ -9,10 +9,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 /usr/bin/qemu-system-s390x \
 -name guest=guest,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-guest/master-key.aes \
--machine s390-ccw-virtio,accel=tcg,usb=off,dump-guest-core=off,\
-memory-backend=s390.ram \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-guest/master-key.aes \
+-machine s390-ccw-virtio,accel=tcg,usb=off,dump-guest-core=off,memory-backend=s390.ram \
 -cpu qemu \
 -m 214 \
 -object memory-backend-ram,id=s390.ram,size=224395264 \
@@ -27,31 +25,15 @@ memory-backend=s390.ram \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--blockdev '{"driver":"file","filename":"/var/images/image1",\
-"node-name":"libvirt-3-storage","cache":{"direct":true,"no-flush":false},\
-"auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-3-format","read-only":false,\
-"cache":{"direct":true,"no-flush":false},"driver":"qcow2",\
-"file":"libvirt-3-storage"}' \
--device virtio-blk-ccw,devno=fe.0.0000,drive=libvirt-3-format,id=virtio-disk0,\
-bootindex=1,write-cache=on,werror=stop,rerror=stop \
--blockdev '{"driver":"file","filename":"/var/images/image2",\
-"node-name":"libvirt-2-storage","cache":{"direct":true,"no-flush":false},\
-"auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-2-format","read-only":false,\
-"cache":{"direct":true,"no-flush":false},"driver":"qcow2",\
-"file":"libvirt-2-storage"}' \
--device virtio-blk-ccw,devno=fe.0.0001,drive=libvirt-2-format,id=virtio-disk1,\
-write-cache=on,werror=enospc \
--blockdev '{"driver":"file","filename":"/var/images/image3",\
-"node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},\
-"auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,\
-"cache":{"direct":true,"no-flush":false},"driver":"qcow2",\
-"file":"libvirt-1-storage"}' \
--device virtio-blk-ccw,devno=fe.0.0002,drive=libvirt-1-format,id=virtio-disk2,\
-write-cache=on,werror=report,rerror=ignore \
+-blockdev '{"driver":"file","filename":"/var/images/image1","node-name":"libvirt-3-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-3-storage"}' \
+-device virtio-blk-ccw,devno=fe.0.0000,drive=libvirt-3-format,id=virtio-disk0,bootindex=1,write-cache=on,werror=stop,rerror=stop \
+-blockdev '{"driver":"file","filename":"/var/images/image2","node-name":"libvirt-2-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-2-storage"}' \
+-device virtio-blk-ccw,devno=fe.0.0001,drive=libvirt-2-format,id=virtio-disk1,write-cache=on,werror=enospc \
+-blockdev '{"driver":"file","filename":"/var/images/image3","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-1-storage"}' \
+-device virtio-blk-ccw,devno=fe.0.0002,drive=libvirt-1-format,id=virtio-disk2,write-cache=on,werror=report,rerror=ignore \
 -audiodev id=audio1,driver=none \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -1713,7 +1713,8 @@ sc_header-ifdef:
 	$(PYTHON) $(top_srcdir)/scripts/header-ifdef.py
 
 sc_test-wrap-argv:
-	$(AM_V_GEN)$(VC_LIST) | $(GREP) -E '\.(ldargs|args)' | $(RUNUTF8) xargs \
+	$(AM_V_GEN)$(VC_LIST) | $(GREP) -v -E 'qemuxml2argvdata' \
+	|$(GREP) -E '\.(ldargs|args)' | $(RUNUTF8) xargs \
 	$(PYTHON) $(top_srcdir)/scripts/test-wrap-argv.py --check
 
 sc_group-qemu-caps:

@@ -18,12 +18,10 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-guest/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-guest/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
 -netdev user,id=hostnet0 \
--device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:24:a5:9f,bus=pci.0,\
-addr=0x3,romfile=
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:24:a5:9f,bus=pci.0,addr=0x3,romfile=

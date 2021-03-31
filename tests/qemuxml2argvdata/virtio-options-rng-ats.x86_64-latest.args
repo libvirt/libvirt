@@ -9,8 +9,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
-"file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off,memory-backend=pc.ram \
 -cpu qemu64 \
 -m 214 \
@@ -34,6 +33,5 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device virtio-rng-pci,rng=objrng0,id=rng0,ats=on,bus=pci.0,addr=0x2 \
 -object '{"qom-type":"rng-random","id":"objrng1","filename":"/dev/random"}' \
 -device virtio-rng-pci,rng=objrng1,id=rng1,ats=off,bus=pci.0,addr=0x3 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -15,24 +15,17 @@ QEMU_AUDIO_DRV=none \
 -mem-prealloc \
 -realtime mlock=off \
 -smp 32,sockets=1,cores=24,threads=1 \
--object memory-backend-file,id=ram-node0,\
-mem-path=/var/lib/libvirt/qemu/ram/-1-instance-00000092/ram-node0,share=on,\
-size=15032385536 \
+-object memory-backend-file,id=ram-node0,mem-path=/var/lib/libvirt/qemu/ram/-1-instance-00000092/ram-node0,share=on,size=15032385536 \
 -numa node,nodeid=0,cpus=0-1,memdev=ram-node0 \
--object memory-backend-file,id=ram-node1,\
-mem-path=/var/lib/libvirt/qemu/ram/-1-instance-00000092/ram-node1,share=on,\
-size=15032385536 \
+-object memory-backend-file,id=ram-node1,mem-path=/var/lib/libvirt/qemu/ram/-1-instance-00000092/ram-node1,share=on,size=15032385536 \
 -numa node,nodeid=1,cpus=2-3,memdev=ram-node1 \
--object memory-backend-file,id=ram-node2,\
-mem-path=/var/lib/libvirt/qemu/ram/-1-instance-00000092/ram-node2,share=off,\
-size=15032385536 \
+-object memory-backend-file,id=ram-node2,mem-path=/var/lib/libvirt/qemu/ram/-1-instance-00000092/ram-node2,share=off,size=15032385536 \
 -numa node,nodeid=2,cpus=4-5,memdev=ram-node2 \
 -uuid 126f2720-6f8e-45ab-a886-ec9277079a67 \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,\
-path=/tmp/lib/domain--1-instance-00000092/monitor.sock,server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-instance-00000092/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

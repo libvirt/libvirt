@@ -18,14 +18,12 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-guest/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-guest/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--device pcie-root-port,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,\
-addr=0x1 \
+-device pcie-root-port,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
 -device pcie-pci-bridge,id=pci.2,bus=pci.1,addr=0x0 \
 -device pcie-root-port,port=0x9,chassis=3,id=pci.3,bus=pcie.0,addr=0x1.0x1 \
 -chardev pty,id=charserial0 \

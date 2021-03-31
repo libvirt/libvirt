@@ -9,12 +9,9 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--object pr-manager-helper,id=pr-helper0,\
-path=/tmp/lib/domain--1-QEMUGuest1/pr-helper0.sock \
--machine pc-i440fx-5.2,accel=tcg,usb=off,dump-guest-core=off,\
-memory-backend=pc.ram \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-object pr-manager-helper,id=pr-helper0,path=/tmp/lib/domain--1-QEMUGuest1/pr-helper0.sock \
+-machine pc-i440fx-5.2,accel=tcg,usb=off,dump-guest-core=off,memory-backend=pc.ram \
 -cpu qemu64 \
 -m 214 \
 -object memory-backend-ram,id=pc.ram,size=224395264 \
@@ -32,24 +29,14 @@ memory-backend=pc.ram \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-scsi-pci,id=scsi0,num_queues=8,bus=pci.0,addr=0x3 \
--blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1",\
-"pr-manager":"pr-helper0","node-name":"libvirt-2-storage",\
-"auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
-"file":"libvirt-2-storage"}' \
--device scsi-block,bus=scsi0.0,channel=0,scsi-id=0,lun=0,\
-drive=libvirt-2-format,id=scsi0-0-0-0,bootindex=1 \
--object pr-manager-helper,id=pr-helper-libvirt-1-storage,\
-path=/path/to/qemu-pr-helper.sock \
--blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2",\
-"pr-manager":"pr-helper-libvirt-1-storage","node-name":"libvirt-1-storage",\
-"auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
-"file":"libvirt-1-storage"}' \
--device scsi-block,bus=scsi0.0,channel=0,scsi-id=0,lun=1,\
-drive=libvirt-1-format,id=scsi0-0-0-1 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","pr-manager":"pr-helper0","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","file":"libvirt-2-storage"}' \
+-device scsi-block,bus=scsi0.0,channel=0,scsi-id=0,lun=0,drive=libvirt-2-format,id=scsi0-0-0-0,bootindex=1 \
+-object pr-manager-helper,id=pr-helper-libvirt-1-storage,path=/path/to/qemu-pr-helper.sock \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","pr-manager":"pr-helper-libvirt-1-storage","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
+-device scsi-block,bus=scsi0.0,channel=0,scsi-id=0,lun=1,drive=libvirt-1-format,id=scsi0-0-0-1 \
 -audiodev id=audio1,driver=none \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

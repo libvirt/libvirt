@@ -10,8 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest2,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
 -machine pc-i440fx-2.8,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \
 -realtime mlock=off \
@@ -20,8 +19,7 @@ file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest2/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest2/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -32,31 +30,18 @@ server=on,wait=off \
 -drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -drive file=/dev/sg0,if=none,format=raw,id=drive-hostdev0 \
--device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=8,\
-drive=drive-hostdev0,id=hostdev0 \
+-device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=8,drive=drive-hostdev0,id=hostdev0 \
 -drive file=/dev/sg0,if=none,format=raw,id=drive-hostdev1,readonly=on \
--device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=7,\
-drive=drive-hostdev1,id=hostdev1 \
--drive file=/dev/sg0,if=none,format=raw,\
-id=drive-ua-7996c8dc-a4fa-4012-b76f-043d20144263 \
--device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=6,\
-drive=drive-ua-7996c8dc-a4fa-4012-b76f-043d20144263,\
-id=ua-7996c8dc-a4fa-4012-b76f-043d20144263 \
--drive file=iscsi://example.org:3260/iqn.1992-01.com.example/0,if=none,\
-format=raw,id=drive-hostdev2 \
--device scsi-generic,bus=scsi0.0,channel=0,scsi-id=2,lun=4,\
-drive=drive-hostdev2,id=hostdev2 \
--drive file=iscsi://example.org:3260/iqn.1992-01.com.example/1,if=none,\
-format=raw,id=drive-hostdev3,readonly=on \
--device scsi-generic,bus=scsi0.0,channel=0,scsi-id=2,lun=5,\
-drive=drive-hostdev3,id=hostdev3 \
--drive file=iscsi://myname:AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A@example.org:\
-3260/iqn.1992-01.com.example%3Astorage/1,if=none,format=raw,id=drive-hostdev4 \
--device scsi-generic,bus=scsi0.0,channel=0,scsi-id=3,lun=4,\
-drive=drive-hostdev4,id=hostdev4 \
--drive file=iscsi://myname:AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A@example.org:\
-3260/iqn.1992-01.com.example%3Astorage/2,if=none,format=raw,id=drive-hostdev5 \
--device scsi-generic,bus=scsi0.0,channel=0,scsi-id=3,lun=5,\
-drive=drive-hostdev5,id=hostdev5 \
+-device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=7,drive=drive-hostdev1,id=hostdev1 \
+-drive file=/dev/sg0,if=none,format=raw,id=drive-ua-7996c8dc-a4fa-4012-b76f-043d20144263 \
+-device scsi-generic,bus=scsi0.0,channel=0,scsi-id=4,lun=6,drive=drive-ua-7996c8dc-a4fa-4012-b76f-043d20144263,id=ua-7996c8dc-a4fa-4012-b76f-043d20144263 \
+-drive file=iscsi://example.org:3260/iqn.1992-01.com.example/0,if=none,format=raw,id=drive-hostdev2 \
+-device scsi-generic,bus=scsi0.0,channel=0,scsi-id=2,lun=4,drive=drive-hostdev2,id=hostdev2 \
+-drive file=iscsi://example.org:3260/iqn.1992-01.com.example/1,if=none,format=raw,id=drive-hostdev3,readonly=on \
+-device scsi-generic,bus=scsi0.0,channel=0,scsi-id=2,lun=5,drive=drive-hostdev3,id=hostdev3 \
+-drive file=iscsi://myname:AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A@example.org:3260/iqn.1992-01.com.example%3Astorage/1,if=none,format=raw,id=drive-hostdev4 \
+-device scsi-generic,bus=scsi0.0,channel=0,scsi-id=3,lun=4,drive=drive-hostdev4,id=hostdev4 \
+-drive file=iscsi://myname:AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A@example.org:3260/iqn.1992-01.com.example%3Astorage/2,if=none,format=raw,id=drive-hostdev5 \
+-device scsi-generic,bus=scsi0.0,channel=0,scsi-id=3,lun=5,drive=drive-hostdev5,id=hostdev5 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
 -msg timestamp=on

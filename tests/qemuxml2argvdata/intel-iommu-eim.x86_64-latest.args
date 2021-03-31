@@ -9,10 +9,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
-"file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
--machine q35,accel=kvm,usb=off,dump-guest-core=off,kernel_irqchip=split,\
-memory-backend=pc.ram \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine q35,accel=kvm,usb=off,dump-guest-core=off,kernel_irqchip=split,memory-backend=pc.ram \
 -cpu qemu64 \
 -m 214 \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
@@ -30,6 +28,5 @@ memory-backend=pc.ram \
 -boot strict=on \
 -device intel-iommu,intremap=on,eim=on \
 -audiodev id=audio1,driver=none \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

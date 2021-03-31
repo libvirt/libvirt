@@ -9,10 +9,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine pc-i440fx-5.2,accel=kvm,usb=off,dump-guest-core=off,\
-memory-backend=pc.ram \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-machine pc-i440fx-5.2,accel=kvm,usb=off,dump-guest-core=off,memory-backend=pc.ram \
 -cpu qemu64 \
 -m 214 \
 -object memory-backend-ram,id=pc.ram,size=224395264 \
@@ -34,6 +32,5 @@ memory-backend=pc.ram \
 -chardev socket,id=charrng0,fd=1729,server=on,wait=off \
 -object rng-egd,id=objrng0,chardev=charrng0 \
 -device virtio-rng-pci,rng=objrng0,id=rng0,bus=pci.0,addr=0x3 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -17,20 +17,17 @@ QEMU_AUDIO_DRV=none \
 -uuid 3ec6cbe1-b5a2-4515-b800-31a61855df41 \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-fdr-br/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-fdr-br/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -device pci-bridge,chassis_nr=1,id=pci.1,bus=pci.0,addr=0x3 \
 -device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.0,addr=0x4 \
 -usb \
--drive file=/var/iso/f18kde.iso,format=raw,if=none,id=drive-ide0-1-0,\
-readonly=on \
+-drive file=/var/iso/f18kde.iso,format=raw,if=none,id=drive-ide0-1-0,readonly=on \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
 -netdev user,id=hostnet0 \
--device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:f1:95:51,bus=pci.0,\
-addr=0x5 \
+-device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:f1:95:51,bus=pci.0,addr=0x5 \
 -netdev user,id=hostnet1 \
 -device e1000,netdev=hostnet1,id=net1,mac=52:54:00:5c:c6:1a,bus=pci.0,addr=0x7 \
 -netdev user,id=hostnet2 \
@@ -50,71 +47,49 @@ addr=0x5 \
 -netdev user,id=hostnet9 \
 -device e1000,netdev=hostnet9,id=net9,mac=52:54:00:17:df:bc,bus=pci.0,addr=0xf \
 -netdev user,id=hostnet10 \
--device rtl8139,netdev=hostnet10,id=net10,mac=52:54:00:3b:d0:51,bus=pci.0,\
-addr=0x10 \
+-device rtl8139,netdev=hostnet10,id=net10,mac=52:54:00:3b:d0:51,bus=pci.0,addr=0x10 \
 -netdev user,id=hostnet11 \
--device e1000,netdev=hostnet11,id=net11,mac=52:54:00:8d:2d:17,bus=pci.0,\
-addr=0x11 \
+-device e1000,netdev=hostnet11,id=net11,mac=52:54:00:8d:2d:17,bus=pci.0,addr=0x11 \
 -netdev user,id=hostnet12 \
--device e1000,netdev=hostnet12,id=net12,mac=52:54:00:a7:66:af,bus=pci.0,\
-addr=0x12 \
+-device e1000,netdev=hostnet12,id=net12,mac=52:54:00:a7:66:af,bus=pci.0,addr=0x12 \
 -netdev user,id=hostnet13 \
--device e1000,netdev=hostnet13,id=net13,mac=52:54:00:54:ab:d7,bus=pci.0,\
-addr=0x13 \
+-device e1000,netdev=hostnet13,id=net13,mac=52:54:00:54:ab:d7,bus=pci.0,addr=0x13 \
 -netdev user,id=hostnet14 \
--device e1000,netdev=hostnet14,id=net14,mac=52:54:00:1f:99:90,bus=pci.0,\
-addr=0x14 \
+-device e1000,netdev=hostnet14,id=net14,mac=52:54:00:1f:99:90,bus=pci.0,addr=0x14 \
 -netdev user,id=hostnet15 \
--device e1000,netdev=hostnet15,id=net15,mac=52:54:00:c8:43:87,bus=pci.0,\
-addr=0x15 \
+-device e1000,netdev=hostnet15,id=net15,mac=52:54:00:c8:43:87,bus=pci.0,addr=0x15 \
 -netdev user,id=hostnet16 \
--device e1000,netdev=hostnet16,id=net16,mac=52:54:00:df:22:b2,bus=pci.0,\
-addr=0x16 \
+-device e1000,netdev=hostnet16,id=net16,mac=52:54:00:df:22:b2,bus=pci.0,addr=0x16 \
 -netdev user,id=hostnet17 \
--device e1000,netdev=hostnet17,id=net17,mac=52:54:00:d2:9a:47,bus=pci.0,\
-addr=0x17 \
+-device e1000,netdev=hostnet17,id=net17,mac=52:54:00:d2:9a:47,bus=pci.0,addr=0x17 \
 -netdev user,id=hostnet18 \
--device e1000,netdev=hostnet18,id=net18,mac=52:54:00:86:05:e2,bus=pci.0,\
-addr=0x18 \
+-device e1000,netdev=hostnet18,id=net18,mac=52:54:00:86:05:e2,bus=pci.0,addr=0x18 \
 -netdev user,id=hostnet19 \
--device e1000,netdev=hostnet19,id=net19,mac=52:54:00:8c:1c:c2,bus=pci.0,\
-addr=0x19 \
+-device e1000,netdev=hostnet19,id=net19,mac=52:54:00:8c:1c:c2,bus=pci.0,addr=0x19 \
 -netdev user,id=hostnet20 \
--device e1000,netdev=hostnet20,id=net20,mac=52:54:00:48:58:92,bus=pci.0,\
-addr=0x1a \
+-device e1000,netdev=hostnet20,id=net20,mac=52:54:00:48:58:92,bus=pci.0,addr=0x1a \
 -netdev user,id=hostnet21 \
--device e1000,netdev=hostnet21,id=net21,mac=52:54:00:99:e5:bf,bus=pci.0,\
-addr=0x1b \
+-device e1000,netdev=hostnet21,id=net21,mac=52:54:00:99:e5:bf,bus=pci.0,addr=0x1b \
 -netdev user,id=hostnet22 \
--device e1000,netdev=hostnet22,id=net22,mac=52:54:00:b1:8c:25,bus=pci.0,\
-addr=0x1c \
+-device e1000,netdev=hostnet22,id=net22,mac=52:54:00:b1:8c:25,bus=pci.0,addr=0x1c \
 -netdev user,id=hostnet23 \
--device e1000,netdev=hostnet23,id=net23,mac=52:54:00:60:e0:d0,bus=pci.0,\
-addr=0x1d \
+-device e1000,netdev=hostnet23,id=net23,mac=52:54:00:60:e0:d0,bus=pci.0,addr=0x1d \
 -netdev user,id=hostnet24 \
--device e1000,netdev=hostnet24,id=net24,mac=52:54:00:37:00:6a,bus=pci.0,\
-addr=0x1e \
+-device e1000,netdev=hostnet24,id=net24,mac=52:54:00:37:00:6a,bus=pci.0,addr=0x1e \
 -netdev user,id=hostnet25 \
--device e1000,netdev=hostnet25,id=net25,mac=52:54:00:c7:c8:ad,bus=pci.0,\
-addr=0x1f \
+-device e1000,netdev=hostnet25,id=net25,mac=52:54:00:c7:c8:ad,bus=pci.0,addr=0x1f \
 -netdev user,id=hostnet26 \
--device e1000,netdev=hostnet26,id=net26,mac=52:54:00:4e:a7:cf,bus=pci.1,\
-addr=0x1 \
+-device e1000,netdev=hostnet26,id=net26,mac=52:54:00:4e:a7:cf,bus=pci.1,addr=0x1 \
 -netdev user,id=hostnet27 \
--device e1000,netdev=hostnet27,id=net27,mac=52:54:00:00:79:69,bus=pci.1,\
-addr=0x2 \
+-device e1000,netdev=hostnet27,id=net27,mac=52:54:00:00:79:69,bus=pci.1,addr=0x2 \
 -netdev user,id=hostnet28 \
--device e1000,netdev=hostnet28,id=net28,mac=52:54:00:47:00:6f,bus=pci.1,\
-addr=0x3 \
+-device e1000,netdev=hostnet28,id=net28,mac=52:54:00:47:00:6f,bus=pci.1,addr=0x3 \
 -netdev user,id=hostnet29 \
--device e1000,netdev=hostnet29,id=net29,mac=52:54:00:2a:8c:8b,bus=pci.1,\
-addr=0x4 \
+-device e1000,netdev=hostnet29,id=net29,mac=52:54:00:2a:8c:8b,bus=pci.1,addr=0x4 \
 -netdev user,id=hostnet30 \
--device e1000,netdev=hostnet30,id=net30,mac=52:54:00:ec:d5:e3,bus=pci.1,\
-addr=0x5 \
+-device e1000,netdev=hostnet30,id=net30,mac=52:54:00:ec:d5:e3,bus=pci.1,addr=0x5 \
 -netdev user,id=hostnet31 \
--device e1000,netdev=hostnet31,id=net31,mac=52:54:00:7e:6e:c8,bus=pci.1,\
-addr=0x6 \
+-device e1000,netdev=hostnet31,id=net31,mac=52:54:00:7e:6e:c8,bus=pci.1,addr=0x6 \
 -vnc 127.0.0.1:0 \
 -k en-us \
 -vga cirrus \

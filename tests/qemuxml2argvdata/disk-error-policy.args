@@ -18,19 +18,15 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
 -usb \
--drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,\
-werror=stop,rerror=stop,cache=none \
+-drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,werror=stop,rerror=stop,cache=none \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--drive file=/dev/HostVG/QEMUGuest2,format=qcow2,if=none,id=drive-ide0-0-1,\
-werror=enospc,cache=none \
+-drive file=/dev/HostVG/QEMUGuest2,format=qcow2,if=none,id=drive-ide0-0-1,werror=enospc,cache=none \
 -device ide-hd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
--drive file=/dev/HostVG/QEMUGuest3,format=qcow2,if=none,id=drive-ide0-1-0,\
-werror=report,rerror=ignore,cache=none \
+-drive file=/dev/HostVG/QEMUGuest3,format=qcow2,if=none,id=drive-ide0-1-0,werror=report,rerror=ignore,cache=none \
 -device ide-hd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0

@@ -16,20 +16,14 @@ QEMU_AUDIO_DRV=none \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -smbios 'type=0,vendor=LENOVO,version=6FET82WW (3.12 )' \
--smbios 'type=1,manufacturer=Fedora,product=Virt-Manager,version=0.8.2-3.fc14,\
-serial=32dfcb37-5af1-552b-357c-be8c3aa38310,\
-uuid=c7a5fdbd-edaf-9455-926a-d65c16db1809,sku=1234567890,family=Red Hat' \
--smbios 'type=2,manufacturer=Hewlett-Packard,product=0B4Ch,version=D,\
-serial=CZC1065993,asset=CZC1065993,location=Upside down' \
--smbios 'type=3,manufacturer=Dell Inc.,version=2.12,serial=65X0XF2,\
-asset=40000101,sku=Type3Sku1' \
--smbios 'type=11,value=Hello,value=World,value=This is,,\
- more tricky value=escaped' \
+-smbios 'type=1,manufacturer=Fedora,product=Virt-Manager,version=0.8.2-3.fc14,serial=32dfcb37-5af1-552b-357c-be8c3aa38310,uuid=c7a5fdbd-edaf-9455-926a-d65c16db1809,sku=1234567890,family=Red Hat' \
+-smbios 'type=2,manufacturer=Hewlett-Packard,product=0B4Ch,version=D,serial=CZC1065993,asset=CZC1065993,location=Upside down' \
+-smbios 'type=3,manufacturer=Dell Inc.,version=2.12,serial=65X0XF2,asset=40000101,sku=Type3Sku1' \
+-smbios 'type=11,value=Hello,value=World,value=This is,, more tricky value=escaped' \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

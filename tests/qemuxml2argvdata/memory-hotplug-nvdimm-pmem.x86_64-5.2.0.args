@@ -9,8 +9,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc-i440fx-5.2,accel=tcg,usb=off,dump-guest-core=off,nvdimm=on \
 -cpu qemu64 \
 -m size=219136k,slots=16,maxmem=1099511627776k \
@@ -18,8 +17,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -smp 2,sockets=2,dies=1,cores=1,threads=1 \
 -object memory-backend-ram,id=ram-node0,size=224395264 \
 -numa node,nodeid=0,cpus=0-1,memdev=ram-node0 \
--object memory-backend-file,id=memnvdimm0,mem-path=/tmp/nvdimm,share=off,\
-size=536870912,pmem=on \
+-object memory-backend-file,id=memnvdimm0,mem-path=/tmp/nvdimm,share=off,size=536870912,pmem=on \
 -device nvdimm,node=0,memdev=memnvdimm0,id=nvdimm0,slot=0 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \
@@ -32,13 +30,10 @@ size=536870912,pmem=on \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1",\
-"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
-"file":"libvirt-1-storage"}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device ide-hd,bus=ide.0,unit=0,drive=libvirt-1-format,id=ide0-0-0,bootindex=1 \
 -audiodev id=audio1,driver=none \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -10,8 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
 -name guest=guest,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-guest/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-guest/master-key.aes \
 -machine s390-ccw-virtio-2.12,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \
 -realtime mlock=off \
@@ -25,18 +24,11 @@ file=/tmp/lib/domain--1-guest/master-key.aes \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--drive file=/var/images/image1,format=qcow2,if=none,id=drive-virtio-disk0,\
-cache=none \
--device virtio-blk-ccw,scsi=off,devno=fe.0.0000,drive=drive-virtio-disk0,\
-id=virtio-disk0,bootindex=1,write-cache=on,werror=stop,rerror=stop \
--drive file=/var/images/image2,format=qcow2,if=none,id=drive-virtio-disk1,\
-cache=none \
--device virtio-blk-ccw,scsi=off,devno=fe.0.0001,drive=drive-virtio-disk1,\
-id=virtio-disk1,write-cache=on,werror=enospc \
--drive file=/var/images/image3,format=qcow2,if=none,id=drive-virtio-disk2,\
-cache=none \
--device virtio-blk-ccw,scsi=off,devno=fe.0.0002,drive=drive-virtio-disk2,\
-id=virtio-disk2,write-cache=on,werror=report,rerror=ignore \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-drive file=/var/images/image1,format=qcow2,if=none,id=drive-virtio-disk0,cache=none \
+-device virtio-blk-ccw,scsi=off,devno=fe.0.0000,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1,write-cache=on,werror=stop,rerror=stop \
+-drive file=/var/images/image2,format=qcow2,if=none,id=drive-virtio-disk1,cache=none \
+-device virtio-blk-ccw,scsi=off,devno=fe.0.0001,drive=drive-virtio-disk1,id=virtio-disk1,write-cache=on,werror=enospc \
+-drive file=/var/images/image3,format=qcow2,if=none,id=drive-virtio-disk2,cache=none \
+-device virtio-blk-ccw,scsi=off,devno=fe.0.0002,drive=drive-virtio-disk2,id=virtio-disk2,write-cache=on,werror=report,rerror=ignore \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

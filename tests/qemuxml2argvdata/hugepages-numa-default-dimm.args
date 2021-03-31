@@ -17,16 +17,13 @@ QEMU_AUDIO_DRV=none \
 -mem-prealloc \
 -mem-path /dev/hugepages2M/libvirt/qemu/-1-fedora \
 -numa node,nodeid=0,cpus=0-1,mem=1024 \
--object memory-backend-file,id=memdimm0,\
-mem-path=/dev/hugepages1G/libvirt/qemu/-1-fedora,size=1073741824,\
-host-nodes=1-3,policy=bind \
+-object memory-backend-file,id=memdimm0,mem-path=/dev/hugepages1G/libvirt/qemu/-1-fedora,size=1073741824,host-nodes=1-3,policy=bind \
 -device pc-dimm,node=0,memdev=memdimm0,id=dimm0,slot=0 \
 -uuid 63840878-0deb-4095-97e6-fc444d9bc9fa \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-fedora/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-fedora/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

@@ -19,15 +19,11 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
 -usb \
--drive file.driver=vxhs,file.vdisk-id=eb90327c-8302-4725-9e1b-4e85ed4dc251,\
-file.server.host=192.168.0.1,file.server.port=9999,format=raw,if=none,\
-id=drive-virtio-disk0,cache=none \
--device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,\
-id=virtio-disk0,bootindex=1,serial=eb90327c-8302-4725-9e1b-4e85ed4dc251
+-drive file.driver=vxhs,file.vdisk-id=eb90327c-8302-4725-9e1b-4e85ed4dc251,file.server.host=192.168.0.1,file.server.port=9999,format=raw,if=none,id=drive-virtio-disk0,cache=none \
+-device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1,serial=eb90327c-8302-4725-9e1b-4e85ed4dc251

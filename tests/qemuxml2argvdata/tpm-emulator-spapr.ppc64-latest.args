@@ -9,10 +9,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-TPM-VM/.config \
 /usr/bin/qemu-system-ppc64 \
 -name guest=TPM-VM,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-TPM-VM/master-key.aes \
--machine pseries-5.0,accel=tcg,usb=off,dump-guest-core=off,\
-memory-backend=ppc_spapr.ram \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-TPM-VM/master-key.aes \
+-machine pseries-5.0,accel=tcg,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram \
 -cpu POWER9 \
 -m 2048 \
 -object memory-backend-ram,id=ppc_spapr.ram,size=2147483648 \
@@ -30,12 +28,9 @@ memory-backend=ppc_spapr.ram \
 -device pci-ohci,id=usb,bus=pci.0,addr=0x1 \
 -device spapr-vscsi,id=scsi0,reg=0x00002000 \
 -device spapr-vscsi,id=scsi1,reg=0x00003000 \
--blockdev '{"driver":"file","filename":"/tmp/scsidisk.img",\
-"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
-"file":"libvirt-1-storage"}' \
--device scsi-hd,bus=scsi1.0,channel=0,scsi-id=0,lun=0,\
-device_id=drive-scsi1-0-0-0,drive=libvirt-1-format,id=scsi1-0-0-0,bootindex=1 \
+-blockdev '{"driver":"file","filename":"/tmp/scsidisk.img","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
+-device scsi-hd,bus=scsi1.0,channel=0,scsi-id=0,lun=0,device_id=drive-scsi1-0-0-0,drive=libvirt-1-format,id=scsi1-0-0-0,bootindex=1 \
 -chardev pty,id=charserial0 \
 -device spapr-vty,chardev=charserial0,id=serial0,reg=0x30000000 \
 -chardev pty,id=charserial1 \
@@ -45,6 +40,5 @@ device_id=drive-scsi1-0-0-0,drive=libvirt-1-format,id=scsi1-0-0-0,bootindex=1 \
 -device tpm-spapr,tpmdev=tpm-tpm0,id=tpm0,reg=0x00005000 \
 -audiodev id=audio1,driver=none \
 -global spapr-nvram.reg=0x4000 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

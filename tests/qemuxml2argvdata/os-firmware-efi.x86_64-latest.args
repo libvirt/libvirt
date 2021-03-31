@@ -9,22 +9,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-fedora/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=fedora,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
-"file":"/tmp/lib/domain--1-fedora/master-key.aes"}' \
--blockdev '{"driver":"file","filename":"/usr/share/OVMF/OVMF_CODE.secboot.fd",\
-"node-name":"libvirt-pflash0-storage","auto-read-only":true,\
-"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,\
-"driver":"raw","file":"libvirt-pflash0-storage"}' \
--blockdev '{"driver":"file",\
-"filename":"/var/lib/libvirt/qemu/nvram/fedora_VARS.fd",\
-"node-name":"libvirt-pflash1-storage","auto-read-only":true,\
-"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-pflash1-format","read-only":false,\
-"driver":"raw","file":"libvirt-pflash1-storage"}' \
--machine pc-q35-4.0,accel=kvm,usb=off,smm=on,dump-guest-core=off,\
-pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format,\
-memory-backend=pc.ram \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-fedora/master-key.aes"}' \
+-blockdev '{"driver":"file","filename":"/usr/share/OVMF/OVMF_CODE.secboot.fd","node-name":"libvirt-pflash0-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,"driver":"raw","file":"libvirt-pflash0-storage"}' \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/qemu/nvram/fedora_VARS.fd","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-pflash1-format","read-only":false,"driver":"raw","file":"libvirt-pflash1-storage"}' \
+-machine pc-q35-4.0,accel=kvm,usb=off,smm=on,dump-guest-core=off,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format,memory-backend=pc.ram \
 -cpu qemu64 \
 -m 8 \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":8388608}' \
@@ -45,12 +35,10 @@ memory-backend=pc.ram \
 -device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x0 \
 -device ioh3420,port=0x8,chassis=3,id=pci.3,bus=pcie.0,addr=0x1 \
 -device ich9-usb-ehci1,id=usb,bus=pcie.0,addr=0x1d.0x7 \
--device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pcie.0,multifunction=on,\
-addr=0x1d \
+-device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pcie.0,multifunction=on,addr=0x1d \
 -device ich9-usb-uhci2,masterbus=usb.0,firstport=2,bus=pcie.0,addr=0x1d.0x1 \
 -device ich9-usb-uhci3,masterbus=usb.0,firstport=4,bus=pcie.0,addr=0x1d.0x2 \
 -audiodev id=audio1,driver=none \
 -device virtio-balloon-pci,id=balloon0,bus=pci.2,addr=0x1 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

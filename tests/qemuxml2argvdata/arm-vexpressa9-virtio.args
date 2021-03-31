@@ -18,15 +18,13 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-armtest/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-armtest/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -kernel /arm.kernel \
 -initrd /arm.initrd \
--append 'console=ttyAMA0,\
-115200n8 rw root=/dev/vda3 rootwait physmap.enabled=0' \
+-append 'console=ttyAMA0,115200n8 rw root=/dev/vda3 rootwait physmap.enabled=0' \
 -dtb /arm.dtb \
 -device virtio-serial-device,id=virtio-serial0 \
 -usb \

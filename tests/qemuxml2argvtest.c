@@ -753,10 +753,10 @@ testCompareXMLToArgv(const void *data)
     if (testCompareXMLToArgvValidateSchema(&driver, migrateURI, info, flags) < 0)
         goto cleanup;
 
-    if (!(actualargv = virCommandToString(cmd, false)))
+    if (!(actualargv = virCommandToString(cmd, true)))
         goto cleanup;
 
-    if (virTestCompareToFile(actualargv, info->outfile) < 0)
+    if (virTestCompareToFileFull(actualargv, info->outfile, false) < 0)
         goto cleanup;
 
     ret = 0;

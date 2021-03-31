@@ -9,10 +9,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
-"file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
--machine pc-q35-2.10,accel=tcg,usb=off,smm=on,dump-guest-core=off,\
-memory-backend=pc.ram \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine pc-q35-2.10,accel=tcg,usb=off,smm=on,dump-guest-core=off,memory-backend=pc.ram \
 -global mch.extended-tseg-mbytes=48 \
 -cpu qemu64 \
 -m 214 \
@@ -29,13 +27,11 @@ memory-backend=pc.ram \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device pcie-root-port,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,\
-addr=0x1 \
+-device pcie-root-port,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
 -device pcie-root-port,port=0x9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
 -device pcie-root-port,port=0xa,chassis=3,id=pci.3,bus=pcie.0,addr=0x1.0x2 \
 -device qemu-xhci,id=usb,bus=pci.1,addr=0x0 \
 -audiodev id=audio1,driver=none \
 -device virtio-balloon-pci,id=balloon0,bus=pci.2,addr=0x0 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

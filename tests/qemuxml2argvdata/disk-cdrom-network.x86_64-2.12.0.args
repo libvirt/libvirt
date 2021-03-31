@@ -10,8 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc-i440fx-2.12,accel=kvm,usb=off,dump-guest-core=off \
 -m 1024 \
 -realtime mlock=off \
@@ -26,16 +25,12 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-shutdown \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--drive file=ftp://host.name:21/url/path/file.iso,format=raw,if=none,\
-id=drive-ide0-0-0,readonly=on \
+-drive file=ftp://host.name:21/url/path/file.iso,format=raw,if=none,id=drive-ide0-0-0,readonly=on \
 -device ide-cd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--drive file=ftps://host.name:990/url/path/file.iso,format=raw,if=none,\
-id=drive-ide0-0-1,readonly=on \
+-drive file=ftps://host.name:990/url/path/file.iso,format=raw,if=none,id=drive-ide0-0-1,readonly=on \
 -device ide-cd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
--drive 'file=https://host.name:443/url/path/file.iso?test=val,format=raw,\
-if=none,id=drive-ide0-1-0,readonly=on' \
+-drive 'file=https://host.name:443/url/path/file.iso?test=val,format=raw,if=none,id=drive-ide0-1-0,readonly=on' \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

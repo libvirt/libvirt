@@ -10,12 +10,9 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc-i440fx-4.0,accel=tcg,usb=off,dump-guest-core=off \
--cpu 'qemu32,hv_relaxed,hv_vapic,hv-spinlocks=0x2fff,hv_vpindex,hv_runtime,\
-hv_synic,hv_stimer,hv_reset,hv-vendor-id=KVM Hv,hv_frequencies,\
-hv_reenlightenment,hv_tlbflush,hv_ipi,hv_evmcs' \
+-cpu 'qemu32,hv_relaxed,hv_vapic,hv-spinlocks=0x2fff,hv_vpindex,hv_runtime,hv_synic,hv_stimer,hv_reset,hv-vendor-id=KVM Hv,hv_frequencies,hv_reenlightenment,hv_tlbflush,hv_ipi,hv_evmcs' \
 -m 214 \
 -overcommit mem-lock=off \
 -smp 6,sockets=6,cores=1,threads=1 \
@@ -29,6 +26,5 @@ hv_reenlightenment,hv_tlbflush,hv_ipi,hv_evmcs' \
 -no-shutdown \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

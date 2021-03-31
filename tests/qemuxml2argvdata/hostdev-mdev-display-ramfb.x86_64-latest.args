@@ -9,8 +9,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest2/.config \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest2,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
-"file":"/tmp/lib/domain--1-QEMUGuest2/master-key.aes"}' \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest2/master-key.aes"}' \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off,memory-backend=pc.ram \
 -cpu qemu64 \
 -m 214 \
@@ -29,11 +28,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest2/.config \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -audiodev id=audio1,driver=none \
 -vnc 127.0.0.1:0,audiodev=audio1 \
--device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,\
-vram64_size_mb=0,vgamem_mb=16,max_outputs=1,bus=pci.0,addr=0x2 \
--device vfio-pci-nohotplug,id=hostdev0,\
-sysfsdev=/sys/bus/mdev/devices/53764d0e-85a0-42b4-af5c-2046b460b1dc,display=on,\
-bus=pci.0,addr=0x3,ramfb=on \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,vram64_size_mb=0,vgamem_mb=16,max_outputs=1,bus=pci.0,addr=0x2 \
+-device vfio-pci-nohotplug,id=hostdev0,sysfsdev=/sys/bus/mdev/devices/53764d0e-85a0-42b4-af5c-2046b460b1dc,display=on,bus=pci.0,addr=0x3,ramfb=on \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

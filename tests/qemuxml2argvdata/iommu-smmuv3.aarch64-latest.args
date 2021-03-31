@@ -9,10 +9,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 /usr/bin/qemu-system-aarch64 \
 -name guest=guest,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-guest/master-key.aes \
--machine virt,accel=tcg,usb=off,dump-guest-core=off,gic-version=2,iommu=smmuv3,\
-memory-backend=mach-virt.ram \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-guest/master-key.aes \
+-machine virt,accel=tcg,usb=off,dump-guest-core=off,gic-version=2,iommu=smmuv3,memory-backend=mach-virt.ram \
 -cpu cortex-a15 \
 -m 1024 \
 -object memory-backend-ram,id=mach-virt.ram,size=1073741824 \
@@ -29,6 +27,5 @@ memory-backend=mach-virt.ram \
 -no-acpi \
 -boot strict=on \
 -audiodev id=audio1,driver=none \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

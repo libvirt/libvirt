@@ -18,8 +18,7 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -31,8 +30,6 @@ server=on,wait=off \
 -global qxl-vga.ram_size=67108864 \
 -global qxl-vga.vram_size=67108864 \
 -global qxl-vga.max_outputs=1 \
--device qxl,id=video1,ram_size=67108864,vram_size=33554432,max_outputs=3,\
-bus=pci.0,addr=0x4 \
--device qxl,id=video2,ram_size=67108864,vram_size=67108864,max_outputs=7,\
-bus=pci.0,addr=0x5 \
+-device qxl,id=video1,ram_size=67108864,vram_size=33554432,max_outputs=3,bus=pci.0,addr=0x4 \
+-device qxl,id=video2,ram_size=67108864,vram_size=67108864,max_outputs=7,bus=pci.0,addr=0x5 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

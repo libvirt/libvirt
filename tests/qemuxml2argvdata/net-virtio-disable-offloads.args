@@ -18,8 +18,7 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -28,8 +27,5 @@ server=on,wait=off \
 -drive file=/dev/HostVG/QEMUGuest7,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -netdev user,id=hostnet0 \
--device virtio-net-pci,csum=off,gso=off,host_tso4=off,host_tso6=off,\
-host_ecn=off,host_ufo=off,mrg_rxbuf=off,guest_csum=off,guest_tso4=off,\
-guest_tso6=off,guest_ecn=off,guest_ufo=off,netdev=hostnet0,id=net0,\
-mac=00:22:44:66:88:aa,bus=pci.0,addr=0x3 \
+-device virtio-net-pci,csum=off,gso=off,host_tso4=off,host_tso6=off,host_ecn=off,host_ufo=off,mrg_rxbuf=off,guest_csum=off,guest_tso4=off,guest_tso6=off,guest_ecn=off,guest_ufo=off,netdev=hostnet0,id=net0,mac=00:22:44:66:88:aa,bus=pci.0,addr=0x3 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4

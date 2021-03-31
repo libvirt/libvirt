@@ -18,19 +18,14 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/to/guest \
--device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=/import/from/host,\
-bus=pci.0,addr=0x3 \
--fsdev local,security_model=mapped,writeout=immediate,id=fsdev-fs1,\
-path=/export/to/guest2 \
--device virtio-9p-pci,id=fs1,fsdev=fsdev-fs1,mount_tag=/import/from/host2,\
-bus=pci.0,addr=0x4 \
+-device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=/import/from/host,bus=pci.0,addr=0x3 \
+-fsdev local,security_model=mapped,writeout=immediate,id=fsdev-fs1,path=/export/to/guest2 \
+-device virtio-9p-pci,id=fs1,fsdev=fsdev-fs1,mount_tag=/import/from/host2,bus=pci.0,addr=0x4 \
 -fsdev handle,writeout=immediate,id=fsdev-fs2,path=/export/to/guest3 \
--device virtio-9p-pci,id=fs2,fsdev=fsdev-fs2,mount_tag=/import/from/host3,\
-bus=pci.0,addr=0x5
+-device virtio-9p-pci,id=fs2,fsdev=fsdev-fs2,mount_tag=/import/from/host3,bus=pci.0,addr=0x5

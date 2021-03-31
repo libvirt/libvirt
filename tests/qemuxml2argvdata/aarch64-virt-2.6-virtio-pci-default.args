@@ -19,8 +19,7 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,\
-path=/tmp/lib/domain--1-aarch64test/monitor.sock,server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-aarch64test/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -34,11 +33,9 @@ path=/tmp/lib/domain--1-aarch64test/monitor.sock,server=on,wait=off \
 -device ioh3420,port=0x10,chassis=3,id=pci.3,bus=pcie.0,addr=0x2 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.2,addr=0x2 \
 -drive file=/aarch64.raw,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-pci,bus=pci.2,addr=0x3,drive=drive-virtio-disk0,\
-id=virtio-disk0,bootindex=1 \
+-device virtio-blk-pci,bus=pci.2,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
 -netdev user,id=hostnet0 \
--device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37,bus=pci.2,\
-addr=0x1 \
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37,bus=pci.2,addr=0x1 \
 -chardev pty,id=charserial0 \
 -serial chardev:charserial0 \
 -chardev pty,id=charconsole1 \

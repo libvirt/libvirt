@@ -10,8 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc-q35-2.9,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \
 -realtime mlock=off \
@@ -26,13 +25,11 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device pcie-root-port,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,\
-addr=0x1 \
+-device pcie-root-port,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
 -device pcie-root-port,port=0x9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
 -device qemu-xhci,id=usb,bus=pci.1,addr=0x0 \
 -drive file=/tmp/firmware.img,format=raw,if=none,id=drive-fdc0-0-0 \
 -drive file=/tmp/data.img,format=qcow2,if=none,id=drive-fdc0-0-1 \
 -device isa-fdc,driveA=drive-fdc0-0-0,bootindexA=1,driveB=drive-fdc0-0-1 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

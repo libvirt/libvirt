@@ -9,8 +9,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
-"file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off,memory-backend=pc.ram \
 -cpu qemu64 \
 -m 214 \
@@ -28,14 +27,10 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--blockdev '{"driver":"file","filename":"/root/boot.iso",\
-"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-2-format","read-only":true,"driver":"raw",\
-"file":"libvirt-2-storage"}' \
--device usb-storage,bus=usb.0,port=1,drive=libvirt-2-format,id=usb-disk0,\
-removable=off \
+-blockdev '{"driver":"file","filename":"/root/boot.iso","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":true,"driver":"raw","file":"libvirt-2-storage"}' \
+-device usb-storage,bus=usb.0,port=1,drive=libvirt-2-format,id=usb-disk0,removable=off \
 -device usb-storage,bus=usb.0,port=2,id=usb-disk1,removable=off \
 -audiodev id=audio1,driver=none \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

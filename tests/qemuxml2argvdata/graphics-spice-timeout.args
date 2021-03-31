@@ -11,32 +11,26 @@ QEMU_AUDIO_DRV=spice \
 -name f14 \
 -S \
 -machine pc,accel=kvm,usb=off,dump-guest-core=off \
--cpu core2duo,+ds,+acpi,+ss,+ht,+tm,+pbe,+ds_cpl,+vmx,+est,+tm2,+cx16,+xtpr,\
-+lahf_lm \
+-cpu core2duo,+ds,+acpi,+ss,+ht,+tm,+pbe,+ds_cpl,+vmx,+est,+tm2,+cx16,+xtpr,+lahf_lm \
 -m 1024 \
 -realtime mlock=off \
 -smp 2,sockets=1,cores=2,threads=1 \
 -uuid 553effab-b5e1-2d80-dfe3-da4344826c43 \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-f14/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-f14/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -boot menu=on \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
 -usb \
--drive file=/var/lib/libvirt/images/f14.img,format=qcow2,if=none,\
-id=drive-virtio-disk0 \
--device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,\
-id=virtio-disk0,bootindex=2 \
--drive file=/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso,format=raw,if=none,\
-id=drive-ide0-1-0,readonly=on \
+-drive file=/var/lib/libvirt/images/f14.img,format=qcow2,if=none,id=drive-virtio-disk0 \
+-device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=2 \
+-drive file=/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso,format=raw,if=none,id=drive-ide0-1-0,readonly=on \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \
 -netdev tap,fd=3,id=hostnet0 \
--device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:71:70:89,bus=pci.0,\
-addr=0x7 \
+-device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:71:70:89,bus=pci.0,addr=0x7 \
 -device usb-tablet,id=input0,bus=usb.0,port=1 \
 -spice port=5900,addr=127.0.0.1,seamless-migration=on \
 -vga std \

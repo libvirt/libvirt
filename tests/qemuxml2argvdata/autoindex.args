@@ -18,8 +18,7 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-q35-test/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-q35-test/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -39,21 +38,17 @@ server=on,wait=off \
 -device xio3130-downstream,port=0x8,chassis=13,id=pci.13,bus=pci.4,addr=0x8 \
 -device xio3130-downstream,port=0x9,chassis=14,id=pci.14,bus=pci.4,addr=0x9 \
 -device ich9-usb-ehci1,id=usb,bus=pcie.0,addr=0x1d.0x7 \
--device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pcie.0,multifunction=on,\
-addr=0x1d \
+-device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pcie.0,multifunction=on,addr=0x1d \
 -device ich9-usb-uhci2,masterbus=usb.0,firstport=2,bus=pcie.0,addr=0x1d.0x1 \
 -device ich9-usb-uhci3,masterbus=usb.0,firstport=4,bus=pcie.0,addr=0x1d.0x2 \
 -device ich9-usb-ehci1,id=usb1,bus=pcie.0,addr=0x1a.0x7 \
--device ich9-usb-uhci1,masterbus=usb1.0,firstport=0,bus=pcie.0,\
-multifunction=on,addr=0x1a \
--device ich9-usb-uhci1,masterbus=usb2.0,firstport=0,bus=pci.2,multifunction=on,\
-addr=0x1 \
+-device ich9-usb-uhci1,masterbus=usb1.0,firstport=0,bus=pcie.0,multifunction=on,addr=0x1a \
+-device ich9-usb-uhci1,masterbus=usb2.0,firstport=0,bus=pci.2,multifunction=on,addr=0x1 \
 -device ich9-usb-uhci2,masterbus=usb2.0,firstport=2,bus=pci.2,addr=0x1.0x1 \
 -device ich9-usb-uhci3,masterbus=usb2.0,firstport=4,bus=pci.2,addr=0x1.0x2 \
 -device ich9-usb-ehci1,id=usb2,bus=pci.2,addr=0x1.0x7 \
 -device nec-usb-xhci,id=usb3,bus=pci.5,addr=0x0 \
--device ich9-usb-uhci1,masterbus=usb4.0,firstport=0,bus=pci.2,multifunction=on,\
-addr=0x2 \
+-device ich9-usb-uhci1,masterbus=usb4.0,firstport=0,bus=pci.2,multifunction=on,addr=0x2 \
 -device ich9-usb-uhci2,masterbus=usb4.0,firstport=2,bus=pci.2,addr=0x2.0x1 \
 -device ich9-usb-uhci3,masterbus=usb4.0,firstport=4,bus=pci.2,addr=0x2.0x2 \
 -device ich9-usb-ehci1,id=usb4,bus=pci.2,addr=0x2.0x7 \

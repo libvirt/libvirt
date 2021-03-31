@@ -18,26 +18,20 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
 -netdev user,id=hostnet0 \
--device idontexist,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,\
-addr=0x3 \
+-device idontexist,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,addr=0x3 \
 -netdev user,id=hostnet1 \
--device vmxnet3,netdev=hostnet1,id=net1,mac=00:11:22:33:44:56,bus=pci.0,\
-addr=0x4 \
+-device vmxnet3,netdev=hostnet1,id=net1,mac=00:11:22:33:44:56,bus=pci.0,addr=0x4 \
 -netdev user,id=hostnet2 \
--device netfront,netdev=hostnet2,id=net2,mac=00:11:22:33:44:57,bus=pci.0,\
-addr=0x5 \
+-device netfront,netdev=hostnet2,id=net2,mac=00:11:22:33:44:57,bus=pci.0,addr=0x5 \
 -netdev user,id=hostnet3 \
--device virtio-net-pci,netdev=hostnet3,id=net3,mac=00:11:22:33:44:58,bus=pci.0,\
-addr=0x6 \
+-device virtio-net-pci,netdev=hostnet3,id=net3,mac=00:11:22:33:44:58,bus=pci.0,addr=0x6 \
 -netdev user,id=hostnet4 \
--device ne2k_pci,netdev=hostnet4,id=net4,mac=00:11:22:33:44:58,bus=pci.0,\
-addr=0x7 \
+-device ne2k_pci,netdev=hostnet4,id=net4,mac=00:11:22:33:44:58,bus=pci.0,addr=0x7 \
 -netdev user,id=hostnet5 \
 -device pcnet,netdev=hostnet5,id=net5,mac=00:11:22:33:44:58,bus=pci.0,addr=0x8

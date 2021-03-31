@@ -10,8 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest2,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
 -machine pc-i440fx-4.1,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \
 -overcommit mem-lock=off \
@@ -34,31 +33,16 @@ file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
 -device scsi-generic,bus=scsi0.0,scsi-id=7,drive=drive-hostdev0,id=hostdev0 \
 -drive file=/dev/sg0,if=none,format=raw,id=drive-hostdev1,readonly=on \
 -device scsi-generic,bus=scsi0.0,scsi-id=6,drive=drive-hostdev1,id=hostdev1 \
--drive file.driver=iscsi,file.portal=example.org:3260,\
-file.target=iqn.1992-01.com.example,file.lun=0,file.transport=tcp,if=none,\
-format=raw,id=drive-hostdev2 \
+-drive file.driver=iscsi,file.portal=example.org:3260,file.target=iqn.1992-01.com.example,file.lun=0,file.transport=tcp,if=none,format=raw,id=drive-hostdev2 \
 -device scsi-generic,bus=scsi0.0,scsi-id=4,drive=drive-hostdev2,id=hostdev2 \
--drive file.driver=iscsi,file.portal=example.org:3260,\
-file.target=iqn.1992-01.com.example,file.lun=1,file.transport=tcp,if=none,\
-format=raw,id=drive-hostdev3 \
+-drive file.driver=iscsi,file.portal=example.org:3260,file.target=iqn.1992-01.com.example,file.lun=1,file.transport=tcp,if=none,format=raw,id=drive-hostdev3 \
 -device scsi-generic,bus=scsi0.0,scsi-id=5,drive=drive-hostdev3,id=hostdev3 \
--object secret,id=hostdev4-secret0,\
-data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
-keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
--drive file.driver=iscsi,file.portal=example.org:3260,\
-file.target=iqn.1992-01.com.example:storage,file.lun=1,file.transport=tcp,\
-file.user=myname,file.password-secret=hostdev4-secret0,if=none,format=raw,\
-id=drive-hostdev4 \
+-object secret,id=hostdev4-secret0,data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
+-drive file.driver=iscsi,file.portal=example.org:3260,file.target=iqn.1992-01.com.example:storage,file.lun=1,file.transport=tcp,file.user=myname,file.password-secret=hostdev4-secret0,if=none,format=raw,id=drive-hostdev4 \
 -device scsi-generic,bus=scsi0.0,scsi-id=3,drive=drive-hostdev4,id=hostdev4 \
--object secret,id=hostdev5-secret0,\
-data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
-keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
--drive file.driver=iscsi,file.portal=example.org:3260,\
-file.target=iqn.1992-01.com.example:storage,file.lun=2,file.transport=tcp,\
-file.user=myname,file.password-secret=hostdev5-secret0,if=none,format=raw,\
-id=drive-hostdev5 \
+-object secret,id=hostdev5-secret0,data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
+-drive file.driver=iscsi,file.portal=example.org:3260,file.target=iqn.1992-01.com.example:storage,file.lun=2,file.transport=tcp,file.user=myname,file.password-secret=hostdev5-secret0,if=none,format=raw,id=drive-hostdev5 \
 -device scsi-generic,bus=scsi0.0,scsi-id=2,drive=drive-hostdev5,id=hostdev5 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -10,8 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc-i440fx-2.12,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \
 -realtime mlock=off \
@@ -27,18 +26,11 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -no-acpi \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,\
-werror=stop,rerror=stop,cache=none \
--device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1,\
-write-cache=on \
--drive file=/dev/HostVG/QEMUGuest2,format=qcow2,if=none,id=drive-ide0-0-1,\
-werror=enospc,cache=none \
--device ide-hd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1,\
-write-cache=on \
--drive file=/dev/HostVG/QEMUGuest3,format=qcow2,if=none,id=drive-ide0-1-0,\
-werror=report,rerror=ignore,cache=none \
--device ide-hd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,\
-write-cache=on \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,werror=stop,rerror=stop,cache=none \
+-device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1,write-cache=on \
+-drive file=/dev/HostVG/QEMUGuest2,format=qcow2,if=none,id=drive-ide0-0-1,werror=enospc,cache=none \
+-device ide-hd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1,write-cache=on \
+-drive file=/dev/HostVG/QEMUGuest3,format=qcow2,if=none,id=drive-ide0-1-0,werror=report,rerror=ignore,cache=none \
+-device ide-hd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,write-cache=on \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

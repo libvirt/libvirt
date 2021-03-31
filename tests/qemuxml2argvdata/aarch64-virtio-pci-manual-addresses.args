@@ -19,8 +19,7 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,\
-path=/tmp/lib/domain--1-aarch64test/monitor.sock,server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-aarch64test/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -34,11 +33,8 @@ path=/tmp/lib/domain--1-aarch64test/monitor.sock,server=on,wait=off \
 -device pci-bridge,chassis_nr=3,id=pci.3,bus=pci.1,addr=0x1 \
 -device virtio-scsi-pci,id=scsi0,bus=pci.3,addr=0x1 \
 -drive file=/aarch64.raw,format=raw,if=none,id=drive-scsi0-0-0-0 \
--device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi0-0-0-0,\
-id=scsi0-0-0-0,bootindex=1 \
+-device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi0-0-0-0,id=scsi0-0-0-0,bootindex=1 \
 -netdev user,id=hostnet0 \
--device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37,bus=pci.3,\
-addr=0x2 \
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37,bus=pci.3,addr=0x2 \
 -netdev user,id=hostnet1 \
--device virtio-net-pci,netdev=hostnet1,id=net1,mac=52:54:00:09:a4:38,bus=pci.2,\
-addr=0x1
+-device virtio-net-pci,netdev=hostnet1,id=net1,mac=52:54:00:09:a4:38,bus=pci.2,addr=0x1

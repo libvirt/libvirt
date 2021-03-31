@@ -9,13 +9,11 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
-"file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off,memory-backend=pc.ram \
 -cpu qemu64 \
 -m 214 \
--object '{"qom-type":"memory-backend-memfd","id":"pc.ram","share":true,\
-"x-use-canonical-path-for-ramblock-id":false,"size":224395264}' \
+-object '{"qom-type":"memory-backend-memfd","id":"pc.ram","share":true,"x-use-canonical-path-for-ramblock-id":false,"size":224395264}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
@@ -30,13 +28,10 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -chardev socket,id=chr-vu-virtio-disk0,path=/tmp/vhost1.sock \
--device vhost-user-blk-pci,bus=pci.0,addr=0x2,chardev=chr-vu-virtio-disk0,\
-id=virtio-disk0,bootindex=1 \
+-device vhost-user-blk-pci,bus=pci.0,addr=0x2,chardev=chr-vu-virtio-disk0,id=virtio-disk0,bootindex=1 \
 -chardev socket,id=chr-vu-virtio-disk1,path=/tmp/vhost1.sock,reconnect=10 \
--device vhost-user-blk-pci,iommu_platform=on,ats=on,packed=on,bus=pci.0,\
-addr=0x3,chardev=chr-vu-virtio-disk1,id=virtio-disk1 \
+-device vhost-user-blk-pci,iommu_platform=on,ats=on,packed=on,bus=pci.0,addr=0x3,chardev=chr-vu-virtio-disk1,id=virtio-disk1 \
 -audiodev id=audio1,driver=none \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

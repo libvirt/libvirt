@@ -10,8 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc-i440fx-4.0,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \
 -overcommit mem-lock=off \
@@ -30,8 +29,6 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -netdev user,id=hostnet0 \
--device rtl8139,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,\
-addr=0x2 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-device rtl8139,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,addr=0x2 \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

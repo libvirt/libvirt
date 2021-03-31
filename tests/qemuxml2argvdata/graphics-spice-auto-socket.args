@@ -17,13 +17,11 @@ QEMU_AUDIO_DRV=spice \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
 -usb \
--spice unix,addr=/tmp/lib/domain--1-QEMUGuest1/spice.sock,\
-seamless-migration=on \
+-spice unix,addr=/tmp/lib/domain--1-QEMUGuest1/spice.sock,seamless-migration=on \
 -vga cirrus

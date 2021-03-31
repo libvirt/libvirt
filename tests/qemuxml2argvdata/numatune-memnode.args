@@ -14,21 +14,17 @@ QEMU_AUDIO_DRV=none \
 -m 24105 \
 -realtime mlock=off \
 -smp 32,sockets=32,cores=1,threads=1 \
--object memory-backend-ram,id=ram-node0,size=20971520,host-nodes=3,\
-policy=preferred \
+-object memory-backend-ram,id=ram-node0,size=20971520,host-nodes=3,policy=preferred \
 -numa node,nodeid=0,cpus=0,memdev=ram-node0 \
--object memory-backend-ram,id=ram-node1,size=676331520,host-nodes=0-7,\
-policy=bind \
+-object memory-backend-ram,id=ram-node1,size=676331520,host-nodes=0-7,policy=bind \
 -numa node,nodeid=1,cpus=1-27,cpus=29,memdev=ram-node1 \
--object memory-backend-ram,id=ram-node2,size=24578621440,host-nodes=1-2,\
-host-nodes=5,host-nodes=7,policy=bind \
+-object memory-backend-ram,id=ram-node2,size=24578621440,host-nodes=1-2,host-nodes=5,host-nodes=7,policy=bind \
 -numa node,nodeid=2,cpus=28,cpus=30-31,memdev=ram-node2 \
 -uuid 9f4b6512-e73a-4a25-93e8-5307802821ce \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

@@ -9,13 +9,9 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
-"file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pc,accel=kvm,usb=off,dump-guest-core=off,memory-backend=pc.ram \
--cpu EPYC-Rome,x2apic=on,tsc-deadline=on,hypervisor=on,tsc-adjust=on,stibp=on,\
-arch-capabilities=on,ssbd=on,xsaves=on,cmp-legacy=on,amd-ssbd=on,virt-ssbd=on,\
-rdctl-no=on,skip-l1dfl-vmentry=on,mds-no=on,pschange-mc-no=on,invtsc=on,\
-tsc-frequency=4567890000 \
+-cpu EPYC-Rome,x2apic=on,tsc-deadline=on,hypervisor=on,tsc-adjust=on,stibp=on,arch-capabilities=on,ssbd=on,xsaves=on,cmp-legacy=on,amd-ssbd=on,virt-ssbd=on,rdctl-no=on,skip-l1dfl-vmentry=on,mds-no=on,pschange-mc-no=on,invtsc=on,tsc-frequency=4567890000 \
 -m 214 \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
 -overcommit mem-lock=off \
@@ -33,6 +29,5 @@ tsc-frequency=4567890000 \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -audiodev id=audio1,driver=none \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

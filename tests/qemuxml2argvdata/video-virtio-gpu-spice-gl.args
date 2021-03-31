@@ -17,15 +17,13 @@ QEMU_AUDIO_DRV=spice \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
 -usb \
--drive file=/var/lib/libvirt/images/QEMUGuest1,format=qcow2,if=none,\
-id=drive-ide0-0-0,cache=none \
+-drive file=/var/lib/libvirt/images/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,cache=none \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -spice port=0,gl=on,rendernode=/dev/dri/foo,seamless-migration=on \
 -device virtio-gpu-pci,id=video0,virgl=on,bus=pci.0,addr=0x2 \

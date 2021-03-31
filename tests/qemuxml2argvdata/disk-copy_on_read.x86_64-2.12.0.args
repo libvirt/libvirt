@@ -10,8 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=test,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,\
-file=/tmp/lib/domain--1-test/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-test/master-key.aes \
 -machine pc-i440fx-2.12,accel=tcg,usb=off,dump-guest-core=off \
 -m 1024 \
 -realtime mlock=off \
@@ -28,17 +27,12 @@ file=/tmp/lib/domain--1-test/master-key.aes \
 -boot menu=on,strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
--drive file=/var/lib/libvirt/images/f14.img,format=qcow2,if=none,\
-id=drive-virtio-disk0,copy-on-read=on \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,\
-id=virtio-disk0,bootindex=2 \
--drive file=/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso,format=raw,if=none,\
-id=drive-ide0-1-0,readonly=on \
+-drive file=/var/lib/libvirt/images/f14.img,format=qcow2,if=none,id=drive-virtio-disk0,copy-on-read=on \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=2 \
+-drive file=/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso,format=raw,if=none,id=drive-ide0-1-0,readonly=on \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \
 -netdev user,id=hostnet0 \
--device virtio-net-pci,tx=bh,netdev=hostnet0,id=net0,mac=52:54:00:e5:48:58,\
-bus=pci.0,addr=0x2 \
+-device virtio-net-pci,tx=bh,netdev=hostnet0,id=net0,mac=52:54:00:e5:48:58,bus=pci.0,addr=0x2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

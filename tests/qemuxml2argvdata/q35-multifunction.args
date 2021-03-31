@@ -18,25 +18,19 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-q35-test/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-q35-test/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--device ioh3420,port=0x10,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,\
-addr=0x2 \
+-device ioh3420,port=0x10,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x2 \
 -device ioh3420,port=0x11,chassis=2,id=pci.2,bus=pcie.0,addr=0x2.0x1 \
 -device ioh3420,port=0x12,chassis=3,id=pci.3,bus=pcie.0,addr=0x2.0x2 \
--device ioh3420,port=0x18,chassis=4,id=pci.4,bus=pcie.0,multifunction=on,\
-addr=0x3 \
--device ioh3420,port=0x19,chassis=5,id=pci.5,bus=pcie.0,multifunction=on,\
-addr=0x3.0x1 \
--device ioh3420,port=0x20,chassis=6,id=pci.6,bus=pcie.0,multifunction=off,\
-addr=0x4 \
+-device ioh3420,port=0x18,chassis=4,id=pci.4,bus=pcie.0,multifunction=on,addr=0x3 \
+-device ioh3420,port=0x19,chassis=5,id=pci.5,bus=pcie.0,multifunction=on,addr=0x3.0x1 \
+-device ioh3420,port=0x20,chassis=6,id=pci.6,bus=pcie.0,multifunction=off,addr=0x4 \
 -device ioh3420,port=0x21,chassis=7,id=pci.7,bus=pcie.0,addr=0x4.0x1 \
--device ioh3420,port=0x8,chassis=8,id=pci.8,bus=pcie.0,multifunction=on,\
-addr=0x1 \
+-device ioh3420,port=0x8,chassis=8,id=pci.8,bus=pcie.0,multifunction=on,addr=0x1 \
 -device ioh3420,port=0x9,chassis=9,id=pci.9,bus=pcie.0,addr=0x1.0x1 \
 -device ioh3420,port=0xa,chassis=10,id=pci.10,bus=pcie.0,addr=0x1.0x2 \
 -device ioh3420,port=0xb,chassis=11,id=pci.11,bus=pcie.0,addr=0x1.0x3 \

@@ -18,8 +18,7 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -32,12 +31,9 @@ server=on,wait=off \
 -chardev socket,id=charshmem3,path=/var/lib/libvirt/shmem-shmem3-sock \
 -device ivshmem,id=shmem4,size=1024m,chardev=charshmem4,bus=pci.0,addr=0x7 \
 -chardev socket,id=charshmem4,path=/tmp/shmem4-sock \
--device ivshmem,id=shmem5,size=2048m,chardev=charshmem5,msi=on,ioeventfd=off,\
-bus=pci.0,addr=0x8 \
+-device ivshmem,id=shmem5,size=2048m,chardev=charshmem5,msi=on,ioeventfd=off,bus=pci.0,addr=0x8 \
 -chardev socket,id=charshmem5,path=/tmp/shmem5-sock \
--device ivshmem,id=shmem6,size=4096m,chardev=charshmem6,msi=on,vectors=16,\
-bus=pci.0,addr=0x9 \
+-device ivshmem,id=shmem6,size=4096m,chardev=charshmem6,msi=on,vectors=16,bus=pci.0,addr=0x9 \
 -chardev socket,id=charshmem6,path=/tmp/shmem6-sock \
--device ivshmem,id=shmem7,size=8192m,chardev=charshmem7,msi=on,vectors=32,\
-ioeventfd=on,bus=pci.0,addr=0xa \
+-device ivshmem,id=shmem7,size=8192m,chardev=charshmem7,msi=on,vectors=32,ioeventfd=on,bus=pci.0,addr=0xa \
 -chardev socket,id=charshmem7,path=/tmp/shmem7-sock

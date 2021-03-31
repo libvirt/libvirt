@@ -17,8 +17,7 @@ QEMU_AUDIO_DRV=spice \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -26,9 +25,7 @@ server=on,wait=off \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--spice port=5903,tls-port=5904,addr=127.0.0.1,x509-dir=/etc/pki/libvirt-spice,\
-tls-channel=main,plaintext-channel=inputs,disable-agent-file-xfer=on,\
-seamless-migration=on \
+-spice port=5903,tls-port=5904,addr=127.0.0.1,x509-dir=/etc/pki/libvirt-spice,tls-channel=main,plaintext-channel=inputs,disable-agent-file-xfer=on,seamless-migration=on \
 -vga qxl \
 -global qxl-vga.ram_size=67108864 \
 -global qxl-vga.vram_size=33554432 \

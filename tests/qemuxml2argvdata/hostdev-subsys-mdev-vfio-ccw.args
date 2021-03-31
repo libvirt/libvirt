@@ -18,12 +18,9 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
-server=on,wait=off \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--device vfio-ccw,id=hostdev0,\
-sysfsdev=/sys/bus/mdev/devices/90c6c135-ad44-41d0-b1b7-bae47de48627,\
-devno=fe.0.0000 \
+-device vfio-ccw,id=hostdev0,sysfsdev=/sys/bus/mdev/devices/90c6c135-ad44-41d0-b1b7-bae47de48627,devno=fe.0.0000 \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001

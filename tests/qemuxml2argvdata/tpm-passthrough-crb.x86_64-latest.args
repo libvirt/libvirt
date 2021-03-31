@@ -9,10 +9,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-TPM-VM/.config \
 /usr/bin/qemu-system-x86_64 \
 -name guest=TPM-VM,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
-"file":"/tmp/lib/domain--1-TPM-VM/master-key.aes"}' \
--machine pc-i440fx-2.12,accel=tcg,usb=off,dump-guest-core=off,\
-memory-backend=pc.ram \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-TPM-VM/master-key.aes"}' \
+-machine pc-i440fx-2.12,accel=tcg,usb=off,dump-guest-core=off,memory-backend=pc.ram \
 -cpu qemu64 \
 -m 2048 \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":2147483648}' \
@@ -34,6 +32,5 @@ memory-backend=pc.ram \
 -device tpm-crb,tpmdev=tpm-tpm0,id=tpm0 \
 -audiodev id=audio1,driver=none \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
-resourcecontrol=deny \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
