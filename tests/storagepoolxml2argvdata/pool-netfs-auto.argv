@@ -1,1 +1,3 @@
-mount localhost:/var/lib/libvirt/images /mnt
+mount \
+localhost:/var/lib/libvirt/images \
+/mnt

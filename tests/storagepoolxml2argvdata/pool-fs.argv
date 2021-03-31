@@ -1,1 +1,4 @@
-mount -t ext3 /dev/sda6 /mnt
+mount \
+-t ext3 \
+/dev/sda6 \
+/mnt

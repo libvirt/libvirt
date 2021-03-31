@@ -1,3 +1,5 @@
 mount \
 -o nodev,nosuid,noexec,guest \
--t cifs //example.com/samba_share /mnt/cifs
+-t cifs \
+//example.com/samba_share \
+/mnt/cifs

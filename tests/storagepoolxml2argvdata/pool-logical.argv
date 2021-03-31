@@ -1,1 +1,2 @@
-vgchange -aly HostVG
+vgchange \
+-aly HostVG

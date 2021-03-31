@@ -1,1 +1,4 @@
-mount -t nfs localhost:/var/lib/libvirt/images /mnt
+mount \
+-t nfs \
+localhost:/var/lib/libvirt/images \
+/mnt

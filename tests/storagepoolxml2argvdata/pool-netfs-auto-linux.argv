@@ -1,2 +1,4 @@
 mount \
--o nodev,nosuid,noexec localhost:/var/lib/libvirt/images /mnt
+-o nodev,nosuid,noexec \
+localhost:/var/lib/libvirt/images \
+/mnt

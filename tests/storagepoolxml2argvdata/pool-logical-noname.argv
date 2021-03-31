@@ -1,1 +1,2 @@
-vgchange -aly zily
+vgchange \
+-aly zily
