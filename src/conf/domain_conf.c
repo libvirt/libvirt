@@ -9319,6 +9319,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     g_autofree char *vendor = NULL;
     g_autofree char *product = NULL;
     g_autofree char *domain_name = NULL;
+    g_autofree char *rotation_rate = NULL;
 
     if (!(def = virDomainDiskDefNew(xmlopt)))
         return NULL;
@@ -9383,6 +9384,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             bus = virXMLPropString(cur, "bus");
             tray = virXMLPropString(cur, "tray");
             removable = virXMLPropString(cur, "removable");
+            rotation_rate = virXMLPropString(cur, "rotation_rate");
 
             /* HACK: Work around for compat with Xen
              * driver in previous libvirt releases */
@@ -9613,6 +9615,13 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                            _("unknown disk removable status '%s'"), removable);
             return NULL;
         }
+    }
+
+    if (rotation_rate &&
+        virStrToLong_ui(rotation_rate, NULL, 10, &def->rotation_rate) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse rotation rate '%s'"), rotation_rate);
+        return NULL;
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info,
@@ -25141,6 +25150,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " removable='%s'",
                           virTristateSwitchTypeToString(def->removable));
     }
+    if (def->rotation_rate)
+        virBufferAsprintf(buf, " rotation_rate='%u'", def->rotation_rate);
     virBufferAddLit(buf, "/>\n");
 
     virDomainDiskDefFormatIotune(buf, def);

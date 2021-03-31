@@ -2372,7 +2372,7 @@ paravirtualized driver is specified via the ``disk`` element.
        <source protocol="tftp" name="url_path">
          <host name="hostname" port="69"/>
        </source>
-       <target dev='hdi' bus='ide' tray='open'/>
+       <target dev='hdi' bus='ide' tray='open' rotation_rate='7200'/>
        <readonly/>
      </disk>
      <disk type='block' device='lun'>
@@ -2385,7 +2385,7 @@ paravirtualized driver is specified via the ``disk`` element.
            <source type='unix' path='/path/to/qemu-pr-helper' mode='client'/>
          </reservations>
        </source>
-       <target dev='sda' bus='scsi'/>
+       <target dev='sda' bus='scsi' rotation_rate='1'/>
        <address type='drive' controller='0' bus='0' target='3' unit='0'/>
      </disk>
      <disk type='block' device='disk'>
@@ -2885,10 +2885,17 @@ paravirtualized driver is specified via the ``disk`` element.
    to "closed". NB, the value of ``tray`` could be updated while the domain is
    running. The optional attribute ``removable`` sets the removable flag for USB
    disks, and its value can be either "on" or "off", defaulting to "off".
+   The optional attribute ``rotation_rate`` sets the rotation rate of the
+   storage for disks on a SCSI, IDE, or SATA bus. Values in the range 1025 to
+   65534 are used to indicate rotational media speed in revolutions per minute.
+   A value of one is used to indicate solid state, or otherwise non-rotational,
+   storage. These values are not required to match the values of the underlying
+   host storage.
    :since:`Since 0.0.3`; ``bus`` attribute :since:`since 0.4.3`; ``tray``
    attribute :since:`since 0.9.11`; "usb" attribute value
    :since:`since after 0.4.4`; "sata" attribute value :since:`since 0.9.7`;
-   "removable" attribute value :since:`since 1.1.3`
+   "removable" attribute value :since:`since 1.1.3`;
+   "rotation_rate" attribute value :since:`since 7.3.0`
 ``iotune``
    The optional ``iotune`` element provides the ability to provide additional
    per-device I/O tuning, with values that can vary for each device (contrast

@@ -539,6 +539,7 @@ struct _virDomainDiskDef {
     char *dst;
     int tray_status; /* enum virDomainDiskTray */
     int removable; /* enum virTristateSwitch */
+    unsigned int rotation_rate;
 
     virStorageSourcePtr mirror;
     int mirrorState; /* enum virDomainDiskMirrorState */

@@ -2230,6 +2230,11 @@
           <ref name="virOnOff"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="rotation_rate">
+          <ref name="positiveInteger"/>
+        </attribute>
+      </optional>
     </element>
   </define>
   <define name="geometry">
