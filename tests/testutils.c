@@ -313,7 +313,7 @@ virTestLoadFileJSON(const char *p, ...)
     if (!(path = virTestLoadFileGetPath(p, ap)))
         goto cleanup;
 
-    if (virTestLoadFile(path, &jsonstr) < 0)
+    if (virFileReadAll(path, INT_MAX, &jsonstr) < 0)
         goto cleanup;
 
     if (!(ret = virJSONValueFromString(jsonstr)))
