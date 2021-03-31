@@ -169,6 +169,7 @@
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>
   <flag name='vnc-opts'/>
+  <flag name='rotation-rate'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700289</microcodeVersion>

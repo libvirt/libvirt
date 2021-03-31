@@ -119,6 +119,7 @@
   <flag name='vnc-opts'/>
   <flag name='audiodev'/>
   <flag name='blockdev-backup'/>
+  <flag name='rotation-rate'/>
   <version>5001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>

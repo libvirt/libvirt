@@ -1863,6 +1863,9 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             virBufferAsprintf(&opt, ",wwn=0x%s", disk->wwn);
     }
 
+    if (disk->rotation_rate)
+        virBufferAsprintf(&opt, ",rotation_rate=%u", disk->rotation_rate);
+
     if (disk->vendor) {
         virBufferAddLit(&opt, ",vendor=");
         virQEMUBuildBufferEscapeComma(&opt, disk->vendor);

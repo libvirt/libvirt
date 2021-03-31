@@ -184,6 +184,7 @@
   <flag name='vhost-user-blk'/>
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
   <flag name='vnc-opts'/>
+  <flag name='rotation-rate'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>

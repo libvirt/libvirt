@@ -624,6 +624,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "audiodev",
               "blockdev-backup",
               "object.qapified",
+              "rotation-rate",
     );
 
 
@@ -1440,6 +1441,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIDisk[] = {
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
     { "device_id", QEMU_CAPS_SCSI_DISK_DEVICE_ID, NULL },
     { "werror", QEMU_CAPS_STORAGE_WERROR, NULL },
+    { "rotation_rate", QEMU_CAPS_ROTATION_RATE, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIDEDrive[] = {

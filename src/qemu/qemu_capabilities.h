@@ -604,6 +604,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_AUDIODEV, /* -audiodev instead of QEMU_AUDIO_DRV */
     QEMU_CAPS_BLOCKDEV_BACKUP, /* qemu supports the blockdev-backup job */
     QEMU_CAPS_OBJECT_QAPIFIED, /* parameters for object-add are formally described */
+    QEMU_CAPS_ROTATION_RATE, /* scsi-disk / ide-drive rotation-rate prop */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

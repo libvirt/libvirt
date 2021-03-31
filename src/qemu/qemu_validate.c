@@ -2547,6 +2547,28 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         }
     }
 
+    if (disk->rotation_rate) {
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI &&
+            disk->bus != VIR_DOMAIN_DISK_BUS_IDE &&
+            disk->bus != VIR_DOMAIN_DISK_BUS_SATA) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("rotation rate is only valid for SCSI/IDE/SATA bus"));
+            return -1;
+        }
+
+        if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("rotation rate is only valid for disk device"));
+            return -1;
+        }
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_ROTATION_RATE)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("rotation rate is not supported with this QEMU"));
+            return -1;
+        }
+    }
+
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_SCSI:
         diskInfo = (virDomainDeviceInfoPtr)&disk->info;
