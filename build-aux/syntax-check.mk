@@ -784,18 +784,6 @@ sc_prohibit_long_lines:
 	halt='Wrap long lines in expected output files' \
 	  $(_sc_search_regexp)
 
-sc_copyright_format:
-	@require='Copyright .*Red 'Hat', Inc\.' \
-	containing='Copyright .*Red 'Hat \
-	halt='Red Hat copyright is missing Inc.' \
-	  $(_sc_search_regexp)
-	@prohibit='Copyright [^(].*Red 'Hat \
-	halt='consistently use (C) in Red Hat copyright' \
-	  $(_sc_search_regexp)
-	@prohibit='\<RedHat\>' \
-	halt='spell Red Hat as two words' \
-	  $(_sc_search_regexp)
-
 # Prefer the new URL listing over the old street address listing when
 # calling out where to get a copy of the [L]GPL.  Also, while we have
 # to ship COPYING (GPL) alongside COPYING.LESSER (LGPL), we want any
@@ -1868,9 +1856,6 @@ exclude_file_name_regexp--sc_avoid_write = \
 exclude_file_name_regexp--sc_bindtextdomain = .*
 
 exclude_file_name_regexp--sc_gettext_init = ^((tests|examples)/|tools/virt-login-shell.c|src/util/vireventglib\.c)
-
-exclude_file_name_regexp--sc_copyright_format = \
-	^build-aux/syntax-check\.mk$$
 
 exclude_file_name_regexp--sc_copyright_usage = \
   ^COPYING(|\.LESSER)|build-aux/syntax-check.mk$$
