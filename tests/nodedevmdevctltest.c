@@ -44,12 +44,12 @@ typedef virCommand* (*MdevctlCmdFunc)(virNodeDeviceDef *, char **, char **);
 
 
 static int
-testMdevctlStartOrDefine(const char *virt_type,
-                         int create,
-                         MdevctlCmdFunc mdevctl_cmd_func,
-                         const char *mdevxml,
-                         const char *cmdfile,
-                         const char *jsonfile)
+testMdevctlCreateOrDefine(const char *virt_type,
+                          int create,
+                          MdevctlCmdFunc mdevctl_cmd_func,
+                          const char *mdevxml,
+                          const char *cmdfile,
+                          const char *jsonfile)
 {
     g_autoptr(virNodeDeviceDef) def = NULL;
     virNodeDeviceObj *obj = NULL;
@@ -93,7 +93,7 @@ testMdevctlStartOrDefine(const char *virt_type,
 }
 
 static int
-testMdevctlStartOrDefineHelper(const void *data)
+testMdevctlCreateOrDefineHelper(const void *data)
 {
     const struct startTestInfo *info = data;
     const char *cmd;
@@ -102,9 +102,9 @@ testMdevctlStartOrDefineHelper(const void *data)
     g_autofree char *cmdlinefile = NULL;
     g_autofree char *jsonfile = NULL;
 
-    if (info->command == MDEVCTL_CMD_START) {
-        cmd = "start";
-        func = nodeDeviceGetMdevctlStartCommand;
+    if (info->command == MDEVCTL_CMD_CREATE) {
+        cmd = "create";
+        func = nodeDeviceGetMdevctlCreateCommand;
     } else if (info->command == MDEVCTL_CMD_DEFINE) {
         cmd = "define";
         func = nodeDeviceGetMdevctlDefineCommand;
@@ -119,8 +119,8 @@ testMdevctlStartOrDefineHelper(const void *data)
     jsonfile = g_strdup_printf("%s/nodedevmdevctldata/%s-%s.json", abs_srcdir,
                                info->filename, cmd);
 
-    return testMdevctlStartOrDefine(info->virt_type, info->create, func,
-                                    mdevxml, cmdlinefile, jsonfile);
+    return testMdevctlCreateOrDefine(info->virt_type, info->create, func,
+                                     mdevxml, cmdlinefile, jsonfile);
 }
 
 typedef virCommand* (*GetStopUndefineCmdFunc)(const char *uuid, char **errbuf);
@@ -180,9 +180,9 @@ testMdevctlUuidCommandHelper(const void *data)
     } else if (info->command == MDEVCTL_CMD_UNDEFINE) {
         cmd = "undefine";
         func = nodeDeviceGetMdevctlUndefineCommand;
-    }else if (info->command == MDEVCTL_CMD_CREATE) {
-        cmd = "create";
-        func = nodeDeviceGetMdevctlCreateCommand;
+    }else if (info->command == MDEVCTL_CMD_START) {
+        cmd = "start";
+        func = nodeDeviceGetMdevctlStartCommand;
     } else {
         return -1;
     }
@@ -403,12 +403,12 @@ mymain(void)
 #define DO_TEST_CMD(desc, virt_type, create, filename, command) \
     do { \
         struct startTestInfo info = { virt_type, create, filename, command }; \
-        DO_TEST_FULL(desc, testMdevctlStartOrDefineHelper, &info); \
+        DO_TEST_FULL(desc, testMdevctlCreateOrDefineHelper, &info); \
        } \
     while (0)
 
-#define DO_TEST_START(filename) \
-    DO_TEST_CMD("mdevctl start " filename, "QEMU", CREATE_DEVICE, filename, MDEVCTL_CMD_START)
+#define DO_TEST_CREATE(filename) \
+    DO_TEST_CMD("mdevctl create " filename, "QEMU", CREATE_DEVICE, filename, MDEVCTL_CMD_CREATE)
 
 #define DO_TEST_DEFINE(filename) \
     DO_TEST_CMD("mdevctl define " filename, "QEMU", CREATE_DEVICE, filename, MDEVCTL_CMD_DEFINE)
@@ -426,8 +426,8 @@ mymain(void)
 #define DO_TEST_UNDEFINE(filename) \
     DO_TEST_UUID_COMMAND_FULL("mdevctl undefine " filename, filename, MDEVCTL_CMD_UNDEFINE)
 
-#define DO_TEST_CREATE(filename) \
-    DO_TEST_UUID_COMMAND_FULL("mdevctl create " filename, filename, MDEVCTL_CMD_CREATE)
+#define DO_TEST_START(filename) \
+    DO_TEST_UUID_COMMAND_FULL("mdevctl start " filename, filename, MDEVCTL_CMD_START)
 
 #define DO_TEST_LIST_DEFINED() \
     DO_TEST_FULL("mdevctl list --defined", testMdevctlListDefined, NULL)
@@ -435,10 +435,9 @@ mymain(void)
 #define DO_TEST_PARSE_JSON(filename) \
     DO_TEST_FULL("parse mdevctl json " filename, testMdevctlParse, filename)
 
-    /* Test mdevctl start commands */
-    DO_TEST_START("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
-    DO_TEST_START("mdev_fedc4916_1ca8_49ac_b176_871d16c13076");
-    DO_TEST_START("mdev_d2441d39_495e_4243_ad9f_beb3f14c23d9");
+    DO_TEST_CREATE("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
+    DO_TEST_CREATE("mdev_fedc4916_1ca8_49ac_b176_871d16c13076");
+    DO_TEST_CREATE("mdev_d2441d39_495e_4243_ad9f_beb3f14c23d9");
 
     /* Test mdevctl stop command, pass an arbitrary uuid */
     DO_TEST_STOP("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
@@ -453,7 +452,7 @@ mymain(void)
 
     DO_TEST_UNDEFINE("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
 
-    DO_TEST_CREATE("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
+    DO_TEST_START("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
 
  done:
     nodedevTestDriverFree(driver);

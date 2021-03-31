@@ -123,9 +123,9 @@ nodeConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
                                         int callbackID);
 
 virCommand *
-nodeDeviceGetMdevctlStartCommand(virNodeDeviceDef *def,
-                                 char **uuid_out,
-                                 char **errmsg);
+nodeDeviceGetMdevctlCreateCommand(virNodeDeviceDef *def,
+                                  char **uuid_out,
+                                  char **errmsg);
 
 virCommand*
 nodeDeviceGetMdevctlDefineCommand(virNodeDeviceDef *def,
@@ -162,8 +162,8 @@ bool nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
                                   virNodeDeviceDef *src);
 
 virCommand*
-nodeDeviceGetMdevctlCreateCommand(const char *uuid,
-                                  char **errmsg);
+nodeDeviceGetMdevctlStartCommand(const char *uuid,
+                                 char **errmsg);
 
 int
 nodeDeviceCreate(virNodeDevice *dev,

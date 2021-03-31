@@ -714,10 +714,10 @@ nodeDeviceFindAddressByName(const char *name)
  * arguments, so provide a common implementation that can be wrapped by a more
  * specific function */
 static virCommand*
-nodeDeviceGetMdevctlDefineStartCommand(virNodeDeviceDef *def,
-                                       const char *subcommand,
-                                       char **uuid_out,
-                                       char **errmsg)
+nodeDeviceGetMdevctlDefineCreateCommand(virNodeDeviceDef *def,
+                                        const char *subcommand,
+                                        char **uuid_out,
+                                        char **errmsg)
 {
     virCommand *cmd;
     g_autofree char *json = NULL;
@@ -752,12 +752,12 @@ nodeDeviceGetMdevctlDefineStartCommand(virNodeDeviceDef *def,
 }
 
 virCommand*
-nodeDeviceGetMdevctlStartCommand(virNodeDeviceDef *def,
+nodeDeviceGetMdevctlCreateCommand(virNodeDeviceDef *def,
                                  char **uuid_out,
                                  char **errmsg)
 {
-    return nodeDeviceGetMdevctlDefineStartCommand(def, "start", uuid_out,
-                                                  errmsg);
+    return nodeDeviceGetMdevctlDefineCreateCommand(def, "start", uuid_out,
+                                                   errmsg);
 }
 
 virCommand*
@@ -765,18 +765,18 @@ nodeDeviceGetMdevctlDefineCommand(virNodeDeviceDef *def,
                                   char **uuid_out,
                                   char **errmsg)
 {
-    return nodeDeviceGetMdevctlDefineStartCommand(def, "define", uuid_out,
-                                                  errmsg);
+    return nodeDeviceGetMdevctlDefineCreateCommand(def, "define", uuid_out,
+                                                   errmsg);
 }
 
 
 
 static int
-virMdevctlStart(virNodeDeviceDef *def, char **uuid, char **errmsg)
+virMdevctlCreate(virNodeDeviceDef *def, char **uuid, char **errmsg)
 {
     int status;
-    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlStartCommand(def, uuid,
-                                                                 errmsg);
+    g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlCreateCommand(def, uuid,
+                                                                  errmsg);
     if (!cmd)
         return -1;
 
@@ -826,7 +826,7 @@ nodeDeviceCreateXMLMdev(virConnectPtr conn,
         return NULL;
     }
 
-    if (virMdevctlStart(def, &uuid, &errmsg) < 0) {
+    if (virMdevctlCreate(def, &uuid, &errmsg) < 0) {
         if (errmsg)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to start mediated device '%s': %s"),
@@ -925,7 +925,7 @@ nodeDeviceGetMdevctlUndefineCommand(const char *uuid, char **errmsg)
 }
 
 virCommand *
-nodeDeviceGetMdevctlCreateCommand(const char *uuid, char **errmsg)
+nodeDeviceGetMdevctlStartCommand(const char *uuid, char **errmsg)
 {
     virCommand *cmd = virCommandNewArgList(MDEVCTL,
                                            "start",
@@ -968,12 +968,12 @@ virMdevctlUndefine(virNodeDeviceDef *def, char **errmsg)
 
 
 static int
-virMdevctlCreate(virNodeDeviceDef *def, char **errmsg)
+virMdevctlStart(virNodeDeviceDef *def, char **errmsg)
 {
     int status;
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = nodeDeviceGetMdevctlCreateCommand(def->caps->data.mdev.uuid, errmsg);
+    cmd = nodeDeviceGetMdevctlStartCommand(def->caps->data.mdev.uuid, errmsg);
 
     if (virCommandRun(cmd, &status) < 0 || status != 0)
         return -1;
@@ -1435,7 +1435,7 @@ nodeDeviceCreate(virNodeDevice *device,
     if (nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_MDEV)) {
         g_autofree char *errmsg = NULL;
 
-        if (virMdevctlCreate(def, &errmsg) < 0) {
+        if (virMdevctlStart(def, &errmsg) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to create mediated device: %s"),
                            errmsg && errmsg[0] ? errmsg : "Unknown Error");
