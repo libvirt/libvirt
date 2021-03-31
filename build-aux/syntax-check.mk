@@ -1504,14 +1504,6 @@ sc_prohibit_backup_files:
 	  { echo '$(ME): found version controlled backup file' 1>&2;	\
 	    exit 1; } || :
 
-# Require the latest GFDL.  Two regexp, since some .texi files end up
-# line wrapping between 'Free Documentation License,' and 'Version'.
-_GFDL_regexp = (Free ''Documentation.*Version 1\.[^3]|Version 1\.[^3] or any)
-sc_GFDL_version:
-	@prohibit='$(_GFDL_regexp)'					\
-	halt='GFDL vN, N!=3'						\
-	  $(_sc_search_regexp)
-
 # This Perl code is slightly obfuscated.  Not only is each "$" doubled
 # because it's in a Makefile, but the $$c's are comments;  we cannot
 # use "#" due to the way the script ends up concatenated onto one line.
