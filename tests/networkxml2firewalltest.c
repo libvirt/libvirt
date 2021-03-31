@@ -98,7 +98,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     char *actual;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, &buf, false, true, testCommandDryRun, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, true, true, testCommandDryRun, NULL);
 
     if (!(def = virNetworkDefParseFile(xml, NULL)))
         goto cleanup;
@@ -115,7 +115,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (STRPREFIX(actual, baseargs))
         actual += strlen(baseargs);
 
-    if (virTestCompareToFile(actual, cmdline) < 0)
+    if (virTestCompareToFileFull(actual, cmdline, false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -189,7 +189,7 @@ mymain(void)
 
     basefile = g_strdup_printf("%s/networkxml2firewalldata/base.args", abs_srcdir);
 
-    if (virTestLoadFile(basefile, &baseargs) < 0)
+    if (virFileReadAll(basefile, INT_MAX, &baseargs) < 0)
         return EXIT_FAILURE;
 
     DO_TEST("nat-default");
