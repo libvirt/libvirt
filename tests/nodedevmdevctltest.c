@@ -10,7 +10,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
-struct startTestInfo {
+struct TestInfo {
     const char *virt_type;
     int create;
     const char *filename;
@@ -32,24 +32,24 @@ testCommandDryRunCallback(const char *const*args G_GNUC_UNUSED,
     *stdinbuf = g_strdup(input);
 }
 
-typedef virCommand* (*MdevctlCmdFunc)(virNodeDeviceDef *, char **, char **);
+typedef virCommand * (*MdevctlCmdFunc)(virNodeDeviceDef *, char **, char **);
 
 
 static int
-testMdevctlCreateOrDefine(const char *virt_type,
-                          int create,
-                          virMdevctlCommand cmd_type,
-                          const char *mdevxml,
-                          const char *cmdfile,
-                          const char *jsonfile)
+testMdevctlCmd(const char *virt_type,
+               int create,
+               virMdevctlCommand cmd_type,
+               const char *mdevxml,
+               const char *cmdfile,
+               const char *jsonfile)
 {
     g_autoptr(virNodeDeviceDef) def = NULL;
     virNodeDeviceObj *obj = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *actualCmdline = NULL;
     int ret = -1;
-    g_autofree char *uuid = NULL;
-    g_autofree char *errmsg = NULL;
+    g_autofree char *outbuf = NULL;
+    g_autofree char *errbuf = NULL;
     g_autofree char *stdinbuf = NULL;
     g_autoptr(virCommand) cmd = NULL;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
@@ -59,12 +59,17 @@ testMdevctlCreateOrDefine(const char *virt_type,
 
     /* this function will set a stdin buffer containing the json configuration
      * of the device. The json value is captured in the callback above */
-    cmd = nodeDeviceGetMdevctlCommand(def, cmd_type, &uuid, &errmsg);
+    cmd = nodeDeviceGetMdevctlCommand(def, cmd_type, &outbuf, &errbuf);
 
     if (!cmd)
         goto cleanup;
 
-    virCommandSetDryRun(dryRunToken, &buf, true, true, testCommandDryRunCallback, &stdinbuf);
+    if (create)
+        virCommandSetDryRun(dryRunToken, &buf, true, true,
+                            testCommandDryRunCallback, &stdinbuf);
+    else
+        virCommandSetDryRun(dryRunToken, &buf, true, true, NULL, NULL);
+
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
@@ -74,7 +79,7 @@ testMdevctlCreateOrDefine(const char *virt_type,
     if (virTestCompareToFileFull(actualCmdline, cmdfile, false) < 0)
         goto cleanup;
 
-    if (virTestCompareToFile(stdinbuf, jsonfile) < 0)
+    if (create && virTestCompareToFile(stdinbuf, jsonfile) < 0)
         goto cleanup;
 
     ret = 0;
@@ -84,10 +89,11 @@ testMdevctlCreateOrDefine(const char *virt_type,
     return ret;
 }
 
+
 static int
-testMdevctlCreateOrDefineHelper(const void *data)
+testMdevctlHelper(const void *data)
 {
-    const struct startTestInfo *info = data;
+    const struct TestInfo *info = data;
     const char *cmd = virMdevctlCommandTypeToString(info->command);
     g_autofree char *mdevxml = NULL;
     g_autofree char *cmdlinefile = NULL;
@@ -100,67 +106,10 @@ testMdevctlCreateOrDefineHelper(const void *data)
     jsonfile = g_strdup_printf("%s/nodedevmdevctldata/%s-%s.json", abs_srcdir,
                                info->filename, cmd);
 
-    return testMdevctlCreateOrDefine(info->virt_type, info->create, info->command,
-                                     mdevxml, cmdlinefile, jsonfile);
+    return testMdevctlCmd(info->virt_type, info->create, info->command,
+                          mdevxml, cmdlinefile, jsonfile);
 }
 
-typedef virCommand* (*GetStopUndefineCmdFunc)(virNodeDeviceDef *def, char **errbuf);
-struct UuidCommandTestInfo {
-    const char *filename;
-    virMdevctlCommand command;
-};
-
-static int
-testMdevctlUuidCommand(virMdevctlCommand command,
-                       const char *mdevxml, const char *outfile)
-{
-    g_autoptr(virNodeDeviceDef) def = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    const char *actualCmdline = NULL;
-    int ret = -1;
-    g_autoptr(virCommand) cmd = NULL;
-    g_autofree char *errmsg = NULL;
-    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
-
-    if (!(def = virNodeDeviceDefParseFile(mdevxml, EXISTING_DEVICE, "QEMU")))
-        goto cleanup;
-
-    cmd = nodeDeviceGetMdevctlCommand(def, command, NULL, &errmsg);
-
-    if (!cmd)
-        goto cleanup;
-
-    virCommandSetDryRun(dryRunToken, &buf, true, true, NULL, NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
-    if (!(actualCmdline = virBufferCurrentContent(&buf)))
-        goto cleanup;
-
-    if (virTestCompareToFileFull(actualCmdline, outfile, false) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    return ret;
-}
-
-static int
-testMdevctlUuidCommandHelper(const void *data)
-{
-    const struct UuidCommandTestInfo *info = data;
-    const char *cmd = virMdevctlCommandTypeToString(info->command);
-    g_autofree char *cmdlinefile = NULL;
-    g_autofree char *mdevxml = NULL;
-
-    mdevxml = g_strdup_printf("%s/nodedevschemadata/%s.xml", abs_srcdir,
-                              info->filename);
-    cmdlinefile = g_strdup_printf("%s/nodedevmdevctldata/mdevctl-%s.argv",
-                                  abs_srcdir, cmd);
-
-    return testMdevctlUuidCommand(info->command, mdevxml, cmdlinefile);
-}
 
 static int
 testMdevctlListDefined(const void *data G_GNUC_UNUSED)
@@ -369,35 +318,28 @@ mymain(void)
 
 #define DO_TEST_CMD(desc, virt_type, create, filename, command) \
     do { \
-        struct startTestInfo info = { virt_type, create, filename, command }; \
-        DO_TEST_FULL(desc, testMdevctlCreateOrDefineHelper, &info); \
+        struct TestInfo info = { virt_type, create, filename, command }; \
+        DO_TEST_FULL(desc, testMdevctlHelper, &info); \
        } \
     while (0)
 
 #define DO_TEST_CREATE(filename) \
-    DO_TEST_CMD("mdevctl create " filename, "QEMU", CREATE_DEVICE, filename, MDEVCTL_CMD_CREATE)
+    DO_TEST_CMD("create mdev " filename, "QEMU", CREATE_DEVICE, filename, MDEVCTL_CMD_CREATE)
 
 #define DO_TEST_DEFINE(filename) \
-    DO_TEST_CMD("mdevctl define " filename, "QEMU", CREATE_DEVICE, filename, MDEVCTL_CMD_DEFINE)
-
-#define DO_TEST_UUID_COMMAND_FULL(desc, filename, command) \
-    do { \
-        struct UuidCommandTestInfo info = { filename, command }; \
-        DO_TEST_FULL(desc, testMdevctlUuidCommandHelper, &info); \
-       } \
-    while (0)
+    DO_TEST_CMD("define mdev " filename, "QEMU", CREATE_DEVICE, filename, MDEVCTL_CMD_DEFINE)
 
 #define DO_TEST_STOP(filename) \
-    DO_TEST_UUID_COMMAND_FULL("mdevctl stop " filename, filename, MDEVCTL_CMD_STOP)
+    DO_TEST_CMD("stop mdev " filename, "QEMU", EXISTING_DEVICE, filename, MDEVCTL_CMD_STOP)
 
 #define DO_TEST_UNDEFINE(filename) \
-    DO_TEST_UUID_COMMAND_FULL("mdevctl undefine " filename, filename, MDEVCTL_CMD_UNDEFINE)
+    DO_TEST_CMD("undefine mdev" filename, "QEMU", EXISTING_DEVICE, filename, MDEVCTL_CMD_UNDEFINE)
 
 #define DO_TEST_START(filename) \
-    DO_TEST_UUID_COMMAND_FULL("mdevctl start " filename, filename, MDEVCTL_CMD_START)
+    DO_TEST_CMD("start mdev " filename, "QEMU", EXISTING_DEVICE, filename, MDEVCTL_CMD_START)
 
 #define DO_TEST_LIST_DEFINED() \
-    DO_TEST_FULL("mdevctl list --defined", testMdevctlListDefined, NULL)
+    DO_TEST_FULL("list defined mdevs", testMdevctlListDefined, NULL)
 
 #define DO_TEST_PARSE_JSON(filename) \
     DO_TEST_FULL("parse mdevctl json " filename, testMdevctlParse, filename)
