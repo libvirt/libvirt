@@ -645,6 +645,9 @@ testCompareXMLToArgv(const void *data)
     char *log = NULL;
     g_autoptr(virCommand) cmd = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    xmlNodePtr root;
 
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, info->arch);
@@ -668,6 +671,21 @@ testCompareXMLToArgv(const void *data)
     if (testCheckExclusiveFlags(info->flags) < 0)
         goto cleanup;
 
+    if (!(xml = virXMLParse(info->infile, NULL, "(domain_definition)")))
+        goto cleanup;
+
+    root = xmlDocGetRootElement(xml);
+    if (!virXMLNodeNameEqual(root, "domain")) {
+        VIR_TEST_VERBOSE("unexpected root element <%s>, expecting <domain>",
+                         root->name);
+        goto cleanup;
+    }
+
+    if (!(ctxt = virXMLXPathContextNew(xml)))
+        goto cleanup;
+
+    ctxt->node = root;
+
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
         goto cleanup;
 
@@ -686,9 +704,9 @@ testCompareXMLToArgv(const void *data)
     }
 
     parseFlags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
-    if (!(vm->def = virDomainDefParseFile(info->infile,
-                                          driver.xmlopt,
-                                          NULL, parseFlags))) {
+
+    if (!(vm->def = virDomainDefParseNode(xml, root, driver.xmlopt, NULL,
+                                          parseFlags))) {
         err = virGetLastError();
         if (!err) {
             VIR_TEST_DEBUG("no error was reported for expected parse error");
