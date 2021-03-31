@@ -1445,14 +1445,6 @@ sc_prohibit_stdio--_without_use:
 	@h='stdio--.h' re='\<((f(re)?|p)open|tmpfile) *\('		\
 	  $(_sc_header_without_use)
 
-# Prohibit the inclusion of strings.h without a sensible use.
-# Using the likes of bcmp, bcopy, bzero, index or rindex is not sensible.
-sc_prohibit_strings_without_use:
-	@h='strings.h'							\
-	re='\<(strn?casecmp|ffs(ll)?)\>'				\
-	  $(_sc_header_without_use)
-
-
 _stddef_syms_re = NULL|offsetof|ptrdiff_t|size_t|wchar_t
 # Prohibit the inclusion of stddef.h without an actual use.
 sc_prohibit_stddef_without_use:
