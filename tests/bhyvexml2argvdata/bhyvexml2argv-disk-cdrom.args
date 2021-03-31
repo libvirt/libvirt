@@ -6,4 +6,5 @@
 -P \
 -s 0:0,hostbridge \
 -s 2:0,ahci,cd:/tmp/cdrom.iso \
--s 3:0,virtio-net,faketapdev,mac=52:54:00:e3:ec:9b bhyve
+-s 3:0,virtio-net,faketapdev,mac=52:54:00:e3:ec:9b \
+bhyve

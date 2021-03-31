@@ -2,4 +2,5 @@
 --root hd0,msdos1 \
 --device-map '<device.map>' \
 --memory 214 \
---cons-dev /dev/nmdm0A bhyve
+--cons-dev /dev/nmdm0A \
+bhyve

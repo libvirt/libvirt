@@ -1,3 +1,4 @@
 /usr/sbin/bhyveload \
 -m 214 \
--d /tmp/cdrom.iso bhyve
+-d /tmp/cdrom.iso \
+bhyve

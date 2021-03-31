@@ -8,4 +8,5 @@
 -l bootrom,/path/to/test.fd \
 -s 2:0,lpc \
 -s 3:0,ahci,hd:/tmp/freebsd.img \
--s 1:0,virtio-net,faketapdev,mac=52:54:00:b9:94:02 bhyve
+-s 1:0,virtio-net,faketapdev,mac=52:54:00:b9:94:02 \
+bhyve

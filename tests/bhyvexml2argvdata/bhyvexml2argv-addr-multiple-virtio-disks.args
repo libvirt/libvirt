@@ -8,4 +8,5 @@
 -s 3:0,virtio-net,faketapdev,mac=52:54:00:bc:85:fe \
 -s 2:0,virtio-blk,/tmp/freebsd.img \
 -s 4:0,virtio-blk,/tmp/test.img \
--s 5:0,virtio-blk,/tmp/test2.img bhyve
+-s 5:0,virtio-blk,/tmp/test2.img \
+bhyve

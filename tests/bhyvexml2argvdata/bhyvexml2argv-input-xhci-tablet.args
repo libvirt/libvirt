@@ -6,4 +6,5 @@
 -P \
 -s 0:0,hostbridge \
 -s 2:0,xhci,tablet \
--s 3:0,ahci-hd,/tmp/freebsd.img bhyve
+-s 3:0,ahci-hd,/tmp/freebsd.img \
+bhyve
