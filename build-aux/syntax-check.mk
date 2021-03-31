@@ -1381,11 +1381,6 @@ sc_require_config_h_first:
 	else :;								\
 	fi
 
-sc_prohibit_WITH_MBRTOWC:
-	@prohibit='\bWITH_MBRTOWC\b'					\
-	halt="do not use $$prohibit; it is always defined"		\
-	  $(_sc_search_regexp)
-
 # To use this "command" macro, you must first define two shell variables:
 # h: the header name, with no enclosing <> or ""
 # re: a regular expression that matches IFF something provided by $h is used.
