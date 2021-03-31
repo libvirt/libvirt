@@ -33,6 +33,11 @@ v7.2.0 (unreleased)
     backups (where only the difference since the last backup is copied) when
     qemu adds the required functionality.
 
+  * Add support for audio backend specific settings
+
+    With this release a new ``<audio/>`` element is introduced that allows
+    users to configure audio output for their guests.
+
 * **Improvements**
 
   * qemu: Compatibility with QEMU 6.0 for certain hot-(un)-plug operations
@@ -41,7 +46,53 @@ v7.2.0 (unreleased)
     release for hotplug and hotunplug of certain devices and helpers, such as
     iothreads, chardevs, RNG devices, disks with secret, ...
 
+  * qemu: Various improvements to embedded mode
+
+    Embedded mode for the QEMU driver, as well as the ``virt-qemu-run`` tool
+    saw improvements in handling of domain life cycle, temporary directories
+    creation (important when using disk secrets) and other minor fixes.
+
+  * Documentation of split daemon related config files
+
+    Split daemons read configuration files upon their start. These were never
+    documented though.
+
 * **Bug fixes**
+
+  * Check host CPU for forbidden features
+
+    CPU feature policy did not work as expected with ``host-passthrough`` and
+    features supported by physical host. CPU features were not filtered out
+    when ``@check`` was set to ``full``.
+
+  * Fix virNetworkUpdate() to work with split daemons
+
+    Due to a bug in our code, virNetworkUpdate() did not work with split daemon
+    unless management application connected to virtnetworkd directly.
+
+  * qemu: increase locked memory limit when a vDPA device is present
+
+    Just like VFIO devices, vDPA devices may need to have all guest memory
+    pages locked/pinned in order to operate properly. These devices are now
+    included when calculating the limit for memory lock.
+
+  * Don't log error if SRIOV PF has no associated netdev
+
+    Some SRIOV PFs don't have a netdev associated with them in which case
+    libvirtd reported an error and refused to start. This is now fixed.
+
+  * qemu: Only raise memlock limit if necessary
+
+    Attempting to set the memlock limit might fail if we're running
+    in a containerized environment where ``CAP_SYS_RESOURCE`` is not
+    available, and if the limit is already high enough there's no
+    point in trying to raise it anyway.
+
+  * Restore security context of swtpm.log
+
+    If a guest with emulated TPM was started and the daemon was restarted
+    afterwards, the security context of the per-domain ``swtmp.log`` file was
+    not restored on domain shutdown leaving it unable to be started again.
 
   * virtlogd|virtlockd: Fixed crash when upgrading the daemons in-place
 
