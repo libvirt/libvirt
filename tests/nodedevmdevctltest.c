@@ -10,19 +10,11 @@
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
-typedef enum {
-    MDEVCTL_CMD_START,
-    MDEVCTL_CMD_STOP,
-    MDEVCTL_CMD_DEFINE,
-    MDEVCTL_CMD_UNDEFINE,
-    MDEVCTL_CMD_CREATE,
-} MdevctlCmd;
-
 struct startTestInfo {
     const char *virt_type;
     int create;
     const char *filename;
-    MdevctlCmd command;
+    virMdevctlCommand command;
 };
 
 /* capture stdin passed to command */
@@ -126,7 +118,7 @@ testMdevctlCreateOrDefineHelper(const void *data)
 typedef virCommand* (*GetStopUndefineCmdFunc)(const char *uuid, char **errbuf);
 struct UuidCommandTestInfo {
     const char *filename;
-    MdevctlCmd command;
+    virMdevctlCommand command;
 };
 
 static int

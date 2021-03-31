@@ -33,6 +33,25 @@ int
 udevNodeRegister(void);
 #endif
 
+
+typedef enum {
+    MDEVCTL_CMD_START,
+    MDEVCTL_CMD_STOP,
+    MDEVCTL_CMD_DEFINE,
+    MDEVCTL_CMD_UNDEFINE,
+
+    /* mdevctl actually doesn't have a 'create' command, it will be replaced
+     * with 'start' eventually in nodeDeviceGetMdevctlCommand, but this clear
+     * separation makes our code more readable in terms of knowing when we're
+     * starting a defined device and when we're creating a transient one */
+    MDEVCTL_CMD_CREATE,
+
+    MDEVCTL_CMD_LAST,
+} virMdevctlCommand;
+
+VIR_ENUM_DECL(virMdevctlCommand);
+
+
 void
 nodeDeviceLock(void);
 

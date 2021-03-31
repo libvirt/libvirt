@@ -50,6 +50,13 @@ VIR_LOG_INIT("node_device.node_device_driver");
 
 virNodeDeviceDriverState *driver;
 
+
+VIR_ENUM_IMPL(virMdevctlCommand,
+              MDEVCTL_CMD_LAST,
+              "start", "stop", "define", "undefine", "create"
+);
+
+
 virDrvOpenStatus
 nodeConnectOpen(virConnectPtr conn,
                 virConnectAuthPtr auth G_GNUC_UNUSED,
