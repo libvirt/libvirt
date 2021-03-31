@@ -1,3 +1,5 @@
 qemu-img \
 create \
--f raw /var/lib/libvirt/images/test.iso 1024K
+-f raw \
+/var/lib/libvirt/images/test.iso \
+1024K

@@ -1,4 +1,6 @@
 qemu-img \
 convert \
 -f qcow2 \
--O raw /var/lib/libvirt/images/OtherDemo.img /dev/HostVG/Swap
+-O raw \
+/var/lib/libvirt/images/OtherDemo.img \
+/dev/HostVG/Swap

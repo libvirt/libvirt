@@ -2,7 +2,8 @@ qemu-img \
 create \
 -f luks \
 --object secret,id=LuksDemo.img_encrypt0,file=/path/to/secretFile \
--o key-secret=LuksDemo.img_encrypt0 /var/lib/libvirt/images/LuksDemo.img \
+-o key-secret=LuksDemo.img_encrypt0 \
+/var/lib/libvirt/images/LuksDemo.img \
 5242880K
 qemu-img \
 convert \
@@ -10,9 +11,6 @@ convert \
 -n \
 --target-image-opts \
 --object secret,id=LuksDemo.img_encrypt0,file=/path/to/secretFile \
---object secret,id=OtherDemo.img_encrypt0,\
-file=/path/to/inputSecretFile driver=luks,\
-file.filename=/var/lib/libvirt/images/OtherDemo.img,\
-key-secret=OtherDemo.img_encrypt0 driver=luks,\
-file.filename=/var/lib/libvirt/images/LuksDemo.img,\
-key-secret=LuksDemo.img_encrypt0
+--object secret,id=OtherDemo.img_encrypt0,file=/path/to/inputSecretFile \
+driver=luks,file.filename=/var/lib/libvirt/images/OtherDemo.img,key-secret=OtherDemo.img_encrypt0 \
+driver=luks,file.filename=/var/lib/libvirt/images/LuksDemo.img,key-secret=LuksDemo.img_encrypt0

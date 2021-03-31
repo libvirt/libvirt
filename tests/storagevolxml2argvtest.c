@@ -104,13 +104,13 @@ testCompareXMLToArgvFiles(bool shouldFail,
         }
 
         if (convertStep != VIR_STORAGE_VOL_ENCRYPT_CONVERT) {
-            if (!(actualCmdline = virCommandToString(cmd, false)))
+            if (!(actualCmdline = virCommandToString(cmd, true)))
                 goto cleanup;
         } else {
             char *createCmdline = actualCmdline;
             g_autofree char *cvtCmdline = NULL;
 
-            if (!(cvtCmdline = virCommandToString(cmd, false)))
+            if (!(cvtCmdline = virCommandToString(cmd, true)))
                 goto cleanup;
 
             actualCmdline = g_strdup_printf("%s\n%s", createCmdline, cvtCmdline);
@@ -127,7 +127,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
 
     } while (convertStep != VIR_STORAGE_VOL_ENCRYPT_DONE);
 
-    if (virTestCompareToFile(actualCmdline, cmdline) < 0)
+    if (virTestCompareToFileFull(actualCmdline, cmdline, false) < 0)
         goto cleanup;
 
     ret = 0;
