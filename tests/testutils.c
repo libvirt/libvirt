@@ -352,6 +352,7 @@ virTestRewrapFile(const char *filename)
  * @param actual: actual output text
  * @param actualName: name designator of the actual text
  * @param regenerate: enable or disable regenerate functionality
+ * @param rewrap: enable or disable rewrapping when regenerating
  *
  * Display expected and actual output text, trimmed to first and last
  * characters at which differences occur. Displays names of the text strings if
@@ -363,7 +364,8 @@ virTestDifferenceFullInternal(FILE *stream,
                               const char *expectName,
                               const char *actual,
                               const char *actualName,
-                              bool regenerate)
+                              bool regenerate,
+                              bool rewrap)
 {
     const char *expectStart;
     const char *expectEnd;
@@ -386,7 +388,8 @@ virTestDifferenceFullInternal(FILE *stream,
             return -1;
         }
 
-        if (virTestRewrapFile(expectName) < 0) {
+        if (rewrap &&
+            virTestRewrapFile(expectName) < 0) {
             virDispatchError(NULL);
             return -1;
         }
@@ -454,7 +457,7 @@ virTestDifferenceFull(FILE *stream,
                       const char *actualName)
 {
     return virTestDifferenceFullInternal(stream, expect, expectName,
-                                         actual, actualName, true);
+                                         actual, actualName, true, true);
 }
 
 /**
@@ -477,7 +480,7 @@ virTestDifferenceFullNoRegenerate(FILE *stream,
                                   const char *actualName)
 {
     return virTestDifferenceFullInternal(stream, expect, expectName,
-                                         actual, actualName, false);
+                                         actual, actualName, false, false);
 }
 
 /**
@@ -566,12 +569,14 @@ int virTestDifferenceBin(FILE *stream,
 /*
  * @param actual: String input content
  * @param filename: File to compare @actual against
+ * @param unwrap: Remove '\\\n' sequences from file content before comparison
  *
  * If @actual is NULL, it's treated as an empty string.
  */
 int
-virTestCompareToFile(const char *actual,
-                     const char *filename)
+virTestCompareToFileFull(const char *actual,
+                         const char *filename,
+                         bool unwrap)
 {
     g_autofree char *filecontent = NULL;
     g_autofree char *fixedcontent = NULL;
@@ -580,8 +585,13 @@ virTestCompareToFile(const char *actual,
     if (!cmpcontent)
         cmpcontent = "";
 
-    if (virTestLoadFile(filename, &filecontent) < 0 && !virTestGetRegenerate())
-        return -1;
+    if (unwrap) {
+        if (virTestLoadFile(filename, &filecontent) < 0 && !virTestGetRegenerate())
+            return -1;
+    } else {
+        if (virFileReadAll(filename, INT_MAX, &filecontent) < 0 && !virTestGetRegenerate())
+            return -1;
+    }
 
     if (filecontent) {
         size_t filecontentLen = strlen(filecontent);
@@ -596,14 +606,28 @@ virTestCompareToFile(const char *actual,
     }
 
     if (STRNEQ_NULLABLE(cmpcontent, filecontent)) {
-        virTestDifferenceFull(stderr,
-                              filecontent, filename,
-                              cmpcontent, NULL);
+        virTestDifferenceFullInternal(stderr, filecontent, filename,
+                                      cmpcontent, NULL, true, unwrap);
         return -1;
     }
 
     return 0;
 }
+
+
+/*
+ * @param actual: String input content
+ * @param filename: File to compare @actual against
+ *
+ * If @actual is NULL, it's treated as an empty string.
+ */
+int
+virTestCompareToFile(const char *actual,
+                     const char *filename)
+{
+    return virTestCompareToFileFull(actual, filename, true);
+}
+
 
 int
 virTestCompareToULL(unsigned long long expect,

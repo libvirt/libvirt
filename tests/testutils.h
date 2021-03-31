@@ -63,6 +63,9 @@ int virTestDifferenceBin(FILE *stream,
                          const char *expect,
                          const char *actual,
                          size_t length);
+int virTestCompareToFileFull(const char *actual,
+                             const char *filename,
+                             bool unwrap);
 int virTestCompareToFile(const char *actual,
                          const char *filename);
 int virTestCompareToString(const char *expect,
