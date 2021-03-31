@@ -152,11 +152,11 @@ nodeDeviceGetMdevctlDefineCommand(virNodeDeviceDef *def,
                                   char **errmsg);
 
 virCommand *
-nodeDeviceGetMdevctlStopCommand(const char *uuid,
+nodeDeviceGetMdevctlStopCommand(virNodeDeviceDef *def,
                                 char **errmsg);
 
 virCommand *
-nodeDeviceGetMdevctlUndefineCommand(const char *uuid,
+nodeDeviceGetMdevctlUndefineCommand(virNodeDeviceDef *def,
                                     char **errmsg);
 
 virCommand *
@@ -181,7 +181,7 @@ bool nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
                                   virNodeDeviceDef *src);
 
 virCommand*
-nodeDeviceGetMdevctlStartCommand(const char *uuid,
+nodeDeviceGetMdevctlStartCommand(virNodeDeviceDef *def,
                                  char **errmsg);
 
 int

@@ -717,42 +717,75 @@ nodeDeviceFindAddressByName(const char *name)
 }
 
 
-/* the mdevctl 'start' and 'define' commands accept almost the exact same
- * arguments, so provide a common implementation that can be wrapped by a more
- * specific function */
-static virCommand*
-nodeDeviceGetMdevctlDefineCreateCommand(virNodeDeviceDef *def,
-                                        const char *subcommand,
-                                        char **uuid_out,
-                                        char **errmsg)
+static virCommand *
+nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
+                            virMdevctlCommand cmd_type,
+                            char **outbuf,
+                            char **errbuf)
 {
-    virCommand *cmd;
-    g_autofree char *json = NULL;
-    g_autofree char *parent_addr = nodeDeviceFindAddressByName(def->parent);
+    g_autofree char *parent_addr = NULL;
+    virCommand *cmd = NULL;
+    const char *subcommand = virMdevctlCommandTypeToString(cmd_type);
+    g_autofree char *inbuf = NULL;
 
-    if (!parent_addr) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to find parent device '%s'"), def->parent);
-        return NULL;
+    switch (cmd_type) {
+    case MDEVCTL_CMD_CREATE:
+        /* now is the time to make sure "create" is replaced with "start" on
+         * mdevctl cmdline */
+        cmd = virCommandNewArgList(MDEVCTL, "start", NULL);
+        break;
+    case MDEVCTL_CMD_STOP:
+    case MDEVCTL_CMD_START:
+    case MDEVCTL_CMD_DEFINE:
+    case MDEVCTL_CMD_UNDEFINE:
+        cmd = virCommandNewArgList(MDEVCTL, subcommand, NULL);
+        break;
+    case MDEVCTL_CMD_LAST:
+    default:
+        /* SHOULD NEVER HAPPEN */
+        break;
     }
 
-    if (nodeDeviceDefToMdevctlConfig(def, &json) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("couldn't convert node device def to mdevctl JSON"));
-        return NULL;
+    switch (cmd_type) {
+    case MDEVCTL_CMD_CREATE:
+    case MDEVCTL_CMD_DEFINE:
+        parent_addr = nodeDeviceFindAddressByName(def->parent);
+
+        if (!parent_addr) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to find parent device '%s'"), def->parent);
+            return NULL;
+        }
+
+        if (nodeDeviceDefToMdevctlConfig(def, &inbuf) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("couldn't convert node device def to mdevctl JSON"));
+            return NULL;
+        }
+
+        virCommandAddArgPair(cmd, "--parent", parent_addr);
+        virCommandAddArgPair(cmd, "--jsonfile", "/dev/stdin");
+
+        virCommandSetInputBuffer(cmd, inbuf);
+        virCommandSetOutputBuffer(cmd, outbuf);
+        break;
+
+    case MDEVCTL_CMD_UNDEFINE:
+    case MDEVCTL_CMD_STOP:
+    case MDEVCTL_CMD_START:
+        /* No special handling here, we only need to pass UUID with these */
+        break;
+    case MDEVCTL_CMD_LAST:
+    default:
+        /* SHOULD NEVER HAPPEN */
+        break;
     }
 
-    cmd = virCommandNewArgList(MDEVCTL, subcommand, NULL);
-    virCommandAddArgPair(cmd, "--parent", parent_addr);
-    virCommandAddArgPair(cmd, "--jsonfile", "/dev/stdin");
-
-    virCommandSetInputBuffer(cmd, json);
-
+    /* Fill in UUID for commands that need it */
     if (def->caps->data.mdev.uuid)
         virCommandAddArgPair(cmd, "--uuid", def->caps->data.mdev.uuid);
 
-    virCommandSetOutputBuffer(cmd, uuid_out);
-    virCommandSetErrorBuffer(cmd, errmsg);
+    virCommandSetErrorBuffer(cmd, errbuf);
 
     return cmd;
 }
@@ -762,8 +795,7 @@ nodeDeviceGetMdevctlCreateCommand(virNodeDeviceDef *def,
                                  char **uuid_out,
                                  char **errmsg)
 {
-    return nodeDeviceGetMdevctlDefineCreateCommand(def, "start", uuid_out,
-                                                   errmsg);
+    return nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_CREATE, uuid_out, errmsg);
 }
 
 virCommand*
@@ -771,8 +803,7 @@ nodeDeviceGetMdevctlDefineCommand(virNodeDeviceDef *def,
                                   char **uuid_out,
                                   char **errmsg)
 {
-    return nodeDeviceGetMdevctlDefineCreateCommand(def, "define", uuid_out,
-                                                   errmsg);
+    return nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_DEFINE, uuid_out, errmsg);
 }
 
 
@@ -906,31 +937,24 @@ nodeDeviceCreateXML(virConnectPtr conn,
 
 
 virCommand *
-nodeDeviceGetMdevctlStopCommand(const char *uuid, char **errmsg)
+nodeDeviceGetMdevctlStopCommand(virNodeDeviceDef *def,
+                                char **errmsg)
 {
-    virCommand *cmd = virCommandNewArgList(MDEVCTL, "stop", NULL);
-    virCommandAddArgPair(cmd, "--uuid", uuid);
-    virCommandSetErrorBuffer(cmd, errmsg);
-    return cmd;
-
+    return nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_STOP, NULL, errmsg);
 }
 
 virCommand *
-nodeDeviceGetMdevctlUndefineCommand(const char *uuid, char **errmsg)
+nodeDeviceGetMdevctlUndefineCommand(virNodeDeviceDef *def,
+                                    char **errmsg)
 {
-    virCommand *cmd = virCommandNewArgList(MDEVCTL, "undefine", NULL);
-    virCommandAddArgPair(cmd, "--uuid", uuid);
-    virCommandSetErrorBuffer(cmd, errmsg);
-    return cmd;
+    return nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_UNDEFINE, NULL, errmsg);
 }
 
 virCommand *
-nodeDeviceGetMdevctlStartCommand(const char *uuid, char **errmsg)
+nodeDeviceGetMdevctlStartCommand(virNodeDeviceDef *def,
+                                 char **errmsg)
 {
-    virCommand *cmd = virCommandNewArgList(MDEVCTL, "start", NULL);
-    virCommandAddArgPair(cmd, "--uuid", uuid);
-    virCommandSetErrorBuffer(cmd, errmsg);
-    return cmd;
+    return nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_START, NULL, errmsg);
 }
 
 static int
@@ -939,7 +963,7 @@ virMdevctlStop(virNodeDeviceDef *def, char **errmsg)
     int status;
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = nodeDeviceGetMdevctlStopCommand(def->caps->data.mdev.uuid, errmsg);
+    cmd = nodeDeviceGetMdevctlStopCommand(def, errmsg);
 
     if (virCommandRun(cmd, &status) < 0 || status != 0)
         return -1;
@@ -954,8 +978,7 @@ virMdevctlUndefine(virNodeDeviceDef *def, char **errmsg)
     int status;
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = nodeDeviceGetMdevctlUndefineCommand(def->caps->data.mdev.uuid,
-                                              errmsg);
+    cmd = nodeDeviceGetMdevctlUndefineCommand(def, errmsg);
 
     if (virCommandRun(cmd, &status) < 0 || status != 0)
         return -1;
@@ -970,7 +993,7 @@ virMdevctlStart(virNodeDeviceDef *def, char **errmsg)
     int status;
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = nodeDeviceGetMdevctlStartCommand(def->caps->data.mdev.uuid, errmsg);
+    cmd = nodeDeviceGetMdevctlStartCommand(def, errmsg);
 
     if (virCommandRun(cmd, &status) < 0 || status != 0)
         return -1;

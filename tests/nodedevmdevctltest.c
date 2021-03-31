@@ -115,7 +115,7 @@ testMdevctlCreateOrDefineHelper(const void *data)
                                      mdevxml, cmdlinefile, jsonfile);
 }
 
-typedef virCommand* (*GetStopUndefineCmdFunc)(const char *uuid, char **errbuf);
+typedef virCommand* (*GetStopUndefineCmdFunc)(virNodeDeviceDef *def, char **errbuf);
 struct UuidCommandTestInfo {
     const char *filename;
     virMdevctlCommand command;
@@ -136,7 +136,7 @@ testMdevctlUuidCommand(GetStopUndefineCmdFunc func,
     if (!(def = virNodeDeviceDefParseFile(mdevxml, EXISTING_DEVICE, "QEMU")))
         goto cleanup;
 
-    cmd = func(def->caps->data.mdev.uuid, &errmsg);
+    cmd = func(def, &errmsg);
 
     if (!cmd)
         goto cleanup;
