@@ -91,7 +91,7 @@ v7.2.0 (unreleased)
   * Restore security context of swtpm.log
 
     If a guest with emulated TPM was started and the daemon was restarted
-    afterwards, the security context of the per-domain ``swtmp.log`` file was
+    afterwards, the security context of the per-domain ``swtpm.log`` file was
     not restored on domain shutdown leaving it unable to be started again.
 
   * virtlogd|virtlockd: Fixed crash when upgrading the daemons in-place
