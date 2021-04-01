@@ -3087,8 +3087,45 @@ virCommandDoAsyncIO(virCommandPtr cmd)
     cmd->flags |= VIR_EXEC_ASYNC_IO | VIR_EXEC_NONBLOCK;
 }
 
+
+struct _virCommandDryRunToken {
+    int dummy;
+};
+
+
+/**
+ * virCommandDryRunTokenNew:
+ *
+ * Returns a token which is used with virCommandSetDryRun. Freeing the token
+ * with the appropriate automatic cleanup function ensures that the dry run
+ * environment is reset.
+ */
+virCommandDryRunToken *
+virCommandDryRunTokenNew(void)
+{
+    return g_new0(virCommandDryRunToken, 1);
+}
+
+
+/**
+ * virCommandDryRunTokenFree:
+ *
+ * Helper to free a virCommandDryRunToken. Do not use this function directly,
+ * always declare virCommandDryRunToken as a g_autoptr.
+ */
+void
+virCommandDryRunTokenFree(virCommandDryRunToken *tok)
+{
+    dryRunBuffer = NULL;
+    dryRunCallback = NULL;
+    dryRunOpaque = NULL;
+    g_free(tok);
+}
+
+
 /**
  * virCommandSetDryRun:
+ * @tok: a virCommandDryRunToken obtained from virCommandDryRunTokenNew
  * @buf: buffer to store stringified commands
  * @callback: callback to process input/output/args
  *
@@ -3120,10 +3157,14 @@ virCommandDoAsyncIO(virCommandPtr cmd)
  * To cancel this effect pass NULL for @buf and @callback.
  */
 void
-virCommandSetDryRun(virBufferPtr buf,
+virCommandSetDryRun(virCommandDryRunToken *tok,
+                    virBufferPtr buf,
                     virCommandDryRunCallback cb,
                     void *opaque)
 {
+    if (!tok)
+        abort();
+
     dryRunBuffer = buf;
     dryRunCallback = cb;
     dryRunOpaque = opaque;

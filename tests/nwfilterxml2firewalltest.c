@@ -371,10 +371,11 @@ static int testCompareXMLToArgvFiles(const char *xml,
     GHashTable *vars = virHashNew(virNWFilterVarValueHashFree);
     virNWFilterInst inst;
     int ret = -1;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     memset(&inst, 0, sizeof(inst));
 
-    virCommandSetDryRun(&buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
 
     if (!vars)
         goto cleanup;
@@ -392,7 +393,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     actualargv = virBufferContentAndReset(&buf);
     virTestClearCommandPath(actualargv);
-    virCommandSetDryRun(NULL, NULL, NULL);
 
     testRemoveCommonRules(actualargv);
 

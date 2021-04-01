@@ -212,10 +212,11 @@ testISCSIGetSession(const void *data)
     struct testIscsiadmCbData cbData = { 0 };
     char *actual_session = NULL;
     int ret = -1;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     cbData.output_version = info->output_version;
 
-    virCommandSetDryRun(NULL, testIscsiadmCb, &cbData);
+    virCommandSetDryRun(dryRunToken, NULL, testIscsiadmCb, &cbData);
 
     actual_session = virISCSIGetSession(info->device_path, true);
 
@@ -230,7 +231,6 @@ testISCSIGetSession(const void *data)
     ret = 0;
 
  cleanup:
-    virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(actual_session);
     return ret;
 }
@@ -250,8 +250,9 @@ testISCSIScanTargets(const void *data)
     char **targets = NULL;
     int ret = -1;
     size_t i;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(NULL, testIscsiadmCb, NULL);
+    virCommandSetDryRun(dryRunToken, NULL, testIscsiadmCb, NULL);
 
     if (virISCSIScanTargets(info->portal, NULL,
                             false, &ntargets, &targets) < 0)
@@ -276,7 +277,6 @@ testISCSIScanTargets(const void *data)
     ret = 0;
 
  cleanup:
-    virCommandSetDryRun(NULL, NULL, NULL);
     for (i = 0; i < ntargets; i++)
         VIR_FREE(targets[i]);
     VIR_FREE(targets);
@@ -297,15 +297,15 @@ testISCSIConnectionLogin(const void *data)
     const struct testConnectionInfoLogin *info = data;
     struct testIscsiadmCbData cbData = { 0 };
     int ret = -1;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(NULL, testIscsiadmCb, &cbData);
+    virCommandSetDryRun(dryRunToken, NULL, testIscsiadmCb, &cbData);
 
     if (virISCSIConnectionLogin(info->portal, info->initiatoriqn, info->target) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
-    virCommandSetDryRun(NULL, NULL, NULL);
     return ret;
 }
 

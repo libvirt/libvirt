@@ -72,13 +72,14 @@ testVirNetDevBandwidthSet(const void *data)
     g_autoptr(virNetDevBandwidth) band = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *actual_cmd = NULL;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     PARSE(info->band, band);
 
     if (!iface)
         iface = "eth0";
 
-    virCommandSetDryRun(&buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
 
     if (virNetDevBandwidthSet(iface, band, info->hierarchical_class, true) < 0)
         goto cleanup;
@@ -97,7 +98,6 @@ testVirNetDevBandwidthSet(const void *data)
 
     ret = 0;
  cleanup:
-    virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(actual_cmd);
     return ret;
 }

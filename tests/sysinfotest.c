@@ -96,17 +96,17 @@ testSysinfo(const void *data)
     g_autofree char *sysinfo = NULL;
     g_autofree char *cpuinfo = NULL;
     g_autofree char *expected = NULL;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     sysinfo = g_strdup_printf("%s/sysinfodata/%ssysinfo.data", abs_srcdir, testdata->name);
     cpuinfo = g_strdup_printf("%s/sysinfodata/%scpuinfo.data", abs_srcdir, testdata->name);
     expected = g_strdup_printf("%s/sysinfodata/%ssysinfo.expect", abs_srcdir, testdata->name);
 
-    virCommandSetDryRun(NULL, testDMIDecodeDryRun, sysinfo);
+    virCommandSetDryRun(dryRunToken, NULL, testDMIDecodeDryRun, sysinfo);
 
     virSysinfoSetup(sysinfo, cpuinfo);
 
     ret = testdata->func();
-    virCommandSetDryRun(NULL, NULL, NULL);
 
     if (!ret)
         return -1;

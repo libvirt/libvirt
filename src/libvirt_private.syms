@@ -1988,6 +1988,8 @@ virCommandAllowCap;
 virCommandClearCaps;
 virCommandDaemonize;
 virCommandDoAsyncIO;
+virCommandDryRunTokenFree;
+virCommandDryRunTokenNew;
 virCommandExec;
 virCommandFree;
 virCommandGetArgList;

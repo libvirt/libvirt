@@ -103,8 +103,9 @@ testNWFilterEBIPTablesAllTeardown(const void *opaque G_GNUC_UNUSED)
         "ebtables --concurrent -t nat -X libvirt-O-vnet0\n";
     char *actual = NULL;
     int ret = -1;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(&buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
 
     if (ebiptables_driver.allTeardown("vnet0") < 0)
         goto cleanup;
@@ -119,7 +120,6 @@ testNWFilterEBIPTablesAllTeardown(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(actual);
     return ret;
 }
@@ -170,8 +170,9 @@ testNWFilterEBIPTablesTearOldRules(const void *opaque G_GNUC_UNUSED)
         "ebtables --concurrent -t nat -E libvirt-P-vnet0 libvirt-O-vnet0\n";
     char *actual = NULL;
     int ret = -1;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(&buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
 
     if (ebiptables_driver.tearOldRules("vnet0") < 0)
         goto cleanup;
@@ -186,7 +187,6 @@ testNWFilterEBIPTablesTearOldRules(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(actual);
     return ret;
 }
@@ -215,8 +215,9 @@ testNWFilterEBIPTablesRemoveBasicRules(const void *opaque G_GNUC_UNUSED)
         "ebtables --concurrent -t nat -X libvirt-P-vnet0\n";
     char *actual = NULL;
     int ret = -1;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(&buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
 
     if (ebiptables_driver.removeBasicRules("vnet0") < 0)
         goto cleanup;
@@ -231,7 +232,6 @@ testNWFilterEBIPTablesRemoveBasicRules(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(actual);
     return ret;
 }
@@ -245,8 +245,9 @@ testNWFilterEBIPTablesTearNewRules(const void *opaque G_GNUC_UNUSED)
         VIR_NWFILTER_NEW_RULES_TEARDOWN;
     char *actual = NULL;
     int ret = -1;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(&buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
 
     if (ebiptables_driver.tearNewRules("vnet0") < 0)
         goto cleanup;
@@ -261,7 +262,6 @@ testNWFilterEBIPTablesTearNewRules(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(actual);
     return ret;
 }
@@ -313,8 +313,9 @@ testNWFilterEBIPTablesApplyBasicRules(const void *opaque G_GNUC_UNUSED)
     char *actual = NULL;
     int ret = -1;
     virMacAddr mac = { .addr = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60 } };
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(&buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
 
     if (ebiptables_driver.applyBasicRules("vnet0", &mac) < 0)
         goto cleanup;
@@ -329,7 +330,6 @@ testNWFilterEBIPTablesApplyBasicRules(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(actual);
     return ret;
 }
@@ -399,8 +399,9 @@ testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque G_GNUC_UNUSED)
             }
         }
     };
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(&buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
 
     if (ebiptables_driver.applyDHCPOnlyRules("vnet0", &mac, &val, false) < 0)
         goto cleanup;
@@ -415,7 +416,6 @@ testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(actual);
     return ret;
 }
@@ -468,8 +468,9 @@ testNWFilterEBIPTablesApplyDropAllRules(const void *opaque G_GNUC_UNUSED)
         "ebtables --concurrent -t nat -E libvirt-P-vnet0 libvirt-O-vnet0\n";
     char *actual = NULL;
     int ret = -1;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(&buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
 
     if (ebiptables_driver.applyDropAllRules("vnet0") < 0)
         goto cleanup;
@@ -484,7 +485,6 @@ testNWFilterEBIPTablesApplyDropAllRules(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virCommandSetDryRun(NULL, NULL, NULL);
     VIR_FREE(actual);
     return ret;
 }

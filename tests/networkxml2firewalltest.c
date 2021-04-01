@@ -96,8 +96,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virNetworkDefPtr def = NULL;
     int ret = -1;
     char *actual;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(&buf, testCommandDryRun, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, testCommandDryRun, NULL);
 
     if (!(def = virNetworkDefParseFile(xml, NULL)))
         goto cleanup;
@@ -107,7 +108,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     actual = actualargv = virBufferContentAndReset(&buf);
     virTestClearCommandPath(actualargv);
-    virCommandSetDryRun(NULL, NULL, NULL);
 
     /* The first network to be created populates the
      * libvirt global chains. We must skip args for

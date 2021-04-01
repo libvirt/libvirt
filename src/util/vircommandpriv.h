@@ -35,6 +35,13 @@ typedef void (*virCommandDryRunCallback)(const char *const*args,
                                          int *status,
                                          void *opaque);
 
-void virCommandSetDryRun(virBufferPtr buf,
+typedef struct _virCommandDryRunToken virCommandDryRunToken;
+
+virCommandDryRunToken * virCommandDryRunTokenNew(void);
+void virCommandDryRunTokenFree(virCommandDryRunToken *token);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCommandDryRunToken, virCommandDryRunTokenFree);
+
+void virCommandSetDryRun(virCommandDryRunToken *tok,
+                         virBufferPtr buf,
                          virCommandDryRunCallback cb,
                          void *opaque);

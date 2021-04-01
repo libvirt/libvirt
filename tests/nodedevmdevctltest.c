@@ -75,6 +75,7 @@ testMdevctlStartOrDefine(const char *virt_type,
     g_autofree char *errmsg = NULL;
     g_autofree char *stdinbuf = NULL;
     g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     if (!(def = virNodeDeviceDefParseFile(mdevxml, create, virt_type)))
         goto cleanup;
@@ -86,7 +87,7 @@ testMdevctlStartOrDefine(const char *virt_type,
     if (!cmd)
         goto cleanup;
 
-    virCommandSetDryRun(&buf, testCommandDryRunCallback, &stdinbuf);
+    virCommandSetDryRun(dryRunToken, &buf, testCommandDryRunCallback, &stdinbuf);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
@@ -102,7 +103,6 @@ testMdevctlStartOrDefine(const char *virt_type,
     ret = 0;
 
  cleanup:
-    virCommandSetDryRun(NULL, NULL, NULL);
     virNodeDeviceObjEndAPI(&obj);
     return ret;
 }
@@ -152,13 +152,14 @@ testMdevctlUuidCommand(const char *uuid, GetStopUndefineCmdFunc func, const char
     int ret = -1;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *errmsg = NULL;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     cmd = func(uuid, &errmsg);
 
     if (!cmd)
         goto cleanup;
 
-    virCommandSetDryRun(&buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
@@ -171,7 +172,6 @@ testMdevctlUuidCommand(const char *uuid, GetStopUndefineCmdFunc func, const char
     ret = 0;
 
  cleanup:
-    virCommandSetDryRun(NULL, NULL, NULL);
     return ret;
 }
 
@@ -214,13 +214,14 @@ testMdevctlListDefined(const void *data G_GNUC_UNUSED)
     g_autofree char *cmdlinefile =
         g_strdup_printf("%s/nodedevmdevctldata/mdevctl-list-defined.argv",
                         abs_srcdir);
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     cmd = nodeDeviceGetMdevctlListCommand(true, &output, &errmsg);
 
     if (!cmd)
         goto cleanup;
 
-    virCommandSetDryRun(&buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
@@ -234,7 +235,6 @@ testMdevctlListDefined(const void *data G_GNUC_UNUSED)
 
  cleanup:
     virBufferFreeAndReset(&buf);
-    virCommandSetDryRun(NULL, NULL, NULL);
     return ret;
 }
 
