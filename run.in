@@ -16,7 +16,7 @@
 # License along with this library; If not, see
 # <http://www.gnu.org/licenses/>.
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 #
 # With this script you can run libvirt programs without needing to
 # install them first.  You just have to do for example:
@@ -38,13 +38,14 @@
 #
 #   sudo ./run virsh list --all
 #
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 import os
 import os.path
 import random
 import sys
 import subprocess
+
 
 # Function to intelligently prepend a path to an environment variable.
 # See https://stackoverflow.com/a/9631350
@@ -53,6 +54,7 @@ def prepend(env, varname, extradir):
         env[varname] = extradir + ":" + env[varname]
     else:
         env[varname] = extradir
+
 
 here = "@abs_builddir@"
 
@@ -93,28 +95,35 @@ modular_daemons = [
     "virtxend",
 ]
 
+
 def is_modular_daemon(name):
     return name in modular_daemons
 
+
 def is_monolithic_daemon(name):
     return name == "libvirtd"
+
 
 def is_systemd_host():
     if os.getuid() != 0:
         return False
     return os.path.exists("/run/systemd/system")
 
+
 def daemon_units(name):
     return [name + suffix for suffix in [
         ".service", ".socket", "-ro.socket", "-admin.socket"]]
+
 
 def is_unit_active(name):
     ret = subprocess.call(["systemctl", "is-active", "-q", name])
     return ret == 0
 
+
 def change_unit(name, action):
     ret = subprocess.call(["systemctl", action, "-q", name])
     return ret == 0
+
 
 try_stop_units = []
 if is_systemd_host():
@@ -152,7 +161,7 @@ else:
 
         print("Running %s..." % prog)
         ret = subprocess.call([prog] + args, env=env)
-    except KeyboardInterrupt as ex:
+    except KeyboardInterrupt:
         pass
     finally:
         print("Re-starting original systemd units...")
