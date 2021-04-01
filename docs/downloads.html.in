@@ -616,6 +616,12 @@ Fingerprint=453B 6531 0595 5628 5547  1199 CA68 BE80 1008 4C9C
 </pre>
 
     <p>
+      It can be downloaded from
+      <a href="https://libvirt.org/sources/gpg_key.asc">this site</a> or from
+      public GPG key servers.
+    </p>
+
+    <p>
       Releases prior to libvirt-6.6 were signed with the following GPG key:
     </p>
 
