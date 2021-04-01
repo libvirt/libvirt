@@ -8,6 +8,16 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
+v7.3.0 (unreleased)
+===================
+
+* **New features**
+
+* **Improvements**
+
+* **Bug fixes**
+
+
 v7.2.0 (2021-04-01)
 ===================
 
