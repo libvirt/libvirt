@@ -26,10 +26,6 @@ if host_machine.system() == 'freebsd'
     if not grep_prog.found()
       error('GNU grep not found')
     endif
-    grep_cmd = run_command(grep_prog, '--version')
-    if grep_cmd.stdout().startswith('grep (BSD grep')
-      error('GNU grep not found')
-    endif
   endif
 elif host_machine.system() == 'darwin'
   grep_prog = find_program('ggrep')
