@@ -198,6 +198,8 @@ mymain(void)
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
      * values for these envvars */
     g_setenv("PATH", "/bin", TRUE);
+    g_unsetenv("QEMU_AUDIO_DRV");
+    g_unsetenv("SDL_AUDIODRIVER");
 
     DO_TEST("minimal", NONE);
     DO_TEST_CAPS_LATEST("genid");
