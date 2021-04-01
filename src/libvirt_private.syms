@@ -2030,6 +2030,7 @@ virCommandSetUID;
 virCommandSetUmask;
 virCommandSetWorkingDirectory;
 virCommandToString;
+virCommandToStringFull;
 virCommandWait;
 virCommandWriteArgLog;
 virFork;

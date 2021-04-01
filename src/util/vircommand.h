@@ -171,6 +171,10 @@ void virCommandWriteArgLog(virCommandPtr cmd,
                            int logfd);
 
 char *virCommandToString(virCommandPtr cmd, bool linebreaks) G_GNUC_WARN_UNUSED_RESULT;
+char *virCommandToStringFull(virCommandPtr cmd,
+                             bool linebreaks,
+                             bool stripCommandPath);
+
 int virCommandGetArgList(virCommandPtr cmd, char ***args, size_t *nargs);
 
 int virCommandExec(virCommandPtr cmd, gid_t *groups, int ngroups) G_GNUC_WARN_UNUSED_RESULT;

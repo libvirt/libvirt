@@ -2055,9 +2055,10 @@ virCommandWriteArgLog(virCommandPtr cmd, int logfd)
 
 
 /**
- * virCommandToString:
+ * virCommandToStringFull:
  * @cmd: the command to convert
  * @linebreaks: true to break line after each env var or option
+ * @stripCommandPath: strip the path leading to the binary of @cmd
  *
  * Call after adding all arguments and environment settings, but
  * before Run/RunAsync, to return a string representation of the
@@ -2067,11 +2068,15 @@ virCommandWriteArgLog(virCommandPtr cmd, int logfd)
  * Caller is responsible for freeing the resulting string.
  */
 char *
-virCommandToString(virCommandPtr cmd, bool linebreaks)
+virCommandToStringFull(virCommandPtr cmd,
+                       bool linebreaks,
+                       bool stripCommandPath)
 {
     size_t i;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool prevopt = false;
+    const char *command = cmd->args[0];
+    g_autofree char *basename = NULL;
 
     /* Cannot assume virCommandRun will be called; so report the error
      * now.  If virCommandRun is called, it will report the same error. */
@@ -2097,7 +2102,11 @@ virCommandToString(virCommandPtr cmd, bool linebreaks)
         if (linebreaks)
             virBufferAddLit(&buf, "\\\n");
     }
-    virBufferEscapeShell(&buf, cmd->args[0]);
+
+    if (stripCommandPath)
+        command = basename = g_path_get_basename(command);
+
+    virBufferEscapeShell(&buf, command);
     for (i = 1; i < cmd->nargs; i++) {
         virBufferAddChar(&buf, ' ');
         if (linebreaks) {
@@ -2113,6 +2122,14 @@ virCommandToString(virCommandPtr cmd, bool linebreaks)
     }
 
     return virBufferContentAndReset(&buf);
+}
+
+
+char *
+virCommandToString(virCommandPtr cmd,
+                   bool linebreaks)
+{
+    return virCommandToStringFull(cmd, linebreaks, false);
 }
 
 
