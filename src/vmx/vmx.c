@@ -1574,18 +1574,17 @@ virVMXParseConfig(virVMXContext *ctx,
     if (sched_cpu_affinity != NULL && STRCASENEQ(sched_cpu_affinity, "all")) {
         g_auto(GStrv) afflist = NULL;
         char **aff;
-        size_t naffs;
 
         def->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN);
 
-        if (!(afflist = virStringSplitCount(sched_cpu_affinity, ",", 0, &naffs)))
+        if (!(afflist = g_strsplit(sched_cpu_affinity, ",", 0)))
             goto cleanup;
 
-        if (naffs < numvcpus) {
+        if (g_strv_length(afflist) < numvcpus) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Expecting VMX entry 'sched.cpu.affinity' to contain "
                              "at least as many values as 'numvcpus' (%lld) but "
-                             "found only %zu value(s)"), numvcpus, naffs);
+                             "found only %u value(s)"), numvcpus, g_strv_length(afflist));
             goto cleanup;
         }
 
