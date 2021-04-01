@@ -31,13 +31,13 @@
     </p>
 
     <pre>
-&lt;networkport
+&lt;networkport&gt;
   &lt;uuid&gt;7ae63b5f-fe96-4af0-a7c3-da04ba1b3f54&lt;/uuid&gt;
   &lt;owner&gt;
     &lt;uuid&gt;06578fc1-c686-46fa-bc2c-220893b466a6&lt;/uuid&gt;
-    &lt;name&gt;myguest&lt;name&gt;
+    &lt;name&gt;myguest&lt;/name&gt;
   &lt;/owner&gt;
-  &lt;group&gt;webfront&lt;group&gt;
+  &lt;group&gt;webfront&lt;/group&gt;
   &lt;mac address='52:54:0:7b:35:93'/&gt;
   ...</pre>
 
