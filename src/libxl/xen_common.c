@@ -372,7 +372,6 @@ xenParsePCI(char *entry)
     virDomainHostdevDefPtr hostdev = NULL;
     g_auto(GStrv) tokens = NULL;
     g_auto(GStrv) options = NULL;
-    size_t ntokens = 0;
     size_t nexttoken = 0;
     char *str;
     char *nextstr;
@@ -383,11 +382,11 @@ xenParsePCI(char *entry)
     virTristateBool filtered = VIR_TRISTATE_BOOL_ABSENT;
 
     /* pci=['00:1b.0','0000:00:13.0,permissive=1'] */
-    if (!(tokens = virStringSplitCount(entry, ":", 3, &ntokens)))
+    if (!(tokens = g_strsplit(entry, ":", 3)))
         return NULL;
 
     /* domain */
-    if (ntokens == 3) {
+    if (g_strv_length(tokens) == 3) {
         if (virStrToLong_i(tokens[nexttoken], NULL, 16, &domain) < 0)
             return NULL;
         nexttoken++;
