@@ -523,8 +523,10 @@ xenParseXLVnuma(virConfPtr conf,
                         tmp = g_strdup(vtoken);
 
                         g_strfreev(token);
-                        if (!(token = virStringSplitCount(tmp, ",", 0, &ndistances)))
+                        if (!(token = g_strsplit(tmp, ",", 0)))
                             goto cleanup;
+
+                        ndistances = g_strv_length(token);
 
                         if (ndistances != nr_nodes) {
                             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
