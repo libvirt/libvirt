@@ -754,19 +754,18 @@ virSystemdActivationInitFromNames(virSystemdActivationPtr act,
 {
     g_auto(GStrv) fdnamelistptr = NULL;
     char **fdnamelist;
-    size_t nfdnames;
     size_t i;
     int nextfd = STDERR_FILENO + 1;
 
     VIR_DEBUG("FD names %s", fdnames);
 
-    if (!(fdnamelistptr = virStringSplitCount(fdnames, ":", 0, &nfdnames)))
+    if (!(fdnamelistptr = g_strsplit(fdnames, ":", 0)))
         goto error;
 
-    if (nfdnames != nfds) {
+    if (g_strv_length(fdnamelistptr) != nfds) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Expecting %d FD names but got %zu"),
-                       nfds, nfdnames);
+                       _("Expecting %d FD names but got %u"),
+                       nfds, g_strv_length(fdnamelistptr));
         goto error;
     }
 
