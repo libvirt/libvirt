@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-03-26 11:32+0000\n"
-"PO-Revision-Date: 2021-03-30 07:01+0000\n"
+"PO-Revision-Date: 2021-04-04 07:01+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5.2\n"
+"X-Generator: Weblate 4.5.3\n"
 
 msgid ""
 "\n"
@@ -143,6 +143,18 @@ msgid ""
 "      %s/virtlogd.pid\n"
 "\n"
 msgstr ""
+"\n"
+"  기본 경로:\n"
+"\n"
+"    환경 파일(unless overridden by -f):\n"
+"      %s/libvirt/virtlogd.conf\n"
+"\n"
+"    소켓:\n"
+"      %s/libvirt/virtlogd-sock\n"
+"\n"
+"    PID file (unless overridden by -p):\n"
+"      %s/virtlogd.pid\n"
+"\n"
 
 msgid ""
 "\n"
@@ -176,6 +188,21 @@ msgid ""
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
+"\n"
+"%s [options]... [<command_string>]\n"
+"%s [options]... <command> [args...]\n"
+"\n"
+" options:\n"
+" -c | --connect=URI daemon admin connection URI\n"
+" -d | --debug=NUM debug level [0-4]\n"
+" -h | --help this help\n"
+" -l | --log=FILE output logging to file\n"
+" -q | --quiet quiet mode\n"
+" -v short version\n"
+" -V long version\n"
+" --version[=TYPE] version, TYPE is short or long (default short)\n"
+" commands (non interactive mode):\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -202,6 +229,28 @@ msgid ""
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
+"\n"
+"%s [options]... [<command_string>]\n"
+"%s [options]... <command> [args...]\n"
+"\n"
+" options:\n"
+" -c | --connect=URI hypervisor connection URI\n"
+" -d | --debug=NUM debug level [0-4]\n"
+" -e | --escape <char> set escape sequence for console\n"
+" -h | --help this help\n"
+" -k | --keepalive-interval=NUM\n"
+" keepalive interval in seconds, 0 for disable\n"
+" -K | --keepalive-count=NUM\n"
+" number of possible missed keepalive messages\n"
+" -l | --log=FILE output logging to file\n"
+" -q | --quiet quiet mode\n"
+" -r | --readonly connect readonly\n"
+" -t | --timing print timing information\n"
+" -v short version\n"
+" -V long version\n"
+" --version[=TYPE] version, TYPE is short or long (default short)\n"
+" commands (non interactive mode):\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -224,6 +273,23 @@ msgid ""
 "    -F | --append-file <file>      append file to an existing profile\n"
 "\n"
 msgstr ""
+"\n"
+"%s mode [options] [extra file] [< def.xml]\n"
+"\n"
+" Modes:\n"
+" -a | --add load profile\n"
+" -c | --create create profile from template\n"
+" -D | --delete unload profile and delete generated rules\n"
+" -r | --replace reload profile\n"
+" -R | --remove unload profile\n"
+" Options:\n"
+" -d | --dryrun dry run\n"
+" -u | --uuid <uuid> uuid (profile name)\n"
+" -h | --help this help\n"
+" extra File:\n"
+" -f | --add-file <file> add file to a profile generated from XML\n"
+" -F | --append-file <file> append file to an existing profile\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -383,9 +449,9 @@ msgstr "%s\n"
 msgid "%s %s"
 msgstr "%s %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s %s '%s' has an unsupported type '%s'"
-msgstr "인터페이스의 유형이 지원되지 않는 '%s'입니다"
+msgstr "%s %s '%s'은 지원하지 않는 유형'%s'입니다"
 
 #, fuzzy, c-format
 msgid "%s %s '%s' has unsupported type '%s', expecting '%s' or '%s'"
@@ -411,9 +477,9 @@ msgstr "%s 배열 요소는 항목 %zu에서 누락됩니다"
 msgid "%s can't be empty"
 msgstr "%s을 비워둘 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s cannot be set higher than %s "
-msgstr "최대 메모리보다 더 높게 메모리를 설정할 수 없음"
+msgstr "%s는 %s 보다 더 높게 메모리를 설정할 수 없습니다 "
 
 #, fuzzy, c-format
 msgid "%s cannot parse GID '%s'"
@@ -445,8 +511,7 @@ msgstr "%s 제품군은 '%s' 네트워크에서 비 IPv4 주소 '%s'에 대해 �
 
 #, c-format
 msgid "%s forwarding requested, but no IP address provided for network '%s'"
-msgstr ""
-"%s 포워딩이 필요하지만 네트워크 '%s'의 IP 주소가 지정되어 있지 않습니다 "
+msgstr "%s 포워딩이 필요하지만 네트워크 '%s'의 IP 주소가 지정되어 있지 않습니다"
 
 #, c-format
 msgid "%s graphics are not supported with this QEMU"
@@ -464,9 +529,9 @@ msgstr "%s에는 잘못된 값 %s 이 있습니다"
 msgid "%s has unexpected '*' before last line"
 msgstr "스트림이 예기치 못하게 종료했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s in %s must be NULL"
-msgstr "%s에서 uuidstr는 올바른 UUID이어야 합니다 "
+msgstr "%s에서 %s는 NULL이어야 합니다"
 
 #, c-format
 msgid "%s in %s must be greater than zero"
@@ -490,7 +555,7 @@ msgstr ""
 
 #, c-format
 msgid "%s is missing 'type' property"
-msgstr "%s에는 'type' 속성이 누락되어 있음 "
+msgstr "%s에는 'type' 속성이 누락되어 있습니다"
 
 #, c-format
 msgid "%s is missing or not an array"
@@ -500,25 +565,25 @@ msgstr ""
 msgid "%s is not a supported cipher name"
 msgstr "%s는 암호 이름을 지원하지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s is not a supported cipher state"
-msgstr "임시 디스크가 아직 지원되지 않음 "
+msgstr "%s는 암호상태를 지원하지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s is not an executable"
-msgstr "시스템이 사용 불가능합니다 "
+msgstr "%s는 실행 할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s is not available with this QEMU binary"
-msgstr "이 QEMU 바이너리에서는 SATA를 지원하지 않습니다"
+msgstr "%s는 QEMU 이진수를 사용 할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s is not supported by this QEMU binary"
-msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
+msgstr "%s는 QEMU 바이너리에서 지원되지 않음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s length greater than maximum: %d > %d"
-msgstr "vCPU 맵 버퍼 길이가 최대 길이를 초과: %d > %d"
+msgstr "%s는 최대보다 길이를 초과: %d > %d"
 
 #, c-format
 msgid "%s model of watchdog can go only on PCI bus"
@@ -540,17 +605,17 @@ msgstr ""
 msgid "%s module is not loaded, "
 msgstr "%s 모듈은 적재되지 않았습니다, "
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s namespace is not available"
-msgstr "시스템이 사용 불가능합니다 "
+msgstr "%s 이름공간이 사용 할 수 없습니다"
 
 #, c-format
 msgid "%s not available, firewall backend will not function"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s not found in %s"
-msgstr "디스크 %s를 찾을 수 없음"
+msgstr "%s는 %s에서 를 찾을 수 없습니다"
 
 #, c-format
 msgid "%s not implemented on Win32"
@@ -560,9 +625,9 @@ msgstr "%s은 Win32상에서 구현되지 않음"
 msgid "%s not matched against 'allowed_users' in %s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s not parseable"
-msgstr "usb 파일 %s를 구문분석 할 수 없음"
+msgstr "%s를 구문 분석 할 수 없음"
 
 #, c-format
 msgid "%s not supported in this QEMU binary"
@@ -570,11 +635,11 @@ msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
 
 #, c-format
 msgid "%s object has invalid dynamic type"
-msgstr "%s 개체에 잘못된 동적 유형이 있습니다 "
+msgstr "%s 개체에 잘못된 동적 유형이 있습니다"
 
 #, c-format
 msgid "%s object is missing the required '%s' property"
-msgstr "%s 개체가 필요한 '%s' 속성에 누락되어 있습니다 "
+msgstr "%s 개체가 필요한 '%s' 속성에 누락되어 있습니다"
 
 #, c-format
 msgid "%s reply data was missing 'model'"
@@ -642,7 +707,7 @@ msgstr ""
 
 #, c-format
 msgid "%s: Cannot request read and write flags together"
-msgstr "%s: 읽기 및 쓰기 플래그를 함께 요청할 수 없습니다 "
+msgstr "%s: 읽기 및 쓰기 플래그를 함께 요청 할 수 없습니다"
 
 #, c-format
 msgid ""
@@ -694,9 +759,9 @@ msgstr ""
 msgid "%s: Missing required address attribute in route definition"
 msgstr "네트워크 '%s'에서 필요한 주소 속성이 누락되어 있음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Missing required gateway attribute in route definition"
-msgstr "포트 그룹에 필요한 이름 속성이 누락되어 있습니다 "
+msgstr "%s: route 확인에서 필요한 게이트웨어 속성이 누락되어 있습니다"
 
 #, fuzzy, c-format
 msgid "%s: No family specified for non-IPv4 address '%s' in route definition"
@@ -706,9 +771,9 @@ msgstr "%s 제품군은 '%s' 네트워크에서 비 IPv4 주소 '%s'에 대해 �
 msgid "%s: No family specified for non-IPv4 gateway '%s' in route definition"
 msgstr "%s 제품군은 '%s' 네트워크에서 비 IPv4 주소 '%s'에 대해 지정되어 있음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: Route definition cannot have both a prefix and a netmask"
-msgstr "네트워크 '%s' 주소는 접두사와 넷마스크 모두를 가질 수 없습니다 "
+msgstr "%s: Route 확인은 접두사와 넷마스크 모두를 가질 수 없습니다"
 
 #, fuzzy, c-format
 msgid ""
@@ -755,9 +820,9 @@ msgstr ""
 msgid "%s: error: unable to determine if daemon is running: %s\n"
 msgstr "%s: 오류: 데몬이 실행중인지 확인할 수 없음: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: event '%s' for node device %s\n"
-msgstr "노드 장치 '%s'가 파괴됨\n"
+msgstr "%s: 노드 장치 '%s'를 위한 사건 %s\n"
 
 #, c-format
 msgid "%s: event '%s' for secret %s\n"
@@ -1008,25 +1073,25 @@ msgstr "'%s' 파일은 메모리에 들어갈 수 없습니다"
 msgid "'%s' is not a VF device"
 msgstr "'%s'는 VF 장치가 아닙니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' is not a known interface"
-msgstr "잘못된 경로, '%s'는 알려진 인터페이스가 이닙니다"
+msgstr "%s는 알려진 연결장치가 이닙니다"
 
 #, c-format
 msgid "'%s' is not a suitable bridge helper"
-msgstr ""
+msgstr "'%s'는 알맞는 브릿지 도우미가 아닙니다"
 
 #, c-format
 msgid "'%s' is not a suitable dbus-daemon"
-msgstr ""
+msgstr "'%s'는 알맞는 dbus 데몬이 아닙니다"
 
 #, c-format
 msgid "'%s' is not a suitable pr helper"
-msgstr ""
+msgstr "'%s' 는 알맞는 도우미가 아닙니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' is not supported in this QEMU binary"
-msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
+msgstr "'%s'는 QEMU 바이너리에서 지원되지 않습니다"
 
 #, c-format
 msgid "'%s' missing"
@@ -1034,11 +1099,11 @@ msgstr "'%s' 누락"
 
 #, c-format
 msgid "'%s' requires shared memory"
-msgstr ""
+msgstr "'%s'는 공유 메모리를 요구합니다"
 
 #, c-format
 msgid "'%s' scheduler bitmap '%s' is empty"
-msgstr ""
+msgstr "'%s' 스케쥴러 비트맵 '%s'는 비었습니다"
 
 #, c-format
 msgid "'%s' starting from %llu has only %zd bytes available"
@@ -1106,7 +1171,7 @@ msgid "'disk' missing in reply of guest-get-fsinfo"
 msgstr ""
 
 msgid "'floor' attribute allowed only in <inbound> element"
-msgstr "'floor' 속성은 <inbound> 요소에만 허용됨 "
+msgstr "'floor' 속성은 <inbound> 요소에만 허용됩니다"
 
 #, fuzzy
 msgid "'gluster' command line tool not found"
@@ -1255,9 +1320,8 @@ msgstr ""
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "이 QEMU 바이너리에서는 SATA를 지원하지 않습니다"
 
-#, fuzzy
 msgid "'trim' algorithm not supported"
-msgstr "시간 초과 매개 변수를 지원하지 않음 "
+msgstr "'trim' 알고리즘을 지원하지 않습니다"
 
 #, fuzzy, c-format
 msgid "'tx_queue_size' attribute must be positive number: %s"
@@ -1308,17 +1372,14 @@ msgstr "(definition_of_secret)"
 msgid "(device_definition)"
 msgstr "(장치 정의)"
 
-#, fuzzy
 msgid "(disk_definition)"
-msgstr "(장치 정의)"
+msgstr "(디스크_정의)"
 
-#, fuzzy
 msgid "(domainCapabilities)"
-msgstr "기능"
+msgstr "(도메인기능)"
 
-#, fuzzy
 msgid "(domain_backup)"
-msgstr "(domain_snapshot)"
+msgstr "(도메인_백업)"
 
 #, fuzzy
 msgid "(domain_checkpoint)"
@@ -1376,9 +1437,8 @@ msgstr "(nwfilter_definition)"
 msgid "(nwfilterbinding_status)"
 msgstr "(nwfilter_definition)"
 
-#, fuzzy
 msgid "(pool state)"
-msgstr "상태 없음"
+msgstr "(풀 상태)"
 
 msgid "(qemu_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
@@ -1389,9 +1449,8 @@ msgstr "하이퍼바이저로 (재)연결"
 msgid "(save cookie)"
 msgstr "(qemu_migration_cookie)"
 
-#, fuzzy
 msgid "(snapshot_tree)"
-msgstr "스냅샷 이름 "
+msgstr "(스냅샷_트리)"
 
 msgid "(storage_pool_definition)"
 msgstr "(저장소 풀 정의)"
@@ -1427,9 +1486,9 @@ msgstr "--%s 또는 --current가 필요함 "
 msgid "--%s and --tree are mutually exclusive"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "--%s is required"
-msgstr "--%s 또는 --current가 필요함 "
+msgstr "--%s가 필요합니다"
 
 #, c-format
 msgid "--%s or --current is required"
@@ -1450,9 +1509,8 @@ msgid ""
 "overlay"
 msgstr ""
 
-#, fuzzy
 msgid "--descendants requires --from"
-msgstr "--descendants에는 --from 또는 --current가 필요합니다"
+msgstr "--descendants는 --from이 필요합니다"
 
 msgid "--descendants requires either --from or --current"
 msgstr "--descendants에는 --from 또는 --current가 필요합니다"
@@ -1577,9 +1635,8 @@ msgid ""
 "configuration"
 msgstr ""
 
-#, fuzzy
 msgid "? - print this help"
-msgstr "도움말 프린트하기"
+msgstr "? -print 이 도움말을 출력합니다"
 
 #, fuzzy
 msgid "A close callback is already registered"
@@ -1640,9 +1697,8 @@ msgstr ""
 msgid "AES256CBC initialization vector invalid len=%zu"
 msgstr ""
 
-#, fuzzy
 msgid "API error"
-msgstr "I/O 오류"
+msgstr "API 오류"
 
 msgid "Aborts the currently running domain job"
 msgstr "현재 실행중인 도메인 작업을 강제 중단합니다"
@@ -1687,14 +1743,13 @@ msgid "Add an IOThread to the guest domain."
 msgstr "대상 도메인에서 재시작 명령 실행."
 
 msgid "Add or remove vcpus"
-msgstr ""
+msgstr "vcpus를 추가하거나 제거하기"
 
 msgid "Added"
-msgstr ""
+msgstr "추가됨"
 
-#, fuzzy
 msgid "Address"
-msgstr "MAC 주소"
+msgstr "주소"
 
 msgid "Advice from numad is needed in case of automatic numa placement"
 msgstr ""
@@ -1912,13 +1967,12 @@ msgstr "예비저장"
 msgid "Backup Dump XML"
 msgstr "스냅샷 덤프 XML"
 
-#, fuzzy
 msgid "Backup started\n"
-msgstr "인터페이스 %s가 시작되었습니다\n"
+msgstr "백업이 시작되었습니다\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Bad $%s value."
-msgstr "비밀정보 값을 설정."
+msgstr "나쁜 $%s 값."
 
 #, c-format
 msgid "Bad ipv4 end address '%s' in <nat> in <forward> in network '%s'"
@@ -2088,7 +2142,7 @@ msgid "CPU arch %s does not match host arch"
 msgstr "CPU 아키텍처 %s는 호스트 아키텍처와 일치하지 않습니다 "
 
 msgid "CPU architecture (/domain/os/type/@arch)"
-msgstr ""
+msgstr "CPU 구조 (/domain/os/type/@arch)"
 
 #, c-format
 msgid "CPU cache mode '%s' can only be used with '%s' / '%s' CPUs"
@@ -3501,9 +3555,8 @@ msgid ""
 "name"
 msgstr "spicevmc에서/로 장치 이름을 변경하면 기본값 대상 채널 이름이 변경됨 "
 
-#, fuzzy
 msgid "Changing fs access mode is not supported by vz driver."
-msgstr "SASL 메커니즘 %s가 서버에서 지원되지 않습니다"
+msgstr "SASL 메커니즘 %s가 서버에서 지원되지 않습니다."
 
 #, fuzzy
 msgid "Changing fs write policy is not supported by vz driver."
@@ -4141,7 +4194,7 @@ msgstr "일치하는 장치 '%s'를 찾을 수 없음"
 
 #, c-format
 msgid "Could not find parent device for '%s'"
-msgstr "'%s'의 부모 장치를 찾을 수 없음"
+msgstr "'%s'의 원인 장치를 찾을 수 없음"
 
 #, c-format
 msgid "Could not find physical NIC with MAC address '%s'"
@@ -4272,13 +4325,13 @@ msgstr "스냅샷 이름을 얻을 수 없음"
 msgid "Could not get current time"
 msgstr "현재 시간을 얻을 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not get device port, rc=%08x"
-msgstr "'%s'의 부모 장치를 찾을 수 없음"
+msgstr "rc=%08x 포트 장치를 찾을 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not get device slot, rc=%08x"
-msgstr "'%s'의 부모 장치를 찾을 수 없음"
+msgstr "rc=%08x 슬롯 장치를 찾을 수 없음"
 
 #, fuzzy, c-format
 msgid "Could not get device type, rc=%08x"
@@ -4550,9 +4603,9 @@ msgstr "호스트 스캔을 시작하게 하려고 '%s'를 열 수 없습니다"
 msgid "Could not open /proc/net/dev"
 msgstr "/proc/net/dev를 열 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open TPM device %s"
-msgstr "'%s'의 부모 장치를 찾을 수 없음"
+msgstr "TMP 장치 %s를 열 수 없습니다"
 
 #, fuzzy, c-format
 msgid "Could not open TPM device's cancel path %s"
@@ -7047,9 +7100,9 @@ msgstr "%s 풀 소스를 찾는 데 실패했습니다"
 msgid "Failed to find fc_host for wwnn='%s' and wwpn='%s'"
 msgstr "'%s' dev '%s'의 디렉토리를 생성하는데 실패했습니다 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find group record for gid '%u'"
-msgstr "%s의 부모 장치를 찾는 데 실패했습니다"
+msgstr "gid '%u'의 그룹 기록을 찾는데 실패했습니다"
 
 #, fuzzy, c-format
 msgid "Failed to find module '%s'"
@@ -7057,7 +7110,7 @@ msgstr "모드 '%s'의 구문분석에 실패했습니다"
 
 #, c-format
 msgid "Failed to find parent device for %s"
-msgstr "%s의 부모 장치를 찾는 데 실패했습니다"
+msgstr "%s를 위한 원인 장치를 찾는 데 실패했습니다"
 
 #, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
@@ -7081,9 +7134,9 @@ msgstr "네트워크 찾기 실패"
 msgid "Failed to find the network: %s"
 msgstr "네트워크 찾기 실패: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find user record for uid '%u'"
-msgstr "%s의 부모 장치를 찾는 데 실패했습니다"
+msgstr "uid '%u'를 위한 사용자 기록을 찾는 데 실패했습니다"
 
 #, c-format
 msgid "Failed to fork as daemon: %s"
@@ -8838,12 +8891,11 @@ msgstr ""
 msgid "Get the maximum migration bandwidth (in MiB/s) for a domain."
 msgstr "게스트 도메인에서 최대 메모리 할당 제한 변경."
 
-#, fuzzy
 msgid "Get the name of the parent of a checkpoint"
-msgstr "부모 스냅샷의 이름 얻기"
+msgstr "점검 지점의 상위 이름을 가져옵니다"
 
 msgid "Get the name of the parent of a snapshot"
-msgstr "부모 스냅샷의 이름 얻기"
+msgstr "스냅샷의 상위 이름을 가져오기"
 
 #, fuzzy
 msgid "Get the summary of block devices for a domain."
@@ -11309,7 +11361,7 @@ msgid ""
 msgstr "인터페이스의 <actual> 요소에서 유형 속성이 누락되어 있음"
 
 msgid "Missing CPU architecture"
-msgstr "CPU 아키텍쳐가 빠져있습니다"
+msgstr "CPU 구조가 빠져있습니다"
 
 msgid "Missing CPU feature name"
 msgstr "CPU 기능 이름이 빠짐"
@@ -12682,9 +12734,8 @@ msgstr ""
 msgid "No support for domain XML entry 'vcpu' attribute 'current'"
 msgstr ""
 
-#, fuzzy
 msgid "No support for multiple video devices"
-msgstr "이 장치에 대한 부모가 없음"
+msgstr "다중 비디오 장치를 위한 지원이 없습니다"
 
 #, fuzzy, c-format
 msgid "No title for domain: %s"
@@ -13378,7 +13429,7 @@ msgid "Parameter 'min_guarantee' not supported by QEMU."
 msgstr ""
 
 msgid "Parent"
-msgstr "부모 "
+msgstr "부모"
 
 #, c-format
 msgid ""
@@ -13388,7 +13439,7 @@ msgstr ""
 
 #, c-format
 msgid "Parent device %s is not capable of vport operations"
-msgstr "부모 장치 %s는 vport 작업을 할 수 없습니다"
+msgstr "상위 장치 %s는 vport 작업을 할 수 없습니다"
 
 msgid "Parent:"
 msgstr "부모:"
@@ -15322,9 +15373,9 @@ msgstr "%s 대상 CPU 아키텍처는 %s 소스와 일치하지 않음 "
 msgid "Target CPU cache does not match source"
 msgstr "대상 CPU가 소스와 일치하지 않음 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target CPU check %s does not match source %s"
-msgstr "%s 대상 CPU 아키텍처는 %s 소스와 일치하지 않음 "
+msgstr "대상 CPU 점검 %s는 원천 %s와 일치하지 않습니다"
 
 #, c-format
 msgid "Target CPU cores %d does not match source %d"
@@ -15640,7 +15691,7 @@ msgstr "대상 도메인 USB 리디렉션 필터 수 %d는 소스 %d와 일치�
 
 #, c-format
 msgid "Target domain architecture %s does not match source %s"
-msgstr "대상 도메인 아키텍처 %s가 소스 %s와 일치하지 않음"
+msgstr "대상 도메인 구조 %s가 소스 %s와 일치하지 않음"
 
 #, c-format
 msgid "Target domain channel count %zu does not match source %zu"
@@ -17061,13 +17112,13 @@ msgstr ""
 msgid "Unable to create KVM vCPU for TSC probing"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create RNG parser for %s"
-msgstr "%s을 생성할 수 없음 "
+msgstr "%s를 위한 RNG 구문분석을 생성 할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create RNG validation context %s"
-msgstr "장치 %s을 생성할 수 없음 "
+msgstr "RNG 유효성 내용 %s를 생성 할 수 없습니다"
 
 #, fuzzy
 msgid "Unable to create TAP devices on this platform"
@@ -17174,17 +17225,14 @@ msgstr ""
 msgid "Unable to decode header until len is received"
 msgstr ""
 
-#, fuzzy
 msgid "Unable to decode message header"
-msgstr "세션 리더가 되는 데 실패"
+msgstr "메시지 헤더를 디코더 할 수 없습니다"
 
-#, fuzzy
 msgid "Unable to decode message length"
-msgstr "세션 리더가 되는 데 실패"
+msgstr "메시지 길이를 디코더 할 수 없습니다"
 
-#, fuzzy
 msgid "Unable to decode message payload"
-msgstr "세션 리더가 되는 데 실패"
+msgstr "메시지 유효 적재량을 디코더 할 수 없습니다"
 
 #, fuzzy
 msgid "Unable to decode number of FDs"
@@ -17272,17 +17320,14 @@ msgstr "비-블러킹 파일 디스크립터 플래그를 설정하는 데 실�
 msgid "Unable to enable/disable perf events"
 msgstr "모니터 이벤트를 등록할 수 없음"
 
-#, fuzzy
 msgid "Unable to encode message header"
-msgstr "세션 리더가 되는 데 실패"
+msgstr "메시지 헤더를 인코더 할 수 없습니다"
 
-#, fuzzy
 msgid "Unable to encode message length"
-msgstr "세션 리더가 되는 데 실패"
+msgstr "메시지 길이를 인코더 할 수 없습니다"
 
-#, fuzzy
 msgid "Unable to encode message payload"
-msgstr "세션 리더가 되는 데 실패"
+msgstr "메시지 유효적재량을 인코더 할 수 없습니다"
 
 #, fuzzy
 msgid "Unable to encode number of FDs"
@@ -17325,9 +17370,8 @@ msgstr "%s를 열 수 없음"
 msgid "Unable to find UUID for location %s"
 msgstr "잠금 상태 %s를 구문 분석할 수 없습니다 "
 
-#, fuzzy
 msgid "Unable to find a free loop device in /dev"
-msgstr "%s의 부모 장치를 찾는 데 실패했습니다"
+msgstr "/dev 에서 자유 루프 장치를 찾을 수 없습니다"
 
 #, c-format
 msgid "Unable to find a free port on virtio-serial controller %u"
@@ -17925,7 +17969,7 @@ msgstr "pid 정보를 가져올 수 없습니다: %d"
 
 #, c-format
 msgid "Unable to open %s"
-msgstr "%s를 열 수 없음"
+msgstr "%s를 열 수 없습니다"
 
 #, fuzzy, c-format
 msgid "Unable to open %s (%d)"
@@ -18184,9 +18228,8 @@ msgstr "PCI 장치 %s를 리셋할 수 없음: %s"
 msgid "Unable to query tap interface name"
 msgstr "인터페이스 탈착 실패"
 
-#, fuzzy
 msgid "Unable to re-encode message length"
-msgstr "세션 리더가 되는 데 실패"
+msgstr "메시지 길이를 다시 인코드 할 수 없습니다"
 
 #, c-format
 msgid "Unable to read %s"
@@ -19139,7 +19182,7 @@ msgstr "알 수 없는 풀 어댑터 유형 '%s'"
 
 #, c-format
 msgid "Unknown architecture %s"
-msgstr "알 수 없는 아키텍처 %s"
+msgstr "알 수 없는구조 %s"
 
 #, fuzzy, c-format
 msgid "Unknown async job type %s"
@@ -19318,9 +19361,9 @@ msgstr "알 수 없는 모델 유형 '%s'"
 msgid "Unknown namespace: %s"
 msgstr "알려지지 않은 릴리즈: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown parameter %s"
-msgstr "알 수 없는 매개 변수 유형: %d"
+msgstr "알지 못하는 매개변수 %s"
 
 #, fuzzy
 msgid "Unknown parameter type"
@@ -20084,7 +20127,7 @@ msgstr "볼륨 이름 '%s'에 지원되지 않는 접미사가 있습니다, '.v
 
 #, c-format
 msgid "Volume path '%s' did not start with parent pool source device name."
-msgstr "볼륨 경로 '%s'가 부모 풀 소스 장치 이름으로 시작하지 않습니다."
+msgstr "볼륨 경로 '%s'가 상위 풀 소스 장치 이름으로 시작하지 않습니다."
 
 #, c-format
 msgid "Volume path '%s' is a FIFO"
@@ -20432,12 +20475,11 @@ msgstr "기본 저장소에 대한 대상"
 msgid "adapter wwpn to be used for underlying storage"
 msgstr "기본 저장소에 대한 대상"
 
-#, fuzzy
 msgid "add a column showing parent checkpoint"
-msgstr "부모 스냅샷을 표시하는 칼럼 추가 "
+msgstr "상위 점검지점을 보여주는데 열 추가"
 
 msgid "add a column showing parent snapshot"
-msgstr "부모 스냅샷을 표시하는 칼럼 추가 "
+msgstr "상위 스냅샷을 표시하는 열 추가"
 
 msgid "add an IOThread to the guest domain"
 msgstr ""
@@ -20600,9 +20642,8 @@ msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr ""
 
-#, fuzzy
 msgid "architecture"
-msgstr "알 수 없는 아키텍처 %s"
+msgstr "구조"
 
 #, fuzzy, c-format
 msgid "architecture from emulator '%s' doesn't match given architecture '%s'"
@@ -21412,9 +21453,9 @@ msgstr ""
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr "상태 변경 락(lock)을 얻을 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot add guest CPU feature for %s architecture"
-msgstr "%s 아키텍쳐에 대한 CPU 데이터를 복호화 할 수 없음"
+msgstr "%s 구조에 대한 CPU 데이터를 복호화 할 수 없음"
 
 #, fuzzy
 msgid "cannot add netlink membership"
@@ -21526,9 +21567,9 @@ msgstr "루트 디렉터리로 cd하기 실패: %s"
 msgid "cannot change to uid to '%u'"
 msgstr "루트 디렉터리로 cd하기 실패: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot check guest CPU feature for %s architecture"
-msgstr "%s 아키텍쳐에 대한 CPU 데이터를 복호화 할 수 없음"
+msgstr "%s 구조에 대한 CPU 데이터를 복호화 할 수 없음"
 
 #, fuzzy, c-format
 msgid "cannot chmod '%s' to 0660"
@@ -21572,11 +21613,11 @@ msgstr "볼륨 %s을 종료할 수 없음 "
 
 #, c-format
 msgid "cannot compare CPUs of %s architecture"
-msgstr "%s 아키텍쳐의 CPU를 비교할 수 없음"
+msgstr "%s 구조의 CPU를 비교 할 수 없음"
 
 #, c-format
 msgid "cannot compute baseline CPU of %s architecture"
-msgstr "%s 아키텍쳐의 베이스라인 CPU를 계산할 수 없음"
+msgstr "%s 구조의 기준선 CPU를 계산 할 수 없음"
 
 #, fuzzy, c-format
 msgid "cannot connect to netlink socket with protocol %d"
@@ -21675,7 +21716,7 @@ msgstr "autostart 디렉터리 '%s'를 생성할 수 없음"
 
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
-msgstr "%s 아키텍쳐에 대한 CPU 데이터를 복호화 할 수 없음"
+msgstr "%s 구조에 대한 CPU 데이터를 복호화 할 수 없음"
 
 #, fuzzy
 msgid "cannot delete checkpoint for inactive domain"
@@ -21701,9 +21742,9 @@ msgstr "자식 없는 스냅샷 목록만 나열"
 msgid "cannot delete snapshots of running domain"
 msgstr "임시 도메인의 스냅샷 이후 중지할 수 없음 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot detect host CPU model for %s architecture"
-msgstr "%s 아키텍쳐에 대한 CPU 데이터를 복호화 할 수 없음"
+msgstr "%s 구조에 대한 CPU 데이터를 복호화 할 수 없음"
 
 #, fuzzy, c-format
 msgid "cannot determine filesystem for '%s'"
@@ -21719,7 +21760,7 @@ msgstr "볼륨 %s에서 내려받기 할 수 없음"
 
 #, c-format
 msgid "cannot encode CPU data for %s architecture"
-msgstr "%s 아키텍쳐에 대한 CPU 데이터를 부호화 할 수 없음"
+msgstr "%s 구조에 대한 CPU 데이터를 부호화 할 수 없음"
 
 msgid "cannot enforce change protection"
 msgstr "변경 사항 보안을 강제할 수 없습니다 "
@@ -21796,7 +21837,7 @@ msgstr "%s에서 시작 시간을 찾을 수 없음"
 
 #, c-format
 msgid "cannot find CPU map for %s architecture"
-msgstr "%s 아키텍쳐에 대한 CPU 맵을 찾을 수 없음"
+msgstr "%s 구조에 대한 CPU 지도를 찾을 수 없음"
 
 #, fuzzy, c-format
 msgid "cannot find IOThread '%u' in iothreadids"
@@ -21814,9 +21855,9 @@ msgstr "장치 '%s'에 대한 통계를 찾을 수 없음"
 msgid "cannot find any matching source devices for logical volume group '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot find architecture %s"
-msgstr "알 수 없는 아키텍처 %s"
+msgstr "구조 %s를 찾을 수 없습니다"
 
 #, fuzzy, c-format
 msgid "cannot find channel %s"
@@ -22820,9 +22861,9 @@ msgstr "파일 '%s'를 unlink할 수 없음"
 msgid "cannot update AppArmor profile '%s'"
 msgstr "AppArmor프로파일 '%s'를 업데이트 할 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot update guest CPU for %s architecture"
-msgstr "%s 아키텍쳐에 대한 CPU 데이터를 복호화 할 수 없음"
+msgstr "%s 구조에 대한 CPU 자료를 복호화 할 수 없음"
 
 msgid ""
 "cannot update lifecycle action because QEMU was started with -no-reboot "
@@ -23071,9 +23112,9 @@ msgstr ""
 msgid "check attribute specified for CPU with no model"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "checkpoint '%s' does not have a parent"
-msgstr "스냅샷 '%s'에는 부모가 없습니다 "
+msgstr "점검지점 '%s'에는 원인이 없습니다"
 
 #, fuzzy, c-format
 msgid "checkpoint '%s' has no parent"
@@ -23544,9 +23585,9 @@ msgstr "도메인에 대해 최대 vcpu를 결정할 수 없음"
 msgid "could not find backing store index '%u' in chain for '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not find base image in chain for '%s'"
-msgstr "'%s'의 부모 장치를 찾을 수 없음"
+msgstr "'%s'를 위한 연결에 기본 이미즈를 찾을 수 없습니다"
 
 #, fuzzy, c-format
 msgid "could not find capabilities for %s"
@@ -28093,11 +28134,11 @@ msgid ""
 "libvir-list@redhat.com"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "interface %s - <port isolated='yes'/> is not supported for network "
 "interfaces with type='%s'"
-msgstr "<virtualport> 요소는 <interface type='%s'>에 대해 지원되지 않음"
+msgstr "연결장치 %s - <port isolated='yes'/>는 유형='%s'와 함께 네트웍 연결장치를 지원하지 않습니다."
 
 #, c-format
 msgid ""
@@ -30617,9 +30658,9 @@ msgstr "필요한 가상 포트 유형이 누락되어 있음"
 msgid "missing 'DateTime' element"
 msgstr "root 요소가 누락되어 있음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing 'architecture' in '%s'"
-msgstr "CPU 아키텍쳐가 빠져있습니다"
+msgstr "'%s'에서 '구조'가 누락되었습니다"
 
 #, c-format
 msgid "missing 'content' value in selinux lxc contexts file '%s'"
@@ -30777,9 +30818,8 @@ msgstr ""
 msgid "missing @managed attribute for <reservations/>"
 msgstr "RAM 파일 시스템의 'usage' 속성 누락 "
 
-#, fuzzy
 msgid "missing CPU data architecture"
-msgstr "CPU 아키텍쳐가 빠져있습니다"
+msgstr "CPU 자료 구조가 누락되었습니다"
 
 #, fuzzy
 msgid "missing CPU definition"
@@ -36905,9 +36945,9 @@ msgstr "QEMU 명령 '%s'를 실행할 수 없음 : %s"
 msgid "unable to find a SCSI controller for idx=%d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to find any emulator to serve '%s' architecture"
-msgstr "%s 아키텍쳐에 대한 CPU 맵을 찾을 수 없음"
+msgstr "%s 구조가 제공되는 어떤 모의 장치를 찾을 수 없습니다"
 
 #, fuzzy, c-format
 msgid "unable to find any master var store for loader: %s"
@@ -37334,7 +37374,7 @@ msgid "undefined"
 msgstr "도메인을 정의하지 않음"
 
 msgid "undefined hardware architecture"
-msgstr "정의되지 않은 하드웨어 아키텍쳐"
+msgstr "정의되지 않은 하드웨어 구조"
 
 #, fuzzy, c-format
 msgid "unexpected %s URI path '%s', try %s:///session"
@@ -37504,9 +37544,9 @@ msgstr "예상외의 데이터 '%s'"
 msgid "unexpected filesystem type %d"
 msgstr "예기치 못한 파일시스템 유형 %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected host-model CPU for %s architecture"
-msgstr "%s 아키텍쳐에 대한 CPU 데이터를 복호화 할 수 없음"
+msgstr "%s 구조를 위한 호스트-모델 CPU를 기대 할 수 없습니다"
 
 #, c-format
 msgid "unexpected hostdev driver name type %d "
@@ -37917,13 +37957,13 @@ msgstr "네트워크 %s에서 알 수 없는 주소 유형 '%s'"
 msgid "unknown arch %s in QEMU capabilities cache"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown architecture '%s'"
-msgstr "알 수 없는 아키텍처 %s"
+msgstr "알 수 없는 구조 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown architecture: %s"
-msgstr "알 수 없는 아키텍처 %s"
+msgstr "알 수 없는 구조: %s"
 
 #, c-format
 msgid "unknown arp bonding validate %s"
