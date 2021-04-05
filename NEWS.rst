@@ -13,6 +13,11 @@ v7.3.0 (unreleased)
 
 * **New features**
 
+  * xen: Support domains with more than 4TB
+
+    The xen driver now supports domains with more than 4TB of memory with
+    xen >= 4.13.
+
 * **Improvements**
 
 * **Bug fixes**
