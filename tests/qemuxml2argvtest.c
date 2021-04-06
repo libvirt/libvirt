@@ -3611,6 +3611,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("virtio-9p-multidevs");
     DO_TEST_CAPS_LATEST("virtio-9p-createmode");
 
+    DO_TEST_CAPS_LATEST("devices-acpi-index");
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 

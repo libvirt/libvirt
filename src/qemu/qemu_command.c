@@ -420,6 +420,8 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
         virBufferAsprintf(buf, ",addr=0x%x", info->addr.pci.slot);
         if (info->addr.pci.function != 0)
             virBufferAsprintf(buf, ".0x%x", info->addr.pci.function);
+        if (info->acpiIndex != 0)
+            virBufferAsprintf(buf, ",acpi-index=%u", info->acpiIndex);
     }
         break;
 

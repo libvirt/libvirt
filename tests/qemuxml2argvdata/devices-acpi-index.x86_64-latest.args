@@ -1,0 +1,57 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-fdr-br \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-fdr-br/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-fdr-br/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-fdr-br/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=fdr-br,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw",\
+"file":"/tmp/lib/domain--1-fdr-br/master-key.aes"}' \
+-machine pc-i440fx-5.0,accel=tcg,usb=off,dump-guest-core=off,\
+memory-backend=pc.ram \
+-cpu qemu64 \
+-m 2048 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":2147483648}' \
+-overcommit mem-lock=off \
+-smp 2,sockets=2,cores=1,threads=1 \
+-uuid 3ec6cbe1-b5a2-4515-b800-31a61855df41 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/test.img",\
+"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw",\
+"file":"libvirt-2-storage"}' \
+-device virtio-blk-pci,bus=pci.0,addr=0x3,acpi-index=1,drive=libvirt-2-format,\
+id=virtio-disk0,bootindex=1 \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/test1.img",\
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw",\
+"file":"libvirt-1-storage"}' \
+-device virtio-blk-pci,bus=pci.0,addr=0x4,acpi-index=42,drive=libvirt-1-format,\
+id=virtio-disk1 \
+-netdev user,id=hostnet0 \
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,\
+addr=0x5,acpi-index=100 \
+-netdev user,id=hostnet1 \
+-device virtio-net-pci,netdev=hostnet1,id=net1,mac=00:11:22:33:44:55,bus=pci.0,\
+addr=0x7,acpi-index=200 \
+-netdev user,id=hostnet2 \
+-device virtio-net-pci,netdev=hostnet2,id=net2,mac=00:11:22:33:44:55,bus=pci.0,\
+addr=0x8,acpi-index=300 \
+-audiodev id=audio1,driver=none \
+-device cirrus-vga,id=video0,bus=pci.0,addr=0x2,acpi-index=1729 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6 \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
+resourcecontrol=deny \
+-msg timestamp=on

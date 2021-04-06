@@ -1069,6 +1069,32 @@ qemuValidateDomainDefPanic(const virDomainDef *def,
 }
 
 
+static int
+qemuValidateDomainDeviceInfo(virDomainDefPtr def G_GNUC_UNUSED,
+                             virDomainDeviceDefPtr dev G_GNUC_UNUSED,
+                             virDomainDeviceInfoPtr info,
+                             void *opaque)
+{
+    virQEMUCapsPtr qemuCaps = opaque;
+
+    if (info->acpiIndex) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_ACPI_INDEX)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ACPI index is not supported with this QEMU"));
+            return -1;
+        }
+
+        if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ACPI index is only supported for PCI devices"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 int
 qemuValidateDomainDef(const virDomainDef *def,
                       void *opaque,
@@ -1234,6 +1260,15 @@ qemuValidateDomainDef(const virDomainDef *def,
                        _("only one audio backend is supported with this QEMU binary"));
         return -1;
     }
+
+    /* Explicitly discarding 'const' from 'def' is ok because
+     * we know our callback qemuValidateDomainDeviceInfo will
+     * not modify it
+     */
+    if (virDomainDeviceInfoIterate((virDomainDefPtr)def,
+                                   qemuValidateDomainDeviceInfo,
+                                   qemuCaps) < 0)
+        return -1;
 
     return 0;
 }

@@ -1522,6 +1522,8 @@ mymain(void)
     driver.config->nogfxAllowHostAudio = false;
     g_unsetenv("QEMU_AUDIO_DRV");
 
+    DO_TEST_CAPS_LATEST("devices-acpi-index");
+
  cleanup:
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
