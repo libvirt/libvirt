@@ -997,6 +997,7 @@ static int test26(const void *unused G_GNUC_UNUSED)
         "--oooh \\\n"
         "-f \\\n"
         "--wizz 'eek eek' \\\n"
+        "--m-m-m-multiarg arg arg2 \\\n"
         "-w \\\n"
         "-z \\\n"
         "-l \\\n"
@@ -1009,7 +1010,9 @@ static int test26(const void *unused G_GNUC_UNUSED)
     virCommandAddEnvPair(cmd, "A", "B");
     virCommandAddEnvPair(cmd, "C", "D  E");
     virCommandAddArgList(cmd, "--foo", "bar", "--oooh", "-f",
-                         "--wizz", "eek eek", "-w", "-z", "-l",
+                         "--wizz", "eek eek",
+                         "--m-m-m-multiarg", "arg", "arg2",
+                         "-w", "-z", "-l",
                          "--mmm", "flash", "bang", "wallop",
                          NULL);
 

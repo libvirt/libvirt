@@ -1,1 +1,1 @@
-A=B C=D  E true --foo bar --oooh -f --wizz eek eek -w -z -l --mmm flash bang wallop
+A=B C=D  E true --foo bar --oooh -f --wizz eek eek --m-m-m-multiarg arg arg2 -w -z -l --mmm flash bang wallop

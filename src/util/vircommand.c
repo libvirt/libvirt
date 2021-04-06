@@ -2076,9 +2076,9 @@ virCommandToStringFull(virCommandPtr cmd,
 {
     size_t i;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    bool prevopt = false;
     const char *command = cmd->args[0];
     g_autofree char *basename = NULL;
+    bool had_option = false;
 
     /* Cannot assume virCommandRun will be called; so report the error
      * now.  If virCommandRun is called, it will report the same error. */
@@ -2111,16 +2111,33 @@ virCommandToStringFull(virCommandPtr cmd,
     virBufferEscapeShell(&buf, command);
     for (i = 1; i < cmd->nargs; i++) {
         virBufferAddChar(&buf, ' ');
+
         if (linebreaks) {
-            /* Line break if this is a --arg or if
-             * the previous arg was a positional option
+            /* we don't want a linebreak only if
+             * - the previous argument is an option (starts with '-')
+             * - there was already an option and another option follows
              */
-            if (cmd->args[i][0] == '-' ||
-                !prevopt)
+            bool linebreak = true;
+
+            if (cmd->args[i][0] != '-') {
+                if (had_option) {
+                    size_t j;
+                    /* we know that arg[i - 1] is valid and arg[i] is not an option */
+                    for (j = i - 1; j < cmd->nargs; j++) {
+                        if (cmd->args[j][0] == '-') {
+                            linebreak = false;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                had_option = true;
+            }
+
+            if (linebreak)
                 virBufferAddLit(&buf, "\\\n");
         }
         virBufferEscapeShell(&buf, cmd->args[i]);
-        prevopt = (cmd->args[i][0] == '-');
     }
 
     return virBufferContentAndReset(&buf);
