@@ -1713,7 +1713,7 @@ sc_header-ifdef:
 	$(PYTHON) $(top_srcdir)/scripts/header-ifdef.py
 
 sc_test-wrap-argv:
-	$(AM_V_GEN)$(VC_LIST) | $(GREP) -v -E 'qemuxml2argvdata' \
+	$(AM_V_GEN)$(VC_LIST) | $(GREP) -v -E 'qemuxml2argvdata|nwfilterxml2firewalldata' \
 	|$(GREP) -E '\.(ldargs|args)' | $(RUNUTF8) xargs \
 	$(PYTHON) $(top_srcdir)/scripts/test-wrap-argv.py --check
 

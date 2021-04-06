@@ -195,8 +195,7 @@ ip6tables \
 -m state \
 --state ESTABLISHED \
 -m comment \
---comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm \
--f ${tmp}' \
+--comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm -f ${tmp}' \
 -j RETURN
 ip6tables \
 -w \
@@ -205,8 +204,7 @@ ip6tables \
 -m state \
 --state NEW,ESTABLISHED \
 -m comment \
---comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm \
--f ${tmp}' \
+--comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm -f ${tmp}' \
 -j ACCEPT
 ip6tables \
 -w \
@@ -215,6 +213,5 @@ ip6tables \
 -m state \
 --state ESTABLISHED \
 -m comment \
---comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm \
--f ${tmp}' \
+--comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm -f ${tmp}' \
 -j RETURN

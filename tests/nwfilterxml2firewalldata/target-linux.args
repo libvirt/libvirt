@@ -52,8 +52,7 @@ iptables \
 -m state \
 --state NEW,ESTABLISHED \
 -m comment \
---comment 'accept rule \
--- dir out' \
+--comment 'accept rule -- dir out' \
 -j RETURN
 iptables \
 -w \
@@ -65,8 +64,7 @@ iptables \
 -m state \
 --state ESTABLISHED \
 -m comment \
---comment 'accept rule \
--- dir out' \
+--comment 'accept rule -- dir out' \
 -j ACCEPT
 iptables \
 -w \
@@ -80,8 +78,7 @@ iptables \
 -m state \
 --state NEW,ESTABLISHED \
 -m comment \
---comment 'accept rule \
--- dir out' \
+--comment 'accept rule -- dir out' \
 -j RETURN
 iptables \
 -w \
@@ -93,8 +90,7 @@ iptables \
 -m dscp \
 --dscp 2 \
 -m comment \
---comment 'drop rule   \
--- dir out' \
+--comment 'drop rule   -- dir out' \
 -j DROP
 iptables \
 -w \
@@ -104,8 +100,7 @@ iptables \
 -m dscp \
 --dscp 2 \
 -m comment \
---comment 'drop rule   \
--- dir out' \
+--comment 'drop rule   -- dir out' \
 -j DROP
 iptables \
 -w \
@@ -117,8 +112,7 @@ iptables \
 -m dscp \
 --dscp 2 \
 -m comment \
---comment 'drop rule   \
--- dir out' \
+--comment 'drop rule   -- dir out' \
 -j DROP
 iptables \
 -w \
@@ -130,8 +124,7 @@ iptables \
 -m dscp \
 --dscp 2 \
 -m comment \
---comment 'reject rule \
--- dir out' \
+--comment 'reject rule -- dir out' \
 -j REJECT
 iptables \
 -w \
@@ -141,8 +134,7 @@ iptables \
 -m dscp \
 --dscp 2 \
 -m comment \
---comment 'reject rule \
--- dir out' \
+--comment 'reject rule -- dir out' \
 -j REJECT
 iptables \
 -w \
@@ -154,8 +146,7 @@ iptables \
 -m dscp \
 --dscp 2 \
 -m comment \
---comment 'reject rule \
--- dir out' \
+--comment 'reject rule -- dir out' \
 -j REJECT
 iptables \
 -w \
@@ -167,8 +158,7 @@ iptables \
 -m state \
 --state ESTABLISHED \
 -m comment \
---comment 'accept rule \
--- dir in' \
+--comment 'accept rule -- dir in' \
 -j RETURN
 iptables \
 -w \
@@ -182,8 +172,7 @@ iptables \
 -m state \
 --state NEW,ESTABLISHED \
 -m comment \
---comment 'accept rule \
--- dir in' \
+--comment 'accept rule -- dir in' \
 -j ACCEPT
 iptables \
 -w \
@@ -195,8 +184,7 @@ iptables \
 -m state \
 --state ESTABLISHED \
 -m comment \
---comment 'accept rule \
--- dir in' \
+--comment 'accept rule -- dir in' \
 -j RETURN
 iptables \
 -w \
@@ -206,8 +194,7 @@ iptables \
 -m dscp \
 --dscp 33 \
 -m comment \
---comment 'drop rule   \
--- dir in' \
+--comment 'drop rule   -- dir in' \
 -j DROP
 iptables \
 -w \
@@ -219,8 +206,7 @@ iptables \
 -m dscp \
 --dscp 33 \
 -m comment \
---comment 'drop rule   \
--- dir in' \
+--comment 'drop rule   -- dir in' \
 -j DROP
 iptables \
 -w \
@@ -230,8 +216,7 @@ iptables \
 -m dscp \
 --dscp 33 \
 -m comment \
---comment 'drop rule   \
--- dir in' \
+--comment 'drop rule   -- dir in' \
 -j DROP
 iptables \
 -w \
@@ -241,8 +226,7 @@ iptables \
 -m dscp \
 --dscp 33 \
 -m comment \
---comment 'reject rule \
--- dir in' \
+--comment 'reject rule -- dir in' \
 -j REJECT
 iptables \
 -w \
@@ -254,8 +238,7 @@ iptables \
 -m dscp \
 --dscp 33 \
 -m comment \
---comment 'reject rule \
--- dir in' \
+--comment 'reject rule -- dir in' \
 -j REJECT
 iptables \
 -w \
@@ -265,78 +248,68 @@ iptables \
 -m dscp \
 --dscp 33 \
 -m comment \
---comment 'reject rule \
--- dir in' \
+--comment 'reject rule -- dir in' \
 -j REJECT
 iptables \
 -w \
 -A FJ-vnet0 \
 -p all \
 -m comment \
---comment 'accept rule \
--- dir inout' \
+--comment 'accept rule -- dir inout' \
 -j RETURN
 iptables \
 -w \
 -A FP-vnet0 \
 -p all \
 -m comment \
---comment 'accept rule \
--- dir inout' \
+--comment 'accept rule -- dir inout' \
 -j ACCEPT
 iptables \
 -w \
 -A HJ-vnet0 \
 -p all \
 -m comment \
---comment 'accept rule \
--- dir inout' \
+--comment 'accept rule -- dir inout' \
 -j RETURN
 iptables \
 -w \
 -A FJ-vnet0 \
 -p all \
 -m comment \
---comment 'drop   rule \
--- dir inout' \
+--comment 'drop   rule -- dir inout' \
 -j DROP
 iptables \
 -w \
 -A FP-vnet0 \
 -p all \
 -m comment \
---comment 'drop   rule \
--- dir inout' \
+--comment 'drop   rule -- dir inout' \
 -j DROP
 iptables \
 -w \
 -A HJ-vnet0 \
 -p all \
 -m comment \
---comment 'drop   rule \
--- dir inout' \
+--comment 'drop   rule -- dir inout' \
 -j DROP
 iptables \
 -w \
 -A FJ-vnet0 \
 -p all \
 -m comment \
---comment 'reject rule \
--- dir inout' \
+--comment 'reject rule -- dir inout' \
 -j REJECT
 iptables \
 -w \
 -A FP-vnet0 \
 -p all \
 -m comment \
---comment 'reject rule \
--- dir inout' \
+--comment 'reject rule -- dir inout' \
 -j REJECT
 iptables \
 -w \
 -A HJ-vnet0 \
 -p all \
 -m comment \
---comment 'reject rule \
--- dir inout' \
+--comment 'reject rule -- dir inout' \
 -j REJECT
