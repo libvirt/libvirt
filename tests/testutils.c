@@ -325,26 +325,6 @@ virTestLoadFileJSON(const char *p, ...)
 }
 
 
-static int
-virTestRewrapFile(const char *filename)
-{
-    g_autofree char *script = NULL;
-    g_autoptr(virCommand) cmd = NULL;
-
-    if (!(virStringHasSuffix(filename, ".args") ||
-          virStringHasSuffix(filename, ".argv") ||
-          virStringHasSuffix(filename, ".ldargs")))
-        return 0;
-
-    script = g_strdup_printf("%s/scripts/test-wrap-argv.py", abs_top_srcdir);
-
-    cmd = virCommandNewArgList(PYTHON3, script, "--in-place", filename, NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        return -1;
-
-    return 0;
-}
-
 /**
  * @param stream: output stream to write differences to
  * @param expect: expected output text
@@ -364,8 +344,7 @@ virTestDifferenceFullInternal(FILE *stream,
                               const char *expectName,
                               const char *actual,
                               const char *actualName,
-                              bool regenerate,
-                              bool rewrap)
+                              bool regenerate)
 {
     const char *expectStart;
     const char *expectEnd;
@@ -384,12 +363,6 @@ virTestDifferenceFullInternal(FILE *stream,
 
     if (expectName && regenerate && (virTestGetRegenerate() > 0)) {
         if (virFileWriteStr(expectName, actual, 0666) < 0) {
-            virDispatchError(NULL);
-            return -1;
-        }
-
-        if (rewrap &&
-            virTestRewrapFile(expectName) < 0) {
             virDispatchError(NULL);
             return -1;
         }
@@ -457,7 +430,7 @@ virTestDifferenceFull(FILE *stream,
                       const char *actualName)
 {
     return virTestDifferenceFullInternal(stream, expect, expectName,
-                                         actual, actualName, true, true);
+                                         actual, actualName, true);
 }
 
 /**
@@ -480,7 +453,7 @@ virTestDifferenceFullNoRegenerate(FILE *stream,
                                   const char *actualName)
 {
     return virTestDifferenceFullInternal(stream, expect, expectName,
-                                         actual, actualName, false, false);
+                                         actual, actualName, false);
 }
 
 /**
@@ -607,7 +580,7 @@ virTestCompareToFileFull(const char *actual,
 
     if (STRNEQ_NULLABLE(cmpcontent, filecontent)) {
         virTestDifferenceFullInternal(stderr, filecontent, filename,
-                                      cmpcontent, NULL, true, unwrap);
+                                      cmpcontent, NULL, true);
         return -1;
     }
 

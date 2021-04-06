@@ -29,7 +29,6 @@ scripts = [
   'meson-timestamp.py',
   'mock-noinline.py',
   'prohibit-duplicate-header.py',
-  'test-wrap-argv.py',
 ]
 
 foreach name : scripts

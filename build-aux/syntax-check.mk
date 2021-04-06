@@ -1679,7 +1679,7 @@ sc_prohibit_path_max_allocation:
 	  $(_sc_search_regexp)
 
 ifneq ($(_gl-Makefile),)
-syntax-check: sc_spacing-check sc_test-wrap-argv \
+syntax-check: sc_spacing-check \
 	sc_prohibit-duplicate-header sc_mock-noinline sc_group-qemu-caps \
         sc_header-ifdef
 	@if ! cppi --version >/dev/null 2>&1; then \
@@ -1711,11 +1711,6 @@ sc_mock-noinline:
 sc_header-ifdef:
 	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.[h]$$' | $(RUNUTF8) xargs \
 	$(PYTHON) $(top_srcdir)/scripts/header-ifdef.py
-
-sc_test-wrap-argv:
-	$(AM_V_GEN)$(VC_LIST) | $(GREP) -v -E 'qemuxml2argvdata|nwfilterxml2firewalldata|bhyvexml2argvdata' \
-	|$(GREP) -E '\.(ldargs|args)' | $(RUNUTF8) xargs \
-	$(PYTHON) $(top_srcdir)/scripts/test-wrap-argv.py --check
 
 sc_group-qemu-caps:
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/group-qemu-caps.py \
