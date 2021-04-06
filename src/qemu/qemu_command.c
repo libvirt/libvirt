@@ -351,7 +351,8 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
     bool contIsPHB = false;
     int contTargetIndex = 0;
 
-    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+    switch ((virDomainDeviceAddressType)info->type) {
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI: {
         size_t i;
 
         if (!(devStr = virPCIDeviceAddressAsString(&info->addr.pci)))
@@ -419,7 +420,10 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
         virBufferAsprintf(buf, ",addr=0x%x", info->addr.pci.slot);
         if (info->addr.pci.function != 0)
             virBufferAsprintf(buf, ".0x%x", info->addr.pci.function);
-    } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+    }
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
         if (!(contAlias = virDomainControllerAliasFind(domainDef,
                                                        VIR_DOMAIN_CONTROLLER_TYPE_USB,
                                                        info->addr.usb.bus)))
@@ -429,23 +433,45 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
             virBufferAddLit(buf, ",port=");
             virDomainUSBAddressPortFormatBuf(buf, info->addr.usb.port);
         }
-    } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
         if (info->addr.spaprvio.has_reg)
             virBufferAsprintf(buf, ",reg=0x%08llx", info->addr.spaprvio.reg);
-    } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
         if (info->addr.ccw.assigned)
             virBufferAsprintf(buf, ",devno=%x.%x.%04x",
                               info->addr.ccw.cssid,
                               info->addr.ccw.ssid,
                               info->addr.ccw.devno);
-    } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA) {
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
         virBufferAsprintf(buf, ",iobase=0x%x,irq=0x%x",
                           info->addr.isa.iobase,
                           info->addr.isa.irq);
-    } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
         virBufferAsprintf(buf, ",slot=%d", info->addr.dimm.slot);
         if (info->addr.dimm.base)
             virBufferAsprintf(buf, ",addr=%llu", info->addr.dimm.base);
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED:
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
+        virReportEnumRangeError(virDomainDeviceAddressType, info->type);
+        return -1;
     }
 
     return 0;
