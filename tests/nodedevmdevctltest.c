@@ -87,7 +87,7 @@ testMdevctlStartOrDefine(const char *virt_type,
     if (!cmd)
         goto cleanup;
 
-    virCommandSetDryRun(dryRunToken, &buf, testCommandDryRunCallback, &stdinbuf);
+    virCommandSetDryRun(dryRunToken, &buf, false, false, testCommandDryRunCallback, &stdinbuf);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
@@ -159,7 +159,7 @@ testMdevctlUuidCommand(const char *uuid, GetStopUndefineCmdFunc func, const char
     if (!cmd)
         goto cleanup;
 
-    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
@@ -221,7 +221,7 @@ testMdevctlListDefined(const void *data G_GNUC_UNUSED)
     if (!cmd)
         goto cleanup;
 
-    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 

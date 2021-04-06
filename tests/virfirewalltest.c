@@ -197,7 +197,7 @@ testFirewallSingleGroup(const void *opaque)
 
     if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
         data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD)
-        virCommandSetDryRun(dryRunToken, &cmdbuf, NULL, NULL);
+        virCommandSetDryRun(dryRunToken, &cmdbuf, false, false, NULL, NULL);
     else
         fwBuf = &cmdbuf;
 
@@ -251,7 +251,7 @@ testFirewallRemoveRule(const void *opaque)
 
     if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
         data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD)
-        virCommandSetDryRun(dryRunToken, &cmdbuf, NULL, NULL);
+        virCommandSetDryRun(dryRunToken, &cmdbuf, false, false, NULL, NULL);
     else
         fwBuf = &cmdbuf;
 
@@ -312,7 +312,7 @@ testFirewallManyGroups(const void *opaque G_GNUC_UNUSED)
 
     if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
         data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD)
-        virCommandSetDryRun(dryRunToken, &cmdbuf, NULL, NULL);
+        virCommandSetDryRun(dryRunToken, &cmdbuf, false, false, NULL, NULL);
     else
         fwBuf = &cmdbuf;
 
@@ -400,7 +400,7 @@ testFirewallIgnoreFailGroup(const void *opaque G_GNUC_UNUSED)
 
     if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
         data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
-        virCommandSetDryRun(dryRunToken, &cmdbuf, testFirewallRollbackHook, NULL);
+        virCommandSetDryRun(dryRunToken, &cmdbuf, false, false, testFirewallRollbackHook, NULL);
     } else {
         fwBuf = &cmdbuf;
         fwError = true;
@@ -469,7 +469,7 @@ testFirewallIgnoreFailRule(const void *opaque G_GNUC_UNUSED)
 
     if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
         data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
-        virCommandSetDryRun(dryRunToken, &cmdbuf, testFirewallRollbackHook, NULL);
+        virCommandSetDryRun(dryRunToken, &cmdbuf, false, false, testFirewallRollbackHook, NULL);
     } else {
         fwBuf = &cmdbuf;
         fwError = true;
@@ -535,7 +535,7 @@ testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
 
     if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
         data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
-        virCommandSetDryRun(dryRunToken, &cmdbuf, testFirewallRollbackHook, NULL);
+        virCommandSetDryRun(dryRunToken, &cmdbuf, false, false, testFirewallRollbackHook, NULL);
     } else {
         fwBuf = &cmdbuf;
         fwError = true;
@@ -599,7 +599,7 @@ testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
 
     if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
         data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
-        virCommandSetDryRun(dryRunToken, &cmdbuf, testFirewallRollbackHook, NULL);
+        virCommandSetDryRun(dryRunToken, &cmdbuf, false, false, testFirewallRollbackHook, NULL);
     } else {
         fwError = true;
         fwBuf = &cmdbuf;
@@ -679,7 +679,7 @@ testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
 
     if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
         data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
-        virCommandSetDryRun(dryRunToken, &cmdbuf, testFirewallRollbackHook, NULL);
+        virCommandSetDryRun(dryRunToken, &cmdbuf, false, false, testFirewallRollbackHook, NULL);
     } else {
         fwBuf = &cmdbuf;
         fwError = true;
@@ -767,7 +767,7 @@ testFirewallChainedRollback(const void *opaque G_GNUC_UNUSED)
 
     if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
         data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
-        virCommandSetDryRun(dryRunToken, &cmdbuf, testFirewallRollbackHook, NULL);
+        virCommandSetDryRun(dryRunToken, &cmdbuf, false, false, testFirewallRollbackHook, NULL);
     } else {
         fwBuf = &cmdbuf;
         fwError = true;
@@ -963,7 +963,7 @@ testFirewallQuery(const void *opaque G_GNUC_UNUSED)
 
     if (data->expectBackend == VIR_FIREWALL_BACKEND_DIRECT ||
         data->expectBackend == VIR_FIREWALL_BACKEND_FIREWALLD) {
-        virCommandSetDryRun(dryRunToken, &cmdbuf, testFirewallQueryHook, NULL);
+        virCommandSetDryRun(dryRunToken, &cmdbuf, false, false, testFirewallQueryHook, NULL);
     } else {
         fwBuf = &cmdbuf;
         fwError = true;

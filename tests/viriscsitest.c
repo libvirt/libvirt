@@ -216,7 +216,7 @@ testISCSIGetSession(const void *data)
 
     cbData.output_version = info->output_version;
 
-    virCommandSetDryRun(dryRunToken, NULL, testIscsiadmCb, &cbData);
+    virCommandSetDryRun(dryRunToken, NULL, false, false, testIscsiadmCb, &cbData);
 
     actual_session = virISCSIGetSession(info->device_path, true);
 
@@ -252,7 +252,7 @@ testISCSIScanTargets(const void *data)
     size_t i;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, NULL, testIscsiadmCb, NULL);
+    virCommandSetDryRun(dryRunToken, NULL, false, false, testIscsiadmCb, NULL);
 
     if (virISCSIScanTargets(info->portal, NULL,
                             false, &ntargets, &targets) < 0)
@@ -299,7 +299,7 @@ testISCSIConnectionLogin(const void *data)
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, NULL, testIscsiadmCb, &cbData);
+    virCommandSetDryRun(dryRunToken, NULL, false, false, testIscsiadmCb, &cbData);
 
     if (virISCSIConnectionLogin(info->portal, info->initiatoriqn, info->target) < 0)
         goto cleanup;

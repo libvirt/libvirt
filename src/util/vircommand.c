@@ -158,6 +158,8 @@ struct _virCommand {
 
 /* See virCommandSetDryRun for description for this variable */
 static virBufferPtr dryRunBuffer;
+static bool dryRunBufferArgLinebreaks;
+static bool dryRunBufferCommandStripPath;
 static virCommandDryRunCallback dryRunCallback;
 static void *dryRunOpaque;
 #ifndef WIN32
@@ -2573,18 +2575,18 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
         goto cleanup;
     }
 
-    str = virCommandToString(cmd, false);
     if (dryRunBuffer || dryRunCallback) {
+        g_autofree char *cmdstr = NULL;
         dryRunStatus = 0;
-        if (!str) {
-            /* error already reported by virCommandToString */
+
+        if (!(cmdstr = virCommandToStringFull(cmd, dryRunBufferArgLinebreaks,
+                                              dryRunBufferCommandStripPath)))
             goto cleanup;
-        }
 
         if (dryRunBuffer) {
             VIR_DEBUG("Dry run requested, appending stringified "
                       "command to dryRunBuffer=%p", dryRunBuffer);
-            virBufferAdd(dryRunBuffer, str, -1);
+            virBufferAdd(dryRunBuffer, cmdstr, -1);
             virBufferAddChar(dryRunBuffer, '\n');
         }
         if (dryRunCallback) {
@@ -2597,6 +2599,7 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
         goto cleanup;
     }
 
+    str = virCommandToString(cmd, false);
     VIR_DEBUG("About to run %s", str ? str : cmd->args[0]);
     ret = virExec(cmd);
     VIR_DEBUG("Command result %d, with PID %d",
@@ -3117,6 +3120,8 @@ void
 virCommandDryRunTokenFree(virCommandDryRunToken *tok)
 {
     dryRunBuffer = NULL;
+    dryRunBufferArgLinebreaks = false;
+    dryRunBufferCommandStripPath = false;
     dryRunCallback = NULL;
     dryRunOpaque = NULL;
     g_free(tok);
@@ -3127,6 +3132,8 @@ virCommandDryRunTokenFree(virCommandDryRunToken *tok)
  * virCommandSetDryRun:
  * @tok: a virCommandDryRunToken obtained from virCommandDryRunTokenNew
  * @buf: buffer to store stringified commands
+ * @bufArgLinebreaks: add linebreaks after command and every argument or argument pair
+ * @bufCommandStripPath: strip leading paths of command
  * @callback: callback to process input/output/args
  *
  * Sometimes it's desired to not actually run given command, but
@@ -3159,6 +3166,8 @@ virCommandDryRunTokenFree(virCommandDryRunToken *tok)
 void
 virCommandSetDryRun(virCommandDryRunToken *tok,
                     virBufferPtr buf,
+                    bool bufArgLinebreaks,
+                    bool bufCommandStripPath,
                     virCommandDryRunCallback cb,
                     void *opaque)
 {
@@ -3166,6 +3175,8 @@ virCommandSetDryRun(virCommandDryRunToken *tok,
         abort();
 
     dryRunBuffer = buf;
+    dryRunBufferArgLinebreaks = bufArgLinebreaks;
+    dryRunBufferCommandStripPath = bufCommandStripPath;
     dryRunCallback = cb;
     dryRunOpaque = opaque;
 }

@@ -98,7 +98,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     char *actual;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, &buf, testCommandDryRun, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, false, false, testCommandDryRun, NULL);
 
     if (!(def = virNetworkDefParseFile(xml, NULL)))
         goto cleanup;

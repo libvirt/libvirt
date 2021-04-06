@@ -79,7 +79,7 @@ testVirNetDevBandwidthSet(const void *data)
     if (!iface)
         iface = "eth0";
 
-    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
 
     if (virNetDevBandwidthSet(iface, band, info->hierarchical_class, true) < 0)
         goto cleanup;

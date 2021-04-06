@@ -102,7 +102,7 @@ testSysinfo(const void *data)
     cpuinfo = g_strdup_printf("%s/sysinfodata/%scpuinfo.data", abs_srcdir, testdata->name);
     expected = g_strdup_printf("%s/sysinfodata/%ssysinfo.expect", abs_srcdir, testdata->name);
 
-    virCommandSetDryRun(dryRunToken, NULL, testDMIDecodeDryRun, sysinfo);
+    virCommandSetDryRun(dryRunToken, NULL, false, false, testDMIDecodeDryRun, sysinfo);
 
     virSysinfoSetup(sysinfo, cpuinfo);
 

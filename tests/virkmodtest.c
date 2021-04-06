@@ -63,7 +63,7 @@ testKModLoad(const void *args G_GNUC_UNUSED)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
 
     errbuf = virKModLoad(MODNAME);
     if (errbuf) {
@@ -90,7 +90,7 @@ testKModUnload(const void *args G_GNUC_UNUSED)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, &buf, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
 
     errbuf = virKModUnload(MODNAME);
     if (errbuf) {
