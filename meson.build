@@ -1268,37 +1268,6 @@ else
   readline_dep = dependency('', required: false)
 endif
 if readline_dep.found()
-  # Gross kludge for readline include path obtained through pkg-config.
-  #
-  # As of 8.0, upstream readline.pc has -I${includedir}/readline among
-  # its Cflags, which is clearly wrong. This does not affect Linux
-  # because ${includedir} is already part of the default include path,
-  # but on other platforms that's not the case and the result is that
-  # <readline/readline.h> can't be located, causing the build to fail.
-  # A patch solving this issue has already been posted upstream, so once
-  # the fix has landed in FreeBSD ports and macOS homebrew we can safely
-  # drop the kludge and rely on pkg-config alone on those platforms.
-  #
-  # [1] https://lists.gnu.org/archive/html/bug-readline/2019-04/msg00007.html
-  if readline_dep.type_name() == 'pkgconfig' and host_machine.system() != 'linux'
-    pkg_config_prog = find_program('pkg-config')
-    rc = run_command(pkg_config_prog, '--cflags', 'readline', check: true)
-    cflags = rc.stdout().strip()
-    if cflags.contains('include/readline')
-      rc = run_command(
-        'python3', '-c',
-        'print("@0@".replace("@1@", "@2@"))'.format(
-          cflags, 'include/readline', 'include',
-        ),
-        check: true,
-      )
-      readline_dep = declare_dependency(
-        compile_args: rc.stdout().strip().split(),
-        dependencies: [ readline_dep ],
-      )
-    endif
-  endif
-
   # We need this to avoid compilation issues with modern compilers.
   # See 9ea3424a178 for a more detailed explanation
   readline_dep = declare_dependency(
