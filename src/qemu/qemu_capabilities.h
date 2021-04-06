@@ -608,6 +608,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 400 */
     QEMU_CAPS_COMPAT_DEPRECATED, /* -compat deprecated-(input|output) is supported */
+    QEMU_CAPS_ACPI_INDEX, /* PCI device 'acpi-index' property */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

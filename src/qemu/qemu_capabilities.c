@@ -628,6 +628,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 400 */
               "compat-deprecated",
+              "acpi-index",
     );
 
 
@@ -1366,6 +1367,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBalloon[] 
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
     { "free-page-reporting", QEMU_CAPS_VIRTIO_BALLOON_FREE_PAGE_REPORTING, NULL },
+    { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
 };
 
 
@@ -1398,6 +1400,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
     { "werror", QEMU_CAPS_STORAGE_WERROR, NULL },
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
+    { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioNet[] = {
@@ -1411,6 +1414,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioNet[] = {
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
     { "failover", QEMU_CAPS_VIRTIO_NET_FAILOVER, NULL },
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
+    { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsPCIeRootPort[] = {
@@ -1431,6 +1435,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioSCSI[] = {
     { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, NULL },
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
+    { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVfioPCI[] = {
@@ -1502,6 +1507,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioGpu[] = {
     { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, NULL },
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
+    { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsICH9[] = {

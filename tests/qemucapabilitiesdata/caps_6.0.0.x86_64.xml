@@ -262,6 +262,7 @@
   <flag name='object.qapified'/>
   <flag name='rotation-rate'/>
   <flag name='compat-deprecated'/>
+  <flag name='acpi-index'/>
   <version>5002092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>
