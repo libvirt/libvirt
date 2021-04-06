@@ -1445,6 +1445,9 @@
         <ref name="alias"/>
       </optional>
       <optional>
+        <ref name="acpi"/>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
       <optional>
@@ -2436,6 +2439,9 @@
           <ref name="alias"/>
         </optional>
         <optional>
+          <ref name="acpi"/>
+        </optional>
+        <optional>
           <ref name="address"/>
         </optional>
         <choice>
@@ -2862,6 +2868,9 @@
           </optional>
           <optional>
             <ref name="alias"/>
+          </optional>
+          <optional>
+            <ref name="acpi"/>
           </optional>
           <optional>
             <ref name="address"/>
@@ -3521,6 +3530,9 @@
         <ref name="alias"/>
       </optional>
       <optional>
+        <ref name="acpi"/>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
       <optional>
@@ -4147,6 +4159,9 @@
           <ref name="alias"/>
         </optional>
         <optional>
+          <ref name="acpi"/>
+        </optional>
+        <optional>
           <ref name="address"/>
         </optional>
       </interleave>
@@ -4285,6 +4300,9 @@
       </optional>
       <optional>
         <ref name="alias"/>
+      </optional>
+      <optional>
+        <ref name="acpi"/>
       </optional>
       <optional>
         <ref name="address"/>
@@ -4537,6 +4555,9 @@
       <interleave>
         <optional>
           <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="acpi"/>
         </optional>
         <optional>
           <ref name="address"/>
@@ -4943,6 +4964,9 @@
         <ref name="alias"/>
       </optional>
       <optional>
+        <ref name="acpi"/>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
     </element>
@@ -5012,6 +5036,9 @@
           <ref name="alias"/>
         </optional>
         <optional>
+          <ref name="acpi"/>
+        </optional>
+        <optional>
           <ref name="address"/>
         </optional>
       </interleave>
@@ -5042,6 +5069,9 @@
       <interleave>
         <optional>
           <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="acpi"/>
         </optional>
         <optional>
           <ref name="address"/>
@@ -5122,6 +5152,9 @@
           <ref name="alias"/>
         </optional>
         <optional>
+          <ref name="acpi"/>
+        </optional>
+        <optional>
           <ref name="address"/>
         </optional>
       </interleave>
@@ -5166,6 +5199,9 @@
         <ref name="alias"/>
       </optional>
       <optional>
+        <ref name="acpi"/>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
     </element>
@@ -5191,6 +5227,9 @@
       <ref name="tpm-backend"/>
       <optional>
         <ref name="alias"/>
+      </optional>
+      <optional>
+        <ref name="acpi"/>
       </optional>
       <optional>
         <ref name="address"/>
@@ -5286,6 +5325,9 @@
         </optional>
         <optional>
           <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="acpi"/>
         </optional>
         <optional>
           <element name="driver">
@@ -5390,6 +5432,9 @@
           <ref name="alias"/>
         </optional>
         <optional>
+          <ref name="acpi"/>
+        </optional>
+        <optional>
           <ref name="address"/>
         </optional>
       </interleave>
@@ -5403,6 +5448,9 @@
       <interleave>
         <optional>
           <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="acpi"/>
         </optional>
         <optional>
           <ref name="address"/>
@@ -5422,6 +5470,9 @@
         <ref name="qemucdevSrcDef"/>
         <optional>
           <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="acpi"/>
         </optional>
         <optional>
           <ref name="address"/>
@@ -5453,6 +5504,9 @@
         </choice>
         <optional>
           <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="acpi"/>
         </optional>
         <optional>
           <ref name="deviceBoot"/>
@@ -6425,6 +6479,16 @@
     </element>
   </define>
 
+  <define name="acpi">
+    <element name="acpi">
+      <optional>
+        <attribute name="index">
+          <ref name="unsignedInt"/>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+
   <define name="memorydev">
     <element name="memory">
       <attribute name="model">
@@ -6462,6 +6526,9 @@
         </optional>
         <optional>
           <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="acpi"/>
         </optional>
       </interleave>
     </element>
@@ -6553,6 +6620,9 @@
         </optional>
         <optional>
           <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="acpi"/>
         </optional>
         <optional>
           <ref name="address"/>
@@ -7545,6 +7615,9 @@
       <interleave>
         <optional>
           <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="acpi"/>
         </optional>
         <optional>
           <ref name="address"/>

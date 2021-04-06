@@ -159,6 +159,9 @@ struct _virDomainDeviceInfo {
     /* bootIndex is only used for disk, network interface, hostdev
      * and redirdev devices */
     unsigned int bootIndex;
+    /* Valid for any PCI device. Can be used for NIC to get
+     * stable numbering in Linux */
+    unsigned int acpiIndex;
 
     /* pciConnectFlags is only used internally during address
      * assignment, never saved and never reported.

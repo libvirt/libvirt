@@ -6335,6 +6335,9 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
+    if (info->acpiIndex != 0)
+        virBufferAsprintf(buf, "<acpi index='%u'/>\n", info->acpiIndex);
+
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
         info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390)
         /* We're done here */
@@ -6661,6 +6664,7 @@ virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt,
     g_autofree char *romenabled = NULL;
     g_autofree char *rombar = NULL;
     g_autofree char *aliasStr = NULL;
+    g_autofree char *acpiIndex = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     virDomainDeviceInfoClear(info);
@@ -6707,6 +6711,14 @@ virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt,
                            _("ROM tuning is not supported when ROM is disabled"));
             goto cleanup;
         }
+    }
+
+    acpiIndex = virXPathString("string(./acpi/@index)", ctxt);
+    if (acpiIndex &&
+        virStrToLong_ui(acpiIndex, NULL, 10, &info->acpiIndex) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Cannot parse ACPI index value '%s'"), acpiIndex);
+        goto cleanup;
     }
 
     if ((address = virXPathNode("./address", ctxt)) &&
@@ -22191,6 +22203,13 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
         break;
+    }
+
+    if (src->acpiIndex != dst->acpiIndex) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target ACPI index '%u' does not match source '%u'"),
+                       dst->acpiIndex, src->acpiIndex);
+        return false;
     }
 
     return true;

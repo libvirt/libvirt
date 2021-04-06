@@ -4363,6 +4363,7 @@ Network interfaces
        <mac address='52:54:00:5d:c7:9e'/>
        <boot order='1'/>
        <rom bar='off'/>
+       <acpi index='4'/>
      </interface>
    </devices>
    ...
@@ -4388,6 +4389,12 @@ tie the interface to a particular pci slot, with attribute ``type='pci'`` as
 when it's in the reserved VMware range by adding a ``type="static"`` attribute
 to the ``<mac/>`` element. Note that this attribute is useless if the provided
 MAC address is outside of the reserved VMWare ranges.
+
+:since:`Since 7.3.0`, one can set the ACPI index against network interfaces.
+With some operating systems (eg Linux with systemd), the ACPI index is used
+to provide network interface device naming, that is stable across changes
+in PCI addresses assigned to the device. This value is required to be unique
+across all devices and be between 1 and (16*1024-1).
 
 :anchor:`<a id="elementsNICSVirtual"/>`
 
