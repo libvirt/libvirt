@@ -46,8 +46,6 @@ char *virTestLoadFilePath(const char *p, ...)
 virJSONValuePtr virTestLoadFileJSON(const char *p, ...)
     G_GNUC_NULL_TERMINATED;
 
-void virTestClearCommandPath(char *cmdset);
-
 int virTestDifference(FILE *stream,
                       const char *expect,
                       const char *actual);
