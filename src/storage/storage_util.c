@@ -4140,8 +4140,8 @@ virStorageBackendFileSystemMountNFSArgs(virCommandPtr cmd,
                                         virStoragePoolDefPtr def,
                                         const char *nfsVers)
 {
-    virCommandAddArgList(cmd, src, def->target.path, NULL);
     virStorageBackendFileSystemMountAddOptions(cmd, def, nfsVers);
+    virCommandAddArgList(cmd, src, def->target.path, NULL);
 }
 
 
@@ -4153,8 +4153,8 @@ virStorageBackendFileSystemMountGlusterArgs(virCommandPtr cmd,
     const char *fmt;
 
     fmt = virStoragePoolFormatFileSystemNetTypeToString(def->source.format);
-    virCommandAddArgList(cmd, "-t", fmt, src, def->target.path, NULL);
     virStorageBackendFileSystemMountAddOptions(cmd, def, "direct-io-mode=1");
+    virCommandAddArgList(cmd, "-t", fmt, src, def->target.path, NULL);
 }
 
 
@@ -4166,8 +4166,8 @@ virStorageBackendFileSystemMountCIFSArgs(virCommandPtr cmd,
     const char *fmt;
 
     fmt = virStoragePoolFormatFileSystemNetTypeToString(def->source.format);
-    virCommandAddArgList(cmd, "-t", fmt, src, def->target.path, NULL);
     virStorageBackendFileSystemMountAddOptions(cmd, def, "guest");
+    virCommandAddArgList(cmd, "-t", fmt, src, def->target.path, NULL);
 }
 
 
@@ -4183,8 +4183,8 @@ virStorageBackendFileSystemMountDefaultArgs(virCommandPtr cmd,
         fmt = virStoragePoolFormatFileSystemTypeToString(def->source.format);
     else
         fmt = virStoragePoolFormatFileSystemNetTypeToString(def->source.format);
-    virCommandAddArgList(cmd, "-t", fmt, src, def->target.path, NULL);
     virStorageBackendFileSystemMountAddOptions(cmd, def, nfsVers);
+    virCommandAddArgList(cmd, "-t", fmt, src, def->target.path, NULL);
 }
 
 

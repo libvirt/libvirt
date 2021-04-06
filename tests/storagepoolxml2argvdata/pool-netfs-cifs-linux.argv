@@ -1,1 +1,3 @@
-mount -t cifs //example.com/samba_share /mnt/cifs -o nodev,nosuid,noexec,guest
+mount \
+-o nodev,nosuid,noexec,guest \
+-t cifs //example.com/samba_share /mnt/cifs

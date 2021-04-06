@@ -1,1 +1,3 @@
-mount -t ext3 /dev/sda6 /mnt -o nodev,nosuid,noexec
+mount \
+-o nodev,nosuid,noexec \
+-t ext3 /dev/sda6 /mnt

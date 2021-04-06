@@ -1,1 +1,5 @@
-mount -t nfs localhost:/var/lib/libvirt/images /mnt -o nfsvers=3,sync,lazytime
+mount \
+-o nfsvers=3,sync,lazytime \
+-t nfs \
+localhost:/var/lib/libvirt/images \
+/mnt

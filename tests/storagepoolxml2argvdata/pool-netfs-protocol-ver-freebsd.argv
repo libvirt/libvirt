@@ -1,1 +1,5 @@
-mount -t nfs localhost:/var/lib/libvirt/images /mnt -o nosuid,noexec,nfsvers=3
+mount \
+-o nosuid,noexec,nfsvers=3 \
+-t nfs \
+localhost:/var/lib/libvirt/images \
+/mnt
