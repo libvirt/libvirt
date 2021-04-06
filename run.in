@@ -159,8 +159,8 @@ else:
 
             stopped_units.append(unit)
 
-        print("Running %s..." % prog)
-        ret = subprocess.call([prog] + args, env=env)
+        print("Running '%s'..." % str(" ".join(args)))
+        ret = subprocess.call(args, env=env)
     except KeyboardInterrupt:
         pass
     finally:
