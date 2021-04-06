@@ -74,12 +74,11 @@ testCompareXMLToArgvFiles(bool shouldFail,
         goto cleanup;
     };
 
-    if (!(actualCmdline = virCommandToString(cmd, false))) {
+    if (!(actualCmdline = virCommandToStringFull(cmd, false, true))) {
         VIR_TEST_DEBUG("pool type '%s' failed to get commandline", defTypeStr);
         goto cleanup;
     }
 
-    virTestClearCommandPath(actualCmdline);
     if (virTestCompareToFile(actualCmdline, cmdline) < 0)
         goto cleanup;
 
