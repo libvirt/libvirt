@@ -105,13 +105,12 @@ testNWFilterEBIPTablesAllTeardown(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, false, true, NULL, NULL);
 
     if (ebiptables_driver.allTeardown("vnet0") < 0)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);
@@ -172,13 +171,12 @@ testNWFilterEBIPTablesTearOldRules(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, false, true, NULL, NULL);
 
     if (ebiptables_driver.tearOldRules("vnet0") < 0)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);
@@ -217,13 +215,12 @@ testNWFilterEBIPTablesRemoveBasicRules(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, false, true, NULL, NULL);
 
     if (ebiptables_driver.removeBasicRules("vnet0") < 0)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);
@@ -247,13 +244,12 @@ testNWFilterEBIPTablesTearNewRules(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, false, true, NULL, NULL);
 
     if (ebiptables_driver.tearNewRules("vnet0") < 0)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);
@@ -315,13 +311,12 @@ testNWFilterEBIPTablesApplyBasicRules(const void *opaque G_GNUC_UNUSED)
     virMacAddr mac = { .addr = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60 } };
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, false, true, NULL, NULL);
 
     if (ebiptables_driver.applyBasicRules("vnet0", &mac) < 0)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);
@@ -401,13 +396,12 @@ testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque G_GNUC_UNUSED)
     };
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, false, true, NULL, NULL);
 
     if (ebiptables_driver.applyDHCPOnlyRules("vnet0", &mac, &val, false) < 0)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);
@@ -470,13 +464,12 @@ testNWFilterEBIPTablesApplyDropAllRules(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, false, true, NULL, NULL);
 
     if (ebiptables_driver.applyDropAllRules("vnet0") < 0)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);
