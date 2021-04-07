@@ -8352,11 +8352,15 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
         return -1;
     }
 
-    if ((haveTLS = virXMLPropString(node, "tls")) &&
-        (src->haveTLS = virTristateBoolTypeFromString(haveTLS)) <= 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                   _("unknown disk source 'tls' setting '%s'"), haveTLS);
+    if ((haveTLS = virXMLPropString(node, "tls"))) {
+        int value;
+
+        if ((value = virTristateBoolTypeFromString(haveTLS)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown disk source 'tls' setting '%s'"), haveTLS);
             return -1;
+        }
+        src->haveTLS = value;
     }
 
     if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&

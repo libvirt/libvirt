@@ -345,7 +345,7 @@ struct _virStorageSource {
     char *nodestorage; /* name of the storage object */
 
     /* An optional setting to enable usage of TLS for the storage source */
-    int haveTLS; /* enum virTristateBool */
+    virTristateBool haveTLS;
 
     /* Indication whether the haveTLS value was altered due to qemu.conf
      * setting when haveTLS is missing from the domain config file */
