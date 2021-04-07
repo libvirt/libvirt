@@ -22294,6 +22294,13 @@ virDomainDiskDefCheckABIStability(virDomainDiskDefPtr src,
         return false;
     }
 
+    if (src->rotation_rate != dst->rotation_rate) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target disk rotation rate %u RPM does not match source %u RPM"),
+                       dst->rotation_rate, src->rotation_rate);
+        return false;
+    }
+
     if (!virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
         return false;
 
