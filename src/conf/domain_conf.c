@@ -10574,14 +10574,15 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
         goto error;
     }
 
-    trustGuestRxFilters = virXMLPropString(node, "trustGuestRxFilters");
-    if (trustGuestRxFilters &&
-        ((actual->trustGuestRxFilters
-          = virTristateBoolTypeFromString(trustGuestRxFilters)) <= 0)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown trustGuestRxFilters value '%s'"),
-                       trustGuestRxFilters);
-        goto error;
+    if ((trustGuestRxFilters = virXMLPropString(node, "trustGuestRxFilters"))) {
+        int value;
+        if ((value = virTristateBoolTypeFromString(trustGuestRxFilters)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown trustGuestRxFilters value '%s'"),
+                           trustGuestRxFilters);
+            goto error;
+        }
+        actual->trustGuestRxFilters = value;
     }
 
     virtPortNode = virXPathNode("./virtualport", ctxt);

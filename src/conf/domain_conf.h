@@ -995,7 +995,7 @@ struct _virDomainActualNetDef {
     virNetDevVPortProfile *virtPortProfile;
     virNetDevBandwidth *bandwidth;
     virNetDevVlan vlan;
-    int trustGuestRxFilters; /* enum virTristateBool */
+    virTristateBool trustGuestRxFilters;
     virTristateBool isolatedPort;
     unsigned int class_id; /* class ID for bandwidth 'floor' */
 };
