@@ -1240,8 +1240,6 @@ qemuMonitorCPUModelInfoCopy(const qemuMonitorCPUModelInfo *orig);
 
 int qemuMonitorGetCommands(qemuMonitor *mon,
                            char ***commands);
-int qemuMonitorGetEvents(qemuMonitor *mon,
-                         char ***events);
 GHashTable *qemuMonitorGetCommandLineOptions(qemuMonitor *mon);
 
 int qemuMonitorGetKVMState(qemuMonitor *mon,

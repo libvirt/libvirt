@@ -6242,63 +6242,6 @@ int qemuMonitorJSONGetCommands(qemuMonitor *mon,
 }
 
 
-int qemuMonitorJSONGetEvents(qemuMonitor *mon,
-                             char ***events)
-{
-    int ret = -1;
-    virJSONValue *cmd;
-    virJSONValue *reply = NULL;
-    virJSONValue *data;
-    char **eventlist = NULL;
-    size_t n = 0;
-    size_t i;
-
-    *events = NULL;
-
-    if (!(cmd = qemuMonitorJSONMakeCommand("query-events", NULL)))
-        return -1;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
-        goto cleanup;
-
-    data = virJSONValueObjectGetArray(reply, "return");
-    n = virJSONValueArraySize(data);
-
-    /* null-terminated list */
-    eventlist = g_new0(char *, n + 1);
-
-    for (i = 0; i < n; i++) {
-        virJSONValue *child = virJSONValueArrayGet(data, i);
-        const char *tmp;
-
-        if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("query-events reply data was missing 'name'"));
-            goto cleanup;
-        }
-
-        eventlist[i] = g_strdup(tmp);
-    }
-
-    ret = n;
-    *events = g_steal_pointer(&eventlist);
-
- cleanup:
-    g_strfreev(eventlist);
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
-}
-
-
 static int
 qemuMonitorJSONGetCommandLineOptionsWorker(size_t pos G_GNUC_UNUSED,
                                            virJSONValue *item,

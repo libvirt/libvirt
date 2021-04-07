@@ -3818,18 +3818,6 @@ qemuMonitorGetCommands(qemuMonitor *mon,
 }
 
 
-int
-qemuMonitorGetEvents(qemuMonitor *mon,
-                     char ***events)
-{
-    VIR_DEBUG("events=%p", events);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONGetEvents(mon, events);
-}
-
-
 GHashTable *
 qemuMonitorGetCommandLineOptions(qemuMonitor *mon)
 {

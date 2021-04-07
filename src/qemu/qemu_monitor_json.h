@@ -416,9 +416,6 @@ int qemuMonitorJSONGetCPUModelComparison(qemuMonitor *mon,
 int qemuMonitorJSONGetCommands(qemuMonitor *mon,
                                char ***commands)
     ATTRIBUTE_NONNULL(2);
-int qemuMonitorJSONGetEvents(qemuMonitor *mon,
-                             char ***events)
-    ATTRIBUTE_NONNULL(2);
 GHashTable *qemuMonitorJSONGetCommandLineOptions(qemuMonitor *mon);
 
 int qemuMonitorJSONGetKVMState(qemuMonitor *mon,
