@@ -9210,27 +9210,36 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
     }
     VIR_FREE(tmp);
 
-    if ((tmp = virXMLPropString(cur, "ioeventfd")) &&
-        (def->ioeventfd = virTristateSwitchTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk ioeventfd mode '%s'"), tmp);
-        return -1;
+    if ((tmp = virXMLPropString(cur, "ioeventfd"))) {
+        int value;
+        if ((value = virTristateSwitchTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown disk ioeventfd mode '%s'"), tmp);
+            return -1;
+        }
+        def->ioeventfd = value;
     }
     VIR_FREE(tmp);
 
-    if ((tmp = virXMLPropString(cur, "event_idx")) &&
-        (def->event_idx = virTristateSwitchTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk event_idx mode '%s'"), tmp);
-        return -1;
+    if ((tmp = virXMLPropString(cur, "event_idx"))) {
+        int value;
+        if ((value = virTristateSwitchTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown disk event_idx mode '%s'"), tmp);
+            return -1;
+        }
+        def->event_idx = value;
     }
     VIR_FREE(tmp);
 
-    if ((tmp = virXMLPropString(cur, "copy_on_read")) &&
-        (def->copy_on_read = virTristateSwitchTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk copy_on_read mode '%s'"), tmp);
-        return -1;
+    if ((tmp = virXMLPropString(cur, "copy_on_read"))) {
+        int value;
+        if ((value = virTristateSwitchTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown disk copy_on_read mode '%s'"), tmp);
+            return -1;
+        }
+        def->copy_on_read = value;
     }
     VIR_FREE(tmp);
 

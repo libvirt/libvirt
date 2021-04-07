@@ -569,9 +569,9 @@ struct _virDomainDiskDef {
     int error_policy;  /* enum virDomainDiskErrorPolicy */
     int rerror_policy; /* enum virDomainDiskErrorPolicy */
     int iomode; /* enum virDomainDiskIo */
-    int ioeventfd; /* enum virTristateSwitch */
-    int event_idx; /* enum virTristateSwitch */
-    int copy_on_read; /* enum virTristateSwitch */
+    virTristateSwitch ioeventfd;
+    virTristateSwitch event_idx;
+    virTristateSwitch copy_on_read;
     int snapshot; /* virDomainSnapshotLocation, snapshot_conf.h */
     int startupPolicy; /* enum virDomainStartupPolicy */
     bool transient;
