@@ -34,6 +34,12 @@ builds to happen when you push to your GitLab repository, you need to
 
 * grab an API token from the `Cirrus CI settings`_ page;
 
+* it may be necessary to push an empty ``.cirrus.yml`` file to your github fork
+  for Cirrus CI to properly recognize the project. You can check whether
+  Cirrus CI knows about your project by navigating to:
+
+  ``https://cirrus-ci.com/yourusername/libvirt``
+
 * in the *CI/CD / Variables* section of the settings page for your GitLab
   repository, create two new variables:
 
