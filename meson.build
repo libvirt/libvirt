@@ -499,10 +499,12 @@ if cc.has_argument('-Wsuggest-attribute=format')
 endif
 
 # used in tests
-cc_flags_relaxed_frame_limit = [
+cc_flags_relaxed_frame_limit = []
+if cc.has_argument('-Wframe-larger-than=262144')
+  cc_flags_relaxed_frame_limit += [
   '-Wframe-larger-than=262144',
-]
-
+  ]
+endif
 
 # various linker checks
 
