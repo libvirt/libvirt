@@ -14569,18 +14569,24 @@ virDomainMemballoonDefParseXML(virDomainXMLOption *xmlopt,
         goto error;
     }
 
-    if ((deflate = virXMLPropString(node, "autodeflate")) &&
-        (def->autodeflate = virTristateSwitchTypeFromString(deflate)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("invalid autodeflate attribute value '%s'"), deflate);
-        goto error;
+    if ((deflate = virXMLPropString(node, "autodeflate"))) {
+        int value;
+        if ((value = virTristateSwitchTypeFromString(deflate)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("invalid autodeflate attribute value '%s'"), deflate);
+            goto error;
+        }
+        def->autodeflate = value;
     }
 
-    if ((freepage_reporting = virXMLPropString(node, "freePageReporting")) &&
-        (def->free_page_reporting = virTristateSwitchTypeFromString(freepage_reporting)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("invalid freePageReporting attribute value '%s'"), freepage_reporting);
-        goto error;
+    if ((freepage_reporting = virXMLPropString(node, "freePageReporting"))) {
+        int value;
+        if ((value = virTristateSwitchTypeFromString(freepage_reporting)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("invalid freePageReporting attribute value '%s'"), freepage_reporting);
+            goto error;
+        }
+        def->free_page_reporting = value;
     }
 
     ctxt->node = node;

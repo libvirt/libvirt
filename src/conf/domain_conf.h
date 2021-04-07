@@ -1915,8 +1915,8 @@ struct _virDomainMemballoonDef {
     int model;
     virDomainDeviceInfo info;
     int period; /* seconds between collections */
-    int autodeflate; /* enum virTristateSwitch */
-    int free_page_reporting; /* enum virTristateSwitch */
+    virTristateSwitch autodeflate;
+    virTristateSwitch free_page_reporting;
     virDomainVirtioOptions *virtio;
 };
 
