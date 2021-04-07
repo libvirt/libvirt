@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-03-26 11:32+0000\n"
-"PO-Revision-Date: 2021-04-04 07:01+0000\n"
+"PO-Revision-Date: 2021-04-07 06:02+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -306,18 +306,24 @@ msgid ""
 "\n"
 "Domain '%s' dumped to %s\n"
 msgstr ""
+"\n"
+"도메인 '%s'가 %s에 덤프되었습니다\n"
 
 #, c-format
 msgid ""
 "\n"
 "Domain '%s' saved to %s\n"
 msgstr ""
+"\n"
+"도메인 '%s'는 %s에 저장되었습니다\n"
 
 #, c-format
 msgid ""
 "\n"
 "Domain '%s' state saved by libvirt\n"
 msgstr ""
+"\n"
+"도메인 '%s' 상태는 libvirt에 의해 저장되었습니다\n"
 
 #, c-format
 msgid ""
@@ -332,6 +338,16 @@ msgid ""
 "\n"
 "libvirt login shell\n"
 msgstr ""
+"\n"
+"사용법:\n"
+" %s [선택]\n"
+"\n"
+"선택:\n"
+" -h | --help 프로그램 도움을 표시합니다\n"
+" -V | --version 프로그램 상태번호를 표시합니다\n"
+" -c CMD shell을 통해 CMD를 실행합니다\n"
+"\n"
+"libvirt 로그인 쉘\n"
 
 #, c-format
 msgid ""
@@ -389,7 +405,7 @@ msgstr ""
 
 #, c-format
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
-msgstr ""
+msgstr "    밴드폭 제한: %llu bytes/s (%-.3lf %s/s)"
 
 msgid "  NAME\n"
 msgstr "  이름\n"
@@ -499,7 +515,7 @@ msgstr ""
 
 #, c-format
 msgid "%s expects UID and GID parameters"
-msgstr ""
+msgstr "%s는 UID와 GID 매개변수를 예상합니다"
 
 #, c-format
 msgid "%s failed new mode for target '%s' with status '%d'"
@@ -515,7 +531,7 @@ msgstr "%s 포워딩이 필요하지만 네트워크 '%s'의 IP 주소가 지정
 
 #, c-format
 msgid "%s graphics are not supported with this QEMU"
-msgstr ""
+msgstr "%s 그래픽은 이 QEMU를 지원하지 않습니다"
 
 #, fuzzy, c-format
 msgid "%s harddisk '%s' has unsupported cache mode '%s'"
@@ -535,23 +551,23 @@ msgstr "%s에서 %s는 NULL이어야 합니다"
 
 #, c-format
 msgid "%s in %s must be greater than zero"
-msgstr ""
+msgstr "%s에서 %s는 0보다 커야 합니다"
 
 #, c-format
 msgid "%s in %s must be zero"
-msgstr ""
+msgstr "%s에서 %s는 0이어야 합니다"
 
 #, c-format
 msgid "%s in %s must be zero or greater"
-msgstr ""
+msgstr "%s에서 %s는 ㅇ이거나 커야 합니다"
 
 #, c-format
 msgid "%s in %s must not be NULL"
-msgstr ""
+msgstr "%s에서 %s는 NULL이면 안됩니다"
 
 #, c-format
 msgid "%s in %s must not be zero"
-msgstr ""
+msgstr "%s에서 %s는 0이면 안됩니다"
 
 #, c-format
 msgid "%s is missing 'type' property"
@@ -681,9 +697,9 @@ msgstr ""
 msgid "%s: %s"
 msgstr "%s: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: unsupported auth %s"
-msgstr "지원되지 않는 기능 %s"
+msgstr "%s: %s:는 지원되지 않는 인증 %s"
 
 #, fuzzy, c-format
 msgid "%s: '%s' does not exist"
@@ -1358,13 +1374,11 @@ msgstr "(CPU 정의)"
 msgid "(_migration_cookie)"
 msgstr "(_migration_cookie)"
 
-#, fuzzy
 msgid "(bridge interface definition)"
-msgstr "(인터페이스 정의)"
+msgstr "(브릿지 연결장치 정의)"
 
-#, fuzzy
 msgid "(capabilities)"
-msgstr "기능"
+msgstr "(기능)"
 
 msgid "(definition_of_secret)"
 msgstr "(definition_of_secret)"
@@ -1381,9 +1395,8 @@ msgstr "(도메인기능)"
 msgid "(domain_backup)"
 msgstr "(도메인_백업)"
 
-#, fuzzy
 msgid "(domain_checkpoint)"
-msgstr "(도메인 정의)"
+msgstr "(도메인_점검점)"
 
 msgid "(domain_definition)"
 msgstr "(도메인 정의)"
@@ -1406,9 +1419,8 @@ msgstr "(인터페이스 정의)"
 msgid "(libxl_migration_cookie)"
 msgstr "(libxl_migration_cookie)"
 
-#, fuzzy
 msgid "(metadata_xml)"
-msgstr "메타데이터: "
+msgstr "(메타자료_xml)"
 
 msgid "(network status)"
 msgstr "(네트워크가 상태)"
@@ -1416,9 +1428,8 @@ msgstr "(네트워크가 상태)"
 msgid "(network_definition)"
 msgstr "(네트워크 정의)"
 
-#, fuzzy
 msgid "(networkport_definition)"
-msgstr "(네트워크 정의)"
+msgstr "(네트워크포트_ 정의)"
 
 msgid "(node_device_definition)"
 msgstr "(node_device_definition)"
@@ -1429,13 +1440,11 @@ msgstr "(없음)"
 msgid "(nwfilter_definition)"
 msgstr "(nwfilter_definition)"
 
-#, fuzzy
 msgid "(nwfilterbinding_definition)"
-msgstr "(nwfilter_definition)"
+msgstr "(nwfilterbinding_정의)"
 
-#, fuzzy
 msgid "(nwfilterbinding_status)"
-msgstr "(nwfilter_definition)"
+msgstr "(nwfilter_정의)"
 
 msgid "(pool state)"
 msgstr "(풀 상태)"
@@ -1478,13 +1487,13 @@ msgstr "--%s <number>"
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#, fuzzy, c-format
+#, c-format
 msgid "--%s and --current are mutually exclusive"
-msgstr "--%s 또는 --current가 필요함 "
+msgstr "--%s 와 --current는 상호 배타적입니다"
 
 #, c-format
 msgid "--%s and --tree are mutually exclusive"
-msgstr ""
+msgstr "--%s 와--tree 는 상호 배타적입니다"
 
 #, c-format
 msgid "--%s is required"
@@ -2173,15 +2182,15 @@ msgstr "%s에 묘사된 CPU가 호스트 CPU와 동일합니다\n"
 msgid "CPU described in %s is incompatible with host CPU\n"
 msgstr "%s에 묘사된 CPU가 호스트 CPU와 호환되지 않습니다\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "CPU described in %s is incompatible with the CPU provided by hypervisor on "
 "the host\n"
-msgstr "%s에 묘사된 CPU가 호스트 CPU와 호환되지 않습니다\n"
+msgstr "%s에서 묘사된 CPU는 호스트에 있는 하이퍼바이저에 의해서 제공된 CPU와 호환되지 않습니다\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU driver '%s' does not exist"
-msgstr "'%s'가 존재하지 않습니다"
+msgstr "CPU 드라이버'%s'가 존재하지 않습니다"
 
 #, c-format
 msgid "CPU feature %s already defined"
@@ -2491,13 +2500,12 @@ msgstr "장치 유형 '%s'을 수정할 수 없음"
 msgid "Can't parse barrier from vzlist output '%s'"
 msgstr "타겟 '%s'에서 파티션 번호를 구문분석할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't parse limit from vzlist output '%s'"
-msgstr "vslist 출력 구문 분석 실패"
+msgstr "vslist 출력 '%s'에서 제한된 구문분석을 실패하였습니다"
 
-#, fuzzy
 msgid "Can't parse prlctl output"
-msgstr "vslist 출력 구문 분석 실패"
+msgstr "plctlt 출력 구문 분석 실패하였습니다"
 
 msgid "Can't perform authentication: Authentication callback not provided"
 msgstr ""
@@ -2507,13 +2515,12 @@ msgid ""
 "not provided "
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't read %s"
-msgstr "%s를 읽을 수 없음"
+msgstr "%s를 읽을 수 없습니다"
 
-#, fuzzy
 msgid "Can't rename domain to itself"
-msgstr "도메인을 다시 시작할 수 없음: %s"
+msgstr "스스로 도메인 이름을 재지정 할 수 없습니다"
 
 msgid "Can't set 0 processors for a VM"
 msgstr ""
@@ -2762,7 +2769,7 @@ msgstr "emulatorpin 노드를 추출할 수 없음"
 
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
-msgstr "실행중인 %s 하이퍼바이저 버전을 추출할 수 없음\n"
+msgstr "실행중인 %s 하이퍼바이저 상태번호를 추출 할 수 없음\n"
 
 #, c-format
 msgid "Cannot find %s - Possibly the package isn't installed"
@@ -4055,18 +4062,17 @@ msgstr "도메인을 삭제할 수 없음: %s"
 
 #, c-format
 msgid "Could not determine kernel version from string %s"
-msgstr "'%s'에서 커널 버전 번호를 알아낼 수 없습니다"
+msgstr "'%s'에서 커널 상태번호를 알아낼 수 없습니다"
 
 #, fuzzy, c-format
 msgid "Could not dlsym %s from '%s': %s"
 msgstr "'%s'에서 '%s'를 검색할 수 없음 "
 
-#, fuzzy
 msgid "Could not extract VirtualBox version"
-msgstr "vzctl 버전을 가져올 수 없음"
+msgstr "vzctl 상태번호를 가져올 수 없음"
 
 msgid "Could not extract vzctl version"
-msgstr "vzctl 버전을 가져올 수 없음"
+msgstr "vzctl 상태번호를 가져올 수 없음"
 
 #, c-format
 msgid "Could not find %s"
@@ -5418,16 +5424,14 @@ msgstr ""
 msgid "Display program help"
 msgstr ""
 
-#, fuzzy
 msgid "Display the system and also the daemon version information."
-msgstr "시스템 버전 정보 보여주기."
+msgstr "시스템 상태번호 정보 보여주기."
 
 msgid "Display the system version information."
-msgstr "시스템 버전 정보 보여주기."
+msgstr "시스템 상태번호 정보 보여주기."
 
-#, fuzzy
 msgid "Display version information"
-msgstr "시스템 버전 정보 보여주기."
+msgstr "시스템 상태번호 정보 보여주기."
 
 msgid ""
 "Displays the node's total number of CPUs, the number of online CPUs and the "
@@ -11067,8 +11071,7 @@ msgstr ""
 #, c-format
 msgid ""
 "Memory balloon device type '%s' is not supported by this version of qemu"
-msgstr ""
-"이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'을(를) 지원하지 않습니다"
+msgstr "이 상태번호의 qemu에서는 메모리 부울 장치 유형 '%s'을(를) 지원하지 않습니다"
 
 #, fuzzy
 msgid "Memory bandwidth:"
@@ -15469,9 +15472,8 @@ msgstr "대상 호스트 장치 모드 %s가 소스 %s와 일치하지 않음"
 msgid "Target TPM device type doesn't match source"
 msgstr "대상 hub 장치 유형 %s이 소스 %s와 일치하지 않음"
 
-#, fuzzy
 msgid "Target TPM version doesn't match source"
-msgstr "대상 USB 버전이 소스와 일치하지 않음"
+msgstr "대상 USB 상태번호가 소스와 일치하지 않음"
 
 #, c-format
 msgid "Target TSC frequency %llu does not match source %llu"
@@ -15499,7 +15501,7 @@ msgid "Target USB vendor ID does not match source"
 msgstr "대상 USB 벤더 ID는 소스와 일치하지 않음"
 
 msgid "Target USB version does not match source"
-msgstr "대상 USB 버전이 소스와 일치하지 않음"
+msgstr "대상 USB 상태번호가 소스와 일치하지 않음"
 
 #, fuzzy
 msgid "Target already exists"
@@ -16752,10 +16754,8 @@ msgid ""
 "XML"
 msgstr ""
 
-#, fuzzy
 msgid "USB redirection filter is not supported by this version of QEMU"
-msgstr ""
-"이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'을(를) 지원하지 않습니다"
+msgstr "USB 방향변경 필터는 QEMU 상태버번호에서 지원하지 않습니다"
 
 #, fuzzy
 msgid "USB redirection is not supported by this version of QEMU"
@@ -19867,7 +19867,7 @@ msgid "Updates on a running domain need VIR_DOMAIN_AFFECT_LIVE flag"
 msgstr ""
 
 msgid "Upgrade to a kernel supporting namespaces"
-msgstr "네임 스페이스를 지원하는 커널로 업그레이드 "
+msgstr "이름공간을 지원하는 커널로 향상"
 
 msgid "Upload file contents to a volume"
 msgstr "볼륨에 파일 컨텐츠를 업로드함"
@@ -19975,25 +19975,17 @@ msgstr ""
 msgid "VFB %s too big for destination"
 msgstr "VFB %s가 목적지로는 너무 큼"
 
-#, fuzzy
 msgid "VFIO AP device assignment is not supported by this version of QEMU"
-msgstr ""
-"이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'을(를) 지원하지 않습니다"
+msgstr "VFIOAP 장치 할당은 QEMU의 상태번호에서 지원하지 않습니다"
 
-#, fuzzy
 msgid "VFIO CCW device assignment is not supported by this version of QEMU"
-msgstr ""
-"이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'을(를) 지원하지 않습니다"
+msgstr "VFIO CCW 장치의 할당은 이 QEMU의 상태번호에서 지원하지 않습니다"
 
-#, fuzzy
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
-msgstr ""
-"이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'을(를) 지원하지 않습니다"
+msgstr "VFIO PCI 장치의 할당은 이 QEMU의 상태번호에서 지원하지 않습니다"
 
-#, fuzzy
 msgid "VFIO PCI device assignment is not supported by this version of qemu"
-msgstr ""
-"이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'을(를) 지원하지 않습니다"
+msgstr "VFIO PCI 장치의 할당은 이 QEMU의 상태번호에서 지원하지 않습니다"
 
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr ""
@@ -24714,18 +24706,15 @@ msgstr "볼륨의 확장된 상세 정보를 표시"
 msgid "display extended details for volumes"
 msgstr "볼륨의 확장된 상세 정보를 표시"
 
-#, fuzzy
 msgid ""
 "display property of device vfio-pci is not supported by this version of QEMU"
-msgstr ""
-"이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'을(를) 지원하지 않습니다"
+msgstr "장치 vfio-pic의 표시 특성은 이 QUMU 상태번호에서 지원하지 않습니다"
 
 msgid "display the progress of dump"
 msgstr ""
 
-#, fuzzy
 msgid "display the progress of migration"
-msgstr "시스템 버전 정보 보여주기."
+msgstr "이전 진행을 표시합니다"
 
 msgid "display the progress of save"
 msgstr ""
@@ -26328,7 +26317,7 @@ msgid "failed to get targets from '%s'"
 msgstr "'%s' 비밀 얻는 데 실패"
 
 msgid "failed to get the daemon version"
-msgstr "데몬 버전을 얻는데 실패"
+msgstr "데몬 상태번호를 얻는데 실패"
 
 #, fuzzy, c-format
 msgid "failed to get the features of RBD image %s"
@@ -26343,14 +26332,13 @@ msgid "failed to get the format of RBD image %s"
 msgstr "RBD 이미지 '%s' 열기 실패"
 
 msgid "failed to get the hypervisor version"
-msgstr "하이퍼바이저 버전 보기 실패"
+msgstr "하이퍼바이저 상태번호 보기 실패"
 
-#, fuzzy
 msgid "failed to get the key of the current session"
-msgstr "데몬 버전을 얻는데 실패"
+msgstr "데몬 상태번호를 얻는데 실패"
 
 msgid "failed to get the library version"
-msgstr "라이브러리 버전 보기 실패"
+msgstr "라이브러리 상태번호 보기 실패"
 
 #, fuzzy, c-format
 msgid "failed to get the stripe count of RBD image %s"
@@ -27968,7 +27956,7 @@ msgstr "이미지 매직이 잘못되었습니다"
 
 #, c-format
 msgid "image version is not supported (%d > %d)"
-msgstr "이미지가 지원하지 않는 버전입니다(%d > %d)"
+msgstr "이미지가 지원하지 않는 상태번호입니다(%d > %d)"
 
 msgid "implies --abort; conclude and pivot a copy or commit job"
 msgstr ""
@@ -30372,10 +30360,9 @@ msgstr "CPU 친화도 처리가 이 플랫폼에서는 지원되지 않습니다
 msgid "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "memory access mode '%s' not supported without guest numa node"
-msgstr ""
-"이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'을(를) 지원하지 않습니다"
+msgstr "이 상태번호의 qemu에서는 메모리 부울 장치 유형 '%s'를 지원하지 않습니다"
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "메모리 속성: [file=]name[,snapshot=type]"
@@ -30404,10 +30391,8 @@ msgstr ""
 msgid "memory device total size exceeds hotplug space"
 msgstr ""
 
-#, fuzzy
 msgid "memory devices are not supported by this driver"
-msgstr ""
-"이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'을(를) 지원하지 않습니다"
+msgstr "이 상태번호의 qemu에서는 메모리 부울 장치 유형 '%s'를 지원하지 않습니다"
 
 #, c-format
 msgid "memory filename '%s' requires external snapshot"
@@ -34523,9 +34508,8 @@ msgstr ""
 msgid "report active users"
 msgstr ""
 
-#, fuzzy
 msgid "report daemon version too"
-msgstr "데몬 버전을 얻는데 실패"
+msgstr "데몬 상태번호을 얻는데 실패"
 
 msgid "report disk information"
 msgstr ""
@@ -35308,7 +35292,7 @@ msgid "show timestamp for each printed event"
 msgstr ""
 
 msgid "show version"
-msgstr "버전 보여주기"
+msgstr "상태번호 보여주기"
 
 msgid "show/set scheduler parameters"
 msgstr "스케줄러 매개 변수 보기/설정"
@@ -39602,11 +39586,11 @@ msgstr "vendor_id는 %d 문자 길이여야 함"
 
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
-msgstr "버전 불일치 (실제 %x, 기대값 %x)"
+msgstr "상태번호 불일치 (실제 %x, 기대값 %x)"
 
 #, c-format
 msgid "version mismatch in event (actual 0x%x, expected 0x%x)"
-msgstr "사건에서 버전 불일치 (실제 %x, 기대값 %x)"
+msgstr "사건에서 상태번호 불일치 (실제 %x, 기대값 %x)"
 
 #, fuzzy
 msgid "version parsing error"
