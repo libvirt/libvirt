@@ -8492,12 +8492,14 @@ virDomainDiskSourceNVMeParse(xmlNodePtr node,
     }
 
     if ((managed = virXMLPropString(node, "managed"))) {
-        if ((nvme->managed = virTristateBoolTypeFromString(managed)) <= 0) {
+        int value;
+        if ((value = virTristateBoolTypeFromString(managed)) <= 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("malformed managed value '%s'"),
                            managed);
             return -1;
         }
+        nvme->managed = value;
     }
 
     if (!(address = virXPathNode("./address", ctxt))) {
