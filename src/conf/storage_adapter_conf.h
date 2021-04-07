@@ -49,7 +49,7 @@ struct _virStorageAdapterFCHost {
     char *parent_fabric_wwn;
     char *wwnn;
     char *wwpn;
-    int managed;        /* enum virTristateSwitch */
+    virTristateBool managed;
 };
 
 typedef struct _virStorageAdapter virStorageAdapter;
