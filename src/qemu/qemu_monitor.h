@@ -1046,7 +1046,6 @@ int qemuMonitorBlockCommit(qemuMonitor *mon,
                            const char *backingName,
                            unsigned long long bandwidth)
     ATTRIBUTE_NONNULL(2);
-bool qemuMonitorSupportsActiveCommit(qemuMonitor *mon);
 char *qemuMonitorDiskNameLookup(qemuMonitor *mon,
                                 const char *device,
                                 virStorageSource *top,

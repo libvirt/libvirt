@@ -2146,49 +2146,6 @@ testQemuMonitorJSONqemuMonitorJSONSendKeyHoldtime(const void *opaque)
 }
 
 static int
-testQemuMonitorJSONqemuMonitorSupportsActiveCommit(const void *opaque)
-{
-    const testGenericData *data = opaque;
-    virDomainXMLOption *xmlopt = data->xmlopt;
-    const char *error1 =
-        "{"
-        "  \"error\": {"
-        "    \"class\": \"DeviceNotFound\","
-        "    \"desc\": \"Device 'bogus' not found\""
-        "  }"
-        "}";
-    const char *error2 =
-        "{"
-        "  \"error\": {"
-        "    \"class\": \"GenericError\","
-        "    \"desc\": \"Parameter 'top' is missing\""
-        "  }"
-        "}";
-    g_autoptr(qemuMonitorTest) test = NULL;
-
-    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
-        return -1;
-
-    if (qemuMonitorTestAddItemParams(test, "block-commit", error1,
-                                     "device", "\"bogus\"",
-                                     NULL, NULL) < 0)
-        return -1;
-
-    if (!qemuMonitorSupportsActiveCommit(qemuMonitorTestGetMonitor(test)))
-        return -1;
-
-    if (qemuMonitorTestAddItemParams(test, "block-commit", error2,
-                                     "device", "\"bogus\"",
-                                     NULL, NULL) < 0)
-        return -1;
-
-    if (qemuMonitorSupportsActiveCommit(qemuMonitorTestGetMonitor(test)))
-        return -1;
-
-    return 0;
-}
-
-static int
 testQemuMonitorJSONqemuMonitorJSONGetDumpGuestMemoryCapability(const void *opaque)
 {
     const testGenericData *data = opaque;
@@ -3136,7 +3093,6 @@ mymain(void)
     DO_TEST(qemuMonitorJSONSendKey);
     DO_TEST(qemuMonitorJSONGetDumpGuestMemoryCapability);
     DO_TEST(qemuMonitorJSONSendKeyHoldtime);
-    DO_TEST(qemuMonitorSupportsActiveCommit);
     DO_TEST(qemuMonitorJSONNBDServerStart);
 
     DO_TEST_CPU_DATA("host");

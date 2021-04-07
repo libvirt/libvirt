@@ -4726,39 +4726,6 @@ qemuMonitorJSONTransaction(qemuMonitor *mon, virJSONValue **actions)
     return ret;
 }
 
-/* Probe if active commit is supported: pass in a bogus device and NULL top
- * and base.  The probe return is true if active commit is detected or false
- * if not supported or on any error */
-bool
-qemuMonitorJSONSupportsActiveCommit(qemuMonitor *mon)
-{
-    bool ret = false;
-    virJSONValue *cmd;
-    virJSONValue *reply = NULL;
-
-    if (!(cmd = qemuMonitorJSONMakeCommand("block-commit", "s:device",
-                                           "bogus", NULL)))
-        return false;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONHasError(reply, "DeviceNotFound")) {
-        VIR_DEBUG("block-commit supports active commit");
-        ret = true;
-        goto cleanup;
-    }
-
-    /* This is a false negative for qemu 2.0; but probably not
-     * worth the additional complexity to worry about it */
-    VIR_DEBUG("block-commit requires 'top' parameter, "
-              "assuming it lacks active commit");
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
-}
-
 
 /* speed is in bytes/sec. Returns 0 on success, -1 with error message
  * emitted on failure. */

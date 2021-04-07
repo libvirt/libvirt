@@ -3280,17 +3280,6 @@ qemuMonitorBlockCommit(qemuMonitor *mon,
 }
 
 
-/* Probe whether active commits are supported by a given qemu binary. */
-bool
-qemuMonitorSupportsActiveCommit(qemuMonitor *mon)
-{
-    if (!mon)
-        return false;
-
-    return qemuMonitorJSONSupportsActiveCommit(mon);
-}
-
-
 /* Determine the name that qemu is using for tracking the backing
  * element TARGET within the chain starting at TOP.  */
 char *
