@@ -10877,14 +10877,15 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         def->type = VIR_DOMAIN_NET_TYPE_USER;
     }
 
-    trustGuestRxFilters = virXMLPropString(node, "trustGuestRxFilters");
-    if (trustGuestRxFilters &&
-        ((def->trustGuestRxFilters
-          = virTristateBoolTypeFromString(trustGuestRxFilters)) <= 0)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown trustGuestRxFilters value '%s'"),
-                       trustGuestRxFilters);
-        goto error;
+    if ((trustGuestRxFilters = virXMLPropString(node, "trustGuestRxFilters"))) {
+        int value;
+        if ((value = virTristateBoolTypeFromString(trustGuestRxFilters)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown trustGuestRxFilters value '%s'"),
+                           trustGuestRxFilters);
+            goto error;
+        }
+        def->trustGuestRxFilters = value;
     }
 
     cur = node->children;

@@ -1103,7 +1103,7 @@ struct _virDomainNetDef {
     GHashTable *filterparams;
     virNetDevBandwidth *bandwidth;
     virNetDevVlan vlan;
-    int trustGuestRxFilters; /* enum virTristateBool */
+    virTristateBool trustGuestRxFilters;
     virTristateBool isolatedPort;
     int linkstate;
     unsigned int mtu;
