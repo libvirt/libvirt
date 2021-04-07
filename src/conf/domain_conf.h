@@ -1856,7 +1856,7 @@ struct _virDomainGraphicsDef {
             int image;
             int jpeg;
             int zlib;
-            int playback;
+            virTristateSwitch playback;
             int streaming;
             virTristateBool copypaste;
             virTristateBool filetransfer;
