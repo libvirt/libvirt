@@ -229,12 +229,10 @@ cc_flags += [
   '-fexceptions',
   '-fipa-pure-const',
   '-fno-common',
-  '-W',
   '-Wabsolute-value',
   '-Waddress',
   '-Waddress-of-packed-member',
   '-Waggressive-loop-optimizations',
-  '-Wall',
   '-Walloc-size-larger-than=@0@'.format(alloc_max.stdout().strip()),
   '-Warray-bounds=2',
   '-Wattribute-alias=2',
@@ -268,7 +266,6 @@ cc_flags += [
   '-Wempty-body',
   '-Wendif-labels',
   '-Wexpansion-to-defined',
-  '-Wextra',
   '-Wformat-contains-nul',
   '-Wformat-extra-args',
   # -Wformat=2 implies -Wformat-nonliteral so we need to manually exclude it
@@ -398,71 +395,74 @@ cc_flags += [
   '-Wwrite-strings',
 ]
 
-supported_cc_flags = cc.get_supported_arguments(cc_flags)
+supported_cc_flags = []
+if get_option('warning_level') == '2'
+  supported_cc_flags = cc.get_supported_arguments(cc_flags)
 
-# on aarch64 error: -fstack-protector not supported for this target
-if host_machine.cpu_family() != 'aarch64'
-  if host_machine.system() in [ 'linux', 'freebsd', 'windows' ]
-    # we prefer -fstack-protector-strong but fallback to -fstack-protector-all
-    fstack_cflags = cc.first_supported_argument([
-      '-fstack-protector-strong',
-      '-fstack-protector-all',
-    ])
-    supported_cc_flags += fstack_cflags
+  # on aarch64 error: -fstack-protector not supported for this target
+  if host_machine.cpu_family() != 'aarch64'
+    if host_machine.system() in [ 'linux', 'freebsd', 'windows' ]
+      # we prefer -fstack-protector-strong but fallback to -fstack-protector-all
+      fstack_cflags = cc.first_supported_argument([
+        '-fstack-protector-strong',
+        '-fstack-protector-all',
+      ])
+      supported_cc_flags += fstack_cflags
 
-    # When building with mingw using -fstack-protector requires libssp library
-    # which is included by using -fstack-protector with linker.
-    if fstack_cflags.length() == 1 and host_machine.system() == 'windows'
-      add_project_link_arguments(fstack_cflags, language: 'c')
+      # When building with mingw using -fstack-protector requires libssp library
+      # which is included by using -fstack-protector with linker.
+      if fstack_cflags.length() == 1 and host_machine.system() == 'windows'
+        add_project_link_arguments(fstack_cflags, language: 'c')
+      endif
     endif
   endif
-endif
 
-if supported_cc_flags.contains('-Wlogical-op')
-  # Broken in 6.0 and later
-  #     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69602
-  w_logical_op_args = ['-O2', '-Wlogical-op', '-Werror']
-  w_logical_op_code = '''
-    #define TEST1 1
-    #define TEST2 TEST1
+  if supported_cc_flags.contains('-Wlogical-op')
+    # Broken in 6.0 and later
+    #     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69602
+    w_logical_op_args = ['-O2', '-Wlogical-op', '-Werror']
+    w_logical_op_code = '''
+      #define TEST1 1
+      #define TEST2 TEST1
+
+      int main(void) {
+        int test = 0;
+        return test == TEST1 || test == TEST2;
+      }
+    '''
+    if not cc.compiles(w_logical_op_code, args: w_logical_op_args)
+      conf.set('BROKEN_GCC_WLOGICALOP_EQUAL_EXPR', 1)
+    endif
+  endif
+
+  # Check whether clang gives bogus warning for -Wdouble-promotion.
+  w_double_promotion_args = ['-O2', '-Wdouble-promotion', '-Werror']
+  w_double_promotion_code = '''
+    #include <math.h>
 
     int main(void) {
-      int test = 0;
-      return test == TEST1 || test == TEST2;
+      float f = 0.0;
+      return isnan(f);
     }
   '''
-  if not cc.compiles(w_logical_op_code, args: w_logical_op_args)
-    conf.set('BROKEN_GCC_WLOGICALOP_EQUAL_EXPR', 1)
+  if cc.compiles(w_double_promotion_code, args: w_double_promotion_args, name: '-Wdouble-promotion')
+    supported_cc_flags += ['-Wdouble-promotion']
   endif
+
+  # Clang complains about unused static inline functions which are common
+  # with G_DEFINE_AUTOPTR_CLEANUP_FUNC.
+  w_unused_function_args = ['-Wunused-function', '-Werror']
+  w_unused_function_code = '''
+    static inline void foo(void) {}
+
+    int main(void) { return 0; }
+  '''
+  # -Wunused-function is implied by -Wall, we must turn it off explicitly.
+  if not cc.compiles(w_unused_function_code, args: w_unused_function_args)
+    supported_cc_flags += ['-Wno-unused-function']
+  endif
+
 endif
-
-# Check whether clang gives bogus warning for -Wdouble-promotion.
-w_double_promotion_args = ['-O2', '-Wdouble-promotion', '-Werror']
-w_double_promotion_code = '''
-  #include <math.h>
-
-  int main(void) {
-    float f = 0.0;
-    return isnan(f);
-  }
-'''
-if cc.compiles(w_double_promotion_code, args: w_double_promotion_args, name: '-Wdouble-promotion')
-  supported_cc_flags += ['-Wdouble-promotion']
-endif
-
-# Clang complains about unused static inline functions which are common
-# with G_DEFINE_AUTOPTR_CLEANUP_FUNC.
-w_unused_function_args = ['-Wunused-function', '-Werror']
-w_unused_function_code = '''
-  static inline void foo(void) {}
-
-  int main(void) { return 0; }
-'''
-# -Wunused-function is implied by -Wall, we must turn it off explicitly.
-if not cc.compiles(w_unused_function_code, args: w_unused_function_args)
-  supported_cc_flags += ['-Wno-unused-function']
-endif
-
 add_project_arguments(supported_cc_flags, language: 'c')
 
 if cc.has_argument('-Wsuggest-attribute=format')
