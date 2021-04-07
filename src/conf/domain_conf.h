@@ -2748,7 +2748,7 @@ struct _virDomainDef {
     virDomainHPTResizing hpt_resizing;
     unsigned long long hpt_maxpagesize; /* Stored in KiB */
     char *hyperv_vendor_id;
-    int apic_eoi;
+    virTristateSwitch apic_eoi;
 
     bool tseg_specified;
     unsigned long long tseg_size;
