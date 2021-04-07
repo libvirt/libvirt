@@ -1233,7 +1233,7 @@ struct _virDomainChrSourceDef {
         /* no <source> for null, vc, stdio */
         struct {
             char *path;
-            int append; /* enum virTristateSwitch */
+            virTristateSwitch append;
         } file; /* pty, file, pipe, or device */
         struct {
             char *master;
@@ -1245,7 +1245,7 @@ struct _virDomainChrSourceDef {
             bool listen;
             int protocol;
             bool tlscreds;
-            int haveTLS; /* enum virTristateBool */
+            virTristateBool haveTLS;
             bool tlsFromConfig;
             virDomainChrSourceReconnectDef reconnect;
         } tcp;
@@ -1266,7 +1266,7 @@ struct _virDomainChrSourceDef {
         } spiceport;
     } data;
     char *logfile;
-    int logappend;
+    virTristateSwitch logappend;
 
     size_t nseclabels;
     virSecurityDeviceLabelDef **seclabels;

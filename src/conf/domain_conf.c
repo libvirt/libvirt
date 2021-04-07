@@ -11913,12 +11913,14 @@ virDomainChrSourceDefParseTCP(virDomainChrSourceDef *def,
     def->data.tcp.service = virXMLPropString(source, "service");
 
     if ((tmp = virXMLPropString(source, "tls"))) {
-        if ((def->data.tcp.haveTLS = virTristateBoolTypeFromString(tmp)) <= 0) {
+        int value;
+        if ((value = virTristateBoolTypeFromString(tmp)) <= 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown chardev 'tls' setting '%s'"),
                            tmp);
             return -1;
         }
+        def->data.tcp.haveTLS = value;
         VIR_FREE(tmp);
     }
 
@@ -11997,12 +11999,15 @@ virDomainChrSourceDefParseFile(virDomainChrSourceDef *def,
 
     def->data.file.path = virXMLPropString(source, "path");
 
-    if ((append = virXMLPropString(source, "append")) &&
-        (def->data.file.append = virTristateSwitchTypeFromString(append)) <= 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid append attribute value '%s'"),
-                       append);
-        return -1;
+    if ((append = virXMLPropString(source, "append"))) {
+        int value;
+        if ((value = virTristateSwitchTypeFromString(append)) <= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid append attribute value '%s'"),
+                           append);
+            return -1;
+        }
+        def->data.file.append = value;
     }
 
     return 0;
@@ -12038,12 +12043,15 @@ virDomainChrSourceDefParseLog(virDomainChrSourceDef *def,
 
     def->logfile = virXMLPropString(log, "file");
 
-    if ((append = virXMLPropString(log, "append")) &&
-        (def->logappend = virTristateSwitchTypeFromString(append)) <= 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid append attribute value '%s'"),
-                       append);
-        return -1;
+    if ((append = virXMLPropString(log, "append"))) {
+        int value;
+        if ((value = virTristateSwitchTypeFromString(append)) <= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid append attribute value '%s'"),
+                           append);
+            return -1;
+        }
+        def->logappend = value;
     }
 
     return 0;
