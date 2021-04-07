@@ -3653,7 +3653,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
 
     /* device alias is checked already in virDomainDefCompatibleDevice */
 
-    if (newdev->info.rombar == VIR_TRISTATE_BOOL_ABSENT)
+    if (newdev->info.rombar == VIR_TRISTATE_SWITCH_ABSENT)
         newdev->info.rombar = olddev->info.rombar;
     if (olddev->info.rombar != newdev->info.rombar) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",

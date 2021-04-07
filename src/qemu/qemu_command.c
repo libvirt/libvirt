@@ -713,7 +713,8 @@ qemuBuildRomStr(virBuffer *buf,
         case VIR_TRISTATE_SWITCH_ON:
             virBufferAddLit(buf, ",rombar=1");
             break;
-        default:
+        case VIR_TRISTATE_SWITCH_ABSENT:
+        case VIR_TRISTATE_SWITCH_LAST:
             break;
         }
         if (info->romfile) {

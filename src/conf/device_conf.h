@@ -143,8 +143,8 @@ struct _virDomainDeviceInfo {
     } master;
     /* rombar and romfile are only used for pci hostdev and network
      * devices. */
-    int romenabled; /* enum virTristateBool */
-    int rombar;         /* enum virTristateSwitch */
+    virTristateBool romenabled;
+    virTristateSwitch rombar;
     char *romfile;
     /* bootIndex is only used for disk, network interface, hostdev
      * and redirdev devices */

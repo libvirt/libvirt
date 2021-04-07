@@ -6691,17 +6691,23 @@ virDomainDeviceInfoParseXML(virDomainXMLOption *xmlopt,
 
     if ((flags & VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) &&
         (rom = virXPathNode("./rom", ctxt))) {
-        if ((romenabled = virXPathString("string(./rom/@enabled)", ctxt)) &&
-            ((info->romenabled = virTristateBoolTypeFromString(romenabled)) <= 0)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown rom enabled value '%s'"), romenabled);
-            goto cleanup;
+        if ((romenabled = virXPathString("string(./rom/@enabled)", ctxt))) {
+            int value;
+            if ((value = virTristateBoolTypeFromString(romenabled)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown rom enabled value '%s'"), romenabled);
+                goto cleanup;
+            }
+            info->romenabled = value;
         }
-        if ((rombar = virXPathString("string(./rom/@bar)", ctxt)) &&
-            ((info->rombar = virTristateSwitchTypeFromString(rombar)) <= 0)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown rom bar value '%s'"), rombar);
-            goto cleanup;
+        if ((rombar = virXPathString("string(./rom/@bar)", ctxt))) {
+            int value;
+            if ((value = virTristateSwitchTypeFromString(rombar)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown rom bar value '%s'"), rombar);
+                goto cleanup;
+            }
+            info->rombar = value;
         }
         info->romfile = virXMLPropString(rom, "file");
 
