@@ -1163,7 +1163,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "rtc-reset-reinjection", QEMU_CAPS_RTC_RESET_REINJECTION },
     { "migrate-incoming", QEMU_CAPS_INCOMING_DEFER },
     { "query-hotpluggable-cpus", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS },
-    { "query-qmp-schema", QEMU_CAPS_QUERY_QMP_SCHEMA },
     { "query-cpu-model-expansion", QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION },
     { "query-cpu-definitions", QEMU_CAPS_QUERY_CPU_DEFINITIONS },
     { "query-named-block-nodes", QEMU_CAPS_QUERY_NAMED_BLOCK_NODES },
@@ -2559,36 +2558,6 @@ virQEMUCapsProbeQMPCommands(virQEMUCaps *qemuCaps,
                                   virQEMUCapsCommands,
                                   ncommands, commands);
     virStringListFreeCount(commands, ncommands);
-
-    /* Probe for active commit of qemu 2.1. We don't need to query directly
-     * if we have QMP schema support */
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_QMP_SCHEMA) &&
-        qemuMonitorSupportsActiveCommit(mon))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_ACTIVE_COMMIT);
-
-    return 0;
-}
-
-
-static int
-virQEMUCapsProbeQMPEvents(virQEMUCaps *qemuCaps,
-                          qemuMonitor *mon)
-{
-    char **events = NULL;
-    int nevents;
-
-    /* we can probe events also from the QMP schema so we can skip this here */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_QMP_SCHEMA))
-        return 0;
-
-    if ((nevents = qemuMonitorGetEvents(mon, &events)) < 0)
-        return -1;
-
-    virQEMUCapsProcessStringFlags(qemuCaps,
-                                  G_N_ELEMENTS(virQEMUCapsEvents),
-                                  virQEMUCapsEvents,
-                                  nevents, events);
-    virStringListFreeCount(events, nevents);
 
     return 0;
 }
@@ -5243,9 +5212,6 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCaps *qemuCaps,
     GHashTable *schema = NULL;
     size_t i;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_QMP_SCHEMA))
-        return 0;
-
     if (!(schemareply = qemuMonitorQueryQMPSchema(mon)))
         return -1;
 
@@ -5337,8 +5303,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
     type = virQEMUCapsGetVirtType(qemuCaps);
     accel = virQEMUCapsGetAccel(qemuCaps, type);
 
-    if (virQEMUCapsProbeQMPEvents(qemuCaps, mon) < 0)
-        return -1;
     if (virQEMUCapsProbeQMPObjectTypes(qemuCaps, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPDeviceProperties(qemuCaps, mon) < 0)

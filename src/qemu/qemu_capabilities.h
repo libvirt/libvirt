@@ -380,7 +380,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH, /* -drive bps_max_length = and friends */
     QEMU_CAPS_DEVICE_IVSHMEM_PLAIN, /* -device ivshmem-plain */
     QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL, /* -device ivshmem-doorbell */
-    QEMU_CAPS_QUERY_QMP_SCHEMA, /* query-qmp-schema command */
+    X_QEMU_CAPS_QUERY_QMP_SCHEMA, /* query-qmp-schema command */
 
     /* 240 */
     QEMU_CAPS_GLUSTER_DEBUG_LEVEL, /* -drive gluster.debug_level={0..9} */

@@ -50,7 +50,6 @@
   <flag name='smm'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='drive-iotune-max-length'/>
-  <flag name='query-qmp-schema'/>
   <flag name='gluster.debug_level'/>
   <flag name='drive-iotune-group'/>
   <flag name='spice-rendernode'/>
