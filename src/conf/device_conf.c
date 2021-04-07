@@ -246,13 +246,15 @@ virPCIDeviceAddressParseXML(xmlNodePtr node,
         return -1;
     }
 
-    if (multi &&
-        ((addr->multi = virTristateSwitchTypeFromString(multi)) <= 0)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unknown value '%s' for <address> 'multifunction' attribute"),
-                       multi);
-        return -1;
-
+    if (multi) {
+        int value;
+        if ((value = virTristateSwitchTypeFromString(multi)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unknown value '%s' for <address> 'multifunction' attribute"),
+                           multi);
+            return -1;
+        }
+        addr->multi = value;
     }
     if (!virPCIDeviceAddressIsEmpty(addr) && !virPCIDeviceAddressIsValid(addr, true))
         return -1;
