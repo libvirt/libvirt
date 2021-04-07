@@ -19221,18 +19221,24 @@ virDomainLoaderDefParseXML(xmlNodePtr node,
             VIR_FREE(loader->path);
     }
 
-    if (readonly_str &&
-        (loader->readonly = virTristateBoolTypeFromString(readonly_str)) <= 0) {
-        virReportError(VIR_ERR_XML_DETAIL,
-                       _("unknown readonly value: %s"), readonly_str);
-        return -1;
+    if (readonly_str) {
+        int value;
+        if ((value = virTristateBoolTypeFromString(readonly_str)) <= 0) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("unknown readonly value: %s"), readonly_str);
+            return -1;
+        }
+        loader->readonly = value;
     }
 
-    if (secure_str &&
-        (loader->secure = virTristateBoolTypeFromString(secure_str)) <= 0) {
-        virReportError(VIR_ERR_XML_DETAIL,
-                       _("unknown secure value: %s"), secure_str);
-        return -1;
+    if (secure_str) {
+        int value;
+        if ((value = virTristateBoolTypeFromString(secure_str)) <= 0) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("unknown secure value: %s"), secure_str);
+            return -1;
+        }
+        loader->secure = value;
     }
 
     if (type_str) {

@@ -2146,9 +2146,9 @@ VIR_ENUM_DECL(virDomainLoader);
 
 struct _virDomainLoaderDef {
     char *path;
-    int readonly;   /* enum virTristateBool */
+    virTristateBool readonly;
     virDomainLoader type;
-    int secure;     /* enum virTristateBool */
+    virTristateBool secure;
     char *nvram;    /* path to non-volatile RAM */
     char *templt;   /* user override of path to master nvram */
 };
