@@ -161,7 +161,7 @@ struct _virStoragePoolSourceDevice {
     virStoragePoolSourceDeviceExtent *freeExtents;
     char *path;
     int format; /* Pool specific source format */
-    int part_separator;  /* enum virTristateSwitch */
+    virTristateBool part_separator;
 
     /* When the source device is a physical disk,
      * the geometry data is needed

@@ -614,14 +614,15 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
 
         partsep = virXMLPropString(nodeset[i], "part_separator");
         if (partsep) {
-            dev.part_separator = virTristateBoolTypeFromString(partsep);
-            if (dev.part_separator <= 0) {
+            int value = virTristateBoolTypeFromString(partsep);
+            if (value <= 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("invalid part_separator setting '%s'"),
                                partsep);
                 virStoragePoolSourceDeviceClear(&dev);
                 goto cleanup;
             }
+            dev.part_separator = value;
         }
 
         if (VIR_APPEND_ELEMENT(source->devices, source->ndevice, dev) < 0) {
@@ -1094,7 +1095,7 @@ virStoragePoolSourceFormat(virBuffer *buf,
             virBufferEscapeString(buf, "<device path='%s'",
                                   src->devices[i].path);
             if (src->devices[i].part_separator !=
-                VIR_TRISTATE_SWITCH_ABSENT) {
+                VIR_TRISTATE_BOOL_ABSENT) {
                 virBufferAsprintf(buf, " part_separator='%s'",
                                   virTristateBoolTypeToString(src->devices[i].part_separator));
             }
