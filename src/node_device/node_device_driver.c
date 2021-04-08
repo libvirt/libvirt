@@ -735,10 +735,9 @@ nodeDeviceGetMdevctlDefineCreateCommand(virNodeDeviceDef *def,
         return NULL;
     }
 
-    cmd = virCommandNewArgList(MDEVCTL, subcommand,
-                               "-p", parent_addr,
-                               "--jsonfile", "/dev/stdin",
-                               NULL);
+    cmd = virCommandNewArgList(MDEVCTL, subcommand, NULL);
+    virCommandAddArgPair(cmd, "--parent", parent_addr);
+    virCommandAddArgPair(cmd, "--jsonfile", "/dev/stdin");
 
     virCommandSetInputBuffer(cmd, json);
 
@@ -902,11 +901,8 @@ nodeDeviceCreateXML(virConnectPtr conn,
 virCommand *
 nodeDeviceGetMdevctlStopCommand(const char *uuid, char **errmsg)
 {
-    virCommand *cmd = virCommandNewArgList(MDEVCTL,
-                                           "stop",
-                                           "-u",
-                                           uuid,
-                                           NULL);
+    virCommand *cmd = virCommandNewArgList(MDEVCTL, "stop", NULL);
+    virCommandAddArgPair(cmd, "--uuid", uuid);
     virCommandSetErrorBuffer(cmd, errmsg);
     return cmd;
 
@@ -915,11 +911,8 @@ nodeDeviceGetMdevctlStopCommand(const char *uuid, char **errmsg)
 virCommand *
 nodeDeviceGetMdevctlUndefineCommand(const char *uuid, char **errmsg)
 {
-    virCommand *cmd = virCommandNewArgList(MDEVCTL,
-                                           "undefine",
-                                           "-u",
-                                           uuid,
-                                           NULL);
+    virCommand *cmd = virCommandNewArgList(MDEVCTL, "undefine", NULL);
+    virCommandAddArgPair(cmd, "--uuid", uuid);
     virCommandSetErrorBuffer(cmd, errmsg);
     return cmd;
 }
@@ -927,11 +920,8 @@ nodeDeviceGetMdevctlUndefineCommand(const char *uuid, char **errmsg)
 virCommand *
 nodeDeviceGetMdevctlStartCommand(const char *uuid, char **errmsg)
 {
-    virCommand *cmd = virCommandNewArgList(MDEVCTL,
-                                           "start",
-                                           "-u",
-                                           uuid,
-                                           NULL);
+    virCommand *cmd = virCommandNewArgList(MDEVCTL, "start", NULL);
+    virCommandAddArgPair(cmd, "--uuid", uuid);
     virCommandSetErrorBuffer(cmd, errmsg);
     return cmd;
 }
