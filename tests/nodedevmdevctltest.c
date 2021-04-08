@@ -125,13 +125,15 @@ testMdevctlStartOrDefineHelper(const void *data)
 
 typedef virCommand* (*GetStopUndefineCmdFunc)(const char *uuid, char **errbuf);
 struct UuidCommandTestInfo {
-    const char *uuid;
+    const char *filename;
     MdevctlCmd command;
 };
 
 static int
-testMdevctlUuidCommand(const char *uuid, GetStopUndefineCmdFunc func, const char *outfile)
+testMdevctlUuidCommand(GetStopUndefineCmdFunc func,
+                       const char *mdevxml, const char *outfile)
 {
+    g_autoptr(virNodeDeviceDef) def = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *actualCmdline = NULL;
     int ret = -1;
@@ -139,7 +141,10 @@ testMdevctlUuidCommand(const char *uuid, GetStopUndefineCmdFunc func, const char
     g_autofree char *errmsg = NULL;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    cmd = func(uuid, &errmsg);
+    if (!(def = virNodeDeviceDefParseFile(mdevxml, EXISTING_DEVICE, "QEMU")))
+        goto cleanup;
+
+    cmd = func(def->caps->data.mdev.uuid, &errmsg);
 
     if (!cmd)
         goto cleanup;
@@ -167,6 +172,7 @@ testMdevctlUuidCommandHelper(const void *data)
     GetStopUndefineCmdFunc func;
     const char *cmd;
     g_autofree char *cmdlinefile = NULL;
+    g_autofree char *mdevxml = NULL;
 
     if (info->command == MDEVCTL_CMD_STOP) {
         cmd = "stop";
@@ -181,10 +187,12 @@ testMdevctlUuidCommandHelper(const void *data)
         return -1;
     }
 
+    mdevxml = g_strdup_printf("%s/nodedevschemadata/%s.xml", abs_srcdir,
+                              info->filename);
     cmdlinefile = g_strdup_printf("%s/nodedevmdevctldata/mdevctl-%s.argv",
                                   abs_srcdir, cmd);
 
-    return testMdevctlUuidCommand(info->uuid, func, cmdlinefile);
+    return testMdevctlUuidCommand(func, mdevxml, cmdlinefile);
 }
 
 static int
@@ -405,21 +413,21 @@ mymain(void)
 #define DO_TEST_DEFINE(filename) \
     DO_TEST_CMD("mdevctl define " filename, "QEMU", CREATE_DEVICE, filename, MDEVCTL_CMD_DEFINE)
 
-#define DO_TEST_UUID_COMMAND_FULL(desc, uuid, command) \
+#define DO_TEST_UUID_COMMAND_FULL(desc, filename, command) \
     do { \
-        struct UuidCommandTestInfo info = { uuid, command }; \
+        struct UuidCommandTestInfo info = { filename, command }; \
         DO_TEST_FULL(desc, testMdevctlUuidCommandHelper, &info); \
        } \
     while (0)
 
-#define DO_TEST_STOP(uuid) \
-    DO_TEST_UUID_COMMAND_FULL("mdevctl stop " uuid, uuid, MDEVCTL_CMD_STOP)
+#define DO_TEST_STOP(filename) \
+    DO_TEST_UUID_COMMAND_FULL("mdevctl stop " filename, filename, MDEVCTL_CMD_STOP)
 
-#define DO_TEST_UNDEFINE(uuid) \
-    DO_TEST_UUID_COMMAND_FULL("mdevctl undefine " uuid, uuid, MDEVCTL_CMD_UNDEFINE)
+#define DO_TEST_UNDEFINE(filename) \
+    DO_TEST_UUID_COMMAND_FULL("mdevctl undefine " filename, filename, MDEVCTL_CMD_UNDEFINE)
 
-#define DO_TEST_CREATE(uuid) \
-    DO_TEST_UUID_COMMAND_FULL("mdevctl create " uuid, uuid, MDEVCTL_CMD_CREATE)
+#define DO_TEST_CREATE(filename) \
+    DO_TEST_UUID_COMMAND_FULL("mdevctl create " filename, filename, MDEVCTL_CMD_CREATE)
 
 #define DO_TEST_LIST_DEFINED() \
     DO_TEST_FULL("mdevctl list --defined", testMdevctlListDefined, NULL)
@@ -433,7 +441,7 @@ mymain(void)
     DO_TEST_START("mdev_d2441d39_495e_4243_ad9f_beb3f14c23d9");
 
     /* Test mdevctl stop command, pass an arbitrary uuid */
-    DO_TEST_STOP("e2451f73-c95b-4124-b900-e008af37c576");
+    DO_TEST_STOP("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
 
     DO_TEST_LIST_DEFINED();
 
@@ -443,9 +451,9 @@ mymain(void)
     DO_TEST_DEFINE("mdev_fedc4916_1ca8_49ac_b176_871d16c13076");
     DO_TEST_DEFINE("mdev_d2441d39_495e_4243_ad9f_beb3f14c23d9");
 
-    DO_TEST_UNDEFINE("d76a6b78-45ed-4149-a325-005f9abc5281");
+    DO_TEST_UNDEFINE("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
 
-    DO_TEST_CREATE("8a05ad83-3472-497d-8631-8142f31460e8");
+    DO_TEST_CREATE("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
 
  done:
     nodedevTestDriverFree(driver);
