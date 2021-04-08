@@ -28,6 +28,7 @@
 #include "virqemu.h"
 #include "virstring.h"
 #include "viralloc.h"
+#include "virbitmap.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -59,10 +60,19 @@ virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
 {
     ssize_t pos = -1;
     ssize_t end;
-    g_autoptr(virBitmap) bitmap = NULL;
+    g_autoptr(virBitmap) bitmap = virBitmapNew(0);
+    size_t i;
 
-    if (virJSONValueGetArrayAsBitmap(array, &bitmap) < 0)
-        return -1;
+    for (i = 0; i < virJSONValueArraySize(array); i++) {
+        virJSONValue *member = virJSONValueArrayGet(array, i);
+        unsigned long long value;
+
+        if (virJSONValueGetNumberUlong(member, &value) < 0)
+            return -1;
+
+        if (virBitmapSetBitExpand(bitmap, value) < 0)
+            return -1;
+    }
 
     while ((pos = virBitmapNextSetBit(bitmap, pos)) > -1) {
         if ((end = virBitmapNextClearBit(bitmap, pos)) < 0)
