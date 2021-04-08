@@ -31,6 +31,7 @@
 #include "virutil.h"
 #include "virbuffer.h"
 #include "virenum.h"
+#include "virbitmap.h"
 
 #if WITH_YAJL
 # include <yajl/yajl_gen.h>
@@ -304,7 +305,8 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
         case 'M':
         case 'm': {
             virBitmapPtr map = va_arg(args, virBitmapPtr);
-            g_autoptr(virJSONValue) jsonMap = NULL;
+            g_autoptr(virJSONValue) jsonMap = virJSONValueNewArray();
+            ssize_t pos = -1;
 
             if (!map) {
                 if (type == 'M')
@@ -316,8 +318,12 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
                 return -1;
             }
 
-            if (!(jsonMap = virJSONValueNewArrayFromBitmap(map)))
-                return -1;
+            while ((pos = virBitmapNextSetBit(map, pos)) > -1) {
+                g_autoptr(virJSONValue) newelem = virJSONValueNewNumberLong(pos);
+
+                if (virJSONValueArrayAppend(jsonMap, &newelem) < 0)
+                    return -1;
+            }
 
             if ((rc = virJSONValueObjectAppend(obj, key, &jsonMap)) < 0)
                 return -1;
@@ -1171,26 +1177,6 @@ virJSONValueGetBoolean(virJSONValuePtr val,
 
     *value = val->data.boolean;
     return 0;
-}
-
-
-virJSONValuePtr
-virJSONValueNewArrayFromBitmap(virBitmapPtr bitmap)
-{
-    g_autoptr(virJSONValue) ret = virJSONValueNewArray();
-    ssize_t pos = -1;
-
-    if (!bitmap)
-        return g_steal_pointer(&ret);
-
-    while ((pos = virBitmapNextSetBit(bitmap, pos)) > -1) {
-        g_autoptr(virJSONValue) newelem = virJSONValueNewNumberLong(pos);
-
-        if (virJSONValueArrayAppend(ret, &newelem) < 0)
-            return NULL;
-    }
-
-    return g_steal_pointer(&ret);
 }
 
 

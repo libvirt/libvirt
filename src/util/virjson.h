@@ -23,7 +23,6 @@
 #pragma once
 
 #include "internal.h"
-#include "virbitmap.h"
 #include "virbuffer.h"
 
 #include <stdarg.h>
@@ -67,7 +66,6 @@ virJSONValuePtr virJSONValueNewBoolean(int boolean);
 virJSONValuePtr virJSONValueNewNull(void);
 virJSONValuePtr virJSONValueNewArray(void);
 virJSONValuePtr virJSONValueNewObject(void);
-virJSONValuePtr virJSONValueNewArrayFromBitmap(virBitmapPtr bitmap);
 
 int virJSONValueObjectAppend(virJSONValuePtr object,
                              const char *key,

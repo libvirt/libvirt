@@ -2492,7 +2492,6 @@ virJSONValueIsArray;
 virJSONValueIsNull;
 virJSONValueIsObject;
 virJSONValueNewArray;
-virJSONValueNewArrayFromBitmap;
 virJSONValueNewBoolean;
 virJSONValueNewNull;
 virJSONValueNewNumberDouble;
