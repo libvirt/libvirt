@@ -39,3273 +39,8 @@
 }
 
 {
-  "execute": "query-commands",
-  "id": "libvirt-4"
-}
-
-{
-  "return": [
-    {
-      "name": "object-add"
-    },
-    {
-      "name": "device_add"
-    },
-    {
-      "name": "query-qmp-schema"
-    },
-    {
-      "name": "query-vm-generation-id"
-    },
-    {
-      "name": "xen-load-devices-state"
-    },
-    {
-      "name": "query-acpi-ospm-status"
-    },
-    {
-      "name": "query-memory-devices"
-    },
-    {
-      "name": "query-command-line-options"
-    },
-    {
-      "name": "query-fdsets"
-    },
-    {
-      "name": "remove-fd"
-    },
-    {
-      "name": "add-fd"
-    },
-    {
-      "name": "query-memory-size-summary"
-    },
-    {
-      "name": "closefd"
-    },
-    {
-      "name": "getfd"
-    },
-    {
-      "name": "xen-set-global-dirty-log"
-    },
-    {
-      "name": "change"
-    },
-    {
-      "name": "human-monitor-command"
-    },
-    {
-      "name": "balloon"
-    },
-    {
-      "name": "inject-nmi"
-    },
-    {
-      "name": "system_wakeup"
-    },
-    {
-      "name": "x-exit-preconfig"
-    },
-    {
-      "name": "cont"
-    },
-    {
-      "name": "pmemsave"
-    },
-    {
-      "name": "memsave"
-    },
-    {
-      "name": "system_powerdown"
-    },
-    {
-      "name": "system_reset"
-    },
-    {
-      "name": "stop"
-    },
-    {
-      "name": "query-pci"
-    },
-    {
-      "name": "query-balloon"
-    },
-    {
-      "name": "query-iothreads"
-    },
-    {
-      "name": "query-uuid"
-    },
-    {
-      "name": "query-kvm"
-    },
-    {
-      "name": "query-name"
-    },
-    {
-      "name": "add_client"
-    },
-    {
-      "name": "set-numa-node"
-    },
-    {
-      "name": "query-hotpluggable-cpus"
-    },
-    {
-      "name": "query-memdev"
-    },
-    {
-      "name": "query-target"
-    },
-    {
-      "name": "query-current-machine"
-    },
-    {
-      "name": "query-machines"
-    },
-    {
-      "name": "cpu-add"
-    },
-    {
-      "name": "query-cpus-fast"
-    },
-    {
-      "name": "query-cpus"
-    },
-    {
-      "name": "device_del"
-    },
-    {
-      "name": "device-list-properties"
-    },
-    {
-      "name": "object-del"
-    },
-    {
-      "name": "qom-list-properties"
-    },
-    {
-      "name": "qom-list-types"
-    },
-    {
-      "name": "qom-set"
-    },
-    {
-      "name": "qom-get"
-    },
-    {
-      "name": "qom-list"
-    },
-    {
-      "name": "quit"
-    },
-    {
-      "name": "query-events"
-    },
-    {
-      "name": "query-commands"
-    },
-    {
-      "name": "query-version"
-    },
-    {
-      "name": "qmp_capabilities"
-    },
-    {
-      "name": "trace-event-set-state"
-    },
-    {
-      "name": "trace-event-get-state"
-    },
-    {
-      "name": "transaction"
-    },
-    {
-      "name": "migrate-pause"
-    },
-    {
-      "name": "migrate-recover"
-    },
-    {
-      "name": "query-colo-status"
-    },
-    {
-      "name": "xen-colo-do-checkpoint"
-    },
-    {
-      "name": "query-xen-replication-status"
-    },
-    {
-      "name": "xen-set-replication"
-    },
-    {
-      "name": "xen-save-devices-state"
-    },
-    {
-      "name": "migrate-incoming"
-    },
-    {
-      "name": "migrate"
-    },
-    {
-      "name": "query-migrate-cache-size"
-    },
-    {
-      "name": "migrate-set-cache-size"
-    },
-    {
-      "name": "migrate_set_speed"
-    },
-    {
-      "name": "migrate_set_downtime"
-    },
-    {
-      "name": "migrate-continue"
-    },
-    {
-      "name": "migrate_cancel"
-    },
-    {
-      "name": "x-colo-lost-heartbeat"
-    },
-    {
-      "name": "migrate-start-postcopy"
-    },
-    {
-      "name": "client_migrate_info"
-    },
-    {
-      "name": "query-migrate-parameters"
-    },
-    {
-      "name": "migrate-set-parameters"
-    },
-    {
-      "name": "query-migrate-capabilities"
-    },
-    {
-      "name": "migrate-set-capabilities"
-    },
-    {
-      "name": "query-migrate"
-    },
-    {
-      "name": "query-display-options"
-    },
-    {
-      "name": "input-send-event"
-    },
-    {
-      "name": "send-key"
-    },
-    {
-      "name": "query-mice"
-    },
-    {
-      "name": "change-vnc-password"
-    },
-    {
-      "name": "query-vnc-servers"
-    },
-    {
-      "name": "query-vnc"
-    },
-    {
-      "name": "query-spice"
-    },
-    {
-      "name": "screendump"
-    },
-    {
-      "name": "expire_password"
-    },
-    {
-      "name": "set_password"
-    },
-    {
-      "name": "query-tpm"
-    },
-    {
-      "name": "query-tpm-types"
-    },
-    {
-      "name": "query-tpm-models"
-    },
-    {
-      "name": "query-rocker-of-dpa-groups"
-    },
-    {
-      "name": "query-rocker-of-dpa-flows"
-    },
-    {
-      "name": "query-rocker-ports"
-    },
-    {
-      "name": "query-rocker"
-    },
-    {
-      "name": "announce-self"
-    },
-    {
-      "name": "query-rx-filter"
-    },
-    {
-      "name": "netdev_del"
-    },
-    {
-      "name": "netdev_add"
-    },
-    {
-      "name": "set_link"
-    },
-    {
-      "name": "query-dump-guest-memory-capability"
-    },
-    {
-      "name": "query-dump"
-    },
-    {
-      "name": "dump-guest-memory"
-    },
-    {
-      "name": "chardev-send-break"
-    },
-    {
-      "name": "chardev-remove"
-    },
-    {
-      "name": "chardev-change"
-    },
-    {
-      "name": "chardev-add"
-    },
-    {
-      "name": "ringbuf-read"
-    },
-    {
-      "name": "ringbuf-write"
-    },
-    {
-      "name": "query-chardev-backends"
-    },
-    {
-      "name": "query-chardev"
-    },
-    {
-      "name": "query-jobs"
-    },
-    {
-      "name": "job-finalize"
-    },
-    {
-      "name": "job-dismiss"
-    },
-    {
-      "name": "job-complete"
-    },
-    {
-      "name": "job-cancel"
-    },
-    {
-      "name": "job-resume"
-    },
-    {
-      "name": "job-pause"
-    },
-    {
-      "name": "blockdev-snapshot-delete-internal-sync"
-    },
-    {
-      "name": "blockdev-snapshot-internal-sync"
-    },
-    {
-      "name": "nbd-server-stop"
-    },
-    {
-      "name": "nbd-server-remove"
-    },
-    {
-      "name": "nbd-server-add"
-    },
-    {
-      "name": "nbd-server-start"
-    },
-    {
-      "name": "x-blockdev-set-iothread"
-    },
-    {
-      "name": "x-blockdev-change"
-    },
-    {
-      "name": "block-set-write-threshold"
-    },
-    {
-      "name": "x-blockdev-amend"
-    },
-    {
-      "name": "blockdev-create"
-    },
-    {
-      "name": "blockdev-del"
-    },
-    {
-      "name": "x-blockdev-reopen"
-    },
-    {
-      "name": "blockdev-add"
-    },
-    {
-      "name": "block-job-finalize"
-    },
-    {
-      "name": "block-job-dismiss"
-    },
-    {
-      "name": "block-job-complete"
-    },
-    {
-      "name": "block-job-resume"
-    },
-    {
-      "name": "block-job-pause"
-    },
-    {
-      "name": "block-job-cancel"
-    },
-    {
-      "name": "block-job-set-speed"
-    },
-    {
-      "name": "block-stream"
-    },
-    {
-      "name": "blockdev-mirror"
-    },
-    {
-      "name": "x-debug-block-dirty-bitmap-sha256"
-    },
-    {
-      "name": "block-dirty-bitmap-merge"
-    },
-    {
-      "name": "block-dirty-bitmap-disable"
-    },
-    {
-      "name": "block-dirty-bitmap-enable"
-    },
-    {
-      "name": "block-dirty-bitmap-clear"
-    },
-    {
-      "name": "block-dirty-bitmap-remove"
-    },
-    {
-      "name": "block-dirty-bitmap-add"
-    },
-    {
-      "name": "drive-mirror"
-    },
-    {
-      "name": "x-debug-query-block-graph"
-    },
-    {
-      "name": "query-named-block-nodes"
-    },
-    {
-      "name": "blockdev-backup"
-    },
-    {
-      "name": "drive-backup"
-    },
-    {
-      "name": "block-commit"
-    },
-    {
-      "name": "change-backing-file"
-    },
-    {
-      "name": "blockdev-snapshot"
-    },
-    {
-      "name": "blockdev-snapshot-sync"
-    },
-    {
-      "name": "block_resize"
-    },
-    {
-      "name": "block_passwd"
-    },
-    {
-      "name": "query-block-jobs"
-    },
-    {
-      "name": "query-blockstats"
-    },
-    {
-      "name": "query-block"
-    },
-    {
-      "name": "block-latency-histogram-set"
-    },
-    {
-      "name": "block_set_io_throttle"
-    },
-    {
-      "name": "blockdev-change-medium"
-    },
-    {
-      "name": "blockdev-insert-medium"
-    },
-    {
-      "name": "blockdev-remove-medium"
-    },
-    {
-      "name": "blockdev-close-tray"
-    },
-    {
-      "name": "blockdev-open-tray"
-    },
-    {
-      "name": "eject"
-    },
-    {
-      "name": "query-pr-managers"
-    },
-    {
-      "name": "watchdog-set-action"
-    },
-    {
-      "name": "query-status"
-    }
-  ],
-  "id": "libvirt-4"
-}
-
-{
-  "execute": "query-kvm",
-  "id": "libvirt-5"
-}
-
-{
-  "return": {
-    "enabled": false,
-    "present": false
-  },
-  "id": "libvirt-5"
-}
-
-{
-  "execute": "qom-list-types",
-  "id": "libvirt-6"
-}
-
-{
-  "return": [
-    {
-      "name": "none-machine",
-      "parent": "machine"
-    },
-    {
-      "name": "tls-cipher-suites",
-      "parent": "tls-creds"
-    },
-    {
-      "name": "secret",
-      "parent": "secret_common"
-    },
-    {
-      "name": "chardev-mux",
-      "parent": "chardev"
-    },
-    {
-      "name": "empty_slot",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "Fujitsu-MB86904-sparc-cpu",
-      "parent": "sparc-cpu"
-    },
-    {
-      "name": "grlib,apbuart",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "Voyager-machine",
-      "parent": "machine"
-    },
-    {
-      "name": "cryptodev-backend-builtin",
-      "parent": "cryptodev-backend"
-    },
-    {
-      "name": "qio-channel-rdma",
-      "parent": "qio-channel"
-    },
-    {
-      "name": "slavio_misc",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "ISA",
-      "parent": "bus"
-    },
-    {
-      "name": "SS-10-machine",
-      "parent": "machine"
-    },
-    {
-      "name": "usb-redir",
-      "parent": "usb-device"
-    },
-    {
-      "name": "migration",
-      "parent": "device"
-    },
-    {
-      "name": "sb16",
-      "parent": "isa-device"
-    },
-    {
-      "name": "SS-600MP-machine",
-      "parent": "machine"
-    },
-    {
-      "name": "slavio_intctl",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "pr-manager-helper",
-      "parent": "pr-manager"
-    },
-    {
-      "name": "tls-creds-x509",
-      "parent": "tls-creds"
-    },
-    {
-      "name": "chardev-udp",
-      "parent": "chardev"
-    },
-    {
-      "name": "chardev-ringbuf",
-      "parent": "chardev"
-    },
-    {
-      "name": "TI-SuperSparc-61-sparc-cpu",
-      "parent": "sparc-cpu"
-    },
-    {
-      "name": "cpu-cluster",
-      "parent": "device"
-    },
-    {
-      "name": "cgthree",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "grlib,irqmp",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "Fujitsu-MB86907-sparc-cpu",
-      "parent": "sparc-cpu"
-    },
-    {
-      "name": "chardev-braille",
-      "parent": "chardev"
-    },
-    {
-      "name": "scsi-hd",
-      "parent": "scsi-disk-base"
-    },
-    {
-      "name": "qemu:memory-region",
-      "parent": "object"
-    },
-    {
-      "name": "qio-channel-tls",
-      "parent": "qio-channel"
-    },
-    {
-      "name": "scsi-block",
-      "parent": "scsi-disk-base"
-    },
-    {
-      "name": "SUNW,tcx",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "SS-4-machine",
-      "parent": "machine"
-    },
-    {
-      "name": "chardev-pty",
-      "parent": "chardev"
-    },
-    {
-      "name": "apc",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "rng-egd",
-      "parent": "rng-backend"
-    },
-    {
-      "name": "TI-MicroSparc-IIep-sparc-cpu",
-      "parent": "sparc-cpu"
-    },
-    {
-      "name": "qio-channel-websock",
-      "parent": "qio-channel"
-    },
-    {
-      "name": "chardev-spiceport",
-      "parent": "chardev-spice"
-    },
-    {
-      "name": "TI-MicroSparc-I-sparc-cpu",
-      "parent": "sparc-cpu"
-    },
-    {
-      "name": "qtest-accel",
-      "parent": "accel"
-    },
-    {
-      "name": "memory-backend-file",
-      "parent": "memory-backend"
-    },
-    {
-      "name": "chardev-serial",
-      "parent": "chardev-fd"
-    },
-    {
-      "name": "qio-dns-resolver",
-      "parent": "object"
-    },
-    {
-      "name": "dbus-vmstate",
-      "parent": "object"
-    },
-    {
-      "name": "iothread",
-      "parent": "object"
-    },
-    {
-      "name": "SCSI",
-      "parent": "bus"
-    },
-    {
-      "name": "chardev-socket",
-      "parent": "chardev"
-    },
-    {
-      "name": "sysbus-m48t59",
-      "parent": "sysbus-m48txx"
-    },
-    {
-      "name": "chardev-stdio",
-      "parent": "chardev-fd"
-    },
-    {
-      "name": "clock",
-      "parent": "object"
-    },
-    {
-      "name": "tcg-accel",
-      "parent": "accel"
-    },
-    {
-      "name": "qemu-console",
-      "parent": "object"
-    },
-    {
-      "name": "chardev-memory",
-      "parent": "chardev-ringbuf"
-    },
-    {
-      "name": "qio-channel-socket",
-      "parent": "qio-channel"
-    },
-    {
-      "name": "authz-list",
-      "parent": "authz"
-    },
-    {
-      "name": "isa-m48t59",
-      "parent": "isa-m48txx"
-    },
-    {
-      "name": "qio-channel-command",
-      "parent": "qio-channel"
-    },
-    {
-      "name": "LEON2-sparc-cpu",
-      "parent": "sparc-cpu"
-    },
-    {
-      "name": "scsi-cd",
-      "parent": "scsi-disk-base"
-    },
-    {
-      "name": "chardev-vc",
-      "parent": "chardev"
-    },
-    {
-      "name": "esp",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "sun4m-iommu",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "input-linux",
-      "parent": "object"
-    },
-    {
-      "name": "authz-simple",
-      "parent": "authz"
-    },
-    {
-      "name": "filter-dump",
-      "parent": "netfilter"
-    },
-    {
-      "name": "LEON3-sparc-cpu",
-      "parent": "sparc-cpu"
-    },
-    {
-      "name": "isa-parallel",
-      "parent": "isa-device"
-    },
-    {
-      "name": "grlib,apbpnp",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "memory-backend-memfd",
-      "parent": "memory-backend"
-    },
-    {
-      "name": "serial-io",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "filter-rewriter",
-      "parent": "netfilter"
-    },
-    {
-      "name": "sun4m-iommu-memory-region",
-      "parent": "qemu:iommu-memory-region"
-    },
-    {
-      "name": "escc",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "colo-compare",
-      "parent": "object"
-    },
-    {
-      "name": "chardev-parallel",
-      "parent": "chardev"
-    },
-    {
-      "name": "floppy",
-      "parent": "device"
-    },
-    {
-      "name": "usb-bus",
-      "parent": "bus"
-    },
-    {
-      "name": "cs4231a",
-      "parent": "isa-device"
-    },
-    {
-      "name": "TI-SuperSparc-II-sparc-cpu",
-      "parent": "sparc-cpu"
-    },
-    {
-      "name": "grlib,ahbpnp",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "chardev-null",
-      "parent": "chardev"
-    },
-    {
-      "name": "scsi-disk",
-      "parent": "scsi-disk-base"
-    },
-    {
-      "name": "authz-pam",
-      "parent": "authz"
-    },
-    {
-      "name": "sysbus-m48t08",
-      "parent": "sysbus-m48txx"
-    },
-    {
-      "name": "SS-5-machine",
-      "parent": "machine"
-    },
-    {
-      "name": "TI-SuperSparc-60-sparc-cpu",
-      "parent": "sparc-cpu"
-    },
-    {
-      "name": "isa-fdc",
-      "parent": "isa-device"
-    },
-    {
-      "name": "sparc32-espdma",
-      "parent": "sparc32-dma-device"
-    },
-    {
-      "name": "tls-creds-anon",
-      "parent": "tls-creds"
-    },
-    {
-      "name": "isabus-bridge",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "sysbus-fdc",
-      "parent": "base-sysbus-fdc"
-    },
-    {
-      "name": "cryptodev-backend",
-      "parent": "object"
-    },
-    {
-      "name": "loader",
-      "parent": "device"
-    },
-    {
-      "name": "secret_keyring",
-      "parent": "secret_common"
-    },
-    {
-      "name": "sparc32-ledma",
-      "parent": "sparc32-dma-device"
-    },
-    {
-      "name": "rng-builtin",
-      "parent": "rng-backend"
-    },
-    {
-      "name": "macio_idreg",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "filter-redirector",
-      "parent": "netfilter"
-    },
-    {
-      "name": "memory-backend-ram",
-      "parent": "memory-backend"
-    },
-    {
-      "name": "filter-mirror",
-      "parent": "netfilter"
-    },
-    {
-      "name": "grlib,gptimer",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "isa-serial",
-      "parent": "isa-device"
-    },
-    {
-      "name": "chardev-wctablet",
-      "parent": "chardev"
-    },
-    {
-      "name": "tls-creds-psk",
-      "parent": "tls-creds"
-    },
-    {
-      "name": "openprom",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "accel",
-      "parent": "object"
-    },
-    {
-      "name": "fw_cfg_mem",
-      "parent": "fw_cfg"
-    },
-    {
-      "name": "tcx_afx",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "chardev-pipe",
-      "parent": "chardev-fd"
-    },
-    {
-      "name": "serial",
-      "parent": "device"
-    },
-    {
-      "name": "fw_cfg_io",
-      "parent": "fw_cfg"
-    },
-    {
-      "name": "SPARCbook-machine",
-      "parent": "machine"
-    },
-    {
-      "name": "ib700",
-      "parent": "isa-device"
-    },
-    {
-      "name": "leon3_generic-machine",
-      "parent": "machine"
-    },
-    {
-      "name": "chardev-testdev",
-      "parent": "chardev"
-    },
-    {
-      "name": "TI-SuperSparc-40-sparc-cpu",
-      "parent": "sparc-cpu"
-    },
-    {
-      "name": "TI-MicroSparc-II-sparc-cpu",
-      "parent": "sparc-cpu"
-    },
-    {
-      "name": "qio-net-listener",
-      "parent": "object"
-    },
-    {
-      "name": "serial-mm",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "authz-list-file",
-      "parent": "authz"
-    },
-    {
-      "name": "slavio_timer",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "System",
-      "parent": "bus"
-    },
-    {
-      "name": "memory",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "filter-replay",
-      "parent": "netfilter"
-    },
-    {
-      "name": "lance",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "filter-buffer",
-      "parent": "netfilter"
-    },
-    {
-      "name": "SUNW,fdtwo",
-      "parent": "base-sysbus-fdc"
-    },
-    {
-      "name": "throttle-group",
-      "parent": "object"
-    },
-    {
-      "name": "qio-channel-file",
-      "parent": "qio-channel"
-    },
-    {
-      "name": "floppy-bus",
-      "parent": "bus"
-    },
-    {
-      "name": "sysbus-m48t02",
-      "parent": "sysbus-m48txx"
-    },
-    {
-      "name": "chardev-msmouse",
-      "parent": "chardev"
-    },
-    {
-      "name": "SPARCClassic-machine",
-      "parent": "machine"
-    },
-    {
-      "name": "scsi-generic",
-      "parent": "scsi-device"
-    },
-    {
-      "name": "unimplemented-device",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "chardev-spicevmc",
-      "parent": "chardev-spice"
-    },
-    {
-      "name": "qio-channel-buffer",
-      "parent": "qio-channel"
-    },
-    {
-      "name": "input-barrier",
-      "parent": "object"
-    },
-    {
-      "name": "adlib",
-      "parent": "isa-device"
-    },
-    {
-      "name": "chardev-gdb",
-      "parent": "chardev"
-    },
-    {
-      "name": "eccmemctl",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "irq",
-      "parent": "object"
-    },
-    {
-      "name": "sparc32-dma",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "TI-SuperSparc-50-sparc-cpu",
-      "parent": "sparc-cpu"
-    },
-    {
-      "name": "LX-machine",
-      "parent": "machine"
-    },
-    {
-      "name": "ne2k_isa",
-      "parent": "isa-device"
-    },
-    {
-      "name": "gus",
-      "parent": "isa-device"
-    },
-    {
-      "name": "container",
-      "parent": "object"
-    },
-    {
-      "name": "rng-random",
-      "parent": "rng-backend"
-    },
-    {
-      "name": "SUNW,CS4231",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "chardev-file",
-      "parent": "chardev-fd"
-    },
-    {
-      "name": "SS-20-machine",
-      "parent": "machine"
-    },
-    {
-      "name": "TI-SuperSparc-51-sparc-cpu",
-      "parent": "sparc-cpu"
-    }
-  ],
-  "id": "libvirt-6"
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "virtio-blk-pci"
-  },
-  "id": "libvirt-7"
-}
-
-{
-  "id": "libvirt-7",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'virtio-blk-pci' not found"
-  }
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "scsi-hd"
-  },
-  "id": "libvirt-8"
-}
-
-{
-  "return": [
-    {
-      "default-value": 4294967295,
-      "name": "scsi-id",
-      "type": "uint32"
-    },
-    {
-      "default-value": 4294967295,
-      "name": "lun",
-      "type": "uint32"
-    },
-    {
-      "default-value": 0,
-      "name": "channel",
-      "type": "uint32"
-    },
-    {
-      "default-value": 0,
-      "name": "lsecs",
-      "type": "uint32"
-    },
-    {
-      "name": "device_id",
-      "type": "str"
-    },
-    {
-      "default-value": 0,
-      "name": "logical_block_size",
-      "description": "A power of two between 512 B and 2 MiB",
-      "type": "size"
-    },
-    {
-      "default-value": 2147483647,
-      "name": "max_io_size",
-      "type": "uint64"
-    },
-    {
-      "default-value": false,
-      "name": "dpofua",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "name": "drive",
-      "description": "Node name or ID of a block device to use as a backend",
-      "type": "str"
-    },
-    {
-      "default-value": 0,
-      "name": "lheads",
-      "type": "uint32"
-    },
-    {
-      "name": "serial",
-      "type": "str"
-    },
-    {
-      "name": "ver",
-      "type": "str"
-    },
-    {
-      "default-value": "auto",
-      "name": "write-cache",
-      "description": "on/off/auto",
-      "type": "OnOffAuto"
-    },
-    {
-      "default-value": false,
-      "name": "share-rw",
-      "type": "bool"
-    },
-    {
-      "default-value": 5,
-      "name": "scsi_version",
-      "type": "int32"
-    },
-    {
-      "default-value": false,
-      "name": "removable",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "default-value": 0,
-      "name": "wwn",
-      "type": "uint64"
-    },
-    {
-      "default-value": 4294967295,
-      "name": "discard_granularity",
-      "type": "size"
-    },
-    {
-      "default-value": 0,
-      "name": "heads",
-      "type": "uint32"
-    },
-    {
-      "name": "vendor",
-      "type": "str"
-    },
-    {
-      "default-value": 1073741824,
-      "name": "max_unmap_size",
-      "type": "uint64"
-    },
-    {
-      "default-value": 0,
-      "name": "cyls",
-      "type": "uint32"
-    },
-    {
-      "default-value": 0,
-      "name": "lcyls",
-      "type": "uint32"
-    },
-    {
-      "name": "product",
-      "type": "str"
-    },
-    {
-      "default-value": 0,
-      "name": "opt_io_size",
-      "type": "size"
-    },
-    {
-      "default-value": "auto",
-      "name": "rerror",
-      "description": "Error handling policy, report/ignore/enospc/stop/auto",
-      "type": "BlockdevOnError"
-    },
-    {
-      "default-value": 0,
-      "name": "secs",
-      "type": "uint32"
-    },
-    {
-      "default-value": 0,
-      "name": "rotation_rate",
-      "type": "uint16"
-    },
-    {
-      "default-value": 0,
-      "name": "min_io_size",
-      "type": "size"
-    },
-    {
-      "default-value": 0,
-      "name": "physical_block_size",
-      "description": "A power of two between 512 B and 2 MiB",
-      "type": "size"
-    },
-    {
-      "default-value": 0,
-      "name": "port_wwn",
-      "type": "uint64"
-    },
-    {
-      "default-value": 0,
-      "name": "port_index",
-      "type": "uint16"
-    },
-    {
-      "default-value": "auto",
-      "name": "werror",
-      "description": "Error handling policy, report/ignore/enospc/stop/auto",
-      "type": "BlockdevOnError"
-    },
-    {
-      "name": "bootindex",
-      "type": "int32"
-    }
-  ],
-  "id": "libvirt-8"
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "ide-hd"
-  },
-  "id": "libvirt-9"
-}
-
-{
-  "id": "libvirt-9",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'ide-hd' not found"
-  }
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "PIIX4_PM"
-  },
-  "id": "libvirt-10"
-}
-
-{
-  "id": "libvirt-10",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'PIIX4_PM' not found"
-  }
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "usb-redir"
-  },
-  "id": "libvirt-11"
-}
-
-{
-  "return": [
-    {
-      "default-value": true,
-      "name": "full-path",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "name": "port",
-      "type": "str"
-    },
-    {
-      "default-value": true,
-      "name": "msos-desc",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "name": "serial",
-      "type": "str"
-    },
-    {
-      "name": "filter",
-      "type": "str"
-    },
-    {
-      "default-value": true,
-      "name": "streams",
-      "type": "bool"
-    },
-    {
-      "name": "chardev",
-      "description": "ID of a chardev to use as a backend",
-      "type": "str"
-    },
-    {
-      "default-value": 2,
-      "name": "debug",
-      "type": "uint8"
-    },
-    {
-      "default-value": true,
-      "name": "suppress-remote-wake",
-      "type": "bool"
-    },
-    {
-      "name": "bootindex",
-      "type": "int32"
-    },
-    {
-      "name": "attached",
-      "type": "bool"
-    }
-  ],
-  "id": "libvirt-11"
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "i440FX-pcihost"
-  },
-  "id": "libvirt-12"
-}
-
-{
-  "id": "libvirt-12",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'i440FX-pcihost' not found"
-  }
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "q35-pcihost"
-  },
-  "id": "libvirt-13"
-}
-
-{
-  "id": "libvirt-13",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'q35-pcihost' not found"
-  }
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "kvm-pit"
-  },
-  "id": "libvirt-14"
-}
-
-{
-  "id": "libvirt-14",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'kvm-pit' not found"
-  }
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "ICH9-LPC"
-  },
-  "id": "libvirt-15"
-}
-
-{
-  "id": "libvirt-15",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'ICH9-LPC' not found"
-  }
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "virtio-balloon-pci"
-  },
-  "id": "libvirt-16"
-}
-
-{
-  "id": "libvirt-16",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'virtio-balloon-pci' not found"
-  }
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "virtio-balloon-ccw"
-  },
-  "id": "libvirt-17"
-}
-
-{
-  "id": "libvirt-17",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'virtio-balloon-ccw' not found"
-  }
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "virtio-balloon-device"
-  },
-  "id": "libvirt-18"
-}
-
-{
-  "id": "libvirt-18",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'virtio-balloon-device' not found"
-  }
-}
-
-{
-  "execute": "device-list-properties",
-  "arguments": {
-    "typename": "usb-host"
-  },
-  "id": "libvirt-19"
-}
-
-{
-  "id": "libvirt-19",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'usb-host' not found"
-  }
-}
-
-{
-  "execute": "qom-list-properties",
-  "arguments": {
-    "typename": "memory-backend-file"
-  },
-  "id": "libvirt-20"
-}
-
-{
-  "return": [
-    {
-      "name": "type",
-      "type": "string"
-    },
-    {
-      "name": "share",
-      "description": "Mark the memory as private to QEMU or shared",
-      "type": "bool"
-    },
-    {
-      "name": "dump",
-      "description": "Set to 'off' to exclude from core dump",
-      "type": "bool"
-    },
-    {
-      "name": "prealloc-threads",
-      "description": "Number of CPU threads to use for prealloc",
-      "type": "int"
-    },
-    {
-      "name": "x-use-canonical-path-for-ramblock-id",
-      "type": "bool"
-    },
-    {
-      "name": "policy",
-      "description": "Set the NUMA policy",
-      "type": "HostMemPolicy"
-    },
-    {
-      "name": "size",
-      "description": "Size of the memory region (ex: 500M)",
-      "type": "int"
-    },
-    {
-      "name": "prealloc",
-      "description": "Preallocate memory",
-      "type": "bool"
-    },
-    {
-      "name": "host-nodes",
-      "description": "Binds memory to the list of NUMA host nodes",
-      "type": "int"
-    },
-    {
-      "name": "merge",
-      "description": "Mark memory as mergeable",
-      "type": "bool"
-    },
-    {
-      "name": "align",
-      "type": "int"
-    },
-    {
-      "name": "pmem",
-      "type": "bool"
-    },
-    {
-      "name": "mem-path",
-      "type": "string"
-    },
-    {
-      "name": "discard-data",
-      "type": "bool"
-    }
-  ],
-  "id": "libvirt-20"
-}
-
-{
-  "execute": "qom-list-properties",
-  "arguments": {
-    "typename": "memory-backend-memfd"
-  },
-  "id": "libvirt-21"
-}
-
-{
-  "return": [
-    {
-      "name": "type",
-      "type": "string"
-    },
-    {
-      "name": "share",
-      "description": "Mark the memory as private to QEMU or shared",
-      "type": "bool"
-    },
-    {
-      "name": "dump",
-      "description": "Set to 'off' to exclude from core dump",
-      "type": "bool"
-    },
-    {
-      "name": "prealloc-threads",
-      "description": "Number of CPU threads to use for prealloc",
-      "type": "int"
-    },
-    {
-      "name": "x-use-canonical-path-for-ramblock-id",
-      "type": "bool"
-    },
-    {
-      "name": "policy",
-      "description": "Set the NUMA policy",
-      "type": "HostMemPolicy"
-    },
-    {
-      "name": "size",
-      "description": "Size of the memory region (ex: 500M)",
-      "type": "int"
-    },
-    {
-      "name": "prealloc",
-      "description": "Preallocate memory",
-      "type": "bool"
-    },
-    {
-      "name": "host-nodes",
-      "description": "Binds memory to the list of NUMA host nodes",
-      "type": "int"
-    },
-    {
-      "name": "merge",
-      "description": "Mark memory as mergeable",
-      "type": "bool"
-    },
-    {
-      "name": "hugetlb",
-      "description": "Use huge pages",
-      "type": "bool"
-    },
-    {
-      "name": "seal",
-      "description": "Seal growing & shrinking",
-      "type": "bool"
-    },
-    {
-      "name": "hugetlbsize",
-      "description": "Huge pages size (ex: 2M, 1G)",
-      "type": "int"
-    }
-  ],
-  "id": "libvirt-21"
-}
-
-{
-  "execute": "query-machines",
-  "id": "libvirt-22"
-}
-
-{
-  "return": [
-    {
-      "hotpluggable-cpus": false,
-      "name": "SS-20",
-      "numa-mem-supported": false,
-      "default-cpu-type": "TI-SuperSparc-II-sparc-cpu",
-      "cpu-max": 4,
-      "deprecated": false
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "LX",
-      "numa-mem-supported": false,
-      "default-cpu-type": "TI-MicroSparc-I-sparc-cpu",
-      "cpu-max": 1,
-      "deprecated": false
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "SPARCClassic",
-      "numa-mem-supported": false,
-      "default-cpu-type": "TI-MicroSparc-I-sparc-cpu",
-      "cpu-max": 1,
-      "deprecated": false
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "leon3_generic",
-      "numa-mem-supported": false,
-      "default-cpu-type": "LEON3-sparc-cpu",
-      "cpu-max": 1,
-      "deprecated": false
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "SPARCbook",
-      "numa-mem-supported": false,
-      "default-cpu-type": "TI-MicroSparc-I-sparc-cpu",
-      "cpu-max": 1,
-      "deprecated": false
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "SS-5",
-      "numa-mem-supported": false,
-      "default-cpu-type": "Fujitsu-MB86904-sparc-cpu",
-      "is-default": true,
-      "cpu-max": 1,
-      "deprecated": false
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "SS-4",
-      "numa-mem-supported": false,
-      "default-cpu-type": "Fujitsu-MB86904-sparc-cpu",
-      "cpu-max": 1,
-      "deprecated": false
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "SS-600MP",
-      "numa-mem-supported": false,
-      "default-cpu-type": "TI-SuperSparc-II-sparc-cpu",
-      "cpu-max": 4,
-      "deprecated": false
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "SS-10",
-      "numa-mem-supported": false,
-      "default-cpu-type": "TI-SuperSparc-II-sparc-cpu",
-      "cpu-max": 4,
-      "deprecated": false
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "Voyager",
-      "numa-mem-supported": false,
-      "default-cpu-type": "Fujitsu-MB86904-sparc-cpu",
-      "cpu-max": 1,
-      "deprecated": false
-    },
-    {
-      "hotpluggable-cpus": false,
-      "name": "none",
-      "numa-mem-supported": false,
-      "cpu-max": 1,
-      "deprecated": false
-    }
-  ],
-  "id": "libvirt-22"
-}
-
-{
-  "execute": "query-tpm-models",
-  "id": "libvirt-23"
-}
-
-{
-  "return": [
-  ],
-  "id": "libvirt-23"
-}
-
-{
-  "execute": "query-tpm-types",
-  "id": "libvirt-24"
-}
-
-{
-  "return": [
-  ],
-  "id": "libvirt-24"
-}
-
-{
-  "execute": "query-command-line-options",
-  "id": "libvirt-25"
-}
-
-{
-  "return": [
-    {
-      "parameters": [
-        {
-          "name": "timeout",
-          "help": "Request timeout in seconds (default 0 = no timeout)",
-          "type": "number"
-        },
-        {
-          "name": "initiator-name",
-          "help": "Initiator iqn name to use when connecting",
-          "type": "string"
-        },
-        {
-          "name": "header-digest",
-          "help": "HeaderDigest setting. {CRC32C|CRC32C-NONE|NONE-CRC32C|NONE}",
-          "type": "string"
-        },
-        {
-          "name": "password-secret",
-          "help": "ID of the secret providing password for CHAP authentication to target",
-          "type": "string"
-        },
-        {
-          "name": "password",
-          "help": "password for CHAP authentication to target",
-          "type": "string"
-        },
-        {
-          "name": "user",
-          "help": "username for CHAP authentication to target",
-          "type": "string"
-        }
-      ],
-      "option": "iscsi"
-    },
-    {
-      "parameters": [
-        {
-          "name": "audiodev",
-          "type": "string"
-        },
-        {
-          "name": "non-adaptive",
-          "type": "boolean"
-        },
-        {
-          "name": "lossy",
-          "type": "boolean"
-        },
-        {
-          "name": "sasl-authz",
-          "type": "string"
-        },
-        {
-          "name": "tls-authz",
-          "type": "string"
-        },
-        {
-          "name": "acl",
-          "type": "boolean"
-        },
-        {
-          "name": "sasl",
-          "type": "boolean"
-        },
-        {
-          "name": "key-delay-ms",
-          "type": "number"
-        },
-        {
-          "name": "lock-key-sync",
-          "type": "boolean"
-        },
-        {
-          "name": "reverse",
-          "type": "boolean"
-        },
-        {
-          "name": "password",
-          "type": "boolean"
-        },
-        {
-          "name": "ipv6",
-          "type": "boolean"
-        },
-        {
-          "name": "ipv4",
-          "type": "boolean"
-        },
-        {
-          "name": "to",
-          "type": "number"
-        },
-        {
-          "name": "connections",
-          "type": "number"
-        },
-        {
-          "name": "head",
-          "type": "number"
-        },
-        {
-          "name": "display",
-          "type": "string"
-        },
-        {
-          "name": "share",
-          "type": "string"
-        },
-        {
-          "name": "tls-creds",
-          "type": "string"
-        },
-        {
-          "name": "websocket",
-          "type": "string"
-        },
-        {
-          "name": "vnc",
-          "type": "string"
-        }
-      ],
-      "option": "vnc"
-    },
-    {
-      "parameters": [
-        {
-          "name": "rendernode",
-          "type": "string"
-        },
-        {
-          "name": "gl",
-          "type": "boolean"
-        },
-        {
-          "name": "head",
-          "type": "number"
-        },
-        {
-          "name": "display",
-          "type": "string"
-        },
-        {
-          "name": "seamless-migration",
-          "type": "boolean"
-        },
-        {
-          "name": "playback-compression",
-          "type": "boolean"
-        },
-        {
-          "name": "agent-mouse",
-          "type": "boolean"
-        },
-        {
-          "name": "streaming-video",
-          "type": "string"
-        },
-        {
-          "name": "zlib-glz-wan-compression",
-          "type": "string"
-        },
-        {
-          "name": "jpeg-wan-compression",
-          "type": "string"
-        },
-        {
-          "name": "image-compression",
-          "type": "string"
-        },
-        {
-          "name": "plaintext-channel",
-          "type": "string"
-        },
-        {
-          "name": "tls-channel",
-          "type": "string"
-        },
-        {
-          "name": "tls-ciphers",
-          "type": "string"
-        },
-        {
-          "name": "x509-dh-key-file",
-          "type": "string"
-        },
-        {
-          "name": "x509-cacert-file",
-          "type": "string"
-        },
-        {
-          "name": "x509-cert-file",
-          "type": "string"
-        },
-        {
-          "name": "x509-key-password",
-          "type": "string"
-        },
-        {
-          "name": "x509-key-file",
-          "type": "string"
-        },
-        {
-          "name": "x509-dir",
-          "type": "string"
-        },
-        {
-          "name": "sasl",
-          "type": "boolean"
-        },
-        {
-          "name": "disable-agent-file-xfer",
-          "type": "boolean"
-        },
-        {
-          "name": "disable-copy-paste",
-          "type": "boolean"
-        },
-        {
-          "name": "disable-ticketing",
-          "type": "boolean"
-        },
-        {
-          "name": "password",
-          "type": "string"
-        },
-        {
-          "name": "unix",
-          "type": "boolean"
-        },
-        {
-          "name": "ipv6",
-          "type": "boolean"
-        },
-        {
-          "name": "ipv4",
-          "type": "boolean"
-        },
-        {
-          "name": "addr",
-          "type": "string"
-        },
-        {
-          "name": "tls-port",
-          "type": "number"
-        },
-        {
-          "name": "port",
-          "type": "number"
-        }
-      ],
-      "option": "spice"
-    },
-    {
-      "parameters": [
-        {
-          "name": "dmode",
-          "type": "number"
-        },
-        {
-          "name": "fmode",
-          "type": "number"
-        },
-        {
-          "name": "sock_fd",
-          "type": "number"
-        },
-        {
-          "name": "socket",
-          "type": "string"
-        },
-        {
-          "name": "multidevs",
-          "type": "string"
-        },
-        {
-          "name": "readonly",
-          "type": "boolean"
-        },
-        {
-          "name": "writeout",
-          "type": "string"
-        },
-        {
-          "name": "security_model",
-          "type": "string"
-        },
-        {
-          "name": "mount_tag",
-          "type": "string"
-        },
-        {
-          "name": "path",
-          "type": "string"
-        },
-        {
-          "name": "fsdriver",
-          "type": "string"
-        }
-      ],
-      "option": "virtfs"
-    },
-    {
-      "parameters": [
-        {
-          "name": "throttling.iops-size",
-          "help": "when limiting by iops max size of an I/O in bytes",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-write-max-length",
-          "help": "length of the bps-write-max burst period, in seconds",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-read-max-length",
-          "help": "length of the bps-read-max burst period, in seconds",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-total-max-length",
-          "help": "length of the bps-total-max burst period, in seconds",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-write-max-length",
-          "help": "length of the iops-write-max burst period, in seconds",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-read-max-length",
-          "help": "length of the iops-read-max burst period, in seconds",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-total-max-length",
-          "help": "length of the iops-total-max burst period, in seconds",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-write-max",
-          "help": "total bytes write burst",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-read-max",
-          "help": "total bytes read burst",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-total-max",
-          "help": "total bytes burst",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-write-max",
-          "help": "I/O operations write burst",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-read-max",
-          "help": "I/O operations read burst",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-total-max",
-          "help": "I/O operations burst",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-write",
-          "help": "limit write bytes per second",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-read",
-          "help": "limit read bytes per second",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-total",
-          "help": "limit total bytes per second",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-write",
-          "help": "limit write operations per second",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-read",
-          "help": "limit read operations per second",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-total",
-          "help": "limit total I/O operations per second",
-          "type": "number"
-        },
-        {
-          "name": "dmode",
-          "type": "number"
-        },
-        {
-          "name": "fmode",
-          "type": "number"
-        },
-        {
-          "name": "sock_fd",
-          "type": "number"
-        },
-        {
-          "name": "socket",
-          "type": "string"
-        },
-        {
-          "name": "multidevs",
-          "type": "string"
-        },
-        {
-          "name": "readonly",
-          "type": "boolean"
-        },
-        {
-          "name": "writeout",
-          "type": "string"
-        },
-        {
-          "name": "security_model",
-          "type": "string"
-        },
-        {
-          "name": "path",
-          "type": "string"
-        },
-        {
-          "name": "fsdriver",
-          "type": "string"
-        }
-      ],
-      "option": "fsdev"
-    },
-    {
-      "parameters": [
-        {
-          "name": "resourcecontrol",
-          "type": "string"
-        },
-        {
-          "name": "spawn",
-          "type": "string"
-        },
-        {
-          "name": "elevateprivileges",
-          "type": "string"
-        },
-        {
-          "name": "obsolete",
-          "type": "string"
-        },
-        {
-          "name": "enable",
-          "type": "boolean"
-        }
-      ],
-      "option": "sandbox"
-    },
-    {
-      "parameters": [
-        {
-          "name": "gen_id",
-          "help": "Sets id of the object generating the fw_cfg blob to be inserted",
-          "type": "string"
-        },
-        {
-          "name": "string",
-          "help": "Sets content of the blob to be inserted from a string",
-          "type": "string"
-        },
-        {
-          "name": "file",
-          "help": "Sets the name of the file from which the fw_cfg blob will be loaded",
-          "type": "string"
-        },
-        {
-          "name": "name",
-          "help": "Sets the fw_cfg name of the blob to be inserted",
-          "type": "string"
-        }
-      ],
-      "option": "fw_cfg"
-    },
-    {
-      "parameters": [
-      ],
-      "option": ""
-    },
-    {
-      "parameters": [
-        {
-          "name": "rrsnapshot",
-          "type": "string"
-        },
-        {
-          "name": "rrfile",
-          "type": "string"
-        },
-        {
-          "name": "rr",
-          "type": "string"
-        },
-        {
-          "name": "sleep",
-          "type": "boolean"
-        },
-        {
-          "name": "align",
-          "type": "boolean"
-        },
-        {
-          "name": "shift",
-          "type": "string"
-        }
-      ],
-      "option": "icount"
-    },
-    {
-      "parameters": [
-      ],
-      "option": "numa"
-    },
-    {
-      "parameters": [
-        {
-          "name": "debug-threads",
-          "help": "When enabled, name the individual threads; defaults off.\nNOTE: The thread names are for debugging and not a\nstable API.",
-          "type": "boolean"
-        },
-        {
-          "name": "process",
-          "help": "Sets the name of the QEMU process, as shown in top etc",
-          "type": "string"
-        },
-        {
-          "name": "guest",
-          "help": "Sets the name of the guest.\nThis name will be displayed in the SDL window caption.\nThe name will also be used for the VNC server",
-          "type": "string"
-        }
-      ],
-      "option": "name"
-    },
-    {
-      "parameters": [
-        {
-          "name": "guest-name",
-          "help": "Prepends guest name for error messages but only if -name guest is set otherwise option is ignored\n",
-          "type": "boolean"
-        },
-        {
-          "name": "timestamp",
-          "type": "boolean"
-        }
-      ],
-      "option": "msg"
-    },
-    {
-      "parameters": [
-        {
-          "name": "cpu-pm",
-          "type": "boolean"
-        },
-        {
-          "name": "mem-lock",
-          "type": "boolean"
-        }
-      ],
-      "option": "overcommit"
-    },
-    {
-      "parameters": [
-        {
-          "name": "mlock",
-          "type": "boolean"
-        }
-      ],
-      "option": "realtime"
-    },
-    {
-      "parameters": [
-      ],
-      "option": "tpmdev"
-    },
-    {
-      "parameters": [
-      ],
-      "option": "object"
-    },
-    {
-      "parameters": [
-        {
-          "name": "opaque",
-          "help": "free-form string used to describe fd",
-          "type": "string"
-        },
-        {
-          "name": "set",
-          "help": "ID of the fd set to add fd to",
-          "type": "number"
-        },
-        {
-          "name": "fd",
-          "help": "file descriptor of which a duplicate is added to fd set",
-          "type": "number"
-        }
-      ],
-      "option": "add-fd"
-    },
-    {
-      "parameters": [
-        {
-          "name": "strict",
-          "type": "boolean"
-        },
-        {
-          "name": "reboot-timeout",
-          "type": "number"
-        },
-        {
-          "name": "splash-time",
-          "type": "number"
-        },
-        {
-          "name": "splash",
-          "type": "string"
-        },
-        {
-          "name": "menu",
-          "type": "boolean"
-        },
-        {
-          "name": "once",
-          "type": "string"
-        },
-        {
-          "name": "order",
-          "type": "string"
-        }
-      ],
-      "option": "boot-opts"
-    },
-    {
-      "parameters": [
-        {
-          "name": "maxcpus",
-          "type": "number"
-        },
-        {
-          "name": "threads",
-          "type": "number"
-        },
-        {
-          "name": "cores",
-          "type": "number"
-        },
-        {
-          "name": "dies",
-          "type": "number"
-        },
-        {
-          "name": "sockets",
-          "type": "number"
-        },
-        {
-          "name": "cpus",
-          "type": "number"
-        }
-      ],
-      "option": "smp-opts"
-    },
-    {
-      "parameters": [
-        {
-          "name": "maxmem",
-          "type": "size"
-        },
-        {
-          "name": "slots",
-          "type": "number"
-        },
-        {
-          "name": "size",
-          "type": "size"
-        }
-      ],
-      "option": "memory"
-    },
-    {
-      "parameters": [
-      ],
-      "option": "accel"
-    },
-    {
-      "parameters": [
-        {
-          "name": "loadparm",
-          "help": "Up to 8 chars in set of [A-Za-z0-9. ](lower case chars converted to upper case) to pass to machine loader, boot manager, and guest kernel",
-          "type": "string"
-        },
-        {
-          "name": "dea-key-wrap",
-          "help": "enable/disable DEA key wrapping using the CPACF wrapping key",
-          "type": "boolean"
-        },
-        {
-          "name": "aes-key-wrap",
-          "help": "enable/disable AES key wrapping using the CPACF wrapping key",
-          "type": "boolean"
-        },
-        {
-          "name": "suppress-vmdesc",
-          "help": "Set on to disable self-describing migration",
-          "type": "boolean"
-        },
-        {
-          "name": "iommu",
-          "help": "Set on/off to enable/disable Intel IOMMU (VT-d)",
-          "type": "boolean"
-        },
-        {
-          "name": "firmware",
-          "help": "firmware image",
-          "type": "string"
-        },
-        {
-          "name": "usb",
-          "help": "Set on/off to enable/disable usb",
-          "type": "boolean"
-        },
-        {
-          "name": "mem-merge",
-          "help": "enable/disable memory merge support",
-          "type": "boolean"
-        },
-        {
-          "name": "dump-guest-core",
-          "help": "Include guest memory in  a core dump",
-          "type": "boolean"
-        },
-        {
-          "name": "dt_compatible",
-          "help": "Overrides the \"compatible\" property of the dt root node",
-          "type": "string"
-        },
-        {
-          "name": "phandle_start",
-          "help": "The first phandle ID we may generate dynamically",
-          "type": "number"
-        },
-        {
-          "name": "dumpdtb",
-          "help": "Dump current dtb to a file and quit",
-          "type": "string"
-        },
-        {
-          "name": "dtb",
-          "help": "Linux kernel device tree file",
-          "type": "string"
-        },
-        {
-          "name": "append",
-          "help": "Linux kernel command line",
-          "type": "string"
-        },
-        {
-          "name": "initrd",
-          "help": "Linux initial ramdisk file",
-          "type": "string"
-        },
-        {
-          "name": "kernel",
-          "help": "Linux kernel image file",
-          "type": "string"
-        },
-        {
-          "name": "kvm_shadow_mem",
-          "help": "KVM shadow MMU size",
-          "type": "size"
-        },
-        {
-          "name": "kernel_irqchip",
-          "help": "use KVM in-kernel irqchip",
-          "type": "boolean"
-        },
-        {
-          "name": "accel",
-          "help": "accelerator list",
-          "type": "string"
-        },
-        {
-          "name": "type",
-          "help": "emulated machine",
-          "type": "string"
-        }
-      ],
-      "option": "machine"
-    },
-    {
-      "parameters": [
-        {
-          "name": "romfile",
-          "type": "string"
-        },
-        {
-          "name": "bootindex",
-          "type": "number"
-        }
-      ],
-      "option": "option-rom"
-    },
-    {
-      "parameters": [
-        {
-          "name": "file",
-          "type": "string"
-        },
-        {
-          "name": "events",
-          "type": "string"
-        },
-        {
-          "name": "enable",
-          "type": "string"
-        }
-      ],
-      "option": "trace"
-    },
-    {
-      "parameters": [
-        {
-          "name": "pretty",
-          "type": "boolean"
-        },
-        {
-          "name": "chardev",
-          "type": "string"
-        },
-        {
-          "name": "mode",
-          "type": "string"
-        }
-      ],
-      "option": "mon"
-    },
-    {
-      "parameters": [
-        {
-          "name": "value",
-          "type": "string"
-        },
-        {
-          "name": "property",
-          "type": "string"
-        },
-        {
-          "name": "driver",
-          "type": "string"
-        }
-      ],
-      "option": "global"
-    },
-    {
-      "parameters": [
-        {
-          "name": "driftfix",
-          "type": "string"
-        },
-        {
-          "name": "clock",
-          "type": "string"
-        },
-        {
-          "name": "base",
-          "type": "string"
-        }
-      ],
-      "option": "rtc"
-    },
-    {
-      "parameters": [
-      ],
-      "option": "net"
-    },
-    {
-      "parameters": [
-      ],
-      "option": "nic"
-    },
-    {
-      "parameters": [
-      ],
-      "option": "netdev"
-    },
-    {
-      "parameters": [
-      ],
-      "option": "device"
-    },
-    {
-      "parameters": [
-        {
-          "name": "abstract",
-          "type": "boolean"
-        },
-        {
-          "name": "tight",
-          "default": "on",
-          "type": "boolean"
-        },
-        {
-          "name": "logappend",
-          "type": "boolean"
-        },
-        {
-          "name": "logfile",
-          "type": "string"
-        },
-        {
-          "name": "append",
-          "type": "boolean"
-        },
-        {
-          "name": "chardev",
-          "type": "string"
-        },
-        {
-          "name": "size",
-          "type": "size"
-        },
-        {
-          "name": "debug",
-          "type": "number"
-        },
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "signal",
-          "type": "boolean"
-        },
-        {
-          "name": "mux",
-          "type": "boolean"
-        },
-        {
-          "name": "rows",
-          "type": "number"
-        },
-        {
-          "name": "cols",
-          "type": "number"
-        },
-        {
-          "name": "height",
-          "type": "number"
-        },
-        {
-          "name": "width",
-          "type": "number"
-        },
-        {
-          "name": "websocket",
-          "type": "boolean"
-        },
-        {
-          "name": "tls-authz",
-          "type": "string"
-        },
-        {
-          "name": "tls-creds",
-          "type": "string"
-        },
-        {
-          "name": "tn3270",
-          "type": "boolean"
-        },
-        {
-          "name": "telnet",
-          "type": "boolean"
-        },
-        {
-          "name": "reconnect",
-          "type": "number"
-        },
-        {
-          "name": "delay",
-          "type": "boolean"
-        },
-        {
-          "name": "server",
-          "type": "boolean"
-        },
-        {
-          "name": "wait",
-          "type": "boolean"
-        },
-        {
-          "name": "ipv6",
-          "type": "boolean"
-        },
-        {
-          "name": "ipv4",
-          "type": "boolean"
-        },
-        {
-          "name": "to",
-          "type": "number"
-        },
-        {
-          "name": "localport",
-          "type": "string"
-        },
-        {
-          "name": "localaddr",
-          "type": "string"
-        },
-        {
-          "name": "fd",
-          "type": "string"
-        },
-        {
-          "name": "port",
-          "type": "string"
-        },
-        {
-          "name": "host",
-          "type": "string"
-        },
-        {
-          "name": "path",
-          "type": "string"
-        },
-        {
-          "name": "backend",
-          "type": "string"
-        }
-      ],
-      "option": "chardev"
-    },
-    {
-      "parameters": [
-        {
-          "name": "copy-on-read",
-          "help": "copy read data from backing file into image file",
-          "type": "boolean"
-        },
-        {
-          "name": "werror",
-          "help": "write error action",
-          "type": "string"
-        },
-        {
-          "name": "rerror",
-          "help": "read error action",
-          "type": "string"
-        },
-        {
-          "name": "read-only",
-          "help": "open drive file as read-only",
-          "type": "boolean"
-        },
-        {
-          "name": "file",
-          "help": "file name",
-          "type": "string"
-        },
-        {
-          "name": "if",
-          "help": "interface (ide, scsi, sd, mtd, floppy, pflash, virtio)",
-          "type": "string"
-        },
-        {
-          "name": "media",
-          "help": "media type (disk, cdrom)",
-          "type": "string"
-        },
-        {
-          "name": "index",
-          "help": "index number",
-          "type": "number"
-        },
-        {
-          "name": "unit",
-          "help": "unit number (i.e. lun for scsi)",
-          "type": "number"
-        },
-        {
-          "name": "bus",
-          "help": "bus number",
-          "type": "number"
-        },
-        {
-          "name": "stats-account-failed",
-          "help": "whether to account for failed I/O operations in the statistics",
-          "type": "boolean"
-        },
-        {
-          "name": "stats-account-invalid",
-          "help": "whether to account for invalid I/O operations in the statistics",
-          "type": "boolean"
-        },
-        {
-          "name": "detect-zeroes",
-          "help": "try to optimize zero writes (off, on, unmap)",
-          "type": "string"
-        },
-        {
-          "name": "throttling.group",
-          "help": "name of the block throttling group",
-          "type": "string"
-        },
-        {
-          "name": "throttling.iops-size",
-          "help": "when limiting by iops max size of an I/O in bytes",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-write-max-length",
-          "help": "length of the bps-write-max burst period, in seconds",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-read-max-length",
-          "help": "length of the bps-read-max burst period, in seconds",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-total-max-length",
-          "help": "length of the bps-total-max burst period, in seconds",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-write-max-length",
-          "help": "length of the iops-write-max burst period, in seconds",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-read-max-length",
-          "help": "length of the iops-read-max burst period, in seconds",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-total-max-length",
-          "help": "length of the iops-total-max burst period, in seconds",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-write-max",
-          "help": "total bytes write burst",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-read-max",
-          "help": "total bytes read burst",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-total-max",
-          "help": "total bytes burst",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-write-max",
-          "help": "I/O operations write burst",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-read-max",
-          "help": "I/O operations read burst",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-total-max",
-          "help": "I/O operations burst",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-write",
-          "help": "limit write bytes per second",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-read",
-          "help": "limit read bytes per second",
-          "type": "number"
-        },
-        {
-          "name": "throttling.bps-total",
-          "help": "limit total bytes per second",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-write",
-          "help": "limit write operations per second",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-read",
-          "help": "limit read operations per second",
-          "type": "number"
-        },
-        {
-          "name": "throttling.iops-total",
-          "help": "limit total I/O operations per second",
-          "type": "number"
-        },
-        {
-          "name": "werror",
-          "help": "write error action",
-          "type": "string"
-        },
-        {
-          "name": "format",
-          "help": "disk format (raw, qcow2, ...)",
-          "type": "string"
-        },
-        {
-          "name": "cache.writeback",
-          "help": "Enable writeback mode",
-          "type": "boolean"
-        },
-        {
-          "name": "aio",
-          "help": "host AIO implementation (threads, native, io_uring)",
-          "type": "string"
-        },
-        {
-          "name": "snapshot",
-          "help": "enable/disable snapshot mode",
-          "type": "boolean"
-        },
-        {
-          "name": "force-share",
-          "help": "always accept other writers (default: off)",
-          "type": "boolean"
-        },
-        {
-          "name": "discard",
-          "help": "discard operation (ignore/off, unmap/on)",
-          "type": "string"
-        },
-        {
-          "name": "auto-read-only",
-          "help": "Node can become read-only if opening read-write fails",
-          "type": "boolean"
-        },
-        {
-          "name": "cache.no-flush",
-          "help": "Ignore flush requests",
-          "type": "boolean"
-        },
-        {
-          "name": "cache.direct",
-          "help": "Bypass software writeback cache on the host",
-          "type": "boolean"
-        },
-        {
-          "name": "driver",
-          "help": "Block driver to use for the node",
-          "type": "string"
-        },
-        {
-          "name": "node-name",
-          "help": "Node name of the block device node",
-          "type": "string"
-        }
-      ],
-      "option": "drive"
-    }
-  ],
-  "id": "libvirt-25"
-}
-
-{
-  "execute": "query-migrate-capabilities",
-  "id": "libvirt-26"
-}
-
-{
-  "return": [
-    {
-      "state": false,
-      "capability": "xbzrle"
-    },
-    {
-      "state": false,
-      "capability": "rdma-pin-all"
-    },
-    {
-      "state": false,
-      "capability": "auto-converge"
-    },
-    {
-      "state": false,
-      "capability": "zero-blocks"
-    },
-    {
-      "state": false,
-      "capability": "compress"
-    },
-    {
-      "state": false,
-      "capability": "events"
-    },
-    {
-      "state": false,
-      "capability": "postcopy-ram"
-    },
-    {
-      "state": false,
-      "capability": "x-colo"
-    },
-    {
-      "state": false,
-      "capability": "release-ram"
-    },
-    {
-      "state": false,
-      "capability": "block"
-    },
-    {
-      "state": false,
-      "capability": "return-path"
-    },
-    {
-      "state": false,
-      "capability": "pause-before-switchover"
-    },
-    {
-      "state": false,
-      "capability": "multifd"
-    },
-    {
-      "state": false,
-      "capability": "dirty-bitmaps"
-    },
-    {
-      "state": false,
-      "capability": "postcopy-blocktime"
-    },
-    {
-      "state": false,
-      "capability": "late-block-activate"
-    },
-    {
-      "state": false,
-      "capability": "x-ignore-shared"
-    },
-    {
-      "state": false,
-      "capability": "validate-uuid"
-    }
-  ],
-  "id": "libvirt-26"
-}
-
-{
   "execute": "query-qmp-schema",
-  "id": "libvirt-27"
+  "id": "libvirt-4"
 }
 
 {
@@ -17288,6 +14023,3271 @@
         "in-use",
         "auto"
       ]
+    }
+  ],
+  "id": "libvirt-4"
+}
+
+{
+  "execute": "query-commands",
+  "id": "libvirt-5"
+}
+
+{
+  "return": [
+    {
+      "name": "object-add"
+    },
+    {
+      "name": "device_add"
+    },
+    {
+      "name": "query-qmp-schema"
+    },
+    {
+      "name": "query-vm-generation-id"
+    },
+    {
+      "name": "xen-load-devices-state"
+    },
+    {
+      "name": "query-acpi-ospm-status"
+    },
+    {
+      "name": "query-memory-devices"
+    },
+    {
+      "name": "query-command-line-options"
+    },
+    {
+      "name": "query-fdsets"
+    },
+    {
+      "name": "remove-fd"
+    },
+    {
+      "name": "add-fd"
+    },
+    {
+      "name": "query-memory-size-summary"
+    },
+    {
+      "name": "closefd"
+    },
+    {
+      "name": "getfd"
+    },
+    {
+      "name": "xen-set-global-dirty-log"
+    },
+    {
+      "name": "change"
+    },
+    {
+      "name": "human-monitor-command"
+    },
+    {
+      "name": "balloon"
+    },
+    {
+      "name": "inject-nmi"
+    },
+    {
+      "name": "system_wakeup"
+    },
+    {
+      "name": "x-exit-preconfig"
+    },
+    {
+      "name": "cont"
+    },
+    {
+      "name": "pmemsave"
+    },
+    {
+      "name": "memsave"
+    },
+    {
+      "name": "system_powerdown"
+    },
+    {
+      "name": "system_reset"
+    },
+    {
+      "name": "stop"
+    },
+    {
+      "name": "query-pci"
+    },
+    {
+      "name": "query-balloon"
+    },
+    {
+      "name": "query-iothreads"
+    },
+    {
+      "name": "query-uuid"
+    },
+    {
+      "name": "query-kvm"
+    },
+    {
+      "name": "query-name"
+    },
+    {
+      "name": "add_client"
+    },
+    {
+      "name": "set-numa-node"
+    },
+    {
+      "name": "query-hotpluggable-cpus"
+    },
+    {
+      "name": "query-memdev"
+    },
+    {
+      "name": "query-target"
+    },
+    {
+      "name": "query-current-machine"
+    },
+    {
+      "name": "query-machines"
+    },
+    {
+      "name": "cpu-add"
+    },
+    {
+      "name": "query-cpus-fast"
+    },
+    {
+      "name": "query-cpus"
+    },
+    {
+      "name": "device_del"
+    },
+    {
+      "name": "device-list-properties"
+    },
+    {
+      "name": "object-del"
+    },
+    {
+      "name": "qom-list-properties"
+    },
+    {
+      "name": "qom-list-types"
+    },
+    {
+      "name": "qom-set"
+    },
+    {
+      "name": "qom-get"
+    },
+    {
+      "name": "qom-list"
+    },
+    {
+      "name": "quit"
+    },
+    {
+      "name": "query-events"
+    },
+    {
+      "name": "query-commands"
+    },
+    {
+      "name": "query-version"
+    },
+    {
+      "name": "qmp_capabilities"
+    },
+    {
+      "name": "trace-event-set-state"
+    },
+    {
+      "name": "trace-event-get-state"
+    },
+    {
+      "name": "transaction"
+    },
+    {
+      "name": "migrate-pause"
+    },
+    {
+      "name": "migrate-recover"
+    },
+    {
+      "name": "query-colo-status"
+    },
+    {
+      "name": "xen-colo-do-checkpoint"
+    },
+    {
+      "name": "query-xen-replication-status"
+    },
+    {
+      "name": "xen-set-replication"
+    },
+    {
+      "name": "xen-save-devices-state"
+    },
+    {
+      "name": "migrate-incoming"
+    },
+    {
+      "name": "migrate"
+    },
+    {
+      "name": "query-migrate-cache-size"
+    },
+    {
+      "name": "migrate-set-cache-size"
+    },
+    {
+      "name": "migrate_set_speed"
+    },
+    {
+      "name": "migrate_set_downtime"
+    },
+    {
+      "name": "migrate-continue"
+    },
+    {
+      "name": "migrate_cancel"
+    },
+    {
+      "name": "x-colo-lost-heartbeat"
+    },
+    {
+      "name": "migrate-start-postcopy"
+    },
+    {
+      "name": "client_migrate_info"
+    },
+    {
+      "name": "query-migrate-parameters"
+    },
+    {
+      "name": "migrate-set-parameters"
+    },
+    {
+      "name": "query-migrate-capabilities"
+    },
+    {
+      "name": "migrate-set-capabilities"
+    },
+    {
+      "name": "query-migrate"
+    },
+    {
+      "name": "query-display-options"
+    },
+    {
+      "name": "input-send-event"
+    },
+    {
+      "name": "send-key"
+    },
+    {
+      "name": "query-mice"
+    },
+    {
+      "name": "change-vnc-password"
+    },
+    {
+      "name": "query-vnc-servers"
+    },
+    {
+      "name": "query-vnc"
+    },
+    {
+      "name": "query-spice"
+    },
+    {
+      "name": "screendump"
+    },
+    {
+      "name": "expire_password"
+    },
+    {
+      "name": "set_password"
+    },
+    {
+      "name": "query-tpm"
+    },
+    {
+      "name": "query-tpm-types"
+    },
+    {
+      "name": "query-tpm-models"
+    },
+    {
+      "name": "query-rocker-of-dpa-groups"
+    },
+    {
+      "name": "query-rocker-of-dpa-flows"
+    },
+    {
+      "name": "query-rocker-ports"
+    },
+    {
+      "name": "query-rocker"
+    },
+    {
+      "name": "announce-self"
+    },
+    {
+      "name": "query-rx-filter"
+    },
+    {
+      "name": "netdev_del"
+    },
+    {
+      "name": "netdev_add"
+    },
+    {
+      "name": "set_link"
+    },
+    {
+      "name": "query-dump-guest-memory-capability"
+    },
+    {
+      "name": "query-dump"
+    },
+    {
+      "name": "dump-guest-memory"
+    },
+    {
+      "name": "chardev-send-break"
+    },
+    {
+      "name": "chardev-remove"
+    },
+    {
+      "name": "chardev-change"
+    },
+    {
+      "name": "chardev-add"
+    },
+    {
+      "name": "ringbuf-read"
+    },
+    {
+      "name": "ringbuf-write"
+    },
+    {
+      "name": "query-chardev-backends"
+    },
+    {
+      "name": "query-chardev"
+    },
+    {
+      "name": "query-jobs"
+    },
+    {
+      "name": "job-finalize"
+    },
+    {
+      "name": "job-dismiss"
+    },
+    {
+      "name": "job-complete"
+    },
+    {
+      "name": "job-cancel"
+    },
+    {
+      "name": "job-resume"
+    },
+    {
+      "name": "job-pause"
+    },
+    {
+      "name": "blockdev-snapshot-delete-internal-sync"
+    },
+    {
+      "name": "blockdev-snapshot-internal-sync"
+    },
+    {
+      "name": "nbd-server-stop"
+    },
+    {
+      "name": "nbd-server-remove"
+    },
+    {
+      "name": "nbd-server-add"
+    },
+    {
+      "name": "nbd-server-start"
+    },
+    {
+      "name": "x-blockdev-set-iothread"
+    },
+    {
+      "name": "x-blockdev-change"
+    },
+    {
+      "name": "block-set-write-threshold"
+    },
+    {
+      "name": "x-blockdev-amend"
+    },
+    {
+      "name": "blockdev-create"
+    },
+    {
+      "name": "blockdev-del"
+    },
+    {
+      "name": "x-blockdev-reopen"
+    },
+    {
+      "name": "blockdev-add"
+    },
+    {
+      "name": "block-job-finalize"
+    },
+    {
+      "name": "block-job-dismiss"
+    },
+    {
+      "name": "block-job-complete"
+    },
+    {
+      "name": "block-job-resume"
+    },
+    {
+      "name": "block-job-pause"
+    },
+    {
+      "name": "block-job-cancel"
+    },
+    {
+      "name": "block-job-set-speed"
+    },
+    {
+      "name": "block-stream"
+    },
+    {
+      "name": "blockdev-mirror"
+    },
+    {
+      "name": "x-debug-block-dirty-bitmap-sha256"
+    },
+    {
+      "name": "block-dirty-bitmap-merge"
+    },
+    {
+      "name": "block-dirty-bitmap-disable"
+    },
+    {
+      "name": "block-dirty-bitmap-enable"
+    },
+    {
+      "name": "block-dirty-bitmap-clear"
+    },
+    {
+      "name": "block-dirty-bitmap-remove"
+    },
+    {
+      "name": "block-dirty-bitmap-add"
+    },
+    {
+      "name": "drive-mirror"
+    },
+    {
+      "name": "x-debug-query-block-graph"
+    },
+    {
+      "name": "query-named-block-nodes"
+    },
+    {
+      "name": "blockdev-backup"
+    },
+    {
+      "name": "drive-backup"
+    },
+    {
+      "name": "block-commit"
+    },
+    {
+      "name": "change-backing-file"
+    },
+    {
+      "name": "blockdev-snapshot"
+    },
+    {
+      "name": "blockdev-snapshot-sync"
+    },
+    {
+      "name": "block_resize"
+    },
+    {
+      "name": "block_passwd"
+    },
+    {
+      "name": "query-block-jobs"
+    },
+    {
+      "name": "query-blockstats"
+    },
+    {
+      "name": "query-block"
+    },
+    {
+      "name": "block-latency-histogram-set"
+    },
+    {
+      "name": "block_set_io_throttle"
+    },
+    {
+      "name": "blockdev-change-medium"
+    },
+    {
+      "name": "blockdev-insert-medium"
+    },
+    {
+      "name": "blockdev-remove-medium"
+    },
+    {
+      "name": "blockdev-close-tray"
+    },
+    {
+      "name": "blockdev-open-tray"
+    },
+    {
+      "name": "eject"
+    },
+    {
+      "name": "query-pr-managers"
+    },
+    {
+      "name": "watchdog-set-action"
+    },
+    {
+      "name": "query-status"
+    }
+  ],
+  "id": "libvirt-5"
+}
+
+{
+  "execute": "query-kvm",
+  "id": "libvirt-6"
+}
+
+{
+  "return": {
+    "enabled": false,
+    "present": false
+  },
+  "id": "libvirt-6"
+}
+
+{
+  "execute": "qom-list-types",
+  "id": "libvirt-7"
+}
+
+{
+  "return": [
+    {
+      "name": "none-machine",
+      "parent": "machine"
+    },
+    {
+      "name": "tls-cipher-suites",
+      "parent": "tls-creds"
+    },
+    {
+      "name": "secret",
+      "parent": "secret_common"
+    },
+    {
+      "name": "chardev-mux",
+      "parent": "chardev"
+    },
+    {
+      "name": "empty_slot",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "Fujitsu-MB86904-sparc-cpu",
+      "parent": "sparc-cpu"
+    },
+    {
+      "name": "grlib,apbuart",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "Voyager-machine",
+      "parent": "machine"
+    },
+    {
+      "name": "cryptodev-backend-builtin",
+      "parent": "cryptodev-backend"
+    },
+    {
+      "name": "qio-channel-rdma",
+      "parent": "qio-channel"
+    },
+    {
+      "name": "slavio_misc",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "ISA",
+      "parent": "bus"
+    },
+    {
+      "name": "SS-10-machine",
+      "parent": "machine"
+    },
+    {
+      "name": "usb-redir",
+      "parent": "usb-device"
+    },
+    {
+      "name": "migration",
+      "parent": "device"
+    },
+    {
+      "name": "sb16",
+      "parent": "isa-device"
+    },
+    {
+      "name": "SS-600MP-machine",
+      "parent": "machine"
+    },
+    {
+      "name": "slavio_intctl",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "pr-manager-helper",
+      "parent": "pr-manager"
+    },
+    {
+      "name": "tls-creds-x509",
+      "parent": "tls-creds"
+    },
+    {
+      "name": "chardev-udp",
+      "parent": "chardev"
+    },
+    {
+      "name": "chardev-ringbuf",
+      "parent": "chardev"
+    },
+    {
+      "name": "TI-SuperSparc-61-sparc-cpu",
+      "parent": "sparc-cpu"
+    },
+    {
+      "name": "cpu-cluster",
+      "parent": "device"
+    },
+    {
+      "name": "cgthree",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "grlib,irqmp",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "Fujitsu-MB86907-sparc-cpu",
+      "parent": "sparc-cpu"
+    },
+    {
+      "name": "chardev-braille",
+      "parent": "chardev"
+    },
+    {
+      "name": "scsi-hd",
+      "parent": "scsi-disk-base"
+    },
+    {
+      "name": "qemu:memory-region",
+      "parent": "object"
+    },
+    {
+      "name": "qio-channel-tls",
+      "parent": "qio-channel"
+    },
+    {
+      "name": "scsi-block",
+      "parent": "scsi-disk-base"
+    },
+    {
+      "name": "SUNW,tcx",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "SS-4-machine",
+      "parent": "machine"
+    },
+    {
+      "name": "chardev-pty",
+      "parent": "chardev"
+    },
+    {
+      "name": "apc",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "rng-egd",
+      "parent": "rng-backend"
+    },
+    {
+      "name": "TI-MicroSparc-IIep-sparc-cpu",
+      "parent": "sparc-cpu"
+    },
+    {
+      "name": "qio-channel-websock",
+      "parent": "qio-channel"
+    },
+    {
+      "name": "chardev-spiceport",
+      "parent": "chardev-spice"
+    },
+    {
+      "name": "TI-MicroSparc-I-sparc-cpu",
+      "parent": "sparc-cpu"
+    },
+    {
+      "name": "qtest-accel",
+      "parent": "accel"
+    },
+    {
+      "name": "memory-backend-file",
+      "parent": "memory-backend"
+    },
+    {
+      "name": "chardev-serial",
+      "parent": "chardev-fd"
+    },
+    {
+      "name": "qio-dns-resolver",
+      "parent": "object"
+    },
+    {
+      "name": "dbus-vmstate",
+      "parent": "object"
+    },
+    {
+      "name": "iothread",
+      "parent": "object"
+    },
+    {
+      "name": "SCSI",
+      "parent": "bus"
+    },
+    {
+      "name": "chardev-socket",
+      "parent": "chardev"
+    },
+    {
+      "name": "sysbus-m48t59",
+      "parent": "sysbus-m48txx"
+    },
+    {
+      "name": "chardev-stdio",
+      "parent": "chardev-fd"
+    },
+    {
+      "name": "clock",
+      "parent": "object"
+    },
+    {
+      "name": "tcg-accel",
+      "parent": "accel"
+    },
+    {
+      "name": "qemu-console",
+      "parent": "object"
+    },
+    {
+      "name": "chardev-memory",
+      "parent": "chardev-ringbuf"
+    },
+    {
+      "name": "qio-channel-socket",
+      "parent": "qio-channel"
+    },
+    {
+      "name": "authz-list",
+      "parent": "authz"
+    },
+    {
+      "name": "isa-m48t59",
+      "parent": "isa-m48txx"
+    },
+    {
+      "name": "qio-channel-command",
+      "parent": "qio-channel"
+    },
+    {
+      "name": "LEON2-sparc-cpu",
+      "parent": "sparc-cpu"
+    },
+    {
+      "name": "scsi-cd",
+      "parent": "scsi-disk-base"
+    },
+    {
+      "name": "chardev-vc",
+      "parent": "chardev"
+    },
+    {
+      "name": "esp",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "sun4m-iommu",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "input-linux",
+      "parent": "object"
+    },
+    {
+      "name": "authz-simple",
+      "parent": "authz"
+    },
+    {
+      "name": "filter-dump",
+      "parent": "netfilter"
+    },
+    {
+      "name": "LEON3-sparc-cpu",
+      "parent": "sparc-cpu"
+    },
+    {
+      "name": "isa-parallel",
+      "parent": "isa-device"
+    },
+    {
+      "name": "grlib,apbpnp",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "memory-backend-memfd",
+      "parent": "memory-backend"
+    },
+    {
+      "name": "serial-io",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "filter-rewriter",
+      "parent": "netfilter"
+    },
+    {
+      "name": "sun4m-iommu-memory-region",
+      "parent": "qemu:iommu-memory-region"
+    },
+    {
+      "name": "escc",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "colo-compare",
+      "parent": "object"
+    },
+    {
+      "name": "chardev-parallel",
+      "parent": "chardev"
+    },
+    {
+      "name": "floppy",
+      "parent": "device"
+    },
+    {
+      "name": "usb-bus",
+      "parent": "bus"
+    },
+    {
+      "name": "cs4231a",
+      "parent": "isa-device"
+    },
+    {
+      "name": "TI-SuperSparc-II-sparc-cpu",
+      "parent": "sparc-cpu"
+    },
+    {
+      "name": "grlib,ahbpnp",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "chardev-null",
+      "parent": "chardev"
+    },
+    {
+      "name": "scsi-disk",
+      "parent": "scsi-disk-base"
+    },
+    {
+      "name": "authz-pam",
+      "parent": "authz"
+    },
+    {
+      "name": "sysbus-m48t08",
+      "parent": "sysbus-m48txx"
+    },
+    {
+      "name": "SS-5-machine",
+      "parent": "machine"
+    },
+    {
+      "name": "TI-SuperSparc-60-sparc-cpu",
+      "parent": "sparc-cpu"
+    },
+    {
+      "name": "isa-fdc",
+      "parent": "isa-device"
+    },
+    {
+      "name": "sparc32-espdma",
+      "parent": "sparc32-dma-device"
+    },
+    {
+      "name": "tls-creds-anon",
+      "parent": "tls-creds"
+    },
+    {
+      "name": "isabus-bridge",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "sysbus-fdc",
+      "parent": "base-sysbus-fdc"
+    },
+    {
+      "name": "cryptodev-backend",
+      "parent": "object"
+    },
+    {
+      "name": "loader",
+      "parent": "device"
+    },
+    {
+      "name": "secret_keyring",
+      "parent": "secret_common"
+    },
+    {
+      "name": "sparc32-ledma",
+      "parent": "sparc32-dma-device"
+    },
+    {
+      "name": "rng-builtin",
+      "parent": "rng-backend"
+    },
+    {
+      "name": "macio_idreg",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "filter-redirector",
+      "parent": "netfilter"
+    },
+    {
+      "name": "memory-backend-ram",
+      "parent": "memory-backend"
+    },
+    {
+      "name": "filter-mirror",
+      "parent": "netfilter"
+    },
+    {
+      "name": "grlib,gptimer",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "isa-serial",
+      "parent": "isa-device"
+    },
+    {
+      "name": "chardev-wctablet",
+      "parent": "chardev"
+    },
+    {
+      "name": "tls-creds-psk",
+      "parent": "tls-creds"
+    },
+    {
+      "name": "openprom",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "accel",
+      "parent": "object"
+    },
+    {
+      "name": "fw_cfg_mem",
+      "parent": "fw_cfg"
+    },
+    {
+      "name": "tcx_afx",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "chardev-pipe",
+      "parent": "chardev-fd"
+    },
+    {
+      "name": "serial",
+      "parent": "device"
+    },
+    {
+      "name": "fw_cfg_io",
+      "parent": "fw_cfg"
+    },
+    {
+      "name": "SPARCbook-machine",
+      "parent": "machine"
+    },
+    {
+      "name": "ib700",
+      "parent": "isa-device"
+    },
+    {
+      "name": "leon3_generic-machine",
+      "parent": "machine"
+    },
+    {
+      "name": "chardev-testdev",
+      "parent": "chardev"
+    },
+    {
+      "name": "TI-SuperSparc-40-sparc-cpu",
+      "parent": "sparc-cpu"
+    },
+    {
+      "name": "TI-MicroSparc-II-sparc-cpu",
+      "parent": "sparc-cpu"
+    },
+    {
+      "name": "qio-net-listener",
+      "parent": "object"
+    },
+    {
+      "name": "serial-mm",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "authz-list-file",
+      "parent": "authz"
+    },
+    {
+      "name": "slavio_timer",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "System",
+      "parent": "bus"
+    },
+    {
+      "name": "memory",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "filter-replay",
+      "parent": "netfilter"
+    },
+    {
+      "name": "lance",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "filter-buffer",
+      "parent": "netfilter"
+    },
+    {
+      "name": "SUNW,fdtwo",
+      "parent": "base-sysbus-fdc"
+    },
+    {
+      "name": "throttle-group",
+      "parent": "object"
+    },
+    {
+      "name": "qio-channel-file",
+      "parent": "qio-channel"
+    },
+    {
+      "name": "floppy-bus",
+      "parent": "bus"
+    },
+    {
+      "name": "sysbus-m48t02",
+      "parent": "sysbus-m48txx"
+    },
+    {
+      "name": "chardev-msmouse",
+      "parent": "chardev"
+    },
+    {
+      "name": "SPARCClassic-machine",
+      "parent": "machine"
+    },
+    {
+      "name": "scsi-generic",
+      "parent": "scsi-device"
+    },
+    {
+      "name": "unimplemented-device",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "chardev-spicevmc",
+      "parent": "chardev-spice"
+    },
+    {
+      "name": "qio-channel-buffer",
+      "parent": "qio-channel"
+    },
+    {
+      "name": "input-barrier",
+      "parent": "object"
+    },
+    {
+      "name": "adlib",
+      "parent": "isa-device"
+    },
+    {
+      "name": "chardev-gdb",
+      "parent": "chardev"
+    },
+    {
+      "name": "eccmemctl",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "irq",
+      "parent": "object"
+    },
+    {
+      "name": "sparc32-dma",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "TI-SuperSparc-50-sparc-cpu",
+      "parent": "sparc-cpu"
+    },
+    {
+      "name": "LX-machine",
+      "parent": "machine"
+    },
+    {
+      "name": "ne2k_isa",
+      "parent": "isa-device"
+    },
+    {
+      "name": "gus",
+      "parent": "isa-device"
+    },
+    {
+      "name": "container",
+      "parent": "object"
+    },
+    {
+      "name": "rng-random",
+      "parent": "rng-backend"
+    },
+    {
+      "name": "SUNW,CS4231",
+      "parent": "sys-bus-device"
+    },
+    {
+      "name": "chardev-file",
+      "parent": "chardev-fd"
+    },
+    {
+      "name": "SS-20-machine",
+      "parent": "machine"
+    },
+    {
+      "name": "TI-SuperSparc-51-sparc-cpu",
+      "parent": "sparc-cpu"
+    }
+  ],
+  "id": "libvirt-7"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "virtio-blk-pci"
+  },
+  "id": "libvirt-8"
+}
+
+{
+  "id": "libvirt-8",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'virtio-blk-pci' not found"
+  }
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-hd"
+  },
+  "id": "libvirt-9"
+}
+
+{
+  "return": [
+    {
+      "default-value": 4294967295,
+      "name": "scsi-id",
+      "type": "uint32"
+    },
+    {
+      "default-value": 4294967295,
+      "name": "lun",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "channel",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "lsecs",
+      "type": "uint32"
+    },
+    {
+      "name": "device_id",
+      "type": "str"
+    },
+    {
+      "default-value": 0,
+      "name": "logical_block_size",
+      "description": "A power of two between 512 B and 2 MiB",
+      "type": "size"
+    },
+    {
+      "default-value": 2147483647,
+      "name": "max_io_size",
+      "type": "uint64"
+    },
+    {
+      "default-value": false,
+      "name": "dpofua",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "drive",
+      "description": "Node name or ID of a block device to use as a backend",
+      "type": "str"
+    },
+    {
+      "default-value": 0,
+      "name": "lheads",
+      "type": "uint32"
+    },
+    {
+      "name": "serial",
+      "type": "str"
+    },
+    {
+      "name": "ver",
+      "type": "str"
+    },
+    {
+      "default-value": "auto",
+      "name": "write-cache",
+      "description": "on/off/auto",
+      "type": "OnOffAuto"
+    },
+    {
+      "default-value": false,
+      "name": "share-rw",
+      "type": "bool"
+    },
+    {
+      "default-value": 5,
+      "name": "scsi_version",
+      "type": "int32"
+    },
+    {
+      "default-value": false,
+      "name": "removable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 0,
+      "name": "wwn",
+      "type": "uint64"
+    },
+    {
+      "default-value": 4294967295,
+      "name": "discard_granularity",
+      "type": "size"
+    },
+    {
+      "default-value": 0,
+      "name": "heads",
+      "type": "uint32"
+    },
+    {
+      "name": "vendor",
+      "type": "str"
+    },
+    {
+      "default-value": 1073741824,
+      "name": "max_unmap_size",
+      "type": "uint64"
+    },
+    {
+      "default-value": 0,
+      "name": "cyls",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "lcyls",
+      "type": "uint32"
+    },
+    {
+      "name": "product",
+      "type": "str"
+    },
+    {
+      "default-value": 0,
+      "name": "opt_io_size",
+      "type": "size"
+    },
+    {
+      "default-value": "auto",
+      "name": "rerror",
+      "description": "Error handling policy, report/ignore/enospc/stop/auto",
+      "type": "BlockdevOnError"
+    },
+    {
+      "default-value": 0,
+      "name": "secs",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "rotation_rate",
+      "type": "uint16"
+    },
+    {
+      "default-value": 0,
+      "name": "min_io_size",
+      "type": "size"
+    },
+    {
+      "default-value": 0,
+      "name": "physical_block_size",
+      "description": "A power of two between 512 B and 2 MiB",
+      "type": "size"
+    },
+    {
+      "default-value": 0,
+      "name": "port_wwn",
+      "type": "uint64"
+    },
+    {
+      "default-value": 0,
+      "name": "port_index",
+      "type": "uint16"
+    },
+    {
+      "default-value": "auto",
+      "name": "werror",
+      "description": "Error handling policy, report/ignore/enospc/stop/auto",
+      "type": "BlockdevOnError"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    }
+  ],
+  "id": "libvirt-9"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "ide-hd"
+  },
+  "id": "libvirt-10"
+}
+
+{
+  "id": "libvirt-10",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'ide-hd' not found"
+  }
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "PIIX4_PM"
+  },
+  "id": "libvirt-11"
+}
+
+{
+  "id": "libvirt-11",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'PIIX4_PM' not found"
+  }
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "usb-redir"
+  },
+  "id": "libvirt-12"
+}
+
+{
+  "return": [
+    {
+      "default-value": true,
+      "name": "full-path",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "port",
+      "type": "str"
+    },
+    {
+      "default-value": true,
+      "name": "msos-desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "serial",
+      "type": "str"
+    },
+    {
+      "name": "filter",
+      "type": "str"
+    },
+    {
+      "default-value": true,
+      "name": "streams",
+      "type": "bool"
+    },
+    {
+      "name": "chardev",
+      "description": "ID of a chardev to use as a backend",
+      "type": "str"
+    },
+    {
+      "default-value": 2,
+      "name": "debug",
+      "type": "uint8"
+    },
+    {
+      "default-value": true,
+      "name": "suppress-remote-wake",
+      "type": "bool"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "attached",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-12"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "i440FX-pcihost"
+  },
+  "id": "libvirt-13"
+}
+
+{
+  "id": "libvirt-13",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'i440FX-pcihost' not found"
+  }
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "q35-pcihost"
+  },
+  "id": "libvirt-14"
+}
+
+{
+  "id": "libvirt-14",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'q35-pcihost' not found"
+  }
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "kvm-pit"
+  },
+  "id": "libvirt-15"
+}
+
+{
+  "id": "libvirt-15",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'kvm-pit' not found"
+  }
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "ICH9-LPC"
+  },
+  "id": "libvirt-16"
+}
+
+{
+  "id": "libvirt-16",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'ICH9-LPC' not found"
+  }
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "virtio-balloon-pci"
+  },
+  "id": "libvirt-17"
+}
+
+{
+  "id": "libvirt-17",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'virtio-balloon-pci' not found"
+  }
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "virtio-balloon-ccw"
+  },
+  "id": "libvirt-18"
+}
+
+{
+  "id": "libvirt-18",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'virtio-balloon-ccw' not found"
+  }
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "virtio-balloon-device"
+  },
+  "id": "libvirt-19"
+}
+
+{
+  "id": "libvirt-19",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'virtio-balloon-device' not found"
+  }
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "usb-host"
+  },
+  "id": "libvirt-20"
+}
+
+{
+  "id": "libvirt-20",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'usb-host' not found"
+  }
+}
+
+{
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "memory-backend-file"
+  },
+  "id": "libvirt-21"
+}
+
+{
+  "return": [
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "share",
+      "description": "Mark the memory as private to QEMU or shared",
+      "type": "bool"
+    },
+    {
+      "name": "dump",
+      "description": "Set to 'off' to exclude from core dump",
+      "type": "bool"
+    },
+    {
+      "name": "prealloc-threads",
+      "description": "Number of CPU threads to use for prealloc",
+      "type": "int"
+    },
+    {
+      "name": "x-use-canonical-path-for-ramblock-id",
+      "type": "bool"
+    },
+    {
+      "name": "policy",
+      "description": "Set the NUMA policy",
+      "type": "HostMemPolicy"
+    },
+    {
+      "name": "size",
+      "description": "Size of the memory region (ex: 500M)",
+      "type": "int"
+    },
+    {
+      "name": "prealloc",
+      "description": "Preallocate memory",
+      "type": "bool"
+    },
+    {
+      "name": "host-nodes",
+      "description": "Binds memory to the list of NUMA host nodes",
+      "type": "int"
+    },
+    {
+      "name": "merge",
+      "description": "Mark memory as mergeable",
+      "type": "bool"
+    },
+    {
+      "name": "align",
+      "type": "int"
+    },
+    {
+      "name": "pmem",
+      "type": "bool"
+    },
+    {
+      "name": "mem-path",
+      "type": "string"
+    },
+    {
+      "name": "discard-data",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-21"
+}
+
+{
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "memory-backend-memfd"
+  },
+  "id": "libvirt-22"
+}
+
+{
+  "return": [
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "share",
+      "description": "Mark the memory as private to QEMU or shared",
+      "type": "bool"
+    },
+    {
+      "name": "dump",
+      "description": "Set to 'off' to exclude from core dump",
+      "type": "bool"
+    },
+    {
+      "name": "prealloc-threads",
+      "description": "Number of CPU threads to use for prealloc",
+      "type": "int"
+    },
+    {
+      "name": "x-use-canonical-path-for-ramblock-id",
+      "type": "bool"
+    },
+    {
+      "name": "policy",
+      "description": "Set the NUMA policy",
+      "type": "HostMemPolicy"
+    },
+    {
+      "name": "size",
+      "description": "Size of the memory region (ex: 500M)",
+      "type": "int"
+    },
+    {
+      "name": "prealloc",
+      "description": "Preallocate memory",
+      "type": "bool"
+    },
+    {
+      "name": "host-nodes",
+      "description": "Binds memory to the list of NUMA host nodes",
+      "type": "int"
+    },
+    {
+      "name": "merge",
+      "description": "Mark memory as mergeable",
+      "type": "bool"
+    },
+    {
+      "name": "hugetlb",
+      "description": "Use huge pages",
+      "type": "bool"
+    },
+    {
+      "name": "seal",
+      "description": "Seal growing & shrinking",
+      "type": "bool"
+    },
+    {
+      "name": "hugetlbsize",
+      "description": "Huge pages size (ex: 2M, 1G)",
+      "type": "int"
+    }
+  ],
+  "id": "libvirt-22"
+}
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-23"
+}
+
+{
+  "return": [
+    {
+      "hotpluggable-cpus": false,
+      "name": "SS-20",
+      "numa-mem-supported": false,
+      "default-cpu-type": "TI-SuperSparc-II-sparc-cpu",
+      "cpu-max": 4,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "LX",
+      "numa-mem-supported": false,
+      "default-cpu-type": "TI-MicroSparc-I-sparc-cpu",
+      "cpu-max": 1,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "SPARCClassic",
+      "numa-mem-supported": false,
+      "default-cpu-type": "TI-MicroSparc-I-sparc-cpu",
+      "cpu-max": 1,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "leon3_generic",
+      "numa-mem-supported": false,
+      "default-cpu-type": "LEON3-sparc-cpu",
+      "cpu-max": 1,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "SPARCbook",
+      "numa-mem-supported": false,
+      "default-cpu-type": "TI-MicroSparc-I-sparc-cpu",
+      "cpu-max": 1,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "SS-5",
+      "numa-mem-supported": false,
+      "default-cpu-type": "Fujitsu-MB86904-sparc-cpu",
+      "is-default": true,
+      "cpu-max": 1,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "SS-4",
+      "numa-mem-supported": false,
+      "default-cpu-type": "Fujitsu-MB86904-sparc-cpu",
+      "cpu-max": 1,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "SS-600MP",
+      "numa-mem-supported": false,
+      "default-cpu-type": "TI-SuperSparc-II-sparc-cpu",
+      "cpu-max": 4,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "SS-10",
+      "numa-mem-supported": false,
+      "default-cpu-type": "TI-SuperSparc-II-sparc-cpu",
+      "cpu-max": 4,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "Voyager",
+      "numa-mem-supported": false,
+      "default-cpu-type": "Fujitsu-MB86904-sparc-cpu",
+      "cpu-max": 1,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "none",
+      "numa-mem-supported": false,
+      "cpu-max": 1,
+      "deprecated": false
+    }
+  ],
+  "id": "libvirt-23"
+}
+
+{
+  "execute": "query-tpm-models",
+  "id": "libvirt-24"
+}
+
+{
+  "return": [
+  ],
+  "id": "libvirt-24"
+}
+
+{
+  "execute": "query-tpm-types",
+  "id": "libvirt-25"
+}
+
+{
+  "return": [
+  ],
+  "id": "libvirt-25"
+}
+
+{
+  "execute": "query-command-line-options",
+  "id": "libvirt-26"
+}
+
+{
+  "return": [
+    {
+      "parameters": [
+        {
+          "name": "timeout",
+          "help": "Request timeout in seconds (default 0 = no timeout)",
+          "type": "number"
+        },
+        {
+          "name": "initiator-name",
+          "help": "Initiator iqn name to use when connecting",
+          "type": "string"
+        },
+        {
+          "name": "header-digest",
+          "help": "HeaderDigest setting. {CRC32C|CRC32C-NONE|NONE-CRC32C|NONE}",
+          "type": "string"
+        },
+        {
+          "name": "password-secret",
+          "help": "ID of the secret providing password for CHAP authentication to target",
+          "type": "string"
+        },
+        {
+          "name": "password",
+          "help": "password for CHAP authentication to target",
+          "type": "string"
+        },
+        {
+          "name": "user",
+          "help": "username for CHAP authentication to target",
+          "type": "string"
+        }
+      ],
+      "option": "iscsi"
+    },
+    {
+      "parameters": [
+        {
+          "name": "audiodev",
+          "type": "string"
+        },
+        {
+          "name": "non-adaptive",
+          "type": "boolean"
+        },
+        {
+          "name": "lossy",
+          "type": "boolean"
+        },
+        {
+          "name": "sasl-authz",
+          "type": "string"
+        },
+        {
+          "name": "tls-authz",
+          "type": "string"
+        },
+        {
+          "name": "acl",
+          "type": "boolean"
+        },
+        {
+          "name": "sasl",
+          "type": "boolean"
+        },
+        {
+          "name": "key-delay-ms",
+          "type": "number"
+        },
+        {
+          "name": "lock-key-sync",
+          "type": "boolean"
+        },
+        {
+          "name": "reverse",
+          "type": "boolean"
+        },
+        {
+          "name": "password",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv6",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv4",
+          "type": "boolean"
+        },
+        {
+          "name": "to",
+          "type": "number"
+        },
+        {
+          "name": "connections",
+          "type": "number"
+        },
+        {
+          "name": "head",
+          "type": "number"
+        },
+        {
+          "name": "display",
+          "type": "string"
+        },
+        {
+          "name": "share",
+          "type": "string"
+        },
+        {
+          "name": "tls-creds",
+          "type": "string"
+        },
+        {
+          "name": "websocket",
+          "type": "string"
+        },
+        {
+          "name": "vnc",
+          "type": "string"
+        }
+      ],
+      "option": "vnc"
+    },
+    {
+      "parameters": [
+        {
+          "name": "rendernode",
+          "type": "string"
+        },
+        {
+          "name": "gl",
+          "type": "boolean"
+        },
+        {
+          "name": "head",
+          "type": "number"
+        },
+        {
+          "name": "display",
+          "type": "string"
+        },
+        {
+          "name": "seamless-migration",
+          "type": "boolean"
+        },
+        {
+          "name": "playback-compression",
+          "type": "boolean"
+        },
+        {
+          "name": "agent-mouse",
+          "type": "boolean"
+        },
+        {
+          "name": "streaming-video",
+          "type": "string"
+        },
+        {
+          "name": "zlib-glz-wan-compression",
+          "type": "string"
+        },
+        {
+          "name": "jpeg-wan-compression",
+          "type": "string"
+        },
+        {
+          "name": "image-compression",
+          "type": "string"
+        },
+        {
+          "name": "plaintext-channel",
+          "type": "string"
+        },
+        {
+          "name": "tls-channel",
+          "type": "string"
+        },
+        {
+          "name": "tls-ciphers",
+          "type": "string"
+        },
+        {
+          "name": "x509-dh-key-file",
+          "type": "string"
+        },
+        {
+          "name": "x509-cacert-file",
+          "type": "string"
+        },
+        {
+          "name": "x509-cert-file",
+          "type": "string"
+        },
+        {
+          "name": "x509-key-password",
+          "type": "string"
+        },
+        {
+          "name": "x509-key-file",
+          "type": "string"
+        },
+        {
+          "name": "x509-dir",
+          "type": "string"
+        },
+        {
+          "name": "sasl",
+          "type": "boolean"
+        },
+        {
+          "name": "disable-agent-file-xfer",
+          "type": "boolean"
+        },
+        {
+          "name": "disable-copy-paste",
+          "type": "boolean"
+        },
+        {
+          "name": "disable-ticketing",
+          "type": "boolean"
+        },
+        {
+          "name": "password",
+          "type": "string"
+        },
+        {
+          "name": "unix",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv6",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv4",
+          "type": "boolean"
+        },
+        {
+          "name": "addr",
+          "type": "string"
+        },
+        {
+          "name": "tls-port",
+          "type": "number"
+        },
+        {
+          "name": "port",
+          "type": "number"
+        }
+      ],
+      "option": "spice"
+    },
+    {
+      "parameters": [
+        {
+          "name": "dmode",
+          "type": "number"
+        },
+        {
+          "name": "fmode",
+          "type": "number"
+        },
+        {
+          "name": "sock_fd",
+          "type": "number"
+        },
+        {
+          "name": "socket",
+          "type": "string"
+        },
+        {
+          "name": "multidevs",
+          "type": "string"
+        },
+        {
+          "name": "readonly",
+          "type": "boolean"
+        },
+        {
+          "name": "writeout",
+          "type": "string"
+        },
+        {
+          "name": "security_model",
+          "type": "string"
+        },
+        {
+          "name": "mount_tag",
+          "type": "string"
+        },
+        {
+          "name": "path",
+          "type": "string"
+        },
+        {
+          "name": "fsdriver",
+          "type": "string"
+        }
+      ],
+      "option": "virtfs"
+    },
+    {
+      "parameters": [
+        {
+          "name": "throttling.iops-size",
+          "help": "when limiting by iops max size of an I/O in bytes",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-write-max-length",
+          "help": "length of the bps-write-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-read-max-length",
+          "help": "length of the bps-read-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-total-max-length",
+          "help": "length of the bps-total-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-write-max-length",
+          "help": "length of the iops-write-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-read-max-length",
+          "help": "length of the iops-read-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-total-max-length",
+          "help": "length of the iops-total-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-write-max",
+          "help": "total bytes write burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-read-max",
+          "help": "total bytes read burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-total-max",
+          "help": "total bytes burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-write-max",
+          "help": "I/O operations write burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-read-max",
+          "help": "I/O operations read burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-total-max",
+          "help": "I/O operations burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-write",
+          "help": "limit write bytes per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-read",
+          "help": "limit read bytes per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-total",
+          "help": "limit total bytes per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-write",
+          "help": "limit write operations per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-read",
+          "help": "limit read operations per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-total",
+          "help": "limit total I/O operations per second",
+          "type": "number"
+        },
+        {
+          "name": "dmode",
+          "type": "number"
+        },
+        {
+          "name": "fmode",
+          "type": "number"
+        },
+        {
+          "name": "sock_fd",
+          "type": "number"
+        },
+        {
+          "name": "socket",
+          "type": "string"
+        },
+        {
+          "name": "multidevs",
+          "type": "string"
+        },
+        {
+          "name": "readonly",
+          "type": "boolean"
+        },
+        {
+          "name": "writeout",
+          "type": "string"
+        },
+        {
+          "name": "security_model",
+          "type": "string"
+        },
+        {
+          "name": "path",
+          "type": "string"
+        },
+        {
+          "name": "fsdriver",
+          "type": "string"
+        }
+      ],
+      "option": "fsdev"
+    },
+    {
+      "parameters": [
+        {
+          "name": "resourcecontrol",
+          "type": "string"
+        },
+        {
+          "name": "spawn",
+          "type": "string"
+        },
+        {
+          "name": "elevateprivileges",
+          "type": "string"
+        },
+        {
+          "name": "obsolete",
+          "type": "string"
+        },
+        {
+          "name": "enable",
+          "type": "boolean"
+        }
+      ],
+      "option": "sandbox"
+    },
+    {
+      "parameters": [
+        {
+          "name": "gen_id",
+          "help": "Sets id of the object generating the fw_cfg blob to be inserted",
+          "type": "string"
+        },
+        {
+          "name": "string",
+          "help": "Sets content of the blob to be inserted from a string",
+          "type": "string"
+        },
+        {
+          "name": "file",
+          "help": "Sets the name of the file from which the fw_cfg blob will be loaded",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "help": "Sets the fw_cfg name of the blob to be inserted",
+          "type": "string"
+        }
+      ],
+      "option": "fw_cfg"
+    },
+    {
+      "parameters": [
+      ],
+      "option": ""
+    },
+    {
+      "parameters": [
+        {
+          "name": "rrsnapshot",
+          "type": "string"
+        },
+        {
+          "name": "rrfile",
+          "type": "string"
+        },
+        {
+          "name": "rr",
+          "type": "string"
+        },
+        {
+          "name": "sleep",
+          "type": "boolean"
+        },
+        {
+          "name": "align",
+          "type": "boolean"
+        },
+        {
+          "name": "shift",
+          "type": "string"
+        }
+      ],
+      "option": "icount"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "numa"
+    },
+    {
+      "parameters": [
+        {
+          "name": "debug-threads",
+          "help": "When enabled, name the individual threads; defaults off.\nNOTE: The thread names are for debugging and not a\nstable API.",
+          "type": "boolean"
+        },
+        {
+          "name": "process",
+          "help": "Sets the name of the QEMU process, as shown in top etc",
+          "type": "string"
+        },
+        {
+          "name": "guest",
+          "help": "Sets the name of the guest.\nThis name will be displayed in the SDL window caption.\nThe name will also be used for the VNC server",
+          "type": "string"
+        }
+      ],
+      "option": "name"
+    },
+    {
+      "parameters": [
+        {
+          "name": "guest-name",
+          "help": "Prepends guest name for error messages but only if -name guest is set otherwise option is ignored\n",
+          "type": "boolean"
+        },
+        {
+          "name": "timestamp",
+          "type": "boolean"
+        }
+      ],
+      "option": "msg"
+    },
+    {
+      "parameters": [
+        {
+          "name": "cpu-pm",
+          "type": "boolean"
+        },
+        {
+          "name": "mem-lock",
+          "type": "boolean"
+        }
+      ],
+      "option": "overcommit"
+    },
+    {
+      "parameters": [
+        {
+          "name": "mlock",
+          "type": "boolean"
+        }
+      ],
+      "option": "realtime"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "tpmdev"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "object"
+    },
+    {
+      "parameters": [
+        {
+          "name": "opaque",
+          "help": "free-form string used to describe fd",
+          "type": "string"
+        },
+        {
+          "name": "set",
+          "help": "ID of the fd set to add fd to",
+          "type": "number"
+        },
+        {
+          "name": "fd",
+          "help": "file descriptor of which a duplicate is added to fd set",
+          "type": "number"
+        }
+      ],
+      "option": "add-fd"
+    },
+    {
+      "parameters": [
+        {
+          "name": "strict",
+          "type": "boolean"
+        },
+        {
+          "name": "reboot-timeout",
+          "type": "number"
+        },
+        {
+          "name": "splash-time",
+          "type": "number"
+        },
+        {
+          "name": "splash",
+          "type": "string"
+        },
+        {
+          "name": "menu",
+          "type": "boolean"
+        },
+        {
+          "name": "once",
+          "type": "string"
+        },
+        {
+          "name": "order",
+          "type": "string"
+        }
+      ],
+      "option": "boot-opts"
+    },
+    {
+      "parameters": [
+        {
+          "name": "maxcpus",
+          "type": "number"
+        },
+        {
+          "name": "threads",
+          "type": "number"
+        },
+        {
+          "name": "cores",
+          "type": "number"
+        },
+        {
+          "name": "dies",
+          "type": "number"
+        },
+        {
+          "name": "sockets",
+          "type": "number"
+        },
+        {
+          "name": "cpus",
+          "type": "number"
+        }
+      ],
+      "option": "smp-opts"
+    },
+    {
+      "parameters": [
+        {
+          "name": "maxmem",
+          "type": "size"
+        },
+        {
+          "name": "slots",
+          "type": "number"
+        },
+        {
+          "name": "size",
+          "type": "size"
+        }
+      ],
+      "option": "memory"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "accel"
+    },
+    {
+      "parameters": [
+        {
+          "name": "loadparm",
+          "help": "Up to 8 chars in set of [A-Za-z0-9. ](lower case chars converted to upper case) to pass to machine loader, boot manager, and guest kernel",
+          "type": "string"
+        },
+        {
+          "name": "dea-key-wrap",
+          "help": "enable/disable DEA key wrapping using the CPACF wrapping key",
+          "type": "boolean"
+        },
+        {
+          "name": "aes-key-wrap",
+          "help": "enable/disable AES key wrapping using the CPACF wrapping key",
+          "type": "boolean"
+        },
+        {
+          "name": "suppress-vmdesc",
+          "help": "Set on to disable self-describing migration",
+          "type": "boolean"
+        },
+        {
+          "name": "iommu",
+          "help": "Set on/off to enable/disable Intel IOMMU (VT-d)",
+          "type": "boolean"
+        },
+        {
+          "name": "firmware",
+          "help": "firmware image",
+          "type": "string"
+        },
+        {
+          "name": "usb",
+          "help": "Set on/off to enable/disable usb",
+          "type": "boolean"
+        },
+        {
+          "name": "mem-merge",
+          "help": "enable/disable memory merge support",
+          "type": "boolean"
+        },
+        {
+          "name": "dump-guest-core",
+          "help": "Include guest memory in  a core dump",
+          "type": "boolean"
+        },
+        {
+          "name": "dt_compatible",
+          "help": "Overrides the \"compatible\" property of the dt root node",
+          "type": "string"
+        },
+        {
+          "name": "phandle_start",
+          "help": "The first phandle ID we may generate dynamically",
+          "type": "number"
+        },
+        {
+          "name": "dumpdtb",
+          "help": "Dump current dtb to a file and quit",
+          "type": "string"
+        },
+        {
+          "name": "dtb",
+          "help": "Linux kernel device tree file",
+          "type": "string"
+        },
+        {
+          "name": "append",
+          "help": "Linux kernel command line",
+          "type": "string"
+        },
+        {
+          "name": "initrd",
+          "help": "Linux initial ramdisk file",
+          "type": "string"
+        },
+        {
+          "name": "kernel",
+          "help": "Linux kernel image file",
+          "type": "string"
+        },
+        {
+          "name": "kvm_shadow_mem",
+          "help": "KVM shadow MMU size",
+          "type": "size"
+        },
+        {
+          "name": "kernel_irqchip",
+          "help": "use KVM in-kernel irqchip",
+          "type": "boolean"
+        },
+        {
+          "name": "accel",
+          "help": "accelerator list",
+          "type": "string"
+        },
+        {
+          "name": "type",
+          "help": "emulated machine",
+          "type": "string"
+        }
+      ],
+      "option": "machine"
+    },
+    {
+      "parameters": [
+        {
+          "name": "romfile",
+          "type": "string"
+        },
+        {
+          "name": "bootindex",
+          "type": "number"
+        }
+      ],
+      "option": "option-rom"
+    },
+    {
+      "parameters": [
+        {
+          "name": "file",
+          "type": "string"
+        },
+        {
+          "name": "events",
+          "type": "string"
+        },
+        {
+          "name": "enable",
+          "type": "string"
+        }
+      ],
+      "option": "trace"
+    },
+    {
+      "parameters": [
+        {
+          "name": "pretty",
+          "type": "boolean"
+        },
+        {
+          "name": "chardev",
+          "type": "string"
+        },
+        {
+          "name": "mode",
+          "type": "string"
+        }
+      ],
+      "option": "mon"
+    },
+    {
+      "parameters": [
+        {
+          "name": "value",
+          "type": "string"
+        },
+        {
+          "name": "property",
+          "type": "string"
+        },
+        {
+          "name": "driver",
+          "type": "string"
+        }
+      ],
+      "option": "global"
+    },
+    {
+      "parameters": [
+        {
+          "name": "driftfix",
+          "type": "string"
+        },
+        {
+          "name": "clock",
+          "type": "string"
+        },
+        {
+          "name": "base",
+          "type": "string"
+        }
+      ],
+      "option": "rtc"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "net"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "nic"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "netdev"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "device"
+    },
+    {
+      "parameters": [
+        {
+          "name": "abstract",
+          "type": "boolean"
+        },
+        {
+          "name": "tight",
+          "default": "on",
+          "type": "boolean"
+        },
+        {
+          "name": "logappend",
+          "type": "boolean"
+        },
+        {
+          "name": "logfile",
+          "type": "string"
+        },
+        {
+          "name": "append",
+          "type": "boolean"
+        },
+        {
+          "name": "chardev",
+          "type": "string"
+        },
+        {
+          "name": "size",
+          "type": "size"
+        },
+        {
+          "name": "debug",
+          "type": "number"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "signal",
+          "type": "boolean"
+        },
+        {
+          "name": "mux",
+          "type": "boolean"
+        },
+        {
+          "name": "rows",
+          "type": "number"
+        },
+        {
+          "name": "cols",
+          "type": "number"
+        },
+        {
+          "name": "height",
+          "type": "number"
+        },
+        {
+          "name": "width",
+          "type": "number"
+        },
+        {
+          "name": "websocket",
+          "type": "boolean"
+        },
+        {
+          "name": "tls-authz",
+          "type": "string"
+        },
+        {
+          "name": "tls-creds",
+          "type": "string"
+        },
+        {
+          "name": "tn3270",
+          "type": "boolean"
+        },
+        {
+          "name": "telnet",
+          "type": "boolean"
+        },
+        {
+          "name": "reconnect",
+          "type": "number"
+        },
+        {
+          "name": "delay",
+          "type": "boolean"
+        },
+        {
+          "name": "server",
+          "type": "boolean"
+        },
+        {
+          "name": "wait",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv6",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv4",
+          "type": "boolean"
+        },
+        {
+          "name": "to",
+          "type": "number"
+        },
+        {
+          "name": "localport",
+          "type": "string"
+        },
+        {
+          "name": "localaddr",
+          "type": "string"
+        },
+        {
+          "name": "fd",
+          "type": "string"
+        },
+        {
+          "name": "port",
+          "type": "string"
+        },
+        {
+          "name": "host",
+          "type": "string"
+        },
+        {
+          "name": "path",
+          "type": "string"
+        },
+        {
+          "name": "backend",
+          "type": "string"
+        }
+      ],
+      "option": "chardev"
+    },
+    {
+      "parameters": [
+        {
+          "name": "copy-on-read",
+          "help": "copy read data from backing file into image file",
+          "type": "boolean"
+        },
+        {
+          "name": "werror",
+          "help": "write error action",
+          "type": "string"
+        },
+        {
+          "name": "rerror",
+          "help": "read error action",
+          "type": "string"
+        },
+        {
+          "name": "read-only",
+          "help": "open drive file as read-only",
+          "type": "boolean"
+        },
+        {
+          "name": "file",
+          "help": "file name",
+          "type": "string"
+        },
+        {
+          "name": "if",
+          "help": "interface (ide, scsi, sd, mtd, floppy, pflash, virtio)",
+          "type": "string"
+        },
+        {
+          "name": "media",
+          "help": "media type (disk, cdrom)",
+          "type": "string"
+        },
+        {
+          "name": "index",
+          "help": "index number",
+          "type": "number"
+        },
+        {
+          "name": "unit",
+          "help": "unit number (i.e. lun for scsi)",
+          "type": "number"
+        },
+        {
+          "name": "bus",
+          "help": "bus number",
+          "type": "number"
+        },
+        {
+          "name": "stats-account-failed",
+          "help": "whether to account for failed I/O operations in the statistics",
+          "type": "boolean"
+        },
+        {
+          "name": "stats-account-invalid",
+          "help": "whether to account for invalid I/O operations in the statistics",
+          "type": "boolean"
+        },
+        {
+          "name": "detect-zeroes",
+          "help": "try to optimize zero writes (off, on, unmap)",
+          "type": "string"
+        },
+        {
+          "name": "throttling.group",
+          "help": "name of the block throttling group",
+          "type": "string"
+        },
+        {
+          "name": "throttling.iops-size",
+          "help": "when limiting by iops max size of an I/O in bytes",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-write-max-length",
+          "help": "length of the bps-write-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-read-max-length",
+          "help": "length of the bps-read-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-total-max-length",
+          "help": "length of the bps-total-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-write-max-length",
+          "help": "length of the iops-write-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-read-max-length",
+          "help": "length of the iops-read-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-total-max-length",
+          "help": "length of the iops-total-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-write-max",
+          "help": "total bytes write burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-read-max",
+          "help": "total bytes read burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-total-max",
+          "help": "total bytes burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-write-max",
+          "help": "I/O operations write burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-read-max",
+          "help": "I/O operations read burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-total-max",
+          "help": "I/O operations burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-write",
+          "help": "limit write bytes per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-read",
+          "help": "limit read bytes per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-total",
+          "help": "limit total bytes per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-write",
+          "help": "limit write operations per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-read",
+          "help": "limit read operations per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-total",
+          "help": "limit total I/O operations per second",
+          "type": "number"
+        },
+        {
+          "name": "werror",
+          "help": "write error action",
+          "type": "string"
+        },
+        {
+          "name": "format",
+          "help": "disk format (raw, qcow2, ...)",
+          "type": "string"
+        },
+        {
+          "name": "cache.writeback",
+          "help": "Enable writeback mode",
+          "type": "boolean"
+        },
+        {
+          "name": "aio",
+          "help": "host AIO implementation (threads, native, io_uring)",
+          "type": "string"
+        },
+        {
+          "name": "snapshot",
+          "help": "enable/disable snapshot mode",
+          "type": "boolean"
+        },
+        {
+          "name": "force-share",
+          "help": "always accept other writers (default: off)",
+          "type": "boolean"
+        },
+        {
+          "name": "discard",
+          "help": "discard operation (ignore/off, unmap/on)",
+          "type": "string"
+        },
+        {
+          "name": "auto-read-only",
+          "help": "Node can become read-only if opening read-write fails",
+          "type": "boolean"
+        },
+        {
+          "name": "cache.no-flush",
+          "help": "Ignore flush requests",
+          "type": "boolean"
+        },
+        {
+          "name": "cache.direct",
+          "help": "Bypass software writeback cache on the host",
+          "type": "boolean"
+        },
+        {
+          "name": "driver",
+          "help": "Block driver to use for the node",
+          "type": "string"
+        },
+        {
+          "name": "node-name",
+          "help": "Node name of the block device node",
+          "type": "string"
+        }
+      ],
+      "option": "drive"
+    }
+  ],
+  "id": "libvirt-26"
+}
+
+{
+  "execute": "query-migrate-capabilities",
+  "id": "libvirt-27"
+}
+
+{
+  "return": [
+    {
+      "state": false,
+      "capability": "xbzrle"
+    },
+    {
+      "state": false,
+      "capability": "rdma-pin-all"
+    },
+    {
+      "state": false,
+      "capability": "auto-converge"
+    },
+    {
+      "state": false,
+      "capability": "zero-blocks"
+    },
+    {
+      "state": false,
+      "capability": "compress"
+    },
+    {
+      "state": false,
+      "capability": "events"
+    },
+    {
+      "state": false,
+      "capability": "postcopy-ram"
+    },
+    {
+      "state": false,
+      "capability": "x-colo"
+    },
+    {
+      "state": false,
+      "capability": "release-ram"
+    },
+    {
+      "state": false,
+      "capability": "block"
+    },
+    {
+      "state": false,
+      "capability": "return-path"
+    },
+    {
+      "state": false,
+      "capability": "pause-before-switchover"
+    },
+    {
+      "state": false,
+      "capability": "multifd"
+    },
+    {
+      "state": false,
+      "capability": "dirty-bitmaps"
+    },
+    {
+      "state": false,
+      "capability": "postcopy-blocktime"
+    },
+    {
+      "state": false,
+      "capability": "late-block-activate"
+    },
+    {
+      "state": false,
+      "capability": "x-ignore-shared"
+    },
+    {
+      "state": false,
+      "capability": "validate-uuid"
     }
   ],
   "id": "libvirt-27"

@@ -5293,6 +5293,8 @@ virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
     /* initiate all capabilities based on qemu version */
     virQEMUCapsInitQMPVersionCaps(qemuCaps);
 
+    if (virQEMUCapsProbeQMPSchemaCapabilities(qemuCaps, mon) < 0)
+        return -1;
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
         return -1;
 
@@ -5320,8 +5322,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
     if (virQEMUCapsProbeQMPCommandLine(qemuCaps, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPMigrationCapabilities(qemuCaps, mon) < 0)
-        return -1;
-    if (virQEMUCapsProbeQMPSchemaCapabilities(qemuCaps, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPGICCapabilities(qemuCaps, mon) < 0)
         return -1;
