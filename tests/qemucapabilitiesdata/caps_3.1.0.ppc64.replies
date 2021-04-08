@@ -5404,11 +5404,11 @@
 }
 
 {
-    "execute": "device-list-properties",
-    "arguments": {
-        "typename": "usb-host"
-    },
-    "id": "libvirt-30"
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "usb-host"
+  },
+  "id": "libvirt-30"
 }
 
 {

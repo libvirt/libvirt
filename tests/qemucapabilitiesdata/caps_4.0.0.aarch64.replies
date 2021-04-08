@@ -5829,11 +5829,11 @@
 }
 
 {
-    "execute": "device-list-properties",
-    "arguments": {
-        "typename": "usb-host"
-    },
-    "id": "libvirt-31"
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "usb-host"
+  },
+  "id": "libvirt-31"
 }
 
 {

@@ -4752,11 +4752,11 @@
 }
 
 {
-    "execute": "device-list-properties",
-    "arguments": {
-        "typename": "usb-host"
-    },
-    "id": "libvirt-36"
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "usb-host"
+  },
+  "id": "libvirt-36"
 }
 
 {

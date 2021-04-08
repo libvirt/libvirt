@@ -6006,11 +6006,11 @@
 }
 
 {
-    "execute": "device-list-properties",
-    "arguments": {
-        "typename": "usb-host"
-    },
-    "id": "libvirt-32"
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "usb-host"
+  },
+  "id": "libvirt-32"
 }
 
 {
