@@ -207,7 +207,7 @@ cc = meson.get_compiler('c')
 cc_flags = []
 
 git_werror = get_option('git_werror')
-if git_werror.enabled() or git_werror.auto() and git
+if (git_werror.enabled() or git_werror.auto()) and git and not get_option('werror')
   cc_flags += [ '-Werror' ]
 endif
 
@@ -2269,7 +2269,6 @@ else
   loader_res = ''
 endif
 misc_summary = {
-  'Use -Werror': cc_flags.contains('-Werror'),
   'Warning Flags': supported_cc_flags,
   'docs': gen_docs,
   'tests': build_tests,
