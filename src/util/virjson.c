@@ -1174,57 +1174,6 @@ virJSONValueGetBoolean(virJSONValuePtr val,
 }
 
 
-/**
- * virJSONValueGetArrayAsBitmap:
- * @val: JSON array to convert to bitmap
- * @bitmap: New bitmap is allocated filled and returned via this argument
- *
- * Attempts a conversion of a JSON array to a bitmap. The members of the array
- * must be non-negative integers for the conversion to succeed. This function
- * does not report libvirt errors so that it can be used to probe that the
- * array can be represented as a bitmap.
- *
- * Returns 0 on success and fills @bitmap; -1 on error and  @bitmap is set to
- * NULL.
- */
-int
-virJSONValueGetArrayAsBitmap(const virJSONValue *val,
-                             virBitmapPtr *bitmap)
-{
-    virJSONValuePtr elem;
-    size_t i;
-    g_autofree unsigned long long *elems = NULL;
-    unsigned long long maxelem = 0;
-
-    *bitmap = NULL;
-
-    if (val->type != VIR_JSON_TYPE_ARRAY)
-        return -1;
-
-    elems = g_new0(unsigned long long, val->data.array.nvalues);
-
-    /* first pass converts array members to numbers and finds the maximum */
-    for (i = 0; i < val->data.array.nvalues; i++) {
-        elem = val->data.array.values[i];
-
-        if (elem->type != VIR_JSON_TYPE_NUMBER ||
-            virStrToLong_ullp(elem->data.number, NULL, 10, &elems[i]) < 0)
-            return -1;
-
-        if (elems[i] > maxelem)
-            maxelem = elems[i];
-    }
-
-    *bitmap = virBitmapNew(maxelem + 1);
-
-    /* second pass sets the correct bits in the map */
-    for (i = 0; i < val->data.array.nvalues; i++)
-        ignore_value(virBitmapSetBit(*bitmap, elems[i]));
-
-    return 0;
-}
-
-
 virJSONValuePtr
 virJSONValueNewArrayFromBitmap(virBitmapPtr bitmap)
 {

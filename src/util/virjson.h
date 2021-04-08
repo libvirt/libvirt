@@ -107,8 +107,6 @@ int virJSONValueGetNumberLong(virJSONValuePtr object, long long *value);
 int virJSONValueGetNumberUlong(virJSONValuePtr object, unsigned long long *value);
 int virJSONValueGetNumberDouble(virJSONValuePtr object, double *value);
 int virJSONValueGetBoolean(virJSONValuePtr object, bool *value);
-int virJSONValueGetArrayAsBitmap(const virJSONValue *val, virBitmapPtr *bitmap)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 bool virJSONValueIsNull(virJSONValuePtr object);
 virJSONValuePtr virJSONValueObjectGetObject(virJSONValuePtr object,
                                             const char *key);

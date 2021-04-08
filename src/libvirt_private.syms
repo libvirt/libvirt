@@ -2478,7 +2478,6 @@ virJSONValueArraySteal;
 virJSONValueCopy;
 virJSONValueFree;
 virJSONValueFromString;
-virJSONValueGetArrayAsBitmap;
 virJSONValueGetBoolean;
 virJSONValueGetNumberDouble;
 virJSONValueGetNumberInt;
