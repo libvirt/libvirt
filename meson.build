@@ -398,6 +398,8 @@ cc_flags += [
   '-Wwrite-strings',
 ]
 
+supported_cc_flags = cc.get_supported_arguments(cc_flags)
+
 # on aarch64 error: -fstack-protector not supported for this target
 if host_machine.cpu_family() != 'aarch64'
   if host_machine.system() in [ 'linux', 'freebsd', 'windows' ]
@@ -406,7 +408,7 @@ if host_machine.cpu_family() != 'aarch64'
       '-fstack-protector-strong',
       '-fstack-protector-all',
     ])
-    cc_flags += fstack_cflags
+    supported_cc_flags += fstack_cflags
 
     # When building with mingw using -fstack-protector requires libssp library
     # which is included by using -fstack-protector with linker.
@@ -416,7 +418,7 @@ if host_machine.cpu_family() != 'aarch64'
   endif
 endif
 
-if cc.has_argument('-Wlogical-op')
+if supported_cc_flags.contains('-Wlogical-op')
   # Broken in 6.0 and later
   #     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69602
   w_logical_op_args = ['-O2', '-Wlogical-op', '-Werror']
@@ -445,7 +447,7 @@ w_double_promotion_code = '''
   }
 '''
 if cc.compiles(w_double_promotion_code, args: w_double_promotion_args, name: '-Wdouble-promotion')
-  cc_flags += ['-Wdouble-promotion']
+  supported_cc_flags += ['-Wdouble-promotion']
 endif
 
 # Clang complains about unused static inline functions which are common
@@ -458,10 +460,9 @@ w_unused_function_code = '''
 '''
 # -Wunused-function is implied by -Wall, we must turn it off explicitly.
 if not cc.compiles(w_unused_function_code, args: w_unused_function_args)
-  cc_flags += ['-Wno-unused-function']
+  supported_cc_flags += ['-Wno-unused-function']
 endif
 
-supported_cc_flags = cc.get_supported_arguments(cc_flags)
 add_project_arguments(supported_cc_flags, language: 'c')
 
 if cc.has_argument('-Wsuggest-attribute=format')
