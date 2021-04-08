@@ -211,7 +211,23 @@ if git_werror.enabled() or git_werror.auto() and git
   cc_flags += [ '-Werror' ]
 endif
 
+
+# gcc --help=warnings outputs
+ptrdiff_max = cc.sizeof('ptrdiff_t', prefix: '#include <stddef.h>')
+size_max = cc.sizeof('size_t', prefix: '#include <stdint.h>')
+# Compute max safe object size by checking ptrdiff_t and size_t sizes.
+# Ideally we would get PTRDIFF_MAX and SIZE_MAX values but it would
+# give us (2147483647L) and we would have to remove the () and the suffix
+# in order to convert it to numbers to be able to pick the smaller one.
+alloc_max = run_command(
+  'python3', '-c',
+  'print(min(2**(@0@ * 8 - 1) - 1, 2**(@1@ * 8) - 1))'.format(ptrdiff_max, size_max),
+)
+
 cc_flags += [
+  '-fasynchronous-unwind-tables',
+  '-fexceptions',
+  '-fipa-pure-const',
   '-fno-common',
   '-W',
   '-Wabsolute-value',
@@ -219,6 +235,9 @@ cc_flags += [
   '-Waddress-of-packed-member',
   '-Waggressive-loop-optimizations',
   '-Wall',
+  '-Walloc-size-larger-than=@0@'.format(alloc_max.stdout().strip()),
+  '-Warray-bounds=2',
+  '-Wattribute-alias=2',
   '-Wattribute-warning',
   '-Wattributes',
   '-Wbool-compare',
@@ -228,7 +247,8 @@ cc_flags += [
   '-Wcannot-profile',
   '-Wcast-align',
   '-Wcast-align=strict',
-  '-Wcast-function-type',
+  # We do "bad" function casts all the time for event callbacks
+  '-Wno-cast-function-type',
   '-Wchar-subscripts',
   '-Wclobbered',
   '-Wcomment',
@@ -251,17 +271,24 @@ cc_flags += [
   '-Wextra',
   '-Wformat-contains-nul',
   '-Wformat-extra-args',
-  '-Wformat-nonliteral',
+  # -Wformat=2 implies -Wformat-nonliteral so we need to manually exclude it
+  '-Wno-format-nonliteral',
+  '-Wformat-overflow=2',
   '-Wformat-security',
+  # -Wformat enables this by default, and we should keep it,
+  # but need to rewrite various areas of code first
+  '-Wno-format-truncation',
   '-Wformat-y2k',
   '-Wformat-zero-length',
   '-Wframe-address',
+  '-Wframe-larger-than=4096',
   '-Wfree-nonheap-object',
   '-Whsa',
   '-Wif-not-aligned',
   '-Wignored-attributes',
   '-Wignored-qualifiers',
   '-Wimplicit',
+  '-Wimplicit-fallthrough=5',
   '-Wimplicit-function-declaration',
   '-Wimplicit-int',
   '-Wincompatible-pointer-types',
@@ -272,6 +299,7 @@ cc_flags += [
   '-Wint-to-pointer-cast',
   '-Winvalid-memory-model',
   '-Winvalid-pch',
+  '-Wjump-misses-init',
   '-Wlogical-not-parentheses',
   '-Wlogical-op',
   '-Wmain',
@@ -293,6 +321,7 @@ cc_flags += [
   '-Wnested-externs',
   '-Wnonnull',
   '-Wnonnull-compare',
+  '-Wnormalized=nfc',
   '-Wnull-dereference',
   '-Wodr',
   '-Wold-style-declaration',
@@ -318,32 +347,41 @@ cc_flags += [
   '-Wshift-count-negative',
   '-Wshift-count-overflow',
   '-Wshift-negative-value',
+  '-Wshift-overflow=2',
+  # So we have -W enabled, and then have to explicitly turn off...
+  '-Wno-sign-compare',
   '-Wsizeof-array-argument',
   '-Wsizeof-pointer-div',
   '-Wsizeof-pointer-memaccess',
   '-Wstrict-aliasing',
   '-Wstrict-prototypes',
+  '-Wstringop-overflow=2',
   '-Wstringop-truncation',
   '-Wsuggest-attribute=cold',
-  '-Wsuggest-attribute=const',
+  '-Wno-suggest-attribute=const',
   '-Wsuggest-attribute=format',
   '-Wsuggest-attribute=noreturn',
-  '-Wsuggest-attribute=pure',
+  '-Wno-suggest-attribute=pure',
   '-Wsuggest-final-methods',
   '-Wsuggest-final-types',
   '-Wswitch',
   '-Wswitch-bool',
+  '-Wswitch-enum',
   '-Wswitch-unreachable',
   '-Wsync-nand',
   '-Wtautological-compare',
   '-Wtrampolines',
   '-Wtrigraphs',
   '-Wtype-limits',
+  # Clang incorrectly complains about dup typedefs win gnu99 mode
+  # so use this Clang-specific arg to keep it quiet
+  '-Wno-typedef-redefinition',
   '-Wuninitialized',
   '-Wunknown-pragmas',
   '-Wunused',
   '-Wunused-but-set-parameter',
   '-Wunused-but-set-variable',
+  '-Wunused-const-variable=2',
   '-Wunused-function',
   '-Wunused-label',
   '-Wunused-local-typedefs',
@@ -355,74 +393,9 @@ cc_flags += [
   '-Wvariadic-macros',
   '-Wvector-operation-performance',
   '-Wvla',
+  '-Wvla-larger-then=4031',
   '-Wvolatile-register-var',
   '-Wwrite-strings',
-]
-
-# gcc --help=warnings outputs
-ptrdiff_max = cc.sizeof('ptrdiff_t', prefix: '#include <stddef.h>')
-size_max = cc.sizeof('size_t', prefix: '#include <stdint.h>')
-# Compute max safe object size by checking ptrdiff_t and size_t sizes.
-# Ideally we would get PTRDIFF_MAX and SIZE_MAX values but it would
-# give us (2147483647L) and we would have to remove the () and the suffix
-# in order to convert it to numbers to be able to pick the smaller one.
-alloc_max = run_command(
-  'python3', '-c',
-  'print(min(2**(@0@ * 8 - 1) - 1, 2**(@1@ * 8) - 1))'.format(ptrdiff_max, size_max),
-)
-cc_flags += [
-  '-Walloc-size-larger-than=@0@'.format(alloc_max.stdout().strip()),
-  '-Warray-bounds=2',
-  '-Wattribute-alias=2',
-  '-Wformat-overflow=2',
-  '-Wformat-truncation=2',
-  '-Wimplicit-fallthrough=5',
-  '-Wnormalized=nfc',
-  '-Wshift-overflow=2',
-  '-Wstringop-overflow=2',
-  '-Wunused-const-variable=2',
-  '-Wvla-larger-then=4031',
-]
-
-cc_flags += [
-  # So we have -W enabled, and then have to explicitly turn off...
-  '-Wno-sign-compare',
-
-  # We do "bad" function casts all the time for event callbacks
-  '-Wno-cast-function-type',
-
-  # Clang incorrectly complains about dup typedefs win gnu99 mode
-  # so use this Clang-specific arg to keep it quiet
-  '-Wno-typedef-redefinition',
-
-  # We don't use -Wc++-compat so we have to enable it explicitly
-  '-Wjump-misses-init',
-
-  # -Wswitch is enabled but that doesn't report missing enums if a default:
-  # is present
-  '-Wswitch-enum',
-
-  # -Wformat=2 implies -Wformat-nonliteral so we need to manually exclude it
-  '-Wno-format-nonliteral',
-
-  # -Wformat enables this by default, and we should keep it,
-  # but need to rewrite various areas of code first
-  '-Wno-format-truncation',
-
-  '-Wframe-larger-than=4096',
-
-  # extra special flags
-  '-fexceptions',
-  '-fasynchronous-unwind-tables',
-
-  # Need -fipa-pure-const in order to make -Wsuggest-attribute=pure
-  # fire even without -O.
-  '-fipa-pure-const',
-
-  # We should eventually enable this, but right now there are at
-  # least 75 functions triggering warnings.
-  '-Wno-suggest-attribute=pure',
-  '-Wno-suggest-attribute=const',
 ]
 
 # on aarch64 error: -fstack-protector not supported for this target
