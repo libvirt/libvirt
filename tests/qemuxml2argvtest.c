@@ -353,13 +353,13 @@ testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
 
 static int
 testUpdateQEMUCaps(const struct testQemuInfo *info,
-                   virDomainObjPtr vm,
+                   virArch arch,
                    virCapsPtr caps)
 {
     if (!caps)
         return -1;
 
-    virQEMUCapsSetArch(info->qemuCaps, vm->def->os.arch);
+    virQEMUCapsSetArch(info->qemuCaps, arch);
 
     virQEMUCapsInitQMPBasicArch(info->qemuCaps);
 
@@ -648,6 +648,8 @@ testCompareXMLToArgv(const void *data)
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr root;
+    g_autofree char *archstr = NULL;
+    virArch arch = VIR_ARCH_NONE;
 
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, info->arch);
@@ -685,6 +687,17 @@ testCompareXMLToArgv(const void *data)
         goto cleanup;
 
     ctxt->node = root;
+
+    if ((archstr = virXPathString("string(./os/type[1]/@arch)", ctxt))) {
+        if ((arch = virArchFromString(archstr)) == VIR_ARCH_NONE) {
+            arch = virArchFromHost();
+        }
+    }
+
+    if (!(info->flags & FLAG_REAL_CAPS)) {
+        if (testUpdateQEMUCaps(info, arch, driver.caps) < 0)
+            goto cleanup;
+    }
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
         goto cleanup;
@@ -739,7 +752,7 @@ testCompareXMLToArgv(const void *data)
         goto cleanup;
 
     if (!(info->flags & FLAG_REAL_CAPS)) {
-        if (testUpdateQEMUCaps(info, vm, driver.caps) < 0)
+        if (testUpdateQEMUCaps(info, vm->def->os.arch, driver.caps) < 0)
             goto cleanup;
         if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
             goto cleanup;
