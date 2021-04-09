@@ -15,6 +15,9 @@
 #include "virfilewrapper.h"
 #include "configmake.h"
 
+#define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
+#include "qemu/qemu_capspriv.h"
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 static virQEMUDriver driver;
@@ -27,9 +30,25 @@ enum {
 
 
 static int
+testXML2XMLCommon(const struct testQemuInfo *info)
+{
+    if (!(info->flags & FLAG_REAL_CAPS)) {
+        virQEMUCapsInitQMPBasicArch(info->qemuCaps);
+        if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 testXML2XMLActive(const void *opaque)
 {
     const struct testQemuInfo *info = opaque;
+
+    if (testXML2XMLCommon(info) < 0)
+        return -1;
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
                                       info->infile, info->outfile, true,
@@ -42,6 +61,9 @@ static int
 testXML2XMLInactive(const void *opaque)
 {
     const struct testQemuInfo *info = opaque;
+
+    if (testXML2XMLCommon(info) < 0)
+        return -1;
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
                                       info->infile, info->outfile, false,
