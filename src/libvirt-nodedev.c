@@ -782,6 +782,7 @@ virNodeDeviceDefineXML(virConnectPtr conn,
 /**
  * virNodeDeviceUndefine:
  * @dev: a device object
+ * @flags: extra flags; not used yet, so callers should always pass 0
  *
  * Undefine the device object. The virtual device  is removed from the host
  * operating system.  This function may require privileged access.
@@ -789,9 +790,10 @@ virNodeDeviceDefineXML(virConnectPtr conn,
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-virNodeDeviceUndefine(virNodeDevicePtr dev)
+virNodeDeviceUndefine(virNodeDevicePtr dev,
+                      unsigned int flags)
 {
-    VIR_DEBUG("dev=%p", dev);
+    VIR_DEBUG("dev=%p, flags=0x%x", dev, flags);
 
     virResetLastError();
 
@@ -800,7 +802,7 @@ virNodeDeviceUndefine(virNodeDevicePtr dev)
 
     if (dev->conn->nodeDeviceDriver &&
         dev->conn->nodeDeviceDriver->nodeDeviceUndefine) {
-        int retval = dev->conn->nodeDeviceDriver->nodeDeviceUndefine(dev);
+        int retval = dev->conn->nodeDeviceDriver->nodeDeviceUndefine(dev, flags);
         if (retval < 0)
             goto error;
 
@@ -818,15 +820,17 @@ virNodeDeviceUndefine(virNodeDevicePtr dev)
 /**
  * virNodeDeviceCreate:
  * @dev: a device object
+ * @flags: extra flags; not used yet, so callers should always pass 0
  *
  * Start a defined node device:
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-virNodeDeviceCreate(virNodeDevicePtr dev)
+virNodeDeviceCreate(virNodeDevicePtr dev,
+                    unsigned int flags)
 {
-    VIR_DEBUG("dev=%p", dev);
+    VIR_DEBUG("dev=%p, flags=0x%x", dev, flags);
 
     virResetLastError();
 
@@ -835,7 +839,7 @@ virNodeDeviceCreate(virNodeDevicePtr dev)
 
     if (dev->conn->nodeDeviceDriver &&
         dev->conn->nodeDeviceDriver->nodeDeviceCreate) {
-        int retval = dev->conn->nodeDeviceDriver->nodeDeviceCreate(dev);
+        int retval = dev->conn->nodeDeviceDriver->nodeDeviceCreate(dev, flags);
         if (retval < 0)
             goto error;
 

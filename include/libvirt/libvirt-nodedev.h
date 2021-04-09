@@ -135,9 +135,11 @@ virNodeDevicePtr virNodeDeviceDefineXML(virConnectPtr conn,
                                         const char *xmlDesc,
                                         unsigned int flags);
 
-int virNodeDeviceUndefine(virNodeDevicePtr dev);
+int virNodeDeviceUndefine(virNodeDevicePtr dev,
+                          unsigned int flags);
 
-int virNodeDeviceCreate(virNodeDevicePtr dev);
+int virNodeDeviceCreate(virNodeDevicePtr dev,
+                        unsigned int flags);
 
 /**
  * VIR_NODE_DEVICE_EVENT_CALLBACK:

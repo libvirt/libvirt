@@ -1609,9 +1609,11 @@ struct remote_node_device_define_xml_ret {
 };
 struct remote_node_device_undefine_args {
         remote_nonnull_string      name;
+        u_int                      flags;
 };
 struct remote_node_device_create_args {
         remote_nonnull_string      name;
+        u_int                      flags;
 };
 struct remote_connect_domain_event_register_ret {
         int                        cb_registered;

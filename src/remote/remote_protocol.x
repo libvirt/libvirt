@@ -2156,10 +2156,12 @@ struct remote_node_device_define_xml_ret {
 
 struct remote_node_device_undefine_args {
     remote_nonnull_string name;
+    unsigned int flags;
 };
 
 struct remote_node_device_create_args {
     remote_nonnull_string name;
+    unsigned int flags;
 };
 
 

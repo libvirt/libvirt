@@ -1341,11 +1341,14 @@ nodeDeviceDefineXML(virConnect *conn,
 
 
 int
-nodeDeviceUndefine(virNodeDevice *device)
+nodeDeviceUndefine(virNodeDevice *device,
+                   unsigned int flags)
 {
     int ret = -1;
     virNodeDeviceObj *obj = NULL;
     virNodeDeviceDef *def;
+
+    virCheckFlags(0, -1);
 
     if (nodeDeviceWaitInit() < 0)
         return -1;
@@ -1387,11 +1390,14 @@ nodeDeviceUndefine(virNodeDevice *device)
 
 
 int
-nodeDeviceCreate(virNodeDevice *device)
+nodeDeviceCreate(virNodeDevice *device,
+                 unsigned int flags)
 {
     int ret = -1;
     virNodeDeviceObj *obj = NULL;
     virNodeDeviceDef *def = NULL;
+
+    virCheckFlags(0, -1);
 
     if (!(obj = nodeDeviceObjFindByName(device->name)))
         return -1;

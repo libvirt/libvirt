@@ -108,7 +108,8 @@ nodeDeviceDefineXML(virConnect *conn,
                     unsigned int flags);
 
 int
-nodeDeviceUndefine(virNodeDevice *dev);
+nodeDeviceUndefine(virNodeDevice *dev,
+                   unsigned int flags);
 
 int
 nodeConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
@@ -165,4 +166,5 @@ nodeDeviceGetMdevctlCreateCommand(const char *uuid,
                                   char **errmsg);
 
 int
-nodeDeviceCreate(virNodeDevice *dev);
+nodeDeviceCreate(virNodeDevice *dev,
+                 unsigned int flags);

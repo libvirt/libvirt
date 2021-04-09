@@ -80,10 +80,12 @@ typedef virNodeDevicePtr
                              unsigned int flags);
 
 typedef int
-(*virDrvNodeDeviceUndefine)(virNodeDevicePtr dev);
+(*virDrvNodeDeviceUndefine)(virNodeDevicePtr dev,
+                            unsigned int flags);
 
 typedef int
-(*virDrvNodeDeviceCreate)(virNodeDevicePtr dev);
+(*virDrvNodeDeviceCreate)(virNodeDevicePtr dev,
+                          unsigned int flags);
 
 typedef int
 (*virDrvConnectNodeDeviceEventRegisterAny)(virConnectPtr conn,
