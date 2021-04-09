@@ -645,11 +645,8 @@ nodeDeviceFindAddressByName(const char *name)
     char *addr = NULL;
     virNodeDeviceObj *dev = virNodeDeviceObjListFindByName(driver->devs, name);
 
-    if (!dev) {
-        virReportError(VIR_ERR_NO_NODE_DEVICE,
-                       _("could not find device '%s'"), name);
+    if (!dev)
         return NULL;
-    }
 
     def = virNodeDeviceObjGetDef(dev);
     for (caps = def->caps; caps != NULL; caps = caps->next) {
