@@ -1,1 +1,4 @@
-$MDEVCTL_BINARY$ define -p 0000:00:02.0 --jsonfile /dev/stdin
+mdevctl \
+define \
+-p 0000:00:02.0 \
+--jsonfile /dev/stdin

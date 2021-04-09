@@ -40,21 +40,6 @@ testCommandDryRunCallback(const char *const*args G_GNUC_UNUSED,
     *stdinbuf = g_strdup(input);
 }
 
-/* We don't want the result of the test to depend on the path to the mdevctl
- * binary on the developer's machine, so replace the path to mdevctl with a
- * placeholder string before comparing to the expected output */
-static int
-nodedevCompareToFile(const char *actual,
-                     const char *filename)
-{
-    g_autofree char *replacedCmdline = NULL;
-
-    replacedCmdline = virStringReplace(actual, MDEVCTL, "$MDEVCTL_BINARY$");
-
-    return virTestCompareToFile(replacedCmdline, filename);
-}
-
-
 typedef virCommand* (*MdevctlCmdFunc)(virNodeDeviceDef *, char **, char **);
 
 
@@ -87,14 +72,14 @@ testMdevctlStartOrDefine(const char *virt_type,
     if (!cmd)
         goto cleanup;
 
-    virCommandSetDryRun(dryRunToken, &buf, false, false, testCommandDryRunCallback, &stdinbuf);
+    virCommandSetDryRun(dryRunToken, &buf, true, true, testCommandDryRunCallback, &stdinbuf);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     if (!(actualCmdline = virBufferCurrentContent(&buf)))
         goto cleanup;
 
-    if (nodedevCompareToFile(actualCmdline, cmdfile) < 0)
+    if (virTestCompareToFileFull(actualCmdline, cmdfile, false) < 0)
         goto cleanup;
 
     if (virTestCompareToFile(stdinbuf, jsonfile) < 0)
@@ -159,14 +144,14 @@ testMdevctlUuidCommand(const char *uuid, GetStopUndefineCmdFunc func, const char
     if (!cmd)
         goto cleanup;
 
-    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, true, true, NULL, NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     if (!(actualCmdline = virBufferCurrentContent(&buf)))
         goto cleanup;
 
-    if (nodedevCompareToFile(actualCmdline, outfile) < 0)
+    if (virTestCompareToFileFull(actualCmdline, outfile, false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -221,14 +206,14 @@ testMdevctlListDefined(const void *data G_GNUC_UNUSED)
     if (!cmd)
         goto cleanup;
 
-    virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, true, true, NULL, NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     if (!(actualCmdline = virBufferCurrentContent(&buf)))
         goto cleanup;
 
-    if (nodedevCompareToFile(actualCmdline, cmdlinefile) < 0)
+    if (virTestCompareToFileFull(actualCmdline, cmdlinefile, false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -270,7 +255,7 @@ testMdevctlParse(const void *data)
         virBufferAddStr(&xmloutbuf, devxml);
     }
 
-    if (nodedevCompareToFile(virBufferCurrentContent(&xmloutbuf), xmloutfile) < 0)
+    if (virTestCompareToFileFull(virBufferCurrentContent(&xmloutbuf), xmloutfile, false) < 0)
         goto cleanup;
 
     ret = 0;

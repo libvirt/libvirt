@@ -1,2 +1,5 @@
-$MDEVCTL_BINARY$ define -p 0000:00:02.0 --jsonfile /dev/stdin \
+mdevctl \
+define \
+-p 0000:00:02.0 \
+--jsonfile /dev/stdin \
 --uuid=d069d019-36ea-4111-8f0a-8c9a70e21366

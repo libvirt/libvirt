@@ -1,1 +1,4 @@
-$MDEVCTL_BINARY$ list --dumpjson --defined
+mdevctl \
+list \
+--dumpjson \
+--defined

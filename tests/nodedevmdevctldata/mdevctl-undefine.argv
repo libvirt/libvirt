@@ -1,1 +1,3 @@
-$MDEVCTL_BINARY$ undefine -u d76a6b78-45ed-4149-a325-005f9abc5281
+mdevctl \
+undefine \
+-u d76a6b78-45ed-4149-a325-005f9abc5281
