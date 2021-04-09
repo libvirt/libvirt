@@ -12,7 +12,6 @@
 
 struct TestInfo {
     const char *virt_type;
-    int create;
     const char *filename;
     virMdevctlCommand command;
 };
@@ -37,7 +36,6 @@ typedef virCommand * (*MdevctlCmdFunc)(virNodeDeviceDef *, char **, char **);
 
 static int
 testMdevctlCmd(const char *virt_type,
-               int create,
                virMdevctlCommand cmd_type,
                const char *mdevxml,
                const char *cmdfile,
@@ -53,6 +51,22 @@ testMdevctlCmd(const char *virt_type,
     g_autofree char *stdinbuf = NULL;
     g_autoptr(virCommand) cmd = NULL;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
+    int create;
+
+    switch (cmd_type) {
+        case MDEVCTL_CMD_CREATE:
+        case MDEVCTL_CMD_DEFINE:
+            create = CREATE_DEVICE;
+            break;
+        case MDEVCTL_CMD_START:
+        case MDEVCTL_CMD_STOP:
+        case MDEVCTL_CMD_UNDEFINE:
+            create = EXISTING_DEVICE;
+            break;
+        case MDEVCTL_CMD_LAST:
+        default:
+            goto cleanup;
+    }
 
     if (!(def = virNodeDeviceDefParseFile(mdevxml, create, virt_type)))
         goto cleanup;
@@ -106,8 +120,8 @@ testMdevctlHelper(const void *data)
     jsonfile = g_strdup_printf("%s/nodedevmdevctldata/%s-%s.json", abs_srcdir,
                                info->filename, cmd);
 
-    return testMdevctlCmd(info->virt_type, info->create, info->command,
-                          mdevxml, cmdlinefile, jsonfile);
+    return testMdevctlCmd(info->virt_type, info->command, mdevxml,
+                          cmdlinefile, jsonfile);
 }
 
 
@@ -316,27 +330,27 @@ mymain(void)
     if (virTestRun(desc, func, info) < 0) \
         ret = -1;
 
-#define DO_TEST_CMD(desc, virt_type, create, filename, command) \
+#define DO_TEST_CMD(desc, virt_type, filename, command) \
     do { \
-        struct TestInfo info = { virt_type, create, filename, command }; \
+        struct TestInfo info = { virt_type, filename, command }; \
         DO_TEST_FULL(desc, testMdevctlHelper, &info); \
        } \
     while (0)
 
 #define DO_TEST_CREATE(filename) \
-    DO_TEST_CMD("create mdev " filename, "QEMU", CREATE_DEVICE, filename, MDEVCTL_CMD_CREATE)
+    DO_TEST_CMD("create mdev " filename, "QEMU", filename, MDEVCTL_CMD_CREATE)
 
 #define DO_TEST_DEFINE(filename) \
-    DO_TEST_CMD("define mdev " filename, "QEMU", CREATE_DEVICE, filename, MDEVCTL_CMD_DEFINE)
+    DO_TEST_CMD("define mdev " filename, "QEMU", filename, MDEVCTL_CMD_DEFINE)
 
 #define DO_TEST_STOP(filename) \
-    DO_TEST_CMD("stop mdev " filename, "QEMU", EXISTING_DEVICE, filename, MDEVCTL_CMD_STOP)
+    DO_TEST_CMD("stop mdev " filename, "QEMU", filename, MDEVCTL_CMD_STOP)
 
 #define DO_TEST_UNDEFINE(filename) \
-    DO_TEST_CMD("undefine mdev" filename, "QEMU", EXISTING_DEVICE, filename, MDEVCTL_CMD_UNDEFINE)
+    DO_TEST_CMD("undefine mdev" filename, "QEMU", filename, MDEVCTL_CMD_UNDEFINE)
 
 #define DO_TEST_START(filename) \
-    DO_TEST_CMD("start mdev " filename, "QEMU", EXISTING_DEVICE, filename, MDEVCTL_CMD_START)
+    DO_TEST_CMD("start mdev " filename, "QEMU", filename, MDEVCTL_CMD_START)
 
 #define DO_TEST_LIST_DEFINED() \
     DO_TEST_FULL("list defined mdevs", testMdevctlListDefined, NULL)
