@@ -13,7 +13,6 @@
   <flag name='seccomp-sandbox'/>
   <flag name='reboot-timeout'/>
   <flag name='vnc'/>
-  <flag name='device-video-primary'/>
   <flag name='nbd-server'/>
   <flag name='rng-random'/>
   <flag name='rng-egd'/>

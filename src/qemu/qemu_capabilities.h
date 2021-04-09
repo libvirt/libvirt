@@ -215,7 +215,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 120 */
     QEMU_CAPS_DEVICE_VMWARE_SVGA, /* -device vmware-svga */
-    QEMU_CAPS_DEVICE_VIDEO_PRIMARY, /* -device safe for primary video device */
+    X_QEMU_CAPS_DEVICE_VIDEO_PRIMARY, /* -device safe for primary video device */
     QEMU_CAPS_DEVICE_SCLPCONSOLE, /* -device sclpconsole */
     QEMU_CAPS_DEVICE_USB_SERIAL, /* -device usb-serial */
     X_QEMU_CAPS_DEVICE_USB_NET, /* -device usb-net */

@@ -32,7 +32,6 @@
   <flag name='reboot-timeout'/>
   <flag name='vnc'/>
   <flag name='VGA'/>
-  <flag name='device-video-primary'/>
   <flag name='usb-serial'/>
   <flag name='nbd-server'/>
   <flag name='virtio-rng'/>

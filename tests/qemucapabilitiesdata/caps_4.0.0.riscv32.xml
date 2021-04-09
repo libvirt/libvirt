@@ -38,7 +38,6 @@
   <flag name='VGA'/>
   <flag name='cirrus-vga'/>
   <flag name='vmware-svga'/>
-  <flag name='device-video-primary'/>
   <flag name='usb-serial'/>
   <flag name='nbd-server'/>
   <flag name='virtio-rng'/>

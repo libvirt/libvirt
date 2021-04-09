@@ -18,7 +18,6 @@
   <flag name='seccomp-sandbox'/>
   <flag name='reboot-timeout'/>
   <flag name='vnc'/>
-  <flag name='device-video-primary'/>
   <flag name='s390-sclp'/>
   <flag name='nbd-server'/>
   <flag name='virtio-rng'/>
