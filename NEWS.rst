@@ -11,6 +11,13 @@ For a more fine-grained view, use the `git log`_.
 v7.4.0 (unreleased)
 ===================
 
+* **Removed features**
+
+  * qemu: Remove support for QEMU < 2.11
+
+    In accordance with our platform support policy, the oldest supported QEMU
+    version is now bumped from 1.5 to 2.11.
+
 * **New features**
 
 * **Improvements**
