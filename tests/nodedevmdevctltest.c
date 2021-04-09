@@ -42,7 +42,6 @@ testMdevctlCmd(virMdevctlCommand cmd_type,
                const char *jsonfile)
 {
     g_autoptr(virNodeDeviceDef) def = NULL;
-    virNodeDeviceObj *obj = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *actualCmdline = NULL;
     int ret = -1;
@@ -99,7 +98,6 @@ testMdevctlCmd(virMdevctlCommand cmd_type,
     ret = 0;
 
  cleanup:
-    virNodeDeviceObjEndAPI(&obj);
     return ret;
 }
 
