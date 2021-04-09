@@ -523,6 +523,7 @@ static int
 virCgroupV2Remove(virCgroup *group)
 {
     g_autofree char *grppath = NULL;
+    virCgroup *parent = virCgroupGetNested(group);
     int controller;
 
     /* Don't delete the root group, if we accidentally
@@ -534,7 +535,7 @@ virCgroupV2Remove(virCgroup *group)
     if (virCgroupV2PathOfController(group, controller, "", &grppath) < 0)
         return 0;
 
-    if (virCgroupV2DevicesRemoveProg(group) < 0)
+    if (virCgroupV2DevicesRemoveProg(parent) < 0)
         return -1;
 
     return virCgroupRemoveRecursively(grppath);
