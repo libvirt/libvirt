@@ -2021,7 +2021,6 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDef *def,
 
 static int
 qemuDomainValidateDevicePCISlotsChipsets(virDomainDef *def,
-                                         virQEMUCaps *qemuCaps G_GNUC_UNUSED,
                                          virDomainPCIAddressSet *addrs)
 {
     if (qemuDomainIsI440FX(def) &&
@@ -2603,8 +2602,7 @@ qemuDomainAssignPCIAddresses(virDomainDef *def,
         if (!(addrs = qemuDomainPCIAddressSetCreate(def, qemuCaps, nbuses, true)))
             goto cleanup;
 
-        if (qemuDomainValidateDevicePCISlotsChipsets(def, qemuCaps,
-                                                     addrs) < 0)
+        if (qemuDomainValidateDevicePCISlotsChipsets(def, addrs) < 0)
             goto cleanup;
 
         /* For domains that have pci-root, reserve 1 extra slot for a
@@ -2739,8 +2737,7 @@ qemuDomainAssignPCIAddresses(virDomainDef *def,
         goto cleanup;
 
     if (qemuDomainSupportsPCI(def, qemuCaps)) {
-        if (qemuDomainValidateDevicePCISlotsChipsets(def, qemuCaps,
-                                                     addrs) < 0)
+        if (qemuDomainValidateDevicePCISlotsChipsets(def, addrs) < 0)
             goto cleanup;
 
         if (qemuDomainAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
