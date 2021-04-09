@@ -51,7 +51,7 @@
         <address domain='0x0000' bus='0x06' slot='0x12' function='0x2'/>
       </source>
       <alias name='hostdev0'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </hostdev>
     <memballoon model='none'/>
   </devices>

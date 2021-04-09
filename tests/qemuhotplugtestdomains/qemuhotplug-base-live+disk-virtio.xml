@@ -27,7 +27,7 @@
       <readonly/>
       <shareable/>
       <alias name='virtio-disk4'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </disk>
     <controller type='usb' index='0'>
       <alias name='usb'/>

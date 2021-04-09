@@ -32,6 +32,9 @@
 #include "virthread.h"
 #include "virfile.h"
 
+#define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
+#include "qemu/qemu_capspriv.h"
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 static virQEMUDriver driver;
@@ -70,6 +73,8 @@ qemuHotplugCreateObjects(virDomainXMLOption *xmlopt,
 
     if (!(priv->qemuCaps = virQEMUCapsNew()))
         return -1;
+
+    virQEMUCapsInitQMPBasicArch(priv->qemuCaps);
 
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VIRTIO_SCSI);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE);
