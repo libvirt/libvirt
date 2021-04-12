@@ -295,6 +295,8 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged,
                              &cfg->nfirmwares) < 0)
         return NULL;
 
+    cfg->deprecationBehavior = g_strdup("none");
+
     return g_steal_pointer(&cfg);
 }
 
