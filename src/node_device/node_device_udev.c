@@ -2119,6 +2119,29 @@ monitorFileRecursively(udevEventData *udev,
 }
 
 
+static int
+mdevctlEnableMonitor(udevEventData *priv)
+{
+    g_autoptr(GFile) mdevctlConfigDir = g_file_new_for_path("/etc/mdevctl.d");
+
+    /* mdevctl may add notification events in the future:
+     * https://github.com/mdevctl/mdevctl/issues/27. For now, fall back to
+     * monitoring the mdevctl configuration directory for changes.
+     * mdevctl configuration is stored in a directory tree within
+     * /etc/mdevctl.d/. There is a directory for each parent device, which
+     * contains a file defining each mediated device */
+    virMutexLock(&priv->mdevctlLock);
+    if (!(priv->mdevctlMonitors = monitorFileRecursively(priv,
+                                                         mdevctlConfigDir))) {
+        virMutexUnlock(&priv->mdevctlLock);
+        return -1;
+    }
+    virMutexUnlock(&priv->mdevctlLock);
+
+    return 0;
+}
+
+
 static void
 mdevctlEventHandleCallback(GFileMonitor *monitor G_GNUC_UNUSED,
                            GFile *file,
@@ -2168,7 +2191,6 @@ nodeStateInitialize(bool privileged,
 {
     udevEventDataPtr priv = NULL;
     struct udev *udev = NULL;
-    g_autoptr(GFile) mdevctlConfigDir = g_file_new_for_path("/etc/mdevctl.d");
 
     if (root != NULL) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2272,19 +2294,8 @@ nodeStateInitialize(bool privileged,
     if (priv->watch == -1)
         goto unlock;
 
-    /* mdevctl may add notification events in the future:
-     * https://github.com/mdevctl/mdevctl/issues/27. For now, fall back to
-     * monitoring the mdevctl configuration directory for changes.
-     * mdevctl configuration is stored in a directory tree within
-     * /etc/mdevctl.d/. There is a directory for each parent device, which
-     * contains a file defining each mediated device */
-    virMutexLock(&priv->mdevctlLock);
-    if (!(priv->mdevctlMonitors = monitorFileRecursively(priv,
-                                                         mdevctlConfigDir))) {
-        virMutexUnlock(&priv->mdevctlLock);
+    if (mdevctlEnableMonitor(priv) < 0)
         goto unlock;
-    }
-    virMutexUnlock(&priv->mdevctlLock);
 
     virObjectUnlock(priv);
 
