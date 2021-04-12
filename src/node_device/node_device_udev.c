@@ -2212,20 +2212,20 @@ nodeStateInitialize(bool privileged,
         !(priv = udevEventDataNew()))
         goto cleanup;
 
+    virObjectLock(priv);
+
     driver->privateData = priv;
     driver->nodeDeviceEventState = virObjectEventStateNew();
 
     if (udevPCITranslateInit(privileged) < 0)
-        goto cleanup;
+        goto unlock;
 
     udev = udev_new();
     if (!udev) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to create udev context"));
-        goto cleanup;
+        goto unlock;
     }
-
-    virObjectLock(priv);
 
     priv->udev_monitor = udev_monitor_new_from_netlink(udev, "udev");
     if (!priv->udev_monitor) {
