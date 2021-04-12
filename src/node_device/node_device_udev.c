@@ -2122,7 +2122,13 @@ monitorFileRecursively(udevEventData *udev,
 static int
 mdevctlEnableMonitor(udevEventData *priv)
 {
-    g_autoptr(GFile) mdevctlConfigDir = g_file_new_for_path("/etc/mdevctl.d");
+    g_autoptr(GFile) mdevctlConfigDir = NULL;
+    const char *mdevctlDir = "/etc/mdevctl.d";
+
+    if (!virFileExists(mdevctlDir))
+        return 0;
+
+    mdevctlConfigDir = g_file_new_for_path(mdevctlDir);
 
     /* mdevctl may add notification events in the future:
      * https://github.com/mdevctl/mdevctl/issues/27. For now, fall back to
