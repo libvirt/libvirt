@@ -2274,7 +2274,7 @@ nodeStateInitialize(bool privileged,
     if (!(priv->mdevctlMonitors = monitorFileRecursively(priv,
                                                          mdevctlConfigDir))) {
         virMutexUnlock(&priv->mdevctlLock);
-        goto cleanup;
+        goto unlock;
     }
     virMutexUnlock(&priv->mdevctlLock);
 
