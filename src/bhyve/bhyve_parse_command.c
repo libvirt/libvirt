@@ -558,7 +558,7 @@ bhyveParsePCIFbuf(virDomainDefPtr def,
 
     virDomainVideoDefPtr video = NULL;
     virDomainGraphicsDefPtr graphics = NULL;
-    g_auto(GStrv) **params = NULL;
+    g_auto(GStrv) params = NULL;
     GStrv next;
 
     if (!(video = virDomainVideoDefNew(xmlopt)))
@@ -582,6 +582,7 @@ bhyveParsePCIFbuf(virDomainDefPtr def,
 
     for (next = params; *next; next++) {
         char *param = *next;
+        char *separator;
         if (!video->driver)
             video->driver = g_new0(virDomainVideoDriverDef, 1);
 
