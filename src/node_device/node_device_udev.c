@@ -63,13 +63,13 @@ struct _udevEventData {
     int watch;
 
     /* Thread data */
-    virThread th;
+    virThread *th;
     virCond threadCond;
     bool threadQuit;
     bool dataReady;
 
     /* init thread */
-    virThread initThread;
+    virThread *initThread;
 
     GList *mdevctlMonitors;
     virMutex mdevctlLock;
@@ -1685,8 +1685,14 @@ nodeStateCleanup(void)
         priv->threadQuit = true;
         virCondSignal(&priv->threadCond);
         virObjectUnlock(priv);
-        virThreadJoin(&priv->initThread);
-        virThreadJoin(&priv->th);
+        if (priv->initThread) {
+            virThreadJoin(priv->initThread);
+            g_clear_pointer(&priv->initThread, g_free);
+        }
+        if (priv->th) {
+            virThreadJoin(priv->th);
+            g_clear_pointer(&priv->th, g_free);
+        }
     }
 
     virObjectUnref(priv);
@@ -2243,10 +2249,12 @@ nodeStateInitialize(bool privileged,
         udev_monitor_set_receive_buffer_size(priv->udev_monitor,
                                              128 * 1024 * 1024);
 
-    if (virThreadCreateFull(&priv->th, true, udevEventHandleThread,
+    priv->th = g_new0(virThread, 1);
+    if (virThreadCreateFull(priv->th, true, udevEventHandleThread,
                             "udev-event", false, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to create udev handler thread"));
+        g_clear_pointer(&priv->th, g_free);
         goto unlock;
     }
 
@@ -2284,10 +2292,12 @@ nodeStateInitialize(bool privileged,
     if (udevSetupSystemDev() != 0)
         goto cleanup;
 
-    if (virThreadCreateFull(&priv->initThread, true, nodeStateInitializeEnumerate,
+    priv->initThread = g_new0(virThread, 1);
+    if (virThreadCreateFull(priv->initThread, true, nodeStateInitializeEnumerate,
                             "nodedev-init", false, udev) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to create udev enumerate thread"));
+        g_clear_pointer(&priv->initThread, g_free);
         goto cleanup;
     }
 
