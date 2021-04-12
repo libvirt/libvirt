@@ -3153,7 +3153,7 @@ virFileOpenTty(int *ttyprimary G_GNUC_UNUSED,
 int
 virFileAbsPath(const char *path, char **abspath)
 {
-    if (path[0] == '/') {
+    if (g_path_is_absolute(path)) {
         *abspath = g_strdup(path);
     } else {
         g_autofree char *buf = g_get_current_dir();
