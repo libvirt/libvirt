@@ -648,6 +648,8 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     virDomainObj *vm = NULL;
     g_autoptr(libxlDriverConfig) cfg = NULL;
 
+    VIR_DEBUG("Received libxl event '%d' for domid '%d'", event->type, event->domid);
+
     if (event->type != LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN &&
             event->type != LIBXL_EVENT_TYPE_DOMAIN_DEATH) {
         VIR_INFO("Unhandled event type %d", event->type);
@@ -843,6 +845,9 @@ libxlDomainCleanup(libxlDriverPrivate *driver,
     virHostdevManager *hostdev_mgr = driver->hostdevMgr;
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
     g_autoptr(virConnect) conn = NULL;
+
+    VIR_DEBUG("Cleaning up domain with id '%d' and name '%s'",
+              vm->def->id, vm->def->name);
 
 #ifdef LIBXL_HAVE_PVUSB
     hostdev_flags |= VIR_HOSTDEV_SP_USB;
