@@ -1074,14 +1074,11 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriver *driver,
  * @mig: migration cookie
  * @host: where are we migrating to
  * @speed: bandwidth limit in MiB/s
- * @migrate_flags: migrate monitor command flags
  *
  * Migrate non-shared storage using the NBD protocol to the server running
  * inside the qemu process on dst and wait until the copy converges.
- * On success update @migrate_flags so we don't tell 'migrate' command
- * to do the very same operation. On failure, the caller is
- * expected to call qemuMigrationSrcNBDCopyCancel to stop all
- * running copy operations.
+ * On failure, the caller is expected to call qemuMigrationSrcNBDCopyCancel
+ * to stop all running copy operations.
  *
  * Returns 0 on success (@migrate_flags updated),
  *        -1 otherwise.
@@ -1092,7 +1089,6 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriver *driver,
                                qemuMigrationCookie *mig,
                                const char *host,
                                unsigned long speed,
-                               unsigned int *migrate_flags,
                                size_t nmigrate_disks,
                                const char **migrate_disks,
                                virConnectPtr dconn,
@@ -1104,7 +1100,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriver *driver,
     int port;
     size_t i;
     unsigned long long mirror_speed = speed;
-    bool mirror_shallow = *migrate_flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
+    bool mirror_shallow = flags & VIR_MIGRATE_NON_SHARED_INC;
     int rv;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virURI) uri = NULL;
@@ -1201,11 +1197,6 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriver *driver,
 
     qemuMigrationSrcFetchMirrorStats(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
                                      priv->job.current);
-
-    /* Okay, all disks are ready. Modify migrate_flags */
-    *migrate_flags &= ~(QEMU_MONITOR_MIGRATE_NON_SHARED_DISK |
-                        QEMU_MONITOR_MIGRATE_NON_SHARED_INC);
-
     return 0;
 }
 
@@ -4130,17 +4121,20 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
                 goto error;
             }
 
-            /* This will update migrate_flags on success */
             if (qemuMigrationSrcNBDStorageCopy(driver, vm, mig,
                                                host,
                                                migrate_speed,
-                                               &migrate_flags,
                                                nmigrate_disks,
                                                migrate_disks,
                                                dconn, tlsAlias,
                                                nbdURI, flags) < 0) {
                 goto error;
             }
+
+            /* mask out the legacy migration flags if we are using NBD */
+            migrate_flags &= ~(QEMU_MONITOR_MIGRATE_NON_SHARED_DISK |
+                               QEMU_MONITOR_MIGRATE_NON_SHARED_INC);
+
         } else {
             /* Destination doesn't support NBD server.
              * Fall back to previous implementation. */
