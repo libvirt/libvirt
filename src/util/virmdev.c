@@ -140,9 +140,7 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
     g_autoptr(virMediatedDevice) dev = NULL;
     g_autofree char *sysfspath = NULL;
 
-    if (!(sysfspath = virMediatedDeviceGetSysfsPath(uuidstr)))
-        return NULL;
-
+    sysfspath = virMediatedDeviceGetSysfsPath(uuidstr);
     if (!virFileExists(sysfspath)) {
         virReportError(VIR_ERR_DEVICE_MISSING,
                        _("mediated device '%s' not found"), uuidstr);
@@ -207,9 +205,6 @@ virMediatedDeviceGetIOMMUGroupDev(const char *uuidstr)
     g_autofree char *result_file = NULL;
     g_autofree char *iommu_path = NULL;
     g_autofree char *dev_path = virMediatedDeviceGetSysfsPath(uuidstr);
-
-    if (!dev_path)
-        return NULL;
 
     iommu_path = g_strdup_printf("%s/iommu_group", dev_path);
 

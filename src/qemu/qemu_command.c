@@ -5138,9 +5138,7 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
     g_autofree char *mdevPath = NULL;
     const char *dev_str = NULL;
 
-    if (!(mdevPath = virMediatedDeviceGetSysfsPath(mdevsrc->uuidstr)))
-        return NULL;
-
+    mdevPath = virMediatedDeviceGetSysfsPath(mdevsrc->uuidstr);
     dev_str = qemuBuildHostdevMdevModelTypeString(mdevsrc);
 
     if (!dev_str)
