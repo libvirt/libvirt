@@ -44,7 +44,6 @@ testMdevctlCmd(virMdevctlCommand cmd_type,
     g_autoptr(virNodeDeviceDef) def = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *actualCmdline = NULL;
-    int ret = -1;
     g_autofree char *outbuf = NULL;
     g_autofree char *errbuf = NULL;
     g_autofree char *stdinbuf = NULL;
@@ -64,18 +63,18 @@ testMdevctlCmd(virMdevctlCommand cmd_type,
             break;
         case MDEVCTL_CMD_LAST:
         default:
-            goto cleanup;
+            return -1;
     }
 
     if (!(def = virNodeDeviceDefParseFile(mdevxml, create, VIRT_TYPE)))
-        goto cleanup;
+        return -1;
 
     /* this function will set a stdin buffer containing the json configuration
      * of the device. The json value is captured in the callback above */
     cmd = nodeDeviceGetMdevctlCommand(def, cmd_type, &outbuf, &errbuf);
 
     if (!cmd)
-        goto cleanup;
+        return -1;
 
     if (create)
         virCommandSetDryRun(dryRunToken, &buf, true, true,
@@ -84,21 +83,18 @@ testMdevctlCmd(virMdevctlCommand cmd_type,
         virCommandSetDryRun(dryRunToken, &buf, true, true, NULL, NULL);
 
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(actualCmdline = virBufferCurrentContent(&buf)))
-        goto cleanup;
+        return -1;
 
     if (virTestCompareToFileFull(actualCmdline, cmdfile, false) < 0)
-        goto cleanup;
+        return -1;
 
     if (create && virTestCompareToFile(stdinbuf, jsonfile) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
