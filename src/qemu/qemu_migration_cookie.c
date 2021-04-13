@@ -790,7 +790,7 @@ qemuMigrationCookieNBDXMLFormat(qemuMigrationCookieNBD *nbd,
         virBufferAsprintf(&childBuf, " capacity='%llu'/>\n", nbd->disks[i].capacity);
     }
 
-    virXMLFormatElement(buf, "nbd", &attrBuf, &childBuf);
+    virXMLFormatElementEmpty(buf, "nbd", &attrBuf, &childBuf);
 }
 
 
