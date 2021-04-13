@@ -312,6 +312,22 @@ qemuMigrationAnyCopyDisk(virDomainDiskDef const *disk,
 }
 
 
+static bool
+qemuMigrationHasAnyStorageMigrationDisks(virDomainDef *def,
+                                         const char **migrate_disks,
+                                         size_t nmigrate_disks)
+{
+    size_t i;
+
+    for (i = 0; i < def->ndisks; i++) {
+        if (qemuMigrationAnyCopyDisk(def->disks[i], nmigrate_disks, migrate_disks))
+            return true;
+    }
+
+    return false;
+}
+
+
 static int
 qemuMigrationDstPrecreateStorage(virDomainObj *vm,
                                  qemuMigrationCookieNBD *nbd,
@@ -4010,6 +4026,11 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
               cookieout, cookieoutlen, flags, resource,
               spec, spec->destType, spec->fwdType, dconn,
               NULLSTR(graphicsuri), nmigrate_disks, migrate_disks);
+
+    if (storageMigration)
+        storageMigration = qemuMigrationHasAnyStorageMigrationDisks(vm->def,
+                                                                    migrate_disks,
+                                                                    nmigrate_disks);
 
     if (storageMigration) {
         cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
