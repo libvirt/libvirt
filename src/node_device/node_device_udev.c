@@ -1984,8 +1984,8 @@ nodeStateInitializeEnumerate(void *opaque)
 
     nodeDeviceLock();
     driver->initialized = true;
-    nodeDeviceUnlock();
     virCondBroadcast(&driver->initCond);
+    nodeDeviceUnlock();
 
     return;
 
