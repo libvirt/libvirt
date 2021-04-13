@@ -42,8 +42,11 @@
 #include "virnetdev.h"
 #include "virutil.h"
 #include "vircommand.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
+
+VIR_LOG_INIT("node_device.node_device_driver");
 
 virNodeDeviceDriverState *driver;
 
@@ -1604,8 +1607,14 @@ nodeDeviceUpdateMediatedDevices(void)
 {
     g_autofree virNodeDeviceDef **defs = NULL;
     g_autofree char *errmsg = NULL;
+    g_autofree char *mdevctl = NULL;
     virMdevctlForEachData data = { 0, };
     size_t i;
+
+    if (!(mdevctl = virFindFileInPath(MDEVCTL))) {
+        VIR_DEBUG(MDEVCTL " not found. Skipping update of mediated devices.");
+        return 0;
+    }
 
     if ((data.ndefs = virMdevctlListDefined(&defs, &errmsg)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
