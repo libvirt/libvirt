@@ -3995,6 +3995,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
     bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
     bool bwParam = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH);
+    bool storageMigration = flags & (VIR_MIGRATE_NON_SHARED_DISK | QEMU_MONITOR_MIGRATE_NON_SHARED_INC);
     bool cancel = false;
     unsigned int waitFlags;
     g_autoptr(virDomainDef) persistDef = NULL;
@@ -4010,19 +4011,13 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
               spec, spec->destType, spec->fwdType, dconn,
               NULLSTR(graphicsuri), nmigrate_disks, migrate_disks);
 
-    if (flags & VIR_MIGRATE_NON_SHARED_DISK) {
-        migrate_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_DISK;
+    if (storageMigration) {
         cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
-    }
 
-    if (flags & VIR_MIGRATE_NON_SHARED_INC) {
-        migrate_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
-        cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
+        if (virQEMUCapsGet(priv->qemuCaps,
+                           QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
+            cookieFlags |= QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS;
     }
-
-    if (cookieFlags & QEMU_MIGRATION_COOKIE_NBD &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
-        cookieFlags |= QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS;
 
     if (virLockManagerPluginUsesState(driver->lockManager) &&
         !cookieout) {
@@ -4100,8 +4095,8 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
                                  migParams) < 0)
         goto error;
 
-    if (migrate_flags & (QEMU_MONITOR_MIGRATE_NON_SHARED_DISK |
-                         QEMU_MONITOR_MIGRATE_NON_SHARED_INC)) {
+
+    if (storageMigration) {
         if (mig->nbd) {
             const char *host = "";
 
@@ -4130,16 +4125,17 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
                                                nbdURI, flags) < 0) {
                 goto error;
             }
-
-            /* mask out the legacy migration flags if we are using NBD */
-            migrate_flags &= ~(QEMU_MONITOR_MIGRATE_NON_SHARED_DISK |
-                               QEMU_MONITOR_MIGRATE_NON_SHARED_INC);
-
         } else {
             /* Destination doesn't support NBD server.
              * Fall back to previous implementation. */
             VIR_DEBUG("Destination doesn't support NBD server "
                       "Falling back to previous implementation.");
+
+            if (flags & VIR_MIGRATE_NON_SHARED_DISK)
+                migrate_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_DISK;
+
+            if (flags & VIR_MIGRATE_NON_SHARED_INC)
+                migrate_flags |= QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
         }
     }
 
