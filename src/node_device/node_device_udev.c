@@ -1982,6 +1982,7 @@ nodeStateInitializeEnumerate(void *opaque)
     if (nodeDeviceUpdateMediatedDevices() != 0)
         goto error;
 
+ cleanup:
     nodeDeviceLock();
     driver->initialized = true;
     virCondBroadcast(&driver->initCond);
@@ -1996,6 +1997,8 @@ nodeStateInitializeEnumerate(void *opaque)
     priv->threadQuit = true;
     virCondSignal(&priv->threadCond);
     virObjectUnlock(priv);
+
+    goto cleanup;
 }
 
 
