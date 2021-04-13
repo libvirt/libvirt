@@ -152,6 +152,9 @@ virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode,
         numa_set_interleave_mask(&mask);
         break;
 
+    case VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE:
+        break;
+
     case VIR_DOMAIN_NUMATUNE_MEM_LAST:
         break;
     }

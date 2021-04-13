@@ -1112,8 +1112,11 @@ NUMA Node Tuning
 ``memory``
    The optional ``memory`` element specifies how to allocate memory for the
    domain process on a NUMA host. It contains several optional attributes.
-   Attribute ``mode`` is either 'interleave', 'strict', or 'preferred', defaults
-   to 'strict'. Attribute ``nodeset`` specifies the NUMA nodes, using the same
+   Attribute ``mode`` is either 'interleave', 'strict', 'preferred', or
+   'restrictive', defaults to 'strict'. The value 'restrictive' specifies
+   using system default policy and only cgroups is used to restrict the
+   memory nodes, and it requires setting mode to 'restrictive' in ``memnode``
+   elements. Attribute ``nodeset`` specifies the NUMA nodes, using the same
    syntax as attribute ``cpuset`` of element ``vcpu``. Attribute ``placement`` (
    :since:`since 0.9.12` ) can be used to indicate the memory placement mode for
    domain process, its value can be either "static" or "auto", defaults to

@@ -175,6 +175,7 @@ VIR_ENUM_IMPL(qemuNumaPolicy,
               "bind",
               "preferred",
               "interleave",
+              "restrictive",
 );
 
 VIR_ENUM_DECL(qemuAudioDriver);

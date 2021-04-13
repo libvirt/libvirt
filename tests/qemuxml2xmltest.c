@@ -1125,6 +1125,7 @@ mymain(void)
     DO_TEST("numatune-distances", QEMU_CAPS_NUMA, QEMU_CAPS_NUMA_DIST);
     DO_TEST("numatune-no-vcpu", QEMU_CAPS_NUMA);
     DO_TEST("numatune-hmat", QEMU_CAPS_NUMA_HMAT, QEMU_CAPS_OBJECT_MEMORY_RAM);
+    DO_TEST_CAPS_LATEST("numatune-memnode-restrictive-mode");
 
     DO_TEST("bios-nvram", NONE);
     DO_TEST("bios-nvram-os-interleave", NONE);

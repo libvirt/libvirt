@@ -43,6 +43,7 @@ VIR_ENUM_IMPL(virDomainNumatuneMemMode,
               "strict",
               "preferred",
               "interleave",
+              "restrictive",
 );
 
 VIR_ENUM_IMPL(virDomainNumatunePlacement,
@@ -228,6 +229,14 @@ virDomainNumatuneNodeParseXML(virDomainNuma *numa,
             if ((mode = virDomainNumatuneMemModeTypeFromString(tmp)) < 0) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("Invalid mode attribute in memnode element"));
+                goto cleanup;
+            }
+
+            if (numa->memory.mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE &&
+                mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("'restrictive' mode is required in memnode element "
+                                 "when mode is 'restrictive' in memory element"));
                 goto cleanup;
             }
             VIR_FREE(tmp);

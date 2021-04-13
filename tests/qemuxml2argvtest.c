@@ -2171,6 +2171,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("numatune-memnode", NONE);
     DO_TEST_CAPS_VER("numatune-memnode", "5.2.0");
     DO_TEST_CAPS_LATEST("numatune-memnode");
+    DO_TEST_PARSE_ERROR("numatune-memnode-invalid-mode", NONE);
 
     DO_TEST("numatune-memnode-no-memory",
             QEMU_CAPS_NUMA,

@@ -1107,6 +1107,7 @@
                   <value>strict</value>
                   <value>preferred</value>
                   <value>interleave</value>
+                  <value>restrictive</value>
                 </choice>
               </attribute>
             </optional>
@@ -1139,6 +1140,7 @@
                 <value>strict</value>
                 <value>preferred</value>
                 <value>interleave</value>
+                <value>restrictive</value>
               </choice>
             </attribute>
             <attribute name="nodeset">
