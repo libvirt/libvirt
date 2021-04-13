@@ -158,7 +158,7 @@ nodeDeviceUnlock(void)
 
 
 static int
-nodeDeviceWaitInit(void)
+nodeDeviceInitWait(void)
 {
     nodeDeviceLock();
     while (!driver->initialized) {
@@ -183,7 +183,7 @@ nodeNumOfDevices(virConnectPtr conn,
 
     virCheckFlags(0, -1);
 
-    if (nodeDeviceWaitInit() < 0)
+    if (nodeDeviceInitWait() < 0)
         return -1;
 
     return virNodeDeviceObjListNumOfDevices(driver->devs, conn, cap,
@@ -203,7 +203,7 @@ nodeListDevices(virConnectPtr conn,
 
     virCheckFlags(0, -1);
 
-    if (nodeDeviceWaitInit() < 0)
+    if (nodeDeviceInitWait() < 0)
         return -1;
 
     return virNodeDeviceObjListGetNames(driver->devs, conn,
@@ -222,7 +222,7 @@ nodeConnectListAllNodeDevices(virConnectPtr conn,
     if (virConnectListAllNodeDevicesEnsureACL(conn) < 0)
         return -1;
 
-    if (nodeDeviceWaitInit() < 0)
+    if (nodeDeviceInitWait() < 0)
         return -1;
 
     return virNodeDeviceObjListExport(conn, driver->devs, devices,
@@ -254,7 +254,7 @@ nodeDeviceLookupByName(virConnectPtr conn,
     virNodeDeviceDef *def;
     virNodeDevicePtr device = NULL;
 
-    if (nodeDeviceWaitInit() < 0)
+    if (nodeDeviceInitWait() < 0)
         return NULL;
 
     if (!(obj = nodeDeviceObjFindByName(name)))
@@ -285,7 +285,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
 
     virCheckFlags(0, NULL);
 
-    if (nodeDeviceWaitInit() < 0)
+    if (nodeDeviceInitWait() < 0)
         return NULL;
 
     if (!(obj = virNodeDeviceObjListFindSCSIHostByWWNs(driver->devs,
@@ -844,7 +844,7 @@ nodeDeviceCreateXML(virConnectPtr conn,
 
     virCheckFlags(0, NULL);
 
-    if (nodeDeviceWaitInit() < 0)
+    if (nodeDeviceInitWait() < 0)
         return NULL;
 
     virt_type  = virConnectGetType(conn);
@@ -1144,7 +1144,7 @@ nodeDeviceDestroy(virNodeDevicePtr device)
     g_autofree char *wwpn = NULL;
     unsigned int parent_host;
 
-    if (nodeDeviceWaitInit() < 0)
+    if (nodeDeviceInitWait() < 0)
         return -1;
 
     if (!(obj = nodeDeviceObjFindByName(device->name)))
@@ -1288,7 +1288,7 @@ nodeDeviceDefineXML(virConnect *conn,
 
     virCheckFlags(0, NULL);
 
-    if (nodeDeviceWaitInit() < 0)
+    if (nodeDeviceInitWait() < 0)
         return NULL;
 
     virt_type  = virConnectGetType(conn);
@@ -1350,7 +1350,7 @@ nodeDeviceUndefine(virNodeDevice *device,
 
     virCheckFlags(0, -1);
 
-    if (nodeDeviceWaitInit() < 0)
+    if (nodeDeviceInitWait() < 0)
         return -1;
 
     if (!(obj = nodeDeviceObjFindByName(device->name)))
@@ -1446,7 +1446,7 @@ nodeConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
     if (virConnectNodeDeviceEventRegisterAnyEnsureACL(conn) < 0)
         return -1;
 
-    if (nodeDeviceWaitInit() < 0)
+    if (nodeDeviceInitWait() < 0)
         return -1;
 
     if (virNodeDeviceEventStateRegisterID(conn, driver->nodeDeviceEventState,
@@ -1465,7 +1465,7 @@ nodeConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
     if (virConnectNodeDeviceEventDeregisterAnyEnsureACL(conn) < 0)
         return -1;
 
-    if (nodeDeviceWaitInit() < 0)
+    if (nodeDeviceInitWait() < 0)
         return -1;
 
     if (virObjectEventStateDeregisterID(conn,
