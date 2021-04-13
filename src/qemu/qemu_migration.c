@@ -2365,26 +2365,30 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
                 return NULL;
             }
         } else {
-            cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
-            priv->nbdPort = 0;
-        }
+            if (nmigrate_disks) {
+                size_t i, j;
+                /* Check user requested only known disk targets. */
+                for (i = 0; i < nmigrate_disks; i++) {
+                    for (j = 0; j < vm->def->ndisks; j++) {
+                        if (STREQ(vm->def->disks[j]->dst, migrate_disks[i]))
+                            break;
+                    }
 
-        if (nmigrate_disks) {
-            size_t i, j;
-            /* Check user requested only known disk targets. */
-            for (i = 0; i < nmigrate_disks; i++) {
-                for (j = 0; j < vm->def->ndisks; j++) {
-                    if (STREQ(vm->def->disks[j]->dst, migrate_disks[i]))
-                        break;
-                }
-
-                if (j == vm->def->ndisks) {
-                    virReportError(VIR_ERR_INVALID_ARG,
-                                   _("disk target %s not found"),
-                                   migrate_disks[i]);
-                    return NULL;
+                    if (j == vm->def->ndisks) {
+                        virReportError(VIR_ERR_INVALID_ARG,
+                                       _("disk target %s not found"),
+                                       migrate_disks[i]);
+                        return NULL;
+                    }
                 }
             }
+
+            priv->nbdPort = 0;
+
+            if (qemuMigrationHasAnyStorageMigrationDisks(vm->def,
+                                                         migrate_disks,
+                                                         nmigrate_disks))
+                cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
         }
     }
 
