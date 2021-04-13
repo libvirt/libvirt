@@ -340,6 +340,9 @@ nodeDeviceGetXMLDesc(virNodeDevicePtr device,
 
     virCheckFlags(0, NULL);
 
+    if (nodeDeviceInitWait() < 0)
+        return NULL;
+
     if (!(obj = nodeDeviceObjFindByName(device->name)))
         return NULL;
     def = virNodeDeviceObjGetDef(obj);
@@ -368,6 +371,9 @@ nodeDeviceGetParent(virNodeDevicePtr device)
     virNodeDeviceDef *def;
     char *ret = NULL;
 
+    if (nodeDeviceInitWait() < 0)
+        return NULL;
+
     if (!(obj = nodeDeviceObjFindByName(device->name)))
         return NULL;
     def = virNodeDeviceObjGetDef(obj);
@@ -394,6 +400,9 @@ nodeDeviceNumOfCaps(virNodeDevicePtr device)
     virNodeDeviceObj *obj;
     virNodeDeviceDef *def;
     int ret = -1;
+
+    if (nodeDeviceInitWait() < 0)
+        return -1;
 
     if (!(obj = nodeDeviceObjFindByName(device->name)))
         return -1;
@@ -422,6 +431,9 @@ nodeDeviceListCaps(virNodeDevicePtr device,
     int ncaps = 0;
     int ret = -1;
     size_t i = 0;
+
+    if (nodeDeviceInitWait() < 0)
+        return -1;
 
     if (!(obj = nodeDeviceObjFindByName(device->name)))
         return -1;
@@ -1398,6 +1410,9 @@ nodeDeviceCreate(virNodeDevice *device,
     virNodeDeviceDef *def = NULL;
 
     virCheckFlags(0, -1);
+
+    if (nodeDeviceInitWait() < 0)
+        return -1;
 
     if (!(obj = nodeDeviceObjFindByName(device->name)))
         return -1;
