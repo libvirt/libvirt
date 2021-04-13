@@ -1631,6 +1631,32 @@ virXMLValidatorFree(virXMLValidator *validator)
 }
 
 
+/* same as virXMLFormatElement but outputs an empty element if @attrBuf and
+ * @childBuf are both empty */
+void
+virXMLFormatElementEmpty(virBuffer *buf,
+                         const char *name,
+                         virBuffer *attrBuf,
+                         virBuffer *childBuf)
+{
+    virBufferAsprintf(buf, "<%s", name);
+
+    if (attrBuf && virBufferUse(attrBuf) > 0)
+        virBufferAddBuffer(buf, attrBuf);
+
+    if (childBuf && virBufferUse(childBuf) > 0) {
+        virBufferAddLit(buf, ">\n");
+        virBufferAddBuffer(buf, childBuf);
+        virBufferAsprintf(buf, "</%s>\n", name);
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    virBufferFreeAndReset(attrBuf);
+    virBufferFreeAndReset(childBuf);
+}
+
+
 /**
  * virXMLFormatElement
  * @buf: the parent buffer where the element will be placed
@@ -1655,21 +1681,7 @@ virXMLFormatElement(virBuffer *buf,
         (!childBuf || virBufferUse(childBuf) == 0))
         return;
 
-    virBufferAsprintf(buf, "<%s", name);
-
-    if (attrBuf && virBufferUse(attrBuf) > 0)
-        virBufferAddBuffer(buf, attrBuf);
-
-    if (childBuf && virBufferUse(childBuf) > 0) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAddBuffer(buf, childBuf);
-        virBufferAsprintf(buf, "</%s>\n", name);
-    } else {
-        virBufferAddLit(buf, "/>\n");
-    }
-
-    virBufferFreeAndReset(attrBuf);
-    virBufferFreeAndReset(childBuf);
+    virXMLFormatElementEmpty(buf, name, attrBuf, childBuf);
 }
 
 

@@ -315,6 +315,13 @@ virXMLFormatElement(virBuffer *buf,
                     virBuffer *attrBuf,
                     virBuffer *childBuf);
 
+void
+virXMLFormatElementEmpty(virBuffer *buf,
+                         const char *name,
+                         virBuffer *attrBuf,
+                         virBuffer *childBuf);
+
+
 struct _virXPathContextNodeSave {
     xmlXPathContextPtr ctxt;
     xmlNodePtr node;
