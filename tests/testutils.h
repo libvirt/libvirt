@@ -30,9 +30,9 @@
 #define EXIT_AM_SKIP 77 /* tell Automake we're skipping a test */
 #define EXIT_AM_HARDFAIL 99 /* tell Automake that the framework is broken */
 
-/* Makefile.am provides these two definitions */
+/* Meson provides these two definitions */
 #if !defined(abs_srcdir) || !defined(abs_builddir)
-# error Fix Makefile.am
+# error Fix build system
 #endif
 
 extern virArch virTestHostArch;

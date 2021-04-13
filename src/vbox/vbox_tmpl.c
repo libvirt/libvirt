@@ -1,10 +1,6 @@
 /** @file vbox_tmpl.c
  * Template File to support multiple versions of VirtualBox
  * at runtime :).
- *
- * IMPORTANT:
- * Please dont include this file in the src/Makefile.am, it
- * is automatically include by other files.
  */
 
 /*

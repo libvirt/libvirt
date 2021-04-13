@@ -24,8 +24,7 @@ Then dissector will compiled with libvirt itself.
 Add/Remove protocol from dissector's support
 --------------------------------------------
 
-Modify variable ``WS_DISSECTOR_PROTO_FILES``
-in ``tools/wireshark/src/Makefile.am``.
+Modify argument ``input`` in ``tools/wireshark/src/libvirt/meson.build``.
 
 Changing installation directory
 -------------------------------
