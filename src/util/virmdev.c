@@ -201,42 +201,38 @@ virMediatedDeviceGetPath(virMediatedDevice *dev)
 char *
 virMediatedDeviceGetIOMMUGroupDev(const char *uuidstr)
 {
-    g_autofree char *result_path = NULL;
-    g_autofree char *result_file = NULL;
-    g_autofree char *iommu_path = NULL;
-    g_autofree char *dev_path = virMediatedDeviceGetSysfsPath(uuidstr);
+    int group_num = virMediatedDeviceGetIOMMUGroupNum(uuidstr);
 
-    iommu_path = g_strdup_printf("%s/iommu_group", dev_path);
-
-    if (!virFileExists(iommu_path)) {
-        virReportSystemError(errno, _("failed to access '%s'"), iommu_path);
+    if (group_num < 0)
         return NULL;
-    }
 
-    if (virFileResolveLink(iommu_path, &result_path) < 0) {
-        virReportSystemError(errno, _("failed to resolve '%s'"), iommu_path);
-        return NULL;
-    }
-
-    result_file = g_path_get_basename(result_path);
-
-    return g_strdup_printf("/dev/vfio/%s", result_file);
+    return g_strdup_printf("/dev/vfio/%i", group_num);
 }
 
 
 int
 virMediatedDeviceGetIOMMUGroupNum(const char *uuidstr)
 {
-    g_autofree char *vfio_path = NULL;
+    g_autofree char *result_path = NULL;
     g_autofree char *group_num_str = NULL;
+    g_autofree char *iommu_path = NULL;
+    g_autofree char *dev_path = virMediatedDeviceGetSysfsPath(uuidstr);
     unsigned int group_num = -1;
 
-    if (!(vfio_path = virMediatedDeviceGetIOMMUGroupDev(uuidstr)))
+    iommu_path = g_strdup_printf("%s/iommu_group", dev_path);
+
+    if (!virFileExists(iommu_path)) {
+        virReportSystemError(errno, _("failed to access '%s'"), iommu_path);
         return -1;
+    }
 
-    group_num_str = g_path_get_basename(vfio_path);
+    if (virFileResolveLink(iommu_path, &result_path) < 0) {
+        virReportSystemError(errno, _("failed to resolve '%s'"), iommu_path);
+        return -1;
+    }
+
+    group_num_str = g_path_get_basename(result_path);
     ignore_value(virStrToLong_ui(group_num_str, NULL, 10, &group_num));
-
     return group_num;
 }
 
