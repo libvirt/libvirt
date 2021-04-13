@@ -1154,6 +1154,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriver *driver,
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Unsupported scheme in disks URI: %s"),
                            uri->scheme);
+            return -1;
         }
     }
 
