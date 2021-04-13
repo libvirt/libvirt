@@ -1207,8 +1207,13 @@ nodeDeviceDestroy(virNodeDevicePtr device)
          * shouldn't try to remove the device. */
         g_autofree char *vfiogroup =
             virMediatedDeviceGetIOMMUGroupDev(def->caps->data.mdev.uuid);
-        VIR_AUTOCLOSE fd = open(vfiogroup, O_RDONLY);
+        VIR_AUTOCLOSE fd = -1;
         g_autofree char *errmsg = NULL;
+
+        if (!vfiogroup)
+            goto cleanup;
+
+        fd = open(vfiogroup, O_RDONLY);
 
         if (fd < 0 && errno == EBUSY) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
