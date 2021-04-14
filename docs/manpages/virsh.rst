@@ -2787,6 +2787,7 @@ returned:
 * ``disk.<num>.partition`` - whether this is a partition or disk
 * ``disk.<num>.dependency.count`` - the number of device dependencies
 * ``disk.<num>.dependency.<num>.name`` - a dependency name
+* ``disk.<num>.serial`` -  optional disk serial number
 * ``disk.<num>.alias`` - the device alias of the disk (e.g. sda)
 * ``disk.<num>.guest_alias`` - optional alias assigned to the disk
 

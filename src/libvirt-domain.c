@@ -12561,6 +12561,7 @@ virDomainSetVcpu(virDomainPtr domain,
  *                      hold the list of PVs, for LUKS encrypted volume this will
  *                      contain the disk where the volume is placed. (Linux)
  *      "disk.<num>.dependency.<num>.name" - a dependency
+ *      "disk.<num>.serial" - optional disk serial number (as string)
  *      "disk.<num>.alias" - the device alias of the disk (e.g. sda)
  *      "disk.<num>.guest_alias" - optional alias assigned to the disk, on Linux
  *                      this is a name assigned by device mapper

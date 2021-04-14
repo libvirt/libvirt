@@ -19951,15 +19951,24 @@ qemuAgentDiskInfoFormatParams(qemuAgentDiskInfo **info,
         }
 
         if (info[i]->address) {
+            qemuAgentDiskAddress *address = info[i]->address;
             virDomainDiskDef *diskdef = NULL;
+
+            if (address->serial) {
+                g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                           "disk.%zu.serial", i);
+                if (virTypedParamsAddString(params, nparams, maxparams,
+                                            param_name, address->serial) < 0)
+                    return;
+            }
 
             /* match the disk to the target in the vm definition */
             diskdef = virDomainDiskByAddress(vmdef,
-                                             &info[i]->address->pci_controller,
-                                             info[i]->address->ccw_addr,
-                                             info[i]->address->bus,
-                                             info[i]->address->target,
-                                             info[i]->address->unit);
+                                             &address->pci_controller,
+                                             address->ccw_addr,
+                                             address->bus,
+                                             address->target,
+                                             address->unit);
             if (diskdef) {
                 g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
                            "disk.%zu.alias", i);
