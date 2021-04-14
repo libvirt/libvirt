@@ -2230,25 +2230,32 @@ virDomainDefGetVcpusTopology(const virDomainDef *def,
 }
 
 
-virDomainDiskDef *
-virDomainDiskDefNew(virDomainXMLOption *xmlopt)
+static virDomainDiskDef *
+virDomainDiskDefNewSource(virDomainXMLOption *xmlopt,
+                          virStorageSource **src)
 {
+    void *privateData = NULL;
     virDomainDiskDef *ret;
-
-    ret = g_new0(virDomainDiskDef, 1);
-
-    ret->src = virStorageSourceNew();
 
     if (xmlopt &&
         xmlopt->privateData.diskNew &&
-        !(ret->privateData = xmlopt->privateData.diskNew()))
-        goto error;
+        !(privateData = xmlopt->privateData.diskNew()))
+        return NULL;
+
+    ret = g_new0(virDomainDiskDef, 1);
+    ret->src = g_steal_pointer(src);
+    ret->privateData = privateData;
 
     return ret;
+}
 
- error:
-    virDomainDiskDefFree(ret);
-    return NULL;
+
+virDomainDiskDef *
+virDomainDiskDefNew(virDomainXMLOption *xmlopt)
+{
+    g_autoptr(virStorageSource) src = virStorageSourceNew();
+
+    return virDomainDiskDefNewSource(xmlopt, &src);
 }
 
 
