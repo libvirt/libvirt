@@ -786,8 +786,8 @@ virXMLParseHelper(int domcode,
                   xmlXPathContextPtr *ctxt)
 {
     struct virParserData private;
-    xmlParserCtxtPtr pctxt;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlParserCtxt) pctxt = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     const char *docname;
 
     if (filename)
@@ -823,32 +823,24 @@ virXMLParseHelper(int domcode,
                                   docname);
         }
 
-        goto error;
+        return NULL;
     }
 
     if (xmlDocGetRootElement(xml) == NULL) {
         virGenericReportError(domcode, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("missing root element"));
-        goto error;
+
+        return NULL;
     }
 
     if (ctxt) {
         if (!(*ctxt = virXMLXPathContextNew(xml)))
-            goto error;
+            return NULL;
 
         (*ctxt)->node = xmlDocGetRootElement(xml);
     }
 
- cleanup:
-    xmlFreeParserCtxt(pctxt);
-
-    return xml;
-
- error:
-    xmlFreeDoc(xml);
-    xml = NULL;
-
-    goto cleanup;
+    return g_steal_pointer(&xml);
 }
 
 const char *virXMLPickShellSafeComment(const char *str1, const char *str2)
