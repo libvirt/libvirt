@@ -50,6 +50,7 @@
 #include "domain_event.h"
 #include "domain_validate.h"
 #include "virtime.h"
+#include "virnetdevbandwidth.h"
 #include "virnetdevopenvswitch.h"
 #include "virstoragefile.h"
 #include "storage_source.h"
@@ -11571,7 +11572,7 @@ qemuDomainInterfaceSetDefaultQDisc(virQEMUDriver *driver,
         actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
         actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        if (virNetDevSetRootQDisc(net->ifname, "noqueue") < 0)
+        if (virNetDevBandwidthSetRootQDisc(net->ifname, "noqueue") < 0)
             return -1;
     }
 

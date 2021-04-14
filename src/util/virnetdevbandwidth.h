@@ -74,3 +74,7 @@ int virNetDevBandwidthUpdateFilter(const char *ifname,
                                    unsigned int id)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     G_GNUC_WARN_UNUSED_RESULT;
+
+int virNetDevBandwidthSetRootQDisc(const char *ifname,
+                                   const char *qdisc)
+    G_GNUC_NO_INLINE;

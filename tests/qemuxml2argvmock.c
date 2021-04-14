@@ -25,6 +25,7 @@
 #include "virmock.h"
 #include "virlog.h"
 #include "virnetdev.h"
+#include "virnetdevbandwidth.h"
 #include "virnetdevip.h"
 #include "virnetdevtap.h"
 #include "virnetdevopenvswitch.h"
@@ -277,8 +278,8 @@ qemuBuildTPMOpenBackendFDs(const char *tpmdev G_GNUC_UNUSED,
 
 
 int
-virNetDevSetRootQDisc(const char *ifname G_GNUC_UNUSED,
-                      const char *qdisc G_GNUC_UNUSED)
+virNetDevBandwidthSetRootQDisc(const char *ifname G_GNUC_UNUSED,
+                               const char *qdisc G_GNUC_UNUSED)
 {
     return 0;
 }

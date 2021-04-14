@@ -23,10 +23,13 @@
 #include "vircommand.h"
 #include "viralloc.h"
 #include "virerror.h"
+#include "virlog.h"
 #include "virstring.h"
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
+
+VIR_LOG_INIT("util.netdevbandwidth");
 
 void
 virNetDevBandwidthFree(virNetDevBandwidth *def)
@@ -748,4 +751,51 @@ virNetDevBandwidthUpdateFilter(const char *ifname,
  cleanup:
     VIR_FREE(class_id);
     return ret;
+}
+
+
+
+/**
+ * virNetDevBandwidthSetRootQDisc:
+ * @ifname: the interface name
+ * @qdisc: queueing discipline to set
+ *
+ * For given interface @ifname set its root queueing discipline
+ * to @qdisc. This can be used to replace the default qdisc
+ * (usually pfifo_fast or whatever is set in
+ * /proc/sys/net/core/default_qdisc) with different qdisc.
+ *
+ * Returns: 0 on success,
+ *         -1 if failed to exec tc (with error reported)
+ *         -2 if tc failed (with no error reported)
+ */
+int
+virNetDevBandwidthSetRootQDisc(const char *ifname,
+                               const char *qdisc)
+{
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *outbuf = NULL;
+    g_autofree char *errbuf = NULL;
+    int status;
+
+    /* Ideally, we would have a netlink implementation and just
+     * call it here.  But honestly, I tried and failed miserably.
+     * Fallback to spawning tc. */
+    cmd = virCommandNewArgList(TC, "qdisc", "add", "dev", ifname,
+                               "root", "handle", "0:", qdisc,
+                               NULL);
+
+    virCommandAddEnvString(cmd, "LC_ALL=C");
+    virCommandSetOutputBuffer(cmd, &outbuf);
+    virCommandSetErrorBuffer(cmd, &errbuf);
+
+    if (virCommandRun(cmd, &status) < 0)
+        return -1;
+
+    if (status != 0) {
+        VIR_DEBUG("Setting qdisc failed: output='%s' err='%s'", outbuf, errbuf);
+        return -2;
+    }
+
+    return 0;
 }
