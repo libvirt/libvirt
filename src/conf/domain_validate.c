@@ -27,6 +27,7 @@
 #include "virconftypes.h"
 #include "virlog.h"
 #include "virutil.h"
+#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -607,18 +608,34 @@ virDomainDiskDefValidate(const virDomainDef *def,
         return -1;
     }
 
-    if (disk->vendor && strlen(disk->vendor) > VENDOR_LEN) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("disk vendor is more than %d characters"),
-                       VENDOR_LEN);
-        return -1;
+    if (disk->vendor) {
+        if (!virStringIsPrintable(disk->vendor)) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("disk vendor is not printable string"));
+            return -1;
+        }
+
+        if (strlen(disk->vendor) > VENDOR_LEN) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("disk vendor is more than %d characters"),
+                           VENDOR_LEN);
+            return -1;
+        }
     }
 
-    if (disk->product && strlen(disk->product) > PRODUCT_LEN) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("disk product is more than %d characters"),
-                       PRODUCT_LEN);
-        return -1;
+    if (disk->product) {
+        if (!virStringIsPrintable(disk->product)) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("disk product is not printable string"));
+            return -1;
+        }
+
+        if (strlen(disk->product) > PRODUCT_LEN) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("disk product is more than %d characters"),
+                           PRODUCT_LEN);
+            return -1;
+        }
     }
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&

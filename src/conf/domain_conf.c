@@ -9433,22 +9433,10 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
                    virXMLNodeNameEqual(cur, "vendor")) {
             if (!(vendor = virXMLNodeContentString(cur)))
                 return NULL;
-
-            if (!virStringIsPrintable(vendor)) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("disk vendor is not printable string"));
-                return NULL;
-            }
         } else if (!product &&
                    virXMLNodeNameEqual(cur, "product")) {
             if (!(product = virXMLNodeContentString(cur)))
                 return NULL;
-
-            if (!virStringIsPrintable(product)) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("disk product is not printable string"));
-                return NULL;
-            }
         } else if (virXMLNodeNameEqual(cur, "boot")) {
             /* boot is parsed as part of virDomainDeviceInfoParseXML */
         } else if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
