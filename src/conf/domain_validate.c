@@ -469,6 +469,24 @@ virDomainDiskDefValidateSourceChainOne(const virStorageSource *src)
         }
     }
 
+    /* internal snapshots and config files are currently supported only with rbd: */
+    if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_NETWORK &&
+        src->protocol != VIR_STORAGE_NET_PROTOCOL_RBD) {
+        if (src->snapshot) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("<snapshot> element is currently supported "
+                             "only with 'rbd' disks"));
+            return -1;
+        }
+
+        if (src->configFile) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("<config> element is currently supported "
+                             "only with 'rbd' disks"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 

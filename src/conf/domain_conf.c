@@ -5367,25 +5367,6 @@ virDomainDiskDefPostParse(virDomainDiskDef *disk,
                           const virDomainDef *def,
                           virDomainXMLOption *xmlopt)
 {
-    /* internal snapshots and config files are currently supported
-     * only with rbd: */
-    if (virStorageSourceGetActualType(disk->src) != VIR_STORAGE_TYPE_NETWORK &&
-        disk->src->protocol != VIR_STORAGE_NET_PROTOCOL_RBD) {
-        if (disk->src->snapshot) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("<snapshot> element is currently supported "
-                             "only with 'rbd' disks"));
-            return -1;
-        }
-
-        if (disk->src->configFile) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("<config> element is currently supported "
-                             "only with 'rbd' disks"));
-            return -1;
-        }
-    }
-
     if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
         disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI) {
         virDomainPostParseCheckISCSIPath(&disk->src->path);
