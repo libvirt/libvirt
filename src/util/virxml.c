@@ -1020,10 +1020,14 @@ catchXMLError(void *ctx, const char *msg G_GNUC_UNUSED, ...)
  * @filename: file to be parsed or NULL if string parsing is requested
  * @xmlStr: XML string to be parsed in case filename is NULL
  * @url: URL of XML document for string parser
+ * @rootelement: Optional name of the expected root element
  * @ctxt: optional pointer to populate with new context pointer
  *
  * Parse XML document provided either as a file or a string. The function
  * guarantees that the XML document contains a root element.
+ *
+ * If @rootelement is not NULL, the name of the root element of the parsed XML
+ * is vaidated against
  *
  * Returns parsed XML document.
  */
@@ -1032,11 +1036,13 @@ virXMLParseHelper(int domcode,
                   const char *filename,
                   const char *xmlStr,
                   const char *url,
+                  const char *rootelement,
                   xmlXPathContextPtr *ctxt)
 {
     struct virParserData private;
     g_autoptr(xmlParserCtxt) pctxt = NULL;
     g_autoptr(xmlDoc) xml = NULL;
+    xmlNodePtr rootnode;
     const char *docname;
 
     if (filename)
@@ -1075,10 +1081,18 @@ virXMLParseHelper(int domcode,
         return NULL;
     }
 
-    if (xmlDocGetRootElement(xml) == NULL) {
+    if (!(rootnode = xmlDocGetRootElement(xml))) {
         virGenericReportError(domcode, VIR_ERR_INTERNAL_ERROR,
                               "%s", _("missing root element"));
 
+        return NULL;
+    }
+
+    if (rootelement &&
+        !virXMLNodeNameEqual(rootnode, rootelement)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("expecting root element of '%s', not '%s'"),
+                       rootelement, rootnode->name);
         return NULL;
     }
 
@@ -1086,7 +1100,7 @@ virXMLParseHelper(int domcode,
         if (!(*ctxt = virXMLXPathContextNew(xml)))
             return NULL;
 
-        (*ctxt)->node = xmlDocGetRootElement(xml);
+        (*ctxt)->node = rootnode;
     }
 
     return g_steal_pointer(&xml);
