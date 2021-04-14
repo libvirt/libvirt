@@ -184,7 +184,8 @@ int virFileResolveAllLinks(const char *linkpath,
 int virFileIsLink(const char *linkpath)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
-char *virFindFileInPath(const char *file);
+char *virFindFileInPath(const char *file)
+    G_GNUC_NO_INLINE;
 
 char *virFileFindResource(const char *filename,
                           const char *builddir,

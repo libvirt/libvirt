@@ -60,6 +60,7 @@ mock_libs = [
   { 'name': 'shunload', 'sources': [ 'shunloadhelper.c' ] },
   { 'name': 'vircgroupmock' },
   { 'name': 'virfilecachemock' },
+  { 'name': 'virfirewallmock' },
   { 'name': 'virgdbusmock' },
   { 'name': 'virhostcpumock' },
   { 'name': 'virhostdevmock' },
