@@ -5367,6 +5367,16 @@ virDomainDiskDefPostParse(virDomainDiskDef *disk,
                           const virDomainDef *def,
                           virDomainXMLOption *xmlopt)
 {
+    if (disk->dst) {
+        char *newdst;
+
+        /* Work around for compat with Xen driver in previous libvirt releases */
+        if ((newdst = g_strdup(STRSKIP(disk->dst, "ioemu:")))) {
+            g_free(disk->dst);
+            disk->dst = newdst;
+        }
+    }
+
     if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
         disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI) {
         virDomainPostParseCheckISCSIPath(&disk->src->path);
@@ -9345,12 +9355,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
                 return NULL;
             removable = virXMLPropString(cur, "removable");
             rotation_rate = virXMLPropString(cur, "rotation_rate");
-
-            /* HACK: Work around for compat with Xen
-             * driver in previous libvirt releases */
-            if (target &&
-                STRPREFIX(target, "ioemu:"))
-                memmove(target, target+6, strlen(target)-5);
         } else if (!domain_name &&
                    virXMLNodeNameEqual(cur, "backenddomain")) {
             domain_name = virXMLPropString(cur, "name");
