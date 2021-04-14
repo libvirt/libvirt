@@ -773,23 +773,6 @@ dnsmasqCapsNewFromBinary(const char *binaryPath)
     return caps;
 }
 
-/** dnsmasqCapsRefresh:
- *
- *   Refresh an existing caps object if the binary has changed. If
- *   there isn't yet a caps object (if it's NULL), create a new one.
- *
- *   Returns 0 on success, -1 on failure
- */
-int
-dnsmasqCapsRefresh(dnsmasqCaps **caps, const char *binaryPath)
-{
-    if (!*caps) {
-        *caps = dnsmasqCapsNewFromBinary(binaryPath);
-        return *caps ? 0 : -1;
-    }
-    return dnsmasqCapsRefreshInternal(*caps, false);
-}
-
 const char *
 dnsmasqCapsGetBinaryPath(dnsmasqCaps *caps)
 {
