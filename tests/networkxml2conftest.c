@@ -123,11 +123,11 @@ mymain(void)
 {
     int ret = 0;
     dnsmasqCaps *restricted
-        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.48", DNSMASQ);
+        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.48");
     dnsmasqCaps *full
-        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.63\n--bind-dynamic", DNSMASQ);
+        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.63\n--bind-dynamic");
     dnsmasqCaps *dhcpv6
-        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.64\n--bind-dynamic", DNSMASQ);
+        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.64\n--bind-dynamic");
 
 #define DO_TEST(xname, xcaps) \
     do { \

@@ -744,9 +744,9 @@ dnsmasqCapsNewEmpty(const char *binaryPath)
 }
 
 dnsmasqCaps *
-dnsmasqCapsNewFromBuffer(const char *buf, const char *binaryPath)
+dnsmasqCapsNewFromBuffer(const char *buf)
 {
-    dnsmasqCaps *caps = dnsmasqCapsNewEmpty(binaryPath);
+    dnsmasqCaps *caps = dnsmasqCapsNewEmpty(DNSMASQ);
 
     if (!caps)
         return NULL;
