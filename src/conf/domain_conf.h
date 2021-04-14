@@ -3353,25 +3353,23 @@ typedef enum {
     VIR_DOMAIN_DEF_PARSE_ALLOW_ROM       = 1 << 4,
     /* internal flag passed to device info sub-parser to allow specifying boot order */
     VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT      = 1 << 5,
-    /* parse only source half of <disk> */
-    VIR_DOMAIN_DEF_PARSE_DISK_SOURCE     = 1 << 6,
     /* perform RNG schema validation on the passed XML document */
-    VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA = 1 << 7,
+    VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA = 1 << 6,
     /* allow updates in post parse callback that would break ABI otherwise */
-    VIR_DOMAIN_DEF_PARSE_ABI_UPDATE = 1 << 8,
+    VIR_DOMAIN_DEF_PARSE_ABI_UPDATE = 1 << 7,
     /* skip definition validation checks meant to be executed on define time only */
-    VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE = 1 << 9,
+    VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE = 1 << 8,
     /* skip parsing of security labels */
-    VIR_DOMAIN_DEF_PARSE_SKIP_SECLABEL        = 1 << 10,
+    VIR_DOMAIN_DEF_PARSE_SKIP_SECLABEL        = 1 << 9,
     /* Allows updates in post parse callback for incoming persistent migration
      * that would break ABI otherwise.  This should be used only if it's safe
      * to do such change. */
-    VIR_DOMAIN_DEF_PARSE_ABI_UPDATE_MIGRATION = 1 << 11,
+    VIR_DOMAIN_DEF_PARSE_ABI_UPDATE_MIGRATION = 1 << 10,
     /* Allows to ignore certain failures in the post parse callbacks, which
      * may happen due to missing packages and can be fixed by re-running the
      * post parse callbacks before starting. Failure of the post parse callback
      * is recorded as def->postParseFail */
-    VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL = 1 << 12,
+    VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL = 1 << 11,
 } virDomainDefParseFlags;
 
 typedef enum {

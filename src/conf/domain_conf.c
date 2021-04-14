@@ -9603,14 +9603,13 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
      * to indicate no media present. LUN is for raw access CD-ROMs
      * that are not attached to a physical device presently */
     if (virStorageSourceIsEmpty(def->src) &&
-        (def->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
-         (flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE))) {
+        def->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
         virReportError(VIR_ERR_NO_SOURCE,
                        target ? "%s" : NULL, target);
         return NULL;
     }
 
-    if (!target && !(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
+    if (!target) {
         if (def->src->srcpool) {
             tmp = g_strdup_printf("pool = '%s', volume = '%s'",
                                   def->src->srcpool->pool, def->src->srcpool->volume);
@@ -9623,29 +9622,27 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
         return NULL;
     }
 
-    if (!(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
-        if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-            !STRPREFIX(target, "fd")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid floppy device name: %s"), target);
-            return NULL;
-        }
+    if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+        !STRPREFIX(target, "fd")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid floppy device name: %s"), target);
+        return NULL;
+    }
 
-        /* Force CDROM to be listed as read only */
-        if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-            def->src->readonly = true;
+    /* Force CDROM to be listed as read only */
+    if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+        def->src->readonly = true;
 
-        if ((def->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
-             def->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
-            !STRPREFIX((const char *)target, "hd") &&
-            !STRPREFIX((const char *)target, "sd") &&
-            !STRPREFIX((const char *)target, "vd") &&
-            !STRPREFIX((const char *)target, "xvd") &&
-            !STRPREFIX((const char *)target, "ubd")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid harddisk device name: %s"), target);
-            return NULL;
-        }
+    if ((def->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
+         def->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
+        !STRPREFIX((const char *)target, "hd") &&
+        !STRPREFIX((const char *)target, "sd") &&
+        !STRPREFIX((const char *)target, "vd") &&
+        !STRPREFIX((const char *)target, "xvd") &&
+        !STRPREFIX((const char *)target, "ubd")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid harddisk device name: %s"), target);
+        return NULL;
     }
 
     if (snapshot) {
@@ -9686,7 +9683,7 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     } else {
         if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
             def->bus = VIR_DOMAIN_DISK_BUS_FDC;
-        } else if (!(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
+        } else {
             if (STRPREFIX(target, "hd"))
                 def->bus = VIR_DOMAIN_DISK_BUS_IDE;
             else if (STRPREFIX(target, "sd"))
