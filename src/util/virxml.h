@@ -101,7 +101,7 @@ virXMLParseHelper(int domcode,
                   const char *filename,
                   const char *xmlStr,
                   const char *url,
-                  xmlXPathContextPtr *pctxt);
+                  xmlXPathContextPtr *ctxt);
 
 const char *
 virXMLPickShellSafeComment(const char *str1,
