@@ -9045,144 +9045,6 @@ virDomainDiskDefGeometryParse(virDomainDiskDef *def,
 
 
 static int
-virDomainDiskDefParseValidateSourceChainOne(const virStorageSource *src)
-{
-    if (src->type == VIR_STORAGE_TYPE_NETWORK && src->auth) {
-        virStorageAuthDef *authdef = src->auth;
-        int actUsage;
-
-        if ((actUsage = virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown secret type '%s'"),
-                           NULLSTR(authdef->secrettype));
-            return -1;
-        }
-
-        if ((src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI &&
-             actUsage != VIR_SECRET_USAGE_TYPE_ISCSI) ||
-            (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD &&
-             actUsage != VIR_SECRET_USAGE_TYPE_CEPH)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("invalid secret type '%s'"),
-                           virSecretUsageTypeToString(actUsage));
-            return -1;
-        }
-    }
-
-    if (src->encryption) {
-        virStorageEncryption *encryption = src->encryption;
-
-        if (encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
-            encryption->encinfo.cipher_name) {
-
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("supplying <cipher> for domain disk definition "
-                             "is unnecessary"));
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-
-static int
-virDomainDiskDefParseValidateSource(const virStorageSource *src)
-{
-    const virStorageSource *next;
-
-    for (next = src; next; next = next->backingStore) {
-        if (virDomainDiskDefParseValidateSourceChainOne(next) < 0)
-            return -1;
-    }
-
-    return 0;
-}
-
-
-static int
-virDomainDiskDefParseValidate(const virDomainDiskDef *def)
-
-{
-    if (virDomainDiskDefParseValidateSource(def->src) < 0)
-        return -1;
-
-    if (def->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
-        if (def->event_idx != VIR_TRISTATE_SWITCH_ABSENT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk event_idx mode supported only for virtio bus"));
-            return -1;
-        }
-
-        if (def->ioeventfd != VIR_TRISTATE_SWITCH_ABSENT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk ioeventfd mode supported only for virtio bus"));
-            return -1;
-        }
-    }
-
-    if (def->device != VIR_DOMAIN_DISK_DEVICE_LUN) {
-        if (def->rawio != VIR_TRISTATE_BOOL_ABSENT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("rawio can be used only with device='lun'"));
-            return -1;
-        }
-
-        if (def->sgio != VIR_DOMAIN_DEVICE_SGIO_DEFAULT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("sgio can be used only with device='lun'"));
-            return -1;
-        }
-    }
-
-    if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-        def->bus != VIR_DOMAIN_DISK_BUS_FDC) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid bus type '%s' for floppy disk"),
-                       virDomainDiskBusTypeToString(def->bus));
-        return -1;
-    }
-
-    if (def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-        def->bus == VIR_DOMAIN_DISK_BUS_FDC) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid bus type '%s' for disk"),
-                       virDomainDiskBusTypeToString(def->bus));
-        return -1;
-    }
-
-    if (def->removable != VIR_TRISTATE_SWITCH_ABSENT &&
-        def->bus != VIR_DOMAIN_DISK_BUS_USB) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("removable is only valid for usb disks"));
-        return -1;
-    }
-
-    if (def->startupPolicy != VIR_DOMAIN_STARTUP_POLICY_DEFAULT) {
-        if (def->src->type == VIR_STORAGE_TYPE_NETWORK) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Setting disk %s is not allowed for "
-                             "disk of network type"),
-                           virDomainStartupPolicyTypeToString(def->startupPolicy));
-            return -1;
-        }
-
-        if (def->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
-            def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-            def->startupPolicy == VIR_DOMAIN_STARTUP_POLICY_REQUISITE) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Setting disk 'requisite' is allowed only for "
-                             "cdrom or floppy"));
-            return -1;
-        }
-    }
-
-
-    return 0;
-}
-
-
-static int
 virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
                                xmlNodePtr cur,
                                xmlXPathContextPtr ctxt)
@@ -9728,9 +9590,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
 
     if (flags & VIR_DOMAIN_DEF_PARSE_STATUS &&
         virDomainDiskDefParsePrivateData(ctxt, def, xmlopt) < 0)
-        return NULL;
-
-    if (virDomainDiskDefParseValidate(def) < 0)
         return NULL;
 
     return g_steal_pointer(&def);
@@ -16497,7 +16356,7 @@ virDomainDiskDefParseSource(const char *xmlStr,
         return NULL;
     }
 
-    if (virDomainDiskDefParseValidateSource(src) < 0)
+    if (virDomainDiskDefValidateSource(src) < 0)
         return NULL;
 
     return g_steal_pointer(&src);

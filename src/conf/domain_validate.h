@@ -38,3 +38,5 @@ int virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                                unsigned int parseFlags,
                                virDomainXMLOption *xmlopt,
                                void *parseOpaque);
+
+int virDomainDiskDefValidateSource(const virStorageSource *src);
