@@ -535,7 +535,7 @@ virCgroupV2Remove(virCgroup *group)
     if (virCgroupV2PathOfController(group, controller, "", &grppath) < 0)
         return 0;
 
-    if (virCgroupV2DevicesRemoveProg(parent) < 0)
+    if (virCgroupV2DevicesCloseProg(parent) < 0)
         return -1;
 
     return virCgroupRemoveRecursively(grppath);

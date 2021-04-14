@@ -548,18 +548,12 @@ virCgroupV2DevicesPrepareProg(virCgroup *group)
 
 
 int
-virCgroupV2DevicesRemoveProg(virCgroup *group)
+virCgroupV2DevicesCloseProg(virCgroup *group)
 {
-    if (virCgroupV2DevicesDetectProg(group) < 0)
-        return -1;
-
-    if (group->unified.devices.progfd <= 0 && group->unified.devices.mapfd <= 0)
-        return 0;
-
-    if (group->unified.devices.mapfd >= 0)
+    if (group->unified.devices.mapfd > 0)
         VIR_FORCE_CLOSE(group->unified.devices.mapfd);
 
-    if (group->unified.devices.progfd >= 0)
+    if (group->unified.devices.progfd > 0)
         VIR_FORCE_CLOSE(group->unified.devices.progfd);
 
     return 0;
@@ -629,7 +623,7 @@ virCgroupV2DevicesPrepareProg(virCgroup *group G_GNUC_UNUSED)
 
 
 int
-virCgroupV2DevicesRemoveProg(virCgroup *group G_GNUC_UNUSED)
+virCgroupV2DevicesCloseProg(virCgroup *group G_GNUC_UNUSED)
 {
     return 0;
 }

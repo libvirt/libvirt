@@ -38,7 +38,7 @@ int
 virCgroupV2DevicesPrepareProg(virCgroup *group);
 
 int
-virCgroupV2DevicesRemoveProg(virCgroup *group);
+virCgroupV2DevicesCloseProg(virCgroup *group);
 
 uint32_t
 virCgroupV2DevicesGetPerms(int perms,

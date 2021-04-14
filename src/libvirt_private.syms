@@ -1963,12 +1963,12 @@ virCgroupV2Register;
 
 # util/vircgroupv2devices.h
 virCgroupV2DevicesAvailable;
+virCgroupV2DevicesCloseProg;
 virCgroupV2DevicesCreateProg;
 virCgroupV2DevicesDetectProg;
 virCgroupV2DevicesGetKey;
 virCgroupV2DevicesGetPerms;
 virCgroupV2DevicesPrepareProg;
-virCgroupV2DevicesRemoveProg;
 
 # util/vircommand.h
 virCommandAbort;
