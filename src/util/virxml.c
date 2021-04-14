@@ -788,6 +788,14 @@ virXMLParseHelper(int domcode,
     struct virParserData private;
     xmlParserCtxtPtr pctxt;
     xmlDocPtr xml = NULL;
+    const char *docname;
+
+    if (filename)
+        docname = filename;
+    else if (url)
+        docname = url;
+    else
+        docname = "[inline data]";
 
     /* Set up a parser context so we can catch the details of XML errors. */
     pctxt = xmlNewParserCtxt();
@@ -807,8 +815,16 @@ virXMLParseHelper(int domcode,
                              XML_PARSE_NONET |
                              XML_PARSE_NOWARNING);
     }
-    if (!xml)
+
+    if (!xml) {
+        if (virGetLastErrorCode() == VIR_ERR_OK) {
+            virGenericReportError(domcode, VIR_ERR_XML_ERROR,
+                                  _("failed to parse xml document '%s'"),
+                                  docname);
+        }
+
         goto error;
+    }
 
     if (xmlDocGetRootElement(xml) == NULL) {
         virGenericReportError(domcode, VIR_ERR_INTERNAL_ERROR,
@@ -832,11 +848,6 @@ virXMLParseHelper(int domcode,
     xmlFreeDoc(xml);
     xml = NULL;
 
-    if (virGetLastErrorCode() == VIR_ERR_OK) {
-        virGenericReportError(domcode, VIR_ERR_XML_ERROR,
-                              _("failed to parse xml document '%s'"),
-                              filename ? filename : "[inline data]");
-    }
     goto cleanup;
 }
 
