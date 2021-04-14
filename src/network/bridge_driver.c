@@ -748,7 +748,7 @@ networkStateInitialize(bool privileged,
                            false, getpid())) < 0)
         goto error;
 
-    /* if this fails now, it will be retried later with dnsmasqCapsRefresh() */
+    /* if this fails now, it will be retried later with networkDnsmasqCapsRefresh() */
     network_driver->dnsmasqCaps = dnsmasqCapsNewFromBinary(DNSMASQ);
 
     if (!(network_driver->networks = virNetworkObjListNew()))
