@@ -101,8 +101,6 @@ int              dnsmasqReload(pid_t pid);
 
 dnsmasqCaps *dnsmasqCapsNewFromBuffer(const char *buf,
                                         const char *binaryPath);
-dnsmasqCaps *dnsmasqCapsNewFromFile(const char *dataPath,
-                                      const char *binaryPath);
 dnsmasqCaps *dnsmasqCapsNewFromBinary(const char *binaryPath);
 int dnsmasqCapsRefresh(dnsmasqCaps **caps, const char *binaryPath);
 bool dnsmasqCapsGet(dnsmasqCaps *caps, dnsmasqCapsFlags flag);

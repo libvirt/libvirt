@@ -674,21 +674,6 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
 }
 
 static int
-dnsmasqCapsSetFromFile(dnsmasqCaps *caps, const char *path)
-{
-    int ret = -1;
-    g_autofree char *buf = NULL;
-
-    if (virFileReadAll(path, 1024 * 1024, &buf) < 0)
-        goto cleanup;
-
-    ret = dnsmasqCapsSetFromBuffer(caps, buf);
-
- cleanup:
-    return ret;
-}
-
-static int
 dnsmasqCapsRefreshInternal(dnsmasqCaps *caps, bool force)
 {
     int ret = -1;
@@ -767,21 +752,6 @@ dnsmasqCapsNewFromBuffer(const char *buf, const char *binaryPath)
         return NULL;
 
     if (dnsmasqCapsSetFromBuffer(caps, buf) < 0) {
-        virObjectUnref(caps);
-        return NULL;
-    }
-    return caps;
-}
-
-dnsmasqCaps *
-dnsmasqCapsNewFromFile(const char *dataPath, const char *binaryPath)
-{
-    dnsmasqCaps *caps = dnsmasqCapsNewEmpty(binaryPath);
-
-    if (!caps)
-        return NULL;
-
-    if (dnsmasqCapsSetFromFile(caps, dataPath) < 0) {
         virObjectUnref(caps);
         return NULL;
     }

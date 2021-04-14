@@ -2091,7 +2091,6 @@ dnsmasqCapsGetBinaryPath;
 dnsmasqCapsGetVersion;
 dnsmasqCapsNewFromBinary;
 dnsmasqCapsNewFromBuffer;
-dnsmasqCapsNewFromFile;
 dnsmasqCapsRefresh;
 dnsmasqContextFree;
 dnsmasqContextNew;
