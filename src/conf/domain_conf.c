@@ -9704,6 +9704,21 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
 }
 
 
+static virStorageSource *
+virDomainDiskDefParseSourceXML(virDomainXMLOption *xmlopt,
+                               xmlNodePtr node,
+                               xmlXPathContextPtr ctxt,
+                               unsigned int flags)
+{
+    g_autoptr(virDomainDiskDef) diskdef = NULL;
+
+    if (!(diskdef = virDomainDiskDefParseXML(xmlopt, node, ctxt,
+                                             flags | VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)))
+        return NULL;
+
+    return g_steal_pointer(&diskdef->src);
+}
+
 
 /**
  * virDomainParseMemory:
@@ -16442,6 +16457,21 @@ virDomainDiskDefParse(const char *xmlStr,
         return NULL;
 
     return virDomainDiskDefParseXML(xmlopt, ctxt->node, ctxt, flags);
+}
+
+
+virStorageSource *
+virDomainDiskDefParseSource(const char *xmlStr,
+                            virDomainXMLOption *xmlopt,
+                            unsigned int flags)
+{
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+
+    if (!(xml = virXMLParseStringCtxtRoot(xmlStr, _("(disk_definition)"), "disk", &ctxt)))
+        return NULL;
+
+    return virDomainDiskDefParseSourceXML(xmlopt, ctxt->node, ctxt, flags);
 }
 
 
