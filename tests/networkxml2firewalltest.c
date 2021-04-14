@@ -152,14 +152,6 @@ testCompareXMLToIPTablesHelper(const void *data)
     return result;
 }
 
-static bool
-hasNetfilterTools(void)
-{
-    return virFileIsExecutable(IPTABLES_PATH) &&
-        virFileIsExecutable(IP6TABLES_PATH) &&
-        virFileIsExecutable(EBTABLES_PATH);
-}
-
 
 static int
 mymain(void)
@@ -179,11 +171,6 @@ mymain(void)
     } while (0)
 
     if (virFirewallSetBackend(VIR_FIREWALL_BACKEND_DIRECT) < 0) {
-        if (!hasNetfilterTools()) {
-            fprintf(stderr, "iptables/ip6tables/ebtables tools not present");
-            return EXIT_AM_SKIP;
-        }
-
         return EXIT_FAILURE;
     }
 
@@ -203,7 +190,8 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virgdbus"))
+VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virgdbus"),
+                      VIR_TEST_MOCK("virfirewall"))
 
 #else /* ! defined (__linux__) */
 
