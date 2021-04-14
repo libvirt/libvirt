@@ -16438,15 +16438,8 @@ virDomainDiskDefParse(const char *xmlStr,
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
 
-    if (!(xml = virXMLParseStringCtxt(xmlStr, _("(disk_definition)"), &ctxt)))
+    if (!(xml = virXMLParseStringCtxtRoot(xmlStr, _("(disk_definition)"), "disk", &ctxt)))
         return NULL;
-
-    if (!virXMLNodeNameEqual(ctxt->node, "disk")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("expecting root element of 'disk', not '%s'"),
-                       ctxt->node->name);
-        return NULL;
-    }
 
     return virDomainDiskDefParseXML(xmlopt, ctxt->node, ctxt, flags);
 }

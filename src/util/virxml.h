@@ -221,6 +221,10 @@ virXMLPickShellSafeComment(const char *str1,
 #define virXMLParseStringCtxt(xmlStr, url, pctxt) \
     virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, NULL, pctxt)
 
+/* virXMLParseStringCtxtRoot is same as above, except it also validates root node name */
+#define virXMLParseStringCtxtRoot(xmlStr, url, rootnode, pctxt) \
+    virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, rootnode, pctxt)
+
 /**
  * virXMLParseFileCtxt:
  * @filename: file to parse
