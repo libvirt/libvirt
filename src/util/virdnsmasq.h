@@ -100,7 +100,7 @@ int              dnsmasqDelete(const dnsmasqContext *ctx);
 int              dnsmasqReload(pid_t pid);
 
 dnsmasqCaps *dnsmasqCapsNewFromBuffer(const char *buf);
-dnsmasqCaps *dnsmasqCapsNewFromBinary(const char *binaryPath);
+dnsmasqCaps *dnsmasqCapsNewFromBinary(void);
 bool dnsmasqCapsGet(dnsmasqCaps *caps, dnsmasqCapsFlags flag);
 const char *dnsmasqCapsGetBinaryPath(dnsmasqCaps *caps);
 unsigned long dnsmasqCapsGetVersion(dnsmasqCaps *caps);

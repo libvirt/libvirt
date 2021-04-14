@@ -130,7 +130,7 @@ networkDnsmasqCapsRefresh(virNetworkDriverState *driver)
 {
     dnsmasqCaps *caps;
 
-    if (!(caps = dnsmasqCapsNewFromBinary(DNSMASQ)))
+    if (!(caps = dnsmasqCapsNewFromBinary()))
         return -1;
 
     networkDriverLock(driver);
@@ -749,7 +749,7 @@ networkStateInitialize(bool privileged,
         goto error;
 
     /* if this fails now, it will be retried later with networkDnsmasqCapsRefresh() */
-    network_driver->dnsmasqCaps = dnsmasqCapsNewFromBinary(DNSMASQ);
+    network_driver->dnsmasqCaps = dnsmasqCapsNewFromBinary();
 
     if (!(network_driver->networks = virNetworkObjListNew()))
         goto error;

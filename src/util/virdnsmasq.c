@@ -759,9 +759,9 @@ dnsmasqCapsNewFromBuffer(const char *buf)
 }
 
 dnsmasqCaps *
-dnsmasqCapsNewFromBinary(const char *binaryPath)
+dnsmasqCapsNewFromBinary(void)
 {
-    dnsmasqCaps *caps = dnsmasqCapsNewEmpty(binaryPath);
+    dnsmasqCaps *caps = dnsmasqCapsNewEmpty(DNSMASQ);
 
     if (!caps)
         return NULL;
