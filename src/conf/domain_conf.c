@@ -340,6 +340,7 @@ VIR_ENUM_IMPL(virDomainDiskGeometryTrans,
 
 VIR_ENUM_IMPL(virDomainDiskBus,
               VIR_DOMAIN_DISK_BUS_LAST,
+              "none",
               "ide",
               "fdc",
               "scsi",
@@ -9510,7 +9511,7 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     }
 
     if (bus) {
-        if ((def->bus = virDomainDiskBusTypeFromString(bus)) < 0) {
+        if ((def->bus = virDomainDiskBusTypeFromString(bus)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk bus type '%s'"), bus);
             return NULL;

@@ -371,6 +371,7 @@ typedef enum {
 } virDomainDiskDevice;
 
 typedef enum {
+    VIR_DOMAIN_DISK_BUS_NONE,
     VIR_DOMAIN_DISK_BUS_IDE,
     VIR_DOMAIN_DISK_BUS_FDC,
     VIR_DOMAIN_DISK_BUS_SCSI,
