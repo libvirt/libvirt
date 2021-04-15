@@ -104,7 +104,9 @@ virFirewallValidateBackend(virFirewallBackend backend)
     size_t i;
 
     for (i = 0; i < G_N_ELEMENTS(commands); i++) {
-        if (!virFileIsExecutable(commands[i])) {
+        g_autofree char *path = virFindFileInPath(commands[i]);
+
+        if (!path) {
             virReportSystemError(errno,
                                  _("%s not available, firewall backend will not function"),
                                  commands[i]);
