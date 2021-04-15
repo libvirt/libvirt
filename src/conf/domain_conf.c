@@ -9045,29 +9045,55 @@ virDomainDiskDefGeometryParse(virDomainDiskDef *def,
 
 
 static int
-virDomainDiskSourceDefParseAuthValidate(const virStorageSource *src)
+virDomainDiskDefParseValidateSourceChainOne(const virStorageSource *src)
 {
-    virStorageAuthDef *authdef = src->auth;
-    int actUsage;
+    if (src->type == VIR_STORAGE_TYPE_NETWORK && src->auth) {
+        virStorageAuthDef *authdef = src->auth;
+        int actUsage;
 
-    if (src->type != VIR_STORAGE_TYPE_NETWORK || !authdef)
-        return 0;
+        if ((actUsage = virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown secret type '%s'"),
+                           NULLSTR(authdef->secrettype));
+            return -1;
+        }
 
-    if ((actUsage = virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown secret type '%s'"),
-                       NULLSTR(authdef->secrettype));
-        return -1;
+        if ((src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI &&
+             actUsage != VIR_SECRET_USAGE_TYPE_ISCSI) ||
+            (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD &&
+             actUsage != VIR_SECRET_USAGE_TYPE_CEPH)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("invalid secret type '%s'"),
+                           virSecretUsageTypeToString(actUsage));
+            return -1;
+        }
     }
 
-    if ((src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI &&
-         actUsage != VIR_SECRET_USAGE_TYPE_ISCSI) ||
-        (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD &&
-         actUsage != VIR_SECRET_USAGE_TYPE_CEPH)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("invalid secret type '%s'"),
-                       virSecretUsageTypeToString(actUsage));
-        return -1;
+    if (src->encryption) {
+        virStorageEncryption *encryption = src->encryption;
+
+        if (encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
+            encryption->encinfo.cipher_name) {
+
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("supplying <cipher> for domain disk definition "
+                             "is unnecessary"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+virDomainDiskDefParseValidateSource(const virStorageSource *src)
+{
+    const virStorageSource *next;
+
+    for (next = src; next; next = next->backingStore) {
+        if (virDomainDiskDefParseValidateSourceChainOne(next) < 0)
+            return -1;
     }
 
     return 0;
@@ -9078,7 +9104,8 @@ static int
 virDomainDiskDefParseValidate(const virDomainDiskDef *def)
 
 {
-    virStorageSource *next;
+    if (virDomainDiskDefParseValidateSource(def->src) < 0)
+        return -1;
 
     if (def->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
         if (def->event_idx != VIR_TRISTATE_SWITCH_ABSENT) {
@@ -9150,23 +9177,6 @@ virDomainDiskDefParseValidate(const virDomainDiskDef *def)
         }
     }
 
-    for (next = def->src; next; next = next->backingStore) {
-        if (virDomainDiskSourceDefParseAuthValidate(next) < 0)
-            return -1;
-
-        if (next->encryption) {
-            virStorageEncryption *encryption = next->encryption;
-
-            if (encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
-                encryption->encinfo.cipher_name) {
-
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("supplying <cipher> for domain disk definition "
-                                 "is unnecessary"));
-                return -1;
-            }
-        }
-    }
 
     return 0;
 }
