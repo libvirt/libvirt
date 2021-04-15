@@ -1315,7 +1315,7 @@ virLogFilterNew(const char *match,
     ret->priority = priority;
 
     /* We must treat 'foo' as equiv to '*foo*' for g_pattern_match
-     * todo substring matches, so add 2 extra bytes
+     * substring matches, so add 2 extra bytes
      */
     ret->match = g_new0(char, mlen + 3);
     ret->match[0] = '*';
