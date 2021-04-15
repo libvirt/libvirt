@@ -5378,6 +5378,33 @@ virDomainDiskDefPostParse(virDomainDiskDef *disk,
         }
     }
 
+    /* Force CDROM to be listed as read only */
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+        disk->src->readonly = true;
+
+    if (disk->bus == VIR_DOMAIN_DISK_BUS_NONE) {
+        disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
+
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+            disk->bus = VIR_DOMAIN_DISK_BUS_FDC;
+        } else if (disk->dst) {
+            if (STRPREFIX(disk->dst, "hd"))
+                disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
+            else if (STRPREFIX(disk->dst, "sd"))
+                disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
+            else if (STRPREFIX(disk->dst, "vd"))
+                disk->bus = VIR_DOMAIN_DISK_BUS_VIRTIO;
+            else if (STRPREFIX(disk->dst, "xvd"))
+                disk->bus = VIR_DOMAIN_DISK_BUS_XEN;
+            else if (STRPREFIX(disk->dst, "ubd"))
+                disk->bus = VIR_DOMAIN_DISK_BUS_UML;
+        }
+    }
+
+    if (disk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT &&
+        disk->src->readonly)
+        disk->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
+
     if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
         disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI) {
         virDomainPostParseCheckISCSIPath(&disk->src->path);
@@ -9465,10 +9492,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
         return NULL;
     }
 
-    /* Force CDROM to be listed as read only */
-    if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-        def->src->readonly = true;
-
     if ((def->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
          def->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
         !STRPREFIX((const char *)target, "hd") &&
@@ -9489,8 +9512,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
                            snapshot);
             return NULL;
         }
-    } else if (def->src->readonly) {
-        def->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
     }
 
     if (rawio) {
@@ -9515,23 +9536,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk bus type '%s'"), bus);
             return NULL;
-        }
-    } else {
-        if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-            def->bus = VIR_DOMAIN_DISK_BUS_FDC;
-        } else {
-            if (STRPREFIX(target, "hd"))
-                def->bus = VIR_DOMAIN_DISK_BUS_IDE;
-            else if (STRPREFIX(target, "sd"))
-                def->bus = VIR_DOMAIN_DISK_BUS_SCSI;
-            else if (STRPREFIX(target, "vd"))
-                def->bus = VIR_DOMAIN_DISK_BUS_VIRTIO;
-            else if (STRPREFIX(target, "xvd"))
-                def->bus = VIR_DOMAIN_DISK_BUS_XEN;
-            else if (STRPREFIX(target, "ubd"))
-                def->bus = VIR_DOMAIN_DISK_BUS_UML;
-            else
-                def->bus = VIR_DOMAIN_DISK_BUS_IDE;
         }
     }
 
