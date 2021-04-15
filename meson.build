@@ -1927,7 +1927,7 @@ if conf.has('WITH_LIBVIRTD')
   endif
 
   if not get_option('storage_sheepdog').disabled()
-    sheepdogcli_prog = find_program(['collie', 'dog'], required: get_option('storage_sheepdog'), dirs: libvirt_sbin_path)
+    sheepdogcli_prog = find_program('dog', required: get_option('storage_sheepdog'), dirs: libvirt_sbin_path)
 
     if sheepdogcli_prog.found()
       use_storage = true
