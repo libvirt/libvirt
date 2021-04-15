@@ -2692,6 +2692,7 @@ qemuProcessSetupPid(virDomainObj *vm,
     g_autoptr(virBitmap) hostcpumap = NULL;
     g_autofree char *mem_mask = NULL;
     int ret = -1;
+    size_t i;
 
     if ((period || quota) &&
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
@@ -2731,6 +2732,37 @@ qemuProcessSetupPid(virDomainObj *vm,
                                                 priv->autoNodeset,
                                                 &mem_mask, -1) < 0)
             goto cleanup;
+
+        /* For restrictive numatune mode we need to set cpuset.mems for vCPU
+         * threads based on the node they are in as there is nothing else uses
+         * for such restriction (e.g. numa_set_membind). */
+        if (nameval == VIR_CGROUP_THREAD_VCPU) {
+            virDomainNuma *numatune = vm->def->numa;
+
+            /* Look for the guest NUMA node of this vCPU */
+            for (i = 0; i < virDomainNumaGetNodeCount(numatune); i++) {
+                g_autoptr(virBitmap) node_cpus = NULL;
+                node_cpus = virDomainNumaGetNodeCpumask(numatune, i);
+
+                if (!virBitmapIsBitSet(node_cpus, id))
+                    continue;
+
+                /* Update the mem_mask for this vCPU if the mode of its node is
+                 * 'restrictive'. */
+                if (virDomainNumatuneGetMode(numatune, i, &mem_mode) == 0 &&
+                    mem_mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
+                    VIR_FREE(mem_mask);
+
+                    if (virDomainNumatuneMaybeFormatNodeset(numatune,
+                                                            priv->autoNodeset,
+                                                            &mem_mask, i) < 0) {
+                        goto cleanup;
+                    }
+                }
+
+                break;
+            }
+        }
 
         if (virCgroupNewThread(priv->cgroup, nameval, id, true, &cgroup) < 0)
             goto cleanup;
