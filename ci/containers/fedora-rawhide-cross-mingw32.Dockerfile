@@ -2,7 +2,8 @@
 #
 #  $ lcitool dockerfile --cross mingw32 fedora-rawhide libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/ceb381dce7c901e180a621951355800d8135ce82
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/6552fd8885423cfc383a58255eca542937f7d4ea
+
 FROM registry.fedoraproject.org/fedora:rawhide
 
 RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
@@ -22,6 +23,7 @@ exec "$@"' > /usr/bin/nosync && \
         bash-completion \
         ca-certificates \
         ccache \
+        cpp \
         cppi \
         diffutils \
         dnsmasq \
@@ -63,7 +65,7 @@ exec "$@"' > /usr/bin/nosync && \
     rpm -qa | sort > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/i686-w64-mingw32-cc && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/i686-w64-mingw32-$(basename /usr/bin/gcc)
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/i686-w64-mingw32-gcc
 
 RUN nosync dnf install -y \
         mingw32-curl \

@@ -2,7 +2,8 @@
 #
 #  $ lcitool dockerfile --cross mips64el debian-sid libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/ceb381dce7c901e180a621951355800d8135ce82
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/6552fd8885423cfc383a58255eca542937f7d4ea
+
 FROM docker.io/library/debian:sid-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -15,13 +16,12 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             bash-completion \
             ca-certificates \
             ccache \
-            clang \
+            cpp \
             diffutils \
             dnsmasq-base \
             dwarves \
             ebtables \
             flake8 \
-            gcc \
             gettext \
             git \
             grep \
@@ -57,7 +57,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     dpkg-query --showformat '${Package}_${Version}_${Architecture}\n' --show > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/mips64el-linux-gnuabi64-cc && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/mips64el-linux-gnuabi64-$(basename /usr/bin/gcc)
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/mips64el-linux-gnuabi64-gcc
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     dpkg --add-architecture mips64el && \

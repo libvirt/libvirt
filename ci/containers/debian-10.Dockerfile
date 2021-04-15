@@ -2,7 +2,8 @@
 #
 #  $ lcitool dockerfile debian-10 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/ceb381dce7c901e180a621951355800d8135ce82
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/6552fd8885423cfc383a58255eca542937f7d4ea
+
 FROM docker.io/library/debian:10-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -16,6 +17,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             ca-certificates \
             ccache \
             clang \
+            cpp \
             diffutils \
             dnsmasq-base \
             dwarves \
@@ -97,10 +99,11 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     dpkg-query --showformat '${Package}_${Version}_${Architecture}\n' --show > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/$(basename /usr/bin/gcc)
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/clang && \
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/gcc
 
 RUN pip3 install \
-         meson==0.55.3
+         meson==0.56.0
 
 ENV LANG "en_US.UTF-8"
 ENV MAKE "/usr/bin/make"
