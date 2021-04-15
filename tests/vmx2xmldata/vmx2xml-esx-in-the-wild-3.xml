@@ -20,6 +20,7 @@
     <disk type='file' device='cdrom'>
       <source file='[498076b2-02796c1a-ef5b-000ae484a6a3] Isos/debian-testing-amd64-netinst.iso'/>
       <target dev='hda' bus='ide'/>
+      <readonly/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='file' device='floppy'>

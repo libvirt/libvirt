@@ -21,16 +21,19 @@
     <disk type='file' device='cdrom'>
       <source file='[datastore] directory/Debian1-cdrom.iso'/>
       <target dev='sdp' bus='scsi'/>
+      <readonly/>
       <address type='drive' controller='1' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='file' device='cdrom'>
       <source file='/vmimages/tools-isoimages/linux.iso'/>
       <target dev='hda' bus='ide'/>
+      <readonly/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='block' device='cdrom'>
       <source dev='/dev/scd0'/>
       <target dev='hdb' bus='ide'/>
+      <readonly/>
       <address type='drive' controller='0' bus='0' target='0' unit='1'/>
     </disk>
     <disk type='file' device='disk'>

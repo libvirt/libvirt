@@ -20,6 +20,7 @@
     <disk type='block' device='lun'>
       <source dev='/vmfs/devices/cdrom/mpx.vmhba32:C0:T0:L0'/>
       <target dev='sdb' bus='scsi'/>
+      <readonly/>
       <address type='drive' controller='0' bus='0' target='0' unit='1'/>
     </disk>
     <controller type='scsi' index='0' model='vmpvscsi'/>

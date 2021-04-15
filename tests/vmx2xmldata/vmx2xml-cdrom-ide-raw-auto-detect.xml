@@ -15,6 +15,7 @@
     <disk type='block' device='lun'>
       <source startupPolicy='optional'/>
       <target dev='hda' bus='ide'/>
+      <readonly/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='ide' index='0'/>

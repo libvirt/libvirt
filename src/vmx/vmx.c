@@ -2411,6 +2411,9 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt, virConf *conf,
             goto cleanup;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+        /* set cdrom to read-only */
+        (*def)->src->readonly = true;
+
         if (fileName && virStringHasCaseSuffix(fileName, ".vmdk")) {
             /*
              * This function was called in order to parse a CDROM device, but

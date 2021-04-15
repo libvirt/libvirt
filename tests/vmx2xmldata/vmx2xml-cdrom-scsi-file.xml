@@ -15,6 +15,7 @@
     <disk type='file' device='cdrom'>
       <source file='[datastore] directory/cdrom.iso'/>
       <target dev='sda' bus='scsi'/>
+      <readonly/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='scsi' index='0'/>
