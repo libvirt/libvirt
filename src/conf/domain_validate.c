@@ -699,6 +699,50 @@ virDomainDiskDefValidate(const virDomainDef *def,
         }
     }
 
+    if (disk->wwn && !virValidateWWN(disk->wwn))
+        return -1;
+
+    if (!disk->dst) {
+        if (disk->src->srcpool) {
+            virReportError(VIR_ERR_NO_TARGET, _("pool = '%s', volume = '%s'"),
+                           disk->src->srcpool->pool,
+                           disk->src->srcpool->volume);
+        } else {
+            virReportError(VIR_ERR_NO_TARGET,
+                           disk->src->path ? "%s" : NULL, disk->src->path);
+        }
+
+        return -1;
+    }
+
+    if ((disk->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
+         disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
+        !STRPREFIX(disk->dst, "hd") &&
+        !STRPREFIX(disk->dst, "sd") &&
+        !STRPREFIX(disk->dst, "vd") &&
+        !STRPREFIX(disk->dst, "xvd") &&
+        !STRPREFIX(disk->dst, "ubd")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid harddisk device name: %s"), disk->dst);
+        return -1;
+    }
+
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+        !STRPREFIX(disk->dst, "fd")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid floppy device name: %s"), disk->dst);
+        return -1;
+    }
+
+    /* Only CDROM and Floppy devices are allowed missing source path to
+     * indicate no media present. LUN is for raw access CD-ROMs that are not
+     * attached to a physical device presently */
+    if (virStorageSourceIsEmpty(disk->src) &&
+        disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+        virReportError(VIR_ERR_NO_SOURCE, "%s", disk->dst);
+        return -1;
+    }
+
     return 0;
 }
 

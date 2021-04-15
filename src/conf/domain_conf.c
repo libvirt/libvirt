@@ -9440,8 +9440,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
             if (!(wwn = virXMLNodeContentString(cur)))
                 return NULL;
 
-            if (!virValidateWWN(wwn))
-                return NULL;
         } else if (!vendor &&
                    virXMLNodeNameEqual(cur, "vendor")) {
             if (!(vendor = virXMLNodeContentString(cur)))
@@ -9460,48 +9458,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
             def->diskElementAuth = !!secretAuth;
             def->diskElementEnc = !!secretEnc;
         }
-    }
-
-    /* Only CDROM and Floppy devices are allowed missing source path
-     * to indicate no media present. LUN is for raw access CD-ROMs
-     * that are not attached to a physical device presently */
-    if (virStorageSourceIsEmpty(def->src) &&
-        def->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-        virReportError(VIR_ERR_NO_SOURCE,
-                       target ? "%s" : NULL, target);
-        return NULL;
-    }
-
-    if (!target) {
-        if (def->src->srcpool) {
-            tmp = g_strdup_printf("pool = '%s', volume = '%s'",
-                                  def->src->srcpool->pool, def->src->srcpool->volume);
-
-            virReportError(VIR_ERR_NO_TARGET, "%s", tmp);
-            VIR_FREE(tmp);
-        } else {
-            virReportError(VIR_ERR_NO_TARGET, def->src->path ? "%s" : NULL, def->src->path);
-        }
-        return NULL;
-    }
-
-    if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-        !STRPREFIX(target, "fd")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid floppy device name: %s"), target);
-        return NULL;
-    }
-
-    if ((def->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
-         def->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
-        !STRPREFIX((const char *)target, "hd") &&
-        !STRPREFIX((const char *)target, "sd") &&
-        !STRPREFIX((const char *)target, "vd") &&
-        !STRPREFIX((const char *)target, "xvd") &&
-        !STRPREFIX((const char *)target, "ubd")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid harddisk device name: %s"), target);
-        return NULL;
     }
 
     if (snapshot) {
