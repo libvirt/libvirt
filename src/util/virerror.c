@@ -804,7 +804,8 @@ virRaiseErrorInternal(const char *filename,
     if (!msg)
         msg = g_strdup(_("No error message provided"));
 
-    /* Deliberately not setting conn, dom & net fields sincethey're utterly unsafe. */
+    /* Deliberately not setting conn, dom & net fields since
+     * they are utterly unsafe. */
     to->domain = domain;
     to->code = code;
     to->message = g_steal_pointer(&msg);

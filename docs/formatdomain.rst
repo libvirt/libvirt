@@ -6921,7 +6921,7 @@ elements
 * ``fixedSettings``
 
   Control whether the mixing engine can dynamically choose settings
-  to mimimize format conversion. This is only valid when the
+  to minimize format conversion. This is only valid when the
   mixing engine is explicitly enabled.
 
 * ``voices``
@@ -6951,7 +6951,7 @@ is permitted with the following attributes.
 * ``format``
 
   The audio format, one of ``s8``, ``u8``, ``s16``, ``u16``,
-  ``s32``, ``u32``, ``f32``. The defalt is hypervisor specific.
+  ``s32``, ``u32``, ``f32``. The default is hypervisor specific.
 
 None audio backend
 ^^^^^^^^^^^^^^^^^^
@@ -7064,7 +7064,7 @@ element
 
   Set the timing policy of the device, values between -1 and 10.
   Smaller numbers result in lower latency but higher CPU usage.
-  A negatve value requests use of fragment mode.
+  A negative value requests use of fragment mode.
 
 The following additional attributes are permitted on the ``<input>``
 and ``<output>`` elements

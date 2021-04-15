@@ -1707,7 +1707,7 @@ virNetDevSetVfConfig(const char *ifname, int vf,
 
 /**
  * virNetDevParseVfInfo:
- * Get the VF interface infomation from kernel by netlink, To make netlink
+ * Get the VF interface information from kernel by netlink, To make netlink
  * parsing logic easy to maintain, extending this function to get some new
  * data is better than add a new function.
  */

@@ -726,13 +726,13 @@ qemuSnapshotPrepare(virDomainObj *vm,
             if (disk->src->metadataCacheMaxSize > 0) {
                 if (disk->src->format != VIR_STORAGE_FILE_QCOW2) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("metdata cache max size control is supported only with qcow2 images"));
+                                   _("metadata cache max size control is supported only with qcow2 images"));
                     return -1;
                 }
 
                 if (!blockdev) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("metdata cache max size control is not supported with this QEMU binary"));
+                                   _("metadata cache max size control is not supported with this QEMU binary"));
                     return -1;
                 }
             }

@@ -360,7 +360,7 @@ virPCIDeviceRead(virPCIDevice *dev,
  * function.
  *
  * Returns the value at @pos in the file, or 0 if there was an
- * error. NB: since 0 could be a valid value, occurence of an error
+ * error. NB: since 0 could be a valid value, occurrence of an error
  * must be determined by examining errno. errno is always reset to 0
  * before the seek/read is attempted (see virPCIDeviceRead()), so if
  * errno != 0 on return from one of these functions, then either the

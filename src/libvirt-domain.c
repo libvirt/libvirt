@@ -13137,7 +13137,7 @@ virDomainAuthorizedSSHKeysSet(virDomainPtr domain,
  * virDomainMessageType constants can be used to restrict
  * results to certain types of message.
  *
- * Note it is hypervisor dependant whether messages are
+ * Note it is hypervisor dependent whether messages are
  * available for shutoff guests, or running guests, or
  * both. Thus a client should be prepared to re-fetch
  * messages when a guest transitions between running

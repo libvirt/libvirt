@@ -85,7 +85,7 @@ kernel:
 Checking SEV support in the virt stack
 ======================================
 
-**Note: All of the commands bellow need to be run with root
+**Note: All of the commands below need to be run with root
 privileges.**
 
 First make sure you have the following packages in the specified

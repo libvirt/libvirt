@@ -43,7 +43,7 @@ configuration file can be used to instruct it to also listen on TCP socket(s).
 Systemd socket activation is also supported to allow it to receive pre-opened
 listener sockets on startup.
 
-Since ``virtproxyd`` merely forwards RPC mesages, it has no important state,
+Since ``virtproxyd`` merely forwards RPC messages, it has no important state,
 and can be restarted at any time. Clients should expect to reconnect after
 the restart.
 

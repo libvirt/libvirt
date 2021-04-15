@@ -3254,7 +3254,7 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
      * idea). This is because of create_default_memdev() in QEMU sets
      * 'x-use-canonical-path-for-ramblock-id' attribute to false and is
      * documented in QEMU in qemu-options.hx under 'memory-backend'. Note
-     * that QEMU consideres 'x-use-canonical-path-for-ramblock-id' stable
+     * that QEMU considers 'x-use-canonical-path-for-ramblock-id' stable
      * and supported despite the 'x-' prefix.
      * See QEMU commit 8db0b20415c129cf5e577a593a4a0372d90b7cc9.
      */

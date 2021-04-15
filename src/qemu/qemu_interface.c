@@ -652,7 +652,7 @@ qemuInterfaceVDPAConnect(virDomainNetDef *net)
 
 
 /*
- * Returns: -1 on error, 0 if slirp isn't available, 1 on succcess
+ * Returns: -1 on error, 0 if slirp isn't available, 1 on success
  */
 int
 qemuInterfacePrepareSlirp(virQEMUDriver *driver,

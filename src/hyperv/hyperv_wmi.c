@@ -331,7 +331,7 @@ hypervSetEmbeddedProperty(GHashTable *table,
  * Add a GHashTable containing object properties as an embedded param to
  * an invocation list.
  *
- * Upon successfull return the @table is consumed and the pointer is cleared out.
+ * Upon successful return the @table is consumed and the pointer is cleared out.
  *
  * Returns -1 on failure, 0 on success.
  */

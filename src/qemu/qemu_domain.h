@@ -260,7 +260,7 @@ struct _qemuDomainObjPrivate {
     bool dbusVMState;
 
     /* prevent deletion of <transient> disk overlay files between startup and
-     * succesful setup of the overlays */
+     * successful setup of the overlays */
     bool inhibitDiskTransientDelete;
 };
 
@@ -469,7 +469,7 @@ struct _qemuDomainXmlNsDef {
     size_t ncapsdel;
     char **capsdel;
 
-    /* We deliberatly keep this as a string so that it's parsed only when
+    /* We deliberately keep this as a string so that it's parsed only when
      * starting the VM to avoid any form of errors in the parser or when
      * changing qemu versions. The knob is mainly for development/CI purposes */
     char *deprecationBehavior;

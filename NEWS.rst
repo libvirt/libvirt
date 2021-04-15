@@ -221,7 +221,7 @@ v7.0.0 (2021-01-15)
 
     Starting from libvirt-6.6 the release tarballs are signed by Jiří Denemark.
     Releases starting with 7.0 contain a note from the previous maintainer
-    Daniel Veillard offically handing over the signing of packages so that the
+    Daniel Veillard officially handing over the signing of packages so that the
     transition can be verified.
 
 * **New features**
@@ -268,7 +268,7 @@ v7.0.0 (2021-01-15)
     interface name was adapted to new versions of OpenVSwitch and thus can
     detect name more reliably.
 
-  * qemu: Report guest disks informations in ``virDomainGetGuestInfo``
+  * qemu: Report guest disks information in ``virDomainGetGuestInfo``
 
     Libvirt is now able to report disks and filesystems from the guest's
     perspective (using guest agent). And with sufficiently new guest agent
@@ -513,7 +513,7 @@ v6.8.0 (2020-10-01)
   * qemu: Preserve qcow2 cluster size after external snapshots
 
     The new overlay image which is installed on top of the current chain when
-    taking an external snapshot now preserves the cluser size of the original
+    taking an external snapshot now preserves the cluster size of the original
     top image to preserve any performance tuning done on the original image.
 
 * **Bug fixes**
@@ -2487,8 +2487,8 @@ v4.6.0 (2018-08-06)
 
   * qemu: Enable VNC console for mediated devices
 
-    Host devices now support a new atribute 'display' which can be used to turn
-    on frame buffer rendering on a vgpu mediated device instead of on an
+    Host devices now support a new attribute 'display' which can be used to
+    turn on frame buffer rendering on a vgpu mediated device instead of on an
     emulated GPU, like QXL.
 
 * **Improvements**

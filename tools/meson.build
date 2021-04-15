@@ -81,7 +81,7 @@ endif
 
 if conf.has('WITH_LOGIN_SHELL')
   # virt-login-shell will be setuid, and must not link to anything
-  # except glibc. It wil scrub the environment and then invoke the
+  # except glibc. It will scrub the environment and then invoke the
   # real virt-login-shell-helper binary.
   executable(
     'virt-login-shell',

@@ -1334,7 +1334,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     /*
      * We don't probe 'esp' directly, because it is often reported
      * as present for all QEMU binaries, due to it being enabled
-     * for built as a dependancy of dc390/am53c974 PCI SCSI
+     * for built as a dependency of dc390/am53c974 PCI SCSI
      * controllers.
      *
      * The base 'esp' device is only used as a built-in device

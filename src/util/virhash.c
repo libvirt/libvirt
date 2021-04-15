@@ -51,7 +51,7 @@ VIR_ONCE_GLOBAL_INIT(virHashAtomic);
 
 
 /**
- * Our hash function uses a random seed to provide uncertainity from run to run
+ * Our hash function uses a random seed to provide uncertainty from run to run
  * to prevent pre-crafting of colliding hash keys.
  */
 static uint32_t virHashTableSeed;

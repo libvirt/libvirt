@@ -599,7 +599,7 @@ helpers = []
 
 if conf.has('WITH_NSS')
   helpers += [
-    # Intentionaly not linking with anything else.
+    # Intentionally not linking with anything else.
     # See the test source for more detailed explanation.
     {
       'name': 'nsslinktest',

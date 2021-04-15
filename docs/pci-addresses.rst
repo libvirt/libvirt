@@ -242,7 +242,7 @@ Reserved addresses
 
 Due to some historical reasons hypervisors might expect some PCI
 devices to appear at certain addresses instead of 'random' ones.
-For QEMU this is machine type and guest architecture dependant.
+For QEMU this is machine type and guest architecture dependent.
 But to give you at least a gist here is list of reserved PCI
 addresses:
 
