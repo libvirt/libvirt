@@ -9314,7 +9314,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     bool source = false;
     g_autofree char *tmp = NULL;
     g_autofree char *snapshot = NULL;
-    g_autofree char *rawio = NULL;
     g_autofree char *sgio = NULL;
     g_autofree char *target = NULL;
     g_autofree char *bus = NULL;
@@ -9357,7 +9356,9 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
 
     snapshot = virXMLPropString(node, "snapshot");
 
-    rawio = virXMLPropString(node, "rawio");
+    if (virXMLPropTristateBool(node, "rawio", VIR_XML_PROP_OPTIONAL, &def->rawio) < 0)
+        return NULL;
+
     sgio = virXMLPropString(node, "sgio");
 
     for (cur = node->children; cur != NULL; cur = cur->next) {
@@ -9469,15 +9470,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk snapshot setting '%s'"),
                            snapshot);
-            return NULL;
-        }
-    }
-
-    if (rawio) {
-        if ((def->rawio = virTristateBoolTypeFromString(rawio)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown disk rawio setting '%s'"),
-                           rawio);
             return NULL;
         }
     }
