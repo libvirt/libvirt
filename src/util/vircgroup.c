@@ -2725,8 +2725,8 @@ virCgroupKillRecursiveInternal(virCgroup *group,
     g_autoptr(DIR) dp = NULL;
     struct dirent *ent;
     int direrr;
-    VIR_DEBUG("group=%p signum=%d pids=%p",
-              group, signum, pids);
+    VIR_DEBUG("group=%p signum=%d pids=%p taskFile=%s dormdir=%d",
+              group, signum, pids, taskFile, dormdir);
 
     if (virCgroupPathOfController(group, controller, "", &keypath) < 0)
         return -1;
