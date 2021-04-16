@@ -37,6 +37,7 @@ xmlXPathContextPtr virXMLXPathContextNew(xmlDocPtr xml)
 typedef enum {
     VIR_XML_PROP_OPTIONAL = 0, /* Attribute may be absent */
     VIR_XML_PROP_REQUIRED = 1 << 0, /* Attribute may not be absent */
+    VIR_XML_PROP_NONZERO = 1 << 1, /* Attribute may not be zero */
 } virXMLPropFlags;
 
 
@@ -116,6 +117,14 @@ virXMLPropTristateSwitch(xmlNodePtr node,
                          virXMLPropFlags flags,
                          virTristateSwitch *result)
     ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+
+int
+virXMLPropInt(xmlNodePtr node,
+              const char *name,
+              int base,
+              virXMLPropFlags flags,
+              int *result)
+    ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 
 /* Internal function; prefer the macros below.  */
 xmlDocPtr
