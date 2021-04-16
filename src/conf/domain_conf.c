@@ -9343,7 +9343,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *target = NULL;
     g_autofree char *bus = NULL;
     g_autofree char *serial = NULL;
-    g_autofree char *startupPolicy = NULL;
     g_autofree char *removable = NULL;
     g_autofree char *logical_block_size = NULL;
     g_autofree char *physical_block_size = NULL;
@@ -9401,7 +9400,11 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
 
             source = true;
 
-            startupPolicy = virXMLPropString(cur, "startupPolicy");
+            if (virXMLPropEnum(cur, "startupPolicy",
+                               virDomainStartupPolicyTypeFromString,
+                               VIR_XML_PROP_OPTIONAL | VIR_XML_PROP_NONZERO,
+                               &def->startupPolicy) < 0)
+                return NULL;
 
             if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
                 (tmp = virXMLPropString(cur, "index")) &&
@@ -9653,18 +9656,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info,
                                     flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) < 0) {
         return NULL;
-    }
-
-    if (startupPolicy) {
-        int val;
-
-        if ((val = virDomainStartupPolicyTypeFromString(startupPolicy)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown startupPolicy value '%s'"),
-                           startupPolicy);
-            return NULL;
-        }
-        def->startupPolicy = val;
     }
 
     def->dst = g_steal_pointer(&target);
