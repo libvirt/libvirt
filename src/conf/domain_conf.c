@@ -18229,21 +18229,13 @@ static virDomainIOThreadIDDef *
 virDomainIOThreadIDDefParseXML(xmlNodePtr node)
 {
     virDomainIOThreadIDDef *iothrid;
-    g_autofree char *tmp = NULL;
 
     iothrid = g_new0(virDomainIOThreadIDDef, 1);
 
-    if (!(tmp = virXMLPropString(node, "id"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Missing 'id' attribute in <iothread> element"));
+    if (virXMLPropUInt(node, "id", 10,
+                       VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                       &iothrid->iothread_id) < 0)
         goto error;
-    }
-    if (virStrToLong_uip(tmp, NULL, 10, &iothrid->iothread_id) < 0 ||
-        iothrid->iothread_id == 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid iothread 'id' value '%s'"), tmp);
-        goto error;
-    }
 
     return iothrid;
 
