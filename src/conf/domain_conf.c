@@ -9345,13 +9345,9 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     }
     VIR_FREE(tmp);
 
-    if ((tmp = virXMLPropString(node, "model")) &&
-        (def->model = virDomainDiskModelTypeFromString(tmp)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk model '%s'"), tmp);
+    if (virXMLPropEnum(node, "model", virDomainDiskModelTypeFromString,
+                       VIR_XML_PROP_OPTIONAL, &def->model) < 0)
         return NULL;
-    }
-    VIR_FREE(tmp);
 
     snapshot = virXMLPropString(node, "snapshot");
 

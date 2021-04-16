@@ -584,7 +584,7 @@ struct _virDomainDiskDef {
     int detect_zeroes; /* enum virDomainDiskDetectZeroes */
     char *domain_name; /* backend domain name */
     unsigned int queues;
-    int model; /* enum virDomainDiskModel */
+    virDomainDiskModel model;
     virDomainVirtioOptions *virtio;
 
     bool diskElementAuth;
