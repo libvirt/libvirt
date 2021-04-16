@@ -1477,6 +1477,24 @@ virCgroupHasController(virCgroup *cgroup, int controller)
 }
 
 
+static int
+virCgroupGetAnyController(virCgroup *cgroup)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (!cgroup->backends[i])
+            continue;
+
+        return cgroup->backends[i]->getAnyController(cgroup);
+    }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("Unable to get any controller"));
+    return -1;
+}
+
+
 int
 virCgroupPathOfController(virCgroup *group,
                           unsigned int controller,
@@ -2715,11 +2733,11 @@ int
 virCgroupKillRecursiveInternal(virCgroup *group,
                                int signum,
                                GHashTable *pids,
-                               int controller,
                                const char *taskFile,
                                bool dormdir)
 {
     int rc;
+    int controller;
     bool killedAny = false;
     g_autofree char *keypath = NULL;
     g_autoptr(DIR) dp = NULL;
@@ -2727,6 +2745,9 @@ virCgroupKillRecursiveInternal(virCgroup *group,
     int direrr;
     VIR_DEBUG("group=%p signum=%d pids=%p taskFile=%s dormdir=%d",
               group, signum, pids, taskFile, dormdir);
+
+    if ((controller = virCgroupGetAnyController(group)) < 0)
+        return -1;
 
     if (virCgroupPathOfController(group, controller, "", &keypath) < 0)
         return -1;
@@ -2760,7 +2781,7 @@ virCgroupKillRecursiveInternal(virCgroup *group,
             return -1;
 
         if ((rc = virCgroupKillRecursiveInternal(subgroup, signum, pids,
-                                                 controller, taskFile, true)) < 0)
+                                                 taskFile, true)) < 0)
             return -1;
         if (rc == 1)
             killedAny = true;

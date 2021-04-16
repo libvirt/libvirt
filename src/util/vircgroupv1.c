@@ -812,12 +812,7 @@ virCgroupV1KillRecursive(virCgroup *group,
                          int signum,
                          GHashTable *pids)
 {
-    int controller = virCgroupV1GetAnyController(group);
-
-    if (controller < 0)
-        return -1;
-
-    return virCgroupKillRecursiveInternal(group, signum, pids, controller,
+    return virCgroupKillRecursiveInternal(group, signum, pids,
                                           "tasks", false);
 }
 

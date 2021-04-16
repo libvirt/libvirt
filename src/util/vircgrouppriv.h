@@ -135,6 +135,5 @@ int virCgroupRemoveRecursively(char *grppath);
 int virCgroupKillRecursiveInternal(virCgroup *group,
                                    int signum,
                                    GHashTable *pids,
-                                   int controller,
                                    const char *taskFile,
                                    bool dormdir);
