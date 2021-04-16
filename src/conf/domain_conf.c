@@ -9344,7 +9344,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *bus = NULL;
     g_autofree char *serial = NULL;
     g_autofree char *startupPolicy = NULL;
-    g_autofree char *tray = NULL;
     g_autofree char *removable = NULL;
     g_autofree char *logical_block_size = NULL;
     g_autofree char *physical_block_size = NULL;
@@ -9415,7 +9414,9 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
                    virXMLNodeNameEqual(cur, "target")) {
             target = virXMLPropString(cur, "dev");
             bus = virXMLPropString(cur, "bus");
-            tray = virXMLPropString(cur, "tray");
+            if (virXMLPropEnum(cur, "tray", virDomainDiskTrayTypeFromString,
+                               VIR_XML_PROP_OPTIONAL, &def->tray_status) < 0)
+                return NULL;
             removable = virXMLPropString(cur, "removable");
             rotation_rate = virXMLPropString(cur, "rotation_rate");
 
@@ -9631,14 +9632,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
                 def->bus = VIR_DOMAIN_DISK_BUS_UML;
             else
                 def->bus = VIR_DOMAIN_DISK_BUS_IDE;
-        }
-    }
-
-    if (tray) {
-        if ((def->tray_status = virDomainDiskTrayTypeFromString(tray)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk tray status '%s'"), tray);
-            return NULL;
         }
     }
 

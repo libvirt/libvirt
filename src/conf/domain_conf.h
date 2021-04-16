@@ -537,7 +537,7 @@ struct _virDomainDiskDef {
     int device; /* enum virDomainDiskDevice */
     int bus; /* enum virDomainDiskBus */
     char *dst;
-    int tray_status; /* enum virDomainDiskTray */
+    virDomainDiskTray tray_status;
     int removable; /* enum virTristateSwitch */
     unsigned int rotation_rate;
 
