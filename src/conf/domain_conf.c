@@ -9319,7 +9319,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *target = NULL;
     g_autofree char *bus = NULL;
     g_autofree char *serial = NULL;
-    g_autofree char *removable = NULL;
     g_autofree char *logical_block_size = NULL;
     g_autofree char *physical_block_size = NULL;
     g_autofree char *wwn = NULL;
@@ -9381,7 +9380,11 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
             if (virXMLPropEnum(cur, "tray", virDomainDiskTrayTypeFromString,
                                VIR_XML_PROP_OPTIONAL, &def->tray_status) < 0)
                 return NULL;
-            removable = virXMLPropString(cur, "removable");
+
+            if (virXMLPropTristateSwitch(cur, "removable", VIR_XML_PROP_OPTIONAL,
+                                         &def->removable) < 0)
+                return NULL;
+
             rotation_rate = virXMLPropString(cur, "rotation_rate");
         } else if (!domain_name &&
                    virXMLNodeNameEqual(cur, "backenddomain")) {
@@ -9491,14 +9494,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
         if ((def->bus = virDomainDiskBusTypeFromString(bus)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk bus type '%s'"), bus);
-            return NULL;
-        }
-    }
-
-    if (removable) {
-        if ((def->removable = virTristateSwitchTypeFromString(removable)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk removable status '%s'"), removable);
             return NULL;
         }
     }
