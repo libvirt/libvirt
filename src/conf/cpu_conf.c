@@ -423,7 +423,6 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
 
     if (def->type == VIR_CPU_TYPE_GUEST) {
         g_autofree char *match = virXMLPropString(ctxt->node, "match");
-        g_autofree char *check = NULL;
 
         if (match) {
             def->match = virCPUMatchTypeFromString(match);
@@ -435,16 +434,9 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
             }
         }
 
-        if ((check = virXMLPropString(ctxt->node, "check"))) {
-            int value = virCPUCheckTypeFromString(check);
-            if (value < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Invalid check attribute for CPU "
-                                 "specification"));
-                return -1;
-            }
-            def->check = value;
-        }
+        if (virXMLPropEnum(ctxt->node, "check", virCPUCheckTypeFromString,
+                           VIR_XML_PROP_OPTIONAL, &def->check) < 0)
+            return -1;
     }
 
     if (def->type == VIR_CPU_TYPE_HOST) {
