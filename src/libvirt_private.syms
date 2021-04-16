@@ -3548,6 +3548,7 @@ virXMLNodeSanitizeNamespaces;
 virXMLNodeToString;
 virXMLParseHelper;
 virXMLPickShellSafeComment;
+virXMLPropEnum;
 virXMLPropInt;
 virXMLPropString;
 virXMLPropStringLimit;

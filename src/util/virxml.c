@@ -760,6 +760,54 @@ virXMLPropUInt(xmlNodePtr node,
 
 
 /**
+ * virXMLPropEnum:
+ * @node: XML dom node pointer
+ * @name: Name of the property (attribute) to get
+ * @strToInt: Conversion function to turn enum name to value. Expected to
+ *            return negative value on failure.
+ * @flags: Bitwise or of virXMLPropFlags
+ * @result: The returned value
+ *
+ * Convenience function to return value of an enum attribute.
+ *
+ * Returns 1 in case of success in which case @result is set,
+ *         or 0 if the attribute is not present,
+ *         or -1 and reports an error on failure.
+ */
+int
+virXMLPropEnum(xmlNodePtr node,
+               const char* name,
+               int (*strToInt)(const char*),
+               virXMLPropFlags flags,
+               unsigned int *result)
+{
+    g_autofree char *tmp = NULL;
+    int ret;
+
+    if (!(tmp = virXMLPropString(node, name))) {
+        if (!(flags & VIR_XML_PROP_REQUIRED))
+            return 0;
+
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Missing required attribute '%s' in element '%s'"),
+                       name, node->name);
+        return -1;
+    }
+
+    ret = strToInt(tmp);
+    if (ret < 0 ||
+        ((flags & VIR_XML_PROP_NONZERO) && (ret == 0))) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid value for attribute '%s' in element '%s': '%s'."),
+                       name, node->name, NULLSTR(tmp));
+        return -1;
+    }
+
+    *result = ret;
+    return 0;
+}
+
+/**
  * virXPathBoolean:
  * @xpath: the XPath string to evaluate
  * @ctxt: an XPath context
