@@ -9316,18 +9316,13 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
                          unsigned int flags)
 {
     g_autoptr(virDomainDiskDef) def = NULL;
-    xmlNodePtr cur;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    bool source = false;
-    g_autofree char *target = NULL;
-    g_autofree char *serial = NULL;
-    g_autofree char *logical_block_size = NULL;
-    g_autofree char *physical_block_size = NULL;
-    g_autofree char *wwn = NULL;
-    g_autofree char *vendor = NULL;
-    g_autofree char *product = NULL;
-    g_autofree char *domain_name = NULL;
-    g_autofree char *rotation_rate = NULL;
+    xmlNodePtr sourceNode;
+    xmlNodePtr targetNode;
+    xmlNodePtr geometryNode;
+    xmlNodePtr blockioNode;
+    xmlNodePtr driverNode;
+    xmlNodePtr mirrorNode;
     g_autoptr(virStorageSource) src = NULL;
 
     if (!(src = virDomainDiskDefParseSourceXML(xmlopt, node, ctxt, flags)))
@@ -9360,131 +9355,100 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
                        VIR_XML_PROP_OPTIONAL | VIR_XML_PROP_NONZERO, &def->sgio) < 0)
         return NULL;
 
-    for (cur = node->children; cur != NULL; cur = cur->next) {
-        if (cur->type != XML_ELEMENT_NODE)
-            continue;
+    if ((sourceNode = virXPathNode("./source", ctxt))) {
+        if (virXMLPropEnum(sourceNode, "startupPolicy",
+                           virDomainStartupPolicyTypeFromString,
+                           VIR_XML_PROP_OPTIONAL | VIR_XML_PROP_NONZERO,
+                           &def->startupPolicy) < 0)
+            return NULL;
+    }
 
-        if (!source && virXMLNodeNameEqual(cur, "source")) {
-            source = true;
+    if ((targetNode = virXPathNode("./target", ctxt))) {
+        def->dst = virXMLPropString(targetNode, "dev");
 
-            if (virXMLPropEnum(cur, "startupPolicy",
-                               virDomainStartupPolicyTypeFromString,
-                               VIR_XML_PROP_OPTIONAL | VIR_XML_PROP_NONZERO,
-                               &def->startupPolicy) < 0)
-                return NULL;
+        if (virXMLPropEnum(targetNode, "bus",
+                           virDomainDiskBusTypeFromString,
+                           VIR_XML_PROP_OPTIONAL | VIR_XML_PROP_NONZERO,
+                           &def->bus) < 0)
+            return NULL;
 
-        } else if (!target &&
-                   virXMLNodeNameEqual(cur, "target")) {
-            target = virXMLPropString(cur, "dev");
-            if (virXMLPropEnum(cur, "bus",
-                               virDomainDiskBusTypeFromString,
-                               VIR_XML_PROP_OPTIONAL | VIR_XML_PROP_NONZERO,
-                               &def->bus) < 0)
-                return NULL;
-            if (virXMLPropEnum(cur, "tray", virDomainDiskTrayTypeFromString,
-                               VIR_XML_PROP_OPTIONAL, &def->tray_status) < 0)
-                return NULL;
+        if (virXMLPropEnum(targetNode, "tray", virDomainDiskTrayTypeFromString,
+                           VIR_XML_PROP_OPTIONAL, &def->tray_status) < 0)
+            return NULL;
 
-            if (virXMLPropTristateSwitch(cur, "removable", VIR_XML_PROP_OPTIONAL,
-                                         &def->removable) < 0)
-                return NULL;
+        if (virXMLPropTristateSwitch(targetNode, "removable", VIR_XML_PROP_OPTIONAL,
+                                     &def->removable) < 0)
+            return NULL;
 
-            rotation_rate = virXMLPropString(cur, "rotation_rate");
-        } else if (!domain_name &&
-                   virXMLNodeNameEqual(cur, "backenddomain")) {
-            domain_name = virXMLPropString(cur, "name");
-        } else if (virXMLNodeNameEqual(cur, "geometry")) {
-            if (virDomainDiskDefGeometryParse(def, cur) < 0)
-                return NULL;
-        } else if (virXMLNodeNameEqual(cur, "blockio")) {
-            logical_block_size =
-                virXMLPropString(cur, "logical_block_size");
-            if (logical_block_size &&
-                virStrToLong_ui(logical_block_size, NULL, 0,
-                                &def->blockio.logical_block_size) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("invalid logical block size '%s'"),
-                               logical_block_size);
-                return NULL;
-            }
-            physical_block_size =
-                virXMLPropString(cur, "physical_block_size");
-            if (physical_block_size &&
-                virStrToLong_ui(physical_block_size, NULL, 0,
-                                &def->blockio.physical_block_size) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("invalid physical block size '%s'"),
-                               physical_block_size);
-                return NULL;
-            }
-        } else if (!virDomainDiskGetDriver(def) &&
-                   virXMLNodeNameEqual(cur, "driver")) {
-            if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
-                return NULL;
+        if (virXMLPropUInt(targetNode, "rotation_rate", 10, VIR_XML_PROP_OPTIONAL,
+                           &def->rotation_rate) < 0)
+            return NULL;
+    }
 
-            if (virDomainDiskDefDriverParseXML(def, cur, ctxt) < 0)
-                return NULL;
-        } else if (!def->mirror &&
-                   virXMLNodeNameEqual(cur, "mirror") &&
-                   !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
-            if (virDomainDiskDefMirrorParse(def, cur, ctxt, flags, xmlopt) < 0)
-                return NULL;
-        } else if (virXMLNodeNameEqual(cur, "auth")) {
-            def->diskElementAuth = true;
-        } else if (virXMLNodeNameEqual(cur, "iotune")) {
-            if (virDomainDiskDefIotuneParse(def, ctxt) < 0)
-                return NULL;
-        } else if (virXMLNodeNameEqual(cur, "transient")) {
-            def->transient = true;
-        } else if (virXMLNodeNameEqual(cur, "encryption")) {
-            def->diskElementEnc = true;
-        } else if (!serial &&
-                   virXMLNodeNameEqual(cur, "serial")) {
-            if (!(serial = virXMLNodeContentString(cur)))
-                return NULL;
-        } else if (!wwn &&
-                   virXMLNodeNameEqual(cur, "wwn")) {
-            if (!(wwn = virXMLNodeContentString(cur)))
-                return NULL;
+    if ((geometryNode = virXPathNode("./geometry", ctxt))) {
+        if (virDomainDiskDefGeometryParse(def, geometryNode) < 0)
+            return NULL;
+    }
 
-        } else if (!vendor &&
-                   virXMLNodeNameEqual(cur, "vendor")) {
-            if (!(vendor = virXMLNodeContentString(cur)))
+    if ((blockioNode = virXPathNode("./blockio", ctxt))) {
+        if (virXMLPropUInt(blockioNode, "logical_block_size", 10, VIR_XML_PROP_OPTIONAL,
+                           &def->blockio.logical_block_size) < 0)
+            return NULL;
+
+        if (virXMLPropUInt(blockioNode, "physical_block_size", 10, VIR_XML_PROP_OPTIONAL,
+                           &def->blockio.physical_block_size) < 0)
+            return NULL;
+    }
+
+    if ((driverNode = virXPathNode("./driver", ctxt))) {
+        if (virDomainVirtioOptionsParseXML(driverNode, &def->virtio) < 0)
+            return NULL;
+
+        if (virDomainDiskDefDriverParseXML(def, driverNode, ctxt) < 0)
+            return NULL;
+    }
+
+    if ((mirrorNode = virXPathNode("./mirror", ctxt))) {
+        if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
+            if (virDomainDiskDefMirrorParse(def, mirrorNode, ctxt, flags, xmlopt) < 0)
                 return NULL;
-        } else if (!product &&
-                   virXMLNodeNameEqual(cur, "product")) {
-            if (!(product = virXMLNodeContentString(cur)))
-                return NULL;
-        } else if (virXMLNodeNameEqual(cur, "boot")) {
-            /* boot is parsed as part of virDomainDeviceInfoParseXML */
-        } else if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
-                   virXMLNodeNameEqual(cur, "diskSecretsPlacement")) {
-            g_autofree char *secretAuth = virXMLPropString(cur, "auth");
-            g_autofree char *secretEnc = virXMLPropString(cur, "enc");
+        }
+    }
+
+    if (virXPathNode("./auth", ctxt))
+        def->diskElementAuth = true;
+
+    if (virXPathNode("./encryption", ctxt))
+        def->diskElementEnc = true;
+
+    if (flags & VIR_DOMAIN_DEF_PARSE_STATUS) {
+        xmlNodePtr diskSecretsPlacementNode;
+
+        if ((diskSecretsPlacementNode = virXPathNode("./diskSecretsPlacement", ctxt))) {
+            g_autofree char *secretAuth = virXMLPropString(diskSecretsPlacementNode, "auth");
+            g_autofree char *secretEnc = virXMLPropString(diskSecretsPlacementNode, "enc");
 
             def->diskElementAuth = !!secretAuth;
             def->diskElementEnc = !!secretEnc;
         }
     }
 
-    if (rotation_rate &&
-        virStrToLong_ui(rotation_rate, NULL, 10, &def->rotation_rate) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot parse rotation rate '%s'"), rotation_rate);
+    if (virXPathNode("./transient", ctxt))
+        def->transient = true;
+
+    if (virDomainDiskDefIotuneParse(def, ctxt) < 0)
         return NULL;
-    }
+
+    def->domain_name = virXPathString("string(./backenddomain/@name)", ctxt);
+    def->serial = virXPathString("string(./serial)", ctxt);
+    def->wwn = virXPathString("string(./wwn)", ctxt);
+    def->vendor = virXPathString("string(./vendor)", ctxt);
+    def->product = virXPathString("string(./product)", ctxt);
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info,
                                     flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) < 0) {
         return NULL;
     }
-
-    def->dst = g_steal_pointer(&target);
-    def->domain_name = g_steal_pointer(&domain_name);
-    def->serial = g_steal_pointer(&serial);
-    def->wwn = g_steal_pointer(&wwn);
-    def->vendor = g_steal_pointer(&vendor);
-    def->product = g_steal_pointer(&product);
 
     if (flags & VIR_DOMAIN_DEF_PARSE_STATUS &&
         virDomainDiskDefParsePrivateData(ctxt, def, xmlopt) < 0)
