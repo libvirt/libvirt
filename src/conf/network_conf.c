@@ -1321,7 +1321,6 @@ virNetworkForwardNatDefParseXML(const char *networkName,
     g_autofree xmlNodePtr *natPortNodes = NULL;
     g_autofree char *addrStart = NULL;
     g_autofree char *addrEnd = NULL;
-    g_autofree char *ipv6 = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = node;
@@ -1333,18 +1332,9 @@ virNetworkForwardNatDefParseXML(const char *networkName,
         return -1;
     }
 
-    ipv6 = virXMLPropString(node, "ipv6");
-    if (ipv6) {
-        int natIPv6;
-        if ((natIPv6 = virTristateBoolTypeFromString(ipv6)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid ipv6 setting '%s' "
-                             "in network '%s' NAT"),
-                           ipv6, networkName);
-            return -1;
-        }
-        def->natIPv6 = natIPv6;
-    }
+    if (virXMLPropTristateBool(node, "ipv6", VIR_XML_PROP_OPTIONAL,
+                               &def->natIPv6) < 0)
+        return -1;
 
     /* addresses for SNAT */
     nNatAddrs = virXPathNodeSet("./address", ctxt, &natAddrNodes);
