@@ -58,6 +58,8 @@ typedef enum {
     VIR_CGROUP_BACKEND_TYPE_LAST,
 } virCgroupBackendType;
 
+VIR_ENUM_DECL(virCgroupBackend);
+
 typedef bool
 (*virCgroupAvailableCB)(void);
 
@@ -464,12 +466,14 @@ virCgroupBackendForController(virCgroup *group,
         virCgroupBackend *backend = virCgroupBackendForController(group, controller); \
         if (!backend) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           _("failed to get cgroup backend for '%s'"), #func); \
+                           _("failed to get cgroup backend for '%s' controller '%u'"), \
+                           #func, controller); \
             return ret; \
         } \
         if (!backend->func) { \
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, \
-                           _("operation '%s' not supported"), #func); \
+                           _("operation '%s' not supported for backend '%s'"), \
+                           #func, virCgroupBackendTypeToString(backend->type)); \
             return ret; \
         } \
         return backend->func(group, ##__VA_ARGS__); \
