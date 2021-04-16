@@ -535,7 +535,7 @@ struct _virDomainDiskDef {
 
     virObject *privateData;
 
-    int device; /* enum virDomainDiskDevice */
+    virDomainDiskDevice device;
     virDomainDiskBus bus;
     char *dst;
     virDomainDiskTray tray_status;

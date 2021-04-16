@@ -886,6 +886,8 @@ hypervDomainAttachStorageVolume(virDomainPtr domain,
         return hypervDomainAttachCDROM(domain, disk, controller, hostname);
     case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
         return hypervDomainAttachFloppy(domain, disk, controller, hostname);
+    case VIR_DOMAIN_DISK_DEVICE_LUN:
+    case VIR_DOMAIN_DISK_DEVICE_LAST:
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Unsupported disk bus"));
         break;

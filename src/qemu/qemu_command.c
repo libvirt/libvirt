@@ -2253,6 +2253,10 @@ qemuBuildDisksCommandLine(virCommand *cmd,
                 bootindex = bootDisk;
                 bootDisk = 0;
                 break;
+            case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+            case VIR_DOMAIN_DISK_DEVICE_LAST:
+            default:
+                break;
             }
         }
 

@@ -3084,6 +3084,9 @@ libxlDomainAttachDeviceDiskLive(virDomainObj *vm, virDomainDeviceDef *dev)
                                virDomainDiskBusTypeToString(l_disk->bus));
             }
             break;
+        case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+        case VIR_DOMAIN_DISK_DEVICE_LUN:
+        case VIR_DOMAIN_DISK_DEVICE_LAST:
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk device type '%s' cannot be hotplugged"),
@@ -3369,6 +3372,10 @@ libxlDomainDetachDeviceDiskLive(virDomainObj *vm, virDomainDeviceDef *dev)
                                virDomainDiskBusTypeToString(dev->data.disk->bus));
             }
             break;
+        case VIR_DOMAIN_DISK_DEVICE_CDROM:
+        case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+        case VIR_DOMAIN_DISK_DEVICE_LUN:
+        case VIR_DOMAIN_DISK_DEVICE_LAST:
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("device type '%s' cannot hot unplugged"),
@@ -4031,6 +4038,10 @@ libxlDomainUpdateDeviceLive(virDomainObj *vm, virDomainDeviceDef *dev)
                     if (ret == 0)
                         dev->data.disk = NULL;
                     break;
+                case VIR_DOMAIN_DISK_DEVICE_DISK:
+                case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+                case VIR_DOMAIN_DISK_DEVICE_LUN:
+                case VIR_DOMAIN_DISK_DEVICE_LAST:
                 default:
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("disk bus '%s' cannot be updated."),

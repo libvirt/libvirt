@@ -9319,7 +9319,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     xmlNodePtr cur;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     bool source = false;
-    g_autofree char *tmp = NULL;
     g_autofree char *target = NULL;
     g_autofree char *serial = NULL;
     g_autofree char *logical_block_size = NULL;
@@ -9342,13 +9341,9 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     /* defaults */
     def->device = VIR_DOMAIN_DISK_DEVICE_DISK;
 
-    if ((tmp = virXMLPropString(node, "device")) &&
-        (def->device = virDomainDiskDeviceTypeFromString(tmp)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk device '%s'"), tmp);
+    if (virXMLPropEnum(node, "device", virDomainDiskDeviceTypeFromString,
+                       VIR_XML_PROP_OPTIONAL, &def->device) < 0)
         return NULL;
-    }
-    VIR_FREE(tmp);
 
     if (virXMLPropEnum(node, "model", virDomainDiskModelTypeFromString,
                        VIR_XML_PROP_OPTIONAL, &def->model) < 0)

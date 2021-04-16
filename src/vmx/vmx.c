@@ -3474,6 +3474,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOption *xmlopt, virDomainDef 
 
             break;
 
+          case VIR_DOMAIN_DISK_DEVICE_LAST:
           default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported disk device type '%s'"),

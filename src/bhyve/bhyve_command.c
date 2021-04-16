@@ -208,6 +208,9 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
             else
                 virBufferAsprintf(&device, "-cd,%s", disk_source);
             break;
+        case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+        case VIR_DOMAIN_DISK_DEVICE_LUN:
+        case VIR_DOMAIN_DISK_DEVICE_LAST:
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("unsupported disk device"));
