@@ -700,6 +700,66 @@ virXMLPropInt(xmlNodePtr node,
 
 
 /**
+ * virXMLPropUInt:
+ * @node: XML dom node pointer
+ * @name: Name of the property (attribute) to get
+ * @base: Number base, see strtol
+ * @flags: Bitwise or of virXMLPropFlags
+ * @result: The returned value
+ *
+ * Convenience function to return value of an unsigned integer attribute.
+ *
+ * Returns 1 in case of success in which case @result is set,
+ *         or 0 if the attribute is not present,
+ *         or -1 and reports an error on failure.
+ */
+int
+virXMLPropUInt(xmlNodePtr node,
+               const char* name,
+               int base,
+               virXMLPropFlags flags,
+               unsigned int *result)
+{
+    g_autofree char *tmp = NULL;
+    int ret;
+    unsigned int val;
+
+    if (!(tmp = virXMLPropString(node, name))) {
+        if (!(flags & VIR_XML_PROP_REQUIRED))
+            return 0;
+
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Missing required attribute '%s' in element '%s'"),
+                       name, node->name);
+        return -1;
+    }
+
+    if (flags & VIR_XML_PROP_WRAPNEGATIVE) {
+        ret = virStrToLong_ui(tmp, NULL, base, &val);
+    } else {
+        ret = virStrToLong_uip(tmp, NULL, base, &val);
+    }
+
+    if (ret < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected integer value"),
+                       name, node->name, tmp);
+        return -1;
+    }
+
+    if ((flags & VIR_XML_PROP_NONZERO) && (val == 0)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid value for attribute '%s' in element '%s': Zero is not permitted"),
+                       name, node->name);
+        return -1;
+    }
+
+    *result = val;
+    return 1;
+}
+
+
+/**
  * virXPathBoolean:
  * @xpath: the XPath string to evaluate
  * @ctxt: an XPath context

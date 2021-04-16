@@ -38,6 +38,7 @@ typedef enum {
     VIR_XML_PROP_OPTIONAL = 0, /* Attribute may be absent */
     VIR_XML_PROP_REQUIRED = 1 << 0, /* Attribute may not be absent */
     VIR_XML_PROP_NONZERO = 1 << 1, /* Attribute may not be zero */
+    VIR_XML_PROP_WRAPNEGATIVE = 1 << 2, /* Wrap around negative values */
 } virXMLPropFlags;
 
 
@@ -124,6 +125,14 @@ virXMLPropInt(xmlNodePtr node,
               int base,
               virXMLPropFlags flags,
               int *result)
+    ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+
+int
+virXMLPropUInt(xmlNodePtr node,
+               const char* name,
+               int base,
+               virXMLPropFlags flags,
+               unsigned int *result)
     ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 
 /* Internal function; prefer the macros below.  */
