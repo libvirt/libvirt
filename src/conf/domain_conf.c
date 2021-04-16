@@ -7874,6 +7874,13 @@ virDomainDiskDefAssignAddress(virDomainXMLOption *xmlopt,
         def->info.addr.drive.unit = idx % 2;
         break;
 
+    case VIR_DOMAIN_DISK_BUS_NONE:
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+    case VIR_DOMAIN_DISK_BUS_XEN:
+    case VIR_DOMAIN_DISK_BUS_USB:
+    case VIR_DOMAIN_DISK_BUS_UML:
+    case VIR_DOMAIN_DISK_BUS_SD:
+    case VIR_DOMAIN_DISK_BUS_LAST:
     default:
         /* Other disk bus's aren't controller based */
         break;
@@ -9314,7 +9321,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     bool source = false;
     g_autofree char *tmp = NULL;
     g_autofree char *target = NULL;
-    g_autofree char *bus = NULL;
     g_autofree char *serial = NULL;
     g_autofree char *logical_block_size = NULL;
     g_autofree char *physical_block_size = NULL;
@@ -9375,7 +9381,11 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
         } else if (!target &&
                    virXMLNodeNameEqual(cur, "target")) {
             target = virXMLPropString(cur, "dev");
-            bus = virXMLPropString(cur, "bus");
+            if (virXMLPropEnum(cur, "bus",
+                               virDomainDiskBusTypeFromString,
+                               VIR_XML_PROP_OPTIONAL | VIR_XML_PROP_NONZERO,
+                               &def->bus) < 0)
+                return NULL;
             if (virXMLPropEnum(cur, "tray", virDomainDiskTrayTypeFromString,
                                VIR_XML_PROP_OPTIONAL, &def->tray_status) < 0)
                 return NULL;
@@ -9459,14 +9469,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
 
             def->diskElementAuth = !!secretAuth;
             def->diskElementEnc = !!secretEnc;
-        }
-    }
-
-    if (bus) {
-        if ((def->bus = virDomainDiskBusTypeFromString(bus)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk bus type '%s'"), bus);
-            return NULL;
         }
     }
 
@@ -30042,6 +30044,10 @@ virDiskNameToBusDeviceIndex(virDomainDiskDef *disk,
         case VIR_DOMAIN_DISK_BUS_VIRTIO:
         case VIR_DOMAIN_DISK_BUS_XEN:
         case VIR_DOMAIN_DISK_BUS_SD:
+        case VIR_DOMAIN_DISK_BUS_NONE:
+        case VIR_DOMAIN_DISK_BUS_SATA:
+        case VIR_DOMAIN_DISK_BUS_UML:
+        case VIR_DOMAIN_DISK_BUS_LAST:
         default:
             *busIdx = 0;
             *devIdx = idx;

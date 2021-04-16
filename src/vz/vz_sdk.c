@@ -595,7 +595,7 @@ prlsdkAddDomainVideoInfoVm(PRL_HANDLE sdkdom, virDomainDef *def)
 }
 
 static int
-prlsdkGetDiskId(PRL_HANDLE disk, int *bus, char **dst)
+prlsdkGetDiskId(PRL_HANDLE disk, virDomainDiskBus *bus, char **dst)
 {
     PRL_RESULT pret;
     PRL_UINT32 pos, ifType;
@@ -1624,7 +1624,7 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
     PRL_HANDLE dev = PRL_INVALID_HANDLE;
     virDomainDiskDef *disk;
     virDomainDiskDevice device;
-    int bus;
+    virDomainDiskBus bus;
     char *dst = NULL;
     int ret = -1;
 
@@ -3462,6 +3462,14 @@ static int prlsdkConfigureDisk(struct _vzDriver *driver,
         sdkbus = PMS_SATA_DEVICE;
         idx = drive->unit;
         break;
+    case VIR_DOMAIN_DISK_BUS_FDC:
+    case VIR_DOMAIN_DISK_BUS_NONE:
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+    case VIR_DOMAIN_DISK_BUS_XEN:
+    case VIR_DOMAIN_DISK_BUS_USB:
+    case VIR_DOMAIN_DISK_BUS_UML:
+    case VIR_DOMAIN_DISK_BUS_SD:
+    case VIR_DOMAIN_DISK_BUS_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Specified disk bus is not "
@@ -3500,7 +3508,7 @@ prlsdkGetDisk(PRL_HANDLE sdkdom, virDomainDiskDef *disk)
     PRL_UINT32 num;
     size_t i;
     PRL_HANDLE sdkdisk = PRL_INVALID_HANDLE;
-    int bus;
+    virDomainDiskBus bus;
     char *dst = NULL;
     PRL_DEVICE_TYPE devType;
 
@@ -4339,6 +4347,14 @@ prlsdkGetBlockStats(PRL_HANDLE sdkstats,
             prefix = "scsi";
             idx = address->unit;
             break;
+        case VIR_DOMAIN_DISK_BUS_FDC:
+        case VIR_DOMAIN_DISK_BUS_NONE:
+        case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        case VIR_DOMAIN_DISK_BUS_XEN:
+        case VIR_DOMAIN_DISK_BUS_USB:
+        case VIR_DOMAIN_DISK_BUS_UML:
+        case VIR_DOMAIN_DISK_BUS_SD:
+        case VIR_DOMAIN_DISK_BUS_LAST:
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown disk bus: %X"), disk->bus);
