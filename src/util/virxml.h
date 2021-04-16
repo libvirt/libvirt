@@ -28,9 +28,17 @@
 #include <libxml/relaxng.h>
 
 #include "virbuffer.h"
+#include "virenum.h"
 
 xmlXPathContextPtr virXMLXPathContextNew(xmlDocPtr xml)
     G_GNUC_WARN_UNUSED_RESULT;
+
+
+typedef enum {
+    VIR_XML_PROP_OPTIONAL = 0, /* Attribute may be absent */
+    VIR_XML_PROP_REQUIRED = 1 << 0, /* Attribute may not be absent */
+} virXMLPropFlags;
+
 
 int
 virXPathBoolean(const char *xpath,
@@ -94,6 +102,13 @@ virXMLPropStringLimit(xmlNodePtr node,
                       size_t maxlen);
 char *
 virXMLNodeContentString(xmlNodePtr node);
+
+int
+virXMLPropTristateBool(xmlNodePtr node,
+                       const char *name,
+                       virXMLPropFlags flags,
+                       virTristateBool *result)
+    ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 
 /* Internal function; prefer the macros below.  */
 xmlDocPtr

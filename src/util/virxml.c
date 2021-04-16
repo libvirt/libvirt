@@ -559,6 +559,50 @@ virXMLNodeContentString(xmlNodePtr node)
 
 
 /**
+ * virXMLPropTristateBool:
+ * @node: XML dom node pointer
+ * @name: Name of the property (attribute) to get
+ * @flags: Bitwise or of virXMLPropFlags
+ * @result: The returned value
+ *
+ * Convenience function to return value of a yes / no attribute.
+ *
+ * Returns 1 in case of success in which case @result is set,
+ *         or 0 if the attribute is not present,
+ *         or -1 and reports an error on failure.
+ */
+int
+virXMLPropTristateBool(xmlNodePtr node,
+                       const char* name,
+                       virXMLPropFlags flags,
+                       virTristateBool *result)
+{
+    g_autofree char *tmp = NULL;
+    int val;
+
+    if (!(tmp = virXMLPropString(node, name))) {
+        if (!(flags & VIR_XML_PROP_REQUIRED))
+            return 0;
+
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Missing required attribute '%s' in element '%s'"),
+                       name, node->name);
+        return -1;
+    }
+
+    if ((val = virTristateBoolTypeFromString(tmp)) <= 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected 'yes' or 'no'"),
+                       name, node->name, tmp);
+        return -1;
+    }
+
+    *result = val;
+    return 1;
+}
+
+
+/**
  * virXPathBoolean:
  * @xpath: the XPath string to evaluate
  * @ctxt: an XPath context
