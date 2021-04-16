@@ -110,6 +110,13 @@ virXMLPropTristateBool(xmlNodePtr node,
                        virTristateBool *result)
     ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 
+int
+virXMLPropTristateSwitch(xmlNodePtr node,
+                         const char *name,
+                         virXMLPropFlags flags,
+                         virTristateSwitch *result)
+    ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+
 /* Internal function; prefer the macros below.  */
 xmlDocPtr
 virXMLParseHelper(int domcode,
