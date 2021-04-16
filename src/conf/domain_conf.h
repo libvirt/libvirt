@@ -573,7 +573,7 @@ struct _virDomainDiskDef {
     virTristateSwitch ioeventfd;
     virTristateSwitch event_idx;
     virTristateSwitch copy_on_read;
-    int snapshot; /* virDomainSnapshotLocation, snapshot_conf.h */
+    unsigned int snapshot; /* virDomainSnapshotLocation, snapshot_conf.h */
     virDomainStartupPolicy startupPolicy;
     bool transient;
     virDomainDeviceInfo info;

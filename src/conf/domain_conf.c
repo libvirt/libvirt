@@ -9313,7 +9313,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     bool source = false;
     g_autofree char *tmp = NULL;
-    g_autofree char *snapshot = NULL;
     g_autofree char *target = NULL;
     g_autofree char *bus = NULL;
     g_autofree char *serial = NULL;
@@ -9349,7 +9348,9 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
                        VIR_XML_PROP_OPTIONAL, &def->model) < 0)
         return NULL;
 
-    snapshot = virXMLPropString(node, "snapshot");
+    if (virXMLPropEnum(node, "snapshot", virDomainSnapshotLocationTypeFromString,
+                       VIR_XML_PROP_OPTIONAL | VIR_XML_PROP_NONZERO, &def->snapshot) < 0)
+        return NULL;
 
     if (virXMLPropTristateBool(node, "rawio", VIR_XML_PROP_OPTIONAL, &def->rawio) < 0)
         return NULL;
@@ -9458,16 +9459,6 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
 
             def->diskElementAuth = !!secretAuth;
             def->diskElementEnc = !!secretEnc;
-        }
-    }
-
-    if (snapshot) {
-        def->snapshot = virDomainSnapshotLocationTypeFromString(snapshot);
-        if (def->snapshot <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk snapshot setting '%s'"),
-                           snapshot);
-            return NULL;
         }
     }
 
