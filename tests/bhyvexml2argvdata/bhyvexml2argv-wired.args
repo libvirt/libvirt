@@ -1,4 +1,4 @@
-/usr/sbin/bhyve \
+bhyve \
 -c 1 \
 -m 214 \
 -S \

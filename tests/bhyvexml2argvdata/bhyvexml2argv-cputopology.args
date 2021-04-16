@@ -1,4 +1,4 @@
-/usr/sbin/bhyve \
+bhyve \
 -c cpus=2,sockets=1,cores=2,threads=1 \
 -m 214 \
 -u \

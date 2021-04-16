@@ -1,4 +1,4 @@
-/usr/sbin/bhyveload \
+bhyveload \
 -m 214 \
 -d /tmp/freebsd.img \
 bhyve
