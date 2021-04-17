@@ -1002,7 +1002,7 @@ virLXCProcessBuildControllerCmd(virLXCDriver *driver,
     virCommandAddArgPair(cmd, "--security",
                          virSecurityManagerGetModel(driver->securityManager));
 
-    virCommandAddArg(cmd, "--handshake");
+    virCommandAddArg(cmd, "--handshakefd");
     virCommandAddArgFormat(cmd, "%d", handshakefd);
 
     for (i = 0; veths && veths[i]; i++)
