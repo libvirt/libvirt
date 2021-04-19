@@ -463,7 +463,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_CCW, /* -device virtual-css-bridge */
     QEMU_CAPS_CCW_CSSID_UNRESTRICTED, /* virtual-css-bridge.cssid-unrestricted= */
     QEMU_CAPS_DEVICE_VFIO_CCW, /* -device vfio-ccw */
-    QEMU_CAPS_SDL_GL, /* -sdl gl */
+    X_QEMU_CAPS_SDL_GL, /* -sdl gl */
     QEMU_CAPS_SCREENDUMP_DEVICE, /* screendump command accepts device & head */
 
     /* 300 */

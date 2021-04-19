@@ -138,7 +138,6 @@
   <flag name='pr-manager-helper'/>
   <flag name='qom-list-properties'/>
   <flag name='memory-backend-file.discard-data'/>
-  <flag name='sdl-gl'/>
   <flag name='screendump_device'/>
   <flag name='hda-output'/>
   <flag name='blockdev-del'/>

@@ -106,7 +106,6 @@
   <flag name='virtual-css-bridge'/>
   <flag name='virtual-css-bridge.cssid-unrestricted'/>
   <flag name='vfio-ccw'/>
-  <flag name='sdl-gl'/>
   <flag name='screendump_device'/>
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>

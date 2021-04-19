@@ -99,7 +99,6 @@
   <flag name='nbd-tls'/>
   <flag name='pr-manager-helper'/>
   <flag name='virtual-css-bridge'/>
-  <flag name='sdl-gl'/>
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
   <flag name='tpm-emulator'/>
