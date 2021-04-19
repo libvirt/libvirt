@@ -1330,6 +1330,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "tcg-accel", QEMU_CAPS_TCG },
     { "pvscsi", QEMU_CAPS_SCSI_PVSCSI },
     { "spapr-tpm-proxy", QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY },
+    { "vmport", QEMU_CAPS_MACHINE_VMPORT_OPT },
     /*
      * We don't probe 'esp' directly, because it is often reported
      * as present for all QEMU binaries, due to it being enabled
@@ -3214,7 +3215,6 @@ struct virQEMUCapsCommandLineProps {
 
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "machine", "mem-merge", QEMU_CAPS_MEM_MERGE },
-    { "machine", "vmport", QEMU_CAPS_MACHINE_VMPORT_OPT },
     { "drive", "discard", QEMU_CAPS_DRIVE_DISCARD },
     { "drive", "detect-zeroes", QEMU_CAPS_DRIVE_DETECT_ZEROES },
     { "boot-opts", "strict", QEMU_CAPS_BOOT_STRICT },
@@ -5021,7 +5021,6 @@ void
 virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
 {
     /* Following caps were asserted by a version check for pre 2.11 qemus */
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_VMPORT_OPT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_SMM_OPT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL_GL);

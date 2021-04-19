@@ -64,7 +64,6 @@
   <flag name='ivshmem'/>
   <flag name='drive-iotune-max'/>
   <flag name='VGA.vgamem_mb'/>
-  <flag name='machine-vmport-opt'/>
   <flag name='aes-key-wrap'/>
   <flag name='dea-key-wrap'/>
   <flag name='pci-serial'/>

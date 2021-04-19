@@ -31,7 +31,6 @@
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
   <flag name='drive-iotune-max'/>
-  <flag name='machine-vmport-opt'/>
   <flag name='aes-key-wrap'/>
   <flag name='dea-key-wrap'/>
   <flag name='vhost-user-multiqueue'/>
