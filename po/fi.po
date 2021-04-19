@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-03-26 11:32+0000\n"
-"PO-Revision-Date: 2021-03-26 08:18+0000\n"
-"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
+"PO-Revision-Date: 2021-04-19 09:05+0000\n"
+"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
 "Language: fi\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.1\n"
+"X-Generator: Weblate 4.5.3\n"
 
 msgid ""
 "\n"
@@ -7988,9 +7988,9 @@ msgstr "Salaisen arvon asettaminen epäonnistui"
 msgid "Failed to set security context for agent for %s"
 msgstr "Agentin suojauskontekstin määrittäminen %s:ta varten epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set security context for monitor for %s"
-msgstr "Verkon luominen tiedostosta %s epäonnistui"
+msgstr "Valvonnan suojauskontekstin asettaminen %s:ta varten epäonnistui"
 
 #, c-format
 msgid "Failed to set session type: %s"
