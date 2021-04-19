@@ -254,10 +254,10 @@
   <flag name='rotation-rate'/>
   <flag name='compat-deprecated'/>
   <flag name='acpi-index'/>
-  <version>5002092</version>
+  <version>6000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>
-  <package>v6.0.0-rc2</package>
+  <package>v6.0.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -1193,6 +1193,9 @@
   <cpu type='kvm' name='EPYC-v3' typename='EPYC-v3-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='EPYC-v2' typename='EPYC-v2-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='EPYC-v1' typename='EPYC-v1-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='EPYC-Rome-v2' typename='EPYC-Rome-v2-x86_64-cpu' usable='no'>
+    <blocker name='ibrs'/>
+  </cpu>
   <cpu type='kvm' name='EPYC-Rome-v1' typename='EPYC-Rome-v1-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='EPYC-Rome' typename='EPYC-Rome-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='EPYC-Milan-v1' typename='EPYC-Milan-v1-x86_64-cpu' usable='no'>
@@ -1463,8 +1466,8 @@
   <machine type='kvm' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='x-remote' maxCpus='1'/>
   <machine type='kvm' name='pc-q35-5.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram'/>
-  <machine type='kvm' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
+  <machine type='kvm' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-q35-4.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
@@ -2720,6 +2723,32 @@
     <blocker name='nrip-save'/>
     <blocker name='xsavec'/>
   </cpu>
+  <cpu type='tcg' name='EPYC-Rome-v2' typename='EPYC-Rome-v2-x86_64-cpu' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='avx2'/>
+    <blocker name='rdseed'/>
+    <blocker name='sha-ni'/>
+    <blocker name='umip'/>
+    <blocker name='rdpid'/>
+    <blocker name='fxsr-opt'/>
+    <blocker name='misalignsse'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='osvw'/>
+    <blocker name='topoext'/>
+    <blocker name='perfctr-core'/>
+    <blocker name='clzero'/>
+    <blocker name='xsaveerptr'/>
+    <blocker name='wbnoinvd'/>
+    <blocker name='ibpb'/>
+    <blocker name='ibrs'/>
+    <blocker name='amd-stibp'/>
+    <blocker name='amd-ssbd'/>
+    <blocker name='nrip-save'/>
+    <blocker name='xsavec'/>
+    <blocker name='xsaves'/>
+  </cpu>
   <cpu type='tcg' name='EPYC-Rome-v1' typename='EPYC-Rome-v1-x86_64-cpu' usable='no'>
     <blocker name='fma'/>
     <blocker name='avx'/>
@@ -3272,8 +3301,8 @@
   <machine type='tcg' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='x-remote' maxCpus='1'/>
   <machine type='tcg' name='pc-q35-5.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram'/>
-  <machine type='tcg' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
+  <machine type='tcg' name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-4.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
