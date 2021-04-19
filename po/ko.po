@@ -7,13 +7,14 @@
 # eukim <eukim@redhat.com>, 2006, 2007, 2009, 2012, 2013, 2014
 # Seong-ho Cho <darkcircle.0426@gmail.com>, 2014
 # simmon <simmon@nplob.com>, 2021.
+# SeongHyun Jo <caelus9536@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-03-26 11:32+0000\n"
 "PO-Revision-Date: 2021-04-16 06:27+0000\n"
-"Last-Translator: simmon <simmon@nplob.com>\n"
+"Last-Translator: SeongHyun Jo <caelus9536@gmail.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -6744,7 +6745,7 @@ msgstr "도메인 저장 파일 '%s'를 만드는 데 실패"
 msgid "Failed to create dump dir %s"
 msgstr "%s에서 도메인 생성하기 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create file '%s'"
 msgstr "'%s' 파일 읽기 실패"
 
