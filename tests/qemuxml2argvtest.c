@@ -1060,7 +1060,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_MACHINE_SMM_OPT,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("machine-vmport-opt",
             QEMU_CAPS_MACHINE_VMPORT_OPT);
@@ -1195,7 +1194,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_MACHINE_SMM_OPT,
             QEMU_CAPS_VIRTIO_SCSI);
 
     /* Make sure all combinations of ACPI and UEFI behave as expected */

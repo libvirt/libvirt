@@ -63,7 +63,6 @@
   <flag name='name-guest'/>
   <flag name='drive-detect-zeroes'/>
   <flag name='tls-creds-x509'/>
-  <flag name='smm'/>
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='virtio-net.rx_queue_size'/>

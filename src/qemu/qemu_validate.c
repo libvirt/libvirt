@@ -244,15 +244,6 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
             }
             break;
 
-        case VIR_DOMAIN_FEATURE_SMM:
-            if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_SMM_OPT)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("smm is not available with this QEMU binary"));
-                return -1;
-            }
-            break;
-
         case VIR_DOMAIN_FEATURE_VMPORT:
             if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
                 !virQEMUCapsSupportsVmport(qemuCaps, def)) {
@@ -325,6 +316,7 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
             }
             break;
 
+        case VIR_DOMAIN_FEATURE_SMM:
         case VIR_DOMAIN_FEATURE_KVM:
         case VIR_DOMAIN_FEATURE_XEN:
         case VIR_DOMAIN_FEATURE_ACPI:

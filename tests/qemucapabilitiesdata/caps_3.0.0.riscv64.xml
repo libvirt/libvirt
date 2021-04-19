@@ -50,7 +50,6 @@
   <flag name='name-guest'/>
   <flag name='drive-detect-zeroes'/>
   <flag name='tls-creds-x509'/>
-  <flag name='smm'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='drive-iotune-max-length'/>
   <flag name='gluster.debug_level'/>
