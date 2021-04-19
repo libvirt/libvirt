@@ -628,7 +628,8 @@ virshCheckpointListCollect(vshControl *ctl,
         }
     }
 
-    if (!(orig_flags & VIR_DOMAIN_CHECKPOINT_LIST_TOPOLOGICAL))
+    if (!(orig_flags & VIR_DOMAIN_CHECKPOINT_LIST_TOPOLOGICAL) &&
+        checkpointlist->chks)
         qsort(checkpointlist->chks, checkpointlist->nchks,
               sizeof(*checkpointlist->chks), virshChkSorter);
 
