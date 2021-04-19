@@ -1,11 +1,15 @@
-install_data('vsh', install_dir: bash_completion_dir)
+completion_commands = [
+  'virsh',
+  'virt-admin',
+]
 
-meson.add_install_script(
-  meson_python_prog.path(), python3_prog.path(), meson_install_symlink_prog.path(),
-  bash_completion_dir, 'vsh', 'virsh',
-)
-
-meson.add_install_script(
-  meson_python_prog.path(), python3_prog.path(), meson_install_symlink_prog.path(),
-  bash_completion_dir, 'vsh', 'virt-admin',
-)
+foreach command : completion_commands
+  completion_conf = configuration_data()
+  completion_conf.set('command', command)
+  completion = configure_file(
+    input: 'vsh.in',
+    output: command,
+    configuration: completion_conf,
+  )
+  install_data(completion, install_dir: bash_completion_dir)
+endforeach

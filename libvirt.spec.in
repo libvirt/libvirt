@@ -1909,9 +1909,6 @@ exit 0
 
 %{_datadir}/libvirt/test-screenshot.png
 
-%files bash-completion
-%{_datadir}/bash-completion/completions/vsh
-
 %if %{with_wireshark}
 %files wireshark
 %{wireshark_plugindir}/libvirt.so
