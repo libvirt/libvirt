@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-03-26 11:32+0000\n"
-"PO-Revision-Date: 2021-01-22 07:03+0000\n"
+"PO-Revision-Date: 2021-04-19 09:05+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4.2\n"
+"X-Generator: Weblate 4.5.3\n"
 
 msgid ""
 "\n"
@@ -19487,7 +19487,7 @@ msgid "Unsupported disk device type '%s'"
 msgstr "Diskenhettypen ”%s” stödjs inte"
 
 msgid "Unsupported disk type"
-msgstr ""
+msgstr "Disktypen stödjs inte"
 
 #, c-format
 msgid "Unsupported disk type %d"
@@ -37899,9 +37899,9 @@ msgstr "okänt smartkortsläge"
 msgid "unknown smartcard type %d"
 msgstr "okänt smartkortsläge"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown smbios mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
+msgstr "okänt smbios-läge ”%s”"
 
 #, fuzzy, c-format
 msgid "unknown sound model '%s'"
@@ -38152,9 +38152,8 @@ msgstr ""
 msgid "unmanaged target dev is not supported on interfaces of type '%s'"
 msgstr ""
 
-#, fuzzy
 msgid "unpaused"
-msgstr "stannad"
+msgstr "avpausad"
 
 msgid "unplug of device was rejected by the guest"
 msgstr ""
@@ -38183,7 +38182,7 @@ msgid "unrecognized section name '%s'"
 msgstr ""
 
 msgid "unspecified error"
-msgstr ""
+msgstr "ospecificerat fel"
 
 #, c-format
 msgid ""
@@ -38195,9 +38194,9 @@ msgstr ""
 msgid "unsupported CPU cache level for mode '%s'"
 msgstr "Konfigurationsformatet stödjs inte ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported CPU type: %s"
-msgstr "disktypen stödjs inte %s"
+msgstr "CPU-typen stödjs inte: %s"
 
 #, fuzzy, c-format
 msgid "unsupported Hyper-V stimer feature: %s"
@@ -38250,9 +38249,9 @@ msgstr "disktypen stödjs inte %s"
 msgid "unsupported audio backend '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported authentication type %d"
-msgstr "Konfigurationstypen stödjs inte %s"
+msgstr "autentiseringstyp %d stödjs inte"
 
 #, fuzzy, c-format
 msgid "unsupported balloon device model '%s'"
@@ -38262,9 +38261,9 @@ msgstr "Diskenhettypen ”%s” stödjs inte"
 msgid "unsupported chardev '%s'"
 msgstr "disktypen stödjs inte %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported chr device type '%s'"
-msgstr "Diskenhettypen ”%s” stödjs inte"
+msgstr "teckenenhetstypen ”%s” stödjs inte"
 
 msgid "unsupported clock adjustment='reset'"
 msgstr ""
@@ -38277,9 +38276,9 @@ msgstr "Konfigurationsformatet stödjs inte ”%s”"
 msgid "unsupported clock offset='%s'"
 msgstr "Konfigurationsformatet stödjs inte ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported config type %s"
-msgstr "Konfigurationstypen stödjs inte %s"
+msgstr "konfigurationstypen %s stödjs inte"
 
 #, fuzzy
 msgid "unsupported configuration"
@@ -38309,9 +38308,9 @@ msgstr "Konfigurationsformatet stödjs inte ”%s”"
 msgid "unsupported data type '%c' for arg '%s'"
 msgstr "disktypen stödjs inte %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported device type %s 0%o"
-msgstr "disktypen stödjs inte %s"
+msgstr "enhetstypen %s 0%o stödjs inte"
 
 #, fuzzy, c-format
 msgid "unsupported device type in network %s interface pool"
@@ -38329,13 +38328,12 @@ msgstr "Diskenhettypen ”%s” stödjs inte"
 msgid "unsupported disk device"
 msgstr "Diskenhettypen ”%s” stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported disk driver %s"
-msgstr "disktypen stödjs inte %s"
+msgstr "diskdrivrutinen %s stödjs inte"
 
-#, fuzzy
 msgid "unsupported disk type"
-msgstr "disktypen stödjs inte %s"
+msgstr "disktypen stödjs inte"
 
 #, c-format
 msgid "unsupported disk type %s"
@@ -38385,7 +38383,7 @@ msgstr ""
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "flaggor som inte stödjs: (0x%x)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported flags (0x%x)"
 msgstr "flaggor som inte stödjs: (0x%x)"
 
@@ -38393,9 +38391,9 @@ msgstr "flaggor som inte stödjs: (0x%x)"
 msgid "unsupported flags: (0x%x)"
 msgstr "flaggor som inte stödjs: (0x%x)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported flash format '%s'"
-msgstr "Konfigurationsformatet stödjs inte ”%s”"
+msgstr "flash-formatet ”%s” stödjs inte"
 
 #, fuzzy, c-format
 msgid "unsupported format %s"
@@ -38460,9 +38458,9 @@ msgstr "Konfigurationsformatet stödjs inte ”%s”"
 msgid "unsupported option"
 msgstr "flaggan '-%c' stöds ej. Se --help."
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported option '%s'. See --help."
-msgstr "flaggan '-%c' stöds ej. Se --help."
+msgstr "flaggan ”%s” stöds inte. Se --help."
 
 #, c-format
 msgid "unsupported option '-%c'. See --help."
@@ -38499,9 +38497,9 @@ msgstr "ej stödd händelse-ID %d"
 msgid "unsupported secret event ID %d"
 msgstr "ej stödd händelse-ID %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported source type '%s'"
-msgstr "disktypen stödjs inte %s"
+msgstr "källtypen ”%s” stödjs inte"
 
 #, fuzzy
 msgid "unsupported state value"
@@ -38527,9 +38525,8 @@ msgstr ""
 msgid "unsupported usb model"
 msgstr "disktypen stödjs inte %s"
 
-#, fuzzy
 msgid "unsupported value"
-msgstr "ej stödd händelse-ID %d"
+msgstr "värde som ej stöds"
 
 #, fuzzy, c-format
 msgid "unsupported volume encryption format %d"
@@ -38541,9 +38538,8 @@ msgstr "oterminerade nummer"
 msgid "unterminated string"
 msgstr "oterminerad sträng"
 
-#, fuzzy
 msgid "update device from an XML file"
-msgstr "anslut enhet från en XML-fil"
+msgstr "uppdatera en enhet från en XML-fil"
 
 msgid "update guest CPU according to host CPU"
 msgstr ""
@@ -38563,7 +38559,7 @@ msgid "uptime file has unexpected format '%s'"
 msgstr "oväntad data '%s'"
 
 msgid "usage:"
-msgstr ""
+msgstr "användning:"
 
 msgid "usb address needs bus id"
 msgstr ""
@@ -38580,7 +38576,7 @@ msgid "usb device not found"
 msgstr "Domän hittades inte"
 
 msgid "usb keyboard is not supported by this QEMU binary"
-msgstr ""
+msgstr "usb-tangentbord stödjs inte av denna QEMU-binär"
 
 msgid "usb product needs id"
 msgstr ""
