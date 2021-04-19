@@ -308,7 +308,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEA_KEY_WRAP, /* -machine dea_key_wrap */
     QEMU_CAPS_DEVICE_PCI_SERIAL, /* -device pci-serial */
     QEMU_CAPS_CPU_AARCH64_OFF, /* -cpu ...,aarch64=off */
-    QEMU_CAPS_VHOSTUSER_MULTIQUEUE, /* vhost-user with -netdev queues= */
+    X_QEMU_CAPS_VHOSTUSER_MULTIQUEUE, /* vhost-user with -netdev queues= */
     QEMU_CAPS_MIGRATION_EVENT, /* MIGRATION event */
 
     /* 190 */

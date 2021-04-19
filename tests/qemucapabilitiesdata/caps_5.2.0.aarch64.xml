@@ -72,7 +72,6 @@
   <flag name='dea-key-wrap'/>
   <flag name='pci-serial'/>
   <flag name='aarch64-off'/>
-  <flag name='vhost-user-multiqueue'/>
   <flag name='migration-event'/>
   <flag name='gpex-pcihost'/>
   <flag name='ioh3420'/>

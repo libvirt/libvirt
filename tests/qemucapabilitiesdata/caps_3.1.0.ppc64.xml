@@ -67,7 +67,6 @@
   <flag name='aes-key-wrap'/>
   <flag name='dea-key-wrap'/>
   <flag name='pci-serial'/>
-  <flag name='vhost-user-multiqueue'/>
   <flag name='migration-event'/>
   <flag name='rtl8139'/>
   <flag name='e1000'/>

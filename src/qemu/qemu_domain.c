@@ -4567,7 +4567,7 @@ qemuDomainDefPostParse(virDomainDef *def,
 
 int
 qemuDomainValidateActualNetDef(const virDomainNetDef *net,
-                               virQEMUCaps *qemuCaps)
+                               virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     /*
      * Validations that can only be properly checked at runtime (after
@@ -4601,15 +4601,6 @@ qemuDomainValidateActualNetDef(const virDomainNetDef *net,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("interface %s - multiqueue is not supported for network interfaces of type %s"),
                            macstr, virDomainNetTypeToString(actualType));
-            return -1;
-        }
-
-        if (net->driver.virtio.queues > 1 &&
-            actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("interface %s - multiqueue is not supported for network interfaces of type vhost-user with this QEMU binary"),
-                           macstr);
             return -1;
         }
     }

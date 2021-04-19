@@ -69,7 +69,6 @@
   <flag name='aes-key-wrap'/>
   <flag name='dea-key-wrap'/>
   <flag name='pci-serial'/>
-  <flag name='vhost-user-multiqueue'/>
   <flag name='migration-event'/>
   <flag name='ioh3420'/>
   <flag name='x3130-upstream'/>

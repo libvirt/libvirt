@@ -5021,7 +5021,6 @@ void
 virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
 {
     /* Following caps were asserted by a version check for pre 2.11 qemus */
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_SMM_OPT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL_GL);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT);

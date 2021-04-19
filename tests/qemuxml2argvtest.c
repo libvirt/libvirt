@@ -1620,10 +1620,8 @@ mymain(void)
     DO_TEST_PARSE_ERROR("vhost_queues-invalid", NONE);
     DO_TEST("net-vhostuser", QEMU_CAPS_CHARDEV_FD_PASS);
     DO_TEST_CAPS_LATEST("net-vhostuser");
-    DO_TEST("net-vhostuser-multiq",
-            QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
-    DO_TEST_FAILURE("net-vhostuser-fail",
-                    QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
+    DO_TEST("net-vhostuser-multiq", NONE);
+    DO_TEST_FAILURE("net-vhostuser-fail", NONE);
     DO_TEST("net-user", NONE);
     DO_TEST_CAPS_ARCH_VER_FULL("net-user", "x86_64", "4.0.0", ARG_FLAGS, FLAG_SLIRP_HELPER);
     DO_TEST("net-user-addr", NONE);
