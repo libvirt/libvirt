@@ -185,7 +185,6 @@
   <flag name='mch'/>
   <flag name='mch.extended-tseg-mbytes'/>
   <flag name='usb-storage.werror'/>
-  <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
   <flag name='blockdev'/>
   <flag name='memory-backend-memfd'/>

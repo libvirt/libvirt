@@ -183,7 +183,6 @@
   <flag name='mch'/>
   <flag name='mch.extended-tseg-mbytes'/>
   <flag name='sev-guest'/>
-  <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>

@@ -101,7 +101,6 @@
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
   <flag name='tpm-emulator'/>
-  <flag name='egl-headless'/>
   <flag name='zpci'/>
   <flag name='iothread.poll-max-ns'/>
   <flag name='query-cpu-model-baseline'/>

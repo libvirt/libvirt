@@ -109,7 +109,6 @@
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
   <flag name='chardev-fd-pass'/>
-  <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
   <flag name='blockdev'/>
   <flag name='vfio-ap'/>

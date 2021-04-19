@@ -72,7 +72,6 @@
   <flag name='screendump_device'/>
   <flag name='blockdev-del'/>
   <flag name='chardev-fd-pass'/>
-  <flag name='egl-headless'/>
   <flag name='blockdev'/>
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>

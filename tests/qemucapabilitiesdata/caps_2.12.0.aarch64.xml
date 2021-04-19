@@ -142,7 +142,6 @@
   <flag name='vhost-vsock'/>
   <flag name='chardev-fd-pass'/>
   <flag name='tpm-emulator'/>
-  <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>

@@ -179,7 +179,6 @@
   <flag name='tpm-emulator'/>
   <flag name='mch'/>
   <flag name='mch.extended-tseg-mbytes'/>
-  <flag name='egl-headless'/>
   <flag name='iothread.poll-max-ns'/>
   <flag name='x86-max-cpu'/>
   <flag name='i8042'/>
