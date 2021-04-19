@@ -161,7 +161,6 @@
   <flag name='vxhs'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='vmcoreinfo'/>
-  <flag name='numa.dist'/>
   <flag name='disk-share-rw'/>
   <flag name='iscsi.password-secret'/>
   <flag name='isa-serial'/>

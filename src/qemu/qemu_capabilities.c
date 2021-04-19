@@ -5020,9 +5020,6 @@ virQEMUCapsInitQMPArch(virQEMUCaps *qemuCaps,
 void
 virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
 {
-    /* Following caps were asserted by a version check for pre 2.11 qemus */
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_NUMA_DIST);
-
     switch (qemuCaps->arch) {
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:

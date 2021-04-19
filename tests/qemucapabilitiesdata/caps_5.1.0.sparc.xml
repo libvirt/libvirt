@@ -56,7 +56,6 @@
   <flag name='loadparm'/>
   <flag name='vnc-multi-servers'/>
   <flag name='chardev-reconnect'/>
-  <flag name='numa.dist'/>
   <flag name='disk-share-rw'/>
   <flag name='iscsi.password-secret'/>
   <flag name='isa-serial'/>

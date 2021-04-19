@@ -429,7 +429,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_VMCOREINFO, /* -device vmcoreinfo */
     QEMU_CAPS_DEVICE_SPAPR_VTY, /* -device spapr-vty */
     QEMU_CAPS_DEVICE_SCLPLMCONSOLE, /* -device sclplmconsole */
-    QEMU_CAPS_NUMA_DIST, /* -numa dist */
+    X_QEMU_CAPS_NUMA_DIST, /* -numa dist */
 
     /* 275 */
     QEMU_CAPS_DISK_SHARE_RW, /* share-rw=on for concurrent disk access */

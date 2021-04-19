@@ -117,7 +117,6 @@
   <flag name='virtio-blk.num-queues'/>
   <flag name='machine.pseries.resize-hpt'/>
   <flag name='spapr-vty'/>
-  <flag name='numa.dist'/>
   <flag name='disk-share-rw'/>
   <flag name='iscsi.password-secret'/>
   <flag name='isa-serial'/>

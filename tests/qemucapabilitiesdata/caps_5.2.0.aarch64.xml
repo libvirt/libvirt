@@ -126,7 +126,6 @@
   <flag name='virtio-gpu.max_outputs'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='vmcoreinfo'/>
-  <flag name='numa.dist'/>
   <flag name='disk-share-rw'/>
   <flag name='iscsi.password-secret'/>
   <flag name='pl011'/>

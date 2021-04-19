@@ -840,14 +840,6 @@ qemuValidateDomainDefNuma(const virDomainDef *def,
         }
     }
 
-    if (virDomainNumaNodesDistancesAreBeingSet(def->numa) &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA_DIST)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("setting NUMA distances is not "
-                         "supported with this qemu"));
-        return -1;
-    }
-
     if (!virQEMUCapsGetMachineNumaMemSupported(qemuCaps,
                                                def->virtType,
                                                def->os.machine)) {

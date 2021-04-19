@@ -84,7 +84,6 @@
   <flag name='virtio-gpu.max_outputs'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='sclplmconsole'/>
-  <flag name='numa.dist'/>
   <flag name='disk-share-rw'/>
   <flag name='iscsi.password-secret'/>
   <flag name='dump-completed'/>

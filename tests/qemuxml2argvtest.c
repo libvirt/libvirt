@@ -2153,7 +2153,7 @@ mymain(void)
             QEMU_CAPS_OBJECT_MEMORY_RAM);
     DO_TEST_PARSE_ERROR("numatune-memnode-no-memory", NONE);
 
-    DO_TEST("numatune-distances", QEMU_CAPS_NUMA, QEMU_CAPS_NUMA_DIST);
+    DO_TEST("numatune-distances", QEMU_CAPS_NUMA);
     DO_TEST("numatune-no-vcpu", NONE);
     DO_TEST_CAPS_LATEST("numatune-hmat");
 
