@@ -18780,12 +18780,12 @@ virDomainFeaturesDefParse(virDomainDef *def,
         int feature;
         int value;
         g_autofree char *ptval = NULL;
-        g_autofree char *tmp = NULL;
 
         if ((n = virXPathNodeSet("./features/xen/*", ctxt, &nodes)) < 0)
             return -1;
 
         for (i = 0; i < n; i++) {
+            g_autofree char *tmp = NULL;
             feature = virDomainXenTypeFromString((const char *)nodes[i]->name);
             if (feature < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
