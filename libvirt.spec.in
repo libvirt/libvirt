@@ -434,6 +434,9 @@ Summary: Server side daemon and supporting files for libvirt library
 # The client side, i.e. shared libs are in a subpackage
 Requires: %{name}-libs = %{version}-%{release}
 
+# bash completion support for virt-admin
+Requires: %{name}-bash-completion = %{version}-%{release}
+
 # (client invokes 'nc' against the UNIX socket on the server)
 Requires: /usr/bin/nc
 
@@ -464,6 +467,10 @@ Requires: numad
 Requires: dbus
 # For uid creation during pre
 Requires(pre): shadow-utils
+
+# Ensure smooth upgrades
+Obsoletes: libvirt-admin < 7.3.0
+Provides: libvirt-admin
 
 %description daemon
 Server side daemon required to manage the virtualization capabilities
@@ -921,14 +928,6 @@ Requires: cyrus-sasl-gssapi
 
 %description libs
 Shared libraries for accessing the libvirt daemon.
-
-%package admin
-Summary: Set of tools to control libvirt daemon
-Requires: %{name}-libs = %{version}-%{release}
-Requires: %{name}-bash-completion = %{version}-%{release}
-
-%description admin
-The client side utilities to control the libvirt daemon.
 
 %package bash-completion
 Summary: Bash completion script
@@ -1593,11 +1592,15 @@ exit 0
 %attr(0755, root, root) %{_sbindir}/virtlogd
 %attr(0755, root, root) %{_sbindir}/virtlockd
 
+%{_mandir}/man1/virt-admin.1*
 %{_mandir}/man8/libvirtd.8*
 %{_mandir}/man8/virtlogd.8*
 %{_mandir}/man8/virtlockd.8*
 %{_mandir}/man8/virtproxyd.8*
 %{_mandir}/man7/virkey*.7*
+
+%{_bindir}/virt-admin
+%{_datadir}/bash-completion/completions/virt-admin
 
 %files daemon-config-network
 %dir %{_datadir}/libvirt/networks/
@@ -1914,11 +1917,6 @@ exit 0
 %{_datadir}/libvirt/cpu_map/*.xml
 
 %{_datadir}/libvirt/test-screenshot.png
-
-%files admin
-%{_mandir}/man1/virt-admin.1*
-%{_bindir}/virt-admin
-%{_datadir}/bash-completion/completions/virt-admin
 
 %files bash-completion
 %{_datadir}/bash-completion/completions/vsh

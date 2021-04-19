@@ -27,13 +27,6 @@ RPM packages
   every other libvirt RPM package. Almost every deployment scenario would be
   better served by picking one of the other RPMs listed below.
 
-* libvirt-admin
-
-  The virt-admin tool, used for administrative operations on any libvirt
-  daemons. Most usefully it allows for logging filters and outputs to be
-  reconfigured on a running daemon without a restart. This is recommended
-  to be installed on any host running a libvirt daemon.
-
 * libvirt-bash-completion
 
   Argument auto-completion support for the Bash shell. This is shared code that
@@ -56,6 +49,11 @@ RPM packages
   In addition to the libvirtd daemon this package also contains the virtlogd,
   virtlockd and virtproxyd daemons, plus a number of helpers, configuration
   files and other bits necessary to create and admin a virtualization host.
+
+  The virt-admin tool, also included in this package, is used for
+  administrative operations on any libvirt daemons. Most usefully it allows
+  for logging filters and outputs to be reconfigured on a running daemon
+  without a restart.
 
 * libvirt-daemon-config-network
 
