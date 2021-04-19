@@ -6245,8 +6245,7 @@ qemuBuildBootCommandLine(virCommand *cmd,
 
 static int
 qemuBuildIOMMUCommandLine(virCommand *cmd,
-                          const virDomainDef *def,
-                          virQEMUCaps *qemuCaps)
+                          const virDomainDef *def)
 {
     const virDomainIOMMUDef *iommu = def->iommu;
 
@@ -6256,13 +6255,6 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
     switch (iommu->model) {
     case VIR_DOMAIN_IOMMU_MODEL_INTEL: {
         g_auto(virBuffer) opts = VIR_BUFFER_INITIALIZER;
-
-        /* qemuValidateDomainDeviceDefIOMMU() already made sure we have
-         * one of QEMU_CAPS_DEVICE_INTEL_IOMMU or QEMU_CAPS_MACHINE_IOMMU:
-         * here we handle the former case, while the latter is taken care
-         * of in qemuBuildMachineCommandLine() */
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU))
-            return 0;
 
         virBufferAddLit(&opts, "intel-iommu");
         if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT) {
@@ -6904,12 +6896,7 @@ qemuBuildMachineCommandLine(virCommand *cmd,
     if (def->iommu) {
         switch (def->iommu->model) {
         case VIR_DOMAIN_IOMMU_MODEL_INTEL:
-            /* qemuValidateDomainDeviceDefIOMMU() already made sure we have
-             * one of QEMU_CAPS_DEVICE_INTEL_IOMMU or QEMU_CAPS_MACHINE_IOMMU:
-             * here we handle the latter case, while the former is taken care
-             * of in qemuBuildIOMMUCommandLine() */
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU))
-                virBufferAddLit(&buf, ",iommu=on");
+            /* The 'intel' IOMMu is formatted in qemuBuildIOMMUCommandLine */
             break;
 
         case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
@@ -10489,7 +10476,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     if (qemuBuildBootCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildIOMMUCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildIOMMUCommandLine(cmd, def) < 0)
         return NULL;
 
     if (qemuBuildGlobalControllerCommandLine(cmd, def) < 0)

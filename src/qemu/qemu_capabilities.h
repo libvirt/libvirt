@@ -373,7 +373,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, /* virtio-*pci.disable-legacy */
     QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS, /* qmp command query-hotpluggable-cpus */
     QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE, /* virtio-net-*.rx_queue_size */
-    QEMU_CAPS_MACHINE_IOMMU, /* -machine iommu=on */
+    X_QEMU_CAPS_MACHINE_IOMMU, /* -machine iommu=on */
 
     /* 235 */
     QEMU_CAPS_DEVICE_VIRTIO_VGA, /* -device virtio-vga */
