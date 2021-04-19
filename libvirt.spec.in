@@ -1883,12 +1883,6 @@ exit 0
 %{_bindir}/virt-xml-validate
 %{_bindir}/virt-pki-validate
 
-%{_datadir}/systemtap/tapset/libvirt_probes*.stp
-%{_datadir}/systemtap/tapset/libvirt_functions.stp
-%if %{with_qemu}
-%{_datadir}/systemtap/tapset/libvirt_qemu_probes*.stp
-%endif
-
 %{_datadir}/bash-completion/completions/virsh
 
 %files libs -f %{name}.lang
@@ -1902,6 +1896,12 @@ exit 0
 %dir %{_datadir}/libvirt/
 %dir %{_datadir}/libvirt/schemas/
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/
+
+%{_datadir}/systemtap/tapset/libvirt_probes*.stp
+%{_datadir}/systemtap/tapset/libvirt_functions.stp
+%if %{with_qemu}
+%{_datadir}/systemtap/tapset/libvirt_qemu_probes*.stp
+%endif
 
 %{_datadir}/libvirt/schemas/*.rng
 
