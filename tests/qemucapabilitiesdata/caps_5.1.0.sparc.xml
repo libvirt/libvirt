@@ -53,7 +53,6 @@
   <flag name='block-write-threshold'/>
   <flag name='query-named-block-nodes'/>
   <flag name='kernel-irqchip'/>
-  <flag name='kernel-irqchip.split'/>
   <flag name='loadparm'/>
   <flag name='vnc-multi-servers'/>
   <flag name='chardev-reconnect'/>

@@ -146,7 +146,6 @@
   <flag name='cpu-cache'/>
   <flag name='qemu-xhci'/>
   <flag name='kernel-irqchip'/>
-  <flag name='kernel-irqchip.split'/>
   <flag name='intel-iommu.intremap'/>
   <flag name='intel-iommu.caching-mode'/>
   <flag name='intel-iommu.eim'/>

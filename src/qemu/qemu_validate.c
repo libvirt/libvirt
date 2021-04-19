@@ -201,22 +201,6 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
                                      "this QEMU binary"));
                     return -1;
                 }
-
-                switch ((virDomainIOAPIC) def->features[i]) {
-                case VIR_DOMAIN_IOAPIC_QEMU:
-                    if (!virQEMUCapsGet(qemuCaps,
-                                        QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT)) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("split I/O APIC is not supported by this "
-                                         "QEMU binary"));
-                        return -1;
-                    }
-                    break;
-                case VIR_DOMAIN_IOAPIC_KVM:
-                case VIR_DOMAIN_IOAPIC_NONE:
-                case VIR_DOMAIN_IOAPIC_LAST:
-                    break;
-                }
             }
             break;
 
