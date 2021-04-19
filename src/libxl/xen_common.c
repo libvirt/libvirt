@@ -543,14 +543,15 @@ xenParseCPU(virConf *conf,
 static int
 xenParseHypervisorFeatures(virConf *conf, virDomainDef *def)
 {
-    g_autofree char *strval = NULL;
+    g_autofree char *tscmode = NULL;
+    g_autofree char *passthrough = NULL;
     virDomainTimerDef *timer;
     int val = 0;
 
-    if (xenConfigGetString(conf, "tsc_mode", &strval, NULL) < 0)
+    if (xenConfigGetString(conf, "tsc_mode", &tscmode, NULL) < 0)
         return -1;
 
-    if (strval) {
+    if (tscmode) {
         VIR_EXPAND_N(def->clock.timers, def->clock.ntimers, 1);
 
         timer = g_new0(virDomainTimerDef, 1);
@@ -559,37 +560,38 @@ xenParseHypervisorFeatures(virConf *conf, virDomainDef *def)
         timer->tickpolicy = -1;
         timer->mode = VIR_DOMAIN_TIMER_MODE_AUTO;
         timer->track = -1;
-        if (STREQ_NULLABLE(strval, "always_emulate"))
+        if (STREQ_NULLABLE(tscmode, "always_emulate"))
             timer->mode = VIR_DOMAIN_TIMER_MODE_EMULATE;
-        else if (STREQ_NULLABLE(strval, "native"))
+        else if (STREQ_NULLABLE(tscmode, "native"))
             timer->mode = VIR_DOMAIN_TIMER_MODE_NATIVE;
-        else if (STREQ_NULLABLE(strval, "native_paravirt"))
+        else if (STREQ_NULLABLE(tscmode, "native_paravirt"))
             timer->mode = VIR_DOMAIN_TIMER_MODE_PARAVIRT;
 
         def->clock.timers[def->clock.ntimers - 1] = timer;
+        VIR_FREE(tscmode);
     }
 
-    if (xenConfigGetString(conf, "passthrough", &strval, NULL) < 0)
+    if (xenConfigGetString(conf, "passthrough", &passthrough, NULL) < 0)
         return -1;
 
-    if (strval) {
-        if (STREQ(strval, "disabled")) {
+    if (passthrough) {
+        if (STREQ(passthrough, "disabled")) {
             def->features[VIR_DOMAIN_FEATURE_XEN] = VIR_TRISTATE_SWITCH_OFF;
             def->xen_features[VIR_DOMAIN_XEN_PASSTHROUGH] = VIR_TRISTATE_SWITCH_OFF;
-        } else if (STREQ(strval, "enabled")) {
+        } else if (STREQ(passthrough, "enabled")) {
             def->features[VIR_DOMAIN_FEATURE_XEN] = VIR_TRISTATE_SWITCH_ON;
             def->xen_features[VIR_DOMAIN_XEN_PASSTHROUGH] = VIR_TRISTATE_SWITCH_ON;
-        } else if (STREQ(strval, "sync_pt")) {
+        } else if (STREQ(passthrough, "sync_pt")) {
             def->features[VIR_DOMAIN_FEATURE_XEN] = VIR_TRISTATE_SWITCH_ON;
             def->xen_features[VIR_DOMAIN_XEN_PASSTHROUGH] = VIR_TRISTATE_SWITCH_ON;
             def->xen_passthrough_mode = VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SYNC_PT;
-        } else if (STREQ(strval, "share_pt")) {
+        } else if (STREQ(passthrough, "share_pt")) {
             def->features[VIR_DOMAIN_FEATURE_XEN] = VIR_TRISTATE_SWITCH_ON;
             def->xen_features[VIR_DOMAIN_XEN_PASSTHROUGH] = VIR_TRISTATE_SWITCH_ON;
             def->xen_passthrough_mode = VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SHARE_PT;
         } else {
             virReportError(VIR_ERR_CONF_SYNTAX,
-                           _("Invalid passthrough mode %s"), strval);
+                           _("Invalid passthrough mode %s"), passthrough);
         }
     }
 
