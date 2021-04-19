@@ -1220,7 +1220,7 @@ cmdDomBlkError(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     virDomainDiskErrorPtr disks = NULL;
-    unsigned int ndisks;
+    unsigned int ndisks = 0;
     size_t i;
     int count;
     bool ret = false;
@@ -1230,10 +1230,10 @@ cmdDomBlkError(vshControl *ctl, const vshCmd *cmd)
 
     if ((count = virDomainGetDiskErrors(dom, NULL, 0, 0)) < 0)
         goto cleanup;
-    ndisks = count;
 
-    if (ndisks) {
-        disks = g_new0(virDomainDiskError, ndisks);
+    if (count > 0) {
+        disks = g_new0(virDomainDiskError, count);
+        ndisks = count;
 
         if ((count = virDomainGetDiskErrors(dom, disks, ndisks, 0)) == -1)
             goto cleanup;
@@ -1252,7 +1252,7 @@ cmdDomBlkError(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    for (i = 0; i < count; i++)
+    for (i = 0; i < ndisks; i++)
         VIR_FREE(disks[i].disk);
     VIR_FREE(disks);
     virshDomainFree(dom);
