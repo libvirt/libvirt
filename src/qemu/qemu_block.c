@@ -965,7 +965,7 @@ qemuBlockStorageSourceGetSshProps(virStorageSource *src)
 
     if (src->nhosts != 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("sheepdog protocol accepts only one host"));
+                       _("ssh protocol accepts only one host"));
         return NULL;
     }
 
