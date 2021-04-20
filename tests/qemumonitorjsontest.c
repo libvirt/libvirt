@@ -1216,7 +1216,6 @@ GEN_TEST_FUNC(qemuMonitorJSONBlockdevMediumRemove, "foodev")
 GEN_TEST_FUNC(qemuMonitorJSONBlockdevMediumInsert, "foodev", "newnode")
 GEN_TEST_FUNC(qemuMonitorJSONBitmapRemove, "foodev", "newnode")
 GEN_TEST_FUNC(qemuMonitorJSONJobDismiss, "jobname")
-GEN_TEST_FUNC(qemuMonitorJSONJobCancel, "jobname", false)
 GEN_TEST_FUNC(qemuMonitorJSONJobComplete, "jobname")
 GEN_TEST_FUNC(qemuMonitorJSONBlockJobCancel, "jobname", true)
 
@@ -3121,7 +3120,6 @@ mymain(void)
     DO_TEST_GEN(qemuMonitorJSONBlockdevMediumInsert);
     DO_TEST_GEN(qemuMonitorJSONBitmapRemove);
     DO_TEST_GEN(qemuMonitorJSONJobDismiss);
-    DO_TEST_GEN(qemuMonitorJSONJobCancel);
     DO_TEST_GEN(qemuMonitorJSONJobComplete);
     DO_TEST_GEN(qemuMonitorJSONBlockJobCancel);
     DO_TEST(qemuMonitorJSONGetBalloonInfo);

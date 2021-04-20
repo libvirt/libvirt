@@ -3449,19 +3449,6 @@ qemuMonitorJobDismiss(qemuMonitor *mon,
 
 
 int
-qemuMonitorJobCancel(qemuMonitor *mon,
-                     const char *jobname,
-                     bool quiet)
-{
-    VIR_DEBUG("jobname='%s' quiet=%d", jobname, quiet);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONJobCancel(mon, jobname, quiet);
-}
-
-
-int
 qemuMonitorJobComplete(qemuMonitor *mon,
                        const char *jobname)
 {

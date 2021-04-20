@@ -348,11 +348,6 @@ int qemuMonitorJSONJobDismiss(qemuMonitor *mon,
                               const char *jobname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int qemuMonitorJSONJobCancel(qemuMonitor *mon,
-                             const char *jobname,
-                             bool quiet)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
 int qemuMonitorJSONJobComplete(qemuMonitor *mon,
                                const char *jobname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

@@ -1106,11 +1106,6 @@ int qemuMonitorJobDismiss(qemuMonitor *mon,
                           const char *jobname)
     ATTRIBUTE_NONNULL(2);
 
-int qemuMonitorJobCancel(qemuMonitor *mon,
-                         const char *jobname,
-                         bool quiet)
-    ATTRIBUTE_NONNULL(2);
-
 int qemuMonitorJobComplete(qemuMonitor *mon,
                            const char *jobname)
     ATTRIBUTE_NONNULL(2);
