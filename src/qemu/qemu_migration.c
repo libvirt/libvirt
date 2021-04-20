@@ -631,9 +631,10 @@ qemuMigrationSrcNBDStorageCopyReady(virDomainObj *vm,
 
 
 /*
- * If @check is true, the function will report an error and return a different
- * code in case a block job fails. This way we can properly abort migration in
- * case some block jobs failed once all memory has already been transferred.
+ * If @abortMigration is false, the function will report an error and return a
+ * different code in case a block job fails. This way we can properly abort
+ * migration in case some block jobs failed once all memory has already been
+ * transferred.
  *
  * Returns 1 if all mirrors are gone,
  *         0 if some mirrors are still active,
@@ -643,7 +644,7 @@ qemuMigrationSrcNBDStorageCopyReady(virDomainObj *vm,
 static int
 qemuMigrationSrcNBDCopyCancelled(virDomainObj *vm,
                                  qemuDomainAsyncJob asyncJob,
-                                 bool check)
+                                 bool abortMigration)
 {
     size_t i;
     size_t active = 0;
@@ -665,7 +666,7 @@ qemuMigrationSrcNBDCopyCancelled(virDomainObj *vm,
         qemuBlockJobUpdate(vm, job, asyncJob);
         switch (job->state) {
         case VIR_DOMAIN_BLOCK_JOB_FAILED:
-            if (check) {
+            if (!abortMigration) {
                 qemuMigrationNBDReportMirrorError(job, disk->dst);
                 failed = true;
             }
@@ -726,7 +727,7 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriver *driver,
                                  virDomainObj *vm,
                                  virDomainDiskDef *disk,
                                  qemuBlockJobData *job,
-                                 bool failNoJob,
+                                 bool abortMigration,
                                  qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -736,7 +737,7 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriver *driver,
     switch (job->state) {
     case VIR_DOMAIN_BLOCK_JOB_FAILED:
     case VIR_DOMAIN_BLOCK_JOB_CANCELED:
-        if (failNoJob) {
+        if (!abortMigration) {
             qemuMigrationNBDReportMirrorError(job, disk->dst);
             return -1;
         }
@@ -761,7 +762,7 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriver *driver,
  * qemuMigrationSrcNBDCopyCancel:
  * @driver: qemu driver
  * @vm: domain
- * @check: if true report an error when some of the mirrors fails
+ * @abortMigration: The migration is being cancelled.
  *
  * Cancel all drive-mirrors started by qemuMigrationSrcNBDStorageCopy.
  * Any pending block job events for the affected disks will be processed and
@@ -773,7 +774,7 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriver *driver,
 static int
 qemuMigrationSrcNBDCopyCancel(virQEMUDriver *driver,
                               virDomainObj *vm,
-                              bool check,
+                              bool abortMigration,
                               qemuDomainAsyncJob asyncJob,
                               virConnectPtr dconn)
 {
@@ -800,7 +801,7 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriver *driver,
         }
 
         rv = qemuMigrationSrcNBDCopyCancelOne(driver, vm, disk, job,
-                                              check, asyncJob);
+                                              abortMigration, asyncJob);
         if (rv != 0) {
             if (rv < 0) {
                 if (!err)
@@ -814,8 +815,8 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriver *driver,
         virObjectUnref(job);
     }
 
-    while ((rv = qemuMigrationSrcNBDCopyCancelled(vm, asyncJob, check)) != 1) {
-        if (check && !failed &&
+    while ((rv = qemuMigrationSrcNBDCopyCancelled(vm, asyncJob, abortMigration)) != 1) {
+        if (!abortMigration && !failed &&
             dconn && virConnectIsAlive(dconn) <= 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("Lost connection to destination host"));
@@ -4288,7 +4289,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     }
 
     if (mig->nbd &&
-        qemuMigrationSrcNBDCopyCancel(driver, vm, true,
+        qemuMigrationSrcNBDCopyCancel(driver, vm, false,
                                       QEMU_ASYNC_JOB_MIGRATION_OUT,
                                       dconn) < 0)
         goto error;
@@ -4366,7 +4367,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
 
         /* cancel any outstanding NBD jobs */
         if (mig && mig->nbd)
-            qemuMigrationSrcNBDCopyCancel(driver, vm, false,
+            qemuMigrationSrcNBDCopyCancel(driver, vm, true,
                                           QEMU_ASYNC_JOB_MIGRATION_OUT,
                                           dconn);
 
@@ -6070,7 +6071,7 @@ qemuMigrationSrcCancel(virQEMUDriver *driver,
     }
 
     if (storage &&
-        qemuMigrationSrcNBDCopyCancel(driver, vm, false,
+        qemuMigrationSrcNBDCopyCancel(driver, vm, true,
                                       QEMU_ASYNC_JOB_NONE, NULL) < 0)
         return -1;
 
