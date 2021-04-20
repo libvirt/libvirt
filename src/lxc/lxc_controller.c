@@ -193,8 +193,8 @@ static virLXCController *virLXCControllerNew(const char *name)
 
     ctrl->timerShutdown = -1;
     ctrl->firstClient = true;
-
     ctrl->name = g_strdup(name);
+    ctrl->handshakeFd = -1;
 
     if (!(driver = virLXCControllerDriverNew()))
         goto error;
