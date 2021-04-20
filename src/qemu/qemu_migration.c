@@ -749,7 +749,9 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriver *driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    rv = qemuMonitorBlockJobCancel(priv->mon, job->name, false);
+    /* when we are aborting the migration we don't care about the data
+     * consistency on the destination so that we can force cancel the mirror */
+    rv = qemuMonitorBlockJobCancel(priv->mon, job->name, abortMigration);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
         return -1;
