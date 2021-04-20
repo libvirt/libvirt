@@ -53,6 +53,10 @@ RPM packages
   stateful drivers. This package does not contain any drivers, so further
   packages need to be installed to provide the desired drivers.
 
+  In addition to the libvirtd daemon this package also contains the virtlogd,
+  virtlockd and virtproxyd daemons, plus a number of helpers, configuration
+  files and other bits necessary to create and admin a virtualization host.
+
 * libvirt-daemon-config-network
 
   The sample configuration file providing the 'default' virtual network that
