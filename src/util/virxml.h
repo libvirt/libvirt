@@ -296,7 +296,6 @@ virXMLValidateAgainstSchema(const char *schemafile,
 
 int
 virXMLValidateNodeAgainstSchema(const char *schemafile,
-                                xmlDocPtr doc,
                                 xmlNodePtr node);
 
 void

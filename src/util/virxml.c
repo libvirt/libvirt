@@ -1551,16 +1551,15 @@ virXMLValidateAgainstSchema(const char *schemafile,
 
 
 int
-virXMLValidateNodeAgainstSchema(const char *schemafile,
-                                xmlDocPtr doc,
-                                xmlNodePtr node)
+virXMLValidateNodeAgainstSchema(const char *schemafile, xmlNodePtr node)
 {
-    xmlNodePtr root;
     int ret;
+    xmlDocPtr copy = xmlNewDoc(NULL);
 
-    root = xmlDocSetRootElement(doc, node);
-    ret = virXMLValidateAgainstSchema(schemafile, doc);
-    xmlDocSetRootElement(doc, root);
+    xmlDocSetRootElement(copy, xmlCopyNode(node, true));
+    ret = virXMLValidateAgainstSchema(schemafile, copy);
+
+    xmlFreeDoc(copy);
     return ret;
 }
 

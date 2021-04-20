@@ -355,8 +355,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
                                                PKGDATADIR "/schemas")))
             return -1;
 
-        if (virXMLValidateNodeAgainstSchema(schemafile, ctxt->doc,
-                                            ctxt->node) < 0)
+        if (virXMLValidateNodeAgainstSchema(schemafile, ctxt->node) < 0)
             return -1;
     }
 
