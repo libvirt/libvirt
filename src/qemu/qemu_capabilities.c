@@ -3819,6 +3819,15 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
 }
 
 
+void
+virQEMUCapsUpdateHostCPUModel(virQEMUCaps *qemuCaps,
+                            virArch hostArch,
+                            virDomainVirtType type)
+{
+    virQEMUCapsHostCPUDataClear(&virQEMUCapsGetAccel(qemuCaps, type)->hostCPU);
+    virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, type);
+}
+
 qemuMonitorCPUModelInfo *
 virQEMUCapsGetCPUModelInfo(virQEMUCaps *qemuCaps,
                            virDomainVirtType type)
