@@ -526,7 +526,7 @@ qemuBlockJobRefreshJobs(virQEMUDriver *driver,
 
             qemuDomainObjEnterMonitor(driver, vm);
 
-            rc = qemuMonitorJobCancel(priv->mon, job->name, true);
+            rc = qemuMonitorBlockJobCancel(priv->mon, job->name, true);
             if (rc == -1 && jobinfo[i]->status == QEMU_MONITOR_JOB_STATUS_CONCLUDED)
                 VIR_WARN("can't cancel job '%s' with invalid data", job->name);
 
