@@ -1697,14 +1697,21 @@ qemuBlockJobEventProcess(virQEMUDriver *driver,
         break;
 
     case QEMU_BLOCKJOB_STATE_READY:
-        /* mirror may be NULL for copy job corresponding to migration */
-        if (job->disk) {
-            job->disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
-            qemuBlockJobEmitEvents(driver, vm, job->disk, job->type, job->newstate);
+        /* in certain cases qemu can blip out and back into 'ready' state for
+         * a blockjob. In cases when we already are past RUNNING the job such
+         * as when pivoting/aborting this could reset the internally set job
+         * state, thus we ignore it if the job isn't in expected state */
+        if (job->state == QEMU_BLOCKJOB_STATE_NEW ||
+            job->state == QEMU_BLOCKJOB_STATE_RUNNING) {
+            /* mirror may be NULL for copy job corresponding to migration */
+            if (job->disk) {
+                job->disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
+                qemuBlockJobEmitEvents(driver, vm, job->disk, job->type, job->newstate);
+            }
+            job->state = job->newstate;
+            qemuDomainSaveStatus(vm);
         }
-        job->state = job->newstate;
         job->newstate = -1;
-        qemuDomainSaveStatus(vm);
         break;
 
     case QEMU_BLOCKJOB_STATE_NEW:
