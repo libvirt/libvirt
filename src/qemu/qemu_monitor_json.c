@@ -5217,13 +5217,15 @@ qemuMonitorJSONBlockStream(qemuMonitor *mon,
 
 int
 qemuMonitorJSONBlockJobCancel(qemuMonitor *mon,
-                              const char *jobname)
+                              const char *jobname,
+                              bool force)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("block-job-cancel",
                                            "s:device", jobname,
+                                           "B:force", force,
                                            NULL)))
         return -1;
 

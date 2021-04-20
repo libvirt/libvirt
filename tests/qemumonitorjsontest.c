@@ -1218,7 +1218,7 @@ GEN_TEST_FUNC(qemuMonitorJSONBitmapRemove, "foodev", "newnode")
 GEN_TEST_FUNC(qemuMonitorJSONJobDismiss, "jobname")
 GEN_TEST_FUNC(qemuMonitorJSONJobCancel, "jobname", false)
 GEN_TEST_FUNC(qemuMonitorJSONJobComplete, "jobname")
-GEN_TEST_FUNC(qemuMonitorJSONBlockJobCancel, "jobname")
+GEN_TEST_FUNC(qemuMonitorJSONBlockJobCancel, "jobname", true)
 
 static int
 testQemuMonitorJSONqemuMonitorJSONNBDServerStart(const void *opaque)

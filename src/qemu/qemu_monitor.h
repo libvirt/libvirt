@@ -1081,7 +1081,8 @@ int qemuMonitorBlockStream(qemuMonitor *mon,
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorBlockJobCancel(qemuMonitor *mon,
-                              const char *jobname)
+                              const char *jobname,
+                              bool force)
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorBlockJobSetSpeed(qemuMonitor *mon,

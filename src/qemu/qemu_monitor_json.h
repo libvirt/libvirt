@@ -325,7 +325,8 @@ int qemuMonitorJSONBlockStream(qemuMonitor *mon,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorJSONBlockJobCancel(qemuMonitor *mon,
-                                  const char *jobname)
+                                  const char *jobname,
+                                  bool force)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int

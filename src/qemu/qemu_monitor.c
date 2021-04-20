@@ -3403,13 +3403,14 @@ qemuMonitorBlockStream(qemuMonitor *mon,
 
 int
 qemuMonitorBlockJobCancel(qemuMonitor *mon,
-                          const char *jobname)
+                          const char *jobname,
+                          bool force)
 {
-    VIR_DEBUG("jobname=%s", jobname);
+    VIR_DEBUG("jobname=%s force=%d", jobname, force);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONBlockJobCancel(mon, jobname);
+    return qemuMonitorJSONBlockJobCancel(mon, jobname, force);
 }
 
 

@@ -748,7 +748,7 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriver *driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    rv = qemuMonitorBlockJobCancel(priv->mon, job->name);
+    rv = qemuMonitorBlockJobCancel(priv->mon, job->name, false);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
         return -1;

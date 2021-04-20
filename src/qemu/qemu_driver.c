@@ -14510,7 +14510,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         if (blockdev)
             ret = qemuMonitorJobCancel(priv->mon, job->name, false);
         else
-            ret = qemuMonitorBlockJobCancel(priv->mon, job->name);
+            ret = qemuMonitorBlockJobCancel(priv->mon, job->name, false);
         if (qemuDomainObjExitMonitor(driver, vm) < 0) {
             ret = -1;
             goto endjob;
