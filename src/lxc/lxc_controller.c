@@ -353,7 +353,6 @@ static int virLXCControllerDaemonHandshake(virLXCController *ctrl)
                              _("error sending continue signal to daemon"));
         return -1;
     }
-    VIR_FORCE_CLOSE(ctrl->handshakeFd);
     return 0;
 }
 
@@ -2402,6 +2401,9 @@ virLXCControllerRun(virLXCController *ctrl)
 
     if (virLXCControllerDaemonHandshake(ctrl) < 0)
         goto cleanup;
+
+    /* and preemptively close handshakeFd */
+    VIR_FORCE_CLOSE(ctrl->handshakeFd);
 
     /* We must not hold open a dbus connection for life
      * of LXC instance, since dbus-daemon is limited to
