@@ -724,7 +724,7 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
                             char **errbuf)
 {
     g_autofree char *parent_addr = NULL;
-    virCommand *cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     const char *subcommand = virMdevctlCommandTypeToString(cmd_type);
     g_autofree char *inbuf = NULL;
 
@@ -787,7 +787,7 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
 
     virCommandSetErrorBuffer(cmd, errbuf);
 
-    return cmd;
+    return g_steal_pointer(&cmd);
 }
 
 
