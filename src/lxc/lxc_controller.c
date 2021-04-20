@@ -348,7 +348,7 @@ static int virLXCControllerConsoleSetNonblocking(virLXCControllerConsole *consol
 }
 
 
-static int virLXCControllerDaemonHandshake(virLXCController *ctrl)
+static int virLXCControllerDaemonHandshakeCont(virLXCController *ctrl)
 {
     if (lxcContainerSendContinue(ctrl->handshakeFds[1]) < 0) {
         virReportSystemError(errno, "%s",
@@ -358,6 +358,15 @@ static int virLXCControllerDaemonHandshake(virLXCController *ctrl)
     return 0;
 }
 
+static int virLXCControllerDaemonHandshakeWait(virLXCController *ctrl)
+{
+    if (lxcContainerWaitForContinue(ctrl->handshakeFds[0]) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("error waiting for continue signal from daemon"));
+        return -1;
+    }
+    return 0;
+}
 
 static int virLXCControllerValidateNICs(virLXCController *ctrl)
 {
@@ -2372,6 +2381,11 @@ virLXCControllerRun(virLXCController *ctrl)
     if (virLXCControllerSetupCgroupLimits(ctrl) < 0)
         goto cleanup;
 
+    /* Allow daemon to detect CGroups. */
+    if (virLXCControllerDaemonHandshakeCont(ctrl) < 0 ||
+        virLXCControllerDaemonHandshakeWait(ctrl) < 0)
+        goto cleanup;
+
     if (virLXCControllerSetupUserns(ctrl) < 0)
         goto cleanup;
 
@@ -2401,7 +2415,8 @@ virLXCControllerRun(virLXCController *ctrl)
         if (virLXCControllerConsoleSetNonblocking(&(ctrl->consoles[i])) < 0)
             goto cleanup;
 
-    if (virLXCControllerDaemonHandshake(ctrl) < 0)
+    /* Allow daemon to connect to the monitor. */
+    if (virLXCControllerDaemonHandshakeCont(ctrl) < 0)
         goto cleanup;
 
     /* and preemptively close handshakeFds */

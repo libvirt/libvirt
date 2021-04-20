@@ -1473,6 +1473,7 @@ int virLXCProcessStart(virConnectPtr conn,
     if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
+    /* The first synchronization point is when the controller creates CGroups. */
     if (lxcContainerWaitForContinue(handshakefds[0]) < 0) {
         char out[1024];
 
@@ -1501,6 +1502,25 @@ int virLXCProcessStart(virConnectPtr conn,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("No valid cgroup for machine %s"),
                        vm->def->name);
+        goto cleanup;
+    }
+
+    if (lxcContainerSendContinue(handshakefds[3]) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to send continue signal to controller"));
+        goto cleanup;
+    }
+
+    /* The second synchronization point is when the controller finished
+     * creating the container. */
+    if (lxcContainerWaitForContinue(handshakefds[0]) < 0) {
+        char out[1024];
+
+        if (!(virLXCProcessReadLogOutput(vm, logfile, pos, out, 1024) < 0)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("guest failed to start: %s"), out);
+        }
+
         goto cleanup;
     }
 
