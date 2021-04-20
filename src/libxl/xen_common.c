@@ -568,7 +568,6 @@ xenParseHypervisorFeatures(virConf *conf, virDomainDef *def)
             timer->mode = VIR_DOMAIN_TIMER_MODE_PARAVIRT;
 
         def->clock.timers[def->clock.ntimers - 1] = timer;
-        VIR_FREE(tscmode);
     }
 
     if (xenConfigGetString(conf, "passthrough", &passthrough, NULL) < 0)
