@@ -309,7 +309,7 @@ vmwareUpdateVMStatus(struct vmware_driver *driver, virDomainObj *vm)
     for (str = outbuf; (parsedVmxPath = strtok_r(str, "\n", &saveptr)) != NULL;
          str = NULL) {
 
-        if (parsedVmxPath[0] != '/')
+        if (!g_path_is_absolute(parsedVmxPath))
             continue;
 
         if (STREQ(parsedVmxPath, vmxAbsolutePath)) {

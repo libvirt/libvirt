@@ -818,7 +818,7 @@ xenParseSxprChar(const char *value,
 
     prefix = value;
 
-    if (value[0] == '/') {
+    if (g_path_is_absolute(value)) {
         def->source->type = VIR_DOMAIN_CHR_TYPE_DEV;
         def->source->data.file.path = g_strdup(value);
     } else {

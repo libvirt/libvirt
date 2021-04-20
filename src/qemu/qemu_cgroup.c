@@ -927,7 +927,7 @@ qemuInitCgroup(virDomainObj *vm,
         vm->def->resource = res;
     }
 
-    if (vm->def->resource->partition[0] != '/') {
+    if (!g_path_is_absolute(vm->def->resource->partition)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Resource partition '%s' must start with '/'"),
                        vm->def->resource->partition);

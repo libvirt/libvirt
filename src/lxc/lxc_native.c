@@ -261,7 +261,7 @@ lxcAddFstabLine(virDomainDef *def, lxcFstab *fstab)
     if (!options)
         return -1;
 
-    if (fstab->dst[0] != '/') {
+    if (!g_path_is_absolute(fstab->dst)) {
         dst = g_strdup_printf("/%s", fstab->dst);
     } else {
         dst = g_strdup(fstab->dst);

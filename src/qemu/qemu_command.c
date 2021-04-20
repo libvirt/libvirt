@@ -1009,7 +1009,7 @@ qemuBuildNetworkDriveStr(virStorageSource *src,
                    !src->hosts->name) ||
                   (src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_UNIX &&
                    src->hosts->socket &&
-                   src->hosts->socket[0] != '/'))) {
+                   !g_path_is_absolute(src->hosts->socket)))) {
 
                 virBufferAddLit(&buf, "nbd:");
 

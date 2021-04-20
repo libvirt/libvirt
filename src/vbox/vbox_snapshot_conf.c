@@ -82,7 +82,7 @@ virVBoxSnapshotConfCreateVBoxSnapshotConfHardDiskPtr(xmlNodePtr diskNode,
                        _("Cannot parse <HardDisk> 'location' attribute"));
         goto cleanup;
     }
-    if (location[0] != '/') {
+    if (!g_path_is_absolute(location)) {
         /* The location is a relative path, so we must change it into an absolute one. */
         tmp = g_strdup_printf("%s%s", machineLocation, location);
         hardDisk->location = g_strdup(tmp);

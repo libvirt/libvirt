@@ -629,7 +629,7 @@ virExec(virCommand *cmd)
     g_autofree gid_t *groups = NULL;
     int ngroups;
 
-    if (cmd->args[0][0] != '/') {
+    if (!g_path_is_absolute(cmd->args[0])) {
         if (!(binary = binarystr = virFindFileInPath(cmd->args[0]))) {
             virReportSystemError(ENOENT,
                                  _("Cannot find '%s' in path"),

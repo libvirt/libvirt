@@ -346,7 +346,7 @@ main(int argc, char **argv)
      * a leading '-' to indicate it is a login shell
      */
     shcmd = shargv[0];
-    if (shcmd[0] != '/') {
+    if (!g_path_is_absolute(shcmd)) {
         virReportSystemError(errno,
                              _("Shell '%s' should have absolute path"),
                              shcmd);

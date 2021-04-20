@@ -363,7 +363,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     def->file = g_steal_pointer(&memoryFile);
 
     /* verify that memory path is absolute */
-    if (def->file && def->file[0] != '/') {
+    if (def->file && !g_path_is_absolute(def->file)) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("memory snapshot file path (%s) must be absolute"),
                        def->file);

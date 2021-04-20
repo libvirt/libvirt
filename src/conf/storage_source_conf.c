@@ -1213,7 +1213,7 @@ virStorageSourceIsRelative(virStorageSource *src)
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_DIR:
-        return src->path[0] != '/';
+        return !g_path_is_absolute(src->path);
 
     case VIR_STORAGE_TYPE_NETWORK:
     case VIR_STORAGE_TYPE_VOLUME:

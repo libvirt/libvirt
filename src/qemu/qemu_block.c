@@ -427,7 +427,8 @@ qemuBlockStorageSourceGetURI(virStorageSource *src)
         if (src->volume) {
             uri->path = g_strdup_printf("/%s/%s", src->volume, src->path);
         } else {
-            uri->path = g_strdup_printf("%s%s", src->path[0] == '/' ? "" : "/",
+            uri->path = g_strdup_printf("%s%s",
+                                        g_path_is_absolute(src->path) ? "" : "/",
                                         src->path);
         }
     }

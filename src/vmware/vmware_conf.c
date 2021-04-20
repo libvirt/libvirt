@@ -154,7 +154,7 @@ vmwareLoadDomains(struct vmware_driver *driver)
     for (str = outbuf; (vmxPath = strtok_r(str, "\n", &saveptr)) != NULL;
         str = NULL) {
 
-        if (vmxPath[0] != '/')
+        if (!g_path_is_absolute(vmxPath))
             continue;
 
         if (virFileReadAll(vmxPath, 10000, &vmx) < 0)

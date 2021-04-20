@@ -262,7 +262,7 @@ virDomainBackupDefParse(xmlXPathContextPtr ctxt,
         }
 
         if (def->server->transport == VIR_STORAGE_NET_HOST_TRANS_UNIX &&
-            def->server->socket[0] != '/') {
+            !g_path_is_absolute(def->server->socket)) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("backup socket path '%s' must be absolute"),
                            def->server->socket);

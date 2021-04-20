@@ -104,7 +104,7 @@ checkPath(const char *path,
     char *relPath = NULL;
     char *crippledPath = NULL;
 
-    if (path[0] != '/')
+    if (!g_path_is_absolute(path))
         relPath = g_strdup_printf("./%s", path);
 
     /* Le sigh. virFileCanonicalizePath() expects @path to exist, otherwise

@@ -92,7 +92,7 @@ virStorageSourceParseBackingURI(virStorageSource *src,
         path = "";
 
     /* possibly skip the leading slash  */
-    if (path[0] == '/')
+    if (g_path_is_absolute(path))
         path++;
 
     /* NBD allows empty export name (path) */

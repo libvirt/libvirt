@@ -68,7 +68,7 @@ virStorageSourceBackinStoreStringIsFile(const char *backing)
 static bool
 virStorageSourceBackinStoreStringIsRelative(const char *backing)
 {
-    if (backing[0] == '/')
+    if (g_path_is_absolute(backing))
         return false;
 
     if (!virStorageSourceBackinStoreStringIsFile(backing))

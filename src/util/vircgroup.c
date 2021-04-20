@@ -953,7 +953,7 @@ virCgroupNewPartition(const char *path,
 
     *group = NULL;
 
-    if (path[0] != '/') {
+    if (!g_path_is_absolute(path)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Partition path '%s' must start with '/'"),
                        path);
@@ -1307,7 +1307,7 @@ virCgroupNewMachineSystemd(const char *name,
         }
     }
 
-    if (!path || STREQ(path, "/") || path[0] != '/') {
+    if (!path || STREQ(path, "/") || !g_path_is_absolute(path)) {
         VIR_DEBUG("Systemd didn't setup its controller, path=%s",
                   NULLSTR(path));
         return -2;
