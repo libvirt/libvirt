@@ -434,9 +434,6 @@ Summary: Server side daemon and supporting files for libvirt library
 # The client side, i.e. shared libs are in a subpackage
 Requires: %{name}-libs = %{version}-%{release}
 
-# bash completion support for virt-admin
-Requires: %{name}-bash-completion = %{version}-%{release}
-
 # (client invokes 'nc' against the UNIX socket on the server)
 Requires: /usr/bin/nc
 
@@ -473,6 +470,7 @@ Requires: gettext
 # Ensure smooth upgrades
 Obsoletes: libvirt-admin < 7.3.0
 Provides: libvirt-admin
+Obsoletes: libvirt-bash-completion < 7.3.0
 
 %description daemon
 Server side daemon required to manage the virtualization capabilities
@@ -912,7 +910,9 @@ Summary: Client side utilities of the libvirt library
 Requires: %{name}-libs = %{version}-%{release}
 # Needed by virt-pki-validate script.
 Requires: gnutls-utils
-Requires: %{name}-bash-completion = %{version}-%{release}
+
+# Ensure smooth upgrades
+Obsoletes: libvirt-bash-completion < 7.3.0
 
 %description client
 The client binaries needed to access the virtualization
@@ -928,12 +928,6 @@ Requires: cyrus-sasl-gssapi
 
 %description libs
 Shared libraries for accessing the libvirt daemon.
-
-%package bash-completion
-Summary: Bash completion script
-
-%description bash-completion
-Bash completion script stub.
 
 %if %{with_wireshark}
 %package wireshark

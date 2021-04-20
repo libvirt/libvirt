@@ -27,12 +27,6 @@ RPM packages
   every other libvirt RPM package. Almost every deployment scenario would be
   better served by picking one of the other RPMs listed below.
 
-* libvirt-bash-completion
-
-  Argument auto-completion support for the Bash shell. This is shared code that
-  is pulled in by either the libvirt-admin or libvirt-clients RPMs, so there is
-  no need to explicitly ask for this package to be installed.
-
 * libvirt-client
 
   The virsh tool, used for interacting with any libvirt driver, both primary
