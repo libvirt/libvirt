@@ -651,50 +651,49 @@ qemuMigrationSrcNBDCopyCancelled(virDomainObj *vm,
     size_t completed = 0;
     bool failed = false;
 
- retry:
-    for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDef *disk = vm->def->disks[i];
-        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        qemuBlockJobData *job;
+    do {
+        active = 0;
+        completed = 0;
 
-        if (!diskPriv->migrating)
-            continue;
+        for (i = 0; i < vm->def->ndisks; i++) {
+            virDomainDiskDef *disk = vm->def->disks[i];
+            qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+            qemuBlockJobData *job;
 
-        if (!(job = qemuBlockJobDiskGetJob(disk)))
-            continue;
+            if (!diskPriv->migrating)
+                continue;
 
-        qemuBlockJobUpdate(vm, job, asyncJob);
-        switch (job->state) {
-        case VIR_DOMAIN_BLOCK_JOB_FAILED:
-            if (!abortMigration) {
-                qemuMigrationNBDReportMirrorError(job, disk->dst);
-                failed = true;
+            if (!(job = qemuBlockJobDiskGetJob(disk)))
+                continue;
+
+            qemuBlockJobUpdate(vm, job, asyncJob);
+            switch (job->state) {
+            case VIR_DOMAIN_BLOCK_JOB_FAILED:
+                if (!abortMigration) {
+                    qemuMigrationNBDReportMirrorError(job, disk->dst);
+                    failed = true;
+                }
+                G_GNUC_FALLTHROUGH;
+            case VIR_DOMAIN_BLOCK_JOB_CANCELED:
+            case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
+                diskPriv->migrating = false;
+                break;
+
+            default:
+                active++;
             }
-            G_GNUC_FALLTHROUGH;
-        case VIR_DOMAIN_BLOCK_JOB_CANCELED:
-        case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
-            diskPriv->migrating = false;
-            break;
 
-        default:
-            active++;
+            if (job->state == VIR_DOMAIN_BLOCK_JOB_COMPLETED)
+                completed++;
+
+            virObjectUnref(job);
         }
 
-        if (job->state == VIR_DOMAIN_BLOCK_JOB_COMPLETED)
-            completed++;
-
-        virObjectUnref(job);
-    }
-
-    /* Updating completed block job drops the lock thus we have to recheck
-     * block jobs for disks that reside before the disk(s) with completed
-     * block job.
-     */
-    if (completed > 0) {
-        completed = 0;
-        active = 0;
-        goto retry;
-    }
+        /* Updating completed block job drops the lock thus we have to recheck
+         * block jobs for disks that reside before the disk(s) with completed
+         * block job.
+         */
+    } while (completed > 0);
 
     if (failed) {
         if (active) {
