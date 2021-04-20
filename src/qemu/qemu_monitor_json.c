@@ -5219,9 +5219,8 @@ int
 qemuMonitorJSONBlockJobCancel(qemuMonitor *mon,
                               const char *jobname)
 {
-    int ret = -1;
-    virJSONValue *cmd = NULL;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("block-job-cancel",
                                            "s:device", jobname,
@@ -5229,17 +5228,12 @@ qemuMonitorJSONBlockJobCancel(qemuMonitor *mon,
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONBlockJobError(cmd, reply, jobname) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    return 0;
 }
 
 
