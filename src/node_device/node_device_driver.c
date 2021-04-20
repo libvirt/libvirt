@@ -743,7 +743,7 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
     case MDEVCTL_CMD_LAST:
     default:
         /* SHOULD NEVER HAPPEN */
-        break;
+        return NULL;
     }
 
     switch (cmd_type) {
