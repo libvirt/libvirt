@@ -939,7 +939,8 @@ virLXCProcessBuildControllerCmd(virLXCDriver *driver,
                                 int *nsInheritFDs,
                                 int *files,
                                 size_t nfiles,
-                                int handshakefd,
+                                int handshakefdW,
+                                int handshakefdR,
                                 int * const logfd,
                                 const char *pidfile)
 {
@@ -1002,13 +1003,14 @@ virLXCProcessBuildControllerCmd(virLXCDriver *driver,
     virCommandAddArgPair(cmd, "--security",
                          virSecurityManagerGetModel(driver->securityManager));
 
-    virCommandAddArg(cmd, "--handshakefd");
-    virCommandAddArgFormat(cmd, "%d", handshakefd);
+    virCommandAddArg(cmd, "--handshakefds");
+    virCommandAddArgFormat(cmd, "%d:%d", handshakefdR, handshakefdW);
 
     for (i = 0; veths && veths[i]; i++)
         virCommandAddArgList(cmd, "--veth", veths[i], NULL);
 
-    virCommandPassFD(cmd, handshakefd, 0);
+    virCommandPassFD(cmd, handshakefdW, 0);
+    virCommandPassFD(cmd, handshakefdR, 0);
     virCommandDaemonize(cmd);
     virCommandSetPidFile(cmd, pidfile);
     virCommandSetOutputFD(cmd, logfd);
@@ -1198,7 +1200,7 @@ int virLXCProcessStart(virConnectPtr conn,
     g_autofree char *logfile = NULL;
     int logfd = -1;
     g_auto(GStrv) veths = NULL;
-    int handshakefds[2] = { -1, -1 };
+    int handshakefds[4] = { -1, -1, -1, -1 }; /* two pipes */
     off_t pos = -1;
     char ebuf[1024];
     g_autofree char *timestamp = NULL;
@@ -1369,7 +1371,8 @@ int virLXCProcessStart(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (virPipe(handshakefds) < 0)
+    if (virPipe(&handshakefds[0]) < 0 ||
+        virPipe(&handshakefds[2]) < 0)
         goto cleanup;
 
     if (!(cmd = virLXCProcessBuildControllerCmd(driver,
@@ -1379,6 +1382,7 @@ int virLXCProcessStart(virConnectPtr conn,
                                                 nsInheritFDs,
                                                 files, nfiles,
                                                 handshakefds[1],
+                                                handshakefds[2],
                                                 &logfd,
                                                 pidfile)))
         goto cleanup;
@@ -1448,7 +1452,8 @@ int virLXCProcessStart(virConnectPtr conn,
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
     priv->doneStopEvent = false;
 
-    if (VIR_CLOSE(handshakefds[1]) < 0) {
+    if (VIR_CLOSE(handshakefds[1]) < 0 ||
+        VIR_CLOSE(handshakefds[2]) < 0) {
         virReportSystemError(errno, "%s", _("could not close handshake fd"));
         goto cleanup;
     }
@@ -1553,8 +1558,8 @@ int virLXCProcessStart(virConnectPtr conn,
     virCommandFree(cmd);
     for (i = 0; i < nttyFDs; i++)
         VIR_FORCE_CLOSE(ttyFDs[i]);
-    VIR_FORCE_CLOSE(handshakefds[0]);
-    VIR_FORCE_CLOSE(handshakefds[1]);
+    for (i = 0; i < G_N_ELEMENTS(handshakefds); i++)
+        VIR_FORCE_CLOSE(handshakefds[i]);
     virObjectUnref(cfg);
     virObjectUnref(caps);
 

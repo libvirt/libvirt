@@ -100,7 +100,7 @@ struct _virLXCController {
     virDomainObj *vm;
     virDomainDef *def;
 
-    int handshakeFd;
+    int handshakeFds[2]; /* { read FD, write FD } */
 
     pid_t initpid;
 
@@ -194,7 +194,8 @@ static virLXCController *virLXCControllerNew(const char *name)
     ctrl->timerShutdown = -1;
     ctrl->firstClient = true;
     ctrl->name = g_strdup(name);
-    ctrl->handshakeFd = -1;
+    ctrl->handshakeFds[0] = -1;
+    ctrl->handshakeFds[1] = -1;
 
     if (!(driver = virLXCControllerDriverNew()))
         goto error;
@@ -311,7 +312,8 @@ static void virLXCControllerFree(virLXCController *ctrl)
     virCgroupFree(ctrl->cgroup);
 
     /* This must always be the last thing to be closed */
-    VIR_FORCE_CLOSE(ctrl->handshakeFd);
+    for (i = 0; i < G_N_ELEMENTS(ctrl->handshakeFds); i++)
+        VIR_FORCE_CLOSE(ctrl->handshakeFds[i]);
     g_free(ctrl);
 }
 
@@ -348,7 +350,7 @@ static int virLXCControllerConsoleSetNonblocking(virLXCControllerConsole *consol
 
 static int virLXCControllerDaemonHandshake(virLXCController *ctrl)
 {
-    if (lxcContainerSendContinue(ctrl->handshakeFd) < 0) {
+    if (lxcContainerSendContinue(ctrl->handshakeFds[1]) < 0) {
         virReportSystemError(errno, "%s",
                              _("error sending continue signal to daemon"));
         return -1;
@@ -2402,8 +2404,9 @@ virLXCControllerRun(virLXCController *ctrl)
     if (virLXCControllerDaemonHandshake(ctrl) < 0)
         goto cleanup;
 
-    /* and preemptively close handshakeFd */
-    VIR_FORCE_CLOSE(ctrl->handshakeFd);
+    /* and preemptively close handshakeFds */
+    for (i = 0; i < G_N_ELEMENTS(ctrl->handshakeFds); i++)
+        VIR_FORCE_CLOSE(ctrl->handshakeFds[i]);
 
     /* We must not hold open a dbus connection for life
      * of LXC instance, since dbus-daemon is limited to
@@ -2431,6 +2434,26 @@ virLXCControllerRun(virLXCController *ctrl)
 }
 
 
+static int
+parseFDPair(const char *arg,
+            int (*fd)[2])
+{
+    g_auto(GStrv) fds = NULL;
+
+    fds = g_strsplit(arg, ":", 0);
+
+    if (fds[0] == NULL || fds[1] == NULL || fds[2] != NULL ||
+        virStrToLong_i(fds[0], NULL, 10, &(*fd)[0]) < 0 ||
+        virStrToLong_i(fds[1], NULL, 10, &(*fd)[1]) < 0) {
+        fprintf(stderr, "malformed --handshakefds argument '%s'",
+                optarg);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 int main(int argc, char *argv[])
 {
     pid_t pid;
@@ -2439,7 +2462,7 @@ int main(int argc, char *argv[])
     size_t nveths = 0;
     char **veths = NULL;
     int ns_fd[VIR_LXC_DOMAIN_NAMESPACE_LAST];
-    int handshakeFd = -1;
+    int handshakeFds[2] = { -1, -1 };
     bool bg = false;
     const struct option options[] = {
         { "background", 0, NULL, 'b' },
@@ -2447,7 +2470,7 @@ int main(int argc, char *argv[])
         { "veth",   1, NULL, 'v' },
         { "console", 1, NULL, 'c' },
         { "passfd", 1, NULL, 'p' },
-        { "handshakefd", 1, NULL, 's' },
+        { "handshakefds", 1, NULL, 's' },
         { "security", 1, NULL, 'S' },
         { "share-net", 1, NULL, 'N' },
         { "share-ipc", 1, NULL, 'I' },
@@ -2515,11 +2538,8 @@ int main(int argc, char *argv[])
             break;
 
         case 's':
-            if (virStrToLong_i(optarg, NULL, 10, &handshakeFd) < 0) {
-                fprintf(stderr, "malformed --handshakefd argument '%s'",
-                        optarg);
+            if (parseFDPair(optarg, &handshakeFds) < 0)
                 goto cleanup;
-            }
             break;
 
         case 'N':
@@ -2561,7 +2581,7 @@ int main(int argc, char *argv[])
             fprintf(stderr, "  -n NAME, --name NAME\n");
             fprintf(stderr, "  -c FD, --console FD\n");
             fprintf(stderr, "  -v VETH, --veth VETH\n");
-            fprintf(stderr, "  -s FD, --handshakefd FD\n");
+            fprintf(stderr, "  -s FD:FD, --handshakefds FD:FD (read:write)\n");
             fprintf(stderr, "  -S NAME, --security NAME\n");
             fprintf(stderr, "  -N FD, --share-net FD\n");
             fprintf(stderr, "  -I FD, --share-ipc FD\n");
@@ -2578,8 +2598,8 @@ int main(int argc, char *argv[])
         goto cleanup;
     }
 
-    if (handshakeFd < 0) {
-        fprintf(stderr, "%s: missing --handshakefd argument for container PTY\n",
+    if (handshakeFds[0] < 0 || handshakeFds[1] < 0) {
+        fprintf(stderr, "%s: missing --handshakefds argument for container PTY\n",
                 argv[0]);
         goto cleanup;
     }
@@ -2596,7 +2616,7 @@ int main(int argc, char *argv[])
     if (!(ctrl = virLXCControllerNew(name)))
         goto cleanup;
 
-    ctrl->handshakeFd = handshakeFd;
+    memcpy(&ctrl->handshakeFds, &handshakeFds, sizeof(handshakeFds));
 
     if (!(ctrl->securityManager = virSecurityManagerNew(securityDriver,
                                                         LXC_DRIVER_NAME, 0)))
