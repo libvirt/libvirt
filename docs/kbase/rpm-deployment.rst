@@ -34,13 +34,11 @@ RPM packages
   reconfigured on a running daemon without a restart. This is recommended
   to be installed on any host running a libvirt daemon.
 
-
 * libvirt-bash-completion
 
   Argument auto-completion support for the Bash shell. This is shared code that
   is pulled in by either the libvirt-admin or libvirt-clients RPMs, so there is
   no need to explicitly ask for this package to be installed.
-
 
 * libvirt-client
 
@@ -49,13 +47,11 @@ RPM packages
   installs should have this installed as it provides a useful way to view and
   debug what is being done by other applications using libvirt.
 
-
 * libvirt-daemon
 
   The monolithic libvirtd daemon, traditionally used for running all the
   stateful drivers. This package does not contain any drivers, so further
   packages need to be installed to provide the desired drivers.
-
 
 * libvirt-daemon-config-network
 
@@ -64,7 +60,6 @@ RPM packages
   on desktop installations, but is not typically desired on server
   installations where VMs will use full bridged connectivity.
 
-
 * libvirt-daemon-config-nwfilter
 
   The sample configuration files providing the network filters for protecting
@@ -72,13 +67,11 @@ RPM packages
   MAC and IP spoofing. This is typically desired on server installations, if
   the mgmt app is using libvirt's network filtering features.
 
-
 * libvirt-daemon-driver-interface
 
   The dynamically loadable driver providing an implementation of the host
   network interface management APIs, as well as the virtinterfaced daemon
   binary.
-
 
 * libvirt-daemon-driver-libxl
 
@@ -89,12 +82,10 @@ RPM packages
   Note that this is a minimal package so does not actually pull in the full
   Xen hypervisor package set. This be must requested separately.
 
-
 * libvirt-daemon-driver-lxc
 
   The dynamically loadable driver providing an implementation of the hypervisor
   APIs for Linux containers, as well as the virtlxcd daemon binary.
-
 
 * libvirt-daemon-driver-network
 
@@ -103,19 +94,16 @@ RPM packages
   binary. Typically the libvirt-daemon-config-network RPM will also be desired
   when this is installed.
 
-
 * libvirt-daemon-driver-nodedev
 
   The dynamically loadable driver providing an implementation of the host
   device management APIs, as well as the virtnodedevd daemon binary.
-
 
 * libvirt-daemon-driver-nwfilter
 
   The dynamically loadable driver providing an implementation of the host
   network firewall management APIs, as well as the virtnwfilterd daemon
   binary.
-
 
 * libvirt-daemon-driver-qemu
 
@@ -126,11 +114,10 @@ RPM packages
   Note that this is a minimal package so does not actually pull in the full
   QEMU or KVM package set. This be must requested separately.
 
-
 * libvirt-daemon-driver-secret
+
   The dynamically loadable driver providing an implementation of the secret
   data management APIs, as well as the virtsecretd daemon binary.
-
 
 * libvirt-daemon-driver-storage
 
@@ -141,7 +128,6 @@ RPM packages
   a smaller install footprint can be obtained by requesting the individual
   drivers.
 
-
 * libvirt-daemon-driver-storage-core
 
   The dynamically loadable driver providing an implementation of the host
@@ -151,73 +137,61 @@ RPM packages
   Note that this is a minimal package so does not actually pull in any pool
   implementations.
 
-
 * libvirt-daemon-driver-storage-disk
 
   The dynamically loadable driver providing an implementation of the disk
   partition storage pool type, for the storage pool management APIs.
-
 
 * libvirt-daemon-driver-storage-gluster
 
   The dynamically loadable driver providing an implementation of the GlusterFS
   file storage pool type, for the storage pool management APIs.
 
-
 * libvirt-daemon-driver-storage-iscsi
 
   The dynamically loadable driver providing an implementation of the ISCSI
   disk storage pool type, for the storage pool management APIs.
-
 
 * libvirt-daemon-driver-storage-iscsi-direct
 
   The dynamically loadable driver providing an implementation of the ISCSI
   network storage pool type, for the storage pool management APIs.
 
-
 * libvirt-daemon-driver-storage-logical
 
   The dynamically loadable driver providing an implementation of the LVM
   storage pool type, for the storage pool management APIs.
-
 
 * libvirt-daemon-driver-storage-mpath
 
   The dynamically loadable driver providing an implementation of the multipath
   disk storage pool type, for the storage pool management APIs.
 
-
 * libvirt-daemon-driver-storage-rbd
 
   The dynamically loadable driver providing an implementation of the RBD
   network storage pool type, for the storage pool management APIs.
-
 
 * libvirt-daemon-driver-storage-scsi
 
   The dynamically loadable driver providing an implementation of the SCSI
   disk storage pool type, for the storage pool management APIs.
 
-
 * libvirt-daemon-driver-storage-sheepdog
 
   The dynamically loadable driver providing an implementation of the SheepDog
   network storage pool type, for the storage pool management APIs.
-
 
 * libvirt-daemon-driver-storage-zfs
 
   The dynamically loadable driver providing an implementation of the ZFS
   file storage pool type, for the storage pool management APIs.
 
-
 * libvirt-daemon-driver-vbox
 
   The dynamically loadable driver providing an implementation of the host
   network interface management APIs, as well as the virtinterfaced daemon
   binary.
-
 
 * libvirt-daemon-kvm
 
@@ -235,7 +209,6 @@ RPM packages
   features, the subset of libvirt-daemon-driver-XXX packages should be used
   instead.
 
-
 * libvirt-daemon-lxc
 
   This is an empty package that exists only as a convenient way to request
@@ -248,7 +221,6 @@ RPM packages
   required features is not known. To have finer grained control over the
   features, the subset of libvirt-daemon-driver-XXX packages should be used
   instead.
-
 
 * libvirt-daemon-qemu
 
@@ -266,7 +238,6 @@ RPM packages
   features, the subset of libvirt-daemon-driver-XXX packages should be used
   instead.
 
-
 * libvirt-daemon-vbox
 
   This is an empty package that exists only as a convenient way to request
@@ -279,7 +250,6 @@ RPM packages
   set of required features is not known. To have finer grained control over the
   features, the subset of libvirt-daemon-driver-XXX packages should be used
   instead.
-
 
 * libvirt-daemon-xen
 
@@ -296,7 +266,6 @@ RPM packages
   required features is not known. To have finer grained control over the
   features, the subset of libvirt-daemon-driver-XXX packages should be used
   instead.
-
 
 * libvirt-devel
 
@@ -327,13 +296,11 @@ RPM packages
   A simple login shell that automatically spawns an LXC container for the user
   logging in and places them in a shell inside that container.
 
-
 * libvirt-nss
 
   A NSS plugin that provides hostname resolution for guests attached to a
   libvirt virtual network. It is recommended to be installed on any host with
   guests using the libvirt virtual network connectivity.
-
 
 * libvirt-wireshark
 
