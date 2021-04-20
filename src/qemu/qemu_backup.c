@@ -676,7 +676,7 @@ qemuBackupJobCancelBlockjobs(virDomainObj *vm,
         if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
             return;
 
-        rc = qemuMonitorJobCancel(priv->mon, job->name, false);
+        rc = qemuMonitorBlockJobCancel(priv->mon, job->name, true);
 
         if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
             return;
