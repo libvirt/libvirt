@@ -6804,7 +6804,8 @@ qemuBuildCpuCommandLine(virCommand *cmd,
 
 static bool
 qemuAppendKeyWrapMachineParm(virBuffer *buf, virQEMUCaps *qemuCaps,
-                             int flag, const char *pname, int pstate)
+                             virQEMUCapsFlags flag, const char *pname,
+                             virTristateSwitch pstate)
 {
     if (pstate != VIR_TRISTATE_SWITCH_ABSENT) {
         if (!virQEMUCapsGet(qemuCaps, flag)) {
