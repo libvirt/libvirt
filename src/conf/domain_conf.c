@@ -14931,31 +14931,14 @@ static virDomainVideoResolutionDef *
 virDomainVideoResolutionDefParseXML(xmlNodePtr node)
 {
     g_autofree virDomainVideoResolutionDef *def = NULL;
-    g_autofree char *x = NULL;
-    g_autofree char *y = NULL;
-
-    x = virXMLPropString(node, "x");
-    y = virXMLPropString(node, "y");
-
-    if (!x || !y) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("missing values for resolution"));
-        return NULL;
-    }
 
     def = g_new0(virDomainVideoResolutionDef, 1);
 
-    if (virStrToLong_uip(x, NULL, 10, &def->x) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot parse video x-resolution '%s'"), x);
+    if (virXMLPropUInt(node, "x", 10, VIR_XML_PROP_REQUIRED, &def->x) < 0)
         return NULL;
-    }
 
-    if (virStrToLong_uip(y, NULL, 10, &def->y) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("cannot parse video y-resolution '%s'"), y);
+    if (virXMLPropUInt(node, "y", 10, VIR_XML_PROP_REQUIRED, &def->y) < 0)
         return NULL;
-    }
 
     return g_steal_pointer(&def);
 }
