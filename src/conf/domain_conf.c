@@ -8468,7 +8468,6 @@ virDomainDiskSourceNVMeParse(xmlNodePtr node,
     g_autoptr(virStorageSourceNVMeDef) nvme = NULL;
     g_autofree char *type = NULL;
     g_autofree char *namespc = NULL;
-    g_autofree char *managed = NULL;
     xmlNodePtr address;
 
     nvme = g_new0(virStorageSourceNVMeDef, 1);
@@ -8499,16 +8498,9 @@ virDomainDiskSourceNVMeParse(xmlNodePtr node,
         return -1;
     }
 
-    if ((managed = virXMLPropString(node, "managed"))) {
-        int value;
-        if ((value = virTristateBoolTypeFromString(managed)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("malformed managed value '%s'"),
-                           managed);
-            return -1;
-        }
-        nvme->managed = value;
-    }
+    if (virXMLPropTristateBool(node, "managed", VIR_XML_PROP_NONE,
+                               &nvme->managed) < 0)
+        return -1;
 
     if (!(address = virXPathNode("./address", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
