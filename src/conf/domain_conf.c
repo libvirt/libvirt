@@ -18854,15 +18854,15 @@ virDomainLoaderDefParseXML(xmlNodePtr node,
                            virDomainLoaderDef *loader,
                            bool fwAutoSelect)
 {
-    g_autofree char *readonly_str = NULL;
-    g_autofree char *secure_str = NULL;
-    g_autofree char *type_str = NULL;
-
-    secure_str = virXMLPropString(node, "secure");
-
     if (!fwAutoSelect) {
-        readonly_str = virXMLPropString(node, "readonly");
-        type_str = virXMLPropString(node, "type");
+        if (virXMLPropTristateBool(node, "readonly", VIR_XML_PROP_NONE,
+                                   &loader->readonly) < 0)
+            return -1;
+
+        if (virXMLPropEnum(node, "type", virDomainLoaderTypeFromString,
+                           VIR_XML_PROP_NONZERO, &loader->type) < 0)
+            return -1;
+
         if (!(loader->path = virXMLNodeContentString(node)))
             return -1;
 
@@ -18870,35 +18870,9 @@ virDomainLoaderDefParseXML(xmlNodePtr node,
             VIR_FREE(loader->path);
     }
 
-    if (readonly_str) {
-        int value;
-        if ((value = virTristateBoolTypeFromString(readonly_str)) <= 0) {
-            virReportError(VIR_ERR_XML_DETAIL,
-                           _("unknown readonly value: %s"), readonly_str);
-            return -1;
-        }
-        loader->readonly = value;
-    }
-
-    if (secure_str) {
-        int value;
-        if ((value = virTristateBoolTypeFromString(secure_str)) <= 0) {
-            virReportError(VIR_ERR_XML_DETAIL,
-                           _("unknown secure value: %s"), secure_str);
-            return -1;
-        }
-        loader->secure = value;
-    }
-
-    if (type_str) {
-        int type;
-        if ((type = virDomainLoaderTypeFromString(type_str)) <= 0) {
-            virReportError(VIR_ERR_XML_DETAIL,
-                           _("unknown type value: %s"), type_str);
-            return -1;
-        }
-        loader->type = type;
-    }
+    if (virXMLPropTristateBool(node, "secure", VIR_XML_PROP_NONE,
+                               &loader->secure) < 0)
+        return -1;
 
     return 0;
 }
