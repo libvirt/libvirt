@@ -4856,7 +4856,7 @@ Teaming a virtio/hostdev NIC pair
 
 :since:`Since 6.1.0 (QEMU and KVM only, requires QEMU 4.2.0 or newer and a guest
 virtio-net driver supporting the "failover" feature, such as the one included in
-Linux kernel 4.18 and newer) ` The ``<teaming>`` element of two interfaces can
+Linux kernel 4.18 and newer)` The ``<teaming>`` element of two interfaces can
 be used to connect them as a team/bond device in the guest (assuming proper
 support in the hypervisor and the guest network driver).
 
