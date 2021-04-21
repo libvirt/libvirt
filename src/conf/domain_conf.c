@@ -11695,20 +11695,11 @@ static int
 virDomainChrSourceDefParseFile(virDomainChrSourceDef *def,
                                xmlNodePtr source)
 {
-    g_autofree char *append = NULL;
-
     def->data.file.path = virXMLPropString(source, "path");
 
-    if ((append = virXMLPropString(source, "append"))) {
-        int value;
-        if ((value = virTristateSwitchTypeFromString(append)) <= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid append attribute value '%s'"),
-                           append);
-            return -1;
-        }
-        def->data.file.append = value;
-    }
+    if (virXMLPropTristateSwitch(source, "append", VIR_XML_PROP_NONE,
+                                 &def->data.file.append) < 0)
+        return -1;
 
     return 0;
 }
