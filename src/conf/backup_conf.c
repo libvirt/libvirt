@@ -106,10 +106,6 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
     g_autofree char *type = NULL;
     g_autofree char *format = NULL;
     g_autofree char *idx = NULL;
-    g_autofree char *backup = NULL;
-    g_autofree char *state = NULL;
-    g_autofree char *backupmode = NULL;
-    int tmp;
     xmlNodePtr srcNode;
     unsigned int storageSourceParseFlags = 0;
     bool internal = flags & VIR_DOMAIN_BACKUP_PARSE_INTERNAL;
@@ -127,15 +123,9 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
 
     def->backup = VIR_TRISTATE_BOOL_YES;
 
-    if ((backup = virXMLPropString(node, "backup"))) {
-        if ((tmp = virTristateBoolTypeFromString(backup)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid disk 'backup' state '%s'"), backup);
-            return -1;
-        }
-
-        def->backup = tmp;
-    }
+    if (virXMLPropTristateBool(node, "backup", VIR_XML_PROP_NONE,
+                               &def->backup) < 0)
+        return -1;
 
     /* don't parse anything else if backup is disabled */
     if (def->backup == VIR_TRISTATE_BOOL_NO)
@@ -146,28 +136,18 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
         def->exportbitmap = virXMLPropString(node, "exportbitmap");
     }
 
-    if ((backupmode = virXMLPropString(node, "backupmode"))) {
-        if ((tmp = virDomainBackupDiskBackupModeTypeFromString(backupmode)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid backupmode '%s' of disk '%s'"),
-                           backupmode, def->name);
-            return -1;
-        }
-
-        def->backupmode = tmp;
-    }
+    if (virXMLPropEnum(node, "backupmode",
+                       virDomainBackupDiskBackupModeTypeFromString,
+                       VIR_XML_PROP_NONE, &def->backupmode) < 0)
+        return -1;
 
     def->incremental = virXMLPropString(node, "incremental");
 
     if (internal) {
-        if (!(state = virXMLPropString(node, "state")) ||
-            (tmp = virDomainBackupDiskStateTypeFromString(state)) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("disk '%s' backup state wrong or missing'"), def->name);
+        if (virXMLPropEnum(node, "state",
+                           virDomainBackupDiskStateTypeFromString,
+                           VIR_XML_PROP_REQUIRED, &def->state) < 0)
             return -1;
-        }
-
-        def->state = tmp;
     }
 
     type = virXMLPropString(node, "type");
