@@ -6480,22 +6480,12 @@ static int
 virDomainDeviceBootParseXML(xmlNodePtr node,
                             virDomainDeviceInfo *info)
 {
-    g_autofree char *order = NULL;
     g_autofree char *loadparm = NULL;
 
-    if (!(order = virXMLPropString(node, "order"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("missing boot order attribute"));
+    if (virXMLPropUInt(node, "order", 10,
+                       VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                       &info->bootIndex) < 0)
         return -1;
-    }
-
-    if (virStrToLong_uip(order, NULL, 10, &info->bootIndex) < 0 ||
-        info->bootIndex == 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("incorrect boot order '%s', expecting positive integer"),
-                       order);
-        return -1;
-    }
 
     loadparm = virXMLPropString(node, "loadparm");
     if (loadparm) {
