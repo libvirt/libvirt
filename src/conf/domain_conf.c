@@ -13823,19 +13823,13 @@ static int
 virDomainAudioJackParse(virDomainAudioIOJack *def,
                         xmlNodePtr node)
 {
-    g_autofree char *exactName = virXMLPropString(node, "exactName");
-
     def->serverName = virXMLPropString(node, "serverName");
     def->clientName = virXMLPropString(node, "clientName");
     def->connectPorts = virXMLPropString(node, "connectPorts");
 
-    if (exactName &&
-        ((def->exactName =
-          virTristateBoolTypeFromString(exactName)) <= 0)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unknown 'exactName' value '%s'"), exactName);
+    if (virXMLPropTristateBool(node, "exactName", VIR_XML_PROP_NONE,
+                               &def->exactName) < 0)
         return -1;
-    }
 
     return 0;
 }
