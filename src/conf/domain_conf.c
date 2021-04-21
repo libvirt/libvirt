@@ -6629,15 +6629,13 @@ virDomainDeviceInfoParseXML(virDomainXMLOption *xmlopt,
                             virDomainDeviceInfo *info,
                             unsigned int flags)
 {
+    xmlNodePtr acpi = NULL;
     xmlNodePtr address = NULL;
     xmlNodePtr master = NULL;
     xmlNodePtr boot = NULL;
     xmlNodePtr rom = NULL;
     int ret = -1;
-    g_autofree char *romenabled = NULL;
-    g_autofree char *rombar = NULL;
     g_autofree char *aliasStr = NULL;
-    g_autofree char *acpiIndex = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     virDomainDeviceInfoClear(info);
@@ -6664,24 +6662,14 @@ virDomainDeviceInfoParseXML(virDomainXMLOption *xmlopt,
 
     if ((flags & VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) &&
         (rom = virXPathNode("./rom", ctxt))) {
-        if ((romenabled = virXPathString("string(./rom/@enabled)", ctxt))) {
-            int value;
-            if ((value = virTristateBoolTypeFromString(romenabled)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown rom enabled value '%s'"), romenabled);
-                goto cleanup;
-            }
-            info->romenabled = value;
-        }
-        if ((rombar = virXPathString("string(./rom/@bar)", ctxt))) {
-            int value;
-            if ((value = virTristateSwitchTypeFromString(rombar)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown rom bar value '%s'"), rombar);
-                goto cleanup;
-            }
-            info->rombar = value;
-        }
+        if (virXMLPropTristateBool(rom, "enabled", VIR_XML_PROP_NONE,
+                                   &info->romenabled) < 0)
+            goto cleanup;
+
+        if (virXMLPropTristateSwitch(rom, "bar", VIR_XML_PROP_NONE,
+                                     &info->rombar) < 0)
+            goto cleanup;
+
         info->romfile = virXMLPropString(rom, "file");
 
         if (info->romenabled == VIR_TRISTATE_BOOL_NO &&
@@ -6692,12 +6680,10 @@ virDomainDeviceInfoParseXML(virDomainXMLOption *xmlopt,
         }
     }
 
-    acpiIndex = virXPathString("string(./acpi/@index)", ctxt);
-    if (acpiIndex &&
-        virStrToLong_ui(acpiIndex, NULL, 10, &info->acpiIndex) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Cannot parse ACPI index value '%s'"), acpiIndex);
-        goto cleanup;
+    if ((acpi = virXPathNode("./acpi", ctxt))) {
+        if (virXMLPropUInt(acpi, "index", 10, VIR_XML_PROP_NONE,
+                           &info->acpiIndex) < 0)
+            goto cleanup;
     }
 
     if ((address = virXPathNode("./address", ctxt)) &&
