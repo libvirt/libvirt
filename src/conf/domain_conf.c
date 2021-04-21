@@ -9337,28 +9337,28 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     def->device = VIR_DOMAIN_DISK_DEVICE_DISK;
 
     if (virXMLPropEnum(node, "device", virDomainDiskDeviceTypeFromString,
-                       VIR_XML_PROP_OPTIONAL, &def->device) < 0)
+                       VIR_XML_PROP_NONE, &def->device) < 0)
         return NULL;
 
     if (virXMLPropEnum(node, "model", virDomainDiskModelTypeFromString,
-                       VIR_XML_PROP_OPTIONAL, &def->model) < 0)
+                       VIR_XML_PROP_NONE, &def->model) < 0)
         return NULL;
 
     if (virXMLPropEnum(node, "snapshot", virDomainSnapshotLocationTypeFromString,
-                       VIR_XML_PROP_OPTIONAL | VIR_XML_PROP_NONZERO, &def->snapshot) < 0)
+                       VIR_XML_PROP_NONZERO, &def->snapshot) < 0)
         return NULL;
 
-    if (virXMLPropTristateBool(node, "rawio", VIR_XML_PROP_OPTIONAL, &def->rawio) < 0)
+    if (virXMLPropTristateBool(node, "rawio", VIR_XML_PROP_NONE, &def->rawio) < 0)
         return NULL;
 
     if (virXMLPropEnum(node, "sgio", virDomainDeviceSGIOTypeFromString,
-                       VIR_XML_PROP_OPTIONAL | VIR_XML_PROP_NONZERO, &def->sgio) < 0)
+                       VIR_XML_PROP_NONZERO, &def->sgio) < 0)
         return NULL;
 
     if ((sourceNode = virXPathNode("./source", ctxt))) {
         if (virXMLPropEnum(sourceNode, "startupPolicy",
                            virDomainStartupPolicyTypeFromString,
-                           VIR_XML_PROP_OPTIONAL | VIR_XML_PROP_NONZERO,
+                           VIR_XML_PROP_NONZERO,
                            &def->startupPolicy) < 0)
             return NULL;
     }
@@ -9368,19 +9368,19 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
 
         if (virXMLPropEnum(targetNode, "bus",
                            virDomainDiskBusTypeFromString,
-                           VIR_XML_PROP_OPTIONAL | VIR_XML_PROP_NONZERO,
+                           VIR_XML_PROP_NONZERO,
                            &def->bus) < 0)
             return NULL;
 
         if (virXMLPropEnum(targetNode, "tray", virDomainDiskTrayTypeFromString,
-                           VIR_XML_PROP_OPTIONAL, &def->tray_status) < 0)
+                           VIR_XML_PROP_NONE, &def->tray_status) < 0)
             return NULL;
 
-        if (virXMLPropTristateSwitch(targetNode, "removable", VIR_XML_PROP_OPTIONAL,
+        if (virXMLPropTristateSwitch(targetNode, "removable", VIR_XML_PROP_NONE,
                                      &def->removable) < 0)
             return NULL;
 
-        if (virXMLPropUInt(targetNode, "rotation_rate", 10, VIR_XML_PROP_OPTIONAL,
+        if (virXMLPropUInt(targetNode, "rotation_rate", 10, VIR_XML_PROP_NONE,
                            &def->rotation_rate) < 0)
             return NULL;
     }
@@ -9391,11 +9391,11 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     }
 
     if ((blockioNode = virXPathNode("./blockio", ctxt))) {
-        if (virXMLPropUInt(blockioNode, "logical_block_size", 10, VIR_XML_PROP_OPTIONAL,
+        if (virXMLPropUInt(blockioNode, "logical_block_size", 10, VIR_XML_PROP_NONE,
                            &def->blockio.logical_block_size) < 0)
             return NULL;
 
-        if (virXMLPropUInt(blockioNode, "physical_block_size", 10, VIR_XML_PROP_OPTIONAL,
+        if (virXMLPropUInt(blockioNode, "physical_block_size", 10, VIR_XML_PROP_NONE,
                            &def->blockio.physical_block_size) < 0)
             return NULL;
     }

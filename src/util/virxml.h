@@ -35,7 +35,7 @@ xmlXPathContextPtr virXMLXPathContextNew(xmlDocPtr xml)
 
 
 typedef enum {
-    VIR_XML_PROP_OPTIONAL = 0, /* Attribute may be absent */
+    VIR_XML_PROP_NONE = 0,
     VIR_XML_PROP_REQUIRED = 1 << 0, /* Attribute may not be absent */
     VIR_XML_PROP_NONZERO = 1 << 1, /* Attribute may not be zero */
 } virXMLPropFlags;

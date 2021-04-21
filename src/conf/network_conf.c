@@ -1332,7 +1332,7 @@ virNetworkForwardNatDefParseXML(const char *networkName,
         return -1;
     }
 
-    if (virXMLPropTristateBool(node, "ipv6", VIR_XML_PROP_OPTIONAL,
+    if (virXMLPropTristateBool(node, "ipv6", VIR_XML_PROP_NONE,
                                &def->natIPv6) < 0)
         return -1;
 

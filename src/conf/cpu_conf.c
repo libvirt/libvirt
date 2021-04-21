@@ -434,7 +434,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
         }
 
         if (virXMLPropEnum(ctxt->node, "check", virCPUCheckTypeFromString,
-                           VIR_XML_PROP_OPTIONAL, &def->check) < 0)
+                           VIR_XML_PROP_NONE, &def->check) < 0)
             return -1;
     }
 
