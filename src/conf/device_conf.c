@@ -267,43 +267,36 @@ int
 virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
                                   virDomainDeviceCCWAddress *addr)
 {
-    g_autofree char *cssid = virXMLPropString(node, "cssid");
-    g_autofree char *ssid = virXMLPropString(node, "ssid");
-    g_autofree char *devno = virXMLPropString(node, "devno");
+    int cssid;
+    int ssid;
+    int devno;
 
     memset(addr, 0, sizeof(*addr));
 
+    if ((cssid = virXMLPropUInt(node, "cssid", 0, VIR_XML_PROP_NONE,
+                                &addr->cssid)) < 0)
+        return -1;
+
+    if ((ssid = virXMLPropUInt(node, "ssid", 0, VIR_XML_PROP_NONE,
+                               &addr->ssid)) < 0)
+        return -1;
+
+    if ((devno = virXMLPropUInt(node, "devno", 0, VIR_XML_PROP_NONE,
+                                &addr->devno)) < 0)
+        return -1;
+
+    if (!virDomainDeviceCCWAddressIsValid(addr)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid specification for virtio ccw address: cssid='0x%x' ssid='0x%x' devno='0x%04x'"),
+                       addr->cssid, addr->ssid, addr->devno);
+        return -1;
+    }
+
     if (cssid && ssid && devno) {
-        if (cssid &&
-            virStrToLong_uip(cssid, NULL, 0, &addr->cssid) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot parse <address> 'cssid' attribute"));
-            return -1;
-        }
-        if (ssid &&
-            virStrToLong_uip(ssid, NULL, 0, &addr->ssid) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot parse <address> 'ssid' attribute"));
-            return -1;
-        }
-        if (devno &&
-            virStrToLong_uip(devno, NULL, 0, &addr->devno) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot parse <address> 'devno' attribute"));
-            return -1;
-        }
-        if (!virDomainDeviceCCWAddressIsValid(addr)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid specification for virtio ccw"
-                             " address: cssid='%s' ssid='%s' devno='%s'"),
-                           cssid, ssid, devno);
-            return -1;
-        }
         addr->assigned = true;
     } else if (cssid || ssid || devno) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Invalid partial specification for virtio ccw"
-                         " address"));
+                       _("Invalid partial specification for virtio ccw address"));
         return -1;
     }
 
