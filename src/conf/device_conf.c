@@ -319,40 +319,21 @@ int
 virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
                                     virDomainDeviceDriveAddress *addr)
 {
-    g_autofree char *controller = virXMLPropString(node, "controller");
-    g_autofree char *bus = virXMLPropString(node, "bus");
-    g_autofree char *target = virXMLPropString(node, "target");
-    g_autofree char *unit = virXMLPropString(node, "unit");
-
     memset(addr, 0, sizeof(*addr));
 
-    if (controller &&
-        virStrToLong_uip(controller, NULL, 10, &addr->controller) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'controller' attribute"));
+    if (virXMLPropUInt(node, "controller", 10, VIR_XML_PROP_NONE,
+                       &addr->controller) < 0)
         return -1;
-    }
 
-    if (bus &&
-        virStrToLong_uip(bus, NULL, 10, &addr->bus) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'bus' attribute"));
+    if (virXMLPropUInt(node, "bus", 10, VIR_XML_PROP_NONE, &addr->bus) < 0)
         return -1;
-    }
 
-    if (target &&
-        virStrToLong_uip(target, NULL, 10, &addr->target) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'target' attribute"));
+    if (virXMLPropUInt(node, "target", 10, VIR_XML_PROP_NONE,
+                       &addr->target) < 0)
         return -1;
-    }
 
-    if (unit &&
-        virStrToLong_uip(unit, NULL, 10, &addr->unit) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'unit' attribute"));
+    if (virXMLPropUInt(node, "unit", 10, VIR_XML_PROP_NONE, &addr->unit) < 0)
         return -1;
-    }
 
     return 0;
 }
