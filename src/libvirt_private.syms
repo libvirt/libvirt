@@ -3555,6 +3555,7 @@ virXMLPropStringLimit;
 virXMLPropTristateBool;
 virXMLPropTristateSwitch;
 virXMLPropUInt;
+virXMLPropULongLong;
 virXMLSaveFile;
 virXMLValidateAgainstSchema;
 virXMLValidatorFree;
