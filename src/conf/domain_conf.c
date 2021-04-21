@@ -11730,20 +11730,11 @@ static int
 virDomainChrSourceDefParseLog(virDomainChrSourceDef *def,
                               xmlNodePtr log)
 {
-    g_autofree char *append = NULL;
-
     def->logfile = virXMLPropString(log, "file");
 
-    if ((append = virXMLPropString(log, "append"))) {
-        int value;
-        if ((value = virTristateSwitchTypeFromString(append)) <= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid append attribute value '%s'"),
-                           append);
-            return -1;
-        }
-        def->logappend = value;
-    }
+    if (virXMLPropTristateSwitch(log, "append", VIR_XML_PROP_NONE,
+                                 &def->logappend) < 0)
+        return -1;
 
     return 0;
 }
