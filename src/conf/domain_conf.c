@@ -15872,8 +15872,6 @@ virDomainVsockDefParseXML(virDomainXMLOption *xmlopt,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr cid;
-    int val;
-    g_autofree char *tmp = NULL;
     g_autoptr(virDomainVsockDef) vsock = NULL;
 
     ctxt->node = node;
@@ -15881,39 +15879,19 @@ virDomainVsockDefParseXML(virDomainXMLOption *xmlopt,
     if (!(vsock = virDomainVsockDefNew(xmlopt)))
         return NULL;
 
-    if ((tmp = virXMLPropString(node, "model"))) {
-        if ((val = virDomainVsockModelTypeFromString(tmp)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, _("unknown vsock model: %s"), tmp);
+    if (virXMLPropEnum(node, "model", virDomainVsockModelTypeFromString,
+                       VIR_XML_PROP_NONE, &vsock->model) < 0)
+        return NULL;
+
+    if ((cid = virXPathNode("./cid", ctxt))) {
+        if (virXMLPropUInt(cid, "address", 10,
+                           VIR_XML_PROP_NONZERO,
+                           &vsock->guest_cid) < 0)
             return NULL;
-        }
-        vsock->model = val;
-    }
 
-    cid = virXPathNode("./cid", ctxt);
-
-    VIR_FREE(tmp);
-    if (cid) {
-        if ((tmp = virXMLPropString(cid, "address"))) {
-            if (virStrToLong_uip(tmp, NULL, 10, &vsock->guest_cid) < 0 ||
-                vsock->guest_cid == 0) {
-                virReportError(VIR_ERR_XML_DETAIL,
-                               _("'cid' attribute must be a positive number: %s"),
-                               tmp);
-                return NULL;
-            }
-        }
-
-        VIR_FREE(tmp);
-        if ((tmp = virXMLPropString(cid, "auto"))) {
-            val = virTristateBoolTypeFromString(tmp);
-            if (val <= 0) {
-                virReportError(VIR_ERR_XML_DETAIL,
-                               _("'auto' attribute can be 'yes' or 'no': %s"),
-                               tmp);
-                return NULL;
-            }
-            vsock->auto_cid = val;
-        }
+        if (virXMLPropTristateBool(cid, "auto", VIR_XML_PROP_NONE,
+                                   &vsock->auto_cid) < 0)
+            return NULL;
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &vsock->info, flags) < 0)
