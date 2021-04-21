@@ -20065,36 +20065,16 @@ virDomainMemorytuneDefParseMemory(xmlXPathContextPtr ctxt,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     unsigned int id;
     unsigned int bandwidth;
-    g_autofree char *tmp = NULL;
 
     ctxt->node = node;
 
-    tmp = virXMLPropString(node, "id");
-    if (!tmp) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Missing memorytune attribute 'id'"));
+    if (virXMLPropUInt(node, "id", 10, VIR_XML_PROP_REQUIRED, &id) < 0)
         return -1;
-    }
-    if (virStrToLong_uip(tmp, NULL, 10, &id) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid memorytune attribute 'id' value '%s'"),
-                       tmp);
-        return -1;
-    }
-    VIR_FREE(tmp);
 
-    tmp = virXMLPropString(node, "bandwidth");
-    if (!tmp) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Missing memorytune attribute 'bandwidth'"));
+    if (virXMLPropUInt(node, "bandwidth", 10, VIR_XML_PROP_REQUIRED,
+                       &bandwidth) < 0)
         return -1;
-    }
-    if (virStrToLong_uip(tmp, NULL, 10, &bandwidth) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid memorytune attribute 'bandwidth' value '%s'"),
-                       tmp);
-        return -1;
-    }
+
     if (virResctrlAllocSetMemoryBandwidth(alloc, id, bandwidth) < 0)
         return -1;
 
