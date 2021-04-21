@@ -7034,9 +7034,6 @@ virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
                                           virDomainXMLOption *xmlopt)
 {
     virDomainHostdevSubsysSCSIHost *scsihostsrc = &scsisrc->u.host;
-    g_autofree char *bus = NULL;
-    g_autofree char *target = NULL;
-    g_autofree char *unit = NULL;
     xmlNodePtr addressnode = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
@@ -7048,32 +7045,17 @@ virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
         return -1;
     }
 
-    if (!(bus = virXMLPropString(addressnode, "bus")) ||
-        !(target = virXMLPropString(addressnode, "target")) ||
-        !(unit = virXMLPropString(addressnode, "unit"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("'bus', 'target', and 'unit' must be specified "
-                         "for scsi hostdev source address"));
+    if (virXMLPropUInt(addressnode, "bus", 0, VIR_XML_PROP_REQUIRED,
+                       &scsihostsrc->bus) < 0)
         return -1;
-    }
 
-    if (virStrToLong_uip(bus, NULL, 0, &scsihostsrc->bus) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse bus '%s'"), bus);
+    if (virXMLPropUInt(addressnode, "target", 0, VIR_XML_PROP_REQUIRED,
+                       &scsihostsrc->target) < 0)
         return -1;
-    }
 
-    if (virStrToLong_uip(target, NULL, 0, &scsihostsrc->target) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse target '%s'"), target);
+    if (virXMLPropULongLong(addressnode, "unit", 0, VIR_XML_PROP_REQUIRED,
+                            &scsihostsrc->unit) < 0)
         return -1;
-    }
-
-    if (virStrToLong_ullp(unit, NULL, 0, &scsihostsrc->unit) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse unit '%s'"), unit);
-        return -1;
-    }
 
     if (!(scsihostsrc->adapter = virXPathString("string(./adapter/@name)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
