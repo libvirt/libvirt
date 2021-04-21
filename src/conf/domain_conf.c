@@ -1603,45 +1603,22 @@ static int
 virDomainVirtioOptionsParseXML(xmlNodePtr driver,
                                virDomainVirtioOptions **virtio)
 {
-    int val;
-    virDomainVirtioOptions *res;
-    g_autofree char *str = NULL;
-
     if (*virtio || !driver)
         return 0;
 
     *virtio = g_new0(virDomainVirtioOptions, 1);
 
-    res = *virtio;
+    if (virXMLPropTristateSwitch(driver, "iommu", VIR_XML_PROP_NONE,
+                                 &(*virtio)->iommu) < 0)
+        return -1;
 
-    if ((str = virXMLPropString(driver, "iommu"))) {
-        if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("invalid iommu value"));
-            return -1;
-        }
-        res->iommu = val;
-    }
-    VIR_FREE(str);
+    if (virXMLPropTristateSwitch(driver, "ats", VIR_XML_PROP_NONE,
+                                 &(*virtio)->ats) < 0)
+        return -1;
 
-    if ((str = virXMLPropString(driver, "ats"))) {
-        if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("invalid ats value"));
-            return -1;
-        }
-        res->ats = val;
-    }
-    VIR_FREE(str);
-
-    if ((str = virXMLPropString(driver, "packed"))) {
-        if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("invalid packed value"));
-            return -1;
-        }
-        res->packed = val;
-    }
+    if (virXMLPropTristateSwitch(driver, "packed", VIR_XML_PROP_NONE,
+                                 &(*virtio)->packed) < 0)
+        return -1;
 
     return 0;
 }
