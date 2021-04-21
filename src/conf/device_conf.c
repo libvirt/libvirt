@@ -200,52 +200,29 @@ virPCIDeviceAddressParseXML(xmlNodePtr node,
 {
     xmlNodePtr cur;
     xmlNodePtr zpci = NULL;
-    g_autofree char *domain   = virXMLPropString(node, "domain");
-    g_autofree char *bus      = virXMLPropString(node, "bus");
-    g_autofree char *slot     = virXMLPropString(node, "slot");
-    g_autofree char *function = virXMLPropString(node, "function");
-    g_autofree char *multi    = virXMLPropString(node, "multifunction");
 
     memset(addr, 0, sizeof(*addr));
 
-    if (domain &&
-        virStrToLong_uip(domain, NULL, 0, &addr->domain) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'domain' attribute"));
+    if (virXMLPropUInt(node, "domain", 0, VIR_XML_PROP_NONE,
+                       &addr->domain) < 0)
         return -1;
-    }
 
-    if (bus &&
-        virStrToLong_uip(bus, NULL, 0, &addr->bus) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'bus' attribute"));
+    if (virXMLPropUInt(node, "bus", 0, VIR_XML_PROP_NONE,
+                       &addr->bus) < 0)
         return -1;
-    }
 
-    if (slot &&
-        virStrToLong_uip(slot, NULL, 0, &addr->slot) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'slot' attribute"));
+    if (virXMLPropUInt(node, "slot", 0, VIR_XML_PROP_NONE,
+                       &addr->slot) < 0)
         return -1;
-    }
 
-    if (function &&
-        virStrToLong_uip(function, NULL, 0, &addr->function) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'function' attribute"));
+    if (virXMLPropUInt(node, "function", 0, VIR_XML_PROP_NONE,
+                       &addr->function) < 0)
         return -1;
-    }
 
-    if (multi) {
-        int value;
-        if ((value = virTristateSwitchTypeFromString(multi)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown value '%s' for <address> 'multifunction' attribute"),
-                           multi);
-            return -1;
-        }
-        addr->multi = value;
-    }
+    if (virXMLPropTristateSwitch(node, "multifunction", VIR_XML_PROP_NONE,
+                                 &addr->multi) < 0)
+        return -1;
+
     if (!virPCIDeviceAddressIsEmpty(addr) && !virPCIDeviceAddressIsValid(addr, true))
         return -1;
 
