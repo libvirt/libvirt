@@ -734,11 +734,7 @@ virXMLPropUInt(xmlNodePtr node,
         return -1;
     }
 
-    if (flags & VIR_XML_PROP_WRAPNEGATIVE) {
-        ret = virStrToLong_ui(tmp, NULL, base, &val);
-    } else {
-        ret = virStrToLong_uip(tmp, NULL, base, &val);
-    }
+    ret = virStrToLong_uip(tmp, NULL, base, &val);
 
     if (ret < 0) {
         virReportError(VIR_ERR_XML_ERROR,
