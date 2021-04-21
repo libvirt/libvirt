@@ -19,7 +19,11 @@
 
 %define arches_qemu_kvm         %{ix86} x86_64 %{power64} %{arm} aarch64 s390x
 %if 0%{?rhel}
-    %define arches_qemu_kvm     x86_64 %{power64} aarch64 s390x
+    %if 0%{?rhel} <= 8
+        %define arches_qemu_kvm     x86_64 %{power64} aarch64 s390x
+    %else
+        %define arches_qemu_kvm     x86_64 aarch64 s390x
+    %endif
 %endif
 
 %define arches_64bit            x86_64 %{power64} aarch64 s390x riscv64
