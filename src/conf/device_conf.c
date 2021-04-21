@@ -342,32 +342,17 @@ int
 virDomainDeviceVirtioSerialAddressParseXML(xmlNodePtr node,
                                            virDomainDeviceVirtioSerialAddress *addr)
 {
-    g_autofree char *controller = virXMLPropString(node, "controller");
-    g_autofree char *bus = virXMLPropString(node, "bus");
-    g_autofree char *port = virXMLPropString(node, "port");
-
     memset(addr, 0, sizeof(*addr));
 
-    if (controller &&
-        virStrToLong_uip(controller, NULL, 10, &addr->controller) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'controller' attribute"));
+    if (virXMLPropUInt(node, "controller", 10, VIR_XML_PROP_NONE,
+                       &addr->controller) < 0)
         return -1;
-    }
 
-    if (bus &&
-        virStrToLong_uip(bus, NULL, 10, &addr->bus) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'bus' attribute"));
+    if (virXMLPropUInt(node, "bus", 10, VIR_XML_PROP_NONE, &addr->bus) < 0)
         return -1;
-    }
 
-    if (port &&
-        virStrToLong_uip(port, NULL, 10, &addr->port) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'port' attribute"));
+    if (virXMLPropUInt(node, "port", 10, VIR_XML_PROP_NONE, &addr->port) < 0)
         return -1;
-    }
 
     return 0;
 }
