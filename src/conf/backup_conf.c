@@ -222,8 +222,6 @@ virDomainBackupDefParse(xmlXPathContextPtr ctxt,
     def->incremental = virXPathString("string(./incremental)", ctxt);
 
     if ((node = virXPathNode("./server", ctxt))) {
-        g_autofree char *tls = NULL;
-
         if (def->type != VIR_DOMAIN_BACKUP_TYPE_PULL) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("use of <server> requires pull mode backup"));
@@ -249,18 +247,9 @@ virDomainBackupDefParse(xmlXPathContextPtr ctxt,
             return NULL;
         }
 
-        if ((tls = virXMLPropString(node, "tls"))) {
-            int tmp;
-
-            if ((tmp = virTristateBoolTypeFromString(tls)) <= 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("unknown value '%s' of 'tls' attribute"),\
-                               tls);
-                return NULL;
-            }
-
-            def->tls = tmp;
-        }
+        if (virXMLPropTristateBool(node, "tls", VIR_XML_PROP_NONE,
+                                   &def->tls) < 0)
+            return NULL;
     }
 
     if ((n = virXPathNodeSet("./disks/*", ctxt, &nodes)) < 0)
