@@ -176,27 +176,15 @@ static int
 virStorageEncryptionInfoParseCipher(xmlNodePtr info_node,
                                     virStorageEncryptionInfoDef *info)
 {
-    g_autofree char *size_str = NULL;
-
     if (!(info->cipher_name = virXMLPropString(info_node, "name"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("cipher info missing 'name' attribute"));
         return -1;
     }
 
-    if ((size_str = virXMLPropString(info_node, "size")) &&
-        virStrToLong_uip(size_str, NULL, 10, &info->cipher_size) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("cannot parse cipher size: '%s'"),
-                       size_str);
+    if (virXMLPropUInt(info_node, "size", 10, VIR_XML_PROP_REQUIRED,
+                       &info->cipher_size) < 0)
         return -1;
-    }
-
-    if (!size_str) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("cipher info missing 'size' attribute"));
-        return -1;
-    }
 
     info->cipher_mode = virXMLPropString(info_node, "mode");
     info->cipher_hash = virXMLPropString(info_node, "hash");
