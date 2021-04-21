@@ -14461,7 +14461,6 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     g_autoptr(qemuBlockJobData) job = NULL;
     virDomainObj *vm;
     qemuDomainObjPrivate *priv = NULL;
-    bool blockdev = false;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC |
@@ -14489,7 +14488,6 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     }
 
     priv = vm->privateData;
-    blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     if (job->state == QEMU_BLOCKJOB_STATE_ABORTING ||
         job->state == QEMU_BLOCKJOB_STATE_PIVOTING) {
@@ -14507,10 +14505,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
             goto endjob;
     } else {
         qemuDomainObjEnterMonitor(driver, vm);
-        if (blockdev)
-            ret = qemuMonitorJobCancel(priv->mon, job->name, false);
-        else
-            ret = qemuMonitorBlockJobCancel(priv->mon, job->name, false);
+        ret = qemuMonitorBlockJobCancel(priv->mon, job->name, false);
         if (qemuDomainObjExitMonitor(driver, vm) < 0) {
             ret = -1;
             goto endjob;
