@@ -361,24 +361,14 @@ int
 virDomainDeviceCcidAddressParseXML(xmlNodePtr node,
                                    virDomainDeviceCcidAddress *addr)
 {
-    g_autofree char *controller = virXMLPropString(node, "controller");
-    g_autofree char *slot = virXMLPropString(node, "slot");
-
     memset(addr, 0, sizeof(*addr));
 
-    if (controller &&
-        virStrToLong_uip(controller, NULL, 10, &addr->controller) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'controller' attribute"));
+    if (virXMLPropUInt(node, "controller", 10, VIR_XML_PROP_NONE,
+                       &addr->controller) < 0)
         return -1;
-    }
 
-    if (slot &&
-        virStrToLong_uip(slot, NULL, 10, &addr->slot) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'slot' attribute"));
+    if (virXMLPropUInt(node, "slot", 10, VIR_XML_PROP_NONE, &addr->slot) < 0)
         return -1;
-    }
 
     return 0;
 }
