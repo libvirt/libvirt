@@ -1456,46 +1456,28 @@ static int
 virDomainKeyWrapCipherDefParseXML(virDomainKeyWrapDef *keywrap,
                                   xmlNodePtr node)
 {
-    int state_type;
-    int name_type;
-    g_autofree char *name = NULL;
-    g_autofree char *state = NULL;
+    virDomainKeyWrapCipherName name;
+    virTristateSwitch state;
 
-    if (!(name = virXMLPropString(node, "name"))) {
-        virReportError(VIR_ERR_CONF_SYNTAX, "%s",
-                       _("missing name for cipher"));
+    if (virXMLPropEnum(node, "name", virDomainKeyWrapCipherNameTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &name) < 0)
         return -1;
-    }
 
-    if ((name_type = virDomainKeyWrapCipherNameTypeFromString(name)) < 0) {
-        virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("%s is not a supported cipher name"), name);
+    if (virXMLPropTristateSwitch(node, "state", VIR_XML_PROP_REQUIRED,
+                                 &state) < 0)
         return -1;
-    }
 
-    if (!(state = virXMLPropString(node, "state"))) {
-        virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("missing state for cipher named %s"), name);
-        return -1;
-    }
-
-    if ((state_type = virTristateSwitchTypeFromString(state)) < 0) {
-        virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("%s is not a supported cipher state"), state);
-        return -1;
-    }
-
-    switch ((virDomainKeyWrapCipherName) name_type) {
+    switch (name) {
     case VIR_DOMAIN_KEY_WRAP_CIPHER_NAME_AES:
         if (keywrap->aes != VIR_TRISTATE_SWITCH_ABSENT) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("A domain definition can have no more than "
                              "one cipher node with name %s"),
-                           virDomainKeyWrapCipherNameTypeToString(name_type));
+                           virDomainKeyWrapCipherNameTypeToString(name));
 
             return -1;
         }
-        keywrap->aes = state_type;
+        keywrap->aes = state;
         break;
 
     case VIR_DOMAIN_KEY_WRAP_CIPHER_NAME_DEA:
@@ -1503,11 +1485,11 @@ virDomainKeyWrapCipherDefParseXML(virDomainKeyWrapDef *keywrap,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("A domain definition can have no more than "
                              "one cipher node with name %s"),
-                           virDomainKeyWrapCipherNameTypeToString(name_type));
+                           virDomainKeyWrapCipherNameTypeToString(name));
 
             return -1;
         }
-        keywrap->dea = state_type;
+        keywrap->dea = state;
         break;
 
     case VIR_DOMAIN_KEY_WRAP_CIPHER_NAME_LAST:
