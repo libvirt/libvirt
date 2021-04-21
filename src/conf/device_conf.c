@@ -465,28 +465,13 @@ int
 virInterfaceLinkParseXML(xmlNodePtr node,
                          virNetDevIfLink *lnk)
 {
-    int state;
-
-    g_autofree char *stateStr = virXMLPropString(node, "state");
-    g_autofree char *speedStr = virXMLPropString(node, "speed");
-
-    if (stateStr) {
-        if ((state = virNetDevIfStateTypeFromString(stateStr)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown link state: %s"),
-                           stateStr);
-            return -1;
-        }
-        lnk->state = state;
-    }
-
-    if (speedStr &&
-        virStrToLong_ui(speedStr, NULL, 10, &lnk->speed) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Unable to parse link speed: %s"),
-                       speedStr);
+    if (virXMLPropEnum(node, "state", virNetDevIfStateTypeFromString,
+                       VIR_XML_PROP_NONE, &lnk->state) < 0)
         return -1;
-    }
+
+    if (virXMLPropUInt(node, "speed", 10, VIR_XML_PROP_NONE, &lnk->speed) < 0)
+        return -1;
+
     return 0;
 }
 
