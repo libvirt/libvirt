@@ -6509,27 +6509,14 @@ static int
 virDomainDeviceISAAddressParseXML(xmlNodePtr node,
                                   virDomainDeviceISAAddress *addr)
 {
-    g_autofree char *iobase = NULL;
-    g_autofree char *irq = NULL;
-
     memset(addr, 0, sizeof(*addr));
 
-    iobase = virXMLPropString(node, "iobase");
-    irq = virXMLPropString(node, "irq");
-
-    if (iobase &&
-        virStrToLong_uip(iobase, NULL, 16, &addr->iobase) < 0) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Cannot parse <address> 'iobase' attribute"));
+    if (virXMLPropUInt(node, "iobase", 16, VIR_XML_PROP_NONE,
+                       &addr->iobase) < 0)
         return -1;
-    }
 
-    if (irq &&
-        virStrToLong_uip(irq, NULL, 16, &addr->irq) < 0) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Cannot parse <address> 'irq' attribute"));
+    if (virXMLPropUInt(node, "irq", 16, VIR_XML_PROP_NONE, &addr->irq) < 0)
         return -1;
-    }
 
     return 0;
 }
