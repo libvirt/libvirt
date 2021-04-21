@@ -8280,24 +8280,14 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
                                 virStorageSource *src,
                                 unsigned int flags)
 {
-    int tlsCfgVal;
-    g_autofree char *protocol = NULL;
-    g_autofree char *haveTLS = NULL;
-    g_autofree char *tlsCfg = NULL;
-    g_autofree char *sslverifystr = NULL;
+    virStorageNetProtocol protocol;
     xmlNodePtr tmpnode;
 
-    if (!(protocol = virXMLPropString(node, "protocol"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing network source protocol type"));
+    if (virXMLPropEnum(node, "protocol", virStorageNetProtocolTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &protocol) < 0)
         return -1;
-    }
 
-    if ((src->protocol = virStorageNetProtocolTypeFromString(protocol)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown protocol type '%s'"), protocol);
-        return -1;
-    }
+    src->protocol = protocol;
 
     if (!(src->path = virXMLPropString(node, "name")) &&
         src->protocol != VIR_STORAGE_NET_PROTOCOL_NBD) {
@@ -8306,26 +8296,16 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
         return -1;
     }
 
-    if ((haveTLS = virXMLPropString(node, "tls"))) {
+    if (virXMLPropTristateBool(node, "tls", VIR_XML_PROP_NONE,
+                               &src->haveTLS) < 0)
+        return -1;
+
+    if (flags & VIR_DOMAIN_DEF_PARSE_STATUS) {
         int value;
-
-        if ((value = virTristateBoolTypeFromString(haveTLS)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown disk source 'tls' setting '%s'"), haveTLS);
+        if (virXMLPropInt(node, "tlsFromConfig", 10, VIR_XML_PROP_NONE,
+                          &value) < 0)
             return -1;
-        }
-        src->haveTLS = value;
-    }
-
-    if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
-        (tlsCfg = virXMLPropString(node, "tlsFromConfig"))) {
-        if (virStrToLong_i(tlsCfg, NULL, 10, &tlsCfgVal) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid tlsFromConfig value: %s"),
-                           tlsCfg);
-            return -1;
-        }
-        src->tlsFromConfig = !!tlsCfgVal;
+        src->tlsFromConfig = !!value;
     }
 
     /* for historical reasons we store the volume and image name in one XML
@@ -8371,15 +8351,10 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
 
     if ((src->protocol == VIR_STORAGE_NET_PROTOCOL_HTTPS ||
          src->protocol == VIR_STORAGE_NET_PROTOCOL_FTPS) &&
-        (sslverifystr = virXPathString("string(./ssl/@verify)", ctxt))) {
-        int verify;
-        if ((verify = virTristateBoolTypeFromString(sslverifystr)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid ssl verify mode '%s'"), sslverifystr);
+        (tmpnode = virXPathNode("./ssl", ctxt))) {
+        if (virXMLPropTristateBool(tmpnode, "verify", VIR_XML_PROP_NONE,
+                                   &src->sslverify) < 0)
             return -1;
-        }
-
-        src->sslverify = verify;
     }
 
     if ((src->protocol == VIR_STORAGE_NET_PROTOCOL_HTTP ||
