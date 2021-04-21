@@ -401,19 +401,15 @@ virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
                                   virDomainDeviceUSBAddress *addr)
 {
     g_autofree char *port = virXMLPropString(node, "port");
-    g_autofree char *bus = virXMLPropString(node, "bus");
 
     memset(addr, 0, sizeof(*addr));
 
     if (port && virDomainDeviceUSBAddressParsePort(addr, port) < 0)
         return -1;
 
-    if (bus &&
-        virStrToLong_uip(bus, NULL, 10, &addr->bus) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'bus' attribute"));
+    if (virXMLPropUInt(node, "bus", 10, VIR_XML_PROP_NONE, &addr->bus) < 0)
         return -1;
-    }
+
     return 0;
 }
 
