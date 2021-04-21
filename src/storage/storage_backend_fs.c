@@ -402,7 +402,11 @@ virStorageBackendExecuteMKFS(const char *device,
                              const char *format)
 {
     g_autoptr(virCommand) cmd = NULL;
-    g_autofree char *mkfs = virFindFileInPath(MKFS);
+    g_autofree char *mkfs = NULL;
+
+#if WITH_STORAGE_FS
+    mkfs = virFindFileInPath(MKFS);
+#endif /* WITH_STORAGE_FS */
 
     if (!mkfs) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -412,7 +416,7 @@ virStorageBackendExecuteMKFS(const char *device,
         return -1;
     }
 
-    cmd = virCommandNewArgList(MKFS, "-t", format, NULL);
+    cmd = virCommandNewArgList(mkfs, "-t", format, NULL);
 
     /* use the force, otherwise mkfs.xfs won't overwrite existing fs.
      * Similarly mkfs.ext2, mkfs.ext3, and mkfs.ext4 require supplying -F
