@@ -6515,24 +6515,13 @@ static int
 virDomainDeviceDimmAddressParseXML(xmlNodePtr node,
                                    virDomainDeviceDimmAddress *addr)
 {
-    g_autofree char *tmp = NULL;
-
-    if (!(tmp = virXMLPropString(node, "slot")) ||
-        virStrToLong_uip(tmp, NULL, 10, &addr->slot) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid or missing dimm slot id '%s'"),
-                       NULLSTR(tmp));
+    if (virXMLPropUInt(node, "slot", 10, VIR_XML_PROP_REQUIRED,
+                       &addr->slot) < 0)
         return -1;
-    }
-    VIR_FREE(tmp);
 
-    if ((tmp = virXMLPropString(node, "base"))) {
-        if (virStrToLong_ullp(tmp, NULL, 16, &addr->base) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid dimm base address '%s'"), tmp);
-            return -1;
-        }
-    }
+    if (virXMLPropULongLong(node, "base", 16, VIR_XML_PROP_NONE,
+                            &addr->base) < 0)
+        return -1;
 
     return 0;
 }
