@@ -2624,8 +2624,8 @@ struct _virDomainPerfDef {
 };
 
 struct _virDomainKeyWrapDef {
-    int aes; /* enum virTristateSwitch */
-    int dea; /* enum virTristateSwitch */
+    virTristateSwitch aes;
+    virTristateSwitch dea;
 };
 
 typedef enum {
