@@ -52,32 +52,22 @@ static int
 virZPCIDeviceAddressParseXML(xmlNodePtr node,
                              virPCIDeviceAddress *addr)
 {
-    virZPCIDeviceAddress def = { .uid = { 0 }, .fid = { 0 } };
-    g_autofree char *uid = NULL;
-    g_autofree char *fid = NULL;
+    int retUid;
+    int retFid;
 
-    uid = virXMLPropString(node, "uid");
-    fid = virXMLPropString(node, "fid");
+    if ((retUid = virXMLPropUInt(node, "uid", 0, VIR_XML_PROP_NONE,
+                                 &addr->zpci.uid.value)) < 0)
+        return -1;
 
-    if (uid) {
-        if (virStrToLong_uip(uid, NULL, 0, &def.uid.value) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot parse <address> 'uid' attribute"));
-            return -1;
-        }
-        def.uid.isSet = true;
-    }
+    if (retUid > 0)
+        addr->zpci.uid.isSet = true;
 
-    if (fid) {
-        if (virStrToLong_uip(fid, NULL, 0, &def.fid.value) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot parse <address> 'fid' attribute"));
-            return -1;
-        }
-        def.fid.isSet = true;
-    }
+    if ((retFid = virXMLPropUInt(node, "fid", 0, VIR_XML_PROP_NONE,
+                                 &addr->zpci.fid.value)) < 0)
+        return -1;
 
-    addr->zpci = def;
+    if (retFid > 0)
+        addr->zpci.fid.isSet = true;
 
     return 0;
 }
