@@ -11469,31 +11469,6 @@ virDomainChrSourceModeTypeFromString(const char *str)
     return -1;
 }
 
-/**
- * virDomainChrSourceDefParseMode:
- * @source: XML dom node
- *
- * Returns: -1 in case of error,
- *          virDomainChrSourceModeType in case of success
- */
-static int
-virDomainChrSourceDefParseMode(xmlNodePtr source)
-{
-    g_autofree char *mode = virXMLPropString(source, "mode");
-    int result;
-
-    if (!mode)
-        return VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT;
-
-    if ((result = virDomainChrSourceModeTypeFromString(mode)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown source mode '%s'"), mode);
-        return -1;
-    }
-
-    return result;
-}
-
 
 static int
 virDomainChrSourceDefParseTCP(virDomainChrSourceDef *def,
@@ -11501,11 +11476,12 @@ virDomainChrSourceDefParseTCP(virDomainChrSourceDef *def,
                               xmlXPathContextPtr ctxt,
                               unsigned int flags)
 {
-    int mode;
+    virDomainChrSourceModeType mode = VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT;
     int tmpVal;
     g_autofree char *tmp = NULL;
 
-    if ((mode = virDomainChrSourceDefParseMode(source)) < 0)
+    if (virXMLPropEnum(source, "mode", virDomainChrSourceModeTypeFromString,
+                       VIR_XML_PROP_NONE, &mode) < 0)
         return -1;
 
     def->data.tcp.listen = mode == VIR_DOMAIN_CHR_SOURCE_MODE_BIND;
@@ -11549,9 +11525,10 @@ static int
 virDomainChrSourceDefParseUDP(virDomainChrSourceDef *def,
                               xmlNodePtr source)
 {
-    int mode;
+    virDomainChrSourceModeType mode = VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT;
 
-    if ((mode = virDomainChrSourceDefParseMode(source)) < 0)
+    if (virXMLPropEnum(source, "mode", virDomainChrSourceModeTypeFromString,
+                       VIR_XML_PROP_NONE, &mode) < 0)
         return -1;
 
     if (mode == VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT &&
@@ -11573,9 +11550,10 @@ virDomainChrSourceDefParseUnix(virDomainChrSourceDef *def,
                                xmlNodePtr source,
                                xmlXPathContextPtr ctxt)
 {
-    int mode;
+    virDomainChrSourceModeType mode = VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT;
 
-    if ((mode = virDomainChrSourceDefParseMode(source)) < 0)
+    if (virXMLPropEnum(source, "mode", virDomainChrSourceModeTypeFromString,
+                       VIR_XML_PROP_NONE, &mode) < 0)
         return -1;
 
     def->data.nix.listen = mode == VIR_DOMAIN_CHR_SOURCE_MODE_BIND;
