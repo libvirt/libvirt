@@ -567,7 +567,7 @@ struct _virDomainDiskDef {
     char *vendor;
     char *product;
     virDomainDiskCache cachemode;
-    int error_policy;  /* enum virDomainDiskErrorPolicy */
+    virDomainDiskErrorPolicy error_policy;
     int rerror_policy; /* enum virDomainDiskErrorPolicy */
     int iomode; /* enum virDomainDiskIo */
     virTristateSwitch ioeventfd;

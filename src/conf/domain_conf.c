@@ -8976,11 +8976,15 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
     }
     VIR_FREE(tmp);
 
-    if ((tmp = virXMLPropString(cur, "error_policy")) &&
-        (def->error_policy = virDomainDiskErrorPolicyTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk error policy '%s'"), tmp);
-        return -1;
+    if ((tmp = virXMLPropString(cur, "error_policy"))) {
+        int error_policy;
+
+        if ((error_policy = virDomainDiskErrorPolicyTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown disk error policy '%s'"), tmp);
+            return -1;
+        }
+        def->error_policy = error_policy;
     }
     VIR_FREE(tmp);
 
