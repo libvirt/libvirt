@@ -872,3 +872,44 @@ virshKeycodeNameCompleter(vshControl *ctl,
 
     return g_steal_pointer(&tmp);
 }
+
+
+char **
+virshDomainFSMountpointsCompleter(vshControl *ctl,
+                                  const vshCmd *cmd,
+                                  unsigned int flags)
+{
+    g_auto(GStrv) tmp = NULL;
+    virDomainPtr dom = NULL;
+    int rc = -1;
+    size_t i;
+    virDomainFSInfoPtr *info = NULL;
+    size_t ninfos = 0;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return NULL;
+
+    rc = virDomainGetFSInfo(dom, &info, 0);
+    if (rc <= 0) {
+        goto cleanup;
+    }
+    ninfos = rc;
+
+    tmp = g_new0(char *, ninfos + 1);
+    for (i = 0; i < ninfos; i++) {
+        tmp[i] = g_strdup(info[i]->mountpoint);
+    }
+    ret = g_steal_pointer(&tmp);
+
+ cleanup:
+    if (info) {
+        for (i = 0; i < ninfos; i++)
+            virDomainFSInfoFree(info[i]);
+        VIR_FREE(info);
+    }
+    virshDomainFree(dom);
+    return ret;
+}

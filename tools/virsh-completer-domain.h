@@ -118,3 +118,7 @@ char ** virshCodesetNameCompleter(vshControl *ctl,
 char ** virshKeycodeNameCompleter(vshControl *ctl,
                                   const vshCmd *cmd,
                                   unsigned int flags);
+
+char ** virshDomainFSMountpointsCompleter(vshControl *ctl,
+                                          const vshCmd *cmd,
+                                          unsigned int flags);
