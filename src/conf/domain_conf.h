@@ -581,7 +581,7 @@ struct _virDomainDiskDef {
     virDomainDeviceSGIO sgio;
     virDomainDiskDiscard discard;
     unsigned int iothread; /* unused = 0, > 0 specific thread # */
-    int detect_zeroes; /* enum virDomainDiskDetectZeroes */
+    virDomainDiskDetectZeroes detect_zeroes;
     char *domain_name; /* backend domain name */
     unsigned int queues;
     virDomainDiskModel model;

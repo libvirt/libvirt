@@ -9083,11 +9083,15 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
         VIR_FREE(tmp);
     }
 
-    if ((tmp = virXMLPropString(cur, "detect_zeroes")) &&
-        (def->detect_zeroes = virDomainDiskDetectZeroesTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown driver detect_zeroes value '%s'"), tmp);
-        return -1;
+    if ((tmp = virXMLPropString(cur, "detect_zeroes"))) {
+        int detect_zeroes;
+
+        if ((detect_zeroes = virDomainDiskDetectZeroesTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown driver detect_zeroes value '%s'"), tmp);
+            return -1;
+        }
+        def->detect_zeroes = detect_zeroes;
     }
     VIR_FREE(tmp);
 
