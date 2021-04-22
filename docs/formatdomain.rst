@@ -3242,6 +3242,10 @@ A directory on the host that can be accessed directly from the guest.
          <source dir='/path'/>
          <target dir='mount_tag'/>
      </filesystem>
+     <filesystem type='mount'>
+         <driver type='virtiofs' queue='1024'/>
+         <source socket='/tmp/sock'/>
+     </filesystem>
      ...
    </devices>
    ...
@@ -3369,7 +3373,11 @@ A directory on the host that can be accessed directly from the guest.
 ``source``
    The resource on the host that is being accessed in the guest. The ``name``
    attribute must be used with ``type='template'``, and the ``dir`` attribute
-   must be used with ``type='mount'``. The ``usage`` attribute is used with
+   must be used with ``type='mount'``. For ``virtiofs``, the ``socket`` attribute
+   can be used to connect to a virtiofsd daemon launched outside of libvirt.
+   In that case, the ``target`` element does not apply and neither do most
+   virtiofs-related options, since they are controlled by virtiofsd, not libvirtd.
+   The ``usage`` attribute is used with
    ``type='ram'`` to set the memory limit in KiB, unless units are specified by
    the ``units`` attribute.
 ``target``
