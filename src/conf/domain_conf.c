@@ -11455,6 +11455,20 @@ typedef enum {
 } virDomainChrSourceModeType;
 
 
+static int
+virDomainChrSourceModeTypeFromString(const char *str)
+{
+    if (!str)
+        return -1;
+
+    if (STREQ(str, "connect"))
+        return VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT;
+    if (STREQ(str, "bind"))
+        return VIR_DOMAIN_CHR_SOURCE_MODE_BIND;
+
+    return -1;
+}
+
 /**
  * virDomainChrSourceDefParseMode:
  * @source: XML dom node
@@ -11466,16 +11480,18 @@ static int
 virDomainChrSourceDefParseMode(xmlNodePtr source)
 {
     g_autofree char *mode = virXMLPropString(source, "mode");
+    int result;
 
-    if (!mode || STREQ(mode, "connect")) {
+    if (!mode)
         return VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT;
-    } else if (STREQ(mode, "bind")) {
-        return VIR_DOMAIN_CHR_SOURCE_MODE_BIND;
+
+    if ((result = virDomainChrSourceModeTypeFromString(mode)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown source mode '%s'"), mode);
+        return -1;
     }
 
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Unknown source mode '%s'"), mode);
-    return -1;
+    return result;
 }
 
 
