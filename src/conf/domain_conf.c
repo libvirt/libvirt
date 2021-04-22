@@ -8988,12 +8988,16 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
     }
     VIR_FREE(tmp);
 
-    if ((tmp = virXMLPropString(cur, "rerror_policy")) &&
-        (((def->rerror_policy = virDomainDiskErrorPolicyTypeFromString(tmp)) <= 0) ||
-         (def->rerror_policy == VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE))) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk read error policy '%s'"), tmp);
-        return -1;
+    if ((tmp = virXMLPropString(cur, "rerror_policy"))) {
+        int rerror_policy;
+
+        if (((rerror_policy = virDomainDiskErrorPolicyTypeFromString(tmp)) <= 0) ||
+            (rerror_policy == VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown disk read error policy '%s'"), tmp);
+            return -1;
+        }
+        def->rerror_policy = rerror_policy;
     }
     VIR_FREE(tmp);
 
