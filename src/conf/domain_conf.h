@@ -569,7 +569,7 @@ struct _virDomainDiskDef {
     virDomainDiskCache cachemode;
     virDomainDiskErrorPolicy error_policy;
     virDomainDiskErrorPolicy rerror_policy;
-    int iomode; /* enum virDomainDiskIo */
+    virDomainDiskIo iomode;
     virTristateSwitch ioeventfd;
     virTristateSwitch event_idx;
     virTristateSwitch copy_on_read;

@@ -9001,11 +9001,15 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
     }
     VIR_FREE(tmp);
 
-    if ((tmp = virXMLPropString(cur, "io")) &&
-        (def->iomode = virDomainDiskIoTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk io mode '%s'"), tmp);
-        return -1;
+    if ((tmp = virXMLPropString(cur, "io"))) {
+        int iomode;
+
+        if ((iomode = virDomainDiskIoTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown disk io mode '%s'"), tmp);
+            return -1;
+        }
+        def->iomode = iomode;
     }
     VIR_FREE(tmp);
 
