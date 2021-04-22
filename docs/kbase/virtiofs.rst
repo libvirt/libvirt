@@ -149,3 +149,18 @@ More optional elements can be specified
     <cache mode='always'/>
     <lock posix='on' flock='on'/>
   </binary>
+
+Externally-launched virtiofsd
+=============================
+
+Libvirtd can also connect the ``vhost-user-fs`` device to a ``virtiofsd``
+daemon launched outside of libvirtd. In that case socket permissions,
+the mount tag and all the virtiofsd options are out of libvirtd's
+control and need to be set by the application running virtiofsd.
+
+::
+
+  <filesystem type='mount'/>
+    <driver type='virtiofs' queue='1024'/>
+    <source socket='/var/virtiofsd.sock'/>
+  </filesystem>
