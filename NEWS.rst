@@ -18,6 +18,12 @@ v7.3.0 (unreleased)
     The xen driver now supports domains with more than 4TB of memory with
     xen >= 4.13.
 
+  * qemu: add socket for virtiofs filesystems
+
+    Libvirt now supports ``filesystem`` devices that connect to
+    a ``virtiofsd`` daemon launched outside of libvirtd, via the
+    ``socket`` attribute of the ``source`` element.
+
 * **Improvements**
 
 * **Bug fixes**
