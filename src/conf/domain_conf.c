@@ -8964,109 +8964,51 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
 
     def->driverName = virXMLPropString(cur, "name");
 
-    if ((tmp = virXMLPropString(cur, "cache"))) {
-        int cachemode;
+    if (virXMLPropEnum(cur, "cache", virDomainDiskCacheTypeFromString,
+                       VIR_XML_PROP_NONE, &def->cachemode) < 0)
+        return -1;
 
-        if ((cachemode = virDomainDiskCacheTypeFromString(tmp)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk cache mode '%s'"), tmp);
-            return -1;
-        }
-        def->cachemode = cachemode;
-    }
-    VIR_FREE(tmp);
+    if (virXMLPropEnum(cur, "error_policy",
+                       virDomainDiskErrorPolicyTypeFromString,
+                       VIR_XML_PROP_NONZERO, &def->error_policy) < 0)
+        return -1;
 
-    if ((tmp = virXMLPropString(cur, "error_policy"))) {
-        int error_policy;
+    if (virXMLPropEnum(cur, "rerror_policy",
+                       virDomainDiskErrorPolicyTypeFromString,
+                       VIR_XML_PROP_NONZERO, &def->rerror_policy) < 0)
+        return -1;
 
-        if ((error_policy = virDomainDiskErrorPolicyTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk error policy '%s'"), tmp);
-            return -1;
-        }
-        def->error_policy = error_policy;
-    }
-    VIR_FREE(tmp);
-
-    if ((tmp = virXMLPropString(cur, "rerror_policy"))) {
-        int rerror_policy;
-
-        if (((rerror_policy = virDomainDiskErrorPolicyTypeFromString(tmp)) <= 0) ||
-            (rerror_policy == VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk read error policy '%s'"), tmp);
-            return -1;
-        }
-        def->rerror_policy = rerror_policy;
-    }
-    VIR_FREE(tmp);
-
-    if ((tmp = virXMLPropString(cur, "io"))) {
-        int iomode;
-
-        if ((iomode = virDomainDiskIoTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk io mode '%s'"), tmp);
-            return -1;
-        }
-        def->iomode = iomode;
-    }
-    VIR_FREE(tmp);
-
-    if ((tmp = virXMLPropString(cur, "ioeventfd"))) {
-        int value;
-        if ((value = virTristateSwitchTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk ioeventfd mode '%s'"), tmp);
-            return -1;
-        }
-        def->ioeventfd = value;
-    }
-    VIR_FREE(tmp);
-
-    if ((tmp = virXMLPropString(cur, "event_idx"))) {
-        int value;
-        if ((value = virTristateSwitchTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk event_idx mode '%s'"), tmp);
-            return -1;
-        }
-        def->event_idx = value;
-    }
-    VIR_FREE(tmp);
-
-    if ((tmp = virXMLPropString(cur, "copy_on_read"))) {
-        int value;
-        if ((value = virTristateSwitchTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk copy_on_read mode '%s'"), tmp);
-            return -1;
-        }
-        def->copy_on_read = value;
-    }
-    VIR_FREE(tmp);
-
-    if ((tmp = virXMLPropString(cur, "discard"))) {
-        int discard;
-
-        if ((discard = virDomainDiskDiscardTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk discard mode '%s'"), tmp);
-            return -1;
-        }
-        def->discard = discard;
-    }
-    VIR_FREE(tmp);
-
-    if ((tmp = virXMLPropString(cur, "iothread")) &&
-        (virStrToLong_uip(tmp, NULL, 10, &def->iothread) < 0 ||
-         def->iothread == 0)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid iothread attribute in disk driver element: %s"),
-                       tmp);
+    if (def->rerror_policy == VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Invalid disk read error policy: '%s'"),
+                       virDomainDiskErrorPolicyTypeToString(def->rerror_policy));
         return -1;
     }
-    VIR_FREE(tmp);
+
+    if (virXMLPropEnum(cur, "io", virDomainDiskIoTypeFromString,
+                       VIR_XML_PROP_NONZERO, &def->iomode) < 0)
+        return -1;
+
+    if (virXMLPropTristateSwitch(cur, "ioeventfd", VIR_XML_PROP_NONE,
+                                 &def->ioeventfd) < 0)
+        return -1;
+
+    if (virXMLPropTristateSwitch(cur, "event_idx", VIR_XML_PROP_NONE,
+                                 &def->event_idx) < 0)
+        return -1;
+
+    if (virXMLPropTristateSwitch(cur, "copy_on_read", VIR_XML_PROP_NONE,
+                                 &def->copy_on_read) < 0)
+        return -1;
+
+    if (virXMLPropEnum(cur, "discard", virDomainDiskDiscardTypeFromString,
+                       VIR_XML_PROP_NONZERO, &def->discard) < 0)
+        return -1;
+
+    if (virXMLPropUInt(cur, "iothread", 10,
+                       VIR_XML_PROP_NONE | VIR_XML_PROP_NONZERO,
+                       &def->iothread) < 0)
+        return -1;
 
     if ((tmp = virXMLPropString(cur, "type"))) {
         if (STREQ(tmp, "aio")) {
@@ -9079,29 +9021,15 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
                 return -1;
             }
         }
-
-        VIR_FREE(tmp);
     }
 
-    if ((tmp = virXMLPropString(cur, "detect_zeroes"))) {
-        int detect_zeroes;
-
-        if ((detect_zeroes = virDomainDiskDetectZeroesTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown driver detect_zeroes value '%s'"), tmp);
-            return -1;
-        }
-        def->detect_zeroes = detect_zeroes;
-    }
-    VIR_FREE(tmp);
-
-    if ((tmp = virXMLPropString(cur, "queues")) &&
-        virStrToLong_uip(tmp, NULL, 10, &def->queues) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("'queues' attribute must be positive number: %s"),
-                       tmp);
+    if (virXMLPropEnum(cur, "detect_zeroes",
+                       virDomainDiskDetectZeroesTypeFromString,
+                       VIR_XML_PROP_NONZERO, &def->detect_zeroes) < 0)
         return -1;
-    }
+
+    if (virXMLPropUInt(cur, "queues", 10, VIR_XML_PROP_NONE, &def->queues) < 0)
+        return -1;
 
     if (virParseScaledValue("./metadata_cache/max_size", NULL,
                             ctxt,
