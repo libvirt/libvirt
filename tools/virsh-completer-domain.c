@@ -624,36 +624,63 @@ virshDomainVcpulistViaAgentCompleter(vshControl *ctl,
             cpulist[i] = g_strdup_printf("%zu", i);
     } else {
         g_autofree char *onlineVcpuStr = NULL;
-        g_autofree unsigned char *vcpumap = NULL;
-        g_autoptr(virBitmap) vcpus = NULL;
-        size_t offset = 0;
+        g_autofree char *offlinableVcpuStr = NULL;
+        g_autofree unsigned char *onlineVcpumap = NULL;
+        g_autofree unsigned char *offlinableVcpumap = NULL;
+        g_autoptr(virBitmap) onlineVcpus = NULL;
+        g_autoptr(virBitmap) offlinableVcpus = NULL;
+        size_t j = 0;
+        int lastcpu;
         int dummy;
 
         if (virDomainGetGuestVcpus(dom, &params, &nparams, 0) < 0)
             goto cleanup;
 
         onlineVcpuStr = vshGetTypedParamValue(ctl, &params[1]);
-        if (virBitmapParse(onlineVcpuStr, &vcpus, nvcpus) < 0)
+        if (!(onlineVcpus = virBitmapParseUnlimited(onlineVcpuStr)))
             goto cleanup;
 
-        if (virBitmapToData(vcpus, &vcpumap, &dummy) < 0)
+        if (virBitmapToData(onlineVcpus, &onlineVcpumap, &dummy) < 0)
             goto cleanup;
 
         if (enable) {
-            cpulist = g_new0(char *, nvcpus - virBitmapCountBits(vcpus) + 1);
-            for (i = 0; i < nvcpus; i++) {
-                if (VIR_CPU_USED(vcpumap, i) != 0)
-                    continue;
+            offlinableVcpuStr = vshGetTypedParamValue(ctl, &params[2]);
 
-                cpulist[offset++] = g_strdup_printf("%zu", i);
+            if (!(offlinableVcpus = virBitmapParseUnlimited(offlinableVcpuStr)))
+                goto cleanup;
+
+            if (virBitmapToData(offlinableVcpus, &offlinableVcpumap, &dummy) < 0)
+                goto cleanup;
+
+            lastcpu = virBitmapLastSetBit(offlinableVcpus);
+            cpulist = g_new0(char *, nvcpus - virBitmapCountBits(onlineVcpus) + 1);
+            for (i = 0; i < nvcpus - virBitmapCountBits(onlineVcpus); i++) {
+                while (j <= lastcpu) {
+                    if (VIR_CPU_USED(onlineVcpumap, j) != 0 ||
+                        VIR_CPU_USED(offlinableVcpumap, j) == 0) {
+                        j += 1;
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
+
+                cpulist[i] = g_strdup_printf("%zu", j++);
             }
         } else if (disable) {
-            cpulist = g_new0(char *, virBitmapCountBits(vcpus) + 1);
-            for (i = 0; i < nvcpus; i++) {
-                if (VIR_CPU_USED(vcpumap, i) == 0)
-                    continue;
+            lastcpu = virBitmapLastSetBit(onlineVcpus);
+            cpulist = g_new0(char *, virBitmapCountBits(onlineVcpus) + 1);
+            for (i = 0; i < virBitmapCountBits(onlineVcpus); i++) {
+                while (j <= lastcpu) {
+                    if (VIR_CPU_USED(onlineVcpumap, j) == 0) {
+                        j += 1;
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
 
-                cpulist[offset++] = g_strdup_printf("%zu", i);
+                cpulist[i] = g_strdup_printf("%zu", j++);
             }
         }
     }
