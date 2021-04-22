@@ -8964,11 +8964,15 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
 
     def->driverName = virXMLPropString(cur, "name");
 
-    if ((tmp = virXMLPropString(cur, "cache")) &&
-        (def->cachemode = virDomainDiskCacheTypeFromString(tmp)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk cache mode '%s'"), tmp);
-        return -1;
+    if ((tmp = virXMLPropString(cur, "cache"))) {
+        int cachemode;
+
+        if ((cachemode = virDomainDiskCacheTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown disk cache mode '%s'"), tmp);
+            return -1;
+        }
+        def->cachemode = cachemode;
     }
     VIR_FREE(tmp);
 
