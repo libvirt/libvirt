@@ -11477,8 +11477,6 @@ virDomainChrSourceDefParseTCP(virDomainChrSourceDef *def,
                               unsigned int flags)
 {
     virDomainChrSourceModeType mode = VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT;
-    int tmpVal;
-    g_autofree char *tmp = NULL;
 
     if (virXMLPropEnum(source, "mode", virDomainChrSourceModeTypeFromString,
                        VIR_XML_PROP_NONE, &mode) < 0)
@@ -11488,26 +11486,16 @@ virDomainChrSourceDefParseTCP(virDomainChrSourceDef *def,
     def->data.tcp.host = virXMLPropString(source, "host");
     def->data.tcp.service = virXMLPropString(source, "service");
 
-    if ((tmp = virXMLPropString(source, "tls"))) {
-        int value;
-        if ((value = virTristateBoolTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown chardev 'tls' setting '%s'"),
-                           tmp);
-            return -1;
-        }
-        def->data.tcp.haveTLS = value;
-        VIR_FREE(tmp);
-    }
+    if (virXMLPropTristateBool(source, "tls", VIR_XML_PROP_NONE,
+                               &def->data.tcp.haveTLS) < 0)
+        return -1;
 
-    if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
-        (tmp = virXMLPropString(source, "tlsFromConfig"))) {
-        if (virStrToLong_i(tmp, NULL, 10, &tmpVal) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid tlsFromConfig value: %s"),
-                           tmp);
+    if (flags & VIR_DOMAIN_DEF_PARSE_STATUS) {
+        int tmpVal;
+
+        if (virXMLPropInt(source, "tlsFromConfig", 10, VIR_XML_PROP_NONE,
+                          &tmpVal) < 0)
             return -1;
-        }
         def->data.tcp.tlsFromConfig = !!tmpVal;
     }
 
