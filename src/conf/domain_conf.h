@@ -579,7 +579,7 @@ struct _virDomainDiskDef {
     virDomainDeviceInfo info;
     virTristateBool rawio;
     virDomainDeviceSGIO sgio;
-    int discard; /* enum virDomainDiskDiscard */
+    virDomainDiskDiscard discard;
     unsigned int iothread; /* unused = 0, > 0 specific thread # */
     int detect_zeroes; /* enum virDomainDiskDetectZeroes */
     char *domain_name; /* backend domain name */

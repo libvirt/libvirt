@@ -9046,11 +9046,15 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
     }
     VIR_FREE(tmp);
 
-    if ((tmp = virXMLPropString(cur, "discard")) &&
-        (def->discard = virDomainDiskDiscardTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk discard mode '%s'"), tmp);
-        return -1;
+    if ((tmp = virXMLPropString(cur, "discard"))) {
+        int discard;
+
+        if ((discard = virDomainDiskDiscardTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown disk discard mode '%s'"), tmp);
+            return -1;
+        }
+        def->discard = discard;
     }
     VIR_FREE(tmp);
 
