@@ -9619,11 +9619,14 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
         return NULL;
     }
 
-    if (ioeventfd &&
-        (def->ioeventfd = virTristateSwitchTypeFromString(ioeventfd)) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Malformed 'ioeventfd' value %s"), ioeventfd);
-        return NULL;
+    if (ioeventfd) {
+        int value;
+        if ((value = virTristateSwitchTypeFromString(ioeventfd)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Malformed 'ioeventfd' value %s"), ioeventfd);
+            return NULL;
+        }
+        def->ioeventfd = value;
     }
 
     if (iothread) {
