@@ -9722,13 +9722,15 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
             /* Other controller models don't require extra checks */
             break;
         }
-        if (modelName &&
-            (def->opts.pciopts.modelName
-             = virDomainControllerPCIModelNameTypeFromString(modelName)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown PCI controller model name '%s'"),
-                           modelName);
-            return NULL;
+        if (modelName) {
+            int value;
+            if ((value = virDomainControllerPCIModelNameTypeFromString(modelName)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Unknown PCI controller model name '%s'"),
+                               modelName);
+                return NULL;
+            }
+            def->opts.pciopts.modelName = value;
         }
         if (chassisNr) {
             if (virStrToLong_i(chassisNr, NULL, 0,

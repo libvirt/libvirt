@@ -2456,7 +2456,7 @@ qemuDomainPCIControllerSetDefaultModelName(virDomainControllerDef *cont,
                                            virDomainDef *def,
                                            virQEMUCaps *qemuCaps)
 {
-    int *modelName = &cont->opts.pciopts.modelName;
+    virDomainControllerPCIModelName *modelName = &cont->opts.pciopts.modelName;
 
     /* make sure it's not already set */
     if (*modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)

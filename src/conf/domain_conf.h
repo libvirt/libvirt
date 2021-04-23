@@ -724,7 +724,7 @@ struct _virDomainPCIControllerOpts {
      *   <model name='ioh3420''/>
      *   ...
      */
-    int modelName; /* the exact name of the device in hypervisor */
+    virDomainControllerPCIModelName modelName;
 
     /* the following items are attributes of the "target" subelement
      * of controller type='pci'. They are bits of configuration that
