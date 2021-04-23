@@ -2753,7 +2753,7 @@ struct _virDomainDef {
     int kvm_features[VIR_DOMAIN_KVM_LAST];
     int msrs_features[VIR_DOMAIN_MSRS_LAST];
     int xen_features[VIR_DOMAIN_XEN_LAST];
-    int xen_passthrough_mode;
+    virDomainXenPassthroughMode xen_passthrough_mode;
     unsigned int hyperv_spinlocks;
     virTristateSwitch hyperv_stimer_direct;
     virGICVersion gic_version;
