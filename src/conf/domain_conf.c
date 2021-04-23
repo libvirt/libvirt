@@ -12885,18 +12885,13 @@ static int
 virDomainGraphicsDefParseXMLDesktop(virDomainGraphicsDef *def,
                                     xmlNodePtr node)
 {
-    g_autofree char *fullscreen = virXMLPropString(node, "fullscreen");
+    virTristateBool fullscreen = VIR_TRISTATE_BOOL_NO;
 
-    if (fullscreen != NULL) {
-        if (virStringParseYesNo(fullscreen, &def->data.desktop.fullscreen) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown fullscreen value '%s'"), fullscreen);
-            return -1;
-        }
-    } else {
-        def->data.desktop.fullscreen = false;
-    }
+    if (virXMLPropTristateBool(node, "fullscreen", VIR_XML_PROP_NONE,
+                               &fullscreen) < 0)
+        return -1;
 
+    def->data.desktop.fullscreen = fullscreen == VIR_TRISTATE_BOOL_YES;
     def->data.desktop.display = virXMLPropString(node, "display");
 
     return 0;
