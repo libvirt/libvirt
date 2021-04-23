@@ -9500,7 +9500,7 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
                                unsigned int flags)
 {
     g_autoptr(virDomainControllerDef) def = NULL;
-    int type = 0;
+    virDomainControllerType type = 0;
     xmlNodePtr cur = NULL;
     bool processedModel = false;
     bool processedTarget = false;
@@ -9508,33 +9508,14 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
     int ports = -1;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int rc;
-    g_autofree char *typeStr = NULL;
     g_autofree char *idx = NULL;
     g_autofree char *model = NULL;
-    g_autofree char *queues = NULL;
-    g_autofree char *cmd_per_lun = NULL;
-    g_autofree char *max_sectors = NULL;
-    g_autofree char *modelName = NULL;
-    g_autofree char *chassisNr = NULL;
-    g_autofree char *chassis = NULL;
-    g_autofree char *port = NULL;
-    g_autofree char *busNr = NULL;
-    g_autofree char *targetIndex = NULL;
-    g_autofree char *hotplug = NULL;
-    g_autofree char *ioeventfd = NULL;
-    g_autofree char *portsStr = NULL;
-    g_autofree char *iothread = NULL;
 
     ctxt->node = node;
 
-    typeStr = virXMLPropString(node, "type");
-    if (typeStr) {
-        if ((type = virDomainControllerTypeFromString(typeStr)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown controller type '%s'"), typeStr);
-            return NULL;
-        }
-    }
+    if (virXMLPropEnum(node, "type", virDomainControllerTypeFromString,
+                       VIR_XML_PROP_NONE, &type) < 0)
+        return NULL;
 
     if (!(def = virDomainControllerDefNew(type)))
         return NULL;
@@ -9564,11 +9545,26 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (virXMLNodeNameEqual(cur, "driver")) {
-                queues = virXMLPropString(cur, "queues");
-                cmd_per_lun = virXMLPropString(cur, "cmd_per_lun");
-                max_sectors = virXMLPropString(cur, "max_sectors");
-                ioeventfd = virXMLPropString(cur, "ioeventfd");
-                iothread = virXMLPropString(cur, "iothread");
+                if (virXMLPropUInt(cur, "queues", 10, VIR_XML_PROP_NONE,
+                                   &def->queues) < 0)
+                    return NULL;
+
+                if (virXMLPropUInt(cur, "cmd_per_lun", 10, VIR_XML_PROP_NONE,
+                                   &def->cmd_per_lun) < 0)
+                    return NULL;
+
+                if (virXMLPropUInt(cur, "max_sectors", 10, VIR_XML_PROP_NONE,
+                                   &def->max_sectors) < 0)
+                    return NULL;
+
+                if (virXMLPropTristateSwitch(cur, "ioeventfd",
+                                             VIR_XML_PROP_NONE,
+                                             &def->ioeventfd) < 0)
+                    return NULL;
+
+                if (virXMLPropUInt(cur, "iothread", 10, VIR_XML_PROP_NONE,
+                                   &def->iothread) < 0)
+                    return NULL;
 
                 if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
                     return NULL;
@@ -9579,7 +9575,15 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
                                      "controller definition not allowed"));
                     return NULL;
                 }
-                modelName = virXMLPropString(cur, "name");
+
+                if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
+                    if (virXMLPropEnum(cur, "name",
+                                       virDomainControllerPCIModelNameTypeFromString,
+                                       VIR_XML_PROP_NONE,
+                                       &def->opts.pciopts.modelName) < 0)
+                        return NULL;
+                }
+
                 processedModel = true;
             } else if (virXMLNodeNameEqual(cur, "target")) {
                 if (processedTarget) {
@@ -9588,12 +9592,39 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
                                      "controller definition not allowed"));
                     return NULL;
                 }
-                chassisNr = virXMLPropString(cur, "chassisNr");
-                chassis = virXMLPropString(cur, "chassis");
-                port = virXMLPropString(cur, "port");
-                busNr = virXMLPropString(cur, "busNr");
-                hotplug = virXMLPropString(cur, "hotplug");
-                targetIndex = virXMLPropString(cur, "index");
+                if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
+                    if (virXMLPropInt(cur, "chassisNr", 0, VIR_XML_PROP_NONE,
+                                      &def->opts.pciopts.chassisNr) < 0)
+                        return NULL;
+
+                    if (virXMLPropInt(cur, "chassis", 0, VIR_XML_PROP_NONE,
+                                      &def->opts.pciopts.chassis) < 0)
+                        return NULL;
+
+                    if (virXMLPropInt(cur, "port", 0, VIR_XML_PROP_NONE,
+                                      &def->opts.pciopts.port) < 0)
+                        return NULL;
+
+                    if (virXMLPropInt(cur, "busNr", 0, VIR_XML_PROP_NONE,
+                                      &def->opts.pciopts.busNr) < 0)
+                        return NULL;
+
+                    if (virXMLPropTristateSwitch(cur, "hotplug",
+                                                 VIR_XML_PROP_NONE,
+                                                 &def->opts.pciopts.hotplug) < 0)
+                        return NULL;
+
+                    if ((rc = virXMLPropInt(cur, "index", 0, VIR_XML_PROP_NONE,
+                                      &def->opts.pciopts.targetIndex)) < 0)
+                        return NULL;
+
+                    if ((rc == 1) && def->opts.pciopts.targetIndex == -1) {
+                        virReportError(VIR_ERR_XML_ERROR,
+                                       _("Invalid target index '%i' in PCI controller"),
+                                       def->opts.pciopts.targetIndex);
+                    }
+                }
+
                 processedTarget = true;
             }
         }
@@ -9610,42 +9641,6 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
         return NULL;
     }
 
-    if (queues && virStrToLong_ui(queues, NULL, 10, &def->queues) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Malformed 'queues' value '%s'"), queues);
-        return NULL;
-    }
-
-    if (cmd_per_lun && virStrToLong_ui(cmd_per_lun, NULL, 10, &def->cmd_per_lun) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Malformed 'cmd_per_lun' value '%s'"), cmd_per_lun);
-        return NULL;
-    }
-
-    if (max_sectors && virStrToLong_ui(max_sectors, NULL, 10, &def->max_sectors) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Malformed 'max_sectors' value %s"), max_sectors);
-        return NULL;
-    }
-
-    if (ioeventfd) {
-        int value;
-        if ((value = virTristateSwitchTypeFromString(ioeventfd)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Malformed 'ioeventfd' value %s"), ioeventfd);
-            return NULL;
-        }
-        def->ioeventfd = value;
-    }
-
-    if (iothread) {
-        if (virStrToLong_uip(iothread, NULL, 10, &def->iothread) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid 'iothread' value '%s'"), iothread);
-            return NULL;
-        }
-    }
-
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
         def->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
         VIR_DEBUG("Ignoring device address for none model usb controller");
@@ -9654,30 +9649,28 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
         return NULL;
     }
 
-    portsStr = virXMLPropString(node, "ports");
-    if (portsStr) {
-        int r = virStrToLong_i(portsStr, NULL, 10, &ports);
-        if (r != 0 || ports < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid ports: %s"), portsStr);
-            return NULL;
-        }
+    if ((rc = virXMLPropInt(node, "ports", 10, VIR_XML_PROP_NONE, &ports)) < 0)
+        return NULL;
+    if ((rc == 1) && ports < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid ports: %i"), ports);
+        return NULL;
     }
 
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL: {
-        g_autofree char *vectors = virXMLPropString(node, "vectors");
+        if ((rc = virXMLPropInt(node, "vectors", 10, VIR_XML_PROP_NONE,
+                                &def->opts.vioserial.vectors)) < 0)
+            return NULL;
+
+        if ((rc == 1) && def->opts.vioserial.vectors < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid vectors: %i"),
+                           def->opts.vioserial.vectors);
+            return NULL;
+        }
 
         def->opts.vioserial.ports = ports;
-        if (vectors) {
-            int r = virStrToLong_i(vectors, NULL, 10,
-                                   &def->opts.vioserial.vectors);
-            if (r != 0 || def->opts.vioserial.vectors < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Invalid vectors: %s"), vectors);
-                return NULL;
-            }
-        }
         break;
     }
     case VIR_DOMAIN_CONTROLLER_TYPE_USB: {
@@ -9731,98 +9724,32 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
             /* Other controller models don't require extra checks */
             break;
         }
-        if (modelName) {
-            int value;
-            if ((value = virDomainControllerPCIModelNameTypeFromString(modelName)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Unknown PCI controller model name '%s'"),
-                               modelName);
-                return NULL;
-            }
-            def->opts.pciopts.modelName = value;
-        }
-        if (chassisNr) {
-            if (virStrToLong_i(chassisNr, NULL, 0,
-                               &def->opts.pciopts.chassisNr) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid chassisNr '%s' in PCI controller"),
-                               chassisNr);
-                return NULL;
-            }
-        }
-        if (chassis) {
-            if (virStrToLong_i(chassis, NULL, 0,
-                               &def->opts.pciopts.chassis) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid chassis '%s' in PCI controller"),
-                               chassis);
-                return NULL;
-            }
-        }
-        if (port) {
-            if (virStrToLong_i(port, NULL, 0,
-                               &def->opts.pciopts.port) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid port '%s' in PCI controller"),
-                               port);
-                return NULL;
-            }
-        }
-        if (busNr) {
-            if (virStrToLong_i(busNr, NULL, 0,
-                               &def->opts.pciopts.busNr) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid busNr '%s' in PCI controller"),
-                               busNr);
-                return NULL;
-            }
-        }
-        if (targetIndex) {
-            if (virStrToLong_i(targetIndex, NULL, 0,
-                               &def->opts.pciopts.targetIndex) < 0 ||
-                def->opts.pciopts.targetIndex == -1) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid target index '%s' in PCI controller"),
-                               targetIndex);
-                return NULL;
-            }
-        }
+
         if (numaNode >= 0)
             def->opts.pciopts.numaNode = numaNode;
 
-        if (hotplug) {
-            int val = virTristateSwitchTypeFromString(hotplug);
-
-            if (val <= 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("PCI controller unrecognized hotplug setting '%s'"),
-                               hotplug);
-                return NULL;
-            }
-            def->opts.pciopts.hotplug = val;
-        }
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS: {
-        g_autofree char *gntframes = virXMLPropString(node, "maxGrantFrames");
-        g_autofree char *eventchannels = virXMLPropString(node, "maxEventChannels");
+        if ((rc = virXMLPropInt(node, "maxGrantFrames", 10, VIR_XML_PROP_NONE,
+                                &def->opts.xenbusopts.maxGrantFrames)) < 0)
+            return NULL;
 
-        if (gntframes) {
-            int r = virStrToLong_i(gntframes, NULL, 10,
-                                   &def->opts.xenbusopts.maxGrantFrames);
-            if (r != 0 || def->opts.xenbusopts.maxGrantFrames < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Invalid maxGrantFrames: %s"), gntframes);
-                return NULL;
-            }
+        if ((rc == 1) && def->opts.xenbusopts.maxGrantFrames < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid maxGrantFrames: %i"),
+                           def->opts.xenbusopts.maxGrantFrames);
+            return NULL;
         }
-        if (eventchannels) {
-            int r = virStrToLong_i(eventchannels, NULL, 10,
-                                   &def->opts.xenbusopts.maxEventChannels);
-            if (r != 0 || def->opts.xenbusopts.maxEventChannels < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Invalid maxEventChannels: %s"), eventchannels);
-                return NULL;
-            }
+
+        if ((rc = virXMLPropInt(node, "maxEventChannels", 10, VIR_XML_PROP_NONE,
+                                &def->opts.xenbusopts.maxEventChannels)) < 0)
+            return NULL;
+
+        if ((rc == 1) && def->opts.xenbusopts.maxEventChannels < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid maxEventChannels: %i"),
+                           def->opts.xenbusopts.maxEventChannels);
+            return NULL;
         }
         break;
     }
