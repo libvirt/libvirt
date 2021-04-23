@@ -1834,7 +1834,7 @@ struct _virDomainGraphicsDef {
             bool autoport;
             char *keymap;
             virDomainGraphicsAuthDef auth;
-            int sharePolicy;
+            virDomainGraphicsVNCSharePolicy sharePolicy;
             virTristateBool powerControl;
             unsigned int audioId;
         } vnc;
