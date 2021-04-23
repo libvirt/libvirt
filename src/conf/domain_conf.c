@@ -10066,49 +10066,30 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     xmlNodePtr bandwidth_node = NULL;
     xmlNodePtr vlanNode;
     xmlNodePtr virtPortNode;
-    g_autofree char *type = NULL;
-    g_autofree char *mode = NULL;
     g_autofree char *addrtype = NULL;
-    g_autofree char *trustGuestRxFilters = NULL;
     g_autofree char *macTableManager = NULL;
-    int type_value;
 
     actual = g_new0(virDomainActualNetDef, 1);
 
     ctxt->node = node;
 
-    type = virXMLPropString(node, "type");
-    if (!type) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("missing type attribute in interface's <actual> element"));
+    if (virXMLPropEnum(node, "type", virDomainNetTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &actual->type) < 0)
         goto error;
-    }
-    if ((type_value = virDomainNetTypeFromString(type)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown type '%s' in interface's <actual> element"), type);
-        goto error;
-    }
-    actual->type = type_value;
+
     if (actual->type != VIR_DOMAIN_NET_TYPE_BRIDGE &&
         actual->type != VIR_DOMAIN_NET_TYPE_DIRECT &&
         actual->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
         actual->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unsupported type '%s' in interface's <actual> element"),
-                       type);
+                       virDomainNetTypeToString(actual->type));
         goto error;
     }
 
-    if ((trustGuestRxFilters = virXMLPropString(node, "trustGuestRxFilters"))) {
-        int value;
-        if ((value = virTristateBoolTypeFromString(trustGuestRxFilters)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown trustGuestRxFilters value '%s'"),
-                           trustGuestRxFilters);
-            goto error;
-        }
-        actual->trustGuestRxFilters = value;
-    }
+    if (virXMLPropTristateBool(node, "trustGuestRxFilters", VIR_XML_PROP_NONE,
+                               &actual->trustGuestRxFilters) < 0)
+        goto error;
 
     virtPortNode = virXPathNode("./virtualport", ctxt);
     if (virtPortNode) {
@@ -10127,7 +10108,8 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("<virtualport> element unsupported for type='%s'"
-                             " in interface's <actual> element"), type);
+                             " in interface's <actual> element"),
+                             virDomainNetTypeToString(actual->type));
             goto error;
         }
     }
@@ -10136,19 +10118,18 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
         xmlNodePtr sourceNode = virXPathNode("./source[1]", ctxt);
 
         if (sourceNode) {
+            int rc;
+            virNetDevMacVLanMode mode;
+
             actual->data.direct.linkdev = virXMLPropString(sourceNode, "dev");
 
-            mode = virXMLPropString(sourceNode, "mode");
-            if (mode) {
-                int m;
-                if ((m = virNetDevMacVLanModeTypeFromString(mode)) < 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("Unknown mode '%s' in interface <actual> element"),
-                                   mode);
-                    goto error;
-                }
-                actual->data.direct.mode = m;
-            }
+            if ((rc = virXMLPropEnum(sourceNode, "mode",
+                                     virNetDevMacVLanModeTypeFromString,
+                                     VIR_XML_PROP_NONE, &mode)) < 0)
+                goto error;
+
+            if (rc == 1)
+                actual->data.direct.mode = mode;
         }
     } else if (actual->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         virDomainHostdevDef *hostdev = &actual->data.hostdev.def;
