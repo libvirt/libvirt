@@ -13230,25 +13230,13 @@ virDomainGraphicsDefParseXML(virDomainXMLOption *xmlopt,
                              unsigned int flags)
 {
     virDomainGraphicsDef *def;
-    int typeVal;
-    g_autofree char *type = NULL;
 
     if (!(def = virDomainGraphicsDefNew(xmlopt)))
         return NULL;
 
-    type = virXMLPropString(node, "type");
-    if (!type) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("missing graphics device type"));
+    if (virXMLPropEnum(node, "type", virDomainGraphicsTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &def->type) < 0)
         goto error;
-    }
-
-    if ((typeVal = virDomainGraphicsTypeFromString(type)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown graphics device type '%s'"), type);
-        goto error;
-    }
-    def->type = typeVal;
 
     switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
