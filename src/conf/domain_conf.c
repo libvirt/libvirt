@@ -9520,8 +9520,7 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
     if (!(def = virDomainControllerDefNew(type)))
         return NULL;
 
-    model = virXMLPropString(node, "model");
-    if (model) {
+    if ((model = virXMLPropString(node, "model"))) {
         if ((def->model = virDomainControllerModelTypeFromString(def, model)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown model type '%s'"), model);
@@ -9532,8 +9531,7 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
     idx = virXMLPropString(node, "index");
     if (idx) {
         unsigned int idxVal;
-        if (virStrToLong_ui(idx, NULL, 10, &idxVal) < 0 ||
-            idxVal > INT_MAX) {
+        if (virStrToLong_ui(idx, NULL, 10, &idxVal) < 0 || idxVal > INT_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Cannot parse controller index %s"), idx);
             return NULL;
