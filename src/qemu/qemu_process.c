@@ -2741,8 +2741,7 @@ qemuProcessSetupPid(virDomainObj *vm,
 
             /* Look for the guest NUMA node of this vCPU */
             for (i = 0; i < virDomainNumaGetNodeCount(numatune); i++) {
-                g_autoptr(virBitmap) node_cpus = NULL;
-                node_cpus = virDomainNumaGetNodeCpumask(numatune, i);
+                virBitmap *node_cpus = virDomainNumaGetNodeCpumask(numatune, i);
 
                 if (!virBitmapIsBitSet(node_cpus, id))
                     continue;
