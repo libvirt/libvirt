@@ -990,7 +990,7 @@ typedef enum {
  * different versions of libvirt may read the same data file.
  */
 struct _virDomainActualNetDef {
-    int type; /* enum virDomainNetType */
+    virDomainNetType type;
     union {
         struct {
             char *brname;

@@ -2468,7 +2468,16 @@ virDomainActualNetDefFree(virDomainActualNetDef *def)
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
         virDomainHostdevDefClear(&def->data.hostdev.def);
         break;
-    default:
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_UDP:
+    case VIR_DOMAIN_NET_TYPE_VDPA:
+    case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }
 
@@ -10137,6 +10146,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     g_autofree char *addrtype = NULL;
     g_autofree char *trustGuestRxFilters = NULL;
     g_autofree char *macTableManager = NULL;
+    int type_value;
 
     actual = g_new0(virDomainActualNetDef, 1);
 
@@ -10148,11 +10158,12 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
                        _("missing type attribute in interface's <actual> element"));
         goto error;
     }
-    if ((actual->type = virDomainNetTypeFromString(type)) < 0) {
+    if ((type_value = virDomainNetTypeFromString(type)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown type '%s' in interface's <actual> element"), type);
         goto error;
     }
+    actual->type = type_value;
     if (actual->type != VIR_DOMAIN_NET_TYPE_BRIDGE &&
         actual->type != VIR_DOMAIN_NET_TYPE_DIRECT &&
         actual->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
@@ -30189,9 +30200,20 @@ virDomainNetGetActualVirtPortProfile(const virDomainNetDef *iface)
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
         case VIR_DOMAIN_NET_TYPE_HOSTDEV:
             return iface->data.network.actual->virtPortProfile;
-        default:
-            return NULL;
+        case VIR_DOMAIN_NET_TYPE_USER:
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        case VIR_DOMAIN_NET_TYPE_SERVER:
+        case VIR_DOMAIN_NET_TYPE_CLIENT:
+        case VIR_DOMAIN_NET_TYPE_MCAST:
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
+        case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        case VIR_DOMAIN_NET_TYPE_UDP:
+        case VIR_DOMAIN_NET_TYPE_VDPA:
+        case VIR_DOMAIN_NET_TYPE_LAST:
+            break;
         }
+        return NULL;
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
