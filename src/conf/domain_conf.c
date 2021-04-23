@@ -13307,17 +13307,19 @@ virDomainSoundDefParseXML(virDomainXMLOption *xmlopt,
     virDomainSoundDef *def;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *model = NULL;
+    int modelval;
     xmlNodePtr audioNode;
 
     def = g_new0(virDomainSoundDef, 1);
     ctxt->node = node;
 
     model = virXMLPropString(node, "model");
-    if ((def->model = virDomainSoundModelTypeFromString(model)) < 0) {
+    if ((modelval = virDomainSoundModelTypeFromString(model)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown sound model '%s'"), model);
         goto error;
     }
+    def->model = modelval;
 
     if (virDomainSoundModelSupportsCodecs(def)) {
         int ncodecs;

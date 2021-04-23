@@ -4133,7 +4133,7 @@ qemuBuildSoundDevStr(const virDomainDef *def,
     const char *model = NULL;
 
     /* Hack for devices with different names in QEMU and libvirt */
-    switch ((virDomainSoundModel) sound->model) {
+    switch (sound->model) {
     case VIR_DOMAIN_SOUND_MODEL_ES1370:
         model = "ES1370";
         break;

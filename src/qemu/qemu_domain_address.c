@@ -759,7 +759,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
     }
 
     case VIR_DOMAIN_DEVICE_SOUND:
-        switch ((virDomainSoundModel) dev->data.sound->model) {
+        switch (dev->data.sound->model) {
         case VIR_DOMAIN_SOUND_MODEL_ES1370:
         case VIR_DOMAIN_SOUND_MODEL_AC97:
         case VIR_DOMAIN_SOUND_MODEL_ICH6:

@@ -4385,7 +4385,7 @@ qemuValidateDomainDeviceDefSound(virDomainSoundDef *sound,
 {
     size_t i;
 
-    switch ((virDomainSoundModel) sound->model) {
+    switch (sound->model) {
     case VIR_DOMAIN_SOUND_MODEL_USB:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_USB_AUDIO)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

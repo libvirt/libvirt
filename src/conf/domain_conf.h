@@ -1449,7 +1449,7 @@ struct _virDomainSoundCodecDef {
 };
 
 struct _virDomainSoundDef {
-    int model;
+    virDomainSoundModel model;
     virDomainDeviceInfo info;
 
     size_t ncodecs;
