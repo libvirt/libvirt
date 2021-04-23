@@ -856,7 +856,7 @@ virXMLPropEnum(xmlNodePtr node,
     }
 
     *result = ret;
-    return 0;
+    return 1;
 }
 
 /**
