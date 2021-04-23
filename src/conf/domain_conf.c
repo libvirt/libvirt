@@ -12739,11 +12739,8 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDef *def,
                                 unsigned int flags)
 {
     g_autofree char *port = virXMLPropString(node, "port");
-    g_autofree char *websocket = virXMLPropString(node, "websocket");
     g_autofree char *websocketGenerated = virXMLPropString(node, "websocketGenerated");
-    g_autofree char *sharePolicy = virXMLPropString(node, "sharePolicy");
     g_autofree char *autoport = virXMLPropString(node, "autoport");
-    g_autofree char *powerControl = virXMLPropString(node, "powerControl");
     xmlNodePtr audioNode;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
@@ -12774,62 +12771,32 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDef *def,
             def->data.vnc.port = 0;
     }
 
-    if (websocket) {
-        if (virStrToLong_i(websocket,
-                           NULL, 10,
-                           &def->data.vnc.websocket) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot parse vnc WebSocket port %s"), websocket);
-            return -1;
-        }
-    }
+    if (virXMLPropInt(node, "websocket", 10, VIR_XML_PROP_NONE,
+                      &def->data.vnc.websocket) < 0)
+        return -1;
 
     if (websocketGenerated)
         ignore_value(virStringParseYesNo(websocketGenerated,
                      &def->data.vnc.websocketGenerated));
 
-    if (sharePolicy) {
-        int policy =
-           virDomainGraphicsVNCSharePolicyTypeFromString(sharePolicy);
+    if (virXMLPropEnum(node, "sharePolicy",
+                       virDomainGraphicsVNCSharePolicyTypeFromString,
+                       VIR_XML_PROP_NONE, &def->data.vnc.sharePolicy) < 0)
+        return -1;
 
-        if (policy < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown vnc display sharing policy '%s'"),
-                           sharePolicy);
-            return -1;
-        } else {
-            def->data.vnc.sharePolicy = policy;
-        }
-    }
-
-    if (powerControl) {
-        int powerControlVal = virTristateBoolTypeFromString(powerControl);
-        if (powerControlVal < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot parse vnc power control '%s'"), powerControl);
-            return -1;
-        }
-        def->data.vnc.powerControl = powerControlVal;
-    }
+    if ((virXMLPropTristateBool(node, "powerControl", VIR_XML_PROP_NONE,
+                                &def->data.vnc.powerControl)) < 0)
+        return -1;
 
     def->data.vnc.keymap = virXMLPropString(node, "keymap");
 
     ctxt->node = node;
     audioNode = virXPathNode("./audio", ctxt);
     if (audioNode) {
-        g_autofree char *tmp = NULL;
-        tmp = virXMLPropString(audioNode, "id");
-        if (!tmp) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("missing audio 'id' attribute"));
+        if (virXMLPropUInt(audioNode, "id", 10,
+                           VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                           &def->data.vnc.audioId) < 0)
             return -1;
-        }
-        if (virStrToLong_ui(tmp, NULL, 10, &def->data.vnc.audioId) < 0 ||
-            def->data.vnc.audioId == 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid audio 'id' value '%s'"), tmp);
-            return -1;
-        }
     }
 
     if (virDomainGraphicsAuthDefParseXML(node, &def->data.vnc.auth,
