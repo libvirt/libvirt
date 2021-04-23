@@ -2755,7 +2755,7 @@ struct _virDomainDef {
     int xen_features[VIR_DOMAIN_XEN_LAST];
     int xen_passthrough_mode;
     unsigned int hyperv_spinlocks;
-    int hyperv_stimer_direct;
+    virTristateSwitch hyperv_stimer_direct;
     virGICVersion gic_version;
     virDomainHPTResizing hpt_resizing;
     unsigned long long hpt_maxpagesize; /* Stored in KiB */
