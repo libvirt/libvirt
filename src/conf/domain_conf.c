@@ -12813,42 +12813,23 @@ virDomainGraphicsDefParseXMLSDL(virDomainGraphicsDef *def,
                                 xmlXPathContextPtr ctxt)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    int enableVal;
     xmlNodePtr glNode;
-    g_autofree char *fullscreen = virXMLPropString(node, "fullscreen");
-    g_autofree char *enable = NULL;
+    virTristateBool fullscreen = VIR_TRISTATE_BOOL_NO;
 
     ctxt->node = node;
 
-    if (fullscreen != NULL) {
-        if (virStringParseYesNo(fullscreen, &def->data.sdl.fullscreen) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown fullscreen value '%s'"), fullscreen);
-            return -1;
-        }
-    } else {
-        def->data.sdl.fullscreen = false;
-    }
+    if (virXMLPropTristateBool(node, "fullscreen", VIR_XML_PROP_NONE,
+                               &fullscreen) < 0)
+        return -1;
 
+    def->data.sdl.fullscreen = fullscreen == VIR_TRISTATE_BOOL_YES;
     def->data.sdl.xauth = virXMLPropString(node, "xauth");
     def->data.sdl.display = virXMLPropString(node, "display");
 
-    glNode = virXPathNode("./gl", ctxt);
-    if (glNode) {
-        enable = virXMLPropString(glNode, "enable");
-        if (!enable) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("sdl gl element missing enable"));
+    if ((glNode = virXPathNode("./gl", ctxt))) {
+        if (virXMLPropTristateBool(glNode, "enable", VIR_XML_PROP_REQUIRED,
+                                   &def->data.sdl.gl) < 0)
             return -1;
-        }
-
-        enableVal = virTristateBoolTypeFromString(enable);
-        if (enableVal < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown enable value '%s'"), enable);
-            return -1;
-        }
-        def->data.sdl.gl = enableVal;
     }
 
     return 0;
