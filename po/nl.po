@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-03-26 11:32+0000\n"
+"POT-Creation-Date: 2021-04-27 08:10+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -40,6 +40,7 @@ msgstr ""
 "  (specificeer help <groep> voor details over de commando's in de groep)\n"
 "\n"
 
+#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -290,6 +291,7 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr ""
 
+#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  NAAM\n"
 
@@ -457,14 +459,6 @@ msgid "%s is missing or not an array"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "%s is not a supported cipher name"
-msgstr "%s harde schijf '%s' heeft niet-ondersteunde cache mode '%s'"
-
-#, fuzzy, c-format
-msgid "%s is not a supported cipher state"
-msgstr "domein is niet in de opgeschorte toestand"
-
-#, fuzzy, c-format
 msgid "%s is not an executable"
 msgstr "is niet actief"
 
@@ -532,6 +526,16 @@ msgstr "SATA wordt niet ondersteund met dit QEMU binaire programma"
 msgid "%s object has invalid dynamic type"
 msgstr ""
 
+#.
+#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
+#. * enumeration values).
+#. *
+#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
+#.
+#.
+#. * Macros to implement managed objects
+#.
+#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, fuzzy, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s mist 'type' eigenschap"
@@ -1023,27 +1027,14 @@ msgid ""
 "'arch' element cannot be used inside 'cpu' element with 'match' attribute'"
 msgstr ""
 
-#, c-format
-msgid "'auto' attribute can be 'yes' or 'no': %s"
-msgstr ""
-
 msgid "'base' and 'baseNode' can't be used together"
 msgstr ""
-
-#, fuzzy
-msgid ""
-"'bus', 'target', and 'unit' must be specified for scsi hostdev source address"
-msgstr "doel type moet gespecificeerd worden voor %s apparaat"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr ""
 
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "'cid' attribute must be a positive number: %s"
-msgstr "sndbuf moet een positief geheel getal zijn"
 
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
 msgstr ""
@@ -1182,6 +1173,11 @@ msgid ""
 "type='vhostuser'>"
 msgstr ""
 
+msgid ""
+"'restrictive' mode is required in memnode element when mode is 'restrictive' "
+"in memory element"
+msgstr ""
+
 #, c-format
 msgid "'rx_queue_size' attribute must be positive number: %s"
 msgstr ""
@@ -1303,6 +1299,7 @@ msgstr "ongeldige VM definitie"
 msgid "(libxl_migration_cookie)"
 msgstr ""
 
+#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr ""
 
@@ -1370,6 +1367,7 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr "ongeldige VM definitie"
 
+#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -1582,6 +1580,12 @@ msgstr ""
 #, fuzzy
 msgid "A storage driver is already registered"
 msgstr "opslag volume bestaat al"
+
+msgid "ACPI index is not supported with this QEMU"
+msgstr ""
+
+msgid "ACPI index is only supported for PCI devices"
+msgstr ""
 
 msgid "ACPI requires UEFI on this architecture"
 msgstr ""
@@ -2258,10 +2262,14 @@ msgid ""
 "dirtyrate'."
 msgstr ""
 
+#.
+#. * Macros to implement dynamic dispatched functions
+#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "Aanroep naar %s voor onverwacht type '%s'"
 
+#. nothing
 #, fuzzy, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "Aanroep naar %s voor onverwacht type '%s'"
@@ -2975,62 +2983,12 @@ msgstr "Kan controller index %s niet ontleden"
 msgid "Cannot parse <VirtualBox> <Machine> node"
 msgstr ""
 
-msgid "Cannot parse <address> 'bus' attribute"
-msgstr "Kan <adres> 'bus' attribuut niet ontleden"
-
-msgid "Cannot parse <address> 'controller' attribute"
-msgstr "Kan <adres> 'controller' attribuut niet ontleden"
-
-#, fuzzy
-msgid "Cannot parse <address> 'cssid' attribute"
-msgstr "Kan <adres> 'bus' attribuut niet ontleden"
-
-#, fuzzy
-msgid "Cannot parse <address> 'devno' attribute"
-msgstr "Kan <adres> 'domain' attribuut niet ontleden"
-
-msgid "Cannot parse <address> 'domain' attribute"
-msgstr "Kan <adres> 'domain' attribuut niet ontleden"
-
-#, fuzzy
-msgid "Cannot parse <address> 'fid' attribute"
-msgstr "Kan <adres> 'unit' attribuut niet ontleden"
-
-msgid "Cannot parse <address> 'function' attribute"
-msgstr "Kan <adres> 'function' attribuut niet ontleden"
-
-#, fuzzy
-msgid "Cannot parse <address> 'iobase' attribute"
-msgstr "Kan <adres> 'bus' attribuut niet ontleden"
-
-#, fuzzy
-msgid "Cannot parse <address> 'irq' attribute"
-msgstr "Kan <adres> 'port' attribuut niet ontleden"
-
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "Kan <adres> 'port' attribuut niet ontleden"
 
 #, fuzzy
 msgid "Cannot parse <address> 'reg' attribute"
 msgstr "Kan <adres> 'port' attribuut niet ontleden"
-
-msgid "Cannot parse <address> 'slot' attribute"
-msgstr "Kan <adres> 'slot' attribuut niet ontleden"
-
-#, fuzzy
-msgid "Cannot parse <address> 'ssid' attribute"
-msgstr "Kan <adres> 'bus' attribuut niet ontleden"
-
-#, fuzzy
-msgid "Cannot parse <address> 'target' attribute"
-msgstr "Kan <adres> 'port' attribuut niet ontleden"
-
-#, fuzzy
-msgid "Cannot parse <address> 'uid' attribute"
-msgstr "Kan <adres> 'unit' attribuut niet ontleden"
-
-msgid "Cannot parse <address> 'unit' attribute"
-msgstr "Kan <adres> 'unit' attribuut niet ontleden"
 
 #, fuzzy
 msgid "Cannot parse <local> 'port' attribute with socket interface"
@@ -4727,6 +4685,7 @@ msgstr ""
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr ""
 
+#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "Kon pool informatie niet ophalen"
 
@@ -5046,6 +5005,9 @@ msgstr "data opslagInfo heeft onverwacht type"
 msgid "Default paths:"
 msgstr ""
 
+msgid "Define a device by an xml file on a node"
+msgstr ""
+
 msgid "Define a domain."
 msgstr "Definieer een domein."
 
@@ -5073,6 +5035,11 @@ msgstr "Definieer of wijzig een geheim."
 #, fuzzy
 msgid "Defined"
 msgstr "Definieer een domein."
+
+msgid ""
+"Defines a persistent device on the node that can be assigned to a domain. "
+"The device must be started before it can be assigned to a domain."
+msgstr ""
 
 #, fuzzy
 msgid "Delete a domain checkpoint"
@@ -5194,6 +5161,10 @@ msgstr "Apparaat %s is vastgekoppeld\n"
 msgid "Device %s reset\n"
 msgstr "Apparaat %s is hersteld\n"
 
+#, c-format
+msgid "Device %s started\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Device %s un-attached from bridge %s\n"
 msgstr "Apparaat %s is vastgekoppeld\n"
@@ -5232,6 +5203,9 @@ msgstr "Apparaat is goed losgekoppeld\n"
 
 msgid "Device detached successfully\n"
 msgstr "Apparaat is goed losgekoppeld\n"
+
+msgid "Device is already active"
+msgstr ""
 
 msgid "Device is not a fibre channel HBA"
 msgstr "Apparaat is geen fibre channel HBA"
@@ -5572,6 +5546,7 @@ msgid ""
 msgstr ""
 "Domein heeft %d interfaces. Specificeer welke los te koppelen met --mac"
 
+#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -6073,7 +6048,7 @@ msgid "Expected exactly 1 host for the storage pool"
 msgstr ""
 
 #, c-format
-msgid "Expecting %d FD names but got %zu"
+msgid "Expecting %d FD names but got %u"
 msgstr ""
 
 #, fuzzy, c-format
@@ -6170,13 +6145,11 @@ msgstr ""
 "Verwacht dat VMX ingang 'sched.cpu.affinity' een door komma's gescheiden "
 "lijst van gehele getallen zonder teken is maar vond '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to contain at least as many values "
-"as 'numvcpus' (%lld) but found only %zu value(s)"
+"as 'numvcpus' (%lld) but found only %u value(s)"
 msgstr ""
-"Verwacht dat VMX ingang 'sched.cpu.affinity' een door komma's gescheiden "
-"lijst van gehele getallen zonder teken is maar vond '%s'"
 
 #, fuzzy, c-format
 msgid ""
@@ -6498,10 +6471,6 @@ msgid "Failed to build pool %s"
 msgstr "Bouwen van pool %s mislukte"
 
 #, fuzzy, c-format
-msgid "Failed to canonicalize path '%s'"
-msgstr "Pad %s maken mislukte"
-
-#, fuzzy, c-format
 msgid "Failed to change owner of %s to %u:%u"
 msgstr "kan eigenaar van '%s' niet instellen op %d:%d"
 
@@ -6812,14 +6781,21 @@ msgstr "%s aanmaken mislukte"
 msgid "Failed to create thread for receiving migration data"
 msgstr "Aanmaken van domein uit %s mislukte"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "Aanmaken van domein uit %s mislukte"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Aanmaken van domein uit %s mislukte"
 
+#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Aanmaken van pool uit %s mislukte"
@@ -6875,6 +6851,10 @@ msgstr "Verwijderen van definitie van interface %s mislukte"
 #, fuzzy, c-format
 msgid "Failed to define new interface %s"
 msgstr "Verwijderen van definitie van interface %s mislukte"
+
+#, c-format
+msgid "Failed to define node device from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to define pool %s"
@@ -7408,6 +7388,7 @@ msgstr "Het tonen van actieve netwerken mislukte"
 msgid "Failed to list active pools"
 msgstr "Het tonen van actieve pools mislukte"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list domains"
 msgstr "Het tonen van actieve domeinen mislukte"
@@ -7424,24 +7405,30 @@ msgstr "Het tonen van inactieve netwerken mislukte"
 msgid "Failed to list inactive pools"
 msgstr "Het tonen van inactieve pools mislukte"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list interfaces"
 msgstr "Het tonen van actieve interfaces mislukte"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "Tonen van lijst van netwerk filter mislukte"
 
+#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "Tonen van lijst van netwerk filter mislukte"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list networks"
 msgstr "Tonen van lijst van netwerk filter mislukte"
 
+#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "Lijst van node apparaten tonen mislukte"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list node secrets"
 msgstr "tonen van lijst geheimen mislukte"
@@ -7450,6 +7437,7 @@ msgstr "tonen van lijst geheimen mislukte"
 msgid "Failed to list persistent guests on $uri"
 msgstr "tonen van lijst geheimen mislukte"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list pools"
 msgstr "Het tonen van actieve pools mislukte"
@@ -7472,6 +7460,7 @@ msgstr "tonen van lijst geheimen mislukte"
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "Afsluiten van domein '%d' met libxenlight mislukte"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list volumes"
 msgstr "Het tonen van opslag volumes mislukte"
@@ -8062,6 +8051,9 @@ msgstr "Rebooten van domein '%d' met  mislukte"
 msgid "Failed to resume domain '%s'"
 msgstr ""
 
+#. Hm, we already know we are in error here.  We don't want to
+#. * overwrite the previous error, though, so we just throw something
+#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "Gast %s hervatten na een storing mislukte"
@@ -8323,6 +8315,10 @@ msgid "Failed to start bridge interface %s"
 msgstr "Starten van interface %s mislukte"
 
 #, c-format
+msgid "Failed to start device %s"
+msgstr ""
+
+#, c-format
 msgid "Failed to start domain '%s'"
 msgstr ""
 
@@ -8436,6 +8432,10 @@ msgstr "Verwijderen van definitie van netwerk %s mislukte"
 #, c-format
 msgid "Failed to undefine network filter %s"
 msgstr "Verwijderen van definitie van netwerk filter %s mislukte"
+
+#, c-format
+msgid "Failed to undefine node device '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to undefine pool %s"
@@ -8683,10 +8683,63 @@ msgstr ""
 "Eerste bestand-gebaseerde harde schijf heeft geen bron, kan data opslag en "
 "pad voor VMX bestand niet afleiden"
 
+#. Macros to help dealing with flag requirements.
+#. *
+#. * VIR_REQUIRE_FLAG_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @RET: Return value.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_REQUIRE_FLAG_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if required flag is not set.
+#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive flags.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @RET: Return value.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr ""
@@ -9727,10 +9780,15 @@ msgstr "ongeldig MAC adres"
 msgid "Invalid allow value, either 'yes' or 'no'"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Invalid append attribute value '%s'"
-msgstr "Ongeldig relatief pad: '%s'"
-
+#.
+#. * Don't check for *selectSet != NULL here because selectSet is a list
+#. * and might contain items already. This function appends to selectSet.
+#.
+#. optional
+#. optional
+#. nothing
+#. nothing
+#. nothing
 msgid "Invalid argument"
 msgstr "Ongeldig argument"
 
@@ -9874,10 +9932,6 @@ msgstr ""
 msgid "Invalid chassisNr '%s' in PCI controller"
 msgstr ""
 
-#, fuzzy
-msgid "Invalid check attribute for CPU specification"
-msgstr "Ongeldig match attribuut voor CPU specificatie"
-
 #, fuzzy, c-format
 msgid "Invalid class ID %d"
 msgstr "ongeldig host UUID: %s"
@@ -9936,6 +9990,10 @@ msgid "Invalid device type supplied: %s"
 msgstr "ongeldig USB apparaat nummer opgegeven voor '%s'"
 
 msgid "Invalid disk bus in definition"
+msgstr ""
+
+#, c-format
+msgid "Invalid disk read error policy: '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -10062,10 +10120,6 @@ msgid "Invalid forwarder element, must contain at least one of addr or domain"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "Invalid fromConfig value: %s"
-msgstr "Ongeldig netwerk filter: %s"
-
-#, fuzzy, c-format
 msgid "Invalid guest rx filters trust setting '%s' "
 msgstr "Ongeldig netwerk filter: %s"
 
@@ -10093,20 +10147,12 @@ msgstr "Ongeldig relatief pad: '%s'"
 msgid "Invalid integer value '%s' in file '%s'"
 msgstr "Ongeldige waarde '%s' voor VMX ingang '%s'"
 
-#, fuzzy, c-format
-msgid "Invalid iothread attribute in disk driver element: %s"
-msgstr "Ongeldige harde schijf apparaat naam: %s"
-
 msgid "Invalid ip address prefix value"
 msgstr "ongeldige ip adres prefix waarde"
 
 #, fuzzy, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "Ongeldig bridge mac adres '%s' in netwerk '%s'"
-
-#, c-format
-msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
-msgstr ""
 
 #, fuzzy
 msgid "Invalid job flags"
@@ -10179,14 +10225,6 @@ msgstr "Ongeldige poorten: %s"
 #, fuzzy, c-format
 msgid "Invalid memory core dump attribute value '%s'"
 msgstr "Ongeldig beveiliging label '%s'"
-
-#, c-format
-msgid "Invalid memorytune attribute 'bandwidth' value '%s'"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "Invalid memorytune attribute 'id' value '%s'"
-msgstr "Ongeldig relatief pad: '%s'"
 
 #, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
@@ -10415,7 +10453,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid specification for virtio ccw address: cssid='%s' ssid='%s' devno='%s'"
+"Invalid specification for virtio ccw address: cssid='0x%x' ssid='0x%x' "
+"devno='0x%04x'"
 msgstr ""
 
 msgid "Invalid specification of multiple <filterref>s in a single <interface>"
@@ -10465,10 +10504,6 @@ msgid "Invalid target model for serial device"
 msgstr "doel van schijf apparaat"
 
 #, fuzzy, c-format
-msgid "Invalid tlsFromConfig value: %s"
-msgstr "Ongeldig netwerk filter: %s"
-
-#, fuzzy, c-format
 msgid ""
 "Invalid to specify MAC address '%s' in network '%s' IPv6 static host "
 "definition"
@@ -10515,6 +10550,10 @@ msgid ""
 "no inbound QoS set"
 msgstr ""
 
+#, c-format
+msgid "Invalid uuid '%s' for new mdev device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid value '%s' for '%s'"
 msgstr "Ongeldige waarde '%s' voor VMX ingang '%s'"
@@ -10526,6 +10565,32 @@ msgstr "Ongeldige waarde '%s' voor VMX ingang '%s'"
 #, fuzzy, c-format
 msgid "Invalid value '%s' for element or attribute '%s'"
 msgstr "Ongeldige waarde '%s' voor VMX ingang '%s'"
+
+#, c-format
+msgid "Invalid value for attribute '%s' in element '%s': '%s'."
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected 'on' or "
+"'off'"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected 'yes' or "
+"'no'"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
+"value"
+msgstr ""
+
+#, c-format
+msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid value for element priority"
@@ -10595,10 +10660,10 @@ msgstr "Ongeldige vectoren: %s"
 msgid "Invalid vendor element in CPU model %s"
 msgstr "Ongeldig leverancier element in CPU model %s"
 
-msgid "Invalid virNetLibsshSessionPtr"
+msgid "Invalid virNetLibsshSession *"
 msgstr ""
 
-msgid "Invalid virNetSSHSessionPtr"
+msgid "Invalid virNetSSHSession *"
 msgstr ""
 
 #, fuzzy, c-format
@@ -11285,10 +11350,6 @@ msgstr "Ontbrekend IP adres in statische host definitie van netwerk '%s'"
 msgid "Missing 'filename' in CPU map include"
 msgstr "Ontbrekende voorouder naam in CPU model %s"
 
-#, fuzzy
-msgid "Missing 'id' attribute in <iothread> element"
-msgstr "Ontbrekende 'threads' attribuut in CPU topologie"
-
 #, c-format
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr ""
@@ -11611,13 +11672,6 @@ msgstr ""
 msgid "Missing max_workers data in JSON document"
 msgstr ""
 
-msgid "Missing memorytune attribute 'bandwidth'"
-msgstr ""
-
-#, fuzzy
-msgid "Missing memorytune attribute 'id'"
-msgstr "ontbrekend opstartvolgorde attribuut"
-
 msgid "Missing min_workers data in JSON document"
 msgstr ""
 
@@ -11800,6 +11854,10 @@ msgstr "Ontbrekend IP adres in statische host definitie van netwerk '%s'"
 #, fuzzy
 msgid "Missing required address in <ip>"
 msgstr "Ontbrekend adres"
+
+#, c-format
+msgid "Missing required attribute '%s' in element '%s'"
+msgstr ""
 
 msgid "Missing required cellid attribute in memnode element"
 msgstr ""
@@ -12152,6 +12210,12 @@ msgstr "SATA wordt niet ondersteund met dit QEMU binaire programma"
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
+#. Output old style header
+#. We only get here if the --details option was selected.
+#. Insert the header into table
+#. The old output format
+#. We only get here if the --details option was selected.
+#. Insert the header into table
 msgid "Name"
 msgstr "Naam"
 
@@ -12802,6 +12866,14 @@ msgstr "Node apparaat niet gevonden"
 msgid "Node device %s created from %s\n"
 msgstr "Node apparaat %s werd aangemaakt uit %s\n"
 
+#, c-format
+msgid "Node device '%s' defined from '%s'\n"
+msgstr ""
+
+#, c-format
+msgid "Node device '%s' is not defined"
+msgstr ""
+
 msgid "Node device not found"
 msgstr "Node apparaat niet gevonden"
 
@@ -13183,11 +13255,31 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
+#. Macros to help dealing with required options.
+#. VSH_REQUIRE_OPTION_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable).
+#. * @NAME2: String containing the name of required option.
+#. * @EXPR2: Expression to validate the variable (boolean variable).
+#. *
+#. * Check if required command options in virsh was set.  Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
 
+msgid "Option --all is incompatible with --inactive"
+msgstr ""
+
 msgid "Option --file is required"
+msgstr ""
+
+msgid "Option --tree is incompatible with other options"
 msgstr ""
 
 msgid "Option argument is empty"
@@ -13196,11 +13288,22 @@ msgstr ""
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive options.
+#. VSH_EXCLUSIVE_OPTIONS_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable)
+#. * @NAME2: String containing the name of the option.
+#. * @EXPR2: Expression to validate the variable (boolean variable)
+#. *
+#. * Reject mutually exclusive command options in virsh. Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
-msgstr ""
-
-msgid "Options --tree and --cap are incompatible"
 msgstr ""
 
 msgid "Options:"
@@ -13436,6 +13539,12 @@ msgstr ""
 msgid "Parent device %s is not capable of vport operations"
 msgstr "Ouder apparaat %s kan geen vport bewerkingen uitvoeren"
 
+msgid "Parent device is not an object"
+msgstr ""
+
+msgid "Parent device's JSON object data is not an array"
+msgstr ""
+
 #, fuzzy
 msgid "Parent:"
 msgstr "Permanent:"
@@ -13448,6 +13557,7 @@ msgstr ""
 msgid "Partition path '%s' must start with '/'"
 msgstr ""
 
+#. warn users that the --base64 option passed from command line is wrong
 #, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "Geen qemu commando-regel argument opgegeven"
@@ -14314,6 +14424,7 @@ msgstr "Andere taken wachten op afhandeling voor dit domein"
 msgid "S4 state is disabled for this domain"
 msgstr "Andere taken wachten op afhandeling voor dit domein"
 
+#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14834,6 +14945,9 @@ msgstr "CPU tijd:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "spice graphics wordt niet ondersteund met deze QEMU"
 
+#. XXX: Need to sort the returned params once new parameter
+#. * fields not of shared memory are added.
+#.
 #, fuzzy
 msgid "Shared memory:\n"
 msgstr "Gebruikt geheugen:"
@@ -14917,6 +15031,7 @@ msgstr "SATA wordt niet ondersteund met dit QEMU binaire programma"
 msgid "Snapshot"
 msgstr "Snapshot lijst"
 
+#. Depending on flags, we re-edit even if XML is unchanged.
 #, fuzzy, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "Domein %s XML configuratie niet gewijzigd.\n"
@@ -15063,6 +15178,9 @@ msgstr "Start een netwerk."
 msgid "Start a pool."
 msgstr "Start een pool."
 
+msgid "Start an inactive node device"
+msgstr ""
+
 msgid "Start to calculate domain's memory dirty rate successfully.\n"
 msgstr ""
 
@@ -15072,6 +15190,9 @@ msgstr "gestart"
 
 #, sh-format
 msgid "Starting shutdown on guest: $name"
+msgstr ""
+
+msgid "Starts an inactive node device that was previously defined"
 msgstr ""
 
 msgid "State"
@@ -15381,7 +15502,12 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr ""
 
+#. title
 msgid "Target"
+msgstr ""
+
+#, c-format
+msgid "Target ACPI index '%u' does not match source '%u'"
 msgstr ""
 
 #, c-format
@@ -15659,6 +15785,10 @@ msgid "Target disk model %s does not match source %s"
 msgstr ""
 "Netwerk configuratie bestandsnaam '%s' komt niet overeen met netwerk naam "
 "'%s'"
+
+#, c-format
+msgid "Target disk rotation rate %u RPM does not match source %u RPM"
+msgstr ""
 
 #, c-format
 msgid "Target disk serial %s does not match source %s"
@@ -16662,9 +16792,11 @@ msgstr ""
 msgid "Try again?"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr ""
 
@@ -17238,6 +17370,10 @@ msgstr ""
 msgid "Unable to create media registry"
 msgstr "kan socket paar niet aanmaken"
 
+#, c-format
+msgid "Unable to create mediated device: %s"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to create migration thread"
 msgstr "Kan domein status niet krijgen"
@@ -17303,6 +17439,10 @@ msgstr "Kan geen sessie leider worden"
 msgid "Unable to decode number of FDs"
 msgstr "Kan aantal geheugen parameters niet verkrijgen"
 
+#, c-format
+msgid "Unable to define mediated device: %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to delete %s"
 msgstr "Kan %s niet openen"
@@ -17333,6 +17473,14 @@ msgstr "kan het domein niet verwijderen, rc=%08x"
 #, fuzzy, c-format
 msgid "Unable to delete port %s from OVS"
 msgstr "Verwijderen van pool %s mislukte"
+
+#, c-format
+msgid "Unable to destroy '%s': %s"
+msgstr ""
+
+#, c-format
+msgid "Unable to destroy '%s': device in use"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to detect filesystem for %s"
@@ -17589,9 +17737,11 @@ msgstr "Kan %s niet openen"
 msgid "Unable to get XML Desc of snapshot"
 msgstr "Kan domein status niet krijgen"
 
-#, fuzzy
-msgid "Unable to get a virDomainSnapshotDefPtr"
-msgstr "Kan domein status niet krijgen"
+msgid "Unable to get a virDomainSnapshotDef *"
+msgstr ""
+
+msgid "Unable to get any controller"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to get blkio parameters"
@@ -18010,6 +18160,10 @@ msgstr "pool %s als autostart te markeren mislukte"
 msgid "Unable to modify live devices"
 msgstr "kan geen toegang tot apparaat %s krijgen\n"
 
+#, c-format
+msgid "Unable to monitor directory: %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to move %s mount to %s"
 msgstr "Kan %s (%d) niet verwijderen"
@@ -18152,6 +18306,9 @@ msgstr "Ontleden mode '%s' mislukte"
 msgid "Unable to parse base SELinux context '%s'"
 msgstr "kan beveiliging context '%s' niet instellen"
 
+msgid "Unable to parse child device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to parse class id '%s'"
 msgstr "kan mac adres '%s' niet ontleden"
@@ -18175,10 +18332,6 @@ msgstr "Kan geheugen parameters niet verkrijgen"
 #, fuzzy, c-format
 msgid "Unable to parse integer parameter '%s'"
 msgstr "Kan geheugen parameters niet verkrijgen"
-
-#, fuzzy, c-format
-msgid "Unable to parse link speed: %s"
-msgstr "Kan %s niet openen"
 
 #, fuzzy, c-format
 msgid "Unable to parse lock state %s"
@@ -18770,7 +18923,8 @@ msgstr "Kan stream niet openen voor '%s'"
 msgid "Unable to start event thread: %s"
 msgstr "Starten van interface %s mislukte"
 
-msgid "Unable to start mediated device"
+#, c-format
+msgid "Unable to start mediated device '%s': %s"
 msgstr ""
 
 #, c-format
@@ -18792,9 +18946,6 @@ msgstr "Starten van interface %s mislukte"
 #, fuzzy, c-format
 msgid "Unable to stat: %s"
 msgstr "Kan %s niet openen"
-
-msgid "Unable to stop mediated device"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -18818,6 +18969,10 @@ msgstr "Kan %s niet openen"
 
 #, c-format
 msgid "Unable to unbind the virtual port %s from Midonet"
+msgstr ""
+
+#, c-format
+msgid "Unable to undefine mediated device: %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -18941,6 +19096,9 @@ msgstr "Verwijder definitie van een geheim."
 msgid "Undefine an inactive domain, or convert persistent to transient."
 msgstr ""
 
+msgid "Undefine an inactive node device"
+msgstr ""
+
 #, fuzzy
 msgid "Undefine the configuration for a persistent network."
 msgstr "Verwijder definitie van de configuratie van een inactieve pool."
@@ -18949,6 +19107,13 @@ msgid "Undefine the configuration for an inactive pool."
 msgstr "Verwijder definitie van de configuratie van een inactieve pool."
 
 msgid "Undefined"
+msgstr ""
+
+#, c-format
+msgid "Undefined node device '%s'\n"
+msgstr ""
+
+msgid "Undefines the configuration for an inactive node device"
 msgstr ""
 
 #, fuzzy, c-format
@@ -19055,6 +19220,9 @@ msgstr "Onverwachte QEMU monitor nog actief tijdens verwijderen van domein"
 #, fuzzy, c-format
 msgid "Unexpected filesystem type %s"
 msgstr "onverwacht bestandssysteem type %d"
+
+msgid "Unexpected format for parent device object"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unexpected hostdev mode %d"
@@ -19338,6 +19506,7 @@ msgstr "Onbekend model type '%s'"
 msgid "Unknown error"
 msgstr "Onbekende fout"
 
+#. should never happen (tm)
 #, fuzzy
 msgid "Unknown error value"
 msgstr "Onbekende fout"
@@ -19487,10 +19656,6 @@ msgid "Unknown slirp feature %s"
 msgstr "Onbekende CPU eigenschap %s"
 
 #, c-format
-msgid "Unknown source mode '%s'"
-msgstr "Onbekende bron mode '%s'"
-
-#, c-format
 msgid "Unknown source type: '%s'"
 msgstr "Onbekend bron type '%s'"
 
@@ -19532,10 +19697,6 @@ msgstr "Onbekende waarde '%s' voor %s"
 #, c-format
 msgid "Unknown value '%s' for %s 'type' property"
 msgstr "Onbekende waarde '%s' voor %s 'type' eigenschap"
-
-#, fuzzy, c-format
-msgid "Unknown value '%s' for <address> 'multifunction' attribute"
-msgstr "Kan <adres> 'function' attribuut niet ontleden"
 
 #, c-format
 msgid "Unknown value '%s' for AnyType 'type' property"
@@ -20147,10 +20308,12 @@ msgstr ""
 msgid "Video adapters are not supported int containers."
 msgstr "spice graphics wordt niet ondersteund met deze QEMU"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr "Virsh commando-regel gereedschap voor libvirt %s\n"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, fuzzy, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr "Virsh commando-regel gereedschap voor libvirt %s\n"
@@ -20638,6 +20801,11 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr ""
 
+#.
+#. * we need to use an intermediary pointer to @data as compilers may sometimes
+#. * complain about @data not being a pointer type:
+#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
+#.
 msgid "allocated netlink buffer is too small"
 msgstr "toegewezen netlink  buffer is te klein"
 
@@ -20949,7 +21117,7 @@ msgid "backing storage not supported for raw volumes"
 msgstr "opslag pool ondersteunt geen versleutelde volumes"
 
 #, c-format
-msgid "backing store for %s (%s) is self-referential"
+msgid "backing store for %s is self-referential or too deeply nested"
 msgstr ""
 
 #, fuzzy, c-format
@@ -21350,10 +21518,6 @@ msgid ""
 "can't add memory backend for guest node '%d' as the guest has only '%zu' "
 "NUMA nodes configured"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "can't canonicalize path '%s'"
-msgstr "kan pad '%s' niet aanmaken"
 
 msgid "can't change link state: device alias not found"
 msgstr ""
@@ -21787,6 +21951,9 @@ msgstr "kan autostart map '%s' niet aanmaken"
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
 msgstr "kan CPU data voor %s architectuur niet decoderen"
+
+msgid "cannot define a mediated device without a parent"
+msgstr ""
 
 #, fuzzy
 msgid "cannot delete checkpoint for inactive domain"
@@ -22315,6 +22482,7 @@ msgstr "kan pad '%s' niet openen"
 msgid "cannot open path '%s' in '%s'"
 msgstr "kan pad '%s' niet openen"
 
+#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "kan volume '%s' niet openen"
@@ -22372,16 +22540,8 @@ msgid "cannot parse bus %s"
 msgstr "kan bus %s niet ontleden"
 
 #, fuzzy, c-format
-msgid "cannot parse bus '%s'"
-msgstr "kan bus %s niet ontleden"
-
-#, fuzzy, c-format
 msgid "cannot parse cache mode '%s' for virtiofs"
 msgstr "kan mode van '%s' niet instellen op %04o"
-
-#, fuzzy, c-format
-msgid "cannot parse cipher size: '%s'"
-msgstr "kan video hoofden '%s' niet ontleden"
 
 #, fuzzy, c-format
 msgid "cannot parse cpu sys stat '%s'"
@@ -22450,6 +22610,10 @@ msgid "cannot parse rdp port %s"
 msgstr "kan rdp poort %s niet ontleden"
 
 #, c-format
+msgid "cannot parse sandbox mode '%s' for virtiofs"
+msgstr ""
+
+#, c-format
 msgid "cannot parse spice port %s"
 msgstr "kan spice poort %s niet ontleden"
 
@@ -22458,16 +22622,8 @@ msgid "cannot parse spice tlsPort %s"
 msgstr "kan spice tlsPort %s niet ontleden"
 
 #, fuzzy, c-format
-msgid "cannot parse target '%s'"
-msgstr "kan '%s' niet stat"
-
-#, fuzzy, c-format
 msgid "cannot parse target for lunStr '%s'"
 msgstr "kan rdp poort %s niet ontleden"
-
-#, fuzzy, c-format
-msgid "cannot parse unit '%s'"
-msgstr "kan bus %s niet ontleden"
 
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
@@ -22515,28 +22671,12 @@ msgid "cannot parse video vram64 '%s'"
 msgstr "kan video ram '%s' niet ontleden"
 
 #, fuzzy, c-format
-msgid "cannot parse video x-resolution '%s'"
-msgstr "kan video hoofden '%s' niet ontleden"
-
-#, fuzzy, c-format
-msgid "cannot parse video y-resolution '%s'"
-msgstr "kan video hoofden '%s' niet ontleden"
-
-#, fuzzy, c-format
 msgid "cannot parse vlan tag '%s' from file '%s'"
 msgstr "kan data niet synchroniseren naar bestand '%s'"
-
-#, fuzzy, c-format
-msgid "cannot parse vnc WebSocket port %s"
-msgstr "kan vnc poort %s niet ontleden"
 
 #, c-format
 msgid "cannot parse vnc port %s"
 msgstr "kan vnc poort %s niet ontleden"
-
-#, c-format
-msgid "cannot parse vnc power control '%s'"
-msgstr ""
 
 #, fuzzy
 msgid "cannot pass pipe for tunnelled migration"
@@ -23214,6 +23354,7 @@ msgstr "kloon naam"
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
+#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "kind faalde om map '%s' aan te maken"
@@ -23240,10 +23381,6 @@ msgstr "domein '%s' verwerkt de binnenkomende migratie niet"
 #, fuzzy
 msgid "cipher info missing 'name' attribute"
 msgstr "vlan interface mist name attribuut"
-
-#, fuzzy
-msgid "cipher info missing 'size' attribute"
-msgstr "ontbrekend domein type attribuut"
 
 msgid "classID attribute not supported on <bandwidth> in this usage context"
 msgstr ""
@@ -23664,10 +23801,6 @@ msgstr "Kan ouder apparaat voor '%s' niet vinden"
 #, fuzzy, c-format
 msgid "could not find capabilities for %s"
 msgstr "geen apparaat mogelijkheden voor '%s'"
-
-#, c-format
-msgid "could not find device '%s'"
-msgstr ""
 
 #, c-format
 msgid "could not find event callback %d for deletion"
@@ -24413,6 +24546,9 @@ msgstr ""
 msgid "device key"
 msgstr "apparaat sleutel"
 
+msgid "device name"
+msgstr ""
+
 msgid "device name or wwn pair in 'wwnn,wwpn' format"
 msgstr ""
 
@@ -24561,10 +24697,6 @@ msgstr "schijf %s niet gevonden"
 
 #, c-format
 msgid "disk '%s' already in active block job"
-msgstr ""
-
-#, c-format
-msgid "disk '%s' backup state wrong or missing'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -25509,6 +25641,9 @@ msgstr "Fout bij aanmaken initiële configuratie"
 msgid "error sending continue signal to daemon"
 msgstr ""
 
+msgid "error waiting for continue signal from daemon"
+msgstr ""
+
 msgid "error while iterating over IFLA_VF_PORTS part"
 msgstr "fout bij het itereren over IFLA_VF_PORTS onderdeel"
 
@@ -25789,9 +25924,9 @@ msgstr "verwacht een toekennnig"
 msgid "expecting an ide:00.00.00 address."
 msgstr ""
 
-#, fuzzy, c-format
-msgid "expecting root element of 'disk', not '%s'"
-msgstr "Root element is niet 'node'"
+#, c-format
+msgid "expecting root element of '%s', not '%s'"
+msgstr ""
 
 msgid "extended partition already exists"
 msgstr "extended partitie bestaat al"
@@ -26086,6 +26221,9 @@ msgstr "Aanmaken van '%s' mislukte: %s"
 msgid "failed to create logfile %s"
 msgstr "aanmaken log bestand %s mislukte"
 
+msgid "failed to create mdevctl thread"
+msgstr ""
+
 msgid "failed to create profile"
 msgstr "aanmaken profiel mislukte"
 
@@ -26263,9 +26401,9 @@ msgstr "verkrijgen van pool UUID mislukte"
 msgid "failed to get cgroup BPF prog info"
 msgstr "Kan sysinfo niet ophalen"
 
-#, fuzzy, c-format
-msgid "failed to get cgroup backend for '%s'"
-msgstr "verkrijgen van domein '%s' mislukte"
+#, c-format
+msgid "failed to get cgroup backend for '%s' controller '%u'"
+msgstr ""
 
 #, fuzzy
 msgid "failed to get cmt scaling factor"
@@ -26739,6 +26877,10 @@ msgstr "Snapshot maken mislukte: %s"
 msgid "failed to query job for disk %s"
 msgstr "Starten van taak op VM '%s' mislukte: %s"
 
+#, c-format
+msgid "failed to query mdevs from mdevctl: %s"
+msgstr ""
+
 #, fuzzy
 msgid "failed to re-init netcf"
 msgstr "aanmaken socket faalde"
@@ -26779,10 +26921,6 @@ msgstr "kan qemu koptekst net lezen"
 #, fuzzy
 msgid "failed to read libxl header"
 msgstr "kan qemu koptekst net lezen"
-
-#, fuzzy, c-format
-msgid "failed to read link of gluster file '%s'"
-msgstr "lezen van bestand '%s' mislukte"
 
 #, c-format
 msgid "failed to read metadata length in '%s'"
@@ -26938,10 +27076,6 @@ msgstr "Instellen van stdin bestand handel mislukte"
 
 msgid "failed to setup stdout file handle"
 msgstr "Instellen van stdout bestand handel mislukte"
-
-#, fuzzy, c-format
-msgid "failed to stat gluster path '%s'"
-msgstr "Stat van opslag volume met pad '%s' mislukte"
 
 #, fuzzy, c-format
 msgid "failed to stat remote file '%s'"
@@ -27120,6 +27254,9 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
+#. parse inbound and outbound which are in the format of
+#. * 'average,peak,burst,floor', in which peak and burst are optional,
+#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "configuratie waarde %s is ongeldig"
@@ -27316,9 +27453,6 @@ msgid ""
 "or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
 "version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
 "with-firewalld-zone"
-msgstr ""
-
-msgid "firmware attribute and firmware type has to be the same"
 msgstr ""
 
 #, fuzzy
@@ -27630,10 +27764,6 @@ msgstr ""
 msgid "graphics device is needed for attribute value 'display=on' in <hostdev>"
 msgstr ""
 
-#, fuzzy
-msgid "graphics listen type must be specified"
-msgstr "doel type moet gespecificeerd worden voor %s apparaat"
-
 msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
 "graphics types"
@@ -27743,6 +27873,7 @@ msgstr "Domein snapshot %s is aangemaakt"
 msgid "handler failed to wait on condition"
 msgstr "wachten op conditie mislukte"
 
+#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr ""
 
@@ -28112,10 +28243,6 @@ msgstr ""
 msgid "incomplete save header in '%s'"
 msgstr "onvolledige opslag koptekst in '%s'"
 
-#, c-format
-msgid "incorrect boot order '%s', expecting positive integer"
-msgstr "onjuiste opstartvolgorde '%s', verwacht positief geheel getal"
-
 #, fuzzy
 msgid "incremental backup is not supported yet"
 msgstr "meerdere streams callbacks niet ondersteund"
@@ -28313,6 +28440,25 @@ msgstr "interface naam"
 msgid "interface name %s does not fit into buffer "
 msgstr "interface naam %s past niet in buffer"
 
+#.
+#. * virsh-interface.c: Commands to manage host interface
+#. *
+#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+#. *
+#. * This library is free software; you can redistribute it and/or
+#. * modify it under the terms of the GNU Lesser General Public
+#. * License as published by the Free Software Foundation; either
+#. * version 2.1 of the License, or (at your option) any later version.
+#. *
+#. * This library is distributed in the hope that it will be useful,
+#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#. * Lesser General Public License for more details.
+#. *
+#. * You should have received a copy of the GNU Lesser General Public
+#. * License along with this library.  If not, see
+#. * <http://www.gnu.org/licenses/>.
+#.
 msgid "interface name or MAC address"
 msgstr "interface naam of MAC adres"
 
@@ -28620,10 +28766,6 @@ msgstr "Ongeldig argument"
 msgid "invalid argument: %s"
 msgstr "Ongeldig argument"
 
-#, fuzzy
-msgid "invalid ats value"
-msgstr "ongeldige catchup slew"
-
 #, c-format
 msgid "invalid audio 'id' value '%s'"
 msgstr ""
@@ -28639,10 +28781,6 @@ msgstr "Onbekend protocol '%s'"
 #, fuzzy, c-format
 msgid "invalid backing protocol string '%s'"
 msgstr "ongeldige opslag pool aanwijzer in %s"
-
-#, c-format
-msgid "invalid backupmode '%s' of disk '%s'"
-msgstr ""
 
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
@@ -28707,15 +28845,7 @@ msgid "invalid devno value '%s' for '%s'"
 msgstr "Ongeldige waarde '%s' voor VMX ingang '%s'"
 
 #, fuzzy, c-format
-msgid "invalid dimm base address '%s'"
-msgstr "ongeldig MAC adres: %s"
-
-#, fuzzy, c-format
 msgid "invalid discard value '%s'"
-msgstr "ongeldige domein toestand '%s'"
-
-#, fuzzy, c-format
-msgid "invalid disk 'backup' state '%s'"
 msgstr "ongeldige domein toestand '%s'"
 
 #, fuzzy, c-format
@@ -28833,10 +28963,6 @@ msgstr "ongeldige interface aanwijzer in"
 msgid "invalid interface pointer in %s"
 msgstr "ongeldige interface aanwijzer in %s"
 
-#, fuzzy
-msgid "invalid iommu value"
-msgstr "ongeldige timer frequentie"
-
 #, fuzzy, c-format
 msgid "invalid iommuGroup number attribute '%s'"
 msgstr "ongeldige domein toestand '%s'"
@@ -28844,10 +28970,6 @@ msgstr "ongeldige domein toestand '%s'"
 #, fuzzy, c-format
 msgid "invalid iommuGroup number attribute for '%s'"
 msgstr "ongeldig USB bus nummer opgegeven voor '%s'"
-
-#, fuzzy, c-format
-msgid "invalid iothread 'id' value '%s'"
-msgstr "ongeldige domein toestand '%s'"
 
 #, fuzzy, c-format
 msgid "invalid iothreads count '%s'"
@@ -28901,10 +29023,6 @@ msgid ""
 "invalid loadparm char '%c', expecting chars in set of [a-zA-Z0-9.] and blank "
 "spaces"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "invalid logical block size '%s'"
-msgstr "ongeldige domein toestand '%s'"
 
 #, c-format
 msgid ""
@@ -29042,14 +29160,6 @@ msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr "Ontbrekende 'cores' attribuut in CPU topologie"
 
 #, fuzzy, c-format
-msgid "invalid or missing dimm slot id '%s'"
-msgstr "ongeldige domein toestand '%s'"
-
-#, fuzzy
-msgid "invalid packed value"
-msgstr "ongeldige catchup slew"
-
-#, fuzzy, c-format
 msgid "invalid part_separator setting '%s'"
 msgstr "Ongeldige CPU leverancier tekenreeks '%s'"
 
@@ -29072,10 +29182,6 @@ msgstr "ongeldig pad, '%s' is geen bekende interface"
 #, c-format
 msgid "invalid path: %s"
 msgstr "ongeldig pad: %s"
-
-#, fuzzy, c-format
-msgid "invalid physical block size '%s'"
-msgstr "ongeldige grootte opgegeven voor '%s'"
 
 msgid "invalid pid"
 msgstr "ongeldig pid"
@@ -29170,10 +29276,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "invalid ssid value '%s' for '%s'"
 msgstr "Ongeldige waarde '%s' voor VMX ingang '%s'"
-
-#, fuzzy, c-format
-msgid "invalid ssl verify mode '%s'"
-msgstr "Ongeldig beveiliging label '%s'"
 
 #, fuzzy, c-format
 msgid "invalid state '%s' of perf event '%s'"
@@ -29756,6 +29858,9 @@ msgstr "Geen domein met overeenkomend id %d"
 msgid "list ephemeral secrets"
 msgstr "toon geheimen"
 
+msgid "list inactive & active devices"
+msgstr ""
+
 msgid "list inactive & active domains"
 msgstr "laat inactief en actieve domeinen zien"
 
@@ -29767,6 +29872,9 @@ msgstr "laat inactief en actieve netwerken zien"
 
 msgid "list inactive & active pools"
 msgstr "laat inactieve en actieve pools zien"
+
+msgid "list inactive devices"
+msgstr ""
 
 msgid "list inactive domains"
 msgstr "laat inactief domeinen zien"
@@ -30189,10 +30297,6 @@ msgstr "ongeldig mac adres: '%s'"
 msgid "malformed machine cpu count in QEMU capabilities cache"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "malformed managed value '%s'"
-msgstr "ongeldig mac adres: '%s'"
-
 #, fuzzy
 msgid "malformed mtu size"
 msgstr "Ongeldige grootte %s"
@@ -30438,6 +30542,9 @@ msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 msgid "mdev attribute missing name or value"
 msgstr ""
 
+msgid "mdevctl JSON response contains no devices"
+msgstr ""
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr ""
@@ -30540,6 +30647,12 @@ msgstr "operatie mislukte: %s"
 msgid "message"
 msgstr "Gebruik"
 
+msgid "metadata cache max size control is not supported with this QEMU binary"
+msgstr ""
+
+msgid "metadata cache max size control is supported only with qcow2 images"
+msgstr ""
+
 #, fuzzy
 msgid "metadata not found"
 msgstr "Domein niet gevonden"
@@ -30564,12 +30677,6 @@ msgid "metadata title can't contain newlines"
 msgstr ""
 
 msgid "metadata_cache is not supported with vhostuser disk"
-msgstr ""
-
-msgid "metdata cache max size control is not supported with this QEMU binary"
-msgstr ""
-
-msgid "metdata cache max size control is supported only with qcow2 images"
 msgstr ""
 
 msgid "migrate domain to another host"
@@ -31017,9 +31124,6 @@ msgstr ""
 msgid "missing boot device"
 msgstr "ontbrekend opstart apparaat"
 
-msgid "missing boot order attribute"
-msgstr "ontbrekend opstartvolgorde attribuut"
-
 #, fuzzy
 msgid "missing capability name"
 msgstr "ontbrekend mogelijkheid type"
@@ -31187,9 +31291,6 @@ msgstr ""
 msgid "missing gluster volume name for path '%s'"
 msgstr "Geen opslag volume met sleutel of pad '%s'"
 
-msgid "missing graphics device type"
-msgstr "ontbrekend grafisch apparaat type"
-
 #, c-format
 msgid "missing host CPU model info from QEMU capabilities for binary %s"
 msgstr ""
@@ -31330,10 +31431,6 @@ msgstr "ontbrekend opstart apparaat"
 msgid "missing name element in migration data"
 msgstr "ontbrekende kernel informatie"
 
-#, fuzzy
-msgid "missing name for cipher"
-msgstr "ontbrekende naam voor host"
-
 msgid "missing name for disk source"
 msgstr "ontbrekende naam voor schijf bron"
 
@@ -31359,10 +31456,6 @@ msgstr "ontbrekende root apparaat informatie in %s"
 #, fuzzy
 msgid "missing network device feature name"
 msgstr "Te lange netwerk apparaat naam"
-
-#, fuzzy
-msgid "missing network source protocol type"
-msgstr "ontbrekend backend voor pool type %d"
 
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
@@ -31584,10 +31677,6 @@ msgstr "ontbrekende naam voor host"
 msgid "missing state attribute '%s' of feature '%s'"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "missing state for cipher named %s"
-msgstr "timer naam ontbreekt"
-
 msgid "missing state from existing snapshot"
 msgstr "ontbrekende toestand in bestaande snapshot"
 
@@ -31712,10 +31801,6 @@ msgid "missing values for acceleration"
 msgstr "ontbrekende apparaten informatie"
 
 #, fuzzy
-msgid "missing values for resolution"
-msgstr "ontbrekende naam voor host"
-
-#, fuzzy
 msgid "missing vcpu enabled state"
 msgstr "ontbrekend mogelijkheid type"
 
@@ -31774,7 +31859,7 @@ msgstr ""
 
 #, c-format
 msgid ""
-"mkfs is not supported on this platform: Failed to make filesystem of type "
+"mkfs is not available on this platform: Failed to make filesystem of type "
 "'%s' on device '%s'"
 msgstr ""
 
@@ -31829,6 +31914,15 @@ msgstr ""
 msgid "monitor failure"
 msgstr "geen monitor pad"
 
+#. *
+#. * QEMU_CHECK_MONITOR_FULL:
+#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
+#. * @exit: statement that is used to exit the function
+#. *
+#. * This macro checks that the monitor is valid for given operation and exits
+#. * the function if not. The macro also adds a debug statement regarding the
+#. * monitor.
+#.
 msgid "monitor must not be NULL"
 msgstr "monitor mag niet NULL zijn"
 
@@ -32037,6 +32131,7 @@ msgstr ""
 msgid "negative size requires --shrink"
 msgstr ""
 
+#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "overeengekomen SSF %d was niet sterk genoeg"
@@ -33364,9 +33459,9 @@ msgstr ""
 msgid "openwsman: %s"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "operation '%s' not supported"
-msgstr "operatie type %d wordt niet ondersteund"
+#, c-format
+msgid "operation '%s' not supported for backend '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "operation aborted"
@@ -33856,6 +33951,10 @@ msgstr "opslag pool '%s' is niet actief"
 #, fuzzy, c-format
 msgid "pool '%s' is starting up"
 msgstr "opslag pool '%s' is niet actief"
+
+#, c-format
+msgid "pool = '%s', volume = '%s'"
+msgstr ""
 
 msgid "pool does not support pool deletion"
 msgstr "pool ondersteunt geen pool verwijdering"
@@ -34882,10 +34981,16 @@ msgstr ""
 msgid "rollback to previous saved configuration created via iface-begin"
 msgstr ""
 
-msgid "root element was not source"
-msgstr "root element was geen bron"
-
 msgid "root path must be absolute"
+msgstr ""
+
+msgid "rotation rate is not supported with this QEMU"
+msgstr ""
+
+msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
+msgstr ""
+
+msgid "rotation rate is only valid for disk device"
 msgstr ""
 
 msgid "rule node requires action attribute"
@@ -34910,6 +35015,9 @@ msgid "runstate '%d' out of range'"
 msgstr "start cel %d buiten (0-%d) reeks"
 
 msgid "rx_queue_size has to be a power of two"
+msgstr ""
+
+msgid "sandbox can only be used with driver=virtiofs"
 msgstr ""
 
 #, c-format
@@ -35002,9 +35110,6 @@ msgid "scripts are not supported on interfaces of type %s"
 msgstr "niet-ondersteund monitor type '%s'"
 
 msgid "scsi-block 'lun' devices do not support the serial property"
-msgstr ""
-
-msgid "sdl gl element missing enable"
 msgstr ""
 
 #, fuzzy, c-format
@@ -35661,6 +35766,9 @@ msgstr "SATA wordt niet ondersteund met dit QEMU binaire programma"
 #, fuzzy, c-format
 msgid "splitting StorageUrl failed %s"
 msgstr "verwijderen van %s station mislukte: %s"
+
+msgid "ssh protocol accepts only one host"
+msgstr ""
 
 msgid "ssl verification is supported only with HTTPS/FTPS protocol"
 msgstr ""
@@ -37053,6 +37161,7 @@ msgstr "kan uuid niet genereren"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
+#. fdatasync() may fail on some special FDs, e.g. pipes
 #, fuzzy, c-format
 msgid "unable to fsync %s"
 msgstr "kan %s niet sluiten"
@@ -37891,12 +38000,6 @@ msgstr "onverwacht mislukt"
 msgid "unimplemented parameter type %d"
 msgstr "onverwacht netwerk type %d"
 
-#, c-format
-msgid ""
-"unique storage file identifier not implemented for storage type %s "
-"(protocol: %s)'"
-msgstr ""
-
 msgid ""
 "unit must be not more than 7 for scsi host device if its controller model is "
 "'lsilogic'"
@@ -37909,16 +38012,14 @@ msgstr ""
 msgid "unix socket for spice graphics are not supported with this QEMU"
 msgstr "spice graphics wordt niet ondersteund met deze QEMU"
 
+#. Something went wrong retrieving a volume path, cope with it
+#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "onbekend"
 
 #, fuzzy, c-format
 msgid "unknown %s action: %s"
 msgstr "onbekende bewaker actie '%s'"
-
-#, c-format
-msgid "unknown 'exactName' value '%s'"
-msgstr ""
 
 #, c-format
 msgid "unknown 'exclusive' value '%s'"
@@ -38095,10 +38196,6 @@ msgstr "onbekend mogelijkheid type '%s'"
 msgid "unknown character device type: %s"
 msgstr "onbekend karakter apparaat type: %s"
 
-#, fuzzy, c-format
-msgid "unknown chardev 'tls' setting '%s'"
-msgstr "onbekend chr apparaat type '%s'"
-
 #, c-format
 msgid "unknown chr device type '%s'"
 msgstr "onbekend chr apparaat type '%s'"
@@ -38159,62 +38256,6 @@ msgstr "onbekend adres type '%s'"
 msgid "unknown dhcp peerdns value %s"
 msgstr "onbekende dhcp peerdns waarde %s"
 
-#, c-format
-msgid "unknown disk bus type '%s'"
-msgstr "onbekend schijf bus type '%s'"
-
-#, c-format
-msgid "unknown disk cache mode '%s'"
-msgstr "onbekende schijf cache mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk copy_on_read mode '%s'"
-msgstr "onbekende schijf io mode '%s'"
-
-#, c-format
-msgid "unknown disk device '%s'"
-msgstr "onbekende schijf apparaat '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk discard mode '%s'"
-msgstr "onbekende schijf io mode '%s'"
-
-#, c-format
-msgid "unknown disk error policy '%s'"
-msgstr "onbekende schijf fout tactiek '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk event_idx mode '%s'"
-msgstr "onbekende schijf io mode '%s'"
-
-#, c-format
-msgid "unknown disk io mode '%s'"
-msgstr "onbekende schijf io mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk ioeventfd mode '%s'"
-msgstr "onbekende schijf io mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk model '%s'"
-msgstr "onbekende schijf io mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk rawio setting '%s'"
-msgstr "onbekende schijf io mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk read error policy '%s'"
-msgstr "onbekende schijf fout tactiek '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk removable status '%s'"
-msgstr "onbekende schijf apparaat '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk sgio mode '%s'"
-msgstr "onbekende schijf io mode '%s'"
-
 #, fuzzy, c-format
 msgid "unknown disk snapshot driver '%s'"
 msgstr "onbekende schijf io mode '%s'"
@@ -38227,21 +38268,9 @@ msgstr "onbekend schijf type '%s'"
 msgid "unknown disk snapshot type '%s'"
 msgstr "onbekend schijf bus type '%s'"
 
-#, fuzzy, c-format
-msgid "unknown disk source 'tls' setting '%s'"
-msgstr "onbekend pci bron type '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk tray status '%s'"
-msgstr "onbekend schijf type '%s'"
-
 #, c-format
 msgid "unknown disk type '%s'"
 msgstr "onbekend schijf type '%s'"
-
-#, fuzzy, c-format
-msgid "unknown driver detect_zeroes value '%s'"
-msgstr "onbekende timer present waarde '%s'"
 
 #, fuzzy, c-format
 msgid "unknown driver format value '%s'"
@@ -38306,41 +38335,9 @@ msgstr "onbekend doorstuur type '%s'"
 msgid "unknown fs driver type '%s'"
 msgstr "onbekend schijf type '%s'"
 
-#, c-format
-msgid "unknown fullscreen value '%s'"
-msgstr "onbekende volledig-scherm waarde '%s'"
-
-#, c-format
-msgid "unknown graphics device type '%s'"
-msgstr "onbekend grafisch apparaat type '%s'"
-
-#, fuzzy, c-format
-msgid "unknown graphics listen type '%s'"
-msgstr "onbekend grafisch apparaat type '%s'"
-
 #, fuzzy, c-format
 msgid "unknown graphics type %s"
 msgstr "onbekend grafisch apparaat type '%s'"
-
-#, fuzzy, c-format
-msgid "unknown guest csum mode '%s'"
-msgstr "onbekende timer mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown guest ecn mode '%s'"
-msgstr "onbekende hostdev mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown guest tso4 mode '%s'"
-msgstr "onbekende schijf io mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown guest tso6 mode '%s'"
-msgstr "onbekende schijf io mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown guest ufo mode '%s'"
-msgstr "onbekende schijf io mode '%s'"
 
 msgid "unknown host"
 msgstr "onbekende host"
@@ -38358,36 +38355,8 @@ msgid "unknown host CPU model"
 msgstr "onbekend CPU model %s"
 
 #, fuzzy, c-format
-msgid "unknown host csum mode '%s'"
-msgstr "onbekende hostdev mode '%s'"
-
-#, fuzzy, c-format
 msgid "unknown host device source address type '%s'"
 msgstr "onbekend adres type '%s'"
-
-#, fuzzy, c-format
-msgid "unknown host ecn mode '%s'"
-msgstr "onbekende hostdev mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown host gso mode '%s'"
-msgstr "onbekende hostdev mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown host mrg_rxbuf mode '%s'"
-msgstr "onbekende hostdev mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown host tso4 mode '%s'"
-msgstr "onbekende hostdev mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown host tso6 mode '%s'"
-msgstr "onbekende hostdev mode '%s'"
-
-#, fuzzy, c-format
-msgid "unknown host ufo mode '%s'"
-msgstr "onbekende hostdev mode '%s'"
 
 #, c-format
 msgid "unknown hostdev mode '%s'"
@@ -38441,10 +38410,6 @@ msgstr "onbekende interface start mode %s"
 msgid "unknown interface type %s"
 msgstr "onbekend interface type %s"
 
-#, c-format
-msgid "unknown interface type '%s'"
-msgstr "onbekend interface type '%s'"
-
 #, fuzzy, c-format
 msgid "unknown interface type: '%s'"
 msgstr "onbekend interface type '%s'"
@@ -38460,10 +38425,6 @@ msgstr "onbekende volledig-scherm waarde '%s'"
 #, fuzzy, c-format
 msgid "unknown ip address type '%s'"
 msgstr "onbekend adres type '%s'"
-
-#, fuzzy, c-format
-msgid "unknown link state: %s"
-msgstr "onbekende interface start mode %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -38587,14 +38548,6 @@ msgstr "onbekende procedure: %d"
 msgid "unknown protocol transport type '%s'"
 msgstr "onbekend protocol type '%s'"
 
-#, c-format
-msgid "unknown protocol type '%s'"
-msgstr "onbekend protocol type '%s'"
-
-#, fuzzy, c-format
-msgid "unknown readonly value: %s"
-msgstr "onbekende dhcp peerdns waarde %s"
-
 #, fuzzy, c-format
 msgid "unknown redirdev bus '%s'"
 msgstr "onbekend schijf bus type '%s'"
@@ -38605,14 +38558,6 @@ msgstr "onbekend karakter apparaat type: %s"
 
 msgid "unknown rng-random backend"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unknown rom bar value '%s'"
-msgstr "onbekende timer present waarde '%s'"
-
-#, fuzzy, c-format
-msgid "unknown rom enabled value '%s'"
-msgstr "onbekende volledig-scherm waarde '%s'"
 
 #, fuzzy, c-format
 msgid "unknown root element '%s' for filter binding"
@@ -38645,10 +38590,6 @@ msgstr "onbekend geheim gebruik type"
 #, c-format
 msgid "unknown secret usage type %s"
 msgstr "onbekend geheim gebruik type %s"
-
-#, fuzzy, c-format
-msgid "unknown secure value: %s"
-msgstr "onbekende volledig-scherm waarde '%s'"
 
 #, fuzzy, c-format
 msgid "unknown sgio mode '%s'"
@@ -38703,10 +38644,6 @@ msgstr "onbekende spice kanaal mode %s"
 #, c-format
 msgid "unknown spice zlib compression %s"
 msgstr "onbekende spice zlib compressie %s"
-
-#, fuzzy, c-format
-msgid "unknown startupPolicy value '%s'"
-msgstr "onbekende volledig-scherm waarde '%s'"
 
 #, fuzzy, c-format
 msgid "unknown state attribute '%s' of feature '%s'"
@@ -38804,10 +38741,6 @@ msgstr ""
 msgid "unknown type presented to host for character device: %s"
 msgstr "onbekend type opgegeven aan host voor karakter apparaat: %s"
 
-#, fuzzy, c-format
-msgid "unknown type value: %s"
-msgstr "onbekend type '%s'"
-
 #, c-format
 msgid "unknown usb source type '%s'"
 msgstr "onbekend usb bron type '%s'"
@@ -38823,10 +38756,6 @@ msgstr "Onbekende waarde '%s' voor xsd:boolean"
 #, fuzzy, c-format
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "onbekende regel action attribuut waarde"
-
-#, c-format
-msgid "unknown value '%s' of 'tls' attribute"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown value for attribute eoi: '%s'"
@@ -38860,10 +38789,6 @@ msgstr "onbekend partitie type"
 msgid "unknown virtualport type %s"
 msgstr "onbekend volume formaat type %s"
 
-#, fuzzy, c-format
-msgid "unknown vnc display sharing policy '%s'"
-msgstr "onbekende schijf fout tactiek '%s'"
-
 msgid "unknown volume encryption format"
 msgstr "onbekend volume encryptie formaat"
 
@@ -38889,10 +38814,6 @@ msgstr "onbekend volume formaat type %s"
 #, fuzzy, c-format
 msgid "unknown volume type '%s'"
 msgstr "onbekend volume formaat type %s"
-
-#, fuzzy, c-format
-msgid "unknown vsock model: %s"
-msgstr "onbekend video model '%s'"
 
 #, c-format
 msgid "unknown watchdog action '%s'"
@@ -39148,6 +39069,28 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
+#. *
+#. * virCheckFlags:
+#. * @supported: an OR'ed set of supported flags
+#. * @retval: return value in case unsupported flags were passed
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Exits the caller function if unsupported flags were
+#. * passed to it.
+#.
+#. *
+#. * virCheckFlagsGoto:
+#. * @supported: an OR'ed set of supported flags
+#. * @label: label to jump to on error
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, fuzzy, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "niet-ondersteunde vlaggen (0x%x)"
@@ -40366,6 +40309,432 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <tekenreeks>"
+
+#, fuzzy
+#~ msgid "%s is not a supported cipher name"
+#~ msgstr "%s harde schijf '%s' heeft niet-ondersteunde cache mode '%s'"
+
+#, fuzzy
+#~ msgid "%s is not a supported cipher state"
+#~ msgstr "domein is niet in de opgeschorte toestand"
+
+#, fuzzy
+#~ msgid ""
+#~ "'bus', 'target', and 'unit' must be specified for scsi hostdev source "
+#~ "address"
+#~ msgstr "doel type moet gespecificeerd worden voor %s apparaat"
+
+#, fuzzy
+#~ msgid "'cid' attribute must be a positive number: %s"
+#~ msgstr "sndbuf moet een positief geheel getal zijn"
+
+#~ msgid "Cannot parse <address> 'bus' attribute"
+#~ msgstr "Kan <adres> 'bus' attribuut niet ontleden"
+
+#~ msgid "Cannot parse <address> 'controller' attribute"
+#~ msgstr "Kan <adres> 'controller' attribuut niet ontleden"
+
+#, fuzzy
+#~ msgid "Cannot parse <address> 'cssid' attribute"
+#~ msgstr "Kan <adres> 'bus' attribuut niet ontleden"
+
+#, fuzzy
+#~ msgid "Cannot parse <address> 'devno' attribute"
+#~ msgstr "Kan <adres> 'domain' attribuut niet ontleden"
+
+#~ msgid "Cannot parse <address> 'domain' attribute"
+#~ msgstr "Kan <adres> 'domain' attribuut niet ontleden"
+
+#, fuzzy
+#~ msgid "Cannot parse <address> 'fid' attribute"
+#~ msgstr "Kan <adres> 'unit' attribuut niet ontleden"
+
+#~ msgid "Cannot parse <address> 'function' attribute"
+#~ msgstr "Kan <adres> 'function' attribuut niet ontleden"
+
+#, fuzzy
+#~ msgid "Cannot parse <address> 'iobase' attribute"
+#~ msgstr "Kan <adres> 'bus' attribuut niet ontleden"
+
+#, fuzzy
+#~ msgid "Cannot parse <address> 'irq' attribute"
+#~ msgstr "Kan <adres> 'port' attribuut niet ontleden"
+
+#~ msgid "Cannot parse <address> 'slot' attribute"
+#~ msgstr "Kan <adres> 'slot' attribuut niet ontleden"
+
+#, fuzzy
+#~ msgid "Cannot parse <address> 'ssid' attribute"
+#~ msgstr "Kan <adres> 'bus' attribuut niet ontleden"
+
+#, fuzzy
+#~ msgid "Cannot parse <address> 'target' attribute"
+#~ msgstr "Kan <adres> 'port' attribuut niet ontleden"
+
+#, fuzzy
+#~ msgid "Cannot parse <address> 'uid' attribute"
+#~ msgstr "Kan <adres> 'unit' attribuut niet ontleden"
+
+#~ msgid "Cannot parse <address> 'unit' attribute"
+#~ msgstr "Kan <adres> 'unit' attribuut niet ontleden"
+
+#, fuzzy
+#~ msgid ""
+#~ "Expecting VMX entry 'sched.cpu.affinity' to contain at least as many "
+#~ "values as 'numvcpus' (%lld) but found only %zu value(s)"
+#~ msgstr ""
+#~ "Verwacht dat VMX ingang 'sched.cpu.affinity' een door komma's gescheiden "
+#~ "lijst van gehele getallen zonder teken is maar vond '%s'"
+
+#, fuzzy
+#~ msgid "Failed to canonicalize path '%s'"
+#~ msgstr "Pad %s maken mislukte"
+
+#, fuzzy
+#~ msgid "Invalid append attribute value '%s'"
+#~ msgstr "Ongeldig relatief pad: '%s'"
+
+#, fuzzy
+#~ msgid "Invalid check attribute for CPU specification"
+#~ msgstr "Ongeldig match attribuut voor CPU specificatie"
+
+#, fuzzy
+#~ msgid "Invalid fromConfig value: %s"
+#~ msgstr "Ongeldig netwerk filter: %s"
+
+#, fuzzy
+#~ msgid "Invalid iothread attribute in disk driver element: %s"
+#~ msgstr "Ongeldige harde schijf apparaat naam: %s"
+
+#, fuzzy
+#~ msgid "Invalid memorytune attribute 'id' value '%s'"
+#~ msgstr "Ongeldig relatief pad: '%s'"
+
+#, fuzzy
+#~ msgid "Invalid tlsFromConfig value: %s"
+#~ msgstr "Ongeldig netwerk filter: %s"
+
+#, fuzzy
+#~ msgid "Missing 'id' attribute in <iothread> element"
+#~ msgstr "Ontbrekende 'threads' attribuut in CPU topologie"
+
+#, fuzzy
+#~ msgid "Missing memorytune attribute 'id'"
+#~ msgstr "ontbrekend opstartvolgorde attribuut"
+
+#, fuzzy
+#~ msgid "Unable to get a virDomainSnapshotDefPtr"
+#~ msgstr "Kan domein status niet krijgen"
+
+#, fuzzy
+#~ msgid "Unable to parse link speed: %s"
+#~ msgstr "Kan %s niet openen"
+
+#~ msgid "Unknown source mode '%s'"
+#~ msgstr "Onbekende bron mode '%s'"
+
+#, fuzzy
+#~ msgid "Unknown value '%s' for <address> 'multifunction' attribute"
+#~ msgstr "Kan <adres> 'function' attribuut niet ontleden"
+
+#, fuzzy
+#~ msgid "can't canonicalize path '%s'"
+#~ msgstr "kan pad '%s' niet aanmaken"
+
+#, fuzzy
+#~ msgid "cannot parse bus '%s'"
+#~ msgstr "kan bus %s niet ontleden"
+
+#, fuzzy
+#~ msgid "cannot parse cipher size: '%s'"
+#~ msgstr "kan video hoofden '%s' niet ontleden"
+
+#, fuzzy
+#~ msgid "cannot parse target '%s'"
+#~ msgstr "kan '%s' niet stat"
+
+#, fuzzy
+#~ msgid "cannot parse unit '%s'"
+#~ msgstr "kan bus %s niet ontleden"
+
+#, fuzzy
+#~ msgid "cannot parse video x-resolution '%s'"
+#~ msgstr "kan video hoofden '%s' niet ontleden"
+
+#, fuzzy
+#~ msgid "cannot parse video y-resolution '%s'"
+#~ msgstr "kan video hoofden '%s' niet ontleden"
+
+#, fuzzy
+#~ msgid "cannot parse vnc WebSocket port %s"
+#~ msgstr "kan vnc poort %s niet ontleden"
+
+#, fuzzy
+#~ msgid "cipher info missing 'size' attribute"
+#~ msgstr "ontbrekend domein type attribuut"
+
+#, fuzzy
+#~ msgid "expecting root element of 'disk', not '%s'"
+#~ msgstr "Root element is niet 'node'"
+
+#, fuzzy
+#~ msgid "failed to get cgroup backend for '%s'"
+#~ msgstr "verkrijgen van domein '%s' mislukte"
+
+#, fuzzy
+#~ msgid "failed to read link of gluster file '%s'"
+#~ msgstr "lezen van bestand '%s' mislukte"
+
+#, fuzzy
+#~ msgid "failed to stat gluster path '%s'"
+#~ msgstr "Stat van opslag volume met pad '%s' mislukte"
+
+#, fuzzy
+#~ msgid "graphics listen type must be specified"
+#~ msgstr "doel type moet gespecificeerd worden voor %s apparaat"
+
+#~ msgid "incorrect boot order '%s', expecting positive integer"
+#~ msgstr "onjuiste opstartvolgorde '%s', verwacht positief geheel getal"
+
+#, fuzzy
+#~ msgid "invalid ats value"
+#~ msgstr "ongeldige catchup slew"
+
+#, fuzzy
+#~ msgid "invalid dimm base address '%s'"
+#~ msgstr "ongeldig MAC adres: %s"
+
+#, fuzzy
+#~ msgid "invalid disk 'backup' state '%s'"
+#~ msgstr "ongeldige domein toestand '%s'"
+
+#, fuzzy
+#~ msgid "invalid iommu value"
+#~ msgstr "ongeldige timer frequentie"
+
+#, fuzzy
+#~ msgid "invalid iothread 'id' value '%s'"
+#~ msgstr "ongeldige domein toestand '%s'"
+
+#, fuzzy
+#~ msgid "invalid logical block size '%s'"
+#~ msgstr "ongeldige domein toestand '%s'"
+
+#, fuzzy
+#~ msgid "invalid or missing dimm slot id '%s'"
+#~ msgstr "ongeldige domein toestand '%s'"
+
+#, fuzzy
+#~ msgid "invalid packed value"
+#~ msgstr "ongeldige catchup slew"
+
+#, fuzzy
+#~ msgid "invalid physical block size '%s'"
+#~ msgstr "ongeldige grootte opgegeven voor '%s'"
+
+#, fuzzy
+#~ msgid "invalid ssl verify mode '%s'"
+#~ msgstr "Ongeldig beveiliging label '%s'"
+
+#, fuzzy
+#~ msgid "malformed managed value '%s'"
+#~ msgstr "ongeldig mac adres: '%s'"
+
+#~ msgid "missing boot order attribute"
+#~ msgstr "ontbrekend opstartvolgorde attribuut"
+
+#~ msgid "missing graphics device type"
+#~ msgstr "ontbrekend grafisch apparaat type"
+
+#, fuzzy
+#~ msgid "missing name for cipher"
+#~ msgstr "ontbrekende naam voor host"
+
+#, fuzzy
+#~ msgid "missing network source protocol type"
+#~ msgstr "ontbrekend backend voor pool type %d"
+
+#, fuzzy
+#~ msgid "missing state for cipher named %s"
+#~ msgstr "timer naam ontbreekt"
+
+#, fuzzy
+#~ msgid "missing values for resolution"
+#~ msgstr "ontbrekende naam voor host"
+
+#, fuzzy
+#~ msgid "operation '%s' not supported"
+#~ msgstr "operatie type %d wordt niet ondersteund"
+
+#~ msgid "root element was not source"
+#~ msgstr "root element was geen bron"
+
+#, fuzzy
+#~ msgid "unknown chardev 'tls' setting '%s'"
+#~ msgstr "onbekend chr apparaat type '%s'"
+
+#~ msgid "unknown disk bus type '%s'"
+#~ msgstr "onbekend schijf bus type '%s'"
+
+#~ msgid "unknown disk cache mode '%s'"
+#~ msgstr "onbekende schijf cache mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk copy_on_read mode '%s'"
+#~ msgstr "onbekende schijf io mode '%s'"
+
+#~ msgid "unknown disk device '%s'"
+#~ msgstr "onbekende schijf apparaat '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk discard mode '%s'"
+#~ msgstr "onbekende schijf io mode '%s'"
+
+#~ msgid "unknown disk error policy '%s'"
+#~ msgstr "onbekende schijf fout tactiek '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk event_idx mode '%s'"
+#~ msgstr "onbekende schijf io mode '%s'"
+
+#~ msgid "unknown disk io mode '%s'"
+#~ msgstr "onbekende schijf io mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk ioeventfd mode '%s'"
+#~ msgstr "onbekende schijf io mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk model '%s'"
+#~ msgstr "onbekende schijf io mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk rawio setting '%s'"
+#~ msgstr "onbekende schijf io mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk read error policy '%s'"
+#~ msgstr "onbekende schijf fout tactiek '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk removable status '%s'"
+#~ msgstr "onbekende schijf apparaat '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk sgio mode '%s'"
+#~ msgstr "onbekende schijf io mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk source 'tls' setting '%s'"
+#~ msgstr "onbekend pci bron type '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk tray status '%s'"
+#~ msgstr "onbekend schijf type '%s'"
+
+#, fuzzy
+#~ msgid "unknown driver detect_zeroes value '%s'"
+#~ msgstr "onbekende timer present waarde '%s'"
+
+#~ msgid "unknown fullscreen value '%s'"
+#~ msgstr "onbekende volledig-scherm waarde '%s'"
+
+#~ msgid "unknown graphics device type '%s'"
+#~ msgstr "onbekend grafisch apparaat type '%s'"
+
+#, fuzzy
+#~ msgid "unknown graphics listen type '%s'"
+#~ msgstr "onbekend grafisch apparaat type '%s'"
+
+#, fuzzy
+#~ msgid "unknown guest csum mode '%s'"
+#~ msgstr "onbekende timer mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown guest ecn mode '%s'"
+#~ msgstr "onbekende hostdev mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown guest tso4 mode '%s'"
+#~ msgstr "onbekende schijf io mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown guest tso6 mode '%s'"
+#~ msgstr "onbekende schijf io mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown guest ufo mode '%s'"
+#~ msgstr "onbekende schijf io mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown host csum mode '%s'"
+#~ msgstr "onbekende hostdev mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown host ecn mode '%s'"
+#~ msgstr "onbekende hostdev mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown host gso mode '%s'"
+#~ msgstr "onbekende hostdev mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown host mrg_rxbuf mode '%s'"
+#~ msgstr "onbekende hostdev mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown host tso4 mode '%s'"
+#~ msgstr "onbekende hostdev mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown host tso6 mode '%s'"
+#~ msgstr "onbekende hostdev mode '%s'"
+
+#, fuzzy
+#~ msgid "unknown host ufo mode '%s'"
+#~ msgstr "onbekende hostdev mode '%s'"
+
+#~ msgid "unknown interface type '%s'"
+#~ msgstr "onbekend interface type '%s'"
+
+#, fuzzy
+#~ msgid "unknown link state: %s"
+#~ msgstr "onbekende interface start mode %s"
+
+#~ msgid "unknown protocol type '%s'"
+#~ msgstr "onbekend protocol type '%s'"
+
+#, fuzzy
+#~ msgid "unknown readonly value: %s"
+#~ msgstr "onbekende dhcp peerdns waarde %s"
+
+#, fuzzy
+#~ msgid "unknown rom bar value '%s'"
+#~ msgstr "onbekende timer present waarde '%s'"
+
+#, fuzzy
+#~ msgid "unknown rom enabled value '%s'"
+#~ msgstr "onbekende volledig-scherm waarde '%s'"
+
+#, fuzzy
+#~ msgid "unknown secure value: %s"
+#~ msgstr "onbekende volledig-scherm waarde '%s'"
+
+#, fuzzy
+#~ msgid "unknown startupPolicy value '%s'"
+#~ msgstr "onbekende volledig-scherm waarde '%s'"
+
+#, fuzzy
+#~ msgid "unknown type value: %s"
+#~ msgstr "onbekend type '%s'"
+
+#, fuzzy
+#~ msgid "unknown vnc display sharing policy '%s'"
+#~ msgstr "onbekende schijf fout tactiek '%s'"
+
+#, fuzzy
+#~ msgid "unknown vsock model: %s"
+#~ msgstr "onbekend video model '%s'"
 
 #, fuzzy
 #~ msgid "%s: %d: failed to allocate argv"

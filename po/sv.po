@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-03-26 11:32+0000\n"
+"POT-Creation-Date: 2021-04-27 08:10+0000\n"
 "PO-Revision-Date: 2021-04-27 09:33+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -40,6 +40,7 @@ msgstr ""
 "\n"
 "  (ange --help <grupp> för detaljer om kommandona i gruppen)\n"
 
+#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -457,6 +458,7 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr "    Bandbreddsgräns: %llu byte/s (%-.3lf %s/s)"
 
+#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  NAMN\n"
 
@@ -634,14 +636,6 @@ msgid "%s is missing or not an array"
 msgstr "%s saknas eller är inte en vektor"
 
 #, c-format
-msgid "%s is not a supported cipher name"
-msgstr "%s är inte ett chiffernamn som stödjs"
-
-#, c-format
-msgid "%s is not a supported cipher state"
-msgstr "%s är inte ett chiffertillstånd som stödjs"
-
-#, c-format
 msgid "%s is not an executable"
 msgstr "%s är inte en körbar"
 
@@ -709,6 +703,16 @@ msgstr "%s stödjs inte i denna QEMU-binär"
 msgid "%s object has invalid dynamic type"
 msgstr "%s-objekt har ogiltig dynamisk typ"
 
+#.
+#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
+#. * enumeration values).
+#. *
+#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
+#.
+#.
+#. * Macros to implement managed objects
+#.
+#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "objektet %s saknar den begärda egenskapen ”%s”"
@@ -1230,27 +1234,14 @@ msgstr ""
 "ett ”arch”-element kan inte användas inuti ett ”cpu”-element med attributet "
 "”match”"
 
-#, c-format
-msgid "'auto' attribute can be 'yes' or 'no': %s"
-msgstr "attributet ”auto” kan vara ”yes” eller ”no”: %s"
-
 msgid "'base' and 'baseNode' can't be used together"
 msgstr "”base” och ”baseNode” får inte användas tillsammans"
-
-msgid ""
-"'bus', 'target', and 'unit' must be specified for scsi hostdev source address"
-msgstr ""
-"”bus”, ”target” och ”unit” måste anges för scsi-värdenhetens källadress"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "”cache” refererar till en NUMA-nodcaceh som inte finns"
 
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr "”can-offline” saknas i svaret på guest-get-vcpus"
-
-#, c-format
-msgid "'cid' attribute must be a positive number: %s"
-msgstr "attributet ”cid” måste vara ett positivt tal: %s"
 
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
 msgstr "”cmd_per_lun” stödj endast av styrenheten virtio-scsi"
@@ -1390,6 +1381,11 @@ msgstr ""
 "attributet ”reconnect” ej stött ”server”-läge för <interface "
 "type='vhostuser'>"
 
+msgid ""
+"'restrictive' mode is required in memnode element when mode is 'restrictive' "
+"in memory element"
+msgstr ""
+
 #, c-format
 msgid "'rx_queue_size' attribute must be positive number: %s"
 msgstr "attributet ”rx_queue_size” måste vara ett positivt tal: %s"
@@ -1499,6 +1495,7 @@ msgstr "(gränssnittsdefinition)"
 msgid "(libxl_migration_cookie)"
 msgstr "(libxl_migrationskaka)"
 
+#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
 
@@ -1556,6 +1553,7 @@ msgstr "(testdrivrutin)"
 msgid "(volume_definition)"
 msgstr "(volymdefinition)"
 
+#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -1785,6 +1783,12 @@ msgstr ""
 
 msgid "A storage driver is already registered"
 msgstr "En lagringsdrivrutin är redan registrerad"
+
+msgid "ACPI index is not supported with this QEMU"
+msgstr ""
+
+msgid "ACPI index is only supported for PCI devices"
+msgstr ""
 
 msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI kräver UEFI på denna arkitektur"
@@ -2481,10 +2485,14 @@ msgstr ""
 "Den beräknade informationen om smutsighetshastighet är tillgänglig genom att "
 "anropa ”domstats --dirtyrate”."
 
+#.
+#. * Macros to implement dynamic dispatched functions
+#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "Anrop av %s för oväntad typ ”%s”"
 
+#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "Anrop av %s för oväntad typ ”%s”, ”%s” förväntades"
@@ -3167,53 +3175,11 @@ msgstr "Kan inte tolka noden <Snapshot> <StorageControllers>"
 msgid "Cannot parse <VirtualBox> <Machine> node"
 msgstr "Kan inte tolka noden <VirtualBox> <Machine>"
 
-msgid "Cannot parse <address> 'bus' attribute"
-msgstr "Kan inte tolka <address> ”bus”-attributet"
-
-msgid "Cannot parse <address> 'controller' attribute"
-msgstr "Kan inte tolka <address> ”controller”-attribut"
-
-msgid "Cannot parse <address> 'cssid' attribute"
-msgstr "Kan inte tolka <address> ”cssid”-attributet"
-
-msgid "Cannot parse <address> 'devno' attribute"
-msgstr "Kan inte tolka <address> ”devno”-attribut"
-
-msgid "Cannot parse <address> 'domain' attribute"
-msgstr "Kan inte tolka <address> ”domain”-attributet"
-
-msgid "Cannot parse <address> 'fid' attribute"
-msgstr "Kan inte tolka <address> ”fid”-attribut"
-
-msgid "Cannot parse <address> 'function' attribute"
-msgstr "Kan inte tolka <address> ”function”-attributet"
-
-msgid "Cannot parse <address> 'iobase' attribute"
-msgstr "Kan inte tolka <address> ”iobase”-attribut"
-
-msgid "Cannot parse <address> 'irq' attribute"
-msgstr "Kan inte tolka <address> ”irq”-attribut"
-
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "Kan inte tolka <address> ”port”-attribut"
 
 msgid "Cannot parse <address> 'reg' attribute"
 msgstr "Kan inte tolka <address> ”reg”-attribut"
-
-msgid "Cannot parse <address> 'slot' attribute"
-msgstr "Kan inte tolka <address> ”slot”-attributet"
-
-msgid "Cannot parse <address> 'ssid' attribute"
-msgstr "Kan inte tolka <address> ”ssid”-attribut"
-
-msgid "Cannot parse <address> 'target' attribute"
-msgstr "Kan inte tolka <address> ”target”-attribut"
-
-msgid "Cannot parse <address> 'uid' attribute"
-msgstr "Kan inte tolka <address> ”uid”-attribut"
-
-msgid "Cannot parse <address> 'unit' attribute"
-msgstr "Kan inte tolka <address> ”unit”-attribut"
 
 msgid "Cannot parse <local> 'port' attribute with socket interface"
 msgstr "Kan inte tolka <local> ”port”-attribut med uttagsgränssnitt"
@@ -4881,6 +4847,7 @@ msgstr "Kunde inte hämta NIC-inställningar"
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr "Kunde inte hämta standardobjekt för Msvm_DiskDrive"
 
+#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "Kunde inte hämta poolinformation"
 
@@ -5196,6 +5163,9 @@ msgstr "Datalagerinformationen har en oväntad typ"
 msgid "Default paths:"
 msgstr "Standardsökvägar:"
 
+msgid "Define a device by an xml file on a node"
+msgstr ""
+
 msgid "Define a domain."
 msgstr "Definiera en domän."
 
@@ -5219,6 +5189,11 @@ msgstr "Definiera eller modifiera en hemlighet."
 
 msgid "Defined"
 msgstr "Definierad"
+
+msgid ""
+"Defines a persistent device on the node that can be assigned to a domain. "
+"The device must be started before it can be assigned to a domain."
+msgstr ""
 
 msgid "Delete a domain checkpoint"
 msgstr "Radera en domänkontrollpunkt"
@@ -5337,6 +5312,10 @@ msgid "Device %s reset\n"
 msgstr "Enheten %s återställd\n"
 
 #, c-format
+msgid "Device %s started\n"
+msgstr ""
+
+#, c-format
 msgid "Device %s un-attached from bridge %s\n"
 msgstr "Enheten %s bortkopplad från bryggan %s\n"
 
@@ -5377,6 +5356,9 @@ msgstr "Begäran om frånkoppling av enhet skickad\n"
 
 msgid "Device detached successfully\n"
 msgstr "Enheten kopplades ifrån\n"
+
+msgid "Device is already active"
+msgstr ""
 
 msgid "Device is not a fibre channel HBA"
 msgstr "Enheten är inte en fiberkanals-HBA"
@@ -5706,6 +5688,7 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr ""
 
+#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -6191,7 +6174,7 @@ msgid "Expected exactly 1 host for the storage pool"
 msgstr ""
 
 #, c-format
-msgid "Expecting %d FD names but got %zu"
+msgid "Expecting %d FD names but got %u"
 msgstr ""
 
 #, c-format
@@ -6275,7 +6258,7 @@ msgstr ""
 #, c-format
 msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to contain at least as many values "
-"as 'numvcpus' (%lld) but found only %zu value(s)"
+"as 'numvcpus' (%lld) but found only %u value(s)"
 msgstr ""
 
 #, c-format
@@ -6576,10 +6559,6 @@ msgstr "Misslyckades att öppna filen ”%s”"
 #, fuzzy, c-format
 msgid "Failed to build pool %s"
 msgstr "Misslyckades att binda uttag till ”%s”"
-
-#, fuzzy, c-format
-msgid "Failed to canonicalize path '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
 
 #, fuzzy, c-format
 msgid "Failed to change owner of %s to %u:%u"
@@ -6892,14 +6871,21 @@ msgstr "Misslyckades att skapa XML"
 msgid "Failed to create thread for receiving migration data"
 msgstr "Misslyckades att skapa domän från %s"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "Misslyckades att skapa domän från %s"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Misslyckades att skapa domän från %s"
 
+#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Misslyckades att skapa domän från %s"
@@ -6955,6 +6941,10 @@ msgstr "Misslyckades med att definiera det nya brygggränssnittet %s"
 #, c-format
 msgid "Failed to define new interface %s"
 msgstr "Misslyckades att definiera det nya gränssnittet %s"
+
+#, c-format
+msgid "Failed to define node device from '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to define pool %s"
@@ -7490,6 +7480,7 @@ msgstr "Misslyckades att lista aktiva nätverk"
 msgid "Failed to list active pools"
 msgstr "Misslyckades att lista aktiva pooler"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list domains"
 msgstr "Misslyckades att lista aktiva domäner"
@@ -7507,26 +7498,32 @@ msgstr "Misslyckades att lista inaktiva nätverk"
 msgid "Failed to list inactive pools"
 msgstr "Misslyckades att lista inaktiva pooler"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list interfaces"
 msgstr "Misslyckades med att starta gränssnittet %s"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "Misslyckades att lista inaktiva domäner"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filters"
 msgstr "Misslyckades att starta nätverk %s"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list networks"
 msgstr "Misslyckades att lista aktiva nätverk"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list node devices"
 msgstr "Misslyckades att lista inaktiva domäner"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list node secrets"
 msgstr "Misslyckades att lista inaktiva nätverk"
@@ -7535,6 +7532,7 @@ msgstr "Misslyckades att lista inaktiva nätverk"
 msgid "Failed to list persistent guests on $uri"
 msgstr "Misslyckades att lista inaktiva nätverk"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list pools"
 msgstr "Misslyckades att lista aktiva domäner"
@@ -7559,6 +7557,7 @@ msgstr "Misslyckades att lista aktiva nätverk"
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list volumes"
 msgstr "Misslyckades att lista aktiva domäner"
@@ -8153,6 +8152,9 @@ msgstr "Misslyckades att fortsätta domän %s"
 msgid "Failed to resume domain '%s'"
 msgstr "Misslyckades att återuppta domänen ”%s”"
 
+#. Hm, we already know we are in error here.  We don't want to
+#. * overwrite the previous error, though, so we just throw something
+#. * to the logs and hope for the best
 #, fuzzy, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "Misslyckades att fortsätta domän %s"
@@ -8408,6 +8410,10 @@ msgid "Failed to start bridge interface %s"
 msgstr "Misslyckades med att starta bryggränssnittet %s"
 
 #, c-format
+msgid "Failed to start device %s"
+msgstr ""
+
+#, c-format
 msgid "Failed to start domain '%s'"
 msgstr "Misslyckades att starta domänen '%s'"
 
@@ -8522,6 +8528,10 @@ msgstr "Misslyckades att avdefiniera nätverk %s"
 #, c-format
 msgid "Failed to undefine network filter %s"
 msgstr "Misslyckades att avdefiniera nätverksfiltret %s"
+
+#, c-format
+msgid "Failed to undefine node device '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to undefine pool %s"
@@ -8756,10 +8766,63 @@ msgid ""
 "for VMX file"
 msgstr ""
 
+#. Macros to help dealing with flag requirements.
+#. *
+#. * VIR_REQUIRE_FLAG_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @RET: Return value.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_REQUIRE_FLAG_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if required flag is not set.
+#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive flags.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @RET: Return value.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr ""
@@ -9728,10 +9791,15 @@ msgstr "Felaktig adress."
 msgid "Invalid allow value, either 'yes' or 'no'"
 msgstr ""
 
-#, c-format
-msgid "Invalid append attribute value '%s'"
-msgstr ""
-
+#.
+#. * Don't check for *selectSet != NULL here because selectSet is a list
+#. * and might contain items already. This function appends to selectSet.
+#.
+#. optional
+#. optional
+#. nothing
+#. nothing
+#. nothing
 msgid "Invalid argument"
 msgstr "Felaktigt argument"
 
@@ -9876,9 +9944,6 @@ msgstr ""
 msgid "Invalid chassisNr '%s' in PCI controller"
 msgstr ""
 
-msgid "Invalid check attribute for CPU specification"
-msgstr "Ogiltigt check-attribut för CPU-specifikationen"
-
 #, fuzzy, c-format
 msgid "Invalid class ID %d"
 msgstr "ogiltiga värd-UUID: %s"
@@ -9937,6 +10002,10 @@ msgid "Invalid device type supplied: %s"
 msgstr "Ogiltigt diskettenhetsnamn: %s"
 
 msgid "Invalid disk bus in definition"
+msgstr ""
+
+#, c-format
+msgid "Invalid disk read error policy: '%s'"
 msgstr ""
 
 #, c-format
@@ -10058,10 +10127,6 @@ msgstr ""
 msgid "Invalid forwarder element, must contain at least one of addr or domain"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Invalid fromConfig value: %s"
-msgstr "Ogiltigt portnummer: %s"
-
 #, c-format
 msgid "Invalid guest rx filters trust setting '%s' "
 msgstr ""
@@ -10090,19 +10155,11 @@ msgstr "Okänt protokoll ”%s”"
 msgid "Invalid integer value '%s' in file '%s'"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Invalid iothread attribute in disk driver element: %s"
-msgstr "Ogiltigt hårddiskenhetsnamn: %s"
-
 msgid "Invalid ip address prefix value"
 msgstr ""
 
 #, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
-msgstr ""
-
-#, c-format
-msgid "Invalid ipv6 setting '%s' in network '%s' NAT"
 msgstr ""
 
 #, fuzzy
@@ -10175,14 +10232,6 @@ msgstr "Ogiltiga portar: %s"
 
 #, c-format
 msgid "Invalid memory core dump attribute value '%s'"
-msgstr ""
-
-#, c-format
-msgid "Invalid memorytune attribute 'bandwidth' value '%s'"
-msgstr ""
-
-#, c-format
-msgid "Invalid memorytune attribute 'id' value '%s'"
 msgstr ""
 
 #, c-format
@@ -10415,7 +10464,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid specification for virtio ccw address: cssid='%s' ssid='%s' devno='%s'"
+"Invalid specification for virtio ccw address: cssid='0x%x' ssid='0x%x' "
+"devno='0x%04x'"
 msgstr ""
 
 msgid "Invalid specification of multiple <filterref>s in a single <interface>"
@@ -10465,10 +10515,6 @@ msgid "Invalid target model for serial device"
 msgstr "mål för diskenhet"
 
 #, c-format
-msgid "Invalid tlsFromConfig value: %s"
-msgstr ""
-
-#, c-format
 msgid ""
 "Invalid to specify MAC address '%s' in network '%s' IPv6 static host "
 "definition"
@@ -10515,6 +10561,10 @@ msgid ""
 "no inbound QoS set"
 msgstr ""
 
+#, c-format
+msgid "Invalid uuid '%s' for new mdev device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid value '%s' for '%s'"
 msgstr "Ogiltig busstyp ”%s” för hårddisk"
@@ -10526,6 +10576,32 @@ msgstr "Felaktigt värde för tidsgräns"
 #, fuzzy, c-format
 msgid "Invalid value '%s' for element or attribute '%s'"
 msgstr "Felaktigt värde för tidsgräns"
+
+#, c-format
+msgid "Invalid value for attribute '%s' in element '%s': '%s'."
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected 'on' or "
+"'off'"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected 'yes' or "
+"'no'"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
+"value"
+msgstr ""
+
+#, c-format
+msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid value for element priority"
@@ -10594,10 +10670,10 @@ msgstr "Ogiltiga vektorer: %s"
 msgid "Invalid vendor element in CPU model %s"
 msgstr ""
 
-msgid "Invalid virNetLibsshSessionPtr"
+msgid "Invalid virNetLibsshSession *"
 msgstr ""
 
-msgid "Invalid virNetSSHSessionPtr"
+msgid "Invalid virNetSSHSession *"
 msgstr ""
 
 #, fuzzy, c-format
@@ -11259,10 +11335,6 @@ msgstr ""
 msgid "Missing 'filename' in CPU map include"
 msgstr ""
 
-#, fuzzy
-msgid "Missing 'id' attribute in <iothread> element"
-msgstr "Saknat ”threads”-attribut i CPU-topologi"
-
 #, c-format
 msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
 msgstr ""
@@ -11585,13 +11657,6 @@ msgstr ""
 msgid "Missing max_workers data in JSON document"
 msgstr ""
 
-msgid "Missing memorytune attribute 'bandwidth'"
-msgstr ""
-
-#, fuzzy
-msgid "Missing memorytune attribute 'id'"
-msgstr "startordningsattribut saknas"
-
 msgid "Missing min_workers data in JSON document"
 msgstr ""
 
@@ -11771,6 +11836,10 @@ msgid "Missing required address attribute in network '%s'"
 msgstr "Saknat ”threads”-attribut i CPU-topologi"
 
 msgid "Missing required address in <ip>"
+msgstr ""
+
+#, c-format
+msgid "Missing required attribute '%s' in element '%s'"
 msgstr ""
 
 msgid "Missing required cellid attribute in memnode element"
@@ -12111,6 +12180,12 @@ msgstr "UNIX-uttag stödjs inte på denna plattform"
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
+#. Output old style header
+#. We only get here if the --details option was selected.
+#. Insert the header into table
+#. The old output format
+#. We only get here if the --details option was selected.
+#. Insert the header into table
 msgid "Name"
 msgstr "Namn"
 
@@ -12726,6 +12801,14 @@ msgstr ""
 msgid "Node device %s created from %s\n"
 msgstr "Domän %s skapad från %s\n"
 
+#, c-format
+msgid "Node device '%s' defined from '%s'\n"
+msgstr ""
+
+#, c-format
+msgid "Node device '%s' is not defined"
+msgstr ""
+
 #, fuzzy
 msgid "Node device not found"
 msgstr "Domän hittades inte"
@@ -13095,11 +13178,31 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
+#. Macros to help dealing with required options.
+#. VSH_REQUIRE_OPTION_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable).
+#. * @NAME2: String containing the name of required option.
+#. * @EXPR2: Expression to validate the variable (boolean variable).
+#. *
+#. * Check if required command options in virsh was set.  Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
 
+msgid "Option --all is incompatible with --inactive"
+msgstr ""
+
 msgid "Option --file is required"
+msgstr ""
+
+msgid "Option --tree is incompatible with other options"
 msgstr ""
 
 msgid "Option argument is empty"
@@ -13108,11 +13211,22 @@ msgstr ""
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive options.
+#. VSH_EXCLUSIVE_OPTIONS_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable)
+#. * @NAME2: String containing the name of the option.
+#. * @EXPR2: Expression to validate the variable (boolean variable)
+#. *
+#. * Reject mutually exclusive command options in virsh. Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
-msgstr ""
-
-msgid "Options --tree and --cap are incompatible"
 msgstr ""
 
 msgid "Options:"
@@ -13340,6 +13454,12 @@ msgstr ""
 msgid "Parent device %s is not capable of vport operations"
 msgstr ""
 
+msgid "Parent device is not an object"
+msgstr ""
+
+msgid "Parent device's JSON object data is not an array"
+msgstr ""
+
 msgid "Parent:"
 msgstr "Förälder:"
 
@@ -13351,6 +13471,7 @@ msgstr ""
 msgid "Partition path '%s' must start with '/'"
 msgstr ""
 
+#. warn users that the --base64 option passed from command line is wrong
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr ""
 
@@ -14189,6 +14310,7 @@ msgstr ""
 msgid "S4 state is disabled for this domain"
 msgstr ""
 
+#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14671,6 +14793,9 @@ msgstr "CPU-tid:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr ""
 
+#. XXX: Need to sort the returned params once new parameter
+#. * fields not of shared memory are added.
+#.
 msgid "Shared memory:\n"
 msgstr "Delat minne:\n"
 
@@ -14749,6 +14874,7 @@ msgstr ""
 msgid "Snapshot"
 msgstr "Ögonblicksbild"
 
+#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "Ögonblicsbilden %s XML-konfiguration inte ändrad.\n"
@@ -14884,6 +15010,9 @@ msgstr "Starta ett nätverk."
 msgid "Start a pool."
 msgstr "Starta ett nätverk."
 
+msgid "Start an inactive node device"
+msgstr ""
+
 msgid "Start to calculate domain's memory dirty rate successfully.\n"
 msgstr ""
 
@@ -14892,6 +15021,9 @@ msgstr "Startad"
 
 #, sh-format
 msgid "Starting shutdown on guest: $name"
+msgstr ""
+
+msgid "Starts an inactive node device that was previously defined"
 msgstr ""
 
 msgid "State"
@@ -15193,8 +15325,13 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr ""
 
+#. title
 msgid "Target"
 msgstr "Mål"
+
+#, c-format
+msgid "Target ACPI index '%u' does not match source '%u'"
+msgstr ""
 
 #, c-format
 msgid "Target CPU arch %s does not match source %s"
@@ -15458,6 +15595,10 @@ msgstr "Måldiskenheten %s stämmer inte med källan %s"
 #, c-format
 msgid "Target disk model %s does not match source %s"
 msgstr "Måldiskmodellen %s stämmer inte med källan %s"
+
+#, c-format
+msgid "Target disk rotation rate %u RPM does not match source %u RPM"
+msgstr ""
 
 #, c-format
 msgid "Target disk serial %s does not match source %s"
@@ -16425,9 +16566,11 @@ msgstr ""
 msgid "Try again?"
 msgstr "Försök igen?"
 
+#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr ""
 
@@ -16984,6 +17127,10 @@ msgstr ""
 msgid "Unable to create media registry"
 msgstr "kan inte skapa uttagspar"
 
+#, c-format
+msgid "Unable to create mediated device: %s"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to create migration thread"
 msgstr "Kan inte skriva till övervakaren"
@@ -17044,6 +17191,10 @@ msgstr ""
 msgid "Unable to decode number of FDs"
 msgstr ""
 
+#, c-format
+msgid "Unable to define mediated device: %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to delete %s"
 msgstr "Kan inte fråga kqueue"
@@ -17072,6 +17223,14 @@ msgstr ""
 
 #, c-format
 msgid "Unable to delete port %s from OVS"
+msgstr ""
+
+#, c-format
+msgid "Unable to destroy '%s': %s"
+msgstr ""
+
+#, c-format
+msgid "Unable to destroy '%s': device in use"
 msgstr ""
 
 #, fuzzy, c-format
@@ -17323,7 +17482,10 @@ msgstr "kan inte skapa körkatalogen %s: %s"
 msgid "Unable to get XML Desc of snapshot"
 msgstr "Kan inte få lokalt uttagsnamn"
 
-msgid "Unable to get a virDomainSnapshotDefPtr"
+msgid "Unable to get a virDomainSnapshotDef *"
+msgstr ""
+
+msgid "Unable to get any controller"
 msgstr ""
 
 #, fuzzy
@@ -17737,6 +17899,10 @@ msgstr "Misslyckades att markera domän %s som autostartad"
 msgid "Unable to modify live devices"
 msgstr "Kan inte initiera certifikat"
 
+#, c-format
+msgid "Unable to monitor directory: %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to move %s mount to %s"
 msgstr "Kan inte skriva till övervakaren"
@@ -17876,6 +18042,9 @@ msgstr "Kan inte tolka UUID:n ”%s”"
 msgid "Unable to parse base SELinux context '%s'"
 msgstr "kan inte tolka mac-adressen ”%s”"
 
+msgid "Unable to parse child device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to parse class id '%s'"
 msgstr "kan inte tolka mac-adressen ”%s”"
@@ -17899,10 +18068,6 @@ msgstr "Kan inte hämta parametrar för trådpoolen"
 #, fuzzy, c-format
 msgid "Unable to parse integer parameter '%s'"
 msgstr "Kan inte hämta parametrar för trådpoolen"
-
-#, fuzzy, c-format
-msgid "Unable to parse link speed: %s"
-msgstr "kan inte tolka mac-adressen ”%s”"
 
 #, fuzzy, c-format
 msgid "Unable to parse lock state %s"
@@ -18481,7 +18646,8 @@ msgstr "kan inte tolka mac-adressen ”%s”"
 msgid "Unable to start event thread: %s"
 msgstr "Kan inte hämta parametrar för trådpoolen"
 
-msgid "Unable to start mediated device"
+#, c-format
+msgid "Unable to start mediated device '%s': %s"
 msgstr ""
 
 #, c-format
@@ -18503,9 +18669,6 @@ msgstr "Misslyckades med att starta gränssnittet %s"
 #, fuzzy, c-format
 msgid "Unable to stat: %s"
 msgstr "Misslyckades att starta domän %s"
-
-msgid "Unable to stop mediated device"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to symlink directory %s to %s"
@@ -18529,6 +18692,10 @@ msgstr "Kan inte skriva till övervakaren"
 
 #, c-format
 msgid "Unable to unbind the virtual port %s from Midonet"
+msgstr ""
+
+#, c-format
+msgid "Unable to undefine mediated device: %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -18649,6 +18816,9 @@ msgstr ""
 msgid "Undefine an inactive domain, or convert persistent to transient."
 msgstr ""
 
+msgid "Undefine an inactive node device"
+msgstr ""
+
 msgid "Undefine the configuration for a persistent network."
 msgstr ""
 
@@ -18657,6 +18827,13 @@ msgstr ""
 
 msgid "Undefined"
 msgstr "Odefinierad"
+
+#, c-format
+msgid "Undefined node device '%s'\n"
+msgstr ""
+
+msgid "Undefines the configuration for an inactive node device"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unexpected CPU fallback value: %d"
@@ -18760,6 +18937,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Unexpected filesystem type %s"
 msgstr "oväntad disktyp %s"
+
+msgid "Unexpected format for parent device object"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unexpected hostdev mode %d"
@@ -19041,6 +19221,7 @@ msgstr "Okänd modelltyp ”%s”"
 msgid "Unknown error"
 msgstr "Okänt fel"
 
+#. should never happen (tm)
 #, fuzzy
 msgid "Unknown error value"
 msgstr "Okänt fel"
@@ -19188,10 +19369,6 @@ msgid "Unknown slirp feature %s"
 msgstr "Okänd modelltyp ”%s”"
 
 #, c-format
-msgid "Unknown source mode '%s'"
-msgstr "Okänd källäge ”%s”"
-
-#, c-format
 msgid "Unknown source type: '%s'"
 msgstr "Okänd källtyp: ”%s”"
 
@@ -19233,10 +19410,6 @@ msgstr "Okänd modelltyp ”%s”"
 #, c-format
 msgid "Unknown value '%s' for %s 'type' property"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Unknown value '%s' for <address> 'multifunction' attribute"
-msgstr "Kan inte tolka <address> ”function”-attributet"
 
 #, c-format
 msgid "Unknown value '%s' for AnyType 'type' property"
@@ -19834,10 +20007,12 @@ msgstr ""
 msgid "Video adapters are not supported int containers."
 msgstr ""
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr ""
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr ""
@@ -20300,6 +20475,11 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr ""
 
+#.
+#. * we need to use an intermediary pointer to @data as compilers may sometimes
+#. * complain about @data not being a pointer type:
+#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
+#.
 msgid "allocated netlink buffer is too small"
 msgstr ""
 
@@ -20598,7 +20778,7 @@ msgid "backing storage not supported for raw volumes"
 msgstr ""
 
 #, c-format
-msgid "backing store for %s (%s) is self-referential"
+msgid "backing store for %s is self-referential or too deeply nested"
 msgstr ""
 
 #, c-format
@@ -20988,10 +21168,6 @@ msgstr ""
 msgid ""
 "can't add memory backend for guest node '%d' as the guest has only '%zu' "
 "NUMA nodes configured"
-msgstr ""
-
-#, c-format
-msgid "can't canonicalize path '%s'"
 msgstr ""
 
 msgid "can't change link state: device alias not found"
@@ -21416,6 +21592,9 @@ msgstr "kan inte skapa tillståndskatalogen ”%s”"
 
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
+msgstr ""
+
+msgid "cannot define a mediated device without a parent"
 msgstr ""
 
 #, fuzzy
@@ -21922,6 +22101,7 @@ msgstr "kan inte skriva konfigurationsfilen ”%s”"
 msgid "cannot open path '%s' in '%s'"
 msgstr ""
 
+#. A dangling symlink now implies a TOCTTOU race; report it.
 #, fuzzy, c-format
 msgid "cannot open volume '%s'"
 msgstr "kan inte skriva konfigurationsfilen ”%s”"
@@ -21978,16 +22158,8 @@ msgid "cannot parse bus %s"
 msgstr "kan inte ta bort konfigurationen %s"
 
 #, fuzzy, c-format
-msgid "cannot parse bus '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
-
-#, fuzzy, c-format
 msgid "cannot parse cache mode '%s' for virtiofs"
 msgstr "okänt disk-cachenings-läge ”%s”"
-
-#, fuzzy, c-format
-msgid "cannot parse cipher size: '%s'"
-msgstr "kan inte skriva konfigurationsfilen ”%s”"
 
 #, c-format
 msgid "cannot parse cpu sys stat '%s'"
@@ -22053,6 +22225,10 @@ msgstr ""
 msgid "cannot parse rdp port %s"
 msgstr "Kan inte tolka styrenhetsindex %s"
 
+#, c-format
+msgid "cannot parse sandbox mode '%s' for virtiofs"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "cannot parse spice port %s"
 msgstr "kan inte tolka parametern instanceid som ett uuid"
@@ -22062,16 +22238,8 @@ msgid "cannot parse spice tlsPort %s"
 msgstr "Kan inte tolka styrenhetsindex %s"
 
 #, fuzzy, c-format
-msgid "cannot parse target '%s'"
-msgstr "Kan inte tolka styrenhetsindex %s"
-
-#, fuzzy, c-format
 msgid "cannot parse target for lunStr '%s'"
 msgstr "Kan inte tolka styrenhetsindex %s"
-
-#, fuzzy, c-format
-msgid "cannot parse unit '%s'"
-msgstr "kan inte skriva konfigurationsfilen ”%s”"
 
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
@@ -22119,28 +22287,12 @@ msgid "cannot parse video vram64 '%s'"
 msgstr "kan inte skapa konfigurationskatalogen ”%s”"
 
 #, fuzzy, c-format
-msgid "cannot parse video x-resolution '%s'"
-msgstr "Kan inte tolka styrenhetsindex %s"
-
-#, fuzzy, c-format
-msgid "cannot parse video y-resolution '%s'"
-msgstr "Kan inte tolka styrenhetsindex %s"
-
-#, fuzzy, c-format
 msgid "cannot parse vlan tag '%s' from file '%s'"
 msgstr "kan inte skriva konfigurationsfilen ”%s”"
 
 #, fuzzy, c-format
-msgid "cannot parse vnc WebSocket port %s"
-msgstr "Kan inte tolka styrenhetsindex %s"
-
-#, fuzzy, c-format
 msgid "cannot parse vnc port %s"
 msgstr "Kan inte tolka styrenhetsindex %s"
-
-#, c-format
-msgid "cannot parse vnc power control '%s'"
-msgstr ""
 
 msgid "cannot pass pipe for tunnelled migration"
 msgstr ""
@@ -22790,6 +22942,7 @@ msgstr ""
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
+#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "barnet misslyckades att skapa katalogen ”%s”"
@@ -22814,9 +22967,6 @@ msgid "chr type '%s' device not present in domain configuration"
 msgstr ""
 
 msgid "cipher info missing 'name' attribute"
-msgstr ""
-
-msgid "cipher info missing 'size' attribute"
 msgstr ""
 
 msgid "classID attribute not supported on <bandwidth> in this usage context"
@@ -23229,10 +23379,6 @@ msgstr "Kunde inte hitta %s med namnet ”%s”"
 #, fuzzy, c-format
 msgid "could not find capabilities for %s"
 msgstr "kan inte ta fram nodegenskaper"
-
-#, c-format
-msgid "could not find device '%s'"
-msgstr ""
 
 #, c-format
 msgid "could not find event callback %d for deletion"
@@ -23957,6 +24103,9 @@ msgstr ""
 msgid "device key"
 msgstr ""
 
+msgid "device name"
+msgstr ""
+
 msgid "device name or wwn pair in 'wwnn,wwpn' format"
 msgstr ""
 
@@ -24099,10 +24248,6 @@ msgstr "Domän hittades inte"
 
 #, c-format
 msgid "disk '%s' already in active block job"
-msgstr ""
-
-#, c-format
-msgid "disk '%s' backup state wrong or missing'"
 msgstr ""
 
 #, c-format
@@ -25022,6 +25167,9 @@ msgstr ""
 msgid "error sending continue signal to daemon"
 msgstr ""
 
+msgid "error waiting for continue signal from daemon"
+msgstr ""
+
 msgid "error while iterating over IFLA_VF_PORTS part"
 msgstr ""
 
@@ -25305,7 +25453,7 @@ msgid "expecting an ide:00.00.00 address."
 msgstr ""
 
 #, c-format
-msgid "expecting root element of 'disk', not '%s'"
+msgid "expecting root element of '%s', not '%s'"
 msgstr ""
 
 #, fuzzy
@@ -25602,6 +25750,9 @@ msgstr "det gick inte att skapa loggfilen %s"
 msgid "failed to create logfile %s"
 msgstr "det gick inte att skapa loggfilen %s"
 
+msgid "failed to create mdevctl thread"
+msgstr ""
+
 msgid "failed to create profile"
 msgstr "misslyckats med att skapa profil"
 
@@ -25778,9 +25929,9 @@ msgstr "misslyckades att hämta nätverks-UUID"
 msgid "failed to get cgroup BPF prog info"
 msgstr "misslyckades att få nodinformation"
 
-#, fuzzy, c-format
-msgid "failed to get cgroup backend for '%s'"
-msgstr "misslyckades att hämta domän '%s'"
+#, c-format
+msgid "failed to get cgroup backend for '%s' controller '%u'"
+msgstr ""
 
 #, fuzzy
 msgid "failed to get cmt scaling factor"
@@ -26250,6 +26401,10 @@ msgstr "Misslyckades att ta ögonblicksbild: %s"
 msgid "failed to query job for disk %s"
 msgstr "Misslyckades att förstöra nätverk %s"
 
+#, c-format
+msgid "failed to query mdevs from mdevctl: %s"
+msgstr ""
+
 #, fuzzy
 msgid "failed to re-init netcf"
 msgstr "misslyckades att få värdnamn"
@@ -26291,10 +26446,6 @@ msgstr "kunde inte läsa konfigurationsfilen %s"
 #, fuzzy
 msgid "failed to read libxl header"
 msgstr "det gick inte att skapa loggfilen %s"
-
-#, fuzzy, c-format
-msgid "failed to read link of gluster file '%s'"
-msgstr "kunde inte läsa konfigurationsfilen %s"
 
 #, fuzzy, c-format
 msgid "failed to read metadata length in '%s'"
@@ -26453,10 +26604,6 @@ msgstr "misslyckades att få värdnamn"
 #, fuzzy
 msgid "failed to setup stdout file handle"
 msgstr "det gick inte att skapa loggfilen %s"
-
-#, fuzzy, c-format
-msgid "failed to stat gluster path '%s'"
-msgstr "Misslyckades med att starta gränssnittet %s"
 
 #, fuzzy, c-format
 msgid "failed to stat remote file '%s'"
@@ -26636,6 +26783,9 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
+#. parse inbound and outbound which are in the format of
+#. * 'average,peak,burst,floor', in which peak and burst are optional,
+#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, c-format
 msgid "field '%s' is malformed"
 msgstr ""
@@ -26823,9 +26973,6 @@ msgid ""
 "or ensure that firewalld has a 'libvirt' zone by upgrading firewalld to a "
 "version supporting rule priorities (0.7.0+) and/or rebuilding libvirt with --"
 "with-firewalld-zone"
-msgstr ""
-
-msgid "firmware attribute and firmware type has to be the same"
 msgstr ""
 
 msgid "firmware auto selection not implemented for this driver"
@@ -27130,10 +27277,6 @@ msgstr ""
 msgid "graphics device is needed for attribute value 'display=on' in <hostdev>"
 msgstr ""
 
-#, fuzzy
-msgid "graphics listen type must be specified"
-msgstr "måltypen måste anges för %s-enhet"
-
 msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
 "graphics types"
@@ -27238,6 +27381,7 @@ msgstr ""
 msgid "handler failed to wait on condition"
 msgstr "misslyckades att skriva konfigurationsfilen"
 
+#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr ""
 
@@ -27595,10 +27739,6 @@ msgstr ""
 msgid "incomplete save header in '%s'"
 msgstr ""
 
-#, c-format
-msgid "incorrect boot order '%s', expecting positive integer"
-msgstr "felaktig startordning ”%s”, ett positivt heltal förväntas"
-
 msgid "incremental backup is not supported yet"
 msgstr ""
 
@@ -27791,6 +27931,25 @@ msgstr "Gränssnitt %s startat\n"
 msgid "interface name %s does not fit into buffer "
 msgstr ""
 
+#.
+#. * virsh-interface.c: Commands to manage host interface
+#. *
+#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+#. *
+#. * This library is free software; you can redistribute it and/or
+#. * modify it under the terms of the GNU Lesser General Public
+#. * License as published by the Free Software Foundation; either
+#. * version 2.1 of the License, or (at your option) any later version.
+#. *
+#. * This library is distributed in the hope that it will be useful,
+#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#. * Lesser General Public License for more details.
+#. *
+#. * You should have received a copy of the GNU Lesser General Public
+#. * License along with this library.  If not, see
+#. * <http://www.gnu.org/licenses/>.
+#.
 msgid "interface name or MAC address"
 msgstr ""
 
@@ -28095,10 +28254,6 @@ msgstr ""
 msgid "invalid argument: %s"
 msgstr "ogiltigt argument: %s"
 
-#, fuzzy
-msgid "invalid ats value"
-msgstr "ogiltig vakthundsåtgärd"
-
 #, c-format
 msgid "invalid audio 'id' value '%s'"
 msgstr ""
@@ -28114,10 +28269,6 @@ msgstr "Okänt protokoll ”%s”"
 #, fuzzy, c-format
 msgid "invalid backing protocol string '%s'"
 msgstr "ogiltig domänpekare i %s"
-
-#, c-format
-msgid "invalid backupmode '%s' of disk '%s'"
-msgstr ""
 
 msgid "invalid cache size in query-migrate-cache-size reply"
 msgstr ""
@@ -28184,16 +28335,8 @@ msgstr ""
 msgid "invalid devno value '%s' for '%s'"
 msgstr "Ogiltig busstyp ”%s” för hårddisk"
 
-#, fuzzy, c-format
-msgid "invalid dimm base address '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
-
 #, c-format
 msgid "invalid discard value '%s'"
-msgstr ""
-
-#, c-format
-msgid "invalid disk 'backup' state '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -28311,19 +28454,12 @@ msgstr "ogiltig nätverkspekare i"
 msgid "invalid interface pointer in %s"
 msgstr "ogiltig nätverkspekare i %s"
 
-msgid "invalid iommu value"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "invalid iommuGroup number attribute '%s'"
 msgstr "Ogiltigt portnummer: %s"
 
 #, c-format
 msgid "invalid iommuGroup number attribute for '%s'"
-msgstr ""
-
-#, c-format
-msgid "invalid iothread 'id' value '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -28377,10 +28513,6 @@ msgstr "ogiltig domänpekare i %s"
 msgid ""
 "invalid loadparm char '%c', expecting chars in set of [a-zA-Z0-9.] and blank "
 "spaces"
-msgstr ""
-
-#, c-format
-msgid "invalid logical block size '%s'"
 msgstr ""
 
 #, c-format
@@ -28512,14 +28644,6 @@ msgstr "Saknat ”cores”-attribut i CPU-topologi"
 msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr "Saknat ”cores”-attribut i CPU-topologi"
 
-#, fuzzy, c-format
-msgid "invalid or missing dimm slot id '%s'"
-msgstr "ogiltig domänpekare i %s"
-
-#, fuzzy
-msgid "invalid packed value"
-msgstr "ogiltig vakthundsåtgärd"
-
 #, c-format
 msgid "invalid part_separator setting '%s'"
 msgstr ""
@@ -28542,10 +28666,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "invalid path: %s"
 msgstr "Ogiltiga portar: %s"
-
-#, c-format
-msgid "invalid physical block size '%s'"
-msgstr ""
 
 msgid "invalid pid"
 msgstr ""
@@ -28639,10 +28759,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "invalid ssid value '%s' for '%s'"
 msgstr "Ogiltig busstyp ”%s” för hårddisk"
-
-#, fuzzy, c-format
-msgid "invalid ssl verify mode '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
 
 #, c-format
 msgid "invalid state '%s' of perf event '%s'"
@@ -29205,6 +29321,9 @@ msgstr ""
 msgid "list ephemeral secrets"
 msgstr ""
 
+msgid "list inactive & active devices"
+msgstr ""
+
 msgid "list inactive & active domains"
 msgstr "lista inaktiva & aktiva domäner<"
 
@@ -29217,6 +29336,9 @@ msgstr "lista inaktiva & aktiva nätverk"
 
 msgid "list inactive & active pools"
 msgstr "lista inaktiva & aktiva pooler<"
+
+msgid "list inactive devices"
+msgstr ""
 
 msgid "list inactive domains"
 msgstr "lista inaktiva domäner"
@@ -29625,10 +29747,6 @@ msgstr "kan inte tolka mac-adressen ”%s”"
 msgid "malformed machine cpu count in QEMU capabilities cache"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "malformed managed value '%s'"
-msgstr "Felaktig målförskjutning för hyra %s"
-
 msgid "malformed mtu size"
 msgstr ""
 
@@ -29862,6 +29980,9 @@ msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 msgid "mdev attribute missing name or value"
 msgstr ""
 
+msgid "mdevctl JSON response contains no devices"
+msgstr ""
+
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
 msgstr ""
@@ -29956,6 +30077,12 @@ msgstr "operation misslyckades: %s"
 msgid "message"
 msgstr "meddelande"
 
+msgid "metadata cache max size control is not supported with this QEMU binary"
+msgstr ""
+
+msgid "metadata cache max size control is supported only with qcow2 images"
+msgstr ""
+
 #, fuzzy
 msgid "metadata not found"
 msgstr "Domän hittades inte"
@@ -29980,12 +30107,6 @@ msgid "metadata title can't contain newlines"
 msgstr ""
 
 msgid "metadata_cache is not supported with vhostuser disk"
-msgstr ""
-
-msgid "metdata cache max size control is not supported with this QEMU binary"
-msgstr ""
-
-msgid "metdata cache max size control is supported only with qcow2 images"
 msgstr ""
 
 msgid "migrate domain to another host"
@@ -30423,9 +30544,6 @@ msgstr ""
 msgid "missing boot device"
 msgstr "startordningsattribut saknas"
 
-msgid "missing boot order attribute"
-msgstr "startordningsattribut saknas"
-
 msgid "missing capability name"
 msgstr ""
 
@@ -30588,10 +30706,6 @@ msgstr ""
 msgid "missing gluster volume name for path '%s'"
 msgstr "namn för värd saknas"
 
-#, fuzzy
-msgid "missing graphics device type"
-msgstr "smartkortenhets läge saknas"
-
 #, c-format
 msgid "missing host CPU model info from QEMU capabilities for binary %s"
 msgstr ""
@@ -30728,10 +30842,6 @@ msgstr "saknar källinformation för enhet"
 msgid "missing name element in migration data"
 msgstr "saknar kärninformation"
 
-#, fuzzy
-msgid "missing name for cipher"
-msgstr "namn för värd saknas"
-
 msgid "missing name for disk source"
 msgstr "saknat namn för källskiva"
 
@@ -30756,10 +30866,6 @@ msgstr "namninformation saknas i %s"
 #, fuzzy
 msgid "missing network device feature name"
 msgstr "Saknat CPU-funktionsnamn"
-
-#, fuzzy
-msgid "missing network source protocol type"
-msgstr "saknat namn för källskiva"
 
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
@@ -30983,10 +31089,6 @@ msgstr "namn för värd saknas"
 msgid "missing state attribute '%s' of feature '%s'"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "missing state for cipher named %s"
-msgstr "namn för värd saknas"
-
 msgid "missing state from existing snapshot"
 msgstr ""
 
@@ -31115,10 +31217,6 @@ msgstr "saknar källinformation för enhet %s"
 msgid "missing values for acceleration"
 msgstr "saknar enhetsinformation"
 
-#, fuzzy
-msgid "missing values for resolution"
-msgstr "namn för värd saknas"
-
 msgid "missing vcpu enabled state"
 msgstr ""
 
@@ -31176,7 +31274,7 @@ msgstr ""
 
 #, c-format
 msgid ""
-"mkfs is not supported on this platform: Failed to make filesystem of type "
+"mkfs is not available on this platform: Failed to make filesystem of type "
 "'%s' on device '%s'"
 msgstr ""
 
@@ -31227,6 +31325,15 @@ msgstr ""
 msgid "monitor failure"
 msgstr ""
 
+#. *
+#. * QEMU_CHECK_MONITOR_FULL:
+#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
+#. * @exit: statement that is used to exit the function
+#. *
+#. * This macro checks that the monitor is valid for given operation and exits
+#. * the function if not. The macro also adds a debug statement regarding the
+#. * monitor.
+#.
 msgid "monitor must not be NULL"
 msgstr ""
 
@@ -31430,6 +31537,7 @@ msgstr ""
 msgid "negative size requires --shrink"
 msgstr ""
 
+#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "förhandlad SSF %d var inte stark nog"
@@ -32708,9 +32816,9 @@ msgstr "öppnad"
 msgid "openwsman: %s"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "operation '%s' not supported"
-msgstr "Domänen är inte avstängd"
+#, c-format
+msgid "operation '%s' not supported for backend '%s'"
+msgstr ""
 
 msgid "operation aborted"
 msgstr "åtgärden avbruten"
@@ -33185,6 +33293,10 @@ msgstr "nätverket %s är inte aktivt"
 
 #, c-format
 msgid "pool '%s' is starting up"
+msgstr ""
+
+#, c-format
+msgid "pool = '%s', volume = '%s'"
 msgstr ""
 
 #, fuzzy
@@ -34182,10 +34294,16 @@ msgstr ""
 msgid "rollback to previous saved configuration created via iface-begin"
 msgstr ""
 
-msgid "root element was not source"
+msgid "root path must be absolute"
 msgstr ""
 
-msgid "root path must be absolute"
+msgid "rotation rate is not supported with this QEMU"
+msgstr ""
+
+msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
+msgstr ""
+
+msgid "rotation rate is only valid for disk device"
 msgstr ""
 
 #, fuzzy
@@ -34212,6 +34330,9 @@ msgid "runstate '%d' out of range'"
 msgstr "värdet på managerid är utanför intervallet"
 
 msgid "rx_queue_size has to be a power of two"
+msgstr ""
+
+msgid "sandbox can only be used with driver=virtiofs"
 msgstr ""
 
 #, c-format
@@ -34301,9 +34422,6 @@ msgid "scripts are not supported on interfaces of type %s"
 msgstr "UNIX-uttag stödjs inte på denna plattform"
 
 msgid "scsi-block 'lun' devices do not support the serial property"
-msgstr ""
-
-msgid "sdl gl element missing enable"
 msgstr ""
 
 #, c-format
@@ -34930,6 +35048,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "splitting StorageUrl failed %s"
 msgstr "att ta bort %s-enheten misslyckades: %s"
+
+msgid "ssh protocol accepts only one host"
+msgstr ""
 
 msgid "ssl verification is supported only with HTTPS/FTPS protocol"
 msgstr ""
@@ -36288,6 +36409,7 @@ msgstr "kan inte initiera mutex"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
+#. fdatasync() may fail on some special FDs, e.g. pipes
 #, fuzzy, c-format
 msgid "unable to fsync %s"
 msgstr "kan inte initiera mutex"
@@ -37124,12 +37246,6 @@ msgstr "oväntad disktyp %s"
 msgid "unimplemented parameter type %d"
 msgstr "okänd parametertyp: %d"
 
-#, c-format
-msgid ""
-"unique storage file identifier not implemented for storage type %s "
-"(protocol: %s)'"
-msgstr ""
-
 msgid ""
 "unit must be not more than 7 for scsi host device if its controller model is "
 "'lsilogic'"
@@ -37142,16 +37258,14 @@ msgstr "unix"
 msgid "unix socket for spice graphics are not supported with this QEMU"
 msgstr "UNIX-uttag stödjs inte på denna plattform"
 
+#. Something went wrong retrieving a volume path, cope with it
+#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "okänd"
 
 #, c-format
 msgid "unknown %s action: %s"
 msgstr "okänd %s-åtgärd: %s"
-
-#, c-format
-msgid "unknown 'exactName' value '%s'"
-msgstr ""
 
 #, c-format
 msgid "unknown 'exclusive' value '%s'"
@@ -37329,10 +37443,6 @@ msgid "unknown character device type: %s"
 msgstr "okänd teckenenhetstyp: %s"
 
 #, fuzzy, c-format
-msgid "unknown chardev 'tls' setting '%s'"
-msgstr "okänd adresstyp ”%s”"
-
-#, fuzzy, c-format
 msgid "unknown chr device type '%s'"
 msgstr "okänd teckenenhetstyp: %s"
 
@@ -37392,62 +37502,6 @@ msgstr "okänd adresstyp ”%s”"
 msgid "unknown dhcp peerdns value %s"
 msgstr "okänd diskenhet ”%s”"
 
-#, c-format
-msgid "unknown disk bus type '%s'"
-msgstr "okänd diskbusstyp ”%s”"
-
-#, c-format
-msgid "unknown disk cache mode '%s'"
-msgstr "okänt disk-cachenings-läge ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown disk copy_on_read mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
-
-#, c-format
-msgid "unknown disk device '%s'"
-msgstr "okänd diskenhet ”%s”"
-
-#, c-format
-msgid "unknown disk discard mode '%s'"
-msgstr "okänt diskkassationsläge ”%s”"
-
-#, c-format
-msgid "unknown disk error policy '%s'"
-msgstr "okänd diskfelspolicy ”%s”"
-
-#, c-format
-msgid "unknown disk event_idx mode '%s'"
-msgstr "okänt disk-event_idx-läge ”%s”"
-
-#, c-format
-msgid "unknown disk io mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
-
-#, c-format
-msgid "unknown disk ioeventfd mode '%s'"
-msgstr "okänt disk-ioeventfd-läge ”%s”"
-
-#, c-format
-msgid "unknown disk model '%s'"
-msgstr "okänd diskmodell ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown disk rawio setting '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
-
-#, c-format
-msgid "unknown disk read error policy '%s'"
-msgstr "okänd diskläsfelspolicy ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown disk removable status '%s'"
-msgstr "okänd diskenhet ”%s”"
-
-#, c-format
-msgid "unknown disk sgio mode '%s'"
-msgstr "okänt disk-sgio-läge ”%s”"
-
 #, fuzzy, c-format
 msgid "unknown disk snapshot driver '%s'"
 msgstr "okänt disk-IO-läge ”%s”"
@@ -37460,21 +37514,9 @@ msgstr "okänd disktyp ”%s”"
 msgid "unknown disk snapshot type '%s'"
 msgstr "okänd diskbusstyp ”%s”"
 
-#, fuzzy, c-format
-msgid "unknown disk source 'tls' setting '%s'"
-msgstr "okänd diskbusstyp ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown disk tray status '%s'"
-msgstr "okänd disktyp ”%s”"
-
 #, c-format
 msgid "unknown disk type '%s'"
 msgstr "okänd disktyp ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown driver detect_zeroes value '%s'"
-msgstr "okänd diskenhet ”%s”"
 
 #, fuzzy, c-format
 msgid "unknown driver format value '%s'"
@@ -37540,40 +37582,8 @@ msgid "unknown fs driver type '%s'"
 msgstr "okänd disktyp ”%s”"
 
 #, fuzzy, c-format
-msgid "unknown fullscreen value '%s'"
-msgstr "okänd filsystemstyp ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown graphics device type '%s'"
-msgstr "okänd teckenenhetstyp: %s"
-
-#, fuzzy, c-format
-msgid "unknown graphics listen type '%s'"
-msgstr "okänd filsystemstyp ”%s”"
-
-#, fuzzy, c-format
 msgid "unknown graphics type %s"
 msgstr "okänd disktyp ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown guest csum mode '%s'"
-msgstr "okända åtkomstläge ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown guest ecn mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown guest tso4 mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown guest tso6 mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown guest ufo mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
 
 msgid "unknown host"
 msgstr "okänd värd"
@@ -37590,36 +37600,8 @@ msgid "unknown host CPU model"
 msgstr "okänd värd"
 
 #, fuzzy, c-format
-msgid "unknown host csum mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
-
-#, fuzzy, c-format
 msgid "unknown host device source address type '%s'"
 msgstr "okänd adresstyp ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown host ecn mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown host gso mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown host mrg_rxbuf mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown host tso4 mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown host tso6 mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown host ufo mode '%s'"
-msgstr "okänt disk-IO-läge ”%s”"
 
 #, fuzzy, c-format
 msgid "unknown hostdev mode '%s'"
@@ -37674,10 +37656,6 @@ msgid "unknown interface type %s"
 msgstr "okänd gränssnittstyp ”%s”"
 
 #, c-format
-msgid "unknown interface type '%s'"
-msgstr "okän gränssnittstyp ”%s”"
-
-#, c-format
 msgid "unknown interface type: '%s'"
 msgstr "okänd gränssnittstyp: ”%s”"
 
@@ -37692,10 +37670,6 @@ msgstr "okänd värd %s"
 #, c-format
 msgid "unknown ip address type '%s'"
 msgstr "okänd ip-adresstyp ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown link state: %s"
-msgstr "okänd disktyp ”%s”"
 
 #, fuzzy, c-format
 msgid "unknown memory balloon model '%s'"
@@ -37820,14 +37794,6 @@ msgstr "okänt förfarande: %d"
 msgid "unknown protocol transport type '%s'"
 msgstr "okänd protokolltyp ”%s”"
 
-#, c-format
-msgid "unknown protocol type '%s'"
-msgstr "okänd protokolltyp ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown readonly value: %s"
-msgstr "okänt förfarande: %d"
-
 #, fuzzy, c-format
 msgid "unknown redirdev bus '%s'"
 msgstr "okänd diskbusstyp ”%s”"
@@ -37838,14 +37804,6 @@ msgstr "okänd teckenenhetstyp: %s"
 
 msgid "unknown rng-random backend"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unknown rom bar value '%s'"
-msgstr "okänt kommando: '%s'"
-
-#, fuzzy, c-format
-msgid "unknown rom enabled value '%s'"
-msgstr "okänt kommando: '%s'"
 
 #, fuzzy, c-format
 msgid "unknown root element '%s' for filter binding"
@@ -37880,10 +37838,6 @@ msgstr "okänd diskbusstyp ”%s”"
 #, fuzzy, c-format
 msgid "unknown secret usage type %s"
 msgstr "okänd diskbusstyp ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown secure value: %s"
-msgstr "okänt förfarande: %d"
 
 #, c-format
 msgid "unknown sgio mode '%s'"
@@ -37938,10 +37892,6 @@ msgstr "okänt smartkortsläge"
 #, fuzzy, c-format
 msgid "unknown spice zlib compression %s"
 msgstr "okända åtkomstläge ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown startupPolicy value '%s'"
-msgstr "okänd diskfelspolicy ”%s”"
 
 #, fuzzy, c-format
 msgid "unknown state attribute '%s' of feature '%s'"
@@ -38040,10 +37990,6 @@ msgid "unknown type presented to host for character device: %s"
 msgstr "okänd typ presenterad för värd för teckenenhet: %s"
 
 #, fuzzy, c-format
-msgid "unknown type value: %s"
-msgstr "okänd OS-typ %s"
-
-#, fuzzy, c-format
 msgid "unknown usb source type '%s'"
 msgstr "okänd diskbusstyp ”%s”"
 
@@ -38057,10 +38003,6 @@ msgstr ""
 
 #, c-format
 msgid "unknown value '%s' in attribute 'usable'"
-msgstr ""
-
-#, c-format
-msgid "unknown value '%s' of 'tls' attribute"
 msgstr ""
 
 #, fuzzy, c-format
@@ -38095,10 +38037,6 @@ msgstr "okänd OS-typ"
 msgid "unknown virtualport type %s"
 msgstr "okänd protokolltyp ”%s”"
 
-#, fuzzy, c-format
-msgid "unknown vnc display sharing policy '%s'"
-msgstr "okänd diskfelspolicy ”%s”"
-
 msgid "unknown volume encryption format"
 msgstr ""
 
@@ -38124,10 +38062,6 @@ msgstr "okänd OS-typ %s"
 #, fuzzy, c-format
 msgid "unknown volume type '%s'"
 msgstr "Okänd modelltyp ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown vsock model: %s"
-msgstr "Okänd källäge ”%s”"
 
 #, fuzzy, c-format
 msgid "unknown watchdog action '%s'"
@@ -38380,6 +38314,28 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
+#. *
+#. * virCheckFlags:
+#. * @supported: an OR'ed set of supported flags
+#. * @retval: return value in case unsupported flags were passed
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Exits the caller function if unsupported flags were
+#. * passed to it.
+#.
+#. *
+#. * virCheckFlagsGoto:
+#. * @supported: an OR'ed set of supported flags
+#. * @label: label to jump to on error
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, fuzzy, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "flaggor som inte stödjs: (0x%x)"
@@ -39559,6 +39515,361 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <sträng>"
+
+#~ msgid "%s is not a supported cipher name"
+#~ msgstr "%s är inte ett chiffernamn som stödjs"
+
+#~ msgid "%s is not a supported cipher state"
+#~ msgstr "%s är inte ett chiffertillstånd som stödjs"
+
+#~ msgid "'auto' attribute can be 'yes' or 'no': %s"
+#~ msgstr "attributet ”auto” kan vara ”yes” eller ”no”: %s"
+
+#~ msgid ""
+#~ "'bus', 'target', and 'unit' must be specified for scsi hostdev source "
+#~ "address"
+#~ msgstr ""
+#~ "”bus”, ”target” och ”unit” måste anges för scsi-värdenhetens källadress"
+
+#~ msgid "'cid' attribute must be a positive number: %s"
+#~ msgstr "attributet ”cid” måste vara ett positivt tal: %s"
+
+#~ msgid "Cannot parse <address> 'bus' attribute"
+#~ msgstr "Kan inte tolka <address> ”bus”-attributet"
+
+#~ msgid "Cannot parse <address> 'controller' attribute"
+#~ msgstr "Kan inte tolka <address> ”controller”-attribut"
+
+#~ msgid "Cannot parse <address> 'cssid' attribute"
+#~ msgstr "Kan inte tolka <address> ”cssid”-attributet"
+
+#~ msgid "Cannot parse <address> 'devno' attribute"
+#~ msgstr "Kan inte tolka <address> ”devno”-attribut"
+
+#~ msgid "Cannot parse <address> 'domain' attribute"
+#~ msgstr "Kan inte tolka <address> ”domain”-attributet"
+
+#~ msgid "Cannot parse <address> 'fid' attribute"
+#~ msgstr "Kan inte tolka <address> ”fid”-attribut"
+
+#~ msgid "Cannot parse <address> 'function' attribute"
+#~ msgstr "Kan inte tolka <address> ”function”-attributet"
+
+#~ msgid "Cannot parse <address> 'iobase' attribute"
+#~ msgstr "Kan inte tolka <address> ”iobase”-attribut"
+
+#~ msgid "Cannot parse <address> 'irq' attribute"
+#~ msgstr "Kan inte tolka <address> ”irq”-attribut"
+
+#~ msgid "Cannot parse <address> 'slot' attribute"
+#~ msgstr "Kan inte tolka <address> ”slot”-attributet"
+
+#~ msgid "Cannot parse <address> 'ssid' attribute"
+#~ msgstr "Kan inte tolka <address> ”ssid”-attribut"
+
+#~ msgid "Cannot parse <address> 'target' attribute"
+#~ msgstr "Kan inte tolka <address> ”target”-attribut"
+
+#~ msgid "Cannot parse <address> 'uid' attribute"
+#~ msgstr "Kan inte tolka <address> ”uid”-attribut"
+
+#~ msgid "Cannot parse <address> 'unit' attribute"
+#~ msgstr "Kan inte tolka <address> ”unit”-attribut"
+
+#, fuzzy
+#~ msgid "Failed to canonicalize path '%s'"
+#~ msgstr "Misslyckades att öppna filen ”%s”"
+
+#~ msgid "Invalid check attribute for CPU specification"
+#~ msgstr "Ogiltigt check-attribut för CPU-specifikationen"
+
+#, fuzzy
+#~ msgid "Invalid fromConfig value: %s"
+#~ msgstr "Ogiltigt portnummer: %s"
+
+#, fuzzy
+#~ msgid "Invalid iothread attribute in disk driver element: %s"
+#~ msgstr "Ogiltigt hårddiskenhetsnamn: %s"
+
+#, fuzzy
+#~ msgid "Missing 'id' attribute in <iothread> element"
+#~ msgstr "Saknat ”threads”-attribut i CPU-topologi"
+
+#, fuzzy
+#~ msgid "Missing memorytune attribute 'id'"
+#~ msgstr "startordningsattribut saknas"
+
+#, fuzzy
+#~ msgid "Unable to parse link speed: %s"
+#~ msgstr "kan inte tolka mac-adressen ”%s”"
+
+#~ msgid "Unknown source mode '%s'"
+#~ msgstr "Okänd källäge ”%s”"
+
+#, fuzzy
+#~ msgid "Unknown value '%s' for <address> 'multifunction' attribute"
+#~ msgstr "Kan inte tolka <address> ”function”-attributet"
+
+#, fuzzy
+#~ msgid "cannot parse bus '%s'"
+#~ msgstr "Misslyckades med att tolka läget ”%s”"
+
+#, fuzzy
+#~ msgid "cannot parse cipher size: '%s'"
+#~ msgstr "kan inte skriva konfigurationsfilen ”%s”"
+
+#, fuzzy
+#~ msgid "cannot parse target '%s'"
+#~ msgstr "Kan inte tolka styrenhetsindex %s"
+
+#, fuzzy
+#~ msgid "cannot parse unit '%s'"
+#~ msgstr "kan inte skriva konfigurationsfilen ”%s”"
+
+#, fuzzy
+#~ msgid "cannot parse video x-resolution '%s'"
+#~ msgstr "Kan inte tolka styrenhetsindex %s"
+
+#, fuzzy
+#~ msgid "cannot parse video y-resolution '%s'"
+#~ msgstr "Kan inte tolka styrenhetsindex %s"
+
+#, fuzzy
+#~ msgid "cannot parse vnc WebSocket port %s"
+#~ msgstr "Kan inte tolka styrenhetsindex %s"
+
+#, fuzzy
+#~ msgid "failed to get cgroup backend for '%s'"
+#~ msgstr "misslyckades att hämta domän '%s'"
+
+#, fuzzy
+#~ msgid "failed to read link of gluster file '%s'"
+#~ msgstr "kunde inte läsa konfigurationsfilen %s"
+
+#, fuzzy
+#~ msgid "failed to stat gluster path '%s'"
+#~ msgstr "Misslyckades med att starta gränssnittet %s"
+
+#, fuzzy
+#~ msgid "graphics listen type must be specified"
+#~ msgstr "måltypen måste anges för %s-enhet"
+
+#~ msgid "incorrect boot order '%s', expecting positive integer"
+#~ msgstr "felaktig startordning ”%s”, ett positivt heltal förväntas"
+
+#, fuzzy
+#~ msgid "invalid ats value"
+#~ msgstr "ogiltig vakthundsåtgärd"
+
+#, fuzzy
+#~ msgid "invalid dimm base address '%s'"
+#~ msgstr "kan inte tolka mac-adressen ”%s”"
+
+#, fuzzy
+#~ msgid "invalid or missing dimm slot id '%s'"
+#~ msgstr "ogiltig domänpekare i %s"
+
+#, fuzzy
+#~ msgid "invalid packed value"
+#~ msgstr "ogiltig vakthundsåtgärd"
+
+#, fuzzy
+#~ msgid "invalid ssl verify mode '%s'"
+#~ msgstr "Misslyckades med att tolka läget ”%s”"
+
+#, fuzzy
+#~ msgid "malformed managed value '%s'"
+#~ msgstr "Felaktig målförskjutning för hyra %s"
+
+#~ msgid "missing boot order attribute"
+#~ msgstr "startordningsattribut saknas"
+
+#, fuzzy
+#~ msgid "missing graphics device type"
+#~ msgstr "smartkortenhets läge saknas"
+
+#, fuzzy
+#~ msgid "missing name for cipher"
+#~ msgstr "namn för värd saknas"
+
+#, fuzzy
+#~ msgid "missing network source protocol type"
+#~ msgstr "saknat namn för källskiva"
+
+#, fuzzy
+#~ msgid "missing state for cipher named %s"
+#~ msgstr "namn för värd saknas"
+
+#, fuzzy
+#~ msgid "missing values for resolution"
+#~ msgstr "namn för värd saknas"
+
+#, fuzzy
+#~ msgid "operation '%s' not supported"
+#~ msgstr "Domänen är inte avstängd"
+
+#, fuzzy
+#~ msgid "unknown chardev 'tls' setting '%s'"
+#~ msgstr "okänd adresstyp ”%s”"
+
+#~ msgid "unknown disk bus type '%s'"
+#~ msgstr "okänd diskbusstyp ”%s”"
+
+#~ msgid "unknown disk cache mode '%s'"
+#~ msgstr "okänt disk-cachenings-läge ”%s”"
+
+#, fuzzy
+#~ msgid "unknown disk copy_on_read mode '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#~ msgid "unknown disk device '%s'"
+#~ msgstr "okänd diskenhet ”%s”"
+
+#~ msgid "unknown disk discard mode '%s'"
+#~ msgstr "okänt diskkassationsläge ”%s”"
+
+#~ msgid "unknown disk error policy '%s'"
+#~ msgstr "okänd diskfelspolicy ”%s”"
+
+#~ msgid "unknown disk event_idx mode '%s'"
+#~ msgstr "okänt disk-event_idx-läge ”%s”"
+
+#~ msgid "unknown disk io mode '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#~ msgid "unknown disk ioeventfd mode '%s'"
+#~ msgstr "okänt disk-ioeventfd-läge ”%s”"
+
+#~ msgid "unknown disk model '%s'"
+#~ msgstr "okänd diskmodell ”%s”"
+
+#, fuzzy
+#~ msgid "unknown disk rawio setting '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#~ msgid "unknown disk read error policy '%s'"
+#~ msgstr "okänd diskläsfelspolicy ”%s”"
+
+#, fuzzy
+#~ msgid "unknown disk removable status '%s'"
+#~ msgstr "okänd diskenhet ”%s”"
+
+#~ msgid "unknown disk sgio mode '%s'"
+#~ msgstr "okänt disk-sgio-läge ”%s”"
+
+#, fuzzy
+#~ msgid "unknown disk source 'tls' setting '%s'"
+#~ msgstr "okänd diskbusstyp ”%s”"
+
+#, fuzzy
+#~ msgid "unknown disk tray status '%s'"
+#~ msgstr "okänd disktyp ”%s”"
+
+#, fuzzy
+#~ msgid "unknown driver detect_zeroes value '%s'"
+#~ msgstr "okänd diskenhet ”%s”"
+
+#, fuzzy
+#~ msgid "unknown fullscreen value '%s'"
+#~ msgstr "okänd filsystemstyp ”%s”"
+
+#, fuzzy
+#~ msgid "unknown graphics device type '%s'"
+#~ msgstr "okänd teckenenhetstyp: %s"
+
+#, fuzzy
+#~ msgid "unknown graphics listen type '%s'"
+#~ msgstr "okänd filsystemstyp ”%s”"
+
+#, fuzzy
+#~ msgid "unknown guest csum mode '%s'"
+#~ msgstr "okända åtkomstläge ”%s”"
+
+#, fuzzy
+#~ msgid "unknown guest ecn mode '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#, fuzzy
+#~ msgid "unknown guest tso4 mode '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#, fuzzy
+#~ msgid "unknown guest tso6 mode '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#, fuzzy
+#~ msgid "unknown guest ufo mode '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#, fuzzy
+#~ msgid "unknown host csum mode '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#, fuzzy
+#~ msgid "unknown host ecn mode '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#, fuzzy
+#~ msgid "unknown host gso mode '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#, fuzzy
+#~ msgid "unknown host mrg_rxbuf mode '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#, fuzzy
+#~ msgid "unknown host tso4 mode '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#, fuzzy
+#~ msgid "unknown host tso6 mode '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#, fuzzy
+#~ msgid "unknown host ufo mode '%s'"
+#~ msgstr "okänt disk-IO-läge ”%s”"
+
+#~ msgid "unknown interface type '%s'"
+#~ msgstr "okän gränssnittstyp ”%s”"
+
+#, fuzzy
+#~ msgid "unknown link state: %s"
+#~ msgstr "okänd disktyp ”%s”"
+
+#~ msgid "unknown protocol type '%s'"
+#~ msgstr "okänd protokolltyp ”%s”"
+
+#, fuzzy
+#~ msgid "unknown readonly value: %s"
+#~ msgstr "okänt förfarande: %d"
+
+#, fuzzy
+#~ msgid "unknown rom bar value '%s'"
+#~ msgstr "okänt kommando: '%s'"
+
+#, fuzzy
+#~ msgid "unknown rom enabled value '%s'"
+#~ msgstr "okänt kommando: '%s'"
+
+#, fuzzy
+#~ msgid "unknown secure value: %s"
+#~ msgstr "okänt förfarande: %d"
+
+#, fuzzy
+#~ msgid "unknown startupPolicy value '%s'"
+#~ msgstr "okänd diskfelspolicy ”%s”"
+
+#, fuzzy
+#~ msgid "unknown type value: %s"
+#~ msgstr "okänd OS-typ %s"
+
+#, fuzzy
+#~ msgid "unknown vnc display sharing policy '%s'"
+#~ msgstr "okänd diskfelspolicy ”%s”"
+
+#, fuzzy
+#~ msgid "unknown vsock model: %s"
+#~ msgstr "Okänd källäge ”%s”"
 
 #~ msgid "%s: %d: failed to allocate argv"
 #~ msgstr "%s: %d: misslyckades att allokera argv"
