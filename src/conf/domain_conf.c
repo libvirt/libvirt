@@ -13637,12 +13637,14 @@ virDomainShmemDefParseXML(virDomainXMLOption *xmlopt,
     if (def->model != VIR_DOMAIN_SHMEM_MODEL_IVSHMEM) {
         tmp = virXMLPropString(node, "role");
         if (tmp) {
-            if ((def->role = virDomainShmemRoleTypeFromString(tmp)) <= 0) {
+            int role;
+            if ((role = virDomainShmemRoleTypeFromString(tmp)) <= 0) {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("Unknown shmem role type '%s'"), tmp);
                 goto cleanup;
             }
 
+            def->role = role;
             VIR_FREE(tmp);
         }
     }

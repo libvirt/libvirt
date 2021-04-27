@@ -1956,7 +1956,7 @@ struct _virDomainShmemDef {
     char *name;
     unsigned long long size;
     virDomainShmemModel model;
-    int role; /* enum virDomainShmemRole */
+    virDomainShmemRole role;
     struct {
         bool enabled;
         virDomainChrSourceDef chr;

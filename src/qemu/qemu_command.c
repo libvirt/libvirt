@@ -9003,7 +9003,7 @@ qemuBuildShmemDevStr(virDomainDef *def,
     } else {
         virBufferAsprintf(&buf, ",memdev=shmmem-%s", shmem->info.alias);
 
-        switch ((virDomainShmemRole) shmem->role) {
+        switch (shmem->role) {
         case VIR_DOMAIN_SHMEM_ROLE_MASTER:
             virBufferAddLit(&buf, ",master=on");
             break;
