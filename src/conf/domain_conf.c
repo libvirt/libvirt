@@ -13606,26 +13606,20 @@ virDomainShmemDefParseXML(virDomainXMLOption *xmlopt,
     xmlNodePtr msi = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr server = NULL;
+    xmlNodePtr model;
     g_autofree char *tmp = NULL;
 
     def = g_new0(virDomainShmemDef, 1);
 
     ctxt->node = node;
 
-    tmp = virXPathString("string(./model/@type)", ctxt);
-    if (tmp) {
-        int model;
+    if ((model = virXPathNode("./model", ctxt))) {
         /* If there's none, we will automatically have the first one
          * (as default).  Unfortunately this has to be done for
          * compatibility reasons. */
-        if ((model = virDomainShmemModelTypeFromString(tmp)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Unknown shmem model type '%s'"), tmp);
+        if (virXMLPropEnum(model, "type", virDomainShmemModelTypeFromString,
+                           VIR_XML_PROP_NONE, &def->model) < 0)
             goto cleanup;
-        }
-
-        def->model = model;
-        VIR_FREE(tmp);
     }
 
     if (!(def->name = virXMLPropString(node, "name"))) {
@@ -13635,18 +13629,9 @@ virDomainShmemDefParseXML(virDomainXMLOption *xmlopt,
     }
 
     if (def->model != VIR_DOMAIN_SHMEM_MODEL_IVSHMEM) {
-        tmp = virXMLPropString(node, "role");
-        if (tmp) {
-            int role;
-            if ((role = virDomainShmemRoleTypeFromString(tmp)) <= 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Unknown shmem role type '%s'"), tmp);
-                goto cleanup;
-            }
-
-            def->role = role;
-            VIR_FREE(tmp);
-        }
+        if (virXMLPropEnum(node, "role", virDomainShmemRoleTypeFromString,
+                           VIR_XML_PROP_NONZERO, &def->role) < 0)
+            goto cleanup;
     }
 
     if (virParseScaledValue("./size[1]", NULL, ctxt,
@@ -13666,26 +13651,13 @@ virDomainShmemDefParseXML(virDomainXMLOption *xmlopt,
     if ((msi = virXPathNode("./msi[1]", ctxt))) {
         def->msi.enabled = true;
 
-        if ((tmp = virXMLPropString(msi, "vectors")) &&
-            virStrToLong_uip(tmp, NULL, 0, &def->msi.vectors) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid number of vectors for shmem: '%s'"),
-                           tmp);
+        if (virXMLPropUInt(msi, "vectors", 0, VIR_XML_PROP_NONE,
+                           &def->msi.vectors) < 0)
             goto cleanup;
-        }
-        VIR_FREE(tmp);
 
-        if ((tmp = virXMLPropString(msi, "ioeventfd"))) {
-            int val;
-
-            if ((val = virTristateSwitchTypeFromString(tmp)) <= 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("invalid msi ioeventfd setting for shmem: '%s'"),
-                               tmp);
-                goto cleanup;
-            }
-            def->msi.ioeventfd = val;
-        }
+        if (virXMLPropTristateSwitch(msi, "ioeventfd", VIR_XML_PROP_NONE,
+                                     &def->msi.ioeventfd) < 0)
+            goto cleanup;
     }
 
     /* msi option is only relevant with a server */
