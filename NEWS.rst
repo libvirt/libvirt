@@ -35,10 +35,58 @@ v7.3.0 (unreleased)
     ``nodedev-list`` only lists active devices by default. Inactive device
     definitions can be shown with the new ``--inactive`` and ``--all`` flags.
 
+  * qemu: Allow use of qemu's ``-compat`` option
+
+    Curious developers or testers now can enable certain ``-compat`` modes which
+    allow to notice use of deprecated commands and options as qemu will use the
+    selected method to notify the user. The new behaviour can be requested using
+    either the ``deprecation_behavior`` option in ``qemu.conf`` for all VMs or
+    using ``<qemu:deprecation behavior='...'/>`` in the VM XML.
+
 * **Improvements**
+
+  * virsh: Improve errors with ``virsh snapshot-create-as``
+
+    The XML document constructed by virsh was forced through XML schema
+    validation which yielded unintelligible error messages in cases such as
+    when the path to the new image did not start with a slash. XML documents
+    are no longer validated as the XML parser actually has better error
+    messages which allow users to figure the problem out quickly.
+
+  * qemu: Terminate backing store when doing a full-chain block pull
+
+    When pulling everything into the overlay image the chain can be terminated
+    since we know that it won't depend on any backing image and thus can prevent
+    attempts to probe the backing chain.
 
 * **Bug fixes**
 
+  * qemu: Fix crash of libvirt on full block pull of a disk
+
+    When the persistent definition contains a compatible disk (meaning the
+    definition of the running and persistent config match) a block pull job
+    would leave a dangling pointer in the config definition which resulted
+    in a crash.
+
+  * qemu: Use proper job cancelling command
+
+    Libvirt's API contract for aborting a block copy job in 'ready' state
+    declares that the destination image of the copy will contain a consistent
+    image of the disk from the time when the block job was aborted. This
+    requires that libvirt uses the proper cancelling qemu command to ensure
+    that the data is consistent which was not the case.
+
+  * qemu: Don't attempt storage migration when there are no migratable disks
+
+    Due to a logic bug introduced in the previous release libvirt would attempt
+    to migrate disks in case when no disks are selected/eligible for migration.
+
+  * qemu: Fix very rare race when two block job 'ready' events are delivered
+
+    In certain high-load scenarios, qemu might deliver the 'ready' event twice
+    and if it's delivered when pivoting to the destination during a block copy
+    job, libvirt would get confused and execute the code as if the job were
+    aborted.
 
 v7.2.0 (2021-04-01)
 ===================
