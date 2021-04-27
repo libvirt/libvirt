@@ -13212,20 +13212,14 @@ virDomainSoundDefParseXML(virDomainXMLOption *xmlopt,
 {
     virDomainSoundDef *def;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    g_autofree char *model = NULL;
-    int modelval;
     xmlNodePtr audioNode;
 
     def = g_new0(virDomainSoundDef, 1);
     ctxt->node = node;
 
-    model = virXMLPropString(node, "model");
-    if ((modelval = virDomainSoundModelTypeFromString(model)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown sound model '%s'"), model);
+    if (virXMLPropEnum(node, "model", virDomainSoundModelTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &def->model) < 0)
         goto error;
-    }
-    def->model = modelval;
 
     if (virDomainSoundModelSupportsCodecs(def)) {
         int ncodecs;
@@ -13254,19 +13248,10 @@ virDomainSoundDefParseXML(virDomainXMLOption *xmlopt,
 
     audioNode = virXPathNode("./audio", ctxt);
     if (audioNode) {
-        g_autofree char *tmp = NULL;
-        tmp = virXMLPropString(audioNode, "id");
-        if (!tmp) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("missing audio 'id' attribute"));
+        if (virXMLPropUInt(audioNode, "id", 10,
+                           VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                           &def->audioId) < 0)
             goto error;
-        }
-        if (virStrToLong_ui(tmp, NULL, 10, &def->audioId) < 0 ||
-            def->audioId == 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid audio 'id' value '%s'"), tmp);
-            goto error;
-        }
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info, flags) < 0)
