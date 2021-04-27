@@ -13528,58 +13528,35 @@ virDomainMemballoonDefParseXML(virDomainXMLOption *xmlopt,
 {
     virDomainMemballoonDef *def;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    xmlNodePtr stats;
     unsigned int period = 0;
-    g_autofree char *model = NULL;
-    g_autofree char *freepage_reporting = NULL;
-    g_autofree char *deflate = NULL;
-    int model_value;
+
+    ctxt->node = node;
 
     def = g_new0(virDomainMemballoonDef, 1);
 
-    model = virXMLPropString(node, "model");
-    if (model == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("balloon memory must contain model name"));
+    if (virXMLPropEnum(node, "model", virDomainMemballoonModelTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &def->model) < 0)
         goto error;
-    }
 
-    if ((model_value = virDomainMemballoonModelTypeFromString(model)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown memory balloon model '%s'"), model);
+    if (virXMLPropTristateSwitch(node, "autodeflate", VIR_XML_PROP_NONE,
+                                 &def->autodeflate) < 0)
         goto error;
-    }
-    def->model = model_value;
 
-    if ((deflate = virXMLPropString(node, "autodeflate"))) {
-        int value;
-        if ((value = virTristateSwitchTypeFromString(deflate)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("invalid autodeflate attribute value '%s'"), deflate);
-            goto error;
-        }
-        def->autodeflate = value;
-    }
-
-    if ((freepage_reporting = virXMLPropString(node, "freePageReporting"))) {
-        int value;
-        if ((value = virTristateSwitchTypeFromString(freepage_reporting)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("invalid freePageReporting attribute value '%s'"), freepage_reporting);
-            goto error;
-        }
-        def->free_page_reporting = value;
-    }
-
-    ctxt->node = node;
-    if (virXPathUInt("string(./stats/@period)", ctxt, &period) < -1) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("invalid statistics collection period"));
+    if (virXMLPropTristateSwitch(node, "freePageReporting",
+                                 VIR_XML_PROP_NONE,
+                                 &def->free_page_reporting) < 0)
         goto error;
-    }
 
     def->period = period;
-    if (def->period < 0)
-        def->period = 0;
+    if ((stats = virXPathNode("./stats", ctxt))) {
+        if (virXMLPropInt(stats, "period", 0, VIR_XML_PROP_NONE,
+                          &def->period) < 0)
+            goto error;
+
+        if (def->period < 0)
+            def->period = 0;
+    }
 
     if (def->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE)
         VIR_DEBUG("Ignoring device address for none model Memballoon");
