@@ -13601,15 +13601,11 @@ virDomainShmemDefParseXML(virDomainXMLOption *xmlopt,
                           xmlXPathContextPtr ctxt,
                           unsigned int flags)
 {
-    virDomainShmemDef *def = NULL;
-    virDomainShmemDef *ret = NULL;
-    xmlNodePtr msi = NULL;
-    VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    xmlNodePtr server = NULL;
+    g_autoptr(virDomainShmemDef) def = g_new0(virDomainShmemDef, 1);
     xmlNodePtr model;
-    g_autofree char *tmp = NULL;
-
-    def = g_new0(virDomainShmemDef, 1);
+    xmlNodePtr msi;
+    xmlNodePtr server;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = node;
 
@@ -13619,33 +13615,33 @@ virDomainShmemDefParseXML(virDomainXMLOption *xmlopt,
          * compatibility reasons. */
         if (virXMLPropEnum(model, "type", virDomainShmemModelTypeFromString,
                            VIR_XML_PROP_NONE, &def->model) < 0)
-            goto cleanup;
+            return NULL;
     }
 
     if (!(def->name = virXMLPropString(node, "name"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("shmem element must contain 'name' attribute"));
-        goto cleanup;
+        return NULL;
     }
 
     if (def->model != VIR_DOMAIN_SHMEM_MODEL_IVSHMEM) {
         if (virXMLPropEnum(node, "role", virDomainShmemRoleTypeFromString,
                            VIR_XML_PROP_NONZERO, &def->role) < 0)
-            goto cleanup;
+            return NULL;
     }
 
     if (virParseScaledValue("./size[1]", NULL, ctxt,
                             &def->size, 1, ULLONG_MAX, false) < 0)
-        goto cleanup;
+        return NULL;
 
     if ((server = virXPathNode("./server[1]", ctxt))) {
-        def->server.enabled = true;
+        g_autofree char *tmp = NULL;
 
+        def->server.enabled = true;
         def->server.chr.type = VIR_DOMAIN_CHR_TYPE_UNIX;
         def->server.chr.data.nix.listen = false;
         if ((tmp = virXMLPropString(server, "path")))
             def->server.chr.data.nix.path = virFileSanitizePath(tmp);
-        VIR_FREE(tmp);
     }
 
     if ((msi = virXPathNode("./msi[1]", ctxt))) {
@@ -13653,28 +13649,25 @@ virDomainShmemDefParseXML(virDomainXMLOption *xmlopt,
 
         if (virXMLPropUInt(msi, "vectors", 0, VIR_XML_PROP_NONE,
                            &def->msi.vectors) < 0)
-            goto cleanup;
+            return NULL;
 
         if (virXMLPropTristateSwitch(msi, "ioeventfd", VIR_XML_PROP_NONE,
                                      &def->msi.ioeventfd) < 0)
-            goto cleanup;
+            return NULL;
     }
 
     /* msi option is only relevant with a server */
     if (def->msi.enabled && !def->server.enabled) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("msi option is only supported with a server"));
-        goto cleanup;
+        return NULL;
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info, flags) < 0)
-        goto cleanup;
+        return NULL;
 
 
-    ret = g_steal_pointer(&def);
- cleanup:
-    virDomainShmemDefFree(def);
-    return ret;
+    return g_steal_pointer(&def);
 }
 
 static int
