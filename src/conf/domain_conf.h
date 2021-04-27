@@ -3270,6 +3270,7 @@ void virDomainHubDefFree(virDomainHubDef *def);
 void virDomainRedirdevDefFree(virDomainRedirdevDef *def);
 void virDomainRedirFilterDefFree(virDomainRedirFilterDef *def);
 void virDomainShmemDefFree(virDomainShmemDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainShmemDef, virDomainShmemDefFree);
 void virDomainDeviceDefFree(virDomainDeviceDef *def);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainDeviceDef, virDomainDeviceDefFree);
