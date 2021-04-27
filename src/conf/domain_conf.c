@@ -13120,11 +13120,14 @@ virDomainAudioCommonParse(virDomainAudioIOCommon *def,
             return -1;
         }
 
-        if (format &&
-            (def->format = virDomainAudioFormatTypeFromString(format)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("cannot parse 'format' value '%s'"), format);
-            return -1;
+        if (format) {
+            int value;
+            if ((value = virDomainAudioFormatTypeFromString(format)) <= 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("cannot parse 'format' value '%s'"), format);
+                return -1;
+            }
+            def->format = value;
         }
     }
 

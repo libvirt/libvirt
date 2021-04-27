@@ -1502,7 +1502,7 @@ struct _virDomainAudioIOCommon {
     unsigned int frequency;
     unsigned int channels;
     unsigned int voices;
-    int format; /* virDomainAudioFormat */
+    virDomainAudioFormat format;
     unsigned int bufferLength; /* milliseconds */
 };
 
