@@ -6936,6 +6936,66 @@ qemuProcessEnablePerf(virDomainObj *vm)
 }
 
 
+static int
+qemuProcessSetupDisksTransientSnapshot(virDomainObj *vm,
+                                       qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
+    size_t i;
+
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
+        return -1;
+
+    snapctxt = qemuSnapshotDiskContextNew(vm->def->ndisks, vm, asyncJob);
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDef *domdisk = vm->def->disks[i];
+        g_autoptr(virDomainSnapshotDiskDef) snapdisk = NULL;
+
+        if (!domdisk->transient)
+            continue;
+
+        /* validation code makes sure that we do this only for local disks
+         * with a file source */
+
+        if (!(snapdisk = qemuSnapshotGetTransientDiskDef(domdisk)))
+            return -1;
+
+        if (qemuSnapshotDiskPrepareOne(snapctxt, domdisk, snapdisk,
+                                       blockNamedNodeData,
+                                       false,
+                                       false) < 0)
+            return -1;
+    }
+
+    if (qemuSnapshotDiskCreate(snapctxt) < 0)
+        return -1;
+
+    /* the overlays are established, so they can be deleted on shutdown */
+    priv->inhibitDiskTransientDelete = false;
+
+    return 0;
+}
+
+
+static int
+qemuProcessSetupDisksTransient(virDomainObj *vm,
+                               qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+
+    if (!(virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)))
+        return 0;
+
+    if (qemuProcessSetupDisksTransientSnapshot(vm, asyncJob) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * qemuProcessLaunch:
  *
@@ -7290,7 +7350,7 @@ qemuProcessLaunch(virConnectPtr conn,
 
     if (!incoming && !snapshot) {
         VIR_DEBUG("Setting up transient disk");
-        if (qemuSnapshotCreateDisksTransient(vm, asyncJob) < 0)
+        if (qemuProcessSetupDisksTransient(vm, asyncJob) < 0)
             goto cleanup;
     }
 

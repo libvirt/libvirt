@@ -55,6 +55,28 @@ qemuSnapshotDelete(virDomainObj *vm,
                    virDomainSnapshotPtr snapshot,
                    unsigned int flags);
 
+
+typedef struct _qemuSnapshotDiskContext qemuSnapshotDiskContext;
+
+qemuSnapshotDiskContext *
+qemuSnapshotDiskContextNew(size_t ndisks,
+                           virDomainObj *vm,
+                           qemuDomainAsyncJob asyncJob);
+
+void
+qemuSnapshotDiskContextCleanup(qemuSnapshotDiskContext *snapctxt);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuSnapshotDiskContext, qemuSnapshotDiskContextCleanup);
+
 int
-qemuSnapshotCreateDisksTransient(virDomainObj *vm,
-                                 qemuDomainAsyncJob asyncJob);
+qemuSnapshotDiskPrepareOne(qemuSnapshotDiskContext *snapctxt,
+                           virDomainDiskDef *disk,
+                           virDomainSnapshotDiskDef *snapdisk,
+                           GHashTable *blockNamedNodeData,
+                           bool reuse,
+                           bool updateConfig);
+int
+qemuSnapshotDiskCreate(qemuSnapshotDiskContext *snapctxt);
+
+virDomainSnapshotDiskDef *
+qemuSnapshotGetTransientDiskDef(virDomainDiskDef *domdisk);

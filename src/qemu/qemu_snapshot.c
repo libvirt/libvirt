@@ -906,7 +906,7 @@ struct _qemuSnapshotDiskContext {
 typedef struct _qemuSnapshotDiskContext qemuSnapshotDiskContext;
 
 
-static qemuSnapshotDiskContext *
+qemuSnapshotDiskContext *
 qemuSnapshotDiskContextNew(size_t ndisks,
                            virDomainObj *vm,
                            qemuDomainAsyncJob asyncJob)
@@ -925,7 +925,7 @@ qemuSnapshotDiskContextNew(size_t ndisks,
 }
 
 
-static void
+void
 qemuSnapshotDiskContextCleanup(qemuSnapshotDiskContext *snapctxt)
 {
     if (!snapctxt)
@@ -939,8 +939,6 @@ qemuSnapshotDiskContextCleanup(qemuSnapshotDiskContext *snapctxt)
 
     g_free(snapctxt);
 }
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuSnapshotDiskContext, qemuSnapshotDiskContextCleanup);
 
 
 /**
@@ -1032,7 +1030,7 @@ qemuSnapshotDiskPrepareOneBlockdev(virQEMUDriver *driver,
 }
 
 
-static int
+int
 qemuSnapshotDiskPrepareOne(qemuSnapshotDiskContext *snapctxt,
                            virDomainDiskDef *disk,
                            virDomainSnapshotDiskDef *snapdisk,
@@ -1170,7 +1168,7 @@ qemuSnapshotDiskPrepareActiveExternal(virDomainObj *vm,
 }
 
 
-static virDomainSnapshotDiskDef *
+virDomainSnapshotDiskDef *
 qemuSnapshotGetTransientDiskDef(virDomainDiskDef *domdisk)
 {
     g_autoptr(virDomainSnapshotDiskDef) snapdisk = g_new0(virDomainSnapshotDiskDef, 1);
@@ -1190,40 +1188,6 @@ qemuSnapshotGetTransientDiskDef(virDomainDiskDef *domdisk)
     }
 
     return g_steal_pointer(&snapdisk);
-}
-
-
-static qemuSnapshotDiskContext *
-qemuSnapshotDiskPrepareDisksTransient(virDomainObj *vm,
-                                      GHashTable *blockNamedNodeData,
-                                      qemuDomainAsyncJob asyncJob)
-{
-    g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
-    size_t i;
-
-    snapctxt = qemuSnapshotDiskContextNew(vm->def->ndisks, vm, asyncJob);
-
-    for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDef *domdisk = vm->def->disks[i];
-        g_autoptr(virDomainSnapshotDiskDef) snapdisk = NULL;
-
-        if (!domdisk->transient)
-            continue;
-
-        /* validation code makes sure that we do this only for local disks
-         * with a file source */
-
-        if (!(snapdisk = qemuSnapshotGetTransientDiskDef(domdisk)))
-            return NULL;
-
-        if (qemuSnapshotDiskPrepareOne(snapctxt, domdisk, snapdisk,
-                                       blockNamedNodeData,
-                                       false,
-                                       false) < 0)
-            return NULL;
-    }
-
-    return g_steal_pointer(&snapctxt);
 }
 
 
@@ -1285,7 +1249,7 @@ qemuSnapshotDiskUpdateSource(virDomainObj *vm,
 }
 
 
-static int
+int
 qemuSnapshotDiskCreate(qemuSnapshotDiskContext *snapctxt)
 {
     qemuDomainObjPrivate *priv = snapctxt->vm->privateData;
@@ -1348,43 +1312,6 @@ qemuSnapshotCreateActiveExternalDisks(virDomainObj *vm,
 
     if (qemuSnapshotDiskCreate(snapctxt) < 0)
         return -1;
-
-    return 0;
-}
-
-
-/**
- * qemuSnapshotCreateDisksTransient:
- * @vm: domain object
- * @asyncJob: qemu async job type
- *
- * Creates overlays on top of disks which are configured as <transient/>. Note
- * that the validation code ensures that <transient> disks have appropriate
- * configuration.
- */
-int
-qemuSnapshotCreateDisksTransient(virDomainObj *vm,
-                                 qemuDomainAsyncJob asyncJob)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-    g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
-    g_autoptr(GHashTable) blockNamedNodeData = NULL;
-
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-        if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
-            return -1;
-
-        if (!(snapctxt = qemuSnapshotDiskPrepareDisksTransient(vm,
-                                                               blockNamedNodeData,
-                                                               asyncJob)))
-            return -1;
-
-        if (qemuSnapshotDiskCreate(snapctxt) < 0)
-            return -1;
-    }
-
-    /* the overlays are established, so they can be deleted on shutdown */
-    priv->inhibitDiskTransientDelete = false;
 
     return 0;
 }
