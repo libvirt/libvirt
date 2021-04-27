@@ -35,14 +35,7 @@ def gather_name(args):
          "Use '--model' to set a model name.")
 
 
-def gather_cpuid_leaves(args):
-    def mask(regs, eax_in, ecx_in, eax_mask, ebx_mask, ecx_mask, edx_mask):
-        if regs["eax_in"] == eax_in and regs["ecx_in"] == ecx_in:
-            regs["eax"] &= eax_mask
-            regs["ebx"] &= ebx_mask
-            regs["ecx"] &= ecx_mask
-            regs["edx"] &= edx_mask
-
+def gather_cpuid_leaves_cpuid(output):
     leave_pattern = re.compile(
         "^\\s*"
         "(0x[0-9a-f]+)\\s*"
@@ -51,6 +44,27 @@ def gather_cpuid_leaves(args):
         "ebx=(0x[0-9a-f]+)\\s*"
         "ecx=(0x[0-9a-f]+)\\s*"
         "edx=(0x[0-9a-f]+)\\s*$")
+
+    for line in output.split("\n"):
+        match = leave_pattern.match(line)
+        if not match:
+            continue
+        yield {
+            "eax_in": int(match.group(1), 0),
+            "ecx_in": int(match.group(2), 0),
+            "eax": int(match.group(3), 0),
+            "ebx": int(match.group(4), 0),
+            "ecx": int(match.group(5), 0),
+            "edx": int(match.group(6), 0)}
+
+
+def gather_cpuid_leaves(args):
+    def mask(regs, eax_in, ecx_in, eax_mask, ebx_mask, ecx_mask, edx_mask):
+        if regs["eax_in"] == eax_in and regs["ecx_in"] == ecx_in:
+            regs["eax"] &= eax_mask
+            regs["ebx"] &= ebx_mask
+            regs["ecx"] &= ecx_mask
+            regs["edx"] &= edx_mask
 
     cpuid = args.path_to_cpuid or "cpuid"
     try:
@@ -63,18 +77,8 @@ def gather_cpuid_leaves(args):
              "package, you can find the sources or binary packages at "
              "'http://www.etallen.com/cpuid.html'.".format(e.filename))
 
-    for line in output.split("\n"):
-        match = leave_pattern.match(line)
-        if not match:
-            continue
-        regs = {
-            "eax_in": int(match.group(1), 0),
-            "ecx_in": int(match.group(2), 0),
-            "eax": int(match.group(3), 0),
-            "ebx": int(match.group(4), 0),
-            "ecx": int(match.group(5), 0),
-            "edx": int(match.group(6), 0)}
-
+    reglist = gather_cpuid_leaves_cpuid(output)
+    for regs in reglist:
         # local apic id. Pretend to always run on logical processor #0.
         mask(regs, 0x01, 0x00, 0xffffffff, 0x00ffffff, 0xffffffff, 0xffffffff)
         mask(regs, 0x0b, 0x00, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffff00)
