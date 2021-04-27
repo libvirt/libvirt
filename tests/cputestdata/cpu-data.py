@@ -58,6 +58,53 @@ def gather_cpuid_leaves_cpuid(output):
             "edx": int(match.group(6), 0)}
 
 
+def gather_cpuid_leaves_kcpuid(output):
+    leave_pattern = re.compile(
+        "^(0x[0-9a-f]+): "
+        "EAX=(0x[0-9a-f]+), "
+        "EBX=(0x[0-9a-f]+), "
+        "ECX=(0x[0-9a-f]+), "
+        "EDX=(0x[0-9a-f]+)$")
+    branch_pattern_head = re.compile(
+        "^(0x[0-9a-f]+): "
+        "subleafs:$")
+    branch_pattern_body = re.compile(
+        "^\\s*([0-9]+): "
+        "EAX=(0x[0-9a-f]+), "
+        "EBX=(0x[0-9a-f]+), "
+        "ECX=(0x[0-9a-f]+), "
+        "EDX=(0x[0-9a-f]+)$")
+
+    regs = list()
+    eax_in = 0
+    for line in output.split("\n"):
+        match = branch_pattern_head.match(line)
+        if match:
+            eax_in = int(match.group(1), 0)
+            continue
+        match = branch_pattern_body.match(line)
+        if match:
+            regs.append({
+                "eax_in": eax_in,
+                "ecx_in": int(match.group(1), 0),
+                "eax": int(match.group(2), 0),
+                "ebx": int(match.group(3), 0),
+                "ecx": int(match.group(4), 0),
+                "edx": int(match.group(5), 0)})
+            continue
+        match = leave_pattern.match(line)
+        if match:
+            regs.append({
+                "eax_in": int(match.group(1), 0),
+                "ecx_in": 0,
+                "eax": int(match.group(2), 0),
+                "ebx": int(match.group(3), 0),
+                "ecx": int(match.group(4), 0),
+                "edx": int(match.group(5), 0)})
+            continue
+    return regs
+
+
 def gather_cpuid_leaves(args):
     def mask(regs, eax_in, ecx_in, eax_mask, ebx_mask, ecx_mask, edx_mask):
         if regs["eax_in"] == eax_in and regs["ecx_in"] == ecx_in:
@@ -77,7 +124,11 @@ def gather_cpuid_leaves(args):
              "package, you can find the sources or binary packages at "
              "'http://www.etallen.com/cpuid.html'.".format(e.filename))
 
-    reglist = gather_cpuid_leaves_cpuid(output)
+    if "=====" in output:
+        reglist = gather_cpuid_leaves_kcpuid(output)
+    else:
+        reglist = gather_cpuid_leaves_cpuid(output)
+
     for regs in reglist:
         # local apic id. Pretend to always run on logical processor #0.
         mask(regs, 0x01, 0x00, 0xffffffff, 0x00ffffff, 0xffffffff, 0xffffffff)
