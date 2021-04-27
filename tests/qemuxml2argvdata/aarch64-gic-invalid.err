@@ -1,1 +1,1 @@
-XML error: malformed gic version: none
+XML error: Invalid value for attribute 'version' in element 'gic': 'none'.

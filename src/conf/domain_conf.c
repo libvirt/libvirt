@@ -17934,18 +17934,17 @@ virDomainFeaturesDefParse(virDomainDef *def,
             def->features[val] = VIR_TRISTATE_SWITCH_ON;
             break;
 
-        case VIR_DOMAIN_FEATURE_CAPABILITIES:
-            if ((tmp = virXMLPropString(nodes[i], "policy"))) {
-                if ((def->features[val] = virDomainCapabilitiesPolicyTypeFromString(tmp)) == -1) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown policy attribute '%s' of feature '%s'"),
-                                   tmp, virDomainFeatureTypeToString(val));
-                    return -1;
-                }
-            } else {
-                def->features[val] = VIR_TRISTATE_SWITCH_ABSENT;
-            }
+        case VIR_DOMAIN_FEATURE_CAPABILITIES: {
+            virDomainCapabilitiesPolicy policy = VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT;
+
+            if (virXMLPropEnum(nodes[i], "policy",
+                               virDomainCapabilitiesPolicyTypeFromString,
+                               VIR_XML_PROP_NONE, &policy) < 0)
+                return -1;
+
+            def->features[val] = policy;
             break;
+        }
 
         case VIR_DOMAIN_FEATURE_VMCOREINFO:
         case VIR_DOMAIN_FEATURE_HAP:
@@ -17964,44 +17963,29 @@ virDomainFeaturesDefParse(virDomainDef *def,
         }
 
         case VIR_DOMAIN_FEATURE_GIC:
-            if ((tmp = virXMLPropString(nodes[i], "version"))) {
-                int gic_version = virGICVersionTypeFromString(tmp);
-                if (gic_version < 0 || gic_version == VIR_GIC_VERSION_NONE) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("malformed gic version: %s"), tmp);
-                    return -1;
-                }
-                def->gic_version = gic_version;
-            }
+            if (virXMLPropEnum(nodes[i], "version", virGICVersionTypeFromString,
+                               VIR_XML_PROP_NONZERO, &def->gic_version) < 0)
+                return -1;
+
             def->features[val] = VIR_TRISTATE_SWITCH_ON;
             break;
 
-        case VIR_DOMAIN_FEATURE_IOAPIC:
-            tmp = virXMLPropString(nodes[i], "driver");
-            if (tmp) {
-                int value = virDomainIOAPICTypeFromString(tmp);
-                if (value < 0 || value == VIR_DOMAIN_IOAPIC_NONE) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("Unknown driver mode: %s"),
-                                   tmp);
-                    return -1;
-                }
-                def->features[val] = value;
-            }
+        case VIR_DOMAIN_FEATURE_IOAPIC: {
+            virDomainIOAPIC driver = VIR_DOMAIN_IOAPIC_NONE;
+
+            if (virXMLPropEnum(nodes[i], "driver", virDomainIOAPICTypeFromString,
+                               VIR_XML_PROP_NONZERO, &driver) < 0)
+                return -1;
+
+            def->features[val] = driver;
             break;
+        }
 
         case VIR_DOMAIN_FEATURE_HPT:
-            tmp = virXMLPropString(nodes[i], "resizing");
-            if (tmp) {
-                int value = virDomainHPTResizingTypeFromString(tmp);
-                if (value < 0 || value == VIR_DOMAIN_HPT_RESIZING_NONE) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("Unknown HPT resizing setting: %s"),
-                                   tmp);
-                    return -1;
-                }
-                def->hpt_resizing = (virDomainHPTResizing) value;
-            }
+            if (virXMLPropEnum(nodes[i], "resizing",
+                               virDomainHPTResizingTypeFromString,
+                               VIR_XML_PROP_NONZERO, &def->hpt_resizing) < 0)
+                return -1;
 
             if (virParseScaledValue("./features/hpt/maxpagesize",
                                     NULL,
@@ -18023,47 +18007,38 @@ virDomainFeaturesDefParse(virDomainDef *def,
             }
             break;
 
-        case VIR_DOMAIN_FEATURE_CFPC:
-            tmp = virXMLPropString(nodes[i], "value");
-            if (tmp) {
-                int value = virDomainCFPCTypeFromString(tmp);
-                if (value < 0 || value == VIR_DOMAIN_CFPC_NONE) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("Unknown value: %s"),
-                                   tmp);
-                    return -1;
-                }
-                def->features[val] = value;
-            }
-            break;
+        case VIR_DOMAIN_FEATURE_CFPC: {
+            virDomainCFPC value = VIR_DOMAIN_CFPC_NONE;
 
-        case VIR_DOMAIN_FEATURE_SBBC:
-            tmp = virXMLPropString(nodes[i], "value");
-            if (tmp) {
-                int value = virDomainSBBCTypeFromString(tmp);
-                if (value < 0 || value == VIR_DOMAIN_SBBC_NONE) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("Unknown value: %s"),
-                                   tmp);
-                    return -1;
-                }
-                def->features[val] = value;
-            }
-            break;
+            if (virXMLPropEnum(nodes[i], "value", virDomainCFPCTypeFromString,
+                               VIR_XML_PROP_NONZERO, &value) < 0)
+                return -1;
 
-        case VIR_DOMAIN_FEATURE_IBS:
-            tmp = virXMLPropString(nodes[i], "value");
-            if (tmp) {
-                int value = virDomainIBSTypeFromString(tmp);
-                if (value < 0 || value == VIR_DOMAIN_IBS_NONE) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("Unknown value: %s"),
-                                   tmp);
-                    return -1;
-                }
-                def->features[val] = value;
-            }
+            def->features[val] = value;
             break;
+        }
+
+        case VIR_DOMAIN_FEATURE_SBBC: {
+            virDomainSBBC value = VIR_DOMAIN_SBBC_NONE;
+
+            if (virXMLPropEnum(nodes[i], "value", virDomainSBBCTypeFromString,
+                               VIR_XML_PROP_NONZERO, &value) < 0)
+                return -1;
+
+            def->features[val] = value;
+            break;
+        }
+
+        case VIR_DOMAIN_FEATURE_IBS: {
+            virDomainIBS value = VIR_DOMAIN_IBS_NONE;
+
+            if (virXMLPropEnum(nodes[i], "value", virDomainIBSTypeFromString,
+                               VIR_XML_PROP_NONZERO, &value) < 0)
+                return -1;
+
+            def->features[val] = value;
+            break;
+        }
 
         case VIR_DOMAIN_FEATURE_HTM:
         case VIR_DOMAIN_FEATURE_NESTED_HV:
@@ -18232,7 +18207,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
     if (def->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
         int feature;
         virTristateSwitch value;
-        g_autofree char *ptval = NULL;
 
         if ((n = virXPathNodeSet("./features/xen/*", ctxt, &nodes)) < 0)
             return -1;
@@ -18260,25 +18234,11 @@ virDomainFeaturesDefParse(virDomainDef *def,
                 if (value != VIR_TRISTATE_SWITCH_ON)
                     break;
 
-                if ((ptval = virXMLPropString(nodes[i], "mode"))) {
-                    int mode = virDomainXenPassthroughModeTypeFromString(ptval);
-
-                    if (mode < 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unsupported mode '%s' for Xen passthrough feature"),
-                                       ptval);
-                        return -1;
-                    }
-
-                    if (mode != VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SYNC_PT &&
-                        mode != VIR_DOMAIN_XEN_PASSTHROUGH_MODE_SHARE_PT) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("'mode' attribute for Xen feature "
-                                         "'passthrough' must be 'sync_pt' or 'share_pt'"));
-                        return -1;
-                    }
-                    def->xen_passthrough_mode = mode;
-                }
+                if (virXMLPropEnum(nodes[i], "mode",
+                                   virDomainXenPassthroughModeTypeFromString,
+                                   VIR_XML_PROP_NONZERO,
+                                   &def->xen_passthrough_mode) < 0)
+                    return -1;
                 break;
 
                 /* coverity[dead_error_begin] */
@@ -18303,24 +18263,16 @@ virDomainFeaturesDefParse(virDomainDef *def,
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_MSRS] == VIR_TRISTATE_SWITCH_ON) {
-        g_autofree char *tmp = NULL;
+        virDomainMsrsUnknown unknown;
         xmlNodePtr node = NULL;
         if ((node = virXPathNode("./features/msrs", ctxt)) == NULL)
             return -1;
 
-        if (!(tmp = virXMLPropString(node, "unknown"))) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("missing 'unknown' attribute for feature '%s'"),
-                           virDomainFeatureTypeToString(VIR_DOMAIN_FEATURE_MSRS));
+        if (virXMLPropEnum(node, "unknown", virDomainMsrsUnknownTypeFromString,
+                           VIR_XML_PROP_REQUIRED, &unknown) < 0)
             return -1;
-        }
 
-        if ((def->msrs_features[VIR_DOMAIN_MSRS_UNKNOWN] = virDomainMsrsUnknownTypeFromString(tmp)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown 'unknown' value '%s'"),
-                           tmp);
-            return -1;
-        }
+        def->msrs_features[VIR_DOMAIN_MSRS_UNKNOWN] = unknown;
     }
 
     if ((n = virXPathNodeSet("./features/capabilities/*", ctxt, &nodes)) < 0)
