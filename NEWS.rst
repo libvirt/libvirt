@@ -24,6 +24,17 @@ v7.3.0 (unreleased)
     a ``virtiofsd`` daemon launched outside of libvirtd, via the
     ``socket`` attribute of the ``source`` element.
 
+  * nodedev: Add ability to manage persistent mediated devices
+
+    Persistent mediated devices can now be managed with libvirt.
+    ``virNodeDeviceDefineXML()`` defines a new device,
+    ``virNodeDeviceUndefine()`` removes an existing definition, and
+    ``virNodeDeviceCreate()`` starts a device definition that is currently
+    inactive. Corresponding virsh commands ``nodedev-define``,
+    ``nodedev-undefine``, and ``nodedev-start`` were also added.
+    ``nodedev-list`` only lists active devices by default. Inactive device
+    definitions can be shown with the new ``--inactive`` and ``--all`` flags.
+
 * **Improvements**
 
 * **Bug fixes**
