@@ -14506,52 +14506,28 @@ static virDomainRedirFilterUSBDevDef *
 virDomainRedirFilterUSBDevDefParseXML(xmlNodePtr node)
 {
     virDomainRedirFilterUSBDevDef *def;
-    g_autofree char *class = NULL;
-    g_autofree char *vendor = NULL;
-    g_autofree char *product = NULL;
     g_autofree char *version = NULL;
-    g_autofree char *allow = NULL;
+    virTristateBool allow;
 
     def = g_new0(virDomainRedirFilterUSBDevDef, 1);
 
-    class = virXMLPropString(node, "class");
-    if (class) {
-        if ((virStrToLong_i(class, NULL, 0, &def->usbClass)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Cannot parse USB Class code %s"), class);
-            goto error;
-        }
+    def->usbClass = -1;
+    if (virXMLPropInt(node, "class", 0, VIR_XML_PROP_NONE, &def->usbClass) < 0)
+        goto error;
 
-        if (def->usbClass != -1 && def->usbClass &~ 0xFF) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid USB Class code %s"), class);
-            goto error;
-        }
-    } else {
-        def->usbClass = -1;
+    if (def->usbClass != -1 && def->usbClass &~ 0xFF) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid USB Class code 0x%x"), def->usbClass);
+        goto error;
     }
 
-    vendor = virXMLPropString(node, "vendor");
-    if (vendor) {
-        if ((virStrToLong_i(vendor, NULL, 0, &def->vendor)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Cannot parse USB vendor ID %s"), vendor);
-            goto error;
-        }
-    } else {
-        def->vendor = -1;
-    }
+    def->vendor = -1;
+    if (virXMLPropInt(node, "vendor", 0, VIR_XML_PROP_NONE, &def->vendor) < 0)
+        goto error;
 
-    product = virXMLPropString(node, "product");
-    if (product) {
-        if ((virStrToLong_i(product, NULL, 0, &def->product)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Cannot parse USB product ID %s"), product);
-            goto error;
-        }
-    } else {
-        def->product = -1;
-    }
+    def->product = -1;
+    if (virXMLPropInt(node, "product", 0, VIR_XML_PROP_NONE, &def->product) < 0)
+        goto error;
 
     version = virXMLPropString(node, "version");
     if (version) {
@@ -14563,18 +14539,10 @@ virDomainRedirFilterUSBDevDefParseXML(xmlNodePtr node)
         def->version = -1;
     }
 
-    allow = virXMLPropString(node, "allow");
-    if (allow) {
-        if (virStringParseYesNo(allow, &def->allow) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Invalid allow value, either 'yes' or 'no'"));
-            goto error;
-        }
-    } else {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Missing allow attribute for USB redirection filter"));
+    if (virXMLPropTristateBool(node, "allow", VIR_XML_PROP_REQUIRED, &allow) < 0)
         goto error;
-    }
+
+    def->allow = allow == VIR_TRISTATE_BOOL_YES;
 
     return def;
 
