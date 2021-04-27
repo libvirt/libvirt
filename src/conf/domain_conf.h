@@ -1924,7 +1924,7 @@ typedef enum {
 } virDomainMemballoonModel;
 
 struct _virDomainMemballoonDef {
-    int model;
+    virDomainMemballoonModel model;
     virDomainDeviceInfo info;
     int period; /* seconds between collections */
     virTristateSwitch autodeflate;

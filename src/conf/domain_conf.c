@@ -13532,6 +13532,7 @@ virDomainMemballoonDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *model = NULL;
     g_autofree char *freepage_reporting = NULL;
     g_autofree char *deflate = NULL;
+    int model_value;
 
     def = g_new0(virDomainMemballoonDef, 1);
 
@@ -13542,11 +13543,12 @@ virDomainMemballoonDefParseXML(virDomainXMLOption *xmlopt,
         goto error;
     }
 
-    if ((def->model = virDomainMemballoonModelTypeFromString(model)) < 0) {
+    if ((model_value = virDomainMemballoonModelTypeFromString(model)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown memory balloon model '%s'"), model);
         goto error;
     }
+    def->model = model_value;
 
     if ((deflate = virXMLPropString(node, "autodeflate"))) {
         int value;

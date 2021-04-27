@@ -1030,7 +1030,7 @@ qemuMonitorInitBalloonObjectPath(qemuMonitor *mon,
 
     switch (balloon->info.type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
-        switch ((virDomainMemballoonModel) balloon->model) {
+        switch (balloon->model) {
             case VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO:
                 name = "virtio-balloon-pci";
                 break;
