@@ -2978,7 +2978,7 @@ qemuDomainAttachShmemDevice(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_SHMEM, { .shmem = shmem } };
 
-    switch ((virDomainShmemModel)shmem->model) {
+    switch (shmem->model) {
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN:
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL:
         break;
@@ -5583,7 +5583,7 @@ qemuDomainDetachPrepShmem(virDomainObj *vm,
 
     *detach = shmem = vm->def->shmems[idx];
 
-    switch ((virDomainShmemModel)shmem->model) {
+    switch (shmem->model) {
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN:
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL:
         break;

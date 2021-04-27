@@ -13614,15 +13614,17 @@ virDomainShmemDefParseXML(virDomainXMLOption *xmlopt,
 
     tmp = virXPathString("string(./model/@type)", ctxt);
     if (tmp) {
+        int model;
         /* If there's none, we will automatically have the first one
          * (as default).  Unfortunately this has to be done for
          * compatibility reasons. */
-        if ((def->model = virDomainShmemModelTypeFromString(tmp)) < 0) {
+        if ((model = virDomainShmemModelTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Unknown shmem model type '%s'"), tmp);
             goto cleanup;
         }
 
+        def->model = model;
         VIR_FREE(tmp);
     }
 

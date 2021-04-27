@@ -4893,6 +4893,11 @@ qemuValidateDomainDeviceDefShmem(virDomainShmemDef *shmem,
                            virDomainShmemModelTypeToString(shmem->model));
             return -1;
         }
+        break;
+
+    case VIR_DOMAIN_SHMEM_MODEL_LAST:
+        virReportEnumRangeError(virDomainShmemModel, shmem->model);
+        return -1;
     }
 
     return 0;

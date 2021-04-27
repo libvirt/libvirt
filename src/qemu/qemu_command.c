@@ -9097,7 +9097,7 @@ qemuBuildShmemCommandLine(virLogManager *logManager,
         return -1;
     }
 
-    switch ((virDomainShmemModel)shmem->model) {
+    switch (shmem->model) {
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM:
         devstr = qemuBuildShmemDevLegacyStr(def, shmem, qemuCaps);
         break;

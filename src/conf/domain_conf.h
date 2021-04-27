@@ -1955,7 +1955,7 @@ typedef enum {
 struct _virDomainShmemDef {
     char *name;
     unsigned long long size;
-    int model; /* enum virDomainShmemModel */
+    virDomainShmemModel model;
     int role; /* enum virDomainShmemRole */
     struct {
         bool enabled;

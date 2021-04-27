@@ -1209,6 +1209,10 @@ get_files(vahControl * ctl)
                 mem_path = g_strdup_printf("/var/lib/libvirt/shmem-%s-sock",
                                shmem->name);
                 break;
+            case VIR_DOMAIN_SHMEM_MODEL_LAST:
+                virReportEnumRangeError(virDomainShmemModel,
+                                        shmem->model);
+                break;
             }
             if (mem_path != NULL) {
                 if (vah_add_file(&buf, mem_path, "rw") != 0)
