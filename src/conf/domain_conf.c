@@ -13044,31 +13044,19 @@ virDomainAudioCommonParse(virDomainAudioIOCommon *def,
                           xmlNodePtr node,
                           xmlXPathContextPtr ctxt)
 {
-    g_autofree char *mixingEngine = virXMLPropString(node, "mixingEngine");
-    g_autofree char *fixedSettings = virXMLPropString(node, "fixedSettings");
-    g_autofree char *voices = virXMLPropString(node, "voices");
-    g_autofree char *bufferLength = virXMLPropString(node, "bufferLength");
     xmlNodePtr settings;
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
     ctxt->node = node;
     settings = virXPathNode("./settings", ctxt);
 
-    if (mixingEngine &&
-        ((def->mixingEngine =
-          virTristateBoolTypeFromString(mixingEngine)) <= 0)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unknown 'mixingEngine' value '%s'"), mixingEngine);
+    if (virXMLPropTristateBool(node, "mixingEngine", VIR_XML_PROP_NONE,
+                               &def->mixingEngine) < 0)
         return -1;
-    }
 
-    if (fixedSettings &&
-        ((def->fixedSettings =
-          virTristateBoolTypeFromString(fixedSettings)) <= 0)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unknown 'fixedSettings' value '%s'"), fixedSettings);
+    if (virXMLPropTristateBool(node, "fixedSettings", VIR_XML_PROP_NONE,
+                               &def->fixedSettings) < 0)
         return -1;
-    }
 
     if (def->fixedSettings == VIR_TRISTATE_BOOL_YES &&
         def->mixingEngine != VIR_TRISTATE_BOOL_YES) {
@@ -13077,58 +13065,37 @@ virDomainAudioCommonParse(virDomainAudioIOCommon *def,
         return -1;
     }
 
-    if (voices &&
-        (virStrToLong_ui(voices, NULL, 10, &def->voices) < 0 ||
-         !def->voices)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("cannot parse 'voices' value '%s'"), voices);
+    if (virXMLPropUInt(node, "voices", 10,
+                       VIR_XML_PROP_NONZERO,
+                       &def->voices) < 0)
         return -1;
-    }
 
-    if (bufferLength &&
-        (virStrToLong_ui(bufferLength, NULL, 10, &def->bufferLength) < 0 ||
-         !def->bufferLength)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("cannot parse 'bufferLength' value '%s'"), bufferLength);
+    if (virXMLPropUInt(node, "bufferLength", 10,
+                       VIR_XML_PROP_NONZERO,
+                       &def->bufferLength) < 0)
         return -1;
-    }
 
     if (settings) {
-        g_autofree char *frequency = virXMLPropString(settings, "frequency");
-        g_autofree char *channels = virXMLPropString(settings, "channels");
-        g_autofree char *format = virXMLPropString(settings, "format");
-
         if (def->fixedSettings != VIR_TRISTATE_BOOL_YES) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("audio settings specified without fixed settings flag"));
             return -1;
         }
 
-        if (frequency &&
-            (virStrToLong_ui(frequency, NULL, 10, &def->frequency) < 0 ||
-             !def->frequency)) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("cannot parse 'frequency' value '%s'"), frequency);
+        if (virXMLPropUInt(settings, "frequency", 10,
+                           VIR_XML_PROP_NONZERO,
+                           &def->frequency) < 0)
             return -1;
-        }
 
-        if (channels &&
-            (virStrToLong_ui(channels, NULL, 10, &def->channels) < 0 ||
-             !def->channels)) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("cannot parse 'channels' value '%s'"), channels);
+        if (virXMLPropUInt(settings, "channels", 10,
+                           VIR_XML_PROP_NONZERO,
+                           &def->channels) < 0)
             return -1;
-        }
 
-        if (format) {
-            int value;
-            if ((value = virDomainAudioFormatTypeFromString(format)) <= 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("cannot parse 'format' value '%s'"), format);
-                return -1;
-            }
-            def->format = value;
-        }
+        if (virXMLPropEnum(settings, "format",
+                           virDomainAudioFormatTypeFromString,
+                           VIR_XML_PROP_NONE, &def->format) < 0)
+            return -1;
     }
 
     return 0;
