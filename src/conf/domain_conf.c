@@ -13494,15 +13494,9 @@ static int
 virDomainAudioSDLParse(virDomainAudioIOSDL *def,
                        xmlNodePtr node)
 {
-    g_autofree char *bufferCount = virXMLPropString(node, "bufferCount");
-
-    if (bufferCount &&
-        virStrToLong_ui(bufferCount, NULL, 10,
-                        &def->bufferCount) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("cannot parse 'bufferCount' value '%s'"), bufferCount);
+    if (virXMLPropUInt(node, "bufferCount", 10, VIR_XML_PROP_NONE,
+                       &def->bufferCount) < 0)
         return -1;
-    }
 
     return 0;
 }
