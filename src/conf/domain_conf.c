@@ -18147,12 +18147,10 @@ virDomainFeaturesDefParse(virDomainDef *def,
                 if (value != VIR_TRISTATE_SWITCH_ON)
                     break;
 
-                if (virXPathUInt("string(./@retries)", ctxt,
-                             &def->hyperv_spinlocks) < 0) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("invalid HyperV spinlock retry count"));
+                if (virXMLPropUInt(nodes[i], "retries", 0,
+                                   VIR_XML_PROP_REQUIRED,
+                                   &def->hyperv_spinlocks) < 0)
                     return -1;
-                }
 
                 if (def->hyperv_spinlocks < 0xFFF) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
