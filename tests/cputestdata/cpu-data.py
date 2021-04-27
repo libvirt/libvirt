@@ -116,7 +116,7 @@ def gather_cpuid_leaves(args):
     cpuid = args.path_to_cpuid or "cpuid"
     try:
         output = subprocess.check_output(
-            [cpuid, "-1r"],
+            [cpuid, "-r" if "kcpuid" in cpuid else "-1r"],
             universal_newlines=True)
     except FileNotFoundError as e:
         exit("Error: '{}' not found.\n'cpuid' can be usually found in a "
