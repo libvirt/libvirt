@@ -1168,6 +1168,29 @@ qemuSnapshotDiskPrepareActiveExternal(virDomainObj *vm,
 }
 
 
+static virDomainSnapshotDiskDef *
+qemuSnapshotGetTransientDiskDef(virDomainDiskDef *domdisk)
+{
+    g_autoptr(virDomainSnapshotDiskDef) snapdisk = g_new0(virDomainSnapshotDiskDef, 1);
+
+    snapdisk->name = g_strdup(domdisk->dst);
+    snapdisk->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
+    snapdisk->src = virStorageSourceNew();
+    snapdisk->src->type = VIR_STORAGE_TYPE_FILE;
+    snapdisk->src->format = VIR_STORAGE_FILE_QCOW2;
+    snapdisk->src->path = g_strdup_printf("%s.TRANSIENT", domdisk->src->path);
+
+    if (virFileExists(snapdisk->src->path)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("Overlay file '%s' for transient disk '%s' already exists"),
+                       snapdisk->src->path, domdisk->dst);
+        return NULL;
+    }
+
+    return g_steal_pointer(&snapdisk);
+}
+
+
 static qemuSnapshotDiskContext *
 qemuSnapshotDiskPrepareDisksTransient(virDomainObj *vm,
                                       virQEMUDriverConfig *cfg,
@@ -1181,26 +1204,16 @@ qemuSnapshotDiskPrepareDisksTransient(virDomainObj *vm,
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *domdisk = vm->def->disks[i];
-        g_autoptr(virDomainSnapshotDiskDef) snapdisk = g_new0(virDomainSnapshotDiskDef, 1);
+        g_autoptr(virDomainSnapshotDiskDef) snapdisk = NULL;
 
         if (!domdisk->transient)
             continue;
 
         /* validation code makes sure that we do this only for local disks
          * with a file source */
-        snapdisk->name = g_strdup(domdisk->dst);
-        snapdisk->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
-        snapdisk->src = virStorageSourceNew();
-        snapdisk->src->type = VIR_STORAGE_TYPE_FILE;
-        snapdisk->src->format = VIR_STORAGE_FILE_QCOW2;
-        snapdisk->src->path = g_strdup_printf("%s.TRANSIENT", domdisk->src->path);
 
-        if (virFileExists(snapdisk->src->path)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("Overlay file '%s' for transient disk '%s' already exists"),
-                           snapdisk->src->path, domdisk->dst);
+        if (!(snapdisk = qemuSnapshotGetTransientDiskDef(domdisk)))
             return NULL;
-        }
 
         if (qemuSnapshotDiskPrepareOne(vm, cfg, domdisk, snapdisk,
                                        snapctxt->dd + snapctxt->ndd++,
