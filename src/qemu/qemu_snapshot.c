@@ -1286,8 +1286,7 @@ qemuSnapshotDiskUpdateSource(virDomainObj *vm,
 
 
 static int
-qemuSnapshotDiskCreate(qemuSnapshotDiskContext *snapctxt,
-                       virQEMUDriverConfig *cfg)
+qemuSnapshotDiskCreate(qemuSnapshotDiskContext *snapctxt)
 {
     qemuDomainObjPrivate *priv = snapctxt->vm->privateData;
     virQEMUDriver *driver = priv->driver;
@@ -1318,9 +1317,9 @@ qemuSnapshotDiskCreate(qemuSnapshotDiskContext *snapctxt,
     if (rc < 0)
         return -1;
 
-    if (virDomainObjSave(snapctxt->vm, driver->xmlopt, cfg->stateDir) < 0 ||
+    if (virDomainObjSave(snapctxt->vm, driver->xmlopt, snapctxt->cfg->stateDir) < 0 ||
         (snapctxt->vm->newDef && virDomainDefSave(snapctxt->vm->newDef, driver->xmlopt,
-                                        cfg->configDir) < 0))
+                                                  snapctxt->cfg->configDir) < 0))
         return -1;
 
     return 0;
@@ -1333,7 +1332,6 @@ qemuSnapshotCreateActiveExternalDisks(virDomainObj *vm,
                                       virDomainMomentObj *snap,
                                       GHashTable *blockNamedNodeData,
                                       unsigned int flags,
-                                      virQEMUDriverConfig *cfg,
                                       qemuDomainAsyncJob asyncJob)
 {
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
@@ -1348,7 +1346,7 @@ qemuSnapshotCreateActiveExternalDisks(virDomainObj *vm,
                                                            blockNamedNodeData, asyncJob)))
         return -1;
 
-    if (qemuSnapshotDiskCreate(snapctxt, cfg) < 0)
+    if (qemuSnapshotDiskCreate(snapctxt) < 0)
         return -1;
 
     return 0;
@@ -1369,8 +1367,6 @@ qemuSnapshotCreateDisksTransient(virDomainObj *vm,
                                  qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    virQEMUDriver *driver = priv->driver;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
 
@@ -1383,7 +1379,7 @@ qemuSnapshotCreateDisksTransient(virDomainObj *vm,
                                                                asyncJob)))
             return -1;
 
-        if (qemuSnapshotDiskCreate(snapctxt, cfg) < 0)
+        if (qemuSnapshotDiskCreate(snapctxt) < 0)
             return -1;
     }
 
@@ -1519,7 +1515,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     /* the domain is now paused if a memory snapshot was requested */
 
     if ((ret = qemuSnapshotCreateActiveExternalDisks(vm, snap,
-                                                     blockNamedNodeData, flags, cfg,
+                                                     blockNamedNodeData, flags,
                                                      QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
         goto cleanup;
 
