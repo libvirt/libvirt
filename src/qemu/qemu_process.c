@@ -7288,9 +7288,11 @@ qemuProcessLaunch(virConnectPtr conn,
         qemuProcessAutoDestroyAdd(driver, vm, conn) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Setting up transient disk");
-    if (qemuSnapshotCreateDisksTransient(vm, asyncJob) < 0)
-        goto cleanup;
+    if (!incoming && !snapshot) {
+        VIR_DEBUG("Setting up transient disk");
+        if (qemuSnapshotCreateDisksTransient(vm, asyncJob) < 0)
+            goto cleanup;
+    }
 
     ret = 0;
 
