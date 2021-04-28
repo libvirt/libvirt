@@ -1033,16 +1033,14 @@ qemuSnapshotDiskPrepareOneBlockdev(virQEMUDriver *driver,
 
 
 static int
-qemuSnapshotDiskPrepareOne(virDomainObj *vm,
-                           virQEMUDriverConfig *cfg,
+qemuSnapshotDiskPrepareOne(qemuSnapshotDiskContext *snapctxt,
                            virDomainDiskDef *disk,
                            virDomainSnapshotDiskDef *snapdisk,
-                           qemuSnapshotDiskContext *snapctxt,
                            GHashTable *blockNamedNodeData,
                            bool reuse,
-                           bool updateConfig,
-                           qemuDomainAsyncJob asyncJob)
+                           bool updateConfig)
 {
+    virDomainObj *vm = snapctxt->vm;
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
@@ -1118,8 +1116,8 @@ qemuSnapshotDiskPrepareOne(virDomainObj *vm,
     dd->prepared = true;
 
     if (blockdev) {
-        if (qemuSnapshotDiskPrepareOneBlockdev(driver, vm, dd, cfg, reuse,
-                                               blockNamedNodeData, asyncJob) < 0)
+        if (qemuSnapshotDiskPrepareOneBlockdev(driver, vm, dd, snapctxt->cfg, reuse,
+                                               blockNamedNodeData, snapctxt->asyncJob) < 0)
             return -1;
 
         if (qemuSnapshotDiskBitmapsPropagate(dd, snapctxt->actions, blockNamedNodeData) < 0)
@@ -1145,7 +1143,6 @@ qemuSnapshotDiskPrepareOne(virDomainObj *vm,
 static qemuSnapshotDiskContext *
 qemuSnapshotDiskPrepareActiveExternal(virDomainObj *vm,
                                       virDomainMomentObj *snap,
-                                      virQEMUDriverConfig *cfg,
                                       bool reuse,
                                       GHashTable *blockNamedNodeData,
                                       qemuDomainAsyncJob asyncJob)
@@ -1160,13 +1157,12 @@ qemuSnapshotDiskPrepareActiveExternal(virDomainObj *vm,
         if (snapdef->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
             continue;
 
-        if (qemuSnapshotDiskPrepareOne(vm, cfg, vm->def->disks[i],
+        if (qemuSnapshotDiskPrepareOne(snapctxt,
+                                       vm->def->disks[i],
                                        snapdef->disks + i,
-                                       snapctxt,
                                        blockNamedNodeData,
                                        reuse,
-                                       true,
-                                       asyncJob) < 0)
+                                       true) < 0)
             return NULL;
     }
 
@@ -1199,7 +1195,6 @@ qemuSnapshotGetTransientDiskDef(virDomainDiskDef *domdisk)
 
 static qemuSnapshotDiskContext *
 qemuSnapshotDiskPrepareDisksTransient(virDomainObj *vm,
-                                      virQEMUDriverConfig *cfg,
                                       GHashTable *blockNamedNodeData,
                                       qemuDomainAsyncJob asyncJob)
 {
@@ -1221,11 +1216,10 @@ qemuSnapshotDiskPrepareDisksTransient(virDomainObj *vm,
         if (!(snapdisk = qemuSnapshotGetTransientDiskDef(domdisk)))
             return NULL;
 
-        if (qemuSnapshotDiskPrepareOne(vm, cfg, domdisk, snapdisk, snapctxt,
+        if (qemuSnapshotDiskPrepareOne(snapctxt, domdisk, snapdisk,
                                        blockNamedNodeData,
                                        false,
-                                       false,
-                                       asyncJob) < 0)
+                                       false) < 0)
             return NULL;
     }
 
@@ -1350,7 +1344,7 @@ qemuSnapshotCreateActiveExternalDisks(virDomainObj *vm,
 
     /* prepare a list of objects to use in the vm definition so that we don't
      * have to roll back later */
-    if (!(snapctxt = qemuSnapshotDiskPrepareActiveExternal(vm, snap, cfg, reuse,
+    if (!(snapctxt = qemuSnapshotDiskPrepareActiveExternal(vm, snap, reuse,
                                                            blockNamedNodeData, asyncJob)))
         return -1;
 
@@ -1384,7 +1378,7 @@ qemuSnapshotCreateDisksTransient(virDomainObj *vm,
         if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
             return -1;
 
-        if (!(snapctxt = qemuSnapshotDiskPrepareDisksTransient(vm, cfg,
+        if (!(snapctxt = qemuSnapshotDiskPrepareDisksTransient(vm,
                                                                blockNamedNodeData,
                                                                asyncJob)))
             return -1;
