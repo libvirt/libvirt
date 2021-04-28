@@ -896,6 +896,8 @@ struct _qemuSnapshotDiskContext {
 
     virJSONValue *actions;
 
+    virQEMUDriverConfig *cfg;
+
     /* needed for automatic cleanup of 'dd' */
     virDomainObj *vm;
     qemuDomainAsyncJob asyncJob;
@@ -909,11 +911,14 @@ qemuSnapshotDiskContextNew(size_t ndisks,
                            virDomainObj *vm,
                            qemuDomainAsyncJob asyncJob)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
     qemuSnapshotDiskContext *ret = g_new0(qemuSnapshotDiskContext, 1);
 
     ret->dd = g_new0(qemuSnapshotDiskData, ndisks);
     ret->actions = virJSONValueNewArray();
     ret->vm = vm;
+    ret->cfg = virQEMUDriverGetConfig(driver);
     ret->asyncJob = asyncJob;
 
     return ret;
@@ -929,6 +934,8 @@ qemuSnapshotDiskContextCleanup(qemuSnapshotDiskContext *snapctxt)
     virJSONValueFree(snapctxt->actions);
 
     qemuSnapshotDiskCleanup(snapctxt->dd, snapctxt->ndd, snapctxt->vm, snapctxt->asyncJob);
+
+    virObjectUnref(snapctxt->cfg);
 
     g_free(snapctxt);
 }
