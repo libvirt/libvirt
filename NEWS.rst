@@ -59,6 +59,11 @@ v7.3.0 (unreleased)
     since we know that it won't depend on any backing image and thus can prevent
     attempts to probe the backing chain.
 
+  * qemu: Expose disk serial in virDomainGetGuestInfo()
+
+    The ``virDomainGetGuestInfo()`` reports disk serial number among with other
+    disk information.
+
 * **Bug fixes**
 
   * qemu: Fix crash of libvirt on full block pull of a disk
@@ -87,6 +92,20 @@ v7.3.0 (unreleased)
     and if it's delivered when pivoting to the destination during a block copy
     job, libvirt would get confused and execute the code as if the job were
     aborted.
+
+  * lxc: Fix container destroy with CGroupsV2
+
+    When an LXC container was started and the host used CGroupsV2 it might have
+    had created nested controllers under the container's scope. Libvirt was
+    unaware and thus destroying the container failed with a cryptic error:
+    ``failed to get cgroup backend for 'pathOfController'``. The CGroup removal
+    code was reworked and is now capable of dealing with such scenario.
+
+  * bash-completion: Fix argument passing to $1
+
+    Due to a bug in bash completion script, the auto completion did not work
+    properly when a connection URI or read only flag were specified on
+    ``virsh`` or ``virt-admin`` command line.
 
 v7.2.0 (2021-04-01)
 ===================
