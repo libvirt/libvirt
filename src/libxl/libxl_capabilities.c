@@ -330,8 +330,8 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCaps *caps)
 
         virCapabilitiesHostNUMAAddCell(caps->host.numa, i,
                                        numa_info[i].size / 1024,
-                                       nr_cpus_node[i], cpus[i],
-                                       nr_siblings, siblings,
+                                       nr_cpus_node[i], &cpus[i],
+                                       nr_siblings, &siblings,
                                        0, NULL);
 
         /* This is safe, as the CPU list is now stored in the NUMA cell */

@@ -254,11 +254,11 @@ virCapabilitiesHostNUMAAddCell(virCapsHostNUMA *caps,
                                int num,
                                unsigned long long mem,
                                int ncpus,
-                               virCapsHostNUMACellCPU *cpus,
+                               virCapsHostNUMACellCPU **cpus,
                                int nsiblings,
-                               virCapsHostNUMACellSiblingInfo *siblings,
+                               virCapsHostNUMACellSiblingInfo **siblings,
                                int npageinfo,
-                               virCapsHostNUMACellPageInfo *pageinfo);
+                               virCapsHostNUMACellPageInfo **pageinfo);
 
 virCapsGuestMachine **
 virCapabilitiesAllocMachines(const char *const *names,

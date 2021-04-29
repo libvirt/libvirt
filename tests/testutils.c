@@ -935,9 +935,9 @@ virTestCapsBuildNUMATopology(int seq)
 
         virCapabilitiesHostNUMAAddCell(caps, cell_id + seq,
                                        MAX_MEM_IN_CELL,
-                                       MAX_CPUS_IN_CELL, cell_cpus,
-                                       VIR_ARCH_NONE, NULL,
-                                       VIR_ARCH_NONE, NULL);
+                                       MAX_CPUS_IN_CELL, &cell_cpus,
+                                       0, NULL,
+                                       0, NULL);
 
         cell_cpus = NULL;
     }

@@ -329,8 +329,9 @@ testBuildCapabilities(virConnectPtr conn)
 
         virCapabilitiesHostNUMAAddCell(caps->host.numa,
                                        i, privconn->cells[i].mem,
-                                       privconn->cells[i].numCpus,
-                                       cpu_cells, 0, NULL, nPages, pages);
+                                       privconn->cells[i].numCpus, &cpu_cells,
+                                       0, NULL,
+                                       nPages, &pages);
     }
 
     for (i = 0; i < G_N_ELEMENTS(guest_types); i++) {

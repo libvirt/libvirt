@@ -330,36 +330,45 @@ virCapabilitiesSetNetPrefix(virCaps *caps,
  * @num: ID number of NUMA cell
  * @mem: Total size of memory in the NUMA node (in KiB)
  * @ncpus: number of CPUs in cell
- * @cpus: array of CPU definition structures, the pointer is stolen
+ * @cpus: array of CPU definition structures
  * @nsiblings: number of sibling NUMA nodes
  * @siblings: info on sibling NUMA nodes
  * @npageinfo: number of pages at node @num
  * @pageinfo: info on each single memory page
  *
- * Registers a new NUMA cell for a host, passing in a
- * array of CPU IDs belonging to the cell
+ * Registers a new NUMA cell for a host, passing in a array of
+ * CPU IDs belonging to the cell, distances to other NUMA nodes
+ * and info on hugepages on the node.
+ *
+ * All pointers are stolen.
  */
 void
 virCapabilitiesHostNUMAAddCell(virCapsHostNUMA *caps,
                                int num,
                                unsigned long long mem,
                                int ncpus,
-                               virCapsHostNUMACellCPU *cpus,
+                               virCapsHostNUMACellCPU **cpus,
                                int nsiblings,
-                               virCapsHostNUMACellSiblingInfo *siblings,
+                               virCapsHostNUMACellSiblingInfo **siblings,
                                int npageinfo,
-                               virCapsHostNUMACellPageInfo *pageinfo)
+                               virCapsHostNUMACellPageInfo **pageinfo)
 {
     virCapsHostNUMACell *cell = g_new0(virCapsHostNUMACell, 1);
 
     cell->num = num;
     cell->mem = mem;
-    cell->ncpus = ncpus;
-    cell->cpus = cpus;
-    cell->nsiblings = nsiblings;
-    cell->siblings = siblings;
-    cell->npageinfo = npageinfo;
-    cell->pageinfo = pageinfo;
+    if (cpus) {
+        cell->ncpus = ncpus;
+        cell->cpus = g_steal_pointer(cpus);
+    }
+    if (siblings) {
+        cell->nsiblings = nsiblings;
+        cell->siblings = g_steal_pointer(siblings);
+    }
+    if (pageinfo) {
+        cell->npageinfo = npageinfo;
+        cell->pageinfo = g_steal_pointer(pageinfo);
+    }
 
     g_ptr_array_add(caps->cells, cell);
 }
@@ -1568,7 +1577,7 @@ virCapabilitiesHostNUMAInitFake(virCapsHostNUMA *caps)
 
         virCapabilitiesHostNUMAAddCell(caps, 0,
                                        nodeinfo.memory,
-                                       cid, cpus,
+                                       cid, &cpus,
                                        0, NULL,
                                        0, NULL);
     }
@@ -1633,13 +1642,9 @@ virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
         memory >>= 10;
 
         virCapabilitiesHostNUMAAddCell(caps, n, memory,
-                                       ncpus, cpus,
-                                       nsiblings, siblings,
-                                       npageinfo, pageinfo);
-
-        cpus = NULL;
-        siblings = NULL;
-        pageinfo = NULL;
+                                       ncpus, &cpus,
+                                       nsiblings, &siblings,
+                                       npageinfo, &pageinfo);
         virBitmapFree(cpumap);
         cpumap = NULL;
     }
