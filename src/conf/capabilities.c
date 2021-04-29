@@ -121,6 +121,8 @@ virCapabilitiesFreeHostNUMACell(virCapsHostNUMACell *cell)
     g_free(cell->cpus);
     g_free(cell->distances);
     g_free(cell->pageinfo);
+    if (cell->caches)
+        g_array_unref(cell->caches);
     g_free(cell);
 }
 
@@ -335,6 +337,7 @@ virCapabilitiesSetNetPrefix(virCaps *caps,
  * @distances: NUMA distances to other nodes
  * @npageinfo: number of pages at node @num
  * @pageinfo: info on each single memory page
+ * @caches: info on memory side caches
  *
  * Registers a new NUMA cell for a host, passing in a array of
  * CPU IDs belonging to the cell, distances to other NUMA nodes
@@ -351,7 +354,8 @@ virCapabilitiesHostNUMAAddCell(virCapsHostNUMA *caps,
                                int ndistances,
                                virNumaDistance **distances,
                                int npageinfo,
-                               virCapsHostNUMACellPageInfo **pageinfo)
+                               virCapsHostNUMACellPageInfo **pageinfo,
+                               GArray **caches)
 {
     virCapsHostNUMACell *cell = g_new0(virCapsHostNUMACell, 1);
 
@@ -368,6 +372,9 @@ virCapabilitiesHostNUMAAddCell(virCapsHostNUMA *caps,
     if (pageinfo) {
         cell->npageinfo = npageinfo;
         cell->pageinfo = g_steal_pointer(pageinfo);
+    }
+    if (caches) {
+        cell->caches = g_steal_pointer(caches);
     }
 
     g_ptr_array_add(caps->cells, cell);
@@ -869,6 +876,11 @@ virCapabilitiesHostNUMAFormat(virBuffer *buf,
         }
 
         virNumaDistanceFormat(buf, cell->distances, cell->ndistances);
+
+        if (cell->caches) {
+            virNumaCache *caches = &g_array_index(cell->caches, virNumaCache, 0);
+            virNumaCacheFormat(buf, caches, cell->caches->len);
+        }
 
         if (virCapsHostNUMACellCPUFormat(buf, cell->cpus, cell->ncpus) < 0)
             return -1;
@@ -1536,6 +1548,129 @@ virCapabilitiesGetNUMAPagesInfo(int node,
 
 
 static int
+virCapabilitiesGetNodeCacheReadFile(const char *prefix,
+                                    const char *dir,
+                                    const char *file,
+                                    unsigned int *value)
+{
+    g_autofree char *path = g_build_filename(prefix, dir, file, NULL);
+    int rv = virFileReadValueUint(value, "%s", path);
+
+    if (rv < 0) {
+        if (rv == -2) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("File '%s' does not exist"),
+                           path);
+        }
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virCapsHostNUMACellCacheComparator(const void *a,
+                                   const void *b)
+{
+    const virNumaCache *aa = a;
+    const virNumaCache *bb = b;
+
+    return aa->level - bb->level;
+}
+
+
+static int
+virCapabilitiesGetNodeCache(int node,
+                            GArray **cachesRet)
+{
+    g_autoptr(DIR) dir = NULL;
+    int direrr = 0;
+    struct dirent *entry;
+    g_autofree char *path = NULL;
+    g_autoptr(GArray) caches = g_array_new(FALSE, FALSE, sizeof(virNumaCache));
+
+    path = g_strdup_printf(SYSFS_SYSTEM_PATH "/node/node%d/memory_side_cache", node);
+
+    if (virDirOpenIfExists(&dir, path) < 0)
+        return -1;
+
+    while (dir && (direrr = virDirRead(dir, &entry, path)) > 0) {
+        const char *dname = STRSKIP(entry->d_name, "index");
+        virNumaCache cache = { 0 };
+        unsigned int indexing;
+        unsigned int write_policy;
+
+        if (!dname)
+            continue;
+
+        if (virStrToLong_ui(dname, NULL, 10, &cache.level) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to parse %s"),
+                           entry->d_name);
+            return -1;
+        }
+
+        if (virCapabilitiesGetNodeCacheReadFile(path, entry->d_name,
+                                                "size", &cache.size) < 0)
+            return -1;
+
+        cache.size >>= 10; /* read in bytes but stored in kibibytes */
+
+        if (virCapabilitiesGetNodeCacheReadFile(path, entry->d_name,
+                                                "line_size", &cache.line) < 0)
+            return -1;
+
+        if (virCapabilitiesGetNodeCacheReadFile(path, entry->d_name,
+                                                "indexing", &indexing) < 0)
+            return -1;
+
+        /* see enum cache_indexing in kernel */
+        switch (indexing) {
+        case 0: cache.associativity = VIR_NUMA_CACHE_ASSOCIATIVITY_DIRECT; break;
+        case 1: cache.associativity = VIR_NUMA_CACHE_ASSOCIATIVITY_FULL; break;
+        case 2: cache.associativity = VIR_NUMA_CACHE_ASSOCIATIVITY_NONE; break;
+        default:
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unknown indexing value '%u'"),
+                               indexing);
+                return -1;
+        }
+
+        if (virCapabilitiesGetNodeCacheReadFile(path, entry->d_name,
+                                                "write_policy", &write_policy) < 0)
+            return -1;
+
+        /* see enum cache_write_policy in kernel */
+        switch (write_policy) {
+        case 0: cache.policy = VIR_NUMA_CACHE_POLICY_WRITEBACK; break;
+        case 1: cache.policy = VIR_NUMA_CACHE_POLICY_WRITETHROUGH; break;
+        case 2: cache.policy = VIR_NUMA_CACHE_POLICY_NONE; break;
+        default:
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unknown write_policy value '%u'"),
+                               write_policy);
+                return -1;
+        }
+
+        g_array_append_val(caches, cache);
+    }
+
+    if (direrr < 0)
+        return -1;
+
+    if (caches->len > 0) {
+        g_array_sort(caches, virCapsHostNUMACellCacheComparator);
+        *cachesRet = g_steal_pointer(&caches);
+    } else {
+        *cachesRet = NULL;
+    }
+
+    return 0;
+}
+
+
+static int
 virCapabilitiesHostNUMAInitFake(virCapsHostNUMA *caps)
 {
     virNodeInfo nodeinfo;
@@ -1586,7 +1721,8 @@ virCapabilitiesHostNUMAInitFake(virCapsHostNUMA *caps)
                                        nodeinfo.memory,
                                        cid, &cpus,
                                        0, NULL,
-                                       0, NULL);
+                                       0, NULL,
+                                       NULL);
     }
 
     return 0;
@@ -1616,8 +1752,9 @@ virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
         g_autofree virNumaDistance *distances = NULL;
         int ndistances = 0;
         g_autofree virCapsHostNUMACellPageInfo *pageinfo = NULL;
-        int npageinfo;
+        int npageinfo = 0;
         unsigned long long memory;
+        g_autoptr(GArray) caches = NULL;
         int cpu;
         size_t i;
 
@@ -1644,6 +1781,9 @@ virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
         if (virCapabilitiesGetNUMAPagesInfo(n, &pageinfo, &npageinfo) < 0)
             goto cleanup;
 
+        if (virCapabilitiesGetNodeCache(n, &caches) < 0)
+            goto cleanup;
+
         /* Detect the amount of memory in the numa cell in KiB */
         virNumaGetNodeMemory(n, &memory, NULL);
         memory >>= 10;
@@ -1651,7 +1791,8 @@ virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
         virCapabilitiesHostNUMAAddCell(caps, n, memory,
                                        ncpus, &cpus,
                                        ndistances, &distances,
-                                       npageinfo, &pageinfo);
+                                       npageinfo, &pageinfo,
+                                       &caches);
     }
 
     ret = 0;

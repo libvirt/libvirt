@@ -332,7 +332,8 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCaps *caps)
                                        numa_info[i].size / 1024,
                                        nr_cpus_node[i], &cpus[i],
                                        nr_distances, &distances,
-                                       0, NULL);
+                                       0, NULL,
+                                       NULL);
 
         /* This is safe, as the CPU list is now stored in the NUMA cell */
         cpus[i] = NULL;

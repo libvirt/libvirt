@@ -331,7 +331,8 @@ testBuildCapabilities(virConnectPtr conn)
                                        i, privconn->cells[i].mem,
                                        privconn->cells[i].numCpus, &cpu_cells,
                                        0, NULL,
-                                       nPages, &pages);
+                                       nPages, &pages,
+                                       NULL);
     }
 
     for (i = 0; i < G_N_ELEMENTS(guest_types); i++) {

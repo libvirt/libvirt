@@ -163,6 +163,10 @@
         </element>
       </optional>
 
+      <zeroOrMore>
+        <ref name="numaCache"/>
+      </zeroOrMore>
+
       <optional>
         <element name="cpus">
           <attribute name="num">
