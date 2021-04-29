@@ -2396,6 +2396,7 @@ virHostGetBootTime;
 
 
 # util/viridentity.h
+virIdentityEnsureSystemToken;
 virIdentityGetCurrent;
 virIdentityGetGroupName;
 virIdentityGetParameters;

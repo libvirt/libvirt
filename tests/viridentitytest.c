@@ -25,7 +25,9 @@
 
 #include "testutils.h"
 
-#include "viridentity.h"
+#define LIBVIRT_VIRIDENTITYPRIV_H_ALLOW
+
+#include "viridentitypriv.h"
 #include "virerror.h"
 #include "viralloc.h"
 #include "virlog.h"
@@ -35,6 +37,13 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("tests.identitytest");
+
+char *
+virIdentityEnsureSystemToken(void)
+{
+    return g_strdup("3de80bcbf22d4833897f1638e01be9b2");
+}
+
 
 static int testIdentityAttrs(const void *data G_GNUC_UNUSED)
 {

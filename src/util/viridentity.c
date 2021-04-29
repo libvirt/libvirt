@@ -22,21 +22,27 @@
 #include <config.h>
 
 #include <unistd.h>
+#include <fcntl.h>
 #if WITH_SELINUX
 # include <selinux/selinux.h>
 #endif
 
+#define LIBVIRT_VIRIDENTITYPRIV_H_ALLOW
+
 #include "internal.h"
 #include "viralloc.h"
 #include "virerror.h"
-#include "viridentity.h"
+#include "viridentitypriv.h"
 #include "virlog.h"
 #include "virobject.h"
+#include "virrandom.h"
 #include "virthread.h"
 #include "virutil.h"
 #include "virstring.h"
 #include "virprocess.h"
 #include "virtypedparam.h"
+#include "virfile.h"
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_IDENTITY
 
@@ -55,6 +61,7 @@ struct _virIdentity {
 G_DEFINE_TYPE(virIdentity, vir_identity, G_TYPE_OBJECT)
 
 static virThreadLocal virIdentityCurrent;
+static char *systemToken;
 
 static void virIdentityFinalize(GObject *obj);
 
@@ -72,6 +79,9 @@ static int virIdentityOnceInit(void)
                        _("Cannot initialize thread local for current identity"));
         return -1;
     }
+
+    if (!(systemToken = virIdentityEnsureSystemToken()))
+        return -1;
 
     return 0;
 }
@@ -141,6 +151,101 @@ int virIdentitySetCurrent(virIdentity *ident)
     }
 
     return 0;
+}
+
+
+#define TOKEN_BYTES 16
+#define TOKEN_STRLEN (TOKEN_BYTES * 2)
+
+static char *
+virIdentityConstructSystemTokenPath(void)
+{
+    g_autofree char *commondir = NULL;
+    if (geteuid() == 0) {
+        commondir = g_strdup(RUNSTATEDIR "/libvirt/common");
+    } else {
+        g_autofree char *rundir = virGetUserRuntimeDirectory();
+        commondir = g_strdup_printf("%s/common", rundir);
+    }
+
+    if (g_mkdir_with_parents(commondir, 0700) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot create daemon common directory '%s'"),
+                             commondir);
+        return NULL;
+    }
+
+    return g_strdup_printf("%s/system.token", commondir);
+}
+
+
+char *
+virIdentityEnsureSystemToken(void)
+{
+    g_autofree char *tokenfile = virIdentityConstructSystemTokenPath();
+    g_autofree char *token = NULL;
+    VIR_AUTOCLOSE fd = -1;
+    struct stat st;
+
+    if (!tokenfile)
+        return NULL;
+
+    fd = open(tokenfile, O_RDWR|O_APPEND|O_CREAT, 0600);
+    if (fd < 0) {
+        virReportSystemError(errno,
+                             _("Unable to open system token %s"),
+                             tokenfile);
+        return NULL;
+    }
+
+    if (virSetCloseExec(fd) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to set close-on-exec flag '%s'"),
+                             tokenfile);
+        return NULL;
+    }
+
+    if (virFileLock(fd, false, 0, 1, true) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to lock system token '%s'"),
+                             tokenfile);
+        return NULL;
+    }
+
+    if (fstat(fd, &st) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to check system token '%s'"),
+                             tokenfile);
+        return NULL;
+    }
+
+    /* Ok, we're the first one here, so we must populate it */
+    if (st.st_size == 0) {
+        if (!(token = virRandomToken(TOKEN_BYTES))) {
+            return NULL;
+        }
+        if (safewrite(fd, token, TOKEN_STRLEN) != TOKEN_STRLEN) {
+            virReportSystemError(errno,
+                                 _("Failed to write system token '%s'"),
+                                 tokenfile);
+            return NULL;
+        }
+    } else {
+        if (virFileReadLimFD(fd, TOKEN_STRLEN, &token) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to write system token '%s'"),
+                                 tokenfile);
+            return NULL;
+        }
+        if (strlen(token) != TOKEN_STRLEN) {
+            virReportSystemError(errno,
+                                 _("System token in %s was corrupt"),
+                                 tokenfile);
+            return NULL;
+        }
+    }
+
+    return g_steal_pointer(&token);
 }
 
 
