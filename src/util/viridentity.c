@@ -367,6 +367,34 @@ virIdentity *virIdentityGetSystem(void)
 
 
 /**
+ * virIdentityIsCurrentElevated:
+ *
+ * Determine if the current identity has elevated privileges.
+ * This indicates that it was invoked on behalf of the
+ * user by a libvirt daemon.
+ *
+ * Returns: true if elevated
+ */
+int virIdentityIsCurrentElevated(void)
+{
+    g_autoptr(virIdentity) current = virIdentityGetCurrent();
+    const char *currentToken = NULL;
+    int rv;
+
+    if (!current) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No current identity"));
+        return -1;
+    }
+
+    rv = virIdentityGetSystemToken(current, &currentToken);
+    if (rv <= 0)
+        return rv;
+
+    return STREQ_NULLABLE(currentToken, systemToken);
+}
+
+/**
  * virIdentityNew:
  *
  * Creates a new empty identity object. After creating, one or

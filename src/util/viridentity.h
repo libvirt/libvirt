@@ -35,6 +35,7 @@ virIdentity *virIdentityElevateCurrent(void);
 
 void virIdentityRestoreHelper(virIdentity **identptr);
 
+int virIdentityIsCurrentElevated(void);
 virIdentity *virIdentityGetSystem(void);
 
 virIdentity *virIdentityNew(void);
