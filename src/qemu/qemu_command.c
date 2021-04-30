@@ -1659,9 +1659,9 @@ qemuBuildDriveDevCacheStr(virDomainDiskDef *disk,
 char *
 qemuBuildDiskDeviceStr(const virDomainDef *def,
                        virDomainDiskDef *disk,
-                       unsigned int bootindex,
                        virQEMUCaps *qemuCaps)
 {
+    qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
     const char *contAlias;
     g_autofree char *backendAlias = NULL;
@@ -1876,8 +1876,10 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     }
 
     virBufferAsprintf(&opt, ",id=%s", disk->info.alias);
-    if (bootindex)
-        virBufferAsprintf(&opt, ",bootindex=%u", bootindex);
+    /* bootindex for floppies is configured via the fdc controller */
+    if (disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+        diskPriv->effectiveBootindex > 0)
+        virBufferAsprintf(&opt, ",bootindex=%u", diskPriv->effectiveBootindex);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKIO)) {
         if (disk->blockio.logical_block_size > 0)
             virBufferAsprintf(&opt, ",logical_block_size=%u",
@@ -2164,8 +2166,7 @@ static int
 qemuBuildDiskCommandLine(virCommand *cmd,
                          const virDomainDef *def,
                          virDomainDiskDef *disk,
-                         virQEMUCaps *qemuCaps,
-                         unsigned int bootindex)
+                         virQEMUCaps *qemuCaps)
 {
     g_autofree char *optstr = NULL;
 
@@ -2188,8 +2189,7 @@ qemuBuildDiskCommandLine(virCommand *cmd,
 
     virCommandAddArg(cmd, "-device");
 
-    if (!(optstr = qemuBuildDiskDeviceStr(def, disk, bootindex,
-                                          qemuCaps)))
+    if (!(optstr = qemuBuildDiskDeviceStr(def, disk, qemuCaps)))
         return -1;
     virCommandAddArg(cmd, optstr);
 
@@ -2213,15 +2213,8 @@ qemuBuildDisksCommandLine(virCommand *cmd,
 
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDef *disk = def->disks[i];
-        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        unsigned int bootindex = 0;
 
-        /* The floppy device itself does not support the bootindex property
-         * so we need to set it up for the controller */
-        if (disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY)
-            bootindex = diskPriv->effectiveBootindex;
-
-        if (qemuBuildDiskCommandLine(cmd, def, disk, qemuCaps, bootindex) < 0)
+        if (qemuBuildDiskCommandLine(cmd, def, disk, qemuCaps) < 0)
             return -1;
     }
 

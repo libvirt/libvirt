@@ -734,7 +734,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
             goto cleanup;
     }
 
-    if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, 0, priv->qemuCaps)))
+    if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, priv->qemuCaps)))
         goto cleanup;
 
     VIR_REALLOC_N(vm->def->disks, vm->def->ndisks + 1);

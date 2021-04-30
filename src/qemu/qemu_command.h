@@ -146,7 +146,6 @@ qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSource *top,
 char
 *qemuBuildDiskDeviceStr(const virDomainDef *def,
                         virDomainDiskDef *disk,
-                        unsigned int bootindex,
                         virQEMUCaps *qemuCaps);
 
 /* Current, best practice */
