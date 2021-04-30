@@ -179,20 +179,20 @@ struct _qemuDomainJobObj {
     /* The following members are for QEMU_JOB_* */
     qemuDomainJob active;               /* Currently running job */
     unsigned long long owner;           /* Thread id which set current job */
-    const char *ownerAPI;               /* The API which owns the job */
+    char *ownerAPI;                     /* The API which owns the job */
     unsigned long long started;         /* When the current job started */
 
     /* The following members are for QEMU_AGENT_JOB_* */
     qemuDomainAgentJob agentActive;     /* Currently running agent job */
     unsigned long long agentOwner;      /* Thread id which set current agent job */
-    const char *agentOwnerAPI;          /* The API which owns the agent job */
+    char *agentOwnerAPI;                /* The API which owns the agent job */
     unsigned long long agentStarted;    /* When the current agent job started */
 
     /* The following members are for QEMU_ASYNC_JOB_* */
     virCond asyncCond;                  /* Use to coordinate with async jobs */
     qemuDomainAsyncJob asyncJob;        /* Currently active async job */
     unsigned long long asyncOwner;      /* Thread which set current async job */
-    const char *asyncOwnerAPI;          /* The API which owns the async job */
+    char *asyncOwnerAPI;                /* The API which owns the async job */
     unsigned long long asyncStarted;    /* When the current async job started */
     int phase;                          /* Job phase (mainly for migrations) */
     unsigned long long mask;            /* Jobs allowed during async job */
