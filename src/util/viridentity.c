@@ -333,6 +333,27 @@ virIdentity *virIdentityNew(void)
 }
 
 
+/**
+ * virIdentityNewCopy:
+ *
+ * Creates a new identity object that is a deep copy of an
+ * existing identity.
+ *
+ * Returns: a copy of the source identity
+ */
+virIdentity *virIdentityNewCopy(virIdentity *src)
+{
+    g_autoptr(virIdentity) ident = virIdentityNew();
+
+    if (virTypedParamsCopy(&ident->params, src->params, src->nparams) < 0)
+        return NULL;
+    ident->nparams = src->nparams;
+    ident->maxparams = src->nparams;
+
+    return g_steal_pointer(&ident);
+}
+
+
 static void virIdentityFinalize(GObject *object)
 {
     virIdentity *ident = VIR_IDENTITY(object);

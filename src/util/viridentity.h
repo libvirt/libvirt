@@ -33,6 +33,7 @@ int virIdentitySetCurrent(virIdentity *ident);
 virIdentity *virIdentityGetSystem(void);
 
 virIdentity *virIdentityNew(void);
+virIdentity *virIdentityNewCopy(virIdentity *src);
 
 int virIdentityGetUserName(virIdentity *ident,
                            const char **username);
