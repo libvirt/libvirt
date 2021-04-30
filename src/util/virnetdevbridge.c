@@ -1063,9 +1063,13 @@ virNetDevBridgeFDBAddDel(const virMacAddr *mac, const char *ifname,
         if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
             goto malformed_resp;
         if (err->error) {
-            virReportSystemError(-err->error,
-                                 _("error adding fdb entry for %s"), ifname);
-            return -1;
+            if (isAdd && -err->error == EEXIST) {
+                VIR_DEBUG("fdb entry for %s already exists", ifname);
+            } else {
+                virReportSystemError(-err->error,
+                                     _("error adding fdb entry for %s"), ifname);
+                return -1;
+            }
         }
         break;
     case NLMSG_DONE:
