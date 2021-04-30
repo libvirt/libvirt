@@ -2396,6 +2396,7 @@ virHostGetBootTime;
 
 
 # util/viridentity.h
+virIdentityElevateCurrent;
 virIdentityEnsureSystemToken;
 virIdentityGetCurrent;
 virIdentityGetGroupName;
@@ -2412,6 +2413,7 @@ virIdentityGetUserName;
 virIdentityGetX509DName;
 virIdentityNew;
 virIdentityNewCopy;
+virIdentityRestoreHelper;
 virIdentitySetCurrent;
 virIdentitySetGroupName;
 virIdentitySetParameters;

@@ -154,6 +154,53 @@ int virIdentitySetCurrent(virIdentity *ident)
 }
 
 
+/**
+ * virIdentityElevateCurrent:
+ *
+ * Set the new identity to be associated with this thread,
+ * to an elevated copy of the current identity. The old
+ * current identity is returned and should be released by
+ * the caller when no longer required.
+ *
+ * Returns the previous identity, or NULL on error
+ */
+virIdentity *virIdentityElevateCurrent(void)
+{
+    g_autoptr(virIdentity) ident = virIdentityGetCurrent();
+    const char *token;
+    int rc;
+
+    if (!ident) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No current identity to elevate"));
+        return NULL;
+    }
+
+    if ((rc = virIdentityGetSystemToken(ident, &token)) < 0)
+        return NULL;
+
+    if (rc == 0) {
+        g_autoptr(virIdentity) identel = virIdentityNewCopy(ident);
+
+        if (virIdentitySetSystemToken(identel, systemToken) < 0)
+            return NULL;
+
+        if (virIdentitySetCurrent(identel) < 0)
+            return NULL;
+    }
+
+    return g_steal_pointer(&ident);
+}
+
+
+void virIdentityRestoreHelper(virIdentity **identptr)
+{
+    virIdentity *ident = *identptr;
+
+    if (ident != NULL)
+        virIdentitySetCurrent(ident);
+}
+
 #define TOKEN_BYTES 16
 #define TOKEN_STRLEN (TOKEN_BYTES * 2)
 

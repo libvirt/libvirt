@@ -27,8 +27,13 @@
 #define VIR_TYPE_IDENTITY vir_identity_get_type()
 G_DECLARE_FINAL_TYPE(virIdentity, vir_identity, VIR, IDENTITY, GObject);
 
+#define VIR_IDENTITY_AUTORESTORE __attribute__((cleanup(virIdentityRestoreHelper)))
+
 virIdentity *virIdentityGetCurrent(void);
 int virIdentitySetCurrent(virIdentity *ident);
+virIdentity *virIdentityElevateCurrent(void);
+
+void virIdentityRestoreHelper(virIdentity **identptr);
 
 virIdentity *virIdentityGetSystem(void);
 
