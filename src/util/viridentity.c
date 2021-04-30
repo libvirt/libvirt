@@ -266,6 +266,7 @@ virIdentity *virIdentityGetSystem(void)
 #if WITH_SELINUX
     char *con;
 #endif
+    g_autofree char *token = NULL;
 
     if (!(ret = virIdentityNew()))
         return NULL;
@@ -307,6 +308,12 @@ virIdentity *virIdentityGetSystem(void)
         freecon(con);
     }
 #endif
+
+    if (!(token = virIdentityEnsureSystemToken()))
+        return NULL;
+
+    if (virIdentitySetSystemToken(ret, token) < 0)
+        return NULL;
 
     return g_steal_pointer(&ret);
 }
