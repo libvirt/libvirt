@@ -949,6 +949,14 @@ endif
 glib_dep = declare_dependency(
   dependencies: [ glib_dep, gobject_dep, gio_dep ],
 )
+glib_version_arr = glib_version.split('.')
+glib_version_str = 'GLIB_VERSION_@0@_@1@'.format(glib_version_arr[0], glib_version_arr[1])
+# Ask for warnings for anything that was marked deprecated in
+# the defined version, or before. It is a candidate for rewrite.
+conf.set('GLIB_VERSION_MIN_REQUIRED', glib_version_str)
+# Ask for warnings if code tries to use function that did not
+# exist in the defined version. These risk breaking builds
+conf.set('GLIB_VERSION_MAX_ALLOWED', glib_version_str)
 
 glusterfs_version = '3.4.1'
 glusterfs_dep = dependency('glusterfs-api', version: '>=' + glusterfs_version, required: get_option('glusterfs'))
