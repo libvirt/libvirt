@@ -2404,6 +2404,50 @@ qemuValidateDomainDeviceDefDiskSerial(const char *value)
 }
 
 
+static bool
+qemuValidateDomainDeviceDefDiskIOThreads(const virDomainDef *def,
+                                         const virDomainDiskDef *disk)
+{
+    /* Right "type" of disk" */
+    switch ((virDomainDiskBus)disk->bus) {
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+            disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("IOThreads only available for virtio pci and "
+                              "virtio ccw disk"));
+            return false;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_IDE:
+    case VIR_DOMAIN_DISK_BUS_FDC:
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+    case VIR_DOMAIN_DISK_BUS_XEN:
+    case VIR_DOMAIN_DISK_BUS_USB:
+    case VIR_DOMAIN_DISK_BUS_UML:
+    case VIR_DOMAIN_DISK_BUS_SATA:
+    case VIR_DOMAIN_DISK_BUS_SD:
+    case VIR_DOMAIN_DISK_BUS_NONE:
+    case VIR_DOMAIN_DISK_BUS_LAST:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("IOThreads not available for bus %s target %s"),
+                       virDomainDiskBusTypeToString(disk->bus), disk->dst);
+        return false;
+    }
+
+    /* Can we find the disk iothread in the iothreadid list? */
+    if (!virDomainIOThreadIDFind(def, disk->iothread)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Disk iothread '%u' not defined in iothreadid"),
+                       disk->iothread);
+        return false;
+    }
+
+    return true;
+}
+
+
 static int
 qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
                                         const virDomainDef *def,
@@ -2789,6 +2833,11 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         qemuValidateDomainDeviceDefDiskSerial(disk->serial) < 0)
         return -1;
 
+    if (!qemuDomainCheckCCWS390AddressSupport(def, &disk->info, qemuCaps, disk->dst))
+        return -1;
+
+    if (disk->iothread && !qemuValidateDomainDeviceDefDiskIOThreads(def, disk))
+        return -1;
 
     return 0;
 }

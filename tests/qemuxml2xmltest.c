@@ -220,7 +220,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("genid-auto");
     DO_TEST("machine-core-on", NONE);
     DO_TEST("machine-core-off", NONE);
-    DO_TEST("machine-loadparm-multiple-disks-nets-s390", NONE);
+    DO_TEST("machine-loadparm-multiple-disks-nets-s390", QEMU_CAPS_CCW);
     DO_TEST("default-kvm-host-arch", NONE);
     DO_TEST("default-qemu-host-arch", NONE);
     DO_TEST("boot-cdrom", NONE);
