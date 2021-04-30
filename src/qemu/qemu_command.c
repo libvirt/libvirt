@@ -1976,13 +1976,11 @@ qemuCommandAddExtDevice(virCommand *cmd,
 static int
 qemuBuildFloppyCommandLineControllerOptions(virCommand *cmd,
                                             const virDomainDef *def,
-                                            virQEMUCaps *qemuCaps,
-                                            unsigned int bootFloppy)
+                                            virQEMUCaps *qemuCaps)
 {
     g_auto(virBuffer) fdc_opts = VIR_BUFFER_INITIALIZER;
     bool explicitfdc = qemuDomainNeedsFDC(def);
     bool hasfloppy = false;
-    unsigned int bootindex;
     char driveLetter;
     size_t i;
 
@@ -1993,26 +1991,21 @@ qemuBuildFloppyCommandLineControllerOptions(virCommand *cmd,
         g_autofree char *backendStr = NULL;
         g_autofree char *bootindexStr = NULL;
         virDomainDiskDef *disk = def->disks[i];
+        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
         if (disk->bus != VIR_DOMAIN_DISK_BUS_FDC)
             continue;
 
         hasfloppy = true;
 
-        if (disk->info.bootIndex) {
-            bootindex = disk->info.bootIndex;
-        } else {
-            bootindex = bootFloppy;
-            bootFloppy = 0;
-        }
-
         if (disk->info.addr.drive.unit)
             driveLetter = 'B';
         else
             driveLetter = 'A';
 
-        if (bootindex)
-            bootindexStr = g_strdup_printf("bootindex%c=%u", driveLetter, bootindex);
+        if (diskPriv->effectiveBootindex > 0)
+            bootindexStr = g_strdup_printf("bootindex%c=%u", driveLetter,
+                                           diskPriv->effectiveBootindex);
 
         /* with -blockdev we setup the floppy device and it's backend with -device */
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
@@ -2210,66 +2203,30 @@ qemuBuildDisksCommandLine(virCommand *cmd,
                           virQEMUCaps *qemuCaps)
 {
     size_t i;
-    unsigned int bootCD = 0;
-    unsigned int bootFloppy = 0;
-    unsigned int bootDisk = 0;
     bool blockdev = virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV);
-
-    for (i = 0; i < def->os.nBootDevs; i++) {
-        switch (def->os.bootDevs[i]) {
-        case VIR_DOMAIN_BOOT_CDROM:
-            bootCD = i + 1;
-            break;
-        case VIR_DOMAIN_BOOT_FLOPPY:
-            bootFloppy = i + 1;
-            break;
-        case VIR_DOMAIN_BOOT_DISK:
-            bootDisk = i + 1;
-            break;
-        }
-    }
 
     /* If we want to express the floppy drives via -device, the controller needs
      * to be instantiated prior to that */
     if (blockdev &&
-        qemuBuildFloppyCommandLineControllerOptions(cmd, def, qemuCaps, bootFloppy) < 0)
+        qemuBuildFloppyCommandLineControllerOptions(cmd, def, qemuCaps) < 0)
         return -1;
 
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDef *disk = def->disks[i];
+        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
         unsigned int bootindex = 0;
-
-        if (disk->info.bootIndex) {
-            bootindex = disk->info.bootIndex;
-        } else {
-            switch (disk->device) {
-            case VIR_DOMAIN_DISK_DEVICE_CDROM:
-                bootindex = bootCD;
-                bootCD = 0;
-                break;
-            case VIR_DOMAIN_DISK_DEVICE_DISK:
-            case VIR_DOMAIN_DISK_DEVICE_LUN:
-                bootindex = bootDisk;
-                bootDisk = 0;
-                break;
-            case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-            case VIR_DOMAIN_DISK_DEVICE_LAST:
-            default:
-                break;
-            }
-        }
 
         /* The floppy device itself does not support the bootindex property
          * so we need to set it up for the controller */
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
-            bootindex = 0;
+        if (disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+            bootindex = diskPriv->effectiveBootindex;
 
         if (qemuBuildDiskCommandLine(cmd, def, disk, qemuCaps, bootindex) < 0)
             return -1;
     }
 
     if (!blockdev &&
-        qemuBuildFloppyCommandLineControllerOptions(cmd, def, qemuCaps, bootFloppy) < 0)
+        qemuBuildFloppyCommandLineControllerOptions(cmd, def, qemuCaps) < 0)
         return -1;
 
     return 0;

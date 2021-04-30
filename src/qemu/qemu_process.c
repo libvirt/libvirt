@@ -6289,6 +6289,70 @@ qemuProcessPrepareDomainNUMAPlacement(virDomainObj *vm)
 }
 
 
+static void
+qemuProcessPrepareDomainDiskBootorder(virDomainDef *def)
+{
+    size_t i;
+    unsigned int bootCD = 0;
+    unsigned int bootFloppy = 0;
+    unsigned int bootDisk = 0;
+
+    for (i = 0; i < def->os.nBootDevs; i++) {
+        switch ((virDomainBootOrder) def->os.bootDevs[i]) {
+        case VIR_DOMAIN_BOOT_CDROM:
+            bootCD = i + 1;
+            break;
+
+        case VIR_DOMAIN_BOOT_FLOPPY:
+            bootFloppy = i + 1;
+            break;
+
+        case VIR_DOMAIN_BOOT_DISK:
+            bootDisk = i + 1;
+            break;
+
+        case VIR_DOMAIN_BOOT_NET:
+            /* network boot is handled in network device formatting code */
+        case VIR_DOMAIN_BOOT_LAST:
+        default:
+            break;
+        }
+    }
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDef *disk = def->disks[i];
+        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+        if (disk->info.bootIndex > 0) {
+            diskPriv->effectiveBootindex = disk->info.bootIndex;
+            continue;
+        }
+
+        switch (disk->device) {
+        case VIR_DOMAIN_DISK_DEVICE_CDROM:
+            diskPriv->effectiveBootindex = bootCD;
+            bootCD = 0;
+            break;
+
+        case VIR_DOMAIN_DISK_DEVICE_DISK:
+        case VIR_DOMAIN_DISK_DEVICE_LUN:
+            diskPriv->effectiveBootindex = bootDisk;
+            bootDisk = 0;
+            break;
+
+        case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+            diskPriv->effectiveBootindex = bootFloppy;
+            bootFloppy = 0;
+            break;
+
+        case VIR_DOMAIN_DISK_DEVICE_LAST:
+        default:
+            break;
+        }
+    }
+}
+
+
 static int
 qemuProcessPrepareDomainStorage(virQEMUDriver *driver,
                                 virDomainObj *vm,
@@ -6314,6 +6378,8 @@ qemuProcessPrepareDomainStorage(virQEMUDriver *driver,
         if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
             return -1;
     }
+
+    qemuProcessPrepareDomainDiskBootorder(vm->def);
 
     return 0;
 }
