@@ -272,3 +272,19 @@ struct _virNumaCache {
 void virNumaCacheFormat(virBuffer *buf,
                         const virNumaCache *caches,
                         size_t ncaches);
+
+typedef struct _virNumaInterconnect virNumaInterconnect;
+struct _virNumaInterconnect {
+    virNumaInterconnectType type;  /* whether structure describes latency
+                                      or bandwidth */
+    unsigned int initiator; /* the initiator NUMA node */
+    unsigned int target;    /* the target NUMA node */
+    unsigned int cache;     /* the target cache on @target; if 0 then the
+                               memory on @target */
+    virMemoryLatency accessType;  /* what type of access is defined */
+    unsigned long value;    /* value itself */
+};
+
+void virNumaInterconnectFormat(virBuffer *buf,
+                               const virNumaInterconnect *interconnects,
+                               size_t ninterconnects);

@@ -915,6 +915,7 @@ virNumaCacheFormat;
 virNumaCachePolicyTypeFromString;
 virNumaCachePolicyTypeToString;
 virNumaDistanceFormat;
+virNumaInterconnectFormat;
 
 
 # conf/nwfilter_conf.h

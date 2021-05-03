@@ -82,8 +82,6 @@ VIR_ENUM_IMPL(virMemoryLatency,
               "write"
 );
 
-typedef struct _virNumaInterconnect virNumaInterconnect;
-
 typedef struct _virDomainNumaNode virDomainNumaNode;
 
 struct _virDomainNuma {
@@ -110,16 +108,7 @@ struct _virDomainNuma {
     } *mem_nodes;           /* guest node configuration */
     size_t nmem_nodes;
 
-    struct _virNumaInterconnect {
-        virNumaInterconnectType type;  /* whether structure describes latency
-                                          or bandwidth */
-        unsigned int initiator; /* the initiator NUMA node */
-        unsigned int target;    /* the target NUMA node */
-        unsigned int cache;     /* the target cache on @target; if 0 then the
-                                   memory on @target */
-        virMemoryLatency accessType;  /* what type of access is defined */
-        unsigned long value;    /* value itself */
-    } *interconnects;
+    virNumaInterconnect *interconnects;
     size_t ninterconnects;
 
     /* Future NUMA tuning related stuff should go here. */
@@ -1129,46 +1118,7 @@ virDomainNumaDefFormatXML(virBuffer *buf,
         virXMLFormatElement(buf, "cell", &attrBuf, &childBuf);
     }
 
-    if (def->ninterconnects) {
-        virBufferAddLit(buf, "<interconnects>\n");
-        virBufferAdjustIndent(buf, 2);
-    }
-
-    for (i = 0; i < def->ninterconnects; i++) {
-        virNumaInterconnect *l = &def->interconnects[i];
-
-        switch (l->type) {
-        case VIR_NUMA_INTERCONNECT_TYPE_LATENCY:
-            virBufferAddLit(buf, "<latency");
-            break;
-        case VIR_NUMA_INTERCONNECT_TYPE_BANDWIDTH:
-            virBufferAddLit(buf, "<bandwidth");
-        }
-
-        virBufferAsprintf(buf,
-                          " initiator='%u' target='%u'",
-                          l->initiator, l->target);
-
-        if (l->cache > 0) {
-            virBufferAsprintf(buf,
-                              " cache='%u'",
-                              l->cache);
-        }
-
-        virBufferAsprintf(buf,
-                          " type='%s' value='%lu'",
-                          virMemoryLatencyTypeToString(l->accessType),
-                          l->value);
-
-        if (l->type == VIR_NUMA_INTERCONNECT_TYPE_BANDWIDTH)
-            virBufferAddLit(buf, " unit='KiB'");
-        virBufferAddLit(buf, "/>\n");
-    }
-
-    if (def->ninterconnects) {
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</interconnects>\n");
-    }
+    virNumaInterconnectFormat(buf, def->interconnects, def->ninterconnects);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</numa>\n");
@@ -1841,4 +1791,51 @@ virNumaCacheFormat(virBuffer *buf,
 
         virXMLFormatElement(buf, "cache", &attrBuf, &childBuf);
     }
+}
+
+
+void
+virNumaInterconnectFormat(virBuffer *buf,
+                          const virNumaInterconnect *interconnects,
+                          size_t ninterconnects)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    size_t i;
+
+    for (i = 0; i < ninterconnects; i++) {
+        const virNumaInterconnect *l = &interconnects[i];
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+        const char *elem = NULL;
+
+        switch (l->type) {
+        case VIR_NUMA_INTERCONNECT_TYPE_LATENCY:
+            elem = "latency";
+            break;
+        case VIR_NUMA_INTERCONNECT_TYPE_BANDWIDTH:
+            elem = "bandwidth";
+            break;
+        }
+
+        virBufferAsprintf(&attrBuf,
+                          " initiator='%u' target='%u'",
+                          l->initiator, l->target);
+
+        if (l->cache > 0) {
+            virBufferAsprintf(&attrBuf,
+                              " cache='%u'",
+                              l->cache);
+        }
+
+        virBufferAsprintf(&attrBuf,
+                          " type='%s' value='%lu'",
+                          virMemoryLatencyTypeToString(l->accessType),
+                          l->value);
+
+        if (l->type == VIR_NUMA_INTERCONNECT_TYPE_BANDWIDTH)
+            virBufferAddLit(&attrBuf, " unit='KiB'");
+
+        virXMLFormatElement(&childBuf, elem, &attrBuf, NULL);
+    }
+
+    virXMLFormatElement(buf, "interconnects", NULL, &childBuf);
 }
