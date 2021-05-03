@@ -259,3 +259,16 @@ struct _virNumaDistance {
 void virNumaDistanceFormat(virBuffer *buf,
                            const virNumaDistance *distances,
                            size_t ndistances);
+
+typedef struct _virNumaCache virNumaCache;
+struct _virNumaCache {
+    unsigned int level; /* cache level */
+    unsigned int size;  /* cache size */
+    unsigned int line;  /* line size, !!! in bytes !!! */
+    virNumaCacheAssociativity associativity; /* cache associativity */
+    virNumaCachePolicy policy; /* cache policy */
+};
+
+void virNumaCacheFormat(virBuffer *buf,
+                        const virNumaCache *caches,
+                        size_t ncaches);

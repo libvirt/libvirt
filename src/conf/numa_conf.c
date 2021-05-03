@@ -82,8 +82,6 @@ VIR_ENUM_IMPL(virDomainMemoryLatency,
               "write"
 );
 
-typedef struct _virNumaCache virNumaCache;
-
 typedef struct _virDomainNumaInterconnect virDomainNumaInterconnect;
 
 typedef struct _virDomainNumaNode virDomainNumaNode;
@@ -107,13 +105,7 @@ struct _virDomainNuma {
         virNumaDistance *distances; /* remote node distances */
         size_t ndistances;
 
-        struct _virNumaCache {
-            unsigned int level; /* cache level */
-            unsigned int size;  /* cache size */
-            unsigned int line;  /* line size, !!! in bytes !!! */
-            virNumaCacheAssociativity associativity; /* cache associativity */
-            virNumaCachePolicy policy; /* cache policy */
-        } *caches;
+        virNumaCache *caches;
         size_t ncaches;
     } *mem_nodes;           /* guest node configuration */
     size_t nmem_nodes;
@@ -1102,7 +1094,6 @@ virDomainNumaDefFormatXML(virBuffer *buf,
         virBitmap *cpumask = virDomainNumaGetNodeCpumask(def, i);
         g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
         g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
-        size_t j;
 
         memAccess = virDomainNumaGetNodeMemoryAccessMode(def, i);
         discard = virDomainNumaGetNodeDiscard(def, i);
@@ -1131,35 +1122,9 @@ virDomainNumaDefFormatXML(virBuffer *buf,
                               def->mem_nodes[i].distances,
                               def->mem_nodes[i].ndistances);
 
-        for (j = 0; j < def->mem_nodes[i].ncaches; j++) {
-            virNumaCache *cache = &def->mem_nodes[i].caches[j];
-
-            virBufferAsprintf(&childBuf, "<cache level='%u'", cache->level);
-            if (cache->associativity) {
-                virBufferAsprintf(&childBuf, " associativity='%s'",
-                                  virNumaCacheAssociativityTypeToString(cache->associativity));
-            }
-
-            if (cache->policy) {
-                virBufferAsprintf(&childBuf, " policy='%s'",
-                                  virNumaCachePolicyTypeToString(cache->policy));
-            }
-            virBufferAddLit(&childBuf, ">\n");
-
-            virBufferAdjustIndent(&childBuf, 2);
-            virBufferAsprintf(&childBuf,
-                              "<size value='%u' unit='KiB'/>\n",
-                              cache->size);
-
-            if (cache->line) {
-                virBufferAsprintf(&childBuf,
-                                  "<line value='%u' unit='B'/>\n",
-                                  cache->line);
-            }
-
-            virBufferAdjustIndent(&childBuf, -2);
-            virBufferAddLit(&childBuf, "</cache>\n");
-        }
+        virNumaCacheFormat(&childBuf,
+                           def->mem_nodes[i].caches,
+                           def->mem_nodes[i].ncaches);
 
         virXMLFormatElement(buf, "cell", &attrBuf, &childBuf);
     }
@@ -1838,4 +1803,42 @@ virNumaDistanceFormat(virBuffer *buf,
     }
 
     virXMLFormatElement(buf, "distances", NULL, &childBuf);
+}
+
+
+void
+virNumaCacheFormat(virBuffer *buf,
+                   const virNumaCache *caches,
+                   size_t ncaches)
+{
+    size_t i;
+
+    for (i = 0; i < ncaches; i++) {
+        const virNumaCache *cache = &caches[i];
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+        virBufferAsprintf(&attrBuf, " level='%u'", cache->level);
+        if (cache->associativity) {
+            virBufferAsprintf(&attrBuf, " associativity='%s'",
+                              virNumaCacheAssociativityTypeToString(cache->associativity));
+        }
+
+        if (cache->policy) {
+            virBufferAsprintf(&attrBuf, " policy='%s'",
+                              virNumaCachePolicyTypeToString(cache->policy));
+        }
+
+        virBufferAsprintf(&childBuf,
+                          "<size value='%u' unit='KiB'/>\n",
+                          cache->size);
+
+        if (cache->line) {
+            virBufferAsprintf(&childBuf,
+                              "<line value='%u' unit='B'/>\n",
+                              cache->line);
+        }
+
+        virXMLFormatElement(buf, "cache", &attrBuf, &childBuf);
+    }
 }

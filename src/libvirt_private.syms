@@ -911,6 +911,7 @@ virDomainNumatuneSet;
 virDomainNumatuneSpecifiedMaxNode;
 virNumaCacheAssociativityTypeFromString;
 virNumaCacheAssociativityTypeToString;
+virNumaCacheFormat;
 virNumaCachePolicyTypeFromString;
 virNumaCachePolicyTypeToString;
 virNumaDistanceFormat;
