@@ -60,7 +60,7 @@ typedef struct _virCapsHostNUMACellCPU virCapsHostNUMACellCPU;
 
 typedef struct _virCapsHostNUMACellPageInfo virCapsHostNUMACellPageInfo;
 
-typedef struct _virCapsHostNUMACellSiblingInfo virCapsHostNUMACellSiblingInfo;
+typedef struct _virCapsHostNUMACellDistance virCapsHostNUMACellDistance;
 
 typedef struct _virCapsHostSecModel virCapsHostSecModel;
 

@@ -247,9 +247,9 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCaps *caps)
 {
     libxl_numainfo *numa_info = NULL;
     libxl_cputopology *cpu_topo = NULL;
-    int nr_nodes = 0, nr_cpus = 0, nr_siblings = 0;
+    int nr_nodes = 0, nr_cpus = 0, nr_distances = 0;
     virCapsHostNUMACellCPU **cpus = NULL;
-    virCapsHostNUMACellSiblingInfo *siblings = NULL;
+    virCapsHostNUMACellDistance *distances = NULL;
     int *nr_cpus_node = NULL;
     size_t i;
     int ret = -1;
@@ -316,22 +316,22 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCaps *caps)
         if (numa_info[i].size == LIBXL_NUMAINFO_INVALID_ENTRY)
             continue;
 
-        nr_siblings = numa_info[i].num_dists;
-        if (nr_siblings) {
+        nr_distances = numa_info[i].num_dists;
+        if (nr_distances) {
             size_t j;
 
-            siblings = g_new0(virCapsHostNUMACellSiblingInfo, nr_siblings);
+            distances = g_new0(virCapsHostNUMACellDistance, nr_distances);
 
-            for (j = 0; j < nr_siblings; j++) {
-                siblings[j].node = j;
-                siblings[j].distance = numa_info[i].dists[j];
+            for (j = 0; j < nr_distances; j++) {
+                distances[j].node = j;
+                distances[j].distance = numa_info[i].dists[j];
             }
         }
 
         virCapabilitiesHostNUMAAddCell(caps->host.numa, i,
                                        numa_info[i].size / 1024,
                                        nr_cpus_node[i], &cpus[i],
-                                       nr_siblings, &siblings,
+                                       nr_distances, &distances,
                                        0, NULL);
 
         /* This is safe, as the CPU list is now stored in the NUMA cell */
@@ -348,7 +348,7 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCaps *caps)
             virCapabilitiesHostNUMAUnref(caps->host.numa);
             caps->host.numa = NULL;
         }
-        VIR_FREE(siblings);
+        VIR_FREE(distances);
     }
 
     VIR_FREE(cpus);
