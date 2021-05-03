@@ -972,11 +972,7 @@ libxlConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
 
     cfg = libxlDriverConfigGet(driver);
     ret = libxl_get_max_cpus(cfg->ctx);
-    /* On failure, libxl_get_max_cpus() will return ERROR_FAIL from Xen 4.4
-     * onward, but it ever returning 0 is obviously wrong too (and it is
-     * what happens, on failure, on Xen 4.3 and earlier). Therefore, a 'less
-     * or equal' is the catchall we want. */
-    if (ret <= 0)
+    if (ret < 0)
         ret = -1;
 
     virObjectUnref(cfg);
