@@ -794,12 +794,15 @@ virCapabilitiesAddStoragePool(virCaps *caps,
 
 
 static int
-virCapabilitiesHostNUMAFormat(virCapsHostNUMA *caps,
-                              virBuffer *buf)
+virCapabilitiesHostNUMAFormat(virBuffer *buf,
+                              virCapsHostNUMA *caps)
 {
     size_t i;
     size_t j;
     char *siblings;
+
+    if (!caps)
+        return 0;
 
     virBufferAddLit(buf, "<topology>\n");
     virBufferAdjustIndent(buf, 2);
@@ -1125,8 +1128,7 @@ virCapabilitiesFormatHostXML(virCapsHost *host,
         virBufferAsprintf(buf, "<netprefix>%s</netprefix>\n",
                           host->netprefix);
 
-    if (host->numa &&
-        virCapabilitiesHostNUMAFormat(host->numa, buf) < 0)
+    if (virCapabilitiesHostNUMAFormat(buf, host->numa) < 0)
         return -1;
 
     if (virCapabilitiesFormatCaches(buf, &host->cache) < 0)
