@@ -1105,92 +1105,81 @@ virDomainNumaDefFormatXML(virBuffer *buf,
     virBufferAdjustIndent(buf, 2);
     for (i = 0; i < ncells; i++) {
         virBitmap *cpumask = virDomainNumaGetNodeCpumask(def, i);
-        int ndistances;
-        size_t ncaches;
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+        size_t j;
 
         memAccess = virDomainNumaGetNodeMemoryAccessMode(def, i);
         discard = virDomainNumaGetNodeDiscard(def, i);
 
-        virBufferAddLit(buf, "<cell");
-        virBufferAsprintf(buf, " id='%zu'", i);
+        virBufferAsprintf(&attrBuf, " id='%zu'", i);
 
         if (cpumask) {
             g_autofree char *cpustr = virBitmapFormat(cpumask);
 
             if (!cpustr)
                 return -1;
-            virBufferAsprintf(buf, " cpus='%s'", cpustr);
+            virBufferAsprintf(&attrBuf, " cpus='%s'", cpustr);
         }
-        virBufferAsprintf(buf, " memory='%llu'",
+        virBufferAsprintf(&attrBuf, " memory='%llu'",
                           virDomainNumaGetNodeMemorySize(def, i));
-        virBufferAddLit(buf, " unit='KiB'");
+        virBufferAddLit(&attrBuf, " unit='KiB'");
         if (memAccess)
-            virBufferAsprintf(buf, " memAccess='%s'",
+            virBufferAsprintf(&attrBuf, " memAccess='%s'",
                               virDomainMemoryAccessTypeToString(memAccess));
 
         if (discard)
-            virBufferAsprintf(buf, " discard='%s'",
+            virBufferAsprintf(&attrBuf, " discard='%s'",
                               virTristateBoolTypeToString(discard));
 
-        ndistances = def->mem_nodes[i].ndistances;
-        ncaches = def->mem_nodes[i].ncaches;
-        if (ndistances == 0 && ncaches == 0) {
-            virBufferAddLit(buf, "/>\n");
-        } else {
-            size_t j;
+        if (def->mem_nodes[i].ndistances) {
+            virDomainNumaDistance *distances = def->mem_nodes[i].distances;
 
-            virBufferAddLit(buf, ">\n");
-            virBufferAdjustIndent(buf, 2);
-
-            if (ndistances) {
-                virDomainNumaDistance *distances = def->mem_nodes[i].distances;
-
-                virBufferAddLit(buf, "<distances>\n");
-                virBufferAdjustIndent(buf, 2);
-                for (j = 0; j < ndistances; j++) {
-                    if (distances[j].value) {
-                        virBufferAddLit(buf, "<sibling");
-                        virBufferAsprintf(buf, " id='%d'", distances[j].cellid);
-                        virBufferAsprintf(buf, " value='%d'", distances[j].value);
-                        virBufferAddLit(buf, "/>\n");
-                    }
+            virBufferAddLit(&childBuf, "<distances>\n");
+            virBufferAdjustIndent(&childBuf, 2);
+            for (j = 0; j < def->mem_nodes[i].ndistances; j++) {
+                if (distances[j].value) {
+                    virBufferAddLit(&childBuf, "<sibling");
+                    virBufferAsprintf(&childBuf, " id='%d'", distances[j].cellid);
+                    virBufferAsprintf(&childBuf, " value='%d'", distances[j].value);
+                    virBufferAddLit(&childBuf, "/>\n");
                 }
-                virBufferAdjustIndent(buf, -2);
-                virBufferAddLit(buf, "</distances>\n");
             }
-
-            for (j = 0; j < ncaches; j++) {
-                virDomainNumaCache *cache = &def->mem_nodes[i].caches[j];
-
-                virBufferAsprintf(buf, "<cache level='%u'", cache->level);
-                if (cache->associativity) {
-                    virBufferAsprintf(buf, " associativity='%s'",
-                                      virDomainCacheAssociativityTypeToString(cache->associativity));
-                }
-
-                if (cache->policy) {
-                    virBufferAsprintf(buf, " policy='%s'",
-                                      virDomainCachePolicyTypeToString(cache->policy));
-                }
-                virBufferAddLit(buf, ">\n");
-
-                virBufferAdjustIndent(buf, 2);
-                virBufferAsprintf(buf,
-                                  "<size value='%u' unit='KiB'/>\n",
-                                  cache->size);
-
-                if (cache->line) {
-                    virBufferAsprintf(buf,
-                                      "<line value='%u' unit='B'/>\n",
-                                      cache->line);
-                }
-
-                virBufferAdjustIndent(buf, -2);
-                virBufferAddLit(buf, "</cache>\n");
-            }
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</cell>\n");
+            virBufferAdjustIndent(&childBuf, -2);
+            virBufferAddLit(&childBuf, "</distances>\n");
         }
+
+        for (j = 0; j < def->mem_nodes[i].ncaches; j++) {
+            virDomainNumaCache *cache = &def->mem_nodes[i].caches[j];
+
+            virBufferAsprintf(&childBuf, "<cache level='%u'", cache->level);
+            if (cache->associativity) {
+                virBufferAsprintf(&childBuf, " associativity='%s'",
+                                  virDomainCacheAssociativityTypeToString(cache->associativity));
+            }
+
+            if (cache->policy) {
+                virBufferAsprintf(&childBuf, " policy='%s'",
+                                  virDomainCachePolicyTypeToString(cache->policy));
+            }
+            virBufferAddLit(&childBuf, ">\n");
+
+            virBufferAdjustIndent(&childBuf, 2);
+            virBufferAsprintf(&childBuf,
+                              "<size value='%u' unit='KiB'/>\n",
+                              cache->size);
+
+            if (cache->line) {
+                virBufferAsprintf(&childBuf,
+                                  "<line value='%u' unit='B'/>\n",
+                                  cache->line);
+            }
+
+            virBufferAdjustIndent(&childBuf, -2);
+            virBufferAddLit(&childBuf, "</cache>\n");
+        }
+
+        virXMLFormatElement(buf, "cell", &attrBuf, &childBuf);
     }
 
     if (def->ninterconnects) {
