@@ -249,7 +249,7 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCaps *caps)
     libxl_cputopology *cpu_topo = NULL;
     int nr_nodes = 0, nr_cpus = 0, nr_distances = 0;
     virCapsHostNUMACellCPU **cpus = NULL;
-    virCapsHostNUMACellDistance *distances = NULL;
+    virNumaDistance *distances = NULL;
     int *nr_cpus_node = NULL;
     size_t i;
     int ret = -1;
@@ -320,11 +320,11 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCaps *caps)
         if (nr_distances) {
             size_t j;
 
-            distances = g_new0(virCapsHostNUMACellDistance, nr_distances);
+            distances = g_new0(virNumaDistance, nr_distances);
 
             for (j = 0; j < nr_distances; j++) {
-                distances[j].node = j;
-                distances[j].distance = numa_info[i].dists[j];
+                distances[j].cellid = j;
+                distances[j].value = numa_info[i].dists[j];
             }
         }
 

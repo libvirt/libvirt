@@ -94,11 +94,6 @@ struct _virCapsHostNUMACellCPU {
     virBitmap *siblings;
 };
 
-struct _virCapsHostNUMACellDistance {
-    int node;               /* foreign NUMA node */
-    unsigned int distance;  /* distance to the node */
-};
-
 struct _virCapsHostNUMACellPageInfo {
     unsigned int size;      /* page size in kibibytes */
     unsigned long long avail;           /* the size of pool */
@@ -109,8 +104,8 @@ struct _virCapsHostNUMACell {
     int ncpus;
     unsigned long long mem; /* in kibibytes */
     virCapsHostNUMACellCPU *cpus;
-    int ndistances;
-    virCapsHostNUMACellDistance *distances;
+    size_t ndistances;
+    virNumaDistance *distances;
     int npageinfo;
     virCapsHostNUMACellPageInfo *pageinfo;
 };
@@ -256,7 +251,7 @@ virCapabilitiesHostNUMAAddCell(virCapsHostNUMA *caps,
                                int ncpus,
                                virCapsHostNUMACellCPU **cpus,
                                int ndistances,
-                               virCapsHostNUMACellDistance **distances,
+                               virNumaDistance **distances,
                                int npageinfo,
                                virCapsHostNUMACellPageInfo **pageinfo);
 

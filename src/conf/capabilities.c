@@ -349,7 +349,7 @@ virCapabilitiesHostNUMAAddCell(virCapsHostNUMA *caps,
                                int ncpus,
                                virCapsHostNUMACellCPU **cpus,
                                int ndistances,
-                               virCapsHostNUMACellDistance **distances,
+                               virNumaDistance **distances,
                                int npageinfo,
                                virCapsHostNUMACellPageInfo **pageinfo)
 {
@@ -833,17 +833,7 @@ virCapabilitiesHostNUMAFormat(virBuffer *buf,
                               cell->pageinfo[j].avail);
         }
 
-        if (cell->ndistances) {
-            virBufferAddLit(buf, "<distances>\n");
-            virBufferAdjustIndent(buf, 2);
-            for (j = 0; j < cell->ndistances; j++) {
-                virBufferAsprintf(buf, "<sibling id='%d' value='%d'/>\n",
-                                  cell->distances[j].node,
-                                  cell->distances[j].distance);
-            }
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</distances>\n");
-        }
+        virNumaDistanceFormat(buf, cell->distances, cell->ndistances);
 
         virBufferAsprintf(buf, "<cpus num='%d'>\n", cell->ncpus);
         virBufferAdjustIndent(buf, 2);
@@ -1457,10 +1447,10 @@ virCapabilitiesFillCPUInfo(int cpu_id G_GNUC_UNUSED,
 
 static int
 virCapabilitiesGetNUMADistances(int node,
-                                virCapsHostNUMACellDistance **distancesRet,
+                                virNumaDistance **distancesRet,
                                 int *ndistancesRet)
 {
-    virCapsHostNUMACellDistance *tmp = NULL;
+    virNumaDistance *tmp = NULL;
     int tmp_size = 0;
     int ret = -1;
     int *distances = NULL;
@@ -1476,14 +1466,14 @@ virCapabilitiesGetNUMADistances(int node,
         return 0;
     }
 
-    tmp = g_new0(virCapsHostNUMACellDistance, ndistances);
+    tmp = g_new0(virNumaDistance, ndistances);
 
     for (i = 0; i < ndistances; i++) {
         if (!distances[i])
             continue;
 
-        tmp[tmp_size].node = i;
-        tmp[tmp_size].distance = distances[i];
+        tmp[tmp_size].cellid = i;
+        tmp[tmp_size].value = distances[i];
         tmp_size++;
     }
 
@@ -1607,7 +1597,7 @@ virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
 
     for (n = 0; n <= max_node; n++) {
         g_autoptr(virBitmap) cpumap = NULL;
-        g_autofree virCapsHostNUMACellDistance *distances = NULL;
+        g_autofree virNumaDistance *distances = NULL;
         int ndistances = 0;
         g_autofree virCapsHostNUMACellPageInfo *pageinfo = NULL;
         int npageinfo;
