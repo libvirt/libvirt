@@ -641,7 +641,7 @@ libxlDomainHandleDeath(libxlDriverPrivate *driver, virDomainObj *vm)
  * Handle previously registered domain event notification from libxenlight.
  */
 void
-libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
+libxlDomainEventHandler(void *data, libxl_event *event)
 {
     libxlDriverPrivate *driver = data;
     libxl_shutdown_reason xl_reason = event->u.domain_shutdown.shutdown_reason;

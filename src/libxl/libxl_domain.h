@@ -117,20 +117,8 @@ void
 libxlDomainCleanup(libxlDriverPrivate *driver,
                    virDomainObj *vm);
 
-/*
- * Note: Xen 4.3 removed the const from the event handler signature.
- * Detect which signature to use based on
- * LIBXL_HAVE_NONCONST_EVENT_OCCURS_EVENT_ARG.
- */
-#ifdef LIBXL_HAVE_NONCONST_EVENT_OCCURS_EVENT_ARG
-# define VIR_LIBXL_EVENT_CONST /* empty */
-#else
-# define VIR_LIBXL_EVENT_CONST const
-#endif
-
 void
-libxlDomainEventHandler(void *data,
-                        VIR_LIBXL_EVENT_CONST libxl_event *event);
+libxlDomainEventHandler(void *data, libxl_event *event);
 
 int
 libxlDomainAutoCoreDump(libxlDriverPrivate *driver,
