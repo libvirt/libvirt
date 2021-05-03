@@ -687,12 +687,12 @@ foreach name : test_scripts
   test(name, script, env: tests_env)
 endforeach
 
+testenv = runutf8
+testenv += 'VIR_TEST_FILE_ACCESS=1'
+
 add_test_setup(
   'access',
-  env: [
-    'VIR_TEST_FILE_ACCESS=1',
-    runutf8,
-  ],
+  env: testenv,
   exe_wrapper: [ python3_prog, check_file_access_prog.path() ],
 )
 
