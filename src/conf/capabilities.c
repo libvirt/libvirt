@@ -1596,22 +1596,22 @@ static int
 virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
 {
     int n;
-    unsigned long long memory;
     virCapsHostNUMACellCPU *cpus = NULL;
-    g_autoptr(virBitmap) cpumap = NULL;
-    g_autofree virCapsHostNUMACellSiblingInfo *siblings = NULL;
-    int nsiblings = 0;
-    g_autofree virCapsHostNUMACellPageInfo *pageinfo = NULL;
-    int npageinfo;
     int ret = -1;
     int ncpus = 0;
-    int cpu;
     int max_node;
 
     if ((max_node = virNumaGetMaxNode()) < 0)
         goto cleanup;
 
     for (n = 0; n <= max_node; n++) {
+        g_autoptr(virBitmap) cpumap = NULL;
+        g_autofree virCapsHostNUMACellSiblingInfo *siblings = NULL;
+        int nsiblings = 0;
+        g_autofree virCapsHostNUMACellPageInfo *pageinfo = NULL;
+        int npageinfo;
+        unsigned long long memory;
+        int cpu;
         size_t i;
 
         if ((ncpus = virNumaGetNodeCPUs(n, &cpumap)) < 0) {
@@ -1645,8 +1645,6 @@ virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
                                        ncpus, &cpus,
                                        nsiblings, &siblings,
                                        npageinfo, &pageinfo);
-        virBitmapFree(cpumap);
-        cpumap = NULL;
     }
 
     ret = 0;
