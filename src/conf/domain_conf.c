@@ -6709,14 +6709,18 @@ virDomainDeviceInfoParseXML(virDomainXMLOption *xmlopt,
 
 static int
 virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
-                                     xmlXPathContextPtr ctxt G_GNUC_UNUSED,
+                                     xmlXPathContextPtr ctxt,
                                      virDomainHostdevDef *def)
 {
-    bool got_product, got_vendor;
-    xmlNodePtr cur;
     virDomainHostdevSubsysUSB *usbsrc = &def->source.subsys.u.usb;
     g_autofree char *startupPolicy = NULL;
     g_autofree char *autoAddress = NULL;
+    xmlNodePtr vendorNode;
+    xmlNodePtr productNode;
+    xmlNodePtr addressNode;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    ctxt->node = node;
 
     if ((startupPolicy = virXMLPropString(node, "startupPolicy"))) {
         def->startupPolicy =
@@ -6734,99 +6738,42 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
 
     /* Product can validly be 0, so we need some extra help to determine
      * if it is uninitialized */
-    got_product = false;
-    got_vendor = false;
+    vendorNode = virXPathNode("./vendor", ctxt);
+    productNode = virXPathNode("./product", ctxt);
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (virXMLNodeNameEqual(cur, "vendor")) {
-                g_autofree char *vendor = virXMLPropString(cur, "id");
+    if (vendorNode) {
+        if (virXMLPropUInt(vendorNode, "id", 0,
+                           VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                           &usbsrc->vendor) < 0)
+            return -1;
 
-                if (vendor) {
-                    got_vendor = true;
-                    if (virStrToLong_ui(vendor, NULL, 0, &usbsrc->vendor) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("cannot parse vendor id %s"), vendor);
-                        return -1;
-                    }
-                } else {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   "%s", _("usb vendor needs id"));
-                    return -1;
-                }
-            } else if (virXMLNodeNameEqual(cur, "product")) {
-                g_autofree char *product = virXMLPropString(cur, "id");
-
-                if (product) {
-                    got_product = true;
-                    if (virStrToLong_ui(product, NULL, 0,
-                                        &usbsrc->product) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("cannot parse product %s"),
-                                       product);
-                        return -1;
-                    }
-                } else {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   "%s", _("usb product needs id"));
-                    return -1;
-                }
-            } else if (virXMLNodeNameEqual(cur, "address")) {
-                g_autofree char *bus = NULL;
-                g_autofree char *device = NULL;
-
-                bus = virXMLPropString(cur, "bus");
-                if (bus) {
-                    if (virStrToLong_ui(bus, NULL, 0, &usbsrc->bus) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("cannot parse bus %s"), bus);
-                        return -1;
-                    }
-                } else {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   "%s", _("usb address needs bus id"));
-                    return -1;
-                }
-
-                device = virXMLPropString(cur, "device");
-                if (device) {
-                    if (virStrToLong_ui(device, NULL, 0, &usbsrc->device) < 0) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("cannot parse device %s"),
-                                       device);
-                        return -1;
-                    }
-                } else {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("usb address needs device id"));
-                    return -1;
-                }
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unknown usb source type '%s'"),
-                               cur->name);
-                return -1;
-            }
+        if (!productNode) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("missing product"));
+            return -1;
         }
-        cur = cur->next;
     }
 
-    if (got_vendor && usbsrc->vendor == 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("vendor cannot be 0."));
-        return -1;
+    if (productNode) {
+        if (virXMLPropUInt(productNode, "id", 0,
+                           VIR_XML_PROP_REQUIRED, &usbsrc->product) < 0)
+            return -1;
+
+        if (!vendorNode) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("missing vendor"));
+            return -1;
+        }
     }
 
-    if (!got_vendor && got_product) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("missing vendor"));
-        return -1;
-    }
-    if (got_vendor && !got_product) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("missing product"));
-        return -1;
+    if ((addressNode = virXPathNode("./address", ctxt))) {
+        if (virXMLPropUInt(addressNode, "bus", 0,
+                           VIR_XML_PROP_REQUIRED, &usbsrc->bus) < 0)
+            return -1;
+
+        if (virXMLPropUInt(addressNode, "device", 0,
+                           VIR_XML_PROP_REQUIRED, &usbsrc->device) < 0)
+            return -1;
     }
 
     return 0;
