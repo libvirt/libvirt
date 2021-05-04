@@ -11531,11 +11531,13 @@ virDomainChrDefParseXML(virDomainXMLOption *xmlopt,
                         xmlNodePtr node,
                         unsigned int flags)
 {
-    xmlNodePtr cur;
+    xmlNodePtr target;
     const char *nodeName;
     virDomainChrDef *def;
-    bool seenTarget = false;
     g_autofree char *type = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    ctxt->node = node;
 
     if (!(def = virDomainChrDefNew(xmlopt)))
         return NULL;
@@ -11558,21 +11560,12 @@ virDomainChrDefParseXML(virDomainXMLOption *xmlopt,
         goto error;
     }
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (virXMLNodeNameEqual(cur, "target")) {
-                seenTarget = true;
-                if (virDomainChrDefParseTargetXML(def, cur, ctxt, flags) < 0)
-                    goto error;
-            }
-        }
-        cur = cur->next;
-    }
-
-    if (!seenTarget &&
-        ((def->targetType = virDomainChrDefaultTargetType(def->deviceType)) < 0))
+    if ((target = virXPathNode("./target", ctxt))) {
+        if (virDomainChrDefParseTargetXML(def, target, ctxt, flags) < 0)
+            goto error;
+    } else if ((def->targetType = virDomainChrDefaultTargetType(def->deviceType)) < 0) {
         goto error;
+    }
 
     if (virDomainChrSourceDefParseXML(def->source, node, flags, def,
                                       ctxt) < 0)
