@@ -6798,6 +6798,7 @@ virDomainHostdevSubsysPCIOrigStatesDefParseXML(xmlNodePtr node,
 
 static int
 virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
+                                     xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                                      virDomainHostdevDef *def,
                                      unsigned int flags)
 {
@@ -7347,7 +7348,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
 
     switch (def->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        if (virDomainHostdevSubsysPCIDefParseXML(sourcenode, def, flags) < 0)
+        if (virDomainHostdevSubsysPCIDefParseXML(sourcenode, ctxt, def, flags) < 0)
             return -1;
 
         backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT;
