@@ -6798,12 +6798,16 @@ virDomainHostdevSubsysPCIOrigStatesDefParseXML(xmlNodePtr node,
 
 static int
 virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
-                                     xmlXPathContextPtr ctxt G_GNUC_UNUSED,
+                                     xmlXPathContextPtr ctxt,
                                      virDomainHostdevDef *def,
                                      unsigned int flags)
 {
     g_autofree char *filtering = NULL;
-    xmlNodePtr cur;
+    xmlNodePtr address = NULL;
+    xmlNodePtr origstates = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    ctxt->node = node;
 
     if ((filtering = virXMLPropString(node, "writeFiltering"))) {
         int val;
@@ -6816,29 +6820,14 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
         def->writeFiltering = val;
     }
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (virXMLNodeNameEqual(cur, "address")) {
-                virPCIDeviceAddress *addr =
-                    &def->source.subsys.u.pci.addr;
+    if ((address = virXPathNode("./address", ctxt)) &&
+        virPCIDeviceAddressParseXML(address, &def->source.subsys.u.pci.addr) < 0)
+        return -1;
 
-                if (virPCIDeviceAddressParseXML(cur, addr) < 0)
-                    return -1;
-            } else if ((flags & VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES) &&
-                       virXMLNodeNameEqual(cur, "origstates")) {
-                virDomainHostdevOrigStates *states = &def->origstates;
-                if (virDomainHostdevSubsysPCIOrigStatesDefParseXML(cur, states) < 0)
-                    return -1;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unknown pci source type '%s'"),
-                               cur->name);
-                return -1;
-            }
-        }
-        cur = cur->next;
-    }
+    if ((flags & VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES) &&
+        (origstates = virXPathNode("./origstates", ctxt)) &&
+        virDomainHostdevSubsysPCIOrigStatesDefParseXML(origstates, &def->origstates) < 0)
+        return -1;
 
     return 0;
 }
