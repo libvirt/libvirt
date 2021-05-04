@@ -1666,85 +1666,65 @@ virBlkioDeviceArrayClear(virBlkioDevice *devices,
  */
 static int
 virDomainBlkioDeviceParseXML(xmlNodePtr root,
-                             xmlXPathContextPtr ctxt G_GNUC_UNUSED,
+                             xmlXPathContextPtr ctxt,
                              virBlkioDevice *dev)
 {
-    xmlNodePtr node;
     g_autofree char *path = NULL;
+    g_autofree char *weight = NULL;
+    g_autofree char *read_bytes_sec = NULL;
+    g_autofree char *write_bytes_sec = NULL;
+    g_autofree char *read_iops_sec = NULL;
+    g_autofree char *write_iops_sec = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
-    for (node = root->children; node != NULL; node = node->next) {
-        g_autofree char *c = NULL;
+    ctxt->node = root;
 
-        if (node->type != XML_ELEMENT_NODE)
-            continue;
-
-        if (!(c = virXMLNodeContentString(node)))
-            return -1;
-
-        if (virXMLNodeNameEqual(node, "path")) {
-            /* To avoid the need for explicit cleanup on failure,
-             * don't set dev->path until we're assured of
-             * success. Until then, store it in an autofree pointer.
-             */
-            if (!path)
-                path = g_steal_pointer(&c);
-            continue;
-        }
-
-        if (virXMLNodeNameEqual(node, "weight")) {
-            if (virStrToLong_ui(c, NULL, 10, &dev->weight) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("could not parse weight %s"),
-                               c);
-                return -1;
-            }
-            continue;
-        }
-
-        if (virXMLNodeNameEqual(node, "read_bytes_sec")) {
-            if (virStrToLong_ull(c, NULL, 10, &dev->rbps) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("could not parse read bytes sec %s"),
-                               c);
-                return -1;
-            }
-            continue;
-        }
-
-        if (virXMLNodeNameEqual(node, "write_bytes_sec")) {
-            if (virStrToLong_ull(c, NULL, 10, &dev->wbps) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("could not parse write bytes sec %s"),
-                               c);
-                return -1;
-            }
-            continue;
-        }
-
-        if (virXMLNodeNameEqual(node, "read_iops_sec")) {
-            if (virStrToLong_ui(c, NULL, 10, &dev->riops) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("could not parse read iops sec %s"),
-                               c);
-                return -1;
-            }
-            continue;
-        }
-
-        if (virXMLNodeNameEqual(node, "write_iops_sec")) {
-            if (virStrToLong_ui(c, NULL, 10, &dev->wiops) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("could not parse write iops sec %s"),
-                               c);
-                return -1;
-            }
-            continue;
-        }
-    }
-
-    if (!path) {
+    /* To avoid the need for explicit cleanup on failure,
+     * don't set dev->path until we're assured of
+     * success. Until then, store it in an autofree pointer.
+     */
+    if (!(path = virXPathString("string(./path)", ctxt))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("missing per-device path"));
+        return -1;
+    }
+
+    if ((weight = virXPathString("string(./weight)", ctxt)) &&
+        (virStrToLong_ui(weight, NULL, 10, &dev->weight) < 0)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("could not parse weight %s"), weight);
+        return -1;
+    }
+
+    if ((read_bytes_sec = virXPathString("string(./read_bytes_sec)", ctxt)) &&
+        (virStrToLong_ull(read_bytes_sec, NULL, 10, &dev->rbps) < 0)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("could not parse read bytes sec %s"),
+                       read_bytes_sec);
+        return -1;
+    }
+
+    if ((write_bytes_sec = virXPathString("string(./write_bytes_sec)", ctxt)) &&
+        (virStrToLong_ull(write_bytes_sec, NULL, 10, &dev->wbps) < 0)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("could not parse write bytes sec %s"),
+                       write_bytes_sec);
+        return -1;
+    }
+
+    if ((read_iops_sec = virXPathString("string(./read_iops_sec)", ctxt)) &&
+        (virStrToLong_ui(read_iops_sec, NULL, 10, &dev->riops) < 0)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("could not parse read iops sec %s"),
+                       read_iops_sec);
+        return -1;
+    }
+
+    if ((write_iops_sec = virXPathString("string(./write_iops_sec)", ctxt)) &&
+        (virStrToLong_ui(write_iops_sec, NULL, 10, &dev->wiops) < 0)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("could not parse write iops sec %s"),
+                       write_iops_sec);
         return -1;
     }
 
