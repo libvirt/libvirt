@@ -14856,48 +14856,24 @@ virDomainMemoryDefParseXML(virDomainXMLOption *xmlopt,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr node;
     virDomainMemoryDef *def;
-    int val;
     g_autofree char *tmp = NULL;
 
     def = g_new0(virDomainMemoryDef, 1);
 
     ctxt->node = memdevNode;
 
-    if (!(tmp = virXMLPropString(memdevNode, "model"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing memory model"));
+    if (virXMLPropEnum(memdevNode, "model", virDomainMemoryModelTypeFromString,
+                       VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                       &def->model) < 0)
         goto error;
-    }
 
-    if ((val = virDomainMemoryModelTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid memory model '%s'"), tmp);
+    if (virXMLPropEnum(memdevNode, "access", virDomainMemoryAccessTypeFromString,
+                       VIR_XML_PROP_NONZERO, &def->access) < 0)
         goto error;
-    }
-    VIR_FREE(tmp);
-    def->model = val;
 
-    if ((tmp = virXMLPropString(memdevNode, "access"))) {
-        if ((val = virDomainMemoryAccessTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid access mode '%s'"), tmp);
-            goto error;
-        }
-
-        def->access = val;
-    }
-    VIR_FREE(tmp);
-
-    if ((tmp = virXMLPropString(memdevNode, "discard"))) {
-        if ((val = virTristateBoolTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid discard value '%s'"), tmp);
-            goto error;
-        }
-
-        def->discard = val;
-    }
-    VIR_FREE(tmp);
+    if (virXMLPropTristateBool(memdevNode, "discard", VIR_XML_PROP_NONE,
+                               &def->discard) < 0)
+        goto error;
 
     /* Extract NVDIMM UUID. */
     if (def->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
@@ -14910,7 +14886,6 @@ virDomainMemoryDefParseXML(virDomainXMLOption *xmlopt,
             goto error;
         }
     }
-    VIR_FREE(tmp);
 
     /* source */
     if ((node = virXPathNode("./source", ctxt)) &&
