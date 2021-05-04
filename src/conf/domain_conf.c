@@ -11021,6 +11021,7 @@ virDomainChrTargetModelFromString(int devtype,
 static int
 virDomainChrDefParseTargetXML(virDomainChrDef *def,
                               xmlNodePtr cur,
+                              xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                               unsigned int flags)
 {
     xmlNodePtr child;
@@ -11560,7 +11561,7 @@ virDomainChrDefParseXML(virDomainXMLOption *xmlopt,
         if (cur->type == XML_ELEMENT_NODE) {
             if (virXMLNodeNameEqual(cur, "target")) {
                 seenTarget = true;
-                if (virDomainChrDefParseTargetXML(def, cur, flags) < 0)
+                if (virDomainChrDefParseTargetXML(def, cur, ctxt, flags) < 0)
                     goto error;
             }
         }
