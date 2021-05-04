@@ -158,11 +158,6 @@ x64-debian-sid-container:
   variables:
     NAME: debian-sid
 
-x64-fedora-32-container:
-  extends: .container_job
-  variables:
-    NAME: fedora-32
-
 x64-fedora-33-container:
   extends: .container_job
   variables:
@@ -355,14 +350,6 @@ x64-centos-stream-8:
     - x64-centos-stream-8-container
   variables:
     NAME: centos-stream-8
-    RPM: skip
-
-x64-fedora-32:
-  extends: .native_build_job
-  needs:
-    - x64-fedora-32-container
-  variables:
-    NAME: fedora-32
     RPM: skip
 
 x64-fedora-33:
