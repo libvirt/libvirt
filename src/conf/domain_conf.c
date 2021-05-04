@@ -18580,19 +18580,9 @@ virDomainResctrlMonDefParse(virDomainDef *def,
         }
 
         if (tag == VIR_RESCTRL_MONITOR_TYPE_CACHE) {
-            tmp = virXMLPropString(nodes[i], "level");
-            if (!tmp) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Missing monitor attribute 'level'"));
+            if (virXMLPropUInt(nodes[i], "level", 10, VIR_XML_PROP_REQUIRED,
+                               &level) < 0)
                 goto cleanup;
-            }
-
-            if (virStrToLong_uip(tmp, NULL, 10, &level) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid monitor attribute 'level' value '%s'"),
-                               tmp);
-                goto cleanup;
-            }
 
             if (level != VIR_DOMAIN_RESCTRL_MONITOR_CACHELEVEL) {
                 virReportError(VIR_ERR_XML_ERROR,
@@ -18600,8 +18590,6 @@ virDomainResctrlMonDefParse(virDomainDef *def,
                                level);
                 goto cleanup;
             }
-
-            VIR_FREE(tmp);
         }
 
         if (virDomainResctrlParseVcpus(def, nodes[i], &domresmon->vcpus) < 0)
