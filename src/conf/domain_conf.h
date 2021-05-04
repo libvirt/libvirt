@@ -2716,7 +2716,7 @@ struct _virDomainDef {
     size_t maxvcpus;
     /* set if the vcpu definition was specified individually */
     bool individualvcpus;
-    int placement_mode;
+    virDomainCpuPlacementMode placement_mode;
     virBitmap *cpumask;
 
     size_t niothreadids;

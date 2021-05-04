@@ -18057,13 +18057,15 @@ virDomainVcpuParse(virDomainDef *def,
 
         tmp = virXMLPropString(vcpuNode, "placement");
         if (tmp) {
-            if ((def->placement_mode =
+            int placement_mode;
+            if ((placement_mode =
                  virDomainCpuPlacementModeTypeFromString(tmp)) < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Unsupported CPU placement mode '%s'"),
                                tmp);
                 return -1;
             }
+            def->placement_mode = placement_mode;
             VIR_FREE(tmp);
         } else {
             def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
