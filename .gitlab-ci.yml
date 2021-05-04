@@ -168,6 +168,11 @@ x64-fedora-33-container:
   variables:
     NAME: fedora-33
 
+x64-fedora-34-container:
+  extends: .container_job
+  variables:
+    NAME: fedora-34
+
 x64-fedora-rawhide-container:
   extends: .container_job
   variables:
@@ -366,6 +371,13 @@ x64-fedora-33:
     - x64-fedora-33-container
   variables:
     NAME: fedora-33
+
+x64-fedora-34:
+  extends: .native_build_job
+  needs:
+    - x64-fedora-34-container
+  variables:
+    NAME: fedora-34
 
 x64-fedora-rawhide:
   extends: .native_build_job
