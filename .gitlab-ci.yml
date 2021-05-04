@@ -423,6 +423,16 @@ x64-freebsd-12-build:
     UPDATE_COMMAND: pkg update
     INSTALL_COMMAND: pkg install -y
 
+x64-freebsd-13-build:
+  extends: .cirrus_build_job
+  variables:
+    NAME: freebsd-13
+    CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
+    CIRRUS_VM_IMAGE_SELECTOR: image_family
+    CIRRUS_VM_IMAGE_NAME: freebsd-13-0
+    UPDATE_COMMAND: pkg update
+    INSTALL_COMMAND: pkg install -y
+
 x64-macos-11-build:
   extends: .cirrus_build_job
   variables:
