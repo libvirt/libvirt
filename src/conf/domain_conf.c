@@ -18441,53 +18441,20 @@ virDomainCachetuneDefParseCache(xmlXPathContextPtr ctxt,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     unsigned int level;
     unsigned int cache;
-    int type;
+    virCacheType type;
     unsigned long long size;
-    g_autofree char *tmp = NULL;
 
     ctxt->node = node;
 
-    tmp = virXMLPropString(node, "id");
-    if (!tmp) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Missing cachetune attribute 'id'"));
+    if (virXMLPropUInt(node, "id", 10, VIR_XML_PROP_REQUIRED, &cache) < 0)
         return -1;
-    }
-    if (virStrToLong_uip(tmp, NULL, 10, &cache) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid cachetune attribute 'id' value '%s'"),
-                       tmp);
-        return -1;
-    }
-    VIR_FREE(tmp);
 
-    tmp = virXMLPropString(node, "level");
-    if (!tmp) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Missing cachetune attribute 'level'"));
+    if (virXMLPropUInt(node, "level", 10, VIR_XML_PROP_REQUIRED, &level) < 0)
         return -1;
-    }
-    if (virStrToLong_uip(tmp, NULL, 10, &level) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid cachetune attribute 'level' value '%s'"),
-                       tmp);
-        return -1;
-    }
-    VIR_FREE(tmp);
 
-    tmp = virXMLPropString(node, "type");
-    if (!tmp) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Missing cachetune attribute 'type'"));
+    if (virXMLPropEnum(node, "type", virCacheTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &type) < 0)
         return -1;
-    }
-    type = virCacheTypeFromString(tmp);
-    if (type < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid cachetune attribute 'type' value '%s'"),
-                       tmp);
-        return -1;
-    }
 
     if (virParseScaledValue("./@size", "./@unit",
                             ctxt, &size, 1024,
