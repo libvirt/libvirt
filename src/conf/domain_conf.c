@@ -14629,39 +14629,24 @@ static int
 virDomainPerfEventDefParseXML(virDomainPerfDef *perf,
                               xmlNodePtr node)
 {
-    int event;
-    g_autofree char *name = NULL;
-    g_autofree char *enabled = NULL;
+    virPerfEventType name;
+    virTristateBool enabled;
 
-    if (!(name = virXMLPropString(node, "name"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s", _("missing perf event name"));
+    if (virXMLPropEnum(node, "name", virPerfEventTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &name) < 0)
         return -1;
-    }
 
-    if ((event = virPerfEventTypeFromString(name)) < 0) {
+    if (virXMLPropTristateBool(node, "enabled", VIR_XML_PROP_REQUIRED, &enabled) < 0)
+        return -1;
+
+    if (perf->events[name] != VIR_TRISTATE_BOOL_ABSENT) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("'unsupported perf event '%s'"), name);
+                       _("perf event '%s' was already specified"),
+                       virPerfEventTypeToString(name));
         return -1;
     }
 
-    if (perf->events[event] != VIR_TRISTATE_BOOL_ABSENT) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("perf event '%s' was already specified"), name);
-        return -1;
-    }
-
-    if (!(enabled = virXMLPropString(node, "enabled"))) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("missing state of perf event '%s'"), name);
-        return -1;
-    }
-
-    if ((perf->events[event] = virTristateBoolTypeFromString(enabled)) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid state '%s' of perf event '%s'"),
-                       enabled, name);
-        return -1;
-    }
+    perf->events[name] = enabled;
 
     return 0;
 }
