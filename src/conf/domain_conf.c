@@ -8041,7 +8041,8 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
 /* Parse the XML definition for a lease
  */
 static virDomainLeaseDef *
-virDomainLeaseDefParseXML(xmlNodePtr node)
+virDomainLeaseDefParseXML(xmlNodePtr node,
+                          xmlXPathContextPtr ctxt G_GNUC_UNUSED)
 {
     virDomainLeaseDef *def;
     xmlNodePtr cur;
@@ -15465,7 +15466,7 @@ virDomainDeviceDefParse(const char *xmlStr,
             return NULL;
         break;
     case VIR_DOMAIN_DEVICE_LEASE:
-        if (!(dev->data.lease = virDomainLeaseDefParseXML(node)))
+        if (!(dev->data.lease = virDomainLeaseDefParseXML(node, ctxt)))
             return NULL;
         break;
     case VIR_DOMAIN_DEVICE_FS:
@@ -20233,7 +20234,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n)
         def->leases = g_new0(virDomainLeaseDef *, n);
     for (i = 0; i < n; i++) {
-        virDomainLeaseDef *lease = virDomainLeaseDefParseXML(nodes[i]);
+        virDomainLeaseDef *lease = virDomainLeaseDefParseXML(nodes[i], ctxt);
         if (!lease)
             goto error;
 
