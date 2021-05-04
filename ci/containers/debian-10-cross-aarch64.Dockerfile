@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile --cross aarch64 debian-10 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/6552fd8885423cfc383a58255eca542937f7d4ea
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/1d4e10a04c6a0d29302003244a9dc4dc3c9d06f0
 
 FROM docker.io/library/debian:10-slim
 
@@ -38,7 +38,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             numad \
             open-iscsi \
             parted \
-            perl \
+            perl-base \
             pkgconf \
             policykit-1 \
             python3 \

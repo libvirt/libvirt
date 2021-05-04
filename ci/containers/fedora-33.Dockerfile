@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile fedora-33 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/6552fd8885423cfc383a58255eca542937f7d4ea
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/1d4e10a04c6a0d29302003244a9dc4dc3c9d06f0
 
 FROM registry.fedoraproject.org/fedora:33
 
@@ -79,7 +79,7 @@ exec "$@"' > /usr/bin/nosync && \
         numad \
         parted \
         parted-devel \
-        perl \
+        perl-base \
         pkgconfig \
         polkit \
         python3 \

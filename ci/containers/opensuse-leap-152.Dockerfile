@@ -1,8 +1,8 @@
 # THIS FILE WAS AUTO-GENERATED
 #
-#  $ lcitool dockerfile opensuse-152 libvirt
+#  $ lcitool dockerfile opensuse-leap-152 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/6552fd8885423cfc383a58255eca542937f7d4ea
+# https://gitlab.com/libvirt/libvirt-ci/-/commit/1d4e10a04c6a0d29302003244a9dc4dc3c9d06f0
 
 FROM registry.opensuse.org/opensuse/leap:15.2
 
@@ -68,7 +68,7 @@ RUN zypper update -y && \
            open-iscsi \
            parted \
            parted-devel \
-           perl \
+           perl-base \
            pkgconfig \
            polkit \
            python3-base \
