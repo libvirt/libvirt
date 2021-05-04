@@ -39,7 +39,15 @@
 
 int virOnce(virOnceControl *once, virOnceFunc init)
 {
-    return pthread_once(&once->once, init);
+    int ret;
+
+    ret = pthread_once(&once->once, init);
+    if (ret != 0) {
+        errno = ret;
+        return -1;
+    }
+
+    return 0;
 }
 
 
