@@ -859,10 +859,10 @@ typedef enum {
 
 struct _virDomainFSDef {
     int type;
-    int fsdriver; /* enum virDomainFSDriverType */
+    virDomainFSDriverType fsdriver;
     int accessmode; /* enum virDomainFSAccessMode */
-    int wrpolicy; /* enum virDomainFSWrpolicy */
     int format; /* virStorageFileFormat */
+    virDomainFSWrpolicy wrpolicy;
     int model; /* virDomainFSModel */
     unsigned int fmode;
     unsigned int dmode;

@@ -9679,7 +9679,8 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virDomainFSDef *def;
-    xmlNodePtr cur;
+    xmlNodePtr driver_node = NULL;
+    xmlNodePtr source_node = NULL;
     g_autofree char *type = NULL;
     g_autofree char *fsdriver = NULL;
     g_autofree char *source = NULL;
@@ -9773,55 +9774,52 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
                             1, ULLONG_MAX, false) < 0)
         goto error;
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (!source && !sock &&
-                virXMLNodeNameEqual(cur, "source")) {
-                sock = virXMLPropString(cur, "socket");
-                if (def->type == VIR_DOMAIN_FS_TYPE_MOUNT ||
-                    def->type == VIR_DOMAIN_FS_TYPE_BIND) {
-                    source = virXMLPropString(cur, "dir");
-                } else if (def->type == VIR_DOMAIN_FS_TYPE_FILE) {
-                    source = virXMLPropString(cur, "file");
-                } else if (def->type == VIR_DOMAIN_FS_TYPE_BLOCK) {
-                    source = virXMLPropString(cur, "dev");
-                } else if (def->type == VIR_DOMAIN_FS_TYPE_TEMPLATE) {
-                    source = virXMLPropString(cur, "name");
-                } else if (def->type == VIR_DOMAIN_FS_TYPE_RAM) {
-                    usage = virXMLPropString(cur, "usage");
-                    units = virXMLPropString(cur, "units");
-                } else if (def->type == VIR_DOMAIN_FS_TYPE_VOLUME) {
-                    def->src->type = VIR_STORAGE_TYPE_VOLUME;
-                    if (virDomainDiskSourcePoolDefParse(cur, &def->src->srcpool) < 0)
-                        goto error;
-                }
-            } else if (!target &&
-                       virXMLNodeNameEqual(cur, "target")) {
-                target = virXMLPropString(cur, "dir");
-            } else if (virXMLNodeNameEqual(cur, "readonly")) {
-                def->readonly = true;
-            } else if (virXMLNodeNameEqual(cur, "driver")) {
-                if (!fsdriver)
-                    fsdriver = virXMLPropString(cur, "type");
-                if (!wrpolicy)
-                    wrpolicy = virXMLPropString(cur, "wrpolicy");
-                if (!format)
-                    format = virXMLPropString(cur, "format");
-
-                if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
-                    goto error;
-            }
+    if ((source_node = virXPathNode("./source", ctxt))) {
+        sock = virXMLPropString(source_node, "socket");
+        if (def->type == VIR_DOMAIN_FS_TYPE_MOUNT ||
+            def->type == VIR_DOMAIN_FS_TYPE_BIND) {
+            source = virXMLPropString(source_node, "dir");
+        } else if (def->type == VIR_DOMAIN_FS_TYPE_FILE) {
+            source = virXMLPropString(source_node, "file");
+        } else if (def->type == VIR_DOMAIN_FS_TYPE_BLOCK) {
+            source = virXMLPropString(source_node, "dev");
+        } else if (def->type == VIR_DOMAIN_FS_TYPE_TEMPLATE) {
+            source = virXMLPropString(source_node, "name");
+        } else if (def->type == VIR_DOMAIN_FS_TYPE_RAM) {
+            usage = virXMLPropString(source_node, "usage");
+            units = virXMLPropString(source_node, "units");
+        } else if (def->type == VIR_DOMAIN_FS_TYPE_VOLUME) {
+            def->src->type = VIR_STORAGE_TYPE_VOLUME;
+            if (virDomainDiskSourcePoolDefParse(source_node, &def->src->srcpool) < 0)
+                goto error;
         }
-        cur = cur->next;
     }
 
-    if (fsdriver) {
-        if ((def->fsdriver = virDomainFSDriverTypeFromString(fsdriver)) <= 0) {
+    target = virXPathString("string(./target/@dir)", ctxt);
+
+    if (virXPathNode("./readonly", ctxt))
+        def->readonly = true;
+
+    if ((driver_node = virXPathNode("./driver", ctxt))) {
+        if (virXMLPropEnum(driver_node, "type",
+                           virDomainFSDriverTypeFromString,
+                           VIR_XML_PROP_NONE, &def->fsdriver) < 0)
+            goto error;
+
+        if (virXMLPropEnum(driver_node, "wrpolicy",
+                           virDomainFSWrpolicyTypeFromString,
+                           VIR_XML_PROP_NONE, &def->wrpolicy) < 0)
+            goto error;
+
+        if ((format = virXMLPropString(driver_node, "format")) &&
+            ((def->format = virStorageFileFormatTypeFromString(format)) <= 0)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown fs driver type '%s'"), fsdriver);
+                           _("unknown driver format value '%s'"), format);
             goto error;
         }
+
+        if (virDomainVirtioOptionsParseXML(driver_node, &def->virtio) < 0)
+            goto error;
     }
 
     if (def->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
@@ -9890,24 +9888,6 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
             }
             def->flock = val;
         }
-    }
-
-    if (format) {
-        if ((def->format = virStorageFileFormatTypeFromString(format)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown driver format value '%s'"), format);
-            goto error;
-        }
-    }
-
-    if (wrpolicy) {
-        if ((def->wrpolicy = virDomainFSWrpolicyTypeFromString(wrpolicy)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown filesystem write policy '%s'"), wrpolicy);
-            goto error;
-        }
-    } else {
-        def->wrpolicy = VIR_DOMAIN_FS_WRPOLICY_DEFAULT;
     }
 
     if (source == NULL && def->type != VIR_DOMAIN_FS_TYPE_RAM
