@@ -12655,12 +12655,28 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDef *def,
                                   xmlXPathContextPtr ctxt,
                                   unsigned int flags)
 {
-    xmlNodePtr cur;
     int defaultModeVal;
+    g_autofree xmlNodePtr *node_list = NULL;
+    int n = 0;
+    size_t i = 0;
+    int value = 0;
     g_autofree char *port = virXMLPropString(node, "port");
     g_autofree char *tlsPort = virXMLPropString(node, "tlsPort");
     g_autofree char *autoport = virXMLPropString(node, "autoport");
     g_autofree char *defaultMode = virXMLPropString(node, "defaultMode");
+    g_autofree char *compression = NULL;
+    g_autofree char *jpeg_compression = NULL;
+    g_autofree char *zlib_compression = NULL;
+    g_autofree char *playback_compression = NULL;
+    g_autofree char *streaming_mode = NULL;
+    g_autofree char *copypaste = NULL;
+    g_autofree char *filetransfer_enable = NULL;
+    g_autofree char *gl_enable = NULL;
+    g_autofree char *mouse_mode = NULL;
+    g_autofree char *rendernode = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    ctxt->node = node;
 
     if (virDomainGraphicsListensParseXML(def, node, ctxt, flags) < 0)
         return -1;
@@ -12716,207 +12732,115 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDef *def,
                                          def->type) < 0)
         return -1;
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (virXMLNodeNameEqual(cur, "channel")) {
-                int nameval, modeval;
-                g_autofree char *name = NULL;
-                g_autofree char *mode = NULL;
+    if ((n = virXPathNodeSet("./channel", ctxt, &node_list)) < 0)
+        return -1;
 
-                name = virXMLPropString(cur, "name");
-                mode = virXMLPropString(cur, "mode");
+    for (i = 0; i < n; i++) {
+        unsigned int name;
+        unsigned int mode;
 
-                if (!name || !mode) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("spice channel missing name/mode"));
-                    return -1;
-                }
+        if (virXMLPropEnum(node_list[i], "name",
+                           virDomainGraphicsSpiceChannelNameTypeFromString,
+                           VIR_XML_PROP_NONE, &name) < 0)
+            return -1;
 
-                if ((nameval = virDomainGraphicsSpiceChannelNameTypeFromString(name)) < 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown spice channel name %s"),
-                                   name);
-                    return -1;
-                }
-                if ((modeval = virDomainGraphicsSpiceChannelModeTypeFromString(mode)) < 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown spice channel mode %s"),
-                                   mode);
-                    return -1;
-                }
+        if (virXMLPropEnum(node_list[i], "mode",
+                           virDomainGraphicsSpiceChannelModeTypeFromString,
+                           VIR_XML_PROP_NONE, &mode) < 0)
+            return -1;
 
-                def->data.spice.channels[nameval] = modeval;
-            } else if (virXMLNodeNameEqual(cur, "image")) {
-                int compressionVal;
-                g_autofree char *compression = virXMLPropString(cur, "compression");
+        def->data.spice.channels[name] = mode;
+    }
 
-                if (!compression) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("spice image missing compression"));
-                    return -1;
-                }
-
-                if ((compressionVal =
-                     virDomainGraphicsSpiceImageCompressionTypeFromString(compression)) <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown spice image compression %s"),
-                                   compression);
-                    return -1;
-                }
-
-                def->data.spice.image = compressionVal;
-            } else if (virXMLNodeNameEqual(cur, "jpeg")) {
-                int compressionVal;
-                g_autofree char *compression = virXMLPropString(cur, "compression");
-
-                if (!compression) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("spice jpeg missing compression"));
-                    return -1;
-                }
-
-                if ((compressionVal =
-                     virDomainGraphicsSpiceJpegCompressionTypeFromString(compression)) <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown spice jpeg compression %s"),
-                                   compression);
-                    return -1;
-                }
-
-                def->data.spice.jpeg = compressionVal;
-            } else if (virXMLNodeNameEqual(cur, "zlib")) {
-                int compressionVal;
-                g_autofree char *compression = virXMLPropString(cur, "compression");
-
-                if (!compression) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("spice zlib missing compression"));
-                    return -1;
-                }
-
-                if ((compressionVal =
-                     virDomainGraphicsSpiceZlibCompressionTypeFromString(compression)) <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown spice zlib compression %s"),
-                                   compression);
-                    return -1;
-                }
-
-                def->data.spice.zlib = compressionVal;
-            } else if (virXMLNodeNameEqual(cur, "playback")) {
-                int compressionVal;
-                g_autofree char *compression = virXMLPropString(cur, "compression");
-
-                if (!compression) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("spice playback missing compression"));
-                    return -1;
-                }
-
-                if ((compressionVal =
-                     virTristateSwitchTypeFromString(compression)) <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("unknown spice playback compression"));
-                    return -1;
-                }
-
-                def->data.spice.playback = compressionVal;
-            } else if (virXMLNodeNameEqual(cur, "streaming")) {
-                int modeVal;
-                g_autofree char *mode = virXMLPropString(cur, "mode");
-
-                if (!mode) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("spice streaming missing mode"));
-                    return -1;
-                }
-                if ((modeVal =
-                     virDomainGraphicsSpiceStreamingModeTypeFromString(mode)) <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("unknown spice streaming mode"));
-                    return -1;
-                }
-
-                def->data.spice.streaming = modeVal;
-            } else if (virXMLNodeNameEqual(cur, "clipboard")) {
-                int copypasteVal;
-                g_autofree char *copypaste = virXMLPropString(cur, "copypaste");
-
-                if (!copypaste) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("spice clipboard missing copypaste"));
-                    return -1;
-                }
-
-                if ((copypasteVal =
-                     virTristateBoolTypeFromString(copypaste)) <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown copypaste value '%s'"), copypaste);
-                    return -1;
-                }
-
-                def->data.spice.copypaste = copypasteVal;
-            } else if (virXMLNodeNameEqual(cur, "filetransfer")) {
-                int enableVal;
-                g_autofree char *enable = virXMLPropString(cur, "enable");
-
-                if (!enable) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("spice filetransfer missing enable"));
-                    return -1;
-                }
-
-                if ((enableVal =
-                     virTristateBoolTypeFromString(enable)) <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown enable value '%s'"), enable);
-                    return -1;
-                }
-
-                def->data.spice.filetransfer = enableVal;
-            } else if (virXMLNodeNameEqual(cur, "gl")) {
-                int enableVal;
-                g_autofree char *enable = virXMLPropString(cur, "enable");
-                g_autofree char *rendernode = virXMLPropString(cur, "rendernode");
-
-                if (!enable) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("spice gl element missing enable"));
-                    return -1;
-                }
-
-                if ((enableVal =
-                     virTristateBoolTypeFromString(enable)) <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown enable value '%s'"), enable);
-                    return -1;
-                }
-
-                def->data.spice.gl = enableVal;
-                def->data.spice.rendernode = g_steal_pointer(&rendernode);
-
-            } else if (virXMLNodeNameEqual(cur, "mouse")) {
-                int modeVal;
-                g_autofree char *mode = virXMLPropString(cur, "mode");
-
-                if (!mode) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("spice mouse missing mode"));
-                    return -1;
-                }
-
-                if ((modeVal = virDomainGraphicsSpiceMouseModeTypeFromString(mode)) <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown mouse mode value '%s'"),
-                                   mode);
-                    return -1;
-                }
-
-                def->data.spice.mousemode = modeVal;
-            }
+    if ((compression = virXPathString("string(./image/@compression)", ctxt))) {
+        if ((value =
+            virDomainGraphicsSpiceImageCompressionTypeFromString(compression)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown spice image compression %s"), compression);
+            return -1;
         }
-        cur = cur->next;
+        def->data.spice.image = value;
+    }
+
+    if ((jpeg_compression = virXPathString("string(./jpeg/@compression)", ctxt))) {
+        if ((value =
+             virDomainGraphicsSpiceJpegCompressionTypeFromString(jpeg_compression)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown spice jpeg compression %s"),
+                           jpeg_compression);
+            return -1;
+        }
+        def->data.spice.jpeg = value;
+    }
+
+    if ((zlib_compression = virXPathString("string(./zlib/@compression)", ctxt))) {
+        if ((value =
+             virDomainGraphicsSpiceZlibCompressionTypeFromString(zlib_compression)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown spice zlib compression %s"),
+                           zlib_compression);
+            return -1;
+        }
+        def->data.spice.zlib = value;
+    }
+
+    if ((playback_compression = virXPathString("string(./playback/@compression)", ctxt))) {
+        if ((value = virTristateSwitchTypeFromString(playback_compression)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("unknown spice playback compression"));
+            return -1;
+        }
+        def->data.spice.playback = value;
+    }
+
+    if ((streaming_mode = virXPathString("string(./streaming/@mode)", ctxt))) {
+        if ((value =
+             virDomainGraphicsSpiceStreamingModeTypeFromString(streaming_mode)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("unknown spice streaming mode"));
+            return -1;
+        }
+        def->data.spice.streaming = value;
+    }
+
+    if ((copypaste = virXPathString("string(./clipboard/@copypaste)", ctxt))) {
+        if ((value = virTristateBoolTypeFromString(copypaste)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown copypaste value '%s'"), copypaste);
+            return -1;
+        }
+        def->data.spice.copypaste = value;
+    }
+
+    if ((filetransfer_enable = virXPathString("string(./filetransfer/@enable)", ctxt))) {
+        if ((value = virTristateBoolTypeFromString(filetransfer_enable)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown enable value '%s'"),
+                           filetransfer_enable);
+            return -1;
+        }
+        def->data.spice.filetransfer = value;
+    }
+
+    if ((gl_enable = virXPathString("string(./gl/@enable)", ctxt))) {
+        rendernode = virXPathString("string(./gl/@rendernode)", ctxt);
+
+        if ((value = virTristateBoolTypeFromString(gl_enable)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown enable value '%s'"), gl_enable);
+            return -1;
+        }
+        def->data.spice.gl = value;
+        def->data.spice.rendernode = g_steal_pointer(&rendernode);
+    }
+
+    if ((mouse_mode = virXPathString("string(./mouse/@mode)", ctxt))) {
+        if ((value = virDomainGraphicsSpiceMouseModeTypeFromString(mouse_mode)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown mouse mode value '%s'"), mouse_mode);
+            return -1;
+        }
+        def->data.spice.mousemode = value;
     }
 
     return 0;
