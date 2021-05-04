@@ -11308,112 +11308,119 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDef *def,
                               virDomainChrDef *chr_def,
                               xmlXPathContextPtr ctxt)
 {
-    bool logParsed = false;
-    bool protocolParsed = false;
-    int sourceParsed = 0;
+    g_autofree xmlNodePtr *logs = NULL;
+    int nlogs = 0;
+    g_autofree xmlNodePtr *protocols = NULL;
+    int nprotocols = 0;
+    g_autofree xmlNodePtr *sources = NULL;
+    int nsources = 0;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
-    for (; cur; cur = cur->next) {
-        if (cur->type != XML_ELEMENT_NODE)
-            continue;
+        ctxt->node = cur;
 
-        if (virXMLNodeNameEqual(cur, "source")) {
-            /* Parse only the first source element since only one is used
-             * for chardev devices, the only exception is UDP type, where
-             * user can specify two source elements. */
-            if (sourceParsed >= 1 && def->type != VIR_DOMAIN_CHR_TYPE_UDP) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("only one source element is allowed for "
-                                 "character device"));
-                goto error;
-            } else if (sourceParsed >= 2) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("only two source elements are allowed for "
-                                 "character device"));
-                goto error;
-            }
-            sourceParsed++;
-
-            switch ((virDomainChrType) def->type) {
-            case VIR_DOMAIN_CHR_TYPE_FILE:
-                if (virDomainChrSourceDefParseFile(def, cur) < 0)
-                    goto error;
-                break;
-
-            case VIR_DOMAIN_CHR_TYPE_PTY:
-                /* PTY path is only parsed from live xml.  */
-                if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
-                    def->data.file.path = virXMLPropString(cur, "path");
-                break;
-
-            case VIR_DOMAIN_CHR_TYPE_DEV:
-            case VIR_DOMAIN_CHR_TYPE_PIPE:
-                def->data.file.path = virXMLPropString(cur, "path");
-                break;
-
-            case VIR_DOMAIN_CHR_TYPE_UNIX:
-                if (virDomainChrSourceDefParseUnix(def, cur, ctxt) < 0)
-                    goto error;
-                break;
-
-            case VIR_DOMAIN_CHR_TYPE_UDP:
-                if (virDomainChrSourceDefParseUDP(def, cur) < 0)
-                    goto error;
-                break;
-
-            case VIR_DOMAIN_CHR_TYPE_TCP:
-                if (virDomainChrSourceDefParseTCP(def, cur, ctxt, flags) < 0)
-                    goto error;
-                break;
-
-            case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
-                def->data.spiceport.channel = virXMLPropString(cur, "channel");
-                break;
-
-            case VIR_DOMAIN_CHR_TYPE_NMDM:
-                def->data.nmdm.master = virXMLPropString(cur, "master");
-                def->data.nmdm.slave = virXMLPropString(cur, "slave");
-                break;
-
-            case VIR_DOMAIN_CHR_TYPE_LAST:
-            case VIR_DOMAIN_CHR_TYPE_NULL:
-            case VIR_DOMAIN_CHR_TYPE_VC:
-            case VIR_DOMAIN_CHR_TYPE_STDIO:
-            case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
-                break;
-            }
-
-            /* Check for an optional seclabel override in <source/>. */
-            if (chr_def) {
-                VIR_XPATH_NODE_AUTORESTORE(ctxt)
-                ctxt->node = cur;
-                if (virSecurityDeviceLabelDefParseXML(&def->seclabels,
-                                                      &def->nseclabels,
-                                                      ctxt,
-                                                      flags) < 0) {
-                    goto error;
-                }
-            }
-        } else if (virXMLNodeNameEqual(cur, "log")) {
-            if (logParsed) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("only one protocol element is allowed for "
-                                 "character device"));
-                goto error;
-            }
-            logParsed = true;
-            if (virDomainChrSourceDefParseLog(def, cur) < 0)
-                goto error;
-        } else if (virXMLNodeNameEqual(cur, "protocol")) {
-            if (protocolParsed) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("only one log element is allowed for "
-                                 "character device"));
-                goto error;
-            }
-            protocolParsed = true;
-            if (virDomainChrSourceDefParseProtocol(def, cur) < 0)
-                goto error;
+    if ((nsources = virXPathNodeSet("./source", ctxt, &sources)) < 0) {
+        goto error;
+    } else if (nsources > 0) {
+        /* Parse only the first source element since only one is used
+         * for chardev devices, the only exception is UDP type, where
+         * user can specify two source elements. */
+        if (nsources > 1 && def->type != VIR_DOMAIN_CHR_TYPE_UDP) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("only one source element is allowed for "
+                             "character device"));
+            goto error;
+        } else if (nsources > 2) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("only two source elements are allowed for "
+                             "character device"));
+            goto error;
         }
+
+        switch ((virDomainChrType) def->type) {
+        case VIR_DOMAIN_CHR_TYPE_FILE:
+            if (virDomainChrSourceDefParseFile(def, sources[0]) < 0)
+                goto error;
+            break;
+
+        case VIR_DOMAIN_CHR_TYPE_PTY:
+            /* PTY path is only parsed from live xml.  */
+            if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
+                def->data.file.path = virXMLPropString(sources[0], "path");
+            break;
+
+        case VIR_DOMAIN_CHR_TYPE_DEV:
+        case VIR_DOMAIN_CHR_TYPE_PIPE:
+            def->data.file.path = virXMLPropString(sources[0], "path");
+            break;
+
+        case VIR_DOMAIN_CHR_TYPE_UNIX:
+            if (virDomainChrSourceDefParseUnix(def, sources[0], ctxt) < 0)
+                goto error;
+            break;
+
+        case VIR_DOMAIN_CHR_TYPE_UDP:
+            if ((virDomainChrSourceDefParseUDP(def, sources[0]) < 0) ||
+                (nsources == 2 && virDomainChrSourceDefParseUDP(def, sources[1]) < 0))
+                goto error;
+            break;
+
+        case VIR_DOMAIN_CHR_TYPE_TCP:
+            if (virDomainChrSourceDefParseTCP(def, sources[0], ctxt, flags) < 0)
+                goto error;
+            break;
+
+        case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+            def->data.spiceport.channel = virXMLPropString(sources[0], "channel");
+            break;
+
+        case VIR_DOMAIN_CHR_TYPE_NMDM:
+            def->data.nmdm.master = virXMLPropString(sources[0], "master)");
+            def->data.nmdm.slave = virXMLPropString(sources[0], "slave)");
+            break;
+
+        case VIR_DOMAIN_CHR_TYPE_LAST:
+        case VIR_DOMAIN_CHR_TYPE_NULL:
+        case VIR_DOMAIN_CHR_TYPE_VC:
+        case VIR_DOMAIN_CHR_TYPE_STDIO:
+        case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+            break;
+        }
+
+        /* Check for an optional seclabel override in <source/>. */
+        if (chr_def) {
+            xmlNodePtr tmp = ctxt->node;
+
+            ctxt->node = sources[0];
+            if (virSecurityDeviceLabelDefParseXML(&def->seclabels, &def->nseclabels,
+                                                  ctxt, flags) < 0) {
+                goto error;
+            }
+            ctxt->node = tmp;
+        }
+    }
+
+    if ((nlogs = virXPathNodeSet("./log", ctxt, &logs)) < 0) {
+        goto error;
+    } else if (nlogs == 1) {
+        if (virDomainChrSourceDefParseLog(def, logs[0]) < 0)
+            goto error;
+    } else if (nlogs > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only one log element is allowed for "
+                         "character device"));
+        goto error;
+    }
+
+    if ((nprotocols = virXPathNodeSet("./protocol", ctxt, &protocols)) < 0) {
+        goto error;
+    } else if (nprotocols == 1) {
+        if (virDomainChrSourceDefParseProtocol(def, protocols[0]) < 0)
+            goto error;
+    } else if (nprotocols > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only one protocol element is allowed for "
+                         "character device"));
+        goto error;
     }
 
     return 0;
@@ -11567,7 +11574,7 @@ virDomainChrDefParseXML(virDomainXMLOption *xmlopt,
         ((def->targetType = virDomainChrDefaultTargetType(def->deviceType)) < 0))
         goto error;
 
-    if (virDomainChrSourceDefParseXML(def->source, node->children, flags, def,
+    if (virDomainChrSourceDefParseXML(def->source, node, flags, def,
                                       ctxt) < 0)
         goto error;
 
@@ -11691,7 +11698,7 @@ virDomainSmartcardDefParseXML(virDomainXMLOption *xmlopt,
         }
 
         cur = node->children;
-        if (virDomainChrSourceDefParseXML(def->data.passthru, cur, flags,
+        if (virDomainChrSourceDefParseXML(def->data.passthru, node, flags,
                                           NULL, ctxt) < 0)
             return NULL;
 
@@ -13644,7 +13651,7 @@ virDomainRNGDefParseXML(virDomainXMLOption *xmlopt,
         }
 
         if (virDomainChrSourceDefParseXML(def->source.chardev,
-                                          backends[0]->children, flags,
+                                          backends[0], flags,
                                           NULL, ctxt) < 0)
             goto error;
         break;
@@ -14651,7 +14658,6 @@ virDomainRedirdevDefParseXML(virDomainXMLOption *xmlopt,
                              xmlXPathContextPtr ctxt,
                              unsigned int flags)
 {
-    xmlNodePtr cur;
     virDomainRedirdevDef *def;
     g_autofree char *bus = NULL;
     g_autofree char *type = NULL;
@@ -14685,10 +14691,9 @@ virDomainRedirdevDefParseXML(virDomainXMLOption *xmlopt,
         goto error;
     }
 
-    cur = node->children;
     /* boot gets parsed in virDomainDeviceInfoParseXML
      * source gets parsed in virDomainChrSourceDefParseXML */
-    if (virDomainChrSourceDefParseXML(def->source, cur, flags,
+    if (virDomainChrSourceDefParseXML(def->source, node, flags,
                                       NULL, ctxt) < 0)
         goto error;
 
