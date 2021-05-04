@@ -11021,16 +11021,18 @@ virDomainChrTargetModelFromString(int devtype,
 static int
 virDomainChrDefParseTargetXML(virDomainChrDef *def,
                               xmlNodePtr cur,
-                              xmlXPathContextPtr ctxt G_GNUC_UNUSED,
+                              xmlXPathContextPtr ctxt,
                               unsigned int flags)
 {
-    xmlNodePtr child;
     unsigned int port;
     g_autofree char *targetType = virXMLPropString(cur, "type");
     g_autofree char *targetModel = NULL;
     g_autofree char *addrStr = NULL;
     g_autofree char *portStr = NULL;
     g_autofree char *stateStr = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    ctxt->node = cur;
 
     if ((def->targetType =
          virDomainChrTargetTypeFromString(def->deviceType,
@@ -11041,14 +11043,7 @@ virDomainChrDefParseTargetXML(virDomainChrDef *def,
         return -1;
     }
 
-    child = cur->children;
-    while (child != NULL) {
-        if (child->type == XML_ELEMENT_NODE &&
-            virXMLNodeNameEqual(child, "model")) {
-            targetModel = virXMLPropString(child, "name");
-        }
-        child = child->next;
-    }
+    targetModel = virXPathString("string(./model/@name)", ctxt);
 
     if ((def->targetModel =
          virDomainChrTargetModelFromString(def->deviceType,
