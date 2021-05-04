@@ -9410,9 +9410,11 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
 {
     g_autoptr(virDomainControllerDef) def = NULL;
     virDomainControllerType type = 0;
-    xmlNodePtr cur = NULL;
-    bool processedModel = false;
-    bool processedTarget = false;
+    xmlNodePtr driver = NULL;
+    g_autofree xmlNodePtr *targetNodes = NULL;
+    int ntargetNodes = 0;
+    g_autofree xmlNodePtr *modelNodes = NULL;
+    int nmodelNodes = 0;
     int numaNode = -1;
     int ports = -1;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
@@ -9448,94 +9450,86 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
         def->idx = idxVal;
     }
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (virXMLNodeNameEqual(cur, "driver")) {
-                if (virXMLPropUInt(cur, "queues", 10, VIR_XML_PROP_NONE,
-                                   &def->queues) < 0)
-                    return NULL;
+    if ((driver = virXPathNode("./driver", ctxt))) {
+        if (virXMLPropUInt(driver, "queues", 10, VIR_XML_PROP_NONE,
+                           &def->queues) < 0)
+            return NULL;
 
-                if (virXMLPropUInt(cur, "cmd_per_lun", 10, VIR_XML_PROP_NONE,
-                                   &def->cmd_per_lun) < 0)
-                    return NULL;
+        if (virXMLPropUInt(driver, "cmd_per_lun", 10, VIR_XML_PROP_NONE,
+                           &def->cmd_per_lun) < 0)
+            return NULL;
 
-                if (virXMLPropUInt(cur, "max_sectors", 10, VIR_XML_PROP_NONE,
-                                   &def->max_sectors) < 0)
-                    return NULL;
+        if (virXMLPropUInt(driver, "max_sectors", 10, VIR_XML_PROP_NONE,
+                           &def->max_sectors) < 0)
+            return NULL;
 
-                if (virXMLPropTristateSwitch(cur, "ioeventfd",
-                                             VIR_XML_PROP_NONE,
-                                             &def->ioeventfd) < 0)
-                    return NULL;
+        if (virXMLPropTristateSwitch(driver, "ioeventfd",
+                                     VIR_XML_PROP_NONE,
+                                     &def->ioeventfd) < 0)
+            return NULL;
 
-                if (virXMLPropUInt(cur, "iothread", 10, VIR_XML_PROP_NONE,
-                                   &def->iothread) < 0)
-                    return NULL;
+        if (virXMLPropUInt(driver, "iothread", 10, VIR_XML_PROP_NONE,
+                           &def->iothread) < 0)
+            return NULL;
 
-                if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
-                    return NULL;
-            } else if (virXMLNodeNameEqual(cur, "model")) {
-                if (processedModel) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("Multiple <model> elements in "
-                                     "controller definition not allowed"));
-                    return NULL;
-                }
+        if (virDomainVirtioOptionsParseXML(driver, &def->virtio) < 0)
+            return NULL;
+    }
 
-                if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-                    if (virXMLPropEnum(cur, "name",
-                                       virDomainControllerPCIModelNameTypeFromString,
-                                       VIR_XML_PROP_NONE,
-                                       &def->opts.pciopts.modelName) < 0)
-                        return NULL;
-                }
-
-                processedModel = true;
-            } else if (virXMLNodeNameEqual(cur, "target")) {
-                if (processedTarget) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("Multiple <target> elements in "
-                                     "controller definition not allowed"));
-                    return NULL;
-                }
-                if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-                    if (virXMLPropInt(cur, "chassisNr", 0, VIR_XML_PROP_NONE,
-                                      &def->opts.pciopts.chassisNr) < 0)
-                        return NULL;
-
-                    if (virXMLPropInt(cur, "chassis", 0, VIR_XML_PROP_NONE,
-                                      &def->opts.pciopts.chassis) < 0)
-                        return NULL;
-
-                    if (virXMLPropInt(cur, "port", 0, VIR_XML_PROP_NONE,
-                                      &def->opts.pciopts.port) < 0)
-                        return NULL;
-
-                    if (virXMLPropInt(cur, "busNr", 0, VIR_XML_PROP_NONE,
-                                      &def->opts.pciopts.busNr) < 0)
-                        return NULL;
-
-                    if (virXMLPropTristateSwitch(cur, "hotplug",
-                                                 VIR_XML_PROP_NONE,
-                                                 &def->opts.pciopts.hotplug) < 0)
-                        return NULL;
-
-                    if ((rc = virXMLPropInt(cur, "index", 0, VIR_XML_PROP_NONE,
-                                      &def->opts.pciopts.targetIndex)) < 0)
-                        return NULL;
-
-                    if ((rc == 1) && def->opts.pciopts.targetIndex == -1) {
-                        virReportError(VIR_ERR_XML_ERROR,
-                                       _("Invalid target index '%i' in PCI controller"),
-                                       def->opts.pciopts.targetIndex);
-                    }
-                }
-
-                processedTarget = true;
-            }
+    nmodelNodes = virXPathNodeSet("./model", ctxt, &modelNodes);
+    if (nmodelNodes == 1) {
+        if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
+            if (virXMLPropEnum(modelNodes[0], "name",
+                               virDomainControllerPCIModelNameTypeFromString,
+                               VIR_XML_PROP_NONE,
+                               &def->opts.pciopts.modelName) < 0)
+                return NULL;
         }
-        cur = cur->next;
+    } else if (nmodelNodes > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Multiple <model> elements in "
+                         "controller definition not allowed"));
+        return NULL;
+    }
+
+    ntargetNodes = virXPathNodeSet("./target", ctxt, &targetNodes);
+    if (ntargetNodes == 1) {
+        if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
+        if (virXMLPropInt(targetNodes[0], "chassisNr", 0, VIR_XML_PROP_NONE,
+                      &def->opts.pciopts.chassisNr) < 0)
+            return NULL;
+
+        if (virXMLPropInt(targetNodes[0], "chassis", 0, VIR_XML_PROP_NONE,
+                          &def->opts.pciopts.chassis) < 0)
+            return NULL;
+
+        if (virXMLPropInt(targetNodes[0], "port", 0, VIR_XML_PROP_NONE,
+                          &def->opts.pciopts.port) < 0)
+            return NULL;
+
+        if (virXMLPropInt(targetNodes[0], "busNr", 0, VIR_XML_PROP_NONE,
+                          &def->opts.pciopts.busNr) < 0)
+            return NULL;
+
+        if (virXMLPropTristateSwitch(targetNodes[0], "hotplug",
+                                     VIR_XML_PROP_NONE,
+                                     &def->opts.pciopts.hotplug) < 0)
+            return NULL;
+
+        if ((rc = virXMLPropInt(targetNodes[0], "index", 0, VIR_XML_PROP_NONE,
+                          &def->opts.pciopts.targetIndex)) < 0)
+            return NULL;
+
+        if ((rc == 1) && def->opts.pciopts.targetIndex == -1)
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid target index '%i' in PCI controller"),
+                           def->opts.pciopts.targetIndex);
+        }
+    } else if (ntargetNodes > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Multiple <target> elements in "
+                         "controller definition not allowed"));
+        return NULL;
     }
 
     /* node is parsed differently from target attributes because
