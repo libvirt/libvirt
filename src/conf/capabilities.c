@@ -1598,10 +1598,10 @@ virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
     int n;
     unsigned long long memory;
     virCapsHostNUMACellCPU *cpus = NULL;
-    virBitmap *cpumap = NULL;
-    virCapsHostNUMACellSiblingInfo *siblings = NULL;
+    g_autoptr(virBitmap) cpumap = NULL;
+    g_autofree virCapsHostNUMACellSiblingInfo *siblings = NULL;
     int nsiblings = 0;
-    virCapsHostNUMACellPageInfo *pageinfo = NULL;
+    g_autofree virCapsHostNUMACellPageInfo *pageinfo = NULL;
     int npageinfo;
     int ret = -1;
     int ncpus = 0;
@@ -1652,11 +1652,8 @@ virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
     ret = 0;
 
  cleanup:
-    virBitmapFree(cpumap);
     virCapabilitiesClearHostNUMACellCPUTopology(cpus, ncpus);
     VIR_FREE(cpus);
-    VIR_FREE(siblings);
-    VIR_FREE(pageinfo);
     return ret;
 }
 
