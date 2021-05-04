@@ -14313,34 +14313,24 @@ virDomainVideoResolutionDefParseXML(xmlNodePtr node)
 
 static virDomainVideoDriverDef *
 virDomainVideoDriverDefParseXML(xmlNodePtr node,
-                                xmlXPathContextPtr ctxt G_GNUC_UNUSED)
+                                xmlXPathContextPtr ctxt)
 {
-    xmlNodePtr cur;
     virDomainVideoDriverDef *def;
-    int val;
-    g_autofree char *vgaconf = NULL;
+    unsigned int val;
+    xmlNodePtr driver = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (!vgaconf &&
-                virXMLNodeNameEqual(cur, "driver")) {
-                vgaconf = virXMLPropString(cur, "vgaconf");
-            }
-        }
-        cur = cur->next;
-    }
+    ctxt->node = node;
 
-    if (!vgaconf)
+    if (!(driver = virXPathNode("./driver", ctxt)))
+        return NULL;
+
+    if (virXMLPropEnum(driver, "vgaconf",
+                       virDomainVideoVGAConfTypeFromString,
+                       VIR_XML_PROP_NONZERO, &val) < 0)
         return NULL;
 
     def = g_new0(virDomainVideoDriverDef, 1);
-
-    if ((val = virDomainVideoVGAConfTypeFromString(vgaconf)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown vgaconf value '%s'"), vgaconf);
-        return def;
-    }
     def->vgaconf = val;
 
     return def;

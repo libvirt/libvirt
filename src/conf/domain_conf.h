@@ -1665,7 +1665,7 @@ struct _virDomainVideoResolutionDef {
 };
 
 struct _virDomainVideoDriverDef {
-   virDomainVideoVGAConf vgaconf;
+    virDomainVideoVGAConf vgaconf;
     char *vhost_user_binary;
 };
 
