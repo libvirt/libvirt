@@ -133,11 +133,6 @@ stages:
 
 # Native container build jobs
 
-x64-centos-7-container:
-  extends: .container_job
-  variables:
-    NAME: centos-7
-
 x64-centos-8-container:
   extends: .container_job
   variables:
@@ -315,17 +310,6 @@ x64-debian-sid:
     - x64-debian-sid-container
   variables:
     NAME: debian-sid
-
-x64-centos-7:
-  extends: .native_build_job
-  needs:
-    - x64-centos-7-container
-  variables:
-    NAME: centos-7
-    # meson dist fails on CentOS 7 because of old git that fails to clone
-    # from shallow git repository which is done when running meson dist
-    DIST: skip
-    RPM: skip
 
 x64-centos-8:
   extends: .native_build_job
