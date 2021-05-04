@@ -14312,7 +14312,8 @@ virDomainVideoResolutionDefParseXML(xmlNodePtr node)
 }
 
 static virDomainVideoDriverDef *
-virDomainVideoDriverDefParseXML(xmlNodePtr node)
+virDomainVideoDriverDefParseXML(xmlNodePtr node,
+                                xmlXPathContextPtr ctxt G_GNUC_UNUSED)
 {
     xmlNodePtr cur;
     virDomainVideoDriverDef *def;
@@ -14477,7 +14478,7 @@ virDomainVideoDefParseXML(virDomainXMLOption *xmlopt,
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info, flags) < 0)
         return NULL;
 
-    def->driver = virDomainVideoDriverDefParseXML(node);
+    def->driver = virDomainVideoDriverDefParseXML(node, ctxt);
 
     return g_steal_pointer(&def);
 }
