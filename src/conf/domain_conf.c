@@ -8042,53 +8042,42 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
  */
 static virDomainLeaseDef *
 virDomainLeaseDefParseXML(xmlNodePtr node,
-                          xmlXPathContextPtr ctxt G_GNUC_UNUSED)
+                          xmlXPathContextPtr ctxt)
 {
     virDomainLeaseDef *def;
-    xmlNodePtr cur;
     g_autofree char *lockspace = NULL;
     g_autofree char *key = NULL;
     g_autofree char *path = NULL;
-    g_autofree char *offset = NULL;
+    xmlNodePtr targetNode = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
+    ctxt->node = node;
     def = g_new0(virDomainLeaseDef, 1);
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (!key && virXMLNodeNameEqual(cur, "key")) {
-                if (!(key = virXMLNodeContentString(cur)))
-                    goto error;
-            } else if (!lockspace &&
-                       virXMLNodeNameEqual(cur, "lockspace")) {
-                if (!(lockspace = virXMLNodeContentString(cur)))
-                    goto error;
-            } else if (!path &&
-                       virXMLNodeNameEqual(cur, "target")) {
-                path = virXMLPropString(cur, "path");
-                offset = virXMLPropString(cur, "offset");
-            }
-        }
-        cur = cur->next;
-    }
-
-    if (!key) {
+    if (!(key = virXPathString("string(./key)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Missing 'key' element for lease"));
         goto error;
     }
-    if (!path) {
+
+    if (!(lockspace = virXPathString("string(./lockspace)", ctxt)))
+        goto error;
+
+    if (!(targetNode = virXPathNode("./target", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Missing 'target' element for lease"));
         goto error;
     }
 
-    if (offset &&
-        virStrToLong_ull(offset, NULL, 10, &def->offset) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Malformed lease target offset %s"), offset);
+    if (!(path = virXMLPropString(targetNode, "path"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Missing 'path' attribute to 'target' element for lease"));
         goto error;
     }
+
+    if (virXMLPropULongLong(targetNode, "offset", 10,
+                            VIR_XML_PROP_NONE, &def->offset) < 0)
+        goto error;
 
     def->key = g_steal_pointer(&key);
     def->lockspace = g_steal_pointer(&lockspace);
