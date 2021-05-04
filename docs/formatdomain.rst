@@ -744,8 +744,8 @@ CPU Tuning
    of element ``vcpu`` is not specified, the vCPU is pinned to all the physical
    CPUs by default. It contains two required attributes, the attribute ``vcpu``
    specifies vCPU id, and the attribute ``cpuset`` is same as attribute
-   ``cpuset`` of element ``vcpu``. (NB: Only qemu driver support) :since:`Since
-   0.9.0`
+   ``cpuset`` of element ``vcpu``.
+   :since:`QEMU driver support since 0.9.0, Xen driver support since 0.9.1`
 ``emulatorpin``
    The optional ``emulatorpin`` element specifies which of host physical CPUs
    the "emulator", a subset of a domain not including vCPU or iothreads will be
