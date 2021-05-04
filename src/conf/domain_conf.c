@@ -17135,24 +17135,10 @@ virDomainIOThreadPinDefParseXML(xmlNodePtr node,
     g_autofree char *tmp = NULL;
     g_autoptr(virBitmap) cpumask = NULL;
 
-    if (!(tmp = virXMLPropString(node, "iothread"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing iothread id in iothreadpin"));
+    if (virXMLPropUInt(node, "iothread", 10,
+                       VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                       &iothreadid) < 0)
         return -1;
-    }
-
-    if (virStrToLong_uip(tmp, NULL, 10, &iothreadid) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid setting for iothread '%s'"), tmp);
-        return -1;
-    }
-    VIR_FREE(tmp);
-
-    if (iothreadid == 0) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("zero is an invalid iothread id value"));
-        return -1;
-    }
 
     if (!(iothrid = virDomainIOThreadIDFind(def, iothreadid))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
