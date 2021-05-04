@@ -1648,6 +1648,7 @@ virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
 
  cleanup:
     virBitmapFree(cpumap);
+    virCapabilitiesClearHostNUMACellCPUTopology(cpus, ncpus);
     VIR_FREE(cpus);
     VIR_FREE(siblings);
     VIR_FREE(pageinfo);
