@@ -14505,7 +14505,7 @@ virDomainRedirFilterUSBVersionHelper(const char *version,
 static virDomainRedirFilterUSBDevDef *
 virDomainRedirFilterUSBDevDefParseXML(xmlNodePtr node)
 {
-    virDomainRedirFilterUSBDevDef *def;
+    g_autofree virDomainRedirFilterUSBDevDef *def = NULL;
     g_autofree char *version = NULL;
     virTristateBool allow;
 
@@ -14513,42 +14513,38 @@ virDomainRedirFilterUSBDevDefParseXML(xmlNodePtr node)
 
     def->usbClass = -1;
     if (virXMLPropInt(node, "class", 0, VIR_XML_PROP_NONE, &def->usbClass) < 0)
-        goto error;
+        return NULL;
 
     if (def->usbClass != -1 && def->usbClass &~ 0xFF) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid USB Class code 0x%x"), def->usbClass);
-        goto error;
+        return NULL;
     }
 
     def->vendor = -1;
     if (virXMLPropInt(node, "vendor", 0, VIR_XML_PROP_NONE, &def->vendor) < 0)
-        goto error;
+        return NULL;
 
     def->product = -1;
     if (virXMLPropInt(node, "product", 0, VIR_XML_PROP_NONE, &def->product) < 0)
-        goto error;
+        return NULL;
 
     version = virXMLPropString(node, "version");
     if (version) {
         if (STREQ(version, "-1"))
             def->version = -1;
         else if ((virDomainRedirFilterUSBVersionHelper(version, def)) < 0)
-            goto error;
+            return NULL;
     } else {
         def->version = -1;
     }
 
     if (virXMLPropTristateBool(node, "allow", VIR_XML_PROP_REQUIRED, &allow) < 0)
-        goto error;
+        return NULL;
 
     def->allow = allow == VIR_TRISTATE_BOOL_YES;
 
-    return def;
-
- error:
-    VIR_FREE(def);
-    return NULL;
+    return g_steal_pointer(&def);
 }
 
 static virDomainRedirFilterDef *
