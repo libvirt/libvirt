@@ -143,10 +143,10 @@ x64-centos-8-container:
   variables:
     NAME: centos-8
 
-x64-centos-stream-container:
+x64-centos-stream-8-container:
   extends: .container_job
   variables:
-    NAME: centos-stream
+    NAME: centos-stream-8
 
 x64-debian-10-container:
   extends: .container_job
@@ -173,10 +173,10 @@ x64-fedora-rawhide-container:
   variables:
     NAME: fedora-rawhide
 
-x64-opensuse-152-container:
+x64-opensuse-leap-152-container:
   extends: .container_job
   variables:
-    NAME: opensuse-152
+    NAME: opensuse-leap-152
 
 x64-ubuntu-1804-container:
   extends: .container_job
@@ -339,12 +339,12 @@ x64-centos-8-clang:
     CC: clang
     RPM: skip
 
-x64-centos-stream:
+x64-centos-stream-8:
   extends: .native_build_job
   needs:
-    - x64-centos-stream-container
+    - x64-centos-stream-8-container
   variables:
-    NAME: centos-stream
+    NAME: centos-stream-8
     RPM: skip
 
 x64-fedora-32:
@@ -378,12 +378,12 @@ x64-fedora-rawhide-clang:
     CC: clang
     RPM: skip
 
-x64-opensuse-152:
+x64-opensuse-leap-152:
   extends: .native_build_job
   needs:
-    - x64-opensuse-152-container
+    - x64-opensuse-leap-152-container
   variables:
-    NAME: opensuse-152
+    NAME: opensuse-leap-152
     RPM: skip
 
 x64-ubuntu-1804:
@@ -539,9 +539,9 @@ website:
 
 codestyle:
   stage: builds
-  image: $CI_REGISTRY_IMAGE/ci-opensuse-152:latest
+  image: $CI_REGISTRY_IMAGE/ci-opensuse-leap-152:latest
   needs:
-    - x64-opensuse-152-container
+    - x64-opensuse-leap-152-container
   before_script:
     - *script_variables
   script:
