@@ -178,6 +178,11 @@ x64-opensuse-leap-152-container:
   variables:
     NAME: opensuse-leap-152
 
+x64-opensuse-tumbleweed-container:
+  extends: .container_job
+  variables:
+    NAME: opensuse-tumbleweed
+
 x64-ubuntu-1804-container:
   extends: .container_job
   variables:
@@ -384,6 +389,14 @@ x64-opensuse-leap-152:
     - x64-opensuse-leap-152-container
   variables:
     NAME: opensuse-leap-152
+    RPM: skip
+
+x64-opensuse-tumbleweed:
+  extends: .native_build_job
+  needs:
+    - x64-opensuse-tumbleweed-container
+  variables:
+    NAME: opensuse-tumbleweed
     RPM: skip
 
 x64-ubuntu-1804:
