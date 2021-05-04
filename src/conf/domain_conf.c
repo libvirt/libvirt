@@ -6709,6 +6709,7 @@ virDomainDeviceInfoParseXML(virDomainXMLOption *xmlopt,
 
 static int
 virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
+                                     xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                                      virDomainHostdevDef *def)
 {
     bool got_product, got_vendor;
@@ -7435,7 +7436,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        if (virDomainHostdevSubsysUSBDefParseXML(sourcenode, def) < 0)
+        if (virDomainHostdevSubsysUSBDefParseXML(sourcenode, ctxt, def) < 0)
             return -1;
         break;
 
