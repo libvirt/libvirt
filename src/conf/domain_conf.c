@@ -11607,12 +11607,14 @@ virDomainSmartcardDefParseXML(virDomainXMLOption *xmlopt,
                               xmlXPathContextPtr ctxt,
                               unsigned int flags)
 {
-    xmlNodePtr cur;
     g_autoptr(virDomainSmartcardDef) def = NULL;
-    size_t i;
     g_autofree char *mode = NULL;
     g_autofree char *type = NULL;
+    g_autofree xmlNodePtr *certificates = NULL;
+    int n = 0;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
+    ctxt->node = node;
     def = g_new0(virDomainSmartcardDef, 1);
 
     mode = virXMLPropString(node, "mode");
@@ -11633,41 +11635,31 @@ virDomainSmartcardDefParseXML(virDomainXMLOption *xmlopt,
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
-        i = 0;
-        cur = node->children;
-        while (cur) {
-            if (cur->type == XML_ELEMENT_NODE &&
-                virXMLNodeNameEqual(cur, "certificate")) {
-                if (i == 3) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("host-certificates mode needs "
-                                     "exactly three certificates"));
-                    return NULL;
-                }
-                if (!(def->data.cert.file[i] = virXMLNodeContentString(cur)))
-                    return NULL;
-
-                i++;
-            } else if (cur->type == XML_ELEMENT_NODE &&
-                       virXMLNodeNameEqual(cur, "database") &&
-                       !def->data.cert.database) {
-                if (!(def->data.cert.database = virXMLNodeContentString(cur)))
-                    return NULL;
-
-                if (*def->data.cert.database != '/') {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("expecting absolute path: %s"),
-                                   def->data.cert.database);
-                    return NULL;
-                }
-            }
-            cur = cur->next;
-        }
-        if (i < 3) {
+        n = virXPathNodeSet("./certificate", ctxt, &certificates);
+        if (n != VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("host-certificates mode needs "
                              "exactly three certificates"));
             return NULL;
+        }
+
+        if (!(def->data.cert.file[0] = virXMLNodeContentString(certificates[0])) ||
+            !(def->data.cert.file[1] = virXMLNodeContentString(certificates[1])) ||
+            !(def->data.cert.file[2] = virXMLNodeContentString(certificates[2])))
+            return NULL;
+
+        if (virXPathNode("./database", ctxt) &&
+            !def->data.cert.database) {
+            if (!(def->data.cert.database =
+                  virXPathString("string(./database/text())", ctxt)))
+                return NULL;
+
+            if (*def->data.cert.database != '/') {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("expecting absolute path: %s"),
+                               def->data.cert.database);
+                return NULL;
+            }
         }
         break;
 
@@ -11690,7 +11682,6 @@ virDomainSmartcardDefParseXML(virDomainXMLOption *xmlopt,
             return NULL;
         }
 
-        cur = node->children;
         if (virDomainChrSourceDefParseXML(def->data.passthru, node, flags,
                                           NULL, ctxt) < 0)
             return NULL;
