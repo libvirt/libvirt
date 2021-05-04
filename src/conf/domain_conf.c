@@ -17089,17 +17089,8 @@ virDomainVcpuPinDefParseXML(virDomainDef *def,
     unsigned int vcpuid;
     g_autofree char *tmp = NULL;
 
-    if (!(tmp = virXMLPropString(node, "vcpu"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s", _("missing vcpu id in vcpupin"));
+    if (virXMLPropUInt(node, "vcpu", 10, VIR_XML_PROP_REQUIRED, &vcpuid) < 0)
         return -1;
-    }
-
-    if (virStrToLong_uip(tmp, NULL, 10, &vcpuid) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid setting for vcpu '%s'"), tmp);
-        return -1;
-    }
-    VIR_FREE(tmp);
 
     if (!(vcpu = virDomainDefGetVcpu(def, vcpuid))) {
         VIR_WARN("Ignoring vcpupin for missing vcpus");
