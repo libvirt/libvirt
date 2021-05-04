@@ -14343,10 +14343,11 @@ virDomainVideoDefParseXML(virDomainXMLOption *xmlopt,
                           unsigned int flags)
 {
     g_autoptr(virDomainVideoDef) def = NULL;
-    xmlNodePtr cur;
+    xmlNodePtr driver;
+    xmlNodePtr accel_node;
+    xmlNodePtr res_node;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *type = NULL;
-    g_autofree char *driver_name = NULL;
     g_autofree char *heads = NULL;
     g_autofree char *vram = NULL;
     g_autofree char *vram64 = NULL;
@@ -14359,51 +14360,27 @@ virDomainVideoDefParseXML(virDomainXMLOption *xmlopt,
 
     ctxt->node = node;
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (!type && !vram && !ram && !heads &&
-                virXMLNodeNameEqual(cur, "model")) {
-                xmlNodePtr child;
-                type = virXMLPropString(cur, "type");
-                ram = virXMLPropString(cur, "ram");
-                vram = virXMLPropString(cur, "vram");
-                vram64 = virXMLPropString(cur, "vram64");
-                vgamem = virXMLPropString(cur, "vgamem");
-                heads = virXMLPropString(cur, "heads");
+    if ((primary = virXPathString("string(./model/@primary)", ctxt)) != NULL)
+        ignore_value(virStringParseYesNo(primary, &def->primary));
 
-                if ((primary = virXMLPropString(cur, "primary")) != NULL) {
-                    ignore_value(virStringParseYesNo(primary, &def->primary));
-                    VIR_FREE(primary);
-                }
+    if ((accel_node = virXPathNode("./model/acceleration", ctxt)) &&
+        (def->accel = virDomainVideoAccelDefParseXML(accel_node)) == NULL)
+        return NULL;
 
-                child = cur->children;
-                while (child != NULL) {
-                    if (child->type == XML_ELEMENT_NODE) {
-                        if (def->accel == NULL &&
-                            virXMLNodeNameEqual(child, "acceleration")) {
-                            if ((def->accel = virDomainVideoAccelDefParseXML(child)) == NULL)
-                                return NULL;
-                        }
-                        if (def->res == NULL &&
-                            virXMLNodeNameEqual(child, "resolution")) {
-                            if ((def->res = virDomainVideoResolutionDefParseXML(child)) == NULL)
-                                return NULL;
-                        }
-                    }
-                    child = child->next;
-                }
-            }
-            if (virXMLNodeNameEqual(cur, "driver")) {
-                if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
-                    return NULL;
-                driver_name = virXMLPropString(cur, "name");
-            }
-        }
-        cur = cur->next;
+    if ((res_node = virXPathNode("./model/resolution", ctxt)) &&
+        (def->res = virDomainVideoResolutionDefParseXML(res_node)) == NULL)
+        return NULL;
+
+    if ((driver = virXPathNode("./driver", ctxt))) {
+        if (virXMLPropEnum(driver, "name",
+                           virDomainVideoBackendTypeFromString,
+                           VIR_XML_PROP_NONE, &def->backend) < 0)
+            return NULL;
+        if (virDomainVirtioOptionsParseXML(driver, &def->virtio) < 0)
+            return NULL;
     }
 
-    if (type) {
+    if ((type = virXPathString("string(./model/@type)", ctxt))) {
         if ((def->type = virDomainVideoTypeFromString(type)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown video model '%s'"), type);
@@ -14413,19 +14390,7 @@ virDomainVideoDefParseXML(virDomainXMLOption *xmlopt,
         def->type = VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
     }
 
-    if (driver_name) {
-        int backend;
-        if ((backend = virDomainVideoBackendTypeFromString(driver_name)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown video driver '%s'"), driver_name);
-            return NULL;
-        }
-        def->backend = backend;
-    } else {
-        def->backend = VIR_DOMAIN_VIDEO_BACKEND_TYPE_DEFAULT;
-    }
-
-    if (ram) {
+    if ((ram = virXPathString("string(./model/@ram)", ctxt))) {
         if (virStrToLong_uip(ram, NULL, 10, &def->ram) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse video ram '%s'"), ram);
@@ -14433,7 +14398,7 @@ virDomainVideoDefParseXML(virDomainXMLOption *xmlopt,
         }
     }
 
-    if (vram) {
+    if ((vram = virXPathString("string(./model/@vram)", ctxt))) {
         if (virStrToLong_uip(vram, NULL, 10, &def->vram) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse video vram '%s'"), vram);
@@ -14441,7 +14406,7 @@ virDomainVideoDefParseXML(virDomainXMLOption *xmlopt,
         }
     }
 
-    if (vram64) {
+    if ((vram64 = virXPathString("string(./model/@vram64)", ctxt))) {
         if (virStrToLong_uip(vram64, NULL, 10, &def->vram64) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse video vram64 '%s'"), vram64);
@@ -14449,7 +14414,7 @@ virDomainVideoDefParseXML(virDomainXMLOption *xmlopt,
         }
     }
 
-    if (vgamem) {
+    if ((vgamem = virXPathString("string(./model/@vgamem)", ctxt))) {
         if (virStrToLong_uip(vgamem, NULL, 10, &def->vgamem) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse video vgamem '%s'"), vgamem);
@@ -14457,7 +14422,7 @@ virDomainVideoDefParseXML(virDomainXMLOption *xmlopt,
         }
     }
 
-    if (heads) {
+    if ((heads = virXPathString("string(./model/@heads)", ctxt))) {
         if (virStrToLong_uip(heads, NULL, 10, &def->heads) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot parse video heads '%s'"), heads);
