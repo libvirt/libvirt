@@ -17870,37 +17870,15 @@ virDomainSchedulerParseCommonAttrs(xmlNodePtr node,
                                    virProcessSchedPolicy *policy,
                                    int *priority)
 {
-    int pol = 0;
-    g_autofree char *tmp = NULL;
-
-    if (!(tmp = virXMLPropString(node, "scheduler"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing scheduler attribute"));
+    if (virXMLPropEnum(node, "scheduler", virProcessSchedPolicyTypeFromString,
+                       VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                       policy) < 0)
         return -1;
-    }
 
-    if ((pol = virProcessSchedPolicyTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid scheduler attribute: '%s'"), tmp);
-        return -1;
-    }
-    *policy = pol;
-
-    VIR_FREE(tmp);
-
-    if (pol == VIR_PROC_POLICY_FIFO ||
-        pol == VIR_PROC_POLICY_RR) {
-        if (!(tmp = virXMLPropString(node, "priority"))) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing scheduler priority"));
+    if (*policy == VIR_PROC_POLICY_FIFO || *policy == VIR_PROC_POLICY_RR) {
+        if (virXMLPropInt(node, "priority", 10, VIR_XML_PROP_REQUIRED,
+                          priority) < 0)
             return -1;
-        }
-
-        if (virStrToLong_i(tmp, NULL, 10, priority) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Invalid value for element priority"));
-            return -1;
-        }
     }
 
     return 0;
