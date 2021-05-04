@@ -18044,32 +18044,16 @@ virDomainVcpuParse(virDomainDef *def,
         }
         VIR_FREE(tmp);
 
-        if ((tmp = virXMLPropString(vcpuNode, "current"))) {
-            if (virStrToLong_ui(tmp, NULL, 10, &vcpus) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("current vcpus count must be an integer"));
-                return -1;
-            }
-            VIR_FREE(tmp);
-        } else {
-            vcpus = maxvcpus;
-        }
+        vcpus = maxvcpus;
 
-        tmp = virXMLPropString(vcpuNode, "placement");
-        if (tmp) {
-            int placement_mode;
-            if ((placement_mode =
-                 virDomainCpuPlacementModeTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Unsupported CPU placement mode '%s'"),
-                               tmp);
-                return -1;
-            }
-            def->placement_mode = placement_mode;
-            VIR_FREE(tmp);
-        } else {
-            def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
-        }
+        if (virXMLPropUInt(vcpuNode, "current", 10, VIR_XML_PROP_NONE, &vcpus) < 0)
+            return -1;
+
+        def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
+        if (virXMLPropEnum(vcpuNode, "placement",
+                           virDomainCpuPlacementModeTypeFromString,
+                           VIR_XML_PROP_NONE, &def->placement_mode) < 0)
+            return -1;
 
         if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
             tmp = virXMLPropString(vcpuNode, "cpuset");
@@ -18100,18 +18084,11 @@ virDomainVcpuParse(virDomainDef *def,
 
         for (i = 0; i < n; i++) {
             virDomainVcpuDef *vcpu;
-            int state;
+            virTristateBool state;
             unsigned int id;
-            unsigned int order;
 
-            if (!(tmp = virXMLPropString(nodes[i], "id")) ||
-                virStrToLong_uip(tmp, NULL, 10, &id) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("missing or invalid vcpu id"));
+            if (virXMLPropUInt(nodes[i], "id", 10, VIR_XML_PROP_REQUIRED, &id) < 0)
                 return -1;
-            }
-
-            VIR_FREE(tmp);
 
             if (id >= def->maxvcpus) {
                 virReportError(VIR_ERR_XML_ERROR,
@@ -18122,41 +18099,20 @@ virDomainVcpuParse(virDomainDef *def,
 
             vcpu = virDomainDefGetVcpu(def, id);
 
-            if (!(tmp = virXMLPropString(nodes[i], "enabled"))) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("missing vcpu enabled state"));
+            if (virXMLPropTristateBool(nodes[i], "enabled",
+                                       VIR_XML_PROP_REQUIRED, &state) < 0)
                 return -1;
-            }
-
-            if ((state = virTristateBoolTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("invalid vcpu 'enabled' value '%s'"), tmp);
-                return -1;
-            }
-            VIR_FREE(tmp);
 
             vcpu->online = state == VIR_TRISTATE_BOOL_YES;
 
-            if ((tmp = virXMLPropString(nodes[i], "hotpluggable"))) {
-                int hotpluggable;
-                if ((hotpluggable = virTristateBoolTypeFromString(tmp)) < 0) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("invalid vcpu 'hotpluggable' value '%s'"), tmp);
-                    return -1;
-                }
-                vcpu->hotpluggable = hotpluggable;
-                VIR_FREE(tmp);
-            }
+            if (virXMLPropTristateBool(nodes[i], "hotpluggable",
+                                       VIR_XML_PROP_NONE,
+                                       &vcpu->hotpluggable) < 0)
+                return -1;
 
-            if ((tmp = virXMLPropString(nodes[i], "order"))) {
-                if (virStrToLong_uip(tmp, NULL, 10, &order) < 0) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("invalid vcpu order"));
-                    return -1;
-                }
-                vcpu->order = order;
-                VIR_FREE(tmp);
-            }
+            if (virXMLPropUInt(nodes[i], "order", 10, VIR_XML_PROP_NONE,
+                               &vcpu->order) < 0)
+                return -1;
         }
     } else {
         if (virDomainDefSetVcpus(def, vcpus) < 0)
