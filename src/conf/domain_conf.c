@@ -1666,6 +1666,7 @@ virBlkioDeviceArrayClear(virBlkioDevice *devices,
  */
 static int
 virDomainBlkioDeviceParseXML(xmlNodePtr root,
+                             xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                              virBlkioDevice *dev)
 {
     xmlNodePtr node;
@@ -19687,7 +19688,7 @@ virDomainDefTunablesParse(virDomainDef *def,
         def->blkio.devices = g_new0(virBlkioDevice, n);
 
     for (i = 0; i < n; i++) {
-        if (virDomainBlkioDeviceParseXML(nodes[i],
+        if (virDomainBlkioDeviceParseXML(nodes[i], ctxt,
                                          &def->blkio.devices[i]) < 0)
             return -1;
         def->blkio.ndevices++;
