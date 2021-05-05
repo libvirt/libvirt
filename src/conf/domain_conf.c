@@ -12739,12 +12739,12 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDef *def,
 
         if (virXMLPropEnum(node_list[i], "name",
                            virDomainGraphicsSpiceChannelNameTypeFromString,
-                           VIR_XML_PROP_NONE, &name) < 0)
+                           VIR_XML_PROP_REQUIRED, &name) < 0)
             return -1;
 
         if (virXMLPropEnum(node_list[i], "mode",
                            virDomainGraphicsSpiceChannelModeTypeFromString,
-                           VIR_XML_PROP_NONE, &mode) < 0)
+                           VIR_XML_PROP_REQUIRED, &mode) < 0)
             return -1;
 
         def->data.spice.channels[name] = mode;
