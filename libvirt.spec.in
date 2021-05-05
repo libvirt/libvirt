@@ -985,13 +985,6 @@ Libvirt plugin for NSS for translating domain names into IP addresses.
 %autosetup -S git_am
 
 %build
-
-%if 0%{?fedora} == 34
-    # binutils change in F34 broke linking of tests
-    # https://bugzilla.redhat.com/show_bug.cgi?id=1889763
-    %define _lto_cflags %{nil}
-%endif
-
 %if ! %{supported_platform}
 echo "This RPM requires either Fedora >= %{min_fedora} or RHEL >= %{min_rhel}"
 exit 1
