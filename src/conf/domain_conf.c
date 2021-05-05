@@ -14313,8 +14313,7 @@ static virDomainVideoDriverDef *
 virDomainVideoDriverDefParseXML(xmlNodePtr node,
                                 xmlXPathContextPtr ctxt)
 {
-    virDomainVideoDriverDef *def;
-    unsigned int val;
+    g_autofree virDomainVideoDriverDef *def = NULL;
     xmlNodePtr driver = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
@@ -14323,15 +14322,14 @@ virDomainVideoDriverDefParseXML(xmlNodePtr node,
     if (!(driver = virXPathNode("./driver", ctxt)))
         return NULL;
 
+    def = g_new0(virDomainVideoDriverDef, 1);
+
     if (virXMLPropEnum(driver, "vgaconf",
                        virDomainVideoVGAConfTypeFromString,
-                       VIR_XML_PROP_NONZERO, &val) < 0)
+                       VIR_XML_PROP_NONZERO, &def->vgaconf) < 0)
         return NULL;
 
-    def = g_new0(virDomainVideoDriverDef, 1);
-    def->vgaconf = val;
-
-    return def;
+    return g_steal_pointer(&def);
 }
 
 static virDomainVideoDef *
