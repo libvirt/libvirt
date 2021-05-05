@@ -12734,8 +12734,8 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDef *def,
         return -1;
 
     for (i = 0; i < n; i++) {
-        unsigned int name;
-        unsigned int mode;
+        virDomainGraphicsSpiceChannelName name;
+        virDomainGraphicsSpiceChannelMode mode;
 
         if (virXMLPropEnum(node_list[i], "name",
                            virDomainGraphicsSpiceChannelNameTypeFromString,
