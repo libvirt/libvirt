@@ -285,6 +285,56 @@ libxlMakeChrdevStr(virDomainChrDef *def, char **buf)
 }
 
 static int
+libxlSetVcpuAffinities(virDomainDef *def,
+                       libxl_ctx *ctx,
+                       libxl_domain_build_info *b_info)
+{
+    libxl_bitmap *vcpu_affinity_array;
+    unsigned int vcpuid;
+    unsigned int vcpu_idx = 0;
+    virDomainVcpuDef *vcpu;
+    bool has_vcpu_pin = false;
+
+    /* Get highest vcpuid with cpumask */
+    for (vcpuid = 0; vcpuid < b_info->max_vcpus; vcpuid++) {
+        vcpu = virDomainDefGetVcpu(def, vcpuid);
+        if (!vcpu)
+            continue;
+        if (!vcpu->cpumask)
+            continue;
+        vcpu_idx = vcpuid;
+        has_vcpu_pin = true;
+    }
+    /* Nothing to do */
+    if (!has_vcpu_pin)
+        return 0;
+
+    /* Adjust index */
+    vcpu_idx++;
+
+    b_info->num_vcpu_hard_affinity = vcpu_idx;
+    /* Will be released by libxl_domain_config_dispose */
+    b_info->vcpu_hard_affinity = g_new0(libxl_bitmap, vcpu_idx);
+    vcpu_affinity_array = b_info->vcpu_hard_affinity;
+
+    for (vcpuid = 0; vcpuid < vcpu_idx; vcpuid++) {
+        libxl_bitmap *map = &vcpu_affinity_array[vcpuid];
+        libxl_bitmap_init(map);
+        /* libxl owns the bitmap */
+        if (libxl_cpu_bitmap_alloc(ctx, map, 0))
+            return -1;
+        vcpu = virDomainDefGetVcpu(def, vcpuid);
+        /* Apply the given mask, or allow unhandled vcpus to run anywhere */
+        if (vcpu && vcpu->cpumask)
+            virBitmapToDataBuf(vcpu->cpumask, map->map, map->size);
+        else
+            libxl_bitmap_set_any(map);
+    }
+    libxl_defbool_set(&b_info->numa_placement, false);
+    return 0;
+}
+
+static int
 libxlMakeDomBuildInfo(virDomainDef *def,
                       libxlDriverConfig *cfg,
                       virCaps *caps,
@@ -320,6 +370,9 @@ libxlMakeDomBuildInfo(virDomainDef *def,
     libxl_bitmap_set_none(&b_info->avail_vcpus);
     for (i = 0; i < virDomainDefGetVcpus(def); i++)
         libxl_bitmap_set((&b_info->avail_vcpus), i);
+
+    if (libxlSetVcpuAffinities(def, ctx, b_info))
+        return -1;
 
     switch ((virDomainClockOffsetType) clock.offset) {
     case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
