@@ -5,12 +5,6 @@
 # or versions, but no effort will be made to ensure that going forward.
 %define min_fedora 33
 
-%if 0%{?fedora} && 0%{?fedora} >= %{min_fedora}
-    %define supported_platform 1
-%else
-    %define supported_platform 0
-%endif
-
 Name:           mingw-libvirt
 Version:        @VERSION@
 Release:        1%{?dist}
@@ -95,9 +89,9 @@ MinGW Windows libvirt virtualization library.
 %setup -q -n libvirt-%{version}
 
 %build
-%if ! %{supported_platform}
-echo "This RPM requires Fedora >= %{min_fedora}"
-exit 1
+%if 0%{?fedora} < %{min_fedora}
+    echo "This RPM requires Fedora >= %{min_fedora}"
+    exit 1
 %endif
 
 %mingw_meson \
