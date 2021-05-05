@@ -11,6 +11,8 @@ stages:
   export CCACHE_DIR="$CCACHE_BASEDIR/ccache"
   export CCACHE_MAXSIZE="500M"
   export PATH="$CCACHE_WRAPPERSDIR:$PATH"
+  export VIR_TEST_VERBOSE="1"
+  export VIR_TEST_DEBUG="1"
 
 # Common templates
 

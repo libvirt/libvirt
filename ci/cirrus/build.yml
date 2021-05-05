@@ -9,6 +9,8 @@ env:
   PKG_CONFIG_PATH: "@PKG_CONFIG_PATH@"
   PYTHON: "@PYTHON@"
   MAKE: "@MAKE@"
+  VIR_TEST_VERBOSE: "1"
+  VIR_TEST_DEBUG: "1"
 
 build_task:
   install_script:
