@@ -14326,7 +14326,7 @@ virDomainVideoDriverDefParseXML(xmlNodePtr node,
 
     if (virXMLPropEnum(driver, "vgaconf",
                        virDomainVideoVGAConfTypeFromString,
-                       VIR_XML_PROP_NONZERO, &def->vgaconf) < 0)
+                       VIR_XML_PROP_NONE, &def->vgaconf) < 0)
         return NULL;
 
     return g_steal_pointer(&def);
