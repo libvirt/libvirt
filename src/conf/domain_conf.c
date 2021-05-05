@@ -9682,12 +9682,10 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
     xmlNodePtr driver_node = NULL;
     xmlNodePtr source_node = NULL;
     g_autofree char *type = NULL;
-    g_autofree char *fsdriver = NULL;
     g_autofree char *source = NULL;
     g_autofree char *target = NULL;
     g_autofree char *format = NULL;
     g_autofree char *accessmode = NULL;
-    g_autofree char *wrpolicy = NULL;
     g_autofree char *usage = NULL;
     g_autofree char *units = NULL;
     g_autofree char *model = NULL;
