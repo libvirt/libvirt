@@ -11314,7 +11314,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDef *def,
     int nsources = 0;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
-        ctxt->node = cur;
+    ctxt->node = cur;
 
     if ((nsources = virXPathNodeSet("./source", ctxt, &sources)) < 0) {
         goto error;
@@ -11372,8 +11372,8 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDef *def,
             break;
 
         case VIR_DOMAIN_CHR_TYPE_NMDM:
-            def->data.nmdm.master = virXMLPropString(sources[0], "master)");
-            def->data.nmdm.slave = virXMLPropString(sources[0], "slave)");
+            def->data.nmdm.master = virXMLPropString(sources[0], "master");
+            def->data.nmdm.slave = virXMLPropString(sources[0], "slave");
             break;
 
         case VIR_DOMAIN_CHR_TYPE_LAST:
