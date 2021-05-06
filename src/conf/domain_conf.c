@@ -8923,9 +8923,7 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
                        VIR_XML_PROP_NONZERO, &def->discard) < 0)
         return -1;
 
-    if (virXMLPropUInt(cur, "iothread", 10,
-                       VIR_XML_PROP_NONE | VIR_XML_PROP_NONZERO,
-                       &def->iothread) < 0)
+    if (virXMLPropUInt(cur, "iothread", 10, VIR_XML_PROP_NONZERO, &def->iothread) < 0)
         return -1;
 
     if ((tmp = virXMLPropString(cur, "type"))) {
