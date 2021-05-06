@@ -3,10 +3,12 @@
 #
 
 # openvz/openvz_conf.h
+openvzCapsInit;
 openvzLocateConfFile;
 openvzReadConfigParam;
 openvzReadNetworkConf;
 openvzVEGetStringParam;
+openvzXMLOption;
 
 # Let emacs know we want case-insensitive sorting
 # Local Variables:
