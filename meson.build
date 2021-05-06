@@ -224,6 +224,9 @@ alloc_max = run_command(
   'print(min(2**(@0@ * 8 - 1) - 1, 2**(@1@ * 8) - 1))'.format(ptrdiff_max, size_max),
 )
 
+# sanitizer instrumentation may enlarge stack frames
+stack_frame_size = get_option('b_sanitize') == 'none' ? 4096 : 8192
+
 cc_flags += [
   '-fasynchronous-unwind-tables',
   '-fexceptions',
@@ -279,7 +282,7 @@ cc_flags += [
   '-Wformat-y2k',
   '-Wformat-zero-length',
   '-Wframe-address',
-  '-Wframe-larger-than=4096',
+  '-Wframe-larger-than=@0@'.format(stack_frame_size),
   '-Wfree-nonheap-object',
   '-Whsa',
   '-Wif-not-aligned',
