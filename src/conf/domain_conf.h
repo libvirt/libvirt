@@ -2531,6 +2531,7 @@ struct _virDomainIOThreadIDDef {
 };
 
 void virDomainIOThreadIDDefFree(virDomainIOThreadIDDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainIOThreadIDDef, virDomainIOThreadIDDefFree);
 
 
 struct _virDomainCputune {
