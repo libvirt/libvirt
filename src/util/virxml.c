@@ -562,11 +562,14 @@ virXMLPropEnumInternal(xmlNodePtr node,
                        const char* name,
                        int (*strToInt)(const char*),
                        virXMLPropFlags flags,
-                       unsigned int *result)
+                       unsigned int *result,
+                       unsigned int defaultResult)
 
 {
     g_autofree char *tmp = NULL;
     int ret;
+
+    *result = defaultResult;
 
     if (!(tmp = virXMLPropString(node, name))) {
         if (!(flags & VIR_XML_PROP_REQUIRED))
@@ -615,10 +618,8 @@ virXMLPropTristateBool(xmlNodePtr node,
 {
     flags |= VIR_XML_PROP_NONZERO;
 
-    *result = VIR_TRISTATE_BOOL_ABSENT;
-
     return virXMLPropEnumInternal(node, name, virTristateBoolTypeFromString,
-                                  flags, result);
+                                  flags, result, VIR_TRISTATE_BOOL_ABSENT);
 }
 
 
@@ -645,10 +646,8 @@ virXMLPropTristateSwitch(xmlNodePtr node,
 {
     flags |= VIR_XML_PROP_NONZERO;
 
-    *result = VIR_TRISTATE_SWITCH_ABSENT;
-
     return virXMLPropEnumInternal(node, name, virTristateSwitchTypeFromString,
-                                  flags, result);
+                                  flags, result, VIR_TRISTATE_SWITCH_ABSENT);
 }
 
 
@@ -851,9 +850,7 @@ virXMLPropEnumDefault(xmlNodePtr node,
                       unsigned int *result,
                       unsigned int defaultResult)
 {
-    *result = defaultResult;
-
-    return virXMLPropEnumInternal(node, name, strToInt, flags, result);
+    return virXMLPropEnumInternal(node, name, strToInt, flags, result, defaultResult);
 }
 
 
@@ -867,6 +864,7 @@ virXMLPropEnumDefault(xmlNodePtr node,
  * @result: The returned value
  *
  * Convenience function to return value of an enum attribute.
+ * @result is initialized to 0 on error or if the element is not found.
  *
  * Returns 1 in case of success in which case @result is set,
  *         or 0 if the attribute is not present,
@@ -879,7 +877,7 @@ virXMLPropEnum(xmlNodePtr node,
                virXMLPropFlags flags,
                unsigned int *result)
 {
-    return virXMLPropEnumInternal(node, name, strToInt, flags, result);
+    return virXMLPropEnumInternal(node, name, strToInt, flags, result, 0);
 }
 
 
