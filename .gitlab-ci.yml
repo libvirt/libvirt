@@ -70,6 +70,26 @@ stages:
         meson test -C build --no-suite syntax-check --print-errorlogs;
       fi
 
+.sanitizer_build_job:
+  stage: builds
+  image: $CI_REGISTRY_IMAGE/ci-ubuntu-2004:latest
+  needs:
+    - x64-ubuntu-2004-container
+  rules:
+    - if: "$TEMPORARILY_DISABLED"
+      allow_failure: true
+    - when: on_success
+  cache:
+    paths:
+      - ccache/
+    key: "$CI_JOB_NAME"
+  before_script:
+    - *script_variables
+  script:
+    - meson build --werror -Db_lundef=false -Db_sanitize="$SANITIZER"
+    - ninja -C build;
+    - ninja -C build test;
+
 # Jobs that we delegate to Cirrus CI because they require an operating
 # system other than Linux. These jobs will only run if the required
 # setup has been performed on the GitLab account (see ci/README.rst).
@@ -517,6 +537,21 @@ mingw64-fedora-rawhide:
   variables:
     NAME: fedora-rawhide
     CROSS: mingw64
+
+# Sanitizers
+
+sanitize-gcc:
+  extends: .sanitizer_build_job
+  variables:
+    ASAN_OPTIONS: verify_asan_link_order=0
+    CC: gcc
+    SANITIZER: address,undefined
+
+sanitize-clang:
+  extends: .sanitizer_build_job
+  variables:
+    CC: clang
+    SANITIZER: address,undefined
 
 
 # This artifact published by this job is downloaded by libvirt.org to
