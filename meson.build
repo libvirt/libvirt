@@ -491,9 +491,12 @@ libvirt_nodelete = cc.get_supported_link_arguments([
   '-Wl,-z,nodelete',
 ])
 
-libvirt_no_undefined = cc.get_supported_link_arguments([
-  '-Wl,-z,defs',
-])
+libvirt_no_undefined = []
+if get_option('b_sanitize') == 'none'
+  libvirt_no_undefined += cc.get_supported_link_arguments([
+    '-Wl,-z,defs',
+  ])
+endif
 
 libvirt_no_indirect = cc.get_supported_link_arguments([
   '-Wl,--no-copy-dt-needed-entries',
