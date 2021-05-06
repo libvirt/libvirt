@@ -600,6 +600,8 @@ virXMLPropEnumInternal(xmlNodePtr node,
  * @result: The returned value
  *
  * Convenience function to return value of a yes / no attribute.
+ * In case when the property is missing @result is initialized to
+ * VIR_TRISTATE_BOOL_ABSENT.
  *
  * Returns 1 in case of success in which case @result is set,
  *         or 0 if the attribute is not present,
@@ -612,6 +614,8 @@ virXMLPropTristateBool(xmlNodePtr node,
                        virTristateBool *result)
 {
     flags |= VIR_XML_PROP_NONZERO;
+
+    *result = VIR_TRISTATE_BOOL_ABSENT;
 
     return virXMLPropEnumInternal(node, name, virTristateBoolTypeFromString,
                                   flags, result);
