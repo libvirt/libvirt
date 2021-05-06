@@ -17010,21 +17010,14 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
 static virDomainIOThreadIDDef *
 virDomainIOThreadIDDefParseXML(xmlNodePtr node)
 {
-    virDomainIOThreadIDDef *iothrid;
-
-    iothrid = g_new0(virDomainIOThreadIDDef, 1);
+    g_autoptr(virDomainIOThreadIDDef) iothrid = g_new0(virDomainIOThreadIDDef, 1);
 
     if (virXMLPropUInt(node, "id", 10,
                        VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
                        &iothrid->iothread_id) < 0)
-        goto error;
+        return NULL;
 
-    return iothrid;
-
- error:
-    virDomainIOThreadIDDefFree(iothrid);
-    iothrid = NULL;
-    return iothrid;
+    return g_steal_pointer(&iothrid);
 }
 
 
