@@ -9083,11 +9083,9 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
 
     ctxt->node = node;
 
-    /* defaults */
-    def->device = VIR_DOMAIN_DISK_DEVICE_DISK;
-
-    if (virXMLPropEnum(node, "device", virDomainDiskDeviceTypeFromString,
-                       VIR_XML_PROP_NONE, &def->device) < 0)
+    if (virXMLPropEnumDefault(node, "device", virDomainDiskDeviceTypeFromString,
+                              VIR_XML_PROP_NONE, &def->device,
+                              VIR_DOMAIN_DISK_DEVICE_DISK) < 0)
         return NULL;
 
     if (virXMLPropEnum(node, "model", virDomainDiskModelTypeFromString,
@@ -11171,10 +11169,11 @@ virDomainChrSourceDefParseTCP(virDomainChrSourceDef *def,
                               xmlXPathContextPtr ctxt,
                               unsigned int flags)
 {
-    virDomainChrSourceModeType mode = VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT;
+    virDomainChrSourceModeType mode;
 
-    if (virXMLPropEnum(source, "mode", virDomainChrSourceModeTypeFromString,
-                       VIR_XML_PROP_NONE, &mode) < 0)
+    if (virXMLPropEnumDefault(source, "mode", virDomainChrSourceModeTypeFromString,
+                              VIR_XML_PROP_NONE, &mode,
+                              VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT) < 0)
         return -1;
 
     def->data.tcp.listen = mode == VIR_DOMAIN_CHR_SOURCE_MODE_BIND;
@@ -11208,10 +11207,11 @@ static int
 virDomainChrSourceDefParseUDP(virDomainChrSourceDef *def,
                               xmlNodePtr source)
 {
-    virDomainChrSourceModeType mode = VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT;
+    virDomainChrSourceModeType mode;
 
-    if (virXMLPropEnum(source, "mode", virDomainChrSourceModeTypeFromString,
-                       VIR_XML_PROP_NONE, &mode) < 0)
+    if (virXMLPropEnumDefault(source, "mode", virDomainChrSourceModeTypeFromString,
+                              VIR_XML_PROP_NONE, &mode,
+                              VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT) < 0)
         return -1;
 
     if (mode == VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT &&
@@ -11233,10 +11233,11 @@ virDomainChrSourceDefParseUnix(virDomainChrSourceDef *def,
                                xmlNodePtr source,
                                xmlXPathContextPtr ctxt)
 {
-    virDomainChrSourceModeType mode = VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT;
+    virDomainChrSourceModeType mode;
 
-    if (virXMLPropEnum(source, "mode", virDomainChrSourceModeTypeFromString,
-                       VIR_XML_PROP_NONE, &mode) < 0)
+    if (virXMLPropEnumDefault(source, "mode", virDomainChrSourceModeTypeFromString,
+                              VIR_XML_PROP_NONE, &mode,
+                              VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT) < 0)
         return -1;
 
     def->data.nix.listen = mode == VIR_DOMAIN_CHR_SOURCE_MODE_BIND;
@@ -17426,11 +17427,12 @@ virDomainFeaturesDefParse(virDomainDef *def,
             break;
 
         case VIR_DOMAIN_FEATURE_CAPABILITIES: {
-            virDomainCapabilitiesPolicy policy = VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT;
+            virDomainCapabilitiesPolicy policy;
 
-            if (virXMLPropEnum(nodes[i], "policy",
-                               virDomainCapabilitiesPolicyTypeFromString,
-                               VIR_XML_PROP_NONE, &policy) < 0)
+            if (virXMLPropEnumDefault(nodes[i], "policy",
+                                      virDomainCapabilitiesPolicyTypeFromString,
+                                      VIR_XML_PROP_NONE, &policy,
+                                      VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT) < 0)
                 return -1;
 
             def->features[val] = policy;
@@ -17465,10 +17467,11 @@ virDomainFeaturesDefParse(virDomainDef *def,
             break;
 
         case VIR_DOMAIN_FEATURE_IOAPIC: {
-            virDomainIOAPIC driver = VIR_DOMAIN_IOAPIC_NONE;
+            virDomainIOAPIC driver;
 
-            if (virXMLPropEnum(nodes[i], "driver", virDomainIOAPICTypeFromString,
-                               VIR_XML_PROP_NONZERO, &driver) < 0)
+            if (virXMLPropEnumDefault(nodes[i], "driver", virDomainIOAPICTypeFromString,
+                                      VIR_XML_PROP_NONZERO, &driver,
+                                      VIR_DOMAIN_IOAPIC_NONE) < 0)
                 return -1;
 
             def->features[val] = driver;
@@ -17502,10 +17505,11 @@ virDomainFeaturesDefParse(virDomainDef *def,
             break;
 
         case VIR_DOMAIN_FEATURE_CFPC: {
-            virDomainCFPC value = VIR_DOMAIN_CFPC_NONE;
+            virDomainCFPC value;
 
-            if (virXMLPropEnum(nodes[i], "value", virDomainCFPCTypeFromString,
-                               VIR_XML_PROP_NONZERO, &value) < 0)
+            if (virXMLPropEnumDefault(nodes[i], "value", virDomainCFPCTypeFromString,
+                                      VIR_XML_PROP_NONZERO, &value,
+                                      VIR_DOMAIN_CFPC_NONE) < 0)
                 return -1;
 
             def->features[val] = value;
@@ -17513,10 +17517,11 @@ virDomainFeaturesDefParse(virDomainDef *def,
         }
 
         case VIR_DOMAIN_FEATURE_SBBC: {
-            virDomainSBBC value = VIR_DOMAIN_SBBC_NONE;
+            virDomainSBBC value;
 
-            if (virXMLPropEnum(nodes[i], "value", virDomainSBBCTypeFromString,
-                               VIR_XML_PROP_NONZERO, &value) < 0)
+            if (virXMLPropEnumDefault(nodes[i], "value", virDomainSBBCTypeFromString,
+                                      VIR_XML_PROP_NONZERO, &value,
+                                      VIR_DOMAIN_SBBC_NONE) < 0)
                 return -1;
 
             def->features[val] = value;
@@ -17524,10 +17529,11 @@ virDomainFeaturesDefParse(virDomainDef *def,
         }
 
         case VIR_DOMAIN_FEATURE_IBS: {
-            virDomainIBS value = VIR_DOMAIN_IBS_NONE;
+            virDomainIBS value;
 
-            if (virXMLPropEnum(nodes[i], "value", virDomainIBSTypeFromString,
-                               VIR_XML_PROP_NONZERO, &value) < 0)
+            if (virXMLPropEnumDefault(nodes[i], "value", virDomainIBSTypeFromString,
+                                      VIR_XML_PROP_NONZERO, &value,
+                                      VIR_DOMAIN_IBS_NONE) < 0)
                 return -1;
 
             def->features[val] = value;
@@ -18049,10 +18055,10 @@ virDomainVcpuParse(virDomainDef *def,
             vcpus = maxvcpus;
         }
 
-        def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
-        if (virXMLPropEnum(vcpuNode, "placement",
-                           virDomainCpuPlacementModeTypeFromString,
-                           VIR_XML_PROP_NONE, &def->placement_mode) < 0)
+        if (virXMLPropEnumDefault(vcpuNode, "placement",
+                                  virDomainCpuPlacementModeTypeFromString,
+                                  VIR_XML_PROP_NONE, &def->placement_mode,
+                                  VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC) < 0)
             return -1;
 
         if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
