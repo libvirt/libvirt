@@ -706,6 +706,7 @@ virXMLPropInt(xmlNodePtr node,
  * @result: The returned value
  *
  * Convenience function to return value of an unsigned integer attribute.
+ * @result is initialized to 0 on error or if the element is not found.
  *
  * Returns 1 in case of success in which case @result is set,
  *         or 0 if the attribute is not present,
@@ -721,6 +722,8 @@ virXMLPropUInt(xmlNodePtr node,
     g_autofree char *tmp = NULL;
     int ret;
     unsigned int val;
+
+    *result = 0;
 
     if (!(tmp = virXMLPropString(node, name))) {
         if (!(flags & VIR_XML_PROP_REQUIRED))
