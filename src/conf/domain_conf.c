@@ -8221,7 +8221,7 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
     if (flags & VIR_DOMAIN_DEF_PARSE_STATUS) {
         int value;
         if (virXMLPropInt(node, "tlsFromConfig", 10, VIR_XML_PROP_NONE,
-                          &value) < 0)
+                          &value, 0) < 0)
             return -1;
         src->tlsFromConfig = !!value;
     }
@@ -9414,7 +9414,7 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree xmlNodePtr *modelNodes = NULL;
     int nmodelNodes = 0;
     int numaNode = -1;
-    int ports = -1;
+    int ports;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int rc;
     g_autofree char *idx = NULL;
@@ -9494,19 +9494,23 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
     if (ntargetNodes == 1) {
         if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
         if (virXMLPropInt(targetNodes[0], "chassisNr", 0, VIR_XML_PROP_NONE,
-                      &def->opts.pciopts.chassisNr) < 0)
+                      &def->opts.pciopts.chassisNr,
+                      def->opts.pciopts.chassisNr) < 0)
             return NULL;
 
         if (virXMLPropInt(targetNodes[0], "chassis", 0, VIR_XML_PROP_NONE,
-                          &def->opts.pciopts.chassis) < 0)
+                          &def->opts.pciopts.chassis,
+                          def->opts.pciopts.chassis) < 0)
             return NULL;
 
         if (virXMLPropInt(targetNodes[0], "port", 0, VIR_XML_PROP_NONE,
-                          &def->opts.pciopts.port) < 0)
+                          &def->opts.pciopts.port,
+                          def->opts.pciopts.port) < 0)
             return NULL;
 
         if (virXMLPropInt(targetNodes[0], "busNr", 0, VIR_XML_PROP_NONE,
-                          &def->opts.pciopts.busNr) < 0)
+                          &def->opts.pciopts.busNr,
+                          def->opts.pciopts.busNr) < 0)
             return NULL;
 
         if (virXMLPropTristateSwitch(targetNodes[0], "hotplug",
@@ -9515,7 +9519,8 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
             return NULL;
 
         if ((rc = virXMLPropInt(targetNodes[0], "index", 0, VIR_XML_PROP_NONE,
-                          &def->opts.pciopts.targetIndex)) < 0)
+                          &def->opts.pciopts.targetIndex,
+                          def->opts.pciopts.targetIndex)) < 0)
             return NULL;
 
         if ((rc == 1) && def->opts.pciopts.targetIndex == -1)
@@ -9548,7 +9553,7 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
         return NULL;
     }
 
-    if ((rc = virXMLPropInt(node, "ports", 10, VIR_XML_PROP_NONE, &ports)) < 0)
+    if ((rc = virXMLPropInt(node, "ports", 10, VIR_XML_PROP_NONE, &ports, -1)) < 0)
         return NULL;
     if ((rc == 1) && ports < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -9559,7 +9564,8 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL: {
         if ((rc = virXMLPropInt(node, "vectors", 10, VIR_XML_PROP_NONE,
-                                &def->opts.vioserial.vectors)) < 0)
+                                &def->opts.vioserial.vectors,
+                                def->opts.vioserial.vectors)) < 0)
             return NULL;
 
         if ((rc == 1) && def->opts.vioserial.vectors < 0) {
@@ -9630,7 +9636,8 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS: {
         if ((rc = virXMLPropInt(node, "maxGrantFrames", 10, VIR_XML_PROP_NONE,
-                                &def->opts.xenbusopts.maxGrantFrames)) < 0)
+                                &def->opts.xenbusopts.maxGrantFrames,
+                                def->opts.xenbusopts.maxGrantFrames)) < 0)
             return NULL;
 
         if ((rc == 1) && def->opts.xenbusopts.maxGrantFrames < 0) {
@@ -9641,7 +9648,8 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
         }
 
         if ((rc = virXMLPropInt(node, "maxEventChannels", 10, VIR_XML_PROP_NONE,
-                                &def->opts.xenbusopts.maxEventChannels)) < 0)
+                                &def->opts.xenbusopts.maxEventChannels,
+                                def->opts.xenbusopts.maxEventChannels)) < 0)
             return NULL;
 
         if ((rc == 1) && def->opts.xenbusopts.maxEventChannels < 0) {
@@ -11181,7 +11189,7 @@ virDomainChrSourceDefParseTCP(virDomainChrSourceDef *def,
         int tmpVal;
 
         if (virXMLPropInt(source, "tlsFromConfig", 10, VIR_XML_PROP_NONE,
-                          &tmpVal) < 0)
+                          &tmpVal, 0) < 0)
             return -1;
         def->data.tcp.tlsFromConfig = !!tmpVal;
     }
@@ -12376,7 +12384,7 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDef *def,
 
     if (flags & VIR_DOMAIN_DEF_PARSE_STATUS) {
         int tmp;
-        if (virXMLPropInt(node, "fromConfig", 10, VIR_XML_PROP_NONE, &tmp) < 0)
+        if (virXMLPropInt(node, "fromConfig", 10, VIR_XML_PROP_NONE, &tmp, 0) < 0)
             return -1;
         def->fromConfig = tmp != 0;
     }
@@ -12519,7 +12527,7 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDef *def,
     }
 
     if (virXMLPropInt(node, "websocket", 10, VIR_XML_PROP_NONE,
-                      &def->data.vnc.websocket) < 0)
+                      &def->data.vnc.websocket, 0) < 0)
         return -1;
 
     if (websocketGenerated)
@@ -12663,14 +12671,12 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDef *def,
     if (virDomainGraphicsListensParseXML(def, node, ctxt, flags) < 0)
         return -1;
 
-    def->data.spice.port = 0;
     if (virXMLPropInt(node, "port", 10, VIR_XML_PROP_NONE,
-                      &def->data.spice.port) < 0)
+                      &def->data.spice.port, 0) < 0)
         return -1;
 
-    def->data.spice.tlsPort = 0;
     if (virXMLPropInt(node, "tlsPort", 10, VIR_XML_PROP_NONE,
-                      &def->data.spice.tlsPort) < 0)
+                      &def->data.spice.tlsPort, 0) < 0)
         return -1;
 
     if (virXMLPropTristateBool(node, "autoport", VIR_XML_PROP_NONE,
@@ -13527,7 +13533,6 @@ virDomainMemballoonDefParseXML(virDomainXMLOption *xmlopt,
     virDomainMemballoonDef *def;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr stats;
-    unsigned int period = 0;
 
     ctxt->node = node;
 
@@ -13546,10 +13551,9 @@ virDomainMemballoonDefParseXML(virDomainXMLOption *xmlopt,
                                  &def->free_page_reporting) < 0)
         goto error;
 
-    def->period = period;
     if ((stats = virXPathNode("./stats", ctxt))) {
         if (virXMLPropInt(stats, "period", 0, VIR_XML_PROP_NONE,
-                          &def->period) < 0)
+                          &def->period, 0) < 0)
             goto error;
 
         if (def->period < 0)
@@ -14509,8 +14513,7 @@ virDomainRedirFilterUSBDevDefParseXML(xmlNodePtr node)
 
     def = g_new0(virDomainRedirFilterUSBDevDef, 1);
 
-    def->usbClass = -1;
-    if (virXMLPropInt(node, "class", 0, VIR_XML_PROP_NONE, &def->usbClass) < 0)
+    if (virXMLPropInt(node, "class", 0, VIR_XML_PROP_NONE, &def->usbClass, -1) < 0)
         return NULL;
 
     if (def->usbClass != -1 && def->usbClass &~ 0xFF) {
@@ -14519,12 +14522,10 @@ virDomainRedirFilterUSBDevDefParseXML(xmlNodePtr node)
         return NULL;
     }
 
-    def->vendor = -1;
-    if (virXMLPropInt(node, "vendor", 0, VIR_XML_PROP_NONE, &def->vendor) < 0)
+    if (virXMLPropInt(node, "vendor", 0, VIR_XML_PROP_NONE, &def->vendor, -1) < 0)
         return NULL;
 
-    def->product = -1;
-    if (virXMLPropInt(node, "product", 0, VIR_XML_PROP_NONE, &def->product) < 0)
+    if (virXMLPropInt(node, "product", 0, VIR_XML_PROP_NONE, &def->product, -1) < 0)
         return NULL;
 
     version = virXMLPropString(node, "version");
@@ -17868,7 +17869,7 @@ virDomainSchedulerParseCommonAttrs(xmlNodePtr node,
 
     if (*policy == VIR_PROC_POLICY_FIFO || *policy == VIR_PROC_POLICY_RR) {
         if (virXMLPropInt(node, "priority", 10, VIR_XML_PROP_REQUIRED,
-                          priority) < 0)
+                          priority, 0) < 0)
             return -1;
     }
 

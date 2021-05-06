@@ -123,7 +123,8 @@ virXMLPropInt(xmlNodePtr node,
               const char *name,
               int base,
               virXMLPropFlags flags,
-              int *result)
+              int *result,
+              int defaultResult)
     ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 
 int

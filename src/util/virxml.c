@@ -651,6 +651,7 @@ virXMLPropTristateSwitch(xmlNodePtr node,
  * @base: Number base, see strtol
  * @flags: Bitwise or of virXMLPropFlags
  * @result: The returned value
+ * @defaultResult: default value of @result in case the property is not found
  *
  * Convenience function to return value of an integer attribute.
  *
@@ -663,10 +664,13 @@ virXMLPropInt(xmlNodePtr node,
               const char *name,
               int base,
               virXMLPropFlags flags,
-              int *result)
+              int *result,
+              int defaultResult)
 {
     g_autofree char *tmp = NULL;
     int val;
+
+    *result = defaultResult;
 
     if (!(tmp = virXMLPropString(node, name))) {
         if (!(flags & VIR_XML_PROP_REQUIRED))
