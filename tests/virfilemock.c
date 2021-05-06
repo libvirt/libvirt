@@ -24,7 +24,6 @@
 #if WITH_LINUX_MAGIC_H
 # include <linux/magic.h>
 #endif
-#include <assert.h>
 
 #include "virmock.h"
 #include "virstring.h"
@@ -186,15 +185,20 @@ realpath(const char *path, char *resolved)
 
     if (getenv("LIBVIRT_MTAB")) {
         const char *p;
-        char *ret;
 
-        assert(resolved == NULL);
-        if ((p = STRSKIP(path, "/some/symlink")))
-            ret = g_strdup_printf("/gluster%s", p);
-        else
-            ret = g_strdup(path);
+        if ((p = STRSKIP(path, "/some/symlink"))) {
+            if (resolved)
+                g_snprintf(resolved, PATH_MAX, "/gluster%s", p);
+            else
+                resolved = g_strdup_printf("/gluster%s", p);
+        } else {
+            if (resolved)
+                g_strlcpy(resolved, path, PATH_MAX);
+            else
+                resolved = g_strdup(path);
+        }
 
-        return ret;
+        return resolved;
     }
 
     return real_realpath(path, resolved);
