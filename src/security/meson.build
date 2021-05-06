@@ -41,7 +41,6 @@ if conf.has('WITH_LIBVIRTD') and conf.has('WITH_APPARMOR')
     'name': 'virt-aa-helper',
     'sources': [
       apparmor_helper_sources,
-      datatypes_sources,
       dtrace_gen_objects,
     ],
     'include': [
