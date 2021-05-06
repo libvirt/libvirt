@@ -17443,11 +17443,14 @@ virDomainFeaturesDefParse(virDomainDef *def,
         case VIR_DOMAIN_FEATURE_PVSPINLOCK:
         case VIR_DOMAIN_FEATURE_VMPORT:
         case VIR_DOMAIN_FEATURE_SMM: {
-            virTristateSwitch state = VIR_TRISTATE_SWITCH_ON;
+            virTristateSwitch state;
 
             if (virXMLPropTristateSwitch(nodes[i], "state",
                                          VIR_XML_PROP_NONE, &state) < 0)
                 return -1;
+
+            if (state == VIR_TRISTATE_SWITCH_ABSENT)
+                state = VIR_TRISTATE_SWITCH_ON;
 
             def->features[val] = state;
             break;
@@ -17770,7 +17773,7 @@ virDomainFeaturesDefParse(virDomainDef *def,
         return -1;
 
     for (i = 0; i < n; i++) {
-        virTristateSwitch state = VIR_TRISTATE_SWITCH_ON;
+        virTristateSwitch state;
         int val = virDomainProcessCapsFeatureTypeFromString((const char *)nodes[i]->name);
         if (val < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -17782,6 +17785,9 @@ virDomainFeaturesDefParse(virDomainDef *def,
         if (virXMLPropTristateSwitch(nodes[i], "state", VIR_XML_PROP_NONE,
                                      &state) < 0)
             return -1;
+
+        if (state == VIR_TRISTATE_SWITCH_ABSENT)
+            state = VIR_TRISTATE_SWITCH_ON;
 
         def->caps_features[val] = state;
     }

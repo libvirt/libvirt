@@ -630,6 +630,8 @@ virXMLPropTristateBool(xmlNodePtr node,
  * @result: The returned value
  *
  * Convenience function to return value of an on / off attribute.
+ * In case when the property is missing @result is initialized to
+ * VIR_TRISTATE_SWITCH_ABSENT.
  *
  * Returns 1 in case of success in which case @result is set,
  *         or 0 if the attribute is not present,
@@ -642,6 +644,8 @@ virXMLPropTristateSwitch(xmlNodePtr node,
                          virTristateSwitch *result)
 {
     flags |= VIR_XML_PROP_NONZERO;
+
+    *result = VIR_TRISTATE_SWITCH_ABSENT;
 
     return virXMLPropEnumInternal(node, name, virTristateSwitchTypeFromString,
                                   flags, result);
