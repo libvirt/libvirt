@@ -828,6 +828,36 @@ virXMLPropULongLong(xmlNodePtr node,
 
 
 /**
+ * virXMLPropEnumDefault:
+ * @node: XML dom node pointer
+ * @name: Name of the property (attribute) to get
+ * @strToInt: Conversion function to turn enum name to value. Expected to
+ *            return negative value on failure.
+ * @flags: Bitwise or of virXMLPropFlags
+ * @result: The returned value
+ * @defaultResult: default value set to @result in case the property is missing
+ *
+ * Convenience function to return value of an enum attribute.
+ *
+ * Returns 1 in case of success in which case @result is set,
+ *         or 0 if the attribute is not present,
+ *         or -1 and reports an error on failure.
+ */
+int
+virXMLPropEnumDefault(xmlNodePtr node,
+                      const char* name,
+                      int (*strToInt)(const char*),
+                      virXMLPropFlags flags,
+                      unsigned int *result,
+                      unsigned int defaultResult)
+{
+    *result = defaultResult;
+
+    return virXMLPropEnumInternal(node, name, strToInt, flags, result);
+}
+
+
+/**
  * virXMLPropEnum:
  * @node: XML dom node pointer
  * @name: Name of the property (attribute) to get
