@@ -12569,7 +12569,7 @@ virDomainGraphicsDefParseXMLSDL(virDomainGraphicsDef *def,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr glNode;
-    virTristateBool fullscreen = VIR_TRISTATE_BOOL_NO;
+    virTristateBool fullscreen;
 
     ctxt->node = node;
 
@@ -12640,7 +12640,7 @@ static int
 virDomainGraphicsDefParseXMLDesktop(virDomainGraphicsDef *def,
                                     xmlNodePtr node)
 {
-    virTristateBool fullscreen = VIR_TRISTATE_BOOL_NO;
+    virTristateBool fullscreen;
 
     if (virXMLPropTristateBool(node, "fullscreen", VIR_XML_PROP_NONE,
                                &fullscreen) < 0)
@@ -12662,7 +12662,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDef *def,
     g_autofree xmlNodePtr *node_list = NULL;
     int n = 0;
     size_t i = 0;
-    virTristateBool autoport = VIR_TRISTATE_BOOL_NO;
+    virTristateBool autoport;
     xmlNodePtr cur;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
