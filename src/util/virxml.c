@@ -557,6 +557,40 @@ virXMLNodeContentString(xmlNodePtr node)
     return ret;
 }
 
+static int
+virXMLPropEnumInternal(xmlNodePtr node,
+                       const char* name,
+                       int (*strToInt)(const char*),
+                       virXMLPropFlags flags,
+                       unsigned int *result)
+
+{
+    g_autofree char *tmp = NULL;
+    int ret;
+
+    if (!(tmp = virXMLPropString(node, name))) {
+        if (!(flags & VIR_XML_PROP_REQUIRED))
+            return 0;
+
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Missing required attribute '%s' in element '%s'"),
+                       name, node->name);
+        return -1;
+    }
+
+    ret = strToInt(tmp);
+    if (ret < 0 ||
+        ((flags & VIR_XML_PROP_NONZERO) && (ret == 0))) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid value for attribute '%s' in element '%s': '%s'."),
+                       name, node->name, NULLSTR(tmp));
+        return -1;
+    }
+
+    *result = ret;
+    return 1;
+}
+
 
 /**
  * virXMLPropTristateBool:
@@ -577,28 +611,10 @@ virXMLPropTristateBool(xmlNodePtr node,
                        virXMLPropFlags flags,
                        virTristateBool *result)
 {
-    g_autofree char *tmp = NULL;
-    int val;
+    flags |= VIR_XML_PROP_NONZERO;
 
-    if (!(tmp = virXMLPropString(node, name))) {
-        if (!(flags & VIR_XML_PROP_REQUIRED))
-            return 0;
-
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Missing required attribute '%s' in element '%s'"),
-                       name, node->name);
-        return -1;
-    }
-
-    if ((val = virTristateBoolTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected 'yes' or 'no'"),
-                       name, node->name, tmp);
-        return -1;
-    }
-
-    *result = val;
-    return 1;
+    return virXMLPropEnumInternal(node, name, virTristateBoolTypeFromString,
+                                  flags, result);
 }
 
 
@@ -621,28 +637,10 @@ virXMLPropTristateSwitch(xmlNodePtr node,
                          virXMLPropFlags flags,
                          virTristateSwitch *result)
 {
-    g_autofree char *tmp = NULL;
-    int val;
+    flags |= VIR_XML_PROP_NONZERO;
 
-    if (!(tmp = virXMLPropString(node, name))) {
-        if (!(flags & VIR_XML_PROP_REQUIRED))
-            return 0;
-
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Missing required attribute '%s' in element '%s'"),
-                       name, node->name);
-        return -1;
-    }
-
-    if ((val = virTristateSwitchTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected 'on' or 'off'"),
-                       name, node->name, tmp);
-        return -1;
-    }
-
-    *result = val;
-    return 1;
+    return virXMLPropEnumInternal(node, name, virTristateSwitchTypeFromString,
+                                  flags, result);
 }
 
 
@@ -833,31 +831,9 @@ virXMLPropEnum(xmlNodePtr node,
                virXMLPropFlags flags,
                unsigned int *result)
 {
-    g_autofree char *tmp = NULL;
-    int ret;
-
-    if (!(tmp = virXMLPropString(node, name))) {
-        if (!(flags & VIR_XML_PROP_REQUIRED))
-            return 0;
-
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Missing required attribute '%s' in element '%s'"),
-                       name, node->name);
-        return -1;
-    }
-
-    ret = strToInt(tmp);
-    if (ret < 0 ||
-        ((flags & VIR_XML_PROP_NONZERO) && (ret == 0))) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': '%s'."),
-                       name, node->name, NULLSTR(tmp));
-        return -1;
-    }
-
-    *result = ret;
-    return 1;
+    return virXMLPropEnumInternal(node, name, strToInt, flags, result);
 }
+
 
 /**
  * virXPathBoolean:
