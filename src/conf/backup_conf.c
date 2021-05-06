@@ -121,11 +121,12 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
         return -1;
     }
 
-    def->backup = VIR_TRISTATE_BOOL_YES;
-
     if (virXMLPropTristateBool(node, "backup", VIR_XML_PROP_NONE,
                                &def->backup) < 0)
         return -1;
+
+    if (def->backup == VIR_TRISTATE_BOOL_ABSENT)
+        def->backup = VIR_TRISTATE_BOOL_YES;
 
     /* don't parse anything else if backup is disabled */
     if (def->backup == VIR_TRISTATE_BOOL_NO)
