@@ -13098,7 +13098,7 @@ virDomainAudioCommonParse(virDomainAudioIOCommon *def,
 
         if (virXMLPropEnum(settings, "format",
                            virDomainAudioFormatTypeFromString,
-                           VIR_XML_PROP_NONE, &def->format) < 0)
+                           VIR_XML_PROP_NONZERO, &def->format) < 0)
             return -1;
     }
 
