@@ -430,7 +430,7 @@ endif
 
 if conf.has('WITH_OPENVZ')
   tests += [
-    { 'name': 'openvzutilstest', 'link_with': [ openvz_lib ] },
+    { 'name': 'openvzutilstest' },
   ]
 endif
 
