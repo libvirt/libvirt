@@ -14257,7 +14257,7 @@ virDomainVideoDefParseXML(virDomainXMLOption *xmlopt,
     if ((driver = virXPathNode("./driver", ctxt))) {
         if (virXMLPropEnum(driver, "name",
                            virDomainVideoBackendTypeFromString,
-                           VIR_XML_PROP_NONE, &def->backend) < 0)
+                           VIR_XML_PROP_NONZERO, &def->backend) < 0)
             return NULL;
         if (virDomainVirtioOptionsParseXML(driver, &def->virtio) < 0)
             return NULL;
