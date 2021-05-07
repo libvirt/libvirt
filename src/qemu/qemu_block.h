@@ -150,6 +150,10 @@ qemuBlockStorageSourceDetachOneBlockdev(virQEMUDriver *driver,
 struct _qemuBlockStorageSourceChainData {
     qemuBlockStorageSourceAttachData **srcdata;
     size_t nsrcdata;
+
+    virJSONValue *copyOnReadProps;
+    char *copyOnReadNodename;
+    bool copyOnReadAttached;
 };
 
 typedef struct _qemuBlockStorageSourceChainData qemuBlockStorageSourceChainData;

@@ -1947,6 +1947,9 @@ qemuBlockStorageSourceChainDataFree(qemuBlockStorageSourceChainData *data)
     for (i = 0; i < data->nsrcdata; i++)
         qemuBlockStorageSourceAttachDataFree(data->srcdata[i]);
 
+    virJSONValueFree(data->copyOnReadProps);
+    g_free(data->copyOnReadNodename);
+
     g_free(data->srcdata);
     g_free(data);
 }
@@ -2054,6 +2057,11 @@ qemuBlockStorageSourceChainAttach(qemuMonitor *mon,
             return -1;
     }
 
+    if (data->copyOnReadProps) {
+        if (qemuMonitorBlockdevAdd(mon, &data->copyOnReadProps) < 0)
+            return -1;
+    }
+
     return 0;
 }
 
@@ -2071,6 +2079,10 @@ qemuBlockStorageSourceChainDetach(qemuMonitor *mon,
                                   qemuBlockStorageSourceChainData *data)
 {
     size_t i;
+
+    if (data->copyOnReadAttached)
+        ignore_value(qemuMonitorBlockdevDel(mon, data->copyOnReadNodename));
+
 
     for (i = 0; i < data->nsrcdata; i++)
         qemuBlockStorageSourceAttachRollback(mon, data->srcdata[i]);
