@@ -68,6 +68,7 @@
 #include "storage_source_conf.h"
 #include "virlog.h"
 #include "virfile.h"
+#include "viridentity.h"
 #include "virjson.h"
 #include "virqemu.h"
 #include "virstring.h"
@@ -1265,6 +1266,7 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObj *pool,
     size_t secretlen = 0;
     virConnectPtr conn = NULL;
     VIR_AUTOCLOSE fd = -1;
+    VIR_IDENTITY_AUTORESTORE virIdentity *oldident = NULL;
 
     if (!enc) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1278,6 +1280,9 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObj *pool,
                          "element is expected in encryption description"));
         return NULL;
     }
+
+    if (!(oldident = virIdentityElevateCurrent()))
+        return NULL;
 
     conn = virGetConnectSecret();
     if (!conn)

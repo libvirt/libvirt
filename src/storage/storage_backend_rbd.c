@@ -27,6 +27,7 @@
 #include "storage_backend_rbd.h"
 #include "storage_conf.h"
 #include "viralloc.h"
+#include "viridentity.h"
 #include "virlog.h"
 #include "viruuid.h"
 #include "virstring.h"
@@ -196,6 +197,7 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDState *ptr,
     g_autofree char *mon_buff = NULL;
 
     if (authdef) {
+        VIR_IDENTITY_AUTORESTORE virIdentity *oldident = NULL;
         g_autofree char *rados_key = NULL;
         int rc;
 
@@ -205,6 +207,9 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDState *ptr,
             virReportSystemError(errno, "%s", _("failed to initialize RADOS"));
             goto cleanup;
         }
+
+        if (!(oldident = virIdentityElevateCurrent()))
+            goto cleanup;
 
         conn = virGetConnectSecret();
         if (!conn)

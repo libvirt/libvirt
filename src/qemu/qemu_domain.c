@@ -41,6 +41,7 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
+#include "viridentity.h"
 #include "cpu/cpu.h"
 #include "viruuid.h"
 #include "virfile.h"
@@ -1116,8 +1117,12 @@ qemuDomainSecretPlainSetup(qemuDomainSecretInfo *secinfo,
                            const char *username,
                            virSecretLookupTypeDef *seclookupdef)
 {
+    VIR_IDENTITY_AUTORESTORE virIdentity *oldident = virIdentityElevateCurrent();
     g_autoptr(virConnect) conn = virGetConnectSecret();
     int ret = -1;
+
+    if (!oldident)
+        return -1;
 
     if (!conn)
         return -1;
@@ -1213,11 +1218,15 @@ qemuDomainSecretAESSetupFromSecret(qemuDomainObjPrivate *priv,
                                    const char *username,
                                    virSecretLookupTypeDef *seclookupdef)
 {
-    g_autoptr(virConnect) conn = virGetConnectSecret();
     qemuDomainSecretInfo *secinfo;
     g_autofree char *alias = qemuAliasForSecret(srcalias, secretuse);
     g_autofree uint8_t *secret = NULL;
     size_t secretlen = 0;
+    VIR_IDENTITY_AUTORESTORE virIdentity *oldident = virIdentityElevateCurrent();
+    g_autoptr(virConnect) conn = virGetConnectSecret();
+
+    if (!oldident)
+        return NULL;
 
     if (!conn)
         return NULL;

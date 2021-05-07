@@ -18,10 +18,13 @@
 
 #include <config.h>
 
+#define LIBVIRT_VIRIDENTITYPRIV_H_ALLOW
+
 #include "internal.h"
 #include "viralloc.h"
 #include "vircommand.h"
 #include "vircrypto.h"
+#include "viridentitypriv.h"
 #include "virmock.h"
 #include "virlog.h"
 #include "virnetdev.h"
@@ -291,4 +294,10 @@ qemuInterfaceVDPAConnect(virDomainNetDef *net G_GNUC_UNUSED)
     if (fcntl(1732, F_GETFD) != -1)
         abort();
     return 1732;
+}
+
+char *
+virIdentityEnsureSystemToken(void)
+{
+    return g_strdup("3de80bcbf22d4833897f1638e01be9b2");
 }

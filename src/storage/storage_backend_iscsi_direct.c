@@ -29,6 +29,7 @@
 #include "storage_util.h"
 #include "viralloc.h"
 #include "virerror.h"
+#include "viridentity.h"
 #include "virlog.h"
 #include "virobject.h"
 #include "virstring.h"
@@ -94,6 +95,7 @@ virStorageBackendISCSIDirectSetAuth(struct iscsi_context *iscsi,
     virStorageAuthDef *authdef = source->auth;
     int ret = -1;
     virConnectPtr conn = NULL;
+    VIR_IDENTITY_AUTORESTORE virIdentity *oldident = NULL;
 
     if (!authdef || authdef->authType == VIR_STORAGE_AUTH_TYPE_NONE)
         return 0;
@@ -106,6 +108,9 @@ virStorageBackendISCSIDirectSetAuth(struct iscsi_context *iscsi,
                        _("iscsi-direct pool only supports 'chap' auth type"));
         return ret;
     }
+
+    if (!(oldident = virIdentityElevateCurrent()))
+        return -1;
 
     if (!(conn = virGetConnectSecret()))
         return ret;

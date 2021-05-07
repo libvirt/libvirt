@@ -34,6 +34,7 @@
 #include "virerror.h"
 #include "virfile.h"
 #include "viriscsi.h"
+#include "viridentity.h"
 #include "virlog.h"
 #include "virobject.h"
 #include "virstring.h"
@@ -263,6 +264,7 @@ virStorageBackendISCSISetAuth(const char *portal,
     virStorageAuthDef *authdef = source->auth;
     int ret = -1;
     virConnectPtr conn = NULL;
+    VIR_IDENTITY_AUTORESTORE virIdentity *oldident = NULL;
 
     if (!authdef || authdef->authType == VIR_STORAGE_AUTH_TYPE_NONE)
         return 0;
@@ -274,6 +276,9 @@ virStorageBackendISCSISetAuth(const char *portal,
                        _("iscsi pool only supports 'chap' auth type"));
         return -1;
     }
+
+    if (!(oldident = virIdentityElevateCurrent()))
+        return -1;
 
     conn = virGetConnectSecret();
     if (!conn)

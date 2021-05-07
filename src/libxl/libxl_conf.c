@@ -31,6 +31,7 @@
 #include "datatypes.h"
 #include "virconf.h"
 #include "virfile.h"
+#include "viridentity.h"
 #include "virstring.h"
 #include "viralloc.h"
 #include "viruuid.h"
@@ -1001,6 +1002,10 @@ libxlMakeNetworkDiskSrc(virStorageSource *src, char **srcstr)
     if (src->auth && src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
         g_autofree uint8_t *secret = NULL;
         size_t secretlen = 0;
+        VIR_IDENTITY_AUTORESTORE virIdentity *oldident = virIdentityElevateCurrent();
+
+        if (!oldident)
+            goto cleanup;
 
         username = src->auth->username;
         if (!(conn = virConnectOpen("xen:///system")))

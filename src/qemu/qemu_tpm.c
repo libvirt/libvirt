@@ -33,6 +33,7 @@
 #include "vircommand.h"
 #include "viralloc.h"
 #include "virkmod.h"
+#include "viridentity.h"
 #include "virlog.h"
 #include "virutil.h"
 #include "viruuid.h"
@@ -366,6 +367,10 @@ qemuTPMSetupEncryption(const unsigned char *secretuuid,
     virSecretLookupTypeDef seclookupdef = {
          .type = VIR_SECRET_LOOKUP_TYPE_UUID,
     };
+    VIR_IDENTITY_AUTORESTORE virIdentity *oldident = virIdentityElevateCurrent();
+
+    if (!oldident)
+        return -1;
 
     conn = virGetConnectSecret();
     if (!conn)

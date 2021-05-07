@@ -11,6 +11,7 @@
 
 # include "internal.h"
 # include "viralloc.h"
+# include "viridentity.h"
 # include "qemu/qemu_alias.h"
 # include "qemu/qemu_capabilities.h"
 # include "qemu/qemu_command.h"
@@ -650,6 +651,7 @@ testCompareXMLToArgv(const void *data)
     xmlNodePtr root;
     g_autofree char *archstr = NULL;
     virArch arch = VIR_ARCH_NONE;
+    g_autoptr(virIdentity) sysident = virIdentityGetSystem();
 
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, info->arch);
@@ -669,6 +671,9 @@ testCompareXMLToArgv(const void *data)
     virSetConnectNodeDev(conn);
     virSetConnectSecret(conn);
     virSetConnectStorage(conn);
+
+    if (virIdentitySetCurrent(sysident) < 0)
+        goto cleanup;
 
     if (testCheckExclusiveFlags(info->flags) < 0)
         goto cleanup;
@@ -809,6 +814,7 @@ testCompareXMLToArgv(const void *data)
     VIR_FREE(log);
     virDomainChrSourceDefClear(&monitor_chr);
     virObjectUnref(vm);
+    virIdentitySetCurrent(NULL);
     virSetConnectSecret(NULL);
     virSetConnectStorage(NULL);
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
