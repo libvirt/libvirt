@@ -8823,21 +8823,11 @@ static bool
 qemuDomainMachineNeedsFDC(const char *machine,
                           const virArch arch)
 {
-    const char *p = STRSKIP(machine, "pc-q35-");
-
     if (!ARCH_IS_X86(arch))
         return false;
 
-    if (!p)
+    if (!STRPREFIX(machine, "pc-q35-"))
         return false;
-
-    if (STRPREFIX(p, "1.") ||
-        STREQ(p, "2.0") ||
-        STREQ(p, "2.1") ||
-        STREQ(p, "2.2") ||
-        STREQ(p, "2.3")) {
-        return false;
-    }
 
     return true;
 }
