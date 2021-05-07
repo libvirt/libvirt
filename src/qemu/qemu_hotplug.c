@@ -4288,7 +4288,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
     virDomainDeviceDef dev;
     size_t i;
     qemuDomainObjPrivate *priv = vm->privateData;
-    g_autofree char *corAlias = NULL;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     int ret = -1;
 
@@ -4301,10 +4300,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
 
         if (!(diskBackend = qemuBlockStorageSourceChainDetachPrepareChardev(chardevAlias)))
             goto cleanup;
-    } else if (blockdev &&
-               !qemuDiskBusIsSD(disk->bus)) {
-        corAlias = g_strdup(diskPriv->nodeCopyOnRead);
-
+    } else if (blockdev && !qemuDiskBusIsSD(disk->bus)) {
         if (diskPriv->blockjob) {
             /* the block job keeps reference to the disk chain */
             diskPriv->blockjob->disk = NULL;
@@ -4313,6 +4309,13 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
         } else {
             if (!(diskBackend = qemuBlockStorageSourceChainDetachPrepareBlockdev(disk->src)))
                 goto cleanup;
+        }
+
+        if (diskPriv->nodeCopyOnRead) {
+            if (!diskBackend)
+                diskBackend = g_new0(qemuBlockStorageSourceChainData, 1);
+            diskBackend->copyOnReadNodename = g_strdup(diskPriv->nodeCopyOnRead);
+            diskBackend->copyOnReadAttached = true;
         }
     } else {
         char *driveAlias;
@@ -4332,9 +4335,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
-
-    if (corAlias)
-        ignore_value(qemuMonitorBlockdevDel(priv->mon, corAlias));
 
     if (diskBackend)
         qemuBlockStorageSourceChainDetach(priv->mon, diskBackend);
