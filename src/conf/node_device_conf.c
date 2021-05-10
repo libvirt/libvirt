@@ -1596,12 +1596,9 @@ virNodeDevCapPCIDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
 
 
 static int
-virPCIEDeviceInfoLinkParseXML(xmlXPathContextPtr ctxt,
-                              xmlNodePtr linkNode,
+virPCIEDeviceInfoLinkParseXML(xmlNodePtr linkNode,
                               virPCIELink *lnk)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt)
-
     if (virXMLPropUInt(linkNode, "width", 0, VIR_XML_PROP_REQUIRED, &lnk->width) < 0)
         return -1;
 
@@ -1629,16 +1626,14 @@ virPCIEDeviceInfoParseXML(xmlXPathContextPtr ctxt,
     if ((lnk = virXPathNode("./link[@validity='cap']", ctxt))) {
         pci_express->link_cap = g_new0(virPCIELink, 1);
 
-        if (virPCIEDeviceInfoLinkParseXML(ctxt, lnk,
-                                          pci_express->link_cap) < 0)
+        if (virPCIEDeviceInfoLinkParseXML(lnk, pci_express->link_cap) < 0)
             return -1;
     }
 
     if ((lnk = virXPathNode("./link[@validity='sta']", ctxt))) {
         pci_express->link_sta = g_new0(virPCIELink, 1);
 
-        if (virPCIEDeviceInfoLinkParseXML(ctxt, lnk,
-                                          pci_express->link_sta) < 0)
+        if (virPCIEDeviceInfoLinkParseXML(lnk, pci_express->link_sta) < 0)
             return -1;
     }
 
