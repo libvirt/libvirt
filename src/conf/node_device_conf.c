@@ -1972,24 +1972,13 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
                           const char *virt_type)
 {
     virNodeDevCapsDef *caps;
-    g_autofree char *tmp = NULL;
-    int val, ret = -1;
+    int ret = -1;
 
     caps = g_new0(virNodeDevCapsDef, 1);
 
-    tmp = virXMLPropString(node, "type");
-    if (!tmp) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("missing capability type"));
+    if (virXMLPropEnum(node, "type", virNodeDevCapTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &caps->data.type) < 0)
         goto error;
-    }
-
-    if ((val = virNodeDevCapTypeFromString(tmp)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown capability type '%s'"), tmp);
-        goto error;
-    }
-    caps->data.type = val;
 
     switch (caps->data.type) {
     case VIR_NODE_DEV_CAP_SYSTEM:
