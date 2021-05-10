@@ -61,13 +61,7 @@ stages:
     - *script_variables
   script:
     - meson build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
-    - if test "$DIST" != "skip";
-      then
-        ninja -C build dist;
-      else
-        ninja -C build;
-        ninja -C build test;
-      fi
+    - ninja -C build dist;
     - if test -x /usr/bin/rpmbuild && test "$RPM" != "skip";
       then
         rpmbuild --nodeps -ta build/meson-dist/libvirt-*.tar.xz;
