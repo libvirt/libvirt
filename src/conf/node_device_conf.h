@@ -377,6 +377,8 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNodeDeviceDef, virNodeDeviceDefFree);
 void
 virNodeDevCapsDefFree(virNodeDevCapsDef *caps);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNodeDevCapsDef, virNodeDevCapsDefFree);
+
 #define VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP \
                 (VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM        | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_PCI_DEV       | \
