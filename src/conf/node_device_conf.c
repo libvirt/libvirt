@@ -1971,14 +1971,12 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
                           int create,
                           const char *virt_type)
 {
-    virNodeDevCapsDef *caps;
+    g_autoptr(virNodeDevCapsDef) caps = g_new0(virNodeDevCapsDef, 1);
     int ret = -1;
-
-    caps = g_new0(virNodeDevCapsDef, 1);
 
     if (virXMLPropEnum(node, "type", virNodeDevCapTypeFromString,
                        VIR_XML_PROP_REQUIRED, &caps->data.type) < 0)
-        goto error;
+        return NULL;
 
     switch (caps->data.type) {
     case VIR_NODE_DEV_CAP_SYSTEM:
@@ -2050,12 +2048,9 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
     }
 
     if (ret < 0)
-        goto error;
-    return caps;
+        return NULL;
 
- error:
-    virNodeDevCapsDefFree(caps);
-    return NULL;
+    return g_steal_pointer(&caps);
 }
 
 
