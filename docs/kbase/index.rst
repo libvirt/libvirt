@@ -40,6 +40,9 @@ Usage
 `Live full disk backup <live_full_disk_backup.html>`__
    A walkthrough of how to take effective live full disk backups.
 
+`Merging disk image chains <merging_disk_image_chains.html>`__
+   Ways to reduce or consolidate disk image chains.
+
 `KVM real time <kvm-realtime.html>`__
    Run real time workloads in guests on a KVM hypervisor
 
