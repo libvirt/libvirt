@@ -1601,38 +1601,16 @@ virPCIEDeviceInfoLinkParseXML(xmlXPathContextPtr ctxt,
                               virPCIELink *lnk)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    int speed;
-    g_autofree char *speedStr = NULL;
-    g_autofree char *portStr = NULL;
 
-    ctxt->node = linkNode;
-
-    if (virXPathUInt("number(./@width)", ctxt, &lnk->width) < 0) {
-        virReportError(VIR_ERR_XML_DETAIL, "%s",
-                       _("mandatory attribute 'width' is missing or malformed"));
+    if (virXMLPropUInt(linkNode, "width", 0, VIR_XML_PROP_REQUIRED, &lnk->width) < 0)
         return -1;
-    }
 
-    if ((speedStr = virXPathString("string(./@speed)", ctxt))) {
-        if ((speed = virPCIELinkSpeedTypeFromString(speedStr)) < 0) {
-            virReportError(VIR_ERR_XML_DETAIL,
-                           _("malformed 'speed' attribute: %s"),
-                           speedStr);
-            return -1;
-        }
-        lnk->speed = speed;
-    }
+    if (virXMLPropEnum(linkNode, "speed", virPCIELinkSpeedTypeFromString,
+                       VIR_XML_PROP_NONE, &lnk->speed) < 0)
+        return -1;
 
-    if ((portStr = virXPathString("string(./@port)", ctxt))) {
-        if (virStrToLong_i(portStr, NULL, 10, &lnk->port) < 0) {
-            virReportError(VIR_ERR_XML_DETAIL,
-                           _("malformed 'port' attribute: %s"),
-                           portStr);
-            return -1;
-        }
-    } else {
-        lnk->port = -1;
-    }
+    if (virXMLPropInt(linkNode, "port", 10, VIR_XML_PROP_NONE, &lnk->port, -1) < 0)
+        return -1;
 
     return 0;
 }
