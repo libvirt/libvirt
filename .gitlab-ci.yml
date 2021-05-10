@@ -60,8 +60,8 @@ stages:
   before_script:
     - *script_variables
   script:
-    - meson build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
-    - ninja -C build dist;
+    - meson setup build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
+    - meson dist -C build
     - if test -x /usr/bin/rpmbuild && test "$RPM" != "skip";
       then
         rpmbuild --nodeps -ta build/meson-dist/libvirt-*.tar.xz;
@@ -122,9 +122,9 @@ stages:
   before_script:
     - *script_variables
   script:
-    - meson build --werror $MESON_OPTS || (cat build/meson-logs/meson-log.txt && exit 1)
-    - ninja -C build
-    - if test "$CROSS" = "i686" ; then ninja -C build test ; fi
+    - meson setup build --werror $MESON_OPTS || (cat build/meson-logs/meson-log.txt && exit 1)
+    - meson compile -C build
+    - if test "$CROSS" = "i686" ; then meson test -C build --print-errorlogs ; fi
 
 
 # Native container build jobs
@@ -527,7 +527,7 @@ website:
   before_script:
     - *script_variables
   script:
-    - meson build --werror --prefix=$(pwd)/vroot || (cat build/meson-logs/meson-log.txt && exit 1)
+    - meson setup build --werror --prefix=$(pwd)/vroot || (cat build/meson-logs/meson-log.txt && exit 1)
     - ninja -C build install-web
     - mv vroot/share/doc/libvirt/html/ website
   artifacts:
@@ -547,7 +547,7 @@ codestyle:
   before_script:
     - *script_variables
   script:
-    - meson build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
+    - meson setup build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
     - ninja -C build libvirt-pot-dep
     - meson test -C build --suite syntax-check --no-rebuild --print-errorlogs
 
@@ -565,7 +565,7 @@ potfile:
   before_script:
     - *script_variables
   script:
-    - meson build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
+    - meson setup build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
     - ninja -C build libvirt-pot-dep
     - ninja -C build libvirt-pot
     - cp po/libvirt.pot libvirt.pot
@@ -603,8 +603,8 @@ coverity:
   script:
     - curl https://scan.coverity.com/download/linux64 --form project=$COVERITY_SCAN_PROJECT_NAME --form token=$COVERITY_SCAN_TOKEN -o /tmp/cov-analysis-linux64.tgz
     - tar xfz /tmp/cov-analysis-linux64.tgz
-    - meson build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
-    - cov-analysis-linux64-*/bin/cov-build --dir cov-int ninja -C build
+    - meson setup build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
+    - cov-analysis-linux64-*/bin/cov-build --dir cov-int meson compile -C build
     - tar cfz cov-int.tar.gz cov-int
     - curl https://scan.coverity.com/builds?project=$COVERITY_SCAN_PROJECT_NAME --form token=$COVERITY_SCAN_TOKEN --form email=$GITLAB_USER_EMAIL --form file=@cov-int.tar.gz --form version="$(git describe --tags)" --form description="$(git describe --tags) / $CI_COMMIT_TITLE / $CI_COMMIT_REF_NAME:$CI_PIPELINE_ID"
   rules:
