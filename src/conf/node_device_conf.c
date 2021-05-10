@@ -2089,24 +2089,13 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
 
     for (i = 0, m = 0; i < n; i++) {
         xmlNodePtr node = nodes[i];
-        g_autofree char *tmp = virXMLPropString(node, "type");
-        int val;
+        virNodeDevDevnodeType val;
 
-        if (!tmp) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("missing devnode type"));
+        if (virXMLPropEnum(node, "type", virNodeDevDevnodeTypeFromString,
+                           VIR_XML_PROP_REQUIRED, &val) < 0)
             goto error;
-        }
 
-        val = virNodeDevDevnodeTypeFromString(tmp);
-
-        if (val < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown devnode type '%s'"), tmp);
-            goto error;
-        }
-
-        switch ((virNodeDevDevnodeType)val) {
+        switch (val) {
         case VIR_NODE_DEV_DEVNODE_DEV:
             if (!(def->devnode = virXMLNodeContentString(node)))
                 goto error;
