@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-04-27 08:10+0000\n"
-"PO-Revision-Date: 2021-04-27 09:33+0000\n"
+"PO-Revision-Date: 2021-05-10 11:34+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.6\n"
+"X-Generator: Weblate 4.6.2\n"
 
 msgid ""
 "\n"
@@ -1385,6 +1385,8 @@ msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
 "in memory element"
 msgstr ""
+"läget ”restrictive” krävs i memnode-elementet när läget är ”restrictive” i "
+"memory-elementet"
 
 #, c-format
 msgid "'rx_queue_size' attribute must be positive number: %s"
@@ -1785,10 +1787,10 @@ msgid "A storage driver is already registered"
 msgstr "En lagringsdrivrutin är redan registrerad"
 
 msgid "ACPI index is not supported with this QEMU"
-msgstr ""
+msgstr "ACPI-index stödjs inte med denna QEMU"
 
 msgid "ACPI index is only supported for PCI devices"
-msgstr ""
+msgstr "ACPI-indes stödjs endast för PCI-enheter"
 
 msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI kräver UEFI på denna arkitektur"
@@ -5164,7 +5166,7 @@ msgid "Default paths:"
 msgstr "Standardsökvägar:"
 
 msgid "Define a device by an xml file on a node"
-msgstr ""
+msgstr "Definiera en enhet med en xml-fil på en nod"
 
 msgid "Define a domain."
 msgstr "Definiera en domän."
@@ -5194,6 +5196,8 @@ msgid ""
 "Defines a persistent device on the node that can be assigned to a domain. "
 "The device must be started before it can be assigned to a domain."
 msgstr ""
+"Definierar en beständig enhet på noden som kan tilldelas till en domän. "
+"Enheten måste startas före den kan tilldelas till en domän."
 
 msgid "Delete a domain checkpoint"
 msgstr "Radera en domänkontrollpunkt"
@@ -5313,7 +5317,7 @@ msgstr "Enheten %s återställd\n"
 
 #, c-format
 msgid "Device %s started\n"
-msgstr ""
+msgstr "Enheten %s startad\n"
 
 #, c-format
 msgid "Device %s un-attached from bridge %s\n"
@@ -5358,7 +5362,7 @@ msgid "Device detached successfully\n"
 msgstr "Enheten kopplades ifrån\n"
 
 msgid "Device is already active"
-msgstr ""
+msgstr "Enheten är redan aktiv"
 
 msgid "Device is not a fibre channel HBA"
 msgstr "Enheten är inte en fiberkanals-HBA"
@@ -5494,21 +5498,24 @@ msgid ""
 "Displays the node's total number of CPUs, the number of online CPUs and the "
 "list of online CPUs."
 msgstr ""
+"Visar nodens totala antal CPU:er, antalet inkopplade CPU:er och listan över "
+"inkopplade CPU:er."
 
 #, c-format
 msgid ""
 "Distance value %d under node %zu is LOCAL_DISTANCE and should be set to 10"
 msgstr ""
+"Avståndsvärdet %d under nod %zu är LOCAL_DISTANCE och skall sättas till 10"
 
 #, c-format
 msgid "Distance value of %d is not in valid range"
-msgstr ""
+msgstr "Avståndsvärdet på %d är inte i det giltiga intervallet"
 
 msgid "Do not change process security label"
-msgstr ""
+msgstr "Ändra inte processäkerhetsetiketten"
 
 msgid "Do not include features that block migration"
-msgstr ""
+msgstr "Inkludera inte funktioner som förhindrar migrering"
 
 #, c-format
 msgid "Domain %s didn't show up"
@@ -5516,11 +5523,11 @@ msgstr "Domänen %s dök inte upp"
 
 #, c-format
 msgid "Domain '%d' has to be running because libxenlight will suspend it"
-msgstr ""
+msgstr "Domänen ”%d” måste köra eftersom libxenlight kommer söva den"
 
 #, c-format
 msgid "Domain '%s' XML configuration edited.\n"
-msgstr ""
+msgstr "Domänen ”%s” XML-konfiguration redigerad.\n"
 
 #, c-format
 msgid "Domain '%s' XML configuration not changed.\n"
@@ -5528,35 +5535,35 @@ msgstr "Domänen ”%s” XML-konfiguration inte ändrad.\n"
 
 #, c-format
 msgid "Domain '%s' attached to pid %u\n"
-msgstr ""
+msgstr "Domänen ”%s” ansluten till pid %u\n"
 
 #, c-format
 msgid "Domain '%s' could not be suspended"
-msgstr ""
+msgstr "Domänen ”%s” kunde inte sövas"
 
 #, c-format
 msgid "Domain '%s' could not be woken up"
-msgstr ""
+msgstr "Domänen ”%s” kunde inte väckas upp"
 
 #, c-format
 msgid "Domain '%s' created from %s\n"
-msgstr ""
+msgstr "Domänen ”%s” skapad från %s\n"
 
 #, c-format
 msgid "Domain '%s' defined from %s\n"
-msgstr ""
+msgstr "Domänen ”%s” definierad från %s\n"
 
 #, c-format
 msgid "Domain '%s' destroyed\n"
-msgstr ""
+msgstr "Domän ”%s” förstörd\n"
 
 #, c-format
 msgid "Domain '%s' has been undefined\n"
-msgstr ""
+msgstr "Domänen ”%s” har avdefinierats\n"
 
 #, c-format
 msgid "Domain '%s' has no manage save image; removal skipped"
-msgstr ""
+msgstr "Domänen ”%s” har ingen hanterad sparad avbild; borttagningen skippad"
 
 #, c-format
 msgid "Domain '%s' is already running"
@@ -5564,11 +5571,11 @@ msgstr "Domänen ”%s” kör redan"
 
 #, c-format
 msgid "Domain '%s' is being rebooted\n"
-msgstr ""
+msgstr "Domänen ”%s” håller på att starts om\n"
 
 #, c-format
 msgid "Domain '%s' is being shutdown\n"
-msgstr ""
+msgstr "Domänen ”%s” håller på att stängas av\n"
 
 #, c-format
 msgid "Domain '%s' marked as autostarted\n"
@@ -5576,27 +5583,27 @@ msgstr "Domänen ”%s” markerad som autostartad\n"
 
 #, c-format
 msgid "Domain '%s' resumed\n"
-msgstr ""
+msgstr "Domänen ”%s” återupptagen\n"
 
 #, c-format
 msgid "Domain '%s' started\n"
-msgstr ""
+msgstr "Domänen ”%s” startad\n"
 
 #, c-format
 msgid "Domain '%s' successfully suspended"
-msgstr ""
+msgstr "Domänen ”%s” sövd"
 
 #, c-format
 msgid "Domain '%s' successfully woken up"
-msgstr ""
+msgstr "Domänen ”%s” uppväckt"
 
 #, c-format
 msgid "Domain '%s' suspended\n"
-msgstr ""
+msgstr "Domänen ”%s” sövd\n"
 
 #, c-format
 msgid "Domain '%s' sysinfo are not available"
-msgstr ""
+msgstr "Domänen ”%s” sysinfo är inte tillgängligt"
 
 #, c-format
 msgid "Domain '%s' unmarked as autostarted\n"
@@ -5604,55 +5611,57 @@ msgstr "Domänen ”%s” avmarkerad som autostartad\n"
 
 #, c-format
 msgid "Domain '%s' was reset\n"
-msgstr ""
+msgstr "Domänen ”%s” återställdes\n"
 
-#, fuzzy
 msgid "Domain Events"
-msgstr "Domän hittades inte"
+msgstr "Domänhändelser"
 
 msgid "Domain UUID is malformed or empty"
-msgstr ""
+msgstr "Domän-UUID:n är felformaterad eller tom"
 
 msgid ""
 "Domain XML doesn't contain any disks, cannot deduce datastore and path for "
 "VMX file"
 msgstr ""
+"Domän-XML innehåller inte några diskar, det går inte att härleda datalager "
+"och sökväg till VMX-filen"
 
 msgid ""
 "Domain XML doesn't contain any file-based harddisks, cannot deduce datastore "
 "and path for VMX file"
 msgstr ""
+"Domän-XML innehåller inte några filbaserade hårddiskar, kan inte härleda "
+"datalager och sökväg till VMX-filen"
 
 msgid "Domain already contains a device with the same address"
-msgstr ""
+msgstr "Domänen innehåller redan en enhet med samma adress"
 
 msgid "Domain already contains a disk with that address"
-msgstr ""
+msgstr "Domänen innehåller redan en disk med den adressen"
 
 #, c-format
 msgid "Domain already exists with UUID '%s'"
-msgstr ""
+msgstr "Domänen finns redan med UUID ”%s”"
 
 msgid "Domain already exists, editing existing domains is not supported yet"
-msgstr ""
+msgstr "Domänen finns redan, att redigera befintliga domäner stödjs inte ännu"
 
 msgid "Domain autodestroy not supported for embedded drivers yet"
-msgstr ""
+msgstr "Domänens autodestruktion stödjs inte för inbäddade drivrutiner ännu"
 
 msgid "Domain autodestroy requires a connection handle"
-msgstr ""
+msgstr "Domänens autodestruktion kräver ett anslutningshandtag"
 
-#, fuzzy
 msgid "Domain backup job id not found"
-msgstr "Domän hittades inte"
+msgstr "Jobb-id för domänsäkerhetskopian hittades inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain backup job id not found: %s"
-msgstr "Domän hittades inte: %s"
+msgstr "Jobb-id för domänsäkerhetskopian hittades inte: %s"
 
 #, c-format
 msgid "Domain checkpoint %s children deleted\n"
-msgstr ""
+msgstr "Domänens kontrollpunkt %s barn raderade\n"
 
 #, c-format
 msgid "Domain checkpoint %s created"
@@ -5662,31 +5671,30 @@ msgstr "Domänkontrollpunkt %s skapad"
 msgid "Domain checkpoint %s created from '%s'"
 msgstr "Domänkontrollpunkten %s skapad från ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain checkpoint %s deleted\n"
-msgstr "Domän %s förstörd\n"
+msgstr "Domänens kontrollpunkt %s raderade\n"
 
-#, fuzzy
 msgid "Domain checkpoint not found"
-msgstr "Domän hittades inte"
+msgstr "Domänkontrollpunkten hittades inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain checkpoint not found: %s"
-msgstr "Domän hittades inte: %s"
+msgstr "Domänkontrollpunkten hittades inte: %s"
 
 msgid "Domain description not changed\n"
-msgstr ""
+msgstr "Domänbeskrivningen inte ändrad\n"
 
 msgid "Domain description updated successfully"
-msgstr ""
+msgstr "Domänbeskrivningen uppdaterad"
 
 msgid "Domain does not have suspend support"
-msgstr ""
+msgstr "Domänen har inte stöd för sovläge"
 
 #, c-format
 msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
-msgstr ""
+msgstr "Domänen har %d gränssnitt. Ange vilket att koppla ifrån med --mac"
 
 #. this is the 2nd match, so it's ambiguous
 #, c-format
@@ -5694,47 +5702,44 @@ msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
 "device and specify the device pci address to remove it."
 msgstr ""
+"Domänen har flera gränssnitt som matchar MAC-adressen %s. Du måste använda "
+"detach-device och ange enhetens pci-adress för att ta bort den."
 
 msgid "Domain has no current snapshot"
-msgstr ""
+msgstr "Domänen har inget aktuell ögonblicksbild"
 
 msgid "Domain has no managed save image"
-msgstr ""
+msgstr "Domänen har ingen hanterad sparad avbild"
 
 msgid "Domain hostdev device"
 msgstr "Domän hostdev-enhet"
 
-#, fuzzy
 msgid "Domain information of managed save state file in XML"
-msgstr "domäninformation i XML"
+msgstr "Domäninformation om hanterad sparad tillståndsfil i XML"
 
-#, fuzzy
 msgid "Domain interface"
-msgstr "domäntillstånd"
+msgstr "Domängränssnitt"
 
 msgid "Domain is already active"
 msgstr "Domänen är redan aktiv"
 
-#, fuzzy
 msgid "Domain is already active or is in state transition"
-msgstr "Domänen är redan aktiv"
+msgstr "Domänen är redan aktiv eller i en tillståndsövergång"
 
 msgid "Domain is already running"
 msgstr "Domänen kör redan"
 
-#, fuzzy
 msgid "Domain is not active"
-msgstr "Domänen är redan aktiv"
+msgstr "Domänen är inte aktiv"
 
 msgid "Domain is not active or in state transition"
-msgstr ""
+msgstr "Domänen är inte aktiv eller i en tillståndsövergång"
 
 msgid "Domain is not active or is in state transition"
-msgstr ""
+msgstr "Domänen är inte aktiv eller är i en tillståndsövergång"
 
-#, fuzzy
 msgid "Domain is not paused"
-msgstr "Domänen är inte avstängd"
+msgstr "Domänen är inte pausad"
 
 msgid "Domain is not powered off"
 msgstr "Domänen är inte avstängd"
@@ -5742,20 +5747,17 @@ msgstr "Domänen är inte avstängd"
 msgid "Domain is not powered on"
 msgstr "Domänen är inte påslagen"
 
-#, fuzzy
 msgid "Domain is not running"
-msgstr "Domänen kör redan"
+msgstr "Domänen kör inte"
 
 msgid "Domain is not suspended"
 msgstr "Domänen är inte sövd"
 
-#, fuzzy
 msgid "Domain is not suspended or powered off"
-msgstr "Domänen är inte avstängd"
+msgstr "Domänen är inte sövd eller avstängd"
 
-#, fuzzy
 msgid "Domain name contains invalid escape sequence"
-msgstr "Modellnamnet innehåller ogiltiga tecken"
+msgstr "Domännamnet innehåller en ogiltig flyktföljd"
 
 msgid "Domain not found"
 msgstr "Domän hittades inte"
@@ -5769,9 +5771,12 @@ msgid ""
 "enabled in the host BIOS, and host configuration is setup to load the kvm "
 "modules."
 msgstr ""
+"Domänen kräver KVM, men det är inte tillgängligt. Kontrollera att "
+"virtualisering är aktiverat i värd-BIOS, och att värdkonfigurationen är "
+"uppsatt för att läsa in kvm-moduler."
 
 msgid "Domain requires at least 1 vCPU"
-msgstr ""
+msgstr "Domänen kräver åtminstone 1 vCPU"
 
 #, c-format
 msgid "Domain restored from %s\n"
@@ -5782,7 +5787,7 @@ msgstr "Domänen skall ha åtminstone en disk definierad"
 
 #, c-format
 msgid "Domain snapshot %s children deleted\n"
-msgstr ""
+msgstr "Domänögonblicksbilden %s barn raderade\n"
 
 #, c-format
 msgid "Domain snapshot %s created"
@@ -5792,276 +5797,276 @@ msgstr "Domänögonblicksbilden %s skapad"
 msgid "Domain snapshot %s created from '%s'"
 msgstr "Domänögonblicksbilden %s skapad från ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain snapshot %s deleted\n"
-msgstr "Domän %s förstörd\n"
+msgstr "Domänögonblicksbilden %s raderad\n"
 
-#, fuzzy
 msgid "Domain snapshot not found"
-msgstr "Domän hittades inte"
+msgstr "Domänögonblicksbilden hittades inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain snapshot not found: %s"
-msgstr "Domän hittades inte: %s"
+msgstr "Domänögonblicksbilden hittades inte: %s"
 
 msgid "Domain title can't contain newlines"
-msgstr ""
+msgstr "Domäntiteln får inte innehålla nyrader"
 
 msgid "Domain title not changed\n"
 msgstr "Domäntiteln ändrades inte\n"
 
 msgid "Domain title updated successfully"
-msgstr ""
+msgstr "Domäntiteln uppdaterad"
 
 msgid "Domain-0 cannot be migrated"
-msgstr ""
+msgstr "Domän-0 kan inte migreras"
 
-#, fuzzy
 msgid "Domain-0 does not support requested operation"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "Domän-0 stödjer inte den begärda åtgärden"
 
 msgid "Domain:"
 msgstr "Domän:"
 
 msgid "Done.\n"
-msgstr ""
+msgstr "Klart.\n"
 
 msgid "Download length it too large"
-msgstr ""
+msgstr "Hämtningslängden är för stor"
 
 msgid "Download volume contents to a file"
-msgstr ""
+msgstr "Hämtningsvolymen innehåll till en fil"
 
 msgid "Downtime w/o network:"
-msgstr ""
+msgstr "Nertid utan nätverk:"
 
 #, c-format
 msgid "Driver %s cannot be used in embedded mode"
-msgstr ""
+msgstr "Drivrutinen %s kan inte användas i inbäddat läge"
 
 msgid "Driver does not support embedded mode"
-msgstr ""
+msgstr "Drivrutinen stödjer inte inbäddat läge"
 
 msgid "Driver does not support setting multiple IP addresses"
-msgstr ""
+msgstr "Drivrutinen stödjer inte att ställa in flera IP-adresser"
 
 msgid "Driver state initialization failed"
 msgstr "Initiering av drivrutinstillstånd misslyckades"
 
 msgid "Dump"
-msgstr ""
+msgstr "Dumpa"
 
 msgid "Dump XML for a domain checkpoint"
-msgstr ""
+msgstr "Dumpa XML för en domänkontrollpunkt"
 
 msgid "Dump XML for a domain snapshot"
-msgstr ""
+msgstr "Dumpa XML för en domänögonblicksbild"
 
 msgid "Dump XML for an ongoing domain block backup job"
-msgstr ""
+msgstr "Dumpa XML för ett pågående domänblockssäkerhetskopieringsjobb"
 
-#, fuzzy
 msgid "Dump XML of domain information for a managed save state file to stdout."
-msgstr "Skriv ut domäninformationen som en XML-dump till stdout."
+msgstr ""
+"Dumpa XML över domäninformationen för en hanterad spartillståndsfil till "
+"standard ut."
 
-#, fuzzy
 msgid "Dump XML of domain information for a saved state file to stdout."
-msgstr "Skriv ut domäninformationen som en XML-dump till stdout."
+msgstr ""
+"Dumpa XML över domäninformationen för en sparad tillståndsfil till standard "
+"ut."
 
 msgid "Dump failed"
-msgstr ""
+msgstr "Dumpen misslyckades"
 
 #, c-format
 msgid "Duplicate NUMA cell info for cell id '%u'"
-msgstr ""
+msgstr "Dubblerad NUMA-cellsinformation för cell-id ”%u”"
 
 #, c-format
 msgid "Duplicate USB address bus %u port %s"
-msgstr ""
+msgstr "Dubberad USB-adress buss %u port %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Duplicate USB controllers with index %u"
-msgstr "Kan inte tolka styrenhetsindex %s"
+msgstr "Uubblerade USB-styrenheter med index %u"
 
 #, c-format
 msgid "Duplicate USB hub on bus %u port %s"
-msgstr ""
+msgstr "Dubblerat USB-nav på buss %u port %s"
 
 #, c-format
 msgid "Duplicate cache type in resctrl for level %u"
-msgstr ""
+msgstr "Dubblerad cachetyp i resctrl för nivå %u"
 
 #, c-format
 msgid "Duplicate hash table key '%s'"
-msgstr ""
+msgstr "Dubblerad hash-tabellnyckel ”%s”"
 
 msgid "Duplicate info for NUMA latencies"
-msgstr ""
+msgstr "Dubblerad information för NUMA-latenser"
 
 #, c-format
 msgid "Duplicate security driver %s"
-msgstr ""
+msgstr "Dubblerad säkerhetsdrivrutin %s"
 
 msgid "Duration not supported. Use 0 for now"
-msgstr ""
+msgstr "Varaktighet stödjs inte. Använd 0 tills vidare"
 
 msgid "EOF notify callback must be supplied"
-msgstr ""
+msgstr "EOF-notifieringsåteranrop måste anges"
 
 msgid "EOF on stdin"
-msgstr ""
+msgstr "EOF i standard in"
 
 msgid "EOF on stdout"
-msgstr ""
+msgstr "EOF i standard ut"
 
 msgid "Echo back arguments, possibly with quoting."
-msgstr ""
+msgstr "Eka tillbaka argument, möjligen med citeringar."
 
 msgid "Edit the XML configuration for a domain."
-msgstr ""
+msgstr "Redigera XML-konfigurationen för en domän."
 
 msgid "Edit the XML configuration for a network filter."
-msgstr ""
+msgstr "Redigera XML-konfigurationen för ett nätverksfilter."
 
 msgid "Edit the XML configuration for a network."
-msgstr ""
+msgstr "Redigera XML-konfigurationen för ett nätverk."
 
-#, fuzzy
 msgid "Edit the XML configuration for a physical host interface."
-msgstr "starta ett fysiskt värdgränssnitt."
+msgstr "Redigera XML-konfigurationen för ett fysiskt värdgränssnitt."
 
 msgid "Edit the XML configuration for a storage pool."
-msgstr ""
+msgstr "Redigera XML-konfigurationen för en lagringspool."
 
-#, fuzzy
 msgid "Edit the domain XML associated with a saved state file"
-msgstr "återställ en domän från ett sparat tillstånd i en fil"
+msgstr "Redigera domän-XML associerad med en sparad tillståndsfil"
 
 msgid "Edit the domain XML associated with the managed save state file"
-msgstr ""
+msgstr "Redigera domän-XML associerad med den hanterade tillståndsfilen"
 
 msgid "Edit the domain checkpoint XML for a named checkpoint"
-msgstr ""
+msgstr "Redigera domänkontrollpunkts-XML för en namngiven kontrollpunkt"
 
 msgid "Edit the domain snapshot XML for a named snapshot"
-msgstr ""
+msgstr "Redigera domänögonblicsbilds-XML för en namngiven ögonblicksbild"
 
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "Antingen ”name” eller ”parent” måste anges för adaptern ”scsi_host”"
 
 msgid "Eject the media"
-msgstr ""
+msgstr "Mata ut mediumet"
 
 msgid "Element 'memnode' is invalid without any guest NUMA cells"
-msgstr ""
+msgstr "Elementet ”memnode” or ogiltigt utan några gäst-NUMA-celler"
 
 msgid "Empty cpu list for pinning"
-msgstr ""
+msgstr "Tom cpu-lista för att fästa"
 
 msgid "Empty iothread cpumap list for pinning"
-msgstr ""
+msgstr "Tom iothread cpumap-lista för fästning"
 
 msgid "Empty prefix name for resctrl monitor"
-msgstr ""
+msgstr "Tomt prefixnamn för resctrl-monitorn"
 
 #, c-format
 msgid "Empty response during %s"
-msgstr ""
+msgstr "Tomt svar under %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Emulator '%s' does not support arch '%s'"
-msgstr "kommandot '%s' stöder inte flaggan --%s"
+msgstr "Emulatorn ”%s” stödjer inte arkitekturen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Emulator '%s' does not support machine type '%s'"
-msgstr "kommandot '%s' stöder inte flaggan --%s"
+msgstr "Emulatorn ”%s” stöder inte maskintypen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Emulator '%s' does not support os type '%s'"
-msgstr "kommandot '%s' stöder inte flaggan --%s"
+msgstr "Emulatorn ”%s” stödjer inte os-typen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Emulator '%s' does not support virt type '%s'"
-msgstr "kommandot '%s' stöder inte flaggan --%s"
+msgstr "Emulatorn ”%s” stödjer inte virtualiseringstypen ”%s”"
 
 msgid "Enabled"
 msgstr "Aktiverad"
 
 msgid "End of file from agent socket"
-msgstr ""
+msgstr "Slut på filen från agentuttaget"
 
-#, fuzzy
 msgid "End of file from qemu monitor"
-msgstr "Kan inte läsa från övervakaren"
+msgstr "Slut på filen från qemu-monitorn"
 
-#, fuzzy
 msgid "End of file while reading data"
-msgstr "Fel när domännamnet lästes"
+msgstr "Slut på filen när data lästes"
 
 #, c-format
 msgid "End of file while reading data: %s"
-msgstr ""
+msgstr "Slut på filen när data lästes: %s"
 
 msgid "End of file while writing data"
-msgstr ""
+msgstr "Slut på filen när data skrevs"
 
 msgid "Ensure data previously on a volume is not accessible to future reads"
 msgstr ""
+"Se till att data som tidigare finns på en volym inte är tillgängligt för "
+"framtida läsningar"
 
 #, c-format
 msgid "Enter %s's password for %s"
-msgstr ""
+msgstr "Ange %ss lösenord för %s"
 
 msgid "Enter new value for secret:"
-msgstr ""
+msgstr "Ange ett nytt värde för hemligheten:"
 
 #, c-format
 msgid "Enter username for %s"
-msgstr ""
+msgstr "Ange användarnamn för %s"
 
 #, c-format
 msgid "Enter username for %s [%s]"
-msgstr ""
+msgstr "Ange användarnamn för %s [%s]"
 
 #, c-format
 msgid "Error adding route to %s"
-msgstr ""
+msgstr "Fel när rutten till %s lades till"
 
 msgid "Error checking for disk label, failed to get disk partition information"
 msgstr ""
+"Fel vid kontroll av disketikett, misslyckades att hämta "
+"diskpartitionsinformation"
 
 msgid "Error creating initial configuration"
-msgstr ""
+msgstr "Fel när en initial konfiguration skapades"
 
 #, c-format
 msgid "Error from child process creating '%s'"
-msgstr ""
+msgstr "Fel från när barnprocessen skapade ”%s”"
 
 #, c-format
 msgid "Error from child process opening '%s'"
-msgstr ""
+msgstr "Fel från när barnprocessen öppnade ”%s”"
 
 msgid "Error getting 'total-bytes' in reply of guest-get-fsinfo"
-msgstr ""
+msgstr "Fel vid läsning av ”total-bytes” i svaret till guest-get-fsinfo"
 
 msgid "Error getting 'used-bytes' in reply of guest-get-fsinfo"
-msgstr ""
+msgstr "Fel i läsning av ”used-bytes” i svaret till guest-get-fsinfo"
 
 #, c-format
 msgid "Error getting physical function's '%s' virtual_functions"
-msgstr ""
+msgstr "Fel när den fysiska funktionens ”%s” virtual_functions hämtades"
 
 msgid "Error in xmlAddPrevSibling"
-msgstr ""
+msgstr "Fel i xmlAddPrevSibling"
 
 msgid "Error in xmlNewProp"
-msgstr ""
+msgstr "Fel i xmlNewProp"
 
 msgid "Error message:"
 msgstr "Felmeddelande:"
 
 msgid "Error notify callback must be supplied"
-msgstr ""
+msgstr "Fel notifieringsanrop måste ges"
 
 #, c-format
 msgid "Error opening file %s"
@@ -6069,61 +6074,56 @@ msgstr "Fel när filen %s öppnades"
 
 #, c-format
 msgid "Error reading secret: %s"
-msgstr ""
+msgstr "Fel vid läsning av hemlighet: %s"
 
 #, c-format
 msgid "Error removing IP address from %s"
-msgstr ""
+msgstr "Fel när en IP-adress togs bort från %s"
 
 msgid "Error while building firewall"
-msgstr ""
+msgstr "Fel när brandväggen byggdes"
 
 #, c-format
 msgid "Error while building firewall: %s"
-msgstr ""
+msgstr "Fel när brandväggen byggdes: %s"
 
 #, c-format
 msgid "Error while closing medium, rc=%08x"
-msgstr ""
+msgstr "Fel när mediumet stängdes, rk=%08x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Error while creating diff storage, rc=%08x"
-msgstr "Fel när domännamnet lästes"
+msgstr "Fel när skillnadslagring skapades, rk=%08x"
 
-#, fuzzy
 msgid "Error while processing agent IO"
-msgstr "Fel när domännamnet lästes"
+msgstr "Fel när agent-IO bearbetades"
 
-#, fuzzy
 msgid "Error while processing command's IO"
-msgstr "Fel när domännamnet lästes"
+msgstr "Fel när kommandots IO bearbetades"
 
-#, fuzzy
 msgid "Error while processing monitor IO"
-msgstr "Fel när domännamnet lästes"
+msgstr "Fel när monitor-IO bearbetades"
 
-#, fuzzy
 msgid "Error while reading /proc/cgroups"
-msgstr "Fel när domännamnet lästes"
+msgstr "Fel när /proc/cgroup lästes"
 
 msgid "Error while reading the domain name"
 msgstr "Fel när domännamnet lästes"
 
 #, c-format
 msgid "Error while removing hostonly network interface, rc=%08x"
-msgstr ""
+msgstr "Fel när hostonly-nätverksgränssnittet togs bort, rk=%08x"
 
 #, c-format
 msgid "Escape character is %s"
-msgstr ""
+msgstr "Flykttecknet är %s"
 
 #, c-format
 msgid "Ethernet controller index %d out of [0..%d] range"
-msgstr ""
+msgstr "Ethernet-styrenhetens index %d utanför intervallet [0..%d]"
 
-#, fuzzy
 msgid "Event thread is already running"
-msgstr "Domänen kör redan"
+msgstr "Händelsetråden redan"
 
 msgid "Event wakeup"
 msgstr "Uppväckt av händelse"
@@ -6132,262 +6132,304 @@ msgid ""
 "Exactly one 'cell' element per guest NUMA cell allowed, non-contiguous "
 "ranges or ranges not starting from 0 are not allowed"
 msgstr ""
+"Precis ett ”cell”-element per gäst-NUMA-cell är tillåtet, icke "
+"sammanhängande intervall eller intervall som inte startar från 0 är inte "
+"tillåtet"
 
 #, c-format
 msgid "Exceeded max iface limit %d"
-msgstr ""
+msgstr "Överskriden max gränssnittsgräns %d"
 
-#, fuzzy
 msgid "Executing new processes is not supported on Win32 platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Att köra nya processer stödjs inte på plattformem Win32"
 
 #, c-format
 msgid "Existing device %s has no type"
-msgstr ""
+msgstr "Befintlig enhet %s har ingen typ"
 
 #, c-format
 msgid "Existing device %s is already a bridge"
-msgstr ""
+msgstr "Befintlig enhet %s är redan en brygga"
 
 msgid "Exit after timeout period"
-msgstr ""
+msgstr "Avsluta efter en tidsgränsperiod"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Expected a /dev path for '%s'"
-msgstr "oväntad data '%s'"
+msgstr "En /dev-sökväg förväntades för ”%s”"
 
 #, c-format
 msgid "Expected an interface of type 'network' not '%s'"
-msgstr ""
+msgstr "Ett gränssnitt av typen ”network” förväntades inte ”%s”"
 
 msgid "Expected at least one file descriptor"
-msgstr ""
+msgstr "Åtminstone en filbeskrivare förväntades"
 
 #, c-format
 msgid "Expected caps for '%s' but saw '%s'"
-msgstr ""
+msgstr "Versaler förväntades för ”%s” men såg ”%s”"
 
 msgid "Expected downtime:"
-msgstr ""
+msgstr "Förväntad nertid:"
 
 msgid "Expected exactly 1 host for the storage pool"
-msgstr ""
+msgstr "Exakt 1 värd förväntades för lagringspoolen"
 
 #, c-format
 msgid "Expecting %d FD names but got %u"
-msgstr ""
+msgstr "%d FB-namn förväntades men fick %u"
 
 #, c-format
 msgid "Expecting '%s' to be a %s host but found a %s host"
-msgstr ""
+msgstr "”%s” förväntades vara en %s-värd men fann en %s-värd"
 
 #, c-format
 msgid "Expecting VI API type 'HostAgent' or 'VirtualCenter' but found '%s'"
-msgstr ""
+msgstr "VI API-typ ”HostAgent” eller ”VirtualCenter” förväntades men fann ”%s”"
 
 #, c-format
 msgid "Expecting VMX entry '%s' to be 'ata-hardDisk' or 'disk' but found '%s'"
 msgstr ""
+"VMX-post ”%s” förväntades vara ”ata-hardDisk” eller ”disk” men fann ”%s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry '%s' to be 'buslogic' or 'lsilogic' or 'lsisas1068' or "
 "'pvscsi' but found '%s'"
 msgstr ""
+"VMX-post ”%s” förväntades vara ”buslogic” eller ”lsilogic” eller ”lsias1068” "
+"eller ”pvscsi” men fann ”%s”"
 
 #, c-format
 msgid "Expecting VMX entry '%s' to be 'cdrom-image' but found '%s'"
-msgstr ""
+msgstr "VMX-post ”%s” förväntades vara ”cdrom-imaage” men fann ”%s”"
 
 #, c-format
 msgid "Expecting VMX entry '%s' to be 'device' or 'file' but found '%s'"
-msgstr ""
+msgstr "VMX-post ”%s” förväntades vara ”device” eller ”file” men fann ”%s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry '%s' to be 'device', 'file' or 'pipe' or 'network' but "
 "found '%s'"
 msgstr ""
+"VMX-post ”%s” förväntades vara ”device”, ”file” eller ”pipe” eller ”network” "
+"men fann ”%s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry '%s' to be 'generated' or 'static' or 'vpx' but found "
 "'%s'"
 msgstr ""
+"VMX-post ”%s” förväntades vara ”generated” eller ”static” eller ”vpx” men "
+"fann ”%s”"
 
 #, c-format
 msgid "Expecting VMX entry '%s' to be 'scsi-hardDisk' or 'disk' but found '%s'"
 msgstr ""
+"VMX-post ”%s” förväntades vara ”scsi-hardDisk” eller ”disk” men fann ”%s”"
 
 #, c-format
 msgid "Expecting VMX entry '%s' to be 'server' or 'client' but found '%s'"
-msgstr ""
+msgstr "VMX-post ”%s” förväntades vara ”server” eller ”client” men fann ”%s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry '%s' to be 'vlance' or 'vmxnet' or 'vmxnet3' or 'e1000' "
 "or 'e1000e' but found '%s'"
 msgstr ""
+"VMX-post ”%s” förväntades vara ”vlance” eller ”vmxnet” eller ”vmxnet3” eller "
+"”e1000” eller ”e1000e” men fann ”%s”"
 
 #, c-format
 msgid "Expecting VMX entry '%s' to be MAC address but found '%s'"
-msgstr ""
+msgstr "VMX-post ”%s” förväntades vara en MAC-adress men fann ”%s”"
 
 #, c-format
 msgid "Expecting VMX entry 'config.version' to be 8 but found %lld"
-msgstr ""
+msgstr "VMX-post ”config.version” förväntades vara 8 men fann %lld"
 
 #, c-format
 msgid ""
 "Expecting VMX entry 'memsize' to be an unsigned integer (multiple of 4) but "
 "found %lld"
 msgstr ""
+"VMX-post ”memsize” förväntades vara ett teckenlöst heltal (mutipel av 4) men "
+"fann %lld"
 
 #, c-format
 msgid ""
 "Expecting VMX entry 'numvcpus' to be an unsigned integer greater than 0 but "
 "found %lld"
 msgstr ""
+"VMX-post ”numvcpus” förväntades vara ett teckenlöst heltal störren än 0 men "
+"fann %lld"
 
 #, c-format
 msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to be a comma separated list of "
 "unsigned integers but found '%s'"
 msgstr ""
+"VMX-post ”sched.cpu.affinity” förväntades vara en kommaseparerad lista av "
+"teckenlösa heltal men fann ”%s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to contain at least as many values "
 "as 'numvcpus' (%lld) but found only %u value(s)"
 msgstr ""
+"VMX-post ”sched.cpu.affinity” förväntades innehålla åtminstone lika många "
+"värden som ”numvcpus” (%lld) men fann bara %u värde(n)"
 
 #, c-format
 msgid ""
 "Expecting VMX entry 'sched.cpu.shares' to be an unsigned integer or 'low', "
 "'normal' or 'high' but found '%s'"
 msgstr ""
+"VMX-post ”sched.cpu.shares” förväntades vara ett teckenlöst heltal eller "
+"”low”, ”normal” eller ”high” men fann ”%s”"
 
 #, c-format
 msgid ""
 "Expecting VMX entry 'virtualHW.version' to be 4 or higher but found %lld"
 msgstr ""
+"VMX-post ”virtualHW.version” förväntades vara 4 eller högre men fann %lld"
 
 #, c-format
 msgid "Expecting domain XML CPU mode 'custom' but found '%s'"
-msgstr ""
+msgstr "Domän-XML-CPU-läge ”custom” förväntades men fann ”%s”"
 
 #, c-format
 msgid "Expecting domain XML CPU sockets per core as %d but found %d"
-msgstr ""
+msgstr "Domän-XML-CPU-uttag per kärna förväntades som %d men fann %d"
 
 #, c-format
 msgid ""
 "Expecting domain XML attribute 'arch' of entry 'os/type' to be 'i686' or "
 "'x86_64' but found '%s'"
 msgstr ""
+"Domän-XML-attributet ”arch” för posten ”os/type” förväntades vara ”i686” "
+"eller ”x86_64” men fann ”%s”"
 
 #, c-format
 msgid ""
 "Expecting domain XML attribute 'cpuset' of entry 'vcpu' to contain at least "
 "%d CPU(s)"
 msgstr ""
+"Domän-XML-attributet ”cpuset” för posten ”vcpu” förväntades innehålla "
+"åtminstone %d CPU(er)"
 
 msgid ""
 "Expecting domain XML attribute 'dev' of entry 'devices/disk/target' to start "
 "with 'fd'"
 msgstr ""
+"Domän-XML-attributet ”dev” i posten ”devices/disk/target” förväntades börja "
+"med ”fd”"
 
 msgid ""
 "Expecting domain XML attribute 'dev' of entry 'devices/disk/target' to start "
 "with 'hd'"
 msgstr ""
+"Domän-XML-attributet ”dev” i posten ”devices/disk/target” förväntades börja "
+"med ”hd”"
 
 msgid ""
 "Expecting domain XML attribute 'dev' of entry 'devices/disk/target' to start "
 "with 'sd'"
 msgstr ""
+"Domän-XML-attributet ”dev” i posten ”devices/disk/target” förväntades börja "
+"med ”sd”"
 
 #, c-format
 msgid ""
 "Expecting domain XML attribute 'model' of entry 'controller' to be "
 "'buslogic' or 'lsilogic' or 'lsisas1068' or 'vmpvscsi' but found '%s'"
 msgstr ""
+"Domän-XM-attributet ”model” i posten ”controller” förväntades vara ”buslogic”"
+" eller ”lsilogic” eller ”lsias1068” eller “vmpvscsi” men fann ”%s”"
 
 #, c-format
 msgid ""
 "Expecting domain XML entry 'devices/interface/model' to be 'vlance' or "
 "'vmxnet' or 'vmxnet2' or 'vmxnet3' or 'e1000' or 'e1000e' but found '%s'"
 msgstr ""
+"Domän-XML-posten ”devices/interface/model” förväntades vara ”vlance” eller "
+"”vmxnet” eller ”vmxnet2” eller ”vmxnet3” eller ”e1000” eller ”e1000e” men "
+"fann ”%s”"
 
 msgid "Expecting domain XML entry 'vcpu' to be greater than 0"
-msgstr ""
+msgstr "Domän-XML-posten ”vcpu” förväntades vara större än 0"
 
 #, c-format
 msgid ""
 "Expecting product 'gsx' or 'esx' or 'embeddedEsx' or 'vpx' but found '%s'"
 msgstr ""
+"Produkten ”gsx” eller ”esx” eller ”embeddedEsx” eller ”vpx” förväntades men "
+"fann ”%s”"
 
 #, c-format
 msgid "Expecting source '%s' of first file-based harddisk to be a VMDK image"
 msgstr ""
+"Källan ”%s” till första filbaserade hårddisken förväntades vara en VMDK-"
+"avbild"
 
 #, c-format
 msgid "Expecting type '%s' but found '%s'"
-msgstr ""
+msgstr "Typen ”%s” förväntades men fann ”%s”"
 
 #, c-format
 msgid "Expecting type to begin with 'ArrayOf' but found '%s'"
-msgstr ""
+msgstr "Typen förväntades börja med ”ArrayOf” men fann ”%s”"
 
 #, c-format
 msgid "Expecting virt type to be '%s' but found '%s'"
-msgstr ""
+msgstr "Virt-typen förväntades vara ”%s” men fann ”%s”"
 
 msgid "Expiry Time"
-msgstr ""
+msgstr "Utgångstid"
 
 msgid ""
 "Explicit destination hostname is required for TLS migration over UNIX socket"
 msgstr ""
+"Ett explicit destinationsvärdnamn krävs för TLS-migrering över UNIX-uttag"
 
-#, fuzzy
 msgid "Extended attributes are not supported on this system"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Utökade attribut stödjs inte på detta system"
 
 #, c-format
 msgid "Extra data in disabled network '%s'"
-msgstr ""
+msgstr "Extra data i avaktiverat nätverk ”%s”"
 
 msgid "Extract the checkpoint's parent, if any"
-msgstr ""
+msgstr "Extrahera kontropunktens förälder, om någon"
 
 msgid "Extract the snapshot's parent, if any"
-msgstr ""
+msgstr "Extrahera ögonblicksbildens förälder, om någon"
 
 msgid "FAIL"
-msgstr ""
+msgstr "MISSLYCKAT"
 
 #, c-format
 msgid "FDC bus index %d out of [0] range"
-msgstr ""
+msgstr "FDC-bussindex %d utnför intervallet [0]"
 
 #, c-format
 msgid "FDC controller index %d out of [0] range"
-msgstr ""
+msgstr "FDC-styrindex %d utanför intervallet [0]"
 
 #, c-format
 msgid "FDC unit index %d out of [0..1] range"
-msgstr ""
+msgstr "FDC-enhetsindex %d utanför intervallet [0..1]"
 
-#, fuzzy
 msgid "Fail to create socket for incoming migration"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades att skapa uttag för inkommande migrering"
 
 msgid "Failed"
 msgstr "Misslyckades"
 
 msgid "Failed disable mount propagation out of the root filesystem"
 msgstr ""
+"Misslyckades att avaktivera överföring av montering utanför rotfilsystemet"
 
 #, fuzzy, c-format
 msgid "Failed new node mode for target '%s'"
