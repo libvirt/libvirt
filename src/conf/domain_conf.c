@@ -20354,7 +20354,7 @@ virDomainObjParseXML(xmlDocPtr xml,
     virDomainObj *obj;
     size_t i;
     int n;
-    int state;
+    virDomainState state;
     int reason = 0;
     void *parseOpaque = NULL;
     g_autofree char *tmp = NULL;
@@ -20377,17 +20377,9 @@ virDomainObjParseXML(xmlDocPtr xml,
     if (!obj->def)
         goto error;
 
-    if (!(tmp = virXMLPropString(ctxt->node, "state"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("missing domain state"));
+    if (virXMLPropEnum(ctxt->node, "state", virDomainStateTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &state) < 0)
         goto error;
-    }
-    if ((state = virDomainStateTypeFromString(tmp)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("invalid domain state '%s'"), tmp);
-        goto error;
-    }
-    VIR_FREE(tmp);
 
     if ((tmp = virXMLPropString(ctxt->node, "reason"))) {
         if ((reason = virDomainStateReasonFromString(state, tmp)) < 0) {
@@ -20409,18 +20401,16 @@ virDomainObjParseXML(xmlDocPtr xml,
     if ((n = virXPathNodeSet("./taint", ctxt, &taintNodes)) < 0)
         goto error;
     for (i = 0; i < n; i++) {
-        char *str = virXMLPropString(taintNodes[i], "flag");
-        if (str) {
-            int flag = virDomainTaintTypeFromString(str);
-            if (flag < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Unknown taint flag %s"), str);
-                VIR_FREE(str);
-                goto error;
-            }
-            VIR_FREE(str);
-            virDomainObjTaint(obj, flag);
-        }
+        int rc;
+        virDomainTaintFlags taint;
+
+        if ((rc = virXMLPropEnum(taintNodes[i], "flag",
+                                 virDomainTaintTypeFromString,
+                                 VIR_XML_PROP_NONE, &taint)) < 0)
+            goto error;
+
+        if (rc == 1)
+            virDomainObjTaint(obj, taint);
     }
 
     if ((n = virXPathNodeSet("./deprecation", ctxt, &depNodes)) < 0)
