@@ -20351,7 +20351,7 @@ virDomainObjParseXML(xmlDocPtr xml,
     long val;
     xmlNodePtr config;
     xmlNodePtr oldnode;
-    virDomainObj *obj;
+    g_autoptr(virDomainObj) obj = NULL;
     size_t i;
     int n;
     virDomainState state;
@@ -20367,7 +20367,7 @@ virDomainObjParseXML(xmlDocPtr xml,
     if (!(config = virXPathNode("./domain", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("no domain config"));
-        goto error;
+        return NULL;
     }
 
     oldnode = ctxt->node;
@@ -20375,17 +20375,17 @@ virDomainObjParseXML(xmlDocPtr xml,
     obj->def = virDomainDefParseXML(xml, ctxt, xmlopt, flags);
     ctxt->node = oldnode;
     if (!obj->def)
-        goto error;
+        return NULL;
 
     if (virXMLPropEnum(ctxt->node, "state", virDomainStateTypeFromString,
                        VIR_XML_PROP_REQUIRED, &state) < 0)
-        goto error;
+        return NULL;
 
     if ((tmp = virXMLPropString(ctxt->node, "reason"))) {
         if ((reason = virDomainStateReasonFromString(state, tmp)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("invalid domain state reason '%s'"), tmp);
-            goto error;
+            return NULL;
         }
     }
 
@@ -20394,12 +20394,12 @@ virDomainObjParseXML(xmlDocPtr xml,
     if (virXPathLong("string(./@pid)", ctxt, &val) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("invalid pid"));
-        goto error;
+        return NULL;
     }
     obj->pid = (pid_t)val;
 
     if ((n = virXPathNodeSet("./taint", ctxt, &taintNodes)) < 0)
-        goto error;
+        return NULL;
     for (i = 0; i < n; i++) {
         int rc;
         virDomainTaintFlags taint;
@@ -20407,14 +20407,14 @@ virDomainObjParseXML(xmlDocPtr xml,
         if ((rc = virXMLPropEnum(taintNodes[i], "flag",
                                  virDomainTaintTypeFromString,
                                  VIR_XML_PROP_NONE, &taint)) < 0)
-            goto error;
+            return NULL;
 
         if (rc == 1)
             virDomainObjTaint(obj, taint);
     }
 
     if ((n = virXPathNodeSet("./deprecation", ctxt, &depNodes)) < 0)
-        goto error;
+        return NULL;
     for (i = 0; i < n; i++) {
         g_autofree char *str = virXMLNodeContentString(depNodes[i]);
         virDomainObjDeprecation(obj, str);
@@ -20422,24 +20422,20 @@ virDomainObjParseXML(xmlDocPtr xml,
 
     if (xmlopt->privateData.parse &&
         xmlopt->privateData.parse(ctxt, obj, &xmlopt->config) < 0)
-        goto error;
+        return NULL;
 
     if (xmlopt->privateData.getParseOpaque)
         parseOpaque = xmlopt->privateData.getParseOpaque(obj);
 
     /* callback to fill driver specific domain aspects */
     if (virDomainDefPostParse(obj->def, flags, xmlopt, parseOpaque) < 0)
-        goto error;
+        return NULL;
 
     /* validate configuration */
     if (virDomainDefValidate(obj->def, flags, xmlopt, parseOpaque) < 0)
-        goto error;
+        return NULL;
 
-    return obj;
-
- error:
-    virObjectUnref(obj);
-    return NULL;
+    return g_steal_pointer(&obj);
 }
 
 
