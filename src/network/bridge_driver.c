@@ -988,7 +988,7 @@ networkBuildDnsmasqLeaseTime(virNetworkDHCPLeaseTimeDef *lease)
     } else {
         unit = virNetworkDHCPLeaseTimeUnitTypeToString(lease->unit);
         /* We get only first compatible char from string: 's', 'm' or 'h' */
-        virBufferAsprintf(&buf, "%lu%c", lease->expiry, unit[0]);
+        virBufferAsprintf(&buf, "%llu%c", lease->expiry, unit[0]);
     }
 
     return virBufferContentAndReset(&buf);

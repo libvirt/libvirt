@@ -105,7 +105,7 @@ VIR_ENUM_DECL(virNetworkForwardDriverName);
 
 typedef struct _virNetworkDHCPLeaseTimeDef virNetworkDHCPLeaseTimeDef;
 struct _virNetworkDHCPLeaseTimeDef {
-    unsigned long expiry;
+    unsigned long long expiry;
     virNetworkDHCPLeaseTimeUnitType unit;
 };
 
