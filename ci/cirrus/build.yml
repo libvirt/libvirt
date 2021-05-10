@@ -23,4 +23,6 @@ build_task:
     - git reset --hard "$CI_COMMIT_SHA"
   build_script:
     - meson setup build
-    - meson dist -C build
+    - meson dist -C build --no-tests
+    - meson compile -C build
+    - meson test -C build --no-suite syntax-check

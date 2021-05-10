@@ -61,10 +61,13 @@ stages:
     - *script_variables
   script:
     - meson setup build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
-    - meson dist -C build
+    - meson dist -C build --no-tests
     - if test -x /usr/bin/rpmbuild && test "$RPM" != "skip";
       then
         rpmbuild --nodeps -ta build/meson-dist/libvirt-*.tar.xz;
+      else
+        meson compile -C build;
+        meson test -C build --no-suite syntax-check --print-errorlogs;
       fi
 
 # Jobs that we delegate to Cirrus CI because they require an operating
@@ -124,7 +127,7 @@ stages:
   script:
     - meson setup build --werror $MESON_OPTS || (cat build/meson-logs/meson-log.txt && exit 1)
     - meson compile -C build
-    - if test "$CROSS" = "i686" ; then meson test -C build --print-errorlogs ; fi
+    - if test "$CROSS" = "i686" ; then meson test -C build --no-suite syntax-check --print-errorlogs ; fi
 
 
 # Native container build jobs
