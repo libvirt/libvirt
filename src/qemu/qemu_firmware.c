@@ -567,6 +567,7 @@ qemuFirmwareFeatureParse(const char *path,
     virJSONValue *featuresJSON;
     g_autoptr(qemuFirmwareFeature) features = NULL;
     size_t nfeatures;
+    size_t nparsed = 0;
     size_t i;
 
     if (!(featuresJSON = virJSONValueObjectGetArray(doc, "features"))) {
@@ -586,17 +587,16 @@ qemuFirmwareFeatureParse(const char *path,
         int tmp;
 
         if ((tmp = qemuFirmwareFeatureTypeFromString(tmpStr)) <= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown feature %s"),
-                           tmpStr);
-            return -1;
+            VIR_DEBUG("ignoring unknown QEMU firmware feature '%s'", tmpStr);
+            continue;
         }
 
-        features[i] = tmp;
+        features[nparsed] = tmp;
+        nparsed++;
     }
 
     fw->features = g_steal_pointer(&features);
-    fw->nfeatures = nfeatures;
+    fw->nfeatures = nparsed;
     return 0;
 }
 
