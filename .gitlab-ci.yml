@@ -555,7 +555,7 @@ codestyle:
   script:
     - meson build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
     - ninja -C build libvirt-pot-dep
-    - meson test -C build --suite syntax-check --no-rebuild || (cat build/meson-logs/testlog.txt && exit 1)
+    - meson test -C build --suite syntax-check --no-rebuild --print-errorlogs
 
 
 # This artifact published by this job is downloaded to push to Weblate
