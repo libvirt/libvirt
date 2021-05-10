@@ -6,6 +6,7 @@ docs_kbase_files = [
   'index',
   'kvm-realtime',
   'launch_security_sev',
+  'live_full_disk_backup',
   'locking-lockd',
   'locking',
   'locking-sanlock',

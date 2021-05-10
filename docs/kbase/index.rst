@@ -37,6 +37,9 @@ Usage
 `Launch security <launch_security_sev.html>`__
    Securely launching VMs with AMD SEV
 
+`Live full disk backup <live_full_disk_backup.html>`__
+   A walkthrough of how to take effective live full disk backups.
+
 `KVM real time <kvm-realtime.html>`__
    Run real time workloads in guests on a KVM hypervisor
 
