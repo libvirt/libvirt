@@ -64,28 +64,17 @@ static int
 virStorageAdapterParseXMLFCHost(xmlNodePtr node,
                                 virStorageAdapterFCHost *fchost)
 {
-    char *managed = NULL;
+    if (virXMLPropTristateBool(node, "managed", VIR_XML_PROP_NONE,
+                               &fchost->managed) < 0)
+        return -1;
 
     fchost->parent = virXMLPropString(node, "parent");
-    if ((managed = virXMLPropString(node, "managed"))) {
-        int value;
-        if ((value = virTristateBoolTypeFromString(managed)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown fc_host managed setting '%s'"),
-                           managed);
-            VIR_FREE(managed);
-            return -1;
-        }
-        fchost->managed = value;
-    }
-
     fchost->parent_wwnn = virXMLPropString(node, "parent_wwnn");
     fchost->parent_wwpn = virXMLPropString(node, "parent_wwpn");
     fchost->parent_fabric_wwn = virXMLPropString(node, "parent_fabric_wwn");
     fchost->wwpn = virXMLPropString(node, "wwpn");
     fchost->wwnn = virXMLPropString(node, "wwnn");
 
-    VIR_FREE(managed);
     return 0;
 }
 
