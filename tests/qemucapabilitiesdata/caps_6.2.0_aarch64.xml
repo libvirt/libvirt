@@ -147,6 +147,7 @@
   <flag name='virtio-crypto'/>
   <flag name='pvpanic-pci'/>
   <flag name='virtio-gpu.blob'/>
+  <flag name='display-reload'/>
   <version>6001050</version>
   <microcodeVersion>61700244</microcodeVersion>
   <package></package>

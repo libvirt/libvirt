@@ -704,6 +704,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 455 */
               "blockjob.backing-mask-protocol", /* QEMU_CAPS_BLOCKJOB_BACKING_MASK_PROTOCOL */
+              "display-reload", /* QEMU_CAPS_DISPLAY_RELOAD */
     );
 
 
@@ -1228,6 +1229,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "calc-dirty-rate", QEMU_CAPS_CALC_DIRTY_RATE },
     { "query-stats", QEMU_CAPS_QUERY_STATS },
     { "query-stats-schemas", QEMU_CAPS_QUERY_STATS_SCHEMAS },
+    { "display-reload", QEMU_CAPS_DISPLAY_RELOAD },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {

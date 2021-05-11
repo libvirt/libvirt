@@ -134,6 +134,7 @@
   <flag name='migration.blocked-reasons'/>
   <flag name='virtio-crypto'/>
   <flag name='pvpanic-pci'/>
+  <flag name='display-reload'/>
   <version>6000000</version>
   <microcodeVersion>61700242</microcodeVersion>
   <package>v6.0.0</package>
