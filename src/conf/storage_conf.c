@@ -531,7 +531,6 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     virStoragePoolOptions *options;
     int n;
     g_autoptr(virStorageAuthDef) authdef = NULL;
-    g_autofree char *port = NULL;
     g_autofree char *ver = NULL;
     g_autofree xmlNodePtr *nodeset = NULL;
     g_autofree char *sourcedir = NULL;
@@ -580,16 +579,9 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                 goto cleanup;
             }
 
-            port = virXMLPropString(nodeset[i], "port");
-            if (port) {
-                if (virStrToLong_i(port, NULL, 10, &source->hosts[i].port) < 0) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("Invalid port number: %s"),
-                                   port);
-                    goto cleanup;
-                }
-            }
-            VIR_FREE(port);
+            if (virXMLPropInt(nodeset[i], "port", 10, VIR_XML_PROP_NONE,
+                              &source->hosts[i].port, 0) < 0)
+                goto cleanup;
         }
     }
 
@@ -602,7 +594,6 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         goto cleanup;
 
     for (i = 0; i < nsource; i++) {
-        g_autofree char *partsep = NULL;
         virStoragePoolSourceDevice dev = { .path = NULL };
         dev.path = virXMLPropString(nodeset[i], "path");
 
@@ -612,17 +603,11 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
             goto cleanup;
         }
 
-        partsep = virXMLPropString(nodeset[i], "part_separator");
-        if (partsep) {
-            int value = virTristateBoolTypeFromString(partsep);
-            if (value <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("invalid part_separator setting '%s'"),
-                               partsep);
-                virStoragePoolSourceDeviceClear(&dev);
-                goto cleanup;
-            }
-            dev.part_separator = value;
+        if (virXMLPropTristateBool(nodeset[i], "part_separator",
+                                   VIR_XML_PROP_NONE,
+                                   &dev.part_separator) < 0) {
+            virStoragePoolSourceDeviceClear(&dev);
+            goto cleanup;
         }
 
         if (VIR_APPEND_ELEMENT(source->devices, source->ndevice, dev) < 0) {
