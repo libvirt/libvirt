@@ -415,7 +415,7 @@ Requires: gettext
 
 # Ensure smooth upgrades
 Obsoletes: libvirt-admin < 7.3.0
-Provides: libvirt-admin
+Provides: libvirt-admin = %{version}-%{release}
 Obsoletes: libvirt-bash-completion < 7.3.0
 
 %description daemon
