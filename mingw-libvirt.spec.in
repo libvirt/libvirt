@@ -89,7 +89,7 @@ MinGW Windows libvirt virtualization library.
 %setup -q -n libvirt-%{version}
 
 %build
-%if 0%{?fedora} && 0%{?fedora} >= %{min_fedora}
+%if 0%{?fedora} >= %{min_fedora}
     %define supported_platform 1
 %else
     %define supported_platform 0
