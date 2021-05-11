@@ -14118,3 +14118,47 @@ virDomainFDAssociate(virDomainPtr domain,
     virDispatchError(conn);
     return -1;
 }
+
+
+/**
+ * virDomainGraphicsReload:
+ * @domain: a domain object
+ * @type: graphics type; from the virDomainGraphicsReloadType enum
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Reload domain's graphics. This can be used to reload TLS certificates
+ * without restarting the domain.
+ *
+ * Returns 0 in case of success, -1 otherwise.
+ *
+ * Since: 10.2.0
+ */
+int
+virDomainGraphicsReload(virDomainPtr domain,
+                        unsigned int type,
+                        unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "type=%u, flags=0x%x", type, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn->driver->domainGraphicsReload) {
+        int ret;
+        ret = conn->driver->domainGraphicsReload(domain, type, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}

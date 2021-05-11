@@ -6507,4 +6507,22 @@ int virDomainFDAssociate(virDomainPtr domain,
                          int *fds,
                          unsigned int flags);
 
+/**
+ * virDomainGraphicsReloadType:
+ *
+ * Since: 10.2.0
+ */
+typedef enum {
+    VIR_DOMAIN_GRAPHICS_RELOAD_TYPE_ANY = 0, /* reload any graphics known to libvirt (Since: 10.2.0) */
+    VIR_DOMAIN_GRAPHICS_RELOAD_TYPE_VNC = 1, /* reload vnc graphics (Since: 10.2.0) */
+# ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_GRAPHICS_RELOAD_TYPE_LAST /* (Since: 10.2.0) */
+# endif
+} virDomainGraphicsReloadType;
+
+int
+virDomainGraphicsReload(virDomainPtr domain,
+                        unsigned int type,
+                        unsigned int flags);
+
 #endif /* LIBVIRT_DOMAIN_H */

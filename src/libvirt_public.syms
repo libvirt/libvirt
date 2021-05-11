@@ -943,4 +943,9 @@ LIBVIRT_10.1.0 {
         virNodeDeviceUpdate;
 } LIBVIRT_9.7.0;
 
+LIBVIRT_10.2.0 {
+    global:
+        virDomainGraphicsReload;
+} LIBVIRT_10.1.0;
+
 # .... define new API here using predicted next version number ....
