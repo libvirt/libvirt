@@ -841,24 +841,17 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     virStoragePoolOptions *options;
     xmlNodePtr source_node;
     g_autoptr(virStoragePoolDef) def = NULL;
-    g_autofree char *type = NULL;
+    virStoragePoolType type;
     g_autofree char *uuid = NULL;
     g_autofree char *target_path = NULL;
 
     def = g_new0(virStoragePoolDef, 1);
 
-    type = virXPathString("string(./@type)", ctxt);
-    if (type == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("storage pool missing type attribute"));
+    if (virXMLPropEnum(ctxt->node, "type", virStoragePoolTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &type) < 0)
         return NULL;
-    }
 
-    if ((def->type = virStoragePoolTypeFromString(type)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown storage pool type %s"), type);
-        return NULL;
-    }
+    def->type = type;
 
     if ((options = virStoragePoolOptionsForPoolType(def->type)) == NULL)
         return NULL;
