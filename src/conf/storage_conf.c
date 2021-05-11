@@ -523,8 +523,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                              int pool_type,
                              xmlNodePtr node)
 {
-    int ret = -1;
-    xmlNodePtr relnode, authnode;
+    xmlNodePtr authnode;
     xmlNodePtr adapternode;
     int nsource;
     size_t i;
@@ -534,18 +533,18 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     g_autofree char *ver = NULL;
     g_autofree xmlNodePtr *nodeset = NULL;
     g_autofree char *sourcedir = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
-    relnode = ctxt->node;
     ctxt->node = node;
 
     if ((options = virStoragePoolOptionsForPoolType(pool_type)) == NULL)
-        goto cleanup;
+        return -1;
 
     source->name = virXPathString("string(./name)", ctxt);
     if (pool_type == VIR_STORAGE_POOL_RBD && source->name == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("element 'name' is mandatory for RBD pool"));
-        goto cleanup;
+        return -1;
     }
 
     if (options->formatFromString) {
@@ -560,12 +559,12 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         if (source->format < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown pool format type %s"), format);
-            goto cleanup;
+            return -1;
         }
     }
 
     if ((n = virXPathNodeSet("./host", ctxt, &nodeset)) < 0)
-        goto cleanup;
+        return -1;
 
     if (n) {
         source->hosts = g_new0(virStoragePoolSourceHost, n);
@@ -576,12 +575,12 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
             if (!source->hosts[i].name) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("missing storage pool host name"));
-                goto cleanup;
+                return -1;
             }
 
             if (virXMLPropInt(nodeset[i], "port", 10, VIR_XML_PROP_NONE,
                               &source->hosts[i].port, 0) < 0)
-                goto cleanup;
+                return -1;
         }
     }
 
@@ -591,7 +590,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
 
     nsource = virXPathNodeSet("./device", ctxt, &nodeset);
     if (nsource < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < nsource; i++) {
         virStoragePoolSourceDevice dev = { .path = NULL };
@@ -600,19 +599,19 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         if (dev.path == NULL) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing storage pool source device path"));
-            goto cleanup;
+            return -1;
         }
 
         if (virXMLPropTristateBool(nodeset[i], "part_separator",
                                    VIR_XML_PROP_NONE,
                                    &dev.part_separator) < 0) {
             virStoragePoolSourceDeviceClear(&dev);
-            goto cleanup;
+            return -1;
         }
 
         if (VIR_APPEND_ELEMENT(source->devices, source->ndevice, dev) < 0) {
             virStoragePoolSourceDeviceClear(&dev);
-            goto cleanup;
+            return -1;
         }
 
     }
@@ -626,17 +625,17 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
 
     if ((adapternode = virXPathNode("./adapter", ctxt))) {
         if (virStorageAdapterParseXML(&source->adapter, adapternode, ctxt) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if ((authnode = virXPathNode("./auth", ctxt))) {
         if (!(authdef = virStorageAuthDefParse(authnode, ctxt)))
-            goto cleanup;
+            return -1;
 
         if (authdef->authType == VIR_STORAGE_AUTH_TYPE_NONE) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("storage pool missing auth type"));
-            goto cleanup;
+            return -1;
         }
 
         source->auth = g_steal_pointer(&authdef);
@@ -650,24 +649,20 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                            _("storage pool protocol ver unsupported for "
                              "pool type '%s'"),
                            virStoragePoolFormatFileSystemNetTypeToString(source->format));
-            goto cleanup;
+            return -1;
         }
         if (virStrToLong_uip(ver, NULL, 0, &source->protocolVer) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("storage pool protocol ver '%s' is malformed"),
                            ver);
-            goto cleanup;
+            return -1;
         }
     }
 
     source->vendor = virXPathString("string(./vendor/@name)", ctxt);
     source->product = virXPathString("string(./product/@name)", ctxt);
 
-    ret = 0;
- cleanup:
-    ctxt->node = relnode;
-
-    return ret;
+    return 0;
 }
 
 
