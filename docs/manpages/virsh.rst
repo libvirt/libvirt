@@ -1783,6 +1783,21 @@ included in the URI. If *--all* is specified, then all show all possible
 graphical displays, for a VM could have more than one graphical displays.
 
 
+domdisplay-reload
+-----------------
+
+**Syntax:**
+
+::
+
+    domdisplay-reload <domain> [[--type] <type>]
+
+Reload the domain's graphical display. This reloads its TLS certificates
+without restarting the domain. ``type`` can be any constant from the
+`virDomainGraphicsReloadType` enum. By default any supported type is reloaded
+(so far only VNC).
+
+
 domfsfreeze
 -----------
 

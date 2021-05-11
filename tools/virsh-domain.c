@@ -13801,6 +13801,45 @@ cmdDomDirtyRateCalc(vshControl *ctl, const vshCmd *cmd)
     return true;
 }
 
+/**
+ * "domdisplay-reload" command
+ */
+static const vshCmdInfo info_domdisplay_reload[] = {
+    {.name = "help",
+     .data = N_("Reload domain's graphics display certificates")
+    },
+    {.name = "desc",
+     .data = N_("Reload domain's graphics display certificates")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_domdisplay_reload[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = "type",
+     .type = VSH_OT_INT,
+     .help = N_("graphics display type")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDomdisplayReload(vshControl *ctl, const vshCmd *cmd)
+{
+    g_autoptr(virshDomain) dom = NULL;
+    unsigned int type = 0;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptUInt(ctl, cmd, "type", &type) < 0)
+        return false;
+
+    if (virDomainGraphicsReload(dom, type, 0) < 0)
+        return false;
+
+    return true;
+}
 
 const vshCmdDef domManagementCmds[] = {
     {.name = "attach-device",
@@ -14463,6 +14502,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdDomFdAssociate,
      .opts = opts_dom_fd_associate,
      .info = info_dom_fd_associate,
+     .flags = 0
+    },
+    {.name = "domdisplay-reload",
+     .handler = cmdDomdisplayReload,
+     .opts = opts_domdisplay_reload,
+     .info = info_domdisplay_reload,
      .flags = 0
     },
     {.name = NULL}
