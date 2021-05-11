@@ -825,3 +825,7 @@ qemuMonitorJSONQueryStats(qemuMonitor *mon,
                           qemuMonitorQueryStatsTargetType target,
                           char **vcpus,
                           GPtrArray *providers);
+
+int qemuMonitorJSONDisplayReload(qemuMonitor *mon,
+                                 const char *type,
+                                 bool tlsCerts);

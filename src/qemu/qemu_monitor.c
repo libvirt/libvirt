@@ -4501,3 +4501,13 @@ qemuMonitorGetStatsByQOMPath(virJSONValue *arr,
 
     return NULL;
 }
+
+int
+qemuMonitorDisplayReload(qemuMonitor *mon,
+                         const char *type,
+                         bool tlsCerts)
+{
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONDisplayReload(mon, type, tlsCerts);
+}

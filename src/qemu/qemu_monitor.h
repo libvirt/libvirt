@@ -1581,3 +1581,8 @@ qemuMonitorExtractQueryStats(virJSONValue *info);
 virJSONValue *
 qemuMonitorGetStatsByQOMPath(virJSONValue *arr,
                              char *qom_path);
+
+int
+qemuMonitorDisplayReload(qemuMonitor *mon,
+                         const char *type,
+                         bool tlsCerts);

@@ -8873,3 +8873,26 @@ qemuMonitorJSONQueryStats(qemuMonitor *mon,
 
     return virJSONValueObjectStealArray(reply, "return");
 }
+
+int qemuMonitorJSONDisplayReload(qemuMonitor *mon,
+                                 const char *type,
+                                 bool tlsCerts)
+{
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+
+    cmd = qemuMonitorJSONMakeCommand("display-reload",
+                                     "s:type", type,
+                                     "b:tls-certs", tlsCerts,
+                                     NULL);
+    if (!cmd)
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    return 0;
+}

@@ -19932,6 +19932,68 @@ qemuDomainFDAssociate(virDomainPtr domain,
     return ret;
 }
 
+static int
+qemuDomainGraphicsReload(virDomainPtr domain,
+                         unsigned int type,
+                         unsigned int flags)
+{
+    int ret = -1;
+    virDomainObj *vm = NULL;
+    qemuDomainObjPrivate *priv;
+
+    virCheckFlagsGoto(0, cleanup);
+
+    if (type >= VIR_DOMAIN_GRAPHICS_RELOAD_TYPE_LAST) {
+        virReportInvalidArg(type,
+                            _("type must be less than %1$d"),
+                            VIR_DOMAIN_GRAPHICS_RELOAD_TYPE_LAST);
+        return -1;
+    }
+
+    if (!(vm = qemuDomainObjFromDomain(domain)))
+        return -1;
+
+    if (virDomainGraphicsReloadEnsureACL(domain->conn, vm->def))
+        goto cleanup;
+
+    if (type == VIR_DOMAIN_GRAPHICS_RELOAD_TYPE_ANY) {
+        size_t i;
+
+        for (i = 0; i < vm->def->ngraphics; i++) {
+            if (vm->def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
+                break;
+        }
+
+        if (i == vm->def->ngraphics) {
+            ret = 0;
+            goto cleanup;
+        }
+    }
+
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    priv = vm->privateData;
+
+    qemuDomainObjEnterMonitor(vm);
+
+    ret = qemuMonitorDisplayReload(priv->mon, "vnc", true);
+
+    qemuDomainObjExitMonitor(vm);
+
+ endjob:
+    virDomainObjEndJob(vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
 
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
@@ -20182,6 +20244,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainStartDirtyRateCalc = qemuDomainStartDirtyRateCalc, /* 7.2.0 */
     .domainSetLaunchSecurityState = qemuDomainSetLaunchSecurityState, /* 8.0.0 */
     .domainFDAssociate = qemuDomainFDAssociate, /* 9.0.0 */
+    .domainGraphicsReload = qemuDomainGraphicsReload, /* 10.2.0 */
 };
 
 
