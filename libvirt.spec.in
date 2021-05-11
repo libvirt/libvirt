@@ -6,12 +6,6 @@
 %define min_rhel 8
 %define min_fedora 33
 
-%if 0%{?fedora} >= %{min_fedora} || 0%{?rhel} >= %{min_rhel}
-    %define supported_platform 1
-%else
-    %define supported_platform 0
-%endif
-
 %define arches_qemu_kvm         %{ix86} x86_64 %{power64} %{arm} aarch64 s390x
 %if 0%{?rhel}
     %define arches_qemu_kvm     x86_64 aarch64 s390x
@@ -929,6 +923,12 @@ Libvirt plugin for NSS for translating domain names into IP addresses.
 %autosetup -S git_am
 
 %build
+%if 0%{?fedora} >= %{min_fedora} || 0%{?rhel} >= %{min_rhel}
+    %define supported_platform 1
+%else
+    %define supported_platform 0
+%endif
+
 %if ! %{supported_platform}
 echo "This RPM requires either Fedora >= %{min_fedora} or RHEL >= %{min_rhel}"
 exit 1
