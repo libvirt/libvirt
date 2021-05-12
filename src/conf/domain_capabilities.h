@@ -113,6 +113,13 @@ struct _virDomainCapsDeviceRNG {
     virDomainCapsEnum backendModel;   /* virDomainRNGBackend */
 };
 
+STATIC_ASSERT_ENUM(VIR_DOMAIN_FS_DRIVER_TYPE_LAST);
+typedef struct _virDomainCapsDeviceFilesystem virDomainCapsDeviceFilesystem;
+struct _virDomainCapsDeviceFilesystem {
+    virTristateBool supported;
+    virDomainCapsEnum driverType; /* virDomainFSDriverType */
+};
+
 STATIC_ASSERT_ENUM(VIR_GIC_VERSION_LAST);
 typedef struct _virDomainCapsFeatureGIC virDomainCapsFeatureGIC;
 struct _virDomainCapsFeatureGIC {
@@ -194,6 +201,7 @@ struct _virDomainCaps {
     virDomainCapsDeviceVideo video;
     virDomainCapsDeviceHostdev hostdev;
     virDomainCapsDeviceRNG rng;
+    virDomainCapsDeviceFilesystem filesystem;
     /* add new domain devices here */
 
     virDomainCapsFeatureGIC gic;

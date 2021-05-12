@@ -524,6 +524,18 @@ virDomainCapsDeviceRNGFormat(virBuffer *buf,
 }
 
 
+static void
+virDomainCapsDeviceFilesystemFormat(virBuffer *buf,
+                                    const virDomainCapsDeviceFilesystem *filesystem)
+{
+    FORMAT_PROLOGUE(filesystem);
+
+    ENUM_PROCESS(filesystem, driverType, virDomainFSDriverTypeToString);
+
+    FORMAT_EPILOGUE(filesystem);
+}
+
+
 /**
  * virDomainCapsFeatureGICFormat:
  * @buf: target buffer
@@ -628,6 +640,7 @@ virDomainCapsFormat(const virDomainCaps *caps)
     virDomainCapsDeviceVideoFormat(&buf, &caps->video);
     virDomainCapsDeviceHostdevFormat(&buf, &caps->hostdev);
     virDomainCapsDeviceRNGFormat(&buf, &caps->rng);
+    virDomainCapsDeviceFilesystemFormat(&buf, &caps->filesystem);
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</devices>\n");

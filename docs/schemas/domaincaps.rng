@@ -182,6 +182,9 @@
       <optional>
         <ref name="rng"/>
       </optional>
+      <optional>
+        <ref name="filesystem"/>
+      </optional>
     </element>
   </define>
 
@@ -215,6 +218,13 @@
 
   <define name="rng">
     <element name="rng">
+      <ref name="supported"/>
+      <ref name="enum"/>
+    </element>
+  </define>
+
+  <define name="filesystem">
+    <element name="filesystem">
       <ref name="supported"/>
       <ref name="enum"/>
     </element>

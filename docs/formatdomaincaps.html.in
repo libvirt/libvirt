@@ -518,6 +518,34 @@
     </dl>
 
 
+    <h4><a id="elementsFilesystem">Filesystem device</a></h4>
+    <p>Filesystem device capabilities are exposed under the
+    <code>filesystem</code> element. For instance:</p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;devices&gt;
+    &lt;filesystem supported='yes'&gt;
+      &lt;enum name='driverType'&gt;
+        &lt;value&gt;default&lt;/value&gt;
+        &lt;value&gt;path&lt;/value&gt;
+        &lt;value&gt;handle&lt;/value&gt;
+        &lt;value&gt;virtiofs&lt;/value&gt;
+      &lt;/enum&gt;
+    &lt;/filesystem&gt;
+    ...
+  &lt;/devices&gt;
+&lt;/domainCapabilities&gt;
+</pre>
+
+    <dl>
+      <dt><code>driverType</code></dt>
+      <dd>Options for the <code>type</code> attribute of the
+      &lt;filesystem&gt;&lt;driver&gt; element.</dd>
+    </dl>
+
+
     <h3><a id="elementsFeatures">Features</a></h3>
 
     <p>One more set of XML elements describe the supported features and
