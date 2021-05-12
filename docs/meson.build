@@ -111,6 +111,7 @@ docs_rst_files = [
   'daemons',
   'developer-tooling',
   'drvqemu',
+  'drvch',
   'formatbackup',
   'formatcheckpoint',
   'formatdomain',

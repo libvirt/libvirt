@@ -1563,6 +1563,48 @@ elif get_option('driver_lxc').enabled()
   error('linux and remote_driver are required for LXC')
 endif
 
+if not get_option('driver_ch').disabled() and host_machine.system() == 'linux' and (host_machine.cpu_family() == 'x86_64' or host_machine.cpu_family() == 'aarch64')
+  use_ch = true
+
+  if not conf.has('WITH_LIBVIRTD')
+    use_ch = false
+    if get_option('driver_ch').enabled()
+      error('libvirtd is required to build Cloud-Hypervisor driver')
+    endif
+  endif
+
+  if not yajl_dep.found()
+    use_ch = false
+    if get_option('driver_ch').enabled()
+      error('YAJL 2 is required to build Cloud-Hypervisor driver')
+    endif
+  endif
+
+  if not curl_dep.found()
+    use_ch = false
+    if get_option('driver_ch').enabled()
+      error('curl is required to build Cloud-Hypervisor driver')
+    endif
+  endif
+
+  if use_ch
+    conf.set('WITH_CH', 1)
+
+    default_ch_user = 'root'
+    default_ch_group = 'root'
+    ch_user = get_option('ch_user')
+    if ch_user == ''
+      ch_user = default_ch_user
+    endif
+    ch_group = get_option('ch_group')
+    if ch_group == ''
+      ch_group = default_ch_group
+    endif
+    conf.set_quoted('CH_USER', ch_user)
+    conf.set_quoted('CH_GROUP', ch_group)
+  endif
+endif
+
 # there's no use compiling the network driver without the libvirt
 # daemon, nor compiling it for macOS, where it breaks the compile
 if not get_option('driver_network').disabled() and conf.has('WITH_LIBVIRTD') and host_machine.system() != 'darwin'
@@ -2215,6 +2257,7 @@ driver_summary = {
   'VBox': conf.has('WITH_VBOX'),
   'libxl': conf.has('WITH_LIBXL'),
   'LXC': conf.has('WITH_LXC'),
+  'Cloud-Hypervisor': conf.has('WITH_CH'),
   'ESX': conf.has('WITH_ESX'),
   'Hyper-V': conf.has('WITH_HYPERV'),
   'vz': conf.has('WITH_VZ'),

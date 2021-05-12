@@ -18,6 +18,11 @@
 @SRCDIR@src/bhyve/bhyve_monitor.c
 @SRCDIR@src/bhyve/bhyve_parse_command.c
 @SRCDIR@src/bhyve/bhyve_process.c
+@SRCDIR@src/ch/ch_conf.c
+@SRCDIR@src/ch/ch_domain.c
+@SRCDIR@src/ch/ch_driver.c
+@SRCDIR@src/ch/ch_monitor.c
+@SRCDIR@src/ch/ch_process.c
 @SRCDIR@src/conf/backup_conf.c
 @SRCDIR@src/conf/capabilities.c
 @SRCDIR@src/conf/checkpoint_conf.c

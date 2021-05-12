@@ -37,6 +37,7 @@
       <li><strong><a href="drvhyperv.html">Microsoft Hyper-V</a></strong></li>
       <li><strong><a href="drvvirtuozzo.html">Virtuozzo</a></strong></li>
       <li><strong><a href="drvbhyve.html">Bhyve</a></strong> - The BSD Hypervisor</li>
+      <li><strong><a href="drvch.html">Cloud Hypervisor</a></strong></li>
     </ul>
 
   </body>

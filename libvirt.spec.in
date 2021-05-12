@@ -1105,6 +1105,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            %{?arg_vmware} \
            -Ddriver_vz=disabled \
            -Ddriver_bhyve=disabled \
+           -Ddriver_ch=disabled \
            -Dremote_default_mode=legacy \
            -Ddriver_interface=enabled \
            -Ddriver_network=enabled \

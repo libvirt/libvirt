@@ -136,6 +136,7 @@ typedef enum {
 
     VIR_FROM_TPM = 70,          /* Error from TPM */
     VIR_FROM_BPF = 71,          /* Error from BPF code */
+    VIR_FROM_CH = 72,           /* Error from Cloud-Hypervisor driver */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_DOMAIN_LAST

@@ -1,0 +1,47 @@
+[Unit]
+Description=Virtualization Cloud-Hypervisor daemon
+Conflicts=libvirtd.service
+Requires=virtchd.socket
+Requires=virtchd-ro.socket
+Requires=virtchd-admin.socket
+Wants=systemd-machined.service
+Before=libvirt-guests.service
+After=network.target
+After=dbus.service
+After=apparmor.service
+After=local-fs.target
+After=remote-fs.target
+After=systemd-logind.service
+After=systemd-machined.service
+Documentation=man:libvirtd(8)
+Documentation=https://libvirt.org
+
+[Service]
+Type=notify
+EnvironmentFile=-@sysconfdir@/sysconfig/virtchd
+ExecStart=@sbindir@/virtchd $VIRTCHD_ARGS
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+# At least 2 FD per guest (eg ch monitor + ch socket).
+# eg if we want to support 4096 guests, we'll typically need 8192 FDs
+# If changing this, also consider virtlogd.service & virtlockd.service
+# limits which are also related to number of guests
+LimitNOFILE=8192
+# The cgroups pids controller can limit the number of tasks started by
+# the daemon, which can limit the number of domains for some hypervisors.
+# A conservative default of 8 tasks per guest results in a TasksMax of
+# 32k to support 4096 guests.
+TasksMax=32768
+# With cgroups v2 there is no devices controller anymore, we have to use
+# eBPF to control access to devices.  In order to do that we create a eBPF
+# hash MAP which locks memory.  The default map size for 64 devices together
+# with program takes 12k per guest.  After rounding up we will get 64M to
+# support 4096 guests.
+LimitMEMLOCK=64M
+
+[Install]
+WantedBy=multi-user.target
+Also=virtchd.socket
+Also=virtchd-ro.socket
+Also=virtchd-admin.socket

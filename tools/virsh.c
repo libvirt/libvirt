@@ -505,6 +505,9 @@ virshShowVersion(vshControl *ctl G_GNUC_UNUSED)
 #ifdef WITH_OPENVZ
     vshPrint(ctl, " OpenVZ");
 #endif
+#ifdef WITH_CH
+    vshPrint(ctl, " Cloud-Hypervisor");
+#endif
 #ifdef WITH_VZ
     vshPrint(ctl, " Virtuozzo");
 #endif
