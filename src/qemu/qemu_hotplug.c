@@ -699,6 +699,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *devstr = NULL;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
+    bool extensionDeviceAttached = false;
+    int rc;
 
     if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
         if (!(data = qemuBuildStorageSourceChainAttachPrepareChardev(disk)))
@@ -726,16 +728,14 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    if (qemuBlockStorageSourceChainAttach(priv->mon, data) < 0)
-        goto exit_monitor;
+    rc = qemuBlockStorageSourceChainAttach(priv->mon, data);
 
-    if (qemuDomainAttachExtensionDevice(priv->mon, &disk->info) < 0)
-        goto exit_monitor;
+    if (rc == 0 &&
+        (rc = qemuDomainAttachExtensionDevice(priv->mon, &disk->info)) == 0)
+        extensionDeviceAttached = true;
 
-    if (qemuMonitorAddDevice(priv->mon, devstr) < 0) {
-        ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &disk->info));
-        goto exit_monitor;
-    }
+    if (rc == 0)
+        rc = qemuMonitorAddDevice(priv->mon, devstr);
 
     /* Setup throttling of disk via block_set_io_throttle QMP command. This
      * is a hack until the 'throttle' blockdev driver will support modification
@@ -743,7 +743,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
      * As there isn't anything sane to do if this fails, let's just return
      * success.
      */
-    if (blockdev &&
+    if (blockdev && rc == 0 &&
         qemuDiskConfigBlkdeviotuneEnabled(disk)) {
         qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
         if (qemuMonitorSetBlockIoThrottle(priv->mon, NULL, diskPriv->qomName,
@@ -755,9 +755,17 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         return -2;
 
+    if (rc < 0)
+        goto rollback;
+
     return 0;
 
- exit_monitor:
+ rollback:
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    if (extensionDeviceAttached)
+        ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &disk->info));
+
     qemuBlockStorageSourceChainDetach(priv->mon, data);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
