@@ -260,13 +260,13 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCaps *caps)
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("libxl_get_numainfo failed"));
         goto cleanup;
-    } else {
-        cpu_topo = libxl_get_cpu_topology(ctx, &nr_cpus);
-        if (cpu_topo == NULL || nr_cpus == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("libxl_get_cpu_topology failed"));
-            goto cleanup;
-        }
+    }
+
+    cpu_topo = libxl_get_cpu_topology(ctx, &nr_cpus);
+    if (cpu_topo == NULL || nr_cpus == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libxl_get_cpu_topology failed"));
+        goto cleanup;
     }
 
     cpus = g_new0(virCapsHostNUMACellCPU *, nr_nodes);
