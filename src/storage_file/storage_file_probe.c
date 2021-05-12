@@ -95,6 +95,8 @@ struct FileTypeInfo {
                            * or NULL if there is no COW base image, to RES;
                            * return BACKING_STORE_* */
     const struct FileEncryptionInfo *cryptInfo; /* Encryption info */
+    unsigned long long (*getClusterSize)(const char *buf,
+                                         size_t buf_size);
     int (*getBackingStore)(char **res, int *format,
                            const char *buf, size_t buf_size);
     int (*getFeatures)(virBitmap **features, int format,
@@ -104,6 +106,9 @@ struct FileTypeInfo {
 
 static int cowGetBackingStore(char **, int *,
                               const char *, size_t);
+static unsigned long long
+qcow2GetClusterSize(const char *buf,
+                    size_t buf_size);
 static int qcowXGetBackingStore(char **, int *,
                                 const char *, size_t);
 static int qcow2GetFeatures(virBitmap **features, int format,
@@ -116,7 +121,8 @@ qedGetBackingStore(char **, int *, const char *, size_t);
 #define QCOWX_HDR_VERSION (4)
 #define QCOWX_HDR_BACKING_FILE_OFFSET (QCOWX_HDR_VERSION+4)
 #define QCOWX_HDR_BACKING_FILE_SIZE (QCOWX_HDR_BACKING_FILE_OFFSET+8)
-#define QCOWX_HDR_IMAGE_SIZE (QCOWX_HDR_BACKING_FILE_SIZE+4+4)
+#define QCOWX_HDR_CLUSTER_BITS_OFFSET (QCOWX_HDR_BACKING_FILE_SIZE+4)
+#define QCOWX_HDR_IMAGE_SIZE (QCOWX_HDR_CLUSTER_BITS_OFFSET+4)
 
 #define QCOW1_HDR_CRYPT (QCOWX_HDR_IMAGE_SIZE+8+1+1+2)
 #define QCOW2_HDR_CRYPT (QCOWX_HDR_IMAGE_SIZE+8)
@@ -238,18 +244,18 @@ static struct FileEncryptionInfo const qcow2EncryptionInfo[] = {
 
 static struct FileTypeInfo const fileTypeInfo[] = {
     [VIR_STORAGE_FILE_NONE] = { 0, NULL, LV_LITTLE_ENDIAN,
-                                -1, 0, {0}, 0, 0, 0, NULL, NULL, NULL },
+                                -1, 0, {0}, 0, 0, 0, NULL, NULL, NULL, NULL },
     [VIR_STORAGE_FILE_RAW] = { 0, NULL, LV_LITTLE_ENDIAN,
                                -1, 0, {0}, 0, 0, 0,
                                luksEncryptionInfo,
-                               NULL, NULL },
+                               NULL, NULL, NULL },
     [VIR_STORAGE_FILE_DIR] = { 0, NULL, LV_LITTLE_ENDIAN,
-                               -1, 0, {0}, 0, 0, 0, NULL, NULL, NULL },
+                               -1, 0, {0}, 0, 0, 0, NULL, NULL, NULL, NULL },
     [VIR_STORAGE_FILE_BOCHS] = {
         /*"Bochs Virtual HD Image", */ /* Untested */
         0, NULL,
         LV_LITTLE_ENDIAN, 64, 4, {0x20000},
-        32+16+16+4+4+4+4+4, 8, 1, NULL, NULL, NULL
+        32+16+16+4+4+4+4+4, 8, 1, NULL, NULL, NULL, NULL
     },
     [VIR_STORAGE_FILE_CLOOP] = {
         /* #!/bin/sh
@@ -258,7 +264,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         */ /* Untested */
         0, NULL,
         LV_LITTLE_ENDIAN, -1, 0, {0},
-        -1, 0, 0, NULL, NULL, NULL
+        -1, 0, 0, NULL, NULL, NULL, NULL
     },
     [VIR_STORAGE_FILE_DMG] = {
         /* XXX QEMU says there's no magic for dmg,
@@ -266,51 +272,52 @@ static struct FileTypeInfo const fileTypeInfo[] = {
          * would have to match) but then disables that check. */
         0, NULL,
         0, -1, 0, {0},
-        -1, 0, 0, NULL, NULL, NULL
+        -1, 0, 0, NULL, NULL, NULL, NULL
     },
     [VIR_STORAGE_FILE_ISO] = {
         32769, "CD001",
         LV_LITTLE_ENDIAN, -2, 0, {0},
-        -1, 0, 0, NULL, NULL, NULL
+        -1, 0, 0, NULL, NULL, NULL, NULL
     },
     [VIR_STORAGE_FILE_VPC] = {
         0, "conectix",
         LV_BIG_ENDIAN, 12, 4, {0x10000},
-        8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, NULL, NULL, NULL
+        8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, NULL, NULL, NULL, NULL
     },
     /* TODO: add getBackingStore function */
     [VIR_STORAGE_FILE_VDI] = {
         64, "\x7f\x10\xda\xbe",
         LV_LITTLE_ENDIAN, 68, 4, {0x00010001},
-        64 + 5 * 4 + 256 + 7 * 4, 8, 1, NULL, NULL, NULL},
+        64 + 5 * 4 + 256 + 7 * 4, 8, 1, NULL, NULL, NULL, NULL},
 
     /* Not direct file formats, but used for various drivers */
     [VIR_STORAGE_FILE_FAT] = { 0, NULL, LV_LITTLE_ENDIAN,
-                               -1, 0, {0}, 0, 0, 0, NULL, NULL, NULL },
+                               -1, 0, {0}, 0, 0, 0, NULL, NULL, NULL, NULL },
     [VIR_STORAGE_FILE_VHD] = { 0, NULL, LV_LITTLE_ENDIAN,
-                               -1, 0, {0}, 0, 0, 0, NULL, NULL, NULL },
+                               -1, 0, {0}, 0, 0, 0, NULL, NULL, NULL, NULL },
     [VIR_STORAGE_FILE_PLOOP] = { 0, "WithouFreSpacExt", LV_LITTLE_ENDIAN,
                                  -2, 0, {0}, PLOOP_IMAGE_SIZE_OFFSET, 0,
-                                 PLOOP_SIZE_MULTIPLIER, NULL, NULL, NULL },
+                                 PLOOP_SIZE_MULTIPLIER, NULL, NULL, NULL, NULL },
 
     /* All formats with a backing store probe below here */
     [VIR_STORAGE_FILE_COW] = {
         0, "OOOM",
         LV_BIG_ENDIAN, 4, 4, {2},
-        4+4+1024+4, 8, 1, NULL, cowGetBackingStore, NULL
+        4+4+1024+4, 8, 1, NULL, NULL, cowGetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_QCOW] = {
         0, "QFI",
         LV_BIG_ENDIAN, 4, 4, {1},
         QCOWX_HDR_IMAGE_SIZE, 8, 1,
         qcow1EncryptionInfo,
-        qcowXGetBackingStore, NULL
+        NULL, qcowXGetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_QCOW2] = {
         0, "QFI",
         LV_BIG_ENDIAN, 4, 4, {2, 3},
         QCOWX_HDR_IMAGE_SIZE, 8, 1,
         qcow2EncryptionInfo,
+        qcow2GetClusterSize,
         qcowXGetBackingStore,
         qcow2GetFeatures
     },
@@ -318,12 +325,12 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         /* https://wiki.qemu.org/Features/QED */
         0, "QED",
         LV_LITTLE_ENDIAN, -2, 0, {0},
-        QED_HDR_IMAGE_SIZE, 8, 1, NULL, qedGetBackingStore, NULL
+        QED_HDR_IMAGE_SIZE, 8, 1, NULL, NULL, qedGetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_VMDK] = {
         0, "KDMV",
         LV_LITTLE_ENDIAN, 4, 4, {1, 2, 3},
-        4+4+4, 8, 512, NULL, vmdk4GetBackingStore, NULL
+        4+4+4, 8, 512, NULL, NULL, vmdk4GetBackingStore, NULL
     },
 };
 G_STATIC_ASSERT(G_N_ELEMENTS(fileTypeInfo) == VIR_STORAGE_FILE_LAST);
@@ -463,6 +470,24 @@ qcow2GetExtensions(const char *buf,
 
         offset += len;
     }
+
+    return 0;
+}
+
+
+static unsigned long long
+qcow2GetClusterSize(const char *buf,
+                    size_t buf_size)
+{
+    int clusterBits = 0;
+
+    if ((QCOWX_HDR_CLUSTER_BITS_OFFSET + 4) > buf_size)
+        return 0;
+
+    clusterBits = virReadBufInt32BE(buf + QCOWX_HDR_CLUSTER_BITS_OFFSET);
+
+    if (clusterBits > 0)
+        return 1 << clusterBits;
 
     return 0;
 }
@@ -889,6 +914,9 @@ virStorageFileProbeGetMetadata(virStorageSource *meta,
             return 0;
         meta->capacity *= fileTypeInfo[meta->format].sizeMultiplier;
     }
+
+    if (fileTypeInfo[meta->format].getClusterSize != NULL)
+        meta->clusterSize = fileTypeInfo[meta->format].getClusterSize(buf, len);
 
     VIR_FREE(meta->backingStoreRaw);
     if (fileTypeInfo[meta->format].getBackingStore != NULL) {
