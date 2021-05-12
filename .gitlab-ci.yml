@@ -585,7 +585,7 @@ website:
 
 
 codestyle:
-  stage: builds
+  stage: sanity_checks
   image: $CI_REGISTRY_IMAGE/ci-opensuse-leap-152:latest
   needs:
     - x64-opensuse-leap-152-container
