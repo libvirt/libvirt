@@ -110,6 +110,13 @@
       </data>
     </element>
   </define>
+
+  <define name="clusterSize">
+    <element name="clusterSize">
+      <ref name="scaledInteger"/>
+    </element>
+  </define>
+
   <define name="fileFormatFeatures">
     <element name="features">
       <interleave>

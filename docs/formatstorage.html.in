@@ -791,6 +791,7 @@
   &lt;/encryption&gt;
   &lt;compat&gt;1.1&lt;/compat&gt;
   &lt;nocow/&gt;
+  &lt;clusterSize unit='KiB'&gt;64&lt;/clusterSize&gt;
   &lt;features&gt;
     &lt;lazy_refcounts/&gt;
   &lt;/features&gt;
@@ -866,6 +867,11 @@
         for a file image in btrfs file system. It will improve performance when
         the file image is used in VM. To create non-raw file images, it
         requires QEMU version since 2.1. <span class="since">Since 1.2.7</span>
+      </dd>
+      <dt><code>clusterSize</code></dt>
+      <dd>Changes the qcow2 cluster size which can affect image file size
+        and performance.
+        <span class="since">Since 7.4.0</span>
       </dd>
       <dt><code>features</code></dt>
       <dd>Format-specific features. Only used for <code>qcow2</code> now.

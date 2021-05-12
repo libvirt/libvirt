@@ -125,6 +125,9 @@
           </element>
         </optional>
         <optional>
+          <ref name="clusterSize"/>
+        </optional>
+        <optional>
           <ref name="fileFormatFeatures"/>
         </optional>
       </interleave>

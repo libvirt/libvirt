@@ -1416,6 +1416,13 @@ virStorageVolDefParseXML(virStoragePoolDef *pool,
     if (virXPathNode("./target/nocow", ctxt))
         def->target.nocow = true;
 
+    if (virParseScaledValue("./target/clusterSize",
+                            "./target/clusterSize/@unit",
+                            ctxt, &def->target.clusterSize,
+                            1, ULLONG_MAX, false) < 0) {
+        return NULL;
+    }
+
     if (virXPathNode("./target/features", ctxt)) {
         if ((n = virXPathNodeSet("./target/features/*", ctxt, &nodes)) < 0)
             return NULL;
@@ -1579,6 +1586,11 @@ virStorageVolTargetDefFormat(virStorageVolOptions *options,
             return -1;
 
     virBufferEscapeString(buf, "<compat>%s</compat>\n", def->compat);
+
+    if (def->clusterSize > 0) {
+        virBufferAsprintf(buf, "<clusterSize unit='B'>%llu</clusterSize>\n",
+                          def->clusterSize);
+    }
 
     if (def->features) {
         size_t i;

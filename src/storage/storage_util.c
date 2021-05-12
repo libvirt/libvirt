@@ -664,6 +664,7 @@ struct _virStorageBackendQemuImgInfo {
     const char *path;
     unsigned long long size_arg;
     unsigned long long allocation;
+    unsigned long long clusterSize;
     bool encryption;
     bool preallocate;
     const char *compat;
@@ -779,6 +780,9 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDef *encinfo,
         virBufferAsprintf(&buf, "compat=%s,", info->compat);
     else if (info->format == VIR_STORAGE_FILE_QCOW2)
         virBufferAddLit(&buf, "compat=0.10,");
+
+    if (info->clusterSize > 0)
+        virBufferAsprintf(&buf, "cluster_size=%llu,", info->clusterSize);
 
     if (info->features && info->format == VIR_STORAGE_FILE_QCOW2) {
         if (virBitmapIsBitSet(info->features,
@@ -1130,6 +1134,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObj *pool,
         .compat = vol->target.compat,
         .features = vol->target.features,
         .nocow = vol->target.nocow,
+        .clusterSize = vol->target.clusterSize,
         .secretAlias = NULL,
     };
     virStorageEncryption *enc = vol->target.encryption;

@@ -1,0 +1,17 @@
+<volume>
+  <name>OtherDemo.img</name>
+  <key>/var/lib/libvirt/images/OtherDemo.img</key>
+  <capacity unit="G">5</capacity>
+  <allocation>294912</allocation>
+  <target>
+    <path>/var/lib/libvirt/images/OtherDemo.img</path>
+    <format type='qcow2'/>
+    <permissions>
+      <mode>0644</mode>
+      <owner>0</owner>
+      <group>0</group>
+      <label>unconfined_u:object_r:virt_image_t:s0</label>
+    </permissions>
+    <clusterSize unit='KiB'>128</clusterSize>
+  </target>
+</volume>

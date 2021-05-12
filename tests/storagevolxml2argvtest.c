@@ -238,6 +238,10 @@ mymain(void)
                  "pool-dir", "vol-qcow2-nocapacity-backing", NULL, NULL,
                  "qcow2-nocapacity", 0);
 
+    DO_TEST("pool-dir", "vol-qcow2-clusterSize",
+            NULL, NULL,
+            "qcow2-clusterSize", 0);
+
     DO_TEST("pool-dir", "vol-file-iso",
             NULL, NULL,
             "iso", 0);
