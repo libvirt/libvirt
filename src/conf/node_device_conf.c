@@ -2059,13 +2059,12 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
                          int create,
                          const char *virt_type)
 {
-    virNodeDeviceDef *def;
+    g_autoptr(virNodeDeviceDef) def = g_new0(virNodeDeviceDef, 1);
     virNodeDevCapsDef **next_cap;
-    xmlNodePtr *nodes = NULL;
+    g_autofree xmlNodePtr *devnode = NULL;
+    g_autofree xmlNodePtr *capability = NULL;
     int n, m;
     size_t i;
-
-    def = g_new0(virNodeDeviceDef, 1);
 
     /* Extract device name */
     if (create == EXISTING_DEVICE) {
@@ -2073,7 +2072,7 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
 
         if (!def->name) {
             virReportError(VIR_ERR_NO_NAME, NULL);
-            goto error;
+            return NULL;
         }
     } else {
         def->name = g_strdup("new device");
@@ -2082,27 +2081,27 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
     def->sysfs_path = virXPathString("string(./path[1])", ctxt);
 
     /* Parse devnodes */
-    if ((n = virXPathNodeSet("./devnode", ctxt, &nodes)) < 0)
-        goto error;
+    if ((n = virXPathNodeSet("./devnode", ctxt, &devnode)) < 0)
+        return NULL;
 
     def->devlinks = g_new0(char *, n + 1);
 
     for (i = 0, m = 0; i < n; i++) {
-        xmlNodePtr node = nodes[i];
+        xmlNodePtr node = devnode[i];
         virNodeDevDevnodeType val;
 
         if (virXMLPropEnum(node, "type", virNodeDevDevnodeTypeFromString,
                            VIR_XML_PROP_REQUIRED, &val) < 0)
-            goto error;
+            return NULL;
 
         switch (val) {
         case VIR_NODE_DEV_DEVNODE_DEV:
             if (!(def->devnode = virXMLNodeContentString(node)))
-                goto error;
+                return NULL;
             break;
         case VIR_NODE_DEV_DEVNODE_LINK:
             if (!(def->devlinks[m++] = virXMLNodeContentString(node)))
-                goto error;
+                return NULL;
             break;
         case VIR_NODE_DEV_DEVNODE_LAST:
             break;
@@ -2118,7 +2117,7 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
                        _("when providing parent wwnn='%s', the "
                          "wwpn must also be provided"),
                        def->parent_wwnn);
-        goto error;
+        return NULL;
     }
 
     if (!def->parent_wwnn && def->parent_wwpn) {
@@ -2126,42 +2125,35 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
                        _("when providing parent wwpn='%s', the "
                          "wwnn must also be provided"),
                        def->parent_wwpn);
-        goto error;
+        return NULL;
     }
     def->parent_fabric_wwn = virXPathString("string(./parent[1]/@fabric_wwn)",
                                             ctxt);
 
     /* Parse device capabilities */
-    VIR_FREE(nodes);
-    if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0)
-        goto error;
+    if ((n = virXPathNodeSet("./capability", ctxt, &capability)) < 0)
+        return NULL;
 
     if (n == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("no device capabilities for '%s'"),
                        def->name);
-        goto error;
+        return NULL;
     }
 
     next_cap = &def->caps;
     for (i = 0; i < n; i++) {
         *next_cap = virNodeDevCapsDefParseXML(ctxt, def,
-                                              nodes[i],
+                                              capability[i],
                                               create,
                                               virt_type);
         if (!*next_cap)
-            goto error;
+            return NULL;
 
         next_cap = &(*next_cap)->next;
     }
-    VIR_FREE(nodes);
 
-    return def;
-
- error:
-    virNodeDeviceDefFree(def);
-    VIR_FREE(nodes);
-    return NULL;
+    return g_steal_pointer(&def);
 }
 
 
