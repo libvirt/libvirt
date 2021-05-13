@@ -742,7 +742,6 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNuma *def,
 {
     int ret = -1;
     int sibling;
-    char *tmp = NULL;
     xmlNodePtr *nodes = NULL;
     size_t i, ndistances = def->nmem_nodes;
 
@@ -764,24 +763,9 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNuma *def,
         virDomainNumaDistance *rdist;
         unsigned int sibling_id, sibling_value;
 
-        /* siblings are in order of parsing or explicitly numbered */
-        if (!(tmp = virXMLPropString(nodes[i], "id"))) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Missing 'id' attribute in NUMA "
-                             "distances under 'cell id %d'"),
-                           cur_cell);
+        if (virXMLPropUInt(nodes[i], "id", 10, VIR_XML_PROP_REQUIRED,
+                           &sibling_id) < 0)
             goto cleanup;
-        }
-
-        /* The "id" needs to be applicable */
-        if (virStrToLong_uip(tmp, NULL, 10, &sibling_id) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid 'id' attribute in NUMA "
-                             "distances for sibling: '%s'"),
-                           tmp);
-            goto cleanup;
-        }
-        VIR_FREE(tmp);
 
         /* The "id" needs to be within numa/cell range */
         if (sibling_id >= ndistances) {
@@ -792,26 +776,9 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNuma *def,
             goto cleanup;
         }
 
-        /* We need a locality value. Check and correct
-         * distance to local and distance to remote node.
-         */
-        if (!(tmp = virXMLPropString(nodes[i], "value"))) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Missing 'value' attribute in NUMA distances "
-                             "under 'cell id %d' for 'sibling id %d'"),
-                           cur_cell, sibling_id);
+        if (virXMLPropUInt(nodes[i], "value", 10, VIR_XML_PROP_REQUIRED,
+                           &sibling_value) < 0)
             goto cleanup;
-        }
-
-        /* The "value" needs to be applicable */
-        if (virStrToLong_uip(tmp, NULL, 10, &sibling_value) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("'value %s' is invalid for "
-                             "'sibling id %d' under NUMA 'cell id %d'"),
-                           tmp, sibling_id, cur_cell);
-            goto cleanup;
-        }
-        VIR_FREE(tmp);
 
         /* Assure LOCAL_DISTANCE <= "value" <= UNREACHABLE
          * and correct LOCAL_DISTANCE setting if such applies.
@@ -866,7 +833,6 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNuma *def,
         def->mem_nodes[i].ndistances = 0;
     }
     VIR_FREE(nodes);
-    VIR_FREE(tmp);
 
     return ret;
 }
