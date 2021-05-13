@@ -954,26 +954,23 @@ virDomainNumaDefParseXML(virDomainNuma *def,
     for (i = 0; i < n; i++) {
         VIR_XPATH_NODE_AUTORESTORE(ctxt)
         int rc;
-        unsigned int cur_cell = i;
+        unsigned int cur_cell;
+
+        if ((rc = virXMLPropUInt(nodes[i], "id", 10, VIR_XML_PROP_NONE,
+                                 &cur_cell)) < 0)
+            goto cleanup;
+
+        if (rc == 0)
+            cur_cell = i;
 
         /* cells are in order of parsing or explicitly numbered */
-        if ((tmp = virXMLPropString(nodes[i], "id"))) {
-            if (virStrToLong_uip(tmp, NULL, 10, &cur_cell) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid 'id' attribute in NUMA cell: '%s'"),
-                               tmp);
-                goto cleanup;
-            }
-
-            if (cur_cell >= n) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Exactly one 'cell' element per guest "
-                                 "NUMA cell allowed, non-contiguous ranges or "
-                                 "ranges not starting from 0 are not allowed"));
-                goto cleanup;
-            }
+        if (cur_cell >= n) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Exactly one 'cell' element per guest "
+                             "NUMA cell allowed, non-contiguous ranges or "
+                             "ranges not starting from 0 are not allowed"));
+            goto cleanup;
         }
-        VIR_FREE(tmp);
 
         if (def->mem_nodes[cur_cell].mem) {
             virReportError(VIR_ERR_XML_ERROR,
@@ -1013,29 +1010,15 @@ virDomainNumaDefParseXML(virDomainNuma *def,
                                  &def->mem_nodes[cur_cell].mem, true, false) < 0)
             goto cleanup;
 
-        if ((tmp = virXMLPropString(nodes[i], "memAccess"))) {
-            if ((rc = virDomainMemoryAccessTypeFromString(tmp)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Invalid 'memAccess' attribute value '%s'"),
-                               tmp);
-                goto cleanup;
-            }
+        if (virXMLPropEnum(nodes[i], "memAccess",
+                           virDomainMemoryAccessTypeFromString,
+                           VIR_XML_PROP_NONZERO,
+                           &def->mem_nodes[cur_cell].memAccess) < 0)
+            goto cleanup;
 
-            def->mem_nodes[cur_cell].memAccess = rc;
-            VIR_FREE(tmp);
-        }
-
-        if ((tmp = virXMLPropString(nodes[i], "discard"))) {
-            if ((rc = virTristateBoolTypeFromString(tmp)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Invalid 'discard' attribute value '%s'"),
-                               tmp);
-                goto cleanup;
-            }
-
-            def->mem_nodes[cur_cell].discard = rc;
-            VIR_FREE(tmp);
-        }
+        if (virXMLPropTristateBool(nodes[i], "discard", VIR_XML_PROP_NONE,
+                                   &def->mem_nodes[cur_cell].discard) < 0)
+            goto cleanup;
 
         /* Parse NUMA distances info */
         if (virDomainNumaDefNodeDistanceParseXML(def, ctxt, cur_cell) < 0)
@@ -1057,24 +1040,15 @@ virDomainNumaDefParseXML(virDomainNuma *def,
         unsigned int initiator;
         unsigned int target;
         unsigned int cache = 0;
-        int accessType;
+        virDomainMemoryLatency accessType;
         unsigned long long value;
 
         if (virXMLNodeNameEqual(nodes[i], "latency")) {
             type = VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY;
 
-            if (!(tmp = virXMLPropString(nodes[i], "value"))) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Missing 'value' attribute in NUMA interconnects"));
+            if (virXMLPropULongLong(nodes[i], "value", 10,
+                                    VIR_XML_PROP_REQUIRED, &value) < 0)
                 goto cleanup;
-            }
-
-            if (virStrToLong_ullp(tmp, NULL, 10, &value) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Invalid 'value' attribute in NUMA interconnects"));
-                goto cleanup;
-            }
-            VIR_FREE(tmp);
         } else if (virXMLNodeNameEqual(nodes[i], "bandwidth")) {
             VIR_XPATH_NODE_AUTORESTORE(ctxt)
             type = VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH;
@@ -1088,56 +1062,22 @@ virDomainNumaDefParseXML(virDomainNuma *def,
             continue;
         }
 
-        if (!(tmp = virXMLPropString(nodes[i], "initiator"))) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing 'initiator' attribute in NUMA interconnects"));
+        if (virXMLPropUInt(nodes[i], "initiator", 10, VIR_XML_PROP_REQUIRED,
+                           &initiator) < 0)
             goto cleanup;
-        }
 
-        if (virStrToLong_uip(tmp, NULL, 10, &initiator) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Invalid 'initiator' attribute in NUMA interconnects"));
+        if (virXMLPropUInt(nodes[i], "target", 10, VIR_XML_PROP_REQUIRED,
+                           &target) < 0)
             goto cleanup;
-        }
-        VIR_FREE(tmp);
 
-        if (!(tmp = virXMLPropString(nodes[i], "target"))) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing 'target' attribute in NUMA interconnects"));
+        if (virXMLPropUInt(nodes[i], "cache", 10, VIR_XML_PROP_NONE,
+                           &cache) < 0)
             goto cleanup;
-        }
 
-        if (virStrToLong_uip(tmp, NULL, 10, &target) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Invalid 'target' attribute in NUMA interconnects"));
+        if (virXMLPropEnum(nodes[i], "type", virDomainMemoryLatencyTypeFromString,
+                           VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                           &accessType) < 0)
             goto cleanup;
-        }
-        VIR_FREE(tmp);
-
-
-        /* cache attribute is optional */
-        if ((tmp = virXMLPropString(nodes[i], "cache"))) {
-            if (virStrToLong_uip(tmp, NULL, 10, &cache) < 0 ||
-                cache == 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Invalid 'cache' attribute in NUMA interconnects"));
-                goto cleanup;
-            }
-        }
-        VIR_FREE(tmp);
-
-        if (!(tmp = virXMLPropString(nodes[i], "type"))) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing 'type' attribute in NUMA interconnects"));
-            goto cleanup;
-        }
-
-        if ((accessType = virDomainMemoryLatencyTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Invalid 'type' attribute in NUMA interconnects"));
-            goto cleanup;
-        }
-        VIR_FREE(tmp);
 
         def->interconnects[i] = (virDomainNumaInterconnect) {type, initiator, target,
                                                              cache, accessType, value};

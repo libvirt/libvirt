@@ -1,1 +1,1 @@
-unsupported configuration: Invalid 'memAccess' attribute value 'invalid'
+XML error: Invalid value for attribute 'memAccess' in element 'cell': 'invalid'.
