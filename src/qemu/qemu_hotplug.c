@@ -34,6 +34,7 @@
 #include "qemu_process.h"
 #include "qemu_security.h"
 #include "qemu_block.h"
+#include "qemu_snapshot.h"
 #include "domain_audit.h"
 #include "netdev_bandwidth_conf.h"
 #include "domain_nwfilter.h"
@@ -685,6 +686,25 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
 }
 
 
+static qemuSnapshotDiskContext *
+qemuDomainAttachDiskGenericTransient(virDomainObj *vm,
+                                     virDomainDiskDef *disk,
+                                     GHashTable *blockNamedNodeData)
+{
+    g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
+    g_autoptr(virDomainSnapshotDiskDef) snapdiskdef = NULL;
+
+    snapdiskdef = qemuSnapshotGetTransientDiskDef(disk, vm->def->name);
+    snapctxt = qemuSnapshotDiskContextNew(1, vm, QEMU_ASYNC_JOB_NONE);
+
+    if (qemuSnapshotDiskPrepareOne(snapctxt, disk, snapdiskdef,
+                                   blockNamedNodeData, false, false) < 0)
+        return NULL;
+
+    return g_steal_pointer(&snapctxt);
+}
+
+
 /**
  * qemuDomainAttachDiskGeneric:
  *
@@ -701,6 +721,11 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     bool extensionDeviceAttached = false;
     int rc;
+    g_autoptr(qemuSnapshotDiskContext) transientDiskSnapshotCtxt = NULL;
+    bool origReadonly = disk->src->readonly;
+
+    if (disk->transient)
+        disk->src->readonly = true;
 
     if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
         if (!(data = qemuBuildStorageSourceChainAttachPrepareChardev(disk)))
@@ -723,6 +748,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
             return -1;
     }
 
+    disk->src->readonly = origReadonly;
+
     qemuDomainObjEnterMonitor(driver, vm);
 
     rc = qemuBlockStorageSourceChainAttach(priv->mon, data);
@@ -732,6 +759,25 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
 
     if (rc < 0)
         goto rollback;
+
+    if (disk->transient) {
+        g_autoptr(qemuBlockStorageSourceAttachData) backend = NULL;
+        g_autoptr(GHashTable) blockNamedNodeData = NULL;
+
+        if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
+            goto rollback;
+
+        if (!(transientDiskSnapshotCtxt = qemuDomainAttachDiskGenericTransient(vm, disk, blockNamedNodeData)))
+            goto rollback;
+
+
+        if (qemuSnapshotDiskCreate(transientDiskSnapshotCtxt) < 0)
+            goto rollback;
+
+        QEMU_DOMAIN_DISK_PRIVATE(disk)->transientOverlayCreated = true;
+        backend = qemuBlockStorageSourceDetachPrepare(disk->src, NULL);
+        ignore_value(VIR_INSERT_ELEMENT(data->srcdata, 0, data->nsrcdata, backend));
+    }
 
     if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, priv->qemuCaps)))
         goto rollback;
@@ -934,12 +980,6 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cdrom/floppy device hotplug isn't supported"));
-        return -1;
-    }
-
-    if (disk->transient) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("transient disk hotplug isn't supported"));
         return -1;
     }
 
