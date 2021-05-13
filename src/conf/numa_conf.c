@@ -186,25 +186,13 @@ virDomainNumatuneNodeParseXML(virDomainNuma *numa,
     }
 
     for (i = 0; i < n; i++) {
-        int mode = 0;
         unsigned int cellid = 0;
         virDomainNumaNode *mem_node = NULL;
         xmlNodePtr cur_node = nodes[i];
 
-        tmp = virXMLPropString(cur_node, "cellid");
-        if (!tmp) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing required cellid attribute "
-                             "in memnode element"));
+        if (virXMLPropUInt(cur_node, "cellid", 10, VIR_XML_PROP_REQUIRED,
+                           &cellid) < 0)
             goto cleanup;
-        }
-        if (virStrToLong_uip(tmp, NULL, 10, &cellid) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid cellid attribute in memnode element: %s"),
-                           tmp);
-            goto cleanup;
-        }
-        VIR_FREE(tmp);
 
         if (cellid >= numa->nmem_nodes) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -222,25 +210,18 @@ virDomainNumatuneNodeParseXML(virDomainNuma *numa,
             goto cleanup;
         }
 
-        tmp = virXMLPropString(cur_node, "mode");
-        if (!tmp) {
-            mem_node->mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
-        } else {
-            if ((mode = virDomainNumatuneMemModeTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Invalid mode attribute in memnode element"));
-                goto cleanup;
-            }
+        if (virXMLPropEnumDefault(cur_node, "mode",
+                                  virDomainNumatuneMemModeTypeFromString,
+                                  VIR_XML_PROP_NONE, &mem_node->mode,
+                                  VIR_DOMAIN_NUMATUNE_MEM_STRICT) < 0)
+            goto cleanup;
 
-            if (numa->memory.mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE &&
-                mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("'restrictive' mode is required in memnode element "
-                                 "when mode is 'restrictive' in memory element"));
-                goto cleanup;
-            }
-            VIR_FREE(tmp);
-            mem_node->mode = mode;
+        if (numa->memory.mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE &&
+            mem_node->mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("'restrictive' mode is required in memnode element "
+                             "when mode is 'restrictive' in memory element"));
+            goto cleanup;
         }
 
         tmp = virXMLPropString(cur_node, "nodeset");
