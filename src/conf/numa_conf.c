@@ -932,20 +932,20 @@ int
 virDomainNumaDefParseXML(virDomainNuma *def,
                          xmlXPathContextPtr ctxt)
 {
-    xmlNodePtr *nodes = NULL;
-    char *tmp = NULL;
+    g_autofree xmlNodePtr *cell = NULL;
+    g_autofree xmlNodePtr *interconnect = NULL;
+
     int n;
     size_t i, j;
-    int ret = -1;
 
     /* check if NUMA definition is present */
     if (!virXPathNode("./cpu/numa[1]", ctxt))
         return 0;
 
-    if ((n = virXPathNodeSet("./cpu/numa[1]/cell", ctxt, &nodes)) <= 0) {
+    if ((n = virXPathNodeSet("./cpu/numa[1]/cell", ctxt, &cell)) <= 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("NUMA topology defined without NUMA cells"));
-        goto cleanup;
+        return -1;
     }
 
     def->mem_nodes = g_new0(struct _virDomainNumaNode, n);
@@ -953,12 +953,13 @@ virDomainNumaDefParseXML(virDomainNuma *def,
 
     for (i = 0; i < n; i++) {
         VIR_XPATH_NODE_AUTORESTORE(ctxt)
+        g_autofree char *tmp = NULL;
         int rc;
         unsigned int cur_cell;
 
-        if ((rc = virXMLPropUInt(nodes[i], "id", 10, VIR_XML_PROP_NONE,
+        if ((rc = virXMLPropUInt(cell[i], "id", 10, VIR_XML_PROP_NONE,
                                  &cur_cell)) < 0)
-            goto cleanup;
+            return -1;
 
         if (rc == 0)
             cur_cell = i;
@@ -969,25 +970,24 @@ virDomainNumaDefParseXML(virDomainNuma *def,
                            _("Exactly one 'cell' element per guest "
                              "NUMA cell allowed, non-contiguous ranges or "
                              "ranges not starting from 0 are not allowed"));
-            goto cleanup;
+            return -1;
         }
 
         if (def->mem_nodes[cur_cell].mem) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Duplicate NUMA cell info for cell id '%u'"),
                            cur_cell);
-            goto cleanup;
+            return -1;
         }
 
-        if ((tmp = virXMLPropString(nodes[i], "cpus"))) {
+        if ((tmp = virXMLPropString(cell[i], "cpus"))) {
             g_autoptr(virBitmap) cpumask = NULL;
 
             if (virBitmapParse(tmp, &cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
-                goto cleanup;
+                return -1;
 
             if (!virBitmapIsAllClear(cpumask))
                 def->mem_nodes[cur_cell].cpumask = g_steal_pointer(&cpumask);
-            VIR_FREE(tmp);
         }
 
         for (j = 0; j < n; j++) {
@@ -1001,38 +1001,38 @@ virDomainNumaDefParseXML(virDomainNuma *def,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("NUMA cells %u and %zu have overlapping vCPU ids"),
                                cur_cell, j);
-                goto cleanup;
+                return -1;
             }
         }
 
-        ctxt->node = nodes[i];
+        ctxt->node = cell[i];
         if (virDomainParseMemory("./@memory", "./@unit", ctxt,
                                  &def->mem_nodes[cur_cell].mem, true, false) < 0)
-            goto cleanup;
+            return -1;
 
-        if (virXMLPropEnum(nodes[i], "memAccess",
+        if (virXMLPropEnum(cell[i], "memAccess",
                            virDomainMemoryAccessTypeFromString,
                            VIR_XML_PROP_NONZERO,
                            &def->mem_nodes[cur_cell].memAccess) < 0)
-            goto cleanup;
+            return -1;
 
-        if (virXMLPropTristateBool(nodes[i], "discard", VIR_XML_PROP_NONE,
+        if (virXMLPropTristateBool(cell[i], "discard", VIR_XML_PROP_NONE,
                                    &def->mem_nodes[cur_cell].discard) < 0)
-            goto cleanup;
+            return -1;
 
         /* Parse NUMA distances info */
         if (virDomainNumaDefNodeDistanceParseXML(def, ctxt, cur_cell) < 0)
-            goto cleanup;
+            return -1;
 
         /* Parse cache info */
         if (virDomainNumaDefNodeCacheParseXML(def, ctxt, cur_cell) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    VIR_FREE(nodes);
     if ((n = virXPathNodeSet("./cpu/numa[1]/interconnects[1]/latency|"
-                             "./cpu/numa[1]/interconnects[1]/bandwidth", ctxt, &nodes)) < 0)
-        goto cleanup;
+                             "./cpu/numa[1]/interconnects[1]/bandwidth", ctxt,
+                             &interconnect)) < 0)
+        return -1;
 
     def->interconnects = g_new0(virDomainNumaInterconnect, n);
     for (i = 0; i < n; i++) {
@@ -1043,53 +1043,49 @@ virDomainNumaDefParseXML(virDomainNuma *def,
         virDomainMemoryLatency accessType;
         unsigned long long value;
 
-        if (virXMLNodeNameEqual(nodes[i], "latency")) {
+        if (virXMLNodeNameEqual(interconnect[i], "latency")) {
             type = VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY;
 
-            if (virXMLPropULongLong(nodes[i], "value", 10,
+            if (virXMLPropULongLong(interconnect[i], "value", 10,
                                     VIR_XML_PROP_REQUIRED, &value) < 0)
-                goto cleanup;
-        } else if (virXMLNodeNameEqual(nodes[i], "bandwidth")) {
+                return -1;
+        } else if (virXMLNodeNameEqual(interconnect[i], "bandwidth")) {
             VIR_XPATH_NODE_AUTORESTORE(ctxt)
             type = VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH;
 
-            ctxt->node = nodes[i];
+            ctxt->node = interconnect[i];
 
             if (virDomainParseMemory("./@value", "./@unit", ctxt, &value, true, false) < 0)
-                goto cleanup;
+                return -1;
         } else {
             /* Ignore yet unknown child elements. */
             continue;
         }
 
-        if (virXMLPropUInt(nodes[i], "initiator", 10, VIR_XML_PROP_REQUIRED,
+        if (virXMLPropUInt(interconnect[i], "initiator", 10, VIR_XML_PROP_REQUIRED,
                            &initiator) < 0)
-            goto cleanup;
+            return -1;
 
-        if (virXMLPropUInt(nodes[i], "target", 10, VIR_XML_PROP_REQUIRED,
+        if (virXMLPropUInt(interconnect[i], "target", 10, VIR_XML_PROP_REQUIRED,
                            &target) < 0)
-            goto cleanup;
+            return -1;
 
-        if (virXMLPropUInt(nodes[i], "cache", 10, VIR_XML_PROP_NONE,
+        if (virXMLPropUInt(interconnect[i], "cache", 10, VIR_XML_PROP_NONE,
                            &cache) < 0)
-            goto cleanup;
+            return -1;
 
-        if (virXMLPropEnum(nodes[i], "type", virDomainMemoryLatencyTypeFromString,
+        if (virXMLPropEnum(interconnect[i], "type",
+                           virDomainMemoryLatencyTypeFromString,
                            VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
                            &accessType) < 0)
-            goto cleanup;
+            return -1;
 
         def->interconnects[i] = (virDomainNumaInterconnect) {type, initiator, target,
                                                              cache, accessType, value};
         def->ninterconnects++;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(nodes);
-    VIR_FREE(tmp);
-    return ret;
+    return 0;
 }
 
 
