@@ -155,16 +155,14 @@ static int
 virDomainNumatuneNodeParseXML(virDomainNuma *numa,
                               xmlXPathContextPtr ctxt)
 {
-    char *tmp = NULL;
     int n = 0;
-    int ret = -1;
     size_t i = 0;
-    xmlNodePtr *nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
 
     if ((n = virXPathNodeSet("./numatune/memnode", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot extract memnode nodes"));
-        goto cleanup;
+        return -1;
     }
 
     if (!n)
@@ -175,30 +173,31 @@ virDomainNumatuneNodeParseXML(virDomainNuma *numa,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Per-node binding is not compatible with "
                          "automatic NUMA placement."));
-        goto cleanup;
+        return -1;
     }
 
     if (!numa->nmem_nodes) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Element 'memnode' is invalid without "
                          "any guest NUMA cells"));
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < n; i++) {
         unsigned int cellid = 0;
         virDomainNumaNode *mem_node = NULL;
         xmlNodePtr cur_node = nodes[i];
+        g_autofree char *tmp = NULL;
 
         if (virXMLPropUInt(cur_node, "cellid", 10, VIR_XML_PROP_REQUIRED,
                            &cellid) < 0)
-            goto cleanup;
+            return -1;
 
         if (cellid >= numa->nmem_nodes) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Argument 'cellid' in memnode element must "
                              "correspond to existing guest's NUMA cell"));
-            goto cleanup;
+            return -1;
         }
 
         mem_node = &numa->mem_nodes[cellid];
@@ -207,21 +206,21 @@ virDomainNumatuneNodeParseXML(virDomainNuma *numa,
             virReportError(VIR_ERR_XML_ERROR,
                            _("Multiple memnode elements with cellid %u"),
                            cellid);
-            goto cleanup;
+            return -1;
         }
 
         if (virXMLPropEnumDefault(cur_node, "mode",
                                   virDomainNumatuneMemModeTypeFromString,
                                   VIR_XML_PROP_NONE, &mem_node->mode,
                                   VIR_DOMAIN_NUMATUNE_MEM_STRICT) < 0)
-            goto cleanup;
+            return -1;
 
         if (numa->memory.mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE &&
             mem_node->mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("'restrictive' mode is required in memnode element "
                              "when mode is 'restrictive' in memory element"));
-            goto cleanup;
+            return -1;
         }
 
         tmp = virXMLPropString(cur_node, "nodeset");
@@ -229,24 +228,19 @@ virDomainNumatuneNodeParseXML(virDomainNuma *numa,
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing required nodeset attribute "
                              "in memnode element"));
-            goto cleanup;
+            return -1;
         }
         if (virBitmapParse(tmp, &mem_node->nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
-            goto cleanup;
+            return -1;
 
         if (virBitmapIsAllClear(mem_node->nodeset)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Invalid value of 'nodeset': %s"), tmp);
-            goto cleanup;
+            return -1;
         }
-        VIR_FREE(tmp);
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(nodes);
-    VIR_FREE(tmp);
-    return ret;
+    return 0;
 }
 
 int
