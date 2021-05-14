@@ -65,10 +65,15 @@
 %endif
 
 %define with_storage_gluster 0%{!?_without_storage_gluster:1}
-%ifnarch %{arches_qemu_kvm}
-    # gluster is only built where qemu driver is enabled on RHEL
-    %if 0%{?rhel}
+%if 0%{?rhel}
+    # Glusterfs has been dropped in RHEL-9, and before that
+    # was only enabled on arches where KVM exists
+    %if 0%{?rhel} > 8
         %define with_storage_gluster 0
+    %else
+        %ifnarch %{arches_qemu_kvm}
+            %define with_storage_gluster 0
+	%endif
     %endif
 %endif
 
