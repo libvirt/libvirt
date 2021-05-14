@@ -807,8 +807,6 @@ virCapabilitiesHostNUMAFormat(virBuffer *buf,
                               virCapsHostNUMA *caps)
 {
     size_t i;
-    size_t j;
-    char *siblings;
 
     if (!caps)
         return 0;
@@ -819,6 +817,8 @@ virCapabilitiesHostNUMAFormat(virBuffer *buf,
     virBufferAdjustIndent(buf, 2);
     for (i = 0; i < caps->cells->len; i++) {
         virCapsHostNUMACell *cell = g_ptr_array_index(caps->cells, i);
+        size_t j;
+
         virBufferAsprintf(buf, "<cell id='%d'>\n", cell->num);
         virBufferAdjustIndent(buf, 2);
 
@@ -851,6 +851,8 @@ virCapabilitiesHostNUMAFormat(virBuffer *buf,
             virBufferAsprintf(buf, "<cpu id='%d'", cell->cpus[j].id);
 
             if (cell->cpus[j].siblings) {
+                g_autofree char *siblings = NULL;
+
                 if (!(siblings = virBitmapFormat(cell->cpus[j].siblings)))
                     return -1;
 
@@ -860,7 +862,6 @@ virCapabilitiesHostNUMAFormat(virBuffer *buf,
                                   cell->cpus[j].die_id,
                                   cell->cpus[j].core_id,
                                   siblings);
-                VIR_FREE(siblings);
             }
             virBufferAddLit(buf, "/>\n");
         }
