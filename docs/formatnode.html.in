@@ -384,6 +384,10 @@
                 The order that they appear in the xml definition determines the
                 order that they will be written to the device.
               </dd>
+              <dt><code>uuid</code></dt>
+              <dd>
+                This element represents the UUID of the mediated device.
+              </dd>
             </dl>
           </dd>
           <dt><code>ccw</code></dt>
