@@ -1318,6 +1318,41 @@ endif
 yajl_version = '2.0.3'
 yajl_dep = dependency('yajl', version: '>=' + yajl_version, required: get_option('yajl'))
 if yajl_dep.found()
+  # Kludge for yajl include path on non-Linux
+  #
+  # As of 2.1.0, upstream yajl.pc has -I${includedir}/yajl among
+  # its Cflags, which is clearly wrong. This does not affect Linux
+  # because ${includedir} is already part of the default include path,
+  # but on other platforms that's not the case and the result is that
+  # <yajl/yajl.h> can't be located, causing the build to fail.
+  #
+  # Since upstream development for yajl has stopped years ago, there's
+  # little hope of this issue getting fixed by a new upstream release.
+  # Some non-Linux operating systems such as FreeBSD have elected to
+  # carry a small downstream patch, but in the case of Homebrew on
+  # macOS this approach has been rejected[1] and so we're left with no
+  # choice but to work around the issue ourselves.
+  #
+  # [1] https://github.com/Homebrew/homebrew-core/pull/74516
+  if host_machine.system() != 'linux'
+    pkg_config_prog = find_program('pkg-config')
+    rc = run_command(pkg_config_prog, '--cflags', 'yajl', check: true)
+    cflags = rc.stdout().strip()
+    if cflags.contains('include/yajl')
+      rc = run_command(
+        'python3', '-c',
+        'print("@0@".replace("@1@", "@2@"))'.format(
+          cflags, 'include/yajl', 'include',
+        ),
+        check: true,
+      )
+      yajl_dep = declare_dependency(
+        compile_args: rc.stdout().strip().split(),
+        dependencies: [ yajl_dep ],
+      )
+    endif
+  endif
+
   conf.set('WITH_YAJL', 1)
 endif
 
