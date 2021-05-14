@@ -1,0 +1,105 @@
+<capabilities>
+
+  <host>
+    <cpu>
+      <arch>x86_64</arch>
+    </cpu>
+    <power_management/>
+    <iommu support='no'/>
+    <migration_features>
+      <live/>
+    </migration_features>
+    <topology>
+      <cells num='2'>
+        <cell id='0'>
+          <memory unit='KiB'>1048576</memory>
+          <pages unit='KiB' size='4'>2048</pages>
+          <pages unit='KiB' size='2048'>4096</pages>
+          <pages unit='KiB' size='1048576'>6144</pages>
+          <cache level='1' associativity='direct' policy='writeback'>
+            <size value='10' unit='KiB'/>
+            <line value='8' unit='B'/>
+          </cache>
+          <cache level='2' associativity='full' policy='writethrough'>
+            <size value='128' unit='KiB'/>
+            <line value='16' unit='B'/>
+          </cache>
+          <cpus num='24'>
+            <cpu id='0' socket_id='0' die_id='0' core_id='0' siblings='0'/>
+            <cpu id='1' socket_id='1' die_id='0' core_id='0' siblings='1'/>
+            <cpu id='2' socket_id='2' die_id='0' core_id='0' siblings='2'/>
+            <cpu id='3' socket_id='3' die_id='0' core_id='0' siblings='3'/>
+            <cpu id='4' socket_id='4' die_id='0' core_id='0' siblings='4'/>
+            <cpu id='5' socket_id='5' die_id='0' core_id='0' siblings='5'/>
+            <cpu id='6' socket_id='6' die_id='0' core_id='0' siblings='6'/>
+            <cpu id='7' socket_id='7' die_id='0' core_id='0' siblings='7'/>
+            <cpu id='8' socket_id='8' die_id='0' core_id='0' siblings='8'/>
+            <cpu id='9' socket_id='9' die_id='0' core_id='0' siblings='9'/>
+            <cpu id='10' socket_id='10' die_id='0' core_id='0' siblings='10'/>
+            <cpu id='11' socket_id='11' die_id='0' core_id='0' siblings='11'/>
+            <cpu id='12' socket_id='12' die_id='0' core_id='0' siblings='12'/>
+            <cpu id='13' socket_id='13' die_id='0' core_id='0' siblings='13'/>
+            <cpu id='14' socket_id='14' die_id='0' core_id='0' siblings='14'/>
+            <cpu id='15' socket_id='15' die_id='0' core_id='0' siblings='15'/>
+            <cpu id='16' socket_id='16' die_id='0' core_id='0' siblings='16'/>
+            <cpu id='17' socket_id='17' die_id='0' core_id='0' siblings='17'/>
+            <cpu id='18' socket_id='18' die_id='0' core_id='0' siblings='18'/>
+            <cpu id='19' socket_id='19' die_id='0' core_id='0' siblings='19'/>
+            <cpu id='20' socket_id='20' die_id='0' core_id='0' siblings='20'/>
+            <cpu id='21' socket_id='21' die_id='0' core_id='0' siblings='21'/>
+            <cpu id='22' socket_id='22' die_id='0' core_id='0' siblings='22'/>
+            <cpu id='23' socket_id='23' die_id='0' core_id='0' siblings='23'/>
+          </cpus>
+        </cell>
+        <cell id='1'>
+          <memory unit='KiB'>2097152</memory>
+          <pages unit='KiB' size='4'>4096</pages>
+          <pages unit='KiB' size='2048'>6144</pages>
+          <pages unit='KiB' size='1048576'>8192</pages>
+          <cache level='1' associativity='direct' policy='writeback'>
+            <size value='10' unit='KiB'/>
+            <line value='8' unit='B'/>
+          </cache>
+          <cpus num='0'/>
+        </cell>
+      </cells>
+      <interconnects>
+        <latency initiator='0' target='0' type='read' value='6'/>
+        <latency initiator='0' target='0' type='write' value='7'/>
+        <latency initiator='0' target='1' type='read' value='11'/>
+        <latency initiator='0' target='1' type='write' value='12'/>
+        <bandwidth initiator='0' target='0' type='read' value='205824' unit='KiB'/>
+        <bandwidth initiator='0' target='0' type='write' value='206848' unit='KiB'/>
+        <bandwidth initiator='0' target='1' type='read' value='103424' unit='KiB'/>
+        <bandwidth initiator='0' target='1' type='write' value='104448' unit='KiB'/>
+      </interconnects>
+    </topology>
+    <cache>
+      <bank id='0' level='3' type='both' size='16' unit='MiB' cpus='0'/>
+      <bank id='1' level='3' type='both' size='16' unit='MiB' cpus='1'/>
+      <bank id='2' level='3' type='both' size='16' unit='MiB' cpus='2'/>
+      <bank id='3' level='3' type='both' size='16' unit='MiB' cpus='3'/>
+      <bank id='4' level='3' type='both' size='16' unit='MiB' cpus='4'/>
+      <bank id='5' level='3' type='both' size='16' unit='MiB' cpus='5'/>
+      <bank id='6' level='3' type='both' size='16' unit='MiB' cpus='6'/>
+      <bank id='7' level='3' type='both' size='16' unit='MiB' cpus='7'/>
+      <bank id='8' level='3' type='both' size='16' unit='MiB' cpus='8'/>
+      <bank id='9' level='3' type='both' size='16' unit='MiB' cpus='9'/>
+      <bank id='10' level='3' type='both' size='16' unit='MiB' cpus='10'/>
+      <bank id='11' level='3' type='both' size='16' unit='MiB' cpus='11'/>
+      <bank id='12' level='3' type='both' size='16' unit='MiB' cpus='12'/>
+      <bank id='13' level='3' type='both' size='16' unit='MiB' cpus='13'/>
+      <bank id='14' level='3' type='both' size='16' unit='MiB' cpus='14'/>
+      <bank id='15' level='3' type='both' size='16' unit='MiB' cpus='15'/>
+      <bank id='16' level='3' type='both' size='16' unit='MiB' cpus='16'/>
+      <bank id='17' level='3' type='both' size='16' unit='MiB' cpus='17'/>
+      <bank id='18' level='3' type='both' size='16' unit='MiB' cpus='18'/>
+      <bank id='19' level='3' type='both' size='16' unit='MiB' cpus='19'/>
+      <bank id='20' level='3' type='both' size='16' unit='MiB' cpus='20'/>
+      <bank id='21' level='3' type='both' size='16' unit='MiB' cpus='21'/>
+      <bank id='22' level='3' type='both' size='16' unit='MiB' cpus='22'/>
+      <bank id='23' level='3' type='both' size='16' unit='MiB' cpus='23'/>
+    </cache>
+  </host>
+
+</capabilities>
