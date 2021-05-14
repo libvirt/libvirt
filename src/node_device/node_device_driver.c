@@ -615,7 +615,8 @@ nodeDeviceDefToMdevctlConfig(virNodeDeviceDef *def, char **buf)
     if (virJSONValueObjectAppendString(json, "mdev_type", mdev->type) < 0)
         return -1;
 
-    if (virJSONValueObjectAppendString(json, "start", "manual") < 0)
+    if (virJSONValueObjectAppendString(json, "start",
+                                       virNodeDevMdevStartTypeToString(mdev->start)) < 0)
         return -1;
 
     if (mdev->attributes) {
@@ -1014,6 +1015,8 @@ nodeDeviceParseMdevctlChildDevice(const char *parent,
     mdev->uuid = g_strdup(uuid);
     mdev->type =
         g_strdup(virJSONValueObjectGetString(props, "mdev_type"));
+    mdev->start =
+        virNodeDevMdevStartTypeFromString(virJSONValueObjectGetString(props, "start"));
 
     attrs = virJSONValueObjectGet(props, "attrs");
 
@@ -1682,6 +1685,8 @@ nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
         g_free(dstmdev->uuid);
         dstmdev->uuid = g_strdup(srcmdev->uuid);
     }
+
+    dstmdev->start = srcmdev->start;
 
     if (virMediatedDeviceAttrsCopy(dstmdev, srcmdev))
         ret = true;

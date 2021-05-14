@@ -388,6 +388,16 @@
               <dd>
                 This element represents the UUID of the mediated device.
               </dd>
+              <dt><code>start</code></dt>
+              <dd>
+                This element represents the start policy for the device.  It
+                has a required attribute <code>type</code>, which can have a
+                value of <code>auto</code> or <code>manual</code>. Mediated
+                devices with an <code>auto</code> start type will be started
+                automatically by the host when the parent device becomes
+                available (either on boot, or when the parent device is
+                attached). Otherwise the device must be started manually.
+              </dd>
             </dl>
           </dd>
           <dt><code>ccw</code></dt>

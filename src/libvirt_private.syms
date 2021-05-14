@@ -846,6 +846,8 @@ virNodeDeviceGetSCSIHostCaps;
 virNodeDeviceGetSCSITargetCaps;
 virNodeDeviceGetWWNs;
 virNodeDeviceUpdateCaps;
+virNodeDevMdevStartTypeFromString;
+virNodeDevMdevStartTypeToString;
 
 
 # conf/node_device_event.h
