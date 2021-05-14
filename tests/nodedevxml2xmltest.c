@@ -14,7 +14,7 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 static int
-testCompareXMLToXMLFiles(const char *xml)
+testCompareXMLToXMLFiles(const char *xml, const char *outfile)
 {
     char *xmlData = NULL;
     char *actual = NULL;
@@ -52,10 +52,8 @@ testCompareXMLToXMLFiles(const char *xml)
     if (!(actual = virNodeDeviceDefFormat(dev)))
         goto fail;
 
-    if (STRNEQ(xmlData, actual)) {
-        virTestDifferenceFull(stderr, xmlData, xml, actual, NULL);
+    if (virTestCompareToFile(actual, outfile) < 0)
         goto fail;
-    }
 
     ret = 0;
 
@@ -71,11 +69,15 @@ testCompareXMLToXMLHelper(const void *data)
 {
     int result = -1;
     char *xml = NULL;
+    g_autofree char *outfile = NULL;
 
     xml = g_strdup_printf("%s/nodedevschemadata/%s.xml", abs_srcdir,
                           (const char *)data);
 
-    result = testCompareXMLToXMLFiles(xml);
+    outfile = g_strdup_printf("%s/nodedevxml2xmlout/%s.xml", abs_srcdir,
+                              (const char *)data);
+
+    result = testCompareXMLToXMLFiles(xml, outfile);
 
     VIR_FREE(xml);
     return result;
