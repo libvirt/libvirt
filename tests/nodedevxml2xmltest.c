@@ -132,6 +132,11 @@ mymain(void)
     DO_TEST("ap_matrix");
     DO_TEST("ap_matrix_mdev_types");
     DO_TEST("mdev_ee0b88c4_f554_4dc1_809d_b2a01e8e48ad");
+    DO_TEST("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
+    DO_TEST("mdev_d2441d39_495e_4243_ad9f_beb3f14c23d9");
+    DO_TEST("mdev_fedc4916_1ca8_49ac_b176_871d16c13076");
+    DO_TEST("mdev_autostart");
+    DO_TEST("mdev_manual");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
