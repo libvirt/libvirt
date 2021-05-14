@@ -915,6 +915,7 @@ virDomainNumatunePlacementTypeFromString;
 virDomainNumatunePlacementTypeToString;
 virDomainNumatuneSet;
 virDomainNumatuneSpecifiedMaxNode;
+virNumaDistanceFormat;
 
 
 # conf/nwfilter_conf.h

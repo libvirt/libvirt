@@ -82,8 +82,6 @@ VIR_ENUM_IMPL(virDomainMemoryLatency,
               "write"
 );
 
-typedef struct _virNumaDistance virNumaDistance;
-
 typedef struct _virDomainNumaCache virDomainNumaCache;
 
 typedef struct _virDomainNumaInterconnect virDomainNumaInterconnect;
@@ -106,10 +104,7 @@ struct _virDomainNuma {
         virDomainMemoryAccess memAccess; /* shared memory access configuration */
         virTristateBool discard; /* discard-data for memory-backend-file */
 
-        struct _virNumaDistance {
-            unsigned int value; /* locality value for node i->j or j->i */
-            unsigned int cellid;
-        } *distances;           /* remote node distances */
+        virNumaDistance *distances; /* remote node distances */
         size_t ndistances;
 
         struct _virDomainNumaCache {
@@ -1132,22 +1127,9 @@ virDomainNumaDefFormatXML(virBuffer *buf,
             virBufferAsprintf(&attrBuf, " discard='%s'",
                               virTristateBoolTypeToString(discard));
 
-        if (def->mem_nodes[i].ndistances) {
-            virNumaDistance *distances = def->mem_nodes[i].distances;
-
-            virBufferAddLit(&childBuf, "<distances>\n");
-            virBufferAdjustIndent(&childBuf, 2);
-            for (j = 0; j < def->mem_nodes[i].ndistances; j++) {
-                if (distances[j].value) {
-                    virBufferAddLit(&childBuf, "<sibling");
-                    virBufferAsprintf(&childBuf, " id='%d'", distances[j].cellid);
-                    virBufferAsprintf(&childBuf, " value='%d'", distances[j].value);
-                    virBufferAddLit(&childBuf, "/>\n");
-                }
-            }
-            virBufferAdjustIndent(&childBuf, -2);
-            virBufferAddLit(&childBuf, "</distances>\n");
-        }
+        virNumaDistanceFormat(&childBuf,
+                              def->mem_nodes[i].distances,
+                              def->mem_nodes[i].ndistances);
 
         for (j = 0; j < def->mem_nodes[i].ncaches; j++) {
             virDomainNumaCache *cache = &def->mem_nodes[i].caches[j];
@@ -1835,4 +1817,25 @@ virDomainNumaGetInterconnect(const virDomainNuma *numa,
     *accessType = l->accessType;
     *value = l->value;
     return 0;
+}
+
+
+void
+virNumaDistanceFormat(virBuffer *buf,
+                      const virNumaDistance *distances,
+                      size_t ndistances)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    size_t i;
+
+    for (i = 0; i < ndistances; i++) {
+        if (distances[i].value == 0)
+            continue;
+        virBufferAddLit(&childBuf, "<sibling");
+        virBufferAsprintf(&childBuf, " id='%d'", distances[i].cellid);
+        virBufferAsprintf(&childBuf, " value='%d'", distances[i].value);
+        virBufferAddLit(&childBuf, "/>\n");
+    }
+
+    virXMLFormatElement(buf, "distances", NULL, &childBuf);
 }

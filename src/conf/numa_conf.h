@@ -249,3 +249,13 @@ int virDomainNumaGetInterconnect(const virDomainNuma *numa,
                                  unsigned int *cache,
                                  virDomainMemoryLatency *accessType,
                                  unsigned long *value);
+
+typedef struct _virNumaDistance virNumaDistance;
+struct _virNumaDistance {
+    unsigned int value; /* locality value for node i->j or j->i */
+    unsigned int cellid;
+};
+
+void virNumaDistanceFormat(virBuffer *buf,
+                           const virNumaDistance *distances,
+                           size_t ndistances);
