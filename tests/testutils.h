@@ -98,6 +98,10 @@ void virTestQuiesceLibvirtErrors(bool always);
 void virTestCounterReset(const char *prefix);
 const char *virTestCounterNext(void);
 
+/**
+ * The @func shall return  EXIT_FAILURE or EXIT_SUCCESS or
+ * EXIT_AM_SKIP or EXIT_AM_HARDFAIL.
+ */
 int virTestMain(int argc,
                 char **argv,
                 int (*func)(void),

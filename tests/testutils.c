@@ -838,6 +838,19 @@ int virTestMain(int argc,
             fprintf(stderr, "%*s", 40 - (int)(testCounter % 40), "");
         fprintf(stderr, " %-3zu %s\n", testCounter, ret == 0 ? "OK" : "FAIL");
     }
+
+    switch (ret) {
+    case EXIT_FAILURE:
+    case EXIT_SUCCESS:
+    case EXIT_AM_SKIP:
+    case EXIT_AM_HARDFAIL:
+        break;
+    default:
+        fprintf(stderr, "Test callback returned invalid value: %d\n", ret);
+        ret = EXIT_AM_HARDFAIL;
+        break;
+    }
+
     if (ret == EXIT_FAILURE && !virBitmapIsAllClear(failedTests)) {
         g_autofree char *failed = virBitmapFormat(failedTests);
         fprintf(stderr, "Some tests failed. Run them using:\n");
