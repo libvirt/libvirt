@@ -108,7 +108,7 @@ mymain(void)
     if (virTestRun("test2", test2, NULL) < 0)
         ret = -1;
 
-    return ret;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIR_TEST_MAIN(mymain)

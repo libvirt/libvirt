@@ -93,7 +93,7 @@ mymain(void)
     DO_TEST_UNUSED("resctrl-skx");
     DO_TEST_UNUSED("resctrl-skx-twocaches");
 
-    return ret;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIR_TEST_MAIN(mymain)

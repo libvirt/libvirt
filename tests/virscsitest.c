@@ -229,7 +229,7 @@ mymain(void)
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(tmpdir);
     VIR_FREE(virscsi_prefix);
-    return ret;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIR_TEST_MAIN(mymain)

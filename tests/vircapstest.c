@@ -249,7 +249,7 @@ mymain(void)
         ret = -1;
 #endif /* WITH_LXC */
 
-    return ret;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIR_TEST_MAIN(mymain)

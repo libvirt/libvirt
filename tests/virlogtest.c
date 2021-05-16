@@ -151,7 +151,7 @@ mymain(void)
     TEST_PARSE_FILTERS_FAIL(":foo", 1);
     TEST_PARSE_FILTERS_FAIL("1:+", 1);
 
-    return ret;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIR_TEST_MAIN(mymain)

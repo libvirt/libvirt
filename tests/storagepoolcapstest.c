@@ -101,7 +101,7 @@ mymain(void)
     DO_TEST("full", fullCaps);
     DO_TEST("fs", fsCaps);
 
-    return ret;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIR_TEST_MAIN(mymain)

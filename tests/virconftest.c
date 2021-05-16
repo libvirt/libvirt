@@ -465,7 +465,7 @@ mymain(void)
     if (virTestRun("string-list", testConfParseStringList, NULL) < 0)
         ret = -1;
 
-    return ret;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 

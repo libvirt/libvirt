@@ -282,7 +282,7 @@ mymain(void)
     VIR_FREE(fakerootdir);
     VIR_FREE(fakesysfsdir);
     VIR_FREE(scsihost_class_path);
-    return ret;
+    return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 VIR_TEST_MAIN(mymain)
