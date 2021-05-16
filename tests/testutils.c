@@ -750,8 +750,7 @@ int virTestMain(int argc,
     size_t noutputs = 0;
     virLogOutput *output = NULL;
     virLogOutput **outputs = NULL;
-    g_autofree char *baseprogname = NULL;
-    const char *progname;
+    g_autofree char *progname = NULL;
     g_autofree const char **preloads = NULL;
     size_t npreloads = 0;
     g_autofree char *mock = NULL;
@@ -784,9 +783,7 @@ int virTestMain(int argc,
         VIR_TEST_PRELOAD(mock);
     }
 
-    progname = baseprogname = g_path_get_basename(argv[0]);
-    if (STRPREFIX(progname, "lt-"))
-        progname += 3;
+    progname = g_path_get_basename(argv[0]);
 
     g_setenv("VIR_TEST_MOCK_PROGNAME", progname, TRUE);
 
