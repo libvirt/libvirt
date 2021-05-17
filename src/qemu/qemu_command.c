@@ -7325,11 +7325,11 @@ qemuBuildNumaHMATCommandLine(virCommand *cmd,
     nlatencies = virDomainNumaGetInterconnectsCount(def->numa);
     for (i = 0; i < nlatencies; i++) {
         g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-        virDomainNumaInterconnectType type;
+        virNumaInterconnectType type;
         unsigned int initiator;
         unsigned int target;
         unsigned int cache;
-        virDomainMemoryLatency accessType;
+        virMemoryLatency accessType;
         unsigned long value;
         const char *hierarchyStr;
         const char *accessStr;
@@ -7340,16 +7340,16 @@ qemuBuildNumaHMATCommandLine(virCommand *cmd,
             return -1;
 
         hierarchyStr = qemuDomainMemoryHierarchyTypeToString(cache);
-        accessStr = virDomainMemoryLatencyTypeToString(accessType);
+        accessStr = virMemoryLatencyTypeToString(accessType);
         virBufferAsprintf(&buf,
                           "hmat-lb,initiator=%u,target=%u,hierarchy=%s,data-type=%s-",
                           initiator, target, hierarchyStr, accessStr);
 
         switch (type) {
-        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY:
+        case VIR_NUMA_INTERCONNECT_TYPE_LATENCY:
             virBufferAsprintf(&buf, "latency,latency=%lu", value);
             break;
-        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH:
+        case VIR_NUMA_INTERCONNECT_TYPE_BANDWIDTH:
             virBufferAsprintf(&buf, "bandwidth,bandwidth=%luK", value);
             break;
         }

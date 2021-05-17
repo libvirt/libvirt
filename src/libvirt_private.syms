@@ -863,8 +863,6 @@ virNodeDeviceGetParentName;
 # conf/numa_conf.h
 virDomainMemoryAccessTypeFromString;
 virDomainMemoryAccessTypeToString;
-virDomainMemoryLatencyTypeFromString;
-virDomainMemoryLatencyTypeToString;
 virDomainNumaCheckABIStability;
 virDomainNumaEquals;
 virDomainNumaFillCPUsInNode;
@@ -909,6 +907,8 @@ virDomainNumatunePlacementTypeFromString;
 virDomainNumatunePlacementTypeToString;
 virDomainNumatuneSet;
 virDomainNumatuneSpecifiedMaxNode;
+virMemoryLatencyTypeFromString;
+virMemoryLatencyTypeToString;
 virNumaCacheAssociativityTypeFromString;
 virNumaCacheAssociativityTypeToString;
 virNumaCacheFormat;

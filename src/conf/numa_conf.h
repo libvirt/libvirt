@@ -69,19 +69,19 @@ typedef enum {
 VIR_ENUM_DECL(virNumaCachePolicy);
 
 typedef enum {
-    VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY,
-    VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH,
-} virDomainNumaInterconnectType;
+    VIR_NUMA_INTERCONNECT_TYPE_LATENCY,
+    VIR_NUMA_INTERCONNECT_TYPE_BANDWIDTH,
+} virNumaInterconnectType;
 
 typedef enum {
-    VIR_DOMAIN_MEMORY_LATENCY_NONE = 0, /* No memory latency defined */
-    VIR_DOMAIN_MEMORY_LATENCY_ACCESS,   /* Access latency */
-    VIR_DOMAIN_MEMORY_LATENCY_READ,     /* Read latency */
-    VIR_DOMAIN_MEMORY_LATENCY_WRITE,    /* Write latency */
+    VIR_MEMORY_LATENCY_NONE = 0, /* No memory latency defined */
+    VIR_MEMORY_LATENCY_ACCESS,   /* Access latency */
+    VIR_MEMORY_LATENCY_READ,     /* Read latency */
+    VIR_MEMORY_LATENCY_WRITE,    /* Write latency */
 
-    VIR_DOMAIN_MEMORY_LATENCY_LAST
-} virDomainMemoryLatency;
-VIR_ENUM_DECL(virDomainMemoryLatency);
+    VIR_MEMORY_LATENCY_LAST
+} virMemoryLatency;
+VIR_ENUM_DECL(virMemoryLatency);
 
 
 virDomainNuma *virDomainNumaNew(void);
@@ -243,11 +243,11 @@ size_t virDomainNumaGetInterconnectsCount(const virDomainNuma *numa);
 
 int virDomainNumaGetInterconnect(const virDomainNuma *numa,
                                  size_t i,
-                                 virDomainNumaInterconnectType *type,
+                                 virNumaInterconnectType *type,
                                  unsigned int *initiator,
                                  unsigned int *target,
                                  unsigned int *cache,
-                                 virDomainMemoryLatency *accessType,
+                                 virMemoryLatency *accessType,
                                  unsigned long *value);
 
 typedef struct _virNumaDistance virNumaDistance;

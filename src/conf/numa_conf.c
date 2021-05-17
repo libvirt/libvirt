@@ -74,15 +74,15 @@ VIR_ENUM_IMPL(virNumaCachePolicy,
               "writethrough",
 );
 
-VIR_ENUM_IMPL(virDomainMemoryLatency,
-              VIR_DOMAIN_MEMORY_LATENCY_LAST,
+VIR_ENUM_IMPL(virMemoryLatency,
+              VIR_MEMORY_LATENCY_LAST,
               "none",
               "access",
               "read",
               "write"
 );
 
-typedef struct _virDomainNumaInterconnect virDomainNumaInterconnect;
+typedef struct _virNumaInterconnect virNumaInterconnect;
 
 typedef struct _virDomainNumaNode virDomainNumaNode;
 
@@ -110,14 +110,14 @@ struct _virDomainNuma {
     } *mem_nodes;           /* guest node configuration */
     size_t nmem_nodes;
 
-    struct _virDomainNumaInterconnect {
-        virDomainNumaInterconnectType type;  /* whether structure describes latency
-                                                or bandwidth */
+    struct _virNumaInterconnect {
+        virNumaInterconnectType type;  /* whether structure describes latency
+                                          or bandwidth */
         unsigned int initiator; /* the initiator NUMA node */
         unsigned int target;    /* the target NUMA node */
         unsigned int cache;     /* the target cache on @target; if 0 then the
                                    memory on @target */
-        virDomainMemoryLatency accessType;  /* what type of access is defined */
+        virMemoryLatency accessType;  /* what type of access is defined */
         unsigned long value;    /* value itself */
     } *interconnects;
     size_t ninterconnects;
@@ -1021,24 +1021,24 @@ virDomainNumaDefParseXML(virDomainNuma *def,
                              &interconnect)) < 0)
         return -1;
 
-    def->interconnects = g_new0(virDomainNumaInterconnect, n);
+    def->interconnects = g_new0(virNumaInterconnect, n);
     for (i = 0; i < n; i++) {
-        virDomainNumaInterconnectType type;
+        virNumaInterconnectType type;
         unsigned int initiator;
         unsigned int target;
         unsigned int cache = 0;
-        virDomainMemoryLatency accessType;
+        virMemoryLatency accessType;
         unsigned long long value;
 
         if (virXMLNodeNameEqual(interconnect[i], "latency")) {
-            type = VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY;
+            type = VIR_NUMA_INTERCONNECT_TYPE_LATENCY;
 
             if (virXMLPropULongLong(interconnect[i], "value", 10,
                                     VIR_XML_PROP_REQUIRED, &value) < 0)
                 return -1;
         } else if (virXMLNodeNameEqual(interconnect[i], "bandwidth")) {
             VIR_XPATH_NODE_AUTORESTORE(ctxt)
-            type = VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH;
+            type = VIR_NUMA_INTERCONNECT_TYPE_BANDWIDTH;
 
             ctxt->node = interconnect[i];
 
@@ -1062,13 +1062,13 @@ virDomainNumaDefParseXML(virDomainNuma *def,
             return -1;
 
         if (virXMLPropEnum(interconnect[i], "type",
-                           virDomainMemoryLatencyTypeFromString,
+                           virMemoryLatencyTypeFromString,
                            VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
                            &accessType) < 0)
             return -1;
 
-        def->interconnects[i] = (virDomainNumaInterconnect) {type, initiator, target,
-                                                             cache, accessType, value};
+        def->interconnects[i] = (virNumaInterconnect) {type, initiator, target,
+                                                       cache, accessType, value};
         def->ninterconnects++;
     }
 
@@ -1135,13 +1135,13 @@ virDomainNumaDefFormatXML(virBuffer *buf,
     }
 
     for (i = 0; i < def->ninterconnects; i++) {
-        virDomainNumaInterconnect *l = &def->interconnects[i];
+        virNumaInterconnect *l = &def->interconnects[i];
 
         switch (l->type) {
-        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY:
+        case VIR_NUMA_INTERCONNECT_TYPE_LATENCY:
             virBufferAddLit(buf, "<latency");
             break;
-        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH:
+        case VIR_NUMA_INTERCONNECT_TYPE_BANDWIDTH:
             virBufferAddLit(buf, "<bandwidth");
         }
 
@@ -1157,10 +1157,10 @@ virDomainNumaDefFormatXML(virBuffer *buf,
 
         virBufferAsprintf(buf,
                           " type='%s' value='%lu'",
-                          virDomainMemoryLatencyTypeToString(l->accessType),
+                          virMemoryLatencyTypeToString(l->accessType),
                           l->value);
 
-        if (l->type == VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH)
+        if (l->type == VIR_NUMA_INTERCONNECT_TYPE_BANDWIDTH)
             virBufferAddLit(buf, " unit='KiB'");
         virBufferAddLit(buf, "/>\n");
     }
@@ -1213,7 +1213,7 @@ virDomainNumaDefValidate(const virDomainNuma *def)
     }
 
     for (i = 0; i < def->ninterconnects; i++) {
-        const virDomainNumaInterconnect *l = &def->interconnects[i];
+        const virNumaInterconnect *l = &def->interconnects[i];
 
         if (l->initiator >= def->nmem_nodes) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -1249,7 +1249,7 @@ virDomainNumaDefValidate(const virDomainNuma *def)
         }
 
         for (j = 0; j < i; j++) {
-            const virDomainNumaInterconnect *ll = &def->interconnects[j];
+            const virNumaInterconnect *ll = &def->interconnects[j];
 
             if (l->type == ll->type &&
                 l->initiator == ll->initiator &&
@@ -1720,20 +1720,20 @@ virDomainNumaGetNodeInitiator(const virDomainNuma *numa,
     /* For the rest, "NUMA node that has best performance (the lowest
      * latency or largest bandwidth) to this NUMA node." */
     for (i = 0; i < numa->ninterconnects; i++) {
-        const virDomainNumaInterconnect *l = &numa->interconnects[i];
+        const virNumaInterconnect *l = &numa->interconnects[i];
 
         if (l->target != node)
             continue;
 
         switch (l->type) {
-        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY:
+        case VIR_NUMA_INTERCONNECT_TYPE_LATENCY:
             if (l->value < minLatency) {
                 minLatency = l->value;
                 candidateLatency = l->initiator;
             }
             break;
 
-        case VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_BANDWIDTH:
+        case VIR_NUMA_INTERCONNECT_TYPE_BANDWIDTH:
             if (l->value > maxBandwidth) {
                 maxBandwidth = l->value;
                 candidateBandwidth = l->initiator;
@@ -1762,14 +1762,14 @@ virDomainNumaGetInterconnectsCount(const virDomainNuma *numa)
 int
 virDomainNumaGetInterconnect(const virDomainNuma *numa,
                              size_t i,
-                             virDomainNumaInterconnectType *type,
+                             virNumaInterconnectType *type,
                              unsigned int *initiator,
                              unsigned int *target,
                              unsigned int *cache,
-                             virDomainMemoryLatency *accessType,
+                             virMemoryLatency *accessType,
                              unsigned long *value)
 {
-    const virDomainNumaInterconnect *l;
+    const virNumaInterconnect *l;
 
     if (!numa || i >= numa->ninterconnects)
         return -1;
