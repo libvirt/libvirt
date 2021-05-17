@@ -191,7 +191,8 @@ virCapabilitiesHostNUMAUnref(virCapsHostNUMA *caps)
 
     if (g_atomic_int_dec_and_test(&caps->refs)) {
         g_ptr_array_unref(caps->cells);
-
+        if (caps->interconnects)
+            g_array_unref(caps->interconnects);
         g_free(caps);
     }
 }
@@ -890,6 +891,13 @@ virCapabilitiesHostNUMAFormat(virBuffer *buf,
     }
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</cells>\n");
+
+    if (caps->interconnects) {
+        const virNumaInterconnect *interconnects;
+        interconnects = &g_array_index(caps->interconnects, virNumaInterconnect, 0);
+        virNumaInterconnectFormat(buf, interconnects, caps->interconnects->len);
+    }
+
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</topology>\n");
     return 0;
@@ -1735,6 +1743,181 @@ virCapabilitiesHostNUMAInitFake(virCapsHostNUMA *caps)
 }
 
 
+static void
+virCapabilitiesHostInsertHMAT(GArray *interconnects,
+                              unsigned int initiator,
+                              unsigned int target,
+                              unsigned int read_bandwidth,
+                              unsigned int write_bandwidth,
+                              unsigned int read_latency,
+                              unsigned int write_latency)
+{
+    virNumaInterconnect ni;
+
+    ni = (virNumaInterconnect) { VIR_NUMA_INTERCONNECT_TYPE_BANDWIDTH,
+        initiator, target, 0, VIR_MEMORY_LATENCY_READ, read_bandwidth};
+    g_array_append_val(interconnects, ni);
+
+    ni = (virNumaInterconnect) { VIR_NUMA_INTERCONNECT_TYPE_BANDWIDTH,
+        initiator, target, 0, VIR_MEMORY_LATENCY_WRITE, write_bandwidth};
+    g_array_append_val(interconnects, ni);
+
+    ni = (virNumaInterconnect) { VIR_NUMA_INTERCONNECT_TYPE_LATENCY,
+        initiator, target, 0, VIR_MEMORY_LATENCY_READ, read_latency};
+    g_array_append_val(interconnects, ni);
+
+    ni = (virNumaInterconnect) { VIR_NUMA_INTERCONNECT_TYPE_LATENCY,
+        initiator, target, 0, VIR_MEMORY_LATENCY_WRITE, write_latency};
+    g_array_append_val(interconnects, ni);
+}
+
+
+static int
+virCapabilitiesHostNUMAInitInterconnectsNode(GArray *interconnects,
+                                             unsigned int node)
+{
+    g_autofree char *path = NULL;
+    g_autofree char *initPath = NULL;
+    g_autoptr(DIR) dir = NULL;
+    int direrr = 0;
+    struct dirent *entry;
+    unsigned int read_bandwidth;
+    unsigned int write_bandwidth;
+    unsigned int read_latency;
+    unsigned int write_latency;
+
+    /* Unfortunately, kernel does not expose full HMAT table. I mean it does,
+     * in its binary form under /sys/firmware/acpi/tables/HMAT but we don't
+     * want to parse that. But some important info is still exposed, under
+     * "access0" and "access1" directories. The former contains the best
+     * interconnect to given node including CPUs and devices that might do I/O
+     * (such as GPUs and NICs). The latter contains the best interconnect to
+     * given node but only CPUs are considered. Stick with access1 until sysfs
+     * exposes the full table in a sensible way.
+     * NB on most system access0 and access1 contain the same values. */
+    path = g_strdup_printf(SYSFS_SYSTEM_PATH "/node/node%d/access1", node);
+
+    if (!virFileExists(path))
+        return 0;
+
+    if (virCapabilitiesGetNodeCacheReadFile(path, "initiators",
+                                            "read_bandwidth",
+                                            &read_bandwidth) < 0)
+        return -1;
+    if (virCapabilitiesGetNodeCacheReadFile(path, "initiators",
+                                            "write_bandwidth",
+                                            &write_bandwidth) < 0)
+        return -1;
+
+    /* Bandwidths are read in MiB but stored in KiB */
+    read_bandwidth <<= 10;
+    write_bandwidth <<= 10;
+
+    if (virCapabilitiesGetNodeCacheReadFile(path, "initiators",
+                                            "read_latency",
+                                            &read_latency) < 0)
+        return -1;
+    if (virCapabilitiesGetNodeCacheReadFile(path, "initiators",
+                                            "write_latency",
+                                            &write_latency) < 0)
+        return -1;
+
+    initPath = g_strdup_printf("%s/initiators", path);
+
+    if (virDirOpen(&dir, initPath) < 0)
+        return -1;
+
+    while ((direrr = virDirRead(dir, &entry, path)) > 0) {
+        const char *dname = STRSKIP(entry->d_name, "node");
+        unsigned int initNode;
+
+        if (!dname)
+            continue;
+
+        if (virStrToLong_ui(dname, NULL, 10, &initNode) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to parse %s"),
+                           entry->d_name);
+            return -1;
+        }
+
+        virCapabilitiesHostInsertHMAT(interconnects,
+                                      initNode, node,
+                                      read_bandwidth,
+                                      write_bandwidth,
+                                      read_latency,
+                                      write_latency);
+    }
+
+    return 0;
+}
+
+
+static int
+virCapsHostNUMAInterconnectComparator(const void *a,
+                                      const void *b)
+{
+    const virNumaInterconnect *aa = a;
+    const virNumaInterconnect *bb = b;
+
+    if (aa->type != bb->type)
+        return aa->type - bb->type;
+
+    if (aa->initiator != bb->initiator)
+        return aa->initiator - bb->initiator;
+
+    if (aa->target != bb->target)
+        return aa->target - bb->target;
+
+    if (aa->cache != bb->cache)
+        return aa->cache - bb->cache;
+
+    if (aa->accessType != bb->accessType)
+        return aa->accessType - bb->accessType;
+
+    return aa->value - bb->value;
+}
+
+
+static int
+virCapabilitiesHostNUMAInitInterconnects(virCapsHostNUMA *caps)
+{
+    g_autoptr(DIR) dir = NULL;
+    int direrr = 0;
+    struct dirent *entry;
+    const char *path = SYSFS_SYSTEM_PATH "/node/";
+    g_autoptr(GArray) interconnects = g_array_new(FALSE, FALSE, sizeof(virNumaInterconnect));
+
+    if (virDirOpenIfExists(&dir, path) < 0)
+        return -1;
+
+    while (dir && (direrr = virDirRead(dir, &entry, path)) > 0) {
+        const char *dname = STRSKIP(entry->d_name, "node");
+        unsigned int node;
+
+        if (!dname)
+            continue;
+
+        if (virStrToLong_ui(dname, NULL, 10, &node) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to parse %s"),
+                           entry->d_name);
+            return -1;
+        }
+
+        if (virCapabilitiesHostNUMAInitInterconnectsNode(interconnects, node) < 0)
+            return -1;
+    }
+
+    if (interconnects->len > 0) {
+        g_array_sort(interconnects, virCapsHostNUMAInterconnectComparator);
+        caps->interconnects = g_steal_pointer(&interconnects);
+    }
+
+    return 0;
+}
+
+
 static int
 virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
 {
@@ -1794,6 +1977,9 @@ virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
                                        npageinfo, &pageinfo,
                                        &caches);
     }
+
+    if (virCapabilitiesHostNUMAInitInterconnects(caps) < 0)
+        goto cleanup;
 
     ret = 0;
 

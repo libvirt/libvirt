@@ -138,6 +138,9 @@
           <ref name="cell"/>
         </oneOrMore>
       </element>
+      <optional>
+        <ref name="numaInterconnects"/>
+      </optional>
     </element>
   </define>
 

@@ -114,6 +114,7 @@ struct _virCapsHostNUMACell {
 struct _virCapsHostNUMA {
     gint refs;
     GPtrArray *cells;
+    GArray *interconnects; /* virNumaInterconnect */
 };
 
 struct _virCapsHostSecModelLabel {
