@@ -82,7 +82,7 @@ VIR_ENUM_IMPL(virDomainMemoryLatency,
               "write"
 );
 
-typedef struct _virDomainNumaDistance virDomainNumaDistance;
+typedef struct _virNumaDistance virNumaDistance;
 
 typedef struct _virDomainNumaCache virDomainNumaCache;
 
@@ -106,7 +106,7 @@ struct _virDomainNuma {
         virDomainMemoryAccess memAccess; /* shared memory access configuration */
         virTristateBool discard; /* discard-data for memory-backend-file */
 
-        struct _virDomainNumaDistance {
+        struct _virNumaDistance {
             unsigned int value; /* locality value for node i->j or j->i */
             unsigned int cellid;
         } *distances;           /* remote node distances */
@@ -759,8 +759,8 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNuma *def,
     }
 
     for (i = 0; i < sibling; i++) {
-        virDomainNumaDistance *ldist;
-        virDomainNumaDistance *rdist;
+        virNumaDistance *ldist;
+        virNumaDistance *rdist;
         unsigned int sibling_id, sibling_value;
 
         if (virXMLPropUInt(nodes[i], "id", 10, VIR_XML_PROP_REQUIRED,
@@ -799,7 +799,7 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNuma *def,
         /* Apply the local / remote distance */
         ldist = def->mem_nodes[cur_cell].distances;
         if (!ldist) {
-            ldist = g_new0(virDomainNumaDistance, ndistances);
+            ldist = g_new0(virNumaDistance, ndistances);
             ldist[cur_cell].value = LOCAL_DISTANCE;
             ldist[cur_cell].cellid = cur_cell;
             def->mem_nodes[cur_cell].ndistances = ndistances;
@@ -812,7 +812,7 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNuma *def,
         /* Apply symmetry if none given */
         rdist = def->mem_nodes[sibling_id].distances;
         if (!rdist) {
-            rdist = g_new0(virDomainNumaDistance, ndistances);
+            rdist = g_new0(virNumaDistance, ndistances);
             rdist[sibling_id].value = LOCAL_DISTANCE;
             rdist[sibling_id].cellid = sibling_id;
             def->mem_nodes[sibling_id].ndistances = ndistances;
@@ -1133,7 +1133,7 @@ virDomainNumaDefFormatXML(virBuffer *buf,
                               virTristateBoolTypeToString(discard));
 
         if (def->mem_nodes[i].ndistances) {
-            virDomainNumaDistance *distances = def->mem_nodes[i].distances;
+            virNumaDistance *distances = def->mem_nodes[i].distances;
 
             virBufferAddLit(&childBuf, "<distances>\n");
             virBufferAdjustIndent(&childBuf, 2);
@@ -1501,7 +1501,7 @@ virDomainNumaGetNodeDistance(virDomainNuma *numa,
                              size_t node,
                              size_t cellid)
 {
-    virDomainNumaDistance *distances = NULL;
+    virNumaDistance *distances = NULL;
 
     if (node < numa->nmem_nodes)
         distances = numa->mem_nodes[node].distances;
@@ -1526,7 +1526,7 @@ virDomainNumaSetNodeDistance(virDomainNuma *numa,
                              size_t cellid,
                              unsigned int value)
 {
-    virDomainNumaDistance *distances;
+    virNumaDistance *distances;
 
     if (node >= numa->nmem_nodes) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1579,7 +1579,7 @@ virDomainNumaSetNodeDistanceCount(virDomainNuma *numa,
                                   size_t node,
                                   size_t ndistances)
 {
-    virDomainNumaDistance *distances;
+    virNumaDistance *distances;
 
     distances = numa->mem_nodes[node].distances;
     if (distances) {
@@ -1589,7 +1589,7 @@ virDomainNumaSetNodeDistanceCount(virDomainNuma *numa,
         return 0;
     }
 
-    distances = g_new0(struct _virDomainNumaDistance, ndistances);
+    distances = g_new0(virNumaDistance, ndistances);
 
     numa->mem_nodes[node].distances = distances;
     numa->mem_nodes[node].ndistances = ndistances;
