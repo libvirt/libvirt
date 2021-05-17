@@ -143,14 +143,12 @@ mymain(void)
 #endif
     int ret = 0;
 
+    if (!virSecurityXATTRNamespaceDefined())
+        return EXIT_AM_SKIP;
+
     if (virInitialize() < 0 ||
         qemuTestDriverInit(&driver) < 0)
         return -1;
-
-    if (!virSecurityXATTRNamespaceDefined()) {
-        ret = EXIT_AM_SKIP;
-        goto cleanup;
-    }
 
     /* Now fix the secdriver */
     virObjectUnref(driver.securityManager);
