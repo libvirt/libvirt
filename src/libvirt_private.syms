@@ -2872,6 +2872,7 @@ virNodeSuspendGetTargetMask;
 virNumaGetAutoPlacementAdvice;
 virNumaGetDistances;
 virNumaGetHostMemoryNodeset;
+virNumaGetMaxCPUs;
 virNumaGetMaxNode;
 virNumaGetNodeCPUs;
 virNumaGetNodeMemory;

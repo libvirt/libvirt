@@ -43,7 +43,7 @@ int virNumaGetNodeMemory(int node,
                          unsigned long long *memsize,
                          unsigned long long *memfree) G_GNUC_NO_INLINE;
 
-unsigned int virNumaGetMaxCPUs(void);
+unsigned int virNumaGetMaxCPUs(void) G_GNUC_NO_INLINE;
 
 int virNumaGetNodeCPUs(int node, virBitmap **cpus) G_GNUC_NO_INLINE;
 int virNumaNodesetToCPUset(virBitmap *nodeset,
