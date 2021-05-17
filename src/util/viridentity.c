@@ -197,8 +197,12 @@ void virIdentityRestoreHelper(virIdentity **identptr)
 {
     virIdentity *ident = *identptr;
 
-    if (ident != NULL)
+    if (ident != NULL) {
         virIdentitySetCurrent(ident);
+        /* virIdentitySetCurrent() grabs its own reference.
+         * We don't need ours anymore. */
+        g_object_unref(ident);
+    }
 }
 
 #define TOKEN_BYTES 16
