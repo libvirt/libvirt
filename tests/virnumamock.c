@@ -172,7 +172,12 @@ virNumaGetNodeCPUs(int node, virBitmap **cpus)
                                SYSFS_SYSTEM_PATH, node) < 0)
         return -1;
 
-    *cpus = virBitmapParseUnlimited(cpulist);
+    if (STREQ(cpulist, "")) {
+        unsigned int max_n_cpus = virNumaGetMaxCPUs();
+        *cpus = virBitmapNew(max_n_cpus);
+    } else {
+        *cpus = virBitmapParseUnlimited(cpulist);
+    }
     if (!*cpus)
         goto cleanup;
 
