@@ -39,6 +39,14 @@ VIR_MOCK_IMPL_RET_VOID(xs_daemon_open,
     return (void*)0x1;
 }
 
+VIR_MOCK_IMPL_RET_ARGS(xs_open,
+                       struct xs_handle *,
+                       unsigned long, flags)
+{
+    VIR_MOCK_REAL_INIT(xs_open);
+    return (void*)0x1;
+}
+
 VIR_MOCK_IMPL_RET_ARGS(xc_interface_open,
                        xc_interface *,
                        xentoollog_logger *, logger,
@@ -93,6 +101,9 @@ VIR_MOCK_STUB_RET_ARGS(xc_sharing_used_frames,
 
 VIR_MOCK_STUB_VOID_ARGS(xs_daemon_close,
                         struct xs_handle *, handle)
+
+VIR_MOCK_STUB_VOID_ARGS(xs_close,
+                        struct xs_handle *, xsh)
 
 VIR_MOCK_STUB_RET_ARGS(bind,
                        int, 0,
