@@ -1395,7 +1395,7 @@ mymain(void)
     DO_TEST_FAILURE("disk-network-rbd-no-colon", NONE);
     DO_TEST("disk-network-sheepdog", NONE);
     DO_TEST_CAPS_VER("disk-network-sheepdog", "2.12.0");
-    DO_TEST_CAPS_LATEST("disk-network-sheepdog");
+    DO_TEST_CAPS_VER("disk-network-sheepdog", "6.0.0");
     DO_TEST("disk-network-source-auth", NONE);
     DO_TEST_CAPS_VER("disk-network-source-auth", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-source-auth");
