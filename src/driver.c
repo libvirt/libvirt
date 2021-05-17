@@ -138,7 +138,7 @@ static virConnectPtr
 virGetConnectGeneric(virThreadLocal *threadPtr, const char *name)
 {
     virConnectPtr conn;
-    virErrorPtr saved;
+    virErrorPtr orig_err;
 
     if (virConnectCacheInitialize() < 0)
         return NULL;
@@ -178,9 +178,9 @@ virGetConnectGeneric(virThreadLocal *threadPtr, const char *name)
     return conn;
 
  error:
-    saved = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     virConnectClose(conn);
-    virSetError(saved);
+    virErrorRestore(&orig_err);
     return NULL;
 }
 
