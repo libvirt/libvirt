@@ -790,9 +790,6 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
             if (!(qemuCaps = qemuTestParseCapabilitiesArch(info->arch, capsfile)))
                 goto cleanup;
 
-            if (stripmachinealiases)
-                virQEMUCapsStripMachineAliases(qemuCaps);
-
             cachedcaps = qemuCaps;
 
             g_hash_table_insert(capscache, g_strdup(capsfile), g_steal_pointer(&qemuCaps));
@@ -800,6 +797,9 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
 
         if (!(qemuCaps = virQEMUCapsNewCopy(cachedcaps)))
             goto cleanup;
+
+        if (stripmachinealiases)
+            virQEMUCapsStripMachineAliases(qemuCaps);
 
         info->flags |= FLAG_REAL_CAPS;
 
