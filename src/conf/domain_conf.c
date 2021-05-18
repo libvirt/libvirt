@@ -10977,7 +10977,6 @@ virDomainChrDefParseTargetXML(virDomainChrDef *def,
     g_autofree char *targetModel = NULL;
     g_autofree char *addrStr = NULL;
     g_autofree char *portStr = NULL;
-    g_autofree char *stateStr = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = cur;
@@ -11007,7 +11006,6 @@ virDomainChrDefParseTargetXML(virDomainChrDef *def,
         switch (def->targetType) {
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
             addrStr = virXMLPropString(cur, "address");
-            portStr = virXMLPropString(cur, "port");
 
             def->target.addr = g_new0(virSocketAddr, 1);
 
@@ -11028,19 +11026,8 @@ virDomainChrDefParseTargetXML(virDomainChrDef *def,
                 return -1;
             }
 
-            if (portStr == NULL) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("guestfwd channel does "
-                                 "not define a target port"));
+            if (virXMLPropUInt(cur, "port", 10, VIR_XML_PROP_REQUIRED, &port) < 0)
                 return -1;
-            }
-
-            if (virStrToLong_ui(portStr, NULL, 10, &port) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid port number: %s"),
-                               portStr);
-                return -1;
-            }
 
             virSocketAddrSetPort(def->target.addr, port);
             break;
@@ -11050,18 +11037,12 @@ virDomainChrDefParseTargetXML(virDomainChrDef *def,
             def->target.name = virXMLPropString(cur, "name");
 
             if (def->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
-                !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
-                (stateStr = virXMLPropString(cur, "state"))) {
-                int tmp;
+                !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
 
-                if ((tmp = virDomainChrDeviceStateTypeFromString(stateStr)) <= 0) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("invalid channel state value '%s'"),
-                                   stateStr);
+                if (virXMLPropEnum(cur, "state",
+                                   virDomainChrDeviceStateTypeFromString,
+                                   VIR_XML_PROP_NONZERO, &def->state) < 0)
                     return -1;
-                }
-
-                def->state = tmp;
             }
             break;
         }
