@@ -258,10 +258,6 @@ struct _qemuDomainObjPrivate {
     GSList *dbusVMStateIds;
     /* true if -object dbus-vmstate was added */
     bool dbusVMState;
-
-    /* prevent deletion of <transient> disk overlay files between startup and
-     * successful setup of the overlays */
-    bool inhibitDiskTransientDelete;
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \
@@ -292,6 +288,9 @@ struct _qemuDomainDiskPrivate {
     unsigned int effectiveBootindex; /* boot index of the disk based on one
                                         of the two ways we use to select a boot
                                         device */
+
+    bool transientOverlayCreated; /* the overlay image of a transient disk was
+                                     created and the definition was updated */
 };
 
 #define QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src) \

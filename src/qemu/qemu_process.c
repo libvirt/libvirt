@@ -5708,9 +5708,6 @@ qemuProcessInit(virQEMUDriver *driver,
     if (virDomainObjSetDefTransient(driver->xmlopt, vm, priv->qemuCaps) < 0)
         goto cleanup;
 
-    /* don't clean up files for <transient> disks until we set them up */
-    priv->inhibitDiskTransientDelete = true;
-
     if (flags & VIR_QEMU_PROCESS_START_PRETEND) {
         if (qemuDomainSetPrivatePaths(driver, vm) < 0) {
             virDomainObjRemoveTransientDef(vm);
@@ -7006,7 +7003,6 @@ static int
 qemuProcessSetupDisksTransientSnapshot(virDomainObj *vm,
                                        qemuDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
     size_t i;
@@ -7039,8 +7035,14 @@ qemuProcessSetupDisksTransientSnapshot(virDomainObj *vm,
     if (qemuSnapshotDiskCreate(snapctxt) < 0)
         return -1;
 
-    /* the overlays are established, so they can be deleted on shutdown */
-    priv->inhibitDiskTransientDelete = false;
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDef *domdisk = vm->def->disks[i];
+
+        if (!domdisk->transient)
+            continue;
+
+        QEMU_DOMAIN_DISK_PRIVATE(domdisk)->transientOverlayCreated = true;
+    }
 
     return 0;
 }
@@ -8077,7 +8079,7 @@ void qemuProcessStop(virQEMUDriver *driver,
             /* for now transient disks are forbidden with migration so they
              * can be handled here */
             if (disk->transient &&
-                !priv->inhibitDiskTransientDelete) {
+                QEMU_DOMAIN_DISK_PRIVATE(disk)->transientOverlayCreated) {
                 VIR_DEBUG("Removing transient overlay '%s' of disk '%s'",
                           disk->src->path, disk->dst);
                 if (qemuDomainStorageFileInit(driver, vm, disk->src, NULL) >= 0) {
@@ -8505,10 +8507,6 @@ qemuProcessReconnect(void *opaque)
     if (oldjob.asyncJob == QEMU_ASYNC_JOB_BACKUP && priv->backup)
         priv->backup->apiFlags = oldjob.apiFlags;
 
-    /* expect that libvirt might have crashed during VM start, so prevent
-     * cleanup of transient disks */
-    priv->inhibitDiskTransientDelete = true;
-
     if (qemuDomainObjBeginJob(driver, obj, QEMU_JOB_MODIFY) < 0)
         goto error;
     jobStarted = true;
@@ -8611,9 +8609,6 @@ qemuProcessReconnect(void *opaque)
         goto error;
     }
 
-    /* vm startup complete, we can remove transient disks if required */
-    priv->inhibitDiskTransientDelete = false;
-
     /* In case the domain shutdown while we were not running,
      * we need to finish the shutdown process. And we need to do it after
      * we have virQEMUCaps filled in.
@@ -8661,6 +8656,16 @@ qemuProcessReconnect(void *opaque)
 
     if (qemuProcessRefreshDisks(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
         goto error;
+
+    /* At this point we've already checked that the startup of the VM was
+     * completed successfully before, thus that also implies that all transient
+     * disk overlays were created. */
+    for (i = 0; i < obj->def->ndisks; i++) {
+        virDomainDiskDef *disk = obj->def->disks[i];
+
+        if (disk->transient)
+            QEMU_DOMAIN_DISK_PRIVATE(disk)->transientOverlayCreated = true;
+    }
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
         qemuBlockNodeNamesDetect(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
