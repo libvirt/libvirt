@@ -6694,28 +6694,23 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
                                      virDomainHostdevDef *def)
 {
     virDomainHostdevSubsysUSB *usbsrc = &def->source.subsys.u.usb;
-    g_autofree char *startupPolicy = NULL;
-    g_autofree char *autoAddress = NULL;
     xmlNodePtr vendorNode;
     xmlNodePtr productNode;
     xmlNodePtr addressNode;
+    virTristateBool autoAddress;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = node;
 
-    if ((startupPolicy = virXMLPropString(node, "startupPolicy"))) {
-        int value = virDomainStartupPolicyTypeFromString(startupPolicy);
-        if (value <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown startup policy '%s'"),
-                           startupPolicy);
-            return -1;
-        }
-        def->startupPolicy = value;
-    }
+    if (virXMLPropEnum(node, "startupPolicy",
+                       virDomainStartupPolicyTypeFromString,
+                       VIR_XML_PROP_NONZERO, &def->startupPolicy) < 0)
+        return -1;
 
-    if ((autoAddress = virXMLPropString(node, "autoAddress")))
-        ignore_value(virStringParseYesNo(autoAddress, &usbsrc->autoAddress));
+    if (virXMLPropTristateBool(node, "autoAddress", VIR_XML_PROP_NONE,
+                               &autoAddress) < 0)
+        return -1;
+    usbsrc->autoAddress = autoAddress == VIR_TRISTATE_BOOL_YES;
 
     /* Product can validly be 0, so we need some extra help to determine
      * if it is uninitialized */
