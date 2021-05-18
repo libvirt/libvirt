@@ -986,15 +986,11 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
             goto cleanup;
 
         releaseUSB = true;
-
-        ret = qemuDomainAttachDiskGeneric(driver, vm, disk);
         break;
 
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
         if (qemuDomainEnsureVirtioAddress(&releaseVirtio, vm, dev, disk->dst) < 0)
             goto cleanup;
-
-        ret = qemuDomainAttachDiskGeneric(driver, vm, disk);
         break;
 
     case VIR_DOMAIN_DISK_BUS_SCSI:
@@ -1023,8 +1019,6 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
             if (!qemuDomainFindOrCreateSCSIDiskController(driver, vm, i))
                 goto cleanup;
         }
-
-        ret = qemuDomainAttachDiskGeneric(driver, vm, disk);
         break;
 
     case VIR_DOMAIN_DISK_BUS_IDE:
@@ -1042,6 +1036,8 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
                        _("disk bus '%s' cannot be hotplugged."),
                        virDomainDiskBusTypeToString(disk->bus));
     }
+
+    ret = qemuDomainAttachDiskGeneric(driver, vm, disk);
 
  cleanup:
     if (ret < 0) {
