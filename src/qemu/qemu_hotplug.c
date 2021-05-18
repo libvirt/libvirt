@@ -995,32 +995,16 @@ qemuDomainAttachSCSIDisk(virQEMUDriver *driver,
 }
 
 
-static int
-qemuDomainAttachUSBMassStorageDevice(virQEMUDriver *driver,
-                                     virDomainObj *vm,
-                                     virDomainDiskDef *disk)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (virDomainUSBAddressEnsure(priv->usbaddrs, &disk->info) < 0)
-        return -1;
-
-    if (qemuDomainAttachDiskGeneric(driver, vm, disk) < 0) {
-        virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
-        return -1;
-    }
-
-    return 0;
-}
-
 
 static int
 qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
                                        virDomainObj *vm,
                                        virDomainDeviceDef *dev)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
     size_t i;
     virDomainDiskDef *disk = dev->data.disk;
+    bool releaseUSB = false;
     int ret = -1;
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
@@ -1060,7 +1044,13 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
                            _("disk device='lun' is not supported for usb bus"));
             break;
         }
-        ret = qemuDomainAttachUSBMassStorageDevice(driver, vm, disk);
+
+        if (virDomainUSBAddressEnsure(priv->usbaddrs, &disk->info) < 0)
+            goto cleanup;
+
+        releaseUSB = true;
+
+        ret = qemuDomainAttachDiskGeneric(driver, vm, disk);
         break;
 
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
@@ -1088,8 +1078,13 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
     }
 
  cleanup:
-    if (ret != 0)
+    if (ret < 0) {
         ignore_value(qemuRemoveSharedDevice(driver, dev, vm->def->name));
+
+        if (releaseUSB)
+            virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
+    }
+
     return ret;
 }
 
