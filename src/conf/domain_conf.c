@@ -6704,14 +6704,14 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
     ctxt->node = node;
 
     if ((startupPolicy = virXMLPropString(node, "startupPolicy"))) {
-        def->startupPolicy =
-            virDomainStartupPolicyTypeFromString(startupPolicy);
-        if (def->startupPolicy <= 0) {
+        int value = virDomainStartupPolicyTypeFromString(startupPolicy);
+        if (value <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown startup policy '%s'"),
                            startupPolicy);
             return -1;
         }
+        def->startupPolicy = value;
     }
 
     if ((autoAddress = virXMLPropString(node, "autoAddress")))

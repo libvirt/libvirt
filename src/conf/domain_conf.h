@@ -332,6 +332,15 @@ struct _virDomainHostdevCaps {
 };
 
 
+typedef enum {
+    VIR_DOMAIN_STARTUP_POLICY_DEFAULT = 0,
+    VIR_DOMAIN_STARTUP_POLICY_MANDATORY,
+    VIR_DOMAIN_STARTUP_POLICY_REQUISITE,
+    VIR_DOMAIN_STARTUP_POLICY_OPTIONAL,
+
+    VIR_DOMAIN_STARTUP_POLICY_LAST
+} virDomainStartupPolicy;
+
 /* basic device for direct passthrough */
 struct _virDomainHostdevDef {
     /* If 'parentnet' is non-NULL it means this host dev was
@@ -343,7 +352,7 @@ struct _virDomainHostdevDef {
     virDomainNetDef *parentnet;
 
     int mode; /* enum virDomainHostdevMode */
-    int startupPolicy; /* enum virDomainStartupPolicy */
+    virDomainStartupPolicy startupPolicy;
     bool managed;
     bool missing;
     bool readonly;
@@ -431,16 +440,6 @@ typedef enum {
 
     VIR_DOMAIN_DISK_IO_LAST
 } virDomainDiskIo;
-
-typedef enum {
-    VIR_DOMAIN_STARTUP_POLICY_DEFAULT = 0,
-    VIR_DOMAIN_STARTUP_POLICY_MANDATORY,
-    VIR_DOMAIN_STARTUP_POLICY_REQUISITE,
-    VIR_DOMAIN_STARTUP_POLICY_OPTIONAL,
-
-    VIR_DOMAIN_STARTUP_POLICY_LAST
-} virDomainStartupPolicy;
-
 
 typedef enum {
     VIR_DOMAIN_DEVICE_SGIO_DEFAULT = 0,
