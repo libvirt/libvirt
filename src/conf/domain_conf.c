@@ -6439,18 +6439,11 @@ static int
 virDomainDeviceUSBMasterParseXML(xmlNodePtr node,
                                  virDomainDeviceUSBMaster *master)
 {
-    g_autofree char *startport = NULL;
-
     memset(master, 0, sizeof(*master));
 
-    startport = virXMLPropString(node, "startport");
-
-    if (startport &&
-        virStrToLong_ui(startport, NULL, 10, &master->startport) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <master> 'startport' attribute"));
+    if (virXMLPropUInt(node, "startport", 10, VIR_XML_PROP_NONE,
+                       &master->startport) < 0)
         return -1;
-    }
 
     return 0;
 }
