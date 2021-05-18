@@ -6173,6 +6173,23 @@ virQEMUCapsFillDomainDeviceRNGCaps(virQEMUCaps *qemuCaps,
 }
 
 
+void
+virQEMUCapsFillDomainDeviceFSCaps(virQEMUCaps *qemuCaps,
+                                  virDomainCapsDeviceFilesystem *filesystem)
+{
+    filesystem->supported = VIR_TRISTATE_BOOL_YES;
+    filesystem->driverType.report = true;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_FS))
+        VIR_DOMAIN_CAPS_ENUM_SET(filesystem->driverType,
+                                 VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(filesystem->driverType,
+                             VIR_DOMAIN_FS_DRIVER_TYPE_PATH,
+                             VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE);
+}
+
+
 /**
  * virQEMUCapsSupportsGICVersion:
  * @qemuCaps: QEMU capabilities
@@ -6301,6 +6318,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virDomainCapsDeviceGraphics *graphics = &domCaps->graphics;
     virDomainCapsDeviceVideo *video = &domCaps->video;
     virDomainCapsDeviceRNG *rng = &domCaps->rng;
+    virDomainCapsDeviceFilesystem *filesystem = &domCaps->filesystem;
 
     virQEMUCapsFillDomainFeaturesFromQEMUCaps(qemuCaps, domCaps);
 
@@ -6329,6 +6347,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virQEMUCapsFillDomainDeviceVideoCaps(qemuCaps, video);
     virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev);
     virQEMUCapsFillDomainDeviceRNGCaps(qemuCaps, rng);
+    virQEMUCapsFillDomainDeviceFSCaps(qemuCaps, filesystem);
     virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureSEVCaps(qemuCaps, domCaps);
 

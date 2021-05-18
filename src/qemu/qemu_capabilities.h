@@ -777,6 +777,9 @@ void virQEMUCapsFillDomainDeviceVideoCaps(virQEMUCaps *qemuCaps,
 void virQEMUCapsFillDomainDeviceRNGCaps(virQEMUCaps *qemuCaps,
                                         virDomainCapsDeviceRNG *rng);
 
+void virQEMUCapsFillDomainDeviceFSCaps(virQEMUCaps *qemuCaps,
+                                       virDomainCapsDeviceFilesystem *filesystem);
+
 bool virQEMUCapsGuestIsNative(virArch host,
                               virArch guest);
 

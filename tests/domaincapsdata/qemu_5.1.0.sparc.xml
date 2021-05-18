@@ -91,6 +91,12 @@
         <value>builtin</value>
       </enum>
     </rng>
+    <filesystem supported='yes'>
+      <enum name='driverType'>
+        <value>path</value>
+        <value>handle</value>
+      </enum>
+    </filesystem>
   </devices>
   <features>
     <gic supported='no'/>
