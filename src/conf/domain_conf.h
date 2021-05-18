@@ -549,7 +549,7 @@ struct _virDomainDiskDef {
         unsigned int cylinders;
         unsigned int heads;
         unsigned int sectors;
-        int trans; /* enum virDomainDiskGeometryTrans */
+        virDomainDiskGeometryTrans trans;
     } geometry;
 
     struct {

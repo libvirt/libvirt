@@ -8845,13 +8845,14 @@ virDomainDiskDefGeometryParse(virDomainDiskDef *def,
     }
 
     if ((tmp = virXMLPropString(cur, "trans"))) {
-        def->geometry.trans = virDomainDiskGeometryTransTypeFromString(tmp);
-        if (def->geometry.trans <= 0) {
+        int value;
+        if ((value = virDomainDiskGeometryTransTypeFromString(tmp)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("invalid translation value '%s'"),
                            tmp);
             return -1;
         }
+        def->geometry.trans = value;
     }
 
     return 0;
