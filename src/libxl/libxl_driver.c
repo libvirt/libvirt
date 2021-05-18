@@ -3042,8 +3042,6 @@ libxlDomainAttachDeviceDiskLive(virDomainObj *vm, virDomainDeviceDef *dev)
                     goto cleanup;
                 }
 
-                VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1);
-
                 if (libxlMakeDisk(l_disk, &x_disk) < 0)
                     goto cleanup;
 
@@ -3066,7 +3064,7 @@ libxlDomainAttachDeviceDiskLive(virDomainObj *vm, virDomainDeviceDef *dev)
                 }
 
                 libxlUpdateDiskDef(l_disk, &x_disk);
-                virDomainDiskInsertPreAlloced(vm->def, l_disk);
+                virDomainDiskInsert(vm->def, l_disk);
 
             } else {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

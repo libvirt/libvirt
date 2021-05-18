@@ -737,7 +737,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
     if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, priv->qemuCaps)))
         goto cleanup;
 
-    VIR_REALLOC_N(vm->def->disks, vm->def->ndisks + 1);
 
     if (qemuHotplugAttachManagedPR(driver, vm, disk->src, QEMU_ASYNC_JOB_NONE) < 0)
         goto cleanup;
@@ -784,7 +783,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
 
     virDomainAuditDisk(vm, NULL, disk->src, "attach", true);
 
-    virDomainDiskInsertPreAlloced(vm->def, disk);
+    virDomainDiskInsert(vm->def, disk);
     ret = 0;
 
  cleanup:

@@ -3401,10 +3401,6 @@ lxcDomainAttachDeviceDiskLive(virLXCDriver *driver,
                              perms) < 0)
         goto cleanup;
 
-    vm->def->disks = g_renew(virDomainDiskDef *,
-                             vm->def->disks,
-                             vm->def->ndisks + 1);
-
     file = g_strdup_printf("/dev/%s", def->dst);
 
     if (lxcDomainAttachDeviceMknod(driver,
@@ -3423,7 +3419,7 @@ lxcDomainAttachDeviceDiskLive(virLXCDriver *driver,
         goto cleanup;
     }
 
-    virDomainDiskInsertPreAlloced(vm->def, def);
+    virDomainDiskInsert(vm->def, def);
 
     ret = 0;
 
