@@ -1557,25 +1557,14 @@ virNodeDevCapPCIDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree xmlNodePtr *addrNodes = NULL;
-    g_autofree char *numberStr = NULL;
     int nAddrNodes;
     size_t i;
 
     ctxt->node = iommuGroupNode;
 
-    numberStr = virXMLPropString(iommuGroupNode, "number");
-    if (!numberStr) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("missing iommuGroup number attribute"));
+    if (virXMLPropUInt(iommuGroupNode, "number", 10, VIR_XML_PROP_REQUIRED,
+                       &pci_dev->iommuGroupNumber) < 0)
         return -1;
-    }
-    if (virStrToLong_ui(numberStr, NULL, 10,
-                        &pci_dev->iommuGroupNumber) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid iommuGroup number attribute '%s'"),
-                       numberStr);
-        return -1;
-    }
 
     if ((nAddrNodes = virXPathNodeSet("./address", ctxt, &addrNodes)) < 0)
         return -1;
