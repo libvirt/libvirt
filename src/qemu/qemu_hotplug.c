@@ -689,13 +689,14 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
 static qemuSnapshotDiskContext *
 qemuDomainAttachDiskGenericTransient(virDomainObj *vm,
                                      virDomainDiskDef *disk,
-                                     GHashTable *blockNamedNodeData)
+                                     GHashTable *blockNamedNodeData,
+                                     qemuDomainAsyncJob asyncJob)
 {
     g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
     g_autoptr(virDomainSnapshotDiskDef) snapdiskdef = NULL;
 
     snapdiskdef = qemuSnapshotGetTransientDiskDef(disk, vm->def->name);
-    snapctxt = qemuSnapshotDiskContextNew(1, vm, QEMU_ASYNC_JOB_NONE);
+    snapctxt = qemuSnapshotDiskContextNew(1, vm, asyncJob);
 
     if (qemuSnapshotDiskPrepareOne(snapctxt, disk, snapdiskdef,
                                    blockNamedNodeData, false, false) < 0)
@@ -713,7 +714,8 @@ qemuDomainAttachDiskGenericTransient(virDomainObj *vm,
 static int
 qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
                             virDomainObj *vm,
-                            virDomainDiskDef *disk)
+                            virDomainDiskDef *disk,
+                            qemuDomainAsyncJob asyncJob)
 {
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -750,7 +752,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
 
     disk->src->readonly = origReadonly;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
 
     rc = qemuBlockStorageSourceChainAttach(priv->mon, data);
 
@@ -764,10 +767,10 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
         g_autoptr(qemuBlockStorageSourceAttachData) backend = NULL;
         g_autoptr(GHashTable) blockNamedNodeData = NULL;
 
-        if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
+        if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
             goto rollback;
 
-        if (!(transientDiskSnapshotCtxt = qemuDomainAttachDiskGenericTransient(vm, disk, blockNamedNodeData)))
+        if (!(transientDiskSnapshotCtxt = qemuDomainAttachDiskGenericTransient(vm, disk, blockNamedNodeData, asyncJob)))
             goto rollback;
 
 
@@ -782,7 +785,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
     if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, priv->qemuCaps)))
         goto rollback;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto rollback;
 
     if ((rc = qemuDomainAttachExtensionDevice(priv->mon, &disk->info)) == 0)
         extensionDeviceAttached = true;
@@ -814,7 +818,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
     return 0;
 
  rollback:
-    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
 
     if (extensionDeviceAttached)
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &disk->info));
@@ -1077,7 +1082,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
     if (qemuHotplugAttachManagedPR(driver, vm, disk->src, QEMU_ASYNC_JOB_NONE) < 0)
         goto cleanup;
 
-    ret = qemuDomainAttachDiskGeneric(driver, vm, disk);
+    ret = qemuDomainAttachDiskGeneric(driver, vm, disk, QEMU_ASYNC_JOB_NONE);
 
     virDomainAuditDisk(vm, NULL, disk->src, "attach", ret == 0);
 
