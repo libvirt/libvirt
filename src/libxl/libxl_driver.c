@@ -2997,7 +2997,7 @@ libxlDomainChangeEjectableMedia(virDomainObj *vm, virDomainDiskDef *disk)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Removable media not supported for %s device"),
                        virDomainDiskDeviceTypeToString(disk->device));
-        return -1;
+        goto cleanup;
     }
 
     if (libxlMakeDisk(disk, &x_disk) < 0)
