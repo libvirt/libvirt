@@ -8815,45 +8815,21 @@ static int
 virDomainDiskDefGeometryParse(virDomainDiskDef *def,
                               xmlNodePtr cur)
 {
-    g_autofree char *tmp = NULL;
+    if (virXMLPropUInt(cur, "cyls", 10, VIR_XML_PROP_NONE,
+                       &def->geometry.cylinders) < 0)
+        return -1;
 
-    if ((tmp = virXMLPropString(cur, "cyls"))) {
-        if (virStrToLong_ui(tmp, NULL, 10, &def->geometry.cylinders) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("invalid geometry settings (cyls)"));
-            return -1;
-        }
-        VIR_FREE(tmp);
-    }
+    if (virXMLPropUInt(cur, "heads", 10, VIR_XML_PROP_NONE,
+                       &def->geometry.heads) < 0)
+        return -1;
 
-    if ((tmp = virXMLPropString(cur, "heads"))) {
-        if (virStrToLong_ui(tmp, NULL, 10, &def->geometry.heads) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("invalid geometry settings (heads)"));
-            return -1;
-        }
-        VIR_FREE(tmp);
-    }
+    if (virXMLPropUInt(cur, "secs", 10, VIR_XML_PROP_NONE,
+                       &def->geometry.sectors) < 0)
+        return -1;
 
-    if ((tmp = virXMLPropString(cur, "secs"))) {
-        if (virStrToLong_ui(tmp, NULL, 10, &def->geometry.sectors) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("invalid geometry settings (secs)"));
-            return -1;
-        }
-        VIR_FREE(tmp);
-    }
-
-    if ((tmp = virXMLPropString(cur, "trans"))) {
-        int value;
-        if ((value = virDomainDiskGeometryTransTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("invalid translation value '%s'"),
-                           tmp);
-            return -1;
-        }
-        def->geometry.trans = value;
-    }
+    if (virXMLPropEnum(cur, "trans", virDomainDiskGeometryTransTypeFromString,
+                       VIR_XML_PROP_NONZERO, &def->geometry.trans) < 0)
+        return -1;
 
     return 0;
 }
