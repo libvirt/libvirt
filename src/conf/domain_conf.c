@@ -13074,26 +13074,15 @@ static int
 virDomainAudioOSSParse(virDomainAudioIOOSS *def,
                        xmlNodePtr node)
 {
-    g_autofree char *tryPoll = virXMLPropString(node, "tryPoll");
-    g_autofree char *bufferCount = virXMLPropString(node, "bufferCount");
-
     def->dev = virXMLPropString(node, "dev");
 
-    if (tryPoll &&
-        ((def->tryPoll =
-          virTristateBoolTypeFromString(tryPoll)) <= 0)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unknown 'tryPoll' value '%s'"), tryPoll);
+    if (virXMLPropTristateBool(node, "tryPoll", VIR_XML_PROP_NONE,
+                               &def->tryPoll) < 0)
         return -1;
-    }
 
-    if (bufferCount &&
-        virStrToLong_ui(bufferCount, NULL, 10,
-                        &def->bufferCount) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("cannot parse 'bufferCount' value '%s'"), bufferCount);
+    if (virXMLPropUInt(node, "bufferCount", 10, VIR_XML_PROP_NONE,
+                       &def->bufferCount) < 0)
         return -1;
-    }
 
     return 0;
 }
