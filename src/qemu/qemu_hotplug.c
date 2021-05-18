@@ -699,17 +699,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
     int ret = -1;
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *devstr = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
-    if (qemuDomainStorageSourceChainAccessAllow(driver, vm, disk->src) < 0)
-        return -1;
-
-    if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
-        goto cleanup;
-
-    if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
-        goto cleanup;
 
     if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
         if (!(data = qemuBuildStorageSourceChainAttachPrepareChardev(disk)))
@@ -778,9 +769,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
     ret = 0;
 
  cleanup:
-    if (ret < 0)
-        ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, disk->src));
-    qemuDomainSecretDiskDestroy(disk);
     return ret;
 
  exit_monitor:
@@ -937,11 +925,13 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
                                        virDomainObj *vm,
                                        virDomainDeviceDef *dev)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivate *priv = vm->privateData;
     size_t i;
     virDomainDiskDef *disk = dev->data.disk;
     bool releaseUSB = false;
     bool releaseVirtio = false;
+    bool releaseSeclabel = false;
     int ret = -1;
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
@@ -1037,6 +1027,17 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
                        virDomainDiskBusTypeToString(disk->bus));
     }
 
+    if (qemuDomainStorageSourceChainAccessAllow(driver, vm, disk->src) < 0)
+        goto cleanup;
+
+    releaseSeclabel = true;
+
+    if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
+        goto cleanup;
+
+    if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
+        goto cleanup;
+
     ret = qemuDomainAttachDiskGeneric(driver, vm, disk);
 
  cleanup:
@@ -1048,7 +1049,11 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
 
         if (releaseVirtio && ret == -1)
             qemuDomainReleaseDeviceAddress(vm, &disk->info);
+
+        if (releaseSeclabel)
+            ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, disk->src));
     }
+    qemuDomainSecretDiskDestroy(disk);
 
     return ret;
 }
