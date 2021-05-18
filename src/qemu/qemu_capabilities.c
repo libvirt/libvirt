@@ -5229,8 +5229,8 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCaps *qemuCaps,
     return 0;
 }
 
-#define QEMU_MIN_MAJOR 1
-#define QEMU_MIN_MINOR 5
+#define QEMU_MIN_MAJOR 2
+#define QEMU_MIN_MINOR 11
 #define QEMU_MIN_MICRO 0
 
 virDomainVirtType
