@@ -763,9 +763,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
         goto cleanup;
     }
 
-    virDomainAuditDisk(vm, NULL, disk->src, "attach", true);
-
-    virDomainDiskInsert(vm->def, disk);
     ret = 0;
 
  cleanup:
@@ -781,7 +778,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
         qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
         ret = -2;
 
-    virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
     goto cleanup;
 }
 
@@ -1039,6 +1035,13 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         goto cleanup;
 
     ret = qemuDomainAttachDiskGeneric(driver, vm, disk);
+
+    virDomainAuditDisk(vm, NULL, disk->src, "attach", ret == 0);
+
+    if (ret < 0)
+        goto cleanup;
+
+    virDomainDiskInsert(vm->def, disk);
 
  cleanup:
     if (ret < 0) {
