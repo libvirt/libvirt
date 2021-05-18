@@ -37,8 +37,8 @@ VIR_LOG_INIT("tests.nettlshelpers");
  * These store some static data that is needed when
  * encoding extensions in the x509 certs
  */
-ASN1_TYPE pkix_asn1;
-extern const ASN1_ARRAY_TYPE pkix_asn1_tab[];
+asn1_node pkix_asn1;
+extern const asn1_static_node pkix_asn1_tab[];
 
 /*
  * To avoid consuming random entropy to generate keys,
@@ -107,7 +107,7 @@ void testTLSCleanup(const char *keyfile)
 /*
  * Turns an ASN1 object into a DER encoded byte array
  */
-static void testTLSDerEncode(ASN1_TYPE src,
+static void testTLSDerEncode(asn1_node src,
                              const char *src_name,
                              gnutls_datum_t * res)
 {
@@ -267,7 +267,7 @@ testTLSGenerateCert(struct testTLSCertReq *req,
      * the 'critical' field which we want control over
      */
     if (req->basicConstraintsEnable) {
-        ASN1_TYPE ext = ASN1_TYPE_EMPTY;
+        asn1_node ext = NULL;
 
         asn1_create_element(pkix_asn1, "PKIX1.BasicConstraints", &ext);
         asn1_write_value(ext, "cA", req->basicConstraintsIsCA ? "TRUE" : "FALSE", 1);
@@ -292,7 +292,7 @@ testTLSGenerateCert(struct testTLSCertReq *req,
      * to be 'critical'
      */
     if (req->keyUsageEnable) {
-        ASN1_TYPE ext = ASN1_TYPE_EMPTY;
+        asn1_node ext = NULL;
         char str[2];
 
         str[0] = req->keyUsageValue & 0xff;
@@ -321,7 +321,7 @@ testTLSGenerateCert(struct testTLSCertReq *req,
      * set this the hard way building up ASN1 data ourselves
      */
     if (req->keyPurposeEnable) {
-        ASN1_TYPE ext = ASN1_TYPE_EMPTY;
+        asn1_node ext = NULL;
 
         asn1_create_element(pkix_asn1, "PKIX1.ExtKeyUsageSyntax", &ext);
         if (req->keyPurposeOID1) {
