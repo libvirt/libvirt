@@ -1429,6 +1429,11 @@
       </optional>
       <optional>
         <element name="transient">
+          <optional>
+            <attribute name="shareBacking">
+              <ref name='virYesNo'/>
+            </attribute>
+          </optional>
           <empty/>
         </element>
       </optional>

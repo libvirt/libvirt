@@ -9047,6 +9047,7 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     xmlNodePtr blockioNode;
     xmlNodePtr driverNode;
     xmlNodePtr mirrorNode;
+    xmlNodePtr transientNode;
     g_autoptr(virStorageSource) src = NULL;
 
     if (!(src = virDomainDiskDefParseSourceXML(xmlopt, node, ctxt, flags)))
@@ -9155,8 +9156,14 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
         }
     }
 
-    if (virXPathNode("./transient", ctxt))
+    if ((transientNode = virXPathNode("./transient", ctxt))) {
         def->transient = true;
+
+        if (virXMLPropTristateBool(transientNode, "shareBacking",
+                                   VIR_XML_PROP_NONE,
+                                   &def->transientShareBacking) < 0)
+            return NULL;
+    }
 
     if (virDomainDiskDefIotuneParse(def, ctxt) < 0)
         return NULL;
@@ -23551,8 +23558,12 @@ virDomainDiskDefFormat(virBuffer *buf,
         virBufferAddLit(buf, "<readonly/>\n");
     if (def->src->shared)
         virBufferAddLit(buf, "<shareable/>\n");
-    if (def->transient)
-        virBufferAddLit(buf, "<transient/>\n");
+    if (def->transient) {
+        virBufferAddLit(buf, "<transient");
+        if (def->transientShareBacking == VIR_TRISTATE_BOOL_YES)
+            virBufferAddLit(buf, " shareBacking='yes'");
+        virBufferAddLit(buf, "/>\n");
+    }
     virBufferEscapeString(buf, "<serial>%s</serial>\n", def->serial);
     virBufferEscapeString(buf, "<wwn>%s</wwn>\n", def->wwn);
     virBufferEscapeString(buf, "<vendor>%s</vendor>\n", def->vendor);

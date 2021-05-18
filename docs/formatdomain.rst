@@ -3135,6 +3135,12 @@ paravirtualized driver is specified via the ``disk`` element.
    disk transient prevents the domain from participating in migration,
    snapshots, or blockjobs. Only supported in vmx hypervisor
    (:since:`Since 0.9.5`) and ``qemu`` hypervisor (:since:`Since 6.9.0`).
+
+   In cases where the source image of the ``<transient/>`` disk is supposed to
+   be shared between multiple concurrently running VMs the optional
+   ``shareBacking`` attribute should be set to ``yes``. Note that hypervisor
+   drivers may need to hotplug such disk and thus it works only with
+   configurations supporting hotplug. :since:`Since 7.4.0`
 ``serial``
    If present, this specify serial number of virtual hard drive. For example, it
    may look like ``<serial>WD-WMAP9A966149</serial>``. Not supported for

@@ -575,6 +575,7 @@ struct _virDomainDiskDef {
     unsigned int snapshot; /* virDomainSnapshotLocation, snapshot_conf.h */
     virDomainStartupPolicy startupPolicy;
     bool transient;
+    virTristateBool transientShareBacking;
     virDomainDeviceInfo info;
     virTristateBool rawio;
     virDomainDeviceSGIO sgio;
