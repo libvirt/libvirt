@@ -933,47 +933,6 @@ qemuDomainFindOrCreateSCSIDiskController(virQEMUDriver *driver,
 
 
 static int
-qemuDomainAttachSCSIDisk(virQEMUDriver *driver,
-                         virDomainObj *vm,
-                         virDomainDiskDef *disk)
-{
-    size_t i;
-
-    /* We should have an address already, so make sure */
-    if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected disk address type %s"),
-                       virDomainDeviceAddressTypeToString(disk->info.type));
-        return -1;
-    }
-
-    if (virDomainSCSIDriveAddressIsUsed(vm->def, &disk->info.addr.drive)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Domain already contains a disk with that address"));
-        return -1;
-    }
-
-    /* Let's make sure the disk has a controller defined and loaded before
-     * trying to add it. The controller used by the disk must exist before a
-     * qemu command line string is generated.
-     *
-     * Ensure that the given controller and all controllers with a smaller index
-     * exist; there must not be any missing index in between.
-     */
-    for (i = 0; i <= disk->info.addr.drive.controller; i++) {
-        if (!qemuDomainFindOrCreateSCSIDiskController(driver, vm, i))
-            return -1;
-    }
-
-    if (qemuDomainAttachDiskGeneric(driver, vm, disk) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-
-static int
 qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
                                        virDomainObj *vm,
                                        virDomainDeviceDef *dev)
@@ -1039,7 +998,33 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         break;
 
     case VIR_DOMAIN_DISK_BUS_SCSI:
-        ret = qemuDomainAttachSCSIDisk(driver, vm, disk);
+        /* We should have an address already, so make sure */
+        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected disk address type %s"),
+                           virDomainDeviceAddressTypeToString(disk->info.type));
+            goto cleanup;
+        }
+
+        if (virDomainSCSIDriveAddressIsUsed(vm->def, &disk->info.addr.drive)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("Domain already contains a disk with that address"));
+            goto cleanup;
+        }
+
+        /* Let's make sure the disk has a controller defined and loaded before
+         * trying to add it. The controller used by the disk must exist before a
+         * qemu command line string is generated.
+         *
+         * Ensure that the given controller and all controllers with a smaller index
+         * exist; there must not be any missing index in between.
+         */
+        for (i = 0; i <= disk->info.addr.drive.controller; i++) {
+            if (!qemuDomainFindOrCreateSCSIDiskController(driver, vm, i))
+                goto cleanup;
+        }
+
+        ret = qemuDomainAttachDiskGeneric(driver, vm, disk);
         break;
 
     case VIR_DOMAIN_DISK_BUS_IDE:
