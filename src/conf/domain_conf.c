@@ -15524,13 +15524,6 @@ virDomainDiskByTarget(virDomainDef *def,
 void virDomainDiskInsert(virDomainDef *def,
                          virDomainDiskDef *disk)
 {
-    def->disks = g_renew(virDomainDiskDef *, def->disks, def->ndisks + 1);
-    virDomainDiskInsertPreAlloced(def, disk);
-}
-
-void virDomainDiskInsertPreAlloced(virDomainDef *def,
-                                   virDomainDiskDef *disk)
-{
     int idx;
     /* Tentatively plan to insert disk at the end. */
     int insertAt = -1;
@@ -15556,9 +15549,7 @@ void virDomainDiskInsertPreAlloced(virDomainDef *def,
         }
     }
 
-    /* VIR_INSERT_ELEMENT_INPLACE will never return an error here. */
-    ignore_value(VIR_INSERT_ELEMENT_INPLACE(def->disks, insertAt,
-                                            def->ndisks, disk));
+    ignore_value(VIR_INSERT_ELEMENT(def->disks, insertAt, def->ndisks, disk));
 }
 
 
@@ -19553,9 +19544,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     if ((n = virXPathNodeSet("./devices/disk", ctxt, &nodes)) < 0)
         goto error;
 
-    if (n)
-        def->disks = g_new0(virDomainDiskDef *, n);
-
     for (i = 0; i < n; i++) {
         virDomainDiskDef *disk = virDomainDiskDefParseXML(xmlopt,
                                                           nodes[i],
@@ -19564,7 +19552,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         if (!disk)
             goto error;
 
-        virDomainDiskInsertPreAlloced(def, disk);
+        virDomainDiskInsert(def, disk);
     }
     VIR_FREE(nodes);
 

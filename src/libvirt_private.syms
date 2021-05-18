@@ -389,7 +389,6 @@ virDomainDiskGetType;
 virDomainDiskIndexByAddress;
 virDomainDiskIndexByName;
 virDomainDiskInsert;
-virDomainDiskInsertPreAlloced;
 virDomainDiskIoTypeFromString;
 virDomainDiskIoTypeToString;
 virDomainDiskMirrorStateTypeFromString;

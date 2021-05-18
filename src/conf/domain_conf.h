@@ -3559,8 +3559,6 @@ virDomainDiskByTarget(virDomainDef *def,
                       const char *dst);
 
 void virDomainDiskInsert(virDomainDef *def, virDomainDiskDef *disk);
-void virDomainDiskInsertPreAlloced(virDomainDef *def,
-                                   virDomainDiskDef *disk);
 int virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
                                      virStorageNetHostDef *host);
 int virDomainDiskDefAssignAddress(virDomainXMLOption *xmlopt,
