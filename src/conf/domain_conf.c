@@ -10093,39 +10093,20 @@ virDomainChrSourceReconnectDefParseXML(virDomainChrSourceReconnectDef *def,
                                        xmlNodePtr node,
                                        xmlXPathContextPtr ctxt)
 {
-    int tmpVal;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr cur;
-    g_autofree char *tmp = NULL;
 
     ctxt->node = node;
 
     if ((cur = virXPathNode("./reconnect", ctxt))) {
-        if ((tmp = virXMLPropString(cur, "enabled"))) {
-            if ((tmpVal = virTristateBoolTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("invalid reconnect enabled value: '%s'"),
-                               tmp);
-                return -1;
-            }
-            def->enabled = tmpVal;
-            VIR_FREE(tmp);
-        }
+        if (virXMLPropTristateBool(cur, "enabled", VIR_XML_PROP_NONE,
+                                   &def->enabled) < 0)
+            return -1;
 
         if (def->enabled == VIR_TRISTATE_BOOL_YES) {
-            if ((tmp = virXMLPropString(cur, "timeout"))) {
-                if (virStrToLong_ui(tmp, NULL, 10, &def->timeout) < 0) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("invalid reconnect timeout value: '%s'"),
-                                   tmp);
-                    return -1;
-                }
-            } else {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("missing timeout for chardev with "
-                                 "reconnect enabled"));
+            if (virXMLPropUInt(cur, "timeout", 10, VIR_XML_PROP_REQUIRED,
+                               &def->timeout) < 0)
                 return -1;
-            }
         }
     }
 
