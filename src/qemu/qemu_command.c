@@ -2164,6 +2164,12 @@ qemuBuildDisksCommandLine(virCommand *cmd,
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDef *disk = def->disks[i];
 
+        /* transient disks with shared backing image will be hotplugged after
+         * the VM is started */
+        if (disk->transient &&
+            disk->transientShareBacking == VIR_TRISTATE_BOOL_YES)
+            continue;
+
         if (qemuBuildDiskCommandLine(cmd, def, disk, qemuCaps) < 0)
             return -1;
     }

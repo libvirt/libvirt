@@ -2980,6 +2980,30 @@ qemuValidateDomainDeviceDefDiskTransient(const virDomainDiskDef *disk,
         return -1;
     }
 
+    if (disk->transientShareBacking == VIR_TRISTATE_BOOL_YES) {
+        /* sharing the backing file requires hotplug of the disk in the qemu driver */
+        switch (disk->bus) {
+        case VIR_DOMAIN_DISK_BUS_USB:
+        case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        case VIR_DOMAIN_DISK_BUS_SCSI:
+            break;
+
+        case VIR_DOMAIN_DISK_BUS_IDE:
+        case VIR_DOMAIN_DISK_BUS_FDC:
+        case VIR_DOMAIN_DISK_BUS_XEN:
+        case VIR_DOMAIN_DISK_BUS_UML:
+        case VIR_DOMAIN_DISK_BUS_SATA:
+        case VIR_DOMAIN_DISK_BUS_SD:
+        case VIR_DOMAIN_DISK_BUS_NONE:
+        case VIR_DOMAIN_DISK_BUS_LAST:
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("disk bus '%s' doesn't support transiend disk backing image sharing"),
+                           virDomainDiskBusTypeToString(disk->bus));
+            return -1;
+        }
+    }
+
     return 0;
 }
 

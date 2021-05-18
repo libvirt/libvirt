@@ -7016,7 +7016,8 @@ qemuProcessSetupDisksTransientSnapshot(virDomainObj *vm,
         virDomainDiskDef *domdisk = vm->def->disks[i];
         g_autoptr(virDomainSnapshotDiskDef) snapdisk = NULL;
 
-        if (!domdisk->transient)
+        if (!domdisk->transient ||
+            domdisk->transientShareBacking == VIR_TRISTATE_BOOL_YES)
             continue;
 
         /* validation code makes sure that we do this only for local disks
@@ -7049,6 +7050,45 @@ qemuProcessSetupDisksTransientSnapshot(virDomainObj *vm,
 
 
 static int
+qemuProcessSetupDisksTransientHotplug(virDomainObj *vm,
+                                      qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    bool hasHotpluggedDisk = false;
+    size_t i;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDef *domdisk = vm->def->disks[i];
+
+        if (!domdisk->transient ||
+            domdisk->transientShareBacking != VIR_TRISTATE_BOOL_YES)
+            continue;
+
+        if (qemuDomainAttachDiskGeneric(priv->driver, vm, domdisk, asyncJob) < 0)
+            return -1;
+
+        hasHotpluggedDisk = true;
+    }
+
+    /* in order to allow booting from such disks we need to issue a system-reset
+     * so that the firmware tables recording bootable devices are regerated */
+    if (hasHotpluggedDisk) {
+        int rc;
+
+        if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+            return -1;
+
+        rc = qemuMonitorSystemReset(priv->mon);
+
+        if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || rc < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuProcessSetupDisksTransient(virDomainObj *vm,
                                qemuDomainAsyncJob asyncJob)
 {
@@ -7058,6 +7098,9 @@ qemuProcessSetupDisksTransient(virDomainObj *vm,
         return 0;
 
     if (qemuProcessSetupDisksTransientSnapshot(vm, asyncJob) < 0)
+        return -1;
+
+    if (qemuProcessSetupDisksTransientHotplug(vm, asyncJob) < 0)
         return -1;
 
     return 0;
