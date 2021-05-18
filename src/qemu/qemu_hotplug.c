@@ -711,7 +711,7 @@ qemuDomainAttachDiskGenericTransient(virDomainObj *vm,
  *
  * Attaches disk to a VM. This function aggregates common code for all bus types.
  * In cases when the VM crashed while adding the disk, -2 is returned. */
-static int
+int
 qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
                             virDomainObj *vm,
                             virDomainDiskDef *disk,

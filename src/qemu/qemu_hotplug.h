@@ -58,6 +58,12 @@ int qemuDomainAttachControllerDevice(virQEMUDriver *driver,
 int qemuDomainAttachDeviceDiskLive(virQEMUDriver *driver,
                                    virDomainObj *vm,
                                    virDomainDeviceDef *dev);
+
+int qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
+                                virDomainObj *vm,
+                                virDomainDiskDef *disk,
+                                qemuDomainAsyncJob asyncJob);
+
 int qemuDomainAttachNetDevice(virQEMUDriver *driver,
                               virDomainObj *vm,
                               virDomainNetDef *net);
