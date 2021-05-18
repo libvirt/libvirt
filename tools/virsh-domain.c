@@ -9025,7 +9025,7 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     }
     kibibytes = VIR_DIV_UP(bytes, 1024);
 
-    if (flags == 0) {
+    if (!current && !live && !config) {
         if (virDomainSetMemory(dom, kibibytes) != 0)
             ret = false;
     } else {
