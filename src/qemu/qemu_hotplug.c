@@ -798,29 +798,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
 }
 
 
-static int
-qemuDomainAttachVirtioDiskDevice(virQEMUDriver *driver,
-                                 virDomainObj *vm,
-                                 virDomainDiskDef *disk)
-{
-    virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_DISK, { .disk = disk } };
-    bool releaseaddr = false;
-    int rv;
-
-    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, disk->dst) < 0)
-        return -1;
-
-    if ((rv = qemuDomainAttachDiskGeneric(driver, vm, disk)) < 0) {
-        if (rv == -1 && releaseaddr)
-            qemuDomainReleaseDeviceAddress(vm, &disk->info);
-
-        return -1;
-    }
-
-    return 0;
-}
-
-
 int qemuDomainAttachControllerDevice(virQEMUDriver *driver,
                                      virDomainObj *vm,
                                      virDomainControllerDef *controller)
@@ -1005,6 +982,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
     size_t i;
     virDomainDiskDef *disk = dev->data.disk;
     bool releaseUSB = false;
+    bool releaseVirtio = false;
     int ret = -1;
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
@@ -1054,7 +1032,10 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         break;
 
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        ret = qemuDomainAttachVirtioDiskDevice(driver, vm, disk);
+        if (qemuDomainEnsureVirtioAddress(&releaseVirtio, vm, dev, disk->dst) < 0)
+            goto cleanup;
+
+        ret = qemuDomainAttachDiskGeneric(driver, vm, disk);
         break;
 
     case VIR_DOMAIN_DISK_BUS_SCSI:
@@ -1083,6 +1064,9 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
 
         if (releaseUSB)
             virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
+
+        if (releaseVirtio && ret == -1)
+            qemuDomainReleaseDeviceAddress(vm, &disk->info);
     }
 
     return ret;
