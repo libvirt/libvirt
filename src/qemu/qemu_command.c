@@ -7670,7 +7670,7 @@ qemuBuildAudioCommandLineArg(virCommand *cmd,
     qemuBuildAudioCommonArg(&buf, "in", &def->input);
     qemuBuildAudioCommonArg(&buf, "out", &def->output);
 
-    switch ((virDomainAudioType)def->type) {
+    switch (def->type) {
     case VIR_DOMAIN_AUDIO_TYPE_NONE:
         break;
 
@@ -7859,7 +7859,7 @@ qemuBuildAudioCommandLineEnv(virCommand *cmd,
     qemuBuildAudioCommonEnv(cmd, "QEMU_AUDIO_ADC_", &audio->input);
     qemuBuildAudioCommonEnv(cmd, "QEMU_AUDIO_DAC_", &audio->output);
 
-    switch ((virDomainAudioType)audio->type) {
+    switch (audio->type) {
     case VIR_DOMAIN_AUDIO_TYPE_NONE:
         break;
 

@@ -524,7 +524,7 @@ bhyveBuildSoundArgStr(const virDomainDef *def G_GNUC_UNUSED,
     virCommandAddArg(cmd, "-s");
 
     if (audio) {
-        switch ((virDomainAudioType) audio->type) {
+        switch (audio->type) {
         case  VIR_DOMAIN_AUDIO_TYPE_OSS:
             if (virDomainAudioIOCommonIsSet(&audio->input) ||
                 virDomainAudioIOCommonIsSet(&audio->output)) {

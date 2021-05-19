@@ -4223,7 +4223,7 @@ qemuValidateDomainDeviceDefAudio(virDomainAudioDef *audio,
         }
     }
 
-    switch ((virDomainAudioType)audio->type) {
+    switch (audio->type) {
     case VIR_DOMAIN_AUDIO_TYPE_NONE:
         break;
 

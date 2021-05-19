@@ -1543,7 +1543,7 @@ struct _virDomainAudioIOSDL {
 };
 
 struct _virDomainAudioDef {
-    int type;
+    virDomainAudioType type;
 
     unsigned int id;
 

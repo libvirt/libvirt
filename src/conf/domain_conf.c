@@ -2922,7 +2922,7 @@ virDomainAudioDefFree(virDomainAudioDef *def)
     if (!def)
         return;
 
-    switch ((virDomainAudioType) def->type) {
+    switch (def->type) {
     case VIR_DOMAIN_AUDIO_TYPE_NONE:
         break;
 
@@ -13123,24 +13123,26 @@ virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
     virDomainAudioDef *def;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *tmp = NULL;
-    g_autofree char *type = NULL;
+    g_autofree char *typestr = NULL;
+    int type;
     xmlNodePtr inputNode, outputNode;
 
     def = g_new0(virDomainAudioDef, 1);
     ctxt->node = node;
 
-    type = virXMLPropString(node, "type");
-    if (!type) {
+    typestr = virXMLPropString(node, "type");
+    if (!typestr) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing audio 'type' attribute"));
         goto error;
     }
 
-    if ((def->type = virDomainAudioTypeTypeFromString(type)) < 0) {
+    if ((type = virDomainAudioTypeTypeFromString(typestr)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown audio type '%s'"), type);
+                       _("unknown audio type '%s'"), typestr);
         goto error;
     }
+    def->type = type;
 
     tmp = virXMLPropString(node, "id");
     if (!tmp) {
@@ -13163,7 +13165,7 @@ virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
     if (outputNode && virDomainAudioCommonParse(&def->output, outputNode, ctxt) < 0)
         goto error;
 
-    switch ((virDomainAudioType) def->type) {
+    switch (def->type) {
     case VIR_DOMAIN_AUDIO_TYPE_NONE:
         break;
 
@@ -25465,7 +25467,7 @@ virDomainAudioDefFormat(virBuffer *buf,
 
     virBufferAsprintf(buf, "<audio id='%d' type='%s'", def->id, type);
 
-    switch ((virDomainAudioType)def->type) {
+    switch (def->type) {
     case VIR_DOMAIN_AUDIO_TYPE_NONE:
         break;
 
