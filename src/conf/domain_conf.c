@@ -13155,17 +13155,21 @@ virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
-        if (inputNode)
-            virDomainAudioCoreAudioParse(&def->backend.coreaudio.input, inputNode);
-        if (outputNode)
-            virDomainAudioCoreAudioParse(&def->backend.coreaudio.output, outputNode);
+        if (inputNode &&
+            virDomainAudioCoreAudioParse(&def->backend.coreaudio.input, inputNode) < 0)
+            goto error;
+        if (outputNode &&
+            virDomainAudioCoreAudioParse(&def->backend.coreaudio.output, outputNode) < 0)
+            goto error;
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_JACK:
-        if (inputNode)
-            virDomainAudioJackParse(&def->backend.jack.input, inputNode);
-        if (outputNode)
-            virDomainAudioJackParse(&def->backend.jack.output, outputNode);
+        if (inputNode &&
+            virDomainAudioJackParse(&def->backend.jack.input, inputNode) < 0)
+            goto error;
+        if (outputNode &&
+            virDomainAudioJackParse(&def->backend.jack.output, outputNode) < 0)
+            goto error;
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_OSS: {
@@ -13193,20 +13197,24 @@ virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
             def->backend.oss.dspPolicySet = true;
         }
 
-        if (inputNode)
-            virDomainAudioOSSParse(&def->backend.oss.input, inputNode);
-        if (outputNode)
-            virDomainAudioOSSParse(&def->backend.oss.output, outputNode);
+        if (inputNode &&
+            virDomainAudioOSSParse(&def->backend.oss.input, inputNode) < 0)
+            goto error;
+        if (outputNode &&
+            virDomainAudioOSSParse(&def->backend.oss.output, outputNode) < 0)
+            goto error;
         break;
     }
 
     case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
         def->backend.pulseaudio.serverName = virXMLPropString(node, "serverName");
 
-        if (inputNode)
-            virDomainAudioPulseAudioParse(&def->backend.pulseaudio.input, inputNode);
-        if (outputNode)
-            virDomainAudioPulseAudioParse(&def->backend.pulseaudio.output, outputNode);
+        if (inputNode &&
+            virDomainAudioPulseAudioParse(&def->backend.pulseaudio.input, inputNode) < 0)
+            goto error;
+        if (outputNode &&
+            virDomainAudioPulseAudioParse(&def->backend.pulseaudio.output, outputNode) < 0)
+            goto error;
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SDL: {
@@ -13214,10 +13222,12 @@ virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
                            VIR_XML_PROP_NONZERO, &def->backend.sdl.driver) < 0)
             goto error;
 
-        if (inputNode)
-            virDomainAudioSDLParse(&def->backend.sdl.input, inputNode);
-        if (outputNode)
-            virDomainAudioSDLParse(&def->backend.sdl.output, outputNode);
+        if (inputNode &&
+            virDomainAudioSDLParse(&def->backend.sdl.input, inputNode) < 0)
+            goto error;
+        if (outputNode &&
+            virDomainAudioSDLParse(&def->backend.sdl.output, outputNode) < 0)
+            goto error;
         break;
     }
 
