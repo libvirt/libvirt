@@ -2507,7 +2507,6 @@ libxlBuildDomainConfig(virPortAllocatorRange *graphicsports,
 {
     virCaps *caps = cfg->caps;
     libxl_ctx *ctx = cfg->ctx;
-    libxl_domain_config_init(d_config);
 
     if (libxlMakeDomCreateInfo(ctx, def, &d_config->c_info) < 0)
         return -1;
