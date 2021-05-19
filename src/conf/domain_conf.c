@@ -14805,71 +14805,36 @@ virDomainIOMMUDefParseXML(xmlNodePtr node,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr driver;
-    int val;
-    g_autofree char *tmp = NULL;
     g_autofree virDomainIOMMUDef *iommu = NULL;
 
     ctxt->node = node;
 
     iommu = g_new0(virDomainIOMMUDef, 1);
 
-    if (!(tmp = virXMLPropString(node, "model"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing model for IOMMU device"));
+    if (virXMLPropEnum(node, "model", virDomainIOMMUModelTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &iommu->model) < 0)
         return NULL;
-    }
-
-    if ((val = virDomainIOMMUModelTypeFromString(tmp)) < 0) {
-        virReportError(VIR_ERR_XML_ERROR, _("unknown IOMMU model: %s"), tmp);
-        return NULL;
-    }
-
-    iommu->model = val;
 
     if ((driver = virXPathNode("./driver", ctxt))) {
-        VIR_FREE(tmp);
-        if ((tmp = virXMLPropString(driver, "intremap"))) {
-            if ((val = virTristateSwitchTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, _("unknown intremap value: %s"), tmp);
-                return NULL;
-            }
-            iommu->intremap = val;
-        }
+        if (virXMLPropTristateSwitch(driver, "intremap", VIR_XML_PROP_NONE,
+                                     &iommu->intremap) < 0)
+            return NULL;
 
-        VIR_FREE(tmp);
-        if ((tmp = virXMLPropString(driver, "caching_mode"))) {
-            if ((val = virTristateSwitchTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, _("unknown caching_mode value: %s"), tmp);
-                return NULL;
-            }
-            iommu->caching_mode = val;
-        }
-        VIR_FREE(tmp);
-        if ((tmp = virXMLPropString(driver, "iotlb"))) {
-            if ((val = virTristateSwitchTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, _("unknown iotlb value: %s"), tmp);
-                return NULL;
-            }
-            iommu->iotlb = val;
-        }
+        if (virXMLPropTristateSwitch(driver, "caching_mode", VIR_XML_PROP_NONE,
+                                     &iommu->caching_mode) < 0)
+            return NULL;
 
-        VIR_FREE(tmp);
-        if ((tmp = virXMLPropString(driver, "eim"))) {
-            if ((val = virTristateSwitchTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, _("unknown eim value: %s"), tmp);
-                return NULL;
-            }
-            iommu->eim = val;
-        }
+        if (virXMLPropTristateSwitch(driver, "iotlb", VIR_XML_PROP_NONE,
+                                     &iommu->iotlb) < 0)
+            return NULL;
 
-        VIR_FREE(tmp);
-        if ((tmp = virXMLPropString(driver, "aw_bits"))) {
-            if (virStrToLong_ui(tmp, NULL, 10, &iommu->aw_bits) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, _("unknown aw_bits value: %s"), tmp);
-                return NULL;
-            }
-        }
+        if (virXMLPropTristateSwitch(driver, "eim", VIR_XML_PROP_NONE,
+                                     &iommu->eim) < 0)
+            return NULL;
 
+        if (virXMLPropUInt(driver, "aw_bits", 10, VIR_XML_PROP_NONE,
+                           &iommu->aw_bits) < 0)
+            return NULL;
     }
 
     return g_steal_pointer(&iommu);
