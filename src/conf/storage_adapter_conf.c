@@ -170,31 +170,25 @@ virStorageAdapterParseXML(virStorageAdapter *adapter,
 {
     int type;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    g_autofree char *adapter_type = NULL;
 
     ctxt->node = node;
 
-    if ((adapter_type = virXMLPropString(node, "type"))) {
-        if ((type = virStorageAdapterTypeFromString(adapter_type)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown pool adapter type '%s'"),
-                           adapter_type);
-            return -1;
-        }
-        adapter->type = type;
+    if ((type = virXMLPropEnum(node, "type",
+                               virStorageAdapterTypeFromString,
+                               VIR_XML_PROP_NONZERO, &adapter->type)) < 0)
+        return -1;
 
-        if ((adapter->type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST) &&
-            (virStorageAdapterParseXMLFCHost(node, &adapter->data.fchost)) < 0)
-            return -1;
+    if (type == 0)
+        return virStorageAdapterParseXMLLegacy(node, ctxt, adapter);
 
-        if ((adapter->type == VIR_STORAGE_ADAPTER_TYPE_SCSI_HOST) &&
-            (virStorageAdapterParseXMLSCSIHost(node, ctxt,
-                                               &adapter->data.scsi_host)) < 0)
-            return -1;
-    } else {
-        if (virStorageAdapterParseXMLLegacy(node, ctxt, adapter) < 0)
-            return -1;
-    }
+    if ((adapter->type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST) &&
+        (virStorageAdapterParseXMLFCHost(node, &adapter->data.fchost)) < 0)
+        return -1;
+
+    if ((adapter->type == VIR_STORAGE_ADAPTER_TYPE_SCSI_HOST) &&
+        (virStorageAdapterParseXMLSCSIHost(node, ctxt,
+                                           &adapter->data.scsi_host)) < 0)
+        return -1;
 
     return 0;
 }
