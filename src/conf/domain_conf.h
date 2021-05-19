@@ -1578,7 +1578,7 @@ struct _virDomainAudioDef {
         struct {
             virDomainAudioIOSDL input;
             virDomainAudioIOSDL output;
-            int driver; /* virDomainAudioSDLDriver */
+            virDomainAudioSDLDriver driver;
         } sdl;
         struct {
             char *path;

@@ -13236,15 +13236,16 @@ virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SDL: {
-        g_autofree char *driver = virXMLPropString(node, "driver");
-        if (driver &&
-            (def->backend.sdl.driver =
-             virDomainAudioSDLDriverTypeFromString(driver)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown SDL driver '%s'"), driver);
-            goto error;
+        g_autofree char *driverstr = virXMLPropString(node, "driver");
+        int driver;
+        if (driverstr) {
+            if ((driver = virDomainAudioSDLDriverTypeFromString(driverstr)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown SDL driver '%s'"), driverstr);
+                goto error;
+            }
+            def->backend.sdl.driver = driver;
         }
-
         if (inputNode)
             virDomainAudioSDLParse(&def->backend.sdl.input, inputNode);
         if (outputNode)
