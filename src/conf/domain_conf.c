@@ -13092,18 +13092,12 @@ static int
 virDomainAudioPulseAudioParse(virDomainAudioIOPulseAudio *def,
                               xmlNodePtr node)
 {
-    g_autofree char *latency = virXMLPropString(node, "latency");
-
     def->name = virXMLPropString(node, "name");
     def->streamName = virXMLPropString(node, "streamName");
 
-    if (latency &&
-        virStrToLong_ui(latency, NULL, 10,
-                        &def->latency) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("cannot parse 'latency' value '%s'"), latency);
+    if (virXMLPropUInt(node, "latency", 10, VIR_XML_PROP_NONE,
+                       &def->latency) < 0)
         return -1;
-    }
 
     return 0;
 }
