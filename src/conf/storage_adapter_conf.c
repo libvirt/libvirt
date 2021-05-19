@@ -168,9 +168,8 @@ virStorageAdapterParseXML(virStorageAdapter *adapter,
                           xmlNodePtr node,
                           xmlXPathContextPtr ctxt)
 {
-    int ret = -1;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    char *adapter_type = NULL;
+    g_autofree char *adapter_type = NULL;
 
     ctxt->node = node;
 
@@ -180,27 +179,23 @@ virStorageAdapterParseXML(virStorageAdapter *adapter,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown pool adapter type '%s'"),
                            adapter_type);
-            goto cleanup;
+            return -1;
         }
 
         if ((adapter->type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST) &&
             (virStorageAdapterParseXMLFCHost(node, &adapter->data.fchost)) < 0)
-                goto cleanup;
+            return -1;
 
         if ((adapter->type == VIR_STORAGE_ADAPTER_TYPE_SCSI_HOST) &&
             (virStorageAdapterParseXMLSCSIHost(node, ctxt,
                                                &adapter->data.scsi_host)) < 0)
-                goto cleanup;
+            return -1;
     } else {
         if (virStorageAdapterParseXMLLegacy(node, ctxt, adapter) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(adapter_type);
-    return ret;
+    return 0;
 }
 
 
