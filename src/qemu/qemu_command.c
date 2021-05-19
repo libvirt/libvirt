@@ -6606,7 +6606,6 @@ qemuBuildCpuCommandLine(virCommand *cmd,
                                       def->hyperv_vendor_id);
                 break;
 
-            /* coverity[dead_error_begin] */
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }
@@ -6638,7 +6637,6 @@ qemuBuildCpuCommandLine(virCommand *cmd,
                     virBufferAddLit(&buf, ",kvm-poll-control=on");
                 break;
 
-            /* coverity[dead_error_begin] */
             case VIR_DOMAIN_KVM_LAST:
                 break;
             }

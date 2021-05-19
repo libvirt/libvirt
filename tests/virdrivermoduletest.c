@@ -38,7 +38,6 @@ static int testDriverModule(const void *args)
 {
     const struct testDriverModuleData *data = args;
 
-    /* coverity[leaked_storage] */
     if (virDriverLoadModule(data->module, data->regfunc, true) != 0)
         return -1;
 

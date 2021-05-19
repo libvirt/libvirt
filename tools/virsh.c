@@ -96,7 +96,6 @@ virshCatchDisconnect(virConnectPtr conn,
         case VIR_CONNECT_CLOSE_REASON_KEEPALIVE:
             str = N_("Disconnected from %s due to keepalive timeout");
             break;
-        /* coverity[dead_error_condition] */
         case VIR_CONNECT_CLOSE_REASON_CLIENT:
         case VIR_CONNECT_CLOSE_REASON_LAST:
             break;

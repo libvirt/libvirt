@@ -1376,7 +1376,6 @@ x86ModelFromCPU(const virCPUDef *cpu,
                 x86DataSubtract(&model->data, &feature->data);
                 break;
 
-            /* coverity[dead_error_condition] */
             case VIR_CPU_FEATURE_OPTIONAL:
             case VIR_CPU_FEATURE_LAST:
                 break;

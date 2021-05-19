@@ -1206,7 +1206,6 @@ mymain(void)
     virinitret = virInitialize();
 
     /* Phase two of killing interfering fds; see above.  */
-    /* coverity[overwrite_var] - silence the obvious */
     fd = 3;
     VIR_FORCE_CLOSE(fd);
     fd = 4;

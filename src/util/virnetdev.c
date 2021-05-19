@@ -2750,7 +2750,6 @@ static int virNetDevParseMcast(char *buf, virNetDevMcastEntry *mcast)
                 }
                 break;
 
-            /* coverity[dead_error_begin] */
             case VIR_MCAST_TYPE_LAST:
                 break;
         }

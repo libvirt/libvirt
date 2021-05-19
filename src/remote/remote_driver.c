@@ -5643,7 +5643,6 @@ remoteStreamEventAddCallback(virStreamPtr st,
 
  cleanup:
     remoteDriverUnlock(priv);
-    /* coverity[leaked_storage] - cbdata is not leaked */
     return ret;
 }
 

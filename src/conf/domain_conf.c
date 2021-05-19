@@ -17421,7 +17421,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
             break;
         }
 
-        /* coverity[dead_error_begin] */
         case VIR_DOMAIN_FEATURE_LAST:
             break;
         }
@@ -17509,7 +17508,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
                 }
                 break;
 
-            /* coverity[dead_error_begin] */
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }
@@ -17564,7 +17562,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
                     def->kvm_features[feature] = value;
                     break;
 
-                /* coverity[dead_error_begin] */
                 case VIR_DOMAIN_KVM_LAST:
                     break;
             }
@@ -17609,7 +17606,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
                     return -1;
                 break;
 
-                /* coverity[dead_error_begin] */
                 case VIR_DOMAIN_XEN_LAST:
                     break;
             }
@@ -21541,7 +21537,6 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
                 }
                 break;
 
-            /* coverity[dead_error_begin] */
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }
@@ -21586,7 +21581,6 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
                 }
                 break;
 
-            /* coverity[dead_error_begin] */
             case VIR_DOMAIN_XEN_LAST:
                 break;
             }
@@ -21612,7 +21606,6 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
 
                 break;
 
-            /* coverity[dead_error_begin] */
             case VIR_DOMAIN_KVM_LAST:
                 break;
             }
@@ -27575,7 +27568,6 @@ virDomainDefFormatFeatures(virBuffer *buf,
                                           def->hyperv_vendor_id);
                     break;
 
-                /* coverity[dead_error_begin] */
                 case VIR_DOMAIN_HYPERV_LAST:
                     break;
                 }
@@ -27602,7 +27594,6 @@ virDomainDefFormatFeatures(virBuffer *buf,
                                               def->kvm_features[j]));
                     break;
 
-                /* coverity[dead_error_begin] */
                 case VIR_DOMAIN_KVM_LAST:
                     break;
                 }
@@ -27644,7 +27635,6 @@ virDomainDefFormatFeatures(virBuffer *buf,
                     }
                     break;
 
-                /* coverity[dead_error_begin] */
                 case VIR_DOMAIN_XEN_LAST:
                     break;
                 }
@@ -27738,7 +27728,6 @@ virDomainDefFormatFeatures(virBuffer *buf,
                               virDomainIBSTypeToString(def->features[i]));
             break;
 
-        /* coverity[dead_error_begin] */
         case VIR_DOMAIN_FEATURE_LAST:
             break;
         }
@@ -29592,7 +29581,6 @@ virDomainObjGetMetadata(virDomainObj *vm,
             return NULL;
         break;
 
-    /* coverity[dead_error_begin] */
     case VIR_DOMAIN_METADATA_LAST:
         break;
     }
@@ -29674,7 +29662,6 @@ virDomainDefSetMetadata(virDomainDef *def,
         }
         break;
 
-    /* coverity[dead_error_begin] */
     case VIR_DOMAIN_METADATA_LAST:
         break;
     }

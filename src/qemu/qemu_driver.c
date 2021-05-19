@@ -8989,7 +8989,6 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
             nodeset = NULL;
             break;
 
-        /* coverity[dead_error_begin] */
         default:
             break;
             /* should not hit here */
@@ -10556,7 +10555,6 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
             if (net->bandwidth && net->bandwidth->out)
                 params[i].value.ui = net->bandwidth->out->burst;
             break;
-        /* coverity[dead_error_begin] */
         default:
             break;
             /* should not hit here */
