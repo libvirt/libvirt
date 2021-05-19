@@ -13122,40 +13122,18 @@ virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
 {
     virDomainAudioDef *def;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    g_autofree char *tmp = NULL;
-    g_autofree char *typestr = NULL;
-    int type;
     xmlNodePtr inputNode, outputNode;
 
     def = g_new0(virDomainAudioDef, 1);
     ctxt->node = node;
 
-    typestr = virXMLPropString(node, "type");
-    if (!typestr) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing audio 'type' attribute"));
+    if (virXMLPropEnum(node, "type", virDomainAudioTypeTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &def->type) < 0)
         goto error;
-    }
 
-    if ((type = virDomainAudioTypeTypeFromString(typestr)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown audio type '%s'"), typestr);
+    if (virXMLPropUInt(node, "id", 10, VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                       &def->id) < 0)
         goto error;
-    }
-    def->type = type;
-
-    tmp = virXMLPropString(node, "id");
-    if (!tmp) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("missing audio 'id' attribute"));
-        goto error;
-    }
-    if (virStrToLong_ui(tmp, NULL, 10, &def->id) < 0 ||
-        def->id == 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid audio 'id' value '%s'"), tmp);
-        goto error;
-    }
 
     inputNode = virXPathNode("./input", ctxt);
     outputNode = virXPathNode("./output", ctxt);
@@ -13191,29 +13169,25 @@ virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_OSS: {
-        g_autofree char *tryMMap = virXMLPropString(node, "tryMMap");
-        g_autofree char *exclusive = virXMLPropString(node, "exclusive");
-        g_autofree char *dspPolicy = virXMLPropString(node, "dspPolicy");
+        int dspPolicySet;
 
-        if (tryMMap && ((def->backend.oss.tryMMap =
-                         virTristateBoolTypeFromString(tryMMap)) <= 0)) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown 'tryMMap' value '%s'"), tryMMap);
+        if (virXMLPropTristateBool(node, "tryMMap", VIR_XML_PROP_NONE,
+                                   &def->backend.oss.tryMMap) < 0)
             goto error;
-        }
 
-        if (exclusive && ((def->backend.oss.exclusive =
-                           virTristateBoolTypeFromString(exclusive)) <= 0)) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown 'exclusive' value '%s'"), exclusive);
+        if (virXMLPropTristateBool(node, "exclusive", VIR_XML_PROP_NONE,
+                                   &def->backend.oss.exclusive) < 0)
             goto error;
-        }
 
-        if (dspPolicy) {
-            if (virStrToLong_i(dspPolicy, NULL, 10,
-                               &def->backend.oss.dspPolicy) < 0) {
+        if ((dspPolicySet = virXMLPropInt(node, "dspPolicy", 10, VIR_XML_PROP_NONE,
+                                     &def->backend.oss.dspPolicy, 0)) < 0)
+            goto error;
+
+        if (dspPolicySet != 0) {
+            if (def->backend.oss.dspPolicy < 0) {
                 virReportError(VIR_ERR_XML_ERROR,
-                               _("cannot parse 'dspPolicy' value '%s'"), dspPolicy);
+                               _("cannot parse 'dspPolicy' value '%i'"),
+                               def->backend.oss.dspPolicy);
                 goto error;
             }
             def->backend.oss.dspPolicySet = true;
@@ -13236,16 +13210,10 @@ virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SDL: {
-        g_autofree char *driverstr = virXMLPropString(node, "driver");
-        int driver;
-        if (driverstr) {
-            if ((driver = virDomainAudioSDLDriverTypeFromString(driverstr)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown SDL driver '%s'"), driverstr);
-                goto error;
-            }
-            def->backend.sdl.driver = driver;
-        }
+        if (virXMLPropEnum(node, "driver", virDomainAudioSDLDriverTypeFromString,
+                           VIR_XML_PROP_NONZERO, &def->backend.sdl.driver) < 0)
+            goto error;
+
         if (inputNode)
             virDomainAudioSDLParse(&def->backend.sdl.input, inputNode);
         if (outputNode)
