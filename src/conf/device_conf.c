@@ -417,19 +417,17 @@ int
 virDomainDeviceSpaprVioAddressParseXML(xmlNodePtr node,
                                       virDomainDeviceSpaprVioAddress *addr)
 {
-    g_autofree char *reg = virXMLPropString(node, "reg");
+    int reg;
 
     memset(addr, 0, sizeof(*addr));
 
-    if (reg) {
-        if (virStrToLong_ull(reg, NULL, 16, &addr->reg) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot parse <address> 'reg' attribute"));
-            return -1;
-        }
+    if ((reg = virXMLPropULongLong(node, "reg", 16, VIR_XML_PROP_NONE,
+                                   &addr->reg)) < 0)
+        return -1;
 
+    if (reg != 0)
         addr->has_reg = true;
-    }
+
     return 0;
 }
 
