@@ -9002,15 +9002,15 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
-    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    unsigned int flags = VIR_DOMAIN_AFFECT_LIVE;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
     VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
 
+    if (current)
+        flags = VIR_DOMAIN_AFFECT_CURRENT;
     if (config)
         flags |= VIR_DOMAIN_AFFECT_CONFIG;
-    if (live)
-        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -9025,13 +9025,8 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     kibibytes = VIR_DIV_UP(bytes, 1024);
 
-    if (!current && !live && !config) {
-        if (virDomainSetMemory(dom, kibibytes) != 0)
-            goto cleanup;
-    } else {
-        if (virDomainSetMemoryFlags(dom, kibibytes, flags) < 0)
-            goto cleanup;
-    }
+    if (virDomainSetMemoryFlags(dom, kibibytes, flags) < 0)
+        goto cleanup;
 
     ret = true;
  cleanup:
@@ -9103,16 +9098,9 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     kibibytes = VIR_DIV_UP(bytes, 1024);
 
-    if (flags == 0) {
-        if (virDomainSetMaxMemory(dom, kibibytes) != 0) {
-            vshError(ctl, "%s", _("Unable to change MaxMemorySize"));
-            goto cleanup;
-        }
-    } else {
-        if (virDomainSetMemoryFlags(dom, kibibytes, flags | VIR_DOMAIN_MEM_MAXIMUM) < 0) {
-            vshError(ctl, "%s", _("Unable to change MaxMemorySize"));
-            goto cleanup;
-        }
+    if (virDomainSetMemoryFlags(dom, kibibytes, flags | VIR_DOMAIN_MEM_MAXIMUM) < 0) {
+        vshError(ctl, "%s", _("Unable to change MaxMemorySize"));
+        goto cleanup;
     }
 
     ret = true;
