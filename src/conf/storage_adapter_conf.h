@@ -54,7 +54,7 @@ struct _virStorageAdapterFCHost {
 
 typedef struct _virStorageAdapter virStorageAdapter;
 struct _virStorageAdapter {
-    int type; /* virStorageAdapterType */
+    virStorageAdapterType type;
 
     union {
         virStorageAdapterSCSIHost scsi_host;

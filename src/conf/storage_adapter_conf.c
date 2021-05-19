@@ -168,19 +168,20 @@ virStorageAdapterParseXML(virStorageAdapter *adapter,
                           xmlNodePtr node,
                           xmlXPathContextPtr ctxt)
 {
+    int type;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *adapter_type = NULL;
 
     ctxt->node = node;
 
     if ((adapter_type = virXMLPropString(node, "type"))) {
-        if ((adapter->type =
-             virStorageAdapterTypeFromString(adapter_type)) <= 0) {
+        if ((type = virStorageAdapterTypeFromString(adapter_type)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown pool adapter type '%s'"),
                            adapter_type);
             return -1;
         }
+        adapter->type = type;
 
         if ((adapter->type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST) &&
             (virStorageAdapterParseXMLFCHost(node, &adapter->data.fchost)) < 0)
