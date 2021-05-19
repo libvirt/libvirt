@@ -313,7 +313,6 @@ virHostMemSetParameterValue(virTypedParameterPtr param)
     int rc = -1;
 
     char *field = strchr(param->field, '_');
-    sa_assert(field);
     field++;
     path = g_strdup_printf("%s/%s", SYSFS_MEMORY_SHARED_PATH, field);
 
@@ -338,7 +337,6 @@ virHostMemParametersAreAllSupported(virTypedParameterPtr params,
         virTypedParameterPtr param = &params[i];
 
         char *field = strchr(param->field, '_');
-        sa_assert(field);
         field++;
         path = g_strdup_printf("%s/%s", SYSFS_MEMORY_SHARED_PATH, field);
 

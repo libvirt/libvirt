@@ -449,7 +449,6 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
                    opt->help = "string": straight replacement of name
                    opt->help = "string=value": treat boolean flag as
                    alias of option and its default value */
-                sa_assert(!alias);
                 alias = g_strdup(opt->help);
                 name = alias;
                 if ((value = strchr(name, '='))) {

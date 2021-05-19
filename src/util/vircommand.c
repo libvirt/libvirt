@@ -2263,9 +2263,6 @@ virCommandProcessIO(virCommand *cmd)
                     buf = cmd->errbuf;
                     len = &errlen;
                 }
-                /* Silence a false positive from clang. */
-                sa_assert(buf);
-
                 done = read(fds[i].fd, data, sizeof(data));
                 if (done < 0) {
                     if (errno != EINTR &&

@@ -398,9 +398,6 @@ qemuMonitorIOWriteWithFD(qemuMonitor *mon,
     msg.msg_controllen = sizeof(control);
 
     cmsg = CMSG_FIRSTHDR(&msg);
-    /* Some static analyzers, like clang 2.6-0.6.pre2, fail to see
-       that our use of CMSG_FIRSTHDR will not return NULL.  */
-    sa_assert(cmsg);
     cmsg->cmsg_len = CMSG_LEN(sizeof(int));
     cmsg->cmsg_level = SOL_SOCKET;
     cmsg->cmsg_type = SCM_RIGHTS;

@@ -432,7 +432,6 @@ virNWFilterBindingObjListCollect(virNWFilterBindingObjList *domlist,
     struct virNWFilterBindingListData data = { NULL, 0 };
 
     virObjectRWLockRead(domlist);
-    sa_assert(domlist->objs);
     data.bindings = g_new0(virNWFilterBindingObj *, virHashSize(domlist->objs));
 
     virHashForEach(domlist->objs, virNWFilterBindingObjListCollectIterator, &data);

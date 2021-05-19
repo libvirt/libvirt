@@ -2089,7 +2089,6 @@ qemuProcessReadLog(qemuDomainLogContext *logCtxt,
             *eol = '\n';
         }
     }
-    filter_next = NULL; /* silence false coverity warning */
 
     if (got > 0 &&
         buf[got - 1] == '\n') {

@@ -1666,8 +1666,6 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         }
 
         if (flags & VIR_DOMAIN_MEM_CONFIG) {
-            /* Help clang 2.8 decipher the logic flow.  */
-            sa_assert(persistentDef);
             virDomainDefSetMemoryTotal(persistentDef, newmem);
             if (persistentDef->mem.cur_balloon > newmem)
                 persistentDef->mem.cur_balloon = newmem;
@@ -1702,7 +1700,6 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         }
 
         if (flags & VIR_DOMAIN_MEM_CONFIG) {
-            sa_assert(persistentDef);
             persistentDef->mem.cur_balloon = newmem;
             ret = virDomainDefSave(persistentDef, driver->xmlopt, cfg->configDir);
             goto endjob;
@@ -2476,9 +2473,6 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
     if (flags & VIR_DOMAIN_AFFECT_LIVE)
         targetDef = vm->def;
 
-    /* Make sure coverity knows targetDef is valid at this point. */
-    sa_assert(targetDef);
-
     pcpumap = virBitmapNewData(cpumap, maplen);
     if (!pcpumap)
         goto endjob;
@@ -2556,9 +2550,6 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE)
         targetDef = vm->def;
-
-    /* Make sure coverity knows targetDef is valid at this point. */
-    sa_assert(targetDef);
 
     hostcpus = virBitmapNew(libxl_get_max_cpus(cfg->ctx));
     virBitmapSetAll(hostcpus);

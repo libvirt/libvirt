@@ -182,7 +182,6 @@ virClassNew(virClass *parent,
         return NULL;
     } else if (objectSize <= parentSize ||
                parentSize != (parent ? parent->objectSize : 0)) {
-        sa_assert(parent);
         virReportInvalidArg(objectSize,
                             _("object size %zu of %s is not larger than parent class %zu"),
                             objectSize, name, parent->objectSize);

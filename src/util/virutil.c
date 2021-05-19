@@ -512,9 +512,6 @@ virGetHostnameImpl(bool quiet)
         return g_strdup(hostname);
     }
 
-    /* Tell static analyzers about getaddrinfo semantics.  */
-    sa_assert(info);
-
     if (info->ai_canonname == NULL ||
         STRPREFIX(info->ai_canonname, "localhost"))
         /* in this case, we tried to canonicalize and we ended up back with

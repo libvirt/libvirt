@@ -980,7 +980,6 @@ virDomainObjListCollect(virDomainObjList *domlist,
     struct virDomainListData data = { NULL, 0 };
 
     virObjectRWLockRead(domlist);
-    sa_assert(domlist->objs);
     data.vms = g_new0(virDomainObj *, virHashSize(domlist->objs));
 
     virHashForEach(domlist->objs, virDomainObjListCollectIterator, &data);
@@ -1040,7 +1039,6 @@ virDomainObjListConvert(virDomainObjList *domlist,
     }
     virObjectRWUnlock(domlist);
 
-    sa_assert(*vms);
     virDomainObjListFilter(vms, nvms, conn, filter, flags);
 
     return 0;

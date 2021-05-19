@@ -937,10 +937,6 @@ virNetServerProcessClients(virNetServer *srv)
 
  reprocess:
     for (i = 0; i < srv->nclients; i++) {
-        /* Coverity 5.3.0 couldn't see that srv->clients is non-NULL
-         * if srv->nclients is non-zero.  */
-        sa_assert(srv->clients);
-
         client = srv->clients[i];
         virObjectLock(client);
         if (virNetServerClientWantCloseLocked(client))
