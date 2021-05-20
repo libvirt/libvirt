@@ -1942,11 +1942,14 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
     }
 
     if ((starttype = virXPathString("string(./start[1]/@type)", ctxt))) {
-        if ((mdev->start = virNodeDevMdevStartTypeFromString(starttype)) < 0) {
+        int tmp;
+        if ((tmp = virNodeDevMdevStartTypeFromString(starttype)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown mdev start type '%s' for '%s'"), starttype, def->name);
             return -1;
         }
+
+        mdev->start = tmp;
     } else {
         mdev->start = VIR_NODE_DEV_MDEV_START_MANUAL;
     }
