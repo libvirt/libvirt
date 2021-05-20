@@ -1919,7 +1919,7 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
     g_autofree xmlNodePtr *attrs = NULL;
     size_t i;
     g_autofree char *uuidstr = NULL;
-    g_autofree char *starttype = NULL;
+    xmlNodePtr startNode = NULL;
 
     ctxt->node = node;
 
@@ -1941,17 +1941,15 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
         virUUIDFormat(uuidbuf, mdev->uuid);
     }
 
-    if ((starttype = virXPathString("string(./start[1]/@type)", ctxt))) {
-        int tmp;
-        if ((tmp = virNodeDevMdevStartTypeFromString(starttype)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown mdev start type '%s' for '%s'"), starttype, def->name);
-            return -1;
-        }
+    mdev->start = VIR_NODE_DEV_MDEV_START_MANUAL;
 
-        mdev->start = tmp;
-    } else {
-        mdev->start = VIR_NODE_DEV_MDEV_START_MANUAL;
+    startNode = virXPathNode("./start[1]", ctxt);
+    if (startNode &&
+        virXMLPropEnumDefault(startNode, "type",
+                              virNodeDevMdevStartTypeFromString,
+                              VIR_XML_PROP_NONE, &mdev->start,
+                              VIR_NODE_DEV_MDEV_START_MANUAL) < 0) {
+        return -1;
     }
 
     /* 'iommuGroup' is optional, only report an error if the supplied value is
