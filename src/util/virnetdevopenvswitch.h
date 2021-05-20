@@ -57,9 +57,6 @@ int virNetDevOpenvswitchInterfaceStats(const char *ifname,
                                        virDomainInterfaceStatsPtr stats)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
-int virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
-
 int
 virNetDevOpenvswitchMaybeUnescapeReply(char *reply)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
