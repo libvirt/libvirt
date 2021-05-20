@@ -143,6 +143,7 @@ VIR_ENUM_IMPL(qemuDumpFormat,
               "kdump-zlib",
               "kdump-lzo",
               "kdump-snappy",
+              "win-dmp",
 );
 
 

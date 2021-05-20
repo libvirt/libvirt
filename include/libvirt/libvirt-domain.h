@@ -691,6 +691,7 @@ typedef enum {
                                                * lzo compression */
     VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_SNAPPY, /* kdump-compressed format, with
                                                * snappy compression */
+    VIR_DOMAIN_CORE_DUMP_FORMAT_WIN_DMP,      /* Windows full crashdump format */
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_CORE_DUMP_FORMAT_LAST
     /*
