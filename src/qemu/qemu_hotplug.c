@@ -701,7 +701,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
     g_autofree char *devstr = NULL;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
-
     if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
         if (!(data = qemuBuildStorageSourceChainAttachPrepareChardev(disk)))
             goto cleanup;
@@ -725,7 +724,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
 
     if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, priv->qemuCaps)))
         goto cleanup;
-
 
     if (qemuHotplugAttachManagedPR(driver, vm, disk->src, QEMU_ASYNC_JOB_NONE) < 0)
         goto cleanup;
