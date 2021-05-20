@@ -129,8 +129,6 @@ libxlMakeDomCreateInfo(libxl_ctx *ctx,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    libxl_domain_create_info_init(c_info);
-
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM ||
         def->os.type == VIR_DOMAIN_OSTYPE_XENPVH) {
 #ifdef WITH_XEN_PVH
