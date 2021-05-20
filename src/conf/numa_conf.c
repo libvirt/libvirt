@@ -60,15 +60,15 @@ VIR_ENUM_IMPL(virDomainMemoryAccess,
               "private",
 );
 
-VIR_ENUM_IMPL(virDomainCacheAssociativity,
-              VIR_DOMAIN_CACHE_ASSOCIATIVITY_LAST,
+VIR_ENUM_IMPL(virNumaCacheAssociativity,
+              VIR_NUMA_CACHE_ASSOCIATIVITY_LAST,
               "none",
               "direct",
               "full",
 );
 
-VIR_ENUM_IMPL(virDomainCachePolicy,
-              VIR_DOMAIN_CACHE_POLICY_LAST,
+VIR_ENUM_IMPL(virNumaCachePolicy,
+              VIR_NUMA_CACHE_POLICY_LAST,
               "none",
               "writeback",
               "writethrough",
@@ -82,7 +82,7 @@ VIR_ENUM_IMPL(virDomainMemoryLatency,
               "write"
 );
 
-typedef struct _virDomainNumaCache virDomainNumaCache;
+typedef struct _virNumaCache virNumaCache;
 
 typedef struct _virDomainNumaInterconnect virDomainNumaInterconnect;
 
@@ -107,12 +107,12 @@ struct _virDomainNuma {
         virNumaDistance *distances; /* remote node distances */
         size_t ndistances;
 
-        struct _virDomainNumaCache {
+        struct _virNumaCache {
             unsigned int level; /* cache level */
             unsigned int size;  /* cache size */
             unsigned int line;  /* line size, !!! in bytes !!! */
-            virDomainCacheAssociativity associativity; /* cache associativity */
-            virDomainCachePolicy policy; /* cache policy */
+            virNumaCacheAssociativity associativity; /* cache associativity */
+            virNumaCachePolicy policy; /* cache policy */
         } *caches;
         size_t ncaches;
     } *mem_nodes;           /* guest node configuration */
@@ -845,11 +845,11 @@ virDomainNumaDefNodeCacheParseXML(virDomainNuma *def,
     if ((n = virXPathNodeSet("./cache", ctxt, &nodes)) < 0)
         return -1;
 
-    def->mem_nodes[cur_cell].caches = g_new0(virDomainNumaCache, n);
+    def->mem_nodes[cur_cell].caches = g_new0(virNumaCache, n);
 
     for (i = 0; i < n; i++) {
         VIR_XPATH_NODE_AUTORESTORE(ctxt)
-        virDomainNumaCache *cache = &def->mem_nodes[cur_cell].caches[i];
+        virNumaCache *cache = &def->mem_nodes[cur_cell].caches[i];
         g_autofree char *tmp = NULL;
         unsigned int level;
         int associativity;
@@ -883,7 +883,7 @@ virDomainNumaDefNodeCacheParseXML(virDomainNuma *def,
             return -1;
         }
 
-        if ((associativity = virDomainCacheAssociativityTypeFromString(tmp)) < 0) {
+        if ((associativity = virNumaCacheAssociativityTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid cache associativity '%s'"),
                            tmp);
@@ -898,7 +898,7 @@ virDomainNumaDefNodeCacheParseXML(virDomainNuma *def,
                            cur_cell);
         }
 
-        if ((policy = virDomainCachePolicyTypeFromString(tmp)) < 0) {
+        if ((policy = virNumaCachePolicyTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid cache policy '%s'"),
                            tmp);
@@ -915,7 +915,7 @@ virDomainNumaDefNodeCacheParseXML(virDomainNuma *def,
                                 ctxt, &line, 1, ULLONG_MAX, true) < 0)
             return -1;
 
-        *cache = (virDomainNumaCache){level, size, line, associativity, policy};
+        *cache = (virNumaCache){level, size, line, associativity, policy};
         def->mem_nodes[cur_cell].ncaches++;
     }
 
@@ -1132,17 +1132,17 @@ virDomainNumaDefFormatXML(virBuffer *buf,
                               def->mem_nodes[i].ndistances);
 
         for (j = 0; j < def->mem_nodes[i].ncaches; j++) {
-            virDomainNumaCache *cache = &def->mem_nodes[i].caches[j];
+            virNumaCache *cache = &def->mem_nodes[i].caches[j];
 
             virBufferAsprintf(&childBuf, "<cache level='%u'", cache->level);
             if (cache->associativity) {
                 virBufferAsprintf(&childBuf, " associativity='%s'",
-                                  virDomainCacheAssociativityTypeToString(cache->associativity));
+                                  virNumaCacheAssociativityTypeToString(cache->associativity));
             }
 
             if (cache->policy) {
                 virBufferAsprintf(&childBuf, " policy='%s'",
-                                  virDomainCachePolicyTypeToString(cache->policy));
+                                  virNumaCachePolicyTypeToString(cache->policy));
             }
             virBufferAddLit(&childBuf, ">\n");
 
@@ -1226,7 +1226,7 @@ virDomainNumaDefValidate(const virDomainNuma *def)
         g_autoptr(virBitmap) levelsSeen = virBitmapNew(0);
 
         for (j = 0; j < node->ncaches; j++) {
-            const virDomainNumaCache *cache = &node->caches[j];
+            const virNumaCache *cache = &node->caches[j];
 
             /* Relax this if there's ever fourth layer of cache */
             if (cache->level > 3) {
@@ -1270,7 +1270,7 @@ virDomainNumaDefValidate(const virDomainNuma *def)
 
         if (l->cache > 0) {
             for (j = 0; j < def->mem_nodes[l->target].ncaches; j++) {
-                const virDomainNumaCache *cache = &def->mem_nodes[l->target].caches[j];
+                const virNumaCache *cache = &def->mem_nodes[l->target].caches[j];
 
                 if (l->cache == cache->level)
                     break;
@@ -1712,8 +1712,8 @@ virDomainNumaGetNodeCache(const virDomainNuma *numa,
                           unsigned int *level,
                           unsigned int *size,
                           unsigned int *line,
-                          virDomainCacheAssociativity *associativity,
-                          virDomainCachePolicy *policy)
+                          virNumaCacheAssociativity *associativity,
+                          virNumaCachePolicy *policy)
 {
     const virDomainNumaNode *cell;
 

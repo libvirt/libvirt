@@ -7250,8 +7250,8 @@ qemuBuilNumaCellCache(virCommand *cmd,
         unsigned int level;
         unsigned int size;
         unsigned int line;
-        virDomainCacheAssociativity associativity;
-        virDomainCachePolicy policy;
+        virNumaCacheAssociativity associativity;
+        virNumaCachePolicy policy;
 
         if (virDomainNumaGetNodeCache(def->numa, cell, i,
                                       &level, &size, &line,
@@ -7266,30 +7266,30 @@ qemuBuilNumaCellCache(virCommand *cmd,
                           cell, size, level);
 
         switch (associativity) {
-        case VIR_DOMAIN_CACHE_ASSOCIATIVITY_NONE:
+        case VIR_NUMA_CACHE_ASSOCIATIVITY_NONE:
             virBufferAddLit(&buf, ",associativity=none");
             break;
-        case VIR_DOMAIN_CACHE_ASSOCIATIVITY_DIRECT:
+        case VIR_NUMA_CACHE_ASSOCIATIVITY_DIRECT:
             virBufferAddLit(&buf, ",associativity=direct");
             break;
-        case VIR_DOMAIN_CACHE_ASSOCIATIVITY_FULL:
+        case VIR_NUMA_CACHE_ASSOCIATIVITY_FULL:
             virBufferAddLit(&buf, ",associativity=complex");
             break;
-        case VIR_DOMAIN_CACHE_ASSOCIATIVITY_LAST:
+        case VIR_NUMA_CACHE_ASSOCIATIVITY_LAST:
             break;
         }
 
         switch (policy) {
-        case VIR_DOMAIN_CACHE_POLICY_NONE:
+        case VIR_NUMA_CACHE_POLICY_NONE:
             virBufferAddLit(&buf, ",policy=none");
             break;
-        case VIR_DOMAIN_CACHE_POLICY_WRITEBACK:
+        case VIR_NUMA_CACHE_POLICY_WRITEBACK:
             virBufferAddLit(&buf, ",policy=write-back");
             break;
-        case VIR_DOMAIN_CACHE_POLICY_WRITETHROUGH:
+        case VIR_NUMA_CACHE_POLICY_WRITETHROUGH:
             virBufferAddLit(&buf, ",policy=write-through");
             break;
-        case VIR_DOMAIN_CACHE_POLICY_LAST:
+        case VIR_NUMA_CACHE_POLICY_LAST:
             break;
         }
 

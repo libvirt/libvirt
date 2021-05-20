@@ -51,22 +51,22 @@ typedef enum {
 VIR_ENUM_DECL(virDomainMemoryAccess);
 
 typedef enum {
-    VIR_DOMAIN_CACHE_ASSOCIATIVITY_NONE,    /* No associativity */
-    VIR_DOMAIN_CACHE_ASSOCIATIVITY_DIRECT,  /* Direct mapped cache */
-    VIR_DOMAIN_CACHE_ASSOCIATIVITY_FULL,    /* Fully associative cache */
+    VIR_NUMA_CACHE_ASSOCIATIVITY_NONE,    /* No associativity */
+    VIR_NUMA_CACHE_ASSOCIATIVITY_DIRECT,  /* Direct mapped cache */
+    VIR_NUMA_CACHE_ASSOCIATIVITY_FULL,    /* Fully associative cache */
 
-    VIR_DOMAIN_CACHE_ASSOCIATIVITY_LAST
-} virDomainCacheAssociativity;
-VIR_ENUM_DECL(virDomainCacheAssociativity);
+    VIR_NUMA_CACHE_ASSOCIATIVITY_LAST
+} virNumaCacheAssociativity;
+VIR_ENUM_DECL(virNumaCacheAssociativity);
 
 typedef enum {
-    VIR_DOMAIN_CACHE_POLICY_NONE,           /* No policy */
-    VIR_DOMAIN_CACHE_POLICY_WRITEBACK,      /* Write-back policy */
-    VIR_DOMAIN_CACHE_POLICY_WRITETHROUGH,   /* Write-through policy */
+    VIR_NUMA_CACHE_POLICY_NONE,           /* No policy */
+    VIR_NUMA_CACHE_POLICY_WRITEBACK,      /* Write-back policy */
+    VIR_NUMA_CACHE_POLICY_WRITETHROUGH,   /* Write-through policy */
 
-    VIR_DOMAIN_CACHE_POLICY_LAST
-} virDomainCachePolicy;
-VIR_ENUM_DECL(virDomainCachePolicy);
+    VIR_NUMA_CACHE_POLICY_LAST
+} virNumaCachePolicy;
+VIR_ENUM_DECL(virNumaCachePolicy);
 
 typedef enum {
     VIR_DOMAIN_NUMA_INTERCONNECT_TYPE_LATENCY,
@@ -233,8 +233,8 @@ int virDomainNumaGetNodeCache(const virDomainNuma *numa,
                               unsigned int *level,
                               unsigned int *size,
                               unsigned int *line,
-                              virDomainCacheAssociativity *associativity,
-                              virDomainCachePolicy *policy);
+                              virNumaCacheAssociativity *associativity,
+                              virNumaCachePolicy *policy);
 
 ssize_t virDomainNumaGetNodeInitiator(const virDomainNuma *numa,
                                       size_t node);

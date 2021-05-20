@@ -861,10 +861,6 @@ virNodeDeviceDeleteVport;
 virNodeDeviceGetParentName;
 
 # conf/numa_conf.h
-virDomainCacheAssociativityTypeFromString;
-virDomainCacheAssociativityTypeToString;
-virDomainCachePolicyTypeFromString;
-virDomainCachePolicyTypeToString;
 virDomainMemoryAccessTypeFromString;
 virDomainMemoryAccessTypeToString;
 virDomainMemoryLatencyTypeFromString;
@@ -913,6 +909,10 @@ virDomainNumatunePlacementTypeFromString;
 virDomainNumatunePlacementTypeToString;
 virDomainNumatuneSet;
 virDomainNumatuneSpecifiedMaxNode;
+virNumaCacheAssociativityTypeFromString;
+virNumaCacheAssociativityTypeToString;
+virNumaCachePolicyTypeFromString;
+virNumaCachePolicyTypeToString;
 virNumaDistanceFormat;
 
 
