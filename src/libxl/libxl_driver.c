@@ -2978,6 +2978,7 @@ libxlDomainChangeEjectableMedia(virDomainObj *vm, virDomainDiskDef *disk)
     size_t i;
     int ret = -1;
 
+    libxl_device_disk_init(&x_disk);
     for (i = 0; i < vm->def->ndisks; i++) {
         if (vm->def->disks[i]->bus == disk->bus &&
             STREQ(vm->def->disks[i]->dst, disk->dst)) {
@@ -3018,6 +3019,7 @@ libxlDomainChangeEjectableMedia(virDomainObj *vm, virDomainDiskDef *disk)
     ret = 0;
 
  cleanup:
+    libxl_device_disk_dispose(&x_disk);
     virObjectUnref(cfg);
     return ret;
 }
@@ -3030,6 +3032,7 @@ libxlDomainAttachDeviceDiskLive(virDomainObj *vm, virDomainDeviceDef *dev)
     libxl_device_disk x_disk;
     int ret = -1;
 
+    libxl_device_disk_init(&x_disk);
     switch (l_disk->device)  {
         case VIR_DOMAIN_DISK_DEVICE_CDROM:
             ret = libxlDomainChangeEjectableMedia(vm, l_disk);
@@ -3091,6 +3094,7 @@ libxlDomainAttachDeviceDiskLive(virDomainObj *vm, virDomainDeviceDef *dev)
     }
 
  cleanup:
+    libxl_device_disk_dispose(&x_disk);
     virObjectUnref(cfg);
     return ret;
 }
@@ -3329,6 +3333,7 @@ libxlDomainDetachDeviceDiskLive(virDomainObj *vm, virDomainDeviceDef *dev)
     int idx;
     int ret = -1;
 
+    libxl_device_disk_init(&x_disk);
     switch (dev->data.disk->device)  {
         case VIR_DOMAIN_DISK_DEVICE_DISK:
             if (dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_XEN) {
@@ -3380,6 +3385,7 @@ libxlDomainDetachDeviceDiskLive(virDomainObj *vm, virDomainDeviceDef *dev)
     }
 
  cleanup:
+    libxl_device_disk_dispose(&x_disk);
     virObjectUnref(cfg);
     return ret;
 }

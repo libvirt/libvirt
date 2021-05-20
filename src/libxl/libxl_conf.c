@@ -1094,8 +1094,6 @@ libxlMakeDisk(virDomainDiskDef *l_disk, libxl_device_disk *x_disk)
     int format = virDomainDiskGetFormat(l_disk);
     int actual_type = virStorageSourceGetActualType(l_disk->src);
 
-    libxl_device_disk_init(x_disk);
-
     if (actual_type == VIR_STORAGE_TYPE_NETWORK) {
         if (STRNEQ_NULLABLE(driver, "qemu")) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -1243,26 +1241,18 @@ libxlMakeDiskList(virDomainDef *def, libxl_domain_config *d_config)
 {
     virDomainDiskDef **l_disks = def->disks;
     int ndisks = def->ndisks;
-    libxl_device_disk *x_disks;
     size_t i;
 
-    x_disks = g_new0(libxl_device_disk, ndisks);
-
-    for (i = 0; i < ndisks; i++) {
-        if (libxlMakeDisk(l_disks[i], &x_disks[i]) < 0)
-            goto error;
-    }
-
-    d_config->disks = x_disks;
+    d_config->disks = g_new0(libxl_device_disk, ndisks);
     d_config->num_disks = ndisks;
 
-    return 0;
+    for (i = 0; i < ndisks; i++) {
+        libxl_device_disk_init(&d_config->disks[i]);
+        if (libxlMakeDisk(l_disks[i], &d_config->disks[i]) < 0)
+            return -1;
+    }
 
- error:
-    for (i = 0; i < ndisks; i++)
-        libxl_device_disk_dispose(&x_disks[i]);
-    VIR_FREE(x_disks);
-    return -1;
+    return 0;
 }
 
 /*
