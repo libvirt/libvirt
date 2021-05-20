@@ -346,8 +346,6 @@ libxlMakeDomBuildInfo(virDomainDef *def,
     size_t i;
     size_t nusbdevice = 0;
 
-    libxl_domain_build_info_init(b_info);
-
     if (hvm) {
         libxl_domain_build_info_init_type(b_info, LIBXL_DOMAIN_TYPE_HVM);
     } else if (pvh) {
