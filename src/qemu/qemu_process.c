@@ -3938,6 +3938,11 @@ qemuProcessNeedMemoryBackingPath(virDomainDef *def,
             return true;
     }
 
+    for (i = 0; i < def->nmems; i++) {
+        if (def->mems[i]->access != VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)
+            return true;
+    }
+
     if (mem) {
         switch (mem->model) {
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:
