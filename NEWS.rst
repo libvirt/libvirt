@@ -22,6 +22,11 @@ v7.4.0 (unreleased)
 
 * **Improvements**
 
+  * Add win-dmp crashdump format
+
+    New ``win-dmp`` format for ``virDomainCoreDumpWithFormat`` API and/or virsh
+    ``dump --format`` was introduced.
+
 * **Bug fixes**
 
 
