@@ -696,22 +696,21 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
                             virDomainDiskDef *disk)
 {
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
-    int ret = -1;
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *devstr = NULL;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
         if (!(data = qemuBuildStorageSourceChainAttachPrepareChardev(disk)))
-            goto cleanup;
+            return -1;
     } else if (blockdev) {
         if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->src,
                                                                       priv->qemuCaps)))
-            goto cleanup;
+            return -1;
 
         if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
             if (!(data->copyOnReadProps = qemuBlockStorageGetCopyOnReadProps(disk)))
-                goto cleanup;
+                return -1;
 
             data->copyOnReadNodename = g_strdup(QEMU_DOMAIN_DISK_PRIVATE(disk)->nodeCopyOnRead);
         }
@@ -719,14 +718,14 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
     } else {
         if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk,
                                                                    priv->qemuCaps)))
-            goto cleanup;
+            return -1;
     }
 
     if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, priv->qemuCaps)))
-        goto cleanup;
+        return -1;
 
     if (qemuHotplugAttachManagedPR(driver, vm, disk->src, QEMU_ASYNC_JOB_NONE) < 0)
-        goto cleanup;
+        return -1;
 
     qemuDomainObjEnterMonitor(driver, vm);
 
@@ -756,27 +755,22 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
             VIR_WARN("failed to set blkdeviotune for '%s' of '%s'", disk->dst, vm->def->name);
     }
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        ret = -2;
-        goto cleanup;
-    }
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return -2;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 
  exit_monitor:
     qemuBlockStorageSourceChainDetach(priv->mon, data);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -2;
+        return -2;
 
     if (virStorageSourceChainHasManagedPR(disk->src) &&
         qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
-        ret = -2;
+        return -2;
 
-    goto cleanup;
+    return -1;
 }
 
 
