@@ -2554,9 +2554,10 @@ If *--memory-only* is specified, the file is elf file, and will only
 include domain's memory and cpu common register value. It is very
 useful if the domain uses host devices directly.
 *--format* *string* is used to specify the format of 'memory-only'
-dump, and *string* can be one of them: elf, kdump-zlib(kdump-compressed
+dump, and *string* can be one of: elf, kdump-zlib(kdump-compressed
 format with zlib-compressed), kdump-lzo(kdump-compressed format with
-lzo-compressed), kdump-snappy(kdump-compressed format with snappy-compressed).
+lzo-compressed), kdump-snappy(kdump-compressed format with snappy-compressed),
+win-dmp(Windows full crashdump format).
 
 The progress may be monitored using ``domjobinfo`` virsh command and canceled
 with ``domjobabort`` command (sent by another virsh instance). Another option

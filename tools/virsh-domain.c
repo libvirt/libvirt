@@ -5463,6 +5463,8 @@ doDump(void *opaque)
                 dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_SNAPPY;
             } else if (STREQ(format, "elf")) {
                 dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_RAW;
+            } else if (STREQ(format, "win-dmp")) {
+                dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_WIN_DMP;
             } else {
                 vshError(ctl, _("format '%s' is not supported, expecting "
                                 "'kdump-zlib', 'kdump-lzo', 'kdump-snappy' "
