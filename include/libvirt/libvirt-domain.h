@@ -694,7 +694,7 @@ typedef enum {
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_CORE_DUMP_FORMAT_LAST
     /*
-     * NB: this enum value will increase over time as new events are
+     * NB: this enum value will increase over time as new formats are
      * added to the libvirt API. It reflects the last state supported
      * by this version of the libvirt API.
      */
