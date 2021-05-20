@@ -15620,6 +15620,12 @@ virDomainNetFindIdx(virDomainDef *def, virDomainNetDef *net)
                                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI);
     bool CCWAddrSpecified = virDomainDeviceAddressIsValid(&net->info,
                                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW);
+    g_autofree char *addr = NULL;
+    const char *macAddr = _("(<null>)");
+    const char *alias = _("(<null>)");
+
+    if (MACAddrSpecified)
+        macAddr = virMacAddrFormat(&net->mac, mac);
 
     for (i = 0; i < def->nnets; i++) {
         if (MACAddrSpecified &&
@@ -15651,7 +15657,7 @@ virDomainNetFindIdx(virDomainDef *def, virDomainNetDef *net)
             if (MACAddrSpecified) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
                                _("multiple devices matching MAC address %s found"),
-                               virMacAddrFormat(&net->mac, mac));
+                               macAddr);
             } else {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("multiple matching devices found"));
@@ -15663,47 +15669,24 @@ virDomainNetFindIdx(virDomainDef *def, virDomainNetDef *net)
         matchidx = i;
     }
 
-    if (matchidx < 0) {
-        if (MACAddrSpecified && PCIAddrSpecified) {
-            virReportError(VIR_ERR_DEVICE_MISSING,
-                           _("no device matching MAC address %s found on "
-                             VIR_PCI_DEVICE_ADDRESS_FMT),
-                           virMacAddrFormat(&net->mac, mac),
-                           net->info.addr.pci.domain,
-                           net->info.addr.pci.bus,
-                           net->info.addr.pci.slot,
-                           net->info.addr.pci.function);
-        } else if (MACAddrSpecified && CCWAddrSpecified) {
-            virReportError(VIR_ERR_DEVICE_MISSING,
-                           _("no device matching MAC address %s found on "
-                             VIR_CCW_DEVICE_ADDRESS_FMT),
-                           virMacAddrFormat(&net->mac, mac),
-                           net->info.addr.ccw.cssid,
-                           net->info.addr.ccw.ssid,
-                           net->info.addr.ccw.devno);
-        } else if (PCIAddrSpecified) {
-            virReportError(VIR_ERR_DEVICE_MISSING,
-                           _("no device found on " VIR_PCI_DEVICE_ADDRESS_FMT),
-                           net->info.addr.pci.domain,
-                           net->info.addr.pci.bus,
-                           net->info.addr.pci.slot,
-                           net->info.addr.pci.function);
-        } else if (CCWAddrSpecified) {
-            virReportError(VIR_ERR_DEVICE_MISSING,
-                           _("no device found on " VIR_CCW_DEVICE_ADDRESS_FMT),
-                           net->info.addr.ccw.cssid,
-                           net->info.addr.ccw.ssid,
-                           net->info.addr.ccw.devno);
-        } else if (MACAddrSpecified) {
-            virReportError(VIR_ERR_DEVICE_MISSING,
-                           _("no device matching MAC address %s found"),
-                           virMacAddrFormat(&net->mac, mac));
-        } else {
-            virReportError(VIR_ERR_DEVICE_MISSING, "%s",
-                           _("no matching device found"));
-        }
-    }
-    return matchidx;
+    if (matchidx >= 0)
+        return matchidx;
+
+    if (net->info.alias)
+        alias = net->info.alias;
+
+    if (CCWAddrSpecified)
+        addr = virDomainCCWAddressAsString(&net->info.addr.ccw);
+    else if (PCIAddrSpecified)
+        addr = virPCIDeviceAddressAsString(&net->info.addr.pci);
+    else
+        addr = g_strdup(_("(<null>)"));
+
+    virReportError(VIR_ERR_DEVICE_MISSING,
+                   _("no device found at address '%s' matching MAC address"
+                     " '%s' and alias '%s'"),
+                   addr, macAddr, alias);
+    return -1;
 }
 
 bool
