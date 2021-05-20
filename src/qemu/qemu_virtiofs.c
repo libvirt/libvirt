@@ -322,7 +322,7 @@ int
 qemuVirtioFSPrepareDomain(virQEMUDriver *driver,
                           virDomainFSDef *fs)
 {
-    if (fs->binary)
+    if (fs->binary || fs->sock)
         return 0;
 
     return qemuVhostUserFillDomainFS(driver, fs);
