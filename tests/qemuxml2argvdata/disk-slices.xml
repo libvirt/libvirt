@@ -18,7 +18,7 @@
       <driver name='qemu' type='raw'/>
       <source file='/var/lib/libvirt/images/raw.img'>
         <slices>
-          <slice type='storage' offset='1234' size='321'/>
+          <slice type='storage' offset='0' size='321'/>
         </slices>
       </source>
       <backingStore/>

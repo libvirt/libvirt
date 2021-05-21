@@ -1638,7 +1638,7 @@
 
   <define name="diskSourceSlice">
     <attribute name="offset">
-      <ref name="positiveInteger"/>
+      <ref name="unsignedInt"/>
     </attribute>
     <attribute name="size">
       <ref name="positiveInteger"/>

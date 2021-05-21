@@ -28,7 +28,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/raw.img","node-name":"libvirt-6-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-6-format","read-only":false,"driver":"raw","offset":1234,"size":321,"file":"libvirt-6-storage"}' \
+-blockdev '{"node-name":"libvirt-6-format","read-only":false,"driver":"raw","offset":0,"size":321,"file":"libvirt-6-storage"}' \
 -device virtio-blk-pci,bus=pci.0,addr=0x2,drive=libvirt-6-format,id=virtio-disk0,bootindex=1 \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/raw.img","node-name":"libvirt-5-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"driver":"raw","node-name":"libvirt-5-slice-sto","offset":9876,"size":123456789,"file":"libvirt-5-storage","auto-read-only":true,"discard":"unmap"}' \
