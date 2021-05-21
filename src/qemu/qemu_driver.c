@@ -8797,10 +8797,6 @@ qemuDomainSetNumaParamsLive(virDomainObj *vm,
             return -1;
     }
 
-    /* set nodeset for root cgroup */
-    if (virCgroupSetCpusetMems(priv->cgroup, nodeset_str) < 0)
-        return -1;
-
     return 0;
 }
 
