@@ -1191,6 +1191,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     int ret = -1;
     bool releaseaddr = false;
     bool iface_connected = false;
+    bool adjustmemlock = false;
     virDomainNetType actualType;
     const virNetDevBandwidth *actualBandwidth;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -1369,6 +1370,10 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDPA:
+        if (qemuDomainAdjustMaxMemLock(vm, false) < 0)
+            goto cleanup;
+        adjustmemlock = true;
+
         if ((vdpafd = qemuInterfaceVDPAConnect(net)) < 0)
             goto cleanup;
         break;
@@ -1548,6 +1553,13 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
          * and/or def->hostdevs) on failure
          */
         virDomainNetRemoveByObj(vm->def, net);
+
+        /* if we adjusted the memlock limit (for a vDPA device) then
+         * we need to re-adjust since we won't be using the device
+         * after all
+         */
+        if (adjustmemlock)
+            qemuDomainAdjustMaxMemLock(vm, false);
 
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             if (conn)
