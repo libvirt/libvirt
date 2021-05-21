@@ -307,6 +307,7 @@ mymain(void)
     DO_TEST("disk-boot-disk", NONE);
     DO_TEST("disk-boot-cdrom", NONE);
     DO_TEST("disk-error-policy", NONE);
+    DO_TEST_CAPS_LATEST("disk-transient");
     DO_TEST("disk-fmt-qcow", NONE);
     DO_TEST_CAPS_VER("disk-cache", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cache");
