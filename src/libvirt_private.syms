@@ -543,6 +543,7 @@ virDomainNetModelTypeToString;
 virDomainNetNotifyActualDevice;
 virDomainNetReleaseActualDevice;
 virDomainNetRemove;
+virDomainNetRemoveByObj;
 virDomainNetRemoveHostdev;
 virDomainNetResolveActualType;
 virDomainNetSetModelString;

@@ -3580,6 +3580,7 @@ int virDomainNetUpdate(virDomainDef *def, size_t netidx, virDomainNetDef *newnet
 int virDomainNetDHCPInterfaces(virDomainDef *def, virDomainInterfacePtr **ifaces);
 int virDomainNetARPInterfaces(virDomainDef *def, virDomainInterfacePtr **ifaces);
 virDomainNetDef *virDomainNetRemove(virDomainDef *def, size_t i);
+virDomainNetDef *virDomainNetRemoveByObj(virDomainDef *def, virDomainNetDef *net);
 void virDomainNetRemoveHostdev(virDomainDef *def, virDomainNetDef *net);
 
 int virDomainHostdevInsert(virDomainDef *def, virDomainHostdevDef *hostdev);

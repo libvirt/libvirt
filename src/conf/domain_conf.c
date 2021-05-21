@@ -15740,6 +15740,24 @@ virDomainNetRemove(virDomainDef *def, size_t i)
 }
 
 
+virDomainNetDef *
+virDomainNetRemoveByObj(virDomainDef *def, virDomainNetDef *net)
+{
+    size_t i;
+
+    /* the device might have been added to hostdevs but not nets */
+    virDomainNetRemoveHostdev(def, net);
+
+    for (i = 0; i < def->nnets; i++) {
+        if (def->nets[i] == net) {
+            VIR_DELETE_ELEMENT(def->nets, i, def->nnets);
+            break;
+        }
+    }
+    return net;
+}
+
+
 int
 virDomainNetUpdate(virDomainDef *def,
                    size_t netidx,
