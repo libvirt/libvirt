@@ -1219,7 +1219,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
     /* final validation now that we have full info on the type */
     if (qemuDomainValidateActualNetDef(net, priv->qemuCaps) < 0)
-        return -1;
+        goto cleanup;
 
     actualType = virDomainNetGetActualType(net);
 
@@ -1337,7 +1337,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
             int rv = qemuInterfacePrepareSlirp(driver, net, &slirp);
 
             if (rv == -1)
-                return -1;
+                goto cleanup;
             if (rv == 0)
                 break;
 
