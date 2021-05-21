@@ -4499,9 +4499,10 @@ qemuProcessUpdateCPU(virQEMUDriver *driver,
 
 
 static int
-qemuPrepareNVRAM(virQEMUDriverConfig *cfg,
+qemuPrepareNVRAM(virQEMUDriver *driver,
                  virDomainObj *vm)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
     int srcFD = -1;
     int dstFD = -1;
@@ -4538,16 +4539,16 @@ qemuPrepareNVRAM(virQEMUDriverConfig *cfg,
                              master_nvram_path);
         goto cleanup;
     }
-    if ((dstFD = virFileOpenAs(loader->nvram,
-                               O_WRONLY | O_CREAT | O_EXCL,
-                               S_IRUSR | S_IWUSR,
-                               cfg->user, cfg->group, 0)) < 0) {
-        virReportSystemError(-dstFD,
-                             _("Failed to create file '%s'"),
-                             loader->nvram);
+
+    if ((dstFD = qemuDomainOpenFile(driver, vm, loader->nvram,
+                                    O_WRONLY | O_CREAT | O_EXCL,
+                                    NULL)) < 0)
         goto cleanup;
-    }
+
     created = true;
+
+    if (qemuSecurityDomainSetPathLabel(driver, vm, loader->nvram, false) < 0)
+        goto cleanup;
 
     do {
         char buf[1024];
@@ -6723,7 +6724,7 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
-    if (qemuPrepareNVRAM(cfg, vm) < 0)
+    if (qemuPrepareNVRAM(driver, vm) < 0)
         return -1;
 
     if (vm->def->vsock) {
