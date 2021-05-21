@@ -724,9 +724,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
     if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, priv->qemuCaps)))
         return -1;
 
-    if (qemuHotplugAttachManagedPR(driver, vm, disk->src, QEMU_ASYNC_JOB_NONE) < 0)
-        return -1;
-
     qemuDomainObjEnterMonitor(driver, vm);
 
     if (qemuBlockStorageSourceChainAttach(priv->mon, data) < 0)
@@ -764,10 +761,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
     qemuBlockStorageSourceChainDetach(priv->mon, data);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -2;
-
-    if (virStorageSourceChainHasManagedPR(disk->src) &&
-        qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
         return -2;
 
     return -1;
@@ -1026,6 +1019,9 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
     if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
         goto cleanup;
 
+    if (qemuHotplugAttachManagedPR(driver, vm, disk->src, QEMU_ASYNC_JOB_NONE) < 0)
+        goto cleanup;
+
     ret = qemuDomainAttachDiskGeneric(driver, vm, disk);
 
     virDomainAuditDisk(vm, NULL, disk->src, "attach", ret == 0);
@@ -1047,6 +1043,9 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
 
         if (releaseSeclabel)
             ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, disk->src));
+
+        if (virStorageSourceChainHasManagedPR(disk->src))
+            ignore_value(qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE));
     }
     qemuDomainSecretDiskDestroy(disk);
 
