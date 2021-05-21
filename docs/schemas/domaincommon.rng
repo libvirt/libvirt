@@ -5443,6 +5443,26 @@
               </attribute>
             </element>
           </group>
+          <group>
+            <attribute name="type">
+              <value>evdev</value>
+            </attribute>
+            <element name="source">
+              <attribute name="dev">
+                <ref name="absFilePath"/>
+              </attribute>
+              <optional>
+                <attribute name="grab">
+                  <value>all</value>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="repeat">
+                  <ref name="virOnOff"/>
+                </attribute>
+              </optional>
+            </element>
+          </group>
         </choice>
         <optional>
           <attribute name="model">

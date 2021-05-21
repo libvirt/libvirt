@@ -4563,6 +4563,7 @@ qemuValidateDomainDeviceDefInput(const virDomainInputDef *input,
         case VIR_DOMAIN_INPUT_TYPE_MOUSE:
         case VIR_DOMAIN_INPUT_TYPE_TABLET:
         case VIR_DOMAIN_INPUT_TYPE_KBD:
+        case VIR_DOMAIN_INPUT_TYPE_EVDEV:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("virtio (non-)transitional models are not "
                              "supported for input type=%s"),
@@ -4606,6 +4607,11 @@ qemuValidateDomainDeviceDefInput(const virDomainInputDef *input,
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
         baseName = "virtio-input-host";
         cap = QEMU_CAPS_VIRTIO_INPUT_HOST;
+        ccwCap = QEMU_CAPS_LAST;
+        break;
+    case VIR_DOMAIN_INPUT_TYPE_EVDEV:
+        baseName = "input-linux";
+        cap = QEMU_CAPS_INPUT_LINUX;
         ccwCap = QEMU_CAPS_LAST;
         break;
     case VIR_DOMAIN_INPUT_TYPE_LAST:

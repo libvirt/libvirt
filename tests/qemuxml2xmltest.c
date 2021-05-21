@@ -1290,6 +1290,8 @@ mymain(void)
     DO_TEST("virtio-input-passthrough",
             QEMU_CAPS_VIRTIO_INPUT_HOST);
 
+    DO_TEST_CAPS_LATEST("input-linux");
+
     DO_TEST("memorybacking-set", NONE);
     DO_TEST("memorybacking-unset", NONE);
 

@@ -973,6 +973,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
         case VIR_DOMAIN_INPUT_BUS_USB:
         case VIR_DOMAIN_INPUT_BUS_XEN:
         case VIR_DOMAIN_INPUT_BUS_PARALLELS:
+        case VIR_DOMAIN_INPUT_BUS_NONE:
         case VIR_DOMAIN_INPUT_BUS_LAST:
             return 0;
         }

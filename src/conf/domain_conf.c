@@ -864,6 +864,7 @@ VIR_ENUM_IMPL(virDomainInput,
               "tablet",
               "keyboard",
               "passthrough",
+              "evdev",
 );
 
 VIR_ENUM_IMPL(virDomainInputBus,
@@ -873,6 +874,7 @@ VIR_ENUM_IMPL(virDomainInputBus,
               "xen",
               "parallels",
               "virtio",
+              "none",
 );
 
 VIR_ENUM_IMPL(virDomainInputModel,
@@ -881,6 +883,12 @@ VIR_ENUM_IMPL(virDomainInputModel,
               "virtio",
               "virtio-transitional",
               "virtio-non-transitional",
+);
+
+VIR_ENUM_IMPL(virDomainInputSourceGrab,
+              VIR_DOMAIN_INPUT_SOURCE_GRAB_LAST,
+              "default",
+              "all",
 );
 
 VIR_ENUM_IMPL(virDomainGraphics,
@@ -1879,6 +1887,7 @@ const char *virDomainInputDefGetPath(virDomainInputDef *input)
         return NULL;
 
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_INPUT_TYPE_EVDEV:
         return input->source.evdev;
     }
     return NULL;
@@ -11819,10 +11828,10 @@ virDomainInputDefParseXML(virDomainXMLOption *xmlopt,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virDomainInputDef *def;
-    g_autofree char *evdev = NULL;
     g_autofree char *type = NULL;
     g_autofree char *bus = NULL;
     g_autofree char *model = NULL;
+    xmlNodePtr source = NULL;
 
     def = g_new0(virDomainInputDef, 1);
 
@@ -11924,6 +11933,8 @@ virDomainInputDefParseXML(virDomainXMLOption *xmlopt,
             } else if (ARCH_IS_S390(dom->os.arch) ||
                        def->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
                 def->bus = VIR_DOMAIN_INPUT_BUS_VIRTIO;
+            } else if (def->type == VIR_DOMAIN_INPUT_TYPE_EVDEV) {
+                def->bus = VIR_DOMAIN_INPUT_BUS_NONE;
             } else {
                 def->bus = VIR_DOMAIN_INPUT_BUS_USB;
             }
@@ -11948,12 +11959,36 @@ virDomainInputDefParseXML(virDomainXMLOption *xmlopt,
         goto error;
     }
 
-    if ((evdev = virXPathString("string(./source/@evdev)", ctxt)))
-        def->source.evdev = virFileSanitizePath(evdev);
-    if (def->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH && !def->source.evdev) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Missing evdev path for input device passthrough"));
-        goto error;
+    if ((source = virXPathNode("./source", ctxt))) {
+        g_autofree char *evdev = NULL;
+
+        if (def->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH)
+            evdev = virXMLPropString(source, "evdev");
+        else if (def->type == VIR_DOMAIN_INPUT_TYPE_EVDEV)
+            evdev = virXMLPropString(source, "dev");
+
+        if (evdev)
+            def->source.evdev = virFileSanitizePath(evdev);
+
+        if (def->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH ||
+            def->type == VIR_DOMAIN_INPUT_TYPE_EVDEV) {
+            if (!def->source.evdev) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Missing evdev path for input device"));
+                goto error;
+            }
+        }
+
+        if (def->type == VIR_DOMAIN_INPUT_TYPE_EVDEV) {
+            if (virXMLPropEnum(source, "grab",
+                               virDomainInputSourceGrabTypeFromString,
+                               VIR_XML_PROP_NONZERO, &def->source.grab) < 0)
+                goto error;
+
+            if (virXMLPropTristateSwitch(source, "repeat",
+                                         VIR_XML_PROP_NONE, &def->source.repeat) < 0)
+                goto error;
+        }
     }
 
     if (virDomainVirtioOptionsParseXML(virXPathNode("./driver", ctxt),
@@ -25912,9 +25947,12 @@ virDomainInputDefFormat(virBuffer *buf,
 {
     const char *type = virDomainInputTypeToString(def->type);
     const char *bus = virDomainInputBusTypeToString(def->bus);
+    const char *grab = virDomainInputSourceGrabTypeToString(def->source.grab);
+    const char *repeat = virTristateSwitchTypeToString(def->source.repeat);
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) sourceAttrBuf = VIR_BUFFER_INITIALIZER;
 
     /* don't format keyboard into migratable XML for backward compatibility */
     if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
@@ -25934,7 +25972,9 @@ virDomainInputDefFormat(virBuffer *buf,
         return -1;
     }
 
-    virBufferAsprintf(&attrBuf, " type='%s' bus='%s'", type, bus);
+    virBufferAsprintf(&attrBuf, " type='%s'", type);
+    if (def->bus != VIR_DOMAIN_INPUT_BUS_NONE)
+        virBufferAsprintf(&attrBuf, " bus='%s'", bus);
 
     if (def->model) {
         const char *model = virDomainInputModelTypeToString(def->model);
@@ -25952,7 +25992,18 @@ virDomainInputDefFormat(virBuffer *buf,
 
     virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL);
 
-    virBufferEscapeString(&childBuf, "<source evdev='%s'/>\n", def->source.evdev);
+    if (def->type == VIR_DOMAIN_INPUT_TYPE_EVDEV)
+        virBufferEscapeString(&sourceAttrBuf, " dev='%s'", def->source.evdev);
+    else
+        virBufferEscapeString(&sourceAttrBuf, " evdev='%s'", def->source.evdev);
+
+    if (def->source.grab)
+        virBufferAsprintf(&sourceAttrBuf, " grab='%s'", grab);
+    if (def->source.repeat)
+        virBufferAsprintf(&sourceAttrBuf, " repeat='%s'", repeat);
+
+    virXMLFormatElement(&childBuf, "source", &sourceAttrBuf, NULL);
+
     virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
     virXMLFormatElement(buf, "input", &attrBuf, &childBuf);

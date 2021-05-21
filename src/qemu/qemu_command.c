@@ -4017,6 +4017,7 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
             return NULL;
         }
         break;
+    case VIR_DOMAIN_INPUT_TYPE_EVDEV:
     case VIR_DOMAIN_INPUT_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainInputType, dev->type);

@@ -1387,6 +1387,7 @@ typedef enum {
     VIR_DOMAIN_INPUT_TYPE_TABLET,
     VIR_DOMAIN_INPUT_TYPE_KBD,
     VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH,
+    VIR_DOMAIN_INPUT_TYPE_EVDEV,
 
     VIR_DOMAIN_INPUT_TYPE_LAST
 } virDomainInputType;
@@ -1397,6 +1398,7 @@ typedef enum {
     VIR_DOMAIN_INPUT_BUS_XEN,
     VIR_DOMAIN_INPUT_BUS_PARALLELS, /* pseudo device for VNC in containers */
     VIR_DOMAIN_INPUT_BUS_VIRTIO,
+    VIR_DOMAIN_INPUT_BUS_NONE,
 
     VIR_DOMAIN_INPUT_BUS_LAST
 } virDomainInputBus;
@@ -1410,12 +1412,21 @@ typedef enum {
     VIR_DOMAIN_INPUT_MODEL_LAST
 } virDomainInputModel;
 
+typedef enum {
+    VIR_DOMAIN_INPUT_SOURCE_GRAB_DEFAULT,
+    VIR_DOMAIN_INPUT_SOURCE_GRAB_ALL,
+
+    VIR_DOMAIN_INPUT_SOURCE_GRAB_LAST
+} virDomainInputSourceGrab;
+
 struct _virDomainInputDef {
     int type;
     int bus;
     int model; /* virDomainInputModel */
     struct {
         char *evdev;
+        virDomainInputSourceGrab grab;
+        virTristateSwitch repeat;
     } source;
     virDomainDeviceInfo info;
     virDomainVirtioOptions *virtio;
@@ -3844,6 +3855,7 @@ VIR_ENUM_DECL(virDomainRedirdevBus);
 VIR_ENUM_DECL(virDomainInput);
 VIR_ENUM_DECL(virDomainInputBus);
 VIR_ENUM_DECL(virDomainInputModel);
+VIR_ENUM_DECL(virDomainInputSourceGrab);
 VIR_ENUM_DECL(virDomainGraphics);
 VIR_ENUM_DECL(virDomainGraphicsListen);
 VIR_ENUM_DECL(virDomainGraphicsAuthConnected);

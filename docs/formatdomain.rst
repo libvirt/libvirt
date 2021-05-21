@@ -5728,26 +5728,37 @@ to provide a graphics tablet for absolute cursor movement.
      <input type='passthrough' bus='virtio'>
        <source evdev='/dev/input/event1'/>
      </input>
+     <input type='evdev'>
+       <source dev='/dev/input/event1234' grab='all' repeat='on'/>
+     </input>
    </devices>
    ...
 
 ``input``
    The ``input`` element has one mandatory attribute, the ``type`` whose value
-   can be 'mouse', 'tablet', ( :since:`since 1.2.2` ) 'keyboard' or (
-   :since:`since 1.3.0` ) 'passthrough'. The tablet provides absolute cursor
-   movement, while the mouse uses relative movement. The optional ``bus``
-   attribute can be used to refine the exact device type. It takes values "xen"
-   (paravirtualized), "ps2" and "usb" or ( :since:`since 1.3.0` ) "virtio".
+   can be 'mouse', 'tablet', ( :since:`since 1.2.2` ) 'keyboard', (
+   :since:`since 1.3.0` ) 'passthrough' or ( :since:`since 7.4.0` ) 'evdev'.
+   The tablet provides absolute cursor movement, while the mouse uses relative
+   movement. The optional ``bus`` attribute can be used to refine the exact
+   device type. It takes values "xen" (paravirtualized), "ps2" and "usb" or (
+   :since:`since 1.3.0` ) "virtio".
 
 The ``input`` element has an optional sub-element ``<address>`` which can tie
-the device to a particular PCI slot, `documented above <#elementsAddress>`__. On
-S390, ``address`` can be used to provide a CCW address for an input device (
-:since:`since 4.2.0` ). For type ``passthrough``, the mandatory sub-element
-``source`` must have an ``evdev`` attribute containing the absolute path to the
-event device passed through to guests. (KVM only) :since:`Since 5.2.0` , the
-``input`` element accepts a ``model`` attribute which has the values 'virtio',
-'virtio-transitional' and 'virtio-non-transitional'. See `Virtio transitional
-devices <#elementsVirtioTransitional>`__ for more details.
+the device to a particular PCI slot, `documented above <#elementsAddress>`__.
+On S390, ``address`` can be used to provide a CCW address for an input device (
+:since:`since 4.2.0` ). For types ``passthrough`` and ``evdev``, the mandatory
+sub-element ``source`` must have an ``evdev`` (for ``passthrough``) or ``dev``
+(for ``evdev``) attribute containing the absolute path to the event device
+passed through to guests.
+For type ``evdev``, ``source`` can have two optional attributes ``grab`` with
+value 'all' which when enabled grabs all input devices instead of just one and
+``repeat`` with value 'on'/'off' to enable/disable auto-repeat events (
+:since:`Since 7.4.0`).
+``input`` type ``evdev`` is currently supported only on linux devices.
+(KVM only) :since:`Since 5.2.0` , the ``input`` element accepts a
+``model`` attribute which has the values 'virtio', 'virtio-transitional' and
+'virtio-non-transitional'. See `Virtio transitional devices
+<#elementsVirtioTransitional>`__ for more details.
 
 The subelement ``driver`` can be used to tune the virtio options of the device:
 `Virtio-specific options <#elementsVirtio>`__ can also be set. ( :since:`Since

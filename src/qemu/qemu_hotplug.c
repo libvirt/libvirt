@@ -5805,6 +5805,7 @@ qemuDomainDetachPrepInput(virDomainObj *vm,
     case VIR_DOMAIN_INPUT_BUS_LAST:
     case VIR_DOMAIN_INPUT_BUS_USB:
     case VIR_DOMAIN_INPUT_BUS_VIRTIO:
+    case VIR_DOMAIN_INPUT_BUS_NONE:
         break;
     }
 

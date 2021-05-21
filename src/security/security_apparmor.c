@@ -720,6 +720,7 @@ AppArmorSetInputLabel(virSecurityManager *mgr,
 
     switch ((virDomainInputType)input->type) {
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_INPUT_TYPE_EVDEV:
         if (input->source.evdev == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("%s: passthrough input device has no source"),

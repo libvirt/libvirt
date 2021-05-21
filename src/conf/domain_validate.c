@@ -1961,6 +1961,14 @@ virDomainInputDefValidate(const virDomainInputDef *input)
             }
             break;
 
+        case VIR_DOMAIN_INPUT_TYPE_EVDEV:
+            if (input->bus != VIR_DOMAIN_INPUT_BUS_NONE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("input evdev doesn't support bus element"));
+                return -1;
+            }
+            break;
+
         case VIR_DOMAIN_INPUT_TYPE_LAST:
         default:
             virReportEnumRangeError(virDomainInputType, input->type);

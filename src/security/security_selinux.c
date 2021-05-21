@@ -1513,6 +1513,7 @@ virSecuritySELinuxSetInputLabel(virSecurityManager *mgr,
 
     switch ((virDomainInputType)input->type) {
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_INPUT_TYPE_EVDEV:
         if (virSecuritySELinuxSetFilecon(mgr, input->source.evdev,
                                          seclabel->imagelabel, true) < 0)
             return -1;
@@ -1543,6 +1544,7 @@ virSecuritySELinuxRestoreInputLabel(virSecurityManager *mgr,
 
     switch ((virDomainInputType)input->type) {
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_INPUT_TYPE_EVDEV:
         rc = virSecuritySELinuxRestoreFileLabel(mgr, input->source.evdev, true);
         break;
 

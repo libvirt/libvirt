@@ -956,6 +956,7 @@ virDomainAuditInput(virDomainObj *vm,
         break;
 
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_INPUT_TYPE_EVDEV:
         VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
                   "virt=%s resrc=evdev reason=%s %s uuid=%s path=%s",
                   virt, reason, vmname, uuidstr, VIR_AUDIT_STR(input->source.evdev));

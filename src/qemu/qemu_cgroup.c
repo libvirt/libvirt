@@ -362,6 +362,7 @@ qemuSetupInputCgroup(virDomainObj *vm,
 
     switch (dev->type) {
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_INPUT_TYPE_EVDEV:
         VIR_DEBUG("Process path '%s' for input device", dev->source.evdev);
         ret = virCgroupAllowDevicePath(priv->cgroup, dev->source.evdev,
                                        VIR_CGROUP_DEVICE_RW, false);
@@ -385,6 +386,7 @@ qemuTeardownInputCgroup(virDomainObj *vm,
 
     switch (dev->type) {
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_INPUT_TYPE_EVDEV:
         VIR_DEBUG("Process path '%s' for input device", dev->source.evdev);
         ret = virCgroupDenyDevicePath(priv->cgroup, dev->source.evdev,
                                       VIR_CGROUP_DEVICE_RWM, false);

@@ -1149,7 +1149,8 @@ get_files(vahControl * ctl)
 
     for (i = 0; i < ctl->def->ninputs; i++) {
         if (ctl->def->inputs[i] &&
-                ctl->def->inputs[i]->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
+                (ctl->def->inputs[i]->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH ||
+                 ctl->def->inputs[i]->type == VIR_DOMAIN_INPUT_TYPE_EVDEV)) {
             if (vah_add_file(&buf, ctl->def->inputs[i]->source.evdev, "rw") != 0)
                 goto cleanup;
         }

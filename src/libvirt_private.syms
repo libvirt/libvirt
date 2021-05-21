@@ -475,6 +475,8 @@ virDomainInputBusTypeToString;
 virDomainInputDefFind;
 virDomainInputDefFree;
 virDomainInputDefGetPath;
+virDomainInputSourceGrabTypeFromString;
+virDomainInputSourceGrabTypeToString;
 virDomainInputTypeToString;
 virDomainIOMMUModelTypeFromString;
 virDomainIOMMUModelTypeToString;
