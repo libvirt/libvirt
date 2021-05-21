@@ -629,6 +629,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 400 */
               "compat-deprecated",
               "acpi-index",
+              "input-linux",
     );
 
 
@@ -1347,6 +1348,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "am53c974", QEMU_CAPS_SCSI_AM53C974 },
     { "virtio-pmem-pci", QEMU_CAPS_DEVICE_VIRTIO_PMEM_PCI },
     { "vhost-user-blk", QEMU_CAPS_DEVICE_VHOST_USER_BLK },
+    { "input-linux", QEMU_CAPS_INPUT_LINUX },
 };
 
 

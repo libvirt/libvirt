@@ -209,6 +209,7 @@
   <flag name='audiodev'/>
   <flag name='blockdev-backup'/>
   <flag name='rotation-rate'/>
+  <flag name='input-linux'/>
   <version>5000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900241</microcodeVersion>

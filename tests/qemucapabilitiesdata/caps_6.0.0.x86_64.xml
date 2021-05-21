@@ -254,6 +254,7 @@
   <flag name='rotation-rate'/>
   <flag name='compat-deprecated'/>
   <flag name='acpi-index'/>
+  <flag name='input-linux'/>
   <version>6000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

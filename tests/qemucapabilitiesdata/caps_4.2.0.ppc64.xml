@@ -190,6 +190,7 @@
   <flag name='vnc-opts'/>
   <flag name='audiodev'/>
   <flag name='rotation-rate'/>
+  <flag name='input-linux'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900242</microcodeVersion>
