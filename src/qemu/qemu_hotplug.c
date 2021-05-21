@@ -1203,9 +1203,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     g_autoptr(virConnect) conn = NULL;
     virErrorPtr save_err = NULL;
 
-    /* preallocate new slot for device */
-    VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1);
-
     /* If appropriate, grab a physical device from the configured
      * network's pool of devices, or resolve bridge device name
      * to the one defined in the network definition.
@@ -1255,6 +1252,18 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     }
 
     releaseaddr = true;
+
+    /* We've completed all examinations of the full domain definition
+     * that require the new device to *not* be present (e.g. PCI
+     * address allocation and alias name assignment) so it is now safe
+     * to add the new device to the domain's nets list (in order for
+     * it to be in place for checks that *do* need it present in the
+     * domain definition, e.g. checking if we need to adjust the
+     * locked memory limit). This means we will need to remove it if
+     * there is a failure.
+     */
+    if (VIR_APPEND_ELEMENT_COPY(vm->def->nets, vm->def->nnets, net) < 0)
+        goto cleanup;
 
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
@@ -1512,9 +1521,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     ret = 0;
 
  cleanup:
-    if (!ret) {
-        vm->def->nets[vm->def->nnets++] = net;
-    } else {
+    if (ret < 0) {
         virErrorPreserveLast(&save_err);
         if (releaseaddr)
             qemuDomainReleaseDeviceAddress(vm, &net->info);
@@ -1536,7 +1543,11 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
             qemuDomainNetDeviceVportRemove(net);
         }
 
-        virDomainNetRemoveHostdev(vm->def, net);
+        /* we had potentially pre-added the device to the domain
+         * device lists, if so we need to remove it (from def->nets
+         * and/or def->hostdevs) on failure
+         */
+        virDomainNetRemoveByObj(vm->def, net);
 
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             if (conn)
