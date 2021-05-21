@@ -3264,6 +3264,8 @@ mymain(void)
             QEMU_CAPS_VIRTIO_MOUSE, QEMU_CAPS_VIRTIO_TABLET);
     DO_TEST("virtio-input-passthrough", QEMU_CAPS_VIRTIO_INPUT_HOST);
 
+    DO_TEST_CAPS_LATEST("input-linux");
+
     DO_TEST("ppc64-usb-controller",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_PCI_OHCI);

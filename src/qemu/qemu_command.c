@@ -4065,6 +4065,29 @@ qemuBuildUSBInputDevStr(const virDomainDef *def,
 }
 
 
+static char *
+qemuBuildObjectInputDevStr(virDomainInputDef *dev,
+                           virQEMUCaps *qemuCaps)
+{
+    g_autoptr(virJSONValue) props = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    if (qemuMonitorCreateObjectProps(&props, "input-linux", dev->info.alias,
+                                     "s:evdev", dev->source.evdev,
+                                     "T:repeat", dev->source.repeat,
+                                     NULL) < 0)
+        return NULL;
+
+    if (dev->source.grab == VIR_DOMAIN_INPUT_SOURCE_GRAB_ALL)
+        virJSONValueObjectAdd(props, "b:grab_all", true, NULL);
+
+    if (qemuBuildObjectCommandlineFromJSON(&buf, props, qemuCaps) < 0)
+        return NULL;
+
+    return virBufferContentAndReset(&buf);
+}
+
+
 int
 qemuBuildInputDevStr(char **devstr,
                      const virDomainDef *def,
@@ -4079,6 +4102,10 @@ qemuBuildInputDevStr(char **devstr,
 
     case VIR_DOMAIN_INPUT_BUS_VIRTIO:
         if (!(*devstr = qemuBuildVirtioInputDevStr(def, input, qemuCaps)))
+            return -1;
+        break;
+    case VIR_DOMAIN_INPUT_BUS_NONE:
+        if (!(*devstr = qemuBuildObjectInputDevStr(input, qemuCaps)))
             return -1;
         break;
     }
@@ -4104,7 +4131,10 @@ qemuBuildInputCommandLine(virCommand *cmd,
             return -1;
 
         if (devstr) {
-            virCommandAddArg(cmd, "-device");
+            if (input->type == VIR_DOMAIN_INPUT_TYPE_EVDEV)
+                virCommandAddArg(cmd, "-object");
+            else
+                virCommandAddArg(cmd, "-device");
             virCommandAddArg(cmd, devstr);
         }
     }
