@@ -11509,7 +11509,7 @@ qemuDomainOpenFile(virQEMUDriver *driver,
         (seclabel = virDomainDefGetSecurityLabelDef(vm->def, "dac")) != NULL &&
         seclabel->label != NULL &&
         (virParseOwnershipIds(seclabel->label, &user, &group) < 0))
-        return -1;
+        return -EINVAL;
 
     return virQEMUFileOpenAs(user, group, dynamicOwnership,
                              path, oflags, needUnlink);
