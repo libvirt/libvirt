@@ -723,15 +723,22 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
             return -1;
     }
 
-    if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, priv->qemuCaps)))
-        return -1;
-
     qemuDomainObjEnterMonitor(driver, vm);
 
     rc = qemuBlockStorageSourceChainAttach(priv->mon, data);
 
-    if (rc == 0 &&
-        (rc = qemuDomainAttachExtensionDevice(priv->mon, &disk->info)) == 0)
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return -2;
+
+    if (rc < 0)
+        goto rollback;
+
+    if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, priv->qemuCaps)))
+        goto rollback;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    if ((rc = qemuDomainAttachExtensionDevice(priv->mon, &disk->info)) == 0)
         extensionDeviceAttached = true;
 
     if (rc == 0)
