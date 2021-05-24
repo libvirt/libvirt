@@ -232,12 +232,16 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
         return NULL;
     }
 
-    if (!(*daemon_path = virFileFindResourceFull(daemon_name,
-                                                 NULL, NULL,
-                                                 abs_top_builddir "/src",
-                                                 SBINDIR,
-                                                 env_name)))
-        return NULL;
+    if (flags & REMOTE_DRIVER_OPEN_AUTOSTART) {
+        if (!(*daemon_path = virFileFindResourceFull(daemon_name,
+                                                     NULL, NULL,
+                                                     abs_top_builddir "/src",
+                                                     SBINDIR,
+                                                     env_name)))
+            return NULL;
+    } else {
+        *daemon_path = NULL;
+    }
 
     VIR_DEBUG("Chosen UNIX sockname=%s daemon_path=%s with mode=%s",
               sock_name, NULLSTR(*daemon_path),
