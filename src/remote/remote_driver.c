@@ -891,10 +891,33 @@ doRemoteOpen(virConnectPtr conn,
             goto failed;
         }
     } else {
-        /* Historically we didn't allow ssh tunnel with session mode,
-         * since we can't construct the accurate path remotely,
-         * so we can default to modern virt-ssh-helper */
-        if (flags & VIR_DRV_OPEN_REMOTE_USER)
+        /*
+         * Goal is to maximise usage of virt-ssh-helper
+         *
+         * Historically tunnelling access for the session mode
+         * daemon did not automatically work, since we can't
+         * construct the accurate path remotely. Users could,
+         * however, specify the 'socket' URI parameter explicitly.
+         *
+         * If we see a 'socket' path we must always use netcat,
+         * since virt-ssh-helper won't handle an explicit socket.
+         * Autostart won't work for session mode, so we assume
+         * user started it manually on the remote host in this
+         * case.
+         *
+         * If we have a 'session' URI without explicit socket,
+         * we can just assume the use of virt-ssh-helper, since
+         * logic for constructing socket paths relies on env
+         * envs whose values have no guarantee of matching those
+         * on the remote host. It was explicitly blocked with an
+         * error check before virt-ssh-helper was introduced.
+         *
+         * For 'system' URIs, we need to try virt-ssh-helper but
+         * with fallback to netcat for back compat.
+         */
+        if (sockname)
+            proxy = VIR_NET_CLIENT_PROXY_NETCAT;
+        else if (flags & VIR_DRV_OPEN_REMOTE_USER)
             proxy = VIR_NET_CLIENT_PROXY_NATIVE;
         else
             proxy = VIR_NET_CLIENT_PROXY_AUTO;
