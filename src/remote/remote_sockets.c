@@ -101,13 +101,12 @@ remoteSplitURIScheme(virURI *uri,
 static char *
 remoteGetUNIXSocketHelper(remoteDriverTransport transport,
                           const char *sock_prefix,
-                          bool ro,
-                          bool session)
+                          unsigned int flags)
 {
     char *sockname = NULL;
     g_autofree char *userdir = NULL;
 
-    if (session) {
+    if (flags & REMOTE_DRIVER_OPEN_USER) {
         userdir = virGetUserRuntimeDirectory();
 
         sockname = g_strdup_printf("%s/%s-sock", userdir, sock_prefix);
@@ -120,13 +119,14 @@ remoteGetUNIXSocketHelper(remoteDriverTransport transport,
          */
         sockname = g_strdup_printf("%s/run/libvirt/%s-%s", LOCALSTATEDIR,
                                    sock_prefix,
-                                   ro ? "sock-ro" : "sock");
+                                   flags & REMOTE_DRIVER_OPEN_RO ?
+                                   "sock-ro" : "sock");
     }
 
     VIR_DEBUG("Built UNIX sockname=%s for transport=%s "
-              "prefix=%s ro=%d session=%d",
+              "prefix=%s flags=0x%x",
               sockname, remoteDriverTransportTypeToString(transport),
-              sock_prefix, ro, session);
+              sock_prefix, flags);
     return sockname;
 }
 
@@ -135,8 +135,7 @@ char *
 remoteGetUNIXSocket(remoteDriverTransport transport,
                     remoteDriverMode mode,
                     const char *driver,
-                    bool ro,
-                    bool session,
+                    unsigned int flags,
                     char **daemon)
 {
     char *sock_name = NULL;
@@ -145,10 +144,10 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
     g_autofree char *direct_sock_name = NULL;
     g_autofree char *legacy_sock_name = NULL;
 
-    VIR_DEBUG("Choosing remote socket for transport=%s mode=%s driver=%s ro=%d session=%d",
+    VIR_DEBUG("Choosing remote socket for transport=%s mode=%s driver=%s flags=0x%x",
               remoteDriverTransportTypeToString(transport),
               remoteDriverModeTypeToString(mode),
-              driver, ro, session);
+              driver, flags);
 
     if (driver)
         direct_daemon = g_strdup_printf("virt%sd", driver);
@@ -156,9 +155,9 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
     legacy_daemon = g_strdup("libvirtd");
 
     if (driver)
-        direct_sock_name = remoteGetUNIXSocketHelper(transport, direct_daemon, ro, session);
+        direct_sock_name = remoteGetUNIXSocketHelper(transport, direct_daemon, flags);
 
-    legacy_sock_name = remoteGetUNIXSocketHelper(transport, "libvirt", ro, session);
+    legacy_sock_name = remoteGetUNIXSocketHelper(transport, "libvirt", flags);
 
     if (mode == REMOTE_DRIVER_MODE_AUTO) {
         if (transport == REMOTE_DRIVER_TRANSPORT_UNIX) {
@@ -221,13 +220,11 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
 void
 remoteGetURIDaemonInfo(virURI *uri,
                        remoteDriverTransport transport,
-                       bool *session,
-                       bool *autostart)
+                       unsigned int *flags)
 {
     const char *autostart_str = getenv("LIBVIRT_AUTOSTART");
 
-    *session = false;
-    *autostart = false;
+    *flags = 0;
 
     /*
      * User session daemon is used for
@@ -244,7 +241,7 @@ remoteGetURIDaemonInfo(virURI *uri,
          STRPREFIX(uri->scheme, "test+")) &&
         geteuid() > 0) {
         VIR_DEBUG("User session daemon required");
-        *session = true;
+        *flags |= REMOTE_DRIVER_OPEN_USER;
 
         /*
          * Furthermore if no servername is given,
@@ -256,7 +253,7 @@ remoteGetURIDaemonInfo(virURI *uri,
             (!autostart_str ||
              STRNEQ(autostart_str, "0"))) {
             VIR_DEBUG("Try daemon autostart");
-            *autostart = true;
+            *flags |= REMOTE_DRIVER_OPEN_AUTOSTART;
         }
     }
 
@@ -268,10 +265,10 @@ remoteGetURIDaemonInfo(virURI *uri,
         VIR_DEBUG("Auto-probe remote URI");
         if (geteuid() > 0) {
             VIR_DEBUG("Auto-spawn user daemon instance");
-            *session = true;
+            *flags |= REMOTE_DRIVER_OPEN_USER;
             if (!autostart_str ||
                 STRNEQ(autostart_str, "0"))
-                *autostart = true;
+                *flags |= REMOTE_DRIVER_OPEN_AUTOSTART;
         }
     }
 }

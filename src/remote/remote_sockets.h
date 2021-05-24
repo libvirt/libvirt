@@ -66,12 +66,10 @@ char *
 remoteGetUNIXSocket(remoteDriverTransport transport,
                     remoteDriverMode mode,
                     const char *driver,
-                    bool ro,
-                    bool session,
+                    unsigned int flags, /* remoteDriverOpenFlags */
                     char **daemon);
 
 void
 remoteGetURIDaemonInfo(virURI *uri,
                        remoteDriverTransport transport,
-                       bool *session,
-                       bool *autostart);
+                       unsigned int *flags); /* remoteDriverOpenFlags */

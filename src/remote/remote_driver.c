@@ -942,9 +942,7 @@ doRemoteOpen(virConnectPtr conn,
     case REMOTE_DRIVER_TRANSPORT_LIBSSH2:
         if (!sockname &&
             !(sockname = remoteGetUNIXSocket(transport, mode, driver_str,
-                                             flags & REMOTE_DRIVER_OPEN_RO,
-                                             flags & REMOTE_DRIVER_OPEN_USER,
-                                             &daemon_name)))
+                                             flags, &daemon_name)))
             goto failed;
         break;
 
@@ -1257,9 +1255,7 @@ remoteConnectOpen(virConnectPtr conn,
 {
     struct private_data *priv;
     int ret = VIR_DRV_OPEN_ERROR;
-    int rflags = 0;
-    bool user;
-    bool autostart;
+    unsigned int rflags = 0;
     char *driver = NULL;
     remoteDriverTransport transport;
 
@@ -1295,14 +1291,10 @@ remoteConnectOpen(virConnectPtr conn,
     if (!(priv = remoteAllocPrivateData()))
         goto cleanup;
 
+
+    remoteGetURIDaemonInfo(conn->uri, transport, &rflags);
     if (flags & VIR_CONNECT_RO)
         rflags |= REMOTE_DRIVER_OPEN_RO;
-
-    remoteGetURIDaemonInfo(conn->uri, transport, &user, &autostart);
-    if (user)
-        rflags |= REMOTE_DRIVER_OPEN_USER;
-    if (autostart)
-        rflags |= REMOTE_DRIVER_OPEN_AUTOSTART;
 
     ret = doRemoteOpen(conn, priv, driver, transport, auth, conf, rflags);
     if (ret != VIR_DRV_OPEN_SUCCESS) {
