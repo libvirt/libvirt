@@ -48,6 +48,13 @@ typedef enum {
     REMOTE_DRIVER_MODE_LAST
 } remoteDriverMode;
 
+typedef enum {
+    REMOTE_DRIVER_OPEN_RO = (1 << 0), /* Use the read-only socket path */
+    REMOTE_DRIVER_OPEN_USER = (1 << 1), /* Use the per-user socket path */
+    REMOTE_DRIVER_OPEN_AUTOSTART = (1 << 2), /* Autostart a per-user daemon */
+} remoteDriverOpenFlags;
+
+
 VIR_ENUM_DECL(remoteDriverMode);
 
 int

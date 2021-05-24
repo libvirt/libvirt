@@ -650,12 +650,6 @@ static virNetClientProgramEvent qemuEvents[] = {
       (xdrproc_t)xdr_qemu_domain_monitor_event_msg },
 };
 
-enum virDrvOpenRemoteFlags {
-    VIR_DRV_OPEN_REMOTE_RO = (1 << 0),
-    VIR_DRV_OPEN_REMOTE_USER      = (1 << 1), /* Use the per-user socket path */
-    VIR_DRV_OPEN_REMOTE_AUTOSTART = (1 << 2), /* Autostart a per-user daemon */
-};
-
 
 static void
 remoteClientCloseFunc(virNetClient *client G_GNUC_UNUSED,
@@ -917,7 +911,7 @@ doRemoteOpen(virConnectPtr conn,
          */
         if (sockname)
             proxy = VIR_NET_CLIENT_PROXY_NETCAT;
-        else if (flags & VIR_DRV_OPEN_REMOTE_USER)
+        else if (flags & REMOTE_DRIVER_OPEN_USER)
             proxy = VIR_NET_CLIENT_PROXY_NATIVE;
         else
             proxy = VIR_NET_CLIENT_PROXY_AUTO;
@@ -948,8 +942,8 @@ doRemoteOpen(virConnectPtr conn,
     case REMOTE_DRIVER_TRANSPORT_LIBSSH2:
         if (!sockname &&
             !(sockname = remoteGetUNIXSocket(transport, mode, driver_str,
-                                             flags & VIR_DRV_OPEN_REMOTE_RO,
-                                             flags & VIR_DRV_OPEN_REMOTE_USER,
+                                             flags & REMOTE_DRIVER_OPEN_RO,
+                                             flags & REMOTE_DRIVER_OPEN_USER,
                                              &daemon_name)))
             goto failed;
         break;
@@ -1011,7 +1005,7 @@ doRemoteOpen(virConnectPtr conn,
                                               netcat,
                                               sockname,
                                               name,
-                                              flags & VIR_DRV_OPEN_REMOTE_RO,
+                                              flags & REMOTE_DRIVER_OPEN_RO,
                                               auth,
                                               conn->uri);
         if (!priv->client)
@@ -1035,7 +1029,7 @@ doRemoteOpen(virConnectPtr conn,
                                              netcat,
                                              sockname,
                                              name,
-                                             flags & VIR_DRV_OPEN_REMOTE_RO,
+                                             flags & REMOTE_DRIVER_OPEN_RO,
                                              auth,
                                              conn->uri);
         if (!priv->client)
@@ -1046,7 +1040,7 @@ doRemoteOpen(virConnectPtr conn,
 
 #ifndef WIN32
     case REMOTE_DRIVER_TRANSPORT_UNIX:
-        if (flags & VIR_DRV_OPEN_REMOTE_AUTOSTART) {
+        if (flags & REMOTE_DRIVER_OPEN_AUTOSTART) {
             const char *env_name = remoteGetDaemonPathEnv();
             if (!(daemonPath = virFileFindResourceFull(daemon_name,
                                                        NULL, NULL,
@@ -1057,7 +1051,7 @@ doRemoteOpen(virConnectPtr conn,
         }
 
         if (!(priv->client = virNetClientNewUNIX(sockname,
-                                                 flags & VIR_DRV_OPEN_REMOTE_AUTOSTART,
+                                                 flags & REMOTE_DRIVER_OPEN_AUTOSTART,
                                                  daemonPath)))
             goto failed;
 
@@ -1079,7 +1073,7 @@ doRemoteOpen(virConnectPtr conn,
                                                 netcat,
                                                 sockname,
                                                 name,
-                                                flags & VIR_DRV_OPEN_REMOTE_RO)))
+                                                flags & REMOTE_DRIVER_OPEN_RO)))
             goto failed;
 
         priv->is_secure = 1;
@@ -1302,13 +1296,13 @@ remoteConnectOpen(virConnectPtr conn,
         goto cleanup;
 
     if (flags & VIR_CONNECT_RO)
-        rflags |= VIR_DRV_OPEN_REMOTE_RO;
+        rflags |= REMOTE_DRIVER_OPEN_RO;
 
     remoteGetURIDaemonInfo(conn->uri, transport, &user, &autostart);
     if (user)
-        rflags |= VIR_DRV_OPEN_REMOTE_USER;
+        rflags |= REMOTE_DRIVER_OPEN_USER;
     if (autostart)
-        rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
+        rflags |= REMOTE_DRIVER_OPEN_AUTOSTART;
 
     ret = doRemoteOpen(conn, priv, driver, transport, auth, conf, rflags);
     if (ret != VIR_DRV_OPEN_SUCCESS) {
