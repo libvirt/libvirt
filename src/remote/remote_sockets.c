@@ -155,12 +155,10 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
 
     legacy_daemon = g_strdup("libvirtd");
 
-    if (driver &&
-        !(direct_sock_name = remoteGetUNIXSocketHelper(transport, direct_daemon, ro, session)))
-        return NULL;
+    if (driver)
+        direct_sock_name = remoteGetUNIXSocketHelper(transport, direct_daemon, ro, session);
 
-    if (!(legacy_sock_name = remoteGetUNIXSocketHelper(transport, "libvirt", ro, session)))
-        return NULL;
+    legacy_sock_name = remoteGetUNIXSocketHelper(transport, "libvirt", ro, session);
 
     if (mode == REMOTE_DRIVER_MODE_AUTO) {
         if (transport == REMOTE_DRIVER_TRANSPORT_UNIX) {
