@@ -1948,73 +1948,6 @@ void *remoteClientNew(virNetServerClient *client,
 
 /*----- Functions. -----*/
 
-#ifdef VIRTPROXYD
-/*
- * When running in virtproxyd regular auto-probing of drivers
- * does not work as we don't have any drivers present (except
- * stateless ones inside libvirt.so). All the interesting
- * drivers are in separate daemons. Thus when we get a NULL
- * URI we need to simulate probing that virConnectOpen would
- * previously do. We use the existence of the UNIX domain
- * socket as our hook for probing.
- *
- * This assumes no stale sockets left over from a now dead
- * daemon, but that's reasonable since libvirtd unlinks
- * sockets it creates on shutdown, or uses systemd activation
- *
- * We only try to probe for primary hypervisor drivers,
- * not the secondary drivers.
- */
-static int
-remoteDispatchProbeURI(bool readonly,
-                       char **probeduri)
-{
-    g_autofree char *driver = NULL;
-    const char *suffix;
-    *probeduri = NULL;
-    VIR_DEBUG("Probing for driver daemon sockets");
-
-    /*
-     * If running root, either the daemon is running and the socket
-     * exists, or we're using socket activation so the socket exists
-     * too.
-     *
-     * If running non-root, the daemon may or may not already be
-     * running, and socket activation probably isn't relevant.
-     * So if no viable socket exists, we need to check which daemons
-     * are actually installed. This is not a big deal as only QEMU &
-     * VBox run as non-root, anyway.
-     */
-    if (geteuid() != 0) {
-        if (remoteProbeSessionDriverFromSocket(false, &driver) < 0)
-            return -1;
-
-        if (driver == NULL &&
-            remoteProbeSessionDriverFromBinary(&driver) < 0)
-            return -1;
-
-        suffix = "session";
-    } else {
-        if (remoteProbeSystemDriverFromSocket(readonly, &driver) < 0)
-            return -1;
-
-        suffix = "system";
-    }
-
-    /* Even if we didn't probe any socket, we won't
-     * return error. Just let virConnectOpen's normal
-     * logic run which will likely return an error anyway
-     */
-    if (!driver)
-        return 0;
-
-    *probeduri = g_strdup_printf("%s:///%s", driver, suffix);
-    VIR_DEBUG("Probed URI %s for driver %s", *probeduri, driver);
-    return 0;
-}
-#endif /* VIRTPROXYD */
-
-
 static int
 remoteDispatchConnectOpen(virNetServer *server G_GNUC_UNUSED,
                           virNetServerClient *client,
@@ -2023,9 +1956,6 @@ remoteDispatchConnectOpen(virNetServer *server G_GNUC_UNUSED,
                           struct remote_connect_open_args *args)
 {
     const char *name;
-#ifdef VIRTPROXYD
-    g_autofree char *probeduri = NULL;
-#endif
     unsigned int flags;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
     int rv = -1;
@@ -2054,13 +1984,6 @@ remoteDispatchConnectOpen(virNetServer *server G_GNUC_UNUSED,
     priv->readonly = flags & VIR_CONNECT_RO;
 
 #ifdef VIRTPROXYD
-    if (!name || STREQ(name, "")) {
-        if (remoteDispatchProbeURI(priv->readonly, &probeduri) < 0)
-            goto cleanup;
-
-        name = probeduri;
-    }
-
     preserveIdentity = true;
 #endif /* VIRTPROXYD */
 
