@@ -66,4 +66,4 @@ Internals / Debugging
 
 `VM migration internals <migrationinternals.html>`__
    VM migration implementation details, complementing the info in
-   `migration <migration.html>`__
+   `migration <../migration.html>`__
