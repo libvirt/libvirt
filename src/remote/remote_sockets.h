@@ -67,7 +67,7 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
                     remoteDriverMode mode,
                     const char *driver,
                     unsigned int flags, /* remoteDriverOpenFlags */
-                    char **daemon);
+                    char **daemon_path);
 
 void
 remoteGetURIDaemonInfo(virURI *uri,

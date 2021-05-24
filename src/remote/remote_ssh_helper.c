@@ -358,7 +358,7 @@ int main(int argc, char **argv)
     gboolean version = false;
     gboolean readonly = false;
     g_autofree char *sock_path = NULL;
-    g_autofree char *daemon_name = NULL;
+    g_autofree char *daemon_path = NULL;
     g_autoptr(virNetSocket) sock = NULL;
     GError *error = NULL;
     g_autoptr(GOptionContext) context = NULL;
@@ -429,10 +429,10 @@ int main(int argc, char **argv)
                                     REMOTE_DRIVER_MODE_AUTO,
                                     driver,
                                     flags,
-                                    &daemon_name);
+                                    &daemon_path);
 
     if (virNetSocketNewConnectUNIX(sock_path, flags & REMOTE_DRIVER_OPEN_AUTOSTART,
-                                   daemon_name, &sock) < 0) {
+                                   daemon_path, &sock) < 0) {
         g_printerr(_("%s: cannot connect to '%s': %s\n"),
                    argv[0], sock_path, virGetLastErrorMessage());
         exit(EXIT_FAILURE);

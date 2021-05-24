@@ -47,6 +47,22 @@ VIR_ENUM_IMPL(remoteDriverMode,
               "legacy",
               "direct");
 
+#ifndef WIN32
+static const char *
+remoteGetDaemonPathEnv(void)
+{
+    /* We prefer a VIRTD_PATH env var to use for all daemons,
+     * but if it is not set we will fallback to LIBVIRTD_PATH
+     * for previous behaviour
+     */
+    if (getenv("VIRTD_PATH") != NULL) {
+        return "VIRTD_PATH";
+    } else {
+        return "LIBVIRTD_PATH";
+    }
+}
+#endif /* WIN32 */
+
 
 int
 remoteSplitURIScheme(virURI *uri,
@@ -136,13 +152,19 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
                     remoteDriverMode mode,
                     const char *driver,
                     unsigned int flags,
-                    char **daemon)
+                    char **daemon_path)
 {
     char *sock_name = NULL;
     g_autofree char *direct_daemon = NULL;
     g_autofree char *legacy_daemon = NULL;
+    g_autofree char *daemon_name = NULL;
     g_autofree char *direct_sock_name = NULL;
     g_autofree char *legacy_sock_name = NULL;
+#ifndef WIN32
+    const char *env_name = remoteGetDaemonPathEnv();
+#else
+    const char *env_path = NULL;
+#endif
 
     VIR_DEBUG("Choosing remote socket for transport=%s mode=%s driver=%s flags=0x%x",
               remoteDriverTransportTypeToString(transport),
@@ -182,7 +204,7 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
     switch ((remoteDriverMode)mode) {
     case REMOTE_DRIVER_MODE_LEGACY:
         sock_name = g_steal_pointer(&legacy_sock_name);
-        *daemon = g_steal_pointer(&legacy_daemon);
+        daemon_name = g_steal_pointer(&legacy_daemon);
         break;
 
     case REMOTE_DRIVER_MODE_DIRECT:
@@ -200,7 +222,7 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
         }
 
         sock_name = g_steal_pointer(&direct_sock_name);
-        *daemon = g_steal_pointer(&direct_daemon);
+        daemon_name = g_steal_pointer(&direct_daemon);
         break;
 
     case REMOTE_DRIVER_MODE_AUTO:
@@ -210,8 +232,15 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
         return NULL;
     }
 
-    VIR_DEBUG("Chosen UNIX sockname=%s daemon=%s with mode=%s",
-              sock_name, NULLSTR(*daemon),
+    if (!(*daemon_path = virFileFindResourceFull(daemon_name,
+                                                 NULL, NULL,
+                                                 abs_top_builddir "/src",
+                                                 SBINDIR,
+                                                 env_name)))
+        return NULL;
+
+    VIR_DEBUG("Chosen UNIX sockname=%s daemon_path=%s with mode=%s",
+              sock_name, NULLSTR(*daemon_path),
               remoteDriverModeTypeToString(mode));
     return sock_name;
 }
