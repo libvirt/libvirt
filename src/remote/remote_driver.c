@@ -780,20 +780,6 @@ doRemoteOpen(virConnectPtr conn,
     size_t i;
     int proxy;
 
-    if (inside_daemon && !conn->uri->server) {
-        mode = REMOTE_DRIVER_MODE_DIRECT;
-    } else {
-        mode = REMOTE_DRIVER_MODE_AUTO;
-    }
-
-    /* Historically we didn't allow ssh tunnel with session mode,
-     * since we can't construct the accurate path remotely,
-     * so we can default to modern virt-ssh-helper */
-    if (flags & VIR_DRV_OPEN_REMOTE_USER)
-        proxy = VIR_NET_CLIENT_PROXY_NATIVE;
-    else
-        proxy = VIR_NET_CLIENT_PROXY_AUTO;
-
     /* We handle *ALL* URIs here. The caller has rejected any
      * URIs we don't care about */
 
@@ -880,22 +866,38 @@ doRemoteOpen(virConnectPtr conn,
         virConfGetValueString(conf, "remote_mode", &mode_str) < 0)
         goto failed;
 
-    if (mode_str &&
-        (mode = remoteDriverModeTypeFromString(mode_str)) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Unknown remote mode '%s'"), mode_str);
-        goto failed;
+    if (mode_str) {
+        if ((mode = remoteDriverModeTypeFromString(mode_str)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Unknown remote mode '%s'"), mode_str);
+            goto failed;
+        }
+    } else {
+        if (inside_daemon && !conn->uri->server) {
+            mode = REMOTE_DRIVER_MODE_DIRECT;
+        } else {
+            mode = REMOTE_DRIVER_MODE_AUTO;
+        }
     }
 
     if (conf && !proxy_str &&
         virConfGetValueString(conf, "remote_proxy", &proxy_str) < 0)
         goto failed;
 
-    if (proxy_str &&
-        (proxy = virNetClientProxyTypeFromString(proxy_str)) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Unnkown proxy type '%s'"), proxy_str);
-        goto failed;
+    if (proxy_str) {
+        if ((proxy = virNetClientProxyTypeFromString(proxy_str)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Unnkown proxy type '%s'"), proxy_str);
+            goto failed;
+        }
+    } else {
+        /* Historically we didn't allow ssh tunnel with session mode,
+         * since we can't construct the accurate path remotely,
+         * so we can default to modern virt-ssh-helper */
+        if (flags & VIR_DRV_OPEN_REMOTE_USER)
+            proxy = VIR_NET_CLIENT_PROXY_NATIVE;
+        else
+            proxy = VIR_NET_CLIENT_PROXY_AUTO;
     }
 
     /* Sanity check that nothing requested !direct mode by mistake */
