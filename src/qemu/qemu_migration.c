@@ -3761,8 +3761,7 @@ qemuMigrationSrcConnect(virQEMUDriver *driver,
         break;
     case MIGRATION_DEST_CONNECT_SOCKET:
         if (virNetSocketNewConnectUNIX(spec->dest.socket.path,
-                                       false, NULL,
-                                       &sock) == 0) {
+                                       NULL, &sock) == 0) {
             fd_qemu = virNetSocketDupFD(sock, true);
             virObjectUnref(sock);
         }

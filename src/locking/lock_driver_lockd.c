@@ -208,7 +208,6 @@ static virNetClient *virLockManagerLockDaemonConnectionNew(bool privileged,
         goto error;
 
     if (!(client = virNetClientNewUNIX(lockdpath,
-                                       daemonPath != NULL,
                                        daemonPath)))
         goto error;
 

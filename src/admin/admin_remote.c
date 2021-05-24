@@ -222,7 +222,7 @@ remoteAdminPrivNew(const char *sock_path)
     if (!(priv = virObjectLockableNew(remoteAdminPrivClass)))
         goto error;
 
-    if (!(priv->client = virNetClientNewUNIX(sock_path, false, NULL)))
+    if (!(priv->client = virNetClientNewUNIX(sock_path, NULL)))
         goto error;
 
     if (!(priv->program = virNetClientProgramNew(ADMIN_PROGRAM,

@@ -366,12 +366,11 @@ virNetClientFindDefaultSshKey(const char *homedir, char **retPath)
 
 
 virNetClient *virNetClientNewUNIX(const char *path,
-                                    bool spawnDaemon,
-                                    const char *binary)
+                                  const char *spawnDaemonPath)
 {
     virNetSocket *sock;
 
-    if (virNetSocketNewConnectUNIX(path, spawnDaemon, binary, &sock) < 0)
+    if (virNetSocketNewConnectUNIX(path, spawnDaemonPath, &sock) < 0)
         return NULL;
 
     return virNetClientNew(sock, NULL);

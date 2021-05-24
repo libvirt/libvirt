@@ -151,7 +151,7 @@ virLXCMonitor *virLXCMonitorNew(virDomainObj *vm,
 
     sockpath = g_strdup_printf("%s/%s.sock", socketdir, vm->def->name);
 
-    if (!(mon->client = virNetClientNewUNIX(sockpath, false, NULL)))
+    if (!(mon->client = virNetClientNewUNIX(sockpath, NULL)))
         goto error;
 
     if (virNetClientRegisterAsyncIO(mon->client) < 0)

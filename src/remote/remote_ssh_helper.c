@@ -431,8 +431,7 @@ int main(int argc, char **argv)
                                     flags,
                                     &daemon_path);
 
-    if (virNetSocketNewConnectUNIX(sock_path, flags & REMOTE_DRIVER_OPEN_AUTOSTART,
-                                   daemon_path, &sock) < 0) {
+    if (virNetSocketNewConnectUNIX(sock_path, daemon_path, &sock) < 0) {
         g_printerr(_("%s: cannot connect to '%s': %s\n"),
                    argv[0], sock_path, virGetLastErrorMessage());
         exit(EXIT_FAILURE);

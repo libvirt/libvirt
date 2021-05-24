@@ -79,7 +79,6 @@ virLogManagerConnect(bool privileged,
         goto error;
 
     if (!(client = virNetClientNewUNIX(logdpath,
-                                       daemonPath != NULL,
                                        daemonPath)))
         goto error;
 

@@ -65,8 +65,7 @@ int virNetSocketNewConnectTCP(const char *nodename,
                               virNetSocket **addr);
 
 int virNetSocketNewConnectUNIX(const char *path,
-                               bool spawnDaemon,
-                               const char *binary,
+                               const char *spawnDaemonPath,
                                virNetSocket **addr);
 
 int virNetSocketNewConnectCommand(virCommand *cmd,

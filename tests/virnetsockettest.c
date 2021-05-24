@@ -131,7 +131,7 @@ testSocketClient(void *opaque)
     virNetSocket *csock = NULL;
 
     if (data->path) {
-        if (virNetSocketNewConnectUNIX(data->path, false,
+        if (virNetSocketNewConnectUNIX(data->path,
                                        NULL, &csock) < 0)
             return;
     } else {
@@ -339,7 +339,7 @@ static int testSocketUNIXAddrs(const void *data G_GNUC_UNUSED)
     if (virNetSocketListen(lsock, 0) < 0)
         goto cleanup;
 
-    if (virNetSocketNewConnectUNIX(path, false, NULL, &csock) < 0)
+    if (virNetSocketNewConnectUNIX(path, NULL, &csock) < 0)
         goto cleanup;
 
     if (STRNEQ(virNetSocketLocalAddrStringSASL(csock), "127.0.0.1;0")) {

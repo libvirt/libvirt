@@ -1022,7 +1022,6 @@ doRemoteOpen(virConnectPtr conn,
 #ifndef WIN32
     case REMOTE_DRIVER_TRANSPORT_UNIX:
         if (!(priv->client = virNetClientNewUNIX(sockname,
-                                                 flags & REMOTE_DRIVER_OPEN_AUTOSTART,
                                                  daemon_path)))
             goto failed;
 

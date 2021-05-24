@@ -664,8 +664,7 @@ int virNetSocketNewConnectTCP(const char *nodename,
 
 #ifndef WIN32
 int virNetSocketNewConnectUNIX(const char *path,
-                               bool spawnDaemon,
-                               const char *binary,
+                               const char *spawnDaemonPath,
                                virNetSocket **retsock)
 {
     char *lockpath = NULL;
@@ -678,25 +677,15 @@ int virNetSocketNewConnectUNIX(const char *path,
     int ret = -1;
     bool daemonLaunched = false;
 
-    VIR_DEBUG("path=%s spawnDaemon=%d binary=%s", path, spawnDaemon,
-        NULLSTR(binary));
+    VIR_DEBUG("path=%s spawnDaemonPath=%s", path, NULLSTR(spawnDaemonPath));
 
     memset(&localAddr, 0, sizeof(localAddr));
     memset(&remoteAddr, 0, sizeof(remoteAddr));
 
     remoteAddr.len = sizeof(remoteAddr.data.un);
 
-    if (spawnDaemon) {
-        g_autofree char *binname = NULL;
-
-        if (!binary) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Auto-spawn of daemon requested, "
-                             "but no binary specified"));
-            goto cleanup;
-        }
-
-        binname = g_path_get_basename(binary);
+    if (spawnDaemonPath) {
+        g_autofree char *binname = g_path_get_basename(spawnDaemonPath);
         rundir = virGetUserRuntimeDirectory();
 
         if (g_mkdir_with_parents(rundir, 0700) < 0) {
@@ -741,7 +730,7 @@ int virNetSocketNewConnectUNIX(const char *path,
         VIR_DEBUG("connect() failed: retries=%d errno=%d", retries, errno);
 
         retries--;
-        if (!spawnDaemon ||
+        if (!spawnDaemonPath ||
             retries == 0 ||
             (errno != ENOENT && errno != ECONNREFUSED)) {
             virReportSystemError(errno, _("Failed to connect socket to '%s'"),
@@ -750,7 +739,7 @@ int virNetSocketNewConnectUNIX(const char *path,
         }
 
         if (!daemonLaunched) {
-            if (virNetSocketForkDaemon(binary) < 0)
+            if (virNetSocketForkDaemon(spawnDaemonPath) < 0)
                 goto cleanup;
 
             daemonLaunched = true;
@@ -785,8 +774,7 @@ int virNetSocketNewConnectUNIX(const char *path,
 }
 #else
 int virNetSocketNewConnectUNIX(const char *path G_GNUC_UNUSED,
-                               bool spawnDaemon G_GNUC_UNUSED,
-                               const char *binary G_GNUC_UNUSED,
+                               const char *spawnDaemonPath,
                                virNetSocket **retsock G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",

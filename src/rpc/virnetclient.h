@@ -48,8 +48,7 @@ virNetClientSSHHelperCommand(virNetClientProxy proxy,
                              bool readonly);
 
 virNetClient *virNetClientNewUNIX(const char *path,
-                                    bool spawnDaemon,
-                                    const char *binary);
+                                  const char *spawnDaemonPath);
 
 virNetClient *virNetClientNewTCP(const char *nodename,
                                    const char *service,
