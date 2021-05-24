@@ -146,6 +146,145 @@ remoteGetUNIXSocketHelper(remoteDriverTransport transport,
     return sockname;
 }
 
+/*
+ * Determine which driver is probably usable based on
+ * which modular daemon binaries are installed.
+ */
+int
+remoteProbeSessionDriverFromBinary(char **driver)
+{
+    /* Order these the same as virDriverLoadModule
+     * calls in daemonInitialize, so we replicate
+     * probing order that virConnectOpen would use
+     * if running inside libvirtd */
+    const char *drivers[] = {
+#ifdef WITH_QEMU
+        "qemu",
+#endif
+#ifdef WITH_VBOX
+        "vbox",
+#endif
+    };
+    ssize_t i;
+
+    VIR_DEBUG("Probing for driver from daemon binaries");
+
+    *driver = NULL;
+
+    for (i = 0; i < (ssize_t) G_N_ELEMENTS(drivers); i++) {
+        g_autofree char *daemonname = NULL;
+        g_autofree char *daemonpath = NULL;
+
+        daemonname = g_strdup_printf("virt%sd", drivers[i]);
+        VIR_DEBUG("Probing driver '%s' via daemon %s", drivers[i], daemonpath);
+
+        if (!(daemonpath = virFileFindResource(daemonname,
+                                               abs_top_builddir "/src",
+                                               SBINDIR)))
+            return -1;
+
+        if (virFileExists(daemonpath)) {
+            VIR_DEBUG("Found driver '%s' via daemon %s", drivers[i], daemonpath);
+            *driver = g_strdup(drivers[i]);
+            return 0;
+        }
+
+        VIR_DEBUG("Missing daemon %s for driver %s", daemonpath, drivers[i]);
+    }
+
+    VIR_DEBUG("No more drivers to probe for");
+    return 0;
+}
+
+
+int
+remoteProbeSystemDriverFromSocket(bool readonly, char **driver)
+{
+    /* Order these the same as virDriverLoadModule
+     * calls in daemonInitialize, so we replicate
+     * probing order that virConnectOpen would use
+     * if running inside libvirtd */
+    const char *drivers[] = {
+#ifdef WITH_LIBXL
+        "xen",
+#endif
+#ifdef WITH_QEMU
+        "qemu",
+#endif
+#ifdef WITH_LXC
+        "lxc",
+#endif
+#ifdef WITH_VBOX
+        "vbox",
+#endif
+#ifdef WITH_BHYVE
+        "bhyve",
+#endif
+#ifdef WITH_VZ
+        "vz",
+#endif
+    };
+    ssize_t i;
+
+    for (i = 0; i < (ssize_t) G_N_ELEMENTS(drivers); i++) {
+        g_autofree char *sockname =
+            g_strdup_printf("%s/libvirt/virt%sd-%s", RUNSTATEDIR,
+                            drivers[i], readonly ? "sock-ro" : "sock");
+
+        if (virFileExists(sockname)) {
+            VIR_DEBUG("Probed driver '%s' via sock '%s'", drivers[i], sockname);
+            *driver = g_strdup(drivers[i]);
+            return 0;
+        }
+
+        VIR_DEBUG("Missing sock %s for driver %s", sockname, drivers[i]);
+    }
+
+    /* Even if we didn't probe any socket, we won't
+     * return error. Just let virConnectOpen's normal
+     * logic run which will likely return an error anyway
+     */
+    VIR_DEBUG("No more drivers to probe for");
+    return 0;
+}
+
+int
+remoteProbeSessionDriverFromSocket(bool readonly, char **driver)
+{
+    /* Order these the same as virDriverLoadModule
+     * calls in daemonInitialize */
+    const char *drivers[] = {
+#ifdef WITH_QEMU
+        "qemu",
+#endif
+#ifdef WITH_VBOX
+        "vbox",
+#endif
+    };
+    ssize_t i;
+
+    for (i = 0; i < (ssize_t) G_N_ELEMENTS(drivers); i++) {
+        g_autofree char *userdir = virGetUserRuntimeDirectory();
+        g_autofree char *sockname =
+            g_strdup_printf("%s/virt%sd-%s",
+                            userdir, drivers[i], readonly ? "sock-ro" : "sock");
+
+        if (virFileExists(sockname)) {
+            VIR_DEBUG("Probed driver '%s' via sock '%s'", drivers[i], sockname);
+            *driver = g_strdup(drivers[i]);
+            return 0;
+        }
+
+        VIR_DEBUG("Missing sock %s for driver %s", sockname, drivers[i]);
+    }
+
+    /* Even if we didn't probe any socket, we won't
+     * return error. Just let virConnectOpen's normal
+     * logic run which will likely return an error anyway
+     */
+    VIR_DEBUG("No more drivers to probe for");
+    return 0;
+}
 
 char *
 remoteGetUNIXSocket(remoteDriverTransport transport,

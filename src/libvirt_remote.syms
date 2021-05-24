@@ -14,6 +14,11 @@ xdr_*;
 xdr_virNetMessageError;
 
 
+# remote/remote_sockets.h
+remoteProbeSessionDriverFromBinary;
+remoteProbeSessionDriverFromSocket;
+remoteProbeSystemDriverFromSocket;
+
 # rpc/virnetclient.h
 virNetClientAddProgram;
 virNetClientAddStream;

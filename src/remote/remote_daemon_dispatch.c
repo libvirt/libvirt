@@ -24,6 +24,7 @@
 
 #include "remote_daemon_dispatch.h"
 #include "remote_daemon.h"
+#include "remote_sockets.h"
 #include "libvirt_internal.h"
 #include "datatypes.h"
 #include "viralloc.h"
@@ -1968,6 +1969,8 @@ static int
 remoteDispatchProbeURI(bool readonly,
                        char **probeduri)
 {
+    g_autofree char *driver = NULL;
+    const char *suffix;
     *probeduri = NULL;
     VIR_DEBUG("Probing for driver daemon sockets");
 
@@ -1976,94 +1979,37 @@ remoteDispatchProbeURI(bool readonly,
      * exists, or we're using socket activation so the socket exists
      * too.
      *
-     * If running non-root, chances are that the daemon won't be
-     * running, nor any socket activation is used. We need to
-     * be able to auto-spawn the daemon. We thus just check to
-     * see what daemons are installed. This is not a big deal as
-     * only QEMU & VBox run as non-root, anyway.
+     * If running non-root, the daemon may or may not already be
+     * running, and socket activation probably isn't relevant.
+     * So if no viable socket exists, we need to check which daemons
+     * are actually installed. This is not a big deal as only QEMU &
+     * VBox run as non-root, anyway.
      */
     if (geteuid() != 0) {
-        /* Order these the same as virDriverLoadModule
-         * calls in daemonInitialize */
-        const char *drivers[] = {
-# ifdef WITH_QEMU
-            "qemu",
-# endif
-# ifdef WITH_VBOX
-            "vbox",
-# endif
-        };
-        ssize_t i;
+        if (remoteProbeSessionDriverFromSocket(false, &driver) < 0)
+            return -1;
 
-        for (i = 0; i < (ssize_t) G_N_ELEMENTS(drivers) && !*probeduri; i++) {
-            g_autofree char *daemonname = NULL;
-            g_autofree char *daemonpath = NULL;
+        if (driver == NULL &&
+            remoteProbeSessionDriverFromBinary(&driver) < 0)
+            return -1;
 
-            daemonname = g_strdup_printf("virt%sd", drivers[i]);
-
-            if (!(daemonpath = virFileFindResource(daemonname,
-                                                   abs_top_builddir "/src",
-                                                   SBINDIR)))
-                return -1;
-
-            if (!virFileExists(daemonpath)) {
-                VIR_DEBUG("Missing daemon %s for driver %s", daemonpath, drivers[i]);
-                continue;
-            }
-
-            *probeduri = g_strdup_printf("%s:///session", drivers[i]);
-
-            VIR_DEBUG("Probed URI %s via daemon %s", *probeduri, daemonpath);
-            return 0;
-        }
+        suffix = "session";
     } else {
-        /* Order these the same as virDriverLoadModule
-         * calls in daemonInitialize */
-        const char *drivers[] = {
-# ifdef WITH_LIBXL
-            "xen",
-# endif
-# ifdef WITH_QEMU
-            "qemu",
-# endif
-# ifdef WITH_LXC
-            "lxc",
-# endif
-# ifdef WITH_VBOX
-            "vbox",
-# endif
-# ifdef WITH_BHYVE
-            "bhyve",
-# endif
-# ifdef WITH_VZ
-            "vz",
-# endif
-        };
-        ssize_t i;
+        if (remoteProbeSystemDriverFromSocket(readonly, &driver) < 0)
+            return -1;
 
-        for (i = 0; i < (ssize_t) G_N_ELEMENTS(drivers) && !*probeduri; i++) {
-            g_autofree char *sockname = NULL;
-
-            sockname = g_strdup_printf("%s/libvirt/virt%sd-%s", RUNSTATEDIR,
-                                       drivers[i], readonly ? "sock-ro" : "sock");
-
-            if (!virFileExists(sockname)) {
-                VIR_DEBUG("Missing sock %s for driver %s", sockname, drivers[i]);
-                continue;
-            }
-
-            *probeduri = g_strdup_printf("%s:///system", drivers[i]);
-
-            VIR_DEBUG("Probed URI %s via sock %s", *probeduri, sockname);
-            return 0;
-        }
+        suffix = "system";
     }
 
     /* Even if we didn't probe any socket, we won't
      * return error. Just let virConnectOpen's normal
      * logic run which will likely return an error anyway
      */
-    VIR_DEBUG("No driver sock exists");
+    if (!driver)
+        return 0;
+
+    *probeduri = g_strdup_printf("%s:///%s", driver, suffix);
+    VIR_DEBUG("Probed URI %s for driver %s", *probeduri, driver);
     return 0;
 }
 #endif /* VIRTPROXYD */

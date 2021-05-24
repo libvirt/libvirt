@@ -62,6 +62,13 @@ remoteSplitURIScheme(virURI *uri,
                      char **driver,
                      remoteDriverTransport *transport);
 
+int
+remoteProbeSessionDriverFromBinary(char **driver);
+int
+remoteProbeSystemDriverFromSocket(bool readonly, char **driver);
+int
+remoteProbeSessionDriverFromSocket(bool readonly, char **driver);
+
 char *
 remoteGetUNIXSocket(remoteDriverTransport transport,
                     remoteDriverMode mode,
