@@ -2001,7 +2001,9 @@ remoteDispatchProbeURI(bool readonly,
 
             daemonname = g_strdup_printf("virt%sd", drivers[i]);
 
-            if (!(daemonpath = virFileFindResource(daemonname, "src", SBINDIR)))
+            if (!(daemonpath = virFileFindResource(daemonname,
+                                                   abs_top_builddir "/src",
+                                                   SBINDIR)))
                 return -1;
 
             if (!virFileExists(daemonpath)) {
