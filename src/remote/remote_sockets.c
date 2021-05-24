@@ -171,14 +171,15 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
               remoteDriverModeTypeToString(mode),
               driver, flags);
 
-    if (driver)
+    if (driver) {
         direct_daemon = g_strdup_printf("virt%sd", driver);
+        direct_sock_name = remoteGetUNIXSocketHelper(transport, direct_daemon, flags);
+    } else {
+        direct_daemon = g_strdup("virtproxyd");
+        direct_sock_name = remoteGetUNIXSocketHelper(transport, "libvirt", flags);
+    }
 
     legacy_daemon = g_strdup("libvirtd");
-
-    if (driver)
-        direct_sock_name = remoteGetUNIXSocketHelper(transport, direct_daemon, flags);
-
     legacy_sock_name = remoteGetUNIXSocketHelper(transport, "libvirt", flags);
 
     if (mode == REMOTE_DRIVER_MODE_AUTO) {
@@ -187,14 +188,12 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
                 mode = REMOTE_DRIVER_MODE_DIRECT;
             } else if (virFileExists(legacy_sock_name)) {
                 mode = REMOTE_DRIVER_MODE_LEGACY;
-            } else if (driver) {
+            } else {
                 /*
                  * This constant comes from the configure script and
                  * maps to either the direct or legacy mode constant
                  */
                 mode = REMOTE_DRIVER_MODE_DEFAULT;
-            } else {
-                mode = REMOTE_DRIVER_MODE_LEGACY;
             }
         } else {
             mode = REMOTE_DRIVER_MODE_LEGACY;
