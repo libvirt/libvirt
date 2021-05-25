@@ -299,6 +299,9 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
     g_autofree char *daemon_name = NULL;
     g_autofree char *direct_sock_name = NULL;
     g_autofree char *legacy_sock_name = NULL;
+#ifdef REMOTE_DRIVER_AUTOSTART_DIRECT
+    g_autofree char *guessdriver = NULL;
+#endif
 #ifndef WIN32
     const char *env_name = remoteGetDaemonPathEnv();
 #else
@@ -310,12 +313,35 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
               remoteDriverModeTypeToString(mode),
               driver, flags);
 
+#ifdef REMOTE_DRIVER_AUTOSTART_DIRECT
+    if (!driver && mode != REMOTE_DRIVER_MODE_LEGACY) {
+        VIR_DEBUG("Client side modular daemon probe");
+        /*
+         * If we don't have a driver (because URI is empty)
+         * in the direct case, we don't know which daemon
+         * to connect to. This logic attempts to be a rough
+         * equivalent of auto-probing from virConnectOpen
+         * in the libvirtd days.
+         */
+        if (geteuid() != 0) {
+            if (remoteProbeSessionDriverFromSocket(false, &guessdriver) < 0)
+                return NULL;
+
+            if (guessdriver == NULL &&
+                remoteProbeSessionDriverFromBinary(&guessdriver) < 0)
+                return NULL;
+        } else {
+            if (remoteProbeSystemDriverFromSocket(flags & REMOTE_DRIVER_OPEN_RO,
+                                                  &guessdriver) < 0)
+                return NULL;
+        }
+        driver = guessdriver;
+    }
+#endif
+
     if (driver) {
         direct_daemon = g_strdup_printf("virt%sd", driver);
         direct_sock_name = remoteGetUNIXSocketHelper(transport, direct_daemon, flags);
-    } else {
-        direct_daemon = g_strdup("virtproxyd");
-        direct_sock_name = remoteGetUNIXSocketHelper(transport, "libvirt", flags);
     }
 
     legacy_daemon = g_strdup("libvirtd");
@@ -323,18 +349,29 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
 
     if (mode == REMOTE_DRIVER_MODE_AUTO) {
         if (transport == REMOTE_DRIVER_TRANSPORT_UNIX) {
+            /*
+             * When locally accessing libvirtd, we pick legacy or
+             * modular daemons depending on which sockets we see
+             * existing.
+             */
             if (direct_sock_name && virFileExists(direct_sock_name)) {
                 mode = REMOTE_DRIVER_MODE_DIRECT;
             } else if (virFileExists(legacy_sock_name)) {
                 mode = REMOTE_DRIVER_MODE_LEGACY;
             } else {
-                /*
-                 * This constant comes from the configure script and
-                 * maps to either the direct or legacy mode constant
-                 */
-                mode = REMOTE_DRIVER_MODE_DEFAULT;
+#ifdef REMOTE_DRIVER_AUTOSTART_DIRECT
+                mode = REMOTE_DRIVER_MODE_DIRECT;
+#else
+                mode = REMOTE_DRIVER_MODE_LEGACY;
+#endif
             }
         } else {
+            /*
+             * When remotely accessing libvirtd, we always default to a legacy socket
+             * path, as there's no way for us to probe what's configured. This does
+             * not matter, since 'virt-ssh-helper' will be used if it is available
+             * and thus probe from context of the remote host
+             */
             mode = REMOTE_DRIVER_MODE_LEGACY;
         }
     }

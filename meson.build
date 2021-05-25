@@ -1421,8 +1421,10 @@ if not get_option('driver_remote').disabled()
   endif
 endif
 
-remote_default_mode = get_option('remote_default_mode').to_upper()
-conf.set('REMOTE_DRIVER_MODE_DEFAULT', 'REMOTE_DRIVER_MODE_@0@'.format(remote_default_mode))
+remote_default_mode = get_option('remote_default_mode')
+if remote_default_mode == 'direct'
+  conf.set('REMOTE_DRIVER_AUTOSTART_DIRECT', '1')
+endif
 
 if not get_option('driver_libvirtd').disabled()
   use_libvirtd = true
