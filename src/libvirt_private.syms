@@ -3555,6 +3555,7 @@ virXMLCheckIllegalChars;
 virXMLExtractNamespaceXML;
 virXMLFormatElement;
 virXMLFormatElementEmpty;
+virXMLFormatMetadata;
 virXMLNewNode;
 virXMLNodeContentString;
 virXMLNodeNameEqual;

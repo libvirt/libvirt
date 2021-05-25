@@ -27806,27 +27806,8 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     virBufferEscapeString(buf, "<description>%s</description>\n",
                           def->description);
 
-    if (def->metadata) {
-        g_autoptr(xmlBuffer) xmlbuf = NULL;
-        int oldIndentTreeOutput = xmlIndentTreeOutput;
-
-        /* Indentation on output requires that we previously set
-         * xmlKeepBlanksDefault to 0 when parsing; also, libxml does 2
-         * spaces per level of indentation of intermediate elements,
-         * but no leading indentation before the starting element.
-         * Thankfully, libxml maps what looks like globals into
-         * thread-local uses, so we are thread-safe.  */
-        xmlIndentTreeOutput = 1;
-        xmlbuf = virXMLBufferCreate();
-
-        if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
-                        virBufferGetIndent(buf) / 2, 1) < 0) {
-            xmlIndentTreeOutput = oldIndentTreeOutput;
-            return -1;
-        }
-        virBufferAsprintf(buf, "%s\n", (char *) xmlBufferContent(xmlbuf));
-        xmlIndentTreeOutput = oldIndentTreeOutput;
-    }
+    if (virXMLFormatMetadata(buf, def->metadata) < 0)
+        return -1;
 
     if (virDomainDefHasMemoryHotplug(def)) {
         virBufferAsprintf(buf,

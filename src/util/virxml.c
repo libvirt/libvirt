@@ -1707,6 +1707,49 @@ virXMLFormatElement(virBuffer *buf,
 }
 
 
+/**
+ * virXMLFormatMetadata:
+ * @buf: the parent buffer where the element will be placed
+ * @metadata: pointer to metadata node
+ *
+ * Helper to format metadata element. If @metadata is NULL then
+ * this function is a NOP.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
+int
+virXMLFormatMetadata(virBuffer *buf,
+                     xmlNodePtr metadata)
+{
+    g_autoptr(xmlBuffer) xmlbuf = NULL;
+    int oldIndentTreeOutput = xmlIndentTreeOutput;
+
+    if (!metadata)
+        return 0;
+
+    /* Indentation on output requires that we previously set
+     * xmlKeepBlanksDefault to 0 when parsing; also, libxml does 2
+     * spaces per level of indentation of intermediate elements,
+     * but no leading indentation before the starting element.
+     * Thankfully, libxml maps what looks like globals into
+     * thread-local uses, so we are thread-safe.  */
+    xmlIndentTreeOutput = 1;
+    xmlbuf = virXMLBufferCreate();
+
+    if (xmlNodeDump(xmlbuf, metadata->doc, metadata,
+                    virBufferGetIndent(buf) / 2, 1) < 0) {
+        xmlIndentTreeOutput = oldIndentTreeOutput;
+        return -1;
+    }
+
+    virBufferAsprintf(buf, "%s\n", (char *) xmlBufferContent(xmlbuf));
+    xmlIndentTreeOutput = oldIndentTreeOutput;
+
+    return 0;
+}
+
+
 void
 virXPathContextNodeRestore(virXPathContextNodeSave *save)
 {
