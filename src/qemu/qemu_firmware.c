@@ -129,6 +129,7 @@ typedef enum {
     QEMU_FIRMWARE_FEATURE_ACPI_S3,
     QEMU_FIRMWARE_FEATURE_ACPI_S4,
     QEMU_FIRMWARE_FEATURE_AMD_SEV,
+    QEMU_FIRMWARE_FEATURE_AMD_SEV_ES,
     QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS,
     QEMU_FIRMWARE_FEATURE_REQUIRES_SMM,
     QEMU_FIRMWARE_FEATURE_SECURE_BOOT,
@@ -145,6 +146,7 @@ VIR_ENUM_IMPL(qemuFirmwareFeature,
               "acpi-s3",
               "acpi-s4",
               "amd-sev",
+              "amd-sev-es",
               "enrolled-keys",
               "requires-smm",
               "secure-boot",
@@ -913,6 +915,9 @@ qemuFirmwareOSInterfaceTypeFromOsDefFirmware(int fw)
 }
 
 
+#define VIR_QEMU_FIRMWARE_AMD_SEV_ES_POLICY (1 << 2)
+
+
 static bool
 qemuFirmwareMatchDomain(const virDomainDef *def,
                         const qemuFirmware *fw,
@@ -924,6 +929,7 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
     bool supportsS4 = false;
     bool requiresSMM = false;
     bool supportsSEV = false;
+    bool supportsSEVES = false;
     bool supportsSecureBoot = false;
     bool hasEnrolledKeys = false;
     int reqSecureBoot;
@@ -972,6 +978,11 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
         case QEMU_FIRMWARE_FEATURE_AMD_SEV:
             supportsSEV = true;
             break;
+
+        case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
+            supportsSEVES = true;
+            break;
+
         case QEMU_FIRMWARE_FEATURE_REQUIRES_SMM:
             requiresSMM = true;
             break;
@@ -1043,10 +1054,19 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
     }
 
     if (def->sev &&
-        def->sev->sectype == VIR_DOMAIN_LAUNCH_SECURITY_SEV &&
-        !supportsSEV) {
-        VIR_DEBUG("Domain requires SEV, firmware '%s' doesn't support it", path);
-        return false;
+        def->sev->sectype == VIR_DOMAIN_LAUNCH_SECURITY_SEV) {
+        if (!supportsSEV) {
+            VIR_DEBUG("Domain requires SEV, firmware '%s' doesn't support it",
+                      path);
+            return false;
+        }
+
+        if (def->sev->policy & VIR_QEMU_FIRMWARE_AMD_SEV_ES_POLICY &&
+            !supportsSEVES) {
+            VIR_DEBUG("Domain requires SEV-ES, firmware '%s' doesn't support it",
+                      path);
+            return false;
+        }
     }
 
     VIR_DEBUG("Firmware '%s' matches domain requirements", path);
@@ -1148,6 +1168,7 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
         case QEMU_FIRMWARE_FEATURE_ACPI_S3:
         case QEMU_FIRMWARE_FEATURE_ACPI_S4:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV:
+        case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
         case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
         case QEMU_FIRMWARE_FEATURE_SECURE_BOOT:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
@@ -1181,6 +1202,7 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
         case QEMU_FIRMWARE_FEATURE_ACPI_S3:
         case QEMU_FIRMWARE_FEATURE_ACPI_S4:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV:
+        case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
         case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
@@ -1412,6 +1434,7 @@ qemuFirmwareGetSupported(const char *machine,
             case QEMU_FIRMWARE_FEATURE_ACPI_S3:
             case QEMU_FIRMWARE_FEATURE_ACPI_S4:
             case QEMU_FIRMWARE_FEATURE_AMD_SEV:
+            case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
             case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
             case QEMU_FIRMWARE_FEATURE_SECURE_BOOT:
             case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
