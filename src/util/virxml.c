@@ -1740,6 +1740,8 @@ virXMLFormatMetadata(virBuffer *buf,
     if (xmlNodeDump(xmlbuf, metadata->doc, metadata,
                     virBufferGetIndent(buf) / 2, 1) < 0) {
         xmlIndentTreeOutput = oldIndentTreeOutput;
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to format metadata element"));
         return -1;
     }
 
