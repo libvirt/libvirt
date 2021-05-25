@@ -73,7 +73,7 @@
     %else
         %ifnarch %{arches_qemu_kvm}
             %define with_storage_gluster 0
-	%endif
+        %endif
     %endif
 %endif
 
