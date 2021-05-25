@@ -297,6 +297,7 @@ html_xslt_gen = []
 # --- end of XSLT processing ---
 
 subdir('fonts')
+subdir('go')
 subdir('html')
 subdir('internals')
 subdir('js')
