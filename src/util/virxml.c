@@ -1723,6 +1723,7 @@ virXMLFormatMetadata(virBuffer *buf,
                      xmlNodePtr metadata)
 {
     g_autoptr(xmlBuffer) xmlbuf = NULL;
+    const char *xmlbufContent = NULL;
     int oldIndentTreeOutput = xmlIndentTreeOutput;
 
     if (!metadata)
@@ -1745,7 +1746,12 @@ virXMLFormatMetadata(virBuffer *buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "%s\n", (char *) xmlBufferContent(xmlbuf));
+    /* After libxml2-v2.9.12-2-g85b1792e even the first line is indented.
+     * But virBufferAsprintf() also adds indentation. Skip one of them. */
+    xmlbufContent = (const char *) xmlBufferContent(xmlbuf);
+    virSkipSpaces(&xmlbufContent);
+
+    virBufferAsprintf(buf, "%s\n", xmlbufContent);
     xmlIndentTreeOutput = oldIndentTreeOutput;
 
     return 0;
