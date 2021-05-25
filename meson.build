@@ -1085,12 +1085,6 @@ parallels_sdk_dep = dependency('parallels-sdk', version: '>=' + parallels_sdk_ve
 pciaccess_version = '0.10.0'
 pciaccess_dep = dependency('pciaccess', version: '>=' + pciaccess_version, required: get_option('pciaccess'))
 
-if not get_option('polkit').disabled() and host_machine.system() != 'windows'
-  pkcheck_prog = find_program('pkcheck', required: false, dirs: libvirt_sbin_path)
-else
-  pkcheck_prog = dependency('', required: false)
-endif
-
 rbd_dep = cc.find_library('rbd', required: false)
 rados_dep = cc.find_library('rados', required: false)
 if rbd_dep.found() and not cc.has_function('rbd_get_features', dependencies: rbd_dep)
@@ -1353,8 +1347,24 @@ elif get_option('firewalld_zone').enabled()
   error('You must have firewalld support enabled to enable firewalld_zone')
 endif
 
-if (pkcheck_prog.found() or get_option('polkit').enabled())
-  conf.set('WITH_POLKIT', 1)
+if not get_option('polkit').disabled()
+  polkit_enable = true
+
+  if get_option('polkit').auto()
+    pkcheck_prog = find_program('pkcheck', required: false, dirs: libvirt_sbin_path)
+    polkit_enable = pkcheck_prog.found()
+  endif
+
+  if host_machine.system() == 'windows'
+    polkit_enable = false
+    if get_option('polkit').enabled()
+      error('polkit support cannot be enabled on Windows')
+    endif
+  endif
+
+  if polkit_enable
+    conf.set('WITH_POLKIT', 1)
+  endif
 endif
 
 if udev_dep.found() and not pciaccess_dep.found()
