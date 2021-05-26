@@ -1339,8 +1339,14 @@ if bash_completion_dep.found()
   endif
 endif
 
-if host_machine.system() != 'freebsd'
-  if not get_option('firewalld').disabled()
+if not get_option('firewalld').disabled()
+  firewalld_enable = true
+
+  if host_machine.system() == 'freebsd'
+    firewalld_enable = false
+  endif
+
+  if firewalld_enable
     conf.set('WITH_FIREWALLD', 1)
   endif
 endif
