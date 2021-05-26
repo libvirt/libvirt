@@ -803,6 +803,41 @@ virCapabilitiesAddStoragePool(virCaps *caps,
 
 
 static int
+virCapsHostNUMACellCPUFormat(virBuffer *buf,
+                             const virCapsHostNUMACellCPU *cpus,
+                             int ncpus)
+{
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    size_t j;
+
+    virBufferAsprintf(&attrBuf, " num='%d'", ncpus);
+
+    for (j = 0; j < ncpus; j++) {
+        virBufferAsprintf(&childBuf, "<cpu id='%d'", cpus[j].id);
+
+        if (cpus[j].siblings) {
+            g_autofree char *siblings = NULL;
+
+            if (!(siblings = virBitmapFormat(cpus[j].siblings)))
+                return -1;
+
+            virBufferAsprintf(&childBuf,
+                              " socket_id='%d' die_id='%d' core_id='%d' siblings='%s'",
+                              cpus[j].socket_id,
+                              cpus[j].die_id,
+                              cpus[j].core_id,
+                              siblings);
+        }
+        virBufferAddLit(&childBuf, "/>\n");
+    }
+
+    virXMLFormatElement(buf, "cpus", &attrBuf, &childBuf);
+    return 0;
+}
+
+
+static int
 virCapabilitiesHostNUMAFormat(virBuffer *buf,
                               virCapsHostNUMA *caps)
 {
@@ -835,28 +870,9 @@ virCapabilitiesHostNUMAFormat(virBuffer *buf,
 
         virNumaDistanceFormat(buf, cell->distances, cell->ndistances);
 
-        virBufferAsprintf(buf, "<cpus num='%d'>\n", cell->ncpus);
-        virBufferAdjustIndent(buf, 2);
-        for (j = 0; j < cell->ncpus; j++) {
-            virBufferAsprintf(buf, "<cpu id='%d'", cell->cpus[j].id);
+        if (virCapsHostNUMACellCPUFormat(buf, cell->cpus, cell->ncpus) < 0)
+            return -1;
 
-            if (cell->cpus[j].siblings) {
-                g_autofree char *siblings = NULL;
-
-                if (!(siblings = virBitmapFormat(cell->cpus[j].siblings)))
-                    return -1;
-
-                virBufferAsprintf(buf,
-                                  " socket_id='%d' die_id='%d' core_id='%d' siblings='%s'",
-                                  cell->cpus[j].socket_id,
-                                  cell->cpus[j].die_id,
-                                  cell->cpus[j].core_id,
-                                  siblings);
-            }
-            virBufferAddLit(buf, "/>\n");
-        }
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</cpus>\n");
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</cell>\n");
     }
