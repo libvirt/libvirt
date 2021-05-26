@@ -695,7 +695,9 @@ qemuDomainAttachDiskGenericTransient(virDomainObj *vm,
     g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
     g_autoptr(virDomainSnapshotDiskDef) snapdiskdef = NULL;
 
-    snapdiskdef = qemuSnapshotGetTransientDiskDef(disk, vm->def->name);
+    if (!(snapdiskdef = qemuSnapshotGetTransientDiskDef(disk, vm->def->name)))
+        return NULL;
+
     snapctxt = qemuSnapshotDiskContextNew(1, vm, asyncJob);
 
     if (qemuSnapshotDiskPrepareOne(snapctxt, disk, snapdiskdef,
