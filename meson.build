@@ -1071,7 +1071,6 @@ else
   intl_dep = dependency('', required: false)
 endif
 
-numactl_version = '2.0.6'
 numactl_dep = cc.find_library('numa', required: get_option('numactl'))
 if numactl_dep.found()
   conf.set('WITH_NUMACTL', 1)
