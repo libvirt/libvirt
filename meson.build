@@ -991,11 +991,11 @@ endif
 libpcap_version = '1.5.0'
 if not get_option('libpcap').disabled()
   libpcap_dep = dependency('pcap', version: '>=' + libpcap_version, required: get_option('libpcap'))
+  if libpcap_dep.found()
+    conf.set('WITH_LIBPCAP', 1)
+  endif
 else
   libpcap_dep = dependency('', required: false)
-endif
-if libpcap_dep.found()
-  conf.set('WITH_LIBPCAP', 1)
 endif
 
 libssh_version = '0.7'
@@ -1139,18 +1139,18 @@ if not get_option('readline').disabled()
       endif
     endif
   endif
+  if readline_dep.found()
+    # We need this to avoid compilation issues with modern compilers.
+    # See 9ea3424a178 for a more detailed explanation
+    readline_dep = declare_dependency(
+      compile_args: [ '-D_FUNCTION_DEF' ],
+      dependencies: [ readline_dep ],
+    )
+
+    conf.set('WITH_READLINE', 1)
+  endif
 else
   readline_dep = dependency('', required: false)
-endif
-if readline_dep.found()
-  # We need this to avoid compilation issues with modern compilers.
-  # See 9ea3424a178 for a more detailed explanation
-  readline_dep = declare_dependency(
-    compile_args: [ '-D_FUNCTION_DEF' ],
-    dependencies: [ readline_dep ],
-  )
-
-  conf.set('WITH_READLINE', 1)
 endif
 
 if not get_option('sanlock').disabled()
@@ -1882,10 +1882,9 @@ if conf.has('WITH_LIBVIRTD')
   if not get_option('storage_vstorage').disabled()
     vstorage_enable = true
     if host_machine.system() != 'linux'
+      vstorage_enable = false
       if get_option('storage_vstorage').enabled()
         error('Vstorage is supported only on Linux')
-      else
-        vstorage_enable = false
       endif
     endif
 
