@@ -168,9 +168,9 @@
           <attribute name="num">
             <ref name="unsignedInt"/>
           </attribute>
-          <oneOrMore>
+          <zeroOrMore>
             <ref name="cpu"/>
-          </oneOrMore>
+          </zeroOrMore>
         </element>
       </optional>
     </element>
