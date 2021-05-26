@@ -85,12 +85,6 @@ VIR_ENUM_IMPL(virNodeDevDRM,
               "render",
 );
 
-VIR_ENUM_IMPL(virNodeDevMdevStart,
-              VIR_NODE_DEV_MDEV_START_LAST,
-              "manual",
-              "auto",
-);
-
 static int
 virNodeDevCapsDefParseString(const char *xpath,
                              xmlXPathContextPtr ctxt,
@@ -534,8 +528,6 @@ virNodeDeviceCapMdevDefFormat(virBuffer *buf,
 
     virBufferEscapeString(buf, "<type id='%s'/>\n", data->mdev.type);
     virBufferEscapeString(buf, "<uuid>%s</uuid>\n", data->mdev.uuid);
-    virBufferEscapeString(buf, "<start type='%s'/>\n",
-                          virNodeDevMdevStartTypeToString(data->mdev.start));
     virBufferAsprintf(buf, "<iommuGroup number='%u'/>\n",
                       data->mdev.iommuGroupNumber);
 
@@ -1157,6 +1149,7 @@ virNodeDevCapStorageParseXML(xmlXPathContextPtr ctxt,
                 return -1;
             }
             storage->removable_media_size = val;
+
             ctxt->node = orignode2;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1919,7 +1912,6 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
     g_autofree xmlNodePtr *attrs = NULL;
     size_t i;
     g_autofree char *uuidstr = NULL;
-    xmlNodePtr startNode = NULL;
 
     ctxt->node = node;
 
@@ -1939,17 +1931,6 @@ virNodeDevCapMdevParseXML(xmlXPathContextPtr ctxt,
         }
         mdev->uuid = g_new0(char, VIR_UUID_STRING_BUFLEN);
         virUUIDFormat(uuidbuf, mdev->uuid);
-    }
-
-    mdev->start = VIR_NODE_DEV_MDEV_START_MANUAL;
-
-    startNode = virXPathNode("./start[1]", ctxt);
-    if (startNode &&
-        virXMLPropEnumDefault(startNode, "type",
-                              virNodeDevMdevStartTypeFromString,
-                              VIR_XML_PROP_NONE, &mdev->start,
-                              VIR_NODE_DEV_MDEV_START_MANUAL) < 0) {
-        return -1;
     }
 
     /* 'iommuGroup' is optional, only report an error if the supplied value is

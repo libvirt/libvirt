@@ -623,17 +623,6 @@
         </element>
       </optional>
       <optional>
-        <element name="start">
-          <attribute name="type">
-            <choice>
-              <value>manual</value>
-              <value>auto</value>
-            </choice>
-          </attribute>
-          <empty/>
-        </element>
-      </optional>
-      <optional>
         <element name="uuid">
           <ref name="UUID"/>
         </element>

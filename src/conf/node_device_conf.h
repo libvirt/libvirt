@@ -124,17 +124,6 @@ typedef enum {
 
 VIR_ENUM_DECL(virNodeDevDRM);
 
-typedef enum {
-    /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
-    VIR_NODE_DEV_MDEV_START_MANUAL,
-    VIR_NODE_DEV_MDEV_START_AUTO,
-
-    VIR_NODE_DEV_MDEV_START_LAST
-} virNodeDevMdevStartType;
-
-VIR_ENUM_DECL(virNodeDevMdevStart);
-
-
 typedef struct _virNodeDevCapSystemHardware virNodeDevCapSystemHardware;
 struct _virNodeDevCapSystemHardware {
     char *vendor_name;
@@ -162,7 +151,6 @@ struct _virNodeDevCapMdev {
     char *type;
     unsigned int iommuGroupNumber;
     char *uuid;
-    virNodeDevMdevStartType start;
     virMediatedDeviceAttr **attributes;
     size_t nattributes;
 };

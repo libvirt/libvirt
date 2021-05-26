@@ -3,7 +3,6 @@
   <parent>pci_0000_00_02_0</parent>
   <capability type='mdev'>
     <type id='i915-GVTg_V5_8'/>
-    <start type='manual'/>
     <iommuGroup number='0'/>
     <attr name='example-attribute' value='attribute-value'/>
   </capability>

@@ -4,7 +4,6 @@
   <capability type='mdev'>
     <type id='i915-GVTg_V5_4'/>
     <uuid>200f228a-c80a-4d50-bfb7-f5a0e4e34045</uuid>
-    <start type='manual'/>
     <iommuGroup number='0'/>
   </capability>
 </device>
@@ -14,7 +13,6 @@
   <capability type='mdev'>
     <type id='i915-GVTg_V5_4'/>
     <uuid>de807ffc-1923-4d5f-b6c9-b20ecebc6d4b</uuid>
-    <start type='auto'/>
     <iommuGroup number='0'/>
   </capability>
 </device>
@@ -24,7 +22,6 @@
   <capability type='mdev'>
     <type id='i915-GVTg_V5_8'/>
     <uuid>435722ea-5f43-468a-874f-da34f1217f13</uuid>
-    <start type='manual'/>
     <iommuGroup number='0'/>
     <attr name='testattr' value='42'/>
   </capability>
@@ -35,7 +32,6 @@
   <capability type='mdev'>
     <type id='vfio_ap-passthrough'/>
     <uuid>783e6dbb-ea0e-411f-94e2-717eaad438bf</uuid>
-    <start type='manual'/>
     <iommuGroup number='0'/>
     <attr name='assign_adapter' value='5'/>
     <attr name='assign_adapter' value='6'/>
