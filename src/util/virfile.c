@@ -56,7 +56,7 @@
 #if WITH_SYS_SYSCALL_H
 # include <sys/syscall.h>
 #endif
-#if WITH_SYS_ACL_H
+#if WITH_LIBACL
 # include <sys/acl.h>
 #endif
 #include <sys/file.h>
@@ -3752,7 +3752,7 @@ virFileMoveMount(const char *src G_GNUC_UNUSED,
 #endif /* !defined(__linux__) || !defined(WITH_SYS_MOUNT_H) */
 
 
-#if defined(WITH_SYS_ACL_H)
+#if defined(WITH_LIBACL)
 int
 virFileGetACLs(const char *file,
                void **acl)
@@ -3782,7 +3782,7 @@ virFileFreeACLs(void **acl)
     *acl = NULL;
 }
 
-#else /* !defined(WITH_SYS_ACL_H) */
+#else /* !defined(WITH_LIBACL) */
 
 int
 virFileGetACLs(const char *file G_GNUC_UNUSED,
@@ -3808,7 +3808,7 @@ virFileFreeACLs(void **acl)
     *acl = NULL;
 }
 
-#endif /* !defined(WITH_SYS_ACL_H) */
+#endif /* !defined(WITH_LIBACL) */
 
 int
 virFileCopyACLs(const char *src,

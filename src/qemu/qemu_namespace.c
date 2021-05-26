@@ -852,7 +852,7 @@ qemuDomainNamespaceAvailable(qemuDomainNamespace ns G_GNUC_UNUSED)
 
     switch (ns) {
     case QEMU_DOMAIN_NS_MOUNT:
-# if !defined(WITH_SYS_ACL_H) || !defined(WITH_SELINUX)
+# if !defined(WITH_LIBACL) || !defined(WITH_SELINUX)
         /* We can't create the exact copy of paths if either of
          * these is not available. */
         return false;

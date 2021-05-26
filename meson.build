@@ -844,11 +844,9 @@ endforeach
 
 # generic build dependencies
 
-if host_machine.system() == 'linux' and cc.has_header('sys/acl.h')
-  acl_dep = cc.find_library('acl', required: false)
-  conf.set('WITH_SYS_ACL_H', 1)
-else
-  acl_dep = dependency('', required: false)
+acl_dep = cc.find_library('acl', required: false)
+if acl_dep.found()
+  conf.set('WITH_LIBACL', 1)
 endif
 
 apparmor_dep = dependency('libapparmor', required: get_option('apparmor'))
