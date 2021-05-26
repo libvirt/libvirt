@@ -1309,9 +1309,7 @@ if yajl_dep.found()
   #
   # [1] https://github.com/Homebrew/homebrew-core/pull/74516
   if host_machine.system() != 'linux'
-    pkg_config_prog = find_program('pkg-config')
-    rc = run_command(pkg_config_prog, '--cflags', 'yajl', check: true)
-    cflags = rc.stdout().strip()
+    cflags = yajl_dep.get_pkgconfig_variable('cflags')
     if cflags.contains('include/yajl')
       rc = run_command(
         'python3', '-c',
