@@ -622,22 +622,6 @@ endforeach
 
 # check for kernel headers required by src/util/virnetdevbridge.c
 if host_machine.system() == 'linux'
-  # Various kernel versions have headers that are not self-standing, but
-  # yet are incompatible with the corresponding glibc headers.  In order
-  # to guarantee compilation across a wide range of versions (from RHEL 5
-  # to rawhide), we first have to probe whether glibc and kernel can be
-  # used in tandem; and if not, provide workarounds that ensure that
-  # ABI-compatible IPv6 types are present for use by the kernel headers.
-  netinet_workaround_code = '''
-  #include <netinet/in.h>
-  #include <linux/in6.h>
-
-  int main(void) { return 0; }
-  '''
-  if not cc.compiles(netinet_workaround_code)
-    conf.set('NETINET_LINUX_WORKAROUND', 1)
-  endif
-
   required_headers = [
     'linux/param.h',
     'linux/sockios.h',
