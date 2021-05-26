@@ -41,6 +41,7 @@ struct _virNodeDeviceObj {
                                            used by testdriver */
     bool active;
     bool persistent;
+    bool autostart;
 };
 
 struct _virNodeDeviceObjList {
@@ -1031,6 +1032,21 @@ virNodeDeviceObjSetPersistent(virNodeDeviceObj *obj,
                               bool persistent)
 {
     obj->persistent = persistent;
+}
+
+
+bool
+virNodeDeviceObjIsAutostart(virNodeDeviceObj *obj)
+{
+    return obj->autostart;
+}
+
+
+void
+virNodeDeviceObjSetAutostart(virNodeDeviceObj *obj,
+                             bool autostart)
+{
+    obj->autostart = autostart;
 }
 
 

@@ -1504,6 +1504,8 @@ udevAddOneDevice(struct udev_device *device)
     bool new_device = true;
     int ret = -1;
     bool was_persistent = false;
+    bool autostart = false;
+    bool is_mdev;
 
     def = g_new0(virNodeDeviceDef, 1);
 
@@ -1525,12 +1527,16 @@ udevAddOneDevice(struct udev_device *device)
     if (udevSetParent(device, def) != 0)
         goto cleanup;
 
+    is_mdev = def->caps->data.type == VIR_NODE_DEV_CAP_MDEV;
+
     if ((obj = virNodeDeviceObjListFindByName(driver->devs, def->name))) {
         objdef = virNodeDeviceObjGetDef(obj);
 
-        if (def->caps->data.type == VIR_NODE_DEV_CAP_MDEV)
+        if (is_mdev)
             nodeDeviceDefCopyFromMdevctl(def, objdef);
         was_persistent = virNodeDeviceObjIsPersistent(obj);
+        autostart = virNodeDeviceObjIsAutostart(obj);
+
         /* If the device was defined by mdevctl and was never instantiated, it
          * won't have a sysfs path. We need to emit a CREATED event... */
         new_device = (objdef->sysfs_path == NULL);
@@ -1543,6 +1549,7 @@ udevAddOneDevice(struct udev_device *device)
     if (!(obj = virNodeDeviceObjListAssignDef(driver->devs, def)))
         goto cleanup;
     virNodeDeviceObjSetPersistent(obj, was_persistent);
+    virNodeDeviceObjSetAutostart(obj, autostart);
     objdef = virNodeDeviceObjGetDef(obj);
 
     if (new_device)
@@ -1946,6 +1953,7 @@ udevSetupSystemDev(void)
         goto cleanup;
 
     virNodeDeviceObjSetActive(obj, true);
+    virNodeDeviceObjSetAutostart(obj, true);
 
     virNodeDeviceObjEndAPI(&obj);
 
@@ -2350,6 +2358,8 @@ static virNodeDeviceDriver udevNodeDeviceDriver = {
     .nodeDeviceDefineXML = nodeDeviceDefineXML, /* 7.3.0 */
     .nodeDeviceUndefine = nodeDeviceUndefine, /* 7.3.0 */
     .nodeDeviceCreate = nodeDeviceCreate, /* 7.3.0 */
+    .nodeDeviceSetAutostart = nodeDeviceSetAutostart, /* 7.8.0 */
+    .nodeDeviceGetAutostart = nodeDeviceGetAutostart, /* 7.8.0 */
 };
 
 

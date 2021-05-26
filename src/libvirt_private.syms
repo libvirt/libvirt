@@ -1289,6 +1289,7 @@ virNetworkPortDefSaveStatus;
 virNodeDeviceObjEndAPI;
 virNodeDeviceObjGetDef;
 virNodeDeviceObjIsActive;
+virNodeDeviceObjIsAutostart;
 virNodeDeviceObjIsPersistent;
 virNodeDeviceObjListAssignDef;
 virNodeDeviceObjListExport;
@@ -1306,6 +1307,7 @@ virNodeDeviceObjListNumOfDevices;
 virNodeDeviceObjListRemove;
 virNodeDeviceObjListRemoveLocked;
 virNodeDeviceObjSetActive;
+virNodeDeviceObjSetAutostart;
 virNodeDeviceObjSetPersistent;
 
 

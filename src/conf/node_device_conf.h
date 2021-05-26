@@ -154,6 +154,7 @@ struct _virNodeDevCapMdev {
     virMediatedDeviceAttr **attributes;
     size_t nattributes;
     char *parent_addr;
+    bool autostart;
 };
 
 typedef struct _virNodeDevCapPCIDev virNodeDevCapPCIDev;

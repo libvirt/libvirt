@@ -177,3 +177,16 @@ int nodeDeviceDefPostParse(virNodeDeviceDef *def,
 
 int nodeDeviceDefValidate(virNodeDeviceDef *def,
                           void *opaque);
+
+int
+nodeDeviceSetAutostart(virNodeDevice *dev,
+                       int autostart);
+
+int
+nodeDeviceGetAutostart(virNodeDevice *dev,
+                       int *autostart);
+
+virCommand*
+nodeDeviceGetMdevctlSetAutostartCommand(virNodeDeviceDef *def,
+                                        bool autostart,
+                                        char **errmsg);

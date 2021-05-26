@@ -137,6 +137,12 @@ virNodeDeviceObjIsPersistent(virNodeDeviceObj *obj);
 void
 virNodeDeviceObjSetPersistent(virNodeDeviceObj *obj,
                               bool persistent);
+bool
+virNodeDeviceObjIsAutostart(virNodeDeviceObj *obj);
+
+void
+virNodeDeviceObjSetAutostart(virNodeDeviceObj *obj,
+                             bool autostart);
 
 typedef bool (*virNodeDeviceObjListPredicate)(virNodeDeviceObj *obj,
                                               const void *opaque);

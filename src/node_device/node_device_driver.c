@@ -621,11 +621,12 @@ nodeDeviceDefToMdevctlConfig(virNodeDeviceDef *def, char **buf)
     size_t i;
     virNodeDevCapMdev *mdev = &def->caps->data.mdev;
     g_autoptr(virJSONValue) json = virJSONValueNewObject();
+    const char *startval = mdev->autostart ? "auto" : "manual";
 
     if (virJSONValueObjectAppendString(json, "mdev_type", mdev->type) < 0)
         return -1;
 
-    if (virJSONValueObjectAppendString(json, "start", "manual") < 0)
+    if (virJSONValueObjectAppendString(json, "start", startval) < 0)
         return -1;
 
     if (mdev->attributes) {
@@ -1014,6 +1015,46 @@ virMdevctlStart(virNodeDeviceDef *def)
 }
 
 
+/* gets a virCommand object that executes a mdevctl command to set the
+ * 'autostart' property of the device to the specified value
+ */
+virCommand*
+nodeDeviceGetMdevctlSetAutostartCommand(virNodeDeviceDef *def,
+                                        bool autostart,
+                                        char **errmsg)
+{
+    virCommand *cmd = virCommandNewArgList(MDEVCTL,
+                                           "modify",
+                                           "--uuid",
+                                           def->caps->data.mdev.uuid,
+                                           NULL);
+
+    if (autostart)
+        virCommandAddArg(cmd, "--auto");
+    else
+        virCommandAddArg(cmd, "--manual");
+
+    virCommandSetErrorBuffer(cmd, errmsg);
+
+    return cmd;
+}
+
+
+static int
+virMdevctlSetAutostart(virNodeDeviceDef *def, bool autostart, char **errmsg)
+{
+    int status;
+    g_autoptr(virCommand) cmd = NULL;
+
+    cmd = nodeDeviceGetMdevctlSetAutostartCommand(def, autostart, errmsg);
+
+    if (virCommandRun(cmd, &status) < 0 || status != 0)
+        return -1;
+
+    return 0;
+}
+
+
 virCommand*
 nodeDeviceGetMdevctlListCommand(bool defined,
                                 char **output,
@@ -1066,6 +1107,7 @@ nodeDeviceParseMdevctlChildDevice(const char *parent,
     virJSONValue *attrs;
     g_autoptr(virNodeDeviceDef) child = g_new0(virNodeDeviceDef, 1);
     virNodeDeviceObj *parent_obj;
+    const char *start = NULL;
 
     /* the child object should have a single key equal to its uuid.
      * The value is an object describing the properties of the mdev */
@@ -1094,6 +1136,8 @@ nodeDeviceParseMdevctlChildDevice(const char *parent,
     mdev->parent_addr = g_strdup(parent);
     mdev->type =
         g_strdup(virJSONValueObjectGetString(props, "mdev_type"));
+    start = virJSONValueObjectGetString(props, "start");
+    mdev->autostart = STREQ_NULLABLE(start, "auto");
 
     attrs = virJSONValueObjectGet(props, "attrs");
 
@@ -1346,6 +1390,7 @@ nodeDeviceUpdateMediatedDevice(virNodeDeviceDef *def)
 
     /* all devices returned by virMdevctlListDefined() are persistent */
     virNodeDeviceObjSetPersistent(obj, true);
+    virNodeDeviceObjSetAutostart(obj, def->caps->data.mdev.autostart);
 
     if (!defined)
         event = virNodeDeviceEventLifecycleNew(name,
@@ -1649,10 +1694,12 @@ removeMissingPersistentMdev(virNodeDeviceObj *obj,
 
     /* The device is active, but no longer defined by mdevctl. Keep the device
      * in the list, but mark it as non-persistent */
-    if (virNodeDeviceObjIsActive(obj))
+    if (virNodeDeviceObjIsActive(obj)) {
+        virNodeDeviceObjSetAutostart(obj, false);
         virNodeDeviceObjSetPersistent(obj, false);
-    else
+    } else {
         remove = true;
+    }
 
     virObjectEventStateQueue(driver->nodeDeviceEventState, event);
 
@@ -1762,6 +1809,92 @@ nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
     if (virMediatedDeviceAttrsCopy(dstmdev, srcmdev))
         ret = true;
 
+    if (dstmdev->autostart != srcmdev->autostart) {
+        ret = true;
+        dstmdev->autostart = srcmdev->autostart;
+    }
+
+    return ret;
+}
+
+
+int
+nodeDeviceSetAutostart(virNodeDevice *device,
+                       int autostart)
+{
+    int ret = -1;
+    virNodeDeviceObj *obj = NULL;
+    virNodeDeviceDef *def = NULL;
+
+    if (nodeDeviceInitWait() < 0)
+        return -1;
+
+    if (!(obj = nodeDeviceObjFindByName(device->name)))
+        return -1;
+    def = virNodeDeviceObjGetDef(obj);
+
+    if (virNodeDeviceSetAutostartEnsureACL(device->conn, def) < 0)
+        goto cleanup;
+
+    if (nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_MDEV)) {
+        if (!virNodeDeviceObjIsPersistent(obj)) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           "%s", _("cannot set autostart for transient device"));
+            goto cleanup;
+        }
+
+        if (autostart != virNodeDeviceObjIsAutostart(obj)) {
+            g_autofree char *errmsg = NULL;
+
+            if (virMdevctlSetAutostart(def, autostart, &errmsg) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unable to set autostart on '%s': %s"),
+                               def->name,
+                               errmsg && errmsg[0] != '\0' ? errmsg : _("Unknown Error"));
+                goto cleanup;
+            }
+            /* Due to mdevctl performance issues, it may take several seconds
+             * to re-query mdevctl for the defined devices. Because the mdevctl
+             * command returned without an error status, assume it was
+             * successful and set the object status directly here rather than
+             * waiting for the next query */
+            virNodeDeviceObjSetAutostart(obj, autostart);
+        }
+        ret = 0;
+    } else {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("Unsupported device type"));
+    }
+
+ cleanup:
+    virNodeDeviceObjEndAPI(&obj);
+    return ret;
+}
+
+
+int
+nodeDeviceGetAutostart(virNodeDevice *device,
+                       int *autostart)
+{
+    virNodeDeviceObj *obj = NULL;
+    virNodeDeviceDef *def = NULL;
+    int ret = -1;
+
+    if (nodeDeviceInitWait() < 0)
+        return -1;
+
+    if (!(obj = nodeDeviceObjFindByName(device->name)))
+        return -1;
+    def = virNodeDeviceObjGetDef(obj);
+
+    if (virNodeDeviceGetAutostartEnsureACL(device->conn, def) < 0)
+        goto cleanup;
+
+    *autostart = virNodeDeviceObjIsAutostart(obj);
+    ret = 0;
+
+ cleanup:
+    virNodeDeviceObjEndAPI(&obj);
     return ret;
 }
 
