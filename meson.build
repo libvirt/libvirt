@@ -1400,11 +1400,19 @@ endif
 
 # build driver options
 
-if get_option('driver_remote').enabled()
+if not get_option('driver_remote').disabled()
+  use_remote = true
+
   if not xdr_dep.found()
-    error('XDR is required for remote driver')
+    use_remote = false
+    if get_option('driver_remote').enabled()
+      error('XDR is required for remote driver')
+    endif
   endif
-  conf.set('WITH_REMOTE', 1)
+
+  if use_remote
+    conf.set('WITH_REMOTE', 1)
+  endif
 endif
 
 remote_default_mode = get_option('remote_default_mode').to_upper()
