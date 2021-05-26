@@ -1313,8 +1313,6 @@ libxlMakeNic(virDomainDef *def,
         return -1;
     }
 
-    libxl_device_nic_init(x_nic);
-
     virMacAddrGetRaw(&l_nic->mac, x_nic->mac);
 
     /*
@@ -1502,6 +1500,7 @@ libxlMakeNicList(virDomainDef *def,  libxl_domain_config *d_config)
     size_t nnics = def->nnets;
     libxl_device_nic *x_nics;
     size_t i, nvnics = 0;
+    int ret = -1;
 
     x_nics = g_new0(libxl_device_nic, nnics);
 
@@ -1509,8 +1508,9 @@ libxlMakeNicList(virDomainDef *def,  libxl_domain_config *d_config)
         if (virDomainNetGetActualType(l_nics[i]) == VIR_DOMAIN_NET_TYPE_HOSTDEV)
             continue;
 
+        libxl_device_nic_init(&x_nics[nvnics]);
         if (libxlMakeNic(def, l_nics[i], &x_nics[nvnics], false))
-            goto error;
+            goto out;
         /*
          * The devid (at least right now) will not get initialized by
          * libxl in the setup case but is required for starting the
@@ -1521,18 +1521,14 @@ libxlMakeNicList(virDomainDef *def,  libxl_domain_config *d_config)
 
         nvnics++;
     }
+    ret = 0;
 
+ out:
     VIR_SHRINK_N(x_nics, nnics, nnics - nvnics);
     d_config->nics = x_nics;
     d_config->num_nics = nvnics;
 
-    return 0;
-
- error:
-    for (i = 0; i < nnics; i++)
-        libxl_device_nic_dispose(&x_nics[i]);
-    VIR_FREE(x_nics);
-    return -1;
+    return ret;
 }
 
 int
