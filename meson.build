@@ -1704,7 +1704,7 @@ if not get_option('driver_secrets').disabled() and conf.has('WITH_LIBVIRTD')
   conf.set('WITH_SECRETS', 1)
 endif
 
-if get_option('driver_test').enabled()
+if not get_option('driver_test').disabled()
   conf.set('WITH_TEST', 1)
 endif
 
