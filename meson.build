@@ -844,6 +844,7 @@ endforeach
 
 # generic build dependencies
 
+# FIXME rewrite to use dependency()
 acl_dep = cc.find_library('acl', required: false)
 if acl_dep.found()
   conf.set('WITH_LIBACL', 1)
@@ -859,12 +860,13 @@ if apparmor_dep.found()
   conf.set_quoted('APPARMOR_PROFILES_PATH', '/sys/kernel/security/apparmor/profiles')
 endif
 
+# FIXME rewrite to use dependency() once we can use 2.4.48
 attr_dep = cc.find_library('attr', required: get_option('attr'))
 if attr_dep.found()
   conf.set('WITH_LIBATTR', 1)
 endif
 
-audit_dep = cc.find_library('audit', required: get_option('audit'))
+audit_dep = dependency('audit', required: get_option('audit'))
 if audit_dep.found()
   conf.set('WITH_AUDIT', 1)
 endif
@@ -878,7 +880,7 @@ if blkid_dep.found()
   conf.set('WITH_BLKID', 1)
 endif
 
-capng_dep = cc.find_library('cap-ng', required: get_option('capng'))
+capng_dep = dependency('libcap-ng', required: get_option('capng'))
 if capng_dep.found()
   conf.set('WITH_CAPNG', 1)
 endif
@@ -1071,6 +1073,7 @@ else
   intl_dep = dependency('', required: false)
 endif
 
+# FIXME rewrite to use dependency() once we can use 2.0.14
 numactl_dep = cc.find_library('numa', required: get_option('numactl'))
 if numactl_dep.found()
   conf.set('WITH_NUMACTL', 1)
@@ -1160,7 +1163,7 @@ else
   sasl_dep = dependency('', required: false)
 endif
 
-selinux_dep = cc.find_library('selinux', required: get_option('selinux'))
+selinux_dep = dependency('libselinux', required: get_option('selinux'))
 if selinux_dep.found()
   selinux_mount = get_option('selinux_mount')
   if selinux_mount == ''
@@ -1269,7 +1272,7 @@ elif host_machine.system() == 'linux'
 elif host_machine.system() in [ 'freebsd', 'darwin' ]
   xdr_dep = cc.find_library('c', required: false)
 else
-  xdr_dep = declare_dependency()
+  xdr_dep = dependency('', required: false)
 endif
 
 yajl_version = '2.0.3'
@@ -1469,16 +1472,16 @@ if not get_option('driver_libxl').disabled() and conf.has('WITH_LIBVIRTD')
     if cc.has_header('libxlutil.h')
       conf.set('WITH_LIBXLUTIL_H', 1)
     endif
-    xl_util_dep = cc.find_library('xlutil')
+    xl_util_dep = dependency('xlutil')
 
-    xen_store_dep = cc.find_library('xenstore')
+    xen_store_dep = dependency('xenstore')
 
     # xtl_* infrastructure is in libxentoollog since Xen 4.7 previously
     # it was in libxenctrl.
     if libxl_dep.version().version_compare('>=4.7.0')
-      xtl_link_dep = cc.find_library('xentoollog')
+      xtl_link_dep = dependency('xentoollog')
     else
-      xtl_link_dep = cc.find_library('xenctrl')
+      xtl_link_dep = dependency('xenctrl')
     endif
 
     if libxl_dep.version().version_compare('>=4.13.0')
