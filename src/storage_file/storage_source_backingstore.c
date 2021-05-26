@@ -109,7 +109,7 @@ virStorageSourceParseBackingURI(virStorageSource *src,
 
     if (src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
         if (virStorageSourceNetworkProtocolPathSplit(src->path, src->protocol,
-                                                     NULL, NULL) < 0)
+                                                     NULL, NULL, NULL) < 0)
             return -1;
     }
 

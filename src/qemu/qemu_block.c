@@ -405,7 +405,7 @@ qemuBlockStorageSourceGetGlusterProps(virStorageSource *src,
 
     if (virStorageSourceNetworkProtocolPathSplit(src->path,
                                                  VIR_STORAGE_NET_PROTOCOL_GLUSTER,
-                                                 &volume, &path) < 0)
+                                                 &volume, NULL, &path) < 0)
         return NULL;
 
      /* { driver:"gluster",
@@ -666,11 +666,12 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
     g_autoptr(virJSONValue) authmodes = NULL;
     const char *keysecret = NULL;
     g_autofree char *pool = NULL;
+    g_autofree char *namespace = NULL;
     g_autofree char *image = NULL;
 
     if (virStorageSourceNetworkProtocolPathSplit(src->path,
                                                  VIR_STORAGE_NET_PROTOCOL_RBD,
-                                                 &pool, &image) < 0)
+                                                 &pool, &namespace, &image) < 0)
         return NULL;
 
     if (src->nhosts > 0 &&
@@ -726,6 +727,7 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
 
     if (virJSONValueObjectAdd(&ret,
                               "s:pool", pool,
+                              "S:namespace", namespace,
                               "s:image", image,
                               "S:snapshot", src->snapshot,
                               "S:conf", src->configFile,

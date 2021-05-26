@@ -106,7 +106,7 @@ virStorageFileBackendGlusterInit(virStorageSource *src)
 
     if (virStorageSourceNetworkProtocolPathSplit(src->path,
                                                  VIR_STORAGE_NET_PROTOCOL_GLUSTER,
-                                                 &volume, &image) < 0)
+                                                 &volume, NULL, &image) < 0)
         return -1;
 
     priv = g_new0(virStorageFileBackendGlusterPriv, 1);

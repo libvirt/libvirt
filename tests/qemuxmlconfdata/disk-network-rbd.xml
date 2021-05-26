@@ -53,7 +53,7 @@
       <auth username='myname'>
         <secret type='ceph' usage='mycluster_myname'/>
       </auth>
-      <source protocol='rbd' name='pool/image'>
+      <source protocol='rbd' name='pool/namespace/image'>
         <host name='mon1.example.org' port='6321'/>
         <host name='mon2.example.org' port='6322'/>
         <host name='mon3.example.org' port='6322'/>
@@ -62,7 +62,7 @@
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
-      <source protocol='rbd' name='pool/image'>
+      <source protocol='rbd' name='pool/namespace/image'>
         <host name='::1' port='6321'/>
         <host name='example.org' port='6789'/>
         <host name='ffff:1234:567:abc::0f' port='6322'/>

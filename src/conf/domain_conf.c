@@ -7370,7 +7370,8 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
         return -1;
     }
 
-    if (virStorageSourceNetworkProtocolPathSplit(src->path, src->protocol, NULL, NULL) < 0)
+    if (virStorageSourceNetworkProtocolPathSplit(src->path, src->protocol,
+                                                 NULL, NULL, NULL) < 0)
         return -1;
 
     if (virXMLPropTristateBool(node, "tls", VIR_XML_PROP_NONE,

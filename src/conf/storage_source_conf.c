@@ -1451,6 +1451,7 @@ virStorageSourceFDTupleNew(void)
  * @path: path to split
  * @protocol: protocol
  * @pool: filled with pool name (may be NULL)
+ * @namespace: filed with namespace (may be NULL)
  * @image: filled with image name (may be NULL)
  *
  * Historically libvirt accepted the specification of Gluster's volume and
@@ -1465,35 +1466,57 @@ int
 virStorageSourceNetworkProtocolPathSplit(const char *path,
                                          virStorageNetProtocol protocol,
                                          char **pool,
+                                         char **namespace,
                                          char **image)
 {
-
-    g_autofree char *pathcopy = g_strdup(path);
-    char *tmp;
+    g_auto(GStrv) tokens = NULL;
+    int components_max = 2;
+    size_t ncomponents = 0;
+    size_t i;
 
     if (protocol != VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
         protocol != VIR_STORAGE_NET_PROTOCOL_RBD) {
 
         if (image)
-            *image = g_steal_pointer(&pathcopy);
+            *image = g_strdup(path);
 
         return 0;
     }
 
-    if (!(tmp = strchr(pathcopy, '/')) || tmp == pathcopy) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("can't split path '%1$s' into pool name and image name"),
-                       pathcopy);
-        return -1;
+    if (protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
+        /* the name of rbd can be <pool>/<image> or <pool>/<namespace>/<image> */
+        components_max = 3;
     }
 
-    tmp[0] = '\0';
+    if ((tokens = g_strsplit(path, "/", components_max)))
+        ncomponents = g_strv_length(tokens);
+
+    if (ncomponents < 2)
+        goto error;
+
+    for (i = 0; i < ncomponents; i++) {
+        if (*tokens[i] == '\0')
+            goto error;
+    }
 
     if (pool)
-        *pool = g_steal_pointer(&pathcopy);
+        *pool = g_strdup(tokens[0]);
+
+    if (namespace) {
+        if (ncomponents == 3)
+            *namespace = g_strdup(tokens[1]);
+        else
+            *namespace = NULL;
+    }
 
     if (image)
-        *image = g_strdup(tmp + 1);
+        *image = g_strdup(tokens[ncomponents - 1]);
 
     return 0;
+
+ error:
+    virReportError(VIR_ERR_XML_ERROR,
+                   _("failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' components"),
+                   path);
+    return -1;
 }

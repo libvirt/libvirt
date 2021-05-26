@@ -602,4 +602,5 @@ int
 virStorageSourceNetworkProtocolPathSplit(const char *path,
                                          virStorageNetProtocol protocol,
                                          char **pool,
+                                         char **namespace,
                                          char **image);

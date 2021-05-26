@@ -2958,6 +2958,12 @@ paravirtualized driver is specified via the ``disk`` element.
       the optional attribute ``tlsHostname`` can be used to override the
       expected host name of the NBD server used for TLS certificate verification.
 
+      For "rbd", the ``name`` attribute could be two formats: the format of
+      ``pool_name/image_name`` includes the rbd pool name and image name with
+      default rbd pool namespace; for the customized namespace, the format is
+      ``pool_name/namespace/image_name`` ( :since:`Since 11.6.0 and QEMU 5.0` ).
+      The pool name, namespace and image are separated by slash.
+
       For protocols ``http`` and ``https`` an optional attribute ``query``
       specifies the query string. ( :since:`Since 6.2.0` )
 
