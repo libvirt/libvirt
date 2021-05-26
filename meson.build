@@ -1342,8 +1342,11 @@ endif
 if not get_option('firewalld').disabled()
   firewalld_enable = true
 
-  if host_machine.system() == 'freebsd'
+  if host_machine.system() != 'linux'
     firewalld_enable = false
+    if get_option('firewalld').enabled()
+      error('firewalld support can only be enabled on Linux')
+    endif
   endif
 
   if firewalld_enable
