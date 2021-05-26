@@ -1266,6 +1266,8 @@ if host_machine.system() == 'windows'
   xdr_dep = cc.find_library('portablexdr', required: false)
 elif host_machine.system() == 'linux'
   xdr_dep = dependency('libtirpc', required: false)
+elif host_machine.system() in [ 'freebsd', 'darwin' ]
+  xdr_dep = cc.find_library('c', required: false)
 else
   xdr_dep = declare_dependency()
 endif
@@ -1375,7 +1377,7 @@ endif
 # build driver options
 
 if get_option('driver_remote').enabled()
-  if not xdr_dep.found() and host_machine.system() not in [ 'freebsd', 'darwin' ]
+  if not xdr_dep.found()
     error('XDR is required for remote driver')
   endif
   conf.set('WITH_REMOTE', 1)
