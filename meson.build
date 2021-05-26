@@ -904,16 +904,6 @@ endif
 curl_version = '7.19.1'
 curl_dep = dependency('libcurl', version: '>=' + curl_version, required: get_option('curl'))
 if curl_dep.found()
-  # XXX as of libcurl-devel-7.20.1-3.fc13.x86_64, curl ships a version
-  # of <curl/curl.h> that #defines several wrapper macros around underlying
-  # functions to add type safety for gcc only.  However, these macros
-  # spuriously trip gcc's -Wlogical-op warning.  Avoid the warning by
-  # disabling the wrappers; even if it removes some type-check safety.
-  curl_dep = declare_dependency(
-    compile_args: [ '-DCURL_DISABLE_TYPECHECK' ],
-    dependencies: [ curl_dep ],
-  )
-
   conf.set('WITH_CURL', 1)
 endif
 
