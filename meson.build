@@ -1838,7 +1838,7 @@ if conf.has('WITH_LIBVIRTD')
   if not get_option('storage_vstorage').disabled()
     vstorage_enable = true
     if host_machine.system() != 'linux'
-      if get_option('storage_fs').enabled()
+      if get_option('storage_vstorage').enabled()
         error('Vstorage is supported only on Linux')
       else
         vstorage_enable = false
