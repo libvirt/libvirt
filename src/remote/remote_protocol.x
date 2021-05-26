@@ -2182,6 +2182,19 @@ struct remote_node_device_create_args {
     unsigned int flags;
 };
 
+struct remote_node_device_get_autostart_args {
+    remote_nonnull_string name;
+};
+
+struct remote_node_device_get_autostart_ret {
+    int autostart;
+};
+
+struct remote_node_device_set_autostart_args {
+    remote_nonnull_string name;
+    int autostart;
+};
+
 
 /*
  * Events Register/Deregister:
@@ -6818,5 +6831,19 @@ enum remote_procedure {
      * @acl: network:write
      * @acl: network:save
      */
-    REMOTE_PROC_NETWORK_DEFINE_XML_FLAGS = 432
+    REMOTE_PROC_NETWORK_DEFINE_XML_FLAGS = 432,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: node_device:read
+     */
+    REMOTE_PROC_NODE_DEVICE_GET_AUTOSTART = 433,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: node_device:write
+     */
+    REMOTE_PROC_NODE_DEVICE_SET_AUTOSTART = 434
 };

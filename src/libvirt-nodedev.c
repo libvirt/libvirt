@@ -980,3 +980,79 @@ virConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
     virDispatchError(conn);
     return -1;
 }
+
+/**
+ * virNodeDeviceSetAutostart:
+ * @dev: the device object
+ * @autostart: whether the device should be automatically started
+ *
+ * Configure the node device to be automatically started when the host machine
+ * boots or the parent device becomes available.
+ *
+ * Returns -1 in case of error, 0 in case of success
+ */
+int
+virNodeDeviceSetAutostart(virNodeDevicePtr dev,
+                          int autostart)
+{
+    VIR_DEBUG("dev=%p", dev);
+
+    virResetLastError();
+
+    virCheckNodeDeviceReturn(dev, -1);
+    virCheckReadOnlyGoto(dev->conn->flags, error);
+
+    if (dev->conn->nodeDeviceDriver &&
+        dev->conn->nodeDeviceDriver->nodeDeviceSetAutostart) {
+        int retval = dev->conn->nodeDeviceDriver->nodeDeviceSetAutostart(dev, autostart);
+        if (retval < 0)
+            goto error;
+
+        return 0;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dev->conn);
+    return -1;
+}
+
+
+/**
+ * virNodeDeviceGetAutostart:
+ * @dev: the device object
+ * @autostart: the value returned
+ *
+ * Provides a boolean value indicating whether the node device is configured to
+ * be automatically started when the host machine boots or the parent device
+ * becomes available.
+ *
+ * Returns -1 in case of error, 0 in case of success
+ */
+int
+virNodeDeviceGetAutostart(virNodeDevicePtr dev,
+                          int *autostart)
+{
+    VIR_DEBUG("dev=%p", dev);
+
+    virResetLastError();
+
+    virCheckNodeDeviceReturn(dev, -1);
+    virCheckReadOnlyGoto(dev->conn->flags, error);
+
+    if (dev->conn->nodeDeviceDriver &&
+        dev->conn->nodeDeviceDriver->nodeDeviceGetAutostart) {
+        int retval = dev->conn->nodeDeviceDriver->nodeDeviceGetAutostart(dev, autostart);
+        if (retval < 0)
+            goto error;
+
+        return 0;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dev->conn);
+    return -1;
+}

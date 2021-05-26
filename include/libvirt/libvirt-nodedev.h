@@ -141,6 +141,12 @@ int virNodeDeviceUndefine(virNodeDevicePtr dev,
 int virNodeDeviceCreate(virNodeDevicePtr dev,
                         unsigned int flags);
 
+int virNodeDeviceSetAutostart(virNodeDevicePtr dev,
+                              int autostart);
+
+int virNodeDeviceGetAutostart(virNodeDevicePtr dev,
+                              int *autostart);
+
 /**
  * VIR_NODE_DEVICE_EVENT_CALLBACK:
  *
