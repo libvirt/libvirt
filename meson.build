@@ -1145,7 +1145,7 @@ if readline_dep.found()
 endif
 
 if not get_option('sanlock').disabled()
-  sanlock_dep = dependency('libsanlock_client', required: false)
+  sanlock_dep = dependency('libsanlock_client', required: get_option('sanlock'))
 
   if sanlock_dep.found()
     conf.set('WITH_SANLOCK', 1)
