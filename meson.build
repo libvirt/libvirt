@@ -1022,7 +1022,7 @@ endif
 libxml_version = '2.9.1'
 libxml_dep = dependency('libxml-2.0', version: '>=' + libxml_version)
 
-libm_dep = cc.find_library('m', required: false)
+libm_dep = cc.find_library('m')
 
 netcf_version = '0.1.8'
 netcf_dep = dependency('netcf', version: '>=' + netcf_version, required: get_option('netcf'))
@@ -2229,7 +2229,6 @@ libs_summary = {
   'glusterfs': glusterfs_dep.found(),
   'libiscsi': libiscsi_dep.found(),
   'libkvm': libkvm_dep.found(),
-  'libm': libm_dep.found(),
   'libnl': libnl_dep.found(),
   'libparted': libparted_dep.found(),
   'libpcap': libpcap_dep.found(),
