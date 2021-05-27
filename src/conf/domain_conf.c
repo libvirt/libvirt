@@ -15141,12 +15141,18 @@ virDomainDiskDefParseSource(const char *xmlStr,
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(virStorageSource) src = NULL;
+    xmlNodePtr driverNode;
 
     if (!(xml = virXMLParseStringCtxtRoot(xmlStr, _("(disk_definition)"), "disk", &ctxt)))
         return NULL;
 
     if (!(src = virDomainDiskDefParseSourceXML(xmlopt, ctxt->node, ctxt, flags)))
         return NULL;
+
+    if ((driverNode = virXPathNode("./driver", ctxt))) {
+        if (virDomainDiskDefDriverSourceParseXML(src, driverNode, ctxt) < 0)
+            return NULL;
+    }
 
     if (virStorageSourceIsEmpty(src)) {
         virReportError(VIR_ERR_NO_SOURCE, NULL);
