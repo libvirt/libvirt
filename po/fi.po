@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-04-27 08:10+0000\n"
-"PO-Revision-Date: 2021-04-19 09:05+0000\n"
-"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
+"PO-Revision-Date: 2021-05-25 15:10+0000\n"
+"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
 "Language: fi\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.3\n"
+"X-Generator: Weblate 4.6.2\n"
 
 msgid ""
 "\n"
@@ -7405,7 +7405,7 @@ msgid "Failed to open pid file '%s'"
 msgstr "pid-tiedoston '%s' avaaminen epäonnistui"
 
 msgid "Failed to open socket to sanlock daemon"
-msgstr ""
+msgstr "Pistokkeen avaaminen sanlock daemonia varten epäonnistui"
 
 #, c-format
 msgid "Failed to open socket to sanlock daemon: %s"
@@ -8371,7 +8371,7 @@ msgid "Filtering using --type is not supported by this libvirt"
 msgstr ""
 
 msgid "Finished"
-msgstr ""
+msgstr "Valmis"
 
 msgid "Finished after guest request"
 msgstr ""
@@ -10345,7 +10345,7 @@ msgid "Library function returned error but did not set virError"
 msgstr ""
 
 msgid "Libvirt"
-msgstr ""
+msgstr "Libvirt"
 
 #, c-format
 msgid "Lifecycle event '%s' doesn't support '%s' action"
@@ -12637,7 +12637,7 @@ msgid "Operation is not supported for device: %s"
 msgstr ""
 
 msgid "Operation not supported"
-msgstr ""
+msgstr "Toimintaa ei tueta"
 
 #, c-format
 msgid "Operation not supported: %s"
@@ -14384,9 +14384,8 @@ msgstr ""
 msgid "Socket path %s too big for destination"
 msgstr ""
 
-#, fuzzy
 msgid "Sockets:"
-msgstr "Prosessorikantoja:"
+msgstr "Pistokkeet:"
 
 msgid "Some activation file descriptors are unclaimed"
 msgstr ""
@@ -23401,7 +23400,7 @@ msgid "device key"
 msgstr ""
 
 msgid "device name"
-msgstr ""
+msgstr "laitteen nimi"
 
 msgid "device name or wwn pair in 'wwnn,wwpn' format"
 msgstr ""
@@ -24746,7 +24745,7 @@ msgid "extended partition already exists"
 msgstr ""
 
 msgid "external"
-msgstr ""
+msgstr "ulkoinen"
 
 #, c-format
 msgid "external active snapshots are not supported on '%s' disks"
@@ -26344,6 +26343,8 @@ msgid ""
 "format '%s' is not supported, expecting 'kdump-zlib', 'kdump-lzo', 'kdump-"
 "snappy' or 'elf'"
 msgstr ""
+"muotoa '%s' ei tueta, odottaen 'kdump-zlib', 'kdump-lzo', 'kdump-snappy' tai "
+"'elf'"
 
 msgid "format features only available with qcow2"
 msgstr ""
@@ -28269,10 +28270,10 @@ msgid "job type '%s' does not support pivot"
 msgstr "komento ”%s” ei tue valitsinta"
 
 msgid "kdump-compressed format is not supported here"
-msgstr ""
+msgstr "kdump-pakattua muotoa ei tueta täällä"
 
 msgid "kdump-compressed format is only supported with memory-only dump"
-msgstr ""
+msgstr "kdump-pakattua muotoa tuetaan vain muistia tyhjennyksessä."
 
 msgid "keep nvram file, if inactive"
 msgstr ""
@@ -29371,9 +29372,8 @@ msgstr "siirretty"
 msgid "migrating"
 msgstr "siirretään"
 
-#, fuzzy
 msgid "migration"
-msgstr "siirto käytettäessä"
+msgstr "siirto"
 
 msgid "migration URI is not supported by tunnelled migration"
 msgstr ""
@@ -34590,7 +34590,7 @@ msgid "target vm vcpu granularity does not allow the desired vcpu count"
 msgstr ""
 
 msgid "tcp"
-msgstr ""
+msgstr "tcp"
 
 msgid "teaming hostdev devices must have type='transient'"
 msgstr ""
@@ -37221,7 +37221,7 @@ msgid "unrecognized section name '%s'"
 msgstr ""
 
 msgid "unspecified error"
-msgstr ""
+msgstr "määrittelemätön virhe"
 
 #, c-format
 msgid ""
@@ -37319,13 +37319,12 @@ msgstr "ei tuettu kellon siirtymä=%s"
 msgid "unsupported config type %s"
 msgstr "Kokoonpanotyyppi %s ei tuettu"
 
-#, fuzzy
 msgid "unsupported configuration"
-msgstr "asetustiedoston lukeminen epäonnistui"
+msgstr "kokoonpanoa ei tueta"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported configuration: %s"
-msgstr "ei tuettu arkkitehtuuri: %s"
+msgstr "kokoonpanoa ei tueta %s"
 
 #, c-format
 msgid "unsupported connection mode for <reservations/>: %s"
@@ -37586,9 +37585,8 @@ msgstr ""
 msgid "unsupported usb model"
 msgstr "levylaite ei tuettu"
 
-#, fuzzy
 msgid "unsupported value"
-msgstr "levylaite ei tuettu"
+msgstr "ei tuettu arvo"
 
 #, c-format
 msgid "unsupported volume encryption format %d"
