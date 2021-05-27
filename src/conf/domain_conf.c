@@ -8849,7 +8849,6 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
                                xmlNodePtr cur,
                                xmlXPathContextPtr ctxt)
 {
-    g_autofree char *tmp = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = cur;
@@ -8900,19 +8899,6 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
     if (virXMLPropUInt(cur, "iothread", 10, VIR_XML_PROP_NONZERO, &def->iothread) < 0)
         return -1;
 
-    if ((tmp = virXMLPropString(cur, "type"))) {
-        if (STREQ(tmp, "aio")) {
-            /* Xen back-compat */
-            def->src->format = VIR_STORAGE_FILE_RAW;
-        } else {
-            if ((def->src->format = virStorageFileFormatTypeFromString(tmp)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown driver format value '%s'"), tmp);
-                return -1;
-            }
-        }
-    }
-
     if (virXMLPropEnum(cur, "detect_zeroes",
                        virDomainDiskDetectZeroesTypeFromString,
                        VIR_XML_PROP_NONZERO, &def->detect_zeroes) < 0)
@@ -8921,9 +8907,36 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
     if (virXMLPropUInt(cur, "queues", 10, VIR_XML_PROP_NONE, &def->queues) < 0)
         return -1;
 
+    return 0;
+}
+
+
+static int
+virDomainDiskDefDriverSourceParseXML(virStorageSource *src,
+                                     xmlNodePtr cur,
+                                     xmlXPathContextPtr ctxt)
+{
+    g_autofree char *tmp = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    ctxt->node = cur;
+
+    if ((tmp = virXMLPropString(cur, "type"))) {
+        if (STREQ(tmp, "aio")) {
+            /* Xen back-compat */
+            src->format = VIR_STORAGE_FILE_RAW;
+        } else {
+            if ((src->format = virStorageFileFormatTypeFromString(tmp)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown driver format value '%s'"), tmp);
+                return -1;
+            }
+        }
+    }
+
     if (virParseScaledValue("./metadata_cache/max_size", NULL,
                             ctxt,
-                            &def->src->metadataCacheMaxSize,
+                            &src->metadataCacheMaxSize,
                             1, ULLONG_MAX, false) < 0)
         return -1;
 
@@ -9128,6 +9141,9 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
             return NULL;
 
         if (virDomainDiskDefDriverParseXML(def, driverNode, ctxt) < 0)
+            return NULL;
+
+        if (virDomainDiskDefDriverSourceParseXML(def->src, driverNode, ctxt) < 0)
             return NULL;
     }
 
