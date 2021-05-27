@@ -5131,6 +5131,21 @@ When *--timestamp* is used, a human-readable timestamp will be printed
 before the event.
 
 
+nodedev-autostart
+-----------------
+
+**Syntax:**
+
+::
+
+   nodedev-autostart [--disable] device
+
+Configure a device to be automatically started when the host machine boots or
+the parent device becomes available. With *--disable*, the device will be set
+to manual mode and will no longer be automatically started by the host. This
+command is only supported for persistently-defined mediated devices.
+
+
 VIRTUAL NETWORK COMMANDS
 ========================
 

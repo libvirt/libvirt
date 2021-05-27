@@ -1153,6 +1153,71 @@ cmdNodeDeviceStart(vshControl *ctl, const vshCmd *cmd)
 }
 
 
+/*
+ * "nodedev-autostart" command
+ */
+static const vshCmdInfo info_node_device_autostart[] = {
+    {.name = "help",
+     .data = N_("autostart a defined node device")
+    },
+    {.name = "desc",
+     .data = N_("Configure a node device to be automatically started at boot.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_node_device_autostart[] = {
+    {.name = "device",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("device name or wwn pair in 'wwnn,wwpn' format"),
+     .completer = virshNodeDeviceNameCompleter,
+    },
+    {.name = "disable",
+     .type = VSH_OT_BOOL,
+     .help = N_("disable autostarting")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdNodeDeviceAutostart(vshControl *ctl, const vshCmd *cmd)
+{
+    virNodeDevice *dev = NULL;
+    bool ret = false;
+    const char *name = NULL;
+    int autostart;
+
+    if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
+        return false;
+
+    dev = vshFindNodeDevice(ctl, name);
+
+    if (!dev) goto cleanup;
+
+    autostart = !vshCommandOptBool(cmd, "disable");
+
+    if (virNodeDeviceSetAutostart(dev, autostart) < 0) {
+        if (autostart)
+            vshError(ctl, _("failed to mark device %s as autostarted"), name);
+        else
+            vshError(ctl, _("failed to unmark device %s as autostarted"), name);
+        goto cleanup;
+    }
+
+    if (autostart)
+        vshPrintExtra(ctl, _("Device %s marked as autostarted\n"), name);
+    else
+        vshPrintExtra(ctl, _("Device %s unmarked as autostarted\n"), name);
+
+    ret = true;
+ cleanup:
+    if (dev)
+        virNodeDeviceFree(dev);
+    return ret;
+}
+
+
 const vshCmdDef nodedevCmds[] = {
     {.name = "nodedev-create",
      .handler = cmdNodeDeviceCreate,
@@ -1222,6 +1287,12 @@ const vshCmdDef nodedevCmds[] = {
      .handler = cmdNodeDeviceStart,
      .opts = opts_node_device_start,
      .info = info_node_device_start,
+     .flags = 0
+    },
+    {.name = "nodedev-autostart",
+     .handler = cmdNodeDeviceAutostart,
+     .opts = opts_node_device_autostart,
+     .info = info_node_device_autostart,
      .flags = 0
     },
     {.name = NULL}
