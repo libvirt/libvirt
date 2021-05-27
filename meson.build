@@ -857,11 +857,19 @@ if apparmor_dep.found()
   conf.set_quoted('APPARMOR_PROFILES_PATH', '/sys/kernel/security/apparmor/profiles')
 endif
 
-if get_option('apparmor_profiles')
+if not get_option('apparmor_profiles').disabled()
+  apparmor_profiles_enable = true
+
   if not conf.has('WITH_APPARMOR')
-    error('Cannot enable apparmor_profiles without apparmor')
+    apparmor_profiles_enable = false
+    if get_option('apparmor_profiles').enabled()
+      error('Cannot enable apparmor_profiles without apparmor')
+    endif
   endif
-  conf.set('WITH_APPARMOR_PROFILES', 1)
+
+  if apparmor_profiles_enable
+    conf.set('WITH_APPARMOR_PROFILES', 1)
+  endif
 endif
 
 # FIXME rewrite to use dependency() once we can use 2.4.48

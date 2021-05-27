@@ -69,7 +69,7 @@ option('driver_vmware', type: 'feature', value: 'auto', description: 'VMware dri
 option('driver_vz', type: 'feature', value: 'auto', description: 'Virtuozzo driver')
 
 option('secdriver_apparmor', type: 'feature', value: 'auto', description: 'use AppArmor security driver')
-option('apparmor_profiles', type: 'boolean', value: false, description: 'install apparmor profiles')
+option('apparmor_profiles', type: 'feature', value: 'disabled', description: 'install apparmor profiles')
 option('secdriver_selinux', type: 'feature', value: 'auto', description: 'use SELinux security driver')
 
 

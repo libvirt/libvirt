@@ -1128,7 +1128,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            -Dselinux=enabled \
            %{?arg_selinux_mount} \
            -Dapparmor=disabled \
-           -Dapparmor_profiles=false \
+           -Dapparmor_profiles=disabled \
            -Dsecdriver_apparmor=disabled \
            -Dudev=enabled \
            -Dyajl=enabled \

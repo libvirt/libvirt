@@ -108,7 +108,7 @@ exit 1
   -Dcurl=enabled \
   -Ddocs=enabled \
   -Dapparmor=disabled \
-  -Dapparmor_profiles=false \
+  -Dapparmor_profiles=disabled \
   -Dattr=disabled \
   -Daudit=disabled \
   -Dbash_completion=disabled \
