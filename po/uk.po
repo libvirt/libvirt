@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-05-25 14:38+0000\n"
-"PO-Revision-Date: 2021-03-27 14:01+0000\n"
+"PO-Revision-Date: 2021-05-27 06:02+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.5.2\n"
+"X-Generator: Weblate 4.6.2\n"
 
 msgid ""
 "\n"
@@ -1404,6 +1404,8 @@ msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
 "in memory element"
 msgstr ""
+"режим «restrictive» є обов'язковим у елементі memnode, якщо у елементі "
+"memory встановлено режим «restrictive»"
 
 #, c-format
 msgid "'rx_queue_size' attribute must be positive number: %s"
@@ -1456,7 +1458,7 @@ msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr "для адаптера типу «fchost» слід вказати атрибути «wwnn» і «wwpn»"
 
 msgid "(<null>)"
-msgstr ""
+msgstr "(<null>)"
 
 msgid "(CPU_definition)"
 msgstr "(визначення_CPU)"
@@ -1810,10 +1812,10 @@ msgid "A storage driver is already registered"
 msgstr "Драйвер сховища даних вже зареєстровано"
 
 msgid "ACPI index is not supported with this QEMU"
-msgstr ""
+msgstr "підтримки індексу ACPI у цьому QEMU не передбачено"
 
 msgid "ACPI index is only supported for PCI devices"
-msgstr ""
+msgstr "Підтримку індексу ACPI передбачено лише для пристроїв PCI"
 
 msgid "ACPI requires UEFI on this architecture"
 msgstr "На цій архітектурі ACPI потребує UEFI"
@@ -2873,7 +2875,7 @@ msgstr "Не вдалося створити каталог автоматичн
 
 #, c-format
 msgid "Cannot create daemon common directory '%s'"
-msgstr ""
+msgstr "Не вдалося створити загальний каталог фонової служби «%s»"
 
 #, c-format
 msgid "Cannot create directory '%s'"
@@ -5290,7 +5292,7 @@ msgid "Default paths:"
 msgstr "Типові шляхи:"
 
 msgid "Define a device by an xml file on a node"
-msgstr ""
+msgstr "Визначити пристрій за файлом xml на вузлі"
 
 msgid "Define a domain."
 msgstr "Визначити домен."
@@ -5320,6 +5322,8 @@ msgid ""
 "Defines a persistent device on the node that can be assigned to a domain. "
 "The device must be started before it can be assigned to a domain."
 msgstr ""
+"Визначає на вузлі сталий пристрій, який можна буде пов'язати із доменом. "
+"Пристрій має запускатися до пов'язування із доменом."
 
 msgid "Delete a domain checkpoint"
 msgstr "Вилучити контрольну точку домену"
@@ -5442,7 +5446,7 @@ msgstr "Початковий стан пристрою %s відновлено\n
 
 #, c-format
 msgid "Device %s started\n"
-msgstr ""
+msgstr "Запущено пристрій %s\n"
 
 #, c-format
 msgid "Device %s un-attached from bridge %s\n"
@@ -5488,7 +5492,7 @@ msgid "Device detached successfully\n"
 msgstr "Пристрій успішно від'єднано\n"
 
 msgid "Device is already active"
-msgstr ""
+msgstr "Пристрій вже є активним"
 
 msgid "Device is not a fibre channel HBA"
 msgstr "Пристрій не є HBA Fibre Channel"
@@ -6324,7 +6328,7 @@ msgstr "У резервному сховищі має бути точно 1 ос
 
 #, c-format
 msgid "Expecting %d FD names but got %u"
-msgstr ""
+msgstr "Мало бути %d назв файлових дескрипторів, але маємо %u"
 
 #, c-format
 msgid "Expecting '%s' to be a %s host but found a %s host"
@@ -6433,6 +6437,8 @@ msgid ""
 "Expecting VMX entry 'sched.cpu.affinity' to contain at least as many values "
 "as 'numvcpus' (%lld) but found only %u value(s)"
 msgstr ""
+"Вивчено запис VMX «sched.cpu.affinity» щодо того, чи містить він принаймні "
+"стільки ж значень, скільки «numvcpus» (%lld). Виявлено лише %u значень."
 
 #, c-format
 msgid ""
@@ -6786,7 +6792,7 @@ msgstr "Не вдалося знайти образ керованого збе�
 
 #, c-format
 msgid "Failed to check system token '%s'"
-msgstr ""
+msgstr "Не вдалося перевірити жетон системи «%s»"
 
 #, c-format
 msgid "Failed to chown device %s"
@@ -7117,7 +7123,7 @@ msgstr "Не вдалося визначити новий інтерфейс %s"
 
 #, c-format
 msgid "Failed to define node device from '%s'"
-msgstr ""
+msgstr "Не вдалося визначити вузловий пристрій на основі «%s»"
 
 #, c-format
 msgid "Failed to define pool %s"
@@ -7723,7 +7729,7 @@ msgstr "Не вдалося знайти батьківський пристрі
 
 #, c-format
 msgid "Failed to lock system token '%s'"
-msgstr ""
+msgstr "Не вдалося заблокувати жетон системи «%s»"
 
 #, c-format
 msgid "Failed to login: %s"
@@ -8534,7 +8540,7 @@ msgstr "Не вдалося запустити інтерфейс містка %
 
 #, c-format
 msgid "Failed to start device %s"
-msgstr ""
+msgstr "Не вдалося запустити пристрій %s"
 
 #, c-format
 msgid "Failed to start domain '%s'"
@@ -8652,7 +8658,7 @@ msgstr "Не вдалося скасувати визначення фільтр
 
 #, c-format
 msgid "Failed to undefine node device '%s'"
-msgstr ""
+msgstr "Не вдалося скасувати визначення вузлового пристрою «%s»"
 
 #, c-format
 msgid "Failed to undefine pool %s"
@@ -8737,7 +8743,7 @@ msgstr "Не вдалося записати заголовок файла зб�
 
 #, c-format
 msgid "Failed to write system token '%s'"
-msgstr ""
+msgstr "Не вдалося записати жетон системи «%s»"
 
 #, c-format
 msgid "Failed to write to pid file '%s'"
@@ -9879,7 +9885,7 @@ msgstr "Некоректний шлях у URI, «%s», спробуйте «/sy
 
 #, c-format
 msgid "Invalid USB Class code 0x%x"
-msgstr ""
+msgstr "Некоректний код класу USB 0x%x"
 
 msgid "Invalid UUID"
 msgstr "Некоректний UUID"
@@ -10095,7 +10101,7 @@ msgstr "Некоректний канал диска у визначенні"
 
 #, c-format
 msgid "Invalid disk read error policy: '%s'"
-msgstr ""
+msgstr "Некоректні правила помилок читання з диска: «%s»"
 
 #, c-format
 msgid "Invalid dns enable setting '%s' in network '%s'"
@@ -10326,11 +10332,11 @@ msgstr "Некоректний рядок відповідності, «%s»"
 
 #, c-format
 msgid "Invalid maxEventChannels: %i"
-msgstr ""
+msgstr "Некоректне значення maxEventChannels: %i"
 
 #, c-format
 msgid "Invalid maxGrantFrames: %i"
-msgstr ""
+msgstr "Некоректне значення maxGrantFrames: %i"
 
 #, c-format
 msgid "Invalid memory core dump attribute value '%s'"
@@ -10488,7 +10494,7 @@ msgstr "Некоректний діапазон портів, «%u-%u»."
 
 #, c-format
 msgid "Invalid ports: %i"
-msgstr ""
+msgstr "Некоректні порти: %i"
 
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -10549,6 +10555,8 @@ msgid ""
 "Invalid specification for virtio ccw address: cssid='0x%x' ssid='0x%x' "
 "devno='0x%04x'"
 msgstr ""
+"Некоректна специфікація адреси ccw віртуального введення-виведення: "
+"cssid='0x%x' ssid='0x%x' devno='0x%04x'"
 
 #, c-format
 msgid "Invalid state '%s' in domain snapshot XML"
@@ -10583,7 +10591,7 @@ msgstr ""
 
 #, c-format
 msgid "Invalid target index '%i' in PCI controller"
-msgstr ""
+msgstr "Некоректний індекс призначення, «%i», у записі контролера PCI"
 
 msgid "Invalid target model for serial device"
 msgstr "Некоректна модель призначення для послідовного пристрою"
@@ -10643,7 +10651,7 @@ msgstr ""
 
 #, c-format
 msgid "Invalid uuid '%s' for new mdev device"
-msgstr ""
+msgstr "Некоректне значення UUID «%s» для нового пристрою mdev"
 
 #, c-format
 msgid "Invalid value '%s' for '%s'"
@@ -10659,17 +10667,21 @@ msgstr "Некоректне значення, «%s», для елемента �
 
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': '%s'."
-msgstr ""
+msgstr "Некоректне значення атрибута «%s» в елементі «%s»: «%s»."
 
 #, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
 msgstr ""
+"Некоректне значення атрибута «%s» в елементі «%s»: «%s». Мало бути ціле "
+"значення"
 
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
 msgstr ""
+"Некоректне значення атрибута «%s» в елементі «%s»: не можна використовувати "
+"нуль"
 
 #, c-format
 msgid "Invalid value for field '%s': expected double"
@@ -10729,17 +10741,17 @@ msgstr "некоректне значення «nodeset»: %s"
 
 #, c-format
 msgid "Invalid vectors: %i"
-msgstr ""
+msgstr "Некоректні вектори: %i"
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
 msgstr "Некоректний елемент «vendor» у записі моделі процесора %s"
 
 msgid "Invalid virNetLibsshSession *"
-msgstr ""
+msgstr "Некоректне значення virNetLibsshSession *"
 
 msgid "Invalid virNetSSHSession *"
-msgstr ""
+msgstr "Некоректне значення virNetSSHSession *"
 
 #, c-format
 msgid "Invalid vnuma configuration for vnode %zu"
@@ -11434,7 +11446,7 @@ msgid "Missing 'name' property in %s lookup"
 msgstr "У записі пошуку %s не вистачає властивості «name»"
 
 msgid "Missing 'path' attribute to 'target' element for lease"
-msgstr ""
+msgstr "Не вказано атрибута «path» елемента «target» для надання"
 
 msgid "Missing 'path' field in JSON document"
 msgstr "У документі JSON пропущено поле «path»"
@@ -11627,7 +11639,7 @@ msgid "Missing essential config entry '%s'"
 msgstr "Не вистачає важливого запису налаштувань «%s»"
 
 msgid "Missing evdev path for input device"
-msgstr ""
+msgstr "Не вказано шлях evdev до пристрою введення"
 
 msgid "Missing fd data in JSON document"
 msgstr "У документі JSON не вистачає даних fd"
@@ -11907,7 +11919,7 @@ msgstr "Пропущено обов'язкову адресу у <ip>"
 
 #, c-format
 msgid "Missing required attribute '%s' in element '%s'"
-msgstr ""
+msgstr "Пропущено обов'язковий атрибут «%s» в елементі «%s»"
 
 #, c-format
 msgid ""
@@ -12588,10 +12600,10 @@ msgid "No current block job for %s"
 msgstr "Немає поточних блокових завдань для %s"
 
 msgid "No current identity"
-msgstr ""
+msgstr "Немає поточного профілю"
 
 msgid "No current identity to elevate"
-msgstr ""
+msgstr "Немає поточного профілю для розширення привілеїв"
 
 msgid "No data supplied for <initarg> element"
 msgstr "Не вказано даних для елемента <initarg>"
@@ -12892,11 +12904,11 @@ msgstr "Вузловий пристрій %s створено на основі 
 
 #, c-format
 msgid "Node device '%s' defined from '%s'\n"
-msgstr ""
+msgstr "Вузловий пристрій «%s» визначено на основі «%s»\n"
 
 #, c-format
 msgid "Node device '%s' is not defined"
-msgstr ""
+msgstr "Вузловий пристрій «%s» не визначено"
 
 msgid "Node device not found"
 msgstr "Не знайдено пристрою вузла"
@@ -13303,13 +13315,13 @@ msgid "Option --%s is required by option --%s"
 msgstr "Параметр --%s потрібен для параметра --%s"
 
 msgid "Option --all is incompatible with --inactive"
-msgstr ""
+msgstr "Параметр --all є несумісним із --inactive"
 
 msgid "Option --file is required"
 msgstr "Слід вказати параметр --file"
 
 msgid "Option --tree is incompatible with other options"
-msgstr ""
+msgstr "Параметр --tree є несумісним із іншими параметрами"
 
 msgid "Option argument is empty"
 msgstr "Порожній аргумент параметра"
@@ -13560,10 +13572,10 @@ msgid "Parent device %s is not capable of vport operations"
 msgstr "Батьківський пристрій %s не здатен виконувати дії з віртуальним портом"
 
 msgid "Parent device is not an object"
-msgstr ""
+msgstr "Батьківський пристрій не є об'єктом"
 
 msgid "Parent device's JSON object data is not an array"
-msgstr ""
+msgstr "Дані об'єкта JSON батьківського пристрою не є масивом"
 
 msgid "Parent:"
 msgstr "Основний:"
@@ -15245,7 +15257,7 @@ msgid "Start a pool."
 msgstr "Запустити буфер."
 
 msgid "Start an inactive node device"
-msgstr ""
+msgstr "Запустити неактивний пристрій вузла"
 
 msgid "Start to calculate domain's memory dirty rate successfully.\n"
 msgstr "Успішний початок обчислення частки «зіпсованої» пам'яті домену.\n"
@@ -15258,7 +15270,7 @@ msgid "Starting shutdown on guest: $name"
 msgstr "Розпочинаємо завершення роботи гостьової системи: $name"
 
 msgid "Starts an inactive node device that was previously defined"
-msgstr ""
+msgstr "Запускає неактивний пристрій вузла, який було визначено раніше"
 
 msgid "State"
 msgstr "Статус"
@@ -15556,7 +15568,7 @@ msgstr "Відсутня підтримка NETNS"
 
 #, c-format
 msgid "System token in %s was corrupt"
-msgstr ""
+msgstr "Жетон системи у %s було пошкоджено"
 
 #, c-format
 msgid "TLS handshake failed %s"
@@ -15604,7 +15616,7 @@ msgstr "Призначення"
 
 #, c-format
 msgid "Target ACPI index '%u' does not match source '%u'"
-msgstr ""
+msgstr "Індекс ACPI призначення «%u» не збігається із індексом джерела «%u»"
 
 #, c-format
 msgid "Target CPU arch %s does not match source %s"
@@ -15910,6 +15922,8 @@ msgstr "Модель диска призначення, %s, не збігаєт�
 #, c-format
 msgid "Target disk rotation rate %u RPM does not match source %u RPM"
 msgstr ""
+"Частота обертання шпінделя диска у %u обертів за хвилину не збігається із "
+"частотою у %u обертів за хвилину джерела"
 
 #, c-format
 msgid "Target disk serial %s does not match source %s"
@@ -17614,7 +17628,7 @@ msgstr "Не вдалося створити реєстр носіїв"
 
 #, c-format
 msgid "Unable to create mediated device: %s"
-msgstr ""
+msgstr "Не вдалося створити проміжний пристрій %s"
 
 msgid "Unable to create migration thread"
 msgstr "Не вдалося створити потік обробки для перенесення"
@@ -17674,7 +17688,7 @@ msgstr "Не вдалося розкодувати кількість дескр
 
 #, c-format
 msgid "Unable to define mediated device: %s"
-msgstr ""
+msgstr "Не вдалося визначити проміжний пристрій: %s"
 
 #, c-format
 msgid "Unable to delete %s"
@@ -17709,11 +17723,11 @@ msgstr "Не вдалося вилучити порт %s з OVS"
 
 #, c-format
 msgid "Unable to destroy '%s': %s"
-msgstr ""
+msgstr "Не вдалося знищити «%s»: %s"
 
 #, c-format
 msgid "Unable to destroy '%s': device in use"
-msgstr ""
+msgstr "Не вдалося знищити «%s»: пристрій використано"
 
 #, c-format
 msgid "Unable to detect filesystem for %s"
@@ -17887,7 +17901,7 @@ msgid "Unable to format guestfwd port"
 msgstr "Не вдалося виконати форматування значення порту guestfwd"
 
 msgid "Unable to format metadata element"
-msgstr ""
+msgstr "Не вдалося виконати форматування елемента метаданих"
 
 msgid "Unable to format time"
 msgstr "Не вдалося форматувати час"
@@ -17961,10 +17975,10 @@ msgid "Unable to get XML Desc of snapshot"
 msgstr "Не вдалося отримати опис XML знімка"
 
 msgid "Unable to get a virDomainSnapshotDef *"
-msgstr ""
+msgstr "Не вдалося отримати virDomainSnapshotDef *"
 
 msgid "Unable to get any controller"
-msgstr ""
+msgstr "Не вдалося отримати жодного контролера"
 
 msgid "Unable to get blkio parameters"
 msgstr "Не вдалося отримати параметри blkio"
@@ -18322,7 +18336,7 @@ msgstr "Внесення змін до інтерактивних пристро
 
 #, c-format
 msgid "Unable to monitor directory: %s"
-msgstr ""
+msgstr "Не вдалося почати спостереження за каталогом: %s"
 
 #, c-format
 msgid "Unable to move %s mount to %s"
@@ -18413,7 +18427,7 @@ msgstr "Не вдалося відкрити потік даних для «%s»
 
 #, c-format
 msgid "Unable to open system token %s"
-msgstr ""
+msgstr "Не вдалося відкрити жетон системи %s"
 
 msgid "Unable to open test socket"
 msgstr "Не вдалося відкрити тестовий сокет"
@@ -18461,7 +18475,7 @@ msgid "Unable to parse base SELinux context '%s'"
 msgstr "Не вдалося обробити основний контекст SELinux «%s»"
 
 msgid "Unable to parse child device"
-msgstr ""
+msgstr "Не вдалося обробити дочірній пристрій"
 
 #, c-format
 msgid "Unable to parse class id '%s'"
@@ -19039,7 +19053,7 @@ msgstr "Не вдалося запустити потік обробки под�
 
 #, c-format
 msgid "Unable to start mediated device '%s': %s"
-msgstr ""
+msgstr "Не вдалося запустити проміжний пристрій «%s»: %s"
 
 #, c-format
 msgid "Unable to stat %p"
@@ -19086,7 +19100,7 @@ msgstr "Не вдалося від'єднати віртуальний порт 
 
 #, c-format
 msgid "Unable to undefine mediated device: %s"
-msgstr ""
+msgstr "Не вдалося скасувати визначення проміжного пристрою: %s"
 
 #, c-format
 msgid "Unable to unlink %s"
@@ -19206,7 +19220,7 @@ msgstr ""
 "тимчасовий."
 
 msgid "Undefine an inactive node device"
-msgstr ""
+msgstr "Скасувати визначення неактивного пристрою вузла"
 
 msgid "Undefine the configuration for a persistent network."
 msgstr "Скасувати призначення конфігурації для постійної мережі."
@@ -19219,10 +19233,10 @@ msgstr "Не визначено"
 
 #, c-format
 msgid "Undefined node device '%s'\n"
-msgstr ""
+msgstr "Невизначений пристрій вузла «%s»\n"
 
 msgid "Undefines the configuration for an inactive node device"
-msgstr ""
+msgstr "Скасовує визначення налаштувань для неактивного пристрою вузла"
 
 #, c-format
 msgid "Unexpected CPU fallback value: %d"
@@ -19331,7 +19345,7 @@ msgid "Unexpected filesystem type %s"
 msgstr "Неочікуваний тип файлової системи %s"
 
 msgid "Unexpected format for parent device object"
-msgstr ""
+msgstr "Неочікуваний формат для об'єкта батьківського пристрою"
 
 #, c-format
 msgid "Unexpected hostdev mode %d"
@@ -21210,6 +21224,8 @@ msgstr "для томів raw не передбачено підтримки р�
 #, c-format
 msgid "backing store for %s is self-referential or too deeply nested"
 msgstr ""
+"резервне сховище для %s посилається саме на себе або є надто глибоко "
+"вкладеним"
 
 #, c-format
 msgid "backing store parser is not implemented for protocol %s"
@@ -22087,7 +22103,7 @@ msgid "cannot decode CPU data for %s architecture"
 msgstr "не вдалося декодувати дані процесора для архітектури %s"
 
 msgid "cannot define a mediated device without a parent"
-msgstr ""
+msgstr "неможливо визначити проміжний пристрій без батьківського"
 
 msgid "cannot delete checkpoint for inactive domain"
 msgstr "неможливо вилучити контрольну точку для неактивного домену"
@@ -22623,7 +22639,7 @@ msgstr "не вдалося обробити запис версії %s у «%.*
 
 #, c-format
 msgid "cannot parse 'dspPolicy' value '%i'"
-msgstr ""
+msgstr "не вдалося обробити значення «dspPolicy» «%i»"
 
 msgid "cannot parse CPU data"
 msgstr "не вдалося обробити дані щодо процесора"
@@ -22699,7 +22715,7 @@ msgstr "не вдалось розібрати rdp-порт %s"
 
 #, c-format
 msgid "cannot parse sandbox mode '%s' for virtiofs"
-msgstr ""
+msgstr "не вдалося обробити режим пісочниці «%s» для virtiofs"
 
 #, c-format
 msgid "cannot parse target for lunStr '%s'"
@@ -24626,7 +24642,7 @@ msgid "device key"
 msgstr "ключ пристрою"
 
 msgid "device name"
-msgstr ""
+msgstr "назва пристрою"
 
 msgid "device name or wwn pair in 'wwnn,wwpn' format"
 msgstr "назва пристрою або пара wwn у форматі «wwnn,wwpn»"
@@ -24845,6 +24861,8 @@ msgstr "дисковий канал «%s» не можна оновлювати.
 #, c-format
 msgid "disk bus '%s' doesn't support transiend disk backing image sharing"
 msgstr ""
+"для каналу диска «%s» не передбачено підтримки оприлюднення резервного "
+"образу проміжного диска"
 
 msgid "disk device 'lun' doesn't support encryption"
 msgstr "для дискового пристрою «lun» не передбачено підтримку шифрування"
@@ -25702,7 +25720,7 @@ msgid "error sending continue signal to daemon"
 msgstr "не вдалося надіслати фоновій службі сигнал продовження"
 
 msgid "error waiting for continue signal from daemon"
-msgstr ""
+msgstr "помилка під час очікування на сигнал продовження від фонової служби"
 
 msgid "error while iterating over IFLA_VF_PORTS part"
 msgstr "помилка під час ітеративного виконання частини IFLA_VF_PORTS"
@@ -25997,7 +26015,7 @@ msgstr "слід вказати адресу ide:00.00.00."
 
 #, c-format
 msgid "expecting root element of '%s', not '%s'"
-msgstr ""
+msgstr "кореневим елементом мав бути «%s», а не «%s»"
 
 msgid "extended partition already exists"
 msgstr "розширений розділ вже існує"
@@ -26287,7 +26305,7 @@ msgid "failed to create logfile %s"
 msgstr "не вдалось створити журнал %s"
 
 msgid "failed to create mdevctl thread"
-msgstr ""
+msgstr "не вдалося створити потік обробки mdevctl"
 
 msgid "failed to create profile"
 msgstr "не вдалося створити профіль"
@@ -26460,7 +26478,7 @@ msgstr "не вдалося отримати дані щодо програми 
 
 #, c-format
 msgid "failed to get cgroup backend for '%s' controller '%u'"
-msgstr ""
+msgstr "Не вдалося отримати модуль cgroup для «%s», контролер «%u»"
 
 msgid "failed to get cmt scaling factor"
 msgstr "не вдалося отримати коефіцієнт масштабування cmt"
@@ -26907,7 +26925,7 @@ msgstr "не вдалося опитати завдання для диска %s
 
 #, c-format
 msgid "failed to query mdevs from mdevctl: %s"
-msgstr ""
+msgstr "не вдалося опитати mdevs з mdevctl: %s"
 
 msgid "failed to re-init netcf"
 msgstr "не вдалося повторно ініціалізувати netcf"
@@ -28381,7 +28399,7 @@ msgid "input devices without vnc are not supported"
 msgstr "підтримки пристроїв введення без vnc не передбачено"
 
 msgid "input evdev doesn't support bus element"
-msgstr ""
+msgstr "у вхідному evdev не передбачено підтримки елемента bus"
 
 #, c-format
 msgid "input too large: %d * %d"
@@ -29797,7 +29815,7 @@ msgid "list ephemeral secrets"
 msgstr "показати список тимчасових ключів"
 
 msgid "list inactive & active devices"
-msgstr ""
+msgstr "показати список неактивних та активних пристроїв"
 
 msgid "list inactive & active domains"
 msgstr "перегляд неактивних та активних доменів"
@@ -29812,7 +29830,7 @@ msgid "list inactive & active pools"
 msgstr "показати список неактивних та активних резервних сховищ даних"
 
 msgid "list inactive devices"
-msgstr ""
+msgstr "показати список неактивних пристроїв"
 
 msgid "list inactive domains"
 msgstr "перегляд неактивних доменів"
@@ -30447,7 +30465,7 @@ msgid "mdev attribute missing name or value"
 msgstr "у атрибуті mdev пропущено назву або значення"
 
 msgid "mdevctl JSON response contains no devices"
-msgstr ""
+msgstr "у відповіді JSON mdevctl не міститься записів пристроїв"
 
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
@@ -30561,9 +30579,13 @@ msgstr "повідомлення"
 
 msgid "metadata cache max size control is not supported with this QEMU binary"
 msgstr ""
+"підтримки керування максимального розміру кешу метаданих у цьому "
+"виконуваному файлі QEMU не передбачено"
 
 msgid "metadata cache max size control is supported only with qcow2 images"
 msgstr ""
+"підтримку керування максимального розміру кешу метаданих підтримано лише з "
+"цими образами qcow2"
 
 msgid "metadata not found"
 msgstr "метадані не знайдено"
@@ -31672,6 +31694,8 @@ msgid ""
 "mkfs is not available on this platform: Failed to make filesystem of type "
 "'%s' on device '%s'"
 msgstr ""
+"На цій платформі підтримка mkfs недоступна: не вдалося створити файлову "
+"систему типу «%s» на пристрої «%s»"
 
 msgid "mode of device reading and writing"
 msgstr "режим читання та запису для пристрою"
@@ -32395,6 +32419,8 @@ msgstr "немає можливостей пристрою для «%s»"
 msgid ""
 "no device found at address '%s' matching MAC address '%s' and alias '%s'"
 msgstr ""
+"за адресою «%s» не знайдено пристрою із MAC-адресою, що збігається із «%s», "
+"і альтернативною назвою «%s»"
 
 #, c-format
 msgid "no device found with alias %s"
@@ -33242,7 +33268,7 @@ msgstr "openwsman: %s"
 
 #, c-format
 msgid "operation '%s' not supported for backend '%s'"
-msgstr ""
+msgstr "підтримки операції «%s» для модуля «%s» не передбачено"
 
 msgid "operation aborted"
 msgstr "виконання дії перервано"
@@ -33748,7 +33774,7 @@ msgstr "запускаємо буфер «%s»"
 
 #, c-format
 msgid "pool = '%s', volume = '%s'"
-msgstr ""
+msgstr "буфер = «%s», том = «%s»"
 
 msgid "pool does not support pool deletion"
 msgstr "резервним сховищем не передбачено підтримки вилучення буфера"
@@ -34806,13 +34832,13 @@ msgid "root path must be absolute"
 msgstr "кореневий шлях має бути абсолютним"
 
 msgid "rotation rate is not supported with this QEMU"
-msgstr ""
+msgstr "у цьому QEMU не передбачено підтримки частоти обертання"
 
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
-msgstr ""
+msgstr "частота обертання має сенс лише для каналу SCSI/IDE/SATA"
 
 msgid "rotation rate is only valid for disk device"
-msgstr ""
+msgstr "частота обертання має сенс лише для дискових пристроїв"
 
 msgid "rule node requires action attribute"
 msgstr "У вузлі «rule» має бути атрибут «action»"
@@ -34841,7 +34867,7 @@ msgid "rx_queue_size has to be a power of two"
 msgstr "rx_queue_size має бути степенем двійки"
 
 msgid "sandbox can only be used with driver=virtiofs"
-msgstr ""
+msgstr "пісочницею можна користуватися лише з driver=virtiofs"
 
 #, c-format
 msgid "sanlock error %d"
@@ -35564,7 +35590,7 @@ msgid "splitting StorageUrl failed %s"
 msgstr "невдала спроба поділу StorageUrl %s"
 
 msgid "ssh protocol accepts only one host"
-msgstr ""
+msgstr "протоколом SSH передбачено лише один вузол"
 
 msgid "ssl verification is supported only with HTTPS/FTPS protocol"
 msgstr "підтримку перевірки ssl передбачено лише для протоколу HTTPS/FTPS"
