@@ -1025,11 +1025,13 @@ libxml_dep = dependency('libxml-2.0', version: '>=' + libxml_version)
 libm_dep = cc.find_library('m')
 
 netcf_version = '0.1.8'
-netcf_dep = dependency('netcf', version: '>=' + netcf_version, required: get_option('netcf'))
 if not get_option('netcf').disabled()
+  netcf_dep = dependency('netcf', version: '>=' + netcf_version, required: get_option('netcf'))
   if netcf_dep.found()
     conf.set('WITH_NETCF', 1)
   endif
+else
+  netcf_dep = dependency('', required: false)
 endif
 
 have_gnu_gettext_tools = false
