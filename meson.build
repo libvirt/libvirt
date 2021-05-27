@@ -420,7 +420,7 @@ if get_option('warning_level') == '2'
   if supported_cc_flags.contains('-Wlogical-op')
     # Broken in 6.0 and later
     #     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69602
-    w_logical_op_args = ['-O2', '-Wlogical-op', '-Werror']
+    w_logical_op_args = [ '-O2', '-Wlogical-op', '-Werror' ]
     w_logical_op_code = '''
       #define TEST1 1
       #define TEST2 TEST1
@@ -436,7 +436,7 @@ if get_option('warning_level') == '2'
   endif
 
   # Check whether clang gives bogus warning for -Wdouble-promotion.
-  w_double_promotion_args = ['-O2', '-Wdouble-promotion', '-Werror']
+  w_double_promotion_args = [ '-O2', '-Wdouble-promotion', '-Werror' ]
   w_double_promotion_code = '''
     #include <math.h>
 
@@ -446,12 +446,12 @@ if get_option('warning_level') == '2'
     }
   '''
   if cc.compiles(w_double_promotion_code, args: w_double_promotion_args, name: '-Wdouble-promotion')
-    supported_cc_flags += ['-Wdouble-promotion']
+    supported_cc_flags += [ '-Wdouble-promotion' ]
   endif
 
   # Clang complains about unused static inline functions which are common
   # with G_DEFINE_AUTOPTR_CLEANUP_FUNC.
-  w_unused_function_args = ['-Wunused-function', '-Werror']
+  w_unused_function_args = [ '-Wunused-function', '-Werror' ]
   w_unused_function_code = '''
     static inline void foo(void) {}
 
@@ -459,7 +459,7 @@ if get_option('warning_level') == '2'
   '''
   # -Wunused-function is implied by -Wall, we must turn it off explicitly.
   if not cc.compiles(w_unused_function_code, args: w_unused_function_args)
-    supported_cc_flags += ['-Wno-unused-function']
+    supported_cc_flags += [ '-Wno-unused-function' ]
   endif
 
 endif
@@ -794,9 +794,9 @@ required_programs = [
 ]
 
 required_programs_groups = [
-  {'name':'rpcgen', 'prog':['rpcgen', 'portable-rpcgen']},
-  {'name':'rst2html', 'prog':['rst2html5', 'rst2html5.py', 'rst2html5-3']},
-  {'name':'rst2man', 'prog':['rst2man', 'rst2man.py', 'rst2man-3']},
+  { 'name': 'rpcgen', 'prog': [ 'rpcgen', 'portable-rpcgen' ] },
+  { 'name': 'rst2html', 'prog': [ 'rst2html5', 'rst2html5.py', 'rst2html5-3' ] },
+  { 'name': 'rst2man', 'prog': [ 'rst2man', 'rst2man.py', 'rst2man-3' ] },
 ]
 
 if host_machine.system() == 'freebsd'
@@ -1060,7 +1060,7 @@ endif
 libxml_version = '2.9.1'
 libxml_dep = dependency('libxml-2.0', version: '>=' + libxml_version)
 
-libm_dep = cc.find_library('m', required : false)
+libm_dep = cc.find_library('m', required: false)
 
 netcf_version = '0.1.8'
 netcf_dep = dependency('netcf', version: '>=' + netcf_version, required: get_option('netcf'))
@@ -1602,7 +1602,7 @@ if not get_option('driver_qemu').disabled()
     endif
     conf.set_quoted('QEMU_MODDIR', qemu_moddir)
 
-    if host_machine.system() in ['freebsd', 'darwin']
+    if host_machine.system() in [ 'freebsd', 'darwin' ]
       default_qemu_user = 'root'
       default_qemu_group = 'wheel'
     else
@@ -1894,7 +1894,7 @@ if conf.has('WITH_LIBVIRTD')
 
   if not get_option('storage_zfs').disabled()
     zfs_enable = true
-    foreach name : ['zfs', 'zpool']
+    foreach name : [ 'zfs', 'zpool' ]
       set_variable(
         '@0@_prog'.format(name),
         find_program(name, required: get_option('storage_zfs'), dirs: libvirt_sbin_path)
@@ -1907,7 +1907,7 @@ if conf.has('WITH_LIBVIRTD')
     if zfs_enable
       use_storage = true
       conf.set('WITH_STORAGE_ZFS', 1)
-      foreach name : ['zfs', 'zpool']
+      foreach name : [ 'zfs', 'zpool' ]
         conf.set_quoted(name.to_upper(), get_variable('@0@_prog'.format(name)).path())
       endforeach
     endif

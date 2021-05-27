@@ -184,7 +184,7 @@ if conf.has('WITH_LIBVIRTD')
     virt_conf_files += qemu_lockd_conf
     virt_test_aug_files += {
       'name': 'test_libvirt_lockd.aug',
-      'aug' : files('test_libvirt_lockd.aug.in'),
+      'aug': files('test_libvirt_lockd.aug.in'),
       'conf': qemu_lockd_conf,
       'test_name': 'libvirt_lockd',
       'test_srcdir': meson.current_source_dir(),
@@ -213,7 +213,7 @@ if conf.has('WITH_LIBVIRTD')
       virt_conf_files += qemu_sanlock_conf
       virt_test_aug_files += {
         'name': 'test_libvirt_sanlock.aug',
-        'aug' : files('test_libvirt_sanlock.aug.in'),
+        'aug': files('test_libvirt_sanlock.aug.in'),
         'conf': qemu_sanlock_conf,
         'test_name': 'libvirt_sanlock',
         'test_srcdir': meson.current_source_dir(),
