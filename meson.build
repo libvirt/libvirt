@@ -804,7 +804,7 @@ if host_machine.system() == 'freebsd'
 endif
 
 foreach name : required_programs
-  prog = find_program(name, required: true, dirs: libvirt_sbin_path)
+  prog = find_program(name, dirs: libvirt_sbin_path)
   varname = name.underscorify()
   conf.set_quoted(varname.to_upper(), prog.path())
   conf.set_quoted('@0@_PATH'.format(varname.to_upper()), prog.path())
@@ -812,7 +812,7 @@ foreach name : required_programs
 endforeach
 
 foreach item : required_programs_groups
-  prog = find_program(item.get('prog'), required: true, dirs: libvirt_sbin_path)
+  prog = find_program(item.get('prog'), dirs: libvirt_sbin_path)
   varname = item.get('name').underscorify()
   conf.set_quoted(varname.to_upper(), prog.path())
   set_variable('@0@_prog'.format(varname), prog)
@@ -1219,7 +1219,7 @@ if selinux_dep.found()
   conf.set('WITH_SELINUX', 1)
 endif
 
-thread_dep = dependency('threads', required: true)
+thread_dep = dependency('threads')
 pthread_sigmask_code = '''
   #include <sys/types.h>
   #include <signal.h>
