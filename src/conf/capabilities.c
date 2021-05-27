@@ -1623,7 +1623,7 @@ virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
         }
 
         if (virCapabilitiesGetNUMADistances(n, &distances, &ndistances) < 0)
-            return -1;
+            goto cleanup;
 
         if (virCapabilitiesGetNUMAPagesInfo(n, &pageinfo, &npageinfo) < 0)
             goto cleanup;
