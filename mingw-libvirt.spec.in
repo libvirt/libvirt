@@ -103,10 +103,12 @@ exit 1
 %mingw_meson \
   --auto-features=enabled \
   -Ddriver_remote=enabled \
+  -Ddriver_test=enabled \
   -Ddriver_esx=enabled \
   -Dcurl=enabled \
   -Ddocs=enabled \
   -Dapparmor=disabled \
+  -Dapparmor_profiles=false \
   -Dattr=disabled \
   -Daudit=disabled \
   -Dbash_completion=disabled \

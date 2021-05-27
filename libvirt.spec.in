@@ -1098,6 +1098,8 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            -Dsasl=enabled \
            -Dpolkit=enabled \
            -Ddriver_libvirtd=enabled \
+           -Ddriver_remote=enabled \
+           -Ddriver_test=enabled \
            %{?arg_esx} \
            %{?arg_hyperv} \
            %{?arg_vmware} \
@@ -1126,6 +1128,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            -Dselinux=enabled \
            %{?arg_selinux_mount} \
            -Dapparmor=disabled \
+           -Dapparmor_profiles=false \
            -Dsecdriver_apparmor=disabled \
            -Dudev=enabled \
            -Dyajl=enabled \
