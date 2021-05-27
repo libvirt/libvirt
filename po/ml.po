@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-04-27 08:10+0000\n"
+"POT-Creation-Date: 2021-05-25 14:38+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -45,7 +45,6 @@ msgstr ""
 "\n"
 "  (കൂട്ടത്തിലുള്ള കല്പ്പന വിശദാംശങ്ങളെക്കുറിച്ചുള്ള സഹായസംഹിത <group> എടുത്തു പറയുക)\n"
 
-#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -345,7 +344,6 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr ""
 
-#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  പേര്\n"
 
@@ -586,16 +584,6 @@ msgstr "ഈ QEMU ബൈനറിയില്‍ %s പിന്തുണയ്�
 msgid "%s object has invalid dynamic type"
 msgstr "%s വസ്തുവില്‍ തെറ്റായ ഡൈനമിക് തരം"
 
-#.
-#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
-#. * enumeration values).
-#. *
-#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
-#.
-#.
-#. * Macros to implement managed objects
-#.
-#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s വസ്തുവില്‍ ആവശ്യമായ '%s' വിശേഷത ലഭ്യമല്ല"
@@ -1172,11 +1160,6 @@ msgstr "virtio-scsi കണ്ട്രോളറിനു് മാത്രമ�
 msgid "'max_workers' must be greater than 0"
 msgstr ""
 
-msgid ""
-"'mode' attribute for Xen feature 'passthrough' must be 'sync_pt' or "
-"'share_pt'"
-msgstr ""
-
 #, c-format
 msgid ""
 "'mode' of Xen passthrough feature differs: source: '%s', destination: '%s'"
@@ -1294,10 +1277,6 @@ msgstr "'queues' വിശേഷത പോസിറ്റീവ് അക്ക�
 msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "'online', guest-get-vcpus-ന്റെ മറുപടിയില്‍ ലഭ്യമല്ല"
 
-#, fuzzy, c-format
-msgid "'unsupported perf event '%s'"
-msgstr "പിന്തുണയ്ക്കാത്ത chardev '%s'"
-
 #, fuzzy
 msgid "'user' missing in reply of guest-get-users"
 msgstr "'online', guest-get-vcpus-ന്റെ മറുപടിയില്‍ ലഭ്യമല്ല"
@@ -1306,16 +1285,15 @@ msgstr "'online', guest-get-vcpus-ന്റെ മറുപടിയില്‍
 msgid "'value %d' is invalid for 'sibling id %d' under NUMA 'cell id %d'"
 msgstr ""
 
-#, c-format
-msgid "'value %s' is invalid for 'sibling id %d' under NUMA 'cell id %d'"
-msgstr ""
-
 #, fuzzy
 msgid "'vhostuser' driver is only supported with 'virtio' device"
 msgstr "virtio നെറ്റ്‌വര്‍ക്ക് ഇന്റര്‍ഫെയിസുകള്‍ക്കു് മാത്രമേ vhost-net പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr "'wwnn', 'wwpn' എന്നിവ അഡാപ്ടര്‍ 'fchost' തരത്തിനു് നിഷ്കര്‍ഷിച്ചിരിയ്ക്കണം"
+
+msgid "(<null>)"
+msgstr ""
 
 msgid "(CPU_definition)"
 msgstr "(CPU_definition)"
@@ -1374,7 +1352,6 @@ msgstr "(interface_definition)"
 msgid "(libxl_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
 
-#. parse and modify the xml from the user
 #, fuzzy
 msgid "(metadata_xml)"
 msgstr "മെറ്റാ-വിവരം:"
@@ -1438,7 +1415,6 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr "(വോള്യം_നിര്‍വചനം)"
 
-#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -2354,14 +2330,10 @@ msgid ""
 "dirtyrate'."
 msgstr ""
 
-#.
-#. * Macros to implement dynamic dispatched functions
-#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "%s-ലേക്കു് വിളിയ്ക്കുക, ഇവ അപ്രതീക്ഷിതമായ '%s' തരത്തിനു്"
 
-#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "%s-ലേക്കുള്ള കോള്‍,  അപ്രതീക്ഷിതമായ '%s' തരത്തിനു്,  പ്രതീക്ഷിച്ചതു് '%s'"
@@ -2664,6 +2636,10 @@ msgstr ""
 #, c-format
 msgid "Cannot create autostart directory %s"
 msgstr "autostart ഡയറക്ടറി %s തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+msgid "Cannot create daemon common directory '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot create directory '%s'"
@@ -3071,15 +3047,9 @@ msgstr ""
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "<address> 'port' സവിശേഷത പാഴ്സ് ചെയ്യാന്‍ കഴിയുന്നില്ല"
 
-msgid "Cannot parse <address> 'reg' attribute"
-msgstr "<address> 'reg' സവിശേഷത പാഴ്സ് ചെയ്യാന്‍ കഴിയുന്നില്ല"
-
 #, fuzzy
 msgid "Cannot parse <local> 'port' attribute with socket interface"
 msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'port' വിശേഷത പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-msgid "Cannot parse <master> 'startport' attribute"
-msgstr "<master> 'startport' സവിശേഷത പാഴ്സ് ചെയ്യാന്‍ കഴിയുന്നില്ല"
 
 msgid "Cannot parse <source> 'port' attribute with socket interface"
 msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില്‍  <source> 'port' വിശേഷത പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -3088,21 +3058,9 @@ msgstr "സോക്കറ്റ് ഇന്റര്‍ഫെയിസില�
 msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "മാക് വിലാസം '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍ പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#, c-format
-msgid "Cannot parse USB Class code %s"
-msgstr "യുഎസ്ബി ക്ലാസ്സ് കോഡ് %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
 #, fuzzy, c-format
 msgid "Cannot parse USB device version %s"
 msgstr "ഡിവൈസ് %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "Cannot parse USB product ID %s"
-msgstr "യുഎസ്ബി പ്രൊഡക്ട് ഐഡി %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "Cannot parse USB vendor ID %s"
-msgstr "യുഎസ്ബി വെണ്ടര്‍ ഐഡി %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 #, fuzzy, c-format
 msgid "Cannot parse UUID '%s'"
@@ -4749,7 +4707,6 @@ msgstr ""
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr ""
 
-#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "പൂള്‍ സംബന്ധിച്ചുള്ള വിവരം ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
@@ -5604,7 +5561,6 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr "ഡൊമൈനില്‍ %d ഇന്റെര്‍ഫേസുകളുണ്ട്. --mac ഉപയോഗിച്ച് വിച്ഛേദിക്കേണ്ടതിനെ പറയുക"
 
-#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -6565,6 +6521,10 @@ msgstr "മേല്‍നോട്ടത്തോടെ സൂക്ഷിച�
 msgid "Failed to check for managed save image"
 msgstr "നിയന്ത്രിത സൂക്ഷിപ്പ് തല്‍സ്വരൂപത്തിനു വേണ്ടി പരിശോധിക്കുന്നതില്‍ പരാജയപ്പെട്ടു "
 
+#, c-format
+msgid "Failed to check system token '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to chown device %s"
 msgstr "ഡിവൈസ് %s വേര്‍പ്പെടുത്തുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -6832,21 +6792,14 @@ msgstr "%s ഉണ്ടാക്കുന്നതില്‍ പരാജയ�
 msgid "Failed to create thread for receiving migration data"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
 
-#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
@@ -7409,7 +7362,6 @@ msgstr "സജീവമായ നെറ്റ്‌വറ്‍ക്കുക�
 msgid "Failed to list active pools"
 msgstr "സജീവമായ പൂളുകള്‍ ലിസ്റ്റ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "ഡൊമെയിനുകള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
@@ -7425,28 +7377,22 @@ msgstr "സജീവമല്ലാത്ത നെറ്റ്‌വറ്‍�
 msgid "Failed to list inactive pools"
 msgstr "സജീവമല്ലാത്ത പൂളുകള്‍ ലിസ്റ്റ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#. there was an error during the first or second call
 msgid "Failed to list interfaces"
 msgstr "ഇന്റര്‍ഫെയിസ് കാണിക്കുന്നതില്‍ പരാജയം"
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "നോഡ് അരിപ്പക്കള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "നോഡ് അരിപ്പക്കള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "നെറ്റ്‌വര്‍ക്ക് കാണിക്കുന്നതില്‍ പരാജയം"
 
-#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "നോഡ് ഡിവൈസുകള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#. there was an error during the call
 msgid "Failed to list node secrets"
 msgstr "നോഡ് രഹസ്യം ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
@@ -7454,7 +7400,6 @@ msgstr "നോഡ് രഹസ്യം ലഭ്യമാക്കുന്ന�
 msgid "Failed to list persistent guests on $uri"
 msgstr "$uri-ല്‍ സ്ഥിരമായ ഗസ്റ്റുകള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#. there was an error during the first or second call
 msgid "Failed to list pools"
 msgstr "പൂള്‍ പട്ടിക ലഭ്യമായില്ല"
 
@@ -7474,7 +7419,6 @@ msgstr "സ്ഥായിയല്ലാത്ത ഗസ്റ്റുകള�
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d'ന്റെ vcpuകള്‍ നിരത്തുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "വോള്യം പട്ടിക ലഭ്യമായില്ല"
 
@@ -7515,6 +7459,10 @@ msgstr "സ്നാപ്പ്ഷോട്ട് എടുക്കുന്�
 
 #, c-format
 msgid "Failed to locate parent device with ID '%s'"
+msgstr ""
+
+#, c-format
+msgid "Failed to lock system token '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -7807,10 +7755,6 @@ msgstr "vzlist ഔട്ട്പുട്ട് പാഴ്സ് ചെയ്
 msgid "Failed to pin vcpu '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് '%d' vcpu ഉറപ്പിക്കാന്‍ സാധിച്ചില്ല"
 
-#, fuzzy, c-format
-msgid "Failed to pin vcpu '%zu' with libxenlight"
-msgstr "libxenlight ഉപയോഗിച്ച് '%d' vcpu ഉറപ്പിക്കാന്‍ സാധിച്ചില്ല"
-
 msgid "Failed to pivot root"
 msgstr "റൂട്ട് pivot ചെയ്യുന്നതില്‍ പരാജയം"
 
@@ -8055,9 +7999,6 @@ msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '
 msgid "Failed to resume domain '%s'"
 msgstr ""
 
-#. Hm, we already know we are in error here.  We don't want to
-#. * overwrite the previous error, though, so we just throw something
-#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "പരാജയത്തിനു് ശേഷം ഗസ്റ്റ് %s വീണ്ടും ആരംഭിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -8521,6 +8462,10 @@ msgid "Failed to write save file header"
 msgstr "സൂക്ഷിപ്പ് ഫയലിന്റെ തലക്കെട്ട് എഴുതുന്നതില്‍ പരാജയപ്പെട്ടു"
 
 #, c-format
+msgid "Failed to write system token '%s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to write to pid file '%s'"
 msgstr "'%s' എന്ന പിഐഡി ഫയലിലേയ്ക്കു് എഴുതുന്നതില്‍ പരാജയം"
 
@@ -8675,63 +8620,10 @@ msgstr ""
 "ആദ്യത്തെ ഫയല്‍ അടിസ്ഥാനത്തിലുള്ള ഹാര്‍ഡ് ഡിസ്കില്‍ ശ്രോതസ്സില്ല, വിഎംഎക്സ് ഫയലില്‍ നിന്നും "
 "ഡേറ്റാസ്റ്റോര്‍ അല്ലെങ്കില്‍ പാഥ് ലഭ്യമല്ല"
 
-#. Macros to help dealing with flag requirements.
-#. *
-#. * VIR_REQUIRE_FLAG_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @RET: Return value.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_REQUIRE_FLAG_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if required flag is not set.
-#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
-#. Macros to help dealing with mutually exclusive flags.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @RET: Return value.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, fuzzy, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "--%s, --%s ഐച്ഛികങ്ങള്‍ പരസ്പര വിരുദ്ധമാകുന്നു"
@@ -9539,51 +9431,16 @@ msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷ�
 msgid "Invalid %s image format specified in configuration file"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-msgid "Invalid 'cache' attribute in NUMA interconnects"
-msgstr ""
-
 #, fuzzy
 msgid "Invalid 'cpu.max' data."
 msgstr "%s-ല്‍ തെറ്റായ cpuNum"
-
-#, fuzzy, c-format
-msgid "Invalid 'discard' attribute value '%s'"
-msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
-
-#, fuzzy, c-format
-msgid "Invalid 'id' attribute in NUMA cell: '%s'"
-msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷത %s"
-
-#, fuzzy, c-format
-msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
-msgstr "'%s' നെറ്റ്‌വര്‍ക്കിനുള്ള dhcp പരിധിയില്‍ 'end' വിശേഷത ലഭ്യമല്ല"
-
-msgid "Invalid 'initiator' attribute in NUMA interconnects"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "Invalid 'iothread' value '%s'"
-msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
 
 #, c-format
 msgid "Invalid 'level' attribute in cache element for NUMA node %d"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Invalid 'memAccess' attribute value '%s'"
-msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
-
 #, c-format
 msgid "Invalid 'removed' attribute for feature %s in model %s"
-msgstr ""
-
-msgid "Invalid 'target' attribute in NUMA interconnects"
-msgstr ""
-
-msgid "Invalid 'type' attribute in NUMA interconnects"
-msgstr ""
-
-msgid "Invalid 'value' attribute in NUMA interconnects"
 msgstr ""
 
 #, c-format
@@ -9717,8 +9574,8 @@ msgid "Invalid URI path '%s', try '/system'"
 msgstr "അപ്രതീക്ഷിതമായ OpenVZ URI പാഥ് , '%s', openvz:///system ശ്രമിക്കുക"
 
 #, c-format
-msgid "Invalid USB Class code %s"
-msgstr "തെറ്റായ യുഎസ്ബി ക്ലാസ്സ് കോഡ് %s"
+msgid "Invalid USB Class code 0x%x"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid UUID"
@@ -9749,18 +9606,6 @@ msgstr "'%2$s' പരാമീറ്ററിനു് '%1$s' എന്ന അ�
 msgid "Invalid address."
 msgstr "അസാധുവായ വിലാസം."
 
-msgid "Invalid allow value, either 'yes' or 'no'"
-msgstr "അനുവദിയ്ക്കേണ്ട തെറ്റായ മൂല്ല്യം, 'yes' അല്ലെങ്കില്‍ 'no'"
-
-#.
-#. * Don't check for *selectSet != NULL here because selectSet is a list
-#. * and might contain items already. This function appends to selectSet.
-#.
-#. optional
-#. optional
-#. nothing
-#. nothing
-#. nothing
 msgid "Invalid argument"
 msgstr "അസാധുവായ ആര്‍ഗ്യുമെന്‍റ്"
 
@@ -9797,10 +9642,6 @@ msgstr ""
 msgid "Invalid attempt to set peer IP for guest"
 msgstr ""
 
-#, c-format
-msgid "Invalid audio 'id' value '%s'"
-msgstr ""
-
 #, fuzzy
 msgid "Invalid auth_pending and auth combination in JSON state document"
 msgstr "JSON അവസ്ഥയുടെ രേഖയില്‍ auth ഫീള്‍ഡ് ലഭ്യമല്ല"
@@ -9833,10 +9674,6 @@ msgstr "ഡിസ്കിനു് തെറ്റായ ബസ് തരം '%
 msgid "Invalid bus type '%s' for floppy disk"
 msgstr "ഫ്ലോപ്പി ഡിസ്കിനു് തെറ്റായ ബസ് രീതി '%s'"
 
-#, fuzzy, c-format
-msgid "Invalid busNr '%s' in PCI controller"
-msgstr "തെറ്റായ വിലാസം '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍"
-
 #, c-format
 msgid "Invalid cache associativity '%s'"
 msgstr ""
@@ -9849,18 +9686,6 @@ msgstr "%s-ല്‍ തെറ്റായ cpuNum"
 msgid "Invalid cache policy '%s'"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Invalid cachetune attribute 'id' value '%s'"
-msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
-
-#, fuzzy, c-format
-msgid "Invalid cachetune attribute 'level' value '%s'"
-msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
-
-#, fuzzy, c-format
-msgid "Invalid cachetune attribute 'type' value '%s'"
-msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
-
 msgid "Invalid call"
 msgstr "തെറ്റായ കോള്‍"
 
@@ -9872,10 +9697,6 @@ msgstr "തെറ്റായ കോള്‍, സെഷന്‍ ലഭ്യ�
 
 msgid "Invalid capability type"
 msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷത"
-
-#, c-format
-msgid "Invalid cellid attribute in memnode element: %s"
-msgstr ""
 
 msgid "Invalid certificate"
 msgstr "തെറ്റായ സര്‍ട്ടിഫീക്കേറ്റ്"
@@ -9895,14 +9716,6 @@ msgstr "തെറ്റായ അക്ഷരം '%c', '%s' ഐഡിയില�
 #, fuzzy
 msgid "Invalid character in source channel for char device"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ ഹോസ്റ്റ് വിശേഷത"
-
-#, fuzzy, c-format
-msgid "Invalid chassis '%s' in PCI controller"
-msgstr "തെറ്റായ വിലാസം '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍"
-
-#, fuzzy, c-format
-msgid "Invalid chassisNr '%s' in PCI controller"
-msgstr "തെറ്റായ വിലാസം '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍"
 
 #, c-format
 msgid "Invalid class ID %d"
@@ -10181,13 +9994,13 @@ msgstr "സിപിയു വ്യക്തമാക്കുന്നതി�
 msgid "Invalid match string '%s'"
 msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷത %s"
 
-#, fuzzy, c-format
-msgid "Invalid maxEventChannels: %s"
-msgstr "തെറ്റായ വെക്ടറുകള്‍: %s"
+#, c-format
+msgid "Invalid maxEventChannels: %i"
+msgstr ""
 
-#, fuzzy, c-format
-msgid "Invalid maxGrantFrames: %s"
-msgstr "തെറ്റായ പോര്‍ട്ടുകള്‍: %s"
+#, c-format
+msgid "Invalid maxGrantFrames: %i"
+msgstr ""
 
 #, c-format
 msgid "Invalid memory core dump attribute value '%s'"
@@ -10205,10 +10018,6 @@ msgstr "തെറ്റായ സമയദൈര്‍ഘ്യം"
 msgid "Invalid mode attribute '%s'"
 msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷത %s"
 
-#, fuzzy
-msgid "Invalid mode attribute in memnode element"
-msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷത %s"
-
 #, fuzzy, c-format
 msgid "Invalid mode setting '%s' in network port"
 msgstr "തെറ്റായ ipv6 സജ്ജീകരണം '%s', '%s' നെറ്റ്‌വര്‍ക്കില്‍"
@@ -10216,10 +10025,6 @@ msgstr "തെറ്റായ ipv6 സജ്ജീകരണം '%s', '%s' നെ
 #, c-format
 msgid "Invalid mode: %s"
 msgstr "തെറ്റായ മോഡ്: %s"
-
-#, fuzzy, c-format
-msgid "Invalid monitor attribute 'level' value '%s'"
-msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
 
 #, fuzzy, c-format
 msgid "Invalid monitor cache level '%d'"
@@ -10346,10 +10151,6 @@ msgstr ""
 msgid "Invalid pool type '%s'"
 msgstr "തെറ്റായ പൂള്‍ രീിതി '%s'"
 
-#, fuzzy, c-format
-msgid "Invalid port '%s' in PCI controller"
-msgstr "എസ്‌സിഎസ്ഐ പൂളിനുള്ള '%s' എന്ന അഡാപ്ടര്‍ നാമം തെറ്റു്"
-
 #, c-format
 msgid "Invalid port number: %s"
 msgstr "തെറ്റായ പോര്‍ട്ട് നംബര്‍: %s"
@@ -10359,8 +10160,8 @@ msgid "Invalid port range '%u-%u'."
 msgstr "തെറ്റായ പോര്‍ട്ട് പരിധി '%u-%u'."
 
 #, c-format
-msgid "Invalid ports: %s"
-msgstr "തെറ്റായ പോര്‍ട്ടുകള്‍: %s"
+msgid "Invalid ports: %i"
+msgstr ""
 
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -10389,10 +10190,6 @@ msgstr "അസാധുവായ ആപേക്ഷിക പാത്ത് '%s
 #, fuzzy
 msgid "Invalid resctrl monitor"
 msgstr "തെറ്റായ ശൃംഖലാ അരിപ്പ"
-
-#, fuzzy, c-format
-msgid "Invalid scheduler attribute: '%s'"
-msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷത %s"
 
 msgid "Invalid secret"
 msgstr "തെറ്റായ രഹസ്യം"
@@ -10431,9 +10228,6 @@ msgid ""
 "devno='0x%04x'"
 msgstr ""
 
-msgid "Invalid specification of multiple <filterref>s in a single <interface>"
-msgstr "ഒറ്റ <interface>-ല്‍ അനവധി  അസാധു <filterref>s നല്‍കിയിരിയ്ക്കുന്നു"
-
 #, c-format
 msgid "Invalid state '%s' in domain snapshot XML"
 msgstr "ഡൊമെയിന്‍ സ്നാപ്പ്ഷോട്ട് എക്സ്എംഎലില്‍ തെറ്റായ അവസ്ഥ '%s'"
@@ -10465,9 +10259,9 @@ msgstr "തെറ്റായ ടാര്‍ഗറ്റ്"
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
 msgstr "ഡൊമെയിന്‍ സ്നാപ്പ്ഷോട്ട് എക്സ്എംഎലില്‍ തെറ്റായ അവസ്ഥ '%s'"
 
-#, fuzzy, c-format
-msgid "Invalid target index '%s' in PCI controller"
-msgstr "എസ്‌സിഎസ്ഐ പൂളിനുള്ള '%s' എന്ന അഡാപ്ടര്‍ നാമം തെറ്റു്"
+#, c-format
+msgid "Invalid target index '%i' in PCI controller"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid target model for serial device"
@@ -10491,10 +10285,6 @@ msgstr ""
 #, c-format
 msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
 msgstr "തെറ്റായ '%s' തരം '%s' പരാമീറ്ററിനു് ആവശ്യപ്പെട്ടിരിയ്ക്കുന്നു, ശരിയായ രീതി '%s'"
-
-#, fuzzy, c-format
-msgid "Invalid unit: %s"
-msgstr "തെറ്റായ പോര്‍ട്ടുകള്‍: %s"
 
 #, fuzzy, c-format
 msgid "Invalid unsigned integer value '%s' in file '%s'"
@@ -10547,18 +10337,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid value for attribute '%s' in element '%s': '%s'. Expected 'on' or "
-"'off'"
-msgstr ""
-
-#, c-format
-msgid ""
-"Invalid value for attribute '%s' in element '%s': '%s'. Expected 'yes' or "
-"'no'"
-msgstr ""
-
-#, c-format
-msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
 msgstr ""
@@ -10566,10 +10344,6 @@ msgstr ""
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
 msgstr ""
-
-#, fuzzy
-msgid "Invalid value for element priority"
-msgstr "സമയപരിധിയ്ക്കുള്ള അസാധുവായ മൂല്ല്യം"
 
 #, c-format
 msgid "Invalid value for field '%s': expected double"
@@ -10625,8 +10399,8 @@ msgid "Invalid value of 'nodeset': %s"
 msgstr "'ephemeral' മൂല്ല്യം തെറ്റാണ്"
 
 #, c-format
-msgid "Invalid vectors: %s"
-msgstr "തെറ്റായ വെക്ടറുകള്‍: %s"
+msgid "Invalid vectors: %i"
+msgstr ""
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
@@ -10875,10 +10649,6 @@ msgstr "തെറ്റായ ഐറ്ററേറ്റര്‍ ‍ഐഡി"
 msgid "Malformatted variable"
 msgstr "തെറ്റായ വേരിയബിള്‍:"
 
-#, fuzzy, c-format
-msgid "Malformed 'cmd_per_lun' value '%s'"
-msgstr "തെറ്റായ 'queues' മൂല്ല്യം '%s'"
-
 #, fuzzy
 msgid "Malformed 'dies' attribute in CPU topology"
 msgstr "കോര്‍സ്‌ (cores) സവിശേഷം സി.പി.യു. ടോപ്പോളജിയില്‍ ഇല്ല"
@@ -10891,20 +10661,8 @@ msgstr "ജെഎസ്ഒഎന്‍ രേഖയിലുള്ള ഉടമ�
 msgid "Malformed 'floor_sum' attribute: %s"
 msgstr "തെറ്റായ 'floor_sum' വിശേഷത: %s"
 
-#, fuzzy, c-format
-msgid "Malformed 'ioeventfd' value %s"
-msgstr "തെറ്റായ 'queues' മൂല്ല്യം '%s'"
-
 msgid "Malformed 'maxCount' parameter"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Malformed 'max_sectors' value %s"
-msgstr "തെറ്റായ 'queues' മൂല്ല്യം '%s'"
-
-#, c-format
-msgid "Malformed 'queues' value '%s'"
-msgstr "തെറ്റായ 'queues' മൂല്ല്യം '%s'"
 
 #, c-format
 msgid ""
@@ -10990,10 +10748,6 @@ msgstr "JSON  അവസ്ഥയുടെ രേഖയില്‍ റീഡ്�
 #, fuzzy
 msgid "Malformed ip-addresses array"
 msgstr "തെറ്റായ mac വിലാസം '%s'"
-
-#, c-format
-msgid "Malformed lease target offset %s"
-msgstr "തെറ്റായ ലീസ് ടാര്‍ഗറ്റ് ഓഫ്സെറ്റ് %s"
 
 #, fuzzy
 msgid "Malformed lease_entries array"
@@ -11332,13 +11086,6 @@ msgstr "'%s' നെറ്റ്‌വര്‍ക്കിനുള്ള dhcp �
 msgid "Missing 'filename' in CPU map include"
 msgstr "സിപിയു മോഡല്‍ %s-ല്‍ മുന്‍ഗാമിയുടെ പേരു് ലഭ്യമല്ല"
 
-#, fuzzy, c-format
-msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
-msgstr "NUMA സെല്ലില്‍ 'cpus' വിശേഷത ലഭ്യമല്ല"
-
-msgid "Missing 'initiator' attribute in NUMA interconnects"
-msgstr ""
-
 msgid "Missing 'key' element for lease"
 msgstr "ലീസില്‍ 'key' എലമെന്റ് ലഭ്യമല്ല"
 
@@ -11357,6 +11104,9 @@ msgstr "ഇന്റര്‍ഫെയിസിന്റെ  <actual> എലമ�
 #, c-format
 msgid "Missing 'name' property in %s lookup"
 msgstr "'name' വിശേഷത %s തിരിച്ചിലില്‍ ലഭ്യമല്ല"
+
+msgid "Missing 'path' attribute to 'target' element for lease"
+msgstr ""
 
 #, fuzzy
 msgid "Missing 'path' field in JSON document"
@@ -11380,30 +11130,15 @@ msgstr "സോക്കെറ്റ്‌സ് (sockets) സവിശേഷം 
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "'%s' നെറ്റ്‌വര്‍ക്കിനുള്ള dhcp പരിധിയില്‍ 'start' വിശേഷത ലഭ്യമല്ല"
 
-msgid "Missing 'target' attribute in NUMA interconnects"
-msgstr ""
-
 msgid "Missing 'target' element for lease"
 msgstr "ലീസില്‍ 'target' എലമെന്റ് ലഭ്യമല്ല"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "ത്രെട്സ് (threads) സവിശേഷം സി.പി.യു. ടോപ്പോളജിയില്‍ ഇല്ല"
 
-msgid "Missing 'type' attribute in NUMA interconnects"
-msgstr ""
-
 #, fuzzy
 msgid "Missing 'uuid' attribute for element <address>"
 msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
-
-#, c-format
-msgid ""
-"Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
-"id %d'"
-msgstr ""
-
-msgid "Missing 'value' attribute in NUMA interconnects"
-msgstr ""
 
 #, fuzzy
 msgid "Missing <address> element"
@@ -11500,9 +11235,6 @@ msgstr ""
 msgid "Missing agent reply object"
 msgstr "മോണിറ്റര്‍ മറുപടി വസ്തു ലഭ്യമല്ല"
 
-msgid "Missing allow attribute for USB redirection filter"
-msgstr "യുഎസ്ബി തിരിച്ചുവിടല്‍ ഫില്‍റ്ററിനുള്ള allow വിശേഷത ലഭ്യമല്ല"
-
 #, c-format
 msgid "Missing ancestor's name in CPU model %s"
 msgstr "സിപിയു മോഡല്‍ %s-ല്‍ മുന്‍ഗാമിയുടെ പേരു് ലഭ്യമല്ല"
@@ -11537,18 +11269,6 @@ msgstr "ബാക്കെന്‍ഡ് %d ലഭ്യമല്ല"
 #, fuzzy
 msgid "Missing bridge name"
 msgstr "ടൈമര്‍ നാമം ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "Missing cachetune attribute 'id'"
-msgstr "ലഭ്യമല്ലാത്ത തരത്തിലുള്ള ഡൊമെയില്‍ വിശേഷത"
-
-#, fuzzy
-msgid "Missing cachetune attribute 'level'"
-msgstr "NUMA സെല്ലില്‍ 'cpus' വിശേഷത ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "Missing cachetune attribute 'type'"
-msgstr "portgroup-ല്‍ ആവശ്യമുള്ള പേരു് ലഭ്യമല്ല"
 
 #, fuzzy
 msgid "Missing capability type"
@@ -11589,7 +11309,7 @@ msgstr "JSON രേഖയില്‍ errfd ഡേറ്റാ ലഭ്യമ�
 msgid "Missing essential config entry '%s'"
 msgstr "അത്യാവശ്യ ക്രമീകരണ എന്‍ട്രി '%s' ലഭ്യമല്ല"
 
-msgid "Missing evdev path for input device passthrough"
+msgid "Missing evdev path for input device"
 msgstr ""
 
 msgid "Missing fd data in JSON document"
@@ -11656,10 +11376,6 @@ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍  max_workers ഡ
 
 msgid "Missing min_workers data in JSON document"
 msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍  min_workers ഡേറ്റാ ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "Missing monitor attribute 'level'"
-msgstr "boot order വിശേഷണം ഇല്ല"
 
 msgid "Missing monitor reply object"
 msgstr "മോണിറ്റര്‍ മറുപടി വസ്തു ലഭ്യമല്ല"
@@ -11846,10 +11562,6 @@ msgstr "ആവശ്യമായ വിലാസ വിശേഷത നെറ്
 msgid "Missing required attribute '%s' in element '%s'"
 msgstr ""
 
-#, fuzzy
-msgid "Missing required cellid attribute in memnode element"
-msgstr "portgroup-ല്‍ ആവശ്യമുള്ള പേരു് ലഭ്യമല്ല"
-
 #, c-format
 msgid ""
 "Missing required dev attribute in <forward> <interface> element of network %s"
@@ -11897,14 +11609,6 @@ msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍ ശ്രോത�
 
 msgid "Missing restricted data in JSON document"
 msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ഡേറ്റാ ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "Missing scheduler attribute"
-msgstr "boot order വിശേഷണം ഇല്ല"
-
-#, fuzzy
-msgid "Missing scheduler priority"
-msgstr "'%s' വിശേഷത ലഭ്യമല്ല"
 
 msgid "Missing scsi_host PCI address element"
 msgstr ""
@@ -12199,12 +11903,6 @@ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക�
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
-#. Output old style header
-#. We only get here if the --details option was selected.
-#. Insert the header into table
-#. The old output format
-#. We only get here if the --details option was selected.
-#. Insert the header into table
 msgid "Name"
 msgstr "പേര്"
 
@@ -12539,6 +12237,12 @@ msgstr ""
 
 #, c-format
 msgid "No current block job for %s"
+msgstr ""
+
+msgid "No current identity"
+msgstr ""
+
+msgid "No current identity to elevate"
 msgstr ""
 
 msgid "No data supplied for <initarg> element"
@@ -13189,10 +12893,6 @@ msgstr "vpxmigr:// മൈഗ്രൈഷന്‍ യുആര്‍ഐ മാ�
 msgid "Only x509 certificates are supported"
 msgstr "x509 സമ്മതപത്രങ്ങള്‍ മാത്രം പിന്തുണയ്ക്കുന്നു"
 
-#, fuzzy
-msgid "OpenGL for SDL is not supported with this QEMU binary"
-msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക്കില്ല"
-
 msgid "OpenRemoteSession/LaunchVMProcess failed, domain can't be started"
 msgstr ""
 "OpenRemoteSession/LaunchVMProcess പരാജയപ്പെട്ടു, ഡൊമെയിന്‍ ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല"
@@ -13242,20 +12942,6 @@ msgstr ""
 "%u സൂചികയുള്ള പിസിഐ കണ്ട്രോളറിനുള്ള പിസിഐയ്ക്കു് ഡിവൈസിന്റെ വിളിപ്പേരു് സജ്ജമല്ല, %s "
 "വിലാസത്തില്‍ ഡിവൈസിനു് ആവശ്യമുണ്ടു്"
 
-#. Macros to help dealing with required options.
-#. VSH_REQUIRE_OPTION_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable).
-#. * @NAME2: String containing the name of required option.
-#. * @EXPR2: Expression to validate the variable (boolean variable).
-#. *
-#. * Check if required command options in virsh was set.  Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
@@ -13275,20 +12961,6 @@ msgstr "ആര്‍ഗ്യുമെന്റ് കാലിയാണു്"
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
-#. Macros to help dealing with mutually exclusive options.
-#. VSH_EXCLUSIVE_OPTIONS_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable)
-#. * @NAME2: String containing the name of the option.
-#. * @EXPR2: Expression to validate the variable (boolean variable)
-#. *
-#. * Reject mutually exclusive command options in virsh. Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "--%s, --%s ഐച്ഛികങ്ങള്‍ പരസ്പര വിരുദ്ധമാകുന്നു"
@@ -13373,13 +13045,6 @@ msgstr ""
 msgid "PASS"
 msgstr "PASS"
 
-msgid "PCI address 0:0:1.0 is in use, QEMU needs it for primary video"
-msgstr ""
-"പിസിഐ വിലാസം 0:0:1.0 നിലവില്‍ ഉപയോഗത്തിലാണു്, ക്യുഇഎംയുവിനു് പ്രധാന വീഡിയോ ആവശ്യമുണ്ടു്"
-
-msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
-msgstr "പിസിഐ വിലാസം 0:0:2.0 ഉപയോഗത്തില്‍, പ്രൈമറി വീഡിയോയ്ക്കു് QEMU ആവശ്യമുണ്ടു്"
-
 #, c-format
 msgid ""
 "PCI controller at index %d (0x%02x) has bus='0x%02x', but index must be "
@@ -13413,10 +13078,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "PCI controller target index '%d' out of range - must be 0-30"
 msgstr "എഫ്ഡിസി കണ്ട്രോളര്‍ സൂചിക %d [0] പരിധിയ്ക്കു് പുറത്തു്"
-
-#, c-format
-msgid "PCI controller unrecognized hotplug setting '%s'"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -13547,7 +13208,6 @@ msgstr "ല്ലപാര്‍സ് ചെയ്ത JSON മറുപറട�
 msgid "Partition path '%s' must start with '/'"
 msgstr "'%s' എന്ന പാര്‍ട്ടീഷന്‍ പാഥ് '/'-ല്‍ ആരംഭിയ്ക്കണം"
 
-#. warn users that the --base64 option passed from command line is wrong
 #, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "qemu കമാന്‍ഡ്-ലൈന്‍ ആര്‍ഗ്യുമെന്റ് നല്‍കിയിട്ടില്ല"
@@ -13766,12 +13426,6 @@ msgstr "പ്രൈമറി ഐഡിഇ കണ്ടോളറിനു് പ
 
 msgid "Primary SATA controller must have PCI address 0:0:1f.2"
 msgstr "പ്രധാന എസ്എടിഎ കണ്ട്രോളറിനു് പിസിഐ വിലാസം 0:0:1f.2 ഉണ്ടായിരിയ്ക്കണം"
-
-msgid "Primary video card must have PCI address 0:0:1.0"
-msgstr "പ്രധാന വീഡിയോ കാര്‍ഡിനു് പിസിഐ വിലാസം 0:0:1.0 ഉണ്ടായിരിയ്ക്കണം"
-
-msgid "Primary video card must have PCI address 0:0:2.0"
-msgstr "പ്രൈമറി വീഡിയോ കാര്‍ഡിനു് പിസിഐ വിലാസം 0:0:2.0 ഉണ്ടായിരിയ്ക്കണം"
 
 #, fuzzy
 msgid "Print lease info for a given network"
@@ -14424,7 +14078,6 @@ msgstr "ഈ ഡൊമെയിനു് S3 അവസ്ഥ പ്രവര്‍
 msgid "S4 state is disabled for this domain"
 msgstr "ഈ ഡൊമെയിനു് S4 അവസ്ഥ പ്രവര്‍ത്തന രഹിതമാക്കിയിരിയ്ക്കുന്നു"
 
-#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14951,9 +14604,6 @@ msgstr "സിപിയു സമയം:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "ഈ QEMU സ്പയിസ് ഗ്രാഫിക്സ് പിന്തുണയ്ക്കുന്നില്ല"
 
-#. XXX: Need to sort the returned params once new parameter
-#. * fields not of shared memory are added.
-#.
 msgid "Shared memory:\n"
 msgstr "പങ്കിട്ട മെമ്മറി:\n"
 
@@ -15033,7 +14683,6 @@ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക�
 msgid "Snapshot"
 msgstr "സ്നാപ്പ്ഷോട്ട് പട്ടിക"
 
-#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "സ്നാപ്പ്ഷോട്ട് %s XML ക്രമീകരണത്തില്‍ മാറ്റം വരുത്തിയിട്ടില്ല.\n"
@@ -15471,6 +15120,10 @@ msgid "System lacks NETNS support"
 msgstr "സിസ്റ്റമിനു് NETNS പിന്തുണ ലഭ്യമല്ല"
 
 #, c-format
+msgid "System token in %s was corrupt"
+msgstr ""
+
+#, c-format
 msgid "TLS handshake failed %s"
 msgstr "ടിഎല്‍എസ് ഹാന്‍ഡ്ഷെയിക്ക് %s-ല്‍ പരാജയപ്പെട്ടു"
 
@@ -15512,7 +15165,6 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr "%s കാലിയാകുവാന്‍ പാടില്ല"
 
-#. title
 msgid "Target"
 msgstr "ടാര്‍ഗറ്റ്"
 
@@ -16789,11 +16441,9 @@ msgstr "പിശക് അവസ്ഥയില്‍ സോക്കറ്റ�
 msgid "Try again?"
 msgstr ""
 
-#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "ഇപ്പോഴും ഉപയോഗത്തിലുള്ള MultiCURL വസ്തു സ്വതന്ത്രമാക്കുവാന്‍ ശ്രമിയ്ക്കുന്നു"
 
-#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "ഉപയോഗത്തിലുള്ള SharedCURL വസ്തുവിനെ സ്വതന്ത്രമാക്കുവാന്‍ ശ്രമിയ്ക്കുന്നു"
 
@@ -17629,6 +17279,9 @@ msgstr "SELinux കോണ്ടെക്സ്റ്റ് ഫോര്‍മാ
 msgid "Unable to format guestfwd port"
 msgstr "guestfwd പോര്‍ട്ട് ഫോര്‍മാറ്റ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
+msgid "Unable to format metadata element"
+msgstr ""
+
 msgid "Unable to format time"
 msgstr "സമയം ഫോര്‍മാറ്റ് ചെയ്യാന്‍ സാധിച്ചില്ല"
 
@@ -18186,6 +17839,10 @@ msgstr "%s റിസോഴ്സ് തുറക്കുവാന്‍ സാ�
 #, c-format
 msgid "Unable to open stream for '%s'"
 msgstr "%s-നുള്ള സ്ട്രീം തുറക്കുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+msgid "Unable to open system token %s"
+msgstr ""
 
 msgid "Unable to open test socket"
 msgstr "പരീക്ഷണ സോക്കറ്റ് തുറക്കുവാന്‍ സാധ്യമല്ല"
@@ -19255,10 +18912,6 @@ msgid "Unknown CPU vendor %s"
 msgstr "അപരിചിതമായ സിപിയു വെണ്ടര്‍ %s"
 
 #, fuzzy, c-format
-msgid "Unknown HPT resizing setting: %s"
-msgstr "അപരിചിതമായ ഡിസ്ക് rawio സജ്ജീകരണം '%s'"
-
-#, fuzzy, c-format
 msgid "Unknown IP address data source %d"
 msgstr "അപരിചിതമായ വിലാസ തരം '%s'"
 
@@ -19269,10 +18922,6 @@ msgstr "അപരിചിതമായ JSON മറുപടി '%s'"
 #, fuzzy, c-format
 msgid "Unknown LXC namespace source '%s'"
 msgstr "അപരിചിതമായ pci സോഴ്സ് രീതി '%s'"
-
-#, fuzzy, c-format
-msgid "Unknown PCI controller model name '%s'"
-msgstr "അപരിചിതമായ കണ്ട്രോളര്‍ തരം '%s'"
 
 #, c-format
 msgid "Unknown PCI device <driver name='%s'/> has been specified"
@@ -19357,10 +19006,6 @@ msgstr "അപരിചിതമായ വിശേഷത രീതി '%s'"
 msgid "Unknown controller type %d"
 msgstr "അപരിചിതമായ കണ്ട്രോളര്‍ തരം '%s'"
 
-#, c-format
-msgid "Unknown controller type '%s'"
-msgstr "അപരിചിതമായ കണ്ട്രോളര്‍ തരം '%s'"
-
 #, fuzzy, c-format
 msgid "Unknown core size '%s'"
 msgstr "അറിയാത്ത കോഡ്സെറ്റ്: '%s'"
@@ -19389,10 +19034,6 @@ msgstr "അപരിചിതമായ ഡിസ്ക് നാമം '%s', വ
 msgid "Unknown domain type: %X"
 msgstr "അപരിചിതമായ ജോലി തരം %s"
 
-#, fuzzy, c-format
-msgid "Unknown driver mode: %s"
-msgstr "പിന്തണയ്ക്കാത്ത ഡ്രൈവര്‍ നാമം '%s'"
-
 #, c-format
 msgid "Unknown driver name '%s'"
 msgstr "പിന്തണയ്ക്കാത്ത ഡ്രൈവര്‍ നാമം '%s'"
@@ -19408,7 +19049,6 @@ msgstr "അജ്ഞാതമായ ഫോര്‍വേഡ് രീതി %d,
 msgid "Unknown error"
 msgstr "അറിയാത്ത ഏതോ പ്രശ്നം"
 
-#. should never happen (tm)
 msgid "Unknown error value"
 msgstr "അപരിചിതമായ പിശക് മൂല്ല്യം"
 
@@ -19487,10 +19127,6 @@ msgid ""
 "'paravirt'"
 msgstr ""
 
-#, c-format
-msgid "Unknown mode '%s' in interface <actual> element"
-msgstr "ഇന്റര്‍ഫെയിസ് <actual> എലമെന്റില്‍ അപരിചിതമായ മോഡ് '%s'"
-
 msgid "Unknown mode has been specified"
 msgstr "അപരിചിതമായ മോഡ് നല്‍കിയിരിയ്ക്കുന്നു"
 
@@ -19509,10 +19145,6 @@ msgstr "അപരിചിതമായ പരാമീറ്റര്‍ തര�
 #, fuzzy
 msgid "Unknown parameter type"
 msgstr "അപരിചിതമായ പരാമീറ്റര്‍ തരം: %d"
-
-#, c-format
-msgid "Unknown pool adapter type '%s'"
-msgstr "അപരിചിതമായ പൂള്‍ അഡാപ്ടര്‍ രീതി '%s'"
 
 #, c-format
 msgid "Unknown protocol '%s'"
@@ -19542,24 +19174,12 @@ msgid "Unknown serial type: %X"
 msgstr "അപരിചിതമായ ഡ്രൈവര്‍ തരം %s"
 
 #, fuzzy, c-format
-msgid "Unknown shmem model type '%s'"
-msgstr "അപരിചിതമായ മോഡല്‍ തരം '%s'"
-
-#, c-format
-msgid "Unknown shmem role type '%s'"
-msgstr ""
-
-#, fuzzy, c-format
 msgid "Unknown slirp feature %s"
 msgstr "അപരിചിതമായ സിപിയു വിശേഷത %s"
 
 #, c-format
 msgid "Unknown source type: '%s'"
 msgstr "അപരിചിതമായ ശ്രോതസ്സ് തരം: '%s'"
-
-#, c-format
-msgid "Unknown startup policy '%s'"
-msgstr "അപരിചിതമായ സ്റ്റാര്‍ട്ടപ്പ് പോളിസി '%s'"
 
 msgid "Unknown state of the remote server SSH key"
 msgstr ""
@@ -19603,10 +19223,6 @@ msgstr "'%s' എന്ന അപരിചിത മൂല്ല്യം, AnyTyp
 #, c-format
 msgid "Unknown value '%s' for xsd:boolean"
 msgstr "xsd:boolean-നു് തെറ്റായ മൂല്ല്യം  '%s'"
-
-#, fuzzy, c-format
-msgid "Unknown value: %s"
-msgstr "അപരിചിതമായ റിലീസ്: %s"
 
 #, c-format
 msgid "Unknown vendor %s referenced by CPU model %s"
@@ -19679,10 +19295,6 @@ msgstr "പിന്തുണയ്ക്കാത്ത <domain> എലമെ�
 #, c-format
 msgid "Unsupported <tftp> element in an IPv6 element in network '%s'"
 msgstr "'%s' നെറ്റ്‌വര്‍ക്കില്‍ ഒരു IPv6 എലമെന്റില്‍ പിന്തുണയില്ലാത്ത <tftp> എലമെന്റ്"
-
-#, c-format
-msgid "Unsupported CPU placement mode '%s'"
-msgstr "പിന്തുണയ്ക്കാത്ത സിപിയു പ്ലെയിസ്മെന്റ് മോഡ് '%s'"
 
 #, fuzzy, c-format
 msgid "Unsupported IP address data source %d"
@@ -20199,12 +19811,10 @@ msgstr "സന്ദേശം"
 msgid "Video adapters are not supported int containers."
 msgstr "ഈ QEMU സ്പയിസ് ഗ്രാഫിക്സ് പിന്തുണയ്ക്കുന്നില്ല"
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr "libvirt %s-നുള്ള Virsh കമാന്‍ഡ് ലൈന്‍ പ്രയോഗം\n"
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, fuzzy, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr "libvirt %s-നുള്ള Virsh കമാന്‍ഡ് ലൈന്‍ പ്രയോഗം\n"
@@ -20686,11 +20296,6 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "വെറുതേ ഇടുന്നതിന് പകരം പുതിയ സ്ഥലം ഉപയോഗിക്കുക"
 
-#.
-#. * we need to use an intermediary pointer to @data as compilers may sometimes
-#. * complain about @data not being a pointer type:
-#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
-#.
 msgid "allocated netlink buffer is too small"
 msgstr "അനുവദിച്ച നെറ്റ്ലിങ്ക് ബഫര്‍ വളരെ ചെറുതാണു്"
 
@@ -21067,9 +20672,6 @@ msgstr ""
 #, fuzzy
 msgid "balloon device cannot be disabled"
 msgstr "ഡിവൈസ് തരം '%s' പരിഷ്കരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
-
-msgid "balloon memory must contain model name"
-msgstr "ബലൂണ്‍ മെമ്മറിയില്‍ മോഡല്‍ നാമം ഉണ്ടായിരിയ്ക്കണം"
 
 #, c-format
 msgid "bandwidth %llu cannot be represented in result"
@@ -22365,7 +21967,6 @@ msgstr "പാഥ് '%s' തുറക്കുവാന്‍ സാധ്യ�
 msgid "cannot open path '%s' in '%s'"
 msgstr "പാഥ് '%s' തുറക്കുവാന്‍ സാധ്യമല്ല"
 
-#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "വോള്യം '%s' തുറക്കുവാന്‍ സാധ്യമല്ല"
@@ -22379,35 +21980,7 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "%s പതിപ്പു് നംബര്‍ , '%.*s'-ലുള്ളതു്, പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
-msgid "cannot parse 'bufferCount' value '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot parse 'bufferLength' value '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot parse 'channels' value '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot parse 'dspPolicy' value '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot parse 'format' value '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot parse 'frequency' value '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot parse 'latency' value '%s'"
-msgstr ""
-
-#, c-format
-msgid "cannot parse 'voices' value '%s'"
+msgid "cannot parse 'dspPolicy' value '%i'"
 msgstr ""
 
 #, fuzzy
@@ -22417,10 +21990,6 @@ msgstr "ഡേറ്റാ ലഭ്യമാക്കുവാന്‍ സാ�
 #, fuzzy, c-format
 msgid "cannot parse MAC address '%s' from file '%s'"
 msgstr "മാക് വിലാസം '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍ പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "cannot parse bus %s"
-msgstr "ബസ് %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 #, fuzzy, c-format
 msgid "cannot parse cache mode '%s' for virtiofs"
@@ -22437,10 +22006,6 @@ msgstr "ഉപയോക്താവിന്റെ '%s' stat പാഴ്സ് 
 #, fuzzy, c-format
 msgid "cannot parse cpu user stat '%s'"
 msgstr "ഉപയോക്താവിന്റെ '%s' stat പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "cannot parse device %s"
-msgstr "ഡിവൈസ് %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 msgid "cannot parse device end location"
 msgstr "ഡിവൈസിന്റെ അവസാന സ്ഥാനം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമായില്ല"
@@ -22479,10 +22044,6 @@ msgstr "മാക് വിലാസം '%s', നെറ്റ്‌വര്‍�
 msgid "cannot parse pid in vmware log file"
 msgstr "vmware ലോഗ് ഫയലിന്റെ pid പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#, c-format
-msgid "cannot parse product %s"
-msgstr "പ്രൊഡക്ട് %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
 #, fuzzy, c-format
 msgid "cannot parse queue size '%s' for virtiofs"
 msgstr "RAM ഫയല്‍സിസ്റ്റത്തില്‍ '%s' ഉപയോഗം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -22494,14 +22055,6 @@ msgstr "rdp പോര്‍ട്ട് %s പാഴ്സ് ചെയ്യു
 #, c-format
 msgid "cannot parse sandbox mode '%s' for virtiofs"
 msgstr ""
-
-#, c-format
-msgid "cannot parse spice port %s"
-msgstr "സ്പയിസ് പോര്‍ട്ട് %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "cannot parse spice tlsPort %s"
-msgstr "സ്പയിസ് tlsPort %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 #, fuzzy, c-format
 msgid "cannot parse target for lunStr '%s'"
@@ -22527,10 +22080,6 @@ msgstr "typeidversion പരാമീറ്ററിന്റെ മൂല്ല
 #, fuzzy, c-format
 msgid "cannot parse vcpu index '%s'"
 msgstr "വീഡിയോ ram '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "cannot parse vendor id %s"
-msgstr "വെന്‍ഡര്‍ id %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
 msgid "cannot parse video heads '%s'"
@@ -23231,7 +22780,6 @@ msgstr "ക്ലോണിന്റെ പേര്"
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
-#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "%s എന്ന തട്ടു്  ഉണ്ടാക്കുന്നതില്‍ ചൈല്‍ഡ് പരാജയപ്പെട്ടു"
@@ -24113,10 +23661,6 @@ msgstr "ഇപ്പോഴത്തെ ബ്രിഡ്ജ് ഡിവൈസ�
 msgid "current vcpu count must equal maximum"
 msgstr "ഇപ്പോഴത്തെ vcpu മൂല്യം  പരമാവധിമൂല്യത്തിനു ചേരണം  "
 
-#, fuzzy
-msgid "current vcpus count must be an integer"
-msgstr "ഇപ്പോഴത്തെ vcpu മൂല്യം  പരമാവധിമൂല്യത്തിനു ചേരണം  "
-
 msgid "current vcpus must be equal to maxvcpus"
 msgstr "ഇപ്പോഴത്തെ vcpus maxvcpus നു തുല്യമായിരിക്കണം "
 
@@ -24633,6 +24177,10 @@ msgstr "ഡിസ്ക് ബസ് '%s' ഹോട്ട്പ്ലഗ് ച�
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "ഡിസ്ക് ബസ് '%s' പരിഷ്കരിയ്ക്കുവാന്‍ സാധ്യമല്ല."
+
+#, c-format
+msgid "disk bus '%s' doesn't support transiend disk backing image sharing"
+msgstr ""
 
 #, fuzzy
 msgid "disk device 'lun' doesn't support encryption"
@@ -26605,10 +26153,6 @@ msgstr "%s പാഴ്സ് ചെയ്യുന്നതില്‍ പര�
 msgid "failed to parse device weight: '%s'"
 msgstr "'%s' ഡിവൈസ് കണ്ണി റിസോള്‍വ് ചെയ്യുവാന്‍ പരാജയപ്പെട്ടു"
 
-#, c-format
-msgid "failed to parse expiry value '%s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "failed to parse int: '%s'"
 msgstr "'%s' ബിറ്റ്മാപ്പ് പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -27102,9 +26646,6 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
-#. parse inbound and outbound which are in the format of
-#. * 'average,peak,burst,floor', in which peak and burst are optional,
-#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "കോണ്‍ഫിഗ് മൂല്ല്യം %s തെറ്റാണു്"
@@ -27707,9 +27248,6 @@ msgstr "guest-get-vcpus മറുപടിയില്‍ തിരികെയ�
 msgid "guestfwd channel does not define a target address"
 msgstr "guestfwd ചാനല്‍ ലക്ഷ്യ വിലാസം നിഷ്കര്‍ഷിച്ചിട്ടില്ല"
 
-msgid "guestfwd channel does not define a target port"
-msgstr "guestfwd ചാനല്‍ ഒരു ലക്ഷ്യ പോര്‍ട്ട് നിഷ്കര്‍ഷിയ്ക്കുന്നില്ല"
-
 msgid "guestfwd channel only supports IPv4 addresses"
 msgstr "guestfwd  ചാനല്‍ IPv4 വിലാസങ്ങള്‍ മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
@@ -27720,7 +27258,6 @@ msgstr "സ്നാപ്ഷോട്ട് ഉണ്ടാക്കിയശ�
 msgid "handler failed to wait on condition"
 msgstr "അവസ്ഥയ്ക്കായി കാത്തിരിക്കുന്നതില്‍ പരാജയം"
 
-#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr "ഹാഷ് തെരച്ചില്‍ നള്‍ പോയിന്റര്‍ ലഭ്യമാക്കുന്നു"
 
@@ -28147,6 +27684,9 @@ msgstr "ഡിസ്ക് ബസ് '%s' ഹോട്ട്പ്ലഗ് ച�
 msgid "input devices without vnc are not supported"
 msgstr "നെറ്റ്‌വര്‍ക്ക് ഡിവൈസ് തരം പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "input evdev doesn't support bus element"
+msgstr ""
+
 #, c-format
 msgid "input too large: %d * %d"
 msgstr "ഇന്‍പുട്ട് വളരെ വലുതു്: %d * %d"
@@ -28209,12 +27749,6 @@ msgstr "%s തരത്തിലുള്ള ഇന്റര്‍ഫെയി�
 msgid ""
 "interface %s - multiqueue is not supported for network interfaces of type %s"
 msgstr "%s തരത്തിലുള്ള ഇന്റര്‍ഫെയിസുകളില്‍ ഫില്‍റ്ററുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
-
-#, c-format
-msgid ""
-"interface %s - multiqueue is not supported for network interfaces of type "
-"vhost-user with this QEMU binary"
-msgstr ""
 
 #, c-format
 msgid ""
@@ -28282,25 +27816,6 @@ msgstr "ഇന്റര്‍ഫെയിസ് പേര്"
 msgid "interface name %s does not fit into buffer "
 msgstr "%s എന്ന ഇന്റര്‍ഫേസ് പേര് ബഫറിനു ചേരില്ല"
 
-#.
-#. * virsh-interface.c: Commands to manage host interface
-#. *
-#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
-#. *
-#. * This library is free software; you can redistribute it and/or
-#. * modify it under the terms of the GNU Lesser General Public
-#. * License as published by the Free Software Foundation; either
-#. * version 2.1 of the License, or (at your option) any later version.
-#. *
-#. * This library is distributed in the hope that it will be useful,
-#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
-#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#. * Lesser General Public License for more details.
-#. *
-#. * You should have received a copy of the GNU Lesser General Public
-#. * License along with this library.  If not, see
-#. * <http://www.gnu.org/licenses/>.
-#.
 msgid "interface name or MAC address"
 msgstr "ഇന്റര്‍ഫെയിസ് പേര് അല്ലെങ്കില്‍ MAC വിലാസം"
 
@@ -28460,9 +27975,6 @@ msgstr "തെറ്റായ വിലാസം '%s', നെറ്റ്‌വ�
 msgid "invalid DNS SRV weight attribute for service '%s' in network '%s'"
 msgstr "തെറ്റായ വിലാസം '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍"
 
-msgid "invalid HyperV spinlock retry count"
-msgstr "തെറ്റായ HyperV സ്പിന്‍ലോക്ക് റീട്രൈ കൌണ്ട്"
-
 msgid "invalid MAC address"
 msgstr "തെറ്റായ മാക് വിലാസം"
 
@@ -28583,10 +28095,6 @@ msgid "invalid XML length: %d"
 msgstr "തെറ്റായ XML നീളം: %d"
 
 #, fuzzy, c-format
-msgid "invalid access mode '%s'"
-msgstr "അസാധുവായ കീ കോഡ്: '%s'"
-
-#, fuzzy, c-format
 msgid "invalid allowReboot value '%s'"
 msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
 
@@ -28607,14 +28115,6 @@ msgstr "തെറ്റായ ആര്‍ഗ്യുമെന്റ് നല�
 #, c-format
 msgid "invalid argument: %s"
 msgstr "അസാധുവായ ആര്‍ഗ്യുമെന്റ്: %s"
-
-#, c-format
-msgid "invalid audio 'id' value '%s'"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "invalid autodeflate attribute value '%s'"
-msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷത %s"
 
 #, fuzzy, c-format
 msgid "invalid backing protocol '%s'"
@@ -28639,10 +28139,6 @@ msgstr "തെറ്റായ കാച്ചപ്പ് സ്ലൂ"
 
 msgid "invalid catchup threshold"
 msgstr "തെറ്റായ കാച്ചപ്പ് ത്രെഷോള്‍ഡ്"
-
-#, fuzzy, c-format
-msgid "invalid channel state value '%s'"
-msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
 
 #, fuzzy, c-format
 msgid "invalid char in %s: %c"
@@ -28688,10 +28184,6 @@ msgid "invalid devno value '%s' for '%s'"
 msgstr "തെറ്റായ മൂല്ല്യം '%s' - VMX എന്‍ട്രി '%s'-ല്‍"
 
 #, fuzzy, c-format
-msgid "invalid discard value '%s'"
-msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
-
-#, fuzzy, c-format
 msgid "invalid disk index '%s'"
 msgstr "തെറ്റായ ലിങ്ക് സ്ഥിതി '%s'"
 
@@ -28713,10 +28205,6 @@ msgstr "തെറ്റായ ഡൊമെയിന്‍ പോയിന്‍�
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ ഡൊമെയിന്‍ പോയിന്‍റര്‍"
-
-#, c-format
-msgid "invalid domain state '%s'"
-msgstr "തെറ്റായ തരത്തിലുള്ള ഡൊമെയിന്‍ അവസ്ഥ '%s'"
 
 #, c-format
 msgid "invalid domain state reason '%s'"
@@ -28761,19 +28249,6 @@ msgstr "തെറ്റായ ഫ്ലാഗ് കൂട്ടം: (0x%x)"
 msgid "invalid fmode: '%s'"
 msgstr ""
 
-#, c-format
-msgid "invalid freePageReporting attribute value '%s'"
-msgstr ""
-
-msgid "invalid geometry settings (cyls)"
-msgstr "തെറ്റായ ജോമട്രി സജ്ജീകരണങ്ങള്‍ (cyls)"
-
-msgid "invalid geometry settings (heads)"
-msgstr "തെറ്റായ ജോമട്രി സജ്ജീകരണങ്ങള്‍ (heads)"
-
-msgid "invalid geometry settings (secs)"
-msgstr "തെറ്റായ ജോമട്രി സജ്ജീകരണങ്ങള്‍ (secs)"
-
 #, fuzzy
 msgid "invalid hasmanagedsave"
 msgstr "അസാധുവായ മോഡ്"
@@ -28808,10 +28283,6 @@ msgstr "തെറ്റായ ഇന്റര്‍ഫെയിസ് പോയ�
 #, c-format
 msgid "invalid interface pointer in %s"
 msgstr "%s-ല്‍ തെറ്റായ ഇന്റര്‍ഫെയിസ് പോയിന്റര്‍"
-
-#, c-format
-msgid "invalid iommuGroup number attribute '%s'"
-msgstr "തെറ്റായ iommuGroup നംബര്‍ വിശേഷത '%s'"
 
 #, fuzzy, c-format
 msgid "invalid iommuGroup number attribute for '%s'"
@@ -28895,10 +28366,6 @@ msgstr ""
 msgid "invalid master key read, size=%zd"
 msgstr "തെറ്റായ മെമ്മറി വ്യാപ്തി %d ലഭിച്ചു"
 
-#, fuzzy, c-format
-msgid "invalid memory model '%s'"
-msgstr "അസാധുവായ കീ കോഡ്: '%s'"
-
 #, fuzzy
 msgid "invalid microcode version"
 msgstr "അസാധുവായ മോഡ്"
@@ -28920,10 +28387,6 @@ msgstr "തെറ്റായ രഹസ്യ രീതി '%s'"
 
 msgid "invalid model for virtio-balloon-pci"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "invalid msi ioeventfd setting for shmem: '%s'"
-msgstr "'%s'-നു് തെറ്റായ വ്യാപ്തി നല്‍കിയിരിക്കുന്നു"
 
 #, fuzzy, c-format
 msgid "invalid nested value key '%s'"
@@ -28980,10 +28443,6 @@ msgstr "തെറ്റായ നോഡ് മെമ്മറി മൂല്ല
 msgid "invalid number '%s' in '%s'"
 msgstr "തെറ്റായ നെറ്റ്മാസ്ക് '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍"
 
-#, fuzzy, c-format
-msgid "invalid number of vectors for shmem: '%s'"
-msgstr "'%s'-നുള്ള തെറ്റായ USB ബസ് നംബര്‍ നല്‍കിയിരിക്കുന്നു"
-
 #, c-format
 msgid ""
 "invalid number value for '%s' host CPU model property in QEMU capabilities "
@@ -28997,10 +28456,6 @@ msgstr "കോര്‍സ്‌ (cores) സവിശേഷം സി.പി.യ
 #, fuzzy, c-format
 msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr "കോര്‍സ്‌ (cores) സവിശേഷം സി.പി.യു. ടോപ്പോളജിയില്‍ ഇല്ല"
-
-#, fuzzy, c-format
-msgid "invalid part_separator setting '%s'"
-msgstr "തെറ്റായ സിപിയു വെണ്ടര്‍ സ്ട്രിങ് '%s'"
 
 #, fuzzy, c-format
 msgid "invalid partition name '%s', expected '%s'"
@@ -29045,14 +28500,6 @@ msgstr "തെറ്റായ രഹസ്യ രീതി '%s'"
 msgid "invalid readahead size or timeout"
 msgstr "സമയപരിധിയ്ക്കുള്ള അസാധുവായ മൂല്ല്യം"
 
-#, fuzzy, c-format
-msgid "invalid reconnect enabled value: '%s'"
-msgstr "തെറ്റായ സുരക്ഷ റീലേബല്‍ മൂല്ല്യം %s"
-
-#, fuzzy, c-format
-msgid "invalid reconnect timeout value: '%s'"
-msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
-
 #, c-format
 msgid "invalid removable media size supplied for '%s'"
 msgstr "'%s'-നുള്ള മാറ്റുവാന്‍ സാധിക്കുന്ന മീഡിയ വ്യാപ്തി തെറ്റാണു്"
@@ -29093,14 +28540,6 @@ msgstr "തെറ്റായ രഹസ്യ രീതി '%s'"
 msgid "invalid server address"
 msgstr "തെറ്റായ മാക് വിലാസം"
 
-#, fuzzy, c-format
-msgid "invalid setting for iothread '%s'"
-msgstr "തെറ്റായ രഹസ്യ രീതി '%s'"
-
-#, fuzzy, c-format
-msgid "invalid setting for vcpu '%s'"
-msgstr "തെറ്റായ രഹസ്യ രീതി '%s'"
-
 #, c-format
 msgid "invalid size supplied for '%s'"
 msgstr "'%s'-നു് തെറ്റായ വ്യാപ്തി നല്‍കിയിരിക്കുന്നു"
@@ -29116,13 +28555,6 @@ msgstr "തെറ്റായ സ്നാപ്പ്ഷോട്ട് നാ�
 #, fuzzy, c-format
 msgid "invalid ssid value '%s' for '%s'"
 msgstr "തെറ്റായ മൂല്ല്യം '%s' - VMX എന്‍ട്രി '%s'-ല്‍"
-
-#, fuzzy, c-format
-msgid "invalid state '%s' of perf event '%s'"
-msgstr "തെറ്റായ മൂല്ല്യം '%s' - VMX എന്‍ട്രി '%s'-ല്‍"
-
-msgid "invalid statistics collection period"
-msgstr "തെറ്റായ സ്ഥിതിവിവരക്കണക്കിന്റെ കലക്ഷന്‍ സമയം"
 
 #, c-format
 msgid "invalid storage pool cow feature state '%s'"
@@ -29169,10 +28601,6 @@ msgstr "തെറ്റായ tlsPort നംബര്‍: %s"
 #, fuzzy
 msgid "invalid transient"
 msgstr "അസാധുവായ ആര്‍ഗ്യുമെന്റ്"
-
-#, c-format
-msgid "invalid translation value '%s'"
-msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
 
 #, c-format
 msgid "invalid type '%s' for parameter '%s', expected '%s'"
@@ -29236,36 +28664,8 @@ msgid "invalid value of memory device node"
 msgstr "സമയപരിധിയ്ക്കുള്ള അസാധുവായ മൂല്ല്യം"
 
 #, fuzzy, c-format
-msgid "invalid value of state argument for Hyper-V stimer '%s' feature"
-msgstr "HyperV Enlightenment വിശേഷത '%s'-നുള്ള ആര്‍ഗ്യുമെന്റിനുള്ള തെറ്റായ അവസ്ഥ"
-
-#, c-format
-msgid "invalid value of state argument for HyperV Enlightenment feature '%s'"
-msgstr "HyperV Enlightenment വിശേഷത '%s'-നുള്ള ആര്‍ഗ്യുമെന്റിനുള്ള തെറ്റായ അവസ്ഥ"
-
-#, fuzzy, c-format
-msgid "invalid value of state argument for KVM feature '%s'"
-msgstr "HyperV Enlightenment വിശേഷത '%s'-നുള്ള ആര്‍ഗ്യുമെന്റിനുള്ള തെറ്റായ അവസ്ഥ"
-
-#, fuzzy, c-format
-msgid "invalid value of state argument for Xen feature '%s'"
-msgstr "HyperV Enlightenment വിശേഷത '%s'-നുള്ള ആര്‍ഗ്യുമെന്റിനുള്ള തെറ്റായ അവസ്ഥ"
-
-#, fuzzy, c-format
-msgid "invalid vcpu 'enabled' value '%s'"
-msgstr "തെറ്റായ സുരക്ഷ റീലേബല്‍ മൂല്ല്യം %s"
-
-#, fuzzy, c-format
-msgid "invalid vcpu 'hotpluggable' value '%s'"
-msgstr "തെറ്റായ സുരക്ഷ റീലേബല്‍ മൂല്ല്യം %s"
-
-#, fuzzy, c-format
 msgid "invalid vcpu index '%u'"
 msgstr "%s-ല്‍ തെറ്റായ cpuNum"
-
-#, fuzzy
-msgid "invalid vcpu order"
-msgstr "അസാധുവായ മോഡ്"
 
 #, fuzzy, c-format
 msgid "invalid vncdisplay value '%s'"
@@ -29998,10 +29398,6 @@ msgstr "പകര്‍ത്തല്‍ ബാക്കിങ്ങ് ചെ�
 msgid "malformed 'offset' property of 'raw' driver"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "malformed 'port' attribute: %s"
-msgstr "തെറ്റായ 'floor_sum' വിശേഷത: %s"
-
 #, fuzzy
 msgid "malformed 'prefix' field"
 msgstr "തെറ്റായ ipset ഫ്ലാഗുകള്‍"
@@ -30012,10 +29408,6 @@ msgstr ""
 
 msgid "malformed 'size' property of 'raw' driver"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "malformed 'speed' attribute: %s"
-msgstr "തെറ്റായ 'floor_sum' വിശേഷത: %s"
 
 #, c-format
 msgid "malformed 'sslverify' field in backing store definition '%s'"
@@ -30073,10 +29465,6 @@ msgstr ""
 #, fuzzy
 msgid "malformed genid element"
 msgstr "തെറ്റായ uuid എലമെന്റ്"
-
-#, fuzzy, c-format
-msgid "malformed gic version: %s"
-msgstr "തെറ്റായ സിഗ്നല്‍ നാമം: %s"
 
 msgid "malformed group element"
 msgstr "തെറ്റായ ഗ്രൂപ്പ് എലമെന്റ്"
@@ -30215,9 +29603,6 @@ msgid "managed save of a domain state"
 msgstr "ഡൊമെയിന്‍ അവസ്ഥ സൂക്ഷിച്ചത് കൈകാര്യം ചെയ്യുക"
 
 msgid "managing externally launched configuration"
-msgstr ""
-
-msgid "mandatory attribute 'width' is missing or malformed"
 msgstr ""
 
 msgid "manipulate authorized SSH keys file for given user (via agent)"
@@ -30722,22 +30107,6 @@ msgstr ""
 msgid "missing 'state' attribute"
 msgstr "ലഭ്യമല്ലാത്ത തരത്തിലുള്ള ഡൊമെയില്‍ വിശേഷത"
 
-#, fuzzy, c-format
-msgid "missing 'state' attribute for Hyper-V stimer '%s' feature"
-msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
-
-#, c-format
-msgid "missing 'state' attribute for HyperV Enlightenment feature '%s'"
-msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
-
-#, fuzzy, c-format
-msgid "missing 'state' attribute for KVM feature '%s'"
-msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
-
-#, fuzzy, c-format
-msgid "missing 'state' attribute for Xen feature '%s'"
-msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
-
 msgid "missing 'target' in iSCSI backing definition"
 msgstr ""
 
@@ -30754,10 +30123,6 @@ msgstr "ഡിസ്ക് ശ്രോതസ്സിനുള്ള നാമ�
 #, c-format
 msgid "missing 'type'(%s) or 'alias'(%s) field of QOM 'object'"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "missing 'unknown' attribute for feature '%s'"
-msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
 
 msgid "missing 'url' in JSON backing volume definition"
 msgstr ""
@@ -30882,12 +30247,6 @@ msgstr "ആര്‍ഗ്യുമെന്റ് ലഭ്യമല്ല"
 msgid "missing array element"
 msgstr "അറേ എലമെന്റ് ലഭ്യമല്ല"
 
-msgid "missing audio 'id' attribute"
-msgstr ""
-
-msgid "missing audio 'type' attribute"
-msgstr ""
-
 #, c-format
 msgid "missing backend for pool type %d"
 msgstr "പൂള്‍ രീതി %d-നുള്ള ബാക്കെന്‍ഡ് ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
@@ -30913,9 +30272,6 @@ msgstr "ബൂട്ട് ഡിവൈസ് ലഭ്യമല്ല"
 
 #, fuzzy
 msgid "missing capability name"
-msgstr "വിശേഷണ തരം ലഭ്യമല്ല"
-
-msgid "missing capability type"
 msgstr "വിശേഷണ തരം ലഭ്യമല്ല"
 
 msgid "missing capacity element"
@@ -30994,10 +30350,6 @@ msgid "missing devno value for '%s'"
 msgstr "ഹോസ്റ്റിനുള്ള നാമം ലഭ്യമല്ല"
 
 #, fuzzy
-msgid "missing devnode type"
-msgstr "ഹബ് ഡിവൈസ് തരം ലഭ്യമല്ല"
-
-#, fuzzy
 msgid "missing disk backing store format"
 msgstr "ലഭ്യമല്ലാത്ത ഡിവൈസുകളുടെ വിവരം"
 
@@ -31021,9 +30373,6 @@ msgstr "സ്നാപ്പ്ഷോട്ടില്‍ ഡൊമെയി�
 
 #, fuzzy
 msgid "missing domain name"
-msgstr "ഡൊമെയിന്‍ അവസ്ഥ ലഭ്യമല്ല"
-
-msgid "missing domain state"
 msgstr "ഡൊമെയിന്‍ അവസ്ഥ ലഭ്യമല്ല"
 
 msgid "missing domain type attribute"
@@ -31138,13 +30487,6 @@ msgstr "ഇന്‍പുട്ട് വോള്യം ടാര്‍ഗറ�
 msgid "missing interface information"
 msgstr "ഇന്റര്‍ഫെയിസ് വിവരം ലഭ്യമല്ല"
 
-msgid "missing iommuGroup number attribute"
-msgstr "iommuGroup നംബര്‍ വിശേഷത ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "missing iothread id in iothreadpin"
-msgstr "ഇന്റര്‍ഫെയിസ് വിവരം ലഭ്യമല്ല"
-
 #, fuzzy
 msgid "missing ivgen info name string"
 msgstr "കേര്‍ണല്‍ വിവരം ലഭ്യമല്ല"
@@ -31192,10 +30534,6 @@ msgid "missing mapping in '%s'"
 msgstr ""
 
 #, fuzzy
-msgid "missing memory model"
-msgstr "ടൈമര്‍ നാമം ലഭ്യമല്ല"
-
-#, fuzzy
 msgid "missing microcode version in QEMU capabilities cache"
 msgstr "മൈഗ്രേഷന്‍ വിശേഷത നാമം ലഭ്യമല്ല"
 
@@ -31205,10 +30543,6 @@ msgstr "മൈഗ്രേഷന്‍ വിശേഷത നാമം ലഭ്
 #, fuzzy
 msgid "missing migration parameter name"
 msgstr "മൈഗ്രേഷന്‍ വിശേഷത നാമം ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "missing model for IOMMU device"
-msgstr "ബൂട്ട് ഡിവൈസ് ലഭ്യമല്ല"
 
 msgid "missing name element in migration data"
 msgstr "നീക്കുന്ന ഡേറ്റയില്‍ നാമം എലമെന്റ് ലഭ്യമല്ല"
@@ -31271,10 +30605,6 @@ msgstr "സിപിയു മോഡല്‍ %s-ല്‍ തെറ്റായ
 msgid "missing or invalid features in CPU data"
 msgstr "സിപിയു മോഡല്‍ %s-ല്‍ തെറ്റായ പിവിആര്‍ മൂല്ല്യം അല്ലെങ്കില്‍ ലഭ്യമല്ല"
 
-#, fuzzy
-msgid "missing or invalid vcpu id"
-msgstr "vlan റ്റാഗ് ഐഡി വിശേഷത ലഭ്യമല്ല അല്ലെങ്കില്‍ തെറ്റാണു്"
-
 msgid "missing or invalid vlan tag id attribute"
 msgstr "vlan റ്റാഗ് ഐഡി വിശേഷത ലഭ്യമല്ല അല്ലെങ്കില്‍ തെറ്റാണു്"
 
@@ -31314,10 +30644,6 @@ msgstr "പേരു് വിവരം ലഭ്യമല്ല"
 
 msgid "missing per-device path"
 msgstr "ഓരോ ഡിവൈസിനുള്ള പാഥ് ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "missing perf event name"
-msgstr "വിശേഷതാ നാമം ലഭ്യമല്ല"
 
 #, fuzzy, c-format
 msgid "missing persistent configuration for disk '%s'"
@@ -31453,16 +30779,8 @@ msgstr "സോഴ്സ് പാഥ് ലഭ്യമല്ല"
 msgid "missing ssid value for '%s'"
 msgstr "ഹോസ്റ്റിനുള്ള നാമം ലഭ്യമല്ല"
 
-#, fuzzy, c-format
-msgid "missing state attribute '%s' of feature '%s'"
-msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
-
 msgid "missing state from existing snapshot"
 msgstr "നിലവിലുള്ള സ്നാപ്പ്ഷോട്ടില്‍ നിന്നും അവസ്ഥ ലഭ്യമല്ല"
-
-#, fuzzy, c-format
-msgid "missing state of perf event '%s'"
-msgstr "അത്യാവശ്യ ക്രമീകരണ എന്‍ട്രി '%s' ലഭ്യമല്ല"
 
 #, fuzzy, c-format
 msgid "missing storage backend for '%s' storage"
@@ -31524,9 +30842,6 @@ msgstr "ഡിവൈസ് %s-നുള്ള ലഭ്യമല്ലാത്�
 msgid "missing the host address for the iSCSI hostdev"
 msgstr ""
 
-msgid "missing timeout for chardev with reconnect enabled"
-msgstr ""
-
 msgid "missing timer name"
 msgstr "ടൈമര്‍ നാമം ലഭ്യമല്ല"
 
@@ -31535,9 +30850,6 @@ msgstr "നീക്കുന്ന ഡേറ്റയില്‍ tlsPort വ�
 
 msgid "missing tmpfs size, set the size option"
 msgstr ""
-
-msgid "missing type attribute in interface's <actual> element"
-msgstr "ഇന്റര്‍ഫെയിസിന്റെ  <actual> എലമെന്റില്‍ വിശേഷത രീതി ലഭ്യമല്ല"
 
 msgid "missing type attribute in migration data"
 msgstr "നീക്കേണ്ട ഡേറ്റയില്‍ വിശേഷത തരം ലഭ്യമല്ല"
@@ -31574,14 +30886,6 @@ msgstr "%s ല്‍ പേരു് വിവരം ലഭ്യമല്ല"
 #, fuzzy
 msgid "missing values for acceleration"
 msgstr "പേരു് വിവരം ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "missing vcpu enabled state"
-msgstr "വിശേഷണ തരം ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "missing vcpu id in vcpupin"
-msgstr "vcpupin-നുള്ള cpuset ലഭ്യമല്ല"
 
 msgid "missing vendor"
 msgstr "വിതരണക്കാരന്‍ ലഭ്യമല്ല"
@@ -31688,15 +30992,6 @@ msgstr "വിവരണത്തിന് പകരം തലക്കെട്�
 msgid "monitor failure"
 msgstr "മോണിറ്റര്‍ പാഥ് ലഭ്യമല്ല"
 
-#. *
-#. * QEMU_CHECK_MONITOR_FULL:
-#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
-#. * @exit: statement that is used to exit the function
-#. *
-#. * This macro checks that the monitor is valid for given operation and exits
-#. * the function if not. The macro also adds a debug statement regarding the
-#. * monitor.
-#.
 msgid "monitor must not be NULL"
 msgstr "മോണിറ്റര്‍ NULL ആയിരിയ്ക്കരുതു്"
 
@@ -31905,7 +31200,6 @@ msgstr "rawio വിശേഷത ആവശ്യമുണ്ടു്"
 msgid "negative size requires --shrink"
 msgstr ""
 
-#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "ചോദ്യം ചെയ്ത SSF %d മതിയാകുന്നതല്ല"
@@ -32359,21 +31653,14 @@ msgstr "കണക്ഷന്‍ പ്രവര്‍ത്തകം ലഭ്�
 msgid "no device capabilities for '%s'"
 msgstr "'%s'-നുള്ള ഡിവൈസ് വിശേഷതകള്‍ ലഭ്യമല്ല"
 
-#, fuzzy
-msgid "no device found on "
-msgstr "%s എന്നു് വിളിപ്പേരുള്ളൊരു ഡിവൈസും ലഭ്യമായില്ല"
+#, c-format
+msgid ""
+"no device found at address '%s' matching MAC address '%s' and alias '%s'"
+msgstr ""
 
 #, c-format
 msgid "no device found with alias %s"
 msgstr "%s എന്നു് വിളിപ്പേരുള്ളൊരു ഡിവൈസും ലഭ്യമായില്ല"
-
-#, fuzzy, c-format
-msgid "no device matching MAC address %s found"
-msgstr "%s മാക് വിലാസമുള്ള ഇന്റര്‍ഫെയിസ് ലഭ്യമല്ല"
-
-#, fuzzy, c-format
-msgid "no device matching MAC address %s found on "
-msgstr "%s മാക് വിലാസമുള്ള ഇന്റര്‍ഫെയിസ് ലഭ്യമല്ല"
 
 #, fuzzy, c-format
 msgid "no disk format for %s was specified"
@@ -32484,9 +31771,6 @@ msgstr "'%s' എന്ന പേരുമായി ചേരുന്നൊര�
 msgid "no interface with matching name '%s'"
 msgstr "'%s' എന്ന പേരുമായി ചേരുന്നൊരു nwfilter ലഭ്യമല്ല"
 
-msgid "no internalFlags support"
-msgstr "internalFlags-ക്കുള്ള പിന്തുണ ലഭ്യമല്ല"
-
 msgid "no job is active on the domain"
 msgstr "ഡൊമെയിനില്‍ ഒരു ജോലിയും സജീവമല്ല"
 
@@ -32505,10 +31789,6 @@ msgstr ""
 #, fuzzy
 msgid "no matching RNG device was found"
 msgstr "ആര്‍എന്‍ജി ഡിവൈസ് മോഡല്‍ ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "no matching device found"
-msgstr "ചേരുന്ന ഡിവൈസ് ലഭ്യമല്ല"
 
 #, fuzzy
 msgid "no matching filesystem device was found"
@@ -34130,9 +33410,6 @@ msgstr ""
 msgid "query-dirty-rate reply was missing 'status' data"
 msgstr ""
 
-msgid "query-events reply data was missing 'name'"
-msgstr "query-events മറുപടി ഡേറ്റയില്‍ 'name' ലഭ്യമല്ല"
-
 msgid "query-fdsets reply was missing 'fdset-id'"
 msgstr ""
 
@@ -35096,10 +34373,6 @@ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക�
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr "നെറ്റ്‌വര്‍ക്ക് തരം %d-യ്ക്കുള്ള പിന്തുണ ലഭ്യമല്ല"
 
-#, fuzzy
-msgid "setting NUMA distances is not supported with this qemu"
-msgstr "ചേരാത്ത NUMA സിപിയു പരിധികള്‍ ഈ ക്യൂഇഎംയുവില്‍ പിന്തുണയ്ക്കുന്നില്ല"
-
 msgid "setting audio buffer count is not supported with this QEMU"
 msgstr ""
 
@@ -35329,10 +34602,6 @@ msgstr "നോണ്‍-ആബ്സ്യൂട്ട് ഉപേക്ഷി�
 msgid "skipped restricted file"
 msgstr "നിബന്ധനകളുള്ള ഫയല്‍ ഉപേക്ഷിച്ചിരിയ്ക്കുന്നു"
 
-#, fuzzy
-msgid "smm is not available with this QEMU binary"
-msgstr "ഈ QEMU ലൈബ്രറിയില്‍ പങ്കിടുന്ന മെമ്മറി പ്രവര്‍ത്തന രഹിതമാക്കുന്നതു് ലഭ്യമല്ല"
-
 #, c-format
 msgid "snapshot %s disappeared from list"
 msgstr "പട്ടികയില്‍ നിന്നും സ്നാപ്പ്ഷോട്ട് %s കാണാനില്ല"
@@ -35461,12 +34730,6 @@ msgstr ""
 "എക്സ് എം  എല്‍ ക്രമീകരണത്തില്‍ spice TLS സജ്ജമാക്കിയിട്ടുണ്ട്, പക്ഷേ qemu.conf ല്‍ TLS പ്രവര്‍"
 "ത്തനരഹിതമാക്കിയിരിക്കുകയാണ്"
 
-msgid "spice channel missing name/mode"
-msgstr "സ്പയിസ് ചാനലിനു് പേരു്/മോഡ് ലഭ്യമല്ല"
-
-msgid "spice clipboard missing copypaste"
-msgstr "സ്പയിസ് ക്ലിപ്പിബോര്‍ഡില്‍ copypaste ലഭ്യമല്ല"
-
 msgid ""
 "spice defaultMode insecure requested in XML configuration, but plaintext "
 "connection is not available"
@@ -35480,30 +34743,10 @@ msgstr ""
 "എക്സ് എം  എല്‍ ക്രമീകരണത്തില്‍ spice TLS സജ്ജമാക്കിയിട്ടുണ്ട്, പക്ഷേ qemu.conf ല്‍ TLS പ്രവര്‍"
 "ത്തനരഹിതമാക്കിയിരിക്കുകയാണ്"
 
-#, fuzzy
-msgid "spice filetransfer missing enable"
-msgstr "സ്പയിസ് ചാനലിനു് പേരു്/മോഡ് ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "spice gl element missing enable"
-msgstr "സ്പയിസ് മൌസില്‍ മോഡ് ലഭ്യമല്ല"
-
-msgid "spice image missing compression"
-msgstr "സ്പെയിസ് ചിത്രത്തില്‍ കമ്പ്രഷന്‍ ലഭ്യമല്ല"
-
 msgid ""
 "spice insecure channels set in XML configuration, but plaintext connection "
 "is not available"
 msgstr ""
-
-msgid "spice jpeg missing compression"
-msgstr "സ്പയിസ് jpeg-ല്‍ കമ്പ്രഷന്‍ ലഭ്യമല്ല"
-
-msgid "spice mouse missing mode"
-msgstr "സ്പയിസ് മൌസില്‍ മോഡ് ലഭ്യമല്ല"
-
-msgid "spice playback missing compression"
-msgstr "സ്പയിസ് പ്ലേബാക്ക് കമ്പ്രഷന്‍ ലഭ്യമല്ല"
 
 #, fuzzy
 msgid ""
@@ -35512,12 +34755,6 @@ msgid ""
 msgstr ""
 "എക്സ് എം  എല്‍ ക്രമീകരണത്തില്‍ spice TLS സജ്ജമാക്കിയിട്ടുണ്ട്, പക്ഷേ qemu.conf ല്‍ TLS പ്രവര്‍"
 "ത്തനരഹിതമാക്കിയിരിക്കുകയാണ്"
-
-msgid "spice streaming missing mode"
-msgstr "സ്പയിസ് സ്ട്രീമിങില്‍ മോഡ് ലഭ്യമല്ല"
-
-msgid "spice zlib missing compression"
-msgstr "സ്പയിസ് zlib-ല്‍ കമ്പ്രഷന്‍ ലഭ്യമല്ല"
 
 #, c-format
 msgid "spice_tls_x509_cert_dir directory '%s' does not exist"
@@ -35529,10 +34766,6 @@ msgstr "spicevmc ഡിവൈസ് തരം virtio മാത്രമേ പ�
 #, fuzzy
 msgid "splash timeout is not supported by this QEMU binary"
 msgstr "ഈ QEMU ബൈനറി റീബൂട്ട് ടൈമൗട്ട് പിന്തുണക്കില്ല "
-
-#, fuzzy
-msgid "split I/O APIC is not supported by this QEMU binary"
-msgstr "ഈ QEMU ബൈനറി discard പിന്തുണയ്ക്കുന്നില്ല"
 
 #, fuzzy, c-format
 msgid "splitting StorageUrl failed %s"
@@ -35696,9 +34929,6 @@ msgstr "സ്റ്റോറേജ് പൂള്‍ സജീവമല്ല"
 
 #, fuzzy
 msgid "storage pool missing auth type"
-msgstr "സംഭരണ പൂള്‍ ലഭ്യമല്ലാത്ത തരം വിശേഷത"
-
-msgid "storage pool missing type attribute"
 msgstr "സംഭരണ പൂള്‍ ലഭ്യമല്ലാത്ത തരം വിശേഷത"
 
 #, fuzzy
@@ -36663,9 +35893,6 @@ msgstr ""
 msgid "transient disk '%s' must not be read-only"
 msgstr ""
 
-msgid "transient disk hotplug isn't supported"
-msgstr ""
-
 #, c-format
 msgid "transient disk not supported by this QEMU binary (%s)"
 msgstr ""
@@ -36960,7 +36187,6 @@ msgstr "mutex init ചെയ്യുവാന്‍ സാധ്യമല്ല
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
-#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "%s fsync ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -37797,38 +37023,12 @@ msgstr ""
 msgid "unix socket for spice graphics are not supported with this QEMU"
 msgstr "ഈ QEMU സ്പയിസ് ഗ്രാഫിക്സ് പിന്തുണയ്ക്കുന്നില്ല"
 
-#. Something went wrong retrieving a volume path, cope with it
-#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "അറിയാത്ത"
 
 #, c-format
 msgid "unknown %s action: %s"
 msgstr "അപരിചിതമായ %s പ്രവര്‍ത്തി: %s"
-
-#, c-format
-msgid "unknown 'exclusive' value '%s'"
-msgstr ""
-
-#, c-format
-msgid "unknown 'fixedSettings' value '%s'"
-msgstr ""
-
-#, c-format
-msgid "unknown 'mixingEngine' value '%s'"
-msgstr ""
-
-#, c-format
-msgid "unknown 'tryMMap' value '%s'"
-msgstr ""
-
-#, c-format
-msgid "unknown 'tryPoll' value '%s'"
-msgstr ""
-
-#, fuzzy, c-format
-msgid "unknown 'unknown' value '%s'"
-msgstr "അപരിചിതമായ rom ബാര്‍ മൂല്ല്യം '%s'"
 
 #, fuzzy, c-format
 msgid "unknown CPU feature %s"
@@ -37845,10 +37045,6 @@ msgstr "അപരിചിതമായ സിപിയു മോഡല്‍ %s"
 #, fuzzy, c-format
 msgid "unknown CPU register '%s'"
 msgstr "അപരിചിതമായ സിപിയു വിശേഷത %s"
-
-#, fuzzy, c-format
-msgid "unknown IOMMU model: %s"
-msgstr "അപരിചിതമായ സിപിയു മോഡല്‍ %s"
 
 msgid "unknown OS type"
 msgstr "അപരിചിതമായ ഒഎസ് രീതി"
@@ -37884,10 +37080,6 @@ msgstr "'%s' SCSI ഹോസ്റ്റ് വിശേഷണ തരം, '%s'-�
 #, fuzzy, c-format
 msgid "unknown SCSI target capability type '%s' for '%s'"
 msgstr "'%s' SCSI ഹോസ്റ്റ് വിശേഷണ തരം, '%s'-നുള്ളതു് അപരിചിതം"
-
-#, c-format
-msgid "unknown SDL driver '%s'"
-msgstr ""
 
 #, c-format
 msgid "unknown SDL_AUDIODRIVER setting %s"
@@ -37930,20 +37122,12 @@ msgid "unknown arp bonding validate %s"
 msgstr "അപരിചിതമായ arp ബോണ്ടിങ് പരിശോധന %s"
 
 #, c-format
-msgid "unknown audio type '%s'"
-msgstr ""
-
-#, c-format
 msgid "unknown auth type '%s'"
 msgstr "അപരിചിതമായ auth രീതി '%s'"
 
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "അപരിചിതമായ ഓഥന്റിക്കേഷന്‍ തരം %s"
-
-#, c-format
-msgid "unknown aw_bits value: %s"
-msgstr ""
 
 #, c-format
 msgid "unknown backend type '%s' for egd"
@@ -37965,17 +37149,9 @@ msgstr "അപരിചിതമായ ബോണ്ടിങ് മോഡ് %s"
 msgid "unknown boot device '%s'"
 msgstr "അപരിചിതമായ ബൂട്ട് ഡിവൈസ് '%s'"
 
-#, fuzzy, c-format
-msgid "unknown caching_mode value: %s"
-msgstr "അപരിചിതമായ കണക്ട് ചെയ്ത മൂല്ല്യം %s"
-
 #, c-format
 msgid "unknown capability type '%d' for '%s'"
 msgstr "അപരിചിതമായ വിശേഷത രീതി '%d','%s'-യ്ക്കുള്ളതു്"
-
-#, c-format
-msgid "unknown capability type '%s'"
-msgstr "അപരിചിതമായ വിശേഷത രീതി '%s'"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -38017,23 +37193,11 @@ msgid "unknown connected value %s"
 msgstr "അപരിചിതമായ കണക്ട് ചെയ്ത മൂല്ല്യം %s"
 
 #, c-format
-msgid "unknown copypaste value '%s'"
-msgstr "അപിചിതമായ copypaste മൂല്ല്യം '%s'"
-
-#, c-format
-msgid "unknown default spice channel mode %s"
-msgstr "അപരിചിതമായ സ്വതവേയുള്ള സ്പയിസ് ചാനല്‍ മോഡ് %s"
-
-#, c-format
 msgid "unknown device type '%s'"
 msgstr "അപരിചിതമായ ഡിവൈസ് തരം '%s'"
 
 #, fuzzy, c-format
 msgid "unknown device type in '%s'"
-msgstr "അപരിചിതമായ ഡിവൈസ് തരം '%s'"
-
-#, fuzzy, c-format
-msgid "unknown devnode type '%s'"
 msgstr "അപരിചിതമായ ഡിവൈസ് തരം '%s'"
 
 #, c-format
@@ -38072,14 +37236,6 @@ msgstr "അപരിചിതമായ വിശേഷത രീതി '%d','%s'
 msgid "unknown dumpformat '%d'"
 msgstr "അപരിചിതമായ വോള്യം ഫോര്‍മാറ്റ് നംബര്‍ %d"
 
-#, fuzzy, c-format
-msgid "unknown eim value: %s"
-msgstr "അപരിചിതമായ പിഎം അവസ്ഥ മൂല്യം %s"
-
-#, fuzzy, c-format
-msgid "unknown enable value '%s'"
-msgstr "അപിചിതമായ copypaste മൂല്ല്യം '%s'"
-
 msgid "unknown error"
 msgstr "അപരിചിതമായ പിശക്"
 
@@ -38088,20 +37244,12 @@ msgid "unknown event type %s"
 msgstr "അപരിചിതമായ ഡിവൈസ് തരം '%s'"
 
 #, fuzzy, c-format
-msgid "unknown fc_host managed setting '%s'"
-msgstr "അപരിചിതമായ ഡിസ്ക് rawio സജ്ജീകരണം '%s'"
-
-#, fuzzy, c-format
 msgid "unknown feature %s"
 msgstr "അപരിചിതമായ സിപിയു വിശേഷത %s"
 
 #, c-format
 msgid "unknown filesystem type '%s'"
 msgstr "അപരിചിതമായ ഫയല്‍സിസ്റ്റം രീതി '%s'"
-
-#, c-format
-msgid "unknown filesystem write policy '%s'"
-msgstr "അപരിചിതമായ ഫയല്‍സിസ്റ്റം റൈറ്റ് പോളിസി '%s'"
 
 #, fuzzy, c-format
 msgid "unknown firmware value %s"
@@ -38114,10 +37262,6 @@ msgstr "അപരിചിതമായ പൂര്‍ണ്ണ സ്ക്ര�
 #, c-format
 msgid "unknown forwarding type '%s'"
 msgstr "ഫോര്‍വേഡിങ് രീതി '%s' അപിരിചിതം"
-
-#, c-format
-msgid "unknown fs driver type '%s'"
-msgstr "അപരിചിതമായ fs ഡ്രൈവര്‍ തരം '%s'"
 
 #, c-format
 msgid "unknown graphics type %s"
@@ -38199,20 +37343,8 @@ msgid "unknown interface type: '%s'"
 msgstr "അപരിചിതമായ ഇന്റര്‍ഫെയിസ് തരം '%s'"
 
 #, fuzzy, c-format
-msgid "unknown intremap value: %s"
-msgstr "അപരിചിതമായ കണക്ട് ചെയ്ത മൂല്ല്യം %s"
-
-#, fuzzy, c-format
-msgid "unknown iotlb value: %s"
-msgstr "അപരിചിതമായ കണക്ട് ചെയ്ത മൂല്ല്യം %s"
-
-#, fuzzy, c-format
 msgid "unknown ip address type '%s'"
 msgstr "അപരിചിതമായ വിലാസ തരം '%s'"
-
-#, c-format
-msgid "unknown memory balloon model '%s'"
-msgstr "അപരിചിതമായ മെമ്മറി ബലൂണ്‍ മോ‍ഡല്‍ '%s'"
 
 #, c-format
 msgid "unknown memory snapshot setting '%s'"
@@ -38261,10 +37393,6 @@ msgstr "അപരിചികമായ ഡിസ്ക് ട്രേ അവസ
 msgid "unknown model '%s'"
 msgstr "അപരിചിതമായ ആര്‍എന്‍ജി മോഡല്‍ '%s'"
 
-#, c-format
-msgid "unknown mouse mode value '%s'"
-msgstr "അപരിചിതമായ മൌസ് മോഡ് മൂല്ല്യം '%s'"
-
 #, fuzzy, c-format
 msgid "unknown multidevs '%s'"
 msgstr "അപരിചിതമായ രീതി %s"
@@ -38296,16 +37424,8 @@ msgid "unknown partition type"
 msgstr "അപരിചിതമായ പാര്‍ട്ടീഷന്‍ തരം"
 
 #, c-format
-msgid "unknown pci source type '%s'"
-msgstr "അപരിചിതമായ pci സോഴ്സ് രീതി '%s'"
-
-#, c-format
 msgid "unknown pci writeFiltering setting '%s'"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unknown policy attribute '%s' of feature '%s'"
-msgstr "അപരിചിതമായ വിശേഷത രീതി '%d','%s'-യ്ക്കുള്ളതു്"
 
 #, c-format
 msgid "unknown pool format number %d"
@@ -38394,46 +37514,8 @@ msgid "unknown smbios mode '%s'"
 msgstr "അപരിചിതമായ smbios മോഡ് '%s'"
 
 #, c-format
-msgid "unknown sound model '%s'"
-msgstr "അപരിചിതമായ ശബ്ദ മാതൃക '%s'"
-
-#, c-format
 msgid "unknown source mode '%s' for volume type disk"
 msgstr "വോള്യം തരത്തിലുള്ള ഡിസ്കിനു് അപരിചിതമായ സോഴ്സ് മോഡ് '%s'"
-
-#, c-format
-msgid "unknown spice channel mode %s"
-msgstr "അപരിചിതമായ സ്പയിസ് ചാനല്‍ മോഡ് %s"
-
-#, c-format
-msgid "unknown spice channel name %s"
-msgstr "അപരിചിതമായ സ്പയിസ് ചാനല്‍ നാമം %s"
-
-#, c-format
-msgid "unknown spice image compression %s"
-msgstr "അപരിചിതമായ സ്പയിസ് ഇമേജ് കമ്പ്രഷന്‍ %s"
-
-#, c-format
-msgid "unknown spice jpeg compression %s"
-msgstr "അപരിചിതമായ സ്പയിസ് jpeg കമ്പ്രഷന്‍ %s"
-
-msgid "unknown spice playback compression"
-msgstr "അപരിചിതമായ സ്പയിസ് പ്ലേബാക്ക് കമ്പ്രഷന്‍"
-
-msgid "unknown spice streaming mode"
-msgstr "അപരിചിതമായ സ്പയിസ് സ്ട്രീമിങ് മോഡ്"
-
-#, c-format
-msgid "unknown spice zlib compression %s"
-msgstr "അപരിചിതമായ സ്പയിസ് zlib കമ്പ്രഷന്‍ %s"
-
-#, fuzzy, c-format
-msgid "unknown state attribute '%s' of feature '%s'"
-msgstr "അപരിചിതമായ സ്റ്റോറേജ് വോള്യം രീതി '%s'('%s'-നുള്ളതു്)"
-
-#, fuzzy, c-format
-msgid "unknown state attribute '%s' of feature capability '%s'"
-msgstr "അപരിചിതമായ സ്റ്റോറേജ് വോള്യം രീതി '%s'('%s'-നുള്ളതു്)"
 
 #, c-format
 msgid "unknown storage capability type '%s' for '%s'"
@@ -38507,25 +37589,13 @@ msgstr "അപരിചിതമായ ടൈമര്‍ tickpolicy '%s'"
 msgid "unknown timer track '%s'"
 msgstr "അപരിചിതമായ ടൈമര്‍ ട്രാക്ക് '%s'"
 
-#, fuzzy, c-format
-msgid "unknown trustGuestRxFilters value '%s'"
-msgstr "അപരിചിതമായ പൂര്‍ണ്ണ സ്ക്രീന്‍ മൂല്ല്യം '%s'"
-
 #, c-format
 msgid "unknown type '%s'"
 msgstr "അപരിചിതമായ രീതി %s"
 
 #, c-format
-msgid "unknown type '%s' in interface's <actual> element"
-msgstr "ഇന്റര്‍ഫെയിസിന്റെ  <actual> എലമെന്റില്‍ '%s' തരം അപരിചിതം"
-
-#, c-format
 msgid "unknown type presented to host for character device: %s"
 msgstr "ക്യാരക്ടര്‍ ഡിവൈസിനുള്ള ഹോസ്റ്റിലേക്കു് അപരിചിതമായ തരം നല്‍കിയിരിയ്ക്കുന്നു: %s"
-
-#, c-format
-msgid "unknown usb source type '%s'"
-msgstr "അപരിചിതമായ usb സോഴ്സ് രീതി '%s'"
 
 #, fuzzy, c-format
 msgid "unknown value '%s' for <hostdev> attribute 'display'"
@@ -38544,16 +37614,8 @@ msgid "unknown value for attribute eoi: '%s'"
 msgstr "അപരിചിതമായ വോള്യം ഫോര്‍മാറ്റ് രീതി %s"
 
 #, fuzzy, c-format
-msgid "unknown vgaconf value '%s'"
-msgstr "അപിചിതമായ copypaste മൂല്ല്യം '%s'"
-
-#, fuzzy, c-format
 msgid "unknown vhost-user type: '%s'"
 msgstr "അപരിചിതമായ ശ്രോതസ്സ് തരം: '%s'"
-
-#, fuzzy, c-format
-msgid "unknown video driver '%s'"
-msgstr "അപരിചിതമായ വീഡിയോ മാതൃക '%s'"
 
 #, c-format
 msgid "unknown video model '%s'"
@@ -38847,28 +37909,6 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
-#. *
-#. * virCheckFlags:
-#. * @supported: an OR'ed set of supported flags
-#. * @retval: return value in case unsupported flags were passed
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Exits the caller function if unsupported flags were
-#. * passed to it.
-#.
-#. *
-#. * virCheckFlagsGoto:
-#. * @supported: an OR'ed set of supported flags
-#. * @label: label to jump to on error
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "പിന്തുണയ്ക്കാത്ത ഫ്ലാഗുകള്‍ (0x%lx), %s ഫംഗ്ഷനില്‍"
@@ -38916,10 +37956,6 @@ msgstr "അപ്രതീക്ഷിതമായ ഇന്റര്‍ഫെ�
 #, fuzzy, c-format
 msgid "unsupported launch security type '%s'"
 msgstr "പിന്തുണയ്ക്കാത്ത chr ഡിവൈസ് തരം '%s'"
-
-#, fuzzy, c-format
-msgid "unsupported mode '%s' for Xen passthrough feature"
-msgstr "'origstates'-ന്റെ പിന്തുണയില്ലാത്ത എലമെന്റ് '%s'"
 
 #, c-format
 msgid "unsupported monitor type '%s'"
@@ -39052,12 +38088,6 @@ msgstr "xsd:dateTime മൂല്ല്യം '%s'-ല്‍ അപ്രതീ�
 msgid "usage:"
 msgstr "ഉപയോഗം: "
 
-msgid "usb address needs bus id"
-msgstr "usb വിലാസത്തിനു് ബസ് id ആവശ്യമുണ്ടു്"
-
-msgid "usb address needs device id"
-msgstr "usb വിലാസത്തിനു് ഡിവൈസ് id ആവശ്യമുണ്ടു്"
-
 #, fuzzy, c-format
 msgid "usb controller type %s doesn't support 'ports' with this QEMU binary"
 msgstr "ഈ QEMU ബൈനറിയില്‍ vhost-net പിന്തുണയ്ക്കുന്നില്ല"
@@ -39068,12 +38098,6 @@ msgstr "യുഎസ്ബി ഡിവൈസ് ലഭ്യമല്ല"
 #, fuzzy
 msgid "usb keyboard is not supported by this QEMU binary"
 msgstr "ഈ QEMU ബൈനറി discard പിന്തുണയ്ക്കുന്നില്ല"
-
-msgid "usb product needs id"
-msgstr "usb കച്ചവടക്കാര്‍ക്ക് id ആവശ്യമുണ്ടു്"
-
-msgid "usb vendor needs id"
-msgstr "usb കച്ചവടക്കാര്‍ക്ക് id ആവശ്യമുണ്ടു്"
 
 #, fuzzy
 msgid "usb-audio controller is not supported by this QEMU binary"
@@ -39388,9 +38412,6 @@ msgstr "nvcpus പൂജ്യമാണു്"
 
 msgid "vcpus overlaps in resctrl groups"
 msgstr ""
-
-msgid "vendor cannot be 0."
-msgstr "വെന്‍ഡര്‍ 0 ആകാന്‍ പാടില്ല."
 
 msgid "vendor id is invalid"
 msgstr "വെണ്ടര്‍ ഐഡി തെറ്റാണു്"
@@ -40072,10 +39093,6 @@ msgstr "ഉവ്വ്"
 msgid "zPCI %s %o is already reserved"
 msgstr "അടയ്ക്കുവാനുള്ള ഒരു പിന്‍വിളി മുന്‍പേ തന്നെ രേഖപ്പെടുത്തിയിട്ടുണ്ട്"
 
-#, fuzzy
-msgid "zero is an invalid iothread id value"
-msgstr "തെറ്റായ നോഡ് സിപിയു ത്രെഡ് മൂല്ല്യം"
-
 #, c-format
 msgid "zone %s requested for network %s but firewalld is not active"
 msgstr ""
@@ -40083,6 +39100,651 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "'unsupported perf event '%s'"
+#~ msgstr "പിന്തുണയ്ക്കാത്ത chardev '%s'"
+
+#~ msgid "Cannot parse <address> 'reg' attribute"
+#~ msgstr "<address> 'reg' സവിശേഷത പാഴ്സ് ചെയ്യാന്‍ കഴിയുന്നില്ല"
+
+#~ msgid "Cannot parse <master> 'startport' attribute"
+#~ msgstr "<master> 'startport' സവിശേഷത പാഴ്സ് ചെയ്യാന്‍ കഴിയുന്നില്ല"
+
+#~ msgid "Cannot parse USB Class code %s"
+#~ msgstr "യുഎസ്ബി ക്ലാസ്സ് കോഡ് %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Cannot parse USB product ID %s"
+#~ msgstr "യുഎസ്ബി പ്രൊഡക്ട് ഐഡി %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Cannot parse USB vendor ID %s"
+#~ msgstr "യുഎസ്ബി വെണ്ടര്‍ ഐഡി %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "Failed to pin vcpu '%zu' with libxenlight"
+#~ msgstr "libxenlight ഉപയോഗിച്ച് '%d' vcpu ഉറപ്പിക്കാന്‍ സാധിച്ചില്ല"
+
+#, fuzzy
+#~ msgid "Invalid 'discard' attribute value '%s'"
+#~ msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "Invalid 'id' attribute in NUMA cell: '%s'"
+#~ msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷത %s"
+
+#, fuzzy
+#~ msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
+#~ msgstr "'%s' നെറ്റ്‌വര്‍ക്കിനുള്ള dhcp പരിധിയില്‍ 'end' വിശേഷത ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "Invalid 'iothread' value '%s'"
+#~ msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "Invalid 'memAccess' attribute value '%s'"
+#~ msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
+
+#~ msgid "Invalid USB Class code %s"
+#~ msgstr "തെറ്റായ യുഎസ്ബി ക്ലാസ്സ് കോഡ് %s"
+
+#~ msgid "Invalid allow value, either 'yes' or 'no'"
+#~ msgstr "അനുവദിയ്ക്കേണ്ട തെറ്റായ മൂല്ല്യം, 'yes' അല്ലെങ്കില്‍ 'no'"
+
+#, fuzzy
+#~ msgid "Invalid busNr '%s' in PCI controller"
+#~ msgstr "തെറ്റായ വിലാസം '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍"
+
+#, fuzzy
+#~ msgid "Invalid cachetune attribute 'id' value '%s'"
+#~ msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "Invalid cachetune attribute 'level' value '%s'"
+#~ msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "Invalid cachetune attribute 'type' value '%s'"
+#~ msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "Invalid chassis '%s' in PCI controller"
+#~ msgstr "തെറ്റായ വിലാസം '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍"
+
+#, fuzzy
+#~ msgid "Invalid chassisNr '%s' in PCI controller"
+#~ msgstr "തെറ്റായ വിലാസം '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍"
+
+#, fuzzy
+#~ msgid "Invalid maxEventChannels: %s"
+#~ msgstr "തെറ്റായ വെക്ടറുകള്‍: %s"
+
+#, fuzzy
+#~ msgid "Invalid maxGrantFrames: %s"
+#~ msgstr "തെറ്റായ പോര്‍ട്ടുകള്‍: %s"
+
+#, fuzzy
+#~ msgid "Invalid mode attribute in memnode element"
+#~ msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷത %s"
+
+#, fuzzy
+#~ msgid "Invalid monitor attribute 'level' value '%s'"
+#~ msgstr "തെറ്റായ മെമ്മറി കോര്‍ ഡംപ് വിശേഷത മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "Invalid port '%s' in PCI controller"
+#~ msgstr "എസ്‌സിഎസ്ഐ പൂളിനുള്ള '%s' എന്ന അഡാപ്ടര്‍ നാമം തെറ്റു്"
+
+#~ msgid "Invalid ports: %s"
+#~ msgstr "തെറ്റായ പോര്‍ട്ടുകള്‍: %s"
+
+#, fuzzy
+#~ msgid "Invalid scheduler attribute: '%s'"
+#~ msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷത %s"
+
+#~ msgid ""
+#~ "Invalid specification of multiple <filterref>s in a single <interface>"
+#~ msgstr "ഒറ്റ <interface>-ല്‍ അനവധി  അസാധു <filterref>s നല്‍കിയിരിയ്ക്കുന്നു"
+
+#, fuzzy
+#~ msgid "Invalid target index '%s' in PCI controller"
+#~ msgstr "എസ്‌സിഎസ്ഐ പൂളിനുള്ള '%s' എന്ന അഡാപ്ടര്‍ നാമം തെറ്റു്"
+
+#, fuzzy
+#~ msgid "Invalid unit: %s"
+#~ msgstr "തെറ്റായ പോര്‍ട്ടുകള്‍: %s"
+
+#, fuzzy
+#~ msgid "Invalid value for element priority"
+#~ msgstr "സമയപരിധിയ്ക്കുള്ള അസാധുവായ മൂല്ല്യം"
+
+#~ msgid "Invalid vectors: %s"
+#~ msgstr "തെറ്റായ വെക്ടറുകള്‍: %s"
+
+#, fuzzy
+#~ msgid "Malformed 'cmd_per_lun' value '%s'"
+#~ msgstr "തെറ്റായ 'queues' മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "Malformed 'ioeventfd' value %s"
+#~ msgstr "തെറ്റായ 'queues' മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "Malformed 'max_sectors' value %s"
+#~ msgstr "തെറ്റായ 'queues' മൂല്ല്യം '%s'"
+
+#~ msgid "Malformed 'queues' value '%s'"
+#~ msgstr "തെറ്റായ 'queues' മൂല്ല്യം '%s'"
+
+#~ msgid "Malformed lease target offset %s"
+#~ msgstr "തെറ്റായ ലീസ് ടാര്‍ഗറ്റ് ഓഫ്സെറ്റ് %s"
+
+#, fuzzy
+#~ msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
+#~ msgstr "NUMA സെല്ലില്‍ 'cpus' വിശേഷത ലഭ്യമല്ല"
+
+#~ msgid "Missing allow attribute for USB redirection filter"
+#~ msgstr "യുഎസ്ബി തിരിച്ചുവിടല്‍ ഫില്‍റ്ററിനുള്ള allow വിശേഷത ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "Missing cachetune attribute 'id'"
+#~ msgstr "ലഭ്യമല്ലാത്ത തരത്തിലുള്ള ഡൊമെയില്‍ വിശേഷത"
+
+#, fuzzy
+#~ msgid "Missing cachetune attribute 'level'"
+#~ msgstr "NUMA സെല്ലില്‍ 'cpus' വിശേഷത ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "Missing cachetune attribute 'type'"
+#~ msgstr "portgroup-ല്‍ ആവശ്യമുള്ള പേരു് ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "Missing monitor attribute 'level'"
+#~ msgstr "boot order വിശേഷണം ഇല്ല"
+
+#, fuzzy
+#~ msgid "Missing required cellid attribute in memnode element"
+#~ msgstr "portgroup-ല്‍ ആവശ്യമുള്ള പേരു് ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "Missing scheduler attribute"
+#~ msgstr "boot order വിശേഷണം ഇല്ല"
+
+#, fuzzy
+#~ msgid "Missing scheduler priority"
+#~ msgstr "'%s' വിശേഷത ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "OpenGL for SDL is not supported with this QEMU binary"
+#~ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക്കില്ല"
+
+#~ msgid "PCI address 0:0:1.0 is in use, QEMU needs it for primary video"
+#~ msgstr ""
+#~ "പിസിഐ വിലാസം 0:0:1.0 നിലവില്‍ ഉപയോഗത്തിലാണു്, ക്യുഇഎംയുവിനു് പ്രധാന വീഡിയോ ആവശ്യമുണ്ടു്"
+
+#~ msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
+#~ msgstr "പിസിഐ വിലാസം 0:0:2.0 ഉപയോഗത്തില്‍, പ്രൈമറി വീഡിയോയ്ക്കു് QEMU ആവശ്യമുണ്ടു്"
+
+#~ msgid "Primary video card must have PCI address 0:0:1.0"
+#~ msgstr "പ്രധാന വീഡിയോ കാര്‍ഡിനു് പിസിഐ വിലാസം 0:0:1.0 ഉണ്ടായിരിയ്ക്കണം"
+
+#~ msgid "Primary video card must have PCI address 0:0:2.0"
+#~ msgstr "പ്രൈമറി വീഡിയോ കാര്‍ഡിനു് പിസിഐ വിലാസം 0:0:2.0 ഉണ്ടായിരിയ്ക്കണം"
+
+#, fuzzy
+#~ msgid "Unknown HPT resizing setting: %s"
+#~ msgstr "അപരിചിതമായ ഡിസ്ക് rawio സജ്ജീകരണം '%s'"
+
+#, fuzzy
+#~ msgid "Unknown PCI controller model name '%s'"
+#~ msgstr "അപരിചിതമായ കണ്ട്രോളര്‍ തരം '%s'"
+
+#~ msgid "Unknown controller type '%s'"
+#~ msgstr "അപരിചിതമായ കണ്ട്രോളര്‍ തരം '%s'"
+
+#, fuzzy
+#~ msgid "Unknown driver mode: %s"
+#~ msgstr "പിന്തണയ്ക്കാത്ത ഡ്രൈവര്‍ നാമം '%s'"
+
+#~ msgid "Unknown mode '%s' in interface <actual> element"
+#~ msgstr "ഇന്റര്‍ഫെയിസ് <actual> എലമെന്റില്‍ അപരിചിതമായ മോഡ് '%s'"
+
+#~ msgid "Unknown pool adapter type '%s'"
+#~ msgstr "അപരിചിതമായ പൂള്‍ അഡാപ്ടര്‍ രീതി '%s'"
+
+#, fuzzy
+#~ msgid "Unknown shmem model type '%s'"
+#~ msgstr "അപരിചിതമായ മോഡല്‍ തരം '%s'"
+
+#~ msgid "Unknown startup policy '%s'"
+#~ msgstr "അപരിചിതമായ സ്റ്റാര്‍ട്ടപ്പ് പോളിസി '%s'"
+
+#, fuzzy
+#~ msgid "Unknown value: %s"
+#~ msgstr "അപരിചിതമായ റിലീസ്: %s"
+
+#~ msgid "Unsupported CPU placement mode '%s'"
+#~ msgstr "പിന്തുണയ്ക്കാത്ത സിപിയു പ്ലെയിസ്മെന്റ് മോഡ് '%s'"
+
+#~ msgid "balloon memory must contain model name"
+#~ msgstr "ബലൂണ്‍ മെമ്മറിയില്‍ മോഡല്‍ നാമം ഉണ്ടായിരിയ്ക്കണം"
+
+#~ msgid "cannot parse bus %s"
+#~ msgstr "ബസ് %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "cannot parse device %s"
+#~ msgstr "ഡിവൈസ് %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "cannot parse product %s"
+#~ msgstr "പ്രൊഡക്ട് %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "cannot parse spice port %s"
+#~ msgstr "സ്പയിസ് പോര്‍ട്ട് %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "cannot parse spice tlsPort %s"
+#~ msgstr "സ്പയിസ് tlsPort %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "cannot parse vendor id %s"
+#~ msgstr "വെന്‍ഡര്‍ id %s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "current vcpus count must be an integer"
+#~ msgstr "ഇപ്പോഴത്തെ vcpu മൂല്യം  പരമാവധിമൂല്യത്തിനു ചേരണം  "
+
+#~ msgid "guestfwd channel does not define a target port"
+#~ msgstr "guestfwd ചാനല്‍ ഒരു ലക്ഷ്യ പോര്‍ട്ട് നിഷ്കര്‍ഷിയ്ക്കുന്നില്ല"
+
+#~ msgid "invalid HyperV spinlock retry count"
+#~ msgstr "തെറ്റായ HyperV സ്പിന്‍ലോക്ക് റീട്രൈ കൌണ്ട്"
+
+#, fuzzy
+#~ msgid "invalid access mode '%s'"
+#~ msgstr "അസാധുവായ കീ കോഡ്: '%s'"
+
+#, fuzzy
+#~ msgid "invalid autodeflate attribute value '%s'"
+#~ msgstr "തെറ്റായ തരത്തിലുള്ള വിശേഷത %s"
+
+#, fuzzy
+#~ msgid "invalid channel state value '%s'"
+#~ msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "invalid discard value '%s'"
+#~ msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
+
+#~ msgid "invalid domain state '%s'"
+#~ msgstr "തെറ്റായ തരത്തിലുള്ള ഡൊമെയിന്‍ അവസ്ഥ '%s'"
+
+#~ msgid "invalid geometry settings (cyls)"
+#~ msgstr "തെറ്റായ ജോമട്രി സജ്ജീകരണങ്ങള്‍ (cyls)"
+
+#~ msgid "invalid geometry settings (heads)"
+#~ msgstr "തെറ്റായ ജോമട്രി സജ്ജീകരണങ്ങള്‍ (heads)"
+
+#~ msgid "invalid geometry settings (secs)"
+#~ msgstr "തെറ്റായ ജോമട്രി സജ്ജീകരണങ്ങള്‍ (secs)"
+
+#~ msgid "invalid iommuGroup number attribute '%s'"
+#~ msgstr "തെറ്റായ iommuGroup നംബര്‍ വിശേഷത '%s'"
+
+#, fuzzy
+#~ msgid "invalid memory model '%s'"
+#~ msgstr "അസാധുവായ കീ കോഡ്: '%s'"
+
+#, fuzzy
+#~ msgid "invalid msi ioeventfd setting for shmem: '%s'"
+#~ msgstr "'%s'-നു് തെറ്റായ വ്യാപ്തി നല്‍കിയിരിക്കുന്നു"
+
+#, fuzzy
+#~ msgid "invalid number of vectors for shmem: '%s'"
+#~ msgstr "'%s'-നുള്ള തെറ്റായ USB ബസ് നംബര്‍ നല്‍കിയിരിക്കുന്നു"
+
+#, fuzzy
+#~ msgid "invalid part_separator setting '%s'"
+#~ msgstr "തെറ്റായ സിപിയു വെണ്ടര്‍ സ്ട്രിങ് '%s'"
+
+#, fuzzy
+#~ msgid "invalid reconnect enabled value: '%s'"
+#~ msgstr "തെറ്റായ സുരക്ഷ റീലേബല്‍ മൂല്ല്യം %s"
+
+#, fuzzy
+#~ msgid "invalid reconnect timeout value: '%s'"
+#~ msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "invalid setting for iothread '%s'"
+#~ msgstr "തെറ്റായ രഹസ്യ രീതി '%s'"
+
+#, fuzzy
+#~ msgid "invalid setting for vcpu '%s'"
+#~ msgstr "തെറ്റായ രഹസ്യ രീതി '%s'"
+
+#, fuzzy
+#~ msgid "invalid state '%s' of perf event '%s'"
+#~ msgstr "തെറ്റായ മൂല്ല്യം '%s' - VMX എന്‍ട്രി '%s'-ല്‍"
+
+#~ msgid "invalid statistics collection period"
+#~ msgstr "തെറ്റായ സ്ഥിതിവിവരക്കണക്കിന്റെ കലക്ഷന്‍ സമയം"
+
+#~ msgid "invalid translation value '%s'"
+#~ msgstr "തെറ്റായ തര്‍ജ്ജമ മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "invalid value of state argument for Hyper-V stimer '%s' feature"
+#~ msgstr "HyperV Enlightenment വിശേഷത '%s'-നുള്ള ആര്‍ഗ്യുമെന്റിനുള്ള തെറ്റായ അവസ്ഥ"
+
+#~ msgid ""
+#~ "invalid value of state argument for HyperV Enlightenment feature '%s'"
+#~ msgstr "HyperV Enlightenment വിശേഷത '%s'-നുള്ള ആര്‍ഗ്യുമെന്റിനുള്ള തെറ്റായ അവസ്ഥ"
+
+#, fuzzy
+#~ msgid "invalid value of state argument for KVM feature '%s'"
+#~ msgstr "HyperV Enlightenment വിശേഷത '%s'-നുള്ള ആര്‍ഗ്യുമെന്റിനുള്ള തെറ്റായ അവസ്ഥ"
+
+#, fuzzy
+#~ msgid "invalid value of state argument for Xen feature '%s'"
+#~ msgstr "HyperV Enlightenment വിശേഷത '%s'-നുള്ള ആര്‍ഗ്യുമെന്റിനുള്ള തെറ്റായ അവസ്ഥ"
+
+#, fuzzy
+#~ msgid "invalid vcpu 'enabled' value '%s'"
+#~ msgstr "തെറ്റായ സുരക്ഷ റീലേബല്‍ മൂല്ല്യം %s"
+
+#, fuzzy
+#~ msgid "invalid vcpu 'hotpluggable' value '%s'"
+#~ msgstr "തെറ്റായ സുരക്ഷ റീലേബല്‍ മൂല്ല്യം %s"
+
+#, fuzzy
+#~ msgid "invalid vcpu order"
+#~ msgstr "അസാധുവായ മോഡ്"
+
+#, fuzzy
+#~ msgid "malformed 'port' attribute: %s"
+#~ msgstr "തെറ്റായ 'floor_sum' വിശേഷത: %s"
+
+#, fuzzy
+#~ msgid "malformed 'speed' attribute: %s"
+#~ msgstr "തെറ്റായ 'floor_sum' വിശേഷത: %s"
+
+#, fuzzy
+#~ msgid "malformed gic version: %s"
+#~ msgstr "തെറ്റായ സിഗ്നല്‍ നാമം: %s"
+
+#, fuzzy
+#~ msgid "missing 'state' attribute for Hyper-V stimer '%s' feature"
+#~ msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
+
+#~ msgid "missing 'state' attribute for HyperV Enlightenment feature '%s'"
+#~ msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "missing 'state' attribute for KVM feature '%s'"
+#~ msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "missing 'state' attribute for Xen feature '%s'"
+#~ msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "missing 'unknown' attribute for feature '%s'"
+#~ msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
+
+#~ msgid "missing capability type"
+#~ msgstr "വിശേഷണ തരം ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "missing devnode type"
+#~ msgstr "ഹബ് ഡിവൈസ് തരം ലഭ്യമല്ല"
+
+#~ msgid "missing domain state"
+#~ msgstr "ഡൊമെയിന്‍ അവസ്ഥ ലഭ്യമല്ല"
+
+#~ msgid "missing iommuGroup number attribute"
+#~ msgstr "iommuGroup നംബര്‍ വിശേഷത ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "missing iothread id in iothreadpin"
+#~ msgstr "ഇന്റര്‍ഫെയിസ് വിവരം ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "missing memory model"
+#~ msgstr "ടൈമര്‍ നാമം ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "missing model for IOMMU device"
+#~ msgstr "ബൂട്ട് ഡിവൈസ് ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "missing or invalid vcpu id"
+#~ msgstr "vlan റ്റാഗ് ഐഡി വിശേഷത ലഭ്യമല്ല അല്ലെങ്കില്‍ തെറ്റാണു്"
+
+#, fuzzy
+#~ msgid "missing perf event name"
+#~ msgstr "വിശേഷതാ നാമം ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "missing state attribute '%s' of feature '%s'"
+#~ msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "missing state of perf event '%s'"
+#~ msgstr "അത്യാവശ്യ ക്രമീകരണ എന്‍ട്രി '%s' ലഭ്യമല്ല"
+
+#~ msgid "missing type attribute in interface's <actual> element"
+#~ msgstr "ഇന്റര്‍ഫെയിസിന്റെ  <actual> എലമെന്റില്‍ വിശേഷത രീതി ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "missing vcpu enabled state"
+#~ msgstr "വിശേഷണ തരം ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "missing vcpu id in vcpupin"
+#~ msgstr "vcpupin-നുള്ള cpuset ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "no device found on "
+#~ msgstr "%s എന്നു് വിളിപ്പേരുള്ളൊരു ഡിവൈസും ലഭ്യമായില്ല"
+
+#, fuzzy
+#~ msgid "no device matching MAC address %s found"
+#~ msgstr "%s മാക് വിലാസമുള്ള ഇന്റര്‍ഫെയിസ് ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "no device matching MAC address %s found on "
+#~ msgstr "%s മാക് വിലാസമുള്ള ഇന്റര്‍ഫെയിസ് ലഭ്യമല്ല"
+
+#~ msgid "no internalFlags support"
+#~ msgstr "internalFlags-ക്കുള്ള പിന്തുണ ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "no matching device found"
+#~ msgstr "ചേരുന്ന ഡിവൈസ് ലഭ്യമല്ല"
+
+#~ msgid "query-events reply data was missing 'name'"
+#~ msgstr "query-events മറുപടി ഡേറ്റയില്‍ 'name' ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "setting NUMA distances is not supported with this qemu"
+#~ msgstr "ചേരാത്ത NUMA സിപിയു പരിധികള്‍ ഈ ക്യൂഇഎംയുവില്‍ പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy
+#~ msgid "smm is not available with this QEMU binary"
+#~ msgstr "ഈ QEMU ലൈബ്രറിയില്‍ പങ്കിടുന്ന മെമ്മറി പ്രവര്‍ത്തന രഹിതമാക്കുന്നതു് ലഭ്യമല്ല"
+
+#~ msgid "spice channel missing name/mode"
+#~ msgstr "സ്പയിസ് ചാനലിനു് പേരു്/മോഡ് ലഭ്യമല്ല"
+
+#~ msgid "spice clipboard missing copypaste"
+#~ msgstr "സ്പയിസ് ക്ലിപ്പിബോര്‍ഡില്‍ copypaste ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "spice filetransfer missing enable"
+#~ msgstr "സ്പയിസ് ചാനലിനു് പേരു്/മോഡ് ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "spice gl element missing enable"
+#~ msgstr "സ്പയിസ് മൌസില്‍ മോഡ് ലഭ്യമല്ല"
+
+#~ msgid "spice image missing compression"
+#~ msgstr "സ്പെയിസ് ചിത്രത്തില്‍ കമ്പ്രഷന്‍ ലഭ്യമല്ല"
+
+#~ msgid "spice jpeg missing compression"
+#~ msgstr "സ്പയിസ് jpeg-ല്‍ കമ്പ്രഷന്‍ ലഭ്യമല്ല"
+
+#~ msgid "spice mouse missing mode"
+#~ msgstr "സ്പയിസ് മൌസില്‍ മോഡ് ലഭ്യമല്ല"
+
+#~ msgid "spice playback missing compression"
+#~ msgstr "സ്പയിസ് പ്ലേബാക്ക് കമ്പ്രഷന്‍ ലഭ്യമല്ല"
+
+#~ msgid "spice streaming missing mode"
+#~ msgstr "സ്പയിസ് സ്ട്രീമിങില്‍ മോഡ് ലഭ്യമല്ല"
+
+#~ msgid "spice zlib missing compression"
+#~ msgstr "സ്പയിസ് zlib-ല്‍ കമ്പ്രഷന്‍ ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "split I/O APIC is not supported by this QEMU binary"
+#~ msgstr "ഈ QEMU ബൈനറി discard പിന്തുണയ്ക്കുന്നില്ല"
+
+#~ msgid "storage pool missing type attribute"
+#~ msgstr "സംഭരണ പൂള്‍ ലഭ്യമല്ലാത്ത തരം വിശേഷത"
+
+#, fuzzy
+#~ msgid "unknown 'unknown' value '%s'"
+#~ msgstr "അപരിചിതമായ rom ബാര്‍ മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "unknown IOMMU model: %s"
+#~ msgstr "അപരിചിതമായ സിപിയു മോഡല്‍ %s"
+
+#, fuzzy
+#~ msgid "unknown caching_mode value: %s"
+#~ msgstr "അപരിചിതമായ കണക്ട് ചെയ്ത മൂല്ല്യം %s"
+
+#~ msgid "unknown capability type '%s'"
+#~ msgstr "അപരിചിതമായ വിശേഷത രീതി '%s'"
+
+#~ msgid "unknown copypaste value '%s'"
+#~ msgstr "അപിചിതമായ copypaste മൂല്ല്യം '%s'"
+
+#~ msgid "unknown default spice channel mode %s"
+#~ msgstr "അപരിചിതമായ സ്വതവേയുള്ള സ്പയിസ് ചാനല്‍ മോഡ് %s"
+
+#, fuzzy
+#~ msgid "unknown devnode type '%s'"
+#~ msgstr "അപരിചിതമായ ഡിവൈസ് തരം '%s'"
+
+#, fuzzy
+#~ msgid "unknown eim value: %s"
+#~ msgstr "അപരിചിതമായ പിഎം അവസ്ഥ മൂല്യം %s"
+
+#, fuzzy
+#~ msgid "unknown enable value '%s'"
+#~ msgstr "അപിചിതമായ copypaste മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "unknown fc_host managed setting '%s'"
+#~ msgstr "അപരിചിതമായ ഡിസ്ക് rawio സജ്ജീകരണം '%s'"
+
+#~ msgid "unknown filesystem write policy '%s'"
+#~ msgstr "അപരിചിതമായ ഫയല്‍സിസ്റ്റം റൈറ്റ് പോളിസി '%s'"
+
+#~ msgid "unknown fs driver type '%s'"
+#~ msgstr "അപരിചിതമായ fs ഡ്രൈവര്‍ തരം '%s'"
+
+#, fuzzy
+#~ msgid "unknown intremap value: %s"
+#~ msgstr "അപരിചിതമായ കണക്ട് ചെയ്ത മൂല്ല്യം %s"
+
+#, fuzzy
+#~ msgid "unknown iotlb value: %s"
+#~ msgstr "അപരിചിതമായ കണക്ട് ചെയ്ത മൂല്ല്യം %s"
+
+#~ msgid "unknown memory balloon model '%s'"
+#~ msgstr "അപരിചിതമായ മെമ്മറി ബലൂണ്‍ മോ‍ഡല്‍ '%s'"
+
+#~ msgid "unknown mouse mode value '%s'"
+#~ msgstr "അപരിചിതമായ മൌസ് മോഡ് മൂല്ല്യം '%s'"
+
+#~ msgid "unknown pci source type '%s'"
+#~ msgstr "അപരിചിതമായ pci സോഴ്സ് രീതി '%s'"
+
+#, fuzzy
+#~ msgid "unknown policy attribute '%s' of feature '%s'"
+#~ msgstr "അപരിചിതമായ വിശേഷത രീതി '%d','%s'-യ്ക്കുള്ളതു്"
+
+#~ msgid "unknown sound model '%s'"
+#~ msgstr "അപരിചിതമായ ശബ്ദ മാതൃക '%s'"
+
+#~ msgid "unknown spice channel mode %s"
+#~ msgstr "അപരിചിതമായ സ്പയിസ് ചാനല്‍ മോഡ് %s"
+
+#~ msgid "unknown spice channel name %s"
+#~ msgstr "അപരിചിതമായ സ്പയിസ് ചാനല്‍ നാമം %s"
+
+#~ msgid "unknown spice image compression %s"
+#~ msgstr "അപരിചിതമായ സ്പയിസ് ഇമേജ് കമ്പ്രഷന്‍ %s"
+
+#~ msgid "unknown spice jpeg compression %s"
+#~ msgstr "അപരിചിതമായ സ്പയിസ് jpeg കമ്പ്രഷന്‍ %s"
+
+#~ msgid "unknown spice playback compression"
+#~ msgstr "അപരിചിതമായ സ്പയിസ് പ്ലേബാക്ക് കമ്പ്രഷന്‍"
+
+#~ msgid "unknown spice streaming mode"
+#~ msgstr "അപരിചിതമായ സ്പയിസ് സ്ട്രീമിങ് മോഡ്"
+
+#~ msgid "unknown spice zlib compression %s"
+#~ msgstr "അപരിചിതമായ സ്പയിസ് zlib കമ്പ്രഷന്‍ %s"
+
+#, fuzzy
+#~ msgid "unknown state attribute '%s' of feature '%s'"
+#~ msgstr "അപരിചിതമായ സ്റ്റോറേജ് വോള്യം രീതി '%s'('%s'-നുള്ളതു്)"
+
+#, fuzzy
+#~ msgid "unknown state attribute '%s' of feature capability '%s'"
+#~ msgstr "അപരിചിതമായ സ്റ്റോറേജ് വോള്യം രീതി '%s'('%s'-നുള്ളതു്)"
+
+#, fuzzy
+#~ msgid "unknown trustGuestRxFilters value '%s'"
+#~ msgstr "അപരിചിതമായ പൂര്‍ണ്ണ സ്ക്രീന്‍ മൂല്ല്യം '%s'"
+
+#~ msgid "unknown type '%s' in interface's <actual> element"
+#~ msgstr "ഇന്റര്‍ഫെയിസിന്റെ  <actual> എലമെന്റില്‍ '%s' തരം അപരിചിതം"
+
+#~ msgid "unknown usb source type '%s'"
+#~ msgstr "അപരിചിതമായ usb സോഴ്സ് രീതി '%s'"
+
+#, fuzzy
+#~ msgid "unknown vgaconf value '%s'"
+#~ msgstr "അപിചിതമായ copypaste മൂല്ല്യം '%s'"
+
+#, fuzzy
+#~ msgid "unknown video driver '%s'"
+#~ msgstr "അപരിചിതമായ വീഡിയോ മാതൃക '%s'"
+
+#, fuzzy
+#~ msgid "unsupported mode '%s' for Xen passthrough feature"
+#~ msgstr "'origstates'-ന്റെ പിന്തുണയില്ലാത്ത എലമെന്റ് '%s'"
+
+#~ msgid "usb address needs bus id"
+#~ msgstr "usb വിലാസത്തിനു് ബസ് id ആവശ്യമുണ്ടു്"
+
+#~ msgid "usb address needs device id"
+#~ msgstr "usb വിലാസത്തിനു് ഡിവൈസ് id ആവശ്യമുണ്ടു്"
+
+#~ msgid "usb product needs id"
+#~ msgstr "usb കച്ചവടക്കാര്‍ക്ക് id ആവശ്യമുണ്ടു്"
+
+#~ msgid "usb vendor needs id"
+#~ msgstr "usb കച്ചവടക്കാര്‍ക്ക് id ആവശ്യമുണ്ടു്"
+
+#~ msgid "vendor cannot be 0."
+#~ msgstr "വെന്‍ഡര്‍ 0 ആകാന്‍ പാടില്ല."
+
+#, fuzzy
+#~ msgid "zero is an invalid iothread id value"
+#~ msgstr "തെറ്റായ നോഡ് സിപിയു ത്രെഡ് മൂല്ല്യം"
 
 #, fuzzy
 #~ msgid "%s is not a supported cipher name"

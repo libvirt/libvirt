@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-04-27 08:10+0000\n"
+"POT-Creation-Date: 2021-05-25 14:38+0000\n"
 "PO-Revision-Date: 2021-03-27 14:01+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -44,7 +44,6 @@ msgstr ""
 "\n"
 "  (вкажіть help <група>, щоб отримати дані щодо команд у групі)\n"
 
-#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -463,7 +462,6 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr "    Обмеження пропускної здатності: %llu байт/с (%-.3lf %s/s)"
 
-#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  НАЗВА\n"
 
@@ -716,16 +714,6 @@ msgstr "у цьому виконуваному файлі QEMU не передб
 msgid "%s object has invalid dynamic type"
 msgstr "Об'єкт %s належить до некоректного динамічного типу"
 
-#.
-#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
-#. * enumeration values).
-#. *
-#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
-#.
-#.
-#. * Macros to implement managed objects
-#.
-#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "У об'єкта %s не вистачає обов'язкової властивості «%s»"
@@ -1339,13 +1327,6 @@ msgstr "підтримку «max_sectors» передбачено лише дл�
 msgid "'max_workers' must be greater than 0"
 msgstr "«max_workers» має бути більшим за 0"
 
-msgid ""
-"'mode' attribute for Xen feature 'passthrough' must be 'sync_pt' or "
-"'share_pt'"
-msgstr ""
-"Атрибут «mode» для можливості Xen «passthrough» має бути «sync_pt» або "
-"«share_pt»"
-
 #, c-format
 msgid ""
 "'mode' of Xen passthrough feature differs: source: '%s', destination: '%s'"
@@ -1461,10 +1442,6 @@ msgstr "значенням атрибута «tx_queue_size» має бути д
 msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "у відповіді guest-get-fsinfo пропущено «type»"
 
-#, c-format
-msgid "'unsupported perf event '%s'"
-msgstr "непідтримувана подія perf «%s»"
-
 msgid "'user' missing in reply of guest-get-users"
 msgstr "у відповіді guest-get-users пропущено «user»"
 
@@ -1472,15 +1449,14 @@ msgstr "у відповіді guest-get-users пропущено «user»"
 msgid "'value %d' is invalid for 'sibling id %d' under NUMA 'cell id %d'"
 msgstr "«value %d» є некоректним для «sibling id %d» у «cell id %d» NUMA"
 
-#, c-format
-msgid "'value %s' is invalid for 'sibling id %d' under NUMA 'cell id %d'"
-msgstr "«value %s» є некоректним для «sibling id %d» у «cell id %d» NUMA"
-
 msgid "'vhostuser' driver is only supported with 'virtio' device"
 msgstr "підтримку драйвера «vhostuser» передбачено лише для пристроїв «virtio»"
 
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr "для адаптера типу «fchost» слід вказати атрибути «wwnn» і «wwpn»"
+
+msgid "(<null>)"
+msgstr ""
 
 msgid "(CPU_definition)"
 msgstr "(визначення_CPU)"
@@ -1533,7 +1509,6 @@ msgstr "(визначення_інтерфейсу)"
 msgid "(libxl_migration_cookie)"
 msgstr "(libxl_migration_cookie)"
 
-#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
 
@@ -1591,7 +1566,6 @@ msgstr "(тестовий драйвер)"
 msgid "(volume_definition)"
 msgstr "(визначення_тому)"
 
-#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -2572,14 +2546,10 @@ msgstr ""
 "Ознайомитися із даними щодо обчисленої частки «зіпсованої» пам'яті можна за "
 "допомогою команди «domstats --dirtyrate»."
 
-#.
-#. * Macros to implement dynamic dispatched functions
-#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "Виклик %s для неочікуваного типу «%s»"
 
-#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "Виклик %s для неочікуваного типу «%s», мало бути «%s»"
@@ -2900,6 +2870,10 @@ msgstr "Не вдалося створити vboxSnapshotXmlSnapshotPtr"
 #, c-format
 msgid "Cannot create autostart directory %s"
 msgstr "Не вдалося створити каталог автоматичного запуску %s"
+
+#, c-format
+msgid "Cannot create daemon common directory '%s'"
+msgstr ""
 
 #, c-format
 msgid "Cannot create directory '%s'"
@@ -3289,15 +3263,9 @@ msgstr "Не вдалося обробити вузол <Machine> <VirtualBox>"
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "Не вдалося обробити атрибут «port» елемента <address>"
 
-msgid "Cannot parse <address> 'reg' attribute"
-msgstr "Не вдалося обробити атрибут «reg» <address>"
-
 msgid "Cannot parse <local> 'port' attribute with socket interface"
 msgstr ""
 "Не вдалося обробити атрибут <local> «port», вказаний з інтерфейсом сокету"
-
-msgid "Cannot parse <master> 'startport' attribute"
-msgstr "Не вдалося обробити атрибут «startport» <master>"
 
 msgid "Cannot parse <source> 'port' attribute with socket interface"
 msgstr ""
@@ -3308,20 +3276,8 @@ msgid "Cannot parse MAC address '%s' in network '%s'"
 msgstr "Не вдалося обробити MAC-адресу «%s» у мережі «%s»"
 
 #, c-format
-msgid "Cannot parse USB Class code %s"
-msgstr "Не вдалося обробити запис коду класу USB, %s"
-
-#, c-format
 msgid "Cannot parse USB device version %s"
 msgstr "Не вдалося обробити запис версії пристрою USB, %s"
-
-#, c-format
-msgid "Cannot parse USB product ID %s"
-msgstr "Не вдалося обробити запис ідентифікатора продукту USB, %s"
-
-#, c-format
-msgid "Cannot parse USB vendor ID %s"
-msgstr "Не вдалося обробити запис ідентифікатора виробника USB, %s"
 
 #, c-format
 msgid "Cannot parse UUID '%s'"
@@ -5009,7 +4965,6 @@ msgstr "Не вдалося отримати параметри NIC"
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr "Не вдалося отримати типовий об'єкт Msvm_DiskDrive"
 
-#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "Не вдалося отримати дані щодо буфера"
 
@@ -5880,7 +5835,6 @@ msgstr ""
 "У домені %d інтерфейсів. Будь ласка, вкажіть інтерфейс для від'єднання за "
 "допомогою --mac"
 
-#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -6831,6 +6785,10 @@ msgid "Failed to check for managed save image"
 msgstr "Не вдалося знайти образ керованого збереження"
 
 #, c-format
+msgid "Failed to check system token '%s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to chown device %s"
 msgstr "Не вдалося змінити власника пристрою %s"
 
@@ -7095,20 +7053,13 @@ msgstr "Не вдалося створити потік обробки"
 msgid "Failed to create thread for receiving migration data"
 msgstr "Не вдалося створити потік обробки для отримання даних перенесення"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 msgid "Failed to create thread to handle daemon restart"
 msgstr ""
 "Не вдалося створити потік обробки для роботи з перезапуску фонової служби"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Не вдалося створити потік для обробки завершення роботи домену"
 
-#. Not much else can be done
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Не вдалося створити потік обробки для обробки оновлення буфера"
 
@@ -7670,7 +7621,6 @@ msgstr "Не вдалося побудувати список активних �
 msgid "Failed to list active pools"
 msgstr "Не вдалося побудувати список активних резервних сховищ даних"
 
-#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "Не вдалося побудувати список доменів"
 
@@ -7686,27 +7636,21 @@ msgstr "Не вдалося побудувати список неактивни
 msgid "Failed to list inactive pools"
 msgstr "Не вдалося побудувати список неактивних резервних сховищ"
 
-#. there was an error during the first or second call
 msgid "Failed to list interfaces"
 msgstr "Не вдалося побудувати список інтерфейсів"
 
-#. there was an error during the call
 msgid "Failed to list network filter bindings"
 msgstr "Не вдалося створити список прив'язок фільтрів мережі"
 
-#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "Не вдалося побудувати список фільтрів мережі"
 
-#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "Не вдалося побудувати список мереж"
 
-#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "Не вдалося побудувати список вузлових пристроїв"
 
-#. there was an error during the call
 msgid "Failed to list node secrets"
 msgstr "Не вдалося побудувати список ключів вузла"
 
@@ -7714,7 +7658,6 @@ msgstr "Не вдалося побудувати список ключів ву�
 msgid "Failed to list persistent guests on $uri"
 msgstr "Не вдалося побудувати список постійних гостьових систем з адресою $uri"
 
-#. there was an error during the first or second call
 msgid "Failed to list pools"
 msgstr "Не вдалося побудувати список буферів"
 
@@ -7736,7 +7679,6 @@ msgstr ""
 "Не вдалося побудувати список віртуальних процесорів для домену «%d» за "
 "допомогою libxenlight"
 
-#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "Не вдалося побудувати список томів"
 
@@ -7778,6 +7720,10 @@ msgstr "Не вдалося завантажити знімок: %s"
 #, c-format
 msgid "Failed to locate parent device with ID '%s'"
 msgstr "Не вдалося знайти батьківський пристрій із ідентифікатором «%s»"
+
+#, c-format
+msgid "Failed to lock system token '%s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to login: %s"
@@ -8071,11 +8017,6 @@ msgid "Failed to pin vcpu '%d' with libxenlight"
 msgstr ""
 "Не вдалося закріпити віртуальні процесори «%d» за допомогою libxenlight"
 
-#, c-format
-msgid "Failed to pin vcpu '%zu' with libxenlight"
-msgstr ""
-"Не вдалося закріпити віртуальні процесори «%zu» за допомогою libxenlight"
-
 msgid "Failed to pivot root"
 msgstr "Не вдалося змінити кореневу файлову систему"
 
@@ -8318,9 +8259,6 @@ msgstr "Не вдалося відновити роботу домену «%d» 
 msgid "Failed to resume domain '%s'"
 msgstr "Помилка відновлення роботи домену «%s»"
 
-#. Hm, we already know we are in error here.  We don't want to
-#. * overwrite the previous error, though, so we just throw something
-#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "Не вдалося відновити роботу гостьової системи %s після помилки"
@@ -8798,6 +8736,10 @@ msgid "Failed to write save file header"
 msgstr "Не вдалося записати заголовок файла збереження"
 
 #, c-format
+msgid "Failed to write system token '%s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to write to pid file '%s'"
 msgstr "Не вдалося виконати запис до файла pid «%s»"
 
@@ -8955,63 +8897,10 @@ msgstr ""
 "У першого заснованого на файлі жорсткого диска немає джерела, не вдалося "
 "визначити сховище даних та шлях ддо файла VMX"
 
-#. Macros to help dealing with flag requirements.
-#. *
-#. * VIR_REQUIRE_FLAG_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @RET: Return value.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_REQUIRE_FLAG_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if required flag is not set.
-#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr "Прапорець «%s» потрібен, якщо використовується «%s»"
 
-#. Macros to help dealing with mutually exclusive flags.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @RET: Return value.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "Прапорці «%s» і «%s» не можна використовувати одночасно"
@@ -9843,51 +9732,16 @@ msgstr "Некоректне значення атрибута %s «vcpus», «%
 msgid "Invalid %s image format specified in configuration file"
 msgstr "У файлі налаштування вказано некоректний формат образу %s"
 
-msgid "Invalid 'cache' attribute in NUMA interconnects"
-msgstr "Некоректний атрибут «cache» у взаємозв'язках NUMA"
-
 msgid "Invalid 'cpu.max' data."
 msgstr "Некоректні дані «cpu.max»."
-
-#, c-format
-msgid "Invalid 'discard' attribute value '%s'"
-msgstr "Некоректне значення атрибуту «discard», «%s»"
-
-#, c-format
-msgid "Invalid 'id' attribute in NUMA cell: '%s'"
-msgstr "Некоректний атрибут «id» у комірці NUMA: «%s»"
-
-#, c-format
-msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
-msgstr "Некоректний атрибут «id» у відстанях NUMA для спорідненого вузла: «%s»"
-
-msgid "Invalid 'initiator' attribute in NUMA interconnects"
-msgstr "Некоректний атрибут «initiator» у взаємозв'язках NUMA"
-
-#, c-format
-msgid "Invalid 'iothread' value '%s'"
-msgstr "Некоректне значення «iothread» «%s»"
 
 #, c-format
 msgid "Invalid 'level' attribute in cache element for NUMA node %d"
 msgstr "Некоректний атрибут «level» в елементі кешу для вузла NUMA %d"
 
 #, c-format
-msgid "Invalid 'memAccess' attribute value '%s'"
-msgstr "Некоректне значення атрибута «memAccess»,«%s»"
-
-#, c-format
 msgid "Invalid 'removed' attribute for feature %s in model %s"
 msgstr "Некоректний атрибут «removed» для можливості %s у моделі %s"
-
-msgid "Invalid 'target' attribute in NUMA interconnects"
-msgstr "Некоректний атрибут «target» у взаємозв'язках NUMA"
-
-msgid "Invalid 'type' attribute in NUMA interconnects"
-msgstr "Некоректний атрибут «type» у взаємозв'язках NUMA"
-
-msgid "Invalid 'value' attribute in NUMA interconnects"
-msgstr "Некоректний атрибут «value» у взаємозв'язках NUMA"
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
@@ -10024,8 +9878,8 @@ msgid "Invalid URI path '%s', try '/system'"
 msgstr "Некоректний шлях у URI, «%s», спробуйте «/system»"
 
 #, c-format
-msgid "Invalid USB Class code %s"
-msgstr "Некоректний код класу USB, %s"
+msgid "Invalid USB Class code 0x%x"
+msgstr ""
 
 msgid "Invalid UUID"
 msgstr "Некоректний UUID"
@@ -10055,18 +9909,6 @@ msgstr "Некоректний тип адреси «%s» для диска «%s
 msgid "Invalid address."
 msgstr "Некоректна адреса."
 
-msgid "Invalid allow value, either 'yes' or 'no'"
-msgstr "Некоректне значення allow: мало бути «yes» або «no»"
-
-#.
-#. * Don't check for *selectSet != NULL here because selectSet is a list
-#. * and might contain items already. This function appends to selectSet.
-#.
-#. optional
-#. optional
-#. nothing
-#. nothing
-#. nothing
 msgid "Invalid argument"
 msgstr "Некоректний аргумент"
 
@@ -10117,10 +9959,6 @@ msgstr ""
 msgid "Invalid attempt to set peer IP for guest"
 msgstr "Некоректна спроба встановити IP вузла для гостьової системи"
 
-#, c-format
-msgid "Invalid audio 'id' value '%s'"
-msgstr "Некоректне значення «id» звуку «%s»"
-
 msgid "Invalid auth_pending and auth combination in JSON state document"
 msgstr "Некоректна комбінація auth_pending і auth у документі щодо стану JSON"
 
@@ -10153,10 +9991,6 @@ msgid "Invalid bus type '%s' for floppy disk"
 msgstr "Неправильний тип шини «%s» для дисковода"
 
 #, c-format
-msgid "Invalid busNr '%s' in PCI controller"
-msgstr "Некоректний номер каналу, «%s», у контролері PCI"
-
-#, c-format
 msgid "Invalid cache associativity '%s'"
 msgstr "Некоректна асоціативність кешу «%s»"
 
@@ -10167,18 +10001,6 @@ msgstr "Некоректний ідентифікатор кешу «%s»"
 #, c-format
 msgid "Invalid cache policy '%s'"
 msgstr "Некоректні правила кешування «%s»"
-
-#, c-format
-msgid "Invalid cachetune attribute 'id' value '%s'"
-msgstr "Некоректне значення атрибута cachetune «id», «%s»"
-
-#, c-format
-msgid "Invalid cachetune attribute 'level' value '%s'"
-msgstr "Некоректне значення атрибута cachetune «level», «%s»"
-
-#, c-format
-msgid "Invalid cachetune attribute 'type' value '%s'"
-msgstr "Некоректне значення атрибута cachetune «type», «%s»"
 
 msgid "Invalid call"
 msgstr "Некоректний виклик"
@@ -10191,10 +10013,6 @@ msgstr "Некоректний виклик, не вказано сеансу"
 
 msgid "Invalid capability type"
 msgstr "Некоректний тип можливості"
-
-#, c-format
-msgid "Invalid cellid attribute in memnode element: %s"
-msgstr "Некоректний атрибут cellid у елементі memnode: %s"
 
 msgid "Invalid certificate"
 msgstr "Некоректний сертифікат"
@@ -10213,14 +10031,6 @@ msgstr "Некоректний символ, «%c», у ідентифікато
 
 msgid "Invalid character in source channel for char device"
 msgstr "Некоректний символ у записі каналу джерела для символьного пристрою"
-
-#, c-format
-msgid "Invalid chassis '%s' in PCI controller"
-msgstr "Некоректне значення chassis, «%s», у контролері PCI"
-
-#, c-format
-msgid "Invalid chassisNr '%s' in PCI controller"
-msgstr "Некоректне значення chassisNr, «%s», у контролері PCI"
 
 #, c-format
 msgid "Invalid class ID %d"
@@ -10515,12 +10325,12 @@ msgid "Invalid match string '%s'"
 msgstr "Некоректний рядок відповідності, «%s»"
 
 #, c-format
-msgid "Invalid maxEventChannels: %s"
-msgstr "Некоректне значення maxEventChannels: %s"
+msgid "Invalid maxEventChannels: %i"
+msgstr ""
 
 #, c-format
-msgid "Invalid maxGrantFrames: %s"
-msgstr "Некоректне значення maxGrantFrames: %s"
+msgid "Invalid maxGrantFrames: %i"
+msgstr ""
 
 #, c-format
 msgid "Invalid memory core dump attribute value '%s'"
@@ -10537,9 +10347,6 @@ msgstr "Некоректна кука перенесення"
 msgid "Invalid mode attribute '%s'"
 msgstr "Некоректний атрибут режиму, «%s»"
 
-msgid "Invalid mode attribute in memnode element"
-msgstr "Некоректний атрибут режиму (mode) у елементі memnode"
-
 #, c-format
 msgid "Invalid mode setting '%s' in network port"
 msgstr "Некоректний параметр режиму «%s» у записі порту мережі"
@@ -10547,10 +10354,6 @@ msgstr "Некоректний параметр режиму «%s» у запи�
 #, c-format
 msgid "Invalid mode: %s"
 msgstr "Некоректний режим: %s"
-
-#, c-format
-msgid "Invalid monitor attribute 'level' value '%s'"
-msgstr "Некоректне значення атрибута «level» засобу стеження, «%s»"
 
 #, c-format
 msgid "Invalid monitor cache level '%d'"
@@ -10676,10 +10479,6 @@ msgid "Invalid pool type '%s'"
 msgstr "Некоректний тип буфера «%s»"
 
 #, c-format
-msgid "Invalid port '%s' in PCI controller"
-msgstr "Некоректний порт «%s» у контролері PCI"
-
-#, c-format
 msgid "Invalid port number: %s"
 msgstr "Некоректний номер порту: %s"
 
@@ -10688,8 +10487,8 @@ msgid "Invalid port range '%u-%u'."
 msgstr "Некоректний діапазон портів, «%u-%u»."
 
 #, c-format
-msgid "Invalid ports: %s"
-msgstr "Некоректні порти: %s"
+msgid "Invalid ports: %i"
+msgstr ""
 
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
@@ -10717,10 +10516,6 @@ msgstr "Некоректний відносний шлях «%s»"
 
 msgid "Invalid resctrl monitor"
 msgstr "Некоректний засіб спостереження resctrl"
-
-#, c-format
-msgid "Invalid scheduler attribute: '%s'"
-msgstr "Некоректний атрибут планувальника: «%s»"
 
 msgid "Invalid secret"
 msgstr "Некоректний ключ"
@@ -10755,9 +10550,6 @@ msgid ""
 "devno='0x%04x'"
 msgstr ""
 
-msgid "Invalid specification of multiple <filterref>s in a single <interface>"
-msgstr "Некоректна специфікація декількох <filterref> у одному <interface>"
-
 #, c-format
 msgid "Invalid state '%s' in domain snapshot XML"
 msgstr "Некоректний стан «%s» у XML знімка домену"
@@ -10790,8 +10582,8 @@ msgstr ""
 "Некоректний стан домену призначення, «%s». У зміні версії знімка відмовлено."
 
 #, c-format
-msgid "Invalid target index '%s' in PCI controller"
-msgstr "Некоректний індекс призначення, «%s», у записі контролера PCI"
+msgid "Invalid target index '%i' in PCI controller"
+msgstr ""
 
 msgid "Invalid target model for serial device"
 msgstr "Некоректна модель призначення для послідовного пристрою"
@@ -10817,10 +10609,6 @@ msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
 msgstr ""
 "Видано запит на некоректний тип «%s» для параметра «%s». Справжнім типом є "
 "«%s»"
-
-#, c-format
-msgid "Invalid unit: %s"
-msgstr "Некоректна одиниця: %s"
 
 #, c-format
 msgid "Invalid unsigned integer value '%s' in file '%s'"
@@ -10875,18 +10663,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Invalid value for attribute '%s' in element '%s': '%s'. Expected 'on' or "
-"'off'"
-msgstr ""
-
-#, c-format
-msgid ""
-"Invalid value for attribute '%s' in element '%s': '%s'. Expected 'yes' or "
-"'no'"
-msgstr ""
-
-#, c-format
-msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
 msgstr ""
@@ -10894,9 +10670,6 @@ msgstr ""
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
 msgstr ""
-
-msgid "Invalid value for element priority"
-msgstr "Некоректне значення пріоритетності елемента"
 
 #, c-format
 msgid "Invalid value for field '%s': expected double"
@@ -10955,8 +10728,8 @@ msgid "Invalid value of 'nodeset': %s"
 msgstr "некоректне значення «nodeset»: %s"
 
 #, c-format
-msgid "Invalid vectors: %s"
-msgstr "Некоректні вектори: %s"
+msgid "Invalid vectors: %i"
+msgstr ""
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
@@ -11211,10 +10984,6 @@ msgstr "Помилковий ідентифікатор ітератора"
 msgid "Malformatted variable"
 msgstr "Помилкове форматування змінної"
 
-#, c-format
-msgid "Malformed 'cmd_per_lun' value '%s'"
-msgstr "Помилкове форматування значення «cmd_per_lun» «%s»"
-
 msgid "Malformed 'dies' attribute in CPU topology"
 msgstr "Помилкове форматування атрибута «dies» у топології процесора"
 
@@ -11225,20 +10994,8 @@ msgstr "Помилкове форматування «domuuid» у докуме�
 msgid "Malformed 'floor_sum' attribute: %s"
 msgstr "Помилкове форматування атрибута «floor_sum»: %s"
 
-#, c-format
-msgid "Malformed 'ioeventfd' value %s"
-msgstr "Помилкове форматування значення «ioeventfd», %s"
-
 msgid "Malformed 'maxCount' parameter"
 msgstr "Помилкове форматування параметра «maxCount»"
-
-#, c-format
-msgid "Malformed 'max_sectors' value %s"
-msgstr "Помилкове форматування значення «max_sectors» «%s»"
-
-#, c-format
-msgid "Malformed 'queues' value '%s'"
-msgstr "Помилкове форматування значення «%s» «queues»"
 
 #, c-format
 msgid ""
@@ -11317,10 +11074,6 @@ msgstr ""
 
 msgid "Malformed ip-addresses array"
 msgstr "Помилкове форматування масиву ip-addresses"
-
-#, c-format
-msgid "Malformed lease target offset %s"
-msgstr "Помилкове форматування відступу наданого призначення %s"
 
 msgid "Malformed lease_entries array"
 msgstr "Помилкове форматування масиву lease_entries"
@@ -11663,13 +11416,6 @@ msgstr "У діапазоні DHCP мережі «%s» не вистачає а�
 msgid "Missing 'filename' in CPU map include"
 msgstr "Пропущено «filename» у включенні карти процесорів"
 
-#, c-format
-msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
-msgstr "Не вказано атрибут «id» у відстанях NUMA під «cell id %d»"
-
-msgid "Missing 'initiator' attribute in NUMA interconnects"
-msgstr "Пропущено атрибут «initiator» у взаємозв'язках NUMA"
-
 msgid "Missing 'key' element for lease"
 msgstr "Не вказано елемента «key» для надання"
 
@@ -11686,6 +11432,9 @@ msgstr "Пропущено атрибут «model» у елементі <hostdev
 #, c-format
 msgid "Missing 'name' property in %s lookup"
 msgstr "У записі пошуку %s не вистачає властивості «name»"
+
+msgid "Missing 'path' attribute to 'target' element for lease"
+msgstr ""
 
 msgid "Missing 'path' field in JSON document"
 msgstr "У документі JSON пропущено поле «path»"
@@ -11707,31 +11456,14 @@ msgstr "Не вказано атрибута «sockets» у топології �
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
 msgstr "У діапазоні DHCP мережі «%s» не вистачає атрибута «start»"
 
-msgid "Missing 'target' attribute in NUMA interconnects"
-msgstr "Пропущено атрибут «target» у взаємозв'язках NUMA"
-
 msgid "Missing 'target' element for lease"
 msgstr "Не вказано елемента «target» для надання"
 
 msgid "Missing 'threads' attribute in CPU topology"
 msgstr "Не вказано атрибута «threads» у топології процесора"
 
-msgid "Missing 'type' attribute in NUMA interconnects"
-msgstr "Пропущено атрибут «type» у взаємозв'язках NUMA"
-
 msgid "Missing 'uuid' attribute for element <address>"
 msgstr "Пропущено атрибут «uuid» елемента <address>"
-
-#, c-format
-msgid ""
-"Missing 'value' attribute in NUMA distances under 'cell id %d' for 'sibling "
-"id %d'"
-msgstr ""
-"Не вказано атрибут «value» у відстанях NUMA під «cell id %d» для «sibling id "
-"%d»"
-
-msgid "Missing 'value' attribute in NUMA interconnects"
-msgstr "Пропущено атрибут «value» у взаємозв'язках NUMA"
 
 msgid "Missing <address> element"
 msgstr "Пропущено елемент <address>"
@@ -11826,9 +11558,6 @@ msgstr "Пропущено адресу у записі можливості «p
 msgid "Missing agent reply object"
 msgstr "Не виявлено об'єкта відповіді агента"
 
-msgid "Missing allow attribute for USB redirection filter"
-msgstr "Не вистачає атрибута allow для фільтра переспрямовування USB"
-
 #, c-format
 msgid "Missing ancestor's name in CPU model %s"
 msgstr "Не вказано назву попередньої моделі процесора %s"
@@ -11859,15 +11588,6 @@ msgstr "Не вистачає модуля %d"
 
 msgid "Missing bridge name"
 msgstr "Пропущено назву містка"
-
-msgid "Missing cachetune attribute 'id'"
-msgstr "Не вказано атрибут cachetune «id»"
-
-msgid "Missing cachetune attribute 'level'"
-msgstr "Не вказано атрибут cachetune «level»"
-
-msgid "Missing cachetune attribute 'type'"
-msgstr "Не вказано атрибут cachetune «type»"
 
 msgid "Missing capability type"
 msgstr "Не вказано типу можливості"
@@ -11906,8 +11626,8 @@ msgstr "У документі JSON не вистачає даних errfd"
 msgid "Missing essential config entry '%s'"
 msgstr "Не вистачає важливого запису налаштувань «%s»"
 
-msgid "Missing evdev path for input device passthrough"
-msgstr "Пропущено шлях evdev для трансляції пристрою введення даних"
+msgid "Missing evdev path for input device"
+msgstr ""
 
 msgid "Missing fd data in JSON document"
 msgstr "У документі JSON не вистачає даних fd"
@@ -11973,9 +11693,6 @@ msgstr "У документі JSON не вистачає даних max_workers"
 
 msgid "Missing min_workers data in JSON document"
 msgstr "У документі JSON не вистачає даних min_workers"
-
-msgid "Missing monitor attribute 'level'"
-msgstr "Пропущено атрибут засобу стеження «level»"
 
 msgid "Missing monitor reply object"
 msgstr "Не виявлено об'єкта відповіді монітора"
@@ -12192,9 +11909,6 @@ msgstr "Пропущено обов'язкову адресу у <ip>"
 msgid "Missing required attribute '%s' in element '%s'"
 msgstr ""
 
-msgid "Missing required cellid attribute in memnode element"
-msgstr "У елементі memnode немає обов'язкового атрибута cellid"
-
 #, c-format
 msgid ""
 "Missing required dev attribute in <forward> <interface> element of network %s"
@@ -12242,12 +11956,6 @@ msgstr "Не вистачає запису значення ресурсів у 
 
 msgid "Missing restricted data in JSON document"
 msgstr "У файлі JSON не вистачає даних щодо обмежень (restricted)"
-
-msgid "Missing scheduler attribute"
-msgstr "Пропущено атрибут планувальника"
-
-msgid "Missing scheduler priority"
-msgstr "Не вказано пріоритетності планувальника"
 
 msgid "Missing scsi_host PCI address element"
 msgstr "Пропущено елемент адреси PCI scsi_host"
@@ -12546,12 +12254,6 @@ msgstr "Підтримки дисків NVMe не передбачено у ць
 msgid "NVMe namespace can't be zero"
 msgstr "Простір назв NVMe не може бути нульовим"
 
-#. Output old style header
-#. We only get here if the --details option was selected.
-#. Insert the header into table
-#. The old output format
-#. We only get here if the --details option was selected.
-#. Insert the header into table
 msgid "Name"
 msgstr "Назва"
 
@@ -12884,6 +12586,12 @@ msgstr "У %d байтах не знайдено повної відповіді
 #, c-format
 msgid "No current block job for %s"
 msgstr "Немає поточних блокових завдань для %s"
+
+msgid "No current identity"
+msgstr ""
+
+msgid "No current identity to elevate"
+msgstr ""
 
 msgid "No data supplied for <initarg> element"
 msgstr "Не вказано даних для елемента <initarg>"
@@ -13542,10 +13250,6 @@ msgstr "Підтримуються лише адреси перенесення 
 msgid "Only x509 certificates are supported"
 msgstr "Передбачено підтримку лише сертифікатів x509"
 
-msgid "OpenGL for SDL is not supported with this QEMU binary"
-msgstr ""
-"Підтримки OpenGL для SDL у цьому виконуваному файлі QEMU не передбачено"
-
 msgid "OpenRemoteSession/LaunchVMProcess failed, domain can't be started"
 msgstr "помилка OpenRemoteSession/LaunchVMProcess, домен не може бути запущено"
 
@@ -13594,20 +13298,6 @@ msgstr ""
 "Параметр «%s» є некоректним для контролера PCI з індексом %d, модель %s і "
 "значенням modelName «%s»"
 
-#. Macros to help dealing with required options.
-#. VSH_REQUIRE_OPTION_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable).
-#. * @NAME2: String containing the name of required option.
-#. * @EXPR2: Expression to validate the variable (boolean variable).
-#. *
-#. * Check if required command options in virsh was set.  Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr "Параметр --%s потрібен для параметра --%s"
@@ -13628,20 +13318,6 @@ msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 "У фоновій службі не передбачено підтримки додаткових прапорців або --rawstats"
 
-#. Macros to help dealing with mutually exclusive options.
-#. VSH_EXCLUSIVE_OPTIONS_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable)
-#. * @NAME2: String containing the name of the option.
-#. * @EXPR2: Expression to validate the variable (boolean variable)
-#. *
-#. * Reject mutually exclusive command options in virsh. Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "Параметри --%s і --%s не можна використовувати одночасно"
@@ -13728,16 +13404,6 @@ msgstr "Файл накладки «%s» для проміжного диска 
 msgid "PASS"
 msgstr "ПРОЙДЕНО"
 
-msgid "PCI address 0:0:1.0 is in use, QEMU needs it for primary video"
-msgstr ""
-"Адресу PCI 0:0:1.0 вже використано, QEMU потрібна ця адреса для роботи з "
-"основним відеопристроєм"
-
-msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
-msgstr ""
-"Адресу PCI 0:0:2.0 вже використано, QEMU потрібна ця адреса для роботи з "
-"основним відеопристроєм"
-
 #, c-format
 msgid ""
 "PCI controller at index %d (0x%02x) has bus='0x%02x', but index must be "
@@ -13783,11 +13449,6 @@ msgid "PCI controller target index '%d' out of range - must be 0-30"
 msgstr ""
 "індекс призначення для контролера PCI, «%d», лежить поза межами припустимого "
 "діапазону, має бути від 0 до 30"
-
-#, c-format
-msgid "PCI controller unrecognized hotplug setting '%s'"
-msgstr ""
-"Нерозпізнаний параметр з'єднання в «гарячому» режимі контролера PCI «%s»"
 
 #, c-format
 msgid ""
@@ -13915,7 +13576,6 @@ msgstr "Оброблена відповідь JSON «%s» не є об'єкто�
 msgid "Partition path '%s' must start with '/'"
 msgstr "Шлях розділу «%s» має починатися з «/»"
 
-#. warn users that the --base64 option passed from command line is wrong
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "Передавання значення ключа у аргументі рядка команди не є безпечним!"
 
@@ -14137,12 +13797,6 @@ msgstr "Основний контролер IDE повинен мати PCI-ад
 
 msgid "Primary SATA controller must have PCI address 0:0:1f.2"
 msgstr "Основний контролер SATA повинен мати PCI-адресу 0:0:1f.2"
-
-msgid "Primary video card must have PCI address 0:0:1.0"
-msgstr "Основна відеокартка повинна мати PCI-адресу 0:0:1.0"
-
-msgid "Primary video card must have PCI address 0:0:2.0"
-msgstr "Основна відеокартка повинна мати PCI-адресу 0:0:2.0"
 
 msgid "Print lease info for a given network"
 msgstr "Вивести дані щодо надання для вказаної мережі"
@@ -14806,7 +14460,6 @@ msgstr "на цьому домені стан S3 вимкнено"
 msgid "S4 state is disabled for this domain"
 msgstr "на цьому домені стан S4 вимкнено"
 
-#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr "Профілю клієнта SASL «%s» немає серед дозволених ACL"
@@ -15365,9 +15018,6 @@ msgstr "Час налаштування:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "У цій версії QEMU не передбачено підтримки прив'язки спільної пам'яті"
 
-#. XXX: Need to sort the returned params once new parameter
-#. * fields not of shared memory are added.
-#.
 msgid "Shared memory:\n"
 msgstr "Спільна пам'ять:\n"
 
@@ -15446,7 +15096,6 @@ msgstr "Для цього потоку даних пропускання не п
 msgid "Snapshot"
 msgstr "Знімок"
 
-#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "Налаштування XML знімка %s не змінено.\n"
@@ -15906,6 +15555,10 @@ msgid "System lacks NETNS support"
 msgstr "Відсутня підтримка NETNS"
 
 #, c-format
+msgid "System token in %s was corrupt"
+msgstr ""
+
+#, c-format
 msgid "TLS handshake failed %s"
 msgstr "Помилка при ініціалізації TLS %s"
 
@@ -15946,7 +15599,6 @@ msgstr "Модель TPM «%s» доступна для гостьових си�
 msgid "Table row cannot be empty"
 msgstr "Рядок таблиці не може бути порожнім"
 
-#. title
 msgid "Target"
 msgstr "Призначення"
 
@@ -17411,11 +17063,9 @@ msgstr "Спроба запису до сокета у стані помилки
 msgid "Try again?"
 msgstr "Повторити спробу?"
 
-#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "Спроба вилучення об'єкта MultiCURL, який ще перебуває у користуванні"
 
-#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "Спроба вилучення об'єкта SharedCURL, який ще перебуває у користуванні"
 
@@ -18236,6 +17886,9 @@ msgstr "Не вдалося виконати форматування конте
 msgid "Unable to format guestfwd port"
 msgstr "Не вдалося виконати форматування значення порту guestfwd"
 
+msgid "Unable to format metadata element"
+msgstr ""
+
 msgid "Unable to format time"
 msgstr "Не вдалося форматувати час"
 
@@ -18757,6 +18410,10 @@ msgstr "Не вдалося відкрити ресурс %s"
 #, c-format
 msgid "Unable to open stream for '%s'"
 msgstr "Не вдалося відкрити потік даних для «%s»"
+
+#, c-format
+msgid "Unable to open system token %s"
+msgstr ""
 
 msgid "Unable to open test socket"
 msgstr "Не вдалося відкрити тестовий сокет"
@@ -19800,10 +19457,6 @@ msgid "Unknown CPU vendor %s"
 msgstr "Невідомий виробник процесорів %s"
 
 #, c-format
-msgid "Unknown HPT resizing setting: %s"
-msgstr "Невідомий параметр зміни розмірів HPT: %s"
-
-#, c-format
 msgid "Unknown IP address data source %d"
 msgstr "Невідоме джерело даних IP-адреси %d"
 
@@ -19814,10 +19467,6 @@ msgstr "Невідома відповідь JSON «%s»"
 #, c-format
 msgid "Unknown LXC namespace source '%s'"
 msgstr "Невідоме джерело простору назв LXC, «%s»"
-
-#, c-format
-msgid "Unknown PCI controller model name '%s'"
-msgstr "Невідома назва моделі контролера PCI, «%s»"
 
 #, c-format
 msgid "Unknown PCI device <driver name='%s'/> has been specified"
@@ -19903,10 +19552,6 @@ msgid "Unknown controller type %d"
 msgstr "Невідомий тип контролера, %d"
 
 #, c-format
-msgid "Unknown controller type '%s'"
-msgstr "невідомий тип контролера «%s»"
-
-#, c-format
 msgid "Unknown core size '%s'"
 msgstr "Невідомий розмір ядра «%s»"
 
@@ -19935,10 +19580,6 @@ msgid "Unknown domain type: %X"
 msgstr "Невідомий тип домену %X"
 
 #, c-format
-msgid "Unknown driver mode: %s"
-msgstr "Невідомий режим драйвера: %s"
-
-#, c-format
 msgid "Unknown driver name '%s'"
 msgstr "Невідома назва драйвера «%s»"
 
@@ -19953,7 +19594,6 @@ msgstr "Невідомий тип enable, %d, у мережі"
 msgid "Unknown error"
 msgstr "Невідома помилка"
 
-#. should never happen (tm)
 msgid "Unknown error value"
 msgstr "Невідоме значення помилки"
 
@@ -20036,10 +19676,6 @@ msgstr ""
 "Невідоме значення режиму, %s. Мало бути вказано значення «acpi», «agent», "
 "«initctl», «signal» або «paravirt»."
 
-#, c-format
-msgid "Unknown mode '%s' in interface <actual> element"
-msgstr "Невідомий режим, «%s» у елементі <actual> інтерфейсу"
-
 msgid "Unknown mode has been specified"
 msgstr "Вказано невідомий програмі режим"
 
@@ -20057,10 +19693,6 @@ msgstr "Невідомий параметр %s"
 
 msgid "Unknown parameter type"
 msgstr "Невідомий тип параметра"
-
-#, c-format
-msgid "Unknown pool adapter type '%s'"
-msgstr "Невідомий тип адаптера буфера, «%s»"
 
 #, c-format
 msgid "Unknown protocol '%s'"
@@ -20090,24 +19722,12 @@ msgid "Unknown serial type: %X"
 msgstr "Невідомий тип серійності %X"
 
 #, c-format
-msgid "Unknown shmem model type '%s'"
-msgstr "Невідомий тип моделі shmem, «%s»"
-
-#, c-format
-msgid "Unknown shmem role type '%s'"
-msgstr "Невідомий тип ролі shmem «%s»"
-
-#, c-format
 msgid "Unknown slirp feature %s"
 msgstr "Невідома можливість slirp %s"
 
 #, c-format
 msgid "Unknown source type: '%s'"
 msgstr "Невідомий тип джерела: «%s»"
-
-#, c-format
-msgid "Unknown startup policy '%s'"
-msgstr "Невідомі правила запуску, «%s»"
 
 msgid "Unknown state of the remote server SSH key"
 msgstr "Невідомий стан ключа SSH віддаленого сервера"
@@ -20151,10 +19771,6 @@ msgstr "Невідоме значення «%s» властивості «type»
 #, c-format
 msgid "Unknown value '%s' for xsd:boolean"
 msgstr "Невідоме значення «%s» xsd:boolean"
-
-#, c-format
-msgid "Unknown value: %s"
-msgstr "Невідоме значення: %s"
 
 #, c-format
 msgid "Unknown vendor %s referenced by CPU model %s"
@@ -20235,10 +19851,6 @@ msgstr ""
 #, c-format
 msgid "Unsupported <tftp> element in an IPv6 element in network '%s'"
 msgstr "Непідтримуваний елемент <tftp> у елементі IPv6 у мережі «%s»"
-
-#, c-format
-msgid "Unsupported CPU placement mode '%s'"
-msgstr "Непідтримуваний режим розташування процесора, «%s»"
 
 #, c-format
 msgid "Unsupported IP address data source %d"
@@ -20764,13 +20376,11 @@ msgstr "Режим докладних повідомлень"
 msgid "Video adapters are not supported int containers."
 msgstr "У контейнерах не передбачено підтримки відеоадаптерів."
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr ""
 "Програма для керування libvirt %s за допомогою командного рядка — Virsh\n"
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr ""
@@ -21274,11 +20884,6 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "отримати всю нову місткість, замість залишення її порожньою"
 
-#.
-#. * we need to use an intermediary pointer to @data as compilers may sometimes
-#. * complain about @data not being a pointer type:
-#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
-#.
 msgid "allocated netlink buffer is too small"
 msgstr "отриманий буфер netlink є занадто малим"
 
@@ -21662,9 +21267,6 @@ msgstr ""
 
 msgid "balloon device cannot be disabled"
 msgstr "балонний пристрій не можна вимикати"
-
-msgid "balloon memory must contain model name"
-msgstr "запис balloon_memory має містити назву моделі"
 
 #, c-format
 msgid "bandwidth %llu cannot be represented in result"
@@ -23007,7 +22609,6 @@ msgstr "не вдалося відкрити шлях «%s»"
 msgid "cannot open path '%s' in '%s'"
 msgstr "не вдалося відкрити каталог «%s» у «%s»"
 
-#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "не вдалося відкрити том «%s»"
@@ -23021,36 +22622,8 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "не вдалося обробити запис версії %s у «%.*s»"
 
 #, c-format
-msgid "cannot parse 'bufferCount' value '%s'"
-msgstr "не вдалося обробити значення «bufferCount» «%s»"
-
-#, c-format
-msgid "cannot parse 'bufferLength' value '%s'"
-msgstr "не вдалося обробити значення «bufferLength» «%s»"
-
-#, c-format
-msgid "cannot parse 'channels' value '%s'"
-msgstr "не вдалося обробити значення «channels» «%s»"
-
-#, c-format
-msgid "cannot parse 'dspPolicy' value '%s'"
-msgstr "не вдалося обробити значення «dspPolicy» «%s»"
-
-#, c-format
-msgid "cannot parse 'format' value '%s'"
-msgstr "не вдалося обробити значення «format», «%s»"
-
-#, c-format
-msgid "cannot parse 'frequency' value '%s'"
-msgstr "не вдалося обробити значення «frequency», «%s»"
-
-#, c-format
-msgid "cannot parse 'latency' value '%s'"
-msgstr "не вдалося обробити значення «latency» «%s»"
-
-#, c-format
-msgid "cannot parse 'voices' value '%s'"
-msgstr "не вдалося обробити значення «voices» «%s»"
+msgid "cannot parse 'dspPolicy' value '%i'"
+msgstr ""
 
 msgid "cannot parse CPU data"
 msgstr "не вдалося обробити дані щодо процесора"
@@ -23058,10 +22631,6 @@ msgstr "не вдалося обробити дані щодо процесор�
 #, c-format
 msgid "cannot parse MAC address '%s' from file '%s'"
 msgstr "не вдалося обробити адресу MAC «%s» з файла «%s»"
-
-#, c-format
-msgid "cannot parse bus %s"
-msgstr "неможливо розібрати шину %s"
 
 #, c-format
 msgid "cannot parse cache mode '%s' for virtiofs"
@@ -23082,10 +22651,6 @@ msgid "cannot parse cpu user stat '%s'"
 msgstr ""
 "не вдалося обробити статистичні дані щодо використання процесора "
 "користувачем «%s»"
-
-#, c-format
-msgid "cannot parse device %s"
-msgstr "неможливо розібрати пристрій %s"
 
 msgid "cannot parse device end location"
 msgstr "не вдалося обробити дані щодо кінця пристрою"
@@ -23125,10 +22690,6 @@ msgid "cannot parse pid in vmware log file"
 msgstr "не вдалося визначити pid у файлі журналу vmware"
 
 #, c-format
-msgid "cannot parse product %s"
-msgstr "неможливо розібрати продукт %s"
-
-#, c-format
 msgid "cannot parse queue size '%s' for virtiofs"
 msgstr "неможливо обробити розмір черги «%s» для virtiofs"
 
@@ -23139,14 +22700,6 @@ msgstr "не вдалось розібрати rdp-порт %s"
 #, c-format
 msgid "cannot parse sandbox mode '%s' for virtiofs"
 msgstr ""
-
-#, c-format
-msgid "cannot parse spice port %s"
-msgstr "не вдалося обробити значення порту SPICE %s"
-
-#, c-format
-msgid "cannot parse spice tlsPort %s"
-msgstr "не вдалося обробити значення атрибута «tlsPort» SPICE %s"
 
 #, c-format
 msgid "cannot parse target for lunStr '%s'"
@@ -23173,10 +22726,6 @@ msgstr "не вдалося обробити значення параметра
 #, c-format
 msgid "cannot parse vcpu index '%s'"
 msgstr "не вдалося обробити значення індексу віртуального процесора, «%s»"
-
-#, c-format
-msgid "cannot parse vendor id %s"
-msgstr "неможливо розібрати ідентифікатор виробника «%s»"
 
 #, c-format
 msgid "cannot parse video heads '%s'"
@@ -23880,7 +23429,6 @@ msgstr "назва контрольної точки"
 msgid "child didn't write error (status=%d)"
 msgstr "дочірній процес не записав помилки (стан=%d)"
 
-#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "дочірньому процесу не вдалося створити каталог «%s»"
@@ -24771,9 +24319,6 @@ msgstr "назва пристрою поточного містка"
 msgid "current vcpu count must equal maximum"
 msgstr "поточна кількість віртуальних процесорів має бути рівною максимальній"
 
-msgid "current vcpus count must be an integer"
-msgstr "значення поточної кількості віртуальних процесорів має бути цілим"
-
 msgid "current vcpus must be equal to maxvcpus"
 msgstr ""
 "поточна кількість віртуальних процесорів має бути рівною максимальній "
@@ -25296,6 +24841,10 @@ msgstr "канал диска «%s» не можна з'єднувати у «г
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "дисковий канал «%s» не можна оновлювати."
+
+#, c-format
+msgid "disk bus '%s' doesn't support transiend disk backing image sharing"
+msgstr ""
 
 msgid "disk device 'lun' doesn't support encryption"
 msgstr "для дискового пристрою «lun» не передбачено підтримку шифрування"
@@ -27241,10 +26790,6 @@ msgid "failed to parse device weight: '%s'"
 msgstr "не вдалося обробити вагу пристрою: «%s»"
 
 #, c-format
-msgid "failed to parse expiry value '%s'"
-msgstr "не вдалося обробити значення застарівання «%s»"
-
-#, c-format
 msgid "failed to parse int: '%s'"
 msgstr "не вдалося обробити ціле число: «%s»"
 
@@ -27732,9 +27277,6 @@ msgstr ""
 "отримати або встановити поточний визначений набір виведень журналу фонової "
 "служби"
 
-#. parse inbound and outbound which are in the format of
-#. * 'average,peak,burst,floor', in which peak and burst are optional,
-#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, c-format
 msgid "field '%s' is malformed"
 msgstr "помилкове форматування поля «%s»"
@@ -28364,9 +27906,6 @@ msgstr "у повернутих даних немає відповіді guest-g
 msgid "guestfwd channel does not define a target address"
 msgstr "для каналу guestfwd не визначено адреси призначення"
 
-msgid "guestfwd channel does not define a target port"
-msgstr "для каналу guestfwd не визначено порту призначення"
-
 msgid "guestfwd channel only supports IPv4 addresses"
 msgstr "для каналу guestfwd передбачено підтримку лише адрес IPv4"
 
@@ -28376,7 +27915,6 @@ msgstr "зупинити роботу домену після створення
 msgid "handler failed to wait on condition"
 msgstr "обробнику не вдалося дочекатися виконання умови"
 
-#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr "у результаті пошук хешу отримано нульовий вказівник"
 
@@ -28842,6 +28380,9 @@ msgstr "пристрій введення даних «%s» не можна з'�
 msgid "input devices without vnc are not supported"
 msgstr "підтримки пристроїв введення без vnc не передбачено"
 
+msgid "input evdev doesn't support bus element"
+msgstr ""
+
 #, c-format
 msgid "input too large: %d * %d"
 msgstr "вхідні дані надто об'ємні: %d * %d"
@@ -28923,14 +28464,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"interface %s - multiqueue is not supported for network interfaces of type "
-"vhost-user with this QEMU binary"
-msgstr ""
-"інтерфейс %s — підтримки багатьох черг для інтерфейсів мережі типу vhost-"
-"user у цьому виконуваному файлі QEMU не передбачено"
-
-#, c-format
-msgid ""
 "interface %s - teaming transient device must be type='hostdev', not '%s'"
 msgstr ""
 "інтерфейс %s — командний проміжний пристрій повинен мати type='hostdev', а "
@@ -28994,25 +28527,6 @@ msgstr "назва інтерфейсу"
 msgid "interface name %s does not fit into buffer "
 msgstr "назву інтерфейсу %s не можна розмістити у буфері "
 
-#.
-#. * virsh-interface.c: Commands to manage host interface
-#. *
-#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
-#. *
-#. * This library is free software; you can redistribute it and/or
-#. * modify it under the terms of the GNU Lesser General Public
-#. * License as published by the Free Software Foundation; either
-#. * version 2.1 of the License, or (at your option) any later version.
-#. *
-#. * This library is distributed in the hope that it will be useful,
-#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
-#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#. * Lesser General Public License for more details.
-#. *
-#. * You should have received a copy of the GNU Lesser General Public
-#. * License along with this library.  If not, see
-#. * <http://www.gnu.org/licenses/>.
-#.
 msgid "interface name or MAC address"
 msgstr "назва інтерфейсу або MAC-адреса"
 
@@ -29174,11 +28688,6 @@ msgstr "некоректний атрибут порту SRV DNS для служ
 msgid "invalid DNS SRV weight attribute for service '%s' in network '%s'"
 msgstr "некоректний атрибут ваги SRV DNS для служби «%s» у мережі «%s»"
 
-msgid "invalid HyperV spinlock retry count"
-msgstr ""
-"некоректна кількість повторних спроб блокування перемикання (spinlock retry) "
-"для HyperV"
-
 msgid "invalid MAC address"
 msgstr "некоректна MAC-адреса"
 
@@ -29298,10 +28807,6 @@ msgid "invalid XML length: %d"
 msgstr "некоректна довжина XML: %d"
 
 #, c-format
-msgid "invalid access mode '%s'"
-msgstr "некоректний режим доступу, «%s»"
-
-#, c-format
 msgid "invalid allowReboot value '%s'"
 msgstr "некоректне значення allowReboot, «%s»"
 
@@ -29322,14 +28827,6 @@ msgstr "вказано некоректний аргумент"
 #, c-format
 msgid "invalid argument: %s"
 msgstr "помилковий аргумент: %s"
-
-#, c-format
-msgid "invalid audio 'id' value '%s'"
-msgstr "некоректне значення «id» звуку «%s»"
-
-#, c-format
-msgid "invalid autodeflate attribute value '%s'"
-msgstr "некоректне значення атрибута autodeflate «%s»"
 
 #, c-format
 msgid "invalid backing protocol '%s'"
@@ -29354,10 +28851,6 @@ msgstr "некоректне обернення відліку перехопл�
 
 msgid "invalid catchup threshold"
 msgstr "некоректне порогове значення перехоплення"
-
-#, c-format
-msgid "invalid channel state value '%s'"
-msgstr "некоректне значення стану каналу, «%s»"
 
 #, c-format
 msgid "invalid char in %s: %c"
@@ -29407,10 +28900,6 @@ msgid "invalid devno value '%s' for '%s'"
 msgstr "некоректне значення devno, «%s», для «%s»"
 
 #, c-format
-msgid "invalid discard value '%s'"
-msgstr "некоректне значення відкидання, «%s»"
-
-#, c-format
 msgid "invalid disk index '%s'"
 msgstr "некоректний індекс диска, «%s»"
 
@@ -29434,10 +28923,6 @@ msgstr "неправильний вказівник домену у"
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "неправильний вказівник домену у %s"
-
-#, c-format
-msgid "invalid domain state '%s'"
-msgstr "неправильний стан домену «%s»"
 
 #, c-format
 msgid "invalid domain state reason '%s'"
@@ -29481,19 +28966,6 @@ msgstr "некоректне поєднання прапорців: (0x%x)"
 msgid "invalid fmode: '%s'"
 msgstr "некоректний fmode: «%s»"
 
-#, c-format
-msgid "invalid freePageReporting attribute value '%s'"
-msgstr "некоректне значення атрибута freePageReporting «%s»"
-
-msgid "invalid geometry settings (cyls)"
-msgstr "некоректні параметри геометрії (циліндри)"
-
-msgid "invalid geometry settings (heads)"
-msgstr "некоректні параметри геометрії (голівки)"
-
-msgid "invalid geometry settings (secs)"
-msgstr "некоректні параметри геометрії (сектори)"
-
 msgid "invalid hasmanagedsave"
 msgstr "некоректне значення hasmanagedsave"
 
@@ -29524,10 +28996,6 @@ msgstr "некоректний вказівник на інтерфейс у"
 #, c-format
 msgid "invalid interface pointer in %s"
 msgstr "некоректний вказівник на інтерфейс у %s"
-
-#, c-format
-msgid "invalid iommuGroup number attribute '%s'"
-msgstr "некоректний атрибут номера iommuGroup «%s»"
 
 #, c-format
 msgid "invalid iommuGroup number attribute for '%s'"
@@ -29619,10 +29087,6 @@ msgstr ""
 msgid "invalid master key read, size=%zd"
 msgstr "прочитано некоректний основний ключ, розмір=%zd"
 
-#, c-format
-msgid "invalid memory model '%s'"
-msgstr "некоректна модель пам'яті «%s»"
-
 msgid "invalid microcode version"
 msgstr "некоректна версія мікрокоду"
 
@@ -29643,10 +29107,6 @@ msgstr "некоректна модель для типу відео «%s»"
 
 msgid "invalid model for virtio-balloon-pci"
 msgstr "некоректна модель для virtio-balloon-pci"
-
-#, c-format
-msgid "invalid msi ioeventfd setting for shmem: '%s'"
-msgstr "некоректний параметр ioeventfd msi для shmem: «%s»"
 
 #, c-format
 msgid "invalid nested value key '%s'"
@@ -29704,10 +29164,6 @@ msgid "invalid number '%s' in '%s'"
 msgstr "некоректне число «%s» у «%s»"
 
 #, c-format
-msgid "invalid number of vectors for shmem: '%s'"
-msgstr "некоректна кількість векторів для shmem: «%s»"
-
-#, c-format
 msgid ""
 "invalid number value for '%s' host CPU model property in QEMU capabilities "
 "cache"
@@ -29726,10 +29182,6 @@ msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr ""
 "некоректний або пропущений атрибути декодування або основної системи у "
 "моделі процесора %s"
-
-#, c-format
-msgid "invalid part_separator setting '%s'"
-msgstr "некоректний параметр part_separator «%s»"
 
 #, c-format
 msgid "invalid partition name '%s', expected '%s'"
@@ -29772,14 +29224,6 @@ msgid "invalid readahead size or timeout"
 msgstr "некоректний розмір попереднього читання або час очікування"
 
 #, c-format
-msgid "invalid reconnect enabled value: '%s'"
-msgstr "некоректне значення enabled для параметра «reconnect»: «%s»"
-
-#, c-format
-msgid "invalid reconnect timeout value: '%s'"
-msgstr "некоректне значення timeout для параметра «reconnect»: «%s»"
-
-#, c-format
 msgid "invalid removable media size supplied for '%s'"
 msgstr "вказано неправильний розмір змінних носіїв для «%s»"
 
@@ -29818,14 +29262,6 @@ msgid "invalid server address"
 msgstr "некоректна адреса сервера"
 
 #, c-format
-msgid "invalid setting for iothread '%s'"
-msgstr "некоректний параметр iothread, «%s»"
-
-#, c-format
-msgid "invalid setting for vcpu '%s'"
-msgstr "некоректний параметр для vcpu, «%s»"
-
-#, c-format
 msgid "invalid size supplied for '%s'"
 msgstr "неприпустимий розмір для «%s»"
 
@@ -29840,13 +29276,6 @@ msgstr "некоректна назва знімка, «%s»: назва не м
 #, c-format
 msgid "invalid ssid value '%s' for '%s'"
 msgstr "некоректне значення ssid, «%s», для «%s»"
-
-#, c-format
-msgid "invalid state '%s' of perf event '%s'"
-msgstr "некоректний стан, «%s», події perf «%s»"
-
-msgid "invalid statistics collection period"
-msgstr "некоректний період збирання статистичних даних"
 
 #, c-format
 msgid "invalid storage pool cow feature state '%s'"
@@ -29894,10 +29323,6 @@ msgstr "некоректний номер tlsPort: %s"
 
 msgid "invalid transient"
 msgstr "некоректний проміжний домен"
-
-#, c-format
-msgid "invalid translation value '%s'"
-msgstr "некоректне значення перенесення «%s»"
 
 #, c-format
 msgid "invalid type '%s' for parameter '%s', expected '%s'"
@@ -29961,37 +29386,8 @@ msgid "invalid value of memory device node"
 msgstr "некоректне значення вузла пристрою пам'яті"
 
 #, c-format
-msgid "invalid value of state argument for Hyper-V stimer '%s' feature"
-msgstr "некоректне значення а стану (state) можливості stimer Hyper-V «%s»"
-
-#, c-format
-msgid "invalid value of state argument for HyperV Enlightenment feature '%s'"
-msgstr ""
-"некоректне значення аргументу стану (state) можливості HyperV Enlightenment "
-"«%s»"
-
-#, c-format
-msgid "invalid value of state argument for KVM feature '%s'"
-msgstr "некоректне значення аргументу стану (state) можливості KVM «%s»"
-
-#, c-format
-msgid "invalid value of state argument for Xen feature '%s'"
-msgstr "некоректне значення аргументу стану (state) можливості Xen «%s»"
-
-#, c-format
-msgid "invalid vcpu 'enabled' value '%s'"
-msgstr "некоректне значення «enabled» віртуального процесора, «%s»"
-
-#, c-format
-msgid "invalid vcpu 'hotpluggable' value '%s'"
-msgstr "некоректне значення «hotpluggable» віртуального процесора, «%s»"
-
-#, c-format
 msgid "invalid vcpu index '%u'"
 msgstr "некоректний індекс віртуального процесора, «%u»"
-
-msgid "invalid vcpu order"
-msgstr "некоректний порядок віртуальних процесорів"
 
 #, c-format
 msgid "invalid vncdisplay value '%s'"
@@ -30721,10 +30117,6 @@ msgstr "створити копію зі спільним використанн
 msgid "malformed 'offset' property of 'raw' driver"
 msgstr "помилкове форматування властивості «offset» драйвер «raw»"
 
-#, c-format
-msgid "malformed 'port' attribute: %s"
-msgstr "помилкове форматування атрибута «port»: %s"
-
 msgid "malformed 'prefix' field"
 msgstr "помилкове форматування поля «prefix»"
 
@@ -30735,10 +30127,6 @@ msgstr ""
 
 msgid "malformed 'size' property of 'raw' driver"
 msgstr "помилкове форматування властивості «size» драйвер «raw»"
-
-#, c-format
-msgid "malformed 'speed' attribute: %s"
-msgstr "помилкове форматування атрибута «speed»: %s"
 
 #, c-format
 msgid "malformed 'sslverify' field in backing store definition '%s'"
@@ -30796,10 +30184,6 @@ msgstr ""
 
 msgid "malformed genid element"
 msgstr "помилкове форматування елемента genid"
-
-#, c-format
-msgid "malformed gic version: %s"
-msgstr "помилкове форматування версії gic: %s"
 
 msgid "malformed group element"
 msgstr "помилкове форматування елемента групи"
@@ -30943,9 +30327,6 @@ msgstr "кероване збереження стану домену"
 
 msgid "managing externally launched configuration"
 msgstr "керування налаштуваннями запущеного ззовні"
-
-msgid "mandatory attribute 'width' is missing or malformed"
-msgstr "пропущено або сформатовано з помилками обов'язковий атрибут «width»"
 
 msgid "manipulate authorized SSH keys file for given user (via agent)"
 msgstr ""
@@ -31483,22 +30864,6 @@ msgstr ""
 msgid "missing 'state' attribute"
 msgstr "пропущено атрибут «state»"
 
-#, c-format
-msgid "missing 'state' attribute for Hyper-V stimer '%s' feature"
-msgstr "пропущено атрибут «state» для stimer Hyper-V, можливість «%s»"
-
-#, c-format
-msgid "missing 'state' attribute for HyperV Enlightenment feature '%s'"
-msgstr "не вказано атрибут «state» можливості HyperV Enlightenment «%s»"
-
-#, c-format
-msgid "missing 'state' attribute for KVM feature '%s'"
-msgstr "не вказано атрибут «state» можливості KVM «%s»"
-
-#, c-format
-msgid "missing 'state' attribute for Xen feature '%s'"
-msgstr "не вказано атрибут «state» можливості Xen «%s»"
-
 msgid "missing 'target' in iSCSI backing definition"
 msgstr "у визначенні резервного тому iSCSI пропущено «target»"
 
@@ -31514,10 +30879,6 @@ msgstr "не вказано атрибута «type» джерела диска"
 #, c-format
 msgid "missing 'type'(%s) or 'alias'(%s) field of QOM 'object'"
 msgstr "пропущено поле «type»(%s) або «alias»(%s) у «object» QOM"
-
-#, c-format
-msgid "missing 'unknown' attribute for feature '%s'"
-msgstr "не вказано атрибут «unknown» можливості «%s»"
 
 msgid "missing 'url' in JSON backing volume definition"
 msgstr "у визначенні резервного тому JSON пропущено «url»"
@@ -31637,12 +30998,6 @@ msgstr "не вистачає аргументу"
 msgid "missing array element"
 msgstr "не вистачає елемента масиву"
 
-msgid "missing audio 'id' attribute"
-msgstr "пропущено атрибут «id» звуку"
-
-msgid "missing audio 'type' attribute"
-msgstr "пропущено атрибут «type» звуку"
-
 #, c-format
 msgid "missing backend for pool type %d"
 msgstr "не вказано модуля обробки для типу буфера %d"
@@ -31667,9 +31022,6 @@ msgstr "не вказано завантажувального пристрою"
 
 msgid "missing capability name"
 msgstr "не вказано назви можливості"
-
-msgid "missing capability type"
-msgstr "немає типу можливості"
 
 msgid "missing capacity element"
 msgstr "не вказано елемент місткості"
@@ -31738,9 +31090,6 @@ msgstr "немає даних щодо пристроїв %s"
 msgid "missing devno value for '%s'"
 msgstr "не вказано значення devno для «%s»"
 
-msgid "missing devnode type"
-msgstr "пропущено тип devnode"
-
 msgid "missing disk backing store format"
 msgstr "не вказано формат резервного сховища даних на диску"
 
@@ -31762,9 +31111,6 @@ msgstr "у знімку не вказано домену"
 
 msgid "missing domain name"
 msgstr "пропущено назву домену"
-
-msgid "missing domain state"
-msgstr "немає стану домену"
 
 msgid "missing domain type attribute"
 msgstr "не вказано атрибут типу домену"
@@ -31876,12 +31222,6 @@ msgstr "не вказано шляху призначення на томі вх
 msgid "missing interface information"
 msgstr "не визначає даних щодо інтерфейсу"
 
-msgid "missing iommuGroup number attribute"
-msgstr "не вказано атрибута номера iommuGroup"
-
-msgid "missing iothread id in iothreadpin"
-msgstr "не вказано ідентифікатор потоку введення-виведення у iothreadpin"
-
 msgid "missing ivgen info name string"
 msgstr "пропущено рядок назви у інформації щодо ivgen"
 
@@ -31921,9 +31261,6 @@ msgstr "у записі кешу можливостей QEMU не вистача
 msgid "missing mapping in '%s'"
 msgstr "пропущено прив'язку у «%s»"
 
-msgid "missing memory model"
-msgstr "не вказано моделі пам'яті"
-
 msgid "missing microcode version in QEMU capabilities cache"
 msgstr "у записі кешу можливостей QEMU не вистачає запису версії мікрокоду"
 
@@ -31932,9 +31269,6 @@ msgstr "не вказано назви можливості з перенесе�
 
 msgid "missing migration parameter name"
 msgstr "не вказано назви параметра перенесення"
-
-msgid "missing model for IOMMU device"
-msgstr "пропущено модель пристрою IOMMU"
 
 msgid "missing name element in migration data"
 msgstr "немає елемента name у даних перенесення"
@@ -31997,11 +31331,6 @@ msgid "missing or invalid features in CPU data"
 msgstr ""
 "у даних щодо процесора пропущено можливості або вказано некоректні дані"
 
-msgid "missing or invalid vcpu id"
-msgstr ""
-"не вказано ідентифікатор віртуального процесора або вказано некоректний "
-"ідентифікатор"
-
 msgid "missing or invalid vlan tag id attribute"
 msgstr "не вистачає атрибута id теґу vlan або вказано некоректне значення"
 
@@ -32048,9 +31377,6 @@ msgstr "не вказано шлях для <reservations/>"
 
 msgid "missing per-device path"
 msgstr "не вказано окремого шляху до пристрою"
-
-msgid "missing perf event name"
-msgstr "пропущено назву події perf"
 
 #, c-format
 msgid "missing persistent configuration for disk '%s'"
@@ -32187,16 +31513,8 @@ msgstr "не вистачає шляху до джерела"
 msgid "missing ssid value for '%s'"
 msgstr "пропущено значення ssid для «%s»"
 
-#, c-format
-msgid "missing state attribute '%s' of feature '%s'"
-msgstr "не вказано атрибут «state» «%s» можливості «%s»"
-
 msgid "missing state from existing snapshot"
 msgstr "не вказано стан з вже створеного знімка"
-
-#, c-format
-msgid "missing state of perf event '%s'"
-msgstr "пропущено стан події perf «%s»"
 
 #, c-format
 msgid "missing storage backend for '%s' storage"
@@ -32257,11 +31575,6 @@ msgstr "немає цільових даних для пристрою %s"
 msgid "missing the host address for the iSCSI hostdev"
 msgstr "не вказано адреси для пристрою iSCSI основної системи"
 
-msgid "missing timeout for chardev with reconnect enabled"
-msgstr ""
-"не вказано час очікування для символьного пристрою із увімкненим повторним "
-"з'єднанням"
-
 msgid "missing timer name"
 msgstr "не вказано назви таймера"
 
@@ -32270,9 +31583,6 @@ msgstr "немає атрибута tlsPort у даних перенесення
 
 msgid "missing tmpfs size, set the size option"
 msgstr "не вказано розміру tmpfs, задайте параметр size"
-
-msgid "missing type attribute in interface's <actual> element"
-msgstr "у елементі інтерфейсу <actual> не вказано атрибута типу"
 
 msgid "missing type attribute in migration data"
 msgstr "немає атрибута type у даних перенесення"
@@ -32307,12 +31617,6 @@ msgstr "не вказано значення для параметра пере�
 
 msgid "missing values for acceleration"
 msgstr "не вказано значень для прискорення"
-
-msgid "missing vcpu enabled state"
-msgstr "не вказано стан enabled віртуального процесора"
-
-msgid "missing vcpu id in vcpupin"
-msgstr "пропущено ідентифікатор vcpu у vcpupin"
 
 msgid "missing vendor"
 msgstr "не вказано виробника"
@@ -32415,15 +31719,6 @@ msgstr "змінити або отримати заголовок замість
 msgid "monitor failure"
 msgstr "помилка монітора"
 
-#. *
-#. * QEMU_CHECK_MONITOR_FULL:
-#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
-#. * @exit: statement that is used to exit the function
-#. *
-#. * This macro checks that the monitor is valid for given operation and exits
-#. * the function if not. The macro also adds a debug statement regarding the
-#. * monitor.
-#.
 msgid "monitor must not be NULL"
 msgstr "значенням monitor не повинен бути NULL"
 
@@ -32634,7 +31929,6 @@ msgstr "потребує можливостей rawio"
 msgid "negative size requires --shrink"
 msgstr "від'ємний розмір вимагає додавання параметра --shrink"
 
-#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "виявлений при узгодженні сторін SSF %d є не надто міцним"
@@ -33097,20 +32391,14 @@ msgstr "немає доступу до жодного з пристроїв ко
 msgid "no device capabilities for '%s'"
 msgstr "немає можливостей пристрою для «%s»"
 
-msgid "no device found on "
-msgstr "не знайдено пристрою на "
+#, c-format
+msgid ""
+"no device found at address '%s' matching MAC address '%s' and alias '%s'"
+msgstr ""
 
 #, c-format
 msgid "no device found with alias %s"
 msgstr "не знайдено пристрою з псевдонімом %s"
-
-#, c-format
-msgid "no device matching MAC address %s found"
-msgstr "не знайдено відповідного пристрою до MAC-адреси %s"
-
-#, c-format
-msgid "no device matching MAC address %s found on "
-msgstr "не знайдено відповідного пристрою до MAC-адреси %s на "
 
 #, c-format
 msgid "no disk format for %s was specified"
@@ -33216,9 +32504,6 @@ msgstr "немає інтерфейсу із MAC, що збігається з �
 msgid "no interface with matching name '%s'"
 msgstr "немає інтерфейсу з назвою відповідною «%s»"
 
-msgid "no internalFlags support"
-msgstr "підтримки internalFlags не передбачено"
-
 msgid "no job is active on the domain"
 msgstr "у домені немає активних завдань"
 
@@ -33238,9 +32523,6 @@ msgstr "немає карти для програми BPF cgroup"
 
 msgid "no matching RNG device was found"
 msgstr "не знайдено відповідного пристрою RNG"
-
-msgid "no matching device found"
-msgstr "не виявлено відповідного пристрою"
 
 msgid "no matching filesystem device was found"
 msgstr "відповідного пристрою файлової системи не знайдено"
@@ -34888,9 +34170,6 @@ msgstr "у відповіді query-dirty-rate пропущено дані «sta
 msgid "query-dirty-rate reply was missing 'status' data"
 msgstr "у відповіді query-dirty-rate пропущено дані «status»"
 
-msgid "query-events reply data was missing 'name'"
-msgstr "у даних відповіді query-events не міститься поля «name»"
-
 msgid "query-fdsets reply was missing 'fdset-id'"
 msgstr "у відповіді query-fdsets немає «fdset-id»"
 
@@ -35866,9 +35145,6 @@ msgstr ""
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr "підтримки встановлення MTU на типі інтерфейсу %s ще не передбачено"
 
-msgid "setting NUMA distances is not supported with this qemu"
-msgstr "з цим QEMU не передбачено підтримки встановлення відстаней NUMA"
-
 msgid "setting audio buffer count is not supported with this QEMU"
 msgstr ""
 "у цьому QEMU не передбачено підтримки встановлення лічильника буфера "
@@ -36119,9 +35395,6 @@ msgstr "пропущено неабсолютний шлях"
 msgid "skipped restricted file"
 msgstr "пропущено файл з обмеженням доступу"
 
-msgid "smm is not available with this QEMU binary"
-msgstr "smm є недоступним, якщо використовується цей виконуваний файл QEMU"
-
 #, c-format
 msgid "snapshot %s disappeared from list"
 msgstr "знімок %s зник зі списку"
@@ -36246,12 +35519,6 @@ msgid ""
 msgstr ""
 "порт TLS spice встановлено у налаштуваннях XML, але TLS вимкнено у qemu.conf"
 
-msgid "spice channel missing name/mode"
-msgstr "У каналі SPICE не вистачає назви або режиму"
-
-msgid "spice clipboard missing copypaste"
-msgstr "У буфері SPICE немає даних для копіювання зі вставленням"
-
 msgid ""
 "spice defaultMode insecure requested in XML configuration, but plaintext "
 "connection is not available"
@@ -36266,15 +35533,6 @@ msgstr ""
 "у налаштуваннях XML визначено типовий захищений режим роботи spice "
 "(defaultMode=secure), але з'єднання TLS є недоступним"
 
-msgid "spice filetransfer missing enable"
-msgstr "у записі передавання файла spice не вистачає enable"
-
-msgid "spice gl element missing enable"
-msgstr "у елементі spice gl пропущено enable"
-
-msgid "spice image missing compression"
-msgstr "не вказано спосіб стискання образу SPICE"
-
 msgid ""
 "spice insecure channels set in XML configuration, but plaintext connection "
 "is not available"
@@ -36282,27 +35540,12 @@ msgstr ""
 "у налаштуваннях XML визначено незахищені канали spice, але просте текстове "
 "з'єднання є недоступним"
 
-msgid "spice jpeg missing compression"
-msgstr "не вказано спосіб стискання JPEG SPICE"
-
-msgid "spice mouse missing mode"
-msgstr "не вказано режиму роботи миші у SPICE"
-
-msgid "spice playback missing compression"
-msgstr "не вказано спосіб стискання playback SPICE"
-
 msgid ""
 "spice secure channels set in XML configuration, but TLS connection is not "
 "available"
 msgstr ""
 "у налаштуваннях XML визначено захищені канали spice, але з'єднання TLS є "
 "недоступним"
-
-msgid "spice streaming missing mode"
-msgstr "не вказано режим передавання SPICE"
-
-msgid "spice zlib missing compression"
-msgstr "не вказано спосіб стискання zlib SPICE"
 
 #, c-format
 msgid "spice_tls_x509_cert_dir directory '%s' does not exist"
@@ -36315,11 +35558,6 @@ msgid "splash timeout is not supported by this QEMU binary"
 msgstr ""
 "у цьому виконуваному файлі QEMU не передбачено підтримки часу очікування "
 "вікна вітання"
-
-msgid "split I/O APIC is not supported by this QEMU binary"
-msgstr ""
-"у цьому виконуваному файлі QEMU не передбачено підтримки APIC поділу "
-"введення-виведення"
 
 #, c-format
 msgid "splitting StorageUrl failed %s"
@@ -36482,9 +35720,6 @@ msgstr "буфер даних не є активним"
 
 msgid "storage pool missing auth type"
 msgstr "для буфера сховища даних не вказано типу розпізнавання"
-
-msgid "storage pool missing type attribute"
-msgstr "не вказано атрибута типу для буфера сховища даних"
 
 msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "підтримку буфера сховища передбачено лише для шифрованих томах LUKS"
@@ -37506,9 +36741,6 @@ msgstr "проміжний диск «%s» має бути непорожнім"
 msgid "transient disk '%s' must not be read-only"
 msgstr "проміжний диск «%s» не має бути призначеним лише для читання"
 
-msgid "transient disk hotplug isn't supported"
-msgstr "підтримки з'єднання «у гарячу» проміжного диска не передбачено"
-
 #, c-format
 msgid "transient disk not supported by this QEMU binary (%s)"
 msgstr ""
@@ -37806,7 +37038,6 @@ msgstr "не вдалося знайти qemu-img"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr "не вдалося знайти коректний потрібний модуль VMware, «%s»"
 
-#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "не вдалося виконати fsync %s"
@@ -38629,38 +37860,12 @@ msgstr ""
 "у цьому виконуваному файлі QEMU не передбачено підтримки сокетів UNIX для "
 "графіки spice"
 
-#. Something went wrong retrieving a volume path, cope with it
-#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "невідомо"
 
 #, c-format
 msgid "unknown %s action: %s"
 msgstr "невідома дія %s: %s"
-
-#, c-format
-msgid "unknown 'exclusive' value '%s'"
-msgstr "невідоме значення «exclusive», «%s»"
-
-#, c-format
-msgid "unknown 'fixedSettings' value '%s'"
-msgstr "невідоме значення «fixedSettings», «%s»"
-
-#, c-format
-msgid "unknown 'mixingEngine' value '%s'"
-msgstr "невідоме значення «mixingEngine», «%s»"
-
-#, c-format
-msgid "unknown 'tryMMap' value '%s'"
-msgstr "невідоме значення «tryMMap», «%s»"
-
-#, c-format
-msgid "unknown 'tryPoll' value '%s'"
-msgstr "невідоме значення «tryPoll», «%s»"
-
-#, c-format
-msgid "unknown 'unknown' value '%s'"
-msgstr "невідоме значення «unknown» «%s»"
 
 #, c-format
 msgid "unknown CPU feature %s"
@@ -38677,10 +37882,6 @@ msgstr "невідома модель процесора %s"
 #, c-format
 msgid "unknown CPU register '%s'"
 msgstr "невідомий регістр процесора, «%s»"
-
-#, c-format
-msgid "unknown IOMMU model: %s"
-msgstr "невідома модель IOMMU: %s"
 
 msgid "unknown OS type"
 msgstr "невідомий тип ОС"
@@ -38716,10 +37917,6 @@ msgstr "невідомий тип можливостей SCSI-вузла «%s» 
 #, c-format
 msgid "unknown SCSI target capability type '%s' for '%s'"
 msgstr "невідомий тип можливостей призначення SCSI, «%s», для «%s»"
-
-#, c-format
-msgid "unknown SDL driver '%s'"
-msgstr "невідомий драйвер SDL, «%s»"
 
 #, c-format
 msgid "unknown SDL_AUDIODRIVER setting %s"
@@ -38762,20 +37959,12 @@ msgid "unknown arp bonding validate %s"
 msgstr "невідома перевірка зв'язку ARP %s"
 
 #, c-format
-msgid "unknown audio type '%s'"
-msgstr "невідомий тип звуку «%s»"
-
-#, c-format
 msgid "unknown auth type '%s'"
 msgstr "невідомий тип розпізнавання «%s»"
 
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "невідомий тип розпізнавання %s"
-
-#, c-format
-msgid "unknown aw_bits value: %s"
-msgstr "невідоме значення aw_bits: %s"
 
 #, c-format
 msgid "unknown backend type '%s' for egd"
@@ -38798,16 +37987,8 @@ msgid "unknown boot device '%s'"
 msgstr "невідомий завантажувальний пристрій «%s»"
 
 #, c-format
-msgid "unknown caching_mode value: %s"
-msgstr "невідоме значення caching_mode: %s"
-
-#, c-format
 msgid "unknown capability type '%d' for '%s'"
 msgstr "невідомий тип можливості «%d» для «%s»"
-
-#, c-format
-msgid "unknown capability type '%s'"
-msgstr "невідомий тип можливості «%s»"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -38849,24 +38030,12 @@ msgid "unknown connected value %s"
 msgstr "невідоме значення connected %s"
 
 #, c-format
-msgid "unknown copypaste value '%s'"
-msgstr "Невідоме значення копіювання зі вставленням «%s»"
-
-#, c-format
-msgid "unknown default spice channel mode %s"
-msgstr "невідомий типовий режим каналу spice, %s"
-
-#, c-format
 msgid "unknown device type '%s'"
 msgstr "невідомий тип пристрою, «%s»"
 
 #, c-format
 msgid "unknown device type in '%s'"
 msgstr "невідомий тип пристрою у «%s»"
-
-#, c-format
-msgid "unknown devnode type '%s'"
-msgstr "невідомий тип devnode, «%s»"
 
 #, c-format
 msgid "unknown dhcp peerdns value %s"
@@ -38904,14 +38073,6 @@ msgstr "невідомий тип drm, «%s», для «%s»"
 msgid "unknown dumpformat '%d'"
 msgstr "невідомий формат дампів, «%d»"
 
-#, c-format
-msgid "unknown eim value: %s"
-msgstr "невідоме значення eim: %s"
-
-#, c-format
-msgid "unknown enable value '%s'"
-msgstr "невідоме значення вмикання, «%s»"
-
 msgid "unknown error"
 msgstr "невідома помилка"
 
@@ -38920,20 +38081,12 @@ msgid "unknown event type %s"
 msgstr "невідомий тип події, %s"
 
 #, c-format
-msgid "unknown fc_host managed setting '%s'"
-msgstr "невідомий керований параметр fc_host «%s»"
-
-#, c-format
 msgid "unknown feature %s"
 msgstr "невідома можливість, %s"
 
 #, c-format
 msgid "unknown filesystem type '%s'"
 msgstr "невідомий тип файлової системи «%s»"
-
-#, c-format
-msgid "unknown filesystem write policy '%s'"
-msgstr "невідомі правила запису до файлової системи, «%s»"
 
 #, c-format
 msgid "unknown firmware value %s"
@@ -38946,10 +38099,6 @@ msgstr "невідоме значення flock «%s»"
 #, c-format
 msgid "unknown forwarding type '%s'"
 msgstr "невідомий тип перенаправлення «%s»"
-
-#, c-format
-msgid "unknown fs driver type '%s'"
-msgstr "невідомий тип драйвера файлової системи, «%s»"
 
 #, c-format
 msgid "unknown graphics type %s"
@@ -39029,20 +38178,8 @@ msgid "unknown interface type: '%s'"
 msgstr "невідомий тип інтерфейсу: «%s»"
 
 #, c-format
-msgid "unknown intremap value: %s"
-msgstr "невідоме значення intremap: %s"
-
-#, c-format
-msgid "unknown iotlb value: %s"
-msgstr "невідоме значення iotlb: %s"
-
-#, c-format
 msgid "unknown ip address type '%s'"
 msgstr "невідомий тип ip-адреси, «%s»"
-
-#, c-format
-msgid "unknown memory balloon model '%s'"
-msgstr "невідома модель додаткової пам'яті «%s»"
 
 #, c-format
 msgid "unknown memory snapshot setting '%s'"
@@ -39094,10 +38231,6 @@ msgid "unknown model '%s'"
 msgstr "невідома модель «%s»"
 
 #, c-format
-msgid "unknown mouse mode value '%s'"
-msgstr "невідоме значення режиму роботи миші, «%s»"
-
-#, c-format
 msgid "unknown multidevs '%s'"
 msgstr "невідоме значення multidevs «%s»"
 
@@ -39128,16 +38261,8 @@ msgid "unknown partition type"
 msgstr "невідомий тип розділу"
 
 #, c-format
-msgid "unknown pci source type '%s'"
-msgstr "невідомий тип PCI-джерела «%s»"
-
-#, c-format
 msgid "unknown pci writeFiltering setting '%s'"
 msgstr "невідомий параметр writeFiltering PCI, «%s»"
-
-#, c-format
-msgid "unknown policy attribute '%s' of feature '%s'"
-msgstr "невідомий атрибут правил, «%s», можливості «%s»"
 
 #, c-format
 msgid "unknown pool format number %d"
@@ -39224,46 +38349,8 @@ msgid "unknown smbios mode '%s'"
 msgstr "невідомий режим smbios «%s»"
 
 #, c-format
-msgid "unknown sound model '%s'"
-msgstr "невідома модель звукового пристрою «%s»"
-
-#, c-format
 msgid "unknown source mode '%s' for volume type disk"
 msgstr "невідомий режим джерела «%s» для диска типу тому"
-
-#, c-format
-msgid "unknown spice channel mode %s"
-msgstr "невідомий режим роботи каналу SPICE %s"
-
-#, c-format
-msgid "unknown spice channel name %s"
-msgstr "невідома назва каналу SPICE %s"
-
-#, c-format
-msgid "unknown spice image compression %s"
-msgstr "невідомий метод стискання образу SPICE %s"
-
-#, c-format
-msgid "unknown spice jpeg compression %s"
-msgstr "невідомий спосіб стискання JPEG SPICE %s"
-
-msgid "unknown spice playback compression"
-msgstr "невідомий спосіб стискання playback SPICE %s"
-
-msgid "unknown spice streaming mode"
-msgstr "невідомий режим передавання SPICE"
-
-#, c-format
-msgid "unknown spice zlib compression %s"
-msgstr "невідомий спосіб стискання zlib SPICE %s"
-
-#, c-format
-msgid "unknown state attribute '%s' of feature '%s'"
-msgstr "невідомий атрибут стану, «%s», можливості «%s»"
-
-#, c-format
-msgid "unknown state attribute '%s' of feature capability '%s'"
-msgstr "неочікуваний атрибут стану «%s» або можливість властивості «%s»"
 
 #, c-format
 msgid "unknown storage capability type '%s' for '%s'"
@@ -39338,24 +38425,12 @@ msgid "unknown timer track '%s'"
 msgstr "невідомий канал таймера «%s»"
 
 #, c-format
-msgid "unknown trustGuestRxFilters value '%s'"
-msgstr "невідоме значення trustGuestRxFilters «%s»"
-
-#, c-format
 msgid "unknown type '%s'"
 msgstr "невідомий тип «%s»"
 
 #, c-format
-msgid "unknown type '%s' in interface's <actual> element"
-msgstr "невідомий тип «%s» у елементі інтерфейсу <actual>"
-
-#, c-format
 msgid "unknown type presented to host for character device: %s"
 msgstr "основній системі вказано невідомий тип для символьного пристрою: %s"
-
-#, c-format
-msgid "unknown usb source type '%s'"
-msgstr "невідомий тип USB-джерела «%s»"
 
 #, c-format
 msgid "unknown value '%s' for <hostdev> attribute 'display'"
@@ -39374,16 +38449,8 @@ msgid "unknown value for attribute eoi: '%s'"
 msgstr "невідоме значення атрибута eoi: «%s»"
 
 #, c-format
-msgid "unknown vgaconf value '%s'"
-msgstr "невідоме значення vgaconf, «%s»"
-
-#, c-format
 msgid "unknown vhost-user type: '%s'"
 msgstr "невідомий тип vhost-user: «%s»"
-
-#, c-format
-msgid "unknown video driver '%s'"
-msgstr "невідомий відеодрайвер, «%s»"
 
 #, c-format
 msgid "unknown video model '%s'"
@@ -39679,28 +38746,6 @@ msgstr "непідтримуваний драйвер файлової сист�
 msgid "unsupported filesystem type '%s'"
 msgstr "непідтримуваний тип файлової системи «%s»"
 
-#. *
-#. * virCheckFlags:
-#. * @supported: an OR'ed set of supported flags
-#. * @retval: return value in case unsupported flags were passed
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Exits the caller function if unsupported flags were
-#. * passed to it.
-#.
-#. *
-#. * virCheckFlagsGoto:
-#. * @supported: an OR'ed set of supported flags
-#. * @label: label to jump to on error
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "непідтримувані прапорці (0x%lx) у функції %s"
@@ -39746,10 +38791,6 @@ msgstr "непідтримуваний тип інтерфейсу %s"
 #, c-format
 msgid "unsupported launch security type '%s'"
 msgstr "непідтримуваний тип захисту від запуску, «%s»"
-
-#, c-format
-msgid "unsupported mode '%s' for Xen passthrough feature"
-msgstr "непідтримуваний режим «%s» для можливості passthrough Xen"
 
 #, c-format
 msgid "unsupported monitor type '%s'"
@@ -39882,12 +38923,6 @@ msgstr "файл даних uptime записано у невідомому фо
 msgid "usage:"
 msgstr "використання:"
 
-msgid "usb address needs bus id"
-msgstr "для адреси USB потрібен ідентифікатор"
-
-msgid "usb address needs device id"
-msgstr "для адреси USB потрібен ідентифікатор"
-
 #, c-format
 msgid "usb controller type %s doesn't support 'ports' with this QEMU binary"
 msgstr ""
@@ -39900,12 +38935,6 @@ msgstr "не знайдено пристрою usb"
 msgid "usb keyboard is not supported by this QEMU binary"
 msgstr ""
 "у цьому виконуваному файлі QEMU не передбачено підтримки клавіатури USB"
-
-msgid "usb product needs id"
-msgstr "потрібен ідентифікатор USB-продукту"
-
-msgid "usb vendor needs id"
-msgstr "для виробника usb потрібен ідентифікатор"
 
 msgid "usb-audio controller is not supported by this QEMU binary"
 msgstr ""
@@ -40258,9 +39287,6 @@ msgstr "vcpus є порожнім"
 
 msgid "vcpus overlaps in resctrl groups"
 msgstr "vcpus перекриваються у групах resctrl"
-
-msgid "vendor cannot be 0."
-msgstr "виробник не може бути 0."
 
 msgid "vendor id is invalid"
 msgstr "некоректне значення ідентифікатора виробника"
@@ -40976,11 +40002,6 @@ msgstr "так"
 msgid "zPCI %s %o is already reserved"
 msgstr "zPCI %s %o вже зарезервовано"
 
-msgid "zero is an invalid iothread id value"
-msgstr ""
-"нуль є некоректним значенням ідентифікатора потоку введення-виведення "
-"(iothread)"
-
 #, c-format
 msgid "zone %s requested for network %s but firewalld is not active"
 msgstr "надійшов запит щодо зони %s для мережі %s, але firewalld не задіяно"
@@ -40988,6 +40009,706 @@ msgstr "надійшов запит щодо зони %s для мережі %s,
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <рядок>}..."
+
+#~ msgid ""
+#~ "'mode' attribute for Xen feature 'passthrough' must be 'sync_pt' or "
+#~ "'share_pt'"
+#~ msgstr ""
+#~ "Атрибут «mode» для можливості Xen «passthrough» має бути «sync_pt» або "
+#~ "«share_pt»"
+
+#~ msgid "'unsupported perf event '%s'"
+#~ msgstr "непідтримувана подія perf «%s»"
+
+#~ msgid "'value %s' is invalid for 'sibling id %d' under NUMA 'cell id %d'"
+#~ msgstr "«value %s» є некоректним для «sibling id %d» у «cell id %d» NUMA"
+
+#~ msgid "Cannot parse <address> 'reg' attribute"
+#~ msgstr "Не вдалося обробити атрибут «reg» <address>"
+
+#~ msgid "Cannot parse <master> 'startport' attribute"
+#~ msgstr "Не вдалося обробити атрибут «startport» <master>"
+
+#~ msgid "Cannot parse USB Class code %s"
+#~ msgstr "Не вдалося обробити запис коду класу USB, %s"
+
+#~ msgid "Cannot parse USB product ID %s"
+#~ msgstr "Не вдалося обробити запис ідентифікатора продукту USB, %s"
+
+#~ msgid "Cannot parse USB vendor ID %s"
+#~ msgstr "Не вдалося обробити запис ідентифікатора виробника USB, %s"
+
+#~ msgid "Failed to pin vcpu '%zu' with libxenlight"
+#~ msgstr ""
+#~ "Не вдалося закріпити віртуальні процесори «%zu» за допомогою libxenlight"
+
+#~ msgid "Invalid 'cache' attribute in NUMA interconnects"
+#~ msgstr "Некоректний атрибут «cache» у взаємозв'язках NUMA"
+
+#~ msgid "Invalid 'discard' attribute value '%s'"
+#~ msgstr "Некоректне значення атрибуту «discard», «%s»"
+
+#~ msgid "Invalid 'id' attribute in NUMA cell: '%s'"
+#~ msgstr "Некоректний атрибут «id» у комірці NUMA: «%s»"
+
+#~ msgid "Invalid 'id' attribute in NUMA distances for sibling: '%s'"
+#~ msgstr ""
+#~ "Некоректний атрибут «id» у відстанях NUMA для спорідненого вузла: «%s»"
+
+#~ msgid "Invalid 'initiator' attribute in NUMA interconnects"
+#~ msgstr "Некоректний атрибут «initiator» у взаємозв'язках NUMA"
+
+#~ msgid "Invalid 'iothread' value '%s'"
+#~ msgstr "Некоректне значення «iothread» «%s»"
+
+#~ msgid "Invalid 'memAccess' attribute value '%s'"
+#~ msgstr "Некоректне значення атрибута «memAccess»,«%s»"
+
+#~ msgid "Invalid 'target' attribute in NUMA interconnects"
+#~ msgstr "Некоректний атрибут «target» у взаємозв'язках NUMA"
+
+#~ msgid "Invalid 'type' attribute in NUMA interconnects"
+#~ msgstr "Некоректний атрибут «type» у взаємозв'язках NUMA"
+
+#~ msgid "Invalid 'value' attribute in NUMA interconnects"
+#~ msgstr "Некоректний атрибут «value» у взаємозв'язках NUMA"
+
+#~ msgid "Invalid USB Class code %s"
+#~ msgstr "Некоректний код класу USB, %s"
+
+#~ msgid "Invalid allow value, either 'yes' or 'no'"
+#~ msgstr "Некоректне значення allow: мало бути «yes» або «no»"
+
+#~ msgid "Invalid audio 'id' value '%s'"
+#~ msgstr "Некоректне значення «id» звуку «%s»"
+
+#~ msgid "Invalid busNr '%s' in PCI controller"
+#~ msgstr "Некоректний номер каналу, «%s», у контролері PCI"
+
+#~ msgid "Invalid cachetune attribute 'id' value '%s'"
+#~ msgstr "Некоректне значення атрибута cachetune «id», «%s»"
+
+#~ msgid "Invalid cachetune attribute 'level' value '%s'"
+#~ msgstr "Некоректне значення атрибута cachetune «level», «%s»"
+
+#~ msgid "Invalid cachetune attribute 'type' value '%s'"
+#~ msgstr "Некоректне значення атрибута cachetune «type», «%s»"
+
+#~ msgid "Invalid cellid attribute in memnode element: %s"
+#~ msgstr "Некоректний атрибут cellid у елементі memnode: %s"
+
+#~ msgid "Invalid chassis '%s' in PCI controller"
+#~ msgstr "Некоректне значення chassis, «%s», у контролері PCI"
+
+#~ msgid "Invalid chassisNr '%s' in PCI controller"
+#~ msgstr "Некоректне значення chassisNr, «%s», у контролері PCI"
+
+#~ msgid "Invalid maxEventChannels: %s"
+#~ msgstr "Некоректне значення maxEventChannels: %s"
+
+#~ msgid "Invalid maxGrantFrames: %s"
+#~ msgstr "Некоректне значення maxGrantFrames: %s"
+
+#~ msgid "Invalid mode attribute in memnode element"
+#~ msgstr "Некоректний атрибут режиму (mode) у елементі memnode"
+
+#~ msgid "Invalid monitor attribute 'level' value '%s'"
+#~ msgstr "Некоректне значення атрибута «level» засобу стеження, «%s»"
+
+#~ msgid "Invalid port '%s' in PCI controller"
+#~ msgstr "Некоректний порт «%s» у контролері PCI"
+
+#~ msgid "Invalid ports: %s"
+#~ msgstr "Некоректні порти: %s"
+
+#~ msgid "Invalid scheduler attribute: '%s'"
+#~ msgstr "Некоректний атрибут планувальника: «%s»"
+
+#~ msgid ""
+#~ "Invalid specification of multiple <filterref>s in a single <interface>"
+#~ msgstr "Некоректна специфікація декількох <filterref> у одному <interface>"
+
+#~ msgid "Invalid target index '%s' in PCI controller"
+#~ msgstr "Некоректний індекс призначення, «%s», у записі контролера PCI"
+
+#~ msgid "Invalid unit: %s"
+#~ msgstr "Некоректна одиниця: %s"
+
+#~ msgid "Invalid value for element priority"
+#~ msgstr "Некоректне значення пріоритетності елемента"
+
+#~ msgid "Invalid vectors: %s"
+#~ msgstr "Некоректні вектори: %s"
+
+#~ msgid "Malformed 'cmd_per_lun' value '%s'"
+#~ msgstr "Помилкове форматування значення «cmd_per_lun» «%s»"
+
+#~ msgid "Malformed 'ioeventfd' value %s"
+#~ msgstr "Помилкове форматування значення «ioeventfd», %s"
+
+#~ msgid "Malformed 'max_sectors' value %s"
+#~ msgstr "Помилкове форматування значення «max_sectors» «%s»"
+
+#~ msgid "Malformed 'queues' value '%s'"
+#~ msgstr "Помилкове форматування значення «%s» «queues»"
+
+#~ msgid "Malformed lease target offset %s"
+#~ msgstr "Помилкове форматування відступу наданого призначення %s"
+
+#~ msgid "Missing 'id' attribute in NUMA distances under 'cell id %d'"
+#~ msgstr "Не вказано атрибут «id» у відстанях NUMA під «cell id %d»"
+
+#~ msgid "Missing 'initiator' attribute in NUMA interconnects"
+#~ msgstr "Пропущено атрибут «initiator» у взаємозв'язках NUMA"
+
+#~ msgid "Missing 'target' attribute in NUMA interconnects"
+#~ msgstr "Пропущено атрибут «target» у взаємозв'язках NUMA"
+
+#~ msgid "Missing 'type' attribute in NUMA interconnects"
+#~ msgstr "Пропущено атрибут «type» у взаємозв'язках NUMA"
+
+#~ msgid ""
+#~ "Missing 'value' attribute in NUMA distances under 'cell id %d' for "
+#~ "'sibling id %d'"
+#~ msgstr ""
+#~ "Не вказано атрибут «value» у відстанях NUMA під «cell id %d» для «sibling "
+#~ "id %d»"
+
+#~ msgid "Missing 'value' attribute in NUMA interconnects"
+#~ msgstr "Пропущено атрибут «value» у взаємозв'язках NUMA"
+
+#~ msgid "Missing allow attribute for USB redirection filter"
+#~ msgstr "Не вистачає атрибута allow для фільтра переспрямовування USB"
+
+#~ msgid "Missing cachetune attribute 'id'"
+#~ msgstr "Не вказано атрибут cachetune «id»"
+
+#~ msgid "Missing cachetune attribute 'level'"
+#~ msgstr "Не вказано атрибут cachetune «level»"
+
+#~ msgid "Missing cachetune attribute 'type'"
+#~ msgstr "Не вказано атрибут cachetune «type»"
+
+#~ msgid "Missing evdev path for input device passthrough"
+#~ msgstr "Пропущено шлях evdev для трансляції пристрою введення даних"
+
+#~ msgid "Missing monitor attribute 'level'"
+#~ msgstr "Пропущено атрибут засобу стеження «level»"
+
+#~ msgid "Missing required cellid attribute in memnode element"
+#~ msgstr "У елементі memnode немає обов'язкового атрибута cellid"
+
+#~ msgid "Missing scheduler attribute"
+#~ msgstr "Пропущено атрибут планувальника"
+
+#~ msgid "Missing scheduler priority"
+#~ msgstr "Не вказано пріоритетності планувальника"
+
+#~ msgid "OpenGL for SDL is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "Підтримки OpenGL для SDL у цьому виконуваному файлі QEMU не передбачено"
+
+#~ msgid "PCI address 0:0:1.0 is in use, QEMU needs it for primary video"
+#~ msgstr ""
+#~ "Адресу PCI 0:0:1.0 вже використано, QEMU потрібна ця адреса для роботи з "
+#~ "основним відеопристроєм"
+
+#~ msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
+#~ msgstr ""
+#~ "Адресу PCI 0:0:2.0 вже використано, QEMU потрібна ця адреса для роботи з "
+#~ "основним відеопристроєм"
+
+#~ msgid "PCI controller unrecognized hotplug setting '%s'"
+#~ msgstr ""
+#~ "Нерозпізнаний параметр з'єднання в «гарячому» режимі контролера PCI «%s»"
+
+#~ msgid "Primary video card must have PCI address 0:0:1.0"
+#~ msgstr "Основна відеокартка повинна мати PCI-адресу 0:0:1.0"
+
+#~ msgid "Primary video card must have PCI address 0:0:2.0"
+#~ msgstr "Основна відеокартка повинна мати PCI-адресу 0:0:2.0"
+
+#~ msgid "Unknown HPT resizing setting: %s"
+#~ msgstr "Невідомий параметр зміни розмірів HPT: %s"
+
+#~ msgid "Unknown PCI controller model name '%s'"
+#~ msgstr "Невідома назва моделі контролера PCI, «%s»"
+
+#~ msgid "Unknown controller type '%s'"
+#~ msgstr "невідомий тип контролера «%s»"
+
+#~ msgid "Unknown driver mode: %s"
+#~ msgstr "Невідомий режим драйвера: %s"
+
+#~ msgid "Unknown mode '%s' in interface <actual> element"
+#~ msgstr "Невідомий режим, «%s» у елементі <actual> інтерфейсу"
+
+#~ msgid "Unknown pool adapter type '%s'"
+#~ msgstr "Невідомий тип адаптера буфера, «%s»"
+
+#~ msgid "Unknown shmem model type '%s'"
+#~ msgstr "Невідомий тип моделі shmem, «%s»"
+
+#~ msgid "Unknown shmem role type '%s'"
+#~ msgstr "Невідомий тип ролі shmem «%s»"
+
+#~ msgid "Unknown startup policy '%s'"
+#~ msgstr "Невідомі правила запуску, «%s»"
+
+#~ msgid "Unknown value: %s"
+#~ msgstr "Невідоме значення: %s"
+
+#~ msgid "Unsupported CPU placement mode '%s'"
+#~ msgstr "Непідтримуваний режим розташування процесора, «%s»"
+
+#~ msgid "balloon memory must contain model name"
+#~ msgstr "запис balloon_memory має містити назву моделі"
+
+#~ msgid "cannot parse 'bufferCount' value '%s'"
+#~ msgstr "не вдалося обробити значення «bufferCount» «%s»"
+
+#~ msgid "cannot parse 'bufferLength' value '%s'"
+#~ msgstr "не вдалося обробити значення «bufferLength» «%s»"
+
+#~ msgid "cannot parse 'channels' value '%s'"
+#~ msgstr "не вдалося обробити значення «channels» «%s»"
+
+#~ msgid "cannot parse 'dspPolicy' value '%s'"
+#~ msgstr "не вдалося обробити значення «dspPolicy» «%s»"
+
+#~ msgid "cannot parse 'format' value '%s'"
+#~ msgstr "не вдалося обробити значення «format», «%s»"
+
+#~ msgid "cannot parse 'frequency' value '%s'"
+#~ msgstr "не вдалося обробити значення «frequency», «%s»"
+
+#~ msgid "cannot parse 'latency' value '%s'"
+#~ msgstr "не вдалося обробити значення «latency» «%s»"
+
+#~ msgid "cannot parse 'voices' value '%s'"
+#~ msgstr "не вдалося обробити значення «voices» «%s»"
+
+#~ msgid "cannot parse bus %s"
+#~ msgstr "неможливо розібрати шину %s"
+
+#~ msgid "cannot parse device %s"
+#~ msgstr "неможливо розібрати пристрій %s"
+
+#~ msgid "cannot parse product %s"
+#~ msgstr "неможливо розібрати продукт %s"
+
+#~ msgid "cannot parse spice port %s"
+#~ msgstr "не вдалося обробити значення порту SPICE %s"
+
+#~ msgid "cannot parse spice tlsPort %s"
+#~ msgstr "не вдалося обробити значення атрибута «tlsPort» SPICE %s"
+
+#~ msgid "cannot parse vendor id %s"
+#~ msgstr "неможливо розібрати ідентифікатор виробника «%s»"
+
+#~ msgid "current vcpus count must be an integer"
+#~ msgstr "значення поточної кількості віртуальних процесорів має бути цілим"
+
+#~ msgid "failed to parse expiry value '%s'"
+#~ msgstr "не вдалося обробити значення застарівання «%s»"
+
+#~ msgid "guestfwd channel does not define a target port"
+#~ msgstr "для каналу guestfwd не визначено порту призначення"
+
+#~ msgid ""
+#~ "interface %s - multiqueue is not supported for network interfaces of type "
+#~ "vhost-user with this QEMU binary"
+#~ msgstr ""
+#~ "інтерфейс %s — підтримки багатьох черг для інтерфейсів мережі типу vhost-"
+#~ "user у цьому виконуваному файлі QEMU не передбачено"
+
+#~ msgid "invalid HyperV spinlock retry count"
+#~ msgstr ""
+#~ "некоректна кількість повторних спроб блокування перемикання (spinlock "
+#~ "retry) для HyperV"
+
+#~ msgid "invalid access mode '%s'"
+#~ msgstr "некоректний режим доступу, «%s»"
+
+#~ msgid "invalid audio 'id' value '%s'"
+#~ msgstr "некоректне значення «id» звуку «%s»"
+
+#~ msgid "invalid autodeflate attribute value '%s'"
+#~ msgstr "некоректне значення атрибута autodeflate «%s»"
+
+#~ msgid "invalid channel state value '%s'"
+#~ msgstr "некоректне значення стану каналу, «%s»"
+
+#~ msgid "invalid discard value '%s'"
+#~ msgstr "некоректне значення відкидання, «%s»"
+
+#~ msgid "invalid domain state '%s'"
+#~ msgstr "неправильний стан домену «%s»"
+
+#~ msgid "invalid freePageReporting attribute value '%s'"
+#~ msgstr "некоректне значення атрибута freePageReporting «%s»"
+
+#~ msgid "invalid geometry settings (cyls)"
+#~ msgstr "некоректні параметри геометрії (циліндри)"
+
+#~ msgid "invalid geometry settings (heads)"
+#~ msgstr "некоректні параметри геометрії (голівки)"
+
+#~ msgid "invalid geometry settings (secs)"
+#~ msgstr "некоректні параметри геометрії (сектори)"
+
+#~ msgid "invalid iommuGroup number attribute '%s'"
+#~ msgstr "некоректний атрибут номера iommuGroup «%s»"
+
+#~ msgid "invalid memory model '%s'"
+#~ msgstr "некоректна модель пам'яті «%s»"
+
+#~ msgid "invalid msi ioeventfd setting for shmem: '%s'"
+#~ msgstr "некоректний параметр ioeventfd msi для shmem: «%s»"
+
+#~ msgid "invalid number of vectors for shmem: '%s'"
+#~ msgstr "некоректна кількість векторів для shmem: «%s»"
+
+#~ msgid "invalid part_separator setting '%s'"
+#~ msgstr "некоректний параметр part_separator «%s»"
+
+#~ msgid "invalid reconnect enabled value: '%s'"
+#~ msgstr "некоректне значення enabled для параметра «reconnect»: «%s»"
+
+#~ msgid "invalid reconnect timeout value: '%s'"
+#~ msgstr "некоректне значення timeout для параметра «reconnect»: «%s»"
+
+#~ msgid "invalid setting for iothread '%s'"
+#~ msgstr "некоректний параметр iothread, «%s»"
+
+#~ msgid "invalid setting for vcpu '%s'"
+#~ msgstr "некоректний параметр для vcpu, «%s»"
+
+#~ msgid "invalid state '%s' of perf event '%s'"
+#~ msgstr "некоректний стан, «%s», події perf «%s»"
+
+#~ msgid "invalid statistics collection period"
+#~ msgstr "некоректний період збирання статистичних даних"
+
+#~ msgid "invalid translation value '%s'"
+#~ msgstr "некоректне значення перенесення «%s»"
+
+#~ msgid "invalid value of state argument for Hyper-V stimer '%s' feature"
+#~ msgstr "некоректне значення а стану (state) можливості stimer Hyper-V «%s»"
+
+#~ msgid ""
+#~ "invalid value of state argument for HyperV Enlightenment feature '%s'"
+#~ msgstr ""
+#~ "некоректне значення аргументу стану (state) можливості HyperV "
+#~ "Enlightenment «%s»"
+
+#~ msgid "invalid value of state argument for KVM feature '%s'"
+#~ msgstr "некоректне значення аргументу стану (state) можливості KVM «%s»"
+
+#~ msgid "invalid value of state argument for Xen feature '%s'"
+#~ msgstr "некоректне значення аргументу стану (state) можливості Xen «%s»"
+
+#~ msgid "invalid vcpu 'enabled' value '%s'"
+#~ msgstr "некоректне значення «enabled» віртуального процесора, «%s»"
+
+#~ msgid "invalid vcpu 'hotpluggable' value '%s'"
+#~ msgstr "некоректне значення «hotpluggable» віртуального процесора, «%s»"
+
+#~ msgid "invalid vcpu order"
+#~ msgstr "некоректний порядок віртуальних процесорів"
+
+#~ msgid "malformed 'port' attribute: %s"
+#~ msgstr "помилкове форматування атрибута «port»: %s"
+
+#~ msgid "malformed 'speed' attribute: %s"
+#~ msgstr "помилкове форматування атрибута «speed»: %s"
+
+#~ msgid "malformed gic version: %s"
+#~ msgstr "помилкове форматування версії gic: %s"
+
+#~ msgid "mandatory attribute 'width' is missing or malformed"
+#~ msgstr "пропущено або сформатовано з помилками обов'язковий атрибут «width»"
+
+#~ msgid "missing 'state' attribute for Hyper-V stimer '%s' feature"
+#~ msgstr "пропущено атрибут «state» для stimer Hyper-V, можливість «%s»"
+
+#~ msgid "missing 'state' attribute for HyperV Enlightenment feature '%s'"
+#~ msgstr "не вказано атрибут «state» можливості HyperV Enlightenment «%s»"
+
+#~ msgid "missing 'state' attribute for KVM feature '%s'"
+#~ msgstr "не вказано атрибут «state» можливості KVM «%s»"
+
+#~ msgid "missing 'state' attribute for Xen feature '%s'"
+#~ msgstr "не вказано атрибут «state» можливості Xen «%s»"
+
+#~ msgid "missing 'unknown' attribute for feature '%s'"
+#~ msgstr "не вказано атрибут «unknown» можливості «%s»"
+
+#~ msgid "missing audio 'id' attribute"
+#~ msgstr "пропущено атрибут «id» звуку"
+
+#~ msgid "missing audio 'type' attribute"
+#~ msgstr "пропущено атрибут «type» звуку"
+
+#~ msgid "missing capability type"
+#~ msgstr "немає типу можливості"
+
+#~ msgid "missing devnode type"
+#~ msgstr "пропущено тип devnode"
+
+#~ msgid "missing domain state"
+#~ msgstr "немає стану домену"
+
+#~ msgid "missing iommuGroup number attribute"
+#~ msgstr "не вказано атрибута номера iommuGroup"
+
+#~ msgid "missing iothread id in iothreadpin"
+#~ msgstr "не вказано ідентифікатор потоку введення-виведення у iothreadpin"
+
+#~ msgid "missing memory model"
+#~ msgstr "не вказано моделі пам'яті"
+
+#~ msgid "missing model for IOMMU device"
+#~ msgstr "пропущено модель пристрою IOMMU"
+
+#~ msgid "missing or invalid vcpu id"
+#~ msgstr ""
+#~ "не вказано ідентифікатор віртуального процесора або вказано некоректний "
+#~ "ідентифікатор"
+
+#~ msgid "missing perf event name"
+#~ msgstr "пропущено назву події perf"
+
+#~ msgid "missing state attribute '%s' of feature '%s'"
+#~ msgstr "не вказано атрибут «state» «%s» можливості «%s»"
+
+#~ msgid "missing state of perf event '%s'"
+#~ msgstr "пропущено стан події perf «%s»"
+
+#~ msgid "missing timeout for chardev with reconnect enabled"
+#~ msgstr ""
+#~ "не вказано час очікування для символьного пристрою із увімкненим "
+#~ "повторним з'єднанням"
+
+#~ msgid "missing type attribute in interface's <actual> element"
+#~ msgstr "у елементі інтерфейсу <actual> не вказано атрибута типу"
+
+#~ msgid "missing vcpu enabled state"
+#~ msgstr "не вказано стан enabled віртуального процесора"
+
+#~ msgid "missing vcpu id in vcpupin"
+#~ msgstr "пропущено ідентифікатор vcpu у vcpupin"
+
+#~ msgid "no device found on "
+#~ msgstr "не знайдено пристрою на "
+
+#~ msgid "no device matching MAC address %s found"
+#~ msgstr "не знайдено відповідного пристрою до MAC-адреси %s"
+
+#~ msgid "no device matching MAC address %s found on "
+#~ msgstr "не знайдено відповідного пристрою до MAC-адреси %s на "
+
+#~ msgid "no internalFlags support"
+#~ msgstr "підтримки internalFlags не передбачено"
+
+#~ msgid "no matching device found"
+#~ msgstr "не виявлено відповідного пристрою"
+
+#~ msgid "query-events reply data was missing 'name'"
+#~ msgstr "у даних відповіді query-events не міститься поля «name»"
+
+#~ msgid "setting NUMA distances is not supported with this qemu"
+#~ msgstr "з цим QEMU не передбачено підтримки встановлення відстаней NUMA"
+
+#~ msgid "smm is not available with this QEMU binary"
+#~ msgstr "smm є недоступним, якщо використовується цей виконуваний файл QEMU"
+
+#~ msgid "spice channel missing name/mode"
+#~ msgstr "У каналі SPICE не вистачає назви або режиму"
+
+#~ msgid "spice clipboard missing copypaste"
+#~ msgstr "У буфері SPICE немає даних для копіювання зі вставленням"
+
+#~ msgid "spice filetransfer missing enable"
+#~ msgstr "у записі передавання файла spice не вистачає enable"
+
+#~ msgid "spice gl element missing enable"
+#~ msgstr "у елементі spice gl пропущено enable"
+
+#~ msgid "spice image missing compression"
+#~ msgstr "не вказано спосіб стискання образу SPICE"
+
+#~ msgid "spice jpeg missing compression"
+#~ msgstr "не вказано спосіб стискання JPEG SPICE"
+
+#~ msgid "spice mouse missing mode"
+#~ msgstr "не вказано режиму роботи миші у SPICE"
+
+#~ msgid "spice playback missing compression"
+#~ msgstr "не вказано спосіб стискання playback SPICE"
+
+#~ msgid "spice streaming missing mode"
+#~ msgstr "не вказано режим передавання SPICE"
+
+#~ msgid "spice zlib missing compression"
+#~ msgstr "не вказано спосіб стискання zlib SPICE"
+
+#~ msgid "split I/O APIC is not supported by this QEMU binary"
+#~ msgstr ""
+#~ "у цьому виконуваному файлі QEMU не передбачено підтримки APIC поділу "
+#~ "введення-виведення"
+
+#~ msgid "storage pool missing type attribute"
+#~ msgstr "не вказано атрибута типу для буфера сховища даних"
+
+#~ msgid "transient disk hotplug isn't supported"
+#~ msgstr "підтримки з'єднання «у гарячу» проміжного диска не передбачено"
+
+#~ msgid "unknown 'exclusive' value '%s'"
+#~ msgstr "невідоме значення «exclusive», «%s»"
+
+#~ msgid "unknown 'fixedSettings' value '%s'"
+#~ msgstr "невідоме значення «fixedSettings», «%s»"
+
+#~ msgid "unknown 'mixingEngine' value '%s'"
+#~ msgstr "невідоме значення «mixingEngine», «%s»"
+
+#~ msgid "unknown 'tryMMap' value '%s'"
+#~ msgstr "невідоме значення «tryMMap», «%s»"
+
+#~ msgid "unknown 'tryPoll' value '%s'"
+#~ msgstr "невідоме значення «tryPoll», «%s»"
+
+#~ msgid "unknown 'unknown' value '%s'"
+#~ msgstr "невідоме значення «unknown» «%s»"
+
+#~ msgid "unknown IOMMU model: %s"
+#~ msgstr "невідома модель IOMMU: %s"
+
+#~ msgid "unknown SDL driver '%s'"
+#~ msgstr "невідомий драйвер SDL, «%s»"
+
+#~ msgid "unknown audio type '%s'"
+#~ msgstr "невідомий тип звуку «%s»"
+
+#~ msgid "unknown aw_bits value: %s"
+#~ msgstr "невідоме значення aw_bits: %s"
+
+#~ msgid "unknown caching_mode value: %s"
+#~ msgstr "невідоме значення caching_mode: %s"
+
+#~ msgid "unknown capability type '%s'"
+#~ msgstr "невідомий тип можливості «%s»"
+
+#~ msgid "unknown copypaste value '%s'"
+#~ msgstr "Невідоме значення копіювання зі вставленням «%s»"
+
+#~ msgid "unknown default spice channel mode %s"
+#~ msgstr "невідомий типовий режим каналу spice, %s"
+
+#~ msgid "unknown devnode type '%s'"
+#~ msgstr "невідомий тип devnode, «%s»"
+
+#~ msgid "unknown eim value: %s"
+#~ msgstr "невідоме значення eim: %s"
+
+#~ msgid "unknown enable value '%s'"
+#~ msgstr "невідоме значення вмикання, «%s»"
+
+#~ msgid "unknown fc_host managed setting '%s'"
+#~ msgstr "невідомий керований параметр fc_host «%s»"
+
+#~ msgid "unknown filesystem write policy '%s'"
+#~ msgstr "невідомі правила запису до файлової системи, «%s»"
+
+#~ msgid "unknown fs driver type '%s'"
+#~ msgstr "невідомий тип драйвера файлової системи, «%s»"
+
+#~ msgid "unknown intremap value: %s"
+#~ msgstr "невідоме значення intremap: %s"
+
+#~ msgid "unknown iotlb value: %s"
+#~ msgstr "невідоме значення iotlb: %s"
+
+#~ msgid "unknown memory balloon model '%s'"
+#~ msgstr "невідома модель додаткової пам'яті «%s»"
+
+#~ msgid "unknown mouse mode value '%s'"
+#~ msgstr "невідоме значення режиму роботи миші, «%s»"
+
+#~ msgid "unknown pci source type '%s'"
+#~ msgstr "невідомий тип PCI-джерела «%s»"
+
+#~ msgid "unknown policy attribute '%s' of feature '%s'"
+#~ msgstr "невідомий атрибут правил, «%s», можливості «%s»"
+
+#~ msgid "unknown sound model '%s'"
+#~ msgstr "невідома модель звукового пристрою «%s»"
+
+#~ msgid "unknown spice channel mode %s"
+#~ msgstr "невідомий режим роботи каналу SPICE %s"
+
+#~ msgid "unknown spice channel name %s"
+#~ msgstr "невідома назва каналу SPICE %s"
+
+#~ msgid "unknown spice image compression %s"
+#~ msgstr "невідомий метод стискання образу SPICE %s"
+
+#~ msgid "unknown spice jpeg compression %s"
+#~ msgstr "невідомий спосіб стискання JPEG SPICE %s"
+
+#~ msgid "unknown spice playback compression"
+#~ msgstr "невідомий спосіб стискання playback SPICE %s"
+
+#~ msgid "unknown spice streaming mode"
+#~ msgstr "невідомий режим передавання SPICE"
+
+#~ msgid "unknown spice zlib compression %s"
+#~ msgstr "невідомий спосіб стискання zlib SPICE %s"
+
+#~ msgid "unknown state attribute '%s' of feature '%s'"
+#~ msgstr "невідомий атрибут стану, «%s», можливості «%s»"
+
+#~ msgid "unknown state attribute '%s' of feature capability '%s'"
+#~ msgstr "неочікуваний атрибут стану «%s» або можливість властивості «%s»"
+
+#~ msgid "unknown trustGuestRxFilters value '%s'"
+#~ msgstr "невідоме значення trustGuestRxFilters «%s»"
+
+#~ msgid "unknown type '%s' in interface's <actual> element"
+#~ msgstr "невідомий тип «%s» у елементі інтерфейсу <actual>"
+
+#~ msgid "unknown usb source type '%s'"
+#~ msgstr "невідомий тип USB-джерела «%s»"
+
+#~ msgid "unknown vgaconf value '%s'"
+#~ msgstr "невідоме значення vgaconf, «%s»"
+
+#~ msgid "unknown video driver '%s'"
+#~ msgstr "невідомий відеодрайвер, «%s»"
+
+#~ msgid "unsupported mode '%s' for Xen passthrough feature"
+#~ msgstr "непідтримуваний режим «%s» для можливості passthrough Xen"
+
+#~ msgid "usb address needs bus id"
+#~ msgstr "для адреси USB потрібен ідентифікатор"
+
+#~ msgid "usb address needs device id"
+#~ msgstr "для адреси USB потрібен ідентифікатор"
+
+#~ msgid "usb product needs id"
+#~ msgstr "потрібен ідентифікатор USB-продукту"
+
+#~ msgid "usb vendor needs id"
+#~ msgstr "для виробника usb потрібен ідентифікатор"
+
+#~ msgid "vendor cannot be 0."
+#~ msgstr "виробник не може бути 0."
+
+#~ msgid "zero is an invalid iothread id value"
+#~ msgstr ""
+#~ "нуль є некоректним значенням ідентифікатора потоку введення-виведення "
+#~ "(iothread)"
 
 #~ msgid "%s is not a supported cipher name"
 #~ msgstr "%s не є підтримуваною назвою шифрування"
