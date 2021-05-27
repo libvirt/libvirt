@@ -234,6 +234,7 @@ cc_flags += [
   '-Waddress-of-packed-member',
   '-Waggressive-loop-optimizations',
   '-Walloc-size-larger-than=@0@'.format(alloc_max.stdout().strip()),
+  '-Walloca',
   '-Warray-bounds=2',
   '-Wattribute-alias=2',
   '-Wattribute-warning',
