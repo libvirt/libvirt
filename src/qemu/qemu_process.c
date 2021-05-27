@@ -7039,7 +7039,8 @@ qemuProcessSetupDisksTransientSnapshot(virDomainObj *vm,
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *domdisk = vm->def->disks[i];
 
-        if (!domdisk->transient)
+        if (!domdisk->transient ||
+            domdisk->transientShareBacking == VIR_TRISTATE_BOOL_YES)
             continue;
 
         QEMU_DOMAIN_DISK_PRIVATE(domdisk)->transientOverlayCreated = true;
