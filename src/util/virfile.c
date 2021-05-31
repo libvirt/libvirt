@@ -733,7 +733,7 @@ static int virFileLoopDeviceOpenSearch(char **dev_name)
             !g_ascii_isdigit(de->d_name[4]))
             continue;
 
-        looppath = g_strdup_printf("/dev/%s", de->d_name);
+        looppath = g_build_filename("/dev", de->d_name, NULL);
 
         VIR_DEBUG("Checking up on device %s", looppath);
         if ((fd = open(looppath, O_RDWR)) < 0) {
@@ -860,7 +860,7 @@ virFileNBDDeviceIsBusy(const char *dev_name)
 {
     g_autofree char *path = NULL;
 
-    path = g_strdup_printf(SYSFS_BLOCK_DIR "/%s/pid", dev_name);
+    path = g_build_filename(SYSFS_BLOCK_DIR, dev_name, "pid", NULL);
 
     if (!virFileExists(path)) {
         if (errno == ENOENT)
@@ -893,7 +893,7 @@ virFileNBDDeviceFindUnused(void)
                 return NULL;
 
             if (rv == 0)
-                return g_strdup_printf("/dev/%s", de->d_name);
+                return g_build_filename("/dev", de->d_name, NULL);
         }
     }
     if (direrr < 0)
@@ -1028,7 +1028,7 @@ int virFileDeleteTree(const char *dir)
         g_autofree char *filepath = NULL;
         GStatBuf sb;
 
-        filepath = g_strdup_printf("%s/%s", dir, de->d_name);
+        filepath = g_build_filename(dir, de->d_name, NULL);
 
         if (g_lstat(filepath, &sb) < 0) {
             virReportSystemError(errno, _("Cannot access '%s'"),
@@ -1568,7 +1568,7 @@ virFileRelLinkPointsTo(const char *directory,
                        checkLink);
         return -1;
     }
-    candidate = g_strdup_printf("%s/%s", directory, checkLink);
+    candidate = g_build_filename(directory, checkLink, NULL);
     return virFileLinkPointsTo(candidate, checkDest);
 }
 
@@ -1705,7 +1705,7 @@ virFindFileInPath(const char *file)
         return NULL;
 
     for (pathiter = paths; *pathiter; pathiter++) {
-        g_autofree char *fullpath = g_strdup_printf("%s/%s", *pathiter, file);
+        g_autofree char *fullpath = g_build_filename(*pathiter, file, NULL);
         if (virFileIsExecutable(fullpath))
             return g_steal_pointer(&fullpath);
     }
@@ -1754,6 +1754,7 @@ virFileFindResourceFull(const char *filename,
     char *ret = NULL;
     const char *envval = envname ? getenv(envname) : NULL;
     const char *path;
+    g_autofree char *fullFilename = NULL;
 
     if (!prefix)
         prefix = "";
@@ -1767,7 +1768,8 @@ virFileFindResourceFull(const char *filename,
     else
         path = installdir;
 
-    ret = g_strdup_printf("%s/%s%s%s", path, prefix, filename, suffix);
+    fullFilename = g_strdup_printf("%s%s%s", prefix, filename, suffix);
+    ret = g_build_filename(path, fullFilename, NULL);
 
     VIR_DEBUG("Resolved '%s' to '%s'", filename, ret);
     return ret;
@@ -2986,7 +2988,7 @@ int virFileChownFiles(const char *name,
     while ((direrr = virDirRead(dir, &ent, name)) > 0) {
         g_autofree char *path = NULL;
 
-        path = g_strdup_printf("%s/%s", name, ent->d_name);
+        path = g_build_filename(name, ent->d_name, NULL);
 
         if (!virFileIsRegular(path))
             continue;
@@ -3048,9 +3050,10 @@ virFileBuildPath(const char *dir, const char *name, const char *ext)
     char *path;
 
     if (ext == NULL) {
-        path = g_strdup_printf("%s/%s", dir, name);
+        path = g_build_filename(dir, name, NULL);
     } else {
-        path = g_strdup_printf("%s/%s%s", dir, name, ext);
+        g_autofree char *extName = g_strdup_printf("%s%s", name, ext);
+        path = g_build_filename(dir, extName, NULL);
     }
 
     return path;
@@ -3158,7 +3161,7 @@ virFileAbsPath(const char *path, char **abspath)
     } else {
         g_autofree char *buf = g_get_current_dir();
 
-        *abspath = g_strdup_printf("%s/%s", buf, path);
+        *abspath = g_build_filename(buf, path, NULL);
     }
 
     return 0;
