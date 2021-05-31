@@ -319,7 +319,7 @@ udevGetUint64SysfsAttr(struct udev_device *udev_device,
 }
 
 
-static int
+static void
 udevGenerateDeviceName(struct udev_device *device,
                        virNodeDeviceDef *def,
                        const char *s)
@@ -327,8 +327,6 @@ udevGenerateDeviceName(struct udev_device *device,
     nodeDeviceGenerateName(def,
                            udev_device_get_subsystem(device),
                            udev_device_get_sysname(device), s);
-
-    return 0;
 }
 
 static virMutex pciaccessMutex = VIR_MUTEX_INITIALIZER;
@@ -410,8 +408,7 @@ udevProcessPCI(struct udev_device *device,
         goto cleanup;
     }
 
-    if (udevGenerateDeviceName(device, def, NULL) != 0)
-        goto cleanup;
+    udevGenerateDeviceName(device, def, NULL);
 
     /* The default value is -1, because it can't be 0
      * as zero is valid node number. */
@@ -493,8 +490,7 @@ udevProcessDRMDevice(struct udev_device *device,
     virNodeDevCapDRM *drm = &def->caps->data.drm;
     int minor;
 
-    if (udevGenerateDeviceName(device, def, NULL) != 0)
-        return -1;
+    udevGenerateDeviceName(device, def, NULL);
 
     if (udevGetIntProperty(device, "MINOR", &minor, 10) < 0)
         return -1;
@@ -544,8 +540,7 @@ udevProcessUSBDevice(struct udev_device *device,
                                &usb_dev->product_name) < 0)
         return -1;
 
-    if (udevGenerateDeviceName(device, def, NULL) != 0)
-        return -1;
+    udevGenerateDeviceName(device, def, NULL);
 
     return 0;
 }
@@ -573,8 +568,7 @@ udevProcessUSBInterface(struct udev_device *device,
                              &usb_if->protocol, 16) < 0)
         return -1;
 
-    if (udevGenerateDeviceName(device, def, NULL) != 0)
-        return -1;
+    udevGenerateDeviceName(device, def, NULL);
 
     return 0;
 }
@@ -605,8 +599,7 @@ udevProcessNetworkInterface(struct udev_device *device,
     if (udevGetUintSysfsAttr(device, "addr_len", &net->address_len, 0) < 0)
         return -1;
 
-    if (udevGenerateDeviceName(device, def, net->address) != 0)
-        return -1;
+    udevGenerateDeviceName(device, def, net->address);
 
     if (virNetDevGetLinkInfo(net->ifname, &net->lnk) < 0)
         return -1;
@@ -638,8 +631,7 @@ udevProcessSCSIHost(struct udev_device *device G_GNUC_UNUSED,
 
     virNodeDeviceGetSCSIHostCaps(&def->caps->data.scsi_host);
 
-    if (udevGenerateDeviceName(device, def, NULL) != 0)
-        return -1;
+    udevGenerateDeviceName(device, def, NULL);
 
     return 0;
 }
@@ -658,8 +650,7 @@ udevProcessSCSITarget(struct udev_device *device,
 
     virNodeDeviceGetSCSITargetCaps(def->sysfs_path, &def->caps->data.scsi_target);
 
-    if (udevGenerateDeviceName(device, def, NULL) != 0)
-        return -1;
+    udevGenerateDeviceName(device, def, NULL);
 
     return 0;
 }
@@ -755,8 +746,7 @@ udevProcessSCSIDevice(struct udev_device *device G_GNUC_UNUSED,
             goto cleanup;
     }
 
-    if (udevGenerateDeviceName(device, def, NULL) != 0)
-        goto cleanup;
+    udevGenerateDeviceName(device, def, NULL);
 
     ret = 0;
 
@@ -1008,8 +998,7 @@ udevProcessStorage(struct udev_device *device,
         goto cleanup;
     }
 
-    if (udevGenerateDeviceName(device, def, storage->serial) != 0)
-        goto cleanup;
+    udevGenerateDeviceName(device, def, storage->serial);
 
  cleanup:
     VIR_DEBUG("Storage ret=%d", ret);
@@ -1025,8 +1014,7 @@ udevProcessSCSIGeneric(struct udev_device *dev,
         !def->caps->data.sg.path)
         return -1;
 
-    if (udevGenerateDeviceName(dev, def, NULL) != 0)
-        return -1;
+    udevGenerateDeviceName(dev, def, NULL);
 
     return 0;
 }
@@ -1068,8 +1056,7 @@ udevProcessMediatedDevice(struct udev_device *dev,
     if ((iommugrp = virMediatedDeviceGetIOMMUGroupNum(data->uuid)) < 0)
         goto cleanup;
 
-    if (udevGenerateDeviceName(dev, def, NULL) != 0)
-        goto cleanup;
+    udevGenerateDeviceName(dev, def, NULL);
 
     data->iommuGroupNumber = iommugrp;
 
@@ -1114,8 +1101,7 @@ udevProcessCCW(struct udev_device *device,
     if (udevGetCCWAddress(def->sysfs_path, &def->caps->data) < 0)
         return -1;
 
-    if (udevGenerateDeviceName(device, def, NULL) != 0)
-        return -1;
+    udevGenerateDeviceName(device, def, NULL);
 
     return 0;
 }
@@ -1134,8 +1120,7 @@ udevProcessCSS(struct udev_device *device,
     if (udevGetCCWAddress(def->sysfs_path, &def->caps->data) < 0)
         return -1;
 
-    if (udevGenerateDeviceName(device, def, NULL) != 0)
-        return -1;
+    udevGenerateDeviceName(device, def, NULL);
 
     if (virNodeDeviceGetCSSDynamicCaps(def->sysfs_path, &def->caps->data.ccw_dev) < 0)
         return -1;
@@ -1181,8 +1166,7 @@ static int
 udevProcessVDPA(struct udev_device *device,
                 virNodeDeviceDef *def)
 {
-    if (udevGenerateDeviceName(device, def, NULL) != 0)
-        return -1;
+    udevGenerateDeviceName(device, def, NULL);
 
     if (udevGetVDPACharDev(def->sysfs_path, &def->caps->data) < 0)
         return -1;
@@ -1209,8 +1193,7 @@ udevProcessAPCard(struct udev_device *device,
         return -1;
     }
 
-    if (udevGenerateDeviceName(device, def, NULL) != 0)
-        return -1;
+    udevGenerateDeviceName(device, def, NULL);
 
     return 0;
 }
@@ -1235,8 +1218,7 @@ udevProcessAPQueue(struct udev_device *device,
         return -1;
     }
 
-    if (udevGenerateDeviceName(device, def, NULL) != 0)
-        return -1;
+    udevGenerateDeviceName(device, def, NULL);
 
     return 0;
 }
