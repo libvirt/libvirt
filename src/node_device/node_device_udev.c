@@ -971,7 +971,8 @@ udevProcessStorage(struct udev_device *device,
             goto cleanup;
     }
 
-    if (STREQ(def->caps->data.storage.drive_type, "cd")) {
+    if (STREQ(def->caps->data.storage.drive_type, "cd") ||
+        STREQ(def->caps->data.storage.drive_type, "cd/dvd")) {
         rv = udevProcessCDROM(device, def);
     } else if (STREQ(def->caps->data.storage.drive_type, "disk")) {
         rv = udevProcessDisk(device, def);
