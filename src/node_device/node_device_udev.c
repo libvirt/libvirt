@@ -927,6 +927,7 @@ udevProcessStorage(struct udev_device *device,
 {
     virNodeDevCapStorage *storage = &def->caps->data.storage;
     int ret = -1;
+    int rv;
     const char* devnode;
 
     devnode = udev_device_get_devnode(device);
@@ -971,22 +972,26 @@ udevProcessStorage(struct udev_device *device,
     }
 
     if (STREQ(def->caps->data.storage.drive_type, "cd")) {
-        ret = udevProcessCDROM(device, def);
+        rv = udevProcessCDROM(device, def);
     } else if (STREQ(def->caps->data.storage.drive_type, "disk")) {
-        ret = udevProcessDisk(device, def);
+        rv = udevProcessDisk(device, def);
     } else if (STREQ(def->caps->data.storage.drive_type, "floppy")) {
-        ret = udevProcessFloppy(device, def);
+        rv = udevProcessFloppy(device, def);
     } else if (STREQ(def->caps->data.storage.drive_type, "sd")) {
-        ret = udevProcessSD(device, def);
+        rv = udevProcessSD(device, def);
     } else if (STREQ(def->caps->data.storage.drive_type, "dasd")) {
-        ret = udevProcessDASD(device, def);
+        rv = udevProcessDASD(device, def);
     } else {
         VIR_DEBUG("Unsupported storage type '%s'",
                   def->caps->data.storage.drive_type);
         goto cleanup;
     }
 
+    if (rv < 0)
+        goto cleanup;
+
     udevGenerateDeviceName(device, def, storage->serial);
+    ret = 0;
 
  cleanup:
     VIR_DEBUG("Storage ret=%d", ret);
