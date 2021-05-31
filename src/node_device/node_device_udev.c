@@ -165,14 +165,12 @@ udevGetDeviceProperty(struct udev_device *udev_device,
 }
 
 
-static int
+static void
 udevGetStringProperty(struct udev_device *udev_device,
                       const char *property_key,
                       char **value)
 {
     *value = g_strdup(udevGetDeviceProperty(udev_device, property_key));
-
-    return 0;
 }
 
 
@@ -517,10 +515,9 @@ udevProcessUSBDevice(struct udev_device *device,
     if (udevGetUintProperty(device, "ID_VENDOR_ID", &usb_dev->vendor, 16) < 0)
         return -1;
 
-    if (udevGetStringProperty(device,
-                              "ID_VENDOR_FROM_DATABASE",
-                              &usb_dev->vendor_name) < 0)
-        return -1;
+    udevGetStringProperty(device,
+                          "ID_VENDOR_FROM_DATABASE",
+                          &usb_dev->vendor_name);
 
     if (!usb_dev->vendor_name &&
         udevGetStringSysfsAttr(device, "manufacturer",
@@ -530,10 +527,9 @@ udevProcessUSBDevice(struct udev_device *device,
     if (udevGetUintProperty(device, "ID_MODEL_ID", &usb_dev->product, 16) < 0)
         return -1;
 
-    if (udevGetStringProperty(device,
-                              "ID_MODEL_FROM_DATABASE",
-                              &usb_dev->product_name) < 0)
-        return -1;
+    udevGetStringProperty(device,
+                          "ID_MODEL_FROM_DATABASE",
+                          &usb_dev->product_name);
 
     if (!usb_dev->product_name &&
         udevGetStringSysfsAttr(device, "product",
@@ -587,10 +583,7 @@ udevProcessNetworkInterface(struct udev_device *device,
         net->subtype = VIR_NODE_DEV_CAP_NET_80203;
     }
 
-    if (udevGetStringProperty(device,
-                              "INTERFACE",
-                              &net->ifname) < 0)
-        return -1;
+    udevGetStringProperty(device, "INTERFACE", &net->ifname);
 
     if (udevGetStringSysfsAttr(device, "address",
                                &net->address) < 0)
@@ -798,9 +791,7 @@ udevProcessRemoveableMedia(struct udev_device *device,
     def->caps->data.storage.flags |=
         VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE;
 
-    if (udevGetStringProperty(device, "ID_FS_LABEL",
-                              &storage->media_label) < 0)
-        return -1;
+    udevGetStringProperty(device, "ID_FS_LABEL", &storage->media_label);
 
     if (udevGetUint64SysfsAttr(device, "size",
                                &storage->num_blocks) < 0)
@@ -946,10 +937,8 @@ udevProcessStorage(struct udev_device *device,
 
     storage->block = g_strdup(devnode);
 
-    if (udevGetStringProperty(device, "ID_BUS", &storage->bus) < 0)
-        goto cleanup;
-    if (udevGetStringProperty(device, "ID_SERIAL", &storage->serial) < 0)
-        goto cleanup;
+    udevGetStringProperty(device, "ID_BUS", &storage->bus);
+    udevGetStringProperty(device, "ID_SERIAL", &storage->serial);
 
     if (udevGetStringSysfsAttr(device, "device/vendor", &storage->vendor) < 0)
         goto cleanup;
@@ -965,8 +954,7 @@ udevProcessStorage(struct udev_device *device,
      * expected, so I don't see a problem with not having a property
      * for it. */
 
-    if (udevGetStringProperty(device, "ID_TYPE", &storage->drive_type) < 0)
-        goto cleanup;
+    udevGetStringProperty(device, "ID_TYPE", &storage->drive_type);
 
     if (!storage->drive_type ||
         STREQ(def->caps->data.storage.drive_type, "generic")) {
@@ -1010,8 +998,9 @@ static int
 udevProcessSCSIGeneric(struct udev_device *dev,
                        virNodeDeviceDef *def)
 {
-    if (udevGetStringProperty(dev, "DEVNAME", &def->caps->data.sg.path) < 0 ||
-        !def->caps->data.sg.path)
+    udevGetStringProperty(dev, "DEVNAME", &def->caps->data.sg.path);
+
+    if (!def->caps->data.sg.path)
         return -1;
 
     udevGenerateDeviceName(dev, def, NULL);
@@ -1317,8 +1306,7 @@ udevGetDeviceType(struct udev_device *device,
 
         /* The following devices do not set the DEVTYPE property, therefore
          * we need to rely on the SUBSYSTEM property */
-        if (udevGetStringProperty(device, "SUBSYSTEM", &subsystem) < 0)
-            return -1;
+        udevGetStringProperty(device, "SUBSYSTEM", &subsystem);
 
         if (STREQ_NULLABLE(subsystem, "scsi_generic"))
             *type = VIR_NODE_DEV_CAP_SCSI_GENERIC;
@@ -1499,8 +1487,7 @@ udevAddOneDevice(struct udev_device *device)
 
     def->sysfs_path = g_strdup(udev_device_get_syspath(device));
 
-    if (udevGetStringProperty(device, "DRIVER", &def->driver) < 0)
-        goto cleanup;
+    udevGetStringProperty(device, "DRIVER", &def->driver);
 
     def->caps = g_new0(virNodeDevCapsDef, 1);
 
