@@ -20,6 +20,17 @@ v7.4.0 (unreleased)
 
 * **New features**
 
+  * qemu: Add support for hotplugging ``<transient/>`` disks
+
+    The disk hotplug code in the qemu driver now can handle hotplug of disks
+    with automatically added overlay.
+
+  * qemu: Add support for sharing base image of ``<transient/>`` disks
+
+    Users can use ``<transient shareBacking='yes'/>`` to tell the qemu driver to
+    never open the base image in write mode thus multiple VMs can share the
+    same image. Note that the disk will be hotplugged during startup.
+
 * **Improvements**
 
   * Add win-dmp crashdump format
@@ -29,6 +40,10 @@ v7.4.0 (unreleased)
 
 * **Bug fixes**
 
+  * Allow 0 offset in XML schema for ``<slice type='storage' offset='0' size='321'/>``
+
+    Having a 0 offset so that the size of the image can be limited is a
+    valid configuration so it was allowed in the XML schema.
 
 v7.3.0 (2021-05-03)
 ===================
