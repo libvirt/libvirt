@@ -5020,6 +5020,44 @@ Note that this makes libvirt quit managing a host device, and may even
 make that device unusable by the rest of the physical host until a reboot.
 
 
+nodedev-define
+--------------
+
+**Syntax:**
+
+::
+
+   nodedev-define FILE
+
+Define an inactive persistent device or modify an existing persistent one from
+the XML *FILE*.
+
+
+nodedev-undefine
+----------------
+
+**Syntax:**
+
+::
+
+   nodedev-undefine device
+
+Undefine the configuration for a persistent device. If the device is active,
+make it transient.
+
+
+nodedev-start
+-------------
+
+**Syntax:**
+
+::
+
+   nodedev-start network
+
+Start a (previously defined) inactive device.
+
+
 nodedev-detach
 --------------
 
@@ -5076,16 +5114,18 @@ nodedev-list
 
 ::
 
-   nodedev-list cap --tree
+   nodedev-list [--cap capability] [--tree] [--inactive | --all]
 
 List all of the devices available on the node that are known by libvirt.
 *cap* is used to filter the list by capability types, the types must be
 separated by comma, e.g. --cap pci,scsi. Valid capability types include
 'system', 'pci', 'usb_device', 'usb', 'net', 'scsi_host', 'scsi_target',
 'scsi', 'storage', 'fc_host', 'vports', 'scsi_generic', 'drm', 'mdev',
-'mdev_types', 'ccw', 'css', 'ap_card', 'ap_queue', 'ap_matrix'.
-If *--tree* is used, the output is formatted in a tree representing parents of each
-node.  *cap* and *--tree* are mutually exclusive.
+'mdev_types', 'ccw', 'css', 'ap_card', 'ap_queue', 'ap_matrix'. By default,
+only active devices are listed. *--inactive* is used to list only inactive
+devices, and *-all* is used to list both active and inactive devices.
+If *--tree* is used, the output is formatted in a tree representing parents of
+each node.  *--tree* is mutually exclusive with all other options.
 
 
 nodedev-reattach
