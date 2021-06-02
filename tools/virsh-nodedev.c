@@ -1218,6 +1218,68 @@ cmdNodeDeviceAutostart(vshControl *ctl, const vshCmd *cmd)
 }
 
 
+/*
+ * "nodedev-info" command
+ */
+static const vshCmdInfo info_node_device_info[] = {
+    {.name = "help",
+     .data = N_("node device information")
+    },
+    {.name = "desc",
+     .data = N_("Returns basic information about the node device")
+    },
+    {.name = NULL}
+};
+
+
+static const vshCmdOptDef opts_node_device_info[] = {
+    {.name = "device",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("device name or wwn pair in 'wwnn,wwpn' format"),
+     .completer = virshNodeDeviceNameCompleter,
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdNodeDeviceInfo(vshControl *ctl, const vshCmd *cmd)
+{
+    virNodeDevicePtr device = NULL;
+    const char *device_value = NULL;
+    bool ret = false;
+    int autostart;
+    const char *parent = NULL;
+
+    if (vshCommandOptStringReq(ctl, cmd, "device", &device_value) < 0)
+         return false;
+
+    device = vshFindNodeDevice(ctl, device_value);
+
+    if (!device)
+        goto cleanup;
+
+    parent = virNodeDeviceGetParent(device);
+    vshPrint(ctl, "%-15s %s\n", _("Name:"), virNodeDeviceGetName(device));
+    vshPrint(ctl, "%-15s %s\n", _("Parent:"), parent ? parent : "");
+    vshPrint(ctl, "%-15s %s\n", _("Active:"), virNodeDeviceIsActive(device) ?
+             _("yes") : _("no"));
+    vshPrint(ctl, "%-15s %s\n", _("Persistent:"),
+             virNodeDeviceIsPersistent(device) ? _("yes") : _("no"));
+    if (virNodeDeviceGetAutostart(device, &autostart) < 0)
+        vshPrint(ctl, "%-15s %s\n", _("Autostart:"), _("no autostart"));
+    else
+        vshPrint(ctl, "%-15s %s\n", _("Autostart:"), autostart ? _("yes") : _("no"));
+
+    ret = true;
+ cleanup:
+    if (device)
+        virNodeDeviceFree(device);
+    return ret;
+}
+
+
+
 const vshCmdDef nodedevCmds[] = {
     {.name = "nodedev-create",
      .handler = cmdNodeDeviceCreate,
@@ -1293,6 +1355,12 @@ const vshCmdDef nodedevCmds[] = {
      .handler = cmdNodeDeviceAutostart,
      .opts = opts_node_device_autostart,
      .info = info_node_device_autostart,
+     .flags = 0
+    },
+    {.name = "nodedev-info",
+     .handler = cmdNodeDeviceInfo,
+     .opts = opts_node_device_info,
+     .info = info_node_device_info,
      .flags = 0
     },
     {.name = NULL}

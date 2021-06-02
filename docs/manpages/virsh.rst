@@ -5057,6 +5057,18 @@ be either device name or wwn pair in "wwnn,wwpn" format (only works
 for HBA).
 
 
+nodedev-info
+------------
+
+**Syntax:**
+
+::
+
+   nodedev-info device
+
+Returns basic information about the *device* object.
+
+
 nodedev-list
 ------------
 
