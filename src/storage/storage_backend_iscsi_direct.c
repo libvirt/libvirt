@@ -391,19 +391,28 @@ virISCSIDirectReportLuns(virStoragePoolObj *pool,
 static int
 virISCSIDirectDisconnect(struct iscsi_context *iscsi)
 {
+    virErrorPtr orig_err;
+    int ret = -1;
+
+    virErrorPreserveLast(&orig_err);
+
     if (iscsi_logout_sync(iscsi) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to logout: %s"),
                        iscsi_get_error(iscsi));
-        return -1;
+        goto cleanup;
     }
     if (iscsi_disconnect(iscsi) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to disconnect: %s"),
                        iscsi_get_error(iscsi));
-        return -1;
+        goto cleanup;
     }
-    return 0;
+
+    ret = 0;
+ cleanup:
+    virErrorRestore(&orig_err);
+    return ret;
 }
 
 static int
