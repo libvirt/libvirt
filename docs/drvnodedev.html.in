@@ -14,13 +14,26 @@
 
     <p>
       The node device driver provides means to list and show details about host
-      devices (<code>virsh nodedev-list</code>,
-      <code>virsh nodedev-dumpxml</code>), which are generic and can be used
-      with all devices. It also provides means to create and destroy devices
-      (<code>virsh nodedev-create</code>, <code>virsh nodedev-destroy</code>)
-      which are meant to be used to create virtual devices, currently only
-      supported by NPIV
-      (<a href="https://wiki.libvirt.org/page/NPIV_in_libvirt">more info about NPIV)</a>).
+      devices (<code>virsh nodedev-list</code>, <code>virsh nodedev-info</code>,
+      and <code>virsh nodedev-dumpxml</code>), which are generic and can be used
+      with all devices.  It also provides the means to manage virtual devices.
+      Persistently-defined virtual devices are only supported for mediated
+      devices, while transient devices are supported by both mediated devices
+      and NPIV (<a href="https://wiki.libvirt.org/page/NPIV_in_libvirt">more
+      info about NPIV)</a>).
+    </p>
+    <p>
+      Persistent virtual devices are managed with
+      <code>virsh nodedev-define</code> and <code>virsh nodedev-undefine</code>.
+      Persistent devices can be configured to start manually or automatically
+      using <code>virsh nodedev-autostart</code>. Inactive devices can be made
+      active with <code>virsh nodedev-start</code>.
+    </p>
+    <p>
+      Transient virtual devices are started and stopped with the commands
+      <code>virsh nodedev-create</code> and <code>virsh nodedev-destroy</code>.
+    </p>
+    <p>
       Devices on the host system are arranged in a tree-like hierarchy, with
       the root node being called <code>computer</code>. The node device driver
       supports udev backend (HAL backend was removed in <code>6.8.0</code>).
@@ -198,6 +211,7 @@
   &lt;/driver&gt;
   &lt;capability type='mdev'&gt;
     &lt;type id='nvidia-11'/&gt;
+    &lt;uuid&gt;4b20d080-1b54-4048-85b3-a6a62d165c01&lt;/uuid&gt;
     &lt;iommuGroup number='12'/&gt;
   &lt;/capability&gt;
 &lt;/device&gt;</pre>
@@ -216,22 +230,31 @@
         display device details
         (<span class="since">Since 3.4.0</span>)
       </li>
+      <li>
+        create transient mediated devices
+        (<span class="since">Since 6.5.0</span>)
+      </li>
+      <li>
+        define persistent mediated devices
+        (<span class="since">Since 7.3.0</span>)
+      </li>
     </ul>
 
     <p>
       Because mediated devices are instantiated from vendor specific templates,
       simply called 'types', information describing these types is contained
-      within the parent device's capabilities
-      (see the example in <a href="#PCI">PCI host devices</a>).
+      within the parent device's capabilities (see the example in <a
+      href="#PCI">PCI host devices</a>). To list all devices capable of
+      creating mediated devices, the following command can be used.
     </p>
+    <pre>$ virsh nodedev-list --cap mdev_types</pre>
 
     <p>
       To see the supported mediated device types on a specific physical device
       use the following:
     </p>
 
-    <pre>
-$ ls /sys/class/mdev_bus/&lt;device&gt;/mdev_supported_types</pre>
+    <pre>$ virsh nodedev-dumpxml &lt;device&gt;</pre>
 
     <p>
       Before creating a mediated device, unbind the device from the respective
@@ -252,22 +275,40 @@ echo $subchannel &gt; /sys/bus/css/drivers/vfio_ccw/bind
     </pre>
 
     <p>
-      To manually instantiate a mediated device, use one of the following as a
-      reference. For a CCW device, use the subchannel ID instead of the device
-      ID.
+      To instantiate a transient mediated device, create an XML file representing the
+      device. See above for information about the mediated device xml format.
     </p>
 
-    <pre>
-$ uuidgen &gt; /sys/class/mdev_bus/&lt;device&gt;/mdev_supported_types/&lt;type&gt;/create
-...
-$ echo &lt;UUID&gt; &gt; /sys/class/mdev_bus/&lt;device&gt;/mdev_supported_types/&lt;type&gt;/create</pre>
+    <pre>$ virsh nodedev-create &lt;xml-file&gt;
+Node device '&lt;device-name&gt;' created from '&lt;xml-file&gt;'</pre>
 
     <p>
-      Manual removal of a mediated device is then performed as follows:
+      If you would like to persistently define the device so that it will be
+      maintained across host reboots, use <code>virsh nodedev-define</code>
+      instead of <code>nodedev-create</code>:
     </p>
 
-    <pre>
-$ echo 1 &gt; /sys/bus/mdev/devices/&lt;uuid&gt;/remove</pre>
+    <pre>$ virsh nodedev-define &lt;xml-file&gt;
+Node device '&lt;device-name&gt;' defined from '&lt;xml-file&gt;'</pre>
 
+    <p>
+      To start an instance of this device definition, use the following command:
+    </p>
+
+    <pre>$ virsh nodedev-start &lt;device-name&gt;</pre>
+    <p>
+      Active mediated device instances can be stopped using <code>virsh
+      nodedev-destroy</code>, and persistent device definitions can be removed
+      using <code>virsh nodedev-undefine</code>.
+    </p>
+
+    <p>
+      If a mediated device is defined persistently, it can also be set to be
+      automatically started whenever the host reboots or when the parent device
+      becomes available. In order to autostart a mediated device, use the
+      following command:
+    </p>
+
+    <pre>$ virsh nodedev-autostart &lt;device-name&gt;</pre>
   </body>
 </html>
