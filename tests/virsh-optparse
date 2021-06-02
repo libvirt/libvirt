@@ -215,7 +215,7 @@ compare exp-err err || fail=1
 # it has been parsed correctly
 cat <<\EOF > exp-err || framework_failure
 error: Unable to change MaxMemorySize
-error: memory in virDomainSetMaxMemory must not be zero
+error: memory in virDomainSetMemoryFlags must not be zero
 EOF
 $VIRSH -q -c $test_url setmaxmem test 0 >out 2>err && fail=1
 test -s out && fail=1
