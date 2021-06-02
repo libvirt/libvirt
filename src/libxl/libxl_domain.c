@@ -446,6 +446,16 @@ libxlDomainDefValidate(const virDomainDef *def,
                                         def->virtType))
         return -1;
 
+    /* Xen+ovmf does not support secure boot */
+    if (virDomainDefHasOldStyleUEFI(def)) {
+        if (def->os.loader &&
+            def->os.loader->secure == VIR_TRISTATE_BOOL_YES) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Secure boot is not supported on Xen"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
