@@ -379,17 +379,9 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDef *dev,
 static int
 libxlDomainDefPostParse(virDomainDef *def,
                         unsigned int parseFlags G_GNUC_UNUSED,
-                        void *opaque,
+                        void *opaque G_GNUC_UNUSED,
                         void *parseOpaque G_GNUC_UNUSED)
 {
-    libxlDriverPrivate *driver = opaque;
-    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
-
-    if (!virCapabilitiesDomainSupported(cfg->caps, def->os.type,
-                                        def->os.arch,
-                                        def->virtType))
-        return -1;
-
     /* Xen PV domains always have a PV console, so add one to the domain config
      * via post-parse callback if not explicitly specified in the XML. */
     if (def->os.type != VIR_DOMAIN_OSTYPE_HVM && def->nconsoles == 0) {
@@ -441,11 +433,28 @@ libxlDomainDefPostParse(virDomainDef *def,
     return 0;
 }
 
+static int
+libxlDomainDefValidate(const virDomainDef *def,
+                       void *opaque,
+                       void *parseOpaque G_GNUC_UNUSED)
+{
+    libxlDriverPrivate *driver = opaque;
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
+
+    if (!virCapabilitiesDomainSupported(cfg->caps, def->os.type,
+                                        def->os.arch,
+                                        def->virtType))
+        return -1;
+
+    return 0;
+}
+
 virDomainDefParserConfig libxlDomainDefParserConfig = {
     .macPrefix = { 0x00, 0x16, 0x3e },
     .netPrefix = LIBXL_GENERATED_PREFIX_XEN,
     .devicesPostParseCallback = libxlDomainDeviceDefPostParse,
     .domainPostParseCallback = libxlDomainDefPostParse,
+    .domainValidateCallback = libxlDomainDefValidate,
     .features = VIR_DOMAIN_DEF_FEATURE_NET_MODEL_STRING,
 };
 
