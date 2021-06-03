@@ -1056,3 +1056,68 @@ virNodeDeviceGetAutostart(virNodeDevicePtr dev,
     virDispatchError(dev->conn);
     return -1;
 }
+
+/**
+ * virNodeDeviceIsPersistent:
+ * @dev: pointer to the nodedev object
+ *
+ * Determine if the node device has a persistent configuration
+ * which means it will still exist after shutting down
+ *
+ * Returns 1 if persistent, 0 if transient, -1 on error
+ */
+int
+virNodeDeviceIsPersistent(virNodeDevicePtr dev)
+{
+    VIR_DEBUG("dev=%p", dev);
+
+    virResetLastError();
+
+    virCheckNodeDeviceReturn(dev, -1);
+
+    if (dev->conn->nodeDeviceDriver &&
+        dev->conn->nodeDeviceDriver->nodeDeviceIsPersistent) {
+        int ret;
+        ret = dev->conn->nodeDeviceDriver->nodeDeviceIsPersistent(dev);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(dev->conn);
+    return -1;
+}
+
+
+/**
+ * virNodeDeviceIsActive:
+ * @dev: pointer to the node device object
+ *
+ * Determine if the node device is currently active
+ *
+ * Returns 1 if active, 0 if inactive, -1 on error
+ */
+int virNodeDeviceIsActive(virNodeDevicePtr dev)
+{
+    VIR_DEBUG("dev=%p", dev);
+
+    virResetLastError();
+
+    virCheckNodeDeviceReturn(dev, -1);
+
+    if (dev->conn->nodeDeviceDriver &&
+        dev->conn->nodeDeviceDriver->nodeDeviceIsActive) {
+        int ret;
+        ret = dev->conn->nodeDeviceDriver->nodeDeviceIsActive(dev);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(dev->conn);
+    return -1;
+}

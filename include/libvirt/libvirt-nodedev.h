@@ -147,6 +147,10 @@ int virNodeDeviceSetAutostart(virNodeDevicePtr dev,
 int virNodeDeviceGetAutostart(virNodeDevicePtr dev,
                               int *autostart);
 
+int virNodeDeviceIsPersistent(virNodeDevicePtr dev);
+
+int virNodeDeviceIsActive(virNodeDevicePtr dev);
+
 /**
  * VIR_NODE_DEVICE_EVENT_CALLBACK:
  *

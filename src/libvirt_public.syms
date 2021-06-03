@@ -906,6 +906,8 @@ LIBVIRT_7.8.0 {
     global:
         virNodeDeviceSetAutostart;
         virNodeDeviceGetAutostart;
+        virNodeDeviceIsPersistent;
+        virNodeDeviceIsActive;
 } LIBVIRT_7.7.0;
 
 # .... define new API here using predicted next version number ....

@@ -2195,6 +2195,22 @@ struct remote_node_device_set_autostart_args {
     int autostart;
 };
 
+struct remote_node_device_is_persistent_args {
+    remote_nonnull_string name;
+};
+
+struct remote_node_device_is_persistent_ret {
+    int persistent;
+};
+
+struct remote_node_device_is_active_args {
+    remote_nonnull_string name;
+};
+
+struct remote_node_device_is_active_ret {
+    int active;
+};
+
 
 /*
  * Events Register/Deregister:
@@ -6845,5 +6861,20 @@ enum remote_procedure {
      * @priority: high
      * @acl: node_device:write
      */
-    REMOTE_PROC_NODE_DEVICE_SET_AUTOSTART = 434
+    REMOTE_PROC_NODE_DEVICE_SET_AUTOSTART = 434,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: node_device:read
+     */
+    REMOTE_PROC_NODE_DEVICE_IS_PERSISTENT = 435,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: node_device:read
+     */
+    REMOTE_PROC_NODE_DEVICE_IS_ACTIVE = 436
+
 };
