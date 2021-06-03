@@ -7602,6 +7602,10 @@ qemuBuildAudioCommandLineArg(virCommand *cmd,
                       def->id,
                       qemuAudioDriverTypeToString(def->type));
 
+    if (def->timerPeriod)
+        virBufferAsprintf(&buf, ",timer-period=%u",
+                          def->timerPeriod);
+
     qemuBuildAudioCommonArg(&buf, "in", &def->input);
     qemuBuildAudioCommonArg(&buf, "out", &def->output);
 
@@ -7790,6 +7794,10 @@ qemuBuildAudioCommandLineEnv(virCommand *cmd,
     audio = def->audios[0];
     virCommandAddEnvPair(cmd, "QEMU_AUDIO_DRV",
                          qemuAudioDriverTypeToString(audio->type));
+
+    if (audio->timerPeriod)
+        virCommandAddEnvFormat(cmd, "QEMU_AUDIO_TIMER_PERIOD=%u",
+                               audio->timerPeriod);
 
     qemuBuildAudioCommonEnv(cmd, "QEMU_AUDIO_ADC_", &audio->input);
     qemuBuildAudioCommonEnv(cmd, "QEMU_AUDIO_DAC_", &audio->output);
