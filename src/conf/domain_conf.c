@@ -25177,6 +25177,7 @@ virDomainSmartcardDefFormat(virBuffer *buf,
 {
     const char *mode = virDomainSmartcardTypeToString(def->type);
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     if (!mode) {
@@ -25209,19 +25210,13 @@ virDomainSmartcardDefFormat(virBuffer *buf,
     }
     virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
-    virBufferAsprintf(buf, "<smartcard mode='%s'", mode);
+    virBufferAsprintf(&attrBuf, " mode='%s'", mode);
     if (def->type == VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH &&
-        virDomainChrAttrsDefFormat(buf, def->data.passthru, false) < 0) {
+        virDomainChrAttrsDefFormat(&attrBuf, def->data.passthru, false) < 0) {
         return -1;
     }
 
-    if (virBufferUse(&childBuf)) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAddBuffer(buf, &childBuf);
-        virBufferAddLit(buf, "</smartcard>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
-    }
+    virXMLFormatElement(buf, "smartcard", &attrBuf, &childBuf);
 
     return 0;
 }
@@ -25300,6 +25295,7 @@ virDomainSoundDefFormat(virBuffer *buf,
 {
     const char *model = virDomainSoundModelTypeToString(def->model);
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     if (!model) {
@@ -25316,14 +25312,9 @@ virDomainSoundDefFormat(virBuffer *buf,
 
     virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
-    virBufferAsprintf(buf, "<sound model='%s'",  model);
-    if (virBufferUse(&childBuf)) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAddBuffer(buf, &childBuf);
-        virBufferAddLit(buf, "</sound>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
-    }
+    virBufferAsprintf(&attrBuf, " model='%s'",  model);
+
+    virXMLFormatElement(buf,  "sound", &attrBuf, &childBuf);
 
     return 0;
 }
@@ -25453,6 +25444,7 @@ virDomainAudioDefFormat(virBuffer *buf,
                         virDomainAudioDef *def)
 {
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) inputBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) outputBuf = VIR_BUFFER_INITIALIZER;
     const char *type = virDomainAudioTypeTypeToString(def->type);
@@ -25463,10 +25455,10 @@ virDomainAudioDefFormat(virBuffer *buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "<audio id='%d' type='%s'", def->id, type);
+    virBufferAsprintf(&attrBuf, " id='%d' type='%s'", def->id, type);
 
     if (def->timerPeriod)
-        virBufferAsprintf(buf, " timerPeriod='%u'", def->timerPeriod);
+        virBufferAsprintf(&attrBuf, " timerPeriod='%u'", def->timerPeriod);
 
     switch (def->type) {
     case VIR_DOMAIN_AUDIO_TYPE_NONE:
@@ -25489,20 +25481,20 @@ virDomainAudioDefFormat(virBuffer *buf,
 
     case VIR_DOMAIN_AUDIO_TYPE_OSS:
         if (def->backend.oss.tryMMap)
-            virBufferAsprintf(buf, " tryMMap='%s'",
+            virBufferAsprintf(&attrBuf, " tryMMap='%s'",
                               virTristateBoolTypeToString(def->backend.oss.tryMMap));
         if (def->backend.oss.exclusive)
-            virBufferAsprintf(buf, " exclusive='%s'",
+            virBufferAsprintf(&attrBuf, " exclusive='%s'",
                               virTristateBoolTypeToString(def->backend.oss.exclusive));
         if (def->backend.oss.dspPolicySet)
-            virBufferAsprintf(buf, " dspPolicy='%d'", def->backend.oss.dspPolicy);
+            virBufferAsprintf(&attrBuf, " dspPolicy='%d'", def->backend.oss.dspPolicy);
 
         virDomainAudioOSSFormat(&def->backend.oss.input, &inputBuf);
         virDomainAudioOSSFormat(&def->backend.oss.output, &outputBuf);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
-        virBufferEscapeString(buf, " serverName='%s'",
+        virBufferEscapeString(&attrBuf, " serverName='%s'",
                               def->backend.pulseaudio.serverName);
 
         virDomainAudioPulseAudioFormat(&def->backend.pulseaudio.input, &inputBuf);
@@ -25511,7 +25503,7 @@ virDomainAudioDefFormat(virBuffer *buf,
 
     case VIR_DOMAIN_AUDIO_TYPE_SDL:
         if (def->backend.sdl.driver)
-            virBufferAsprintf(buf, " driver='%s'",
+            virBufferAsprintf(&attrBuf, " driver='%s'",
                               virDomainAudioSDLDriverTypeToString(
                                   def->backend.sdl.driver));
 
@@ -25523,7 +25515,7 @@ virDomainAudioDefFormat(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
-        virBufferEscapeString(buf, " path='%s'", def->backend.file.path);
+        virBufferEscapeString(&attrBuf, " path='%s'", def->backend.file.path);
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
@@ -25535,13 +25527,7 @@ virDomainAudioDefFormat(virBuffer *buf,
     virDomainAudioCommonFormat(&def->input, &childBuf, &inputBuf, "input");
     virDomainAudioCommonFormat(&def->output, &childBuf, &outputBuf, "output");
 
-    if (virBufferUse(&childBuf)) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAddBuffer(buf, &childBuf);
-        virBufferAddLit(buf, "</audio>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
-    }
+    virXMLFormatElement(buf, "audio", &attrBuf, &childBuf);
 
     return 0;
 }
@@ -27002,6 +26988,7 @@ virDomainCachetuneDefFormat(virBuffer *buf,
                             unsigned int flags)
 {
     g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     size_t i = 0;
     g_autofree char *vcpus = NULL;
 
@@ -27024,19 +27011,17 @@ virDomainCachetuneDefFormat(virBuffer *buf,
     if (!vcpus)
         return -1;
 
-    virBufferAsprintf(buf, "<cachetune vcpus='%s'", vcpus);
+    virBufferAsprintf(&attrBuf, " vcpus='%s'", vcpus);
 
     if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
         const char *alloc_id = virResctrlAllocGetID(resctrl->alloc);
         if (!alloc_id)
             return -1;
 
-        virBufferAsprintf(buf, " id='%s'", alloc_id);
+        virBufferAsprintf(&attrBuf, " id='%s'", alloc_id);
     }
-    virBufferAddLit(buf, ">\n");
 
-    virBufferAddBuffer(buf, &childrenBuf);
-    virBufferAddLit(buf, "</cachetune>\n");
+    virXMLFormatElement(buf, "cachetune", &attrBuf, &childrenBuf);
 
     return 0;
 }
@@ -27062,6 +27047,7 @@ virDomainMemorytuneDefFormat(virBuffer *buf,
                             unsigned int flags)
 {
     g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_autofree char *vcpus = NULL;
     size_t i = 0;
 
@@ -27084,19 +27070,17 @@ virDomainMemorytuneDefFormat(virBuffer *buf,
     if (!vcpus)
         return -1;
 
-    virBufferAsprintf(buf, "<memorytune vcpus='%s'", vcpus);
+    virBufferAsprintf(&attrBuf, " vcpus='%s'", vcpus);
 
     if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
         const char *alloc_id = virResctrlAllocGetID(resctrl->alloc);
         if (!alloc_id)
             return -1;
 
-        virBufferAsprintf(buf, " id='%s'", alloc_id);
+        virBufferAsprintf(&attrBuf, " id='%s'", alloc_id);
     }
-    virBufferAddLit(buf, ">\n");
 
-    virBufferAddBuffer(buf, &childrenBuf);
-    virBufferAddLit(buf, "</memorytune>\n");
+    virXMLFormatElement(buf, "memorytune", &attrBuf, &childrenBuf);
 
     return 0;
 }
@@ -27213,11 +27197,7 @@ virDomainCputuneDefFormat(virBuffer *buf,
     for (i = 0; i < def->nresctrls; i++)
         virDomainMemorytuneDefFormat(&childrenBuf, def->resctrls[i], flags);
 
-    if (virBufferUse(&childrenBuf)) {
-        virBufferAddLit(buf, "<cputune>\n");
-        virBufferAddBuffer(buf, &childrenBuf);
-        virBufferAddLit(buf, "</cputune>\n");
-    }
+    virXMLFormatElement(buf, "cputune", NULL, &childrenBuf);
 
     return 0;
 }
