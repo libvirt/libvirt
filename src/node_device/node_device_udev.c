@@ -1503,7 +1503,7 @@ udevAddOneDevice(struct udev_device *device)
     virObjectEvent *event = NULL;
     bool new_device = true;
     int ret = -1;
-    bool was_persistent = false;
+    bool persistent = false;
     bool autostart = false;
     bool is_mdev;
 
@@ -1534,7 +1534,8 @@ udevAddOneDevice(struct udev_device *device)
 
         if (is_mdev)
             nodeDeviceDefCopyFromMdevctl(def, objdef);
-        was_persistent = virNodeDeviceObjIsPersistent(obj);
+
+        persistent = virNodeDeviceObjIsPersistent(obj);
         autostart = virNodeDeviceObjIsAutostart(obj);
 
         /* If the device was defined by mdevctl and was never instantiated, it
@@ -1548,7 +1549,7 @@ udevAddOneDevice(struct udev_device *device)
      * and the current definition will take its place. */
     if (!(obj = virNodeDeviceObjListAssignDef(driver->devs, def)))
         goto cleanup;
-    virNodeDeviceObjSetPersistent(obj, was_persistent);
+    virNodeDeviceObjSetPersistent(obj, persistent);
     virNodeDeviceObjSetAutostart(obj, autostart);
     objdef = virNodeDeviceObjGetDef(obj);
 
@@ -1954,6 +1955,7 @@ udevSetupSystemDev(void)
 
     virNodeDeviceObjSetActive(obj, true);
     virNodeDeviceObjSetAutostart(obj, true);
+    virNodeDeviceObjSetPersistent(obj, true);
 
     virNodeDeviceObjEndAPI(&obj);
 
@@ -2360,6 +2362,8 @@ static virNodeDeviceDriver udevNodeDeviceDriver = {
     .nodeDeviceCreate = nodeDeviceCreate, /* 7.3.0 */
     .nodeDeviceSetAutostart = nodeDeviceSetAutostart, /* 7.8.0 */
     .nodeDeviceGetAutostart = nodeDeviceGetAutostart, /* 7.8.0 */
+    .nodeDeviceIsPersistent = nodeDeviceIsPersistent, /* 7.8.0 */
+    .nodeDeviceIsActive = nodeDeviceIsActive, /* 7.8.0 */
 };
 
 

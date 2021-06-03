@@ -1989,3 +1989,53 @@ int nodeDeviceDefValidate(virNodeDeviceDef *def,
     }
     return 0;
 }
+
+
+int
+nodeDeviceIsPersistent(virNodeDevice *device)
+{
+    virNodeDeviceObj *obj = NULL;
+    virNodeDeviceDef *def = NULL;
+    int ret = -1;
+
+    if (nodeDeviceInitWait() < 0)
+        return -1;
+
+    if (!(obj = nodeDeviceObjFindByName(device->name)))
+        return -1;
+    def = virNodeDeviceObjGetDef(obj);
+
+    if (virNodeDeviceIsPersistentEnsureACL(device->conn, def) < 0)
+        goto cleanup;
+
+    ret = virNodeDeviceObjIsPersistent(obj);
+
+ cleanup:
+    virNodeDeviceObjEndAPI(&obj);
+    return ret;
+}
+
+
+int
+nodeDeviceIsActive(virNodeDevice *device)
+{
+    virNodeDeviceObj *obj = NULL;
+    virNodeDeviceDef *def = NULL;
+    int ret = -1;
+
+    if (nodeDeviceInitWait() < 0)
+        return -1;
+
+    if (!(obj = nodeDeviceObjFindByName(device->name)))
+        return -1;
+    def = virNodeDeviceObjGetDef(obj);
+
+    if (virNodeDeviceIsActiveEnsureACL(device->conn, def) < 0)
+        goto cleanup;
+
+    ret = virNodeDeviceObjIsActive(obj);
+
+ cleanup:
+    virNodeDeviceObjEndAPI(&obj);
+    return ret;
+}

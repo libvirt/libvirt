@@ -186,6 +186,12 @@ int
 nodeDeviceGetAutostart(virNodeDevice *dev,
                        int *autostart);
 
+int
+nodeDeviceIsPersistent(virNodeDevice *dev);
+
+int
+nodeDeviceIsActive(virNodeDevice *dev);
+
 virCommand*
 nodeDeviceGetMdevctlSetAutostartCommand(virNodeDeviceDef *def,
                                         bool autostart,
