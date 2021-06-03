@@ -677,7 +677,7 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
     /* Be aware that this function might run in a separate process.
      * Therefore, any driver state changes would be thrown away. */
 
-    if (priv && src && priv->chownCallback) {
+    if (src && priv->chownCallback) {
         rc = priv->chownCallback(src, uid, gid);
         /* here path is used only for error messages */
         path = NULLSTR(src->path);
