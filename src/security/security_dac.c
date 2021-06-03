@@ -688,15 +688,8 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
     } else {
         struct stat sb;
 
-        if (!path) {
-            if (!src || !src->path)
-                return 0;
-
-            if (!virStorageSourceIsLocalStorage(src))
-                return 0;
-
-            path = src->path;
-        }
+        if (!path)
+            return 0;
 
         if (stat(path, &sb) < 0) {
             virReportSystemError(errno, _("unable to stat: %s"), path);
