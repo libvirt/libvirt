@@ -6864,13 +6864,15 @@ A virtual sound card can be attached to the host via the ``sound`` element.
 ``sound``
    The ``sound`` element has one mandatory attribute, ``model``, which specifies
    what real sound device is emulated. Valid values are specific to the
-   underlying hypervisor, though typical choices are 'es1370', 'sb16', 'ac97',
-   'ich6' and 'usb'. ( :since:`'ac97' only since 0.6.0, 'ich6' only since
-   0.8.8, 'usb' only since 1.2.7` )
+   underlying hypervisor, though typical choices are 'sb16', 'es1370', 'pcspk',
+   'ac97' (:since:`Since 0.6.0`), 'ich6' (:since:`Since 0.8.8`), 'ich9'
+   (:since:`Since 1.1.3`), 'usb' (:since:`Since 1.2.8`) and 'ich7'
+   (:since:`Since 6.7.0`, bhyve only).
 
-:since:`Since 0.9.13` , a sound element with ``ich6`` model can have optional
-sub-elements ``<codec>`` to attach various audio codecs to the audio device. If
-not specified, a default codec will be attached to allow playback and recording.
+:since:`Since 0.9.13` , a sound element with ``ich6`` or ``ich9`` models can have
+optional sub-elements ``<codec>`` to attach various audio codecs to the audio
+device. If not specified, a default codec will be attached to allow playback
+and recording.
 
 Valid values are:
 
