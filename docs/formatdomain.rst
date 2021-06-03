@@ -6910,8 +6910,8 @@ ID is specified, then the default audio backend will be used.
 
 :anchor:`<a id="elementsAudio"/>`
 
-Audio devices
-~~~~~~~~~~~~~
+Audio backends
+~~~~~~~~~~~~~~
 
 A virtual audio device corresponds to a host audio backend that is mapped
 to the guest sound device.
