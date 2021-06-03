@@ -1559,6 +1559,8 @@ struct _virDomainAudioDef {
 
     unsigned int id;
 
+    unsigned int timerPeriod;
+
     virDomainAudioIOCommon input;
     virDomainAudioIOCommon output;
     union {

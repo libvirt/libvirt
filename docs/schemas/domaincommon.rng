@@ -4774,6 +4774,11 @@
       <attribute name="id">
         <ref name="uint8"/>
       </attribute>
+      <optional>
+        <attribute name="timerPeriod">
+          <ref name="uint32"/>
+        </attribute>
+      </optional>
       <choice>
         <group>
           <attribute name="type">

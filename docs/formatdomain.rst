@@ -6924,6 +6924,10 @@ to the guest sound device.
 ``id``
    Integer id of the audio device. Must be greater than 0.
 
+``timerPeriod``
+   Timer period in microseconds. Must be greater than 0. If omitted,
+   the lowest possible period is used.
+
 All the backends support child element for configuring input and
 output properties
 
@@ -6931,7 +6935,7 @@ output properties
 
    ...
    <devices>
-     <audio id='1' type='pulseaudio'>
+     <audio id='1' type='pulseaudio' timerPeriod='40'>
        <input mixingEngine='yes' fixedSettings='yes' voices='1' bufferLength='100'>
          <settings frequency='44100' channels='2' format='s16'/>
        </input>

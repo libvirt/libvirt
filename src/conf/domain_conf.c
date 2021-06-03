@@ -13193,6 +13193,10 @@ virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
                        &def->id) < 0)
         goto error;
 
+    if (virXMLPropUInt(node, "timerPeriod", 10, VIR_XML_PROP_NONZERO,
+                       &def->timerPeriod) < 0)
+        goto error;
+
     inputNode = virXPathNode("./input", ctxt);
     outputNode = virXPathNode("./output", ctxt);
 
@@ -25460,6 +25464,9 @@ virDomainAudioDefFormat(virBuffer *buf,
     }
 
     virBufferAsprintf(buf, "<audio id='%d' type='%s'", def->id, type);
+
+    if (def->timerPeriod)
+        virBufferAsprintf(buf, " timerPeriod='%u'", def->timerPeriod);
 
     switch (def->type) {
     case VIR_DOMAIN_AUDIO_TYPE_NONE:
