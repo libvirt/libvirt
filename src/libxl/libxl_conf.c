@@ -627,15 +627,28 @@ libxlMakeDomBuildInfo(virDomainDef *def,
 
         /*
          * Currently libxl only allows specifying the type of BIOS.
-         * If the type is PFLASH, we assume OVMF and set libxl_bios_type
+         * If automatic firmware selection is enabled or the loader
+         * type is PFLASH, we assume OVMF and set libxl_bios_type
          * to LIBXL_BIOS_TYPE_OVMF. The path to the OVMF firmware is
          * configured when building Xen using '--with-system-ovmf='. If
          * not specified, LIBXL_FIRMWARE_DIR/ovmf.bin is used. In the
          * future, Xen will support a user-specified firmware path. See
          * https://lists.xenproject.org/archives/html/xen-devel/2016-03/msg01628.html
          */
-        if (virDomainDefHasOldStyleUEFI(def))
+        if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
+            if (def->os.loader == NULL)
+                def->os.loader = g_new0(virDomainLoaderDef, 1);
+            if (def->os.loader->path == NULL)
+                def->os.loader->path = g_strdup(cfg->firmwares[0]->name);
+            if (def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_NONE)
+                def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
+            if (def->os.loader->readonly == VIR_TRISTATE_BOOL_ABSENT)
+                def->os.loader->readonly = VIR_TRISTATE_BOOL_YES;
             b_info->u.hvm.bios = LIBXL_BIOS_TYPE_OVMF;
+            def->os.firmware = VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
+        } else if (virDomainDefHasOldStyleUEFI(def)) {
+            b_info->u.hvm.bios = LIBXL_BIOS_TYPE_OVMF;
+        }
 
         if (def->emulator) {
             if (!virFileExists(def->emulator)) {

@@ -440,6 +440,7 @@ libxlDomainDefValidate(const virDomainDef *def,
 {
     libxlDriverPrivate *driver = opaque;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
+    bool reqSecureBoot = false;
 
     if (!virCapabilitiesDomainSupported(cfg->caps, def->os.type,
                                         def->os.arch,
@@ -447,13 +448,20 @@ libxlDomainDefValidate(const virDomainDef *def,
         return -1;
 
     /* Xen+ovmf does not support secure boot */
+    if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
+        if (def->os.firmwareFeatures &&
+            def->os.firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT])
+            reqSecureBoot = true;
+    }
     if (virDomainDefHasOldStyleUEFI(def)) {
         if (def->os.loader &&
-            def->os.loader->secure == VIR_TRISTATE_BOOL_YES) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Secure boot is not supported on Xen"));
-            return -1;
-        }
+            def->os.loader->secure == VIR_TRISTATE_BOOL_YES)
+            reqSecureBoot = true;
+    }
+    if (reqSecureBoot) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Secure boot is not supported on Xen"));
+        return -1;
     }
 
     return 0;
@@ -465,7 +473,9 @@ virDomainDefParserConfig libxlDomainDefParserConfig = {
     .devicesPostParseCallback = libxlDomainDeviceDefPostParse,
     .domainPostParseCallback = libxlDomainDefPostParse,
     .domainValidateCallback = libxlDomainDefValidate,
-    .features = VIR_DOMAIN_DEF_FEATURE_NET_MODEL_STRING,
+
+    .features = VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT |
+                VIR_DOMAIN_DEF_FEATURE_NET_MODEL_STRING,
 };
 
 
