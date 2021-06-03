@@ -672,7 +672,7 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
                                    uid_t uid,
                                    gid_t gid)
 {
-    int rc;
+    int rc = 0;
 
     /* Be aware that this function might run in a separate process.
      * Therefore, any driver state changes would be thrown away. */
@@ -683,7 +683,9 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
         /* on -2 returned an error was already reported */
         if (rc == -2)
             return -1;
-    } else {
+    }
+
+    if (rc == 0 || rc == -3) {
         struct stat sb;
 
         if (!path)

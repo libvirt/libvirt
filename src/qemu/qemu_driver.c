@@ -228,31 +228,13 @@ qemuSecurityChownCallback(const virStorageSource *src,
                           uid_t uid,
                           gid_t gid)
 {
-    struct stat sb;
     int save_errno = 0;
     int ret = -1;
     int rv;
     g_autoptr(virStorageSource) cpy = NULL;
 
-    if (virStorageSourceIsLocalStorage(src)) {
-        /* use direct chown for local files so that the file doesn't
-         * need to be initialized */
-        if (!src->path)
-            return 0;
-
-        if (stat(src->path, &sb) >= 0) {
-            if (sb.st_uid == uid &&
-                sb.st_gid == gid) {
-                /* It's alright, there's nothing to change anyway. */
-                return 0;
-            }
-        }
-
-        if (chown(src->path, uid, gid) < 0)
-            return -1;
-
-        return 0;
-    }
+    if (virStorageSourceIsLocalStorage(src))
+        return -3;
 
     if ((rv = virStorageSourceSupportsSecurityDriver(src)) <= 0)
         return rv;

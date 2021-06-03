@@ -53,9 +53,16 @@ int virSecurityManagerStackAddNested(virSecurityManager *stack,
  * @uid: target uid
  * @gid: target gid
  *
- * A function callback to chown image files described by the disk source struct
- * @src. The callback shall return 0 on success, -1 on error and errno set (no
- * libvirt error reported) OR -2 and a libvirt error reported. */
+ * A function callback to chown image files described by the disk
+ * source struct @src. The callback can decide to skip given @src
+ * and thus let DAC driver chown the file instead (signalled by
+ * returning -3).
+ *
+ * Returns: 0 on success,
+ *         -1 on error and errno set (no libvirt error reported),
+ *         -2 and a libvirt error reported.
+ *         -3 if callback did not handle chown
+ */
 typedef int
 (*virSecurityManagerDACChownCallback)(const virStorageSource *src,
                                       uid_t uid,
