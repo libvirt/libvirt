@@ -929,7 +929,7 @@ static virStateDriver chStateDriver = {
 
 int chRegister(void)
 {
-    if (virRegisterConnectDriver(&chConnectDriver, false) < 0)
+    if (virRegisterConnectDriver(&chConnectDriver, true) < 0)
         return -1;
     if (virRegisterStateDriver(&chStateDriver) < 0)
         return -1;
