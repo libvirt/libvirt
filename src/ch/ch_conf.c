@@ -213,11 +213,17 @@ chExtractVersionInfo(int *retversion)
     tmp = help;
 
     /* expected format: cloud-hypervisor v<major>.<minor>.<micro> */
-    if ((tmp = STRSKIP(tmp, "cloud-hypervisor v")) == NULL)
+    if ((tmp = STRSKIP(tmp, "cloud-hypervisor v")) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unexpected output of cloud-hypervisor binary"));
         goto cleanup;
+    }
 
-    if (virParseVersionString(tmp, &version, true) < 0)
+    if (virParseVersionString(tmp, &version, true) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to parse cloud-hypervisor version: %s"), tmp);
         goto cleanup;
+    }
 
     if (version < MIN_VERSION) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -241,11 +247,8 @@ int chExtractVersion(virCHDriver *driver)
     if (driver->version > 0)
         return 0;
 
-    if (chExtractVersionInfo(&driver->version) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not extract Cloud-Hypervisor version"));
+    if (chExtractVersionInfo(&driver->version) < 0)
         return -1;
-    }
 
     return 0;
 }
