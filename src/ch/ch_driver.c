@@ -827,6 +827,7 @@ static int chStateCleanup(void)
     virObjectUnref(ch_driver->config);
     virMutexDestroy(&ch_driver->lock);
     g_free(ch_driver);
+    ch_driver = NULL;
 
     return 0;
 }
