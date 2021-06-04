@@ -196,10 +196,10 @@ chExtractVersion(virCHDriver *driver)
 {
     int ret = -1;
     unsigned long version;
-    char *help = NULL;
+    g_autofree char *help = NULL;
     char *tmp = NULL;
     g_autofree char *ch_cmd = g_find_program_in_path(CH_CMD);
-    virCommand *cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     if (!ch_cmd)
         return -2;
@@ -236,6 +236,5 @@ chExtractVersion(virCHDriver *driver)
     ret = 0;
 
  cleanup:
-    virCommandFree(cmd);
     return ret;
 }
