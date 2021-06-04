@@ -201,8 +201,7 @@ chExtractVersionInfo(int *retversion)
     g_autofree char *ch_cmd = g_find_program_in_path(CH_CMD);
     virCommand *cmd = virCommandNewArgList(ch_cmd, "--version", NULL);
 
-    if (retversion)
-        *retversion = 0;
+    *retversion = 0;
 
     virCommandAddEnvString(cmd, "LC_ALL=C");
     virCommandSetOutputBuffer(cmd, &help);
@@ -231,9 +230,7 @@ chExtractVersionInfo(int *retversion)
         goto cleanup;
     }
 
-    if (retversion)
-        *retversion = version;
-
+    *retversion = version;
     ret = 0;
 
  cleanup:
