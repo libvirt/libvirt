@@ -365,7 +365,7 @@ Switching to modular daemons
 ----------------------------
 
 If a host is currently set to use the monolithic ``libvirtd`` daemon and needs
-to be migrated to the monolithic daemons a number of services need to be
+to be migrated to the modular daemons a number of services need to be
 changed. The steps below outline the process on hosts using the systemd init
 service.
 
@@ -438,10 +438,6 @@ host first.
 
 Proxy daemon
 ============
-
-The monolithic daemon is known as ``libvirtd`` and has historically been the
-default in libvirt. It is configured via the file ``/etc/libvirt/libvirtd.conf``
-
 
 Proxy sockets
 -------------
