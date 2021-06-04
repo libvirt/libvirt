@@ -700,7 +700,8 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
         }
 
 #ifdef WIN32
-        rc = ENOSYS;
+        rc = -1;
+        errno = ENOSYS;
 #else /* !WIN32 */
         rc = chown(path, uid, gid);
 #endif /* !WIN32 */
