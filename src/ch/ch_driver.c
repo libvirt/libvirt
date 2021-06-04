@@ -836,6 +836,9 @@ static int chStateInitialize(bool privileged,
                              virStateInhibitCallback callback G_GNUC_UNUSED,
                              void *opaque G_GNUC_UNUSED)
 {
+    int ret = VIR_DRV_STATE_INIT_ERROR;
+    int rv;
+
     if (root != NULL) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Driver does not support embedded mode"));
@@ -861,14 +864,18 @@ static int chStateInitialize(bool privileged,
     if (!(ch_driver->config = virCHDriverConfigNew(privileged)))
         goto cleanup;
 
-    if (chExtractVersion(ch_driver) < 0)
+    if ((rv = chExtractVersion(ch_driver)) < 0) {
+        if (rv == -2)
+            ret = VIR_DRV_STATE_INIT_SKIPPED;
         goto cleanup;
+    }
 
-    return VIR_DRV_STATE_INIT_COMPLETE;
+    ret = VIR_DRV_STATE_INIT_COMPLETE;
 
  cleanup:
-    chStateCleanup();
-    return VIR_DRV_STATE_INIT_ERROR;
+    if (ret != VIR_DRV_STATE_INIT_COMPLETE)
+        chStateCleanup();
+    return ret;
 }
 
 /* Function Tables */

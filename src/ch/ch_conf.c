@@ -199,8 +199,12 @@ chExtractVersion(virCHDriver *driver)
     char *help = NULL;
     char *tmp = NULL;
     g_autofree char *ch_cmd = g_find_program_in_path(CH_CMD);
-    virCommand *cmd = virCommandNewArgList(ch_cmd, "--version", NULL);
+    virCommand *cmd = NULL;
 
+    if (!ch_cmd)
+        return -2;
+
+    cmd = virCommandNewArgList(ch_cmd, "--version", NULL);
     virCommandAddEnvString(cmd, "LC_ALL=C");
     virCommandSetOutputBuffer(cmd, &help);
 
