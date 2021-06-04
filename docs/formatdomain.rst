@@ -3146,6 +3146,16 @@ paravirtualized driver is specified via the ``disk`` element.
    may look like ``<serial>WD-WMAP9A966149</serial>``. Not supported for
    scsi-block devices, that is those using disk ``type`` 'block' using
    ``device`` 'lun' on ``bus`` 'scsi'. :since:`Since 0.7.1`
+
+   Note that depending on hypervisor and device type the serial number may be
+   truncated silently. IDE/SATA devices are commonly limited to 20 characters.
+   SCSI devices depending on hypervisor version are limited to 20, 36 or 247
+   characters.
+
+   Hypervisors may also start rejecting overly long serials instead of
+   truncating them in the future so it's advised to avoid the implicit
+   truncation by testing the desired serial length range with the desired device
+   and hypervisor combination.
 ``wwn``
    If present, this element specifies the WWN (World Wide Name) of a virtual
    hard disk or CD-ROM drive. It must be composed of 16 hexadecimal digits.
