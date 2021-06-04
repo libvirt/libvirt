@@ -194,7 +194,6 @@ virCHDriverConfigDispose(void *obj)
 int
 chExtractVersion(virCHDriver *driver)
 {
-    int ret = -1;
     unsigned long version;
     g_autofree char *help = NULL;
     char *tmp = NULL;
@@ -209,7 +208,7 @@ chExtractVersion(virCHDriver *driver)
     virCommandSetOutputBuffer(cmd, &help);
 
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     tmp = help;
 
@@ -217,24 +216,21 @@ chExtractVersion(virCHDriver *driver)
     if ((tmp = STRSKIP(tmp, "cloud-hypervisor v")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unexpected output of cloud-hypervisor binary"));
-        goto cleanup;
+        return -1;
     }
 
     if (virParseVersionString(tmp, &version, true) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to parse cloud-hypervisor version: %s"), tmp);
-        goto cleanup;
+        return -1;
     }
 
     if (version < MIN_VERSION) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cloud-Hypervisor version is too old (v15.0 is the minimum supported version)"));
-        goto cleanup;
+        return -1;
     }
 
     driver->version = version;
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
