@@ -679,8 +679,6 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
 
     if (src && priv->chownCallback) {
         rc = priv->chownCallback(src, uid, gid);
-        /* here path is used only for error messages */
-        path = NULLSTR(src->path);
 
         /* on -2 returned an error was already reported */
         if (rc == -2)
@@ -712,20 +710,20 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
         if (errno == EOPNOTSUPP || errno == EINVAL) {
             VIR_INFO("Setting user and group to '%ld:%ld' on '%s' not "
                      "supported by filesystem",
-                     (long)uid, (long)gid, path);
+                     (long)uid, (long)gid, NULLSTR(path));
         } else if (errno == EPERM) {
             VIR_INFO("Setting user and group to '%ld:%ld' on '%s' not "
                      "permitted",
-                     (long)uid, (long)gid, path);
+                     (long)uid, (long)gid, NULLSTR(path));
         } else if (errno == EROFS) {
             VIR_INFO("Setting user and group to '%ld:%ld' on '%s' not "
                      "possible on readonly filesystem",
-                     (long)uid, (long)gid, path);
+                     (long)uid, (long)gid, NULLSTR(path));
         } else {
             virReportSystemError(errno,
                                  _("unable to set user and group to '%ld:%ld' "
                                    "on '%s'"),
-                                 (long)uid, (long)gid, path);
+                                 (long)uid, (long)gid, NULLSTR(path));
             return -1;
         }
     }
