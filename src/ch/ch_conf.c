@@ -191,8 +191,8 @@ virCHDriverConfigDispose(void *obj)
 
 #define MIN_VERSION ((15 * 1000000) + (0 * 1000) + (0))
 
-static int
-chExtractVersionInfo(int *retversion)
+int
+chExtractVersion(virCHDriver *driver)
 {
     int ret = -1;
     unsigned long version;
@@ -200,8 +200,6 @@ chExtractVersionInfo(int *retversion)
     char *tmp = NULL;
     g_autofree char *ch_cmd = g_find_program_in_path(CH_CMD);
     virCommand *cmd = virCommandNewArgList(ch_cmd, "--version", NULL);
-
-    *retversion = 0;
 
     virCommandAddEnvString(cmd, "LC_ALL=C");
     virCommandSetOutputBuffer(cmd, &help);
@@ -230,22 +228,10 @@ chExtractVersionInfo(int *retversion)
         goto cleanup;
     }
 
-    *retversion = version;
+    driver->version = version;
     ret = 0;
 
  cleanup:
     virCommandFree(cmd);
-
     return ret;
-}
-
-int chExtractVersion(virCHDriver *driver)
-{
-    if (driver->version > 0)
-        return 0;
-
-    if (chExtractVersionInfo(&driver->version) < 0)
-        return -1;
-
-    return 0;
 }
