@@ -774,7 +774,7 @@ int virNetSocketNewConnectUNIX(const char *path,
 }
 #else
 int virNetSocketNewConnectUNIX(const char *path G_GNUC_UNUSED,
-                               const char *spawnDaemonPath,
+                               const char *spawnDaemonPath G_GNUC_UNUSED,
                                virNetSocket **retsock G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
