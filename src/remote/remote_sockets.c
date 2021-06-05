@@ -163,7 +163,7 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
 #ifndef WIN32
     const char *env_name = remoteGetDaemonPathEnv();
 #else
-    const char *env_path = NULL;
+    const char *env_name = NULL;
 #endif
 
     VIR_DEBUG("Choosing remote socket for transport=%s mode=%s driver=%s flags=0x%x",
