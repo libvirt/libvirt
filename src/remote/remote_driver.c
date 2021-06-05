@@ -729,9 +729,6 @@ doRemoteOpen(virConnectPtr conn,
              virConf *conf,
              unsigned int flags)
 {
-#ifndef WIN32
-    g_autofree char *daemonPath = NULL;
-#endif
     g_autofree char *tls_priority = NULL;
     g_autofree char *name = NULL;
     g_autofree char *command = NULL;
