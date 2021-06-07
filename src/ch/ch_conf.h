@@ -35,7 +35,6 @@ struct _virCHDriverConfig {
 
     char *stateDir;
     char *logDir;
-    char *uri;
 
     uid_t user;
     gid_t group;

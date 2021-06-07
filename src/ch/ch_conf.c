@@ -141,7 +141,6 @@ virCHDriverConfigNew(bool privileged)
     if (!(cfg = virObjectNew(virCHDriverConfigClass)))
         return NULL;
 
-    cfg->uri = g_strdup(privileged ? "ch:///system" : "ch:///session");
     if (privileged) {
         if (virGetUserID(CH_USER, &cfg->user) < 0)
             return NULL;
