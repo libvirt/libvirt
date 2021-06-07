@@ -155,8 +155,8 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     }
 
     cmd = virNetDevOpenvswitchCreateCmd();
-    virCommandAddArgList(cmd, "--", "--if-exists", "del-port",
-                         ifname, "--", "add-port", brname, ifname, NULL);
+    virCommandAddArgList(cmd, "--", "--may-exist",
+                         "add-port", brname, ifname, NULL);
 
     virNetDevOpenvswitchConstructVlans(cmd, virtVlan);
 
