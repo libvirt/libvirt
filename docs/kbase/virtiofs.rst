@@ -29,7 +29,11 @@ NUMA. As of QEMU 5.0.0 and libvirt 6.9.0, it is possible to
 specify the memory backend without NUMA (using the so called
 memobject interface).
 
-Either of the following:
+One of the following:
+
+* Use memfd memory
+
+  No host setup is required when using the Linux memfd memory backend.
 
 * Use file-backed memory
 
@@ -75,7 +79,20 @@ Guest setup
 
 #. Specify the memory backend
 
-   Either of the following:
+   One of the following:
+
+   * memfd memory
+
+     ::
+
+        <domain>
+          ...
+          <memoryBacking>
+            <source type='memfd'/>
+            <access mode='shared'/>
+          </memoryBacking>
+          ...
+        </domain>
 
    * File-backed memory
 
