@@ -5410,6 +5410,14 @@ static const vshCmdOptDef opts_dump[] = {
     {.name = NULL}
 };
 
+VIR_ENUM_IMPL(virDomainCoreDumpFormat,
+              VIR_DOMAIN_CORE_DUMP_FORMAT_LAST,
+              "kdump-zlib",
+              "kdump-lzo",
+              "kdump-snappy",
+              "elf",
+              "win-dmp");
+
 static void
 doDump(void *opaque)
 {
@@ -5421,7 +5429,7 @@ doDump(void *opaque)
     const char *to = NULL;
     unsigned int flags = 0;
     const char *format = NULL;
-    unsigned int dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_RAW;
+    int dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_RAW;
 #ifndef WIN32
     sigset_t sigmask, oldsigmask;
 
@@ -5455,20 +5463,10 @@ doDump(void *opaque)
         }
 
         if (vshCommandOptStringQuiet(ctl, cmd, "format", &format) > 0) {
-            if (STREQ(format, "kdump-zlib")) {
-                dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_ZLIB;
-            } else if (STREQ(format, "kdump-lzo")) {
-                dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_LZO;
-            } else if (STREQ(format, "kdump-snappy")) {
-                dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_SNAPPY;
-            } else if (STREQ(format, "elf")) {
-                dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_RAW;
-            } else if (STREQ(format, "win-dmp")) {
-                dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_WIN_DMP;
-            } else {
+            if ((dumpformat = virDomainCoreDumpFormatTypeFromString(format)) < 0) {
                 vshError(ctl, _("format '%s' is not supported, expecting "
-                                "'kdump-zlib', 'kdump-lzo', 'kdump-snappy' "
-                                "or 'elf'"), format);
+                                "'kdump-zlib', 'kdump-lzo', 'kdump-snappy', "
+                                "'win-dmp' or 'elf'"), format);
                 goto out;
             }
         }

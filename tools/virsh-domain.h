@@ -43,3 +43,4 @@ extern const vshCmdDef domManagementCmds[];
 VIR_ENUM_DECL(virDomainProcessSignal);
 VIR_ENUM_DECL(virDomainLifecycle);
 VIR_ENUM_DECL(virDomainLifecycleAction);
+VIR_ENUM_DECL(virDomainCoreDumpFormat);
