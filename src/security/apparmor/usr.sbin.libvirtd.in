@@ -25,6 +25,9 @@ profile libvirtd @sbindir@/libvirtd flags=(attach_disconnected) {
   capability fsetid,
   capability audit_write,
   capability ipc_lock,
+  capability sys_rawio,
+  capability bpf,
+  capability perfmon,
 
   # Needed for vfio
   capability sys_resource,
