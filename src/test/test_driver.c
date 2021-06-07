@@ -5007,6 +5007,36 @@ testDomainInterfaceAddressFromNet(testDriver *driver,
     return ret;
 }
 
+static int
+testNodeGetSecurityModel(virConnectPtr conn,
+                         virSecurityModelPtr secmodel)
+{
+    testDriver *driver = conn->privateData;
+
+    memset(secmodel, 0, sizeof(*secmodel));
+
+    if (driver->caps->host.nsecModels == 0 ||
+        driver->caps->host.secModels[0].model == NULL)
+        return 0;
+
+    if (virStrcpy(secmodel->model, driver->caps->host.secModels[0].model,
+                  VIR_SECURITY_MODEL_BUFLEN) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("security model string exceeds max %d bytes"),
+                       VIR_SECURITY_MODEL_BUFLEN - 1);
+        return -1;
+    }
+
+    if (virStrcpy(secmodel->doi, driver->caps->host.secModels[0].doi,
+                  VIR_SECURITY_DOI_BUFLEN) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("security DOI string exceeds max %d bytes"),
+                       VIR_SECURITY_DOI_BUFLEN - 1);
+        return -1;
+    }
+
+    return 0;
+}
 
 static int
 testDomainInterfaceAddresses(virDomainPtr dom,
@@ -9296,6 +9326,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetVcpus = testDomainGetVcpus, /* 0.7.3 */
     .domainGetVcpuPinInfo = testDomainGetVcpuPinInfo, /* 1.2.18 */
     .domainGetMaxVcpus = testDomainGetMaxVcpus, /* 0.7.3 */
+    .nodeGetSecurityModel = testNodeGetSecurityModel, /* 7.5.0 */
     .domainGetXMLDesc = testDomainGetXMLDesc, /* 0.1.4 */
     .domainSetMemoryParameters = testDomainSetMemoryParameters, /* 5.6.0 */
     .domainGetMemoryParameters = testDomainGetMemoryParameters, /* 5.6.0 */
