@@ -1662,54 +1662,17 @@ virFileIsLink(const char *linkpath)
 char *
 virFindFileInPath(const char *file)
 {
-    const char *origpath = NULL;
-    g_auto(GStrv) paths = NULL;
-    char **pathiter;
-
+    g_autofree char *path = NULL;
     if (file == NULL)
         return NULL;
 
-    /* if we are passed an absolute path (starting with /), return a
-     * copy of that path, after validating that it is executable
+    path = g_find_program_in_path(file);
+
+    /* Workaround for a bug in g_find_program_in_path() not returning absolute
+     * path as documented.  This has been fixed in
+     * https://gitlab.gnome.org/GNOME/glib/-/merge_requests/2127
      */
-    if (g_path_is_absolute(file)) {
-        if (!virFileIsExecutable(file))
-            return NULL;
-
-        return g_strdup(file);
-    }
-
-    /* If we are passed an anchored path (containing a /), then there
-     * is no path search - it must exist in the current directory
-     */
-    if (strchr(file, '/')) {
-        char *abspath = NULL;
-
-        if (!virFileIsExecutable(file))
-            return NULL;
-
-        return g_canonicalize_filename(file, NULL);
-    }
-
-    /* copy PATH env so we can tweak it */
-    origpath = getenv("PATH");
-    if (!origpath)
-        origpath = "/bin:/usr/bin";
-
-    /* for each path segment, append the file to search for and test for
-     * it. return it if found.
-     */
-
-    if (!(paths = g_strsplit(origpath, ":", 0)))
-        return NULL;
-
-    for (pathiter = paths; *pathiter; pathiter++) {
-        g_autofree char *fullpath = g_build_filename(*pathiter, file, NULL);
-        if (virFileIsExecutable(fullpath))
-            return g_steal_pointer(&fullpath);
-    }
-
-    return NULL;
+    return g_canonicalize_filename(path, NULL);
 }
 
 
