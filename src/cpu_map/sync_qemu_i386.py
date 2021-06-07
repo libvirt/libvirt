@@ -196,7 +196,7 @@ def read_builtin_x86_defs(filename):
     """Extract content between begin_mark and end_mark from file `filename` as
     string, while expanding shorthand macros like "I486_FEATURES"."""
 
-    begin_mark = "static X86CPUDefinition builtin_x86_defs[] = {\n"
+    begin_mark = re.compile("^static X86CPUDefinition builtin_x86_defs\\[\\] = {$")
     end_mark = "};\n"
     shorthand = re.compile("^#define ([A-Z0-9_]+_FEATURES) (.*)$")
     lines = list()
@@ -205,10 +205,11 @@ def read_builtin_x86_defs(filename):
     with open(filename, "rt") as f:
         while True:
             line = readline_cont(f)
-            if line == begin_mark:
-                break
             if not line:
                 raise RuntimeError("begin mark not found")
+            match = begin_mark.match(line)
+            if match:
+                break;
             match = shorthand.match(line)
             if match:
                 # TCG definitions are irrelevant for cpu models
