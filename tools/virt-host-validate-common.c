@@ -142,7 +142,7 @@ int virHostValidateDeviceExists(const char *hvname,
 
     if (access(dev_name, F_OK) < 0) {
         virHostMsgFail(level, "%s", hint);
-        return -1;
+        return VIR_HOST_VALIDATE_FAILURE(level);
     }
 
     virHostMsgPass();
@@ -159,7 +159,7 @@ int virHostValidateDeviceAccessible(const char *hvname,
 
     if (access(dev_name, R_OK|W_OK) < 0) {
         virHostMsgFail(level, "%s", hint);
-        return -1;
+        return VIR_HOST_VALIDATE_FAILURE(level);
     }
 
     virHostMsgPass();
@@ -180,7 +180,7 @@ int virHostValidateNamespace(const char *hvname,
 
     if (access(nspath, F_OK) < 0) {
         virHostMsgFail(level, "%s", hint);
-        return -1;
+        return VIR_HOST_VALIDATE_FAILURE(level);
     }
 
     virHostMsgPass();
@@ -264,17 +264,17 @@ int virHostValidateLinuxKernel(const char *hvname,
 
     if (STRNEQ(uts.sysname, "Linux")) {
         virHostMsgFail(level, "%s", hint);
-        return -1;
+        return VIR_HOST_VALIDATE_FAILURE(level);
     }
 
     if (virParseVersionString(uts.release, &thisversion, true) < 0) {
         virHostMsgFail(level, "%s", hint);
-        return -1;
+        return VIR_HOST_VALIDATE_FAILURE(level);
     }
 
     if (thisversion < version) {
         virHostMsgFail(level, "%s", hint);
-        return -1;
+        return VIR_HOST_VALIDATE_FAILURE(level);
     } else {
         virHostMsgPass();
         return 0;
@@ -291,7 +291,7 @@ int virHostValidateCGroupControllers(const char *hvname,
     size_t i;
 
     if (virCgroupNew("/", -1, &group) < 0)
-        return -1;
+        return VIR_HOST_VALIDATE_FAILURE(level);
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         int flag = 1 << i;
@@ -303,7 +303,7 @@ int virHostValidateCGroupControllers(const char *hvname,
         virHostMsgCheck(hvname, "for cgroup '%s' controller support", cg_name);
 
         if (!virCgroupHasController(group, i)) {
-            ret = -1;
+            ret = VIR_HOST_VALIDATE_FAILURE(level);
             virHostMsgFail(level, "Enable '%s' in kernel Kconfig file or "
                            "mount/enable cgroup controller in your system",
                            cg_name);
@@ -320,7 +320,7 @@ int virHostValidateCGroupControllers(const char *hvname G_GNUC_UNUSED,
                                      virHostValidateLevel level)
 {
     virHostMsgFail(level, "%s", "This platform does not support cgroups");
-    return -1;
+    return VIR_HOST_VALIDATE_FAILURE(level);
 }
 #endif /* !__linux__ */
 
@@ -354,7 +354,7 @@ int virHostValidateIOMMU(const char *hvname,
                            "No ACPI DMAR table found, IOMMU either "
                            "disabled in BIOS or not supported by this "
                            "hardware platform");
-            return -1;
+            return VIR_HOST_VALIDATE_FAILURE(level);
         }
     } else if (isAMD) {
         virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
@@ -366,7 +366,7 @@ int virHostValidateIOMMU(const char *hvname,
                            "No ACPI IVRS table found, IOMMU either "
                            "disabled in BIOS or not supported by this "
                            "hardware platform");
-            return -1;
+            return VIR_HOST_VALIDATE_FAILURE(level);
         }
     } else if (ARCH_IS_PPC64(arch)) {
         /* Empty Block */
@@ -385,7 +385,7 @@ int virHostValidateIOMMU(const char *hvname,
     } else {
         virHostMsgFail(level,
                        "Unknown if this platform has IOMMU support");
-        return -1;
+        return VIR_HOST_VALIDATE_FAILURE(level);
     }
 
 
@@ -404,7 +404,7 @@ int virHostValidateIOMMU(const char *hvname,
                            "Add %s to kernel cmdline arguments", bootarg);
         else
             virHostMsgFail(level, "IOMMU capability not compiled into kernel.");
-        return -1;
+        return VIR_HOST_VALIDATE_FAILURE(level);
     }
     virHostMsgPass();
     return 0;
@@ -468,7 +468,7 @@ int virHostValidateSecureGuests(const char *hvname,
             }
 
             if (virFileReadValueString(&cmdline, "/proc/cmdline") < 0)
-                return -1;
+                return VIR_HOST_VALIDATE_FAILURE(level);
 
             /* we're prefix matching rather than equality matching here, because
              * kernel would treat even something like prot_virt='yFOO' as
@@ -516,7 +516,7 @@ int virHostValidateSecureGuests(const char *hvname,
     } else {
         virHostMsgFail(level,
                        "Unknown if this platform has Secure Guest support");
-        return -1;
+        return VIR_HOST_VALIDATE_FAILURE(level);
     }
 
     return 0;

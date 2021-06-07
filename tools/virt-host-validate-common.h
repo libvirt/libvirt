@@ -45,6 +45,20 @@ typedef enum {
 
 VIR_ENUM_DECL(virHostValidateCPUFlag);
 
+/**
+ * VIR_HOST_VALIDATE_FAILURE
+ * @level: the virHostValidateLevel to be checked
+ *
+ * This macro is to be used in to return a failures based on the
+ * virHostValidateLevel use in the function.
+ *
+ * If the virHostValidateLevel is VIR_HOST_VALIDATE_FAIL, -1 is returned.
+ * 0 is returned otherwise (as the virHosValidateLevel is then either a
+ * Warn or a Note).
+ */
+
+#define VIR_HOST_VALIDATE_FAILURE(level) (level == VIR_HOST_VALIDATE_FAIL) ? -1 : 0
+
 void virHostMsgSetQuiet(bool quietFlag);
 
 void virHostMsgCheck(const char *prefix,
