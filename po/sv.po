@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-05-25 14:38+0000\n"
-"PO-Revision-Date: 2021-05-10 11:34+0000\n"
+"PO-Revision-Date: 2021-06-07 08:46+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -1420,7 +1420,7 @@ msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr "”wwnn” och ”wwpn” måste anges för adaptertypen ”fchost”"
 
 msgid "(<null>)"
-msgstr ""
+msgstr "(<null>)"
 
 msgid "(CPU_definition)"
 msgstr "(CPU_definition)"
@@ -2778,7 +2778,7 @@ msgstr "Kan inte skapa autostartkatalogen %s"
 
 #, c-format
 msgid "Cannot create daemon common directory '%s'"
-msgstr ""
+msgstr "Kan inte skapa demonens allmänna katalog ”%s”"
 
 #, c-format
 msgid "Cannot create directory '%s'"
@@ -6385,290 +6385,284 @@ msgid "Failed disable mount propagation out of the root filesystem"
 msgstr ""
 "Misslyckades att avaktivera överföring av montering utanför rotfilsystemet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed new node mode for target '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades att sätta nytt läge för målet ”%s”"
 
 #, c-format
 msgid "Failed set TLS x509 credentials: %s"
-msgstr ""
+msgstr "Misslyckades att sätta TLS 509-kreditiv: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed testunitready: %s"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Misslyckades med testunitready: %s"
 
-#, fuzzy
 msgid "Failed to accept migration connection"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "Misslyckades att acceptera migrationsanslutningen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to access '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att komma åt ”%s”"
 
-#, fuzzy
 msgid "Failed to acquire lock"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades att få låset"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to acquire lock: %s"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att få låset: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to acquire pid file '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades att få tag i pid-filen ”%s”"
 
 #, c-format
 msgid "Failed to add %s controller type definition"
-msgstr ""
+msgstr "Misslyckades att lägga till %s-styrenhetens typdefinition"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add IP address %s to IP address cache for interface %s"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr ""
+"Misslyckades med att lägga till IP-adress %s till IP-adresscachen för "
+"gränssnittet %s"
 
 #, c-format
 msgid "Failed to add IP address %s/%d%s%s%s%s to %s"
-msgstr ""
+msgstr "Misslyckades att lägga till IP-adressen %s/%d%s%s%s%s till %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add PCI device %s to the inactive list"
-msgstr "Misslyckades att lista inaktiva domäner"
+msgstr "Misslyckades att lägga till PCI-enheten %s till den inaktiva listan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add capability %s: %d"
-msgstr "Det gick inte att sätta förmågor: %d"
+msgstr "Misslyckades att lägga till förmågan %s: %d"
 
 #, c-format
 msgid ""
 "Failed to add driver '%s' to driver_override  interface of PCI device '%s'"
 msgstr ""
+"Misslyckades att lägga till drivrutinen ”%s” till driver_override-gränssnitt "
+"för PCI-enheten ”%s”"
 
 msgid "Failed to add netlink event handle watch"
-msgstr ""
+msgstr "Misslyckades att lägga till netlink-händelsehanteringsbavakning"
 
 msgid "Failed to add signal handle watch"
-msgstr ""
+msgstr "Misslyckades att lägga till signalhanteringsbevakning"
 
 #, c-format
 msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
 msgstr ""
+"Misslyckades att lägga till lagringsstyrenhet (namn: %s, busstyp: %d), "
+"rk=%08x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to allocate PCI device list: %s"
-msgstr "Misslyckades att ansluta enhet från %s"
+msgstr "Misslyckades att allokera PCI-enhetslistan: %s"
 
-#, fuzzy
 msgid "Failed to allocate XML buffer"
-msgstr "Misslyckades att skapa XML"
+msgstr "Misslyckades att allokera en XML-buffert"
 
 #, c-format
 msgid "Failed to allocate memory for checkpoint directory for domain %s"
 msgstr ""
+"Misslyckades att allokera minne för kontrollpunktskatalogen för domänen %s"
 
-#, fuzzy
 msgid "Failed to allocate memory for path"
-msgstr "kunde inte allokera minne"
+msgstr "Misslyckades att allokera minne för sökvägen"
 
 #, c-format
 msgid "Failed to allocate memory for snapshot directory for domain %s"
 msgstr ""
+"Misslyckades att allokera minne för ögonblicksbildskatalogen för domänen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to allocate slirp for '%s'"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att allokera slirp för ”%s”"
 
-#, fuzzy
 msgid "Failed to allocate tty"
-msgstr "Misslyckades att skapa XML"
+msgstr "Misslyckades att allokera en tty"
 
 #, c-format
 msgid "Failed to apply capabilities: %d"
 msgstr "Det gick inte att sätta förmågor: %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to apply firewall rules %s: %s"
-msgstr "Det gick inte att sätta förmågor: %d"
+msgstr "Misslyckades att ta brandväggsregler i drift %s: %s"
 
 #, c-format
 msgid "Failed to attach device from %s"
 msgstr "Misslyckades att ansluta enhet från %s"
 
-#, fuzzy
 msgid "Failed to attach disk"
-msgstr "Misslyckades att ansluta enhet från %s"
+msgstr "Misslyckades att ansluta en disk"
 
-#, fuzzy
 msgid "Failed to attach interface"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Misslyckades med att ansluta ett gränssnitt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to attach to pid %u"
-msgstr "Misslyckades att ansluta enhet från %s"
+msgstr "Misslyckades att ansluta till pid %u"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to authenticate as 'none': %s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Misslyckades att autentisera som ”none”: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to autostart VM '%s': %s"
-msgstr "Misslyckades att hämta block statistik %sl %s"
+msgstr "Misslyckades att automatstarta VM:en ”%s”: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to autostart storage pool '%s': %s"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Misslyckades med att automatstarta lagringspoolen ”%s”: %s"
 
-#, fuzzy
 msgid "Failed to balloon domain0 memory"
-msgstr "Misslyckades att starta om domän %s"
+msgstr "Misslyckades att blåsa upp domän0-minnet"
 
-#, fuzzy
 msgid "Failed to begin network config change transaction"
-msgstr "Misslyckades att definiera nätverk från %s"
+msgstr ""
+"Misslyckades att påbörja ändringstransaktionen av nätverkskonfigurationen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bind %s on to %s"
-msgstr "Misslyckades att binda uttag till ”%s”"
+msgstr "Misslyckades att binda %s till %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bind %s to new root %s"
-msgstr "Misslyckades att binda uttag till ”%s”"
+msgstr "Misslyckades att binda %s till den nya roten %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bind cgroup '%s' on '%s'"
-msgstr "Misslyckades att binda uttag till ”%s”"
+msgstr "Misslyckades att binda cgroup ”%s” på ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bind mount directory %s to %s"
-msgstr "Misslyckades att binda uttag till ”%s”"
+msgstr "Misslyckades att binda monteringskatalogen %s till %s"
 
 #, c-format
 msgid "Failed to bind socket to '%s'"
 msgstr "Misslyckades att binda uttag till ”%s”"
 
-#, fuzzy
 msgid "Failed to build pidfile path"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades att bygga pid-filsökvägen"
 
-#, fuzzy
 msgid "Failed to build pidfile path."
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades att bygga pid-filsökvägen."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to build pool %s"
-msgstr "Misslyckades att binda uttag till ”%s”"
+msgstr "Misslyckades att bygga poolen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to change owner of %s to %u:%u"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att byta ägare av %s till %u:%u"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to change ownership of '%s' to %d:%d"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att byta ägarskap av ”%s” till %d:%d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to change ownership of tty %s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Misslyckades att byta ägarskap av tty %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to change size of volume '%s' by %s"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att ändra storleken på volymen ”%s” med %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to change size of volume '%s' to %s"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att ändra storlek på volymen ”%s” till %s"
 
 #, c-format
 msgid "Failed to change storage controller model, rc=%08x"
-msgstr ""
+msgstr "Misslyckades att ändra styrenhetsmodellen för lagring, rk=%08x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to chdir into %s"
-msgstr "Misslyckades att förstöra nätverk %s"
+msgstr "Misslyckades att ändra katalog till %s"
 
-#, fuzzy
 msgid "Failed to check for domain managed save image"
-msgstr "Misslyckades att återställa domän från %s"
+msgstr "Misslyckades att leta efter en domänhanterad sparad avbild"
 
 msgid "Failed to check for managed save image"
-msgstr ""
+msgstr "Misslyckades att leta efter en hanterad sparad avbild"
 
 #, c-format
 msgid "Failed to check system token '%s'"
-msgstr ""
+msgstr "Misslyckades att kontrollera systempoletten ”%s”"
 
 #, c-format
 msgid "Failed to chown device %s"
 msgstr "Misslyckades att göra chown på enheten %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to clean up %s"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades att rensa upp %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to clear security context for agent for %s"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades att nollställa säkerhetskontexten för agenten för %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to clear security context for monitor for %s"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades att nollställa säkerhetskontexten för övervakningen av %s"
 
 #, c-format
 msgid "Failed to clone vol from %s"
 msgstr "Misslyckades att klona volymen från %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to close bind target %s"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Misslyckades med att stänga bindningsmålet %s"
 
-#, fuzzy
 msgid "Failed to collect auth credentials"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades att samla autentiseringskreditiv"
 
 msgid "Failed to commit network config change transaction"
 msgstr ""
+"Misslyckades att fastställa ändringstransaktionen av nätverkskonfigurationen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to compare host CPU with %s"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades att jämföra värd-CPU:n med %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to compare hypervisor CPU with %s"
-msgstr "misslyckades att hämta typ av hypervisor"
+msgstr "Misslyckades att jämföra hypervisor-CPU:n med %s"
 
 #, c-format
 msgid "Failed to compile regex %s"
 msgstr "Misslyckades att kompilera reguljäruttrycket %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to complete action %s on media"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att fullfölja åtgärden %s på mediet"
 
-#, fuzzy
 msgid "Failed to complete tree listing"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "Misslyckades att färdigställa trädlistningen"
 
 #, c-format
 msgid "Failed to connect socket to '%s'"
 msgstr "Misslyckades att ansluta uttaget till ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to connect to remote libvirt URI %s: %s"
-msgstr "Misslyckades att ansluta uttaget till ”%s”"
+msgstr "Misslyckades att ansluta till fjärr-libvirt-URI:n %s: %s"
 
-#, fuzzy
 msgid "Failed to connect to ssh agent"
-msgstr "Misslyckades att ansluta uttaget till ”%s”"
+msgstr "Misslyckades att ansluta till ssh-agenten"
 
-#, fuzzy
 msgid "Failed to connect to the admin server"
-msgstr "misslyckades att ansluta till hypervisor"
+msgstr "Misslyckades att ansluta administrationsservern"
 
 #, c-format
 msgid "Failed to connect: %s"
 msgstr "Misslyckades att ansluta: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to convert '%s' to int"
-msgstr "Misslyckades att konvertera ”%s” till teckenlöst heltal"
+msgstr "Misslyckades att konvertera ”%s” till heltal"
 
 #, c-format
 msgid "Failed to convert '%s' to unsigned int"
@@ -6678,37 +6672,32 @@ msgstr "Misslyckades att konvertera ”%s” till teckenlöst heltal"
 msgid "Failed to convert '%s' to unsigned long long"
 msgstr "Misslyckades att konvertera ”%s” till teckenlöst långlångt heltal"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to convert interface index %d to a name"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "Misslyckades att konvertera gränssnittsindex %d till ett namn"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to convert loadparm '%s' to upper case"
-msgstr "Misslyckades att konvertera ”%s” till teckenlöst heltal"
+msgstr "Misslyckades att konvertera laddparametern ”%s” till versaler"
 
-#, fuzzy
 msgid "Failed to convert the command string to argv-lists"
-msgstr "Misslyckades att konvertera ”%s” till teckenlöst heltal"
+msgstr "Misslyckades att konvertera kommandosträngen till argv-listor"
 
-#, fuzzy
 msgid "Failed to copy XML node"
-msgstr "Misslyckades att skapa XML"
+msgstr "Misslyckades att kopiera XML-noden"
 
 #, c-format
 msgid "Failed to core dump domain '%s' to %s"
-msgstr ""
+msgstr "Misslyckades att kärndumpa domänen ”%s” till %s"
 
-#, fuzzy
 msgid "Failed to count network filters"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades att räkna nätverksfilter"
 
-#, fuzzy
 msgid "Failed to count node devices"
-msgstr "Misslyckades att avmontera enheten från %s"
+msgstr "Misslyckades att räkna nodenheter"
 
-#, fuzzy
 msgid "Failed to count secrets"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades att räkna hemligheter"
 
 #, c-format
 msgid "Failed to create %s"
@@ -6718,64 +6707,61 @@ msgstr "Misslyckades att skapa %s"
 msgid "Failed to create '%s': %s"
 msgstr "misslyckades med att skapa ”%s”: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create SASL client context: %d (%s)"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att SASL-klientkontext: %d (%s)"
 
 msgid "Failed to create XML"
 msgstr "Misslyckades att skapa XML"
 
-#, fuzzy
 msgid "Failed to create XML config object"
-msgstr "Misslyckades att skapa XML"
+msgstr "Misslyckades att skapa XML-konfigurationsobjekt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create bind target %s"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa bindningsmål %s"
 
-#, fuzzy
 msgid "Failed to create bridge node in xml document"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa en bryggnod i xml-dokumentet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create cache dir %s"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa cache-katalogen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create channel target dir %s"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades att skapa kanalmålskatalogen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create checkpoint dir %s"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa kontrollpunktskatalogen %s"
 
 #, c-format
 msgid "Failed to create dbus state dir %s"
-msgstr ""
+msgstr "Misslyckades att skapa dbus-tillståndskatalogen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades att en katalog för ”%s” enheten ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create directory for device %s"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades att en katalog för enheten %s"
 
-#, fuzzy
 msgid "Failed to create disk pool geometry"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades att skapa diskpoolsgeometrin"
 
 #, c-format
 msgid "Failed to create domain from %s"
 msgstr "Misslyckades att skapa domän från %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create domain save file '%s'"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa domänsparfilen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create dump dir %s"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa dumpkatalogen %s"
 
 #, c-format
 msgid "Failed to create file '%s'"
@@ -6783,22 +6769,23 @@ msgstr "Misslyckades att skapa filen ”%s”"
 
 #, c-format
 msgid "Failed to create file '%s': couldn't determine fs type"
-msgstr ""
+msgstr "Misslyckades att skapa filen ”%s”: kunde inte avgöra fs-typen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create filesystem probe for device %s"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades att filsystemsproben för enheten %s"
 
 msgid "Failed to create interface node under bridge node in xml document"
 msgstr ""
+"Misslyckades att skapa en gränssnittsnod under bryggnoden i xml-dokumentet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create iscsi context for %s"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades att skapa iscsi-kontexten för %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create lib dir %s"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa bibliotekskatalogen %s"
 
 #, fuzzy, c-format
 msgid "Failed to create memory backing dir %s"
@@ -23693,7 +23680,7 @@ msgid "device key"
 msgstr ""
 
 msgid "device name"
-msgstr ""
+msgstr "enhetsnamn"
 
 msgid "device name or wwn pair in 'wwnn,wwpn' format"
 msgstr ""
@@ -24110,7 +24097,7 @@ msgstr ""
 
 #, c-format
 msgid "domain '%s' has no current snapshot"
-msgstr ""
+msgstr "domänen ”%s” har ingen aktuell ögonblicksbild"
 
 #, c-format
 msgid "domain '%s' in %s must match connection"
@@ -24279,9 +24266,8 @@ msgstr "Domänen är inte avstängd"
 msgid "domain is not in suspend state"
 msgstr "Domän %s suspenderad\n"
 
-#, fuzzy
 msgid "domain is not running"
-msgstr "Domänen kör redan"
+msgstr "domänen kör inte"
 
 msgid "domain is not running on destination host"
 msgstr ""
@@ -24407,7 +24393,7 @@ msgid "done"
 msgstr "klar"
 
 msgid "download volume contents to a file"
-msgstr ""
+msgstr "hämta volymens innehåll till en fil"
 
 msgid "drive hotplug is not supported"
 msgstr ""
@@ -24983,7 +24969,7 @@ msgid "expected exactly 1 device for the storage pool"
 msgstr ""
 
 msgid "expected exactly 1 host for the storage pool"
-msgstr ""
+msgstr "exakt 1 värd förväntades för lagringspoolen"
 
 #, c-format
 msgid "expected protocol '%s' but got '%s' in URI JSON volume definition"
