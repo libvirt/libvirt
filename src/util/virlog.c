@@ -1512,7 +1512,7 @@ virLogParseOutput(const char *src)
 #endif
         break;
     case VIR_LOG_TO_FILE:
-        if (virFileAbsPath(tokens[2], &abspath) < 0)
+        if (!(abspath = g_canonicalize_filename(tokens[2], NULL)))
             return NULL;
         ret = virLogNewOutputToFile(prio, abspath);
         VIR_FREE(abspath);

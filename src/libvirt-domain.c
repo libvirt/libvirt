@@ -827,7 +827,7 @@ virDomainSave(virDomainPtr domain, const char *to)
         char *absolute_to;
 
         /* We must absolutize the file path as the save is done out of process */
-        if (virFileAbsPath(to, &absolute_to) < 0) {
+        if (!(absolute_to = g_canonicalize_filename(to, NULL))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("could not build absolute output file path"));
             goto error;
@@ -915,7 +915,7 @@ virDomainSaveFlags(virDomainPtr domain, const char *to,
         char *absolute_to;
 
         /* We must absolutize the file path as the save is done out of process */
-        if (virFileAbsPath(to, &absolute_to) < 0) {
+        if (!(absolute_to = g_canonicalize_filename(to, NULL))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("could not build absolute output file path"));
             goto error;
@@ -965,7 +965,7 @@ virDomainRestore(virConnectPtr conn, const char *from)
         char *absolute_from;
 
         /* We must absolutize the file path as the restore is done out of process */
-        if (virFileAbsPath(from, &absolute_from) < 0) {
+        if (!(absolute_from = g_canonicalize_filename(from, NULL))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("could not build absolute input file path"));
             goto error;
@@ -1039,7 +1039,7 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
         char *absolute_from;
 
         /* We must absolutize the file path as the restore is done out of process */
-        if (virFileAbsPath(from, &absolute_from) < 0) {
+        if (!(absolute_from = g_canonicalize_filename(from, NULL))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("could not build absolute input file path"));
             goto error;
@@ -1097,7 +1097,7 @@ virDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *file,
         char *absolute_file;
 
         /* We must absolutize the file path as the read is done out of process */
-        if (virFileAbsPath(file, &absolute_file) < 0) {
+        if (!(absolute_file = g_canonicalize_filename(file, NULL))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("could not build absolute input file path"));
             goto error;
@@ -1170,7 +1170,7 @@ virDomainSaveImageDefineXML(virConnectPtr conn, const char *file,
         char *absolute_file;
 
         /* We must absolutize the file path as the read is done out of process */
-        if (virFileAbsPath(file, &absolute_file) < 0) {
+        if (!(absolute_file = g_canonicalize_filename(file, NULL))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("could not build absolute input file path"));
             goto error;
@@ -1245,7 +1245,7 @@ virDomainCoreDump(virDomainPtr domain, const char *to, unsigned int flags)
         char *absolute_to;
 
         /* We must absolutize the file path as the save is done out of process */
-        if (virFileAbsPath(to, &absolute_to) < 0) {
+        if (!(absolute_to = g_canonicalize_filename(to, NULL))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("could not build absolute core file path"));
             goto error;
@@ -1329,7 +1329,7 @@ virDomainCoreDumpWithFormat(virDomainPtr domain, const char *to,
         char *absolute_to;
 
         /* We must absolutize the file path as the save is done out of process */
-        if (virFileAbsPath(to, &absolute_to) < 0) {
+        if (!(absolute_to = g_canonicalize_filename(to, NULL))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("could not build absolute core file path"));
             goto error;

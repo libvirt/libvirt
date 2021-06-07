@@ -1688,8 +1688,7 @@ virFindFileInPath(const char *file)
         if (!virFileIsExecutable(file))
             return NULL;
 
-        ignore_value(virFileAbsPath(file, &abspath));
-        return abspath;
+        return g_canonicalize_filename(file, NULL);
     }
 
     /* copy PATH env so we can tweak it */
@@ -3145,27 +3144,6 @@ virFileOpenTty(int *ttyprimary G_GNUC_UNUSED,
     return -1;
 }
 #endif /* WIN32 */
-
-/*
- * Creates an absolute path for a potentially relative path.
- * Return 0 if the path was not relative, or on success.
- * Return -1 on error.
- *
- * You must free the result.
- */
-int
-virFileAbsPath(const char *path, char **abspath)
-{
-    if (g_path_is_absolute(path)) {
-        *abspath = g_strdup(path);
-    } else {
-        g_autofree char *buf = g_get_current_dir();
-
-        *abspath = g_build_filename(buf, path, NULL);
-    }
-
-    return 0;
-}
 
 /* Remove spurious / characters from a path. The result must be freed */
 char *

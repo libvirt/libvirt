@@ -283,9 +283,6 @@ char *virFileBuildPath(const char *dir,
                        const char *name,
                        const char *ext) G_GNUC_WARN_UNUSED_RESULT;
 
-
-int virFileAbsPath(const char *path,
-                   char **abspath) G_GNUC_WARN_UNUSED_RESULT;
 void virFileRemoveLastComponent(char *path);
 
 int virFileOpenTty(int *ttymaster,

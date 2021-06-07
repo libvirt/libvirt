@@ -2178,7 +2178,6 @@ virDirOpen;
 virDirOpenIfExists;
 virDirOpenQuiet;
 virDirRead;
-virFileAbsPath;
 virFileAccessibleAs;
 virFileActivateDirOverrideForLib;
 virFileActivateDirOverrideForProg;
