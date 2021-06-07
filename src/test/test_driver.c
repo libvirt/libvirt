@@ -5008,6 +5008,36 @@ testDomainInterfaceAddressFromNet(testDriver *driver,
 }
 
 static int
+testDomainGetSecurityLabel(virDomainPtr dom,
+                           virSecurityLabelPtr seclabel)
+{
+    virDomainObj *vm;
+    int ret = -1;
+
+    memset(seclabel, 0, sizeof(*seclabel));
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainObjIsActive(vm)) {
+        if (virStrcpyStatic(seclabel->label, "libvirt-test") < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("security label exceeds maximum: %zu"),
+                           sizeof(seclabel->label) - 1);
+            goto cleanup;
+        }
+
+        seclabel->enforcing = 1;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
 testNodeGetSecurityModel(virConnectPtr conn,
                          virSecurityModelPtr secmodel)
 {
@@ -9326,6 +9356,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetVcpus = testDomainGetVcpus, /* 0.7.3 */
     .domainGetVcpuPinInfo = testDomainGetVcpuPinInfo, /* 1.2.18 */
     .domainGetMaxVcpus = testDomainGetMaxVcpus, /* 0.7.3 */
+    .domainGetSecurityLabel = testDomainGetSecurityLabel, /* 7.5.0 */
     .nodeGetSecurityModel = testNodeGetSecurityModel, /* 7.5.0 */
     .domainGetXMLDesc = testDomainGetXMLDesc, /* 0.1.4 */
     .domainSetMemoryParameters = testDomainSetMemoryParameters, /* 5.6.0 */

@@ -21,6 +21,7 @@ main(void)
 #else
 
 # define DOM_UUID "ef861801-45b9-11cb-88e3-afbfe5370493"
+# define SECURITY_LABEL "libvirt-test (enforcing)"
 
 static const char *dominfo_fc4 = "\
 Id:             2\n\
@@ -36,6 +37,7 @@ Autostart:      disable\n\
 Managed save:   no\n\
 Security model: testSecurity\n\
 Security DOI:   \n\
+Security label: " SECURITY_LABEL "\n\
 \n";
 static const char *domuuid_fc4 = DOM_UUID "\n\n";
 static const char *domid_fc4 = "2\n\n";
