@@ -940,3 +940,22 @@ virshDomainFSMountpointsCompleter(vshControl *ctl,
     virshDomainFree(dom);
     return ret;
 }
+
+
+char **
+virshDomainCoreDumpFormatCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                   const vshCmd *cmd G_GNUC_UNUSED,
+                                   unsigned int flags)
+{
+    char **ret = NULL;
+    size_t i;
+
+    virCheckFlags(0, NULL);
+
+    ret = g_new0(char *, VIR_DOMAIN_CORE_DUMP_FORMAT_LAST + 1);
+
+    for (i = 0; i < VIR_DOMAIN_CORE_DUMP_FORMAT_LAST; i++)
+        ret[i] = g_strdup(virDomainCoreDumpFormatTypeToString(i));
+
+    return ret;
+}

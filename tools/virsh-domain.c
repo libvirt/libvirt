@@ -5405,6 +5405,8 @@ static const vshCmdOptDef opts_dump[] = {
     },
     {.name = "format",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_NONE,
+     .completer = virshDomainCoreDumpFormatCompleter,
      .help = N_("specify the format of memory-only dump")
     },
     {.name = NULL}

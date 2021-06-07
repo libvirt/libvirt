@@ -122,3 +122,8 @@ char ** virshKeycodeNameCompleter(vshControl *ctl,
 char ** virshDomainFSMountpointsCompleter(vshControl *ctl,
                                           const vshCmd *cmd,
                                           unsigned int flags);
+
+char **
+virshDomainCoreDumpFormatCompleter(vshControl *ctl,
+                                   const vshCmd *cmd,
+                                   unsigned int flags);
