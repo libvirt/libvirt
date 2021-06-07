@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-05-25 14:38+0000\n"
-"PO-Revision-Date: 2021-05-10 11:34+0000\n"
+"PO-Revision-Date: 2021-06-04 10:32+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -6284,9 +6284,9 @@ msgstr "시험장치 준비 실패: %s"
 msgid "Failed to accept migration connection"
 msgstr "조건을 기다리는 데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to access '%s'"
-msgstr "'%s' 열기 실패"
+msgstr "'%s' 접근에 실패하였습니다"
 
 msgid "Failed to acquire lock"
 msgstr "잠금을 취득하는데 실패했습니다"
@@ -17751,9 +17751,9 @@ msgstr "처리 ID 시작 시간을 질의 할 수 없습니다"
 msgid "Unable to query sector size %s"
 msgstr "섹터 크기 %s를 질의 할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to query sector size %s: %s"
-msgstr "PCI 장치 %s를 리셋할 수 없음: %s"
+msgstr "섹터 크기 %s:%s를 질의 할 수 없습니다"
 
 #, fuzzy
 msgid "Unable to query tap interface name"
@@ -18357,9 +18357,9 @@ msgstr "로그 파일 쓰기 실패"
 msgid "Unable to write to file %s"
 msgstr "파일 %s에 쓸 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to file '%s'"
-msgstr "pid 파일 '%s/%s.pid' 쓰기 실패"
+msgstr "파일 %s에 쓸 수 없습니다"
 
 #, fuzzy
 msgid "Unable to write to monitor"
@@ -24843,19 +24843,19 @@ msgstr ""
 
 #, c-format
 msgid "event 'lifecycle' for network %s: %s\n"
-msgstr ""
+msgstr "네트워크 %s: %s에 대한 사건 '수명주기'\n"
 
 #, c-format
 msgid "event 'lifecycle' for node device %s: %s\n"
-msgstr ""
+msgstr "노드 장치 %s: %s에 대한 사건 '수명주기'\n"
 
 #, c-format
 msgid "event 'lifecycle' for secret %s: %s\n"
-msgstr ""
+msgstr "비밀 %s: %s에 대한 사건 '수명주기'\n"
 
 #, c-format
 msgid "event 'lifecycle' for storage pool %s: %s\n"
-msgstr ""
+msgstr "저장소 풀 %s: %s에 대한 사건 '수명주기'\n"
 
 #, c-format
 msgid ""
@@ -36131,7 +36131,7 @@ msgstr "macvtap 탭상의 인터페이스 플래그를 얻을 수 었습니다"
 
 #, c-format
 msgid "unable to stat %s"
-msgstr ""
+msgstr "실패한 통계 %s"
 
 #, fuzzy, c-format
 msgid "unable to stat block copy target '%s'"
@@ -36141,17 +36141,17 @@ msgstr "소켓 보안 문맥 '%s'을 설정할 수 없음"
 msgid "unable to stat for disk %s: %s"
 msgstr "rundir %s를 생성할 수 없습니다: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to stat: %s"
-msgstr "%s를 닫을 수 없음"
+msgstr "통계 할 수 없습니다: %s"
 
 #, fuzzy
 msgid "unable to truncate"
 msgstr "뮤텍스를 초기화할 수 없음 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to truncate %s"
-msgstr "%s을 생성할 수 없음 "
+msgstr "%s을 자를 수 없습니다"
 
 #, fuzzy
 msgid "unable to unload already unloaded profile"
