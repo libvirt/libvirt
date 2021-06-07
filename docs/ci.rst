@@ -50,10 +50,10 @@ Language bindings
           :target: https://gitlab.com/libvirt/libvirt-csharp/pipelines
           :alt: libvirt-csharp pipeline status
 
-   * - libvirt-go
-     - .. image:: https://gitlab.com/libvirt/libvirt-go/badges/master/pipeline.svg
-          :target: https://gitlab.com/libvirt/libvirt-go/pipelines
-          :alt: libvirt-go pipeline status
+   * - libvirt-go-module
+     - .. image:: https://gitlab.com/libvirt/libvirt-go-module/badges/master/pipeline.svg
+          :target: https://gitlab.com/libvirt/libvirt-go-module/pipelines
+          :alt: libvirt-go-module pipeline status
 
    * - libvirt-java
      - .. image:: https://gitlab.com/libvirt/libvirt-java/badges/master/pipeline.svg
@@ -116,10 +116,10 @@ Object mappings
           :target: https://gitlab.com/libvirt/libvirt-glib/pipelines
           :alt: libvirt-glib pipeline status
 
-   * - libvirt-go-xml
-     - .. image:: https://gitlab.com/libvirt/libvirt-go-xml/badges/master/pipeline.svg
-          :target: https://gitlab.com/libvirt/libvirt-go-xml/pipelines
-          :alt: libvirt-go-xml pipeline status
+   * - libvirt-go-xml-module
+     - .. image:: https://gitlab.com/libvirt/libvirt-go-xml-module/badges/master/pipeline.svg
+          :target: https://gitlab.com/libvirt/libvirt-go-xml-module/pipelines
+          :alt: libvirt-go-xml-module pipeline status
 
    * - libvirt-snmp
      - .. image:: https://gitlab.com/libvirt/libvirt-snmp/badges/master/pipeline.svg
