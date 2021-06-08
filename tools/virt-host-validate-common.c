@@ -470,14 +470,12 @@ int virHostValidateSecureGuests(const char *hvname,
                 return 0;
             }
 
-            if (virFileReadValueString(&cmdline, "/proc/cmdline") < 0)
-                return VIR_HOST_VALIDATE_FAILURE(level);
-
             /* we're prefix matching rather than equality matching here, because
              * kernel would treat even something like prot_virt='yFOO' as
              * enabled
              */
-            if (virKernelCmdlineMatchParam(cmdline, "prot_virt", kIBMValues,
+            if (virFileReadValueString(&cmdline, "/proc/cmdline") >= 0 &&
+                virKernelCmdlineMatchParam(cmdline, "prot_virt", kIBMValues,
                                            G_N_ELEMENTS(kIBMValues),
                                            VIR_KERNEL_CMDLINE_FLAGS_SEARCH_FIRST |
                                            VIR_KERNEL_CMDLINE_FLAGS_CMP_PREFIX)) {
