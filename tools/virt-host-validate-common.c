@@ -517,11 +517,9 @@ int virHostValidateSecureGuests(const char *hvname,
                            "disabled in firemare.");
             return VIR_HOST_VALIDATE_FAILURE(level);
         }
-    } else {
-        virHostMsgFail(level,
-                       "Unknown if this platform has Secure Guest support");
-        return VIR_HOST_VALIDATE_FAILURE(level);
     }
 
-    return 0;
+    virHostMsgFail(level,
+                   "Unknown if this platform has Secure Guest support");
+    return VIR_HOST_VALIDATE_FAILURE(level);
 }
