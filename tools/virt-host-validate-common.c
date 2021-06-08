@@ -290,8 +290,11 @@ int virHostValidateCGroupControllers(const char *hvname,
     int ret = 0;
     size_t i;
 
-    if (virCgroupNew("/", -1, &group) < 0)
+    if (virCgroupNew("/", -1, &group) < 0) {
+        fprintf(stderr, "Unable to initialize cgroups: %s\n",
+                virGetLastErrorMessage());
         return VIR_HOST_VALIDATE_FAILURE(level);
+    }
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         int flag = 1 << i;
