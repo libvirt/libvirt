@@ -467,7 +467,7 @@ int virHostValidateSecureGuests(const char *hvname,
             if (!virFileIsDir("/sys/firmware/uv")) {
                 virHostMsgFail(level, "IBM Secure Execution not supported by "
                                       "the currently used kernel");
-                return 0;
+                return VIR_HOST_VALIDATE_FAILURE(level);
             }
 
             /* we're prefix matching rather than equality matching here, because
@@ -486,16 +486,18 @@ int virHostValidateSecureGuests(const char *hvname,
                                "IBM Secure Execution appears to be disabled "
                                "in kernel. Add prot_virt=1 to kernel cmdline "
                                "arguments");
+                return VIR_HOST_VALIDATE_FAILURE(level);
             }
         } else {
             virHostMsgFail(level, "Hardware or firmware does not provide "
                                   "support for IBM Secure Execution");
+            return VIR_HOST_VALIDATE_FAILURE(level);
         }
     } else if (hasAMDSev) {
         if (virFileReadValueString(&mod_value, "/sys/module/kvm_amd/parameters/sev") < 0) {
             virHostMsgFail(level, "AMD Secure Encrypted Virtualization not "
                                   "supported by the currently used kernel");
-            return 0;
+            return VIR_HOST_VALIDATE_FAILURE(level);
         }
 
         if (mod_value[0] != '1') {
@@ -503,7 +505,7 @@ int virHostValidateSecureGuests(const char *hvname,
                            "AMD Secure Encrypted Virtualization appears to be "
                            "disabled in kernel. Add kvm_amd.sev=1 "
                            "to the kernel cmdline arguments");
-            return 0;
+            return VIR_HOST_VALIDATE_FAILURE(level);
         }
 
         if (virFileExists("/dev/sev")) {
@@ -513,6 +515,7 @@ int virHostValidateSecureGuests(const char *hvname,
             virHostMsgFail(level,
                            "AMD Secure Encrypted Virtualization appears to be "
                            "disabled in firemare.");
+            return VIR_HOST_VALIDATE_FAILURE(level);
         }
     } else {
         virHostMsgFail(level,
