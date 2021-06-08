@@ -338,6 +338,8 @@ int virHostValidateIOMMU(const char *hvname,
     struct dirent *dent;
     int rc;
 
+    virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
+
     flags = virHostValidateGetCPUFlags();
 
     if (flags && virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_VMX))
@@ -348,7 +350,6 @@ int virHostValidateIOMMU(const char *hvname,
     virBitmapFree(flags);
 
     if (isIntel) {
-        virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
         if (access("/sys/firmware/acpi/tables/DMAR", F_OK) == 0) {
             virHostMsgPass();
             bootarg = "intel_iommu=on";
@@ -360,7 +361,6 @@ int virHostValidateIOMMU(const char *hvname,
             return VIR_HOST_VALIDATE_FAILURE(level);
         }
     } else if (isAMD) {
-        virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
         if (access("/sys/firmware/acpi/tables/IVRS", F_OK) == 0) {
             virHostMsgPass();
             bootarg = "iommu=pt iommu=1";
@@ -372,7 +372,7 @@ int virHostValidateIOMMU(const char *hvname,
             return VIR_HOST_VALIDATE_FAILURE(level);
         }
     } else if (ARCH_IS_PPC64(arch)) {
-        /* Empty Block */
+        virHostMsgPass();
     } else if (ARCH_IS_S390(arch)) {
         g_autoptr(DIR) dir = NULL;
 
@@ -385,6 +385,7 @@ int virHostValidateIOMMU(const char *hvname,
         rc = virDirRead(dir, &dent, NULL);
         if (rc <= 0)
             return 0;
+        virHostMsgPass();
     } else {
         virHostMsgFail(level,
                        "Unknown if this platform has IOMMU support");
