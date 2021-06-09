@@ -4243,6 +4243,10 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
         }
     } else {
         virBufferAsprintf(&buf, "%s", model);
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_VGA_GL) &&
+            accel3d == VIR_TRISTATE_SWITCH_ON &&
+            STREQ(model, "virtio-vga"))
+            virBufferAddLit(&buf, "-gl");
     }
 
     virBufferAsprintf(&buf, ",id=%s", video->info.alias);
