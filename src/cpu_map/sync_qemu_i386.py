@@ -209,7 +209,7 @@ def read_builtin_x86_defs(filename):
                 raise RuntimeError("begin mark not found")
             match = begin_mark.match(line)
             if match:
-                break;
+                break
             match = shorthand.match(line)
             if match:
                 # TCG definitions are irrelevant for cpu models
