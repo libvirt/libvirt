@@ -631,6 +631,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "acpi-index",
               "input-linux",
               "virtio-gpu-gl-pci",
+              "virtio-vga-gl",
     );
 
 
@@ -1351,6 +1352,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "vhost-user-blk", QEMU_CAPS_DEVICE_VHOST_USER_BLK },
     { "input-linux", QEMU_CAPS_INPUT_LINUX },
     { "virtio-gpu-gl-pci", QEMU_CAPS_VIRTIO_GPU_GL_PCI },
+    { "virtio-vga-gl", QEMU_CAPS_VIRTIO_VGA_GL },
 };
 
 
