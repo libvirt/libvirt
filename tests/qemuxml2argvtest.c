@@ -2501,6 +2501,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
             QEMU_CAPS_DEVICE_VIRTIO_VGA,
             QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS);
+    DO_TEST_CAPS_LATEST("video-virtio-vga-gpu-gl");
     DO_TEST_CAPS_LATEST("video-bochs-display-device");
     DO_TEST_CAPS_LATEST("video-ramfb-display-device");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("video-ramfb-display-device-pci-address");

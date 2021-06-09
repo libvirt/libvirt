@@ -1340,6 +1340,7 @@ mymain(void)
             QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW);
     DO_TEST("video-none-device", QEMU_CAPS_VNC);
+    DO_TEST_CAPS_LATEST("video-virtio-vga-gpu-gl");
 
     DO_TEST_CAPS_LATEST("intel-iommu");
     DO_TEST_CAPS_LATEST("intel-iommu-caching-mode");
