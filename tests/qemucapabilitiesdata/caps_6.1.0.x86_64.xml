@@ -254,6 +254,7 @@
   <flag name='compat-deprecated'/>
   <flag name='acpi-index'/>
   <flag name='input-linux'/>
+  <flag name='virtio-gpu-gl-pci'/>
   <version>6000050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>

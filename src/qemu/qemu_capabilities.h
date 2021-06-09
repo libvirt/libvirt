@@ -610,6 +610,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_COMPAT_DEPRECATED, /* -compat deprecated-(input|output) is supported */
     QEMU_CAPS_ACPI_INDEX, /* PCI device 'acpi-index' property */
     QEMU_CAPS_INPUT_LINUX, /* -object input-linux */
+    QEMU_CAPS_VIRTIO_GPU_GL_PCI, /* -device virtio-gpu-gl-pci */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
