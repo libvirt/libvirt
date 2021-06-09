@@ -4203,6 +4203,10 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *model = NULL;
+    virTristateSwitch accel3d = VIR_TRISTATE_SWITCH_ABSENT;
+
+    if (video->accel)
+        accel3d = video->accel->accel3d;
 
     /* We try to chose the best model for primary video device by preferring
      * model with VGA compatibility mode.  For some video devices on some
@@ -4228,6 +4232,11 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
     }
 
     if (STREQ(model, "virtio-gpu") || STREQ(model, "vhost-user-gpu")) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI) &&
+            accel3d == VIR_TRISTATE_SWITCH_ON &&
+            STREQ(model, "virtio-gpu"))
+            model = "virtio-gpu-gl";
+
         if (qemuBuildVirtioDevStr(&buf, model, qemuCaps,
                                   VIR_DOMAIN_DEVICE_VIDEO, video) < 0) {
             return NULL;
@@ -4242,10 +4251,10 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
         video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
         if (video->accel &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_VIRGL) &&
-            (video->accel->accel3d == VIR_TRISTATE_SWITCH_ON ||
-             video->accel->accel3d == VIR_TRISTATE_SWITCH_OFF)) {
+            (accel3d == VIR_TRISTATE_SWITCH_ON ||
+             accel3d == VIR_TRISTATE_SWITCH_OFF)) {
             virBufferAsprintf(&buf, ",virgl=%s",
-                              virTristateSwitchTypeToString(video->accel->accel3d));
+                              virTristateSwitchTypeToString(accel3d));
         }
     }
 
