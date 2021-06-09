@@ -4538,15 +4538,18 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
         goto cleanup;
     }
 
-    if ((dstFD = qemuDomainOpenFile(driver, vm, loader->nvram,
-                                    O_WRONLY | O_CREAT | O_EXCL,
-                                    NULL)) < 0)
+    if ((dstFD = virFileOpenAs(loader->nvram,
+                               O_WRONLY | O_CREAT | O_EXCL,
+                               S_IRUSR | S_IWUSR,
+                               cfg->user, cfg->group,
+                               VIR_FILE_OPEN_FORCE_OWNER)) < 0) {
+        virReportSystemError(-dstFD,
+                             _("Failed to create file '%s'"),
+                             loader->nvram);
         goto cleanup;
+    }
 
     created = true;
-
-    if (qemuSecurityDomainSetPathLabel(driver, vm, loader->nvram, false) < 0)
-        goto cleanup;
 
     do {
         char buf[1024];
