@@ -4,7 +4,7 @@
   <memory>219100</memory>
   <currentMemory>219100</currentMemory>
   <os>
-    <type arch='s390x' machine='s390-virtio'>hvm</type>
+    <type arch='s390x' machine='s390-ccw-virtio'>hvm</type>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
