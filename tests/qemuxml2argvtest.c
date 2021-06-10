@@ -1336,8 +1336,6 @@ mymain(void)
     DO_TEST_FAILURE("disk-floppy-pseries",
                     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST("disk-floppy-tray", NONE);
-    DO_TEST("disk-virtio-s390",
-            QEMU_CAPS_VIRTIO_S390);
     DO_TEST("disk-virtio", NONE);
     DO_TEST("disk-virtio-ccw",
             QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
@@ -1634,8 +1632,6 @@ mymain(void)
             QEMU_CAPS_VIRTIO_TX_ALG);
     DO_TEST("net-virtio-disable-offloads", NONE);
     DO_TEST("net-virtio-netdev", NONE);
-    DO_TEST("net-virtio-s390",
-            QEMU_CAPS_VIRTIO_S390);
     DO_TEST("net-virtio-ccw",
             QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("net-virtio-rxtxqueuesize",
@@ -1756,8 +1752,6 @@ mymain(void)
     DO_TEST("console-virtio", NONE);
     DO_TEST("console-virtio-many",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("console-virtio-s390",
-            QEMU_CAPS_VIRTIO_S390);
     DO_TEST("console-virtio-ccw",
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_S390);
