@@ -6974,8 +6974,13 @@ qemuBuildMachineCommandLine(virCommand *cmd,
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_LOADPARM))
         qemuAppendLoadparmMachineParm(&buf, def);
 
-    if (def->sev)
-        virBufferAddLit(&buf, ",memory-encryption=sev0");
+    if (def->sev) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT)) {
+            virBufferAddLit(&buf, ",confidential-guest-support=sev0");
+        } else {
+            virBufferAddLit(&buf, ",memory-encryption=sev0");
+        }
+    }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
         if (priv->pflash0)
