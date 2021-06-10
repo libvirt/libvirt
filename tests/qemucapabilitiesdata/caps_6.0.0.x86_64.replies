@@ -28685,11 +28685,13 @@
 }
 
 {
-  "id": "libvirt-49",
-  "error": {
-    "class": "GenericError",
-    "desc": "SEV is not enabled in KVM"
-  }
+  "return": {
+    "reduced-phys-bits": 1,
+    "cbitpos": 47,
+    "cert-chain": "AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA",
+    "pdh": "AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA"
+  },
+  "id": "libvirt-49"
 }
 
 {
