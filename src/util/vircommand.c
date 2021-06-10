@@ -2053,8 +2053,9 @@ virCommandWriteArgLog(virCommand *cmd, int logfd)
 
 
 /**
- * virCommandToStringFull:
+ * virCommandToStringBuf:
  * @cmd: the command to convert
+ * @buf: buffer to format @cmd into
  * @linebreaks: true to break line after each env var or option
  * @stripCommandPath: strip the path leading to the binary of @cmd
  *
@@ -2062,16 +2063,15 @@ virCommandWriteArgLog(virCommand *cmd, int logfd)
  * before Run/RunAsync, to return a string representation of the
  * environment and arguments of cmd, suitably quoted for pasting into
  * a shell.  If virCommandRun cannot succeed (because of an
- * out-of-memory condition while building cmd), NULL will be returned.
- * Caller is responsible for freeing the resulting string.
+ * out-of-memory condition while building cmd), -1 will be returned.
  */
-char *
-virCommandToStringFull(virCommand *cmd,
-                       bool linebreaks,
-                       bool stripCommandPath)
+int
+virCommandToStringBuf(virCommand *cmd,
+                      virBuffer *buf,
+                      bool linebreaks,
+                      bool stripCommandPath)
 {
     size_t i;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *command = cmd->args[0];
     g_autofree char *basename = NULL;
     bool had_option = false;
@@ -2080,7 +2080,7 @@ virCommandToStringFull(virCommand *cmd,
      * now.  If virCommandRun is called, it will report the same error. */
     if (virCommandHasError(cmd)) {
         virCommandRaiseError(cmd);
-        return NULL;
+        return -1;
     }
 
     for (i = 0; i < cmd->nenv; i++) {
@@ -2091,22 +2091,22 @@ virCommandToStringFull(virCommand *cmd,
         if (!eq) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("invalid use of command API"));
-            return NULL;
+            return -1;
         }
         eq++;
-        virBufferAdd(&buf, cmd->env[i], eq - cmd->env[i]);
-        virBufferEscapeShell(&buf, eq);
-        virBufferAddChar(&buf, ' ');
+        virBufferAdd(buf, cmd->env[i], eq - cmd->env[i]);
+        virBufferEscapeShell(buf, eq);
+        virBufferAddChar(buf, ' ');
         if (linebreaks)
-            virBufferAddLit(&buf, "\\\n");
+            virBufferAddLit(buf, "\\\n");
     }
 
     if (stripCommandPath)
         command = basename = g_path_get_basename(command);
 
-    virBufferEscapeShell(&buf, command);
+    virBufferEscapeShell(buf, command);
     for (i = 1; i < cmd->nargs; i++) {
-        virBufferAddChar(&buf, ' ');
+        virBufferAddChar(buf, ' ');
 
         if (linebreaks) {
             /* we don't want a linebreak only if
@@ -2131,10 +2131,24 @@ virCommandToStringFull(virCommand *cmd,
             }
 
             if (linebreak)
-                virBufferAddLit(&buf, "\\\n");
+                virBufferAddLit(buf, "\\\n");
         }
-        virBufferEscapeShell(&buf, cmd->args[i]);
+        virBufferEscapeShell(buf, cmd->args[i]);
     }
+
+    return 0;
+}
+
+
+char *
+virCommandToStringFull(virCommand *cmd,
+                       bool linebreaks,
+                       bool stripCommandPath)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    if (virCommandToStringBuf(cmd, &buf, linebreaks, stripCommandPath))
+        return NULL;
 
     return virBufferContentAndReset(&buf);
 }

@@ -173,6 +173,10 @@ char *virCommandToString(virCommand *cmd, bool linebreaks) G_GNUC_WARN_UNUSED_RE
 char *virCommandToStringFull(virCommand *cmd,
                              bool linebreaks,
                              bool stripCommandPath);
+int virCommandToStringBuf(virCommand *cmd,
+                          virBuffer *buf,
+                          bool linebreaks,
+                          bool stripCommandPath);
 
 int virCommandGetArgList(virCommand *cmd, char ***args, size_t *nargs);
 
