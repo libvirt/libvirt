@@ -24,9 +24,7 @@
           ]
         }
       }
-    ]
-  },
-  {
+    ],
     "matrix": [
       { "783e6dbb-ea0e-411f-94e2-717eaad438bf": {
         "mdev_type": "vfio_ap-passthrough",

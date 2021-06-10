@@ -1056,6 +1056,7 @@ nodeDeviceParseMdevctlJSON(const char *jsonstring,
     size_t noutdevs = 0;
     size_t i;
     size_t j;
+    virJSONValue *obj;
 
     json_devicelist = virJSONValueFromString(jsonstring);
 
@@ -1065,31 +1066,33 @@ nodeDeviceParseMdevctlJSON(const char *jsonstring,
         goto error;
     }
 
-    n = virJSONValueArraySize(json_devicelist);
+    /* mdevctl list --dumpjson produces an output that is an array that
+     * contains only a single object which contains a property for each parent
+     * device */
+    if (virJSONValueArraySize(json_devicelist) != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unexpected format for mdevctl response"));
+        goto error;
+    }
 
+    obj = virJSONValueArrayGet(json_devicelist, 0);
+
+    if (!virJSONValueIsObject(obj)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("device list is not an object"));
+        goto error;
+    }
+
+    n = virJSONValueObjectKeysNumber(obj);
     for (i = 0; i < n; i++) {
-        virJSONValue *obj = virJSONValueArrayGet(json_devicelist, i);
         const char *parent;
         virJSONValue *child_array;
         int nchildren;
 
-        if (!virJSONValueIsObject(obj)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Parent device is not an object"));
-            goto error;
-        }
-
-        /* mdevctl returns an array of objects.  Each object is a parent device
-         * object containing a single key-value pair which maps from the name
-         * of the parent device to an array of child devices */
-        if (virJSONValueObjectKeysNumber(obj) != 1) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unexpected format for parent device object"));
-            goto error;
-        }
-
-        parent = virJSONValueObjectGetKey(obj, 0);
-        child_array = virJSONValueObjectGetValue(obj, 0);
+        /* The key of each object property is the name of a parent device
+         * which maps to an array of child devices */
+        parent = virJSONValueObjectGetKey(obj, i);
+        child_array = virJSONValueObjectGetValue(obj, i);
 
         if (!virJSONValueIsArray(child_array)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
