@@ -2430,16 +2430,8 @@ static bool
 qemuValidateDomainDeviceDefDiskIOThreads(const virDomainDef *def,
                                          const virDomainDiskDef *disk)
 {
-    /* Right "type" of disk" */
     switch ((virDomainDiskBus)disk->bus) {
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-            disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                            _("IOThreads only available for virtio pci and "
-                              "virtio ccw disk"));
-            return false;
-        }
         break;
 
     case VIR_DOMAIN_DISK_BUS_IDE:
