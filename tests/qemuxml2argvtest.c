@@ -1762,9 +1762,7 @@ mymain(void)
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_S390);
     DO_TEST_CAPS_LATEST("console-virtio-unix");
-    DO_TEST("console-sclp",
-            QEMU_CAPS_VIRTIO_S390,
-            QEMU_CAPS_DEVICE_SCLPCONSOLE);
+    DO_TEST_CAPS_ARCH_LATEST("console-sclp", "s390x");
     DO_TEST("channel-spicevmc",
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
