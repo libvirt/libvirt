@@ -1309,11 +1309,15 @@ qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
         break;
         }
 
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("'virtio-s390' addresses are no longer supported"));
+        return -1;
+
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
