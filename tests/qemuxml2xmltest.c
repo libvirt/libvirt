@@ -1051,8 +1051,7 @@ mymain(void)
             QEMU_CAPS_CCW_CSSID_UNRESTRICTED,
             QEMU_CAPS_DEVICE_VFIO_AP);
 
-    DO_TEST("s390-defaultconsole",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST_CAPS_ARCH_LATEST("s390-defaultconsole", "s390x");
     DO_TEST("s390-panic",
             QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("s390-panic-missing",
