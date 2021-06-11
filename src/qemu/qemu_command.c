@@ -4159,10 +4159,13 @@ qemuBuildSoundCommandLine(virCommand *cmd,
 
 static const char *
 qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
-                        const virDomainVideoDef *video)
+                        const virDomainVideoDef *video,
+                        bool *virtio)
 {
     const char *model = NULL;
     bool primaryVga = false;
+
+    *virtio = false;
 
     if (video->primary && qemuDomainSupportsVideoVga(video, qemuCaps))
         primaryVga = true;
@@ -4172,10 +4175,12 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
      * architectures there might not be such model so fallback to one
      * without VGA compatibility mode. */
     if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
-        if (primaryVga)
+        if (primaryVga) {
             model = "vhost-user-vga";
-        else
+        } else {
             model = "vhost-user-gpu";
+            *virtio = true;
+        }
     } else {
         if (primaryVga) {
             switch ((virDomainVideoType) video->type) {
@@ -4216,6 +4221,7 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
                 break;
             case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
                 model = "virtio-gpu";
+                *virtio = true;
                 break;
             case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
             case VIR_DOMAIN_VIDEO_TYPE_VGA:
@@ -4253,14 +4259,15 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *model = NULL;
     virTristateSwitch accel3d = VIR_TRISTATE_SWITCH_ABSENT;
+    bool virtio = false;
 
     if (video->accel)
         accel3d = video->accel->accel3d;
 
-    if (!(model = qemuDeviceVideoGetModel(qemuCaps, video)))
+    if (!(model = qemuDeviceVideoGetModel(qemuCaps, video, &virtio)))
         return NULL;
 
-    if (STREQ(model, "virtio-gpu") || STREQ(model, "vhost-user-gpu")) {
+    if (virtio) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI) &&
             accel3d == VIR_TRISTATE_SWITCH_ON &&
             STREQ(model, "virtio-gpu"))
