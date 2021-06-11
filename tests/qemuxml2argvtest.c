@@ -1337,14 +1337,9 @@ mymain(void)
                     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST("disk-floppy-tray", NONE);
     DO_TEST("disk-virtio", NONE);
-    DO_TEST("disk-virtio-ccw",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST("disk-virtio-ccw-many",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST("disk-virtio-s390-zpci",
-            QEMU_CAPS_DEVICE_ZPCI,
-            QEMU_CAPS_CCW,
-            QEMU_CAPS_VIRTIO_S390);
+    DO_TEST("disk-virtio-ccw", QEMU_CAPS_CCW);
+    DO_TEST("disk-virtio-ccw-many", QEMU_CAPS_CCW);
+    DO_TEST("disk-virtio-s390-zpci", QEMU_CAPS_DEVICE_ZPCI, QEMU_CAPS_CCW);
     DO_TEST_PARSE_ERROR("non-x86_64-timer-error", QEMU_CAPS_CCW);
     DO_TEST("disk-order", QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("disk-virtio-queues",
@@ -1631,8 +1626,7 @@ mymain(void)
             QEMU_CAPS_VIRTIO_TX_ALG);
     DO_TEST("net-virtio-disable-offloads", NONE);
     DO_TEST("net-virtio-netdev", NONE);
-    DO_TEST("net-virtio-ccw",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST("net-virtio-ccw", QEMU_CAPS_CCW);
     DO_TEST("net-virtio-rxtxqueuesize",
             QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE,
             QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE);
@@ -1751,9 +1745,7 @@ mymain(void)
     DO_TEST("console-virtio", NONE);
     DO_TEST("console-virtio-many",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("console-virtio-ccw",
-            QEMU_CAPS_CCW,
-            QEMU_CAPS_VIRTIO_S390);
+    DO_TEST("console-virtio-ccw", QEMU_CAPS_CCW);
     DO_TEST_CAPS_LATEST("console-virtio-unix");
     DO_TEST_CAPS_ARCH_LATEST("console-sclp", "s390x");
     DO_TEST("channel-spicevmc",
@@ -1917,8 +1909,7 @@ mymain(void)
             QEMU_CAPS_OBJECT_USB_AUDIO);
     DO_TEST("fs9p", NONE);
     DO_TEST_CAPS_LATEST("fs9p");
-    DO_TEST("fs9p-ccw",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST("fs9p-ccw", QEMU_CAPS_CCW);
     DO_TEST_CAPS_ARCH_LATEST("fs9p-ccw", "s390x");
 
     DO_TEST("hostdev-usb-address", NONE);
@@ -2051,7 +2042,7 @@ mymain(void)
     DO_TEST_FAILURE("iothreads-nocap", NONE);
     DO_TEST("iothreads-disk", QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST("iothreads-disk-virtio-ccw", QEMU_CAPS_OBJECT_IOTHREAD,
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW);
     DO_TEST_CAPS_VER("iothreads-virtio-scsi-pci", "5.2.0");
     DO_TEST_CAPS_LATEST("iothreads-virtio-scsi-pci");
     DO_TEST_CAPS_ARCH_LATEST("iothreads-virtio-scsi-ccw", "s390x");
@@ -2089,7 +2080,7 @@ mymain(void)
     DO_TEST_FAILURE("cpu-qemu-host-passthrough", QEMU_CAPS_KVM);
 
     qemuTestSetHostArch(&driver, VIR_ARCH_S390X);
-    DO_TEST("cpu-s390-zEC12", QEMU_CAPS_KVM, QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST("cpu-s390-zEC12", QEMU_CAPS_KVM, QEMU_CAPS_CCW);
     DO_TEST("cpu-s390-features", QEMU_CAPS_KVM, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION);
     DO_TEST_FAILURE("cpu-s390-features", QEMU_CAPS_KVM);
     qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
@@ -2536,37 +2527,23 @@ mymain(void)
             QEMU_CAPS_OBJECT_RNG_EGD);
     DO_TEST("virtio-rng-ccw",
             QEMU_CAPS_CCW,
-            QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_DEVICE_VIRTIO_RNG,
             QEMU_CAPS_OBJECT_RNG_RANDOM);
 
     DO_TEST_CAPS_ARCH_LATEST("s390-allow-bogus-usb-none", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("s390-allow-bogus-usb-controller", "s390x");
 
-    DO_TEST("s390-panic-no-address",
-            QEMU_CAPS_CCW,
-            QEMU_CAPS_VIRTIO_S390);
-    DO_TEST_PARSE_ERROR("s390-panic-address",
-                        QEMU_CAPS_CCW,
-                        QEMU_CAPS_VIRTIO_S390);
-    DO_TEST("s390-panic-missing",
-            QEMU_CAPS_CCW,
-            QEMU_CAPS_VIRTIO_S390);
-    DO_TEST_PARSE_ERROR("s390-no-parallel",
-            QEMU_CAPS_CCW,
-            QEMU_CAPS_VIRTIO_S390);
-    DO_TEST("s390-serial",
-            QEMU_CAPS_CCW,
-            QEMU_CAPS_VIRTIO_S390,
-            QEMU_CAPS_DEVICE_SCLPCONSOLE);
+    DO_TEST("s390-panic-no-address", QEMU_CAPS_CCW);
+    DO_TEST_PARSE_ERROR("s390-panic-address", QEMU_CAPS_CCW);
+    DO_TEST("s390-panic-missing", QEMU_CAPS_CCW);
+    DO_TEST_PARSE_ERROR("s390-no-parallel", QEMU_CAPS_CCW);
+    DO_TEST("s390-serial", QEMU_CAPS_CCW, QEMU_CAPS_DEVICE_SCLPCONSOLE);
     DO_TEST("s390-serial-2",
             QEMU_CAPS_CCW,
-            QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_DEVICE_SCLPCONSOLE,
             QEMU_CAPS_DEVICE_SCLPLMCONSOLE);
     DO_TEST("s390-serial-console",
             QEMU_CAPS_CCW,
-            QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_DEVICE_SCLPCONSOLE);
 
     DO_TEST("ppc-dtb",
@@ -3147,92 +3124,89 @@ mymain(void)
             QEMU_CAPS_AES_KEY_WRAP,
             QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW);
     DO_TEST_FAILURE("machine-aeskeywrap-on-caps",
                     QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-aeskeywrap-on-cap",
             QEMU_CAPS_AES_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW);
     DO_TEST_FAILURE("machine-aeskeywrap-on-cap",
                     QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-aeskeywrap-off-caps",
             QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW);
     DO_TEST_FAILURE("machine-aeskeywrap-off-caps",
                     QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-aeskeywrap-off-cap",
             QEMU_CAPS_AES_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW);
     DO_TEST_FAILURE("machine-aeskeywrap-off-cap",
                     QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-deakeywrap-on-caps",
             QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW);
     DO_TEST_FAILURE("machine-deakeywrap-on-caps",
                     QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-deakeywrap-on-cap",
             QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW);
     DO_TEST_FAILURE("machine-deakeywrap-on-cap",
                     QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-deakeywrap-off-caps",
             QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW);
     DO_TEST_FAILURE("machine-deakeywrap-off-caps",
                     QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-deakeywrap-off-cap",
             QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW);
     DO_TEST_FAILURE("machine-deakeywrap-off-cap",
                     QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-keywrap-none-caps",
             QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW);
     DO_TEST("machine-keywrap-none",
             QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW);
 
     DO_TEST("machine-loadparm-s390",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390,
+            QEMU_CAPS_CCW,
             QEMU_CAPS_LOADPARM);
     DO_TEST("machine-loadparm-net-s390",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390,
+            QEMU_CAPS_CCW,
             QEMU_CAPS_LOADPARM);
     DO_TEST("machine-loadparm-multiple-disks-nets-s390",
             QEMU_CAPS_CCW,
-            QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_LOADPARM);
     DO_TEST_PARSE_ERROR("machine-loadparm-s390-char-invalid",
                         QEMU_CAPS_CCW,
-                        QEMU_CAPS_VIRTIO_S390,
                         QEMU_CAPS_LOADPARM);
     DO_TEST_PARSE_ERROR("machine-loadparm-s390-len-invalid",
                         QEMU_CAPS_CCW,
-                        QEMU_CAPS_VIRTIO_S390,
                         QEMU_CAPS_LOADPARM);
 
     DO_TEST("qemu-ns-domain-ns0", NONE);

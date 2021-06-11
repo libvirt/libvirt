@@ -565,13 +565,11 @@ mymain(void)
     DO_TEST("iothreads-ids-partial", NONE);
     DO_TEST("cputune-iothreads", NONE);
     DO_TEST("iothreads-disk", NONE);
-    DO_TEST("iothreads-disk-virtio-ccw",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST("iothreads-disk-virtio-ccw", QEMU_CAPS_CCW);
     DO_TEST("iothreads-virtio-scsi-pci",
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("iothreads-virtio-scsi-ccw",
-            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_CCW,
-            QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_CCW);
     DO_TEST("lease", NONE);
     DO_TEST("event_idx", NONE);
     DO_TEST("vhost_queues", NONE);
@@ -1052,18 +1050,12 @@ mymain(void)
             QEMU_CAPS_DEVICE_VFIO_AP);
 
     DO_TEST_CAPS_ARCH_LATEST("s390-defaultconsole", "s390x");
-    DO_TEST("s390-panic",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST("s390-panic-missing",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST("s390-panic-no-address",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST("s390-serial",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST("s390-serial-2",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST("s390-serial-console",
-            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST("s390-panic", QEMU_CAPS_CCW);
+    DO_TEST("s390-panic-missing", QEMU_CAPS_CCW);
+    DO_TEST("s390-panic-no-address", QEMU_CAPS_CCW);
+    DO_TEST("s390-serial", QEMU_CAPS_CCW);
+    DO_TEST("s390-serial-2", QEMU_CAPS_CCW);
+    DO_TEST("s390-serial-console", QEMU_CAPS_CCW);
 
     DO_TEST("pcihole64", QEMU_CAPS_I440FX_PCI_HOLE64_SIZE);
     DO_TEST("pcihole64-gib", QEMU_CAPS_I440FX_PCI_HOLE64_SIZE);
