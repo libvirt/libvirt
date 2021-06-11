@@ -4195,18 +4195,11 @@ qemuBuildSoundCommandLine(virCommand *cmd,
 }
 
 
-
-static char *
-qemuBuildDeviceVideoStr(const virDomainDef *def,
-                        virDomainVideoDef *video,
-                        virQEMUCaps *qemuCaps)
+static const char *
+qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
+                        const virDomainVideoDef *video)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *model = NULL;
-    virTristateSwitch accel3d = VIR_TRISTATE_SWITCH_ABSENT;
-
-    if (video->accel)
-        accel3d = video->accel->accel3d;
 
     /* We try to chose the best model for primary video device by preferring
      * model with VGA compatibility mode.  For some video devices on some
@@ -4230,6 +4223,25 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
                        virDomainVideoTypeToString(video->type));
         return NULL;
     }
+
+    return model;
+}
+
+
+static char *
+qemuBuildDeviceVideoStr(const virDomainDef *def,
+                        virDomainVideoDef *video,
+                        virQEMUCaps *qemuCaps)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    const char *model = NULL;
+    virTristateSwitch accel3d = VIR_TRISTATE_SWITCH_ABSENT;
+
+    if (video->accel)
+        accel3d = video->accel->accel3d;
+
+    if (!(model = qemuDeviceVideoGetModel(qemuCaps, video)))
+        return NULL;
 
     if (STREQ(model, "virtio-gpu") || STREQ(model, "vhost-user-gpu")) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI) &&
