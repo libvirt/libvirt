@@ -2241,10 +2241,7 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
 
         /* don't touch s390 devices */
         if (virDeviceInfoPCIAddressIsPresent(&def->disks[i]->info) ||
-            def->disks[i]->info.type ==
-            VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390 ||
-            def->disks[i]->info.type ==
-            VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
+            def->disks[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
             continue;
 
         /* Also ignore virtio-mmio disks if our machine allows them */

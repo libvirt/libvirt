@@ -486,9 +486,6 @@ qemuBuildVirtioDevStr(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
-        implName = "s390";
-        break;
-
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
@@ -5348,8 +5345,7 @@ qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
     }
 
     if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-        dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
-        dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
+        dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
         /* Check it's a virtio-serial address */
         if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
