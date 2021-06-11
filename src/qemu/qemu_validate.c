@@ -2855,9 +2855,6 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         qemuValidateDomainDeviceDefDiskSerial(disk->serial) < 0)
         return -1;
 
-    if (!qemuDomainCheckCCWS390AddressSupport(def, &disk->info, qemuCaps, disk->dst))
-        return -1;
-
     if (disk->iothread && !qemuValidateDomainDeviceDefDiskIOThreads(def, disk))
         return -1;
 
@@ -3948,10 +3945,6 @@ qemuValidateDomainDeviceDefController(const virDomainControllerDef *controller,
 {
     int ret = 0;
 
-    if (!qemuDomainCheckCCWS390AddressSupport(def, &controller->info, qemuCaps,
-                                              "controller"))
-        return -1;
-
     if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
         !qemuValidateCheckSCSIControllerModel(qemuCaps, controller->model))
         return -1;
@@ -4493,7 +4486,6 @@ qemuValidateDomainDeviceDefSound(virDomainSoundDef *sound,
 
 static int
 qemuValidateDomainDeviceDefVsock(const virDomainVsockDef *vsock,
-                                 const virDomainDef *def,
                                  virQEMUCaps *qemuCaps)
 {
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_VSOCK)) {
@@ -4502,10 +4494,6 @@ qemuValidateDomainDeviceDefVsock(const virDomainVsockDef *vsock,
                          "with this QEMU binary"));
         return -1;
     }
-
-    if (!qemuDomainCheckCCWS390AddressSupport(def, &vsock->info, qemuCaps,
-                                              "vsock"))
-        return -1;
 
     if (qemuValidateDomainVirtioOptions(vsock->virtio, qemuCaps) < 0)
         return -1;
@@ -5071,7 +5059,7 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_VSOCK:
-        ret = qemuValidateDomainDeviceDefVsock(dev->data.vsock, def, qemuCaps);
+        ret = qemuValidateDomainDeviceDefVsock(dev->data.vsock, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_TPM:

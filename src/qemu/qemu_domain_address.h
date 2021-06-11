@@ -65,5 +65,4 @@ void qemuDomainReleaseMemoryDeviceSlot(virDomainObj *vm,
 
 int qemuDomainEnsureVirtioAddress(bool *releaseAddr,
                                   virDomainObj *vm,
-                                  virDomainDeviceDef *dev,
-                                  const char *devicename);
+                                  virDomainDeviceDef *dev);

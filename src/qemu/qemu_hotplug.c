@@ -869,7 +869,7 @@ int qemuDomainAttachControllerDevice(virQEMUDriver *driver,
         return -1;
     }
 
-    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, "controller") < 0)
+    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
         return -1;
 
     if (qemuAssignDeviceControllerAlias(vm->def, controller) < 0)
@@ -1022,7 +1022,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         break;
 
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        if (qemuDomainEnsureVirtioAddress(&releaseVirtio, vm, dev, disk->dst) < 0)
+        if (qemuDomainEnsureVirtioAddress(&releaseVirtio, vm, dev) < 0)
             goto cleanup;
         break;
 
@@ -2312,7 +2312,7 @@ qemuDomainAttachRNGDevice(virQEMUDriver *driver,
     /* preallocate space for the device definition */
     VIR_REALLOC_N(vm->def->rngs, vm->def->nrngs + 1);
 
-    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, "rng") < 0)
+    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
         return -1;
 
     if (qemuDomainNamespaceSetupRNG(vm, rng) < 0)
@@ -2861,10 +2861,9 @@ qemuDomainAttachMediatedDevice(virQEMUDriver *driver,
             return -1;
         break;
     case VIR_MDEV_MODEL_TYPE_VFIO_CCW: {
-        const char *devName = hostdev->source.subsys.u.mdev.uuidstr;
         bool releaseaddr = false;
 
-        if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, devName) < 0)
+        if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
             return -1;
     }   break;
     case VIR_MDEV_MODEL_TYPE_LAST:
@@ -3201,7 +3200,7 @@ qemuDomainAttachInputDevice(virQEMUDriver *driver,
     }
 
     if (input->bus == VIR_DOMAIN_INPUT_BUS_VIRTIO) {
-        if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, "input") < 0)
+        if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
             return -1;
     } else if (input->bus == VIR_DOMAIN_INPUT_BUS_USB) {
         if (virDomainUSBAddressEnsure(priv->usbaddrs, &input->info) < 0)
@@ -3298,7 +3297,7 @@ qemuDomainAttachVsockDevice(virQEMUDriver *driver,
         return -1;
     }
 
-    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, "vsock") < 0)
+    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
         return -1;
 
     if (qemuAssignDeviceVsockAlias(vsock) < 0)

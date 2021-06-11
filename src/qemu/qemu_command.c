@@ -5501,10 +5501,6 @@ qemuBuildRNGDevStr(const virDomainDef *def,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (!qemuDomainCheckCCWS390AddressSupport(def, &dev->info, qemuCaps,
-                                              dev->source.file))
-        return NULL;
-
     if (qemuBuildVirtioDevStr(&buf, "virtio-rng", qemuCaps,
                               VIR_DOMAIN_DEVICE_RNG, dev) < 0) {
         return NULL;

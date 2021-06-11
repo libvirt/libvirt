@@ -10637,44 +10637,6 @@ qemuDomainGetMachineName(virDomainObj *vm)
 }
 
 
-/* Check whether the device address is using either 'ccw' or default s390
- * address format and whether that's "legal" for the current qemu and/or
- * guest os.machine type. This is the corollary to the code which doesn't
- * find the address type set using an emulator that supports either 'ccw'
- * or s390 and sets the address type based on the capabilities.
- *
- * If the address is using 'ccw' or s390 and it's not supported, generate
- * an error and return false; otherwise, return true.
- */
-bool
-qemuDomainCheckCCWS390AddressSupport(const virDomainDef *def,
-                                     const virDomainDeviceInfo *info,
-                                     virQEMUCaps *qemuCaps,
-                                     const char *devicename)
-{
-    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-        if (!qemuDomainIsS390CCW(def)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("cannot use CCW address type for device "
-                             "'%s' using machine type '%s'"),
-                       devicename, def->os.machine);
-            return false;
-        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("CCW address type is not supported by "
-                             "this QEMU"));
-            return false;
-        }
-    } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("virtio S390 address type is not supported by "
-                         "this QEMU"));
-        return false;
-    }
-    return true;
-}
-
-
 /**
  * qemuDomainPrepareDiskSourceData:
  *
