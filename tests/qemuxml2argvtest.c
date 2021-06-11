@@ -2542,10 +2542,7 @@ mymain(void)
             QEMU_CAPS_OBJECT_RNG_RANDOM);
 
     DO_TEST_CAPS_ARCH_LATEST("s390-allow-bogus-usb-none", "s390x");
-    DO_TEST("s390-allow-bogus-usb-controller",
-            QEMU_CAPS_VIRTIO_S390,
-            QEMU_CAPS_DEVICE_VIRTIO_RNG,
-            QEMU_CAPS_OBJECT_RNG_RANDOM);
+    DO_TEST_CAPS_ARCH_LATEST("s390-allow-bogus-usb-controller", "s390x");
 
     DO_TEST("s390-panic-no-address",
             QEMU_CAPS_CCW,
