@@ -634,6 +634,7 @@ testCompareXMLToArgv(const void *data)
 {
     struct testQemuInfo *info = (void *) data;
     g_autofree char *migrateURI = NULL;
+    g_auto(virBuffer) actualBuf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actualargv = NULL;
     unsigned int flags = info->flags;
     unsigned int parseFlags = info->parseFlags;
@@ -788,8 +789,11 @@ testCompareXMLToArgv(const void *data)
     if (testCompareXMLToArgvValidateSchema(&driver, migrateURI, info, flags) < 0)
         goto cleanup;
 
-    if (!(actualargv = virCommandToString(cmd, true)))
+    if (virCommandToStringBuf(cmd, &actualBuf, true, false) < 0)
         goto cleanup;
+
+    virBufferAddLit(&actualBuf, "\n");
+    actualargv = virBufferContentAndReset(&actualBuf);
 
     if (virTestCompareToFileFull(actualargv, info->outfile, false) < 0)
         goto cleanup;
