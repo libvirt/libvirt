@@ -180,7 +180,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 95 */
     QEMU_CAPS_NEC_USB_XHCI, /* -device nec-usb-xhci */
-    QEMU_CAPS_VIRTIO_S390, /* -device virtio-*-s390 */
+    X_QEMU_CAPS_VIRTIO_S390, /* -device virtio-*-s390 */
     X_QEMU_CAPS_BALLOON_EVENT, /* Async event for balloon changes */
     X_QEMU_CAPS_NETDEV_BRIDGE, /* bridge helper support */
     QEMU_CAPS_SCSI_LSI, /* -device lsi */
