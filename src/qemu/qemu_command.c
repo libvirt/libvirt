@@ -104,25 +104,6 @@ VIR_ENUM_IMPL(qemuVideo,
               "", /* ramfb can't be used with -vga */
 );
 
-VIR_ENUM_DECL(qemuDeviceVideoSecondary);
-
-VIR_ENUM_IMPL(qemuDeviceVideoSecondary,
-              VIR_DOMAIN_VIDEO_TYPE_LAST,
-              "", /* default value, we shouldn't see this */
-              "", /* no secondary device for VGA */
-              "", /* no secondary device for cirrus-vga */
-              "", /* no secondary device for vmware-svga */
-              "", /* don't support xen */
-              "", /* don't support vbox */
-              "qxl",
-              "", /* don't support parallels */
-              "virtio-gpu",
-              "" /* don't support gop */,
-              "" /* 'none' doesn't make sense here */,
-              "" /* no secondary device for bochs */,
-              "" /* no secondary device for ramfb */,
-);
-
 VIR_ENUM_IMPL(qemuSoundCodec,
               VIR_DOMAIN_SOUND_CODEC_TYPE_LAST,
               "hda-duplex",
@@ -4229,7 +4210,27 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
                 break;
             }
         } else {
-            model = qemuDeviceVideoSecondaryTypeToString(video->type);
+            switch ((virDomainVideoType) video->type) {
+            case VIR_DOMAIN_VIDEO_TYPE_QXL:
+                model = "qxl";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
+                model = "virtio-gpu";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
+            case VIR_DOMAIN_VIDEO_TYPE_VGA:
+            case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+            case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+            case VIR_DOMAIN_VIDEO_TYPE_XEN:
+            case VIR_DOMAIN_VIDEO_TYPE_VBOX:
+            case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
+            case VIR_DOMAIN_VIDEO_TYPE_GOP:
+            case VIR_DOMAIN_VIDEO_TYPE_NONE:
+            case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
+            case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
+            case VIR_DOMAIN_VIDEO_TYPE_LAST:
+                break;
+            }
         }
     }
 
