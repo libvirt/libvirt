@@ -104,25 +104,6 @@ VIR_ENUM_IMPL(qemuVideo,
               "", /* ramfb can't be used with -vga */
 );
 
-VIR_ENUM_DECL(qemuDeviceVideo);
-
-VIR_ENUM_IMPL(qemuDeviceVideo,
-              VIR_DOMAIN_VIDEO_TYPE_LAST,
-              "", /* default value, we shouldn't see this */
-              "VGA",
-              "cirrus-vga",
-              "vmware-svga",
-              "", /* don't support xen */
-              "", /* don't support vbox */
-              "qxl-vga",
-              "", /* don't support parallels */
-              "virtio-vga",
-              "" /* don't support gop */,
-              "" /* 'none' doesn't make sense here */,
-              "bochs-display",
-              "ramfb",
-);
-
 VIR_ENUM_DECL(qemuDeviceVideoSecondary);
 
 VIR_ENUM_IMPL(qemuDeviceVideoSecondary,
@@ -4215,10 +4196,41 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
         else
             model = "vhost-user-gpu";
     } else {
-        if (primaryVga)
-            model = qemuDeviceVideoTypeToString(video->type);
-        else
+        if (primaryVga) {
+            switch ((virDomainVideoType) video->type) {
+            case VIR_DOMAIN_VIDEO_TYPE_VGA:
+                model = "VGA";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+                model = "cirrus-vga";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+                model = "vmware-svga";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_QXL:
+                model = "qxl-vga";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
+                model = "virtio-vga";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
+                model = "bochs-display";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
+                model = "ramfb";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
+            case VIR_DOMAIN_VIDEO_TYPE_XEN:
+            case VIR_DOMAIN_VIDEO_TYPE_VBOX:
+            case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
+            case VIR_DOMAIN_VIDEO_TYPE_GOP:
+            case VIR_DOMAIN_VIDEO_TYPE_NONE:
+            case VIR_DOMAIN_VIDEO_TYPE_LAST:
+                break;
+            }
+        } else {
             model = qemuDeviceVideoSecondaryTypeToString(video->type);
+        }
     }
 
     if (!model || STREQ(model, "")) {
