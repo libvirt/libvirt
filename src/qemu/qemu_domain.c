@@ -10163,7 +10163,7 @@ qemuDomainCheckMonitor(virQEMUDriver *driver,
 
 
 bool
-qemuDomainSupportsVideoVga(virDomainVideoDef *video,
+qemuDomainSupportsVideoVga(const virDomainVideoDef *video,
                            virQEMUCaps *qemuCaps)
 {
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {

@@ -914,7 +914,7 @@ int qemuDomainCheckMonitor(virQEMUDriver *driver,
                            virDomainObj *vm,
                            qemuDomainAsyncJob asyncJob);
 
-bool qemuDomainSupportsVideoVga(virDomainVideoDef *video,
+bool qemuDomainSupportsVideoVga(const virDomainVideoDef *video,
                                 virQEMUCaps *qemuCaps);
 
 bool qemuDomainNeedsVFIO(const virDomainDef *def);
