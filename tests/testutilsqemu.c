@@ -73,7 +73,7 @@ static const char *const riscv64_machines[] = {
     "spike_v1.10", "spike_v1.9.1", "sifive_e", "virt", "sifive_u", NULL
 };
 static const char *const s390x_machines[] = {
-    "s390-virtio", "s390-ccw-virtio", "s390-ccw", NULL
+    "s390-ccw-virtio", "s390-ccw", NULL
 };
 static const char *const sparc_machines[] = {
     "SS-5", "LX", "SPARCClassic", "SPARCbook",
