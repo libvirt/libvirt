@@ -10666,12 +10666,10 @@ qemuDomainCheckCCWS390AddressSupport(const virDomainDef *def,
             return false;
         }
     } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtio S390 address type is not supported by "
-                             "this QEMU"));
-            return false;
-        }
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("virtio S390 address type is not supported by "
+                         "this QEMU"));
+        return false;
     }
     return true;
 }
