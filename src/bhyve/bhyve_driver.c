@@ -723,14 +723,14 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
                                                     "<device.map>", NULL)))
             goto cleanup;
 
-        virBufferAdd(&buf, virCommandToString(loadcmd, false), -1);
+        virCommandToStringBuf(loadcmd, &buf, false, false);
         virBufferAddChar(&buf, '\n');
     }
 
     if (!(cmd = virBhyveProcessBuildBhyveCmd(privconn, def, true)))
         goto cleanup;
 
-    virBufferAdd(&buf, virCommandToString(cmd, false), -1);
+    virCommandToStringBuf(cmd, &buf, false, false);
 
     ret = virBufferContentAndReset(&buf);
 
