@@ -4200,18 +4200,22 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
                         const virDomainVideoDef *video)
 {
     const char *model = NULL;
+    bool primaryVga = false;
+
+    if (video->primary && qemuDomainSupportsVideoVga(video, qemuCaps))
+        primaryVga = true;
 
     /* We try to chose the best model for primary video device by preferring
      * model with VGA compatibility mode.  For some video devices on some
      * architectures there might not be such model so fallback to one
      * without VGA compatibility mode. */
     if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
-        if (video->primary && qemuDomainSupportsVideoVga(video, qemuCaps))
+        if (primaryVga)
             model = "vhost-user-vga";
         else
             model = "vhost-user-gpu";
     } else {
-        if (video->primary && qemuDomainSupportsVideoVga(video, qemuCaps))
+        if (primaryVga)
             model = qemuDeviceVideoTypeToString(video->type);
         else
             model = qemuDeviceVideoSecondaryTypeToString(video->type);
