@@ -1893,7 +1893,7 @@ mymain(void)
     DO_TEST("balloon-device-deflate",
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
     DO_TEST("balloon-ccw-deflate",
-            QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
+            QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE, QEMU_CAPS_CCW);
     DO_TEST("balloon-mmio-deflate",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);

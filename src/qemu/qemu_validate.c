@@ -1276,6 +1276,7 @@ qemuValidateDomainDeviceDefZPCIAddress(virDomainDeviceInfo *info,
 
 static int
 qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
+                                   const virDomainDef *def,
                                    virQEMUCaps *qemuCaps)
 {
     virDomainDeviceInfo *info;
@@ -1314,11 +1315,26 @@ qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
                        _("'virtio-s390' addresses are no longer supported"));
         return -1;
 
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
+        if (!qemuDomainIsS390CCW(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("cannot use CCW address type for device '%s' using machine type '%s'"),
+                           NULLSTR(info->alias), def->os.machine);
+            return -1;
+        }
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("CCW address type is not supported by this QEMU"));
+            return -1;
+        }
+
+        break;
+
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
@@ -5008,7 +5024,7 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
         qemuCaps = qemuCapsLocal;
     }
 
-    if ((ret = qemuValidateDomainDeviceDefAddress(dev, qemuCaps)) < 0)
+    if ((ret = qemuValidateDomainDeviceDefAddress(dev, def, qemuCaps)) < 0)
         return ret;
 
     switch ((virDomainDeviceType)dev->type) {
