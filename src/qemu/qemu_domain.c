@@ -3883,10 +3883,6 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
         def->memballoon = memballoon;
     }
 
-    if (STRPREFIX(def->os.machine, "s390-virtio") &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390) && def->memballoon)
-        def->memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
-
     if (addDefaultUSBMouse) {
         bool hasUSBTablet = false;
         size_t j;
