@@ -4164,8 +4164,12 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
 {
     const char *model = NULL;
     bool primaryVga = false;
+    virTristateSwitch accel3d = VIR_TRISTATE_SWITCH_ABSENT;
 
     *virtio = false;
+
+    if (video->accel)
+        accel3d = video->accel->accel3d;
 
     if (video->primary && qemuDomainSupportsVideoVga(video, qemuCaps))
         primaryVga = true;
@@ -4197,7 +4201,11 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
                 model = "qxl-vga";
                 break;
             case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
-                model = "virtio-vga";
+                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_VGA_GL) &&
+                    accel3d == VIR_TRISTATE_SWITCH_ON)
+                    model = "virtio-vga-gl";
+                else
+                    model = "virtio-vga";
                 break;
             case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
                 model = "bochs-display";
@@ -4220,7 +4228,11 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
                 model = "qxl";
                 break;
             case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
-                model = "virtio-gpu";
+                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI) &&
+                    accel3d == VIR_TRISTATE_SWITCH_ON)
+                    model = "virtio-gpu-gl";
+                else
+                    model = "virtio-gpu";
                 *virtio = true;
                 break;
             case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
@@ -4268,21 +4280,12 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
         return NULL;
 
     if (virtio) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI) &&
-            accel3d == VIR_TRISTATE_SWITCH_ON &&
-            STREQ(model, "virtio-gpu"))
-            model = "virtio-gpu-gl";
-
         if (qemuBuildVirtioDevStr(&buf, model, qemuCaps,
                                   VIR_DOMAIN_DEVICE_VIDEO, video) < 0) {
             return NULL;
         }
     } else {
         virBufferAsprintf(&buf, "%s", model);
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_VGA_GL) &&
-            accel3d == VIR_TRISTATE_SWITCH_ON &&
-            STREQ(model, "virtio-vga"))
-            virBufferAddLit(&buf, "-gl");
     }
 
     virBufferAsprintf(&buf, ",id=%s", video->info.alias);
