@@ -31,9 +31,10 @@
     </p>
 
     <ul>
-      <li><strong>Software development</strong>. The core library / daemon (and
-        thus the bulk of coding) is written in C, but there are
-        language bindings written in Python, Perl, Java, Ruby,
+      <li><strong>Software development</strong>. The official upstream code are
+        kept in various <a href="https://gitlab.com/libvirt/">Git repositories</a>.
+        The core library / daemon (and thus the bulk of coding) is written in C,
+        but there are language bindings written in Python, Perl, Java, Ruby,
         Php, OCaml and Go. There are also higher level wrappers
         mapping libvirt into other object frameworks, such GLib,
         CIM and SNMP. For those interested in working on the core parts of
