@@ -1924,8 +1924,10 @@ virCapabilitiesInitCaches(virCaps *caps)
     /* Sort the array in order for the tests to be predictable.  This way we can
      * still traverse the directory instead of guessing names (in case there is
      * 'index1' and 'index3' but no 'index2'). */
-    qsort(caps->host.cache.banks, caps->host.cache.nbanks,
-          sizeof(*caps->host.cache.banks), virCapsHostCacheBankSorter);
+    if (caps->host.cache.banks) {
+        qsort(caps->host.cache.banks, caps->host.cache.nbanks,
+              sizeof(*caps->host.cache.banks), virCapsHostCacheBankSorter);
+    }
 
     if (virCapabilitiesInitResctrlMemory(caps) < 0)
         goto cleanup;

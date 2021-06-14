@@ -69,7 +69,8 @@ static void
 sortAddr(leaseAddress *tmpAddress,
          size_t ntmpAddress)
 {
-    qsort(tmpAddress, ntmpAddress, sizeof(*tmpAddress), leaseAddressSorter);
+    if (tmpAddress)
+        qsort(tmpAddress, ntmpAddress, sizeof(*tmpAddress), leaseAddressSorter);
 }
 
 
