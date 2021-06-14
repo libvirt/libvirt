@@ -1481,7 +1481,7 @@ elif get_option('driver_interface').enabled()
 endif
 
 if not get_option('driver_libxl').disabled() and conf.has('WITH_LIBVIRTD')
-  libxl_version = '4.6.0'
+  libxl_version = '4.9.0'
   libxl_dep = dependency('xenlight', version: '>=' + libxl_version, required: get_option('driver_libxl'))
 
   if libxl_dep.found()
@@ -1501,15 +1501,11 @@ if not get_option('driver_libxl').disabled() and conf.has('WITH_LIBVIRTD')
     xl_util_dep = dependency('xlutil')
 
     xen_store_dep = dependency('xenstore')
+    xtl_link_dep = dependency('xentoollog')
 
-    # xtl_* infrastructure is in libxentoollog since Xen 4.7 previously
-    # it was in libxenctrl.
-    if libxl_dep.version().version_compare('>=4.7.0')
-      xtl_link_dep = dependency('xentoollog')
-    else
-      xtl_link_dep = dependency('xenctrl')
-    endif
-
+    # Upstream Xen failed to advertise LIBXL_API_VERSION 0x040700 and
+    # 0x040800 until the Xen 4.13 release. For Xen versions 4.9-4.12
+    # we'll need to stick with version 0x040500.
     if libxl_dep.version().version_compare('>=4.13.0')
       LIBXL_API_VERSION='0x041300'
     else
