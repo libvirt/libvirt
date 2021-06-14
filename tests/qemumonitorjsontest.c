@@ -502,10 +502,8 @@ testQemuMonitorJSONGetCommands(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
-    int ret = -1;
-    char **commands = NULL;
+    g_auto(GStrv) commands = NULL;
     int ncommands = 0;
-    size_t i;
     g_autoptr(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
@@ -525,16 +523,16 @@ testQemuMonitorJSONGetCommands(const void *opaque)
                                "   } "
                                "  ]"
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     if ((ncommands = qemuMonitorGetCommands(qemuMonitorTestGetMonitor(test),
                                         &commands)) < 0)
-        goto cleanup;
+        return -1;
 
     if (ncommands != 3) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "ncommands %d is not 3", ncommands);
-        goto cleanup;
+        return -1;
     }
 
 #define CHECK(i, wantname) \
@@ -543,7 +541,7 @@ testQemuMonitorJSONGetCommands(const void *opaque)
             virReportError(VIR_ERR_INTERNAL_ERROR, \
                            "name %s is not %s", \
                            commands[i], (wantname)); \
-            goto cleanup; \
+            return -1; \
         } \
     } while (0)
 
@@ -552,13 +550,8 @@ testQemuMonitorJSONGetCommands(const void *opaque)
     CHECK(2, "quit");
 
 #undef CHECK
-    ret = 0;
 
- cleanup:
-    for (i = 0; i < ncommands; i++)
-        VIR_FREE(commands[i]);
-    VIR_FREE(commands);
-    return ret;
+    return 0;
 }
 
 
