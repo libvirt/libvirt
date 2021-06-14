@@ -6768,11 +6768,10 @@ int
 qemuMonitorJSONGetMigrationCapabilities(qemuMonitor *mon,
                                         char ***capabilities)
 {
-    int ret = -1;
-    virJSONValue *cmd;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValue *caps;
-    char **list = NULL;
+    g_auto(GStrv) list = NULL;
     size_t i;
     size_t n;
 
@@ -6783,15 +6782,13 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitor *mon,
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return -1;
 
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound"))
+        return 0;
 
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
-        goto cleanup;
+        return -1;
 
     caps = virJSONValueObjectGetArray(reply, "return");
     n = virJSONValueArraySize(caps);
@@ -6805,26 +6802,20 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitor *mon,
         if (!cap || virJSONValueGetType(cap) != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing entry in migration capabilities list"));
-            goto cleanup;
+            return -1;
         }
 
         if (!(name = virJSONValueObjectGetString(cap, "capability"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing migration capability name"));
-            goto cleanup;
+            return -1;
         }
 
         list[i] = g_strdup(name);
     }
 
-    ret = n;
     *capabilities = g_steal_pointer(&list);
-
- cleanup:
-    g_strfreev(list);
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    return n;
 }
 
 
