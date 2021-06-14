@@ -1772,16 +1772,17 @@ static void
 virQEMUCapsProcessStringFlags(virQEMUCaps *qemuCaps,
                               size_t nflags,
                               struct virQEMUCapsStringFlags *flags,
-                              size_t nvalues,
-                              char *const*values)
+                              char **values)
 {
-    size_t i, j;
+    size_t i;
+    char **value;
+
     for (i = 0; i < nflags; i++) {
         if (virQEMUCapsGet(qemuCaps, flags[i].flag))
             continue;
 
-        for (j = 0; j < nvalues; j++) {
-            if (STREQ(values[j], flags[i].value)) {
+        for (value = values; *value; value++) {
+            if (STREQ(*value, flags[i].value)) {
                 virQEMUCapsSet(qemuCaps, flags[i].flag);
                 break;
             }
@@ -2558,15 +2559,14 @@ virQEMUCapsProbeQMPCommands(virQEMUCaps *qemuCaps,
                             qemuMonitor *mon)
 {
     g_auto(GStrv) commands = NULL;
-    int ncommands;
 
-    if ((ncommands = qemuMonitorGetCommands(mon, &commands)) < 0)
+    if (qemuMonitorGetCommands(mon, &commands) < 0)
         return -1;
 
     virQEMUCapsProcessStringFlags(qemuCaps,
                                   G_N_ELEMENTS(virQEMUCapsCommands),
                                   virQEMUCapsCommands,
-                                  ncommands, commands);
+                                  commands);
 
     return 0;
 }
@@ -2577,14 +2577,13 @@ virQEMUCapsProbeQMPObjectTypes(virQEMUCaps *qemuCaps,
                                qemuMonitor *mon)
 {
     g_auto(GStrv) values = NULL;
-    int nvalues;
 
-    if ((nvalues = qemuMonitorGetObjectTypes(mon, &values)) < 0)
+    if (qemuMonitorGetObjectTypes(mon, &values) < 0)
         return -1;
     virQEMUCapsProcessStringFlags(qemuCaps,
                                   G_N_ELEMENTS(virQEMUCapsObjectTypes),
                                   virQEMUCapsObjectTypes,
-                                  nvalues, values);
+                                  values);
 
     return 0;
 }
@@ -2638,19 +2637,18 @@ virQEMUCapsProbeQMPObjectProperties(virQEMUCaps *qemuCaps,
     for (i = 0; i < G_N_ELEMENTS(virQEMUCapsObjectProps); i++) {
         virQEMUCapsObjectTypeProps *props = virQEMUCapsObjectProps + i;
         g_auto(GStrv) values = NULL;
-        int nvalues;
 
         if (props->capsCondition >= 0 &&
             !virQEMUCapsGet(qemuCaps, props->capsCondition))
             continue;
 
-        if ((nvalues = qemuMonitorGetObjectProps(mon, props->type, &values)) < 0)
+        if (qemuMonitorGetObjectProps(mon, props->type, &values) < 0)
             return -1;
 
         virQEMUCapsProcessStringFlags(qemuCaps,
                                       props->nprops,
                                       props->props,
-                                      nvalues, values);
+                                      values);
     }
 
     return 0;
@@ -2864,7 +2862,6 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCaps *qemuCaps,
         const char *canon = virQEMUCapsGetCanonicalMachine(qemuCaps, virtType, props.type);
         g_autofree char *type = NULL;
         g_auto(GStrv) values = NULL;
-        int nvalues;
 
         if (STRNEQ(canon, "none") &&
             !virQEMUCapsIsMachineSupported(qemuCaps, virtType, canon)) {
@@ -2875,13 +2872,13 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCaps *qemuCaps,
          * followed by the -machine suffix */
         type = g_strdup_printf("%s-machine", canon);
 
-        if ((nvalues = qemuMonitorGetObjectProps(mon, type, &values)) < 0)
+        if (qemuMonitorGetObjectProps(mon, type, &values) < 0)
             return -1;
 
         virQEMUCapsProcessStringFlags(qemuCaps,
                                       props.nprops,
                                       props.props,
-                                      nvalues, values);
+                                      values);
     }
 
     return 0;
@@ -3299,15 +3296,14 @@ virQEMUCapsProbeQMPMigrationCapabilities(virQEMUCaps *qemuCaps,
                                          qemuMonitor *mon)
 {
     g_auto(GStrv) caps = NULL;
-    int ncaps;
 
-    if ((ncaps = qemuMonitorGetMigrationCapabilities(mon, &caps)) < 0)
+    if (qemuMonitorGetMigrationCapabilities(mon, &caps) < 0)
         return -1;
 
     virQEMUCapsProcessStringFlags(qemuCaps,
                                   G_N_ELEMENTS(virQEMUCapsMigration),
                                   virQEMUCapsMigration,
-                                  ncaps, caps);
+                                  caps);
 
     return 0;
 }
