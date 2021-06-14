@@ -20022,8 +20022,121 @@
 }
 
 {
-  "execute": "query-cpu-definitions",
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "none-machine"
+  },
   "id": "libvirt-39"
+}
+
+{
+  "return": [
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "enforce-config-section",
+      "description": "Set on to enforce configuration section migration",
+      "type": "bool"
+    },
+    {
+      "name": "kernel",
+      "description": "Linux kernel image file",
+      "type": "string"
+    },
+    {
+      "name": "dt-compatible",
+      "description": "Overrides the \"compatible\" property of the dt root node",
+      "type": "string"
+    },
+    {
+      "name": "initrd",
+      "description": "Linux initial ramdisk file",
+      "type": "string"
+    },
+    {
+      "name": "graphics",
+      "description": "Set on/off to enable/disable graphics emulation",
+      "type": "bool"
+    },
+    {
+      "name": "kernel-irqchip",
+      "description": "Configure KVM in-kernel irqchip",
+      "type": "on|off|split"
+    },
+    {
+      "name": "usb",
+      "description": "Set on/off to enable/disable usb",
+      "type": "bool"
+    },
+    {
+      "name": "firmware",
+      "description": "Firmware image",
+      "type": "string"
+    },
+    {
+      "name": "memory-encryption",
+      "description": "Set memory encryption object to use",
+      "type": "string"
+    },
+    {
+      "name": "dump-guest-core",
+      "description": "Include guest memory in a core dump",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-shadow-mem",
+      "description": "KVM shadow MMU size",
+      "type": "int"
+    },
+    {
+      "name": "igd-passthru",
+      "description": "Set on/off to enable/disable igd passthrou",
+      "type": "bool"
+    },
+    {
+      "name": "phandle-start",
+      "description": "The first phandle ID we may generate dynamically",
+      "type": "int"
+    },
+    {
+      "name": "dumpdtb",
+      "description": "Dump current dtb to a file and quit",
+      "type": "string"
+    },
+    {
+      "name": "mem-merge",
+      "description": "Enable/disable memory merge support",
+      "type": "bool"
+    },
+    {
+      "name": "dtb",
+      "description": "Linux kernel device tree file",
+      "type": "string"
+    },
+    {
+      "name": "accel",
+      "description": "Accelerator list",
+      "type": "string"
+    },
+    {
+      "name": "append",
+      "description": "Linux kernel command line",
+      "type": "string"
+    },
+    {
+      "name": "suppress-vmdesc",
+      "description": "Set on to disable self-describing migration",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-39"
+}
+
+{
+  "execute": "query-cpu-definitions",
+  "id": "libvirt-40"
 }
 
 {
@@ -20214,34 +20327,34 @@
       "static": false
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -21409,12 +21522,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -21492,12 +21605,12 @@
       "capability": "validate-uuid"
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
   "execute": "query-gic-capabilities",
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -21513,7 +21626,7 @@
       "kernel": false
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -21524,7 +21637,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -21554,7 +21667,7 @@
       }
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {

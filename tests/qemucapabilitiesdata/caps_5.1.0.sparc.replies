@@ -15899,30 +15899,128 @@
 }
 
 {
-  "execute": "query-tpm-models",
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "none-machine"
+  },
   "id": "libvirt-24"
 }
 
 {
   "return": [
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "enforce-config-section",
+      "description": "Set on to enforce configuration section migration",
+      "type": "bool"
+    },
+    {
+      "name": "graphics",
+      "description": "Set on/off to enable/disable graphics emulation",
+      "type": "bool"
+    },
+    {
+      "name": "memory-encryption",
+      "description": "Set memory encryption object to use",
+      "type": "string"
+    },
+    {
+      "name": "dtb",
+      "description": "Linux kernel device tree file",
+      "type": "string"
+    },
+    {
+      "name": "usb",
+      "description": "Set on/off to enable/disable usb",
+      "type": "bool"
+    },
+    {
+      "name": "phandle-start",
+      "description": "The first phandle ID we may generate dynamically",
+      "type": "int"
+    },
+    {
+      "name": "dump-guest-core",
+      "description": "Include guest memory in a core dump",
+      "type": "bool"
+    },
+    {
+      "name": "append",
+      "description": "Linux kernel command line",
+      "type": "string"
+    },
+    {
+      "name": "suppress-vmdesc",
+      "description": "Set on to disable self-describing migration",
+      "type": "bool"
+    },
+    {
+      "name": "mem-merge",
+      "description": "Enable/disable memory merge support",
+      "type": "bool"
+    },
+    {
+      "name": "dt-compatible",
+      "description": "Overrides the \"compatible\" property of the dt root node",
+      "type": "string"
+    },
+    {
+      "name": "kernel",
+      "description": "Linux kernel image file",
+      "type": "string"
+    },
+    {
+      "name": "dumpdtb",
+      "description": "Dump current dtb to a file and quit",
+      "type": "string"
+    },
+    {
+      "name": "initrd",
+      "description": "Linux initial ramdisk file",
+      "type": "string"
+    },
+    {
+      "name": "firmware",
+      "description": "Firmware image",
+      "type": "string"
+    },
+    {
+      "name": "memory-backend",
+      "description": "Set RAM backendValid value is ID of hostmem based backend",
+      "type": "string"
+    }
   ],
   "id": "libvirt-24"
+}
+
+{
+  "execute": "query-tpm-models",
+  "id": "libvirt-25"
+}
+
+{
+  "return": [
+  ],
+  "id": "libvirt-25"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-25"
+  "id": "libvirt-26"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-25"
+  "id": "libvirt-26"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-26"
+  "id": "libvirt-27"
 }
 
 {
@@ -17207,12 +17305,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-26"
+  "id": "libvirt-27"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-27"
+  "id": "libvirt-28"
 }
 
 {
@@ -17290,5 +17388,5 @@
       "capability": "validate-uuid"
     }
   ],
-  "id": "libvirt-27"
+  "id": "libvirt-28"
 }

@@ -25133,8 +25133,114 @@
 }
 
 {
-  "execute": "query-cpu-definitions",
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "none-machine"
+  },
   "id": "libvirt-43"
+}
+
+{
+  "return": [
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "description": "Linux kernel image file",
+      "name": "kernel",
+      "type": "string"
+    },
+    {
+      "description": "Overrides the \"compatible\" property of the dt root node",
+      "name": "dt-compatible",
+      "type": "string"
+    },
+    {
+      "description": "Linux initial ramdisk file",
+      "name": "initrd",
+      "type": "string"
+    },
+    {
+      "description": "Set confidential guest scheme to support",
+      "name": "confidential-guest-support",
+      "type": "link<confidential-guest-support>"
+    },
+    {
+      "description": "Set on/off to enable/disable graphics emulation",
+      "name": "graphics",
+      "type": "bool"
+    },
+    {
+      "description": "Set on/off to enable/disable usb",
+      "name": "usb",
+      "type": "bool"
+    },
+    {
+      "description": "Firmware image",
+      "name": "firmware",
+      "type": "string"
+    },
+    {
+      "description": "Set memory encryption object to use",
+      "name": "memory-encryption",
+      "type": "string"
+    },
+    {
+      "description": "Include guest memory in a core dump",
+      "name": "dump-guest-core",
+      "type": "bool"
+    },
+    {
+      "description": "The first phandle ID we may generate dynamically",
+      "name": "phandle-start",
+      "type": "int"
+    },
+    {
+      "description": "Dump current dtb to a file and quit",
+      "name": "dumpdtb",
+      "type": "string"
+    },
+    {
+      "description": "Set RAM backendValid value is ID of hostmem based backend",
+      "name": "memory-backend",
+      "type": "string"
+    },
+    {
+      "description": "Linux kernel device tree file",
+      "name": "dtb",
+      "type": "string"
+    },
+    {
+      "description": "Enable/disable memory merge support",
+      "name": "mem-merge",
+      "type": "bool"
+    },
+    {
+      "description": "Linux kernel command line",
+      "name": "append",
+      "type": "string"
+    },
+    {
+      "description": "Set on to disable self-describing migration",
+      "name": "suppress-vmdesc",
+      "type": "bool"
+    },
+    {
+      "name": "peripheral-anon",
+      "type": "child<container>"
+    },
+    {
+      "name": "peripheral",
+      "type": "child<container>"
+    }
+  ],
+  "id": "libvirt-43"
+}
+
+{
+  "execute": "query-cpu-definitions",
+  "id": "libvirt-44"
 }
 
 {
@@ -27002,12 +27108,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -27015,12 +27121,12 @@
     "tpm-crb",
     "tpm-tis"
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -27028,12 +27134,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -28352,12 +28458,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -28439,16 +28545,16 @@
       "capability": "background-snapshot"
     }
   ],
-  "id": "libvirt-47"
-}
-
-{
-  "execute": "query-sev-capabilities",
   "id": "libvirt-48"
 }
 
 {
-  "id": "libvirt-48",
+  "execute": "query-sev-capabilities",
+  "id": "libvirt-49"
+}
+
+{
+  "id": "libvirt-49",
   "error": {
     "class": "GenericError",
     "desc": "SEV is not enabled in KVM"
@@ -28463,7 +28569,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-50"
 }
 
 {
@@ -28784,7 +28890,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-50"
 }
 
 {
@@ -28798,7 +28904,7 @@
       }
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-51"
 }
 
 {
@@ -29119,7 +29225,7 @@
       }
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-51"
 }
 
 {
