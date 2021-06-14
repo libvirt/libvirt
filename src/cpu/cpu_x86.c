@@ -2575,12 +2575,12 @@ cpuidSetLeafD(virCPUData *data,
     sub1 = *cpuid;
     for (sub = 2; sub < 64; sub++) {
         if (sub < 32 &&
-            !(sub0.eax & (1 << sub)) &&
-            !(sub1.ecx & (1 << sub)))
+            !(sub0.eax & (1U << sub)) &&
+            !(sub1.ecx & (1U << sub)))
             continue;
         if (sub >= 32 &&
-            !(sub0.edx & (1 << (sub - 32))) &&
-            !(sub1.edx & (1 << (sub - 32))))
+            !(sub0.edx & (1U << (sub - 32))) &&
+            !(sub1.edx & (1U << (sub - 32))))
             continue;
 
         cpuid->ecx_in = sub;
@@ -2614,7 +2614,7 @@ cpuidSetLeafResID(virCPUData *data,
         return -1;
 
     for (sub = 1; sub < 32; sub++) {
-        if (!(res & (1 << sub)))
+        if (!(res & (1U << sub)))
             continue;
         cpuid->ecx_in = sub;
         cpuidCall(cpuid);
