@@ -978,7 +978,8 @@ sc_require_locale_h:
 
 sc_prohibit_empty_first_line:
 	@$(VC_LIST_EXCEPT) | xargs awk 'BEGIN { fail=0; } \
-	FNR == 1 { if ($$0 == "") { print FILENAME ":1:"; fail=1; } } \
+	FNR == 1 { maybe_fail = $$0 == ""; } \
+	FNR == 2 { if (maybe_fail == 1) { print FILENAME ":1:"; fail=1; } } \
 	END { if (fail == 1) { \
 	  print "$(ME): Prohibited empty first line" > "/dev/stderr"; \
 	} exit fail; }'
@@ -1835,7 +1836,7 @@ exclude_file_name_regexp--sc_prohibit_mixed_case_abbreviations = \
   ^src/(vbox/vbox_CAPI.*.h|esx/esx_vi.(c|h)|esx/esx_storage_backend_iscsi.c)$$
 
 exclude_file_name_regexp--sc_prohibit_empty_first_line = \
-  ^(src/esx/README|tests/(vmwarever|virhostcpu|vircaps2xml)data/.*)$$
+  ^tests/vmwareverdata/fusion-5.0.3.txt$$
 
 exclude_file_name_regexp--sc_prohibit_useless_translation = \
   ^tests/virpolkittest.c
