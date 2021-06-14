@@ -3160,36 +3160,27 @@ static int
 virQEMUCapsProbeQMPTPM(virQEMUCaps *qemuCaps,
                        qemuMonitor *mon)
 {
-    int nentries;
+    g_auto(GStrv) models = NULL;
+    g_auto(GStrv) types = NULL;
     size_t i;
-    char **entries = NULL;
 
-    if ((nentries = qemuMonitorGetTPMModels(mon, &entries)) < 0)
+    if (qemuMonitorGetTPMModels(mon, &models) < 0)
         return -1;
 
-    if (nentries > 0) {
-        for (i = 0; i < G_N_ELEMENTS(virQEMUCapsTPMModelsToCaps); i++) {
-            const char *needle = virDomainTPMModelTypeToString(
-                virQEMUCapsTPMModelsToCaps[i].type);
-            if (g_strv_contains((const char **)entries, needle))
-                virQEMUCapsSet(qemuCaps,
-                               virQEMUCapsTPMModelsToCaps[i].caps);
-        }
+    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsTPMModelsToCaps); i++) {
+        const char *needle = virDomainTPMModelTypeToString(virQEMUCapsTPMModelsToCaps[i].type);
+        if (g_strv_contains((const char **)models, needle))
+            virQEMUCapsSet(qemuCaps, virQEMUCapsTPMModelsToCaps[i].caps);
     }
-    g_strfreev(entries);
 
-    if ((nentries = qemuMonitorGetTPMTypes(mon, &entries)) < 0)
+    if (qemuMonitorGetTPMTypes(mon, &types) < 0)
         return -1;
 
-    if (nentries > 0) {
-        for (i = 0; i < G_N_ELEMENTS(virQEMUCapsTPMTypesToCaps); i++) {
-            const char *needle = virDomainTPMBackendTypeToString(
-                virQEMUCapsTPMTypesToCaps[i].type);
-            if (g_strv_contains((const char **)entries, needle))
-                virQEMUCapsSet(qemuCaps, virQEMUCapsTPMTypesToCaps[i].caps);
-        }
+    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsTPMTypesToCaps); i++) {
+        const char *needle = virDomainTPMBackendTypeToString(virQEMUCapsTPMTypesToCaps[i].type);
+        if (g_strv_contains((const char **)types, needle))
+            virQEMUCapsSet(qemuCaps, virQEMUCapsTPMTypesToCaps[i].caps);
     }
-    g_strfreev(entries);
 
     return 0;
 }
