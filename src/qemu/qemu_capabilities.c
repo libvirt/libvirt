@@ -2557,7 +2557,7 @@ static int
 virQEMUCapsProbeQMPCommands(virQEMUCaps *qemuCaps,
                             qemuMonitor *mon)
 {
-    char **commands = NULL;
+    g_auto(GStrv) commands = NULL;
     int ncommands;
 
     if ((ncommands = qemuMonitorGetCommands(mon, &commands)) < 0)
@@ -2567,7 +2567,6 @@ virQEMUCapsProbeQMPCommands(virQEMUCaps *qemuCaps,
                                   G_N_ELEMENTS(virQEMUCapsCommands),
                                   virQEMUCapsCommands,
                                   ncommands, commands);
-    virStringListFreeCount(commands, ncommands);
 
     return 0;
 }
@@ -2577,8 +2576,8 @@ static int
 virQEMUCapsProbeQMPObjectTypes(virQEMUCaps *qemuCaps,
                                qemuMonitor *mon)
 {
+    g_auto(GStrv) values = NULL;
     int nvalues;
-    char **values;
 
     if ((nvalues = qemuMonitorGetObjectTypes(mon, &values)) < 0)
         return -1;
@@ -2586,7 +2585,6 @@ virQEMUCapsProbeQMPObjectTypes(virQEMUCaps *qemuCaps,
                                   G_N_ELEMENTS(virQEMUCapsObjectTypes),
                                   virQEMUCapsObjectTypes,
                                   nvalues, values);
-    virStringListFreeCount(values, nvalues);
 
     return 0;
 }
@@ -2856,8 +2854,6 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCaps *qemuCaps,
                                 virDomainVirtType virtType,
                                 qemuMonitor *mon)
 {
-    char **values;
-    int nvalues;
     size_t i;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QOM_LIST_PROPERTIES))
@@ -2867,6 +2863,8 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCaps *qemuCaps,
         virQEMUCapsObjectTypeProps props = virQEMUCapsMachineProps[i];
         const char *canon = virQEMUCapsGetCanonicalMachine(qemuCaps, virtType, props.type);
         g_autofree char *type = NULL;
+        g_auto(GStrv) values = NULL;
+        int nvalues;
 
         if (STRNEQ(canon, "none") &&
             !virQEMUCapsIsMachineSupported(qemuCaps, virtType, canon)) {
@@ -2884,8 +2882,6 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCaps *qemuCaps,
                                       props.nprops,
                                       props.props,
                                       nvalues, values);
-
-        virStringListFreeCount(values, nvalues);
     }
 
     return 0;
@@ -3302,7 +3298,7 @@ static int
 virQEMUCapsProbeQMPMigrationCapabilities(virQEMUCaps *qemuCaps,
                                          qemuMonitor *mon)
 {
-    char **caps = NULL;
+    g_auto(GStrv) caps = NULL;
     int ncaps;
 
     if ((ncaps = qemuMonitorGetMigrationCapabilities(mon, &caps)) < 0)
@@ -3312,7 +3308,6 @@ virQEMUCapsProbeQMPMigrationCapabilities(virQEMUCaps *qemuCaps,
                                   G_N_ELEMENTS(virQEMUCapsMigration),
                                   virQEMUCapsMigration,
                                   ncaps, caps);
-    virStringListFreeCount(caps, ncaps);
 
     return 0;
 }
