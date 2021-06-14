@@ -6524,7 +6524,7 @@ qemuMonitorJSONGetStringListProperty(qemuMonitor *mon,
     if (!(*strList = virJSONValueObjectGetStringArray(reply, "return")))
         return -1;
 
-    return g_strv_length(*strList);
+    return 0;
 }
 
 
