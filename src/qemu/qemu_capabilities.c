@@ -632,6 +632,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "input-linux",
               "virtio-gpu-gl-pci",
               "virtio-vga-gl",
+
+              /* 405 */
+              "confidential-guest-support",
     );
 
 
@@ -1756,12 +1759,19 @@ static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsVirt[] = {
     { "iommu", QEMU_CAPS_MACHINE_VIRT_IOMMU },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsGeneric[] = {
+    { "confidential-guest-support", QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT },
+};
+
 static virQEMUCapsObjectTypeProps virQEMUCapsMachineProps[] = {
     { "pseries", virQEMUCapsMachinePropsPSeries,
       G_N_ELEMENTS(virQEMUCapsMachinePropsPSeries),
       -1 },
     { "virt", virQEMUCapsMachinePropsVirt,
       G_N_ELEMENTS(virQEMUCapsMachinePropsVirt),
+      -1 },
+    { "none", virQEMUCapsMachinePropsGeneric,
+      G_N_ELEMENTS(virQEMUCapsMachinePropsGeneric),
       -1 },
 };
 
