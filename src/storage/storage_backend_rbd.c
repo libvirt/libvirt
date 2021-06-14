@@ -579,9 +579,8 @@ static char **
 virStorageBackendRBDGetVolNames(virStorageBackendRBDState *ptr)
 {
     char **names = NULL;
-    size_t nnames = 0;
     int rc;
-    rbd_image_spec_t *images = NULL;
+    g_autofree rbd_image_spec_t *images = NULL;
     size_t nimages = 16;
     size_t i;
 
@@ -593,23 +592,18 @@ virStorageBackendRBDGetVolNames(virStorageBackendRBDState *ptr)
             break;
         if (rc != -ERANGE) {
             virReportSystemError(errno, "%s", _("Unable to list RBD images"));
-            goto error;
+            return NULL;
         }
     }
 
     names = g_new0(char *, nimages + 1);
-    nnames = nimages;
 
     for (i = 0; i < nimages; i++)
-        names[i] = g_steal_pointer(&images[i].name);
+        names[i] = g_strdup(images[i].name);
+
+    rbd_image_spec_list_cleanup(images, nimages);
 
     return names;
-
- error:
-    virStringListFreeCount(names, nnames);
-    rbd_image_spec_list_cleanup(images, nimages);
-    VIR_FREE(images);
-    return NULL;
 }
 
 #else /* ! WITH_RBD_LIST2 */
