@@ -39,16 +39,15 @@ static int
 testQemuAgentSSHKeys(const void *data)
 {
     virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
-    qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
-    char **keys = NULL;
+    g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
+    g_auto(GStrv) keys = NULL;
     int nkeys = 0;
-    int ret = -1;
 
     if (!test)
         return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-ssh-get-authorized-keys",
                                "{\"return\": {"
@@ -57,59 +56,52 @@ testQemuAgentSSHKeys(const void *data)
                                "    \"algo2 key2 comments2\""
                                "  ]"
                                "}}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-ssh-add-authorized-keys",
                                "{ \"return\" : {} }") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-ssh-remove-authorized-keys",
                                "{ \"return\" : {} }") < 0)
-        goto cleanup;
+        return -1;
 
     if ((nkeys = qemuAgentSSHGetAuthorizedKeys(qemuMonitorTestGetAgent(test),
                                                "user",
                                                &keys)) < 0)
-        goto cleanup;
+        return -1;
 
     if (nkeys != 2) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "expected 2 keys, got %d", nkeys);
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ(keys[1], "algo2 key2 comments2")) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "Unexpected key returned: %s", keys[1]);
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
 
-    if ((ret = qemuAgentSSHAddAuthorizedKeys(qemuMonitorTestGetAgent(test),
-                                             "user",
-                                             (const char **) keys,
-                                             nkeys,
-                                             true)) < 0)
-        goto cleanup;
+    if (qemuAgentSSHAddAuthorizedKeys(qemuMonitorTestGetAgent(test),
+                                      "user",
+                                      (const char **) keys,
+                                      nkeys,
+                                      true) < 0)
+        return -1;
 
-    if ((ret = qemuAgentSSHRemoveAuthorizedKeys(qemuMonitorTestGetAgent(test),
-                                                "user",
-                                                (const char **) keys,
-                                                nkeys)) < 0)
-        goto cleanup;
+    if (qemuAgentSSHRemoveAuthorizedKeys(qemuMonitorTestGetAgent(test),
+                                         "user",
+                                         (const char **) keys,
+                                         nkeys) < 0)
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virStringListFreeCount(keys, nkeys);
-    qemuMonitorTestFree(test);
-    return ret;
+    return 0;
 }
 
 
