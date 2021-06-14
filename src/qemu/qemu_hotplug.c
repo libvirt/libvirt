@@ -5317,7 +5317,7 @@ qemuDomainDetachPrepDisk(virDomainObj *vm,
     int idx;
 
     if ((idx = qemuFindDisk(vm->def, match->dst)) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
+        virReportError(VIR_ERR_DEVICE_MISSING,
                        _("disk %s not found"), match->dst);
         return -1;
     }
@@ -5814,7 +5814,7 @@ qemuDomainDetachPrepInput(virDomainObj *vm,
     int idx;
 
     if ((idx = virDomainInputDefFind(vm->def, match)) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+        virReportError(VIR_ERR_DEVICE_MISSING, "%s",
                        _("matching input device not found"));
         return -1;
     }
@@ -5850,7 +5850,7 @@ qemuDomainDetachPrepVsock(virDomainObj *vm,
     *detach = vsock = vm->def->vsock;
     if (!vsock ||
         !virDomainVsockDefEquals(match, vsock)) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+        virReportError(VIR_ERR_DEVICE_MISSING, "%s",
                        _("matching vsock device not found"));
         return -1;
     }
