@@ -6615,14 +6615,13 @@ qemuMonitorJSONParsePropsList(virJSONValue *cmd,
                               char ***props)
 {
     virJSONValue *data;
-    char **proplist = NULL;
+    g_auto(GStrv) proplist = NULL;
     size_t n = 0;
     size_t count = 0;
     size_t i;
-    int ret = -1;
 
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
-        goto cleanup;
+        return -1;
 
     data = virJSONValueObjectGetArray(reply, "return");
     n = virJSONValueArraySize(data);
@@ -6641,18 +6640,14 @@ qemuMonitorJSONParsePropsList(virJSONValue *cmd,
         if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("reply data was missing 'name'"));
-            goto cleanup;
+            return -1;
         }
 
         proplist[count++] = g_strdup(tmp);
     }
 
-    ret = count;
     *props = g_steal_pointer(&proplist);
-
- cleanup:
-    g_strfreev(proplist);
-    return ret;
+    return count;
 }
 
 
