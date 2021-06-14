@@ -561,7 +561,6 @@ testQemuMonitorJSONGetTPMModels(const void *opaque)
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
     g_auto(GStrv) tpmmodels = NULL;
-    int ntpmmodels = 0;
     g_autoptr(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
@@ -575,13 +574,12 @@ testQemuMonitorJSONGetTPMModels(const void *opaque)
                                "}") < 0)
         return -1;
 
-    if ((ntpmmodels = qemuMonitorGetTPMModels(qemuMonitorTestGetMonitor(test),
-                                              &tpmmodels)) < 0)
+    if (qemuMonitorGetTPMModels(qemuMonitorTestGetMonitor(test), &tpmmodels) < 0)
         return -1;
 
-    if (ntpmmodels != 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "ntpmmodels %d is not 1", ntpmmodels);
+    if (g_strv_length(tpmmodels) != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "expected 1 tpm model");
         return -1;
     }
 

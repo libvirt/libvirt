@@ -7219,7 +7219,7 @@ qemuMonitorJSONGetStringArray(qemuMonitor *mon,
     if (!(*array = virJSONValueObjectGetStringArray(reply, "return")))
         return -1;
 
-    return g_strv_length(*array);
+    return 0;
 }
 
 int qemuMonitorJSONGetTPMModels(qemuMonitor *mon,
