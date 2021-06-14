@@ -560,8 +560,7 @@ testQemuMonitorJSONGetTPMModels(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
-    int ret = -1;
-    char **tpmmodels = NULL;
+    g_auto(GStrv) tpmmodels = NULL;
     int ntpmmodels = 0;
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -574,16 +573,16 @@ testQemuMonitorJSONGetTPMModels(const void *opaque)
                                "  \"passthrough\""
                                "  ]"
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     if ((ntpmmodels = qemuMonitorGetTPMModels(qemuMonitorTestGetMonitor(test),
                                               &tpmmodels)) < 0)
-        goto cleanup;
+        return -1;
 
     if (ntpmmodels != 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "ntpmmodels %d is not 1", ntpmmodels);
-        goto cleanup;
+        return -1;
     }
 
 #define CHECK(i, wantname) \
@@ -592,7 +591,7 @@ testQemuMonitorJSONGetTPMModels(const void *opaque)
             virReportError(VIR_ERR_INTERNAL_ERROR, \
                            "name %s is not %s", \
                            tpmmodels[i], (wantname)); \
-            goto cleanup; \
+            return -1; \
         } \
     } while (0)
 
@@ -600,11 +599,7 @@ testQemuMonitorJSONGetTPMModels(const void *opaque)
 
 #undef CHECK
 
-    ret = 0;
-
- cleanup:
-    g_strfreev(tpmmodels);
-    return ret;
+    return 0;
 }
 
 
