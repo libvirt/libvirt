@@ -7327,7 +7327,7 @@ remoteDispatchDomainAuthorizedSshKeysGet(virNetServer *server G_GNUC_UNUSED,
     int rv = -1;
     virConnectPtr conn = remoteGetHypervisorConn(client);
     int nkeys = 0;
-    char **keys = NULL;
+    g_auto(GStrv) keys = NULL;
     virDomainPtr dom = NULL;
 
     if (!conn)
@@ -7355,8 +7355,6 @@ remoteDispatchDomainAuthorizedSshKeysGet(virNetServer *server G_GNUC_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (nkeys > 0)
-        virStringListFreeCount(keys, nkeys);
     virObjectUnref(dom);
 
     return rv;
@@ -7409,7 +7407,7 @@ remoteDispatchDomainGetMessages(virNetServer *server G_GNUC_UNUSED,
     int rv = -1;
     virConnectPtr conn = remoteGetHypervisorConn(client);
     int nmsgs = 0;
-    char **msgs = NULL;
+    g_auto(GStrv) msgs = NULL;
     virDomainPtr dom = NULL;
 
     if (!conn)
@@ -7436,8 +7434,6 @@ remoteDispatchDomainGetMessages(virNetServer *server G_GNUC_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    if (nmsgs > 0)
-        virStringListFreeCount(msgs, nmsgs);
     virObjectUnref(dom);
 
     return rv;
