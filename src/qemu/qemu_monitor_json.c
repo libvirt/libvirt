@@ -6159,11 +6159,10 @@ qemuMonitorJSONGetCPUModelComparison(qemuMonitor *mon,
 int qemuMonitorJSONGetCommands(qemuMonitor *mon,
                                char ***commands)
 {
-    int ret = -1;
-    virJSONValue *cmd;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValue *data;
-    char **commandlist = NULL;
+    g_auto(GStrv) commandlist = NULL;
     size_t n = 0;
     size_t i;
 
@@ -6173,10 +6172,10 @@ int qemuMonitorJSONGetCommands(qemuMonitor *mon,
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
-        goto cleanup;
+        return -1;
 
     data = virJSONValueObjectGetArray(reply, "return");
     n = virJSONValueArraySize(data);
@@ -6191,21 +6190,14 @@ int qemuMonitorJSONGetCommands(qemuMonitor *mon,
         if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("query-commands reply data was missing 'name'"));
-            goto cleanup;
+            return -1;
         }
 
         commandlist[i] = g_strdup(tmp);
     }
 
-    ret = n;
     *commands = g_steal_pointer(&commandlist);
-
-
- cleanup:
-    g_strfreev(commandlist);
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    return n;
 }
 
 
