@@ -7201,12 +7201,12 @@ qemuMonitorJSONBlockExportAdd(qemuMonitor *mon,
 
 
 static int
-qemuMonitorJSONGetStringArray(qemuMonitor *mon, const char *qmpCmd,
+qemuMonitorJSONGetStringArray(qemuMonitor *mon,
+                              const char *qmpCmd,
                               char ***array)
 {
-    int ret = -1;
-    virJSONValue *cmd;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     *array = NULL;
 
@@ -7214,25 +7214,18 @@ qemuMonitorJSONGetStringArray(qemuMonitor *mon, const char *qmpCmd,
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return -1;
 
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound"))
+        return 0;
 
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(*array = virJSONValueObjectGetStringArray(reply, "return")))
-        goto cleanup;
+        return -1;
 
-    ret = g_strv_length(*array);
-
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
+    return g_strv_length(*array);
 }
 
 int qemuMonitorJSONGetTPMModels(qemuMonitor *mon,
