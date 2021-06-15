@@ -64,6 +64,7 @@
     {.name = "type", \
      .type = VSH_OT_DATA, \
      .flags = VSH_OFLAG_REQ, \
+     .completer = virshPoolTypeCompleter, \
      .help = N_("type of the pool") \
     }, \
     {.name = "print-xml", \
