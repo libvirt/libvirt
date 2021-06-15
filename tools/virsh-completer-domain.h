@@ -132,3 +132,9 @@ char **
 virshDomainMigrateCompMethodsCompleter(vshControl *ctl,
                                        const vshCmd *cmd,
                                        unsigned int flags);
+
+
+char **
+virshDomainStorageFileFormatCompleter(vshControl *ctl,
+                                      const vshCmd *cmd,
+                                      unsigned int flags);

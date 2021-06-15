@@ -2236,6 +2236,8 @@ static const vshCmdOptDef opts_blockcopy[] = {
     },
     {.name = "format",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_NONE,
+     .completer = virshDomainStorageFileFormatCompleter,
      .help = N_("format of the destination file")
     },
     {.name = "granularity",
