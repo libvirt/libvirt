@@ -1,0 +1,55 @@
+#include <tunables/global>
+
+profile virtxend @sbindir@/virtxend flags=(attach_disconnected) {
+  #include <abstractions/base>
+  #include <abstractions/dbus>
+
+  capability kill,
+  capability setgid,
+  capability setuid,
+  capability sys_pacct,
+  capability ipc_lock,
+
+  network inet stream,
+  network inet dgram,
+  network inet6 stream,
+  network inet6 dgram,
+  network netlink raw,
+  network packet dgram,
+  network packet raw,
+
+  # for --p2p migrations
+  unix (send, receive) type=stream addr=none peer=(label=unconfined addr=none),
+
+  ptrace (read,trace) peer=unconfined,
+
+  signal (send) set=(kill, term, hup) peer=unconfined,
+
+  # Very lenient profile for virtxend
+  / r,
+  /** rwmkl,
+
+  /bin/* PUx,
+  /sbin/* PUx,
+  /usr/bin/* PUx,
+  @sbindir@/virtlogd pix,
+  @sbindir@/* PUx,
+  /{usr/,}lib/udev/scsi_id PUx,
+  /usr/{lib,lib64}/xen-common/bin/xen-toolstack PUx,
+  /usr/{lib,lib64,libexec}/xen/bin/* Ux,
+  /usr/{lib,libexec}/xen-*/bin/libxl-save-helper PUx,
+  /usr/{lib,libexec}/xen-*/bin/pygrub PUx,
+
+  # force the use of virt-aa-helper
+  audit deny /{usr/,}sbin/apparmor_parser rwxl,
+  audit deny /etc/apparmor.d/libvirt/** wxl,
+  audit deny /sys/kernel/security/apparmor/features rwxl,
+  audit deny /sys/kernel/security/apparmor/matching rwxl,
+  audit deny /sys/kernel/security/apparmor/.* rwxl,
+  /sys/kernel/security/apparmor/profiles r,
+  @libexecdir@/* PUxr,
+  @libexecdir@/libvirt_parthelper ix,
+  @libexecdir@/libvirt_iohelper ix,
+  /etc/libvirt/hooks/** rmix,
+  /etc/xen/scripts/** rmix,
+}
