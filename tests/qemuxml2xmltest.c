@@ -371,7 +371,8 @@ mymain(void)
             QEMU_CAPS_VNC);
     DO_TEST("graphics-vnc-egl-headless",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_VNC);
+            QEMU_CAPS_VNC,
+            QEMU_CAPS_EGL_HEADLESS);
 
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-aarch64", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-ppc64", "ppc64");
@@ -414,12 +415,13 @@ mymain(void)
     cfg->spiceTLS = false;
     DO_TEST("graphics-spice-egl-headless",
             QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_SPICE);
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_EGL_HEADLESS);
 
     DO_TEST("graphics-egl-headless-rendernode",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_EGL_HEADLESS_RENDERNODE,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA);
+            QEMU_CAPS_EGL_HEADLESS);
 
     DO_TEST("input-usbmouse", NONE);
     DO_TEST("input-usbtablet", NONE);
