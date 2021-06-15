@@ -384,8 +384,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_SPICE);
 
-    DO_TEST("graphics-sdl", QEMU_CAPS_DEVICE_VGA);
-    DO_TEST("graphics-sdl-fullscreen", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-sdl", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_SDL);
+    DO_TEST("graphics-sdl-fullscreen", QEMU_CAPS_DEVICE_CIRRUS_VGA, QEMU_CAPS_SDL);
 
     cfg->spiceTLS = true;
     DO_TEST("graphics-spice",
@@ -1273,7 +1273,8 @@ mymain(void)
             QEMU_CAPS_SPICE_RENDERNODE);
     DO_TEST("video-virtio-gpu-sdl-gl",
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL);
+            QEMU_CAPS_VIRTIO_GPU_VIRGL,
+            QEMU_CAPS_SDL);
 
     DO_TEST("virtio-input",
             QEMU_CAPS_VIRTIO_KEYBOARD,

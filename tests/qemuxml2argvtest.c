@@ -1168,7 +1168,7 @@ mymain(void)
     /* Validate auto-creation of <audio> for legacy compat */
     g_setenv("QEMU_AUDIO_DRV", "sdl", TRUE);
     g_setenv("SDL_AUDIODRIVER", "esd", TRUE);
-    DO_TEST("audio-default-sdl", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("audio-default-sdl", QEMU_CAPS_DEVICE_CIRRUS_VGA, QEMU_CAPS_SDL);
     DO_TEST_CAPS_LATEST("audio-default-sdl");
     g_unsetenv("QEMU_AUDIO_DRV");
     g_unsetenv("SDL_AUDIODRIVER");
@@ -1542,10 +1542,10 @@ mymain(void)
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
 
     DO_TEST("graphics-sdl",
-            QEMU_CAPS_DEVICE_VGA);
+            QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_SDL);
     DO_TEST_CAPS_LATEST_PARSE_ERROR("graphics-sdl-egl-headless");
     DO_TEST("graphics-sdl-fullscreen",
-            QEMU_CAPS_DEVICE_CIRRUS_VGA);
+            QEMU_CAPS_DEVICE_CIRRUS_VGA, QEMU_CAPS_SDL);
     DO_TEST("graphics-spice",
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_QXL,
@@ -2480,7 +2480,8 @@ mymain(void)
             QEMU_CAPS_SPICE_RENDERNODE);
     DO_TEST("video-virtio-gpu-sdl-gl",
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL);
+            QEMU_CAPS_VIRTIO_GPU_VIRGL,
+            QEMU_CAPS_SDL);
     DO_TEST("video-virtio-gpu-secondary",
             QEMU_CAPS_DEVICE_VIRTIO_GPU);
     DO_TEST("video-virtio-vga",
