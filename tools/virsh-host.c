@@ -950,6 +950,13 @@ cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
 /*
  * "nodesuspend" command
  */
+
+VIR_ENUM_IMPL(virNodeSuspendTarget,
+              VIR_NODE_SUSPEND_TARGET_LAST,
+              "mem",
+              "disk",
+              "hybrid");
+
 static const vshCmdInfo info_nodesuspend[] = {
     {.name = "help",
      .data = N_("suspend the host node for a given time duration")
@@ -980,7 +987,7 @@ static bool
 cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
 {
     const char *target = NULL;
-    unsigned int suspendTarget;
+    int suspendTarget;
     long long duration;
     virshControl *priv = ctl->privData;
 
@@ -990,13 +997,7 @@ cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptLongLong(ctl, cmd, "duration", &duration) < 0)
         return false;
 
-    if (STREQ(target, "mem")) {
-        suspendTarget = VIR_NODE_SUSPEND_TARGET_MEM;
-    } else if (STREQ(target, "disk")) {
-        suspendTarget = VIR_NODE_SUSPEND_TARGET_DISK;
-    } else if (STREQ(target, "hybrid")) {
-        suspendTarget = VIR_NODE_SUSPEND_TARGET_HYBRID;
-    } else {
+    if ((suspendTarget = virNodeSuspendTargetTypeFromString(target)) < 0) {
         vshError(ctl, "%s", _("Invalid target"));
         return false;
     }
