@@ -86,7 +86,7 @@ stages:
   before_script:
     - *script_variables
   script:
-    - meson build --werror -Db_lundef=false -Db_sanitize="$SANITIZER"
+    - meson build --werror -Ddocs=disabled -Db_lundef=false -Db_sanitize="$SANITIZER"
     - ninja -C build;
     - ninja -C build test;
 
