@@ -1667,6 +1667,8 @@ virFindFileInPath(const char *file)
         return NULL;
 
     path = g_find_program_in_path(file);
+    if (!path)
+        return NULL;
 
     /* Workaround for a bug in g_find_program_in_path() not returning absolute
      * path as documented.  This has been fixed in
