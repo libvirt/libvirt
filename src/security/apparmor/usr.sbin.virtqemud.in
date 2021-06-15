@@ -1,0 +1,134 @@
+#include <tunables/global>
+@{LIBVIRT}="libvirt"
+
+profile virtqemud @sbindir@/virtqemud flags=(attach_disconnected) {
+  #include <abstractions/base>
+  #include <abstractions/dbus>
+
+  capability kill,
+  capability net_admin,
+  capability net_raw,
+  capability setgid,
+  capability sys_admin,
+  capability sys_module,
+  capability sys_ptrace,
+  capability sys_pacct,
+  capability sys_nice,
+  capability sys_chroot,
+  capability setuid,
+  capability dac_override,
+  capability dac_read_search,
+  capability fowner,
+  capability chown,
+  capability setpcap,
+  capability mknod,
+  capability fsetid,
+  capability audit_write,
+  capability ipc_lock,
+  capability sys_rawio,
+  capability bpf,
+  capability perfmon,
+
+  # Needed for vfio
+  capability sys_resource,
+
+  mount options=(rw,rslave)  -> /,
+  mount options=(rw, nosuid) -> /{var/,}run/libvirt/qemu/*.dev/,
+  umount /{var/,}run/libvirt/qemu/*.dev/,
+
+  # libvirt provides any mounts under /dev to qemu namespaces
+  mount options=(rw, move) /dev/ -> /{,var/}run/libvirt/qemu/*.dev/,
+  mount options=(rw, move) /dev/** -> /{,var/}run/libvirt/qemu/*{,/},
+  mount options=(rw, move) /{,var/}run/libvirt/qemu/*.dev/ -> /dev/,
+  mount options=(rw, move) /{,var/}run/libvirt/qemu/*{,/} -> /dev/**,
+
+  network inet stream,
+  network inet dgram,
+  network inet6 stream,
+  network inet6 dgram,
+  network netlink raw,
+  network packet dgram,
+  network packet raw,
+
+  # for --p2p migrations
+  unix (send, receive) type=stream addr=none peer=(label=unconfined addr=none),
+
+  ptrace (read,trace) peer=unconfined,
+  ptrace (read,trace) peer=@{profile_name},
+  ptrace (read,trace) peer=dnsmasq,
+  ptrace (read,trace) peer=/usr/sbin/dnsmasq,
+  ptrace (read,trace) peer=libvirt-*,
+
+  signal (send) peer=dnsmasq,
+  signal (send) peer=/usr/sbin/dnsmasq,
+  signal (read, send) peer=libvirt-*,
+  signal (send) set=(kill, term) peer=unconfined,
+
+  # For communication/control to qemu-bridge-helper
+  unix (send, receive) type=stream addr=none peer=(label=libvirtd//qemu_bridge_helper),
+  signal (send) set=(term) peer=libvirtd//qemu_bridge_helper,
+
+  # allow connect with openGraphicsFD, direction reversed in newer versions
+  unix (send, receive) type=stream addr=none peer=(label=libvirt-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*),
+  # unconfined also required if guests run without security module
+  unix (send, receive) type=stream addr=none peer=(label=unconfined),
+
+  # required if guests run unconfined seclabel type='none' but libvirtd is confined
+  signal (read, send) peer=unconfined,
+
+  # Very lenient profile for libvirtd since we want to first focus on confining
+  # the guests. Guests will have a very restricted profile.
+  / r,
+  /** rwmkl,
+
+  /bin/* PUx,
+  /sbin/* PUx,
+  /usr/bin/* PUx,
+  @sbindir@/virtlogd pix,
+  @sbindir@/* PUx,
+  /{usr/,}lib/udev/scsi_id PUx,
+  /usr/{lib,lib64,lib/qemu,libexec}/vhost-user-gpu PUx,
+  /usr/{lib,lib64,lib/qemu,libexec}/virtiofsd PUx,
+
+  # Required by nwfilter_ebiptables_driver.c:ebiptablesWriteToTempFile() to
+  # read and run an ebtables script.
+  /var/lib/libvirt/virtd* ixr,
+
+  # force the use of virt-aa-helper
+  audit deny /{usr/,}sbin/apparmor_parser rwxl,
+  audit deny /etc/apparmor.d/libvirt/** wxl,
+  audit deny /sys/kernel/security/apparmor/features rwxl,
+  audit deny /sys/kernel/security/apparmor/matching rwxl,
+  audit deny /sys/kernel/security/apparmor/.* rwxl,
+  /sys/kernel/security/apparmor/profiles r,
+  @libexecdir@/* PUxr,
+  @libexecdir@/libvirt_parthelper ix,
+  @libexecdir@/libvirt_iohelper ix,
+  /etc/libvirt/hooks/** rmix,
+
+  # allow changing to our UUID-based named profiles
+  change_profile -> @{LIBVIRT}-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*,
+
+  /usr/{lib,lib64,lib/qemu,libexec}/qemu-bridge-helper Cx -> qemu_bridge_helper,
+  # child profile for bridge helper process
+  profile qemu_bridge_helper {
+   #include <abstractions/base>
+
+   capability setuid,
+   capability setgid,
+   capability setpcap,
+   capability net_admin,
+
+   network inet stream,
+
+   # For communication/control from virtqemud
+   unix (send, receive) type=stream addr=none peer=(label=virtqemud),
+   signal (receive) set=(term) peer=virtqemud,
+
+   /dev/net/tun rw,
+   /etc/qemu/** r,
+   owner @{PROC}/*/status r,
+
+   /usr/{lib,lib64,lib/qemu,libexec}/qemu-bridge-helper rmix,
+  }
+}

@@ -1,6 +1,7 @@
 apparmor_gen_profiles = [
   'usr.lib.libvirt.virt-aa-helper',
   'usr.sbin.libvirtd',
+  'usr.sbin.virtqemud',
 ]
 
 apparmor_gen_profiles_conf = configuration_data()

@@ -16,9 +16,11 @@
 
   ptrace (readby, tracedby) peer=libvirtd,
   ptrace (readby, tracedby) peer=/usr/sbin/libvirtd,
+  ptrace (readby, tracedby) peer=virtqemud,
 
   signal (receive) peer=libvirtd,
   signal (receive) peer=/usr/sbin/libvirtd,
+  signal (receive) peer=virtqemud,
 
   /dev/kvm rw,
   /dev/net/tun rw,
@@ -223,6 +225,7 @@
   # allow connect with openGraphicsFD to work
   unix (send, receive) type=stream addr=none peer=(label=libvirtd),
   unix (send, receive) type=stream addr=none peer=(label=/usr/sbin/libvirtd),
+  unix (send, receive) type=stream addr=none peer=(label=virtqemud),
 
   # for gathering information about available host resources
   /sys/devices/system/cpu/ r,
