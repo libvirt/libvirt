@@ -43,6 +43,7 @@
 #include "virstring.h"
 #include "virsh-console.h"
 #include "virsh-domain-monitor.h"
+#include "virsh-host.h"
 #include "virerror.h"
 #include "virtime.h"
 #include "virtypedparam.h"
@@ -3472,7 +3473,7 @@ cmdDomPMSuspend(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     bool ret = false;
     const char *target = NULL;
-    unsigned int suspendTarget;
+    int suspendTarget;
     unsigned long long duration = 0;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, &name)))
@@ -3484,13 +3485,7 @@ cmdDomPMSuspend(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "target", &target) < 0)
         goto cleanup;
 
-    if (STREQ(target, "mem")) {
-        suspendTarget = VIR_NODE_SUSPEND_TARGET_MEM;
-    } else if (STREQ(target, "disk")) {
-        suspendTarget = VIR_NODE_SUSPEND_TARGET_DISK;
-    } else if (STREQ(target, "hybrid")) {
-        suspendTarget = VIR_NODE_SUSPEND_TARGET_HYBRID;
-    } else {
+    if ((suspendTarget = virNodeSuspendTargetTypeFromString(target)) < 0) {
         vshError(ctl, "%s", _("Invalid target"));
         goto cleanup;
     }
