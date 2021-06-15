@@ -959,3 +959,20 @@ virshDomainCoreDumpFormatCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     return ret;
 }
+
+
+char **
+virshDomainMigrateCompMethodsCompleter(vshControl *ctl,
+                                       const vshCmd *cmd,
+                                       unsigned int flags)
+{
+    const char *methods[] = {"xbzrle", "mt",  NULL};
+    const char *method = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "comp-methods", &method) < 0)
+        return NULL;
+
+    return virshCommaStringListComplete(method, methods);
+}

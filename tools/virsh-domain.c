@@ -10619,6 +10619,7 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "comp-methods",
      .type = VSH_OT_STRING,
+     .completer = virshDomainMigrateCompMethodsCompleter,
      .help = N_("comma separated list of compression methods to be used")
     },
     {.name = "comp-mt-level",

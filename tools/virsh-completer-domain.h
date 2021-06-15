@@ -127,3 +127,8 @@ char **
 virshDomainCoreDumpFormatCompleter(vshControl *ctl,
                                    const vshCmd *cmd,
                                    unsigned int flags);
+
+char **
+virshDomainMigrateCompMethodsCompleter(vshControl *ctl,
+                                       const vshCmd *cmd,
+                                       unsigned int flags);
