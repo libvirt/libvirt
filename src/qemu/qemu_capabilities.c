@@ -635,6 +635,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 405 */
               "confidential-guest-support",
+              "query-display-options",
     );
 
 
@@ -1180,6 +1181,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-cpu-model-baseline", QEMU_CAPS_QUERY_CPU_MODEL_BASELINE },
     { "query-cpu-model-comparison", QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON },
     { "block-export-add", QEMU_CAPS_BLOCK_EXPORT_ADD },
+    { "query-display-options", QEMU_CAPS_QUERY_DISPLAY_OPTIONS },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {

@@ -257,6 +257,7 @@
   <flag name='virtio-gpu-gl-pci'/>
   <flag name='virtio-vga-gl'/>
   <flag name='confidential-guest-support'/>
+  <flag name='query-display-options'/>
   <version>6000050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
