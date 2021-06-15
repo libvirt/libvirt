@@ -1576,6 +1576,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
       QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING },
     { "blockdev-backup", QEMU_CAPS_BLOCKDEV_BACKUP },
     { "object-add/arg-type/qom-type/^secret", QEMU_CAPS_OBJECT_QAPIFIED },
+    { "query-display-options/ret-type/+sdl", QEMU_CAPS_SDL },
 };
 
 typedef struct _virQEMUCapsObjectTypeProps virQEMUCapsObjectTypeProps;
@@ -5160,6 +5161,11 @@ virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps)
 static void
 virQEMUCapsInitProcessCaps(virQEMUCaps *qemuCaps)
 {
+    /* versions prior to the introduction of 'query-display-options' had SDL
+     * mostly compiled in */
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_DISPLAY_OPTIONS))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL);
+
     if (ARCH_IS_X86(qemuCaps->arch) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION)) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_CACHE);

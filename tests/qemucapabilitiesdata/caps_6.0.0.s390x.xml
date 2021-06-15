@@ -4,6 +4,7 @@
   <selfctime>0</selfctime>
   <selfvers>0</selfvers>
   <flag name='kvm'/>
+  <flag name='sdl'/>
   <flag name='virtio-tx-alg'/>
   <flag name='virtio-blk-pci.ioeventfd'/>
   <flag name='virtio-blk-pci.event_idx'/>

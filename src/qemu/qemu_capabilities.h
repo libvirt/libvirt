@@ -82,7 +82,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 25 */
     X_QEMU_CAPS_DEVICE, /* Is the -device arg available */
-    X_QEMU_CAPS_SDL, /* Is the new -sdl arg available */
+    QEMU_CAPS_SDL, /* support for SDL graphics is compiled into qemu */
     X_QEMU_CAPS_SMP_TOPOLOGY, /* -smp has sockets/cores/threads */
     X_QEMU_CAPS_NETDEV, /* -netdev flag & netdev_add/remove */
     X_QEMU_CAPS_RTC, /* The -rtc flag for clock options */

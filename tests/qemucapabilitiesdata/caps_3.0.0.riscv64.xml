@@ -3,6 +3,7 @@
   <qemuctime>0</qemuctime>
   <selfctime>0</selfctime>
   <selfvers>0</selfvers>
+  <flag name='sdl'/>
   <flag name='scsi-disk.channel'/>
   <flag name='scsi-block'/>
   <flag name='dump-guest-memory'/>

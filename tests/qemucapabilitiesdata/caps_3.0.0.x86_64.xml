@@ -4,6 +4,7 @@
   <selfctime>0</selfctime>
   <selfvers>0</selfvers>
   <flag name='kvm'/>
+  <flag name='sdl'/>
   <flag name='no-hpet'/>
   <flag name='spice'/>
   <flag name='hda-duplex'/>
