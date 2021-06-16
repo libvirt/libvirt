@@ -266,6 +266,11 @@ struct _virStoragePoolSourceList {
     virStoragePoolSource *sources;
 };
 
+void
+virStoragePoolSourceListFree(virStoragePoolSourceList *list);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStoragePoolSourceList, virStoragePoolSourceListFree);
+
+
 virStoragePoolDef *
 virStoragePoolDefParseXML(xmlXPathContextPtr ctxt);
 

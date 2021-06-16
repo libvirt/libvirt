@@ -1803,3 +1803,19 @@ virStoragePoolSourceListFormat(virStoragePoolSourceList *def)
 
     return virBufferContentAndReset(&buf);
 }
+
+
+void
+virStoragePoolSourceListFree(virStoragePoolSourceList *list)
+{
+    size_t i;
+
+    if (!list)
+        return;
+
+    for (i = 0; i < list->nsources; i++)
+        virStoragePoolSourceClear(&list->sources[i]);
+
+    g_free(list->sources);
+    g_free(list);
+}
