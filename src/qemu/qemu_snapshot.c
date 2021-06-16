@@ -1451,9 +1451,9 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
             goto cleanup;
         xml = NULL;
 
-        if ((ret = qemuSaveImageCreate(driver, vm, snapdef->file, data,
-                                      compressor, 0,
-                                      QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
+        if ((ret = qemuSaveImageCreate(driver, vm, snapdef->memorysnapshotfile,
+                                       data, compressor, 0,
+                                       QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
             goto cleanup;
 
         /* the memory image was created, remove it on errors */
@@ -1522,7 +1522,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
 
     virQEMUSaveDataFree(data);
     if (memory_unlink && ret < 0)
-        unlink(snapdef->file);
+        unlink(snapdef->memorysnapshotfile);
 
     return ret;
 }

@@ -82,7 +82,7 @@ struct _virDomainSnapshotDef {
     int state; /* virDomainSnapshotState */
 
     int memory; /* virDomainMemorySnapshot */
-    char *file; /* memory state file when snapshot is external */
+    char *memorysnapshotfile; /* memory state file when snapshot is external */
 
     size_t ndisks; /* should not exceed dom->ndisks */
     virDomainSnapshotDiskDef *disks;

@@ -125,7 +125,7 @@ virDomainSnapshotDefDispose(void *obj)
     virDomainSnapshotDef *def = obj;
     size_t i;
 
-    g_free(def->file);
+    g_free(def->memorysnapshotfile);
     for (i = 0; i < def->ndisks; i++)
         virDomainSnapshotDiskDefClear(&def->disks[i]);
     g_free(def->disks);
@@ -360,13 +360,13 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                          "disk-only snapshot"));
         goto cleanup;
     }
-    def->file = g_steal_pointer(&memoryFile);
+    def->memorysnapshotfile = g_steal_pointer(&memoryFile);
 
     /* verify that memory path is absolute */
-    if (def->file && !g_path_is_absolute(def->file)) {
+    if (def->memorysnapshotfile && !g_path_is_absolute(def->memorysnapshotfile)) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("memory snapshot file path (%s) must be absolute"),
-                       def->file);
+                       def->memorysnapshotfile);
         goto cleanup;
     }
 
@@ -863,7 +863,7 @@ virDomainSnapshotDefFormatInternal(virBuffer *buf,
     if (def->memory) {
         virBufferAsprintf(buf, "<memory snapshot='%s'",
                           virDomainSnapshotLocationTypeToString(def->memory));
-        virBufferEscapeString(buf, " file='%s'", def->file);
+        virBufferEscapeString(buf, " file='%s'", def->memorysnapshotfile);
         virBufferAddLit(buf, "/>\n");
     }
 
