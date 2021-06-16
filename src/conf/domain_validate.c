@@ -2036,8 +2036,10 @@ virDomainShmemDefValidate(const virDomainShmemDef *shmem)
 static int
 virDomainFSDefValidate(const virDomainFSDef *fs)
 {
-    if (fs->dst == NULL && !fs->sock) {
+    if (fs->dst == NULL) {
         const char *source = fs->src->path;
+        if (!source)
+            source = fs->sock;
 
         virReportError(VIR_ERR_NO_TARGET,
                        source ? "%s" : NULL, source);

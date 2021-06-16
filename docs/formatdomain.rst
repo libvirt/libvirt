@@ -3261,6 +3261,7 @@ A directory on the host that can be accessed directly from the guest.
      <filesystem type='mount'>
          <driver type='virtiofs' queue='1024'/>
          <source socket='/tmp/sock'/>
+         <target dir='tag'/>
      </filesystem>
      ...
    </devices>
