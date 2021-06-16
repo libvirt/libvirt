@@ -582,18 +582,22 @@ qemuSnapshotPrepareDiskExternal(virDomainObj *vm,
                                      _("unable to stat for disk %s: %s"),
                                      snapdisk->name, snapdisk->src->path);
                 return -1;
-            } else if (reuse) {
+            }
+
+            if (reuse) {
                 virReportSystemError(err,
                                      _("missing existing file for disk %s: %s"),
                                      snapdisk->name, snapdisk->src->path);
                 return -1;
             }
-        } else if (!S_ISBLK(st.st_mode) && st.st_size && !reuse) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("external snapshot file for disk %s already "
-                             "exists and is not a block device: %s"),
-                           snapdisk->name, snapdisk->src->path);
-            return -1;
+        } else {
+            if (!S_ISBLK(st.st_mode) && st.st_size && !reuse) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("external snapshot file for disk %s already "
+                                 "exists and is not a block device: %s"),
+                               snapdisk->name, snapdisk->src->path);
+                return -1;
+            }
         }
     }
 
