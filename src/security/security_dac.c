@@ -143,6 +143,8 @@ virSecurityDACChownListFree(void *opaque)
     g_free(list);
 }
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSecurityDACChownList, virSecurityDACChownListFree);
+
 
 /**
  * virSecurityDACTransactionAppend:
@@ -552,10 +554,9 @@ virSecurityDACPreFork(virSecurityManager *mgr)
 static int
 virSecurityDACTransactionStart(virSecurityManager *mgr)
 {
-    virSecurityDACChownList *list;
+    g_autoptr(virSecurityDACChownList) list = NULL;
 
-    list = virThreadLocalGet(&chownList);
-    if (list) {
+    if (virThreadLocalGet(&chownList)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Another relabel transaction is already started"));
         return -1;
@@ -568,9 +569,9 @@ virSecurityDACTransactionStart(virSecurityManager *mgr)
     if (virThreadLocalSet(&chownList, list) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to set thread local variable"));
-        virSecurityDACChownListFree(list);
         return -1;
     }
+    list = NULL;
 
     return 0;
 }
@@ -601,21 +602,20 @@ virSecurityDACTransactionCommit(virSecurityManager *mgr G_GNUC_UNUSED,
                                 pid_t pid,
                                 bool lock)
 {
-    virSecurityDACChownList *list;
+    g_autoptr(virSecurityDACChownList) list = NULL;
     int rc;
-    int ret = -1;
 
     list = virThreadLocalGet(&chownList);
     if (!list) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("No transaction is set"));
-        goto cleanup;
+        return -1;
     }
 
     if (virThreadLocalSet(&chownList, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to clear thread local variable"));
-        goto cleanup;
+        return -1;
     }
 
     list->lock = lock;
@@ -628,7 +628,7 @@ virSecurityDACTransactionCommit(virSecurityManager *mgr G_GNUC_UNUSED,
             if (virGetLastErrorCode() == VIR_ERR_SYSTEM_ERROR)
                 pid = -1;
             else
-                goto cleanup;
+                return -1;
         }
     }
 
@@ -640,12 +640,9 @@ virSecurityDACTransactionCommit(virSecurityManager *mgr G_GNUC_UNUSED,
     }
 
     if (rc < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virSecurityDACChownListFree(list);
-    return ret;
+    return 0;
 }
 
 /**
@@ -657,7 +654,7 @@ virSecurityDACTransactionCommit(virSecurityManager *mgr G_GNUC_UNUSED,
 static void
 virSecurityDACTransactionAbort(virSecurityManager *mgr G_GNUC_UNUSED)
 {
-    virSecurityDACChownList *list;
+    g_autoptr(virSecurityDACChownList) list = NULL;
 
     list = virThreadLocalGet(&chownList);
     if (!list)
@@ -665,7 +662,6 @@ virSecurityDACTransactionAbort(virSecurityManager *mgr G_GNUC_UNUSED)
 
     if (virThreadLocalSet(&chownList, NULL) < 0)
         VIR_DEBUG("Unable to clear thread local variable");
-    virSecurityDACChownListFree(list);
 }
 
 
