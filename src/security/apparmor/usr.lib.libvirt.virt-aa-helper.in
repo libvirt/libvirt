@@ -19,7 +19,8 @@ profile virt-aa-helper @libexecdir@/virt-aa-helper {
   # Used when internally running another command (namely apparmor_parser)
   @{PROC}/@{pid}/fd/ r,
 
-  @sysconfdir@/libnl-3/classid r,
+  # allow reading libnl's classid file
+  @sysconfdir@/libnl{,-3}/classid r,
 
   # for gl enabled graphics
   /dev/dri/{,*} r,

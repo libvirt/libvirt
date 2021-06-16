@@ -35,6 +35,8 @@
   @{PROC}/sys/vm/overcommit_memory r,
   # detect hardware capabilities via qemu_getauxval
   owner @{PROC}/*/auxv r,
+  # allow reading libnl's classid file
+  /etc/libnl{,-3}/classid r,
 
   # For hostdev access. The actual devices will be added dynamically
   /sys/bus/usb/devices/ r,
