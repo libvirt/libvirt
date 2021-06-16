@@ -239,7 +239,7 @@ qemuFirmwareTargetFree(qemuFirmwareTarget *target)
     if (!target)
         return;
 
-    virStringListFreeCount(target->machines, target->nmachines);
+    g_strfreev(target->machines);
 
     g_free(target);
 }
@@ -534,7 +534,7 @@ qemuFirmwareTargetParse(const char *path,
 
         nmachines = virJSONValueArraySize(machines);
 
-        t->machines = g_new0(char *, nmachines);
+        t->machines = g_new0(char *, nmachines + 1);
 
         for (j = 0; j < nmachines; j++) {
             virJSONValue *machine = virJSONValueArrayGet(machines, j);
