@@ -40,3 +40,14 @@ typedef struct virshPoolEventCallback virshPoolEventCallback;
 extern virshPoolEventCallback virshPoolEventCallbacks[];
 
 extern const vshCmdDef storagePoolCmds[];
+
+struct virshStoragePoolList {
+    virStoragePoolPtr *pools;
+    size_t npools;
+};
+
+struct virshStoragePoolList *
+virshStoragePoolListCollect(vshControl *ctl,
+                            unsigned int flags);
+
+void virshStoragePoolListFree(struct virshStoragePoolList *list);
