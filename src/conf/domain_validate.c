@@ -2036,6 +2036,14 @@ virDomainShmemDefValidate(const virDomainShmemDef *shmem)
 static int
 virDomainFSDefValidate(const virDomainFSDef *fs)
 {
+    if (fs->dst == NULL && !fs->sock) {
+        const char *source = fs->src->path;
+
+        virReportError(VIR_ERR_NO_TARGET,
+                       source ? "%s" : NULL, source);
+        return -1;
+    }
+
     if (fs->info.bootIndex &&
         fs->fsdriver != VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

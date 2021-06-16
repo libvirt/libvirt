@@ -9896,12 +9896,6 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
         goto error;
     }
 
-    if (target == NULL && !sock) {
-        virReportError(VIR_ERR_NO_TARGET,
-                       source ? "%s" : NULL, source);
-        goto error;
-    }
-
     if (def->type == VIR_DOMAIN_FS_TYPE_RAM) {
         if (!usage) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
