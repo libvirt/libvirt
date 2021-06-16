@@ -2,6 +2,7 @@
 
 profile virt-aa-helper @libexecdir@/virt-aa-helper {
   #include <abstractions/base>
+  #include <abstractions/openssl>
 
   # needed for searching directories
   capability dac_override,
