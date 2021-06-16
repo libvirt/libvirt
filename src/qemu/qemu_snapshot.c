@@ -541,9 +541,6 @@ qemuSnapshotPrepareDiskExternal(virDomainObj *vm,
                                 bool reuse,
                                 bool blockdev)
 {
-    struct stat st;
-    int err;
-    int rc;
 
     if (disk->src->readonly && !(reuse || blockdev)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -567,6 +564,10 @@ qemuSnapshotPrepareDiskExternal(virDomainObj *vm,
     }
 
     if (virStorageSourceIsLocalStorage(snapdisk->src)) {
+        struct stat st;
+        int err;
+        int rc;
+
         if (virStorageSourceInit(snapdisk->src) < 0)
             return -1;
 
