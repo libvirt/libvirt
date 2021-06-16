@@ -1496,6 +1496,33 @@ virDomainDefIOMMUValidate(const virDomainDef *def)
 
 
 static int
+virDomainDefFSValidate(const virDomainDef *def)
+{
+    size_t i;
+    g_autoptr(GHashTable) dsts = virHashNew(NULL);
+
+    for (i = 0; i < def->nfss; i++) {
+        const virDomainFSDef *fs = def->fss[i];
+
+        if (fs->fsdriver != VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS)
+            continue;
+
+        if (virHashHasEntry(dsts, fs->dst)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("filesystem target '%s' specified twice"),
+                           fs->dst);
+            return -1;
+        }
+
+        if (virHashAddEntry(dsts, fs->dst, (void *) 0x1) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDefValidateInternal(const virDomainDef *def,
                              virDomainXMLOption *xmlopt)
 {
@@ -1539,6 +1566,9 @@ virDomainDefValidateInternal(const virDomainDef *def,
         return -1;
 
     if (virDomainNumaDefValidate(def->numa) < 0)
+        return -1;
+
+    if (virDomainDefFSValidate(def) < 0)
         return -1;
 
     return 0;
