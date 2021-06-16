@@ -1643,11 +1643,7 @@ static const vshCmdInfo info_vol_key[] = {
 };
 
 static const vshCmdOptDef opts_vol_key[] = {
-    {.name = "vol",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("volume name or path")
-    },
+    VIRSH_COMMON_OPT_VOL_NAME(N_("volume name or path")),
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = NULL}
 };
@@ -1679,11 +1675,7 @@ static const vshCmdInfo info_vol_path[] = {
 };
 
 static const vshCmdOptDef opts_vol_path[] = {
-    {.name = "vol",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("volume name or key")
-    },
+    VIRSH_COMMON_OPT_VOL_NAME(N_("volume name or key")),
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = NULL}
 };
