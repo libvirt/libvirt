@@ -1356,6 +1356,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
     bool memory = snapdef->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
     bool memory_unlink = false;
+    bool memory_existing = false;
     bool thaw = false;
     bool pmsuspended = false;
     int compressed;
@@ -1451,13 +1452,16 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
             goto cleanup;
         xml = NULL;
 
+        memory_existing = virFileExists(snapdef->memorysnapshotfile);
+
         if ((ret = qemuSaveImageCreate(driver, vm, snapdef->memorysnapshotfile,
                                        data, compressor, 0,
                                        QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
             goto cleanup;
 
         /* the memory image was created, remove it on errors */
-        memory_unlink = true;
+        if (!memory_existing)
+            memory_unlink = true;
 
         /* forbid any further manipulation */
         qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_DEFAULT_MASK);
