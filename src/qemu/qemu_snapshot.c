@@ -598,6 +598,15 @@ qemuSnapshotPrepareDiskExternal(virDomainObj *vm,
                 }
             }
         } else {
+            /* at this point VIR_STORAGE_TYPE_DIR was already rejected */
+            if ((snapdisk->src->type == VIR_STORAGE_TYPE_BLOCK && !S_ISBLK(st.st_mode)) ||
+                (snapdisk->src->type == VIR_STORAGE_TYPE_FILE && !S_ISREG(st.st_mode))) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("mismatch between configured type for snapshot disk '%s' and the type of existing file '%s'"),
+                               snapdisk->name, snapdisk->src->path);
+                return -1;
+            }
+
             if (!S_ISBLK(st.st_mode) && st.st_size && !reuse) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("external snapshot file for disk %s already "
