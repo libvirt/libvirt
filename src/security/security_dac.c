@@ -211,11 +211,10 @@ virSecurityDACTransactionRun(pid_t pid G_GNUC_UNUSED,
 {
     virSecurityDACChownList *list = opaque;
     virSecurityManagerMetadataLockState *state;
-    const char **paths = NULL;
+    g_autofree const char **paths = NULL;
     size_t npaths = 0;
     size_t i;
     int rv = 0;
-    int ret = -1;
 
     if (list->lock) {
         paths = g_new0(const char *, list->nItems);
@@ -229,7 +228,7 @@ virSecurityDACTransactionRun(pid_t pid G_GNUC_UNUSED,
         }
 
         if (!(state = virSecurityManagerMetadataLock(list->manager, paths, npaths)))
-            goto cleanup;
+            return -1;
 
         for (i = 0; i < list->nItems; i++) {
             virSecurityDACChownItem *item = list->items[i];
@@ -287,12 +286,9 @@ virSecurityDACTransactionRun(pid_t pid G_GNUC_UNUSED,
         virSecurityManagerMetadataUnlock(list->manager, &state);
 
     if (rv < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(paths);
-    return ret;
+    return 0;
 }
 
 
@@ -438,14 +434,11 @@ virSecurityDACRememberLabel(virSecurityDACData *priv G_GNUC_UNUSED,
                             uid_t uid,
                             gid_t gid)
 {
-    char *label = NULL;
-    int ret = -1;
+    g_autofree char *label = NULL;
 
     label = g_strdup_printf("+%u:+%u", (unsigned int)uid, (unsigned int)gid);
 
-    ret = virSecuritySetRememberedLabel(SECURITY_DAC_NAME, path, label);
-    VIR_FREE(label);
-    return ret;
+    return virSecuritySetRememberedLabel(SECURITY_DAC_NAME, path, label);
 }
 
 /**
@@ -469,8 +462,7 @@ virSecurityDACRecallLabel(virSecurityDACData *priv G_GNUC_UNUSED,
                           uid_t *uid,
                           gid_t *gid)
 {
-    char *label;
-    int ret = -1;
+    g_autofree char *label = NULL;
     int rv;
 
     rv = virSecurityGetRememberedLabel(SECURITY_DAC_NAME, path, &label);
@@ -481,12 +473,9 @@ virSecurityDACRecallLabel(virSecurityDACData *priv G_GNUC_UNUSED,
         return 1;
 
     if (virParseOwnershipIds(label, uid, gid) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(label);
-    return ret;
+    return 0;
 }
 
 static virSecurityDriverStatus
@@ -512,8 +501,8 @@ static int
 virSecurityDACClose(virSecurityManager *mgr)
 {
     virSecurityDACData *priv = virSecurityManagerGetPrivateData(mgr);
-    VIR_FREE(priv->groups);
-    VIR_FREE(priv->baselabel);
+    g_clear_pointer(&priv->groups, g_free);
+    g_clear_pointer(&priv->baselabel, g_free);
     return 0;
 }
 
@@ -536,7 +525,7 @@ virSecurityDACPreFork(virSecurityManager *mgr)
     virSecurityDACData *priv = virSecurityManagerGetPrivateData(mgr);
     int ngroups;
 
-    VIR_FREE(priv->groups);
+    g_clear_pointer(&priv->groups, g_free);
     priv->ngroups = 0;
     if ((ngroups = virGetGroupList(priv->user, priv->group,
                                    &priv->groups)) < 0)
@@ -1500,8 +1489,8 @@ virSecurityDACSetChardevLabelHelper(virSecurityManager *mgr,
     virSecurityDACData *priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDef *seclabel;
     virSecurityDeviceLabelDef *chr_seclabel = NULL;
-    char *in = NULL, *out = NULL;
-    int ret = -1;
+    g_autofree char *in = NULL;
+    g_autofree char *out = NULL;
     uid_t user;
     gid_t group;
 
@@ -1529,9 +1518,11 @@ virSecurityDACSetChardevLabelHelper(virSecurityManager *mgr,
     switch ((virDomainChrType)dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        ret = virSecurityDACSetOwnership(mgr, NULL,
-                                         dev_source->data.file.path,
-                                         user, group, remember);
+        if (virSecurityDACSetOwnership(mgr, NULL,
+                                       dev_source->data.file.path,
+                                       user, group, remember) < 0) {
+            return -1;
+        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
@@ -1539,14 +1530,14 @@ virSecurityDACSetChardevLabelHelper(virSecurityManager *mgr,
         out = g_strdup_printf("%s.out", dev_source->data.file.path);
         if (virFileExists(in) && virFileExists(out)) {
             if (virSecurityDACSetOwnership(mgr, NULL, in, user, group, remember) < 0 ||
-                virSecurityDACSetOwnership(mgr, NULL, out, user, group, remember) < 0)
-                goto done;
+                virSecurityDACSetOwnership(mgr, NULL, out, user, group, remember) < 0) {
+                return -1;
+            }
         } else if (virSecurityDACSetOwnership(mgr, NULL,
                                               dev_source->data.file.path,
                                               user, group, remember) < 0) {
-            goto done;
+            return -1;
         }
-        ret = 0;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -1558,10 +1549,10 @@ virSecurityDACSetChardevLabelHelper(virSecurityManager *mgr,
              * and passed via FD */
             if (virSecurityDACSetOwnership(mgr, NULL,
                                            dev_source->data.nix.path,
-                                           user, group, remember) < 0)
-                goto done;
+                                           user, group, remember) < 0) {
+                return -1;
+            }
         }
-        ret = 0;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
@@ -1574,14 +1565,10 @@ virSecurityDACSetChardevLabelHelper(virSecurityManager *mgr,
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
     case VIR_DOMAIN_CHR_TYPE_NMDM:
     case VIR_DOMAIN_CHR_TYPE_LAST:
-        ret = 0;
         break;
     }
 
- done:
-    VIR_FREE(in);
-    VIR_FREE(out);
-    return ret;
+    return 0;
 }
 
 
@@ -1604,8 +1591,8 @@ virSecurityDACRestoreChardevLabelHelper(virSecurityManager *mgr,
                                         bool recall)
 {
     virSecurityDeviceLabelDef *chr_seclabel = NULL;
-    char *in = NULL, *out = NULL;
-    int ret = -1;
+    g_autofree char *in = NULL;
+    g_autofree char *out = NULL;
 
     chr_seclabel = virDomainChrSourceDefGetSecurityLabelDef(dev_source,
                                                             SECURITY_DAC_NAME);
@@ -1621,9 +1608,11 @@ virSecurityDACRestoreChardevLabelHelper(virSecurityManager *mgr,
     switch ((virDomainChrType)dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        ret = virSecurityDACRestoreFileLabelInternal(mgr, NULL,
-                                                     dev_source->data.file.path,
-                                                     recall);
+        if (virSecurityDACRestoreFileLabelInternal(mgr, NULL,
+                                                   dev_source->data.file.path,
+                                                   recall) < 0) {
+            return -1;
+        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
@@ -1631,14 +1620,14 @@ virSecurityDACRestoreChardevLabelHelper(virSecurityManager *mgr,
         in = g_strdup_printf("%s.in", dev_source->data.file.path);
         if (virFileExists(in) && virFileExists(out)) {
             if (virSecurityDACRestoreFileLabelInternal(mgr, NULL, out, recall) < 0 ||
-                virSecurityDACRestoreFileLabelInternal(mgr, NULL, in, recall) < 0)
-                goto done;
+                virSecurityDACRestoreFileLabelInternal(mgr, NULL, in, recall) < 0) {
+                return -1;
+            }
         } else if (virSecurityDACRestoreFileLabelInternal(mgr, NULL,
                                                           dev_source->data.file.path,
                                                           recall) < 0) {
-            goto done;
+            return -1;
         }
-        ret = 0;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -1646,9 +1635,8 @@ virSecurityDACRestoreChardevLabelHelper(virSecurityManager *mgr,
             virSecurityDACRestoreFileLabelInternal(mgr, NULL,
                                                    dev_source->data.nix.path,
                                                    recall) < 0) {
-            goto done;
+            return -1;
         }
-        ret = 0;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_NULL:
@@ -1661,14 +1649,10 @@ virSecurityDACRestoreChardevLabelHelper(virSecurityManager *mgr,
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
     case VIR_DOMAIN_CHR_TYPE_NMDM:
     case VIR_DOMAIN_CHR_TYPE_LAST:
-        ret = 0;
         break;
     }
 
- done:
-    VIR_FREE(in);
-    VIR_FREE(out);
-    return ret;
+    return 0;
 }
 
 
@@ -2378,8 +2362,7 @@ virSecurityDACGetProcessLabelInternal(pid_t pid,
                                       virSecurityLabelPtr seclabel)
 {
     struct stat sb;
-    char *path = NULL;
-    int ret = -1;
+    g_autofree char *path = NULL;
 
     VIR_DEBUG("Getting DAC user and group on process '%d'", pid);
 
@@ -2389,16 +2372,12 @@ virSecurityDACGetProcessLabelInternal(pid_t pid,
         virReportSystemError(errno,
                              _("unable to get uid and gid for PID %d via procfs"),
                              pid);
-        goto cleanup;
+        return -1;
     }
 
     g_snprintf(seclabel->label, VIR_SECURITY_LABEL_BUFLEN,
                "+%u:+%u", (unsigned int)sb.st_uid, (unsigned int)sb.st_gid);
-    ret = 0;
-
- cleanup:
-    VIR_FREE(path);
-    return ret;
+    return 0;
 }
 #elif defined(__FreeBSD__)
 static int
