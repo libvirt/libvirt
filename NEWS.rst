@@ -11,6 +11,13 @@ For a more fine-grained view, use the `git log`_.
 v7.5.0 (unreleased)
 ===================
 
+* **Removed features**
+
+  * xen: Remove support for Xen < 4.9
+
+    In accordance with our platform support policy, the oldest supported Xen
+    version is now bumped from 4.6 to 4.9.
+
 * **New features**
 
 * **Improvements**
