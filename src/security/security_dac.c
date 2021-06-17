@@ -89,6 +89,18 @@ struct _virSecurityDACChownList {
 
 virThreadLocal chownList;
 
+static void
+virSecurityDACChownItemFree(virSecurityDACChownItem *item)
+{
+    if (!item)
+        return;
+
+    g_free(item->path);
+    g_free(item);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSecurityDACChownItem, virSecurityDACChownItemFree);
+
 static int
 virSecurityDACChownListAppend(virSecurityDACChownList *list,
                               const char *path,
@@ -98,15 +110,11 @@ virSecurityDACChownListAppend(virSecurityDACChownList *list,
                               bool remember,
                               bool restore)
 {
-    int ret = -1;
-    char *tmp = NULL;
-    virSecurityDACChownItem *item = NULL;
+    g_autoptr(virSecurityDACChownItem) item = NULL;
 
     item = g_new0(virSecurityDACChownItem, 1);
 
-    tmp = g_strdup(path);
-
-    item->path = g_steal_pointer(&tmp);
+    item->path = g_strdup(path);
     item->src = src;
     item->uid = uid;
     item->gid = gid;
@@ -114,13 +122,9 @@ virSecurityDACChownListAppend(virSecurityDACChownList *list,
     item->restore = restore;
 
     if (VIR_APPEND_ELEMENT(list->items, list->nItems, item) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(tmp);
-    VIR_FREE(item);
-    return ret;
+    return 0;
 }
 
 static void
@@ -132,10 +136,8 @@ virSecurityDACChownListFree(void *opaque)
     if (!list)
         return;
 
-    for (i = 0; i < list->nItems; i++) {
-        g_free(list->items[i]->path);
-        g_free(list->items[i]);
-    }
+    for (i = 0; i < list->nItems; i++)
+        virSecurityDACChownItemFree(list->items[i]);
     g_free(list->items);
     virObjectUnref(list->manager);
     g_free(list);
