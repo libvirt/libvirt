@@ -1230,10 +1230,21 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         /* This is really a "smart hostdev", so it should be attached
          * as a hostdev (the hostdev code will reach over into the
          * netdev-specific code as appropriate), then also added to
-         * the nets list (see cleanup:) if successful.
+         * the nets list if successful.
          */
-        ret = qemuDomainAttachHostDevice(driver, vm,
-                                         virDomainNetGetActualHostdev(net));
+        if (qemuDomainAttachHostDevice(driver, vm,
+                                       virDomainNetGetActualHostdev(net)) < 0) {
+            goto cleanup;
+        }
+        if (VIR_APPEND_ELEMENT_COPY(vm->def->nets, vm->def->nnets, net) < 0)
+            goto cleanup;
+
+        /* the rest of the setup doesn't apply to hostdev interfaces, so
+         * we can skip straight to the cleanup (nothing there applies to
+         * hostdev interfaces either, but it might in the future, so we
+         * may as well be consistent)
+         */
+        ret = 0;
         goto cleanup;
     }
 
