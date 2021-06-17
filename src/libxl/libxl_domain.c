@@ -597,7 +597,6 @@ libxlDomainShutdownThread(void *opaque)
         case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
             goto endjob;
         }
-#ifdef LIBXL_HAVE_SOFT_RESET
     } else if (xl_reason == LIBXL_SHUTDOWN_REASON_SOFT_RESET) {
         libxlDomainObjPrivate *priv = vm->privateData;
 
@@ -624,7 +623,6 @@ libxlDomainShutdownThread(void *opaque)
         }
         libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW);
         libxlDomainUnpauseWrapper(cfg->ctx, vm->def->id);
-#endif
     } else {
         VIR_INFO("Unhandled shutdown_reason %d", xl_reason);
     }
@@ -878,9 +876,7 @@ libxlDomainCleanup(libxlDriverPrivate *driver,
     VIR_DEBUG("Cleaning up domain with id '%d' and name '%s'",
               vm->def->id, vm->def->name);
 
-#ifdef LIBXL_HAVE_PVUSB
     hostdev_flags |= VIR_HOSTDEV_SP_USB;
-#endif
 
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
@@ -1188,7 +1184,6 @@ libxlDomainUpdateDiskParams(virDomainDef *def, libxl_ctx *ctx)
     VIR_FREE(disks);
 }
 
-#ifdef LIBXL_HAVE_DEVICE_CHANNEL
 static void
 libxlDomainCreateChannelPTY(virDomainDef *def, libxl_ctx *ctx)
 {
@@ -1222,13 +1217,6 @@ libxlDomainCreateChannelPTY(virDomainDef *def, libxl_ctx *ctx)
     for (i = 0; i < nchannels; i++)
         libxl_device_channel_dispose(&x_channels[i]);
 }
-#endif
-
-#ifdef LIBXL_HAVE_SRM_V2
-# define LIBXL_DOMSTART_RESTORE_VER_ATTR /* empty */
-#else
-# define LIBXL_DOMSTART_RESTORE_VER_ATTR G_GNUC_UNUSED
-#endif
 
 /*
  * Start a domain through libxenlight.
@@ -1240,7 +1228,7 @@ libxlDomainStart(libxlDriverPrivate *driver,
                  virDomainObj *vm,
                  bool start_paused,
                  int restore_fd,
-                 uint32_t restore_ver LIBXL_DOMSTART_RESTORE_VER_ATTR)
+                 uint32_t restore_ver)
 {
     libxl_domain_config d_config;
     virDomainDef *def = NULL;
@@ -1259,9 +1247,7 @@ libxlDomainStart(libxlDriverPrivate *driver,
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
     g_autofree char *config_json = NULL;
 
-#ifdef LIBXL_HAVE_PVUSB
     hostdev_flags |= VIR_HOSTDEV_SP_USB;
-#endif
 
     libxl_domain_config_init(&d_config);
 
@@ -1385,9 +1371,7 @@ libxlDomainStart(libxlDriverPrivate *driver,
                                       &domid, NULL, &aop_console_how);
     } else {
         libxl_domain_restore_params_init(&params);
-#ifdef LIBXL_HAVE_SRM_V2
         params.stream_version = restore_ver;
-#endif
         ret = libxlDomainCreateRestoreWrapper(cfg->ctx, &d_config, &domid,
                                               restore_fd, &params,
                                           &aop_console_how);
@@ -1431,10 +1415,8 @@ libxlDomainStart(libxlDriverPrivate *driver,
     libxlDomainCreateIfaceNames(vm->def, &d_config);
     libxlDomainUpdateDiskParams(vm->def, cfg->ctx);
 
-#ifdef LIBXL_HAVE_DEVICE_CHANNEL
     if (vm->def->nchannels > 0)
         libxlDomainCreateChannelPTY(vm->def, cfg->ctx);
-#endif
 
     if ((dom_xml = virDomainDefFormat(vm->def, driver->xmlopt, 0)) == NULL)
         goto destroy_dom;

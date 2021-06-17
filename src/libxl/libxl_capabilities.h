@@ -39,8 +39,6 @@
  * by libvirt for Xen, and cannot be used for a persistent network name.  */
 #define LIBXL_GENERATED_PREFIX_XEN "vif"
 
-bool libxlCapsHasPVUSB(void) G_GNUC_NO_INLINE;
-
 virCaps *
 libxlMakeCapabilities(libxl_ctx *ctx);
 

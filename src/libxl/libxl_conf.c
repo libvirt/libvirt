@@ -619,11 +619,9 @@ libxlMakeDomBuildInfo(virDomainDef *def,
         }
         b_info->u.hvm.boot = g_strdup(bootorder);
 
-#ifdef LIBXL_HAVE_BUILDINFO_KERNEL
         b_info->cmdline = g_strdup(def->os.cmdline);
         b_info->kernel = g_strdup(def->os.kernel);
         b_info->ramdisk = g_strdup(def->os.initrd);
-#endif
 
         /*
          * Currently libxl only allows specifying the type of BIOS.
@@ -677,7 +675,6 @@ libxlMakeDomBuildInfo(virDomainDef *def,
                     0)
                     return -1;
             } else {
-#ifdef LIBXL_HAVE_BUILDINFO_SERIAL_LIST
                 b_info->u.hvm.serial_list = *g_new0(libxl_string_list, def->nserials + 1);
                 for (i = 0; i < def->nserials; i++) {
                     if (libxlMakeChrdevStr(def->serials[i],
@@ -688,12 +685,6 @@ libxlMakeDomBuildInfo(virDomainDef *def,
                     }
                 }
                 b_info->u.hvm.serial_list[i] = NULL;
-#else
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s",
-                               _("Only one serial device is supported by libxl"));
-                return -1;
-#endif
             }
         }
 
@@ -714,22 +705,8 @@ libxlMakeDomBuildInfo(virDomainDef *def,
             if (def->inputs[i]->bus != VIR_DOMAIN_INPUT_BUS_USB)
                 continue;
 
-#ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
             VIR_EXPAND_N(b_info->u.hvm.usbdevice_list, nusbdevice, 1);
-#else
-            nusbdevice++;
-            if (nusbdevice > 1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("libxenlight supports only one input device"));
-                return -1;
-            }
-#endif
-
-#ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
             usbdevice = &b_info->u.hvm.usbdevice_list[nusbdevice - 1];
-#else
-            usbdevice = &b_info->u.hvm.usbdevice;
-#endif
             switch (def->inputs[i]->type) {
                 case VIR_DOMAIN_INPUT_TYPE_MOUSE:
                     VIR_FREE(*usbdevice);
@@ -746,11 +723,9 @@ libxlMakeDomBuildInfo(virDomainDef *def,
             }
         }
 
-#ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
         /* NULL-terminate usbdevice_list */
         if (nusbdevice > 0)
             VIR_EXPAND_N(b_info->u.hvm.usbdevice_list, nusbdevice, 1);
-#endif
     } else if (pvh) {
         b_info->cmdline = g_strdup(def->os.cmdline);
         b_info->kernel = g_strdup(def->os.kernel);
@@ -840,7 +815,6 @@ libxlMakeDomBuildInfo(virDomainDef *def,
     return 0;
 }
 
-#ifdef LIBXL_HAVE_VNUMA
 static int
 libxlMakeVnumaList(virDomainDef *def,
                    libxl_ctx *ctx,
@@ -948,7 +922,6 @@ libxlMakeVnumaList(virDomainDef *def,
 
     return ret;
 }
-#endif
 
 static int
 libxlDiskSetDiscard(libxl_device_disk *x_disk, int discard)
@@ -1136,12 +1109,10 @@ libxlMakeDisk(virDomainDiskDef *l_disk, libxl_device_disk *x_disk)
                 x_disk->format = LIBXL_DISK_FORMAT_RAW;
                 x_disk->backend = LIBXL_DISK_BACKEND_TAP;
                 break;
-#ifdef LIBXL_HAVE_QED
             case VIR_STORAGE_FILE_QED:
                 x_disk->format = LIBXL_DISK_FORMAT_QED;
                 x_disk->backend = LIBXL_DISK_BACKEND_QDISK;
                 break;
-#endif
             default:
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("libxenlight does not support disk format %s "
@@ -1159,11 +1130,9 @@ libxlMakeDisk(virDomainDiskDef *l_disk, libxl_device_disk *x_disk)
             case VIR_STORAGE_FILE_QCOW2:
                 x_disk->format = LIBXL_DISK_FORMAT_QCOW2;
                 break;
-#ifdef LIBXL_HAVE_QED
             case VIR_STORAGE_FILE_QED:
                 x_disk->format = LIBXL_DISK_FORMAT_QED;
                 break;
-#endif
             case VIR_STORAGE_FILE_VHD:
                 x_disk->format = LIBXL_DISK_FORMAT_VHD;
                 break;
@@ -1712,7 +1681,6 @@ libxlMakeBuildInfoVfb(virPortAllocatorRange *graphicsports,
             break;
         }
 
-#ifdef LIBXL_HAVE_SPICE_VDAGENT
         if (l_vfb->data.spice.copypaste == VIR_TRISTATE_BOOL_YES) {
             libxl_defbool_set(&b_info->u.hvm.spice.vdagent, true);
             libxl_defbool_set(&b_info->u.hvm.spice.clipboard_sharing, true);
@@ -1720,7 +1688,6 @@ libxlMakeBuildInfoVfb(virPortAllocatorRange *graphicsports,
             libxl_defbool_set(&b_info->u.hvm.spice.vdagent, false);
             libxl_defbool_set(&b_info->u.hvm.spice.clipboard_sharing, false);
         }
-#endif
 
         return 0;
     }
@@ -2000,7 +1967,6 @@ libxlDriverGetDom0MaxmemConf(libxlDriverConfig *cfg,
 }
 
 
-#ifdef LIBXL_HAVE_DEVICE_CHANNEL
 static int
 libxlPrepareChannel(virDomainChrDef *channel,
                     const char *channelDir,
@@ -2096,9 +2062,7 @@ libxlMakeChannelList(const char *channelDir,
     VIR_FREE(x_channels);
     return -1;
 }
-#endif
 
-#ifdef LIBXL_HAVE_PVUSB
 int
 libxlMakeUSBController(virDomainControllerDef *controller,
                        libxl_device_usbctrl *usbctrl)
@@ -2315,7 +2279,6 @@ libxlMakeUSBList(virDomainDef *def, libxl_domain_config *d_config)
     VIR_FREE(x_usbdevs);
     return -1;
 }
-#endif
 
 int
 libxlMakePCI(virDomainHostdevDef *hostdev, libxl_device_pci *pcidev)
@@ -2429,7 +2392,6 @@ libxlMakeVideo(virDomainDef *def, libxl_domain_config *d_config)
             }
             break;
 
-#ifdef LIBXL_HAVE_QXL
         case VIR_DOMAIN_VIDEO_TYPE_QXL:
             b_info->u.hvm.vga.kind = LIBXL_VGA_INTERFACE_TYPE_QXL;
             if (def->videos[0]->vram < 128 * 1024) {
@@ -2438,7 +2400,6 @@ libxlMakeVideo(virDomainDef *def, libxl_domain_config *d_config)
                 return -1;
             }
             break;
-#endif
 
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -2509,10 +2470,8 @@ libxlBuildDomainConfig(virPortAllocatorRange *graphicsports,
     if (libxlMakeDomBuildInfo(def, cfg, caps, d_config) < 0)
         return -1;
 
-#ifdef LIBXL_HAVE_VNUMA
     if (libxlMakeVnumaList(def, ctx, d_config) < 0)
         return -1;
-#endif
 
     if (libxlMakeDiskList(def, d_config) < 0)
         return -1;
@@ -2529,18 +2488,14 @@ libxlBuildDomainConfig(virPortAllocatorRange *graphicsports,
     if (libxlMakePCIList(def, d_config) < 0)
         return -1;
 
-#ifdef LIBXL_HAVE_PVUSB
     if (libxlMakeUSBControllerList(def, d_config) < 0)
         return -1;
 
     if (libxlMakeUSBList(def, d_config) < 0)
         return -1;
-#endif
 
-#ifdef LIBXL_HAVE_DEVICE_CHANNEL
     if (libxlMakeChannelList(cfg->channelDir, def, d_config) < 0)
         return -1;
-#endif
 
     /*
      * Now that any potential VFBs are defined, update the build info with

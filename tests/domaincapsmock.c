@@ -17,17 +17,6 @@
 #include <config.h>
 
 #include "virhostcpu.h"
-#ifdef WITH_LIBXL
-# include "libxl/libxl_capabilities.h"
-#endif
-
-#ifdef WITH_LIBXL
-bool
-libxlCapsHasPVUSB(void)
-{
-    return true;
-}
-#endif
 
 int
 virHostCPUGetKVMMaxVCPUs(void)

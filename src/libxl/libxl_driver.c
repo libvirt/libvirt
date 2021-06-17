@@ -394,9 +394,7 @@ libxlReconnectDomain(virDomainObj *vm,
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
     int ret = -1;
 
-#ifdef LIBXL_HAVE_PVUSB
     hostdev_flags |= VIR_HOSTDEV_SP_USB;
-#endif
 
     virObjectRef(vm);
     virObjectLock(vm);
@@ -567,11 +565,7 @@ static const libxl_osevent_hooks libxl_osevent_callbacks = {
 };
 
 static const libxl_childproc_hooks libxl_child_hooks = {
-#ifdef LIBXL_HAVE_SIGCHLD_OWNER_SELECTIVE_REAP
     .chldowner = libxl_sigchld_owner_libxl_always_selective_reap,
-#else
-    .chldowner = libxl_sigchld_owner_libxl,
-#endif
 };
 
 const struct libxl_event_hooks ev_hooks = {
@@ -3144,7 +3138,6 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivate *driver,
     return ret;
 }
 
-#ifdef LIBXL_HAVE_PVUSB
 static int
 libxlDomainAttachControllerDevice(libxlDriverPrivate *driver,
                                   virDomainObj *vm,
@@ -3276,7 +3269,6 @@ libxlDomainAttachHostUSBDevice(libxlDriverPrivate *driver,
     libxl_device_usbdev_dispose(&usbdev);
     return ret;
 }
-#endif
 
 static int
 libxlDomainAttachHostDevice(libxlDriverPrivate *driver,
@@ -3296,12 +3288,10 @@ libxlDomainAttachHostDevice(libxlDriverPrivate *driver,
             return -1;
         break;
 
-#ifdef LIBXL_HAVE_PVUSB
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         if (libxlDomainAttachHostUSBDevice(driver, vm, hostdev) < 0)
             return -1;
         break;
-#endif
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -3482,13 +3472,11 @@ libxlDomainAttachDeviceLive(libxlDriverPrivate *driver,
                 dev->data.disk = NULL;
             break;
 
-#ifdef LIBXL_HAVE_PVUSB
         case VIR_DOMAIN_DEVICE_CONTROLLER:
             ret = libxlDomainAttachControllerDevice(driver, vm, dev->data.controller);
             if (!ret)
                 dev->data.controller = NULL;
             break;
-#endif
 
         case VIR_DOMAIN_DEVICE_NET:
             ret = libxlDomainAttachNetDevice(driver, vm,
@@ -3569,9 +3557,7 @@ libxlDomainAttachDeviceConfig(virDomainDef *vmdef, virDomainDeviceDef *dev)
 
             switch (hostdev->source.subsys.type) {
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-#ifndef LIBXL_HAVE_PVUSB
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-#endif
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
                 return -1;
             }
@@ -3689,7 +3675,6 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivate *driver,
     return ret;
 }
 
-#ifdef LIBXL_HAVE_PVUSB
 static int
 libxlDomainDetachControllerDevice(libxlDriverPrivate *driver,
                                   virDomainObj *vm,
@@ -3808,7 +3793,6 @@ libxlDomainDetachHostUSBDevice(libxlDriverPrivate *driver,
     libxl_device_usbdev_dispose(&usbdev);
     return ret;
 }
-#endif
 
 static int
 libxlDomainDetachHostDevice(libxlDriverPrivate *driver,
@@ -3828,10 +3812,8 @@ libxlDomainDetachHostDevice(libxlDriverPrivate *driver,
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             return libxlDomainDetachHostPCIDevice(driver, vm, hostdev);
 
-#ifdef LIBXL_HAVE_PVUSB
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
             return libxlDomainDetachHostUSBDevice(driver, vm, hostdev);
-#endif
 
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3914,11 +3896,9 @@ libxlDomainDetachDeviceLive(libxlDriverPrivate *driver,
             ret = libxlDomainDetachDeviceDiskLive(vm, dev);
             break;
 
-#ifdef LIBXL_HAVE_PVUSB
         case VIR_DOMAIN_DEVICE_CONTROLLER:
             ret = libxlDomainDetachControllerDevice(driver, vm, dev);
             break;
-#endif
 
         case VIR_DOMAIN_DEVICE_NET:
             ret = libxlDomainDetachNetDevice(driver, vm,
@@ -4856,12 +4836,8 @@ libxlDomainSetSchedulerParameters(virDomainPtr dom, virTypedParameterPtr params,
     return libxlDomainSetSchedulerParametersFlags(dom, params, nparams, 0);
 }
 
-/* NUMA node affinity information is available through libxl
- * starting from Xen 4.3. */
-#ifdef LIBXL_HAVE_DOMAIN_NODEAFFINITY
-
 /* Number of Xen NUMA parameters */
-# define LIBXL_NUMA_NPARAM 2
+#define LIBXL_NUMA_NPARAM 2
 
 static int
 libxlDomainGetNumaParameters(virDomainPtr dom,
@@ -4978,7 +4954,6 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
     virObjectUnref(cfg);
     return ret;
 }
-#endif
 
 static int
 libxlDomainIsActive(virDomainPtr dom)
@@ -6535,9 +6510,7 @@ static virHypervisorDriver libxlHypervisorDriver = {
     .domainGetSchedulerParametersFlags = libxlDomainGetSchedulerParametersFlags, /* 0.9.2 */
     .domainSetSchedulerParameters = libxlDomainSetSchedulerParameters, /* 0.9.0 */
     .domainSetSchedulerParametersFlags = libxlDomainSetSchedulerParametersFlags, /* 0.9.2 */
-#ifdef LIBXL_HAVE_DOMAIN_NODEAFFINITY
     .domainGetNumaParameters = libxlDomainGetNumaParameters, /* 1.1.1 */
-#endif
     .nodeGetFreeMemory = libxlNodeGetFreeMemory, /* 0.9.0 */
     .nodeGetCellsFreeMemory = libxlNodeGetCellsFreeMemory, /* 1.1.1 */
     .domainGetJobInfo = libxlDomainGetJobInfo, /* 1.3.1 */

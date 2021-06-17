@@ -128,7 +128,6 @@ xenParseXLOS(virConf *conf, virDomainDef *def, virCaps *caps)
         if (xenConfigCopyStringOpt(conf, "acpi_firmware", &def->os.slic_table) < 0)
             return -1;
 
-#ifdef LIBXL_HAVE_BUILDINFO_KERNEL
         if (xenConfigCopyStringOpt(conf, "kernel", &def->os.kernel) < 0)
             return -1;
 
@@ -137,7 +136,6 @@ xenParseXLOS(virConf *conf, virDomainDef *def, virCaps *caps)
 
         if (xenParseCmdline(conf, &def->os.cmdline) < 0)
             return -1;
-#endif
 
         if (xenConfigGetString(conf, "boot", &boot, "c") < 0)
             return -1;
@@ -402,7 +400,6 @@ xenParseXLSpice(virConf *conf, virDomainDef *def)
     return -1;
 }
 
-#ifdef LIBXL_HAVE_VNUMA
 static int
 xenParseXLVnuma(virConf *conf,
                 virDomainDef *def)
@@ -591,7 +588,6 @@ xenParseXLVnuma(virConf *conf,
 
     return ret;
 }
-#endif
 
 static int
 xenParseXLXenbusLimits(virConf *conf, virDomainDef *def)
@@ -756,11 +752,9 @@ xenParseXLDisk(virConf *conf, virDomainDef *def)
                 case LIBXL_DISK_FORMAT_EMPTY:
                     break;
 
-#ifdef LIBXL_HAVE_QED
                 case LIBXL_DISK_FORMAT_QED:
                     disk->src->format = VIR_STORAGE_FILE_QED;
                     break;
-#endif
 
                 default:
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -833,15 +827,9 @@ xenParseXLInputDevs(virConf *conf, virDomainDef *def)
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         val = virConfGetValue(conf, "usbdevice");
         /* usbdevice can be defined as either a single string or a list */
-        if (val && val->type == VIR_CONF_LIST) {
-#ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
+        if (val && val->type == VIR_CONF_LIST)
             val = val->list;
-#else
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("multiple USB devices not supported"));
-            return -1;
-#endif
-        }
+
         /* otherwise val->next is NULL, so can be handled by the same code */
         while (val) {
             if (val->type != VIR_CONF_STRING) {
@@ -1162,10 +1150,8 @@ xenParseXL(virConf *conf,
     if (xenParseXLOS(conf, def, caps) < 0)
         goto cleanup;
 
-#ifdef LIBXL_HAVE_VNUMA
     if (xenParseXLVnuma(conf, def) < 0)
         goto cleanup;
-#endif
 
     if (xenParseXLXenbusLimits(conf, def) < 0)
         goto cleanup;
@@ -1224,7 +1210,6 @@ xenFormatXLOS(virConf *conf, virDomainDef *def)
             xenConfigSetString(conf, "acpi_firmware", def->os.slic_table) < 0)
             return -1;
 
-#ifdef LIBXL_HAVE_BUILDINFO_KERNEL
         if (def->os.kernel &&
             xenConfigSetString(conf, "kernel", def->os.kernel) < 0)
             return -1;
@@ -1236,7 +1221,6 @@ xenFormatXLOS(virConf *conf, virDomainDef *def)
         if (def->os.cmdline &&
             xenConfigSetString(conf, "cmdline", def->os.cmdline) < 0)
             return -1;
-#endif
 
         for (i = 0; i < def->os.nBootDevs; i++) {
             switch (def->os.bootDevs[i]) {
@@ -1390,7 +1374,6 @@ xenFormatXLCPUID(virConf *conf, virDomainDef *def)
     return ret;
 }
 
-#ifdef LIBXL_HAVE_VNUMA
 static int
 xenFormatXLVnode(virConfValue *list,
                  virBuffer *buf)
@@ -1511,7 +1494,6 @@ xenFormatXLDomainVnuma(virConf *conf,
     virConfFreeValue(vnumaVal);
     return -1;
 }
-#endif
 
 static int
 xenFormatXLXenbusLimits(virConf *conf, virDomainDef *def)
@@ -2196,10 +2178,8 @@ xenFormatXL(virDomainDef *def, virConnectPtr conn)
     if (xenFormatXLCPUID(conf, def) < 0)
         return NULL;
 
-#ifdef LIBXL_HAVE_VNUMA
     if (xenFormatXLDomainVnuma(conf, def) < 0)
         return NULL;
-#endif
 
     if (xenFormatXLXenbusLimits(conf, def) < 0)
         return NULL;

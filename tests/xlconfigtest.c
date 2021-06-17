@@ -244,9 +244,7 @@ mymain(void)
     DO_TEST("new-disk");
     DO_TEST_FORMAT("disk-positional-parms-full", false);
     DO_TEST_FORMAT("disk-positional-parms-partial", false);
-#ifdef LIBXL_HAVE_QED
     DO_TEST_FORMAT("disk-qed", false);
-#endif
     DO_TEST("net-fakemodel");
     DO_TEST("spice");
     DO_TEST("spice-features");
@@ -260,12 +258,10 @@ mymain(void)
     DO_TEST("fullvirt-cpuid");
     DO_TEST("fullvirt-acpi-slic");
     DO_TEST("fullvirt-pci");
-#ifdef LIBXL_HAVE_VNUMA
     DO_TEST("fullvirt-vnuma");
     DO_TEST_PARSE("fullvirt-vnuma-autocomplete", false);
     DO_TEST_PARSE("fullvirt-vnuma-nodistances", false);
     DO_TEST_PARSE("fullvirt-vnuma-partialdist", false);
-#endif
 
     DO_TEST("paravirt-cmdline");
     DO_TEST_FORMAT("paravirt-cmdline-extra-root", false);
@@ -275,21 +271,13 @@ mymain(void)
     DO_TEST_FORMAT("fullvirt-type", false);
     DO_TEST("pvh-type");
 
-#ifdef LIBXL_HAVE_DEVICE_CHANNEL
     DO_TEST("channel-pty");
     DO_TEST("channel-unix");
-#endif
-#ifdef LIBXL_HAVE_BUILDINFO_SERIAL_LIST
     DO_TEST("fullvirt-multiserial");
-#endif
-#ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
     DO_TEST("fullvirt-multiusb");
-#endif
-#ifdef LIBXL_HAVE_BUILDINFO_KERNEL
     DO_TEST("fullvirt-direct-kernel-boot");
     DO_TEST_FORMAT("fullvirt-direct-kernel-boot-extra", false);
     DO_TEST_FORMAT("fullvirt-direct-kernel-boot-bogus-extra", false);
-#endif
 #ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
     DO_TEST("max-gntframes");
 #endif
