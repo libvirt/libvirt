@@ -2021,7 +2021,7 @@ remoteDispatchProbeURI(bool readonly,
          * calls in daemonInitialize */
         const char *drivers[] = {
 # ifdef WITH_LIBXL
-            "libxl",
+            "xen",
 # endif
 # ifdef WITH_QEMU
             "qemu",
