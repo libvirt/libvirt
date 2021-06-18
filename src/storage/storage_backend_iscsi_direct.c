@@ -495,15 +495,13 @@ virStorageBackendISCSIDirectFindPoolSources(const char *srcSpec,
     char **targets = NULL;
     char *ret = NULL;
     size_t i;
-    virStoragePoolSourceList list = {
-        .type = VIR_STORAGE_POOL_ISCSI_DIRECT,
-        .nsources = 0,
-        .sources = NULL
-    };
+    g_autoptr(virStoragePoolSourceList) list = g_new0(virStoragePoolSourceList, 1);
     g_autofree char *portal = NULL;
     g_autoptr(virStoragePoolSource) source = NULL;
 
     virCheckFlags(0, NULL);
+
+    list->type = VIR_STORAGE_POOL_ISCSI_DIRECT;
 
     if (!srcSpec) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -511,7 +509,7 @@ virStorageBackendISCSIDirectFindPoolSources(const char *srcSpec,
         return NULL;
     }
 
-    if (!(source = virStoragePoolDefParseSourceString(srcSpec, list.type)))
+    if (!(source = virStoragePoolDefParseSourceString(srcSpec, list->type)))
         return NULL;
 
     if (source->nhost != 1) {
@@ -532,30 +530,28 @@ virStorageBackendISCSIDirectFindPoolSources(const char *srcSpec,
     if (virISCSIDirectScanTargets(source->initiator.iqn, portal, &ntargets, &targets) < 0)
         goto cleanup;
 
-    list.sources = g_new0(virStoragePoolSource, ntargets);
+    list->sources = g_new0(virStoragePoolSource, ntargets);
 
     for (i = 0; i < ntargets; i++) {
-        list.sources[i].devices = g_new0(virStoragePoolSourceDevice, 1);
-        list.sources[i].hosts = g_new0(virStoragePoolSourceHost, 1);
-        list.sources[i].nhost = 1;
-        list.sources[i].hosts[0] = source->hosts[0];
-        list.sources[i].initiator = source->initiator;
-        list.sources[i].ndevice = 1;
-        list.sources[i].devices[0].path = targets[i];
-        list.nsources++;
+        list->sources[i].hosts = g_new0(virStoragePoolSourceHost, 1);
+        list->sources[i].nhost = 1;
+        list->sources[i].hosts[0].name = g_strdup(source->hosts[0].name);
+        list->sources[i].hosts[0].port = source->hosts[0].port;
+
+        virStorageSourceInitiatorCopy(&list->sources[i].initiator,
+                                      &source->initiator);
+
+        list->sources[i].devices = g_new0(virStoragePoolSourceDevice, 1);
+        list->sources[i].ndevice = 1;
+        list->sources[i].devices[0].path = g_strdup(targets[i]);
+
+        list->nsources++;
     }
 
-    if (!(ret = virStoragePoolSourceListFormat(&list)))
+    if (!(ret = virStoragePoolSourceListFormat(list)))
         goto cleanup;
 
  cleanup:
-    if (list.sources) {
-        for (i = 0; i < ntargets; i++) {
-            VIR_FREE(list.sources[i].hosts);
-            VIR_FREE(list.sources[i].devices);
-        }
-        VIR_FREE(list.sources);
-    }
     for (i = 0; i < ntargets; i++)
         VIR_FREE(targets[i]);
     VIR_FREE(targets);
