@@ -485,8 +485,7 @@ virStorageBackendISCSIDirectFindPoolSources(const char *srcSpec,
                                             unsigned int flags)
 {
     size_t ntargets = 0;
-    char **targets = NULL;
-    char *ret = NULL;
+    g_auto(GStrv) targets = NULL;
     size_t i;
     g_autoptr(virStoragePoolSourceList) list = g_new0(virStoragePoolSourceList, 1);
     g_autofree char *portal = NULL;
@@ -508,20 +507,20 @@ virStorageBackendISCSIDirectFindPoolSources(const char *srcSpec,
     if (source->nhost != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Expected exactly 1 host for the storage pool"));
-        goto cleanup;
+        return NULL;
     }
 
     if (!source->initiator.iqn) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("missing initiator IQN"));
-        goto cleanup;
+        return NULL;
     }
 
     if (!(portal = virStorageBackendISCSIDirectPortal(source)))
-        goto cleanup;
+        return NULL;
 
     if (virISCSIDirectScanTargets(source->initiator.iqn, portal, &ntargets, &targets) < 0)
-        goto cleanup;
+        return NULL;
 
     list->sources = g_new0(virStoragePoolSource, ntargets);
 
@@ -541,14 +540,7 @@ virStorageBackendISCSIDirectFindPoolSources(const char *srcSpec,
         list->nsources++;
     }
 
-    if (!(ret = virStoragePoolSourceListFormat(list)))
-        goto cleanup;
-
- cleanup:
-    for (i = 0; i < ntargets; i++)
-        VIR_FREE(targets[i]);
-    VIR_FREE(targets);
-    return ret;
+    return virStoragePoolSourceListFormat(list);
 }
 
 static struct iscsi_context *
