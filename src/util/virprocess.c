@@ -402,7 +402,7 @@ pid_t virProcessGroupGet(pid_t pid)
  * was killed forcibly, -1 if it is still alive,
  * or another error occurred.
  *
- * Callers can proide an extra delay in seconds to
+ * Callers can provide an extra delay in seconds to
  * wait longer than the default.
  */
 int
