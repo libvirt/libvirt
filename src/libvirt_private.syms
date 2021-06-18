@@ -457,6 +457,7 @@ virDomainHostdevDefFree;
 virDomainHostdevDefNew;
 virDomainHostdevFind;
 virDomainHostdevInsert;
+virDomainHostdevMatch;
 virDomainHostdevModeTypeToString;
 virDomainHostdevRemove;
 virDomainHostdevSubsysPCIBackendTypeToString;

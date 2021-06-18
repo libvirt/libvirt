@@ -3590,6 +3590,8 @@ virDomainHostdevDef *
 virDomainHostdevRemove(virDomainDef *def, size_t i);
 int virDomainHostdevFind(virDomainDef *def, virDomainHostdevDef *match,
                          virDomainHostdevDef **found);
+int virDomainHostdevMatch(virDomainHostdevDef *a,
+                          virDomainHostdevDef *b);
 
 virDomainGraphicsListenDef *
 virDomainGraphicsGetListen(virDomainGraphicsDef *def, size_t i);

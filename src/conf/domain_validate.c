@@ -1068,7 +1068,25 @@ virDomainDefDuplicateDiskInfoValidate(const virDomainDef *def)
     return 0;
 }
 
+static int
+virDomainDefDuplicateHostdevInfoValidate(const virDomainDef *def)
+{
+    size_t i;
+    size_t j;
 
+    for (i = 0; i < def->nhostdevs; i++) {
+        for (j = i + 1; j < def->nhostdevs; j++) {
+            if (virDomainHostdevMatch(def->hostdevs[i],
+                                      def->hostdevs[j])) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                    _("Hostdev already exists in the domain configuration"));
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
 
 /**
  * virDomainDefDuplicateDriveAddressesValidate:
@@ -1527,6 +1545,9 @@ virDomainDefValidateInternal(const virDomainDef *def,
                              virDomainXMLOption *xmlopt)
 {
     if (virDomainDefDuplicateDiskInfoValidate(def) < 0)
+        return -1;
+
+    if (virDomainDefDuplicateHostdevInfoValidate(def) < 0)
         return -1;
 
     if (virDomainDefDuplicateDriveAddressesValidate(def) < 0)

@@ -1918,8 +1918,11 @@ mymain(void)
     DO_TEST("hostdev-usb-address", NONE);
     DO_TEST("hostdev-usb-address-device", NONE);
     DO_TEST("hostdev-usb-address-device-boot", NONE);
+    DO_TEST_PARSE_ERROR("hostdev-usb-duplicate", NONE);
     DO_TEST("hostdev-pci-address", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-pci-address-device", QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST_PARSE_ERROR("hostdev-pci-duplicate",
+                        QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-vfio",
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-vfio-multidomain",
@@ -1930,6 +1933,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_PARSE_ERROR("hostdev-mdev-invalid-target-address",
             QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST_PARSE_ERROR("hostdev-mdev-duplicate",
+                        QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_CAPS_LATEST("hostdev-mdev-display-spice-opengl");
     DO_TEST_CAPS_LATEST("hostdev-mdev-display-spice-egl-headless");
     DO_TEST_CAPS_LATEST("hostdev-mdev-display-vnc");
@@ -2860,6 +2865,9 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DEVICE_VHOST_SCSI,
             QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
             QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY);
+    DO_TEST_PARSE_ERROR("hostdev-scsi-duplicate",
+                        QEMU_CAPS_VIRTIO_SCSI,
+                        QEMU_CAPS_DEVICE_VHOST_SCSI);
 
     DO_TEST_CAPS_VER("mlock-on", "3.0.0");
     DO_TEST_CAPS_VER("mlock-off", "3.0.0");

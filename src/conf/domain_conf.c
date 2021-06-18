@@ -15369,7 +15369,7 @@ virDomainHostdevMatchCaps(virDomainHostdevDef *a,
 }
 
 
-static int
+int
 virDomainHostdevMatch(virDomainHostdevDef *a,
                       virDomainHostdevDef *b)
 {
