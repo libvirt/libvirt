@@ -420,37 +420,30 @@ virISCSIDirectUpdateTargets(struct iscsi_context *iscsi,
                             size_t *ntargets,
                             char ***targets)
 {
-    int ret = -1;
     struct iscsi_discovery_address *addr;
     struct iscsi_discovery_address *tmp_addr;
-    size_t tmp_ntargets = 0;
-    char **tmp_targets = NULL;
+    size_t i = 0;
+
+    *ntargets = 0;
 
     if (!(addr = iscsi_discovery_sync(iscsi))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to discover session: %s"),
                        iscsi_get_error(iscsi));
-        return ret;
+        return -1;
     }
 
-    for (tmp_addr = addr; tmp_addr; tmp_addr = tmp_addr->next) {
-        g_autofree char *target = NULL;
+    for (tmp_addr = addr; tmp_addr; tmp_addr = tmp_addr->next)
+        (*ntargets)++;
 
-        target = g_strdup(tmp_addr->target_name);
+    *targets = g_new0(char *, *ntargets + 1);
 
-        if (VIR_APPEND_ELEMENT(tmp_targets, tmp_ntargets, target) < 0)
-            goto cleanup;
-    }
+    for (tmp_addr = addr; tmp_addr; tmp_addr = tmp_addr->next)
+        *targets[i++] = g_strdup(tmp_addr->target_name);
 
-    *targets = g_steal_pointer(&tmp_targets);
-    *ntargets = tmp_ntargets;
-    tmp_ntargets = 0;
-
-    ret = 0;
- cleanup:
     iscsi_free_discovery_data(iscsi, addr);
-    virStringListFreeCount(tmp_targets, tmp_ntargets);
-    return ret;
+
+    return 0;
 }
 
 static int
