@@ -360,125 +360,6 @@ virCHMonitorBuildNetsJson(virJSONValue *content, virDomainDef *vmdef)
 }
 
 static int
-virCHMonitorDetectUnsupportedDevices(virDomainDef *vmdef)
-{
-    int ret = 0;
-
-    if (vmdef->ngraphics > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support graphics"));
-        ret = 1;
-    }
-    if (vmdef->ncontrollers > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support controllers"));
-        ret = 1;
-    }
-    if (vmdef->nfss > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support fss"));
-        ret = 1;
-    }
-    if (vmdef->ninputs > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support inputs"));
-        ret = 1;
-    }
-    if (vmdef->nsounds > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support sounds"));
-        ret = 1;
-    }
-    if (vmdef->naudios > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support audios"));
-        ret = 1;
-    }
-    if (vmdef->nvideos > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support videos"));
-        ret = 1;
-    }
-    if (vmdef->nhostdevs > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support hostdevs"));
-        ret = 1;
-    }
-    if (vmdef->nredirdevs > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support redirdevs"));
-        ret = 1;
-    }
-    if (vmdef->nsmartcards > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support smartcards"));
-        ret = 1;
-    }
-    if (vmdef->nserials > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support serials"));
-        ret = 1;
-    }
-    if (vmdef->nparallels > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support parallels"));
-        ret = 1;
-    }
-    if (vmdef->nchannels > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support channels"));
-        ret = 1;
-    }
-    if (vmdef->nconsoles > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support consoles"));
-        ret = 1;
-    }
-    if (vmdef->nleases > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support leases"));
-        ret = 1;
-    }
-    if (vmdef->nhubs > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support hubs"));
-        ret = 1;
-    }
-    if (vmdef->nseclabels > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support seclabels"));
-        ret = 1;
-    }
-    if (vmdef->nrngs > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support rngs"));
-        ret = 1;
-    }
-    if (vmdef->nshmems > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support shmems"));
-        ret = 1;
-    }
-    if (vmdef->nmems > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support mems"));
-        ret = 1;
-    }
-    if (vmdef->npanics > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support panics"));
-        ret = 1;
-    }
-    if (vmdef->nsysinfo > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Cloud-Hypervisor doesn't support sysinfo"));
-        ret = 1;
-    }
-
-    return ret;
-}
-
-static int
 virCHMonitorBuildVMJson(virDomainDef *vmdef, char **jsonstr)
 {
     virJSONValue *content = virJSONValueNewObject();
@@ -489,9 +370,6 @@ virCHMonitorBuildVMJson(virDomainDef *vmdef, char **jsonstr)
                        _("VM is not defined"));
         goto cleanup;
     }
-
-    if (virCHMonitorDetectUnsupportedDevices(vmdef))
-        goto cleanup;
 
     if (virCHMonitorBuildCPUJson(content, vmdef) < 0)
         goto cleanup;

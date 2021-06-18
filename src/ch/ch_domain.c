@@ -197,7 +197,127 @@ virCHDomainDefPostParse(virDomainDef *def,
     return 0;
 }
 
+static int
+chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
+                          const virDomainDef *def G_GNUC_UNUSED,
+                          void *opaque G_GNUC_UNUSED,
+                          void *parseOpaque G_GNUC_UNUSED)
+{
+    int ret = -1;
+
+    switch ((virDomainDeviceType)dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        ret = 0;
+        break;
+    case VIR_DOMAIN_DEVICE_LEASE:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support lease"));
+        break;
+    case VIR_DOMAIN_DEVICE_FS:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support fs"));
+        break;
+    case VIR_DOMAIN_DEVICE_NET:
+        ret = 0;
+        break;
+    case VIR_DOMAIN_DEVICE_INPUT:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support input"));
+        break;
+    case VIR_DOMAIN_DEVICE_SOUND:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support sound"));
+        break;
+    case VIR_DOMAIN_DEVICE_VIDEO:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support video"));
+        break;
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support hostdev"));
+        break;
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support watchdog"));
+        break;
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support controller"));
+        break;
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support graphics"));
+        break;
+    case VIR_DOMAIN_DEVICE_HUB:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support hub"));
+        break;
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support redirdev"));
+        break;
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support smartcard"));
+        break;
+    case VIR_DOMAIN_DEVICE_CHR:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support chr"));
+        break;
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support memballoon"));
+        break;
+    case VIR_DOMAIN_DEVICE_NVRAM:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support nvram"));
+        break;
+    case VIR_DOMAIN_DEVICE_RNG:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support rng"));
+        break;
+    case VIR_DOMAIN_DEVICE_SHMEM:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support shmem"));
+        break;
+    case VIR_DOMAIN_DEVICE_TPM:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support tpm"));
+        break;
+    case VIR_DOMAIN_DEVICE_PANIC:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support panic"));
+        break;
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        ret = 0;
+        break;
+    case VIR_DOMAIN_DEVICE_IOMMU:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support iommu"));
+        break;
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        ret = 0;
+        break;
+    case VIR_DOMAIN_DEVICE_AUDIO:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cloud-Hypervisor doesn't support audio"));
+        break;
+    case VIR_DOMAIN_DEVICE_NONE:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("unexpected VIR_DOMAIN_DEVICE_NONE"));
+        break;
+
+    case VIR_DOMAIN_DEVICE_LAST:
+    default:
+        virReportEnumRangeError(virDomainDeviceType, dev->type);
+        break;
+    }
+
+    return ret;
+}
+
 virDomainDefParserConfig virCHDriverDomainDefParserConfig = {
     .domainPostParseBasicCallback = virCHDomainDefPostParseBasic,
     .domainPostParseCallback = virCHDomainDefPostParse,
+    .deviceValidateCallback = chValidateDomainDeviceDef,
 };
