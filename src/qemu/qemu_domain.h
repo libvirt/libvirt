@@ -457,14 +457,19 @@ struct _qemuDomainSaveCookie {
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuDomainSaveCookie, virObjectUnref);
 
+typedef struct _qemuDomainXmlNsEnvTuple qemuDomainXmlNsEnvTuple;
+struct _qemuDomainXmlNsEnvTuple {
+    char *name;
+    char *value;
+};
+
 typedef struct _qemuDomainXmlNsDef qemuDomainXmlNsDef;
 struct _qemuDomainXmlNsDef {
     size_t num_args;
     char **args;
 
     unsigned int num_env;
-    char **env_name;
-    char **env_value;
+    qemuDomainXmlNsEnvTuple *env;
 
     size_t ncapsadd;
     char **capsadd;

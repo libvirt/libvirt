@@ -10638,8 +10638,8 @@ qemuBuildCommandLine(virQEMUDriver *driver,
         for (i = 0; i < qemuxmlns->num_args; i++)
             virCommandAddArg(cmd, qemuxmlns->args[i]);
         for (i = 0; i < qemuxmlns->num_env; i++)
-            virCommandAddEnvPair(cmd, qemuxmlns->env_name[i],
-                                 NULLSTR_EMPTY(qemuxmlns->env_value[i]));
+            virCommandAddEnvPair(cmd, qemuxmlns->env[i].name,
+                                 NULLSTR_EMPTY(qemuxmlns->env[i].value));
     }
 
     if (qemuBuildSeccompSandboxCommandLine(cmd, cfg, qemuCaps) < 0)

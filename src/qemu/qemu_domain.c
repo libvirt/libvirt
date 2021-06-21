@@ -3319,12 +3319,18 @@ virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
 static void
 qemuDomainXmlNsDefFree(qemuDomainXmlNsDef *def)
 {
+    size_t i;
+
     if (!def)
         return;
 
+    for (i = 0; i < def->num_env; i++) {
+        g_free(def->env[i].name);
+        g_free(def->env[i].value);
+    }
+    g_free(def->env);
+
     virStringListFreeCount(def->args, def->num_args);
-    virStringListFreeCount(def->env_name, def->num_env);
-    virStringListFreeCount(def->env_value, def->num_env);
     virStringListFreeCount(def->capsadd, def->ncapsadd);
     virStringListFreeCount(def->capsdel, def->ncapsdel);
 
@@ -3372,15 +3378,21 @@ qemuDomainDefNamespaceParseCommandlineArgs(qemuDomainXmlNsDef *nsdef,
 
 
 static int
-qemuDomainDefNamespaceParseCommandlineEnvNameValidate(const char *envname)
+qemuDomainDefNamespaceParseCommandlineEnvValidate(qemuDomainXmlNsEnvTuple *env)
 {
-    if (!g_ascii_isalpha(envname[0]) && envname[0] != '_') {
+    if (!env->name) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No qemu environment name specified"));
+        return -1;
+    }
+
+    if (!g_ascii_isalpha(env->name[0]) && env->name[0] != '_') {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Invalid environment name, it must begin with a letter or underscore"));
         return -1;
     }
 
-    if (strspn(envname, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_") != strlen(envname)) {
+    if (strspn(env->name, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_") != strlen(env->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Invalid environment name, it must contain only alphanumerics and underscore"));
         return -1;
@@ -3404,22 +3416,17 @@ qemuDomainDefNamespaceParseCommandlineEnv(qemuDomainXmlNsDef *nsdef,
     if (nnodes == 0)
         return 0;
 
-    nsdef->env_name = g_new0(char *, nnodes);
-    nsdef->env_value = g_new0(char *, nnodes);
+    nsdef->env = g_new0(qemuDomainXmlNsEnvTuple, nnodes);
 
     for (i = 0; i < nnodes; i++) {
-        if (!(nsdef->env_name[nsdef->num_env] = virXMLPropString(nodes[i], "name"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("No qemu environment name specified"));
-            return -1;
-        }
+        qemuDomainXmlNsEnvTuple *env = nsdef->env + i;
 
-        if (qemuDomainDefNamespaceParseCommandlineEnvNameValidate(nsdef->env_name[nsdef->num_env]) < 0)
-            return -1;
-
-        nsdef->env_value[nsdef->num_env] = virXMLPropString(nodes[i], "value");
-        /* a NULL value for command is allowed, since it might be empty */
+        env->name = virXMLPropString(nodes[i], "name");
+        env->value = virXMLPropString(nodes[i], "value");
         nsdef->num_env++;
+
+        if (qemuDomainDefNamespaceParseCommandlineEnvValidate(env) < 0)
+            return -1;
     }
 
     return 0;
@@ -3513,9 +3520,8 @@ qemuDomainDefNamespaceFormatXMLCommandline(virBuffer *buf,
         virBufferEscapeString(buf, "<qemu:arg value='%s'/>\n",
                               cmd->args[i]);
     for (i = 0; i < cmd->num_env; i++) {
-        virBufferAsprintf(buf, "<qemu:env name='%s'", cmd->env_name[i]);
-        if (cmd->env_value[i])
-            virBufferEscapeString(buf, " value='%s'", cmd->env_value[i]);
+        virBufferAsprintf(buf, "<qemu:env name='%s'", cmd->env[i].name);
+        virBufferEscapeString(buf, " value='%s'", cmd->env[i].value);
         virBufferAddLit(buf, "/>\n");
     }
 
