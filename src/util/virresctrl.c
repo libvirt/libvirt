@@ -1437,7 +1437,6 @@ virResctrlAllocParseProcessMemoryBandwidth(virResctrlInfo *resctrl,
     if (alloc->mem_bw->nbandwidths <= id) {
         VIR_EXPAND_N(alloc->mem_bw->bandwidths, alloc->mem_bw->nbandwidths,
                      id - alloc->mem_bw->nbandwidths + 1);
-        return -1;
     }
     if (!alloc->mem_bw->bandwidths[id])
         alloc->mem_bw->bandwidths[id] = g_new0(unsigned int, 1);
