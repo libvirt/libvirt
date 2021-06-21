@@ -145,7 +145,6 @@ extern virXMLNamespace networkDnsmasqXMLNamespace;
 
 typedef struct _networkDnsmasqXmlNsDef networkDnsmasqXmlNsDef;
 struct _networkDnsmasqXmlNsDef {
-    size_t noptions;
     char **options;
 };
 
@@ -157,7 +156,7 @@ networkDnsmasqDefNamespaceFree(void *nsdata)
     if (!def)
         return;
 
-    virStringListFreeCount(def->options, def->noptions);
+    g_strfreev(def->options);
 
     g_free(def);
 }
@@ -179,10 +178,10 @@ networkDnsmasqDefNamespaceParseOptions(networkDnsmasqXmlNsDef *nsdef,
     if (nnodes == 0)
         return 0;
 
-    nsdef->options = g_new0(char *, nnodes);
+    nsdef->options = g_new0(char *, nnodes + 1);
 
     for (i = 0; i < nnodes; i++) {
-        if (!(nsdef->options[nsdef->noptions++] = virXMLPropString(nodes[i], "value"))) {
+        if (!(nsdef->options[i] = virXMLPropString(nodes[i], "value"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("No dnsmasq options value specified"));
             return -1;
@@ -202,7 +201,7 @@ networkDnsmasqDefNamespaceParse(xmlXPathContextPtr ctxt,
     if (networkDnsmasqDefNamespaceParseOptions(nsdata, ctxt))
         return -1;
 
-    if (nsdata->noptions > 0)
+    if (nsdata->options)
         *data = g_steal_pointer(&nsdata);
 
     return 0;
@@ -214,17 +213,16 @@ networkDnsmasqDefNamespaceFormatXML(virBuffer *buf,
                                     void *nsdata)
 {
     networkDnsmasqXmlNsDef *def = nsdata;
-    size_t i;
+    GStrv n;
 
-    if (!def->noptions)
+    if (!def->options)
         return 0;
 
     virBufferAddLit(buf, "<dnsmasq:options>\n");
     virBufferAdjustIndent(buf, 2);
 
-    for (i = 0; i < def->noptions; i++) {
-        virBufferEscapeString(buf, "<dnsmasq:option value='%s'/>\n",
-                              def->options[i]);
+    for (n = def->options; *n; n++) {
+        virBufferEscapeString(buf, "<dnsmasq:option value='%s'/>\n", *n);
     }
 
     virBufferAdjustIndent(buf, -2);
@@ -1554,8 +1552,9 @@ networkDnsmasqConfContents(virNetworkObj *obj,
 
     if (def->namespaceData) {
         networkDnsmasqXmlNsDef *dnsmasqxmlns = def->namespaceData;
-        for (i = 0; i < dnsmasqxmlns->noptions; i++)
-            virBufferAsprintf(&configbuf, "%s\n", dnsmasqxmlns->options[i]);
+        GStrv n;
+        for (n = dnsmasqxmlns->options; n && *n; n++)
+            virBufferAsprintf(&configbuf, "%s\n", *n);
     }
 
     if (!(*configstr = virBufferContentAndReset(&configbuf)))
