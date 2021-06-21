@@ -10633,10 +10633,11 @@ qemuBuildCommandLine(virQEMUDriver *driver,
 
     if (def->namespaceData) {
         qemuDomainXmlNsDef *qemuxmlns;
+        GStrv n;
 
         qemuxmlns = def->namespaceData;
-        for (i = 0; i < qemuxmlns->num_args; i++)
-            virCommandAddArg(cmd, qemuxmlns->args[i]);
+        for (n = qemuxmlns->args; n && *n; n++)
+            virCommandAddArg(cmd, *n);
         for (i = 0; i < qemuxmlns->num_env; i++)
             virCommandAddEnvPair(cmd, qemuxmlns->env[i].name,
                                  NULLSTR_EMPTY(qemuxmlns->env[i].value));

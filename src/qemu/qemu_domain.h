@@ -465,7 +465,6 @@ struct _qemuDomainXmlNsEnvTuple {
 
 typedef struct _qemuDomainXmlNsDef qemuDomainXmlNsDef;
 struct _qemuDomainXmlNsDef {
-    size_t num_args;
     char **args;
 
     unsigned int num_env;

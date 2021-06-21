@@ -3330,7 +3330,7 @@ qemuDomainXmlNsDefFree(qemuDomainXmlNsDef *def)
     }
     g_free(def->env);
 
-    virStringListFreeCount(def->args, def->num_args);
+    g_strfreev(def->args);
     g_strfreev(def->capsadd);
     g_strfreev(def->capsdel);
 
@@ -3363,10 +3363,10 @@ qemuDomainDefNamespaceParseCommandlineArgs(qemuDomainXmlNsDef *nsdef,
     if (nnodes == 0)
         return 0;
 
-    nsdef->args = g_new0(char *, nnodes);
+    nsdef->args = g_new0(char *, nnodes + 1);
 
     for (i = 0; i < nnodes; i++) {
-        if (!(nsdef->args[nsdef->num_args++] = virXMLPropString(nodes[i], "value"))) {
+        if (!(nsdef->args[i] = virXMLPropString(nodes[i], "value"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("No qemu command-line argument specified"));
             return -1;
@@ -3491,7 +3491,7 @@ qemuDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
 
     nsdata->deprecationBehavior = virXPathString("string(./qemu:deprecation/@behavior)", ctxt);
 
-    if (nsdata->num_args > 0 || nsdata->num_env > 0 ||
+    if (nsdata->args || nsdata->num_env > 0 ||
         nsdata->capsadd || nsdata->capsdel ||
         nsdata->deprecationBehavior)
         *data = g_steal_pointer(&nsdata);
@@ -3508,17 +3508,17 @@ static void
 qemuDomainDefNamespaceFormatXMLCommandline(virBuffer *buf,
                                            qemuDomainXmlNsDef *cmd)
 {
+    GStrv n;
     size_t i;
 
-    if (!cmd->num_args && !cmd->num_env)
+    if (!cmd->args && !cmd->num_env)
         return;
 
     virBufferAddLit(buf, "<qemu:commandline>\n");
     virBufferAdjustIndent(buf, 2);
 
-    for (i = 0; i < cmd->num_args; i++)
-        virBufferEscapeString(buf, "<qemu:arg value='%s'/>\n",
-                              cmd->args[i]);
+    for (n = cmd->args; n && *n; n++)
+        virBufferEscapeString(buf, "<qemu:arg value='%s'/>\n", *n);
     for (i = 0; i < cmd->num_env; i++) {
         virBufferAsprintf(buf, "<qemu:env name='%s'", cmd->env[i].name);
         virBufferEscapeString(buf, " value='%s'", cmd->env[i].value);
@@ -6615,7 +6615,7 @@ void qemuDomainObjCheckTaint(virQEMUDriver *driver,
 
     if (obj->def->namespaceData) {
         qemuDomainXmlNsDef *qemuxmlns = obj->def->namespaceData;
-        if (qemuxmlns->num_args || qemuxmlns->num_env)
+        if (qemuxmlns->args || qemuxmlns->num_env)
             qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_ARGV, logCtxt);
         if (qemuxmlns->capsadd || qemuxmlns->capsdel)
             custom_hypervisor_feat = true;
