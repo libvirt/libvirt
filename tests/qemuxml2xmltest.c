@@ -1306,7 +1306,8 @@ mymain(void)
     DO_TEST("memfd-memory-numa",
             QEMU_CAPS_OBJECT_MEMORY_MEMFD,
             QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB,
-            QEMU_CAPS_OBJECT_MEMORY_FILE);
+            QEMU_CAPS_OBJECT_MEMORY_FILE,
+            QEMU_CAPS_DEVICE_NVDIMM);
     DO_TEST("memfd-memory-default-hugepage",
             QEMU_CAPS_OBJECT_MEMORY_MEMFD,
             QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB,

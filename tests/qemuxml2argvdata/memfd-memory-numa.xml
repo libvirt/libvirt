@@ -1,6 +1,7 @@
 <domain type='kvm'>
   <name>instance-00000092</name>
   <uuid>126f2720-6f8e-45ab-a886-ec9277079a67</uuid>
+  <maxMemory slots='16' unit='KiB'>1099511627776</maxMemory>
   <memory unit='KiB'>14680064</memory>
   <currentMemory unit='KiB'>14680064</currentMemory>
   <memoryBacking>
@@ -41,5 +42,15 @@
     <memballoon model='virtio'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </memballoon>
+    <memory model='nvdimm'>
+      <source>
+        <path>/tmp/nvdimm</path>
+      </source>
+      <target>
+        <size unit='KiB'>523264</size>
+        <node>0</node>
+      </target>
+      <address type='dimm' slot='0'/>
+    </memory>
   </devices>
 </domain>

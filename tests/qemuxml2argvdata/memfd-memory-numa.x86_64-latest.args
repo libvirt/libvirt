@@ -10,13 +10,15 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-instance-00000092/.config \
 -name guest=instance-00000092,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-instance-00000092/master-key.aes"}' \
--machine pc-i440fx-2.3,accel=kvm,usb=off,dump-guest-core=off \
+-machine pc-i440fx-2.3,accel=kvm,usb=off,dump-guest-core=off,nvdimm=on \
 -cpu qemu64 \
--m 14336 \
+-m size=14680064k,slots=16,maxmem=1099511627776k \
 -overcommit mem-lock=off \
 -smp 8,sockets=1,dies=1,cores=8,threads=1 \
 -object '{"qom-type":"memory-backend-memfd","id":"ram-node0","hugetlb":true,"hugetlbsize":2097152,"share":true,"prealloc":true,"size":15032385536,"host-nodes":[3],"policy":"preferred"}' \
 -numa node,nodeid=0,cpus=0-7,memdev=ram-node0 \
+-object '{"qom-type":"memory-backend-file","id":"memnvdimm0","mem-path":"/tmp/nvdimm","share":true,"prealloc":true,"size":536870912,"host-nodes":[3],"policy":"preferred"}' \
+-device nvdimm,node=0,memdev=memnvdimm0,id=nvdimm0,slot=0 \
 -uuid 126f2720-6f8e-45ab-a886-ec9277079a67 \
 -display none \
 -no-user-config \

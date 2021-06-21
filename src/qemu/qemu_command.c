@@ -3052,7 +3052,8 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
 
     props = virJSONValueNewObject();
 
-    if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_MEMFD) {
+    if (!mem->nvdimmPath &&
+        def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_MEMFD) {
         backendType = "memory-backend-memfd";
 
         if (useHugepage) {
