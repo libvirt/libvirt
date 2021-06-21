@@ -26,6 +26,17 @@
 #include "virjson.h"
 #include "viruri.h"
 
+void
+qemuBlockStorageSourceSetStorageNodename(virStorageSource *src,
+                                         char *nodename);
+
+const char *
+qemuBlockStorageSourceGetEffectiveStorageNodename(virStorageSource *src);
+
+const char *
+qemuBlockStorageSourceGetStorageNodename(virStorageSource *src);
+
+
 typedef struct qemuBlockNodeNameBackingChainData qemuBlockNodeNameBackingChainData;
 struct qemuBlockNodeNameBackingChainData {
     char *qemufilename; /* name of the image from qemu */

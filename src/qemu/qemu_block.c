@@ -53,6 +53,54 @@ qemuBlockNodeNameValidate(const char *nn)
 
 
 /**
+ * qemuBlockStorageSourceSetStorageNodename:
+ * @src: virStorageSource to set the storage nodename
+ * @nodename: The node name to set (stolen)
+ *
+ * Sets @nodename as the storage node name of @src. Using NULL @nodename clears
+ * the nodename. @src takes ownership of @nodename.
+ */
+void
+qemuBlockStorageSourceSetStorageNodename(virStorageSource *src,
+                                         char *nodename)
+{
+    g_free(src->nodestorage);
+    src->nodestorage = nodename;
+}
+
+
+/**
+ * qemuBlockStorageSourceGetEffectiveStorageNodename:
+ * @src: virStorageSource to get the effective nodename of
+ *
+ * Gets the nodename that exposes the storage corresponding to @src, without
+ * the format driver applied. This function always returns a name.
+ */
+const char *
+qemuBlockStorageSourceGetEffectiveStorageNodename(virStorageSource *src)
+{
+    if (src->sliceStorage &&
+        src->sliceStorage->nodename)
+        return src->sliceStorage->nodename;
+
+    return src->nodestorage;
+}
+
+
+/**
+ * qemuBlockStorageSourceGetStorageNodename:
+ * @src: virStorageSource to get the effective nodename of
+ *
+ * Gets the nodename corresponding to the real backing storage format layer.
+ */
+const char *
+qemuBlockStorageSourceGetStorageNodename(virStorageSource *src)
+{
+    return src->nodestorage;
+}
+
+
+/**
  * qemuBlockStorageSourceSupportsConcurrentAccess:
  * @src: disk storage source
  *
