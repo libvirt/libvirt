@@ -25921,7 +25921,8 @@ virDomainMemorySourceDefFormat(virBuffer *buf,
 
 static void
 virDomainMemoryTargetDefFormat(virBuffer *buf,
-                               virDomainMemoryDef *def)
+                               virDomainMemoryDef *def,
+                               unsigned int flags)
 {
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
@@ -25943,6 +25944,10 @@ virDomainMemoryTargetDefFormat(virBuffer *buf,
 
         virBufferAsprintf(&childBuf, "<requested unit='KiB'>%llu</requested>\n",
                           def->requestedsize);
+        if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
+            virBufferAsprintf(&childBuf, "<current unit='KiB'>%llu</current>\n",
+                              def->currentsize);
+        }
     }
 
     virXMLFormatElement(buf, "target", NULL, &childBuf);
@@ -25975,7 +25980,7 @@ virDomainMemoryDefFormat(virBuffer *buf,
     if (virDomainMemorySourceDefFormat(buf, def) < 0)
         return -1;
 
-    virDomainMemoryTargetDefFormat(buf, def);
+    virDomainMemoryTargetDefFormat(buf, def, flags);
 
     virDomainDeviceInfoFormat(buf, &def->info, flags);
 

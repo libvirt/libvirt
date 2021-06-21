@@ -2496,6 +2496,9 @@ struct _virDomainMemoryDef {
     unsigned long long labelsize; /* kibibytes; valid only for NVDIMM */
     unsigned long long blocksize; /* kibibytes; valid only for VIRTIO_MEM */
     unsigned long long requestedsize; /* kibibytes; valid only for VIRTIO_MEM */
+    unsigned long long currentsize; /* kibibytes, valid for VIRTIO_MEM and
+                                       active domain only, only to report never
+                                       parse */
     bool readonly; /* valid only for NVDIMM */
 
     /* required for QEMU NVDIMM ppc64 support */
