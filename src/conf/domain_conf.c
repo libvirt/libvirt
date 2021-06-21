@@ -16621,6 +16621,23 @@ virDomainMemoryFindByDeviceInfo(virDomainDef *def,
 }
 
 
+virDomainMemoryDef *
+virDomainMemoryFindByDeviceAlias(virDomainDef *def,
+                                 const char *alias)
+{
+    size_t i;
+
+    for (i = 0; i < def->nmems; i++) {
+        virDomainMemoryDef *tmp = def->mems[i];
+
+        if (STREQ_NULLABLE(tmp->info.alias, alias))
+            return tmp;
+    }
+
+    return NULL;
+}
+
+
 /**
  * virDomainMemoryInsert:
  *

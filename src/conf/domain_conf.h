@@ -3816,6 +3816,11 @@ virDomainMemoryFindByDeviceInfo(virDomainDef *dev,
                                 int *pos)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
+virDomainMemoryDef *
+virDomainMemoryFindByDeviceAlias(virDomainDef *def,
+                                 const char *alias)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
+
 int virDomainShmemDefInsert(virDomainDef *def, virDomainShmemDef *shmem)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 bool virDomainShmemDefEquals(virDomainShmemDef *src, virDomainShmemDef *dst)
