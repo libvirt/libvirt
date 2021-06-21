@@ -5484,7 +5484,6 @@ qemuProcessStartUpdateCustomCaps(virDomainObj *vm)
     qemuDomainXmlNsDef *nsdef = vm->def->namespaceData;
     char **next;
     int tmp;
-    size_t i;
 
     if (cfg->capabilityfilters) {
         for (next = cfg->capabilityfilters; *next; next++) {
@@ -5500,22 +5499,22 @@ qemuProcessStartUpdateCustomCaps(virDomainObj *vm)
     }
 
     if (nsdef) {
-        for (i = 0; i < nsdef->ncapsadd; i++) {
-            if ((tmp = virQEMUCapsTypeFromString(nsdef->capsadd[i])) < 0) {
+        for (next = nsdef->capsadd; next && *next; next++) {
+            if ((tmp = virQEMUCapsTypeFromString(*next)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("invalid qemu namespace capability '%s'"),
-                               nsdef->capsadd[i]);
+                               *next);
                 return -1;
             }
 
             virQEMUCapsSet(priv->qemuCaps, tmp);
         }
 
-        for (i = 0; i < nsdef->ncapsdel; i++) {
-            if ((tmp = virQEMUCapsTypeFromString(nsdef->capsdel[i])) < 0) {
+        for (next = nsdef->capsdel; next && *next; next++) {
+            if ((tmp = virQEMUCapsTypeFromString(*next)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("invalid qemu namespace capability '%s'"),
-                               nsdef->capsdel[i]);
+                               *next);
                 return -1;
             }
 

@@ -471,10 +471,8 @@ struct _qemuDomainXmlNsDef {
     unsigned int num_env;
     qemuDomainXmlNsEnvTuple *env;
 
-    size_t ncapsadd;
     char **capsadd;
 
-    size_t ncapsdel;
     char **capsdel;
 
     /* We deliberately keep this as a string so that it's parsed only when

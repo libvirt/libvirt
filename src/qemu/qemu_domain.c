@@ -3331,8 +3331,8 @@ qemuDomainXmlNsDefFree(qemuDomainXmlNsDef *def)
     g_free(def->env);
 
     virStringListFreeCount(def->args, def->num_args);
-    virStringListFreeCount(def->capsadd, def->ncapsadd);
-    virStringListFreeCount(def->capsdel, def->ncapsdel);
+    g_strfreev(def->capsadd);
+    g_strfreev(def->capsdel);
 
     g_free(def->deprecationBehavior);
 
@@ -3448,10 +3448,10 @@ qemuDomainDefNamespaceParseCaps(qemuDomainXmlNsDef *nsdef,
         return -1;
 
     if (nnodesadd > 0) {
-        nsdef->capsadd = g_new0(char *, nnodesadd);
+        nsdef->capsadd = g_new0(char *, nnodesadd + 1);
 
         for (i = 0; i < nnodesadd; i++) {
-            if (!(nsdef->capsadd[nsdef->ncapsadd++] = virXMLPropString(nodesadd[i], "capability"))) {
+            if (!(nsdef->capsadd[i] = virXMLPropString(nodesadd[i], "capability"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("missing capability name"));
                 return -1;
@@ -3460,10 +3460,10 @@ qemuDomainDefNamespaceParseCaps(qemuDomainXmlNsDef *nsdef,
     }
 
     if (nnodesdel > 0) {
-        nsdef->capsdel = g_new0(char *, nnodesdel);
+        nsdef->capsdel = g_new0(char *, nnodesdel + 1);
 
         for (i = 0; i < nnodesdel; i++) {
-            if (!(nsdef->capsdel[nsdef->ncapsdel++] = virXMLPropString(nodesdel[i], "capability"))) {
+            if (!(nsdef->capsdel[i] = virXMLPropString(nodesdel[i], "capability"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("missing capability name"));
                 return -1;
@@ -3492,7 +3492,7 @@ qemuDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
     nsdata->deprecationBehavior = virXPathString("string(./qemu:deprecation/@behavior)", ctxt);
 
     if (nsdata->num_args > 0 || nsdata->num_env > 0 ||
-        nsdata->ncapsadd > 0 || nsdata->ncapsdel > 0 ||
+        nsdata->capsadd || nsdata->capsdel ||
         nsdata->deprecationBehavior)
         *data = g_steal_pointer(&nsdata);
 
@@ -3534,19 +3534,19 @@ static void
 qemuDomainDefNamespaceFormatXMLCaps(virBuffer *buf,
                                     qemuDomainXmlNsDef *xmlns)
 {
-    size_t i;
+    GStrv n;
 
-    if (!xmlns->ncapsadd && !xmlns->ncapsdel)
+    if (!xmlns->capsadd && !xmlns->capsdel)
         return;
 
     virBufferAddLit(buf, "<qemu:capabilities>\n");
     virBufferAdjustIndent(buf, 2);
 
-    for (i = 0; i < xmlns->ncapsadd; i++)
-        virBufferEscapeString(buf, "<qemu:add capability='%s'/>\n", xmlns->capsadd[i]);
+    for (n = xmlns->capsadd; n && *n; n++)
+        virBufferEscapeString(buf, "<qemu:add capability='%s'/>\n", *n);
 
-    for (i = 0; i < xmlns->ncapsdel; i++)
-        virBufferEscapeString(buf, "<qemu:del capability='%s'/>\n", xmlns->capsdel[i]);
+    for (n = xmlns->capsdel; n && *n; n++)
+        virBufferEscapeString(buf, "<qemu:del capability='%s'/>\n", *n);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</qemu:capabilities>\n");
@@ -6617,7 +6617,7 @@ void qemuDomainObjCheckTaint(virQEMUDriver *driver,
         qemuDomainXmlNsDef *qemuxmlns = obj->def->namespaceData;
         if (qemuxmlns->num_args || qemuxmlns->num_env)
             qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_ARGV, logCtxt);
-        if (qemuxmlns->ncapsadd > 0 || qemuxmlns->ncapsdel > 0)
+        if (qemuxmlns->capsadd || qemuxmlns->capsdel)
             custom_hypervisor_feat = true;
     }
 
