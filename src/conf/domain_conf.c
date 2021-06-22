@@ -17482,6 +17482,51 @@ virDomainFeaturesXENDefParse(virDomainDef *def,
 
 
 static int
+virDomainFeaturesCapabilitiesDefParse(virDomainDef *def,
+                                      xmlNodePtr node,
+                                      xmlXPathContext *ctxt)
+{
+    g_autofree xmlNodePtr *nodes = NULL;
+    size_t i;
+    int n;
+    virDomainCapabilitiesPolicy policy;
+
+    if (virXMLPropEnumDefault(node, "policy",
+                              virDomainCapabilitiesPolicyTypeFromString,
+                              VIR_XML_PROP_NONE, &policy,
+                              VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT) < 0)
+        return -1;
+
+    def->features[VIR_DOMAIN_FEATURE_CAPABILITIES] = policy;
+
+    if ((n = virXPathNodeSet("./features/capabilities/*", ctxt, &nodes)) < 0)
+        return -1;
+
+    for (i = 0; i < n; i++) {
+        virTristateSwitch state;
+        int val = virDomainProcessCapsFeatureTypeFromString((const char *)nodes[i]->name);
+        if (val < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unexpected capability feature '%s'"), nodes[i]->name);
+            return -1;
+        }
+
+
+        if (virXMLPropTristateSwitch(nodes[i], "state", VIR_XML_PROP_NONE,
+                                     &state) < 0)
+            return -1;
+
+        if (state == VIR_TRISTATE_SWITCH_ABSENT)
+            state = VIR_TRISTATE_SWITCH_ON;
+
+        def->caps_features[val] = state;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainFeaturesDefParse(virDomainDef *def,
                           xmlXPathContextPtr ctxt)
 {
@@ -17549,15 +17594,8 @@ virDomainFeaturesDefParse(virDomainDef *def,
             break;
 
         case VIR_DOMAIN_FEATURE_CAPABILITIES: {
-            virDomainCapabilitiesPolicy policy;
-
-            if (virXMLPropEnumDefault(nodes[i], "policy",
-                                      virDomainCapabilitiesPolicyTypeFromString,
-                                      VIR_XML_PROP_NONE, &policy,
-                                      VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT) < 0)
+            if (virDomainFeaturesCapabilitiesDefParse(def, nodes[i], ctxt) < 0)
                 return -1;
-
-            def->features[val] = policy;
             break;
         }
 
@@ -17703,31 +17741,7 @@ virDomainFeaturesDefParse(virDomainDef *def,
             break;
         }
     }
-    VIR_FREE(nodes);
 
-    if ((n = virXPathNodeSet("./features/capabilities/*", ctxt, &nodes)) < 0)
-        return -1;
-
-    for (i = 0; i < n; i++) {
-        virTristateSwitch state;
-        int val = virDomainProcessCapsFeatureTypeFromString((const char *)nodes[i]->name);
-        if (val < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unexpected capability feature '%s'"), nodes[i]->name);
-            return -1;
-        }
-
-
-        if (virXMLPropTristateSwitch(nodes[i], "state", VIR_XML_PROP_NONE,
-                                     &state) < 0)
-            return -1;
-
-        if (state == VIR_TRISTATE_SWITCH_ABSENT)
-            state = VIR_TRISTATE_SWITCH_ON;
-
-        def->caps_features[val] = state;
-    }
-    VIR_FREE(nodes);
     return 0;
 }
 
