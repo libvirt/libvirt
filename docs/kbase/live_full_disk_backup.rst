@@ -97,7 +97,7 @@ virDomainBackupBegin() API: Assuming a guest with a single disk image,
 create a temporary live QCOW2 overlay (commonly called as "external
 snapshot") to track the live guest writes.  Then backup the original
 disk image while the guest (live QEMU) keeps writing to the temporary
-overlay.  Finally, perform the "active block-commit" opertion to
+overlay.  Finally, perform the "active block-commit" operation to
 live-merge the temporary overlay disk contents into the original image —
 i.e. the backing file — and "pivot" the live QEMU process to point to
 it.
@@ -138,7 +138,7 @@ it.
     you have to explicitly clean the libvirt metadata using ``virsh
     snapshot-delete vm1 --metadata [name|--current]``.
 
-#. Now, take a backup the orignal image, ``base.raw``, to a different
+#. Now, take a backup the original image, ``base.raw``, to a different
    location using ``cp`` or ``rsync``::
 
     $ cp /var/lib/libvirt/images/base.raw
