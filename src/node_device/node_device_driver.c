@@ -57,6 +57,9 @@ VIR_ENUM_IMPL(virMdevctlCommand,
 );
 
 
+#define MDEVCTL_ERROR(msg) (msg && msg[0] != '\0' ? msg : _("Unknown error"))
+
+
 virDrvOpenStatus
 nodeConnectOpen(virConnectPtr conn,
                 virConnectAuthPtr auth G_GNUC_UNUSED,
@@ -1390,7 +1393,7 @@ nodeDeviceUndefine(virNodeDevice *device,
         if (virMdevctlUndefine(def, &errmsg) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to undefine mediated device: %s"),
-                           errmsg && errmsg[0] ? errmsg : "Unknown Error");
+                           MDEVCTL_ERROR(errmsg));
             goto cleanup;
         }
         ret = 0;
@@ -1437,7 +1440,7 @@ nodeDeviceCreate(virNodeDevice *device,
         if (virMdevctlStart(def, &errmsg) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to create mediated device: %s"),
-                           errmsg && errmsg[0] ? errmsg : "Unknown Error");
+                           MDEVCTL_ERROR(errmsg));
             goto cleanup;
         }
         ret = 0;
