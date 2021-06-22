@@ -17432,31 +17432,25 @@ virDomainFeaturesKVMDefParse(virDomainDef *def,
 
 static int
 virDomainFeaturesXENDefParse(virDomainDef *def,
-                             xmlXPathContext *ctxt)
+                             xmlNodePtr node)
 {
-    g_autofree xmlNodePtr *nodes = NULL;
-    size_t i;
-    int n;
-
     def->features[VIR_DOMAIN_FEATURE_XEN] = VIR_TRISTATE_SWITCH_ON;
 
     if (def->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
         int feature;
         virTristateSwitch value;
 
-        if ((n = virXPathNodeSet("./features/xen/*", ctxt, &nodes)) < 0)
-            return -1;
-
-        for (i = 0; i < n; i++) {
-            feature = virDomainXenTypeFromString((const char *)nodes[i]->name);
+        node = xmlFirstElementChild(node);
+        while (node) {
+            feature = virDomainXenTypeFromString((const char *)node->name);
             if (feature < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unsupported Xen feature: %s"),
-                               nodes[i]->name);
+                               node->name);
                 return -1;
             }
 
-            if (virXMLPropTristateSwitch(nodes[i], "state",
+            if (virXMLPropTristateSwitch(node, "state",
                                          VIR_XML_PROP_REQUIRED, &value) < 0)
                 return -1;
 
@@ -17470,7 +17464,7 @@ virDomainFeaturesXENDefParse(virDomainDef *def,
                 if (value != VIR_TRISTATE_SWITCH_ON)
                     break;
 
-                if (virXMLPropEnum(nodes[i], "mode",
+                if (virXMLPropEnum(node, "mode",
                                    virDomainXenPassthroughModeTypeFromString,
                                    VIR_XML_PROP_NONZERO,
                                    &def->xen_passthrough_mode) < 0)
@@ -17480,8 +17474,9 @@ virDomainFeaturesXENDefParse(virDomainDef *def,
                 case VIR_DOMAIN_XEN_LAST:
                     break;
             }
+
+            node = xmlNextElementSibling(node);
         }
-        VIR_FREE(nodes);
     }
 
     return 0;
@@ -17540,7 +17535,7 @@ virDomainFeaturesDefParse(virDomainDef *def,
             break;
 
         case VIR_DOMAIN_FEATURE_XEN:
-            if (virDomainFeaturesXENDefParse(def, ctxt) < 0)
+            if (virDomainFeaturesXENDefParse(def, nodes[i]) < 0)
                 return -1;
             break;
 
