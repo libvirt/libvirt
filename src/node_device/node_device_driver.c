@@ -1230,6 +1230,15 @@ nodeDeviceDestroy(virNodeDevicePtr device)
 
         ret = 0;
     } else if (nodeDeviceHasCapability(def, VIR_NODE_DEV_CAP_MDEV)) {
+        g_autofree char *vfiogroup = NULL;
+        VIR_AUTOCLOSE fd = -1;
+
+        if (!virNodeDeviceObjIsActive(obj)) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("Device '%s' is not active"), def->name);
+            goto cleanup;
+        }
+
         /* If this mediated device is in use by a vm, attempting to stop it
          * will block until the vm closes the device. The nodedev driver
          * cannot query the hypervisor driver to determine whether the device
@@ -1239,10 +1248,7 @@ nodeDeviceDestroy(virNodeDevicePtr device)
          * to be opened by one user at a time. So if we get EBUSY when opening
          * the group, we infer that the device is in use and therefore we
          * shouldn't try to remove the device. */
-        g_autofree char *vfiogroup =
-            virMediatedDeviceGetIOMMUGroupDev(def->caps->data.mdev.uuid);
-        VIR_AUTOCLOSE fd = -1;
-
+        vfiogroup = virMediatedDeviceGetIOMMUGroupDev(def->caps->data.mdev.uuid);
         if (!vfiogroup)
             goto cleanup;
 
