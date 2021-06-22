@@ -17399,6 +17399,54 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
 
 
 static int
+virDomainFeaturesKVMDefParse(virDomainDef *def,
+                             xmlXPathContext *ctxt)
+{
+    g_autofree xmlNodePtr *nodes = NULL;
+    size_t i;
+    int n;
+
+    def->features[VIR_DOMAIN_FEATURE_KVM] = VIR_TRISTATE_SWITCH_ON;
+
+    if (def->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
+        int feature;
+        virTristateSwitch value;
+        if ((n = virXPathNodeSet("./features/kvm/*", ctxt, &nodes)) < 0)
+            return -1;
+
+        for (i = 0; i < n; i++) {
+            feature = virDomainKVMTypeFromString((const char *)nodes[i]->name);
+            if (feature < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported KVM feature: %s"),
+                               nodes[i]->name);
+                return -1;
+            }
+
+            switch ((virDomainKVM) feature) {
+                case VIR_DOMAIN_KVM_HIDDEN:
+                case VIR_DOMAIN_KVM_DEDICATED:
+                case VIR_DOMAIN_KVM_POLLCONTROL:
+                    if (virXMLPropTristateSwitch(nodes[i], "state",
+                                                 VIR_XML_PROP_REQUIRED,
+                                                 &value) < 0)
+                        return -1;
+
+                    def->kvm_features[feature] = value;
+                    break;
+
+                case VIR_DOMAIN_KVM_LAST:
+                    break;
+            }
+        }
+        VIR_FREE(nodes);
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainFeaturesDefParse(virDomainDef *def,
                           xmlXPathContextPtr ctxt)
 {
@@ -17435,7 +17483,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
         case VIR_DOMAIN_FEATURE_PAE:
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
         case VIR_DOMAIN_FEATURE_PRIVNET:
-        case VIR_DOMAIN_FEATURE_KVM:
         case VIR_DOMAIN_FEATURE_MSRS:
         case VIR_DOMAIN_FEATURE_XEN:
             def->features[val] = VIR_TRISTATE_SWITCH_ON;
@@ -17443,6 +17490,11 @@ virDomainFeaturesDefParse(virDomainDef *def,
 
         case VIR_DOMAIN_FEATURE_HYPERV:
             if (virDomainFeaturesHyperVDefParse(def, nodes[i]) < 0)
+                return -1;
+            break;
+
+        case VIR_DOMAIN_FEATURE_KVM:
+            if (virDomainFeaturesKVMDefParse(def, ctxt) < 0)
                 return -1;
             break;
 
@@ -17578,40 +17630,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
         }
     }
     VIR_FREE(nodes);
-
-    if (def->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
-        int feature;
-        virTristateSwitch value;
-        if ((n = virXPathNodeSet("./features/kvm/*", ctxt, &nodes)) < 0)
-            return -1;
-
-        for (i = 0; i < n; i++) {
-            feature = virDomainKVMTypeFromString((const char *)nodes[i]->name);
-            if (feature < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported KVM feature: %s"),
-                               nodes[i]->name);
-                return -1;
-            }
-
-            switch ((virDomainKVM) feature) {
-                case VIR_DOMAIN_KVM_HIDDEN:
-                case VIR_DOMAIN_KVM_DEDICATED:
-                case VIR_DOMAIN_KVM_POLLCONTROL:
-                    if (virXMLPropTristateSwitch(nodes[i], "state",
-                                                 VIR_XML_PROP_REQUIRED,
-                                                 &value) < 0)
-                        return -1;
-
-                    def->kvm_features[feature] = value;
-                    break;
-
-                case VIR_DOMAIN_KVM_LAST:
-                    break;
-            }
-        }
-        VIR_FREE(nodes);
-    }
 
     if (def->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
         int feature;
