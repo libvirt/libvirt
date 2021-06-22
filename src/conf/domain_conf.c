@@ -17400,26 +17400,21 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
 
 static int
 virDomainFeaturesKVMDefParse(virDomainDef *def,
-                             xmlXPathContext *ctxt)
+                             xmlNodePtr node)
 {
-    g_autofree xmlNodePtr *nodes = NULL;
-    size_t i;
-    int n;
-
     def->features[VIR_DOMAIN_FEATURE_KVM] = VIR_TRISTATE_SWITCH_ON;
 
     if (def->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
         int feature;
         virTristateSwitch value;
-        if ((n = virXPathNodeSet("./features/kvm/*", ctxt, &nodes)) < 0)
-            return -1;
 
-        for (i = 0; i < n; i++) {
-            feature = virDomainKVMTypeFromString((const char *)nodes[i]->name);
+        node = xmlFirstElementChild(node);
+        while (node) {
+            feature = virDomainKVMTypeFromString((const char *)node->name);
             if (feature < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unsupported KVM feature: %s"),
-                               nodes[i]->name);
+                               node->name);
                 return -1;
             }
 
@@ -17427,7 +17422,7 @@ virDomainFeaturesKVMDefParse(virDomainDef *def,
                 case VIR_DOMAIN_KVM_HIDDEN:
                 case VIR_DOMAIN_KVM_DEDICATED:
                 case VIR_DOMAIN_KVM_POLLCONTROL:
-                    if (virXMLPropTristateSwitch(nodes[i], "state",
+                    if (virXMLPropTristateSwitch(node, "state",
                                                  VIR_XML_PROP_REQUIRED,
                                                  &value) < 0)
                         return -1;
@@ -17438,8 +17433,9 @@ virDomainFeaturesKVMDefParse(virDomainDef *def,
                 case VIR_DOMAIN_KVM_LAST:
                     break;
             }
+
+            node = xmlNextElementSibling(node);
         }
-        VIR_FREE(nodes);
     }
 
     return 0;
@@ -17494,7 +17490,7 @@ virDomainFeaturesDefParse(virDomainDef *def,
             break;
 
         case VIR_DOMAIN_FEATURE_KVM:
-            if (virDomainFeaturesKVMDefParse(def, ctxt) < 0)
+            if (virDomainFeaturesKVMDefParse(def, nodes[i]) < 0)
                 return -1;
             break;
 
