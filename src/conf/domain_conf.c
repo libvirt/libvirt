@@ -17404,28 +17404,26 @@ virDomainFeaturesKVMDefParse(virDomainDef *def,
 {
     def->features[VIR_DOMAIN_FEATURE_KVM] = VIR_TRISTATE_SWITCH_ON;
 
-    if (def->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
+    node = xmlFirstElementChild(node);
+    while (node) {
         int feature;
         virTristateSwitch value;
 
-        node = xmlFirstElementChild(node);
-        while (node) {
-            feature = virDomainKVMTypeFromString((const char *)node->name);
-            if (feature < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported KVM feature: %s"),
-                               node->name);
-                return -1;
-            }
-
-            if (virXMLPropTristateSwitch(node, "state", VIR_XML_PROP_REQUIRED,
-                                         &value) < 0)
-                return -1;
-
-            def->kvm_features[feature] = value;
-
-            node = xmlNextElementSibling(node);
+        feature = virDomainKVMTypeFromString((const char *)node->name);
+        if (feature < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported KVM feature: %s"),
+                           node->name);
+            return -1;
         }
+
+        if (virXMLPropTristateSwitch(node, "state", VIR_XML_PROP_REQUIRED,
+                                     &value) < 0)
+            return -1;
+
+        def->kvm_features[feature] = value;
+
+        node = xmlNextElementSibling(node);
     }
 
     return 0;
