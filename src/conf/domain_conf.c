@@ -17287,6 +17287,128 @@ virDomainResourceDefParse(xmlNodePtr node,
 
 
 static int
+virDomainFeaturesHyperVDefParse(virDomainDef *def,
+                                xmlXPathContext *ctxt)
+{
+    g_autofree xmlNodePtr *nodes = NULL;
+    size_t i;
+    int n;
+
+    def->features[VIR_DOMAIN_FEATURE_HYPERV] = VIR_TRISTATE_SWITCH_ON;
+
+    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
+        int feature;
+        virTristateSwitch value;
+        if ((n = virXPathNodeSet("./features/hyperv/*", ctxt, &nodes)) < 0)
+            return -1;
+
+        for (i = 0; i < n; i++) {
+            feature = virDomainHypervTypeFromString((const char *)nodes[i]->name);
+            if (feature < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported HyperV Enlightenment feature: %s"),
+                               nodes[i]->name);
+                return -1;
+            }
+
+            if (virXMLPropTristateSwitch(nodes[i], "state",
+                                         VIR_XML_PROP_REQUIRED, &value) < 0)
+                return -1;
+
+            def->hyperv_features[feature] = value;
+
+            switch ((virDomainHyperv) feature) {
+            case VIR_DOMAIN_HYPERV_RELAXED:
+            case VIR_DOMAIN_HYPERV_VAPIC:
+            case VIR_DOMAIN_HYPERV_VPINDEX:
+            case VIR_DOMAIN_HYPERV_RUNTIME:
+            case VIR_DOMAIN_HYPERV_SYNIC:
+            case VIR_DOMAIN_HYPERV_STIMER:
+            case VIR_DOMAIN_HYPERV_RESET:
+            case VIR_DOMAIN_HYPERV_FREQUENCIES:
+            case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
+            case VIR_DOMAIN_HYPERV_TLBFLUSH:
+            case VIR_DOMAIN_HYPERV_IPI:
+            case VIR_DOMAIN_HYPERV_EVMCS:
+                break;
+
+            case VIR_DOMAIN_HYPERV_SPINLOCKS:
+                if (value != VIR_TRISTATE_SWITCH_ON)
+                    break;
+
+                if (virXMLPropUInt(nodes[i], "retries", 0,
+                                   VIR_XML_PROP_REQUIRED,
+                                   &def->hyperv_spinlocks) < 0)
+                    return -1;
+
+                if (def->hyperv_spinlocks < 0xFFF) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("HyperV spinlock retry count must be "
+                                     "at least 4095"));
+                    return -1;
+                }
+                break;
+
+            case VIR_DOMAIN_HYPERV_VENDOR_ID:
+                if (value != VIR_TRISTATE_SWITCH_ON)
+                    break;
+
+                if (!(def->hyperv_vendor_id = virXMLPropString(nodes[i],
+                                                               "value"))) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("missing 'value' attribute for "
+                                     "HyperV feature 'vendor_id'"));
+                    return -1;
+                }
+
+                if (strlen(def->hyperv_vendor_id) > VIR_DOMAIN_HYPERV_VENDOR_ID_MAX) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("HyperV vendor_id value must not be more "
+                                     "than %d characters."),
+                                   VIR_DOMAIN_HYPERV_VENDOR_ID_MAX);
+                    return -1;
+                }
+
+                /* ensure that the string can be passed to qemu */
+                if (strchr(def->hyperv_vendor_id, ',')) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("HyperV vendor_id value is invalid"));
+                    return -1;
+                }
+                break;
+
+            case VIR_DOMAIN_HYPERV_LAST:
+                break;
+            }
+        }
+        VIR_FREE(nodes);
+    }
+
+    if (def->hyperv_features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
+        if ((n = virXPathNodeSet("./features/hyperv/stimer/*", ctxt, &nodes)) < 0)
+            return -1;
+
+        for (i = 0; i < n; i++) {
+            if (STRNEQ((const char *)nodes[i]->name, "direct")) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported Hyper-V stimer feature: %s"),
+                               nodes[i]->name);
+                return -1;
+            }
+
+            if (virXMLPropTristateSwitch(nodes[i], "state",
+                                         VIR_XML_PROP_REQUIRED,
+                                         &def->hyperv_stimer_direct) < 0)
+                return -1;
+        }
+        VIR_FREE(nodes);
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainFeaturesDefParse(virDomainDef *def,
                           xmlXPathContextPtr ctxt)
 {
@@ -17323,11 +17445,15 @@ virDomainFeaturesDefParse(virDomainDef *def,
         case VIR_DOMAIN_FEATURE_PAE:
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
         case VIR_DOMAIN_FEATURE_PRIVNET:
-        case VIR_DOMAIN_FEATURE_HYPERV:
         case VIR_DOMAIN_FEATURE_KVM:
         case VIR_DOMAIN_FEATURE_MSRS:
         case VIR_DOMAIN_FEATURE_XEN:
             def->features[val] = VIR_TRISTATE_SWITCH_ON;
+            break;
+
+        case VIR_DOMAIN_FEATURE_HYPERV:
+            if (virDomainFeaturesHyperVDefParse(def, ctxt) < 0)
+                return -1;
             break;
 
         case VIR_DOMAIN_FEATURE_CAPABILITIES: {
@@ -17462,114 +17588,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
         }
     }
     VIR_FREE(nodes);
-
-    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
-        int feature;
-        virTristateSwitch value;
-        if ((n = virXPathNodeSet("./features/hyperv/*", ctxt, &nodes)) < 0)
-            return -1;
-
-        for (i = 0; i < n; i++) {
-            feature = virDomainHypervTypeFromString((const char *)nodes[i]->name);
-            if (feature < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported HyperV Enlightenment feature: %s"),
-                               nodes[i]->name);
-                return -1;
-            }
-
-            if (virXMLPropTristateSwitch(nodes[i], "state",
-                                         VIR_XML_PROP_REQUIRED, &value) < 0)
-                return -1;
-
-            def->hyperv_features[feature] = value;
-
-            switch ((virDomainHyperv) feature) {
-            case VIR_DOMAIN_HYPERV_RELAXED:
-            case VIR_DOMAIN_HYPERV_VAPIC:
-            case VIR_DOMAIN_HYPERV_VPINDEX:
-            case VIR_DOMAIN_HYPERV_RUNTIME:
-            case VIR_DOMAIN_HYPERV_SYNIC:
-            case VIR_DOMAIN_HYPERV_STIMER:
-            case VIR_DOMAIN_HYPERV_RESET:
-            case VIR_DOMAIN_HYPERV_FREQUENCIES:
-            case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
-            case VIR_DOMAIN_HYPERV_TLBFLUSH:
-            case VIR_DOMAIN_HYPERV_IPI:
-            case VIR_DOMAIN_HYPERV_EVMCS:
-                break;
-
-            case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                if (value != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                if (virXMLPropUInt(nodes[i], "retries", 0,
-                                   VIR_XML_PROP_REQUIRED,
-                                   &def->hyperv_spinlocks) < 0)
-                    return -1;
-
-                if (def->hyperv_spinlocks < 0xFFF) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("HyperV spinlock retry count must be "
-                                     "at least 4095"));
-                    return -1;
-                }
-                break;
-
-            case VIR_DOMAIN_HYPERV_VENDOR_ID:
-                if (value != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                if (!(def->hyperv_vendor_id = virXMLPropString(nodes[i],
-                                                               "value"))) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("missing 'value' attribute for "
-                                     "HyperV feature 'vendor_id'"));
-                    return -1;
-                }
-
-                if (strlen(def->hyperv_vendor_id) > VIR_DOMAIN_HYPERV_VENDOR_ID_MAX) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("HyperV vendor_id value must not be more "
-                                     "than %d characters."),
-                                   VIR_DOMAIN_HYPERV_VENDOR_ID_MAX);
-                    return -1;
-                }
-
-                /* ensure that the string can be passed to qemu */
-                if (strchr(def->hyperv_vendor_id, ',')) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("HyperV vendor_id value is invalid"));
-                    return -1;
-                }
-                break;
-
-            case VIR_DOMAIN_HYPERV_LAST:
-                break;
-            }
-        }
-        VIR_FREE(nodes);
-    }
-
-    if (def->hyperv_features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
-        if ((n = virXPathNodeSet("./features/hyperv/stimer/*", ctxt, &nodes)) < 0)
-            return -1;
-
-        for (i = 0; i < n; i++) {
-            if (STRNEQ((const char *)nodes[i]->name, "direct")) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported Hyper-V stimer feature: %s"),
-                               nodes[i]->name);
-                return -1;
-            }
-
-            if (virXMLPropTristateSwitch(nodes[i], "state",
-                                         VIR_XML_PROP_REQUIRED,
-                                         &def->hyperv_stimer_direct) < 0)
-                return -1;
-        }
-        VIR_FREE(nodes);
-    }
 
     if (def->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
         int feature;
