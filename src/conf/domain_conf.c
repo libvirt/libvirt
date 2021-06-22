@@ -17518,9 +17518,20 @@ virDomainFeaturesDefParse(virDomainDef *def,
         case VIR_DOMAIN_FEATURE_PAE:
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
         case VIR_DOMAIN_FEATURE_PRIVNET:
-        case VIR_DOMAIN_FEATURE_MSRS:
             def->features[val] = VIR_TRISTATE_SWITCH_ON;
             break;
+
+        case VIR_DOMAIN_FEATURE_MSRS: {
+            virDomainMsrsUnknown unknown;
+            if (virXMLPropEnum(nodes[i], "unknown",
+                               virDomainMsrsUnknownTypeFromString,
+                               VIR_XML_PROP_REQUIRED, &unknown) < 0)
+                return -1;
+
+            def->features[val] = VIR_TRISTATE_SWITCH_ON;
+            def->msrs_features[VIR_DOMAIN_MSRS_UNKNOWN] = unknown;
+            break;
+        }
 
         case VIR_DOMAIN_FEATURE_HYPERV:
             if (virDomainFeaturesHyperVDefParse(def, nodes[i]) < 0)
@@ -17693,19 +17704,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
         }
     }
     VIR_FREE(nodes);
-
-    if (def->features[VIR_DOMAIN_FEATURE_MSRS] == VIR_TRISTATE_SWITCH_ON) {
-        virDomainMsrsUnknown unknown;
-        xmlNodePtr node = NULL;
-        if ((node = virXPathNode("./features/msrs", ctxt)) == NULL)
-            return -1;
-
-        if (virXMLPropEnum(node, "unknown", virDomainMsrsUnknownTypeFromString,
-                           VIR_XML_PROP_REQUIRED, &unknown) < 0)
-            return -1;
-
-        def->msrs_features[VIR_DOMAIN_MSRS_UNKNOWN] = unknown;
-    }
 
     if ((n = virXPathNodeSet("./features/capabilities/*", ctxt, &nodes)) < 0)
         return -1;
