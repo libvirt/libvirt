@@ -17418,21 +17418,11 @@ virDomainFeaturesKVMDefParse(virDomainDef *def,
                 return -1;
             }
 
-            switch ((virDomainKVM) feature) {
-                case VIR_DOMAIN_KVM_HIDDEN:
-                case VIR_DOMAIN_KVM_DEDICATED:
-                case VIR_DOMAIN_KVM_POLLCONTROL:
-                    if (virXMLPropTristateSwitch(node, "state",
-                                                 VIR_XML_PROP_REQUIRED,
-                                                 &value) < 0)
-                        return -1;
+            if (virXMLPropTristateSwitch(node, "state", VIR_XML_PROP_REQUIRED,
+                                         &value) < 0)
+                return -1;
 
-                    def->kvm_features[feature] = value;
-                    break;
-
-                case VIR_DOMAIN_KVM_LAST:
-                    break;
-            }
+            def->kvm_features[feature] = value;
 
             node = xmlNextElementSibling(node);
         }
