@@ -17483,12 +17483,8 @@ virDomainFeaturesXENDefParse(virDomainDef *def,
 
 static int
 virDomainFeaturesCapabilitiesDefParse(virDomainDef *def,
-                                      xmlNodePtr node,
-                                      xmlXPathContext *ctxt)
+                                      xmlNodePtr node)
 {
-    g_autofree xmlNodePtr *nodes = NULL;
-    size_t i;
-    int n;
     virDomainCapabilitiesPolicy policy;
 
     if (virXMLPropEnumDefault(node, "policy",
@@ -17499,27 +17495,25 @@ virDomainFeaturesCapabilitiesDefParse(virDomainDef *def,
 
     def->features[VIR_DOMAIN_FEATURE_CAPABILITIES] = policy;
 
-    if ((n = virXPathNodeSet("./features/capabilities/*", ctxt, &nodes)) < 0)
-        return -1;
-
-    for (i = 0; i < n; i++) {
+    node = xmlFirstElementChild(node);
+    while (node) {
         virTristateSwitch state;
-        int val = virDomainProcessCapsFeatureTypeFromString((const char *)nodes[i]->name);
+        int val = virDomainProcessCapsFeatureTypeFromString((const char *)node->name);
         if (val < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unexpected capability feature '%s'"), nodes[i]->name);
+                           _("unexpected capability feature '%s'"), node->name);
             return -1;
         }
 
 
-        if (virXMLPropTristateSwitch(nodes[i], "state", VIR_XML_PROP_NONE,
-                                     &state) < 0)
+        if (virXMLPropTristateSwitch(node, "state", VIR_XML_PROP_NONE, &state) < 0)
             return -1;
 
         if (state == VIR_TRISTATE_SWITCH_ABSENT)
             state = VIR_TRISTATE_SWITCH_ON;
 
         def->caps_features[val] = state;
+        node = xmlNextElementSibling(node);
     }
 
     return 0;
@@ -17594,7 +17588,7 @@ virDomainFeaturesDefParse(virDomainDef *def,
             break;
 
         case VIR_DOMAIN_FEATURE_CAPABILITIES: {
-            if (virDomainFeaturesCapabilitiesDefParse(def, nodes[i], ctxt) < 0)
+            if (virDomainFeaturesCapabilitiesDefParse(def, nodes[i]) < 0)
                 return -1;
             break;
         }
