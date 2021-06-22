@@ -17436,47 +17436,45 @@ virDomainFeaturesXENDefParse(virDomainDef *def,
 {
     def->features[VIR_DOMAIN_FEATURE_XEN] = VIR_TRISTATE_SWITCH_ON;
 
-    if (def->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
+    node = xmlFirstElementChild(node);
+    while (node) {
         int feature;
         virTristateSwitch value;
 
-        node = xmlFirstElementChild(node);
-        while (node) {
-            feature = virDomainXenTypeFromString((const char *)node->name);
-            if (feature < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported Xen feature: %s"),
-                               node->name);
-                return -1;
-            }
+        feature = virDomainXenTypeFromString((const char *)node->name);
+        if (feature < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported Xen feature: %s"),
+                           node->name);
+            return -1;
+        }
 
-            if (virXMLPropTristateSwitch(node, "state",
-                                         VIR_XML_PROP_REQUIRED, &value) < 0)
-                return -1;
+        if (virXMLPropTristateSwitch(node, "state",
+                                     VIR_XML_PROP_REQUIRED, &value) < 0)
+            return -1;
 
-            def->xen_features[feature] = value;
+        def->xen_features[feature] = value;
 
-            switch ((virDomainXen) feature) {
-                case VIR_DOMAIN_XEN_E820_HOST:
-                    break;
+        switch ((virDomainXen) feature) {
+        case VIR_DOMAIN_XEN_E820_HOST:
+            break;
 
-            case VIR_DOMAIN_XEN_PASSTHROUGH:
-                if (value != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                if (virXMLPropEnum(node, "mode",
-                                   virDomainXenPassthroughModeTypeFromString,
-                                   VIR_XML_PROP_NONZERO,
-                                   &def->xen_passthrough_mode) < 0)
-                    return -1;
+        case VIR_DOMAIN_XEN_PASSTHROUGH:
+            if (value != VIR_TRISTATE_SWITCH_ON)
                 break;
 
-                case VIR_DOMAIN_XEN_LAST:
-                    break;
-            }
+            if (virXMLPropEnum(node, "mode",
+                               virDomainXenPassthroughModeTypeFromString,
+                               VIR_XML_PROP_NONZERO,
+                               &def->xen_passthrough_mode) < 0)
+                return -1;
+            break;
 
-            node = xmlNextElementSibling(node);
+            case VIR_DOMAIN_XEN_LAST:
+                break;
         }
+
+        node = xmlNextElementSibling(node);
     }
 
     return 0;
