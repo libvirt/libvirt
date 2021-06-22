@@ -17303,6 +17303,8 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
             return -1;
 
         for (i = 0; i < n; i++) {
+            xmlNodePtr child;
+
             feature = virDomainHypervTypeFromString((const char *)nodes[i]->name);
             if (feature < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -17323,13 +17325,34 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
             case VIR_DOMAIN_HYPERV_VPINDEX:
             case VIR_DOMAIN_HYPERV_RUNTIME:
             case VIR_DOMAIN_HYPERV_SYNIC:
-            case VIR_DOMAIN_HYPERV_STIMER:
             case VIR_DOMAIN_HYPERV_RESET:
             case VIR_DOMAIN_HYPERV_FREQUENCIES:
             case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
             case VIR_DOMAIN_HYPERV_TLBFLUSH:
             case VIR_DOMAIN_HYPERV_IPI:
             case VIR_DOMAIN_HYPERV_EVMCS:
+                break;
+
+            case VIR_DOMAIN_HYPERV_STIMER:
+                if (value != VIR_TRISTATE_SWITCH_ON)
+                    break;
+
+                child = xmlFirstElementChild(nodes[i]);
+                while (child) {
+                    if (STRNEQ((const char *)child->name, "direct")) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("unsupported Hyper-V stimer feature: %s"),
+                                       child->name);
+                        return -1;
+                    }
+
+                    if (virXMLPropTristateSwitch(child, "state",
+                                                 VIR_XML_PROP_REQUIRED,
+                                                 &def->hyperv_stimer_direct) < 0)
+                        return -1;
+
+                    child = xmlNextElementSibling(child);
+                }
                 break;
 
             case VIR_DOMAIN_HYPERV_SPINLOCKS:
@@ -17381,27 +17404,6 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
                 break;
             }
         }
-        VIR_FREE(nodes);
-    }
-
-    if (def->hyperv_features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
-        if ((n = virXPathNodeSet("./features/hyperv/stimer/*", ctxt, &nodes)) < 0)
-            return -1;
-
-        for (i = 0; i < n; i++) {
-            if (STRNEQ((const char *)nodes[i]->name, "direct")) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported Hyper-V stimer feature: %s"),
-                               nodes[i]->name);
-                return -1;
-            }
-
-            if (virXMLPropTristateSwitch(nodes[i], "state",
-                                         VIR_XML_PROP_REQUIRED,
-                                         &def->hyperv_stimer_direct) < 0)
-                return -1;
-        }
-        VIR_FREE(nodes);
     }
 
     return 0;
