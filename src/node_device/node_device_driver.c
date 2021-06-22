@@ -847,8 +847,8 @@ nodeDeviceCreateXMLMdev(virConnectPtr conn,
     if (virMdevctlCreate(def, &uuid, &errmsg) < 0) {
         if (errmsg)
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to start mediated device '%s': %s"),
-                           def->name, errmsg);
+                           _("Unable to start mediated device: %s"),
+                           errmsg);
         return NULL;
     }
 
