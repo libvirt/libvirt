@@ -17288,32 +17288,27 @@ virDomainResourceDefParse(xmlNodePtr node,
 
 static int
 virDomainFeaturesHyperVDefParse(virDomainDef *def,
-                                xmlXPathContext *ctxt)
+                                xmlNodePtr node)
 {
-    g_autofree xmlNodePtr *nodes = NULL;
-    size_t i;
-    int n;
-
     def->features[VIR_DOMAIN_FEATURE_HYPERV] = VIR_TRISTATE_SWITCH_ON;
 
     if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
         int feature;
         virTristateSwitch value;
-        if ((n = virXPathNodeSet("./features/hyperv/*", ctxt, &nodes)) < 0)
-            return -1;
 
-        for (i = 0; i < n; i++) {
+        node = xmlFirstElementChild(node);
+        while (node != NULL) {
             xmlNodePtr child;
 
-            feature = virDomainHypervTypeFromString((const char *)nodes[i]->name);
+            feature = virDomainHypervTypeFromString((const char *)node->name);
             if (feature < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unsupported HyperV Enlightenment feature: %s"),
-                               nodes[i]->name);
+                               node->name);
                 return -1;
             }
 
-            if (virXMLPropTristateSwitch(nodes[i], "state",
+            if (virXMLPropTristateSwitch(node, "state",
                                          VIR_XML_PROP_REQUIRED, &value) < 0)
                 return -1;
 
@@ -17337,7 +17332,7 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
                 if (value != VIR_TRISTATE_SWITCH_ON)
                     break;
 
-                child = xmlFirstElementChild(nodes[i]);
+                child = xmlFirstElementChild(node);
                 while (child) {
                     if (STRNEQ((const char *)child->name, "direct")) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -17359,7 +17354,7 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
                 if (value != VIR_TRISTATE_SWITCH_ON)
                     break;
 
-                if (virXMLPropUInt(nodes[i], "retries", 0,
+                if (virXMLPropUInt(node, "retries", 0,
                                    VIR_XML_PROP_REQUIRED,
                                    &def->hyperv_spinlocks) < 0)
                     return -1;
@@ -17376,7 +17371,7 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
                 if (value != VIR_TRISTATE_SWITCH_ON)
                     break;
 
-                if (!(def->hyperv_vendor_id = virXMLPropString(nodes[i],
+                if (!(def->hyperv_vendor_id = virXMLPropString(node,
                                                                "value"))) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("missing 'value' attribute for "
@@ -17403,6 +17398,8 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }
+
+            node = xmlNextElementSibling(node);
         }
     }
 
@@ -17454,7 +17451,7 @@ virDomainFeaturesDefParse(virDomainDef *def,
             break;
 
         case VIR_DOMAIN_FEATURE_HYPERV:
-            if (virDomainFeaturesHyperVDefParse(def, ctxt) < 0)
+            if (virDomainFeaturesHyperVDefParse(def, nodes[i]) < 0)
                 return -1;
             break;
 
