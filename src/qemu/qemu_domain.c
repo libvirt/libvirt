@@ -2812,8 +2812,10 @@ qemuDomainVirStorageSourceFindByNodeName(virStorageSource *top,
     virStorageSource *tmp;
 
     for (tmp = top; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
+        const char *nodestorage = qemuBlockStorageSourceGetStorageNodename(tmp);
+
         if ((tmp->nodeformat && STREQ(tmp->nodeformat, nodeName)) ||
-            (tmp->nodestorage && STREQ(tmp->nodestorage, nodeName)))
+            (nodestorage && STREQ(nodestorage, nodeName)))
             return tmp;
     }
 
