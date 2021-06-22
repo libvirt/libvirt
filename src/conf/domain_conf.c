@@ -17292,115 +17292,106 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
 {
     def->features[VIR_DOMAIN_FEATURE_HYPERV] = VIR_TRISTATE_SWITCH_ON;
 
-    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
+    node = xmlFirstElementChild(node);
+    while (node != NULL) {
         int feature;
         virTristateSwitch value;
+        xmlNodePtr child;
 
-        node = xmlFirstElementChild(node);
-        while (node != NULL) {
-            xmlNodePtr child;
-
-            feature = virDomainHypervTypeFromString((const char *)node->name);
-            if (feature < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported HyperV Enlightenment feature: %s"),
-                               node->name);
-                return -1;
-            }
-
-            if (virXMLPropTristateSwitch(node, "state",
-                                         VIR_XML_PROP_REQUIRED, &value) < 0)
-                return -1;
-
-            def->hyperv_features[feature] = value;
-
-            switch ((virDomainHyperv) feature) {
-            case VIR_DOMAIN_HYPERV_RELAXED:
-            case VIR_DOMAIN_HYPERV_VAPIC:
-            case VIR_DOMAIN_HYPERV_VPINDEX:
-            case VIR_DOMAIN_HYPERV_RUNTIME:
-            case VIR_DOMAIN_HYPERV_SYNIC:
-            case VIR_DOMAIN_HYPERV_RESET:
-            case VIR_DOMAIN_HYPERV_FREQUENCIES:
-            case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
-            case VIR_DOMAIN_HYPERV_TLBFLUSH:
-            case VIR_DOMAIN_HYPERV_IPI:
-            case VIR_DOMAIN_HYPERV_EVMCS:
-                break;
-
-            case VIR_DOMAIN_HYPERV_STIMER:
-                if (value != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                child = xmlFirstElementChild(node);
-                while (child) {
-                    if (STRNEQ((const char *)child->name, "direct")) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unsupported Hyper-V stimer feature: %s"),
-                                       child->name);
-                        return -1;
-                    }
-
-                    if (virXMLPropTristateSwitch(child, "state",
-                                                 VIR_XML_PROP_REQUIRED,
-                                                 &def->hyperv_stimer_direct) < 0)
-                        return -1;
-
-                    child = xmlNextElementSibling(child);
-                }
-                break;
-
-            case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                if (value != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                if (virXMLPropUInt(node, "retries", 0,
-                                   VIR_XML_PROP_REQUIRED,
-                                   &def->hyperv_spinlocks) < 0)
-                    return -1;
-
-                if (def->hyperv_spinlocks < 0xFFF) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("HyperV spinlock retry count must be "
-                                     "at least 4095"));
-                    return -1;
-                }
-                break;
-
-            case VIR_DOMAIN_HYPERV_VENDOR_ID:
-                if (value != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                if (!(def->hyperv_vendor_id = virXMLPropString(node,
-                                                               "value"))) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("missing 'value' attribute for "
-                                     "HyperV feature 'vendor_id'"));
-                    return -1;
-                }
-
-                if (strlen(def->hyperv_vendor_id) > VIR_DOMAIN_HYPERV_VENDOR_ID_MAX) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("HyperV vendor_id value must not be more "
-                                     "than %d characters."),
-                                   VIR_DOMAIN_HYPERV_VENDOR_ID_MAX);
-                    return -1;
-                }
-
-                /* ensure that the string can be passed to qemu */
-                if (strchr(def->hyperv_vendor_id, ',')) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("HyperV vendor_id value is invalid"));
-                    return -1;
-                }
-                break;
-
-            case VIR_DOMAIN_HYPERV_LAST:
-                break;
-            }
-
-            node = xmlNextElementSibling(node);
+        feature = virDomainHypervTypeFromString((const char *)node->name);
+        if (feature < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported HyperV Enlightenment feature: %s"),
+                           node->name);
+            return -1;
         }
+
+        if (virXMLPropTristateSwitch(node, "state", VIR_XML_PROP_REQUIRED,
+                                     &value) < 0)
+            return -1;
+
+        def->hyperv_features[feature] = value;
+
+        switch ((virDomainHyperv) feature) {
+        case VIR_DOMAIN_HYPERV_RELAXED:
+        case VIR_DOMAIN_HYPERV_VAPIC:
+        case VIR_DOMAIN_HYPERV_VPINDEX:
+        case VIR_DOMAIN_HYPERV_RUNTIME:
+        case VIR_DOMAIN_HYPERV_SYNIC:
+        case VIR_DOMAIN_HYPERV_RESET:
+        case VIR_DOMAIN_HYPERV_FREQUENCIES:
+        case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
+        case VIR_DOMAIN_HYPERV_TLBFLUSH:
+        case VIR_DOMAIN_HYPERV_IPI:
+        case VIR_DOMAIN_HYPERV_EVMCS:
+            break;
+
+        case VIR_DOMAIN_HYPERV_STIMER:
+            if (value != VIR_TRISTATE_SWITCH_ON)
+                break;
+
+            child = xmlFirstElementChild(node);
+            while (child) {
+                if (STRNEQ((const char *)child->name, "direct")) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unsupported Hyper-V stimer feature: %s"),
+                                   child->name);
+                    return -1;
+                }
+
+                if (virXMLPropTristateSwitch(child, "state", VIR_XML_PROP_REQUIRED,
+                                             &def->hyperv_stimer_direct) < 0)
+                    return -1;
+
+                child = xmlNextElementSibling(child);
+            }
+            break;
+
+        case VIR_DOMAIN_HYPERV_SPINLOCKS:
+            if (value != VIR_TRISTATE_SWITCH_ON)
+                break;
+
+            if (virXMLPropUInt(node, "retries", 0, VIR_XML_PROP_REQUIRED,
+                               &def->hyperv_spinlocks) < 0)
+                return -1;
+
+            if (def->hyperv_spinlocks < 0xFFF) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("HyperV spinlock retry count must be at least 4095"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_HYPERV_VENDOR_ID:
+            if (value != VIR_TRISTATE_SWITCH_ON)
+                break;
+
+            if (!(def->hyperv_vendor_id = virXMLPropString(node, "value"))) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("missing 'value' attribute for HyperV feature 'vendor_id'"));
+                return -1;
+            }
+
+            if (strlen(def->hyperv_vendor_id) > VIR_DOMAIN_HYPERV_VENDOR_ID_MAX) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("HyperV vendor_id value must not be more than %d characters."),
+                               VIR_DOMAIN_HYPERV_VENDOR_ID_MAX);
+                return -1;
+            }
+
+            /* ensure that the string can be passed to qemu */
+            if (strchr(def->hyperv_vendor_id, ',')) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("HyperV vendor_id value is invalid"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_HYPERV_LAST:
+            break;
+        }
+
+        node = xmlNextElementSibling(node);
     }
 
     return 0;
