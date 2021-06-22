@@ -17431,6 +17431,64 @@ virDomainFeaturesKVMDefParse(virDomainDef *def,
 
 
 static int
+virDomainFeaturesXENDefParse(virDomainDef *def,
+                             xmlXPathContext *ctxt)
+{
+    g_autofree xmlNodePtr *nodes = NULL;
+    size_t i;
+    int n;
+
+    def->features[VIR_DOMAIN_FEATURE_XEN] = VIR_TRISTATE_SWITCH_ON;
+
+    if (def->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
+        int feature;
+        virTristateSwitch value;
+
+        if ((n = virXPathNodeSet("./features/xen/*", ctxt, &nodes)) < 0)
+            return -1;
+
+        for (i = 0; i < n; i++) {
+            feature = virDomainXenTypeFromString((const char *)nodes[i]->name);
+            if (feature < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported Xen feature: %s"),
+                               nodes[i]->name);
+                return -1;
+            }
+
+            if (virXMLPropTristateSwitch(nodes[i], "state",
+                                         VIR_XML_PROP_REQUIRED, &value) < 0)
+                return -1;
+
+            def->xen_features[feature] = value;
+
+            switch ((virDomainXen) feature) {
+                case VIR_DOMAIN_XEN_E820_HOST:
+                    break;
+
+            case VIR_DOMAIN_XEN_PASSTHROUGH:
+                if (value != VIR_TRISTATE_SWITCH_ON)
+                    break;
+
+                if (virXMLPropEnum(nodes[i], "mode",
+                                   virDomainXenPassthroughModeTypeFromString,
+                                   VIR_XML_PROP_NONZERO,
+                                   &def->xen_passthrough_mode) < 0)
+                    return -1;
+                break;
+
+                case VIR_DOMAIN_XEN_LAST:
+                    break;
+            }
+        }
+        VIR_FREE(nodes);
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainFeaturesDefParse(virDomainDef *def,
                           xmlXPathContextPtr ctxt)
 {
@@ -17468,7 +17526,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
         case VIR_DOMAIN_FEATURE_PRIVNET:
         case VIR_DOMAIN_FEATURE_MSRS:
-        case VIR_DOMAIN_FEATURE_XEN:
             def->features[val] = VIR_TRISTATE_SWITCH_ON;
             break;
 
@@ -17479,6 +17536,11 @@ virDomainFeaturesDefParse(virDomainDef *def,
 
         case VIR_DOMAIN_FEATURE_KVM:
             if (virDomainFeaturesKVMDefParse(def, nodes[i]) < 0)
+                return -1;
+            break;
+
+        case VIR_DOMAIN_FEATURE_XEN:
+            if (virDomainFeaturesXENDefParse(def, ctxt) < 0)
                 return -1;
             break;
 
@@ -17614,50 +17676,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
         }
     }
     VIR_FREE(nodes);
-
-    if (def->features[VIR_DOMAIN_FEATURE_XEN] == VIR_TRISTATE_SWITCH_ON) {
-        int feature;
-        virTristateSwitch value;
-
-        if ((n = virXPathNodeSet("./features/xen/*", ctxt, &nodes)) < 0)
-            return -1;
-
-        for (i = 0; i < n; i++) {
-            feature = virDomainXenTypeFromString((const char *)nodes[i]->name);
-            if (feature < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported Xen feature: %s"),
-                               nodes[i]->name);
-                return -1;
-            }
-
-            if (virXMLPropTristateSwitch(nodes[i], "state",
-                                         VIR_XML_PROP_REQUIRED, &value) < 0)
-                return -1;
-
-            def->xen_features[feature] = value;
-
-            switch ((virDomainXen) feature) {
-                case VIR_DOMAIN_XEN_E820_HOST:
-                    break;
-
-            case VIR_DOMAIN_XEN_PASSTHROUGH:
-                if (value != VIR_TRISTATE_SWITCH_ON)
-                    break;
-
-                if (virXMLPropEnum(nodes[i], "mode",
-                                   virDomainXenPassthroughModeTypeFromString,
-                                   VIR_XML_PROP_NONZERO,
-                                   &def->xen_passthrough_mode) < 0)
-                    return -1;
-                break;
-
-                case VIR_DOMAIN_XEN_LAST:
-                    break;
-            }
-        }
-        VIR_FREE(nodes);
-    }
 
     if (def->features[VIR_DOMAIN_FEATURE_SMM] == VIR_TRISTATE_SWITCH_ON) {
         int rv = virParseScaledValue("string(./features/smm/tseg)",
