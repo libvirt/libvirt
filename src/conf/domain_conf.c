@@ -17532,7 +17532,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
         return -1;
 
     for (i = 0; i < n; i++) {
-        g_autofree char *tmp = NULL;
         int val = virDomainFeatureTypeFromString((const char *)nodes[i]->name);
         if (val < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -17541,24 +17540,22 @@ virDomainFeaturesDefParse(virDomainDef *def,
         }
 
         switch ((virDomainFeature) val) {
-        case VIR_DOMAIN_FEATURE_APIC:
-            if ((tmp = virXPathString("string(./features/apic/@eoi)", ctxt))) {
-                int eoi;
-                if ((eoi = virTristateSwitchTypeFromString(tmp)) <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown value for attribute eoi: '%s'"),
-                                   tmp);
-                    return -1;
-                }
-                def->apic_eoi = eoi;
-            }
-            G_GNUC_FALLTHROUGH;
         case VIR_DOMAIN_FEATURE_ACPI:
         case VIR_DOMAIN_FEATURE_PAE:
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
         case VIR_DOMAIN_FEATURE_PRIVNET:
             def->features[val] = VIR_TRISTATE_SWITCH_ON;
             break;
+
+        case VIR_DOMAIN_FEATURE_APIC: {
+            virTristateSwitch eoi;
+            if (virXMLPropTristateSwitch(nodes[i], "eoi", VIR_XML_PROP_NONE, &eoi) < 0)
+                return -1;
+
+            def->features[val] = VIR_TRISTATE_SWITCH_ON;
+            def->apic_eoi = eoi;
+            break;
+        }
 
         case VIR_DOMAIN_FEATURE_MSRS: {
             virDomainMsrsUnknown unknown;
