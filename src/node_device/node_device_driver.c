@@ -799,6 +799,10 @@ virMdevctlCreate(virNodeDeviceDef *def, char **uuid, char **errmsg)
                                                             MDEVCTL_CMD_CREATE,
                                                             uuid,
                                                             errmsg);
+
+    if (!cmd)
+        return -1;
+
     /* an auto-generated uuid is returned via stdout if no uuid is specified in
      * the mdevctl args */
     if (virCommandRun(cmd, &status) < 0 || status != 0)
@@ -818,6 +822,9 @@ virMdevctlDefine(virNodeDeviceDef *def, char **uuid, char **errmsg)
     g_autoptr(virCommand) cmd = nodeDeviceGetMdevctlCommand(def,
                                                             MDEVCTL_CMD_DEFINE,
                                                             uuid, errmsg);
+
+    if (!cmd)
+        return -1;
 
     /* an auto-generated uuid is returned via stdout if no uuid is specified in
      * the mdevctl args */
@@ -925,6 +932,9 @@ virMdevctlStop(virNodeDeviceDef *def, char **errmsg)
 
     cmd = nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_STOP, NULL, errmsg);
 
+    if (!cmd)
+        return -1;
+
     if (virCommandRun(cmd, &status) < 0 || status != 0)
         return -1;
 
@@ -940,6 +950,9 @@ virMdevctlUndefine(virNodeDeviceDef *def, char **errmsg)
 
     cmd = nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_UNDEFINE, NULL, errmsg);
 
+    if (!cmd)
+        return -1;
+
     if (virCommandRun(cmd, &status) < 0 || status != 0)
         return -1;
 
@@ -954,6 +967,9 @@ virMdevctlStart(virNodeDeviceDef *def, char **errmsg)
     g_autoptr(virCommand) cmd = NULL;
 
     cmd = nodeDeviceGetMdevctlCommand(def, MDEVCTL_CMD_START, NULL, errmsg);
+
+    if (!cmd)
+        return -1;
 
     if (virCommandRun(cmd, &status) < 0 || status != 0)
         return -1;
