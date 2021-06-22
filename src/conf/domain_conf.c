@@ -17554,8 +17554,7 @@ virDomainFeaturesDefParse(virDomainDef *def,
         case VIR_DOMAIN_FEATURE_HAP:
         case VIR_DOMAIN_FEATURE_PMU:
         case VIR_DOMAIN_FEATURE_PVSPINLOCK:
-        case VIR_DOMAIN_FEATURE_VMPORT:
-        case VIR_DOMAIN_FEATURE_SMM: {
+        case VIR_DOMAIN_FEATURE_VMPORT: {
             virTristateSwitch state;
 
             if (virXMLPropTristateSwitch(nodes[i], "state",
@@ -17566,6 +17565,31 @@ virDomainFeaturesDefParse(virDomainDef *def,
                 state = VIR_TRISTATE_SWITCH_ON;
 
             def->features[val] = state;
+            break;
+        }
+
+        case VIR_DOMAIN_FEATURE_SMM: {
+            virTristateSwitch state;
+
+            if (virXMLPropTristateSwitch(nodes[i], "state",
+                                         VIR_XML_PROP_NONE, &state) < 0)
+                return -1;
+
+            if ((state == VIR_TRISTATE_SWITCH_ABSENT) ||
+                (state == VIR_TRISTATE_SWITCH_ON)) {
+                int rv = virParseScaledValue("string(./features/smm/tseg)",
+                                             "string(./features/smm/tseg/@unit)",
+                                             ctxt,
+                                             &def->tseg_size,
+                                             1024 * 1024, /* Defaults to mebibytes */
+                                             ULLONG_MAX,
+                                             false);
+                if (rv < 0)
+                    return -1;
+
+                def->features[val] = VIR_TRISTATE_SWITCH_ON;
+                def->tseg_specified = rv != 0;
+            }
             break;
         }
 
@@ -17669,19 +17693,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
         }
     }
     VIR_FREE(nodes);
-
-    if (def->features[VIR_DOMAIN_FEATURE_SMM] == VIR_TRISTATE_SWITCH_ON) {
-        int rv = virParseScaledValue("string(./features/smm/tseg)",
-                                     "string(./features/smm/tseg/@unit)",
-                                     ctxt,
-                                     &def->tseg_size,
-                                     1024 * 1024, /* Defaults to mebibytes */
-                                     ULLONG_MAX,
-                                     false);
-        if (rv < 0)
-            return -1;
-        def->tseg_specified = rv;
-    }
 
     if (def->features[VIR_DOMAIN_FEATURE_MSRS] == VIR_TRISTATE_SWITCH_ON) {
         virDomainMsrsUnknown unknown;
