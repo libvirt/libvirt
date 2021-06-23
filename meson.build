@@ -1005,7 +1005,7 @@ else
 endif
 
 libssh_version = '0.7'
-if get_option('driver_remote').enabled()
+if not get_option('driver_remote').disabled()
   libssh_dep = dependency('libssh', version: '>=' + libssh_version, required: get_option('libssh'))
   if libssh_dep.found()
     conf.set('WITH_LIBSSH', 1)
@@ -1028,7 +1028,7 @@ else
 endif
 
 libssh2_version = '1.3'
-if get_option('driver_remote').enabled()
+if not get_option('driver_remote').disabled()
   libssh2_dep = dependency('libssh2', version: '>=' + libssh2_version, required: get_option('libssh2'))
   if libssh2_dep.found()
     conf.set('WITH_SSH2', 1)
