@@ -1182,7 +1182,7 @@ rm -f $RPM_BUILD_ROOT%{wireshark_plugindir}/libvirt.la
 %endif
 
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
-# We don't want to install /etc/libvirt/qemu/networks in the main %files list
+# We don't want to install /etc/libvirt/qemu/networks in the main %%files list
 # because if the admin wants to delete the default network completely, we don't
 # want to end up re-incarnating it on every RPM upgrade.
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/libvirt/networks/
@@ -1191,7 +1191,7 @@ cp $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml \
 # libvirt saves this file with mode 0600
 chmod 0600 $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml
 
-# nwfilter files are installed in /usr/share/libvirt and copied to /etc in %post
+# nwfilter files are installed in /usr/share/libvirt and copied to /etc in %%post
 # to avoid verification errors on changed files in /etc
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/libvirt/nwfilter/
 cp -a $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/nwfilter/*.xml \
