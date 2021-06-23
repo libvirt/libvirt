@@ -247,7 +247,6 @@ BuildRequires: ninja-build
 BuildRequires: git
 BuildRequires: perl-interpreter
 BuildRequires: python3
-BuildRequires: systemd-units
 %if %{with_libxl}
 BuildRequires: xen-devel
 %endif
@@ -412,10 +411,7 @@ Requires: polkit >= 0.112
 Requires: dmidecode
 %endif
 # For service management
-Requires(post): systemd-units
-Requires(post): systemd-sysv
-Requires(preun): systemd-units
-Requires(postun): systemd-units
+Requires(post): /usr/bin/systemctl
 %if %{with_numad}
 Requires: numad
 %endif
