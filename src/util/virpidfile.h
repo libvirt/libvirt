@@ -73,4 +73,6 @@ int virPidFileConstructPath(bool privileged,
                             const char *progname,
                             char **pidfile);
 
+int virPidFileForceCleanupPathFull(const char *path,
+                                   bool group) ATTRIBUTE_NONNULL(1);
 int virPidFileForceCleanupPath(const char *path) ATTRIBUTE_NONNULL(1);

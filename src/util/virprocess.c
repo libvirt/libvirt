@@ -406,15 +406,15 @@ pid_t virProcessGroupGet(pid_t pid)
  * wait longer than the default.
  */
 int
-virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay)
+virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay, bool group)
 {
     size_t i;
     /* This is in 1/5th seconds since polling is on a 0.2s interval */
     unsigned int polldelay = (force ? 200 : 75) + (extradelay*5);
     const char *signame = "TERM";
 
-    VIR_DEBUG("vpid=%lld force=%d extradelay=%u",
-              (long long)pid, force, extradelay);
+    VIR_DEBUG("vpid=%lld force=%d extradelay=%u group=%d",
+              (long long)pid, force, extradelay, group);
 
     /* This loop sends SIGTERM, then waits a few iterations (10 seconds)
      * to see if it dies. If the process still hasn't exited, and
@@ -429,6 +429,8 @@ virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay)
      */
     for (i = 0; i < polldelay; i++) {
         int signum;
+        int rc;
+
         if (i == 0) {
             signum = SIGTERM; /* kindly suggest it should exit */
         } else if (i == 50 && force) {
@@ -447,7 +449,12 @@ virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay)
             signum = 0; /* Just check for existence */
         }
 
-        if (virProcessKill(pid, signum) < 0) {
+        if (group)
+            rc = virProcessGroupKill(pid, signum);
+        else
+            rc = virProcessKill(pid, signum);
+
+        if (rc < 0) {
             if (errno != ESRCH) {
                 virReportSystemError(errno,
                                      _("Failed to terminate process %lld with SIG%s"),
@@ -470,7 +477,7 @@ virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay)
 
 int virProcessKillPainfully(pid_t pid, bool force)
 {
-    return virProcessKillPainfullyDelay(pid, force, 0);
+    return virProcessKillPainfullyDelay(pid, force, 0, false);
 }
 
 #if WITH_SCHED_GETAFFINITY

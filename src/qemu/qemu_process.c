@@ -7700,7 +7700,8 @@ qemuProcessKill(virDomainObj *vm, unsigned int flags)
      * to be safe against stalls by the kernel freeing up the resources */
     return virProcessKillPainfullyDelay(vm->pid,
                                         !!(flags & VIR_QEMU_PROCESS_KILL_FORCE),
-                                        vm->def->nhostdevs * 2);
+                                        vm->def->nhostdevs * 2,
+                                        false);
 }
 
 

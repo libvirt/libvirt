@@ -514,7 +514,7 @@ virPidFileConstructPath(bool privileged,
  * Returns 0 if the pidfile was successfully cleaned up, -1 otherwise.
  */
 int
-virPidFileForceCleanupPath(const char *path)
+virPidFileForceCleanupPathFull(const char *path, bool group)
 {
     pid_t pid = 0;
     int fd = -1;
@@ -529,10 +529,15 @@ virPidFileForceCleanupPath(const char *path)
     if (fd < 0) {
         virResetLastError();
 
+        if (pid > 1 && group)
+            pid = virProcessGroupGet(pid);
+
         /* Only kill the process if the pid is valid one.  0 means
          * there is somebody else doing the same pidfile cleanup
          * machinery. */
-        if (pid)
+        if (group)
+            virProcessKillPainfullyDelay(pid, true, 0, true);
+        else if (pid)
             virProcessKillPainfully(pid, true);
 
         if (virPidFileDeletePath(path) < 0)
@@ -543,4 +548,10 @@ virPidFileForceCleanupPath(const char *path)
         virPidFileReleasePath(path, fd);
 
     return 0;
+}
+
+int
+virPidFileForceCleanupPath(const char *path)
+{
+    return virPidFileForceCleanupPathFull(path, false);
 }

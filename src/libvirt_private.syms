@@ -3038,6 +3038,7 @@ virPidFileConstructPath;
 virPidFileDelete;
 virPidFileDeletePath;
 virPidFileForceCleanupPath;
+virPidFileForceCleanupPathFull;
 virPidFileRead;
 virPidFileReadIfAlive;
 virPidFileReadPath;
