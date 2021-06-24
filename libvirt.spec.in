@@ -85,6 +85,10 @@
 %endif
 
 %define with_storage_iscsi_direct 0%{!?_without_storage_iscsi_direct:1}
+# libiscsi has been dropped in RHEL-9
+%if 0%{?rhel} > 8
+    %define with_storage_iscsi_direct 0
+%endif
 
 # Other optional features
 %define with_numactl          0%{!?_without_numactl:1}
