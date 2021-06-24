@@ -1184,12 +1184,10 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
     }
 # ifdef PR_CAPBSET_DROP
     /* If newer kernel, we need also need setpcap to change the bounding set */
-    if ((capBits || need_setgid || need_setuid) &&
-        !capng_have_capability(CAPNG_EFFECTIVE, CAP_SETPCAP)) {
+    if (!capng_have_capability(CAPNG_EFFECTIVE, CAP_SETPCAP)) {
         need_setpcap = true;
-    }
-    if (need_setpcap)
         capng_update(CAPNG_ADD, CAPNG_EFFECTIVE|CAPNG_PERMITTED, CAP_SETPCAP);
+    }
 # endif
 
     /* Tell system we want to keep caps across uid change */
