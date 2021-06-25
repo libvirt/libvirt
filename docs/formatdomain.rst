@@ -7540,12 +7540,15 @@ Example: usage of the TPM Emulator
       each QEMU guest requesting access to it.
 
 ``version``
-   The ``version`` attribute indicates the version of the TPM. By default a TPM
-   1.2 is created. This attribute only works with the ``emulator`` backend. The
-   following versions are supported:
+   The ``version`` attribute indicates the version of the TPM. This attribute
+   only works with the ``emulator`` backend. The following versions are
+   supported:
 
    -  '1.2' : creates a TPM 1.2
    -  '2.0' : creates a TPM 2.0
+
+   The default version used depends on the combination of hypervisor, guest
+   architecture, TPM model and backend.
 
 ``persistent_state``
    The ``persistent_state`` attribute indicates whether 'swtpm' TPM state is
