@@ -4517,6 +4517,12 @@ qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
                            _("TPM 1.2 is not supported with the SPAPR device model"));
             return -1;
         }
+        /* TPM 1.2 + ARM does not work */
+        if (qemuDomainIsARMVirt(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("TPM 1.2 is not supported on ARM"));
+            return -1;
+        }
         break;
     case VIR_DOMAIN_TPM_VERSION_2_0:
     case VIR_DOMAIN_TPM_VERSION_DEFAULT:

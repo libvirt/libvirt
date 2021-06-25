@@ -2565,6 +2565,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("tpm-emulator-tpm2-pstate");
     DO_TEST_CAPS_LATEST_PPC64("tpm-emulator-spapr");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-tpm", "aarch64");
+    DO_TEST_PARSE_ERROR("aarch64-tpm-wrong-model", "aarch64");
 
     DO_TEST_PARSE_ERROR("pci-domain-invalid", NONE);
     DO_TEST_PARSE_ERROR("pci-bus-invalid", NONE);
