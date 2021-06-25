@@ -4445,7 +4445,8 @@ qemuDomainDefTPMsPostParse(virDomainDef *def)
         /* TPM 1.2 and 2 are not compatible, so we choose a specific version here */
         if (tpm->version == VIR_DOMAIN_TPM_VERSION_DEFAULT) {
             if (tpm->model == VIR_DOMAIN_TPM_MODEL_SPAPR ||
-                tpm->model == VIR_DOMAIN_TPM_MODEL_CRB)
+                tpm->model == VIR_DOMAIN_TPM_MODEL_CRB ||
+                qemuDomainIsARMVirt(def))
                 tpm->version = VIR_DOMAIN_TPM_VERSION_2_0;
             else
                 tpm->version = VIR_DOMAIN_TPM_VERSION_1_2;
