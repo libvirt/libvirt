@@ -8,8 +8,8 @@
   </os>
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
-    <tpm model='tpm-tis'>
-      <backend type='emulator' version='2.0'/>
+    <tpm>
+      <backend type='emulator'/>
     </tpm>
   </devices>
 </domain>
