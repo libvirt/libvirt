@@ -783,6 +783,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("tpm-emulator-tpm2");
     DO_TEST_CAPS_LATEST("tpm-emulator-tpm2-enc");
     DO_TEST_CAPS_LATEST("tpm-emulator-tpm2-pstate");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-tpm", "aarch64");
 
     DO_TEST("metadata", NONE);
     DO_TEST("metadata-duplicate", NONE);

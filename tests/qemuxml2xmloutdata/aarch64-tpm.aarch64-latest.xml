@@ -1,0 +1,29 @@
+<domain type='qemu'>
+  <name>aarch64test</name>
+  <uuid>496d7ea8-9739-544b-4ebd-ef08be936e8b</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='aarch64' machine='virt'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <gic version='2'/>
+  </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>cortex-a15</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <tpm model='tpm-tis'>
+      <backend type='emulator' version='2.0'/>
+    </tpm>
+    <audio id='1' type='none'/>
+  </devices>
+</domain>
