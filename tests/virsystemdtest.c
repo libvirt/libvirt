@@ -736,6 +736,9 @@ mymain(void)
     TEST_MACHINE("demo.-.test.", NULL, 11, "qemu-11-demo.test");
     TEST_MACHINE("demo", "/tmp/root1", 1, "qemu-embed-0991f456-1-demo");
     TEST_MACHINE("demo", "/tmp/root2", 1, "qemu-embed-95d47ff5-1-demo");
+    TEST_MACHINE("|.-m", NULL, 1, "qemu-1-m");
+    TEST_MACHINE("Auto-esx7.0-rhel7.9-special-characters~!@#$%^&*_=+,?><:;|.\"[]()`\\-m",
+                 NULL, 1, "qemu-1-Auto-esx7.0-rhel7.9-special-characters.m");
 
 # define TESTS_PM_SUPPORT_HELPER(name, function) \
     do { \

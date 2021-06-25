@@ -63,18 +63,18 @@ virDomainMachineNameAppendValid(virBuffer *buf,
             break;
 
         if (*name == '.' || *name == '-') {
-            if (!skip)
+            if (!skip) {
                 virBufferAddChar(buf, *name);
-            skip = true;
+                skip = true;
+            }
             continue;
         }
-
-        skip = false;
 
         if (!strchr(HOSTNAME_CHARS, *name))
             continue;
 
         virBufferAddChar(buf, *name);
+        skip = false;
     }
 
     /* trailing dashes or dots are not allowed */
