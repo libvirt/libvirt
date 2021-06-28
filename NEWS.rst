@@ -22,7 +22,19 @@ v7.5.0 (unreleased)
 
 * **Improvements**
 
+  * docs: Document disk serial truncation status quo
+
+    Disk ``<serial>`` is being truncated by QEMU before passed to the guest.
+    Since it's impossible to fix it without running into further regressions
+    the documentation was improved to document the intricacies.
+
 * **Bug fixes**
+
+  * qemu: Fixed validation of disk ``iothread`` configuration
+
+    The validation of ``iothread`` config was previously moved to a place where
+    it caused bogus errors when address wasn't allocated when hotplugging a
+    disk. The check is now removed as it wasn't actually necessary at all.
 
 
 v7.4.0 (2021-06-01)
