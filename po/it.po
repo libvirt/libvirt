@@ -10,13 +10,14 @@
 # Silvio Pierro <perplesso82@gmail.com>, 2009
 # Pino Toscano <toscano.pino@tiscali.it>, 2020.
 # Milo Casagrande <milo@milo.name>, 2020.
+# Nathan <nathan95@live.it>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-06-25 08:08+0000\n"
-"PO-Revision-Date: 2020-09-10 13:43+0000\n"
-"Last-Translator: Milo Casagrande <milo@milo.name>\n"
+"PO-Revision-Date: 2021-06-28 06:04+0000\n"
+"Last-Translator: Nathan <nathan95@live.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/it/>\n"
 "Language: it\n"
@@ -24,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2.2\n"
+"X-Generator: Weblate 4.7\n"
 
 msgid ""
 "\n"
@@ -8470,7 +8471,7 @@ msgid "Failed! Volume not removed."
 msgstr "Fallito! Volume non rimosso."
 
 msgid "Failed."
-msgstr ""
+msgstr "Fallito"
 
 #, fuzzy, c-format
 msgid "Failure action %s is not supported by sanlock"
@@ -8523,7 +8524,7 @@ msgstr ""
 
 #, c-format
 msgid "File '%s' does not exist"
-msgstr ""
+msgstr "File [%s] non esiste"
 
 #, c-format
 msgid "File '%s' has unknown type"
