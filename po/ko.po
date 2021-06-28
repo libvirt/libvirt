@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-06-25 08:08+0000\n"
-"PO-Revision-Date: 2021-06-25 09:30+0000\n"
+"PO-Revision-Date: 2021-06-28 06:04+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -1206,13 +1206,13 @@ msgid "'base' and 'baseNode' can't be used together"
 msgstr "'base' 와 'baseNode'는 함께 사용 될 수 없습니다"
 
 msgid "'cache' refers to a non-existent NUMA node cache"
-msgstr ""
+msgstr "'캐쉬'는 존재하지 않는 NUMA 노드 캐쉬를 나타냅니다"
 
 msgid "'can-offline' missing in reply of guest-get-vcpus"
-msgstr ""
+msgstr "guest-get-vcpus의 응답에 'can-offline'이 누락됨"
 
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
-msgstr ""
+msgstr "'cmd_per_lun'는 virtio-scsi 제어기에서만 지원합니다"
 
 #, fuzzy
 msgid "'cow' storage format is not supported"
@@ -1221,10 +1221,10 @@ msgstr "fs 포맷 %s은 지원되지 않음"
 msgid ""
 "'directory' storage format is not directly supported by QEMU, use 'dir' disk "
 "type instead"
-msgstr ""
+msgstr "'디렉토리' 저장소 형식은 QEMU에서 직접 지원하지 않으며, 대신에 'dir' 디스크 유형을 사용합니다"
 
 msgid "'disk' missing in reply of guest-get-fsinfo"
-msgstr ""
+msgstr "guest-get-fsinfo의 응답에서 '디스크'가 누락됨"
 
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "'floor' 속성은 <inbound> 요소에만 허용됩니다"
@@ -1234,16 +1234,16 @@ msgid "'gluster' command line tool not found"
 msgstr "저장소 풀을 찾을 수 없음"
 
 msgid "'host-name' missing in guest-get-host-name reply"
-msgstr ""
+msgstr "guest-get-host-name 응답에서 '호스트-이름'이 누락됨"
 
 #, c-format
 msgid ""
 "'incremental' backup mode of disk '%s' requires setting 'incremental' field "
 "for disk or backup"
-msgstr ""
+msgstr "디스크 '%s'의 '증분' 백업 방법은 디스크 또는 백업을 위해 '증분' 부분의 설정이 필요합니다"
 
 msgid "'initiator' refers to a non-existent NUMA node"
-msgstr ""
+msgstr "'initiator'는 존재하지 않는 NUMA 노드를 나타냅니다"
 
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
 msgstr "'ioeventfd'는 virtio-scsi 제어기에서만 지원됩니다"
@@ -1543,7 +1543,7 @@ msgstr "-------------------------------------------------"
 
 msgid ""
 "--async requires at least one of --timeout, --wait, --pivot, or --finish"
-msgstr ""
+msgstr "--async는 적어도 --timeout, --wait, --pivot, 또는 --finish 중의 하나가 필요합니다"
 
 msgid ""
 "--async requires at least one of --timeout, --wait, --pivot, or --keep-"
@@ -8519,7 +8519,7 @@ msgstr ""
 
 #, c-format
 msgid "File '%s' does not exist"
-msgstr ""
+msgstr "파일 `%s`가 존재하지 않습니다"
 
 #, c-format
 msgid "File '%s' has unknown type"
@@ -20491,21 +20491,21 @@ msgid "block I/O throttle limit value must be no more than %llu"
 msgstr ""
 
 msgid "block copy still active"
-msgstr ""
+msgstr "블럭 복사는 여전히 활성화됨"
 
 #, c-format
 msgid "block copy still active: %s"
-msgstr ""
+msgstr "블럭 복사는 여전히 활동화됨: %s"
 
 msgid "block device"
 msgstr "블럭 장치"
 
 #, c-format
 msgid "block device snapshot target '%s' doesn't exist"
-msgstr ""
+msgstr "블럭 장치 스냅샷 대상 '%s'가 존재하지 않습니다"
 
 msgid "block info is not supported for vhostuser disk"
-msgstr ""
+msgstr "블럭 정보는 vhostuser 디스크를 지원하지 않습니다"
 
 #, c-format
 msgid "block job '%s' failed while pivoting"
@@ -20562,7 +20562,7 @@ msgid ""
 msgstr ""
 
 msgid "blockdev-create job was cancelled"
-msgstr ""
+msgstr "blockdev-create 작업이 취소되었습니다"
 
 msgid "blocked"
 msgstr "차단됨"
@@ -20600,16 +20600,16 @@ msgstr "본드 인터페이스에 bond 요소가 빠졌습니다"
 msgid "bool"
 msgstr "bool"
 
-#, fuzzy, c-format
+#, c-format
 msgid "boot order %u is already used by another device"
-msgstr "부팅 순서 '%s'가 하나 이상의 장치에 대해 사용되었습니다"
+msgstr "부팅 순서 %u가 다른 장치에서 이미 사용되었습니다"
 
 #, c-format
 msgid "boot order '%s' used for more than one device"
 msgstr "부팅 순서 '%s'가 하나 이상의 장치에 대해 사용되었습니다"
 
 msgid "boot order is only supported for virtiofs"
-msgstr ""
+msgstr "부트 순서는 virtiofs에서만 지원합니다"
 
 msgid "booted"
 msgstr "부팅됨"
@@ -20651,11 +20651,11 @@ msgstr "브릿지 '%s'가 잘못된 접두사를 갖고 있습니다"
 msgid "bridge an existing network device"
 msgstr "기존 네트워크 장치 브릿지"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "bridge delay/stp/zone options only allowed in route, nat, and isolated mode, "
 "not in %s (network '%s')"
-msgstr "브리지 이름이 %s 모드 (네트워크 '%s')에서 허용되지 않음 "
+msgstr "브릿지 지연/멈춤/대역 선택은 %s (네트워크 '%s')가 아니라 경로, nat 과 분리된 방법에서만 허용됩니다"
 
 msgid "bridge interface misses the bridge element"
 msgstr "브리지 인터페이스에 bridge 요소가 빠졌습니다"
@@ -20664,9 +20664,9 @@ msgstr "브리지 인터페이스에 bridge 요소가 빠졌습니다"
 msgid "bridge interface stp should be on or off got %s"
 msgstr "브리지 인터페이스 stp는 on이나 off여야 하나, %s가 지정되었습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "bridge macTableManager setting not allowed in %s mode (network '%s')"
-msgstr "브리지 이름이 %s 모드 (네트워크 '%s')에서 허용되지 않음 "
+msgstr "브릿지 맥테이블관리자 설정은 %s 방법(네트워크 '%s')에서 허용되지 않습니다"
 
 #, c-format
 msgid "bridge name '%s' already in use."
@@ -20674,14 +20674,14 @@ msgstr "브리지 이름 '%s'가 이미 사용중."
 
 #, c-format
 msgid "bridge name not allowed in %s mode (network '%s')"
-msgstr "브리지 이름이 %s 모드 (네트워크 '%s')에서 허용되지 않음 "
+msgstr "브릿지 이름은 %s 방법(네트워크 '%s')에서 허용되지 않습니다"
 
 #, c-format
 msgid "bridge zone not allowed in %s mode (network '%s')"
 msgstr "%s 모드 (네트워크 '%s')에서 브릿지 영역이 허용되지 않음"
 
 msgid "buffer for root interface name is too small"
-msgstr ""
+msgstr "root 연결장치 이름을 위한 버퍼가 너무 작습니다"
 
 msgid "buffer too small for IP address"
 msgstr "버퍼가 IP 주소에 대해 너무 작음"
@@ -23370,7 +23370,7 @@ msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE)가 부정 응답 코드를 반
 
 #, c-format
 msgid "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d)"
-msgstr ""
+msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE)가 오류를 반환함: %s (%d)"
 
 #, c-format
 msgid ""
@@ -23380,7 +23380,7 @@ msgstr ""
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %s (%d)"
-msgstr ""
+msgstr "curl_easy_perform()이 오류를 반환함: %s (%d)"
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %s (%d) : %s"
