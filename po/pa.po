@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-05-25 14:38+0000\n"
+"POT-Creation-Date: 2021-06-25 08:08+0000\n"
 "PO-Revision-Date: 2015-03-01 05:31+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -1279,6 +1279,9 @@ msgstr ""
 msgid "'vhostuser' driver is only supported with 'virtio' device"
 msgstr "ਸਕਰਿਪਟ ਐਗਜ਼ੀਕਿਊਸ਼ਨ ਨੂੰ ਈਥਰਨੈੱਟ ਇੰਟਰਫੇਸ ਲਈ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
+msgid "'virtio-s390' addresses are no longer supported"
+msgstr ""
+
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr "'wwnn' ਅਤੇ 'wwpn' ਅਡਾਪਟਰ ਕਿਸਮ 'fchost' ਲਈ ਜਰੂਰ ਦਰਸਾਏ ਜਾਣ"
 
@@ -1892,9 +1895,6 @@ msgstr ""
 
 msgid "Auto converge throttle:"
 msgstr ""
-
-msgid "Auto-spawn of daemon requested, but no binary specified"
-msgstr "daemon ਦੇ Auto-spawn ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ ਸੀ, ਪਰ ਕੋਈ ਬਾਇਨਰੀ ਦਰਸਾਈ ਨਹੀਂ ਗਈ"
 
 msgid "Automatic disk lease mode enabled, but no host ID is set"
 msgstr "ਸ੍ਵੈ-ਚਲਿਤ ਡਿਸਕ ਰੂਪ ਯੋਗ ਹੋਇਆ। ਪਰ ਕੋਈ ਮੇਜਬਾਨ ID ਪੱਕੀ ਨਹੀਂ ਕੀਤੀ ਹੈ"
@@ -2645,6 +2645,14 @@ msgstr "ਇਸ ਪਲੇਟ ਫਾਰਮ ਤੇ ਹੋਸਟ ਜੰਤਰ ਮਲ
 #, fuzzy, c-format
 msgid "Cannot create resctrl directory '%s'"
 msgstr "ਲਾਗ ਡਾਇਰੈਕਟਰੀ '%s' ਬਣਾ ਨਹੀਂ ਸਕਦਾ"
+
+#, c-format
+msgid "Cannot create socket '%s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot create socket directory '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot create user runtime directory '%s'"
@@ -3569,6 +3577,17 @@ msgstr ""
 msgid ""
 "Close callback for domain %s already registered with another connection %p"
 msgstr "ਡੋਮੇਨ %s ਲਈ ਕਾਲਬੈਕ ਬੰਦ ਕਰੋ ਪਹਿਲਾਂ ਹੀ ਕਿਸੇ ਹੋਰ ਸੰਪਰਕ %p ਨਾਲ ਦਰਜ ਹੈ"
+
+#, c-format
+msgid "Cloud-Hypervisor doesn't support '%s' device"
+msgstr ""
+
+msgid "Cloud-Hypervisor state driver is not active"
+msgstr ""
+
+msgid ""
+"Cloud-Hypervisor version is too old (v15.0 is the minimum supported version)"
+msgstr ""
 
 #, c-format
 msgid "Colliding cache allocations for cache level '%u' id '%u', type '%s'"
@@ -8267,6 +8286,10 @@ msgstr "ਕਾਰਵਾਈ %lld  ਨੂੰ SIG%s ਨਾਲ ਰੋਕਣ ਵਿ�
 msgid "Failed to translate bridge '%s' prefix %d to netmask"
 msgstr "xml ਡੌਕੂਮੈਂਟ ਵਿੱਚ ਬਰਿੱਜ ਨੋਡ ਬਣਾਉਣ ਤੋਂ ਫੇਲ"
 
+#, c-format
+msgid "Failed to translate net prefix %d to netmask"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to trigger a probe for PCI device '%s'"
 msgstr "PCI ਜੰਤਰ ਰੀਸੈੱਟ ਕਰਨ ਲਈ ਫੇਲ: %s"
@@ -8461,6 +8484,10 @@ msgstr ""
 msgid ""
 "File '%s' does not contain any <cpu> element or valid domain XML, host "
 "capabilities XML, or domain capabilities XML"
+msgstr ""
+
+#, c-format
+msgid "File '%s' does not exist"
 msgstr ""
 
 #, c-format
@@ -9101,9 +9128,6 @@ msgstr "%s ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀ
 #, fuzzy
 msgid "IOThreads not supported with this binary"
 msgstr "SATA ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
-
-msgid "IOThreads only available for virtio pci and virtio ccw disk"
-msgstr ""
 
 #, fuzzy
 msgid "IOThreads polling is not supported for this QEMU"
@@ -10397,6 +10421,9 @@ msgstr "ਕਰਨਲ ਨਿੱਜੀ devpts ਦਾ ਸਮਰਥਨ ਨਹੀਂ 
 msgid "Kernel doesn't support user namespace"
 msgstr "ਕਰਨਲ ਯੂਜ਼ਰ ਨਾਂ ਥਾਂ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ"
 
+msgid "Kernel image path in this domain is not defined"
+msgstr ""
+
 #, fuzzy
 msgid "Key file path must be provided for private key authentication"
 msgstr "ਨਿੱਜੀ ਚਾਬੀ ਪ੍ਰਮਾਣਿਕਤਾ ਲਈ ਉੱਪਭੋਗੀ ਨਾਂ ਅਤੇ ਚਾਬੀ ਫਾਈਲ ਰਾਹ ਮੁਹੱਈਆ ਕਰਵਾਉਣਾ ਜਰੂਰੀ ਹੈ"
@@ -11202,6 +11229,9 @@ msgstr "JSON ਫਾਈਲ ਵਿੱਚੋਂ defaultLockspace ਡਾਟਾ ਗ�
 #, fuzzy
 msgid "Missing device name for container-side veth"
 msgstr "char ਯੰਤਰ ਲਈ ਗੁੰਮ ਸਰੋਤ ਸੇਵਾ ਐਟਰੀਬਿਊਟ"
+
+msgid "Missing disk file path in domain"
+msgstr ""
 
 msgid "Missing disk info when adding volume"
 msgstr ""
@@ -12218,6 +12248,9 @@ msgstr "%s ਨਾਂ ਵਾਲਾ ਕੋਈ ਡੋਮੇਨ ਨਹੀਂ ਹੈ"
 msgid "No emulator found for arch '%s'"
 msgstr "'%s' ਲਈ ਕੋਈ ਸਾਕਟ ਐਡਰੈੱਸ ਨਹੀਂ ਲੱਭਿਆ"
 
+msgid "No emulator found for cloud-hypervisor"
+msgstr ""
+
 msgid "No error message from child failure"
 msgstr "ਕੋਈ ਗਲਤੀ ਸੁਨੇਹਾ ਨਹੀਂ ਦਿੱਤਾ ਗਿਆ"
 
@@ -12759,10 +12792,6 @@ msgstr "ਸਿਰਫ ਇੱਕ ਪ੍ਰਮੁੱਖ ਵੀਡੀਓ ਯੰਤ�
 msgid "Only one primary video device is supported"
 msgstr "ਸਿਰਫ ਇੱਕ ਪ੍ਰਮੁੱਖ ਵੀਡੀਓ ਯੰਤਰ ਸਮਰਥਿਤ ਹੈ"
 
-#, fuzzy
-msgid "Only one serial device is supported by libxl"
-msgstr "ਸਿਰਫ ਇੱਕ ਪ੍ਰਮੁੱਖ ਵੀਡੀਓ ਯੰਤਰ ਸਮਰਥਿਤ ਹੈ"
-
 msgid "Only ploop disk images are supported by vz driver."
 msgstr ""
 
@@ -12793,6 +12822,10 @@ msgstr "ਸਿਰਫ ਪਹਿਲਾਂ ਕੰਸੋਲ ਇੱਕ ਸੀਰੀ�
 
 msgid "Only the init process may be killed"
 msgstr "ਸਿਰਫ਼ init ਕਾਰਵਾਈ ਹੀ ਖਤਮ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ"
+
+#, c-format
+msgid "Only virtio bus types are supported for '%s'"
+msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "ਸਿਰਫ vpxmigr:// ਮਾਈਗਰੇਸ਼ਨ URIs ਨੂੰ ਸਹਿਯੋਗ ਹੈ"
@@ -14180,6 +14213,9 @@ msgstr "ਸੀਕਰੇਟ ਨਹੀਂ ਲੱਭਿਆ: %s"
 
 msgid "Secret value set\n"
 msgstr "ਸੀਕਰੇਟ ਮੁੱਲ ਸੈੱਟ ਹੋ ਗਿਆ\n"
+
+msgid "Secure boot is not supported on Xen"
+msgstr ""
 
 msgid "Secure boot is supported for x86_64 architecture only"
 msgstr ""
@@ -17750,6 +17786,10 @@ msgid "Unable to parse class id '%s'"
 msgstr "ਸ਼੍ਰੇਣੀ id '%s' ਨੂੰ ਪਾਰਸ ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ"
 
 #, c-format
+msgid "Unable to parse cloud-hypervisor version: %s"
+msgstr ""
+
+#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "ਮੌਜੂਦਾ SELinux ਕੰਟੈਕਸਟ '%s' ਪਾਰਸ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 
@@ -18674,6 +18714,9 @@ msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਨੈੱਟਵਰਕ ਕਿਸਮ %s"
 msgid "Unexpected network protocol '%s'"
 msgstr "ਅਣਜਾਣ ਪਰੋਟੋਕਾਲ '%s'"
 
+msgid "Unexpected output of cloud-hypervisor binary"
+msgstr ""
+
 #, c-format
 msgid "Unexpected parameter %s for lease resource"
 msgstr "ਲੀਜ਼ ਵਸੀਲੇ ਲਈ ਅਣਕਿਆਸਿਆ ਪੈਰਾਮੀਟਰ %s"
@@ -19590,6 +19633,9 @@ msgstr "qemu ਦੇ ਇਸ ਸੰਸਕਰਣ ਨਾਲ VFIO PCI ਯੰਤਰ �
 
 msgid "VM is already active"
 msgstr "VM ਪਹਿਲਾਂ ਹੀ ਸਰਗਰਮ ਹੈ"
+
+msgid "VM is not defined"
+msgstr ""
 
 #, c-format
 msgid "VMX entry '%s' contains unsupported scheme '%s'"
@@ -20606,6 +20652,10 @@ msgstr "ਬਲਾਕ ਕਾਪੀ ਹਾਲੇ ਵੀ ਸਰਗਰਮ ਹੈ: %s
 
 msgid "block device"
 msgstr "ਬਲਾਕ ਜੰਤਰ"
+
+#, c-format
+msgid "block device snapshot target '%s' doesn't exist"
+msgstr ""
 
 msgid "block info is not supported for vhostuser disk"
 msgstr ""
@@ -23472,10 +23522,18 @@ msgstr ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned a negative response code"
 
 #, c-format
+msgid "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d)"
+msgstr ""
+
+#, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d) : %s"
 msgstr ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d) : %s"
+
+#, c-format
+msgid "curl_easy_perform() returned an error: %s (%d)"
+msgstr ""
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %s (%d) : %s"
@@ -24907,6 +24965,9 @@ msgstr "XML ਵਰਤੋਂ ਲਈ ਬਚਾਅ"
 msgid "escape for shell use"
 msgstr "ਸ਼ੈੱਲ ਵਰਤੋਂ ਲਈ ਛੱਡੋ"
 
+msgid "ethernet type supports a single guest ip"
+msgstr ""
+
 #, c-format
 msgid "ethtool ioctl error on %s"
 msgstr ""
@@ -25309,6 +25370,9 @@ msgstr "%s ਨੂੰ ਟਰੰਕੇਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ"
 msgid "failed to begin transaction: %s%s%s"
 msgstr "ਇੰਟਰਫੇਸ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ: %s%s%s"
 
+msgid "failed to boot guest VM"
+msgstr ""
+
 msgid "failed to calculate ssh host key hash"
 msgstr "veth ਨਾਂ ਨਿਰਧਾਰਤ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
@@ -25409,6 +25473,9 @@ msgstr "XML ਬਣਾਉਣ ਲਈ ਫੇਲ"
 msgid "failed to create channel dir '%s': %s"
 msgstr "'%s' ਨੂੰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ: %s"
 
+msgid "failed to create connection to CH socket"
+msgstr ""
+
 #, fuzzy
 msgid "failed to create copy target"
 msgstr "ਸਾਕਟ ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ"
@@ -25423,6 +25490,9 @@ msgstr "'%s' ਨੂੰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ: %s"
 
 #, c-format
 msgid "failed to create glfs object for '%s'"
+msgstr ""
+
+msgid "failed to create guest VM"
 msgstr ""
 
 #, fuzzy, c-format
@@ -26152,6 +26222,9 @@ msgstr "qemu ਸਿਰਲੇਖ ਪੜਨ ਤੋਂ ਫੇਲ"
 msgid "failed to read temporary file created with template %s"
 msgstr "ਟੈਂਪਲਿਟ %s ਨਾਲ ਬਣਾਈ ਆਰਜੀ ਫਾਇਲ ਪੜਨ ਤੋਂ ਫੇਲ"
 
+msgid "failed to reboot domain"
+msgstr ""
+
 #, fuzzy
 msgid "failed to receive device from udev monitor"
 msgstr "%s ਤੋਂ ਨੋਡ ਜੰਤਰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
@@ -26294,6 +26367,9 @@ msgstr "failed to setup stdin file handle"
 msgid "failed to setup stdout file handle"
 msgstr "failed to setup stdout file handle"
 
+msgid "failed to shutdown guest VM"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to stat remote file '%s'"
 msgstr "ਫਾਇਲ '%s' ਨੂੰ ਬਣਾਉਣ ਵਿੱਚ ਫੇਲ"
@@ -26316,6 +26392,9 @@ msgstr "RBD ਈਮੇਜ਼ '%s' ਨੂੰ ਮੁੜ-ਅਕਾਰ ਦੇਣ ਤੋ�
 #, c-format
 msgid "failed to store %lld to %s"
 msgstr "%lld ਨੂੰ %s ਤੇ ਸਟੋਰ ਕਰਨ ਵਿੱਚ ਫੇਲ"
+
+msgid "failed to suspend domain"
+msgstr ""
 
 msgid "failed to take screenshot"
 msgstr "ਸਨੈਪਸ਼ਾਟ ਲੈਣ ਵਿੱਚ ਫੇਲ"
@@ -26546,6 +26625,10 @@ msgstr "ਫਾਇਲ ਜਿਸ ਵਿੱਚ ਇੱਕ XML ਵਾਲੀਅਮ ਵ
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "ਫਾਇਲ-ਸਿਸਟਮ ਦੀ ਕਿਸਮ 'template' ਜਾਂ 'mount' ਨਹੀਂ ਹੈ"
 
+#, c-format
+msgid "filesystem target '%s' specified twice"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "filter '%s' already exists with uuid %s"
 msgstr "ਪੂਲ '%s' ਪਹਿਲਾਂ ਹੀ uuid %s ਨਾਲ ਮੌਜੂਦ ਹੈ"
@@ -26746,7 +26829,7 @@ msgstr "ਇੱਕ ਭੌਤਿਕ ਹੋਸਟ ਇੰਟਰਫੇਸ ਖਤਮ �
 #, c-format
 msgid ""
 "format '%s' is not supported, expecting 'kdump-zlib', 'kdump-lzo', 'kdump-"
-"snappy' or 'elf'"
+"snappy', 'win-dmp' or 'elf'"
 msgstr ""
 
 msgid "format features only available with qcow2"
@@ -28769,10 +28852,6 @@ msgstr "userdata ਸੰਭਾਲਣ ਤੋਂ libxenlight ਅਸਫਲ ਹੋਇ
 msgid "libxenlight state driver is not active"
 msgstr "lxc ਸਟੇਟ ਡਰਾਈਵਰ ਸਰਗਰਮ ਨਹੀਂ ਹੈ"
 
-#, fuzzy
-msgid "libxenlight supports only one input device"
-msgstr "ps2 ਬੱਸ %s ਇੰਪੁੱਟ ਜੰਤਰ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
-
 #, c-format
 msgid "libxl_domain_info failed for domain '%d'"
 msgstr "cputime ਨੂੰ ਡੋਮੇਨ '%d' ਲਈ ਪੜ ਨਹੀਂ ਸਕਦਾ"
@@ -29820,6 +29899,12 @@ msgstr ""
 #, fuzzy, c-format
 msgid "mishandled storage format '%s'"
 msgstr "ਡੋਮੇਨ '%s' ਲੈਣ ਲਈ ਫੇਲ"
+
+#, c-format
+msgid ""
+"mismatch between configured type for snapshot disk '%s' and the type of "
+"existing file '%s'"
+msgstr ""
 
 #, c-format
 msgid "mismatch of address family in range %s - %s"
@@ -30878,10 +30963,6 @@ msgstr "ਨੈੱਟਵਰਕ %s ਵਿੱਚ ਦਰਸਾਏ ਗਏ ਸਾਰ�
 
 #, fuzzy
 msgid "multiple OpenGL displays are not supported by QEMU"
-msgstr "ਲਾਇਬ੍ਰੇਰੀ ਕਾਲ ਅਸਫ਼ਲ ਹੈ, ਸੰਭਵ ਤੌਰ ਉੱਤੇ ਸਹਾਇਕ ਨਹੀਂ ਹੈ"
-
-#, fuzzy
-msgid "multiple USB devices not supported"
 msgstr "ਲਾਇਬ੍ਰੇਰੀ ਕਾਲ ਅਸਫ਼ਲ ਹੈ, ਸੰਭਵ ਤੌਰ ਉੱਤੇ ਸਹਾਇਕ ਨਹੀਂ ਹੈ"
 
 #, fuzzy, c-format
@@ -32186,6 +32267,18 @@ msgstr "ਸਿਰਫ ਇੱਕ ਹੀ watchdog ਜੰਤਰ ਸਹਿਯੋਗ�
 #, fuzzy
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "sgio ਸਿਰਫ਼ scsi ਮੇਜਬਾਨ ਯੰਤਰ ਲਈ ਸਮਰਥਿਤ ਹੈ"
+
+msgid "only can reboot running/paused domain"
+msgstr ""
+
+msgid "only can resume paused domain"
+msgstr ""
+
+msgid "only can shutdown running/paused domain"
+msgstr ""
+
+msgid "only can suspend running domain"
+msgstr ""
 
 msgid "only connect if safe console handling is supported"
 msgstr "ਸਿਰਫ ਤਾਂ ਹੀ ਜੁੜੋ ਜੇ ਸੁਰੱਖਿਅਤ ਕੰਸੋਲ ਪਰਬੰਧਨ ਨੂੰ ਸਹਿਯੋਗ ਹੈ"
@@ -37115,6 +37208,10 @@ msgid "unknown hub device type '%s'"
 msgstr "ਅਣਜਾਣ hub ਜੰਤਰ ਕਿਸਮ '%s'"
 
 #, c-format
+msgid "unknown indexing value '%u'"
+msgstr ""
+
+#, c-format
 msgid "unknown input bus type '%s'"
 msgstr "ਅਚਾਨਕ ਇੰਪੁੱਟ ਬੱਸ ਕਿਸਮ '%s'"
 
@@ -37422,10 +37519,6 @@ msgid "unknown value '%s' in attribute 'usable'"
 msgstr "ਅਣਜਾਣ ਰੂਲ ਐਕਸ਼ਨ ਐਟਰੀਬਿਊਟ ਮੁੱਲ"
 
 #, fuzzy, c-format
-msgid "unknown value for attribute eoi: '%s'"
-msgstr "ਅਚਾਨਕ OS ਕਿਸਮ %s"
-
-#, fuzzy, c-format
 msgid "unknown vhost-user type: '%s'"
 msgstr "ਅਣਜਾਣ ਸਰੋਤ ਕਿਸਮ: '%s'"
 
@@ -37478,6 +37571,10 @@ msgstr "ਅਣਜਾਣ watchdog ਕਾਰਵਾਈ '%s'"
 #, c-format
 msgid "unknown watchdog model '%s'"
 msgstr "ਅਣਜਾਣ watchdog ਮਾਡਲ '%s'"
+
+#, c-format
+msgid "unknown write_policy value '%u'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown xattr value '%s'"
@@ -38270,6 +38367,9 @@ msgstr "hostdev subsys ਕਿਸਮ '%s' ਨੂੰ ਸਹਿਯੋਗ ਨਹੀ�
 msgid "vhost-user-gpu failed to start"
 msgstr "ਗਿਸਟ ਚਾਲੂ ਹੋਣ ਤੇ ਫੇਲ ਹੋਇਆ: %s"
 
+msgid "vhost_user type support UNIX socket in this CH"
+msgstr ""
+
 msgid "vhostuser disk is not supported with this QEMU binary"
 msgstr ""
 
@@ -38402,10 +38502,6 @@ msgstr "vport ਕਾਰਵਾਈ '%s' ਮੇਜਬਾਨ%d ਲਈ ਸਮਰਥ�
 msgid "virtio (non-)transitional models are not supported for input type=%s"
 msgstr "<virtualport> ਐਲੀਮੈਂਟ ਨੂੰ <interface type='%s'> ਲਈ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
-#, fuzzy
-msgid "virtio S390 address type is not supported by this QEMU"
-msgstr "nvram ਯੰਤਰ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
-
 #, fuzzy, c-format
 msgid "virtio disk cannot have an address of type '%s'"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਡਿਸਕ ਐਡਰੈੱਸ ਕਿਸਮ '%s'"
@@ -38413,6 +38509,10 @@ msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਡਿਸਕ ਐਡਰੈੱਸ ਕਿਸ�
 #, fuzzy
 msgid "virtio non-transitional model not supported for this qemu"
 msgstr "vport ਕਾਰਵਾਈ '%s' ਮੇਜਬਾਨ%d ਲਈ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+
+#, c-format
+msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
+msgstr ""
 
 #, fuzzy
 msgid "virtio rx_queue_size option is not supported with this QEMU binary"
@@ -38467,9 +38567,6 @@ msgstr ""
 
 msgid "virtio-s390 bus doesn't have an address"
 msgstr ""
-
-msgid "virtio-s390 net device cannot be hotplugged."
-msgstr "virtio-s390 ਨੈੱਟ ਯੰਤਰ ਹੌਟ-ਪਲੱਗ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।"
 
 msgid ""
 "virtio-scsi IOThreads only available for virtio pci and virtio ccw "
@@ -38910,6 +39007,32 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Auto-spawn of daemon requested, but no binary specified"
+#~ msgstr "daemon ਦੇ Auto-spawn ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ ਸੀ, ਪਰ ਕੋਈ ਬਾਇਨਰੀ ਦਰਸਾਈ ਨਹੀਂ ਗਈ"
+
+#, fuzzy
+#~ msgid "Only one serial device is supported by libxl"
+#~ msgstr "ਸਿਰਫ ਇੱਕ ਪ੍ਰਮੁੱਖ ਵੀਡੀਓ ਯੰਤਰ ਸਮਰਥਿਤ ਹੈ"
+
+#, fuzzy
+#~ msgid "libxenlight supports only one input device"
+#~ msgstr "ps2 ਬੱਸ %s ਇੰਪੁੱਟ ਜੰਤਰ ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਦਿੰਦਾ"
+
+#, fuzzy
+#~ msgid "multiple USB devices not supported"
+#~ msgstr "ਲਾਇਬ੍ਰੇਰੀ ਕਾਲ ਅਸਫ਼ਲ ਹੈ, ਸੰਭਵ ਤੌਰ ਉੱਤੇ ਸਹਾਇਕ ਨਹੀਂ ਹੈ"
+
+#, fuzzy
+#~ msgid "unknown value for attribute eoi: '%s'"
+#~ msgstr "ਅਚਾਨਕ OS ਕਿਸਮ %s"
+
+#, fuzzy
+#~ msgid "virtio S390 address type is not supported by this QEMU"
+#~ msgstr "nvram ਯੰਤਰ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
+
+#~ msgid "virtio-s390 net device cannot be hotplugged."
+#~ msgstr "virtio-s390 ਨੈੱਟ ਯੰਤਰ ਹੌਟ-ਪਲੱਗ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।"
 
 #, fuzzy
 #~ msgid "'unsupported perf event '%s'"

@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-05-25 14:38+0000\n"
+"POT-Creation-Date: 2021-06-25 08:08+0000\n"
 "PO-Revision-Date: 2021-05-27 06:02+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -1454,6 +1454,9 @@ msgstr "«value %d» є некоректним для «sibling id %d» у «cel
 msgid "'vhostuser' driver is only supported with 'virtio' device"
 msgstr "підтримку драйвера «vhostuser» передбачено лише для пристроїв «virtio»"
 
+msgid "'virtio-s390' addresses are no longer supported"
+msgstr ""
+
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr "для адаптера типу «fchost» слід вказати атрибути «wwnn» і «wwpn»"
 
@@ -2090,11 +2093,6 @@ msgstr ""
 
 msgid "Auto converge throttle:"
 msgstr "Дроселювання автопокриття:"
-
-msgid "Auto-spawn of daemon requested, but no binary specified"
-msgstr ""
-"Надіслано запит на автоматичне відновлення роботи фонової служби, але не "
-"вказано виконуваного файла служби"
 
 msgid "Automatic disk lease mode enabled, but no host ID is set"
 msgstr ""
@@ -2891,6 +2889,14 @@ msgstr "На цій платформі неможливо створювати �
 #, c-format
 msgid "Cannot create resctrl directory '%s'"
 msgstr "Не вдалося створити каталог resctrl «%s»"
+
+#, c-format
+msgid "Cannot create socket '%s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot create socket directory '%s'"
+msgstr ""
 
 #, c-format
 msgid "Cannot create user runtime directory '%s'"
@@ -3851,6 +3857,17 @@ msgid ""
 msgstr ""
 "Закритий зворотній виклик для домену %s вже зареєстровано з іншим з'єднанням "
 "%p"
+
+#, c-format
+msgid "Cloud-Hypervisor doesn't support '%s' device"
+msgstr ""
+
+msgid "Cloud-Hypervisor state driver is not active"
+msgstr ""
+
+msgid ""
+"Cloud-Hypervisor version is too old (v15.0 is the minimum supported version)"
+msgstr ""
 
 #, c-format
 msgid "Colliding cache allocations for cache level '%u' id '%u', type '%s'"
@@ -8613,6 +8630,10 @@ msgid "Failed to translate bridge '%s' prefix %d to netmask"
 msgstr "Не вдалося перетворити префікс містка «%s» %d на маску мережі"
 
 #, c-format
+msgid "Failed to translate net prefix %d to netmask"
+msgstr ""
+
+#, c-format
 msgid "Failed to trigger a probe for PCI device '%s'"
 msgstr "Не вдалося увімкнути перевірку PCI-пристрою «%s»"
 
@@ -8811,6 +8832,10 @@ msgid ""
 msgstr ""
 "Файл «%s» не містить жодного елемента <cpu> або коректного XML домену, "
 "можливостей XML вузла або можливостей XML домену"
+
+#, c-format
+msgid "File '%s' does not exist"
+msgstr ""
 
 #, c-format
 msgid "File '%s' has unknown type"
@@ -9483,9 +9508,6 @@ msgstr "у цій версії QEMU не передбачено IOThreads"
 
 msgid "IOThreads not supported with this binary"
 msgstr "підтримки IOThreads у цьому виконуваному файлі не передбачено"
-
-msgid "IOThreads only available for virtio pci and virtio ccw disk"
-msgstr "IOThreads доступне лише для дисків PCI та CCW virtio"
 
 msgid "IOThreads polling is not supported for this QEMU"
 msgstr "Для цього QEMU не передбачено підтримки опитування IOThreads"
@@ -10555,8 +10577,8 @@ msgid ""
 "Invalid specification for virtio ccw address: cssid='0x%x' ssid='0x%x' "
 "devno='0x%04x'"
 msgstr ""
-"Некоректна специфікація адреси ccw віртуального введення-виведення: "
-"cssid='0x%x' ssid='0x%x' devno='0x%04x'"
+"Некоректна специфікація адреси ccw віртуального введення-виведення: cssid='0x"
+"%x' ssid='0x%x' devno='0x%04x'"
 
 #, c-format
 msgid "Invalid state '%s' in domain snapshot XML"
@@ -10824,6 +10846,9 @@ msgstr "У ядрі не передбачено підтримки закрит�
 
 msgid "Kernel doesn't support user namespace"
 msgstr "У ядрі не передбачено підтримки простору назв користувача"
+
+msgid "Kernel image path in this domain is not defined"
+msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
 msgstr ""
@@ -11621,6 +11646,9 @@ msgstr ""
 
 msgid "Missing device name for container-side veth"
 msgstr "Пропущено назву пристрою для veth на боці контейнера"
+
+msgid "Missing disk file path in domain"
+msgstr ""
 
 msgid "Missing disk info when adding volume"
 msgstr "Не вистачає даних щодо диска під час додавання тому"
@@ -12665,6 +12693,9 @@ msgstr "Немає домену з назвою %s"
 msgid "No emulator found for arch '%s'"
 msgstr "Не знайдено емулятора для архітектури «%s»"
 
+msgid "No emulator found for cloud-hypervisor"
+msgstr ""
+
 msgid "No error message from child failure"
 msgstr "Не отримано повідомлення про помилку дочірнього процесу"
 
@@ -13220,9 +13251,6 @@ msgstr "Передбачено підтримку пристроїв основ�
 msgid "Only one primary video device is supported"
 msgstr "Передбачено підтримку лише одного основного відеопристрою"
 
-msgid "Only one serial device is supported by libxl"
-msgstr "У libxl передбачено підтримку лише одного послідовного пристрою"
-
 msgid "Only ploop disk images are supported by vz driver."
 msgstr "У драйвері vz передбачено підтримку лише образів дисків ploop."
 
@@ -13255,6 +13283,10 @@ msgstr "Послідовним портом може бути лише перш�
 
 msgid "Only the init process may be killed"
 msgstr "Можна завершувати роботу лише процесу init"
+
+#, c-format
+msgid "Only virtio bus types are supported for '%s'"
+msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "Підтримуються лише адреси перенесення типу vpxmigr://"
@@ -14701,6 +14733,9 @@ msgstr "Не знайдено ключа: %s"
 
 msgid "Secret value set\n"
 msgstr "Значення ключа встановлено\n"
+
+msgid "Secure boot is not supported on Xen"
+msgstr ""
 
 msgid "Secure boot is supported for x86_64 architecture only"
 msgstr "Підтримку Secure boot передбачено лише для архітектури x86_64"
@@ -18482,6 +18517,10 @@ msgid "Unable to parse class id '%s'"
 msgstr "Не вдалося обробити ідентифікатор класу «%s»"
 
 #, c-format
+msgid "Unable to parse cloud-hypervisor version: %s"
+msgstr ""
+
+#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "Не вдалося обробити поточний контекст SELinux «%s»"
 
@@ -19389,6 +19428,9 @@ msgstr "Неочікуваний тип порту мережі %s"
 #, c-format
 msgid "Unexpected network protocol '%s'"
 msgstr "Неочікуваний протокол мережі «%s»"
+
+msgid "Unexpected output of cloud-hypervisor binary"
+msgstr ""
 
 #, c-format
 msgid "Unexpected parameter %s for lease resource"
@@ -20326,6 +20368,9 @@ msgstr "у цій системі поки що не передбачено пр�
 
 msgid "VM is already active"
 msgstr "Віртуальна машина вже активна"
+
+msgid "VM is not defined"
+msgstr ""
 
 #, c-format
 msgid "VMX entry '%s' contains unsupported scheme '%s'"
@@ -21386,6 +21431,10 @@ msgstr "не завершено копіювання блоків: %s"
 
 msgid "block device"
 msgstr "блоковий пристрій"
+
+#, c-format
+msgid "block device snapshot target '%s' doesn't exist"
+msgstr ""
 
 msgid "block info is not supported for vhostuser disk"
 msgstr ""
@@ -24316,11 +24365,19 @@ msgstr ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE)) повернуто від'ємний код відповіді"
 
 #, c-format
+msgid "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d)"
+msgstr ""
+
+#, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d) : %s"
 msgstr ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) повернуто повідомлення про "
 "помилку: %s (%d): %s"
+
+#, c-format
+msgid "curl_easy_perform() returned an error: %s (%d)"
+msgstr ""
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %s (%d) : %s"
@@ -25755,6 +25812,9 @@ msgstr "екранувати для використання у XML"
 msgid "escape for shell use"
 msgstr "екранувати для використання у командній оболонці"
 
+msgid "ethernet type supports a single guest ip"
+msgstr ""
+
 #, c-format
 msgid "ethtool ioctl error on %s"
 msgstr "помилка ioctl ethtool %s"
@@ -26169,6 +26229,9 @@ msgstr "не вдалося пройти розпізнавання: %s"
 msgid "failed to begin transaction: %s%s%s"
 msgstr "не вдалося розпочати дію: %s%s%s"
 
+msgid "failed to boot guest VM"
+msgstr ""
+
 msgid "failed to calculate ssh host key hash"
 msgstr "не вдалося обчислити хеш ключа ssh вузла"
 
@@ -26263,6 +26326,9 @@ msgstr "не вдалося створити простір назв XML"
 msgid "failed to create channel dir '%s': %s"
 msgstr "не вдалося створити каталог каналу «%s»: %s"
 
+msgid "failed to create connection to CH socket"
+msgstr ""
+
 msgid "failed to create copy target"
 msgstr "не вдалося створити призначення копії"
 
@@ -26277,6 +26343,9 @@ msgstr "не вдалося створити каталог дампу «%s»: %
 #, c-format
 msgid "failed to create glfs object for '%s'"
 msgstr "не вдалося створити об'єкт glfs для «%s»"
+
+msgid "failed to create guest VM"
+msgstr ""
 
 #, c-format
 msgid "failed to create image file '%s'"
@@ -26975,6 +27044,9 @@ msgid "failed to read temporary file created with template %s"
 msgstr ""
 "не вдалося прочитати файл тимчасових даних, створений за допомогою шаблона %s"
 
+msgid "failed to reboot domain"
+msgstr ""
+
 msgid "failed to receive device from udev monitor"
 msgstr "не вдалося отримати пристрій від засобу спостереження udev"
 
@@ -27121,6 +27193,9 @@ msgstr "Не вдалося встановити дескриптор файла
 msgid "failed to setup stdout file handle"
 msgstr "Не вдалося встановити дескриптор файла stdout"
 
+msgid "failed to shutdown guest VM"
+msgstr ""
+
 #, c-format
 msgid "failed to stat remote file '%s'"
 msgstr "не вдалося обробити stat віддаленого файла «%s»"
@@ -27143,6 +27218,9 @@ msgstr "не вдалося отримати статистичні дані щ�
 #, c-format
 msgid "failed to store %lld to %s"
 msgstr "не вдалося зберегти %lld до %s"
+
+msgid "failed to suspend domain"
+msgstr ""
 
 msgid "failed to take screenshot"
 msgstr "не вдалося створити знімок вікна"
@@ -27370,6 +27448,10 @@ msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "тип файлової системи відрізняється від «template» та «mount»"
 
 #, c-format
+msgid "filesystem target '%s' specified twice"
+msgstr ""
+
+#, c-format
 msgid "filter '%s' already exists with uuid %s"
 msgstr "фільтр «%s» вже існує з uuid %s"
 
@@ -27572,10 +27654,8 @@ msgstr ""
 #, c-format
 msgid ""
 "format '%s' is not supported, expecting 'kdump-zlib', 'kdump-lzo', 'kdump-"
-"snappy' or 'elf'"
+"snappy', 'win-dmp' or 'elf'"
 msgstr ""
-"підтримки формату «%s» не передбачено, можна використовувати лише такі "
-"формати: kdump-zlib, kdump-lzo, kdump-snappy або elf"
 
 msgid "format features only available with qcow2"
 msgstr "можливостями з форматування можна користуватися лише з qcow2"
@@ -29698,9 +29778,6 @@ msgstr "libxenlight не вдалося зберегти дані користу
 msgid "libxenlight state driver is not active"
 msgstr "Драйвер станів libxenlight не задіяно"
 
-msgid "libxenlight supports only one input device"
-msgstr "У libxenlight передбачено підтримку лише одного пристрою введення"
-
 #, c-format
 msgid "libxl_domain_info failed for domain '%d'"
 msgstr "Помилка libxl_domain_info для домену «%d»"
@@ -30780,6 +30857,12 @@ msgid "mishandled storage format '%s'"
 msgstr "помилкова обробка формату сховища «%s»"
 
 #, c-format
+msgid ""
+"mismatch between configured type for snapshot disk '%s' and the type of "
+"existing file '%s'"
+msgstr ""
+
+#, c-format
 msgid "mismatch of address family in range %s - %s"
 msgstr "невідповідність сімейства адрес у діапазоні %s - %s"
 
@@ -31808,9 +31891,6 @@ msgstr ""
 
 msgid "multiple OpenGL displays are not supported by QEMU"
 msgstr "підтримки декількох дисплеїв OpenGL у цьому QEMU не передбачено"
-
-msgid "multiple USB devices not supported"
-msgstr "підтримки декількох пристроїв USB не передбачено"
 
 #, c-format
 msgid "multiple devices matching MAC address %s found"
@@ -33130,6 +33210,18 @@ msgstr "передбачено підтримку лише одного стор
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr ""
 "для вхідних пристроїв «passthrough» передбачено підтримку лише шини «virtio»"
+
+msgid "only can reboot running/paused domain"
+msgstr ""
+
+msgid "only can resume paused domain"
+msgstr ""
+
+msgid "only can shutdown running/paused domain"
+msgstr ""
+
+msgid "only can suspend running domain"
+msgstr ""
 
 msgid "only connect if safe console handling is supported"
 msgstr ""
@@ -38164,6 +38256,10 @@ msgid "unknown hub device type '%s'"
 msgstr "невідомий тип основного пристрою «%s»"
 
 #, c-format
+msgid "unknown indexing value '%u'"
+msgstr ""
+
+#, c-format
 msgid "unknown input bus type '%s'"
 msgstr "невідомий тип шини вводу «%s»"
 
@@ -38471,10 +38567,6 @@ msgid "unknown value '%s' in attribute 'usable'"
 msgstr "невідоме значення, «%s» у атрибуті «usable»"
 
 #, c-format
-msgid "unknown value for attribute eoi: '%s'"
-msgstr "невідоме значення атрибута eoi: «%s»"
-
-#, c-format
 msgid "unknown vhost-user type: '%s'"
 msgstr "невідомий тип vhost-user: «%s»"
 
@@ -38526,6 +38618,10 @@ msgstr "невідома сторожова дія «%s»"
 #, c-format
 msgid "unknown watchdog model '%s'"
 msgstr "невідома модель сторожового пристрою «%s»"
+
+#, c-format
+msgid "unknown write_policy value '%u'"
+msgstr ""
 
 #, c-format
 msgid "unknown xattr value '%s'"
@@ -39359,6 +39455,9 @@ msgstr "підтримки типу vhost-user «%s» не передбачен�
 msgid "vhost-user-gpu failed to start"
 msgstr "Не вдалося запустити vhost-user-gpu"
 
+msgid "vhost_user type support UNIX socket in this CH"
+msgstr ""
+
 msgid "vhostuser disk is not supported with this QEMU binary"
 msgstr ""
 "підтримки дисків vhostuser у цьому виконуваному файлі QEMU не передбачено"
@@ -39496,15 +39595,16 @@ msgid "virtio (non-)transitional models are not supported for input type=%s"
 msgstr ""
 "підтримки virtio (не)перехідних моделей для вхідного типу %s не передбачено"
 
-msgid "virtio S390 address type is not supported by this QEMU"
-msgstr "підтримки типу адрес virtio S390 не передбачено цією версією QEMU"
-
 #, c-format
 msgid "virtio disk cannot have an address of type '%s'"
 msgstr "диск virtio не може мати адреси типу «%s»"
 
 msgid "virtio non-transitional model not supported for this qemu"
 msgstr "підтримки неперехідних моделей virtio для цього qemu не передбачено"
+
+#, c-format
+msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
+msgstr ""
 
 msgid "virtio rx_queue_size option is not supported with this QEMU binary"
 msgstr ""
@@ -39566,10 +39666,6 @@ msgstr "підтримки virtio-pmem не передбачено у цьому
 
 msgid "virtio-s390 bus doesn't have an address"
 msgstr "канал virtio-s390 не має адреси"
-
-msgid "virtio-s390 net device cannot be hotplugged."
-msgstr ""
-"мережеві пристрої типу «virtio-s390» не можна з'єднувати у «гарячому» режимі."
 
 msgid ""
 "virtio-scsi IOThreads only available for virtio pci and virtio ccw "
@@ -40035,6 +40131,41 @@ msgstr "надійшов запит щодо зони %s для мережі %s,
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <рядок>}..."
+
+#~ msgid "Auto-spawn of daemon requested, but no binary specified"
+#~ msgstr ""
+#~ "Надіслано запит на автоматичне відновлення роботи фонової служби, але не "
+#~ "вказано виконуваного файла служби"
+
+#~ msgid "IOThreads only available for virtio pci and virtio ccw disk"
+#~ msgstr "IOThreads доступне лише для дисків PCI та CCW virtio"
+
+#~ msgid "Only one serial device is supported by libxl"
+#~ msgstr "У libxl передбачено підтримку лише одного послідовного пристрою"
+
+#~ msgid ""
+#~ "format '%s' is not supported, expecting 'kdump-zlib', 'kdump-lzo', 'kdump-"
+#~ "snappy' or 'elf'"
+#~ msgstr ""
+#~ "підтримки формату «%s» не передбачено, можна використовувати лише такі "
+#~ "формати: kdump-zlib, kdump-lzo, kdump-snappy або elf"
+
+#~ msgid "libxenlight supports only one input device"
+#~ msgstr "У libxenlight передбачено підтримку лише одного пристрою введення"
+
+#~ msgid "multiple USB devices not supported"
+#~ msgstr "підтримки декількох пристроїв USB не передбачено"
+
+#~ msgid "unknown value for attribute eoi: '%s'"
+#~ msgstr "невідоме значення атрибута eoi: «%s»"
+
+#~ msgid "virtio S390 address type is not supported by this QEMU"
+#~ msgstr "підтримки типу адрес virtio S390 не передбачено цією версією QEMU"
+
+#~ msgid "virtio-s390 net device cannot be hotplugged."
+#~ msgstr ""
+#~ "мережеві пристрої типу «virtio-s390» не можна з'єднувати у «гарячому» "
+#~ "режимі."
 
 #~ msgid ""
 #~ "'mode' attribute for Xen feature 'passthrough' must be 'sync_pt' or "

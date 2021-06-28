@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-05-25 14:38+0000\n"
+"POT-Creation-Date: 2021-06-25 08:08+0000\n"
 "PO-Revision-Date: 2021-06-07 08:46+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1416,6 +1416,9 @@ msgstr "”value %d” är inte giltigt för ”sibling id %d” under NUMA ”c
 msgid "'vhostuser' driver is only supported with 'virtio' device"
 msgstr "drivrutinen ”vhostuser” stödjs endast med enheten ”virtio”"
 
+msgid "'virtio-s390' addresses are no longer supported"
+msgstr ""
+
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr "”wwnn” och ”wwpn” måste anges för adaptertypen ”fchost”"
 
@@ -2032,9 +2035,6 @@ msgstr ""
 
 msgid "Auto converge throttle:"
 msgstr "Automatkonvergeringsstrypning:"
-
-msgid "Auto-spawn of daemon requested, but no binary specified"
-msgstr "Automatstart av en demon begärd, men ingen binär angiven"
 
 msgid "Automatic disk lease mode enabled, but no host ID is set"
 msgstr ""
@@ -2794,6 +2794,14 @@ msgstr "Det går inte att skapa macvlan-enheter på denna plattform"
 #, c-format
 msgid "Cannot create resctrl directory '%s'"
 msgstr "Kan inte skapa resctrl-katalogen ”%s”"
+
+#, c-format
+msgid "Cannot create socket '%s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot create socket directory '%s'"
+msgstr ""
 
 #, c-format
 msgid "Cannot create user runtime directory '%s'"
@@ -3704,6 +3712,17 @@ msgid ""
 msgstr ""
 "Stängningsåteranrop för domänen %s är redan registrerad med en annan "
 "förbindelse %p"
+
+#, c-format
+msgid "Cloud-Hypervisor doesn't support '%s' device"
+msgstr ""
+
+msgid "Cloud-Hypervisor state driver is not active"
+msgstr ""
+
+msgid ""
+"Cloud-Hypervisor version is too old (v15.0 is the minimum supported version)"
+msgstr ""
 
 #, c-format
 msgid "Colliding cache allocations for cache level '%u' id '%u', type '%s'"
@@ -6453,8 +6472,8 @@ msgstr "Misslyckades att lägga till signalhanteringsbevakning"
 #, c-format
 msgid "Failed to add storage controller (name: %s, busType: %d), rc=%08x"
 msgstr ""
-"Misslyckades att lägga till lagringsstyrenhet (namn: %s, busstyp: %d), "
-"rk=%08x"
+"Misslyckades att lägga till lagringsstyrenhet (namn: %s, busstyp: %d), rk="
+"%08x"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
@@ -8453,6 +8472,10 @@ msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
 msgid "Failed to translate bridge '%s' prefix %d to netmask"
 msgstr ""
 
+#, c-format
+msgid "Failed to translate net prefix %d to netmask"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to trigger a probe for PCI device '%s'"
 msgstr "Misslyckades med att tolka läget ”%s”"
@@ -8652,6 +8675,10 @@ msgstr ""
 msgid ""
 "File '%s' does not contain any <cpu> element or valid domain XML, host "
 "capabilities XML, or domain capabilities XML"
+msgstr ""
+
+#, c-format
+msgid "File '%s' does not exist"
 msgstr ""
 
 #, c-format
@@ -9254,9 +9281,6 @@ msgid "IOThreads not supported for this QEMU"
 msgstr ""
 
 msgid "IOThreads not supported with this binary"
-msgstr ""
-
-msgid "IOThreads only available for virtio pci and virtio ccw disk"
 msgstr ""
 
 msgid "IOThreads polling is not supported for this QEMU"
@@ -10547,6 +10571,9 @@ msgstr "lagringspool stödjer inte skapande av volymer"
 msgid "Kernel doesn't support user namespace"
 msgstr ""
 
+msgid "Kernel image path in this domain is not defined"
+msgstr ""
+
 msgid "Key file path must be provided for private key authentication"
 msgstr ""
 
@@ -11319,6 +11346,9 @@ msgstr ""
 #, fuzzy
 msgid "Missing device name for container-side veth"
 msgstr "Källtjänstattribut saknas för teckenenhet"
+
+msgid "Missing disk file path in domain"
+msgstr ""
 
 msgid "Missing disk info when adding volume"
 msgstr ""
@@ -12309,6 +12339,9 @@ msgstr "Kunde inte hitta %s med namnet ”%s”"
 msgid "No emulator found for arch '%s'"
 msgstr ""
 
+msgid "No emulator found for cloud-hypervisor"
+msgstr ""
+
 #, fuzzy
 msgid "No error message from child failure"
 msgstr "Inget felmeddelande gavs"
@@ -12826,9 +12859,6 @@ msgstr ""
 msgid "Only one primary video device is supported"
 msgstr ""
 
-msgid "Only one serial device is supported by libxl"
-msgstr ""
-
 msgid "Only ploop disk images are supported by vz driver."
 msgstr ""
 
@@ -12857,6 +12887,10 @@ msgid "Only the first console can be a serial port"
 msgstr ""
 
 msgid "Only the init process may be killed"
+msgstr ""
+
+#, c-format
+msgid "Only virtio bus types are supported for '%s'"
 msgstr ""
 
 #, fuzzy
@@ -14205,6 +14239,9 @@ msgid "Secret not found: %s"
 msgstr "Nätverk hittades inte: %s"
 
 msgid "Secret value set\n"
+msgstr ""
+
+msgid "Secure boot is not supported on Xen"
 msgstr ""
 
 msgid "Secure boot is supported for x86_64 architecture only"
@@ -17737,6 +17774,10 @@ msgstr ""
 msgid "Unable to parse class id '%s'"
 msgstr "kan inte tolka mac-adressen ”%s”"
 
+#, c-format
+msgid "Unable to parse cloud-hypervisor version: %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "kan inte tolka mac-adressen ”%s”"
@@ -18672,6 +18713,9 @@ msgstr "oväntad disktyp %s"
 msgid "Unexpected network protocol '%s'"
 msgstr "Okänt protokoll ”%s”"
 
+msgid "Unexpected output of cloud-hypervisor binary"
+msgstr ""
+
 #, c-format
 msgid "Unexpected parameter %s for lease resource"
 msgstr ""
@@ -19585,6 +19629,9 @@ msgstr "UNIX-uttag stödjs inte på denna plattform"
 #, fuzzy
 msgid "VM is already active"
 msgstr "Domänen är redan aktiv"
+
+msgid "VM is not defined"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "VMX entry '%s' contains unsupported scheme '%s'"
@@ -20565,6 +20612,10 @@ msgstr ""
 
 msgid "block device"
 msgstr "blockenhet"
+
+#, c-format
+msgid "block device snapshot target '%s' doesn't exist"
+msgstr ""
 
 msgid "block info is not supported for vhostuser disk"
 msgstr ""
@@ -23369,8 +23420,16 @@ msgid ""
 msgstr ""
 
 #, c-format
+msgid "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d)"
+msgstr ""
+
+#, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d) : %s"
+msgstr ""
+
+#, c-format
+msgid "curl_easy_perform() returned an error: %s (%d)"
 msgstr ""
 
 #, c-format
@@ -24784,6 +24843,9 @@ msgstr ""
 msgid "escape for shell use"
 msgstr ""
 
+msgid "ethernet type supports a single guest ip"
+msgstr ""
+
 #, c-format
 msgid "ethtool ioctl error on %s"
 msgstr ""
@@ -25182,6 +25244,9 @@ msgstr "Misslyckades att ta ögonblicksbild: %s"
 msgid "failed to begin transaction: %s%s%s"
 msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
 
+msgid "failed to boot guest VM"
+msgstr ""
+
 #, fuzzy
 msgid "failed to calculate ssh host key hash"
 msgstr "Misslyckades att skapa uttag"
@@ -25286,6 +25351,9 @@ msgstr "Misslyckades att skapa XML"
 msgid "failed to create channel dir '%s': %s"
 msgstr "kan inte skapa körkatalogen %s: %s"
 
+msgid "failed to create connection to CH socket"
+msgstr ""
+
 #, fuzzy
 msgid "failed to create copy target"
 msgstr "misslyckats med att skapa profil"
@@ -25300,6 +25368,9 @@ msgstr "kan inte skapa körkatalogen %s: %s"
 
 #, c-format
 msgid "failed to create glfs object for '%s'"
+msgstr ""
+
+msgid "failed to create guest VM"
 msgstr ""
 
 #, fuzzy, c-format
@@ -26034,6 +26105,9 @@ msgstr "misslyckats med att skapa profil"
 msgid "failed to read temporary file created with template %s"
 msgstr "kunde inte läsa konfigurationsfilen %s"
 
+msgid "failed to reboot domain"
+msgstr ""
+
 #, fuzzy
 msgid "failed to receive device from udev monitor"
 msgstr "Kan inte läsa från övervakaren"
@@ -26180,6 +26254,9 @@ msgstr "misslyckades att få värdnamn"
 msgid "failed to setup stdout file handle"
 msgstr "det gick inte att skapa loggfilen %s"
 
+msgid "failed to shutdown guest VM"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to stat remote file '%s'"
 msgstr "Misslyckades att öppna filen ”%s”"
@@ -26203,6 +26280,9 @@ msgstr "Misslyckades med att starta gränssnittet %s"
 #, fuzzy, c-format
 msgid "failed to store %lld to %s"
 msgstr "Misslyckades att återställa domän från %s"
+
+msgid "failed to suspend domain"
+msgstr ""
 
 #, fuzzy
 msgid "failed to take screenshot"
@@ -26435,6 +26515,10 @@ msgid "filesystem is not of type 'template' or 'mount'"
 msgstr ""
 
 #, c-format
+msgid "filesystem target '%s' specified twice"
+msgstr ""
+
+#, c-format
 msgid "filter '%s' already exists with uuid %s"
 msgstr "filtret ”%s” finns redan med uuid %s"
 
@@ -26627,7 +26711,7 @@ msgstr "starta ett fysiskt värdgränssnitt."
 #, c-format
 msgid ""
 "format '%s' is not supported, expecting 'kdump-zlib', 'kdump-lzo', 'kdump-"
-"snappy' or 'elf'"
+"snappy', 'win-dmp' or 'elf'"
 msgstr ""
 
 msgid "format features only available with qcow2"
@@ -28627,9 +28711,6 @@ msgstr "libxenlight misslyckades med att lagra användardata"
 msgid "libxenlight state driver is not active"
 msgstr ""
 
-msgid "libxenlight supports only one input device"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "libxl_domain_info failed for domain '%d'"
 msgstr "libxenlight misslyckades att återställa domänen ”%s”"
@@ -29665,6 +29746,12 @@ msgstr ""
 #, fuzzy, c-format
 msgid "mishandled storage format '%s'"
 msgstr "misslyckades att hämta domän '%s'"
+
+#, c-format
+msgid ""
+"mismatch between configured type for snapshot disk '%s' and the type of "
+"existing file '%s'"
+msgstr ""
 
 #, c-format
 msgid "mismatch of address family in range %s - %s"
@@ -30721,9 +30808,6 @@ msgid ""
 msgstr ""
 
 msgid "multiple OpenGL displays are not supported by QEMU"
-msgstr ""
-
-msgid "multiple USB devices not supported"
 msgstr ""
 
 #, c-format
@@ -31997,6 +32081,18 @@ msgid "only a single watchdog device is supported"
 msgstr ""
 
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
+msgstr ""
+
+msgid "only can reboot running/paused domain"
+msgstr ""
+
+msgid "only can resume paused domain"
+msgstr ""
+
+msgid "only can shutdown running/paused domain"
+msgstr ""
+
+msgid "only can suspend running domain"
 msgstr ""
 
 msgid "only connect if safe console handling is supported"
@@ -36801,6 +36897,10 @@ msgid "unknown hub device type '%s'"
 msgstr "okänd disktyp ”%s”"
 
 #, c-format
+msgid "unknown indexing value '%u'"
+msgstr ""
+
+#, c-format
 msgid "unknown input bus type '%s'"
 msgstr "okänd inmatningsbusstyp ”%s”"
 
@@ -37112,10 +37212,6 @@ msgid "unknown value '%s' in attribute 'usable'"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "unknown value for attribute eoi: '%s'"
-msgstr "okänd teckenenhetstyp: %s"
-
-#, fuzzy, c-format
 msgid "unknown vhost-user type: '%s'"
 msgstr "okänd diskbusstyp ”%s”"
 
@@ -37168,6 +37264,10 @@ msgstr "okänt kommando: '%s'"
 #, fuzzy, c-format
 msgid "unknown watchdog model '%s'"
 msgstr "okänt disk-IO-läge ”%s”"
+
+#, c-format
+msgid "unknown write_policy value '%u'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown xattr value '%s'"
@@ -37952,6 +38052,9 @@ msgstr ""
 msgid "vhost-user-gpu failed to start"
 msgstr ""
 
+msgid "vhost_user type support UNIX socket in this CH"
+msgstr ""
+
 msgid "vhostuser disk is not supported with this QEMU binary"
 msgstr ""
 
@@ -38081,9 +38184,6 @@ msgstr ""
 msgid "virtio (non-)transitional models are not supported for input type=%s"
 msgstr ""
 
-msgid "virtio S390 address type is not supported by this QEMU"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "virtio disk cannot have an address of type '%s'"
 msgstr "okänd adresstyp ”%s”"
@@ -38091,6 +38191,10 @@ msgstr "okänd adresstyp ”%s”"
 #, fuzzy
 msgid "virtio non-transitional model not supported for this qemu"
 msgstr "Extrahering av värdend stödjs inte på denna plattform"
+
+#, c-format
+msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
+msgstr ""
 
 msgid "virtio rx_queue_size option is not supported with this QEMU binary"
 msgstr ""
@@ -38142,10 +38246,6 @@ msgstr ""
 
 msgid "virtio-s390 bus doesn't have an address"
 msgstr ""
-
-#, fuzzy
-msgid "virtio-s390 net device cannot be hotplugged."
-msgstr "Denna typ av disk kan inte tas bort under drift"
 
 msgid ""
 "virtio-scsi IOThreads only available for virtio pci and virtio ccw "
@@ -38569,6 +38669,17 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <sträng>"
+
+#~ msgid "Auto-spawn of daemon requested, but no binary specified"
+#~ msgstr "Automatstart av en demon begärd, men ingen binär angiven"
+
+#, fuzzy
+#~ msgid "unknown value for attribute eoi: '%s'"
+#~ msgstr "okänd teckenenhetstyp: %s"
+
+#, fuzzy
+#~ msgid "virtio-s390 net device cannot be hotplugged."
+#~ msgstr "Denna typ av disk kan inte tas bort under drift"
 
 #~ msgid ""
 #~ "'mode' attribute for Xen feature 'passthrough' must be 'sync_pt' or "

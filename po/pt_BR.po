@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-05-25 14:38+0000\n"
+"POT-Creation-Date: 2021-06-25 08:08+0000\n"
 "PO-Revision-Date: 2020-10-14 16:08+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
@@ -1308,6 +1308,9 @@ msgstr ""
 msgid "'vhostuser' driver is only supported with 'virtio' device"
 msgstr "vhost-net é suportado somente para as interfaces de rede do virtio"
 
+msgid "'virtio-s390' addresses are no longer supported"
+msgstr ""
+
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr ""
 "'wwnn' e 'wwpn' deve ser especificado para o tipo de adaptador 'fchost'"
@@ -1935,9 +1938,6 @@ msgstr ""
 
 msgid "Auto converge throttle:"
 msgstr ""
-
-msgid "Auto-spawn of daemon requested, but no binary specified"
-msgstr "Auto-spawn de daemon requisitado, mas nenhum binário especificado"
 
 msgid "Automatic disk lease mode enabled, but no host ID is set"
 msgstr "Modo de lease de disco automático, mas nenhuma ID de host foi definida"
@@ -2707,6 +2707,14 @@ msgstr "Não foi possícel criar dispositivos de macvlan nesta plataforma"
 #, fuzzy, c-format
 msgid "Cannot create resctrl directory '%s'"
 msgstr "não foi possível criar o diretório de log \"%s\""
+
+#, c-format
+msgid "Cannot create socket '%s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot create socket directory '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot create user runtime directory '%s'"
@@ -3662,6 +3670,17 @@ msgstr ""
 msgid ""
 "Close callback for domain %s already registered with another connection %p"
 msgstr "Fechar callback para domínio %s já registrado com outra conexão %p"
+
+#, c-format
+msgid "Cloud-Hypervisor doesn't support '%s' device"
+msgstr ""
+
+msgid "Cloud-Hypervisor state driver is not active"
+msgstr ""
+
+msgid ""
+"Cloud-Hypervisor version is too old (v15.0 is the minimum supported version)"
+msgstr ""
 
 #, c-format
 msgid "Colliding cache allocations for cache level '%u' id '%u', type '%s'"
@@ -8459,6 +8478,10 @@ msgstr "Falha ao terminar processo %lld com SIG%s"
 msgid "Failed to translate bridge '%s' prefix %d to netmask"
 msgstr "Falha ao criar nó de ponte no documento xml"
 
+#, c-format
+msgid "Failed to translate net prefix %d to netmask"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to trigger a probe for PCI device '%s'"
 msgstr "Falha ao redefinir o dispositivo de PCI: %s"
@@ -8655,6 +8678,10 @@ msgstr ""
 msgid ""
 "File '%s' does not contain any <cpu> element or valid domain XML, host "
 "capabilities XML, or domain capabilities XML"
+msgstr ""
+
+#, c-format
+msgid "File '%s' does not exist"
 msgstr ""
 
 #, c-format
@@ -9316,9 +9343,6 @@ msgstr "%s não é suportado neste binário QEMU"
 #, fuzzy
 msgid "IOThreads not supported with this binary"
 msgstr "SATA não é suportado com este binário do QEMU"
-
-msgid "IOThreads only available for virtio pci and virtio ccw disk"
-msgstr ""
 
 #, fuzzy
 msgid "IOThreads polling is not supported for this QEMU"
@@ -10635,6 +10659,9 @@ msgstr "Kernel não suporta devpts privado"
 msgid "Kernel doesn't support user namespace"
 msgstr "Kernel não suporta namespace de usuário"
 
+msgid "Kernel image path in this domain is not defined"
+msgstr ""
+
 #, fuzzy
 msgid "Key file path must be provided for private key authentication"
 msgstr ""
@@ -11447,6 +11474,9 @@ msgstr "Falta dados defaultLockspace  a partir do arquivo JSON"
 #, fuzzy
 msgid "Missing device name for container-side veth"
 msgstr "Falta o atributo da fonte do dispositivo de caractere"
+
+msgid "Missing disk file path in domain"
+msgstr ""
 
 msgid "Missing disk info when adding volume"
 msgstr ""
@@ -12498,6 +12528,9 @@ msgstr "Nenhum domínio com nome %s"
 msgid "No emulator found for arch '%s'"
 msgstr "Não foi encontrado nenhum endereço de soquete para '%s' "
 
+msgid "No emulator found for cloud-hypervisor"
+msgstr ""
+
 msgid "No error message from child failure"
 msgstr "Nenhuma mensagem de erro da falha do filho"
 
@@ -13052,9 +13085,6 @@ msgstr "Somente um dispositivo de vídeo primário é suportado"
 msgid "Only one primary video device is supported"
 msgstr "Somente um dispositivo de vídeo primário é suportado"
 
-msgid "Only one serial device is supported by libxl"
-msgstr "Apenas um dispositivo serial é suportada por libxl"
-
 msgid "Only ploop disk images are supported by vz driver."
 msgstr ""
 
@@ -13086,6 +13116,10 @@ msgstr "Somente o primeiro console pode ser uma porta em série"
 
 msgid "Only the init process may be killed"
 msgstr "Somente o processo init pode ser eliminado"
+
+#, c-format
+msgid "Only virtio bus types are supported for '%s'"
+msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "Somente URIs de migração vpxmigr:// são suportados"
@@ -14526,6 +14560,9 @@ msgid "Secret value set\n"
 msgstr ""
 "Valor secreto definido\n"
 "\n"
+
+msgid "Secure boot is not supported on Xen"
+msgstr ""
 
 msgid "Secure boot is supported for x86_64 architecture only"
 msgstr ""
@@ -18180,6 +18217,10 @@ msgid "Unable to parse class id '%s'"
 msgstr "Incapaz de analizar id de classe '%s'"
 
 #, c-format
+msgid "Unable to parse cloud-hypervisor version: %s"
+msgstr ""
+
+#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "Incapaz de analisar contexto atual do SELinux '%s'"
 
@@ -19115,6 +19156,9 @@ msgstr "não há suporte ao tipo de rede %s"
 msgid "Unexpected network protocol '%s'"
 msgstr "Protocolo desconhecido '%s'"
 
+msgid "Unexpected output of cloud-hypervisor binary"
+msgstr ""
+
 #, c-format
 msgid "Unexpected parameter %s for lease resource"
 msgstr "Parâmetro inesperado %s para recurso de lease"
@@ -20045,6 +20089,9 @@ msgstr ""
 
 msgid "VM is already active"
 msgstr "A MV já está ativa"
+
+msgid "VM is not defined"
+msgstr ""
 
 #, c-format
 msgid "VMX entry '%s' contains unsupported scheme '%s'"
@@ -21081,6 +21128,10 @@ msgstr "Cópia de bloco ainda ativa: %s"
 
 msgid "block device"
 msgstr "dispositivo de bloco"
+
+#, c-format
+msgid "block device snapshot target '%s' doesn't exist"
+msgstr ""
 
 msgid "block info is not supported for vhostuser disk"
 msgstr ""
@@ -24036,10 +24087,18 @@ msgstr ""
 "negativo"
 
 #, c-format
+msgid "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d)"
+msgstr ""
+
+#, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d) : %s"
 msgstr ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) retornou com um erro: %s (%d) : %s"
+
+#, c-format
+msgid "curl_easy_perform() returned an error: %s (%d)"
+msgstr ""
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %s (%d) : %s"
@@ -25497,6 +25556,9 @@ msgstr "escape para uso de XML"
 msgid "escape for shell use"
 msgstr "escape para uso de terminal"
 
+msgid "ethernet type supports a single guest ip"
+msgstr ""
+
 #, c-format
 msgid "ethtool ioctl error on %s"
 msgstr ""
@@ -25906,6 +25968,9 @@ msgstr "Não foi possível truncar %s"
 msgid "failed to begin transaction: %s%s%s"
 msgstr "falha ao iniciar transação: %s%s%s"
 
+msgid "failed to boot guest VM"
+msgstr ""
+
 msgid "failed to calculate ssh host key hash"
 msgstr "falha ao calcular o hash de chave de host ssh"
 
@@ -26004,6 +26069,9 @@ msgstr "Falha ao criar um novo namespace XML"
 msgid "failed to create channel dir '%s': %s"
 msgstr "falha ao criar \"%s\": %s"
 
+msgid "failed to create connection to CH socket"
+msgstr ""
+
 #, fuzzy
 msgid "failed to create copy target"
 msgstr "falha ao criar soquete"
@@ -26018,6 +26086,9 @@ msgstr "falha ao criar \"%s\": %s"
 
 #, c-format
 msgid "failed to create glfs object for '%s'"
+msgstr ""
+
+msgid "failed to create guest VM"
 msgstr ""
 
 #, fuzzy, c-format
@@ -26746,6 +26817,9 @@ msgstr "falha ao ler o cabeçalho do qemu"
 msgid "failed to read temporary file created with template %s"
 msgstr "falha ao ler o arquivo temporário criado com o modelo %s"
 
+msgid "failed to reboot domain"
+msgstr ""
+
 #, fuzzy
 msgid "failed to receive device from udev monitor"
 msgstr "Falha ao criar um dispositivo de nó a partir de %s"
@@ -26888,6 +26962,9 @@ msgstr "falha ao configurar o identificador de arquivo stdin"
 msgid "failed to setup stdout file handle"
 msgstr "falha ao configurar o identificador de arquivo stdout"
 
+msgid "failed to shutdown guest VM"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to stat remote file '%s'"
 msgstr "Falha ao criar arquivo '%s'"
@@ -26910,6 +26987,9 @@ msgstr "falha ao redimencionar a imagem RBD '%s'"
 #, c-format
 msgid "failed to store %lld to %s"
 msgstr "falha ao armazenar %lld em %s"
+
+msgid "failed to suspend domain"
+msgstr ""
 
 msgid "failed to take screenshot"
 msgstr "falha ao obter screenshot"
@@ -27141,6 +27221,10 @@ msgstr "XML atualizado contendo nome de arquivo para o alvo"
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "sistema de arquivo não é o tipo 'template' ou 'mount'"
 
+#, c-format
+msgid "filesystem target '%s' specified twice"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "filter '%s' already exists with uuid %s"
 msgstr "pool '%s' já existe com a uuid %s"
@@ -27342,7 +27426,7 @@ msgstr "interrompe de forma forçada uma interface de host físico"
 #, c-format
 msgid ""
 "format '%s' is not supported, expecting 'kdump-zlib', 'kdump-lzo', 'kdump-"
-"snappy' or 'elf'"
+"snappy', 'win-dmp' or 'elf'"
 msgstr ""
 
 msgid "format features only available with qcow2"
@@ -29391,10 +29475,6 @@ msgstr "libxenlight falhou ao armazenar userdata"
 msgid "libxenlight state driver is not active"
 msgstr "o driver do estado do libxenlight não está ativo"
 
-#, fuzzy
-msgid "libxenlight supports only one input device"
-msgstr "O barramento ps2 não dá suporte ao dispositivo de entrada %s"
-
 #, c-format
 msgid "libxl_domain_info failed for domain '%d'"
 msgstr "libxl_domain_info falhou para o domínio '%d'"
@@ -30444,6 +30524,12 @@ msgstr ""
 #, fuzzy, c-format
 msgid "mishandled storage format '%s'"
 msgstr "falha ao obter domínio \"%s\""
+
+#, c-format
+msgid ""
+"mismatch between configured type for snapshot disk '%s' and the type of "
+"existing file '%s'"
+msgstr ""
 
 #, c-format
 msgid "mismatch of address family in range %s - %s"
@@ -31509,10 +31595,6 @@ msgstr ""
 
 #, fuzzy
 msgid "multiple OpenGL displays are not supported by QEMU"
-msgstr "faixa múltipla de callbacks não é suportada"
-
-#, fuzzy
-msgid "multiple USB devices not supported"
 msgstr "faixa múltipla de callbacks não é suportada"
 
 #, fuzzy, c-format
@@ -32848,6 +32930,18 @@ msgstr "somente um dispositivo de watchdog é suportado"
 #, fuzzy
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "sgio é suportado somente para dispositivo do host do scsi "
+
+msgid "only can reboot running/paused domain"
+msgstr ""
+
+msgid "only can resume paused domain"
+msgstr ""
+
+msgid "only can shutdown running/paused domain"
+msgstr ""
+
+msgid "only can suspend running domain"
+msgstr ""
 
 msgid "only connect if safe console handling is supported"
 msgstr "somente conecta se o manuseio seguro do console é suportado"
@@ -37846,6 +37940,10 @@ msgid "unknown hub device type '%s'"
 msgstr "tipo de dispositvo de hub desconhecido '%s'"
 
 #, c-format
+msgid "unknown indexing value '%u'"
+msgstr ""
+
+#, c-format
 msgid "unknown input bus type '%s'"
 msgstr "tipo de barramento de entrada desconhecido \"%s\""
 
@@ -38156,10 +38254,6 @@ msgid "unknown value '%s' in attribute 'usable'"
 msgstr "valor do atributo de ação de regra desconhecido"
 
 #, fuzzy, c-format
-msgid "unknown value for attribute eoi: '%s'"
-msgstr "tipo de formato de volume desconhecido %s"
-
-#, fuzzy, c-format
 msgid "unknown vhost-user type: '%s'"
 msgstr "Tipo de fonte desconhecida: '%s'"
 
@@ -38212,6 +38306,10 @@ msgstr "ação watchdog desconhecido '%s'"
 #, c-format
 msgid "unknown watchdog model '%s'"
 msgstr "modelo de watchdog desconhecido '%s'"
+
+#, c-format
+msgid "unknown write_policy value '%u'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown xattr value '%s'"
@@ -39005,6 +39103,9 @@ msgstr "não há suporte para tipo hostdev subsys '%s'"
 msgid "vhost-user-gpu failed to start"
 msgstr "Convidado falhou ao inciar: %s"
 
+msgid "vhost_user type support UNIX socket in this CH"
+msgstr ""
+
 msgid "vhostuser disk is not supported with this QEMU binary"
 msgstr ""
 
@@ -39138,10 +39239,6 @@ msgstr "Operação vport '%s' não é suportada para host%d"
 msgid "virtio (non-)transitional models are not supported for input type=%s"
 msgstr "<virtualport> elemento não suportado para <interface type='%s'>"
 
-#, fuzzy
-msgid "virtio S390 address type is not supported by this QEMU"
-msgstr "dispositivo nvram não é suportado por este binário de QEMU "
-
 #, fuzzy, c-format
 msgid "virtio disk cannot have an address of type '%s'"
 msgstr "Tipo de endereço de disco não é suportado '%s'"
@@ -39149,6 +39246,10 @@ msgstr "Tipo de endereço de disco não é suportado '%s'"
 #, fuzzy
 msgid "virtio non-transitional model not supported for this qemu"
 msgstr "Operação vport '%s' não é suportada para host%d"
+
+#, c-format
+msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
+msgstr ""
 
 #, fuzzy
 msgid "virtio rx_queue_size option is not supported with this QEMU binary"
@@ -39205,9 +39306,6 @@ msgstr ""
 
 msgid "virtio-s390 bus doesn't have an address"
 msgstr ""
-
-msgid "virtio-s390 net device cannot be hotplugged."
-msgstr "dispositivo de rede virtio-s390 não pode ser desconectado"
 
 msgid ""
 "virtio-scsi IOThreads only available for virtio pci and virtio ccw "
@@ -39654,6 +39752,31 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Auto-spawn of daemon requested, but no binary specified"
+#~ msgstr "Auto-spawn de daemon requisitado, mas nenhum binário especificado"
+
+#~ msgid "Only one serial device is supported by libxl"
+#~ msgstr "Apenas um dispositivo serial é suportada por libxl"
+
+#, fuzzy
+#~ msgid "libxenlight supports only one input device"
+#~ msgstr "O barramento ps2 não dá suporte ao dispositivo de entrada %s"
+
+#, fuzzy
+#~ msgid "multiple USB devices not supported"
+#~ msgstr "faixa múltipla de callbacks não é suportada"
+
+#, fuzzy
+#~ msgid "unknown value for attribute eoi: '%s'"
+#~ msgstr "tipo de formato de volume desconhecido %s"
+
+#, fuzzy
+#~ msgid "virtio S390 address type is not supported by this QEMU"
+#~ msgstr "dispositivo nvram não é suportado por este binário de QEMU "
+
+#~ msgid "virtio-s390 net device cannot be hotplugged."
+#~ msgstr "dispositivo de rede virtio-s390 não pode ser desconectado"
 
 #, fuzzy
 #~ msgid "'unsupported perf event '%s'"

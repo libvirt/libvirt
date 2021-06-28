@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-05-25 14:38+0000\n"
+"POT-Creation-Date: 2021-06-25 08:08+0000\n"
 "PO-Revision-Date: 2021-02-21 08:40+0000\n"
 "Last-Translator: Pany <geekpany@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1381,6 +1381,9 @@ msgstr ""
 msgid "'vhostuser' driver is only supported with 'virtio' device"
 msgstr "只在 virtio 网络接口中支持 vhost-net"
 
+msgid "'virtio-s390' addresses are no longer supported"
+msgstr ""
+
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr "必须为适配器类型 'fchost' 指定 'wwnn' 和 'wwpn'"
 
@@ -1970,9 +1973,6 @@ msgstr "需要自动分配 spic TLS 端口，但在 qemu.conf 中禁用了 spice
 
 msgid "Auto converge throttle:"
 msgstr ""
-
-msgid "Auto-spawn of daemon requested, but no binary specified"
-msgstr "需要 auto-spawn 守护进程，但没有指定二进制文件。"
 
 msgid "Automatic disk lease mode enabled, but no host ID is set"
 msgstr "已弃用自动磁盘租赁模式但未设定主机 ID"
@@ -2712,6 +2712,14 @@ msgstr "无法在这个平台中生成 macvlan 设备"
 #, fuzzy, c-format
 msgid "Cannot create resctrl directory '%s'"
 msgstr "无法生成日志目录 '%s'"
+
+#, c-format
+msgid "Cannot create socket '%s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot create socket directory '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot create user runtime directory '%s'"
@@ -3633,6 +3641,17 @@ msgstr ""
 msgid ""
 "Close callback for domain %s already registered with another connection %p"
 msgstr "已使用另一个连接 %s 注册的域 %p 的 close 回叫"
+
+#, c-format
+msgid "Cloud-Hypervisor doesn't support '%s' device"
+msgstr ""
+
+msgid "Cloud-Hypervisor state driver is not active"
+msgstr ""
+
+msgid ""
+"Cloud-Hypervisor version is too old (v15.0 is the minimum supported version)"
+msgstr ""
 
 #, c-format
 msgid "Colliding cache allocations for cache level '%u' id '%u', type '%s'"
@@ -8296,6 +8315,10 @@ msgstr "进程 %lld 无法使用 SIG%s 终止"
 msgid "Failed to translate bridge '%s' prefix %d to netmask"
 msgstr "在 xml 文档中生成桥接节点失败"
 
+#, c-format
+msgid "Failed to translate net prefix %d to netmask"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to trigger a probe for PCI device '%s'"
 msgstr "重新附加 PCI 设备失败：%s"
@@ -8489,6 +8512,10 @@ msgstr ""
 msgid ""
 "File '%s' does not contain any <cpu> element or valid domain XML, host "
 "capabilities XML, or domain capabilities XML"
+msgstr ""
+
+#, c-format
+msgid "File '%s' does not exist"
 msgstr ""
 
 #, c-format
@@ -9123,9 +9150,6 @@ msgstr "这个 QEMU 二进制中不支持 %s"
 #, fuzzy
 msgid "IOThreads not supported with this binary"
 msgstr "这个 QEMU 二进制中不支持 SATA"
-
-msgid "IOThreads only available for virtio pci and virtio ccw disk"
-msgstr ""
 
 #, fuzzy
 msgid "IOThreads polling is not supported for this QEMU"
@@ -10415,6 +10439,9 @@ msgstr "内核不支持专用 devpts"
 msgid "Kernel doesn't support user namespace"
 msgstr "内核不支持用户名称空间"
 
+msgid "Kernel image path in this domain is not defined"
+msgstr ""
+
 #, fuzzy
 msgid "Key file path must be provided for private key authentication"
 msgstr "私钥认证必须提供用户名和密钥文件路径"
@@ -11213,6 +11240,9 @@ msgstr "缺少 JSON 文件中的 defaultLockspace 数据"
 #, fuzzy
 msgid "Missing device name for container-side veth"
 msgstr "缺少字符设备的源服务属性"
+
+msgid "Missing disk file path in domain"
+msgstr ""
 
 msgid "Missing disk info when adding volume"
 msgstr ""
@@ -12214,6 +12244,9 @@ msgstr "没有名为 %s 的域"
 msgid "No emulator found for arch '%s'"
 msgstr "未找到 '%s' 的插槽地址"
 
+msgid "No emulator found for cloud-hypervisor"
+msgstr ""
+
 msgid "No error message from child failure"
 msgstr "没有子进程失败的出错信息"
 
@@ -12751,9 +12784,6 @@ msgstr "只支持一个主视频设备"
 msgid "Only one primary video device is supported"
 msgstr "只支持一个主视频设备"
 
-msgid "Only one serial device is supported by libxl"
-msgstr "libxl 只支持一个串行设备"
-
 msgid "Only ploop disk images are supported by vz driver."
 msgstr ""
 
@@ -12785,6 +12815,10 @@ msgstr "只有第一个控制台可以使串口"
 
 msgid "Only the init process may be killed"
 msgstr "只有 init 进程可能会被杀死"
+
+#, c-format
+msgid "Only virtio bus types are supported for '%s'"
+msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "只支持 vpxmigr:// migration URI"
@@ -14156,6 +14190,9 @@ msgstr "未找到 secret：%s"
 
 msgid "Secret value set\n"
 msgstr "secret 值设定\n"
+
+msgid "Secure boot is not supported on Xen"
+msgstr ""
 
 msgid "Secure boot is supported for x86_64 architecture only"
 msgstr ""
@@ -17704,6 +17741,10 @@ msgid "Unable to parse class id '%s'"
 msgstr "无法解析等级 id '%s'"
 
 #, c-format
+msgid "Unable to parse cloud-hypervisor version: %s"
+msgstr ""
+
+#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "无法解析当前进程上下文 '%s'"
 
@@ -18623,6 +18664,9 @@ msgstr "不支持的网络类型 %s"
 #, fuzzy, c-format
 msgid "Unexpected network protocol '%s'"
 msgstr "意外规则协议 %d"
+
+msgid "Unexpected output of cloud-hypervisor binary"
+msgstr ""
 
 #, c-format
 msgid "Unexpected parameter %s for lease resource"
@@ -19544,6 +19588,9 @@ msgstr "qemu 的这个版本不支持 VFIO PCI 设备分配"
 
 msgid "VM is already active"
 msgstr "VM 已经激活"
+
+msgid "VM is not defined"
+msgstr ""
 
 #, c-format
 msgid "VMX entry '%s' contains unsupported scheme '%s'"
@@ -20553,6 +20600,10 @@ msgstr "块复制仍活跃：%s"
 
 msgid "block device"
 msgstr "阻止设备"
+
+#, c-format
+msgid "block device snapshot target '%s' doesn't exist"
+msgstr ""
 
 msgid "block info is not supported for vhostuser disk"
 msgstr ""
@@ -23400,9 +23451,17 @@ msgid ""
 msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) 返回消极响应代码"
 
 #, c-format
+msgid "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d)"
+msgstr ""
+
+#, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d) : %s"
 msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) 返回一个错误：%s (%d) : %s"
+
+#, c-format
+msgid "curl_easy_perform() returned an error: %s (%d)"
+msgstr ""
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %s (%d) : %s"
@@ -24829,6 +24888,9 @@ msgstr "为了在XML中使用而进行编码"
 msgid "escape for shell use"
 msgstr "为了在shell中使用而进行编码"
 
+msgid "ethernet type supports a single guest ip"
+msgstr ""
+
 #, c-format
 msgid "ethtool ioctl error on %s"
 msgstr ""
@@ -25230,6 +25292,9 @@ msgstr "截取 %s 失败"
 msgid "failed to begin transaction: %s%s%s"
 msgstr "开始传输失败：%s%s%s"
 
+msgid "failed to boot guest VM"
+msgstr ""
+
 msgid "failed to calculate ssh host key hash"
 msgstr "计算 ssh 主机密钥哈希失败"
 
@@ -25330,6 +25395,9 @@ msgstr "创建XML失败"
 msgid "failed to create channel dir '%s': %s"
 msgstr "创建 save 目录  '%s' 失败：%s"
 
+msgid "failed to create connection to CH socket"
+msgstr ""
+
 #, fuzzy
 msgid "failed to create copy target"
 msgstr "生成插槽失败"
@@ -25344,6 +25412,9 @@ msgstr "创建 dump 目录  '%s' 失败：%s"
 
 #, c-format
 msgid "failed to create glfs object for '%s'"
+msgstr ""
+
+msgid "failed to create guest VM"
 msgstr ""
 
 #, fuzzy, c-format
@@ -26067,6 +26138,9 @@ msgstr "读取 qemu 标题失败"
 msgid "failed to read temporary file created with template %s"
 msgstr "读取使用模板 %s 创建的临时文件失败"
 
+msgid "failed to reboot domain"
+msgstr ""
+
 #, fuzzy
 msgid "failed to receive device from udev monitor"
 msgstr "使用 %s 生成的节点设备失败"
@@ -26209,6 +26283,9 @@ msgstr "设置 stdin 文件处理失败"
 msgid "failed to setup stdout file handle"
 msgstr "设置 stdout 文件处理失败"
 
+msgid "failed to shutdown guest VM"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to stat remote file '%s'"
 msgstr "创建文件 '%s' 失败"
@@ -26231,6 +26308,9 @@ msgstr "重新定义图像 '%s' 大小失败"
 #, c-format
 msgid "failed to store %lld to %s"
 msgstr "将 %lld 恢复为 %s 失败"
+
+msgid "failed to suspend domain"
+msgstr ""
 
 msgid "failed to take screenshot"
 msgstr "截屏失败"
@@ -26461,6 +26541,10 @@ msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "filesyste 不是 'template' 或者 'mount' 类型"
 
 #, c-format
+msgid "filesystem target '%s' specified twice"
+msgstr ""
+
+#, c-format
 msgid "filter '%s' already exists with uuid %s"
 msgstr "过滤器 ‘%s’ 已存在并使用 uuid %s"
 
@@ -26660,7 +26744,7 @@ msgstr "强制停止物理主机接口。"
 #, c-format
 msgid ""
 "format '%s' is not supported, expecting 'kdump-zlib', 'kdump-lzo', 'kdump-"
-"snappy' or 'elf'"
+"snappy', 'win-dmp' or 'elf'"
 msgstr ""
 
 msgid "format features only available with qcow2"
@@ -28672,10 +28756,6 @@ msgstr "libxenlight 无法保存用户数据"
 msgid "libxenlight state driver is not active"
 msgstr "libxenlight 状态驱动程序不活跃"
 
-#, fuzzy
-msgid "libxenlight supports only one input device"
-msgstr "ps2 总线不支持 %s 输入设备"
-
 #, c-format
 msgid "libxl_domain_info failed for domain '%d'"
 msgstr "libxl_domain_info 在域 '%d' 中失败"
@@ -29710,6 +29790,12 @@ msgstr "只有 copy 任务支持没有指定类型的镜像"
 #, fuzzy, c-format
 msgid "mishandled storage format '%s'"
 msgstr "获得域 '%s' 失败"
+
+#, c-format
+msgid ""
+"mismatch between configured type for snapshot disk '%s' and the type of "
+"existing file '%s'"
+msgstr ""
 
 #, c-format
 msgid "mismatch of address family in range %s - %s"
@@ -30757,10 +30843,6 @@ msgstr "在网络 %s 中找到多个匹配所有指定字段的 DNS SRV 记录"
 
 #, fuzzy
 msgid "multiple OpenGL displays are not supported by QEMU"
-msgstr "不支持多流回叫"
-
-#, fuzzy
-msgid "multiple USB devices not supported"
 msgstr "不支持多流回叫"
 
 #, fuzzy, c-format
@@ -32058,6 +32140,18 @@ msgstr "只支持单一监视器设备"
 #, fuzzy
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "只有 scsi 主机设备支持 sgio"
+
+msgid "only can reboot running/paused domain"
+msgstr ""
+
+msgid "only can resume paused domain"
+msgstr ""
+
+msgid "only can shutdown running/paused domain"
+msgstr ""
+
+msgid "only can suspend running domain"
+msgstr ""
 
 msgid "only connect if safe console handling is supported"
 msgstr "只有在支持安全控制台处理时方可连接"
@@ -36953,6 +37047,10 @@ msgid "unknown hub device type '%s'"
 msgstr "未知集线器设备类型 '%s'"
 
 #, c-format
+msgid "unknown indexing value '%u'"
+msgstr ""
+
+#, c-format
 msgid "unknown input bus type '%s'"
 msgstr "未知输入总线类型 '%s'"
 
@@ -37259,10 +37357,6 @@ msgstr "属性 eoi 的意外值：'%s'"
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr "属性 eoi 的意外值：'%s'"
 
-#, c-format
-msgid "unknown value for attribute eoi: '%s'"
-msgstr "属性 eoi 的意外值：'%s'"
-
 #, fuzzy, c-format
 msgid "unknown vhost-user type: '%s'"
 msgstr "未知卷类型 '%s'"
@@ -37316,6 +37410,10 @@ msgstr "未知监视器动作 '%s'"
 #, c-format
 msgid "unknown watchdog model '%s'"
 msgstr "未知监视器模型 '%s'"
+
+#, c-format
+msgid "unknown write_policy value '%u'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown xattr value '%s'"
@@ -38107,6 +38205,9 @@ msgstr "不支持 hostdev 子系统类型 '%s'"
 msgid "vhost-user-gpu failed to start"
 msgstr "虚拟机无法启动：%s"
 
+msgid "vhost_user type support UNIX socket in this CH"
+msgstr ""
+
 msgid "vhostuser disk is not supported with this QEMU binary"
 msgstr ""
 
@@ -38239,10 +38340,6 @@ msgstr "vport 操作 '%s'在 host%d 中不支持"
 msgid "virtio (non-)transitional models are not supported for input type=%s"
 msgstr "不支持 <interface type='%s'> 的 <virtualport> 元素"
 
-#, fuzzy
-msgid "virtio S390 address type is not supported by this QEMU"
-msgstr "这个 QEMU 二进制文件不支持 nvram 设备 "
-
 #, fuzzy, c-format
 msgid "virtio disk cannot have an address of type '%s'"
 msgstr "virtio-s390 总线中没有任何地址"
@@ -38250,6 +38347,10 @@ msgstr "virtio-s390 总线中没有任何地址"
 #, fuzzy
 msgid "virtio non-transitional model not supported for this qemu"
 msgstr "vport 操作 '%s'在 host%d 中不支持"
+
+#, c-format
+msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
+msgstr ""
 
 #, fuzzy
 msgid "virtio rx_queue_size option is not supported with this QEMU binary"
@@ -38304,9 +38405,6 @@ msgstr ""
 
 msgid "virtio-s390 bus doesn't have an address"
 msgstr "virtio-s390 总线中没有任何地址"
-
-msgid "virtio-s390 net device cannot be hotplugged."
-msgstr "virtio-s390 网络设备不能热插拔。"
 
 msgid ""
 "virtio-scsi IOThreads only available for virtio pci and virtio ccw "
@@ -38746,6 +38844,30 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <字符串>}..."
+
+#~ msgid "Auto-spawn of daemon requested, but no binary specified"
+#~ msgstr "需要 auto-spawn 守护进程，但没有指定二进制文件。"
+
+#~ msgid "Only one serial device is supported by libxl"
+#~ msgstr "libxl 只支持一个串行设备"
+
+#, fuzzy
+#~ msgid "libxenlight supports only one input device"
+#~ msgstr "ps2 总线不支持 %s 输入设备"
+
+#, fuzzy
+#~ msgid "multiple USB devices not supported"
+#~ msgstr "不支持多流回叫"
+
+#~ msgid "unknown value for attribute eoi: '%s'"
+#~ msgstr "属性 eoi 的意外值：'%s'"
+
+#, fuzzy
+#~ msgid "virtio S390 address type is not supported by this QEMU"
+#~ msgstr "这个 QEMU 二进制文件不支持 nvram 设备 "
+
+#~ msgid "virtio-s390 net device cannot be hotplugged."
+#~ msgstr "virtio-s390 网络设备不能热插拔。"
 
 #, fuzzy
 #~ msgid "'unsupported perf event '%s'"

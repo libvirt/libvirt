@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-05-25 14:38+0000\n"
+"POT-Creation-Date: 2021-06-25 08:08+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -1289,6 +1289,9 @@ msgstr ""
 msgid "'vhostuser' driver is only supported with 'virtio' device"
 msgstr "virtio നെറ്റ്‌വര്‍ക്ക് ഇന്റര്‍ഫെയിസുകള്‍ക്കു് മാത്രമേ vhost-net പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
+msgid "'virtio-s390' addresses are no longer supported"
+msgstr ""
+
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr "'wwnn', 'wwpn' എന്നിവ അഡാപ്ടര്‍ 'fchost' തരത്തിനു് നിഷ്കര്‍ഷിച്ചിരിയ്ക്കണം"
 
@@ -1902,9 +1905,6 @@ msgstr ""
 
 msgid "Auto converge throttle:"
 msgstr ""
-
-msgid "Auto-spawn of daemon requested, but no binary specified"
-msgstr "ഡെമണ്‍ auto-spawn ആവശ്യപ്പെട്ടിരിയ്ക്കുന്നു, പക്ഷേ ബൈനറി നല്‍കിയിട്ടില്ല"
 
 msgid "Automatic disk lease mode enabled, but no host ID is set"
 msgstr "ഓട്ടോമാറ്റിക് ഡിസ്ക് ലീസ് മോഡ് പ്രവര്‍ത്തന സജ്ജം, പക്ഷേ ഹോസ്റ്റ് ഐഡി സജ്ജമല്ല"
@@ -2655,6 +2655,14 @@ msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ മാക്‌വി�
 #, fuzzy, c-format
 msgid "Cannot create resctrl directory '%s'"
 msgstr "'%s' ലോഗ് ഡയറക്ടറി തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+msgid "Cannot create socket '%s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot create socket directory '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot create user runtime directory '%s'"
@@ -3586,6 +3594,17 @@ msgid ""
 "Close callback for domain %s already registered with another connection %p"
 msgstr ""
 "ഡൊമെയിന്‍ %s-നുള്ള ക്ലോസ്ബാക്ക് നിലവില്‍ മറ്റൊരു കണക്ഷന്‍ %p-നൊപ്പം രജിസ്ടര്‍ ചെയ്തിരിയ്ക്കുന്നു"
+
+#, c-format
+msgid "Cloud-Hypervisor doesn't support '%s' device"
+msgstr ""
+
+msgid "Cloud-Hypervisor state driver is not active"
+msgstr ""
+
+msgid ""
+"Cloud-Hypervisor version is too old (v15.0 is the minimum supported version)"
+msgstr ""
 
 #, c-format
 msgid "Colliding cache allocations for cache level '%u' id '%u', type '%s'"
@@ -8332,6 +8351,10 @@ msgstr "%lld പ്രക്രിയ, SIG%s-നൊപ്പം ഇല്ലാ�
 msgid "Failed to translate bridge '%s' prefix %d to netmask"
 msgstr "xml രേഖയില്‍ ബ്രിഡ്ജ് നോഡ് ഉണ്ടാക്കാന്‍ പറ്റിയില്ല"
 
+#, c-format
+msgid "Failed to translate net prefix %d to netmask"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to trigger a probe for PCI device '%s'"
 msgstr "പിസിഐ ഡിവൈസ് വീണ്ടും സജ്ജമാക്കുന്നതില്‍ പരാജയം: %s"
@@ -8527,6 +8550,10 @@ msgstr ""
 msgid ""
 "File '%s' does not contain any <cpu> element or valid domain XML, host "
 "capabilities XML, or domain capabilities XML"
+msgstr ""
+
+#, c-format
+msgid "File '%s' does not exist"
 msgstr ""
 
 #, c-format
@@ -9174,9 +9201,6 @@ msgstr "ഈ QEMU ബൈനറിയില്‍ %s പിന്തുണയ്�
 #, fuzzy
 msgid "IOThreads not supported with this binary"
 msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക്കില്ല"
-
-msgid "IOThreads only available for virtio pci and virtio ccw disk"
-msgstr ""
 
 #, fuzzy
 msgid "IOThreads polling is not supported for this QEMU"
@@ -10483,6 +10507,9 @@ msgstr "കേര്‍ണല്‍ സ്വകാര്യ devpts പിന്
 msgid "Kernel doesn't support user namespace"
 msgstr "കേര്‍ണല്‍ നെയിംസ്പെയിസ് പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "Kernel image path in this domain is not defined"
+msgstr ""
+
 #, fuzzy
 msgid "Key file path must be provided for private key authentication"
 msgstr ""
@@ -11290,6 +11317,9 @@ msgstr "JSON ഫയലില്‍ defaultLockspace ലഭ്യമല്ല"
 #, fuzzy
 msgid "Missing device name for container-side veth"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ സേവന വിശേഷത"
+
+msgid "Missing disk file path in domain"
+msgstr ""
 
 msgid "Missing disk info when adding volume"
 msgstr ""
@@ -12307,6 +12337,9 @@ msgstr "%s എന്ന പേരില്‍ ഡൊമെയിനില്ല"
 msgid "No emulator found for arch '%s'"
 msgstr "'%s'-നുള്ള സോക്കറ്റ് വിലാസങ്ങളൊന്നും ലഭ്യമല്ല"
 
+msgid "No emulator found for cloud-hypervisor"
+msgstr ""
+
 msgid "No error message from child failure"
 msgstr "ചൈള്‍ഡ് പരാജയത്തിനു് പിശക് സന്ദേശം ലഭ്യമല്ല"
 
@@ -12852,9 +12885,6 @@ msgstr "ഒറ്റ പ്രൈമറി വീഡിയോ ഡിവൈസ്
 msgid "Only one primary video device is supported"
 msgstr "ഒറ്റ പ്രൈമറി വീഡിയോ ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
-msgid "Only one serial device is supported by libxl"
-msgstr "libxl ഒരു സീരിയല്‍ ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ള"
-
 msgid "Only ploop disk images are supported by vz driver."
 msgstr ""
 
@@ -12886,6 +12916,10 @@ msgstr "ആദ്യ കണ്‍സോളിനു് മാത്രമേ ഒ
 
 msgid "Only the init process may be killed"
 msgstr "init പ്രക്രിയ മാത്രമേ ഇല്ലാതാക്കുവാന്‍ പാടുള്ളൂ"
+
+#, c-format
+msgid "Only virtio bus types are supported for '%s'"
+msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "vpxmigr:// മൈഗ്രൈഷന്‍ യുആര്‍ഐ മാത്രം പിന്തുണയ്ക്കുന്നു"
@@ -14298,6 +14332,9 @@ msgstr "രഹസ്യം ലഭ്യമല്ല: %s"
 
 msgid "Secret value set\n"
 msgstr "രഹസ്യ മൂല്ല്യം സജ്ജമാക്കി\n"
+
+msgid "Secure boot is not supported on Xen"
+msgstr ""
 
 msgid "Secure boot is supported for x86_64 architecture only"
 msgstr ""
@@ -17898,6 +17935,10 @@ msgid "Unable to parse class id '%s'"
 msgstr "ക്ലാസ്സ് ഐഡി '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
+msgid "Unable to parse cloud-hypervisor version: %s"
+msgstr ""
+
+#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "നിലവിലുള്ള SELinux കോണ്ടെക്സ്റ്റ് '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
@@ -18829,6 +18870,9 @@ msgstr "പിന്തുണയ്ക്കാത്ത നെറ്റ്‌�
 msgid "Unexpected network protocol '%s'"
 msgstr "അപരിചിതമായ പ്രോട്ടോക്കോള്‍ %s"
 
+msgid "Unexpected output of cloud-hypervisor binary"
+msgstr ""
+
 #, c-format
 msgid "Unexpected parameter %s for lease resource"
 msgstr "ലീസ് റിസോഴ്സിനു് അപ്രതീക്ഷിതമായ പരാമീറ്റര്‍ %s"
@@ -19746,6 +19790,9 @@ msgstr "VFIO പിസിഐ ഡിവൈസ് നല്‍കുന്നത�
 
 msgid "VM is already active"
 msgstr "വിഎം നിലിവില്‍ പ്രവര്‍ത്തനത്തിലാണ്"
+
+msgid "VM is not defined"
+msgstr ""
 
 #, c-format
 msgid "VMX entry '%s' contains unsupported scheme '%s'"
@@ -20765,6 +20812,10 @@ msgstr "ബ്ലോക്ക് പകര്‍പ്പ് ഇപ്പോഴ�
 
 msgid "block device"
 msgstr "ബ്ളോക്ക് ഡിവൈസ്"
+
+#, c-format
+msgid "block device snapshot target '%s' doesn't exist"
+msgstr ""
 
 msgid "block info is not supported for vhostuser disk"
 msgstr ""
@@ -23643,10 +23694,18 @@ msgstr ""
 "കിയിരിയ്ക്കുന്നു"
 
 #, c-format
+msgid "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d)"
+msgstr ""
+
+#, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d) : %s"
 msgstr ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) ഒരു പിശക് ലഭ്യമാക്കി: %s (%d) : %s"
+
+#, c-format
+msgid "curl_easy_perform() returned an error: %s (%d)"
+msgstr ""
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %s (%d) : %s"
@@ -25083,6 +25142,9 @@ msgstr "എക്സ്എംഎല്‍ ഉപയോഗത്തിനായ�
 msgid "escape for shell use"
 msgstr "ഷെല്‍ ഉപയോഗത്തിനായി പുറത്തു് കടക്കുക"
 
+msgid "ethernet type supports a single guest ip"
+msgstr ""
+
 #, c-format
 msgid "ethtool ioctl error on %s"
 msgstr ""
@@ -25486,6 +25548,9 @@ msgstr "%s ചെറുതാക്കുന്നതില്‍ പരാജ�
 msgid "failed to begin transaction: %s%s%s"
 msgstr "ഇടപാടു് ആരംഭിയ്ക്കുന്നതില്‍ പരാജയം: %s%s%s"
 
+msgid "failed to boot guest VM"
+msgstr ""
+
 msgid "failed to calculate ssh host key hash"
 msgstr "ssh ഹോസ്റ്റ് കീ ഹാഷ് കണക്കുകൂട്ടുന്നതില്‍ പരാജയം"
 
@@ -25586,6 +25651,9 @@ msgstr "XML ഉണ്ടാക്കുന്നതില്‍ പരാജയ�
 msgid "failed to create channel dir '%s': %s"
 msgstr "'%s' ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
+msgid "failed to create connection to CH socket"
+msgstr ""
+
 #, fuzzy
 msgid "failed to create copy target"
 msgstr "സോക്കറ്റ് ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
@@ -25600,6 +25668,9 @@ msgstr "'%s' ഉണ്ടാക്കുന്നതില്‍ പരാജയ
 
 #, c-format
 msgid "failed to create glfs object for '%s'"
+msgstr ""
+
+msgid "failed to create guest VM"
 msgstr ""
 
 #, fuzzy, c-format
@@ -26329,6 +26400,9 @@ msgstr "qemu ഹെഡര്‍ ലഭ്യമാക്കുന്നതില
 msgid "failed to read temporary file created with template %s"
 msgstr "ടെംപ്ലേറ്റ് %s-നൊപ്പം ഉണ്ടാക്കിയ താല്‍ക്കാലിക ഫയല്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
+msgid "failed to reboot domain"
+msgstr ""
+
 #, fuzzy
 msgid "failed to receive device from udev monitor"
 msgstr "%s-ല്‍ നിന്നും നോഡ് ഡിവൈസ് ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -26471,6 +26545,9 @@ msgstr "stdin ഫയല്‍ ഹാന്‍ഡില്‍ സജ്ജമാ�
 msgid "failed to setup stdout file handle"
 msgstr "stdout ഫയല്‍ ഹാന്‍ഡില്‍ സജ്ജമാക്കുന്നതില്‍ പരാജയം"
 
+msgid "failed to shutdown guest VM"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to stat remote file '%s'"
 msgstr "ഫയല്‍ '%s' തയ്യാറാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -26493,6 +26570,9 @@ msgstr "ആര്‍ബിഡി ചിത്രം '%s'-ന്റെ വ്യ�
 #, c-format
 msgid "failed to store %lld to %s"
 msgstr "%lld, %s-ലേക്കു് സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+
+msgid "failed to suspend domain"
+msgstr ""
 
 msgid "failed to take screenshot"
 msgstr "സ്ക്രീന്‍ഷോട്ട് എടുക്കുന്നതില്‍ പരാജയം"
@@ -26725,6 +26805,10 @@ msgstr "ടാര്‍ഗത്തിന് വേണ്ട പുതുക്�
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "'template' അല്ലെങ്കില്‍ 'mount' തരത്തിലുള്ള ഫയല്‍സിസ്റ്റമല്ല"
 
+#, c-format
+msgid "filesystem target '%s' specified twice"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "filter '%s' already exists with uuid %s"
 msgstr "'%s' പൂള്‍ നിലവില്‍ uuid %s-യ്ക്കൊപ്പം നിലവിലുണ്ടു്"
@@ -26926,7 +27010,7 @@ msgstr "ഹോസ്റ്റ് ഫിസിക്കല്‍ ഇന്റെ�
 #, c-format
 msgid ""
 "format '%s' is not supported, expecting 'kdump-zlib', 'kdump-lzo', 'kdump-"
-"snappy' or 'elf'"
+"snappy', 'win-dmp' or 'elf'"
 msgstr ""
 
 msgid "format features only available with qcow2"
@@ -28960,10 +29044,6 @@ msgstr "ഉപയോക്തൃഡേറ്റാ സൂക്ഷിയ്ക�
 msgid "libxenlight state driver is not active"
 msgstr "libxenlight അവസ്ഥാ പ്രവര്‍ത്തകം സജീവമല്ല"
 
-#, fuzzy
-msgid "libxenlight supports only one input device"
-msgstr "ps2 ബസ്  %s ഇന്‍പുട്ട് ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
-
 #, c-format
 msgid "libxl_domain_info failed for domain '%d'"
 msgstr "'%d' ഡൊമെയിനുള്ള libxl_domain_info പരാജയപ്പെട്ടു"
@@ -29995,6 +30075,12 @@ msgstr ""
 #, fuzzy, c-format
 msgid "mishandled storage format '%s'"
 msgstr "ഡൊമെയിന്‍ '%s' ലഭ്യമാകുന്നതില്‍ പരാജയം"
+
+#, c-format
+msgid ""
+"mismatch between configured type for snapshot disk '%s' and the type of "
+"existing file '%s'"
+msgstr ""
 
 #, c-format
 msgid "mismatch of address family in range %s - %s"
@@ -31055,10 +31141,6 @@ msgstr "പൊരുത്തപ്പെടുന്ന അനവധി DNS SRV
 
 #, fuzzy
 msgid "multiple OpenGL displays are not supported by QEMU"
-msgstr "അനവധി സ്ട്രീ കോള്‍ബാക്കുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
-
-#, fuzzy
-msgid "multiple USB devices not supported"
 msgstr "അനവധി സ്ട്രീ കോള്‍ബാക്കുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
 #, fuzzy, c-format
@@ -32367,6 +32449,18 @@ msgstr "ഒറ്റ വാച്ച്ഡോഗ് ഡിവൈസ് മാത
 #, fuzzy
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "scsi ഹോസ്റ്റ് ഡിവൈസിനു് മാത്രമേ sgio പിന്തുണയ്ക്കുന്നുള്ളൂ"
+
+msgid "only can reboot running/paused domain"
+msgstr ""
+
+msgid "only can resume paused domain"
+msgstr ""
+
+msgid "only can shutdown running/paused domain"
+msgstr ""
+
+msgid "only can suspend running domain"
+msgstr ""
 
 msgid "only connect if safe console handling is supported"
 msgstr "സുരക്ഷിതമായ കണ്‍സോള്‍ കൈകാര്യം പിന്‍തുണ ഉണ്ടെങ്കില്‍ മാത്രം ബന്ധിപ്പിക്കുക"
@@ -37303,6 +37397,10 @@ msgid "unknown hub device type '%s'"
 msgstr "അപരിചിതമായ ഹബ് ഡിവൈസ് തരം '%s'"
 
 #, c-format
+msgid "unknown indexing value '%u'"
+msgstr ""
+
+#, c-format
 msgid "unknown input bus type '%s'"
 msgstr "അപരിചിതമായ ഇന്‍പുട്ട് ബസ് രീതി '%s'"
 
@@ -37610,10 +37708,6 @@ msgid "unknown value '%s' in attribute 'usable'"
 msgstr "അജ്ഞാതമായ നിയമ നടപടി സവിശേഷതാ മൂല്യം"
 
 #, fuzzy, c-format
-msgid "unknown value for attribute eoi: '%s'"
-msgstr "അപരിചിതമായ വോള്യം ഫോര്‍മാറ്റ് രീതി %s"
-
-#, fuzzy, c-format
 msgid "unknown vhost-user type: '%s'"
 msgstr "അപരിചിതമായ ശ്രോതസ്സ് തരം: '%s'"
 
@@ -37666,6 +37760,10 @@ msgstr "അപരിചിതമായ വാച്ച്ഡോഗ് രീത�
 #, c-format
 msgid "unknown watchdog model '%s'"
 msgstr "അപരിചിതമായ വാച്ച്ഡോഗ് മാതൃക '%s'"
+
+#, c-format
+msgid "unknown write_policy value '%u'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown xattr value '%s'"
@@ -38458,6 +38556,9 @@ msgstr "hostdev subsys രീതി '%s' പിന്തുണയ്ക്കു
 msgid "vhost-user-gpu failed to start"
 msgstr "ഗസ്റ്റ് ആരംഭിയ്ക്കുന്നതില്‍ പരാജയം: %s"
 
+msgid "vhost_user type support UNIX socket in this CH"
+msgstr ""
+
 msgid "vhostuser disk is not supported with this QEMU binary"
 msgstr ""
 
@@ -38592,10 +38693,6 @@ msgstr "vport പ്രക്രിയ '%s' host%d പിന്തുണയ്�
 msgid "virtio (non-)transitional models are not supported for input type=%s"
 msgstr "<virtualport> എലമെന്റില്‍ <interface type='%s'>-നുള്ള പിന്തുണ ലഭ്യമല്ല"
 
-#, fuzzy
-msgid "virtio S390 address type is not supported by this QEMU"
-msgstr "ഈ ക്യൂഇഎംയു ബൈനറി nvram ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
-
 #, fuzzy, c-format
 msgid "virtio disk cannot have an address of type '%s'"
 msgstr "പിന്തണയ്ക്കാത്ത ഡിവൈസ് വിലാസ തരം '%s'"
@@ -38603,6 +38700,10 @@ msgstr "പിന്തണയ്ക്കാത്ത ഡിവൈസ് വി�
 #, fuzzy
 msgid "virtio non-transitional model not supported for this qemu"
 msgstr "vport പ്രക്രിയ '%s' host%d പിന്തുണയ്ക്കുന്നില്ല"
+
+#, c-format
+msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
+msgstr ""
 
 #, fuzzy
 msgid "virtio rx_queue_size option is not supported with this QEMU binary"
@@ -38659,9 +38760,6 @@ msgstr ""
 
 msgid "virtio-s390 bus doesn't have an address"
 msgstr ""
-
-msgid "virtio-s390 net device cannot be hotplugged."
-msgstr "virtio-s390 നെറ്റ് ഡിവൈസ് ഹോട്ട് പ്ലഗ്ഗ് ചെയ്യുാന്‍ സാധ്യമല്ല."
 
 msgid ""
 "virtio-scsi IOThreads only available for virtio pci and virtio ccw "
@@ -39100,6 +39198,31 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Auto-spawn of daemon requested, but no binary specified"
+#~ msgstr "ഡെമണ്‍ auto-spawn ആവശ്യപ്പെട്ടിരിയ്ക്കുന്നു, പക്ഷേ ബൈനറി നല്‍കിയിട്ടില്ല"
+
+#~ msgid "Only one serial device is supported by libxl"
+#~ msgstr "libxl ഒരു സീരിയല്‍ ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ള"
+
+#, fuzzy
+#~ msgid "libxenlight supports only one input device"
+#~ msgstr "ps2 ബസ്  %s ഇന്‍പുട്ട് ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy
+#~ msgid "multiple USB devices not supported"
+#~ msgstr "അനവധി സ്ട്രീ കോള്‍ബാക്കുകള്‍ പിന്തുണയ്ക്കുന്നില്ല"
+
+#, fuzzy
+#~ msgid "unknown value for attribute eoi: '%s'"
+#~ msgstr "അപരിചിതമായ വോള്യം ഫോര്‍മാറ്റ് രീതി %s"
+
+#, fuzzy
+#~ msgid "virtio S390 address type is not supported by this QEMU"
+#~ msgstr "ഈ ക്യൂഇഎംയു ബൈനറി nvram ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
+
+#~ msgid "virtio-s390 net device cannot be hotplugged."
+#~ msgstr "virtio-s390 നെറ്റ് ഡിവൈസ് ഹോട്ട് പ്ലഗ്ഗ് ചെയ്യുാന്‍ സാധ്യമല്ല."
 
 #, fuzzy
 #~ msgid "'unsupported perf event '%s'"

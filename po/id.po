@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-05-25 14:38+0000\n"
+"POT-Creation-Date: 2021-06-25 08:08+0000\n"
 "PO-Revision-Date: 2020-09-07 08:49+0000\n"
 "Last-Translator: Andika Triwidada <andika@gmail.com>\n"
 "Language-Team: Indonesian <https://translate.fedoraproject.org/projects/"
@@ -1185,6 +1185,9 @@ msgstr ""
 msgid "'vhostuser' driver is only supported with 'virtio' device"
 msgstr ""
 
+msgid "'virtio-s390' addresses are no longer supported"
+msgstr ""
+
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr ""
 
@@ -1766,9 +1769,6 @@ msgid ""
 msgstr ""
 
 msgid "Auto converge throttle:"
-msgstr ""
-
-msgid "Auto-spawn of daemon requested, but no binary specified"
 msgstr ""
 
 msgid "Automatic disk lease mode enabled, but no host ID is set"
@@ -2493,6 +2493,14 @@ msgstr ""
 
 #, c-format
 msgid "Cannot create resctrl directory '%s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot create socket '%s'"
+msgstr ""
+
+#, c-format
+msgid "Cannot create socket directory '%s'"
 msgstr ""
 
 #, c-format
@@ -3371,6 +3379,17 @@ msgstr ""
 #, c-format
 msgid ""
 "Close callback for domain %s already registered with another connection %p"
+msgstr ""
+
+#, c-format
+msgid "Cloud-Hypervisor doesn't support '%s' device"
+msgstr ""
+
+msgid "Cloud-Hypervisor state driver is not active"
+msgstr ""
+
+msgid ""
+"Cloud-Hypervisor version is too old (v15.0 is the minimum supported version)"
 msgstr ""
 
 #, c-format
@@ -8049,6 +8068,10 @@ msgid "Failed to translate bridge '%s' prefix %d to netmask"
 msgstr ""
 
 #, c-format
+msgid "Failed to translate net prefix %d to netmask"
+msgstr ""
+
+#, c-format
 msgid "Failed to trigger a probe for PCI device '%s'"
 msgstr ""
 
@@ -8244,6 +8267,10 @@ msgstr ""
 msgid ""
 "File '%s' does not contain any <cpu> element or valid domain XML, host "
 "capabilities XML, or domain capabilities XML"
+msgstr ""
+
+#, c-format
+msgid "File '%s' does not exist"
 msgstr ""
 
 #, c-format
@@ -8833,9 +8860,6 @@ msgid "IOThreads not supported for this QEMU"
 msgstr ""
 
 msgid "IOThreads not supported with this binary"
-msgstr ""
-
-msgid "IOThreads only available for virtio pci and virtio ccw disk"
 msgstr ""
 
 msgid "IOThreads polling is not supported for this QEMU"
@@ -10097,6 +10121,9 @@ msgstr ""
 msgid "Kernel doesn't support user namespace"
 msgstr ""
 
+msgid "Kernel image path in this domain is not defined"
+msgstr ""
+
 msgid "Key file path must be provided for private key authentication"
 msgstr ""
 
@@ -10853,6 +10880,9 @@ msgstr ""
 #, fuzzy
 msgid "Missing device name for container-side veth"
 msgstr "informasi perangkat tidak ada"
+
+msgid "Missing disk file path in domain"
+msgstr ""
 
 msgid "Missing disk info when adding volume"
 msgstr ""
@@ -11825,6 +11855,9 @@ msgstr "id domain atau nama"
 msgid "No emulator found for arch '%s'"
 msgstr ""
 
+msgid "No emulator found for cloud-hypervisor"
+msgstr ""
+
 #, fuzzy
 msgid "No error message from child failure"
 msgstr "Tidak ada pesan kesalahan yang tersedia"
@@ -12333,9 +12366,6 @@ msgstr ""
 msgid "Only one primary video device is supported"
 msgstr ""
 
-msgid "Only one serial device is supported by libxl"
-msgstr ""
-
 msgid "Only ploop disk images are supported by vz driver."
 msgstr ""
 
@@ -12363,6 +12393,10 @@ msgid "Only the first console can be a serial port"
 msgstr ""
 
 msgid "Only the init process may be killed"
+msgstr ""
+
+#, c-format
+msgid "Only virtio bus types are supported for '%s'"
 msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
@@ -13702,6 +13736,9 @@ msgid "Secret not found: %s"
 msgstr "Jaringan tidak ditemukan: %s"
 
 msgid "Secret value set\n"
+msgstr ""
+
+msgid "Secure boot is not supported on Xen"
 msgstr ""
 
 msgid "Secure boot is supported for x86_64 architecture only"
@@ -17154,6 +17191,10 @@ msgid "Unable to parse class id '%s'"
 msgstr ""
 
 #, c-format
+msgid "Unable to parse cloud-hypervisor version: %s"
+msgstr ""
+
+#, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr ""
 
@@ -18050,6 +18091,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Unexpected network protocol '%s'"
 msgstr "data yang tidak diharapkan '%s'"
+
+msgid "Unexpected output of cloud-hypervisor binary"
+msgstr ""
 
 #, c-format
 msgid "Unexpected parameter %s for lease resource"
@@ -18958,6 +19002,9 @@ msgstr ""
 #, fuzzy
 msgid "VM is already active"
 msgstr "Domain sudah aktif"
+
+msgid "VM is not defined"
+msgstr ""
 
 #, c-format
 msgid "VMX entry '%s' contains unsupported scheme '%s'"
@@ -19927,6 +19974,10 @@ msgstr ""
 
 msgid "block device"
 msgstr "perangkat blok"
+
+#, c-format
+msgid "block device snapshot target '%s' doesn't exist"
+msgstr ""
 
 msgid "block info is not supported for vhostuser disk"
 msgstr ""
@@ -22698,8 +22749,16 @@ msgid ""
 msgstr ""
 
 #, c-format
+msgid "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d)"
+msgstr ""
+
+#, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %s (%d) : %s"
+msgstr ""
+
+#, c-format
+msgid "curl_easy_perform() returned an error: %s (%d)"
 msgstr ""
 
 #, c-format
@@ -24111,6 +24170,9 @@ msgstr ""
 msgid "escape for shell use"
 msgstr ""
 
+msgid "ethernet type supports a single guest ip"
+msgstr ""
+
 #, c-format
 msgid "ethtool ioctl error on %s"
 msgstr ""
@@ -24506,6 +24568,9 @@ msgstr "Gagal memasang perangkat dari %s"
 msgid "failed to begin transaction: %s%s%s"
 msgstr "Gagal mendapatkan statistik antarmuka %s %s"
 
+msgid "failed to boot guest VM"
+msgstr ""
+
 msgid "failed to calculate ssh host key hash"
 msgstr ""
 
@@ -24610,6 +24675,9 @@ msgstr "Gagal membuat XML"
 msgid "failed to create channel dir '%s': %s"
 msgstr "Gagal membuat domain dari %s"
 
+msgid "failed to create connection to CH socket"
+msgstr ""
+
 #, fuzzy
 msgid "failed to create copy target"
 msgstr "gagal menyimpan konten"
@@ -24624,6 +24692,9 @@ msgstr "gagal mendapatkan domain '%s'"
 
 #, c-format
 msgid "failed to create glfs object for '%s'"
+msgstr ""
+
+msgid "failed to create guest VM"
 msgstr ""
 
 #, fuzzy, c-format
@@ -25373,6 +25444,9 @@ msgstr "Gagal mendapatkan nama-host"
 msgid "failed to read temporary file created with template %s"
 msgstr "gagal membaca berkas konfigurasi %s"
 
+msgid "failed to reboot domain"
+msgstr ""
+
 #, fuzzy
 msgid "failed to receive device from udev monitor"
 msgstr "Gagal melepas perangkat dari %s"
@@ -25521,6 +25595,9 @@ msgstr "Gagal mendapatkan nama-host"
 msgid "failed to setup stdout file handle"
 msgstr "gagal menulis pada berkas log"
 
+msgid "failed to shutdown guest VM"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to stat remote file '%s'"
 msgstr "gagal membuka berkas"
@@ -25544,6 +25621,9 @@ msgstr "Gagal menjalankan domain %s"
 #, fuzzy, c-format
 msgid "failed to store %lld to %s"
 msgstr "Gagal menjalankan domain %s"
+
+msgid "failed to suspend domain"
+msgstr ""
 
 #, fuzzy
 msgid "failed to take screenshot"
@@ -25786,6 +25866,10 @@ msgid "filesystem is not of type 'template' or 'mount'"
 msgstr ""
 
 #, c-format
+msgid "filesystem target '%s' specified twice"
+msgstr ""
+
+#, c-format
 msgid "filter '%s' already exists with uuid %s"
 msgstr ""
 
@@ -25974,7 +26058,7 @@ msgstr ""
 #, c-format
 msgid ""
 "format '%s' is not supported, expecting 'kdump-zlib', 'kdump-lzo', 'kdump-"
-"snappy' or 'elf'"
+"snappy', 'win-dmp' or 'elf'"
 msgstr ""
 
 msgid "format features only available with qcow2"
@@ -27930,9 +28014,6 @@ msgstr ""
 msgid "libxenlight state driver is not active"
 msgstr ""
 
-msgid "libxenlight supports only one input device"
-msgstr ""
-
 #, c-format
 msgid "libxl_domain_info failed for domain '%d'"
 msgstr ""
@@ -28947,6 +29028,12 @@ msgstr ""
 #, fuzzy, c-format
 msgid "mishandled storage format '%s'"
 msgstr "gagal mendapatkan domain '%s'"
+
+#, c-format
+msgid ""
+"mismatch between configured type for snapshot disk '%s' and the type of "
+"existing file '%s'"
+msgstr ""
 
 #, c-format
 msgid "mismatch of address family in range %s - %s"
@@ -29970,9 +30057,6 @@ msgid ""
 msgstr ""
 
 msgid "multiple OpenGL displays are not supported by QEMU"
-msgstr ""
-
-msgid "multiple USB devices not supported"
 msgstr ""
 
 #, c-format
@@ -31230,6 +31314,18 @@ msgid "only a single watchdog device is supported"
 msgstr ""
 
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
+msgstr ""
+
+msgid "only can reboot running/paused domain"
+msgstr ""
+
+msgid "only can resume paused domain"
+msgstr ""
+
+msgid "only can shutdown running/paused domain"
+msgstr ""
+
+msgid "only can suspend running domain"
 msgstr ""
 
 msgid "only connect if safe console handling is supported"
@@ -35969,6 +36065,10 @@ msgstr "host %s tidak diketahui"
 msgid "unknown hub device type '%s'"
 msgstr "jenis OS %s tidak diketahui"
 
+#, c-format
+msgid "unknown indexing value '%u'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unknown input bus type '%s'"
 msgstr "jenis OS %s tidak diketahui"
@@ -36278,10 +36378,6 @@ msgstr ""
 msgid "unknown value '%s' in attribute 'usable'"
 msgstr ""
 
-#, c-format
-msgid "unknown value for attribute eoi: '%s'"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "unknown vhost-user type: '%s'"
 msgstr "host %s tidak diketahui"
@@ -36335,6 +36431,10 @@ msgstr "perintah tidak diketahui: '%s'"
 #, fuzzy, c-format
 msgid "unknown watchdog model '%s'"
 msgstr "perintah tidak diketahui: '%s'"
+
+#, c-format
+msgid "unknown write_policy value '%u'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unknown xattr value '%s'"
@@ -37111,6 +37211,9 @@ msgstr ""
 msgid "vhost-user-gpu failed to start"
 msgstr ""
 
+msgid "vhost_user type support UNIX socket in this CH"
+msgstr ""
+
 msgid "vhostuser disk is not supported with this QEMU binary"
 msgstr ""
 
@@ -37239,14 +37342,15 @@ msgstr ""
 msgid "virtio (non-)transitional models are not supported for input type=%s"
 msgstr ""
 
-msgid "virtio S390 address type is not supported by this QEMU"
-msgstr ""
-
 #, c-format
 msgid "virtio disk cannot have an address of type '%s'"
 msgstr ""
 
 msgid "virtio non-transitional model not supported for this qemu"
+msgstr ""
+
+#, c-format
+msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
 msgstr ""
 
 msgid "virtio rx_queue_size option is not supported with this QEMU binary"
@@ -37298,9 +37402,6 @@ msgid "virtio-pmem isn't supported by this QEMU binary"
 msgstr ""
 
 msgid "virtio-s390 bus doesn't have an address"
-msgstr ""
-
-msgid "virtio-s390 net device cannot be hotplugged."
 msgstr ""
 
 msgid ""
