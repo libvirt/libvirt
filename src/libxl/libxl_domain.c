@@ -1272,21 +1272,16 @@ libxlDomainStartPrepare(libxlDriverPrivate *driver,
     return -1;
 }
 
-/*
- * Start a domain through libxenlight.
- *
- * virDomainObj *must be locked and a job acquired on invocation
- */
 static int
-libxlDomainStart(libxlDriverPrivate *driver,
-                 virDomainObj *vm,
-                 bool start_paused,
-                 int restore_fd,
-                 uint32_t restore_ver)
+libxlDomainStartPerform(libxlDriverPrivate *driver,
+                        virDomainObj *vm,
+                        bool start_paused,
+                        int restore_fd,
+                        uint32_t restore_ver)
 {
     libxl_domain_config d_config;
-    virObjectEvent *event = NULL;
     int ret = -1;
+    int libxlret = -1;
     uint32_t domid = 0;
     g_autofree char *dom_xml = NULL;
     libxlDomainObjPrivate *priv = vm->privateData;
@@ -1295,17 +1290,14 @@ libxlDomainStart(libxlDriverPrivate *driver,
     libxl_domain_restore_params params;
     g_autofree char *config_json = NULL;
 
-    if (libxlDomainStartPrepare(driver, vm) < 0)
-        return -1;
-
     libxl_domain_config_init(&d_config);
 
     if (libxlBuildDomainConfig(driver->reservedGraphicsPorts, vm->def,
                                cfg, &d_config) < 0)
-        goto cleanup_dom;
+        goto cleanup;
 
     if (cfg->autoballoon && libxlDomainFreeMem(cfg->ctx, &d_config) < 0)
-        goto cleanup_dom;
+        goto cleanup;
 
     /* now that we know it is about to start call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
@@ -1321,7 +1313,7 @@ libxlDomainStart(libxlDriverPrivate *driver,
          * If the script raised an error abort the launch
          */
         if (hookret < 0)
-            goto cleanup_dom;
+            goto cleanup;
     }
 
     if (priv->hookRun) {
@@ -1340,19 +1332,19 @@ libxlDomainStart(libxlDriverPrivate *driver,
     aop_console_how.for_callback = vm;
     aop_console_how.callback = libxlConsoleCallback;
     if (restore_fd < 0) {
-        ret = libxl_domain_create_new(cfg->ctx, &d_config,
+        libxlret = libxl_domain_create_new(cfg->ctx, &d_config,
                                       &domid, NULL, &aop_console_how);
     } else {
         libxl_domain_restore_params_init(&params);
         params.stream_version = restore_ver;
-        ret = libxlDomainCreateRestoreWrapper(cfg->ctx, &d_config, &domid,
+        libxlret = libxlDomainCreateRestoreWrapper(cfg->ctx, &d_config, &domid,
                                               restore_fd, &params,
                                           &aop_console_how);
         libxl_domain_restore_params_dispose(&params);
     }
     virObjectLock(vm);
 
-    if (ret) {
+    if (libxlret) {
         if (restore_fd < 0)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("libxenlight failed to create new domain '%s'"),
@@ -1361,7 +1353,7 @@ libxlDomainStart(libxlDriverPrivate *driver,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("libxenlight failed to restore domain '%s'"),
                            d_config.c_info.name);
-        goto cleanup_dom;
+        goto cleanup;
     }
 
     /*
@@ -1411,9 +1403,6 @@ libxlDomainStart(libxlDriverPrivate *driver,
     if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
         goto destroy_dom;
 
-    if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
-        driver->inhibitCallback(true, driver->inhibitOpaque);
-
     /* finally we can call the 'started' hook script if any */
     if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
         char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
@@ -1431,24 +1420,52 @@ libxlDomainStart(libxlDriverPrivate *driver,
             goto destroy_dom;
     }
 
-    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STARTED,
-                                     restore_fd < 0 ?
-                                         VIR_DOMAIN_EVENT_STARTED_BOOTED :
-                                         VIR_DOMAIN_EVENT_STARTED_RESTORED);
-    virObjectEventStateQueue(driver->domainEventState, event);
-
-    libxl_domain_config_dispose(&d_config);
-    return 0;
+    ret = 0;
+    goto cleanup;
 
  destroy_dom:
     libxlDomainDestroyInternal(driver, vm);
     vm->def->id = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
 
- cleanup_dom:
-    libxlDomainCleanup(driver, vm);
+ cleanup:
     libxl_domain_config_dispose(&d_config);
-    return -1;
+    return ret;
+}
+
+/*
+ * Start a domain through libxenlight.
+ *
+ * virDomainObj must be locked and a job acquired on invocation
+ */
+static int
+libxlDomainStart(libxlDriverPrivate *driver,
+                 virDomainObj *vm,
+                 bool start_paused,
+                 int restore_fd,
+                 uint32_t restore_ver)
+{
+    virObjectEvent *event = NULL;
+
+    if (libxlDomainStartPrepare(driver, vm) < 0)
+        return -1;
+
+    if (libxlDomainStartPerform(driver, vm, start_paused,
+                                restore_fd, restore_ver) < 0) {
+        libxlDomainCleanup(driver, vm);
+        return -1;
+    }
+
+    if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
+        driver->inhibitCallback(true, driver->inhibitOpaque);
+
+    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STARTED,
+                                              restore_fd < 0 ?
+                                              VIR_DOMAIN_EVENT_STARTED_BOOTED :
+                                              VIR_DOMAIN_EVENT_STARTED_RESTORED);
+    virObjectEventStateQueue(driver->domainEventState, event);
+
+    return 0;
 }
 
 int
