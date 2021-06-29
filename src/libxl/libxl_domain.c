@@ -1223,6 +1223,55 @@ libxlDomainCreateChannelPTY(virDomainDef *def, libxl_ctx *ctx)
         libxl_device_channel_dispose(&x_channels[i]);
 }
 
+static int
+libxlDomainStartPrepare(libxlDriverPrivate *driver,
+                        virDomainObj *vm)
+{
+    virHostdevManager *hostdev_mgr = driver->hostdevMgr;
+    unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI | VIR_HOSTDEV_SP_USB;
+
+    if (virDomainObjSetDefTransient(driver->xmlopt, vm, NULL) < 0)
+        return -1;
+
+    /* Run an early hook to set-up missing devices */
+    if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
+        g_autofree char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
+        int hookret;
+
+        hookret = virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,
+                              VIR_HOOK_LIBXL_OP_PREPARE, VIR_HOOK_SUBOP_BEGIN,
+                              NULL, xml, NULL);
+        /*
+         * If the script raised an error abort the launch
+         */
+        if (hookret < 0)
+            goto error;
+    }
+
+    if (virDomainLockProcessStart(driver->lockManager,
+                                  "xen:///system",
+                                  vm,
+                                  true,
+                                  NULL) < 0)
+        goto error;
+
+    if (libxlNetworkPrepareDevices(vm->def) < 0)
+        goto error;
+
+    if (virHostdevPrepareDomainDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
+                                       vm->def, hostdev_flags) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    libxlNetworkUnwindDevices(vm->def);
+    virHostdevReAttachDomainDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
+                                    vm->def, hostdev_flags);
+    virDomainObjRemoveTransientDef(vm);
+    return -1;
+}
+
 /*
  * Start a domain through libxenlight.
  *
@@ -1242,55 +1291,20 @@ libxlDomainStart(libxlDriverPrivate *driver,
     g_autofree char *dom_xml = NULL;
     libxlDomainObjPrivate *priv = vm->privateData;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
-    virHostdevManager *hostdev_mgr = driver->hostdevMgr;
     libxl_asyncprogress_how aop_console_how;
     libxl_domain_restore_params params;
-    unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
     g_autofree char *config_json = NULL;
 
-    hostdev_flags |= VIR_HOSTDEV_SP_USB;
+    if (libxlDomainStartPrepare(driver, vm) < 0)
+        return -1;
 
     libxl_domain_config_init(&d_config);
-
-    if (virDomainObjSetDefTransient(driver->xmlopt, vm, NULL) < 0)
-        goto cleanup;
-
-    /* Run an early hook to set-up missing devices */
-    if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
-        int hookret;
-
-        hookret = virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,
-                              VIR_HOOK_LIBXL_OP_PREPARE, VIR_HOOK_SUBOP_BEGIN,
-                              NULL, xml, NULL);
-        VIR_FREE(xml);
-
-        /*
-         * If the script raised an error abort the launch
-         */
-        if (hookret < 0)
-            goto cleanup_dom;
-    }
-
-    if (virDomainLockProcessStart(driver->lockManager,
-                                  "xen:///system",
-                                  vm,
-                                  true,
-                                  NULL) < 0)
-        goto cleanup;
-
-    if (libxlNetworkPrepareDevices(vm->def) < 0)
-        goto cleanup_dom;
 
     if (libxlBuildDomainConfig(driver->reservedGraphicsPorts, vm->def,
                                cfg, &d_config) < 0)
         goto cleanup_dom;
 
     if (cfg->autoballoon && libxlDomainFreeMem(cfg->ctx, &d_config) < 0)
-        goto cleanup_dom;
-
-    if (virHostdevPrepareDomainDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
-                                       vm->def, hostdev_flags) < 0)
         goto cleanup_dom;
 
     /* now that we know it is about to start call the hook if present */
@@ -1414,7 +1428,7 @@ libxlDomainStart(libxlDriverPrivate *driver,
          * If the script raised an error abort the launch
          */
         if (hookret < 0)
-            goto cleanup_dom;
+            goto destroy_dom;
     }
 
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STARTED,
@@ -1423,21 +1437,18 @@ libxlDomainStart(libxlDriverPrivate *driver,
                                          VIR_DOMAIN_EVENT_STARTED_RESTORED);
     virObjectEventStateQueue(driver->domainEventState, event);
 
-    ret = 0;
-    goto cleanup;
+    libxl_domain_config_dispose(&d_config);
+    return 0;
 
  destroy_dom:
-    ret = -1;
     libxlDomainDestroyInternal(driver, vm);
     vm->def->id = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
 
  cleanup_dom:
     libxlDomainCleanup(driver, vm);
-
- cleanup:
     libxl_domain_config_dispose(&d_config);
-    return ret;
+    return -1;
 }
 
 int
