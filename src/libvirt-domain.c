@@ -6290,8 +6290,8 @@ virDomainGetBlockInfo(virDomainPtr domain, const char *disk,
  *
  * Define a domain, but does not start it.
  * This definition is persistent, until explicitly undefined with
- * virDomainUndefine(). A previous definition for this domain would be
- * overridden if it already exists.
+ * virDomainUndefine(). A previous definition for this domain with the same
+ * UUID and name would be overridden if it already exists.
  *
  * virDomainFree should be used to free the resources after the
  * domain object is no longer needed.
@@ -6333,8 +6333,8 @@ virDomainDefineXML(virConnectPtr conn, const char *xml)
  *
  * Defines a domain, but does not start it.
  * This definition is persistent, until explicitly undefined with
- * virDomainUndefine(). A previous definition for this domain would be
- * overridden if it already exists.
+ * virDomainUndefine(). A previous definition for this domain with the same
+ * UUID and name would be overridden if it already exists.
  *
  * virDomainFree should be used to free the resources after the
  * domain object is no longer needed.
