@@ -281,15 +281,8 @@ static int virLockManagerLockDaemonSetupLockspace(const char *path)
                                 VIR_LOCK_SPACE_PROTOCOL_PROC_CREATE_LOCKSPACE,
                                 0, NULL, NULL, NULL,
                                 (xdrproc_t)xdr_virLockSpaceProtocolCreateLockSpaceArgs, (char*)&args,
-                                (xdrproc_t)xdr_void, NULL) < 0) {
-        if (virGetLastErrorCode() == VIR_ERR_OPERATION_INVALID) {
-            /* The lockspace already exists */
-            virResetLastError();
-            rv = 0;
-        } else {
-            goto cleanup;
-        }
-    }
+                                (xdrproc_t)xdr_void, NULL) < 0)
+        goto cleanup;
 
     rv = 0;
 

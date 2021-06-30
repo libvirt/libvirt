@@ -405,9 +405,8 @@ virLockSpaceProtocolDispatchCreateLockSpace(virNetServer *server G_GNUC_UNUSED,
     }
 
     if (virLockDaemonFindLockSpace(lockDaemon, args->path) != NULL) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Lockspace for path %s already exists"),
-                       args->path);
+        VIR_DEBUG("Lockspace for path %s already exists", args->path);
+        rv = 0;
         goto cleanup;
     }
 
