@@ -853,6 +853,25 @@ libxlNetworkUnwindDevices(virDomainDef *def)
     }
 }
 
+int
+libxlDomainHookRun(libxlDriverPrivate *driver,
+                   virDomainDef *def,
+                   unsigned int def_fmtflags,
+                   int hookop,
+                   int hooksubop,
+                   char **output)
+{
+    g_autofree char *xml = NULL;
+
+    if (!virHookPresent(VIR_HOOK_DRIVER_LIBXL))
+        return 0;
+
+    xml = virDomainDefFormat(def, driver->xmlopt, def_fmtflags);
+    return virHookCall(VIR_HOOK_DRIVER_LIBXL, def->name,
+                       hookop, hooksubop,
+                       NULL, xml, output);
+}
+
 /*
  * Internal domain destroy function.
  *
@@ -903,16 +922,10 @@ libxlDomainCleanup(libxlDriverPrivate *driver,
 
     hostdev_flags |= VIR_HOSTDEV_SP_USB;
 
-    /* now that we know it's stopped call the hook if present */
-    if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
-
-        /* we can't stop the operation even if the script raised an error */
-        ignore_value(virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,
-                                 VIR_HOOK_LIBXL_OP_STOPPED, VIR_HOOK_SUBOP_END,
-                                 NULL, xml, NULL));
-        VIR_FREE(xml);
-    }
+    /* Call hook with stopped operation. Ignore error and continue with cleanup */
+    ignore_value(libxlDomainHookRun(driver, vm->def, 0,
+                                    VIR_HOOK_LIBXL_OP_STOPPED,
+                                    VIR_HOOK_SUBOP_END, NULL));
 
     virHostdevReAttachDomainDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                     vm->def, hostdev_flags);
@@ -956,16 +969,10 @@ libxlDomainCleanup(libxlDriverPrivate *driver,
         VIR_DEBUG("Failed to remove domain XML for %s", vm->def->name);
     VIR_FREE(file);
 
-    /* The "release" hook cleans up additional resources */
-    if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
-
-        /* we can't stop the operation even if the script raised an error */
-        ignore_value(virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,
-                                 VIR_HOOK_LIBXL_OP_RELEASE, VIR_HOOK_SUBOP_END,
-                                 NULL, xml, NULL));
-        VIR_FREE(xml);
-    }
+    /* Call hook with release operation. Ignore error and continue with cleanup */
+    ignore_value(libxlDomainHookRun(driver, vm->def, 0,
+                                    VIR_HOOK_LIBXL_OP_RELEASE,
+                                    VIR_HOOK_SUBOP_END, NULL));
 
     virDomainObjRemoveTransientDef(vm);
 }
@@ -1234,19 +1241,10 @@ libxlDomainStartPrepare(libxlDriverPrivate *driver,
         return -1;
 
     /* Run an early hook to set-up missing devices */
-    if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
-        g_autofree char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
-        int hookret;
-
-        hookret = virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,
-                              VIR_HOOK_LIBXL_OP_PREPARE, VIR_HOOK_SUBOP_BEGIN,
-                              NULL, xml, NULL);
-        /*
-         * If the script raised an error abort the launch
-         */
-        if (hookret < 0)
-            goto error;
-    }
+    if (libxlDomainHookRun(driver, vm->def, 0,
+                           VIR_HOOK_LIBXL_OP_PREPARE,
+                           VIR_HOOK_SUBOP_BEGIN, NULL) < 0)
+        goto error;
 
     if (virDomainLockProcessStart(driver->lockManager,
                                   "xen:///system",
@@ -1300,21 +1298,10 @@ libxlDomainStartPerform(libxlDriverPrivate *driver,
         goto cleanup;
 
     /* now that we know it is about to start call the hook if present */
-    if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
-        int hookret;
-
-        hookret = virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,
-                              VIR_HOOK_LIBXL_OP_START, VIR_HOOK_SUBOP_BEGIN,
-                              NULL, xml, NULL);
-        VIR_FREE(xml);
-
-        /*
-         * If the script raised an error abort the launch
-         */
-        if (hookret < 0)
-            goto cleanup;
-    }
+    if (libxlDomainHookRun(driver, vm->def, 0,
+                           VIR_HOOK_LIBXL_OP_START,
+                           VIR_HOOK_SUBOP_BEGIN, NULL) < 0)
+        goto cleanup;
 
     if (priv->hookRun) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -1404,21 +1391,10 @@ libxlDomainStartPerform(libxlDriverPrivate *driver,
         goto destroy_dom;
 
     /* finally we can call the 'started' hook script if any */
-    if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
-        int hookret;
-
-        hookret = virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,
-                              VIR_HOOK_LIBXL_OP_STARTED, VIR_HOOK_SUBOP_BEGIN,
-                              NULL, xml, NULL);
-        VIR_FREE(xml);
-
-        /*
-         * If the script raised an error abort the launch
-         */
-        if (hookret < 0)
-            goto destroy_dom;
-    }
+    if (libxlDomainHookRun(driver, vm->def, 0,
+                           VIR_HOOK_LIBXL_OP_STARTED,
+                           VIR_HOOK_SUBOP_BEGIN, NULL) < 0)
+        goto destroy_dom;
 
     ret = 0;
     goto cleanup;

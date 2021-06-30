@@ -490,18 +490,13 @@ libxlDomainMigrationPrepareAny(virConnectPtr dconn,
 
     /* Let migration hook filter domain XML */
     if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
-        char *xml;
         int hookret;
 
-        if (!(xml = virDomainDefFormat(*def, driver->xmlopt,
-                                       VIR_DOMAIN_XML_SECURE |
-                                       VIR_DOMAIN_XML_MIGRATABLE)))
-            return -1;
-
-        hookret = virHookCall(VIR_HOOK_DRIVER_LIBXL, (*def)->name,
-                              VIR_HOOK_LIBXL_OP_MIGRATE, VIR_HOOK_SUBOP_BEGIN,
-                              NULL, xml, xmlout);
-        VIR_FREE(xml);
+        hookret = libxlDomainHookRun(driver, *def,
+                                     VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_MIGRATABLE,
+                                     VIR_HOOK_LIBXL_OP_MIGRATE,
+                                     VIR_HOOK_SUBOP_BEGIN,
+                                     xmlout);
 
         if (hookret < 0) {
             return -1;

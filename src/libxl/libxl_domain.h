@@ -109,6 +109,14 @@ libxlDomainSaveImageOpen(libxlDriverPrivate *driver,
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
 int
+libxlDomainHookRun(libxlDriverPrivate *driver,
+                   virDomainDef *def,
+                   unsigned int def_fmtflags,
+                   int hookop,
+                   int hooksubop,
+                   char **output);
+
+int
 libxlDomainDestroyInternal(libxlDriverPrivate *driver,
                            virDomainObj *vm);
 
