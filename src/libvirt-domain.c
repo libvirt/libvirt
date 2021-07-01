@@ -12637,6 +12637,10 @@ int virDomainGetGuestInfo(virDomainPtr domain,
  * live VM XML for 'backingStore' or 'source' elements of a disk. If index is
  * given the threshold is set for the corresponding image.
  *
+ * In case when @dev does not contain index the
+ * VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD event may be emitted twice, once for the
+ * disk device target without index and once containing the index.
+ *
  * Note that the threshold event can be registered also for destinations of a
  * 'virDomainBlockCopy' destination by using the 'index' of the 'mirror' source.
  *
