@@ -90,6 +90,7 @@ v7.4.0 (2021-06-01)
     Having a 0 offset so that the size of the image can be limited is a
     valid configuration so it was allowed in the XML schema.
 
+
 v7.3.0 (2021-05-03)
 ===================
 
@@ -188,6 +189,7 @@ v7.3.0 (2021-05-03)
     Due to a bug in bash completion script, the auto completion did not work
     properly when a connection URI or read only flag were specified on
     ``virsh`` or ``virt-admin`` command line.
+
 
 v7.2.0 (2021-04-01)
 ===================
