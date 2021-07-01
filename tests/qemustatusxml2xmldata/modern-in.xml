@@ -340,6 +340,7 @@
                 <secret type='tlskey' alias='tls-certificate-key-alias'/>
                 <TLSx509 alias='transport-alias'/>
               </objects>
+              <thresholdEvent indexUsed='yes'/>
             </privateData>
           </source>
           <backingStore/>

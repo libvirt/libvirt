@@ -387,6 +387,11 @@ struct _virStorageSource {
     char *nfs_group;
     uid_t nfs_uid;
     gid_t nfs_gid;
+
+    /* We need a flag to remember that the threshold event for this source was
+     * registered with a full index (vda[3]) so that we can properly report just
+     * one event for it */
+    bool thresholdEventWithIndex;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageSource, virObjectUnref);

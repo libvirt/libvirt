@@ -1951,6 +1951,7 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
     g_autofree char *encalias = NULL;
     g_autofree char *httpcookiealias = NULL;
     g_autofree char *tlskeyalias = NULL;
+    g_autofree char *thresholdEventWithIndex = NULL;
 
     src->nodestorage = virXPathString("string(./nodenames/nodename[@type='storage']/@name)", ctxt);
     src->nodeformat = virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt);
@@ -1989,6 +1990,10 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
 
     if (virStorageSourcePrivateDataParseRelPath(ctxt, src) < 0)
         return -1;
+
+    if ((thresholdEventWithIndex = virXPathString("string(./thresholdEvent/@indexUsed)", ctxt)) &&
+        virTristateBoolTypeFromString(thresholdEventWithIndex) == VIR_TRISTATE_BOOL_YES)
+        src->thresholdEventWithIndex = true;
 
     return 0;
 }
@@ -2043,6 +2048,9 @@ qemuStorageSourcePrivateDataFormat(virStorageSource *src,
         virBufferAsprintf(&tmp, "<TLSx509 alias='%s'/>\n", src->tlsAlias);
 
     virXMLFormatElement(buf, "objects", NULL, &tmp);
+
+    if (src->thresholdEventWithIndex)
+        virBufferAddLit(buf, "<thresholdEvent indexUsed='yes'/>\n");
 
     return 0;
 }
