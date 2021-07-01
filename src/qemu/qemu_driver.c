@@ -19623,6 +19623,10 @@ qemuDomainSetBlockThreshold(virDomainPtr dom,
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         goto endjob;
 
+    /* we need to remember whether the threshold was registered with an explicit
+     * index to fire the correct event */
+    src->thresholdEventWithIndex = !!strchr(dev, '[');
+
     ret = 0;
 
  endjob:
