@@ -11,6 +11,14 @@ For a more fine-grained view, use the `git log`_.
 v7.5.0 (unreleased)
 ===================
 
+* **Security**
+
+  * svirt: fix MCS label generation (CVE-2021-3631)
+
+    A flaw in the way MCS labels were generated could result in a VM's
+    resource not being fully protected from access by another VM were
+    it to be compromised. https://gitlab.com/libvirt/libvirt/-/issues/153
+
 * **Removed features**
 
   * xen: Remove support for Xen < 4.9
