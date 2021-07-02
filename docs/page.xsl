@@ -105,6 +105,12 @@
         <xsl:if test="$pagesrc = 'docs/libvirt-go-xml.rst'">
           <meta name="go-import" content="libvirt.org/libvirt-go-xml git https://gitlab.com/libvirt/libvirt-go-xml.git"/>
         </xsl:if>
+        <xsl:if test="$pagesrc = 'docs/go/libvirt.rst'">
+          <meta name="go-import" content="libvirt.org/go/libvirt git https://gitlab.com/libvirt/libvirt-go-module.git"/>
+        </xsl:if>
+        <xsl:if test="$pagesrc = 'docs/go/libvirtxml.rst'">
+          <meta name="go-import" content="libvirt.org/go/libvirtxml git https://gitlab.com/libvirt/libvirt-go-xml-module.git"/>
+        </xsl:if>
         <xsl:apply-templates select="/html:html/html:head/html:script" mode="content"/>
 
         <script type="text/javascript" src="{$href_base}js/main.js">
