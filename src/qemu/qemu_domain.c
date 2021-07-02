@@ -7088,6 +7088,7 @@ qemuDomainSnapshotDiscard(virQEMUDriver *driver,
 
     if (!metadata_only) {
         if (!virDomainObjIsActive(vm)) {
+            size_t i;
             /* Ignore any skipped disks */
 
             /* Prefer action on the disks in use at the time the snapshot was
@@ -7097,6 +7098,11 @@ qemuDomainSnapshotDiscard(virQEMUDriver *driver,
 
             if (!def)
                 def = vm->def;
+
+            for (i = 0; i < def->ndisks; i++) {
+                if (virDomainDiskTranslateSourcePool(def->disks[i]) < 0)
+                    return -1;
+            }
 
             if (qemuDomainSnapshotForEachQcow2(driver, def, snap, "-d", true) < 0)
                 return -1;

@@ -1813,6 +1813,8 @@ qemuSnapshotRevertInactive(virQEMUDriver *driver,
                            virDomainObj *vm,
                            virDomainMomentObj *snap)
 {
+    size_t i;
+
     /* Prefer action on the disks in use at the time the snapshot was
      * created; but fall back to current definition if dealing with a
      * snapshot created prior to libvirt 0.9.5.  */
@@ -1820,6 +1822,11 @@ qemuSnapshotRevertInactive(virQEMUDriver *driver,
 
     if (!def)
         def = vm->def;
+
+    for (i = 0; i < def->ndisks; i++) {
+        if (virDomainDiskTranslateSourcePool(def->disks[i]) < 0)
+            return -1;
+    }
 
     /* Try all disks, but report failure if we skipped any.  */
     if (qemuDomainSnapshotForEachQcow2(driver, def, snap, "-a", true) != 0)
