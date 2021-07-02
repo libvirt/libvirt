@@ -1104,8 +1104,10 @@ virResctrlAllocUpdateMask(virResctrlAlloc *alloc,
         VIR_EXPAND_N(a_type->masks, a_type->nmasks,
                      cache - a_type->nmasks + 1);
 
-    if (!a_type->masks[cache])
-        a_type->masks[cache] = virBitmapNewCopy(mask);
+    if (a_type->masks[cache])
+        virBitmapFree(a_type->masks[cache]);
+
+    a_type->masks[cache] = virBitmapNewCopy(mask);
 
     return 0;
 }
