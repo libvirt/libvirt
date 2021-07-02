@@ -100,10 +100,10 @@
         <title>libvirt: <xsl:value-of select="html:html/html:body//html:h1"/></title>
         <meta name="description" content="libvirt, virtualization, virtualization API"/>
         <xsl:if test="$pagesrc = 'docs/libvirt-go.rst'">
-          <meta name="go-import" content="libvirt.org/libvirt-go git https://libvirt.org/git/libvirt-go.git"/>
+          <meta name="go-import" content="libvirt.org/libvirt-go git https://gitlab.com/libvirt/libvirt-go.git"/>
         </xsl:if>
         <xsl:if test="$pagesrc = 'docs/libvirt-go-xml.rst'">
-          <meta name="go-import" content="libvirt.org/libvirt-go-xml git https://libvirt.org/git/libvirt-go-xml.git"/>
+          <meta name="go-import" content="libvirt.org/libvirt-go-xml git https://gitlab.com/libvirt/libvirt-go-xml.git"/>
         </xsl:if>
         <xsl:apply-templates select="/html:html/html:head/html:script" mode="content"/>
 
