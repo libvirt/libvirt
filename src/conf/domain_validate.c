@@ -1261,8 +1261,7 @@ virDomainDefValidateAliases(const virDomainDef *def,
     int ret = -1;
 
     /* We are not storing copies of aliases. Don't free them. */
-    if (!(data.aliases = virHashNew(NULL)))
-        goto cleanup;
+    data.aliases = virHashNew(NULL);
 
     if (virDomainDeviceInfoIterateFlags((virDomainDef *) def,
                                         virDomainDeviceDefValidateAliasesIterator,
