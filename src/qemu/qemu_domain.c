@@ -1788,8 +1788,7 @@ qemuDomainObjPrivateAlloc(void *opaque)
     if (!(priv->devs = virChrdevAlloc()))
         goto error;
 
-    if (!(priv->blockjobs = virHashNew(virObjectFreeHashData)))
-        goto error;
+    priv->blockjobs = virHashNew(virObjectFreeHashData);
 
     /* agent commands block by default, user can choose different behavior */
     priv->agentTimeout = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK;
