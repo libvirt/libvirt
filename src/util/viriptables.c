@@ -70,8 +70,8 @@ iptablesPrivateChainCreate(virFirewall *fw,
                            void *opaque)
 {
     iptablesGlobalChainData *data = opaque;
-    GHashTable *chains = virHashNew(NULL);
-    GHashTable *links = virHashNew(NULL);
+    g_autoptr(GHashTable) chains = virHashNew(NULL);
+    g_autoptr(GHashTable) links = virHashNew(NULL);
     const char *const *tmp;
     int ret = -1;
     size_t i;
@@ -114,8 +114,6 @@ iptablesPrivateChainCreate(virFirewall *fw,
 
     ret = 0;
  cleanup:
-    virHashFree(chains);
-    virHashFree(links);
     return ret;
 }
 
