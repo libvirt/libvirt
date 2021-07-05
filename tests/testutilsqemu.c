@@ -585,7 +585,7 @@ testQemuGetLatestCaps(void)
         "s390x",
         "x86_64",
     };
-    GHashTable *capslatest = virHashNew(g_free);
+    g_autoptr(GHashTable) capslatest = virHashNew(g_free);
     size_t i;
 
     VIR_TEST_VERBOSE("");
@@ -601,10 +601,9 @@ testQemuGetLatestCaps(void)
 
     VIR_TEST_VERBOSE("");
 
-    return capslatest;
+    return g_steal_pointer(&capslatest);
 
  error:
-    virHashFree(capslatest);
     return NULL;
 }
 
