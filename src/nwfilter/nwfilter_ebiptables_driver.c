@@ -3338,9 +3338,6 @@ ebiptablesApplyNewRules(const char *ifname,
     size_t nsubchains = 0;
     int ret = -1;
 
-    if (!chains_in_set || !chains_out_set)
-        goto cleanup;
-
     if (nrules)
         qsort(rules, nrules, sizeof(rules[0]),
               virNWFilterRuleInstSortPtr);
