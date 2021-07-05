@@ -293,8 +293,7 @@ virLockSpace *virLockSpaceNewPostExecRestart(virJSONValue *object)
         return NULL;
     }
 
-    if (!(lockspace->resources = virHashNew(virLockSpaceResourceDataFree)))
-        goto error;
+    lockspace->resources = virHashNew(virLockSpaceResourceDataFree);
 
     if (virJSONValueObjectHasKey(object, "directory")) {
         const char *dir = virJSONValueObjectGetString(object, "directory");
