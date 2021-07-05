@@ -5069,12 +5069,12 @@ GHashTable *
 qemuMonitorJSONGetAllBlockJobInfo(qemuMonitor *mon,
                                   bool rawjobname)
 {
-    virJSONValue *cmd = NULL;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValue *data;
     size_t nr_results;
     size_t i;
-    GHashTable *blockJobs = NULL;
+    g_autoptr(GHashTable) blockJobs = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("query-block-jobs", NULL);
     if (!cmd)
@@ -5103,14 +5103,10 @@ qemuMonitorJSONGetAllBlockJobInfo(qemuMonitor *mon,
     }
 
  cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return blockJobs;
+    return g_steal_pointer(&blockJobs);
 
  error:
-    virHashFree(blockJobs);
-    blockJobs = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
