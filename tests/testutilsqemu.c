@@ -594,7 +594,7 @@ testQemuGetLatestCaps(void)
         char *cap = testQemuGetLatestCapsForArch(archs[i], "xml");
 
         if (!cap || virHashAddEntry(capslatest, archs[i], cap) < 0)
-            goto error;
+            return NULL;
 
         VIR_TEST_VERBOSE("latest caps for %s: %s", archs[i], cap);
     }
@@ -602,9 +602,6 @@ testQemuGetLatestCaps(void)
     VIR_TEST_VERBOSE("");
 
     return g_steal_pointer(&capslatest);
-
- error:
-    return NULL;
 }
 
 
