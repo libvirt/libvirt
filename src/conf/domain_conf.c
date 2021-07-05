@@ -14730,12 +14730,12 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
     if (virXMLPropEnum(sevNode, "type", virDomainLaunchSecurityTypeFromString,
                        VIR_XML_PROP_NONZERO | VIR_XML_PROP_REQUIRED,
                        &def->sectype) < 0)
-        goto error;
+        return NULL;
 
     if (virXPathULongHex("string(./policy)", ctxt, &policy) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("failed to get launch security policy"));
-        goto error;
+        return NULL;
     }
 
     /* the following attributes are platform dependent and if missing, we can
@@ -14747,7 +14747,7 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
     } else if (rc == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Invalid format for launch security cbitpos"));
-        goto error;
+        return NULL;
     }
 
     rc = virXPathUInt("string(./reducedPhysBits)", ctxt,
@@ -14758,7 +14758,7 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Invalid format for launch security "
                          "reduced-phys-bits"));
-        goto error;
+        return NULL;
     }
 
     def->policy = policy;
@@ -14766,9 +14766,6 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
     def->session = virXPathString("string(./session)", ctxt);
 
     return g_steal_pointer(&def);
-
- error:
-    return NULL;
 }
 
 
