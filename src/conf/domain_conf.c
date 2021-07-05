@@ -14721,7 +14721,7 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autoptr(virDomainSEVDef) def = NULL;
     unsigned long policy;
-    int rc = -1;
+    int rc;
 
     def = g_new0(virDomainSEVDef, 1);
 
