@@ -1460,16 +1460,12 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
-    g_autoptr(GHashTable) blockDevices = NULL;
-    g_autoptr(GHashTable) expectedBlockDevices = NULL;
+    g_autoptr(GHashTable) blockDevices = virHashNew(g_free);
+    g_autoptr(GHashTable) expectedBlockDevices = virHashNew(g_free);
     struct qemuDomainDiskInfo *info;
     g_autoptr(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
-        return -1;
-
-    if (!(blockDevices = virHashNew(g_free)) ||
-        !(expectedBlockDevices = virHashNew(g_free)))
         return -1;
 
     info = g_new0(struct qemuDomainDiskInfo, 1);
