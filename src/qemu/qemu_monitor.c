@@ -4214,7 +4214,7 @@ int
 qemuMonitorGetMemoryDeviceInfo(qemuMonitor *mon,
                                GHashTable **info)
 {
-    GHashTable *hash;
+    g_autoptr(GHashTable) hash = NULL;
     int ret;
 
     VIR_DEBUG("info=%p", info);
@@ -4229,7 +4229,6 @@ qemuMonitorGetMemoryDeviceInfo(qemuMonitor *mon,
     if ((ret = qemuMonitorJSONGetMemoryDeviceInfo(mon, hash)) >= 0)
         *info = g_steal_pointer(&hash);
 
-    virHashFree(hash);
     return ret;
 }
 
