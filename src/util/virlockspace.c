@@ -247,8 +247,7 @@ virLockSpace *virLockSpaceNew(const char *directory)
 
     lockspace->dir = g_strdup(directory);
 
-    if (!(lockspace->resources = virHashNew(virLockSpaceResourceDataFree)))
-        goto error;
+    lockspace->resources = virHashNew(virLockSpaceResourceDataFree);
 
     if (directory) {
         if (virFileExists(directory)) {
