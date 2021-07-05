@@ -14719,7 +14719,7 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
                         xmlXPathContextPtr ctxt)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    virDomainSEVDef *def;
+    g_autoptr(virDomainSEVDef) def = NULL;
     unsigned long policy;
     int rc = -1;
 
@@ -14765,10 +14765,9 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
     def->dh_cert = virXPathString("string(./dhCert)", ctxt);
     def->session = virXPathString("string(./session)", ctxt);
 
-    return def;
+    return g_steal_pointer(&def);
 
  error:
-    virDomainSEVDefFree(def);
     return NULL;
 }
 
