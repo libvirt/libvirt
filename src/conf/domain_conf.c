@@ -3490,7 +3490,7 @@ virDomainResctrlDefFree(virDomainResctrlDef *resctrl)
 }
 
 
-static void
+void
 virDomainSEVDefFree(virDomainSEVDef *def)
 {
     if (!def)

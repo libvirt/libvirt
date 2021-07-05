@@ -2661,6 +2661,8 @@ struct _virDomainSEVDef {
     unsigned int reduced_phys_bits;
 };
 
+void virDomainSEVDefFree(virDomainSEVDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainSEVDef, virDomainSEVDefFree);
 
 typedef enum {
     VIR_DOMAIN_IOMMU_MODEL_INTEL,
