@@ -5935,10 +5935,7 @@ virDomainDefCollectBootOrder(virDomainDef *def G_GNUC_UNUSED,
 static int
 virDomainDefBootOrderPostParse(virDomainDef *def)
 {
-    g_autoptr(GHashTable) bootHash = NULL;
-
-    if (!(bootHash = virHashNew(NULL)))
-        return -1;
+    g_autoptr(GHashTable) bootHash = virHashNew(NULL);
 
     if (virDomainDeviceInfoIterate(def, virDomainDefCollectBootOrder, bootHash) < 0)
         return -1;
