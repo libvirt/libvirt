@@ -1811,7 +1811,6 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
-    int ret = -1;
     g_autoptr(GHashTable) info = NULL;
     g_autoptr(GHashTable) expectedInfo = NULL;
     qemuMonitorChardevInfo info0 = { NULL, VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT };
@@ -1825,7 +1824,7 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *opaque)
 
     if (!(info = virHashNew(qemuMonitorChardevInfoFree)) ||
         !(expectedInfo = virHashNew(NULL)))
-        goto cleanup;
+        return -1;
 
     if (virHashAddEntry(expectedInfo, "charserial1", &info1) < 0 ||
         virHashAddEntry(expectedInfo, "charserial0", &info2) < 0 ||
@@ -1833,7 +1832,7 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *opaque)
         virHashAddEntry(expectedInfo, "charserial2", &info3) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Unable to create expectedInfo hash table");
-        goto cleanup;
+        return -1;
     }
 
     if (qemuMonitorTestAddItem(test, "query-chardev",
@@ -1860,21 +1859,19 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *opaque)
                                "    ],"
                                "    \"id\": \"libvirt-15\""
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONGetChardevInfo(qemuMonitorTestGetMonitor(test),
                                       info) < 0)
-        goto cleanup;
+        return -1;
 
     if (!virHashEqual(info, expectedInfo, testHashEqualChardevInfo)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Hashtable is different to the expected one");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
