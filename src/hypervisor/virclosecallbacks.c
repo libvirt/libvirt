@@ -69,10 +69,6 @@ virCloseCallbacksNew(void)
         return NULL;
 
     closeCallbacks->list = virHashNew(g_free);
-    if (!closeCallbacks->list) {
-        virObjectUnref(closeCallbacks);
-        return NULL;
-    }
 
     return closeCallbacks;
 }
