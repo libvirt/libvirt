@@ -14721,33 +14721,16 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virDomainSEVDef *def;
     unsigned long policy;
-    g_autofree char *type = NULL;
-    int sectype;
     int rc = -1;
 
     def = g_new0(virDomainSEVDef, 1);
 
     ctxt->node = sevNode;
 
-    if (!(type = virXMLPropString(sevNode, "type"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing launch security type"));
+    if (virXMLPropEnum(sevNode, "type", virDomainLaunchSecurityTypeFromString,
+                       VIR_XML_PROP_NONZERO | VIR_XML_PROP_REQUIRED,
+                       &def->sectype) < 0)
         goto error;
-    }
-
-    sectype = virDomainLaunchSecurityTypeFromString(type);
-    switch ((virDomainLaunchSecurity) sectype) {
-    case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
-        break;
-    case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
-    case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
-    default:
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unsupported launch security type '%s'"),
-                       type);
-        goto error;
-    }
-    def->sectype = sectype;
 
     if (virXPathULongHex("string(./policy)", ctxt, &policy) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
