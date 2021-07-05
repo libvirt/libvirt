@@ -2651,7 +2651,7 @@ typedef enum {
 
 
 struct _virDomainSEVDef {
-    int sectype; /* enum virDomainLaunchSecurity */
+    virDomainLaunchSecurity sectype;
     char *dh_cert;
     char *session;
     unsigned int policy;

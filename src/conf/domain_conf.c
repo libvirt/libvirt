@@ -14722,6 +14722,7 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
     virDomainSEVDef *def;
     unsigned long policy;
     g_autofree char *type = NULL;
+    int sectype;
     int rc = -1;
 
     def = g_new0(virDomainSEVDef, 1);
@@ -14734,8 +14735,8 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
         goto error;
     }
 
-    def->sectype = virDomainLaunchSecurityTypeFromString(type);
-    switch ((virDomainLaunchSecurity) def->sectype) {
+    sectype = virDomainLaunchSecurityTypeFromString(type);
+    switch ((virDomainLaunchSecurity) sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         break;
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
@@ -14746,6 +14747,7 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
                        type);
         goto error;
     }
+    def->sectype = sectype;
 
     if (virXPathULongHex("string(./policy)", ctxt, &policy) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
