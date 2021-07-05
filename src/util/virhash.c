@@ -102,10 +102,7 @@ virHashAtomicNew(virHashDataFree dataFree)
     if (!(hash = virObjectLockableNew(virHashAtomicClass)))
         return NULL;
 
-    if (!(hash->hash = virHashNew(dataFree))) {
-        virObjectUnref(hash);
-        return NULL;
-    }
+    hash->hash = virHashNew(dataFree);
     return hash;
 }
 
