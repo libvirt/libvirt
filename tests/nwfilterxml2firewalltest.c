@@ -370,9 +370,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     virCommandSetDryRun(dryRunToken, &buf, true, true, NULL, NULL);
 
-    if (!vars)
-        goto cleanup;
-
     if (testSetDefaultParameters(vars) < 0)
         goto cleanup;
 
