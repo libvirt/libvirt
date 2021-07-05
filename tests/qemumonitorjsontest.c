@@ -1460,7 +1460,6 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
-    int ret = -1;
     g_autoptr(GHashTable) blockDevices = NULL;
     g_autoptr(GHashTable) expectedBlockDevices = NULL;
     struct qemuDomainDiskInfo *info;
@@ -1471,14 +1470,14 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
 
     if (!(blockDevices = virHashNew(g_free)) ||
         !(expectedBlockDevices = virHashNew(g_free)))
-        goto cleanup;
+        return -1;
 
     info = g_new0(struct qemuDomainDiskInfo, 1);
 
     if (virHashAddEntry(expectedBlockDevices, "virtio-disk0", info) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Unable to create expectedBlockDevices hash table");
-        goto cleanup;
+        return -1;
     }
 
     info = g_new0(struct qemuDomainDiskInfo, 1);
@@ -1486,7 +1485,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
     if (virHashAddEntry(expectedBlockDevices, "virtio-disk1", info) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Unable to create expectedBlockDevices hash table");
-        goto cleanup;
+        return -1;
     }
 
     info = g_new0(struct qemuDomainDiskInfo, 1);
@@ -1497,7 +1496,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
     if (virHashAddEntry(expectedBlockDevices, "ide0-1-0", info) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Unable to create expectedBlockDevices hash table");
-        goto cleanup;
+        return -1;
     }
 
     info = g_new0(struct qemuDomainDiskInfo, 1);
@@ -1509,24 +1508,22 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
     if (virHashAddEntry(expectedBlockDevices, "ide0-1-1", info) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Unable to create expectedBlockDevices hash table");
-        goto cleanup;
+        return -1;
     }
 
     if (qemuMonitorTestAddItem(test, "query-block", queryBlockReply) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONGetBlockInfo(qemuMonitorTestGetMonitor(test), blockDevices) < 0)
-        goto cleanup;
+        return -1;
 
     if (!virHashEqual(blockDevices, expectedBlockDevices, testHashEqualQemuDomainDiskInfo)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Hashtable is different to the expected one");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
