@@ -153,8 +153,7 @@ virLockDaemonNew(virLockDaemonConfig *config, bool privileged)
     virObjectUnref(srv);
     srv = NULL;
 
-    if (!(lockd->lockspaces = virHashNew(virLockDaemonLockSpaceDataFree)))
-        goto error;
+    lockd->lockspaces = virHashNew(virLockDaemonLockSpaceDataFree);
 
     if (!(lockd->defaultLockspace = virLockSpaceNew(NULL)))
         goto error;
