@@ -365,10 +365,7 @@ qemuBlockNodeNamesDetect(virQEMUDriver *driver,
 GHashTable *
 qemuBlockGetNodeData(virJSONValue *data)
 {
-    g_autoptr(GHashTable) nodedata = NULL;
-
-    if (!(nodedata = virHashNew(virJSONValueHashFree)))
-        return NULL;
+    g_autoptr(GHashTable) nodedata = virHashNew(virJSONValueHashFree);
 
     if (virJSONValueArrayForeachSteal(data,
                                       qemuBlockNamedNodesArrayToHash, nodedata) < 0)
