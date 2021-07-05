@@ -1538,7 +1538,6 @@ testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *opaque)
     virDomainXMLOption *xmlopt = data->xmlopt;
     g_autoptr(GHashTable) blockstats = NULL;
     qemuBlockStats *stats;
-    int ret = -1;
     g_autoptr(qemuMonitorTest) test = NULL;
 
     const char *reply =
@@ -1632,10 +1631,10 @@ testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *opaque)
         return -1;
 
     if (!(blockstats = virHashNew(g_free)))
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0)
-        goto cleanup;
+        return -1;
 
 #define CHECK0FULL(var, value, varformat, valformat) \
     if (stats->var != value) { \
@@ -1643,7 +1642,7 @@ testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *opaque)
                        "Invalid " #var " value: " varformat \
                        ", expected " valformat, \
                        stats->var, value); \
-        goto cleanup; \
+        return -1; \
     }
 
 #define CHECK0(var, value) CHECK0FULL(var, value, "%lld", "%d")
@@ -1654,7 +1653,7 @@ testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *opaque)
     if (!(stats = virHashLookup(blockstats, NAME))) { \
         virReportError(VIR_ERR_INTERNAL_ERROR, \
                        "block stats for device '%s' is missing", NAME); \
-        goto cleanup; \
+        return -1; \
     } \
     CHECK0(rd_req, RD_REQ) \
     CHECK0(rd_bytes, RD_BYTES) \
@@ -1669,26 +1668,24 @@ testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *opaque)
 
     if (qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorTestGetMonitor(test),
                                             blockstats, false) < 0)
-        goto cleanup;
+        return -1;
 
     if (!blockstats) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "qemuMonitorJSONGetAllBlockStatsInfo didn't return stats");
-        goto cleanup;
+        return -1;
     }
 
     CHECK("virtio-disk0", 1279, 28505088, 640616474, 174, 2845696, 530699221, 0, 0, 5256018944ULL, true)
     CHECK("virtio-disk1", 85, 348160, 8232156, 0, 0, 0, 0, 0, 0ULL, true)
     CHECK("ide0-1-0", 16, 49250, 1004952, 0, 0, 0, 0, 0, 0ULL, false)
 
-    ret = 0;
+    return 0;
 
 #undef CHECK
 #undef CHECK0
 #undef CHECK0FULL
 
- cleanup:
-    return ret;
 }
 
 
