@@ -4522,8 +4522,7 @@ qemuMonitorGetPRManagerInfo(qemuMonitor *mon,
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (!(info = virHashNew(g_free)))
-        goto cleanup;
+    info = virHashNew(g_free);
 
     if (qemuMonitorJSONGetPRManagerInfo(mon, info) < 0)
         goto cleanup;
