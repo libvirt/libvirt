@@ -4516,13 +4516,11 @@ qemuMonitorGetPRManagerInfo(qemuMonitor *mon,
                             GHashTable **retinfo)
 {
     int ret = -1;
-    GHashTable *info = NULL;
+    g_autoptr(GHashTable) info = virHashNew(g_free);
 
     *retinfo = NULL;
 
     QEMU_CHECK_MONITOR(mon);
-
-    info = virHashNew(g_free);
 
     if (qemuMonitorJSONGetPRManagerInfo(mon, info) < 0)
         goto cleanup;
@@ -4530,7 +4528,6 @@ qemuMonitorGetPRManagerInfo(qemuMonitor *mon,
     *retinfo = g_steal_pointer(&info);
     ret = 0;
  cleanup:
-    virHashFree(info);
     return ret;
 }
 
