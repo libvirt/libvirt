@@ -1536,7 +1536,7 @@ testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
-    GHashTable *blockstats = NULL;
+    g_autoptr(GHashTable) blockstats = NULL;
     qemuBlockStats *stats;
     int ret = -1;
     g_autoptr(qemuMonitorTest) test = NULL;
@@ -1688,7 +1688,6 @@ testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *opaque)
 #undef CHECK0FULL
 
  cleanup:
-    virHashFree(blockstats);
     return ret;
 }
 
