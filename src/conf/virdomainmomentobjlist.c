@@ -274,10 +274,6 @@ virDomainMomentObjListNew(void)
 
     moments = g_new0(virDomainMomentObjList, 1);
     moments->objs = virHashNew(virDomainMomentObjListDataFree);
-    if (!moments->objs) {
-        VIR_FREE(moments);
-        return NULL;
-    }
     return moments;
 }
 
