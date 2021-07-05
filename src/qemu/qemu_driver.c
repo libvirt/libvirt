@@ -753,8 +753,7 @@ qemuStateInitialize(bool privileged,
     if (!(qemu_driver->hostdevMgr = virHostdevManagerGetDefault()))
         goto error;
 
-    if (!(qemu_driver->sharedDevices = virHashNew(qemuSharedDeviceEntryFree)))
-        goto error;
+    qemu_driver->sharedDevices = virHashNew(qemuSharedDeviceEntryFree);
 
     if (qemuMigrationDstErrorInit(qemu_driver) < 0)
         goto error;
