@@ -100,20 +100,9 @@ init_hash(void)
     if (xattr_paths)
         return;
 
-    if (!(xattr_paths = virHashNew(g_free))) {
-        fprintf(stderr, "Unable to create hash table for XATTR paths\n");
-        abort();
-    }
-
-    if (!(chown_paths = virHashNew(g_free))) {
-        fprintf(stderr, "Unable to create hash table for chowned paths\n");
-        abort();
-    }
-
-    if (!(selinux_paths = virHashNew(g_free))) {
-        fprintf(stderr, "Unable to create hash table for selinux labels\n");
-        abort();
-    }
+    xattr_paths = virHashNew(g_free);
+    chown_paths = virHashNew(g_free);
+    selinux_paths = virHashNew(g_free);
 }
 
 
