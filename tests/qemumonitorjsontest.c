@@ -1811,8 +1811,8 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
-    g_autoptr(GHashTable) info = NULL;
-    g_autoptr(GHashTable) expectedInfo = NULL;
+    g_autoptr(GHashTable) info = virHashNew(qemuMonitorChardevInfoFree);
+    g_autoptr(GHashTable) expectedInfo = virHashNew(NULL);
     qemuMonitorChardevInfo info0 = { NULL, VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT };
     qemuMonitorChardevInfo info1 = { (char *) "/dev/pts/21", VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED };
     qemuMonitorChardevInfo info2 = { (char *) "/dev/pts/20", VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT };
@@ -1820,10 +1820,6 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *opaque)
     g_autoptr(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
-        return -1;
-
-    if (!(info = virHashNew(qemuMonitorChardevInfoFree)) ||
-        !(expectedInfo = virHashNew(NULL)))
         return -1;
 
     if (virHashAddEntry(expectedInfo, "charserial1", &info1) < 0 ||
