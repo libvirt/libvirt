@@ -88,7 +88,7 @@ qemuInteropFetchConfigs(const char *name,
                         char ***configs,
                         bool privileged)
 {
-    g_autoptr(GHashTable) files = NULL;
+    g_autoptr(GHashTable) files = virHashNew(g_free);
     g_autofree char *homeConfig = NULL;
     g_autofree char *xdgConfig = NULL;
     g_autofree char *sysLocation = virFileBuildPath(QEMU_SYSTEM_LOCATION, name, NULL);
@@ -116,9 +116,6 @@ qemuInteropFetchConfigs(const char *name,
 
         homeConfig = g_strdup_printf("%s/qemu/%s", xdgConfig, name);
     }
-
-    if (!(files = virHashNew(g_free)))
-        return -1;
 
     if (qemuBuildFileList(files, sysLocation) < 0)
         return -1;
