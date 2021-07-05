@@ -585,11 +585,8 @@ testQemuGetLatestCaps(void)
         "s390x",
         "x86_64",
     };
-    GHashTable *capslatest;
+    GHashTable *capslatest = virHashNew(g_free);
     size_t i;
-
-    if (!(capslatest = virHashNew(g_free)))
-        goto error;
 
     VIR_TEST_VERBOSE("");
 
