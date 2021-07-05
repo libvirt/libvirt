@@ -75,12 +75,8 @@ virDomainObjList *virDomainObjListNew(void)
     if (!(doms = virObjectRWLockableNew(virDomainObjListClass)))
         return NULL;
 
-    if (!(doms->objs = virHashNew(virObjectFreeHashData)) ||
-        !(doms->objsName = virHashNew(virObjectFreeHashData))) {
-        virObjectUnref(doms);
-        return NULL;
-    }
-
+    doms->objs = virHashNew(virObjectFreeHashData);
+    doms->objsName = virHashNew(virObjectFreeHashData);
     return doms;
 }
 
