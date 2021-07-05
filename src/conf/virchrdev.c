@@ -265,13 +265,9 @@ virChrdevs *virChrdevAlloc(void)
 
     /* there will hardly be any devices most of the time, the hash
      * does not have to be huge */
-    if (!(devs->hash = virHashNew(virChrdevHashEntryFree)))
-        goto error;
+    devs->hash = virHashNew(virChrdevHashEntryFree);
 
     return devs;
- error:
-    virChrdevFree(devs);
-    return NULL;
 }
 
 /**
