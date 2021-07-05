@@ -5074,39 +5074,34 @@ qemuMonitorJSONGetAllBlockJobInfo(qemuMonitor *mon,
     virJSONValue *data;
     size_t nr_results;
     size_t i;
-    g_autoptr(GHashTable) blockJobs = NULL;
+    g_autoptr(GHashTable) blockJobs = virHashNew(g_free);
 
     cmd = qemuMonitorJSONMakeCommand("query-block-jobs", NULL);
     if (!cmd)
         return NULL;
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return NULL;
 
     if ((data = virJSONValueObjectGetArray(reply, "return")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("reply was missing return data"));
-        goto cleanup;
+        return NULL;
     }
 
     nr_results = virJSONValueArraySize(data);
-    blockJobs = virHashNew(g_free);
 
     for (i = 0; i < nr_results; i++) {
         virJSONValue *entry = virJSONValueArrayGet(data, i);
         if (!entry) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing array element"));
-            goto error;
+            return NULL;
         }
         if (qemuMonitorJSONParseBlockJobInfo(blockJobs, entry, rawjobname) < 0)
-            goto error;
+            return NULL;
     }
 
- cleanup:
     return g_steal_pointer(&blockJobs);
-
- error:
-    return NULL;
 }
 
 
