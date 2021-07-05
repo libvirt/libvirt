@@ -1388,8 +1388,7 @@ virDomainCCWAddressSetCreate(void)
 
     addrs = g_new0(virDomainCCWAddressSet, 1);
 
-    if (!(addrs->defined = virHashNew(g_free)))
-        goto error;
+    addrs->defined = virHashNew(g_free);
 
     /* must use cssid = 0xfe (254) for virtio-ccw devices */
     addrs->next.cssid = 254;
@@ -1397,10 +1396,6 @@ virDomainCCWAddressSetCreate(void)
     addrs->next.devno = 0;
     addrs->next.assigned = 0;
     return addrs;
-
- error:
-    virDomainCCWAddressSetFree(addrs);
-    return NULL;
 }
 
 
