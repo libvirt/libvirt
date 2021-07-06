@@ -2103,7 +2103,7 @@ qemuDomainDiskInfoFree(void *value)
 GHashTable *
 qemuMonitorGetBlockInfo(qemuMonitor *mon)
 {
-    GHashTable *table;
+    g_autoptr(GHashTable) table = NULL;
 
     QEMU_CHECK_MONITOR_NULL(mon);
 
@@ -2111,11 +2111,10 @@ qemuMonitorGetBlockInfo(qemuMonitor *mon)
         return NULL;
 
     if (qemuMonitorJSONGetBlockInfo(mon, table) < 0) {
-        virHashFree(table);
         return NULL;
     }
 
-    return table;
+    return g_steal_pointer(&table);
 }
 
 
