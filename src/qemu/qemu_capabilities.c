@@ -3045,8 +3045,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
         qemuMonitorCPUProperty *nmProp;
         size_t i;
 
-        if (!(hash = virHashNew(NULL)))
-            goto cleanup;
+        hash = virHashNew(NULL);
 
         for (i = 0; i < modelInfo->nprops; i++) {
             prop = modelInfo->props + i;
