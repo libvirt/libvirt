@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-06-25 08:08+0000\n"
-"PO-Revision-Date: 2021-06-28 06:04+0000\n"
+"PO-Revision-Date: 2021-07-03 15:04+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7\n"
+"X-Generator: Weblate 4.7.1\n"
 
 msgid ""
 "\n"
@@ -20715,9 +20715,8 @@ msgstr ""
 msgid "cache mode of disk device"
 msgstr "디스크 장치의 소스"
 
-#, fuzzy
 msgid "cachetune is only supported for KVM domains"
-msgstr "vhost-net은 virtio 네트워크 인터페이스에 대해서만 지원됨 "
+msgstr "캐시튠은 KVM 도메인에서만 지원합니다"
 
 msgid ""
 "calculate memory dirty rate within specified seconds, the supported value "
@@ -21188,9 +21187,9 @@ msgstr "동작 중인 도메인에 도메인 스냅샷을 제거 할 수 없습�
 msgid "cannot delete inactive domain with %d checkpoints"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot delete inactive domain with %d snapshots"
-msgstr "도메인 스냅샷 삭제 "
+msgstr "%d 스냅샷와 함께 비활성화 도메인을 삭제 할 수 있습니다"
 
 #, fuzzy
 msgid "cannot delete metadata of a snapshot with children"
@@ -21203,9 +21202,9 @@ msgstr "동작 중인 도메인의 스냅샷을 제거 할 수 없습니다"
 msgid "cannot detect host CPU model for %s architecture"
 msgstr "%s 구조에 대한 CPU 데이터를 복호화 할 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot determine filesystem for '%s'"
-msgstr "%s의 파일 시스템을 감지할 수 없습니다 "
+msgstr "'%s'에 파일 시스템을 결정 할 수 없습니다"
 
 #, fuzzy
 msgid "cannot do managed save for transient domain"
@@ -21407,13 +21406,13 @@ msgstr "'%s' 장치에 디스크 '%s'의 외부 스냅샷 이름을 생성 할 �
 
 #, c-format
 msgid "cannot generate external snapshot name for disk '%s' without source"
-msgstr "소스 없이 디스크 '%s'의 외부 스냅샷 이름을 생성할 수 없습니다 "
+msgstr "원천 없는 디스크 '%s'에 외부 스냅샷 이름을 생성 할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "cannot generate external snapshot name for disk '%s': collision with disk "
 "'%s'"
-msgstr "소스 없이 디스크 '%s'의 외부 스냅샷 이름을 생성할 수 없습니다 "
+msgstr "디스크 '%s'를 위해 외부 스냅샷 이름을 생성 할 수 없습니다: 디스크 '%s'와 충돌"
 
 #, c-format
 msgid "cannot get CPU affinity of process %d"
@@ -21502,11 +21501,10 @@ msgid "cannot get vcpupin for transient domain"
 msgstr "임시 도메인에 대해 autostart를 설정할 수 없음"
 
 msgid "cannot halt after snapshot of transient domain"
-msgstr "임시 도메인의 스냅샷 이후 중지할 수 없음 "
+msgstr "임시 도메인의 스냅샷 이후에는 중지 할 수 없습니다"
 
-#, fuzzy
 msgid "cannot halt after transient domain snapshot"
-msgstr "임시 도메인의 스냅샷 이후 중지할 수 없음 "
+msgstr "임시 도메인의 스냅샷 이후에는 중지 할 수 없습니다."
 
 #, c-format
 msgid "cannot hot unplug %s device with PCI guest address: "
@@ -21576,9 +21574,9 @@ msgstr "실행중이 아닌 도메인의 vcpu 목록을 얻을 수 없음"
 msgid "cannot load AppArmor profile '%s'"
 msgstr "AppArmor 프로파일 '%s'를 적재 할 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot load cert data from %s: %s"
-msgstr "볼륨 %s에서 데이터를 수신할 수 없음 "
+msgstr "%s: %s에서 인증서를 적재 할 수 없습니다"
 
 #, c-format
 msgid "cannot lookup default selinux label for tap fd %d"
@@ -21592,9 +21590,9 @@ msgstr "호스트 CPU 기능을 가져올 수 없습니다"
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot migrate domain with %d snapshots"
-msgstr "스냅샷에서 도메인이 누락되어 있음 "
+msgstr "%d 스냅샷와 함께 도메인을 이전 할 수 없습니다"
 
 #, fuzzy
 msgid "cannot migrate domain with I/O error"
@@ -21764,8 +21762,7 @@ msgstr "타겟 '%s'에서 파티션 번호를 구문분석할 수 없습니다"
 
 #, c-format
 msgid "cannot parse password validity time '%s', expect YYYY-MM-DDTHH:MM:SS"
-msgstr ""
-"암호 유효 기간 '%s'을 구문 분석할 수 없습니다, YYYY-MM-DDTHH:MM:SS가 필요 "
+msgstr "비밀번호 유효시간 '%s'을 구문 분석 할 수 없으며, YYYY-MM-DDTHH:MM:SS를 예상합니다"
 
 #, fuzzy, c-format
 msgid "cannot parse pci address '%s' for network interface"
@@ -22277,28 +22274,27 @@ msgstr "자료를 파일 '%s'에 작성 할 수 없습니다"
 msgid "cannot write to '%s' on bridge '%s'"
 msgstr ""
 
-#, fuzzy
 msgid "cannot write to stdout"
-msgstr "스트림에 쓸 수 없음"
+msgstr "표준 출력으로 작성 할 수 없습니다"
 
 msgid "cannot write to stream"
-msgstr "스트림에 쓸 수 없음"
+msgstr "스트림으로 작성 할 수 없습니다"
 
 msgid "cap for XEN_CREDIT"
-msgstr "XEN_CREDIT의 cap"
+msgstr "XEN_CREDIT를 위한 cap"
 
 msgid "capabilities"
 msgstr "기능"
 
 msgid "capability names, separated by comma"
-msgstr ""
+msgstr "쉼표로 구분 된 기능 이름"
 
 #, c-format
 msgid "capacity in %s cannot be zero without 'delta' or 'shrink' flags set"
-msgstr ""
+msgstr "%s에서 용량은 '델타' 또는 '축소' 플래그 설정 없이 0일 수 없습니다"
 
 msgid "capture disk state but not vm state"
-msgstr ""
+msgstr "vm 상태가 아니라 디스크 상태를 캡처합니다"
 
 #, fuzzy
 msgid "ccf-assist configuration is not supported by this QEMU binary"
