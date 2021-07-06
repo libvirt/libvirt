@@ -51,6 +51,8 @@ virNWFilterVarValue *virNWFilterVarValueCreateSimple(char *);
 virNWFilterVarValue *virNWFilterVarValueCreateSimpleCopyValue(const char *);
 virNWFilterVarValue *virNWFilterVarValueCopy(const virNWFilterVarValue *);
 void virNWFilterVarValueFree(virNWFilterVarValue *val);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNWFilterVarValue, virNWFilterVarValueFree);
+
 void virNWFilterVarValueHashFree(void *payload);
 const char *virNWFilterVarValueGetSimple(const virNWFilterVarValue *val);
 const char *virNWFilterVarValueGetNthValue(const virNWFilterVarValue *val,
