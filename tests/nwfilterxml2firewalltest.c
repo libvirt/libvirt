@@ -148,7 +148,7 @@ static GHashTable *
 virNWFilterCreateVarsFrom(GHashTable *vars1,
                           GHashTable *vars2)
 {
-    GHashTable *res = virHashNew(virNWFilterVarValueHashFree);
+    g_autoptr(GHashTable) res = virHashNew(virNWFilterVarValueHashFree);
 
     if (virNWFilterHashTablePutAll(vars1, res) < 0)
         goto err_exit;
@@ -156,10 +156,9 @@ virNWFilterCreateVarsFrom(GHashTable *vars1,
     if (virNWFilterHashTablePutAll(vars2, res) < 0)
         goto err_exit;
 
-    return res;
+    return g_steal_pointer(&res);
 
  err_exit:
-    virHashFree(res);
     return NULL;
 }
 
