@@ -200,8 +200,6 @@ virNWFilterCreateVarsFrom(GHashTable *vars1,
                           GHashTable *vars2)
 {
     GHashTable *res = virHashNew(virNWFilterVarValueHashFree);
-    if (!res)
-        return NULL;
 
     if (virNWFilterHashTablePutAll(vars1, res) < 0)
         goto error;
