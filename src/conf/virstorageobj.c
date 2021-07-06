@@ -398,11 +398,8 @@ virStoragePoolObjListNew(void)
     if (!(pools = virObjectRWLockableNew(virStoragePoolObjListClass)))
         return NULL;
 
-    if (!(pools->objs = virHashNew(virObjectFreeHashData)) ||
-        !(pools->objsName = virHashNew(virObjectFreeHashData))) {
-        virObjectUnref(pools);
-        return NULL;
-    }
+    pools->objs = virHashNew(virObjectFreeHashData);
+    pools->objsName = virHashNew(virObjectFreeHashData);
 
     return pools;
 }
