@@ -41,6 +41,8 @@ struct _virNWFilterBindingDef {
 
 void
 virNWFilterBindingDefFree(virNWFilterBindingDef *binding);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNWFilterBindingDef, virNWFilterBindingDefFree);
+
 virNWFilterBindingDef *
 virNWFilterBindingDefCopy(virNWFilterBindingDef *src);
 
