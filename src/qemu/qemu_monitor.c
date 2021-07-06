@@ -2162,8 +2162,7 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitor *mon,
     if (!(*ret_stats = virHashNew(g_free)))
         goto error;
 
-    ret = qemuMonitorJSONGetAllBlockStatsInfo(mon, *ret_stats,
-                                              backingChain);
+    ret = qemuMonitorJSONGetAllBlockStatsInfo(mon, *ret_stats, backingChain);
 
     if (ret < 0)
         goto error;
