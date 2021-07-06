@@ -958,11 +958,10 @@ virSystemdActivationNew(virSystemdActivationMap *map,
                         size_t nmap,
                         int nfds)
 {
-    virSystemdActivation *act;
+    g_autoptr(virSystemdActivation) act = g_new0(virSystemdActivation, 1);
     const char *fdnames;
 
     VIR_DEBUG("Activated with %d FDs", nfds);
-    act = g_new0(virSystemdActivation, 1);
 
     act->fds = virHashNew(virSystemdActivationEntryFree);
 
@@ -976,10 +975,9 @@ virSystemdActivationNew(virSystemdActivationMap *map,
     }
 
     VIR_DEBUG("Created activation object for %d FDs", nfds);
-    return act;
+    return g_steal_pointer(&act);
 
  error:
-    virSystemdActivationFree(act);
     return NULL;
 }
 
