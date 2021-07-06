@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-06-25 08:08+0000\n"
-"PO-Revision-Date: 2021-06-17 07:15+0000\n"
-"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
+"PO-Revision-Date: 2021-07-02 14:04+0000\n"
+"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
 "Language: fi\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.6.2\n"
+"X-Generator: Weblate 4.7.1\n"
 
 msgid ""
 "\n"
@@ -14516,7 +14516,7 @@ msgstr "Kohdeprosessoriytimet %s eivät vastaa lähdettä %s"
 
 #, c-format
 msgid "Target CPU dies %d does not match source %d"
-msgstr ""
+msgstr "Kohdesuoritinmalli %d ei vastaa lähdettä %d"
 
 msgid "Target CPU does not match source"
 msgstr ""
@@ -14547,19 +14547,19 @@ msgstr "Kohdeprosessoripistokkeet %d eivät vastaa lähdettä %d"
 
 #, c-format
 msgid "Target CPU threads %d does not match source %d"
-msgstr ""
+msgstr "Kohdeprosessorin säikeet %d eivät vastaa lähdettä %d"
 
 #, c-format
 msgid "Target CPU type %s does not match source %s"
-msgstr ""
+msgstr "Kohde-CPU-tyyppi %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target CPU vendor %s does not match source %s"
-msgstr ""
+msgstr "Kohde-CPU-toimittaja %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target CPU vendor id %s does not match source %s"
-msgstr ""
+msgstr "Kohde-CPU-toimittajan tunnus %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target NUMA distance from %zu to %zu doesn't match source"
@@ -14590,7 +14590,7 @@ msgstr ""
 
 #, c-format
 msgid "Target RNG model '%s' does not match source '%s'"
-msgstr ""
+msgstr "Kohde-RNG-malli '%s' ei vastaa lähdettä '%s'"
 
 msgid "Target TPM device model doesn't match source"
 msgstr ""
@@ -14645,7 +14645,7 @@ msgstr ""
 
 #, c-format
 msgid "Target balloon model %s does not match source %s"
-msgstr ""
+msgstr "Kohdepallomalli %s ei vastaa lähdettä %s"
 
 msgid "Target base board does not match source"
 msgstr ""
@@ -14738,18 +14738,18 @@ msgstr ""
 
 #, c-format
 msgid "Target disk %s does not match source %s"
-msgstr ""
+msgstr "Kohdelevy %s ei vastaa lähdettä %s"
 
 msgid "Target disk access mode does not match source"
 msgstr ""
 
 #, c-format
 msgid "Target disk bus %s does not match source %s"
-msgstr ""
+msgstr "Kohdelevyväylä %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target disk device %s does not match source %s"
-msgstr ""
+msgstr "Kohdelevylaite %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target disk model %s does not match source %s"
@@ -14761,11 +14761,11 @@ msgstr ""
 
 #, c-format
 msgid "Target disk serial %s does not match source %s"
-msgstr ""
+msgstr "Kohdelevysarja %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target disk wwn '%s' does not match source '%s'"
-msgstr ""
+msgstr "Kohdelevyn wwn '%s' ei vastaa lähdettä '%s'"
 
 #, c-format
 msgid ""
@@ -14802,7 +14802,7 @@ msgstr ""
 
 #, c-format
 msgid "Target domain RNG device count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen RNG-laitteen lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain SMBIOS mode %s does not match source %s"
@@ -14810,7 +14810,7 @@ msgstr ""
 
 #, c-format
 msgid "Target domain TPM device count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen TPM-laitteen lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
@@ -14822,15 +14822,15 @@ msgstr ""
 
 #, c-format
 msgid "Target domain channel count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen kanavan lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain console count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen konsolin lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain controller count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen ohjaimen lasku %zu ei vastaa lähdettä %zu"
 
 msgid "Target domain count of sysinfo does not match source"
 msgstr ""
@@ -14841,11 +14841,11 @@ msgstr ""
 
 #, c-format
 msgid "Target domain disk count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen levyn lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain filesystem count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen tiedostojärjestelmän lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain genid %s does not match source %s"
@@ -14853,15 +14853,15 @@ msgstr ""
 
 #, c-format
 msgid "Target domain host device count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen isäntälaitteen lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain hub device count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen keskitinlaitteen lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain input device count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen syöttölaitteen lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain machine type %s does not match source %s"
@@ -14877,7 +14877,7 @@ msgstr ""
 
 #, c-format
 msgid "Target domain memory device count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen muistilaitteen lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain memory slots count '%u' doesn't match source '%u'"
@@ -14893,7 +14893,7 @@ msgstr "Kohdetoimialueen verkkokorttien määrä %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain panic device count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen paniikkilaitteen lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain parallel port count %zu does not match source %zu"
@@ -14908,7 +14908,7 @@ msgstr ""
 
 #, c-format
 msgid "Target domain serial port count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen sarjaportin lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain shared memory device count %zu does not match source %zu"
@@ -14916,11 +14916,11 @@ msgstr ""
 
 #, c-format
 msgid "Target domain smartcard count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen alykortin lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain sound card count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen äänikortin lasku %zu ei vastaa lähdettä %zu"
 
 msgid "Target domain timers do not match source"
 msgstr ""
@@ -14935,7 +14935,7 @@ msgstr ""
 
 #, c-format
 msgid "Target domain video card count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen videokortin lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain virt type %s does not match source %s"
@@ -14976,11 +14976,11 @@ msgstr ""
 
 #, c-format
 msgid "Target input device bus %s does not match source %s"
-msgstr ""
+msgstr "Kohdesyötelaiteväylän lasku %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target input device type %s does not match source %s"
-msgstr ""
+msgstr "Kohdesyötelaitetyypin lasku %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target input model %s does not match source %s"
@@ -15037,7 +15037,7 @@ msgstr "Verkkoa ei löytynyt"
 
 #, c-format
 msgid "Target panic model '%s' does not match source '%s'"
-msgstr ""
+msgstr "Kohdepaniikkimallin lasku '%s' ei vastaa lähdettä '%s'"
 
 #, c-format
 msgid "Target parallel port %d does not match source %d"
@@ -15081,7 +15081,7 @@ msgstr ""
 
 #, c-format
 msgid "Target sound card model %s does not match source %s"
-msgstr ""
+msgstr "Kohde-äänikorttimallin lasku %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target sysinfo %s %s does not match source %s"
@@ -15100,7 +15100,7 @@ msgstr ""
 
 #, c-format
 msgid "Target timer %s does not match source %s"
-msgstr ""
+msgstr "Kohde-ajastin %s'ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target timer presence %d does not match source %d"
@@ -15131,7 +15131,7 @@ msgstr ""
 
 #, c-format
 msgid "Target video card model %s does not match source %s"
-msgstr ""
+msgstr "Kohdevideokorttimallin %s'ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target video card ram %u does not match source %u"
@@ -19701,9 +19701,9 @@ msgstr ""
 msgid "authentication cancelled"
 msgstr "Tunnistautuminen keskeytettiin"
 
-#, fuzzy, c-format
+#, c-format
 msgid "authentication cancelled: %s"
-msgstr "todennus epäonnistui: %s"
+msgstr "Tunnistautuminen keskeytettiin: %s"
 
 msgid "authentication failed"
 msgstr "todennus epäonnistui"
@@ -23023,9 +23023,8 @@ msgstr "laitteen nimi"
 msgid "device name or wwn pair in 'wwnn,wwpn' format"
 msgstr ""
 
-#, fuzzy
 msgid "device not found"
-msgstr "Toimialuetta ei löytynyt"
+msgstr "laitetta ei löydy"
 
 #, c-format
 msgid "device not found: %s"
@@ -23451,7 +23450,7 @@ msgstr "toimialue '%s' on jo käynnistetty"
 
 #, c-format
 msgid "domain '%s' is already defined with uuid %s"
-msgstr ""
+msgstr "toimialue '%s' on jo määritelty uuid:lla %s"
 
 #, c-format
 msgid "domain '%s' is not being migrated"
@@ -26756,7 +26755,7 @@ msgstr ""
 #, c-format
 msgid ""
 "interface %s - filterref is not supported for network interfaces of type %s"
-msgstr ""
+msgstr "liitäntä %s - filterref ei tueta verkkoliitännöissä tyyppiä %s"
 
 #, c-format
 msgid ""
@@ -28327,7 +28326,7 @@ msgid "lock owner details have not been registered"
 msgstr ""
 
 msgid "logfile not supported in this QEMU binary"
-msgstr ""
+msgstr "lokitiedosto ei tuettuna tällä QEMU-binaarilla"
 
 #, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
@@ -29750,7 +29749,7 @@ msgid "missing storage pool source device path"
 msgstr "puuttuva tallennusvarannon lähdelaitteen polku"
 
 msgid "missing storage pool source host name"
-msgstr ""
+msgstr "puuttuva tallennusvarannon lähde-isäntänimi"
 
 msgid "missing storage pool source path"
 msgstr "puuttuva tallennusvarannon lähteen polku"
@@ -29981,7 +29980,7 @@ msgstr ""
 "%s (network '%s'):ssa"
 
 msgid "multidevs is not supported with this QEMU binary"
-msgstr ""
+msgstr "multidevs ei ole tuettu tällä QEMU-binaarilla"
 
 #, c-format
 msgid "multiple <portgroup> elements with the same name (%s) in network '%s'"
@@ -31239,10 +31238,10 @@ msgid "only a single memory balloon device is supported"
 msgstr ""
 
 msgid "only a single nvram device is supported"
-msgstr ""
+msgstr "vain yksittäistä nvram-laitetta tuetaan"
 
 msgid "only a single vsock device is supported"
-msgstr ""
+msgstr "vain yksittäistä vsock-laitetta tuetaan"
 
 msgid "only a single watchdog device is supported"
 msgstr "vain yktä vahtikoiralaitetta tuetaan"
@@ -31343,7 +31342,7 @@ msgid "only single USB controller is supported"
 msgstr ""
 
 msgid "only single input device is supported"
-msgstr ""
+msgstr "vain yksittäistä syötelaitetta tuetaan"
 
 msgid "only snapshot=no is supported with vhostuser disk"
 msgstr ""
@@ -33165,7 +33164,7 @@ msgid "setting ACPI S4 not supported"
 msgstr ""
 
 msgid "setting MTU is not supported with this QEMU binary"
-msgstr ""
+msgstr "MTU:n määrittämistä ei tueta tällä QEMU-binaarilla"
 
 #, c-format
 msgid "setting MTU on interface type %s is not supported yet"
@@ -37116,7 +37115,7 @@ msgid "vgamem attribute only supported for video type qxl"
 msgstr ""
 
 msgid "vhost-net is not supported with this QEMU binary"
-msgstr ""
+msgstr "vhost-netiä ei tueta tällä QEMU-binaarilla"
 
 #, fuzzy
 msgid "vhost-net is only supported for virtio network interfaces"
@@ -37357,7 +37356,7 @@ msgid "virtiofs does not yet support read-only mode"
 msgstr ""
 
 msgid "virtiofs is not supported with this QEMU binary"
-msgstr ""
+msgstr "virtiofs:ta ei tueta tällä QEMU-binaarilla"
 
 msgid "virtiofs is not yet supported in session mode"
 msgstr ""
@@ -37407,7 +37406,7 @@ msgid "vlan trunking is not supported by SR-IOV network devices"
 msgstr ""
 
 msgid "vmcoreinfo is not available with this QEMU binary"
-msgstr ""
+msgstr "vmcoreinfo ei ole saatavana tällä QEMU-binaarilla"
 
 msgid ""
 "vmplayer does not support libvirt suspend/resume (vmware pause/unpause) "
