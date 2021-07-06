@@ -758,8 +758,7 @@ virSecuritySELinuxQEMUInitialize(virSecurityManager *mgr)
     VIR_DEBUG("Loaded file context '%s', content context '%s'",
               data->file_context, data->content_context);
 
-    if (!(data->mcs = virHashNew(NULL)))
-        goto error;
+    data->mcs = virHashNew(NULL);
 
     return 0;
 
