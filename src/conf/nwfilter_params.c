@@ -702,8 +702,6 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
     virNWFilterVarValue *value;
 
     GHashTable *table = virHashNew(virNWFilterVarValueHashFree);
-    if (!table)
-        return NULL;
 
     cur = cur->children;
 
