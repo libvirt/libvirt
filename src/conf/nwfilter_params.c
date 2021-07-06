@@ -703,7 +703,7 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
 
     GHashTable *table = virHashNew(virNWFilterVarValueHashFree);
 
-    cur = cur->children;
+    cur = xmlFirstElementChild(cur);
 
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
@@ -739,7 +739,7 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
                 VIR_FREE(val);
             }
         }
-        cur = cur->next;
+        cur = xmlNextElementSibling(cur);
     }
     return table;
 
