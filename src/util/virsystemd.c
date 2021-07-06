@@ -968,17 +968,14 @@ virSystemdActivationNew(virSystemdActivationMap *map,
     fdnames = getenv("LISTEN_FDNAMES");
     if (fdnames) {
         if (virSystemdActivationInitFromNames(act, nfds, fdnames) < 0)
-            goto error;
+            return NULL;
     } else {
         if (virSystemdActivationInitFromMap(act, nfds, map, nmap) < 0)
-            goto error;
+            return NULL;
     }
 
     VIR_DEBUG("Created activation object for %d FDs", nfds);
     return g_steal_pointer(&act);
-
- error:
-    return NULL;
 }
 
 
