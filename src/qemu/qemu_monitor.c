@@ -2154,7 +2154,7 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitor *mon,
                                 GHashTable **ret_stats,
                                 bool backingChain)
 {
-    int ret = -1;
+    int ret;
     VIR_DEBUG("ret_stats=%p, backing=%d", ret_stats, backingChain);
 
     QEMU_CHECK_MONITOR(mon);
