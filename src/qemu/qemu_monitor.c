@@ -2884,7 +2884,6 @@ int
 qemuMonitorGetChardevInfo(qemuMonitor *mon,
                           GHashTable **retinfo)
 {
-    int ret;
     GHashTable *info = NULL;
 
     VIR_DEBUG("retinfo=%p", retinfo);
@@ -2894,9 +2893,7 @@ qemuMonitorGetChardevInfo(qemuMonitor *mon,
     if (!(info = virHashNew(qemuMonitorChardevInfoFree)))
         goto error;
 
-    ret = qemuMonitorJSONGetChardevInfo(mon, info);
-
-    if (ret < 0)
+    if (qemuMonitorJSONGetChardevInfo(mon, info) < 0)
         goto error;
 
     *retinfo = info;
