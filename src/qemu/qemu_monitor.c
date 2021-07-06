@@ -2103,7 +2103,6 @@ qemuDomainDiskInfoFree(void *value)
 GHashTable *
 qemuMonitorGetBlockInfo(qemuMonitor *mon)
 {
-    int ret;
     GHashTable *table;
 
     QEMU_CHECK_MONITOR_NULL(mon);
@@ -2111,9 +2110,7 @@ qemuMonitorGetBlockInfo(qemuMonitor *mon)
     if (!(table = virHashNew(qemuDomainDiskInfoFree)))
         return NULL;
 
-    ret = qemuMonitorJSONGetBlockInfo(mon, table);
-
-    if (ret < 0) {
+    if (qemuMonitorJSONGetBlockInfo(mon, table) < 0) {
         virHashFree(table);
         return NULL;
     }
