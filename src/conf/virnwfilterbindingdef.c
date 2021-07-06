@@ -49,9 +49,7 @@ virNWFilterBindingDefFree(virNWFilterBindingDef *def)
 virNWFilterBindingDef *
 virNWFilterBindingDefCopy(virNWFilterBindingDef *src)
 {
-    virNWFilterBindingDef *ret;
-
-    ret = g_new0(virNWFilterBindingDef, 1);
+    g_autoptr(virNWFilterBindingDef) ret = g_new0(virNWFilterBindingDef, 1);
 
     ret->ownername = g_strdup(src->ownername);
 
@@ -70,10 +68,9 @@ virNWFilterBindingDefCopy(virNWFilterBindingDef *src)
     if (virNWFilterHashTablePutAll(src->filterparams, ret->filterparams) < 0)
         goto error;
 
-    return ret;
+    return g_steal_pointer(&ret);
 
  error:
-    virNWFilterBindingDefFree(ret);
     return NULL;
 }
 
