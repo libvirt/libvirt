@@ -118,8 +118,7 @@ virNetworkObjNew(void)
         virBitmapSetBitExpand(obj->classIdMap, 2) < 0)
         goto error;
 
-    if (!(obj->ports = virHashNew(virNetworkObjPortFree)))
-        goto error;
+    obj->ports = virHashNew(virNetworkObjPortFree);
 
     virObjectLock(obj);
 
