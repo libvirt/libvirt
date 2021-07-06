@@ -2155,26 +2155,22 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitor *mon,
                                 bool backingChain)
 {
     int ret;
-    GHashTable *stats = NULL;
+    g_autoptr(GHashTable) stats = NULL;
+
     VIR_DEBUG("ret_stats=%p, backing=%d", ret_stats, backingChain);
 
     QEMU_CHECK_MONITOR(mon);
 
     if (!(stats = virHashNew(g_free)))
-        goto error;
+        return -1;
 
     ret = qemuMonitorJSONGetAllBlockStatsInfo(mon, stats, backingChain);
 
     if (ret < 0)
-        goto error;
+        return -1;
 
-    *ret_stats = stats;
+    *ret_stats = g_steal_pointer(&stats);
     return ret;
-
- error:
-    virHashFree(stats);
-    *ret_stats = NULL;
-    return -1;
 }
 
 
