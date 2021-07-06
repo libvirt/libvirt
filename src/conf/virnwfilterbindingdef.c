@@ -66,12 +66,9 @@ virNWFilterBindingDefCopy(virNWFilterBindingDef *src)
     ret->filterparams = virHashNew(virNWFilterVarValueHashFree);
 
     if (virNWFilterHashTablePutAll(src->filterparams, ret->filterparams) < 0)
-        goto error;
+        return NULL;
 
     return g_steal_pointer(&ret);
-
- error:
-    return NULL;
 }
 
 
