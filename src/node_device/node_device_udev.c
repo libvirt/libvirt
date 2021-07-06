@@ -1067,7 +1067,7 @@ udevProcessMediatedDevice(struct udev_device *dev,
         return -1;
     }
 
-    udevGenerateDeviceName(dev, def, NULL);
+    udevGenerateDeviceName(dev, def, data->parent_addr);
 
     data->iommuGroupNumber = iommugrp;
 

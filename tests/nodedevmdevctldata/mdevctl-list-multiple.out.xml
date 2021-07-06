@@ -1,5 +1,5 @@
 <device>
-  <name>mdev_200f228a_c80a_4d50_bfb7_f5a0e4e34045</name>
+  <name>mdev_200f228a_c80a_4d50_bfb7_f5a0e4e34045_0000_00_02_0</name>
   <parent>pci_0000_00_02_0</parent>
   <capability type='mdev'>
     <type id='i915-GVTg_V5_4'/>
@@ -8,7 +8,7 @@
   </capability>
 </device>
 <device>
-  <name>mdev_de807ffc_1923_4d5f_b6c9_b20ecebc6d4b</name>
+  <name>mdev_de807ffc_1923_4d5f_b6c9_b20ecebc6d4b_0000_00_02_0</name>
   <parent>pci_0000_00_02_0</parent>
   <capability type='mdev'>
     <type id='i915-GVTg_V5_4'/>
@@ -17,7 +17,7 @@
   </capability>
 </device>
 <device>
-  <name>mdev_435722ea_5f43_468a_874f_da34f1217f13</name>
+  <name>mdev_435722ea_5f43_468a_874f_da34f1217f13_0000_00_02_0</name>
   <parent>pci_0000_00_02_0</parent>
   <capability type='mdev'>
     <type id='i915-GVTg_V5_8'/>
@@ -27,7 +27,7 @@
   </capability>
 </device>
 <device>
-  <name>mdev_783e6dbb_ea0e_411f_94e2_717eaad438bf</name>
+  <name>mdev_783e6dbb_ea0e_411f_94e2_717eaad438bf_matrix</name>
   <parent>ap_matrix</parent>
   <capability type='mdev'>
     <type id='vfio_ap-passthrough'/>

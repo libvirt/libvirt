@@ -1028,7 +1028,8 @@ nodeDeviceGetMdevctlListCommand(bool defined,
 
 static void mdevGenerateDeviceName(virNodeDeviceDef *dev)
 {
-    nodeDeviceGenerateName(dev, "mdev", dev->caps->data.mdev.uuid, NULL);
+    nodeDeviceGenerateName(dev, "mdev", dev->caps->data.mdev.uuid,
+                           dev->caps->data.mdev.parent_addr);
 }
 
 
