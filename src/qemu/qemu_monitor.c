@@ -2884,14 +2884,11 @@ int
 qemuMonitorGetChardevInfo(qemuMonitor *mon,
                           GHashTable **retinfo)
 {
-    g_autoptr(GHashTable) info = NULL;
+    g_autoptr(GHashTable) info = virHashNew(qemuMonitorChardevInfoFree);
 
     VIR_DEBUG("retinfo=%p", retinfo);
 
     QEMU_CHECK_MONITOR(mon);
-
-    if (!(info = virHashNew(qemuMonitorChardevInfoFree)))
-        return -1;
 
     if (qemuMonitorJSONGetChardevInfo(mon, info) < 0)
         return -1;
