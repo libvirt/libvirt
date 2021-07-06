@@ -1998,27 +1998,10 @@ virNWFilterDHCPSnoopInit(void)
     virNWFilterSnoopState.snoopReqs =
         virHashNew(virNWFilterSnoopReqRelease);
 
-    if (!virNWFilterSnoopState.ifnameToKey ||
-        !virNWFilterSnoopState.snoopReqs ||
-        !virNWFilterSnoopState.active)
-        goto error;
-
     virNWFilterSnoopLeaseFileLoad();
     virNWFilterSnoopLeaseFileOpen();
 
     return 0;
-
- error:
-    virHashFree(virNWFilterSnoopState.ifnameToKey);
-    virNWFilterSnoopState.ifnameToKey = NULL;
-
-    virHashFree(virNWFilterSnoopState.snoopReqs);
-    virNWFilterSnoopState.snoopReqs = NULL;
-
-    virHashFree(virNWFilterSnoopState.active);
-    virNWFilterSnoopState.active = NULL;
-
-    return -1;
 }
 
 /**
