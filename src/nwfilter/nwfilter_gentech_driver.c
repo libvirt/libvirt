@@ -1007,8 +1007,7 @@ virNWFilterBuildAll(virNWFilterDriverState *driver,
     VIR_DEBUG("Build all filters newFilters=%d", newFilters);
 
     if (newFilters) {
-        if (!(data.skipInterfaces = virHashNew(NULL)))
-            return -1;
+        data.skipInterfaces = virHashNew(NULL);
 
         data.step = STEP_APPLY_NEW;
         if (virNWFilterBindingObjListForEach(driver->bindings,
