@@ -519,11 +519,6 @@ virNWFilterDoInstantiate(virNWFilterTechDriver *techdriver,
 
     memset(&inst, 0, sizeof(inst));
 
-    if (!missing_vars) {
-        rc = -1;
-        goto error;
-    }
-
     rc = virNWFilterDetermineMissingVarsRec(filter,
                                             binding->filterparams,
                                             missing_vars,
