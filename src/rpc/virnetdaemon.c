@@ -141,8 +141,7 @@ virNetDaemonNew(void)
     if (!(dmn = virObjectLockableNew(virNetDaemonClass)))
         return NULL;
 
-    if (!(dmn->servers = virHashNew(virObjectFreeHashData)))
-        goto error;
+    dmn->servers = virHashNew(virObjectFreeHashData);
 
 #ifndef WIN32
     dmn->sigwrite = dmn->sigread = -1;
