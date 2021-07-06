@@ -261,8 +261,8 @@ virNWFilterRuleDefToRuleInst(virNWFilterDef *def,
     ruleinst->chainPriority = def->chainPriority;
     ruleinst->def = rule;
     ruleinst->priority = rule->priority;
-    if (!(ruleinst->vars = virHashNew(virNWFilterVarValueHashFree)))
-        goto cleanup;
+    ruleinst->vars = virHashNew(virNWFilterVarValueHashFree);
+
     if (virNWFilterHashTablePutAll(vars, ruleinst->vars) < 0)
         goto cleanup;
 
