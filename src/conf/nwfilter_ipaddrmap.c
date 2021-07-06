@@ -150,9 +150,6 @@ int
 virNWFilterIPAddrMapInit(void)
 {
     ipAddressMap = virHashNew(virNWFilterVarValueHashFree);
-    if (!ipAddressMap)
-        return -1;
-
     return 0;
 }
 
