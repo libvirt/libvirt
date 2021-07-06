@@ -774,16 +774,8 @@ virNWFilterLearnInit(void)
 
     VIR_DEBUG("Initializing IP address learning");
     threadsTerminate = false;
-
     pendingLearnReq = virHashNew(freeLearnReqEntry);
-    if (!pendingLearnReq)
-        return -1;
-
     ifaceLockMap = virHashNew(g_free);
-    if (!ifaceLockMap) {
-        virNWFilterLearnShutdown();
-        return -1;
-    }
 
     return 0;
 }
