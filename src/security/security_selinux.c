@@ -687,8 +687,7 @@ virSecuritySELinuxLXCInitialize(virSecurityManager *mgr)
         goto error;
     }
 
-    if (!(data->mcs = virHashNew(NULL)))
-        goto error;
+    data->mcs = virHashNew(NULL);
 
     return 0;
 
