@@ -151,15 +151,12 @@ virNWFilterCreateVarsFrom(GHashTable *vars1,
     g_autoptr(GHashTable) res = virHashNew(virNWFilterVarValueHashFree);
 
     if (virNWFilterHashTablePutAll(vars1, res) < 0)
-        goto err_exit;
+        return NULL;
 
     if (virNWFilterHashTablePutAll(vars2, res) < 0)
-        goto err_exit;
+        return NULL;
 
     return g_steal_pointer(&res);
-
- err_exit:
-    return NULL;
 }
 
 
