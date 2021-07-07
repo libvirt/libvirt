@@ -519,6 +519,7 @@ virDomainNetDefActualFromNetworkPort;
 virDomainNetDefActualToNetworkPort;
 virDomainNetDefFormat;
 virDomainNetDefFree;
+virDomainNetDefIsOvsport;
 virDomainNetDefNew;
 virDomainNetDefToNetworkPort;
 virDomainNetDHCPInterfaces;

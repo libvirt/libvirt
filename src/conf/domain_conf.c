@@ -29107,6 +29107,17 @@ virDomainNetGetActualVirtPortProfile(const virDomainNetDef *iface)
     }
 }
 
+/* Check whether the port is an ovs managed port */
+bool
+virDomainNetDefIsOvsport(const virDomainNetDef *net)
+{
+    const virNetDevVPortProfile *vport = virDomainNetGetActualVirtPortProfile(net);
+    virDomainNetType actualType = virDomainNetGetActualType(net);
+
+    return (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) && vport &&
+        vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH;
+}
+
 const virNetDevBandwidth *
 virDomainNetGetActualBandwidth(const virDomainNetDef *iface)
 {

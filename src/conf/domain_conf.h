@@ -3612,6 +3612,8 @@ int virDomainNetGetActualDirectMode(const virDomainNetDef *iface);
 virDomainHostdevDef *virDomainNetGetActualHostdev(virDomainNetDef *iface);
 const virNetDevVPortProfile *
 virDomainNetGetActualVirtPortProfile(const virDomainNetDef *iface);
+bool
+virDomainNetDefIsOvsport(const virDomainNetDef *net);
 const virNetDevBandwidth *
 virDomainNetGetActualBandwidth(const virDomainNetDef *iface);
 const virNetDevVlan *virDomainNetGetActualVlan(const virDomainNetDef *iface);
