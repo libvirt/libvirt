@@ -226,6 +226,7 @@ virDiskNameParse;
 virDiskNameToBusDeviceIndex;
 virDiskNameToIndex;
 virDomainActualNetDefFree;
+virDomainAudioDefFree;
 virDomainAudioFormatTypeFromString;
 virDomainAudioFormatTypeToString;
 virDomainAudioIOCommonIsSet;
