@@ -11599,7 +11599,8 @@ qemuDomainInterfaceSetDefaultQDisc(virQEMUDriver *driver,
         actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
         actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        if (virNetDevBandwidthSetRootQDisc(net->ifname, "noqueue") < 0)
+        if (!virDomainNetDefIsOvsport(net) &&
+            virNetDevBandwidthSetRootQDisc(net->ifname, "noqueue") < 0)
             return -1;
     }
 
