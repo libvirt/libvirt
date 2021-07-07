@@ -30,6 +30,7 @@
         <latency initiator='0' target='0' type='access' value='5'/>
         <latency initiator='0' target='0' cache='1' type='access' value='10'/>
         <bandwidth initiator='0' target='0' type='access' value='204800' unit='KiB'/>
+        <bandwidth initiator='0' target='0' cache='1' type='access' value='208896' unit='KiB'/>
       </interconnects>
     </numa>
   </cpu>

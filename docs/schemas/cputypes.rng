@@ -250,6 +250,11 @@
             <attribute name="target">
               <ref name="unsignedInt"/>
             </attribute>
+            <optional>
+              <attribute name="cache">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
             <attribute name="type">
               <choice>
                 <value>access</value>
