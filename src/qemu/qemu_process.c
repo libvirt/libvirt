@@ -7966,7 +7966,6 @@ void qemuProcessStop(virQEMUDriver *driver,
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDef *net = def->nets[i];
         vport = virDomainNetGetActualVirtPortProfile(net);
-
         switch (virDomainNetGetActualType(net)) {
         case VIR_DOMAIN_NET_TYPE_DIRECT:
             ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
@@ -8022,6 +8021,12 @@ void qemuProcessStop(virQEMUDriver *driver,
                 virDomainNetReleaseActualDevice(conn, vm->def, net);
             else
                 VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
+        }
+
+        if (virDomainNetDefIsOvsport(net) &&
+            virNetDevOpenvswitchInterfaceClearQos(net->ifname, vm->def->uuid) < 0) {
+            VIR_WARN("cannot clear bandwidth setting for ovs device : %s",
+                     net->ifname);
         }
     }
 

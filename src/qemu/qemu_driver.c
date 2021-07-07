@@ -10231,6 +10231,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     bool inboundSpecified = false, outboundSpecified = false;
     int actualType;
     bool qosSupported = true;
+    bool ovsType = false;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -10277,6 +10278,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     if (net) {
         actualType = virDomainNetGetActualType(net);
         qosSupported = virNetDevSupportsBandwidth(actualType);
+        ovsType = virDomainNetDefIsOvsport(net);
     }
 
     if (qosSupported && persistentNet) {
@@ -10366,8 +10368,25 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
             }
         }
 
-        if (virNetDevBandwidthSet(net->ifname, newBandwidth, false,
-                                  !virDomainNetTypeSharesHostView(net)) < 0) {
+        if (ovsType) {
+            if (virNetDevOpenvswitchInterfaceSetQos(net->ifname, newBandwidth,
+                                                    vm->def->uuid,
+                                                    !virDomainNetTypeSharesHostView(net)) < 0) {
+                virErrorPtr orig_err;
+
+                virErrorPreserveLast(&orig_err);
+                ignore_value(virNetDevOpenvswitchInterfaceSetQos(net->ifname, newBandwidth,
+                                                                 vm->def->uuid,
+                                                                 !virDomainNetTypeSharesHostView(net)));
+                if (net->bandwidth) {
+                    ignore_value(virDomainNetBandwidthUpdate(net,
+                                                             net->bandwidth));
+                }
+                virErrorRestore(&orig_err);
+                goto endjob;
+            }
+        } else if (virNetDevBandwidthSet(net->ifname, newBandwidth, false,
+                                         !virDomainNetTypeSharesHostView(net)) < 0) {
             virErrorPtr orig_err;
 
             virErrorPreserveLast(&orig_err);

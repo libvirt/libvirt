@@ -1409,9 +1409,15 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     actualBandwidth = virDomainNetGetActualBandwidth(net);
     if (actualBandwidth) {
         if (virNetDevSupportsBandwidth(actualType)) {
-            if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false,
-                                      !virDomainNetTypeSharesHostView(net)) < 0)
+            if (virDomainNetDefIsOvsport(net)) {
+                if (virNetDevOpenvswitchInterfaceSetQos(net->ifname, actualBandwidth,
+                                                        vm->def->uuid,
+                                                        !virDomainNetTypeSharesHostView(net)) < 0)
+                    goto cleanup;
+            } else if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false,
+                                             !virDomainNetTypeSharesHostView(net)) < 0) {
                 goto cleanup;
+            }
         } else {
             VIR_WARN("setting bandwidth on interfaces of "
                      "type '%s' is not implemented yet",
@@ -3914,9 +3920,15 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         const virNetDevBandwidth *newb = virDomainNetGetActualBandwidth(newdev);
 
         if (newb) {
-            if (virNetDevBandwidthSet(newdev->ifname, newb, false,
-                                      !virDomainNetTypeSharesHostView(newdev)) < 0)
+            if (virDomainNetDefIsOvsport(newdev)) {
+                if (virNetDevOpenvswitchInterfaceSetQos(newdev->ifname, newb,
+                                                        vm->def->uuid,
+                                                        !virDomainNetTypeSharesHostView(newdev)) < 0)
+                    goto cleanup;
+            } else if (virNetDevBandwidthSet(newdev->ifname, newb, false,
+                                             !virDomainNetTypeSharesHostView(newdev)) < 0) {
                 goto cleanup;
+            }
         } else {
             /*
              * virNetDevBandwidthSet() doesn't clear any existing
@@ -4665,11 +4677,16 @@ qemuDomainRemoveNetDevice(virQEMUDriver *driver,
     if (!(charDevAlias = qemuAliasChardevFromDevAlias(net->info.alias)))
         return -1;
 
-    if (virDomainNetGetActualBandwidth(net) &&
-        virNetDevSupportsBandwidth(virDomainNetGetActualType(net)) &&
-        virNetDevBandwidthClear(net->ifname) < 0)
-        VIR_WARN("cannot clear bandwidth setting for device : %s",
-                 net->ifname);
+    if (virNetDevSupportsBandwidth(virDomainNetGetActualType(net))) {
+        if (virDomainNetDefIsOvsport(net)) {
+            if (virNetDevOpenvswitchInterfaceClearQos(net->ifname, vm->def->uuid) < 0)
+                VIR_WARN("cannot clear bandwidth setting for ovs device : %s",
+                         net->ifname);
+        } else if (virNetDevBandwidthClear(net->ifname) < 0) {
+            VIR_WARN("cannot clear bandwidth setting for device : %s",
+                     net->ifname);
+        }
+    }
 
     /* deactivate the tap/macvtap device on the host, which could also
      * affect the parent device (e.g. macvtap passthrough mode sets

@@ -8611,9 +8611,15 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     actualBandwidth = virDomainNetGetActualBandwidth(net);
     if (actualBandwidth) {
         if (virNetDevSupportsBandwidth(actualType)) {
-            if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false,
-                                      !virDomainNetTypeSharesHostView(net)) < 0)
+            if (virDomainNetDefIsOvsport(net)) {
+                if (virNetDevOpenvswitchInterfaceSetQos(net->ifname, actualBandwidth,
+                                                        def->uuid,
+                                                        !virDomainNetTypeSharesHostView(net)) < 0)
+                    goto cleanup;
+            } else if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false,
+                                             !virDomainNetTypeSharesHostView(net)) < 0) {
                 goto cleanup;
+            }
         } else {
             VIR_WARN("setting bandwidth on interfaces of "
                      "type '%s' is not implemented yet",
