@@ -1,6 +1,6 @@
 <device>
   <name>mdev_200f228a_c80a_4d50_bfb7_f5a0e4e34045</name>
-  <parent>0000:00:02.0</parent>
+  <parent>computer</parent>
   <capability type='mdev'>
     <type id='i915-GVTg_V5_4'/>
     <uuid>200f228a-c80a-4d50-bfb7-f5a0e4e34045</uuid>
@@ -9,7 +9,7 @@
 </device>
 <device>
   <name>mdev_de807ffc_1923_4d5f_b6c9_b20ecebc6d4b</name>
-  <parent>0000:00:02.0</parent>
+  <parent>computer</parent>
   <capability type='mdev'>
     <type id='i915-GVTg_V5_4'/>
     <uuid>de807ffc-1923-4d5f-b6c9-b20ecebc6d4b</uuid>
@@ -18,7 +18,7 @@
 </device>
 <device>
   <name>mdev_435722ea_5f43_468a_874f_da34f1217f13</name>
-  <parent>0000:00:02.0</parent>
+  <parent>computer</parent>
   <capability type='mdev'>
     <type id='i915-GVTg_V5_8'/>
     <uuid>435722ea-5f43-468a-874f-da34f1217f13</uuid>
@@ -28,7 +28,7 @@
 </device>
 <device>
   <name>mdev_783e6dbb_ea0e_411f_94e2_717eaad438bf</name>
-  <parent>matrix</parent>
+  <parent>computer</parent>
   <capability type='mdev'>
     <type id='vfio_ap-passthrough'/>
     <uuid>783e6dbb-ea0e-411f-94e2-717eaad438bf</uuid>
