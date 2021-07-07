@@ -231,7 +231,7 @@ fakeRootDevice(void)
  * parent of the mdev, and it needs a PCI address
  */
 static virNodeDeviceDef *
-fakeParentDevice(void)
+fakePCIDevice(void)
 {
     virNodeDeviceDef *def = NULL;
     virNodeDevCapPCIDev *pci_dev;
@@ -252,6 +252,29 @@ fakeParentDevice(void)
     return def;
 }
 
+
+/* Add a fake matrix device that can be used as a parent device for mediated
+ * devices. For our purposes, it only needs to have a name that matches the
+ * parent of the mdev, and it needs the proper name
+ */
+static virNodeDeviceDef *
+fakeMatrixDevice(void)
+{
+    virNodeDeviceDef *def = NULL;
+    virNodeDevCapAPMatrix *cap;
+
+    def = g_new0(virNodeDeviceDef, 1);
+    def->caps = g_new0(virNodeDevCapsDef, 1);
+
+    def->name = g_strdup("ap_matrix");
+    def->parent = g_strdup("computer");
+
+    def->caps->data.type = VIR_NODE_DEV_CAP_AP_MATRIX;
+    cap = &def->caps->data.ap_matrix;
+    cap->addr = g_strdup("matrix");
+
+    return def;
+}
 static int
 addDevice(virNodeDeviceDef *def)
 {
@@ -274,7 +297,8 @@ static int
 nodedevTestDriverAddTestDevices(void)
 {
     if (addDevice(fakeRootDevice()) < 0 ||
-        addDevice(fakeParentDevice()) < 0)
+        addDevice(fakePCIDevice()) < 0 ||
+        addDevice(fakeMatrixDevice()) < 0)
         return -1;
 
     return 0;

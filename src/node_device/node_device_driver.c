@@ -648,17 +648,11 @@ nodeDeviceDefToMdevctlConfig(virNodeDeviceDef *def, char **buf)
 
 
 static char *
-nodeDeviceFindAddressByName(const char *name)
+nodeDeviceObjFormatAddress(virNodeDeviceObj *obj)
 {
-    virNodeDeviceDef *def = NULL;
     virNodeDevCapsDef *caps = NULL;
     char *addr = NULL;
-    virNodeDeviceObj *dev = virNodeDeviceObjListFindByName(driver->devs, name);
-
-    if (!dev)
-        return NULL;
-
-    def = virNodeDeviceObjGetDef(dev);
+    virNodeDeviceDef *def = virNodeDeviceObjGetDef(obj);
     for (caps = def->caps; caps != NULL; caps = caps->next) {
         switch (caps->data.type) {
         case VIR_NODE_DEV_CAP_PCI_DEV: {
@@ -714,8 +708,6 @@ nodeDeviceFindAddressByName(const char *name)
             break;
     }
 
-    virNodeDeviceObjEndAPI(&dev);
-
     return addr;
 }
 
@@ -730,6 +722,7 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
     g_autoptr(virCommand) cmd = NULL;
     const char *subcommand = virMdevctlCommandTypeToString(cmd_type);
     g_autofree char *inbuf = NULL;
+    virNodeDeviceObj *parent_obj = NULL;
 
     switch (cmd_type) {
     case MDEVCTL_CMD_CREATE:
@@ -754,7 +747,10 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
     switch (cmd_type) {
     case MDEVCTL_CMD_CREATE:
     case MDEVCTL_CMD_DEFINE:
-        parent_addr = nodeDeviceFindAddressByName(def->parent);
+        if ((parent_obj = nodeDeviceObjFindByName(def->parent))) {
+            parent_addr = nodeDeviceObjFormatAddress(parent_obj);
+            virNodeDeviceObjEndAPI(&parent_obj);
+        }
 
         if (!parent_addr) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1042,6 +1038,21 @@ static void mdevGenerateDeviceName(virNodeDeviceDef *dev)
 }
 
 
+static bool
+matchDeviceAddress(virNodeDeviceObj *obj,
+                   const void *opaque)
+{
+    g_autofree char *addr = NULL;
+    bool want = false;
+
+    virObjectLock(obj);
+    addr = nodeDeviceObjFormatAddress(obj);
+    want = STREQ_NULLABLE(addr, opaque);
+    virObjectUnlock(obj);
+    return want;
+}
+
+
 static virNodeDeviceDef*
 nodeDeviceParseMdevctlChildDevice(const char *parent,
                                   virJSONValue *json)
@@ -1051,7 +1062,7 @@ nodeDeviceParseMdevctlChildDevice(const char *parent,
     virJSONValue *props;
     virJSONValue *attrs;
     g_autoptr(virNodeDeviceDef) child = g_new0(virNodeDeviceDef, 1);
-    g_autofree char *parent_sysfs_path = NULL;
+    virNodeDeviceObj *parent_obj;
 
     /* the child object should have a single key equal to its uuid.
      * The value is an object describing the properties of the mdev */
@@ -1064,20 +1075,12 @@ nodeDeviceParseMdevctlChildDevice(const char *parent,
     /* Look up id of parent device. mdevctl supports defining mdevs for parent
      * devices that are not present on the system (to support starting mdevs on
      * hotplug, etc) so the parent may not actually exist. */
-    parent_sysfs_path = g_strdup_printf("/sys/class/mdev_bus/%s", parent);
-    if (virFileExists(parent_sysfs_path)) {
-        g_autofree char *canon_syspath = virFileCanonicalizePath(parent_sysfs_path);
-        virNodeDeviceObj *parentobj = NULL;
-
-        if ((parentobj = virNodeDeviceObjListFindBySysfsPath(driver->devs,
-                                                             canon_syspath))) {
-            virNodeDeviceDef *parentdef = virNodeDeviceObjGetDef(parentobj);
-            child->parent = g_strdup(parentdef->name);
-            virNodeDeviceObjEndAPI(&parentobj);
-
-            child->parent_sysfs_path = g_steal_pointer(&canon_syspath);
-        }
-    }
+    if ((parent_obj = virNodeDeviceObjListFind(driver->devs, matchDeviceAddress,
+                                               (void *)parent))) {
+        virNodeDeviceDef *parentdef = virNodeDeviceObjGetDef(parent_obj);
+        child->parent = g_strdup(parentdef->name);
+        virNodeDeviceObjEndAPI(&parent_obj);
+    };
     if (!child->parent)
         child->parent = g_strdup("computer");
     child->caps = g_new0(virNodeDevCapsDef, 1);
