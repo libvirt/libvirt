@@ -428,8 +428,8 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         return false;
     }
 
-    if (tree && (cap_str || inactive || all)) {
-        vshError(ctl, "%s", _("Option --tree is incompatible with other options"));
+    if (tree && (cap_str || inactive)) {
+        vshError(ctl, "%s", _("Option --tree is incompatible with --cap and --inactive"));
         return false;
     }
 
