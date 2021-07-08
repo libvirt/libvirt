@@ -942,6 +942,7 @@ virQEMUCapsGetMachineTypesCaps(virQEMUCaps *qemuCaps,
 {
     size_t i;
     virQEMUCapsAccel *accel;
+    g_autoptr(GPtrArray) array = NULL;
 
     /* Guest capabilities do not report TCG vs. KVM caps separately. We just
      * take the set of machine types we probed first. */
@@ -953,13 +954,13 @@ virQEMUCapsGetMachineTypesCaps(virQEMUCaps *qemuCaps,
     *machines = NULL;
     *nmachines = accel->nmachineTypes;
 
-    if (*nmachines)
-        *machines = g_new0(virCapsGuestMachine *, accel->nmachineTypes);
+    if (*nmachines == 0)
+        return 0;
+
+    array = g_ptr_array_sized_new(*nmachines);
 
     for (i = 0; i < accel->nmachineTypes; i++) {
-        virCapsGuestMachine *mach;
-        mach = g_new0(virCapsGuestMachine, 1);
-        (*machines)[i] = mach;
+        virCapsGuestMachine *mach = g_new0(virCapsGuestMachine, 1);
         if (accel->machineTypes[i].alias) {
             mach->name = g_strdup(accel->machineTypes[i].alias);
             mach->canonical = g_strdup(accel->machineTypes[i].name);
@@ -968,6 +969,7 @@ virQEMUCapsGetMachineTypesCaps(virQEMUCaps *qemuCaps,
         }
         mach->maxCpus = accel->machineTypes[i].maxCpus;
         mach->deprecated = accel->machineTypes[i].deprecated;
+        g_ptr_array_add(array, mach);
     }
 
     /* Make sure all canonical machine types also have their own entry so that
@@ -975,18 +977,19 @@ virQEMUCapsGetMachineTypesCaps(virQEMUCaps *qemuCaps,
      * supported machine types.
      */
     i = 0;
-    while (i < *nmachines) {
+    while (i < array->len) {
         size_t j;
         bool found = false;
-        virCapsGuestMachine *machine = (*machines)[i];
+        virCapsGuestMachine *machine = g_ptr_array_index(array, i);
 
         if (!machine->canonical) {
             i++;
             continue;
         }
 
-        for (j = 0; j < *nmachines; j++) {
-            if (STREQ(machine->canonical, (*machines)[j]->name)) {
+        for (j = 0; j < array->len; j++) {
+            virCapsGuestMachine *mach = g_ptr_array_index(array, j);
+            if (STREQ(machine->canonical, mach->name)) {
                 found = true;
                 break;
             }
@@ -995,25 +998,21 @@ virQEMUCapsGetMachineTypesCaps(virQEMUCaps *qemuCaps,
         if (!found) {
             virCapsGuestMachine *mach;
             mach = g_new0(virCapsGuestMachine, 1);
-            if (VIR_INSERT_ELEMENT_COPY(*machines, i, *nmachines, mach) < 0) {
-                VIR_FREE(mach);
-                goto error;
-            }
             mach->name = g_strdup(machine->canonical);
             mach->maxCpus = machine->maxCpus;
             mach->deprecated = machine->deprecated;
+            g_ptr_array_insert(array, i, mach);
             i++;
         }
         i++;
     }
 
-    return 0;
+    *nmachines = array->len;
+    *machines = g_new0(virCapsGuestMachine *, array->len);
+    for (i = 0; i < array->len; ++i)
+        (*machines)[i] = g_ptr_array_index(array, i);
 
- error:
-    virCapabilitiesFreeMachines(*machines, *nmachines);
-    *nmachines = 0;
-    *machines = NULL;
-    return -1;
+    return 0;
 }
 
 
