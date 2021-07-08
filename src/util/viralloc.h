@@ -165,7 +165,7 @@ int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
     sizeof(char[2 * (sizeof(*(a) = *(b)) == sizeof(*(b))) - 1])
 
 /**
- * VIR_INSERT_ELEMENT:
+ * VIR_INSERT_ELEMENT, VIR_INSERT_ELEMENT_INPLACE:
  * @ptr:     pointer to array of objects (*not* ptr to ptr)
  * @at:      index within array where new elements should be added
  * @count:   variable tracking number of elements currently allocated
@@ -179,18 +179,10 @@ int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
  * item 'newelem' into ptr[at], then store the address of
  * allocated memory in 'ptr' and the new size in 'count'.
  *
- * VIR_INSERT_ELEMENT_COPY is identical, but doesn't clear out the
- *   original element to 0 on success, so there are two copies of the
- *   element. This is useful if the "element" is actually just a
- *   pointer to the real data, and you want to maintain a reference to
- *   it for use after the insert is completed; but if the "element" is
- *   an object that points to other allocated memory, having multiple
- *   copies can cause problems (e.g. double free).
+ * VIR_INSERT_ELEMENT_INPLACE is identical, but assumes any necessary
+ * memory re-allocation has already been done.
  *
- * VIR_INSERT_ELEMENT_*INPLACE are identical, but assume any necessary
- *   memory re-allocation has already been done.
- *
- * VIR_INSERT_ELEMENT_* all need to send "1" as the "add" argument to
+ * Both functions need to send "1" as the "add" argument to
  * virInsertElementsN (which has the currently-unused capability of
  * inserting multiple items at once). We use this to our advantage by
  * replacing it with VIR_TYPECHECK(ptr, &newelem) so that we can be
@@ -203,15 +195,9 @@ int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
 #define VIR_INSERT_ELEMENT(ptr, at, count, newelem) \
     virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false)
-#define VIR_INSERT_ELEMENT_COPY(ptr, at, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count), \
-                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, false)
 #define VIR_INSERT_ELEMENT_INPLACE(ptr, at, count, newelem) \
     virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, true)
-#define VIR_INSERT_ELEMENT_COPY_INPLACE(ptr, at, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count), \
-                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, true)
 
 /**
  * VIR_APPEND_ELEMENT:
