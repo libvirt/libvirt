@@ -2996,7 +2996,10 @@ virCgroupControllerAvailable(int controller)
 {
     g_autoptr(virCgroup) cgroup = NULL;
 
-    if (virCgroupNewSelf(&cgroup) < 0)
+    /* Don't use virCgroupNewSelf() - we might be running in a slice that
+     * doesn't have @controller but the domain (for which we will later use
+     * virCgroupHasController()) might have it. */
+    if (virCgroupNew("/", -1, &cgroup) < 0)
         return false;
 
     return virCgroupHasController(cgroup, controller);
