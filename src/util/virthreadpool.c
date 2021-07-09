@@ -247,10 +247,10 @@ virThreadPoolNewFull(size_t minWorkers,
     pool->maxWorkers = maxWorkers;
     pool->maxPrioWorkers = prioWorkers;
 
-    if (virThreadPoolExpand(pool, minWorkers, false) < 0)
+    if ((minWorkers > 0) && virThreadPoolExpand(pool, minWorkers, false) < 0)
         goto error;
 
-    if (virThreadPoolExpand(pool, prioWorkers, true) < 0)
+    if ((prioWorkers > 0) && virThreadPoolExpand(pool, prioWorkers, true) < 0)
         goto error;
 
     return pool;
