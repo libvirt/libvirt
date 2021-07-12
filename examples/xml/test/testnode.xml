@@ -9,6 +9,7 @@
      -->
   <domain file="testdomfv0.xml"/>
   <domain file="testdomfc4.xml"/>
+  <domain file="testdomfc5.xml"/>
   <network file="testnetpriv.xml"/>
   <network file="testnetdef.xml"/>
   <pool file="testpool.xml">

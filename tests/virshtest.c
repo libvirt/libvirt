@@ -20,14 +20,21 @@ main(void)
 
 #else
 
-# define DOM_UUID "ef861801-45b9-11cb-88e3-afbfe5370493"
+# define DOM_FC4_UUID "ef861801-45b9-11cb-88e3-afbfe5370493"
+# define DOM_FC5_UUID "08721f99-3d1d-4aec-96eb-97803297bb36"
 # define SECURITY_LABEL "libvirt-test (enforcing)"
-# define MESSAGES "tainted: network configuration using opaque shell scripts"
+# define FC4_MESSAGES "tainted: network configuration using opaque shell scripts"
+# define FC5_MESSAGES "tainted: running with undesirable elevated privileges\n\
+                tainted: network configuration using opaque shell scripts\n\
+                tainted: use of host cdrom passthrough\n\
+                tainted: custom device tree blob used\n\
+                tainted: use of deprecated configuration settings\n\
+                deprecated configuration: CPU model Deprecated-Test"
 
 static const char *dominfo_fc4 = "\
 Id:             2\n\
 Name:           fc4\n\
-UUID:           " DOM_UUID "\n\
+UUID:           " DOM_FC4_UUID "\n\
 OS Type:        linux\n\
 State:          running\n\
 CPU(s):         1\n\
@@ -39,12 +46,29 @@ Managed save:   no\n\
 Security model: testSecurity\n\
 Security DOI:   \n\
 Security label: " SECURITY_LABEL "\n\
-Messages:       " MESSAGES "\n\
+Messages:       " FC4_MESSAGES "\n\
 \n";
-static const char *domuuid_fc4 = DOM_UUID "\n\n";
+static const char *domuuid_fc4 = DOM_FC4_UUID "\n\n";
 static const char *domid_fc4 = "2\n\n";
 static const char *domname_fc4 = "fc4\n\n";
 static const char *domstate_fc4 = "running\n\n";
+static const char *dominfo_fc5 = "\
+Id:             3\n\
+Name:           fc5\n\
+UUID:           " DOM_FC5_UUID "\n\
+OS Type:        linux\n\
+State:          running\n\
+CPU(s):         4\n\
+Max memory:     2097152 KiB\n\
+Used memory:    2097152 KiB\n\
+Persistent:     yes\n\
+Autostart:      disable\n\
+Managed save:   no\n\
+Security model: testSecurity\n\
+Security DOI:   \n\
+Security label: " SECURITY_LABEL "\n\
+Messages:       " FC5_MESSAGES "\n\
+\n";
 
 static int testFilterLine(char *buffer,
                           const char *toRemove)
@@ -128,6 +152,7 @@ static int testCompareListCustom(const void *data G_GNUC_UNUSED)
 ----------------------\n\
  1    fv0    running\n\
  2    fc4    running\n\
+ 3    fc5    running\n\
 \n";
     return testCompareOutputLit(exp, NULL, argv);
 }
@@ -177,7 +202,7 @@ static int testCompareDominfoByID(const void *data G_GNUC_UNUSED)
 
 static int testCompareDominfoByUUID(const void *data G_GNUC_UNUSED)
 {
-    const char *const argv[] = { VIRSH_CUSTOM, "dominfo", DOM_UUID, NULL };
+    const char *const argv[] = { VIRSH_CUSTOM, "dominfo", DOM_FC4_UUID, NULL };
     const char *exp = dominfo_fc4;
     return testCompareOutputLit(exp, "\nCPU time:", argv);
 }
@@ -186,6 +211,13 @@ static int testCompareDominfoByName(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "fc4", NULL };
     const char *exp = dominfo_fc4;
+    return testCompareOutputLit(exp, "\nCPU time:", argv);
+}
+
+static int testCompareTaintedDominfoByName(const void *data G_GNUC_UNUSED)
+{
+    const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "fc5", NULL };
+    const char *exp = dominfo_fc5;
     return testCompareOutputLit(exp, "\nCPU time:", argv);
 }
 
@@ -212,7 +244,7 @@ static int testCompareDomidByName(const void *data G_GNUC_UNUSED)
 
 static int testCompareDomidByUUID(const void *data G_GNUC_UNUSED)
 {
-    const char *const argv[] = { VIRSH_CUSTOM, "domid", DOM_UUID, NULL };
+    const char *const argv[] = { VIRSH_CUSTOM, "domid", DOM_FC4_UUID, NULL };
     const char *exp = domid_fc4;
     return testCompareOutputLit(exp, NULL, argv);
 }
@@ -226,7 +258,7 @@ static int testCompareDomnameByID(const void *data G_GNUC_UNUSED)
 
 static int testCompareDomnameByUUID(const void *data G_GNUC_UNUSED)
 {
-    const char *const argv[] = { VIRSH_CUSTOM, "domname", DOM_UUID, NULL };
+    const char *const argv[] = { VIRSH_CUSTOM, "domname", DOM_FC4_UUID, NULL };
     const char *exp = domname_fc4;
     return testCompareOutputLit(exp, NULL, argv);
 }
@@ -240,7 +272,7 @@ static int testCompareDomstateByID(const void *data G_GNUC_UNUSED)
 
 static int testCompareDomstateByUUID(const void *data G_GNUC_UNUSED)
 {
-    const char *const argv[] = { VIRSH_CUSTOM, "domstate", DOM_UUID, NULL };
+    const char *const argv[] = { VIRSH_CUSTOM, "domstate", DOM_FC4_UUID, NULL };
     const char *exp = domstate_fc4;
     return testCompareOutputLit(exp, NULL, argv);
 }
@@ -305,6 +337,10 @@ mymain(void)
 
     if (virTestRun("virsh dominfo (by name)",
                    testCompareDominfoByName, NULL) != 0)
+        ret = -1;
+
+    if (virTestRun("virsh dominfo (by name, more tainted messages)",
+                   testCompareTaintedDominfoByName, NULL) != 0)
         ret = -1;
 
     if (virTestRun("virsh domid (by name)",

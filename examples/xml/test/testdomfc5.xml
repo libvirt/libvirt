@@ -1,0 +1,51 @@
+<domain type='test'>
+  <name>fc5</name>
+  <uuid>08721f993d1d4aec96eb97803297bb36</uuid>
+  <cpu mode='custom'>
+    <model>Deprecated-Test</model>
+    <vendor>Libvirt</vendor>
+    <topology sockets='1' dies='1' cores='4' threads='1'/>
+  </cpu>
+  <os>
+    <type>hvm</type>
+    <loader>/usr/lib/xen/boot/hvmloader</loader>
+    <dtb>/root/ppc.dtb</dtb>
+    <boot dev='hd'/>
+  </os>
+  <memory>2097152</memory>
+  <vcpu>4</vcpu>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <features>
+    <pae/>
+    <acpi/>
+    <apic/>
+  </features>
+  <devices>
+    <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
+    <interface type='bridge'>
+      <source bridge='xenbr0'/>
+      <mac address='00:16:3e:5d:c7:26'/>
+      <script path='vif-bridge'/>
+    </interface>
+    <disk type='file'>
+      <source file='/root/fv0'/>
+      <target dev='hda'/>
+    </disk>
+    <disk type='block' device='cdrom'>
+      <source dev='/dev/sr0'/>
+      <target dev='hdb' bus='ide'/>
+      <readonly/>
+    </disk>
+    <disk type='file' device='floppy'>
+      <source file='/root/fd.img'/>
+      <target dev='fda'/>
+    </disk>
+    <disk type='block' device='lun' rawio='yes'>
+      <source dev='/dev/disk/by-path/ip-127.0.0.1:3260-iscsi-test.target-lun-0'/>
+      <target dev='sda' bus='scsi'/>
+    </disk>
+    <graphics type='vnc' port='5904'/>
+  </devices>
+</domain>
