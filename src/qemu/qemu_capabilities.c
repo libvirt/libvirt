@@ -3168,6 +3168,9 @@ virQEMUCapsProbeQMPTPM(virQEMUCaps *qemuCaps,
     if (qemuMonitorGetTPMModels(mon, &models) < 0)
         return -1;
 
+    if (!models)
+        return 0;
+
     for (i = 0; i < G_N_ELEMENTS(virQEMUCapsTPMModelsToCaps); i++) {
         const char *needle = virDomainTPMModelTypeToString(virQEMUCapsTPMModelsToCaps[i].type);
         if (g_strv_contains((const char **)models, needle))
@@ -3176,6 +3179,9 @@ virQEMUCapsProbeQMPTPM(virQEMUCaps *qemuCaps,
 
     if (qemuMonitorGetTPMTypes(mon, &types) < 0)
         return -1;
+
+    if (!types)
+        return 0;
 
     for (i = 0; i < G_N_ELEMENTS(virQEMUCapsTPMTypesToCaps); i++) {
         const char *needle = virDomainTPMBackendTypeToString(virQEMUCapsTPMTypesToCaps[i].type);
