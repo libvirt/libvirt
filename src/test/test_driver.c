@@ -746,6 +746,81 @@ static char *testBuildFilename(const char *relativeTo,
     return g_strdup_printf("%s/%s", basename, filename);
 }
 
+static void
+testDomainObjCheckCPUTaint(virDomainObj *obj)
+{
+    switch (obj->def->cpu->mode) {
+    case VIR_CPU_MODE_CUSTOM:
+        if (obj->def->cpu->model)
+            if (STREQ(obj->def->cpu->model, "Deprecated-Test")) {
+                virDomainObjTaint(obj, VIR_DOMAIN_TAINT_DEPRECATED_CONFIG);
+                virDomainObjDeprecation(obj, "CPU model Deprecated-Test");
+            }
+
+        break;
+    default:
+        break;
+    }
+}
+
+static void
+testDomainObjCheckDiskTaint(virDomainObj *obj,
+                            virDomainDiskDef *disk)
+{
+    if (disk->rawio == VIR_TRISTATE_BOOL_YES)
+        virDomainObjTaint(obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES);
+
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+        virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_BLOCK &&
+        disk->src->path)
+        virDomainObjTaint(obj, VIR_DOMAIN_TAINT_CDROM_PASSTHROUGH);
+}
+
+static void
+testDomainObjCheckHostdevTaint(virDomainObj *obj,
+                               virDomainHostdevDef *hostdev)
+{
+    if (!virHostdevIsSCSIDevice(hostdev))
+        return;
+
+    if (hostdev->source.subsys.u.scsi.rawio == VIR_TRISTATE_BOOL_YES)
+        virDomainObjTaint(obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES);
+}
+
+static void
+testDomainObjCheckNetTaint(virDomainObj *obj,
+                           virDomainNetDef *net)
+{
+    /* script is only useful for NET_TYPE_ETHERNET (qemu) and
+     * NET_TYPE_BRIDGE (xen), but could be (incorrectly) specified for
+     * any interface type. In any case, it's adding user sauce into
+     * the soup, so it should taint the domain.
+     */
+    if (net->script != NULL)
+        virDomainObjTaint(obj, VIR_DOMAIN_TAINT_SHELL_SCRIPTS);
+}
+
+static void
+testDomainObjCheckTaint(virDomainObj *obj)
+{
+    size_t i;
+
+    for (i = 0; i < obj->def->ndisks; i++)
+        testDomainObjCheckDiskTaint(obj, obj->def->disks[i]);
+
+    for (i = 0; i < obj->def->nhostdevs; i++)
+        testDomainObjCheckHostdevTaint(obj, obj->def->hostdevs[i]);
+
+    for (i = 0; i < obj->def->nnets; i++)
+        testDomainObjCheckNetTaint(obj, obj->def->nets[i]);
+
+    if (obj->def->cpu)
+        testDomainObjCheckCPUTaint(obj);
+
+    if (obj->def->os.dtb)
+        virDomainObjTaint(obj, VIR_DOMAIN_TAINT_CUSTOM_DTB);
+}
+
 static xmlNodePtr
 testParseXMLDocFromFile(xmlNodePtr node, const char *file, const char *type)
 {
@@ -967,6 +1042,8 @@ testParseDomains(testDriver *privconn,
             testDomainShutdownState(NULL, obj, 0);
         }
         virDomainObjSetState(obj, nsdata->runstate, 0);
+
+        testDomainObjCheckTaint(obj);
 
         virDomainObjEndAPI(&obj);
     }
