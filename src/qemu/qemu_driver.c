@@ -20362,8 +20362,6 @@ qemuDomainGetMessages(virDomainPtr dom,
 {
     virDomainObj *vm = NULL;
     int rv = -1;
-    size_t i, n;
-    int nmsgs;
 
     virCheckFlags(VIR_DOMAIN_MESSAGE_DEPRECATION |
                   VIR_DOMAIN_MESSAGE_TAINTING, -1);
@@ -20374,37 +20372,7 @@ qemuDomainGetMessages(virDomainPtr dom,
     if (virDomainGetMessagesEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    *msgs = NULL;
-    nmsgs = 0;
-    n = 0;
-
-    if (!flags || (flags & VIR_DOMAIN_MESSAGE_TAINTING)) {
-        nmsgs += __builtin_popcount(vm->taint);
-        *msgs = g_renew(char *, *msgs, nmsgs+1);
-
-        for (i = 0; i < VIR_DOMAIN_TAINT_LAST; i++) {
-            if (vm->taint & (1 << i)) {
-                (*msgs)[n++] = g_strdup_printf(
-                    _("tainted: %s"),
-                    _(virDomainTaintMessageTypeToString(i)));
-            }
-        }
-    }
-
-    if (!flags || (flags & VIR_DOMAIN_MESSAGE_DEPRECATION)) {
-        nmsgs += vm->ndeprecations;
-        *msgs = g_renew(char *, *msgs, nmsgs+1);
-
-        for (i = 0; i < vm->ndeprecations; i++) {
-            (*msgs)[n++] = g_strdup_printf(
-                _("deprecated configuration: %s"),
-                vm->deprecations[i]);
-        }
-    }
-
-    (*msgs)[nmsgs] = NULL;
-
-    rv = nmsgs;
+    rv = virDomainObjGetMessages(vm, msgs, flags);
 
  cleanup:
     virDomainObjEndAPI(&vm);

@@ -4165,3 +4165,8 @@ virHostdevIsMdevDevice(const virDomainHostdevDef *hostdev)
 bool
 virHostdevIsVFIODevice(const virDomainHostdevDef *hostdev)
     ATTRIBUTE_NONNULL(1);
+
+int
+virDomainObjGetMessages(virDomainObj *vm,
+                        char ***msgs,
+                        unsigned int flags);

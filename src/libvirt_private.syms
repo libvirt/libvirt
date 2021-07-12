@@ -567,6 +567,7 @@ virDomainObjDeprecation;
 virDomainObjEndAPI;
 virDomainObjFormat;
 virDomainObjGetDefs;
+virDomainObjGetMessages;
 virDomainObjGetMetadata;
 virDomainObjGetOneDef;
 virDomainObjGetOneDefState;
