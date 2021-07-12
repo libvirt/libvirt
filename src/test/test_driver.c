@@ -9353,6 +9353,26 @@ testDomainCheckpointDelete(virDomainCheckpointPtr checkpoint,
     return ret;
 }
 
+static int
+testDomainGetMessages(virDomainPtr dom,
+                      char ***msgs,
+                      unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    int rv = -1;
+
+    virCheckFlags(VIR_DOMAIN_MESSAGE_DEPRECATION |
+                  VIR_DOMAIN_MESSAGE_TAINTING, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    rv = virDomainObjGetMessages(vm, msgs, flags);
+
+    virDomainObjEndAPI(&vm);
+    return rv;
+}
+
 /*
  * Test driver
  */
@@ -9511,6 +9531,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainCheckpointLookupByName = testDomainCheckpointLookupByName, /* 5.6.0 */
     .domainCheckpointGetParent = testDomainCheckpointGetParent, /* 5.6.0 */
     .domainCheckpointDelete = testDomainCheckpointDelete, /* 5.6.0 */
+    .domainGetMessages = testDomainGetMessages, /* 7.6.0 */
 };
 
 static virNetworkDriver testNetworkDriver = {
