@@ -2081,6 +2081,68 @@ testDomainGetState(virDomainPtr domain,
 }
 
 static int
+testDomainGetControlInfo(virDomainPtr dom,
+                         virDomainControlInfoPtr info,
+                         unsigned int flags)
+{
+    virDomainObj *vm;
+    testDomainObjPrivate *priv;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    memset(info, 0, sizeof(*info));
+
+    if (priv->seconds > 0 && priv->seconds < 10000) {
+        info->state = VIR_DOMAIN_CONTROL_JOB;
+        info->stateTime = priv->seconds;
+    } else if (priv->seconds < 30000 && priv->seconds >= 10000) {
+        info->state = VIR_DOMAIN_CONTROL_OCCUPIED;
+        info->stateTime = priv->seconds - 10000;
+    } else if (priv->seconds < 60000 && priv->seconds >= 30000) {
+        info->state = VIR_DOMAIN_CONTROL_ERROR;
+        switch (priv->seconds % 4) {
+        case 0:
+            info->details = VIR_DOMAIN_CONTROL_ERROR_REASON_NONE;
+            break;
+
+        case 1:
+            info->details = VIR_DOMAIN_CONTROL_ERROR_REASON_UNKNOWN;
+            break;
+
+        case 2:
+            info->details = VIR_DOMAIN_CONTROL_ERROR_REASON_MONITOR;
+            break;
+
+        case 3:
+            info->details = VIR_DOMAIN_CONTROL_ERROR_REASON_INTERNAL;
+            break;
+
+        default:
+            info->details = VIR_DOMAIN_CONTROL_ERROR_REASON_NONE;
+            break;
+        }
+        info->stateTime = priv->seconds - 30000;
+    } else {
+        info->state = VIR_DOMAIN_CONTROL_OK;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
 testDomainGetTime(virDomainPtr dom,
                   long long *seconds,
                   unsigned int *nseconds,
@@ -9335,6 +9397,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetHostname = testDomainGetHostname, /* 5.5.0 */
     .domainGetInfo = testDomainGetInfo, /* 0.1.1 */
     .domainGetState = testDomainGetState, /* 0.9.2 */
+    .domainGetControlInfo = testDomainGetControlInfo, /* 7.6.0 */
     .domainGetTime = testDomainGetTime, /* 5.4.0 */
     .domainSetTime = testDomainSetTime, /* 5.7.0 */
     .domainSave = testDomainSave, /* 0.3.2 */
