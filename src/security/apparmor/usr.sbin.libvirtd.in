@@ -88,7 +88,7 @@ profile libvirtd @sbindir@/libvirtd flags=(attach_disconnected) {
   @sbindir@/* PUx,
   /{usr/,}lib/udev/scsi_id PUx,
   /usr/{lib,lib64}/xen-common/bin/xen-toolstack PUx,
-  /usr/{lib,lib64}/xen/bin/* Ux,
+  /usr/{lib,lib64,libexec}/xen/bin/* Ux,
   /usr/{lib,libexec}/xen-*/bin/libxl-save-helper PUx,
   /usr/{lib,libexec}/xen-*/bin/pygrub PUx,
   /usr/{lib,lib64,lib/qemu,libexec}/vhost-user-gpu PUx,
