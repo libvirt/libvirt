@@ -1250,8 +1250,11 @@ get_files(vahControl * ctl)
                 "  \"%s/libvirt/qemu/swtpm/%s-swtpm.sock\" rw,\n",
                 RUNSTATEDIR, shortName);
             /* Paths for swtpm to use: give it access to its state
-             * directory, log, and PID files.
+             * directory (state files and fsync on dir), log, and PID files.
              */
+            virBufferAsprintf(&buf,
+                "  \"%s/lib/libvirt/swtpm/%s/%s/\" r,\n",
+                LOCALSTATEDIR, uuidstr, tpmpath);
             virBufferAsprintf(&buf,
                 "  \"%s/lib/libvirt/swtpm/%s/%s/**\" rwk,\n",
                 LOCALSTATEDIR, uuidstr, tpmpath);
