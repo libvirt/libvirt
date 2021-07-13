@@ -1717,6 +1717,13 @@ sc_group-qemu-caps:
 	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/group-qemu-caps.py \
 		--check --prefix $(top_srcdir)/
 
+sc_prohibit_enum_impl_with_vir_prefix_in_virsh:
+	@prohibit='VIR_ENUM_(IMPL|DECL)\(vir[^s]'			\
+	in_vc_files='tools/virsh.*\.[ch]$$'					\
+	halt='avoid "vir" prefix for enums in virsh'				\
+	  $(_sc_search_regexp)
+
+
 # List all syntax-check exemptions:
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/vsh\.h$$
 
