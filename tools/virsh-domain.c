@@ -5412,10 +5412,10 @@ static const vshCmdOptDef opts_dump[] = {
 
 VIR_ENUM_IMPL(virDomainCoreDumpFormat,
               VIR_DOMAIN_CORE_DUMP_FORMAT_LAST,
+              "elf",
               "kdump-zlib",
               "kdump-lzo",
               "kdump-snappy",
-              "elf",
               "win-dmp");
 
 static void
