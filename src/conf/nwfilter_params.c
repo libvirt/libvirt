@@ -707,28 +707,22 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
             g_autofree char *nam = virXMLPropString(cur, "name");
             g_autofree char *val = virXMLPropString(cur, "value");
             g_autoptr(virNWFilterVarValue) value = NULL;
-            if (nam != NULL && val != NULL) {
-                if (!isValidVarName(nam))
-                    goto skip_entry;
-                if (!isValidVarValue(val))
-                    goto skip_entry;
-                value = virHashLookup(table, nam);
-                if (value) {
-                    /* add value to existing value -> list */
-                    if (virNWFilterVarValueAddValue(value, val) < 0) {
-                        value = NULL;
-                        goto err_exit;
-                    }
-                    val = NULL;
-                } else {
-                    value = virNWFilterParseVarValue(val);
-                    if (!value)
-                        goto skip_entry;
-                    if (virHashUpdateEntry(table, nam, value) < 0)
-                        goto err_exit;
-                }
-                value = NULL;
+
+            if (nam == NULL || !isValidVarName(nam) ||
+                val == NULL || !isValidVarValue(val)) {
+                goto skip_entry;
             }
+
+            if ((value = virHashLookup(table, nam))) {
+                /* add value to existing value -> list */
+                if (virNWFilterVarValueAddValue(g_steal_pointer(&value), val) < 0)
+                    goto err_exit;
+                val = NULL;
+            } else if ((value = virNWFilterParseVarValue(val))) {
+                if (virHashUpdateEntry(table, nam, value) < 0)
+                    goto err_exit;
+            }
+            value = NULL;
  skip_entry:
         }
         cur = xmlNextElementSibling(cur);
