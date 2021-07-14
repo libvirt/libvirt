@@ -3404,12 +3404,17 @@ virNetworkDefUpdateDNSHost(virNetworkDef *def,
         if (virSocketAddrEqual(&host.ip, &dns->hosts[i].ip))
             foundThisTime = true;
 
-        for (j = 0; j < host.nnames && !foundThisTime; j++) {
-            for (k = 0; k < dns->hosts[i].nnames && !foundThisTime; k++) {
-                if (STREQ(host.names[j], dns->hosts[i].names[k]))
-                    foundThisTime = true;
+        /* when adding we want to only check duplicates of address since having
+         * multiple addresses with the same hostname is a legitimate configuration */
+        if (!isAdd) {
+            for (j = 0; j < host.nnames && !foundThisTime; j++) {
+                for (k = 0; k < dns->hosts[i].nnames && !foundThisTime; k++) {
+                    if (STREQ(host.names[j], dns->hosts[i].names[k]))
+                        foundThisTime = true;
+                }
             }
         }
+
         if (foundThisTime) {
             foundCt++;
             foundIdx = i;

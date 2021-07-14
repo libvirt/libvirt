@@ -4,6 +4,9 @@
   <forward dev='eth0' mode='nat'/>
   <bridge name='virbr0' stp='on' delay='0'/>
   <dns forwardPlainNames='no'>
+    <host ip='192.168.122.122'>
+      <hostname>pudding</hostname>
+    </host>
     <host ip='192.168.122.1'>
       <hostname>host</hostname>
       <hostname>gateway</hostname>

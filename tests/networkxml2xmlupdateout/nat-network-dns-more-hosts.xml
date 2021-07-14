@@ -9,6 +9,9 @@
     <host ip='f0:d::f0:d'>
       <hostname>pudding</hostname>
     </host>
+    <host ip='192.168.122.122'>
+      <hostname>pudding</hostname>
+    </host>
     <host ip='192.168.122.1'>
       <hostname>host</hostname>
       <hostname>gateway</hostname>
