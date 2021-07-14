@@ -710,28 +710,25 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
 
             if (nam == NULL || !isValidVarName(nam) ||
                 val == NULL || !isValidVarValue(val)) {
-                goto skip_entry;
+                cur = xmlNextElementSibling(cur);
+                continue;
             }
 
             if ((value = virHashLookup(table, nam))) {
                 /* add value to existing value -> list */
                 if (virNWFilterVarValueAddValue(g_steal_pointer(&value), val) < 0)
-                    goto err_exit;
+                    return NULL;
                 val = NULL;
             } else if ((value = virNWFilterParseVarValue(val))) {
                 if (virHashUpdateEntry(table, nam, value) < 0)
-                    goto err_exit;
+                    return NULL;
             }
             value = NULL;
- skip_entry:
         }
         cur = xmlNextElementSibling(cur);
     }
 
     return g_steal_pointer(&table);
-
- err_exit:
-    return NULL;
 }
 
 
