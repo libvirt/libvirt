@@ -472,7 +472,7 @@ sc_prohibit_gethostname:
 sc_prohibit_readdir:
 	@prohibit='\b(read|close|open)dir *\(' \
 	exclude='exempt from syntax-check' \
-	halt='use virDirOpen, virDirRead and VIR_DIR_CLOSE' \
+	halt='use virDirOpen, virDirRead and g_autoptr(DIR)' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_gettext_noop:
