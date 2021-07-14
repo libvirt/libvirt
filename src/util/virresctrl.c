@@ -662,7 +662,7 @@ virResctrlGetMemoryBandwidthInfo(virResctrlInfo *resctrl)
     rv = virFileReadValueUint(&i_membw->max_allocation,
                               SYSFS_RESCTRL_PATH "/info/MB/num_closids");
     if (rv == -2) {
-         /* Similar reasoning to min_bandwidth above. */
+        /* Similar reasoning to min_bandwidth above. */
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot get max allocation from resctrl memory info"));
     }

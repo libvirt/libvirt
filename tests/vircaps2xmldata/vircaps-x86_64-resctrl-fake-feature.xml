@@ -56,10 +56,10 @@
     </cache>
     <memory_bandwidth>
       <node id='0' cpus='0-5'>
-        <control granularity='10' min ='10' maxAllocs='4'/>
+        <control granularity='10' min='10' maxAllocs='4'/>
       </node>
       <node id='1' cpus='6-11'>
-        <control granularity='10' min ='10' maxAllocs='4'/>
+        <control granularity='10' min='10' maxAllocs='4'/>
       </node>
       <monitor maxMonitors='176'>
         <feature name='mbm_total_bytes'/>

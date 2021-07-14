@@ -283,11 +283,11 @@
               <attribute name="granularity">
                 <ref name="unsignedInt"/>
               </attribute>
-            <optional>
-              <attribute name="min">
-                <ref name="unsignedInt"/>
-              </attribute>
-            </optional>
+              <optional>
+                <attribute name="min">
+                  <ref name="unsignedInt"/>
+                </attribute>
+              </optional>
               <attribute name="maxAllocs">
                 <ref name="unsignedInt"/>
               </attribute>

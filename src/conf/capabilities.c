@@ -1056,7 +1056,7 @@ virCapabilitiesFormatMemoryBandwidth(virBuffer *buf,
                           node->id, cpus_str);
 
         virBufferAsprintf(&childrenBuf,
-                          "<control granularity='%u' min ='%u' "
+                          "<control granularity='%u' min='%u' "
                           "maxAllocs='%u'/>\n",
                           control->granularity, control->min,
                           control->max_allocation);
