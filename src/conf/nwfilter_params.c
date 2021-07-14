@@ -706,39 +706,38 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
     cur = xmlFirstElementChild(cur);
 
     while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (virXMLNodeNameEqual(cur, "parameter")) {
-                nam = virXMLPropString(cur, "name");
-                val = virXMLPropString(cur, "value");
-                value = NULL;
-                if (nam != NULL && val != NULL) {
-                    if (!isValidVarName(nam))
-                        goto skip_entry;
-                    if (!isValidVarValue(val))
-                        goto skip_entry;
-                    value = virHashLookup(table, nam);
-                    if (value) {
-                        /* add value to existing value -> list */
-                        if (virNWFilterVarValueAddValue(value, val) < 0) {
-                            value = NULL;
-                            goto err_exit;
-                        }
-                        val = NULL;
-                    } else {
-                        value = virNWFilterParseVarValue(val);
-                        if (!value)
-                            goto skip_entry;
-                        if (virHashUpdateEntry(table, nam, value) < 0)
-                            goto err_exit;
+        if (virXMLNodeNameEqual(cur, "parameter")) {
+            nam = virXMLPropString(cur, "name");
+            val = virXMLPropString(cur, "value");
+            value = NULL;
+            if (nam != NULL && val != NULL) {
+                if (!isValidVarName(nam))
+                    goto skip_entry;
+                if (!isValidVarValue(val))
+                    goto skip_entry;
+                value = virHashLookup(table, nam);
+                if (value) {
+                    /* add value to existing value -> list */
+                    if (virNWFilterVarValueAddValue(value, val) < 0) {
+                        value = NULL;
+                        goto err_exit;
                     }
-                    value = NULL;
+                    val = NULL;
+                } else {
+                    value = virNWFilterParseVarValue(val);
+                    if (!value)
+                        goto skip_entry;
+                    if (virHashUpdateEntry(table, nam, value) < 0)
+                        goto err_exit;
                 }
- skip_entry:
-                virNWFilterVarValueFree(value);
-                VIR_FREE(nam);
-                VIR_FREE(val);
+                value = NULL;
             }
+ skip_entry:
+            virNWFilterVarValueFree(value);
+            VIR_FREE(nam);
+            VIR_FREE(val);
         }
+
         cur = xmlNextElementSibling(cur);
     }
     return table;
