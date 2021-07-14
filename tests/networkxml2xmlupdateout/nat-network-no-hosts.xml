@@ -5,7 +5,16 @@
     <interface dev='eth0'/>
   </forward>
   <bridge name='virbr0' stp='on' delay='0'/>
-  <dns forwardPlainNames='no'/>
+  <dns forwardPlainNames='no'>
+    <host ip='192.168.122.2'>
+      <hostname>shared</hostname>
+      <hostname>names</hostname>
+    </host>
+    <host ip='fd8f:1391:3a82:150::c0a8:9603'>
+      <hostname>shared</hostname>
+      <hostname>names</hostname>
+    </host>
+  </dns>
   <ip address='192.168.122.1' netmask='255.255.255.0'>
   </ip>
 </network>
