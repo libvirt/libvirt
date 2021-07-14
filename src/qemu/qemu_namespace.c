@@ -929,6 +929,10 @@ qemuNamespaceMknodOne(qemuNamespaceMknodItem *data)
     bool isDev = S_ISCHR(data->sb.st_mode) || S_ISBLK(data->sb.st_mode);
     bool isReg = S_ISREG(data->sb.st_mode) || S_ISFIFO(data->sb.st_mode) || S_ISSOCK(data->sb.st_mode);
     bool isDir = S_ISDIR(data->sb.st_mode);
+    bool exists = false;
+
+    if (virFileExists(data->file))
+        exists = true;
 
     if (virFileMakeParentPath(data->file) < 0) {
         virReportSystemError(errno,
@@ -1039,7 +1043,7 @@ qemuNamespaceMknodOne(qemuNamespaceMknodItem *data)
         virFileMoveMount(data->target, data->file) < 0)
         goto cleanup;
 
-    ret = 0;
+    ret = exists;
  cleanup:
     if (ret < 0 && delDevice) {
         if (isDir)
@@ -1069,15 +1073,21 @@ qemuNamespaceMknodHelper(pid_t pid G_GNUC_UNUSED,
     qemuNamespaceMknodData *data = opaque;
     size_t i;
     int ret = -1;
+    bool exists = false;
 
     qemuSecurityPostFork(data->driver->securityManager);
 
     for (i = 0; i < data->nitems; i++) {
-        if (qemuNamespaceMknodOne(&data->items[i]) < 0)
+        int rc = 0;
+
+        if ((rc = qemuNamespaceMknodOne(&data->items[i])) < 0)
             goto cleanup;
+
+        if (rc > 0)
+            exists = true;
     }
 
-    ret = 0;
+    ret = exists;
  cleanup:
     qemuNamespaceMknodDataClear(data);
     return ret;
