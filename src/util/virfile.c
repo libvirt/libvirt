@@ -2889,9 +2889,9 @@ virDirOpenQuiet(DIR **dirp, const char *name)
  * @name: if non-NULL, the name related to @dirp for use in error reporting
  *
  * Wrapper around readdir. Typical usage:
+ *   g_autoptr(DIR) dir = NULL;
  *   struct dirent *ent;
  *   int rc;
- *   DIR *dir;
  *   if (virDirOpen(&dir, name) < 0)
  *       goto error;
  *   while ((rc = virDirRead(dir, &ent, name)) > 0)
