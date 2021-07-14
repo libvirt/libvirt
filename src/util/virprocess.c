@@ -1244,7 +1244,7 @@ static int virProcessNamespaceHelper(pid_t pid G_GNUC_UNUSED,
 /* Run cb(opaque) in the mount namespace of pid.  Return -1 with error
  * message raised if we fail to run the child, if the child dies from
  * a signal, or if the child has status EXIT_CANCELED; otherwise return
- * the exit status of the child. The callback will be run in a child
+ * value is the retval of the callback. The callback will be run in a child
  * process so must be careful to only use async signal safe functions.
  */
 int
@@ -1298,7 +1298,9 @@ virProcessRunInForkHelper(int errfd,
                           virProcessForkCallback cb,
                           void *opaque)
 {
-    if (cb(ppid, opaque) < 0) {
+    int ret = 0;
+
+    if ((ret = cb(ppid, opaque)) < 0) {
         virErrorPtr err = virGetLastError();
 
         if (err) {
@@ -1323,7 +1325,7 @@ virProcessRunInForkHelper(int errfd,
         return -1;
     }
 
-    return 0;
+    return ret;
 }
 
 
@@ -1344,7 +1346,7 @@ virProcessRunInForkHelper(int errfd,
  * On return, the returned value is either -1 with error message
  * reported if something went bad in the parent, if child has
  * died from a signal or if the child returned EXIT_CANCELED.
- * Otherwise the returned value is the exit status of the child.
+ * Otherwise the returned value is the retval of the callback.
  */
 int
 virProcessRunInFork(virProcessForkCallback cb,
@@ -1377,7 +1379,7 @@ virProcessRunInFork(virProcessForkCallback cb,
         ret = virProcessWait(child, &status, false);
         if (ret == 0) {
             ret = status == EXIT_CANCELED ? -1 : status;
-            if (ret) {
+            if (ret < 0) {
                 if (nread == sizeof(*bin)) {
                     bin = g_new0(errorDataBin, 1);
                     memcpy(bin->bindata, buf, sizeof(*bin));
