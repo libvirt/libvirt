@@ -50,37 +50,43 @@ void qemuDomainDestroyNamespace(virQEMUDriver *driver,
 bool qemuDomainNamespaceAvailable(qemuDomainNamespace ns);
 
 int qemuDomainNamespaceSetupDisk(virDomainObj *vm,
-                                 virStorageSource *src);
+                                 virStorageSource *src,
+                                 bool *created);
 
 int qemuDomainNamespaceTeardownDisk(virDomainObj *vm,
                                     virStorageSource *src);
 
 int qemuDomainNamespaceSetupHostdev(virDomainObj *vm,
-                                    virDomainHostdevDef *hostdev);
+                                    virDomainHostdevDef *hostdev,
+                                    bool *created);
 
 int qemuDomainNamespaceTeardownHostdev(virDomainObj *vm,
                                        virDomainHostdevDef *hostdev);
 
 int qemuDomainNamespaceSetupMemory(virDomainObj *vm,
-                                   virDomainMemoryDef *memory);
+                                   virDomainMemoryDef *memory,
+                                   bool *created);
 
 int qemuDomainNamespaceTeardownMemory(virDomainObj *vm,
                                       virDomainMemoryDef *memory);
 
 int qemuDomainNamespaceSetupChardev(virDomainObj *vm,
-                                    virDomainChrDef *chr);
+                                    virDomainChrDef *chr,
+                                    bool *created);
 
 int qemuDomainNamespaceTeardownChardev(virDomainObj *vm,
                                        virDomainChrDef *chr);
 
 int qemuDomainNamespaceSetupRNG(virDomainObj *vm,
-                                virDomainRNGDef *rng);
+                                virDomainRNGDef *rng,
+                                bool *created);
 
 int qemuDomainNamespaceTeardownRNG(virDomainObj *vm,
                                    virDomainRNGDef *rng);
 
 int qemuDomainNamespaceSetupInput(virDomainObj *vm,
-                                  virDomainInputDef *input);
+                                  virDomainInputDef *input,
+                                  bool *created);
 
 int qemuDomainNamespaceTeardownInput(virDomainObj *vm,
                                      virDomainInputDef *input);

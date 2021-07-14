@@ -610,7 +610,8 @@ qemuDomainSetupLaunchSecurity(virDomainObj *vm,
 
 static int
 qemuNamespaceMknodPaths(virDomainObj *vm,
-                        GSList *paths);
+                        GSList *paths,
+                        bool *created);
 
 
 int
@@ -657,7 +658,7 @@ qemuDomainBuildNamespace(virQEMUDriverConfig *cfg,
     if (qemuDomainSetupLaunchSecurity(vm, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, paths) < 0)
+    if (qemuNamespaceMknodPaths(vm, paths, NULL) < 0)
         return -1;
 
     return 0;
@@ -1235,7 +1236,8 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodData *data,
 
 static int
 qemuNamespaceMknodPaths(virDomainObj *vm,
-                        GSList *paths)
+                        GSList *paths,
+                        bool *created)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
@@ -1280,15 +1282,13 @@ qemuNamespaceMknodPaths(virDomainObj *vm,
     if (qemuSecurityPreFork(driver->securityManager) < 0)
         goto cleanup;
 
-    if (virProcessRunInMountNamespace(vm->pid,
-                                      qemuNamespaceMknodHelper,
-                                      &data) < 0) {
-        qemuSecurityPostFork(driver->securityManager);
-        goto cleanup;
-    }
+    ret = virProcessRunInMountNamespace(vm->pid, qemuNamespaceMknodHelper,
+                                        &data);
     qemuSecurityPostFork(driver->securityManager);
 
-    ret = 0;
+    if (ret == 0 && created != NULL)
+        *created = true;
+
  cleanup:
     for (i = 0; i < data.nitems; i++) {
         if (data.items[i].bindmounted &&
@@ -1307,7 +1307,8 @@ qemuNamespaceMknodPaths(virDomainObj *vm,
 
 static int
 qemuNamespaceMknodPaths(virDomainObj *vm G_GNUC_UNUSED,
-                        GSList *paths G_GNUC_UNUSED)
+                        GSList *paths G_GNUC_UNUSED,
+                        bool *created G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Namespaces are not supported on this platform."));
@@ -1393,7 +1394,8 @@ qemuNamespaceUnlinkPaths(virDomainObj *vm,
 
 int
 qemuDomainNamespaceSetupDisk(virDomainObj *vm,
-                             virStorageSource *src)
+                             virStorageSource *src,
+                             bool *created)
 {
     g_autoptr(virGSListString) paths = NULL;
 
@@ -1403,7 +1405,7 @@ qemuDomainNamespaceSetupDisk(virDomainObj *vm,
     if (qemuDomainSetupDisk(src, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, paths) < 0)
+    if (qemuNamespaceMknodPaths(vm, paths, created) < 0)
         return -1;
 
     return 0;
@@ -1437,7 +1439,8 @@ qemuDomainNamespaceTeardownDisk(virDomainObj *vm G_GNUC_UNUSED,
  */
 int
 qemuDomainNamespaceSetupHostdev(virDomainObj *vm,
-                                virDomainHostdevDef *hostdev)
+                                virDomainHostdevDef *hostdev,
+                                bool *created)
 {
     g_autoptr(virGSListString) paths = NULL;
 
@@ -1450,7 +1453,7 @@ qemuDomainNamespaceSetupHostdev(virDomainObj *vm,
                                &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, paths) < 0)
+    if (qemuNamespaceMknodPaths(vm, paths, created) < 0)
         return -1;
 
     return 0;
@@ -1492,7 +1495,8 @@ qemuDomainNamespaceTeardownHostdev(virDomainObj *vm,
 
 int
 qemuDomainNamespaceSetupMemory(virDomainObj *vm,
-                               virDomainMemoryDef *mem)
+                               virDomainMemoryDef *mem,
+                               bool *created)
 {
     g_autoptr(virGSListString) paths = NULL;
 
@@ -1502,7 +1506,7 @@ qemuDomainNamespaceSetupMemory(virDomainObj *vm,
     if (qemuDomainSetupMemory(mem, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, paths) < 0)
+    if (qemuNamespaceMknodPaths(vm, paths, created) < 0)
         return -1;
 
     return 0;
@@ -1530,7 +1534,8 @@ qemuDomainNamespaceTeardownMemory(virDomainObj *vm,
 
 int
 qemuDomainNamespaceSetupChardev(virDomainObj *vm,
-                                virDomainChrDef *chr)
+                                virDomainChrDef *chr,
+                                bool *created)
 {
     g_autoptr(virGSListString) paths = NULL;
 
@@ -1540,7 +1545,7 @@ qemuDomainNamespaceSetupChardev(virDomainObj *vm,
     if (qemuDomainSetupChardev(vm->def, chr, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, paths) < 0)
+    if (qemuNamespaceMknodPaths(vm, paths, created) < 0)
         return -1;
 
     return 0;
@@ -1568,7 +1573,8 @@ qemuDomainNamespaceTeardownChardev(virDomainObj *vm,
 
 int
 qemuDomainNamespaceSetupRNG(virDomainObj *vm,
-                            virDomainRNGDef *rng)
+                            virDomainRNGDef *rng,
+                            bool *created)
 {
     g_autoptr(virGSListString) paths = NULL;
 
@@ -1578,7 +1584,7 @@ qemuDomainNamespaceSetupRNG(virDomainObj *vm,
     if (qemuDomainSetupRNG(rng, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, paths) < 0)
+    if (qemuNamespaceMknodPaths(vm, paths, created) < 0)
         return -1;
 
     return 0;
@@ -1606,9 +1612,11 @@ qemuDomainNamespaceTeardownRNG(virDomainObj *vm,
 
 int
 qemuDomainNamespaceSetupInput(virDomainObj *vm,
-                              virDomainInputDef *input)
+                              virDomainInputDef *input,
+                              bool *created)
 {
     g_autoptr(virGSListString) paths = NULL;
+    int ret = 0;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -1616,8 +1624,9 @@ qemuDomainNamespaceSetupInput(virDomainObj *vm,
     if (qemuDomainSetupInput(input, &paths) < 0)
         return -1;
 
-    if (qemuNamespaceMknodPaths(vm, paths) < 0)
+    if ((ret = qemuNamespaceMknodPaths(vm, paths, created)) < 0)
         return -1;
+
     return 0;
 }
 

@@ -1685,9 +1685,8 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
         goto error;
     teardownmemlock = true;
 
-    if (qemuDomainNamespaceSetupHostdev(vm, hostdev) < 0)
+    if (qemuDomainNamespaceSetupHostdev(vm, hostdev, &teardowndevice) < 0)
         goto error;
-    teardowndevice = true;
 
     if (qemuSetupHostdevCgroup(vm, hostdev) < 0)
         goto error;
@@ -2219,9 +2218,8 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
     if (rc == 1)
         need_release = true;
 
-    if (qemuDomainNamespaceSetupChardev(vm, chr) < 0)
+    if (qemuDomainNamespaceSetupChardev(vm, chr, &teardowndevice) < 0)
         goto cleanup;
-    teardowndevice = true;
 
     if (qemuSecuritySetChardevLabel(driver, vm, chr) < 0)
         goto cleanup;
@@ -2332,9 +2330,8 @@ qemuDomainAttachRNGDevice(virQEMUDriver *driver,
     if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
         return -1;
 
-    if (qemuDomainNamespaceSetupRNG(vm, rng) < 0)
+    if (qemuDomainNamespaceSetupRNG(vm, rng, &teardowndevice) < 0)
         goto cleanup;
-    teardowndevice = true;
 
     if (qemuSetupRNGCgroup(vm, rng) < 0)
         goto cleanup;
@@ -2476,9 +2473,8 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
     if (qemuProcessBuildDestroyMemoryPaths(driver, vm, mem, true) < 0)
         goto cleanup;
 
-    if (qemuDomainNamespaceSetupMemory(vm, mem) < 0)
+    if (qemuDomainNamespaceSetupMemory(vm, mem, &teardowndevice) < 0)
         goto cleanup;
-    teardowndevice = true;
 
     if (qemuSetupMemoryDevicesCgroup(vm, mem) < 0)
         goto cleanup;
@@ -2592,9 +2588,8 @@ qemuDomainAttachHostUSBDevice(virQEMUDriver *driver,
 
     added = true;
 
-    if (qemuDomainNamespaceSetupHostdev(vm, hostdev) < 0)
+    if (qemuDomainNamespaceSetupHostdev(vm, hostdev, &teardowndevice) < 0)
         goto cleanup;
-    teardowndevice = true;
 
     if (qemuSetupHostdevCgroup(vm, hostdev) < 0)
         goto cleanup;
@@ -2673,9 +2668,8 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriver *driver,
     if (qemuHostdevPrepareSCSIDevices(driver, vm->def->name, &hostdev, 1) < 0)
         return -1;
 
-    if (qemuDomainNamespaceSetupHostdev(vm, hostdev) < 0)
+    if (qemuDomainNamespaceSetupHostdev(vm, hostdev, &teardowndevice) < 0)
         goto cleanup;
-    teardowndevice = true;
 
     if (qemuSetupHostdevCgroup(vm, hostdev) < 0)
         goto cleanup;
@@ -2767,9 +2761,8 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriver *driver,
     if (qemuHostdevPrepareSCSIVHostDevices(driver, vm->def->name, &hostdev, 1) < 0)
         return -1;
 
-    if (qemuDomainNamespaceSetupHostdev(vm, hostdev) < 0)
+    if (qemuDomainNamespaceSetupHostdev(vm, hostdev, &teardowndevice) < 0)
         goto cleanup;
-    teardowndevice = true;
 
     if (qemuSetupHostdevCgroup(vm, hostdev) < 0)
         goto cleanup;
@@ -2894,9 +2887,8 @@ qemuDomainAttachMediatedDevice(virQEMUDriver *driver,
         goto cleanup;
     added = true;
 
-    if (qemuDomainNamespaceSetupHostdev(vm, hostdev) < 0)
+    if (qemuDomainNamespaceSetupHostdev(vm, hostdev, &teardowndevice) < 0)
         goto cleanup;
-    teardowndevice = true;
 
     if (qemuSetupHostdevCgroup(vm, hostdev) < 0)
         goto cleanup;
@@ -3231,9 +3223,8 @@ qemuDomainAttachInputDevice(virQEMUDriver *driver,
     if (qemuBuildInputDevStr(&devstr, vm->def, input, priv->qemuCaps) < 0)
         goto cleanup;
 
-    if (qemuDomainNamespaceSetupInput(vm, input) < 0)
+    if (qemuDomainNamespaceSetupInput(vm, input, &teardowndevice) < 0)
         goto cleanup;
-    teardowndevice = true;
 
     if (qemuSetupInputCgroup(vm, input) < 0)
         goto cleanup;

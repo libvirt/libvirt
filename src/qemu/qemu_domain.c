@@ -7934,10 +7934,8 @@ qemuDomainStorageSourceAccessModify(virQEMUDriver *driver,
 
         revoke_nvme = true;
 
-        if (qemuDomainNamespaceSetupDisk(vm, src) < 0)
+        if (qemuDomainNamespaceSetupDisk(vm, src, &revoke_namespace) < 0)
             goto revoke;
-
-        revoke_namespace = true;
     }
 
     if (qemuSecuritySetImageLabel(driver, vm, src, chain, chain_top) < 0)

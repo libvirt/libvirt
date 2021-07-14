@@ -8452,7 +8452,7 @@ qemuProcessRefreshLegacyBlockjob(void *payload,
 
             if (disk->mirror->format &&
                 disk->mirror->format != VIR_STORAGE_FILE_RAW &&
-                (qemuDomainNamespaceSetupDisk(vm, disk->mirror) < 0 ||
+                (qemuDomainNamespaceSetupDisk(vm, disk->mirror, NULL) < 0 ||
                  qemuSetupImageChainCgroup(vm, disk->mirror) < 0 ||
                  qemuSecuritySetImageLabel(priv->driver, vm, disk->mirror,
                                            true, true) < 0))
