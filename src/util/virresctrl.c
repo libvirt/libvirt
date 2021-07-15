@@ -542,7 +542,7 @@ virResctrlGetCacheInfo(virResctrlInfo *resctrl,
 
         type = virResctrlTypeFromString(endptr);
         if (type < 0) {
-            VIR_DEBUG("Cannot parse resctrl cache info type '%s'", endptr);
+            VIR_DEBUG("Ignoring resctrl cache info with suffix '%s'", endptr);
             continue;
         }
 
