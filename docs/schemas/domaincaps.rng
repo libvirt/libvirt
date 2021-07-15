@@ -38,6 +38,9 @@
           <ref name="cpu"/>
         </optional>
         <optional>
+          <ref name="memoryBacking"/>
+        </optional>
+        <optional>
           <ref name="devices"/>
         </optional>
         <optional>
@@ -162,6 +165,13 @@
           <text/>
         </element>
       </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="memoryBacking">
+    <element name="memoryBacking">
+      <ref name="supported"/>
+      <ref name="enum"/>
     </element>
   </define>
 

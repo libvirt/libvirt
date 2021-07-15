@@ -62,6 +62,13 @@ struct _virDomainCapsOS {
     virDomainCapsLoader loader;     /* Info about virDomainLoaderDef */
 };
 
+STATIC_ASSERT_ENUM(VIR_DOMAIN_MEMORY_SOURCE_LAST);
+typedef struct _virDomainCapsMemoryBacking virDomainCapsMemoryBacking;
+struct _virDomainCapsMemoryBacking {
+    virTristateBool supported;
+    virDomainCapsEnum sourceType; /* virDomainMemorySource */
+};
+
 STATIC_ASSERT_ENUM(VIR_DOMAIN_DISK_DEVICE_LAST);
 STATIC_ASSERT_ENUM(VIR_DOMAIN_DISK_BUS_LAST);
 STATIC_ASSERT_ENUM(VIR_DOMAIN_DISK_MODEL_LAST);
@@ -196,6 +203,7 @@ struct _virDomainCaps {
 
     virDomainCapsOS os;
     virDomainCapsCPU cpu;
+    virDomainCapsMemoryBacking memoryBacking;
     virDomainCapsDeviceDisk disk;
     virDomainCapsDeviceGraphics graphics;
     virDomainCapsDeviceVideo video;

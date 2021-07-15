@@ -290,6 +290,34 @@
 &lt;domainCapabilities&gt;
 </pre>
 
+    <h3><a id="elementsMemoryBacking">Memory Backing</a></h3>
+
+    <p>
+      The <code>memory backing</code> element indicates whether or not
+      <a href="formatdomain.html#memory-backing">memory backing</a>
+      is supported.
+    </p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;memoryBacking supported='yes'&gt;
+    &lt;enum name='sourceType'&gt;
+      &lt;value&gt;anonymous&lt;/value&gt;
+      &lt;value&gt;file&lt;/value&gt;
+      &lt;value&gt;memfd&lt;/value&gt;
+    &lt;/enum&gt;
+  &lt;/memoryBacking&gt;
+  ...
+&lt;domainCapabilities&gt;
+</pre>
+
+    <dl>
+      <dt><code>sourceType</code></dt>
+      <dd>Options for the <code>type</code> attribute of the
+      &lt;memoryBacking&gt;&lt;source&gt; element.</dd>
+    </dl>
+
     <h3><a id="elementsDevices">Devices</a></h3>
 
     <p>
