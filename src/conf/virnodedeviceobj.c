@@ -1023,9 +1023,9 @@ virNodeDeviceObjSetPersistent(virNodeDeviceObj *obj,
 }
 
 
-struct virNodeDeviceObjListRemoveHelperData
-{
-    virNodeDeviceObjListRemoveIterator callback;
+typedef struct _PredicateHelperData PredicateHelperData;
+struct _PredicateHelperData {
+    virNodeDeviceObjListPredicate predicate;
     void *opaque;
 };
 
@@ -1033,9 +1033,9 @@ static int virNodeDeviceObjListRemoveHelper(void *key G_GNUC_UNUSED,
                                             void *value,
                                             void *opaque)
 {
-    struct virNodeDeviceObjListRemoveHelperData *data = opaque;
+    PredicateHelperData *data = opaque;
 
-    return data->callback(value, data->opaque);
+    return data->predicate(value, data->opaque);
 }
 
 
@@ -1051,11 +1051,11 @@ static int virNodeDeviceObjListRemoveHelper(void *key G_GNUC_UNUSED,
  */
 void
 virNodeDeviceObjListForEachRemove(virNodeDeviceObjList *devs,
-                                  virNodeDeviceObjListRemoveIterator callback,
+                                  virNodeDeviceObjListPredicate callback,
                                   void *opaque)
 {
-    struct virNodeDeviceObjListRemoveHelperData data = {
-        .callback = callback,
+    PredicateHelperData data = {
+        .predicate = callback,
         .opaque = opaque
     };
 
@@ -1064,4 +1064,41 @@ virNodeDeviceObjListForEachRemove(virNodeDeviceObjList *devs,
                                 virNodeDeviceObjListRemoveHelper,
                                 &data);
     virObjectRWUnlock(devs);
+}
+
+
+static int virNodeDeviceObjListFindHelper(const void *payload,
+                                          const char *name G_GNUC_UNUSED,
+                                          const void *opaque)
+{
+    PredicateHelperData *data = (PredicateHelperData *) opaque;
+    virNodeDeviceObj *obj = (virNodeDeviceObj *) payload;
+
+    return data->predicate(obj, data->opaque);
+}
+
+
+/**
+ * virNodeDeviceObjListFind
+ * @devs: Pointer to object list
+ * @predicate: function to test the device for a certain property
+ * @opaque: Opaque data to use as argument to helper
+ *
+ * For each object in @devs, call the @predicate helper using @opaque as
+ * an argument until it returns TRUE. The list may not be modified while
+ * iterating.
+ */
+virNodeDeviceObj *
+virNodeDeviceObjListFind(virNodeDeviceObjList *devs,
+                         virNodeDeviceObjListPredicate predicate,
+                         void *opaque)
+{
+    PredicateHelperData data = {
+        .predicate = predicate,
+        .opaque = opaque
+    };
+
+    return virNodeDeviceObjListSearch(devs,
+                                      virNodeDeviceObjListFindHelper,
+                                      &data);
 }

@@ -1290,6 +1290,7 @@ virNodeDeviceObjIsActive;
 virNodeDeviceObjIsPersistent;
 virNodeDeviceObjListAssignDef;
 virNodeDeviceObjListExport;
+virNodeDeviceObjListFind;
 virNodeDeviceObjListFindByName;
 virNodeDeviceObjListFindBySysfsPath;
 virNodeDeviceObjListFindMediatedDeviceByUUID;

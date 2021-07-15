@@ -136,9 +136,14 @@ void
 virNodeDeviceObjSetPersistent(virNodeDeviceObj *obj,
                               bool persistent);
 
-typedef bool (*virNodeDeviceObjListRemoveIterator)(virNodeDeviceObj *obj,
-                                                   const void *opaque);
+typedef bool (*virNodeDeviceObjListPredicate)(virNodeDeviceObj *obj,
+                                              const void *opaque);
 
 void virNodeDeviceObjListForEachRemove(virNodeDeviceObjList *devs,
-                                       virNodeDeviceObjListRemoveIterator callback,
+                                       virNodeDeviceObjListPredicate callback,
                                        void *opaque);
+
+virNodeDeviceObj *
+virNodeDeviceObjListFind(virNodeDeviceObjList *devs,
+                         virNodeDeviceObjListPredicate callback,
+                         void *opaque);
