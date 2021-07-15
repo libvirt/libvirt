@@ -775,6 +775,9 @@ int virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
                               virFirmware **firmwares,
                               size_t nfirmwares);
 
+void virQEMUCapsFillDomainMemoryBackingCaps(virQEMUCaps *qemuCaps,
+                                            virDomainCapsMemoryBacking *memoryBacking);
+
 void virQEMUCapsFillDomainDeviceGraphicsCaps(virQEMUCaps *qemuCaps,
                                              virDomainCapsDeviceGraphics *dev);
 

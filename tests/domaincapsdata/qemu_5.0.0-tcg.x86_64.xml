@@ -123,6 +123,13 @@
       <model usable='yes'>486</model>
     </mode>
   </cpu>
+  <memoryBacking supported='yes'>
+    <enum name='sourceType'>
+      <value>file</value>
+      <value>anonymous</value>
+      <value>memfd</value>
+    </enum>
+  </memoryBacking>
   <devices>
     <disk supported='yes'>
       <enum name='diskDevice'>

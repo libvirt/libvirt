@@ -33,6 +33,13 @@
     <mode name='host-model' supported='no'/>
     <mode name='custom' supported='no'/>
   </cpu>
+  <memoryBacking supported='yes'>
+    <enum name='sourceType'>
+      <value>file</value>
+      <value>anonymous</value>
+      <value>memfd</value>
+    </enum>
+  </memoryBacking>
   <devices>
     <disk supported='yes'>
       <enum name='diskDevice'>

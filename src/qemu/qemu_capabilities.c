@@ -6005,6 +6005,26 @@ virQEMUCapsFillDomainFeaturesFromQEMUCaps(virQEMUCaps *qemuCaps,
 }
 
 
+void
+virQEMUCapsFillDomainMemoryBackingCaps(virQEMUCaps *qemuCaps,
+                                  virDomainCapsMemoryBacking *memoryBacking)
+{
+    memoryBacking->supported = VIR_TRISTATE_BOOL_YES;
+    memoryBacking->sourceType.report = true;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD))
+        VIR_DOMAIN_CAPS_ENUM_SET(memoryBacking->sourceType,
+                                 VIR_DOMAIN_MEMORY_SOURCE_MEMFD);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE))
+        VIR_DOMAIN_CAPS_ENUM_SET(memoryBacking->sourceType,
+                                 VIR_DOMAIN_MEMORY_SOURCE_FILE);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(memoryBacking->sourceType,
+                             VIR_DOMAIN_MEMORY_SOURCE_ANONYMOUS);
+}
+
+
 static void
 virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCaps *qemuCaps,
                                     const char *machine,
@@ -6322,6 +6342,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virDomainCapsDeviceVideo *video = &domCaps->video;
     virDomainCapsDeviceRNG *rng = &domCaps->rng;
     virDomainCapsDeviceFilesystem *filesystem = &domCaps->filesystem;
+    virDomainCapsMemoryBacking *memoryBacking = &domCaps->memoryBacking;
 
     virQEMUCapsFillDomainFeaturesFromQEMUCaps(qemuCaps, domCaps);
 
@@ -6345,6 +6366,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
         return -1;
 
     virQEMUCapsFillDomainCPUCaps(qemuCaps, hostarch, domCaps);
+    virQEMUCapsFillDomainMemoryBackingCaps(qemuCaps, memoryBacking);
     virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps, domCaps->machine, disk);
     virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, graphics);
     virQEMUCapsFillDomainDeviceVideoCaps(qemuCaps, video);
