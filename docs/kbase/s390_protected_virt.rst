@@ -127,10 +127,13 @@ Protected virtualization guests support I/O using virtio devices.
 As the virtio data structures of secure guests are not accessible
 by the host, it is necessary to use shared memory ('bounce buffers').
 
-To enable virtio devices to use shared buffers, it is necessary
-to configure them with platform_iommu enabled. This can done by adding
-``iommu='on'`` to the driver element of a virtio device definition in the
-guest's XML, e.g.
+Since libvirt 7.6.0 the
+`<launchSecurity> <https://libvirt.org/formatdomain.html#launchSecurity>`__
+element with type ``s390-pv`` should be used on protected virtualization guests.
+Without ``launchSecurity`` you must enable all virtio devices to use shared
+buffers by configuring them with platform_iommu enabled.
+This can done by adding ``iommu='on'`` to the driver element of a virtio
+device definition in the guest's XML, e.g.
 
 ::
 
@@ -140,8 +143,10 @@ guest's XML, e.g.
      <driver name='vhost' iommu='on'/>
    </interface>
 
-It is mandatory to define all virtio bus devices in this way to
-prevent the host from attempting to access protected memory.
+Unless you are using ``launchSecurity`` you must define all virtio bus
+devices in this way to prevent the host from attempting to access
+protected memory.
+
 Ballooning will not work and is fenced by QEMU. It should be
 disabled by specifying
 
@@ -158,8 +163,42 @@ allocated 2K entries. A commonly used value for swiotlb is 262144.
 Example guest definition
 ========================
 
-Minimal domain XML for a protected virtualization guest, essentially
-it's mostly about the ``iommu`` property
+Minimal domain XML for a protected virtualization guest with
+the ``launchSecurity`` element of type ``s390-pv``
+
+::
+
+   <domain type='kvm'>
+     <name>protected</name>
+     <memory unit='KiB'>2048000</memory>
+     <currentMemory unit='KiB'>2048000</currentMemory>
+     <vcpu>1</vcpu>
+     <os>
+       <type arch='s390x'>hvm</type>
+     </os>
+     <cpu mode='host-model'/>
+     <devices>
+       <disk type='file' device='disk'>
+         <driver name='qemu' type='qcow2' cache='none' io='native'>
+         <source file='/var/lib/libvirt/images/protected.qcow2'/>
+         <target dev='vda' bus='virtio'/>
+       </disk>
+       <interface type='network'>
+         <source network='default'/>
+         <model type='virtio'/>
+       </interface>
+       <console type='pty'/>
+       <memballoon model='none'/>
+     </devices>
+     <launchSecurity type='s390-pv'/>
+   </domain>
+
+
+Example guest definition without launchSecurity
+===============================================
+
+Minimal domain XML for a protected virtualization guest using the
+``iommu='on'`` setting for each virtio device.
 
 ::
 

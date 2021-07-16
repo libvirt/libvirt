@@ -8082,6 +8082,13 @@ Note: DEA/TDEA is synonymous with DES/TDES.
 Launch Security
 ---------------
 
+Specifying ``<launchSecurity type='s390-pv'\>`` in a s390 domain prepares
+the guest to run in protected virtualization secure mode, also known as
+IBM Secure Execution. For more required host and guest preparation steps, see
+`Protected Virtualization on s390 <kbase/s390_protected_virt.html>`__
+:since:`Since 7.6.0`
+
+
 The contents of the ``<launchSecurity type='sev'>`` element is used to provide
 the guest owners input used for creating an encrypted VM using the AMD SEV
 feature (Secure Encrypted Virtualization). SEV is an extension to the AMD-V
