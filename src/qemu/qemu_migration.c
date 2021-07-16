@@ -3968,11 +3968,10 @@ qemuMigrationSrcRunPrepareBlockDirtyBitmaps(virDomainObj *vm,
     if (qemuMigrationCookieBlockDirtyBitmapsMatchDisks(vm->def, mig->blockDirtyBitmaps) < 0)
         return -1;
 
-    /* For QEMU_MONITOR_MIGRATE_NON_SHARED_INC we can migrate the bitmaps
-     * directly, otherwise we must create merged bitmaps from the whole
-     * chain */
+    /* For VIR_MIGRATE_NON_SHARED_INC we can migrate the bitmaps directly,
+     * otherwise we must create merged bitmaps from the whole chain */
 
-    if (!(flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC) &&
+    if (!(flags & VIR_MIGRATE_NON_SHARED_INC) &&
         qemuMigrationSrcRunPrepareBlockDirtyBitmapsMerge(vm, mig) < 0)
         return -1;
 
