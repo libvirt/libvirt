@@ -153,6 +153,7 @@ struct _virNodeDevCapMdev {
     char *uuid;
     virMediatedDeviceAttr **attributes;
     size_t nattributes;
+    char *parent_addr;
 };
 
 typedef struct _virNodeDevCapPCIDev virNodeDevCapPCIDev;

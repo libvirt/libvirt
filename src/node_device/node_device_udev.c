@@ -1024,6 +1024,7 @@ udevProcessMediatedDevice(struct udev_device *dev,
     char *linkpath = NULL;
     char *canonicalpath = NULL;
     virNodeDevCapMdev *data = &def->caps->data.mdev;
+    struct udev_device *parent_device = NULL;
 
     /* Because of a kernel uevent race, we might get the 'add' event prior to
      * the sysfs tree being ready, so any attempt to access any sysfs attribute
@@ -1050,6 +1051,21 @@ udevProcessMediatedDevice(struct udev_device *dev,
     data->uuid = g_strdup(udev_device_get_sysname(dev));
     if ((iommugrp = virMediatedDeviceGetIOMMUGroupNum(data->uuid)) < 0)
         goto cleanup;
+
+    /* lookup the address of parent device */
+    parent_device = udev_device_get_parent(dev);
+    if (parent_device) {
+        const char *parent_sysfs_path = udev_device_get_syspath(parent_device);
+        if (parent_sysfs_path)
+            data->parent_addr = g_path_get_basename(parent_sysfs_path);
+    }
+
+    if (!data->parent_addr) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get parent of '%s'"),
+                       udev_device_get_syspath(dev));
+        return -1;
+    }
 
     udevGenerateDeviceName(dev, def, NULL);
 

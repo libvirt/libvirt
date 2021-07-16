@@ -2309,6 +2309,7 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
         for (i = 0; i < data->mdev.nattributes; i++)
             virMediatedDeviceAttrFree(data->mdev.attributes[i]);
         g_free(data->mdev.attributes);
+        g_free(data->mdev.parent_addr);
         break;
     case VIR_NODE_DEV_CAP_CSS_DEV:
         for (i = 0; i < data->ccw_dev.nmdev_types; i++)

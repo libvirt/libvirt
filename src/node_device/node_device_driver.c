@@ -1088,6 +1088,7 @@ nodeDeviceParseMdevctlChildDevice(const char *parent,
 
     mdev = &child->caps->data.mdev;
     mdev->uuid = g_strdup(uuid);
+    mdev->parent_addr = g_strdup(parent);
     mdev->type =
         g_strdup(virJSONValueObjectGetString(props, "mdev_type"));
 
