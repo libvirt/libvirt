@@ -2135,6 +2135,12 @@ const char *virQEMUCapsGetPackage(virQEMUCaps *qemuCaps)
 }
 
 
+bool virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps)
+{
+    return qemuCaps->kvmSupportsSecureGuest;
+}
+
+
 int
 virQEMUCapsAddCPUDefinitions(virQEMUCaps *qemuCaps,
                              virDomainVirtType type,
