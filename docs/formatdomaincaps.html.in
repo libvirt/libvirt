@@ -648,6 +648,16 @@
     <code>virDomainUndefine</code> is supported.
     </p>
 
+    <h4><a id="elementsS390PV">s390-pv capability</a></h4>
+
+    <p>Reports whether the hypervisor supports the Protected Virtualization.
+    In order to use Protected Virtualization with libvirt have a look at the
+    <a href="formatdomain.html#launchSecurity">launchSecurity element in the
+    domain XML</a>. For more details on the Protected Virtualization feature
+    please see <a href="kbase/s390_protected_virt.html">Protected
+    Virtualization on s390</a>.
+    </p>
+
     <h4><a id="elementsSEV">SEV capabilities</a></h4>
 
     <p>AMD Secure Encrypted Virtualization (SEV) capabilities are exposed under
