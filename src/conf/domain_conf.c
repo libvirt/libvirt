@@ -14732,40 +14732,50 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
                        &def->sectype) < 0)
         return NULL;
 
-    if (virXPathULongHex("string(./policy)", ctxt, &policy) < 0) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("failed to get launch security policy"));
+    switch ((virDomainLaunchSecurity) def->sectype) {
+    case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+        if (virXPathULongHex("string(./policy)", ctxt, &policy) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("failed to get launch security policy"));
+            return NULL;
+        }
+
+        /* the following attributes are platform dependent and if missing, we can
+         * autofill them from domain capabilities later
+        */
+        rc = virXPathUInt("string(./cbitpos)", ctxt, &def->cbitpos);
+        if (rc == 0) {
+            def->haveCbitpos = true;
+        } else if (rc == -2) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Invalid format for launch security cbitpos"));
+            return NULL;
+        }
+
+        rc = virXPathUInt("string(./reducedPhysBits)", ctxt,
+                          &def->reduced_phys_bits);
+        if (rc == 0) {
+            def->haveReducedPhysBits = true;
+        } else if (rc == -2) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Invalid format for launch security "
+                             "reduced-phys-bits"));
+            return NULL;
+        }
+
+        def->policy = policy;
+        def->dh_cert = virXPathString("string(./dhCert)", ctxt);
+        def->session = virXPathString("string(./session)", ctxt);
+
+        return g_steal_pointer(&def);
+    case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
+    case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
+    default:
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unsupported launch security type '%s'"),
+                       virDomainLaunchSecurityTypeToString(def->sectype));
         return NULL;
     }
-
-    /* the following attributes are platform dependent and if missing, we can
-     * autofill them from domain capabilities later
-     */
-    rc = virXPathUInt("string(./cbitpos)", ctxt, &def->cbitpos);
-    if (rc == 0) {
-        def->haveCbitpos = true;
-    } else if (rc == -2) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Invalid format for launch security cbitpos"));
-        return NULL;
-    }
-
-    rc = virXPathUInt("string(./reducedPhysBits)", ctxt,
-                      &def->reduced_phys_bits);
-    if (rc == 0) {
-        def->haveReducedPhysBits = true;
-    } else if (rc == -2) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Invalid format for launch security "
-                         "reduced-phys-bits"));
-        return NULL;
-    }
-
-    def->policy = policy;
-    def->dh_cert = virXPathString("string(./dhCert)", ctxt);
-    def->session = virXPathString("string(./session)", ctxt);
-
-    return g_steal_pointer(&def);
 }
 
 
@@ -26856,28 +26866,37 @@ virDomainKeyWrapDefFormat(virBuffer *buf, virDomainKeyWrapDef *keywrap)
 static void
 virDomainSEVDefFormat(virBuffer *buf, virDomainSEVDef *sev)
 {
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
     if (!sev)
         return;
 
-    virBufferAsprintf(buf, "<launchSecurity type='%s'>\n",
+    virBufferAsprintf(&attrBuf, " type='%s'",
                       virDomainLaunchSecurityTypeToString(sev->sectype));
-    virBufferAdjustIndent(buf, 2);
 
-    if (sev->haveCbitpos)
-        virBufferAsprintf(buf, "<cbitpos>%d</cbitpos>\n", sev->cbitpos);
+    switch ((virDomainLaunchSecurity) sev->sectype) {
+    case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+        if (sev->haveCbitpos)
+            virBufferAsprintf(&childBuf, "<cbitpos>%d</cbitpos>\n", sev->cbitpos);
 
-    if (sev->haveReducedPhysBits)
-        virBufferAsprintf(buf, "<reducedPhysBits>%d</reducedPhysBits>\n",
-                          sev->reduced_phys_bits);
-    virBufferAsprintf(buf, "<policy>0x%04x</policy>\n", sev->policy);
-    if (sev->dh_cert)
-        virBufferEscapeString(buf, "<dhCert>%s</dhCert>\n", sev->dh_cert);
+        if (sev->haveReducedPhysBits)
+            virBufferAsprintf(&childBuf, "<reducedPhysBits>%d</reducedPhysBits>\n",
+                              sev->reduced_phys_bits);
+        virBufferAsprintf(&childBuf, "<policy>0x%04x</policy>\n", sev->policy);
+        if (sev->dh_cert)
+            virBufferEscapeString(&childBuf, "<dhCert>%s</dhCert>\n", sev->dh_cert);
 
-    if (sev->session)
-        virBufferEscapeString(buf, "<session>%s</session>\n", sev->session);
+        if (sev->session)
+            virBufferEscapeString(&childBuf, "<session>%s</session>\n", sev->session);
 
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</launchSecurity>\n");
+        break;
+    case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
+    case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
+        return;
+    }
+
+    virXMLFormatElement(buf, "launchSecurity", &attrBuf, &childBuf);
 }
 
 
