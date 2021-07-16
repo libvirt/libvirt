@@ -482,40 +482,48 @@
 
   <define name="launchSecurity">
     <element name="launchSecurity">
-      <attribute name="type">
-        <value>sev</value>
-      </attribute>
-      <interleave>
-        <optional>
-          <element name="cbitpos">
-            <data type="unsignedInt"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="reducedPhysBits">
-            <data type="unsignedInt"/>
-          </element>
-        </optional>
-        <element name="policy">
-          <ref name="hexuint"/>
-        </element>
-        <optional>
-          <element name="handle">
-            <ref name="unsignedInt"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="dhCert">
-            <data type="string"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="session">
-            <data type="string"/>
-          </element>
-        </optional>
-      </interleave>
+      <choice>
+        <group>
+          <ref name="launchSecuritySEV"/>
+        </group>
+      </choice>
     </element>
+  </define>
+
+  <define name="launchSecuritySEV">
+    <attribute name="type">
+      <value>sev</value>
+    </attribute>
+    <interleave>
+      <optional>
+        <element name="cbitpos">
+          <data type="unsignedInt"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="reducedPhysBits">
+          <data type="unsignedInt"/>
+        </element>
+      </optional>
+      <element name="policy">
+        <ref name="hexuint"/>
+      </element>
+      <optional>
+        <element name="handle">
+          <ref name="unsignedInt"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="dhCert">
+          <data type="string"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="session">
+          <data type="string"/>
+        </element>
+      </optional>
+    </interleave>
   </define>
 
   <!--
