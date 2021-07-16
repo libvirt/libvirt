@@ -2185,6 +2185,13 @@ virNodeDeviceDefParse(const char *str,
 
     if (parserCallbacks) {
         int ret = 0;
+        /* fill in backend-specific aspects */
+        if (parserCallbacks->postParse) {
+            ret = parserCallbacks->postParse(def, opaque);
+            if (ret < 0)
+                return NULL;
+        }
+
         /* validate definition */
         if (parserCallbacks->validate) {
             ret = parserCallbacks->validate(def, opaque);

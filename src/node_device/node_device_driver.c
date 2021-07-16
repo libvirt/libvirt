@@ -718,11 +718,9 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
                             char **outbuf,
                             char **errbuf)
 {
-    g_autofree char *parent_addr = NULL;
     g_autoptr(virCommand) cmd = NULL;
     const char *subcommand = virMdevctlCommandTypeToString(cmd_type);
     g_autofree char *inbuf = NULL;
-    virNodeDeviceObj *parent_obj = NULL;
 
     switch (cmd_type) {
     case MDEVCTL_CMD_CREATE:
@@ -747,12 +745,7 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
     switch (cmd_type) {
     case MDEVCTL_CMD_CREATE:
     case MDEVCTL_CMD_DEFINE:
-        if ((parent_obj = nodeDeviceObjFindByName(def->parent))) {
-            parent_addr = nodeDeviceObjFormatAddress(parent_obj);
-            virNodeDeviceObjEndAPI(&parent_obj);
-        }
-
-        if (!parent_addr) {
+        if (!def->caps->data.mdev.parent_addr) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to find parent device '%s'"), def->parent);
             return NULL;
@@ -764,7 +757,7 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
             return NULL;
         }
 
-        virCommandAddArgPair(cmd, "--parent", parent_addr);
+        virCommandAddArgPair(cmd, "--parent", def->caps->data.mdev.parent_addr);
         virCommandAddArgPair(cmd, "--jsonfile", "/dev/stdin");
 
         virCommandSetInputBuffer(cmd, inbuf);
@@ -1764,9 +1757,30 @@ nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
 }
 
 
+int nodeDeviceDefPostParse(virNodeDeviceDef *def,
+                           G_GNUC_UNUSED void *opaque)
+{
+    virNodeDevCapsDef *caps = NULL;
+    for (caps = def->caps; caps != NULL; caps = caps->next) {
+        if (caps->data.type == VIR_NODE_DEV_CAP_MDEV) {
+            virNodeDeviceObj *obj = NULL;
+
+            if (def->parent)
+                obj = virNodeDeviceObjListFindByName(driver->devs, def->parent);
+
+            if (obj) {
+                caps->data.mdev.parent_addr = nodeDeviceObjFormatAddress(obj);
+                virNodeDeviceObjEndAPI(&obj);
+            }
+        }
+    }
+    return 0;
+}
+
+
 /* validate that parent exists */
 static int nodeDeviceDefValidateMdev(virNodeDeviceDef *def,
-                                     G_GNUC_UNUSED virNodeDevCapMdev *mdev,
+                                     virNodeDevCapMdev *mdev,
                                      G_GNUC_UNUSED void *opaque)
 {
     virNodeDeviceObj *obj = NULL;
@@ -1782,8 +1796,17 @@ static int nodeDeviceDefValidateMdev(virNodeDeviceDef *def,
                        def->parent);
         return -1;
     }
-
     virNodeDeviceObjEndAPI(&obj);
+
+    /* the post-parse callback should have found the address of the parent
+     * device and stored it in the mdev caps */
+    if (!mdev->parent_addr) {
+        virReportError(VIR_ERR_PARSE_FAILED,
+                       _("Unable to find address for parent device '%s'"),
+                       def->parent);
+        return -1;
+    }
+
     return 0;
 }
 

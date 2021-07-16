@@ -13,6 +13,7 @@
 #define VIRT_TYPE "QEMU"
 
 static virNodeDeviceDefParserCallbacks parser_callbacks = {
+    .postParse = nodeDeviceDefPostParse,
     .validate = nodeDeviceDefValidate
 };
 

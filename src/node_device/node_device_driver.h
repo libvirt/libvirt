@@ -172,5 +172,8 @@ int
 nodeDeviceCreate(virNodeDevice *dev,
                  unsigned int flags);
 
+int nodeDeviceDefPostParse(virNodeDeviceDef *def,
+                           void *opaque);
+
 int nodeDeviceDefValidate(virNodeDeviceDef *def,
                           void *opaque);
