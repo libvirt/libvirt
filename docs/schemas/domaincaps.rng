@@ -258,6 +258,9 @@
         <ref name="backup"/>
       </optional>
       <optional>
+        <ref name="s390-pv"/>
+      </optional>
+      <optional>
         <ref name="sev"/>
       </optional>
     </element>
@@ -290,6 +293,12 @@
 
   <define name="backup">
     <element name="backup">
+      <ref name="supported"/>
+    </element>
+  </define>
+
+  <define name="s390-pv">
+    <element name="s390-pv">
       <ref name="supported"/>
     </element>
   </define>

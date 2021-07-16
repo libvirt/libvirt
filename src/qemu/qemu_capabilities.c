@@ -6340,6 +6340,21 @@ virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCaps *qemuCaps,
 }
 
 
+static void
+virQEMUCapsFillDomainFeatureS390PVCaps(virQEMUCaps *qemuCaps,
+                                       virDomainCaps *domCaps)
+{
+    if (ARCH_IS_S390(qemuCaps->arch)) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT) &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_S390_PV_GUEST) &&
+            virQEMUCapsGetKVMSupportsSecureGuest(qemuCaps))
+            domCaps->features[VIR_DOMAIN_CAPS_FEATURE_S390_PV] = VIR_TRISTATE_BOOL_YES;
+        else
+            domCaps->features[VIR_DOMAIN_CAPS_FEATURE_S390_PV] = VIR_TRISTATE_BOOL_NO;
+    }
+}
+
+
 int
 virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
                           virArch hostarch,
@@ -6388,6 +6403,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virQEMUCapsFillDomainDeviceFSCaps(qemuCaps, filesystem);
     virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureSEVCaps(qemuCaps, domCaps);
+    virQEMUCapsFillDomainFeatureS390PVCaps(qemuCaps, domCaps);
 
     return 0;
 }

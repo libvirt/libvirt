@@ -42,6 +42,7 @@ VIR_ENUM_IMPL(virDomainCapsFeature,
               "genid",
               "backingStoreInput",
               "backup",
+              "s390-pv",
 );
 
 static virClass *virDomainCapsClass;

@@ -244,6 +244,7 @@
     <genid supported='no'/>
     <backingStoreInput supported='yes'/>
     <backup supported='no'/>
+    <s390-pv supported='no'/>
     <sev supported='no'/>
   </features>
 </domainCapabilities>
