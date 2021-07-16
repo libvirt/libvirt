@@ -636,6 +636,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 405 */
               "confidential-guest-support",
               "query-display-options",
+              "s390-pv-guest",
     );
 
 
@@ -1353,6 +1354,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "input-linux", QEMU_CAPS_INPUT_LINUX },
     { "virtio-gpu-gl-pci", QEMU_CAPS_VIRTIO_GPU_GL_PCI },
     { "virtio-vga-gl", QEMU_CAPS_VIRTIO_VGA_GL },
+    { "s390-pv-guest", QEMU_CAPS_S390_PV_GUEST },
 };
 
 
