@@ -2170,10 +2170,12 @@ static virNodeDeviceDef *
 virNodeDeviceDefParse(const char *str,
                       const char *filename,
                       int create,
-                      const char *virt_type)
+                      const char *virt_type,
+                      virNodeDeviceDefParserCallbacks *parserCallbacks,
+                      void *opaque)
 {
     xmlDocPtr xml;
-    virNodeDeviceDef *def = NULL;
+    g_autoptr(virNodeDeviceDef) def = NULL;
 
     if ((xml = virXMLParse(filename, str, _("(node_device_definition)")))) {
         def = virNodeDeviceDefParseNode(xml, xmlDocGetRootElement(xml),
@@ -2181,25 +2183,39 @@ virNodeDeviceDefParse(const char *str,
         xmlFreeDoc(xml);
     }
 
-    return def;
+    if (parserCallbacks) {
+        int ret = 0;
+        /* validate definition */
+        if (parserCallbacks->validate) {
+            ret = parserCallbacks->validate(def, opaque);
+            if (ret < 0)
+                return NULL;
+        }
+    }
+
+    return g_steal_pointer(&def);
 }
 
 
 virNodeDeviceDef *
 virNodeDeviceDefParseString(const char *str,
                             int create,
-                            const char *virt_type)
+                            const char *virt_type,
+                            virNodeDeviceDefParserCallbacks *parserCallbacks,
+                            void *opaque)
 {
-    return virNodeDeviceDefParse(str, NULL, create, virt_type);
+    return virNodeDeviceDefParse(str, NULL, create, virt_type, parserCallbacks, opaque);
 }
 
 
 virNodeDeviceDef *
 virNodeDeviceDefParseFile(const char *filename,
                           int create,
-                          const char *virt_type)
+                          const char *virt_type,
+                          virNodeDeviceDefParserCallbacks *parserCallbacks,
+                          void *opaque)
 {
-    return virNodeDeviceDefParse(NULL, filename, create, virt_type);
+    return virNodeDeviceDefParse(NULL, filename, create, virt_type, parserCallbacks, opaque);
 }
 
 

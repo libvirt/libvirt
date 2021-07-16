@@ -47,6 +47,7 @@ struct _virNodeDeviceDriverState {
 
     /* Immutable pointer, self-locking APIs */
     virObjectEventState *nodeDeviceEventState;
+    virNodeDeviceDefParserCallbacks parserCallbacks;
 };
 
 void

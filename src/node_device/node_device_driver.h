@@ -171,3 +171,6 @@ bool nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
 int
 nodeDeviceCreate(virNodeDevice *dev,
                  unsigned int flags);
+
+int nodeDeviceDefValidate(virNodeDeviceDef *def,
+                          void *opaque);

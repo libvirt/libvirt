@@ -896,7 +896,8 @@ nodeDeviceCreateXML(virConnectPtr conn,
 
     virt_type  = virConnectGetType(conn);
 
-    if (!(def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type)))
+    if (!(def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type,
+                                            &driver->parserCallbacks, NULL)))
         return NULL;
 
     if (virNodeDeviceCreateXMLEnsureACL(conn, def) < 0)
@@ -1375,7 +1376,8 @@ nodeDeviceDefineXML(virConnect *conn,
 
     virt_type  = virConnectGetType(conn);
 
-    if (!(def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type)))
+    if (!(def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type,
+                                            &driver->parserCallbacks, NULL)))
         return NULL;
 
     if (virNodeDeviceDefineXMLEnsureACL(conn, def) < 0)
@@ -1759,4 +1761,66 @@ nodeDeviceDefCopyFromMdevctl(virNodeDeviceDef *dst,
         ret = true;
 
     return ret;
+}
+
+
+/* validate that parent exists */
+static int nodeDeviceDefValidateMdev(virNodeDeviceDef *def,
+                                     G_GNUC_UNUSED virNodeDevCapMdev *mdev,
+                                     G_GNUC_UNUSED void *opaque)
+{
+    virNodeDeviceObj *obj = NULL;
+    if (!def->parent) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("missing parent device"));
+        return -1;
+    }
+    obj = virNodeDeviceObjListFindByName(driver->devs, def->parent);
+    if (!obj) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("invalid parent device '%s'"),
+                       def->parent);
+        return -1;
+    }
+
+    virNodeDeviceObjEndAPI(&obj);
+    return 0;
+}
+
+int nodeDeviceDefValidate(virNodeDeviceDef *def,
+                          G_GNUC_UNUSED void *opaque)
+{
+    virNodeDevCapsDef *caps = NULL;
+    for (caps = def->caps; caps != NULL; caps = caps->next) {
+        switch (caps->data.type) {
+            case VIR_NODE_DEV_CAP_MDEV:
+                if (nodeDeviceDefValidateMdev(def, &caps->data.mdev, opaque) < 0)
+                    return -1;
+                break;
+
+            case VIR_NODE_DEV_CAP_SYSTEM:
+            case VIR_NODE_DEV_CAP_PCI_DEV:
+            case VIR_NODE_DEV_CAP_USB_DEV:
+            case VIR_NODE_DEV_CAP_USB_INTERFACE:
+            case VIR_NODE_DEV_CAP_NET:
+            case VIR_NODE_DEV_CAP_SCSI_HOST:
+            case VIR_NODE_DEV_CAP_SCSI_TARGET:
+            case VIR_NODE_DEV_CAP_SCSI:
+            case VIR_NODE_DEV_CAP_STORAGE:
+            case VIR_NODE_DEV_CAP_FC_HOST:
+            case VIR_NODE_DEV_CAP_VPORTS:
+            case VIR_NODE_DEV_CAP_SCSI_GENERIC:
+            case VIR_NODE_DEV_CAP_DRM:
+            case VIR_NODE_DEV_CAP_MDEV_TYPES:
+            case VIR_NODE_DEV_CAP_CCW_DEV:
+            case VIR_NODE_DEV_CAP_CSS_DEV:
+            case VIR_NODE_DEV_CAP_VDPA:
+            case VIR_NODE_DEV_CAP_AP_CARD:
+            case VIR_NODE_DEV_CAP_AP_QUEUE:
+            case VIR_NODE_DEV_CAP_AP_MATRIX:
+            case VIR_NODE_DEV_CAP_LAST:
+                break;
+        }
+    }
+    return 0;
 }

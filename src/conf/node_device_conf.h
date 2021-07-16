@@ -349,15 +349,31 @@ struct _virNodeDeviceDef {
 char *
 virNodeDeviceDefFormat(const virNodeDeviceDef *def);
 
+
+typedef int (*virNodeDeviceDefPostParseCallback)(virNodeDeviceDef *dev,
+                                                 void *opaque);
+
+typedef int (*virNodeDeviceDefValidateCallback)(virNodeDeviceDef *dev,
+                                                void *opaque);
+
+typedef struct _virNodeDeviceDefParserCallbacks {
+    virNodeDeviceDefPostParseCallback postParse;
+    virNodeDeviceDefValidateCallback validate;
+} virNodeDeviceDefParserCallbacks;
+
 virNodeDeviceDef *
 virNodeDeviceDefParseString(const char *str,
                             int create,
-                            const char *virt_type);
+                            const char *virt_type,
+                            virNodeDeviceDefParserCallbacks *callbacks,
+                            void *opaque);
 
 virNodeDeviceDef *
 virNodeDeviceDefParseFile(const char *filename,
                           int create,
-                          const char *virt_type);
+                          const char *virt_type,
+                          virNodeDeviceDefParserCallbacks *callbacks,
+                          void *opaque);
 
 virNodeDeviceDef *
 virNodeDeviceDefParseNode(xmlDocPtr xml,

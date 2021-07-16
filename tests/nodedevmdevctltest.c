@@ -12,6 +12,10 @@
 
 #define VIRT_TYPE "QEMU"
 
+static virNodeDeviceDefParserCallbacks parser_callbacks = {
+    .validate = nodeDeviceDefValidate
+};
+
 struct TestInfo {
     const char *filename;
     virMdevctlCommand command;
@@ -66,7 +70,8 @@ testMdevctlCmd(virMdevctlCommand cmd_type,
             return -1;
     }
 
-    if (!(def = virNodeDeviceDefParseFile(mdevxml, create, VIRT_TYPE)))
+    if (!(def = virNodeDeviceDefParseFile(mdevxml, create, VIRT_TYPE,
+                                          &parser_callbacks, NULL)))
         return -1;
 
     /* this function will set a stdin buffer containing the json configuration

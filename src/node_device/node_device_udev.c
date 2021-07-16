@@ -2243,6 +2243,8 @@ nodeStateInitialize(bool privileged,
     driver->privateData = priv;
     driver->nodeDeviceEventState = virObjectEventStateNew();
 
+    driver->parserCallbacks.validate = nodeDeviceDefValidate;
+
     if (udevPCITranslateInit(privileged) < 0)
         goto unlock;
 
