@@ -6971,13 +6971,13 @@ qemuBuildMachineCommandLine(virCommand *cmd,
         switch ((virDomainLaunchSecurity) def->sec->sectype) {
         case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT)) {
-                virBufferAddLit(&buf, ",confidential-guest-support=sev0");
+                virBufferAddLit(&buf, ",confidential-guest-support=lsec0");
             } else {
-                virBufferAddLit(&buf, ",memory-encryption=sev0");
+                virBufferAddLit(&buf, ",memory-encryption=lsec0");
             }
             break;
         case VIR_DOMAIN_LAUNCH_SECURITY_PV:
-            virBufferAddLit(&buf, ",confidential-guest-support=pv0");
+            virBufferAddLit(&buf, ",confidential-guest-support=lsec0");
             break;
         case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
         case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
@@ -9858,7 +9858,7 @@ qemuBuildSEVCommandLine(virDomainObj *vm, virCommand *cmd,
     if (sev->session)
         sessionpath = g_strdup_printf("%s/session.base64", priv->libDir);
 
-    if (qemuMonitorCreateObjectProps(&props, "sev-guest", "sev0",
+    if (qemuMonitorCreateObjectProps(&props, "sev-guest", "lsec0",
                                      "u:cbitpos", sev->cbitpos,
                                      "u:reduced-phys-bits", sev->reduced_phys_bits,
                                      "u:policy", sev->policy,
@@ -9883,7 +9883,7 @@ qemuBuildPVCommandLine(virDomainObj *vm, virCommand *cmd)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     qemuDomainObjPrivate *priv = vm->privateData;
 
-    if (qemuMonitorCreateObjectProps(&props, "s390-pv-guest", "pv0",
+    if (qemuMonitorCreateObjectProps(&props, "s390-pv-guest", "lsec0",
                                      NULL) < 0)
         return -1;
 
