@@ -7852,9 +7852,6 @@ void qemuProcessStop(virQEMUDriver *driver,
     if (!!g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
 
-    /* Wake up anything waiting on domain condition */
-    virDomainObjBroadcast(vm);
-
     if ((timestamp = virTimeStringNow()) != NULL) {
         qemuDomainLogAppendMessage(driver, vm, "%s: shutting down, reason=%s\n",
                                    timestamp,
@@ -7924,6 +7921,9 @@ void qemuProcessStop(virQEMUDriver *driver,
     qemuDBusStop(driver, vm);
 
     vm->def->id = -1;
+
+    /* Wake up anything waiting on domain condition */
+    virDomainObjBroadcast(vm);
 
     virFileDeleteTree(priv->libDir);
     virFileDeleteTree(priv->channelTargetDir);
