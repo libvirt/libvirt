@@ -401,13 +401,21 @@ virNodeDeviceObjListFindSCSIHostByWWNs(virNodeDeviceObjList *devs,
                                       &data);
 }
 
+
+typedef struct _FindMediatedDeviceData FindMediatedDeviceData;
+struct _FindMediatedDeviceData {
+    const char *uuid;
+    const char *parent_addr;
+};
+
+
 static int
 virNodeDeviceObjListFindMediatedDeviceByUUIDCallback(const void *payload,
                                                      const char *name G_GNUC_UNUSED,
                                                      const void *opaque)
 {
     virNodeDeviceObj *obj = (virNodeDeviceObj *) payload;
-    const char *uuid = (const char *) opaque;
+    const FindMediatedDeviceData* data = opaque;
     virNodeDevCapsDef *cap;
     int want = 0;
 
@@ -415,7 +423,8 @@ virNodeDeviceObjListFindMediatedDeviceByUUIDCallback(const void *payload,
 
     for (cap = obj->def->caps; cap != NULL; cap = cap->next) {
         if (cap->data.type == VIR_NODE_DEV_CAP_MDEV) {
-            if (STREQ(cap->data.mdev.uuid, uuid)) {
+            if (STREQ(cap->data.mdev.uuid, data->uuid) &&
+                STREQ(cap->data.mdev.parent_addr, data->parent_addr)) {
                 want = 1;
                 break;
             }
@@ -429,11 +438,13 @@ virNodeDeviceObjListFindMediatedDeviceByUUIDCallback(const void *payload,
 
 virNodeDeviceObj *
 virNodeDeviceObjListFindMediatedDeviceByUUID(virNodeDeviceObjList *devs,
-                                             const char *uuid)
+                                             const char *uuid,
+                                             const char *parent_addr)
 {
+    const FindMediatedDeviceData data = {uuid, parent_addr};
     return virNodeDeviceObjListSearch(devs,
                                       virNodeDeviceObjListFindMediatedDeviceByUUIDCallback,
-                                      uuid);
+                                      &data);
 }
 
 static void

@@ -321,6 +321,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
 static virNodeDevicePtr
 nodeDeviceLookupMediatedDeviceByUUID(virConnectPtr conn,
                                      const char *uuid,
+                                     const char *parent_addr,
                                      unsigned int flags)
 {
     virNodeDeviceObj *obj = NULL;
@@ -330,7 +331,7 @@ nodeDeviceLookupMediatedDeviceByUUID(virConnectPtr conn,
     virCheckFlags(0, NULL);
 
     if (!(obj = virNodeDeviceObjListFindMediatedDeviceByUUID(driver->devs,
-                                                             uuid)))
+                                                             uuid, parent_addr)))
         return NULL;
 
     def = virNodeDeviceObjGetDef(obj);
@@ -542,23 +543,29 @@ nodeDeviceFindNewDevice(virConnectPtr conn,
 }
 
 
+typedef struct {
+    const char *uuid;
+    const char *parent_addr;
+} NewMediatedDeviceData;
+
 static virNodeDevicePtr
 nodeDeviceFindNewMediatedDeviceFunc(virConnectPtr conn,
                                     const void *opaque)
 {
-    const char *uuid = opaque;
+    const NewMediatedDeviceData *data = opaque;
 
-    return nodeDeviceLookupMediatedDeviceByUUID(conn, uuid, 0);
+    return nodeDeviceLookupMediatedDeviceByUUID(conn, data->uuid, data->parent_addr, 0);
 }
 
 
 static virNodeDevicePtr
 nodeDeviceFindNewMediatedDevice(virConnectPtr conn,
-                                const char *mdev_uuid)
+                                const char *mdev_uuid,
+                                const char *parent_addr)
 {
-    return nodeDeviceFindNewDevice(conn,
-                                   nodeDeviceFindNewMediatedDeviceFunc,
-                                   mdev_uuid);
+    NewMediatedDeviceData data = {mdev_uuid, parent_addr};
+    return nodeDeviceFindNewDevice(conn, nodeDeviceFindNewMediatedDeviceFunc,
+                                   &data);
 }
 
 
@@ -867,7 +874,8 @@ nodeDeviceCreateXMLMdev(virConnectPtr conn,
         def->caps->data.mdev.uuid = g_steal_pointer(&uuid);
     }
 
-    return nodeDeviceFindNewMediatedDevice(conn, def->caps->data.mdev.uuid);
+    return nodeDeviceFindNewMediatedDevice(conn, def->caps->data.mdev.uuid,
+                                           def->caps->data.mdev.parent_addr);
 }
 
 

@@ -122,7 +122,8 @@ virNodeDeviceObjSetSkipUpdateCaps(virNodeDeviceObj *obj,
                                   bool skipUpdateCaps);
 virNodeDeviceObj *
 virNodeDeviceObjListFindMediatedDeviceByUUID(virNodeDeviceObjList *devs,
-                                             const char *uuid);
+                                             const char *uuid,
+                                             const char *parent_addr);
 
 bool
 virNodeDeviceObjIsActive(virNodeDeviceObj *obj);
