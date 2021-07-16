@@ -1218,7 +1218,7 @@ qemuValidateDomainDef(const virDomainDef *def,
         switch ((virDomainLaunchSecurity) def->sec->sectype) {
         case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("SEV launch security is not supported with "
                                  "this QEMU binary"));
                 return -1;
