@@ -89,6 +89,8 @@ stages:
     - meson build --werror -Ddocs=disabled -Db_lundef=false -Db_sanitize="$SANITIZER"
     - ninja -C build;
     - ninja -C build test;
+  variables:
+    UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
 
 # Jobs that we delegate to Cirrus CI because they require an operating
 # system other than Linux. These jobs will only run if the required
