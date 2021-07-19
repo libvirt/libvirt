@@ -227,6 +227,11 @@ alloc_max = run_command(
 # sanitizer instrumentation may enlarge stack frames
 stack_frame_size = get_option('b_sanitize') == 'none' ? 4096 : 8192
 
+# array_bounds=2 check triggers false positive on some GCC
+# versions when using sanitizers. Seen on Fedora 34 with
+# GCC 11.1.1
+array_bounds = get_option('b_sanitize') == 'none' ? 2 : 1
+
 cc_flags += [
   '-fasynchronous-unwind-tables',
   '-fexceptions',
@@ -238,7 +243,7 @@ cc_flags += [
   '-Waggressive-loop-optimizations',
   '-Walloc-size-larger-than=@0@'.format(alloc_max.stdout().strip()),
   '-Walloca',
-  '-Warray-bounds=2',
+  '-Warray-bounds=@0@'.format(array_bounds),
   '-Wattribute-alias=2',
   '-Wattribute-warning',
   '-Wattributes',
