@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile --cross aarch64 debian-sid libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/1d4e10a04c6a0d29302003244a9dc4dc3c9d06f0
+# https://gitlab.com/libvirt/libvirt-ci
 
 FROM docker.io/library/debian:sid-slim
 
@@ -70,7 +70,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libapparmor-dev:arm64 \
             libattr1-dev:arm64 \
             libaudit-dev:arm64 \
-            libavahi-client-dev:arm64 \
             libblkid-dev:arm64 \
             libc6-dev:arm64 \
             libcap-ng-dev:arm64 \

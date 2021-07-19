@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile --cross s390x debian-sid libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/1d4e10a04c6a0d29302003244a9dc4dc3c9d06f0
+# https://gitlab.com/libvirt/libvirt-ci
 
 FROM docker.io/library/debian:sid-slim
 
@@ -70,7 +70,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libapparmor-dev:s390x \
             libattr1-dev:s390x \
             libaudit-dev:s390x \
-            libavahi-client-dev:s390x \
             libblkid-dev:s390x \
             libc6-dev:s390x \
             libcap-ng-dev:s390x \

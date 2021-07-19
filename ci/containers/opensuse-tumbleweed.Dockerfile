@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile opensuse-tumbleweed libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/1d4e10a04c6a0d29302003244a9dc4dc3c9d06f0
+# https://gitlab.com/libvirt/libvirt-ci
 
 FROM registry.opensuse.org/opensuse/tumbleweed:latest
 
@@ -11,7 +11,6 @@ RUN zypper update -y && \
            audit-devel \
            augeas \
            augeas-lenses \
-           avahi-devel \
            bash-completion \
            ca-certificates \
            ccache \

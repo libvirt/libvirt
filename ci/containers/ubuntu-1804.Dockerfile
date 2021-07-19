@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile ubuntu-1804 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/1d4e10a04c6a0d29302003244a9dc4dc3c9d06f0
+# https://gitlab.com/libvirt/libvirt-ci
 
 FROM docker.io/library/ubuntu:18.04
 
@@ -35,7 +35,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libapparmor-dev \
             libattr1-dev \
             libaudit-dev \
-            libavahi-client-dev \
             libblkid-dev \
             libc-dev-bin \
             libc6-dev \

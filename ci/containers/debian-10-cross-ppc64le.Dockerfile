@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile --cross ppc64le debian-10 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/1d4e10a04c6a0d29302003244a9dc4dc3c9d06f0
+# https://gitlab.com/libvirt/libvirt-ci
 
 FROM docker.io/library/debian:10-slim
 
@@ -50,8 +50,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             radvd \
             scrub \
             sed \
-            xsltproc \
-            zfs-fuse && \
+            xsltproc && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \
     sed -Ei 's,^# (en_US\.UTF-8 .*)$,\1,' /etc/locale.gen && \
@@ -72,7 +71,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libapparmor-dev:ppc64el \
             libattr1-dev:ppc64el \
             libaudit-dev:ppc64el \
-            libavahi-client-dev:ppc64el \
             libblkid-dev:ppc64el \
             libc6-dev:ppc64el \
             libcap-ng-dev:ppc64el \

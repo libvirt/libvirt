@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile centos-stream-8 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/1d4e10a04c6a0d29302003244a9dc4dc3c9d06f0
+# https://gitlab.com/libvirt/libvirt-ci
 
 FROM quay.io/centos/centos:stream8
 
@@ -14,7 +14,6 @@ RUN dnf update -y && \
     dnf install -y \
         audit-libs-devel \
         augeas \
-        avahi-devel \
         bash-completion \
         ca-certificates \
         ccache \

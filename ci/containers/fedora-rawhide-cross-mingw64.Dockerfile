@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile --cross mingw64 fedora-rawhide libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/1d4e10a04c6a0d29302003244a9dc4dc3c9d06f0
+# https://gitlab.com/libvirt/libvirt-ci
 
 FROM registry.fedoraproject.org/fedora:rawhide
 

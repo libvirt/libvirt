@@ -2,7 +2,7 @@
 #
 #  $ lcitool dockerfile debian-10 libvirt
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/1d4e10a04c6a0d29302003244a9dc4dc3c9d06f0
+# https://gitlab.com/libvirt/libvirt-ci
 
 FROM docker.io/library/debian:10-slim
 
@@ -34,7 +34,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libapparmor-dev \
             libattr1-dev \
             libaudit-dev \
-            libavahi-client-dev \
             libblkid-dev \
             libc-dev-bin \
             libc6-dev \
@@ -90,8 +89,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             systemtap-sdt-dev \
             wireshark-dev \
             xfslibs-dev \
-            xsltproc \
-            zfs-fuse && \
+            xsltproc && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \
     sed -Ei 's,^# (en_US\.UTF-8 .*)$,\1,' /etc/locale.gen && \
