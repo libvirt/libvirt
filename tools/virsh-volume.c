@@ -962,8 +962,8 @@ static const vshCmdOptDef opts_vol_wipe[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_DECL(virStorageVolWipeAlgorithm);
-VIR_ENUM_IMPL(virStorageVolWipeAlgorithm,
+VIR_ENUM_DECL(virshStorageVolWipeAlgorithm);
+VIR_ENUM_IMPL(virshStorageVolWipeAlgorithm,
               VIR_STORAGE_VOL_WIPE_ALG_LAST,
               "zero", "nnsa", "dod", "bsi", "gutmann", "schneier",
               "pfitzner7", "pfitzner33", "random", "trim");
@@ -985,7 +985,7 @@ cmdVolWipe(vshControl *ctl, const vshCmd *cmd)
         goto out;
 
     if (algorithm_str &&
-        (algorithm = virStorageVolWipeAlgorithmTypeFromString(algorithm_str)) < 0) {
+        (algorithm = virshStorageVolWipeAlgorithmTypeFromString(algorithm_str)) < 0) {
         vshError(ctl, _("Unsupported algorithm '%s'"), algorithm_str);
         goto out;
     }
