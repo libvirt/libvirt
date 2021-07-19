@@ -25,4 +25,4 @@
 
 extern const vshCmdDef hostAndHypervisorCmds[];
 
-VIR_ENUM_DECL(virNodeSuspendTarget);
+VIR_ENUM_DECL(virshNodeSuspendTarget);

@@ -951,7 +951,7 @@ cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
  * "nodesuspend" command
  */
 
-VIR_ENUM_IMPL(virNodeSuspendTarget,
+VIR_ENUM_IMPL(virshNodeSuspendTarget,
               VIR_NODE_SUSPEND_TARGET_LAST,
               "mem",
               "disk",
@@ -998,7 +998,7 @@ cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptLongLong(ctl, cmd, "duration", &duration) < 0)
         return false;
 
-    if ((suspendTarget = virNodeSuspendTargetTypeFromString(target)) < 0) {
+    if ((suspendTarget = virshNodeSuspendTargetTypeFromString(target)) < 0) {
         vshError(ctl, "%s", _("Invalid target"));
         return false;
     }

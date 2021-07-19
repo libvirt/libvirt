@@ -3488,7 +3488,7 @@ cmdDomPMSuspend(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "target", &target) < 0)
         goto cleanup;
 
-    if ((suspendTarget = virNodeSuspendTargetTypeFromString(target)) < 0) {
+    if ((suspendTarget = virshNodeSuspendTargetTypeFromString(target)) < 0) {
         vshError(ctl, "%s", _("Invalid target"));
         goto cleanup;
     }

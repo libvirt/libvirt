@@ -183,7 +183,7 @@ virshNodeSuspendTargetCompleter(vshControl *ctl G_GNUC_UNUSED,
     ret = g_new0(char *, VIR_NODE_SUSPEND_TARGET_LAST + 1);
 
     for (i = 0; i < VIR_NODE_SUSPEND_TARGET_LAST; i++)
-        ret[i] = g_strdup(virNodeSuspendTargetTypeToString(i));
+        ret[i] = g_strdup(virshNodeSuspendTargetTypeToString(i));
 
     return ret;
 }
