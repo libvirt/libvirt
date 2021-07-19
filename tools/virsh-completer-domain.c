@@ -762,7 +762,7 @@ virshDomainSignalCompleter(vshControl *ctl G_GNUC_UNUSED,
     tmp = g_new0(char *, VIR_DOMAIN_PROCESS_SIGNAL_LAST + 1);
 
     for (i = 0; i < VIR_DOMAIN_PROCESS_SIGNAL_LAST; i++) {
-        const char *name = virDomainProcessSignalTypeToString(i);
+        const char *name = virshDomainProcessSignalTypeToString(i);
         tmp[i] = g_strdup(name);
     }
 
@@ -783,7 +783,7 @@ virshDomainLifecycleCompleter(vshControl *ctl G_GNUC_UNUSED,
     tmp = g_new0(char *, VIR_DOMAIN_LIFECYCLE_LAST + 1);
 
     for (i = 0; i < VIR_DOMAIN_LIFECYCLE_LAST; i++) {
-        const char *name = virDomainLifecycleTypeToString(i);
+        const char *name = virshDomainLifecycleTypeToString(i);
         tmp[i] = g_strdup(name);
     }
 
@@ -804,7 +804,7 @@ virshDomainLifecycleActionCompleter(vshControl *ctl G_GNUC_UNUSED,
     tmp = g_new0(char *, VIR_DOMAIN_LIFECYCLE_ACTION_LAST + 1);
 
     for (i = 0; i < VIR_DOMAIN_LIFECYCLE_ACTION_LAST; i++) {
-        const char *action = virDomainLifecycleActionTypeToString(i);
+        const char *action = virshDomainLifecycleActionTypeToString(i);
         tmp[i] = g_strdup(action);
     }
 
@@ -956,7 +956,7 @@ virshDomainCoreDumpFormatCompleter(vshControl *ctl G_GNUC_UNUSED,
     ret = g_new0(char *, VIR_DOMAIN_CORE_DUMP_FORMAT_LAST + 1);
 
     for (i = 0; i < VIR_DOMAIN_CORE_DUMP_FORMAT_LAST; i++)
-        ret[i] = g_strdup(virDomainCoreDumpFormatTypeToString(i));
+        ret[i] = g_strdup(virshDomainCoreDumpFormatTypeToString(i));
 
     return ret;
 }

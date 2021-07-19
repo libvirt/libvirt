@@ -5410,7 +5410,7 @@ static const vshCmdOptDef opts_dump[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_IMPL(virDomainCoreDumpFormat,
+VIR_ENUM_IMPL(virshDomainCoreDumpFormat,
               VIR_DOMAIN_CORE_DUMP_FORMAT_LAST,
               "elf",
               "kdump-zlib",
@@ -5463,7 +5463,7 @@ doDump(void *opaque)
         }
 
         if (vshCommandOptStringQuiet(ctl, cmd, "format", &format) > 0) {
-            if ((dumpformat = virDomainCoreDumpFormatTypeFromString(format)) < 0) {
+            if ((dumpformat = virshDomainCoreDumpFormatTypeFromString(format)) < 0) {
                 vshError(ctl, _("format '%s' is not supported, expecting "
                                 "'kdump-zlib', 'kdump-lzo', 'kdump-snappy', "
                                 "'win-dmp' or 'elf'"), format);
@@ -5711,13 +5711,13 @@ static const vshCmdOptDef opts_setLifecycleAction[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_IMPL(virDomainLifecycle,
+VIR_ENUM_IMPL(virshDomainLifecycle,
               VIR_DOMAIN_LIFECYCLE_LAST,
               "poweroff",
               "reboot",
               "crash");
 
-VIR_ENUM_IMPL(virDomainLifecycleAction,
+VIR_ENUM_IMPL(virshDomainLifecycleAction,
               VIR_DOMAIN_LIFECYCLE_ACTION_LAST,
               "destroy",
               "restart",
@@ -5754,13 +5754,13 @@ cmdSetLifecycleAction(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if ((tmpVal = virDomainLifecycleTypeFromString(typeStr)) < 0) {
+    if ((tmpVal = virshDomainLifecycleTypeFromString(typeStr)) < 0) {
         vshError(ctl, _("Invalid lifecycle type '%s'."), typeStr);
         return false;
     }
     type = tmpVal;
 
-    if ((tmpVal = virDomainLifecycleActionTypeFromString(actionStr)) < 0) {
+    if ((tmpVal = virshDomainLifecycleActionTypeFromString(actionStr)) < 0) {
         vshError(ctl, _("Invalid lifecycle action '%s'."), actionStr);
         return false;
     }
@@ -8894,7 +8894,7 @@ static const vshCmdOptDef opts_send_process_signal[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_IMPL(virDomainProcessSignal,
+VIR_ENUM_IMPL(virshDomainProcessSignal,
               VIR_DOMAIN_PROCESS_SIGNAL_LAST,
                "nop",    "hup",  "int",  "quit",  "ill", /* 0-4 */
               "trap",   "abrt",  "bus",   "fpe", "kill", /* 5-9 */
@@ -8928,7 +8928,7 @@ static int getSignalNumber(const char *signame)
     else if (STRPREFIX(p, "sig"))
         p += 3;
 
-    return virDomainProcessSignalTypeFromString(p);
+    return virshDomainProcessSignalTypeFromString(p);
 }
 
 static bool

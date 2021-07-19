@@ -40,7 +40,7 @@ VIR_ENUM_DECL(virshDomainHostnameSource);
 
 extern const vshCmdDef domManagementCmds[];
 
-VIR_ENUM_DECL(virDomainProcessSignal);
-VIR_ENUM_DECL(virDomainLifecycle);
-VIR_ENUM_DECL(virDomainLifecycleAction);
-VIR_ENUM_DECL(virDomainCoreDumpFormat);
+VIR_ENUM_DECL(virshDomainProcessSignal);
+VIR_ENUM_DECL(virshDomainLifecycle);
+VIR_ENUM_DECL(virshDomainLifecycleAction);
+VIR_ENUM_DECL(virshDomainCoreDumpFormat);
