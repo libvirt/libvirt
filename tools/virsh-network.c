@@ -943,13 +943,13 @@ static const vshCmdOptDef opts_network_update[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_DECL(virNetworkUpdateCommand);
-VIR_ENUM_IMPL(virNetworkUpdateCommand,
+VIR_ENUM_DECL(virshNetworkUpdateCommand);
+VIR_ENUM_IMPL(virshNetworkUpdateCommand,
               VIR_NETWORK_UPDATE_COMMAND_LAST,
               "none", "modify", "delete", "add-last", "add-first");
 
-VIR_ENUM_DECL(virNetworkSection);
-VIR_ENUM_IMPL(virNetworkSection,
+VIR_ENUM_DECL(virshNetworkSection);
+VIR_ENUM_IMPL(virshNetworkSection,
               VIR_NETWORK_SECTION_LAST,
               "none", "bridge", "domain", "ip", "ip-dhcp-host",
               "ip-dhcp-range", "forward", "forward-interface",
@@ -983,7 +983,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
         /* "add" is a synonym for "add-last" */
         command = VIR_NETWORK_UPDATE_COMMAND_ADD_LAST;
     } else {
-        command = virNetworkUpdateCommandTypeFromString(commandStr);
+        command = virshNetworkUpdateCommandTypeFromString(commandStr);
         if (command <= 0 || command >= VIR_NETWORK_UPDATE_COMMAND_LAST) {
             vshError(ctl, _("unrecognized command name '%s'"), commandStr);
             goto cleanup;
@@ -993,7 +993,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "section", &sectionStr) < 0)
         goto cleanup;
 
-    section = virNetworkSectionTypeFromString(sectionStr);
+    section = virshNetworkSectionTypeFromString(sectionStr);
     if (section <= 0 || section >= VIR_NETWORK_SECTION_LAST) {
         vshError(ctl, _("unrecognized section name '%s'"), sectionStr);
         goto cleanup;
