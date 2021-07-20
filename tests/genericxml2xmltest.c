@@ -153,6 +153,12 @@ mymain(void)
 #define DO_TEST_DIFFERENT(name) \
     DO_TEST_FULL(name, 1, true, TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS)
 
+#define DO_TEST_FAIL_ACTIVE(name) \
+    DO_TEST_FULL(name, 0, true, TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE)
+
+#define DO_TEST_FAIL_INACTIVE(name) \
+    DO_TEST_FULL(name, 0, false, TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE)
+
     DO_TEST_DIFFERENT("disk-virtio");
     DO_TEST_DIFFERENT("disk-hyperv-physical");
     DO_TEST_DIFFERENT("disk-hyperv-virtual");
@@ -162,19 +168,16 @@ mymain(void)
     DO_TEST_DIFFERENT("graphics-vnc-socket");
     DO_TEST_DIFFERENT("graphics-vnc-socket-listen");
     DO_TEST_DIFFERENT("graphics-listen-back-compat");
-    DO_TEST_FULL("graphics-listen-back-compat-mismatch", 0, true,
-        TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_FAIL_ACTIVE("graphics-listen-back-compat-mismatch");
     DO_TEST_DIFFERENT("graphics-vnc-listen-attr-only");
     DO_TEST_DIFFERENT("graphics-vnc-listen-element-minimal");
     DO_TEST_DIFFERENT("graphics-vnc-listen-element-with-address");
     DO_TEST_DIFFERENT("graphics-vnc-socket-attr-listen-address");
     DO_TEST_DIFFERENT("graphics-vnc-socket-attr-listen-socket");
-    DO_TEST_FULL("graphics-vnc-socket-attr-listen-socket-mismatch", 0, true,
-        TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_FAIL_ACTIVE("graphics-vnc-socket-attr-listen-socket-mismatch");
     DO_TEST("graphics-vnc-autoport-no");
 
-    DO_TEST_FULL("name-slash-fail", 0, true,
-        TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_FAIL_ACTIVE("name-slash-fail");
 
     DO_TEST("perf");
 
@@ -188,47 +191,31 @@ mymain(void)
     DO_TEST("network-interface-mac-check");
 
     DO_TEST_DIFFERENT("chardev-tcp");
-    DO_TEST_FULL("chardev-tcp-missing-host", 0, true,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
-    DO_TEST_FULL("chardev-tcp-missing-service", 0, true,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
-    DO_TEST_FULL("chardev-tcp-multiple-source", 0, true,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_FAIL_ACTIVE("chardev-tcp-missing-host");
+    DO_TEST_FAIL_ACTIVE("chardev-tcp-missing-service");
+    DO_TEST_FAIL_ACTIVE("chardev-tcp-multiple-source");
     DO_TEST_DIFFERENT("chardev-udp");
-    DO_TEST_FULL("chardev-udp-missing-connect-service", 0, true,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
-    DO_TEST_FULL("chardev-udp-multiple-source", 0, true,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_FAIL_ACTIVE("chardev-udp-missing-connect-service");
+    DO_TEST_FAIL_ACTIVE("chardev-udp-multiple-source");
     DO_TEST_DIFFERENT("chardev-unix");
-    DO_TEST_FULL("chardev-unix-smartcard-missing-path", 0, true,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
-    DO_TEST_FULL("chardev-unix-redirdev-missing-path", 0, true,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
-    DO_TEST_FULL("chardev-unix-rng-missing-path", 0, true,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_FAIL_ACTIVE("chardev-unix-smartcard-missing-path");
+    DO_TEST_FAIL_ACTIVE("chardev-unix-redirdev-missing-path");
+    DO_TEST_FAIL_ACTIVE("chardev-unix-rng-missing-path");
     DO_TEST_DIFFERENT("chardev-reconnect");
-    DO_TEST_FULL("chardev-reconnect-missing-timeout", 0, true,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
-    DO_TEST_FULL("chardev-reconnect-invalid-mode", 0, true,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_FAIL_ACTIVE("chardev-reconnect-missing-timeout");
+    DO_TEST_FAIL_ACTIVE("chardev-reconnect-invalid-mode");
 
     DO_TEST("cachetune-small");
     DO_TEST("cachetune-cdp");
     DO_TEST("cachetune");
     DO_TEST_DIFFERENT("cachetune-extra-tunes");
-    DO_TEST_FULL("cachetune-colliding-allocs", false, false,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
-    DO_TEST_FULL("cachetune-colliding-tunes", false, false,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
-    DO_TEST_FULL("cachetune-colliding-types", false, false,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
-    DO_TEST_FULL("cachetune-colliding-monitor", false, false,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_FAIL_INACTIVE("cachetune-colliding-allocs");
+    DO_TEST_FAIL_INACTIVE("cachetune-colliding-tunes");
+    DO_TEST_FAIL_INACTIVE("cachetune-colliding-types");
+    DO_TEST_FAIL_INACTIVE("cachetune-colliding-monitor");
     DO_TEST_DIFFERENT("memorytune");
-    DO_TEST_FULL("memorytune-colliding-allocs", false, false,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
-    DO_TEST_FULL("memorytune-colliding-cachetune", false, false,
-                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_FAIL_INACTIVE("memorytune-colliding-allocs");
+    DO_TEST_FAIL_INACTIVE("memorytune-colliding-cachetune");
 
     DO_TEST("tseg");
 
