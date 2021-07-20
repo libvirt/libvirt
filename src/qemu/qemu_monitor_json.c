@@ -78,7 +78,6 @@ VIR_ENUM_IMPL(qemuMonitorJobStatus,
 
 static void qemuMonitorJSONHandleShutdown(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandleReset(qemuMonitor *mon, virJSONValue *data);
-static void qemuMonitorJSONHandlePowerdown(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandleStop(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandleResume(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandleRTCChange(qemuMonitor *mon, virJSONValue *data);
@@ -137,7 +136,6 @@ static qemuEventHandler eventHandlers[] = {
     { "MIGRATION", qemuMonitorJSONHandleMigrationStatus, },
     { "MIGRATION_PASS", qemuMonitorJSONHandleMigrationPass, },
     { "NIC_RX_FILTER_CHANGED", qemuMonitorJSONHandleNicRxFilterChanged, },
-    { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
     { "PR_MANAGER_STATUS_CHANGED", qemuMonitorJSONHandlePRManagerStatusChanged, },
     { "RDMA_GID_STATUS_CHANGED", qemuMonitorJSONHandleRdmaGidStatusChanged, },
     { "RESET", qemuMonitorJSONHandleReset, },
@@ -731,11 +729,6 @@ static void qemuMonitorJSONHandleShutdown(qemuMonitor *mon, virJSONValue *data)
 static void qemuMonitorJSONHandleReset(qemuMonitor *mon, virJSONValue *data G_GNUC_UNUSED)
 {
     qemuMonitorEmitReset(mon);
-}
-
-static void qemuMonitorJSONHandlePowerdown(qemuMonitor *mon, virJSONValue *data G_GNUC_UNUSED)
-{
-    qemuMonitorEmitPowerdown(mon);
 }
 
 static void qemuMonitorJSONHandleStop(qemuMonitor *mon, virJSONValue *data G_GNUC_UNUSED)

@@ -1196,17 +1196,6 @@ qemuMonitorEmitReset(qemuMonitor *mon)
 
 
 int
-qemuMonitorEmitPowerdown(qemuMonitor *mon)
-{
-    int ret = -1;
-    VIR_DEBUG("mon=%p", mon);
-
-    QEMU_MONITOR_CALLBACK(mon, ret, domainPowerdown, mon->vm);
-    return ret;
-}
-
-
-int
 qemuMonitorEmitStop(qemuMonitor *mon)
 {
     int ret = -1;

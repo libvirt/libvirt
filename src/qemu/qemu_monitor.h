@@ -169,9 +169,6 @@ typedef int (*qemuMonitorDomainShutdownCallback)(qemuMonitor *mon,
 typedef int (*qemuMonitorDomainResetCallback)(qemuMonitor *mon,
                                               virDomainObj *vm,
                                               void *opaque);
-typedef int (*qemuMonitorDomainPowerdownCallback)(qemuMonitor *mon,
-                                                  virDomainObj *vm,
-                                                  void *opaque);
 typedef int (*qemuMonitorDomainStopCallback)(qemuMonitor *mon,
                                              virDomainObj *vm,
                                              void *opaque);
@@ -372,7 +369,6 @@ struct _qemuMonitorCallbacks {
     qemuMonitorDomainEventCallback domainEvent;
     qemuMonitorDomainShutdownCallback domainShutdown;
     qemuMonitorDomainResetCallback domainReset;
-    qemuMonitorDomainPowerdownCallback domainPowerdown;
     qemuMonitorDomainStopCallback domainStop;
     qemuMonitorDomainResumeCallback domainResume;
     qemuMonitorDomainRTCChangeCallback domainRTCChange;
@@ -447,7 +443,6 @@ int qemuMonitorEmitEvent(qemuMonitor *mon, const char *event,
                          const char *details);
 int qemuMonitorEmitShutdown(qemuMonitor *mon, virTristateBool guest);
 int qemuMonitorEmitReset(qemuMonitor *mon);
-int qemuMonitorEmitPowerdown(qemuMonitor *mon);
 int qemuMonitorEmitStop(qemuMonitor *mon);
 int qemuMonitorEmitResume(qemuMonitor *mon);
 int qemuMonitorEmitRTCChange(qemuMonitor *mon, long long offset);
