@@ -284,7 +284,7 @@ virIdentityEnsureSystemToken(void)
     } else {
         if (virFileReadLimFD(fd, TOKEN_STRLEN, &token) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to write system token '%s'"),
+                                 _("Failed to read system token '%s'"),
                                  tokenfile);
             return NULL;
         }
