@@ -745,7 +745,7 @@ qemuProcessHandleResume(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectEventStateQueue(driver->domainEventState, event);
 }
 
-static int
+static void
 qemuProcessHandleRTCChange(qemuMonitor *mon G_GNUC_UNUSED,
                            virDomainObj *vm,
                            long long offset,
@@ -785,7 +785,6 @@ qemuProcessHandleRTCChange(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectUnlock(vm);
 
     virObjectEventStateQueue(driver->domainEventState, event);
-    return 0;
 }
 
 

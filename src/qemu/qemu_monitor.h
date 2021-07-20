@@ -175,10 +175,10 @@ typedef void (*qemuMonitorDomainStopCallback)(qemuMonitor *mon,
 typedef void (*qemuMonitorDomainResumeCallback)(qemuMonitor *mon,
                                                 virDomainObj *vm,
                                                 void *opaque);
-typedef int (*qemuMonitorDomainRTCChangeCallback)(qemuMonitor *mon,
-                                                  virDomainObj *vm,
-                                                  long long offset,
-                                                  void *opaque);
+typedef void (*qemuMonitorDomainRTCChangeCallback)(qemuMonitor *mon,
+                                                   virDomainObj *vm,
+                                                   long long offset,
+                                                   void *opaque);
 typedef int (*qemuMonitorDomainWatchdogCallback)(qemuMonitor *mon,
                                                  virDomainObj *vm,
                                                  int action,
