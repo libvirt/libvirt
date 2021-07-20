@@ -429,11 +429,23 @@ qemuProcessHandleReset(qemuMonitor *mon G_GNUC_UNUSED,
                        void *opaque)
 {
     virQEMUDriver *driver = opaque;
-    virObjectEvent *event;
+    virObjectEvent *event = NULL;
     qemuDomainObjPrivate *priv;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    virDomainState state;
+    int reason;
 
     virObjectLock(vm);
+
+    state = virDomainObjGetState(vm, &reason);
+
+    /* ignore reset events on VM startup. Libvirt in certain instances does a
+     * reset during startup so that the ACPI tables are re-generated */
+    if (state == VIR_DOMAIN_PAUSED &&
+        reason == VIR_DOMAIN_PAUSED_STARTING_UP) {
+        VIR_DEBUG("ignoring reset event during startup");
+        goto unlock;
+    }
 
     event = virDomainEventRebootNewFromObj(vm);
     priv = vm->privateData;
@@ -443,6 +455,7 @@ qemuProcessHandleReset(qemuMonitor *mon G_GNUC_UNUSED,
     if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
         VIR_WARN("Failed to save status on vm %s", vm->def->name);
 
+ unlock:
     virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, event);
 }
