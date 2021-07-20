@@ -215,12 +215,12 @@ typedef void (*qemuMonitorDomainJobStatusChangeCallback)(qemuMonitor *mon,
                                                          const char *jobname,
                                                          int status,
                                                          void *opaque);
-typedef int (*qemuMonitorDomainTrayChangeCallback)(qemuMonitor *mon,
-                                                   virDomainObj *vm,
-                                                   const char *devAlias,
-                                                   const char *devid,
-                                                   int reason,
-                                                   void *opaque);
+typedef void (*qemuMonitorDomainTrayChangeCallback)(qemuMonitor *mon,
+                                                    virDomainObj *vm,
+                                                    const char *devAlias,
+                                                    const char *devid,
+                                                    int reason,
+                                                    void *opaque);
 typedef int (*qemuMonitorDomainPMWakeupCallback)(qemuMonitor *mon,
                                                  virDomainObj *vm,
                                                  void *opaque);

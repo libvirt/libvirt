@@ -1089,7 +1089,7 @@ qemuProcessHandleGraphics(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectEventStateQueue(driver->domainEventState, event);
 }
 
-static int
+static void
 qemuProcessHandleTrayChange(qemuMonitor *mon G_GNUC_UNUSED,
                             virDomainObj *vm,
                             const char *devAlias,
@@ -1123,7 +1123,6 @@ qemuProcessHandleTrayChange(qemuMonitor *mon G_GNUC_UNUSED,
 
     virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, event);
-    return 0;
 }
 
 static int
