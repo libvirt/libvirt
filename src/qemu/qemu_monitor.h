@@ -324,9 +324,9 @@ typedef void (*qemuMonitorDomainRdmaGidStatusChangedCallback)(qemuMonitor *mon,
                                                               unsigned long long interface_id,
                                                               void *opaque);
 
-typedef int (*qemuMonitorDomainGuestCrashloadedCallback)(qemuMonitor *mon,
-                                                         virDomainObj *vm,
-                                                         void *opaque);
+typedef void (*qemuMonitorDomainGuestCrashloadedCallback)(qemuMonitor *mon,
+                                                          virDomainObj *vm,
+                                                          void *opaque);
 
 typedef enum {
     QEMU_MONITOR_MEMORY_FAILURE_RECIPIENT_HYPERVISOR,

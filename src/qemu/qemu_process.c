@@ -1792,7 +1792,7 @@ qemuProcessHandleRdmaGidStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleGuestCrashloaded(qemuMonitor *mon G_GNUC_UNUSED,
                                   virDomainObj *vm,
                                   void *opaque)
@@ -1812,8 +1812,6 @@ qemuProcessHandleGuestCrashloaded(qemuMonitor *mon G_GNUC_UNUSED,
     }
 
     virObjectUnlock(vm);
-
-    return 0;
 }
 
 
