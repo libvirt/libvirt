@@ -1227,7 +1227,7 @@ qemuProcessHandleBalloonChange(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectEventStateQueue(driver->domainEventState, event);
 }
 
-static int
+static void
 qemuProcessHandlePMSuspendDisk(qemuMonitor *mon G_GNUC_UNUSED,
                                virDomainObj *vm,
                                void *opaque)
@@ -1265,8 +1265,6 @@ qemuProcessHandlePMSuspendDisk(qemuMonitor *mon G_GNUC_UNUSED,
 
     virObjectEventStateQueue(driver->domainEventState, event);
     virObjectEventStateQueue(driver->domainEventState, lifecycleEvent);
-
-    return 0;
 }
 
 
