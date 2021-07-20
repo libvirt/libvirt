@@ -1393,7 +1393,7 @@ qemuProcessHandleDeviceDeleted(qemuMonitor *mon G_GNUC_UNUSED,
  *  Note that qemu does not emit the event for all the documented sources or
  *  devices.
  */
-static int
+static void
 qemuProcessHandleAcpiOstInfo(qemuMonitor *mon G_GNUC_UNUSED,
                              virDomainObj *vm,
                              const char *alias,
@@ -1428,8 +1428,6 @@ qemuProcessHandleAcpiOstInfo(qemuMonitor *mon G_GNUC_UNUSED,
  cleanup:
     virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, event);
-
-    return 0;
 }
 
 

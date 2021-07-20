@@ -267,14 +267,14 @@ typedef void (*qemuMonitorDomainMigrationPassCallback)(qemuMonitor *mon,
                                                        int pass,
                                                        void *opaque);
 
-typedef int (*qemuMonitorDomainAcpiOstInfoCallback)(qemuMonitor *mon,
-                                                    virDomainObj *vm,
-                                                    const char *alias,
-                                                    const char *slotType,
-                                                    const char *slot,
-                                                    unsigned int source,
-                                                    unsigned int status,
-                                                    void *opaque);
+typedef void (*qemuMonitorDomainAcpiOstInfoCallback)(qemuMonitor *mon,
+                                                     virDomainObj *vm,
+                                                     const char *alias,
+                                                     const char *slotType,
+                                                     const char *slot,
+                                                     unsigned int source,
+                                                     unsigned int status,
+                                                     void *opaque);
 
 
 typedef int (*qemuMonitorDomainBlockThresholdCallback)(qemuMonitor *mon,
