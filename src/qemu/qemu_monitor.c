@@ -1147,126 +1147,107 @@ qemuMonitorUpdateVideoVram64Size(qemuMonitor *mon,
 
 
 /* Ensure proper locking around callbacks.  */
-#define QEMU_MONITOR_CALLBACK(mon, ret, callback, ...) \
+#define QEMU_MONITOR_CALLBACK(mon, callback, ...) \
     do { \
         virObjectRef(mon); \
         virObjectUnlock(mon); \
         if ((mon)->cb && (mon)->cb->callback) \
-            (ret) = (mon)->cb->callback(mon, __VA_ARGS__, \
-                                        (mon)->callbackOpaque); \
+            (mon)->cb->callback(mon, __VA_ARGS__, (mon)->callbackOpaque); \
         virObjectLock(mon); \
         virObjectUnref(mon); \
     } while (0)
 
 
-int
+void
 qemuMonitorEmitEvent(qemuMonitor *mon, const char *event,
                      long long seconds, unsigned int micros,
                      const char *details)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p event=%s", mon, event);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainEvent, mon->vm, event, seconds,
+    QEMU_MONITOR_CALLBACK(mon, domainEvent, mon->vm, event, seconds,
                           micros, details);
-    return ret;
 }
 
 
-int
+void
 qemuMonitorEmitShutdown(qemuMonitor *mon, virTristateBool guest)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p guest=%u", mon, guest);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainShutdown, mon->vm, guest);
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainShutdown, mon->vm, guest);
 }
 
 
-int
+void
 qemuMonitorEmitReset(qemuMonitor *mon)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainReset, mon->vm);
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainReset, mon->vm);
 }
 
 
-int
+void
 qemuMonitorEmitStop(qemuMonitor *mon)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainStop, mon->vm);
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainStop, mon->vm);
 }
 
 
-int
+void
 qemuMonitorEmitResume(qemuMonitor *mon)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainResume, mon->vm);
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainResume, mon->vm);
 }
 
 
-int
+void
 qemuMonitorEmitGuestPanic(qemuMonitor *mon,
                           qemuMonitorEventPanicInfo *info)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
-    QEMU_MONITOR_CALLBACK(mon, ret, domainGuestPanic, mon->vm, info);
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainGuestPanic, mon->vm, info);
 }
 
 
-int
+void
 qemuMonitorEmitRTCChange(qemuMonitor *mon, long long offset)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainRTCChange, mon->vm, offset);
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainRTCChange, mon->vm, offset);
 }
 
 
-int
+void
 qemuMonitorEmitWatchdog(qemuMonitor *mon, int action)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainWatchdog, mon->vm, action);
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainWatchdog, mon->vm, action);
 }
 
 
-int
+void
 qemuMonitorEmitIOError(qemuMonitor *mon,
                        const char *diskAlias,
                        const char *nodename,
                        int action,
                        const char *reason)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainIOError, mon->vm,
+    QEMU_MONITOR_CALLBACK(mon, domainIOError, mon->vm,
                           diskAlias, nodename, action, reason);
-    return ret;
 }
 
 
-int
+void
 qemuMonitorEmitGraphics(qemuMonitor *mon,
                         int phase,
                         int localFamily,
@@ -1279,202 +1260,160 @@ qemuMonitorEmitGraphics(qemuMonitor *mon,
                         const char *x509dname,
                         const char *saslUsername)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainGraphics, mon->vm, phase,
+    QEMU_MONITOR_CALLBACK(mon, domainGraphics, mon->vm, phase,
                           localFamily, localNode, localService,
                           remoteFamily, remoteNode, remoteService,
                           authScheme, x509dname, saslUsername);
-    return ret;
 }
 
 
-int
+void
 qemuMonitorEmitTrayChange(qemuMonitor *mon,
                           const char *devAlias,
                           const char *devid,
                           int reason)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainTrayChange, mon->vm,
+    QEMU_MONITOR_CALLBACK(mon, domainTrayChange, mon->vm,
                           devAlias, devid, reason);
-
-    return ret;
 }
 
 
-int
+void
 qemuMonitorEmitPMWakeup(qemuMonitor *mon)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainPMWakeup, mon->vm);
-
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainPMWakeup, mon->vm);
 }
 
 
-int
+void
 qemuMonitorEmitPMSuspend(qemuMonitor *mon)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainPMSuspend, mon->vm);
-
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainPMSuspend, mon->vm);
 }
 
 
-int
+void
 qemuMonitorEmitPMSuspendDisk(qemuMonitor *mon)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainPMSuspendDisk, mon->vm);
-
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainPMSuspendDisk, mon->vm);
 }
 
 
-int
+void
 qemuMonitorEmitBlockJob(qemuMonitor *mon,
                         const char *diskAlias,
                         int type,
                         int status,
                         const char *error)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainBlockJob, mon->vm,
+    QEMU_MONITOR_CALLBACK(mon, domainBlockJob, mon->vm,
                           diskAlias, type, status, error);
-    return ret;
 }
 
 
-int
+void
 qemuMonitorEmitJobStatusChange(qemuMonitor *mon,
                                const char *jobname,
                                qemuMonitorJobStatus status)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, jobStatusChange, mon->vm, jobname, status);
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, jobStatusChange, mon->vm, jobname, status);
 }
 
 
-int
+void
 qemuMonitorEmitBalloonChange(qemuMonitor *mon,
                              unsigned long long actual)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainBalloonChange, mon->vm, actual);
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainBalloonChange, mon->vm, actual);
 }
 
 
-int
+void
 qemuMonitorEmitDeviceDeleted(qemuMonitor *mon,
                              const char *devAlias)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainDeviceDeleted, mon->vm, devAlias);
-
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainDeviceDeleted, mon->vm, devAlias);
 }
 
 
-int
+void
 qemuMonitorEmitNicRxFilterChanged(qemuMonitor *mon,
                                   const char *devAlias)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainNicRxFilterChanged, mon->vm, devAlias);
-
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainNicRxFilterChanged, mon->vm, devAlias);
 }
 
 
-int
+void
 qemuMonitorEmitSerialChange(qemuMonitor *mon,
                             const char *devAlias,
                             bool connected)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p, devAlias='%s', connected=%d", mon, devAlias, connected);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainSerialChange, mon->vm, devAlias, connected);
-
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainSerialChange, mon->vm, devAlias, connected);
 }
 
 
-int
+void
 qemuMonitorEmitSpiceMigrated(qemuMonitor *mon)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainSpiceMigrated, mon->vm);
-
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainSpiceMigrated, mon->vm);
 }
 
 
-int
+void
 qemuMonitorEmitMemoryFailure(qemuMonitor *mon,
                              qemuMonitorEventMemoryFailure *mfp)
 {
-    int ret = -1;
-
-    QEMU_MONITOR_CALLBACK(mon, ret, domainMemoryFailure, mon->vm, mfp);
-
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainMemoryFailure, mon->vm, mfp);
 }
 
 
-int
+void
 qemuMonitorEmitMigrationStatus(qemuMonitor *mon,
                                int status)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p, status=%s",
               mon, NULLSTR(qemuMonitorMigrationStatusTypeToString(status)));
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainMigrationStatus, mon->vm, status);
-
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainMigrationStatus, mon->vm, status);
 }
 
 
-int
+void
 qemuMonitorEmitMigrationPass(qemuMonitor *mon,
                              int pass)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p, pass=%d", mon, pass);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainMigrationPass, mon->vm, pass);
-
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainMigrationPass, mon->vm, pass);
 }
 
 
-int
+void
 qemuMonitorEmitAcpiOstInfo(qemuMonitor *mon,
                            const char *alias,
                            const char *slotType,
@@ -1482,92 +1421,73 @@ qemuMonitorEmitAcpiOstInfo(qemuMonitor *mon,
                            unsigned int source,
                            unsigned int status)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p, alias='%s', slotType='%s', slot='%s', source='%u' status=%u",
               mon, NULLSTR(alias), slotType, slot, source, status);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainAcpiOstInfo, mon->vm,
+    QEMU_MONITOR_CALLBACK(mon, domainAcpiOstInfo, mon->vm,
                           alias, slotType, slot, source, status);
-
-    return ret;
 }
 
 
-int
+void
 qemuMonitorEmitBlockThreshold(qemuMonitor *mon,
                               const char *nodename,
                               unsigned long long threshold,
                               unsigned long long excess)
 {
-    int ret = -1;
-
     VIR_DEBUG("mon=%p, node-name='%s', threshold='%llu', excess='%llu'",
               mon, nodename, threshold, excess);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainBlockThreshold, mon->vm,
+    QEMU_MONITOR_CALLBACK(mon, domainBlockThreshold, mon->vm,
                           nodename, threshold, excess);
-
-    return ret;
 }
 
 
-int
+void
 qemuMonitorEmitDumpCompleted(qemuMonitor *mon,
                              int status,
                              qemuMonitorDumpStats *stats,
                              const char *error)
 {
-    int ret = -1;
-
     VIR_DEBUG("mon=%p", mon);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainDumpCompleted, mon->vm,
+    QEMU_MONITOR_CALLBACK(mon, domainDumpCompleted, mon->vm,
                           status, stats, error);
-
-    return ret;
 }
 
 
-int
+void
 qemuMonitorEmitPRManagerStatusChanged(qemuMonitor *mon,
                                       const char *prManager,
                                       bool connected)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p, prManager='%s', connected=%d", mon, prManager, connected);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainPRManagerStatusChanged,
+    QEMU_MONITOR_CALLBACK(mon, domainPRManagerStatusChanged,
                           mon->vm, prManager, connected);
-
-    return ret;
 }
 
 
-int
+void
 qemuMonitorEmitRdmaGidStatusChanged(qemuMonitor *mon,
                                     const char *netdev,
                                     bool gid_status,
                                     unsigned long long subnet_prefix,
                                     unsigned long long interface_id)
 {
-    int ret = -1;
     VIR_DEBUG("netdev=%s, gid_status=%d, subnet_prefix=0x%llx, interface_id=0x%llx",
               netdev, gid_status, subnet_prefix, interface_id);
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainRdmaGidStatusChanged, mon->vm,
+    QEMU_MONITOR_CALLBACK(mon, domainRdmaGidStatusChanged, mon->vm,
                           netdev, gid_status, subnet_prefix, interface_id);
-
-    return ret;
 }
 
 
-int
+void
 qemuMonitorEmitGuestCrashloaded(qemuMonitor *mon)
 {
-    int ret = -1;
     VIR_DEBUG("mon=%p", mon);
-    QEMU_MONITOR_CALLBACK(mon, ret, domainGuestCrashloaded, mon->vm);
-    return ret;
+    QEMU_MONITOR_CALLBACK(mon, domainGuestCrashloaded, mon->vm);
 }
 
 

@@ -438,95 +438,95 @@ int qemuMonitorUpdateVideoVram64Size(qemuMonitor *mon,
                                      const char *videoName)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
-int qemuMonitorEmitEvent(qemuMonitor *mon, const char *event,
-                         long long seconds, unsigned int micros,
-                         const char *details);
-int qemuMonitorEmitShutdown(qemuMonitor *mon, virTristateBool guest);
-int qemuMonitorEmitReset(qemuMonitor *mon);
-int qemuMonitorEmitStop(qemuMonitor *mon);
-int qemuMonitorEmitResume(qemuMonitor *mon);
-int qemuMonitorEmitRTCChange(qemuMonitor *mon, long long offset);
-int qemuMonitorEmitWatchdog(qemuMonitor *mon, int action);
-int qemuMonitorEmitIOError(qemuMonitor *mon,
-                           const char *diskAlias,
-                           const char *nodename,
-                           int action,
-                           const char *reason);
-int qemuMonitorEmitGraphics(qemuMonitor *mon,
-                            int phase,
-                            int localFamily,
-                            const char *localNode,
-                            const char *localService,
-                            int remoteFamily,
-                            const char *remoteNode,
-                            const char *remoteService,
-                            const char *authScheme,
-                            const char *x509dname,
-                            const char *saslUsername);
-int qemuMonitorEmitTrayChange(qemuMonitor *mon,
-                              const char *devAlias,
-                              const char *devid,
-                              int reason);
-int qemuMonitorEmitPMWakeup(qemuMonitor *mon);
-int qemuMonitorEmitPMSuspend(qemuMonitor *mon);
-int qemuMonitorEmitBlockJob(qemuMonitor *mon,
+void qemuMonitorEmitEvent(qemuMonitor *mon, const char *event,
+                          long long seconds, unsigned int micros,
+                          const char *details);
+void qemuMonitorEmitShutdown(qemuMonitor *mon, virTristateBool guest);
+void qemuMonitorEmitReset(qemuMonitor *mon);
+void qemuMonitorEmitStop(qemuMonitor *mon);
+void qemuMonitorEmitResume(qemuMonitor *mon);
+void qemuMonitorEmitRTCChange(qemuMonitor *mon, long long offset);
+void qemuMonitorEmitWatchdog(qemuMonitor *mon, int action);
+void qemuMonitorEmitIOError(qemuMonitor *mon,
                             const char *diskAlias,
-                            int type,
-                            int status,
-                            const char *error);
-int qemuMonitorEmitJobStatusChange(qemuMonitor *mon,
-                                   const char *jobname,
-                                   qemuMonitorJobStatus status);
-int qemuMonitorEmitBalloonChange(qemuMonitor *mon,
-                                 unsigned long long actual);
-int qemuMonitorEmitPMSuspendDisk(qemuMonitor *mon);
-int qemuMonitorEmitGuestPanic(qemuMonitor *mon,
-                              qemuMonitorEventPanicInfo *info);
-int qemuMonitorEmitDeviceDeleted(qemuMonitor *mon,
-                                 const char *devAlias);
-int qemuMonitorEmitNicRxFilterChanged(qemuMonitor *mon,
-                                      const char *devAlias);
-int qemuMonitorEmitSerialChange(qemuMonitor *mon,
-                                const char *devAlias,
-                                bool connected);
-int qemuMonitorEmitSpiceMigrated(qemuMonitor *mon);
+                            const char *nodename,
+                            int action,
+                            const char *reason);
+void qemuMonitorEmitGraphics(qemuMonitor *mon,
+                             int phase,
+                             int localFamily,
+                             const char *localNode,
+                             const char *localService,
+                             int remoteFamily,
+                             const char *remoteNode,
+                             const char *remoteService,
+                             const char *authScheme,
+                             const char *x509dname,
+                             const char *saslUsername);
+void qemuMonitorEmitTrayChange(qemuMonitor *mon,
+                               const char *devAlias,
+                               const char *devid,
+                               int reason);
+void qemuMonitorEmitPMWakeup(qemuMonitor *mon);
+void qemuMonitorEmitPMSuspend(qemuMonitor *mon);
+void qemuMonitorEmitBlockJob(qemuMonitor *mon,
+                             const char *diskAlias,
+                             int type,
+                             int status,
+                             const char *error);
+void qemuMonitorEmitJobStatusChange(qemuMonitor *mon,
+                                    const char *jobname,
+                                    qemuMonitorJobStatus status);
+void qemuMonitorEmitBalloonChange(qemuMonitor *mon,
+                                  unsigned long long actual);
+void qemuMonitorEmitPMSuspendDisk(qemuMonitor *mon);
+void qemuMonitorEmitGuestPanic(qemuMonitor *mon,
+                               qemuMonitorEventPanicInfo *info);
+void qemuMonitorEmitDeviceDeleted(qemuMonitor *mon,
+                                  const char *devAlias);
+void qemuMonitorEmitNicRxFilterChanged(qemuMonitor *mon,
+                                       const char *devAlias);
+void qemuMonitorEmitSerialChange(qemuMonitor *mon,
+                                 const char *devAlias,
+                                 bool connected);
+void qemuMonitorEmitSpiceMigrated(qemuMonitor *mon);
 
-int qemuMonitorEmitMemoryFailure(qemuMonitor *mon,
-                                 qemuMonitorEventMemoryFailure *mfp);
+void qemuMonitorEmitMemoryFailure(qemuMonitor *mon,
+                                  qemuMonitorEventMemoryFailure *mfp);
 
-int qemuMonitorEmitMigrationStatus(qemuMonitor *mon,
-                                   int status);
-int qemuMonitorEmitMigrationPass(qemuMonitor *mon,
-                                 int pass);
+void qemuMonitorEmitMigrationStatus(qemuMonitor *mon,
+                                    int status);
+void qemuMonitorEmitMigrationPass(qemuMonitor *mon,
+                                  int pass);
 
-int qemuMonitorEmitAcpiOstInfo(qemuMonitor *mon,
-                               const char *alias,
-                               const char *slotType,
-                               const char *slot,
-                               unsigned int source,
-                               unsigned int status);
+void qemuMonitorEmitAcpiOstInfo(qemuMonitor *mon,
+                                const char *alias,
+                                const char *slotType,
+                                const char *slot,
+                                unsigned int source,
+                                unsigned int status);
 
-int qemuMonitorEmitBlockThreshold(qemuMonitor *mon,
-                                  const char *nodename,
-                                  unsigned long long threshold,
-                                  unsigned long long excess);
+void qemuMonitorEmitBlockThreshold(qemuMonitor *mon,
+                                   const char *nodename,
+                                   unsigned long long threshold,
+                                   unsigned long long excess);
 
-int qemuMonitorEmitDumpCompleted(qemuMonitor *mon,
-                                 int status,
-                                 qemuMonitorDumpStats *stats,
-                                 const char *error);
+void qemuMonitorEmitDumpCompleted(qemuMonitor *mon,
+                                  int status,
+                                  qemuMonitorDumpStats *stats,
+                                  const char *error);
 
-int qemuMonitorEmitPRManagerStatusChanged(qemuMonitor *mon,
-                                          const char *prManager,
-                                          bool connected);
+void qemuMonitorEmitPRManagerStatusChanged(qemuMonitor *mon,
+                                           const char *prManager,
+                                           bool connected);
 
-int qemuMonitorEmitRdmaGidStatusChanged(qemuMonitor *mon,
-                                        const char *netdev,
-                                        bool gid_status,
-                                        unsigned long long subnet_prefix,
-                                        unsigned long long interface_id);
+void qemuMonitorEmitRdmaGidStatusChanged(qemuMonitor *mon,
+                                         const char *netdev,
+                                         bool gid_status,
+                                         unsigned long long subnet_prefix,
+                                         unsigned long long interface_id);
 
-int qemuMonitorEmitGuestCrashloaded(qemuMonitor *mon);
+void qemuMonitorEmitGuestCrashloaded(qemuMonitor *mon);
 
 int qemuMonitorStartCPUs(qemuMonitor *mon);
 int qemuMonitorStopCPUs(qemuMonitor *mon);
