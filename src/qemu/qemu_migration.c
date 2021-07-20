@@ -5214,9 +5214,11 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriver *driver,
 
  cleanup:
     virErrorPreserveLast(&orig_err);
-    qemuDomainObjEnterRemote(vm);
-    virConnectUnregisterCloseCallback(dconn, qemuMigrationSrcConnectionClosed);
-    ignore_value(qemuDomainObjExitRemote(vm, false));
+    if (dconn && virConnectIsAlive(dconn) == 1) {
+        qemuDomainObjEnterRemote(vm);
+        virConnectUnregisterCloseCallback(dconn, qemuMigrationSrcConnectionClosed);
+        ignore_value(qemuDomainObjExitRemote(vm, false));
+    }
     virErrorRestore(&orig_err);
     return ret;
 }
