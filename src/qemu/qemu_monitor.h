@@ -179,10 +179,10 @@ typedef void (*qemuMonitorDomainRTCChangeCallback)(qemuMonitor *mon,
                                                    virDomainObj *vm,
                                                    long long offset,
                                                    void *opaque);
-typedef int (*qemuMonitorDomainWatchdogCallback)(qemuMonitor *mon,
-                                                 virDomainObj *vm,
-                                                 int action,
-                                                 void *opaque);
+typedef void (*qemuMonitorDomainWatchdogCallback)(qemuMonitor *mon,
+                                                  virDomainObj *vm,
+                                                  int action,
+                                                  void *opaque);
 typedef int (*qemuMonitorDomainIOErrorCallback)(qemuMonitor *mon,
                                                 virDomainObj *vm,
                                                 const char *diskAlias,

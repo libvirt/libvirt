@@ -788,7 +788,7 @@ qemuProcessHandleRTCChange(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleWatchdog(qemuMonitor *mon G_GNUC_UNUSED,
                           virDomainObj *vm,
                           int action,
@@ -842,8 +842,6 @@ qemuProcessHandleWatchdog(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, watchdogEvent);
     virObjectEventStateQueue(driver->domainEventState, lifecycleEvent);
-
-    return 0;
 }
 
 
