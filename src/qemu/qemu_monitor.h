@@ -356,10 +356,10 @@ struct _qemuMonitorEventMemoryFailure {
     bool recursive;
 };
 
-typedef int (*qemuMonitorDomainMemoryFailureCallback)(qemuMonitor *mon,
-                                                      virDomainObj *vm,
-                                                      qemuMonitorEventMemoryFailure *mfp,
-                                                      void *opaque);
+typedef void (*qemuMonitorDomainMemoryFailureCallback)(qemuMonitor *mon,
+                                                       virDomainObj *vm,
+                                                       qemuMonitorEventMemoryFailure *mfp,
+                                                       void *opaque);
 
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
 struct _qemuMonitorCallbacks {

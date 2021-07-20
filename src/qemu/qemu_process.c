@@ -1815,7 +1815,7 @@ qemuProcessHandleGuestCrashloaded(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleMemoryFailure(qemuMonitor *mon G_GNUC_UNUSED,
                                virDomainObj *vm,
                                qemuMonitorEventMemoryFailure *mfp,
@@ -1836,9 +1836,7 @@ qemuProcessHandleMemoryFailure(qemuMonitor *mon G_GNUC_UNUSED,
         break;
     case QEMU_MONITOR_MEMORY_FAILURE_RECIPIENT_LAST:
     default:
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("requested unknown memory failure recipient"));
-        return -1;
+        return;
     }
 
     switch (mfp->action) {
@@ -1856,9 +1854,7 @@ qemuProcessHandleMemoryFailure(qemuMonitor *mon G_GNUC_UNUSED,
         break;
     case QEMU_MONITOR_MEMORY_FAILURE_ACTION_LAST:
     default:
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("requested unknown memory failure action"));
-        return -1;
+        return;
     }
 
     if (mfp->action_required)
@@ -1868,8 +1864,6 @@ qemuProcessHandleMemoryFailure(qemuMonitor *mon G_GNUC_UNUSED,
 
     event = virDomainEventMemoryFailureNewFromObj(vm, recipient, action, flags);
     virObjectEventStateQueue(driver->domainEventState, event);
-
-    return 0;
 }
 
 
