@@ -262,10 +262,10 @@ typedef void (*qemuMonitorDomainMigrationStatusCallback)(qemuMonitor *mon,
                                                          int status,
                                                          void *opaque);
 
-typedef int (*qemuMonitorDomainMigrationPassCallback)(qemuMonitor *mon,
-                                                      virDomainObj *vm,
-                                                      int pass,
-                                                      void *opaque);
+typedef void (*qemuMonitorDomainMigrationPassCallback)(qemuMonitor *mon,
+                                                       virDomainObj *vm,
+                                                       int pass,
+                                                       void *opaque);
 
 typedef int (*qemuMonitorDomainAcpiOstInfoCallback)(qemuMonitor *mon,
                                                     virDomainObj *vm,
