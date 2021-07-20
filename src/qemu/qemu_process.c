@@ -977,7 +977,7 @@ qemuProcessHandleBlockJob(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleJobStatusChange(qemuMonitor *mon G_GNUC_UNUSED,
                                  virDomainObj *vm,
                                  const char *jobname,
@@ -1034,7 +1034,6 @@ qemuProcessHandleJobStatusChange(qemuMonitor *mon G_GNUC_UNUSED,
  cleanup:
     qemuProcessEventFree(processEvent);
     virObjectUnlock(vm);
-    return 0;
 }
 
 
