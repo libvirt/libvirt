@@ -67,3 +67,7 @@ Internals / Debugging
 `VM migration internals <migrationinternals.html>`__
    VM migration implementation details, complementing the info in
    `migration <../migration.html>`__
+
+`Capturing core dumps for QEMU <qemu-core-dump.html>`__
+   How to configure libvirt to enable capture of core dumps from
+   QEMU virtual machines

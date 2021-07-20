@@ -12,6 +12,7 @@ docs_kbase_files = [
   'locking-sanlock',
   'merging_disk_image_chains',
   'migrationinternals',
+  'qemu-core-dump',
   'qemu-passthrough-security',
   'rpm-deployment',
   's390_protected_virt',
