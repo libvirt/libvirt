@@ -1125,7 +1125,7 @@ qemuProcessHandleTrayChange(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectEventStateQueue(driver->domainEventState, event);
 }
 
-static int
+static void
 qemuProcessHandlePMWakeup(qemuMonitor *mon G_GNUC_UNUSED,
                           virDomainObj *vm,
                           void *opaque)
@@ -1160,7 +1160,6 @@ qemuProcessHandlePMWakeup(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, event);
     virObjectEventStateQueue(driver->domainEventState, lifecycleEvent);
-    return 0;
 }
 
 static int
