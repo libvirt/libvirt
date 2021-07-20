@@ -570,7 +570,7 @@ qemuProcessHandleEvent(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleShutdown(qemuMonitor *mon G_GNUC_UNUSED,
                           virDomainObj *vm,
                           virTristateBool guest_initiated,
@@ -642,8 +642,6 @@ qemuProcessHandleShutdown(qemuMonitor *mon G_GNUC_UNUSED,
  unlock:
     virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, event);
-
-    return 0;
 }
 
 
