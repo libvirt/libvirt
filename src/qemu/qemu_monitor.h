@@ -247,11 +247,11 @@ typedef void (*qemuMonitorDomainNicRxFilterChangedCallback)(qemuMonitor *mon,
                                                             const char *devAlias,
                                                             void *opaque);
 
-typedef int (*qemuMonitorDomainSerialChangeCallback)(qemuMonitor *mon,
-                                                     virDomainObj *vm,
-                                                     const char *devAlias,
-                                                     bool connected,
-                                                     void *opaque);
+typedef void (*qemuMonitorDomainSerialChangeCallback)(qemuMonitor *mon,
+                                                      virDomainObj *vm,
+                                                      const char *devAlias,
+                                                      bool connected,
+                                                      void *opaque);
 
 typedef int (*qemuMonitorDomainSpiceMigratedCallback)(qemuMonitor *mon,
                                                       virDomainObj *vm,
