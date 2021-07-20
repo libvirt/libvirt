@@ -303,12 +303,12 @@ struct _qemuMonitorDumpStats {
     unsigned long long total; /* total bytes to be written */
 };
 
-typedef int (*qemuMonitorDomainDumpCompletedCallback)(qemuMonitor *mon,
-                                                      virDomainObj *vm,
-                                                      int status,
-                                                      qemuMonitorDumpStats *stats,
-                                                      const char *error,
-                                                      void *opaque);
+typedef void (*qemuMonitorDomainDumpCompletedCallback)(qemuMonitor *mon,
+                                                       virDomainObj *vm,
+                                                       int status,
+                                                       qemuMonitorDumpStats *stats,
+                                                       const char *error,
+                                                       void *opaque);
 
 typedef int (*qemuMonitorDomainPRManagerStatusChangedCallback)(qemuMonitor *mon,
                                                                virDomainObj *vm,

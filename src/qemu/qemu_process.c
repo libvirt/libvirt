@@ -1663,7 +1663,7 @@ qemuProcessHandleMigrationPass(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleDumpCompleted(qemuMonitor *mon G_GNUC_UNUSED,
                                virDomainObj *vm,
                                int status,
@@ -1700,7 +1700,6 @@ qemuProcessHandleDumpCompleted(qemuMonitor *mon G_GNUC_UNUSED,
  cleanup:
     virResetLastError();
     virObjectUnlock(vm);
-    return 0;
 }
 
 
