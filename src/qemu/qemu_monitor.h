@@ -238,10 +238,10 @@ typedef void (*qemuMonitorDomainGuestPanicCallback)(qemuMonitor *mon,
                                                     virDomainObj *vm,
                                                     qemuMonitorEventPanicInfo *info,
                                                     void *opaque);
-typedef int (*qemuMonitorDomainDeviceDeletedCallback)(qemuMonitor *mon,
-                                                      virDomainObj *vm,
-                                                      const char *devAlias,
-                                                      void *opaque);
+typedef void (*qemuMonitorDomainDeviceDeletedCallback)(qemuMonitor *mon,
+                                                       virDomainObj *vm,
+                                                       const char *devAlias,
+                                                       void *opaque);
 typedef int (*qemuMonitorDomainNicRxFilterChangedCallback)(qemuMonitor *mon,
                                                            virDomainObj *vm,
                                                            const char *devAlias,

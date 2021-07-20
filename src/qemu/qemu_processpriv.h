@@ -32,9 +32,9 @@
  * This header file should never be used outside unit tests.
  */
 
-int qemuProcessHandleDeviceDeleted(qemuMonitor *mon,
-                                   virDomainObj *vm,
-                                   const char *devAlias,
-                                   void *opaque);
+void qemuProcessHandleDeviceDeleted(qemuMonitor *mon,
+                                    virDomainObj *vm,
+                                    const char *devAlias,
+                                    void *opaque);
 
 int qemuProcessQMPInitMonitor(qemuMonitor *mon);

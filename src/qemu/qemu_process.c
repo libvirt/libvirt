@@ -1297,7 +1297,7 @@ qemuProcessHandleGuestPanic(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-int
+void
 qemuProcessHandleDeviceDeleted(qemuMonitor *mon G_GNUC_UNUSED,
                                virDomainObj *vm,
                                const char *devAlias,
@@ -1330,7 +1330,7 @@ qemuProcessHandleDeviceDeleted(qemuMonitor *mon G_GNUC_UNUSED,
 
  cleanup:
     virObjectUnlock(vm);
-    return 0;
+    return;
  error:
     qemuProcessEventFree(processEvent);
     goto cleanup;
