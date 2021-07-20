@@ -310,11 +310,11 @@ typedef void (*qemuMonitorDomainDumpCompletedCallback)(qemuMonitor *mon,
                                                        const char *error,
                                                        void *opaque);
 
-typedef int (*qemuMonitorDomainPRManagerStatusChangedCallback)(qemuMonitor *mon,
-                                                               virDomainObj *vm,
-                                                               const char *prManager,
-                                                               bool connected,
-                                                               void *opaque);
+typedef void (*qemuMonitorDomainPRManagerStatusChangedCallback)(qemuMonitor *mon,
+                                                                virDomainObj *vm,
+                                                                const char *prManager,
+                                                                bool connected,
+                                                                void *opaque);
 
 typedef int (*qemuMonitorDomainRdmaGidStatusChangedCallback)(qemuMonitor *mon,
                                                              virDomainObj *vm,

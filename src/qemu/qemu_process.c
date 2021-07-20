@@ -1703,7 +1703,7 @@ qemuProcessHandleDumpCompleted(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandlePRManagerStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
                                         virDomainObj *vm,
                                         const char *prManager,
@@ -1714,24 +1714,21 @@ qemuProcessHandlePRManagerStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
     qemuDomainObjPrivate *priv;
     struct qemuProcessEvent *processEvent = NULL;
     const char *managedAlias = qemuDomainGetManagedPRAlias();
-    int ret = -1;
 
     virObjectLock(vm);
 
     VIR_DEBUG("pr-manager %s status changed for domain %p %s connected=%d",
               prManager, vm, vm->def->name, connected);
 
-    if (connected) {
-        /* Connect events are boring. */
-        ret = 0;
+    /* Connect events are boring. */
+    if (connected)
         goto cleanup;
-    }
+
     /* Disconnect events are more interesting. */
 
     if (STRNEQ(prManager, managedAlias)) {
         VIR_DEBUG("pr-manager %s not managed, ignoring event",
                   prManager);
-        ret = 0;
         goto cleanup;
     }
 
@@ -1749,10 +1746,8 @@ qemuProcessHandlePRManagerStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
         goto cleanup;
     }
 
-    ret = 0;
  cleanup:
     virObjectUnlock(vm);
-    return ret;
 }
 
 
