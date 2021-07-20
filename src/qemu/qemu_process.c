@@ -1751,7 +1751,7 @@ qemuProcessHandlePRManagerStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleRdmaGidStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
                                       virDomainObj *vm,
                                       const char *netdev,
@@ -1763,7 +1763,6 @@ qemuProcessHandleRdmaGidStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
     virQEMUDriver *driver = opaque;
     struct qemuProcessEvent *processEvent = NULL;
     qemuMonitorRdmaGidStatus *info = NULL;
-    int ret = -1;
 
     virObjectLock(vm);
 
@@ -1787,14 +1786,9 @@ qemuProcessHandleRdmaGidStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
     if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
         qemuProcessEventFree(processEvent);
         virObjectUnref(vm);
-        goto cleanup;
     }
 
-    ret = 0;
- cleanup:
-    qemuMonitorEventRdmaGidStatusFree(info);
     virObjectUnlock(vm);
-    return ret;
 }
 
 

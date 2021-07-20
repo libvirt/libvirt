@@ -316,13 +316,13 @@ typedef void (*qemuMonitorDomainPRManagerStatusChangedCallback)(qemuMonitor *mon
                                                                 bool connected,
                                                                 void *opaque);
 
-typedef int (*qemuMonitorDomainRdmaGidStatusChangedCallback)(qemuMonitor *mon,
-                                                             virDomainObj *vm,
-                                                             const char *netdev,
-                                                             bool gid_status,
-                                                             unsigned long long subnet_prefix,
-                                                             unsigned long long interface_id,
-                                                             void *opaque);
+typedef void (*qemuMonitorDomainRdmaGidStatusChangedCallback)(qemuMonitor *mon,
+                                                              virDomainObj *vm,
+                                                              const char *netdev,
+                                                              bool gid_status,
+                                                              unsigned long long subnet_prefix,
+                                                              unsigned long long interface_id,
+                                                              void *opaque);
 
 typedef int (*qemuMonitorDomainGuestCrashloadedCallback)(qemuMonitor *mon,
                                                          virDomainObj *vm,
