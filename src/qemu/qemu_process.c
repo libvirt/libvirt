@@ -845,7 +845,7 @@ qemuProcessHandleWatchdog(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
                          virDomainObj *vm,
                          const char *diskAlias,
@@ -912,7 +912,6 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectEventStateQueue(driver->domainEventState, ioErrorEvent);
     virObjectEventStateQueue(driver->domainEventState, ioErrorEvent2);
     virObjectEventStateQueue(driver->domainEventState, lifecycleEvent);
-    return 0;
 }
 
 static int
