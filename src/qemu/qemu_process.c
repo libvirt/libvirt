@@ -914,7 +914,7 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectEventStateQueue(driver->domainEventState, lifecycleEvent);
 }
 
-static int
+static void
 qemuProcessHandleBlockJob(qemuMonitor *mon G_GNUC_UNUSED,
                           virDomainObj *vm,
                           const char *diskAlias,
@@ -974,7 +974,6 @@ qemuProcessHandleBlockJob(qemuMonitor *mon G_GNUC_UNUSED,
  cleanup:
     qemuProcessEventFree(processEvent);
     virObjectUnlock(vm);
-    return 0;
 }
 
 
