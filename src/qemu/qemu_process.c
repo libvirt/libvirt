@@ -1268,7 +1268,7 @@ qemuProcessHandlePMSuspendDisk(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleGuestPanic(qemuMonitor *mon G_GNUC_UNUSED,
                             virDomainObj *vm,
                             qemuMonitorEventPanicInfo *info,
@@ -1294,8 +1294,6 @@ qemuProcessHandleGuestPanic(qemuMonitor *mon G_GNUC_UNUSED,
     }
 
     virObjectUnlock(vm);
-
-    return 0;
 }
 
 

@@ -234,10 +234,10 @@ typedef void (*qemuMonitorDomainBalloonChangeCallback)(qemuMonitor *mon,
 typedef void (*qemuMonitorDomainPMSuspendDiskCallback)(qemuMonitor *mon,
                                                        virDomainObj *vm,
                                                        void *opaque);
-typedef int (*qemuMonitorDomainGuestPanicCallback)(qemuMonitor *mon,
-                                                   virDomainObj *vm,
-                                                   qemuMonitorEventPanicInfo *info,
-                                                   void *opaque);
+typedef void (*qemuMonitorDomainGuestPanicCallback)(qemuMonitor *mon,
+                                                    virDomainObj *vm,
+                                                    qemuMonitorEventPanicInfo *info,
+                                                    void *opaque);
 typedef int (*qemuMonitorDomainDeviceDeletedCallback)(qemuMonitor *mon,
                                                       virDomainObj *vm,
                                                       const char *devAlias,
