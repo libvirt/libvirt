@@ -1587,7 +1587,7 @@ qemuProcessHandleSpiceMigrated(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
                                  virDomainObj *vm,
                                  int status,
@@ -1636,7 +1636,6 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
  cleanup:
     virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, event);
-    return 0;
 }
 
 
