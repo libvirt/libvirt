@@ -1559,7 +1559,7 @@ qemuProcessHandleSerialChanged(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleSpiceMigrated(qemuMonitor *mon G_GNUC_UNUSED,
                                virDomainObj *vm,
                                void *opaque G_GNUC_UNUSED)
@@ -1584,7 +1584,6 @@ qemuProcessHandleSpiceMigrated(qemuMonitor *mon G_GNUC_UNUSED,
 
  cleanup:
     virObjectUnlock(vm);
-    return 0;
 }
 
 

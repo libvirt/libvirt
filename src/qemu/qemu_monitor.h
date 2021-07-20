@@ -253,9 +253,9 @@ typedef void (*qemuMonitorDomainSerialChangeCallback)(qemuMonitor *mon,
                                                       bool connected,
                                                       void *opaque);
 
-typedef int (*qemuMonitorDomainSpiceMigratedCallback)(qemuMonitor *mon,
-                                                      virDomainObj *vm,
-                                                      void *opaque);
+typedef void (*qemuMonitorDomainSpiceMigratedCallback)(qemuMonitor *mon,
+                                                       virDomainObj *vm,
+                                                       void *opaque);
 
 typedef int (*qemuMonitorDomainMigrationStatusCallback)(qemuMonitor *mon,
                                                         virDomainObj *vm,
