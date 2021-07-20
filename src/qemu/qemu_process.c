@@ -1485,7 +1485,7 @@ qemuProcessHandleBlockThreshold(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleNicRxFilterChanged(qemuMonitor *mon G_GNUC_UNUSED,
                                     virDomainObj *vm,
                                     const char *devAlias,
@@ -1514,7 +1514,7 @@ qemuProcessHandleNicRxFilterChanged(qemuMonitor *mon G_GNUC_UNUSED,
 
  cleanup:
     virObjectUnlock(vm);
-    return 0;
+    return;
  error:
     qemuProcessEventFree(processEvent);
     goto cleanup;
