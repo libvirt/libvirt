@@ -850,6 +850,7 @@ CPU Tuning
    to which vCPUs this allocation applies. A vCPU can only be member of one
    ``cachetune`` element allocation. The vCPUs specified by cachetune can be
    identical with those in memorytune, however they are not allowed to overlap.
+   The optional, output only ``id`` attribute identifies cache uniquely.
    Supported subelements are:
 
    ``cache``

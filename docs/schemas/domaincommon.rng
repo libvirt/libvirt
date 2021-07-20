@@ -1006,6 +1006,11 @@
             <attribute name="vcpus">
               <ref name="cpuset"/>
             </attribute>
+            <optional>
+              <attribute name="id">
+                <data type="string"/>
+              </attribute>
+            </optional>
             <oneOrMore>
               <choice>
                 <element name="cache">
