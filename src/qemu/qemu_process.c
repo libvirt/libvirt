@@ -1202,7 +1202,7 @@ qemuProcessHandlePMSuspend(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectEventStateQueue(driver->domainEventState, lifecycleEvent);
 }
 
-static int
+static void
 qemuProcessHandleBalloonChange(qemuMonitor *mon G_GNUC_UNUSED,
                                virDomainObj *vm,
                                unsigned long long actual,
@@ -1225,7 +1225,6 @@ qemuProcessHandleBalloonChange(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectUnlock(vm);
 
     virObjectEventStateQueue(driver->domainEventState, event);
-    return 0;
 }
 
 static int
