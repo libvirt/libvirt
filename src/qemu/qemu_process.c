@@ -1431,7 +1431,7 @@ qemuProcessHandleAcpiOstInfo(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleBlockThreshold(qemuMonitor *mon G_GNUC_UNUSED,
                                 virDomainObj *vm,
                                 const char *nodename,
@@ -1478,8 +1478,6 @@ qemuProcessHandleBlockThreshold(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, eventDevice);
     virObjectEventStateQueue(driver->domainEventState, eventSource);
-
-    return 0;
 }
 
 

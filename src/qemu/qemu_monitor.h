@@ -277,12 +277,12 @@ typedef void (*qemuMonitorDomainAcpiOstInfoCallback)(qemuMonitor *mon,
                                                      void *opaque);
 
 
-typedef int (*qemuMonitorDomainBlockThresholdCallback)(qemuMonitor *mon,
-                                                       virDomainObj *vm,
-                                                       const char *nodename,
-                                                       unsigned long long threshold,
-                                                       unsigned long long excess,
-                                                       void *opaque);
+typedef void (*qemuMonitorDomainBlockThresholdCallback)(qemuMonitor *mon,
+                                                        virDomainObj *vm,
+                                                        const char *nodename,
+                                                        unsigned long long threshold,
+                                                        unsigned long long excess,
+                                                        void *opaque);
 
 
 typedef enum {
