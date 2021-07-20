@@ -1,16 +1,16 @@
-<domain type='qemu'>
+<domain type='qemu' id='42'>
   <name>QEMUGuest1</name>
   <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
   <memory unit='KiB'>219136</memory>
   <currentMemory unit='KiB'>219136</currentMemory>
   <vcpu placement='static'>4</vcpu>
   <cputune>
-    <cachetune vcpus='0-1'>
-      <monitor level='3' vcpus='0-1'/>
+    <cachetune vcpus='0-1' id='vcpus_0-1'>
       <cache id='0' level='3' type='both' size='3' unit='MiB'/>
       <cache id='1' level='3' type='both' size='3' unit='MiB'/>
+      <monitor level='3' vcpus='0-1'/>
     </cachetune>
-    <cachetune vcpus='3'>
+    <cachetune vcpus='3' id='vcpus_3'>
       <cache id='0' level='3' type='both' size='3' unit='MiB'/>
     </cachetune>
   </cputune>
