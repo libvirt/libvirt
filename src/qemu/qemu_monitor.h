@@ -166,9 +166,9 @@ typedef void (*qemuMonitorDomainShutdownCallback)(qemuMonitor *mon,
                                                   virDomainObj *vm,
                                                   virTristateBool guest,
                                                   void *opaque);
-typedef int (*qemuMonitorDomainResetCallback)(qemuMonitor *mon,
-                                              virDomainObj *vm,
-                                              void *opaque);
+typedef void (*qemuMonitorDomainResetCallback)(qemuMonitor *mon,
+                                               virDomainObj *vm,
+                                               void *opaque);
 typedef int (*qemuMonitorDomainStopCallback)(qemuMonitor *mon,
                                              virDomainObj *vm,
                                              void *opaque);

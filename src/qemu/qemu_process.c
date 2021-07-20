@@ -400,7 +400,7 @@ qemuProcessFindDomainDiskByAliasOrQOM(virDomainObj *vm,
 }
 
 
-static int
+static void
 qemuProcessHandleReset(qemuMonitor *mon G_GNUC_UNUSED,
                        virDomainObj *vm,
                        void *opaque)
@@ -409,7 +409,6 @@ qemuProcessHandleReset(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectEvent *event;
     qemuDomainObjPrivate *priv;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    int ret = -1;
 
     virObjectLock(vm);
 
@@ -441,11 +440,9 @@ qemuProcessHandleReset(qemuMonitor *mon G_GNUC_UNUSED,
         qemuDomainObjEndJob(driver, vm);
     }
 
-    ret = 0;
  cleanup:
     virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, event);
-    return ret;
 }
 
 
