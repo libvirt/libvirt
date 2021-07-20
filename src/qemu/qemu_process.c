@@ -280,6 +280,33 @@ qemuConnectAgent(virQEMUDriver *driver, virDomainObj *vm)
 }
 
 
+/**
+ * qemuProcessEventSubmit:
+ * @driver: QEMU driver object
+ * @event: pointer to the variable holding the event processing data (stolen and cleared)
+ *
+ * Submits @event to be processed by the asynchronous event handling thread.
+ * In case when submission of the handling fails @event is properly freed and
+ * cleared. If (*event)->vm is non-NULL the domain object is uref'd before freeing
+ * @event.
+ */
+static void
+qemuProcessEventSubmit(virQEMUDriver *driver,
+                       struct qemuProcessEvent **event)
+{
+    if (!*event)
+        return;
+
+    if (virThreadPoolSendJob(driver->workerPool, 0, *event) < 0) {
+        if ((*event)->vm)
+            virObjectUnref((*event)->vm);
+        qemuProcessEventFree(*event);
+    }
+
+    *event = NULL;
+}
+
+
 /*
  * This is a callback registered with a qemuMonitor *instance,
  * and to be invoked when the monitor console hits an end of file
@@ -310,11 +337,7 @@ qemuProcessHandleMonitorEOF(qemuMonitor *mon,
     processEvent->eventType = QEMU_PROCESS_EVENT_MONITOR_EOF;
     processEvent->vm = virObjectRef(vm);
 
-    if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        virObjectUnref(vm);
-        qemuProcessEventFree(processEvent);
-        goto cleanup;
-    }
+    qemuProcessEventSubmit(driver, &processEvent);
 
     /* We don't want this EOF handler to be called over and over while the
      * thread is waiting for a job.
@@ -833,10 +856,8 @@ qemuProcessHandleWatchdog(qemuMonitor *mon G_GNUC_UNUSED,
          * deleted before handling watchdog event is finished.
          */
         processEvent->vm = virObjectRef(vm);
-        if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-            virObjectUnref(vm);
-            qemuProcessEventFree(processEvent);
-        }
+
+        qemuProcessEventSubmit(driver, &processEvent);
     }
 
     virObjectUnlock(vm);
@@ -925,7 +946,6 @@ qemuProcessHandleBlockJob(qemuMonitor *mon G_GNUC_UNUSED,
 {
     qemuDomainObjPrivate *priv;
     virQEMUDriver *driver = opaque;
-    struct qemuProcessEvent *processEvent = NULL;
     virDomainDiskDef *disk;
     g_autoptr(qemuBlockJobData) job = NULL;
     char *data = NULL;
@@ -954,7 +974,7 @@ qemuProcessHandleBlockJob(qemuMonitor *mon G_GNUC_UNUSED,
         virDomainObjBroadcast(vm);
     } else {
         /* there is no waiting SYNC API, dispatch the update to a thread */
-        processEvent = g_new0(struct qemuProcessEvent, 1);
+        struct qemuProcessEvent *processEvent = g_new0(struct qemuProcessEvent, 1);
 
         processEvent->eventType = QEMU_PROCESS_EVENT_BLOCK_JOB;
         data = g_strdup(diskAlias);
@@ -963,16 +983,10 @@ qemuProcessHandleBlockJob(qemuMonitor *mon G_GNUC_UNUSED,
         processEvent->action = type;
         processEvent->status = status;
 
-        if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-            virObjectUnref(vm);
-            goto cleanup;
-        }
-
-        processEvent = NULL;
+        qemuProcessEventSubmit(driver, &processEvent);
     }
 
  cleanup:
-    qemuProcessEventFree(processEvent);
     virObjectUnlock(vm);
 }
 
@@ -986,7 +1000,6 @@ qemuProcessHandleJobStatusChange(qemuMonitor *mon G_GNUC_UNUSED,
 {
     virQEMUDriver *driver = opaque;
     qemuDomainObjPrivate *priv;
-    struct qemuProcessEvent *processEvent = NULL;
     qemuBlockJobData *job = NULL;
     int jobnewstate;
 
@@ -1016,23 +1029,18 @@ qemuProcessHandleJobStatusChange(qemuMonitor *mon G_GNUC_UNUSED,
         VIR_DEBUG("job '%s' handled synchronously", jobname);
         virDomainObjBroadcast(vm);
     } else {
+        struct qemuProcessEvent *processEvent = g_new0(struct qemuProcessEvent, 1);
+
         VIR_DEBUG("job '%s' handled by event thread", jobname);
-        processEvent = g_new0(struct qemuProcessEvent, 1);
 
         processEvent->eventType = QEMU_PROCESS_EVENT_JOB_STATUS_CHANGE;
         processEvent->vm = virObjectRef(vm);
         processEvent->data = virObjectRef(job);
 
-        if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-            virObjectUnref(vm);
-            goto cleanup;
-        }
-
-        processEvent = NULL;
+        qemuProcessEventSubmit(driver, &processEvent);
     }
 
  cleanup:
-    qemuProcessEventFree(processEvent);
     virObjectUnlock(vm);
 }
 
@@ -1288,10 +1296,7 @@ qemuProcessHandleGuestPanic(qemuMonitor *mon G_GNUC_UNUSED,
      */
     processEvent->vm = virObjectRef(vm);
 
-    if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        virObjectUnref(vm);
-        qemuProcessEventFree(processEvent);
-    }
+    qemuProcessEventSubmit(driver, &processEvent);
 
     virObjectUnlock(vm);
 }
@@ -1323,17 +1328,10 @@ qemuProcessHandleDeviceDeleted(qemuMonitor *mon G_GNUC_UNUSED,
     processEvent->data = data;
     processEvent->vm = virObjectRef(vm);
 
-    if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        virObjectUnref(vm);
-        goto error;
-    }
+    qemuProcessEventSubmit(driver, &processEvent);
 
  cleanup:
     virObjectUnlock(vm);
-    return;
- error:
-    qemuProcessEventFree(processEvent);
-    goto cleanup;
 }
 
 
@@ -1503,17 +1501,9 @@ qemuProcessHandleNicRxFilterChanged(qemuMonitor *mon G_GNUC_UNUSED,
     processEvent->data = data;
     processEvent->vm = virObjectRef(vm);
 
-    if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        virObjectUnref(vm);
-        goto error;
-    }
+    qemuProcessEventSubmit(driver, &processEvent);
 
- cleanup:
     virObjectUnlock(vm);
-    return;
- error:
-    qemuProcessEventFree(processEvent);
-    goto cleanup;
 }
 
 
@@ -1541,17 +1531,9 @@ qemuProcessHandleSerialChanged(qemuMonitor *mon G_GNUC_UNUSED,
     processEvent->action = connected;
     processEvent->vm = virObjectRef(vm);
 
-    if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        virObjectUnref(vm);
-        goto error;
-    }
+    qemuProcessEventSubmit(driver, &processEvent);
 
- cleanup:
     virObjectUnlock(vm);
-    return;
- error:
-    qemuProcessEventFree(processEvent);
-    goto cleanup;
 }
 
 
@@ -1740,11 +1722,7 @@ qemuProcessHandlePRManagerStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
     processEvent->eventType = QEMU_PROCESS_EVENT_PR_DISCONNECT;
     processEvent->vm = virObjectRef(vm);
 
-    if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        qemuProcessEventFree(processEvent);
-        virObjectUnref(vm);
-        goto cleanup;
-    }
+    qemuProcessEventSubmit(driver, &processEvent);
 
  cleanup:
     virObjectUnlock(vm);
@@ -1783,10 +1761,7 @@ qemuProcessHandleRdmaGidStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
     processEvent->vm = virObjectRef(vm);
     processEvent->data = g_steal_pointer(&info);
 
-    if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        qemuProcessEventFree(processEvent);
-        virObjectUnref(vm);
-    }
+    qemuProcessEventSubmit(driver, &processEvent);
 
     virObjectUnlock(vm);
 }
@@ -1806,10 +1781,7 @@ qemuProcessHandleGuestCrashloaded(qemuMonitor *mon G_GNUC_UNUSED,
     processEvent->eventType = QEMU_PROCESS_EVENT_GUEST_CRASHLOADED;
     processEvent->vm = virObjectRef(vm);
 
-    if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        virObjectUnref(vm);
-        qemuProcessEventFree(processEvent);
-    }
+    qemuProcessEventSubmit(driver, &processEvent);
 
     virObjectUnlock(vm);
 }
