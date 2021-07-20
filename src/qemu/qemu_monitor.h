@@ -224,9 +224,9 @@ typedef void (*qemuMonitorDomainTrayChangeCallback)(qemuMonitor *mon,
 typedef void (*qemuMonitorDomainPMWakeupCallback)(qemuMonitor *mon,
                                                   virDomainObj *vm,
                                                   void *opaque);
-typedef int (*qemuMonitorDomainPMSuspendCallback)(qemuMonitor *mon,
-                                                  virDomainObj *vm,
-                                                  void *opaque);
+typedef void (*qemuMonitorDomainPMSuspendCallback)(qemuMonitor *mon,
+                                                   virDomainObj *vm,
+                                                   void *opaque);
 typedef int (*qemuMonitorDomainBalloonChangeCallback)(qemuMonitor *mon,
                                                       virDomainObj *vm,
                                                       unsigned long long actual,
