@@ -642,7 +642,7 @@ qemuProcessHandleShutdown(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleStop(qemuMonitor *mon G_GNUC_UNUSED,
                       virDomainObj *vm,
                       void *opaque)
@@ -700,8 +700,6 @@ qemuProcessHandleStop(qemuMonitor *mon G_GNUC_UNUSED,
 
     virObjectUnlock(vm);
     virObjectEventStateQueue(driver->domainEventState, event);
-
-    return 0;
 }
 
 
