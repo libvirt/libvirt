@@ -1139,6 +1139,12 @@ nodeDeviceParseMdevctlJSON(const char *jsonstring,
         goto error;
     }
 
+    if (virJSONValueArraySize(json_devicelist) == 0) {
+        VIR_DEBUG("mdevctl has no defined mediated devices");
+        *devs = NULL;
+        return 0;
+    }
+
     /* mdevctl list --dumpjson produces an output that is an array that
      * contains only a single object which contains a property for each parent
      * device */

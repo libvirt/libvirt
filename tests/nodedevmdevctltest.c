@@ -360,6 +360,7 @@ mymain(void)
 
     DO_TEST_LIST_DEFINED();
 
+    DO_TEST_PARSE_JSON("mdevctl-list-empty");
     DO_TEST_PARSE_JSON("mdevctl-list-multiple");
 
     DO_TEST_DEFINE("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
