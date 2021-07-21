@@ -3491,13 +3491,20 @@ virDomainResctrlDefFree(virDomainResctrlDef *resctrl)
 
 
 void
-virDomainSEVDefFree(virDomainSEVDef *def)
+virDomainSecDefFree(virDomainSecDef *def)
 {
     if (!def)
         return;
 
-    g_free(def->dh_cert);
-    g_free(def->session);
+    switch ((virDomainLaunchSecurity) def->sectype) {
+    case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+        g_free(def->data.sev.dh_cert);
+        g_free(def->data.sev.session);
+        break;
+    case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
+    case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
+        break;
+    }
 
     g_free(def);
 }
@@ -3703,7 +3710,7 @@ void virDomainDefFree(virDomainDef *def)
     if (def->namespaceData && def->ns.free)
         (def->ns.free)(def->namespaceData);
 
-    virDomainSEVDefFree(def->sev);
+    virDomainSecDefFree(def->sec);
 
     xmlFreeNode(def->metadata);
 
@@ -14714,68 +14721,79 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
 }
 
 
-static virDomainSEVDef *
-virDomainSEVDefParseXML(xmlNodePtr sevNode,
+static int
+virDomainSEVDefParseXML(virDomainSEVDef *def,
                         xmlXPathContextPtr ctxt)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    g_autoptr(virDomainSEVDef) def = NULL;
     unsigned long policy;
     int rc;
 
-    def = g_new0(virDomainSEVDef, 1);
+    if (virXPathULongHex("string(./policy)", ctxt, &policy) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("failed to get launch security policy"));
+        return -1;
+    }
 
-    ctxt->node = sevNode;
+    /* the following attributes are platform dependent and if missing, we can
+     * autofill them from domain capabilities later
+     */
+    rc = virXPathUInt("string(./cbitpos)", ctxt, &def->cbitpos);
+    if (rc == 0) {
+        def->haveCbitpos = true;
+    } else if (rc == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Invalid format for launch security cbitpos"));
+        return -1;
+    }
 
-    if (virXMLPropEnum(sevNode, "type", virDomainLaunchSecurityTypeFromString,
+    rc = virXPathUInt("string(./reducedPhysBits)", ctxt,
+                      &def->reduced_phys_bits);
+    if (rc == 0) {
+        def->haveReducedPhysBits = true;
+    } else if (rc == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Invalid format for launch security "
+                         "reduced-phys-bits"));
+        return -1;
+    }
+
+    def->policy = policy;
+    def->dh_cert = virXPathString("string(./dhCert)", ctxt);
+    def->session = virXPathString("string(./session)", ctxt);
+
+    return 0;
+}
+
+
+static virDomainSecDef *
+virDomainSecDefParseXML(xmlNodePtr lsecNode,
+                        xmlXPathContextPtr ctxt)
+{
+    g_autoptr(virDomainSecDef) sec = g_new0(virDomainSecDef, 1);
+
+    ctxt->node = lsecNode;
+
+    if (virXMLPropEnum(lsecNode, "type", virDomainLaunchSecurityTypeFromString,
                        VIR_XML_PROP_NONZERO | VIR_XML_PROP_REQUIRED,
-                       &def->sectype) < 0)
+                       &sec->sectype) < 0)
         return NULL;
 
-    switch ((virDomainLaunchSecurity) def->sectype) {
+    switch ((virDomainLaunchSecurity) sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
-        if (virXPathULongHex("string(./policy)", ctxt, &policy) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("failed to get launch security policy"));
+        if (virDomainSEVDefParseXML(&sec->data.sev, ctxt) < 0)
             return NULL;
-        }
-
-        /* the following attributes are platform dependent and if missing, we can
-         * autofill them from domain capabilities later
-        */
-        rc = virXPathUInt("string(./cbitpos)", ctxt, &def->cbitpos);
-        if (rc == 0) {
-            def->haveCbitpos = true;
-        } else if (rc == -2) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Invalid format for launch security cbitpos"));
-            return NULL;
-        }
-
-        rc = virXPathUInt("string(./reducedPhysBits)", ctxt,
-                          &def->reduced_phys_bits);
-        if (rc == 0) {
-            def->haveReducedPhysBits = true;
-        } else if (rc == -2) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Invalid format for launch security "
-                             "reduced-phys-bits"));
-            return NULL;
-        }
-
-        def->policy = policy;
-        def->dh_cert = virXPathString("string(./dhCert)", ctxt);
-        def->session = virXPathString("string(./session)", ctxt);
-
-        return g_steal_pointer(&def);
+        break;
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
     case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
     default:
         virReportError(VIR_ERR_XML_ERROR,
                        _("unsupported launch security type '%s'"),
-                       virDomainLaunchSecurityTypeToString(def->sectype));
+                       virDomainLaunchSecurityTypeToString(sec->sectype));
         return NULL;
     }
+
+    return g_steal_pointer(&sec);
 }
 
 
@@ -20130,10 +20148,10 @@ virDomainDefParseXML(xmlDocPtr xml,
     ctxt->node = node;
     VIR_FREE(nodes);
 
-    /* Check for SEV feature */
+    /* Check for launch security e.g. SEV feature */
     if ((node = virXPathNode("./launchSecurity", ctxt)) != NULL) {
-        def->sev = virDomainSEVDefParseXML(node, ctxt);
-        if (!def->sev)
+        def->sec = virDomainSecDefParseXML(node, ctxt);
+        if (!def->sec)
             goto error;
     }
 
@@ -26864,19 +26882,21 @@ virDomainKeyWrapDefFormat(virBuffer *buf, virDomainKeyWrapDef *keywrap)
 
 
 static void
-virDomainSEVDefFormat(virBuffer *buf, virDomainSEVDef *sev)
+virDomainSecDefFormat(virBuffer *buf, virDomainSecDef *sec)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
-    if (!sev)
+    if (!sec)
         return;
 
     virBufferAsprintf(&attrBuf, " type='%s'",
-                      virDomainLaunchSecurityTypeToString(sev->sectype));
+                      virDomainLaunchSecurityTypeToString(sec->sectype));
 
-    switch ((virDomainLaunchSecurity) sev->sectype) {
-    case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+    switch ((virDomainLaunchSecurity) sec->sectype) {
+    case VIR_DOMAIN_LAUNCH_SECURITY_SEV: {
+        virDomainSEVDef *sev = &sec->data.sev;
+
         if (sev->haveCbitpos)
             virBufferAsprintf(&childBuf, "<cbitpos>%d</cbitpos>\n", sev->cbitpos);
 
@@ -26891,6 +26911,7 @@ virDomainSEVDefFormat(virBuffer *buf, virDomainSEVDef *sev)
             virBufferEscapeString(&childBuf, "<session>%s</session>\n", sev->session);
 
         break;
+    }
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
     case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
         return;
@@ -28305,7 +28326,7 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     if (def->keywrap)
         virDomainKeyWrapDefFormat(buf, def->keywrap);
 
-    virDomainSEVDefFormat(buf, def->sev);
+    virDomainSecDefFormat(buf, def->sec);
 
     if (def->namespaceData && def->ns.format) {
         if ((def->ns.format)(buf, def->namespaceData) < 0)

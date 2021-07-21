@@ -594,16 +594,25 @@ static int
 qemuDomainSetupLaunchSecurity(virDomainObj *vm,
                               GSList **paths)
 {
-    virDomainSEVDef *sev = vm->def->sev;
+    virDomainSecDef *sec = vm->def->sec;
 
-    if (!sev || sev->sectype != VIR_DOMAIN_LAUNCH_SECURITY_SEV)
+    if (!sec)
         return 0;
 
-    VIR_DEBUG("Setting up launch security");
+    switch ((virDomainLaunchSecurity) sec->sectype) {
+    case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+        VIR_DEBUG("Setting up launch security for SEV");
 
-    *paths = g_slist_prepend(*paths, g_strdup(QEMU_DEV_SEV));
+        *paths = g_slist_prepend(*paths, g_strdup(QEMU_DEV_SEV));
 
-    VIR_DEBUG("Set up launch security");
+        VIR_DEBUG("Set up launch security for SEV");
+        break;
+    case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
+    case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
+        virReportEnumRangeError(virDomainLaunchSecurity, sec->sectype);
+        return -1;
+    }
+
     return 0;
 }
 

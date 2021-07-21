@@ -19852,7 +19852,8 @@ qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
     if (virDomainGetLaunchSecurityInfoEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
-    if (vm->def->sev) {
+    if (vm->def->sec &&
+        vm->def->sec->sectype == VIR_DOMAIN_LAUNCH_SECURITY_SEV) {
         if (qemuDomainGetSEVMeasurement(driver, vm, params, nparams, flags) < 0)
             goto cleanup;
     }

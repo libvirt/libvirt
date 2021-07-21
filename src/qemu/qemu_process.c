@@ -6481,7 +6481,7 @@ qemuProcessUpdateSEVInfo(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUCaps *qemuCaps = priv->qemuCaps;
-    virDomainSEVDef *sev = vm->def->sev;
+    virDomainSEVDef *sev = &vm->def->sec->data.sev;
     virSEVCapability *sevCaps = NULL;
 
     /* if platform specific info like 'cbitpos' and 'reducedPhysBits' have
@@ -6637,7 +6637,8 @@ qemuProcessPrepareDomain(virQEMUDriver *driver,
     for (i = 0; i < vm->def->nshmems; i++)
         qemuDomainPrepareShmemChardev(vm->def->shmems[i]);
 
-    if (vm->def->sev) {
+    if (vm->def->sec &&
+        vm->def->sec->sectype == VIR_DOMAIN_LAUNCH_SECURITY_SEV) {
         VIR_DEBUG("Updating SEV platform info");
         if (qemuProcessUpdateSEVInfo(vm) < 0)
             return -1;
@@ -6675,10 +6676,7 @@ qemuProcessSEVCreateFile(virDomainObj *vm,
 static int
 qemuProcessPrepareSEVGuestInput(virDomainObj *vm)
 {
-    virDomainSEVDef *sev = vm->def->sev;
-
-    if (!sev)
-        return 0;
+    virDomainSEVDef *sev = &vm->def->sec->data.sev;
 
     VIR_DEBUG("Preparing SEV guest");
 
@@ -6690,6 +6688,27 @@ qemuProcessPrepareSEVGuestInput(virDomainObj *vm)
     if (sev->session) {
         if (qemuProcessSEVCreateFile(vm, "session", sev->session) < 0)
             return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuProcessPrepareLaunchSecurityGuestInput(virDomainObj *vm)
+{
+    virDomainSecDef *sec = vm->def->sec;
+
+    if (!sec)
+        return 0;
+
+    switch ((virDomainLaunchSecurity) sec->sectype) {
+    case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+        return qemuProcessPrepareSEVGuestInput(vm);
+    case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
+    case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
+        virReportEnumRangeError(virDomainLaunchSecurity, sec->sectype);
+        return -1;
     }
 
     return 0;
@@ -6875,7 +6894,7 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
     if (qemuExtDevicesPrepareHost(driver, vm) < 0)
         return -1;
 
-    if (qemuProcessPrepareSEVGuestInput(vm) < 0)
+    if (qemuProcessPrepareLaunchSecurityGuestInput(vm) < 0)
         return -1;
 
     return 0;

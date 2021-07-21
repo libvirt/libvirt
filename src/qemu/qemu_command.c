@@ -6967,11 +6967,19 @@ qemuBuildMachineCommandLine(virCommand *cmd,
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_LOADPARM))
         qemuAppendLoadparmMachineParm(&buf, def);
 
-    if (def->sev) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT)) {
-            virBufferAddLit(&buf, ",confidential-guest-support=sev0");
-        } else {
-            virBufferAddLit(&buf, ",memory-encryption=sev0");
+    if (def->sec) {
+        switch ((virDomainLaunchSecurity) def->sec->sectype) {
+        case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT)) {
+                virBufferAddLit(&buf, ",confidential-guest-support=sev0");
+            } else {
+                virBufferAddLit(&buf, ",memory-encryption=sev0");
+            }
+            break;
+        case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
+        case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
+            virReportEnumRangeError(virDomainLaunchSecurity, def->sec->sectype);
+            return -1;
         }
     }
 
@@ -9838,9 +9846,6 @@ qemuBuildSEVCommandLine(virDomainObj *vm, virCommand *cmd,
     g_autofree char *dhpath = NULL;
     g_autofree char *sessionpath = NULL;
 
-    if (!sev)
-        return 0;
-
     VIR_DEBUG("policy=0x%x cbitpos=%d reduced_phys_bits=%d",
               sev->policy, sev->cbitpos, sev->reduced_phys_bits);
 
@@ -9866,6 +9871,28 @@ qemuBuildSEVCommandLine(virDomainObj *vm, virCommand *cmd,
     virCommandAddArgBuffer(cmd, &buf);
     return 0;
 }
+
+
+static int
+qemuBuildSecCommandLine(virDomainObj *vm, virCommand *cmd,
+                        virDomainSecDef *sec)
+{
+    if (!sec)
+        return 0;
+
+    switch ((virDomainLaunchSecurity) sec->sectype) {
+    case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+        return qemuBuildSEVCommandLine(vm, cmd, &sec->data.sev);
+        break;
+    case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
+    case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
+        virReportEnumRangeError(virDomainLaunchSecurity, sec->sectype);
+        return -1;
+    }
+
+    return 0;
+}
+
 
 static int
 qemuBuildVMCoreInfoCommandLine(virCommand *cmd,
@@ -10566,7 +10593,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     if (qemuBuildVMCoreInfoCommandLine(cmd, def) < 0)
         return NULL;
 
-    if (qemuBuildSEVCommandLine(vm, cmd, def->sev) < 0)
+    if (qemuBuildSecCommandLine(vm, cmd, def->sec) < 0)
         return NULL;
 
     if (snapshot)

@@ -856,7 +856,9 @@ qemuSetupDevicesCgroup(virDomainObj *vm)
             return -1;
     }
 
-    if (vm->def->sev && qemuSetupSEVCgroup(vm) < 0)
+    if (vm->def->sec &&
+        vm->def->sec->sectype == VIR_DOMAIN_LAUNCH_SECURITY_SEV &&
+        qemuSetupSEVCgroup(vm) < 0)
         return -1;
 
     return 0;

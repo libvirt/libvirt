@@ -1053,19 +1053,26 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
         return false;
     }
 
-    if (def->sev &&
-        def->sev->sectype == VIR_DOMAIN_LAUNCH_SECURITY_SEV) {
-        if (!supportsSEV) {
-            VIR_DEBUG("Domain requires SEV, firmware '%s' doesn't support it",
-                      path);
-            return false;
-        }
+    if (def->sec) {
+        switch ((virDomainLaunchSecurity) def->sec->sectype) {
+        case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+            if (!supportsSEV) {
+                VIR_DEBUG("Domain requires SEV, firmware '%s' doesn't support it",
+                          path);
+                return false;
+            }
 
-        if (def->sev->policy & VIR_QEMU_FIRMWARE_AMD_SEV_ES_POLICY &&
-            !supportsSEVES) {
-            VIR_DEBUG("Domain requires SEV-ES, firmware '%s' doesn't support it",
-                      path);
-            return false;
+            if (def->sec->data.sev.policy & VIR_QEMU_FIRMWARE_AMD_SEV_ES_POLICY &&
+                !supportsSEVES) {
+                VIR_DEBUG("Domain requires SEV-ES, firmware '%s' doesn't support it",
+                          path);
+                return false;
+            }
+            break;
+        case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
+        case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
+            virReportEnumRangeError(virDomainLaunchSecurity, def->sec->sectype);
+            return -1;
         }
     }
 

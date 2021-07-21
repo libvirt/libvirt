@@ -202,6 +202,8 @@ typedef struct _virDomainResourceDef virDomainResourceDef;
 
 typedef struct _virDomainSEVDef virDomainSEVDef;
 
+typedef struct _virDomainSecDef virDomainSecDef;
+
 typedef struct _virDomainShmemDef virDomainShmemDef;
 
 typedef struct _virDomainSmartcardDef virDomainSmartcardDef;

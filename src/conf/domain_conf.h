@@ -2651,7 +2651,6 @@ typedef enum {
 
 
 struct _virDomainSEVDef {
-    virDomainLaunchSecurity sectype;
     char *dh_cert;
     char *session;
     unsigned int policy;
@@ -2661,8 +2660,15 @@ struct _virDomainSEVDef {
     unsigned int reduced_phys_bits;
 };
 
-void virDomainSEVDefFree(virDomainSEVDef *def);
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainSEVDef, virDomainSEVDefFree);
+struct _virDomainSecDef {
+    virDomainLaunchSecurity sectype;
+    union {
+        virDomainSEVDef sev;
+    } data;
+};
+
+void virDomainSecDefFree(virDomainSecDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainSecDef, virDomainSecDefFree);
 
 typedef enum {
     VIR_DOMAIN_IOMMU_MODEL_INTEL,
@@ -2873,8 +2879,8 @@ struct _virDomainDef {
 
     virDomainKeyWrapDef *keywrap;
 
-    /* SEV-specific domain */
-    virDomainSEVDef *sev;
+    /* launch security e.g. SEV */
+    virDomainSecDef *sec;
 
     /* Application-specific custom metadata */
     xmlNodePtr metadata;
