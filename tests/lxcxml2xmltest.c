@@ -21,7 +21,7 @@ static virLXCDriver *driver;
 struct testInfo {
     const char *name;
     int different;
-    bool inactive_only;
+    bool active_only;
     unsigned int parse_flags;
 };
 
@@ -40,7 +40,7 @@ testCompareXMLToXMLHelper(const void *data)
 
     ret = testCompareDomXML2XMLFiles(driver->caps, driver->xmlopt, xml_in,
                                      info->different ? xml_out : xml_in,
-                                     !info->inactive_only,
+                                     info->active_only,
                                      info->parse_flags,
                                      TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
     VIR_FREE(xml_in);
@@ -57,9 +57,9 @@ mymain(void)
     if (!(driver = testLXCDriverInit()))
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, is_different, inactive, parse_flags) \
+# define DO_TEST_FULL(name, is_different, active, parse_flags) \
     do { \
-        const struct testInfo info = {name, is_different, inactive, \
+        const struct testInfo info = {name, is_different, active, \
                                       parse_flags}; \
         if (virTestRun("LXC XML-2-XML " name, \
                        testCompareXMLToXMLHelper, &info) < 0) \
@@ -67,10 +67,10 @@ mymain(void)
     } while (0)
 
 # define DO_TEST(name) \
-    DO_TEST_FULL(name, 0, false, 0)
+    DO_TEST_FULL(name, 0, true, 0)
 
 # define DO_TEST_DIFFERENT(name) \
-    DO_TEST_FULL(name, 1, false, 0)
+    DO_TEST_FULL(name, 1, true, 0)
 
     /* Unset or set all envvars here that are copied in lxcdBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
