@@ -1738,8 +1738,10 @@ storagePoolLookupByTargetPath(virConnectPtr conn,
                                            storagePoolLookupByTargetPathCallback,
                                            cleanpath))) {
         def = virStoragePoolObjGetDef(obj);
-        if (virStoragePoolLookupByTargetPathEnsureACL(conn, def) < 0)
+        if (virStoragePoolLookupByTargetPathEnsureACL(conn, def) < 0) {
+            virStoragePoolObjEndAPI(&obj);
             return NULL;
+        }
 
         pool = virGetStoragePool(conn, def->name, def->uuid, NULL, NULL);
         virStoragePoolObjEndAPI(&obj);
