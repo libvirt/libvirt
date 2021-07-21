@@ -363,7 +363,6 @@ typedef void (*qemuMonitorDomainMemoryFailureCallback)(qemuMonitor *mon,
 
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
 struct _qemuMonitorCallbacks {
-    qemuMonitorDestroyCallback destroy;
     qemuMonitorEofNotifyCallback eofNotify;
     qemuMonitorErrorNotifyCallback errorNotify;
     qemuMonitorDomainEventCallback domainEvent;

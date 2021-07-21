@@ -233,8 +233,6 @@ qemuMonitorDispose(void *obj)
 
     VIR_DEBUG("mon=%p", mon);
     qemuMonitorDisposed = true;
-    if (mon->cb && mon->cb->destroy)
-        (mon->cb->destroy)(mon, mon->vm, mon->callbackOpaque);
     virObjectUnref(mon->vm);
 
     g_main_context_unref(mon->context);
