@@ -233,6 +233,7 @@ mymain(void)
     DO_TEST("tseg");
 
     DO_TEST("launch-security-sev");
+    DO_TEST("launch-security-s390-pv");
 
     DO_TEST_DIFFERENT("cputune");
     DO_TEST("device-backenddomain");

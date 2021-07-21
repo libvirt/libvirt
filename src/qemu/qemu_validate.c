@@ -1224,6 +1224,16 @@ qemuValidateDomainDef(const virDomainDef *def,
                 return -1;
             }
             break;
+        case VIR_DOMAIN_LAUNCH_SECURITY_PV:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT) ||
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_S390_PV_GUEST) ||
+                !virQEMUCapsGetKVMSupportsSecureGuest(qemuCaps)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("S390 PV launch security is not supported with "
+                                 "this QEMU binary"));
+                return -1;
+            }
+            break;
         case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
         case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
             virReportEnumRangeError(virDomainLaunchSecurity, def->sec->sectype);

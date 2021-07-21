@@ -6976,6 +6976,9 @@ qemuBuildMachineCommandLine(virCommand *cmd,
                 virBufferAddLit(&buf, ",memory-encryption=sev0");
             }
             break;
+        case VIR_DOMAIN_LAUNCH_SECURITY_PV:
+            virBufferAddLit(&buf, ",confidential-guest-support=pv0");
+            break;
         case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
         case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
             virReportEnumRangeError(virDomainLaunchSecurity, def->sec->sectype);
@@ -9874,6 +9877,26 @@ qemuBuildSEVCommandLine(virDomainObj *vm, virCommand *cmd,
 
 
 static int
+qemuBuildPVCommandLine(virDomainObj *vm, virCommand *cmd)
+{
+    g_autoptr(virJSONValue) props = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    qemuDomainObjPrivate *priv = vm->privateData;
+
+    if (qemuMonitorCreateObjectProps(&props, "s390-pv-guest", "pv0",
+                                     NULL) < 0)
+        return -1;
+
+    if (qemuBuildObjectCommandlineFromJSON(&buf, props, priv->qemuCaps) < 0)
+        return -1;
+
+    virCommandAddArg(cmd, "-object");
+    virCommandAddArgBuffer(cmd, &buf);
+    return 0;
+}
+
+
+static int
 qemuBuildSecCommandLine(virDomainObj *vm, virCommand *cmd,
                         virDomainSecDef *sec)
 {
@@ -9883,6 +9906,9 @@ qemuBuildSecCommandLine(virDomainObj *vm, virCommand *cmd,
     switch ((virDomainLaunchSecurity) sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         return qemuBuildSEVCommandLine(vm, cmd, &sec->data.sev);
+        break;
+    case VIR_DOMAIN_LAUNCH_SECURITY_PV:
+        return qemuBuildPVCommandLine(vm, cmd);
         break;
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
     case VIR_DOMAIN_LAUNCH_SECURITY_LAST:

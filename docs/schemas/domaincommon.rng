@@ -486,6 +486,11 @@
         <group>
           <ref name="launchSecuritySEV"/>
         </group>
+        <group>
+          <attribute name="type">
+            <value>s390-pv</value>
+          </attribute>
+        </group>
       </choice>
     </element>
   </define>

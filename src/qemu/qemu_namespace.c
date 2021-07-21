@@ -607,6 +607,8 @@ qemuDomainSetupLaunchSecurity(virDomainObj *vm,
 
         VIR_DEBUG("Set up launch security for SEV");
         break;
+    case VIR_DOMAIN_LAUNCH_SECURITY_PV:
+        break;
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
     case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
         virReportEnumRangeError(virDomainLaunchSecurity, sec->sectype);

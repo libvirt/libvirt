@@ -3469,6 +3469,8 @@ mymain(void)
     DO_TEST_CAPS_VER("launch-security-sev", "6.0.0");
     DO_TEST_CAPS_VER("launch-security-sev-missing-platform-info", "2.12.0");
 
+    DO_TEST_CAPS_ARCH_LATEST("launch-security-s390-pv", "s390x");
+
     DO_TEST_CAPS_LATEST("vhost-user-fs-fd-memory");
     DO_TEST_CAPS_LATEST("vhost-user-fs-hugepages");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("vhost-user-fs-readonly");

@@ -1401,6 +1401,7 @@ VIR_ENUM_IMPL(virDomainLaunchSecurity,
               VIR_DOMAIN_LAUNCH_SECURITY_LAST,
               "",
               "sev",
+              "s390-pv",
 );
 
 static virClass *virDomainObjClass;
@@ -3501,6 +3502,7 @@ virDomainSecDefFree(virDomainSecDef *def)
         g_free(def->data.sev.dh_cert);
         g_free(def->data.sev.session);
         break;
+    case VIR_DOMAIN_LAUNCH_SECURITY_PV:
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
     case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
         break;
@@ -14783,6 +14785,8 @@ virDomainSecDefParseXML(xmlNodePtr lsecNode,
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         if (virDomainSEVDefParseXML(&sec->data.sev, ctxt) < 0)
             return NULL;
+        break;
+    case VIR_DOMAIN_LAUNCH_SECURITY_PV:
         break;
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
     case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
@@ -26912,6 +26916,10 @@ virDomainSecDefFormat(virBuffer *buf, virDomainSecDef *sec)
 
         break;
     }
+
+    case VIR_DOMAIN_LAUNCH_SECURITY_PV:
+        break;
+
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
     case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
         return;
