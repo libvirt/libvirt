@@ -9005,10 +9005,15 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
     VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
 
-    if (current)
+    if (config || live || current) {
         flags = VIR_DOMAIN_AFFECT_CURRENT;
-    if (config)
-        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+
+        if (config)
+            flags |= VIR_DOMAIN_AFFECT_CONFIG;
+
+        if (live)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
+    }
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
