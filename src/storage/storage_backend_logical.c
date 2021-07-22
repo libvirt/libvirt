@@ -863,6 +863,8 @@ virStorageBackendLogicalLVCreate(virStorageVolDef *vol,
     else
         virCommandAddArg(cmd, def->source.name);
 
+    virCommandAddArg(cmd, "--yes");
+
     return virCommandRun(cmd, NULL);
 }
 
