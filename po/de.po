@@ -14,13 +14,14 @@
 # noxin <transifex.com@davidmainzer.com>, 2013
 # Florian H. <postfuerflo@gmail.com>, 2016
 # Fabian Affolter <mail@fabian-affolter.ch>, 2020.
+# Christian Kirbach <christian.kirbach@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-06-25 08:08+0000\n"
-"PO-Revision-Date: 2020-12-13 02:19+0000\n"
-"Last-Translator: Fabian Affolter <mail@fabian-affolter.ch>\n"
+"PO-Revision-Date: 2021-07-22 13:07+0000\n"
+"Last-Translator: Christian Kirbach <christian.kirbach@gmail.com>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/de/>\n"
 "Language: de\n"
@@ -28,7 +29,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3.2\n"
+"X-Generator: Weblate 4.7.2\n"
 
 msgid ""
 "\n"
@@ -362,13 +363,13 @@ msgid " Hypervisors:"
 msgstr " Hypervisors:"
 
 msgid " Miscellaneous:"
-msgstr "Verschiedenes:"
+msgstr " Verschiedenes:"
 
 msgid " Networking:"
-msgstr "Vernetzung:"
+msgstr " Netzwerk:"
 
 msgid " Storage:"
-msgstr "Speicher:"
+msgstr " Datenspeicher:"
 
 #, c-format
 msgid ""
@@ -3008,7 +3009,7 @@ msgid "Cannot open %s"
 msgstr "%s kann nicht geöffnet werden"
 
 msgid "Cannot open /proc/cgroups"
-msgstr " /proc/cgroups kann nicht geöffnet werden"
+msgstr "/proc/cgroups kann nicht geöffnet werden"
 
 #, c-format
 msgid "Cannot open embedded driver at path '%s', already open with path '%s'"
@@ -35223,7 +35224,7 @@ msgid "show/set scheduler parameters"
 msgstr "Scheduler-Parameter anzeigen/setzen"
 
 msgid "shut off"
-msgstr "ausschalten"
+msgstr "ausgeschaltet"
 
 msgid "shutdown"
 msgstr "Herunterfahren"
@@ -35718,14 +35719,14 @@ msgid "suspend a domain"
 msgstr "Eine Domain anhalten"
 
 msgid "suspend a domain gracefully using power management functions"
-msgstr "suspendieren Domain ordnungsgemäß mit Power-Management-Funktionen"
+msgstr "Domain kontrolliert mit Power-Management-Funktionen anhalten"
 
 #, fuzzy
 msgid "suspend the guest after timeout"
 msgstr "Gast nach der Erstellung angehalten lassen"
 
 msgid "suspend the host node for a given time duration"
-msgstr "Anhalten den Host Knoten für eine bestimmte Zeitdauer"
+msgstr "Den Host-Knoten für eine bestimmte Zeitdauer anhalten"
 
 #, fuzzy
 msgid "switch to post-copy after timeout"
@@ -35888,7 +35889,7 @@ msgid "terminal QAPI query component '%s' of '%s' must not have followers"
 msgstr ""
 
 msgid "terminate gracefully"
-msgstr " würdevoll beenden"
+msgstr "kontrolliert beenden"
 
 #, fuzzy
 msgid "terminated abnormally"
