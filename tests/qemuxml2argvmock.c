@@ -41,7 +41,6 @@
 #include "virutil.h"
 #include "qemu/qemu_interface.h"
 #include "qemu/qemu_command.h"
-#include "qemu/qemu_capabilities.h"
 #include <time.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -301,19 +300,4 @@ char *
 virIdentityEnsureSystemToken(void)
 {
     return g_strdup("3de80bcbf22d4833897f1638e01be9b2");
-}
-
-static bool (*real_virQEMUCapsGetKVMSupportsSecureGuest)(virQEMUCaps *qemuCaps);
-
-bool
-virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps)
-{
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_S390_PV_GUEST))
-        return true;
-
-    if (!real_virQEMUCapsGetKVMSupportsSecureGuest)
-        VIR_MOCK_REAL_INIT(virQEMUCapsGetKVMSupportsSecureGuest);
-
-    return real_virQEMUCapsGetKVMSupportsSecureGuest(qemuCaps);
 }
