@@ -1250,7 +1250,8 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
      * do this if we failed to get the capability above, so ignore the
      * return value.
      */
-    capng_apply(CAPNG_SELECT_BOUNDS);
+    if (!need_setpcap)
+        capng_apply(CAPNG_SELECT_BOUNDS);
 
     /* Drop the caps that allow setuid/gid (unless they were requested) */
     if (need_setgid)
