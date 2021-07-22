@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-06-25 08:08+0000\n"
-"PO-Revision-Date: 2021-07-03 15:04+0000\n"
+"PO-Revision-Date: 2021-07-20 13:24+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -1214,9 +1214,8 @@ msgstr "guest-get-vcpus의 응답에 'can-offline'이 누락됨"
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
 msgstr "'cmd_per_lun'는 virtio-scsi 제어기에서만 지원합니다"
 
-#, fuzzy
 msgid "'cow' storage format is not supported"
-msgstr "fs 포맷 %s은 지원되지 않음"
+msgstr "`cow` 저장소 형식이 지원되지 않음"
 
 msgid ""
 "'directory' storage format is not directly supported by QEMU, use 'dir' disk "
@@ -1229,9 +1228,8 @@ msgstr "guest-get-fsinfo의 응답에서 '디스크'가 누락됨"
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "'floor' 속성은 <inbound> 요소에만 허용됩니다"
 
-#, fuzzy
 msgid "'gluster' command line tool not found"
-msgstr "저장소 풀을 찾을 수 없음"
+msgstr "`gluster`명령 줄 도구를 찾을 수 없음"
 
 msgid "'host-name' missing in guest-get-host-name reply"
 msgstr "guest-get-host-name 응답에서 '호스트-이름'이 누락됨"
@@ -1248,45 +1246,44 @@ msgstr "'initiator'는 존재하지 않는 NUMA 노드를 나타냅니다"
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
 msgstr "'ioeventfd'는 virtio-scsi 제어기에서만 지원됩니다"
 
-#, fuzzy
 msgid "'iothread' attribute only supported for virtio scsi controllers"
-msgstr "램 속성은 qxl 유형에만 지원됨"
+msgstr "virtio scisi 제어기를 위해 'iothread' 속성만 지원함"
 
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "'iothread'는 virtio-scsi 제어기에서만 지원됩니다"
 
 msgid "'jack' audio backend is not supported with this QEMU"
-msgstr ""
+msgstr "'jack' 오디오 백엔드는 이 QEMU를 지원하지 않습니다"
 
 msgid "'logical-id' missing in reply of guest-get-vcpus"
-msgstr ""
+msgstr "guest-get-vcpus의 응답에서 'logical-id'가 누락"
 
 msgid "'login-time' missing in reply of guest-get-users"
-msgstr ""
+msgstr "guest-get-users의 응답에서 'login-time'이 누락"
 
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "'max_sector'는 virtio-scsi 제어기에서만 지원됩니다"
 
 msgid "'max_workers' must be greater than 0"
-msgstr ""
+msgstr "'max_workers'는 0 보다 커야만 합니다"
 
 #, c-format
 msgid ""
 "'mode' of Xen passthrough feature differs: source: '%s', destination: '%s'"
-msgstr ""
+msgstr "Xen 통과 기능의 '방식'이 다릅니다: 원천: source: '%s', 대상: '%s'"
 
 #, c-format
 msgid "'model' attribute in <hostdev> is only supported when type='%s'"
-msgstr ""
+msgstr "<hostdev>에서 'model' 속성은 유형='%s' 일 때에만 지원됩니다"
 
 msgid "'mountpoint' missing in reply of guest-get-fsinfo"
-msgstr ""
+msgstr "guest-get-fsinfo의 응답에서 '적재지점'이 누락"
 
 msgid "'name' missing in reply of guest-get-disks"
-msgstr ""
+msgstr "guest-get-disks의 응답에서 '이름'이 누락"
 
 msgid "'name' missing in reply of guest-get-fsinfo"
-msgstr ""
+msgstr "guest-get-fsinfo의 응답에서 '이름'이 누락"
 
 msgid "'netns' namespace source can only be used with sharenet"
 msgstr ""
@@ -6271,9 +6268,9 @@ msgstr "실패"
 msgid "FDC bus index %d out of [0] range"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "FDC controller index %d out of [0] range"
-msgstr "대상 컨트롤러 인덱스 %d가 소스 %d와 일치하지 않음"
+msgstr "[0] 범위 밖의 FDC 제어 개요 %d"
 
 #, c-format
 msgid "FDC unit index %d out of [0..1] range"
@@ -6320,13 +6317,13 @@ msgstr "블럭 이름 %s 구문 분석 실패"
 msgid "Failed to acquire pid file '%s'"
 msgstr "pid 파일 '%s' 획득 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add %s controller type definition"
-msgstr "하이퍼바이저에서 연결 끊기 실패"
+msgstr "%s 제어기 유형 정의 추가에 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add IP address %s to IP address cache for interface %s"
-msgstr "인터페이스 %s를 파괴하는 데 실패"
+msgstr "연결장치 %s를 위해 IP 주소 %s를 IP 주소 캐쉬에 추가하는데 실패"
 
 #, c-format
 msgid "Failed to add IP address %s/%d%s%s%s%s to %s"
@@ -6424,13 +6421,13 @@ msgstr "도메인 %s를 재시작하기 실패"
 msgid "Failed to begin network config change transaction"
 msgstr "네트워크 구성 변경 연결을 시작하는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bind %s on to %s"
-msgstr "풀 %s를 만드는 데 실패"
+msgstr "%s를 %s에 바인드하는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bind %s to new root %s"
-msgstr "네트워크 찾기 실패: %s"
+msgstr "%s를 새로운 root %s에 바인드하는데 실패"
 
 #, c-format
 msgid "Failed to bind cgroup '%s' on '%s'"
@@ -6454,9 +6451,9 @@ msgstr "pidfile 경로를 설정하는 데 실패."
 msgid "Failed to build pool %s"
 msgstr "풀 %s를 만드는 데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to change owner of %s to %u:%u"
-msgstr "'%s'의 소유권을 %d로 이전할 수 없음: %d"
+msgstr "%s의 소유권을 %u로 변경 하는데 실패:%u"
 
 #, fuzzy, c-format
 msgid "Failed to change ownership of '%s' to %d:%d"
@@ -6536,9 +6533,9 @@ msgstr "하이퍼바이저 CPU를 %s와 비교하는 데 실패하였습니다"
 msgid "Failed to compile regex %s"
 msgstr "정규식 %s를 컴파일하는 데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to complete action %s on media"
-msgstr "도메인 %s를 %s에 코어 덤프하기 실패"
+msgstr "미디어에서 동작 %s를 완료하는데 실패"
 
 #, fuzzy
 msgid "Failed to complete tree listing"
@@ -6576,9 +6573,9 @@ msgstr "'%s'를 정수로 변환하는데 실패"
 msgid "Failed to convert '%s' to unsigned long long"
 msgstr "'%s'를 정수로 변환하는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to convert interface index %d to a name"
-msgstr "인터페이스 정보 보기 실패"
+msgstr "연결장치 개요 %d를 이름으로 변환하는데 실패"
 
 #, fuzzy, c-format
 msgid "Failed to convert loadparm '%s' to upper case"
@@ -6594,21 +6591,20 @@ msgstr "XML 노드를 복사할 수 없음"
 
 #, c-format
 msgid "Failed to core dump domain '%s' to %s"
-msgstr ""
+msgstr "덤프 도메인 ' %s'를 %s로 빼내는데 실패"
 
 msgid "Failed to count network filters"
-msgstr "네트워크 필터 나열 실패"
+msgstr "네트워크 필터를 셈하는데 실패"
 
 msgid "Failed to count node devices"
-msgstr "노드 장치 갯수 세기 실패"
+msgstr "노드 장치 갯수를 셈하는데 실패"
 
-#, fuzzy
 msgid "Failed to count secrets"
-msgstr "비밀정보 목록생성 실패"
+msgstr "비밀을 셈하는데 실패"
 
 #, c-format
 msgid "Failed to create %s"
-msgstr "%s 생성 실패"
+msgstr "%s를 생성 하는데 실패"
 
 #, c-format
 msgid "Failed to create '%s': %s"
@@ -6687,9 +6683,9 @@ msgstr "장치 %s의 파일시스템 조사를 생성하는데 실패했습니�
 msgid "Failed to create interface node under bridge node in xml document"
 msgstr "xml 문서에서 브리지 노드 아래에 인터페이스 노드를 생성하는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create iscsi context for %s"
-msgstr "SASL 클라이언트 문맥을 생성하는 데 실패: %d (%s)"
+msgstr "%s를 위한 iscsi 문맥을 생성하는데 실패"
 
 #, fuzzy, c-format
 msgid "Failed to create lib dir %s"
@@ -6934,9 +6930,9 @@ msgstr "디스크 탈착 실패"
 msgid "Failed to detach interface"
 msgstr "인터페이스 탈착 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to determine broadcast address for '%s/%d'"
-msgstr "'%s'에 필요한 소켓 생성 실패"
+msgstr "'%s/%d'를 위한 방송 주소를 결정하는데 실패"
 
 #, c-format
 msgid "Failed to determine if %u:%u:%u:%u is a Direct-Access LUN"
@@ -21504,7 +21500,7 @@ msgid "cannot halt after snapshot of transient domain"
 msgstr "임시 도메인의 스냅샷 이후에는 중지 할 수 없습니다"
 
 msgid "cannot halt after transient domain snapshot"
-msgstr "임시 도메인의 스냅샷 이후에는 중지 할 수 없습니다."
+msgstr "임시 도메인의 스냅샷 이후에는 중지 할 수 없습니다"
 
 #, c-format
 msgid "cannot hot unplug %s device with PCI guest address: "
@@ -33798,7 +33794,7 @@ msgid ""
 msgstr ""
 
 msgid "running"
-msgstr "실행중"
+msgstr "실행 중"
 
 msgid "running with undesirable elevated privileges"
 msgstr ""
@@ -34685,7 +34681,7 @@ msgid "storage source pool '%s' volume '%s' is not translated"
 msgstr "저장소 풀 '%s'가 이미 동작중이 아닙니다"
 
 msgid "storage state driver is not active"
-msgstr "저장소 상태 드라이버가 실행중이 아닙니다"
+msgstr "저장소 상태 드라이버가 실행 중이 아닙니다"
 
 msgid "storage type 'dir' requires use of storage format 'fat'"
 msgstr ""
