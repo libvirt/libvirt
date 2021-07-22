@@ -1261,7 +1261,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
     if (need_setpcap)
         capng_update(CAPNG_DROP, CAPNG_EFFECTIVE|CAPNG_PERMITTED, CAP_SETPCAP);
 
-    if (((capng_ret = capng_apply(CAPNG_SELECT_CAPS)) < 0)) {
+    if ((capng_ret = capng_apply(CAPNG_SELECT_CAPS)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot apply process capabilities %d"), capng_ret);
         return -1;
