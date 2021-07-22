@@ -17857,6 +17857,23 @@ qemuDomainGetStatsCpuCgroup(virDomainObj *dom,
     return 0;
 }
 
+static int
+qemuDomainGetStatsCpuHaltPollTime(virDomainObj *dom,
+                                  virTypedParamList *params)
+{
+    unsigned long long haltPollSuccess = 0;
+    unsigned long long haltPollFail = 0;
+    pid_t pid = dom->pid;
+
+    if (virHostCPUGetHaltPollTime(pid, &haltPollSuccess, &haltPollFail) < 0)
+        return 0;
+
+    if (virTypedParamListAddULLong(params, haltPollSuccess, "cpu.haltpoll.success.time") < 0 ||
+        virTypedParamListAddULLong(params, haltPollFail, "cpu.haltpoll.fail.time") < 0)
+        return -1;
+
+    return 0;
+}
 
 static int
 qemuDomainGetStatsCpu(virQEMUDriver *driver,
@@ -17868,6 +17885,9 @@ qemuDomainGetStatsCpu(virQEMUDriver *driver,
         return -1;
 
     if (qemuDomainGetStatsCpuCache(driver, dom, params) < 0)
+        return -1;
+
+    if (qemuDomainGetStatsCpuHaltPollTime(dom, params) < 0)
         return -1;
 
     return 0;

@@ -2260,6 +2260,10 @@ When selecting the *--state* group the following fields are returned:
 * ``cpu.time`` - total cpu time spent for this domain in nanoseconds
 * ``cpu.user`` - user cpu time spent in nanoseconds
 * ``cpu.system`` - system cpu time spent in nanoseconds
+* ``cpu.haltpoll.success.time`` - cpu halt polling success time spent in
+  nanoseconds
+* ``cpu.haltpoll.fail.time`` - cpu halt polling fail time spent in
+  nanoseconds
 * ``cpu.cache.monitor.count`` - the number of cache monitors for this
   domain
 * ``cpu.cache.monitor.<num>.name`` - the name of cache monitor <num>
