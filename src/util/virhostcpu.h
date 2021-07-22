@@ -83,3 +83,7 @@ int virHostCPUGetMSR(unsigned long index,
 virHostCPUTscInfo *virHostCPUGetTscInfo(void);
 
 int virHostCPUGetSignature(char **signature);
+
+int virHostCPUGetHaltPollTime(pid_t pid,
+                              unsigned long long *haltPollSuccess,
+                              unsigned long long *haltPollFail);

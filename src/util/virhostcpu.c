@@ -1535,3 +1535,42 @@ virHostCPUGetSignature(char **signature)
 }
 
 #endif /* __linux__ */
+
+int
+virHostCPUGetHaltPollTime(pid_t pid,
+                      unsigned long long *haltPollSuccess,
+                      unsigned long long *haltPollFail)
+{
+    g_autofree char *pidToStr = NULL;
+    g_autofree char *debugFsPath = NULL;
+    g_autofree char *kvmPath = NULL;
+    struct dirent *ent = NULL;
+    g_autoptr(DIR) dir = NULL;
+    bool found = false;
+
+    if (!(debugFsPath = virFileFindMountPoint("debugfs")))
+        return -1;
+
+    kvmPath = g_strdup_printf("%s/%s", debugFsPath, "kvm");
+    if (virDirOpenQuiet(&dir, kvmPath) != 1)
+        return -1;
+
+    pidToStr = g_strdup_printf("%lld-", (long long)pid);
+    while (virDirRead(dir, &ent, NULL) > 0) {
+        if (STRPREFIX(ent->d_name, pidToStr)) {
+            found = true;
+            break;
+        }
+    }
+
+    if (!found)
+        return -1;
+
+    if (virFileReadValueUllongQuiet(haltPollSuccess, "%s/%s/%s", kvmPath,
+                                    ent->d_name, "halt_poll_success_ns") < 0 ||
+        virFileReadValueUllongQuiet(haltPollFail, "%s/%s/%s", kvmPath,
+                                    ent->d_name, "halt_poll_fail_ns") < 0)
+        return -1;
+
+    return 0;
+}
