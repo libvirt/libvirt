@@ -22,7 +22,7 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
     <input type='evdev'>
-      <source dev='/dev/input/event1234' grab='all' repeat='on'/>
+      <source dev='/dev/input/event1234' grab='all' grabToggle='alt-alt' repeat='on'/>
     </input>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>

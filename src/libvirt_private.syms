@@ -476,6 +476,8 @@ virDomainInputBusTypeToString;
 virDomainInputDefFind;
 virDomainInputDefFree;
 virDomainInputDefGetPath;
+virDomainInputSourceGrabToggleTypeFromString;
+virDomainInputSourceGrabToggleTypeToString;
 virDomainInputSourceGrabTypeFromString;
 virDomainInputSourceGrabTypeToString;
 virDomainInputTypeToString;

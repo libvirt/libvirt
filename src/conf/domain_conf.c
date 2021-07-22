@@ -891,6 +891,17 @@ VIR_ENUM_IMPL(virDomainInputSourceGrab,
               "all",
 );
 
+VIR_ENUM_IMPL(virDomainInputSourceGrabToggle,
+              VIR_DOMAIN_INPUT_SOURCE_GRAB_TOGGLE_LAST,
+              "default",
+              "ctrl-ctrl",
+              "alt-alt",
+              "shift-shift",
+              "meta-meta",
+              "scrolllock",
+              "ctrl-scrolllock",
+);
+
 VIR_ENUM_IMPL(virDomainGraphics,
               VIR_DOMAIN_GRAPHICS_TYPE_LAST,
               "sdl",
@@ -12009,6 +12020,11 @@ virDomainInputDefParseXML(virDomainXMLOption *xmlopt,
             if (virXMLPropEnum(source, "grab",
                                virDomainInputSourceGrabTypeFromString,
                                VIR_XML_PROP_NONZERO, &def->source.grab) < 0)
+                goto error;
+
+            if (virXMLPropEnum(source, "grabToggle",
+                               virDomainInputSourceGrabToggleTypeFromString,
+                               VIR_XML_PROP_NONZERO, &def->source.grabToggle) < 0)
                 goto error;
 
             if (virXMLPropTristateSwitch(source, "repeat",
@@ -25998,6 +26014,7 @@ virDomainInputDefFormat(virBuffer *buf,
     const char *type = virDomainInputTypeToString(def->type);
     const char *bus = virDomainInputBusTypeToString(def->bus);
     const char *grab = virDomainInputSourceGrabTypeToString(def->source.grab);
+    const char *grabToggle = virDomainInputSourceGrabToggleTypeToString(def->source.grabToggle);
     const char *repeat = virTristateSwitchTypeToString(def->source.repeat);
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
@@ -26049,6 +26066,8 @@ virDomainInputDefFormat(virBuffer *buf,
 
     if (def->source.grab)
         virBufferAsprintf(&sourceAttrBuf, " grab='%s'", grab);
+    if (def->source.grabToggle)
+        virBufferAsprintf(&sourceAttrBuf, " grabToggle='%s'", grabToggle);
     if (def->source.repeat)
         virBufferAsprintf(&sourceAttrBuf, " repeat='%s'", repeat);
 

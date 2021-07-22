@@ -5485,6 +5485,18 @@
                 </attribute>
               </optional>
               <optional>
+                <attribute name="grabToggle">
+                  <choice>
+                    <value>ctrl-ctrl</value>
+                    <value>alt-alt</value>
+                    <value>shift-shift</value>
+                    <value>meta-meta</value>
+                    <value>scrolllock</value>
+                    <value>ctrl-scrolllock</value>
+                  </choice>
+                </attribute>
+              </optional>
+              <optional>
                 <attribute name="repeat">
                   <ref name="virOnOff"/>
                 </attribute>

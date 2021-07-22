@@ -1420,6 +1420,18 @@ typedef enum {
     VIR_DOMAIN_INPUT_SOURCE_GRAB_LAST
 } virDomainInputSourceGrab;
 
+typedef enum {
+    VIR_DOMAIN_INPUT_SOURCE_GRAB_TOGGLE_DEFAULT,
+    VIR_DOMAIN_INPUT_SOURCE_GRAB_TOGGLE_CTRL_CTRL,
+    VIR_DOMAIN_INPUT_SOURCE_GRAB_TOGGLE_ALT_ALT,
+    VIR_DOMAIN_INPUT_SOURCE_GRAB_TOGGLE_SHIFT_SHIFT,
+    VIR_DOMAIN_INPUT_SOURCE_GRAB_TOGGLE_META_META,
+    VIR_DOMAIN_INPUT_SOURCE_GRAB_TOGGLE_SCROLLLOCK,
+    VIR_DOMAIN_INPUT_SOURCE_GRAB_TOGGLE_CTRL_SCROLLLOCK,
+
+    VIR_DOMAIN_INPUT_SOURCE_GRAB_TOGGLE_LAST
+} virDomainInputSourceGrabToggle;
+
 struct _virDomainInputDef {
     int type;
     int bus;
@@ -1427,6 +1439,7 @@ struct _virDomainInputDef {
     struct {
         char *evdev;
         virDomainInputSourceGrab grab;
+        virDomainInputSourceGrabToggle grabToggle;
         virTristateSwitch repeat;
     } source;
     virDomainDeviceInfo info;
@@ -3871,6 +3884,7 @@ VIR_ENUM_DECL(virDomainInput);
 VIR_ENUM_DECL(virDomainInputBus);
 VIR_ENUM_DECL(virDomainInputModel);
 VIR_ENUM_DECL(virDomainInputSourceGrab);
+VIR_ENUM_DECL(virDomainInputSourceGrabToggle);
 VIR_ENUM_DECL(virDomainGraphics);
 VIR_ENUM_DECL(virDomainGraphicsListen);
 VIR_ENUM_DECL(virDomainGraphicsAuthConnected);

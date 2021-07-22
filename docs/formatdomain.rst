@@ -5747,7 +5747,7 @@ to provide a graphics tablet for absolute cursor movement.
        <source evdev='/dev/input/event1'/>
      </input>
      <input type='evdev'>
-       <source dev='/dev/input/event1234' grab='all' repeat='on'/>
+       <source dev='/dev/input/event1234' grab='all' repeat='on' grabToggle='ctrl-ctrl'/>
      </input>
    </devices>
    ...
@@ -5768,10 +5768,12 @@ On S390, ``address`` can be used to provide a CCW address for an input device (
 sub-element ``source`` must have an ``evdev`` (for ``passthrough``) or ``dev``
 (for ``evdev``) attribute containing the absolute path to the event device
 passed through to guests.
-For type ``evdev``, ``source`` can have two optional attributes ``grab`` with
-value 'all' which when enabled grabs all input devices instead of just one and
-``repeat`` with value 'on'/'off' to enable/disable auto-repeat events (
-:since:`Since 7.4.0`).
+For type ``evdev``, ``source`` has three optional attributes ``grab`` with
+value 'all' which when enabled grabs all input devices instead of just one,
+``repeat`` with value 'on'/'off' to enable/disable auto-repeat events and
+``grabToggle`` (:since:`since 7.6.0`) with values ``ctrl-ctrl``, ``alt-alt``,
+``shift-shift``, ``meta-meta``, ``scrolllock`` or ``ctrl-scrolllock`` to
+change the grab key combination.
 ``input`` type ``evdev`` is currently supported only on linux devices.
 (KVM only) :since:`Since 5.2.0` , the ``input`` element accepts a
 ``model`` attribute which has the values 'virtio', 'virtio-transitional' and
