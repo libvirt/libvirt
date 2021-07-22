@@ -5222,10 +5222,10 @@ qemuDomainControllerDefPostParse(virDomainControllerDef *cont,
             return -1;
         }
         if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS &&
-            !qemuDomainIsQ35(def)) {
+            !(qemuDomainIsQ35(def) || qemuDomainIsARMVirt(def))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("pcie-expander-bus controllers are only supported "
-                             "on q35-based machinetypes"));
+                           _("pcie-expander-bus controllers are not supported "
+                             "with this machine type"));
             return -1;
         }
 

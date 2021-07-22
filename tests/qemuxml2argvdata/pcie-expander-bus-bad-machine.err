@@ -1,1 +1,1 @@
-unsupported configuration: pcie-expander-bus controllers are only supported on q35-based machinetypes
+unsupported configuration: pcie-expander-bus controllers are not supported with this machine type
