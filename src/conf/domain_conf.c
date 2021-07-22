@@ -14727,7 +14727,6 @@ static int
 virDomainSEVDefParseXML(virDomainSEVDef *def,
                         xmlXPathContextPtr ctxt)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     unsigned long policy;
     int rc;
 
