@@ -4065,6 +4065,30 @@ virFileReadValueUllong(unsigned long long *value, const char *format, ...)
     return 0;
 }
 
+int
+virFileReadValueUllongQuiet(unsigned long long *value, const char *format, ...)
+{
+    g_autofree char *str = NULL;
+    g_autofree char *path = NULL;
+    va_list ap;
+
+    va_start(ap, format);
+    path = g_strdup_vprintf(format, ap);
+    va_end(ap);
+
+    if (!virFileExists(path))
+        return -2;
+
+    if (virFileReadAllQuiet(path, VIR_INT64_STR_BUFLEN, &str) < 0)
+        return -1;
+
+    virStringTrimOptionalNewline(str);
+
+    if (virStrToLong_ullp(str, NULL, 10, value) < 0)
+        return -1;
+
+    return 0;
+}
 
 /**
  * virFileReadValueScaledInt:

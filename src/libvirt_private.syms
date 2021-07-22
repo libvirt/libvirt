@@ -2244,6 +2244,7 @@ virFileReadValueScaledInt;
 virFileReadValueString;
 virFileReadValueUint;
 virFileReadValueUllong;
+virFileReadValueUllongQuiet;
 virFileRelLinkPointsTo;
 virFileRemove;
 virFileRemoveLastComponent;
