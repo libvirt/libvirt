@@ -1422,7 +1422,7 @@ virFileReadLimFD(int fd, int maxlen, char **buf)
         errno = EINVAL;
         return -1;
     }
-    s = saferead_lim(fd, maxlen+1, &len);
+    s = saferead_lim(fd, (size_t) maxlen + 1, &len);
     if (s == NULL)
         return -1;
     if (len > maxlen || (int)len != len) {
