@@ -3139,65 +3139,41 @@ mymain(void)
             QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_CCW);
-    DO_TEST_FAILURE("machine-aeskeywrap-on-caps",
-                    QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-aeskeywrap-on-cap",
             QEMU_CAPS_AES_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_CCW);
-    DO_TEST_FAILURE("machine-aeskeywrap-on-cap",
-                    QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-aeskeywrap-off-caps",
             QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_CCW);
-    DO_TEST_FAILURE("machine-aeskeywrap-off-caps",
-                    QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-aeskeywrap-off-cap",
             QEMU_CAPS_AES_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_CCW);
-    DO_TEST_FAILURE("machine-aeskeywrap-off-cap",
-                    QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-deakeywrap-on-caps",
             QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_CCW);
-    DO_TEST_FAILURE("machine-deakeywrap-on-caps",
-                    QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-deakeywrap-on-cap",
             QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_CCW);
-    DO_TEST_FAILURE("machine-deakeywrap-on-cap",
-                    QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-deakeywrap-off-caps",
             QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_CCW);
-    DO_TEST_FAILURE("machine-deakeywrap-off-caps",
-                    QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-deakeywrap-off-cap",
             QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_CCW);
-    DO_TEST_FAILURE("machine-deakeywrap-off-cap",
-                    QEMU_CAPS_VIRTIO_SCSI,
-                    QEMU_CAPS_CCW);
 
     DO_TEST("machine-keywrap-none-caps",
             QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
