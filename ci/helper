@@ -190,18 +190,18 @@ class Application:
         output = subprocess.check_output([self._args.lcitool] + args)
         return output.decode("utf-8")
 
-    def _lcitool_get_hosts(self):
-        output = self._lcitool_run(["hosts"])
+    def _lcitool_get_targets(self):
+        output = self._lcitool_run(["targets"])
         return output.splitlines()
 
-    def _generate_dockerfile(self, host, cross=None):
-        args = ["dockerfile", host, "libvirt"]
+    def _generate_dockerfile(self, target, cross=None):
+        args = ["dockerfile", target, "libvirt"]
         outdir = self._basedir.joinpath("containers")
-        outfile = f"{host}.Dockerfile"
+        outfile = f"{target}.Dockerfile"
 
         if cross:
             args.extend(["--cross", cross])
-            outfile = f"{host}-cross-{cross}.Dockerfile"
+            outfile = f"{target}-cross-{cross}.Dockerfile"
 
         outpath = outdir.joinpath(outfile)
         if not self._args.quiet:
@@ -211,10 +211,10 @@ class Application:
         with open(outpath, "w") as f:
             f.write(output)
 
-    def _generate_vars(self, host):
-        args = ["variables", host, "libvirt"]
+    def _generate_vars(self, target):
+        args = ["variables", target, "libvirt"]
         outdir = self._basedir.joinpath("cirrus")
-        outfile = f"{host}.vars"
+        outfile = f"{target}.vars"
 
         outpath = outdir.joinpath(outfile)
         if not self._args.quiet:
@@ -241,37 +241,37 @@ class Application:
             "mingw64",
         ]
 
-        for host in self._lcitool_get_hosts():
-            if host.startswith("freebsd-") or host.startswith("macos-"):
+        for target in self._lcitool_get_targets():
+            if target.startswith("freebsd-") or target.startswith("macos-"):
                 continue
 
-            self._generate_dockerfile(host)
+            self._generate_dockerfile(target)
 
-            if host == "fedora-rawhide":
+            if target == "fedora-rawhide":
                 for cross in fedora_cross:
-                    self._generate_dockerfile(host, cross)
+                    self._generate_dockerfile(target, cross)
 
-            if host.startswith("debian-"):
+            if target.startswith("debian-"):
                 for cross in debian_cross:
-                    if host == "debian-sid" and cross == "mips":
+                    if target == "debian-sid" and cross == "mips":
                         continue
-                    self._generate_dockerfile(host, cross)
+                    self._generate_dockerfile(target, cross)
 
     def _refresh_cirrus(self):
-        for host in self._lcitool_get_hosts():
-            if not (host.startswith("freebsd-") or host.startswith("macos-")):
+        for target in self._lcitool_get_targets():
+            if not (target.startswith("freebsd-") or target.startswith("macos-")):
                 continue
 
-            self._generate_vars(host)
+            self._generate_vars(target)
 
     def _check_stale_images(self):
         namespace = self._args.namespace
         gitlab_uri = self._args.gitlab_uri
         registry_uri = util.get_registry_uri(namespace, gitlab_uri)
-        lcitool_hosts = self._lcitool_get_hosts()
+        lcitool_targets = self._lcitool_get_targets()
 
         stale_images = util.get_registry_stale_images(registry_uri,
-                                                      lcitool_hosts)
+                                                      lcitool_targets)
         if stale_images:
             spacing = "\n" + 4 * " "
             stale_fmt = [f"{k} (ID: {v})" for k, v in stale_images.items()]
