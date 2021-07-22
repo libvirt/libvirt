@@ -17,8 +17,11 @@
 #include <config.h>
 
 #include "virhostcpu.h"
-#include "virmock.h"
-#include "qemu/qemu_capabilities.h"
+
+#if WITH_QEMU
+# include "virmock.h"
+# include "qemu/qemu_capabilities.h"
+#endif
 
 int
 virHostCPUGetKVMMaxVCPUs(void)
@@ -32,6 +35,7 @@ virHostCPUGetMicrocodeVersion(virArch hostArch G_GNUC_UNUSED)
     return 0;
 }
 
+#if WITH_QEMU
 static bool (*real_virQEMUCapsGetKVMSupportsSecureGuest)(virQEMUCaps *qemuCaps);
 
 bool
@@ -46,3 +50,4 @@ virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps)
 
     return real_virQEMUCapsGetKVMSupportsSecureGuest(qemuCaps);
 }
+#endif
