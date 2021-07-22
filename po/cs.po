@@ -9,21 +9,22 @@
 # Zdenek <chmelarz@gmail.com>, 2016
 # Pavel Borecki <pavel.borecki@gmail.com>, 2018, 2019
 # Daniel Berrange <dan-zanata@berrange.com>, 2019
+# Matej Cepl <mcepl@cepl.eu>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-06-25 08:08+0000\n"
-"PO-Revision-Date: 2019-12-16 05:00+0000\n"
-"Last-Translator: Daniel Berrange <dan-zanata@berrange.com>\n"
-"Language-Team: Czech (http://www.transifex.com/projects/p/fedora/language/"
-"cs/)\n"
+"PO-Revision-Date: 2021-07-21 11:38+0000\n"
+"Last-Translator: Matej Cepl <mcepl@cepl.eu>\n"
+"Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
+"libvirt/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Zanata 4.6.2\n"
+"X-Generator: Weblate 4.7.2\n"
 
 msgid ""
 "\n"
@@ -3078,7 +3079,7 @@ msgid "Cannot open network interface control socket"
 msgstr "Nedaří se otevřít řídící soket síťového rozhraní"
 
 msgid "Cannot open resctrl"
-msgstr "Nedaří se otevrít resctrl"
+msgstr "Nedaří se otevřít resctrl"
 
 #, fuzzy, c-format
 msgid "Cannot parse %srequest stat '%s'"
@@ -3808,7 +3809,7 @@ msgstr ""
 #, c-format
 msgid "Config entry '%s' must represent a boolean value (true|false)"
 msgstr ""
-"Je třeba, aby položka nastavení „%s“ představovala hodnotu typu bolean "
+"Je třeba, aby položka nastavení „%s“ představovala hodnotu typu boolean "
 "(pravda|nepravda)"
 
 #, c-format
@@ -4049,7 +4050,7 @@ msgid "Could not create monitor"
 msgstr "Nedaří se vytvořit monitor"
 
 msgid "Could not create openwsman client"
-msgstr "Nedaří se vytvořit klienta openvsman"
+msgstr "Nedaří se vytvořit klienta openwsman"
 
 msgid "Could not create simple param"
 msgstr "Nedaří se vytvořit jednoduchý parametr"
@@ -4860,7 +4861,7 @@ msgstr "Nedaří se nastavit velikost paměti"
 
 #, c-format
 msgid "Could not set memory to %lu kilobytes: %s"
-msgstr "Nelze nastavit velikost paměti na %lu kilobajtů: %s"
+msgstr "Nelze nastavit velikost paměti na %lu kilobajtů: %s"
 
 msgid "Could not set namespace address for xmlNodeParam"
 msgstr "Nedaří se nastavit adresu jmenného prostoru pro xmlNodeParam"
@@ -8698,7 +8699,7 @@ msgid ""
 "for VMX file"
 msgstr ""
 "První na souboru založený pevný disk nemá zdroj – není možné vyvodit datové "
-"úložiště a popis umítění VMX souboru"
+"úložiště a popis umístění VMX souboru"
 
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
@@ -9033,7 +9034,7 @@ msgid "Handshake is already complete"
 msgstr "Úvod navázání spojení je už dokončen"
 
 msgid "Hard disk is null"
-msgstr "Hard disk je prázdný"
+msgstr "Pevný disk je prázdný"
 
 msgid "Holes are not supported with this stream"
 msgstr "Díry nejsou s tímto proudem podporovány"
@@ -9544,7 +9545,7 @@ msgstr ""
 
 #, c-format
 msgid "Invalid CPU vendor string '%s'"
-msgstr "Neplatný řeťezec výrobce procesoru „%s“"
+msgstr "Neplatný řetězec výrobce procesoru „%s“"
 
 #, c-format
 msgid "Invalid DNS SRV priority attribute for service '%s' in network '%s'"
@@ -9580,7 +9581,7 @@ msgstr "Neplatná PCI adresa %s. Jsou k dispozici pouze PCI sběrnice až po %zu
 
 #, c-format
 msgid "Invalid PCI address %s. Only PCI domain 0 is available"
-msgstr "Neplatná PCI adresa %s. Je k dispozci pouze PCI doména 0"
+msgstr "Neplatná PCI adresa %s. Je k dispozici pouze PCI doména 0"
 
 #, c-format
 msgid "Invalid PCI address %s. function must be <= %u"
@@ -10534,7 +10535,7 @@ msgstr ""
 #, c-format
 msgid "JSON backing volume definition '%s' lacks driver name"
 msgstr ""
-"JSON definice svazku „%s“, na kterém je zalotené, postrádá název ovladače"
+"JSON definice svazku „%s“, na kterém je založené, postrádá název ovladače"
 
 #, fuzzy, c-format
 msgid "JSON backing volume definition '%s' must not have nested format drivers"
@@ -10678,7 +10679,7 @@ msgstr "Zámkový prostor pro popis umístění %s neexistuje"
 
 #, c-format
 msgid "Lockspace location %s exists, but is not a directory"
-msgstr "Umístění zámkového prosotru %s existuje, ale nejedná se o složku"
+msgstr "Umístění zámkového prostoru %s existuje, ale nejedná se o složku"
 
 #, c-format
 msgid "Lockspace path '%s' exceeded %d characters"
@@ -10690,7 +10691,7 @@ msgstr "Prostředek zámkového prostoru „%s“ je uzamčen"
 
 #, c-format
 msgid "Lockspace resource '%s' is not locked"
-msgstr "Prostředek zámkového prostoru „%s“ není uzamečen"
+msgstr "Prostředek zámkového prostoru „%s“ není uzamčen"
 
 msgid "Logging filters: "
 msgstr "Filtry zaznamenávání provozu:"
@@ -11079,7 +11080,7 @@ msgid ""
 "directsync"
 msgstr ""
 "Přestěhování může vést k porušení dat pokud disky používají jinou mezipaměť "
-"než žádno nebo directsync"
+"než žádnou nebo directsync"
 
 msgid "Migration not possible without a vCenter"
 msgstr "Migrace není možná bez vCenter"
@@ -12013,7 +12014,7 @@ msgstr "Síť %s označena jako automaticky spouštěná\n"
 
 #, c-format
 msgid "Network %s started\n"
-msgstr "Síť %s sputěna\n"
+msgstr "Síť %s spuštěna\n"
 
 #, c-format
 msgid "Network %s unmarked as autostarted\n"
@@ -12455,7 +12456,7 @@ msgid "No open log file %s"
 msgstr "Žádný otevřený soubor záznamu událostí %s"
 
 msgid "No output from iptables --version"
-msgstr "Žádný výstup z ptables --version"
+msgstr "Žádný výstup z iptables --version"
 
 msgid "No per-CPU stats available"
 msgstr "Statistiky pro jednotlivé procesory nejsou k dispozici"
@@ -12539,7 +12540,7 @@ msgstr "Nebyl zadán typ pro adresu zařízení"
 
 #, c-format
 msgid "No usable Vf's present on SRIOV PF %s"
-msgstr "Na SRIOV PF %s se nenachází žádné použitélné VF"
+msgstr "Na SRIOV PF %s se nenachází žádné použitelné VF"
 
 #, c-format
 msgid "No usable target index found for %d"
@@ -13241,9 +13242,8 @@ msgstr "Zpracovaná JSON odpověď „%s“ není objekt"
 msgid "Partition path '%s' must start with '/'"
 msgstr "Je třeba, aby popis umístění oddílu „%s“ začínal na „/“"
 
-#, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
-msgstr "Nezadán žádný argument příkazového řádku pro qemu"
+msgstr "Zadávání tajných hodnot na příkazovém řádku je nebezpečné!"
 
 #, c-format
 msgid "Passphrase for key '%s'"
@@ -14255,7 +14255,7 @@ msgid ""
 msgstr ""
 "Uložit a zlikvidovat spuštěnou doménu, takže může být restartována ze\n"
 "    stejného stavu později.  Když je příště spuštěn virsh 'start'\n"
-"    příkaz pro doménu, bude automaticky sputěna\n"
+"    příkaz pro doménu, bude automaticky spuštěna\n"
 "    z tohoto uloženého stavu."
 
 msgid "Save the RAM state of a running domain."
@@ -14912,8 +14912,8 @@ msgstr "Stav:"
 msgid ""
 "Static host definition in IPv4 network '%s' must have mac or name attribute"
 msgstr ""
-"Je třeba, aby statická definice hostitele v IPv4 síti „%s“ měla atribut mac "
-"(mac adresa) nebo name (název)"
+"Je třeba, aby statická definice hostitele v IPv4 síti „%s“ měla atribut mac ("
+"MAC adresa) nebo name (název)"
 
 #, c-format
 msgid ""
@@ -16844,7 +16844,7 @@ msgid "Unable to change to %s"
 msgstr "Nedaří se změnit na %s"
 
 msgid "Unable to change to root dir"
-msgstr "Nelze se přesunout do kořenové složky"
+msgstr "Nelze se přesunout do kořenové složky"
 
 #, c-format
 msgid "Unable to chdir(%s)"
@@ -19080,7 +19080,7 @@ msgid ""
 "Unknown mode %s value, expecting 'acpi', 'agent', 'initctl', 'signal', or "
 "'paravirt'"
 msgstr ""
-"Neznámá hodnota režimu %s, očekávno 'acpi', 'agent', 'initctl', 'signal', "
+"Neznámá hodnota režimu %s, očekáváno 'acpi', 'agent', 'initctl', 'signal', "
 "nebo 'paravirt'"
 
 msgid "Unknown mode has been specified"
@@ -19897,7 +19897,7 @@ msgstr ""
 
 #, c-format
 msgid "Wiping volume '%s'(%s) ... "
-msgstr "Vymazávání svazku „%s“(%s)…"
+msgstr "Vymazávání svazku „%s“(%s) … "
 
 msgid ""
 "Write filtering of PCI device configuration space is not supported by qemu"
@@ -21261,7 +21261,7 @@ msgid "cannot change to '%u' group"
 msgstr "nedaří se změnit na skupinu „%u“"
 
 msgid "cannot change to root directory"
-msgstr "nelze se přesunout do kořenové složky"
+msgstr "nelze se přesunout do kořenové složky"
 
 #, c-format
 msgid "cannot change to root directory: %s"
@@ -21370,7 +21370,7 @@ msgstr "pokud existuje zachycený stav, není možné vytvořit kontrolní bod"
 
 #, c-format
 msgid "cannot create config directory %s"
-msgstr "nelze vytvořit adresář s konfigurací %s"
+msgstr "nelze vytvořit adresář s konfigurací %s"
 
 #, c-format
 msgid "cannot create config directory '%s'"
@@ -21822,7 +21822,7 @@ msgstr "nedaří se načíst data certifikátu z %s: %s"
 #, c-format
 msgid "cannot lookup default selinux label for tap fd %d"
 msgstr ""
-"nedaří se vyhledat výchozí selinux štítek pro tap popisovač souboru tap %d"
+"nedaří se vyhledat výchozí SELinux štítek pro tap popisovač souboru tap %d"
 
 #, fuzzy
 msgid "cannot migrate a domain with <hostdev mode='capabilities'>"
@@ -22106,7 +22106,7 @@ msgid "cannot query SASL username on connection %d (%s)"
 msgstr "ve spojení %d (%s) se nedaří dotázat SASL uživatelské jméno"
 
 msgid "cannot query both live and config at once"
-msgstr "není možné dotazovat jak live, tak nastavení"
+msgstr "není možné dotazovat se jak naživo, tak z nastavení"
 
 #, c-format
 msgid "cannot read %s"
@@ -22962,7 +22962,7 @@ msgid ""
 "migration) or source(p2p migration)"
 msgstr ""
 "URI připojení cílového hostitele, jak je viděna z klienta (běžné "
-"přestěhování) nebo zroje (p2p přestěhování)"
+"přestěhování) nebo zdroje (p2p přestěhování)"
 
 msgid "connection already open"
 msgstr "spojení už je navázáno"
@@ -23132,15 +23132,15 @@ msgstr "nedaří se převést hodnotu průměrné rychlosti „%s“"
 
 #, c-format
 msgid "could not convert bandwidth burst value '%s'"
-msgstr "nedaří se převést hodnotu „%s“ dávky přenosové rychosti"
+msgstr "nedaří se převést hodnotu „%s“ dávky přenosové rychlosti"
 
 #, c-format
 msgid "could not convert bandwidth floor value '%s'"
-msgstr "nedaří se převést hodnotu „%s“ dolní hodnoty přenosové rychosti"
+msgstr "nedaří se převést hodnotu „%s“ dolní hodnoty přenosové rychlosti"
 
 #, c-format
 msgid "could not convert bandwidth peak value '%s'"
-msgstr "nedaří se převést hodnotu „%s“ špičky přenosové rychosti"
+msgstr "nedaří se převést hodnotu „%s“ špičky přenosové rychlosti"
 
 msgid "could not create profile"
 msgstr "nelze vytvořit profil"
@@ -24499,7 +24499,7 @@ msgid "domain is not in suspend state"
 msgstr "doména není ve stavu uspáno"
 
 msgid "domain is not running"
-msgstr "doména není spuštěná"
+msgstr "doména není spuštěná"
 
 msgid "domain is not running on destination host"
 msgstr "doména není spuštěná na cílovém hostiteli"
@@ -24766,7 +24766,7 @@ msgid "edit XML for a checkpoint"
 msgstr "upravit XML pro kontrolní bod"
 
 msgid "edit XML for a domain's managed save state file"
-msgstr "upravit xML pro soubor spravovaného stavu uložení domény"
+msgstr "upravit XML pro soubor spravovaného stavu uložení domény"
 
 msgid "edit XML for a domain's saved state file"
 msgstr "upravit XML pro soubor uloženého stavu domény"
@@ -24793,7 +24793,7 @@ msgid "element 'name' is mandatory for RBD pool"
 msgstr "pro RBD fond je prvek 'name' povinný"
 
 msgid "empty json array"
-msgstr "prázdné json pole"
+msgstr "prázdné JSON pole"
 
 msgid "empty path"
 msgstr "prázdný popis umístění"
@@ -27646,17 +27646,21 @@ msgstr ""
 "přetečení celočíselného typu na %s. Obraťte se na vývojový tým libvirt na "
 "libvir-list@redhat.com"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "interface %s - <port isolated='yes'/> is not supported for network "
 "interfaces with type='%s'"
-msgstr "nespravované cílové zařízení není podporováno pro rozhraní typu „%s“"
+msgstr ""
+"zařízení %s - <port isolated='yes'/> není podporováno pro síťové rozhraní "
+"typu „%s“"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "interface %s - <port isolated='yes'/> is not supported for network "
 "interfaces with virtualport type='%s'"
-msgstr "nespravované cílové zařízení není podporováno pro rozhraní typu „%s“"
+msgstr ""
+"rozhraní %s - <port isolated='yes'/> není podporováno pro síťové rozhraní s "
+"virtualportem typu='%s'"
 
 #, fuzzy, c-format
 msgid ""
@@ -29505,7 +29509,7 @@ msgid "malformed volume extent stripes value"
 msgstr "nesprávně formulovaná hodnota proužků extentu svazku"
 
 msgid "malformed/missing addr in dimm memory info"
-msgstr "nesprávně formulovaná / chybící adresa v informacích o dimm paměti"
+msgstr "nesprávně formulovaná / chybějící adresa v informacích o dimm paměti"
 
 msgid "malformed/missing hotpluggable in dimm memory info"
 msgstr ""
@@ -29927,11 +29931,11 @@ msgstr ""
 
 #, c-format
 msgid "mismatch of address family in range %s - %s"
-msgstr "neshoda generace aderes v rozsahu %s až %s"
+msgstr "neshoda generace adres v rozsahu %s až %s"
 
 #, c-format
 msgid "mismatch of address family in range %s - %s for network %s"
-msgstr "neshoda generace aderes v rozsahu %s až %s pro síť %s"
+msgstr "neshoda generace adres v rozsahu %s až %s pro síť %s"
 
 msgid "mismatched header magic"
 msgstr "neodpovídající identifikátory v hlavičce"
@@ -29952,7 +29956,7 @@ msgstr "Chybí architektura procesoru"
 
 #, c-format
 msgid "missing 'content' value in selinux lxc contexts file '%s'"
-msgstr "v souboru „%s“ selinux lxc kontextu chybí hodnota 'content'"
+msgstr "v souboru „%s“ SELinux lxc kontextu chybí hodnota 'content'"
 
 #, c-format
 msgid ""
@@ -29966,7 +29970,7 @@ msgstr "chybí hodnota cssid pro „%s“"
 
 #, c-format
 msgid "missing 'file' value in selinux lxc contexts file '%s'"
-msgstr "v souboru „%s“ selinux lxc kontextu chybí hodnota 'file'"
+msgstr "v souboru „%s“ SELinux lxc kontextu chybí hodnota 'file'"
 
 msgid "missing 'filename' field in JSON backing volume definition"
 msgstr ""
@@ -30020,7 +30024,7 @@ msgstr ""
 
 #, c-format
 msgid "missing 'process' value in selinux lxc contexts file '%s'"
-msgstr "v souboru „%s“ selinux lxc kontextu chybí hodnota 'process'"
+msgstr "v souboru „%s“ SELinux lxc kontextu chybí hodnota 'process'"
 
 msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr ""
@@ -30224,7 +30228,7 @@ msgid "missing creationTime from existing checkpoint"
 msgstr "chybí creationTime (okamžik vytvoření) z existujícího kontrolního bodu"
 
 msgid "missing creationTime from existing snapshot"
-msgstr "v existujícím obrazu chybí čas vytvoření (creationTime)"
+msgstr "v existujícím obrazu chybí čas vytvoření (creationTime)"
 
 #, c-format
 msgid "missing cssid value for '%s'"
@@ -30815,7 +30819,7 @@ msgid "missing vporttype attribute in migration data"
 msgstr "v migračních datech chybí atribut vporttype"
 
 msgid "missing watchdog model"
-msgstr "chybí model watchdogu"
+msgstr "chybí model watchdogu"
 
 #, c-format
 msgid "missing wwpn identifier for '%s'"
@@ -34116,7 +34120,7 @@ msgstr "chybí štítek zabezpečení"
 
 #, c-format
 msgid "security label model %s is not supported with selinux"
-msgstr "model štítku zabezpečení %s není s selinux podporován"
+msgstr "model štítku zabezpečení %s není s SELinux podporován"
 
 #, c-format
 msgid "security model exceeds maximum: %zu"
@@ -35987,7 +35991,7 @@ msgstr "nelze vytvořit rundir %s: %s"
 
 #, c-format
 msgid "unable to create selinux context for: %s"
-msgstr "nedaří se vytvořit selinux kontext pro: %s"
+msgstr "nedaří se vytvořit SELinux kontext pro: %s"
 
 msgid "unable to create socket pair"
 msgstr "nedaří se vytvořit dvojici soketů"
@@ -36123,7 +36127,7 @@ msgid "unable to get screen resolution"
 msgstr "nedaří se získat rozlišení obrazovky"
 
 msgid "unable to get selinux context range"
-msgstr "nedaří se získat rozsah selinux kontextu"
+msgstr "nedaří se získat rozsah SELinux kontextu"
 
 #, fuzzy, c-format
 msgid "unable to get size of '%s'"
@@ -36492,10 +36496,10 @@ msgid "unexpected actual net type %d"
 msgstr "neočekávaný skutečný typ sítě %d"
 
 msgid "unexpected address type for fdc disk"
-msgstr "neočekávaný typ adresy pro fdc disk"
+msgstr "neočekávaný typ adresy pro fdc disk"
 
 msgid "unexpected address type for ide disk"
-msgstr "neočekávaný typ adresy pro ide disk"
+msgstr "neočekávaný typ adresy pro ide disk"
 
 msgid "unexpected address type for sata disk"
 msgstr ""
@@ -36840,7 +36844,7 @@ msgstr "neočekávaný typ %d pro kolonku %s"
 
 #, c-format
 msgid "unexpected type for file '%s'"
-msgstr "neočekávaný typ adresy pro soubor „%s“"
+msgstr "neočekávaný typ adresy pro soubor „%s“"
 
 #, c-format
 msgid "unexpected type returned by QEMU command '%s'"
@@ -37192,7 +37196,7 @@ msgstr "neznámý model vstupu „%s“"
 
 #, c-format
 msgid "unknown inputvol storage vol type %d"
-msgstr "neznámý typ %d vstupního svazku svazku úložiště"
+msgstr "neznámý typ %d vstupního svazku úložiště"
 
 #, c-format
 msgid "unknown interface event_idx mode '%s'"
