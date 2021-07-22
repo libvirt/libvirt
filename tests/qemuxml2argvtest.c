@@ -2847,6 +2847,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("pcie-expander-bus-bad-bus",
                         QEMU_CAPS_DEVICE_IOH3420,
                         QEMU_CAPS_DEVICE_PXB_PCIE);
+    DO_TEST_CAPS_ARCH_LATEST("pcie-expander-bus-aarch64", "aarch64");
 
     DO_TEST_CAPS_VER("hostdev-scsi-lsi", "4.1.0");
     DO_TEST_CAPS_LATEST("hostdev-scsi-lsi");

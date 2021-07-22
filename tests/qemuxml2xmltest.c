@@ -989,6 +989,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_X3130_UPSTREAM,
             QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM,
             QEMU_CAPS_DEVICE_PXB_PCIE);
+    DO_TEST_CAPS_ARCH_LATEST("pcie-expander-bus-aarch64", "aarch64");
     DO_TEST("autoindex",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,

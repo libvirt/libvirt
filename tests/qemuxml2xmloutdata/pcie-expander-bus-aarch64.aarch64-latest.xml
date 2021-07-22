@@ -1,0 +1,32 @@
+<domain type='qemu'>
+  <name>pcie-expander-bus-test</name>
+  <uuid>11dbdcdd-4c3b-482b-8903-9bdb8c0a2774</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static'>16</vcpu>
+  <os>
+    <type arch='aarch64' machine='virt'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <gic version='2'/>
+  </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>cortex-a15</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <controller type='pci' index='1' model='pcie-expander-bus'>
+      <model name='pxb-pcie'/>
+      <target busNr='254'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </controller>
+    <audio id='1' type='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

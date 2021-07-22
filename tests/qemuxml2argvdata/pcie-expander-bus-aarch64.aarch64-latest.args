@@ -1,0 +1,32 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-pcie-expander-bus-te \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-pcie-expander-bus-te/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-pcie-expander-bus-te/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-pcie-expander-bus-te/.config \
+/usr/bin/qemu-system-aarch64 \
+-name guest=pcie-expander-bus-test,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-pcie-expander-bus-te/master-key.aes"}' \
+-machine virt,accel=tcg,usb=off,dump-guest-core=off,gic-version=2,memory-backend=mach-virt.ram \
+-cpu cortex-a15 \
+-m 2048 \
+-object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":2147483648}' \
+-overcommit mem-lock=off \
+-smp 16,sockets=16,cores=1,threads=1 \
+-uuid 11dbdcdd-4c3b-482b-8903-9bdb8c0a2774 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi \
+-boot strict=on \
+-device pxb-pcie,bus_nr=254,id=pci.1,bus=pcie.0,addr=0x1 \
+-audiodev id=audio1,driver=none \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on
