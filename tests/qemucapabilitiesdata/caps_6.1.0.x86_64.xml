@@ -260,10 +260,10 @@
   <flag name='virtio-vga-gl'/>
   <flag name='confidential-guest-support'/>
   <flag name='query-display-options'/>
-  <version>6000050</version>
+  <version>6000090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
-  <package>v6.0.0-1910-gd0ac9a6147</package>
+  <package>v6.1.0-rc0-48-g7b7ca8ebde</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -285,6 +285,7 @@
     <property name='bus-lock-detect' type='boolean' value='false'/>
     <property name='xsavec' type='boolean' value='true' migratable='yes'/>
     <property name='intel-pt' type='boolean' value='false'/>
+    <property name='vmx-tsc-scaling' type='boolean' value='false'/>
     <property name='vmx-cr8-store-exit' type='boolean' value='false'/>
     <property name='vmx-rdseed-exit' type='boolean' value='false'/>
     <property name='vmx-eptp-switching' type='boolean' value='false'/>
@@ -1652,6 +1653,7 @@
     <property name='bus-lock-detect' type='boolean' value='false'/>
     <property name='xsavec' type='boolean' value='false'/>
     <property name='intel-pt' type='boolean' value='false'/>
+    <property name='vmx-tsc-scaling' type='boolean' value='false'/>
     <property name='vmx-cr8-store-exit' type='boolean' value='false'/>
     <property name='vmx-rdseed-exit' type='boolean' value='false'/>
     <property name='vmx-eptp-switching' type='boolean' value='false'/>
