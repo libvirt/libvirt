@@ -14772,6 +14772,7 @@ static virDomainSecDef *
 virDomainSecDefParseXML(xmlNodePtr lsecNode,
                         xmlXPathContextPtr ctxt)
 {
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autoptr(virDomainSecDef) sec = g_new0(virDomainSecDef, 1);
 
     ctxt->node = lsecNode;
