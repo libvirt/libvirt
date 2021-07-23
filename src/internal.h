@@ -147,8 +147,17 @@
  *
  * silence the compiler warning when falling through a switch case
  *
- * TODO: Remove after upgrading to GLib >= 2.60
+ * Note: GLib 2.69.0 introduced version checks on the
+ * macro usage. Thus an app setting GLIB_VERSION_MAX_ALLOWED
+ * to less than 2.60 will trigger a warning using G_GNUC_FALLTHROUGH
+ * Normally the warning is a good thing, but we want to use our
+ * fallback impl, so we have to temporarily cull the GLib macro.
+ *
+ * All this should be removed once updating to min GLib >= 2.60
  */
+#if GLIB_CHECK_VERSION(2, 69, 0)
+# undef G_GNUC_FALLTHROUGH
+#endif
 #ifndef G_GNUC_FALLTHROUGH
 # if __GNUC_PREREQ (7, 0)
 #  define G_GNUC_FALLTHROUGH __attribute__((fallthrough))
