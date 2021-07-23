@@ -280,6 +280,7 @@ qemuVhostUserGPUFillCapabilities(qemuVhostUser *vu,
     qemuVhostUserGPU *gpu = &vu->capabilities.gpu;
     virJSONValue *featuresJSON;
     size_t nfeatures;
+    size_t nparsed = 0;
     size_t i;
     g_autoptr(qemuVhostUserGPUFeature) features = NULL;
 
@@ -299,17 +300,16 @@ qemuVhostUserGPUFillCapabilities(qemuVhostUser *vu,
         int tmp;
 
         if ((tmp = qemuVhostUserGPUFeatureTypeFromString(tmpStr)) <= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown feature %s"),
-                           tmpStr);
+            VIR_DEBUG("ignoring unknown QEMU vhost-user feature '%s'", tmpStr);
             continue;
         }
 
-        features[i] = tmp;
+        features[nparsed] = tmp;
+        nparsed++;
     }
 
     gpu->features = g_steal_pointer(&features);
-    gpu->nfeatures = nfeatures;
+    gpu->nfeatures = nparsed;
 
     return 0;
 }
