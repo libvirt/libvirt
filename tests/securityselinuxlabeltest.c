@@ -325,10 +325,15 @@ mymain(void)
     int rc = testUserXattrEnabled();
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
 
-    if (rc < 0)
+    if (rc < 0) {
+        VIR_TEST_VERBOSE("failed to determine xattr support");
         return EXIT_FAILURE;
-    if (!rc)
+    }
+
+    if (rc == 0) {
+        VIR_TEST_VERBOSE("xattr unsupported");
         return EXIT_AM_SKIP;
+    }
 
     if (!(mgr = virSecurityManagerNew("selinux", "QEMU",
                                       VIR_SECURITY_MANAGER_DEFAULT_CONFINED |
