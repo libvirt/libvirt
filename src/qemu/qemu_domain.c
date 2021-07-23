@@ -1772,36 +1772,6 @@ qemuDomainObjStopWorker(virDomainObj *dom)
 }
 
 
-static void *
-qemuDomainObjPrivateAlloc(void *opaque)
-{
-    qemuDomainObjPrivate *priv;
-
-    priv = g_new0(qemuDomainObjPrivate, 1);
-
-    if (qemuDomainObjInitJob(&priv->job, &qemuPrivateJobCallbacks) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to init qemu driver mutexes"));
-        goto error;
-    }
-
-    if (!(priv->devs = virChrdevAlloc()))
-        goto error;
-
-    priv->blockjobs = virHashNew(virObjectFreeHashData);
-
-    /* agent commands block by default, user can choose different behavior */
-    priv->agentTimeout = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK;
-    priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
-    priv->driver = opaque;
-
-    return priv;
-
- error:
-    VIR_FREE(priv);
-    return NULL;
-}
-
 /**
  * qemuDomainObjPrivateDataClear:
  * @priv: domain private data
@@ -1919,6 +1889,37 @@ qemuDomainObjPrivateFree(void *data)
     }
 
     g_free(priv);
+}
+
+
+static void *
+qemuDomainObjPrivateAlloc(void *opaque)
+{
+    qemuDomainObjPrivate *priv;
+
+    priv = g_new0(qemuDomainObjPrivate, 1);
+
+    if (qemuDomainObjInitJob(&priv->job, &qemuPrivateJobCallbacks) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to init qemu driver mutexes"));
+        goto error;
+    }
+
+    if (!(priv->devs = virChrdevAlloc()))
+        goto error;
+
+    priv->blockjobs = virHashNew(virObjectFreeHashData);
+
+    /* agent commands block by default, user can choose different behavior */
+    priv->agentTimeout = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK;
+    priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
+    priv->driver = opaque;
+
+    return priv;
+
+ error:
+    VIR_FREE(priv);
+    return NULL;
 }
 
 
