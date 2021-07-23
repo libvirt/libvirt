@@ -13,6 +13,12 @@ v7.6.0 (unreleased)
 
 * **New features**
 
+  * qemu: Incremental backup support via ``virDomainBackupBegin``
+
+    libvirt-7.6 along with the unreleased qemu-6.1 will fully support the change
+    block tracking features (block-dirty-bitmaps) to be able to do incremental
+    backups and management of the checkpoint states via the appropriate APIs.
+
 * **Improvements**
 
 * **Bug fixes**
