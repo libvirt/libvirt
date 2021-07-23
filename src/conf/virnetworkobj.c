@@ -112,21 +112,16 @@ virNetworkObjNew(void)
 
     obj->classIdMap = virBitmapNew(INIT_CLASS_ID_BITMAP_SIZE);
 
-    /* The first three class IDs are already taken */
-    if (virBitmapSetBitExpand(obj->classIdMap, 0) < 0 ||
-        virBitmapSetBitExpand(obj->classIdMap, 1) < 0 ||
-        virBitmapSetBitExpand(obj->classIdMap, 2) < 0)
-        goto error;
+    /* The first three class IDs are already taken. */
+    ignore_value(virBitmapSetBit(obj->classIdMap, 0));
+    ignore_value(virBitmapSetBit(obj->classIdMap, 1));
+    ignore_value(virBitmapSetBit(obj->classIdMap, 2));
 
     obj->ports = virHashNew(virNetworkObjPortFree);
 
     virObjectLock(obj);
 
     return obj;
-
- error:
-    virObjectUnref(obj);
-    return NULL;
 }
 
 
