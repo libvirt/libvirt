@@ -274,15 +274,10 @@ GHashTable *
 hypervCreateEmbeddedParam(hypervWmiClassInfo *classInfo)
 {
     size_t i;
-    size_t count;
     g_autoptr(GHashTable) table = virHashNew(NULL);
     XmlSerializerInfo *typeinfo = NULL;
 
     typeinfo = classInfo->serializerInfo;
-
-    /* loop through the items to find out how many fields there are */
-    for (count = 0; typeinfo[count].name != NULL; count++)
-        ;
 
     for (i = 0; typeinfo[i].name != NULL; i++) {
         XmlSerializerInfo *item = &typeinfo[i];
