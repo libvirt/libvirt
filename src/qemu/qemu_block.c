@@ -230,19 +230,15 @@ GHashTable *
 qemuBlockNodeNameGetBackingChain(virJSONValue *namednodes,
                                  virJSONValue *blockstats)
 {
-    struct qemuBlockNodeNameGetBackingChainData data;
     g_autoptr(GHashTable) namednodestable = virHashNew(virJSONValueHashFree);
     g_autoptr(GHashTable) disks = virHashNew(qemuBlockNodeNameBackingChainDataHashEntryFree);
-
-    memset(&data, 0, sizeof(data));
+    struct qemuBlockNodeNameGetBackingChainData data = { .nodenamestable = namednodestable,
+                                                         .disks = disks };
 
     if (virJSONValueArrayForeachSteal(namednodes,
                                       qemuBlockNamedNodesArrayToHash,
                                       namednodestable) < 0)
         return NULL;
-
-    data.nodenamestable = namednodestable;
-    data.disks = disks;
 
     if (virJSONValueArrayForeachSteal(blockstats,
                                       qemuBlockNodeNameGetBackingChainDisk,
