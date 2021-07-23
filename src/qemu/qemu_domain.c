@@ -1891,22 +1891,22 @@ qemuDomainObjPrivateFree(void *data)
     g_free(priv);
 }
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuDomainObjPrivate, qemuDomainObjPrivateFree);
+
 
 static void *
 qemuDomainObjPrivateAlloc(void *opaque)
 {
-    qemuDomainObjPrivate *priv;
-
-    priv = g_new0(qemuDomainObjPrivate, 1);
+    g_autoptr(qemuDomainObjPrivate) priv = g_new0(qemuDomainObjPrivate, 1);
 
     if (qemuDomainObjInitJob(&priv->job, &qemuPrivateJobCallbacks) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to init qemu driver mutexes"));
-        goto error;
+        return NULL;
     }
 
     if (!(priv->devs = virChrdevAlloc()))
-        goto error;
+        return NULL;
 
     priv->blockjobs = virHashNew(virObjectFreeHashData);
 
@@ -1915,11 +1915,7 @@ qemuDomainObjPrivateAlloc(void *opaque)
     priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
     priv->driver = opaque;
 
-    return priv;
-
- error:
-    VIR_FREE(priv);
-    return NULL;
+    return g_steal_pointer(&priv);
 }
 
 
