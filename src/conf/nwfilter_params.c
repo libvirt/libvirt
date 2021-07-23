@@ -700,9 +700,8 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
 {
     g_autoptr(GHashTable) table = virHashNew(virNWFilterVarValueHashFree);
 
-    cur = xmlFirstElementChild(cur);
-
-    while (cur != NULL) {
+    for (cur = xmlFirstElementChild(cur); cur != NULL;
+         cur = xmlNextElementSibling(cur)) {
         if (virXMLNodeNameEqual(cur, "parameter")) {
             g_autofree char *nam = virXMLPropString(cur, "name");
             g_autofree char *val = virXMLPropString(cur, "value");
@@ -710,7 +709,6 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
 
             if (nam == NULL || !isValidVarName(nam) ||
                 val == NULL || !isValidVarValue(val)) {
-                cur = xmlNextElementSibling(cur);
                 continue;
             }
 
@@ -725,7 +723,6 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
             }
             value = NULL;
         }
-        cur = xmlNextElementSibling(cur);
     }
 
     return g_steal_pointer(&table);
