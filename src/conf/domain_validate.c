@@ -1257,25 +1257,20 @@ static int
 virDomainDefValidateAliases(const virDomainDef *def,
                             GHashTable **aliases)
 {
-    struct virDomainDefValidateAliasesData data;
-    int ret = -1;
-
     /* We are not storing copies of aliases. Don't free them. */
-    data.aliases = virHashNew(NULL);
+    g_autoptr(GHashTable) tmpaliases = virHashNew(NULL);
+    struct virDomainDefValidateAliasesData data = { .aliases = tmpaliases };
 
     if (virDomainDeviceInfoIterateFlags((virDomainDef *) def,
                                         virDomainDeviceDefValidateAliasesIterator,
                                         DOMAIN_DEVICE_ITERATE_ALL_CONSOLES,
                                         &data) < 0)
-        goto cleanup;
+        return -1;
 
     if (aliases)
-        *aliases = g_steal_pointer(&data.aliases);
+        *aliases = g_steal_pointer(&tmpaliases);
 
-    ret = 0;
- cleanup:
-    virHashFree(data.aliases);
-    return ret;
+    return 0;
 }
 
 
