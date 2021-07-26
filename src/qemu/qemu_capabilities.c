@@ -3221,6 +3221,10 @@ struct virQEMUCapsCommandLineProps {
     int flag;
 };
 
+
+/* This uses 'query-command-line-options' which uses old-style argument parsers
+ * in qemu and thus isn't being properly extended. Other means to detect
+ * features should be used if possible. */
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "boot-opts", "strict", QEMU_CAPS_BOOT_STRICT },
     { "boot-opts", "reboot-timeout", QEMU_CAPS_REBOOT_TIMEOUT },
