@@ -11,7 +11,7 @@ QEMU driver configuration
 
 There is a global setting in the QEMU driver configuration file that controls
 whether core dumps are permitted, and their maximum size. Enabling core dumps
-is simply a matter of setting the maximum size to a non-zero value by editting
+is simply a matter of setting the maximum size to a non-zero value by editing
 the ``/etc/libvirt/qemu.conf`` file:
 
 ::
@@ -65,7 +65,7 @@ machine basis in the XML configuration:
 
    <memory dumpCore="on">...</memory>
 
-Note, it is still neccessary to at least set ``max_core`` to a non-zero
+Note, it is still necessary to at least set ``max_core`` to a non-zero
 value in the global configuration file.
 
 Some management applications may not offer the ability to customimze the
