@@ -2341,7 +2341,7 @@ qemuProcessWaitForMonitor(virQEMUDriver *driver,
     bool retry = true;
 
     if (priv->qemuCaps &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS))
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE))
         retry = false;
 
     VIR_DEBUG("Connect monitor to vm=%p name='%s' retry=%d",
@@ -5553,7 +5553,7 @@ qemuProcessPrepareQEMUCaps(virDomainObj *vm,
         return -1;
 
     if (processStartFlags & VIR_QEMU_PROCESS_START_STANDALONE)
-        virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS);
+        virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE);
 
     /* Update qemu capabilities according to lists passed in via namespace */
     if (qemuProcessStartUpdateCustomCaps(vm) < 0)
@@ -8513,7 +8513,7 @@ qemuProcessReconnect(void *opaque)
     if (qemuHostdevUpdateActiveDomainDevices(driver, obj->def) < 0)
         goto error;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS))
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE))
         retry = false;
 
     if (qemuDomainObjStartWorker(obj) < 0)

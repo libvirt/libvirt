@@ -4716,7 +4716,7 @@ qemuBuildChrChardevFileStr(virLogManager *logManager,
      * assumed. But keeping the old style is still handy when
      * building a standalone command line (e.g. for tests). */
     if (logManager ||
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS)) {
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
         g_autofree char *fdset = NULL;
         int logfd;
         size_t idx;
@@ -4990,7 +4990,7 @@ qemuBuildChrChardevStr(virLogManager *logManager,
         virBufferAsprintf(&buf, "socket,id=%s", charAlias);
         if (dev->data.nix.listen &&
             (cdevflags & QEMU_BUILD_CHARDEV_UNIX_FD_PASS) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS)) {
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
             int fd;
 
             if (qemuSecuritySetSocketLabel(secManager, (virDomainDef *)def) < 0)

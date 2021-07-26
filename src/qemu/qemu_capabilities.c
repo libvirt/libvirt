@@ -491,7 +491,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "blockdev-del", /* QEMU_CAPS_BLOCKDEV_DEL */
               "vmgenid", /* QEMU_CAPS_DEVICE_VMGENID */
               "vhost-vsock", /* QEMU_CAPS_DEVICE_VHOST_VSOCK */
-              "chardev-fd-pass", /* QEMU_CAPS_CHARDEV_FD_PASS */
+              "chardev-fd-pass", /* QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE */
 
               /* 305 */
               "tpm-emulator", /* QEMU_CAPS_DEVICE_TPM_EMULATOR */
@@ -3232,7 +3232,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "boot-opts", "strict", QEMU_CAPS_BOOT_STRICT },
     { "boot-opts", "reboot-timeout", QEMU_CAPS_REBOOT_TIMEOUT },
     { "boot-opts", "splash-time", QEMU_CAPS_SPLASH_TIMEOUT },
-    { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS },
+    { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE },
     { "drive", "discard", QEMU_CAPS_DRIVE_DISCARD },
     { "drive", "detect-zeroes", QEMU_CAPS_DRIVE_DETECT_ZEROES },
     { "drive", "throttling.bps-total-max", QEMU_CAPS_DRIVE_IOTUNE_MAX},
