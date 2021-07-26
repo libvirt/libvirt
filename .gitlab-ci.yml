@@ -186,7 +186,7 @@ x64-fedora-34-container:
     NAME: fedora-34
 
 x64-fedora-rawhide-container:
-  extends: .container_job
+  extends: .container_optional_job
   variables:
     NAME: fedora-rawhide
 
@@ -299,12 +299,12 @@ s390x-debian-sid-container:
     NAME: debian-sid-cross-s390x
 
 mingw32-fedora-rawhide-container:
-  extends: .container_job
+  extends: .container_optional_job
   variables:
     NAME: fedora-rawhide-cross-mingw32
 
 mingw64-fedora-rawhide-container:
-  extends: .container_job
+  extends: .container_optional_job
   variables:
     NAME: fedora-rawhide-cross-mingw64
 
