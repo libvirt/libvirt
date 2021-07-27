@@ -23,12 +23,12 @@ v7.6.0 (unreleased)
 
 * **Bug fixes**
 
-  * qemu: Fix migration with VIR_MIGRATE_NON_SHARED_INC
+  * qemu: Fix migration with ``VIR_MIGRATE_NON_SHARED_INC``
 
-    libvirt 7.3.0 introduced a bug where VIR_MIGRATE_NON_SHARED_INC would not
-    actually migrate the contents of the disk due to broken logic and at the
-    same time could trigger migration of storage when VIR_MIGRATE_TUNNELLED is
-    requested. This release fixes the bug.
+    libvirt 7.3.0 introduced a bug where ``VIR_MIGRATE_NON_SHARED_INC`` would
+    not actually migrate the contents of the disk due to broken logic and at
+    the same time could trigger migration of storage when
+    ``VIR_MIGRATE_TUNNELLED`` is requested. This release fixes the bug.
 
 
 v7.5.0 (2021-07-01)
