@@ -2157,6 +2157,7 @@ qemuBlockStorageGetCopyOnReadProps(virDomainDiskDef *disk)
                                           "s:driver", "copy-on-read",
                                           "s:node-name", priv->nodeCopyOnRead,
                                           "s:file", disk->src->nodeformat,
+                                          "s:discard", "unmap",
                                           NULL));
 
     return ret;

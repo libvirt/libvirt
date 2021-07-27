@@ -30,7 +30,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-test/.config \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/f14.img","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"qcow2","file":"libvirt-2-storage"}' \
--blockdev '{"driver":"copy-on-read","node-name":"libvirt-CoR-vda","file":"libvirt-2-format"}' \
+-blockdev '{"driver":"copy-on-read","node-name":"libvirt-CoR-vda","file":"libvirt-2-format","discard":"unmap"}' \
 -device virtio-blk-pci,bus=pci.0,addr=0x4,drive=libvirt-CoR-vda,id=virtio-disk0,bootindex=2 \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":true,"driver":"raw","file":"libvirt-1-storage"}' \
