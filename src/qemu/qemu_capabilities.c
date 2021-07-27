@@ -3210,7 +3210,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "fsdev", "fmode", QEMU_CAPS_FSDEV_CREATEMODE }, /* Could have also checked fsdev->dmode */
     { "fw_cfg", "file", QEMU_CAPS_FW_CFG },
     { "machine", "kernel_irqchip", QEMU_CAPS_MACHINE_KERNEL_IRQCHIP },
-    { "machine", "loadparm", QEMU_CAPS_LOADPARM },
     { "numa", NULL, QEMU_CAPS_NUMA }, /* not needed after qemuCaps->version < 3000000 */
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
     { "sandbox", "enable", QEMU_CAPS_SECCOMP_SANDBOX },
@@ -5004,6 +5003,7 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
     case VIR_ARCH_S390X:
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_AES_KEY_WRAP);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEA_KEY_WRAP);
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_LOADPARM);
         break;
 
     case VIR_ARCH_ALPHA:

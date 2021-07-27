@@ -48,7 +48,6 @@
   <flag name='query-named-block-nodes'/>
   <flag name='kernel-irqchip'/>
   <flag name='virtio.iommu_platform'/>
-  <flag name='loadparm'/>
   <flag name='vnc-multi-servers'/>
   <flag name='chardev-reconnect'/>
   <flag name='virtio-gpu.max_outputs'/>

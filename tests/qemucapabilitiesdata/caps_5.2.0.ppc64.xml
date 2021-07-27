@@ -103,7 +103,6 @@
   <flag name='kernel-irqchip'/>
   <flag name='virtio.iommu_platform'/>
   <flag name='virtio.ats'/>
-  <flag name='loadparm'/>
   <flag name='spapr-pci-host-bridge'/>
   <flag name='spapr-pci-host-bridge.numa_node'/>
   <flag name='vnc-multi-servers'/>
