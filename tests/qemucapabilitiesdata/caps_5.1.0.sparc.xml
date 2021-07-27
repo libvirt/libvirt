@@ -26,8 +26,6 @@
   <flag name='memory-backend-file'/>
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
-  <flag name='aes-key-wrap'/>
-  <flag name='dea-key-wrap'/>
   <flag name='migration-event'/>
   <flag name='incoming-defer'/>
   <flag name='chardev-file-append'/>

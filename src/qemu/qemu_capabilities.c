@@ -3209,8 +3209,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
     { "fsdev", "fmode", QEMU_CAPS_FSDEV_CREATEMODE }, /* Could have also checked fsdev->dmode */
     { "fw_cfg", "file", QEMU_CAPS_FW_CFG },
-    { "machine", "aes-key-wrap", QEMU_CAPS_AES_KEY_WRAP },
-    { "machine", "dea-key-wrap", QEMU_CAPS_DEA_KEY_WRAP },
     { "machine", "kernel_irqchip", QEMU_CAPS_MACHINE_KERNEL_IRQCHIP },
     { "machine", "loadparm", QEMU_CAPS_LOADPARM },
     { "numa", NULL, QEMU_CAPS_NUMA }, /* not needed after qemuCaps->version < 3000000 */
@@ -5002,6 +5000,12 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT);
         break;
 
+    case VIR_ARCH_S390:
+    case VIR_ARCH_S390X:
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_AES_KEY_WRAP);
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEA_KEY_WRAP);
+        break;
+
     case VIR_ARCH_ALPHA:
     case VIR_ARCH_PPC:
     case VIR_ARCH_PPCEMB:
@@ -5009,8 +5013,6 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
     case VIR_ARCH_SH4EB:
     case VIR_ARCH_RISCV32:
     case VIR_ARCH_RISCV64:
-    case VIR_ARCH_S390:
-    case VIR_ARCH_S390X:
     case VIR_ARCH_SPARC:
     case VIR_ARCH_SPARC64:
     case VIR_ARCH_ARMV6L:

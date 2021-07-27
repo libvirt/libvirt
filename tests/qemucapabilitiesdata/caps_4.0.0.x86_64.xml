@@ -80,8 +80,6 @@
   <flag name='qxl.vgamem_mb'/>
   <flag name='pc-dimm'/>
   <flag name='machine-vmport-opt'/>
-  <flag name='aes-key-wrap'/>
-  <flag name='dea-key-wrap'/>
   <flag name='pci-serial'/>
   <flag name='migration-event'/>
   <flag name='ioh3420'/>
