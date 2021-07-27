@@ -67,576 +67,576 @@ VIR_LOG_INIT("qemu.qemu_capabilities");
 VIR_ENUM_IMPL(virQEMUCaps,
               QEMU_CAPS_LAST, /* virQEMUCaps grouping marker */
               /* 0 */
-              "vnc-colon",
-              "no-reboot",
-              "drive",
-              "drive-boot",
-              "name",
+              "vnc-colon", /* X_QEMU_CAPS_VNC_COLON */
+              "no-reboot", /* X_QEMU_CAPS_NO_REBOOT */
+              "drive", /* X_QEMU_CAPS_DRIVE */
+              "drive-boot", /* X_QEMU_CAPS_DRIVE_BOOT */
+              "name", /* X_QEMU_CAPS_NAME */
 
               /* 5 */
-              "uuid",
-              "domid",
-              "vnet-hdr",
-              "migrate-kvm-stdio",
-              "migrate-qemu-tcp",
+              "uuid", /* X_QEMU_CAPS_UUID */
+              "domid", /* X_QEMU_CAPS_DOMID */
+              "vnet-hdr", /* X_QEMU_CAPS_VNET_HDR */
+              "migrate-kvm-stdio", /* X_QEMU_CAPS_MIGRATE_KVM_STDIO */
+              "migrate-qemu-tcp", /* X_QEMU_CAPS_MIGRATE_QEMU_TCP */
 
               /* 10 */
-              "migrate-qemu-exec",
-              "drive-cache-v2",
-              "kvm",
-              "drive-format",
-              "vga",
+              "migrate-qemu-exec", /* X_QEMU_CAPS_MIGRATE_QEMU_EXEC */
+              "drive-cache-v2", /* X_QEMU_CAPS_DRIVE_CACHE_V2 */
+              "kvm", /* QEMU_CAPS_KVM */
+              "drive-format", /* X_QEMU_CAPS_DRIVE_FORMAT */
+              "vga", /* X_QEMU_CAPS_VGA */
 
               /* 15 */
-              "0.10",
-              "pci-device",
-              "mem-path",
-              "drive-serial",
-              "xen-domid",
+              "0.10", /* X_QEMU_CAPS_0_10 */
+              "pci-device", /* X_QEMU_CAPS_PCIDEVICE */
+              "mem-path", /* X_QEMU_CAPS_MEM_PATH */
+              "drive-serial", /* X_QEMU_CAPS_DRIVE_SERIAL */
+              "xen-domid", /* X_QEMU_CAPS_XEN_DOMID */
 
               /* 20 */
-              "migrate-qemu-unix",
-              "chardev",
-              "enable-kvm",
-              "monitor-json",
-              "balloon",
+              "migrate-qemu-unix", /* X_QEMU_CAPS_MIGRATE_QEMU_UNIX */
+              "chardev", /* X_QEMU_CAPS_CHARDEV */
+              "enable-kvm", /* X_QEMU_CAPS_ENABLE_KVM */
+              "monitor-json", /* X_QEMU_CAPS_MONITOR_JSON */
+              "balloon", /* X_QEMU_CAPS_BALLOON */
 
               /* 25 */
-              "device",
-              "sdl",
-              "smp-topology",
-              "netdev",
-              "rtc",
+              "device", /* X_QEMU_CAPS_DEVICE */
+              "sdl", /* QEMU_CAPS_SDL */
+              "smp-topology", /* X_QEMU_CAPS_SMP_TOPOLOGY */
+              "netdev", /* X_QEMU_CAPS_NETDEV */
+              "rtc", /* X_QEMU_CAPS_RTC */
 
               /* 30 */
-              "vhost-net",
-              "rtc-td-hack",
-              "no-hpet",
-              "no-kvm-pit",
-              "tdf",
+              "vhost-net", /* X_QEMU_CAPS_VHOST_NET */
+              "rtc-td-hack", /* X_QEMU_CAPS_RTC_TD_HACK */
+              "no-hpet", /* QEMU_CAPS_NO_HPET */
+              "no-kvm-pit", /* X_QEMU_CAPS_NO_KVM_PIT */
+              "tdf", /* X_QEMU_CAPS_TDF */
 
               /* 35 */
-              "pci-configfd",
-              "nodefconfig",
-              "boot-menu",
-              "fsdev",
-              "nesting",
+              "pci-configfd", /* X_QEMU_CAPS_PCI_CONFIGFD */
+              "nodefconfig", /* X_QEMU_CAPS_NODEFCONFIG */
+              "boot-menu", /* X_QEMU_CAPS_BOOT_MENU */
+              "fsdev", /* X_QEMU_CAPS_FSDEV */
+              "nesting", /* X_QEMU_CAPS_NESTING */
 
               /* 40 */
-              "name-process",
-              "drive-readonly",
-              "smbios-type",
-              "vga-qxl",
-              "spice",
+              "name-process", /* X_QEMU_CAPS_NAME_PROCESS */
+              "drive-readonly", /* X_QEMU_CAPS_DRIVE_READONLY */
+              "smbios-type", /* X_QEMU_CAPS_SMBIOS_TYPE */
+              "vga-qxl", /* X_QEMU_CAPS_VGA_QXL */
+              "spice", /* QEMU_CAPS_SPICE */
 
               /* 45 */
-              "vga-none",
-              "migrate-qemu-fd",
-              "boot-index",
-              "hda-duplex",
-              "drive-aio",
+              "vga-none", /* X_QEMU_CAPS_VGA_NONE */
+              "migrate-qemu-fd", /* X_QEMU_CAPS_MIGRATE_QEMU_FD */
+              "boot-index", /* X_QEMU_CAPS_BOOTINDEX */
+              "hda-duplex", /* QEMU_CAPS_HDA_DUPLEX */
+              "drive-aio", /* X_QEMU_CAPS_DRIVE_AIO */
 
               /* 50 */
-              "pci-multibus",
-              "pci-bootindex",
-              "ccid-emulated",
-              "ccid-passthru",
-              "chardev-spicevmc",
+              "pci-multibus", /* X_QEMU_CAPS_PCI_MULTIBUS */
+              "pci-bootindex", /* X_QEMU_CAPS_PCI_BOOTINDEX */
+              "ccid-emulated", /* QEMU_CAPS_CCID_EMULATED */
+              "ccid-passthru", /* QEMU_CAPS_CCID_PASSTHRU */
+              "chardev-spicevmc", /* X_QEMU_CAPS_CHARDEV_SPICEVMC */
 
               /* 55 */
-              "device-spicevmc",
-              "virtio-tx-alg",
-              "device-qxl-vga",
-              "pci-multifunction",
-              "virtio-blk-pci.ioeventfd",
+              "device-spicevmc", /* X_QEMU_CAPS_DEVICE_SPICEVMC */
+              "virtio-tx-alg", /* QEMU_CAPS_VIRTIO_TX_ALG */
+              "device-qxl-vga", /* X_QEMU_CAPS_DEVICE_QXL_VGA */
+              "pci-multifunction", /* X_QEMU_CAPS_PCI_MULTIFUNCTION */
+              "virtio-blk-pci.ioeventfd", /* QEMU_CAPS_VIRTIO_IOEVENTFD */
 
               /* 60 */
-              "sga",
-              "virtio-blk-pci.event_idx",
-              "virtio-net-pci.event_idx",
-              "cache-directsync",
-              "piix3-usb-uhci",
+              "sga", /* QEMU_CAPS_SGA */
+              "virtio-blk-pci.event_idx", /* QEMU_CAPS_VIRTIO_BLK_EVENT_IDX */
+              "virtio-net-pci.event_idx", /* QEMU_CAPS_VIRTIO_NET_EVENT_IDX */
+              "cache-directsync", /* X_QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC */
+              "piix3-usb-uhci", /* QEMU_CAPS_PIIX3_USB_UHCI */
 
               /* 65 */
-              "piix4-usb-uhci",
-              "usb-ehci",
-              "ich9-usb-ehci1",
-              "vt82c686b-usb-uhci",
-              "pci-ohci",
+              "piix4-usb-uhci", /* QEMU_CAPS_PIIX4_USB_UHCI */
+              "usb-ehci", /* QEMU_CAPS_USB_EHCI */
+              "ich9-usb-ehci1", /* QEMU_CAPS_ICH9_USB_EHCI1 */
+              "vt82c686b-usb-uhci", /* QEMU_CAPS_VT82C686B_USB_UHCI */
+              "pci-ohci", /* QEMU_CAPS_PCI_OHCI */
 
               /* 70 */
-              "usb-redir",
-              "usb-hub",
-              "no-shutdown",
-              "cache-unsafe",
-              "rombar",
+              "usb-redir", /* QEMU_CAPS_USB_REDIR */
+              "usb-hub", /* QEMU_CAPS_USB_HUB */
+              "no-shutdown", /* X_QEMU_CAPS_NO_SHUTDOWN */
+              "cache-unsafe", /* X_QEMU_CAPS_DRIVE_CACHE_UNSAFE */
+              "rombar", /* X_QEMU_CAPS_PCI_ROMBAR */
 
               /* 75 */
-              "ich9-ahci",
-              "no-acpi",
-              "fsdev-readonly",
-              "virtio-blk-pci.scsi",
-              "blk-sg-io",
+              "ich9-ahci", /* QEMU_CAPS_ICH9_AHCI */
+              "no-acpi", /* QEMU_CAPS_NO_ACPI */
+              "fsdev-readonly", /* X_QEMU_CAPS_FSDEV_READONLY */
+              "virtio-blk-pci.scsi", /* QEMU_CAPS_VIRTIO_BLK_SCSI */
+              "blk-sg-io", /* X_QEMU_CAPS_VIRTIO_BLK_SG_IO */
 
               /* 80 */
-              "drive-copy-on-read",
-              "cpu-host",
-              "fsdev-writeout",
-              "drive-iotune",
-              "system_wakeup",
+              "drive-copy-on-read", /* X_QEMU_CAPS_DRIVE_COPY_ON_READ */
+              "cpu-host", /* X_QEMU_CAPS_CPU_HOST */
+              "fsdev-writeout", /* X_QEMU_CAPS_FSDEV_WRITEOUT */
+              "drive-iotune", /* X_QEMU_CAPS_DRIVE_IOTUNE */
+              "system_wakeup", /* X_QEMU_CAPS_WAKEUP */
 
               /* 85 */
-              "scsi-disk.channel",
-              "scsi-block",
-              "transaction",
-              "block-job-sync",
-              "block-job-async",
+              "scsi-disk.channel", /* QEMU_CAPS_SCSI_DISK_CHANNEL */
+              "scsi-block", /* QEMU_CAPS_SCSI_BLOCK */
+              "transaction", /* X_QEMU_CAPS_TRANSACTION */
+              "block-job-sync", /* X_QEMU_CAPS_BLOCKJOB_SYNC */
+              "block-job-async", /* X_QEMU_CAPS_BLOCKJOB_ASYNC */
 
               /* 90 */
-              "scsi-cd",
-              "ide-cd",
-              "no-user-config",
-              "hda-micro",
-              "dump-guest-memory",
+              "scsi-cd", /* X_QEMU_CAPS_SCSI_CD */
+              "ide-cd", /* X_QEMU_CAPS_IDE_CD */
+              "no-user-config", /* X_QEMU_CAPS_NO_USER_CONFIG */
+              "hda-micro", /* QEMU_CAPS_HDA_MICRO */
+              "dump-guest-memory", /* QEMU_CAPS_DUMP_GUEST_MEMORY */
 
               /* 95 */
-              "nec-usb-xhci",
-              "virtio-s390",
-              "balloon-event",
-              "bridge",
-              "lsi",
+              "nec-usb-xhci", /* QEMU_CAPS_NEC_USB_XHCI */
+              "virtio-s390", /* X_QEMU_CAPS_VIRTIO_S390 */
+              "balloon-event", /* X_QEMU_CAPS_BALLOON_EVENT */
+              "bridge", /* X_QEMU_CAPS_NETDEV_BRIDGE */
+              "lsi", /* QEMU_CAPS_SCSI_LSI */
 
               /* 100 */
-              "virtio-scsi-pci",
-              "blockio",
-              "disable-s3",
-              "disable-s4",
-              "usb-redir.filter",
+              "virtio-scsi-pci", /* QEMU_CAPS_VIRTIO_SCSI */
+              "blockio", /* QEMU_CAPS_BLOCKIO */
+              "disable-s3", /* QEMU_CAPS_PIIX_DISABLE_S3 */
+              "disable-s4", /* QEMU_CAPS_PIIX_DISABLE_S4 */
+              "usb-redir.filter", /* QEMU_CAPS_USB_REDIR_FILTER */
 
               /* 105 */
-              "ide-drive.wwn",
-              "scsi-disk.wwn",
-              "seccomp-sandbox",
-              "reboot-timeout",
-              "dump-guest-core",
+              "ide-drive.wwn", /* QEMU_CAPS_IDE_DRIVE_WWN */
+              "scsi-disk.wwn", /* QEMU_CAPS_SCSI_DISK_WWN */
+              "seccomp-sandbox", /* QEMU_CAPS_SECCOMP_SANDBOX */
+              "reboot-timeout", /* QEMU_CAPS_REBOOT_TIMEOUT */
+              "dump-guest-core", /* X_QEMU_CAPS_DUMP_GUEST_CORE */
 
               /* 110 */
-              "seamless-migration",
-              "block-commit",
-              "vnc",
-              "drive-mirror",
-              "usb-redir.bootindex",
+              "seamless-migration", /* X_QEMU_CAPS_SEAMLESS_MIGRATION */
+              "block-commit", /* X_QEMU_CAPS_BLOCK_COMMIT */
+              "vnc", /* QEMU_CAPS_VNC */
+              "drive-mirror", /* X_QEMU_CAPS_DRIVE_MIRROR */
+              "usb-redir.bootindex", /* X_QEMU_CAPS_USB_REDIR_BOOTINDEX */
 
               /* 115 */
-              "usb-host.bootindex",
-              "blockdev-snapshot-sync",
-              "qxl",
-              "VGA",
-              "cirrus-vga",
+              "usb-host.bootindex", /* X_QEMU_CAPS_USB_HOST_BOOTINDEX */
+              "blockdev-snapshot-sync", /* X_QEMU_CAPS_DISK_SNAPSHOT */
+              "qxl", /* QEMU_CAPS_DEVICE_QXL */
+              "VGA", /* QEMU_CAPS_DEVICE_VGA */
+              "cirrus-vga", /* QEMU_CAPS_DEVICE_CIRRUS_VGA */
 
               /* 120 */
-              "vmware-svga",
-              "device-video-primary",
-              "s390-sclp",
-              "usb-serial",
-              "usb-net",
+              "vmware-svga", /* QEMU_CAPS_DEVICE_VMWARE_SVGA */
+              "device-video-primary", /* X_QEMU_CAPS_DEVICE_VIDEO_PRIMARY */
+              "s390-sclp", /* QEMU_CAPS_DEVICE_SCLPCONSOLE */
+              "usb-serial", /* QEMU_CAPS_DEVICE_USB_SERIAL */
+              "usb-net", /* X_QEMU_CAPS_DEVICE_USB_NET */
 
               /* 125 */
-              "add-fd",
-              "nbd-server",
-              "virtio-rng",
-              "rng-random",
-              "rng-egd",
+              "add-fd", /* X_QEMU_CAPS_ADD_FD */
+              "nbd-server", /* QEMU_CAPS_NBD_SERVER */
+              "virtio-rng", /* QEMU_CAPS_DEVICE_VIRTIO_RNG */
+              "rng-random", /* QEMU_CAPS_OBJECT_RNG_RANDOM */
+              "rng-egd", /* QEMU_CAPS_OBJECT_RNG_EGD */
 
               /* 130 */
-              "virtio-ccw",
-              "dtb",
-              "megasas",
-              "ipv6-migration",
-              "machine-opt",
+              "virtio-ccw", /* QEMU_CAPS_VIRTIO_CCW */
+              "dtb", /* X_QEMU_CAPS_DTB */
+              "megasas", /* QEMU_CAPS_SCSI_MEGASAS */
+              "ipv6-migration", /* X_QEMU_CAPS_IPV6_MIGRATION */
+              "machine-opt", /* X_QEMU_CAPS_MACHINE_OPT */
 
               /* 135 */
-              "machine-usb-opt",
-              "tpm-passthrough",
-              "tpm-tis",
-              "nvram",
-              "pci-bridge",
+              "machine-usb-opt", /* X_QEMU_CAPS_MACHINE_USB_OPT */
+              "tpm-passthrough", /* QEMU_CAPS_DEVICE_TPM_PASSTHROUGH */
+              "tpm-tis", /* QEMU_CAPS_DEVICE_TPM_TIS */
+              "nvram", /* QEMU_CAPS_DEVICE_NVRAM */
+              "pci-bridge", /* QEMU_CAPS_DEVICE_PCI_BRIDGE */
 
               /* 140 */
-              "vfio-pci",
-              "vfio-pci.bootindex",
-              "scsi-generic",
-              "scsi-generic.bootindex",
-              "mem-merge",
+              "vfio-pci", /* QEMU_CAPS_DEVICE_VFIO_PCI */
+              "vfio-pci.bootindex", /* X_QEMU_CAPS_VFIO_PCI_BOOTINDEX */
+              "scsi-generic", /* X_QEMU_CAPS_DEVICE_SCSI_GENERIC */
+              "scsi-generic.bootindex", /* X_QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX */
+              "mem-merge", /* QEMU_CAPS_MEM_MERGE */
 
               /* 145 */
-              "vnc-websocket",
-              "drive-discard",
-              "mlock",
-              "vnc-share-policy",
-              "device-del-event",
+              "vnc-websocket", /* X_QEMU_CAPS_VNC_WEBSOCKET */
+              "drive-discard", /* QEMU_CAPS_DRIVE_DISCARD */
+              "mlock", /* X_QEMU_CAPS_REALTIME_MLOCK */
+              "vnc-share-policy", /* X_QEMU_CAPS_VNC_SHARE_POLICY */
+              "device-del-event", /* X_QEMU_CAPS_DEVICE_DEL_EVENT */
 
               /* 150 */
-              "dmi-to-pci-bridge",
-              "i440fx-pci-hole64-size",
-              "q35-pci-hole64-size",
-              "usb-storage",
-              "usb-storage.removable",
+              "dmi-to-pci-bridge", /* QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE */
+              "i440fx-pci-hole64-size", /* QEMU_CAPS_I440FX_PCI_HOLE64_SIZE */
+              "q35-pci-hole64-size", /* QEMU_CAPS_Q35_PCI_HOLE64_SIZE */
+              "usb-storage", /* QEMU_CAPS_DEVICE_USB_STORAGE */
+              "usb-storage.removable", /* QEMU_CAPS_USB_STORAGE_REMOVABLE */
 
               /* 155 */
-              "virtio-mmio",
-              "ich9-intel-hda",
-              "kvm-pit-lost-tick-policy",
-              "boot-strict",
-              "pvpanic",
+              "virtio-mmio", /* QEMU_CAPS_DEVICE_VIRTIO_MMIO */
+              "ich9-intel-hda", /* QEMU_CAPS_DEVICE_ICH9_INTEL_HDA */
+              "kvm-pit-lost-tick-policy", /* QEMU_CAPS_KVM_PIT_TICK_POLICY */
+              "boot-strict", /* QEMU_CAPS_BOOT_STRICT */
+              "pvpanic", /* QEMU_CAPS_DEVICE_PANIC */
 
               /* 160 */
-              "enable-fips",
-              "spice-file-xfer-disable",
-              "spiceport",
-              "usb-kbd",
-              "host-pci-multidomain",
+              "enable-fips", /* QEMU_CAPS_ENABLE_FIPS */
+              "spice-file-xfer-disable", /* QEMU_CAPS_SPICE_FILE_XFER_DISABLE */
+              "spiceport", /* X_QEMU_CAPS_CHARDEV_SPICEPORT */
+              "usb-kbd", /* QEMU_CAPS_DEVICE_USB_KBD */
+              "host-pci-multidomain", /* X_QEMU_CAPS_HOST_PCI_MULTIDOMAIN */
 
               /* 165 */
-              "msg-timestamp",
-              "active-commit",
-              "change-backing-file",
-              "memory-backend-ram",
-              "numa",
+              "msg-timestamp", /* QEMU_CAPS_MSG_TIMESTAMP */
+              "active-commit", /* QEMU_CAPS_ACTIVE_COMMIT */
+              "change-backing-file", /* QEMU_CAPS_CHANGE_BACKING_FILE */
+              "memory-backend-ram", /* QEMU_CAPS_OBJECT_MEMORY_RAM */
+              "numa", /* QEMU_CAPS_NUMA */
 
               /* 170 */
-              "memory-backend-file",
-              "usb-audio",
-              "rtc-reset-reinjection",
-              "splash-timeout",
-              "iothread",
+              "memory-backend-file", /* QEMU_CAPS_OBJECT_MEMORY_FILE */
+              "usb-audio", /* QEMU_CAPS_OBJECT_USB_AUDIO */
+              "rtc-reset-reinjection", /* QEMU_CAPS_RTC_RESET_REINJECTION */
+              "splash-timeout", /* QEMU_CAPS_SPLASH_TIMEOUT */
+              "iothread", /* QEMU_CAPS_OBJECT_IOTHREAD */
 
               /* 175 */
-              "migrate-rdma",
-              "ivshmem",
-              "drive-iotune-max",
-              "VGA.vgamem_mb",
-              "vmware-svga.vgamem_mb",
+              "migrate-rdma", /* QEMU_CAPS_MIGRATE_RDMA */
+              "ivshmem", /* QEMU_CAPS_DEVICE_IVSHMEM */
+              "drive-iotune-max", /* QEMU_CAPS_DRIVE_IOTUNE_MAX */
+              "VGA.vgamem_mb", /* QEMU_CAPS_VGA_VGAMEM */
+              "vmware-svga.vgamem_mb", /* QEMU_CAPS_VMWARE_SVGA_VGAMEM */
 
               /* 180 */
-              "qxl.vgamem_mb",
-              "qxl-vga.vgamem_mb",
-              "pc-dimm",
-              "machine-vmport-opt",
-              "aes-key-wrap",
+              "qxl.vgamem_mb", /* QEMU_CAPS_QXL_VGAMEM */
+              "qxl-vga.vgamem_mb", /* X_QEMU_CAPS_QXL_VGA_VGAMEM */
+              "pc-dimm", /* QEMU_CAPS_DEVICE_PC_DIMM */
+              "machine-vmport-opt", /* QEMU_CAPS_MACHINE_VMPORT_OPT */
+              "aes-key-wrap", /* QEMU_CAPS_AES_KEY_WRAP */
 
               /* 185 */
-              "dea-key-wrap",
-              "pci-serial",
-              "aarch64-off",
-              "vhost-user-multiqueue",
-              "migration-event",
+              "dea-key-wrap", /* QEMU_CAPS_DEA_KEY_WRAP */
+              "pci-serial", /* QEMU_CAPS_DEVICE_PCI_SERIAL */
+              "aarch64-off", /* QEMU_CAPS_CPU_AARCH64_OFF */
+              "vhost-user-multiqueue", /* X_QEMU_CAPS_VHOSTUSER_MULTIQUEUE */
+              "migration-event", /* QEMU_CAPS_MIGRATION_EVENT */
 
               /* 190 */
-              "gpex-pcihost",
-              "ioh3420",
-              "x3130-upstream",
-              "xio3130-downstream",
-              "rtl8139",
+              "gpex-pcihost", /* QEMU_CAPS_OBJECT_GPEX */
+              "ioh3420", /* QEMU_CAPS_DEVICE_IOH3420 */
+              "x3130-upstream", /* QEMU_CAPS_DEVICE_X3130_UPSTREAM */
+              "xio3130-downstream", /* QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM */
+              "rtl8139", /* QEMU_CAPS_DEVICE_RTL8139 */
 
               /* 195 */
-              "e1000",
-              "virtio-net",
-              "gic-version",
-              "incoming-defer",
-              "virtio-gpu",
+              "e1000", /* QEMU_CAPS_DEVICE_E1000 */
+              "virtio-net", /* QEMU_CAPS_DEVICE_VIRTIO_NET */
+              "gic-version", /* QEMU_CAPS_MACH_VIRT_GIC_VERSION */
+              "incoming-defer", /* QEMU_CAPS_INCOMING_DEFER */
+              "virtio-gpu", /* QEMU_CAPS_DEVICE_VIRTIO_GPU */
 
               /* 200 */
-              "virtio-gpu.virgl",
-              "virtio-keyboard",
-              "virtio-mouse",
-              "virtio-tablet",
-              "virtio-input-host",
+              "virtio-gpu.virgl", /* QEMU_CAPS_VIRTIO_GPU_VIRGL */
+              "virtio-keyboard", /* QEMU_CAPS_VIRTIO_KEYBOARD */
+              "virtio-mouse", /* QEMU_CAPS_VIRTIO_MOUSE */
+              "virtio-tablet", /* QEMU_CAPS_VIRTIO_TABLET */
+              "virtio-input-host", /* QEMU_CAPS_VIRTIO_INPUT_HOST */
 
               /* 205 */
-              "chardev-file-append",
-              "ich9-disable-s3",
-              "ich9-disable-s4",
-              "vserport-change-event",
-              "virtio-balloon-pci.deflate-on-oom",
+              "chardev-file-append", /* QEMU_CAPS_CHARDEV_FILE_APPEND */
+              "ich9-disable-s3", /* QEMU_CAPS_ICH9_DISABLE_S3 */
+              "ich9-disable-s4", /* QEMU_CAPS_ICH9_DISABLE_S4 */
+              "vserport-change-event", /* QEMU_CAPS_VSERPORT_CHANGE */
+              "virtio-balloon-pci.deflate-on-oom", /* QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE */
 
               /* 210 */
-              "mptsas1068",
-              "spice-gl",
-              "qxl.vram64_size_mb",
-              "qxl-vga.vram64_size_mb",
-              "chardev-logfile",
+              "mptsas1068", /* QEMU_CAPS_SCSI_MPTSAS1068 */
+              "spice-gl", /* QEMU_CAPS_SPICE_GL */
+              "qxl.vram64_size_mb", /* QEMU_CAPS_QXL_VRAM64 */
+              "qxl-vga.vram64_size_mb", /* X_QEMU_CAPS_QXL_VGA_VRAM64 */
+              "chardev-logfile", /* QEMU_CAPS_CHARDEV_LOGFILE */
 
               /* 215 */
-              "debug-threads",
-              "secret",
-              "pxb",
-              "pxb-pcie",
-              "device-tray-moved-event",
+              "debug-threads", /* QEMU_CAPS_NAME_DEBUG_THREADS */
+              "secret", /* QEMU_CAPS_OBJECT_SECRET */
+              "pxb", /* QEMU_CAPS_DEVICE_PXB */
+              "pxb-pcie", /* QEMU_CAPS_DEVICE_PXB_PCIE */
+              "device-tray-moved-event", /* X_QEMU_CAPS_DEVICE_TRAY_MOVED */
 
               /* 220 */
-              "nec-usb-xhci-ports",
-              "virtio-scsi-pci.iothread",
-              "name-guest",
-              "qxl.max_outputs",
-              "qxl-vga.max_outputs",
+              "nec-usb-xhci-ports", /* QEMU_CAPS_NEC_USB_XHCI_PORTS */
+              "virtio-scsi-pci.iothread", /* QEMU_CAPS_VIRTIO_SCSI_IOTHREAD */
+              "name-guest", /* QEMU_CAPS_NAME_GUEST */
+              "qxl.max_outputs", /* QEMU_CAPS_QXL_MAX_OUTPUTS */
+              "qxl-vga.max_outputs", /* X_QEMU_CAPS_QXL_VGA_MAX_OUTPUTS */
 
               /* 225 */
-              "spice-unix",
-              "drive-detect-zeroes",
-              "tls-creds-x509",
-              "display",
-              "intel-iommu",
+              "spice-unix", /* QEMU_CAPS_SPICE_UNIX */
+              "drive-detect-zeroes", /* QEMU_CAPS_DRIVE_DETECT_ZEROES */
+              "tls-creds-x509", /* QEMU_CAPS_OBJECT_TLS_CREDS_X509 */
+              "display", /* X_QEMU_CAPS_DISPLAY */
+              "intel-iommu", /* QEMU_CAPS_DEVICE_INTEL_IOMMU */
 
               /* 230 */
-              "smm",
-              "virtio-pci-disable-legacy",
-              "query-hotpluggable-cpus",
-              "virtio-net.rx_queue_size",
-              "machine-iommu",
+              "smm", /* X_QEMU_CAPS_MACHINE_SMM_OPT */
+              "virtio-pci-disable-legacy", /* QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY */
+              "query-hotpluggable-cpus", /* QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS */
+              "virtio-net.rx_queue_size", /* QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE */
+              "machine-iommu", /* X_QEMU_CAPS_MACHINE_IOMMU */
 
               /* 235 */
-              "virtio-vga",
-              "drive-iotune-max-length",
-              "ivshmem-plain",
-              "ivshmem-doorbell",
-              "query-qmp-schema",
+              "virtio-vga", /* QEMU_CAPS_DEVICE_VIRTIO_VGA */
+              "drive-iotune-max-length", /* QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH */
+              "ivshmem-plain", /* QEMU_CAPS_DEVICE_IVSHMEM_PLAIN */
+              "ivshmem-doorbell", /* QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL */
+              "query-qmp-schema", /* X_QEMU_CAPS_QUERY_QMP_SCHEMA */
 
               /* 240 */
-              "gluster.debug_level",
-              "vhost-scsi",
-              "drive-iotune-group",
-              "query-cpu-model-expansion",
-              "virtio-net.host_mtu",
+              "gluster.debug_level", /* QEMU_CAPS_GLUSTER_DEBUG_LEVEL */
+              "vhost-scsi", /* QEMU_CAPS_DEVICE_VHOST_SCSI */
+              "drive-iotune-group", /* QEMU_CAPS_DRIVE_IOTUNE_GROUP */
+              "query-cpu-model-expansion", /* QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION */
+              "virtio-net.host_mtu", /* QEMU_CAPS_VIRTIO_NET_HOST_MTU */
 
               /* 245 */
-              "spice-rendernode",
-              "nvdimm",
-              "pcie-root-port",
-              "query-cpu-definitions",
-              "block-write-threshold",
+              "spice-rendernode", /* QEMU_CAPS_SPICE_RENDERNODE */
+              "nvdimm", /* QEMU_CAPS_DEVICE_NVDIMM */
+              "pcie-root-port", /* QEMU_CAPS_DEVICE_PCIE_ROOT_PORT */
+              "query-cpu-definitions", /* QEMU_CAPS_QUERY_CPU_DEFINITIONS */
+              "block-write-threshold", /* QEMU_CAPS_BLOCK_WRITE_THRESHOLD */
 
               /* 250 */
-              "query-named-block-nodes",
-              "cpu-cache",
-              "qemu-xhci",
-              "kernel-irqchip",
-              "kernel-irqchip.split",
+              "query-named-block-nodes", /* QEMU_CAPS_QUERY_NAMED_BLOCK_NODES */
+              "cpu-cache", /* QEMU_CAPS_CPU_CACHE */
+              "qemu-xhci", /* QEMU_CAPS_DEVICE_QEMU_XHCI */
+              "kernel-irqchip", /* QEMU_CAPS_MACHINE_KERNEL_IRQCHIP */
+              "kernel-irqchip.split", /* X_QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT */
 
               /* 255 */
-              "intel-iommu.intremap",
-              "intel-iommu.caching-mode",
-              "intel-iommu.eim",
-              "intel-iommu.device-iotlb",
-              "virtio.iommu_platform",
+              "intel-iommu.intremap", /* QEMU_CAPS_INTEL_IOMMU_INTREMAP */
+              "intel-iommu.caching-mode", /* QEMU_CAPS_INTEL_IOMMU_CACHING_MODE */
+              "intel-iommu.eim", /* QEMU_CAPS_INTEL_IOMMU_EIM */
+              "intel-iommu.device-iotlb", /* QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB */
+              "virtio.iommu_platform", /* QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM */
 
               /* 260 */
-              "virtio.ats",
-              "loadparm",
-              "spapr-pci-host-bridge",
-              "spapr-pci-host-bridge.numa_node",
-              "vnc-multi-servers",
+              "virtio.ats", /* QEMU_CAPS_VIRTIO_PCI_ATS */
+              "loadparm", /* QEMU_CAPS_LOADPARM */
+              "spapr-pci-host-bridge", /* QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE */
+              "spapr-pci-host-bridge.numa_node", /* QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE */
+              "vnc-multi-servers", /* QEMU_CAPS_VNC_MULTI_SERVERS */
 
               /* 265 */
-              "virtio-net.tx_queue_size",
-              "chardev-reconnect",
-              "virtio-gpu.max_outputs",
-              "vxhs",
-              "virtio-blk.num-queues",
+              "virtio-net.tx_queue_size", /* QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE */
+              "chardev-reconnect", /* QEMU_CAPS_CHARDEV_RECONNECT */
+              "virtio-gpu.max_outputs", /* QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS */
+              "vxhs", /* QEMU_CAPS_VXHS */
+              "virtio-blk.num-queues", /* QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES */
 
               /* 270 */
-              "machine.pseries.resize-hpt",
-              "vmcoreinfo",
-              "spapr-vty",
-              "sclplmconsole",
-              "numa.dist",
+              "machine.pseries.resize-hpt", /* QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT */
+              "vmcoreinfo", /* QEMU_CAPS_DEVICE_VMCOREINFO */
+              "spapr-vty", /* QEMU_CAPS_DEVICE_SPAPR_VTY */
+              "sclplmconsole", /* QEMU_CAPS_DEVICE_SCLPLMCONSOLE */
+              "numa.dist", /* X_QEMU_CAPS_NUMA_DIST */
 
               /* 275 */
-              "disk-share-rw",
-              "iscsi.password-secret",
-              "isa-serial",
-              "pl011",
-              "machine.pseries.max-cpu-compat",
+              "disk-share-rw", /* QEMU_CAPS_DISK_SHARE_RW */
+              "iscsi.password-secret", /* QEMU_CAPS_ISCSI_PASSWORD_SECRET */
+              "isa-serial", /* QEMU_CAPS_DEVICE_ISA_SERIAL */
+              "pl011", /* QEMU_CAPS_DEVICE_PL011 */
+              "machine.pseries.max-cpu-compat", /* QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT */
 
               /* 280 */
-              "dump-completed",
-              "virtio-gpu-ccw",
-              "virtio-keyboard-ccw",
-              "virtio-mouse-ccw",
-              "virtio-tablet-ccw",
+              "dump-completed", /* QEMU_CAPS_DUMP_COMPLETED */
+              "virtio-gpu-ccw", /* QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW */
+              "virtio-keyboard-ccw", /* QEMU_CAPS_DEVICE_VIRTIO_KEYBOARD_CCW */
+              "virtio-mouse-ccw", /* QEMU_CAPS_DEVICE_VIRTIO_MOUSE_CCW */
+              "virtio-tablet-ccw", /* QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW */
 
               /* 285 */
-              "qcow2-luks",
-              "pcie-pci-bridge",
-              "seccomp-blacklist",
-              "query-cpus-fast",
-              "disk-write-cache",
+              "qcow2-luks", /* QEMU_CAPS_QCOW2_LUKS */
+              "pcie-pci-bridge", /* QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE */
+              "seccomp-blacklist", /* QEMU_CAPS_SECCOMP_BLACKLIST */
+              "query-cpus-fast", /* QEMU_CAPS_QUERY_CPUS_FAST */
+              "disk-write-cache", /* QEMU_CAPS_DISK_WRITE_CACHE */
 
               /* 290 */
-              "nbd-tls",
-              "tpm-crb",
-              "pr-manager-helper",
-              "qom-list-properties",
-              "memory-backend-file.discard-data",
+              "nbd-tls", /* QEMU_CAPS_NBD_TLS */
+              "tpm-crb", /* QEMU_CAPS_DEVICE_TPM_CRB */
+              "pr-manager-helper", /* QEMU_CAPS_PR_MANAGER_HELPER */
+              "qom-list-properties", /* QEMU_CAPS_QOM_LIST_PROPERTIES */
+              "memory-backend-file.discard-data", /* QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD */
 
               /* 295 */
-              "virtual-css-bridge",
-              "virtual-css-bridge.cssid-unrestricted",
-              "vfio-ccw",
-              "sdl-gl",
-              "screendump_device",
+              "virtual-css-bridge", /* QEMU_CAPS_CCW */
+              "virtual-css-bridge.cssid-unrestricted", /* QEMU_CAPS_CCW_CSSID_UNRESTRICTED */
+              "vfio-ccw", /* QEMU_CAPS_DEVICE_VFIO_CCW */
+              "sdl-gl", /* X_QEMU_CAPS_SDL_GL */
+              "screendump_device", /* QEMU_CAPS_SCREENDUMP_DEVICE */
 
               /* 300 */
-              "hda-output",
-              "blockdev-del",
-              "vmgenid",
-              "vhost-vsock",
-              "chardev-fd-pass",
+              "hda-output", /* QEMU_CAPS_HDA_OUTPUT */
+              "blockdev-del", /* QEMU_CAPS_BLOCKDEV_DEL */
+              "vmgenid", /* QEMU_CAPS_DEVICE_VMGENID */
+              "vhost-vsock", /* QEMU_CAPS_DEVICE_VHOST_VSOCK */
+              "chardev-fd-pass", /* QEMU_CAPS_CHARDEV_FD_PASS */
 
               /* 305 */
-              "tpm-emulator",
-              "mch",
-              "mch.extended-tseg-mbytes",
-              "sev-guest",
-              "machine.pseries.cap-hpt-max-page-size",
+              "tpm-emulator", /* QEMU_CAPS_DEVICE_TPM_EMULATOR */
+              "mch", /* QEMU_CAPS_DEVICE_MCH */
+              "mch.extended-tseg-mbytes", /* QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES */
+              "sev-guest", /* QEMU_CAPS_SEV_GUEST */
+              "machine.pseries.cap-hpt-max-page-size", /* QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE */
 
               /* 310 */
-              "machine.pseries.cap-htm",
-              "usb-storage.werror",
-              "egl-headless",
-              "vfio-pci.display",
-              "blockdev",
+              "machine.pseries.cap-htm", /* QEMU_CAPS_MACHINE_PSERIES_CAP_HTM */
+              "usb-storage.werror", /* QEMU_CAPS_USB_STORAGE_WERROR */
+              "egl-headless", /* QEMU_CAPS_EGL_HEADLESS */
+              "vfio-pci.display", /* QEMU_CAPS_VFIO_PCI_DISPLAY */
+              "blockdev", /* QEMU_CAPS_BLOCKDEV */
 
               /* 315 */
-              "vfio-ap",
-              "zpci",
-              "memory-backend-memfd",
-              "memory-backend-memfd.hugetlb",
-              "iothread.poll-max-ns",
+              "vfio-ap", /* QEMU_CAPS_DEVICE_VFIO_AP */
+              "zpci", /* QEMU_CAPS_DEVICE_ZPCI */
+              "memory-backend-memfd", /* QEMU_CAPS_OBJECT_MEMORY_MEMFD */
+              "memory-backend-memfd.hugetlb", /* QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB */
+              "iothread.poll-max-ns", /* QEMU_CAPS_IOTHREAD_POLLING */
 
               /* 320 */
-              "machine.pseries.cap-nested-hv",
-              "egl-headless.rendernode",
-              "memory-backend-file.align",
-              "memory-backend-file.pmem",
-              "nvdimm.unarmed",
+              "machine.pseries.cap-nested-hv", /* QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV */
+              "egl-headless.rendernode", /* QEMU_CAPS_EGL_HEADLESS_RENDERNODE */
+              "memory-backend-file.align", /* QEMU_CAPS_OBJECT_MEMORY_FILE_ALIGN */
+              "memory-backend-file.pmem", /* QEMU_CAPS_OBJECT_MEMORY_FILE_PMEM */
+              "nvdimm.unarmed", /* QEMU_CAPS_DEVICE_NVDIMM_UNARMED */
 
               /* 325 */
-              "scsi-disk.device_id",
-              "virtio-pci-non-transitional",
-              "overcommit",
-              "query-current-machine",
-              "machine.virt.iommu",
+              "scsi-disk.device_id", /* QEMU_CAPS_SCSI_DISK_DEVICE_ID */
+              "virtio-pci-non-transitional", /* QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL */
+              "overcommit", /* QEMU_CAPS_OVERCOMMIT */
+              "query-current-machine", /* QEMU_CAPS_QUERY_CURRENT_MACHINE */
+              "machine.virt.iommu", /* QEMU_CAPS_MACHINE_VIRT_IOMMU */
 
               /* 330 */
-              "bitmap-merge",
-              "nbd-bitmap",
-              "x86-max-cpu",
-              "cpu-unavailable-features",
-              "canonical-cpu-features",
+              "bitmap-merge", /* QEMU_CAPS_BITMAP_MERGE */
+              "nbd-bitmap", /* QEMU_CAPS_NBD_BITMAP */
+              "x86-max-cpu", /* QEMU_CAPS_X86_MAX_CPU */
+              "cpu-unavailable-features", /* QEMU_CAPS_CPU_UNAVAILABLE_FEATURES */
+              "canonical-cpu-features", /* QEMU_CAPS_CANONICAL_CPU_FEATURES */
 
               /* 335 */
-              "bochs-display",
-              "migration-file-drop-cache",
-              "dbus-vmstate",
-              "vhost-user-gpu",
-              "vhost-user-vga",
+              "bochs-display", /* QEMU_CAPS_DEVICE_BOCHS_DISPLAY */
+              "migration-file-drop-cache", /* QEMU_CAPS_MIGRATION_FILE_DROP_CACHE */
+              "dbus-vmstate", /* QEMU_CAPS_DBUS_VMSTATE */
+              "vhost-user-gpu", /* QEMU_CAPS_DEVICE_VHOST_USER_GPU */
+              "vhost-user-vga", /* QEMU_CAPS_DEVICE_VHOST_USER_VGA */
 
               /* 340 */
-              "incremental-backup",
-              "query-cpu-model-baseline",
-              "query-cpu-model-comparison",
-              "ramfb",
-              "machine.pseries.cap-ccf-assist",
+              "incremental-backup", /* QEMU_CAPS_INCREMENTAL_BACKUP */
+              "query-cpu-model-baseline", /* QEMU_CAPS_QUERY_CPU_MODEL_BASELINE */
+              "query-cpu-model-comparison", /* QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON */
+              "ramfb", /* QEMU_CAPS_DEVICE_RAMFB */
+              "machine.pseries.cap-ccf-assist", /* QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST */
 
               /* 345 */
-              "arm-max-cpu",
-              "blockdev-file-dynamic-auto-read-only",
-              "savevm-monitor-nodes",
-              "drive-nvme",
-              "smp-dies",
+              "arm-max-cpu", /* QEMU_CAPS_ARM_MAX_CPU */
+              "blockdev-file-dynamic-auto-read-only", /* QEMU_CAPS_BLOCK_FILE_AUTO_READONLY_DYNAMIC */
+              "savevm-monitor-nodes", /* QEMU_CAPS_SAVEVM_MONITOR_NODES */
+              "drive-nvme", /* QEMU_CAPS_DRIVE_NVME */
+              "smp-dies", /* QEMU_CAPS_SMP_DIES */
 
               /* 350 */
-              "i8042",
-              "rng-builtin",
-              "virtio-net.failover",
-              "tpm-spapr",
-              "cpu.kvm-no-adjvtime",
+              "i8042", /* QEMU_CAPS_DEVICE_I8042 */
+              "rng-builtin", /* QEMU_CAPS_OBJECT_RNG_BUILTIN */
+              "virtio-net.failover", /* QEMU_CAPS_VIRTIO_NET_FAILOVER */
+              "tpm-spapr", /* QEMU_CAPS_DEVICE_TPM_SPAPR */
+              "cpu.kvm-no-adjvtime", /* QEMU_CAPS_CPU_KVM_NO_ADJVTIME */
 
               /* 355 */
-              "vhost-user-fs",
-              "query-named-block-nodes.flat",
-              "blockdev-snapshot.allow-write-only-overlay",
-              "blockdev-reopen",
-              "storage.werror",
+              "vhost-user-fs", /* QEMU_CAPS_DEVICE_VHOST_USER_FS */
+              "query-named-block-nodes.flat", /* QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT */
+              "blockdev-snapshot.allow-write-only-overlay", /* QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY */
+              "blockdev-reopen", /* QEMU_CAPS_BLOCKDEV_REOPEN */
+              "storage.werror", /* QEMU_CAPS_STORAGE_WERROR */
 
               /* 360 */
-              "fsdev.multidevs",
-              "virtio.packed",
-              "pcie-root-port.hotplug",
-              "aio.io_uring",
-              "machine.pseries.cap-cfpc",
+              "fsdev.multidevs", /* QEMU_CAPS_FSDEV_MULTIDEVS */
+              "virtio.packed", /* QEMU_CAPS_VIRTIO_PACKED_QUEUES */
+              "pcie-root-port.hotplug", /* QEMU_CAPS_PCIE_ROOT_PORT_HOTPLUG */
+              "aio.io_uring", /* QEMU_CAPS_AIO_IO_URING */
+              "machine.pseries.cap-cfpc", /* QEMU_CAPS_MACHINE_PSERIES_CAP_CFPC */
 
               /* 365 */
-              "machine.pseries.cap-sbbc",
-              "machine.pseries.cap-ibs",
-              "tcg",
-              "virtio-blk-pci.scsi.default.disabled",
-              "pvscsi",
+              "machine.pseries.cap-sbbc", /* QEMU_CAPS_MACHINE_PSERIES_CAP_SBBC */
+              "machine.pseries.cap-ibs", /* QEMU_CAPS_MACHINE_PSERIES_CAP_IBS */
+              "tcg", /* QEMU_CAPS_TCG */
+              "virtio-blk-pci.scsi.default.disabled", /* QEMU_CAPS_VIRTIO_BLK_SCSI_DEFAULT_DISABLED */
+              "pvscsi", /* QEMU_CAPS_SCSI_PVSCSI */
 
               /* 370 */
-              "cpu.migratable",
-              "query-cpu-model-expansion.migratable",
-              "fw_cfg",
-              "migration-param.bandwidth",
-              "migration-param.downtime",
+              "cpu.migratable", /* QEMU_CAPS_CPU_MIGRATABLE */
+              "query-cpu-model-expansion.migratable", /* QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_MIGRATABLE */
+              "fw_cfg", /* QEMU_CAPS_FW_CFG */
+              "migration-param.bandwidth", /* QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH */
+              "migration-param.downtime", /* QEMU_CAPS_MIGRATION_PARAM_DOWNTIME */
 
               /* 375 */
-              "migration-param.xbzrle-cache-size",
-              "intel-iommu.aw-bits",
-              "spapr-tpm-proxy",
-              "numa.hmat",
-              "blockdev-hostdev-scsi",
+              "migration-param.xbzrle-cache-size", /* QEMU_CAPS_MIGRATION_PARAM_XBZRLE_CACHE_SIZE */
+              "intel-iommu.aw-bits", /* QEMU_CAPS_INTEL_IOMMU_AW_BITS */
+              "spapr-tpm-proxy", /* QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY */
+              "numa.hmat", /* QEMU_CAPS_NUMA_HMAT */
+              "blockdev-hostdev-scsi", /* QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI */
 
               /* 380 */
-              "usb-host.hostdevice",
-              "virtio-balloon.free-page-reporting",
-              "block-export-add",
-              "netdev.vhost-vdpa",
-              "fsdev.createmode",
+              "usb-host.hostdevice", /* QEMU_CAPS_USB_HOST_HOSTDEVICE */
+              "virtio-balloon.free-page-reporting", /* QEMU_CAPS_VIRTIO_BALLOON_FREE_PAGE_REPORTING */
+              "block-export-add", /* QEMU_CAPS_BLOCK_EXPORT_ADD */
+              "netdev.vhost-vdpa", /* QEMU_CAPS_NETDEV_VHOST_VDPA */
+              "fsdev.createmode", /* QEMU_CAPS_FSDEV_CREATEMODE */
 
               /* 385 */
-              "ncr53c90",
-              "dc390",
-              "am53c974",
-              "virtio-pmem-pci",
-              "vhost-user-fs.bootindex",
+              "ncr53c90", /* QEMU_CAPS_SCSI_NCR53C90 */
+              "dc390", /* QEMU_CAPS_SCSI_DC390 */
+              "am53c974", /* QEMU_CAPS_SCSI_AM53C974 */
+              "virtio-pmem-pci", /* QEMU_CAPS_DEVICE_VIRTIO_PMEM_PCI */
+              "vhost-user-fs.bootindex", /* QEMU_CAPS_VHOST_USER_FS_BOOTINDEX */
 
               /* 390 */
-              "vhost-user-blk",
-              "cpu-max",
-              "memory-backend-file.x-use-canonical-path-for-ramblock-id",
-              "vnc-opts",
-              "migration-param.block-bitmap-mapping",
+              "vhost-user-blk", /* QEMU_CAPS_DEVICE_VHOST_USER_BLK */
+              "cpu-max", /* QEMU_CAPS_CPU_MAX */
+              "memory-backend-file.x-use-canonical-path-for-ramblock-id", /* QEMU_CAPS_X_USE_CANONICAL_PATH_FOR_RAMBLOCK_ID */
+              "vnc-opts", /* QEMU_CAPS_VNC_OPTS */
+              "migration-param.block-bitmap-mapping", /* QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING */
 
               /* 395 */
-              "vnc-power-control",
-              "audiodev",
-              "blockdev-backup",
-              "object.qapified",
-              "rotation-rate",
+              "vnc-power-control", /* QEMU_CAPS_VNC_POWER_CONTROL */
+              "audiodev", /* QEMU_CAPS_AUDIODEV */
+              "blockdev-backup", /* QEMU_CAPS_BLOCKDEV_BACKUP */
+              "object.qapified", /* QEMU_CAPS_OBJECT_QAPIFIED */
+              "rotation-rate", /* QEMU_CAPS_ROTATION_RATE */
 
               /* 400 */
-              "compat-deprecated",
-              "acpi-index",
-              "input-linux",
-              "virtio-gpu-gl-pci",
-              "virtio-vga-gl",
+              "compat-deprecated", /* QEMU_CAPS_COMPAT_DEPRECATED */
+              "acpi-index", /* QEMU_CAPS_ACPI_INDEX */
+              "input-linux", /* QEMU_CAPS_INPUT_LINUX */
+              "virtio-gpu-gl-pci", /* QEMU_CAPS_VIRTIO_GPU_GL_PCI */
+              "virtio-vga-gl", /* QEMU_CAPS_VIRTIO_VGA_GL */
 
               /* 405 */
-              "confidential-guest-support",
-              "query-display-options",
-              "s390-pv-guest",
+              "confidential-guest-support", /* QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT */
+              "query-display-options", /* QEMU_CAPS_QUERY_DISPLAY_OPTIONS */
+              "s390-pv-guest", /* QEMU_CAPS_S390_PV_GUEST */
     );
 
 

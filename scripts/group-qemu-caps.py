@@ -27,8 +27,33 @@ import subprocess
 import sys
 
 
+def load_caps_flags(filename, start_regex, end_regex):
+    capsflags = []
+    game_on = False
+
+    with open(filename, "r") as fh:
+        for line in fh:
+            line = line.rstrip("\n")
+            if game_on:
+                if re.search(r'''.*/\* [0-9]+ \*/.*''', line):
+                    continue
+                if re.search(r'''^\s*$''', line):
+                    continue
+                match = re.search(r'''[ ]+([A-Z0-9_]+)''', line)
+
+                if match:
+                    capsflags.append(match[1])
+
+            if re.search(start_regex, line):
+                game_on = True
+            elif game_on and re.search(end_regex, line):
+                game_on = False
+
+    return capsflags
+
+
 def regroup_caps(check, filename, start_regex, end_regex,
-                 trailing_newline, counter_prefix):
+                 trailing_newline, counter_prefix, capsflags):
     step = 5
 
     original = []
@@ -68,6 +93,12 @@ def regroup_caps(check, filename, start_regex, end_regex,
 
             game_on = False
 
+        # ensure that flag names in the .c file have the correct flag in the comment
+        if game_on and capsflags:
+            flagname = re.search(r'''.*".*",''', line)
+            if flagname:
+                line = flagname[0] + " /* %s */" % capsflags[counter - 1]
+
         fixed.append(line + "\n")
 
     if check:
@@ -100,12 +131,17 @@ args = parser.parse_args()
 
 errs = False
 
+capsflags = load_caps_flags(args.prefix + 'src/qemu/qemu_capabilities.h',
+                            r'virQEMUCapsFlags grouping marker',
+                            r'QEMU_CAPS_LAST \/\* this must')
+
 if not regroup_caps(args.check,
                     args.prefix + 'src/qemu/qemu_capabilities.c',
                     r'virQEMUCaps grouping marker',
                     r'\);',
                     0,
-                    "              "):
+                    "              ",
+                    capsflags):
     errs = True
 
 if not regroup_caps(args.check,
@@ -113,7 +149,8 @@ if not regroup_caps(args.check,
                     r'virQEMUCapsFlags grouping marker',
                     r'QEMU_CAPS_LAST \/\* this must',
                     1,
-                    "    "):
+                    "    ",
+                    None):
     errs = True
 
 if errs:
