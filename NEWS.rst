@@ -11,6 +11,15 @@ For a more fine-grained view, use the `git log`_.
 v7.6.0 (unreleased)
 ===================
 
+* **Security**
+
+  * storage: Unlock pool objects on ACL check failures in ``storagePoolLookupByTargetPath`` (CVE-2021-3667)
+
+    A logic bug in ``storagePoolLookupByTargetPath`` where the storage pool
+    object was left locked after a failure of the ACL check could potentially
+    deprive legitimate users access to a storage pool object by users who don't
+    have access.
+
 * **New features**
 
   * qemu: Incremental backup support via ``virDomainBackupBegin``
