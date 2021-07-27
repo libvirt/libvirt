@@ -39,6 +39,13 @@ v7.6.0 (unreleased)
     the same time could trigger migration of storage when
     ``VIR_MIGRATE_TUNNELLED`` is requested. This release fixes the bug.
 
+  * qemu: Don't emit ``VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD`` twice when registered with index
+
+    When registering the threshold event with the index notation (e.g.
+    ``vda[3]``) libvirt would emit the event also for ``vda`` if the image is
+    in the top layer. The intention was to emit two events only when the
+    original registration was done without the index.
+
 
 v7.5.0 (2021-07-01)
 ===================
