@@ -2859,12 +2859,10 @@
           </group>
         </choice>
         <interleave>
-          <optional>
-            <element name="target">
-              <attribute name="dir"/>
-              <empty/>
-            </element>
-          </optional>
+          <element name="target">
+            <attribute name="dir"/>
+            <empty/>
+          </element>
           <optional>
             <attribute name="accessmode">
               <choice>
