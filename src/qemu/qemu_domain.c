@@ -6463,7 +6463,10 @@ void qemuDomainObjTaint(virQEMUDriver *driver,
                         virDomainTaintFlags taint,
                         qemuDomainLogContext *logCtxt)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+
     qemuDomainObjTaintMsg(driver, obj, taint, logCtxt, NULL);
+    ignore_value(virDomainObjSave(obj, driver->xmlopt, cfg->stateDir));
 }
 
 void qemuDomainObjTaintMsg(virQEMUDriver *driver,
