@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-07-27 13:35+0000\n"
-"PO-Revision-Date: 2021-06-28 06:04+0000\n"
+"PO-Revision-Date: 2021-07-27 18:43+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.7\n"
+"X-Generator: Weblate 4.7.2\n"
 
 msgid ""
 "\n"
@@ -5496,7 +5496,7 @@ msgstr "Пристрій «%s» вже форматовано з викорис�
 
 #, c-format
 msgid "Device '%s' is not active"
-msgstr ""
+msgstr "Пристрій «%s» є неактивним"
 
 #, c-format
 msgid "Device '%s' is unrecognized, requires build"
@@ -8174,7 +8174,7 @@ msgstr "Не вдалося прочитати файл знімка %s"
 
 #, c-format
 msgid "Failed to read system token '%s'"
-msgstr ""
+msgstr "Не вдалося прочитати жетон системи «%s»"
 
 msgid "Failed to read the container continue message"
 msgstr "Помилка при читанні повідомлення продовження контейнера"
@@ -9449,7 +9449,7 @@ msgstr ""
 "передбачено"
 
 msgid "Hostdev already exists in the domain configuration"
-msgstr ""
+msgstr "Hostdev вже існує у налаштуваннях домену"
 
 #, c-format
 msgid "Hostdev source %s must be a block device"
@@ -13487,7 +13487,7 @@ msgid "Option --file is required"
 msgstr "Слід вказати параметр --file"
 
 msgid "Option --tree is incompatible with --cap and --inactive"
-msgstr ""
+msgstr "Параметр --tree є несумісним із параметрами --cap і --inactive"
 
 msgid "Option argument is empty"
 msgstr "Порожній аргумент параметра"
@@ -14649,6 +14649,8 @@ msgstr "на цьому домені стан S3 вимкнено"
 
 msgid "S390 PV launch security is not supported with this QEMU binary"
 msgstr ""
+"У цьому виконуваному файлі QEMU не передбачено підтримки захисту запуску PV "
+"S390"
 
 msgid "S4 state is disabled for this domain"
 msgstr "на цьому домені стан S4 вимкнено"
@@ -15777,7 +15779,7 @@ msgid "TLS:"
 msgstr "TLS:"
 
 msgid "TPM 1.2 is not supported on ARM"
-msgstr ""
+msgstr "На ARM не передбачено підтримки TPM 1.2"
 
 msgid "TPM 1.2 is not supported with the SPAPR device model"
 msgstr ""
@@ -17776,7 +17778,7 @@ msgstr "Не вдалося створити сокет UNIX"
 
 #, c-format
 msgid "Unable to create and set qos configuration on port %s"
-msgstr ""
+msgstr "Не вдалося створити і встановити налаштування qos на порту %s"
 
 msgid "Unable to create blkid library handle"
 msgstr "Не вдалося створити обробник бібліотеки ідентифікаторів блоків"
@@ -17930,11 +17932,11 @@ msgstr "Не вдалося знищити «%s»: пристрій викори
 
 #, c-format
 msgid "Unable to destroy qos on port %s"
-msgstr ""
+msgstr "Не вдалося зруйнувати qos на порту %s"
 
 #, c-format
 msgid "Unable to destroy queue on port %s"
-msgstr ""
+msgstr "Не вдалося зруйнувати чергу на порту %s"
 
 #, c-format
 msgid "Unable to detect filesystem for %s"
@@ -19226,11 +19228,11 @@ msgstr "Не можна встановлювати профіль порту д�
 
 #, c-format
 msgid "Unable to set qos configuration on port %s"
-msgstr ""
+msgstr "Не вдалося встановити налаштування qos на порту %s"
 
 #, c-format
 msgid "Unable to set queue configuration on port %s"
-msgstr ""
+msgstr "Не вдалося встановити налаштування черги на порту %s"
 
 msgid "Unable to set socket reuse addr flag"
 msgstr "Не вдалося встановити прапорець повторного використання адреси сокета"
@@ -19272,7 +19274,7 @@ msgstr "Не вдалося запустити потік обробки под�
 
 #, c-format
 msgid "Unable to start mediated device: %s"
-msgstr ""
+msgstr "Не вдалося запустити проміжний пристрій: %s"
 
 #, c-format
 msgid "Unable to stat %p"
@@ -19564,7 +19566,7 @@ msgid "Unexpected filesystem type %s"
 msgstr "Неочікуваний тип файлової системи %s"
 
 msgid "Unexpected format for mdevctl response"
-msgstr ""
+msgstr "Неочікуваний формат відповіді mdevctl"
 
 #, c-format
 msgid "Unexpected hostdev mode %d"
@@ -19694,7 +19696,7 @@ msgstr "Невідомий виробник процесорів %s"
 
 #, c-format
 msgid "Unknown Command '%i'"
-msgstr ""
+msgstr "Невідома команда «%i»"
 
 #, c-format
 msgid "Unknown IP address data source %d"
@@ -24895,7 +24897,7 @@ msgid "device key"
 msgstr "ключ пристрою"
 
 msgid "device list is not an object"
-msgstr ""
+msgstr "список пристроїв не є об'єктом"
 
 msgid "device name"
 msgstr "назва пристрою"
