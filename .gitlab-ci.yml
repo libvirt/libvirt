@@ -21,7 +21,8 @@ stages:
   stage: containers
   needs: []
   services:
-    - docker:dind
+    - name: registry.gitlab.com/libvirt/libvirt-ci/docker-dind:master
+      alias: docker
   rules:
     - if: "$TEMPORARILY_DISABLED"
       allow_failure: true
