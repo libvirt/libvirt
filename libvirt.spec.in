@@ -192,7 +192,7 @@
 %if 0%{?rhel}
     %define enable_werror -Dwerror=true
 %else
-    %define enable_werror -Dwerror=false
+    %define enable_werror -Dwerror=false -Dgit_werror=disabled
 %endif
 
 %define tls_priority "@LIBVIRT,SYSTEM"
