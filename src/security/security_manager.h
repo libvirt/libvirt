@@ -220,6 +220,14 @@ int virSecurityManagerSetTPMLabels(virSecurityManager *mgr,
 int virSecurityManagerRestoreTPMLabels(virSecurityManager *mgr,
                                        virDomainDef *vm);
 
+int virSecurityManagerSetNetdevLabel(virSecurityManager *mgr,
+                                     virDomainDef *vm,
+                                     virDomainNetDef *net);
+
+int virSecurityManagerRestoreNetdevLabel(virSecurityManager *mgr,
+                                         virDomainDef *vm,
+                                         virDomainNetDef *net);
+
 typedef struct _virSecurityManagerMetadataLockState virSecurityManagerMetadataLockState;
 struct _virSecurityManagerMetadataLockState {
     size_t nfds; /* Captures size of both @fds and @paths */

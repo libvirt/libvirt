@@ -963,6 +963,55 @@ virSecurityStackRestoreTPMLabels(virSecurityManager *mgr,
 }
 
 
+static int
+virSecurityStackDomainSetNetdevLabel(virSecurityManager *mgr,
+                                     virDomainDef *def,
+                                     virDomainNetDef *net)
+{
+    virSecurityStackData *priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItem *item = priv->itemsHead;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetNetdevLabel(item->securityManager, def, net) < 0)
+            goto rollback;
+    }
+
+    return 0;
+
+ rollback:
+    for (item = item->prev; item; item = item->prev) {
+        if (virSecurityManagerRestoreNetdevLabel(item->securityManager,
+                                                 def, net) < 0) {
+            VIR_WARN("Unable to restore netdev label after failed set label "
+                     "call virDriver=%s driver=%s domain=%s",
+                     virSecurityManagerGetVirtDriver(mgr),
+                     virSecurityManagerGetDriver(item->securityManager),
+                     def->name);
+        }
+    }
+    return -1;
+}
+
+
+static int
+virSecurityStackDomainRestoreNetdevLabel(virSecurityManager *mgr,
+                                         virDomainDef *def,
+                                         virDomainNetDef *net)
+{
+    virSecurityStackData *priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItem *item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerRestoreNetdevLabel(item->securityManager,
+                                                 def, net) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
+
 virSecurityDriver virSecurityDriverStack = {
     .privateDataLen                     = sizeof(virSecurityStackData),
     .name                               = "stack",
@@ -1028,4 +1077,7 @@ virSecurityDriver virSecurityDriverStack = {
 
     .domainSetSecurityTPMLabels         = virSecurityStackSetTPMLabels,
     .domainRestoreSecurityTPMLabels     = virSecurityStackRestoreTPMLabels,
+
+    .domainSetSecurityNetdevLabel      = virSecurityStackDomainSetNetdevLabel,
+    .domainRestoreSecurityNetdevLabel  = virSecurityStackDomainRestoreNetdevLabel,
 };

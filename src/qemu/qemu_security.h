@@ -79,6 +79,14 @@ int qemuSecurityRestoreChardevLabel(virQEMUDriver *driver,
                                     virDomainObj *vm,
                                     virDomainChrDef *chr);
 
+int qemuSecuritySetNetdevLabel(virQEMUDriver *driver,
+                               virDomainObj *vm,
+                               virDomainNetDef *net);
+
+int qemuSecurityRestoreNetdevLabel(virQEMUDriver *driver,
+                                   virDomainObj *vm,
+                                   virDomainNetDef *net);
+
 int qemuSecurityStartVhostUserGPU(virQEMUDriver *driver,
                                   virDomainObj *vm,
                                   virCommand *cmd,

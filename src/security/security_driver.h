@@ -157,6 +157,12 @@ typedef int (*virSecurityDomainSetTPMLabels) (virSecurityManager *mgr,
                                               virDomainDef *def);
 typedef int (*virSecurityDomainRestoreTPMLabels) (virSecurityManager *mgr,
                                                   virDomainDef *def);
+typedef int (*virSecurityDomainSetNetdevLabel) (virSecurityManager *mgr,
+                                                virDomainDef *def,
+                                                virDomainNetDef *net);
+typedef int (*virSecurityDomainRestoreNetdevLabel) (virSecurityManager *mgr,
+                                                    virDomainDef *def,
+                                                    virDomainNetDef *net);
 
 
 struct _virSecurityDriver {
@@ -224,6 +230,9 @@ struct _virSecurityDriver {
 
     virSecurityDomainSetTPMLabels domainSetSecurityTPMLabels;
     virSecurityDomainRestoreTPMLabels domainRestoreSecurityTPMLabels;
+
+    virSecurityDomainSetNetdevLabel domainSetSecurityNetdevLabel;
+    virSecurityDomainRestoreNetdevLabel domainRestoreSecurityNetdevLabel;
 };
 
 virSecurityDriver *virSecurityDriverLookup(const char *name,

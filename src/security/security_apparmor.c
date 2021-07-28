@@ -1054,6 +1054,64 @@ AppArmorRestoreChardevLabel(virSecurityManager *mgr,
 }
 
 static int
+AppArmorSetNetdevLabel(virSecurityManager *mgr,
+                       virDomainDef *def,
+                       virDomainNetDef *net)
+{
+    int ret = -1;
+    virSecurityLabelDef *secdef;
+    virDomainChrSourceDef *dev_source;
+    virDomainNetType actualType;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
+    if (!secdef)
+        return 0;
+
+    actualType = virDomainNetGetActualType(net);
+    if (actualType != VIR_DOMAIN_NET_TYPE_VHOSTUSER)
+        return 0;
+
+    dev_source = net->data.vhostuser;
+    switch ((virDomainChrType)dev_source->type) {
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        ret = reload_profile(mgr, def, dev_source->data.file.path, true);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
+        ret = 0;
+        break;
+    }
+
+    return ret;
+}
+
+static int
+AppArmorRestoreNetdevLabel(virSecurityManager *mgr,
+                           virDomainDef *def,
+                           virDomainNetDef *net G_GNUC_UNUSED)
+{
+    virSecurityLabelDef *secdef;
+
+    secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
+    if (!secdef)
+        return 0;
+
+    return reload_profile(mgr, def, NULL, false);
+}
+
+static int
 AppArmorSetPathLabel(virSecurityManager *mgr,
                            virDomainDef *def,
                            const char *path,
@@ -1167,6 +1225,9 @@ virSecurityDriver virAppArmorSecurityDriver = {
 
     .domainSetSecurityChardevLabel      = AppArmorSetChardevLabel,
     .domainRestoreSecurityChardevLabel  = AppArmorRestoreChardevLabel,
+
+    .domainSetSecurityNetdevLabel       = AppArmorSetNetdevLabel,
+    .domainRestoreSecurityNetdevLabel   = AppArmorRestoreNetdevLabel,
 
     .domainSetSecurityImageFDLabel      = AppArmorSetFDLabel,
     .domainSetSecurityTapFDLabel        = AppArmorSetFDLabel,

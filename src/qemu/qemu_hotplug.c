@@ -1203,6 +1203,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     g_autofree char *netdev_name = NULL;
     g_autoptr(virConnect) conn = NULL;
     virErrorPtr save_err = NULL;
+    bool teardownlabel = false;
 
     /* If appropriate, grab a physical device from the configured
      * network's pool of devices, or resolve bridge device name
@@ -1343,6 +1344,9 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
                                                    &net->ifname) < 0)
             goto cleanup;
 
+        if (qemuSecuritySetNetdevLabel(driver, vm, net) < 0)
+            goto cleanup;
+        teardownlabel = true;
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
@@ -1558,6 +1562,10 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
             qemuDomainNetDeviceVportRemove(net);
         }
+
+        if (teardownlabel &&
+            qemuSecurityRestoreNetdevLabel(driver, vm, net) < 0)
+            VIR_WARN("Unable to restore network device labelling on hotplug fail");
 
         /* we had potentially pre-added the device to the domain
          * device lists, if so we need to remove it (from def->nets
@@ -4801,6 +4809,11 @@ qemuDomainRemoveNetDevice(virQEMUDriver *driver,
                          virDomainNetGetActualDirectMode(net),
                          virDomainNetGetActualVirtPortProfile(net),
                          cfg->stateDir));
+    }
+
+    if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
+        if (qemuSecurityRestoreNetdevLabel(driver, vm, net) < 0)
+            VIR_WARN("Unable to restore security label on vhostuser char device");
     }
 
     qemuDomainNetDeviceVportRemove(net);

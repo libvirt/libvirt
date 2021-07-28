@@ -1297,6 +1297,44 @@ virSecurityManagerRestoreTPMLabels(virSecurityManager *mgr,
 }
 
 
+int
+virSecurityManagerSetNetdevLabel(virSecurityManager *mgr,
+                                 virDomainDef *vm,
+                                 virDomainNetDef *net)
+{
+    int ret;
+
+    if (mgr->drv->domainSetSecurityNetdevLabel) {
+        virObjectLock(mgr);
+        ret = mgr->drv->domainSetSecurityNetdevLabel(mgr, vm, net);
+        virObjectUnlock(mgr);
+
+        return ret;
+    }
+
+    return 0;
+}
+
+
+int
+virSecurityManagerRestoreNetdevLabel(virSecurityManager *mgr,
+                                     virDomainDef *vm,
+                                     virDomainNetDef *net)
+{
+    int ret;
+
+    if (mgr->drv->domainRestoreSecurityNetdevLabel) {
+        virObjectLock(mgr);
+        ret = mgr->drv->domainRestoreSecurityNetdevLabel(mgr, vm, net);
+        virObjectUnlock(mgr);
+
+        return ret;
+    }
+
+    return 0;
+}
+
+
 static int
 cmpstringp(const void *p1, const void *p2)
 {

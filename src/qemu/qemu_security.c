@@ -439,6 +439,65 @@ qemuSecurityRestoreChardevLabel(virQEMUDriver *driver,
     return ret;
 }
 
+int
+qemuSecuritySetNetdevLabel(virQEMUDriver *driver,
+                           virDomainObj *vm,
+                           virDomainNetDef *net)
+{
+    int ret = -1;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    pid_t pid = -1;
+
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        pid = vm->pid;
+
+    if (virSecurityManagerTransactionStart(driver->securityManager) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerSetNetdevLabel(driver->securityManager,
+                                         vm->def, net) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerTransactionCommit(driver->securityManager,
+                                            pid, priv->rememberOwner) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virSecurityManagerTransactionAbort(driver->securityManager);
+    return ret;
+}
+
+
+int
+qemuSecurityRestoreNetdevLabel(virQEMUDriver *driver,
+                               virDomainObj *vm,
+                               virDomainNetDef *net)
+{
+    int ret = -1;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    pid_t pid = -1;
+
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        pid = vm->pid;
+
+    if (virSecurityManagerTransactionStart(driver->securityManager) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerRestoreNetdevLabel(driver->securityManager,
+                                             vm->def, net) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerTransactionCommit(driver->securityManager,
+                                            pid, priv->rememberOwner) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virSecurityManagerTransactionAbort(driver->securityManager);
+    return ret;
+}
+
 
 /*
  * qemuSecurityStartVhostUserGPU:
