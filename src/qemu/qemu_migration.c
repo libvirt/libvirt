@@ -1272,9 +1272,17 @@ qemuMigrationSrcIsAllowedHostdev(const virDomainDef *def)
                 }
 
                 /* all other PCI hostdevs can't be migrated */
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                               _("cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"),
-                               virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
+                if (hostdev->parentnet) {
+                    virDomainNetType actualType = virDomainNetGetActualType(hostdev->parentnet);
+
+                    virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                                   _("cannot migrate a domain with <interface type='%s'>"),
+                                   virDomainNetTypeToString(actualType));
+                } else {
+                    virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                                   _("cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"),
+                                   virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
+                }
                 return false;
 
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
