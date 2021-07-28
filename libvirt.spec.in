@@ -1263,6 +1263,14 @@ then \
 fi \
 %libvirt_daemon_finish_restart %1
 
+%global libvirt_daemon_systemd_post() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1.service
+
+%global libvirt_daemon_systemd_post_inet() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.service
+
+%global libvirt_daemon_systemd_preun() %systemd_preun %1.service %1-ro.socket %1-admin.socket %1.socket
+
+%global libvirt_daemon_systemd_preun_inet() %systemd_preun %1.service %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.socket
+
 %pre daemon
 # 'libvirt' group is just to allow password-less polkit access to
 # libvirtd. The uid number is irrelevant, so we use dynamic allocation
@@ -1272,28 +1280,20 @@ getent group libvirt >/dev/null || groupadd -r libvirt
 exit 0
 
 %post daemon
-%global post_units \\\
-        virtlockd.socket virtlockd-admin.socket \\\
-        virtlogd.socket virtlogd-admin.socket \\\
-        libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket \\\
-        libvirtd-tcp.socket libvirtd-tls.socket \\\
-        libvirtd.service \\\
-        libvirt-guests.service
+%libvirt_daemon_systemd_post virtlogd
+%libvirt_daemon_systemd_post virtlockdd
+%libvirt_daemon_systemd_post_inet libvirtd
 
-%systemd_post %post_units
+%systemd_post libvirt-guests.service
 
 %libvirt_daemon_schedule_restart libvirtd
 
 %preun daemon
-%global preun_units \\\
-        libvirtd.service \\\
-        libvirtd-tcp.socket libvirtd-tls.socket \\\
-        libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket \\\
-        virtlogd.socket virtlogd-admin.socket virtlogd.service \\\
-        virtlockd.socket virtlockd-admin.socket virtlockd.service \\\
-        libvirt-guests.service
+%systemd_preun libvirt-guests.service
 
-%systemd_preun %preun_units
+%libvirt_daemon_systemd_preun_inet libvirtd
+%libvirt_daemon_systemd_preun virtlogd
+%libvirt_daemon_systemd_preun virtlockdd
 
 %postun daemon
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
