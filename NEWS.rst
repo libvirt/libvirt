@@ -46,6 +46,12 @@ v7.6.0 (unreleased)
     in the top layer. The intention was to emit two events only when the
     original registration was done without the index.
 
+  * qemu: Pass discard requests for disks with ``copy_on_read='on'``
+
+    When a disk using the ``copy_on_read='on'`` option is configured also with
+    ``discard='unmap'`` the discard requests will now be passed to the
+    underlying image freeing up the space.
+
 
 v7.5.0 (2021-07-01)
 ===================
