@@ -33,8 +33,8 @@ v7.6.0 (unreleased)
     Specifying s390-pv as launch security type in an s390 domain prepares for
     running the guest in protected virtualization secure mode, also known as
     IBM Secure Execution. This simplifies the definition and reduces the risk
-    of an incorrect definition, e.g. by forgetting to specify iommu=on on all
-    virtio devices.
+    of an incorrect definition, e.g. by forgetting to specify ``iommu=on`` on
+    all virtio devices.
 
 * **Improvements**
 
