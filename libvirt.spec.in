@@ -181,6 +181,11 @@
     %define with_dmidecode 0%{!?_without_dmidecode:1}
 %endif
 
+%define with_modular_daemons 0
+%if 0%{?fedora} >= 35 || 0%{?rhel} >= 9
+%define with_modular_daemons 1
+%endif
+
 # Force QEMU to run as non-root
 %define qemu_user  qemu
 %define qemu_group  qemu
@@ -1282,7 +1287,11 @@ exit 0
 %post daemon
 %libvirt_daemon_systemd_post virtlogd
 %libvirt_daemon_systemd_post virtlockdd
+%if %{with_modular_daemons}
+%libvirt_daemon_systemd_post_inet virtproxyd
+%else
 %libvirt_daemon_systemd_post_inet libvirtd
+%endif
 
 %systemd_post libvirt-guests.service
 
@@ -1292,6 +1301,7 @@ exit 0
 %systemd_preun libvirt-guests.service
 
 %libvirt_daemon_systemd_preun_inet libvirtd
+%libvirt_daemon_systemd_preun_inet virtproxyd
 %libvirt_daemon_systemd_preun virtlogd
 %libvirt_daemon_systemd_preun virtlockdd
 
@@ -1360,7 +1370,13 @@ fi
     %firewalld_reload
 %endif
 
+%if %{with_modular_daemons}
+%libvirt_daemon_systemd_post virtnetworkd
+%endif
 %libvirt_daemon_schedule_restart virtnetworkd
+
+%preun
+%libvirt_daemon_systemd_preun virtnetworkd
 
 %postun daemon-driver-network
 %if %{with_firewalld_zone}
@@ -1372,63 +1388,117 @@ fi
 
 
 %post daemon-driver-nwfilter
+%if %{with_modular_daemons}
+%libvirt_daemon_systemd_post virtnwfilterd
+%endif
 %libvirt_daemon_schedule_restart virtnwfilterd
+
+%preun daemon-driver-nwfilter
+%libvirt_daemon_systemd_preun virtnwfilterd
 
 %posttrans daemon-driver-nwfilter
 %libvirt_daemon_perform_restart virtnwfilterd
 
 
 %post daemon-driver-nodedev
+%if %{with_modular_daemons}
+%libvirt_daemon_systemd_post virtnodedevd
+%endif
 %libvirt_daemon_schedule_restart virtnodedevd
+
+%preun daemon-driver-nodedev
+%libvirt_daemon_systemd_preun virtnodedevd
 
 %posttrans daemon-driver-nodedev
 %libvirt_daemon_perform_restart virtnodedevd
 
 
 %post daemon-driver-interface
+%if %{with_modular_daemons}
+%libvirt_daemon_systemd_post virtinterfaced
+%endif
 %libvirt_daemon_schedule_restart virtinterfaced
+
+%preun daemon-driver-interface
+%libvirt_daemon_systemd_preun virtinterfaced
 
 %posttrans daemon-driver-interface
 %libvirt_daemon_perform_restart virtinterfaced
 
 
 %post daemon-driver-secret
+%if %{with_modular_daemons}
+%libvirt_daemon_systemd_post virtsecretd
+%endif
 %libvirt_daemon_schedule_restart virtsecretd
+
+%preun daemon-driver-secret
+%libvirt_daemon_systemd_preun virtsecretd
 
 %posttranstrans daemon-driver-secret
 %libvirt_daemon_perform_restart virtsecretd
 
 
 %post daemon-driver-storage
+%if %{with_modular_daemons}
+%libvirt_daemon_systemd_post virtstoraged
+%endif
 %libvirt_daemon_schedule_restart virtstoraged
+
+%preun daemon-driver-storage
+%libvirt_daemon_systemd_preun virtstoraged
 
 %posttrans daemon-driver-storage
 %libvirt_daemon_perform_restart virtstoraged
 
 
 %post daemon-driver-qemu
+%if %{with_modular_daemons}
+%libvirt_daemon_systemd_post virtqemud
+%endif
 %libvirt_daemon_schedule_restart virtqemud
+
+%preun daemon-driver-qemu
+%libvirt_daemon_systemd_preun virtqemud
 
 %posttrans daemon-driver-qemu
 %libvirt_daemon_perform_restart virtqemud
 
 
 %post daemon-driver-lxc
+%if %{with_modular_daemons}
+%libvirt_daemon_systemd_post virtlxcd
+%endif
 %libvirt_daemon_schedule_restart virtlxcd
+
+%preun daemon-driver-lxc
+%libvirt_daemon_systemd_preun virtlxcd
 
 %posttrans daemon-driver-lxc
 %libvirt_daemon_perform_restart virtlxcd
 
 
 %post daemon-driver-vbox
+%if %{with_modular_daemons}
+%libvirt_daemon_systemd_post virtvboxd
+%endif
 %libvirt_daemon_schedule_restart virtvboxd
+
+%preun daemon-driver-vbox
+%libvirt_daemon_systemd_preun virtvboxd
 
 %posttrans daemon-driver-vbox
 %libvirt_daemon_perform_restart virtvboxd
 
 
 %post daemon-driver-libxl
+%if %{with_modular_daemons}
+%libvirt_daemon_systemd_post virtxend
+%endif
 %libvirt_daemon_schedule_restart virtxend
+
+%preun daemon-driver-libxl
+%libvirt_daemon_systemd_preun virtxend
 
 %posttrans daemon-driver-libxl
 %libvirt_daemon_perform_restart virtxend
