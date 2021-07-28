@@ -1360,10 +1360,79 @@ fi
     %firewalld_reload
 %endif
 
+%libvirt_daemon_schedule_restart virtnetworkd
+
 %postun daemon-driver-network
 %if %{with_firewalld_zone}
     %firewalld_reload
 %endif
+
+%posttrans daemon-driver-network
+%libvirt_daemon_perform_restart virtnetworkd
+
+
+%post daemon-driver-nwfilter
+%libvirt_daemon_schedule_restart virtnwfilterd
+
+%posttrans daemon-driver-nwfilter
+%libvirt_daemon_perform_restart virtnwfilterd
+
+
+%post daemon-driver-nodedev
+%libvirt_daemon_schedule_restart virtnodedevd
+
+%posttrans daemon-driver-nodedev
+%libvirt_daemon_perform_restart virtnodedevd
+
+
+%post daemon-driver-interface
+%libvirt_daemon_schedule_restart virtinterfaced
+
+%posttrans daemon-driver-interface
+%libvirt_daemon_perform_restart virtinterfaced
+
+
+%post daemon-driver-secret
+%libvirt_daemon_schedule_restart virtsecretd
+
+%posttranstrans daemon-driver-secret
+%libvirt_daemon_perform_restart virtsecretd
+
+
+%post daemon-driver-storage
+%libvirt_daemon_schedule_restart virtstoraged
+
+%posttrans daemon-driver-storage
+%libvirt_daemon_perform_restart virtstoraged
+
+
+%post daemon-driver-qemu
+%libvirt_daemon_schedule_restart virtqemud
+
+%posttrans daemon-driver-qemu
+%libvirt_daemon_perform_restart virtqemud
+
+
+%post daemon-driver-lxc
+%libvirt_daemon_schedule_restart virtlxcd
+
+%posttrans daemon-driver-lxc
+%libvirt_daemon_perform_restart virtlxcd
+
+
+%post daemon-driver-vbox
+%libvirt_daemon_schedule_restart virtvboxd
+
+%posttrans daemon-driver-vbox
+%libvirt_daemon_perform_restart virtvboxd
+
+
+%post daemon-driver-libxl
+%libvirt_daemon_schedule_restart virtxend
+
+%posttrans daemon-driver-libxl
+%libvirt_daemon_perform_restart virtxend
+
 
 %post daemon-config-network
 if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ; then
