@@ -1337,6 +1337,32 @@ virVMXConfigScanResultsCollector(const char* name,
 }
 
 
+static int
+virVMXParseGenID(virConf *conf,
+                 virDomainDef *def)
+{
+    long long vmid[2] = { 0 };
+    g_autofree char *uuidstr = NULL;
+
+    if (virVMXGetConfigLong(conf, "vm.genid", &vmid[0], 0, true) < 0 ||
+        virVMXGetConfigLong(conf, "vm.genidX", &vmid[1], 0, true) < 0)
+        return -1;
+
+    if (vmid[0] == 0 && vmid[1] == 0)
+        return 0;
+
+    uuidstr = g_strdup_printf("%.16llx%.16llx", vmid[0], vmid[1]);
+    if (virUUIDParse(uuidstr, def->genid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not parse UUID from string '%s'"), uuidstr);
+        return -1;
+    }
+    def->genidRequested = true;
+
+    return 0;
+}
+
+
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * VMX -> Domain XML
@@ -1465,6 +1491,10 @@ virVMXParseConfig(virVMXContext *ctx,
             goto cleanup;
         }
     }
+
+    /* vmx:vm.genid + vm.genidX -> def:genid */
+    if (virVMXParseGenID(conf, def) < 0)
+        goto cleanup;
 
     /* vmx:annotation -> def:description */
     if (virVMXGetConfigString(conf, "annotation", &def->description,

@@ -1,6 +1,7 @@
 <domain type='vmware'>
   <name>w2019biosvmware</name>
   <uuid>421a6177-5aa9-abb7-5924-fc376c18a1b4</uuid>
+  <genid>13c67c91-9f47-526f-b0d6-e4dd2e4bb4f9</genid>
   <memory unit='KiB'>4194304</memory>
   <currentMemory unit='KiB'>4194304</currentMemory>
   <vcpu placement='static'>2</vcpu>
