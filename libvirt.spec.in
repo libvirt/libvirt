@@ -1248,6 +1248,21 @@ mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes.stp \
 # raising the test timeout
 VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
 
+%global libvirt_daemon_schedule_restart() mkdir -p %{_localstatedir}/lib/rpm-state/libvirt || : \
+/bin/systemctl is-active %1.service 1>/dev/null 2>&1 && \
+  touch %{_localstatedir}/lib/rpm-state/libvirt/restart-%1 || :
+
+%global libvirt_daemon_finish_restart() rm -f %{_localstatedir}/lib/rpm-state/libvirt/restart-%1 \
+rmdir %{_localstatedir}/lib/rpm-state/libvirt 2>/dev/null || :
+
+%global libvirt_daemon_needs_restart() -f %{_localstatedir}/lib/rpm-state/libvirt/restart-%1
+
+%global libvirt_daemon_perform_restart() if test %libvirt_daemon_needs_restart %1 \
+then \
+  /bin/systemctl try-restart %1.service >/dev/null 2>&1 || : \
+fi \
+%libvirt_daemon_finish_restart %1
+
 %pre daemon
 # 'libvirt' group is just to allow password-less polkit access to
 # libvirtd. The uid number is irrelevant, so we use dynamic allocation
@@ -1267,9 +1282,7 @@ exit 0
 
 %systemd_post %post_units
 
-# request daemon restart in posttrans
-mkdir -p %{_localstatedir}/lib/rpm-state/libvirt || :
-touch %{_localstatedir}/lib/rpm-state/libvirt/restart || :
+%libvirt_daemon_schedule_restart libvirtd
 
 %preun daemon
 %global preun_units \\\
@@ -1302,7 +1315,8 @@ if [ $1 -ge 1 ] ; then
 fi
 
 %posttrans daemon
-if [ -f %{_localstatedir}/lib/rpm-state/libvirt/restart ]; then
+if test %libvirt_daemon_needs_restart libvirtd
+then
     # See if user has previously modified their install to
     # tell libvirtd to use --listen
     grep -E '^LIBVIRTD_ARGS=.*--listen' /etc/sysconfig/libvirtd 1>/dev/null 2>&1
@@ -1338,7 +1352,8 @@ if [ -f %{_localstatedir}/lib/rpm-state/libvirt/restart ]; then
         fi
     fi
 fi
-rm -rf %{_localstatedir}/lib/rpm-state/libvirt || :
+
+%libvirt_daemon_finish_restart libvirtd
 
 %post daemon-driver-network
 %if %{with_firewalld_zone}
@@ -1388,15 +1403,11 @@ if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ;
     chmod 0600 %{_sysconfdir}/libvirt/qemu/networks/default.xml
 
     # Make sure libvirt picks up the new network defininiton
-    mkdir -p %{_localstatedir}/lib/rpm-state/libvirt || :
-    touch %{_localstatedir}/lib/rpm-state/libvirt/restart || :
+    %libvirt_daemon_schedule_restart libvirtd
 fi
 
 %posttrans daemon-config-network
-if [ -f %{_localstatedir}/lib/rpm-state/libvirt/restart ]; then
-    /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
-fi
-rm -rf %{_localstatedir}/lib/rpm-state/libvirt || :
+%libvirt_daemon_perform_restart libvirtd
 
 %post daemon-config-nwfilter
 for datadir_file in %{_datadir}/libvirt/nwfilter/*.xml; do
@@ -1407,15 +1418,10 @@ for datadir_file in %{_datadir}/libvirt/nwfilter/*.xml; do
   fi
 done
 # Make sure libvirt picks up the new nwfilter defininitons
-mkdir -p %{_localstatedir}/lib/rpm-state/libvirt || :
-touch %{_localstatedir}/lib/rpm-state/libvirt/restart || :
+%libvirt_daemon_schedule_restart libvirtd
 
 %posttrans daemon-config-nwfilter
-if [ -f %{_localstatedir}/lib/rpm-state/libvirt/restart ]; then
-    /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
-fi
-rm -rf %{_localstatedir}/lib/rpm-state/libvirt || :
-
+%libvirt_daemon_perform_restart libvirtd
 
 %if %{with_qemu}
 %pre daemon-driver-qemu
