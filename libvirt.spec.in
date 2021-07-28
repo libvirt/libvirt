@@ -1404,10 +1404,12 @@ if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ;
 
     # Make sure libvirt picks up the new network defininiton
     %libvirt_daemon_schedule_restart libvirtd
+    %libvirt_daemon_schedule_restart virtnetworkd
 fi
 
 %posttrans daemon-config-network
 %libvirt_daemon_perform_restart libvirtd
+%libvirt_daemon_perform_restart virtnetworkd
 
 %post daemon-config-nwfilter
 for datadir_file in %{_datadir}/libvirt/nwfilter/*.xml; do
@@ -1419,9 +1421,11 @@ for datadir_file in %{_datadir}/libvirt/nwfilter/*.xml; do
 done
 # Make sure libvirt picks up the new nwfilter defininitons
 %libvirt_daemon_schedule_restart libvirtd
+%libvirt_daemon_schedule_restart virtnwfilterd
 
 %posttrans daemon-config-nwfilter
 %libvirt_daemon_perform_restart libvirtd
+%libvirt_daemon_perform_restart virtnwfilterd
 
 %if %{with_qemu}
 %pre daemon-driver-qemu
