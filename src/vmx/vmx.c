@@ -2213,11 +2213,6 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt, virConf *conf,
     char mode_name[32] = "";
     char *mode = NULL;
 
-    if (def == NULL || *def != NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
-
     if (!(*def = virDomainDiskDefNew(xmlopt)))
         return -1;
 
