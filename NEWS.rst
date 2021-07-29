@@ -36,6 +36,12 @@ v7.6.0 (unreleased)
     of an incorrect definition, e.g. by forgetting to specify ``iommu=on`` on
     all virtio devices.
 
+  * domstats: Add haltpolling time statistic interface
+
+    Domstats now provide the data of cpu haltpolling time. This feature relies
+    on statistics available after kernel version 5.8. This will allow the user
+    to get more accurate CPU usage information if needed.
+
 * **Improvements**
 
 * **Bug fixes**
