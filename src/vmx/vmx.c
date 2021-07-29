@@ -1719,10 +1719,6 @@ virVMXParseConfig(virVMXContext *ctx,
     if (def->graphics[def->ngraphics] != NULL)
         ++def->ngraphics;
 
-    /* def:disks: 4 * 15 scsi + 4 * 30 sata + 2 * 2 ide + 2 floppy = 186 */
-    def->disks = g_new0(virDomainDiskDef *, 186);
-    def->ndisks = 0;
-
     /* def:disks (scsi) */
     for (controller = 0; controller < 4; ++controller) {
         if (virVMXParseSCSIController(conf, controller, &present,
@@ -1734,6 +1730,8 @@ virVMXParseConfig(virVMXContext *ctx,
             continue;
 
         for (unit = 0; unit < 16; ++unit) {
+            g_autoptr(virDomainDiskDef) disk = NULL;
+
             if (unit == 7) {
                 /*
                  * SCSI unit 7 is assigned to the SCSI controller and cannot be
@@ -1744,25 +1742,22 @@ virVMXParseConfig(virVMXContext *ctx,
 
             if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
                                 VIR_DOMAIN_DISK_BUS_SCSI, controller, unit,
-                                &def->disks[def->ndisks], def) < 0) {
+                                &disk, def) < 0) {
                 goto cleanup;
             }
 
-            if (def->disks[def->ndisks] != NULL) {
-                ++def->ndisks;
+            if (!disk &&
+                virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
+                                VIR_DOMAIN_DISK_BUS_SCSI, controller, unit,
+                                &disk, def) < 0) {
+                goto cleanup;
+            }
+
+            if (!disk)
                 continue;
-            }
 
-            if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
-                                 VIR_DOMAIN_DISK_BUS_SCSI, controller, unit,
-                                 &def->disks[def->ndisks], def) < 0) {
-                goto cleanup;
-            }
-
-            if (def->disks[def->ndisks] != NULL)
-                ++def->ndisks;
+            VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk);
         }
-
     }
 
     /* add all the SCSI controllers we've seen, up until the last one that is
@@ -1787,27 +1782,26 @@ virVMXParseConfig(virVMXContext *ctx,
             continue;
 
         for (unit = 0; unit < 30; ++unit) {
+            g_autoptr(virDomainDiskDef) disk = NULL;
+
             if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
                                 VIR_DOMAIN_DISK_BUS_SATA, controller, unit,
-                                &def->disks[def->ndisks], def) < 0) {
+                                &disk, def) < 0) {
                 goto cleanup;
             }
 
-            if (def->disks[def->ndisks] != NULL) {
-                ++def->ndisks;
-                continue;
-            }
-
-            if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
+            if (!disk &&
+                virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
                                  VIR_DOMAIN_DISK_BUS_SATA, controller, unit,
-                                 &def->disks[def->ndisks], def) < 0) {
+                                 &disk, def) < 0) {
                 goto cleanup;
             }
 
-            if (def->disks[def->ndisks] != NULL)
-                ++def->ndisks;
-        }
+            if (!disk)
+                continue;
 
+            VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk);
+        }
     }
 
     /* add all the SATA controllers we've seen, up until the last one that is
@@ -1824,38 +1818,42 @@ virVMXParseConfig(virVMXContext *ctx,
     /* def:disks (ide) */
     for (bus = 0; bus < 2; ++bus) {
         for (unit = 0; unit < 2; ++unit) {
+            g_autoptr(virDomainDiskDef) disk = NULL;
+
             if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
                                 VIR_DOMAIN_DISK_BUS_IDE, bus, unit,
-                                &def->disks[def->ndisks], def) < 0) {
+                                &disk, def) < 0) {
                 goto cleanup;
             }
 
-            if (def->disks[def->ndisks] != NULL) {
-                ++def->ndisks;
-                continue;
-            }
-
-            if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
+            if (!disk &&
+                virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
                                 VIR_DOMAIN_DISK_BUS_IDE, bus, unit,
-                                &def->disks[def->ndisks], def) < 0) {
+                                &disk, def) < 0) {
                 goto cleanup;
             }
 
-            if (def->disks[def->ndisks] != NULL)
-                ++def->ndisks;
+            if (!disk)
+                continue;
+
+            VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk);
         }
     }
 
     /* def:disks (floppy) */
     for (unit = 0; unit < 2; ++unit) {
+        g_autoptr(virDomainDiskDef) disk = NULL;
+
         if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_FLOPPY,
                             VIR_DOMAIN_DISK_BUS_FDC, 0, unit,
-                            &def->disks[def->ndisks], def) < 0) {
+                            &disk, def) < 0) {
             goto cleanup;
         }
 
-        if (def->disks[def->ndisks] != NULL)
-            ++def->ndisks;
+        if (!disk)
+            continue;
+
+        VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk);
     }
 
     /* def:fss */
