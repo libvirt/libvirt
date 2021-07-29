@@ -397,12 +397,13 @@ virNVMeDeviceListCreateReAttachList(virNVMeDeviceList *activeList,
         const virNVMeDevice *d = toReAttachList->devs[i];
         g_autoptr(virPCIDevice) pci = NULL;
         size_t nused = 0;
+        size_t j;
 
         /* Check if there is any other NVMe device with the same PCI address as
          * @d. To simplify this, let's just count how many NVMe devices with
          * the same PCI address there are on the @activeList. */
-        for (i = 0; i < activeList->count; i++) {
-            virNVMeDevice *other = activeList->devs[i];
+        for (j = 0; j < activeList->count; j++) {
+            virNVMeDevice *other = activeList->devs[j];
 
             if (!virPCIDeviceAddressEqual(&d->address, &other->address))
                 continue;
