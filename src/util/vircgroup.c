@@ -3973,3 +3973,34 @@ virCgroupGetCpuPeriodQuota(virCgroup *cgroup, unsigned long long *period,
 
     return 0;
 }
+
+
+/**
+ * virCgroupGetInode:
+ *
+ * @cgroup: the cgroup to get inode for
+ *
+ * Get the @cgroup inode and return its value to the caller.
+ *
+ * Returns inode on success, -1 on error with error message reported.
+ */
+int
+virCgroupGetInode(virCgroup *cgroup)
+{
+    struct stat st;
+    int controller = virCgroupGetAnyController(cgroup);
+    g_autofree char *path = NULL;
+
+    if (controller < 0)
+        return -1;
+
+    if (virCgroupPathOfController(cgroup, controller, "", &path) < 0)
+        return -1;
+
+    if (stat(path, &st) < 0) {
+        virReportSystemError(errno, _("failed to get stat for '%s'"), path);
+        return -1;
+    }
+
+    return st.st_ino;
+}

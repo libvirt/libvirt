@@ -283,3 +283,5 @@ int virCgroupSetOwner(virCgroup *cgroup,
 int virCgroupHasEmptyTasks(virCgroup *cgroup, int controller);
 
 bool virCgroupControllerAvailable(int controller);
+
+int virCgroupGetInode(virCgroup *cgroup);

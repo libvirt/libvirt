@@ -1922,6 +1922,7 @@ virCgroupGetCpuShares;
 virCgroupGetDevicePermsString;
 virCgroupGetDomainTotalCpuStats;
 virCgroupGetFreezerState;
+virCgroupGetInode;
 virCgroupGetMemoryHardLimit;
 virCgroupGetMemorySoftLimit;
 virCgroupGetMemoryStat;
