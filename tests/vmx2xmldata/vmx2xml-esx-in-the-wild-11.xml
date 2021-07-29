@@ -20,6 +20,11 @@
       <target dev='sda' bus='scsi'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/esx6.7-rhel7.7-x86_64_3.vmdk'/>
+      <target dev='sdp' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='16'/>
+    </disk>
     <controller type='scsi' index='0' model='vmpvscsi'/>
     <interface type='bridge'>
       <mac address='00:50:56:ac:3e:a1' type='generated'/>

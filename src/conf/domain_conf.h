@@ -2727,6 +2727,7 @@ struct _virDomainVirtioOptions {
 };
 
 
+#define SCSI_SUPER_WIDE_BUS_MAX_CONT_UNIT 64
 #define SCSI_WIDE_BUS_MAX_CONT_UNIT 16
 #define SCSI_NARROW_BUS_MAX_CONT_UNIT 7
 

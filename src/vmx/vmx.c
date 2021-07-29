@@ -1476,6 +1476,8 @@ virVMXParseConfig(virVMXContext *ctx,
                          "4 or higher but found %lld"),
                        virtualHW_version);
         goto cleanup;
+    } else if (virtualHW_version >= 13) {
+        def->scsiBusMaxUnit = SCSI_SUPER_WIDE_BUS_MAX_CONT_UNIT;
     }
 
     /* vmx:uuid.bios -> def:uuid */
@@ -1729,7 +1731,7 @@ virVMXParseConfig(virVMXContext *ctx,
         if (! present)
             continue;
 
-        for (unit = 0; unit < 16; ++unit) {
+        for (unit = 0; unit < def->scsiBusMaxUnit; unit++) {
             g_autoptr(virDomainDiskDef) disk = NULL;
 
             if (unit == 7) {
@@ -2164,7 +2166,8 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt, virConf *conf,
      *                    VIR_DOMAIN_DISK_DEVICE_LUN}
      *         busType = VIR_DOMAIN_DISK_BUS_SCSI
      * controllerOrBus = [0..3] -> controller
-     *            unit = [0..6,8..15]
+     *            unit = [0..6,8..15] for virtualHW_version < 13
+     *            unit = [0..6,8..64] for virtualHW_version >= 13
      *
      *          device = {VIR_DOMAIN_DISK_DEVICE_DISK,
      *                    VIR_DOMAIN_DISK_DEVICE_CDROM,
@@ -2230,10 +2233,10 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt, virConf *conf,
                 goto cleanup;
             }
 
-            if (unit < 0 || unit > 15 || unit == 7) {
+            if (unit < 0 || unit > vmdef->scsiBusMaxUnit || unit == 7) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("SCSI unit index %d out of [0..6,8..15] range"),
-                               unit);
+                               _("SCSI unit index %d out of [0..6,8..%u] range"),
+                               unit, vmdef->scsiBusMaxUnit);
                 goto cleanup;
             }
 
