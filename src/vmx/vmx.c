@@ -48,6 +48,10 @@ domain-xml                        <=>   vmx
                                         virtualHW.version = "8"                 # essential for ESX 5.0
                                         virtualHW.version = "9"                 # essential for ESX 5.1
                                         virtualHW.version = "10"                # essential for ESX 5.5
+                                        virtualHW.version = "11"                # essential for ESX 6.0
+                                        virtualHW.version = "13"                # essential for ESX 6.5
+                                        virtualHW.version = "14"                # essential for ESX 6.7
+                                        virtualHW.version = "17"                # essential for ESX 7.0
 
 
 ???                               <=>   guestOS = "<value>"                     # essential, FIXME: not representable
