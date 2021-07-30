@@ -332,6 +332,11 @@ void qemuTestDriverFree(virQEMUDriver *driver)
     virObjectUnref(driver->caps);
     virObjectUnref(driver->config);
     virObjectUnref(driver->securityManager);
+
+    virCPUDefFree(cpuDefault);
+    virCPUDefFree(cpuHaswell);
+    virCPUDefFree(cpuPower8);
+    virCPUDefFree(cpuPower9);
 }
 
 int qemuTestCapsCacheInsert(virFileCache *cache,
