@@ -4907,6 +4907,13 @@ virQEMUCapsIsValid(void *data,
             return false;
         }
 
+        if (virCPUDataIsIdentical(priv->cpuData, qemuCaps->cpuData) !=
+            VIR_CPU_COMPARE_IDENTICAL) {
+            VIR_DEBUG("Outdated capabilities for '%s': host cpuid changed",
+                      qemuCaps->binary);
+            return false;
+        }
+
         kvmSupportsNesting = virQEMUCapsKVMSupportsNesting();
         if (kvmSupportsNesting != qemuCaps->kvmSupportsNesting) {
             VIR_DEBUG("Outdated capabilities for '%s': kvm kernel nested "
@@ -5387,7 +5394,8 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 gid_t runGid,
                                 const char *hostCPUSignature,
                                 unsigned int microcodeVersion,
-                                const char *kernelVersion)
+                                const char *kernelVersion,
+                                virCPUData* cpuData)
 {
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
     struct stat sb;
@@ -5435,7 +5443,7 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
         qemuCaps->hostCPUSignature = g_strdup(hostCPUSignature);
         qemuCaps->microcodeVersion = microcodeVersion;
-        qemuCaps->cpuData = NULL;
+        qemuCaps->cpuData = virCPUDataNewCopy(cpuData);
 
         qemuCaps->kernelVersion = g_strdup(kernelVersion);
 
@@ -5460,7 +5468,8 @@ virQEMUCapsNewData(const char *binary,
                                            priv->runGid,
                                            priv->hostCPUSignature,
                                            virHostCPUGetMicrocodeVersion(priv->hostArch),
-                                           priv->kernelVersion);
+                                           priv->kernelVersion,
+                                           priv->cpuData);
 }
 
 
