@@ -905,6 +905,34 @@ qemuSetupCpuCgroup(virDomainObj *vm)
 
 
 static int
+qemuSetupCgroupAppid(virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    int inode = -1;
+    const char *path = "/sys/class/fc/fc_udev_device/appid_store";
+    g_autofree char *appid = NULL;
+    virDomainResourceDef *resource = vm->def->resource;
+
+    if (!resource || !resource->appid)
+        return 0;
+
+    inode = virCgroupGetInode(priv->cgroup);
+    if (inode < 0)
+        return -1;
+
+    appid = g_strdup_printf("%X:%s", inode, resource->appid);
+
+    if (virFileWriteStr(path, appid, 0) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to write '%s' to '%s'"), appid, path);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuInitCgroup(virDomainObj *vm,
                size_t nnicindexes,
                int *nicindexes)
@@ -1094,6 +1122,9 @@ qemuSetupCgroup(virDomainObj *vm,
         return -1;
 
     if (qemuSetupCpusetCgroup(vm) < 0)
+        return -1;
+
+    if (qemuSetupCgroupAppid(vm) < 0)
         return -1;
 
     return 0;
