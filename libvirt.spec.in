@@ -183,7 +183,7 @@
 
 %define with_modular_daemons 0
 %if 0%{?fedora} >= 35 || 0%{?rhel} >= 9
-%define with_modular_daemons 1
+    %define with_modular_daemons 1
 %endif
 
 # Force QEMU to run as non-root
@@ -1081,6 +1081,12 @@ exit 1
     %define arg_libssh2 -Dlibssh2=disabled
 %endif
 
+%if %{with_modular_daemons}
+    %define arg_remote_mode -Dremote_default_mode=direct
+%else
+    %define arg_remote_mode -Dremote_default_mode=legacy
+%endif
+
 %define when  %(date +"%%F-%%T")
 %define where %(hostname)
 %define who   %{?packager}%{!?packager:Unknown}
@@ -1111,7 +1117,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            -Ddriver_vz=disabled \
            -Ddriver_bhyve=disabled \
            -Ddriver_ch=disabled \
-           -Dremote_default_mode=legacy \
+           %{?arg_remote_mode} \
            -Ddriver_interface=enabled \
            -Ddriver_network=enabled \
            -Dstorage_fs=enabled \
