@@ -725,6 +725,7 @@ struct _virQEMUCaps {
     char *kernelVersion;
 
     virArch arch;
+    virCPUData *cpuData;
 
     size_t ngicCapabilities;
     virGICCapability *gicCapabilities;
@@ -1965,6 +1966,7 @@ virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
     ret->kernelVersion = g_strdup(qemuCaps->kernelVersion);
 
     ret->arch = qemuCaps->arch;
+    ret->cpuData = virCPUDataNewCopy(qemuCaps->cpuData);
 
     if (virQEMUCapsAccelCopy(&ret->kvm, &qemuCaps->kvm) < 0 ||
         virQEMUCapsAccelCopy(&ret->tcg, &qemuCaps->tcg) < 0)
@@ -2014,6 +2016,8 @@ void virQEMUCapsDispose(void *obj)
     g_free(qemuCaps->hostCPUSignature);
 
     g_free(qemuCaps->gicCapabilities);
+
+    virCPUDataFree(qemuCaps->cpuData);
 
     virSEVCapabilitiesFree(qemuCaps->sevCapabilities);
 
@@ -4260,6 +4264,12 @@ virQEMUCapsLoadCache(virArch hostArch,
     }
     VIR_FREE(str);
 
+    if (virXPathBoolean("boolean(./cpudata)", ctxt) > 0) {
+        qemuCaps->cpuData = virCPUDataParseNode(virXPathNode("./cpudata", ctxt));
+        if (!qemuCaps->cpuData)
+            goto cleanup;
+    }
+
     if (virQEMUCapsLoadAccel(qemuCaps, ctxt, VIR_DOMAIN_VIRT_KVM) < 0 ||
         virQEMUCapsLoadAccel(qemuCaps, ctxt, VIR_DOMAIN_VIRT_QEMU) < 0)
         goto cleanup;
@@ -4560,6 +4570,11 @@ virQEMUCapsFormatCache(virQEMUCaps *qemuCaps)
     if (qemuCaps->kernelVersion)
         virBufferAsprintf(&buf, "<kernelVersion>%s</kernelVersion>\n",
                           qemuCaps->kernelVersion);
+
+    if (qemuCaps->cpuData) {
+        g_autofree char * cpudata = virCPUDataFormat(qemuCaps->cpuData);
+        virBufferAsprintf(&buf, "%s", cpudata);
+    }
 
     virBufferAsprintf(&buf, "<arch>%s</arch>\n",
                       virArchToString(qemuCaps->arch));
@@ -5418,6 +5433,7 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
         qemuCaps->hostCPUSignature = g_strdup(hostCPUSignature);
         qemuCaps->microcodeVersion = microcodeVersion;
+        qemuCaps->cpuData = NULL;
 
         qemuCaps->kernelVersion = g_strdup(kernelVersion);
 
