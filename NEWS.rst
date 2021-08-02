@@ -8,7 +8,7 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v7.6.0 (unreleased)
+v7.6.0 (2021-08-02)
 ===================
 
 * **Security**
@@ -41,8 +41,6 @@ v7.6.0 (unreleased)
     Domstats now provide the data of cpu haltpolling time. This feature relies
     on statistics available after kernel version 5.8. This will allow the user
     to get more accurate CPU usage information if needed.
-
-* **Improvements**
 
 * **Bug fixes**
 
