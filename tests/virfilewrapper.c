@@ -78,8 +78,8 @@ virFileWrapperAddPrefix(const char *prefix,
 
     init_syms();
 
-    VIR_APPEND_ELEMENT_QUIET(prefixes, nprefixes, prefix);
-    VIR_APPEND_ELEMENT_QUIET(overrides, noverrides, override);
+    VIR_APPEND_ELEMENT(prefixes, nprefixes, prefix);
+    VIR_APPEND_ELEMENT(overrides, noverrides, override);
 }
 
 
