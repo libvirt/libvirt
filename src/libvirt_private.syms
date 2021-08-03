@@ -1760,6 +1760,7 @@ vir_g_strdup_vprintf;
 
 
 # util/viralloc.h
+virAppendElement;
 virDeleteElementsN;
 virExpandN;
 virInsertElementsN;

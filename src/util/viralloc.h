@@ -46,6 +46,14 @@ int virInsertElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
                        size_t typematchDummy, void *newelem,
                        bool clearOriginal, bool inPlace)
     G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+void virAppendElement(void *ptrptr,
+                      size_t size,
+                      size_t *countptr,
+                      size_t typematchDummy,
+                      void *newelem,
+                      bool clearOriginal,
+                      bool inPlace)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
                        size_t toremove, bool inPlace)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);

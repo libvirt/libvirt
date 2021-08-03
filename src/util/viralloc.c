@@ -261,6 +261,36 @@ virInsertElementsN(void *ptrptr,
 
 
 /**
+ * virAppendElement:
+ * @ptrptr:   pointer to hold address of allocated memory
+ * @size:     the size of one element in bytes
+ * @countptr: variable tracking number of elements currently allocated
+ * @typematchDummy: helper variable to consume results of compile time checks
+ * @newelem: pointer to a new element to append to @ptrptr
+ *           (the original will be zeroed out if clearOriginal is true)
+ * @clearOriginal: false if the new item in the array should be copied
+ *            from the original, and the original left intact.
+ *            true if the original should be 0'd out on success.
+ * @inPlace:  false if we should expand the allocated memory before
+ *            moving, true if we should assume someone else *has
+ *            already* done that.
+ *
+ * Re-allocate @ptrptr to fit an extra element and place @newelem at the end.
+ */
+void
+virAppendElement(void *ptrptr,
+                 size_t size,
+                 size_t *countptr,
+                 size_t typematchDummy G_GNUC_UNUSED,
+                 void *newelem,
+                 bool clearOriginal,
+                 bool inPlace)
+{
+    virInsertElementInternal(ptrptr, size, *countptr, countptr, newelem, clearOriginal, inPlace);
+}
+
+
+/**
  * virDeleteElementsN:
  * @ptrptr:   pointer to hold address of allocated memory
  * @size:     the size of one element in bytes
