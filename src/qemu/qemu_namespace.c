@@ -682,7 +682,8 @@ qemuDomainUnshareNamespace(virQEMUDriverConfig *cfg,
                            virDomainObj *vm)
 {
     const char *devPath = NULL;
-    char **devMountsPath = NULL, **devMountsSavePath = NULL;
+    g_auto(GStrv) devMountsPath = NULL;
+    g_auto(GStrv) devMountsSavePath = NULL;
     size_t ndevMountsPath = 0, i;
     int ret = -1;
 
@@ -791,8 +792,6 @@ qemuDomainUnshareNamespace(virQEMUDriverConfig *cfg,
         else
             unlink(devMountsSavePath[i]);
     }
-    virStringListFreeCount(devMountsPath, ndevMountsPath);
-    virStringListFreeCount(devMountsSavePath, ndevMountsPath);
     return ret;
 }
 
