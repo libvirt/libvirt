@@ -103,7 +103,7 @@ testReadNetworkConf(const void *data G_GNUC_UNUSED)
         .caps = openvzCapsInit(),
     };
 
-    if (!(def = virDomainDefNew()))
+    if (!(def = virDomainDefNew(driver.xmlopt)))
         goto cleanup;
 
     def->os.init = g_strdup("/sbin/init");

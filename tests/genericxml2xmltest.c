@@ -100,7 +100,7 @@ testCompareBackupXML(const void *opaque)
     }
 
     /* create a fake definition and fill it with disks */
-    if (!(fakedef = virDomainDefNew()))
+    if (!(fakedef = virDomainDefNew(xmlopt)))
         return -1;
 
     fakedef->ndisks = backup->ndisks + 1;

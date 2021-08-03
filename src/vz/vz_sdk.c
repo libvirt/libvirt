@@ -1789,7 +1789,7 @@ prlsdkLoadDomain(struct _vzDriver *driver,
     PRL_HANDLE job;
     char uuidstr[VIR_UUID_STRING_BRACED_BUFLEN];
 
-    if (!(def = virDomainDefNew()))
+    if (!(def = virDomainDefNew(driver->xmlopt)))
         goto error;
 
     if (!(def->name = prlsdkGetStringParamVar(PrlVmCfg_GetName, sdkdom)))

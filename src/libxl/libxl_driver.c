@@ -584,7 +584,7 @@ libxlAddDom0(libxlDriverPrivate *driver)
      * created.
      */
     if ((vm = virDomainObjListFindByID(driver->domains, 0)) == NULL) {
-        if (!(def = virDomainDefNew()))
+        if (!(def = virDomainDefNew(driver->xmlopt)))
             goto cleanup;
 
         def->id = 0;

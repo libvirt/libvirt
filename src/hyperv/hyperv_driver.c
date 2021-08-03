@@ -2678,7 +2678,7 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
-    if (!(def = virDomainDefNew()))
+    if (!(def = virDomainDefNew(priv->xmlopt)))
         return NULL;
 
     virUUIDFormat(domain->uuid, uuid_string);
@@ -3048,7 +3048,7 @@ hypervDomainAttachDeviceFlags(virDomainPtr domain, const char *xml, unsigned int
     virUUIDFormat(domain->uuid, uuid_string);
 
     /* get domain definition */
-    if (!(def = virDomainDefNew()))
+    if (!(def = virDomainDefNew(priv->xmlopt)))
         return -1;
 
     /* get domain device definition */

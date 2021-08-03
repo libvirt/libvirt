@@ -9110,7 +9110,7 @@ qemuProcessQMPConnectMonitor(qemuProcessQMP *proc)
 
     if (!(xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL, NULL, NULL)) ||
         !(proc->vm = virDomainObjNew(xmlopt)) ||
-        !(proc->vm->def = virDomainDefNew()))
+        !(proc->vm->def = virDomainDefNew(xmlopt)))
         goto cleanup;
 
     proc->vm->pid = proc->pid;

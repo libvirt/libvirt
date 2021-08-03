@@ -2726,6 +2726,11 @@ struct _virDomainVirtioOptions {
     virTristateSwitch packed;
 };
 
+
+#define SCSI_WIDE_BUS_MAX_CONT_UNIT 16
+#define SCSI_NARROW_BUS_MAX_CONT_UNIT 7
+
+
 /*
  * Guest VM main configuration
  *
@@ -2904,6 +2909,8 @@ struct _virDomainDef {
                              callbacks failed for a non-critical reason
                              (was not able to fill in some data) and thus
                              should be re-run before starting */
+
+    unsigned int scsiBusMaxUnit;
 };
 
 
@@ -3351,7 +3358,7 @@ virDomainGraphicsDefNew(virDomainXMLOption *xmlopt);
 virDomainNetDef *
 virDomainNetDefNew(virDomainXMLOption *xmlopt);
 
-virDomainDef *virDomainDefNew(void);
+virDomainDef *virDomainDefNew(virDomainXMLOption *xmlopt);
 
 void virDomainObjAssignDef(virDomainObj *domain,
                            virDomainDef *def,

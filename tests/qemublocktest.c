@@ -279,7 +279,7 @@ testQemuDiskXMLToProps(const void *opaque)
                                        VIR_DOMAIN_DEF_PARSE_STATUS)))
         return -1;
 
-    if (!(vmdef = virDomainDefNew()))
+    if (!(vmdef = virDomainDefNew(data->driver->xmlopt)))
         return -1;
 
     virDomainDiskInsert(vmdef, disk);

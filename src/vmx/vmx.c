@@ -1445,7 +1445,7 @@ virVMXParseConfig(virVMXContext *ctx,
         goto cleanup;
 
     /* Allocate domain def */
-    if (!(def = virDomainDefNew()))
+    if (!(def = virDomainDefNew(xmlopt)))
         goto cleanup;
 
     def->virtType = VIR_DOMAIN_VIRT_VMWARE;

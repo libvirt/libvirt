@@ -1103,7 +1103,7 @@ lxcParseConfigString(const char *config,
     if (!(properties = virConfReadString(config, VIR_CONF_FLAG_LXC_FORMAT)))
         return NULL;
 
-    if (!(vmdef = virDomainDefNew()))
+    if (!(vmdef = virDomainDefNew(xmlopt)))
         goto error;
 
     if (virUUIDGenerate(vmdef->uuid) < 0) {

@@ -3801,7 +3801,7 @@ virDomainObjNew(virDomainXMLOption *xmlopt)
 
 
 virDomainDef *
-virDomainDefNew(void)
+virDomainDefNew(virDomainXMLOption *xmlopt)
 {
     virDomainDef *ret;
 
@@ -3813,6 +3813,11 @@ virDomainDefNew(void)
     ret->mem.hard_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
     ret->mem.soft_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
     ret->mem.swap_hard_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+
+    if (xmlopt && xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_WIDE_SCSI)
+        ret->scsiBusMaxUnit = SCSI_WIDE_BUS_MAX_CONT_UNIT;
+    else
+        ret->scsiBusMaxUnit = SCSI_NARROW_BUS_MAX_CONT_UNIT;
 
     return ret;
 
@@ -5138,12 +5143,11 @@ virDomainSCSIDriveAddressIsUsed(const virDomainDef *def,
 /* Find out the next usable "unit" of a specific controller */
 static int
 virDomainControllerSCSINextUnit(const virDomainDef *def,
-                                unsigned int max_unit,
                                 unsigned int controller)
 {
     size_t i;
 
-    for (i = 0; i < max_unit; i++) {
+    for (i = 0; i < def->scsiBusMaxUnit; i++) {
         /* Default to assigning addresses using bus = target = 0 */
         const virDomainDeviceDriveAddress addr = {controller, 0, 0, i};
 
@@ -5155,22 +5159,13 @@ virDomainControllerSCSINextUnit(const virDomainDef *def,
 }
 
 
-#define SCSI_WIDE_BUS_MAX_CONT_UNIT 16
-#define SCSI_NARROW_BUS_MAX_CONT_UNIT 7
-
 static void
-virDomainHostdevAssignAddress(virDomainXMLOption *xmlopt,
+virDomainHostdevAssignAddress(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
                               const virDomainDef *def,
                               virDomainHostdevDef *hostdev)
 {
     int next_unit = 0;
     int controller = 0;
-    unsigned int max_unit;
-
-    if (xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_WIDE_SCSI)
-        max_unit = SCSI_WIDE_BUS_MAX_CONT_UNIT;
-    else
-        max_unit = SCSI_NARROW_BUS_MAX_CONT_UNIT;
 
     /* NB: Do not attempt calling virDomainDefMaybeAddController to
      * automagically add a "new" controller. Doing so will result in
@@ -5185,7 +5180,7 @@ virDomainHostdevAssignAddress(virDomainXMLOption *xmlopt,
      * hostdev being added to the as yet to be created controller.
      */
     do {
-        next_unit = virDomainControllerSCSINextUnit(def, max_unit, controller);
+        next_unit = virDomainControllerSCSINextUnit(def, controller);
         if (next_unit < 0)
             controller++;
     } while (next_unit < 0);
@@ -7657,7 +7652,7 @@ virDomainDeviceFindSCSIController(const virDomainDef *def,
 }
 
 int
-virDomainDiskDefAssignAddress(virDomainXMLOption *xmlopt,
+virDomainDiskDefAssignAddress(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
                               virDomainDiskDef *def,
                               const virDomainDef *vmdef)
 {
@@ -7677,14 +7672,14 @@ virDomainDiskDefAssignAddress(virDomainXMLOption *xmlopt,
 
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
 
-        if (xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_WIDE_SCSI) {
+        if (vmdef->scsiBusMaxUnit > SCSI_NARROW_BUS_MAX_CONT_UNIT) {
             /* For a wide SCSI bus we define the default mapping to be
              * 16 units per bus, 1 bus per controller, many controllers.
              * Unit 7 is the SCSI controller itself. Therefore unit 7
              * cannot be assigned to disks and is skipped.
              */
-            controller = idx / 15;
-            unit = idx % 15;
+            controller = idx / (vmdef->scsiBusMaxUnit - 1);
+            unit = idx % (vmdef->scsiBusMaxUnit - 1);
 
             /* Skip the SCSI controller at unit 7 */
             if (unit >= 7)
@@ -19528,7 +19523,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *tmp = NULL;
 
-    if (!(def = virDomainDefNew()))
+    if (!(def = virDomainDefNew(xmlopt)))
         return NULL;
 
     if (virDomainDefParseIDs(def, ctxt, flags, &uuid_generated) < 0)

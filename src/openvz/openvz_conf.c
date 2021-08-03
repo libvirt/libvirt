@@ -484,7 +484,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
         }
         *line++ = '\0';
 
-        if (!(def = virDomainDefNew()))
+        if (!(def = virDomainDefNew(driver->xmlopt)))
             goto cleanup;
 
         def->virtType = VIR_DOMAIN_VIRT_OPENVZ;

@@ -1038,7 +1038,7 @@ qemuMonitorCommonTestNew(virDomainXMLOption *xmlopt,
         test->vm = virDomainObjNew(xmlopt);
         if (!test->vm)
             goto error;
-        if (!(test->vm->def = virDomainDefNew()))
+        if (!(test->vm->def = virDomainDefNew(xmlopt)))
             goto error;
     }
 

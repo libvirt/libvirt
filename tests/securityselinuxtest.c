@@ -67,7 +67,7 @@ testBuildDomainDef(bool dynamic,
     virDomainDef *def;
     virSecurityLabelDef *secdef = NULL;
 
-    if (!(def = virDomainDefNew()))
+    if (!(def = virDomainDefNew(NULL)))
         goto error;
 
     def->virtType = VIR_DOMAIN_VIRT_KVM;

@@ -410,7 +410,7 @@ xenParseXM(virConf *conf,
 {
     virDomainDef *def = NULL;
 
-    if (!(def = virDomainDefNew()))
+    if (!(def = virDomainDefNew(xmlopt)))
         return NULL;
 
     def->virtType = VIR_DOMAIN_VIRT_XEN;

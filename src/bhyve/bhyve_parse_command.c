@@ -948,7 +948,7 @@ bhyveParseCommandLineString(const char* nativeConfig,
     int loader_argc = 0;
     char **loader_argv = NULL;
 
-    if (!(def = virDomainDefNew()))
+    if (!(def = virDomainDefNew(xmlopt)))
         goto cleanup;
 
     /* Initialize defaults. */
