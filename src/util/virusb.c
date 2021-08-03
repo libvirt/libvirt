@@ -447,7 +447,9 @@ virUSBDeviceListAdd(virUSBDeviceList *list,
                        (*dev)->name);
         return -1;
     }
-    return VIR_APPEND_ELEMENT(list->devs, list->count, *dev);
+    VIR_APPEND_ELEMENT(list->devs, list->count, *dev);
+
+    return 0;
 }
 
 virUSBDevice *

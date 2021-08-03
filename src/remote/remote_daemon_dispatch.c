@@ -4120,10 +4120,9 @@ remoteDispatchConnectDomainEventRegister(virNetServer *server G_GNUC_UNUSED,
     callback->callbackID = -1;
     callback->legacy = true;
     ref = callback;
-    if (VIR_APPEND_ELEMENT(priv->domainEventCallbacks,
-                           priv->ndomainEventCallbacks,
-                           callback) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(priv->domainEventCallbacks,
+                       priv->ndomainEventCallbacks,
+                       callback);
 
     if ((callbackID = virConnectDomainEventRegisterAny(conn,
                                                        NULL,
@@ -4348,10 +4347,9 @@ remoteDispatchConnectDomainEventRegisterAny(virNetServer *server G_GNUC_UNUSED,
     callback->callbackID = -1;
     callback->legacy = true;
     ref = callback;
-    if (VIR_APPEND_ELEMENT(priv->domainEventCallbacks,
-                           priv->ndomainEventCallbacks,
-                           callback) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(priv->domainEventCallbacks,
+                       priv->ndomainEventCallbacks,
+                       callback);
 
     if ((callbackID = virConnectDomainEventRegisterAny(conn,
                                                        NULL,
@@ -4422,10 +4420,9 @@ remoteDispatchConnectDomainEventCallbackRegisterAny(virNetServer *server G_GNUC_
     callback->eventID = args->eventID;
     callback->callbackID = -1;
     ref = callback;
-    if (VIR_APPEND_ELEMENT(priv->domainEventCallbacks,
-                           priv->ndomainEventCallbacks,
-                           callback) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(priv->domainEventCallbacks,
+                       priv->ndomainEventCallbacks,
+                       callback);
 
     if ((callbackID = virConnectDomainEventRegisterAny(conn,
                                                        dom,
@@ -5898,10 +5895,9 @@ remoteDispatchConnectNetworkEventRegisterAny(virNetServer *server G_GNUC_UNUSED,
     callback->eventID = args->eventID;
     callback->callbackID = -1;
     ref = callback;
-    if (VIR_APPEND_ELEMENT(priv->networkEventCallbacks,
-                           priv->nnetworkEventCallbacks,
-                           callback) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(priv->networkEventCallbacks,
+                       priv->nnetworkEventCallbacks,
+                       callback);
 
     if ((callbackID = virConnectNetworkEventRegisterAny(conn,
                                                         net,
@@ -6018,10 +6014,9 @@ remoteDispatchConnectStoragePoolEventRegisterAny(virNetServer *server G_GNUC_UNU
     callback->eventID = args->eventID;
     callback->callbackID = -1;
     ref = callback;
-    if (VIR_APPEND_ELEMENT(priv->storageEventCallbacks,
-                           priv->nstorageEventCallbacks,
-                           callback) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(priv->storageEventCallbacks,
+                       priv->nstorageEventCallbacks,
+                       callback);
 
     if ((callbackID = virConnectStoragePoolEventRegisterAny(conn,
                                                             pool,
@@ -6137,10 +6132,9 @@ remoteDispatchConnectNodeDeviceEventRegisterAny(virNetServer *server G_GNUC_UNUS
     callback->eventID = args->eventID;
     callback->callbackID = -1;
     ref = callback;
-    if (VIR_APPEND_ELEMENT(priv->nodeDeviceEventCallbacks,
-                           priv->nnodeDeviceEventCallbacks,
-                           callback) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(priv->nodeDeviceEventCallbacks,
+                       priv->nnodeDeviceEventCallbacks,
+                       callback);
 
     if ((callbackID = virConnectNodeDeviceEventRegisterAny(conn,
                                                            dev,
@@ -6256,10 +6250,9 @@ remoteDispatchConnectSecretEventRegisterAny(virNetServer *server G_GNUC_UNUSED,
     callback->eventID = args->eventID;
     callback->callbackID = -1;
     ref = callback;
-    if (VIR_APPEND_ELEMENT(priv->secretEventCallbacks,
-                           priv->nsecretEventCallbacks,
-                           callback) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(priv->secretEventCallbacks,
+                       priv->nsecretEventCallbacks,
+                       callback);
 
     if ((callbackID = virConnectSecretEventRegisterAny(conn,
                                                        secret,
@@ -6370,10 +6363,9 @@ qemuDispatchConnectDomainMonitorEventRegister(virNetServer *server G_GNUC_UNUSED
     callback->eventID = -1;
     callback->callbackID = -1;
     ref = callback;
-    if (VIR_APPEND_ELEMENT(priv->qemuEventCallbacks,
-                           priv->nqemuEventCallbacks,
-                           callback) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(priv->qemuEventCallbacks,
+                       priv->nqemuEventCallbacks,
+                       callback);
 
     if ((callbackID = virConnectDomainQemuMonitorEventRegister(conn,
                                                                dom,

@@ -794,10 +794,7 @@ static int lxcContainerSetReadOnly(void)
 
         tmp = g_strdup(mntent.mnt_dir);
 
-        if (VIR_APPEND_ELEMENT(mounts, nmounts, tmp) < 0) {
-            g_free(tmp);
-            goto cleanup;
-        }
+        VIR_APPEND_ELEMENT(mounts, nmounts, tmp);
     }
 
     if (!mounts) {

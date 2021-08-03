@@ -4227,9 +4227,7 @@ networkGetDHCPLeases(virNetworkPtr net,
             lease->clientid = g_strdup(virJSONValueObjectGetString(lease_tmp, "client-id"));
             lease->hostname = g_strdup(virJSONValueObjectGetString(lease_tmp, "hostname"));
 
-            if (VIR_APPEND_ELEMENT(leases_ret, nleases, lease) < 0)
-                goto cleanup;
-
+            VIR_APPEND_ELEMENT(leases_ret, nleases, lease);
         } else {
             nleases++;
         }

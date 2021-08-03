@@ -7245,8 +7245,7 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
 
     case VIR_DOMAIN_DEVICE_SOUND:
         sound = dev->data.sound;
-        if (VIR_APPEND_ELEMENT(vmdef->sounds, vmdef->nsounds, sound) < 0)
-            return -1;
+        VIR_APPEND_ELEMENT(vmdef->sounds, vmdef->nsounds, sound);
         dev->data.sound = NULL;
         break;
 
@@ -7319,8 +7318,7 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
             return -1;
         }
 
-        if (VIR_APPEND_ELEMENT(vmdef->rngs, vmdef->nrngs, dev->data.rng) < 0)
-            return -1;
+        VIR_APPEND_ELEMENT(vmdef->rngs, vmdef->nrngs, dev->data.rng);
         dev->data.rng = NULL;
 
         break;
@@ -7342,8 +7340,7 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
     case VIR_DOMAIN_DEVICE_REDIRDEV:
         redirdev = dev->data.redirdev;
 
-        if (VIR_APPEND_ELEMENT(vmdef->redirdevs, vmdef->nredirdevs, redirdev) < 0)
-            return -1;
+        VIR_APPEND_ELEMENT(vmdef->redirdevs, vmdef->nredirdevs, redirdev);
         dev->data.redirdev = NULL;
         break;
 
@@ -7369,8 +7366,7 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
         break;
 
     case VIR_DOMAIN_DEVICE_INPUT:
-        if (VIR_APPEND_ELEMENT(vmdef->inputs, vmdef->ninputs, dev->data.input) < 0)
-            return -1;
+        VIR_APPEND_ELEMENT(vmdef->inputs, vmdef->ninputs, dev->data.input);
         break;
 
     case VIR_DOMAIN_DEVICE_VSOCK:
@@ -17665,8 +17661,7 @@ qemuDomainGetResctrlMonData(virQEMUDriver *driver,
                                           &res->stats, &res->nstats) < 0)
                 goto error;
 
-            if (VIR_APPEND_ELEMENT(*resdata, *nresdata, res) < 0)
-                goto error;
+            VIR_APPEND_ELEMENT(*resdata, *nresdata, res);
         }
     }
 

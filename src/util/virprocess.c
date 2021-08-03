@@ -673,8 +673,7 @@ int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids)
             goto cleanup;
         tmp_pid = tmp;
 
-        if (VIR_APPEND_ELEMENT(*pids, *npids, tmp_pid) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT(*pids, *npids, tmp_pid);
     }
 
     if (value < 0)

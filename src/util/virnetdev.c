@@ -2799,8 +2799,7 @@ static int virNetDevGetMcastList(const char *ifname,
         /* Only return global multicast MAC addresses for
          * specified interface */
         if (entry->global && STREQ(ifname, entry->name)) {
-            if (VIR_APPEND_ELEMENT(mcast->entries, mcast->nentries, entry))
-                 return -1;
+            VIR_APPEND_ELEMENT(mcast->entries, mcast->nentries, entry);
         } else {
             memset(entry, 0, sizeof(virNetDevMcastEntry));
         }

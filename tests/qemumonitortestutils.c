@@ -465,19 +465,10 @@ qemuMonitorTestAddHandler(qemuMonitorTest *test,
     item->opaque = opaque;
 
     virMutexLock(&test->lock);
-    if (VIR_APPEND_ELEMENT(test->items, test->nitems, item) < 0) {
-        virMutexUnlock(&test->lock);
-        goto error;
-    }
+    VIR_APPEND_ELEMENT(test->items, test->nitems, item);
     virMutexUnlock(&test->lock);
 
     return 0;
-
- error:
-    if (freecb)
-        (freecb)(opaque);
-    VIR_FREE(item);
-    return -1;
 }
 
 void *

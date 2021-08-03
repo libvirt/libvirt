@@ -183,7 +183,9 @@ virSCSIVHostDeviceListAdd(virSCSIVHostDeviceList *list,
                        _("Device %s is already in use"), dev->name);
         return -1;
     }
-    return VIR_APPEND_ELEMENT(list->devs, list->count, dev);
+    VIR_APPEND_ELEMENT(list->devs, list->count, dev);
+
+    return 0;
 }
 
 

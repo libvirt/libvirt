@@ -285,8 +285,7 @@ ppc64VendorParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
         return -1;
     }
 
-    if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor);
 
     return 0;
 }
@@ -361,8 +360,7 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
         model->data.pvr[i].mask = pvr;
     }
 
-    if (VIR_APPEND_ELEMENT(map->models, map->nmodels, model) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT(map->models, map->nmodels, model);
 
     return 0;
 }

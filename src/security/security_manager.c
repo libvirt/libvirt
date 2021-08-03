@@ -684,9 +684,8 @@ virSecurityManagerGenLabel(virSecurityManager *mgr,
         } else {
             /* The seclabel must be added to @vm prior calling domainGenSecurityLabel
              * which may require seclabel to be presented already */
-            if (generated &&
-                VIR_APPEND_ELEMENT(vm->seclabels, vm->nseclabels, seclabel) < 0)
-                goto cleanup;
+            if (generated)
+                VIR_APPEND_ELEMENT(vm->seclabels, vm->nseclabels, seclabel);
 
             if (sec_managers[i]->drv->domainGenSecurityLabel(sec_managers[i], vm) < 0) {
                 if (VIR_DELETE_ELEMENT(vm->seclabels,

@@ -102,8 +102,7 @@ vshTableRowNew(const char *arg, va_list ap)
 
         tmp = g_strdup(arg);
 
-        if (VIR_APPEND_ELEMENT(row->cells, row->ncells, tmp) < 0)
-            goto error;
+        VIR_APPEND_ELEMENT(row->cells, row->ncells, tmp);
 
         arg = va_arg(ap, const char *);
     }
@@ -140,8 +139,7 @@ vshTableNew(const char *arg, ...)
     if (!header)
         goto error;
 
-    if (VIR_APPEND_ELEMENT(table->rows, table->nrows, header) < 0)
-        goto error;
+    VIR_APPEND_ELEMENT(table->rows, table->nrows, header);
 
     return table;
  error:
@@ -182,8 +180,7 @@ vshTableRowAppend(vshTable *table, const char *arg, ...)
         goto cleanup;
     }
 
-    if (VIR_APPEND_ELEMENT(table->rows, table->nrows, row) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(table->rows, table->nrows, row);
 
     ret = 0;
  cleanup:

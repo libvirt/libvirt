@@ -1086,16 +1086,12 @@ virNetServerGetClients(virNetServer *srv,
 
     for (i = 0; i < srv->nclients; i++) {
         virNetServerClient *client = virObjectRef(srv->clients[i]);
-        if (VIR_APPEND_ELEMENT(list, nclients, client) < 0) {
-            virObjectUnref(client);
-            goto cleanup;
-        }
+        VIR_APPEND_ELEMENT(list, nclients, client);
     }
 
     *clts = g_steal_pointer(&list);
     ret = nclients;
 
- cleanup:
     virObjectListFreeCount(list, nclients);
     virObjectUnlock(srv);
     return ret;

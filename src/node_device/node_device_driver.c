@@ -1191,8 +1191,7 @@ nodeDeviceParseMdevctlJSON(const char *jsonstring,
                 goto error;
             }
 
-            if (VIR_APPEND_ELEMENT(outdevs, noutdevs, child) < 0)
-                goto error;
+            VIR_APPEND_ELEMENT(outdevs, noutdevs, child);
         }
     }
 

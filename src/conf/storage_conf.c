@@ -609,11 +609,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
             return -1;
         }
 
-        if (VIR_APPEND_ELEMENT(source->devices, source->ndevice, dev) < 0) {
-            virStoragePoolSourceDeviceClear(&dev);
-            return -1;
-        }
-
+        VIR_APPEND_ELEMENT(source->devices, source->ndevice, dev);
     }
 
     sourcedir = virXPathString("string(./dir/@path)", ctxt);

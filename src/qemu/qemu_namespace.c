@@ -1226,9 +1226,8 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodData *data,
         g_free(next);
         next = g_strdup(item.target);
 
-        if (addToData &&
-            VIR_APPEND_ELEMENT(data->items, data->nitems, item) < 0)
-            return -1;
+        if (addToData)
+            VIR_APPEND_ELEMENT(data->items, data->nitems, item);
 
         if (!isLink)
             break;

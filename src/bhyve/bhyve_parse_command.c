@@ -328,10 +328,7 @@ bhyveParseBhyveLPCArg(virDomainDef *def,
             break;
         }
 
-        if (VIR_APPEND_ELEMENT(def->serials, def->nserials, chr) < 0) {
-            virDomainChrDefFree(chr);
-            goto error;
-        }
+        VIR_APPEND_ELEMENT(def->serials, def->nserials, chr);
     }
 
     VIR_FREE(type);
@@ -459,8 +456,7 @@ bhyveParsePCIDisk(virDomainDef *def,
 
     disk->dst[2] = 'a' + idx;
 
-    if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
-        goto error;
+    VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk);
 
     return 0;
 
@@ -536,8 +532,7 @@ bhyveParsePCINet(virDomainDef *def,
     if (!mac)
         virDomainNetGenerateMAC(xmlopt, &net->mac);
 
-    if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0)
-        goto error;
+    VIR_APPEND_ELEMENT(def->nets, def->nnets, net);
     return 0;
 
  error:
@@ -642,11 +637,8 @@ bhyveParsePCIFbuf(virDomainDef *def,
     }
 
  cleanup:
-    if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, video) < 0)
-        goto error;
-
-    if (VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, graphics) < 0)
-        goto error;
+    VIR_APPEND_ELEMENT(def->videos, def->nvideos, video);
+    VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, graphics);
 
     return 0;
 

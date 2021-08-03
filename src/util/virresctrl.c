@@ -2634,14 +2634,12 @@ virResctrlMonitorGetStats(virResctrlMonitor *monitor,
             if (rv < 0)
                 goto cleanup;
 
-            if (VIR_APPEND_ELEMENT(stat->vals, stat->nvals, val) < 0)
-                goto cleanup;
+            VIR_APPEND_ELEMENT(stat->vals, stat->nvals, val);
 
             stat->features[i] = g_strdup(resources[i]);
         }
 
-        if (VIR_APPEND_ELEMENT(*stats, *nstats, stat) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT(*stats, *nstats, stat);
     }
 
     /* Sort in id's ascending order */

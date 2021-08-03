@@ -849,9 +849,7 @@ virNodeDevCapMdevTypesParseXML(xmlXPathContextPtr ctxt,
 
         type->name = virXPathString("string(./name)", ctxt);
 
-        if (VIR_APPEND_ELEMENT(*mdev_types,
-                               *nmdev_types, type) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT(*mdev_types, *nmdev_types, type);
     }
 
     ret = 0;
@@ -1574,10 +1572,9 @@ virNodeDevCapPCIDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
 
         if (virPCIDeviceAddressParseXML(addrNodes[i], pciAddr) < 0)
             return -1;
-        if (VIR_APPEND_ELEMENT(pci_dev->iommuGroupDevices,
-                               pci_dev->nIommuGroupDevices,
-                               pciAddr) < 0)
-            return -1;
+        VIR_APPEND_ELEMENT(pci_dev->iommuGroupDevices,
+                           pci_dev->nIommuGroupDevices,
+                           pciAddr);
     }
 
     return 0;
@@ -1684,10 +1681,9 @@ virNodeDevPCICapSRIOVVirtualParseXML(xmlXPathContextPtr ctxt,
         if (virPCIDeviceAddressParseXML(addresses[i], addr) < 0)
             return -1;
 
-        if (VIR_APPEND_ELEMENT(pci_dev->virtual_functions,
-                               pci_dev->num_virtual_functions,
-                               addr) < 0)
-            return -1;
+        VIR_APPEND_ELEMENT(pci_dev->virtual_functions,
+                           pci_dev->num_virtual_functions,
+                           addr);
     }
 
     pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
@@ -1896,9 +1892,9 @@ virNodeDevCapMdevAttributeParseXML(xmlXPathContextPtr ctxt,
         return -1;
     }
 
-    return VIR_APPEND_ELEMENT(mdev->attributes,
-                              mdev->nattributes,
-                              attr);
+    VIR_APPEND_ELEMENT(mdev->attributes, mdev->nattributes, attr);
+
+    return 0;
 }
 
 static int

@@ -1893,8 +1893,7 @@ virVMXParseConfig(virVMXContext *ctx,
         if (!net)
             continue;
 
-        if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT(def->nets, def->nnets, net);
     }
 
     /* def:inputs */

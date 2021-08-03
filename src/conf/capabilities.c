@@ -2124,10 +2124,7 @@ virCapabilitiesInitResctrlMemory(virCaps *caps)
             node->id = bank->id;
             node->cpus = virBitmapNewCopy(bank->cpus);
 
-            if (VIR_APPEND_ELEMENT(caps->host.memBW.nodes,
-                                   caps->host.memBW.nnodes, node) < 0) {
-                goto cleanup;
-            }
+            VIR_APPEND_ELEMENT(caps->host.memBW.nodes, caps->host.memBW.nnodes, node);
         }
         virCapsHostMemBWNodeFree(node);
         node = NULL;
@@ -2250,11 +2247,7 @@ virCapabilitiesInitCaches(virCaps *caps)
                                            &bank->controls) < 0)
                     goto cleanup;
 
-                if (VIR_APPEND_ELEMENT(caps->host.cache.banks,
-                                       caps->host.cache.nbanks,
-                                       bank) < 0) {
-                    goto cleanup;
-                }
+                VIR_APPEND_ELEMENT(caps->host.cache.banks, caps->host.cache.nbanks, bank);
             }
 
             virCapsHostCacheBankFree(bank);

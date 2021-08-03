@@ -971,13 +971,8 @@ virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
             if ((*list)[i] == gid)
                 goto cleanup;
         }
-        if (VIR_APPEND_ELEMENT(*list, i, gid) < 0) {
-            ret = -1;
-            VIR_FREE(*list);
-            goto cleanup;
-        } else {
-            ret = i;
-        }
+        VIR_APPEND_ELEMENT(*list, i, gid);
+        ret = i;
     }
 
  cleanup:

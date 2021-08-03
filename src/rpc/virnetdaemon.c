@@ -237,7 +237,9 @@ collectServers(void *payload,
     if (!srv)
         return -1;
 
-    return VIR_APPEND_ELEMENT(*data->servers, data->nservers, srv);
+    VIR_APPEND_ELEMENT(*data->servers, data->nservers, srv);
+
+    return 0;
 }
 
 

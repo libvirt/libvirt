@@ -900,8 +900,7 @@ esxConnectListAllNetworks(virConnectPtr conn,
             virNetworkPtr net = virtualswitchToNetwork(conn, hostVirtualSwitch);
             if (!net)
                 goto cleanup;
-            if (VIR_APPEND_ELEMENT(*nets, count, net) < 0)
-                goto cleanup;
+            VIR_APPEND_ELEMENT(*nets, count, net);
         } else {
             ++count;
         }

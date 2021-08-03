@@ -1688,7 +1688,9 @@ virPCIDeviceListAdd(virPCIDeviceList *list,
                        _("Device %s is already in use"), dev->name);
         return -1;
     }
-    return VIR_APPEND_ELEMENT(list->devs, list->count, dev);
+    VIR_APPEND_ELEMENT(list->devs, list->count, dev);
+
+    return 0;
 }
 
 
@@ -1948,9 +1950,8 @@ virPCIGetIOMMUGroupAddressesAddOne(virPCIDeviceAddress *newDevAddr, void *opaque
 
     *copyAddr = *newDevAddr;
 
-    if (VIR_APPEND_ELEMENT(*addrList->iommuGroupDevices,
-                           *addrList->nIommuGroupDevices, copyAddr) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT(*addrList->iommuGroupDevices,
+                       *addrList->nIommuGroupDevices, copyAddr);
 
     return 0;
 }
@@ -2363,9 +2364,7 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
             goto error;
         }
 
-        if (VIR_APPEND_ELEMENT(*virtual_functions, *num_virtual_functions,
-                               config_addr) < 0)
-            goto error;
+        VIR_APPEND_ELEMENT(*virtual_functions, *num_virtual_functions, config_addr);
     } while (1);
 
     VIR_DEBUG("Found %zu virtual functions for %s",

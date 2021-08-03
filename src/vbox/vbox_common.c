@@ -3535,9 +3535,8 @@ vboxDumpDisplay(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
         graphics->data.desktop.display = g_strdup(getenv("DISPLAY"));
     }
 
-    if (graphics &&
-        VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, graphics) < 0)
-        goto cleanup;
+    if (graphics)
+        VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, graphics);
 
     gVBoxAPI.UIMachine.GetVRDEServer(machine, &VRDEServer);
     if (VRDEServer)
@@ -3574,8 +3573,7 @@ vboxDumpDisplay(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
         if (reuseSingleConnection)
             graphics->data.rdp.replaceUser = true;
 
-        if (VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, graphics) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, graphics);
     }
 
     ret = 0;
@@ -3758,10 +3756,7 @@ vboxDumpNetworks(virDomainDef *def, struct _vboxDriver *data, IMachine *machine,
 
         if (enabled) {
             net = vboxDumpNetwork(data, adapter);
-            if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0) {
-                VBOX_RELEASE(adapter);
-                return -1;
-            }
+            VIR_APPEND_ELEMENT(def->nets, def->nnets, net);
         }
 
         VBOX_RELEASE(adapter);

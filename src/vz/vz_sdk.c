@@ -553,8 +553,7 @@ prlsdkAddDomainVideoInfoCt(virDomainDef *def,
     video->type = VIR_DOMAIN_VIDEO_TYPE_PARALLELS;
     video->vram = 0;
 
-    if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, video) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(def->videos, def->nvideos, video);
 
     ret = 0;
  cleanup:
@@ -945,10 +944,7 @@ prlsdkGetNetAddresses(PRL_HANDLE sdknet, virDomainNetDef *net)
         if (!(ip = prlsdkParseNetAddress(addr)))
             continue;
 
-        if (VIR_APPEND_ELEMENT(net->guestIP.ips, net->guestIP.nips, ip) < 0) {
-            VIR_FREE(ip);
-            goto cleanup;
-        }
+        VIR_APPEND_ELEMENT(net->guestIP.ips, net->guestIP.nips, ip);
     }
 
     ret = 0;
@@ -979,8 +975,7 @@ prlsdkGetRoutes(PRL_HANDLE sdknet, virDomainNetDef *net)
                                                NULL, gw, 0, true, 0, false)))
             goto cleanup;
 
-        if (VIR_APPEND_ELEMENT(net->guestIP.routes, net->guestIP.nroutes, route) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT(net->guestIP.routes, net->guestIP.nroutes, route);
     }
 
     if (*gw6 != '\0') {
@@ -989,8 +984,7 @@ prlsdkGetRoutes(PRL_HANDLE sdknet, virDomainNetDef *net)
                                                NULL, gw6, 0, true, 0, false)))
             goto cleanup;
 
-        if (VIR_APPEND_ELEMENT(net->guestIP.routes, net->guestIP.nroutes, route) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT(net->guestIP.routes, net->guestIP.nroutes, route);
     }
 
     ret = 0;
@@ -1126,8 +1120,7 @@ prlsdkAddDomainNetInfo(PRL_HANDLE sdkdom, virDomainDef *def)
         PrlHandle_Free(netAdapter);
         netAdapter = PRL_INVALID_HANDLE;
 
-        if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0)
-            goto error;
+        VIR_APPEND_ELEMENT(def->nets, def->nnets, net);
     }
 
     return 0;
@@ -1242,8 +1235,7 @@ prlsdkAddSerialInfo(PRL_HANDLE sdkdom,
         PrlHandle_Free(serialPort);
         serialPort = PRL_INVALID_HANDLE;
 
-        if (VIR_APPEND_ELEMENT(*serials, *nserials, chr) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT(*serials, *nserials, chr);
     }
 
     return 0;
@@ -1327,8 +1319,7 @@ prlsdkAddVNCInfo(PRL_HANDLE sdkdom, virDomainDef *def)
 
     gr->listens[0].type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
 
-    if (VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, gr) < 0)
-        goto error;
+    VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, gr);
 
     return 0;
 

@@ -1638,10 +1638,7 @@ virLogParseOutputs(const char *src, virLogOutput ***outputs)
          * lose the old entry
          */
         at = virLogFindOutput(list, noutputs, output->dest, output->name);
-        if (VIR_APPEND_ELEMENT(list, noutputs, output) < 0) {
-            virLogOutputFree(output);
-            return -1;
-        }
+        VIR_APPEND_ELEMENT(list, noutputs, output);
         if (at >= 0) {
             virLogOutputFree(list[at]);
             VIR_DELETE_ELEMENT(list, at, noutputs);
@@ -1687,10 +1684,7 @@ virLogParseFilters(const char *src, virLogFilter ***filters)
         if (!(filter = virLogParseFilter(*next)))
             return -1;
 
-        if (VIR_APPEND_ELEMENT(list, nfilters, filter)) {
-            virLogFilterFree(filter);
-            return -1;
-        }
+        VIR_APPEND_ELEMENT(list, nfilters, filter);
     }
 
     *filters = g_steal_pointer(&list);

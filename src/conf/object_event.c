@@ -440,8 +440,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     cb->filter_opaque = filter_opaque;
     cb->legacy = legacy;
 
-    if (VIR_APPEND_ELEMENT(cbList->callbacks, cbList->count, cb) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(cbList->callbacks, cbList->count, cb);
 
     /* When additional filtering is being done, every client callback
      * is matched to exactly one server callback.  */
@@ -454,7 +453,6 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
             ret++;
     }
 
- cleanup:
     virObjectEventCallbackFree(cb);
     return ret;
 }
@@ -642,8 +640,8 @@ virObjectEventQueuePush(virObjectEventQueue *evtQueue,
     if (!evtQueue)
         return -1;
 
-    if (VIR_APPEND_ELEMENT(evtQueue->events, evtQueue->count, event) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT(evtQueue->events, evtQueue->count, event);
+
     return 0;
 }
 

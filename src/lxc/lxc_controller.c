@@ -597,8 +597,7 @@ static int virLXCControllerAppendNBDPids(virLXCController *ctrl,
         return -1;
 
     for (i = 0; i < npids; i++) {
-        if (VIR_APPEND_ELEMENT(ctrl->nbdpids, ctrl->nnbdpids, pids[i]) < 0)
-            return -1;
+        VIR_APPEND_ELEMENT(ctrl->nbdpids, ctrl->nnbdpids, pids[i]);
     }
 
     return 0;

@@ -355,8 +355,7 @@ openvzReadFSConf(virDomainDef *def,
         }
     }
 
-    if (VIR_APPEND_ELEMENT(def->fss, def->nfss, fs) < 0)
-        goto error;
+    VIR_APPEND_ELEMENT(def->fss, def->nfss, fs);
 
     VIR_FREE(temp);
 

@@ -599,8 +599,9 @@ virJSONValueObjectInsert(virJSONValue *object,
         ret = VIR_INSERT_ELEMENT(object->data.object.pairs, 0,
                                  object->data.object.npairs, pair);
     } else {
-        ret = VIR_APPEND_ELEMENT(object->data.object.pairs,
-                                 object->data.object.npairs, pair);
+        VIR_APPEND_ELEMENT(object->data.object.pairs,
+                           object->data.object.npairs, pair);
+        ret = 0;
     }
 
     if (ret == 0)

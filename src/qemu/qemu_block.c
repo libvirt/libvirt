@@ -1962,8 +1962,7 @@ qemuBlockStorageSourceChainDetachPrepareBlockdev(virStorageSource *src)
         if (!(backend = qemuBlockStorageSourceDetachPrepare(n, NULL)))
             return NULL;
 
-        if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, backend) < 0)
-            return NULL;
+        VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, backend);
     }
 
     return g_steal_pointer(&data);
@@ -1990,8 +1989,7 @@ qemuBlockStorageSourceChainDetachPrepareDrive(virStorageSource *src,
     if (!(backend = qemuBlockStorageSourceDetachPrepare(src, driveAlias)))
         return NULL;
 
-    if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, backend) < 0)
-        return NULL;
+    VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, backend);
 
     return g_steal_pointer(&data);
 }
@@ -2016,8 +2014,7 @@ qemuBlockStorageSourceChainDetachPrepareChardev(char *chardevAlias)
     backend->chardevAlias = chardevAlias;
     backend->chardevAdded = true;
 
-    if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, backend) < 0)
-        return NULL;
+    VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, backend);
 
     return g_steal_pointer(&data);
 }

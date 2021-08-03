@@ -1484,8 +1484,7 @@ qemuFirmwareGetSupported(const char *machine,
 
                 tmp->name = g_strdup(fwpath);
                 tmp->nvram = g_strdup(nvrampath);
-                if (VIR_APPEND_ELEMENT(*fws, *nfws, tmp) < 0)
-                    return -1;
+                VIR_APPEND_ELEMENT(*fws, *nfws, tmp);
             }
         }
     }

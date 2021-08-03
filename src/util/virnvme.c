@@ -191,11 +191,10 @@ virNVMeDeviceListAdd(virNVMeDeviceList *list,
         return -1;
     }
 
-    if (!(tmp = virNVMeDeviceCopy(dev)) ||
-        VIR_APPEND_ELEMENT(list->devs, list->count, tmp) < 0) {
-        virNVMeDeviceFree(tmp);
+    if (!(tmp = virNVMeDeviceCopy(dev)))
         return -1;
-    }
+
+    VIR_APPEND_ELEMENT(list->devs, list->count, tmp);
 
     return 0;
 }

@@ -201,9 +201,7 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDef *vol,
         extent.start = offset * size;
         extent.end = (offset * size) + length;
 
-        if (VIR_APPEND_ELEMENT(vol->source.extents, vol->source.nextent,
-                               extent) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT(vol->source.extents, vol->source.nextent, extent);
     }
 
     ret = 0;

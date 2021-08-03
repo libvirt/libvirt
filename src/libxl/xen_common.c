@@ -495,10 +495,7 @@ xenParsePCIList(virConf *conf, virDomainDef *def)
         if (!(hostdev = xenParsePCI(entry)))
             return -1;
 
-        if (VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev) < 0) {
-            virDomainHostdevDefFree(hostdev);
-            return -1;
-        }
+        VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev);
     }
 
     return 0;
@@ -983,8 +980,7 @@ xenParseCharDev(virConf *conf, virDomainDef *def, const char *nativeFormat)
                     goto cleanup;
                 chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
                 chr->target.port = portnum;
-                if (VIR_APPEND_ELEMENT(def->serials, def->nserials, chr) < 0)
-                    goto cleanup;
+                VIR_APPEND_ELEMENT(def->serials, def->nserials, chr);
             }
         } else {
             g_autofree char *serial = NULL;
@@ -1265,7 +1261,6 @@ xenParseVifList(virConf *conf, virDomainDef *def, const char *vif_typename)
 
     for (list = list->list; list; list = list->next) {
         virDomainNetDef *net = NULL;
-        int rc;
 
         if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
             continue;
@@ -1273,11 +1268,7 @@ xenParseVifList(virConf *conf, virDomainDef *def, const char *vif_typename)
         if (!(net = xenParseVif(list->str, vif_typename)))
             return -1;
 
-        rc = VIR_APPEND_ELEMENT(def->nets, def->nnets, net);
-        if (rc < 0) {
-            virDomainNetDefFree(net);
-            return -1;
-        }
+        VIR_APPEND_ELEMENT(def->nets, def->nnets, net);
     }
 
     return 0;
@@ -1339,7 +1330,7 @@ xenParseSxprSound(virDomainDef *def,
             snddef = g_new0(virDomainSoundDef, 1);
             snddef->model = model;
 
-            ignore_value(VIR_APPEND_ELEMENT(def->sounds, def->nsounds, snddef));
+            VIR_APPEND_ELEMENT(def->sounds, def->nsounds, snddef);
 
             if (!next)
                 break;

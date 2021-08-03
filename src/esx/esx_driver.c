@@ -5166,8 +5166,7 @@ esxDomainInterfaceAddresses(virDomainPtr domain,
                 else if (ret == 0)
                     continue;
 
-                if (VIR_APPEND_ELEMENT(iface->addrs, addrs_count, ip_addr)  < 0)
-                    goto cleanup;
+                VIR_APPEND_ELEMENT(iface->addrs, addrs_count, ip_addr);
             }
         } else {
             esxVI_String *str;
@@ -5182,9 +5181,7 @@ esxDomainInterfaceAddresses(virDomainPtr domain,
                 else if (ret == 0)
                     continue;
 
-                if (VIR_APPEND_ELEMENT(iface->addrs, addrs_count, ip_addr)  < 0)
-                    goto cleanup;
-
+                VIR_APPEND_ELEMENT(iface->addrs, addrs_count, ip_addr);
             }
         }
 

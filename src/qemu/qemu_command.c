@@ -8591,9 +8591,10 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
          */
         if (driver->privileged && nicindexes && nnicindexes &&
             net->ifname) {
-            if (virNetDevGetIndex(net->ifname, &nicindex) < 0 ||
-                VIR_APPEND_ELEMENT(*nicindexes, *nnicindexes, nicindex) < 0)
+            if (virNetDevGetIndex(net->ifname, &nicindex) < 0)
                 goto cleanup;
+
+            VIR_APPEND_ELEMENT(*nicindexes, *nnicindexes, nicindex);
         }
         break;
     }
@@ -11005,8 +11006,7 @@ qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDef *disk,
     if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, elem, qemuCaps) < 0)
         return NULL;
 
-    if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem) < 0)
-        return NULL;
+    VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem);
 
     return g_steal_pointer(&data);
 }
@@ -11030,8 +11030,7 @@ qemuBuildStorageSourceChainAttachPrepareChardev(virDomainDiskDef *disk)
     if (!(elem = qemuBuildStorageSourceAttachPrepareChardev(disk)))
         return NULL;
 
-    if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem) < 0)
-        return NULL;
+    VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem);
 
     return g_steal_pointer(&data);
 }
@@ -11051,8 +11050,7 @@ qemuBuildStorageSourceChainAttachPrepareBlockdevOne(qemuBlockStorageSourceChainD
     if (qemuBuildStorageSourceAttachPrepareCommon(src, elem, qemuCaps) < 0)
         return -1;
 
-    if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem);
 
     return 0;
 }

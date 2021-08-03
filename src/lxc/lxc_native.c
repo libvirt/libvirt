@@ -448,8 +448,7 @@ lxcAddNetworkRouteDefinition(const char *address,
                                          0, false)))
         return -1;
 
-    if (VIR_APPEND_ELEMENT(*routes, *nroutes, route) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT(*routes, *nroutes, route);
 
     return 0;
 }
@@ -569,8 +568,7 @@ lxcNetworkParseDataIPs(const char *name,
 
     g_strfreev(ipparts);
 
-    if (VIR_APPEND_ELEMENT(parseData->ips, parseData->nips, ip) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT(parseData->ips, parseData->nips, ip);
 
     return 0;
 }

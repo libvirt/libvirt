@@ -937,8 +937,7 @@ x86VendorParse(xmlXPathContextPtr ctxt,
     if (virCPUx86VendorToData(string, &vendor->data) < 0)
         return -1;
 
-    if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor);
 
     return 0;
 }
@@ -1145,8 +1144,7 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
     if (!feature->migratable)
         VIR_APPEND_ELEMENT_COPY(map->migrate_blockers, map->nblockers, feature);
 
-    if (VIR_APPEND_ELEMENT(map->features, map->nfeatures, feature) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT(map->features, map->nfeatures, feature);
 
     return 0;
 }
@@ -1679,8 +1677,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
     if (x86ModelParseFeatures(model, ctxt, map) < 0)
         return -1;
 
-    if (VIR_APPEND_ELEMENT(map->models, map->nmodels, model) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT(map->models, map->nmodels, model);
 
     return 0;
 }

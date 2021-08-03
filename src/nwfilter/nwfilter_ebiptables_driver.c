@@ -3315,8 +3315,7 @@ ebtablesGetSubChainInsts(GHashTable *chains,
         inst->protoidx = idx;
         inst->filtername = filter_names[i].key;
 
-        if (VIR_APPEND_ELEMENT(*insts, *ninsts, inst) < 0)
-            return -1;
+        VIR_APPEND_ELEMENT(*insts, *ninsts, inst);
     }
 
     return 0;

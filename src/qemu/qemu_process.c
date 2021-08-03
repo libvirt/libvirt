@@ -6001,8 +6001,7 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriver *driver,
             vcpupriv->vcpus != 0) {
             vcpupriv->alias = g_strdup_printf("vcpu%zu", i);
 
-            if (VIR_APPEND_ELEMENT(bootHotplug, nbootHotplug, vcpu) < 0)
-                goto cleanup;
+            VIR_APPEND_ELEMENT(bootHotplug, nbootHotplug, vcpu);
         }
     }
 

@@ -125,11 +125,9 @@ virSecuritySELinuxContextListAppend(virSecuritySELinuxContextList *list,
     item->remember = remember;
     item->restore = restore;
 
-    if (VIR_APPEND_ELEMENT(list->items, list->nItems, item) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(list->items, list->nItems, item);
 
     ret = 0;
- cleanup:
     virSecuritySELinuxContextItemFree(item);
     return ret;
 }
@@ -1894,11 +1892,7 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManager *mgr,
         if (!disk_seclabel)
             return -1;
         disk_seclabel->labelskip = true;
-        if (VIR_APPEND_ELEMENT(src->seclabels, src->nseclabels,
-                               disk_seclabel) < 0) {
-            virSecurityDeviceLabelDefFree(disk_seclabel);
-            return -1;
-        }
+        VIR_APPEND_ELEMENT(src->seclabels, src->nseclabels, disk_seclabel);
         ret = 0;
     }
 

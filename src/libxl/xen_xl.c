@@ -796,8 +796,7 @@ xenParseXLDisk(virConf *conf, virDomainDef *def)
             else
                 disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
 
-            if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
-                goto fail;
+            VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk);
 
             libxl_device_disk_dispose(libxldisk);
 
@@ -855,10 +854,7 @@ xenParseXLInputDevs(virConf *conf, virDomainDef *def)
                     input->type = VIR_DOMAIN_INPUT_TYPE_TABLET;
                 else if (STREQ(str, "keyboard"))
                     input->type = VIR_DOMAIN_INPUT_TYPE_KBD;
-                if (VIR_APPEND_ELEMENT(def->inputs, def->ninputs, input) < 0) {
-                    virDomainInputDefFree(input);
-                    return -1;
-                }
+                VIR_APPEND_ELEMENT(def->inputs, def->ninputs, input);
             }
             val = val->next;
         }
@@ -928,10 +924,7 @@ xenParseXLUSBController(virConf *conf, virDomainDef *def)
             controller->model = usbctrl_type;
             controller->opts.usbopts.ports = usbctrl_ports;
 
-            if (VIR_APPEND_ELEMENT(def->controllers, def->ncontrollers, controller) < 0) {
-                virDomainControllerDefFree(controller);
-                return -1;
-            }
+            VIR_APPEND_ELEMENT(def->controllers, def->ncontrollers, controller);
 
         skipusbctrl:
             list = list->next;
@@ -995,10 +988,7 @@ xenParseXLUSB(virConf *conf, virDomainDef *def)
             hostdev->source.subsys.u.usb.bus = busNum;
             hostdev->source.subsys.u.usb.device = devNum;
 
-            if (VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev) < 0) {
-                virDomainHostdevDefFree(hostdev);
-                return -1;
-            }
+            VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev);
 
         skipusb:
             list = list->next;
@@ -1073,8 +1063,7 @@ xenParseXLChannel(virConf *conf, virDomainDef *def)
             channel->targetType = VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN;
             channel->target.name = g_steal_pointer(&name);
 
-            if (VIR_APPEND_ELEMENT(def->channels, def->nchannels, channel) < 0)
-                goto cleanup;
+            VIR_APPEND_ELEMENT(def->channels, def->nchannels, channel);
 
         skipchannel:
             list = list->next;

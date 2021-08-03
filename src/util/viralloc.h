@@ -227,12 +227,10 @@ int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
  *   necessary memory re-allocation has already been done.
  *
  * These macros are safe to use on arguments with side effects.
- *
- * Returns -1 on failure (with OOM error reported), 0 on success
  */
 #define VIR_APPEND_ELEMENT(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count), \
-                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false)
+    virAppendElement(&(ptr), sizeof(*(ptr)), &(count), \
+                     VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false)
 #define VIR_APPEND_ELEMENT_COPY(ptr, count, newelem) \
     virAppendElement(&(ptr), sizeof(*(ptr)), &(count), \
                      VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, false)

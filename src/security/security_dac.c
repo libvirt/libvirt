@@ -121,8 +121,7 @@ virSecurityDACChownListAppend(virSecurityDACChownList *list,
     item->remember = remember;
     item->restore = restore;
 
-    if (VIR_APPEND_ELEMENT(list->items, list->nItems, item) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT(list->items, list->nItems, item);
 
     return 0;
 }

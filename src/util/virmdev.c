@@ -303,7 +303,9 @@ virMediatedDeviceListAdd(virMediatedDeviceList *list,
                        _("device %s is already in use"), (*dev)->path);
         return -1;
     }
-    return VIR_APPEND_ELEMENT(list->devs, list->count, *dev);
+    VIR_APPEND_ELEMENT(list->devs, list->count, *dev);
+
+    return 0;
 }
 
 
@@ -554,8 +556,7 @@ virMediatedDeviceGetMdevTypes(const char *sysfspath,
         if (virMediatedDeviceTypeReadAttrs(tmppath, &mdev_type) < 0)
             goto cleanup;
 
-        if (VIR_APPEND_ELEMENT(mdev_types, nmdev_types, mdev_type) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT(mdev_types, nmdev_types, mdev_type);
     }
 
     if (dirret < 0)

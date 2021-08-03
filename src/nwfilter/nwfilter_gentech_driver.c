@@ -266,10 +266,7 @@ virNWFilterRuleDefToRuleInst(virNWFilterDef *def,
     if (virNWFilterHashTablePutAll(vars, ruleinst->vars) < 0)
         goto cleanup;
 
-    if (VIR_APPEND_ELEMENT(inst->rules,
-                           inst->nrules,
-                           ruleinst) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(inst->rules, inst->nrules, ruleinst);
 
     ret = 0;
  cleanup:
@@ -316,10 +313,7 @@ virNWFilterIncludeDefToRuleInst(virNWFilterDriverState *driver,
         break;
     }
 
-    if (VIR_APPEND_ELEMENT(inst->filters,
-                           inst->nfilters,
-                           obj) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(inst->filters, inst->nfilters, obj);
     obj = NULL;
 
     if (virNWFilterDefToInst(driver,

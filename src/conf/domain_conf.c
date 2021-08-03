@@ -4820,10 +4820,7 @@ virDomainDefAddConsoleCompat(virDomainDef *def)
 
         /* create the serial port definition from the console definition */
         if (def->nserials == 0) {
-            if (VIR_APPEND_ELEMENT(def->serials,
-                                   def->nserials,
-                                   def->consoles[0]) < 0)
-                return -1;
+            VIR_APPEND_ELEMENT(def->serials, def->nserials, def->consoles[0]);
 
             /* modify it to be a serial port */
             def->serials[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
@@ -7475,9 +7472,10 @@ virDomainNetIPInfoParseXML(const char *source,
         goto cleanup;
 
     for (i = 0; i < nnodes; i++) {
-        if (!(ip = virDomainNetIPParseXML(nodes[i])) ||
-            VIR_APPEND_ELEMENT(def->ips, def->nips, ip) < 0)
+        if (!(ip = virDomainNetIPParseXML(nodes[i])))
             goto cleanup;
+
+        VIR_APPEND_ELEMENT(def->ips, def->nips, ip);
     }
     VIR_FREE(nodes);
 
@@ -7485,9 +7483,10 @@ virDomainNetIPInfoParseXML(const char *source,
         goto cleanup;
 
     for (i = 0; i < nnodes; i++) {
-        if (!(route = virNetDevIPRouteParseXML(source, nodes[i], ctxt)) ||
-            VIR_APPEND_ELEMENT(def->routes, def->nroutes, route) < 0)
+        if (!(route = virNetDevIPRouteParseXML(source, nodes[i], ctxt)))
             goto cleanup;
+
+        VIR_APPEND_ELEMENT(def->routes, def->nroutes, route);
     }
 
     ret = 0;
@@ -10120,8 +10119,7 @@ virDomainNetAppendIPAddress(virDomainNetDef *def,
         goto error;
     ipDef->prefix = prefix;
 
-    if (VIR_APPEND_ELEMENT(def->guestIP.ips, def->guestIP.nips, ipDef) < 0)
-        goto error;
+    VIR_APPEND_ELEMENT(def->guestIP.ips, def->guestIP.nips, ipDef);
 
     return 0;
 
@@ -12464,8 +12462,7 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDef *def,
     /* If no <listen/> element was found add a new one created by parsing
      * <graphics/> element. */
     if (def->nListens == 0) {
-        if (VIR_APPEND_ELEMENT(def->listens, def->nListens, newListen) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT(def->listens, def->nListens, newListen);
     } else {
         virDomainGraphicsListenDef *glisten = &def->listens[0];
 
@@ -15216,7 +15213,9 @@ virDomainChrTargetTypeToString(int deviceType,
 int
 virDomainHostdevInsert(virDomainDef *def, virDomainHostdevDef *hostdev)
 {
-    return VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev);
+    VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev);
+
+    return 0;
 }
 
 virDomainHostdevDef *
@@ -15631,13 +15630,7 @@ int virDomainNetInsert(virDomainDef *def, virDomainNetDef *net)
         virDomainHostdevInsert(def, &net->data.hostdev.def) < 0)
         return -1;
 
-    if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0) {
-        /* virDomainHostdevInsert just appends new hostdevs, so we are sure
-         * that the hostdev we've added a few lines above is at the end of
-         * array. Although, devices are indexed from zero ... */
-        virDomainHostdevRemove(def, def->nhostdevs - 1);
-        return -1;
-    }
+    VIR_APPEND_ELEMENT(def->nets, def->nnets, net);
     return 0;
 }
 
@@ -15835,8 +15828,7 @@ virDomainNetUpdate(virDomainDef *def,
         }
     } else if (newhostdev) {
         /* add newhostdev to end of def->hostdevs */
-        if (VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, newhostdev) < 0)
-            return -1;
+        VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, newhostdev);
     }
 
     def->nets[netidx] = newnet;
@@ -15952,8 +15944,7 @@ virDomainNetARPInterfaces(virDomainDef *def,
 
                 iface->addrs->addr = g_strdup(entry.ipaddr);
 
-                if (VIR_APPEND_ELEMENT(ifaces_ret, ifaces_count, iface) < 0)
-                    goto cleanup;
+                VIR_APPEND_ELEMENT(ifaces_ret, ifaces_count, iface);
             }
         }
     }
@@ -16649,7 +16640,9 @@ int
 virDomainShmemDefInsert(virDomainDef *def,
                         virDomainShmemDef *shmem)
 {
-    return VIR_APPEND_ELEMENT(def->shmems, def->nshmems, shmem);
+    VIR_APPEND_ELEMENT(def->shmems, def->nshmems, shmem);
+
+    return 0;
 }
 
 
@@ -17237,10 +17230,7 @@ virDomainDefMaybeAddInput(virDomainDef *def,
     input->type = type;
     input->bus = bus;
 
-    if (VIR_APPEND_ELEMENT(def->inputs, def->ninputs, input) < 0) {
-        VIR_FREE(input);
-        return -1;
-    }
+    VIR_APPEND_ELEMENT(def->inputs, def->ninputs, input);
 
     return 0;
 }
@@ -18581,10 +18571,7 @@ virDomainResctrlMonDefParse(virDomainDef *def,
         if (virResctrlMonitorSetID(domresmon->instance, id) < 0)
             goto cleanup;
 
-        if (VIR_APPEND_ELEMENT(resctrl->monitors,
-                               resctrl->nmonitors,
-                               domresmon) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT(resctrl->monitors, resctrl->nmonitors, domresmon);
 
         VIR_FREE(id);
         VIR_FREE(tmp);
@@ -18697,8 +18684,7 @@ virDomainCachetuneDefParse(virDomainDef *def,
         goto cleanup;
     }
 
-    if (VIR_APPEND_ELEMENT(def->resctrls, def->nresctrls, resctrl) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT(def->resctrls, def->nresctrls, resctrl);
 
     ret = 0;
  cleanup:
@@ -19063,8 +19049,7 @@ virDomainMemorytuneDefParse(virDomainDef *def,
      * only append the new @newresctrl object to domain if any of them is
      * not zero. */
     if (newresctrl && (nmons || n)) {
-        if (VIR_APPEND_ELEMENT(def->resctrls, def->nresctrls, newresctrl) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT(def->resctrls, def->nresctrls, newresctrl);
     }
 
     ret = 0;
@@ -22728,8 +22713,7 @@ virDomainDefAddImplicitVideo(virDomainDef *def, virDomainXMLOption *xmlopt)
     if (!(video = virDomainVideoDefNew(xmlopt)))
         return -1;
     video->type = VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
-    if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, video) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT(def->videos, def->nvideos, video);
 
     return 0;
 }
@@ -28694,7 +28678,9 @@ virDiskNameToBusDeviceIndex(virDomainDiskDef *disk,
 int
 virDomainFSInsert(virDomainDef *def, virDomainFSDef *fs)
 {
-    return VIR_APPEND_ELEMENT(def->fss, def->nfss, fs);
+    VIR_APPEND_ELEMENT(def->fss, def->nfss, fs);
+
+    return 0;
 }
 
 virDomainFSDef *

@@ -3852,8 +3852,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
             vol.source = g_steal_pointer(&source);
             vol.target = g_steal_pointer(&target);
-            if (VIR_APPEND_ELEMENT(vols, nvols, vol) < 0)
-                goto cleanup;
+            VIR_APPEND_ELEMENT(vols, nvols, vol);
         }
 
         /* print volumes specified by user that were not found in domain definition */

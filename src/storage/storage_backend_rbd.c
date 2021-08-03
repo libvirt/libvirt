@@ -639,8 +639,7 @@ virStorageBackendRBDGetVolNames(virStorageBackendRBDState *ptr)
 
         namedup = g_strdup(name);
 
-        if (VIR_APPEND_ELEMENT(names, nnames, namedup) < 0)
-            return NULL;
+        VIR_APPEND_ELEMENT(names, nnames, namedup);
 
         name += strlen(name) + 1;
     }

@@ -9253,8 +9253,7 @@ qemuMonitorJSONGetJobInfo(qemuMonitor *mon,
         if (!(job = qemuMonitorJSONGetJobInfoOne(virJSONValueArrayGet(data, i))))
             return -1;
 
-        if (VIR_APPEND_ELEMENT(*jobs, *njobs, job) < 0)
-            return -1;
+        VIR_APPEND_ELEMENT(*jobs, *njobs, job);
     }
 
     return 0;

@@ -812,10 +812,12 @@ int virTestMain(int argc,
     if (!getenv("LIBVIRT_DEBUG") && !virLogGetNbOutputs()) {
         if (!(output = virLogOutputNew(virtTestLogOutput, virtTestLogClose,
                                        &testLog, VIR_LOG_DEBUG,
-                                       VIR_LOG_TO_STDERR, NULL)) ||
-            VIR_APPEND_ELEMENT(outputs, noutputs, output) < 0 ||
-            virLogDefineOutputs(outputs, noutputs) < 0) {
-            virLogOutputFree(output);
+                                       VIR_LOG_TO_STDERR, NULL)))
+            return EXIT_FAILURE;
+
+        VIR_APPEND_ELEMENT(outputs, noutputs, output);
+
+        if (virLogDefineOutputs(outputs, noutputs) < 0) {
             virLogOutputListFree(outputs, noutputs);
             return EXIT_FAILURE;
         }

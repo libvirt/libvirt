@@ -1027,11 +1027,7 @@ virDomainObjListConvert(virDomainObjList *domlist,
 
         virObjectRef(vm);
 
-        if (VIR_APPEND_ELEMENT(*vms, *nvms, vm) < 0) {
-            virObjectRWUnlock(domlist);
-            virObjectUnref(vm);
-            goto error;
-        }
+        VIR_APPEND_ELEMENT(*vms, *nvms, vm);
     }
     virObjectRWUnlock(domlist);
 

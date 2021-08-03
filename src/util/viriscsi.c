@@ -369,8 +369,7 @@ virISCSIGetTargets(char **const groups,
 
     target = g_strdup(groups[1]);
 
-    if (VIR_APPEND_ELEMENT(list->targets, list->ntargets, target) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT(list->targets, list->ntargets, target);
 
     return 0;
 }

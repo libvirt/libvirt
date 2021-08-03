@@ -593,8 +593,7 @@ int virNetMessageAddFD(virNetMessage *msg,
                              newfd);
         goto error;
     }
-    if (VIR_APPEND_ELEMENT(msg->fds, msg->nfds, newfd) < 0)
-        goto error;
+    VIR_APPEND_ELEMENT(msg->fds, msg->nfds, newfd);
     return 0;
  error:
     VIR_FORCE_CLOSE(newfd);
