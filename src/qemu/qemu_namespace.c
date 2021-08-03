@@ -1250,8 +1250,7 @@ qemuNamespaceMknodPaths(virDomainObj *vm,
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    char **devMountsPath = NULL;
-    size_t ndevMountsPath = 0;
+    g_auto(GStrv) devMountsPath = NULL;
     qemuNamespaceMknodData data = { 0 };
     size_t i;
     int ret = -1;
@@ -1261,9 +1260,7 @@ qemuNamespaceMknodPaths(virDomainObj *vm,
         return 0;
 
     cfg = virQEMUDriverGetConfig(driver);
-    if (qemuDomainGetPreservedMounts(cfg, vm,
-                                     &devMountsPath, NULL,
-                                     &ndevMountsPath) < 0)
+    if (qemuDomainGetPreservedMounts(cfg, vm, &devMountsPath, NULL, NULL) < 0)
         return -1;
 
     data.driver = driver;
@@ -1304,7 +1301,6 @@ qemuNamespaceMknodPaths(virDomainObj *vm,
         }
     }
     qemuNamespaceMknodDataClear(&data);
-    virStringListFreeCount(devMountsPath, ndevMountsPath);
     return ret;
 }
 
