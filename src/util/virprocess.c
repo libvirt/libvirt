@@ -361,6 +361,23 @@ int virProcessKill(pid_t pid, int sig)
 }
 
 
+/* send signal to a process group */
+int virProcessGroupKill(pid_t pid, int sig G_GNUC_UNUSED)
+{
+    if (pid <= 1) {
+        errno = ESRCH;
+        return -1;
+    }
+
+#ifdef WIN32
+    errno = ENOSYS;
+    return -1;
+#else
+    return killpg(pid, sig);
+#endif
+}
+
+
 /*
  * Try to kill the process and verify it has exited
  *

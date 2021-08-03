@@ -52,6 +52,7 @@ virProcessWait(pid_t pid, int *exitstatus, bool raw)
     G_GNUC_WARN_UNUSED_RESULT;
 
 int virProcessKill(pid_t pid, int sig);
+int virProcessGroupKill(pid_t pid, int sig);
 
 int virProcessKillPainfully(pid_t pid, bool force);
 int virProcessKillPainfullyDelay(pid_t pid,
