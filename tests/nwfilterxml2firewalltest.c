@@ -269,12 +269,7 @@ virNWFilterDefToInst(const char *xml,
     if (!def)
         return -1;
 
-    if (VIR_APPEND_ELEMENT_COPY(inst->filters,
-                                inst->nfilters,
-                                def) < 0) {
-        virNWFilterDefFree(def);
-        goto cleanup;
-    }
+    VIR_APPEND_ELEMENT_COPY(inst->filters, inst->nfilters, def);
 
     for (i = 0; i < def->nentries; i++) {
         if (def->filterEntries[i]->rule) {

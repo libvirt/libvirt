@@ -206,8 +206,7 @@ openvzReadNetworkConf(virDomainDef *def,
             if (virDomainNetAppendIPAddress(net, token, AF_UNSPEC, 0) < 0)
                 goto error;
 
-            if (VIR_APPEND_ELEMENT_COPY(def->nets, def->nnets, net) < 0)
-                goto error;
+            VIR_APPEND_ELEMENT_COPY(def->nets, def->nnets, net);
 
             token = strtok_r(NULL, " ", &saveptr);
         }
@@ -275,7 +274,7 @@ openvzReadNetworkConf(virDomainDef *def,
                 }
             }
 
-            ignore_value(VIR_APPEND_ELEMENT_COPY(def->nets, def->nnets, net));
+            VIR_APPEND_ELEMENT_COPY(def->nets, def->nnets, net);
         }
     }
 

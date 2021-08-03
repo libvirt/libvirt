@@ -318,8 +318,7 @@ virLogHandlerNewPostExecRestart(virJSONValue *object,
         if (!(file = virLogHandlerLogFilePostExecRestart(handler, child)))
             goto error;
 
-        if (VIR_APPEND_ELEMENT_COPY(handler->files, handler->nfiles, file) < 0)
-            goto error;
+        VIR_APPEND_ELEMENT_COPY(handler->files, handler->nfiles, file);
 
         if ((file->watch = virEventAddHandle(file->pipefd,
                                              VIR_EVENT_HANDLE_READABLE,
@@ -401,8 +400,7 @@ virLogHandlerDomainOpenLogFile(virLogHandler *handler,
                                                DEFAULT_MODE)) == NULL)
         goto error;
 
-    if (VIR_APPEND_ELEMENT_COPY(handler->files, handler->nfiles, file) < 0)
-        goto error;
+    VIR_APPEND_ELEMENT_COPY(handler->files, handler->nfiles, file);
 
     if ((file->watch = virEventAddHandle(file->pipefd,
                                          VIR_EVENT_HANDLE_READABLE,

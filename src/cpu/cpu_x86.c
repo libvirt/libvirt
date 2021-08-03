@@ -514,9 +514,8 @@ virCPUx86DataAddItem(virCPUx86Data *data,
     if ((existing = virCPUx86DataGet(data, item))) {
         virCPUx86DataItemSetBits(existing, item);
     } else {
-        if (VIR_APPEND_ELEMENT_COPY(data->items, data->len,
-                                    *((virCPUx86DataItem *)item)) < 0)
-            return -1;
+        VIR_APPEND_ELEMENT_COPY(data->items, data->len,
+                                *((virCPUx86DataItem *)item));
 
         qsort(data->items, data->len,
               sizeof(virCPUx86DataItem), virCPUx86DataSorter);
@@ -1143,11 +1142,8 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
             return -1;
     }
 
-    if (!feature->migratable &&
-        VIR_APPEND_ELEMENT_COPY(map->migrate_blockers,
-                                map->nblockers,
-                                feature) < 0)
-        return -1;
+    if (!feature->migratable)
+        VIR_APPEND_ELEMENT_COPY(map->migrate_blockers, map->nblockers, feature);
 
     if (VIR_APPEND_ELEMENT(map->features, map->nfeatures, feature) < 0)
         return -1;

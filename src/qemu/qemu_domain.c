@@ -4001,11 +4001,7 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
         if (j == def->npanics) {
             virDomainPanicDef *panic = g_new0(virDomainPanicDef, 1);
 
-            if (VIR_APPEND_ELEMENT_COPY(def->panics,
-                                        def->npanics, panic) < 0) {
-                VIR_FREE(panic);
-                return -1;
-            }
+            VIR_APPEND_ELEMENT_COPY(def->panics, def->npanics, panic);
         }
     }
 

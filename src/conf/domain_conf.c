@@ -16573,8 +16573,7 @@ virDomainMemoryInsert(virDomainDef *def,
         return -1;
     }
 
-    if (VIR_APPEND_ELEMENT_COPY(def->mems, def->nmems, mem) < 0)
-        return -1;
+    VIR_APPEND_ELEMENT_COPY(def->mems, def->nmems, mem);
 
     virDomainDefSetMemoryTotal(def, memory + mem->size);
 
@@ -17141,10 +17140,7 @@ virDomainDefAddController(virDomainDef *def, int type, int idx, int model)
     cont->idx = idx;
     cont->model = model;
 
-    if (VIR_APPEND_ELEMENT_COPY(def->controllers, def->ncontrollers, cont) < 0) {
-        VIR_FREE(cont);
-        return NULL;
-    }
+    VIR_APPEND_ELEMENT_COPY(def->controllers, def->ncontrollers, cont);
 
     return cont;
 }
@@ -22780,15 +22776,9 @@ virDomainIOThreadIDAdd(virDomainDef *def,
 
     iothrid->iothread_id = iothread_id;
 
-    if (VIR_APPEND_ELEMENT_COPY(def->iothreadids, def->niothreadids,
-                                iothrid) < 0)
-        goto error;
+    VIR_APPEND_ELEMENT_COPY(def->iothreadids, def->niothreadids, iothrid);
 
     return iothrid;
-
- error:
-    virDomainIOThreadIDDefFree(iothrid);
-    return NULL;
 }
 
 
@@ -29304,13 +29294,9 @@ virDomainGraphicsListenAppendAddress(virDomainGraphicsDef *def,
 
     glisten.address = g_strdup(address);
 
-    if (VIR_APPEND_ELEMENT_COPY(def->listens, def->nListens, glisten) < 0)
-        goto error;
+    VIR_APPEND_ELEMENT_COPY(def->listens, def->nListens, glisten);
 
     return 0;
- error:
-    VIR_FREE(glisten.address);
-    return -1;
 }
 
 
@@ -29326,14 +29312,9 @@ virDomainGraphicsListenAppendSocket(virDomainGraphicsDef *def,
 
     glisten.socket = g_strdup(socketPath);
 
-    if (VIR_APPEND_ELEMENT_COPY(def->listens, def->nListens, glisten) < 0)
-        goto error;
+    VIR_APPEND_ELEMENT_COPY(def->listens, def->nListens, glisten);
 
     return 0;
-
- error:
-    VIR_FREE(glisten.socket);
-    return -1;
 }
 
 

@@ -1236,8 +1236,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
                                        virDomainNetGetActualHostdev(net)) < 0) {
             goto cleanup;
         }
-        if (VIR_APPEND_ELEMENT_COPY(vm->def->nets, vm->def->nnets, net) < 0)
-            goto cleanup;
+        VIR_APPEND_ELEMENT_COPY(vm->def->nets, vm->def->nnets, net);
 
         /* the rest of the setup doesn't apply to hostdev interfaces, so
          * we can skip straight to the cleanup (nothing there applies to
@@ -1272,8 +1271,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
      * locked memory limit). This means we will need to remove it if
      * there is a failure.
      */
-    if (VIR_APPEND_ELEMENT_COPY(vm->def->nets, vm->def->nnets, net) < 0)
-        goto cleanup;
+    VIR_APPEND_ELEMENT_COPY(vm->def->nets, vm->def->nnets, net);
 
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:

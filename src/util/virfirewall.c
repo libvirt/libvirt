@@ -313,13 +313,9 @@ virFirewallAddRuleFullV(virFirewall *firewall,
         ADD_ARG(rule, str);
 
     if (group->addingRollback) {
-        ignore_value(VIR_APPEND_ELEMENT_COPY(group->rollback,
-                                             group->nrollback,
-                                             rule));
+        VIR_APPEND_ELEMENT_COPY(group->rollback, group->nrollback, rule);
     } else {
-        ignore_value(VIR_APPEND_ELEMENT_COPY(group->action,
-                                             group->naction,
-                                             rule));
+        VIR_APPEND_ELEMENT_COPY(group->action, group->naction, rule);
     }
 
 

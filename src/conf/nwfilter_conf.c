@@ -394,11 +394,9 @@ virNWFilterRuleDefAddString(virNWFilterRuleDef *nwf,
                             const char *string,
                             size_t maxstrlen)
 {
-    char *tmp;
+    char *tmp = g_strndup(string, maxstrlen);
 
-    tmp = g_strndup(string, maxstrlen);
-    if (VIR_APPEND_ELEMENT_COPY(nwf->strings, nwf->nstrings, tmp) < 0)
-        VIR_FREE(tmp);
+    VIR_APPEND_ELEMENT_COPY(nwf->strings, nwf->nstrings, tmp);
 
     return tmp;
 }
@@ -2696,11 +2694,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
             }
 
             if (entry->rule || entry->include) {
-                if (VIR_APPEND_ELEMENT_COPY(ret->filterEntries,
-                                            ret->nentries, entry) < 0) {
-                    virNWFilterEntryFree(entry);
-                    goto cleanup;
-                }
+                VIR_APPEND_ELEMENT_COPY(ret->filterEntries, ret->nentries, entry);
             } else {
                 virNWFilterEntryFree(entry);
             }

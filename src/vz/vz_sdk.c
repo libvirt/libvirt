@@ -578,8 +578,7 @@ prlsdkAddDomainVideoInfoVm(PRL_HANDLE sdkdom, virDomainDef *def)
     video = g_new0(virDomainVideoDef, 1);
     accel = g_new0(virDomainVideoAccelDef, 1);
 
-    if (VIR_APPEND_ELEMENT_COPY(def->videos, def->nvideos, video) < 0)
-        goto error;
+    VIR_APPEND_ELEMENT_COPY(def->videos, def->nvideos, video);
 
     video->type = VIR_DOMAIN_VIDEO_TYPE_VGA;
     video->vram = videoRam << 10; /* from mbibytes to kbibytes */
@@ -587,11 +586,6 @@ prlsdkAddDomainVideoInfoVm(PRL_HANDLE sdkdom, virDomainDef *def)
     video->accel = accel;
 
     return 0;
-
- error:
-    VIR_FREE(accel);
-    virDomainVideoDefFree(video);
-    return -1;
 }
 
 static int
