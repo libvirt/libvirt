@@ -542,24 +542,19 @@ prlsdkAddDomainVideoInfoCt(virDomainDef *def,
                            virDomainXMLOption *xmlopt)
 {
     virDomainVideoDef *video = NULL;
-    int ret = -1;
 
     if (def->ngraphics == 0)
         return 0;
 
     if (!(video = virDomainVideoDefNew(xmlopt)))
-        goto cleanup;
+        return -1;
 
     video->type = VIR_DOMAIN_VIDEO_TYPE_PARALLELS;
     video->vram = 0;
 
     VIR_APPEND_ELEMENT(def->videos, def->nvideos, video);
 
-    ret = 0;
- cleanup:
-    virDomainVideoDefFree(video);
-
-    return ret;
+    return 0;
 }
 
 static int
