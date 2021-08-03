@@ -2647,6 +2647,7 @@ static int
 virNodeDeviceGetPCISRIOVCaps(const char *sysfsPath,
                              virNodeDevCapPCIDev *pci_dev)
 {
+    g_autoptr(virPCIVirtualFunctionList) vfs = g_new0(virPCIVirtualFunctionList, 1);
     size_t i;
     int ret;
 
@@ -2668,11 +2669,16 @@ virNodeDeviceGetPCISRIOVCaps(const char *sysfsPath,
     if (pci_dev->physical_function)
         pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
 
-    ret = virPCIGetVirtualFunctions(sysfsPath, &pci_dev->virtual_functions,
-                                    &pci_dev->num_virtual_functions,
-                                    &pci_dev->max_virtual_functions);
-    if (ret < 0)
-        return ret;
+    if (virPCIGetVirtualFunctions(sysfsPath, &vfs) < 0)
+        return -1;
+
+    pci_dev->virtual_functions = g_new0(virPCIDeviceAddress *, vfs->nfunctions);
+
+    for (i = 0; i < vfs->nfunctions; i++)
+        pci_dev->virtual_functions[i] = g_steal_pointer(&vfs->functions[i].addr);
+
+    pci_dev->num_virtual_functions = vfs->nfunctions;
+    pci_dev->max_virtual_functions = vfs->maxfunctions;
 
     if (pci_dev->num_virtual_functions > 0 ||
         pci_dev->max_virtual_functions > 0)

@@ -3017,6 +3017,7 @@ virPCIHeaderTypeToString;
 virPCIIsVirtualFunction;
 virPCIStubDriverTypeFromString;
 virPCIStubDriverTypeToString;
+virPCIVirtualFunctionListFree;
 virZPCIDeviceAddressIsIncomplete;
 virZPCIDeviceAddressIsPresent;
 

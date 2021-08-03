@@ -2247,6 +2247,22 @@ virZPCIDeviceAddressIsPresent(const virZPCIDeviceAddress *addr)
 }
 
 
+void
+virPCIVirtualFunctionListFree(virPCIVirtualFunctionList *list)
+{
+    size_t i;
+
+    if (!list)
+        return;
+
+    for (i = 0; i < list->nfunctions; i++) {
+        g_free(list->functions[i].addr);
+    }
+
+    g_free(list);
+}
+
+
 #ifdef __linux__
 
 virPCIDeviceAddress *
@@ -2321,62 +2337,54 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path,
  */
 int
 virPCIGetVirtualFunctions(const char *sysfs_path,
-                          virPCIDeviceAddress ***virtual_functions,
-                          size_t *num_virtual_functions,
-                          unsigned int *max_virtual_functions)
+                          virPCIVirtualFunctionList **vfs)
 {
-    size_t i;
     g_autofree char *totalvfs_file = NULL;
     g_autofree char *totalvfs_str = NULL;
-    g_autofree virPCIDeviceAddress *config_addr = NULL;
+    g_autoptr(virPCIVirtualFunctionList) list = g_new0(virPCIVirtualFunctionList, 1);
 
-    *virtual_functions = NULL;
-    *num_virtual_functions = 0;
-    *max_virtual_functions = 0;
+    *vfs = NULL;
 
     totalvfs_file = g_strdup_printf("%s/sriov_totalvfs", sysfs_path);
     if (virFileExists(totalvfs_file)) {
         char *end = NULL; /* so that terminating \n doesn't create error */
+        unsigned long long maxfunctions = 0;
 
         if (virFileReadAll(totalvfs_file, 16, &totalvfs_str) < 0)
-            goto error;
-        if (virStrToLong_ui(totalvfs_str, &end, 10, max_virtual_functions) < 0) {
+            return -1;
+        if (virStrToLong_ull(totalvfs_str, &end, 10, &maxfunctions) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unrecognized value in %s: %s"),
                            totalvfs_file, totalvfs_str);
-            goto error;
+            return -1;
         }
+        list->maxfunctions = maxfunctions;
     }
 
     do {
         g_autofree char *device_link = NULL;
+        struct virPCIVirtualFunction fnc = { NULL };
+
         /* look for virtfn%d links until one isn't found */
-        device_link = g_strdup_printf("%s/virtfn%zu", sysfs_path,
-                                      *num_virtual_functions);
+        device_link = g_strdup_printf("%s/virtfn%zu", sysfs_path, list->nfunctions);
 
         if (!virFileExists(device_link))
             break;
 
-        if (!(config_addr = virPCIGetDeviceAddressFromSysfsLink(device_link))) {
+        if (!(fnc.addr = virPCIGetDeviceAddressFromSysfsLink(device_link))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to get SRIOV function from device link '%s'"),
                            device_link);
-            goto error;
+            return -1;
         }
 
-        VIR_APPEND_ELEMENT(*virtual_functions, *num_virtual_functions, config_addr);
+        VIR_APPEND_ELEMENT(list->functions, list->nfunctions, fnc);
     } while (1);
 
-    VIR_DEBUG("Found %zu virtual functions for %s",
-              *num_virtual_functions, sysfs_path);
-    return 0;
+    VIR_DEBUG("Found %zu virtual functions for %s", list->nfunctions, sysfs_path);
 
- error:
-    for (i = 0; i < *num_virtual_functions; i++)
-        VIR_FREE((*virtual_functions)[i]);
-    VIR_FREE(*virtual_functions);
-    *num_virtual_functions = 0;
-    return -1;
+    *vfs = g_steal_pointer(&list);
+    return 0;
 }
 
 
@@ -2403,24 +2411,21 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
 {
     int ret = -1;
     size_t i;
-    size_t num_virt_fns = 0;
-    unsigned int max_virt_fns = 0;
     g_autofree virPCIDeviceAddress *vf_bdf = NULL;
-    virPCIDeviceAddress **virt_fns = NULL;
+    g_autoptr(virPCIVirtualFunctionList) virt_fns = NULL;
 
     if (!(vf_bdf = virPCIGetDeviceAddressFromSysfsLink(vf_sysfs_device_link)))
         return ret;
 
-    if (virPCIGetVirtualFunctions(pf_sysfs_device_link, &virt_fns,
-                                  &num_virt_fns, &max_virt_fns) < 0) {
+    if (virPCIGetVirtualFunctions(pf_sysfs_device_link, &virt_fns) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Error getting physical function's '%s' "
                          "virtual_functions"), pf_sysfs_device_link);
         goto out;
     }
 
-    for (i = 0; i < num_virt_fns; i++) {
-        if (virPCIDeviceAddressEqual(vf_bdf, virt_fns[i])) {
+    for (i = 0; i < virt_fns->nfunctions; i++) {
+        if (virPCIDeviceAddressEqual(vf_bdf, virt_fns->functions[i].addr)) {
             *vf_index = i;
             ret = 0;
             break;
@@ -2428,12 +2433,6 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
     }
 
  out:
-
-    /* free virtual functions */
-    for (i = 0; i < num_virt_fns; i++)
-        VIR_FREE(virt_fns[i]);
-
-    VIR_FREE(virt_fns);
     return ret;
 }
 
@@ -2641,9 +2640,7 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path G_GNUC_UNUSED,
 
 int
 virPCIGetVirtualFunctions(const char *sysfs_path G_GNUC_UNUSED,
-                          virPCIDeviceAddress ***virtual_functions G_GNUC_UNUSED,
-                          size_t *num_virtual_functions G_GNUC_UNUSED,
-                          unsigned int *max_virtual_functions G_GNUC_UNUSED)
+                          virPCIVirtualFunctionList **vfs G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;

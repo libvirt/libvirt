@@ -1231,7 +1231,7 @@ virNetDevGetVirtualFunctions(const char *pfname,
     size_t i;
     g_autofree char *pf_sysfs_device_link = NULL;
     g_autofree char *pfPhysPortID = NULL;
-    unsigned int max_vfs;
+    g_autoptr(virPCIVirtualFunctionList) vfs = NULL;
 
     *virt_fns = NULL;
     *n_vfname = 0;
@@ -1242,13 +1242,17 @@ virNetDevGetVirtualFunctions(const char *pfname,
     if (virNetDevSysfsFile(&pf_sysfs_device_link, pfname, "device") < 0)
         goto cleanup;
 
-    if (virPCIGetVirtualFunctions(pf_sysfs_device_link, virt_fns, n_vfname, &max_vfs) < 0)
+    if (virPCIGetVirtualFunctions(pf_sysfs_device_link, &vfs) < 0)
         goto cleanup;
 
-    *vfname = g_new0(char *, *n_vfname);
+    *vfname = g_new0(char *, vfs->nfunctions);
+    *virt_fns = g_new0(virPCIDeviceAddress *, vfs->nfunctions);
+    *n_vfname = vfs->nfunctions;
 
     for (i = 0; i < *n_vfname; i++) {
         g_autofree char *pci_sysfs_device_link = NULL;
+
+        virt_fns[i] = g_steal_pointer(&vfs->functions[i].addr);
 
         if (virPCIDeviceAddressGetSysfsFile((*virt_fns)[i],
                                             &pci_sysfs_device_link) < 0) {
