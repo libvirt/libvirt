@@ -148,7 +148,6 @@ void virShrinkN(void *ptrptr, size_t size, size_t *countptr, size_t toremove)
  * @size:     the size of one element in bytes
  * @at:       index within array where new elements should be added, -1 for end
  * @countptr: variable tracking number of elements currently allocated
- * @typematchDummy: helper variable to consume results of compile time checks
  * @newelems: pointer to array of one or more new elements to move into
  *            place (the originals will be zeroed out if successful
  *            and if clearOriginal is true)
@@ -168,24 +167,17 @@ void virShrinkN(void *ptrptr, size_t size, size_t *countptr, size_t toremove)
  * with zero.  at must be between [0,*countptr], except that -1 is
  * treated the same as *countptr for convenience.
  *
- * Returns -1 on failure, 0 on success
+ * Aborts on OOM failure.
  */
-int
-virInsertElementsN(void *ptrptr, size_t size, size_t at,
-                   size_t *countptr,
-                   size_t typematchDummy G_GNUC_UNUSED,
-                   void *newelems,
-                   bool clearOriginal, bool inPlace)
+static void
+virInsertElementInternal(void *ptrptr,
+                         size_t size,
+                         size_t at,
+                         size_t *countptr,
+                         void *newelems,
+                         bool clearOriginal,
+                         bool inPlace)
 {
-    if (at == -1) {
-        at = *countptr;
-    } else if (at > *countptr) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("out of bounds index - count %zu at %zu"),
-                       *countptr, at);
-        return -1;
-    }
-
     if (inPlace) {
         *countptr += 1;
     } else {
@@ -212,9 +204,61 @@ virInsertElementsN(void *ptrptr, size_t size, size_t at,
         /* NB: if inPlace, assume memory at the end wasn't initialized */
         memset(*(char**)ptrptr + (size * at), 0, size);
     }
+}
+
+
+/**
+ * virInsertElementsN:
+ * @ptrptr:   pointer to hold address of allocated memory
+ * @size:     the size of one element in bytes
+ * @at:       index within array where new elements should be added, -1 for end
+ * @countptr: variable tracking number of elements currently allocated
+ * @typematchDummy: helper variable to consume results of compile time checks
+ * @newelems: pointer to array of one or more new elements to move into
+ *            place (the originals will be zeroed out if successful
+ *            and if clearOriginal is true)
+ * @clearOriginal: false if the new item in the array should be copied
+ *            from the original, and the original left intact.
+ *            true if the original should be 0'd out on success.
+ * @inPlace:  false if we should expand the allocated memory before
+ *            moving, true if we should assume someone else *has
+ *            already* done that.
+ *
+ * Re-allocate an array of *countptr elements, each sizeof(*ptrptr) bytes
+ * long, to be *countptr elements long, then appropriately move
+ * the elements starting at ptrptr[at] up by 1 elements, copy the
+ * items from newelems into ptrptr[at], then store the address of
+ * allocated memory in *ptrptr and the new size in *countptr.  If
+ * newelems is NULL, the new elements at ptrptr[at] are instead filled
+ * with zero.  at must be between [0,*countptr], except that -1 is
+ * treated the same as *countptr for convenience.
+ *
+ * Returns -1 on failure, 0 on success
+ */
+int
+virInsertElementsN(void *ptrptr,
+                   size_t size,
+                   size_t at,
+                   size_t *countptr,
+                   size_t typematchDummy G_GNUC_UNUSED,
+                   void *newelems,
+                   bool clearOriginal,
+                   bool inPlace)
+{
+    if (at == -1) {
+        at = *countptr;
+    } else if (at > *countptr) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("out of bounds index - count %zu at %zu"),
+                       *countptr, at);
+        return -1;
+    }
+
+    virInsertElementInternal(ptrptr, size, at, countptr, newelems, clearOriginal, inPlace);
 
     return 0;
 }
+
 
 /**
  * virDeleteElementsN:
