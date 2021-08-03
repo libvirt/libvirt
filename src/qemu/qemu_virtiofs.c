@@ -281,7 +281,7 @@ qemuVirtioFSStop(virQEMUDriver *driver G_GNUC_UNUSED,
     if (!(pidfile = qemuVirtioFSCreatePidFilename(vm, fs->info.alias)))
         goto cleanup;
 
-    if (virPidFileForceCleanupPath(pidfile) < 0) {
+    if (virPidFileForceCleanupPathFull(pidfile, true) < 0) {
         VIR_WARN("Unable to kill virtiofsd process");
     } else {
         if (QEMU_DOMAIN_FS_PRIVATE(fs)->vhostuser_fs_sock)
