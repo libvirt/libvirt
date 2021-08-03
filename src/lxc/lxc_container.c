@@ -773,8 +773,7 @@ static int lxcContainerSetReadOnly(void)
     FILE *procmnt;
     struct mntent mntent;
     char mntbuf[1024];
-    int ret = -1;
-    char **mounts = NULL;
+    g_auto(GStrv) mounts = NULL;
     size_t nmounts = 0;
     size_t i;
 
@@ -797,13 +796,16 @@ static int lxcContainerSetReadOnly(void)
         VIR_APPEND_ELEMENT(mounts, nmounts, tmp);
     }
 
-    if (!mounts) {
-        ret = 0;
-        goto cleanup;
-    }
+    endmntent(procmnt);
 
-    qsort(mounts, nmounts, sizeof(mounts[0]),
-          virStringSortRevCompare);
+    if (!mounts)
+        return 0;
+
+    qsort(mounts, nmounts, sizeof(mounts[0]), virStringSortRevCompare);
+
+    /* turn 'mounts' into a proper GStrv */
+    VIR_EXPAND_N(mounts, nmounts, 1);
+    nmounts--;
 
     for (i = 0; i < nmounts; i++) {
         VIR_DEBUG("Bind readonly %s", mounts[i]);
@@ -811,16 +813,11 @@ static int lxcContainerSetReadOnly(void)
             virReportSystemError(errno,
                                  _("Failed to make mount %s readonly"),
                                  mounts[i]);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    virStringListFreeCount(mounts, nmounts);
-    endmntent(procmnt);
-    return ret;
-
+    return 0;
 }
 
 
