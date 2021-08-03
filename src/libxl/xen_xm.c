@@ -238,9 +238,9 @@ xenParseXMDisk(char *entry, int hvm)
 static int
 xenParseXMDiskList(virConf *conf, virDomainDef *def)
 {
-    char **disks = NULL, **entries;
+    g_auto(GStrv) disks = NULL;
+    GStrv entries;
     int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
-    int ret = -1;
     int rc;
 
     rc = virConfGetValueStringList(conf, "disk", false, &disks);
@@ -258,10 +258,7 @@ xenParseXMDiskList(virConf *conf, virDomainDef *def)
         VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk);
     }
 
-    ret = 0;
-
-    g_strfreev(disks);
-    return ret;
+    return 0;
 }
 
 
