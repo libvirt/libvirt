@@ -1187,12 +1187,10 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodData *data,
                             virQEMUDriverConfig *cfg,
                             virDomainObj *vm,
                             const char *file,
-                            char * const *devMountsPath,
-                            size_t ndevMountsPath)
+                            GStrv devMountsPath)
 {
     long ttl = sysconf(_SC_SYMLOOP_MAX);
     g_autofree char *next = g_strdup(file);
-    size_t i;
 
     while (1) {
         g_auto(qemuNamespaceMknodItem) item = { 0 };
@@ -1213,14 +1211,19 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodData *data,
         next = g_strdup(item.target);
 
         if (STRPREFIX(item.file, QEMU_DEVPREFIX)) {
-            for (i = 0; i < ndevMountsPath; i++) {
-                if (STREQ(devMountsPath[i], "/dev"))
+            GStrv n;
+            bool found = false;
+
+            for (n = devMountsPath; n && *n; n++) {
+                if (STREQ(*n, "/dev"))
                     continue;
-                if (STRPREFIX(item.file, devMountsPath[i]))
+                if (STRPREFIX(item.file, *n)) {
+                    found = true;
                     break;
+                }
             }
 
-            if (i == ndevMountsPath)
+            if (!found)
                 VIR_APPEND_ELEMENT(data->items, data->nitems, item);
         }
 
@@ -1269,8 +1272,7 @@ qemuNamespaceMknodPaths(virDomainObj *vm,
     for (next = paths; next; next = next->next) {
         const char *path = next->data;
 
-        if (qemuNamespacePrepareOneItem(&data, cfg, vm, path,
-                                        devMountsPath, ndevMountsPath) < 0)
+        if (qemuNamespacePrepareOneItem(&data, cfg, vm, path, devMountsPath) < 0)
             goto cleanup;
     }
 
