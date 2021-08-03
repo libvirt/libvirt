@@ -378,6 +378,23 @@ int virProcessGroupKill(pid_t pid, int sig G_GNUC_UNUSED)
 }
 
 
+/* get process group from a pid */
+pid_t virProcessGroupGet(pid_t pid)
+{
+    if (pid <= 1) {
+        errno = ESRCH;
+        return -1;
+    }
+
+#ifdef WIN32
+    errno = ENOSYS;
+    return -1;
+#else
+    return getpgid(pid);
+#endif
+}
+
+
 /*
  * Try to kill the process and verify it has exited
  *

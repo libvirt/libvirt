@@ -3070,6 +3070,7 @@ virProcessGetMaxMemLock;
 virProcessGetNamespaces;
 virProcessGetPids;
 virProcessGetStartTime;
+virProcessGroupGet;
 virProcessGroupKill;
 virProcessKill;
 virProcessKillPainfully;

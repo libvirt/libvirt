@@ -53,6 +53,7 @@ virProcessWait(pid_t pid, int *exitstatus, bool raw)
 
 int virProcessKill(pid_t pid, int sig);
 int virProcessGroupKill(pid_t pid, int sig);
+pid_t virProcessGroupGet(pid_t pid);
 
 int virProcessKillPainfully(pid_t pid, bool force);
 int virProcessKillPainfullyDelay(pid_t pid,
