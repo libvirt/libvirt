@@ -1077,7 +1077,6 @@ int
 virNetServerGetClients(virNetServer *srv,
                        virNetServerClient ***clts)
 {
-    int ret = -1;
     size_t i;
     size_t nclients = 0;
     virNetServerClient **list = NULL;
@@ -1090,11 +1089,10 @@ virNetServerGetClients(virNetServer *srv,
     }
 
     *clts = g_steal_pointer(&list);
-    ret = nclients;
 
-    virObjectListFreeCount(list, nclients);
     virObjectUnlock(srv);
-    return ret;
+
+    return nclients;
 }
 
 virNetServerClient *
