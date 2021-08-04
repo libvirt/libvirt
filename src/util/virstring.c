@@ -70,29 +70,6 @@ virStringListMerge(char ***dst,
 }
 
 
-/**
- * virStringListFreeCount:
- * @strings: array of strings to free
- * @count: number of elements in the array
- *
- * Frees a string array of @count length.
- */
-void
-virStringListFreeCount(char **strings,
-                       size_t count)
-{
-    size_t i;
-
-    if (!strings)
-        return;
-
-    for (i = 0; i < count; i++)
-        g_free(strings[i]);
-
-    g_free(strings);
-}
-
-
 /* Like strtol, but produce an "int" result, and check more carefully.
    Return 0 upon success;  return -1 to indicate failure.
    When END_PTR is NULL, the byte after the final valid digit must be NUL.
