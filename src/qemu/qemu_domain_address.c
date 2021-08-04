@@ -2942,7 +2942,6 @@ qemuDomainUSBAddressAddHubs(virDomainDef *def)
     virDomainHubDef *hub = NULL;
     size_t available_ports;
     size_t hubs_needed = 0;
-    int ret = -1;
     size_t i;
 
     available_ports = virDomainUSBAddressCountAllPorts(def);
@@ -2972,9 +2971,7 @@ qemuDomainUSBAddressAddHubs(virDomainDef *def)
         VIR_APPEND_ELEMENT(def->hubs, def->nhubs, hub);
     }
 
-    ret = 0;
-    VIR_FREE(hub);
-    return ret;
+    return 0;
 }
 
 
