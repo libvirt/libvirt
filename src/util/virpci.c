@@ -2461,7 +2461,7 @@ virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddress *addr,
 int
 virPCIGetNetName(const char *device_link_sysfs_path,
                  size_t idx,
-                 char *physPortID,
+                 const char *physPortID,
                  char **netname)
 {
     g_autofree char *pcidev_sysfs_net_path = NULL;
@@ -2672,7 +2672,7 @@ virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddress *dev G_GNUC_UNUSED,
 int
 virPCIGetNetName(const char *device_link_sysfs_path G_GNUC_UNUSED,
                  size_t idx G_GNUC_UNUSED,
-                 char *physPortID G_GNUC_UNUSED,
+                 const char *physPortID G_GNUC_UNUSED,
                  char **netname G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));

@@ -240,7 +240,7 @@ int virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddress *addr,
 
 int virPCIGetNetName(const char *device_link_sysfs_path,
                      size_t idx,
-                     char *physPortID,
+                     const char *physPortID,
                      char **netname);
 
 bool virPCIDeviceAddressIsValid(virPCIDeviceAddress *addr,
