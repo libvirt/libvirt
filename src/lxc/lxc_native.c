@@ -548,7 +548,7 @@ lxcNetworkParseDataIPs(const char *name,
                        lxcNetworkParseData *parseData)
 {
     int family = AF_INET;
-    char **ipparts = NULL;
+    g_auto(GStrv) ipparts = NULL;
     g_autofree virNetDevIPAddr *ip = g_new0(virNetDevIPAddr, 1);
 
     if (STREQ(name, "ipv6") || STREQ(name, "ipv6.address"))
@@ -561,12 +561,8 @@ lxcNetworkParseDataIPs(const char *name,
 
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Invalid CIDR address: '%s'"), value->str);
-
-        g_strfreev(ipparts);
         return -1;
     }
-
-    g_strfreev(ipparts);
 
     VIR_APPEND_ELEMENT(parseData->ips, parseData->nips, ip);
 
