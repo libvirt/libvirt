@@ -252,8 +252,11 @@ virNWFilterRuleDefToRuleInst(virNWFilterDef *def,
                              GHashTable *vars,
                              virNWFilterInst *inst)
 {
+    g_autoptr(GHashTable) tmpvars = virHashNew(virNWFilterVarValueHashFree);
     virNWFilterRuleInst *ruleinst;
-    int ret = -1;
+
+    if (virNWFilterHashTablePutAll(vars, tmpvars) < 0)
+        return -1;
 
     ruleinst = g_new0(virNWFilterRuleInst, 1);
 
@@ -261,17 +264,11 @@ virNWFilterRuleDefToRuleInst(virNWFilterDef *def,
     ruleinst->chainPriority = def->chainPriority;
     ruleinst->def = rule;
     ruleinst->priority = rule->priority;
-    ruleinst->vars = virHashNew(virNWFilterVarValueHashFree);
-
-    if (virNWFilterHashTablePutAll(vars, ruleinst->vars) < 0)
-        goto cleanup;
+    ruleinst->vars = g_steal_pointer(&tmpvars);
 
     VIR_APPEND_ELEMENT(inst->rules, inst->nrules, ruleinst);
 
-    ret = 0;
- cleanup:
-    virNWFilterRuleInstFree(ruleinst);
-    return ret;
+    return 0;
 }
 
 
