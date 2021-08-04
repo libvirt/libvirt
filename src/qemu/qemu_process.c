@@ -5985,12 +5985,11 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriver *driver,
     qemuCgroupEmulatorAllNodesData *emulatorCgroup = NULL;
     virDomainVcpuDef *vcpu;
     qemuDomainVcpuPrivate *vcpupriv;
-    virJSONValue *vcpuprops = NULL;
     size_t i;
     int ret = -1;
     int rc;
 
-    virDomainVcpuDef **bootHotplug = NULL;
+    g_autofree virDomainVcpuDef **bootHotplug = NULL;
     size_t nbootHotplug = 0;
 
     for (i = 0; i < maxvcpus; i++) {
@@ -6005,10 +6004,8 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriver *driver,
         }
     }
 
-    if (nbootHotplug == 0) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (nbootHotplug == 0)
+        return 0;
 
     qsort(bootHotplug, nbootHotplug, sizeof(*bootHotplug),
           qemuProcessVcpusSortOrder);
@@ -6017,6 +6014,7 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriver *driver,
         goto cleanup;
 
     for (i = 0; i < nbootHotplug; i++) {
+        g_autoptr(virJSONValue) vcpuprops = NULL;
         vcpu = bootHotplug[i];
 
         if (!(vcpuprops = qemuBuildHotpluggableCPUProps(vcpu)))
@@ -6033,16 +6031,12 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriver *driver,
 
         if (rc < 0)
             goto cleanup;
-
-        virJSONValueFree(vcpuprops);
     }
 
     ret = 0;
 
  cleanup:
     qemuCgroupEmulatorAllNodesRestore(emulatorCgroup);
-    VIR_FREE(bootHotplug);
-    virJSONValueFree(vcpuprops);
     return ret;
 }
 
