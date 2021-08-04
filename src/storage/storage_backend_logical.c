@@ -121,10 +121,13 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDef *vol,
     g_autoptr(GRegex) re = NULL;
     g_autoptr(GError) err = NULL;
     g_autoptr(GMatchInfo) info = NULL;
-    int nextents, ret = -1;
+    int nextents;
+    int ret = -1;
     const char *regex_unit = "(\\S+)\\((\\S+)\\)";
     size_t i;
-    unsigned long long offset, size, length;
+    unsigned long long offset;
+    unsigned long long size;
+    unsigned long long length;
     virStorageVolSourceExtent extent;
     g_autofree char *regex = NULL;
 
