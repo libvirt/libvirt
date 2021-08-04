@@ -453,7 +453,6 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
             ret++;
     }
 
-    virObjectEventCallbackFree(cb);
     return ret;
 }
 
