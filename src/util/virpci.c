@@ -2409,31 +2409,28 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
                               const char *vf_sysfs_device_link,
                               int *vf_index)
 {
-    int ret = -1;
     size_t i;
     g_autofree virPCIDeviceAddress *vf_bdf = NULL;
     g_autoptr(virPCIVirtualFunctionList) virt_fns = NULL;
 
     if (!(vf_bdf = virPCIGetDeviceAddressFromSysfsLink(vf_sysfs_device_link)))
-        return ret;
+        return -1;
 
     if (virPCIGetVirtualFunctions(pf_sysfs_device_link, &virt_fns) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Error getting physical function's '%s' "
                          "virtual_functions"), pf_sysfs_device_link);
-        goto out;
+        return -1;
     }
 
     for (i = 0; i < virt_fns->nfunctions; i++) {
         if (virPCIDeviceAddressEqual(vf_bdf, virt_fns->functions[i].addr)) {
             *vf_index = i;
-            ret = 0;
-            break;
+            return 0;
         }
     }
 
- out:
-    return ret;
+    return -1;
 }
 
 /*
