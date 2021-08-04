@@ -2599,7 +2599,6 @@ static int
 networkCreateInterfacePool(virNetworkDef *netdef)
 {
     size_t numVirtFns = 0;
-    unsigned int maxVirtFns = 0;
     char **vfNames = NULL;
     virPCIDeviceAddress **virtFns;
 
@@ -2610,7 +2609,7 @@ networkCreateInterfacePool(virNetworkDef *netdef)
        return 0;
 
     if ((virNetDevGetVirtualFunctions(netdef->forward.pfs->dev, &vfNames,
-                                      &virtFns, &numVirtFns, &maxVirtFns)) < 0) {
+                                      &virtFns, &numVirtFns)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not get Virtual functions on %s"),
                        netdef->forward.pfs->dev);
