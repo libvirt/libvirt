@@ -252,11 +252,8 @@ int virNetDevGetPhysPortName(const char *ifname,
     G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevGetVirtualFunctions(const char *pfname,
-                                 char ***vfname,
-                                 virPCIDeviceAddress ***virt_fns,
-                                 size_t *n_vfname)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(4) G_GNUC_WARN_UNUSED_RESULT;
+                                 virPCIVirtualFunctionList **vfs)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevSaveNetConfig(const char *linkdev, int vf,
                            const char *stateDir,

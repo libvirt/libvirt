@@ -1213,24 +1213,17 @@ virNetDevGetPhysPortName(const char *ifname,
 
 /**
  * virNetDevGetVirtualFunctions:
- *
  * @pfname : name of the physical function interface name
- * @vfname: array that will hold the interface names of the virtual_functions
- * @n_vfname: pointer to the number of virtual functions
+ * @vfs: Filled with struct describing the virtual functions of @pfname
  *
  * Returns 0 on success and -1 on failure
  */
-
 int
 virNetDevGetVirtualFunctions(const char *pfname,
-                             char ***vfname,
-                             virPCIDeviceAddress ***virt_fns,
-                             size_t *n_vfname)
+                             virPCIVirtualFunctionList **vfs)
 {
-    size_t i;
     g_autofree char *pf_sysfs_device_link = NULL;
     g_autofree char *pfPhysPortID = NULL;
-    g_autoptr(virPCIVirtualFunctionList) vfs = NULL;
 
     if (virNetDevGetPhysPortID(pfname, &pfPhysPortID) < 0)
         return -1;
@@ -1238,17 +1231,8 @@ virNetDevGetVirtualFunctions(const char *pfname,
     if (virNetDevSysfsFile(&pf_sysfs_device_link, pfname, "device") < 0)
         return -1;
 
-    if (virPCIGetVirtualFunctionsFull(pf_sysfs_device_link, &vfs, pfPhysPortID) < 0)
+    if (virPCIGetVirtualFunctionsFull(pf_sysfs_device_link, vfs, pfPhysPortID) < 0)
         return -1;
-
-    *vfname = g_new0(char *, vfs->nfunctions);
-    *virt_fns = g_new0(virPCIDeviceAddress *, vfs->nfunctions);
-    *n_vfname = vfs->nfunctions;
-
-    for (i = 0; i < *n_vfname; i++) {
-        virt_fns[i] = g_steal_pointer(&vfs->functions[i].addr);
-        vfname[i] = g_steal_pointer(&vfs->functions[i].ifname);
-    }
 
     return 0;
 }
@@ -1448,9 +1432,7 @@ virNetDevGetPhysPortName(const char *ifname G_GNUC_UNUSED,
 
 int
 virNetDevGetVirtualFunctions(const char *pfname G_GNUC_UNUSED,
-                             char ***vfname G_GNUC_UNUSED,
-                             virPCIDeviceAddress ***virt_fns G_GNUC_UNUSED,
-                             size_t *n_vfname G_GNUC_UNUSED)
+                             virPCIVirtualFunctionList **vfs G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get virtual functions on this platform"));

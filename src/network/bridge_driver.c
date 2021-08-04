@@ -2598,29 +2598,25 @@ networkShutdownNetworkBridge(virNetworkObj *obj G_GNUC_UNUSED)
 static int
 networkCreateInterfacePool(virNetworkDef *netdef)
 {
-    size_t numVirtFns = 0;
-    char **vfNames = NULL;
-    virPCIDeviceAddress **virtFns;
-
+    g_autoptr(virPCIVirtualFunctionList) vfs = NULL;
     int ret = -1;
     size_t i;
 
     if (netdef->forward.npfs == 0 || netdef->forward.nifs > 0)
        return 0;
 
-    if ((virNetDevGetVirtualFunctions(netdef->forward.pfs->dev, &vfNames,
-                                      &virtFns, &numVirtFns)) < 0) {
+    if (virNetDevGetVirtualFunctions(netdef->forward.pfs->dev, &vfs) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not get Virtual functions on %s"),
                        netdef->forward.pfs->dev);
         goto cleanup;
     }
 
-    netdef->forward.ifs = g_new0(virNetworkForwardIfDef, numVirtFns);
+    netdef->forward.ifs = g_new0(virNetworkForwardIfDef, vfs->nfunctions);
 
-    for (i = 0; i < numVirtFns; i++) {
-        virPCIDeviceAddress *thisVirtFn = virtFns[i];
-        const char *thisName = vfNames[i];
+    for (i = 0; i < vfs->nfunctions; i++) {
+        virPCIDeviceAddress *thisVirtFn = vfs->functions[i].addr;
+        const char *thisName = vfs->functions[i].ifname;
         virNetworkForwardIfDef *thisIf
             = &netdef->forward.ifs[netdef->forward.nifs];
 
@@ -2689,12 +2685,6 @@ networkCreateInterfacePool(virNetworkDef *netdef)
     if (netdef->forward.nifs == 0)
         g_clear_pointer(&netdef->forward.ifs, g_free);
 
-    for (i = 0; i < numVirtFns; i++) {
-        g_free(vfNames[i]);
-        g_free(virtFns[i]);
-    }
-    g_free(vfNames);
-    g_free(virtFns);
     return ret;
 }
 
