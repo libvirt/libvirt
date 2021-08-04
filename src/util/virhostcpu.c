@@ -1336,9 +1336,6 @@ virHostCPUGetMSR(unsigned long index,
 }
 
 
-# define VMX_PROCBASED_CTLS2_MSR 0x48b
-# define VMX_USE_TSC_SCALING (1 << 25)
-
 /*
  * This function should only be called when the host CPU supports invariant TSC
  * (invtsc CPUID feature).
@@ -1349,11 +1346,10 @@ virHostCPUGetMSR(unsigned long index,
 virHostCPUTscInfo *
 virHostCPUGetTscInfo(void)
 {
-    virHostCPUTscInfo *info;
+    g_autofree virHostCPUTscInfo *info = g_new0(virHostCPUTscInfo, 1);
     VIR_AUTOCLOSE kvmFd = -1;
     VIR_AUTOCLOSE vmFd = -1;
     VIR_AUTOCLOSE vcpuFd = -1;
-    uint64_t msr = 0;
     int rc;
 
     if ((kvmFd = open(KVM_DEVICE, O_RDONLY)) < 0) {
@@ -1378,23 +1374,19 @@ virHostCPUGetTscInfo(void)
                              _("Unable to probe TSC frequency"));
         return NULL;
     }
-
-    info = g_new0(virHostCPUTscInfo, 1);
-
     info->frequency = rc * 1000ULL;
 
-    if (virHostCPUGetMSR(VMX_PROCBASED_CTLS2_MSR, &msr) == 0) {
-        /* High 32 bits of the MSR value indicate whether specific control
-         * can be set to 1. */
-        msr >>= 32;
-
-        info->scaling = virTristateBoolFromBool(!!(msr & VMX_USE_TSC_SCALING));
+    if ((rc = ioctl(kvmFd, KVM_CHECK_EXTENSION, KVM_CAP_TSC_CONTROL)) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to query TSC scaling support"));
+        return NULL;
     }
+    info->scaling = rc ? VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
 
     VIR_DEBUG("Detected TSC frequency %llu Hz, scaling %s",
               info->frequency, virTristateBoolTypeToString(info->scaling));
 
-    return info;
+    return g_steal_pointer(&info);
 }
 
 #else
