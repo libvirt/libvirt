@@ -2257,9 +2257,18 @@ virPCIVirtualFunctionListFree(virPCIVirtualFunctionList *list)
 
     for (i = 0; i < list->nfunctions; i++) {
         g_free(list->functions[i].addr);
+        g_free(list->functions[i].ifname);
     }
 
     g_free(list);
+}
+
+
+int
+virPCIGetVirtualFunctions(const char *sysfs_path,
+                          virPCIVirtualFunctionList **vfs)
+{
+    return virPCIGetVirtualFunctionsFull(sysfs_path, vfs, NULL);
 }
 
 
@@ -2332,12 +2341,20 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path,
 }
 
 
-/*
- * Returns virtual functions of a physical function
+/**
+ * virPCIGetVirtualFunctionsFull:
+ * @sysfs_path: path to physical function sysfs entry
+ * @vfs: filled with the virtual function data
+ * @pfPhysPortID: Optional physical port id. If provided the network interface
+ *                name of the VFs is queried too.
+ *
+ *
+ * Returns virtual functions of a physical function.
  */
 int
-virPCIGetVirtualFunctions(const char *sysfs_path,
-                          virPCIVirtualFunctionList **vfs)
+virPCIGetVirtualFunctionsFull(const char *sysfs_path,
+                              virPCIVirtualFunctionList **vfs,
+                              const char *pfPhysPortID)
 {
     g_autofree char *totalvfs_file = NULL;
     g_autofree char *totalvfs_str = NULL;
@@ -2363,7 +2380,7 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
 
     do {
         g_autofree char *device_link = NULL;
-        struct virPCIVirtualFunction fnc = { NULL };
+        struct virPCIVirtualFunction fnc = { NULL, NULL };
 
         /* look for virtfn%d links until one isn't found */
         device_link = g_strdup_printf("%s/virtfn%zu", sysfs_path, list->nfunctions);
@@ -2376,6 +2393,13 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
                            _("Failed to get SRIOV function from device link '%s'"),
                            device_link);
             return -1;
+        }
+
+        if (pfPhysPortID) {
+            if (virPCIGetNetName(device_link, 0, pfPhysPortID, &fnc.ifname) < 0) {
+                g_free(fnc.addr);
+                return -1;
+            }
         }
 
         VIR_APPEND_ELEMENT(list->functions, list->nfunctions, fnc);
@@ -2636,8 +2660,9 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path G_GNUC_UNUSED,
 }
 
 int
-virPCIGetVirtualFunctions(const char *sysfs_path G_GNUC_UNUSED,
-                          virPCIVirtualFunctionList **vfs G_GNUC_UNUSED)
+virPCIGetVirtualFunctionsFull(const char *sysfs_path G_GNUC_UNUSED,
+                              virPCIVirtualFunctionList **vfs G_GNUC_UNUSED,
+                              const char *pfPhysPortID G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;

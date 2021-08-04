@@ -1227,62 +1227,30 @@ virNetDevGetVirtualFunctions(const char *pfname,
                              virPCIDeviceAddress ***virt_fns,
                              size_t *n_vfname)
 {
-    int ret = -1;
     size_t i;
     g_autofree char *pf_sysfs_device_link = NULL;
     g_autofree char *pfPhysPortID = NULL;
     g_autoptr(virPCIVirtualFunctionList) vfs = NULL;
 
-    *virt_fns = NULL;
-    *n_vfname = 0;
-
     if (virNetDevGetPhysPortID(pfname, &pfPhysPortID) < 0)
-        goto cleanup;
+        return -1;
 
     if (virNetDevSysfsFile(&pf_sysfs_device_link, pfname, "device") < 0)
-        goto cleanup;
+        return -1;
 
-    if (virPCIGetVirtualFunctions(pf_sysfs_device_link, &vfs) < 0)
-        goto cleanup;
+    if (virPCIGetVirtualFunctionsFull(pf_sysfs_device_link, &vfs, pfPhysPortID) < 0)
+        return -1;
 
     *vfname = g_new0(char *, vfs->nfunctions);
     *virt_fns = g_new0(virPCIDeviceAddress *, vfs->nfunctions);
     *n_vfname = vfs->nfunctions;
 
     for (i = 0; i < *n_vfname; i++) {
-        g_autofree char *pci_sysfs_device_link = NULL;
-
         virt_fns[i] = g_steal_pointer(&vfs->functions[i].addr);
-
-        if (virPCIDeviceAddressGetSysfsFile((*virt_fns)[i],
-                                            &pci_sysfs_device_link) < 0) {
-            virReportSystemError(ENOSYS, "%s",
-                                 _("Failed to get PCI SYSFS file"));
-            goto cleanup;
-        }
-
-        if (virPCIGetNetName(pci_sysfs_device_link, 0,
-                             pfPhysPortID, &((*vfname)[i])) < 0) {
-            goto cleanup;
-        }
-
-        if (!(*vfname)[i])
-            VIR_INFO("VF does not have an interface name");
+        vfname[i] = g_steal_pointer(&vfs->functions[i].ifname);
     }
 
-    ret = 0;
-
- cleanup:
-    if (ret < 0) {
-        virStringListFreeCount(*vfname, *n_vfname);
-
-        for (i = 0; i < *n_vfname; i++)
-            VIR_FREE((*virt_fns)[i]);
-        VIR_FREE(*virt_fns);
-        *vfname = NULL;
-        *n_vfname = 0;
-    }
-    return ret;
+    return 0;
 }
 
 /**

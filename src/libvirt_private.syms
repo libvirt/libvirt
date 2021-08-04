@@ -3012,6 +3012,7 @@ virPCIGetPhysicalFunction;
 virPCIGetVirtualFunctionIndex;
 virPCIGetVirtualFunctionInfo;
 virPCIGetVirtualFunctions;
+virPCIGetVirtualFunctionsFull;
 virPCIHeaderTypeFromString;
 virPCIHeaderTypeToString;
 virPCIIsVirtualFunction;

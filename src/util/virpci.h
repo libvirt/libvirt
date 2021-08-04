@@ -214,6 +214,7 @@ int virPCIGetPhysicalFunction(const char *vf_sysfs_path,
 
 struct virPCIVirtualFunction {
     virPCIDeviceAddress *addr;
+    char *ifname;
 };
 
 struct _virPCIVirtualFunctionList {
@@ -226,6 +227,9 @@ typedef struct _virPCIVirtualFunctionList virPCIVirtualFunctionList;
 void virPCIVirtualFunctionListFree(virPCIVirtualFunctionList *list);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virPCIVirtualFunctionList, virPCIVirtualFunctionListFree);
 
+int virPCIGetVirtualFunctionsFull(const char *sysfs_path,
+                                  virPCIVirtualFunctionList **vfs,
+                                  const char *pfPhysPortID);
 int virPCIGetVirtualFunctions(const char *sysfs_path,
                               virPCIVirtualFunctionList **vfs);
 
