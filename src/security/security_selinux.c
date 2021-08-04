@@ -114,7 +114,6 @@ virSecuritySELinuxContextListAppend(virSecuritySELinuxContextList *list,
                                     bool remember,
                                     bool restore)
 {
-    int ret = -1;
     virSecuritySELinuxContextItem *item = NULL;
 
     item = g_new0(virSecuritySELinuxContextItem, 1);
@@ -127,9 +126,7 @@ virSecuritySELinuxContextListAppend(virSecuritySELinuxContextList *list,
 
     VIR_APPEND_ELEMENT(list->items, list->nItems, item);
 
-    ret = 0;
-    virSecuritySELinuxContextItemFree(item);
-    return ret;
+    return 0;
 }
 
 static void
