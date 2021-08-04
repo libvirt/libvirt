@@ -7319,8 +7319,6 @@ qemuDomainAttachDeviceConfig(virDomainDef *vmdef,
         }
 
         VIR_APPEND_ELEMENT(vmdef->rngs, vmdef->nrngs, dev->data.rng);
-        dev->data.rng = NULL;
-
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:
