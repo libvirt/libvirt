@@ -128,10 +128,7 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDef *vol,
     unsigned long long offset;
     unsigned long long size;
     unsigned long long length;
-    virStorageVolSourceExtent extent;
     g_autofree char *regex = NULL;
-
-    memset(&extent, 0, sizeof(extent));
 
     /* Assume 1 extent (the regex for 'devices' is "(\\S+)") and only
      * check the 'stripes' field if we have a striped, mirror, or one of
@@ -189,11 +186,12 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDef *vol,
      * is the whole matched string.
      */
     for (i = 0; i < nextents; i++) {
-        size_t j;
         g_autofree char *offset_str = NULL;
+        virStorageVolSourceExtent extent;
+        size_t j = (i * 2) + 1;
 
-        j = (i * 2) + 1;
-        extent.path = g_match_info_fetch(info, j);
+        memset(&extent, 0, sizeof(extent));
+
         offset_str = g_match_info_fetch(info, j + 1);
 
         if (virStrToLong_ull(offset_str, NULL, 10, &offset) < 0) {
@@ -201,6 +199,8 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDef *vol,
                            _("malformed volume extent offset value"));
             goto cleanup;
         }
+
+        extent.path = g_match_info_fetch(info, j);
         extent.start = offset * size;
         extent.end = (offset * size) + length;
 
@@ -210,7 +210,6 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDef *vol,
     ret = 0;
 
  cleanup:
-    VIR_FREE(extent.path);
     return ret;
 }
 
