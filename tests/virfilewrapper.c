@@ -78,13 +78,8 @@ virFileWrapperAddPrefix(const char *prefix,
 
     init_syms();
 
-    if (VIR_APPEND_ELEMENT_QUIET(prefixes, nprefixes, prefix) < 0 ||
-        VIR_APPEND_ELEMENT_QUIET(overrides, noverrides, override) < 0) {
-        VIR_FREE(prefixes);
-        VIR_FREE(overrides);
-        fprintf(stderr, "Unable to add path override for '%s'\n", prefix);
-        abort();
-    }
+    VIR_APPEND_ELEMENT_QUIET(prefixes, nprefixes, prefix);
+    VIR_APPEND_ELEMENT_QUIET(overrides, noverrides, override);
 }
 
 

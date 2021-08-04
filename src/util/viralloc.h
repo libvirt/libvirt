@@ -247,7 +247,8 @@ int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
 
 /* Quiet version of macros above */
 #define VIR_APPEND_ELEMENT_QUIET(ptr, count, newelem) \
-    VIR_APPEND_ELEMENT(ptr, count, newelem)
+    virAppendElement(&(ptr), sizeof(*(ptr)), &(count), \
+                     VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false)
 
 /**
  * VIR_DELETE_ELEMENT:

@@ -428,9 +428,7 @@ pci_device_create_iommu(const struct pciDevice *dev,
     iommuGroup->iommu = dev->iommuGroup;
     iommuGroup->nDevicesBoundToVFIO = 0; /* No device bound to VFIO by default */
 
-    if (VIR_APPEND_ELEMENT_QUIET(pciIommuGroups, npciIommuGroups,
-                                 iommuGroup) < 0)
-        ABORT_OOM();
+    VIR_APPEND_ELEMENT_QUIET(pciIommuGroups, npciIommuGroups, iommuGroup);
 }
 
 
@@ -544,8 +542,7 @@ pci_device_new_from_stub(const struct pciDevice *data)
     if (pci_device_autobind(dev) < 0)
         ABORT("Unable to bind: %s", devid);
 
-    if (VIR_APPEND_ELEMENT_QUIET(pciDevices, nPCIDevices, dev) < 0)
-        ABORT_OOM();
+    VIR_APPEND_ELEMENT_QUIET(pciDevices, nPCIDevices, dev);
 }
 
 static struct pciDevice *
@@ -716,8 +713,7 @@ pci_driver_new(const char *name, ...)
     make_file(driverpath, "bind", NULL, -1);
     make_file(driverpath, "unbind", NULL, -1);
 
-    if (VIR_APPEND_ELEMENT_QUIET(pciDrivers, nPCIDrivers, driver) < 0)
-        ABORT_OOM();
+    VIR_APPEND_ELEMENT_QUIET(pciDrivers, nPCIDrivers, driver);
 }
 
 static struct pciDriver *
