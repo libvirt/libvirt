@@ -214,7 +214,6 @@ virNWFilterRuleDefToRuleInst(virNWFilterDef *def,
         goto cleanup;
 
     VIR_APPEND_ELEMENT(inst->rules, inst->nrules, ruleinst);
-    ruleinst = NULL;
 
     ret = 0;
  cleanup:
