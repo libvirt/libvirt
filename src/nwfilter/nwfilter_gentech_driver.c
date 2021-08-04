@@ -281,20 +281,20 @@ virNWFilterIncludeDefToRuleInst(virNWFilterDriverState *driver,
                                 virNWFilterInst *inst)
 {
     virNWFilterObj *obj;
-    GHashTable *tmpvars = NULL;
+    g_autoptr(GHashTable) tmpvars = NULL;
     virNWFilterDef *childdef;
     virNWFilterDef *newChilddef;
-    int ret = -1;
 
     VIR_DEBUG("Instantiating filter %s", inc->filterref);
-    if (!(obj = virNWFilterObjListFindInstantiateFilter(driver->nwfilters,
-                                                        inc->filterref)))
-        goto cleanup;
 
     /* create a temporary hashmap for depth-first tree traversal */
-    if (!(tmpvars = virNWFilterCreateVarsFrom(inc->params,
-                                              vars)))
-        goto cleanup;
+    if (!(tmpvars = virNWFilterCreateVarsFrom(inc->params, vars)))
+        return -1;
+
+    /* 'obj' is always appended to 'inst->filters' thus we don't unlock it */
+    if (!(obj = virNWFilterObjListFindInstantiateFilter(driver->nwfilters,
+                                                        inc->filterref)))
+        return -1;
 
     childdef = virNWFilterObjGetDef(obj);
 
@@ -311,24 +311,18 @@ virNWFilterIncludeDefToRuleInst(virNWFilterDriverState *driver,
     }
 
     VIR_APPEND_ELEMENT(inst->filters, inst->nfilters, obj);
-    obj = NULL;
 
     if (virNWFilterDefToInst(driver,
                              childdef,
                              tmpvars,
                              useNewFilter,
                              foundNewFilter,
-                             inst) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    if (ret < 0)
+                             inst) < 0) {
         virNWFilterInstReset(inst);
-    virHashFree(tmpvars);
-    if (obj)
-        virNWFilterObjUnlock(obj);
-    return ret;
+        return -1;
+    }
+
+    return 0;
 }
 
 
