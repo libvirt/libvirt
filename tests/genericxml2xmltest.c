@@ -225,6 +225,8 @@ mymain(void)
     DO_TEST_DIFFERENT("cputune");
     DO_TEST("device-backenddomain");
 
+    DO_TEST("fibrechannel-appid");
+
 #define DO_TEST_BACKUP_FULL(name, intrnl) \
     do { \
         const struct testCompareBackupXMLData data = { .testname = name, \

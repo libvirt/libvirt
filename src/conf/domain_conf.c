@@ -3446,6 +3446,7 @@ virDomainResourceDefFree(virDomainResourceDef *resource)
         return;
 
     g_free(resource->partition);
+    g_free(resource->appid);
     g_free(resource);
 }
 
@@ -17285,16 +17286,19 @@ virDomainResourceDefParse(xmlNodePtr node,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virDomainResourceDef *def = NULL;
     char *partition = NULL;
+    char *appid = NULL;
 
     ctxt->node = node;
 
     partition = virXPathString("string(./partition)", ctxt);
+    appid = virXPathString("string(./fibrechannel/@appid)", ctxt);
 
-    if (!partition)
+    if (!partition && !appid)
         return NULL;
 
     def = g_new0(virDomainResourceDef, 1);
     def->partition = partition;
+    def->appid = appid;
 
     return def;
 }
@@ -26768,6 +26772,9 @@ virDomainResourceDefFormat(virBuffer *buf,
 
     if (def->partition)
         virBufferEscapeString(&childBuf, "<partition>%s</partition>\n", def->partition);
+
+    if (def->appid)
+        virBufferEscapeString(&childBuf, "<fibrechannel appid='%s'/>\n", def->appid);
 
     virXMLFormatElement(buf, "resource", NULL, &childBuf);
 }

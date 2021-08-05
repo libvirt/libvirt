@@ -55,6 +55,37 @@ virDomainDefBootValidate(const virDomainDef *def)
 }
 
 
+#define APPID_LEN_MIN 1
+#define APPID_LEN_MAX 128
+
+static int
+virDomainDefResourceValidate(const virDomainDef *def)
+{
+    if (!def->resource)
+        return 0;
+
+    if (def->resource->appid) {
+        int len;
+
+        if (!virStringIsPrintable(def->resource->appid)) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Fibre Channel 'appid' is not a printable string"));
+            return -1;
+        }
+
+        len = strlen(def->resource->appid);
+        if (len < APPID_LEN_MIN || len > APPID_LEN_MAX) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Fibre Channel 'appid' string length must be between [%d, %d]"),
+                           APPID_LEN_MIN, APPID_LEN_MAX);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 static int
 virDomainDefVideoValidate(const virDomainDef *def)
 {
@@ -1538,6 +1569,9 @@ static int
 virDomainDefValidateInternal(const virDomainDef *def,
                              virDomainXMLOption *xmlopt)
 {
+    if (virDomainDefResourceValidate(def) < 0)
+        return -1;
+
     if (virDomainDefDuplicateDiskInfoValidate(def) < 0)
         return -1;
 

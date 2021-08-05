@@ -2538,6 +2538,7 @@ void virBlkioDeviceArrayClear(virBlkioDevice *deviceWeights,
 
 struct _virDomainResourceDef {
     char *partition;
+    char *appid;
 };
 
 struct _virDomainHugePage {

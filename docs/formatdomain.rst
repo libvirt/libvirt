@@ -1221,6 +1221,27 @@ Resource partitions are currently supported by the QEMU and LXC drivers, which
 map partition paths to cgroups directories, in all mounted controllers.
 :since:`Since 1.0.5`
 
+Fibre Channel VMID
+-------------------
+
+The FC SAN can provide various QoS levels and access control depending on the
+VMID. It can also collect telemetry data at per-VM level which can be used
+to enhance the IO performance of the VM. This can be configured by using
+the ``appid`` attribute of ``fibrechannel`` element. The attribute contains
+single string (max 128 bytes) and it is used by kernel to create VMID.
+
+::
+
+   ...
+   <resource>
+     <fibrechannel appid='userProvidedID'/>
+   </resource>
+   ...
+
+Using this feature requires Fibre Channel capable HW, kernel compiled with
+option ``CONFIG_BLK_CGROUP_FC_APPID`` and ``nvme_fc`` kernel module loaded.
+:since:`Since 7.7.0`
+
 :anchor:`<a id="elementsCPU"/>`
 
 CPU model and topology

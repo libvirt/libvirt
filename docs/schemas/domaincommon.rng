@@ -576,6 +576,17 @@
     </element>
   </define>
 
+  <define name="fibrechannel">
+    <element name="fibrechannel">
+      <attribute name="appid">
+        <data type="string">
+          <!-- All printable characters -->
+          <param name="pattern">[&#x20;-&#x7E;]{1,128}</param>
+        </data>
+      </attribute>
+    </element>
+  </define>
+
   <!--
       The Identifiers can be:
       - an optional id attribute with a number on the domain element
@@ -1176,6 +1187,9 @@
         <element name="partition">
           <ref name="absFilePath"/>
         </element>
+      </optional>
+      <optional>
+        <ref name="fibrechannel"/>
       </optional>
     </element>
   </define>
