@@ -1172,9 +1172,11 @@
 
   <define name="respartition">
     <element name="resource">
-      <element name="partition">
-        <ref name="absFilePath"/>
-      </element>
+      <optional>
+        <element name="partition">
+          <ref name="absFilePath"/>
+        </element>
+      </optional>
     </element>
   </define>
 

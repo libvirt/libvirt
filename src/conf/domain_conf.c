@@ -17284,23 +17284,19 @@ virDomainResourceDefParse(xmlNodePtr node,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virDomainResourceDef *def = NULL;
+    char *partition = NULL;
 
     ctxt->node = node;
 
-    def = g_new0(virDomainResourceDef, 1);
+    partition = virXPathString("string(./partition)", ctxt);
 
-    /* Find out what type of virtualization to use */
-    if (!(def->partition = virXPathString("string(./partition)", ctxt))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("missing resource partition attribute"));
-        goto error;
-    }
+    if (!partition)
+        return NULL;
+
+    def = g_new0(virDomainResourceDef, 1);
+    def->partition = partition;
 
     return def;
-
- error:
-    virDomainResourceDefFree(def);
-    return NULL;
 }
 
 
