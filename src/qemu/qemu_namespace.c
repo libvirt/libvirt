@@ -1197,7 +1197,6 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodData *data,
     while (1) {
         g_auto(qemuNamespaceMknodItem) item = { 0 };
         bool isLink;
-        bool addToData = false;
         int rc;
 
         rc = qemuNamespaceMknodItemInit(&item, cfg, vm, next);
@@ -1210,24 +1209,20 @@ qemuNamespacePrepareOneItem(qemuNamespaceMknodData *data,
         }
 
         isLink = S_ISLNK(item.sb.st_mode);
+        g_free(next);
+        next = g_strdup(item.target);
 
-        if (STRPREFIX(next, QEMU_DEVPREFIX)) {
+        if (STRPREFIX(item.file, QEMU_DEVPREFIX)) {
             for (i = 0; i < ndevMountsPath; i++) {
                 if (STREQ(devMountsPath[i], "/dev"))
                     continue;
-                if (STRPREFIX(next, devMountsPath[i]))
+                if (STRPREFIX(item.file, devMountsPath[i]))
                     break;
             }
 
             if (i == ndevMountsPath)
-                addToData = true;
+                VIR_APPEND_ELEMENT(data->items, data->nitems, item);
         }
-
-        g_free(next);
-        next = g_strdup(item.target);
-
-        if (addToData)
-            VIR_APPEND_ELEMENT(data->items, data->nitems, item);
 
         if (!isLink)
             break;
