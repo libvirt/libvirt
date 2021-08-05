@@ -313,14 +313,11 @@ virIdentity *virIdentityGetSystem(void)
     g_autofree char *username = NULL;
     g_autofree char *groupname = NULL;
     unsigned long long startTime;
-    g_autoptr(virIdentity) ret = NULL;
+    g_autoptr(virIdentity) ret = virIdentityNew();
 #if WITH_SELINUX
     char *con;
 #endif
     g_autofree char *token = NULL;
-
-    if (!(ret = virIdentityNew()))
-        return NULL;
 
     if (virIdentitySetProcessID(ret, getpid()) < 0)
         return NULL;

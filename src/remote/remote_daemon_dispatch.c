@@ -2192,7 +2192,7 @@ remoteDispatchConnectSetIdentity(virNetServer *server G_GNUC_UNUSED,
     int nparams = 0;
     int rv = -1;
     virConnectPtr conn = remoteGetHypervisorConn(client);
-    g_autoptr(virIdentity) ident = NULL;
+    g_autoptr(virIdentity) ident = virIdentityNew();
     if (!conn)
         goto cleanup;
 
@@ -2207,9 +2207,6 @@ remoteDispatchConnectSetIdentity(virNetServer *server G_GNUC_UNUSED,
     VIR_TYPED_PARAMS_DEBUG(params, nparams);
 
     if (virConnectSetIdentityEnsureACL(conn) < 0)
-        goto cleanup;
-
-    if (!(ident = virIdentityNew()))
         goto cleanup;
 
     if (virIdentitySetParameters(ident, params, nparams) < 0)

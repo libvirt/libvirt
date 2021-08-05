@@ -747,10 +747,7 @@ virNetServerClientCreateIdentity(virNetServerClient *client)
     g_autofree char *username = NULL;
     g_autofree char *groupname = NULL;
     g_autofree char *seccontext = NULL;
-    g_autoptr(virIdentity) ret = NULL;
-
-    if (!(ret = virIdentityNew()))
-        return NULL;
+    g_autoptr(virIdentity) ret = virIdentityNew();
 
     if (client->sock && virNetSocketIsLocal(client->sock)) {
         gid_t gid;
