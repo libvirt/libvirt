@@ -26761,11 +26761,15 @@ static void
 virDomainResourceDefFormat(virBuffer *buf,
                            virDomainResourceDef *def)
 {
-    virBufferAddLit(buf, "<resource>\n");
-    virBufferAdjustIndent(buf, 2);
-    virBufferEscapeString(buf, "<partition>%s</partition>\n", def->partition);
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</resource>\n");
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    if (!def)
+        return;
+
+    if (def->partition)
+        virBufferEscapeString(&childBuf, "<partition>%s</partition>\n", def->partition);
+
+    virXMLFormatElement(buf, "resource", NULL, &childBuf);
 }
 
 
@@ -27918,8 +27922,7 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     if (virDomainNumatuneFormatXML(buf, def->numa) < 0)
         return -1;
 
-    if (def->resource)
-        virDomainResourceDefFormat(buf, def->resource);
+    virDomainResourceDefFormat(buf, def->resource);
 
     for (i = 0; i < def->nsysinfo; i++) {
         if (virSysinfoFormat(buf, def->sysinfo[i]) < 0)
