@@ -1458,10 +1458,11 @@ fi
 %libvirt_daemon_perform_restart virtstoraged
 
 
+%if %{with_qemu}
 %post daemon-driver-qemu
-%if %{with_modular_daemons}
+    %if %{with_modular_daemons}
 %libvirt_daemon_systemd_post virtqemud
-%endif
+    %endif
 %libvirt_daemon_schedule_restart virtqemud
 
 %preun daemon-driver-qemu
@@ -1469,12 +1470,14 @@ fi
 
 %posttrans daemon-driver-qemu
 %libvirt_daemon_perform_restart virtqemud
-
-
-%post daemon-driver-lxc
-%if %{with_modular_daemons}
-%libvirt_daemon_systemd_post virtlxcd
 %endif
+
+
+%if %{with_lxc}
+%post daemon-driver-lxc
+    %if %{with_modular_daemons}
+%libvirt_daemon_systemd_post virtlxcd
+    %endif
 %libvirt_daemon_schedule_restart virtlxcd
 
 %preun daemon-driver-lxc
@@ -1482,12 +1485,14 @@ fi
 
 %posttrans daemon-driver-lxc
 %libvirt_daemon_perform_restart virtlxcd
-
-
-%post daemon-driver-vbox
-%if %{with_modular_daemons}
-%libvirt_daemon_systemd_post virtvboxd
 %endif
+
+
+%if %{with_vbox}
+%post daemon-driver-vbox
+    %if %{with_modular_daemons}
+%libvirt_daemon_systemd_post virtvboxd
+    %endif
 %libvirt_daemon_schedule_restart virtvboxd
 
 %preun daemon-driver-vbox
@@ -1495,12 +1500,14 @@ fi
 
 %posttrans daemon-driver-vbox
 %libvirt_daemon_perform_restart virtvboxd
-
-
-%post daemon-driver-libxl
-%if %{with_modular_daemons}
-%libvirt_daemon_systemd_post virtxend
 %endif
+
+
+%if %{with_libxl}
+%post daemon-driver-libxl
+    %if %{with_modular_daemons}
+%libvirt_daemon_systemd_post virtxend
+    %endif
 %libvirt_daemon_schedule_restart virtxend
 
 %preun daemon-driver-libxl
@@ -1508,6 +1515,7 @@ fi
 
 %posttrans daemon-driver-libxl
 %libvirt_daemon_perform_restart virtxend
+%endif
 
 
 %post daemon-config-network
