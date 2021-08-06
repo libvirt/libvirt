@@ -4702,30 +4702,63 @@ qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
 
 static int
 qemuBuildChrChardevFileStr(virLogManager *logManager,
-                           virCommand *cmd,
+                           virSecurityManager *secManager,
+                           virQEMUDriverConfig *cfg,
+                           virQEMUCaps *qemuCaps,
                            const virDomainDef *def,
+                           virCommand *cmd,
                            virBuffer *buf,
                            const char *filearg, const char *fileval,
                            const char *appendarg, int appendval)
 {
-    if (logManager) {
+    /* Technically, to pass an FD via /dev/fdset we don't need
+     * any capability check because X_QEMU_CAPS_ADD_FD is already
+     * assumed. But keeping the old style is still handy when
+     * building a standalone command line (e.g. for tests). */
+    if (logManager ||
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS)) {
         g_autofree char *fdset = NULL;
-        int flags = 0;
         int logfd;
         size_t idx;
 
-        if (appendval == VIR_TRISTATE_SWITCH_ABSENT ||
-            appendval == VIR_TRISTATE_SWITCH_OFF)
-            flags |= VIR_LOG_MANAGER_PROTOCOL_DOMAIN_OPEN_LOG_FILE_TRUNCATE;
+        if (logManager) {
+            int flags = 0;
 
-        if ((logfd = virLogManagerDomainOpenLogFile(logManager,
-                                                    "qemu",
-                                                    def->uuid,
-                                                    def->name,
-                                                    fileval,
-                                                    flags,
-                                                    NULL, NULL)) < 0)
-            return -1;
+            if (appendval == VIR_TRISTATE_SWITCH_ABSENT ||
+                appendval == VIR_TRISTATE_SWITCH_OFF)
+                flags |= VIR_LOG_MANAGER_PROTOCOL_DOMAIN_OPEN_LOG_FILE_TRUNCATE;
+
+            if ((logfd = virLogManagerDomainOpenLogFile(logManager,
+                                                        "qemu",
+                                                        def->uuid,
+                                                        def->name,
+                                                        fileval,
+                                                        flags,
+                                                        NULL, NULL)) < 0)
+                return -1;
+        } else {
+            int oflags = O_CREAT | O_WRONLY;
+
+            switch (appendval) {
+            case VIR_TRISTATE_SWITCH_ABSENT:
+            case VIR_TRISTATE_SWITCH_OFF:
+                oflags |= O_TRUNC;
+                break;
+            case VIR_TRISTATE_SWITCH_ON:
+                oflags |= O_APPEND;
+                break;
+            case VIR_TRISTATE_SWITCH_LAST:
+                break;
+            }
+
+            if ((logfd = qemuDomainOpenFile(cfg, def, fileval, oflags, NULL)) < 0)
+                return -1;
+
+            if (qemuSecuritySetImageFDLabel(secManager, (virDomainDef*)def, logfd) < 0) {
+                VIR_FORCE_CLOSE(logfd);
+                return -1;
+            }
+        }
 
         virCommandPassFDIndex(cmd, logfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT, &idx);
         fdset = qemuBuildFDSet(logfd, idx);
@@ -4868,7 +4901,7 @@ qemuBuildChrChardevStr(virLogManager *logManager,
 
         if (qemuBuildChrChardevFileStr(cdevflags & QEMU_BUILD_CHARDEV_FILE_LOGD ?
                                        logManager : NULL,
-                                       cmd, def, &buf,
+                                       secManager, cfg, qemuCaps, def, cmd, &buf,
                                        "path", dev->data.file.path,
                                        "append", dev->data.file.append) < 0)
             return NULL;
@@ -5004,7 +5037,8 @@ qemuBuildChrChardevStr(virLogManager *logManager,
     }
 
     if (dev->logfile) {
-        if (qemuBuildChrChardevFileStr(logManager, cmd, def, &buf,
+        if (qemuBuildChrChardevFileStr(logManager, secManager, cfg,
+                                       qemuCaps, def, cmd, &buf,
                                        "logfile", dev->logfile,
                                        "logappend", dev->logappend) < 0)
             return NULL;
