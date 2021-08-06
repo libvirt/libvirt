@@ -1047,7 +1047,7 @@ int virQEMUFileOpenAs(uid_t fallback_uid,
                       bool *needUnlink);
 
 int
-qemuDomainOpenFile(virQEMUDriver *driver,
+qemuDomainOpenFile(virQEMUDriverConfig *cfg,
                    const virDomainDef *def,
                    const char *path,
                    int oflags,

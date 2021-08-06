@@ -10808,7 +10808,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
  * reported) or -1 otherwise (errors are reported).
  */
 static int
-qemuDomainStorageOpenStat(virQEMUDriver *driver,
+qemuDomainStorageOpenStat(virQEMUDriver *driver G_GNUC_UNUSED,
                           virQEMUDriverConfig *cfg,
                           virDomainObj *vm,
                           virStorageSource *src,
@@ -10820,7 +10820,7 @@ qemuDomainStorageOpenStat(virQEMUDriver *driver,
         if (skipInaccessible && !virFileExists(src->path))
             return 0;
 
-        if ((*ret_fd = qemuDomainOpenFile(driver, vm->def, src->path, O_RDONLY,
+        if ((*ret_fd = qemuDomainOpenFile(cfg, vm->def, src->path, O_RDONLY,
                                           NULL)) < 0)
             return -1;
 

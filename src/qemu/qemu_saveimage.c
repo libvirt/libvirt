@@ -313,7 +313,7 @@ qemuSaveImageCreate(virQEMUDriver *driver,
     if (qemuDomainFileWrapperFDClose(vm, wrapperFd) < 0)
         goto cleanup;
 
-    if ((fd = qemuDomainOpenFile(driver, vm->def, path, O_WRONLY, NULL)) < 0 ||
+    if ((fd = qemuDomainOpenFile(cfg, vm->def, path, O_WRONLY, NULL)) < 0 ||
         virQEMUSaveDataFinish(data, &fd, path) < 0)
         goto cleanup;
 
@@ -440,6 +440,7 @@ qemuSaveImageOpen(virQEMUDriver *driver,
                   bool open_write,
                   bool unlink_corrupt)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     VIR_AUTOCLOSE fd = -1;
     int ret = -1;
     g_autoptr(virQEMUSaveData) data = NULL;
@@ -459,7 +460,7 @@ qemuSaveImageOpen(virQEMUDriver *driver,
         oflags |= directFlag;
     }
 
-    if ((fd = qemuDomainOpenFile(driver, NULL, path, oflags, NULL)) < 0)
+    if ((fd = qemuDomainOpenFile(cfg, NULL, path, oflags, NULL)) < 0)
         return -1;
 
     if (bypass_cache &&

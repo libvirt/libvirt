@@ -11511,7 +11511,7 @@ virQEMUFileOpenAs(uid_t fallback_uid,
 
 /**
  * qemuDomainOpenFile:
- * @driver: driver object
+ * @cfg: driver config object
  * @def: domain definition
  * @path: path to file to open
  * @oflags: flags for opening/creation of the file
@@ -11526,13 +11526,12 @@ virQEMUFileOpenAs(uid_t fallback_uid,
  * qemuDomainStorageFileInit and storage driver APIs if possible.
  **/
 int
-qemuDomainOpenFile(virQEMUDriver *driver,
+qemuDomainOpenFile(virQEMUDriverConfig *cfg,
                    const virDomainDef *def,
                    const char *path,
                    int oflags,
                    bool *needUnlink)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     uid_t user = cfg->user;
     gid_t group = cfg->group;
     bool dynamicOwnership = cfg->dynamicOwnership;
