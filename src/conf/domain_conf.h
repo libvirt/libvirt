@@ -3776,7 +3776,7 @@ virDomainObjGetState(virDomainObj *obj, int *reason)
         ATTRIBUTE_NONNULL(1);
 
 virSecurityLabelDef *
-virDomainDefGetSecurityLabelDef(virDomainDef *def, const char *model);
+virDomainDefGetSecurityLabelDef(const virDomainDef *def, const char *model);
 
 virSecurityDeviceLabelDef *
 virDomainChrSourceDefGetSecurityLabelDef(virDomainChrSourceDef *def,

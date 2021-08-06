@@ -29481,7 +29481,7 @@ virDomainDeviceDefCopy(virDomainDeviceDef *src,
 
 
 virSecurityLabelDef *
-virDomainDefGetSecurityLabelDef(virDomainDef *def, const char *model)
+virDomainDefGetSecurityLabelDef(const virDomainDef *def, const char *model)
 {
     size_t i;
     virSecurityLabelDef *seclabel = NULL;
