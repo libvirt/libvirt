@@ -266,7 +266,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_VIRTIO_MMIO, /* -device virtio-mmio */
     QEMU_CAPS_DEVICE_ICH9_INTEL_HDA, /* -device ich9-intel-hda */
     QEMU_CAPS_KVM_PIT_TICK_POLICY, /* kvm-pit.lost_tick_policy */
-    QEMU_CAPS_BOOT_STRICT, /* -boot strict */
+    X_QEMU_CAPS_BOOT_STRICT, /* -boot strict */
     QEMU_CAPS_DEVICE_PANIC, /* -device pvpanic */
 
     /* 160 */

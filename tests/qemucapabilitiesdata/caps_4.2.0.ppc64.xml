@@ -50,7 +50,6 @@
   <flag name='usb-storage'/>
   <flag name='usb-storage.removable'/>
   <flag name='ich9-intel-hda'/>
-  <flag name='boot-strict'/>
   <flag name='enable-fips'/>
   <flag name='usb-kbd'/>
   <flag name='active-commit'/>

@@ -287,7 +287,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-mmio", /* QEMU_CAPS_DEVICE_VIRTIO_MMIO */
               "ich9-intel-hda", /* QEMU_CAPS_DEVICE_ICH9_INTEL_HDA */
               "kvm-pit-lost-tick-policy", /* QEMU_CAPS_KVM_PIT_TICK_POLICY */
-              "boot-strict", /* QEMU_CAPS_BOOT_STRICT */
+              "boot-strict", /* X_QEMU_CAPS_BOOT_STRICT */
               "pvpanic", /* QEMU_CAPS_DEVICE_PANIC */
 
               /* 160 */
@@ -3205,7 +3205,6 @@ struct virQEMUCapsCommandLineProps {
  * in qemu and thus isn't being properly extended. Other means to detect
  * features should be used if possible. */
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
-    { "boot-opts", "strict", QEMU_CAPS_BOOT_STRICT },
     { "boot-opts", "reboot-timeout", QEMU_CAPS_REBOOT_TIMEOUT },
     { "boot-opts", "splash-time", QEMU_CAPS_SPLASH_TIMEOUT },
     { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE },
