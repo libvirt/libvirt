@@ -1176,7 +1176,6 @@ mymain(void)
 
     DO_TEST("reboot-timeout-disabled", QEMU_CAPS_REBOOT_TIMEOUT);
     DO_TEST("reboot-timeout-enabled", QEMU_CAPS_REBOOT_TIMEOUT);
-    DO_TEST_PARSE_ERROR_NOCAPS("reboot-timeout-enabled");
 
     DO_TEST("bios",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
