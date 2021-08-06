@@ -10820,7 +10820,7 @@ qemuDomainStorageOpenStat(virQEMUDriver *driver,
         if (skipInaccessible && !virFileExists(src->path))
             return 0;
 
-        if ((*ret_fd = qemuDomainOpenFile(driver, vm, src->path, O_RDONLY,
+        if ((*ret_fd = qemuDomainOpenFile(driver, vm->def, src->path, O_RDONLY,
                                           NULL)) < 0)
             return -1;
 

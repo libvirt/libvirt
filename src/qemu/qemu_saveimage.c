@@ -313,7 +313,7 @@ qemuSaveImageCreate(virQEMUDriver *driver,
     if (qemuDomainFileWrapperFDClose(vm, wrapperFd) < 0)
         goto cleanup;
 
-    if ((fd = qemuDomainOpenFile(driver, vm, path, O_WRONLY, NULL)) < 0 ||
+    if ((fd = qemuDomainOpenFile(driver, vm->def, path, O_WRONLY, NULL)) < 0 ||
         virQEMUSaveDataFinish(data, &fd, path) < 0)
         goto cleanup;
 

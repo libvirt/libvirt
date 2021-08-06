@@ -11512,7 +11512,7 @@ virQEMUFileOpenAs(uid_t fallback_uid,
 /**
  * qemuDomainOpenFile:
  * @driver: driver object
- * @vm: domain object
+ * @def: domain definition
  * @path: path to file to open
  * @oflags: flags for opening/creation of the file
  * @needUnlink: set to true if file was created by this function
@@ -11527,7 +11527,7 @@ virQEMUFileOpenAs(uid_t fallback_uid,
  **/
 int
 qemuDomainOpenFile(virQEMUDriver *driver,
-                   virDomainObj *vm,
+                   const virDomainDef *def,
                    const char *path,
                    int oflags,
                    bool *needUnlink)
@@ -11539,8 +11539,8 @@ qemuDomainOpenFile(virQEMUDriver *driver,
     virSecurityLabelDef *seclabel;
 
     /* TODO: Take imagelabel into account? */
-    if (vm &&
-        (seclabel = virDomainDefGetSecurityLabelDef(vm->def, "dac")) != NULL &&
+    if (def &&
+        (seclabel = virDomainDefGetSecurityLabelDef(def, "dac")) != NULL &&
         seclabel->label != NULL &&
         (virParseOwnershipIds(seclabel->label, &user, &group) < 0))
         return -EINVAL;
