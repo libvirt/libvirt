@@ -25,7 +25,6 @@
   <flag name='memory-backend-ram'/>
   <flag name='numa'/>
   <flag name='memory-backend-file'/>
-  <flag name='splash-timeout'/>
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
   <flag name='aes-key-wrap'/>

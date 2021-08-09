@@ -308,7 +308,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "memory-backend-file", /* QEMU_CAPS_OBJECT_MEMORY_FILE */
               "usb-audio", /* QEMU_CAPS_OBJECT_USB_AUDIO */
               "rtc-reset-reinjection", /* QEMU_CAPS_RTC_RESET_REINJECTION */
-              "splash-timeout", /* QEMU_CAPS_SPLASH_TIMEOUT */
+              "splash-timeout", /* X_QEMU_CAPS_SPLASH_TIMEOUT */
               "iothread", /* QEMU_CAPS_OBJECT_IOTHREAD */
 
               /* 175 */
@@ -3205,7 +3205,6 @@ struct virQEMUCapsCommandLineProps {
  * in qemu and thus isn't being properly extended. Other means to detect
  * features should be used if possible. */
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
-    { "boot-opts", "splash-time", QEMU_CAPS_SPLASH_TIMEOUT },
     { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE },
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
     { "fsdev", "fmode", QEMU_CAPS_FSDEV_CREATEMODE }, /* Could have also checked fsdev->dmode */

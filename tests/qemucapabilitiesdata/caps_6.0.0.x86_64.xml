@@ -73,7 +73,6 @@
   <flag name='memory-backend-file'/>
   <flag name='usb-audio'/>
   <flag name='rtc-reset-reinjection'/>
-  <flag name='splash-timeout'/>
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
   <flag name='VGA.vgamem_mb'/>
