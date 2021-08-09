@@ -566,8 +566,7 @@ qemuValidateDomainDefPM(const virDomainDef *def,
 
 
 static int
-qemuValidateDomainDefBoot(const virDomainDef *def,
-                          virQEMUCaps *qemuCaps)
+qemuValidateDomainDefBoot(const virDomainDef *def)
 {
     if (def->os.loader &&
         def->os.loader->secure == VIR_TRISTATE_BOOL_YES) {
@@ -594,15 +593,6 @@ qemuValidateDomainDefBoot(const virDomainDef *def,
             def->features[VIR_DOMAIN_FEATURE_SMM] != VIR_TRISTATE_SWITCH_ON) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Secure boot requires SMM feature enabled"));
-            return -1;
-        }
-    }
-
-    if (def->os.bm_timeout_set) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPLASH_TIMEOUT)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("splash timeout is not supported "
-                             "by this QEMU binary"));
             return -1;
         }
     }
@@ -1218,7 +1208,7 @@ qemuValidateDomainDef(const virDomainDef *def,
     if (qemuValidateDomainDefPM(def, qemuCaps) < 0)
         return -1;
 
-    if (qemuValidateDomainDefBoot(def, qemuCaps) < 0)
+    if (qemuValidateDomainDefBoot(def) < 0)
         return -1;
 
     if (qemuValidateDomainVCpuTopology(def, qemuCaps) < 0)

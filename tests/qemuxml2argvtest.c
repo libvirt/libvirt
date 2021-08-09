@@ -1068,10 +1068,8 @@ mymain(void)
             QEMU_CAPS_ICH9_AHCI);
     DO_TEST_NOCAPS("boot-multi");
     DO_TEST_NOCAPS("boot-menu-enable");
-    DO_TEST("boot-menu-enable-with-timeout",
-            QEMU_CAPS_SPLASH_TIMEOUT);
-    DO_TEST_PARSE_ERROR("boot-menu-enable-with-timeout-invalid",
-                        QEMU_CAPS_SPLASH_TIMEOUT);
+    DO_TEST_NOCAPS("boot-menu-enable-with-timeout");
+    DO_TEST_PARSE_ERROR_NOCAPS("boot-menu-enable-with-timeout-invalid");
     DO_TEST_NOCAPS("boot-menu-disable");
     DO_TEST_NOCAPS("boot-menu-disable-drive");
     DO_TEST_PARSE_ERROR("boot-dev+order",
