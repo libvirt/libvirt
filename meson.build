@@ -790,7 +790,7 @@ required_programs = [
 
 required_programs_groups = [
   { 'name': 'rpcgen', 'prog': [ 'rpcgen', 'portable-rpcgen' ] },
-  { 'name': 'rst2html', 'prog': [ 'rst2html5', 'rst2html5.py', 'rst2html5-3' ] },
+  { 'name': 'rst2html5', 'prog': [ 'rst2html5', 'rst2html5.py', 'rst2html5-3' ] },
   { 'name': 'rst2man', 'prog': [ 'rst2man', 'rst2man.py', 'rst2man-3' ] },
 ]
 

@@ -12,7 +12,7 @@ foreach name : docs_go_files
 
   html_xslt_gen += {
     'name': name,
-    'file': docs_rst2html_gen.process(rst_file),
+    'file': docs_rst2html5_gen.process(rst_file),
     'source': 'docs' / 'go' / rst_file,
   }
 endforeach
