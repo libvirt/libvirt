@@ -10,7 +10,6 @@
   <flag name='virtio-scsi-pci'/>
   <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
-  <flag name='reboot-timeout'/>
   <flag name='vnc'/>
   <flag name='nbd-server'/>
   <flag name='virtio-rng'/>

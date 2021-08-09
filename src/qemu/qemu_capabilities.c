@@ -217,7 +217,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "ide-drive.wwn", /* QEMU_CAPS_IDE_DRIVE_WWN */
               "scsi-disk.wwn", /* QEMU_CAPS_SCSI_DISK_WWN */
               "seccomp-sandbox", /* QEMU_CAPS_SECCOMP_SANDBOX */
-              "reboot-timeout", /* QEMU_CAPS_REBOOT_TIMEOUT */
+              "reboot-timeout", /* X_QEMU_CAPS_REBOOT_TIMEOUT */
               "dump-guest-core", /* X_QEMU_CAPS_DUMP_GUEST_CORE */
 
               /* 110 */
@@ -3205,7 +3205,6 @@ struct virQEMUCapsCommandLineProps {
  * in qemu and thus isn't being properly extended. Other means to detect
  * features should be used if possible. */
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
-    { "boot-opts", "reboot-timeout", QEMU_CAPS_REBOOT_TIMEOUT },
     { "boot-opts", "splash-time", QEMU_CAPS_SPLASH_TIMEOUT },
     { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE },
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },

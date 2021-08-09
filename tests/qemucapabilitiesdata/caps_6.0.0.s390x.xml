@@ -19,7 +19,6 @@
   <flag name='usb-redir.filter'/>
   <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
-  <flag name='reboot-timeout'/>
   <flag name='vnc'/>
   <flag name='s390-sclp'/>
   <flag name='nbd-server'/>
