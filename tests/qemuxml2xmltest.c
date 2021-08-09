@@ -233,8 +233,8 @@ mymain(void)
     DO_TEST_NOCAPS("boot-menu-disable-with-timeout");
     DO_TEST_NOCAPS("boot-order");
 
-    DO_TEST("reboot-timeout-enabled", QEMU_CAPS_REBOOT_TIMEOUT);
-    DO_TEST("reboot-timeout-disabled", QEMU_CAPS_REBOOT_TIMEOUT);
+    DO_TEST_NOCAPS("reboot-timeout-enabled");
+    DO_TEST_NOCAPS("reboot-timeout-disabled");
 
     DO_TEST_NOCAPS("clock-utc");
     DO_TEST_NOCAPS("clock-localtime");

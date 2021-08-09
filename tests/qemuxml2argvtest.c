@@ -1174,8 +1174,8 @@ mymain(void)
     driver.config->nogfxAllowHostAudio = false;
     g_unsetenv("QEMU_AUDIO_DRV");
 
-    DO_TEST("reboot-timeout-disabled", QEMU_CAPS_REBOOT_TIMEOUT);
-    DO_TEST("reboot-timeout-enabled", QEMU_CAPS_REBOOT_TIMEOUT);
+    DO_TEST_NOCAPS("reboot-timeout-disabled");
+    DO_TEST_NOCAPS("reboot-timeout-enabled");
 
     DO_TEST("bios",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
