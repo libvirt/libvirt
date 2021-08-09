@@ -812,6 +812,34 @@ foreach item : required_programs_groups
   set_variable('@0@_prog'.format(varname), prog)
 endforeach
 
+# There are two versions of rst2html5 in the wild: one is the version
+# coming from the docutils package, and the other is the one coming
+# from the rst2html5 package. These versions are subtly different,
+# and the libvirt documentation can only be successfully generated
+# using the docutils version. Every now and then, users will report
+# build failures that can be traced back to having the wrong version
+# installed.
+#
+# The only reliable way to tell the two binaries apart seems to be
+# looking look at their version information: the docutils version
+# will report
+#
+#   rst2html5 (Docutils ..., Python ..., on ...)
+#
+# whereas the rst2html5 version will report
+#
+#   rst2html5 ... (Docutils ..., Python ..., on ...)
+#
+# with the additional bit of information being the version number for
+# the rst2html5 package itself.
+#
+# Use this knowledge to detect the version that we know doesn't work
+# for building libvirt and reject it
+rst2html5_version = run_command(rst2html5_prog, '--version')
+rst2html5_version = rst2html5_version.stdout().split('(')
+if rst2html5_version[0] != 'rst2html5 '
+  error('Please uninstall the rst2html5 package and install the docutils package')
+endif
 
 # optional programs
 
