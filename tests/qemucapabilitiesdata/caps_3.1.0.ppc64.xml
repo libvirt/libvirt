@@ -42,7 +42,6 @@
   <flag name='nvram'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
-  <flag name='mem-merge'/>
   <flag name='drive-discard'/>
   <flag name='usb-storage'/>
   <flag name='usb-storage.removable'/>

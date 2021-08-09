@@ -267,7 +267,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "vfio-pci.bootindex", /* X_QEMU_CAPS_VFIO_PCI_BOOTINDEX */
               "scsi-generic", /* X_QEMU_CAPS_DEVICE_SCSI_GENERIC */
               "scsi-generic.bootindex", /* X_QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX */
-              "mem-merge", /* QEMU_CAPS_MEM_MERGE */
+              "mem-merge", /* X_QEMU_CAPS_MEM_MERGE */
 
               /* 145 */
               "vnc-websocket", /* X_QEMU_CAPS_VNC_WEBSOCKET */
@@ -3209,7 +3209,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
     { "fsdev", "fmode", QEMU_CAPS_FSDEV_CREATEMODE }, /* Could have also checked fsdev->dmode */
     { "fw_cfg", "file", QEMU_CAPS_FW_CFG },
-    { "machine", "mem-merge", QEMU_CAPS_MEM_MERGE },
     { "machine", "aes-key-wrap", QEMU_CAPS_AES_KEY_WRAP },
     { "machine", "dea-key-wrap", QEMU_CAPS_DEA_KEY_WRAP },
     { "machine", "kernel_irqchip", QEMU_CAPS_MACHINE_KERNEL_IRQCHIP },

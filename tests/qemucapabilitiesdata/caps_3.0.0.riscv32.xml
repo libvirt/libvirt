@@ -16,7 +16,6 @@
   <flag name='rng-random'/>
   <flag name='rng-egd'/>
   <flag name='tpm-passthrough'/>
-  <flag name='mem-merge'/>
   <flag name='drive-discard'/>
   <flag name='virtio-mmio'/>
   <flag name='enable-fips'/>

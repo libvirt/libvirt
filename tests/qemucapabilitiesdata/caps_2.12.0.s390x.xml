@@ -26,7 +26,6 @@
   <flag name='virtio-ccw'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
-  <flag name='mem-merge'/>
   <flag name='drive-discard'/>
   <flag name='virtio-mmio'/>
   <flag name='enable-fips'/>

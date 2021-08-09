@@ -54,7 +54,6 @@
   <flag name='tpm-tis'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
-  <flag name='mem-merge'/>
   <flag name='drive-discard'/>
   <flag name='dmi-to-pci-bridge'/>
   <flag name='i440fx-pci-hole64-size'/>

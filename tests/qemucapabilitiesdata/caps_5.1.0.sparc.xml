@@ -16,7 +16,6 @@
   <flag name='nbd-server'/>
   <flag name='rng-random'/>
   <flag name='rng-egd'/>
-  <flag name='mem-merge'/>
   <flag name='drive-discard'/>
   <flag name='enable-fips'/>
   <flag name='spice-file-xfer-disable'/>
