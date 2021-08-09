@@ -1291,7 +1291,7 @@ mymain(void)
                         QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_CAPS_LATEST("hugepages-memaccess3");
     DO_TEST_CAPS_LATEST("hugepages-nvdimm");
-    DO_TEST("nosharepages", QEMU_CAPS_MEM_MERGE);
+    DO_TEST_NOCAPS("nosharepages");
     DO_TEST_NOCAPS("disk-cdrom");
     DO_TEST_CAPS_VER("disk-cdrom", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cdrom");
