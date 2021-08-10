@@ -29,4 +29,5 @@ QEMU_AUDIO_DRV=none \
 -netdev user,id=hostnet0 \
 -device e1000e,netdev=hostnet0,id=net0,mac=52:54:00:aa:bf:ef,bus=pci.2,addr=0x1 \
 -device intel-hda,id=sound0,bus=pci.3,addr=0x0 \
--device hda-duplex,id=sound0-codec0,bus=sound0.0,cad=0
+-device hda-duplex,id=sound0-codec0,bus=sound0.0,cad=0 \
+-msg timestamp=on

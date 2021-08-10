@@ -27,4 +27,5 @@ QEMU_AUDIO_DRV=none \
 -device zpci,uid=5,fid=1,target=hostdev1,id=zpci5 \
 -device vfio-pci,host=0001:00:00.0,id=hostdev1,bus=pci.0,addr=0x2 \
 -device zpci,uid=2,fid=2,target=balloon0,id=zpci2 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
+-msg timestamp=on

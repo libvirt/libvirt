@@ -25,4 +25,5 @@ QEMU_AUDIO_DRV=none \
 -kernel /var/lib/libvirt/images/riscv64.bbl \
 -append root=/dev/vda \
 -drive file=/var/lib/libvirt/images/riscv64.qcow2,format=qcow2,if=none,id=drive-virtio-disk0 \
--device virtio-blk-pci,bus=pcie.0,addr=0x1,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1
+-device virtio-blk-pci,bus=pcie.0,addr=0x1,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+-msg timestamp=on

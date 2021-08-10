@@ -35,4 +35,5 @@ QEMU_AUDIO_DRV=none \
 -chardev socket,id=charchannel2,path=/tmp/channel/domain--1-QEMUGuest1/ble,server=on,wait=off \
 -device virtserialport,bus=virtio-serial0.0,nr=3,chardev=charchannel2,id=channel2,name=ble \
 -chardev socket,id=charchannel3,path=/tmp/channel/domain--1-QEMUGuest1/fdsa,server=on,wait=off \
--device virtserialport,bus=virtio-serial0.0,nr=4,chardev=charchannel3,id=channel3,name=fdsa
+-device virtserialport,bus=virtio-serial0.0,nr=4,chardev=charchannel3,id=channel3,name=fdsa \
+-msg timestamp=on

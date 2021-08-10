@@ -40,4 +40,5 @@ QEMU_AUDIO_DRV=spice \
 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
 -drive file=iscsi://example.foo.org:3260/iqn.1992-01.com.example%3Amy,,storage/1,if=none,format=raw,id=drive-hostdev0 \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=0,lun=4,drive=drive-hostdev0,id=hostdev0 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
+-msg timestamp=on

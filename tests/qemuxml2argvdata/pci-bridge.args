@@ -93,4 +93,5 @@ QEMU_AUDIO_DRV=none \
 -vnc 127.0.0.1:0 \
 -k en-us \
 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6 \
+-msg timestamp=on

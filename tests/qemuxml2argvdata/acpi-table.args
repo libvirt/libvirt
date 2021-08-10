@@ -23,4 +23,5 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -acpitable sig=SLIC,file=/var/lib/libvirt/acpi/slic.dat \
--usb
+-usb \
+-msg timestamp=on

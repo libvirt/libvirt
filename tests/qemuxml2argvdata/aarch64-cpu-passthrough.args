@@ -25,4 +25,5 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -no-acpi \
 -drive file=/aarch64.raw,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1
+-device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+-msg timestamp=on

@@ -37,4 +37,5 @@ QEMU_AUDIO_DRV=none \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37,bus=pci.3,addr=0x2 \
 -netdev user,id=hostnet1 \
--device virtio-net-pci,netdev=hostnet1,id=net1,mac=52:54:00:09:a4:38,bus=pci.2,addr=0x1
+-device virtio-net-pci,netdev=hostnet1,id=net1,mac=52:54:00:09:a4:38,bus=pci.2,addr=0x1 \
+-msg timestamp=on

@@ -26,4 +26,5 @@ QEMU_AUDIO_DRV=none \
 -drive file=/home/berrange/VirtualMachines/redhat-6.2-sparc.img,format=qcow2,if=none,id=drive-scsi0-0-0-0 \
 -device scsi-hd,bus=scsi.0,scsi-id=0,drive=drive-scsi0-0-0-0,id=scsi0-0-0-0,bootindex=1 \
 -drive file=/home/berrange/VirtualMachines/redhat-6.2-sparc.iso,format=raw,if=none,id=drive-scsi0-0-0-1,readonly=on \
--device scsi-cd,bus=scsi.0,scsi-id=1,drive=drive-scsi0-0-0-1,id=scsi0-0-0-1
+-device scsi-cd,bus=scsi.0,scsi-id=1,drive=drive-scsi0-0-0-1,id=scsi0-0-0-1 \
+-msg timestamp=on

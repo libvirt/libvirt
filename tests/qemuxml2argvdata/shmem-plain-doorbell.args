@@ -39,4 +39,5 @@ QEMU_AUDIO_DRV=none \
 -device ivshmem-doorbell,id=shmem6,chardev=charshmem6,vectors=16,ioeventfd=on,bus=pci.0,addr=0x8 \
 -chardev socket,id=charshmem6,path=/tmp/shmem6-sock \
 -device ivshmem-doorbell,id=shmem7,chardev=charshmem7,vectors=32,ioeventfd=on,bus=pci.0,addr=0x9 \
--chardev socket,id=charshmem7,path=/tmp/shmem7-sock
+-chardev socket,id=charshmem7,path=/tmp/shmem7-sock \
+-msg timestamp=on

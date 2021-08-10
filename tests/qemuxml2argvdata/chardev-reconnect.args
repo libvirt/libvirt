@@ -37,4 +37,5 @@ QEMU_AUDIO_DRV=none \
 -device usb-redir,chardev=charredir0,id=redir0,bus=usb.0,port=2 \
 -chardev socket,id=charrng0,host=localhost,port=2345,reconnect=5 \
 -object rng-egd,id=objrng0,chardev=charrng0 \
--device virtio-rng-pci,rng=objrng0,id=rng0,bus=pci.0,addr=0x3
+-device virtio-rng-pci,rng=objrng0,id=rng0,bus=pci.0,addr=0x3 \
+-msg timestamp=on

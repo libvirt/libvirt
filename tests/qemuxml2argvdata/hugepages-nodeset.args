@@ -25,4 +25,5 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--usb
+-usb \
+-msg timestamp=on

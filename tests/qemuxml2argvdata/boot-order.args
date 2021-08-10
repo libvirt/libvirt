@@ -35,4 +35,5 @@ QEMU_AUDIO_DRV=none \
 -global isa-fdc.bootindexB=4 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,addr=0x2,bootindex=2 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
+-msg timestamp=on

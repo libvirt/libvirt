@@ -28,4 +28,5 @@ QEMU_AUDIO_DRV=none \
 -initrd /aarch64.initrd \
 -append console=ttyAMA0 \
 -netdev user,id=hostnet0 \
--device virtio-net-device,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37
+-device virtio-net-device,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37 \
+-msg timestamp=on

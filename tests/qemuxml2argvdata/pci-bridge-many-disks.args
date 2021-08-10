@@ -237,4 +237,5 @@ QEMU_AUDIO_DRV=none \
 -drive file=/var/lib/libvirt/images/disk-z-c.img,format=raw,if=none,id=drive-virtio-disk678 \
 -device virtio-blk-pci,bus=pci.3,addr=0xf,drive=drive-virtio-disk678,id=virtio-disk678 \
 -drive file=/var/lib/libvirt/images/disk-z-d.img,format=raw,if=none,id=drive-virtio-disk679 \
--device virtio-blk-pci,bus=pci.3,addr=0x10,drive=drive-virtio-disk679,id=virtio-disk679
+-device virtio-blk-pci,bus=pci.3,addr=0x10,drive=drive-virtio-disk679,id=virtio-disk679 \
+-msg timestamp=on

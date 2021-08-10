@@ -24,4 +24,5 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -usb \
--device pvpanic,ioport=1285
+-device pvpanic,ioport=1285 \
+-msg timestamp=on

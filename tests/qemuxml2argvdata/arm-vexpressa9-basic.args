@@ -31,4 +31,5 @@ QEMU_AUDIO_DRV=none \
 -netdev user,id=hostnet0 \
 -net nic,macaddr=52:54:00:09:a4:37,netdev=hostnet0,model=lan9118,id=net0 \
 -chardev pty,id=charserial0 \
--serial chardev:charserial0
+-serial chardev:charserial0 \
+-msg timestamp=on

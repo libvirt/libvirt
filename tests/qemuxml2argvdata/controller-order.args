@@ -44,4 +44,5 @@ QEMU_AUDIO_DRV=spice \
 -device intel-hda,id=sound0,bus=pci.0,addr=0x4 \
 -device hda-duplex,id=sound0-codec0,bus=sound0.0,cad=0 \
 -device usb-host,hostbus=14,hostaddr=6,id=hostdev0,bus=usb.0,port=2 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6 \
+-msg timestamp=on

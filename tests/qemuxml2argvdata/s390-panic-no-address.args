@@ -25,4 +25,5 @@ QEMU_AUDIO_DRV=none \
 -device virtio-serial-ccw,id=virtio-serial0,devno=fe.0.0000 \
 -chardev pty,id=charconsole0 \
 -device virtconsole,chardev=charconsole0,id=console0 \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001
+-device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001 \
+-msg timestamp=on

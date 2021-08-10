@@ -28,4 +28,5 @@ QEMU_AUDIO_DRV=none \
 -device usb-hub,id=hub1,bus=usb.0,port=2 \
 -device usb-mouse,id=input0,bus=usb.0,port=3 \
 -device usb-mouse,id=input1,bus=usb.0,port=4 \
--device usb-mouse,id=input2,bus=usb.0,port=5
+-device usb-mouse,id=input2,bus=usb.0,port=5 \
+-msg timestamp=on

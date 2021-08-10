@@ -54,4 +54,5 @@ QEMU_AUDIO_DRV=none \
 -device virtio-scsi-pci,id=scsi28,bus=pci.0,addr=0x1d \
 -device virtio-scsi-pci,id=scsi29,bus=pci.0,addr=0x1e \
 -device virtio-scsi-pci,id=scsi30,bus=pci.0,addr=0x1f \
--device virtio-scsi-pci,id=scsi31,bus=pci.1.0,addr=0x1
+-device virtio-scsi-pci,id=scsi31,bus=pci.1.0,addr=0x1 \
+-msg timestamp=on

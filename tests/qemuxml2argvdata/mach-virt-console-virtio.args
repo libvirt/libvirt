@@ -25,4 +25,5 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -device virtio-serial-device,id=virtio-serial0 \
 -chardev pty,id=charconsole0 \
--device virtconsole,chardev=charconsole0,id=console0
+-device virtconsole,chardev=charconsole0,id=console0 \
+-msg timestamp=on

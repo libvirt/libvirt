@@ -29,4 +29,5 @@ QEMU_AUDIO_DRV=none \
 -soundhw pcspk \
 -device ES1370,id=sound1,bus=pci.0,addr=0x2 \
 -device sb16,id=sound2 \
--device AC97,id=sound3,bus=pci.0,addr=0x3
+-device AC97,id=sound3,bus=pci.0,addr=0x3 \
+-msg timestamp=on

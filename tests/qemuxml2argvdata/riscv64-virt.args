@@ -28,4 +28,5 @@ QEMU_AUDIO_DRV=none \
 -device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
 -chardev pty,id=charserial0 \
 -serial chardev:charserial0 \
--device virtio-balloon-device,id=balloon0
+-device virtio-balloon-device,id=balloon0 \
+-msg timestamp=on

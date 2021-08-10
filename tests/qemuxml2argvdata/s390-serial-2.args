@@ -25,4 +25,5 @@ QEMU_AUDIO_DRV=none \
 -chardev pty,id=charserial0 \
 -device sclpconsole,chardev=charserial0,id=serial0 \
 -chardev pty,id=charserial1 \
--device sclplmconsole,chardev=charserial1,id=serial1
+-device sclplmconsole,chardev=charserial1,id=serial1 \
+-msg timestamp=on

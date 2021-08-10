@@ -31,4 +31,5 @@ QEMU_AUDIO_DRV=none \
 -netdev user,id=hostnet0 \
 -device virtio-net-device,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37 \
 -chardev pty,id=charserial0 \
--serial chardev:charserial0
+-serial chardev:charserial0 \
+-msg timestamp=on

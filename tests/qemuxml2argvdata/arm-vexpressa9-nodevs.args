@@ -26,4 +26,5 @@ QEMU_AUDIO_DRV=none \
 -initrd /arm.initrd \
 -append console=ttyAMA0,115200n8 \
 -dtb /arm.dtb \
--usb
+-usb \
+-msg timestamp=on

@@ -23,4 +23,5 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -usb \
--global spapr-nvram.reg=0x4000
+-global spapr-nvram.reg=0x4000 \
+-msg timestamp=on

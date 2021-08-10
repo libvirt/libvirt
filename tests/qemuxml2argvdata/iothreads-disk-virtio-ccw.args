@@ -28,4 +28,5 @@ QEMU_AUDIO_DRV=none \
 -device virtio-blk-ccw,iothread=iothread1,devno=fe.0.0000,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
 -drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-virtio-disk1 \
 -device virtio-blk-ccw,iothread=iothread2,devno=0.0.0007,drive=drive-virtio-disk1,id=virtio-disk1 \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a
+-device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a \
+-msg timestamp=on

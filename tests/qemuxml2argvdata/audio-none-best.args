@@ -36,4 +36,5 @@ QEMU_AUDIO_DAC_FIXED_FMT=f32 \
 -no-acpi \
 -usb \
 -drive file=/dev/cdrom,format=raw,if=none,id=drive-ide0-1-0,readonly=on \
--device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1
+-device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \
+-msg timestamp=on

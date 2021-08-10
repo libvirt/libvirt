@@ -35,4 +35,5 @@ QEMU_AUDIO_DRV=none \
 -device virtconsole,chardev=charconsole2,id=console2 \
 -chardev pty,id=charconsole3 \
 -device virtconsole,chardev=charconsole3,id=console3 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
+-msg timestamp=on

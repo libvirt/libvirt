@@ -45,4 +45,5 @@ QEMU_AUDIO_DRV=none \
 -device virtconsole,chardev=charconsole1,id=console1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.4,addr=0x0 \
 -object rng-random,id=objrng0,filename=/dev/random \
--device virtio-rng-pci,rng=objrng0,id=rng0,bus=pci.5,addr=0x0
+-device virtio-rng-pci,rng=objrng0,id=rng0,bus=pci.5,addr=0x0 \
+-msg timestamp=on

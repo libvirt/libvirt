@@ -36,4 +36,5 @@ QEMU_AUDIO_DRV=none \
 -device ivshmem,id=shmem6,size=4096m,chardev=charshmem6,msi=on,vectors=16,bus=pci.0,addr=0x8 \
 -chardev socket,id=charshmem6,path=/tmp/shmem6-sock \
 -device ivshmem,id=shmem7,size=8192m,chardev=charshmem7,msi=on,vectors=32,ioeventfd=on,bus=pci.0,addr=0x9 \
--chardev socket,id=charshmem7,path=/tmp/shmem7-sock
+-chardev socket,id=charshmem7,path=/tmp/shmem7-sock \
+-msg timestamp=on

@@ -23,4 +23,5 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -chardev pty,id=charserial0 \
--device pci-serial,chardev=charserial0,id=serial0,bus=pci.0,addr=0x1
+-device pci-serial,chardev=charserial0,id=serial0,bus=pci.0,addr=0x1 \
+-msg timestamp=on

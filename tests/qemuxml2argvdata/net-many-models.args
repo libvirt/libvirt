@@ -34,4 +34,5 @@ QEMU_AUDIO_DRV=none \
 -netdev user,id=hostnet4 \
 -device ne2k_pci,netdev=hostnet4,id=net4,mac=00:11:22:33:44:58,bus=pci.0,addr=0x6 \
 -netdev user,id=hostnet5 \
--device pcnet,netdev=hostnet5,id=net5,mac=00:11:22:33:44:58,bus=pci.0,addr=0x7
+-device pcnet,netdev=hostnet5,id=net5,mac=00:11:22:33:44:58,bus=pci.0,addr=0x7 \
+-msg timestamp=on

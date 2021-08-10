@@ -26,4 +26,5 @@ QEMU_AUDIO_DRV=none \
 -vnc 127.0.0.1:0 \
 -device virtio-gpu-ccw,id=video0,max_outputs=1,devno=fe.0.0002 \
 -device virtio-gpu-ccw,id=video1,max_outputs=1,devno=fe.0.0003 \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001
+-device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001 \
+-msg timestamp=on

@@ -39,4 +39,5 @@ QEMU_AUDIO_DRV=none \
 -device virtio-net-pci,netdev=hostnet3,id=net3,mac=52:54:00:ee:96:6d,bus=pci.0,addr=0x5 \
 -chardev socket,id=charnet4,path=/tmp/vhost3.sock,reconnect=0 \
 -netdev vhost-user,chardev=charnet4,queues=4,id=hostnet4 \
--device virtio-net-pci,mq=on,vectors=10,netdev=hostnet4,id=net4,mac=52:54:00:ee:96:6e,bus=pci.0,addr=0x6
+-device virtio-net-pci,mq=on,vectors=10,netdev=hostnet4,id=net4,mac=52:54:00:ee:96:6e,bus=pci.0,addr=0x6 \
+-msg timestamp=on

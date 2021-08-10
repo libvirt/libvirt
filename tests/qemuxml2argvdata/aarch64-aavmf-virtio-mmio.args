@@ -37,4 +37,5 @@ QEMU_AUDIO_DRV=none \
 -device virtconsole,chardev=charconsole0,id=console0 \
 -device virtio-balloon-device,id=balloon0 \
 -object rng-random,id=objrng0,filename=/dev/random \
--device virtio-rng-device,rng=objrng0,id=rng0
+-device virtio-rng-device,rng=objrng0,id=rng0 \
+-msg timestamp=on

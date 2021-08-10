@@ -25,4 +25,5 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -kernel /var/lib/libvirt/images/guest.vmlinuz \
 -initrd /var/lib/libvirt/images/guest.initramfs \
--append 'rw root=/dev/vda rootwait'
+-append 'rw root=/dev/vda rootwait' \
+-msg timestamp=on

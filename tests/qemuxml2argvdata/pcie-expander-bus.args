@@ -125,4 +125,5 @@ QEMU_AUDIO_DRV=none \
 -netdev user,id=hostnet30 \
 -device e1000,netdev=hostnet30,id=net30,mac=52:54:00:7e:6e:c8,bus=pci.34,addr=0x0 \
 -netdev user,id=hostnet31 \
--device e1000,netdev=hostnet31,id=net31,mac=52:54:00:7e:6d:c9,bus=pci.35,addr=0x0
+-device e1000,netdev=hostnet31,id=net31,mac=52:54:00:7e:6d:c9,bus=pci.35,addr=0x0 \
+-msg timestamp=on

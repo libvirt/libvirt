@@ -23,4 +23,5 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1
+-device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+-msg timestamp=on

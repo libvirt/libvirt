@@ -23,4 +23,5 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -chardev pty,id=charserial0 \
--device sclpconsole,chardev=charserial0,id=serial0
+-device sclpconsole,chardev=charserial0,id=serial0 \
+-msg timestamp=on

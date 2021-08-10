@@ -24,4 +24,5 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x1 \
 -chardev pty,id=charconsole0 \
--device virtconsole,chardev=charconsole0,id=console0
+-device virtconsole,chardev=charconsole0,id=console0 \
+-msg timestamp=on

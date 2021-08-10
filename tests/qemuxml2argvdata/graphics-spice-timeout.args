@@ -35,4 +35,5 @@ QEMU_AUDIO_DRV=spice \
 -spice port=5900,addr=127.0.0.1,seamless-migration=on \
 -device VGA,id=video0,bus=pci.0,addr=0x2 \
 -device AC97,id=sound0,bus=pci.0,addr=0x3 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5 \
+-msg timestamp=on

@@ -27,4 +27,5 @@ QEMU_AUDIO_DRV=none \
 -device pcie-root-port,port=0x9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
 -device qemu-xhci,id=usb,bus=pci.1,addr=0x0 \
 -chardev pty,id=charserial0 \
--device usb-serial,chardev=charserial0,id=serial0,bus=usb.0,port=1
+-device usb-serial,chardev=charserial0,id=serial0,bus=usb.0,port=1 \
+-msg timestamp=on

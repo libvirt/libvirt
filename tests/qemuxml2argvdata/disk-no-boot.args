@@ -30,4 +30,5 @@ QEMU_AUDIO_DRV=none \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \
 -drive file=/dev/fd0,format=raw,if=none,id=drive-fdc0-0-0 \
 -global isa-fdc.driveA=drive-fdc0-0-0 \
--global isa-fdc.bootindexA=3
+-global isa-fdc.bootindexA=3 \
+-msg timestamp=on

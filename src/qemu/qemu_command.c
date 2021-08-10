@@ -10690,8 +10690,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
         qemuBuildVsockCommandLine(cmd, def, def->vsock, qemuCaps) < 0)
         return NULL;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MSG_TIMESTAMP) &&
-        cfg->logTimestamp)
+    if (cfg->logTimestamp)
         virCommandAddArgList(cmd, "-msg", "timestamp=on", NULL);
 
     return g_steal_pointer(&cmd);
