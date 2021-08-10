@@ -1050,8 +1050,6 @@ mymain(void)
     g_unsetenv("SDL_AUDIODRIVER");
 
     DO_TEST("minimal", NONE);
-    DO_TEST("minimal-sandbox",
-            QEMU_CAPS_SECCOMP_BLACKLIST);
     DO_TEST_PARSE_ERROR("minimal-no-memory", NONE);
 
     DO_TEST_CAPS_LATEST("genid");
