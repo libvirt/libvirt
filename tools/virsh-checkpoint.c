@@ -716,9 +716,6 @@ cmdCheckpointList(vshControl *ctl,
     bool ret = false;
     unsigned int flags = 0;
     size_t i;
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    char *doc = NULL;
     virDomainCheckpointPtr checkpoint = NULL;
     long long creation_longlong;
     g_autoptr(GDateTime) then = NULL;
@@ -728,7 +725,6 @@ cmdCheckpointList(vshControl *ctl,
     bool parent = vshCommandOptBool(cmd, "parent");
     bool roots = vshCommandOptBool(cmd, "roots");
     const char *from_chk = NULL;
-    char *parent_chk = NULL;
     virDomainCheckpointPtr start = NULL;
     struct virshCheckpointList *checkpointlist = NULL;
     vshTable *table = NULL;
@@ -805,13 +801,11 @@ cmdCheckpointList(vshControl *ctl,
 
     for (i = 0; i < checkpointlist->nchks; i++) {
         g_autofree gchar *thenstr = NULL;
+        g_autoptr(xmlDoc) xml = NULL;
+        g_autoptr(xmlXPathContext) ctxt = NULL;
+        g_autofree char *parent_chk = NULL;
+        g_autofree char *doc = NULL;
         const char *chk_name;
-
-        /* free up memory from previous iterations of the loop */
-        VIR_FREE(parent_chk);
-        xmlXPathFreeContext(ctxt);
-        xmlFreeDoc(xml);
-        VIR_FREE(doc);
 
         checkpoint = checkpointlist->chks[i].chk;
         chk_name = virDomainCheckpointGetName(checkpoint);
@@ -856,13 +850,8 @@ cmdCheckpointList(vshControl *ctl,
     ret = true;
 
  cleanup:
-    /* this frees up memory from the last iteration of the loop */
     virshCheckpointListFree(checkpointlist);
-    VIR_FREE(parent_chk);
     virshDomainCheckpointFree(start);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
-    VIR_FREE(doc);
     virshDomainFree(dom);
     vshTableFree(table);
 
