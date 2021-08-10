@@ -3730,6 +3730,16 @@ void virDomainDefFree(virDomainDef *def)
     g_free(def);
 }
 
+static void
+virDomainObjDeprecationFree(virDomainObj *dom)
+{
+    size_t i = 0;
+    for (i = 0; i < dom->ndeprecations; i++) {
+        g_free(dom->deprecations[i]);
+    }
+    g_free(dom->deprecations);
+}
+
 static void virDomainObjDispose(void *obj)
 {
     virDomainObj *dom = obj;
@@ -3742,6 +3752,7 @@ static void virDomainObjDispose(void *obj)
     if (dom->privateDataFreeFunc)
         (dom->privateDataFreeFunc)(dom->privateData);
 
+    virDomainObjDeprecationFree(dom);
     virDomainSnapshotObjListFree(dom->snapshots);
     virDomainCheckpointObjListFree(dom->checkpoints);
 }
