@@ -82,7 +82,6 @@
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
   <flag name='ivshmem'/>
-  <flag name='drive-iotune-max'/>
   <flag name='VGA.vgamem_mb'/>
   <flag name='vmware-svga.vgamem_mb'/>
   <flag name='qxl.vgamem_mb'/>
@@ -130,12 +129,10 @@
   <flag name='query-hotpluggable-cpus'/>
   <flag name='virtio-net.rx_queue_size'/>
   <flag name='virtio-vga'/>
-  <flag name='drive-iotune-max-length'/>
   <flag name='ivshmem-plain'/>
   <flag name='ivshmem-doorbell'/>
   <flag name='gluster.debug_level'/>
   <flag name='vhost-scsi'/>
-  <flag name='drive-iotune-group'/>
   <flag name='query-cpu-model-expansion'/>
   <flag name='virtio-net.host_mtu'/>
   <flag name='spice-rendernode'/>

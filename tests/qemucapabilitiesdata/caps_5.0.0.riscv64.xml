@@ -68,7 +68,6 @@
   <flag name='splash-timeout'/>
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
-  <flag name='drive-iotune-max'/>
   <flag name='VGA.vgamem_mb'/>
   <flag name='vmware-svga.vgamem_mb'/>
   <flag name='aes-key-wrap'/>
@@ -106,12 +105,10 @@
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='virtio-net.rx_queue_size'/>
-  <flag name='drive-iotune-max-length'/>
   <flag name='ivshmem-plain'/>
   <flag name='ivshmem-doorbell'/>
   <flag name='gluster.debug_level'/>
   <flag name='vhost-scsi'/>
-  <flag name='drive-iotune-group'/>
   <flag name='virtio-net.host_mtu'/>
   <flag name='spice-rendernode'/>
   <flag name='pcie-root-port'/>

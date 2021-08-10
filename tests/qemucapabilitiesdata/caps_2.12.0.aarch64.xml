@@ -63,7 +63,6 @@
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
   <flag name='ivshmem'/>
-  <flag name='drive-iotune-max'/>
   <flag name='VGA.vgamem_mb'/>
   <flag name='aes-key-wrap'/>
   <flag name='dea-key-wrap'/>
@@ -99,12 +98,10 @@
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='virtio-net.rx_queue_size'/>
-  <flag name='drive-iotune-max-length'/>
   <flag name='ivshmem-plain'/>
   <flag name='ivshmem-doorbell'/>
   <flag name='gluster.debug_level'/>
   <flag name='vhost-scsi'/>
-  <flag name='drive-iotune-group'/>
   <flag name='virtio-net.host_mtu'/>
   <flag name='pcie-root-port'/>
   <flag name='query-cpu-definitions'/>

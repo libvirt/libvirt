@@ -3266,8 +3266,6 @@ mymain(void)
     DO_TEST("name-escape",
             QEMU_CAPS_NAME_DEBUG_THREADS,
             QEMU_CAPS_OBJECT_SECRET,
-            QEMU_CAPS_DRIVE_IOTUNE_MAX,
-            QEMU_CAPS_DRIVE_IOTUNE_GROUP,
             QEMU_CAPS_VNC,
             QEMU_CAPS_NAME_GUEST,
             QEMU_CAPS_DEVICE_CIRRUS_VGA,

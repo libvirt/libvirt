@@ -293,7 +293,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 175 */
     QEMU_CAPS_MIGRATE_RDMA, /* have rdma migration */
     QEMU_CAPS_DEVICE_IVSHMEM, /* -device ivshmem */
-    QEMU_CAPS_DRIVE_IOTUNE_MAX, /* -drive bps_max= and friends */
+    X_QEMU_CAPS_DRIVE_IOTUNE_MAX, /* -drive bps_max= and friends */
     QEMU_CAPS_VGA_VGAMEM, /* -device VGA.vgamem_mb */
     QEMU_CAPS_VMWARE_SVGA_VGAMEM, /* -device vmware-svga.vgamem_mb */
 
@@ -377,7 +377,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 235 */
     QEMU_CAPS_DEVICE_VIRTIO_VGA, /* -device virtio-vga */
-    QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH, /* -drive bps_max_length = and friends */
+    X_QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH, /* -drive bps_max_length = and friends */
     QEMU_CAPS_DEVICE_IVSHMEM_PLAIN, /* -device ivshmem-plain */
     QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL, /* -device ivshmem-doorbell */
     X_QEMU_CAPS_QUERY_QMP_SCHEMA, /* query-qmp-schema command */
@@ -385,7 +385,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 240 */
     QEMU_CAPS_GLUSTER_DEBUG_LEVEL, /* -drive gluster.debug_level={0..9} */
     QEMU_CAPS_DEVICE_VHOST_SCSI, /* -device vhost-scsi-{ccw,pci} */
-    QEMU_CAPS_DRIVE_IOTUNE_GROUP, /* -drive throttling.group=<name> */
+    X_QEMU_CAPS_DRIVE_IOTUNE_GROUP, /* -drive throttling.group=<name> */
     QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION, /* qmp query-cpu-model-expansion */
     QEMU_CAPS_VIRTIO_NET_HOST_MTU, /* virtio-net-*.host_mtu */
 

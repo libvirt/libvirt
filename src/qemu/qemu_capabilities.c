@@ -314,7 +314,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 175 */
               "migrate-rdma", /* QEMU_CAPS_MIGRATE_RDMA */
               "ivshmem", /* QEMU_CAPS_DEVICE_IVSHMEM */
-              "drive-iotune-max", /* QEMU_CAPS_DRIVE_IOTUNE_MAX */
+              "drive-iotune-max", /* X_QEMU_CAPS_DRIVE_IOTUNE_MAX */
               "VGA.vgamem_mb", /* QEMU_CAPS_VGA_VGAMEM */
               "vmware-svga.vgamem_mb", /* QEMU_CAPS_VMWARE_SVGA_VGAMEM */
 
@@ -397,7 +397,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 235 */
               "virtio-vga", /* QEMU_CAPS_DEVICE_VIRTIO_VGA */
-              "drive-iotune-max-length", /* QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH */
+              "drive-iotune-max-length", /* X_QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH */
               "ivshmem-plain", /* QEMU_CAPS_DEVICE_IVSHMEM_PLAIN */
               "ivshmem-doorbell", /* QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL */
               "query-qmp-schema", /* X_QEMU_CAPS_QUERY_QMP_SCHEMA */
@@ -405,7 +405,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 240 */
               "gluster.debug_level", /* QEMU_CAPS_GLUSTER_DEBUG_LEVEL */
               "vhost-scsi", /* QEMU_CAPS_DEVICE_VHOST_SCSI */
-              "drive-iotune-group", /* QEMU_CAPS_DRIVE_IOTUNE_GROUP */
+              "drive-iotune-group", /* X_QEMU_CAPS_DRIVE_IOTUNE_GROUP */
               "query-cpu-model-expansion", /* QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION */
               "virtio-net.host_mtu", /* QEMU_CAPS_VIRTIO_NET_HOST_MTU */
 
@@ -3236,9 +3236,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "boot-opts", "reboot-timeout", QEMU_CAPS_REBOOT_TIMEOUT },
     { "boot-opts", "splash-time", QEMU_CAPS_SPLASH_TIMEOUT },
     { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE },
-    { "drive", "throttling.bps-total-max", QEMU_CAPS_DRIVE_IOTUNE_MAX},
-    { "drive", "throttling.bps-total-max-length", QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH },
-    { "drive", "throttling.group", QEMU_CAPS_DRIVE_IOTUNE_GROUP },
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
     { "fsdev", "fmode", QEMU_CAPS_FSDEV_CREATEMODE }, /* Could have also checked fsdev->dmode */
     { "fw_cfg", "file", QEMU_CAPS_FW_CFG },
