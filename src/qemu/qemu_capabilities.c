@@ -1183,6 +1183,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "block-export-add", QEMU_CAPS_BLOCK_EXPORT_ADD },
     { "query-display-options", QEMU_CAPS_QUERY_DISPLAY_OPTIONS },
     { "blockdev-reopen", QEMU_CAPS_BLOCKDEV_REOPEN },
+    { "set-numa-node", QEMU_CAPS_NUMA },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
@@ -3247,7 +3248,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "msg", "timestamp", QEMU_CAPS_MSG_TIMESTAMP },
     { "name", "debug-threads", QEMU_CAPS_NAME_DEBUG_THREADS },
     { "name", "guest", QEMU_CAPS_NAME_GUEST },
-    { "numa", NULL, QEMU_CAPS_NUMA },
+    { "numa", NULL, QEMU_CAPS_NUMA }, /* not needed after qemuCaps->version < 3000000 */
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
     { "sandbox", "enable", QEMU_CAPS_SECCOMP_SANDBOX },
     { "sandbox", "elevateprivileges", QEMU_CAPS_SECCOMP_BLACKLIST },
