@@ -1490,11 +1490,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     unsigned int flags = 0;
     size_t i;
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    char *doc = NULL;
     virDomainSnapshotPtr snapshot = NULL;
-    char *state = NULL;
     long long creation_longlong;
     g_autoptr(GDateTime) then = NULL;
     bool tree = vshCommandOptBool(cmd, "tree");
@@ -1504,7 +1500,6 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     bool roots = vshCommandOptBool(cmd, "roots");
     bool current = vshCommandOptBool(cmd, "current");
     const char *from_snap = NULL;
-    char *parent_snap = NULL;
     virDomainSnapshotPtr start = NULL;
     struct virshSnapshotList *snaplist = NULL;
     vshTable *table = NULL;
@@ -1592,14 +1587,12 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 
     for (i = 0; i < snaplist->nsnaps; i++) {
         g_autofree gchar *thenstr = NULL;
+        g_autoptr(xmlDoc) xml = NULL;
+        g_autoptr(xmlXPathContext) ctxt = NULL;
+        g_autofree char *parent_snap = NULL;
+        g_autofree char *state = NULL;
+        g_autofree char *doc = NULL;
         const char *snap_name;
-
-        /* free up memory from previous iterations of the loop */
-        VIR_FREE(parent_snap);
-        VIR_FREE(state);
-        xmlXPathFreeContext(ctxt);
-        xmlFreeDoc(xml);
-        VIR_FREE(doc);
 
         snapshot = snaplist->snaps[i].snap;
         snap_name = virDomainSnapshotGetName(snapshot);
@@ -1648,14 +1641,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    /* this frees up memory from the last iteration of the loop */
     virshSnapshotListFree(snaplist);
-    VIR_FREE(parent_snap);
-    VIR_FREE(state);
     virshDomainSnapshotFree(start);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
-    VIR_FREE(doc);
     virshDomainFree(dom);
     vshTableFree(table);
 
