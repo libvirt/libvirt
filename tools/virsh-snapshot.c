@@ -42,7 +42,7 @@ virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
                     unsigned int flags, const char *from)
 {
     bool ret = false;
-    virDomainSnapshotPtr snapshot;
+    g_autoptr(virshDomainSnapshot) snapshot = NULL;
     bool halt = false;
     const char *name = NULL;
 
@@ -99,7 +99,6 @@ virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
     ret = true;
 
  cleanup:
-    virshDomainSnapshotFree(snapshot);
     return ret;
 }
 
@@ -162,10 +161,10 @@ static const vshCmdOptDef opts_snapshot_create[] = {
 static bool
 cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *from = NULL;
-    char *buffer = NULL;
+    g_autofree char *buffer = NULL;
     unsigned int flags = 0;
 
     if (vshCommandOptBool(cmd, "redefine"))
@@ -206,9 +205,6 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
     ret = virshSnapshotCreate(ctl, dom, buffer, flags, from);
 
  cleanup:
-    VIR_FREE(buffer);
-    virshDomainFree(dom);
-
     return ret;
 }
 
@@ -221,7 +217,7 @@ virshParseSnapshotMemspec(vshControl *ctl, virBuffer *buf, const char *str)
     int ret = -1;
     const char *snapshot = NULL;
     const char *file = NULL;
-    char **array = NULL;
+    g_auto(GStrv) array = NULL;
     int narray;
     size_t i;
 
@@ -251,7 +247,6 @@ virshParseSnapshotMemspec(vshControl *ctl, virBuffer *buf, const char *str)
  cleanup:
     if (ret < 0)
         vshError(ctl, _("unable to parse memspec: %s"), str);
-    g_strfreev(array);
     return ret;
 }
 
@@ -264,7 +259,7 @@ virshParseSnapshotDiskspec(vshControl *ctl, virBuffer *buf, const char *str)
     const char *driver = NULL;
     const char *stype = NULL;
     const char *file = NULL;
-    char **array = NULL;
+    g_auto(GStrv) array = NULL;
     int narray;
     size_t i;
     bool isFile = true;
@@ -319,7 +314,6 @@ virshParseSnapshotDiskspec(vshControl *ctl, virBuffer *buf, const char *str)
  cleanup:
     if (ret < 0)
         vshError(ctl, _("unable to parse diskspec: %s"), str);
-    g_strfreev(array);
     return ret;
 }
 
@@ -391,9 +385,9 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
 static bool
 cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
-    char *buffer = NULL;
+    g_autofree char *buffer = NULL;
     const char *name = NULL;
     const char *desc = NULL;
     const char *memspec = NULL;
@@ -460,9 +454,6 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     ret = virshSnapshotCreate(ctl, dom, buffer, flags, NULL);
 
  cleanup:
-    VIR_FREE(buffer);
-    virshDomainFree(dom);
-
     return ret;
 }
 
@@ -538,9 +529,9 @@ static const vshCmdOptDef opts_snapshot_edit[] = {
 static bool
 cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
-    virDomainSnapshotPtr snapshot = NULL;
-    virDomainSnapshotPtr edited = NULL;
+    g_autoptr(virshDomain) dom = NULL;
+    g_autoptr(virshDomainSnapshot) snapshot = NULL;
+    g_autoptr(virshDomainSnapshot) edited = NULL;
     const char *name = NULL;
     const char *edited_name;
     bool ret = false;
@@ -610,9 +601,6 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (!ret && name)
         vshError(ctl, _("Failed to update %s"), name);
-    virshDomainSnapshotFree(edited);
-    virshDomainSnapshotFree(snapshot);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -650,11 +638,11 @@ static const vshCmdOptDef opts_snapshot_current[] = {
 static bool
 cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     int current;
-    virDomainSnapshotPtr snapshot = NULL;
-    char *xml = NULL;
+    g_autoptr(virshDomainSnapshot) snapshot = NULL;
+    g_autofree char *xml = NULL;
     const char *snapshotname = NULL;
     unsigned int flags = 0;
     const char *domname;
@@ -671,7 +659,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (snapshotname) {
-        virDomainSnapshotPtr snapshot2 = NULL;
+        g_autoptr(virshDomainSnapshot) snapshot2 = NULL;
         flags = (VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
                  VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT);
 
@@ -689,7 +677,6 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
         if (!(snapshot2 = virDomainSnapshotCreateXML(dom, xml, flags)))
             goto cleanup;
 
-        virshDomainSnapshotFree(snapshot2);
         vshPrintExtra(ctl, _("Snapshot %s set as current"), snapshotname);
         ret = true;
         goto cleanup;
@@ -724,10 +711,6 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (!ret)
         vshReportError(ctl);
-    VIR_FREE(xml);
-    virshDomainSnapshotFree(snapshot);
-    virshDomainFree(dom);
-
     return ret;
 }
 
@@ -739,10 +722,10 @@ static int
 virshGetSnapshotParent(vshControl *ctl, virDomainSnapshotPtr snapshot,
                        char **parent_name)
 {
-    virDomainSnapshotPtr parent = NULL;
-    char *xml = NULL;
-    xmlDocPtr xmldoc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(virshDomainSnapshot) parent = NULL;
+    g_autofree char *xml = NULL;
+    g_autoptr(xmlDoc) xmldoc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     int ret = -1;
     virshControl *priv = ctl->privData;
 
@@ -784,10 +767,6 @@ virshGetSnapshotParent(vshControl *ctl, virDomainSnapshotPtr snapshot,
     } else {
         vshResetLibvirtError();
     }
-    virshDomainSnapshotFree(parent);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xmldoc);
-    VIR_FREE(xml);
     return ret;
 }
 
@@ -799,11 +778,11 @@ static int
 virshSnapshotFilter(vshControl *ctl, virDomainSnapshotPtr snapshot,
                     unsigned int flags)
 {
-    char *xml = NULL;
-    xmlDocPtr xmldoc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autofree char *xml = NULL;
+    g_autoptr(xmlDoc) xmldoc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     int ret = -1;
-    char *state = NULL;
+    g_autofree char *state = NULL;
 
     if (!snapshot)
         return 1;
@@ -841,10 +820,6 @@ virshSnapshotFilter(vshControl *ctl, virDomainSnapshotPtr snapshot,
     }
 
  cleanup:
-    VIR_FREE(state);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xmldoc);
-    VIR_FREE(xml);
     return ret;
 }
 
@@ -875,15 +850,15 @@ static const vshCmdOptDef opts_snapshot_info[] = {
 static bool
 cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
-    virDomainSnapshotPtr snapshot = NULL;
+    g_autoptr(virshDomain) dom = NULL;
+    g_autoptr(virshDomainSnapshot) snapshot = NULL;
     const char *name;
-    char *doc = NULL;
-    xmlDocPtr xmldoc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    char *state = NULL;
+    g_autofree char *doc = NULL;
+    g_autoptr(xmlDoc) xmldoc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autofree char *state = NULL;
     int external;
-    char *parent = NULL;
+    g_autofree char *parent = NULL;
     bool ret = false;
     int count;
     unsigned int flags;
@@ -906,14 +881,13 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
      * attempt a fallback.  */
     current = virDomainSnapshotIsCurrent(snapshot, 0);
     if (current < 0) {
-        virDomainSnapshotPtr other = virDomainSnapshotCurrent(dom, 0);
+        g_autoptr(virshDomainSnapshot) other = NULL;
 
         vshResetLibvirtError();
         current = 0;
         if (other) {
             if (STREQ(name, virDomainSnapshotGetName(other)))
                 current = 1;
-            virshDomainSnapshotFree(other);
         }
     }
     vshPrint(ctl, "%-15s %s\n", _("Current:"),
@@ -1007,13 +981,6 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(state);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xmldoc);
-    VIR_FREE(doc);
-    VIR_FREE(parent);
-    virshDomainSnapshotFree(snapshot);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -1486,7 +1453,7 @@ static const vshCmdOptDef opts_snapshot_list[] = {
 static bool
 cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     unsigned int flags = 0;
     size_t i;
@@ -1500,9 +1467,9 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     bool roots = vshCommandOptBool(cmd, "roots");
     bool current = vshCommandOptBool(cmd, "current");
     const char *from_snap = NULL;
-    virDomainSnapshotPtr start = NULL;
+    g_autoptr(virshDomainSnapshot) start = NULL;
     struct virshSnapshotList *snaplist = NULL;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(tree, name);
     VSH_EXCLUSIVE_OPTIONS_VAR(parent, roots);
@@ -1642,10 +1609,6 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virshSnapshotListFree(snaplist);
-    virshDomainSnapshotFree(start);
-    virshDomainFree(dom);
-    vshTableFree(table);
-
     return ret;
 }
 
@@ -1680,11 +1643,11 @@ static const vshCmdOptDef opts_snapshot_dumpxml[] = {
 static bool
 cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *name = NULL;
-    virDomainSnapshotPtr snapshot = NULL;
-    char *xml = NULL;
+    g_autoptr(virshDomainSnapshot) snapshot = NULL;
+    g_autofree char *xml = NULL;
     unsigned int flags = 0;
 
     if (vshCommandOptBool(cmd, "security-info"))
@@ -1706,10 +1669,6 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(xml);
-    virshDomainSnapshotFree(snapshot);
-    virshDomainFree(dom);
-
     return ret;
 }
 
@@ -1740,11 +1699,11 @@ static const vshCmdOptDef opts_snapshot_parent[] = {
 static bool
 cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *name = NULL;
-    virDomainSnapshotPtr snapshot = NULL;
-    char *parent = NULL;
+    g_autoptr(virshDomainSnapshot) snapshot = NULL;
+    g_autofree char *parent = NULL;
 
     dom = virshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
@@ -1766,10 +1725,6 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(parent);
-    virshDomainSnapshotFree(snapshot);
-    virshDomainFree(dom);
-
     return ret;
 }
 
@@ -1812,10 +1767,10 @@ static const vshCmdOptDef opts_snapshot_revert[] = {
 static bool
 cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *name = NULL;
-    virDomainSnapshotPtr snapshot = NULL;
+    g_autoptr(virshDomainSnapshot) snapshot = NULL;
     unsigned int flags = 0;
     bool force = false;
     int result;
@@ -1852,8 +1807,6 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainSnapshotFree(snapshot);
-    virshDomainFree(dom);
 
     return ret;
 }
@@ -1897,10 +1850,10 @@ static const vshCmdOptDef opts_snapshot_delete[] = {
 static bool
 cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *name = NULL;
-    virDomainSnapshotPtr snapshot = NULL;
+    g_autoptr(virshDomainSnapshot) snapshot = NULL;
     unsigned int flags = 0;
 
     dom = virshCommandOptDomain(ctl, cmd, NULL);
@@ -1934,8 +1887,6 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainSnapshotFree(snapshot);
-    virshDomainFree(dom);
 
     return ret;
 }
