@@ -318,7 +318,7 @@ vshCmddefCheckInternals(vshControl *ctl,
 
         case VSH_OT_ALIAS: {
             size_t j;
-            char *name = (char *)opt->help; /* cast away const */
+            g_autofree char *name = NULL;
             char *p;
 
             if (opt->flags || !opt->help) {
@@ -326,15 +326,16 @@ vshCmddefCheckInternals(vshControl *ctl,
                          opt->name, cmd->name);
                 return -1; /* alias options are tracked by the original name */
             }
-            if ((p = strchr(name, '=')))
-                name = g_strndup(name, p - name);
+            if ((p = strchr(opt->help, '=')))
+                name = g_strndup(opt->help, p - opt->help);
+            else
+                name = g_strdup(opt->help);
             for (j = i + 1; cmd->opts[j].name; j++) {
                 if (STREQ(name, cmd->opts[j].name) &&
                     cmd->opts[j].type != VSH_OT_ALIAS)
                     break;
             }
-            if (name != opt->help) {
-                VIR_FREE(name);
+            if (p) {
                 /* If alias comes with value, replacement must not be bool */
                 if (cmd->opts[j].type == VSH_OT_BOOL) {
                     vshError(ctl, _("alias '%s' of command '%s' has mismatched alias type"),
