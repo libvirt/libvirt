@@ -55,8 +55,10 @@ void
 virshDomainCheckpointFree(virDomainCheckpointPtr chk);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshDomainCheckpoint, virshDomainCheckpointFree);
 
+typedef virDomainSnapshot virshDomainSnapshot;
 void
 virshDomainSnapshotFree(virDomainSnapshotPtr snap);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshDomainSnapshot, virshDomainSnapshotFree);
 
 int
 virshDomainState(vshControl *ctl,
