@@ -5428,10 +5428,9 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
                                       bool supportGroupNameOption,
                                       bool supportMaxLengthOptions)
 {
-    int ret = -1;
-    virJSONValue *cmd = NULL;
-    virJSONValue *result = NULL;
-    virJSONValue *args = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) result = NULL;
+    g_autoptr(virJSONValue) args = NULL;
     const char *errdev = drivealias;
 
     if (!errdev)
@@ -5450,7 +5449,7 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
                                  "U:iops_rd", info->read_iops_sec,
                                  "U:iops_wr", info->write_iops_sec,
                                  NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (supportMaxOptions &&
         virJSONValueObjectAdd(args,
@@ -5462,13 +5461,13 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
                               "U:iops_wr_max", info->write_iops_sec_max,
                               "U:iops_size", info->size_iops_sec,
                               NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (supportGroupNameOption &&
         virJSONValueObjectAdd(args,
                               "S:group", info->group_name,
                               NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (supportMaxLengthOptions &&
         virJSONValueObjectAdd(args,
@@ -5485,13 +5484,13 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
                               "P:iops_wr_max_length",
                               info->write_iops_sec_max_length,
                               NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (virJSONValueObjectAppend(cmd, "arguments", &args) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &result) < 0)
-        goto cleanup;
+        return -1;
 
     if (virJSONValueObjectHasKey(result, "error")) {
         if (qemuMonitorJSONHasError(result, "DeviceNotActive")) {
@@ -5507,15 +5506,10 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
                            qemuMonitorJSONCommandName(cmd),
                            qemuMonitorJSONStringifyError(error));
         }
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(result);
-    virJSONValueFree(args);
-    return ret;
+    return 0;
 }
 
 int qemuMonitorJSONGetBlockIoThrottle(qemuMonitor *mon,
