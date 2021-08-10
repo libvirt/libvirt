@@ -8,7 +8,7 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-guest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-guest1/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
--name guest1 \
+-name guest=guest1,debug-threads=on \
 -S \
 -machine s390-ccw-virtio,accel=kvm,usb=off,dump-guest-core=off \
 -cpu zEC12 \

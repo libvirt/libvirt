@@ -8,7 +8,7 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-qemu-host/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-qemu-host/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
--name qemu-host \
+-name guest=qemu-host,debug-threads=on \
 -S \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off \
 -m 4096 \

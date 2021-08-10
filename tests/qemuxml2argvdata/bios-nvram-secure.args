@@ -8,7 +8,7 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-test-bios/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-test-bios/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
--name test-bios \
+-name guest=test-bios,debug-threads=on \
 -S \
 -machine pc-q35-2.5,accel=tcg,usb=off,smm=on,dump-guest-core=off \
 -global driver=cfi.pflash01,property=secure,value=on \

@@ -8,7 +8,7 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-instance-00000092/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-instance-00000092/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
--name instance-00000092 \
+-name guest=instance-00000092,debug-threads=on \
 -S \
 -machine pc-i440fx-2.3,accel=kvm,usb=off,dump-guest-core=off \
 -m 28672 \

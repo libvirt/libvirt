@@ -8,7 +8,7 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-lots-of-disks/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-lots-of-disks/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
--name lots-of-disks \
+-name guest=lots-of-disks,debug-threads=on \
 -S \
 -machine pc-i440fx-1.4,accel=tcg,usb=off,dump-guest-core=off \
 -cpu qemu64,-kvmclock \

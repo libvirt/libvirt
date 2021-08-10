@@ -8,7 +8,7 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-delete/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-delete/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
--name delete \
+-name guest=delete,debug-threads=on \
 -S \
 -machine pc,accel=kvm,usb=off,dump-guest-core=off \
 -m 256 \

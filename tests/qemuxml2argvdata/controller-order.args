@@ -8,7 +8,7 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-fdr/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-fdr/.config \
 QEMU_AUDIO_DRV=spice \
 /usr/bin/qemu-system-x86_64 \
--name fdr \
+-name guest=fdr,debug-threads=on \
 -S \
 -machine pc,accel=kvm,usb=off,dump-guest-core=off \
 -m 4096 \

@@ -8,7 +8,7 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-gentoo/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-gentoo/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
--name gentoo \
+-name guest=gentoo,debug-threads=on \
 -S \
 -machine pc-i440fx-1.4,accel=kvm,usb=off,dump-guest-core=off \
 -m 4096 \

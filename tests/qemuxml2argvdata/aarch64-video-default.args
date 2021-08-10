@@ -8,7 +8,7 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-aarch64-vgpu/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-aarch64-vgpu/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
--name aarch64-vgpu \
+-name guest=aarch64-vgpu,debug-threads=on \
 -S \
 -machine virt,accel=tcg,usb=off,dump-guest-core=off,gic-version=2 \
 -cpu cortex-a57 \

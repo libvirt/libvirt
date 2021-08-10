@@ -8,7 +8,7 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-expander-test/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-expander-test/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
--name expander-test \
+-name guest=expander-test,debug-threads=on \
 -S \
 -machine pc-i440fx-2.5,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \

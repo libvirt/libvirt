@@ -8,7 +8,7 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-aarch64test/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-aarch64test/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
--name aarch64test \
+-name guest=aarch64test,debug-threads=on \
 -S \
 -machine virt,accel=kvm,usb=off,dump-guest-core=off,gic-version=host \
 -cpu host \

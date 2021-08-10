@@ -8,7 +8,7 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-ppc64 \
--name QEMUGuest1 \
+-name guest=QEMUGuest1,debug-threads=on \
 -S \
 -machine pseries,accel=tcg,usb=off,dump-guest-core=off,nvdimm=on \
 -m size=1048576k,slots=16,maxmem=1099511627776k \
