@@ -1962,8 +1962,7 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *opaque)
         goto cleanup;
 
     if (qemuMonitorJSONSetBlockIoThrottle(qemuMonitorTestGetMonitor(test),
-                                          "drive-virtio-disk1", NULL, &info, true,
-                                          true, true) < 0)
+                                          "drive-virtio-disk1", NULL, &info) < 0)
         goto cleanup;
 
     ret = 0;

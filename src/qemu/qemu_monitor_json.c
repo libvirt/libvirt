@@ -5423,66 +5423,35 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValue *io_throttle,
 int qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
                                       const char *drivealias,
                                       const char *qomid,
-                                      virDomainBlockIoTuneInfo *info,
-                                      bool supportMaxOptions,
-                                      bool supportGroupNameOption,
-                                      bool supportMaxLengthOptions)
+                                      virDomainBlockIoTuneInfo *info)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) result = NULL;
-    g_autoptr(virJSONValue) args = NULL;
 
-    if (!(cmd = qemuMonitorJSONMakeCommand("block_set_io_throttle", NULL)))
-        return -1;
-
-    if (virJSONValueObjectCreate(&args,
-                                 "S:device", drivealias,
-                                 "S:id", qomid,
-                                 "U:bps", info->total_bytes_sec,
-                                 "U:bps_rd", info->read_bytes_sec,
-                                 "U:bps_wr", info->write_bytes_sec,
-                                 "U:iops", info->total_iops_sec,
-                                 "U:iops_rd", info->read_iops_sec,
-                                 "U:iops_wr", info->write_iops_sec,
-                                 NULL) < 0)
-        return -1;
-
-    if (supportMaxOptions &&
-        virJSONValueObjectAdd(args,
-                              "U:bps_max", info->total_bytes_sec_max,
-                              "U:bps_rd_max", info->read_bytes_sec_max,
-                              "U:bps_wr_max", info->write_bytes_sec_max,
-                              "U:iops_max", info->total_iops_sec_max,
-                              "U:iops_rd_max", info->read_iops_sec_max,
-                              "U:iops_wr_max", info->write_iops_sec_max,
-                              "U:iops_size", info->size_iops_sec,
-                              NULL) < 0)
-        return -1;
-
-    if (supportGroupNameOption &&
-        virJSONValueObjectAdd(args,
-                              "S:group", info->group_name,
-                              NULL) < 0)
-        return -1;
-
-    if (supportMaxLengthOptions &&
-        virJSONValueObjectAdd(args,
-                              "P:bps_max_length",
-                              info->total_bytes_sec_max_length,
-                              "P:bps_rd_max_length",
-                              info->read_bytes_sec_max_length,
-                              "P:bps_wr_max_length",
-                              info->write_bytes_sec_max_length,
-                              "P:iops_max_length",
-                              info->total_iops_sec_max_length,
-                              "P:iops_rd_max_length",
-                              info->read_iops_sec_max_length,
-                              "P:iops_wr_max_length",
-                              info->write_iops_sec_max_length,
-                              NULL) < 0)
-        return -1;
-
-    if (virJSONValueObjectAppend(cmd, "arguments", &args) < 0)
+    if (!(cmd = qemuMonitorJSONMakeCommand("block_set_io_throttle",
+                                           "S:device", drivealias,
+                                           "S:id", qomid,
+                                           "U:bps", info->total_bytes_sec,
+                                           "U:bps_rd", info->read_bytes_sec,
+                                           "U:bps_wr", info->write_bytes_sec,
+                                           "U:iops", info->total_iops_sec,
+                                           "U:iops_rd", info->read_iops_sec,
+                                           "U:iops_wr", info->write_iops_sec,
+                                           "U:bps_max", info->total_bytes_sec_max,
+                                           "U:bps_rd_max", info->read_bytes_sec_max,
+                                           "U:bps_wr_max", info->write_bytes_sec_max,
+                                           "U:iops_max", info->total_iops_sec_max,
+                                           "U:iops_rd_max", info->read_iops_sec_max,
+                                           "U:iops_wr_max", info->write_iops_sec_max,
+                                           "U:iops_size", info->size_iops_sec,
+                                           "S:group", info->group_name,
+                                           "P:bps_max_length", info->total_bytes_sec_max_length,
+                                           "P:bps_rd_max_length", info->read_bytes_sec_max_length,
+                                           "P:bps_wr_max_length", info->write_bytes_sec_max_length,
+                                           "P:iops_max_length", info->total_iops_sec_max_length,
+                                           "P:iops_rd_max_length", info->read_iops_sec_max_length,
+                                           "P:iops_wr_max_length", info->write_iops_sec_max_length,
+                                           NULL)))
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &result) < 0)

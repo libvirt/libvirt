@@ -16179,9 +16179,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
             qemuDomainObjEnterMonitor(driver, vm);
             ret = qemuMonitorSetBlockIoThrottle(priv->mon, drivealias, qdevid,
-                                                &info, true,
-                                                set_fields & QEMU_BLOCK_IOTUNE_SET_GROUP_NAME,
-                                                true);
+                                                &info);
             if (qemuDomainObjExitMonitor(driver, vm) < 0)
                 ret = -1;
             if (ret < 0)

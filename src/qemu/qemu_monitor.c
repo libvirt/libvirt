@@ -3333,20 +3333,14 @@ int
 qemuMonitorSetBlockIoThrottle(qemuMonitor *mon,
                               const char *drivealias,
                               const char *qomid,
-                              virDomainBlockIoTuneInfo *info,
-                              bool supportMaxOptions,
-                              bool supportGroupNameOption,
-                              bool supportMaxLengthOptions)
+                              virDomainBlockIoTuneInfo *info)
 {
     VIR_DEBUG("drivealias=%s, qomid=%s, info=%p",
               NULLSTR(drivealias), NULLSTR(qomid), info);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONSetBlockIoThrottle(mon, drivealias, qomid, info,
-                                             supportMaxOptions,
-                                             supportGroupNameOption,
-                                             supportMaxLengthOptions);
+    return qemuMonitorJSONSetBlockIoThrottle(mon, drivealias, qomid, info);
 }
 
 

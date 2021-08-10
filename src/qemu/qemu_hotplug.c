@@ -566,8 +566,7 @@ qemuDomainChangeMediaBlockdev(virQEMUDriver *driver,
         qemuDiskConfigBlkdeviotuneEnabled(disk)) {
         rc = qemuMonitorSetBlockIoThrottle(priv->mon, NULL,
                                            diskPriv->qomName,
-                                           &disk->blkdeviotune,
-                                           true, true, true);
+                                           &disk->blkdeviotune);
     }
 
     if (rc == 0)
@@ -806,8 +805,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
         qemuDiskConfigBlkdeviotuneEnabled(disk)) {
         qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
         if (qemuMonitorSetBlockIoThrottle(priv->mon, NULL, diskPriv->qomName,
-                                          &disk->blkdeviotune,
-                                          true, true, true) < 0)
+                                          &disk->blkdeviotune) < 0)
             VIR_WARN("failed to set blkdeviotune for '%s' of '%s'", disk->dst, vm->def->name);
     }
 

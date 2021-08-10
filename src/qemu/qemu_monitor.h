@@ -1112,10 +1112,7 @@ int qemuMonitorOpenGraphics(qemuMonitor *mon,
 int qemuMonitorSetBlockIoThrottle(qemuMonitor *mon,
                                   const char *drivealias,
                                   const char *qomid,
-                                  virDomainBlockIoTuneInfo *info,
-                                  bool supportMaxOptions,
-                                  bool supportGroupNameOption,
-                                  bool supportMaxLengthOptions);
+                                  virDomainBlockIoTuneInfo *info);
 
 int qemuMonitorGetBlockIoThrottle(qemuMonitor *mon,
                                   const char *drivealias,

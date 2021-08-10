@@ -361,10 +361,7 @@ int qemuMonitorJSONOpenGraphics(qemuMonitor *mon,
 int qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
                                       const char *drivealias,
                                       const char *qomid,
-                                      virDomainBlockIoTuneInfo *info,
-                                      bool supportMaxOptions,
-                                      bool supportGroupNameOption,
-                                      bool supportMaxLengthOptions);
+                                      virDomainBlockIoTuneInfo *info);
 
 int qemuMonitorJSONGetBlockIoThrottle(qemuMonitor *mon,
                                       const char *drivealias,

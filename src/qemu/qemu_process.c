@@ -6888,8 +6888,7 @@ qemuProcessSetupDiskThrottlingBlockdev(virQEMUDriver *driver,
             continue;
 
         if (qemuMonitorSetBlockIoThrottle(qemuDomainGetMonitor(vm), NULL,
-                                          diskPriv->qomName, &disk->blkdeviotune,
-                                          true, true, true) < 0)
+                                          diskPriv->qomName, &disk->blkdeviotune) < 0)
             goto cleanup;
     }
 
