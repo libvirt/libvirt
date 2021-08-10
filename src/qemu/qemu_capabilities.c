@@ -298,7 +298,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "host-pci-multidomain", /* X_QEMU_CAPS_HOST_PCI_MULTIDOMAIN */
 
               /* 165 */
-              "msg-timestamp", /* QEMU_CAPS_MSG_TIMESTAMP */
+              "msg-timestamp", /* X_QEMU_CAPS_MSG_TIMESTAMP */
               "active-commit", /* QEMU_CAPS_ACTIVE_COMMIT */
               "change-backing-file", /* QEMU_CAPS_CHANGE_BACKING_FILE */
               "memory-backend-ram", /* QEMU_CAPS_OBJECT_MEMORY_RAM */
@@ -3245,7 +3245,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "machine", "dea-key-wrap", QEMU_CAPS_DEA_KEY_WRAP },
     { "machine", "kernel_irqchip", QEMU_CAPS_MACHINE_KERNEL_IRQCHIP },
     { "machine", "loadparm", QEMU_CAPS_LOADPARM },
-    { "msg", "timestamp", QEMU_CAPS_MSG_TIMESTAMP },
     { "numa", NULL, QEMU_CAPS_NUMA }, /* not needed after qemuCaps->version < 3000000 */
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
     { "sandbox", "enable", QEMU_CAPS_SECCOMP_SANDBOX },

@@ -53,7 +53,6 @@
   <flag name='ich9-intel-hda'/>
   <flag name='boot-strict'/>
   <flag name='usb-kbd'/>
-  <flag name='msg-timestamp'/>
   <flag name='active-commit'/>
   <flag name='change-backing-file'/>
   <flag name='memory-backend-ram'/>

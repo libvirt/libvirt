@@ -277,7 +277,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_HOST_PCI_MULTIDOMAIN, /* support domain > 0 in host pci address */
 
     /* 165 */
-    QEMU_CAPS_MSG_TIMESTAMP, /* -msg timestamp */
+    X_QEMU_CAPS_MSG_TIMESTAMP, /* -msg timestamp */
     QEMU_CAPS_ACTIVE_COMMIT, /* block-commit works without 'top' */
     QEMU_CAPS_CHANGE_BACKING_FILE, /* change name of backing file in metadata */
     QEMU_CAPS_OBJECT_MEMORY_RAM, /* -object memory-backend-ram */
