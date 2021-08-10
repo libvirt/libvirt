@@ -5431,10 +5431,6 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) result = NULL;
     g_autoptr(virJSONValue) args = NULL;
-    const char *errdev = drivealias;
-
-    if (!errdev)
-        errdev = qomid;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("block_set_io_throttle", NULL)))
         return -1;
@@ -5492,22 +5488,8 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &result) < 0)
         return -1;
 
-    if (virJSONValueObjectHasKey(result, "error")) {
-        if (qemuMonitorJSONHasError(result, "DeviceNotActive")) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("No active operation on device: %s"), errdev);
-        } else if (qemuMonitorJSONHasError(result, "NotSupported")) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("Operation is not supported for device: %s"), errdev);
-        } else {
-            virJSONValue *error = virJSONValueObjectGet(result, "error");
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to execute '%s', unexpected error: '%s'"),
-                           qemuMonitorJSONCommandName(cmd),
-                           qemuMonitorJSONStringifyError(error));
-        }
+    if (qemuMonitorJSONCheckError(cmd, result) < 0)
         return -1;
-    }
 
     return 0;
 }
