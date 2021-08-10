@@ -122,7 +122,7 @@ int
 vshStringToArray(const char *str,
                  char ***array)
 {
-    char *str_copied = g_strdup(str);
+    g_autofree char *str_copied = g_strdup(str);
     char *str_tok = NULL;
     char *tmp;
     unsigned int nstr_tokens = 0;
@@ -163,7 +163,6 @@ vshStringToArray(const char *str,
     arr[nstr_tokens++] = g_strdup(str_tok);
 
     *array = arr;
-    VIR_FREE(str_copied);
     return nstr_tokens;
 }
 
@@ -434,7 +433,7 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
 {
     size_t i;
     const vshCmdOptDef *ret = NULL;
-    char *alias = NULL;
+    g_autofree char *alias = NULL;
 
     if (STREQ(name, helpopt.name))
         return &helpopt;
@@ -481,7 +480,6 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
                  cmd->name, name);
     }
  cleanup:
-    VIR_FREE(alias);
     return ret;
 }
 
@@ -1814,7 +1812,7 @@ void
 vshDebug(vshControl *ctl, int level, const char *format, ...)
 {
     va_list ap;
-    char *str;
+    g_autofree char *str = NULL;
 
     /* Aligning log levels to that of libvirt.
      * Traces with levels >=  user-specified-level
@@ -1831,14 +1829,13 @@ vshDebug(vshControl *ctl, int level, const char *format, ...)
     str = g_strdup_vprintf(format, ap);
     va_end(ap);
     fputs(str, stdout);
-    VIR_FREE(str);
 }
 
 void
 vshPrintExtra(vshControl *ctl, const char *format, ...)
 {
     va_list ap;
-    char *str;
+    g_autofree char *str = NULL;
 
     if (ctl && ctl->quiet)
         return;
@@ -1847,7 +1844,6 @@ vshPrintExtra(vshControl *ctl, const char *format, ...)
     str = g_strdup_vprintf(format, ap);
     va_end(ap);
     fputs(str, stdout);
-    VIR_FREE(str);
 }
 
 
@@ -1855,13 +1851,12 @@ void
 vshPrint(vshControl *ctl G_GNUC_UNUSED, const char *format, ...)
 {
     va_list ap;
-    char *str;
+    g_autofree char *str = NULL;
 
     va_start(ap, format);
     str = g_strdup_vprintf(format, ap);
     va_end(ap);
     fputs(str, stdout);
-    VIR_FREE(str);
 }
 
 
@@ -1960,7 +1955,7 @@ void
 vshError(vshControl *ctl, const char *format, ...)
 {
     va_list ap;
-    char *str;
+    g_autofree char *str = NULL;
 
     if (ctl != NULL) {
         va_start(ap, format);
@@ -1980,7 +1975,6 @@ vshError(vshControl *ctl, const char *format, ...)
 
     fprintf(stderr, "%s\n", NULLSTR(str));
     fflush(stderr);
-    VIR_FREE(str);
 }
 
 
@@ -2186,7 +2180,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
                  va_list ap)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *str = NULL;
+    g_autofree char *str = NULL;
     size_t len;
     const char *lvl = "";
     g_autoptr(GDateTime) now = g_date_time_new_now_local();
@@ -2237,13 +2231,11 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
     if (safewrite(ctl->log_fd, str, len) < 0)
         goto error;
 
-    VIR_FREE(str);
     return;
 
  error:
     vshCloseLogFile(ctl);
     vshError(ctl, "%s", _("failed to write the log file"));
-    VIR_FREE(str);
 }
 
 /**
@@ -2359,7 +2351,7 @@ vshAskReedit(vshControl *ctl,
 char *
 vshEditWriteToTempFile(vshControl *ctl, const char *doc)
 {
-    char *ret;
+    g_autofree char *ret = NULL;
     const char *tmpdir;
     int fd;
 
@@ -2370,7 +2362,6 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     if (fd == -1) {
         vshError(ctl, _("g_mkstemp_full: failed to create temporary file: %s"),
                  g_strerror(errno));
-        VIR_FREE(ret);
         return NULL;
     }
 
@@ -2379,14 +2370,12 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
                  ret, g_strerror(errno));
         VIR_FORCE_CLOSE(fd);
         unlink(ret);
-        VIR_FREE(ret);
         return NULL;
     }
     if (VIR_CLOSE(fd) < 0) {
         vshError(ctl, _("close: %s: failed to write or close temporary file: %s"),
                  ret, g_strerror(errno));
         unlink(ret);
-        VIR_FREE(ret);
         return NULL;
     }
 
@@ -2406,7 +2395,7 @@ int
 vshEditFile(vshControl *ctl, const char *filename)
 {
     const char *editor;
-    virCommand *cmd;
+    g_autoptr(virCommand) cmd = NULL;
     int ret = -1;
     int outfd = STDOUT_FILENO;
     int errfd = STDERR_FILENO;
@@ -2450,7 +2439,6 @@ vshEditFile(vshControl *ctl, const char *filename)
     ret = 0;
 
  cleanup:
-    virCommandFree(cmd);
     return ret;
 }
 
@@ -2806,10 +2794,10 @@ vshReadlineCharIsQuoted(char *line, int idx)
 static int
 vshReadlineInit(vshControl *ctl)
 {
-    char *userdir = NULL;
+    g_autofree char *userdir = NULL;
     int max_history = 500;
     int ret = -1;
-    char *histsize_env = NULL;
+    g_autofree char *histsize_env = NULL;
     const char *histsize_str = NULL;
     const char *break_characters = " \t\n`@$><=;|&{(";
     const char *quote_characters = "\"'";
@@ -2856,8 +2844,6 @@ vshReadlineInit(vshControl *ctl)
     ret = 0;
 
  cleanup:
-    VIR_FREE(userdir);
-    VIR_FREE(histsize_env);
     return ret;
 }
 
@@ -2940,10 +2926,9 @@ static int
 vshInitDebug(vshControl *ctl)
 {
     const char *debugEnv;
-    char *env = NULL;
 
     if (ctl->debug == VSH_DEBUG_DEFAULT) {
-        env = g_strdup_printf("%s_DEBUG", ctl->env_prefix);
+        g_autofree char *env = g_strdup_printf("%s_DEBUG", ctl->env_prefix);
 
         /* log level not set from commandline, check env variable */
         debugEnv = getenv(env);
@@ -2957,11 +2942,10 @@ vshInitDebug(vshControl *ctl)
                 ctl->debug = debug;
             }
         }
-        VIR_FREE(env);
     }
 
     if (ctl->logfile == NULL) {
-        env = g_strdup_printf("%s_LOG_FILE", ctl->env_prefix);
+        g_autofree char *env = g_strdup_printf("%s_LOG_FILE", ctl->env_prefix);
 
         /* log file not set from cmdline */
         debugEnv = getenv(env);
@@ -2969,7 +2953,6 @@ vshInitDebug(vshControl *ctl)
             ctl->logfile = g_strdup(debugEnv);
             vshOpenLogFile(ctl);
         }
-        VIR_FREE(env);
     }
 
     return 0;
@@ -3186,7 +3169,7 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
     bool err = false;
     int count = 0;
     const vshCmdOpt *opt = NULL;
-    char *arg;
+    g_autofree char *arg = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (vshCommandOptBool(cmd, "shell"))
@@ -3197,7 +3180,7 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
         err = true;
 
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        char *str;
+        g_autofree char *str = NULL;
         g_auto(virBuffer) xmlbuf = VIR_BUFFER_INITIALIZER;
         const char *curr = opt->data;
 
@@ -3216,7 +3199,6 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
         else
             virBufferAdd(&buf, str, -1);
         count++;
-        VIR_FREE(str);
     }
 
     arg = virBufferContentAndReset(&buf);
@@ -3226,7 +3208,6 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
         else
             vshPrint(ctl, "%s", arg);
     }
-    VIR_FREE(arg);
     return true;
 }
 
