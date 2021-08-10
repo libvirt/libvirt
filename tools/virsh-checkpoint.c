@@ -46,19 +46,18 @@ virshCheckpointCreate(vshControl *ctl,
                       unsigned int flags,
                       const char *from)
 {
-    bool ret = false;
     g_autoptr(virshDomainCheckpoint) checkpoint = NULL;
     const char *name = NULL;
 
     checkpoint = virDomainCheckpointCreateXML(dom, buffer, flags);
 
     if (checkpoint == NULL)
-        goto cleanup;
+        return false;
 
     name = virDomainCheckpointGetName(checkpoint);
     if (!name) {
         vshError(ctl, "%s", _("Could not get checkpoint name"));
-        goto cleanup;
+        return false;
     }
 
     if (from)
@@ -67,10 +66,7 @@ virshCheckpointCreate(vshControl *ctl,
     else
         vshPrintExtra(ctl, _("Domain checkpoint %s created"), name);
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 
@@ -114,7 +110,6 @@ cmdCheckpointCreate(vshControl *ctl,
                     const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = false;
     const char *from = NULL;
     g_autofree char *buffer = NULL;
     unsigned int flags = 0;
@@ -129,23 +124,20 @@ cmdCheckpointCreate(vshControl *ctl,
         flags |= VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
-        goto cleanup;
+        return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "xmlfile", &from) < 0)
-        goto cleanup;
+        return false;
     if (!from) {
         buffer = g_strdup("<domaincheckpoint/>");
     } else {
         if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
             vshSaveLibvirtError();
-            goto cleanup;
+            return false;
         }
     }
 
-    ret = virshCheckpointCreate(ctl, dom, buffer, flags, from);
-
- cleanup:
-    return ret;
+    return virshCheckpointCreate(ctl, dom, buffer, flags, from);
 }
 
 
@@ -234,7 +226,6 @@ cmdCheckpointCreateAs(vshControl *ctl,
                       const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = false;
     g_autofree char *buffer = NULL;
     const char *name = NULL;
     const char *desc = NULL;
@@ -250,7 +241,7 @@ cmdCheckpointCreateAs(vshControl *ctl,
 
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "description", &desc) < 0)
-        goto cleanup;
+        return false;
 
     virBufferAddLit(&buf, "<domaincheckpoint>\n");
     virBufferAdjustIndent(&buf, 2);
@@ -262,7 +253,7 @@ cmdCheckpointCreateAs(vshControl *ctl,
         virBufferAdjustIndent(&buf, 2);
         while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
             if (virshParseCheckpointDiskspec(ctl, &buf, opt->data) < 0)
-                goto cleanup;
+                return false;
         }
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</disks>\n");
@@ -274,14 +265,10 @@ cmdCheckpointCreateAs(vshControl *ctl,
 
     if (vshCommandOptBool(cmd, "print-xml")) {
         vshPrint(ctl, "%s\n",  buffer);
-        ret = true;
-        goto cleanup;
+        return true;
     }
 
-    ret = virshCheckpointCreate(ctl, dom, buffer, flags, NULL);
-
- cleanup:
-    return ret;
+    return virshCheckpointCreate(ctl, dom, buffer, flags, NULL);
 }
 
 
@@ -466,7 +453,6 @@ cmdCheckpointInfo(vshControl *ctl,
     g_autoptr(virshDomainCheckpoint) checkpoint = NULL;
     const char *name;
     g_autofree char *parent = NULL;
-    bool ret = false;
     int count;
     unsigned int flags;
 
@@ -476,7 +462,7 @@ cmdCheckpointInfo(vshControl *ctl,
 
     if (virshLookupCheckpoint(ctl, cmd, "checkpointname", dom,
                               &checkpoint, &name) < 0)
-        goto cleanup;
+        return false;
 
     vshPrint(ctl, "%-15s %s\n", _("Name:"), name);
     vshPrint(ctl, "%-15s %s\n", _("Domain:"), virDomainGetName(dom));
@@ -484,7 +470,7 @@ cmdCheckpointInfo(vshControl *ctl,
     if (virshGetCheckpointParent(ctl, checkpoint, &parent) < 0) {
         vshError(ctl, "%s",
                  _("unexpected problem querying checkpoint state"));
-        goto cleanup;
+        return false;
     }
     vshPrint(ctl, "%-15s %s\n", _("Parent:"), parent ? parent : "-");
 
@@ -494,21 +480,18 @@ cmdCheckpointInfo(vshControl *ctl,
     if (count < 0) {
         if (last_error->code == VIR_ERR_NO_SUPPORT) {
             vshResetLibvirtError();
-            ret = true;
+            return true;
         }
-        goto cleanup;
+        return false;
     }
     vshPrint(ctl, "%-15s %d\n", _("Children:"), count);
     flags = VIR_DOMAIN_CHECKPOINT_LIST_DESCENDANTS;
     count = virDomainCheckpointListAllChildren(checkpoint, NULL, flags);
     if (count < 0)
-        goto cleanup;
+        return false;
     vshPrint(ctl, "%-15s %d\n", _("Descendants:"), count);
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 
@@ -876,7 +859,6 @@ cmdCheckpointDumpXML(vshControl *ctl,
                      const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = false;
     const char *name = NULL;
     g_autoptr(virshDomainCheckpoint) checkpoint = NULL;
     g_autofree char *xml = NULL;
@@ -894,16 +876,13 @@ cmdCheckpointDumpXML(vshControl *ctl,
 
     if (virshLookupCheckpoint(ctl, cmd, "checkpointname", dom,
                               &checkpoint, &name) < 0)
-        goto cleanup;
+        return false;
 
     if (!(xml = virDomainCheckpointGetXMLDesc(checkpoint, flags)))
-        goto cleanup;
+        return false;
 
     vshPrint(ctl, "%s", xml);
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 
@@ -935,32 +914,28 @@ cmdCheckpointParent(vshControl *ctl,
                     const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = false;
     const char *name = NULL;
     g_autoptr(virshDomainCheckpoint) checkpoint = NULL;
     g_autofree char *parent = NULL;
 
     dom = virshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
-        goto cleanup;
+        return false;
 
     if (virshLookupCheckpoint(ctl, cmd, "checkpointname", dom,
                               &checkpoint, &name) < 0)
-        goto cleanup;
+        return false;
 
     if (virshGetCheckpointParent(ctl, checkpoint, &parent) < 0)
-        goto cleanup;
+        return false;
     if (!parent) {
         vshError(ctl, _("checkpoint '%s' has no parent"), name);
-        goto cleanup;
+        return false;
     }
 
     vshPrint(ctl, "%s", parent);
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 
@@ -1005,18 +980,17 @@ cmdCheckpointDelete(vshControl *ctl,
                     const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = false;
     const char *name = NULL;
     g_autoptr(virshDomainCheckpoint) checkpoint = NULL;
     unsigned int flags = 0;
 
     dom = virshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
-        goto cleanup;
+        return false;
 
     if (virshLookupCheckpoint(ctl, cmd, "checkpointname", dom,
                               &checkpoint, &name) < 0)
-        goto cleanup;
+        return false;
 
     if (vshCommandOptBool(cmd, "children"))
         flags |= VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN;
@@ -1032,13 +1006,10 @@ cmdCheckpointDelete(vshControl *ctl,
             vshPrintExtra(ctl, _("Domain checkpoint %s deleted\n"), name);
     } else {
         vshError(ctl, _("Failed to delete checkpoint %s"), name);
-        goto cleanup;
+        return false;
     }
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 
