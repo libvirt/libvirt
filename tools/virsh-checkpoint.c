@@ -47,7 +47,7 @@ virshCheckpointCreate(vshControl *ctl,
                       const char *from)
 {
     bool ret = false;
-    virDomainCheckpointPtr checkpoint;
+    g_autoptr(virshDomainCheckpoint) checkpoint = NULL;
     const char *name = NULL;
 
     checkpoint = virDomainCheckpointCreateXML(dom, buffer, flags);
@@ -70,7 +70,6 @@ virshCheckpointCreate(vshControl *ctl,
     ret = true;
 
  cleanup:
-    virshDomainCheckpointFree(checkpoint);
     return ret;
 }
 
@@ -114,10 +113,10 @@ static bool
 cmdCheckpointCreate(vshControl *ctl,
                     const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *from = NULL;
-    char *buffer = NULL;
+    g_autofree char *buffer = NULL;
     unsigned int flags = 0;
 
     VSH_REQUIRE_OPTION("redefine-validate", "redefine");
@@ -146,9 +145,6 @@ cmdCheckpointCreate(vshControl *ctl,
     ret = virshCheckpointCreate(ctl, dom, buffer, flags, from);
 
  cleanup:
-    VIR_FREE(buffer);
-    virshDomainFree(dom);
-
     return ret;
 }
 
@@ -165,7 +161,7 @@ virshParseCheckpointDiskspec(vshControl *ctl,
     const char *name = NULL;
     const char *checkpoint = NULL;
     const char *bitmap = NULL;
-    char **array = NULL;
+    g_auto(GStrv) array = NULL;
     int narray;
     size_t i;
 
@@ -193,7 +189,6 @@ virshParseCheckpointDiskspec(vshControl *ctl,
  cleanup:
     if (ret < 0)
         vshError(ctl, _("unable to parse diskspec: %s"), str);
-    g_strfreev(array);
     return ret;
 }
 
@@ -238,9 +233,9 @@ static bool
 cmdCheckpointCreateAs(vshControl *ctl,
                       const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
-    char *buffer = NULL;
+    g_autofree char *buffer = NULL;
     const char *name = NULL;
     const char *desc = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -286,9 +281,6 @@ cmdCheckpointCreateAs(vshControl *ctl,
     ret = virshCheckpointCreate(ctl, dom, buffer, flags, NULL);
 
  cleanup:
-    VIR_FREE(buffer);
-    virshDomainFree(dom);
-
     return ret;
 }
 
@@ -353,9 +345,9 @@ static bool
 cmdCheckpointEdit(vshControl *ctl,
                   const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
-    virDomainCheckpointPtr checkpoint = NULL;
-    virDomainCheckpointPtr edited = NULL;
+    g_autoptr(virshDomain) dom = NULL;
+    g_autoptr(virshDomainCheckpoint) checkpoint = NULL;
+    g_autoptr(virshDomainCheckpoint) edited = NULL;
     const char *name = NULL;
     const char *edited_name;
     bool ret = false;
@@ -404,9 +396,6 @@ cmdCheckpointEdit(vshControl *ctl,
  cleanup:
     if (!ret && name)
         vshError(ctl, _("Failed to update %s"), name);
-    virshDomainCheckpointFree(edited);
-    virshDomainCheckpointFree(checkpoint);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -420,7 +409,7 @@ virshGetCheckpointParent(vshControl *ctl,
                          virDomainCheckpointPtr checkpoint,
                          char **parent_name)
 {
-    virDomainCheckpointPtr parent = NULL;
+    g_autoptr(virshDomainCheckpoint) parent = NULL;
     int ret = -1;
 
     *parent_name = NULL;
@@ -441,7 +430,6 @@ virshGetCheckpointParent(vshControl *ctl,
     } else {
         vshResetLibvirtError();
     }
-    virshDomainCheckpointFree(parent);
     return ret;
 }
 
@@ -474,10 +462,10 @@ static bool
 cmdCheckpointInfo(vshControl *ctl,
                   const vshCmd *cmd)
 {
-    virDomainPtr dom;
-    virDomainCheckpointPtr checkpoint = NULL;
+    g_autoptr(virshDomain) dom = NULL;
+    g_autoptr(virshDomainCheckpoint) checkpoint = NULL;
     const char *name;
-    char *parent = NULL;
+    g_autofree char *parent = NULL;
     bool ret = false;
     int count;
     unsigned int flags;
@@ -520,9 +508,6 @@ cmdCheckpointInfo(vshControl *ctl,
     ret = true;
 
  cleanup:
-    VIR_FREE(parent);
-    virshDomainCheckpointFree(checkpoint);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -708,7 +693,7 @@ static bool
 cmdCheckpointList(vshControl *ctl,
                   const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     unsigned int flags = 0;
     size_t i;
@@ -721,9 +706,9 @@ cmdCheckpointList(vshControl *ctl,
     bool parent = vshCommandOptBool(cmd, "parent");
     bool roots = vshCommandOptBool(cmd, "roots");
     const char *from_chk = NULL;
-    virDomainCheckpointPtr start = NULL;
+    g_autoptr(virshDomainCheckpoint) start = NULL;
     struct virshCheckpointList *checkpointlist = NULL;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(tree, name);
     VSH_EXCLUSIVE_OPTIONS_VAR(parent, roots);
@@ -847,10 +832,6 @@ cmdCheckpointList(vshControl *ctl,
 
  cleanup:
     virshCheckpointListFree(checkpointlist);
-    virshDomainCheckpointFree(start);
-    virshDomainFree(dom);
-    vshTableFree(table);
-
     return ret;
 }
 
@@ -894,11 +875,11 @@ static bool
 cmdCheckpointDumpXML(vshControl *ctl,
                      const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *name = NULL;
-    virDomainCheckpointPtr checkpoint = NULL;
-    char *xml = NULL;
+    g_autoptr(virshDomainCheckpoint) checkpoint = NULL;
+    g_autofree char *xml = NULL;
     unsigned int flags = 0;
 
     if (vshCommandOptBool(cmd, "security-info"))
@@ -922,10 +903,6 @@ cmdCheckpointDumpXML(vshControl *ctl,
     ret = true;
 
  cleanup:
-    VIR_FREE(xml);
-    virshDomainCheckpointFree(checkpoint);
-    virshDomainFree(dom);
-
     return ret;
 }
 
@@ -957,11 +934,11 @@ static bool
 cmdCheckpointParent(vshControl *ctl,
                     const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *name = NULL;
-    virDomainCheckpointPtr checkpoint = NULL;
-    char *parent = NULL;
+    g_autoptr(virshDomainCheckpoint) checkpoint = NULL;
+    g_autofree char *parent = NULL;
 
     dom = virshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
@@ -983,10 +960,6 @@ cmdCheckpointParent(vshControl *ctl,
     ret = true;
 
  cleanup:
-    VIR_FREE(parent);
-    virshDomainCheckpointFree(checkpoint);
-    virshDomainFree(dom);
-
     return ret;
 }
 
@@ -1031,10 +1004,10 @@ static bool
 cmdCheckpointDelete(vshControl *ctl,
                     const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *name = NULL;
-    virDomainCheckpointPtr checkpoint = NULL;
+    g_autoptr(virshDomainCheckpoint) checkpoint = NULL;
     unsigned int flags = 0;
 
     dom = virshCommandOptDomain(ctl, cmd, NULL);
@@ -1065,9 +1038,6 @@ cmdCheckpointDelete(vshControl *ctl,
     ret = true;
 
  cleanup:
-    virshDomainCheckpointFree(checkpoint);
-    virshDomainFree(dom);
-
     return ret;
 }
 
