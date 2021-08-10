@@ -3279,7 +3279,6 @@ mymain(void)
             QEMU_CAPS_CHARDEV_FILE_APPEND,
             QEMU_CAPS_CCID_EMULATED,
             QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("debug-threads", QEMU_CAPS_NAME_DEBUG_THREADS);
 
     DO_TEST("master-key", QEMU_CAPS_OBJECT_SECRET);
     DO_TEST("usb-long-port-path",
