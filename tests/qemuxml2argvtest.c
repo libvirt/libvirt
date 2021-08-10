@@ -3261,10 +3261,8 @@ mymain(void)
                  ARG_QEMU_CAPS, NONE);
 
     DO_TEST("name-escape",
-            QEMU_CAPS_NAME_DEBUG_THREADS,
             QEMU_CAPS_OBJECT_SECRET,
             QEMU_CAPS_VNC,
-            QEMU_CAPS_NAME_GUEST,
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_SPICE_UNIX,

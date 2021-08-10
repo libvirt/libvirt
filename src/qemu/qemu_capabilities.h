@@ -348,7 +348,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_CHARDEV_LOGFILE, /* -chardev logfile=xxxx */
 
     /* 215 */
-    QEMU_CAPS_NAME_DEBUG_THREADS, /* Is -name debug-threads= available */
+    X_QEMU_CAPS_NAME_DEBUG_THREADS, /* Is -name debug-threads= available */
     QEMU_CAPS_OBJECT_SECRET, /* -object secret */
     QEMU_CAPS_DEVICE_PXB, /* -device pxb */
     QEMU_CAPS_DEVICE_PXB_PCIE, /* -device pxb-pcie */
@@ -357,7 +357,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 220 */
     QEMU_CAPS_NEC_USB_XHCI_PORTS, /* -device nec-usb-xhci.p3 ports setting */
     QEMU_CAPS_VIRTIO_SCSI_IOTHREAD, /* virtio-scsi-{pci,ccw}.iothread */
-    QEMU_CAPS_NAME_GUEST, /* -name guest= */
+    X_QEMU_CAPS_NAME_GUEST, /* -name guest= */
     QEMU_CAPS_QXL_MAX_OUTPUTS, /* -device qxl,max-outputs= */
     X_QEMU_CAPS_QXL_VGA_MAX_OUTPUTS, /* -device qxl-vga,max-outputs= */
 

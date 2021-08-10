@@ -368,7 +368,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "chardev-logfile", /* QEMU_CAPS_CHARDEV_LOGFILE */
 
               /* 215 */
-              "debug-threads", /* QEMU_CAPS_NAME_DEBUG_THREADS */
+              "debug-threads", /* X_QEMU_CAPS_NAME_DEBUG_THREADS */
               "secret", /* QEMU_CAPS_OBJECT_SECRET */
               "pxb", /* QEMU_CAPS_DEVICE_PXB */
               "pxb-pcie", /* QEMU_CAPS_DEVICE_PXB_PCIE */
@@ -377,7 +377,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 220 */
               "nec-usb-xhci-ports", /* QEMU_CAPS_NEC_USB_XHCI_PORTS */
               "virtio-scsi-pci.iothread", /* QEMU_CAPS_VIRTIO_SCSI_IOTHREAD */
-              "name-guest", /* QEMU_CAPS_NAME_GUEST */
+              "name-guest", /* X_QEMU_CAPS_NAME_GUEST */
               "qxl.max_outputs", /* QEMU_CAPS_QXL_MAX_OUTPUTS */
               "qxl-vga.max_outputs", /* X_QEMU_CAPS_QXL_VGA_MAX_OUTPUTS */
 
@@ -3246,8 +3246,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "machine", "kernel_irqchip", QEMU_CAPS_MACHINE_KERNEL_IRQCHIP },
     { "machine", "loadparm", QEMU_CAPS_LOADPARM },
     { "msg", "timestamp", QEMU_CAPS_MSG_TIMESTAMP },
-    { "name", "debug-threads", QEMU_CAPS_NAME_DEBUG_THREADS },
-    { "name", "guest", QEMU_CAPS_NAME_GUEST },
     { "numa", NULL, QEMU_CAPS_NUMA }, /* not needed after qemuCaps->version < 3000000 */
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
     { "sandbox", "enable", QEMU_CAPS_SECCOMP_SANDBOX },

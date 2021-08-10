@@ -111,13 +111,11 @@
   <flag name='spice-gl'/>
   <flag name='qxl.vram64_size_mb'/>
   <flag name='chardev-logfile'/>
-  <flag name='debug-threads'/>
   <flag name='secret'/>
   <flag name='pxb'/>
   <flag name='pxb-pcie'/>
   <flag name='nec-usb-xhci-ports'/>
   <flag name='virtio-scsi-pci.iothread'/>
-  <flag name='name-guest'/>
   <flag name='qxl.max_outputs'/>
   <flag name='spice-unix'/>
   <flag name='drive-detect-zeroes'/>

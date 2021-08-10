@@ -87,11 +87,9 @@
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
   <flag name='mptsas1068'/>
   <flag name='chardev-logfile'/>
-  <flag name='debug-threads'/>
   <flag name='secret'/>
   <flag name='nec-usb-xhci-ports'/>
   <flag name='virtio-scsi-pci.iothread'/>
-  <flag name='name-guest'/>
   <flag name='drive-detect-zeroes'/>
   <flag name='tls-creds-x509'/>
   <flag name='virtio-pci-disable-legacy'/>
