@@ -41,7 +41,6 @@ static bool
 virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
                     unsigned int flags, const char *from)
 {
-    bool ret = false;
     g_autoptr(virshDomainSnapshot) snapshot = NULL;
     bool halt = false;
     const char *name = NULL;
@@ -64,12 +63,12 @@ virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
         persistent = virDomainIsPersistent(dom);
         if (persistent < 0) {
             vshReportError(ctl);
-            goto cleanup;
+            return false;
         }
         if (!persistent) {
             vshError(ctl, "%s",
                      _("cannot halt after snapshot of transient domain"));
-            goto cleanup;
+            return false;
         }
         if (virDomainIsActive(dom) == 1)
             halt = true;
@@ -78,17 +77,17 @@ virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
     }
 
     if (snapshot == NULL)
-        goto cleanup;
+        return false;
 
     if (halt && virDomainDestroy(dom) < 0) {
         vshReportError(ctl);
-        goto cleanup;
+        return false;
     }
 
     name = virDomainSnapshotGetName(snapshot);
     if (!name) {
         vshError(ctl, "%s", _("Could not get snapshot name"));
-        goto cleanup;
+        return false;
     }
 
     if (from)
@@ -96,10 +95,7 @@ virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
     else
         vshPrintExtra(ctl, _("Domain snapshot %s created"), name);
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -162,7 +158,6 @@ static bool
 cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = false;
     const char *from = NULL;
     g_autofree char *buffer = NULL;
     unsigned int flags = 0;
@@ -189,23 +184,20 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
-        goto cleanup;
+        return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "xmlfile", &from) < 0)
-        goto cleanup;
+        return false;
     if (!from) {
         buffer = g_strdup("<domainsnapshot/>");
     } else {
         if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
             vshSaveLibvirtError();
-            goto cleanup;
+            return false;
         }
     }
 
-    ret = virshSnapshotCreate(ctl, dom, buffer, flags, from);
-
- cleanup:
-    return ret;
+    return virshSnapshotCreate(ctl, dom, buffer, flags, from);
 }
 
 /*
@@ -386,7 +378,6 @@ static bool
 cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = false;
     g_autofree char *buffer = NULL;
     const char *name = NULL;
     const char *desc = NULL;
@@ -417,7 +408,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "description", &desc) < 0)
-        goto cleanup;
+        return false;
 
     virBufferAddLit(&buf, "<domainsnapshot>\n");
     virBufferAdjustIndent(&buf, 2);
@@ -425,17 +416,17 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     virBufferEscapeString(&buf, "<description>%s</description>\n", desc);
 
     if (vshCommandOptStringReq(ctl, cmd, "memspec", &memspec) < 0)
-        goto cleanup;
+        return false;
 
     if (memspec && virshParseSnapshotMemspec(ctl, &buf, memspec) < 0)
-        goto cleanup;
+        return false;
 
     if (vshCommandOptBool(cmd, "diskspec")) {
         virBufferAddLit(&buf, "<disks>\n");
         virBufferAdjustIndent(&buf, 2);
         while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
             if (virshParseSnapshotDiskspec(ctl, &buf, opt->data) < 0)
-                goto cleanup;
+                return false;
         }
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</disks>\n");
@@ -447,14 +438,10 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "print-xml")) {
         vshPrint(ctl, "%s\n",  buffer);
-        ret = true;
-        goto cleanup;
+        return true;
     }
 
-    ret = virshSnapshotCreate(ctl, dom, buffer, flags, NULL);
-
- cleanup:
-    return ret;
+    return virshSnapshotCreate(ctl, dom, buffer, flags, NULL);
 }
 
 /* Helper for resolving {--current | --ARG name} into a snapshot
@@ -789,11 +776,11 @@ virshSnapshotFilter(vshControl *ctl, virDomainSnapshotPtr snapshot,
 
     xml = virDomainSnapshotGetXMLDesc(snapshot, 0);
     if (!xml)
-        goto cleanup;
+        return -1;
 
     xmldoc = virXMLParseStringCtxt(xml, _("(domain_snapshot)"), &ctxt);
     if (!xmldoc)
-        goto cleanup;
+        return -1;
 
     /* Libvirt 1.0.1 and newer never call this function, because the
      * filtering is already supported by the listing functions.  Older
@@ -803,7 +790,7 @@ virshSnapshotFilter(vshControl *ctl, virDomainSnapshotPtr snapshot,
     state = virXPathString("string(/domainsnapshot/state)", ctxt);
     if (!state) {
         vshError(ctl, "%s", _("unable to perform snapshot filtering"));
-        goto cleanup;
+        return -1;
     }
     if (STREQ(state, "disk-snapshot")) {
         ret = ((flags & (VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY |
@@ -819,7 +806,6 @@ virshSnapshotFilter(vshControl *ctl, virDomainSnapshotPtr snapshot,
             ret = !!(flags & VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE);
     }
 
- cleanup:
     return ret;
 }
 
@@ -859,7 +845,6 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     g_autofree char *state = NULL;
     int external;
     g_autofree char *parent = NULL;
-    bool ret = false;
     int count;
     unsigned int flags;
     int current;
@@ -872,7 +857,7 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
 
     if (virshLookupSnapshot(ctl, cmd, "snapshotname", true, dom,
                             &snapshot, &name) < 0)
-        goto cleanup;
+        return false;
 
     vshPrint(ctl, "%-15s %s\n", _("Name:"), name);
     vshPrint(ctl, "%-15s %s\n", _("Domain:"), virDomainGetName(dom));
@@ -897,17 +882,17 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
      * state of the machine at the time of the snapshot.  */
     doc = virDomainSnapshotGetXMLDesc(snapshot, 0);
     if (!doc)
-        goto cleanup;
+        return false;
 
     xmldoc = virXMLParseStringCtxt(doc, _("(domain_snapshot)"), &ctxt);
     if (!xmldoc)
-        goto cleanup;
+        return false;
 
     state = virXPathString("string(/domainsnapshot/state)", ctxt);
     if (!state) {
         vshError(ctl, "%s",
                  _("unexpected problem reading snapshot xml"));
-        goto cleanup;
+        return false;
     }
     vshPrint(ctl, "%-15s %s\n", _("State:"), state);
 
@@ -933,7 +918,7 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     if (external < 0) {
         vshError(ctl, "%s",
                  _("unexpected problem reading snapshot xml"));
-        goto cleanup;
+        return false;
     }
     vshPrint(ctl, "%-15s %s\n", _("Location:"),
              external ? _("external") : _("internal"));
@@ -946,24 +931,22 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     /* Children, Descendants.  After this point, the fallback to
      * compute children is too expensive, so we gracefully quit if the
      * APIs don't exist.  */
-    if (priv->useSnapshotOld) {
-        ret = true;
-        goto cleanup;
-    }
+    if (priv->useSnapshotOld)
+        return true;
     flags = 0;
     count = virDomainSnapshotNumChildren(snapshot, flags);
     if (count < 0) {
         if (last_error->code == VIR_ERR_NO_SUPPORT) {
             vshResetLibvirtError();
-            ret = true;
+            return true;
         }
-        goto cleanup;
+        return false;
     }
     vshPrint(ctl, "%-15s %d\n", _("Children:"), count);
     flags = VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS;
     count = virDomainSnapshotNumChildren(snapshot, flags);
     if (count < 0)
-        goto cleanup;
+        return false;
     vshPrint(ctl, "%-15s %d\n", _("Descendants:"), count);
 
     /* Metadata; the fallback here relies on the fact that metadata
@@ -978,10 +961,7 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%-15s %s\n", _("Metadata:"),
                  metadata ? _("yes") : _("no"));
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 /* Helpers for collecting a list of snapshots.  */
@@ -1644,7 +1624,6 @@ static bool
 cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = false;
     const char *name = NULL;
     g_autoptr(virshDomainSnapshot) snapshot = NULL;
     g_autofree char *xml = NULL;
@@ -1660,16 +1639,13 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (!(snapshot = virDomainSnapshotLookupByName(dom, name, 0)))
-        goto cleanup;
+        return false;
 
     if (!(xml = virDomainSnapshotGetXMLDesc(snapshot, flags)))
-        goto cleanup;
+        return false;
 
     vshPrint(ctl, "%s", xml);
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -1700,32 +1676,28 @@ static bool
 cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = false;
     const char *name = NULL;
     g_autoptr(virshDomainSnapshot) snapshot = NULL;
     g_autofree char *parent = NULL;
 
     dom = virshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
-        goto cleanup;
+        return false;
 
     if (virshLookupSnapshot(ctl, cmd, "snapshotname", true, dom,
                             &snapshot, &name) < 0)
-        goto cleanup;
+        return false;
 
     if (virshGetSnapshotParent(ctl, snapshot, &parent) < 0)
-        goto cleanup;
+        return false;
     if (!parent) {
         vshError(ctl, _("snapshot '%s' has no parent"), name);
-        goto cleanup;
+        return false;
     }
 
     vshPrint(ctl, "%s", parent);
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -1768,7 +1740,6 @@ static bool
 cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = false;
     const char *name = NULL;
     g_autoptr(virshDomainSnapshot) snapshot = NULL;
     unsigned int flags = 0;
@@ -1788,11 +1759,11 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
 
     dom = virshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
-        goto cleanup;
+        return false;
 
     if (virshLookupSnapshot(ctl, cmd, "snapshotname", true, dom,
                             &snapshot, &name) < 0)
-        goto cleanup;
+        return false;
 
     result = virDomainRevertToSnapshot(snapshot, flags);
     if (result < 0 && force &&
@@ -1802,13 +1773,9 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
         result = virDomainRevertToSnapshot(snapshot, flags);
     }
     if (result < 0)
-        goto cleanup;
+        return false;
 
-    ret = true;
-
- cleanup:
-
-    return ret;
+    return true;
 }
 
 /*
@@ -1851,18 +1818,17 @@ static bool
 cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = false;
     const char *name = NULL;
     g_autoptr(virshDomainSnapshot) snapshot = NULL;
     unsigned int flags = 0;
 
     dom = virshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
-        goto cleanup;
+        return false;
 
     if (virshLookupSnapshot(ctl, cmd, "snapshotname", true, dom,
                             &snapshot, &name) < 0)
-        goto cleanup;
+        return false;
 
     if (vshCommandOptBool(cmd, "children"))
         flags |= VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN;
@@ -1881,14 +1847,10 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
             vshPrintExtra(ctl, _("Domain snapshot %s deleted\n"), name);
     } else {
         vshError(ctl, _("Failed to delete snapshot %s"), name);
-        goto cleanup;
+        return false;
     }
 
-    ret = true;
-
- cleanup:
-
-    return ret;
+    return true;
 }
 
 const vshCmdDef snapshotCmds[] = {
