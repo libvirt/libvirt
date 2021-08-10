@@ -2396,7 +2396,6 @@ vshEditFile(vshControl *ctl, const char *filename)
 {
     const char *editor;
     g_autoptr(virCommand) cmd = NULL;
-    int ret = -1;
     int outfd = STDOUT_FILENO;
     int errfd = STDERR_FILENO;
 
@@ -2434,12 +2433,9 @@ vshEditFile(vshControl *ctl, const char *filename)
     if (virCommandRunAsync(cmd, NULL) < 0 ||
         virCommandWait(cmd, NULL) < 0) {
         vshReportError(ctl);
-        goto cleanup;
+        return -1;
     }
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 char *
@@ -2796,7 +2792,6 @@ vshReadlineInit(vshControl *ctl)
 {
     g_autofree char *userdir = NULL;
     int max_history = 500;
-    int ret = -1;
     g_autofree char *histsize_env = NULL;
     const char *histsize_str = NULL;
     const char *break_characters = " \t\n`@$><=;|&{(";
@@ -2821,12 +2816,12 @@ vshReadlineInit(vshControl *ctl)
     if ((histsize_str = getenv(histsize_env))) {
         if (virStrToLong_i(histsize_str, NULL, 10, &max_history) < 0) {
             vshError(ctl, _("Bad $%s value."), histsize_env);
-            goto cleanup;
+            return -1;
         } else if (max_history > HISTSIZE_MAX || max_history < 0) {
             vshError(ctl, _("$%s value should be between 0 "
                             "and %d"),
                      histsize_env, HISTSIZE_MAX);
-            goto cleanup;
+            return -1;
         }
     }
     stifle_history(max_history);
@@ -2841,10 +2836,7 @@ vshReadlineInit(vshControl *ctl)
     ctl->historyfile = g_strdup_printf("%s/history", ctl->historydir);
 
     read_history(ctl->historyfile);
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static void
