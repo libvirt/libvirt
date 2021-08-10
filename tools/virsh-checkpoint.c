@@ -478,8 +478,6 @@ cmdCheckpointInfo(vshControl *ctl,
     virDomainCheckpointPtr checkpoint = NULL;
     const char *name;
     char *parent = NULL;
-    xmlDocPtr xmldoc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
     bool ret = false;
     int count;
     unsigned int flags;
@@ -522,8 +520,6 @@ cmdCheckpointInfo(vshControl *ctl,
     ret = true;
 
  cleanup:
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xmldoc);
     VIR_FREE(parent);
     virshDomainCheckpointFree(checkpoint);
     virshDomainFree(dom);
