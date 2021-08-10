@@ -30,3 +30,4 @@ vshTable *vshTableNew(const char *format, ...);
 int vshTableRowAppend(vshTable *table, const char *arg, ...);
 void vshTablePrintToStdout(vshTable *table, vshControl *ctl);
 char *vshTablePrintToString(vshTable *table, bool header);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(vshTable, vshTableFree);
