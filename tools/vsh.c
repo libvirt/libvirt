@@ -3199,17 +3199,16 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
         char *str;
         g_auto(virBuffer) xmlbuf = VIR_BUFFER_INITIALIZER;
-
-        arg = opt->data;
+        const char *curr = opt->data;
 
         if (count)
             virBufferAddChar(&buf, ' ');
 
         if (xml) {
-            virBufferEscapeString(&xmlbuf, "%s", arg);
+            virBufferEscapeString(&xmlbuf, "%s", curr);
             str = virBufferContentAndReset(&xmlbuf);
         } else {
-            str = g_strdup(arg);
+            str = g_strdup(curr);
         }
 
         if (shell)
