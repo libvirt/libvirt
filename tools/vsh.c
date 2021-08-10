@@ -2253,10 +2253,7 @@ vshCloseLogFile(vshControl *ctl)
                  g_strerror(errno));
     }
 
-    if (ctl->logfile) {
-        VIR_FREE(ctl->logfile);
-        ctl->logfile = NULL;
-    }
+    g_clear_pointer(&ctl->logfile, g_free);
 }
 
 #ifndef WIN32
@@ -2852,8 +2849,8 @@ vshReadlineDeinit(vshControl *ctl)
         }
     }
 
-    VIR_FREE(ctl->historydir);
-    VIR_FREE(ctl->historyfile);
+    g_clear_pointer(&ctl->historydir, g_free);
+    g_clear_pointer(&ctl->historyfile, g_free);
 }
 
 char *
