@@ -2876,15 +2876,13 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
 /**
  * qemuValidateDomainDeviceDefDiskBlkdeviotune:
  * @disk: disk configuration
- * @qemuCaps: qemu capabilities, NULL if checking cold-configuration
  *
  * Checks whether block io tuning settings make sense. Returns -1 on error and
  * reports a proper libvirt error.
  */
 static int
 qemuValidateDomainDeviceDefDiskBlkdeviotune(const virDomainDiskDef *disk,
-                                            const virDomainDef *def,
-                                            virQEMUCaps *qemuCaps)
+                                            const virDomainDef *def)
 {
     /* group_name by itself is ignored by qemu */
     if (disk->blkdeviotune.group_name &&
@@ -2933,33 +2931,6 @@ qemuValidateDomainDeviceDefDiskBlkdeviotune(const virDomainDiskDef *disk,
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                       _("block I/O throttle limit must "
                         "be no more than %llu using QEMU"), QEMU_BLOCK_IOTUNE_MAX);
-        return -1;
-    }
-
-    /* block I/O throttling 1.7 */
-    if (virDomainBlockIoTuneInfoHasMax(&disk->blkdeviotune) &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("there are some block I/O throttling parameters "
-                         "that are not supported with this QEMU binary"));
-        return -1;
-    }
-
-    /* block I/O group 2.4 */
-    if (disk->blkdeviotune.group_name &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_GROUP)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("the block I/O throttling group parameter is "
-                         "not supported with this QEMU binary"));
-        return -1;
-    }
-
-    /* block I/O throttling length 2.6 */
-    if (virDomainBlockIoTuneInfoHasMaxLength(&disk->blkdeviotune) &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("there are some block I/O throttling length parameters "
-                         "that are not supported with this QEMU binary"));
         return -1;
     }
 
@@ -3052,7 +3023,7 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
     if (qemuValidateDomainDeviceDefDiskFrontend(disk, def, qemuCaps) < 0)
         return -1;
 
-    if (qemuValidateDomainDeviceDefDiskBlkdeviotune(disk, def, qemuCaps) < 0)
+    if (qemuValidateDomainDeviceDefDiskBlkdeviotune(disk, def) < 0)
         return -1;
 
     if (qemuValidateDomainDeviceDefDiskTransient(disk, qemuCaps) < 0)

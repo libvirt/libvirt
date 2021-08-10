@@ -15928,9 +15928,6 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     virDomainDiskDef *conf_disk = NULL;
     virDomainDiskDef *disk;
     qemuBlockIoTuneSetFlags set_fields = 0;
-    bool supportMaxOptions = true;
-    bool supportGroupNameOption = true;
-    bool supportMaxLengthOptions = true;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     virObjectEvent *event = NULL;
     virTypedParameterPtr eventParams = NULL;
@@ -16115,40 +16112,6 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     virDomainBlockIoTuneInfoCopy(&info, &conf_info);
 
     if (def) {
-        supportMaxOptions = virQEMUCapsGet(priv->qemuCaps,
-                                           QEMU_CAPS_DRIVE_IOTUNE_MAX);
-        supportGroupNameOption = virQEMUCapsGet(priv->qemuCaps,
-                                                QEMU_CAPS_DRIVE_IOTUNE_GROUP);
-        supportMaxLengthOptions =
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH);
-
-        if (!supportMaxOptions &&
-            (set_fields & (QEMU_BLOCK_IOTUNE_SET_BYTES_MAX |
-                           QEMU_BLOCK_IOTUNE_SET_IOPS_MAX |
-                           QEMU_BLOCK_IOTUNE_SET_SIZE_IOPS))) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("a block I/O throttling parameter is not "
-                             "supported with this QEMU binary"));
-             goto endjob;
-        }
-
-        if (!supportGroupNameOption &&
-            (set_fields & QEMU_BLOCK_IOTUNE_SET_GROUP_NAME)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("the block I/O throttling group parameter is not "
-                             "supported with this QEMU binary"));
-             goto endjob;
-        }
-
-        if (!supportMaxLengthOptions &&
-            (set_fields & (QEMU_BLOCK_IOTUNE_SET_BYTES_MAX_LENGTH |
-                           QEMU_BLOCK_IOTUNE_SET_IOPS_MAX_LENGTH))) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("a block I/O throttling length parameter is not "
-                             "supported with this QEMU binary"));
-             goto endjob;
-        }
-
         if (!(disk = qemuDomainDiskByName(def, path)))
             goto endjob;
 
@@ -16216,9 +16179,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
             qemuDomainObjEnterMonitor(driver, vm);
             ret = qemuMonitorSetBlockIoThrottle(priv->mon, drivealias, qdevid,
-                                                &info, supportMaxOptions,
+                                                &info, true,
                                                 set_fields & QEMU_BLOCK_IOTUNE_SET_GROUP_NAME,
-                                                supportMaxLengthOptions);
+                                                true);
             if (qemuDomainObjExitMonitor(driver, vm) < 0)
                 ret = -1;
             if (ret < 0)
@@ -16323,19 +16286,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
-    if (def) {
-        /* If the VM is running, we can check if the current VM can use
-         * optional parameters or not. */
-        maxparams = QEMU_NB_BLOCK_IO_TUNE_BASE_PARAMS;
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX))
-            maxparams += QEMU_NB_BLOCK_IO_TUNE_MAX_PARAMS;
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_GROUP))
-            maxparams += QEMU_NB_BLOCK_IO_TUNE_GROUP_PARAMS;
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH))
-            maxparams += QEMU_NB_BLOCK_IO_TUNE_LENGTH_PARAMS;
-    } else {
-        maxparams = QEMU_NB_BLOCK_IO_TUNE_ALL_PARAMS;
-    }
+    maxparams = QEMU_NB_BLOCK_IO_TUNE_ALL_PARAMS;
 
     if (*nparams == 0) {
         *nparams = maxparams;
