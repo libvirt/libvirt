@@ -12,7 +12,7 @@ html_xslt_gen = []
 foreach name : internals_in_files
   html_xslt_gen += {
     'name': name,
-    'source': 'docs/internals' / name + '.html.in',
+    'source': 'docs' / 'internals' / name + '.html.in',
   }
 endforeach
 

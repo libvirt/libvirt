@@ -79,7 +79,7 @@ if conf.has('WITH_STORAGE')
     ],
     include_directories: [
       conf_inc_dir,
-      include_directories('../storage_file'),
+      include_directories('..' / 'storage_file'),
     ],
   )
 
@@ -163,7 +163,7 @@ if conf.has('WITH_STORAGE_GLUSTER')
       glusterfs_dep,
     ],
     'include': [
-      include_directories('../storage_file'),
+      include_directories('..' / 'storage_file'),
     ],
     'install_dir': storage_backend_install_dir,
   }

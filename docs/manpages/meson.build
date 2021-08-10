@@ -125,7 +125,7 @@ foreach data : docs_man_files
   html_xslt_gen += {
     'name': data['name'],
     'file': html_in,
-    'source': 'docs/manpages' / rst_in_file,
+    'source': 'docs' / 'manpages' / rst_in_file,
   }
 endforeach
 
