@@ -73,7 +73,7 @@ char *
 virXPathString(const char *xpath,
                xmlXPathContextPtr ctxt)
 {
-    xmlXPathObjectPtr obj;
+    g_autoptr(xmlXPathObject) obj = NULL;
     char *ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
@@ -84,11 +84,9 @@ virXPathString(const char *xpath,
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        xmlXPathFreeObject(obj);
         return NULL;
     }
     ret = g_strdup((char *)obj->stringval);
-    xmlXPathFreeObject(obj);
     return ret;
 }
 
@@ -148,7 +146,7 @@ virXPathNumber(const char *xpath,
                xmlXPathContextPtr ctxt,
                double *value)
 {
-    xmlXPathObjectPtr obj;
+    g_autoptr(xmlXPathObject) obj = NULL;
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -158,12 +156,10 @@ virXPathNumber(const char *xpath,
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
         (isnan(obj->floatval))) {
-        xmlXPathFreeObject(obj);
         return -1;
     }
 
     *value = obj->floatval;
-    xmlXPathFreeObject(obj);
     return 0;
 }
 
@@ -173,7 +169,7 @@ virXPathLongBase(const char *xpath,
                  int base,
                  long *value)
 {
-    xmlXPathObjectPtr obj;
+    g_autoptr(xmlXPathObject) obj = NULL;
     int ret = 0;
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
@@ -195,7 +191,6 @@ virXPathLongBase(const char *xpath,
         ret = -1;
     }
 
-    xmlXPathFreeObject(obj);
     return ret;
 }
 
@@ -275,7 +270,7 @@ virXPathULongBase(const char *xpath,
                   int base,
                   unsigned long *value)
 {
-    xmlXPathObjectPtr obj;
+    g_autoptr(xmlXPathObject) obj = NULL;
     int ret = 0;
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
@@ -297,7 +292,6 @@ virXPathULongBase(const char *xpath,
         ret = -1;
     }
 
-    xmlXPathFreeObject(obj);
     return ret;
 }
 
@@ -388,7 +382,7 @@ virXPathULongLong(const char *xpath,
                   xmlXPathContextPtr ctxt,
                   unsigned long long *value)
 {
-    xmlXPathObjectPtr obj;
+    g_autoptr(xmlXPathObject) obj = NULL;
     int ret = 0;
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
@@ -410,7 +404,6 @@ virXPathULongLong(const char *xpath,
         ret = -1;
     }
 
-    xmlXPathFreeObject(obj);
     return ret;
 }
 
@@ -431,7 +424,7 @@ virXPathLongLong(const char *xpath,
                  xmlXPathContextPtr ctxt,
                  long long *value)
 {
-    xmlXPathObjectPtr obj;
+    g_autoptr(xmlXPathObject) obj = NULL;
     int ret = 0;
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
@@ -453,7 +446,6 @@ virXPathLongLong(const char *xpath,
         ret = -1;
     }
 
-    xmlXPathFreeObject(obj);
     return ret;
 }
 
@@ -895,7 +887,7 @@ int
 virXPathBoolean(const char *xpath,
                 xmlXPathContextPtr ctxt)
 {
-    xmlXPathObjectPtr obj;
+    g_autoptr(xmlXPathObject) obj = NULL;
     int ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
@@ -906,12 +898,10 @@ virXPathBoolean(const char *xpath,
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
     if ((obj == NULL) || (obj->type != XPATH_BOOLEAN) ||
         (obj->boolval < 0) || (obj->boolval > 1)) {
-        xmlXPathFreeObject(obj);
         return -1;
     }
     ret = obj->boolval;
 
-    xmlXPathFreeObject(obj);
     return ret;
 }
 
@@ -929,7 +919,7 @@ xmlNodePtr
 virXPathNode(const char *xpath,
              xmlXPathContextPtr ctxt)
 {
-    xmlXPathObjectPtr obj;
+    g_autoptr(xmlXPathObject) obj = NULL;
     xmlNodePtr ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
@@ -941,12 +931,10 @@ virXPathNode(const char *xpath,
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr <= 0) ||
         (obj->nodesetval->nodeTab == NULL)) {
-        xmlXPathFreeObject(obj);
         return NULL;
     }
 
     ret = obj->nodesetval->nodeTab[0];
-    xmlXPathFreeObject(obj);
     return ret;
 }
 
@@ -966,7 +954,7 @@ virXPathNodeSet(const char *xpath,
                 xmlXPathContextPtr ctxt,
                 xmlNodePtr **list)
 {
-    xmlXPathObjectPtr obj;
+    g_autoptr(xmlXPathObject) obj = NULL;
     int ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
@@ -985,21 +973,17 @@ virXPathNodeSet(const char *xpath,
     if (obj->type != XPATH_NODESET) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Incorrect xpath '%s'"), xpath);
-        xmlXPathFreeObject(obj);
         return -1;
     }
 
-    if ((obj->nodesetval == NULL)  || (obj->nodesetval->nodeNr < 0)) {
-        xmlXPathFreeObject(obj);
+    if ((obj->nodesetval == NULL)  || (obj->nodesetval->nodeNr < 0))
         return 0;
-    }
 
     ret = obj->nodesetval->nodeNr;
     if (list != NULL && ret) {
         *list = g_new0(xmlNodePtr, ret);
         memcpy(*list, obj->nodesetval->nodeTab, ret * sizeof(xmlNodePtr));
     }
-    xmlXPathFreeObject(obj);
     return ret;
 }
 
