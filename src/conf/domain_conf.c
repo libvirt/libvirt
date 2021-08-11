@@ -19515,8 +19515,7 @@ virDomainDefControllersParse(virDomainDef *def,
 }
 
 static virDomainDef *
-virDomainDefParseXML(xmlDocPtr xml G_GNUC_UNUSED,
-                     xmlXPathContextPtr ctxt,
+virDomainDefParseXML(xmlXPathContextPtr ctxt,
                      virDomainXMLOption *xmlopt,
                      unsigned int flags)
 {
@@ -20281,8 +20280,7 @@ virDomainDefParseXML(xmlDocPtr xml G_GNUC_UNUSED,
 
 
 static virDomainObj *
-virDomainObjParseXML(xmlDocPtr xml,
-                     xmlXPathContextPtr ctxt,
+virDomainObjParseXML(xmlXPathContextPtr ctxt,
                      virDomainXMLOption *xmlopt,
                      unsigned int flags)
 {
@@ -20310,7 +20308,7 @@ virDomainObjParseXML(xmlDocPtr xml,
 
     oldnode = ctxt->node;
     ctxt->node = config;
-    obj->def = virDomainDefParseXML(xml, ctxt, xmlopt, flags);
+    obj->def = virDomainDefParseXML(ctxt, xmlopt, flags);
     ctxt->node = oldnode;
     if (!obj->def)
         return NULL;
@@ -20443,7 +20441,7 @@ virDomainDefParseNode(xmlDocPtr xml,
 
     ctxt->node = root;
 
-    if (!(def = virDomainDefParseXML(xml, ctxt, xmlopt, flags)))
+    if (!(def = virDomainDefParseXML(ctxt, xmlopt, flags)))
         return NULL;
 
     /* callback to fill driver specific domain aspects */
@@ -20478,7 +20476,7 @@ virDomainObjParseNode(xmlDocPtr xml,
         return NULL;
 
     ctxt->node = root;
-    return virDomainObjParseXML(xml, ctxt, xmlopt, flags);
+    return virDomainObjParseXML(ctxt, xmlopt, flags);
 }
 
 
