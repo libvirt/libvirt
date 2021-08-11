@@ -57,7 +57,7 @@ static char *
 getMetadataFromXML(virDomainPtr dom)
 {
     xmlDocPtr doc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr node;
 
     char *xml = NULL;
@@ -77,7 +77,6 @@ getMetadataFromXML(virDomainPtr dom)
  cleanup:
     VIR_FREE(xml);
     xmlFreeDoc(doc);
-    xmlXPathFreeContext(ctxt);
 
     return ret;
 }

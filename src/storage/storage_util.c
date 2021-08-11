@@ -2893,7 +2893,7 @@ virStorageUtilGlusterExtractPoolSources(const char *host,
                                         virStoragePoolType pooltype)
 {
     xmlDocPtr doc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     virStoragePoolSource *src = NULL;
     size_t i;
     int nnodes;
@@ -2940,7 +2940,6 @@ virStorageUtilGlusterExtractPoolSources(const char *host,
     ret = nnodes;
 
  cleanup:
-    xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
 
     return ret;

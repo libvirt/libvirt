@@ -268,7 +268,7 @@ virNetworkPortDef *
 virNetworkPortDefParseNode(xmlDocPtr xml,
                            xmlNodePtr root)
 {
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     virNetworkPortDef *def = NULL;
 
     if (STRNEQ((const char *)root->name, "networkport")) {
@@ -285,7 +285,6 @@ virNetworkPortDefParseNode(xmlDocPtr xml,
     def = virNetworkPortDefParseXML(ctxt);
 
  cleanup:
-    xmlXPathFreeContext(ctxt);
     return def;
 }
 

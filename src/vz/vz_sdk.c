@@ -4579,7 +4579,7 @@ prlsdkParseSnapshotTree(const char *treexml)
 {
     virDomainSnapshotObjList *ret = NULL;
     xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr root;
     xmlNodePtr *nodes = NULL;
     virDomainSnapshotDef *def = NULL;
@@ -4696,7 +4696,6 @@ prlsdkParseSnapshotTree(const char *treexml)
     virDomainSnapshotObjListFree(snapshots);
     VIR_FREE(nodes);
     VIR_FREE(xmlstr);
-    xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     VIR_FREE(def);
 

@@ -52,7 +52,7 @@ testQemuGetCaps(char *caps)
 {
     virQEMUCaps *qemuCaps = NULL;
     xmlDocPtr xml;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     ssize_t i, n;
     g_autofree xmlNodePtr *nodes = NULL;
 
@@ -80,13 +80,11 @@ testQemuGetCaps(char *caps)
     }
 
     xmlFreeDoc(xml);
-    xmlXPathFreeContext(ctxt);
     return qemuCaps;
 
  error:
     virObjectUnref(qemuCaps);
     xmlFreeDoc(xml);
-    xmlXPathFreeContext(ctxt);
     return NULL;
 }
 

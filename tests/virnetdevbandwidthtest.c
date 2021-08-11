@@ -43,7 +43,7 @@ struct testSetStruct {
     do { \
         int rc; \
         xmlDocPtr doc; \
-        xmlXPathContextPtr ctxt = NULL; \
+        g_autoptr(xmlXPathContext) ctxt = NULL; \
  \
         if (!xml) \
             break; \
@@ -58,7 +58,6 @@ struct testSetStruct {
                                      ctxt->node, \
                                      true); \
         xmlFreeDoc(doc); \
-        xmlXPathFreeContext(ctxt); \
         if (rc < 0) \
             goto cleanup; \
     } while (0)

@@ -149,7 +149,7 @@ libxlMigrationEatCookie(const char *cookiein,
 {
     libxlMigrationCookie *mig = NULL;
     xmlDocPtr doc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autofree char *uuidstr = NULL;
     int ret = -1;
 
@@ -216,7 +216,6 @@ libxlMigrationEatCookie(const char *cookiein,
     libxlMigrationCookieFree(mig);
 
  cleanup:
-    xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
     return ret;
 }

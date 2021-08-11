@@ -1224,7 +1224,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
     g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
     esxVI_Fault *fault = NULL;
     g_autofree char *xpathExpression = NULL;
-    xmlXPathContextPtr xpathContext = NULL;
+    g_autoptr(xmlXPathContext) xpathContext = NULL;
     xmlNodePtr responseNode = NULL;
 
     if (!request || !response || *response) {
@@ -1384,8 +1384,6 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
         esxVI_Response_Free(response);
         esxVI_Fault_Free(&fault);
     }
-
-    xmlXPathFreeContext(xpathContext);
 
     return result;
 }

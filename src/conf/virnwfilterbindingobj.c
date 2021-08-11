@@ -236,7 +236,7 @@ static virNWFilterBindingObj *
 virNWFilterBindingObjParseNode(xmlDocPtr doc,
                                xmlNodePtr root)
 {
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     virNWFilterBindingObj *obj = NULL;
 
     if (STRNEQ((const char *)root->name, "filterbindingstatus")) {
@@ -253,7 +253,6 @@ virNWFilterBindingObjParseNode(xmlDocPtr doc,
     obj = virNWFilterBindingObjParseXML(doc, ctxt);
 
  cleanup:
-    xmlXPathFreeContext(ctxt);
     return obj;
 }
 

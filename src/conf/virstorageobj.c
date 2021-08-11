@@ -1644,7 +1644,7 @@ virStoragePoolObjLoadState(virStoragePoolObjList *pools,
     char *stateFile = NULL;
     virStoragePoolObj *obj = NULL;
     xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr node = NULL;
     g_autoptr(virStoragePoolDef) def = NULL;
 
@@ -1688,7 +1688,6 @@ virStoragePoolObjLoadState(virStoragePoolObjList *pools,
  cleanup:
     VIR_FREE(stateFile);
     xmlFreeDoc(xml);
-    xmlXPathFreeContext(ctxt);
     return obj;
 }
 

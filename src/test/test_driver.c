@@ -1334,7 +1334,7 @@ static int
 testOpenFromFile(virConnectPtr conn, const char *file)
 {
     xmlDocPtr doc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     testDriver *privconn;
 
     if (!(privconn = testDriverNew()))
@@ -1355,14 +1355,12 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     if (testOpenParse(privconn, file, ctxt) < 0)
         goto error;
 
-    xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
     virObjectUnlock(privconn);
 
     return VIR_DRV_OPEN_SUCCESS;
 
  error:
-    xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
     virObjectUnref(privconn);
     conn->privateData = NULL;
@@ -1378,7 +1376,7 @@ testOpenDefault(virConnectPtr conn)
     int ret = VIR_DRV_OPEN_ERROR;
     testDriver *privconn = NULL;
     xmlDocPtr doc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     size_t i;
 
     virMutexLock(&defaultLock);
@@ -1426,7 +1424,6 @@ testOpenDefault(virConnectPtr conn)
     ret = VIR_DRV_OPEN_SUCCESS;
  cleanup:
     virMutexUnlock(&defaultLock);
-    xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
     return ret;
 

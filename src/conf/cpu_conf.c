@@ -282,7 +282,7 @@ virCPUDefParseXMLString(const char *xml,
                         bool validateXML)
 {
     xmlDocPtr doc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     int ret = -1;
 
     if (!xml) {
@@ -300,7 +300,6 @@ virCPUDefParseXMLString(const char *xml,
 
  cleanup:
     xmlFreeDoc(doc);
-    xmlXPathFreeContext(ctxt);
     return ret;
 }
 

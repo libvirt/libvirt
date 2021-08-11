@@ -80,7 +80,7 @@ virSaveCookieParseString(const char *xml,
                          virSaveCookieCallbacks *saveCookie)
 {
     xmlDocPtr doc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     int ret = -1;
 
     *obj = NULL;
@@ -96,7 +96,6 @@ virSaveCookieParseString(const char *xml,
     ret = virSaveCookieParseNode(ctxt, obj, saveCookie);
 
  cleanup:
-    xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
     return ret;
 }

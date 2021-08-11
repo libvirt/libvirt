@@ -159,7 +159,7 @@ virNWFilterBindingDef *
 virNWFilterBindingDefParseNode(xmlDocPtr xml,
                                xmlNodePtr root)
 {
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     virNWFilterBindingDef *def = NULL;
 
     if (STRNEQ((const char *)root->name, "filterbinding")) {
@@ -176,7 +176,6 @@ virNWFilterBindingDefParseNode(xmlDocPtr xml,
     def = virNWFilterBindingDefParseXML(ctxt);
 
  cleanup:
-    xmlXPathFreeContext(ctxt);
     return def;
 }
 

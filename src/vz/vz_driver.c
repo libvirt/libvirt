@@ -2790,7 +2790,7 @@ static vzMigrationCookie *
 vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
 {
     xmlDocPtr doc = NULL;
-    xmlXPathContextPtr ctx = NULL;
+    g_autoptr(xmlXPathContext) ctx = NULL;
     vzMigrationCookie *mig = NULL;
 
     mig = g_new0(vzMigrationCookie, 1);
@@ -2838,7 +2838,6 @@ vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
     }
 
  cleanup:
-    xmlXPathFreeContext(ctx);
     xmlFreeDoc(doc);
     return mig;
 

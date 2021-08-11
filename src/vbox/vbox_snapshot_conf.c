@@ -578,7 +578,7 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
     xmlDocPtr xml = NULL;
     xmlNodePtr machineNode = NULL;
     xmlNodePtr cur = NULL;
-    xmlXPathContextPtr xPathContext = NULL;
+    g_autoptr(xmlXPathContext) xPathContext = NULL;
     char *currentStateModifiedString = NULL;
 
     char **searchResultTab = NULL;
@@ -716,7 +716,6 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
     ret = 0;
 
  cleanup:
-    xmlXPathFreeContext(xPathContext);
     xmlFreeDoc(xml);
 
     VIR_FREE(currentStateModifiedString);
@@ -1221,7 +1220,7 @@ virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(const char *filePath,
     size_t i = 0;
     char **ret = NULL;
     xmlDocPtr xml = NULL;
-    xmlXPathContextPtr xPathContext = NULL;
+    g_autoptr(xmlXPathContext) xPathContext = NULL;
     xmlNodePtr *nodes = NULL;
     int nodeSize = 0;
     *rwDisksPath = NULL;
@@ -1260,7 +1259,6 @@ virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(const char *filePath,
 
  cleanup:
     xmlFreeDoc(xml);
-    xmlXPathFreeContext(xPathContext);
     if (result < 0) {
         g_strfreev(ret);
         nodeSize = -1;
@@ -1284,7 +1282,7 @@ virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(const char *filePath,
     size_t i = 0;
     char **ret = NULL;
     xmlDocPtr xml = NULL;
-    xmlXPathContextPtr xPathContext = NULL;
+    g_autoptr(xmlXPathContext) xPathContext = NULL;
     xmlNodePtr *nodes = NULL;
     int nodeSize = 0;
     if (filePath == NULL) {
@@ -1322,7 +1320,6 @@ virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(const char *filePath,
 
  cleanup:
     xmlFreeDoc(xml);
-    xmlXPathFreeContext(xPathContext);
     if (result < 0) {
         g_strfreev(ret);
         nodeSize = -1;

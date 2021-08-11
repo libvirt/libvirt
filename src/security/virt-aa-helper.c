@@ -569,7 +569,7 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
 {
     int rc = -1;
     xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     char *arch;
 
     if (!(xml = virXMLParseStringCtxt(xmlStr, _("(domain_definition)"),
@@ -608,7 +608,6 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
 
  cleanup:
     xmlFreeDoc(xml);
-    xmlXPathFreeContext(ctxt);
 
     return rc;
 }
