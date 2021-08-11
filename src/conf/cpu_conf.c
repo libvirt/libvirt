@@ -1126,8 +1126,6 @@ virCPUDefListParse(const char **xmlCPUs,
                    unsigned int ncpus,
                    virCPUType cpuType)
 {
-    xmlDocPtr doc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
     virCPUDef **cpus = NULL;
     size_t i;
 
@@ -1152,24 +1150,20 @@ virCPUDefListParse(const char **xmlCPUs,
     cpus = g_new0(virCPUDef *, ncpus + 1);
 
     for (i = 0; i < ncpus; i++) {
+        g_autoptr(xmlDoc) doc = NULL;
+        g_autoptr(xmlXPathContext) ctxt = NULL;
+
         if (!(doc = virXMLParseStringCtxt(xmlCPUs[i], _("(CPU_definition)"), &ctxt)))
             goto error;
 
         if (virCPUDefParseXML(ctxt, NULL, cpuType, &cpus[i], false) < 0)
             goto error;
-
-        xmlXPathFreeContext(ctxt);
-        xmlFreeDoc(doc);
-        ctxt = NULL;
-        doc = NULL;
     }
 
     return cpus;
 
  error:
     virCPUDefListFree(cpus);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(doc);
     return NULL;
 }
 
