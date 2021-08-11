@@ -1096,6 +1096,8 @@ catchXMLError(void *ctx, const char *msg G_GNUC_UNUSED, ...)
  * @url: URL of XML document for string parser
  * @rootelement: Optional name of the expected root element
  * @ctxt: optional pointer to populate with new context pointer
+ * @schemafile: unused
+ * @validate: unused
  *
  * Parse XML document provided either as a file or a string. The function
  * guarantees that the XML document contains a root element.
@@ -1111,7 +1113,9 @@ virXMLParseHelper(int domcode,
                   const char *xmlStr,
                   const char *url,
                   const char *rootelement,
-                  xmlXPathContextPtr *ctxt)
+                  xmlXPathContextPtr *ctxt,
+                  const char *schemafile G_GNUC_UNUSED,
+                  bool validate G_GNUC_UNUSED)
 {
     struct virParserData private;
     g_autoptr(xmlParserCtxt) pctxt = NULL;

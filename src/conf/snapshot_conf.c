@@ -462,7 +462,7 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     xmlDocPtr xml;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)")))) {
+    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)"), NULL, false))) {
         xmlKeepBlanksDefault(keepBlanksDefault);
         ret = virDomainSnapshotDefParseNode(xml, xmlDocGetRootElement(xml),
                                             xmlopt, parseOpaque,

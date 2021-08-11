@@ -170,7 +170,9 @@ virXMLParseHelper(int domcode,
                   const char *xmlStr,
                   const char *url,
                   const char *rootelement,
-                  xmlXPathContextPtr *ctxt);
+                  xmlXPathContextPtr *ctxt,
+                  const char *schemafile,
+                  bool validate);
 
 const char *
 virXMLPickShellSafeComment(const char *str1,
@@ -185,8 +187,8 @@ virXMLPickShellSafeComment(const char *str1,
  *
  * Return the parsed document object, or NULL on failure.
  */
-#define virXMLParse(filename, xmlStr, url) \
-    virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, NULL, NULL)
+#define virXMLParse(filename, xmlStr, url, schemafile, validate) \
+    virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, NULL, NULL, schemafile, validate)
 
 /**
  * virXMLParseString:
@@ -198,7 +200,7 @@ virXMLPickShellSafeComment(const char *str1,
  * Return the parsed document object, or NULL on failure.
  */
 #define virXMLParseString(xmlStr, url) \
-    virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, NULL, NULL)
+    virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, NULL, NULL, NULL, false)
 
 /**
  * virXMLParseFile:
@@ -209,7 +211,7 @@ virXMLPickShellSafeComment(const char *str1,
  * Return the parsed document object, or NULL on failure.
  */
 #define virXMLParseFile(filename) \
-    virXMLParseHelper(VIR_FROM_THIS, filename, NULL, NULL, NULL, NULL)
+    virXMLParseHelper(VIR_FROM_THIS, filename, NULL, NULL, NULL, NULL, NULL, false)
 
 /**
  * virXMLParseCtxt:
@@ -224,7 +226,7 @@ virXMLPickShellSafeComment(const char *str1,
  * Return the parsed document object, or NULL on failure.
  */
 #define virXMLParseCtxt(filename, xmlStr, url, pctxt) \
-    virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, NULL, pctxt)
+    virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, NULL, pctxt, NULL, false)
 
 /**
  * virXMLParseStringCtxt:
@@ -238,11 +240,11 @@ virXMLPickShellSafeComment(const char *str1,
  * Return the parsed document object, or NULL on failure.
  */
 #define virXMLParseStringCtxt(xmlStr, url, pctxt) \
-    virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, NULL, pctxt)
+    virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, NULL, pctxt, NULL, false)
 
 /* virXMLParseStringCtxtRoot is same as above, except it also validates root node name */
 #define virXMLParseStringCtxtRoot(xmlStr, url, rootnode, pctxt) \
-    virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, rootnode, pctxt)
+    virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, rootnode, pctxt, NULL, false)
 
 /**
  * virXMLParseFileCtxt:
@@ -255,7 +257,7 @@ virXMLPickShellSafeComment(const char *str1,
  * Return the parsed document object, or NULL on failure.
  */
 #define virXMLParseFileCtxt(filename, pctxt) \
-    virXMLParseHelper(VIR_FROM_THIS, filename, NULL, NULL, NULL, pctxt)
+    virXMLParseHelper(VIR_FROM_THIS, filename, NULL, NULL, NULL, pctxt, NULL, false)
 
 int
 virXMLSaveFile(const char *path,

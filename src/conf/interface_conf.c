@@ -824,7 +824,7 @@ virInterfaceDefParse(const char *xmlStr,
     xmlDocPtr xml;
     virInterfaceDef *def = NULL;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(interface_definition)")))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(interface_definition)"), NULL, false))) {
         def = virInterfaceDefParseNode(xml, xmlDocGetRootElement(xml));
         xmlFreeDoc(xml);
     }

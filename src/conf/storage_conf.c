@@ -1009,7 +1009,7 @@ virStoragePoolDefParse(const char *xmlStr,
     virStoragePoolDef *ret = NULL;
     xmlDocPtr xml;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(storage_pool_definition)")))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(storage_pool_definition)"), NULL, false))) {
         ret = virStoragePoolDefParseNode(xml, xmlDocGetRootElement(xml));
         xmlFreeDoc(xml);
     }
@@ -1478,7 +1478,7 @@ virStorageVolDefParse(virStoragePoolDef *pool,
     virStorageVolDef *ret = NULL;
     xmlDocPtr xml;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(storage_volume_definition)")))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(storage_volume_definition)"), NULL, false))) {
         ret = virStorageVolDefParseNode(pool, xml, xmlDocGetRootElement(xml), flags);
         xmlFreeDoc(xml);
     }

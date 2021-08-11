@@ -2177,7 +2177,7 @@ virNodeDeviceDefParse(const char *str,
     xmlDocPtr xml;
     g_autoptr(virNodeDeviceDef) def = NULL;
 
-    if ((xml = virXMLParse(filename, str, _("(node_device_definition)")))) {
+    if ((xml = virXMLParse(filename, str, _("(node_device_definition)"), NULL, false))) {
         def = virNodeDeviceDefParseNode(xml, xmlDocGetRootElement(xml),
                                         create, virt_type);
         xmlFreeDoc(xml);

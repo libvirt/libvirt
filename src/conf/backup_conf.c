@@ -281,7 +281,7 @@ virDomainBackupDefParseString(const char *xmlStr,
     g_autoptr(xmlDoc) xml = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_backup)")))) {
+    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_backup)"), NULL, false))) {
         xmlKeepBlanksDefault(keepBlanksDefault);
         ret = virDomainBackupDefParseNode(xml, xmlDocGetRootElement(xml),
                                           xmlopt, flags);

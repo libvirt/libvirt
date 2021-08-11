@@ -2744,7 +2744,7 @@ virNWFilterDefParse(const char *xmlStr,
     virNWFilterDef *def = NULL;
     xmlDocPtr xml;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(nwfilter_definition)")))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(nwfilter_definition)"), NULL, false))) {
         def = virNWFilterDefParseNode(xml, xmlDocGetRootElement(xml));
         xmlFreeDoc(xml);
     }

@@ -297,7 +297,7 @@ virNetworkPortDefParse(const char *xmlStr,
     virNetworkPortDef *def = NULL;
     xmlDocPtr xml;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(networkport_definition)")))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(networkport_definition)"), NULL, false))) {
         def = virNetworkPortDefParseNode(xml, xmlDocGetRootElement(xml));
         xmlFreeDoc(xml);
     }

@@ -20400,7 +20400,7 @@ virDomainDefParse(const char *xmlStr,
     virDomainDef *def = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
     xmlNodePtr root;
-    if (!(xml = virXMLParse(filename, xmlStr, _("(domain_definition)"))))
+    if (!(xml = virXMLParse(filename, xmlStr, _("(domain_definition)"), NULL, false)))
         goto cleanup;
 
     root = xmlDocGetRootElement(xml);
