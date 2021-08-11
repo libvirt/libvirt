@@ -3066,7 +3066,7 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     size_t i;
     xmlDocPtr xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    xmlXPathObjectPtr obj = NULL;
+    g_autoptr(xmlXPathObject) obj = NULL;
     xmlNodePtr cur = NULL;
     char *xml_buf = NULL;
 
@@ -3178,7 +3178,6 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    xmlXPathFreeObject(obj);
     xmlFreeDoc(xml);
     VIR_FREE(xml_buf);
 
@@ -12070,7 +12069,7 @@ virshDomainDetachInterface(char *doc,
                            const char *mac)
 {
     xmlDocPtr xml = NULL;
-    xmlXPathObjectPtr obj = NULL;
+    g_autoptr(xmlXPathObject) obj = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr cur = NULL, matchNode = NULL;
     char *detach_xml = NULL;
@@ -12145,7 +12144,6 @@ virshDomainDetachInterface(char *doc,
  cleanup:
     VIR_FREE(detach_xml);
     xmlFreeDoc(xml);
-    xmlXPathFreeObject(obj);
     return ret == 0;
 }
 
@@ -12250,7 +12248,7 @@ virshFindDisk(const char *doc,
               int type)
 {
     xmlDocPtr xml = NULL;
-    xmlXPathObjectPtr obj = NULL;
+    g_autoptr(xmlXPathObject) obj = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr cur = NULL;
     xmlNodePtr ret = NULL;
@@ -12325,7 +12323,6 @@ virshFindDisk(const char *doc,
     vshError(NULL, _("No disk found whose source path or target is %s"), path);
 
  cleanup:
-    xmlXPathFreeObject(obj);
     xmlFreeDoc(xml);
     return ret;
 }
