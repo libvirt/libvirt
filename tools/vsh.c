@@ -3150,20 +3150,15 @@ const vshCmdInfo info_echo[] = {
 bool
 cmdEcho(vshControl *ctl, const vshCmd *cmd)
 {
-    bool shell = false;
-    bool xml = false;
-    bool err = false;
+    bool shell = vshCommandOptBool(cmd, "shell");
+    bool xml = vshCommandOptBool(cmd, "xml");
+    bool err = vshCommandOptBool(cmd, "err");
     int count = 0;
     const vshCmdOpt *opt = NULL;
     g_autofree char *arg = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (vshCommandOptBool(cmd, "shell"))
-        shell = true;
-    if (vshCommandOptBool(cmd, "xml"))
-        xml = true;
-    if (vshCommandOptBool(cmd, "err"))
-        err = true;
+    VSH_EXCLUSIVE_OPTIONS_VAR(shell, xml);
 
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
         g_autofree char *str = NULL;
