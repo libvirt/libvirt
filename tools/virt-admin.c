@@ -332,7 +332,7 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     char *uri = NULL;
     virAdmServerPtr *srvs = NULL;
     vshAdmControl *priv = ctl->privData;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     /* Obtain a list of available servers on the daemon */
     if ((nsrvs = virAdmConnectListServers(priv->conn, &srvs, 0)) < 0) {
@@ -361,7 +361,6 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
     ret = true;
  cleanup:
-    vshTableFree(table);
     if (srvs) {
         for (i = 0; i < nsrvs; i++)
             virAdmServerFree(srvs[i]);
@@ -580,7 +579,7 @@ cmdSrvClientsList(vshControl *ctl, const vshCmd *cmd)
     virAdmServerPtr srv = NULL;
     virAdmClientPtr *clts = NULL;
     vshAdmControl *priv = ctl->privData;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
         return false;
@@ -621,7 +620,6 @@ cmdSrvClientsList(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    vshTableFree(table);
     if (clts) {
         for (i = 0; i < nclts; i++)
             virAdmClientFree(clts[i]);

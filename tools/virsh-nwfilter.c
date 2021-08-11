@@ -354,7 +354,7 @@ cmdNWFilterList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     char uuid[VIR_UUID_STRING_BUFLEN];
     bool ret = false;
     struct virshNWFilterList *list = NULL;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     if (!(list = virshNWFilterListCollect(ctl, 0)))
         return false;
@@ -378,7 +378,6 @@ cmdNWFilterList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
     ret = true;
  cleanup:
-    vshTableFree(table);
     virshNWFilterListFree(list);
     return ret;
 }
@@ -717,7 +716,7 @@ cmdNWFilterBindingList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     size_t i;
     bool ret = false;
     struct virshNWFilterBindingList *list = NULL;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     if (!(list = virshNWFilterBindingListCollect(ctl, 0)))
         return false;
@@ -740,7 +739,6 @@ cmdNWFilterBindingList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
     ret = true;
  cleanup:
-    vshTableFree(table);
     virshNWFilterBindingListFree(list);
     return ret;
 }

@@ -348,7 +348,7 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     struct virshInterfaceList *list = NULL;
     size_t i;
     bool ret = false;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(all, inactive);
 
@@ -381,7 +381,6 @@ cmdInterfaceList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
     ret = true;
  cleanup:
-    vshTableFree(table);
     virshInterfaceListFree(list);
     return ret;
 }

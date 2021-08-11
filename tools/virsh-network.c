@@ -711,7 +711,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     bool optUUID = vshCommandOptBool(cmd, "uuid");
     char uuid[VIR_UUID_STRING_BUFLEN];
     unsigned int flags = VIR_CONNECT_LIST_NETWORKS_ACTIVE;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     if (vshCommandOptBool(cmd, "inactive"))
         flags = VIR_CONNECT_LIST_NETWORKS_INACTIVE;
@@ -782,7 +782,6 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
     ret = true;
  cleanup:
-    vshTableFree(table);
     virshNetworkListFree(list);
     return ret;
 }
@@ -1407,7 +1406,7 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
     size_t i;
     unsigned int flags = 0;
     virNetworkPtr network = NULL;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, "mac", &mac) < 0)
         return false;
@@ -1461,7 +1460,6 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    vshTableFree(table);
     if (leases) {
         for (i = 0; i < nleases; i++)
             virNetworkDHCPLeaseFree(leases[i]);
@@ -1754,7 +1752,7 @@ cmdNetworkPortList(vshControl *ctl, const vshCmd *cmd)
     bool optUUID = vshCommandOptBool(cmd, "uuid");
     char uuid[VIR_UUID_STRING_BUFLEN];
     unsigned int flags = 0;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     if (optTable + optUUID > 1) {
         vshError(ctl, "%s",
@@ -1795,7 +1793,6 @@ cmdNetworkPortList(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    vshTableFree(table);
     virshNetworkPortListFree(list);
     return ret;
 }

@@ -6983,7 +6983,7 @@ virshVcpuPinQuery(vshControl *ctl,
     size_t i;
     int ncpus;
     bool ret = false;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     if ((ncpus = virshCPUCountCollect(ctl, dom, countFlags, true)) < 0) {
         if (ncpus == -1) {
@@ -7038,7 +7038,6 @@ virshVcpuPinQuery(vshControl *ctl,
 
     ret = true;
  cleanup:
-    vshTableFree(table);
     VIR_FREE(cpumap);
     return ret;
 }
@@ -7604,7 +7603,7 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
     virDomainIOThreadInfoPtr *info = NULL;
     size_t i;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
     bool ret = false;
     int rc;
 
@@ -7655,7 +7654,6 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
     for (i = 0; i < niothreads; i++)
         virDomainIOThreadInfoFree(info[i]);
     VIR_FREE(info);
-    vshTableFree(table);
     return ret;
 }
 
@@ -13907,7 +13905,7 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
     int rc = -1;
     size_t i, j;
     virDomainFSInfoPtr *info = NULL;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
     size_t ninfos = 0;
     bool ret = false;
 
@@ -13962,7 +13960,6 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
             virDomainFSInfoFree(info[i]);
         VIR_FREE(info);
     }
-    vshTableFree(table);
     return ret;
 }
 

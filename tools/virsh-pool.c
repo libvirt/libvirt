@@ -1135,7 +1135,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     bool inactive, all;
     bool uuid = false;
     bool name = false;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     inactive = vshCommandOptBool(cmd, "inactive");
     all = vshCommandOptBool(cmd, "all");
@@ -1390,7 +1390,6 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     ret = true;
 
  cleanup:
-    vshTableFree(table);
     if (list && list->npools) {
         for (i = 0; i < list->npools; i++) {
             VIR_FREE(poolInfoTexts[i].state);

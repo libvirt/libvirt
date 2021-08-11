@@ -551,7 +551,7 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     struct virshSecretList *list = NULL;
     bool ret = false;
     unsigned int flags = 0;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     if (vshCommandOptBool(cmd, "ephemeral"))
         flags |= VIR_CONNECT_LIST_SECRETS_EPHEMERAL;
@@ -605,7 +605,6 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     ret = true;
 
  cleanup:
-    vshTableFree(table);
     virshSecretListFree(list);
     return ret;
 }

@@ -590,7 +590,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     char *device = NULL;
     char *target = NULL;
     char *source = NULL;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     if (vshCommandOptBool(cmd, "inactive"))
         flags |= VIR_DOMAIN_XML_INACTIVE;
@@ -674,7 +674,6 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    vshTableFree(table);
     VIR_FREE(source);
     VIR_FREE(target);
     VIR_FREE(device);
@@ -711,7 +710,7 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
     int ninterfaces;
     xmlNodePtr *interfaces = NULL;
     size_t i;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     if (vshCommandOptBool(cmd, "inactive"))
         flags |= VIR_DOMAIN_XML_INACTIVE;
@@ -763,7 +762,6 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    vshTableFree(table);
     VIR_FREE(interfaces);
     return ret;
 }
@@ -1938,7 +1936,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     char id_buf[VIR_INT64_STR_BUFLEN];
     unsigned int id;
     unsigned int flags = VIR_CONNECT_LIST_DOMAINS_ACTIVE;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     /* construct filter flags */
     if (vshCommandOptBool(cmd, "inactive") ||
@@ -2060,7 +2058,6 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    vshTableFree(table);
     virshDomainListFree(list);
     return ret;
 }

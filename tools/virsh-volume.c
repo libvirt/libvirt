@@ -1415,7 +1415,7 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     };
     struct volInfoText *volInfoTexts = NULL;
     struct virshStorageVolList *list = NULL;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     /* Look up the pool information given to us by the user */
     if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
@@ -1513,7 +1513,6 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     ret = true;
 
  cleanup:
-    vshTableFree(table);
 
     /* Safely free the memory allocated in this function */
     if (list && list->nvols) {
