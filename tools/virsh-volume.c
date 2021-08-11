@@ -526,7 +526,7 @@ static xmlChar *
 virshMakeCloneXML(const char *origxml, const char *newname)
 {
     xmlDocPtr doc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlXPathObjectPtr obj = NULL;
     xmlChar *newxml = NULL;
     int size;
@@ -545,7 +545,6 @@ virshMakeCloneXML(const char *origxml, const char *newname)
 
  cleanup:
     xmlXPathFreeObject(obj);
-    xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
     return newxml;
 }
