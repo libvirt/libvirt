@@ -281,7 +281,8 @@ virDomainBackupDefParseString(const char *xmlStr,
     g_autoptr(xmlDoc) xml = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_backup)"), NULL, false))) {
+    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_backup)"), "domainbackup.rng",
+                           !(flags & VIR_DOMAIN_BACKUP_PARSE_INTERNAL)))) {
         xmlKeepBlanksDefault(keepBlanksDefault);
         ret = virDomainBackupDefParseNode(xml, xmlDocGetRootElement(xml),
                                           xmlopt, flags);
@@ -299,21 +300,10 @@ virDomainBackupDefParseNode(xmlDocPtr xml,
                             unsigned int flags)
 {
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    g_autofree char *schema = NULL;
 
     if (!virXMLNodeNameEqual(root, "domainbackup")) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("domainbackup"));
         return NULL;
-    }
-
-    if (!(flags & VIR_DOMAIN_BACKUP_PARSE_INTERNAL)) {
-        if (!(schema = virFileFindResource("domainbackup.rng",
-                                           abs_top_srcdir "/docs/schemas",
-                                           PKGDATADIR "/schemas")))
-            return NULL;
-
-        if (virXMLValidateAgainstSchema(schema, xml) < 0)
-            return NULL;
     }
 
     if (!(ctxt = virXMLXPathContextNew(xml)))

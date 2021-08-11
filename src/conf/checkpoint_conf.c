@@ -193,21 +193,11 @@ virDomainCheckpointDefParseNode(xmlDocPtr xml,
                                 unsigned int flags)
 {
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    g_autofree char *schema = NULL;
 
     if (!virXMLNodeNameEqual(root, "domaincheckpoint")) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("domaincheckpoint"));
         return NULL;
     }
-
-    /* This is a new enough API to make schema validation unconditional */
-    schema = virFileFindResource("domaincheckpoint.rng",
-                                 abs_top_srcdir "/docs/schemas",
-                                 PKGDATADIR "/schemas");
-    if (!schema)
-        return NULL;
-    if (virXMLValidateAgainstSchema(schema, xml) < 0)
-        return NULL;
 
     if (!(ctxt = virXMLXPathContextNew(xml)))
         return NULL;
@@ -226,7 +216,8 @@ virDomainCheckpointDefParseString(const char *xmlStr,
     xmlDocPtr xml;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_checkpoint)"), NULL, false))) {
+    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_checkpoint)"),
+                           "domaincheckpoint.rng", true))) {
         xmlKeepBlanksDefault(keepBlanksDefault);
         ret = virDomainCheckpointDefParseNode(xml, xmlDocGetRootElement(xml),
                                               xmlopt, parseOpaque, flags);

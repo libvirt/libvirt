@@ -432,18 +432,6 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
         return NULL;
     }
 
-    if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE) {
-        g_autofree char *schema = NULL;
-
-        schema = virFileFindResource("domainsnapshot.rng",
-                                     abs_top_srcdir "/docs/schemas",
-                                     PKGDATADIR "/schemas");
-        if (!schema)
-            return NULL;
-        if (virXMLValidateAgainstSchema(schema, xml) < 0)
-            return NULL;
-    }
-
     if (!(ctxt = virXMLXPathContextNew(xml)))
         return NULL;
 
@@ -462,7 +450,8 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     xmlDocPtr xml;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)"), NULL, false))) {
+    if ((xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)"), "domainsnapshot.rng",
+                           flags & VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE))) {
         xmlKeepBlanksDefault(keepBlanksDefault);
         ret = virDomainSnapshotDefParseNode(xml, xmlDocGetRootElement(xml),
                                             xmlopt, parseOpaque,
