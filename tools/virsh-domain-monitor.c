@@ -452,22 +452,16 @@ static bool
 cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainBlockInfo info;
-    virDomainPtr dom;
-    bool ret = false;
+    g_autoptr(virshDomain) dom = NULL;
     bool human = false;
     bool all = false;
     const char *device = NULL;
-    xmlDocPtr xmldoc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    g_autoptr(xmlDoc) xmldoc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     int ndisks;
     size_t i;
-    xmlNodePtr *disks = NULL;
-    char *target = NULL;
-    char *protocol = NULL;
-    char *cap = NULL;
-    char *alloc = NULL;
-    char *phy = NULL;
-    vshTable *table = NULL;
+    g_autofree xmlNodePtr *disks = NULL;
+    g_autoptr(vshTable) table = NULL;
 
     VSH_EXCLUSIVE_OPTIONS("all", "device");
 
@@ -477,7 +471,7 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
     all = vshCommandOptBool(cmd, "all");
     if (!all && vshCommandOptStringQuiet(ctl, cmd, "device", &device) <= 0) {
         vshError(ctl, "command 'domblkinfo' requires <device> option");
-        goto cleanup;
+        return false;
     }
 
     human = vshCommandOptBool(cmd, "human");
@@ -487,18 +481,24 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
         int rc;
 
         if (virshDomainGetXML(ctl, cmd, 0, &xmldoc, &ctxt) < 0)
-            goto cleanup;
+            return false;
 
         ndisks = virXPathNodeSet("./devices/disk", ctxt, &disks);
         if (ndisks < 0)
-            goto cleanup;
+            return false;
 
         /* title */
         table = vshTableNew(_("Target"), _("Capacity"), _("Allocation"), _("Physical"), NULL);
         if (!table)
-            goto cleanup;
+            return false;
 
         for (i = 0; i < ndisks; i++) {
+            g_autofree char *target = NULL;
+            g_autofree char *protocol = NULL;
+            g_autofree char *cap = NULL;
+            g_autofree char *alloc = NULL;
+            g_autofree char *phy = NULL;
+
             ctxt->node = disks[i];
             protocol = virXPathString("string(./source/@protocol)", ctxt);
             target = virXPathString("string(./target/@dev)", ctxt);
@@ -517,7 +517,7 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
                         memset(&info, 0, sizeof(info));
                         vshResetLibvirtError();
                     } else {
-                        goto cleanup;
+                        return false;
                     }
                 }
             } else {
@@ -527,41 +527,29 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
             }
 
             if (!cmdDomblkinfoGet(&info, &cap, &alloc, &phy, human))
-                goto cleanup;
+                return false;
             if (vshTableRowAppend(table, target, cap, alloc, phy, NULL) < 0)
-                goto cleanup;
-
-            VIR_FREE(target);
-            VIR_FREE(protocol);
+                return false;
         }
 
         vshTablePrintToStdout(table, ctl);
 
     } else {
+        g_autofree char *cap = NULL;
+        g_autofree char *alloc = NULL;
+        g_autofree char *phy = NULL;
+
         if (virDomainGetBlockInfo(dom, device, &info, 0) < 0)
-            goto cleanup;
+            return false;
 
         if (!cmdDomblkinfoGet(&info, &cap, &alloc, &phy, human))
-            goto cleanup;
+            return false;
         vshPrint(ctl, "%-15s %s\n", _("Capacity:"), cap);
         vshPrint(ctl, "%-15s %s\n", _("Allocation:"), alloc);
         vshPrint(ctl, "%-15s %s\n", _("Physical:"), phy);
     }
 
-    ret = true;
-
- cleanup:
-    vshTableFree(table);
-    VIR_FREE(cap);
-    VIR_FREE(alloc);
-    VIR_FREE(phy);
-    virshDomainFree(dom);
-    VIR_FREE(target);
-    VIR_FREE(protocol);
-    VIR_FREE(disks);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xmldoc);
-    return ret;
+    return true;
 }
 
 /*
