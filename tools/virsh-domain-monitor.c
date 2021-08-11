@@ -1276,7 +1276,8 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     int autostart;
     unsigned int id;
-    char *str, uuid[VIR_UUID_STRING_BUFLEN];
+    char uuid[VIR_UUID_STRING_BUFLEN];
+    g_autofree char *ostype = NULL;
     int has_managed_save = 0;
     virshControl *priv = ctl->privData;
     g_auto(GStrv) messages = NULL;
@@ -1294,10 +1295,8 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
     if (virDomainGetUUIDString(dom, &uuid[0]) == 0)
         vshPrint(ctl, "%-15s %s\n", _("UUID:"), uuid);
 
-    if ((str = virDomainGetOSType(dom))) {
-        vshPrint(ctl, "%-15s %s\n", _("OS Type:"), str);
-        VIR_FREE(str);
-    }
+    if ((ostype = virDomainGetOSType(dom)))
+        vshPrint(ctl, "%-15s %s\n", _("OS Type:"), ostype);
 
     if (virDomainGetInfo(dom, &info) == 0) {
         vshPrint(ctl, "%-15s %s\n", _("State:"),
