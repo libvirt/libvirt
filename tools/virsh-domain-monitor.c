@@ -296,7 +296,7 @@ static const vshCmdOptDef opts_dommemstat[] = {
 static bool
 cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name;
     virDomainMemoryStatStruct stats[VIR_DOMAIN_MEMORY_STAT_NR];
     unsigned int nr_stats;
@@ -381,7 +381,6 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -893,7 +892,7 @@ static const vshCmdOptDef opts_domcontrol[] = {
 static bool
 cmdDomControl(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = true;
     virDomainControlInfo info;
 
@@ -920,7 +919,6 @@ cmdDomControl(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -994,7 +992,7 @@ static const struct _domblkstat_sequence domblkstat_output[] = {
 static bool
 cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name = NULL, *device = NULL;
     virDomainBlockStatsStruct stats;
     virTypedParameterPtr params = NULL;
@@ -1106,7 +1104,6 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(params);
-    virshDomainFree(dom);
     return ret;
 }
 #undef DOMBLKSTAT_LEGACY_PRINT
@@ -1138,7 +1135,7 @@ static const vshCmdOptDef opts_domifstat[] = {
 static bool
 cmdDomIfstat(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name = NULL, *device = NULL;
     virDomainInterfaceStatsStruct stats;
     bool ret = false;
@@ -1181,7 +1178,6 @@ cmdDomIfstat(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -1206,7 +1202,7 @@ static const vshCmdOptDef opts_domblkerror[] = {
 static bool
 cmdDomBlkError(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     virDomainDiskErrorPtr disks = NULL;
     unsigned int ndisks = 0;
     size_t i;
@@ -1243,7 +1239,6 @@ cmdDomBlkError(vshControl *ctl, const vshCmd *cmd)
     for (i = 0; i < ndisks; i++)
         VIR_FREE(disks[i].disk);
     VIR_FREE(disks);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -1269,7 +1264,7 @@ static bool
 cmdDominfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainInfo info;
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     virSecurityModel secmodel;
     virSecurityLabelPtr seclabel;
     int persistent = 0;
@@ -1352,7 +1347,6 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
     memset(&secmodel, 0, sizeof(secmodel));
     if (virNodeGetSecurityModel(priv->conn, &secmodel) == -1) {
         if (last_error->code != VIR_ERR_NO_SUPPORT) {
-            virshDomainFree(dom);
             return false;
         } else {
             vshResetLibvirtError();
@@ -1367,7 +1361,6 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
             seclabel = g_new0(virSecurityLabel, 1);
 
             if (virDomainGetSecurityLabel(dom, seclabel) == -1) {
-                virshDomainFree(dom);
                 VIR_FREE(seclabel);
                 return false;
             } else {
@@ -1388,7 +1381,6 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -1417,7 +1409,7 @@ static const vshCmdOptDef opts_domstate[] = {
 static bool
 cmdDomstate(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = true;
     bool showReason = vshCommandOptBool(cmd, "reason");
     int state, reason;
@@ -1440,7 +1432,6 @@ cmdDomstate(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -1481,7 +1472,7 @@ static const vshCmdOptDef opts_domtime[] = {
 static bool
 cmdDomTime(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     bool now = vshCommandOptBool(cmd, "now");
     bool pretty = vshCommandOptBool(cmd, "pretty");
@@ -1540,7 +1531,6 @@ cmdDomTime(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -2373,7 +2363,7 @@ VIR_ENUM_IMPL(virshDomainInterfaceAddressesSource,
 static bool
 cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *ifacestr = NULL;
     virDomainInterfacePtr *ifaces = NULL;
     size_t i, j;
@@ -2466,7 +2456,6 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
     }
     VIR_FREE(ifaces);
 
-    virshDomainFree(dom);
     return ret;
 }
 

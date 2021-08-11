@@ -32,7 +32,7 @@ virshCheckpointNameCompleter(vshControl *ctl,
                              unsigned int flags)
 {
     virshControl *priv = ctl->privData;
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     virDomainCheckpointPtr *checkpoints = NULL;
     int ncheckpoints = 0;
     size_t i = 0;
@@ -60,7 +60,6 @@ virshCheckpointNameCompleter(vshControl *ctl,
         virshDomainCheckpointFree(checkpoints[i]);
     }
     g_free(checkpoints);
-    virshDomainFree(dom);
 
     return ret;
 
@@ -71,6 +70,5 @@ virshCheckpointNameCompleter(vshControl *ctl,
     for (i = 0; i < ncheckpoints; i++)
         g_free(ret[i]);
     g_free(ret);
-    virshDomainFree(dom);
     return NULL;
 }

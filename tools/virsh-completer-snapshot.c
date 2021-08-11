@@ -32,7 +32,7 @@ virshSnapshotNameCompleter(vshControl *ctl,
                            unsigned int flags)
 {
     virshControl *priv = ctl->privData;
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     virDomainSnapshotPtr *snapshots = NULL;
     int rc;
     int nsnapshots = 0;
@@ -63,7 +63,6 @@ virshSnapshotNameCompleter(vshControl *ctl,
     ret = g_steal_pointer(&tmp);
 
  cleanup:
-    virshDomainFree(dom);
     for (i = 0; i < nsnapshots; i++)
         virshDomainSnapshotFree(snapshots[i]);
     g_free(snapshots);

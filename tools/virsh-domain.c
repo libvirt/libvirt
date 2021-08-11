@@ -321,7 +321,7 @@ static const vshCmdOptDef opts_attach_device[] = {
 static bool
 cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *from = NULL;
     char *buffer;
     int rv;
@@ -373,7 +373,6 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -882,7 +881,7 @@ virshParseRateStr(vshControl *ctl,
 static bool
 cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *mac = NULL, *target = NULL, *script = NULL,
                *type = NULL, *source = NULL, *model = NULL,
                *inboundStr = NULL, *outboundStr = NULL, *alias = NULL;
@@ -1074,7 +1073,6 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(xml);
-    virshDomainFree(dom);
     return functionReturn;
 }
 
@@ -1103,7 +1101,7 @@ static const vshCmdOptDef opts_autostart[] = {
 static bool
 cmdAutostart(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name;
     int autostart;
 
@@ -1117,7 +1115,6 @@ cmdAutostart(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("Failed to mark domain '%s' as autostarted"), name);
         else
             vshError(ctl, _("Failed to unmark domain '%s' as autostarted"), name);
-        virshDomainFree(dom);
         return false;
     }
 
@@ -1126,7 +1123,6 @@ cmdAutostart(vshControl *ctl, const vshCmd *cmd)
     else
         vshPrintExtra(ctl, _("Domain '%s' unmarked as autostarted\n"), name);
 
-    virshDomainFree(dom);
     return true;
 }
 
@@ -1320,7 +1316,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
 static bool
 cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name, *disk;
     const char *group_name = NULL;
     unsigned long long value;
@@ -1441,7 +1437,6 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virshDomainFree(dom);
     return ret;
 
  save_error:
@@ -1506,7 +1501,7 @@ static const vshCmdOptDef opts_blkiotune[] = {
 static bool
 cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *device_weight = NULL;
     const char *device_riops = NULL;
     const char *device_wiops = NULL;
@@ -1638,7 +1633,6 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virshDomainFree(dom);
     return ret;
 
  save_error:
@@ -2019,7 +2013,7 @@ static const vshCmdOptDef opts_blockcommit[] = {
 static bool
 cmdBlockcommit(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     bool verbose = vshCommandOptBool(cmd, "verbose");
     bool pivot = vshCommandOptBool(cmd, "pivot");
@@ -2156,7 +2150,6 @@ cmdBlockcommit(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virshDomainFree(dom);
     virshBlockJobWaitFree(bjWait);
     return ret;
 }
@@ -2262,7 +2255,7 @@ static const vshCmdOptDef opts_blockcopy[] = {
 static bool
 cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *dest = NULL;
     const char *format = NULL;
     unsigned long bandwidth = 0;
@@ -2473,7 +2466,6 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     VIR_FREE(xmlstr);
     virTypedParamsFree(params, nparams);
-    virshDomainFree(dom);
     virshBlockJobWaitFree(bjWait);
     return ret;
 }
@@ -2683,7 +2675,7 @@ cmdBlockjob(vshControl *ctl, const vshCmd *cmd)
     bool async = vshCommandOptBool(cmd, "async");
     bool info = vshCommandOptBool(cmd, "info");
     bool bandwidth = vshCommandOptBool(cmd, "bandwidth");
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *path;
 
     VSH_EXCLUSIVE_OPTIONS("raw", "abort");
@@ -2715,7 +2707,6 @@ cmdBlockjob(vshControl *ctl, const vshCmd *cmd)
         ret = virshBlockJobInfo(ctl, dom, path, raw, bytes);
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -2778,7 +2769,7 @@ static const vshCmdOptDef opts_blockpull[] = {
 static bool
 cmdBlockpull(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     bool blocking = vshCommandOptBool(cmd, "wait");
     bool verbose = vshCommandOptBool(cmd, "verbose");
@@ -2861,7 +2852,6 @@ cmdBlockpull(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     virshBlockJobWaitFree(bjWait);
     return ret;
 }
@@ -2898,7 +2888,7 @@ static const vshCmdOptDef opts_blockresize[] = {
 static bool
 cmdBlockresize(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *path = NULL;
     unsigned long long size = 0;
     unsigned int flags = 0;
@@ -2926,7 +2916,6 @@ cmdBlockresize(vshControl *ctl, const vshCmd *cmd)
         ret = true;
     }
 
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -3000,7 +2989,7 @@ cmdRunConsole(vshControl *ctl, virDomainPtr dom,
 static bool
 cmdConsole(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     bool force = vshCommandOptBool(cmd, "force");
     bool safe = vshCommandOptBool(cmd, "safe");
@@ -3021,7 +3010,6 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
     ret = cmdRunConsole(ctl, dom, name, flags);
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 #endif /* WIN32 */
@@ -3064,7 +3052,7 @@ static const vshCmdOptDef opts_domif_setlink[] = {
 static bool
 cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *iface;
     const char *state;
     char *value;
@@ -3194,7 +3182,6 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     VIR_FREE(xml_buf);
-    virshDomainFree(dom);
 
     return ret;
 }
@@ -3236,7 +3223,7 @@ static const vshCmdOptDef opts_domiftune[] = {
 static bool
 cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name = NULL, *device = NULL,
                *inboundStr = NULL, *outboundStr = NULL;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
@@ -3386,7 +3373,6 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virshDomainFree(dom);
     return ret;
 
  save_error:
@@ -3417,7 +3403,7 @@ static const vshCmdOptDef opts_suspend[] = {
 static bool
 cmdSuspend(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name;
     bool ret = true;
 
@@ -3431,7 +3417,6 @@ cmdSuspend(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -3472,7 +3457,7 @@ static const vshCmdOptDef opts_dom_pm_suspend[] = {
 static bool
 cmdDomPMSuspend(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name;
     bool ret = false;
     const char *target = NULL;
@@ -3505,7 +3490,6 @@ cmdDomPMSuspend(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -3532,7 +3516,7 @@ static const vshCmdOptDef opts_dom_pm_wakeup[] = {
 static bool
 cmdDomPMWakeup(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name;
     bool ret = false;
     unsigned int flags = 0;
@@ -3552,7 +3536,6 @@ cmdDomPMWakeup(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -3625,7 +3608,7 @@ typedef struct {
 static bool
 cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *name = NULL;
     /* Flags to attempt.  */
@@ -3974,7 +3957,6 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(vol_nodes);
     xmlFreeDoc(doc);
     xmlXPathFreeContext(ctxt);
-    virshDomainFree(dom);
     return ret;
 
  error:
@@ -4077,7 +4059,7 @@ cmdStartGetFDs(vshControl *ctl,
 static bool
 cmdStart(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
 #ifndef WIN32
     bool console = vshCommandOptBool(cmd, "console");
@@ -4152,7 +4134,6 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     VIR_FREE(fds);
     return ret;
 }
@@ -4202,7 +4183,7 @@ doSave(void *opaque)
     virshCtrlData *data = opaque;
     vshControl *ctl = data->ctl;
     const vshCmd *cmd = data->cmd;
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name = NULL;
     const char *to = NULL;
     unsigned int flags = 0;
@@ -4253,7 +4234,6 @@ doSave(void *opaque)
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:
 #endif /* !WIN32 */
-    virshDomainFree(dom);
     VIR_FREE(xml);
     g_main_loop_quit(data->eventLoop);
 }
@@ -4464,7 +4444,7 @@ virshWatchJob(vshControl *ctl,
 static bool
 cmdSave(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     virThread workerThread;
     bool verbose = false;
     const char *to = NULL;
@@ -4502,7 +4482,6 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
         vshPrintExtra(ctl, _("\nDomain '%s' saved to %s\n"), name, to);
 
  cleanup:
-    virshDomainFree(dom);
     return !data.ret;
 }
 
@@ -4735,7 +4714,7 @@ doManagedsave(void *opaque)
     virshCtrlData *data = opaque;
     vshControl *ctl = data->ctl;
     const vshCmd *cmd = data->cmd;
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name;
     unsigned int flags = 0;
 #ifndef WIN32
@@ -4768,14 +4747,13 @@ doManagedsave(void *opaque)
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:
 #endif /* !WIN32 */
-    virshDomainFree(dom);
     g_main_loop_quit(data->eventLoop);
 }
 
 static bool
 cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool verbose = false;
     const char *name = NULL;
     virThread workerThread;
@@ -4809,7 +4787,6 @@ cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
         vshPrintExtra(ctl, _("\nDomain '%s' state saved by libvirt\n"), name);
 
  cleanup:
-    virshDomainFree(dom);
     return !data.ret;
 }
 
@@ -4834,7 +4811,7 @@ static const vshCmdOptDef opts_managedsaveremove[] = {
 static bool
 cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name;
     bool ret = false;
     int hassave;
@@ -4864,7 +4841,6 @@ cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -4898,7 +4874,7 @@ static bool
 cmdManagedSaveEdit(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     unsigned int getxml_flags = VIR_DOMAIN_XML_SECURE;
     unsigned int define_flags = 0;
 
@@ -4930,7 +4906,6 @@ cmdManagedSaveEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -4960,7 +4935,7 @@ static bool
 cmdManagedSaveDumpxml(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     unsigned int flags = 0;
     char *xml = NULL;
 
@@ -4977,7 +4952,6 @@ cmdManagedSaveDumpxml(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     VIR_FREE(xml);
     return ret;
 }
@@ -5017,7 +4991,7 @@ static bool
 cmdManagedSaveDefine(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *xmlfile = NULL;
     char *xml = NULL;
     unsigned int flags = 0;
@@ -5049,7 +5023,6 @@ cmdManagedSaveDefine(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     VIR_FREE(xml);
     return ret;
 }
@@ -5186,7 +5159,7 @@ static bool
 cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
 {
     char *schedulertype;
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     virTypedParameterPtr params = NULL;
     virTypedParameterPtr updates = NULL;
     int nparams = 0;
@@ -5283,7 +5256,6 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     virTypedParamsFree(params, nparams);
     virTypedParamsFree(updates, nupdates);
-    virshDomainFree(dom);
     return ret_val;
 }
 
@@ -5423,7 +5395,7 @@ doDump(void *opaque)
     virshCtrlData *data = opaque;
     vshControl *ctl = data->ctl;
     const vshCmd *cmd = data->cmd;
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name = NULL;
     const char *to = NULL;
     unsigned int flags = 0;
@@ -5489,14 +5461,13 @@ doDump(void *opaque)
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:
 #endif /* !WIN32 */
-    virshDomainFree(dom);
     g_main_loop_quit(data->eventLoop);
 }
 
 static bool
 cmdDump(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool verbose = false;
     const char *name = NULL;
     const char *to = NULL;
@@ -5534,7 +5505,6 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
         vshPrintExtra(ctl, _("\nDomain '%s' dumped to %s\n"), name, to);
 
  cleanup:
-    virshDomainFree(dom);
     return !data.ret;
 }
 
@@ -5595,7 +5565,7 @@ virshGenFileName(vshControl *ctl, virDomainPtr dom, const char *mime)
 static bool
 cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name = NULL;
     char *file = NULL;
     int fd = -1;
@@ -5669,7 +5639,6 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
         unlink(file);
     if (generated)
         VIR_FREE(file);
-    virshDomainFree(dom);
     if (st)
         virStreamFree(st);
     VIR_FORCE_CLOSE(fd);
@@ -5728,7 +5697,7 @@ VIR_ENUM_IMPL(virshDomainLifecycleAction,
 static bool
 cmdSetLifecycleAction(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = true;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
@@ -5773,7 +5742,6 @@ cmdSetLifecycleAction(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -5812,7 +5780,7 @@ static const vshCmdOptDef opts_set_user_password[] = {
 static bool
 cmdSetUserPassword(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *name;
     const char *password = NULL;
     const char *user = NULL;
@@ -5838,7 +5806,6 @@ cmdSetUserPassword(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 /*
@@ -5862,7 +5829,7 @@ static const vshCmdOptDef opts_resume[] = {
 static bool
 cmdResume(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = true;
     const char *name;
 
@@ -5876,7 +5843,6 @@ cmdResume(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -5906,7 +5872,7 @@ static const vshCmdOptDef opts_shutdown[] = {
 static bool
 cmdShutdown(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *name;
     const char *mode = NULL;
@@ -5961,7 +5927,6 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virshDomainFree(dom);
     g_strfreev(modes);
     return ret;
 }
@@ -5992,7 +5957,7 @@ static const vshCmdOptDef opts_reboot[] = {
 static bool
 cmdReboot(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *name;
     const char *mode = NULL;
@@ -6042,7 +6007,6 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virshDomainFree(dom);
     g_strfreev(modes);
     return ret;
 }
@@ -6068,7 +6032,7 @@ static const vshCmdOptDef opts_reset[] = {
 static bool
 cmdReset(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = true;
     const char *name;
 
@@ -6082,7 +6046,6 @@ cmdReset(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -6199,7 +6162,7 @@ static bool
 cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainJobInfo info;
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *unit;
     double val;
@@ -6499,7 +6462,6 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     virTypedParamsFree(params, nparams);
     return ret;
 
@@ -6529,7 +6491,7 @@ static const vshCmdOptDef opts_domjobabort[] = {
 static bool
 cmdDomjobabort(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = true;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
@@ -6538,7 +6500,6 @@ cmdDomjobabort(vshControl *ctl, const vshCmd *cmd)
     if (virDomainAbortJob(dom) < 0)
         ret = false;
 
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -6662,7 +6623,7 @@ virshCPUCountCollect(vshControl *ctl,
 static bool
 cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     bool maximum = vshCommandOptBool(cmd, "maximum");
     bool active = vshCommandOptBool(cmd, "active");
@@ -6735,7 +6696,6 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -7130,7 +7090,7 @@ virshParseCPUList(vshControl *ctl, int *cpumaplen,
 static bool
 cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     unsigned int vcpu = 0;
     const char *cpulist = NULL;
     bool ret = false;
@@ -7195,7 +7155,6 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(cpumap);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -7229,7 +7188,7 @@ static const vshCmdOptDef opts_emulatorpin[] = {
 static bool
 cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *cpulist = NULL;
     bool ret = false;
     unsigned char *cpumap = NULL;
@@ -7257,13 +7216,11 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "cpulist", &cpulist) < 0) {
-        virshDomainFree(dom);
         return false;
     }
     query = !cpulist;
 
     if ((maxcpu = virshNodeGetCPUCount(priv->conn)) < 0) {
-        virshDomainFree(dom);
         return false;
     }
 
@@ -7300,7 +7257,6 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
     ret = true;
  cleanup:
     VIR_FREE(cpumap);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -7345,7 +7301,7 @@ static const vshCmdOptDef opts_setvcpus[] = {
 static bool
 cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     unsigned int count = 0;
     bool ret = false;
     bool maximum = vshCommandOptBool(cmd, "maximum");
@@ -7396,7 +7352,6 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -7436,7 +7391,7 @@ static const vshCmdOptDef opts_guestvcpus[] = {
 static bool
 cmdGuestvcpus(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool enable = vshCommandOptBool(cmd, "enable");
     bool disable = vshCommandOptBool(cmd, "disable");
     virTypedParameterPtr params = NULL;
@@ -7483,7 +7438,6 @@ cmdGuestvcpus(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -7526,7 +7480,7 @@ static const vshCmdOptDef opts_setvcpu[] = {
 static bool
 cmdSetvcpu(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool enable = vshCommandOptBool(cmd, "enable");
     bool disable = vshCommandOptBool(cmd, "disable");
     bool config = vshCommandOptBool(cmd, "config");
@@ -7566,7 +7520,6 @@ cmdSetvcpu(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -7606,7 +7559,7 @@ cmdDomblkthreshold(vshControl *ctl, const vshCmd *cmd)
 {
     unsigned long long threshold;
     const char *dev = NULL;
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
 
     if (vshCommandOptStringReq(ctl, cmd, "dev", &dev))
@@ -7625,7 +7578,6 @@ cmdDomblkthreshold(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -7653,7 +7605,7 @@ static const vshCmdOptDef opts_iothreadinfo[] = {
 static bool
 cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
@@ -7713,7 +7665,6 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
         virDomainIOThreadInfoFree(info[i]);
     VIR_FREE(info);
     vshTableFree(table);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -7753,7 +7704,7 @@ static const vshCmdOptDef opts_iothreadpin[] = {
 static bool
 cmdIOThreadPin(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *cpulist = NULL;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
@@ -7797,7 +7748,6 @@ cmdIOThreadPin(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(cpumap);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -7830,7 +7780,7 @@ static const vshCmdOptDef opts_iothreadadd[] = {
 static bool
 cmdIOThreadAdd(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     int iothread_id = 0;
     bool ret = false;
     bool config = vshCommandOptBool(cmd, "config");
@@ -7862,7 +7812,6 @@ cmdIOThreadAdd(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -7908,7 +7857,7 @@ static const vshCmdOptDef opts_iothreadset[] = {
 static bool
 cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     int id = 0;
     bool ret = false;
     bool live = vshCommandOptBool(cmd, "live");
@@ -7962,7 +7911,6 @@ cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virshDomainFree(dom);
     return ret;
 
  save_error:
@@ -8001,7 +7949,7 @@ static const vshCmdOptDef opts_iothreaddel[] = {
 static bool
 cmdIOThreadDel(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     int iothread_id = 0;
     bool ret = false;
     bool config = vshCommandOptBool(cmd, "config");
@@ -8033,7 +7981,6 @@ cmdIOThreadDel(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -8090,7 +8037,7 @@ vshCPUStatsPrintField(vshControl *ctl,
 static bool
 cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     virTypedParameterPtr params = NULL;
     int max_id, cpu = 0, show_count = -1, nparams = 0, stats_per_cpu;
     size_t i, j;
@@ -8211,7 +8158,6 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virshDomainFree(dom);
     return ret;
 
  failed_stats:
@@ -8263,7 +8209,7 @@ static const vshCmdOptDef opts_create[] = {
 static bool
 cmdCreate(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *from = NULL;
     bool ret = false;
     char *buffer;
@@ -8307,7 +8253,6 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     if (console)
         cmdRunConsole(ctl, dom, NULL, 0);
 #endif
-    virshDomainFree(dom);
     ret = true;
 
  cleanup:
@@ -8341,7 +8286,7 @@ static const vshCmdOptDef opts_define[] = {
 static bool
 cmdDefine(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *from = NULL;
     bool ret = true;
     char *buffer;
@@ -8366,7 +8311,6 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
     if (dom != NULL) {
         vshPrintExtra(ctl, _("Domain '%s' defined from %s\n"),
                       virDomainGetName(dom), from);
-        virshDomainFree(dom);
     } else {
         vshError(ctl, _("Failed to define domain from %s"), from);
         ret = false;
@@ -8399,7 +8343,7 @@ static const vshCmdOptDef opts_destroy[] = {
 static bool
 cmdDestroy(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = true;
     const char *name;
     unsigned int flags = 0;
@@ -8423,7 +8367,6 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -8464,7 +8407,7 @@ static const vshCmdOptDef opts_desc[] = {
 static bool
 cmdDesc(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
@@ -8583,7 +8526,6 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
         unlink(tmp);
         VIR_FREE(tmp);
     }
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -8650,7 +8592,7 @@ virshDomainGetEditMetadata(vshControl *ctl G_GNUC_UNUSED,
 static bool
 cmdMetadata(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
@@ -8726,7 +8668,6 @@ cmdMetadata(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -8811,7 +8752,7 @@ virshKeyCodeGetInt(const char *key_name)
 static bool
 cmdSendKey(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const char *codeset_option;
     int codeset;
@@ -8862,7 +8803,6 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
         ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -8993,7 +8933,7 @@ static const vshCmdOptDef opts_setmem[] = {
 static bool
 cmdSetmem(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     unsigned long long bytes = 0;
     unsigned long long max;
     unsigned long kibibytes = 0;
@@ -9034,7 +8974,6 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -9071,7 +9010,7 @@ static const vshCmdOptDef opts_setmaxmem[] = {
 static bool
 cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     unsigned long long bytes = 0;
     unsigned long long max;
     unsigned long kibibytes = 0;
@@ -9109,7 +9048,6 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -9197,7 +9135,7 @@ virshMemtuneGetSize(vshControl *ctl, const vshCmd *cmd,
 static bool
 cmdMemtune(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     long long tmpVal;
     int nparams = 0;
     int maxparams = 0;
@@ -9280,7 +9218,6 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virshDomainFree(dom);
     return ret;
 
  save_error:
@@ -9366,7 +9303,7 @@ virshPrintPerfStatus(vshControl *ctl, virTypedParameterPtr params, int nparams)
 static bool
 cmdPerf(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     int nparams = 0;
     int maxparams = 0;
     virTypedParameterPtr params = NULL;
@@ -9418,7 +9355,6 @@ cmdPerf(vshControl *ctl, const vshCmd *cmd)
     ret = true;
  cleanup:
     virTypedParamsFree(params, nparams);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -9459,7 +9395,7 @@ static const vshCmdOptDef opts_numatune[] = {
 static bool
 cmdNumatune(vshControl * ctl, const vshCmd * cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     int nparams = 0;
     int maxparams = 0;
     size_t i;
@@ -9551,7 +9487,6 @@ cmdNumatune(vshControl * ctl, const vshCmd * cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virshDomainFree(dom);
     return ret;
 
  save_error:
@@ -9761,7 +9696,7 @@ static const vshCmdOptDef opts_qemu_monitor_event[] = {
 static bool
 cmdQemuMonitorEvent(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     unsigned int flags = 0;
     int eventId = -1;
@@ -9819,7 +9754,6 @@ cmdQemuMonitorEvent(vshControl *ctl, const vshCmd *cmd)
     if (eventId >= 0 &&
         virConnectDomainQemuMonitorEventDeregister(priv->conn, eventId) < 0)
         ret = false;
-    virshDomainFree(dom);
 
     return ret;
 }
@@ -9849,7 +9783,7 @@ static const vshCmdOptDef opts_qemu_attach[] = {
 static bool
 cmdQemuAttach(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     unsigned int flags = 0;
     unsigned int pid_value; /* API uses unsigned int, not pid_t */
     virshControl *priv = ctl->privData;
@@ -9864,7 +9798,6 @@ cmdQemuAttach(vshControl *ctl, const vshCmd *cmd)
 
     vshPrintExtra(ctl, _("Domain '%s' attached to pid %u\n"),
                   virDomainGetName(dom), pid_value);
-    virshDomainFree(dom);
     return true;
 }
 
@@ -9911,7 +9844,7 @@ static const vshCmdOptDef opts_qemu_agent_command[] = {
 static bool
 cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     char *guest_agent_cmd = NULL;
     char *result = NULL;
@@ -9979,7 +9912,6 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     VIR_FREE(result);
     VIR_FREE(guest_agent_cmd);
-    virshDomainFree(dom);
 
     return ret;
 }
@@ -10014,7 +9946,7 @@ static const vshCmdOptDef opts_lxc_enter_namespace[] = {
 static bool
 cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     const vshCmdOpt *opt = NULL;
     char **cmdargv = NULL;
@@ -10109,7 +10041,6 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     VIR_FREE(seclabel);
     VIR_FREE(secmodel);
-    virshDomainFree(dom);
     VIR_FREE(cmdargv);
     return ret;
 }
@@ -10151,7 +10082,7 @@ static const vshCmdOptDef opts_dumpxml[] = {
 static bool
 cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = true;
     char *dump;
     unsigned int flags = 0;
@@ -10180,7 +10111,6 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -10278,7 +10208,7 @@ cmdDomXMLToNative(vshControl *ctl, const vshCmd *cmd)
     char *xmlData = NULL;
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, "format", &format) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "xml", &xmlFile) < 0)
@@ -10313,7 +10243,6 @@ cmdDomXMLToNative(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    virshDomainFree(dom);
     VIR_FREE(xmlData);
     VIR_FREE(configData);
     return ret;
@@ -10345,14 +10274,13 @@ static const vshCmdOptDef opts_domname[] = {
 static bool
 cmdDomname(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
 
     if (!(dom = virshCommandOptDomainBy(ctl, cmd, NULL,
                                         VIRSH_BYID|VIRSH_BYUUID)))
         return false;
 
     vshPrint(ctl, "%s\n", virDomainGetName(dom));
-    virshDomainFree(dom);
     return true;
 }
 
@@ -10383,7 +10311,7 @@ static const vshCmdOptDef opts_domrename[] = {
 static bool
 cmdDomrename(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *new_name = NULL;
     bool ret = false;
 
@@ -10400,7 +10328,6 @@ cmdDomrename(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -10426,7 +10353,7 @@ static const vshCmdOptDef opts_domid[] = {
 static bool
 cmdDomid(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     unsigned int id;
 
     if (!(dom = virshCommandOptDomainBy(ctl, cmd, NULL,
@@ -10438,7 +10365,6 @@ cmdDomid(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%s\n", "-");
     else
         vshPrint(ctl, "%d\n", id);
-    virshDomainFree(dom);
     return true;
 }
 
@@ -10463,7 +10389,7 @@ static const vshCmdOptDef opts_domuuid[] = {
 static bool
 cmdDomuuid(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     char uuid[VIR_UUID_STRING_BUFLEN];
 
     if (!(dom = virshCommandOptDomainBy(ctl, cmd, NULL,
@@ -10475,7 +10401,6 @@ cmdDomuuid(vshControl *ctl, const vshCmd *cmd)
     else
         vshError(ctl, "%s", _("failed to get domain UUID"));
 
-    virshDomainFree(dom);
     return true;
 }
 
@@ -10684,7 +10609,7 @@ static const vshCmdOptDef opts_migrate[] = {
 static void
 doMigrate(void *opaque)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *desturi = NULL;
     const char *opt = NULL;
     unsigned int flags = 0;
@@ -10972,10 +10897,9 @@ doMigrate(void *opaque)
             data->ret = 0;
     } else {
         /* For traditional live migration, connect to the destination host directly. */
-        virDomainPtr ddom = NULL;
+        g_autoptr(virshDomain) ddom = NULL;
 
         if ((ddom = virDomainMigrate3(dom, dconn, params, nparams, flags))) {
-            virshDomainFree(ddom);
             data->ret = 0;
         }
     }
@@ -10986,7 +10910,6 @@ doMigrate(void *opaque)
  out_sig:
 #endif /* !WIN32 */
     virTypedParamsFree(params, nparams);
-    virshDomainFree(dom);
     g_main_loop_quit(data->eventLoop);
     return;
 
@@ -11046,7 +10969,7 @@ virshMigrateIteration(virConnectPtr conn G_GNUC_UNUSED,
 static bool
 cmdMigrate(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     virThread workerThread;
     bool verbose = false;
     unsigned int timeout = 0;
@@ -11144,7 +11067,6 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
         virConnectClose(data.dconn);
     if (iterEvent != -1)
         virConnectDomainEventDeregisterAny(priv->conn, iterEvent);
-    virshDomainFree(dom);
     return !data.ret;
 }
 
@@ -11174,7 +11096,7 @@ static const vshCmdOptDef opts_migrate_setmaxdowntime[] = {
 static bool
 cmdMigrateSetMaxDowntime(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     unsigned long long downtime = 0;
     bool ret = false;
 
@@ -11194,7 +11116,6 @@ cmdMigrateSetMaxDowntime(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  done:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -11220,7 +11141,7 @@ static const vshCmdOptDef opts_migrate_getmaxdowntime[] = {
 static bool
 cmdMigrateGetMaxDowntime(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     unsigned long long downtime;
     bool ret = false;
 
@@ -11234,7 +11155,6 @@ cmdMigrateGetMaxDowntime(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  done:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -11266,7 +11186,7 @@ static const vshCmdOptDef opts_migrate_compcache[] = {
 static bool
 cmdMigrateCompCache(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     unsigned long long size = 0;
     bool ret = false;
     const char *unit;
@@ -11292,7 +11212,6 @@ cmdMigrateCompCache(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -11327,7 +11246,7 @@ static const vshCmdOptDef opts_migrate_setspeed[] = {
 static bool
 cmdMigrateSetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     unsigned long bandwidth = 0;
     unsigned int flags = 0;
     bool ret = false;
@@ -11347,7 +11266,6 @@ cmdMigrateSetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  done:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -11376,7 +11294,7 @@ static const vshCmdOptDef opts_migrate_getspeed[] = {
 static bool
 cmdMigrateGetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     unsigned long bandwidth;
     unsigned int flags = 0;
     bool ret = false;
@@ -11395,7 +11313,6 @@ cmdMigrateGetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  done:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -11421,7 +11338,7 @@ static const vshCmdOptDef opts_migrate_postcopy[] = {
 static bool
 cmdMigratePostCopy(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
@@ -11433,7 +11350,6 @@ cmdMigratePostCopy(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -11474,7 +11390,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 {
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool ret = false;
     char *xpath = NULL;
@@ -11704,7 +11620,6 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(output);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -11731,7 +11646,7 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
 {
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     int port = 0;
     char *listen_addr = NULL;
@@ -11780,7 +11695,6 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(listen_addr);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -12004,7 +11918,7 @@ static const vshCmdOptDef opts_detach_device_alias[] = {
 static bool
 cmdDetachDeviceAlias(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *alias = NULL;
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
@@ -12035,7 +11949,6 @@ cmdDetachDeviceAlias(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -12070,7 +11983,7 @@ static const vshCmdOptDef opts_update_device[] = {
 static bool
 cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     const char *from = NULL;
     char *buffer = NULL;
     bool ret = false;
@@ -12118,7 +12031,6 @@ cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(buffer);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -12249,7 +12161,7 @@ virshDomainDetachInterface(char *doc,
 static bool
 cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     char *doc_live = NULL, *doc_config = NULL;
     const char *mac = NULL, *type = NULL;
     int flags = 0;
@@ -12307,7 +12219,6 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     }
     VIR_FREE(doc_live);
     VIR_FREE(doc_config);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -12612,7 +12523,7 @@ static bool
 cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
 {
     char *disk_xml = NULL;
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *target = NULL;
     char *doc = NULL;
     int ret;
@@ -12683,7 +12594,6 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     xmlFreeNode(disk_node);
     VIR_FREE(disk_xml);
     VIR_FREE(doc);
-    virshDomainFree(dom);
     return functionReturn;
 }
 
@@ -12713,8 +12623,8 @@ static bool
 cmdEdit(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
-    virDomainPtr dom = NULL;
-    virDomainPtr dom_edited = NULL;
+    g_autoptr(virshDomain) dom = NULL;
+    g_autoptr(virshDomain) dom_edited = NULL;
     unsigned int query_flags = VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_INACTIVE;
     unsigned int define_flags = VIR_DOMAIN_DEFINE_VALIDATE;
     virshControl *priv = ctl->privData;
@@ -12750,8 +12660,6 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
-    virshDomainFree(dom_edited);
 
     return ret;
 }
@@ -13569,7 +13477,7 @@ static const vshCmdOptDef opts_event[] = {
 static bool
 cmdEvent(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     int timeout = 0;
     virshDomEventData *data = NULL;
@@ -13679,7 +13587,6 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         }
         VIR_FREE(data);
     }
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -13745,7 +13652,7 @@ static const vshCmdOptDef opts_change_media[] = {
 static bool
 cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *source = NULL;
     const char *path = NULL;
     char *doc = NULL;
@@ -13845,7 +13752,6 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(doc);
     xmlFreeNode(disk_node);
     VIR_FREE(disk_xml);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -13876,7 +13782,7 @@ static const vshCmdOptDef opts_domfstrim[] = {
 static bool
 cmdDomFSTrim(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     unsigned long long minimum = 0;
     const char *mountPoint = NULL;
@@ -13899,7 +13805,6 @@ cmdDomFSTrim(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -13925,7 +13830,7 @@ static const vshCmdOptDef opts_domfsfreeze[] = {
 static bool
 cmdDomFSFreeze(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     int ret = -1;
     const vshCmdOpt *opt = NULL;
     const char **mountpoints = NULL;
@@ -13949,7 +13854,6 @@ cmdDomFSFreeze(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(mountpoints);
-    virshDomainFree(dom);
     return ret >= 0;
 }
 
@@ -13975,7 +13879,7 @@ static const vshCmdOptDef opts_domfsthaw[] = {
 static bool
 cmdDomFSThaw(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     int ret = -1;
     const vshCmdOpt *opt = NULL;
     const char **mountpoints = NULL;
@@ -13999,7 +13903,6 @@ cmdDomFSThaw(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(mountpoints);
-    virshDomainFree(dom);
     return ret >= 0;
 }
 
@@ -14021,7 +13924,7 @@ static const vshCmdOptDef opts_domfsinfo[] = {
 static bool
 cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     int rc = -1;
     size_t i, j;
     virDomainFSInfoPtr *info = NULL;
@@ -14081,7 +13984,6 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
         VIR_FREE(info);
     }
     vshTableFree(table);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -14111,7 +14013,7 @@ static const vshCmdOptDef opts_guest_agent_timeout[] = {
 static bool
 cmdGuestAgentTimeout(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     int timeout = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK;
     const unsigned int flags = 0;
     bool ret = false;
@@ -14127,7 +14029,6 @@ cmdGuestAgentTimeout(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -14177,7 +14078,7 @@ static const vshCmdOptDef opts_guestinfo[] = {
 static bool
 cmdGuestInfo(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
     virTypedParameterPtr params = NULL;
     int nparams = 0;
@@ -14213,7 +14114,6 @@ cmdGuestInfo(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -14244,7 +14144,7 @@ static const vshCmdOptDef opts_get_user_sshkeys[] = {
 static bool
 cmdGetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *user;
     g_auto(GStrv) keys = NULL;
     int nkeys = 0;
@@ -14268,7 +14168,6 @@ cmdGetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -14312,7 +14211,7 @@ static const vshCmdOptDef opts_set_user_sshkeys[] = {
 static bool
 cmdSetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *user;
     const char *from;
     g_autofree char *buffer = NULL;
@@ -14369,7 +14268,6 @@ cmdSetUserSSHKeys(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -14403,7 +14301,7 @@ static const vshCmdOptDef opts_domdirtyrate_calc[] = {
 static bool
 cmdDomDirtyRateCalc(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     int seconds = 1; /* the default value is 1 */
     bool ret = false;
 
@@ -14421,7 +14319,6 @@ cmdDomDirtyRateCalc(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 

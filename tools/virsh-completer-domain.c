@@ -442,7 +442,7 @@ virshDomainIOThreadIdCompleter(vshControl *ctl,
                                const vshCmd *cmd,
                                unsigned int flags)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     size_t niothreads = 0;
     g_autofree virDomainIOThreadInfoPtr *info = NULL;
     size_t i;
@@ -468,7 +468,6 @@ virshDomainIOThreadIdCompleter(vshControl *ctl,
     ret = g_steal_pointer(&tmp);
 
  cleanup:
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -478,7 +477,7 @@ virshDomainVcpuCompleter(vshControl *ctl,
                          const vshCmd *cmd,
                          unsigned int flags)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     int nvcpus = 0;
@@ -509,7 +508,6 @@ virshDomainVcpuCompleter(vshControl *ctl,
  cleanup:
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -519,7 +517,7 @@ virshDomainVcpulistCompleter(vshControl *ctl,
                              const vshCmd *cmd,
                              unsigned int flags)
 {
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     int nvcpus = 0;
@@ -554,7 +552,6 @@ virshDomainVcpulistCompleter(vshControl *ctl,
  cleanup:
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -594,7 +591,7 @@ virshDomainVcpulistViaAgentCompleter(vshControl *ctl,
                                      const vshCmd *cmd,
                                      unsigned int flags)
 {
-    virDomainPtr dom;
+    g_autoptr(virshDomain) dom = NULL;
     bool enable = vshCommandOptBool(cmd, "enable");
     bool disable = vshCommandOptBool(cmd, "disable");
     virTypedParameterPtr params = NULL;
@@ -690,7 +687,6 @@ virshDomainVcpulistViaAgentCompleter(vshControl *ctl,
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -908,7 +904,7 @@ virshDomainFSMountpointsCompleter(vshControl *ctl,
                                   unsigned int flags)
 {
     g_auto(GStrv) tmp = NULL;
-    virDomainPtr dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     int rc = -1;
     size_t i;
     virDomainFSInfoPtr *info = NULL;
@@ -938,7 +934,6 @@ virshDomainFSMountpointsCompleter(vshControl *ctl,
             virDomainFSInfoFree(info[i]);
         VIR_FREE(info);
     }
-    virshDomainFree(dom);
     return ret;
 }
 
