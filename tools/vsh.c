@@ -3115,6 +3115,10 @@ const vshCmdOptDef opts_echo[] = {
      .type = VSH_OT_BOOL,
      .help = N_("escape for XML use")
     },
+    {.name = "split",
+     .type = VSH_OT_BOOL,
+     .help = N_("split each argument on ','; ',,' is an escape sequence")
+    },
     {.name = "err",
      .type = VSH_OT_BOOL,
      .help = N_("output to stderr"),
@@ -3153,11 +3157,14 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
     bool shell = vshCommandOptBool(cmd, "shell");
     bool xml = vshCommandOptBool(cmd, "xml");
     bool err = vshCommandOptBool(cmd, "err");
+    bool split = vshCommandOptBool(cmd, "split");
     const vshCmdOpt *opt = NULL;
     g_autofree char *arg = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(shell, xml);
+    VSH_EXCLUSIVE_OPTIONS_VAR(shell, split);
+    VSH_EXCLUSIVE_OPTIONS_VAR(xml, split);
 
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
         const char *curr = opt->data;
@@ -3166,6 +3173,14 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
             virBufferEscapeString(&buf, "%s", curr);
         } else if (shell) {
             virBufferEscapeShell(&buf, curr);
+        } else if (split) {
+            g_auto(GStrv) spl = NULL;
+            GStrv n;
+
+            vshStringToArray(curr, &spl);
+
+            for (n = spl; *n; n++)
+                virBufferAsprintf(&buf, "%s\n", *n);
         } else {
             virBufferAdd(&buf, curr, -1);
         }
