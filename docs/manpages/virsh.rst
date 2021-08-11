@@ -907,23 +907,6 @@ print that all CPU models are accepted for these architectures and the actual
 list of supported CPU models can be checked in the domain capabilities XML.
 
 
-echo
-----
-
-**Syntax:**
-
-::
-
-   echo [--shell] [--xml] [err...] [arg...]
-
-Echo back each *arg*, separated by space.  If *--shell* is
-specified, then the output will be single-quoted where needed, so that
-it is suitable for reuse in a shell context.  If *--xml* is
-specified, then the output will be escaped for use in XML.
-If *--err* is specified, prefix ``"error: "`` and output to stderr
-instead of stdout.
-
-
 hypervisor-cpu-compare
 ----------------------
 

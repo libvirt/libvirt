@@ -3136,10 +3136,10 @@ const vshCmdOptDef opts_echo[] = {
 
 const vshCmdInfo info_echo[] = {
     {.name = "help",
-     .data = N_("echo arguments")
+     .data = N_("echo arguments. Used for internal testing.")
     },
     {.name = "desc",
-     .data = N_("Echo back arguments, possibly with quoting.")
+     .data = N_("Echo back arguments, possibly with quoting. Used for internal testing.")
     },
     {.name = NULL}
 };
