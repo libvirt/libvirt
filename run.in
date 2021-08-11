@@ -80,6 +80,9 @@ env["LIBVIRT_DIR_OVERRIDE"] = "1"
 # read problems when using glibc.
 env["MALLOC_PERTURB_"] = "%d" % random.randint(1, 255)
 
+env["abs_builddir"] = "@abs_builddir@"
+env["abs_top_builddir"] = "@abs_top_builddir@"
+
 modular_daemons = [
     "virtinterfaced",
     "virtlxcd",

@@ -2233,6 +2233,7 @@ configure_file(output: 'meson-config.h', configuration: conf)
 # generate run helper
 run_conf = configuration_data()
 run_conf.set('abs_builddir', meson.build_root())
+run_conf.set('abs_top_builddir', meson.build_root())
 configure_file(
   input: 'run.in',
   output: '@BASENAME@',
