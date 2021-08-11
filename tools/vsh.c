@@ -3153,7 +3153,6 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
     bool shell = vshCommandOptBool(cmd, "shell");
     bool xml = vshCommandOptBool(cmd, "xml");
     bool err = vshCommandOptBool(cmd, "err");
-    int count = 0;
     const vshCmdOpt *opt = NULL;
     g_autofree char *arg = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -3161,26 +3160,20 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS_VAR(shell, xml);
 
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        g_autofree char *str = NULL;
-        g_auto(virBuffer) xmlbuf = VIR_BUFFER_INITIALIZER;
         const char *curr = opt->data;
 
-        if (count)
-            virBufferAddChar(&buf, ' ');
-
         if (xml) {
-            virBufferEscapeString(&xmlbuf, "%s", curr);
-            str = virBufferContentAndReset(&xmlbuf);
+            virBufferEscapeString(&buf, "%s", curr);
+        } else if (shell) {
+            virBufferEscapeShell(&buf, curr);
         } else {
-            str = g_strdup(curr);
+            virBufferAdd(&buf, curr, -1);
         }
 
-        if (shell)
-            virBufferEscapeShell(&buf, str);
-        else
-            virBufferAdd(&buf, str, -1);
-        count++;
+        virBufferAddChar(&buf, ' ');
     }
+
+    virBufferTrim(&buf, " ");
 
     arg = virBufferContentAndReset(&buf);
     if (arg) {
