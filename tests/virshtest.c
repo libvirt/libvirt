@@ -432,9 +432,8 @@ mymain(void)
     DO_TEST(15, "a A 0 + * ; . &apos; &quot; / ? =   \n &lt; &gt; &amp;\n",
             "echo", "--xml", "a", "A", "0", "+", "*", ";", ".", "'", "\"",
             "/", "?", "=", " ", "\n", "<", ">", "&");
-    DO_TEST(16, "a A 0 + '*' ';' . '&apos;' '&quot;' / '?' = ' ' '\n' '&lt;'"
-            " '&gt;' '&amp;'\n",
-            "echo", "--shell", "--xml", "a", "A", "0", "+", "*", ";", ".", "'",
+    DO_TEST(16, "a A 0 + '*' ';' . ''\\''' '\"' / '?' = ' ' '\n' '<' '>' '&'\n",
+            "echo", "--shell", "a", "A", "0", "+", "*", ";", ".", "\'",
             "\"", "/", "?", "=", " ", "\n", "<", ">", "&");
     DO_TEST(17, "\n",
             "echo", "");
@@ -443,7 +442,7 @@ mymain(void)
     DO_TEST(19, "\n",
             "echo", "--xml", "");
     DO_TEST(20, "''\n",
-            "echo", "--xml", "--shell", "");
+            "echo", "--shell", "");
     DO_TEST(21, "\n",
             "echo ''");
     DO_TEST(22, "''\n",
@@ -451,7 +450,7 @@ mymain(void)
     DO_TEST(23, "\n",
             "echo --xml ''");
     DO_TEST(24, "''\n",
-            "echo --xml --shell \"\"''");
+            "echo --shell \"\"''");
 
     /* Tests of -- handling.  */
     DO_TEST(25, "a\n",
