@@ -115,7 +115,7 @@ static virNodeDevice*
 vshFindNodeDevice(vshControl *ctl, const char *value)
 {
     virNodeDevicePtr dev = NULL;
-    char **arr = NULL;
+    g_auto(GStrv) arr = NULL;
     int narr;
     virshControl *priv = ctl->privData;
 
@@ -140,7 +140,6 @@ vshFindNodeDevice(vshControl *ctl, const char *value)
     }
 
  cleanup:
-    g_strfreev(arr);
     return dev;
 }
 
@@ -409,7 +408,7 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     bool tree = vshCommandOptBool(cmd, "tree");
     bool ret = true;
     unsigned int flags = 0;
-    char **caps = NULL;
+    g_auto(GStrv) caps = NULL;
     int ncaps = 0;
     struct virshNodeDeviceList *list = NULL;
     int cap_type = -1;
@@ -555,7 +554,6 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     }
 
  cleanup:
-    g_strfreev(caps);
     virshNodeDeviceListFree(list);
     return ret;
 }

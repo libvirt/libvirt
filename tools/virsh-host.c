@@ -1301,7 +1301,7 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = false;
     char *result = NULL;
-    char **list = NULL;
+    g_auto(GStrv) list = NULL;
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
@@ -1326,7 +1326,6 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     }
 
     VIR_FREE(result);
-    g_strfreev(list);
     return ret;
 }
 

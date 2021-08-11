@@ -4002,7 +4002,7 @@ cmdStartGetFDs(vshControl *ctl,
                int **fdsret)
 {
     const char *fdopt;
-    char **fdlist = NULL;
+    g_auto(GStrv) fdlist = NULL;
     int *fds = NULL;
     size_t nfds = 0;
     size_t i;
@@ -4028,14 +4028,11 @@ cmdStartGetFDs(vshControl *ctl,
         fds[nfds - 1] = fd;
     }
 
-    g_strfreev(fdlist);
-
     *fdsret = fds;
     *nfdsret = nfds;
     return 0;
 
  error:
-    g_strfreev(fdlist);
     VIR_FREE(fds);
     return -1;
 }
@@ -5859,7 +5856,7 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
     const char *mode = NULL;
     int flags = 0;
     int rv;
-    char **modes = NULL;
+    g_auto(GStrv) modes = NULL;
     char **tmp;
 
     if (vshCommandOptStringReq(ctl, cmd, "mode", &mode) < 0)
@@ -5908,7 +5905,6 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    g_strfreev(modes);
     return ret;
 }
 
@@ -5943,7 +5939,7 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     const char *mode = NULL;
     int flags = 0;
-    char **modes = NULL;
+    g_auto(GStrv) modes = NULL;
     char **tmp;
 
     if (vshCommandOptStringReq(ctl, cmd, "mode", &mode) < 0)
@@ -5988,7 +5984,6 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    g_strfreev(modes);
     return ret;
 }
 
