@@ -33,6 +33,7 @@
 #include "virfile.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_XML
 
@@ -1096,8 +1097,8 @@ catchXMLError(void *ctx, const char *msg G_GNUC_UNUSED, ...)
  * @url: URL of XML document for string parser
  * @rootelement: Optional name of the expected root element
  * @ctxt: optional pointer to populate with new context pointer
- * @schemafile: unused
- * @validate: unused
+ * @schemafile: optional name of the file the parsed XML will be validated against
+ * @validate: if true, the XML will be validated against schema in @schemafile
  *
  * Parse XML document provided either as a file or a string. The function
  * guarantees that the XML document contains a root element.
@@ -1114,8 +1115,8 @@ virXMLParseHelper(int domcode,
                   const char *url,
                   const char *rootelement,
                   xmlXPathContextPtr *ctxt,
-                  const char *schemafile G_GNUC_UNUSED,
-                  bool validate G_GNUC_UNUSED)
+                  const char *schemafile,
+                  bool validate)
 {
     struct virParserData private;
     g_autoptr(xmlParserCtxt) pctxt = NULL;
@@ -1179,6 +1180,15 @@ virXMLParseHelper(int domcode,
             return NULL;
 
         (*ctxt)->node = rootnode;
+    }
+
+    if (validate && schemafile != NULL) {
+        g_autofree char *schema = virFileFindResource(schemafile,
+                                                      abs_top_srcdir "/docs/schemas",
+                                                      PKGDATADIR "/schemas");
+        if (!schema ||
+            (virXMLValidateAgainstSchema(schema, xml) < 0))
+            return NULL;
     }
 
     return g_steal_pointer(&xml);
