@@ -3055,7 +3055,6 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshDomain) dom = NULL;
     const char *iface;
     const char *state;
-    char *value;
     virMacAddr macaddr;
     const char *element;
     const char *attr;
@@ -3119,13 +3118,10 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
         while (cur) {
             if (cur->type == XML_ELEMENT_NODE &&
                 virXMLNodeNameEqual(cur, element)) {
-                value = virXMLPropString(cur, attr);
+                g_autofree char *value = virXMLPropString(cur, attr);
 
-                if (STRCASEEQ(value, iface)) {
-                    VIR_FREE(value);
+                if (STRCASEEQ(value, iface))
                     goto hit;
-                }
-                VIR_FREE(value);
             }
             cur = cur->next;
         }
@@ -3639,9 +3635,6 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr *vol_nodes = NULL;   /* XML nodes of volumes of the guest */
     int nvol_nodes;
-    char *source = NULL;
-    char *target = NULL;
-    char *pool = NULL;
     size_t i;
     size_t j;
     virshControl *priv = ctl->privData;
@@ -3759,13 +3752,12 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
             goto error;
 
         for (i = 0; i < nvol_nodes; i++) {
+            g_autofree char *source = NULL;
+            g_autofree char *target = NULL;
+            g_autofree char *pool = NULL;
             virshUndefineVolume vol;
 
             ctxt->node = vol_nodes[i];
-
-            VIR_FREE(source);
-            VIR_FREE(target);
-            VIR_FREE(pool);
 
             /* get volume source and target paths */
             if (!(target = virXPathString("string(./target/@dev)", ctxt)))
@@ -3936,9 +3928,6 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    VIR_FREE(source);
-    VIR_FREE(target);
-    VIR_FREE(pool);
     for (i = 0; i < nvols; i++) {
         VIR_FREE(vols[i].source);
         VIR_FREE(vols[i].target);
@@ -5096,7 +5085,6 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
                    virTypedParameterPtr src_params, int nsrc_params,
                    virTypedParameterPtr *update_params)
 {
-    char *set_field = NULL;
     char *set_val = NULL;
     const char *val = NULL;
     const vshCmdOpt *opt = NULL;
@@ -5107,7 +5095,8 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
     int rv;
 
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        set_field = g_strdup(opt->data);
+        g_autofree char *set_field = g_strdup(opt->data);
+
         if (!(set_val = strchr(set_field, '='))) {
             vshError(ctl, "%s", _("Invalid syntax for --set, "
                                   "expecting name=value"));
@@ -5121,8 +5110,6 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
                                   &params, &nparams, &maxparams,
                                   set_field, set_val) < 0)
             goto cleanup;
-
-        VIR_FREE(set_field);
     }
 
     rv = vshCommandOptStringReq(ctl, cmd, "cap", &val);
@@ -5145,7 +5132,6 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
     *update_params = g_steal_pointer(&params);
 
  cleanup:
-    VIR_FREE(set_field);
     virTypedParamsFree(params, nparams);
     return ret;
 }
@@ -6759,7 +6745,6 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
     unsigned int curvcpus = 0;
     unsigned int maxvcpus = 0;
     unsigned int vcpuid;
-    char *online = NULL;
 
     if (inactive)
         flags |= VIR_DOMAIN_XML_INACTIVE;
@@ -6788,6 +6773,8 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
     }
 
     for (i = 0; i < nnodes; i++) {
+        g_autofree char *online = NULL;
+
         ctxt->node = nodes[i];
 
         if (virXPathUInt("string(@id)", ctxt, &vcpuid) < 0 ||
@@ -6796,8 +6783,6 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
 
         if (STREQ(online, "yes"))
             ignore_value(virBitmapSetBit(ret, vcpuid));
-
-        VIR_FREE(online);
     }
 
     if (virBitmapCountBits(ret) != curvcpus) {
@@ -6807,7 +6792,6 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
     }
 
  cleanup:
-    VIR_FREE(online);
     VIR_FREE(nodes);
     return ret;
 }

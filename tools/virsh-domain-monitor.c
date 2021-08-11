@@ -586,10 +586,6 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     xmlNodePtr *disks = NULL;
     size_t i;
     bool details = false;
-    char *type = NULL;
-    char *device = NULL;
-    char *target = NULL;
-    char *source = NULL;
     g_autoptr(vshTable) table = NULL;
 
     if (vshCommandOptBool(cmd, "inactive"))
@@ -613,6 +609,11 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     for (i = 0; i < ndisks; i++) {
+        g_autofree char *type = NULL;
+        g_autofree char *device = NULL;
+        g_autofree char *target = NULL;
+        g_autofree char *source = NULL;
+
         ctxt->node = disks[i];
 
         type = virXPathString("string(./@type)", ctxt);
@@ -662,11 +663,6 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
                                   NULLSTR_MINUS(source), NULL) < 0)
                 goto cleanup;
         }
-
-        VIR_FREE(source);
-        VIR_FREE(target);
-        VIR_FREE(device);
-        VIR_FREE(type);
     }
 
     vshTablePrintToStdout(table, ctl);
@@ -674,10 +670,6 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(source);
-    VIR_FREE(target);
-    VIR_FREE(device);
-    VIR_FREE(type);
     VIR_FREE(disks);
     return ret;
 }
@@ -987,7 +979,6 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
     virDomainBlockStatsStruct stats;
     virTypedParameterPtr params = NULL;
     virTypedParameterPtr par = NULL;
-    char *value = NULL;
     const char *field = NULL;
     int rc, nparams = 0;
     size_t i;
@@ -1053,6 +1044,8 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
 
         /* at first print all known values in desired order */
         for (i = 0; domblkstat_output[i].field != NULL; i++) {
+            g_autofree char *value = NULL;
+
             if (!(par = virTypedParamsGet(params, nparams,
                                           domblkstat_output[i].field)))
                 continue;
@@ -1075,18 +1068,17 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
 
             vshPrint(ctl, "%s %-*s %s\n", device,
                      human ? 31 : 0, field, value);
-
-            VIR_FREE(value);
         }
 
         /* go through the fields again, for remaining fields */
         for (i = 0; i < nparams; i++) {
+            g_autofree char *value = NULL;
+
             if (!*params[i].field)
                 continue;
 
             value = vshGetTypedParamValue(ctl, params+i);
             vshPrint(ctl, "%s %s %s\n", device, params[i].field, value);
-            VIR_FREE(value);
         }
     }
 
@@ -1927,7 +1919,6 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     bool optName = vshCommandOptBool(cmd, "name");
     bool optID = vshCommandOptBool(cmd, "id");
     size_t i;
-    char *title;
     char uuid[VIR_UUID_STRING_BUFLEN];
     int state;
     bool ret = false;
@@ -2010,6 +2001,8 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
                 state = -2;
 
             if (optTitle) {
+                g_autofree char *title = NULL;
+
                 if (!(title = virshGetDomainDescription(ctl, dom, true, 0)))
                     goto cleanup;
                 if (vshTableRowAppend(table, id_buf,
@@ -2018,7 +2011,6 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
                                       : virshDomainStateToString(state),
                                       title, NULL) < 0)
                     goto cleanup;
-                VIR_FREE(title);
             } else {
                 if (vshTableRowAppend(table, id_buf,
                                       virDomainGetName(dom),
@@ -2175,7 +2167,6 @@ virshDomainStatsPrintRecord(vshControl *ctl G_GNUC_UNUSED,
                             virDomainStatsRecordPtr record,
                             bool raw G_GNUC_UNUSED)
 {
-    char *param;
     size_t i;
 
     vshPrint(ctl, "Domain: '%s'\n", virDomainGetName(record->dom));
@@ -2183,12 +2174,12 @@ virshDomainStatsPrintRecord(vshControl *ctl G_GNUC_UNUSED,
     /* XXX: Implement pretty-printing */
 
     for (i = 0; i < record->nparams; i++) {
+        g_autofree char *param = NULL;
+
         if (!(param = vshGetTypedParamValue(ctl, record->params + i)))
             return false;
 
         vshPrint(ctl, "  %s=%s\n", record->params[i].field, param);
-
-        VIR_FREE(param);
     }
 
     return true;
@@ -2388,7 +2379,6 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
 
     for (i = 0; i < ifaces_count; i++) {
         virDomainInterfacePtr iface = ifaces[i];
-        char *ip_addr_str = NULL;
         const char *type = NULL;
 
         if (ifacestr && STRNEQ(ifacestr, iface->name))
@@ -2404,6 +2394,7 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
 
         for (j = 0; j < iface->naddrs; j++) {
             g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+            g_autofree char *ip_addr_str = NULL;
 
             switch (iface->addrs[j].type) {
             case VIR_IP_ADDR_TYPE_IPV4:
@@ -2431,8 +2422,6 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
             else
                 vshPrint(ctl, " %-10s %-17s    %s\n",
                          "-", "-", ip_addr_str);
-
-            VIR_FREE(ip_addr_str);
         }
     }
 
