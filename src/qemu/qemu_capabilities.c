@@ -4191,7 +4191,7 @@ virQEMUCapsLoadCache(virArch hostArch,
                      const char *filename,
                      bool skipInvalidation)
 {
-    xmlDocPtr doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     int ret = -1;
     size_t i;
     int n;
@@ -4421,7 +4421,6 @@ virQEMUCapsLoadCache(virArch hostArch,
  cleanup:
     VIR_FREE(str);
     VIR_FREE(nodes);
-    xmlFreeDoc(doc);
     return ret;
 }
 

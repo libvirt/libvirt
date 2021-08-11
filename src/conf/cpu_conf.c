@@ -281,7 +281,7 @@ virCPUDefParseXMLString(const char *xml,
                         virCPUDef **cpu,
                         bool validateXML)
 {
-    xmlDocPtr doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     int ret = -1;
 
@@ -299,7 +299,6 @@ virCPUDefParseXMLString(const char *xml,
     ret = 0;
 
  cleanup:
-    xmlFreeDoc(doc);
     return ret;
 }
 

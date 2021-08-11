@@ -1619,12 +1619,11 @@ int
 virXMLValidateNodeAgainstSchema(const char *schemafile, xmlNodePtr node)
 {
     int ret;
-    xmlDocPtr copy = xmlNewDoc(NULL);
+    g_autoptr(xmlDoc) copy = xmlNewDoc(NULL);
 
     xmlDocSetRootElement(copy, xmlCopyNode(node, true));
     ret = virXMLValidateAgainstSchema(schemafile, copy);
 
-    xmlFreeDoc(copy);
     return ret;
 }
 

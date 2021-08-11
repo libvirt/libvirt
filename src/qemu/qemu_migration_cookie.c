@@ -1431,7 +1431,7 @@ qemuMigrationCookieXMLParseStr(qemuMigrationCookie *mig,
                                const char *xml,
                                unsigned int flags)
 {
-    xmlDocPtr doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     int ret = -1;
 
@@ -1443,7 +1443,6 @@ qemuMigrationCookieXMLParseStr(qemuMigrationCookie *mig,
     ret = qemuMigrationCookieXMLParse(mig, driver, qemuCaps, doc, ctxt, flags);
 
  cleanup:
-    xmlFreeDoc(doc);
 
     return ret;
 }

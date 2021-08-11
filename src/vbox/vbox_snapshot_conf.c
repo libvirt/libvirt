@@ -575,7 +575,7 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
 {
     int ret = -1;
     virVBoxSnapshotConfMachine *machineDescription = NULL;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     xmlNodePtr machineNode = NULL;
     xmlNodePtr cur = NULL;
     g_autoptr(xmlXPathContext) xPathContext = NULL;
@@ -716,7 +716,6 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
     ret = 0;
 
  cleanup:
-    xmlFreeDoc(xml);
 
     VIR_FREE(currentStateModifiedString);
     VIR_FREE(currentSnapshotAttribute);
@@ -954,7 +953,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachine *machine,
 {
     int ret = -1;
     size_t i = 0;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     xmlNodePtr mediaRegistryNode = NULL;
     xmlNodePtr snapshotNode = NULL;
     xmlNodePtr machineNode = NULL;
@@ -1172,7 +1171,6 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachine *machine,
     xmlUnlinkNode(machineNode);
     xmlFreeNode(machineNode);
 
-    xmlFreeDoc(xml);
 
     g_strfreev(firstRegex);
     g_strfreev(secondRegex);
@@ -1219,7 +1217,7 @@ virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(const char *filePath,
     int result = -1;
     size_t i = 0;
     char **ret = NULL;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) xPathContext = NULL;
     xmlNodePtr *nodes = NULL;
     int nodeSize = 0;
@@ -1258,7 +1256,6 @@ virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(const char *filePath,
     result = 0;
 
  cleanup:
-    xmlFreeDoc(xml);
     if (result < 0) {
         g_strfreev(ret);
         nodeSize = -1;
@@ -1281,7 +1278,7 @@ virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(const char *filePath,
     int result = -1;
     size_t i = 0;
     char **ret = NULL;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) xPathContext = NULL;
     xmlNodePtr *nodes = NULL;
     int nodeSize = 0;
@@ -1319,7 +1316,6 @@ virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(const char *filePath,
     result = 0;
 
  cleanup:
-    xmlFreeDoc(xml);
     if (result < 0) {
         g_strfreev(ret);
         nodeSize = -1;

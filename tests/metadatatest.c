@@ -56,7 +56,7 @@ static const char metadata2_ns[] =
 static char *
 getMetadataFromXML(virDomainPtr dom)
 {
-    xmlDocPtr doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr node;
 
@@ -76,7 +76,6 @@ getMetadataFromXML(virDomainPtr dom)
 
  cleanup:
     VIR_FREE(xml);
-    xmlFreeDoc(doc);
 
     return ret;
 }

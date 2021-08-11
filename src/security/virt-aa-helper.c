@@ -568,7 +568,7 @@ static int
 caps_mockup(vahControl * ctl, const char *xmlStr)
 {
     int rc = -1;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     char *arch;
 
@@ -607,7 +607,6 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
     rc = 0;
 
  cleanup:
-    xmlFreeDoc(xml);
 
     return rc;
 }

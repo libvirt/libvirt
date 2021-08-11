@@ -20377,7 +20377,7 @@ virDomainDefParse(const char *xmlStr,
                   void *parseOpaque,
                   unsigned int flags)
 {
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     virDomainDef *def = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
     xmlNodePtr root;
@@ -20397,7 +20397,6 @@ virDomainDefParse(const char *xmlStr,
     def = virDomainDefParseNode(xml, root, xmlopt, parseOpaque, flags);
 
  cleanup:
-    xmlFreeDoc(xml);
     xmlKeepBlanksDefault(keepBlanksDefault);
     return def;
 }
@@ -20480,14 +20479,13 @@ virDomainObjParseFile(const char *filename,
                       virDomainXMLOption *xmlopt,
                       unsigned int flags)
 {
-    xmlDocPtr xml;
+    g_autoptr(xmlDoc) xml = NULL;
     virDomainObj *obj = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
     if ((xml = virXMLParseFile(filename))) {
         obj = virDomainObjParseNode(xml, xmlDocGetRootElement(xml),
                                     xmlopt, flags);
-        xmlFreeDoc(xml);
     }
 
     xmlKeepBlanksDefault(keepBlanksDefault);

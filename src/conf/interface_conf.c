@@ -821,12 +821,11 @@ static virInterfaceDef *
 virInterfaceDefParse(const char *xmlStr,
                      const char *filename)
 {
-    xmlDocPtr xml;
+    g_autoptr(xmlDoc) xml = NULL;
     virInterfaceDef *def = NULL;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(interface_definition)"), NULL, false))) {
         def = virInterfaceDefParseNode(xml, xmlDocGetRootElement(xml));
-        xmlFreeDoc(xml);
     }
 
     return def;

@@ -2789,7 +2789,7 @@ vzBakeCookie(struct _vzDriver *driver,
 static vzMigrationCookie *
 vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
 {
-    xmlDocPtr doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctx = NULL;
     vzMigrationCookie *mig = NULL;
 
@@ -2838,7 +2838,6 @@ vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
     }
 
  cleanup:
-    xmlFreeDoc(doc);
     return mig;
 
  error:

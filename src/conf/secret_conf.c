@@ -193,12 +193,11 @@ static virSecretDef *
 virSecretDefParse(const char *xmlStr,
                   const char *filename)
 {
-    xmlDocPtr xml;
+    g_autoptr(xmlDoc) xml = NULL;
     virSecretDef *ret = NULL;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(definition_of_secret)"), NULL, false))) {
         ret = secretXMLParseNode(xml, xmlDocGetRootElement(xml));
-        xmlFreeDoc(xml);
     }
 
     return ret;

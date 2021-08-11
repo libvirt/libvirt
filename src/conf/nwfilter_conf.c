@@ -2742,11 +2742,10 @@ virNWFilterDefParse(const char *xmlStr,
                     const char *filename)
 {
     virNWFilterDef *def = NULL;
-    xmlDocPtr xml;
+    g_autoptr(xmlDoc) xml = NULL;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(nwfilter_definition)"), NULL, false))) {
         def = virNWFilterDefParseNode(xml, xmlDocGetRootElement(xml));
-        xmlFreeDoc(xml);
     }
 
     return def;

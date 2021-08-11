@@ -185,11 +185,10 @@ virNWFilterBindingDefParse(const char *xmlStr,
                            const char *filename)
 {
     virNWFilterBindingDef *def = NULL;
-    xmlDocPtr xml;
+    g_autoptr(xmlDoc) xml = NULL;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(nwfilterbinding_definition)"), NULL, false))) {
         def = virNWFilterBindingDefParseNode(xml, xmlDocGetRootElement(xml));
-        xmlFreeDoc(xml);
     }
 
     return def;

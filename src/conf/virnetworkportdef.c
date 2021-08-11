@@ -294,11 +294,10 @@ virNetworkPortDefParse(const char *xmlStr,
                        const char *filename)
 {
     virNetworkPortDef *def = NULL;
-    xmlDocPtr xml;
+    g_autoptr(xmlDoc) xml = NULL;
 
     if ((xml = virXMLParse(filename, xmlStr, _("(networkport_definition)"), NULL, false))) {
         def = virNetworkPortDefParseNode(xml, xmlDocGetRootElement(xml));
-        xmlFreeDoc(xml);
     }
 
     return def;

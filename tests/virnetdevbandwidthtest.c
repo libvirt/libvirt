@@ -42,7 +42,7 @@ struct testSetStruct {
 #define PARSE(xml, var) \
     do { \
         int rc; \
-        xmlDocPtr doc; \
+        g_autoptr(xmlDoc) doc = NULL; \
         g_autoptr(xmlXPathContext) ctxt = NULL; \
  \
         if (!xml) \
@@ -57,7 +57,6 @@ struct testSetStruct {
                                      NULL, \
                                      ctxt->node, \
                                      true); \
-        xmlFreeDoc(doc); \
         if (rc < 0) \
             goto cleanup; \
     } while (0)

@@ -71,7 +71,7 @@ static virCPUDef *
 cpuTestLoadXML(virArch arch, const char *name)
 {
     char *xml = NULL;
-    xmlDocPtr doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     virCPUDef *cpu = NULL;
 
@@ -84,7 +84,6 @@ cpuTestLoadXML(virArch arch, const char *name)
     virCPUDefParseXML(ctxt, NULL, VIR_CPU_TYPE_AUTO, &cpu, false);
 
  cleanup:
-    xmlFreeDoc(doc);
     VIR_FREE(xml);
     return cpu;
 }
@@ -96,7 +95,7 @@ cpuTestLoadMultiXML(virArch arch,
                     unsigned int *count)
 {
     char *xml = NULL;
-    xmlDocPtr doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr *nodes = NULL;
     virCPUDef **cpus = NULL;
@@ -129,7 +128,6 @@ cpuTestLoadMultiXML(virArch arch,
  cleanup:
     VIR_FREE(xml);
     VIR_FREE(nodes);
-    xmlFreeDoc(doc);
     return cpus;
 
  cleanup_cpus:
