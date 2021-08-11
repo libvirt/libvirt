@@ -19515,7 +19515,7 @@ virDomainDefControllersParse(virDomainDef *def,
 }
 
 static virDomainDef *
-virDomainDefParseXML(xmlDocPtr xml,
+virDomainDefParseXML(xmlDocPtr xml G_GNUC_UNUSED,
                      xmlXPathContextPtr ctxt,
                      virDomainXMLOption *xmlopt,
                      unsigned int flags)
@@ -19528,18 +19528,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     bool usb_none = false;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *tmp = NULL;
-
-    if (flags & VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA) {
-        g_autofree char *schema = NULL;
-
-        schema = virFileFindResource("domain.rng",
-                                     abs_top_srcdir "/docs/schemas",
-                                     PKGDATADIR "/schemas");
-        if (!schema)
-            return NULL;
-        if (virXMLValidateAgainstSchema(schema, xml) < 0)
-            return NULL;
-    }
 
     if (!(def = virDomainDefNew()))
         return NULL;
@@ -20400,7 +20388,8 @@ virDomainDefParse(const char *xmlStr,
     virDomainDef *def = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
     xmlNodePtr root;
-    if (!(xml = virXMLParse(filename, xmlStr, _("(domain_definition)"), NULL, false)))
+    if (!(xml = virXMLParse(filename, xmlStr, _("(domain_definition)"), "domain.rng",
+                            flags & VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA)))
         goto cleanup;
 
     root = xmlDocGetRootElement(xml);
