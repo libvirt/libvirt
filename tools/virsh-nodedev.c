@@ -58,7 +58,7 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
     virNodeDevicePtr dev = NULL;
     const char *from = NULL;
     bool ret = true;
-    char *buffer;
+    g_autofree char *buffer = NULL;
     virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
@@ -68,7 +68,6 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     dev = virNodeDeviceCreateXML(priv->conn, buffer, 0);
-    VIR_FREE(buffer);
 
     if (dev != NULL) {
         vshPrintExtra(ctl, _("Node device %s created from %s\n"),
@@ -293,7 +292,7 @@ virshNodeDeviceListCollect(vshControl *ctl,
 
     /* filter the list if the list was acquired by fallback means */
     for (i = 0; i < list->ndevices; i++) {
-        char **caps = NULL;
+        g_autofree char **caps = NULL;
         int ncaps = 0;
         bool match = false;
         size_t j, k;
@@ -310,7 +309,6 @@ virshNodeDeviceListCollect(vshControl *ctl,
 
         if ((ncaps = virNodeDeviceListCaps(device, caps, ncaps)) < 0) {
             vshError(ctl, "%s", _("Failed to get capability names of the device"));
-            VIR_FREE(caps);
             goto cleanup;
         }
 
@@ -325,8 +323,6 @@ virshNodeDeviceListCollect(vshControl *ctl,
                 }
             }
         }
-
-        VIR_FREE(caps);
 
         if (!match)
             goto remove_entry;
@@ -586,7 +582,7 @@ static bool
 cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     virNodeDevicePtr device = NULL;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     const char *device_value = NULL;
     bool ret = false;
 
@@ -605,7 +601,6 @@ cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    VIR_FREE(xml);
     if (device)
         virNodeDeviceFree(device);
     return ret;
@@ -1084,7 +1079,7 @@ cmdNodeDeviceDefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     virNodeDevice *dev = NULL;
     const char *from = NULL;
     bool ret = true;
-    char *buffer;
+    g_autofree char *buffer = NULL;
     virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
@@ -1094,7 +1089,6 @@ cmdNodeDeviceDefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         return false;
 
     dev = virNodeDeviceDefineXML(priv->conn, buffer, 0);
-    VIR_FREE(buffer);
 
     if (dev != NULL) {
         vshPrintExtra(ctl, _("Node device '%s' defined from '%s'\n"),

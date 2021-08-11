@@ -81,7 +81,7 @@ virshCatchDisconnect(virConnectPtr conn,
         vshControl *ctl = opaque;
         const char *str = "unknown reason";
         virErrorPtr error;
-        char *uri;
+        g_autofree char *uri = NULL;
 
         virErrorPreserveLast(&error);
         uri = virConnectGetURI(conn);
@@ -101,7 +101,6 @@ virshCatchDisconnect(virConnectPtr conn,
             break;
         }
         vshError(ctl, _(str), NULLSTR(uri));
-        VIR_FREE(uri);
 
         virErrorRestore(&error);
         disconnected++;

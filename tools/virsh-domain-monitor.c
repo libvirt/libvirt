@@ -583,7 +583,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(xmlDoc) xmldoc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     int ndisks;
-    xmlNodePtr *disks = NULL;
+    g_autofree xmlNodePtr *disks = NULL;
     size_t i;
     bool details = false;
     g_autoptr(vshTable) table = NULL;
@@ -670,7 +670,6 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(disks);
     return ret;
 }
 
@@ -700,7 +699,7 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(xmlDoc) xmldoc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     int ninterfaces;
-    xmlNodePtr *interfaces = NULL;
+    g_autofree xmlNodePtr *interfaces = NULL;
     size_t i;
     g_autoptr(vshTable) table = NULL;
 
@@ -754,7 +753,6 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(interfaces);
     return ret;
 }
 
@@ -791,13 +789,13 @@ static bool
 cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
 {
     const char *iface = NULL;
-    char *state = NULL;
-    char *xpath = NULL;
+    g_autofree char *state = NULL;
+    g_autofree char *xpath = NULL;
     virMacAddr macaddr;
     char macstr[VIR_MAC_STRING_BUFLEN] = "";
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    xmlNodePtr *interfaces = NULL;
+    g_autofree xmlNodePtr *interfaces = NULL;
     int ninterfaces;
     unsigned int flags = 0;
     bool ret = false;
@@ -846,9 +844,6 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(state);
-    VIR_FREE(interfaces);
-    VIR_FREE(xpath);
 
     return ret;
 }
@@ -977,7 +972,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshDomain) dom = NULL;
     const char *name = NULL, *device = NULL;
     virDomainBlockStatsStruct stats;
-    virTypedParameterPtr params = NULL;
+    g_autofree virTypedParameterPtr params = NULL;
     virTypedParameterPtr par = NULL;
     const char *field = NULL;
     int rc, nparams = 0;
@@ -1085,7 +1080,6 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(params);
     return ret;
 }
 #undef DOMBLKSTAT_LEGACY_PRINT

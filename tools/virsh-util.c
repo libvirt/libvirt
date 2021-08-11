@@ -304,7 +304,7 @@ virshDomainGetXMLFromDom(vshControl *ctl,
                          xmlDocPtr *xml,
                          xmlXPathContextPtr *ctxt)
 {
-    char *desc = NULL;
+    g_autofree char *desc = NULL;
 
     if (!(desc = virDomainGetXMLDesc(dom, flags))) {
         vshError(ctl, _("Failed to get domain description xml"));
@@ -312,7 +312,6 @@ virshDomainGetXMLFromDom(vshControl *ctl,
     }
 
     *xml = virXMLParseStringCtxt(desc, _("(domain_definition)"), ctxt);
-    VIR_FREE(desc);
 
     if (!(*xml)) {
         vshError(ctl, _("Failed to parse domain description xml"));

@@ -486,7 +486,7 @@ cmdInterfaceDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     virInterfacePtr iface;
     bool ret = true;
-    char *dump;
+    g_autofree char *dump = NULL;
     unsigned int flags = 0;
     bool inactive = vshCommandOptBool(cmd, "inactive");
 
@@ -499,7 +499,6 @@ cmdInterfaceDumpXML(vshControl *ctl, const vshCmd *cmd)
     dump = virInterfaceGetXMLDesc(iface, flags);
     if (dump != NULL) {
         vshPrint(ctl, "%s", dump);
-        VIR_FREE(dump);
     } else {
         ret = false;
     }
@@ -533,7 +532,7 @@ cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
     virInterfacePtr iface;
     const char *from = NULL;
     bool ret = true;
-    char *buffer;
+    g_autofree char *buffer = NULL;
     virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
@@ -543,7 +542,6 @@ cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     iface = virInterfaceDefineXML(priv->conn, buffer, 0);
-    VIR_FREE(buffer);
 
     if (iface != NULL) {
         vshPrintExtra(ctl, _("Interface %s defined from %s\n"),

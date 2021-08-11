@@ -90,7 +90,7 @@ cmdNWFilterDefine(vshControl *ctl, const vshCmd *cmd)
     virNWFilterPtr nwfilter;
     const char *from = NULL;
     bool ret = true;
-    char *buffer;
+    g_autofree char *buffer = NULL;
     virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
@@ -100,7 +100,6 @@ cmdNWFilterDefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     nwfilter = virNWFilterDefineXML(priv->conn, buffer);
-    VIR_FREE(buffer);
 
     if (nwfilter != NULL) {
         vshPrintExtra(ctl, _("Network filter %s defined from %s\n"),
@@ -185,7 +184,7 @@ cmdNWFilterDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     virNWFilterPtr nwfilter;
     bool ret = true;
-    char *dump;
+    g_autofree char *dump = NULL;
 
     if (!(nwfilter = virshCommandOptNWFilter(ctl, cmd, NULL)))
         return false;
@@ -193,7 +192,6 @@ cmdNWFilterDumpXML(vshControl *ctl, const vshCmd *cmd)
     dump = virNWFilterGetXMLDesc(nwfilter, 0);
     if (dump != NULL) {
         vshPrint(ctl, "%s", dump);
-        VIR_FREE(dump);
     } else {
         ret = false;
     }
@@ -600,7 +598,7 @@ cmdNWFilterBindingDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     virNWFilterBindingPtr binding;
     bool ret = true;
-    char *dump;
+    g_autofree char *dump = NULL;
 
     if (!(binding = virshCommandOptNWFilterBinding(ctl, cmd, NULL)))
         return false;
@@ -608,7 +606,6 @@ cmdNWFilterBindingDumpXML(vshControl *ctl, const vshCmd *cmd)
     dump = virNWFilterBindingGetXMLDesc(binding, 0);
     if (dump != NULL) {
         vshPrint(ctl, "%s", dump);
-        VIR_FREE(dump);
     } else {
         ret = false;
     }

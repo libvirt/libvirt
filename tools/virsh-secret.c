@@ -80,7 +80,7 @@ static bool
 cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
 {
     const char *from = NULL;
-    char *buffer;
+    g_autofree char *buffer = NULL;
     virSecretPtr res;
     char uuid[VIR_UUID_STRING_BUFLEN];
     bool ret = false;
@@ -106,7 +106,6 @@ cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(buffer);
     virshSecretFree(res);
     return ret;
 }
@@ -139,7 +138,7 @@ cmdSecretDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     virSecretPtr secret;
     bool ret = false;
-    char *xml;
+    g_autofree char *xml = NULL;
 
     secret = virshCommandOptSecret(ctl, cmd, NULL);
     if (secret == NULL)
@@ -149,7 +148,6 @@ cmdSecretDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (xml == NULL)
         goto cleanup;
     vshPrint(ctl, "%s", xml);
-    VIR_FREE(xml);
     ret = true;
 
  cleanup:

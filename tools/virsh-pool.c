@@ -270,7 +270,7 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool;
     const char *from = NULL;
     bool ret = true;
-    char *buffer;
+    g_autofree char *buffer = NULL;
     bool build;
     bool overwrite;
     bool no_overwrite;
@@ -298,7 +298,6 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     pool = virStoragePoolCreateXML(priv->conn, buffer, flags);
-    VIR_FREE(buffer);
 
     if (pool != NULL) {
         vshPrintExtra(ctl, _("Pool %s created from %s\n"),
@@ -464,7 +463,7 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
     const char *name;
-    char *xml;
+    g_autofree char *xml = NULL;
     bool printXML = vshCommandOptBool(cmd, "print-xml");
     bool build;
     bool overwrite;
@@ -491,10 +490,8 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     if (printXML) {
         vshPrint(ctl, "%s", xml);
-        VIR_FREE(xml);
     } else {
         pool = virStoragePoolCreateXML(priv->conn, xml, flags);
-        VIR_FREE(xml);
 
         if (pool != NULL) {
             vshPrintExtra(ctl, _("Pool %s created\n"), name);
@@ -533,7 +530,7 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool;
     const char *from = NULL;
     bool ret = true;
-    char *buffer;
+    g_autofree char *buffer = NULL;
     virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
@@ -543,7 +540,6 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     pool = virStoragePoolDefineXML(priv->conn, buffer, 0);
-    VIR_FREE(buffer);
 
     if (pool != NULL) {
         vshPrintExtra(ctl, _("Pool %s defined from %s\n"),
@@ -574,7 +570,7 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
     const char *name;
-    char *xml;
+    g_autofree char *xml = NULL;
     bool printXML = vshCommandOptBool(cmd, "print-xml");
     virshControl *priv = ctl->privData;
 
@@ -583,10 +579,8 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
 
     if (printXML) {
         vshPrint(ctl, "%s", xml);
-        VIR_FREE(xml);
     } else {
         pool = virStoragePoolDefineXML(priv->conn, xml, 0);
-        VIR_FREE(xml);
 
         if (pool != NULL) {
             vshPrintExtra(ctl, _("Pool %s defined\n"), name);
@@ -799,7 +793,7 @@ cmdPoolDumpXML(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     bool inactive = vshCommandOptBool(cmd, "inactive");
     unsigned int flags = 0;
-    char *dump;
+    g_autofree char *dump = NULL;
 
     if (inactive)
         flags |= VIR_STORAGE_XML_INACTIVE;
@@ -810,7 +804,6 @@ cmdPoolDumpXML(vshControl *ctl, const vshCmd *cmd)
     dump = virStoragePoolGetXMLDesc(pool, flags);
     if (dump != NULL) {
         vshPrint(ctl, "%s", dump);
-        VIR_FREE(dump);
     } else {
         ret = false;
     }
@@ -1442,8 +1435,8 @@ static bool
 cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd G_GNUC_UNUSED)
 {
     const char *type = NULL, *host = NULL;
-    char *srcSpec = NULL;
-    char *srcList;
+    g_autofree char *srcSpec = NULL;
+    g_autofree char *srcList = NULL;
     const char *initiator = NULL;
     virshControl *priv = ctl->privData;
 
@@ -1479,13 +1472,11 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd G_GNUC_UNUSED)
     }
 
     srcList = virConnectFindStoragePoolSources(priv->conn, type, srcSpec, 0);
-    VIR_FREE(srcSpec);
     if (srcList == NULL) {
         vshError(ctl, _("Failed to find any %s pool sources"), type);
         return false;
     }
     vshPrint(ctl, "%s", srcList);
-    VIR_FREE(srcList);
 
     return true;
 }
@@ -1832,7 +1823,7 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool = NULL;
     virStoragePoolPtr pool_edited = NULL;
     unsigned int flags = VIR_STORAGE_XML_INACTIVE;
-    char *tmp_desc = NULL;
+    g_autofree char *tmp_desc = NULL;
     virshControl *priv = ctl->privData;
 
     pool = virshCommandOptPool(ctl, cmd, "pool", NULL);
@@ -1847,8 +1838,6 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
         } else {
             goto cleanup;
         }
-    } else {
-        VIR_FREE(tmp_desc);
     }
 
 #define EDIT_GET_XML virStoragePoolGetXMLDesc(pool, flags)

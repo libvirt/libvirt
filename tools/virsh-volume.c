@@ -233,7 +233,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
     virStorageVolPtr vol = NULL;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     bool printXML = vshCommandOptBool(cmd, "print-xml");
     const char *name, *capacityStr = NULL, *allocationStr = NULL, *format = NULL;
     const char *snapshotStrVol = NULL, *snapshotStrFormat = NULL;
@@ -290,7 +290,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     /* Convert the snapshot parameters into backingStore XML */
     if (snapshotStrVol) {
         virStorageVolPtr snapVol;
-        char *snapshotStrVolPath;
+        g_autofree char *snapshotStrVolPath = NULL;
         /* Lookup snapshot backing volume.  Try the backing-vol
          *  parameter as a name */
         vshDebug(ctl, VSH_ERR_DEBUG,
@@ -347,7 +347,6 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
         virBufferAddLit(&buf, "</backingStore>\n");
 
         /* Cleanup snapshot allocations */
-        VIR_FREE(snapshotStrVolPath);
         virStorageVolFree(snapVol);
     }
 
@@ -372,7 +371,6 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (vol)
         virStorageVolFree(vol);
     virStoragePoolFree(pool);
-    VIR_FREE(xml);
     return ret;
 }
 
@@ -407,7 +405,7 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = false;
     unsigned int flags = 0;
-    char *buffer = NULL;
+    g_autofree char *buffer = NULL;
 
     if (vshCommandOptBool(cmd, "prealloc-metadata"))
         flags |= VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
@@ -433,7 +431,6 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    VIR_FREE(buffer);
     virStoragePoolFree(pool);
     return ret;
 }
@@ -477,7 +474,7 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
     virStorageVolPtr newvol = NULL, inputvol = NULL;
     const char *from = NULL;
     bool ret = false;
-    char *buffer = NULL;
+    g_autofree char *buffer = NULL;
     unsigned int flags = 0;
 
     if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
@@ -512,7 +509,6 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    VIR_FREE(buffer);
     if (pool)
         virStoragePoolFree(pool);
     if (inputvol)
@@ -585,7 +581,7 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr origpool = NULL;
     virStorageVolPtr origvol = NULL, newvol = NULL;
     const char *name = NULL;
-    char *origxml = NULL;
+    g_autofree char *origxml = NULL;
     xmlChar *newxml = NULL;
     bool ret = false;
     unsigned int flags = 0;
@@ -632,7 +628,6 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(origxml);
     xmlFree(newxml);
     if (origvol)
         virStorageVolFree(origvol);
@@ -1680,7 +1675,7 @@ static bool
 cmdVolPath(vshControl *ctl, const vshCmd *cmd)
 {
     virStorageVolPtr vol;
-    char * StorageVolPath;
+    g_autofree char *StorageVolPath = NULL;
 
     if (!(vol = virshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
         return false;
@@ -1691,7 +1686,6 @@ cmdVolPath(vshControl *ctl, const vshCmd *cmd)
     }
 
     vshPrint(ctl, "%s\n", StorageVolPath);
-    VIR_FREE(StorageVolPath);
     virStorageVolFree(vol);
     return true;
 }

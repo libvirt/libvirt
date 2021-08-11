@@ -206,7 +206,7 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
     virNetworkPtr network;
     const char *from = NULL;
     bool ret = true;
-    char *buffer;
+    g_autofree char *buffer = NULL;
     virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
@@ -216,7 +216,6 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     network = virNetworkCreateXML(priv->conn, buffer);
-    VIR_FREE(buffer);
 
     if (network != NULL) {
         vshPrintExtra(ctl, _("Network %s created from %s\n"),
@@ -254,7 +253,7 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
     virNetworkPtr network;
     const char *from = NULL;
     bool ret = true;
-    char *buffer;
+    g_autofree char *buffer = NULL;
     virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
@@ -264,7 +263,6 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     network = virNetworkDefineXML(priv->conn, buffer);
-    VIR_FREE(buffer);
 
     if (network != NULL) {
         vshPrintExtra(ctl, _("Network %s defined from %s\n"),
@@ -343,7 +341,7 @@ cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     virNetworkPtr network;
     bool ret = true;
-    char *dump;
+    g_autofree char *dump = NULL;
     unsigned int flags = 0;
     int inactive;
 
@@ -358,7 +356,6 @@ cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
 
     if (dump != NULL) {
         vshPrint(ctl, "%s", dump);
-        VIR_FREE(dump);
     } else {
         ret = false;
     }
@@ -964,7 +961,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
     const char *sectionStr = NULL;
     int command, section, parentIndex = -1;
     const char *xml = NULL;
-    char *xmlFromFile = NULL;
+    g_autofree char *xmlFromFile = NULL;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     unsigned int flags = VIR_NETWORK_UPDATE_AFFECT_CURRENT;
@@ -1059,7 +1056,6 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     vshReportError(ctl);
     virNetworkFree(network);
-    VIR_FREE(xmlFromFile);
     return ret;
 }
 
@@ -1556,7 +1552,7 @@ cmdNetworkPortDumpXML(vshControl *ctl, const vshCmd *cmd)
     virNetworkPtr network;
     virNetworkPortPtr port = NULL;
     bool ret = true;
-    char *dump;
+    g_autofree char *dump = NULL;
     unsigned int flags = 0;
 
     if (!(network = virshCommandOptNetwork(ctl, cmd, NULL)))
@@ -1569,7 +1565,6 @@ cmdNetworkPortDumpXML(vshControl *ctl, const vshCmd *cmd)
 
     if (dump != NULL) {
         vshPrint(ctl, "%s", dump);
-        VIR_FREE(dump);
     } else {
         ret = false;
     }
