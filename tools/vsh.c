@@ -122,48 +122,38 @@ int
 vshStringToArray(const char *str,
                  char ***array)
 {
-    g_autofree char *str_copied = g_strdup(str);
-    char *str_tok = NULL;
-    char *tmp;
-    unsigned int nstr_tokens = 0;
-    char **arr = NULL;
-    size_t len = strlen(str_copied);
+    g_auto(GStrv) tmp = NULL;
+    GStrv n;
+    size_t ntoks = 0;
+    bool concat = false;
 
-    /* tokenize the string from user and save its parts into an array */
-    nstr_tokens = 1;
+    tmp = g_strsplit(str, ",", 0);
 
-    /* count the delimiters, recognizing ,, as an escape for a
-     * literal comma */
-    str_tok = str_copied;
-    while ((str_tok = strchr(str_tok, ','))) {
-        if (str_tok[1] == ',')
-            str_tok++;
-        else
-            nstr_tokens++;
-        str_tok++;
-    }
+    *array = g_new0(char *, g_strv_length(tmp) + 1);
+    (*array)[ntoks++] = g_strdup(tmp[0]);
 
-    /* reserve the NULL element at the end */
-    arr = g_new0(char *, nstr_tokens + 1);
+    /* undo splitting of comma escape (',,') by concatenating back on empty strings */
+    for (n = tmp + 1; n[0]; n++) {
+        if (concat) {
+            g_autofree char *old = (*array)[ntoks - 1];
 
-    /* tokenize the input string, while treating ,, as a literal comma */
-    nstr_tokens = 0;
-    tmp = str_tok = str_copied;
-    while ((tmp = strchr(tmp, ','))) {
-        if (tmp[1] == ',') {
-            memmove(&tmp[1], &tmp[2], len - (tmp - str_copied) - 2 + 1);
-            len--;
-            tmp++;
+            (*array)[ntoks - 1] = g_strconcat(old, ",", n[0], NULL);
+            concat = false;
             continue;
         }
-        *tmp++ = '\0';
-        arr[nstr_tokens++] = g_strdup(str_tok);
-        str_tok = tmp;
-    }
-    arr[nstr_tokens++] = g_strdup(str_tok);
 
-    *array = arr;
-    return nstr_tokens;
+        if (strlen(n[0]) == 0) {
+            concat = true;
+        } else {
+            (*array)[ntoks++] = g_strdup(n[0]);
+        }
+    }
+
+    /* corner case of ending with a single comma */
+    if (concat)
+        (*array)[ntoks++] = g_strdup("");
+
+    return ntoks;
 }
 
 virErrorPtr last_error;
