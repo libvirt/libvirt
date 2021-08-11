@@ -5912,7 +5912,8 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
     const char *mode = NULL;
     int flags = 0;
     int rv;
-    char **modes = NULL, **tmp;
+    char **modes = NULL;
+    char **tmp;
 
     if (vshCommandOptStringReq(ctl, cmd, "mode", &mode) < 0)
         return false;
@@ -5996,7 +5997,8 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     const char *mode = NULL;
     int flags = 0;
-    char **modes = NULL, **tmp;
+    char **modes = NULL;
+    char **tmp;
 
     if (vshCommandOptStringReq(ctl, cmd, "mode", &mode) < 0)
         return false;
@@ -12166,7 +12168,8 @@ virshDomainDetachInterface(char *doc,
     xmlXPathObjectPtr obj = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr cur = NULL, matchNode = NULL;
-    char *detach_xml = NULL, buf[64];
+    char *detach_xml = NULL;
+    char buf[64];
     int diff_mac, ret = -1;
     size_t i;
 
