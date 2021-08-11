@@ -74,7 +74,6 @@ virXPathString(const char *xpath,
                xmlXPathContextPtr ctxt)
 {
     g_autoptr(xmlXPathObject) obj = NULL;
-    char *ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -86,8 +85,7 @@ virXPathString(const char *xpath,
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
         return NULL;
     }
-    ret = g_strdup((char *)obj->stringval);
-    return ret;
+    return g_strdup((char *)obj->stringval);
 }
 
 
@@ -888,7 +886,6 @@ virXPathBoolean(const char *xpath,
                 xmlXPathContextPtr ctxt)
 {
     g_autoptr(xmlXPathObject) obj = NULL;
-    int ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -900,9 +897,7 @@ virXPathBoolean(const char *xpath,
         (obj->boolval < 0) || (obj->boolval > 1)) {
         return -1;
     }
-    ret = obj->boolval;
-
-    return ret;
+    return obj->boolval;
 }
 
 /**
@@ -920,7 +915,6 @@ virXPathNode(const char *xpath,
              xmlXPathContextPtr ctxt)
 {
     g_autoptr(xmlXPathObject) obj = NULL;
-    xmlNodePtr ret;
 
     if ((ctxt == NULL) || (xpath == NULL)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -934,8 +928,7 @@ virXPathNode(const char *xpath,
         return NULL;
     }
 
-    ret = obj->nodesetval->nodeTab[0];
-    return ret;
+    return obj->nodesetval->nodeTab[0];
 }
 
 /**
