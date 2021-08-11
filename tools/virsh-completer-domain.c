@@ -478,7 +478,7 @@ virshDomainVcpuCompleter(vshControl *ctl,
                          unsigned int flags)
 {
     g_autoptr(virshDomain) dom = NULL;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     int nvcpus = 0;
     unsigned int id;
@@ -506,7 +506,6 @@ virshDomainVcpuCompleter(vshControl *ctl,
     ret = g_steal_pointer(&tmp);
 
  cleanup:
-    xmlFreeDoc(xml);
     return ret;
 }
 
@@ -517,7 +516,7 @@ virshDomainVcpulistCompleter(vshControl *ctl,
                              unsigned int flags)
 {
     g_autoptr(virshDomain) dom = NULL;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     int nvcpus = 0;
     unsigned int id;
@@ -549,7 +548,6 @@ virshDomainVcpulistCompleter(vshControl *ctl,
     ret = virshCommaStringListComplete(vcpuid, (const char **)vcpulist);
 
  cleanup:
-    xmlFreeDoc(xml);
     return ret;
 }
 

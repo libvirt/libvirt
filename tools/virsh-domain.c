@@ -3064,7 +3064,7 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     unsigned int xmlflags = 0;
     size_t i;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(xmlXPathObject) obj = NULL;
     xmlNodePtr cur = NULL;
@@ -3178,7 +3178,6 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    xmlFreeDoc(xml);
     VIR_FREE(xml_buf);
 
     return ret;
@@ -3636,7 +3635,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     int nvol_list = 0;
     virshUndefineVolume *vols = NULL; /* info about the volumes to delete */
     size_t nvols = 0;
-    xmlDocPtr doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr *vol_nodes = NULL;   /* XML nodes of volumes of the guest */
     int nvol_nodes;
@@ -3953,7 +3952,6 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(vol_list);
 
     VIR_FREE(vol_nodes);
-    xmlFreeDoc(doc);
     return ret;
 
  error:
@@ -6551,7 +6549,7 @@ virshCPUCountCollect(vshControl *ctl,
     int ret = -2;
     virDomainInfo info;
     int count;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
 
     if (checkState &&
@@ -6611,7 +6609,6 @@ virshCPUCountCollect(vshControl *ctl,
 
     ret = count;
  cleanup:
-    xmlFreeDoc(xml);
 
     return ret;
 }
@@ -6754,7 +6751,7 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
 {
     unsigned int flags = 0;
     virBitmap *ret = NULL;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr *nodes = NULL;
     int nnodes;
@@ -6812,7 +6809,6 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
  cleanup:
     VIR_FREE(online);
     VIR_FREE(nodes);
-    xmlFreeDoc(xml);
     return ret;
 }
 
@@ -11383,7 +11379,7 @@ static const vshCmdOptDef opts_domdisplay[] = {
 static bool
 cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 {
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(virshDomain) dom = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -11613,7 +11609,6 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(passwd);
     VIR_FREE(listen_addr);
     VIR_FREE(output);
-    xmlFreeDoc(xml);
     return ret;
 }
 
@@ -11638,7 +11633,7 @@ static const vshCmdOptDef opts_vncdisplay[] = {
 static bool
 cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
 {
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
@@ -11687,7 +11682,6 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(listen_addr);
-    xmlFreeDoc(xml);
     return ret;
 }
 
@@ -11712,7 +11706,7 @@ static const vshCmdOptDef opts_ttyconsole[] = {
 static bool
 cmdTTYConsole(vshControl *ctl, const vshCmd *cmd)
 {
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     bool ret = false;
     char *tty = NULL;
@@ -11727,7 +11721,6 @@ cmdTTYConsole(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    xmlFreeDoc(xml);
     VIR_FREE(tty);
     return ret;
 }
@@ -12068,7 +12061,7 @@ virshDomainDetachInterface(char *doc,
                            const char *type,
                            const char *mac)
 {
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathObject) obj = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr cur = NULL, matchNode = NULL;
@@ -12143,7 +12136,6 @@ virshDomainDetachInterface(char *doc,
 
  cleanup:
     VIR_FREE(detach_xml);
-    xmlFreeDoc(xml);
     return ret == 0;
 }
 
@@ -12247,7 +12239,7 @@ virshFindDisk(const char *doc,
               const char *path,
               int type)
 {
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathObject) obj = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr cur = NULL;
@@ -12323,7 +12315,6 @@ virshFindDisk(const char *doc,
     vshError(NULL, _("No disk found whose source path or target is %s"), path);
 
  cleanup:
-    xmlFreeDoc(xml);
     return ret;
 }
 

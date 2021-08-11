@@ -167,7 +167,7 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     bool cellno = vshCommandOptBool(cmd, "cellno");
     size_t i;
     char *cap_xml = NULL;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     virshControl *priv = ctl->privData;
 
@@ -243,7 +243,6 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    xmlFreeDoc(xml);
     VIR_FREE(nodes);
     VIR_FREE(nodes_free);
     VIR_FREE(nodes_id);
@@ -306,7 +305,7 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
     xmlNodePtr *nodes = NULL;
     int nodes_cnt;
     char *cap_xml = NULL;
-    xmlDocPtr doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     bool all = vshCommandOptBool(cmd, "all");
     bool cellno = vshCommandOptBool(cmd, "cellno");
@@ -442,7 +441,6 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    xmlFreeDoc(doc);
     VIR_FREE(cap_xml);
     VIR_FREE(nodes);
     VIR_FREE(counts);
@@ -504,7 +502,7 @@ cmdAllocpages(vshControl *ctl, const vshCmd *cmd)
     unsigned long long pageCounts[1], tmp;
     unsigned int flags = 0;
     char *cap_xml = NULL;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr *nodes = NULL;
     virshControl *priv = ctl->privData;
@@ -569,7 +567,6 @@ cmdAllocpages(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    xmlFreeDoc(xml);
     VIR_FREE(nodes);
     VIR_FREE(cap_xml);
     return ret;
@@ -603,7 +600,7 @@ cmdMaxvcpus(vshControl *ctl, const vshCmd *cmd)
     const char *type = NULL;
     int vcpus = -1;
     char *caps = NULL;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     virshControl *priv = ctl->privData;
     bool ret = false;
@@ -628,7 +625,6 @@ cmdMaxvcpus(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    xmlFreeDoc(xml);
     VIR_FREE(caps);
     return ret;
 }
@@ -1120,7 +1116,7 @@ vshExtractCPUDefXMLs(vshControl *ctl,
     char **cpus = NULL;
     char *buffer = NULL;
     char *xmlStr = NULL;
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr *nodes = NULL;
     char *doc;
@@ -1183,7 +1179,6 @@ vshExtractCPUDefXMLs(vshControl *ctl,
  cleanup:
     VIR_FREE(buffer);
     VIR_FREE(xmlStr);
-    xmlFreeDoc(xml);
     VIR_FREE(nodes);
     return cpus;
 

@@ -55,7 +55,7 @@ virshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
                           unsigned int flags)
 {
     char *desc = NULL;
-    xmlDocPtr doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     int type;
 
@@ -92,7 +92,6 @@ virshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
         desc = g_strdup("");
 
  cleanup:
-    xmlFreeDoc(doc);
 
     return desc;
 }
@@ -581,7 +580,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
     unsigned int flags = 0;
-    xmlDocPtr xmldoc = NULL;
+    g_autoptr(xmlDoc) xmldoc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     int ndisks;
     xmlNodePtr *disks = NULL;
@@ -681,7 +680,6 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(device);
     VIR_FREE(type);
     VIR_FREE(disks);
-    xmlFreeDoc(xmldoc);
     return ret;
 }
 
@@ -708,7 +706,7 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
     unsigned int flags = 0;
-    xmlDocPtr xmldoc = NULL;
+    g_autoptr(xmlDoc) xmldoc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     int ninterfaces;
     xmlNodePtr *interfaces = NULL;
@@ -767,7 +765,6 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     vshTableFree(table);
     VIR_FREE(interfaces);
-    xmlFreeDoc(xmldoc);
     return ret;
 }
 
@@ -808,7 +805,7 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
     char *xpath = NULL;
     virMacAddr macaddr;
     char macstr[VIR_MAC_STRING_BUFLEN] = "";
-    xmlDocPtr xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr *interfaces = NULL;
     int ninterfaces;
@@ -862,7 +859,6 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(state);
     VIR_FREE(interfaces);
     VIR_FREE(xpath);
-    xmlFreeDoc(xml);
 
     return ret;
 }

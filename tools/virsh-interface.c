@@ -821,7 +821,7 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
     char *if_xml = NULL;
     xmlChar *br_xml = NULL;
     int br_xml_size;
-    xmlDocPtr xml_doc = NULL;
+    g_autoptr(xmlDoc) xml_doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr top_node, br_node, if_node, cur;
     virshControl *priv = ctl->privData;
@@ -1001,7 +1001,6 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(if_type);
     VIR_FREE(if2_name);
     VIR_FREE(delay_str);
-    xmlFreeDoc(xml_doc);
     return ret;
 }
 
@@ -1042,7 +1041,7 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
     char *br_xml = NULL;
     xmlChar *if_xml = NULL;
     int if_xml_size;
-    xmlDocPtr xml_doc = NULL;
+    g_autoptr(xmlDoc) xml_doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr top_node, if_node, cur;
     virshControl *priv = ctl->privData;
@@ -1200,7 +1199,6 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(br_xml);
     VIR_FREE(if_type);
     VIR_FREE(if_name);
-    xmlFreeDoc(xml_doc);
     return ret;
 }
 

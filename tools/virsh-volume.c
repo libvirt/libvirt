@@ -525,7 +525,7 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
 static xmlChar *
 virshMakeCloneXML(const char *origxml, const char *newname)
 {
-    xmlDocPtr doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(xmlXPathObject) obj = NULL;
     xmlChar *newxml = NULL;
@@ -544,7 +544,6 @@ virshMakeCloneXML(const char *origxml, const char *newname)
     xmlDocDumpMemory(doc, &newxml, &size);
 
  cleanup:
-    xmlFreeDoc(doc);
     return newxml;
 }
 
