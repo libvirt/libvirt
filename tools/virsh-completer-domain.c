@@ -447,7 +447,6 @@ virshDomainIOThreadIdCompleter(vshControl *ctl,
     g_autofree virDomainIOThreadInfoPtr *info = NULL;
     size_t i;
     int rc;
-    char **ret = NULL;
     g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
@@ -456,7 +455,7 @@ virshDomainIOThreadIdCompleter(vshControl *ctl,
         return NULL;
 
     if ((rc = virDomainGetIOThreadInfo(dom, &info, flags)) < 0)
-        goto cleanup;
+        return NULL;
 
     niothreads = rc;
 
@@ -465,10 +464,7 @@ virshDomainIOThreadIdCompleter(vshControl *ctl,
     for (i = 0; i < niothreads; i++)
         tmp[i] = g_strdup_printf("%u", info[i]->iothread_id);
 
-    ret = g_steal_pointer(&tmp);
-
- cleanup:
-    return ret;
+    return g_steal_pointer(&tmp);
 }
 
 
@@ -482,7 +478,6 @@ virshDomainVcpuCompleter(vshControl *ctl,
     g_autoptr(xmlXPathContext) ctxt = NULL;
     int nvcpus = 0;
     unsigned int id;
-    char **ret = NULL;
     g_auto(GStrv) tmp = NULL;
 
     virCheckFlags(0, NULL);
@@ -492,21 +487,18 @@ virshDomainVcpuCompleter(vshControl *ctl,
 
     if (virshDomainGetXMLFromDom(ctl, dom, VIR_DOMAIN_XML_INACTIVE,
                                  &xml, &ctxt) < 0)
-        goto cleanup;
+        return NULL;
 
     /* Query the max rather than the current vcpu count */
     if (virXPathInt("string(/domain/vcpu)", ctxt, &nvcpus) < 0)
-        goto cleanup;
+        return NULL;
 
     tmp = g_new0(char *, nvcpus + 1);
 
     for (id = 0; id < nvcpus; id++)
         tmp[id] = g_strdup_printf("%u", id);
 
-    ret = g_steal_pointer(&tmp);
-
- cleanup:
-    return ret;
+    return g_steal_pointer(&tmp);
 }
 
 
@@ -522,7 +514,6 @@ virshDomainVcpulistCompleter(vshControl *ctl,
     unsigned int id;
     g_auto(GStrv) vcpulist = NULL;
     const char *vcpuid = NULL;
-    char **ret = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -530,25 +521,22 @@ virshDomainVcpulistCompleter(vshControl *ctl,
         return NULL;
 
     if (vshCommandOptStringQuiet(ctl, cmd, "vcpulist", &vcpuid) < 0)
-        goto cleanup;
+        return NULL;
 
     if (virshDomainGetXMLFromDom(ctl, dom, VIR_DOMAIN_XML_INACTIVE,
                                  &xml, &ctxt) < 0)
-        goto cleanup;
+        return NULL;
 
     /* Query the max rather than the current vcpu count */
     if (virXPathInt("string(/domain/vcpu)", ctxt, &nvcpus) < 0)
-        goto cleanup;
+        return NULL;
 
     vcpulist = g_new0(char *, nvcpus + 1);
 
     for (id = 0; id < nvcpus; id++)
         vcpulist[id] = g_strdup_printf("%u", id);
 
-    ret = virshCommaStringListComplete(vcpuid, (const char **)vcpulist);
-
- cleanup:
-    return ret;
+    return virshCommaStringListComplete(vcpuid, (const char **)vcpulist);
 }
 
 

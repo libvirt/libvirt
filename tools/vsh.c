@@ -432,7 +432,6 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
                    bool report)
 {
     size_t i;
-    const vshCmdOptDef *ret = NULL;
     g_autofree char *alias = NULL;
 
     if (STREQ(name, helpopt.name))
@@ -457,7 +456,7 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
                         if (report)
                             vshError(ctl, _("invalid '=' after option --%s"),
                                      opt->name);
-                        goto cleanup;
+                        return NULL;
                     }
                     *optstr = g_strdup(value + 1);
                 }
@@ -466,12 +465,11 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
             if ((*opts_seen & (1ULL << i)) && opt->type != VSH_OT_ARGV) {
                 if (report)
                     vshError(ctl, _("option --%s already seen"), name);
-                goto cleanup;
+                return NULL;
             }
             *opts_seen |= 1ULL << i;
             *opt_index = i;
-            ret = opt;
-            goto cleanup;
+            return opt;
         }
     }
 
@@ -479,8 +477,7 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
         vshError(ctl, _("command '%s' doesn't support option --%s"),
                  cmd->name, name);
     }
- cleanup:
-    return ret;
+    return NULL;
 }
 
 static const vshCmdOptDef *

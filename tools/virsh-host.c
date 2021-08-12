@@ -97,7 +97,6 @@ static const vshCmdOptDef opts_domcapabilities[] = {
 static bool
 cmdDomCapabilities(vshControl *ctl, const vshCmd *cmd)
 {
-    bool ret = false;
     g_autofree char *caps = NULL;
     const char *virttype = NULL;
     const char *emulatorbin = NULL;
@@ -110,19 +109,18 @@ cmdDomCapabilities(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "emulatorbin", &emulatorbin) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "machine", &machine) < 0)
-        return ret;
+        return false;
 
     caps = virConnectGetDomainCapabilities(priv->conn, emulatorbin,
                                            arch, machine, virttype, flags);
     if (!caps) {
         vshError(ctl, "%s", _("failed to get emulator capabilities"));
-        goto cleanup;
+        return false;
     }
 
     vshPrint(ctl, "%s\n", caps);
-    ret = true;
- cleanup:
-    return ret;
+
+    return true;
 }
 
 /*
@@ -154,7 +152,6 @@ static const vshCmdOptDef opts_freecell[] = {
 static bool
 cmdFreecell(vshControl *ctl, const vshCmd *cmd)
 {
-    bool ret = false;
     int cell = -1;
     unsigned long long memory = 0;
     g_autofree xmlNodePtr *nodes = NULL;
@@ -177,13 +174,13 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     if (all) {
         if (!(cap_xml = virConnectGetCapabilities(priv->conn))) {
             vshError(ctl, "%s", _("unable to get node capabilities"));
-            goto cleanup;
+            return false;
         }
 
         xml = virXMLParseStringCtxt(cap_xml, _("(capabilities)"), &ctxt);
         if (!xml) {
             vshError(ctl, "%s", _("unable to get node capabilities"));
-            goto cleanup;
+            return false;
         }
 
         nodes_cnt = virXPathNodeSet("/capabilities/host/topology/cells/cell",
@@ -192,7 +189,7 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
         if (nodes_cnt == -1) {
             vshError(ctl, "%s", _("could not get information about "
                                   "NUMA topology"));
-            goto cleanup;
+            return false;
         }
 
         nodes_free = g_new0(unsigned long long, nodes_cnt);
@@ -203,14 +200,14 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
             g_autofree char *val = virXMLPropString(nodes[i], "id");
             if (virStrToLong_ulp(val, NULL, 10, &id)) {
                 vshError(ctl, "%s", _("conversion from string failed"));
-                goto cleanup;
+                return false;
             }
             nodes_id[i] = id;
             if (virNodeGetCellsFreeMemory(priv->conn, &(nodes_free[i]),
                                           id, 1) != 1) {
                 vshError(ctl, _("failed to get free memory for NUMA node "
                                 "number: %lu"), id);
-                goto cleanup;
+                return false;
             }
         }
 
@@ -225,21 +222,18 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     } else {
         if (cellno) {
             if (virNodeGetCellsFreeMemory(priv->conn, &memory, cell, 1) != 1)
-                goto cleanup;
+                return false;
 
             vshPrint(ctl, "%d: %llu KiB\n", cell, (memory/1024));
         } else {
             if ((memory = virNodeGetFreeMemory(priv->conn)) == 0)
-                goto cleanup;
+                return false;
 
             vshPrint(ctl, "%s: %llu KiB\n", _("Total"), (memory/1024));
         }
     }
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 
@@ -476,7 +470,6 @@ static const vshCmdOptDef opts_allocpages[] = {
 static bool
 cmdAllocpages(vshControl *ctl, const vshCmd *cmd)
 {
-    bool ret = false;
     bool add = vshCommandOptBool(cmd, "add");
     bool all = vshCommandOptBool(cmd, "all");
     bool cellno = vshCommandOptBool(cmd, "cellno");
@@ -511,13 +504,13 @@ cmdAllocpages(vshControl *ctl, const vshCmd *cmd)
 
         if (!(cap_xml = virConnectGetCapabilities(priv->conn))) {
             vshError(ctl, "%s", _("unable to get node capabilities"));
-            goto cleanup;
+            return false;
         }
 
         xml = virXMLParseStringCtxt(cap_xml, _("(capabilities)"), &ctxt);
         if (!xml) {
             vshError(ctl, "%s", _("unable to get node capabilities"));
-            goto cleanup;
+            return false;
         }
 
         nodes_cnt = virXPathNodeSet("/capabilities/host/topology/cells/cell",
@@ -526,7 +519,7 @@ cmdAllocpages(vshControl *ctl, const vshCmd *cmd)
         if (nodes_cnt == -1) {
             vshError(ctl, "%s", _("could not get information about "
                                   "NUMA topology"));
-            goto cleanup;
+            return false;
         }
 
         for (i = 0; i < nodes_cnt; i++) {
@@ -534,22 +527,20 @@ cmdAllocpages(vshControl *ctl, const vshCmd *cmd)
             g_autofree char *val = virXMLPropString(nodes[i], "id");
             if (virStrToLong_ulp(val, NULL, 10, &id)) {
                 vshError(ctl, "%s", _("conversion from string failed"));
-                goto cleanup;
+                return false;
             }
 
             if (virNodeAllocPages(priv->conn, 1, pageSizes,
                                   pageCounts, id, 1, flags) < 0)
-                goto cleanup;
+                return false;
         }
     } else {
         if (virNodeAllocPages(priv->conn, 1, pageSizes, pageCounts,
                               startCell, cellCount, flags) < 0)
-            goto cleanup;
+            return false;
     }
 
-    ret = true;
- cleanup:
-    return ret;
+    return true;
 }
 
 
@@ -583,7 +574,6 @@ cmdMaxvcpus(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     virshControl *priv = ctl->privData;
-    bool ret = false;
 
     if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
         return false;
@@ -591,7 +581,7 @@ cmdMaxvcpus(vshControl *ctl, const vshCmd *cmd)
     if ((caps = virConnectGetDomainCapabilities(priv->conn, NULL, NULL, NULL,
                                                 type, 0))) {
         if (!(xml = virXMLParseStringCtxt(caps, _("(domainCapabilities)"), &ctxt)))
-            goto cleanup;
+            return false;
 
         ignore_value(virXPathInt("string(./vcpu[1]/@max)", ctxt, &vcpus));
     } else {
@@ -599,13 +589,11 @@ cmdMaxvcpus(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (vcpus < 0 && (vcpus = virConnectGetMaxVcpus(priv->conn, type)) < 0)
-        goto cleanup;
+        return false;
 
     vshPrint(ctl, "%d\n", vcpus);
-    ret = true;
 
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -673,13 +661,12 @@ cmdNodeCpuMap(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     g_autofree unsigned char *cpumap = NULL;
     unsigned int online;
     bool pretty = vshCommandOptBool(cmd, "pretty");
-    bool ret = false;
     virshControl *priv = ctl->privData;
 
     cpunum = virNodeGetCPUMap(priv->conn, &cpumap, &online, 0);
     if (cpunum < 0) {
         vshError(ctl, "%s", _("Unable to get cpu map"));
-        goto cleanup;
+        return false;
     }
 
     vshPrint(ctl, "%-15s %d\n", _("CPUs present:"), cpunum);
@@ -690,7 +677,7 @@ cmdNodeCpuMap(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         g_autofree char *str = virBitmapDataFormat(cpumap, VIR_CPU_MAPLEN(cpunum));
 
         if (!str)
-            goto cleanup;
+            return false;
         vshPrint(ctl, "%s", str);
     } else {
         for (cpu = 0; cpu < cpunum; cpu++)
@@ -698,10 +685,7 @@ cmdNodeCpuMap(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     }
     vshPrint(ctl, "\n");
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -767,7 +751,6 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
     int cpuNum = VIR_NODE_CPU_STATS_ALL_CPUS;
     g_autofree virNodeCPUStatsPtr params = NULL;
     int nparams = 0;
-    bool ret = false;
     unsigned long long cpu_stats[VIRSH_CPU_LAST] = { 0 };
     bool present[VIRSH_CPU_LAST] = { false };
     virshControl *priv = ctl->privData;
@@ -791,7 +774,7 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
     for (i = 0; i < 2; i++) {
         if (virNodeGetCPUStats(priv->conn, cpuNum, params, &nparams, 0) != 0) {
             vshError(ctl, "%s", _("Unable to get node cpu stats"));
-            goto cleanup;
+            return false;
         }
 
         for (j = 0; j < nparams; j++) {
@@ -845,10 +828,7 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -879,7 +859,6 @@ cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
     size_t i;
     int cellNum = VIR_NODE_MEMORY_STATS_ALL_CELLS;
     g_autofree virNodeMemoryStatsPtr params = NULL;
-    bool ret = false;
     virshControl *priv = ctl->privData;
 
     if (vshCommandOptInt(ctl, cmd, "cell", &cellNum) < 0)
@@ -889,29 +868,25 @@ cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
     if (virNodeGetMemoryStats(priv->conn, cellNum, NULL, &nparams, 0) != 0) {
         vshError(ctl, "%s",
                  _("Unable to get number of memory stats"));
-        goto cleanup;
+        return false;
     }
 
     if (nparams == 0) {
         /* nothing to output */
-        ret = true;
-        goto cleanup;
+        return true;
     }
 
     /* now go get all the memory parameters */
     params = g_new0(virNodeMemoryStats, nparams);
     if (virNodeGetMemoryStats(priv->conn, cellNum, params, &nparams, 0) != 0) {
         vshError(ctl, "%s", _("Unable to get memory stats"));
-        goto cleanup;
+        return false;
     }
 
     for (i = 0; i < nparams; i++)
         vshPrint(ctl, "%-7s: %20llu KiB\n", params[i].field, params[i].value);
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 /*

@@ -81,7 +81,7 @@ virshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
 
     /* fall back to xml */
     if (virshDomainGetXMLFromDom(ctl, dom, flags, &doc, &ctxt) < 0)
-        goto cleanup;
+        return NULL;
 
     if (title)
         desc = virXPathString("string(./title[1])", ctxt);
@@ -90,8 +90,6 @@ virshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
 
     if (!desc)
         desc = g_strdup("");
-
- cleanup:
 
     return desc;
 }
@@ -299,7 +297,6 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
     virDomainMemoryStatStruct stats[VIR_DOMAIN_MEMORY_STAT_NR];
     unsigned int nr_stats;
     size_t i;
-    bool ret = false;
     int rv = 0;
     int period = -1;
     bool config = vshCommandOptBool(cmd, "config");
@@ -326,26 +323,25 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
      * This is not really an unsigned long, but it
      */
     if ((rv = vshCommandOptInt(ctl, cmd, "period", &period)) < 0)
-        goto cleanup;
+        return false;
     if (rv > 0) {
         if (period < 0) {
             vshError(ctl, _("Invalid collection period value '%d'"), period);
-            goto cleanup;
+            return false;
         }
 
         if (virDomainSetMemoryStatsPeriod(dom, period, flags) < 0) {
             vshError(ctl, "%s",
                      _("Unable to change balloon collection period."));
-        } else {
-            ret = true;
+            return false;
         }
-        goto cleanup;
+        return true;
     }
 
     nr_stats = virDomainMemoryStats(dom, stats, VIR_DOMAIN_MEMORY_STAT_NR, 0);
     if (nr_stats == -1) {
         vshError(ctl, _("Failed to get memory statistics for domain %s"), name);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0; i < nr_stats; i++) {
@@ -377,9 +373,7 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "hugetlb_pgfail %llu\n", stats[i].val);
     }
 
-    ret = true;
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -578,7 +572,6 @@ static const vshCmdOptDef opts_domblklist[] = {
 static bool
 cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
 {
-    bool ret = false;
     unsigned int flags = 0;
     g_autoptr(xmlDoc) xmldoc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
@@ -594,11 +587,11 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     details = vshCommandOptBool(cmd, "details");
 
     if (virshDomainGetXML(ctl, cmd, flags, &xmldoc, &ctxt) < 0)
-        goto cleanup;
+        return false;
 
     ndisks = virXPathNodeSet("./devices/disk", ctxt, &disks);
     if (ndisks < 0)
-        goto cleanup;
+        return false;
 
     if (details)
         table = vshTableNew(_("Type"), _("Device"), _("Target"), _("Source"), NULL);
@@ -606,7 +599,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
         table = vshTableNew(_("Target"), _("Source"), NULL);
 
     if (!table)
-        goto cleanup;
+        return false;
 
     for (i = 0; i < ndisks; i++) {
         g_autofree char *type = NULL;
@@ -621,14 +614,14 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
             device = virXPathString("string(./@device)", ctxt);
             if (!type || !device) {
                 vshPrint(ctl, "unable to query block list details");
-                goto cleanup;
+                return false;
             }
         }
 
         target = virXPathString("string(./target/@dev)", ctxt);
         if (!target) {
             vshError(ctl, "unable to query block list");
-            goto cleanup;
+            return false;
         }
 
         if (STREQ_NULLABLE(type, "nvme")) {
@@ -640,7 +633,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
                 !(addrNode = virXPathNode("./source/address", ctxt)) ||
                 virPCIDeviceAddressParseXML(addrNode, &addr) < 0) {
                 vshError(ctl, "Unable to query NVMe disk address");
-                goto cleanup;
+                return false;
             }
 
             source = g_strdup_printf("nvme://%04x:%02x:%02x.%d/%s",
@@ -657,20 +650,17 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
         if (details) {
             if (vshTableRowAppend(table, type, device, target,
                                   NULLSTR_MINUS(source), NULL) < 0)
-                goto cleanup;
+                return false;
         } else {
             if (vshTableRowAppend(table, target,
                                   NULLSTR_MINUS(source), NULL) < 0)
-                goto cleanup;
+                return false;
         }
     }
 
     vshTablePrintToStdout(table, ctl);
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -694,7 +684,6 @@ static const vshCmdOptDef opts_domiflist[] = {
 static bool
 cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
 {
-    bool ret = false;
     unsigned int flags = 0;
     g_autoptr(xmlDoc) xmldoc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
@@ -707,16 +696,16 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_XML_INACTIVE;
 
     if (virshDomainGetXML(ctl, cmd, flags, &xmldoc, &ctxt) < 0)
-        goto cleanup;
+        return false;
 
     ninterfaces = virXPathNodeSet("./devices/interface", ctxt, &interfaces);
     if (ninterfaces < 0)
-        goto cleanup;
+        return false;
 
     table = vshTableNew(_("Interface"), _("Type"),
                         _("Source"), _("Model"), _("MAC"), NULL);
     if (!table)
-        goto cleanup;
+        return false;
 
     for (i = 0; i < ninterfaces; i++) {
         g_autofree char *type = NULL;
@@ -745,15 +734,12 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
                               model ? model : "-",
                               mac ? mac : "-",
                               NULL) < 0)
-            goto cleanup;
+            return false;
     }
 
     vshTablePrintToStdout(table, ctl);
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -798,7 +784,6 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
     g_autofree xmlNodePtr *interfaces = NULL;
     int ninterfaces;
     unsigned int flags = 0;
-    bool ret = false;
 
     if (vshCommandOptStringReq(ctl, cmd, "interface", &iface) < 0)
         return false;
@@ -807,7 +792,7 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
         flags = VIR_DOMAIN_XML_INACTIVE;
 
     if (virshDomainGetXML(ctl, cmd, flags, &xml, &ctxt) < 0)
-        goto cleanup;
+        return false;
 
     /* normalize the mac addr */
     if (virMacAddrParse(iface, &macaddr) == 0)
@@ -819,7 +804,7 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
 
     if ((ninterfaces = virXPathNodeSet(xpath, ctxt, &interfaces)) < 0) {
         vshError(ctl, _("Failed to extract interface information"));
-        goto cleanup;
+        return false;
     }
 
     if (ninterfaces < 1) {
@@ -828,10 +813,10 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
         else
             vshError(ctl, _("Interface (dev: %s) not found."), iface);
 
-        goto cleanup;
+        return false;
     } else if (ninterfaces > 1) {
         vshError(ctl, _("multiple matching interfaces found"));
-        goto cleanup;
+        return false;
     }
 
     ctxt->node = interfaces[0];
@@ -841,11 +826,7 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
     else
         vshPrint(ctl, "%s up", iface);
 
-    ret = true;
-
- cleanup:
-
-    return ret;
+    return true;
 }
 
 /*
@@ -870,16 +851,13 @@ static bool
 cmdDomControl(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = true;
     virDomainControlInfo info;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (virDomainGetControlInfo(dom, &info, 0) < 0) {
-        ret = false;
-        goto cleanup;
-    }
+    if (virDomainGetControlInfo(dom, &info, 0) < 0)
+        return false;
 
     if (info.state != VIR_DOMAIN_CONTROL_OK &&
         info.state != VIR_DOMAIN_CONTROL_ERROR) {
@@ -895,8 +873,7 @@ cmdDomControl(vshControl *ctl, const vshCmd *cmd)
                  virshDomainControlStateToString(info.state));
     }
 
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -977,7 +954,6 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
     const char *field = NULL;
     int rc, nparams = 0;
     size_t i;
-    bool ret = false;
     bool human = vshCommandOptBool(cmd, "human"); /* human readable output */
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, &name)))
@@ -988,7 +964,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
        API contract.
      */
     if (vshCommandOptStringReq(ctl, cmd, "device", &device) < 0)
-        goto cleanup;
+        return false;
 
     if (!device)
         device = "";
@@ -1002,7 +978,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
     if (rc < 0) {
         /* try older API if newer is not supported */
         if (last_error->code != VIR_ERR_NO_SUPPORT)
-            goto cleanup;
+            return false;
 
         vshResetLibvirtError();
 
@@ -1010,7 +986,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
                                 sizeof(stats)) == -1) {
             vshError(ctl, _("Failed to get block stats %s %s"),
                      name, device);
-            goto cleanup;
+            return false;
         }
 
         /* human friendly output */
@@ -1028,7 +1004,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
         params = g_new0(virTypedParameter, nparams);
         if (virDomainBlockStatsFlags(dom, device, params, &nparams, 0) < 0) {
             vshError(ctl, _("Failed to get block stats for domain '%s' device '%s'"), name, device);
-            goto cleanup;
+            return false;
         }
 
         /* set for prettier output */
@@ -1077,10 +1053,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 #undef DOMBLKSTAT_LEGACY_PRINT
 
@@ -1114,17 +1087,16 @@ cmdDomIfstat(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshDomain) dom = NULL;
     const char *name = NULL, *device = NULL;
     virDomainInterfaceStatsStruct stats;
-    bool ret = false;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "interface", &device) < 0)
-        goto cleanup;
+        return false;
 
     if (virDomainInterfaceStats(dom, device, &stats, sizeof(stats)) == -1) {
         vshError(ctl, _("Failed to get interface stats %s %s"), name, device);
-        goto cleanup;
+        return false;
     }
 
     if (stats.rx_bytes >= 0)
@@ -1151,10 +1123,7 @@ cmdDomIfstat(vshControl *ctl, const vshCmd *cmd)
     if (stats.tx_drop >= 0)
         vshPrint(ctl, "%s tx_drop %lld\n", device, stats.tx_drop);
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -1386,17 +1355,14 @@ static bool
 cmdDomstate(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = true;
     bool showReason = vshCommandOptBool(cmd, "reason");
     int state, reason;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if ((state = virshDomainState(ctl, dom, &reason)) < 0) {
-        ret = false;
-        goto cleanup;
-    }
+    if ((state = virshDomainState(ctl, dom, &reason)) < 0)
+        return false;
 
     if (showReason) {
         vshPrint(ctl, "%s (%s)\n",
@@ -1407,8 +1373,7 @@ cmdDomstate(vshControl *ctl, const vshCmd *cmd)
                  virshDomainStateToString(state));
     }
 
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -1449,7 +1414,6 @@ static bool
 cmdDomTime(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = false;
     bool now = vshCommandOptBool(cmd, "now");
     bool pretty = vshCommandOptBool(cmd, "pretty");
     bool rtcSync = vshCommandOptBool(cmd, "sync");
@@ -1470,7 +1434,7 @@ cmdDomTime(vshControl *ctl, const vshCmd *cmd)
 
     if (rv < 0) {
         /* invalid integer format */
-        goto cleanup;
+        return false;
     } else if (rv > 0) {
         /* valid integer to set */
         doSet = true;
@@ -1479,18 +1443,18 @@ cmdDomTime(vshControl *ctl, const vshCmd *cmd)
     if (doSet || now || rtcSync) {
         if (now && ((seconds = time(NULL)) == (time_t) -1)) {
             vshError(ctl, _("Unable to get current time"));
-            goto cleanup;
+            return false;
         }
 
         if (rtcSync)
             flags |= VIR_DOMAIN_TIME_SYNC;
 
         if (virDomainSetTime(dom, seconds, nseconds, flags) < 0)
-            goto cleanup;
+            return false;
 
     } else {
         if (virDomainGetTime(dom, &seconds, &nseconds, flags) < 0)
-            goto cleanup;
+            return false;
 
         if (pretty) {
             g_autoptr(GDateTime) then = NULL;
@@ -1505,9 +1469,7 @@ cmdDomTime(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    ret = true;
- cleanup:
-    return ret;
+    return true;
 }
 
 /*

@@ -529,17 +529,16 @@ virshMakeCloneXML(const char *origxml, const char *newname)
 
     doc = virXMLParseStringCtxt(origxml, _("(volume_definition)"), &ctxt);
     if (!doc)
-        goto cleanup;
+        return NULL;
 
     obj = xmlXPathEval(BAD_CAST "/volume/name", ctxt);
     if (obj == NULL || obj->nodesetval == NULL ||
         obj->nodesetval->nodeTab == NULL)
-        goto cleanup;
+        return NULL;
 
     xmlNodeSetContent(obj->nodesetval->nodeTab[0], (const xmlChar *)newname);
     xmlDocDumpMemory(doc, &newxml, &size);
 
- cleanup:
     return newxml;
 }
 

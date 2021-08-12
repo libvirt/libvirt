@@ -122,11 +122,11 @@ vshFindNodeDevice(vshControl *ctl, const char *value)
         narr = vshStringToArray(value, &arr);
         if (narr != 2) {
             vshError(ctl, _("Malformed device value '%s'"), value);
-            goto cleanup;
+            return NULL;
         }
 
         if (!virValidateWWN(arr[0]) || !virValidateWWN(arr[1]))
-            goto cleanup;
+            return NULL;
 
         dev = virNodeDeviceLookupSCSIHostByWWN(priv->conn, arr[0], arr[1], 0);
     } else {
@@ -135,10 +135,9 @@ vshFindNodeDevice(vshControl *ctl, const char *value)
 
     if (!dev) {
         vshError(ctl, "%s '%s'", _("Could not find matching device"), value);
-        goto cleanup;
+        return NULL;
     }
 
- cleanup:
     return dev;
 }
 
