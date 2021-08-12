@@ -2377,7 +2377,7 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     }
 
     /* Temporary filename: caller frees. */
-    return ret;
+    return g_steal_pointer(&ret);
 }
 
 /* Characters permitted in $EDITOR environment variable and temp filename. */
