@@ -923,13 +923,12 @@ libxlMakeVnumaList(virDomainDef *def,
     return ret;
 }
 
-static int
-libxlDiskSetDiscard(libxl_device_disk *x_disk, int discard)
+static void
+libxlDiskSetDiscard(libxl_device_disk *x_disk, virDomainDiskDiscard discard)
 {
     if (!x_disk->readwrite)
-        return 0;
-#if defined(LIBXL_HAVE_LIBXL_DEVICE_DISK_DISCARD_ENABLE)
-    switch ((virDomainDiskDiscard)discard) {
+        return;
+    switch (discard) {
     case VIR_DOMAIN_DISK_DISCARD_DEFAULT:
     case VIR_DOMAIN_DISK_DISCARD_LAST:
         break;
@@ -940,15 +939,6 @@ libxlDiskSetDiscard(libxl_device_disk *x_disk, int discard)
         libxl_defbool_set(&x_disk->discard_enable, false);
         break;
     }
-    return 0;
-#else
-    if (discard == VIR_DOMAIN_DISK_DISCARD_DEFAULT)
-        return 0;
-    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                   _("This version of libxenlight does not support "
-                     "disk 'discard' option passing"));
-    return -1;
-#endif
 }
 
 static char *
@@ -1189,8 +1179,7 @@ libxlMakeDisk(virDomainDiskDef *l_disk, libxl_device_disk *x_disk)
     x_disk->removable = 1;
     x_disk->readwrite = !l_disk->src->readonly;
     x_disk->is_cdrom = l_disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ? 1 : 0;
-    if (libxlDiskSetDiscard(x_disk, l_disk->discard) < 0)
-        return -1;
+    libxlDiskSetDiscard(x_disk, l_disk->discard);
     /* An empty CDROM must have the empty format, otherwise libxl fails. */
     if (x_disk->is_cdrom && !x_disk->pdev_path)
         x_disk->format = LIBXL_DISK_FORMAT_EMPTY;
