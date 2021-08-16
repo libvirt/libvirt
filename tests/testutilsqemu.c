@@ -684,7 +684,8 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
 {
     va_list argptr;
     testQemuInfoArgName argname;
-    virQEMUCaps *qemuCaps = NULL;
+    g_autoptr(virQEMUCaps) fakeCaps = virQEMUCapsNew();
+    bool fakeCapsUsed = false;
     int gic = GIC_NONE;
     char *capsarch = NULL;
     char *capsver = NULL;
@@ -692,16 +693,18 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
     int flag;
     int ret = -1;
 
+    if (!fakeCaps)
+        abort();
+
     va_start(argptr, capslatest);
     argname = va_arg(argptr, testQemuInfoArgName);
     while (argname != ARG_END) {
         switch (argname) {
         case ARG_QEMU_CAPS:
-            if (qemuCaps || !(qemuCaps = virQEMUCapsNew()))
-                goto cleanup;
+            fakeCapsUsed = true;
 
             while ((flag = va_arg(argptr, int)) < QEMU_CAPS_LAST)
-                virQEMUCapsSet(qemuCaps, flag);
+                virQEMUCapsSet(fakeCaps, flag);
 
             /* Some tests are run with NONE capabilities, which is just
              * another name for QEMU_CAPS_LAST. If that is the case the
@@ -764,15 +767,15 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
         goto cleanup;
     }
 
-    if (qemuCaps && (capsarch || capsver)) {
-        fprintf(stderr, "ARG_QEMU_CAPS can not be combined with ARG_CAPS_ARCH "
-                        "or ARG_CAPS_VER\n");
-        goto cleanup;
-    }
-
-    if (!qemuCaps && capsarch && capsver) {
+    if (capsarch && capsver) {
         bool stripmachinealiases = false;
         virQEMUCaps *cachedcaps = NULL;
+
+        if (fakeCapsUsed) {
+            fprintf(stderr, "ARG_QEMU_CAPS can not be combined with ARG_CAPS_ARCH "
+                    "or ARG_CAPS_VER\n");
+            goto cleanup;
+        }
 
         info->arch = virArchFromString(capsarch);
 
@@ -785,32 +788,26 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
         }
 
         if (!g_hash_table_lookup_extended(capscache, capsfile, NULL, (void **) &cachedcaps)) {
-            if (!(qemuCaps = qemuTestParseCapabilitiesArch(info->arch, capsfile)))
+            if (!(cachedcaps = qemuTestParseCapabilitiesArch(info->arch, capsfile)))
                 goto cleanup;
 
-            cachedcaps = qemuCaps;
-
-            g_hash_table_insert(capscache, g_strdup(capsfile), g_steal_pointer(&qemuCaps));
+            g_hash_table_insert(capscache, g_strdup(capsfile), cachedcaps);
         }
 
-        if (!(qemuCaps = virQEMUCapsNewCopy(cachedcaps)))
+        if (!(info->qemuCaps = virQEMUCapsNewCopy(cachedcaps)))
             goto cleanup;
 
         if (stripmachinealiases)
-            virQEMUCapsStripMachineAliases(qemuCaps);
+            virQEMUCapsStripMachineAliases(info->qemuCaps);
 
         info->flags |= FLAG_REAL_CAPS;
 
         /* provide path to the replies file for schema testing */
         capsfile[strlen(capsfile) - 3] = '\0';
         info->schemafile = g_strdup_printf("%sreplies", capsfile);
+    } else {
+        info->qemuCaps = g_steal_pointer(&fakeCaps);
     }
-
-    if (!qemuCaps) {
-        fprintf(stderr, "No qemuCaps generated\n");
-        goto cleanup;
-    }
-    info->qemuCaps = g_steal_pointer(&qemuCaps);
 
     if (gic != GIC_NONE && testQemuCapsSetGIC(info->qemuCaps, gic) < 0)
         goto cleanup;
@@ -818,7 +815,6 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
     ret = 0;
 
  cleanup:
-    virObjectUnref(qemuCaps);
     va_end(argptr);
 
     return ret;
