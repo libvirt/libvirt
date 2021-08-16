@@ -943,7 +943,7 @@ mymain(void)
         }; \
         info.qapiSchemaCache = qapiSchemaCache; \
         if (testQemuInfoSetArgs(&info, capscache, capslatest, \
-                                __VA_ARGS__, ARG_END) < 0) \
+                                __VA_ARGS__) < 0) \
             ret = -1; \
         testInfoSetPaths(&info, _suffix); \
         if (virTestRun("QEMU XML-2-ARGV " _name _suffix, \
@@ -956,7 +956,8 @@ mymain(void)
     DO_TEST_INTERNAL(name, "." arch "-" ver, \
                      ARG_CAPS_ARCH, arch, \
                      ARG_CAPS_VER, ver, \
-                     __VA_ARGS__)
+                     __VA_ARGS__, \
+                     ARG_END)
 
 # define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
     DO_TEST_CAPS_INTERNAL(name, arch, "latest", __VA_ARGS__)
@@ -1009,7 +1010,7 @@ mymain(void)
 
 # define DO_TEST_FULL(name, ...) \
     DO_TEST_INTERNAL(name, "", \
-                     __VA_ARGS__, QEMU_CAPS_LAST)
+                     __VA_ARGS__, QEMU_CAPS_LAST, ARG_END)
 
 /* All the following macros require an explicit QEMU_CAPS_* list
  * at the end of the argument list, or the NONE placeholder.
