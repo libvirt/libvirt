@@ -151,9 +151,7 @@ mymain(void)
         static struct testQemuInfo info = { \
             .name = _name, \
         }; \
-        if (testQemuInfoSetArgs(&info, capscache, capslatest, \
-                                __VA_ARGS__, \
-                                ARG_END) < 0 || \
+        if (testQemuInfoSetArgs(&info, capscache, capslatest, __VA_ARGS__) < 0 || \
             qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0) { \
             VIR_TEST_DEBUG("Failed to generate test data for '%s'", _name); \
             ret = -1; \
@@ -179,7 +177,8 @@ mymain(void)
     DO_TEST_INTERNAL(name, "." arch "-" ver, WHEN_BOTH, \
                      ARG_CAPS_ARCH, arch, \
                      ARG_CAPS_VER, ver, \
-                     __VA_ARGS__)
+                     __VA_ARGS__, \
+                     ARG_END)
 
 #define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
     DO_TEST_CAPS_INTERNAL(name, arch, "latest", __VA_ARGS__)
@@ -200,7 +199,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
 #define DO_TEST_FULL(name, when, ...) \
-    DO_TEST_INTERNAL(name, "", when, __VA_ARGS__)
+    DO_TEST_INTERNAL(name, "", when, __VA_ARGS__, ARG_END)
 
 #define DO_TEST(name, ...) \
     DO_TEST_FULL(name, WHEN_BOTH, \
