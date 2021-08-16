@@ -631,8 +631,6 @@ virQEMUCaps *virQEMUCapsNewBinary(const char *binary);
 void virQEMUCapsSet(virQEMUCaps *qemuCaps,
                     virQEMUCapsFlags flag) ATTRIBUTE_NONNULL(1);
 
-void virQEMUCapsSetList(virQEMUCaps *qemuCaps, ...) ATTRIBUTE_NONNULL(1);
-
 void virQEMUCapsClear(virQEMUCaps *qemuCaps,
                       virQEMUCapsFlags flag) ATTRIBUTE_NONNULL(1);
 

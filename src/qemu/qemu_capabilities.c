@@ -2050,19 +2050,6 @@ virQEMUCapsSet(virQEMUCaps *qemuCaps,
 
 
 void
-virQEMUCapsSetList(virQEMUCaps *qemuCaps, ...)
-{
-    va_list list;
-    int flag;
-
-    va_start(list, qemuCaps);
-    while ((flag = va_arg(list, int)) < QEMU_CAPS_LAST)
-        virQEMUCapsSet(qemuCaps, flag);
-    va_end(list);
-}
-
-
-void
 virQEMUCapsClear(virQEMUCaps *qemuCaps,
                  virQEMUCapsFlags flag)
 {
