@@ -936,7 +936,7 @@ mymain(void)
  * the test cases should be forked using DO_TEST_CAPS_VER with the appropriate
  * version.
  */
-# define DO_TEST_INTERNAL(_name, _suffix, ...) \
+# define DO_TEST_FULL(_name, _suffix, ...) \
     do { \
         static struct testQemuInfo info = { \
             .name = _name, \
@@ -953,11 +953,11 @@ mymain(void)
     } while (0)
 
 # define DO_TEST_CAPS_INTERNAL(name, arch, ver, ...) \
-    DO_TEST_INTERNAL(name, "." arch "-" ver, \
-                     ARG_CAPS_ARCH, arch, \
-                     ARG_CAPS_VER, ver, \
-                     __VA_ARGS__, \
-                     ARG_END)
+    DO_TEST_FULL(name, "." arch "-" ver, \
+                 ARG_CAPS_ARCH, arch, \
+                 ARG_CAPS_VER, ver, \
+                 __VA_ARGS__, \
+                 ARG_END)
 
 # define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
     DO_TEST_CAPS_INTERNAL(name, arch, "latest", __VA_ARGS__)
@@ -1008,31 +1008,26 @@ mymain(void)
 # define DO_TEST_CAPS_VER_PARSE_ERROR(name, ver) \
     DO_TEST_CAPS_ARCH_VER_PARSE_ERROR(name, "x86_64", ver)
 
-# define DO_TEST_FULL(name, ...) \
-    DO_TEST_INTERNAL(name, "", \
-                     __VA_ARGS__, ARG_END)
-
 /* All the following macros require an explicit QEMU_CAPS_* list
  * at the end of the argument list, or the NONE placeholder.
  * */
 # define DO_TEST(name, ...) \
-    DO_TEST_FULL(name, \
-                 ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST)
+    DO_TEST_FULL(name, "", ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END)
 
 # define DO_TEST_GIC(name, gic, ...) \
-    DO_TEST_FULL(name, \
+    DO_TEST_FULL(name, "", \
                  ARG_GIC, gic, \
-                 ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST)
+                 ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END)
 
 # define DO_TEST_FAILURE(name, ...) \
-    DO_TEST_FULL(name, \
+    DO_TEST_FULL(name, "", \
                  ARG_FLAGS, FLAG_EXPECT_FAILURE, \
-                 ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST)
+                 ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END)
 
 # define DO_TEST_PARSE_ERROR(name, ...) \
-    DO_TEST_FULL(name, \
+    DO_TEST_FULL(name, "", \
                  ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE, \
-                 ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST)
+                 ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END)
 
 # define NONE QEMU_CAPS_LAST
 
@@ -2011,25 +2006,28 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("hostdev-subsys-mdev-vfio-ap-boot-fail",
                                          "s390x");
 
-    DO_TEST_FULL("restore-v2",
+    DO_TEST_FULL("restore-v2", "",
                  ARG_MIGRATE_FROM, "exec:cat",
-                 ARG_MIGRATE_FD, 7);
-    DO_TEST_FULL("restore-v2-fd",
+                 ARG_MIGRATE_FD, 7,
+                 ARG_END);
+    DO_TEST_FULL("restore-v2-fd", "",
                  ARG_MIGRATE_FROM, "stdio",
-                 ARG_MIGRATE_FD, 7);
-    DO_TEST_FULL("restore-v2-fd",
+                 ARG_MIGRATE_FD, 7,
+                 ARG_END);
+    DO_TEST_FULL("restore-v2-fd", "",
                  ARG_MIGRATE_FROM, "fd:7",
-                 ARG_MIGRATE_FD, 7);
-    DO_TEST_FULL("migrate",
-                 ARG_MIGRATE_FROM, "tcp:10.0.0.1:5000");
+                 ARG_MIGRATE_FD, 7, ARG_END);
+    DO_TEST_FULL("migrate", "",
+                 ARG_MIGRATE_FROM, "tcp:10.0.0.1:5000", ARG_END);
 
-    DO_TEST_FULL("migrate-numa-unaligned",
+    DO_TEST_FULL("migrate-numa-unaligned", "",
                  ARG_MIGRATE_FROM, "stdio",
                  ARG_MIGRATE_FD, 7,
                  ARG_QEMU_CAPS,
                  QEMU_CAPS_NUMA,
                  QEMU_CAPS_OBJECT_MEMORY_RAM,
-                 QEMU_CAPS_LAST);
+                 QEMU_CAPS_LAST,
+                 ARG_END);
 
     DO_TEST_CAPS_VER("qemu-ns", "4.0.0");
     DO_TEST_CAPS_LATEST("qemu-ns");
@@ -2073,10 +2071,11 @@ mymain(void)
     DO_TEST("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("cpu-host-model", NONE);
     DO_TEST("cpu-host-model-vendor", NONE);
-    DO_TEST_FULL("cpu-host-model-fallback",
-                 ARG_FLAGS, FLAG_SKIP_LEGACY_CPUS);
-    DO_TEST_FULL("cpu-host-model-nofallback",
-                 ARG_FLAGS, FLAG_SKIP_LEGACY_CPUS | FLAG_EXPECT_FAILURE);
+    DO_TEST_FULL("cpu-host-model-fallback", "",
+                 ARG_FLAGS, FLAG_SKIP_LEGACY_CPUS, ARG_END);
+    DO_TEST_FULL("cpu-host-model-nofallback", "",
+                 ARG_FLAGS, FLAG_SKIP_LEGACY_CPUS | FLAG_EXPECT_FAILURE,
+                 ARG_END);
     DO_TEST("cpu-host-passthrough", QEMU_CAPS_KVM);
     DO_TEST_FAILURE("cpu-qemu-host-passthrough", QEMU_CAPS_KVM);
 
@@ -3097,14 +3096,15 @@ mymain(void)
     DO_TEST("memory-hotplug-ppc64-nonuma", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST_FULL("memory-hotplug-ppc64-nonuma-abi-update",
+    DO_TEST_FULL("memory-hotplug-ppc64-nonuma-abi-update", "",
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                  ARG_QEMU_CAPS,
                  QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM,
                  QEMU_CAPS_NUMA, QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                  QEMU_CAPS_OBJECT_MEMORY_RAM,
                  QEMU_CAPS_OBJECT_MEMORY_FILE,
-                 QEMU_CAPS_LAST);
+                 QEMU_CAPS_LAST,
+                 ARG_END);
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm");
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm-access");
     DO_TEST_CAPS_VER("memory-hotplug-nvdimm-label", "5.2.0");
@@ -3118,13 +3118,14 @@ mymain(void)
     DO_TEST("memory-hotplug-nvdimm-ppc64", QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                                            QEMU_CAPS_OBJECT_MEMORY_FILE,
                                            QEMU_CAPS_DEVICE_NVDIMM);
-    DO_TEST_FULL("memory-hotplug-nvdimm-ppc64-abi-update",
+    DO_TEST_FULL("memory-hotplug-nvdimm-ppc64-abi-update", "",
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                  ARG_QEMU_CAPS,
                  QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                  QEMU_CAPS_OBJECT_MEMORY_FILE,
                  QEMU_CAPS_DEVICE_NVDIMM,
-                 QEMU_CAPS_LAST);
+                 QEMU_CAPS_LAST,
+                 ARG_END);
     DO_TEST_CAPS_VER("memory-hotplug-virtio-pmem", "5.2.0");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
 
@@ -3212,13 +3213,14 @@ mymain(void)
     DO_TEST("ppc64-usb-controller-legacy",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_PIIX3_USB_UHCI);
-    DO_TEST_FULL("ppc64-usb-controller-qemu-xhci",
+    DO_TEST_FULL("ppc64-usb-controller-qemu-xhci", "",
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                  ARG_QEMU_CAPS,
                  QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                  QEMU_CAPS_NEC_USB_XHCI,
                  QEMU_CAPS_DEVICE_QEMU_XHCI,
-                 QEMU_CAPS_LAST);
+                 QEMU_CAPS_LAST,
+                 ARG_END);
 
     DO_TEST_PARSE_ERROR("ppc64-tpmproxy-double",
                         QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
@@ -3253,9 +3255,10 @@ mymain(void)
      * the wrong binary for the arch. We expect to get a failure about
      * bad arch later when creating the pretend command.
      */
-    DO_TEST_FULL("missing-machine",
+    DO_TEST_FULL("missing-machine", "",
                  ARG_FLAGS, FLAG_EXPECT_FAILURE,
-                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
+                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE,
+                 ARG_END);
 
     DO_TEST("name-escape",
             QEMU_CAPS_OBJECT_SECRET,
