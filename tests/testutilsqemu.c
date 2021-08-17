@@ -697,8 +697,7 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
         abort();
 
     va_start(argptr, capslatest);
-    argname = va_arg(argptr, testQemuInfoArgName);
-    while (argname != ARG_END) {
+    while ((argname = va_arg(argptr, testQemuInfoArgName)) != ARG_END) {
         switch (argname) {
         case ARG_QEMU_CAPS:
             fakeCapsUsed = true;
@@ -740,8 +739,6 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
             fprintf(stderr, "Unexpected test info argument");
             goto cleanup;
         }
-
-        argname = va_arg(argptr, testQemuInfoArgName);
     }
 
     if (!!capsarch ^ !!capsver) {
