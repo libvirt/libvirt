@@ -110,9 +110,7 @@ mymain(void)
         static struct testQemuInfo info = { \
             .name = _name, \
         }; \
-        if (testQemuInfoSetArgs(&info, capscache, capslatest, \
-                                ARG_QEMU_CAPS, QEMU_CAPS_LAST, \
-                                ARG_END) < 0 || \
+        if (testQemuInfoSetArgs(&info, capscache, capslatest, ARG_END) < 0 || \
             qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0) { \
             VIR_TEST_DEBUG("Failed to generate status test data for '%s'", _name); \
             return -1; \
