@@ -60,7 +60,7 @@ getMetadataFromXML(virDomainPtr dom)
     g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr node;
 
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     char *ret = NULL;
 
     if (!(xml = virDomainGetXMLDesc(dom, 0)))
@@ -75,7 +75,6 @@ getMetadataFromXML(virDomainPtr dom)
     ret = virXMLNodeToString(node->doc, node);
 
  cleanup:
-    VIR_FREE(xml);
 
     return ret;
 }

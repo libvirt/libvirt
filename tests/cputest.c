@@ -70,7 +70,7 @@ static virQEMUDriver driver;
 static virCPUDef *
 cpuTestLoadXML(virArch arch, const char *name)
 {
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     virCPUDef *cpu = NULL;
@@ -84,7 +84,6 @@ cpuTestLoadXML(virArch arch, const char *name)
     virCPUDefParseXML(ctxt, NULL, VIR_CPU_TYPE_AUTO, &cpu, false);
 
  cleanup:
-    VIR_FREE(xml);
     return cpu;
 }
 
@@ -94,10 +93,10 @@ cpuTestLoadMultiXML(virArch arch,
                     const char *name,
                     unsigned int *count)
 {
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    xmlNodePtr *nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     virCPUDef **cpus = NULL;
     int n;
     size_t i;
@@ -126,8 +125,6 @@ cpuTestLoadMultiXML(virArch arch,
     *count = n;
 
  cleanup:
-    VIR_FREE(xml);
-    VIR_FREE(nodes);
     return cpus;
 
  cleanup_cpus:

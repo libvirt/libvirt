@@ -1641,7 +1641,7 @@ virStoragePoolObjLoadState(virStoragePoolObjList *pools,
                            const char *stateDir,
                            const char *name)
 {
-    char *stateFile = NULL;
+    g_autofree char *stateFile = NULL;
     virStoragePoolObj *obj = NULL;
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
@@ -1686,7 +1686,6 @@ virStoragePoolObjLoadState(virStoragePoolObjList *pools,
     obj->active = true;
 
  cleanup:
-    VIR_FREE(stateFile);
     return obj;
 }
 
