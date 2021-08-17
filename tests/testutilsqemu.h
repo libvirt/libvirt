@@ -58,6 +58,7 @@ struct testQemuConf {
     GHashTable *capscache;
     GHashTable *capslatest;
     GHashTable *qapiSchemaCache;
+    int *retptr;
 };
 
 struct testQemuArgs {
