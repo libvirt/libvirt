@@ -204,8 +204,6 @@ mymain(void)
 #define DO_TEST_NOCAPS(name) \
     DO_TEST_FULL(name, "", WHEN_BOTH, ARG_END)
 
-#define NONE QEMU_CAPS_LAST
-
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
      * values for these envvars */
@@ -632,7 +630,7 @@ mymain(void)
     DO_TEST_FULL("seclabel-dynamic-none-relabel", "", WHEN_INACTIVE,
                  ARG_QEMU_CAPS, QEMU_CAPS_DEVICE_CIRRUS_VGA,
                  QEMU_CAPS_OBJECT_MEMORY_FILE,
-                 QEMU_CAPS_SPICE, NONE,
+                 QEMU_CAPS_SPICE, QEMU_CAPS_LAST,
                  ARG_END);
     DO_TEST_NOCAPS("numad-static-vcpu-no-numatune");
 
