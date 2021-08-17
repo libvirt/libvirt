@@ -3005,6 +3005,37 @@ virCgroupControllerAvailable(int controller)
     return virCgroupHasController(cgroup, controller);
 }
 
+
+/**
+ * virCgroupGetInode:
+ *
+ * @cgroup: the cgroup to get inode for
+ *
+ * Get the @cgroup inode and return its value to the caller.
+ *
+ * Returns inode on success, -1 on error with error message reported.
+ */
+int
+virCgroupGetInode(virCgroup *cgroup)
+{
+    struct stat st;
+    int controller = virCgroupGetAnyController(cgroup);
+    g_autofree char *path = NULL;
+
+    if (controller < 0)
+        return -1;
+
+    if (virCgroupPathOfController(cgroup, controller, "", &path) < 0)
+        return -1;
+
+    if (stat(path, &st) < 0) {
+        virReportSystemError(errno, _("failed to get stat for '%s'"), path);
+        return -1;
+    }
+
+    return st.st_ino;
+}
+
 #else /* !__linux__ */
 
 bool
@@ -3769,6 +3800,14 @@ virCgroupControllerAvailable(int controller G_GNUC_UNUSED)
 {
     return false;
 }
+
+int
+virCgroupGetInode(virCgroup *cgroup G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
 #endif /* !__linux__ */
 
 
@@ -3972,35 +4011,4 @@ virCgroupGetCpuPeriodQuota(virCgroup *cgroup, unsigned long long *period,
         return -1;
 
     return 0;
-}
-
-
-/**
- * virCgroupGetInode:
- *
- * @cgroup: the cgroup to get inode for
- *
- * Get the @cgroup inode and return its value to the caller.
- *
- * Returns inode on success, -1 on error with error message reported.
- */
-int
-virCgroupGetInode(virCgroup *cgroup)
-{
-    struct stat st;
-    int controller = virCgroupGetAnyController(cgroup);
-    g_autofree char *path = NULL;
-
-    if (controller < 0)
-        return -1;
-
-    if (virCgroupPathOfController(cgroup, controller, "", &path) < 0)
-        return -1;
-
-    if (stat(path, &st) < 0) {
-        virReportSystemError(errno, _("failed to get stat for '%s'"), path);
-        return -1;
-    }
-
-    return st.st_ino;
 }
