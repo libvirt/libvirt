@@ -73,10 +73,10 @@ int virNetDevOpenvswitchUpdateVlan(const char *ifname,
 
 int virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
                                         const virNetDevBandwidth *bandwidth,
-                                        const unsigned char *vmid,
+                                        const unsigned char *vmuuid,
                                         bool swapped)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevOpenvswitchInterfaceClearQos(const char *ifname,
-                                          const unsigned char *vmid)
+                                          const unsigned char *vmuuid)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;

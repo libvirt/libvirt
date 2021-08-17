@@ -624,6 +624,7 @@ int virNetDevOpenvswitchUpdateVlan(const char *ifname,
  * virNetDevOpenvswitchInterfaceSetQos:
  * @ifname: on which interface
  * @bandwidth: rates to set (may be NULL)
+ * @vmuuid: the Domain UUID that has this interface
  * @swapped: true if IN/OUT should be set contrariwise
  *
  * Update qos configuration of an OVS port.
@@ -640,7 +641,7 @@ int virNetDevOpenvswitchUpdateVlan(const char *ifname,
 int
 virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
                                     const virNetDevBandwidth *bandwidth,
-                                    const unsigned char *vmid,
+                                    const unsigned char *vmuuid,
                                     bool swapped)
 {
     virNetDevBandwidthRate *rx = NULL; /* From domain POV */
@@ -674,7 +675,7 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
     }
 
     if (!bandwidth->out && !bandwidth->in) {
-        if (virNetDevOpenvswitchInterfaceClearQos(ifname, vmid) < 0) {
+        if (virNetDevOpenvswitchInterfaceClearQos(ifname, vmuuid) < 0) {
             VIR_WARN("Clean qos for interface %s failed", ifname);
         }
         return 0;
@@ -699,7 +700,7 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
 
         /* find queue */
         cmd = virNetDevOpenvswitchCreateCmd();
-        virUUIDFormat(vmid, vmuuidstr);
+        virUUIDFormat(vmuuid, vmuuidstr);
         vmid_ex_id = g_strdup_printf("external-ids:vm-id=\"%s\"", vmuuidstr);
         ifname_ex_id = g_strdup_printf("external-ids:ifname=\"%s\"", ifname);
         virCommandAddArgList(cmd, "--no-heading", "--columns=_uuid", "find", "queue",
@@ -801,7 +802,7 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
 
 int
 virNetDevOpenvswitchInterfaceClearQos(const char *ifname,
-                                      const unsigned char *vmid)
+                                      const unsigned char *vmuuid)
 {
     char vmuuidstr[VIR_UUID_STRING_BUFLEN];
     g_autoptr(virCommand) cmd = NULL;
@@ -813,7 +814,7 @@ virNetDevOpenvswitchInterfaceClearQos(const char *ifname,
 
     /* find qos */
     cmd = virNetDevOpenvswitchCreateCmd();
-    virUUIDFormat(vmid, vmuuidstr);
+    virUUIDFormat(vmuuid, vmuuidstr);
     vmid_ex_id = g_strdup_printf("external-ids:vm-id=\"%s\"", vmuuidstr);
     virCommandAddArgList(cmd, "--no-heading", "--columns=_uuid", "find", "qos", vmid_ex_id, NULL);
     virCommandSetOutputBuffer(cmd, &qos_uuid);
