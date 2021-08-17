@@ -967,7 +967,6 @@ virSecuritySELinuxReserveLabel(virSecurityManager *mgr,
     }
 
     ctx = context_new(pctx);
-    freecon(pctx);
     if (!ctx)
         goto error;
 
@@ -985,11 +984,13 @@ virSecuritySELinuxReserveLabel(virSecurityManager *mgr,
         goto error;
     }
 
+    freecon(pctx);
     context_free(ctx);
 
     return 0;
 
  error:
+    freecon(pctx);
     context_free(ctx);
     return -1;
 }
