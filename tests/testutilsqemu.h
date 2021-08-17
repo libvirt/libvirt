@@ -60,6 +60,16 @@ struct testQemuConf {
     GHashTable *qapiSchemaCache;
 };
 
+struct testQemuArgs {
+    bool newargs;
+    virQEMUCaps *fakeCaps;
+    bool fakeCapsUsed;
+    char *capsver;
+    char *capsarch;
+    int gic;
+    bool invalidarg;
+};
+
 struct testQemuInfo {
     const char *name;
     char *infile;
@@ -73,6 +83,7 @@ struct testQemuInfo {
     virArch arch;
     char *schemafile;
 
+    struct testQemuArgs args;
     struct testQemuConf *conf;
 };
 
@@ -116,9 +127,10 @@ int testQemuCapsIterate(const char *suffix,
                         testQemuCapsIterateCallback callback,
                         void *opaque);
 
-int testQemuInfoSetArgs(struct testQemuInfo *info,
-                        struct testQemuConf *conf,
-                        ...);
+void testQemuInfoSetArgs(struct testQemuInfo *info,
+                         struct testQemuConf *conf,
+                         ...);
+int testQemuInfoInitArgs(struct testQemuInfo *info);
 void testQemuInfoClear(struct testQemuInfo *info);
 
 #endif

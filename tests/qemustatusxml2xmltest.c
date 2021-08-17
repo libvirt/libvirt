@@ -23,6 +23,12 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     g_autofree char *actual = NULL;
     int ret = -1;
 
+    if (testQemuInfoInitArgs((struct testQemuInfo *) data) < 0)
+        return -1;
+
+    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, data->qemuCaps) < 0)
+        return -1;
+
     if (!(obj = virDomainObjParseFile(data->infile, driver.xmlopt,
                                       VIR_DOMAIN_DEF_PARSE_STATUS |
                                       VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
@@ -112,11 +118,7 @@ mymain(void)
         static struct testQemuInfo info = { \
             .name = _name, \
         }; \
-        if (testQemuInfoSetArgs(&info, &testConf, ARG_END) < 0 || \
-            qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0) { \
-            VIR_TEST_DEBUG("Failed to generate status test data for '%s'", _name); \
-            return -1; \
-        } \
+        testQemuInfoSetArgs(&info, &testConf, ARG_END); \
         testInfoSetStatusPaths(&info); \
 \
         if (virTestRun("QEMU status XML-2-XML " _name, \

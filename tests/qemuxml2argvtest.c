@@ -653,6 +653,9 @@ testCompareXMLToArgv(const void *data)
     virArch arch = VIR_ARCH_NONE;
     g_autoptr(virIdentity) sysident = virIdentityGetSystem();
 
+    if (testQemuInfoInitArgs((struct testQemuInfo *) info) < 0)
+        goto cleanup;
+
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, info->arch);
 
@@ -943,8 +946,7 @@ mymain(void)
         static struct testQemuInfo info = { \
             .name = _name, \
         }; \
-        if (testQemuInfoSetArgs(&info, &testConf, __VA_ARGS__) < 0) \
-            ret = -1; \
+        testQemuInfoSetArgs(&info, &testConf, __VA_ARGS__); \
         testInfoSetPaths(&info, _suffix); \
         if (virTestRun("QEMU XML-2-ARGV " _name _suffix, \
                        testCompareXMLToArgv, &info) < 0) \

@@ -32,11 +32,14 @@ enum {
 static int
 testXML2XMLCommon(const struct testQemuInfo *info)
 {
-    if (!(info->flags & FLAG_REAL_CAPS)) {
+    if (testQemuInfoInitArgs((struct testQemuInfo *) info) < 0)
+        return -1;
+
+    if (!(info->flags & FLAG_REAL_CAPS))
         virQEMUCapsInitQMPBasicArch(info->qemuCaps);
-        if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
-            return -1;
-    }
+
+    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
+        return -1;
 
     return 0;
 }
@@ -154,11 +157,7 @@ mymain(void)
         static struct testQemuInfo info = { \
             .name = _name, \
         }; \
-        if (testQemuInfoSetArgs(&info, &testConf, __VA_ARGS__) < 0 || \
-            qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0) { \
-            VIR_TEST_DEBUG("Failed to generate test data for '%s'", _name); \
-            ret = -1; \
-        } \
+        testQemuInfoSetArgs(&info, &testConf, __VA_ARGS__); \
  \
         if (when & WHEN_INACTIVE) { \
             testInfoSetPaths(&info, suffix, WHEN_INACTIVE); \
