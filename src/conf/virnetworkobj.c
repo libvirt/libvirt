@@ -860,13 +860,13 @@ virNetworkLoadState(virNetworkObjList *nets,
                     const char *name,
                     virNetworkXMLOption *xmlopt)
 {
-    char *configFile = NULL;
+    g_autofree char *configFile = NULL;
     virNetworkDef *def = NULL;
     virNetworkObj *obj = NULL;
-    xmlDocPtr xml = NULL;
-    xmlNodePtr node = NULL, *nodes = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    virBitmap *classIdMap = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
+    xmlNodePtr node = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autoptr(virBitmap) classIdMap = NULL;
     unsigned long long floor_sum_val = 0;
     unsigned int taint = 0;
     int n;
@@ -903,18 +903,16 @@ virNetworkLoadState(virNetworkObjList *nets,
     if (virXMLNodeNameEqual(node, "networkstatus")) {
         /* Newer network status file. Contains useful
          * info which are not to be found in bare config XML */
-        char *classIdStr = NULL;
-        char *floor_sum = NULL;
+        g_autofree char *classIdStr = NULL;
+        g_autofree char *floor_sum = NULL;
+        g_autofree xmlNodePtr *nodes = NULL;
 
         ctxt->node = node;
         if ((classIdStr = virXPathString("string(./class_id[1]/@bitmap)",
                                          ctxt))) {
-            if (!(classIdMap = virBitmapParseUnlimited(classIdStr))) {
-                VIR_FREE(classIdStr);
+            if (!(classIdMap = virBitmapParseUnlimited(classIdStr)))
                 goto error;
-            }
         }
-        VIR_FREE(classIdStr);
 
         floor_sum = virXPathString("string(./floor[1]/@sum)", ctxt);
         if (floor_sum &&
@@ -922,31 +920,26 @@ virNetworkLoadState(virNetworkObjList *nets,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Malformed 'floor_sum' attribute: %s"),
                            floor_sum);
-            VIR_FREE(floor_sum);
             goto error;
         }
-        VIR_FREE(floor_sum);
 
         if ((n = virXPathNodeSet("./taint", ctxt, &nodes)) < 0)
             goto error;
 
         for (i = 0; i < n; i++) {
-            char *str = virXMLPropString(nodes[i], "flag");
+            g_autofree char *str = virXMLPropString(nodes[i], "flag");
             if (str) {
                 int flag = virNetworkTaintTypeFromString(str);
                 if (flag < 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("Unknown taint flag %s"), str);
-                    VIR_FREE(str);
                     goto error;
                 }
-                VIR_FREE(str);
                 /* Compute taint mask here. The network object does not
                  * exist yet, so we can't use virNetworkObjtTaint. */
                 taint |= (1 << flag);
             }
         }
-        VIR_FREE(nodes);
     }
 
     /* create the object */
@@ -958,7 +951,7 @@ virNetworkLoadState(virNetworkObjList *nets,
     /* assign status data stored in the network object */
     if (classIdMap) {
         virBitmapFree(obj->classIdMap);
-        obj->classIdMap = classIdMap;
+        obj->classIdMap = g_steal_pointer(&classIdMap);
     }
 
     if (floor_sum_val > 0)
@@ -967,17 +960,11 @@ virNetworkLoadState(virNetworkObjList *nets,
     obj->taint = taint;
     obj->active = true; /* network with a state file is by definition active */
 
- cleanup:
-    VIR_FREE(configFile);
-    xmlFreeDoc(xml);
-    xmlXPathFreeContext(ctxt);
     return obj;
 
  error:
-    VIR_FREE(nodes);
-    virBitmapFree(classIdMap);
     virNetworkDefFree(def);
-    goto cleanup;
+    return NULL;
 }
 
 
