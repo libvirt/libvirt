@@ -1013,6 +1013,8 @@ mymain(void)
  * */
 # define DO_TEST(name, ...) \
     DO_TEST_FULL(name, "", ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END)
+# define DO_TEST_NOCAPS(name) \
+    DO_TEST_FULL(name, "",  ARG_END)
 
 # define DO_TEST_GIC(name, gic, ...) \
     DO_TEST_FULL(name, "", \
@@ -1045,17 +1047,17 @@ mymain(void)
     g_unsetenv("QEMU_AUDIO_DRV");
     g_unsetenv("SDL_AUDIODRIVER");
 
-    DO_TEST("minimal", NONE);
+    DO_TEST_NOCAPS("minimal");
     DO_TEST_PARSE_ERROR("minimal-no-memory", NONE);
 
     DO_TEST_CAPS_LATEST("genid");
     DO_TEST_CAPS_LATEST("genid-auto");
 
-    DO_TEST("machine-aliases1", NONE);
+    DO_TEST_NOCAPS("machine-aliases1");
     DO_TEST("machine-aliases2", QEMU_CAPS_KVM);
-    DO_TEST("machine-core-on", NONE);
+    DO_TEST_NOCAPS("machine-core-on");
     driver.config->dumpGuestCore = true;
-    DO_TEST("machine-core-off", NONE);
+    DO_TEST_NOCAPS("machine-core-off");
     driver.config->dumpGuestCore = false;
     DO_TEST("machine-smm-opt",
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
@@ -1065,24 +1067,24 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("machine-vmport-opt",
             QEMU_CAPS_MACHINE_VMPORT_OPT);
-    DO_TEST("default-kvm-host-arch", NONE);
-    DO_TEST("default-qemu-host-arch", NONE);
-    DO_TEST("x86-kvm-32-on-64", NONE);
-    DO_TEST("boot-cdrom", NONE);
-    DO_TEST("boot-network", NONE);
-    DO_TEST("boot-floppy", NONE);
+    DO_TEST_NOCAPS("default-kvm-host-arch");
+    DO_TEST_NOCAPS("default-qemu-host-arch");
+    DO_TEST_NOCAPS("x86-kvm-32-on-64");
+    DO_TEST_NOCAPS("boot-cdrom");
+    DO_TEST_NOCAPS("boot-network");
+    DO_TEST_NOCAPS("boot-floppy");
     DO_TEST("boot-floppy-q35",
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI);
-    DO_TEST("boot-multi", NONE);
-    DO_TEST("boot-menu-enable", NONE);
+    DO_TEST_NOCAPS("boot-multi");
+    DO_TEST_NOCAPS("boot-menu-enable");
     DO_TEST("boot-menu-enable-with-timeout",
             QEMU_CAPS_SPLASH_TIMEOUT);
     DO_TEST_PARSE_ERROR("boot-menu-enable-with-timeout", NONE);
     DO_TEST_PARSE_ERROR("boot-menu-enable-with-timeout-invalid",
                         QEMU_CAPS_SPLASH_TIMEOUT);
-    DO_TEST("boot-menu-disable", NONE);
-    DO_TEST("boot-menu-disable-drive", NONE);
+    DO_TEST_NOCAPS("boot-menu-disable");
+    DO_TEST_NOCAPS("boot-menu-disable-drive");
     DO_TEST_PARSE_ERROR("boot-dev+order",
             QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("boot-order",
@@ -1094,15 +1096,15 @@ mymain(void)
             QEMU_CAPS_VIRTIO_BLK_SCSI);
 
     /* Simplest possible <audio>, all supported with ENV */
-    DO_TEST("audio-none-minimal", NONE);
-    DO_TEST("audio-alsa-minimal", NONE);
-    DO_TEST("audio-coreaudio-minimal", NONE);
+    DO_TEST_NOCAPS("audio-none-minimal");
+    DO_TEST_NOCAPS("audio-alsa-minimal");
+    DO_TEST_NOCAPS("audio-coreaudio-minimal");
     DO_TEST_PARSE_ERROR("audio-jack-minimal", NONE);
-    DO_TEST("audio-oss-minimal", NONE);
-    DO_TEST("audio-pulseaudio-minimal", NONE);
-    DO_TEST("audio-sdl-minimal", NONE);
-    DO_TEST("audio-spice-minimal", NONE);
-    DO_TEST("audio-file-minimal", NONE);
+    DO_TEST_NOCAPS("audio-oss-minimal");
+    DO_TEST_NOCAPS("audio-pulseaudio-minimal");
+    DO_TEST_NOCAPS("audio-sdl-minimal");
+    DO_TEST_NOCAPS("audio-spice-minimal");
+    DO_TEST_NOCAPS("audio-file-minimal");
 
     DO_TEST_CAPS_LATEST("audio-none-minimal");
     DO_TEST_CAPS_LATEST("audio-alsa-minimal");
@@ -1115,14 +1117,14 @@ mymain(void)
     DO_TEST_CAPS_LATEST("audio-file-minimal");
 
     /* Best <audio> still compat with old ENV */
-    DO_TEST("audio-none-best", NONE);
-    DO_TEST("audio-alsa-best", NONE);
-    DO_TEST("audio-coreaudio-best", NONE);
-    DO_TEST("audio-oss-best", NONE);
-    DO_TEST("audio-pulseaudio-best", NONE);
-    DO_TEST("audio-sdl-best", NONE);
-    DO_TEST("audio-spice-best", NONE);
-    DO_TEST("audio-file-best", NONE);
+    DO_TEST_NOCAPS("audio-none-best");
+    DO_TEST_NOCAPS("audio-alsa-best");
+    DO_TEST_NOCAPS("audio-coreaudio-best");
+    DO_TEST_NOCAPS("audio-oss-best");
+    DO_TEST_NOCAPS("audio-pulseaudio-best");
+    DO_TEST_NOCAPS("audio-sdl-best");
+    DO_TEST_NOCAPS("audio-spice-best");
+    DO_TEST_NOCAPS("audio-file-best");
 
     DO_TEST_CAPS_LATEST("audio-none-best");
     DO_TEST_CAPS_LATEST("audio-alsa-best");
@@ -1178,7 +1180,7 @@ mymain(void)
 
     g_setenv("QEMU_AUDIO_DRV", "alsa", TRUE);
     driver.config->nogfxAllowHostAudio = true;
-    DO_TEST("audio-default-nographics", NONE);
+    DO_TEST_NOCAPS("audio-default-nographics");
     DO_TEST_CAPS_LATEST("audio-default-nographics");
     driver.config->nogfxAllowHostAudio = false;
     g_unsetenv("QEMU_AUDIO_DRV");
@@ -1190,7 +1192,7 @@ mymain(void)
     DO_TEST("bios",
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_SGA);
-    DO_TEST("bios-nvram", NONE);
+    DO_TEST_NOCAPS("bios-nvram");
     DO_TEST("bios-nvram-secure",
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
@@ -1199,26 +1201,26 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI);
 
     /* Make sure all combinations of ACPI and UEFI behave as expected */
-    DO_TEST("q35-acpi-uefi", NONE);
+    DO_TEST_NOCAPS("q35-acpi-uefi");
     DO_TEST_PARSE_ERROR("q35-noacpi-uefi", NONE);
-    DO_TEST("q35-noacpi-nouefi", NONE);
-    DO_TEST("q35-acpi-nouefi", NONE);
+    DO_TEST_NOCAPS("q35-noacpi-nouefi");
+    DO_TEST_NOCAPS("q35-acpi-nouefi");
 
-    DO_TEST("clock-utc", NONE);
-    DO_TEST("clock-localtime", NONE);
-    DO_TEST("clock-localtime-basis-localtime", NONE);
-    DO_TEST("clock-variable", NONE);
-    DO_TEST("clock-france", NONE);
-    DO_TEST("clock-hpet-off", NONE);
+    DO_TEST_NOCAPS("clock-utc");
+    DO_TEST_NOCAPS("clock-localtime");
+    DO_TEST_NOCAPS("clock-localtime-basis-localtime");
+    DO_TEST_NOCAPS("clock-variable");
+    DO_TEST_NOCAPS("clock-france");
+    DO_TEST_NOCAPS("clock-hpet-off");
     DO_TEST("clock-catchup", QEMU_CAPS_KVM_PIT_TICK_POLICY);
-    DO_TEST("cpu-kvmclock", NONE);
-    DO_TEST("cpu-host-kvmclock", NONE);
+    DO_TEST_NOCAPS("cpu-kvmclock");
+    DO_TEST_NOCAPS("cpu-host-kvmclock");
     DO_TEST("kvmclock", QEMU_CAPS_KVM);
     DO_TEST("clock-timer-hyperv-rtc", QEMU_CAPS_KVM);
-    DO_TEST("clock-realtime", NONE);
+    DO_TEST_NOCAPS("clock-realtime");
 
-    DO_TEST("cpu-eoi-disabled", NONE);
-    DO_TEST("cpu-eoi-enabled", NONE);
+    DO_TEST_NOCAPS("cpu-eoi-disabled");
+    DO_TEST_NOCAPS("cpu-eoi-enabled");
     DO_TEST("controller-order",
             QEMU_CAPS_KVM,
             QEMU_CAPS_PIIX3_USB_UHCI,
@@ -1247,11 +1249,11 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hyperv-panic");
     DO_TEST_CAPS_LATEST("hyperv-stimer-direct");
 
-    DO_TEST("kvm-features", NONE);
-    DO_TEST("kvm-features-off", NONE);
+    DO_TEST_NOCAPS("kvm-features");
+    DO_TEST_NOCAPS("kvm-features-off");
 
-    DO_TEST("pmu-feature", NONE);
-    DO_TEST("pmu-feature-off", NONE);
+    DO_TEST_NOCAPS("pmu-feature");
+    DO_TEST_NOCAPS("pmu-feature-off");
 
     DO_TEST("pages-discard",
             QEMU_CAPS_OBJECT_MEMORY_FILE,
@@ -1306,12 +1308,12 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hugepages-memaccess3");
     DO_TEST_CAPS_LATEST("hugepages-nvdimm");
     DO_TEST("nosharepages", QEMU_CAPS_MEM_MERGE);
-    DO_TEST("disk-cdrom", NONE);
+    DO_TEST_NOCAPS("disk-cdrom");
     DO_TEST_CAPS_VER("disk-cdrom", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cdrom");
     DO_TEST_CAPS_LATEST("disk-cdrom-empty-network-invalid");
     DO_TEST_CAPS_LATEST("disk-cdrom-bus-other");
-    DO_TEST("disk-iscsi", NONE);
+    DO_TEST_NOCAPS("disk-iscsi");
     DO_TEST("disk-cdrom-network", QEMU_CAPS_KVM);
     DO_TEST_CAPS_VER("disk-cdrom-network", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cdrom-network");
@@ -1319,7 +1321,7 @@ mymain(void)
             QEMU_CAPS_VIRTIO_TX_ALG);
     DO_TEST_CAPS_VER("disk-cdrom-tray", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cdrom-tray");
-    DO_TEST("disk-floppy", NONE);
+    DO_TEST_NOCAPS("disk-floppy");
     DO_TEST_CAPS_VER("disk-floppy", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-floppy");
     DO_TEST_CAPS_VER("disk-floppy-q35-2_9", "2.12.0");
@@ -1328,8 +1330,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-floppy-q35-2_11");
     DO_TEST_FAILURE("disk-floppy-pseries",
                     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
-    DO_TEST("disk-floppy-tray", NONE);
-    DO_TEST("disk-virtio", NONE);
+    DO_TEST_NOCAPS("disk-floppy-tray");
+    DO_TEST_NOCAPS("disk-virtio");
     DO_TEST("disk-virtio-ccw", QEMU_CAPS_CCW);
     DO_TEST("disk-virtio-ccw-many", QEMU_CAPS_CCW);
     DO_TEST("disk-virtio-s390-zpci", QEMU_CAPS_DEVICE_ZPCI, QEMU_CAPS_CCW);
@@ -1337,22 +1339,22 @@ mymain(void)
     DO_TEST("disk-order", QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("disk-virtio-queues",
             QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES);
-    DO_TEST("disk-boot-disk", NONE);
-    DO_TEST("disk-boot-cdrom", NONE);
-    DO_TEST("floppy-drive-fat", NONE);
+    DO_TEST_NOCAPS("disk-boot-disk");
+    DO_TEST_NOCAPS("disk-boot-cdrom");
+    DO_TEST_NOCAPS("floppy-drive-fat");
     DO_TEST_CAPS_VER("floppy-drive-fat", "2.12.0");
     DO_TEST_CAPS_LATEST("floppy-drive-fat");
-    DO_TEST("disk-readonly-disk", NONE);
+    DO_TEST_NOCAPS("disk-readonly-disk");
     DO_TEST_CAPS_VER("disk-readonly-disk", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-readonly-disk");
-    DO_TEST("disk-fmt-qcow", NONE);
+    DO_TEST_NOCAPS("disk-fmt-qcow");
     DO_TEST_PARSE_ERROR("disk-fmt-cow", NONE);
     DO_TEST_PARSE_ERROR("disk-fmt-dir", NONE);
     DO_TEST_PARSE_ERROR("disk-fmt-iso", NONE);
     DO_TEST_CAPS_VER("disk-shared", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-shared");
     DO_TEST_PARSE_ERROR("disk-shared-qcow", NONE);
-    DO_TEST("disk-error-policy", NONE);
+    DO_TEST_NOCAPS("disk-error-policy");
     DO_TEST_CAPS_VER("disk-error-policy", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-error-policy");
     DO_TEST_CAPS_ARCH_VER("disk-error-policy-s390x", "s390x", "2.12.0");
@@ -1362,7 +1364,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-metadata-cache");
     DO_TEST_CAPS_ARCH_VER_PARSE_ERROR("disk-transient", "x86_64", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-transient");
-    DO_TEST("disk-network-nbd", NONE);
+    DO_TEST_NOCAPS("disk-network-nbd");
     DO_TEST_CAPS_VER("disk-network-nbd", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-nbd");
     DO_TEST("disk-network-iscsi", QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_BLOCK);
@@ -1382,10 +1384,10 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-network-rbd", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd");
     DO_TEST_FAILURE("disk-network-rbd-no-colon", NONE);
-    DO_TEST("disk-network-sheepdog", NONE);
+    DO_TEST_NOCAPS("disk-network-sheepdog");
     DO_TEST_CAPS_VER("disk-network-sheepdog", "2.12.0");
     DO_TEST_CAPS_VER("disk-network-sheepdog", "6.0.0");
-    DO_TEST("disk-network-source-auth", NONE);
+    DO_TEST_NOCAPS("disk-network-source-auth");
     DO_TEST_CAPS_VER("disk-network-source-auth", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-source-auth");
     DO_TEST("disk-network-vxhs", QEMU_CAPS_VXHS);
@@ -1401,7 +1403,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-http");
     driver.config->vxhsTLS = 0;
     VIR_FREE(driver.config->vxhsTLSx509certdir);
-    DO_TEST("disk-no-boot", NONE);
+    DO_TEST_NOCAPS("disk-no-boot");
     DO_TEST_CAPS_LATEST("disk-nvme");
     DO_TEST_CAPS_LATEST("disk-vhostuser");
     DO_TEST_PARSE_ERROR("disk-device-lun-type-invalid",
@@ -1428,12 +1430,12 @@ mymain(void)
     DO_TEST_CAPS_LATEST("controller-virtio-scsi");
     DO_TEST("disk-sata-device",
             QEMU_CAPS_ICH9_AHCI);
-    DO_TEST("disk-aio", NONE);
+    DO_TEST_NOCAPS("disk-aio");
     DO_TEST_CAPS_VER("disk-aio", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-aio");
     DO_TEST_CAPS_LATEST("disk-aio-io_uring");
-    DO_TEST("disk-source-pool", NONE);
-    DO_TEST("disk-source-pool-mode", NONE);
+    DO_TEST_NOCAPS("disk-source-pool");
+    DO_TEST_NOCAPS("disk-source-pool-mode");
     DO_TEST("disk-ioeventfd",
             QEMU_CAPS_VIRTIO_IOEVENTFD,
             QEMU_CAPS_VIRTIO_TX_ALG,
@@ -1447,7 +1449,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-discard");
     DO_TEST_CAPS_VER("disk-detect-zeroes", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-detect-zeroes");
-    DO_TEST("disk-snapshot", NONE);
+    DO_TEST_NOCAPS("disk-snapshot");
     DO_TEST_PARSE_ERROR("disk-same-targets",
                         QEMU_CAPS_SCSI_LSI,
                         QEMU_CAPS_DEVICE_USB_STORAGE);
@@ -1600,28 +1602,28 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("graphics-spice-invalid-egl-headless");
     DO_TEST_CAPS_LATEST("graphics-spice-gl-auto-rendernode");
 
-    DO_TEST("input-usbmouse", NONE);
-    DO_TEST("input-usbtablet", NONE);
-    DO_TEST("misc-acpi", NONE);
+    DO_TEST_NOCAPS("input-usbmouse");
+    DO_TEST_NOCAPS("input-usbtablet");
+    DO_TEST_NOCAPS("misc-acpi");
     DO_TEST("misc-disable-s3", QEMU_CAPS_PIIX_DISABLE_S3);
     DO_TEST("misc-disable-suspends", QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4);
     DO_TEST("misc-enable-s4", QEMU_CAPS_PIIX_DISABLE_S4);
     DO_TEST_PARSE_ERROR("misc-enable-s4", NONE);
-    DO_TEST("misc-no-reboot", NONE);
-    DO_TEST("misc-uuid", NONE);
+    DO_TEST_NOCAPS("misc-no-reboot");
+    DO_TEST_NOCAPS("misc-uuid");
     DO_TEST_PARSE_ERROR("vhost_queues-invalid", NONE);
     DO_TEST("net-vhostuser", QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE);
     DO_TEST_CAPS_LATEST("net-vhostuser");
-    DO_TEST("net-vhostuser-multiq", NONE);
+    DO_TEST_NOCAPS("net-vhostuser-multiq");
     DO_TEST_FAILURE("net-vhostuser-fail", NONE);
-    DO_TEST("net-user", NONE);
+    DO_TEST_NOCAPS("net-user");
     DO_TEST_CAPS_ARCH_VER_FULL("net-user", "x86_64", "4.0.0", ARG_FLAGS, FLAG_SLIRP_HELPER);
-    DO_TEST("net-user-addr", NONE);
-    DO_TEST("net-virtio", NONE);
+    DO_TEST_NOCAPS("net-user-addr");
+    DO_TEST_NOCAPS("net-virtio");
     DO_TEST("net-virtio-device",
             QEMU_CAPS_VIRTIO_TX_ALG);
-    DO_TEST("net-virtio-disable-offloads", NONE);
-    DO_TEST("net-virtio-netdev", NONE);
+    DO_TEST_NOCAPS("net-virtio-disable-offloads");
+    DO_TEST_NOCAPS("net-virtio-netdev");
     DO_TEST("net-virtio-ccw", QEMU_CAPS_CCW);
     DO_TEST("net-virtio-rxtxqueuesize",
             QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE,
@@ -1635,16 +1637,16 @@ mymain(void)
     DO_TEST("net-virtio-teaming-hostdev",
             QEMU_CAPS_VIRTIO_NET_FAILOVER,
             QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("net-eth", NONE);
-    DO_TEST("net-eth-ifname", NONE);
-    DO_TEST("net-eth-names", NONE);
-    DO_TEST("net-eth-hostip", NONE);
-    DO_TEST("net-eth-unmanaged-tap", NONE);
-    DO_TEST("net-client", NONE);
-    DO_TEST("net-server", NONE);
-    DO_TEST("net-many-models", NONE);
-    DO_TEST("net-mcast", NONE);
-    DO_TEST("net-udp", NONE);
+    DO_TEST_NOCAPS("net-eth");
+    DO_TEST_NOCAPS("net-eth-ifname");
+    DO_TEST_NOCAPS("net-eth-names");
+    DO_TEST_NOCAPS("net-eth-hostip");
+    DO_TEST_NOCAPS("net-eth-unmanaged-tap");
+    DO_TEST_NOCAPS("net-client");
+    DO_TEST_NOCAPS("net-server");
+    DO_TEST_NOCAPS("net-many-models");
+    DO_TEST_NOCAPS("net-mcast");
+    DO_TEST_NOCAPS("net-udp");
     DO_TEST("net-hostdev", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("net-hostdev-bootorder", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("net-hostdev-multidomain", QEMU_CAPS_DEVICE_VFIO_PCI);
@@ -1672,7 +1674,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("serial-spiceport-nospice", NONE);
+    DO_TEST_NOCAPS("serial-spiceport-nospice");
 
     DO_TEST("console-compat",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
@@ -1723,22 +1725,22 @@ mymain(void)
     VIR_FREE(driver.config->chardevTLSx509certdir);
     DO_TEST("serial-many-chardev",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("parallel-tcp-chardev", NONE);
-    DO_TEST("parallel-parport-chardev", NONE);
+    DO_TEST_NOCAPS("parallel-tcp-chardev");
+    DO_TEST_NOCAPS("parallel-parport-chardev");
     DO_TEST_CAPS_LATEST("parallel-unix-chardev");
     DO_TEST("console-compat-chardev",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("pci-serial-dev-chardev",
             QEMU_CAPS_DEVICE_PCI_SERIAL);
 
-    DO_TEST("channel-guestfwd", NONE);
+    DO_TEST_NOCAPS("channel-guestfwd");
     DO_TEST_CAPS_LATEST("channel-unix-guestfwd");
-    DO_TEST("channel-virtio", NONE);
-    DO_TEST("channel-virtio-state", NONE);
-    DO_TEST("channel-virtio-auto", NONE);
-    DO_TEST("channel-virtio-autoassign", NONE);
-    DO_TEST("channel-virtio-autoadd", NONE);
-    DO_TEST("console-virtio", NONE);
+    DO_TEST_NOCAPS("channel-virtio");
+    DO_TEST_NOCAPS("channel-virtio-state");
+    DO_TEST_NOCAPS("channel-virtio-auto");
+    DO_TEST_NOCAPS("channel-virtio-autoassign");
+    DO_TEST_NOCAPS("channel-virtio-autoadd");
+    DO_TEST_NOCAPS("console-virtio");
     DO_TEST("console-virtio-many",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("console-virtio-ccw", QEMU_CAPS_CCW);
@@ -1749,7 +1751,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("channel-virtio-default",
             QEMU_CAPS_SPICE);
-    DO_TEST("channel-virtio-unix", NONE);
+    DO_TEST_NOCAPS("channel-virtio-unix");
 
     DO_TEST("smartcard-host",
             QEMU_CAPS_CCID_EMULATED);
@@ -1776,12 +1778,12 @@ mymain(void)
     DO_TEST_PARSE_ERROR("chardev-reconnect-generated-path",
                         QEMU_CAPS_CHARDEV_RECONNECT);
 
-    DO_TEST("usb-controller", NONE);
+    DO_TEST_NOCAPS("usb-controller");
     DO_TEST("usb-piix3-controller",
             QEMU_CAPS_PIIX3_USB_UHCI);
     DO_TEST("usb-ich9-ehci-addr",
             QEMU_CAPS_ICH9_USB_EHCI1);
-    DO_TEST("input-usbmouse-addr", NONE);
+    DO_TEST_NOCAPS("input-usbmouse-addr");
     DO_TEST("usb-ich9-companion",
             QEMU_CAPS_ICH9_USB_EHCI1);
     DO_TEST_PARSE_ERROR("usb-ich9-no-companion",
@@ -1834,7 +1836,7 @@ mymain(void)
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1);
-    DO_TEST("usb-none", NONE);
+    DO_TEST_NOCAPS("usb-none");
     DO_TEST_PARSE_ERROR("usb-none-other", NONE);
     DO_TEST_PARSE_ERROR("usb-none-hub",
             QEMU_CAPS_USB_HUB);
@@ -1875,17 +1877,17 @@ mymain(void)
     DO_TEST_PARSE_ERROR("usb-controller-qemu-xhci-limit",
                         QEMU_CAPS_DEVICE_QEMU_XHCI);
 
-    DO_TEST("smbios", NONE);
+    DO_TEST_NOCAPS("smbios");
     DO_TEST_PARSE_ERROR("smbios-date", NONE);
     DO_TEST_PARSE_ERROR("smbios-uuid-match", NONE);
     DO_TEST("smbios-type-fwcfg", QEMU_CAPS_FW_CFG);
 
-    DO_TEST("watchdog", NONE);
-    DO_TEST("watchdog-device", NONE);
-    DO_TEST("watchdog-dump", NONE);
-    DO_TEST("watchdog-injectnmi", NONE);
+    DO_TEST_NOCAPS("watchdog");
+    DO_TEST_NOCAPS("watchdog-device");
+    DO_TEST_NOCAPS("watchdog-dump");
+    DO_TEST_NOCAPS("watchdog-injectnmi");
     DO_TEST_CAPS_ARCH_LATEST("watchdog-diag288", "s390x");
-    DO_TEST("balloon-device", NONE);
+    DO_TEST_NOCAPS("balloon-device");
     DO_TEST("balloon-device-deflate",
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
     DO_TEST("balloon-ccw-deflate",
@@ -1895,22 +1897,22 @@ mymain(void)
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
     DO_TEST("balloon-device-deflate-off",
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
-    DO_TEST("balloon-device-auto", NONE);
-    DO_TEST("balloon-device-period", NONE);
-    DO_TEST("sound", NONE);
+    DO_TEST_NOCAPS("balloon-device-auto");
+    DO_TEST_NOCAPS("balloon-device-period");
+    DO_TEST_NOCAPS("sound");
     DO_TEST("sound-device",
             QEMU_CAPS_HDA_DUPLEX, QEMU_CAPS_HDA_MICRO,
             QEMU_CAPS_HDA_OUTPUT,
             QEMU_CAPS_DEVICE_ICH9_INTEL_HDA,
             QEMU_CAPS_OBJECT_USB_AUDIO);
-    DO_TEST("fs9p", NONE);
+    DO_TEST_NOCAPS("fs9p");
     DO_TEST_CAPS_LATEST("fs9p");
     DO_TEST("fs9p-ccw", QEMU_CAPS_CCW);
     DO_TEST_CAPS_ARCH_LATEST("fs9p-ccw", "s390x");
 
-    DO_TEST("hostdev-usb-address", NONE);
-    DO_TEST("hostdev-usb-address-device", NONE);
-    DO_TEST("hostdev-usb-address-device-boot", NONE);
+    DO_TEST_NOCAPS("hostdev-usb-address");
+    DO_TEST_NOCAPS("hostdev-usb-address-device");
+    DO_TEST_NOCAPS("hostdev-usb-address-device-boot");
     DO_TEST_PARSE_ERROR("hostdev-usb-duplicate", NONE);
     DO_TEST("hostdev-pci-address", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-pci-address-device", QEMU_CAPS_DEVICE_VFIO_PCI);
@@ -1980,8 +1982,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_ZPCI);
 
     DO_TEST("pci-rom", QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("pci-rom-disabled", NONE);
-    DO_TEST("pci-rom-disabled-invalid", NONE);
+    DO_TEST_NOCAPS("pci-rom-disabled");
+    DO_TEST_NOCAPS("pci-rom-disabled-invalid");
 
     DO_TEST("hostdev-subsys-mdev-vfio-ccw",
             QEMU_CAPS_CCW,
@@ -2031,10 +2033,10 @@ mymain(void)
 
     DO_TEST_CAPS_VER("qemu-ns", "4.0.0");
     DO_TEST_CAPS_LATEST("qemu-ns");
-    DO_TEST("qemu-ns-no-env", NONE);
-    DO_TEST("qemu-ns-alt", NONE);
+    DO_TEST_NOCAPS("qemu-ns-no-env");
+    DO_TEST_NOCAPS("qemu-ns-alt");
 
-    DO_TEST("smp", NONE);
+    DO_TEST_NOCAPS("smp");
     DO_TEST("smp-dies", QEMU_CAPS_SMP_DIES);
 
     DO_TEST("iothreads", QEMU_CAPS_OBJECT_IOTHREAD);
@@ -2048,9 +2050,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("iothreads-virtio-scsi-pci");
     DO_TEST_CAPS_ARCH_LATEST("iothreads-virtio-scsi-ccw", "s390x");
 
-    DO_TEST("cpu-topology1", NONE);
-    DO_TEST("cpu-topology2", NONE);
-    DO_TEST("cpu-topology3", NONE);
+    DO_TEST_NOCAPS("cpu-topology1");
+    DO_TEST_NOCAPS("cpu-topology2");
+    DO_TEST_NOCAPS("cpu-topology3");
     DO_TEST("cpu-minimum1", QEMU_CAPS_KVM);
     DO_TEST("cpu-minimum2", QEMU_CAPS_KVM);
     DO_TEST("cpu-exact1", QEMU_CAPS_KVM);
@@ -2060,17 +2062,17 @@ mymain(void)
     DO_TEST_FAILURE("cpu-nofallback", QEMU_CAPS_KVM);
     DO_TEST("cpu-strict1", QEMU_CAPS_KVM);
     DO_TEST("cpu-no-removed-features", QEMU_CAPS_KVM);
-    DO_TEST("cpu-numa1", NONE);
-    DO_TEST("cpu-numa2", NONE);
-    DO_TEST("cpu-numa-no-memory-element", NONE);
+    DO_TEST_NOCAPS("cpu-numa1");
+    DO_TEST_NOCAPS("cpu-numa2");
+    DO_TEST_NOCAPS("cpu-numa-no-memory-element");
     DO_TEST_PARSE_ERROR("cpu-numa3", NONE);
     DO_TEST_PARSE_ERROR("cpu-numa-disjoint", NONE);
     DO_TEST("cpu-numa-disjoint", QEMU_CAPS_NUMA);
     DO_TEST_FAILURE("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_RAM);
     DO_TEST_PARSE_ERROR("cpu-numa-memshared-1", NONE);
     DO_TEST("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("cpu-host-model", NONE);
-    DO_TEST("cpu-host-model-vendor", NONE);
+    DO_TEST_NOCAPS("cpu-host-model");
+    DO_TEST_NOCAPS("cpu-host-model-vendor");
     DO_TEST_FULL("cpu-host-model-fallback", "",
                  ARG_FLAGS, FLAG_SKIP_LEGACY_CPUS, ARG_END);
     DO_TEST_FULL("cpu-host-model-nofallback", "",
@@ -2090,7 +2092,7 @@ mymain(void)
     DO_TEST("cpu-Haswell2", QEMU_CAPS_KVM);
     DO_TEST("cpu-Haswell3", QEMU_CAPS_KVM);
     DO_TEST("cpu-Haswell-noTSX", QEMU_CAPS_KVM);
-    DO_TEST("cpu-host-model-cmt", NONE);
+    DO_TEST_NOCAPS("cpu-host-model-cmt");
     DO_TEST_CAPS_VER("cpu-host-model-cmt", "4.0.0");
     DO_TEST("cpu-tsc-frequency", QEMU_CAPS_KVM);
     DO_TEST_CAPS_VER("cpu-tsc-frequency", "4.0.0");
@@ -2110,12 +2112,12 @@ mymain(void)
     DO_TEST_PARSE_ERROR("luks-disk-invalid", NONE);
     DO_TEST_PARSE_ERROR("luks-disks-source-both", QEMU_CAPS_OBJECT_SECRET);
 
-    DO_TEST("memtune", NONE);
-    DO_TEST("memtune-unlimited", NONE);
-    DO_TEST("blkiotune", NONE);
-    DO_TEST("blkiotune-device", NONE);
-    DO_TEST("cputune", NONE);
-    DO_TEST("cputune-zero-shares", NONE);
+    DO_TEST_NOCAPS("memtune");
+    DO_TEST_NOCAPS("memtune-unlimited");
+    DO_TEST_NOCAPS("blkiotune");
+    DO_TEST_NOCAPS("blkiotune-device");
+    DO_TEST_NOCAPS("cputune");
+    DO_TEST_NOCAPS("cputune-zero-shares");
     DO_TEST_PARSE_ERROR("cputune-iothreadsched-toomuch", NONE);
     DO_TEST_PARSE_ERROR("cputune-vcpusched-overlap", NONE);
     DO_TEST("cputune-numatune",
@@ -2128,7 +2130,7 @@ mymain(void)
             QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST_CAPS_LATEST("cputune-cpuset-big-id");
 
-    DO_TEST("numatune-memory", NONE);
+    DO_TEST_NOCAPS("numatune-memory");
     DO_TEST_PARSE_ERROR("numatune-memory-invalid-nodeset", NONE);
     DO_TEST("numatune-memnode",
             QEMU_CAPS_NUMA,
@@ -2145,22 +2147,22 @@ mymain(void)
     DO_TEST_PARSE_ERROR("numatune-memnode-no-memory", NONE);
 
     DO_TEST("numatune-distances", QEMU_CAPS_NUMA);
-    DO_TEST("numatune-no-vcpu", NONE);
+    DO_TEST_NOCAPS("numatune-no-vcpu");
     DO_TEST_CAPS_LATEST("numatune-hmat");
 
-    DO_TEST("numatune-auto-nodeset-invalid", NONE);
+    DO_TEST_NOCAPS("numatune-auto-nodeset-invalid");
     DO_TEST("numatune-auto-prefer", QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_FAILURE("numatune-static-nodeset-exceed-hostnode",
                     QEMU_CAPS_OBJECT_MEMORY_RAM);
     DO_TEST_PARSE_ERROR("numatune-memnode-nocpu", NONE);
     DO_TEST_PARSE_ERROR("numatune-memnodes-problematic", NONE);
-    DO_TEST("numad", NONE);
-    DO_TEST("numad-auto-vcpu-static-numatune", NONE);
+    DO_TEST_NOCAPS("numad");
+    DO_TEST_NOCAPS("numad-auto-vcpu-static-numatune");
     DO_TEST_PARSE_ERROR("numad-auto-vcpu-static-numatune-no-nodeset", NONE);
-    DO_TEST("numad-auto-memory-vcpu-cpuset", NONE);
-    DO_TEST("numad-auto-memory-vcpu-no-cpuset-and-placement", NONE);
-    DO_TEST("numad-static-memory-auto-vcpu", NONE);
+    DO_TEST_NOCAPS("numad-auto-memory-vcpu-cpuset");
+    DO_TEST_NOCAPS("numad-auto-memory-vcpu-no-cpuset-and-placement");
+    DO_TEST_NOCAPS("numad-static-memory-auto-vcpu");
     DO_TEST_CAPS_VER("blkdeviotune-max", "4.1.0");
     DO_TEST_CAPS_LATEST("blkdeviotune-max");
     DO_TEST_CAPS_VER("blkdeviotune-group-num", "4.1.0");
@@ -2171,18 +2173,18 @@ mymain(void)
     DO_TEST("multifunction-pci-device",
             QEMU_CAPS_SCSI_LSI);
 
-    DO_TEST("monitor-json", NONE);
+    DO_TEST_NOCAPS("monitor-json");
 
-    DO_TEST("seclabel-dynamic", NONE);
-    DO_TEST("seclabel-dynamic-baselabel", NONE);
-    DO_TEST("seclabel-dynamic-override", NONE);
-    DO_TEST("seclabel-dynamic-labelskip", NONE);
-    DO_TEST("seclabel-dynamic-relabel", NONE);
-    DO_TEST("seclabel-static", NONE);
-    DO_TEST("seclabel-static-relabel", NONE);
-    DO_TEST("seclabel-static-labelskip", NONE);
-    DO_TEST("seclabel-none", NONE);
-    DO_TEST("seclabel-dac-none", NONE);
+    DO_TEST_NOCAPS("seclabel-dynamic");
+    DO_TEST_NOCAPS("seclabel-dynamic-baselabel");
+    DO_TEST_NOCAPS("seclabel-dynamic-override");
+    DO_TEST_NOCAPS("seclabel-dynamic-labelskip");
+    DO_TEST_NOCAPS("seclabel-dynamic-relabel");
+    DO_TEST_NOCAPS("seclabel-static");
+    DO_TEST_NOCAPS("seclabel-static-relabel");
+    DO_TEST_NOCAPS("seclabel-static-labelskip");
+    DO_TEST_NOCAPS("seclabel-none");
+    DO_TEST_NOCAPS("seclabel-dac-none");
     DO_TEST_PARSE_ERROR("seclabel-multiple", NONE);
     DO_TEST_PARSE_ERROR("seclabel-device-duplicates", NONE);
 
@@ -2428,12 +2430,12 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_MMIO);
     DO_TEST_PARSE_ERROR("mach-virt-serial-invalid-machine", NONE);
 
-    DO_TEST("disk-ide-split", NONE);
+    DO_TEST_NOCAPS("disk-ide-split");
     DO_TEST("disk-ide-wwn",
             QEMU_CAPS_IDE_DRIVE_WWN,
             QEMU_CAPS_SCSI_DISK_WWN);
 
-    DO_TEST("disk-geometry", NONE);
+    DO_TEST_NOCAPS("disk-geometry");
     DO_TEST("disk-blockio", QEMU_CAPS_BLOCKIO);
 
     DO_TEST("video-device-pciaddr-default",
@@ -2883,8 +2885,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_Q35_PCI_HOLE64_SIZE);
 
-    DO_TEST("arm-vexpressa9-nodevs", NONE);
-    DO_TEST("arm-vexpressa9-basic", NONE);
+    DO_TEST_NOCAPS("arm-vexpressa9-nodevs");
+    DO_TEST_NOCAPS("arm-vexpressa9-basic");
     DO_TEST("arm-vexpressa9-virtio",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
@@ -3039,9 +3041,9 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCI_SERIAL);
 
     /* Make sure all combinations of ACPI and UEFI behave as expected */
-    DO_TEST("aarch64-acpi-uefi", NONE);
-    DO_TEST("aarch64-noacpi-uefi", NONE);
-    DO_TEST("aarch64-noacpi-nouefi", NONE);
+    DO_TEST_NOCAPS("aarch64-acpi-uefi");
+    DO_TEST_NOCAPS("aarch64-noacpi-uefi");
+    DO_TEST_NOCAPS("aarch64-noacpi-nouefi");
     DO_TEST_PARSE_ERROR("aarch64-acpi-nouefi", NONE);
 
     /* QEMU 4.0.0 didn't have support for aarch64 CPU features */
@@ -3087,7 +3089,7 @@ mymain(void)
 
     DO_TEST_FAILURE("memory-align-fail", NONE);
     DO_TEST_PARSE_ERROR("memory-hotplug-nonuma", QEMU_CAPS_DEVICE_PC_DIMM);
-    DO_TEST("memory-hotplug", NONE);
+    DO_TEST_NOCAPS("memory-hotplug");
     DO_TEST("memory-hotplug", QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA);
     DO_TEST("memory-hotplug-dimm", QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA,
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
@@ -3194,12 +3196,12 @@ mymain(void)
                         QEMU_CAPS_CCW,
                         QEMU_CAPS_LOADPARM);
 
-    DO_TEST("qemu-ns-domain-ns0", NONE);
-    DO_TEST("qemu-ns-domain-commandline", NONE);
-    DO_TEST("qemu-ns-domain-commandline-ns0", NONE);
-    DO_TEST("qemu-ns-commandline", NONE);
-    DO_TEST("qemu-ns-commandline-ns0", NONE);
-    DO_TEST("qemu-ns-commandline-ns1", NONE);
+    DO_TEST_NOCAPS("qemu-ns-domain-ns0");
+    DO_TEST_NOCAPS("qemu-ns-domain-commandline");
+    DO_TEST_NOCAPS("qemu-ns-domain-commandline-ns0");
+    DO_TEST_NOCAPS("qemu-ns-commandline");
+    DO_TEST_NOCAPS("qemu-ns-commandline-ns0");
+    DO_TEST_NOCAPS("qemu-ns-commandline-ns1");
 
     DO_TEST("virtio-input", QEMU_CAPS_VIRTIO_KEYBOARD,
             QEMU_CAPS_VIRTIO_MOUSE, QEMU_CAPS_VIRTIO_TABLET);
@@ -3281,7 +3283,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("usb-too-long-port-path-invalid",
                         QEMU_CAPS_USB_HUB);
 
-    DO_TEST("acpi-table", NONE);
+    DO_TEST_NOCAPS("acpi-table");
 
     DO_TEST_CAPS_LATEST("intel-iommu");
     DO_TEST_CAPS_LATEST("intel-iommu-caching-mode");
@@ -3379,7 +3381,7 @@ mymain(void)
     DO_TEST("cpu-check-partial", QEMU_CAPS_KVM);
     DO_TEST("cpu-check-full", QEMU_CAPS_KVM);
     DO_TEST("cpu-check-default-none", QEMU_CAPS_KVM);
-    DO_TEST("cpu-check-default-none2", NONE);
+    DO_TEST_NOCAPS("cpu-check-default-none2");
     DO_TEST("cpu-check-default-partial", QEMU_CAPS_KVM);
     DO_TEST("cpu-check-default-partial2", QEMU_CAPS_KVM);
 
