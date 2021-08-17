@@ -535,11 +535,11 @@ testCompareXMLToArgvValidateSchema(virQEMUDriver *drv,
 
     if (info->schemafile) {
         /* lookup and insert into cache if not found */
-        if (!g_hash_table_lookup_extended(info->qapiSchemaCache,
+        if (!g_hash_table_lookup_extended(info->conf->qapiSchemaCache,
                                           info->schemafile,
                                           NULL, (void **) &schema)) {
             schema = testQEMUSchemaLoad(info->schemafile);
-            g_hash_table_insert(info->qapiSchemaCache,
+            g_hash_table_insert(info->conf->qapiSchemaCache,
                                 g_strdup(info->schemafile),
                                 schema);
         }
@@ -845,9 +845,15 @@ mymain(void)
 {
     int ret = 0;
     g_autofree char *fakerootdir = NULL;
-    g_autoptr(GHashTable) capslatest = NULL;
+    g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
     g_autoptr(GHashTable) qapiSchemaCache = virHashNew((GDestroyNotify) virHashFree);
     g_autoptr(GHashTable) capscache = virHashNew(virObjectFreeHashData);
+    struct testQemuConf testConf = { .capslatest = capslatest,
+                                     .capscache = capscache,
+                                     .qapiSchemaCache = qapiSchemaCache };
+
+    if (!capslatest)
+        return EXIT_FAILURE;
 
     fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
@@ -901,10 +907,6 @@ mymain(void)
     VIR_FREE(driver.config->nvramDir);
     driver.config->nvramDir = g_strdup("/var/lib/libvirt/qemu/nvram");
 
-    capslatest = testQemuGetLatestCaps();
-    if (!capslatest)
-        return EXIT_FAILURE;
-
     virFileWrapperAddPrefix(SYSCONFDIR "/qemu/firmware",
                             abs_srcdir "/qemufirmwaredata/etc/qemu/firmware");
     virFileWrapperAddPrefix(PREFIX "/share/qemu/firmware",
@@ -941,9 +943,7 @@ mymain(void)
         static struct testQemuInfo info = { \
             .name = _name, \
         }; \
-        info.qapiSchemaCache = qapiSchemaCache; \
-        if (testQemuInfoSetArgs(&info, capscache, capslatest, \
-                                __VA_ARGS__) < 0) \
+        if (testQemuInfoSetArgs(&info, &testConf, __VA_ARGS__) < 0) \
             ret = -1; \
         testInfoSetPaths(&info, _suffix); \
         if (virTestRun("QEMU XML-2-ARGV " _name _suffix, \

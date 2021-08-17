@@ -679,8 +679,7 @@ testQemuCapsIterate(const char *suffix,
 
 int
 testQemuInfoSetArgs(struct testQemuInfo *info,
-                    GHashTable *capscache,
-                    GHashTable *capslatest, ...)
+                    struct testQemuConf *conf, ...)
 {
     va_list argptr;
     testQemuInfoArgName argname;
@@ -696,7 +695,9 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
     if (!fakeCaps)
         abort();
 
-    va_start(argptr, capslatest);
+    info->conf = conf;
+
+    va_start(argptr, conf);
     while ((argname = va_arg(argptr, testQemuInfoArgName)) != ARG_END) {
         switch (argname) {
         case ARG_QEMU_CAPS:
@@ -760,18 +761,18 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
         info->arch = virArchFromString(capsarch);
 
         if (STREQ(capsver, "latest")) {
-            capsfile = g_strdup(virHashLookup(capslatest, capsarch));
+            capsfile = g_strdup(virHashLookup(info->conf->capslatest, capsarch));
             stripmachinealiases = true;
         } else {
             capsfile = g_strdup_printf("%s/caps_%s.%s.xml",
                                        TEST_QEMU_CAPS_PATH, capsver, capsarch);
         }
 
-        if (!g_hash_table_lookup_extended(capscache, capsfile, NULL, (void **) &cachedcaps)) {
+        if (!g_hash_table_lookup_extended(info->conf->capscache, capsfile, NULL, (void **) &cachedcaps)) {
             if (!(cachedcaps = qemuTestParseCapabilitiesArch(info->arch, capsfile)))
                 goto cleanup;
 
-            g_hash_table_insert(capscache, g_strdup(capsfile), cachedcaps);
+            g_hash_table_insert(info->conf->capscache, g_strdup(capsfile), cachedcaps);
         }
 
         if (!(info->qemuCaps = virQEMUCapsNewCopy(cachedcaps)))

@@ -72,11 +72,13 @@ mymain(void)
     int ret = 0;
     g_autofree char *fakerootdir = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    g_autoptr(GHashTable) capslatest = NULL;
+    g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
     g_autoptr(GHashTable) capscache = virHashNew(virObjectFreeHashData);
     g_autoptr(virConnect) conn = NULL;
+    struct testQemuConf testConf = { .capslatest = capslatest,
+                                     .capscache = capscache,
+                                     .qapiSchemaCache = NULL };
 
-    capslatest = testQemuGetLatestCaps();
     if (!capslatest)
         return EXIT_FAILURE;
 
@@ -110,7 +112,7 @@ mymain(void)
         static struct testQemuInfo info = { \
             .name = _name, \
         }; \
-        if (testQemuInfoSetArgs(&info, capscache, capslatest, ARG_END) < 0 || \
+        if (testQemuInfoSetArgs(&info, &testConf, ARG_END) < 0 || \
             qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0) { \
             VIR_TEST_DEBUG("Failed to generate status test data for '%s'", _name); \
             return -1; \

@@ -54,6 +54,12 @@ typedef enum {
     FLAG_SLIRP_HELPER       = 1 << 5,
 } testQemuInfoFlags;
 
+struct testQemuConf {
+    GHashTable *capscache;
+    GHashTable *capslatest;
+    GHashTable *qapiSchemaCache;
+};
+
 struct testQemuInfo {
     const char *name;
     char *infile;
@@ -66,7 +72,8 @@ struct testQemuInfo {
     unsigned int parseFlags;
     virArch arch;
     char *schemafile;
-    GHashTable *qapiSchemaCache;
+
+    struct testQemuConf *conf;
 };
 
 virCaps *testQemuCapsInit(void);
@@ -110,8 +117,8 @@ int testQemuCapsIterate(const char *suffix,
                         void *opaque);
 
 int testQemuInfoSetArgs(struct testQemuInfo *info,
-                        GHashTable *capscache,
-                        GHashTable *capslatest, ...);
+                        struct testQemuConf *conf,
+                        ...);
 void testQemuInfoClear(struct testQemuInfo *info);
 
 #endif
