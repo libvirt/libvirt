@@ -2095,6 +2095,9 @@ qemuBuildVHostUserFsCommandLine(virCommand *cmd,
     virCommandAddArg(cmd, "-chardev");
     virCommandAddArg(cmd, chrdevstr);
 
+    if (qemuCommandAddExtDevice(cmd, &fs->info) < 0)
+        return -1;
+
     if (!(devstr = qemuBuildVHostUserFsDevStr(fs, def, chardev_alias, priv)))
         return -1;
 
