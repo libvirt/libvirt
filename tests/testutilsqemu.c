@@ -705,23 +705,6 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
 
             while ((flag = va_arg(argptr, int)) < QEMU_CAPS_LAST)
                 virQEMUCapsSet(fakeCaps, flag);
-
-            /* Some tests are run with NONE capabilities, which is just
-             * another name for QEMU_CAPS_LAST. If that is the case the
-             * arguments look like this :
-             *
-             *   ARG_QEMU_CAPS, NONE, QEMU_CAPS_LAST, ARG_END
-             *
-             * Fetch one argument more and if it is QEMU_CAPS_LAST then
-             * break from the switch() to force getting next argument
-             * in the line. If it is not QEMU_CAPS_LAST then we've
-             * fetched real ARG_* and we must process it.
-             */
-            if ((flag = va_arg(argptr, int)) != QEMU_CAPS_LAST) {
-                argname = flag;
-                continue;
-            }
-
             break;
 
         case ARG_GIC:
