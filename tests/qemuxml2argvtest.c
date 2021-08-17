@@ -1025,6 +1025,8 @@ mymain(void)
     DO_TEST_FULL(name, "", \
                  ARG_FLAGS, FLAG_EXPECT_FAILURE, \
                  ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END)
+# define DO_TEST_FAILURE_NOCAPS(name) \
+    DO_TEST_FULL(name, "", ARG_FLAGS, FLAG_EXPECT_FAILURE, ARG_END)
 
 # define DO_TEST_PARSE_ERROR(name, ...) \
     DO_TEST_FULL(name, "", \
@@ -1034,8 +1036,6 @@ mymain(void)
     DO_TEST_FULL(name, "", \
                  ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE, \
                  ARG_END)
-
-# define NONE QEMU_CAPS_LAST
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
@@ -1387,7 +1387,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-gluster");
     DO_TEST_CAPS_VER("disk-network-rbd", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd");
-    DO_TEST_FAILURE("disk-network-rbd-no-colon", NONE);
+    DO_TEST_FAILURE_NOCAPS("disk-network-rbd-no-colon");
     DO_TEST_NOCAPS("disk-network-sheepdog");
     DO_TEST_CAPS_VER("disk-network-sheepdog", "2.12.0");
     DO_TEST_CAPS_VER("disk-network-sheepdog", "6.0.0");
@@ -1617,7 +1617,7 @@ mymain(void)
     DO_TEST("net-vhostuser", QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE);
     DO_TEST_CAPS_LATEST("net-vhostuser");
     DO_TEST_NOCAPS("net-vhostuser-multiq");
-    DO_TEST_FAILURE("net-vhostuser-fail", NONE);
+    DO_TEST_FAILURE_NOCAPS("net-vhostuser-fail");
     DO_TEST_NOCAPS("net-user");
     DO_TEST_CAPS_ARCH_VER_FULL("net-user", "x86_64", "4.0.0", ARG_FLAGS, FLAG_SLIRP_HELPER);
     DO_TEST_NOCAPS("net-user-addr");
@@ -1875,7 +1875,7 @@ mymain(void)
             QEMU_CAPS_NEC_USB_XHCI,
             QEMU_CAPS_NEC_USB_XHCI_PORTS);
     DO_TEST("usb-controller-qemu-xhci", QEMU_CAPS_DEVICE_QEMU_XHCI);
-    DO_TEST_FAILURE("usb-controller-qemu-xhci-unavailable", NONE);
+    DO_TEST_FAILURE_NOCAPS("usb-controller-qemu-xhci-unavailable");
     DO_TEST_PARSE_ERROR("usb-controller-qemu-xhci-limit",
                         QEMU_CAPS_DEVICE_QEMU_XHCI);
 
@@ -2044,7 +2044,7 @@ mymain(void)
     DO_TEST("iothreads", QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST("iothreads-ids", QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST("iothreads-ids-partial", QEMU_CAPS_OBJECT_IOTHREAD);
-    DO_TEST_FAILURE("iothreads-nocap", NONE);
+    DO_TEST_FAILURE_NOCAPS("iothreads-nocap");
     DO_TEST("iothreads-disk", QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST("iothreads-disk-virtio-ccw", QEMU_CAPS_OBJECT_IOTHREAD,
             QEMU_CAPS_CCW);
@@ -3089,7 +3089,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR_NOCAPS("shmem-msi-only");
     DO_TEST("cpu-host-passthrough-features", QEMU_CAPS_KVM);
 
-    DO_TEST_FAILURE("memory-align-fail", NONE);
+    DO_TEST_FAILURE_NOCAPS("memory-align-fail");
     DO_TEST_PARSE_ERROR("memory-hotplug-nonuma", QEMU_CAPS_DEVICE_PC_DIMM);
     DO_TEST_NOCAPS("memory-hotplug");
     DO_TEST("memory-hotplug", QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA);
