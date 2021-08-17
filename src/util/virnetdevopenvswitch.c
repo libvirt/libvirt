@@ -620,6 +620,14 @@ int virNetDevOpenvswitchUpdateVlan(const char *ifname,
 }
 
 
+/*
+ * Average, peak, floor and burst in virNetDevBandwidth are in kbytes.
+ * However other_config in ovs qos is in bit.
+ * ingress_policing_rate in ovs interface is in kbit.
+ */
+#define VIR_NETDEV_TX_TO_OVS 8192
+#define VIR_NETDEV_RX_TO_OVS 8
+
 /**
  * virNetDevOpenvswitchInterfaceSetQos:
  * @ifname: on which interface
@@ -692,11 +700,11 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
         g_autofree char *qos_uuid = NULL;
         g_autofree char *queue_uuid = NULL;
 
-        average = g_strdup_printf("%llu", tx->average * 8192);
+        average = g_strdup_printf("%llu", tx->average * VIR_NETDEV_TX_TO_OVS);
         if (tx->burst)
-            burst = g_strdup_printf("%llu", tx->burst * 8192);
+            burst = g_strdup_printf("%llu", tx->burst * VIR_NETDEV_TX_TO_OVS);
         if (tx->peak)
-            peak = g_strdup_printf("%llu", tx->peak * 8192);
+            peak = g_strdup_printf("%llu", tx->peak * VIR_NETDEV_TX_TO_OVS);
 
         /* find queue */
         cmd = virNetDevOpenvswitchCreateCmd();
@@ -786,9 +794,11 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
 
         cmd = virNetDevOpenvswitchCreateCmd();
         virCommandAddArgList(cmd, "set", "Interface", ifname, NULL);
-        virCommandAddArgFormat(cmd, "ingress_policing_rate=%llu", rx->average * 8);
+        virCommandAddArgFormat(cmd, "ingress_policing_rate=%llu",
+                               rx->average * VIR_NETDEV_RX_TO_OVS);
         if (rx->burst)
-            virCommandAddArgFormat(cmd, "ingress_policing_burst=%llu", rx->burst * 8);
+            virCommandAddArgFormat(cmd, "ingress_policing_burst=%llu",
+                                   rx->burst * VIR_NETDEV_RX_TO_OVS);
 
         if (virCommandRun(cmd, NULL) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
