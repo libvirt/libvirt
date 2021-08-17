@@ -336,13 +336,23 @@ qemuAssignDeviceNetAlias(virDomainDef *def,
 
 
 static int
-qemuAssignDeviceFSAlias(virDomainFSDef *fss,
-                        int idx)
+qemuAssignDeviceFSAlias(virDomainDef *def,
+                        virDomainFSDef *fss)
 {
+    size_t i;
+    int maxidx = 0;
+
     if (fss->info.alias)
         return 0;
 
-    fss->info.alias = g_strdup_printf("fs%d", idx);
+    for (i = 0; i < def->nfss; i++) {
+        int idx;
+
+        if ((idx = qemuDomainDeviceAliasIndex(&def->fss[i]->info, "fs")) >= maxidx)
+            maxidx = idx + 1;
+    }
+
+    fss->info.alias = g_strdup_printf("fs%d", maxidx);
     return 0;
 }
 
@@ -634,7 +644,7 @@ qemuAssignDeviceAliases(virDomainDef *def, virQEMUCaps *qemuCaps)
     }
 
     for (i = 0; i < def->nfss; i++) {
-        if (qemuAssignDeviceFSAlias(def->fss[i], i) < 0)
+        if (qemuAssignDeviceFSAlias(def, def->fss[i]) < 0)
             return -1;
     }
     for (i = 0; i < def->nsounds; i++) {
