@@ -38,6 +38,14 @@ typedef enum {
 
 VIR_ENUM_DECL(virshDomainHostnameSource);
 
+typedef enum {
+    VIRSH_DOMAIN_INTERFACE_SOURCE_MODE_SERVER,
+    VIRSH_DOMAIN_INTERFACE_SOURCE_MODE_CLIENT,
+    VIRSH_DOMAIN_INTERFACE_SOURCE_MODE_LAST
+} virshDomainInterfaceSourceMode;
+
+VIR_ENUM_DECL(virshDomainInterfaceSourceMode);
+
 extern const vshCmdDef domManagementCmds[];
 
 VIR_ENUM_DECL(virshDomainProcessSignal);

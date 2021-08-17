@@ -831,8 +831,18 @@ static const vshCmdOptDef opts_attach_interface[] = {
      .type = VSH_OT_BOOL,
      .help = N_("libvirt will automatically detach/attach the device from/to host")
     },
+    {.name = "source-mode",
+     .type = VSH_OT_STRING,
+     .completer = virshDomainInterfaceSourceModeCompleter,
+     .help = N_("mode attribute of <source/> element")
+    },
     {.name = NULL}
 };
+
+VIR_ENUM_IMPL(virshDomainInterfaceSourceMode,
+              VIRSH_DOMAIN_INTERFACE_SOURCE_MODE_LAST,
+              "server",
+              "client");
 
 /* parse inbound and outbound which are in the format of
  * 'average,peak,burst,floor', in which peak and burst are optional,
@@ -881,6 +891,8 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     const char *mac = NULL, *target = NULL, *script = NULL,
                *type = NULL, *source = NULL, *model = NULL,
                *inboundStr = NULL, *outboundStr = NULL, *alias = NULL;
+    const char *sourceModeStr = NULL;
+    int sourceMode = -1;
     virNetDevBandwidthRate inbound, outbound;
     virDomainNetType typ;
     int ret;
@@ -911,13 +923,20 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "model", &model) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "alias", &alias) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "inbound", &inboundStr) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "outbound", &outboundStr) < 0)
+        vshCommandOptStringReq(ctl, cmd, "outbound", &outboundStr) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "source-mode", &sourceModeStr) < 0)
         return false;
 
     /* check interface type */
     if ((int)(typ = virDomainNetTypeFromString(type)) < 0) {
         vshError(ctl, _("No support for %s in command 'attach-interface'"),
                  type);
+        return false;
+    }
+
+    if (sourceModeStr &&
+        (sourceMode = virshDomainInterfaceSourceModeTypeFromString(sourceModeStr)) < 0) {
+        vshError(ctl, _("Invalid source mode: %s"), sourceModeStr);
         return false;
     }
 
@@ -981,9 +1000,18 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         break;
     }
 
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        if (sourceMode < 0) {
+            vshError(ctl, _("source-mode is mandatory"));
+            return false;
+        }
+        virBufferAsprintf(&buf, "<source type='unix' path='%s' mode='%s'/>\n",
+                          source,
+                          virshDomainInterfaceSourceModeTypeToString(sourceMode));
+        break;
+
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
-    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_MCAST:

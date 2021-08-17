@@ -373,6 +373,25 @@ virshDomainInterfaceAddrSourceCompleter(vshControl *ctl G_GNUC_UNUSED,
 
 
 char **
+virshDomainInterfaceSourceModeCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                        const vshCmd *cmd G_GNUC_UNUSED,
+                                        unsigned int flags)
+{
+    char **ret = NULL;
+    size_t i;
+
+    virCheckFlags(0, NULL);
+
+    ret = g_new0(char *, VIRSH_DOMAIN_INTERFACE_SOURCE_MODE_LAST);
+
+    for (i = 0; i < VIRSH_DOMAIN_INTERFACE_SOURCE_MODE_LAST; i++)
+        ret[i] = g_strdup(virshDomainInterfaceSourceModeTypeToString(i));
+
+    return ret;
+}
+
+
+char **
 virshDomainHostnameSourceCompleter(vshControl *ctl G_GNUC_UNUSED,
                                    const vshCmd *cmd G_GNUC_UNUSED,
                                    unsigned int flags)

@@ -4659,6 +4659,7 @@ attach-interface
       [--target target] [--mac mac] [--script script] [--model model]
       [--inbound average,peak,burst,floor] [--outbound average,peak,burst]
       [--alias alias] [--managed] [--print-xml]
+      [--source-mode mode]
 
 Attach a new network interface to the domain.
 
@@ -4672,7 +4673,9 @@ Attach a new network interface to the domain.
 interfaces or bridges,
 
 *hostdev* to indicate connection using a passthrough of PCI device
-on the host.
+on the host,
+
+*vhostuser* to indicate connection using a virtio transport protocol.
 
 ``source`` indicates the source of the connection.  The source depends
 on the type of the interface:
@@ -4685,6 +4688,8 @@ on the type of the interface:
 
 *hostdev* the PCI address of the host's interface formatted
 as domain:bus:slot.function.
+
+*vhostuser* the path to UNIX socket (control plane)
 
 ``--target`` is used to specify the tap/macvtap device to be used to
 connect the domain to the source.  Names starting with 'vnet' are
@@ -4719,6 +4724,10 @@ Network XML documentation at
 ``--managed`` is usable only for *hostdev* type and tells libvirt
 that the interface should be managed, which means detached and reattached
 from/to the host by libvirt.
+
+``--source-mode`` is mandatory for *vhostuser* interface and accepts values
+*server* and *client* that control whether hypervisor waits for the other
+process to connect, or initiates connection, respectively.
 
 If ``--print-xml`` is specified, then the XML of the interface that would be
 attached is printed instead.
