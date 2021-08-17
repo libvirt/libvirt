@@ -2837,13 +2837,11 @@ vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
         goto error;
     }
 
- cleanup:
     return mig;
 
  error:
     vzMigrationCookieFree(mig);
-    mig = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 #define VZ_MIGRATION_FLAGS         (VIR_MIGRATE_PAUSED | \

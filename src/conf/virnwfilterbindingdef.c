@@ -160,23 +160,19 @@ virNWFilterBindingDefParseNode(xmlDocPtr xml,
                                xmlNodePtr root)
 {
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    virNWFilterBindingDef *def = NULL;
 
     if (STRNEQ((const char *)root->name, "filterbinding")) {
         virReportError(VIR_ERR_XML_ERROR,
                        "%s",
                        _("unknown root element for nwfilter binding"));
-        goto cleanup;
+        return NULL;
     }
 
     if (!(ctxt = virXMLXPathContextNew(xml)))
-        goto cleanup;
+        return NULL;
 
     ctxt->node = root;
-    def = virNWFilterBindingDefParseXML(ctxt);
-
- cleanup:
-    return def;
+    return virNWFilterBindingDefParseXML(ctxt);
 }
 
 

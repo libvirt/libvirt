@@ -61,22 +61,17 @@ getMetadataFromXML(virDomainPtr dom)
     xmlNodePtr node;
 
     g_autofree char *xml = NULL;
-    char *ret = NULL;
 
     if (!(xml = virDomainGetXMLDesc(dom, 0)))
-        goto cleanup;
+        return NULL;
 
     if (!(doc = virXMLParseStringCtxt(xml, "(domain_definition)", &ctxt)))
-        goto cleanup;
+        return NULL;
 
     if (!(node = virXPathNode("//metadata/*", ctxt)))
-        goto cleanup;
+        return NULL;
 
-    ret = virXMLNodeToString(node->doc, node);
-
- cleanup:
-
-    return ret;
+    return virXMLNodeToString(node->doc, node);
 }
 
 

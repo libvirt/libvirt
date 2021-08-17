@@ -1652,30 +1652,30 @@ virStoragePoolObjLoadState(virStoragePoolObjList *pools,
         return NULL;
 
     if (!(xml = virXMLParseCtxt(stateFile, NULL, _("(pool state)"), &ctxt)))
-        goto cleanup;
+        return NULL;
 
     if (!(node = virXPathNode("//pool", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not find any 'pool' element in state file"));
-        goto cleanup;
+        return NULL;
     }
 
     ctxt->node = node;
     if (!(def = virStoragePoolDefParseXML(ctxt)))
-        goto cleanup;
+        return NULL;
 
     if (STRNEQ(name, def->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Storage pool state file '%s' does not match "
                          "pool name '%s'"),
                        stateFile, def->name);
-        goto cleanup;
+        return NULL;
     }
 
     /* create the object */
     if (!(obj = virStoragePoolObjListAdd(pools, def,
                                          VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE)))
-        goto cleanup;
+        return NULL;
     def = NULL;
 
     /* XXX: future handling of some additional useful status data,
@@ -1684,8 +1684,6 @@ virStoragePoolObjLoadState(virStoragePoolObjList *pools,
      */
 
     obj->active = true;
-
- cleanup:
     return obj;
 }
 

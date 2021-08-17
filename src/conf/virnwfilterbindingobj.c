@@ -237,23 +237,19 @@ virNWFilterBindingObjParseNode(xmlDocPtr doc,
                                xmlNodePtr root)
 {
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    virNWFilterBindingObj *obj = NULL;
 
     if (STRNEQ((const char *)root->name, "filterbindingstatus")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unknown root element '%s' for filter binding"),
                        root->name);
-        goto cleanup;
+        return NULL;
     }
 
     if (!(ctxt = virXMLXPathContextNew(doc)))
-        goto cleanup;
+        return NULL;
 
     ctxt->node = root;
-    obj = virNWFilterBindingObjParseXML(doc, ctxt);
-
- cleanup:
-    return obj;
+    return virNWFilterBindingObjParseXML(doc, ctxt);
 }
 
 

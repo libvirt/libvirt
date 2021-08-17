@@ -1433,18 +1433,13 @@ qemuMigrationCookieXMLParseStr(qemuMigrationCookie *mig,
 {
     g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    int ret = -1;
 
     VIR_DEBUG("xml=%s", NULLSTR(xml));
 
     if (!(doc = virXMLParseStringCtxt(xml, _("(qemu_migration_cookie)"), &ctxt)))
-        goto cleanup;
+        return -1;
 
-    ret = qemuMigrationCookieXMLParse(mig, driver, qemuCaps, doc, ctxt, flags);
-
- cleanup:
-
-    return ret;
+    return qemuMigrationCookieXMLParse(mig, driver, qemuCaps, doc, ctxt, flags);
 }
 
 

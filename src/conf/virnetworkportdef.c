@@ -269,23 +269,19 @@ virNetworkPortDefParseNode(xmlDocPtr xml,
                            xmlNodePtr root)
 {
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    virNetworkPortDef *def = NULL;
 
     if (STRNEQ((const char *)root->name, "networkport")) {
         virReportError(VIR_ERR_XML_ERROR,
                        "%s",
                        _("unknown root element for network port"));
-        goto cleanup;
+        return NULL;
     }
 
     if (!(ctxt = virXMLXPathContextNew(xml)))
-        goto cleanup;
+        return NULL;
 
     ctxt->node = root;
-    def = virNetworkPortDefParseXML(ctxt);
-
- cleanup:
-    return def;
+    return virNetworkPortDefParseXML(ctxt);
 }
 
 

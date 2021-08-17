@@ -283,23 +283,19 @@ virCPUDefParseXMLString(const char *xml,
 {
     g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    int ret = -1;
 
     if (!xml) {
         virReportError(VIR_ERR_INVALID_ARG, "%s", _("missing CPU definition"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(doc = virXMLParseStringCtxt(xml, _("(CPU_definition)"), &ctxt)))
-        goto cleanup;
+        return -1;
 
     if (virCPUDefParseXML(ctxt, NULL, type, cpu, validateXML) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

@@ -79,11 +79,10 @@ cpuTestLoadXML(virArch arch, const char *name)
                           virArchToString(arch), name);
 
     if (!(doc = virXMLParseFileCtxt(xml, &ctxt)))
-        goto cleanup;
+        return NULL;
 
     virCPUDefParseXML(ctxt, NULL, VIR_CPU_TYPE_AUTO, &cpu, false);
 
- cleanup:
     return cpu;
 }
 
@@ -105,12 +104,12 @@ cpuTestLoadMultiXML(virArch arch,
                           virArchToString(arch), name);
 
     if (!(doc = virXMLParseFileCtxt(xml, &ctxt)))
-        goto cleanup;
+        return NULL;
 
     n = virXPathNodeSet("/cpuTest/cpu", ctxt, &nodes);
     if (n <= 0) {
         fprintf(stderr, "\nNo /cpuTest/cpu elements found in %s\n", xml);
-        goto cleanup;
+        return NULL;
     }
 
     cpus = g_new0(virCPUDef *, n);
@@ -119,19 +118,18 @@ cpuTestLoadMultiXML(virArch arch,
         ctxt->node = nodes[i];
         if (virCPUDefParseXML(ctxt, NULL, VIR_CPU_TYPE_HOST, &cpus[i],
                               false) < 0)
-            goto cleanup_cpus;
+            goto error;
     }
 
     *count = n;
 
- cleanup:
     return cpus;
 
- cleanup_cpus:
+ error:
     for (i = 0; i < n; i++)
         virCPUDefFree(cpus[i]);
     VIR_FREE(cpus);
-    goto cleanup;
+    return NULL;
 }
 
 

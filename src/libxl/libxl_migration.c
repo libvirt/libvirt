@@ -151,7 +151,6 @@ libxlMigrationEatCookie(const char *cookiein,
     g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autofree char *uuidstr = NULL;
-    int ret = -1;
 
     /*
      * Assume a legacy (V1) migration stream if request came from a
@@ -209,14 +208,11 @@ libxlMigrationEatCookie(const char *cookiein,
     }
 
     *migout = mig;
-    ret = 0;
-    goto cleanup;
+    return 0;
 
  error:
     libxlMigrationCookieFree(mig);
-
- cleanup:
-    return ret;
+    return -1;
 }
 
 static void

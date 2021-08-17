@@ -2897,26 +2897,25 @@ virStorageUtilGlusterExtractPoolSources(const char *host,
     virStoragePoolSource *src = NULL;
     size_t i;
     int nnodes;
-    int ret = -1;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *volname = NULL;
 
     if (!(doc = virXMLParseStringCtxt(xml, _("(gluster_cli_output)"), &ctxt)))
-        goto cleanup;
+        return -1;
 
     if ((nnodes = virXPathNodeSet("//volumes/volume", ctxt, &nodes)) < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < nnodes; i++) {
         ctxt->node = nodes[i];
 
         if (!(src = virStoragePoolSourceListNewSource(list)))
-            goto cleanup;
+            return -1;
 
         if (!(volname = virXPathString("string(./name)", ctxt))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to extract gluster volume name"));
-            goto cleanup;
+            return -1;
         }
 
         if (pooltype == VIR_STORAGE_POOL_NETFS) {
@@ -2928,7 +2927,7 @@ virStorageUtilGlusterExtractPoolSources(const char *host,
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("unsupported gluster lookup"));
-            goto cleanup;
+            return -1;
         }
 
         src->hosts = g_new0(virStoragePoolSourceHost, 1);
@@ -2937,11 +2936,7 @@ virStorageUtilGlusterExtractPoolSources(const char *host,
         src->hosts[0].name = g_strdup(host);
     }
 
-    ret = nnodes;
-
- cleanup:
-
-    return ret;
+    return nnodes;
 }
 
 

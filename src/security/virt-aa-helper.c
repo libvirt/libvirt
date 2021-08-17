@@ -567,34 +567,33 @@ verify_xpath_context(xmlXPathContextPtr ctxt)
 static int
 caps_mockup(vahControl * ctl, const char *xmlStr)
 {
-    int rc = -1;
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     char *arch;
 
     if (!(xml = virXMLParseStringCtxt(xmlStr, _("(domain_definition)"),
                                       &ctxt))) {
-        goto cleanup;
+        return -1;
     }
 
     if (!virXMLNodeNameEqual(ctxt->node, "domain")) {
         vah_error(NULL, 0, _("unexpected root element, expecting <domain>"));
-        goto cleanup;
+        return -1;
     }
 
     /* Quick sanity check for some required elements */
     if (verify_xpath_context(ctxt) != 0)
-        goto cleanup;
+        return -1;
 
     ctl->virtType = virXPathString("string(./@type)", ctxt);
     if (!ctl->virtType) {
         vah_error(ctl, 0, _("domain type is not defined"));
-        goto cleanup;
+        return -1;
     }
     ctl->os = virXPathString("string(./os/type[1])", ctxt);
     if (!ctl->os) {
         vah_error(ctl, 0, _("os.type is not defined"));
-        goto cleanup;
+        return -1;
     }
     arch = virXPathString("string(./os/type[1]/@arch)", ctxt);
     if (!arch) {
@@ -604,11 +603,7 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
         VIR_FREE(arch);
     }
 
-    rc = 0;
-
- cleanup:
-
-    return rc;
+    return 0;
 }
 
 virDomainDefParserConfig virAAHelperDomainDefParserConfig = {
