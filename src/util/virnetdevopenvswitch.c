@@ -789,6 +789,10 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
                 return -1;
             }
         }
+    } else {
+        if (virNetDevOpenvswitchInterfaceClearTxQos(ifname, vmuuid) < 0) {
+            VIR_WARN("Clean tx qos for interface %s failed", ifname);
+        }
     }
 
     if (rx) {
@@ -807,14 +811,18 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
                            _("Unable to set vlan configuration on port %s"), ifname);
             return -1;
         }
+    } else {
+        if (virNetDevOpenvswitchInterfaceClearRxQos(ifname) < 0) {
+            VIR_WARN("Clean rx qos for interface %s failed", ifname);
+        }
     }
 
     return 0;
 }
 
 int
-virNetDevOpenvswitchInterfaceClearQos(const char *ifname,
-                                      const unsigned char *vmuuid)
+virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
+                                        const unsigned char *vmuuid)
 {
     char vmuuidstr[VIR_UUID_STRING_BUFLEN];
     g_autoptr(virCommand) cmd = NULL;
@@ -890,4 +898,42 @@ virNetDevOpenvswitchInterfaceClearQos(const char *ifname,
     }
 
     return 0;
+}
+
+int
+virNetDevOpenvswitchInterfaceClearRxQos(const char *ifname)
+{
+    g_autoptr(virCommand) cmd = NULL;
+
+    cmd = virNetDevOpenvswitchCreateCmd();
+    virCommandAddArgList(cmd, "set", "Interface", ifname, NULL);
+    virCommandAddArgFormat(cmd, "ingress_policing_rate=%llu", 0llu);
+    virCommandAddArgFormat(cmd, "ingress_policing_burst=%llu", 0llu);
+
+    if (virCommandRun(cmd, NULL) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to set vlan configuration on port %s"), ifname);
+        return -1;
+    }
+
+    return 0;
+}
+
+int
+virNetDevOpenvswitchInterfaceClearQos(const char *ifname,
+                                      const unsigned char *vmuuid)
+{
+    int ret = 0;
+
+    if (virNetDevOpenvswitchInterfaceClearTxQos(ifname, vmuuid) < 0) {
+        VIR_WARN("Clean tx qos for interface %s failed", ifname);
+        ret = -1;
+    }
+
+    if (virNetDevOpenvswitchInterfaceClearRxQos(ifname) < 0) {
+        VIR_WARN("Clean rx qos for interface %s failed", ifname);
+        ret = -1;
+    }
+
+    return ret;
 }
