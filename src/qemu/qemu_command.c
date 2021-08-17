@@ -2033,6 +2033,20 @@ qemuBuildDisksCommandLine(virCommand *cmd,
 }
 
 
+static char *
+qemuBuildVHostUserFsChardevStr(const virDomainFSDef *fs,
+                               const char *chardev_alias)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&buf, "socket");
+    virBufferAsprintf(&buf, ",id=%s", chardev_alias);
+    virBufferAddLit(&buf, ",path=");
+    virQEMUBuildBufferEscapeComma(&buf, QEMU_DOMAIN_FS_PRIVATE(fs)->vhostuser_fs_sock);
+    return virBufferContentAndReset(&buf);
+}
+
+
 static int
 qemuBuildVHostUserFsCommandLine(virCommand *cmd,
                                 virDomainFSDef *fs,
@@ -2040,16 +2054,14 @@ qemuBuildVHostUserFsCommandLine(virCommand *cmd,
                                 qemuDomainObjPrivate *priv)
 {
     g_autofree char *chardev_alias = NULL;
+    g_autofree char *chrdevstr = NULL;
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
 
     chardev_alias = qemuDomainGetVhostUserChrAlias(fs->info.alias);
+    chrdevstr = qemuBuildVHostUserFsChardevStr(fs, chardev_alias);
 
     virCommandAddArg(cmd, "-chardev");
-    virBufferAddLit(&opt, "socket");
-    virBufferAsprintf(&opt, ",id=%s", chardev_alias);
-    virBufferAddLit(&opt, ",path=");
-    virQEMUBuildBufferEscapeComma(&opt, QEMU_DOMAIN_FS_PRIVATE(fs)->vhostuser_fs_sock);
-    virCommandAddArgBuffer(cmd, &opt);
+    virCommandAddArg(cmd, chrdevstr);
 
     virCommandAddArg(cmd, "-device");
 
