@@ -824,6 +824,7 @@ int
 virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
                                         const unsigned char *vmuuid)
 {
+    int ret = 0;
     char vmuuidstr[VIR_UUID_STRING_BUFLEN];
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *ifname_ex_id = NULL;
@@ -871,9 +872,8 @@ virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
             cmd = virNetDevOpenvswitchCreateCmd();
             virCommandAddArgList(cmd, "destroy", "qos", line, NULL);
             if (virCommandRun(cmd, NULL) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to destroy qos on port %s"), ifname);
-                return -1;
+                VIR_WARN("Unable to destroy qos on port %s", ifname);
+                ret = -1;
             }
         }
     }
@@ -890,14 +890,13 @@ virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
             cmd = virNetDevOpenvswitchCreateCmd();
             virCommandAddArgList(cmd, "destroy", "queue", line, NULL);
             if (virCommandRun(cmd, NULL) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to destroy queue on port %s"), ifname);
-                return -1;
+                VIR_WARN("Unable to destroy queue on port %s", ifname);
+                ret = -1;
             }
         }
     }
 
-    return 0;
+    return ret;
 }
 
 int
@@ -912,7 +911,7 @@ virNetDevOpenvswitchInterfaceClearRxQos(const char *ifname)
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to set vlan configuration on port %s"), ifname);
+                       _("Unable to reset ingress on port %s"), ifname);
         return -1;
     }
 
