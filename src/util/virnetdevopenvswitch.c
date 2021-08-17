@@ -619,6 +619,23 @@ int virNetDevOpenvswitchUpdateVlan(const char *ifname,
     return 0;
 }
 
+static char*
+virNetDevOpenvswitchFindUUID(const char *table,
+                             const char *vmid_ex_id,
+                             const char *ifname_ex_id)
+{
+    g_autoptr(virCommand) cmd = NULL;
+    char *uuid = NULL;
+
+    cmd = virNetDevOpenvswitchCreateCmd();
+    virCommandAddArgList(cmd, "--no-heading", "--columns=_uuid", "find", table,
+                         vmid_ex_id, ifname_ex_id, NULL);
+    virCommandSetOutputBuffer(cmd, &uuid);
+    if (virCommandRun(cmd, NULL) < 0) {
+        VIR_WARN("Unable to find queue on port with %s", ifname_ex_id);
+    }
+    return uuid;
+}
 
 /*
  * Average, peak, floor and burst in virNetDevBandwidth are in kbytes.
@@ -706,30 +723,15 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
         if (tx->peak)
             peak = g_strdup_printf("%llu", tx->peak * VIR_NETDEV_TX_TO_OVS);
 
-        /* find queue */
-        cmd = virNetDevOpenvswitchCreateCmd();
         virUUIDFormat(vmuuid, vmuuidstr);
         vmid_ex_id = g_strdup_printf("external-ids:vm-id=\"%s\"", vmuuidstr);
         ifname_ex_id = g_strdup_printf("external-ids:ifname=\"%s\"", ifname);
-        virCommandAddArgList(cmd, "--no-heading", "--columns=_uuid", "find", "queue",
-                             vmid_ex_id, ifname_ex_id, NULL);
-        virCommandSetOutputBuffer(cmd, &queue_uuid);
-        if (virCommandRun(cmd, NULL) < 0) {
-            VIR_WARN("Unable to find queue on port %s", ifname);
-        }
-
+        /* find queue */
+        queue_uuid = virNetDevOpenvswitchFindUUID("queue", vmid_ex_id, ifname_ex_id);
         /* find qos */
-        virCommandFree(cmd);
-        cmd = virNetDevOpenvswitchCreateCmd();
-        virCommandAddArgList(cmd, "--no-heading", "--columns=_uuid", "find", "qos",
-                             vmid_ex_id, ifname_ex_id, NULL);
-        virCommandSetOutputBuffer(cmd, &qos_uuid);
-        if (virCommandRun(cmd, NULL) < 0) {
-            VIR_WARN("Unable to find qos on port %s", ifname);
-        }
+        qos_uuid = virNetDevOpenvswitchFindUUID("qos", vmid_ex_id, ifname_ex_id);
 
         /* create qos and set */
-        virCommandFree(cmd);
         cmd = virNetDevOpenvswitchCreateCmd();
         if (queue_uuid && *queue_uuid) {
             g_auto(GStrv) lines = g_strsplit(queue_uuid, "\n", 0);
@@ -816,6 +818,7 @@ virNetDevOpenvswitchInterfaceClearQos(const char *ifname,
 {
     char vmuuidstr[VIR_UUID_STRING_BUFLEN];
     g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *ifname_ex_id = NULL;
     g_autofree char *vmid_ex_id = NULL;
     g_autofree char *qos_uuid = NULL;
     g_autofree char *queue_uuid = NULL;
@@ -823,24 +826,13 @@ virNetDevOpenvswitchInterfaceClearQos(const char *ifname,
     size_t i;
 
     /* find qos */
-    cmd = virNetDevOpenvswitchCreateCmd();
     virUUIDFormat(vmuuid, vmuuidstr);
     vmid_ex_id = g_strdup_printf("external-ids:vm-id=\"%s\"", vmuuidstr);
-    virCommandAddArgList(cmd, "--no-heading", "--columns=_uuid", "find", "qos", vmid_ex_id, NULL);
-    virCommandSetOutputBuffer(cmd, &qos_uuid);
-    if (virCommandRun(cmd, NULL) < 0) {
-        VIR_WARN("Unable to find qos on port %s", ifname);
-    }
-
+    ifname_ex_id = g_strdup_printf("external-ids:ifname=\"%s\"", ifname);
     /* find queue */
-    virCommandFree(cmd);
-    cmd = virNetDevOpenvswitchCreateCmd();
-    vmid_ex_id = g_strdup_printf("external-ids:vm-id=\"%s\"", vmuuidstr);
-    virCommandAddArgList(cmd, "--no-heading", "--columns=_uuid", "find", "queue", vmid_ex_id, NULL);
-    virCommandSetOutputBuffer(cmd, &queue_uuid);
-    if (virCommandRun(cmd, NULL) < 0) {
-        VIR_WARN("Unable to find queue on port %s", ifname);
-    }
+    queue_uuid = virNetDevOpenvswitchFindUUID("queue", vmid_ex_id, ifname_ex_id);
+    /* find qos */
+    qos_uuid = virNetDevOpenvswitchFindUUID("qos", vmid_ex_id, ifname_ex_id);
 
     if (qos_uuid && *qos_uuid) {
         g_auto(GStrv) lines = g_strsplit(qos_uuid, "\n", 0);
@@ -854,7 +846,7 @@ virNetDevOpenvswitchInterfaceClearQos(const char *ifname,
             virCommandFree(cmd);
             cmd = virNetDevOpenvswitchCreateCmd();
             virCommandAddArgList(cmd, "--no-heading", "--columns=_uuid", "--if-exists",
-                    "list", "port", ifname, "qos", NULL);
+                                 "list", "port", ifname, "qos", NULL);
             virCommandSetOutputBuffer(cmd, &port_qos);
             if (virCommandRun(cmd, NULL) < 0) {
                 VIR_WARN("Unable to remove port qos on port %s", ifname);
