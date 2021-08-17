@@ -2047,6 +2047,36 @@ qemuBuildVHostUserFsChardevStr(const virDomainFSDef *fs,
 }
 
 
+static char *
+qemuBuildVHostUserFsDevStr(virDomainFSDef *fs,
+                           const virDomainDef *def,
+                           const char *chardev_alias,
+                           qemuDomainObjPrivate *priv)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    if (qemuBuildVirtioDevStr(&buf, "vhost-user-fs", priv->qemuCaps,
+                              VIR_DOMAIN_DEVICE_FS, fs) < 0)
+        return NULL;
+
+    virBufferAsprintf(&buf, ",id=%s", fs->info.alias);
+    virBufferAsprintf(&buf, ",chardev=%s", chardev_alias);
+    if (fs->queue_size)
+        virBufferAsprintf(&buf, ",queue-size=%llu", fs->queue_size);
+    virBufferAddLit(&buf, ",tag=");
+    virQEMUBuildBufferEscapeComma(&buf, fs->dst);
+    qemuBuildVirtioOptionsStr(&buf, fs->virtio);
+
+    if (fs->info.bootIndex)
+        virBufferAsprintf(&buf, ",bootindex=%u", fs->info.bootIndex);
+
+    if (qemuBuildDeviceAddressStr(&buf, def, &fs->info) < 0)
+        return NULL;
+
+    return virBufferContentAndReset(&buf);
+}
+
+
 static int
 qemuBuildVHostUserFsCommandLine(virCommand *cmd,
                                 virDomainFSDef *fs,
@@ -2055,7 +2085,7 @@ qemuBuildVHostUserFsCommandLine(virCommand *cmd,
 {
     g_autofree char *chardev_alias = NULL;
     g_autofree char *chrdevstr = NULL;
-    g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
+    g_autofree char *devstr = NULL;
 
     chardev_alias = qemuDomainGetVhostUserChrAlias(fs->info.alias);
     chrdevstr = qemuBuildVHostUserFsChardevStr(fs, chardev_alias);
@@ -2063,27 +2093,12 @@ qemuBuildVHostUserFsCommandLine(virCommand *cmd,
     virCommandAddArg(cmd, "-chardev");
     virCommandAddArg(cmd, chrdevstr);
 
+    if (!(devstr = qemuBuildVHostUserFsDevStr(fs, def, chardev_alias, priv)))
+        return -1;
+
     virCommandAddArg(cmd, "-device");
+    virCommandAddArg(cmd, devstr);
 
-    if (qemuBuildVirtioDevStr(&opt, "vhost-user-fs", priv->qemuCaps,
-                              VIR_DOMAIN_DEVICE_FS, fs) < 0)
-        return -1;
-
-    virBufferAsprintf(&opt, ",id=%s", fs->info.alias);
-    virBufferAsprintf(&opt, ",chardev=%s", chardev_alias);
-    if (fs->queue_size)
-        virBufferAsprintf(&opt, ",queue-size=%llu", fs->queue_size);
-    virBufferAddLit(&opt, ",tag=");
-    virQEMUBuildBufferEscapeComma(&opt, fs->dst);
-    qemuBuildVirtioOptionsStr(&opt, fs->virtio);
-
-    if (fs->info.bootIndex)
-        virBufferAsprintf(&opt, ",bootindex=%u", fs->info.bootIndex);
-
-    if (qemuBuildDeviceAddressStr(&opt, def, &fs->info) < 0)
-        return -1;
-
-    virCommandAddArgBuffer(cmd, &opt);
     return 0;
 }
 
