@@ -34,7 +34,7 @@ enum {
 };
 
 typedef enum {
-    ARG_QEMU_CAPS,
+    ARG_QEMU_CAPS = QEMU_CAPS_LAST + 1,
     ARG_GIC,
     ARG_MIGRATE_FROM,
     ARG_MIGRATE_FD,
