@@ -617,14 +617,10 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("ppc64-tpmproxy-single", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-tpmproxy-with-tpm", "ppc64");
 
-    DO_TEST_FULL("seclabel-dynamic-baselabel", "", WHEN_INACTIVE,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("seclabel-dynamic-override", "", WHEN_INACTIVE,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("seclabel-dynamic-labelskip", "", WHEN_INACTIVE,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("seclabel-dynamic-relabel", "", WHEN_INACTIVE,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
+    DO_TEST_FULL("seclabel-dynamic-baselabel", "", WHEN_INACTIVE, ARG_END);
+    DO_TEST_FULL("seclabel-dynamic-override", "", WHEN_INACTIVE, ARG_END);
+    DO_TEST_FULL("seclabel-dynamic-labelskip", "", WHEN_INACTIVE, ARG_END);
+    DO_TEST_FULL("seclabel-dynamic-relabel", "", WHEN_INACTIVE, ARG_END);
     DO_TEST("seclabel-static", NONE);
     DO_TEST("seclabel-static-labelskip", NONE);
     DO_TEST("seclabel-none", NONE);
@@ -1161,69 +1157,27 @@ mymain(void)
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_VNC);
 
-    DO_TEST_FULL("aarch64-gic-none", "", WHEN_BOTH,
-                 ARG_GIC, GIC_NONE,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-none-v2", "", WHEN_BOTH,
-                 ARG_GIC, GIC_V2,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-none-v3", "", WHEN_BOTH,
-                 ARG_GIC, GIC_V3,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-none-both", "", WHEN_BOTH,
-                 ARG_GIC, GIC_BOTH,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-none-tcg", "", WHEN_BOTH,
-                 ARG_GIC, GIC_BOTH,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-default", "", WHEN_BOTH,
-                 ARG_GIC, GIC_NONE,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-default-v2", "", WHEN_BOTH,
-                 ARG_GIC, GIC_V2,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-default-v3", "", WHEN_BOTH,
-                 ARG_GIC, GIC_V3,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-default-both", "", WHEN_BOTH,
-                 ARG_GIC, GIC_BOTH,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-v2", "", WHEN_BOTH,
-                 ARG_GIC, GIC_NONE,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-v2", "", WHEN_BOTH,
-                 ARG_GIC, GIC_V2,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-v2", "", WHEN_BOTH,
-                 ARG_GIC, GIC_V3,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-v2", "", WHEN_BOTH,
-                 ARG_GIC, GIC_BOTH,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-v3", "", WHEN_BOTH,
-                 ARG_GIC, GIC_NONE,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-v3", "", WHEN_BOTH,
-                 ARG_GIC, GIC_V2,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-v3", "", WHEN_BOTH,
-                 ARG_GIC, GIC_V3,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-v3", "", WHEN_BOTH,
-                 ARG_GIC, GIC_BOTH,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-host", "", WHEN_BOTH,
-                 ARG_GIC, GIC_NONE,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-host", "", WHEN_BOTH,
-                 ARG_GIC, GIC_V2,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-host", "", WHEN_BOTH,
-                 ARG_GIC, GIC_V3,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
-    DO_TEST_FULL("aarch64-gic-host", "", WHEN_BOTH,
-                 ARG_GIC, GIC_BOTH,
-                 ARG_QEMU_CAPS, NONE, ARG_END);
+    DO_TEST_FULL("aarch64-gic-none", "", WHEN_BOTH, ARG_GIC, GIC_NONE, ARG_END);
+    DO_TEST_FULL("aarch64-gic-none-v2", "", WHEN_BOTH, ARG_GIC, GIC_V2, ARG_END);
+    DO_TEST_FULL("aarch64-gic-none-v3", "", WHEN_BOTH, ARG_GIC, GIC_V3, ARG_END);
+    DO_TEST_FULL("aarch64-gic-none-both", "", WHEN_BOTH, ARG_GIC, GIC_BOTH, ARG_END);
+    DO_TEST_FULL("aarch64-gic-none-tcg", "", WHEN_BOTH, ARG_GIC, GIC_BOTH, ARG_END);
+    DO_TEST_FULL("aarch64-gic-default", "", WHEN_BOTH, ARG_GIC, GIC_NONE, ARG_END);
+    DO_TEST_FULL("aarch64-gic-default-v2", "", WHEN_BOTH, ARG_GIC, GIC_V2, ARG_END);
+    DO_TEST_FULL("aarch64-gic-default-v3", "", WHEN_BOTH, ARG_GIC, GIC_V3, ARG_END);
+    DO_TEST_FULL("aarch64-gic-default-both", "", WHEN_BOTH, ARG_GIC, GIC_BOTH, ARG_END);
+    DO_TEST_FULL("aarch64-gic-v2", "", WHEN_BOTH, ARG_GIC, GIC_NONE, ARG_END);
+    DO_TEST_FULL("aarch64-gic-v2", "", WHEN_BOTH, ARG_GIC, GIC_V2, ARG_END);
+    DO_TEST_FULL("aarch64-gic-v2", "", WHEN_BOTH, ARG_GIC, GIC_V3, ARG_END);
+    DO_TEST_FULL("aarch64-gic-v2", "", WHEN_BOTH, ARG_GIC, GIC_BOTH, ARG_END);
+    DO_TEST_FULL("aarch64-gic-v3", "", WHEN_BOTH, ARG_GIC, GIC_NONE, ARG_END);
+    DO_TEST_FULL("aarch64-gic-v3", "", WHEN_BOTH, ARG_GIC, GIC_V2, ARG_END);
+    DO_TEST_FULL("aarch64-gic-v3", "", WHEN_BOTH, ARG_GIC, GIC_V3, ARG_END);
+    DO_TEST_FULL("aarch64-gic-v3", "", WHEN_BOTH, ARG_GIC, GIC_BOTH, ARG_END);
+    DO_TEST_FULL("aarch64-gic-host", "", WHEN_BOTH, ARG_GIC, GIC_NONE, ARG_END);
+    DO_TEST_FULL("aarch64-gic-host", "", WHEN_BOTH, ARG_GIC, GIC_V2, ARG_END);
+    DO_TEST_FULL("aarch64-gic-host", "", WHEN_BOTH, ARG_GIC, GIC_V3, ARG_END);
+    DO_TEST_FULL("aarch64-gic-host", "", WHEN_BOTH, ARG_GIC, GIC_BOTH, ARG_END);
 
     /* SVE aarch64 CPU features work on modern QEMU */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-features-sve", "aarch64");
