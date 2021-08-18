@@ -2077,6 +2077,22 @@ mymain(void)
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_ICH9_USB_EHCI1);
+
+    /* host-model cpu expansion depends on the cpu reported by qemu and thus
+     * we invoke it for all real capability dumps we have */
+    DO_TEST_CAPS_VER("cpu-host-model", "2.11.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "2.12.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "3.0.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "3.1.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "4.0.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "4.1.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "4.2.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "5.0.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "5.1.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "5.2.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "6.0.0");
+    DO_TEST_CAPS_VER("cpu-host-model", "6.1.0");
+
     DO_TEST_NOCAPS("cpu-host-model-vendor");
     DO_TEST_FULL("cpu-host-model-fallback", "",
                  ARG_FLAGS, FLAG_SKIP_LEGACY_CPUS, ARG_END);
