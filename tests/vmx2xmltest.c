@@ -245,7 +245,6 @@ mymain(void)
     DO_TEST("cdrom-ide-device", "cdrom-ide-device");
     DO_TEST("cdrom-ide-raw-device", "cdrom-ide-raw-device");
     DO_TEST("cdrom-ide-raw-auto-detect", "cdrom-ide-raw-auto-detect");
-    DO_TEST("cdrom-ide-raw-auto-detect", "cdrom-ide-raw-auto-detect");
 
     DO_TEST("cdrom-ide-file-missing-datastore", "cdrom-ide-empty");
     DO_TEST("cdrom-ide-file-missing-file", "cdrom-ide-empty");
@@ -272,8 +271,6 @@ mymain(void)
 
     DO_TEST("serial-file", "serial-file");
     DO_TEST("serial-device", "serial-device");
-    DO_TEST("serial-pipe-client-app", "serial-pipe");
-    DO_TEST("serial-pipe-server-vm", "serial-pipe");
     DO_TEST("serial-pipe-client-app", "serial-pipe");
     DO_TEST("serial-pipe-server-vm", "serial-pipe");
     DO_TEST("serial-network-server", "serial-network-server");
