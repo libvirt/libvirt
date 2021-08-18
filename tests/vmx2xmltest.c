@@ -110,8 +110,7 @@ testCompareFiles(const char *vmx, const char *xml, bool should_fail_parse)
 }
 
 struct testInfo {
-    const char *input;
-    const char *output;
+    const char *file;
     bool should_fail;
 };
 
@@ -124,9 +123,9 @@ testCompareHelper(const void *data)
     char *xml = NULL;
 
     vmx = g_strdup_printf("%s/vmx2xmldata/vmx2xml-%s.vmx", abs_srcdir,
-                          info->input);
+                          info->file);
     xml = g_strdup_printf("%s/vmx2xmldata/vmx2xml-%s.xml", abs_srcdir,
-                          info->output);
+                          info->file);
 
     ret = testCompareFiles(vmx, xml, info->should_fail);
 
@@ -191,18 +190,18 @@ mymain(void)
 {
     int ret = 0;
 
-# define DO_TEST_FULL(_in, _out, _should_fail) \
+# define DO_TEST_FULL(file, should_fail) \
         do { \
-            struct testInfo info = { _in, _out, _should_fail }; \
+            struct testInfo info = { file, should_fail }; \
             virResetLastError(); \
-            if (virTestRun("VMware VMX-2-XML "_in" -> "_out, \
+            if (virTestRun("VMware VMX-2-XML " file, \
                            testCompareHelper, &info) < 0) { \
                 ret = -1; \
             } \
         } while (0)
 
-# define DO_TEST(_in, _out) DO_TEST_FULL(_in, _out, false)
-# define DO_TEST_FAIL(_in, _out) DO_TEST_FULL(_in, _out, true)
+# define DO_TEST(file) DO_TEST_FULL(file, false)
+# define DO_TEST_FAIL(file) DO_TEST_FULL(file, true)
 
     testCapsInit();
 
@@ -218,100 +217,100 @@ mymain(void)
     ctx.autodetectSCSIControllerModel = NULL;
     ctx.datacenterPath = NULL;
 
-    DO_TEST("case-insensitive-1", "case-insensitive-1");
-    DO_TEST("case-insensitive-2", "case-insensitive-2");
+    DO_TEST("case-insensitive-1");
+    DO_TEST("case-insensitive-2");
 
-    DO_TEST("minimal", "minimal");
-    DO_TEST("minimal-64bit", "minimal-64bit");
+    DO_TEST("minimal");
+    DO_TEST("minimal-64bit");
 
-    DO_TEST("graphics-vnc", "graphics-vnc");
+    DO_TEST("graphics-vnc");
 
-    DO_TEST("scsi-driver", "scsi-driver");
-    DO_TEST("scsi-writethrough", "scsi-writethrough");
+    DO_TEST("scsi-driver");
+    DO_TEST("scsi-writethrough");
 
-    DO_TEST("harddisk-scsi-file", "harddisk-scsi-file");
-    DO_TEST("harddisk-ide-file", "harddisk-ide-file");
-    DO_TEST("harddisk-transient", "harddisk-transient");
+    DO_TEST("harddisk-scsi-file");
+    DO_TEST("harddisk-ide-file");
+    DO_TEST("harddisk-transient");
 
-    DO_TEST("cdrom-scsi-file", "cdrom-scsi-file");
-    DO_TEST("cdrom-scsi-empty", "cdrom-scsi-empty");
-    DO_TEST("cdrom-scsi-device", "cdrom-scsi-device");
-    DO_TEST("cdrom-scsi-raw-device", "cdrom-scsi-raw-device");
-    DO_TEST("cdrom-scsi-raw-auto-detect", "cdrom-scsi-raw-auto-detect");
-    DO_TEST("cdrom-scsi-passthru", "cdrom-scsi-passthru");
-    DO_TEST("cdrom-ide-file", "cdrom-ide-file");
-    DO_TEST("cdrom-ide-empty", "cdrom-ide-empty");
-    DO_TEST("cdrom-ide-empty-2", "cdrom-ide-empty-2");
-    DO_TEST("cdrom-ide-device", "cdrom-ide-device");
-    DO_TEST("cdrom-ide-raw-device", "cdrom-ide-raw-device");
-    DO_TEST("cdrom-ide-raw-auto-detect", "cdrom-ide-raw-auto-detect");
+    DO_TEST("cdrom-scsi-file");
+    DO_TEST("cdrom-scsi-empty");
+    DO_TEST("cdrom-scsi-device");
+    DO_TEST("cdrom-scsi-raw-device");
+    DO_TEST("cdrom-scsi-raw-auto-detect");
+    DO_TEST("cdrom-scsi-passthru");
+    DO_TEST("cdrom-ide-file");
+    DO_TEST("cdrom-ide-empty");
+    DO_TEST("cdrom-ide-empty-2");
+    DO_TEST("cdrom-ide-device");
+    DO_TEST("cdrom-ide-raw-device");
+    DO_TEST("cdrom-ide-raw-auto-detect");
 
-    DO_TEST("cdrom-ide-file-missing-datastore", "cdrom-ide-empty");
-    DO_TEST("cdrom-ide-file-missing-file", "cdrom-ide-empty");
+    DO_TEST("cdrom-ide-file-missing-datastore");
+    DO_TEST("cdrom-ide-file-missing-file");
 
-    DO_TEST_FAIL("harddisk-ide-file-missing-datastore", "harddisk-ide-file");
-    DO_TEST_FAIL("harddisk-scsi-file-missing-file", "harddisk-scsi-file");
+    DO_TEST_FAIL("harddisk-ide-file-missing-datastore");
+    DO_TEST_FAIL("harddisk-scsi-file-missing-file");
 
-    DO_TEST("floppy-file", "floppy-file");
-    DO_TEST("floppy-device", "floppy-device");
+    DO_TEST("floppy-file");
+    DO_TEST("floppy-device");
 
-    DO_TEST("sharedfolder", "sharedfolder");
+    DO_TEST("sharedfolder");
 
-    DO_TEST("ethernet-e1000", "ethernet-e1000");
-    DO_TEST("ethernet-vmxnet2", "ethernet-vmxnet2");
+    DO_TEST("ethernet-e1000");
+    DO_TEST("ethernet-vmxnet2");
 
-    DO_TEST("ethernet-custom", "ethernet-custom");
-    DO_TEST("ethernet-bridged", "ethernet-bridged");
-    DO_TEST("ethernet-nat", "ethernet-nat");
+    DO_TEST("ethernet-custom");
+    DO_TEST("ethernet-bridged");
+    DO_TEST("ethernet-nat");
 
-    DO_TEST("ethernet-generated", "ethernet-generated");
-    DO_TEST("ethernet-static", "ethernet-static");
-    DO_TEST("ethernet-vpx", "ethernet-vpx");
-    DO_TEST("ethernet-other", "ethernet-other");
+    DO_TEST("ethernet-generated");
+    DO_TEST("ethernet-static");
+    DO_TEST("ethernet-vpx");
+    DO_TEST("ethernet-other");
 
-    DO_TEST("serial-file", "serial-file");
-    DO_TEST("serial-device", "serial-device");
-    DO_TEST("serial-pipe-client-app", "serial-pipe");
-    DO_TEST("serial-pipe-server-vm", "serial-pipe");
-    DO_TEST("serial-network-server", "serial-network-server");
-    DO_TEST("serial-network-client", "serial-network-client");
+    DO_TEST("serial-file");
+    DO_TEST("serial-device");
+    DO_TEST("serial-pipe-client-app");
+    DO_TEST("serial-pipe-server-vm");
+    DO_TEST("serial-network-server");
+    DO_TEST("serial-network-client");
 
-    DO_TEST("parallel-file", "parallel-file");
-    DO_TEST("parallel-device", "parallel-device");
+    DO_TEST("parallel-file");
+    DO_TEST("parallel-device");
 
-    DO_TEST("esx-in-the-wild-1", "esx-in-the-wild-1");
-    DO_TEST("esx-in-the-wild-2", "esx-in-the-wild-2");
-    DO_TEST("esx-in-the-wild-3", "esx-in-the-wild-3");
-    DO_TEST("esx-in-the-wild-4", "esx-in-the-wild-4");
-    DO_TEST("esx-in-the-wild-5", "esx-in-the-wild-5");
-    DO_TEST("esx-in-the-wild-6", "esx-in-the-wild-6");
-    DO_TEST("esx-in-the-wild-7", "esx-in-the-wild-7");
-    DO_TEST("esx-in-the-wild-8", "esx-in-the-wild-8");
-    DO_TEST("esx-in-the-wild-9", "esx-in-the-wild-9");
-    DO_TEST("esx-in-the-wild-10", "esx-in-the-wild-10");
-    DO_TEST("esx-in-the-wild-11", "esx-in-the-wild-11");
+    DO_TEST("esx-in-the-wild-1");
+    DO_TEST("esx-in-the-wild-2");
+    DO_TEST("esx-in-the-wild-3");
+    DO_TEST("esx-in-the-wild-4");
+    DO_TEST("esx-in-the-wild-5");
+    DO_TEST("esx-in-the-wild-6");
+    DO_TEST("esx-in-the-wild-7");
+    DO_TEST("esx-in-the-wild-8");
+    DO_TEST("esx-in-the-wild-9");
+    DO_TEST("esx-in-the-wild-10");
+    DO_TEST("esx-in-the-wild-11");
 
-    DO_TEST("gsx-in-the-wild-1", "gsx-in-the-wild-1");
-    DO_TEST("gsx-in-the-wild-2", "gsx-in-the-wild-2");
-    DO_TEST("gsx-in-the-wild-3", "gsx-in-the-wild-3");
-    DO_TEST("gsx-in-the-wild-4", "gsx-in-the-wild-4");
+    DO_TEST("gsx-in-the-wild-1");
+    DO_TEST("gsx-in-the-wild-2");
+    DO_TEST("gsx-in-the-wild-3");
+    DO_TEST("gsx-in-the-wild-4");
 
-    DO_TEST("ws-in-the-wild-1", "ws-in-the-wild-1");
-    DO_TEST("ws-in-the-wild-2", "ws-in-the-wild-2");
+    DO_TEST("ws-in-the-wild-1");
+    DO_TEST("ws-in-the-wild-2");
 
-    DO_TEST("fusion-in-the-wild-1", "fusion-in-the-wild-1");
+    DO_TEST("fusion-in-the-wild-1");
 
-    DO_TEST("annotation", "annotation");
+    DO_TEST("annotation");
 
-    DO_TEST("smbios", "smbios");
+    DO_TEST("smbios");
 
-    DO_TEST("svga", "svga");
+    DO_TEST("svga");
 
-    DO_TEST("firmware-efi", "firmware-efi");
+    DO_TEST("firmware-efi");
 
     ctx.datacenterPath = "folder1/folder2/datacenter1";
 
-    DO_TEST("datacenterpath", "datacenterpath");
+    DO_TEST("datacenterpath");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
