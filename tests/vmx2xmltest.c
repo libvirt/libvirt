@@ -122,9 +122,9 @@ testCompareHelper(const void *data)
     char *vmx = NULL;
     char *xml = NULL;
 
-    vmx = g_strdup_printf("%s/vmx2xmldata/vmx2xml-%s.vmx", abs_srcdir,
+    vmx = g_strdup_printf("%s/vmx2xmldata/%s.vmx", abs_srcdir,
                           info->file);
-    xml = g_strdup_printf("%s/vmx2xmldata/vmx2xml-%s.xml", abs_srcdir,
+    xml = g_strdup_printf("%s/vmx2xmldata/%s.xml", abs_srcdir,
                           info->file);
 
     ret = testCompareFiles(vmx, xml, info->should_fail);
