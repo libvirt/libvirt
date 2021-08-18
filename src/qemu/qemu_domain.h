@@ -1043,3 +1043,7 @@ int
 qemuDomainNamePathsCleanup(virQEMUDriverConfig *cfg,
                            const char *name,
                            bool bestEffort);
+
+char *
+qemuDomainGetVHostUserFSSocketPath(qemuDomainObjPrivate *priv,
+                                   const virDomainFSDef *fs);

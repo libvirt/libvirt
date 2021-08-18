@@ -11440,3 +11440,14 @@ qemuDomainNamePathsCleanup(virQEMUDriverConfig *cfg,
 
     return 0;
 }
+
+
+char *
+qemuDomainGetVHostUserFSSocketPath(qemuDomainObjPrivate *priv,
+                                   const virDomainFSDef *fs)
+{
+    if (fs->sock)
+        return g_strdup(fs->sock);
+
+    return virFileBuildPath(priv->libDir, fs->info.alias, "-fs.sock");
+}
