@@ -18,7 +18,7 @@
     <feature policy='require' name='invtsc'/>
   </cpu>
   <clock offset='utc'>
-    <timer name='tsc' frequency='3504000000'/>
+    <timer name='tsc' frequency='4567890000'/>
   </clock>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
