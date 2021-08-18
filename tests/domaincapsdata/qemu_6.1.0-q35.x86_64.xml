@@ -56,13 +56,11 @@
       <feature policy='require' name='invtsc'/>
       <feature policy='require' name='amd-ssbd'/>
       <feature policy='require' name='virt-ssbd'/>
+      <feature policy='require' name='svme-addr-chk'/>
       <feature policy='require' name='rdctl-no'/>
       <feature policy='require' name='skip-l1dfl-vmentry'/>
       <feature policy='require' name='mds-no'/>
       <feature policy='require' name='pschange-mc-no'/>
-      <feature policy='disable' name='svm'/>
-      <feature policy='disable' name='npt'/>
-      <feature policy='disable' name='nrip-save'/>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='yes'>qemu64</model>

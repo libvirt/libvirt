@@ -17,11 +17,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 90,
-      "minor": 0,
+      "micro": 0,
+      "minor": 1,
       "major": 6
     },
-    "package": "v6.1.0-rc0-48-g7b7ca8ebde"
+    "package": "v6.1.0"
   },
   "id": "libvirt-2"
 }
@@ -16942,10 +16942,6 @@
 {
   "return": [
     {
-      "name": "chardev-pty",
-      "parent": "chardev"
-    },
-    {
       "name": "vhost-user-vsock-device",
       "parent": "vhost-vsock-common"
     },
@@ -16994,7 +16990,7 @@
       "parent": "confidential-guest-support"
     },
     {
-      "name": "usb-redir",
+      "name": "usb-wacom-tablet",
       "parent": "usb-device"
     },
     {
@@ -17002,7 +16998,7 @@
       "parent": "netfilter"
     },
     {
-      "name": "usb-wacom-tablet",
+      "name": "usb-redir",
       "parent": "usb-device"
     },
     {
@@ -17042,12 +17038,12 @@
       "parent": "pit-common"
     },
     {
-      "name": "core2duo-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "ich9-usb-uhci5",
       "parent": "pci-uhci-usb"
+    },
+    {
+      "name": "core2duo-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "pcm3680_pci",
@@ -17094,8 +17090,12 @@
       "parent": "usb-device"
     },
     {
-      "name": "chardev-serial",
-      "parent": "chardev-fd"
+      "name": "virtio-9p-pci-transitional",
+      "parent": "virtio-9p-pci-base"
+    },
+    {
+      "name": "chardev-pty",
+      "parent": "chardev"
     },
     {
       "name": "virtio-blk-device",
@@ -17114,16 +17114,16 @@
       "parent": "x86_64-cpu"
     },
     {
+      "name": "qtest-accel",
+      "parent": "accel"
+    },
+    {
       "name": "chardev-wctablet",
       "parent": "chardev"
     },
     {
       "name": "Westmere-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
-    },
-    {
-      "name": "vhost-user-vsock-pci",
-      "parent": "vhost-user-vsock-pci-base"
     },
     {
       "name": "ich9-usb-uhci2",
@@ -17134,20 +17134,20 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "Cooperlake-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "chardev-serial",
+      "parent": "chardev-fd"
     },
     {
       "name": "virtio-gpu-gl-device",
       "parent": "virtio-gpu-device"
     },
     {
-      "name": "qtest-accel",
-      "parent": "accel"
+      "name": "vhost-user-vsock-pci",
+      "parent": "vhost-user-vsock-pci-base"
     },
     {
-      "name": "kvmclock",
-      "parent": "sys-bus-device"
+      "name": "Cooperlake-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "ich9-usb-uhci1",
@@ -17170,16 +17170,16 @@
       "parent": "pci-device"
     },
     {
-      "name": "e1000e",
-      "parent": "pci-device"
-    },
-    {
-      "name": "x3130-upstream",
-      "parent": "pcie-port"
+      "name": "kvmclock",
+      "parent": "sys-bus-device"
     },
     {
       "name": "virtio-serial-pci-transitional",
       "parent": "virtio-serial-pci-base"
+    },
+    {
+      "name": "x3130-upstream",
+      "parent": "pcie-port"
     },
     {
       "name": "memory-backend-ram",
@@ -17190,6 +17190,10 @@
       "parent": "PCI"
     },
     {
+      "name": "e1000e",
+      "parent": "pci-device"
+    },
+    {
       "name": "n270-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
@@ -17198,8 +17202,8 @@
       "parent": "pci-host-bridge"
     },
     {
-      "name": "virtio-9p-pci-transitional",
-      "parent": "virtio-9p-pci-base"
+      "name": "virtio-input-host-pci",
+      "parent": "virtio-input-host-pci-base-type"
     },
     {
       "name": "chardev-file",
@@ -17382,10 +17386,6 @@
       "parent": "bus"
     },
     {
-      "name": "memory-region",
-      "parent": "object"
-    },
-    {
       "name": "Skylake-Server-v3-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
@@ -17402,8 +17402,8 @@
       "parent": "pci-device"
     },
     {
-      "name": "virtio-input-host-pci",
-      "parent": "virtio-input-host-pci-base-type"
+      "name": "memory-region",
+      "parent": "object"
     },
     {
       "name": "nvdimm",
@@ -17474,28 +17474,28 @@
       "parent": "sys-bus-device"
     },
     {
-      "name": "chardev-memory",
-      "parent": "chardev-ringbuf"
-    },
-    {
-      "name": "pc-q35-2.8-machine",
-      "parent": "generic-pc-machine"
+      "name": "i82557a",
+      "parent": "pci-device"
     },
     {
       "name": "vhost-user-scsi-pci-non-transitional",
       "parent": "vhost-user-scsi-pci-base"
     },
     {
-      "name": "i82557a",
-      "parent": "pci-device"
+      "name": "vmmouse",
+      "parent": "isa-device"
+    },
+    {
+      "name": "chardev-udp",
+      "parent": "chardev"
+    },
+    {
+      "name": "pc-q35-2.8-machine",
+      "parent": "generic-pc-machine"
     },
     {
       "name": "generic-sdhci",
       "parent": "sys-bus-device"
-    },
-    {
-      "name": "vmmouse",
-      "parent": "isa-device"
     },
     {
       "name": "virtio-scsi-pci-non-transitional",
@@ -17514,8 +17514,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "chardev-udp",
-      "parent": "chardev"
+      "name": "chardev-memory",
+      "parent": "chardev-ringbuf"
     },
     {
       "name": "EPYC-Rome-v1-x86_64-cpu",
@@ -17574,12 +17574,12 @@
       "parent": "virtio-9p-pci-base"
     },
     {
-      "name": "memory-backend-file",
-      "parent": "memory-backend"
-    },
-    {
       "name": "Nehalem-v2-x86_64-cpu",
       "parent": "x86_64-cpu"
+    },
+    {
+      "name": "memory-backend-file",
+      "parent": "memory-backend"
     },
     {
       "name": "vhost-vsock-device",
@@ -17618,16 +17618,16 @@
       "parent": "device"
     },
     {
-      "name": "isabus-bridge",
-      "parent": "sys-bus-device"
+      "name": "IvyBridge-v2-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "ne2k_pci",
       "parent": "pci-device"
     },
     {
-      "name": "IvyBridge-v2-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "isabus-bridge",
+      "parent": "sys-bus-device"
     },
     {
       "name": "usb-bus",
@@ -17640,10 +17640,6 @@
     {
       "name": "qtest",
       "parent": "object"
-    },
-    {
-      "name": "EPYC-v1-x86_64-cpu",
-      "parent": "x86_64-cpu"
     },
     {
       "name": "tcg-accel",
@@ -17682,12 +17678,16 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "isa-ipmi-kcs",
-      "parent": "isa-device"
-    },
-    {
       "name": "i82551",
       "parent": "pci-device"
+    },
+    {
+      "name": "EPYC-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
+    },
+    {
+      "name": "isa-ipmi-kcs",
+      "parent": "isa-device"
     },
     {
       "name": "Icelake-Server-noTSX-x86_64-cpu",
@@ -17714,12 +17714,12 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "vhost-user-backend",
-      "parent": "object"
-    },
-    {
       "name": "mioe3680_pci",
       "parent": "pci-device"
+    },
+    {
+      "name": "vhost-user-backend",
+      "parent": "object"
     },
     {
       "name": "vmxnet3",
@@ -17760,6 +17760,10 @@
     {
       "name": "virtio-serial-device",
       "parent": "virtio-device"
+    },
+    {
+      "name": "virtio-serial-pci",
+      "parent": "virtio-serial-pci-base"
     },
     {
       "name": "Denverton-v2-x86_64-cpu",
@@ -17814,8 +17818,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "virtio-rng-pci-non-transitional",
-      "parent": "virtio-rng-pci-base"
+      "name": "vhost-user-blk-pci-non-transitional",
+      "parent": "vhost-user-blk-pci-base"
     },
     {
       "name": "cirrus-vga",
@@ -17842,8 +17846,8 @@
       "parent": "pcie-host-bridge"
     },
     {
-      "name": "virtio-serial-pci",
-      "parent": "virtio-serial-pci-base"
+      "name": "virtio-rng-pci-non-transitional",
+      "parent": "virtio-rng-pci-base"
     },
     {
       "name": "Skylake-Client-x86_64-cpu",
@@ -17856,10 +17860,6 @@
     {
       "name": "Cooperlake-v2-x86_64-cpu",
       "parent": "x86_64-cpu"
-    },
-    {
-      "name": "vhost-user-blk-pci-non-transitional",
-      "parent": "vhost-user-blk-pci-base"
     },
     {
       "name": "container",
@@ -17906,12 +17906,12 @@
       "parent": "e1000-base"
     },
     {
-      "name": "pxb-pcie-bus",
-      "parent": "PCIE"
-    },
-    {
       "name": "sdhci-pci",
       "parent": "pci-device"
+    },
+    {
+      "name": "pxb-pcie-bus",
+      "parent": "PCIE"
     },
     {
       "name": "vhost-user-scsi",
@@ -18158,8 +18158,8 @@
       "parent": "chardev-spice"
     },
     {
-      "name": "qio-channel-command",
-      "parent": "qio-channel"
+      "name": "tls-creds-x509",
+      "parent": "tls-creds"
     },
     {
       "name": "Opteron_G3-v1-x86_64-cpu",
@@ -18174,8 +18174,8 @@
       "parent": "virtio-blk-pci-base"
     },
     {
-      "name": "tls-creds-x509",
-      "parent": "tls-creds"
+      "name": "qio-channel-command",
+      "parent": "qio-channel"
     },
     {
       "name": "pc-i440fx-2.4-machine",
@@ -18254,12 +18254,12 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "chardev-braille",
-      "parent": "chardev"
-    },
-    {
       "name": "tpci200",
       "parent": "pci-device"
+    },
+    {
+      "name": "chardev-braille",
+      "parent": "chardev"
     },
     {
       "name": "rocker",
@@ -18272,10 +18272,6 @@
     {
       "name": "gpio_i2c",
       "parent": "sys-bus-device"
-    },
-    {
-      "name": "secret",
-      "parent": "secret_common"
     },
     {
       "name": "qio-channel-socket",
@@ -18298,36 +18294,32 @@
       "parent": "object"
     },
     {
-      "name": "chardev-socket",
-      "parent": "chardev"
-    },
-    {
       "name": "clock",
       "parent": "object"
-    },
-    {
-      "name": "ioh3420",
-      "parent": "pcie-root-port-base"
     },
     {
       "name": "Haswell-v2-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
-      "name": "usb-ehci",
-      "parent": "pci-ehci-usb"
-    },
-    {
       "name": "host-x86_64-cpu",
       "parent": "max-x86_64-cpu"
     },
     {
-      "name": "pc-i440fx-2.11-machine",
-      "parent": "generic-pc-machine"
+      "name": "secret",
+      "parent": "secret_common"
+    },
+    {
+      "name": "usb-ehci",
+      "parent": "pci-ehci-usb"
     },
     {
       "name": "pxb",
       "parent": "pci-device"
+    },
+    {
+      "name": "pc-i440fx-2.11-machine",
+      "parent": "generic-pc-machine"
     },
     {
       "name": "AC97",
@@ -18338,12 +18330,20 @@
       "parent": "device"
     },
     {
-      "name": "virtio-pmem",
-      "parent": "virtio-device"
+      "name": "Cascadelake-Server-noTSX-x86_64-cpu",
+      "parent": "x86_64-cpu"
+    },
+    {
+      "name": "chardev-socket",
+      "parent": "chardev"
     },
     {
       "name": "nvme-bus",
       "parent": "bus"
+    },
+    {
+      "name": "virtconsole",
+      "parent": "virtserialport"
     },
     {
       "name": "virtio-net-pci-non-transitional",
@@ -18354,20 +18354,20 @@
       "parent": "isa-device"
     },
     {
-      "name": "hyperv-testdev",
-      "parent": "isa-device"
+      "name": "virtio-iommu-pci-non-transitional",
+      "parent": "virtio-iommu-device-base"
     },
     {
       "name": "scsi-hd",
       "parent": "scsi-disk-base"
     },
     {
-      "name": "Cascadelake-Server-noTSX-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "usb-kbd",
       "parent": "usb-hid"
+    },
+    {
+      "name": "lsi53c810",
+      "parent": "lsi53c895a"
     },
     {
       "name": "isa-fdc",
@@ -18402,28 +18402,28 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "Skylake-Client-v1-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "virtio-pmem",
+      "parent": "virtio-device"
+    },
+    {
+      "name": "tpm-tis",
+      "parent": "isa-device"
     },
     {
       "name": "Skylake-Server-IBRS-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
-      "name": "lsi53c810",
-      "parent": "lsi53c895a"
-    },
-    {
-      "name": "virtio-iommu-pci-non-transitional",
-      "parent": "virtio-iommu-device-base"
+      "name": "hyperv-testdev",
+      "parent": "isa-device"
     },
     {
       "name": "s3c-sdhci",
       "parent": "generic-sdhci"
     },
     {
-      "name": "tpm-tis",
-      "parent": "isa-device"
+      "name": "filter-mirror",
+      "parent": "netfilter"
     },
     {
       "name": "fw_cfg_mem",
@@ -18450,16 +18450,16 @@
       "parent": "virtio-input-hid-device"
     },
     {
-      "name": "virtconsole",
-      "parent": "virtserialport"
+      "name": "Skylake-Client-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
+    },
+    {
+      "name": "ioh3420",
+      "parent": "pcie-root-port-base"
     },
     {
       "name": "guest-loader",
       "parent": "device"
-    },
-    {
-      "name": "filter-mirror",
-      "parent": "netfilter"
     },
     {
       "name": "x-remote-machine",
@@ -18674,12 +18674,12 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "Nehalem-v1-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "kvmvapic",
       "parent": "sys-bus-device"
+    },
+    {
+      "name": "Nehalem-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "nvme-ns",
@@ -18870,12 +18870,12 @@
       "parent": "virtio-gpu-base"
     },
     {
-      "name": "hda-duplex",
-      "parent": "hda-audio"
-    },
-    {
       "name": "pentium-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
+    },
+    {
+      "name": "hda-duplex",
+      "parent": "hda-audio"
     },
     {
       "name": "amd-iommu-iommu-memory-region",
@@ -18890,23 +18890,27 @@
       "parent": "pci-device"
     },
     {
+      "name": "Cooperlake-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
+    },
+    {
       "name": "Cascadelake-Server-v3-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
-      "name": "Cooperlake-v1-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "cfi.pflash01",
+      "parent": "sys-bus-device"
     },
     {
       "name": "virtio-balloon-device",
       "parent": "virtio-device"
     },
     {
-      "name": "Skylake-Server-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "isa-parallel",
+      "parent": "isa-device"
     },
     {
-      "name": "Nehalem-IBRS-x86_64-cpu",
+      "name": "Skylake-Server-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
@@ -18914,12 +18918,8 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "isa-parallel",
-      "parent": "isa-device"
-    },
-    {
-      "name": "cfi.pflash01",
-      "parent": "sys-bus-device"
+      "name": "Nehalem-IBRS-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "pentium2-v1-x86_64-cpu",
@@ -19030,16 +19030,16 @@
       "parent": "object"
     },
     {
-      "name": "EPYC-Milan-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "virtio-tablet-pci",
       "parent": "virtio-tablet-pci-base-type"
     },
     {
       "name": "dc390",
       "parent": "am53c974"
+    },
+    {
+      "name": "EPYC-Milan-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "i6300esb",
@@ -19158,8 +19158,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "kvm64-v1-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "pcie-root-port",
+      "parent": "pcie-root-port-base"
     },
     {
       "name": "IDE",
@@ -19170,8 +19170,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "pcie-root-port",
-      "parent": "pcie-root-port-base"
+      "name": "kvm64-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "mptsas1068",
@@ -27878,104 +27878,6 @@
     {
       "parameters": [
         {
-          "name": "power-control",
-          "type": "boolean"
-        },
-        {
-          "name": "audiodev",
-          "type": "string"
-        },
-        {
-          "name": "non-adaptive",
-          "type": "boolean"
-        },
-        {
-          "name": "lossy",
-          "type": "boolean"
-        },
-        {
-          "name": "sasl-authz",
-          "type": "string"
-        },
-        {
-          "name": "tls-authz",
-          "type": "string"
-        },
-        {
-          "name": "sasl",
-          "type": "boolean"
-        },
-        {
-          "name": "key-delay-ms",
-          "type": "number"
-        },
-        {
-          "name": "lock-key-sync",
-          "type": "boolean"
-        },
-        {
-          "name": "reverse",
-          "type": "boolean"
-        },
-        {
-          "name": "password-secret",
-          "type": "string"
-        },
-        {
-          "name": "password",
-          "type": "boolean"
-        },
-        {
-          "name": "ipv6",
-          "type": "boolean"
-        },
-        {
-          "name": "ipv4",
-          "type": "boolean"
-        },
-        {
-          "name": "to",
-          "type": "number"
-        },
-        {
-          "name": "connections",
-          "type": "number"
-        },
-        {
-          "name": "head",
-          "type": "number"
-        },
-        {
-          "name": "display",
-          "type": "string"
-        },
-        {
-          "name": "share",
-          "type": "string"
-        },
-        {
-          "name": "tls-creds",
-          "type": "string"
-        },
-        {
-          "name": "websocket",
-          "type": "string"
-        },
-        {
-          "name": "vnc",
-          "type": "string"
-        }
-      ],
-      "option": "vnc"
-    },
-    {
-      "parameters": [
-      ],
-      "option": "smbios"
-    },
-    {
-      "parameters": [
-        {
           "name": "rendernode",
           "type": "string"
         },
@@ -28105,6 +28007,41 @@
         }
       ],
       "option": "spice"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "smbios"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "acpi"
+    },
+    {
+      "parameters": [
+        {
+          "name": "resourcecontrol",
+          "type": "string"
+        },
+        {
+          "name": "spawn",
+          "type": "string"
+        },
+        {
+          "name": "elevateprivileges",
+          "type": "string"
+        },
+        {
+          "name": "obsolete",
+          "type": "string"
+        },
+        {
+          "name": "enable",
+          "type": "boolean"
+        }
+      ],
+      "option": "sandbox"
     },
     {
       "parameters": [
@@ -28297,33 +28234,96 @@
     },
     {
       "parameters": [
-      ],
-      "option": "acpi"
-    },
-    {
-      "parameters": [
         {
-          "name": "resourcecontrol",
-          "type": "string"
-        },
-        {
-          "name": "spawn",
-          "type": "string"
-        },
-        {
-          "name": "elevateprivileges",
-          "type": "string"
-        },
-        {
-          "name": "obsolete",
-          "type": "string"
-        },
-        {
-          "name": "enable",
+          "name": "power-control",
           "type": "boolean"
+        },
+        {
+          "name": "audiodev",
+          "type": "string"
+        },
+        {
+          "name": "non-adaptive",
+          "type": "boolean"
+        },
+        {
+          "name": "lossy",
+          "type": "boolean"
+        },
+        {
+          "name": "sasl-authz",
+          "type": "string"
+        },
+        {
+          "name": "tls-authz",
+          "type": "string"
+        },
+        {
+          "name": "sasl",
+          "type": "boolean"
+        },
+        {
+          "name": "key-delay-ms",
+          "type": "number"
+        },
+        {
+          "name": "lock-key-sync",
+          "type": "boolean"
+        },
+        {
+          "name": "reverse",
+          "type": "boolean"
+        },
+        {
+          "name": "password-secret",
+          "type": "string"
+        },
+        {
+          "name": "password",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv6",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv4",
+          "type": "boolean"
+        },
+        {
+          "name": "to",
+          "type": "number"
+        },
+        {
+          "name": "connections",
+          "type": "number"
+        },
+        {
+          "name": "head",
+          "type": "number"
+        },
+        {
+          "name": "display",
+          "type": "string"
+        },
+        {
+          "name": "share",
+          "type": "string"
+        },
+        {
+          "name": "tls-creds",
+          "type": "string"
+        },
+        {
+          "name": "websocket",
+          "type": "string"
+        },
+        {
+          "name": "vnc",
+          "type": "string"
         }
       ],
-      "option": "sandbox"
+      "option": "vnc"
     },
     {
       "parameters": [
@@ -29182,7 +29182,7 @@
       "name": "base",
       "props": {
         "vmx-entry-load-rtit-ctl": false,
-        "svme-addr-chk": false,
+        "svme-addr-chk": true,
         "cmov": true,
         "ia64": false,
         "ssb-no": false,
@@ -29278,7 +29278,7 @@
         "avx-vnni": false,
         "3dnowext": false,
         "amd-no-ssb": false,
-        "npt": false,
+        "npt": true,
         "rdctl-no": true,
         "vmx-invvpid": false,
         "clwb": true,
@@ -29320,7 +29320,7 @@
         "vmx-vpid": false,
         "syscall": true,
         "avx512dq": false,
-        "svm": false,
+        "svm": true,
         "invtsc": false,
         "vmx-monitor-exit": false,
         "sse2": true,
@@ -29346,7 +29346,7 @@
         "vmx-exit-clear-rtit-ctl": false,
         "model": 113,
         "movbe": true,
-        "nrip-save": false,
+        "nrip-save": true,
         "ssse3": true,
         "sse4a": true,
         "kvm-msi-ext-dest-id": false,
@@ -29519,7 +29519,7 @@
       "name": "base",
       "props": {
         "vmx-entry-load-rtit-ctl": false,
-        "svme-addr-chk": false,
+        "svme-addr-chk": true,
         "cmov": true,
         "ia64": false,
         "ssb-no": false,
@@ -29615,7 +29615,7 @@
         "avx-vnni": false,
         "3dnowext": false,
         "amd-no-ssb": false,
-        "npt": false,
+        "npt": true,
         "rdctl-no": true,
         "vmx-invvpid": false,
         "clwb": true,
@@ -29657,7 +29657,7 @@
         "vmx-vpid": false,
         "syscall": true,
         "avx512dq": false,
-        "svm": false,
+        "svm": true,
         "invtsc": true,
         "vmx-monitor-exit": false,
         "sse2": true,
@@ -29683,7 +29683,7 @@
         "vmx-exit-clear-rtit-ctl": false,
         "model": 113,
         "movbe": true,
-        "nrip-save": false,
+        "nrip-save": true,
         "ssse3": true,
         "sse4a": true,
         "kvm-msi-ext-dest-id": false,

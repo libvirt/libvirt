@@ -256,14 +256,14 @@
   <flag name='virtio-vga-gl'/>
   <flag name='confidential-guest-support'/>
   <flag name='query-display-options'/>
-  <version>6000090</version>
+  <version>6001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
-  <package>v6.1.0-rc0-48-g7b7ca8ebde</package>
+  <package>v6.1.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
-    <property name='svme-addr-chk' type='boolean' value='false'/>
+    <property name='svme-addr-chk' type='boolean' value='true' migratable='yes'/>
     <property name='cmov' type='boolean' value='true' migratable='yes'/>
     <property name='ia64' type='boolean' value='false'/>
     <property name='ssb-no' type='boolean' value='false'/>
@@ -359,7 +359,7 @@
     <property name='avx-vnni' type='boolean' value='false'/>
     <property name='3dnowext' type='boolean' value='false'/>
     <property name='amd-no-ssb' type='boolean' value='false'/>
-    <property name='npt' type='boolean' value='false'/>
+    <property name='npt' type='boolean' value='true' migratable='yes'/>
     <property name='rdctl-no' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-invvpid' type='boolean' value='false'/>
     <property name='clwb' type='boolean' value='true' migratable='yes'/>
@@ -401,7 +401,7 @@
     <property name='vmx-vpid' type='boolean' value='false'/>
     <property name='syscall' type='boolean' value='true' migratable='yes'/>
     <property name='avx512dq' type='boolean' value='false'/>
-    <property name='svm' type='boolean' value='false'/>
+    <property name='svm' type='boolean' value='true' migratable='yes'/>
     <property name='invtsc' type='boolean' value='true' migratable='no'/>
     <property name='vmx-monitor-exit' type='boolean' value='false'/>
     <property name='sse2' type='boolean' value='true' migratable='yes'/>
@@ -427,7 +427,7 @@
     <property name='vmx-exit-clear-rtit-ctl' type='boolean' value='false'/>
     <property name='model' type='number' value='113'/>
     <property name='movbe' type='boolean' value='true' migratable='yes'/>
-    <property name='nrip-save' type='boolean' value='false'/>
+    <property name='nrip-save' type='boolean' value='true' migratable='yes'/>
     <property name='ssse3' type='boolean' value='true' migratable='yes'/>
     <property name='sse4a' type='boolean' value='true' migratable='yes'/>
     <property name='kvm-msi-ext-dest-id' type='boolean' value='false'/>
