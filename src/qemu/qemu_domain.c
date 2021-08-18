@@ -983,46 +983,6 @@ qemuDomainNetworkPrivateDispose(void *obj G_GNUC_UNUSED)
 }
 
 
-static virClass *qemuDomainFSPrivateClass;
-static void qemuDomainFSPrivateDispose(void *obj);
-
-
-static int
-qemuDomainFSPrivateOnceInit(void)
-{
-    if (!VIR_CLASS_NEW(qemuDomainFSPrivate, virClassForObject()))
-        return -1;
-
-    return 0;
-}
-
-
-VIR_ONCE_GLOBAL_INIT(qemuDomainFSPrivate);
-
-
-static virObject *
-qemuDomainFSPrivateNew(void)
-{
-    qemuDomainFSPrivate *priv;
-
-    if (qemuDomainFSPrivateInitialize() < 0)
-        return NULL;
-
-    if (!(priv = virObjectNew(qemuDomainFSPrivateClass)))
-        return NULL;
-
-    return (virObject *) priv;
-}
-
-
-static void
-qemuDomainFSPrivateDispose(void *obj)
-{
-    qemuDomainFSPrivate *priv = obj;
-
-    g_free(priv->vhostuser_fs_sock);
-}
-
 static virClass *qemuDomainVideoPrivateClass;
 static void qemuDomainVideoPrivateDispose(void *obj);
 
@@ -3163,7 +3123,6 @@ virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
     .graphicsNew = qemuDomainGraphicsPrivateNew,
     .networkNew = qemuDomainNetworkPrivateNew,
     .videoNew = qemuDomainVideoPrivateNew,
-    .fsNew = qemuDomainFSPrivateNew,
     .parse = qemuDomainObjPrivateXMLParse,
     .format = qemuDomainObjPrivateXMLFormat,
     .getParseOpaque = qemuDomainObjPrivateXMLGetParseOpaque,

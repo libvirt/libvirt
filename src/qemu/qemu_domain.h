@@ -392,17 +392,6 @@ struct _qemuDomainNetworkPrivate {
 };
 
 
-#define QEMU_DOMAIN_FS_PRIVATE(dev) \
-    ((qemuDomainFSPrivate *) (dev)->privateData)
-
-typedef struct _qemuDomainFSPrivate qemuDomainFSPrivate;
-struct _qemuDomainFSPrivate {
-    virObject parent;
-
-    char *vhostuser_fs_sock;
-};
-
-
 typedef enum {
     QEMU_PROCESS_EVENT_WATCHDOG = 0,
     QEMU_PROCESS_EVENT_GUESTPANIC,
