@@ -444,7 +444,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
             QEMU_DOMAIN_FS_PRIVATE(fs)->vhostuser_fs_sock)
             continue;
 
-        s = g_strdup_printf("/tmp/lib/domain--1-guest/fs%zu.vhost-fs.sock", i);
+        s = g_strdup_printf("/tmp/lib/domain--1-guest/fs%zu-fs.sock", i);
         QEMU_DOMAIN_FS_PRIVATE(fs)->vhostuser_fs_sock = s;
     }
 
