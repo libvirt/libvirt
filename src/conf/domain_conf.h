@@ -1284,6 +1284,7 @@ struct _virDomainChrSourceDef {
     size_t nseclabels;
     virSecurityDeviceLabelDef **seclabels;
 };
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainChrSourceDef, virObjectUnref);
 
 /* A complete character device, both host and domain views.  */
 struct _virDomainChrDef {
@@ -3300,6 +3301,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainNetDef, virDomainNetDefFree);
 void virDomainSmartcardDefFree(virDomainSmartcardDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainSmartcardDef, virDomainSmartcardDefFree);
 void virDomainChrDefFree(virDomainChrDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainChrDef, virDomainChrDefFree);
 int virDomainChrSourceDefCopy(virDomainChrSourceDef *dest,
                               virDomainChrSourceDef *src);
 void virDomainSoundCodecDefFree(virDomainSoundCodecDef *def);
