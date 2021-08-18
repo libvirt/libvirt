@@ -436,18 +436,6 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
         }
     }
 
-    for (i = 0; i < vm->def->nfss; i++) {
-        virDomainFSDef *fs = vm->def->fss[i];
-        char *s;
-
-        if (fs->fsdriver != VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS ||
-            QEMU_DOMAIN_FS_PRIVATE(fs)->vhostuser_fs_sock)
-            continue;
-
-        s = g_strdup_printf("/tmp/lib/domain--1-guest/fs%zu-fs.sock", i);
-        QEMU_DOMAIN_FS_PRIVATE(fs)->vhostuser_fs_sock = s;
-    }
-
     if (vm->def->vsock) {
         virDomainVsockDef *vsock = vm->def->vsock;
         qemuDomainVsockPrivate *vsockPriv =
