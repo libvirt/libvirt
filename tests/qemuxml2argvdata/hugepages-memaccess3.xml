@@ -12,9 +12,6 @@
     <type arch='x86_64' machine='pc-i440fx-2.9'>hvm</type>
     <bootmenu enable='yes'/>
   </os>
-  <cpu mode='host-model' check='partial'>
-    <model fallback='allow'/>
-  </cpu>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>

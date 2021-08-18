@@ -11,7 +11,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-fedora/.config \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-fedora/master-key.aes"}' \
 -machine pc-i440fx-2.9,accel=kvm,usb=off,dump-guest-core=off,memory-backend=pc.ram \
--cpu EPYC-Rome,x2apic=on,tsc-deadline=on,hypervisor=on,tsc-adjust=on,stibp=on,arch-capabilities=on,ssbd=on,xsaves=on,cmp-legacy=on,amd-ssbd=on,virt-ssbd=on,rdctl-no=on,skip-l1dfl-vmentry=on,mds-no=on,pschange-mc-no=on,svm=off,npt=off,nrip-save=off \
+-cpu qemu64 \
 -m 4096 \
 -object '{"qom-type":"memory-backend-file","id":"pc.ram","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-fedora","share":true,"x-use-canonical-path-for-ramblock-id":false,"prealloc":true,"size":4294967296}' \
 -overcommit mem-lock=off \
