@@ -1,19 +1,21 @@
-<domain type='qemu'>
+<domain type='kvm'>
   <name>QEMUGuest1</name>
   <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
   <memory unit='KiB'>219100</memory>
   <currentMemory unit='KiB'>219100</currentMemory>
-  <vcpu placement='static'>6</vcpu>
+  <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='x86_64' machine='pc'>hvm</type>
-    <boot dev='network'/>
+    <type arch='x86_64' machine='q35'>hvm</type>
   </os>
-  <cpu mode='host-model'/>
+  <cpu mode='host-model'>
+    <model fallback='allow'/>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='pci' index='0' model='pcie-root'/>
   </devices>
 </domain>

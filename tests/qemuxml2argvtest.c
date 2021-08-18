@@ -2071,7 +2071,12 @@ mymain(void)
     DO_TEST_FAILURE("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_RAM);
     DO_TEST_PARSE_ERROR_NOCAPS("cpu-numa-memshared-1");
     DO_TEST("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST_NOCAPS("cpu-host-model");
+    DO_TEST("cpu-host-model",
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_ICH9_AHCI,
+            QEMU_CAPS_ICH9_USB_EHCI1);
     DO_TEST_NOCAPS("cpu-host-model-vendor");
     DO_TEST_FULL("cpu-host-model-fallback", "",
                  ARG_FLAGS, FLAG_SKIP_LEGACY_CPUS, ARG_END);
