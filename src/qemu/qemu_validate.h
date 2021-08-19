@@ -38,3 +38,8 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
                             const virDomainDef *def,
                             void *opaque,
                             void *parseOpaque);
+
+int
+qemuValidateLifecycleAction(virDomainLifecycleAction onPoweroff,
+                            virDomainLifecycleAction onReboot,
+                            virDomainLifecycleAction onCrash);

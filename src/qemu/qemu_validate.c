@@ -1063,6 +1063,35 @@ qemuValidateDomainDeviceInfo(virDomainDef *def G_GNUC_UNUSED,
     return 0;
 }
 
+
+int
+qemuValidateLifecycleAction(virDomainLifecycleAction onPoweroff,
+                            virDomainLifecycleAction onReboot,
+                            virDomainLifecycleAction onCrash)
+{
+    /* The qemu driver doesn't yet implement any meaningful handling for
+     * VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME */
+    if (onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME ||
+        onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME ||
+        onCrash == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("qemu driver doesn't support the 'rename-restart' action for 'on_reboot'/'on_poweroff'/'on_crash'"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuValidateDomainLifecycleAction(const virDomainDef *def)
+{
+    return qemuValidateLifecycleAction(def->onPoweroff,
+                                       def->onReboot,
+                                       def->onCrash);
+}
+
+
 int
 qemuValidateDomainDef(const virDomainDef *def,
                       void *opaque,
@@ -1156,6 +1185,9 @@ qemuValidateDomainDef(const virDomainDef *def,
             return -1;
         }
     }
+
+    if (qemuValidateDomainLifecycleAction(def) < 0)
+        return -1;
 
     if (qemuValidateDomainDefCpu(driver, def, qemuCaps) < 0)
         return -1;
