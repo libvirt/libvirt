@@ -4215,7 +4215,7 @@ virDomainMigrateToURI(virDomainPtr domain,
     const char *dconnuri = NULL;
     const char *miguri = NULL;
 
-    VIR_DOMAIN_DEBUG(domain, "duri=%p, flags=0x%lx, dname=%s, bandwidth=%lu",
+    VIR_DOMAIN_DEBUG(domain, "duri=%s, flags=0x%lx, dname=%s, bandwidth=%lu",
                      NULLSTR(duri), flags, NULLSTR(dname), bandwidth);
 
     virResetLastError();
