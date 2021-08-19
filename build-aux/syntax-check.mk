@@ -37,9 +37,6 @@ _sp = $(_empty) $(_empty)
 # If S1 == S2, return S1, otherwise the empty string.
 _equal = $(and $(findstring $(1),$(2)),$(findstring $(2),$(1)))
 
-GIT = git
-VC = $(GIT)
-
 VC_LIST = $(top_srcdir)/build-aux/vc-list-files -C $(top_srcdir)
 
 # You can override this variable in syntax-check.mk to set your own regexp
@@ -85,15 +82,6 @@ syntax-check-rules := $(sort $(shell $(SED) -n \
    's/^\(sc_[a-zA-Z0-9_-]*\):.*/\1/p' $(top_srcdir)/$(ME) $(_cfg_mk)))
 .PHONY: $(syntax-check-rules)
 
-ifeq ($(shell $(VC_LIST) >/dev/null 2>&1; echo $$?),0)
-  local-checks-available += $(syntax-check-rules)
-else
-  local-checks-available += no-vc-detected
-no-vc-detected:
-	@echo "No version control files detected; skipping syntax check"
-endif
-.PHONY: $(local-checks-available)
-
 # Arrange to print the name of each syntax-checking rule just before running it.
 $(syntax-check-rules): %: %.m
 sc_m_rules_ = $(patsubst %, %.m, $(syntax-check-rules))
@@ -116,7 +104,7 @@ $(sc_z_rules_): %.z: %
 # that computes and prints elapsed time.
 local-check :=								\
   $(patsubst sc_%, sc_%.z,						\
-    $(filter-out $(local-checks-to-skip), $(local-checks-available)))
+    $(filter-out $(local-checks-to-skip), $(syntax-check-rules)))
 
 syntax-check: $(local-check)
 
