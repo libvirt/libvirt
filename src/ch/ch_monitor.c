@@ -543,9 +543,8 @@ void virCHMonitorClose(virCHMonitor *mon)
         g_free(mon->socketpath);
     }
 
+    virObjectUnref(mon->vm);
     virObjectUnref(mon);
-    if (mon->vm)
-        virObjectUnref(mon->vm);
 }
 
 static int
