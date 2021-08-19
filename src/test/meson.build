@@ -17,6 +17,7 @@ if conf.has('WITH_TEST')
     ],
     include_directories: [
       conf_inc_dir,
+      hypervisor_inc_dir,
     ],
   )
 
