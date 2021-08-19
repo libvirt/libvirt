@@ -38,4 +38,15 @@
     </disk>
     <graphics type='vnc' port='5904'/>
   </devices>
+  <blkiotune>
+    <weight>800</weight>
+    <device>
+      <path>/dev/hda</path>
+      <weight>700</weight>
+      <read_bytes_sec>700</read_bytes_sec>
+      <write_bytes_sec>700</write_bytes_sec>
+      <read_iops_sec>700</read_iops_sec>
+      <write_iops_sec>700</write_iops_sec>
+    </device>
+  </blkiotune>
 </domain>

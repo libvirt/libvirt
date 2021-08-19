@@ -30,6 +30,8 @@ main(void)
                 tainted: custom device tree blob used\n\
                 tainted: use of deprecated configuration settings\n\
                 deprecated configuration: CPU model Deprecated-Test"
+# define GET_BLKIO_PARAMETER "/dev/hda,700"
+# define SET_BLKIO_PARAMETER "/dev/hda,1000"
 
 static const char *dominfo_fc4 = "\
 Id:             2\n\
@@ -68,6 +70,25 @@ Security model: testSecurity\n\
 Security DOI:   \n\
 Security label: " SECURITY_LABEL "\n\
 Messages:       " FC5_MESSAGES "\n\
+\n";
+
+static const char *get_blkio_parameters = "\
+weight         : 800\n\
+device_weight  : " GET_BLKIO_PARAMETER "\n\
+device_read_iops_sec: " GET_BLKIO_PARAMETER "\n\
+device_write_iops_sec: " GET_BLKIO_PARAMETER "\n\
+device_read_bytes_sec: " GET_BLKIO_PARAMETER "\n\
+device_write_bytes_sec: " GET_BLKIO_PARAMETER "\n\
+\n";
+
+static const char *set_blkio_parameters = "\
+\n\
+weight         : 500\n\
+device_weight  : " SET_BLKIO_PARAMETER "\n\
+device_read_iops_sec: " SET_BLKIO_PARAMETER "\n\
+device_write_iops_sec: " SET_BLKIO_PARAMETER "\n\
+device_read_bytes_sec: " SET_BLKIO_PARAMETER "\n\
+device_write_bytes_sec: " SET_BLKIO_PARAMETER "\n\
 \n";
 
 static int testFilterLine(char *buffer,
@@ -291,6 +312,32 @@ static int testCompareDomControlInfoByName(const void *data G_GNUC_UNUSED)
     return testCompareOutputLit(exp, NULL, argv);
 }
 
+static int testCompareGetBlkioParameters(const void *data G_GNUC_UNUSED)
+{
+    const char *const argv[] = { VIRSH_CUSTOM, "blkiotune", "fv0", NULL };
+    const char *exp = get_blkio_parameters;
+    return testCompareOutputLit(exp, NULL, argv);
+}
+
+static int testCompareSetBlkioParameters(const void *data G_GNUC_UNUSED)
+{
+    const char *const argv[] = { VIRSH_CUSTOM, "blkiotune fv0\
+                                 --weight 500\
+                                 --device-weights\
+                                 " SET_BLKIO_PARAMETER "\
+                                 --device-read-iops-sec\
+                                 " SET_BLKIO_PARAMETER "\
+                                 --device-write-iops-sec\
+                                 " SET_BLKIO_PARAMETER "\
+                                 --device-read-bytes-sec\
+                                 " SET_BLKIO_PARAMETER "\
+                                 --device-write-bytes-sec\
+                                 " SET_BLKIO_PARAMETER ";\
+                                 blkiotune fv0", NULL };
+    const char *exp = set_blkio_parameters;
+    return testCompareOutputLit(exp, NULL, argv);
+}
+
 struct testInfo {
     const char *const *argv;
     const char *result;
@@ -381,6 +428,14 @@ mymain(void)
 
     if (virTestRun("virsh domcontrol (by name)",
                    testCompareDomControlInfoByName, NULL) != 0)
+        ret = -1;
+
+    if (virTestRun("virsh blkiotune (get parameters)",
+                   testCompareGetBlkioParameters, NULL) != 0)
+        ret = -1;
+
+    if (virTestRun("virsh blkiotune (set parameters)",
+                   testCompareSetBlkioParameters, NULL) != 0)
         ret = -1;
 
     /* It's a bit awkward listing result before argument, but that's a
