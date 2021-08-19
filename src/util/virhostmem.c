@@ -849,6 +849,14 @@ virHostMemGetFreePages(unsigned int npages,
     int cell;
     size_t i, ncounts = 0;
 
+    if (!virNumaIsAvailable() && lastCell == 0 &&
+        startCell == 0 && cellCount == 1) {
+        /* As a special case, if we were built without numactl and want to
+         * fetch info on the fake NUMA node set startCell to -1 to make the
+         * loop below fetch overall info. */
+        startCell = -1;
+    }
+
     if (startCell > lastCell) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("start cell %d out of range (0-%d)"),
@@ -890,6 +898,14 @@ virHostMemAllocPages(unsigned int npages,
 {
     int cell;
     size_t i, ncounts = 0;
+
+    if (!virNumaIsAvailable() && lastCell == 0 &&
+        startCell == 0 && cellCount == 1) {
+        /* As a special case, if we were built without numactl and want to
+         * allocate hugepages on the fake NUMA node set startCell to -1 to make
+         * the loop below operate on NUMA agnostic sysfs paths. */
+        startCell = -1;
+    }
 
     if (startCell > lastCell) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
