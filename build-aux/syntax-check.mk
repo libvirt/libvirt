@@ -1689,16 +1689,16 @@ sc_prohibit-duplicate-header:
 	$(PYTHON) $(top_srcdir)/scripts/prohibit-duplicate-header.py
 
 sc_spacing-check:
-	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.c$$' | xargs \
+	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.c$$' | xargs \
 	$(PERL) $(top_srcdir)/build-aux/check-spacing.pl || \
 	  { echo '$(ME): incorrect formatting' 1>&2; exit 1; }
 
 sc_mock-noinline:
-	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.[ch]$$' | $(RUNUTF8) xargs \
+	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.[ch]$$' | $(RUNUTF8) xargs \
 	$(PYTHON) $(top_srcdir)/scripts/mock-noinline.py
 
 sc_header-ifdef:
-	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.[h]$$' | $(RUNUTF8) xargs \
+	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.[h]$$' | $(RUNUTF8) xargs \
 	$(PYTHON) $(top_srcdir)/scripts/header-ifdef.py
 
 sc_group-qemu-caps:
