@@ -69,6 +69,7 @@ virCapabilitiesGetNodeInfo;
 virCapabilitiesHostInitIOMMU;
 virCapabilitiesHostNUMAAddCell;
 virCapabilitiesHostNUMAGetCpus;
+virCapabilitiesHostNUMAGetMaxNode;
 virCapabilitiesHostNUMANew;
 virCapabilitiesHostNUMANewHost;
 virCapabilitiesHostNUMARef;

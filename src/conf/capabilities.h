@@ -328,6 +328,8 @@ virCapabilitiesFormatXML(virCaps *caps);
 virBitmap *virCapabilitiesHostNUMAGetCpus(virCapsHostNUMA *caps,
                                             virBitmap *nodemask);
 
+int virCapabilitiesHostNUMAGetMaxNode(virCapsHostNUMA *caps);
+
 int virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo);
 
 int virCapabilitiesInitPages(virCaps *caps);

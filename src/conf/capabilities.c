@@ -1434,6 +1434,15 @@ virCapabilitiesHostNUMAGetCpus(virCapsHostNUMA *caps,
 
 
 int
+virCapabilitiesHostNUMAGetMaxNode(virCapsHostNUMA *caps)
+{
+    virCapsHostNUMACell *cell = g_ptr_array_index(caps->cells, caps->cells->len - 1);
+
+    return cell->num;
+}
+
+
+int
 virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo)
 {
     virArch hostarch = virArchFromHost();
