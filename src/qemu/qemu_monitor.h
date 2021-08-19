@@ -1214,6 +1214,7 @@ int qemuMonitorGetCPUModelExpansion(qemuMonitor *mon,
                                     qemuMonitorCPUModelInfo **model_info);
 
 void qemuMonitorCPUModelInfoFree(qemuMonitorCPUModelInfo *model_info);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMonitorCPUModelInfo, qemuMonitorCPUModelInfoFree);
 
 int qemuMonitorGetCPUModelBaseline(qemuMonitor *mon,
                                    virCPUDef *cpu_a,
