@@ -463,18 +463,18 @@ typedef enum {
 static virQEMUCaps *
 cpuTestMakeQEMUCaps(const struct data *data)
 {
-    virQEMUCaps *qemuCaps = NULL;
-    qemuMonitorTest *testMon = NULL;
-    qemuMonitorCPUModelInfo *model = NULL;
-    virCPUDef *cpu = NULL;
+    g_autoptr(virQEMUCaps) qemuCaps = NULL;
+    g_autoptr(qemuMonitorTest) testMon = NULL;
+    g_autoptr(qemuMonitorCPUModelInfo) model = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
     bool fail_no_props = true;
-    char *json = NULL;
+    g_autofree char *json = NULL;
 
     json = g_strdup_printf("%s/cputestdata/%s-cpuid-%s.json", abs_srcdir,
                            virArchToString(data->arch), data->host);
 
     if (!(testMon = qemuMonitorTestNewFromFile(json, driver.xmlopt, true)))
-        goto error;
+        return NULL;
 
     qemuMonitorTestAllowUnusedCommands(testMon);
 
@@ -488,10 +488,10 @@ cpuTestMakeQEMUCaps(const struct data *data)
     if (qemuMonitorGetCPUModelExpansion(qemuMonitorTestGetMonitor(testMon),
                                         QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC,
                                         cpu, true, fail_no_props, &model) < 0)
-        goto error;
+        return NULL;
 
     if (!(qemuCaps = virQEMUCapsNew()))
-        goto error;
+        return NULL;
 
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_KVM);
     if (data->flags == JSON_MODELS ||
@@ -504,20 +504,9 @@ cpuTestMakeQEMUCaps(const struct data *data)
 
     if (virQEMUCapsProbeCPUDefinitionsTest(qemuCaps,
                                            qemuMonitorTestGetMonitor(testMon)) < 0)
-        goto error;
+        return NULL;
 
- cleanup:
-    qemuMonitorCPUModelInfoFree(model);
-    qemuMonitorTestFree(testMon);
-    virCPUDefFree(cpu);
-    VIR_FREE(json);
-
-    return qemuCaps;
-
- error:
-    virObjectUnref(qemuCaps);
-    qemuCaps = NULL;
-    goto cleanup;
+    return g_steal_pointer(&qemuCaps);
 }
 
 
