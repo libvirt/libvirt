@@ -37,7 +37,8 @@ _sp = $(_empty) $(_empty)
 # If S1 == S2, return S1, otherwise the empty string.
 _equal = $(and $(findstring $(1),$(2)),$(findstring $(2),$(1)))
 
-VC_LIST = $(top_srcdir)/build-aux/vc-list-files -C $(top_srcdir)
+VC_LIST = cd $(top_srcdir); git ls-tree -r 'HEAD:' | \
+          sed -n "s|^100[^	]*.||p"
 
 # You can override this variable in syntax-check.mk to set your own regexp
 # matching files to ignore.
@@ -63,8 +64,7 @@ endif
 _sc_excl = \
   $(or $(exclude_file_name_regexp--$@),^$$)
 VC_LIST_EXCEPT = \
-  $(VC_LIST) | $(SED) 's|^$(_dot_escaped_srcdir)/||' \
-	| $(GREP) -Ev -e '($(VC_LIST_ALWAYS_EXCLUDE_REGEX)|$(_sc_excl))' \
+  $(VC_LIST) | $(GREP) -Ev -e '($(VC_LIST_ALWAYS_EXCLUDE_REGEX)|$(_sc_excl))' \
 	$(_prepend_srcdir_prefix)
 
 # Prevent programs like 'sort' from considering distinct strings to be equal.
