@@ -271,6 +271,8 @@ mymain(void)
     DO_TEST("serial-file");
     DO_TEST("serial-device");
     DO_TEST("serial-pipe-client-app");
+    DO_TEST("serial-pipe-client-vm");
+    DO_TEST("serial-pipe-server-app");
     DO_TEST("serial-pipe-server-vm");
     DO_TEST("serial-network-server");
     DO_TEST("serial-network-client");
