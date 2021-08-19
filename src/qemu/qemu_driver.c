@@ -17428,12 +17428,22 @@ qemuNodeGetFreePages(virConnectPtr conn,
                      unsigned long long *counts,
                      unsigned int flags)
 {
+    virQEMUDriver *driver = conn->privateData;
+    g_autoptr(virCaps) caps = NULL;
+    int lastCell;
+
     virCheckFlags(0, -1);
 
     if (virNodeGetFreePagesEnsureACL(conn) < 0)
         return -1;
 
-    return virHostMemGetFreePages(npages, pages, startCell, cellCount, counts);
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        return -1;
+
+    lastCell = virCapabilitiesHostNUMAGetMaxNode(caps->host.numa);
+
+    return virHostMemGetFreePages(npages, pages, startCell, cellCount,
+                                  lastCell, counts);
 }
 
 

@@ -7598,7 +7598,7 @@ vboxNodeGetFreeMemory(virConnectPtr conn G_GNUC_UNUSED)
 }
 
 static int
-vboxNodeGetFreePages(virConnectPtr conn G_GNUC_UNUSED,
+vboxNodeGetFreePages(virConnectPtr conn,
                      unsigned int npages,
                      unsigned int *pages,
                      int startCell,
@@ -7606,9 +7606,17 @@ vboxNodeGetFreePages(virConnectPtr conn G_GNUC_UNUSED,
                      unsigned long long *counts,
                      unsigned int flags)
 {
+    struct _vboxDriver *driver = conn->privateData;
+    int lastCell;
+
     virCheckFlags(0, -1);
 
-    return virHostMemGetFreePages(npages, pages, startCell, cellCount, counts);
+    virObjectLock(driver);
+    lastCell = virCapabilitiesHostNUMAGetMaxNode(driver->caps->host.numa);
+    virObjectUnlock(driver);
+
+    return virHostMemGetFreePages(npages, pages, startCell,
+                                  cellCount, lastCell, counts);
 }
 
 static int
