@@ -1089,6 +1089,15 @@ qemuValidateLifecycleAction(virDomainLifecycleAction onPoweroff,
         return -1;
     }
 
+    /* the qemu driver can't meaningfully handle
+     * onPoweroff -> reboot + onReboot -> destroy */
+    if (onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART &&
+        onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("qemu driver doesn't support 'onReboot' set to 'destroy and 'onPoweroff' set to 'reboot'"));
+        return -1;
+    }
+
     return 0;
 }
 
