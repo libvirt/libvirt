@@ -53,4 +53,5 @@ int virHostMemAllocPages(unsigned int npages,
                          unsigned long long *pageCounts,
                          int startCell,
                          unsigned int cellCount,
+                         int lastCell,
                          bool add);

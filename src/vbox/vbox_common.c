@@ -7628,12 +7628,18 @@ vboxNodeAllocPages(virConnectPtr conn G_GNUC_UNUSED,
                    unsigned int cellCount,
                    unsigned int flags)
 {
+    struct _vboxDriver *driver = conn->privateData;
+    int lastCell;
     bool add = !(flags & VIR_NODE_ALLOC_PAGES_SET);
 
     virCheckFlags(VIR_NODE_ALLOC_PAGES_SET, -1);
 
+    virObjectLock(driver);
+    lastCell = virCapabilitiesHostNUMAGetMaxNode(driver->caps->host.numa);
+    virObjectUnlock(driver);
+
     return virHostMemAllocPages(npages, pageSizes, pageCounts,
-                                startCell, cellCount, add);
+                                startCell, cellCount, lastCell, add);
 }
 
 static int

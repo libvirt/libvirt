@@ -5041,6 +5041,9 @@ lxcNodeAllocPages(virConnectPtr conn,
                   unsigned int cellCount,
                   unsigned int flags)
 {
+    virLXCDriver *driver = conn->privateData;
+    g_autoptr(virCaps) caps = NULL;
+    int lastCell;
     bool add = !(flags & VIR_NODE_ALLOC_PAGES_SET);
 
     virCheckFlags(VIR_NODE_ALLOC_PAGES_SET, -1);
@@ -5048,8 +5051,14 @@ lxcNodeAllocPages(virConnectPtr conn,
     if (virNodeAllocPagesEnsureACL(conn) < 0)
         return -1;
 
+    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
+        return -1;
+
+    lastCell = virCapabilitiesHostNUMAGetMaxNode(caps->host.numa);
+
     return virHostMemAllocPages(npages, pageSizes, pageCounts,
-                                startCell, cellCount, add);
+                                startCell, cellCount,
+                                lastCell, add);
 }
 
 

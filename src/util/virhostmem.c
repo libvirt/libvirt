@@ -885,13 +885,11 @@ virHostMemAllocPages(unsigned int npages,
                      unsigned long long *pageCounts,
                      int startCell,
                      unsigned int cellCount,
+                     int lastCell,
                      bool add)
 {
-    int cell, lastCell;
+    int cell;
     size_t i, ncounts = 0;
-
-    if ((lastCell = virNumaGetMaxNode()) < 0)
-        return 0;
 
     if (startCell > lastCell) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
