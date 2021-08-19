@@ -6165,10 +6165,16 @@ qemuBuildPMCommandLine(virCommand *cmd,
 {
     virQEMUCaps *qemuCaps = priv->qemuCaps;
 
-    if (priv->allowReboot == VIR_TRISTATE_BOOL_NO)
-        virCommandAddArg(cmd, "-no-reboot");
-    else
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION)) {
+        /* with new qemu we always want '-no-shutdown' on startup and we set
+         * all the other behaviour later during startup */
         virCommandAddArg(cmd, "-no-shutdown");
+    } else {
+        if (priv->allowReboot == VIR_TRISTATE_BOOL_NO)
+            virCommandAddArg(cmd, "-no-reboot");
+        else
+            virCommandAddArg(cmd, "-no-shutdown");
+    }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI)) {
         if (def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_TRISTATE_SWITCH_ON)
