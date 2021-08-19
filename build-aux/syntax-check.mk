@@ -108,8 +108,6 @@ local-check :=								\
 
 syntax-check: $(local-check)
 
-_test_script_regex = \<test-lib\.sh\>
-
 # Files that should never cause syntax check failures.
 VC_LIST_ALWAYS_EXCLUDE_REGEX = \
   (^(docs/(news(-[0-9]*)?\.html\.in|.*\.patch))|\.(po|fig|gif|ico|png))$$
