@@ -1,0 +1,15 @@
+protocol:
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/i.qcow2",
+  "size": 4294967296
+}
+
+format:
+{
+  "driver": "qcow2",
+  "file": "0123456789ABCDEF0123456789ABCDE",
+  "size": 8589934590,
+  "backing-file": "/var/lib/libvirt/images/i.qcow2",
+  "backing-fmt": "qcow2"
+}
