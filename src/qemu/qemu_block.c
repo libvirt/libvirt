@@ -2264,7 +2264,8 @@ qemuBlockStorageSourceCreateAddBacking(virStorageSource *backing,
         return 0;
 
     if (format) {
-        if (backing->encryption &&
+        if (backing->format == VIR_STORAGE_FILE_RAW &&
+            backing->encryption &&
             backing->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS)
             backingFormatStr = "luks";
         else
