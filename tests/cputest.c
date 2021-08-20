@@ -404,7 +404,7 @@ cpuTestHasFeature(const void *arg)
     const struct data *data = arg;
     int ret = -1;
     virCPUDef *host = NULL;
-    virCPUData *hostData = NULL;
+    g_autoptr(virCPUData) hostData = NULL;
     int result;
 
     if (!(host = cpuTestLoadXML(data->arch, data->host)))
@@ -434,7 +434,6 @@ cpuTestHasFeature(const void *arg)
     ret = 0;
 
  cleanup:
-    virCPUDataFree(hostData);
     virCPUDefFree(host);
     return ret;
 }
@@ -552,7 +551,7 @@ cpuTestCPUID(bool guest, const void *arg)
 {
     const struct data *data = arg;
     int ret = -1;
-    virCPUData *hostData = NULL;
+    g_autoptr(virCPUData) hostData = NULL;
     char *hostFile = NULL;
     char *host = NULL;
     virCPUDef *cpu = NULL;
@@ -596,7 +595,6 @@ cpuTestCPUID(bool guest, const void *arg)
  cleanup:
     VIR_FREE(hostFile);
     VIR_FREE(host);
-    virCPUDataFree(hostData);
     virCPUDefFree(cpu);
     VIR_FREE(result);
     virObjectUnref(models);
@@ -646,7 +644,7 @@ static int
 cpuTestCPUIDSignature(const void *arg)
 {
     const struct data *data = arg;
-    virCPUData *hostData = NULL;
+    g_autoptr(virCPUData) hostData = NULL;
     char *hostFile = NULL;
     char *host = NULL;
     int ret = -1;
@@ -661,7 +659,6 @@ cpuTestCPUIDSignature(const void *arg)
     ret = cpuTestCompareSignature(data, hostData);
 
  cleanup:
-    virCPUDataFree(hostData);
     VIR_FREE(hostFile);
     VIR_FREE(host);
     return ret;
@@ -765,10 +762,10 @@ cpuTestUpdateLive(const void *arg)
     virCPUDef *cpu = NULL;
     char *enabledFile = NULL;
     char *enabled = NULL;
-    virCPUData *enabledData = NULL;
+    g_autoptr(virCPUData) enabledData = NULL;
     char *disabledFile = NULL;
     char *disabled = NULL;
-    virCPUData *disabledData = NULL;
+    g_autoptr(virCPUData) disabledData = NULL;
     char *expectedFile = NULL;
     virCPUDef *expected = NULL;
     virDomainCapsCPUModels *hvModels = NULL;
@@ -842,10 +839,8 @@ cpuTestUpdateLive(const void *arg)
     virCPUDefFree(cpu);
     VIR_FREE(enabledFile);
     VIR_FREE(enabled);
-    virCPUDataFree(enabledData);
     VIR_FREE(disabledFile);
     VIR_FREE(disabled);
-    virCPUDataFree(disabledData);
     VIR_FREE(expectedFile);
     virCPUDefFree(expected);
     virObjectUnref(hvModels);
@@ -892,7 +887,7 @@ cpuTestJSONSignature(const void *arg)
 {
     const struct data *data = arg;
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
-    virCPUData *hostData = NULL;
+    g_autoptr(virCPUData) hostData = NULL;
     qemuMonitorCPUModelInfo *modelInfo;
     int ret = -1;
 
@@ -906,7 +901,6 @@ cpuTestJSONSignature(const void *arg)
     ret = cpuTestCompareSignature(data, hostData);
 
  cleanup:
-    virCPUDataFree(hostData);
     return ret;
 }
 #endif
