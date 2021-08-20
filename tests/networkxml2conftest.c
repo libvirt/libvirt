@@ -27,7 +27,7 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf,
     virCommand *cmd = NULL;
     char *pidfile = NULL;
     dnsmasqContext *dctx = NULL;
-    virNetworkXMLOption *xmlopt = NULL;
+    g_autoptr(virNetworkXMLOption) xmlopt = NULL;
 
     if (!(xmlopt = networkDnsmasqCreateXMLConf()))
         goto fail;
@@ -85,7 +85,6 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf,
     VIR_FREE(hostsfileactual);
     VIR_FREE(pidfile);
     virCommandFree(cmd);
-    virObjectUnref(xmlopt);
     virNetworkObjEndAPI(&obj);
     dnsmasqContextFree(dctx);
     return ret;

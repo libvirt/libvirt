@@ -67,7 +67,7 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
 {
     char *gotxlcfgData = NULL;
     g_autoptr(virConf) conf = NULL;
-    virConnectPtr conn = NULL;
+    g_autoptr(virConnect) conn = NULL;
     int wrote = 4096;
     int ret = -1;
     virDomainDef *def = NULL;
@@ -111,7 +111,6 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
     VIR_FREE(replacedXML);
     VIR_FREE(gotxlcfgData);
     virDomainDefFree(def);
-    virObjectUnref(conn);
 
     return ret;
 }
@@ -127,7 +126,7 @@ testCompareFormatXML(const char *xlcfg, const char *xml, bool replaceVars)
     char *gotxml = NULL;
     g_autoptr(virConf) conf = NULL;
     int ret = -1;
-    virConnectPtr conn;
+    g_autoptr(virConnect) conn = NULL;
     virDomainDef *def = NULL;
     char *replacedXML = NULL;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
@@ -166,7 +165,6 @@ testCompareFormatXML(const char *xlcfg, const char *xml, bool replaceVars)
     VIR_FREE(xlcfgData);
     VIR_FREE(gotxml);
     virDomainDefFree(def);
-    virObjectUnref(conn);
 
     return ret;
 }

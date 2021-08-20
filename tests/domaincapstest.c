@@ -75,7 +75,7 @@ fillQemuCaps(virDomainCaps *domCaps,
 {
     int ret = -1;
     char *path = NULL;
-    virQEMUCaps *qemuCaps = NULL;
+    g_autoptr(virQEMUCaps) qemuCaps = NULL;
     virDomainCapsLoader *loader = &domCaps->os.loader;
     virDomainVirtType virtType;
 
@@ -127,7 +127,6 @@ fillQemuCaps(virDomainCaps *domCaps,
 
     ret = 0;
  cleanup:
-    virObjectUnref(qemuCaps);
     VIR_FREE(path);
     return ret;
 }
@@ -208,7 +207,7 @@ static int
 test_virDomainCapsFormat(const void *opaque)
 {
     const struct testData *data = opaque;
-    virDomainCaps *domCaps = NULL;
+    g_autoptr(virDomainCaps) domCaps = NULL;
     char *path = NULL;
     char *domCapsXML = NULL;
     int ret = -1;
@@ -256,7 +255,6 @@ test_virDomainCapsFormat(const void *opaque)
  cleanup:
     VIR_FREE(domCapsXML);
     VIR_FREE(path);
-    virObjectUnref(domCaps);
     return ret;
 }
 

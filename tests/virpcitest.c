@@ -93,8 +93,8 @@ testVirPCIDeviceDetach(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     virPCIDevice *dev[] = {NULL, NULL, NULL};
     size_t i, nDev = G_N_ELEMENTS(dev);
-    virPCIDeviceList *activeDevs = NULL;
-    virPCIDeviceList *inactiveDevs = NULL;
+    g_autoptr(virPCIDeviceList) activeDevs = NULL;
+    g_autoptr(virPCIDeviceList) inactiveDevs = NULL;
     int count;
 
     if (!(activeDevs = virPCIDeviceListNew()) ||
@@ -126,8 +126,6 @@ testVirPCIDeviceDetach(const void *opaque G_GNUC_UNUSED)
  cleanup:
     for (i = 0; i < nDev; i++)
         virPCIDeviceFree(dev[i]);
-    virObjectUnref(activeDevs);
-    virObjectUnref(inactiveDevs);
     return ret;
 }
 
@@ -137,8 +135,8 @@ testVirPCIDeviceReset(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     virPCIDevice *dev[] = {NULL, NULL, NULL};
     size_t i, nDev = G_N_ELEMENTS(dev);
-    virPCIDeviceList *activeDevs = NULL;
-    virPCIDeviceList *inactiveDevs = NULL;
+    g_autoptr(virPCIDeviceList) activeDevs = NULL;
+    g_autoptr(virPCIDeviceList) inactiveDevs = NULL;
     int count;
 
     if (!(activeDevs = virPCIDeviceListNew()) ||
@@ -164,8 +162,6 @@ testVirPCIDeviceReset(const void *opaque G_GNUC_UNUSED)
  cleanup:
     for (i = 0; i < nDev; i++)
         virPCIDeviceFree(dev[i]);
-    virObjectUnref(activeDevs);
-    virObjectUnref(inactiveDevs);
     return ret;
 }
 
@@ -175,8 +171,8 @@ testVirPCIDeviceReattach(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     virPCIDevice *dev[] = {NULL, NULL, NULL};
     size_t i, nDev = G_N_ELEMENTS(dev);
-    virPCIDeviceList *activeDevs = NULL;
-    virPCIDeviceList *inactiveDevs = NULL;
+    g_autoptr(virPCIDeviceList) activeDevs = NULL;
+    g_autoptr(virPCIDeviceList) inactiveDevs = NULL;
     int count;
 
     if (!(activeDevs = virPCIDeviceListNew()) ||
@@ -213,8 +209,6 @@ testVirPCIDeviceReattach(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    virObjectUnref(activeDevs);
-    virObjectUnref(inactiveDevs);
     return ret;
 }
 

@@ -35,7 +35,7 @@ static int
 testMACLookup(const void *opaque)
 {
     const struct testData *data = opaque;
-    virMacMap *mgr = NULL;
+    g_autoptr(virMacMap) mgr = NULL;
     GSList *macs;
     GSList *next;
     size_t i, j;
@@ -79,7 +79,6 @@ testMACLookup(const void *opaque)
     ret = 0;
  cleanup:
     VIR_FREE(file);
-    virObjectUnref(mgr);
     return ret;
 }
 
@@ -88,7 +87,7 @@ static int
 testMACRemove(const void *opaque)
 {
     const struct testData *data = opaque;
-    virMacMap *mgr = NULL;
+    g_autoptr(virMacMap) mgr = NULL;
     GSList *macs;
     size_t i;
     char *file = NULL;
@@ -117,7 +116,6 @@ testMACRemove(const void *opaque)
     ret = 0;
  cleanup:
     VIR_FREE(file);
-    virObjectUnref(mgr);
     return ret;
 }
 

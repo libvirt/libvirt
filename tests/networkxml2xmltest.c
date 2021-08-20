@@ -30,7 +30,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
     int ret;
     testCompareNetXML2XMLResult result = TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS;
     virNetworkDef *dev = NULL;
-    virNetworkXMLOption *xmlopt = NULL;
+    g_autoptr(virNetworkXMLOption) xmlopt = NULL;
 
     if (!(xmlopt = networkDnsmasqCreateXMLConf()))
         goto cleanup;
@@ -72,7 +72,6 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
 
     VIR_FREE(actual);
     virNetworkDefFree(dev);
-    virObjectUnref(xmlopt);
     return ret;
 }
 

@@ -42,7 +42,7 @@ testCompareParseXML(const char *xmcfg, const char *xml)
     char *gotxmcfgData = NULL;
     g_autoptr(virConf) conf = NULL;
     int ret = -1;
-    virConnectPtr conn = NULL;
+    g_autoptr(virConnect) conn = NULL;
     int wrote = 4096;
     virDomainDef *def = NULL;
 
@@ -75,7 +75,6 @@ testCompareParseXML(const char *xmcfg, const char *xml)
  fail:
     VIR_FREE(gotxmcfgData);
     virDomainDefFree(def);
-    virObjectUnref(conn);
 
     return ret;
 }

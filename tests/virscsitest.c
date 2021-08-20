@@ -60,7 +60,7 @@ test1(const void *data G_GNUC_UNUSED)
 static int
 test2(const void *data G_GNUC_UNUSED)
 {
-    virSCSIDeviceList *list = NULL;
+    g_autoptr(virSCSIDeviceList) list = NULL;
     virSCSIDevice *dev = NULL;
     virSCSIDevice *dev1 = NULL;
     bool free_dev = true;
@@ -157,7 +157,6 @@ test2(const void *data G_GNUC_UNUSED)
         virSCSIDeviceFree(dev);
     if (free_dev1)
         virSCSIDeviceFree(dev1);
-    virObjectUnref(list);
     return ret;
 }
 

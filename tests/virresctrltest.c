@@ -21,10 +21,10 @@ test_virResctrlGetUnused(const void *opaque)
     char *system_dir = NULL;
     char *resctrl_dir = NULL;
     int ret = -1;
-    virResctrlAlloc *alloc = NULL;
+    g_autoptr(virResctrlAlloc) alloc = NULL;
     char *schemata_str = NULL;
     char *schemata_file;
-    virCaps *caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
 
     system_dir = g_strdup_printf("%s/vircaps2xmldata/linux-%s/system", abs_srcdir,
                                  data->filename);
@@ -65,8 +65,6 @@ test_virResctrlGetUnused(const void *opaque)
 
     ret = 0;
  cleanup:
-    virObjectUnref(caps);
-    virObjectUnref(alloc);
     VIR_FREE(system_dir);
     VIR_FREE(resctrl_dir);
     VIR_FREE(schemata_str);

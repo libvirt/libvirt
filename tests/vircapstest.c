@@ -151,7 +151,7 @@ static int
 test_virCapsDomainDataLookupQEMU(const void *data G_GNUC_UNUSED)
 {
     int ret = 0;
-    virCaps *caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
 
     if (!(caps = testQemuCapsInit())) {
         ret = -1;
@@ -196,7 +196,6 @@ test_virCapsDomainDataLookupQEMU(const void *data G_GNUC_UNUSED)
     CAPS_EXPECT_ERR(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_VMWARE, NULL, "pc");
 
  out:
-    virObjectUnref(caps);
     return ret;
 }
 #endif /* WITH_QEMU */
@@ -206,7 +205,7 @@ static int
 test_virCapsDomainDataLookupLXC(const void *data G_GNUC_UNUSED)
 {
     int ret = 0;
-    virCaps *caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
 
     if (!(caps = testLXCCapsInit())) {
         ret = -1;
@@ -221,7 +220,6 @@ test_virCapsDomainDataLookupLXC(const void *data G_GNUC_UNUSED)
         VIR_DOMAIN_VIRT_LXC, "/usr/libexec/libvirt_lxc", NULL);
 
  out:
-    virObjectUnref(caps);
     return ret;
 }
 #endif /* WITH_LXC */

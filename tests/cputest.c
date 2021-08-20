@@ -526,7 +526,7 @@ cpuTestCPUID(bool guest, const void *arg)
     g_autofree char *host = NULL;
     g_autoptr(virCPUDef) cpu = NULL;
     g_autofree char *result = NULL;
-    virDomainCapsCPUModels *models = NULL;
+    g_autoptr(virDomainCapsCPUModels) models = NULL;
 
     hostFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s.xml", abs_srcdir,
                                virArchToString(data->arch), data->host);
@@ -563,7 +563,6 @@ cpuTestCPUID(bool guest, const void *arg)
     ret = cpuTestCompareXML(data->arch, cpu, result);
 
  cleanup:
-    virObjectUnref(models);
     return ret;
 }
 
@@ -728,8 +727,8 @@ cpuTestUpdateLive(const void *arg)
     g_autoptr(virCPUData) disabledData = NULL;
     g_autofree char *expectedFile = NULL;
     g_autoptr(virCPUDef) expected = NULL;
-    virDomainCapsCPUModels *hvModels = NULL;
-    virDomainCapsCPUModels *models = NULL;
+    g_autoptr(virDomainCapsCPUModels) hvModels = NULL;
+    g_autoptr(virDomainCapsCPUModels) models = NULL;
     int ret = -1;
 
     cpuFile = g_strdup_printf("cpuid-%s-guest", data->host);
@@ -795,8 +794,6 @@ cpuTestUpdateLive(const void *arg)
     ret = cpuTestUpdateLiveCompare(data->arch, cpu, expected);
 
  cleanup:
-    virObjectUnref(hvModels);
-    virObjectUnref(models);
     return ret;
 }
 
