@@ -69,7 +69,7 @@ testVirNetDevBandwidthSet(const void *data)
     const char *iface = info->iface;
     g_autoptr(virNetDevBandwidth) band = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *actual_cmd = NULL;
+    g_autofree char *actual_cmd = NULL;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     PARSE(info->band, band);
@@ -96,7 +96,6 @@ testVirNetDevBandwidthSet(const void *data)
 
     ret = 0;
  cleanup:
-    VIR_FREE(actual_cmd);
     return ret;
 }
 
