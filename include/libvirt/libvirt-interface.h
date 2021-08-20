@@ -79,6 +79,10 @@ typedef enum {
     VIR_INTERFACE_XML_INACTIVE = 1 << 0 /* dump inactive interface information */
 } virInterfaceXMLFlags;
 
+typedef enum {
+    VIR_INTERFACE_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
+} virInterfaceDefineFlags;
+
 char *                  virInterfaceGetXMLDesc    (virInterfacePtr iface,
                                                    unsigned int flags);
 virInterfacePtr         virInterfaceDefineXML     (virConnectPtr conn,

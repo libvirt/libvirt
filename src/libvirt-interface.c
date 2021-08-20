@@ -437,7 +437,7 @@ virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
  * virInterfaceDefineXML:
  * @conn: pointer to the hypervisor connection
  * @xml: the XML description for the interface, preferably in UTF-8
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virInterfaceDefineFlags
  *
  * Define an inactive persistent physical host interface or modify an existing
  * persistent one from the XML description.
