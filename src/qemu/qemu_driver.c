@@ -1869,8 +1869,7 @@ static int qemuDomainSuspend(virDomainPtr dom)
         if (qemuProcessStopCPUs(driver, vm, reason, QEMU_ASYNC_JOB_NONE) < 0)
             goto endjob;
     }
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        goto endjob;
+    qemuDomainSaveStatus(vm);
     ret = 0;
 
  endjob:
@@ -1927,8 +1926,7 @@ static int qemuDomainResume(virDomainPtr dom)
             goto endjob;
         }
     }
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        goto endjob;
+    qemuDomainSaveStatus(vm);
     ret = 0;
 
  endjob:
@@ -2522,8 +2520,7 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
         }
 
         def->memballoon->period = period;
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            goto endjob;
+        qemuDomainSaveStatus(vm);
     }
 
     if (persistentDef) {
@@ -3621,7 +3618,6 @@ processGuestPanicEvent(virQEMUDriver *driver,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virObjectEvent *event = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     bool removeInactive = false;
     unsigned long flags = VIR_DUMP_MEMORY_ONLY;
 
@@ -3646,10 +3642,7 @@ processGuestPanicEvent(virQEMUDriver *driver,
 
     virObjectEventStateQueue(driver->domainEventState, event);
 
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-        VIR_WARN("Unable to save status on vm %s after state change",
-                 vm->def->name);
-    }
+    qemuDomainSaveStatus(vm);
 
     if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
         VIR_WARN("Unable to release lease on %s", vm->def->name);
@@ -3702,7 +3695,6 @@ processDeviceDeletedEvent(virQEMUDriver *driver,
                           virDomainObj *vm,
                           const char *devAlias)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainDeviceDef dev;
 
     VIR_DEBUG("Removing device %s from domain %p %s",
@@ -3726,9 +3718,7 @@ processDeviceDeletedEvent(virQEMUDriver *driver,
             goto endjob;
     }
 
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        VIR_WARN("unable to save domain status after removing device %s",
-                 devAlias);
+    qemuDomainSaveStatus(vm);
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
@@ -4043,7 +4033,6 @@ processSerialChangedEvent(virQEMUDriver *driver,
                           const char *devAlias,
                           bool connected)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainChrDeviceState newstate;
     virObjectEvent *event = NULL;
     virDomainDeviceDef dev;
@@ -4094,9 +4083,7 @@ processSerialChangedEvent(virQEMUDriver *driver,
 
     dev.data.chr->state = newstate;
 
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        VIR_WARN("unable to save status of domain %s after updating state of "
-                 "channel %s", vm->def->name, devAlias);
+    qemuDomainSaveStatus(vm);
 
     if (STREQ_NULLABLE(dev.data.chr->target.name, "org.qemu.guest_agent.0")) {
         if (newstate == VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED) {
@@ -4518,7 +4505,6 @@ qemuDomainPinVcpuLive(virDomainObj *vm,
                       virDomainDef *def,
                       int vcpu,
                       virQEMUDriver *driver,
-                      virQEMUDriverConfig *cfg,
                       virBitmap *cpumap)
 {
     virBitmap *tmpmap = NULL;
@@ -4570,8 +4556,7 @@ qemuDomainPinVcpuLive(virDomainObj *vm,
     vcpuinfo->cpumask = tmpmap;
     tmpmap = NULL;
 
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        goto cleanup;
+    qemuDomainSaveStatus(vm);
 
     if (g_snprintf(paramField, VIR_TYPED_PARAM_FIELD_LENGTH,
                    VIR_DOMAIN_TUNABLE_CPU_VCPUPIN, vcpu) < 0) {
@@ -4644,7 +4629,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     }
 
     if (def &&
-        qemuDomainPinVcpuLive(vm, def, vcpu, driver, cfg, pcpumap) < 0)
+        qemuDomainPinVcpuLive(vm, def, vcpu, driver, pcpumap) < 0)
         goto endjob;
 
     if (persistentDef) {
@@ -4785,8 +4770,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
         virBitmapFree(def->cputune.emulatorpin);
         def->cputune.emulatorpin = virBitmapNewCopy(pcpumap);
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            goto endjob;
+        qemuDomainSaveStatus(vm);
 
         str = virBitmapFormat(pcpumap);
         if (virTypedParamsAddString(&eventParams, &eventNparams,
@@ -5245,8 +5229,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
         if (virProcessSetAffinity(iothrid->thread_id, pcpumap, false) < 0)
             goto endjob;
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            goto endjob;
+        qemuDomainSaveStatus(vm);
 
         if (g_snprintf(paramField, VIR_TYPED_PARAM_FIELD_LENGTH,
                        VIR_DOMAIN_TUNABLE_CPU_IOTHREADSPIN, iothread_id) < 0) {
@@ -5692,8 +5675,7 @@ qemuDomainChgIOThread(virQEMUDriver *driver,
 
         }
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            goto endjob;
+        qemuDomainSaveStatus(vm);
     }
 
     if (persistentDef) {
@@ -7823,8 +7805,7 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObj *vm,
          * changed even if we failed to attach the device. For example,
          * a new controller may be created.
          */
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            return -1;
+        qemuDomainSaveStatus(vm);
     }
 
     /* Finally, if no error until here, we can save config. */
@@ -7962,15 +7943,8 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
          * device we're going to update. */
         if ((ret = qemuDomainUpdateDeviceLive(vm, dev_copy, dom, force)) < 0)
             goto endjob;
-        /*
-         * update domain status forcibly because the domain status may be
-         * changed even if we failed to attach the device. For example,
-         * a new controller may be created.
-         */
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-            ret = -1;
-            goto endjob;
-        }
+
+        qemuDomainSaveStatus(vm);
     }
 
     /* Finally, if no error until here, we can save config. */
@@ -8055,13 +8029,7 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriver *driver,
         if (rc == 0 && qemuDomainUpdateDeviceList(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
             goto cleanup;
 
-        /*
-         * update domain status forcibly because the domain status may be
-         * changed even if we failed to attach the device. For example,
-         * a new controller may be created.
-         */
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            goto cleanup;
+        qemuDomainSaveStatus(vm);
     }
 
     /* Finally, if no error until here, we can save config. */
@@ -8434,9 +8402,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
     if (def) {
         ret = virDomainCgroupSetupDomainBlkioParameters(priv->cgroup, def,
                                                         params, nparams);
-
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            goto endjob;
+        qemuDomainSaveStatus(vm);
     }
     if (ret < 0)
         goto endjob;
@@ -8611,9 +8577,8 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
                                                 params, nparams) < 0)
         goto endjob;
 
-    if (def &&
-        virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        goto endjob;
+    if (def)
+        qemuDomainSaveStatus(vm);
 
     if (persistentDef &&
         virDomainDefSave(persistentDef, driver->xmlopt, cfg->configDir) < 0)
@@ -8874,8 +8839,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                                  -1, mode, nodeset) < 0)
             goto endjob;
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            goto endjob;
+        qemuDomainSaveStatus(vm);
     }
 
     if (persistentDef) {
@@ -9066,8 +9030,7 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
                 VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
         }
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            goto endjob;
+        qemuDomainSaveStatus(vm);
     }
 
     if (persistentDef) {
@@ -9518,8 +9481,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
         }
     }
 
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        goto endjob;
+    qemuDomainSaveStatus(vm);
 
     if (eventNparams) {
         event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
@@ -10416,8 +10378,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                 goto endjob;
         }
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            goto endjob;
+        qemuDomainSaveStatus(vm);
     }
 
     if (persistentNet) {
@@ -14442,7 +14403,6 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainDiskDef *disk = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     bool pivot = !!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT);
     bool async = !!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC);
     g_autoptr(qemuBlockJobData) job = NULL;
@@ -14506,7 +14466,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         job->state = QEMU_BLOCKJOB_STATE_ABORTING;
     }
 
-    ignore_value(virDomainObjSave(vm, driver->xmlopt, cfg->stateDir));
+    qemuDomainSaveStatus(vm);
 
     if (!async) {
         qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
@@ -16189,8 +16149,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
         qemuDomainSetGroupBlockIoTune(def, &info);
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            goto endjob;
+        qemuDomainSaveStatus(vm);
 
         if (eventNparams) {
             event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
@@ -19684,8 +19643,7 @@ qemuDomainSetLifecycleAction(virDomainPtr dom,
 
         qemuDomainModifyLifecycleAction(def, type, action);
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            goto endjob;
+        qemuDomainSaveStatus(vm);
     }
 
     if (persistentDef) {
@@ -20223,9 +20181,7 @@ qemuDomainAgentSetResponseTimeout(virDomainPtr dom,
 
     QEMU_DOMAIN_PRIVATE(vm)->agentTimeout = timeout;
 
-    if (virDomainObjIsActive(vm) &&
-        virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        goto cleanup;
+    qemuDomainSaveStatus(vm);
 
     ret = 0;
 
