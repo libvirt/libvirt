@@ -85,6 +85,9 @@ virNWFilterPtr          virNWFilterLookupByUUIDString (virConnectPtr conn,
  */
 virNWFilterPtr          virNWFilterDefineXML    (virConnectPtr conn,
                                                  const char *xmlDesc);
+virNWFilterPtr          virNWFilterDefineXMLFlags(virConnectPtr conn,
+                                                  const char *xmlDesc,
+                                                  unsigned int flags);
 
 /*
  * Delete persistent nwfilter

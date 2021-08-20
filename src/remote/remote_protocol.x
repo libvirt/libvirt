@@ -1627,6 +1627,15 @@ struct remote_nwfilter_define_xml_ret {
     remote_nonnull_nwfilter nwfilter;
 };
 
+struct remote_nwfilter_define_xml_flags_args {
+    remote_nonnull_string xml;
+    unsigned int flags;
+};
+
+struct remote_nwfilter_define_xml_flags_ret {
+    remote_nonnull_nwfilter nwfilter;
+};
+
 struct remote_nwfilter_undefine_args {
     remote_nonnull_nwfilter nwfilter;
 };
@@ -6784,6 +6793,13 @@ enum remote_procedure {
      * @priority: high
      * @acl: node_device:start
      */
-    REMOTE_PROC_NODE_DEVICE_CREATE = 430
+    REMOTE_PROC_NODE_DEVICE_CREATE = 430,
 
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: nwfilter:write
+     * @acl: nwfilter:save
+     */
+    REMOTE_PROC_NWFILTER_DEFINE_XML_FLAGS = 431
 };

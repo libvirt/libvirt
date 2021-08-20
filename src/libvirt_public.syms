@@ -896,4 +896,9 @@ LIBVIRT_7.3.0 {
         virNodeDeviceCreate;
 } LIBVIRT_7.2.0;
 
+LIBVIRT_7.7.0 {
+    global:
+        virNWFilterDefineXMLFlags;
+} LIBVIRT_7.3.0;
+
 # .... define new API here using predicted next version number ....

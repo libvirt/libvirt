@@ -407,6 +407,47 @@ virNWFilterDefineXML(virConnectPtr conn, const char *xmlDesc)
 
 
 /**
+ * virNWFilterDefineXMLFlags:
+ * @conn: pointer to the hypervisor connection
+ * @xmlDesc: an XML description of the nwfilter
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Define a new network filter, based on an XML description
+ * similar to the one returned by virNWFilterGetXMLDesc()
+ *
+ * virNWFilterFree should be used to free the resources after the
+ * nwfilter object is no longer needed.
+ *
+ * Returns a new nwfilter object or NULL in case of failure
+ */
+virNWFilterPtr
+virNWFilterDefineXMLFlags(virConnectPtr conn, const char *xmlDesc, unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, xmlDesc=%s flags=0x%x", conn, NULLSTR(xmlDesc), flags);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgGoto(xmlDesc, error);
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn->nwfilterDriver && conn->nwfilterDriver->nwfilterDefineXMLFlags) {
+        virNWFilterPtr ret;
+        ret = conn->nwfilterDriver->nwfilterDefineXMLFlags(conn, xmlDesc, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+
+/**
  * virNWFilterUndefine:
  * @nwfilter: a nwfilter object
  *

@@ -8680,6 +8680,7 @@ static virNWFilterDriver nwfilter_driver = {
     .nwfilterLookupByName = remoteNWFilterLookupByName, /* 0.8.0 */
     .nwfilterGetXMLDesc           = remoteNWFilterGetXMLDesc, /* 0.8.0 */
     .nwfilterDefineXML            = remoteNWFilterDefineXML, /* 0.8.0 */
+    .nwfilterDefineXMLFlags       = remoteNWFilterDefineXMLFlags, /* 7.7.0 */
     .nwfilterUndefine             = remoteNWFilterUndefine, /* 0.8.0 */
     .connectNumOfNWFilters       = remoteConnectNumOfNWFilters, /* 0.8.0 */
     .connectListNWFilters        = remoteConnectListNWFilters, /* 0.8.0 */
