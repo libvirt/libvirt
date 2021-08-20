@@ -546,7 +546,8 @@ virNWFilterSaveConfig(const char *configDir,
                       virNWFilterDef *def);
 
 virNWFilterDef *
-virNWFilterDefParseString(const char *xml);
+virNWFilterDefParseString(const char *xml,
+                          unsigned int flags);
 
 virNWFilterDef *
 virNWFilterDefParseFile(const char *filename);

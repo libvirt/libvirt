@@ -547,7 +547,7 @@ nwfilterDefineXMLFlags(virConnectPtr conn,
     nwfilterDriverLock();
     virNWFilterWriteLockFilterUpdates();
 
-    if (!(def = virNWFilterDefParseString(xml)))
+    if (!(def = virNWFilterDefParseString(xml, 0)))
         goto cleanup;
 
     if (virNWFilterDefineXMLFlagsEnsureACL(conn, def) < 0)

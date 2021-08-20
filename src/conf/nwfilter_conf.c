@@ -2739,12 +2739,14 @@ virNWFilterDefParseNode(xmlDocPtr xml,
 
 static virNWFilterDef *
 virNWFilterDefParse(const char *xmlStr,
-                    const char *filename)
+                    const char *filename,
+                    unsigned int flags)
 {
     virNWFilterDef *def = NULL;
     g_autoptr(xmlDoc) xml = NULL;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(nwfilter_definition)"), NULL, false))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(nwfilter_definition)"), "nwfilter.rng",
+                           flags & VIR_NWFILTER_DEFINE_VALIDATE))) {
         def = virNWFilterDefParseNode(xml, xmlDocGetRootElement(xml));
     }
 
@@ -2753,16 +2755,17 @@ virNWFilterDefParse(const char *xmlStr,
 
 
 virNWFilterDef *
-virNWFilterDefParseString(const char *xmlStr)
+virNWFilterDefParseString(const char *xmlStr,
+                          unsigned int flags)
 {
-    return virNWFilterDefParse(xmlStr, NULL);
+    return virNWFilterDefParse(xmlStr, NULL, flags);
 }
 
 
 virNWFilterDef *
 virNWFilterDefParseFile(const char *filename)
 {
-    return virNWFilterDefParse(NULL, filename);
+    return virNWFilterDefParse(NULL, filename, 0);
 }
 
 
