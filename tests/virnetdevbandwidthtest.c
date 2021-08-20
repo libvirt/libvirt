@@ -63,7 +63,6 @@ testVirNetDevBandwidthParse(virNetDevBandwidth **var,
 static int
 testVirNetDevBandwidthSet(const void *data)
 {
-    int ret = -1;
     const struct testSetStruct *info = data;
     const char *iface = info->iface;
     g_autoptr(virNetDevBandwidth) band = NULL;
@@ -80,7 +79,7 @@ testVirNetDevBandwidthSet(const void *data)
     virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
 
     if (virNetDevBandwidthSet(iface, band, info->hierarchical_class, true) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(actual_cmd = virBufferContentAndReset(&buf))) {
         /* This is interesting, no command has been executed.
@@ -91,12 +90,10 @@ testVirNetDevBandwidthSet(const void *data)
         virTestDifference(stderr,
                           NULLSTR(info->exp_cmd),
                           NULLSTR(actual_cmd));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

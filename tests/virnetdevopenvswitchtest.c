@@ -152,7 +152,6 @@ testNameEscape(const void *opaque)
 static int
 testVirNetDevOpenvswitchInterfaceSetQos(const void *data)
 {
-    int ret = -1;
     const struct testSetQosStruct *info = data;
     const char *iface = info->iface;
     g_autoptr(virNetDevBandwidth) band = NULL;
@@ -169,7 +168,7 @@ testVirNetDevOpenvswitchInterfaceSetQos(const void *data)
     virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
 
     if (virNetDevOpenvswitchInterfaceSetQos(iface, band, vm_id, true) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(actual_cmd = virBufferContentAndReset(&buf))) {
         /* This is interesting, no command has been executed.
@@ -180,19 +179,16 @@ testVirNetDevOpenvswitchInterfaceSetQos(const void *data)
         virTestDifference(stderr,
                           NULLSTR(info->exp_cmd),
                           NULLSTR(actual_cmd));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-    cleanup:
-    return ret;
+    return 0;
 }
 
 
 static int
 testVirNetDevOpenvswitchInterfaceClearQos(const void *data)
 {
-    int ret = -1;
     const struct testClearQosStruct *info = data;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actual_cmd = NULL;
@@ -203,7 +199,7 @@ testVirNetDevOpenvswitchInterfaceClearQos(const void *data)
     virCommandSetDryRun(dryRunToken, &buf, false, false, NULL, NULL);
 
     if (virNetDevOpenvswitchInterfaceClearQos(iface, vmid) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(actual_cmd = virBufferContentAndReset(&buf))) {
         /* This is interesting, no command has been executed.
@@ -214,12 +210,10 @@ testVirNetDevOpenvswitchInterfaceClearQos(const void *data)
         virTestDifference(stderr,
                           NULLSTR(info->exp_cmd),
                           NULLSTR(actual_cmd));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-    cleanup:
-    return ret;
+    return 0;
 }
 
 static int
