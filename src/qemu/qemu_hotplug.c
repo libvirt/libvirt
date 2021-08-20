@@ -3117,8 +3117,6 @@ qemuDomainAttachWatchdog(virQEMUDriver *driver,
     int ret = -1;
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_WATCHDOG, { .watchdog = watchdog } };
-    virDomainWatchdogAction actualAction = watchdog->action;
-    const char *actionStr = NULL;
     g_autofree char *watchdogstr = NULL;
     bool releaseAddress = false;
     int rv;
@@ -3146,17 +3144,59 @@ qemuDomainAttachWatchdog(virQEMUDriver *driver,
     if (!(watchdogstr = qemuBuildWatchdogDevStr(vm->def, watchdog, priv->qemuCaps)))
         goto cleanup;
 
+    qemuDomainObjEnterMonitor(driver, vm);
+
     /* QEMU doesn't have a 'dump' action; we tell qemu to 'pause', then
        libvirt listens for the watchdog event, and we perform the dump
        ourselves. so convert 'dump' to 'pause' for the qemu cli */
-    if (actualAction == VIR_DOMAIN_WATCHDOG_ACTION_DUMP)
-        actualAction = VIR_DOMAIN_WATCHDOG_ACTION_PAUSE;
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION)) {
+        qemuMonitorActionWatchdog watchdogaction = QEMU_MONITOR_ACTION_WATCHDOG_KEEP;
 
-    actionStr = virDomainWatchdogActionTypeToString(actualAction);
+        switch (watchdog->action) {
+        case VIR_DOMAIN_WATCHDOG_ACTION_RESET:
+            watchdogaction = QEMU_MONITOR_ACTION_WATCHDOG_RESET;
+            break;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+        case VIR_DOMAIN_WATCHDOG_ACTION_SHUTDOWN:
+            watchdogaction = QEMU_MONITOR_ACTION_WATCHDOG_SHUTDOWN;
+            break;
 
-    rv = qemuMonitorSetWatchdogAction(priv->mon, actionStr);
+        case VIR_DOMAIN_WATCHDOG_ACTION_POWEROFF:
+            watchdogaction = QEMU_MONITOR_ACTION_WATCHDOG_POWEROFF;
+            break;
+
+        case VIR_DOMAIN_WATCHDOG_ACTION_PAUSE:
+        case VIR_DOMAIN_WATCHDOG_ACTION_DUMP:
+            watchdogaction = QEMU_MONITOR_ACTION_WATCHDOG_PAUSE;
+            break;
+
+        case VIR_DOMAIN_WATCHDOG_ACTION_NONE:
+            watchdogaction = QEMU_MONITOR_ACTION_WATCHDOG_NONE;
+            break;
+
+        case VIR_DOMAIN_WATCHDOG_ACTION_INJECTNMI:
+            watchdogaction = QEMU_MONITOR_ACTION_WATCHDOG_INJECT_NMI;
+            break;
+
+        case VIR_DOMAIN_WATCHDOG_ACTION_LAST:
+        default:
+            break;
+        };
+
+        rv = qemuMonitorSetAction(priv->mon,
+                                  QEMU_MONITOR_ACTION_SHUTDOWN_KEEP,
+                                  QEMU_MONITOR_ACTION_REBOOT_KEEP,
+                                  watchdogaction,
+                                  QEMU_MONITOR_ACTION_PANIC_KEEP);
+    } else {
+        virDomainWatchdogAction actualAction = watchdog->action;
+
+        if (actualAction == VIR_DOMAIN_WATCHDOG_ACTION_DUMP)
+            actualAction = VIR_DOMAIN_WATCHDOG_ACTION_PAUSE;
+
+        rv = qemuMonitorSetWatchdogAction(priv->mon,
+                                          virDomainWatchdogActionTypeToString(actualAction));
+    }
 
     if (rv >= 0)
         rv = qemuMonitorAddDevice(priv->mon, watchdogstr);
