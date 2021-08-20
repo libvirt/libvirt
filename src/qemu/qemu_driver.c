@@ -19669,10 +19669,11 @@ qemuDomainSetLifecycleAction(virDomainPtr dom,
         goto endjob;
 
     if (def) {
-        if (priv->allowReboot == VIR_TRISTATE_BOOL_NO) {
+        if (priv->allowReboot == VIR_TRISTATE_BOOL_NO ||
+            (type == VIR_DOMAIN_LIFECYCLE_REBOOT &&
+             def->onReboot != action)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("cannot update lifecycle action because QEMU "
-                             "was started with -no-reboot option"));
+                           _("cannot update lifecycle action because QEMU was started with incompatible -no-reboot setting"));
             goto endjob;
         }
 
