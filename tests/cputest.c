@@ -193,8 +193,8 @@ cpuTestCompare(const void *arg)
 {
     const struct data *data = arg;
     int ret = -1;
-    virCPUDef *host = NULL;
-    virCPUDef *cpu = NULL;
+    g_autoptr(virCPUDef) host = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
     virCPUCompareResult result;
 
     if (!(host = cpuTestLoadXML(data->arch, data->host)) ||
@@ -217,8 +217,6 @@ cpuTestCompare(const void *arg)
     ret = 0;
 
  cleanup:
-    virCPUDefFree(host);
-    virCPUDefFree(cpu);
     return ret;
 }
 
@@ -228,8 +226,8 @@ cpuTestGuestCPU(const void *arg)
 {
     const struct data *data = arg;
     int ret = -2;
-    virCPUDef *host = NULL;
-    virCPUDef *cpu = NULL;
+    g_autoptr(virCPUDef) host = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
     virCPUCompareResult cmpResult;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *result = NULL;
@@ -268,8 +266,6 @@ cpuTestGuestCPU(const void *arg)
 
  cleanup:
     VIR_FREE(result);
-    virCPUDefFree(host);
-    virCPUDefFree(cpu);
 
     if (ret == data->result) {
         /* We got the result we expected, whether it was
@@ -370,9 +366,9 @@ cpuTestUpdate(const void *arg)
 {
     const struct data *data = arg;
     int ret = -1;
-    virCPUDef *host = NULL;
-    virCPUDef *migHost = NULL;
-    virCPUDef *cpu = NULL;
+    g_autoptr(virCPUDef) host = NULL;
+    g_autoptr(virCPUDef) migHost = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
     char *result = NULL;
 
     if (!(host = cpuTestLoadXML(data->arch, data->host)) ||
@@ -390,9 +386,6 @@ cpuTestUpdate(const void *arg)
     ret = cpuTestCompareXML(data->arch, cpu, result);
 
  cleanup:
-    virCPUDefFree(host);
-    virCPUDefFree(cpu);
-    virCPUDefFree(migHost);
     VIR_FREE(result);
     return ret;
 }
@@ -403,7 +396,7 @@ cpuTestHasFeature(const void *arg)
 {
     const struct data *data = arg;
     int ret = -1;
-    virCPUDef *host = NULL;
+    g_autoptr(virCPUDef) host = NULL;
     g_autoptr(virCPUData) hostData = NULL;
     int result;
 
@@ -434,7 +427,6 @@ cpuTestHasFeature(const void *arg)
     ret = 0;
 
  cleanup:
-    virCPUDefFree(host);
     return ret;
 }
 
@@ -554,7 +546,7 @@ cpuTestCPUID(bool guest, const void *arg)
     g_autoptr(virCPUData) hostData = NULL;
     char *hostFile = NULL;
     char *host = NULL;
-    virCPUDef *cpu = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
     char *result = NULL;
     virDomainCapsCPUModels *models = NULL;
 
@@ -595,7 +587,6 @@ cpuTestCPUID(bool guest, const void *arg)
  cleanup:
     VIR_FREE(hostFile);
     VIR_FREE(host);
-    virCPUDefFree(cpu);
     VIR_FREE(result);
     virObjectUnref(models);
     return ret;
@@ -759,7 +750,7 @@ cpuTestUpdateLive(const void *arg)
 {
     const struct data *data = arg;
     char *cpuFile = NULL;
-    virCPUDef *cpu = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
     char *enabledFile = NULL;
     char *enabled = NULL;
     g_autoptr(virCPUData) enabledData = NULL;
@@ -767,7 +758,7 @@ cpuTestUpdateLive(const void *arg)
     char *disabled = NULL;
     g_autoptr(virCPUData) disabledData = NULL;
     char *expectedFile = NULL;
-    virCPUDef *expected = NULL;
+    g_autoptr(virCPUDef) expected = NULL;
     virDomainCapsCPUModels *hvModels = NULL;
     virDomainCapsCPUModels *models = NULL;
     int ret = -1;
@@ -836,13 +827,11 @@ cpuTestUpdateLive(const void *arg)
 
  cleanup:
     VIR_FREE(cpuFile);
-    virCPUDefFree(cpu);
     VIR_FREE(enabledFile);
     VIR_FREE(enabled);
     VIR_FREE(disabledFile);
     VIR_FREE(disabled);
     VIR_FREE(expectedFile);
-    virCPUDefFree(expected);
     virObjectUnref(hvModels);
     virObjectUnref(models);
     return ret;
@@ -855,7 +844,7 @@ cpuTestJSONCPUID(const void *arg)
 {
     const struct data *data = arg;
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
-    virCPUDef *cpu = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
     char *result = NULL;
     int ret = -1;
 
@@ -876,7 +865,6 @@ cpuTestJSONCPUID(const void *arg)
     ret = cpuTestCompareXML(data->arch, cpu, result);
 
  cleanup:
-    virCPUDefFree(cpu);
     VIR_FREE(result);
     return ret;
 }
