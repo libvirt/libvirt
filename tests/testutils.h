@@ -40,6 +40,10 @@ extern virArch virTestHostArch;
 int virTestRun(const char *title,
                int (*body)(const void *data),
                const void *data);
+void virTestRunLog(int *ret,
+                   const char *title,
+                   int (*body)(const void *data),
+                   const void *data);
 int virTestLoadFile(const char *file, char **buf);
 char *virTestLoadFilePath(const char *p, ...)
     G_GNUC_NULL_TERMINATED;

@@ -913,22 +913,10 @@ mymain(void)
         }; \
         g_autofree char *testLabel = NULL; \
  \
-        g_free(virTestLogContentAndReset());\
- \
         testLabel = g_strdup_printf("%s(%s): %s", #api, \
                                     virArchToString(arch), name); \
  \
-        if (virTestRun(testLabel, api, &data) < 0) { \
-            if (virTestGetDebug()) { \
-                char *log; \
-                if ((log = virTestLogContentAndReset()) && \
-                     strlen(log) > 0) \
-                    VIR_TEST_DEBUG("\n%s", log); \
-                VIR_FREE(log); \
-            } \
-            ret = -1; \
-        } \
- \
+        virTestRunLog(&ret, testLabel, api, &data); \
     } while (0)
 
 #define DO_TEST_COMPARE(arch, host, cpu, result) \

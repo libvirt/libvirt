@@ -180,6 +180,36 @@ virTestRun(const char *title,
 }
 
 
+/*
+ * A wrapper for virTestRun that resets the log content before each run
+ * and sets ret to -1 on failure. On success, ret is untouched.
+ */
+void
+virTestRunLog(int *ret,
+              const char *title,
+              int (*body)(const void *data),
+              const void *data)
+{
+    int rc;
+
+    g_free(virTestLogContentAndReset());
+
+    rc = virTestRun(title, body, data);
+
+    if (rc >= 0)
+        return;
+
+    *ret = -1;
+
+    if (virTestGetDebug()) {
+        g_autofree char *log = virTestLogContentAndReset();
+
+        if (strlen(log) > 0)
+            VIR_TEST_DEBUG("\n%s", log);
+    }
+}
+
+
 /**
  * virTestLoadFile:
  * @file: name of the file to load
