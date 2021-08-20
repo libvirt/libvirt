@@ -637,6 +637,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "confidential-guest-support", /* QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT */
               "query-display-options", /* QEMU_CAPS_QUERY_DISPLAY_OPTIONS */
               "s390-pv-guest", /* QEMU_CAPS_S390_PV_GUEST */
+              "set-action", /* QEMU_CAPS_SET_ACTION */
     );
 
 
@@ -1180,6 +1181,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-display-options", QEMU_CAPS_QUERY_DISPLAY_OPTIONS },
     { "blockdev-reopen", QEMU_CAPS_BLOCKDEV_REOPEN },
     { "set-numa-node", QEMU_CAPS_NUMA },
+    { "set-action", QEMU_CAPS_SET_ACTION },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {

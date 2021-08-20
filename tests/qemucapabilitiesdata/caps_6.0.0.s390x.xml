@@ -164,6 +164,7 @@
   <flag name='confidential-guest-support'/>
   <flag name='query-display-options'/>
   <flag name='s390-pv-guest'/>
+  <flag name='set-action'/>
   <version>6000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100242</microcodeVersion>
