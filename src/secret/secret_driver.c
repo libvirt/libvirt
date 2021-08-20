@@ -222,7 +222,7 @@ secretDefineXML(virConnectPtr conn,
 
     virCheckFlags(0, NULL);
 
-    if (!(def = virSecretDefParseString(xml)))
+    if (!(def = virSecretDefParseString(xml, 0)))
         return NULL;
 
     if (virSecretDefineXMLEnsureACL(conn, def) < 0)
