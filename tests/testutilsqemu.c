@@ -304,19 +304,15 @@ virQEMUCaps *
 qemuTestParseCapabilitiesArch(virArch arch,
                               const char *capsFile)
 {
-    virQEMUCaps *qemuCaps = NULL;
+    g_autoptr(virQEMUCaps) qemuCaps = NULL;
     g_autofree char *binary = g_strdup_printf("/usr/bin/qemu-system-%s",
                                               virArchToString(arch));
 
     if (!(qemuCaps = virQEMUCapsNewBinary(binary)) ||
         virQEMUCapsLoadCache(arch, qemuCaps, capsFile, true) < 0)
-        goto error;
+        return NULL;
 
-    return qemuCaps;
-
- error:
-    virObjectUnref(qemuCaps);
-    return NULL;
+    return g_steal_pointer(&qemuCaps);
 }
 
 
