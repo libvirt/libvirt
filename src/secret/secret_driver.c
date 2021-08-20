@@ -220,9 +220,9 @@ secretDefineXML(virConnectPtr conn,
     virSecretDef *def;
     virObjectEvent *event = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_SECRET_DEFINE_VALIDATE, NULL);
 
-    if (!(def = virSecretDefParseString(xml, 0)))
+    if (!(def = virSecretDefParseString(xml, flags)))
         return NULL;
 
     if (virSecretDefineXMLEnsureACL(conn, def) < 0)
