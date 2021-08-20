@@ -7483,7 +7483,7 @@ nwfilter-define
 
 ::
 
-   nwfilter-define xmlfile
+   nwfilter-define xmlfile [--validate]
 
 Make a new network filter known to libvirt. If a network filter with
 the same name already exists, it will be replaced with the new XML.
@@ -7491,6 +7491,9 @@ Any running virtual machine referencing this network filter will have
 its network traffic rules adapted. If for any reason the network traffic
 filtering rules cannot be instantiated by any of the running virtual
 machines, then the new XML will be rejected.
+
+Optionally, the format of the input XML file can be validated against an
+internal RNG schema with *--validate*.
 
 
 nwfilter-undefine
