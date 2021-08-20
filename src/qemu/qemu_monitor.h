@@ -102,6 +102,48 @@ struct _qemuMonitorRdmaGidStatus {
 
 
 typedef enum {
+    QEMU_MONITOR_ACTION_SHUTDOWN_KEEP, /* do not change the current setting */
+    QEMU_MONITOR_ACTION_SHUTDOWN_POWEROFF,
+    QEMU_MONITOR_ACTION_SHUTDOWN_PAUSE,
+
+    QEMU_MONITOR_ACTION_SHUTDOWN_LAST
+} qemuMonitorActionShutdown;
+
+
+typedef enum {
+    QEMU_MONITOR_ACTION_REBOOT_KEEP, /* do not change the current setting */
+    QEMU_MONITOR_ACTION_REBOOT_RESET,
+    QEMU_MONITOR_ACTION_REBOOT_SHUTDOWN,
+
+    QEMU_MONITOR_ACTION_REBOOT_LAST
+} qemuMonitorActionReboot;
+
+
+typedef enum {
+    QEMU_MONITOR_ACTION_WATCHDOG_KEEP, /* do not change the current setting */
+    QEMU_MONITOR_ACTION_WATCHDOG_RESET,
+    QEMU_MONITOR_ACTION_WATCHDOG_SHUTDOWN,
+    QEMU_MONITOR_ACTION_WATCHDOG_POWEROFF,
+    QEMU_MONITOR_ACTION_WATCHDOG_PAUSE,
+    QEMU_MONITOR_ACTION_WATCHDOG_DEBUG,
+    QEMU_MONITOR_ACTION_WATCHDOG_NONE,
+    QEMU_MONITOR_ACTION_WATCHDOG_INJECT_NMI,
+
+    QEMU_MONITOR_ACTION_WATCHDOG_LAST
+} qemuMonitorActionWatchdog;
+
+
+typedef enum {
+    QEMU_MONITOR_ACTION_PANIC_KEEP, /* do not change the current setting */
+    QEMU_MONITOR_ACTION_PANIC_PAUSE,
+    QEMU_MONITOR_ACTION_PANIC_SHUTDOWN,
+    QEMU_MONITOR_ACTION_PANIC_NONE,
+
+    QEMU_MONITOR_ACTION_PANIC_LAST
+} qemuMonitorActionPanic;
+
+
+typedef enum {
     QEMU_MONITOR_JOB_TYPE_UNKNOWN, /* internal value, not exposed by qemu */
     QEMU_MONITOR_JOB_TYPE_COMMIT,
     QEMU_MONITOR_JOB_TYPE_STREAM,
@@ -1488,3 +1530,10 @@ struct _qemuMonitorDirtyRateInfo {
 int
 qemuMonitorQueryDirtyRate(qemuMonitor *mon,
                           qemuMonitorDirtyRateInfo *info);
+
+int
+qemuMonitorSetAction(qemuMonitor *mon,
+                     qemuMonitorActionShutdown shutdown,
+                     qemuMonitorActionReboot reboot,
+                     qemuMonitorActionWatchdog watchdog,
+                     qemuMonitorActionPanic panic);

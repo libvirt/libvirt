@@ -703,3 +703,10 @@ qemuMonitorJSONStartDirtyRateCalc(qemuMonitor *mon,
 int
 qemuMonitorJSONQueryDirtyRate(qemuMonitor *mon,
                               qemuMonitorDirtyRateInfo *info);
+
+int
+qemuMonitorJSONSetAction(qemuMonitor *mon,
+                         qemuMonitorActionShutdown shutdown,
+                         qemuMonitorActionReboot reboot,
+                         qemuMonitorActionWatchdog watchdog,
+                         qemuMonitorActionPanic panic);

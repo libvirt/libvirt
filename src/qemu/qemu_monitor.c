@@ -4609,3 +4609,19 @@ qemuMonitorQueryDirtyRate(qemuMonitor *mon,
 
     return qemuMonitorJSONQueryDirtyRate(mon, info);
 }
+
+
+int
+qemuMonitorSetAction(qemuMonitor *mon,
+                     qemuMonitorActionShutdown shutdown,
+                     qemuMonitorActionReboot reboot,
+                     qemuMonitorActionWatchdog watchdog,
+                     qemuMonitorActionPanic panic)
+{
+    VIR_DEBUG("shutdown=%u, reboot=%u, watchdog=%u panic=%u",
+              shutdown, reboot, watchdog, panic);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONSetAction(mon, shutdown, reboot, watchdog, panic);
+}

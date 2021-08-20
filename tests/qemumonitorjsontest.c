@@ -1204,6 +1204,11 @@ GEN_TEST_FUNC(qemuMonitorJSONBitmapRemove, "foodev", "newnode")
 GEN_TEST_FUNC(qemuMonitorJSONJobDismiss, "jobname")
 GEN_TEST_FUNC(qemuMonitorJSONJobComplete, "jobname")
 GEN_TEST_FUNC(qemuMonitorJSONBlockJobCancel, "jobname", true)
+GEN_TEST_FUNC(qemuMonitorJSONSetAction,
+              QEMU_MONITOR_ACTION_SHUTDOWN_PAUSE,
+              QEMU_MONITOR_ACTION_REBOOT_RESET,
+              QEMU_MONITOR_ACTION_WATCHDOG_SHUTDOWN,
+              QEMU_MONITOR_ACTION_PANIC_SHUTDOWN)
 
 static int
 testQemuMonitorJSONqemuMonitorJSONNBDServerStart(const void *opaque)
@@ -3067,6 +3072,7 @@ mymain(void)
     DO_TEST_GEN(qemuMonitorJSONJobDismiss);
     DO_TEST_GEN(qemuMonitorJSONJobComplete);
     DO_TEST_GEN(qemuMonitorJSONBlockJobCancel);
+    DO_TEST_GEN(qemuMonitorJSONSetAction);
     DO_TEST(qemuMonitorJSONGetBalloonInfo);
     DO_TEST(qemuMonitorJSONGetBlockInfo);
     DO_TEST(qemuMonitorJSONGetAllBlockStatsInfo);

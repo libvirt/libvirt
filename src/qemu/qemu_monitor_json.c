@@ -9325,3 +9325,82 @@ qemuMonitorJSONQueryDirtyRate(qemuMonitor *mon,
 
     return qemuMonitorJSONExtractDirtyRateInfo(data, info);
 }
+
+
+VIR_ENUM_DECL(qemuMonitorActionShutdown);
+VIR_ENUM_IMPL(qemuMonitorActionShutdown,
+              QEMU_MONITOR_ACTION_SHUTDOWN_LAST,
+              "",
+              "poweroff",
+              "pause");
+
+VIR_ENUM_DECL(qemuMonitorActionReboot);
+VIR_ENUM_IMPL(qemuMonitorActionReboot,
+              QEMU_MONITOR_ACTION_REBOOT_LAST,
+              "",
+              "reset",
+              "shutdown");
+
+VIR_ENUM_DECL(qemuMonitorActionWatchdog);
+VIR_ENUM_IMPL(qemuMonitorActionWatchdog,
+              QEMU_MONITOR_ACTION_WATCHDOG_LAST,
+              "",
+              "reset",
+              "shutdown",
+              "poweroff",
+              "pause",
+              "debug",
+              "none",
+              "inject-nmi");
+
+VIR_ENUM_DECL(qemuMonitorActionPanic);
+VIR_ENUM_IMPL(qemuMonitorActionPanic,
+              QEMU_MONITOR_ACTION_PANIC_LAST,
+              "",
+              "pause",
+              "shutdown",
+              "none");
+
+
+int
+qemuMonitorJSONSetAction(qemuMonitor *mon,
+                         qemuMonitorActionShutdown shutdown,
+                         qemuMonitorActionReboot reboot,
+                         qemuMonitorActionWatchdog watchdog,
+                         qemuMonitorActionPanic panic)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    const char *actionShutdown = NULL;
+    const char *actionReboot = NULL;
+    const char *actionWatchdog = NULL;
+    const char *actionPanic = NULL;
+
+    if (shutdown != QEMU_MONITOR_ACTION_SHUTDOWN_KEEP)
+        actionShutdown = qemuMonitorActionShutdownTypeToString(shutdown);
+
+    if (reboot != QEMU_MONITOR_ACTION_REBOOT_KEEP)
+        actionReboot = qemuMonitorActionRebootTypeToString(reboot);
+
+    if (watchdog != QEMU_MONITOR_ACTION_WATCHDOG_KEEP)
+        actionWatchdog = qemuMonitorActionWatchdogTypeToString(watchdog);
+
+    if (panic != QEMU_MONITOR_ACTION_PANIC_KEEP)
+        actionPanic = qemuMonitorActionPanicTypeToString(panic);
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("set-action",
+                                           "S:shutdown", actionShutdown,
+                                           "S:reboot", actionReboot,
+                                           "S:watchdog", actionWatchdog,
+                                           "S:panic", actionPanic,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    return 0;
+}
