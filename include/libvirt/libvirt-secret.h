@@ -88,6 +88,11 @@ virSecretPtr            virSecretLookupByUUIDString(virConnectPtr conn,
 virSecretPtr            virSecretLookupByUsage(virConnectPtr conn,
                                                int usageType,
                                                const char *usageID);
+
+typedef enum {
+    VIR_SECRET_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
+} virSecretDefineFlags;
+
 virSecretPtr            virSecretDefineXML      (virConnectPtr conn,
                                                  const char *xml,
                                                  unsigned int flags);

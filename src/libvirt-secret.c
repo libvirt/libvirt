@@ -316,7 +316,7 @@ virSecretLookupByUsage(virConnectPtr conn,
  * virSecretDefineXML:
  * @conn: virConnect connection
  * @xml: XML describing the secret.
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virSecretDefineFlags
  *
  * If XML specifies a UUID, locates the specified secret and replaces all
  * attributes of the secret specified by UUID by attributes specified in xml
