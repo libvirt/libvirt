@@ -5523,10 +5523,11 @@ iface-define
 
 ::
 
-   iface-define file
+   iface-define file [--validate]
 
 Define an inactive persistent physical host interface or modify an existing
-persistent one from the XML *file*.
+persistent one from the XML *file*. Optionally, the format of the input XML
+file can be validated against an internal RNG schema with *--validate*.
 
 
 iface-destroy
