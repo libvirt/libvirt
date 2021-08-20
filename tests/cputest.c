@@ -140,21 +140,17 @@ cpuTestCompareXML(virArch arch,
 {
     g_autofree char *xml = NULL;
     g_autofree char *actual = NULL;
-    int ret = -1;
 
     xml = g_strdup_printf("%s/cputestdata/%s-%s.xml", abs_srcdir,
                           virArchToString(arch), name);
 
     if (!(actual = virCPUDefFormat(cpu, NULL)))
-        goto cleanup;
+        return -1;
 
     if (virTestCompareToFile(actual, xml) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -190,14 +186,13 @@ static int
 cpuTestCompare(const void *arg)
 {
     const struct data *data = arg;
-    int ret = -1;
     g_autoptr(virCPUDef) host = NULL;
     g_autoptr(virCPUDef) cpu = NULL;
     virCPUCompareResult result;
 
     if (!(host = cpuTestLoadXML(data->arch, data->host)) ||
         !(cpu = cpuTestLoadXML(data->arch, data->name)))
-        goto cleanup;
+        return -1;
 
     result = virCPUCompare(host->arch, host, cpu, false);
     if (data->result == VIR_CPU_COMPARE_ERROR)
@@ -209,13 +204,10 @@ cpuTestCompare(const void *arg)
                     cpuTestCompResStr(result));
         /* Pad to line up with test name ... in virTestRun */
         VIR_TEST_VERBOSE("%74s", "... ");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -360,7 +352,6 @@ static int
 cpuTestUpdate(const void *arg)
 {
     const struct data *data = arg;
-    int ret = -1;
     g_autoptr(virCPUDef) host = NULL;
     g_autoptr(virCPUDef) migHost = NULL;
     g_autoptr(virCPUDef) cpu = NULL;
@@ -368,20 +359,17 @@ cpuTestUpdate(const void *arg)
 
     if (!(host = cpuTestLoadXML(data->arch, data->host)) ||
         !(cpu = cpuTestLoadXML(data->arch, data->name)))
-        goto cleanup;
+        return -1;
 
     if (!(migHost = virCPUCopyMigratable(data->arch, host)))
-        goto cleanup;
+        return -1;
 
     if (virCPUUpdate(host->arch, cpu, migHost) < 0)
-        goto cleanup;
+        return -1;
 
     result = g_strdup_printf("%s+%s", data->host, data->name);
 
-    ret = cpuTestCompareXML(data->arch, cpu, result);
-
- cleanup:
-    return ret;
+    return cpuTestCompareXML(data->arch, cpu, result);
 }
 
 
@@ -389,17 +377,16 @@ static int
 cpuTestHasFeature(const void *arg)
 {
     const struct data *data = arg;
-    int ret = -1;
     g_autoptr(virCPUDef) host = NULL;
     g_autoptr(virCPUData) hostData = NULL;
     int result;
 
     if (!(host = cpuTestLoadXML(data->arch, data->host)))
-        goto cleanup;
+        return -1;
 
     if (cpuEncode(host->arch, host, NULL, &hostData,
                   NULL, NULL, NULL, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     result = virCPUCheckFeature(host->arch, host, data->name);
 
@@ -415,13 +402,10 @@ cpuTestHasFeature(const void *arg)
             cpuTestBoolWithErrorStr(result));
         /* Pad to line up with test name ... in virTestRun */
         VIR_TEST_VERBOSE("%74s", "... ");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -629,19 +613,15 @@ cpuTestCPUIDSignature(const void *arg)
     g_autoptr(virCPUData) hostData = NULL;
     g_autofree char *hostFile = NULL;
     g_autofree char *host = NULL;
-    int ret = -1;
 
     hostFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s.xml", abs_srcdir,
                                virArchToString(data->arch), data->host);
 
     if (virTestLoadFile(hostFile, &host) < 0 ||
         !(hostData = virCPUDataParse(host)))
-        goto cleanup;
+        return -1;
 
-    ret = cpuTestCompareSignature(data, hostData);
-
- cleanup:
-    return ret;
+    return cpuTestCompareSignature(data, hostData);
 }
 
 
@@ -829,12 +809,11 @@ cpuTestJSONCPUID(const void *arg)
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
     g_autoptr(virCPUDef) cpu = NULL;
     g_autofree char *result = NULL;
-    int ret = -1;
 
     result = g_strdup_printf("cpuid-%s-json", data->host);
 
     if (!(qemuCaps = cpuTestMakeQEMUCaps(data)))
-        goto cleanup;
+        return -1;
 
     cpu = virCPUDefNew();
     cpu->arch = data->arch;
@@ -843,12 +822,9 @@ cpuTestJSONCPUID(const void *arg)
     cpu->fallback = VIR_CPU_FALLBACK_FORBID;
 
     if (virQEMUCapsInitCPUModel(qemuCaps, VIR_DOMAIN_VIRT_KVM, cpu, false) != 0)
-        goto cleanup;
+        return -1;
 
-    ret = cpuTestCompareXML(data->arch, cpu, result);
-
- cleanup:
-    return ret;
+    return cpuTestCompareXML(data->arch, cpu, result);
 }
 
 
@@ -859,19 +835,15 @@ cpuTestJSONSignature(const void *arg)
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
     g_autoptr(virCPUData) hostData = NULL;
     qemuMonitorCPUModelInfo *modelInfo;
-    int ret = -1;
 
     if (!(qemuCaps = cpuTestMakeQEMUCaps(data)))
-        goto cleanup;
+        return -1;
 
     modelInfo = virQEMUCapsGetCPUModelInfo(qemuCaps, VIR_DOMAIN_VIRT_KVM);
     if (!(hostData = virQEMUCapsGetCPUModelX86Data(qemuCaps, modelInfo, false)))
-        goto cleanup;
+        return -1;
 
-    ret = cpuTestCompareSignature(data, hostData);
-
- cleanup:
-    return ret;
+    return cpuTestCompareSignature(data, hostData);
 }
 #endif
 
