@@ -350,6 +350,11 @@ if host_machine.system() == 'linux'
     { 'name': 'virscsitest' },
     { 'name': 'virusbtest' },
   ]
+  if conf.has('WITH_YAJL')
+    tests += [
+      { 'name': 'virnetdevopenvswitchtest' },
+    ]
+  endif
 endif
 
 if conf.has('WITH_BHYVE')
@@ -543,7 +548,6 @@ if conf.has('WITH_YAJL')
   tests += [
     { 'name': 'virjsontest' },
     { 'name': 'virmacmaptest' },
-    { 'name': 'virnetdevopenvswitchtest' },
   ]
 endif
 
