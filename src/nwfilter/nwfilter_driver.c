@@ -536,7 +536,8 @@ nwfilterDefineXMLFlags(virConnectPtr conn,
     virNWFilterDef *objdef;
     virNWFilterPtr nwfilter = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_NWFILTER_DEFINE_VALIDATE, NULL);
+
 
     if (!driver->privileged) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -547,7 +548,7 @@ nwfilterDefineXMLFlags(virConnectPtr conn,
     nwfilterDriverLock();
     virNWFilterWriteLockFilterUpdates();
 
-    if (!(def = virNWFilterDefParseString(xml, 0)))
+    if (!(def = virNWFilterDefParseString(xml, flags)))
         goto cleanup;
 
     if (virNWFilterDefineXMLFlagsEnsureACL(conn, def) < 0)
