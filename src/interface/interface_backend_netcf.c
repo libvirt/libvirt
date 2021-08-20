@@ -894,11 +894,11 @@ static virInterfacePtr netcfInterfaceDefineXML(virConnectPtr conn,
     virInterfaceDef *ifacedef = NULL;
     virInterfacePtr ret = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_INTERFACE_DEFINE_VALIDATE, NULL);
 
     virObjectLock(driver);
 
-    ifacedef = virInterfaceDefParseString(xml, 0);
+    ifacedef = virInterfaceDefParseString(xml, flags);
     if (!ifacedef) {
         /* error was already reported */
         goto cleanup;

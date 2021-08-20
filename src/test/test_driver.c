@@ -6156,10 +6156,10 @@ testInterfaceDefineXML(virConnectPtr conn,
     virInterfaceDef *objdef;
     virInterfacePtr ret = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_INTERFACE_DEFINE_VALIDATE, NULL);
 
     virObjectLock(privconn);
-    if ((def = virInterfaceDefParseString(xmlStr, 0)) == NULL)
+    if ((def = virInterfaceDefParseString(xmlStr, flags)) == NULL)
         goto cleanup;
 
     if ((obj = virInterfaceObjListAssignDef(privconn->ifaces, def)) == NULL)
