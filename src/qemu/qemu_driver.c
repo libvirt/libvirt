@@ -19652,6 +19652,8 @@ qemuDomainSetLifecycleAction(virDomainPtr dom,
     virDomainDef *persistentDef = NULL;
     int ret = -1;
 
+    /* note that 'action' and 'type' are range-checked in the public API wrapper */
+
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
