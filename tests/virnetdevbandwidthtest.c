@@ -39,27 +39,26 @@ struct testSetStruct {
     const bool hierarchical_class;
 };
 
-#define PARSE(xml, var) \
-    do { \
-        int rc; \
-        g_autoptr(xmlDoc) doc = NULL; \
-        g_autoptr(xmlXPathContext) ctxt = NULL; \
- \
-        if (!xml) \
-            break; \
- \
-        if (!(doc = virXMLParseStringCtxt((xml), \
-                                          "bandwidth definition", \
-                                          &ctxt))) \
-            goto cleanup; \
- \
-        rc = virNetDevBandwidthParse(&(var), \
-                                     NULL, \
-                                     ctxt->node, \
-                                     true); \
-        if (rc < 0) \
-            goto cleanup; \
-    } while (0)
+static int
+testVirNetDevBandwidthParse(virNetDevBandwidth **var,
+                            const char *xml)
+{
+    g_autoptr(xmlDoc) doc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+
+    if (!xml)
+        return 0;
+
+    if (!(doc = virXMLParseStringCtxt((xml),
+                                      "bandwidth definition",
+                                      &ctxt)))
+        return -1;
+
+    return virNetDevBandwidthParse(var,
+                                   NULL,
+                                   ctxt->node,
+                                   true);
+}
 
 static int
 testVirNetDevBandwidthSet(const void *data)
@@ -72,7 +71,8 @@ testVirNetDevBandwidthSet(const void *data)
     g_autofree char *actual_cmd = NULL;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    PARSE(info->band, band);
+    if (testVirNetDevBandwidthParse(&band, info->band) < 0)
+        return -1;
 
     if (!iface)
         iface = "eth0";
