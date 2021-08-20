@@ -138,8 +138,8 @@ cpuTestCompareXML(virArch arch,
                   virCPUDef *cpu,
                   const char *name)
 {
-    char *xml = NULL;
-    char *actual = NULL;
+    g_autofree char *xml = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
 
     xml = g_strdup_printf("%s/cputestdata/%s-%s.xml", abs_srcdir,
@@ -154,8 +154,6 @@ cpuTestCompareXML(virArch arch,
     ret = 0;
 
  cleanup:
-    VIR_FREE(xml);
-    VIR_FREE(actual);
     return ret;
 }
 
@@ -230,7 +228,7 @@ cpuTestGuestCPU(const void *arg)
     g_autoptr(virCPUDef) cpu = NULL;
     virCPUCompareResult cmpResult;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *result = NULL;
+    g_autofree char *result = NULL;
 
     if (!(host = cpuTestLoadXML(data->arch, data->host)) ||
         !(cpu = cpuTestLoadXML(data->arch, data->name)))
@@ -265,8 +263,6 @@ cpuTestGuestCPU(const void *arg)
     ret = 0;
 
  cleanup:
-    VIR_FREE(result);
-
     if (ret == data->result) {
         /* We got the result we expected, whether it was
          * a success or a failure */
@@ -292,7 +288,7 @@ cpuTestBaseline(const void *arg)
     virCPUDef **cpus = NULL;
     virCPUDef *baseline = NULL;
     unsigned int ncpus = 0;
-    char *result = NULL;
+    g_autofree char *result = NULL;
     const char *suffix;
     size_t i;
 
@@ -356,7 +352,6 @@ cpuTestBaseline(const void *arg)
         VIR_FREE(cpus);
     }
     virCPUDefFree(baseline);
-    VIR_FREE(result);
     return ret;
 }
 
@@ -369,7 +364,7 @@ cpuTestUpdate(const void *arg)
     g_autoptr(virCPUDef) host = NULL;
     g_autoptr(virCPUDef) migHost = NULL;
     g_autoptr(virCPUDef) cpu = NULL;
-    char *result = NULL;
+    g_autofree char *result = NULL;
 
     if (!(host = cpuTestLoadXML(data->arch, data->host)) ||
         !(cpu = cpuTestLoadXML(data->arch, data->name)))
@@ -386,7 +381,6 @@ cpuTestUpdate(const void *arg)
     ret = cpuTestCompareXML(data->arch, cpu, result);
 
  cleanup:
-    VIR_FREE(result);
     return ret;
 }
 
@@ -544,10 +538,10 @@ cpuTestCPUID(bool guest, const void *arg)
     const struct data *data = arg;
     int ret = -1;
     g_autoptr(virCPUData) hostData = NULL;
-    char *hostFile = NULL;
-    char *host = NULL;
+    g_autofree char *hostFile = NULL;
+    g_autofree char *host = NULL;
     g_autoptr(virCPUDef) cpu = NULL;
-    char *result = NULL;
+    g_autofree char *result = NULL;
     virDomainCapsCPUModels *models = NULL;
 
     hostFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s.xml", abs_srcdir,
@@ -585,9 +579,6 @@ cpuTestCPUID(bool guest, const void *arg)
     ret = cpuTestCompareXML(data->arch, cpu, result);
 
  cleanup:
-    VIR_FREE(hostFile);
-    VIR_FREE(host);
-    VIR_FREE(result);
     virObjectUnref(models);
     return ret;
 }
@@ -636,8 +627,8 @@ cpuTestCPUIDSignature(const void *arg)
 {
     const struct data *data = arg;
     g_autoptr(virCPUData) hostData = NULL;
-    char *hostFile = NULL;
-    char *host = NULL;
+    g_autofree char *hostFile = NULL;
+    g_autofree char *host = NULL;
     int ret = -1;
 
     hostFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s.xml", abs_srcdir,
@@ -650,8 +641,6 @@ cpuTestCPUIDSignature(const void *arg)
     ret = cpuTestCompareSignature(data, hostData);
 
  cleanup:
-    VIR_FREE(hostFile);
-    VIR_FREE(host);
     return ret;
 }
 
@@ -749,15 +738,15 @@ static int
 cpuTestUpdateLive(const void *arg)
 {
     const struct data *data = arg;
-    char *cpuFile = NULL;
+    g_autofree char *cpuFile = NULL;
     g_autoptr(virCPUDef) cpu = NULL;
-    char *enabledFile = NULL;
-    char *enabled = NULL;
+    g_autofree char *enabledFile = NULL;
+    g_autofree char *enabled = NULL;
     g_autoptr(virCPUData) enabledData = NULL;
-    char *disabledFile = NULL;
-    char *disabled = NULL;
+    g_autofree char *disabledFile = NULL;
+    g_autofree char *disabled = NULL;
     g_autoptr(virCPUData) disabledData = NULL;
-    char *expectedFile = NULL;
+    g_autofree char *expectedFile = NULL;
     g_autoptr(virCPUDef) expected = NULL;
     virDomainCapsCPUModels *hvModels = NULL;
     virDomainCapsCPUModels *models = NULL;
@@ -826,12 +815,6 @@ cpuTestUpdateLive(const void *arg)
     ret = cpuTestUpdateLiveCompare(data->arch, cpu, expected);
 
  cleanup:
-    VIR_FREE(cpuFile);
-    VIR_FREE(enabledFile);
-    VIR_FREE(enabled);
-    VIR_FREE(disabledFile);
-    VIR_FREE(disabled);
-    VIR_FREE(expectedFile);
     virObjectUnref(hvModels);
     virObjectUnref(models);
     return ret;
@@ -845,7 +828,7 @@ cpuTestJSONCPUID(const void *arg)
     const struct data *data = arg;
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
     g_autoptr(virCPUDef) cpu = NULL;
-    char *result = NULL;
+    g_autofree char *result = NULL;
     int ret = -1;
 
     result = g_strdup_printf("cpuid-%s-json", data->host);
@@ -865,7 +848,6 @@ cpuTestJSONCPUID(const void *arg)
     ret = cpuTestCompareXML(data->arch, cpu, result);
 
  cleanup:
-    VIR_FREE(result);
     return ret;
 }
 
@@ -957,7 +939,7 @@ mymain(void)
             models == NULL ? NULL : #models, \
             flags, result \
         }; \
-        char *testLabel; \
+        g_autofree char *testLabel = NULL; \
  \
         g_free(virTestLogContentAndReset());\
  \
@@ -975,7 +957,6 @@ mymain(void)
             ret = -1; \
         } \
  \
-        VIR_FREE(testLabel); \
     } while (0)
 
 #define DO_TEST_COMPARE(arch, host, cpu, result) \
@@ -997,7 +978,7 @@ mymain(void)
 #define DO_TEST_BASELINE(arch, name, flags, result) \
     do { \
         const char *suffix = ""; \
-        char *label; \
+        g_autofree char *label = NULL; \
         if ((flags) & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) \
             suffix = " (expanded)"; \
         if ((flags) & VIR_CONNECT_BASELINE_CPU_MIGRATABLE) \
@@ -1005,7 +986,6 @@ mymain(void)
         label = g_strdup_printf("%s%s", name, suffix); \
         DO_TEST(arch, cpuTestBaseline, label, NULL, \
                 "baseline-" name, NULL, flags, result); \
-        VIR_FREE(label); \
     } while (0)
 
 #define DO_TEST_HASFEATURE(arch, host, feature, result) \
