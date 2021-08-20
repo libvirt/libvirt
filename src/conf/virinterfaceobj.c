@@ -373,7 +373,7 @@ virInterfaceObjListCloneCb(void *payload,
     if (!(xml = virInterfaceDefFormat(srcObj->def)))
         goto error;
 
-    if (!(backup = virInterfaceDefParseString(xml)))
+    if (!(backup = virInterfaceDefParseString(xml, 0)))
         goto error;
     VIR_FREE(xml);
 

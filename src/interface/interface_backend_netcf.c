@@ -862,7 +862,7 @@ static char *netcfInterfaceGetXMLDesc(virInterfacePtr ifinfo,
         goto cleanup;
     }
 
-    ifacedef = virInterfaceDefParseString(xmlstr);
+    ifacedef = virInterfaceDefParseString(xmlstr, 0);
     if (!ifacedef) {
         /* error was already reported */
         goto cleanup;
@@ -898,7 +898,7 @@ static virInterfacePtr netcfInterfaceDefineXML(virConnectPtr conn,
 
     virObjectLock(driver);
 
-    ifacedef = virInterfaceDefParseString(xml);
+    ifacedef = virInterfaceDefParseString(xml, 0);
     if (!ifacedef) {
         /* error was already reported */
         goto cleanup;

@@ -6159,7 +6159,7 @@ testInterfaceDefineXML(virConnectPtr conn,
     virCheckFlags(0, NULL);
 
     virObjectLock(privconn);
-    if ((def = virInterfaceDefParseString(xmlStr)) == NULL)
+    if ((def = virInterfaceDefParseString(xmlStr, 0)) == NULL)
         goto cleanup;
 
     if ((obj = virInterfaceObjListAssignDef(privconn->ifaces, def)) == NULL)

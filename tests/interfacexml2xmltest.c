@@ -24,7 +24,7 @@ testCompareXMLToXMLFiles(const char *xml)
     if (virTestLoadFile(xml, &xmlData) < 0)
         goto fail;
 
-    if (!(dev = virInterfaceDefParseString(xmlData)))
+    if (!(dev = virInterfaceDefParseString(xmlData, 0)))
         goto fail;
 
     if (!(actual = virInterfaceDefFormat(dev)))
