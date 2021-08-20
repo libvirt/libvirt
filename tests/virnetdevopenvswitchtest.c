@@ -48,8 +48,8 @@ struct testClearQosStruct {
 #define PARSE(xml, var) \
     do { \
         int rc; \
-        xmlDocPtr doc; \
-        xmlXPathContextPtr ctxt = NULL; \
+        g_autoptr(xmlDoc) doc = NULL; \
+        g_autoptr(xmlXPathContext) ctxt = NULL; \
  \
         if (!xml) \
             break; \
@@ -63,8 +63,6 @@ struct testClearQosStruct {
                                      NULL, \
                                      ctxt->node, \
                                      true); \
-        xmlFreeDoc(doc); \
-        xmlXPathFreeContext(ctxt); \
         if (rc < 0) \
             goto cleanup; \
     } while (0)
@@ -160,7 +158,7 @@ testVirNetDevOpenvswitchInterfaceSetQos(const void *data)
     const char *iface = info->iface;
     g_autoptr(virNetDevBandwidth) band = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *actual_cmd = NULL;
+    g_autofree char *actual_cmd = NULL;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     PARSE(info->band, band);
@@ -187,7 +185,6 @@ testVirNetDevOpenvswitchInterfaceSetQos(const void *data)
 
     ret = 0;
     cleanup:
-    VIR_FREE(actual_cmd);
     return ret;
 }
 
@@ -198,7 +195,7 @@ testVirNetDevOpenvswitchInterfaceClearQos(const void *data)
     int ret = -1;
     const struct testClearQosStruct *info = data;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *actual_cmd = NULL;
+    g_autofree char *actual_cmd = NULL;
     const char *iface = info->iface;
     const unsigned char *vmid = info->vmid;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
@@ -222,7 +219,6 @@ testVirNetDevOpenvswitchInterfaceClearQos(const void *data)
 
     ret = 0;
     cleanup:
-    VIR_FREE(actual_cmd);
     return ret;
 }
 
