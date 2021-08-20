@@ -83,8 +83,7 @@ mymain(void)
     g_autoptr(virConnect) conn = NULL;
     struct testQemuConf testConf = { .capslatest = capslatest,
                                      .capscache = capscache,
-                                     .qapiSchemaCache = NULL,
-                                     .retptr = NULL };
+                                     .qapiSchemaCache = NULL };
 
     if (!capslatest)
         return EXIT_FAILURE;

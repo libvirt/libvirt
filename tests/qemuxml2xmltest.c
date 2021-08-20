@@ -55,7 +55,6 @@ testXML2XMLActive(const void *opaque)
                                    info->infile, info->outfile, true,
                                    info->parseFlags,
                                    TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS) < 0) {
-        *info->conf->retptr = -1;
         return -1;
     }
 
@@ -73,7 +72,6 @@ testXML2XMLInactive(const void *opaque)
                                    info->infile, info->outfile, false,
                                    info->parseFlags,
                                    TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS) < 0) {
-        *info->conf->retptr = -1;
         return -1;
     }
 
@@ -118,8 +116,7 @@ mymain(void)
     g_autoptr(virConnect) conn = NULL;
     struct testQemuConf testConf = { .capslatest = capslatest,
                                      .capscache = capscache,
-                                     .qapiSchemaCache = NULL,
-                                     .retptr = &ret };
+                                     .qapiSchemaCache = NULL };
 
     if (!capslatest)
         return EXIT_FAILURE;
@@ -168,12 +165,12 @@ mymain(void)
  \
         if (when & WHEN_INACTIVE) { \
             testInfoSetPaths(&info, suffix, WHEN_INACTIVE); \
-            virTestRun("QEMU XML-2-XML-inactive " _name, testXML2XMLInactive, &info); \
+            virTestRunLog(&ret, "QEMU XML-2-XML-inactive " _name, testXML2XMLInactive, &info); \
         } \
  \
         if (when & WHEN_ACTIVE) { \
             testInfoSetPaths(&info, suffix, WHEN_ACTIVE); \
-            virTestRun("QEMU XML-2-XML-active " _name, testXML2XMLActive, &info); \
+            virTestRunLog(&ret, "QEMU XML-2-XML-active " _name, testXML2XMLActive, &info); \
         } \
         testQemuInfoClear(&info); \
     } while (0)

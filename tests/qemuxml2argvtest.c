@@ -766,8 +766,6 @@ testCompareXMLToArgv(const void *data)
             goto cleanup;
     }
 
-    log = virTestLogContentAndReset();
-    VIR_FREE(log);
     virResetLastError();
 
     if (!(cmd = testCompareXMLToArgvCreateArgs(&driver, vm, migrateURI, info,
@@ -826,9 +824,6 @@ testCompareXMLToArgv(const void *data)
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 
-    if (ret < 0)
-        *info->conf->retptr = ret;
-
     return ret;
 }
 
@@ -856,8 +851,7 @@ mymain(void)
     g_autoptr(GHashTable) capscache = virHashNew(virObjectFreeHashData);
     struct testQemuConf testConf = { .capslatest = capslatest,
                                      .capscache = capscache,
-                                     .qapiSchemaCache = qapiSchemaCache,
-                                     .retptr = &ret };
+                                     .qapiSchemaCache = qapiSchemaCache };
 
     if (!capslatest)
         return EXIT_FAILURE;
@@ -952,7 +946,7 @@ mymain(void)
         }; \
         testQemuInfoSetArgs(&info, &testConf, __VA_ARGS__); \
         testInfoSetPaths(&info, _suffix); \
-        virTestRun("QEMU XML-2-ARGV " _name _suffix, testCompareXMLToArgv, &info); \
+        virTestRunLog(&ret, "QEMU XML-2-ARGV " _name _suffix, testCompareXMLToArgv, &info); \
         testQemuInfoClear(&info); \
     } while (0)
 
