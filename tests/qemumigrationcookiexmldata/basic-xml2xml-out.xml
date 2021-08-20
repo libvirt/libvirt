@@ -3,7 +3,6 @@
   <uuid>dcf47dbd-46d1-4d5b-b442-262a806a333a</uuid>
   <hostname>hostname</hostname>
   <hostuuid>4a802f00-4cba-5df6-9679-a08c4c5b577f</hostuuid>
-  <allowReboot value='default'/>
   <capabilities>
   </capabilities>
 </qemu-migration>

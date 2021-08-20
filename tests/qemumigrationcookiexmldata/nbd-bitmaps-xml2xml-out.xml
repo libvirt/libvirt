@@ -29,7 +29,6 @@
     <feature policy='disable' name='npt'/>
     <feature policy='disable' name='nrip-save'/>
   </cpu>
-  <allowReboot value='yes'/>
   <capabilities>
     <cap name='xbzrle' auto='no'/>
     <cap name='auto-converge' auto='no'/>

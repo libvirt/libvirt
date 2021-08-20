@@ -211,7 +211,6 @@
     <auto_converge_throttle>14</auto_converge_throttle>
   </statistics>
   <cpu mode='host-passthrough' check='partial' migratable='on'/>
-  <allowReboot value='yes'/>
   <capabilities>
     <cap name='xbzrle' auto='yes'/>
     <cap name='postcopy-ram' auto='no'/>

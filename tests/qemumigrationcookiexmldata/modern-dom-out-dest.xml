@@ -6,7 +6,6 @@
   <feature name='memory-hotplug'/>
   <feature name='cpu-hotplug'/>
   <graphics type='spice' port='5900' listen='127.0.0.1' tlsPort='-1'/>
-  <allowReboot value='yes'/>
   <capabilities>
   </capabilities>
 </qemu-migration>

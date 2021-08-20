@@ -558,18 +558,6 @@ qemuMigrationCookieAddCPU(qemuMigrationCookie *mig,
 }
 
 
-static void
-qemuMigrationCookieAddAllowReboot(qemuMigrationCookie *mig,
-                                  virDomainObj *vm)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    mig->allowReboot = priv->allowReboot;
-
-    mig->flags |= QEMU_MIGRATION_COOKIE_ALLOW_REBOOT;
-}
-
-
 static int
 qemuMigrationCookieAddCaps(qemuMigrationCookie *mig,
                            virDomainObj *vm,
@@ -900,9 +888,6 @@ qemuMigrationCookieXMLFormat(virQEMUDriver *driver,
 
     if (mig->flags & QEMU_MIGRATION_COOKIE_CPU && mig->cpu)
         virCPUDefFormatBufFull(buf, mig->cpu, NULL);
-
-    if (mig->flags & QEMU_MIGRATION_COOKIE_ALLOW_REBOOT)
-        qemuDomainObjPrivateXMLFormatAllowReboot(buf, mig->allowReboot);
 
     if (mig->flags & QEMU_MIGRATION_COOKIE_CAPS)
         qemuMigrationCookieCapsXMLFormat(buf, mig->caps);
@@ -1407,10 +1392,6 @@ qemuMigrationCookieXMLParse(qemuMigrationCookie *mig,
                           false) < 0)
         return -1;
 
-    if (flags & QEMU_MIGRATION_COOKIE_ALLOW_REBOOT &&
-        qemuDomainObjPrivateXMLParseAllowReboot(ctxt, &mig->allowReboot) < 0)
-        return -1;
-
     if (flags & QEMU_MIGRATION_COOKIE_CAPS &&
         !(mig->caps = qemuMigrationCookieCapsXMLParse(ctxt)))
         return -1;
@@ -1490,9 +1471,6 @@ qemuMigrationCookieFormat(qemuMigrationCookie *mig,
     if (flags & QEMU_MIGRATION_COOKIE_CPU &&
         qemuMigrationCookieAddCPU(mig, dom) < 0)
         return -1;
-
-    if (flags & QEMU_MIGRATION_COOKIE_ALLOW_REBOOT)
-        qemuMigrationCookieAddAllowReboot(mig, dom);
 
     if (flags & QEMU_MIGRATION_COOKIE_CAPS &&
         qemuMigrationCookieAddCaps(mig, dom, party) < 0)
