@@ -73,6 +73,10 @@ static const vshCmdInfo info_secret_define[] = {
 
 static const vshCmdOptDef opts_secret_define[] = {
     VIRSH_COMMON_OPT_FILE(N_("file containing secret attributes in XML")),
+    {.name = "validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the XML against the schema")
+    },
     {.name = NULL}
 };
 
@@ -84,15 +88,19 @@ cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
     virSecretPtr res;
     char uuid[VIR_UUID_STRING_BUFLEN];
     bool ret = false;
+    unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
 
+    if (vshCommandOptBool(cmd, "validate"))
+        flags |= VIR_SECRET_DEFINE_VALIDATE;
+
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    if (!(res = virSecretDefineXML(priv->conn, buffer, 0))) {
+    if (!(res = virSecretDefineXML(priv->conn, buffer, flags))) {
         vshError(ctl, _("Failed to set attributes from %s"), from);
         goto cleanup;
     }

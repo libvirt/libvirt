@@ -6698,13 +6698,15 @@ secret-define
 
 ::
 
-   secret-define file
+   secret-define file [--validate]
 
 Create a secret with the properties specified in *file*, with no associated
 secret value.  If *file* does not specify a UUID, choose one automatically.
 If *file* specifies a UUID of an existing secret, replace its properties by
 properties defined in *file*, without affecting the secret value.
 
+Optionally, the format of the input XML file can be validated against an
+internal RNG schema with *--validate*.
 
 secret-dumpxml
 --------------
