@@ -525,14 +525,18 @@ nwfilterConnectListAllNWFilters(virConnectPtr conn,
     return ret;
 }
 
+
 static virNWFilterPtr
-nwfilterDefineXML(virConnectPtr conn,
-                  const char *xml)
+nwfilterDefineXMLFlags(virConnectPtr conn,
+                       const char *xml,
+                       unsigned int flags)
 {
     virNWFilterDef *def;
     virNWFilterObj *obj = NULL;
     virNWFilterDef *objdef;
     virNWFilterPtr nwfilter = NULL;
+
+    virCheckFlags(0, NULL);
 
     if (!driver->privileged) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -546,7 +550,7 @@ nwfilterDefineXML(virConnectPtr conn,
     if (!(def = virNWFilterDefParseString(xml)))
         goto cleanup;
 
-    if (virNWFilterDefineXMLEnsureACL(conn, def) < 0)
+    if (virNWFilterDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
     if (!(obj = virNWFilterObjListAssignDef(driver->nwfilters, def)))
@@ -569,6 +573,14 @@ nwfilterDefineXML(virConnectPtr conn,
     virNWFilterUnlockFilterUpdates();
     nwfilterDriverUnlock();
     return nwfilter;
+}
+
+
+static virNWFilterPtr
+nwfilterDefineXML(virConnectPtr conn,
+                  const char *xml)
+{
+    return nwfilterDefineXMLFlags(conn, xml, 0);
 }
 
 
@@ -809,6 +821,7 @@ static virNWFilterDriver nwfilterDriver = {
     .nwfilterLookupByName = nwfilterLookupByName, /* 0.8.0 */
     .nwfilterLookupByUUID = nwfilterLookupByUUID, /* 0.8.0 */
     .nwfilterDefineXML = nwfilterDefineXML, /* 0.8.0 */
+    .nwfilterDefineXMLFlags = nwfilterDefineXMLFlags, /* 7.7.0 */
     .nwfilterUndefine = nwfilterUndefine, /* 0.8.0 */
     .nwfilterGetXMLDesc = nwfilterGetXMLDesc, /* 0.8.0 */
     .nwfilterBindingLookupByPortDev = nwfilterBindingLookupByPortDev, /* 4.5.0 */
