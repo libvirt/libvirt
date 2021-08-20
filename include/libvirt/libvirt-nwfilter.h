@@ -80,6 +80,10 @@ virNWFilterPtr          virNWFilterLookupByUUID       (virConnectPtr conn,
 virNWFilterPtr          virNWFilterLookupByUUIDString (virConnectPtr conn,
                                                        const char *uuid);
 
+typedef enum {
+    VIR_NWFILTER_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
+} virNWFilterDefineFlags;
+
 /*
  * Define persistent nwfilter
  */

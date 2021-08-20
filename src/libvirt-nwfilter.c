@@ -410,7 +410,7 @@ virNWFilterDefineXML(virConnectPtr conn, const char *xmlDesc)
  * virNWFilterDefineXMLFlags:
  * @conn: pointer to the hypervisor connection
  * @xmlDesc: an XML description of the nwfilter
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virNWFilterDefineFlags
  *
  * Define a new network filter, based on an XML description
  * similar to the one returned by virNWFilterGetXMLDesc()
