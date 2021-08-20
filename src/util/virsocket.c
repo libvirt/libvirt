@@ -477,9 +477,7 @@ virSocketRecvFD(int sock, int fdflags)
     /* set close-on-exec flag */
     if (!MSG_CMSG_CLOEXEC && (fdflags & O_CLOEXEC)) {
         if (virSetCloseExec(fd) < 0) {
-            int saved_errno = errno;
             VIR_FORCE_CLOSE(fd);
-            errno = saved_errno;
             return -1;
         }
     }
