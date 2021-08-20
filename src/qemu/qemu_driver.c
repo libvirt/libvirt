@@ -19627,6 +19627,58 @@ qemuDomainModifyLifecycleAction(virDomainDef *def,
 }
 
 
+static int
+qemuDomainModifyLifecycleActionLive(virDomainObj *vm,
+                                    virDomainLifecycle type,
+                                    virDomainLifecycleAction action)
+{
+    qemuMonitorActionReboot monReboot = QEMU_MONITOR_ACTION_REBOOT_KEEP;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    int rc;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION))
+        return 0;
+
+    /* For now we only update 'reboot' action here as we want to keep the
+     * shutdown action as is (we're emulating the outcome anyways)) */
+    if (type != VIR_DOMAIN_LIFECYCLE_REBOOT ||
+        vm->def->onReboot == action)
+        return 0;
+
+
+    switch (action) {
+    case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
+        monReboot = QEMU_MONITOR_ACTION_REBOOT_SHUTDOWN;
+        break;
+
+    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
+        monReboot = QEMU_MONITOR_ACTION_REBOOT_RESET;
+        break;
+
+    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
+        return 0;
+    }
+
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    rc = qemuMonitorSetAction(priv->mon,
+                              QEMU_MONITOR_ACTION_SHUTDOWN_KEEP,
+                              monReboot,
+                              QEMU_MONITOR_ACTION_WATCHDOG_KEEP,
+                              QEMU_MONITOR_ACTION_PANIC_KEEP);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        return -1;
+
+    return 0;
+}
+
 
 static int
 qemuDomainSetLifecycleAction(virDomainPtr dom,
@@ -19669,13 +19721,18 @@ qemuDomainSetLifecycleAction(virDomainPtr dom,
         goto endjob;
 
     if (def) {
-        if (priv->allowReboot == VIR_TRISTATE_BOOL_NO ||
-            (type == VIR_DOMAIN_LIFECYCLE_REBOOT &&
-             def->onReboot != action)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("cannot update lifecycle action because QEMU was started with incompatible -no-reboot setting"));
-            goto endjob;
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION)) {
+            if (priv->allowReboot == VIR_TRISTATE_BOOL_NO ||
+                (type == VIR_DOMAIN_LIFECYCLE_REBOOT &&
+                 def->onReboot != action)) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("cannot update lifecycle action because QEMU was started with incompatible -no-reboot setting"));
+                goto endjob;
+            }
         }
+
+        if (qemuDomainModifyLifecycleActionLive(vm, type, action) < 0)
+            goto endjob;
 
         qemuDomainModifyLifecycleAction(def, type, action);
 
