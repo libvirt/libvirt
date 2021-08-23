@@ -1953,7 +1953,7 @@ virQEMUCapsAccelCopy(virQEMUCapsAccel *dst,
 
 virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
 {
-    virQEMUCaps *ret = virQEMUCapsNewBinary(qemuCaps->binary);
+    g_autoptr(virQEMUCaps) ret = virQEMUCapsNewBinary(qemuCaps->binary);
     size_t i;
 
     if (!ret)
@@ -1980,7 +1980,7 @@ virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
 
     if (virQEMUCapsAccelCopy(&ret->kvm, &qemuCaps->kvm) < 0 ||
         virQEMUCapsAccelCopy(&ret->tcg, &qemuCaps->tcg) < 0)
-        goto error;
+        return NULL;
 
     ret->gicCapabilities = g_new0(virGICCapability, qemuCaps->ngicCapabilities);
     ret->ngicCapabilities = qemuCaps->ngicCapabilities;
@@ -1990,13 +1990,9 @@ virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST) &&
         virQEMUCapsSEVInfoCopy(&ret->sevCapabilities,
                                qemuCaps->sevCapabilities) < 0)
-        goto error;
+        return NULL;
 
-    return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 
