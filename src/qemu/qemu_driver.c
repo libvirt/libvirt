@@ -3201,6 +3201,7 @@ doCoreDump(virQEMUDriver *driver,
     int rc = -1;
     virFileWrapperFd *wrapperFd = NULL;
     int directFlag = 0;
+    bool needUnlink = false;
     unsigned int flags = VIR_FILE_WRAPPER_NON_BLOCKING;
     const char *memory_dump_format = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -3224,12 +3225,9 @@ doCoreDump(virQEMUDriver *driver,
             goto cleanup;
         }
     }
-    /* Core dumps usually imply last-ditch analysis efforts are
-     * desired, so we intentionally do not unlink even if a file was
-     * created.  */
     if ((fd = virQEMUFileOpenAs(cfg->user, cfg->group, false, path,
                              O_CREAT | O_TRUNC | O_WRONLY | directFlag,
-                             NULL)) < 0)
+                             &needUnlink)) < 0)
         goto cleanup;
 
     if (!(wrapperFd = virFileWrapperFdNew(&fd, path, flags)))
@@ -3282,7 +3280,7 @@ doCoreDump(virQEMUDriver *driver,
     if (qemuDomainFileWrapperFDClose(vm, wrapperFd) < 0)
         ret = -1;
     virFileWrapperFdFree(wrapperFd);
-    if (ret != 0)
+    if (ret != 0 && needUnlink)
         unlink(path);
     return ret;
 }
