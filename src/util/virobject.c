@@ -427,6 +427,22 @@ virObjectGetRWLockableObj(void *anyobj)
 
 
 /**
+ * virObjectLockGuard:
+ * @anyobj: any instance of virObjectLockable
+ *
+ * Acquire a lock on @anyobj that will be managed by the virLockGuard object
+ * returned to the caller.
+ */
+virLockGuard
+virObjectLockGuard(void *anyobj)
+{
+    virObjectLockable *obj = virObjectGetLockableObj(anyobj);
+
+    return virLockGuardLock(&obj->lock);
+}
+
+
+/**
  * virObjectLock:
  * @anyobj: any instance of virObjectLockable
  *

@@ -2956,6 +2956,7 @@ virObjectListFree;
 virObjectListFreeCount;
 virObjectLock;
 virObjectLockableNew;
+virObjectLockGuard;
 virObjectNew;
 virObjectRef;
 virObjectRWLockableNew;
