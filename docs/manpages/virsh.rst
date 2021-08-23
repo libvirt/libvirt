@@ -5177,10 +5177,12 @@ net-define
 
 ::
 
-   net-define file
+   net-define file [--validate]
 
 Define an inactive persistent virtual network or modify an existing persistent
 one from the XML *file*.
+Optionally, the format of the input XML file can be validated against an
+internal RNG schema with *--validate*.
 
 
 net-destroy

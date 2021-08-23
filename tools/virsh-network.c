@@ -244,6 +244,10 @@ static const vshCmdInfo info_network_define[] = {
 
 static const vshCmdOptDef opts_network_define[] = {
     VIRSH_COMMON_OPT_FILE(N_("file containing an XML network description")),
+    {.name = "validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the XML against the schema")
+    },
     {.name = NULL}
 };
 
@@ -254,15 +258,22 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     g_autofree char *buffer = NULL;
+    unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
 
+    if (vshCommandOptBool(cmd, "validate"))
+        flags |= VIR_NETWORK_DEFINE_VALIDATE;
+
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    network = virNetworkDefineXML(priv->conn, buffer);
+    if (flags)
+        network = virNetworkDefineXMLFlags(priv->conn, buffer, flags);
+    else
+        network = virNetworkDefineXML(priv->conn, buffer);
 
     if (network != NULL) {
         vshPrintExtra(ctl, _("Network %s defined from %s\n"),
