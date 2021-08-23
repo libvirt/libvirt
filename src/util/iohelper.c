@@ -28,6 +28,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "virthread.h"
 #include "virfile.h"
@@ -56,6 +58,8 @@ runIO(const char *path, int fd, int oflags)
     unsigned long long total = 0;
     bool direct = O_DIRECT && ((oflags & O_DIRECT) != 0);
     off_t end = 0;
+    struct stat sb;
+    bool isBlockDev = false;
 
 #if WITH_POSIX_MEMALIGN
     if (posix_memalign(&base, alignMask + 1, buflen))
@@ -67,6 +71,14 @@ runIO(const char *path, int fd, int oflags)
     buf = (char *) (((intptr_t) base + alignMask) & ~alignMask);
 #endif
 
+    if (fstat(fd, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to access file descriptor %d path %s"),
+                             fd, path);
+        goto cleanup;
+    }
+    isBlockDev = S_ISBLK(sb.st_mode);
+
     switch (oflags & O_ACCMODE) {
     case O_RDONLY:
         fdin = fd;
@@ -75,7 +87,7 @@ runIO(const char *path, int fd, int oflags)
         fdoutname = "stdout";
         /* To make the implementation simpler, we give up on any
          * attempt to use O_DIRECT in a non-trivial manner.  */
-        if (direct && ((end = lseek(fd, 0, SEEK_CUR)) != 0)) {
+        if (!isBlockDev && direct && ((end = lseek(fd, 0, SEEK_CUR)) != 0)) {
             virReportSystemError(end < 0 ? errno : EINVAL, "%s",
                                  _("O_DIRECT read needs entire seekable file"));
             goto cleanup;
@@ -88,7 +100,7 @@ runIO(const char *path, int fd, int oflags)
         fdoutname = path;
         /* To make the implementation simpler, we give up on any
          * attempt to use O_DIRECT in a non-trivial manner.  */
-        if (direct && (end = lseek(fd, 0, SEEK_END)) != 0) {
+        if (!isBlockDev && direct && (end = lseek(fd, 0, SEEK_END)) != 0) {
             virReportSystemError(end < 0 ? errno : EINVAL, "%s",
                                  _("O_DIRECT write needs empty seekable file"));
             goto cleanup;
@@ -140,7 +152,7 @@ runIO(const char *path, int fd, int oflags)
                 goto cleanup;
             }
 
-            if (ftruncate(fd, total) < 0) {
+            if (!isBlockDev && ftruncate(fd, total) < 0) {
                 virReportSystemError(errno, _("Unable to truncate %s"), fdoutname);
                 goto cleanup;
             }
