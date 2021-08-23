@@ -1439,7 +1439,6 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     size_t i;
     virDomainSnapshotPtr snapshot = NULL;
     long long creation_longlong;
-    g_autoptr(GDateTime) then = NULL;
     bool tree = vshCommandOptBool(cmd, "tree");
     bool name = vshCommandOptBool(cmd, "name");
     bool from = vshCommandOptBool(cmd, "from");
@@ -1533,6 +1532,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     }
 
     for (i = 0; i < snaplist->nsnaps; i++) {
+        g_autoptr(GDateTime) then = NULL;
         g_autofree gchar *thenstr = NULL;
         g_autoptr(xmlDoc) xml = NULL;
         g_autoptr(xmlXPathContext) ctxt = NULL;
