@@ -119,6 +119,10 @@ virNetworkPtr           virNetworkLookupByUUIDString    (virConnectPtr conn,
 virNetworkPtr           virNetworkCreateXML     (virConnectPtr conn,
                                                  const char *xmlDesc);
 
+typedef enum {
+    VIR_NETWORK_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
+} virNetworkDefineFlags;
+
 /*
  * Define inactive persistent network
  */

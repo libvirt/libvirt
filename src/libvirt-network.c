@@ -469,7 +469,7 @@ virNetworkDefineXML(virConnectPtr conn, const char *xml)
  * virNetworkDefineXMLFlags:
  * @conn: pointer to the hypervisor connection
  * @xml: the XML description for the network, preferably in UTF-8
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virNetworkDefineFlags
  *
  * Define an inactive persistent virtual network or modify an existing
  * persistent one from the XML description.
