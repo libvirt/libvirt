@@ -7024,6 +7024,37 @@ qemuProcessSetupDisksTransient(virDomainObj *vm,
 }
 
 
+static int
+qemuProcessSetupLifecycleActions(virDomainObj *vm,
+                                 qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    int rc;
+
+    if (!(virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION)))
+        return 0;
+
+    /* for now we handle only onReboot->destroy here as an alternative to
+     * '-no-reboot' on the commandline */
+    if (vm->def->onReboot != VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY)
+        return 0;
+
+    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+        return -1;
+
+    rc = qemuMonitorSetAction(priv->mon,
+                              QEMU_MONITOR_ACTION_SHUTDOWN_KEEP,
+                              QEMU_MONITOR_ACTION_REBOOT_SHUTDOWN,
+                              QEMU_MONITOR_ACTION_WATCHDOG_KEEP,
+                              QEMU_MONITOR_ACTION_PANIC_KEEP);
+
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || rc < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * qemuProcessLaunch:
  *
@@ -7381,6 +7412,10 @@ qemuProcessLaunch(virConnectPtr conn,
         if (qemuProcessSetupDisksTransient(vm, asyncJob) < 0)
             goto cleanup;
     }
+
+    VIR_DEBUG("Setting handling of lifecycle actions");
+    if (qemuProcessSetupLifecycleActions(vm, asyncJob) < 0)
+        goto cleanup;
 
     ret = 0;
 
