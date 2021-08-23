@@ -265,6 +265,7 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDef *chkdef)
     virDomainDef *domdef = chkdef->parent.dom;
     g_autoptr(GHashTable) map = virHashNew(NULL);
     g_autofree virDomainCheckpointDiskDef *olddisks = NULL;
+    size_t oldndisks;
     size_t i;
     int checkpoint_default = VIR_DOMAIN_CHECKPOINT_TYPE_NONE;
 
@@ -292,9 +293,14 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDef *chkdef)
     if (!chkdef->ndisks)
         checkpoint_default = VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP;
 
+    olddisks = g_steal_pointer(&chkdef->disks);
+    oldndisks = chkdef->ndisks;
+    chkdef->disks = g_new0(virDomainCheckpointDiskDef, domdef->ndisks);
+    chkdef->ndisks = domdef->ndisks;
+
     /* Double check requested disks.  */
-    for (i = 0; i < chkdef->ndisks; i++) {
-        virDomainCheckpointDiskDef *chkdisk = &chkdef->disks[i];
+    for (i = 0; i < oldndisks; i++) {
+        virDomainCheckpointDiskDef *chkdisk = &olddisks[i];
         virDomainDiskDef *domdisk = virDomainDiskByName(domdef, chkdisk->name, false);
 
         if (!domdisk) {
@@ -327,10 +333,6 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDef *chkdef)
             chkdisk->name = g_strdup(domdisk->dst);
         }
     }
-
-    olddisks = g_steal_pointer(&chkdef->disks);
-    chkdef->disks = g_new0(virDomainCheckpointDiskDef, domdef->ndisks);
-    chkdef->ndisks = domdef->ndisks;
 
     for (i = 0; i < domdef->ndisks; i++) {
         virDomainDiskDef *domdisk = domdef->disks[i];

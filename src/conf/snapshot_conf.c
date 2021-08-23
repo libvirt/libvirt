@@ -636,6 +636,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
     virDomainDef *domdef = snapdef->parent.dom;
     g_autoptr(GHashTable) map = virHashNew(NULL);
     g_autofree virDomainSnapshotDiskDef *olddisks = NULL;
+    size_t oldndisks;
     size_t i;
 
     if (!domdef) {
@@ -654,9 +655,14 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
     if (!domdef->ndisks)
         return 0;
 
+    olddisks = g_steal_pointer(&snapdef->disks);
+    oldndisks = snapdef->ndisks;
+    snapdef->disks = g_new0(virDomainSnapshotDiskDef, domdef->ndisks);
+    snapdef->ndisks = domdef->ndisks;
+
     /* Double check requested disks.  */
-    for (i = 0; i < snapdef->ndisks; i++) {
-        virDomainSnapshotDiskDef *snapdisk = &snapdef->disks[i];
+    for (i = 0; i < oldndisks; i++) {
+        virDomainSnapshotDiskDef *snapdisk = &olddisks[i];
         virDomainDiskDef *domdisk = virDomainDiskByName(domdef, snapdisk->name, false);
 
         if (!domdisk) {
@@ -707,10 +713,6 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
             snapdisk->name = g_strdup(domdisk->dst);
         }
     }
-
-    olddisks = g_steal_pointer(&snapdef->disks);
-    snapdef->disks = g_new0(virDomainSnapshotDiskDef, domdef->ndisks);
-    snapdef->ndisks = domdef->ndisks;
 
     for (i = 0; i < domdef->ndisks; i++) {
         virDomainDiskDef *domdisk = domdef->disks[i];
