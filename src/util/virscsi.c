@@ -414,8 +414,7 @@ virSCSIDeviceListDel(virSCSIDeviceList *list,
                 virSCSIDeviceUsedByInfoFree(dev->used_by[i]);
                 VIR_DELETE_ELEMENT(dev->used_by, i, dev->n_used_by);
             } else {
-                g_autoptr(virSCSIDevice) tmp = NULL;
-                tmp = virSCSIDeviceListSteal(list, dev);
+                virSCSIDeviceFree(virSCSIDeviceListSteal(list, dev));
             }
             break;
         }
