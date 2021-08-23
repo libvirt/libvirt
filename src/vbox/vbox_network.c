@@ -397,7 +397,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start,
 
     VBOX_IID_INITIALIZE(&vboxnetiid);
 
-    if (!(def = virNetworkDefParseString(xml, NULL)) ||
+    if (!(def = virNetworkDefParseString(xml, NULL, 0)) ||
         (def->forward.type != VIR_NETWORK_FORWARD_NONE) ||
         (def->nips == 0 || !def->ips))
         goto cleanup;

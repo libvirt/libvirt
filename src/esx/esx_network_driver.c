@@ -298,7 +298,7 @@ esxNetworkDefineXMLFlags(virConnectPtr conn, const char *xml,
         return NULL;
 
     /* Parse network XML */
-    def = virNetworkDefParseString(xml, NULL);
+    def = virNetworkDefParseString(xml, NULL, 0);
 
     if (!def)
         return NULL;

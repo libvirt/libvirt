@@ -318,7 +318,7 @@ virNetworkDefCopy(virNetworkDef *def,
     if (!(xml = virNetworkDefFormat(def, xmlopt, flags)))
        return NULL;
 
-    return virNetworkDefParseString(xml, xmlopt);
+    return virNetworkDefParseString(xml, xmlopt, 0);
 }
 
 
@@ -2085,13 +2085,15 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
 static virNetworkDef *
 virNetworkDefParse(const char *xmlStr,
                    const char *filename,
-                   virNetworkXMLOption *xmlopt)
+                   virNetworkXMLOption *xmlopt,
+                   unsigned int flags)
 {
     g_autoptr(xmlDoc) xml = NULL;
     virNetworkDef *def = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(network_definition)"), NULL, false)))
+    if ((xml = virXMLParse(filename, xmlStr, _("(network_definition)"),
+                           "network.rng", flags & VIR_NETWORK_DEFINE_VALIDATE)))
         def = virNetworkDefParseNode(xml, xmlDocGetRootElement(xml), xmlopt);
 
     xmlKeepBlanksDefault(keepBlanksDefault);
@@ -2101,9 +2103,10 @@ virNetworkDefParse(const char *xmlStr,
 
 virNetworkDef *
 virNetworkDefParseString(const char *xmlStr,
-                         virNetworkXMLOption *xmlopt)
+                         virNetworkXMLOption *xmlopt,
+                         unsigned int flags)
 {
-    return virNetworkDefParse(xmlStr, NULL, xmlopt);
+    return virNetworkDefParse(xmlStr, NULL, xmlopt, flags);
 }
 
 
@@ -2111,7 +2114,7 @@ virNetworkDef *
 virNetworkDefParseFile(const char *filename,
                        virNetworkXMLOption *xmlopt)
 {
-    return virNetworkDefParse(NULL, filename, xmlopt);
+    return virNetworkDefParse(NULL, filename, xmlopt, 0);
 }
 
 

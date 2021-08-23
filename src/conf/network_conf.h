@@ -327,7 +327,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
 
 virNetworkDef *
 virNetworkDefParseString(const char *xmlStr,
-                         virNetworkXMLOption *xmlopt);
+                         virNetworkXMLOption *xmlopt,
+                         unsigned int flags);
 
 virNetworkDef *
 virNetworkDefParseFile(const char *filename,
