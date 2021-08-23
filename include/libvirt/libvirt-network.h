@@ -124,6 +124,9 @@ virNetworkPtr           virNetworkCreateXML     (virConnectPtr conn,
  */
 virNetworkPtr           virNetworkDefineXML     (virConnectPtr conn,
                                                  const char *xmlDesc);
+virNetworkPtr           virNetworkDefineXMLFlags(virConnectPtr conn,
+                                                 const char *xmlDesc,
+                                                 unsigned int flags);
 
 /*
  * Delete persistent network

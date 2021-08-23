@@ -1538,6 +1538,15 @@ struct remote_network_define_xml_ret {
     remote_nonnull_network net;
 };
 
+struct remote_network_define_xml_flags_args {
+    remote_nonnull_string xml;
+    unsigned int flags;
+};
+
+struct remote_network_define_xml_flags_ret {
+    remote_nonnull_network net;
+};
+
 struct remote_network_undefine_args {
     remote_nonnull_network net;
 };
@@ -6801,5 +6810,13 @@ enum remote_procedure {
      * @acl: nwfilter:write
      * @acl: nwfilter:save
      */
-    REMOTE_PROC_NWFILTER_DEFINE_XML_FLAGS = 431
+    REMOTE_PROC_NWFILTER_DEFINE_XML_FLAGS = 431,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: network:write
+     * @acl: network:save
+     */
+    REMOTE_PROC_NETWORK_DEFINE_XML_FLAGS = 432
 };

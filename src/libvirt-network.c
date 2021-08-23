@@ -466,6 +466,47 @@ virNetworkDefineXML(virConnectPtr conn, const char *xml)
 
 
 /**
+ * virNetworkDefineXMLFlags:
+ * @conn: pointer to the hypervisor connection
+ * @xml: the XML description for the network, preferably in UTF-8
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Define an inactive persistent virtual network or modify an existing
+ * persistent one from the XML description.
+ *
+ * virNetworkFree should be used to free the resources after the
+ * network object is no longer needed.
+ *
+ * Returns NULL in case of error, a pointer to the network otherwise
+ */
+virNetworkPtr
+virNetworkDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, xml=%s, flags=0x%x", conn, NULLSTR(xml), flags);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, NULL);
+    virCheckReadOnlyGoto(conn->flags, error);
+    virCheckNonNullArgGoto(xml, error);
+
+    if (conn->networkDriver && conn->networkDriver->networkDefineXMLFlags) {
+        virNetworkPtr ret;
+        ret = conn->networkDriver->networkDefineXMLFlags(conn, xml, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+
+/**
  * virNetworkUndefine:
  * @network: pointer to a defined network
  *

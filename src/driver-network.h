@@ -73,6 +73,11 @@ typedef virNetworkPtr
 (*virDrvNetworkDefineXML)(virConnectPtr conn,
                           const char *xml);
 
+typedef virNetworkPtr
+(*virDrvNetworkDefineXMLFlags)(virConnectPtr conn,
+                               const char *xml,
+                               unsigned int flags);
+
 typedef int
 (*virDrvNetworkUndefine)(virNetworkPtr network);
 
@@ -172,6 +177,7 @@ struct _virNetworkDriver {
     virDrvNetworkLookupByName networkLookupByName;
     virDrvNetworkCreateXML networkCreateXML;
     virDrvNetworkDefineXML networkDefineXML;
+    virDrvNetworkDefineXMLFlags networkDefineXMLFlags;
     virDrvNetworkUndefine networkUndefine;
     virDrvNetworkUpdate networkUpdate;
     virDrvNetworkCreate networkCreate;

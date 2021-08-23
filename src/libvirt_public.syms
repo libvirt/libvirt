@@ -899,6 +899,7 @@ LIBVIRT_7.3.0 {
 LIBVIRT_7.7.0 {
     global:
         virNWFilterDefineXMLFlags;
+        virNetworkDefineXMLFlags;
 } LIBVIRT_7.3.0;
 
 # .... define new API here using predicted next version number ....
