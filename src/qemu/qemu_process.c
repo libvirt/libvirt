@@ -6354,6 +6354,11 @@ qemuProcessPrepareAllowReboot(virDomainObj *vm)
     virDomainDef *def = vm->def;
     qemuDomainObjPrivate *priv = vm->privateData;
 
+    /* with 'set-action' QMP command we don't need to keep this around as
+     * we always update qemu with the proper state */
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION))
+        return;
+
     if (priv->allowReboot != VIR_TRISTATE_BOOL_ABSENT)
         return;
 
