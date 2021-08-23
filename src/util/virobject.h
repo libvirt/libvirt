@@ -148,3 +148,25 @@ virObjectListFree(void *list);
 void
 virObjectListFreeCount(void *list,
                        size_t count);
+
+#define VIR_WITH_OBJECT_LOCK_GUARD_(o, name) \
+    for (g_auto(virLockGuard) name = virObjectLockGuard(o); name.mutex; \
+         name.mutex = (virLockGuardUnlock(&name), NULL))
+
+/**
+ * VIR_WITH_OBJECT_LOCK_GUARD:
+ *
+ * This macro defines a lock scope such that entering the scope takes the lock
+ * and leaving the scope releases the lock. Return statements are allowed
+ * within the scope and release the lock. Break and continue statements leave
+ * the scope early and release the lock.
+ *
+ *     virObjectLockable *lockable = ...;
+ *
+ *     VIR_WITH_OBJECT_LOCK_GUARD(lockable) {
+ *         // `lockable` is locked, and released automatically on scope exit
+ *         ...
+ *     }
+ */
+#define VIR_WITH_OBJECT_LOCK_GUARD(o) \
+    VIR_WITH_OBJECT_LOCK_GUARD_(o, CONCAT(var, __COUNTER__))
