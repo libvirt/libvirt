@@ -367,7 +367,8 @@ vboxSocketFormatAddrUtf16(struct _vboxDriver *data, virSocketAddr *addr)
 }
 
 static virNetworkPtr
-vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
+vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start,
+                           unsigned int flags)
 {
     struct _vboxDriver *data = conn->privateData;
     PRUnichar *networkInterfaceNameUtf16 = NULL;
@@ -384,6 +385,8 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
     IHost *host = NULL;
     virNetworkPtr ret = NULL;
     nsresult rc;
+
+    virCheckFlags(0, NULL);
 
     if (!data->vboxObj)
         return ret;
@@ -554,12 +557,12 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
 
 static virNetworkPtr vboxNetworkCreateXML(virConnectPtr conn, const char *xml)
 {
-    return vboxNetworkDefineCreateXML(conn, xml, true);
+    return vboxNetworkDefineCreateXML(conn, xml, true, 0);
 }
 
 static virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml)
 {
-    return vboxNetworkDefineCreateXML(conn, xml, false);
+    return vboxNetworkDefineCreateXML(conn, xml, false, 0);
 }
 
 static int
