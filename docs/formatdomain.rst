@@ -1747,8 +1747,7 @@ Each of these states allow for the same four possible actions.
    supported by the libxl hypervisor driver.)
 
 QEMU/KVM supports the ``on_poweroff`` and ``on_reboot`` events handling the
-``destroy`` and ``restart`` actions. The ``preserve`` action for an
-``on_reboot`` event is treated as a ``destroy``.
+``destroy`` and ``restart`` actions.
 
 The ``on_crash`` event supports these additional actions :since:`since 0.8.4` .
 
