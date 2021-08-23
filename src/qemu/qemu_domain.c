@@ -11139,22 +11139,6 @@ qemuDomainRunningReasonToResumeEvent(virDomainRunningReason reason)
 }
 
 
-/* qemuDomainIsUsingNoShutdown:
- * @priv: Domain private data
- *
- * We can receive an event when QEMU stops. If we use no-shutdown, then
- * we can watch for this event and do a soft/warm reboot.
- *
- * Returns: @true when -no-shutdown either should be or was added to the
- * command line.
- */
-bool
-qemuDomainIsUsingNoShutdown(qemuDomainObjPrivate *priv)
-{
-    return priv->allowReboot == VIR_TRISTATE_BOOL_YES;
-}
-
-
 bool
 qemuDomainDiskIsMissingLocalOptional(virDomainDiskDef *disk)
 {

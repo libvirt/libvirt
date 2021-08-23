@@ -1002,9 +1002,6 @@ virDomainEventResumedDetailType
 qemuDomainRunningReasonToResumeEvent(virDomainRunningReason reason);
 
 bool
-qemuDomainIsUsingNoShutdown(qemuDomainObjPrivate *priv);
-
-bool
 qemuDomainDiskIsMissingLocalOptional(virDomainDiskDef *disk);
 
 void

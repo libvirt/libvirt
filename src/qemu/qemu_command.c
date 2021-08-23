@@ -6165,11 +6165,9 @@ qemuBuildPMCommandLine(virCommand *cmd,
 {
     virQEMUCaps *qemuCaps = priv->qemuCaps;
 
-    /* Only add -no-reboot option if each event destroys domain */
     if (priv->allowReboot == VIR_TRISTATE_BOOL_NO)
         virCommandAddArg(cmd, "-no-reboot");
-
-    if (qemuDomainIsUsingNoShutdown(priv))
+    else
         virCommandAddArg(cmd, "-no-shutdown");
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI)) {

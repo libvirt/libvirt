@@ -8751,8 +8751,7 @@ qemuProcessReconnect(void *opaque)
          * domain crashed; otherwise, if the monitor was started,
          * then we can blame ourselves, else we failed before the
          * monitor started so we don't really know. */
-        if (!priv->mon && tryMonReconn &&
-            qemuDomainIsUsingNoShutdown(priv))
+        if (!priv->mon && tryMonReconn && priv->allowReboot == VIR_TRISTATE_BOOL_YES)
             state = VIR_DOMAIN_SHUTOFF_CRASHED;
         else if (priv->mon)
             state = VIR_DOMAIN_SHUTOFF_DAEMON;
