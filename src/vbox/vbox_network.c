@@ -375,7 +375,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
     PRUnichar *networkNameUtf16 = NULL;
     char *networkNameUtf8 = NULL;
     IHostNetworkInterface *networkInterface = NULL;
-    virNetworkDef *def = virNetworkDefParseString(xml, NULL);
+    virNetworkDef *def = NULL;
     virNetworkIPDef *ipdef = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     vboxIID vboxnetiid;
@@ -394,7 +394,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
 
     VBOX_IID_INITIALIZE(&vboxnetiid);
 
-    if ((!def) ||
+    if (!(def = virNetworkDefParseString(xml, NULL)) ||
         (def->forward.type != VIR_NETWORK_FORWARD_NONE) ||
         (def->nips == 0 || !def->ips))
         goto cleanup;
