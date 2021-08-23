@@ -5510,7 +5510,7 @@ virQEMUCapsLoadFile(const char *filename,
                     void *privData,
                     bool *outdated)
 {
-    virQEMUCaps *qemuCaps = virQEMUCapsNewBinary(binary);
+    g_autoptr(virQEMUCaps) qemuCaps = virQEMUCapsNewBinary(binary);
     virQEMUCapsCachePriv *priv = privData;
     int ret;
 
@@ -5519,17 +5519,13 @@ virQEMUCapsLoadFile(const char *filename,
 
     ret = virQEMUCapsLoadCache(priv->hostArch, qemuCaps, filename, false);
     if (ret < 0)
-        goto error;
+        return NULL;
     if (ret == 1) {
         *outdated = true;
-        goto error;
+        return NULL;
     }
 
-    return qemuCaps;
-
- error:
-    virObjectUnref(qemuCaps);
-    return NULL;
+    return g_steal_pointer(&qemuCaps);
 }
 
 
