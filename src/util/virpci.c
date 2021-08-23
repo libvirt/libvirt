@@ -2150,8 +2150,8 @@ virPCIDeviceIsBehindSwitchLackingACS(virPCIDevice *dev)
                 return 1;
         }
 
-        tmp = parent;
-        ret = virPCIDeviceGetParent(parent, &parent);
+        tmp = g_steal_pointer(&parent);
+        ret = virPCIDeviceGetParent(tmp, &parent);
         if (ret < 0)
             return -1;
     } while (parent);
