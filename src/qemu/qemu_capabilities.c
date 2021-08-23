@@ -2986,7 +2986,6 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
     g_autoptr(virCPUDef) cpu = NULL;
     qemuMonitorCPUModelExpansionType type;
     bool fail_no_props = true;
-    int ret = -1;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
         return 0;
@@ -3017,14 +3016,14 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
 
     if (qemuMonitorGetCPUModelExpansion(mon, type, cpu, true, fail_no_props,
                                         &modelInfo) < 0)
-        goto cleanup;
+        return -1;
 
     /* Try to check migratability of each feature. */
     if (modelInfo &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_MIGRATABLE) &&
         qemuMonitorGetCPUModelExpansion(mon, type, cpu, false, fail_no_props,
                                         &nonMigratable) < 0)
-        goto cleanup;
+        return -1;
 
     if (nonMigratable) {
         qemuMonitorCPUProperty *prop;
@@ -3036,7 +3035,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
         for (i = 0; i < modelInfo->nprops; i++) {
             prop = modelInfo->props + i;
             if (virHashAddEntry(hash, prop->name, prop) < 0)
-                goto cleanup;
+                return -1;
         }
 
         for (i = 0; i < nonMigratable->nprops; i++) {
@@ -3058,11 +3057,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
     }
 
     accel->hostCPU.info = g_steal_pointer(&modelInfo);
-    ret = 0;
-
- cleanup:
-
-    return ret;
+    return 0;
 }
 
 
@@ -3495,11 +3490,10 @@ virQEMUCapsGetCPUModelX86Data(virQEMUCaps *qemuCaps,
     unsigned long long sigModel = 0;
     unsigned long long sigStepping = 0;
     g_autoptr(virCPUData) data = NULL;
-    virCPUData *ret = NULL;
     size_t i;
 
     if (!(data = virCPUDataNew(VIR_ARCH_X86_64)))
-        goto cleanup;
+        return NULL;
 
     for (i = 0; i < model->nprops; i++) {
         qemuMonitorCPUProperty *prop = model->props + i;
@@ -3512,14 +3506,14 @@ virQEMUCapsGetCPUModelX86Data(virQEMUCaps *qemuCaps,
                 continue;
 
             if (virCPUDataAddFeature(data, name) < 0)
-                goto cleanup;
+                return NULL;
 
             break;
 
         case QEMU_MONITOR_CPU_PROPERTY_STRING:
             if (STREQ(name, "vendor") &&
                 virCPUx86DataSetVendor(data, prop->value.string) < 0)
-                goto cleanup;
+                return NULL;
             break;
 
         case QEMU_MONITOR_CPU_PROPERTY_NUMBER:
@@ -3537,12 +3531,9 @@ virQEMUCapsGetCPUModelX86Data(virQEMUCaps *qemuCaps,
     }
 
     if (virCPUx86DataSetSignature(data, sigFamily, sigModel, sigStepping) < 0)
-        goto cleanup;
+        return NULL;
 
-    ret = g_steal_pointer(&data);
-
- cleanup:
-    return ret;
+    return g_steal_pointer(&data);
 }
 
 
@@ -3560,23 +3551,19 @@ virQEMUCapsInitCPUModelX86(virQEMUCaps *qemuCaps,
 {
     g_autoptr(virDomainCapsCPUModels) cpuModels = NULL;
     g_autoptr(virCPUData) data = NULL;
-    int ret = -1;
 
     if (!model)
         return 1;
 
     if (!(data = virQEMUCapsGetCPUModelX86Data(qemuCaps, model, migratable)))
-        goto cleanup;
+        return -1;
 
     cpuModels = virQEMUCapsGetCPUModels(qemuCaps, type, NULL, NULL);
 
     if (cpuDecode(cpu, data, cpuModels) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -4647,7 +4634,6 @@ virQEMUCapsSaveFile(void *data,
 {
     virQEMUCaps *qemuCaps = data;
     g_autofree char *xml = NULL;
-    int ret = -1;
 
     xml = virQEMUCapsFormatCache(qemuCaps);
 
@@ -4655,7 +4641,7 @@ virQEMUCapsSaveFile(void *data,
         virReportSystemError(errno,
                              _("Failed to save '%s' for '%s'"),
                              filename, qemuCaps->binary);
-        goto cleanup;
+        return -1;
     }
 
     VIR_DEBUG("Saved caps '%s' for '%s' with (%lld, %lld)",
@@ -4663,9 +4649,7 @@ virQEMUCapsSaveFile(void *data,
               (long long)qemuCaps->ctime,
               (long long)qemuCaps->libvirtCtime);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
