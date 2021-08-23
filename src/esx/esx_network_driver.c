@@ -292,13 +292,13 @@ esxNetworkDefineXMLFlags(virConnectPtr conn, const char *xml,
 
     unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5]; /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_NETWORK_DEFINE_VALIDATE, NULL);
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return NULL;
 
     /* Parse network XML */
-    def = virNetworkDefParseString(xml, NULL, 0);
+    def = virNetworkDefParseString(xml, NULL, flags);
 
     if (!def)
         return NULL;

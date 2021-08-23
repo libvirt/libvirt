@@ -3527,9 +3527,9 @@ networkDefineXMLFlags(virConnectPtr conn,
     virNetworkPtr net = NULL;
     virObjectEvent *event = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_NETWORK_DEFINE_VALIDATE, NULL);
 
-    if (!(def = virNetworkDefParseString(xml, network_driver->xmlopt, 0)))
+    if (!(def = virNetworkDefParseString(xml, network_driver->xmlopt, flags)))
         goto cleanup;
 
     if (virNetworkDefineXMLFlagsEnsureACL(conn, def) < 0)

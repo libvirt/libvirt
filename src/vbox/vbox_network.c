@@ -386,7 +386,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start,
     virNetworkPtr ret = NULL;
     nsresult rc;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_NETWORK_DEFINE_VALIDATE, NULL);
 
     if (!data->vboxObj)
         return ret;
@@ -397,7 +397,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start,
 
     VBOX_IID_INITIALIZE(&vboxnetiid);
 
-    if (!(def = virNetworkDefParseString(xml, NULL, 0)) ||
+    if (!(def = virNetworkDefParseString(xml, NULL, flags)) ||
         (def->forward.type != VIR_NETWORK_FORWARD_NONE) ||
         (def->nips == 0 || !def->ips))
         goto cleanup;

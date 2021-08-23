@@ -5618,9 +5618,9 @@ testNetworkDefineXMLFlags(virConnectPtr conn,
     virNetworkPtr net = NULL;
     virObjectEvent *event = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_NETWORK_DEFINE_VALIDATE, NULL);
 
-    if ((newDef = virNetworkDefParseString(xml, NULL, 0)) == NULL)
+    if ((newDef = virNetworkDefParseString(xml, NULL, flags)) == NULL)
         goto cleanup;
 
     if (!(obj = virNetworkObjAssignDef(privconn->networks, newDef, 0)))
