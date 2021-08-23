@@ -565,6 +565,12 @@ static virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml)
     return vboxNetworkDefineCreateXML(conn, xml, false, 0);
 }
 
+static virNetworkPtr vboxNetworkDefineXMLFlags(virConnectPtr conn, const char *xml,
+                                               unsigned int flags)
+{
+    return vboxNetworkDefineCreateXML(conn, xml, false, flags);
+}
+
 static int
 vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterface)
 {
@@ -924,6 +930,7 @@ virNetworkDriver vboxNetworkDriver = {
     .networkLookupByName = vboxNetworkLookupByName, /* 0.6.4 */
     .networkCreateXML = vboxNetworkCreateXML, /* 0.6.4 */
     .networkDefineXML = vboxNetworkDefineXML, /* 0.6.4 */
+    .networkDefineXMLFlags = vboxNetworkDefineXMLFlags, /* 7.7.0 */
     .networkUndefine = vboxNetworkUndefine, /* 0.6.4 */
     .networkCreate = vboxNetworkCreate, /* 0.6.4 */
     .networkDestroy = vboxNetworkDestroy, /* 0.6.4 */

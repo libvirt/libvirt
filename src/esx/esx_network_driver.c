@@ -274,7 +274,8 @@ esxBandwidthToShapingPolicy(virNetDevBandwidth *bandwidth,
 
 
 static virNetworkPtr
-esxNetworkDefineXML(virConnectPtr conn, const char *xml)
+esxNetworkDefineXMLFlags(virConnectPtr conn, const char *xml,
+                         unsigned int flags)
 {
     virNetworkPtr network = NULL;
     esxPrivate *priv = conn->privateData;
@@ -290,6 +291,8 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
     size_t i;
 
     unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5]; /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
+
+    virCheckFlags(0, NULL);
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return NULL;
@@ -490,6 +493,14 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
     esxVI_HostPortGroupSpec_Free(&hostPortGroupSpec);
 
     return network;
+}
+
+
+
+static virNetworkPtr
+esxNetworkDefineXML(virConnectPtr conn, const char *xml)
+{
+    return esxNetworkDefineXMLFlags(conn, xml, 0);
 }
 
 
@@ -933,6 +944,7 @@ virNetworkDriver esxNetworkDriver = {
     .networkLookupByUUID = esxNetworkLookupByUUID, /* 0.10.0 */
     .networkLookupByName = esxNetworkLookupByName, /* 0.10.0 */
     .networkDefineXML = esxNetworkDefineXML, /* 0.10.0 */
+    .networkDefineXMLFlags = esxNetworkDefineXMLFlags, /* 7.7.0 */
     .networkUndefine = esxNetworkUndefine, /* 0.10.0 */
     .networkGetXMLDesc = esxNetworkGetXMLDesc, /* 0.10.0 */
     .networkGetAutostart = esxNetworkGetAutostart, /* 0.10.0 */
