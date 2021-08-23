@@ -2980,10 +2980,10 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
                            virDomainVirtType virtType)
 {
     const char *model = virtType == VIR_DOMAIN_VIRT_KVM ? "host" : "max";
-    qemuMonitorCPUModelInfo *modelInfo = NULL;
-    qemuMonitorCPUModelInfo *nonMigratable = NULL;
-    GHashTable *hash = NULL;
-    virCPUDef *cpu;
+    g_autoptr(qemuMonitorCPUModelInfo) modelInfo = NULL;
+    g_autoptr(qemuMonitorCPUModelInfo) nonMigratable = NULL;
+    g_autoptr(GHashTable) hash = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
     qemuMonitorCPUModelExpansionType type;
     bool fail_no_props = true;
     int ret = -1;
@@ -3061,10 +3061,6 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
     ret = 0;
 
  cleanup:
-    virHashFree(hash);
-    qemuMonitorCPUModelInfoFree(nonMigratable);
-    qemuMonitorCPUModelInfoFree(modelInfo);
-    virCPUDefFree(cpu);
 
     return ret;
 }
@@ -3084,7 +3080,7 @@ virQEMUCapsGetCPUFeatures(virQEMUCaps *qemuCaps,
                           char ***features)
 {
     qemuMonitorCPUModelInfo *modelInfo;
-    char **list;
+    g_auto(GStrv) list = NULL;
     size_t i;
     size_t n;
     int ret = -1;
@@ -3113,7 +3109,6 @@ virQEMUCapsGetCPUFeatures(virQEMUCaps *qemuCaps,
     else
         ret = 0;
 
-    g_strfreev(list);
     return ret;
 }
 
@@ -3499,7 +3494,7 @@ virQEMUCapsGetCPUModelX86Data(virQEMUCaps *qemuCaps,
     unsigned long long sigFamily = 0;
     unsigned long long sigModel = 0;
     unsigned long long sigStepping = 0;
-    virCPUData *data = NULL;
+    g_autoptr(virCPUData) data = NULL;
     virCPUData *ret = NULL;
     size_t i;
 
@@ -3547,7 +3542,6 @@ virQEMUCapsGetCPUModelX86Data(virQEMUCaps *qemuCaps,
     ret = g_steal_pointer(&data);
 
  cleanup:
-    virCPUDataFree(data);
     return ret;
 }
 
@@ -3565,7 +3559,7 @@ virQEMUCapsInitCPUModelX86(virQEMUCaps *qemuCaps,
                            bool migratable)
 {
     g_autoptr(virDomainCapsCPUModels) cpuModels = NULL;
-    virCPUData *data = NULL;
+    g_autoptr(virCPUData) data = NULL;
     int ret = -1;
 
     if (!model)
@@ -3582,7 +3576,6 @@ virQEMUCapsInitCPUModelX86(virQEMUCaps *qemuCaps,
     ret = 0;
 
  cleanup:
-    virCPUDataFree(data);
     return ret;
 }
 
@@ -3769,9 +3762,9 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
 {
     char *str = NULL;
     xmlNodePtr hostCPUNode;
-    xmlNodePtr *nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    qemuMonitorCPUModelInfo *hostCPU = NULL;
+    g_autoptr(qemuMonitorCPUModelInfo) hostCPU = NULL;
     g_autofree char *xpath = g_strdup_printf("./hostCPU[@type='%s']", typeStr);
     int ret = -1;
     size_t i;
@@ -3881,8 +3874,6 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
 
  cleanup:
     VIR_FREE(str);
-    VIR_FREE(nodes);
-    qemuMonitorCPUModelInfoFree(hostCPU);
     return ret;
 }
 
@@ -4655,7 +4646,7 @@ virQEMUCapsSaveFile(void *data,
                     void *privData G_GNUC_UNUSED)
 {
     virQEMUCaps *qemuCaps = data;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     int ret = -1;
 
     xml = virQEMUCapsFormatCache(qemuCaps);
@@ -4674,7 +4665,6 @@ virQEMUCapsSaveFile(void *data,
 
     ret = 0;
  cleanup:
-    VIR_FREE(xml);
     return ret;
 }
 
@@ -5189,7 +5179,7 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCaps *qemuCaps,
 {
     struct virQEMUCapsStringFlags *entry;
     virJSONValue *schemareply;
-    GHashTable *schema = NULL;
+    g_autoptr(GHashTable) schema = NULL;
     size_t i;
 
     if (!(schemareply = qemuMonitorQueryQMPSchema(mon)))
@@ -5214,7 +5204,6 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCaps *qemuCaps,
             virQEMUCapsSet(qemuCaps, entry->flag);
     }
 
-    virHashFree(schema);
     return 0;
 }
 
@@ -5575,7 +5564,7 @@ virQEMUCapsCacheNew(const char *libDir,
                     uid_t runUid,
                     gid_t runGid)
 {
-    char *capsCacheDir = NULL;
+    g_autofree char *capsCacheDir = NULL;
     virFileCache *cache = NULL;
     virQEMUCapsCachePriv *priv = NULL;
     struct utsname uts;
@@ -5603,7 +5592,6 @@ virQEMUCapsCacheNew(const char *libDir,
         priv->kernelVersion = g_strdup_printf("%s %s", uts.release, uts.version);
 
  cleanup:
-    VIR_FREE(capsCacheDir);
     return cache;
 
  error:
