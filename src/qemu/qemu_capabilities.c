@@ -5430,18 +5430,18 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 unsigned int microcodeVersion,
                                 const char *kernelVersion)
 {
-    virQEMUCaps *qemuCaps;
+    g_autoptr(virQEMUCaps) qemuCaps = NULL;
     struct stat sb;
 
     if (!(qemuCaps = virQEMUCapsNewBinary(binary)))
-        goto error;
+        return NULL;
 
     /* We would also want to check faccessat if we cared about ACLs,
      * but we don't.  */
     if (stat(binary, &sb) < 0) {
         virReportSystemError(errno, _("Cannot check QEMU binary %s"),
                              binary);
-        goto error;
+        return NULL;
     }
     qemuCaps->ctime = sb.st_ctime;
 
@@ -5452,20 +5452,20 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
     if (!virFileIsExecutable(binary)) {
         virReportSystemError(errno, _("QEMU binary %s is not executable"),
                              binary);
-        goto error;
+        return NULL;
     }
 
     if (virFileExists(QEMU_MODDIR)) {
         if (stat(QEMU_MODDIR, &sb) < 0) {
             virReportSystemError(errno, _("Cannot check QEMU module directory %s"),
                                  QEMU_MODDIR);
-            goto error;
+            return NULL;
         }
         qemuCaps->modDirMtime = sb.st_mtime;
     }
 
     if (virQEMUCapsInitQMP(qemuCaps, libDir, runUid, runGid) < 0)
-        goto error;
+        return NULL;
 
     qemuCaps->libvirtCtime = virGetSelfLastChanged();
     qemuCaps->libvirtVersion = LIBVIR_VERSION_NUMBER;
@@ -5484,11 +5484,7 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
         qemuCaps->kvmSupportsSecureGuest = virQEMUCapsKVMSupportsSecureGuest();
     }
 
-    return qemuCaps;
-
- error:
-    virObjectUnref(qemuCaps);
-    return NULL;
+    return g_steal_pointer(&qemuCaps);
 }
 
 static void *
