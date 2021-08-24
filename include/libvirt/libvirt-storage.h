@@ -271,6 +271,10 @@ virStoragePoolPtr       virStoragePoolLookupByVolume    (virStorageVolPtr vol);
 virStoragePoolPtr       virStoragePoolLookupByTargetPath(virConnectPtr conn,
                                                          const char *path);
 
+typedef enum {
+    VIR_STORAGE_POOL_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
+} virStoragePoolDefineFlags;
+
 /*
  * Creating/destroying pools
  */

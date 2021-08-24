@@ -591,7 +591,7 @@ virStoragePoolCreateXML(virConnectPtr conn,
  * virStoragePoolDefineXML:
  * @conn: pointer to hypervisor connection
  * @xml: XML description for new pool
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virStoragePoolDefineFlags
  *
  * Define an inactive persistent storage pool or modify an existing persistent
  * one from the XML description.
