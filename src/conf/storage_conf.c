@@ -1004,12 +1004,14 @@ virStoragePoolDefParseNode(xmlDocPtr xml,
 
 static virStoragePoolDef *
 virStoragePoolDefParse(const char *xmlStr,
-                       const char *filename)
+                       const char *filename,
+                       unsigned int flags)
 {
     virStoragePoolDef *ret = NULL;
     g_autoptr(xmlDoc) xml = NULL;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(storage_pool_definition)"), NULL, false))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(storage_pool_definition)"),
+                           "storagepool.rng", flags & VIR_STORAGE_POOL_DEFINE_VALIDATE))) {
         ret = virStoragePoolDefParseNode(xml, xmlDocGetRootElement(xml));
     }
 
@@ -1018,16 +1020,17 @@ virStoragePoolDefParse(const char *xmlStr,
 
 
 virStoragePoolDef *
-virStoragePoolDefParseString(const char *xmlStr)
+virStoragePoolDefParseString(const char *xmlStr,
+                             unsigned int flags)
 {
-    return virStoragePoolDefParse(xmlStr, NULL);
+    return virStoragePoolDefParse(xmlStr, NULL, flags);
 }
 
 
 virStoragePoolDef *
 virStoragePoolDefParseFile(const char *filename)
 {
-    return virStoragePoolDefParse(NULL, filename);
+    return virStoragePoolDefParse(NULL, filename, 0);
 }
 
 

@@ -275,7 +275,8 @@ virStoragePoolDef *
 virStoragePoolDefParseXML(xmlXPathContextPtr ctxt);
 
 virStoragePoolDef *
-virStoragePoolDefParseString(const char *xml);
+virStoragePoolDefParseString(const char *xml,
+                             unsigned int flags);
 
 virStoragePoolDef *
 virStoragePoolDefParseFile(const char *filename);
