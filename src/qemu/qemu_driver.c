@@ -53,6 +53,7 @@
 #include "qemu_namespace.h"
 #include "qemu_saveimage.h"
 #include "qemu_snapshot.h"
+#include "qemu_validate.h"
 
 #include "virerror.h"
 #include "virlog.h"
@@ -19575,6 +19576,36 @@ qemuDomainSetBlockThreshold(virDomainPtr dom,
 }
 
 
+static int
+qemuDomainSetLifecycleActionValidate(virDomainDef *def,
+                                     virDomainLifecycle type,
+                                     virDomainLifecycleAction action)
+{
+    virDomainLifecycleAction onPoweroff = def->onPoweroff;
+    virDomainLifecycleAction onReboot = def->onReboot;
+    virDomainLifecycleAction onCrash = def->onCrash;
+
+    switch (type) {
+    case VIR_DOMAIN_LIFECYCLE_POWEROFF:
+        onPoweroff = action;
+        break;
+    case VIR_DOMAIN_LIFECYCLE_REBOOT:
+        onReboot = action;
+        break;
+    case VIR_DOMAIN_LIFECYCLE_CRASH:
+        onCrash = action;
+        break;
+    case VIR_DOMAIN_LIFECYCLE_LAST:
+        break;
+    }
+
+    if (qemuValidateLifecycleAction(onPoweroff, onReboot, onCrash) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static void
 qemuDomainModifyLifecycleAction(virDomainDef *def,
                                 virDomainLifecycle type,
@@ -19631,6 +19662,10 @@ qemuDomainSetLifecycleAction(virDomainPtr dom,
         goto cleanup;
 
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
+        goto endjob;
+
+    if ((def && qemuDomainSetLifecycleActionValidate(def, type, action) < 0) ||
+         (persistentDef && qemuDomainSetLifecycleActionValidate(persistentDef, type, action) < 0))
         goto endjob;
 
     if (def) {
