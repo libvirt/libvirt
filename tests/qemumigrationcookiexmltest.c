@@ -401,7 +401,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-    g_autoptr(virQEMUDriverConfig) cfg = NULL;
     g_autoptr(GHashTable) capslatest = NULL;
     g_autoptr(virConnect) conn = NULL;
 
@@ -412,7 +411,6 @@ mymain(void)
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-    cfg = virQEMUDriverGetConfig(&driver);
     driver.privileged = true;
 
     if (!(conn = virGetConnect()))
