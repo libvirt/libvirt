@@ -816,9 +816,9 @@ storagePoolDefineXML(virConnectPtr conn,
     virObjectEvent *event = NULL;
     g_autoptr(virStoragePoolDef) newDef = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_STORAGE_POOL_DEFINE_VALIDATE, NULL);
 
-    if (!(newDef = virStoragePoolDefParseString(xml, 0)))
+    if (!(newDef = virStoragePoolDefParseString(xml, flags)))
         goto cleanup;
 
     if (virXMLCheckIllegalChars("name", newDef->name, "\n") < 0)
