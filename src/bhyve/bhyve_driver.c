@@ -87,7 +87,8 @@ bhyveAutostartDomain(virDomainObj *vm, void *opaque)
 {
     const struct bhyveAutostartData *data = opaque;
     int ret = 0;
-    virObjectLock(vm);
+    VIR_LOCK_GUARD lock = virObjectLockGuard(vm);
+
     if (vm->autostart && !virDomainObjIsActive(vm)) {
         virResetLastError();
         ret = virBhyveProcessStart(data->conn, vm,
@@ -98,7 +99,6 @@ bhyveAutostartDomain(virDomainObj *vm, void *opaque)
                            vm->def->name, virGetLastErrorMessage());
         }
     }
-    virObjectUnlock(vm);
     return ret;
 }
 
