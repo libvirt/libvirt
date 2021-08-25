@@ -100,6 +100,9 @@
 #define STREQ_NULLABLE(a, b) (g_strcmp0(a, b) == 0)
 #define STRNEQ_NULLABLE(a, b) (g_strcmp0(a, b) != 0)
 
+#define CONCAT_(a, b) a ## b
+#define CONCAT(a, b) CONCAT_(a, b)
+
 #ifdef WIN32
 # ifndef O_CLOEXEC
 #  define O_CLOEXEC _O_NOINHERIT
