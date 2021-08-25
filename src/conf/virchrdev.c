@@ -237,12 +237,10 @@ static void virChrdevFDStreamCloseCb(virStreamPtr st G_GNUC_UNUSED,
                                       void *opaque)
 {
     virChrdevStreamInfo *priv = opaque;
-    virMutexLock(&priv->devs->lock);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&priv->devs->lock);
 
     /* remove entry from hash */
     virHashRemoveEntry(priv->devs->hash, priv->path);
-
-    virMutexUnlock(&priv->devs->lock);
 }
 
 /**
