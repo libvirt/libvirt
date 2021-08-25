@@ -1258,13 +1258,11 @@ int virLXCProcessStart(virConnectPtr conn,
         return -1;
     }
 
-    if (!vm->def->resource) {
-        virDomainResourceDef *res = g_new0(virDomainResourceDef, 1);
+    if (!vm->def->resource)
+        vm->def->resource = g_new0(virDomainResourceDef, 1);
 
-        res->partition = g_strdup("/machine");
-
-        vm->def->resource = res;
-    }
+    if (!vm->def->resource->partition)
+        vm->def->resource->partition = g_strdup("/machine");
 
     logfile = g_strdup_printf("%s/%s.log", cfg->logDir, vm->def->name);
 

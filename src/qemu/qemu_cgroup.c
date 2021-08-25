@@ -949,15 +949,11 @@ qemuInitCgroup(virDomainObj *vm,
     virCgroupFree(priv->cgroup);
     priv->cgroup = NULL;
 
-    if (!vm->def->resource) {
-        virDomainResourceDef *res;
+    if (!vm->def->resource)
+        vm->def->resource = g_new0(virDomainResourceDef, 1);
 
-        res = g_new0(virDomainResourceDef, 1);
-
-        res->partition = g_strdup("/machine");
-
-        vm->def->resource = res;
-    }
+    if (!vm->def->resource->partition)
+        vm->def->resource->partition = g_strdup("/machine");
 
     if (!g_path_is_absolute(vm->def->resource->partition)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
