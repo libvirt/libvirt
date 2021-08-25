@@ -59,6 +59,14 @@ v7.7.0 (unreleased)
     pool when built without numactl. This is now fixed and the pool can be
     allocated/reported on properly.
 
+  * qemu: Record proper ``backing`` format for overlays of qcow2+luks images
+
+    Libvirt would record ``luks`` instead of ``qcow2`` into the metadata. In
+    practice this is a problem only when inspecting images manually via
+    ``qemu-img`` as with libvirt users must use full specification of the
+    backing chain in the domain XML which supersedes information recorded in
+    the image metadata.
+
 
 v7.6.0 (2021-08-02)
 ===================
