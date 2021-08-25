@@ -291,10 +291,10 @@ void virChrdevFree(virChrdevs *devs)
     if (!devs)
         return;
 
-    virMutexLock(&devs->lock);
-    virHashForEachSafe(devs->hash, virChrdevFreeClearCallbacks, NULL);
-    g_clear_pointer(&devs->hash, g_hash_table_unref);
-    virMutexUnlock(&devs->lock);
+    VIR_WITH_MUTEX_LOCK_GUARD(&devs->lock) {
+        virHashForEachSafe(devs->hash, virChrdevFreeClearCallbacks, NULL);
+        g_clear_pointer(&devs->hash, g_hash_table_unref);
+    }
     virMutexDestroy(&devs->lock);
 
     g_free(devs);
