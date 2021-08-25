@@ -750,7 +750,7 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
     info->args.newargs = false;
 
     if (info->args.invalidarg) {
-        fprintf(stderr, "Invalid agument encountered by 'testQemuInfoSetArgs'\n");
+        fprintf(stderr, "Invalid argument encountered by 'testQemuInfoSetArgs'\n");
         return -1;
     }
 
