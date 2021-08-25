@@ -45,6 +45,36 @@ v7.7.0 (unreleased)
     The genid attribute is now reported for VMX guests. Libvirt can now
     properly process super wide SCSI bus (64 units).
 
+  * qemu: Lifecycle action (``on_poweroff``/``on_reboot``) handling improvements
+
+    The handling of lifecycle actions was fixed and improved in multiple ways:
+
+    - ``restart-rename`` action was forbidden
+
+      The action was never properly implemented in the qemu driver and didn't
+      actually result in a restart of the VM but rather termination. The qemu
+      driver now rejects such configurations.
+
+    - ``preserve`` action was forbidden
+
+      Similarly to the previous case this never worked as the intended semantics
+      of the actions dictate. It's better to not allow it at all until there's a
+      proper implementation
+
+    - ``reboot`` action of ``on_poweroff`` now actually works
+
+      The guest OS is now rebooted instead of terminating the VM when the
+      ``reboot`` action is used and the guest OS powers down. Note that it's
+      incompatible with ``on_reboot`` set to ``destroy``.
+
+    - Changes in action action of ``on_reboot`` are now updated with qemu
+
+      Libvirtd can now properly update the ``on_reboot`` action in qemu which
+      allows proper handling when changing between ``reboot`` and ``destroy``
+      actions. In addition, switching from ``reboot`` to ``destroy`` was
+      forbidden for older qemus which don't support the update API as the guest
+      could still reboot and execute some instructions until it was terminated.
+
 * **Bug fixes**
 
   * qemu: Open chardev logfile on behalf of QEMU
