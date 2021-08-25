@@ -96,6 +96,21 @@ void virMutexUnlock(virMutex *m)
     pthread_mutex_unlock(&m->lock);
 }
 
+virLockGuard virLockGuardLock(virMutex *m)
+{
+    virLockGuard l = { m };
+    virMutexLock(m);
+    return l;
+}
+
+void virLockGuardUnlock(virLockGuard *l)
+{
+    if (!l || !l->mutex)
+        return;
+
+    virMutexUnlock(g_steal_pointer(&l->mutex));
+}
+
 
 int virRWLockInit(virRWLock *m)
 {

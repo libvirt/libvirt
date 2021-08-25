@@ -3388,6 +3388,8 @@ virCondInit;
 virCondSignal;
 virCondWait;
 virCondWaitUntil;
+virLockGuardLock;
+virLockGuardUnlock;
 virMutexDestroy;
 virMutexInit;
 virMutexInitRecursive;
