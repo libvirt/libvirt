@@ -33,6 +33,13 @@ v7.7.0 (unreleased)
     * Add flag ``VIR_INTERFACE_DEFINE_VALIDATE`` to validate interface input xml.
       For virsh, users can use it as ``iface-define --validate``.
 
+  * Add SecurityManager APIs for labeling network devices
+
+    New ``virSecurityManagerSetNetdevLabel`` and ``virSecurityManagerSetNetdevLabel``
+    APIs are introduced and implemented in the Apparmor security driver.
+    The qemu driver uses the APIs to label vhostuser ports on hotplug and
+    restore labeling on unplug.
+
 * **Bug fixes**
 
 
