@@ -126,6 +126,11 @@ v7.5.0 (2021-07-01)
     Since it's impossible to fix it without running into further regressions
     the documentation was improved to document the intricacies.
 
+  * vmx: Parse vm.genid and support super wide SCSI bus
+
+    The genid attribute is now reported for VMX guests. Libvirt can now
+    properly process super wide SCSI bus (64 units).
+
 * **Bug fixes**
 
   * qemu: Fixed validation of disk ``iothread`` configuration
@@ -133,6 +138,18 @@ v7.5.0 (2021-07-01)
     The validation of ``iothread`` config was previously moved to a place where
     it caused bogus errors when address wasn't allocated when hotplugging a
     disk. The check is now removed as it wasn't actually necessary at all.
+
+  * qemu: Open chardev logfile on behalf of QEMU
+
+    Guests with a logfile configured for their chardevs are now able to start
+    even when no virtlogd is configured.
+
+  * virhostmem: Handle numactl-less build in hugepages allocation/reporting
+
+    Some architectures don't have notion of NUMA (e.g. s390x) but do support
+    hugepages. Libvirt silently ignored requests to allocate/report hugepage
+    pool when built without numactl. This is now fixed and the pool can be
+    allocated/reported on properly.
 
 
 v7.4.0 (2021-06-01)
