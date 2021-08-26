@@ -503,6 +503,10 @@ static const vshCmdInfo info_nwfilter_binding_create[] = {
 static const vshCmdOptDef opts_nwfilter_binding_create[] = {
     VIRSH_COMMON_OPT_FILE(N_("file containing an XML network "
                              "filter binding description")),
+    {.name = "validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the XML against the schema")
+    },
     {.name = NULL}
 };
 
@@ -513,15 +517,19 @@ cmdNWFilterBindingCreate(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     char *buffer;
+    unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
 
+    if (vshCommandOptBool(cmd, "validate"))
+        flags |= VIR_NWFILTER_BINDING_CREATE_VALIDATE;
+
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    binding = virNWFilterBindingCreateXML(priv->conn, buffer, 0);
+    binding = virNWFilterBindingCreateXML(priv->conn, buffer, flags);
     VIR_FREE(buffer);
 
     if (binding != NULL) {

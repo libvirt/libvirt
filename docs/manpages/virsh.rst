@@ -7588,7 +7588,7 @@ nwfilter-binding-create
 
 ::
 
-   nwfilter-binding-create xmlfile
+   nwfilter-binding-create xmlfile [--validate]
 
 Associate a network port with a network filter. The network filter backend
 will immediately attempt to instantiate the filter rules on the port. This
@@ -7598,6 +7598,9 @@ bindings are generally automatically managed by the hypervisor, using this
 command to define a filter for a network port and then starting the guest
 afterwards may prevent the guest from starting if it attempts to use the
 network port and finds a filter already defined.
+
+Optionally, the format of the input XML file can be validated against an
+internal RNG schema with *--validate*.
 
 
 nwfilter-binding-delete
