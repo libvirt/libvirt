@@ -718,7 +718,7 @@ virNWFilterBindingGetFilterName(virNWFilterBindingPtr binding)
  * virNWFilterBindingCreateXML:
  * @conn: pointer to the hypervisor connection
  * @xml: an XML description of the binding
- * @flags: currently unused, pass 0
+ * @flags: bitwise-OR of virNWFilterBindingCreateFlags
  *
  * Define a new network filter, based on an XML description
  * similar to the one returned by virNWFilterGetXMLDesc(). This

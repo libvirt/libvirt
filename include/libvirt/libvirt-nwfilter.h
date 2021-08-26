@@ -107,6 +107,11 @@ int                     virNWFilterFree         (virNWFilterPtr nwfilter);
 /*
  * NWFilter information
  */
+
+typedef enum {
+    VIR_NWFILTER_BINDING_CREATE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
+} virNWFilterBindingCreateFlags;
+
 const char*             virNWFilterGetName       (virNWFilterPtr nwfilter);
 int                     virNWFilterGetUUID       (virNWFilterPtr nwfilter,
                                                   unsigned char *uuid);
