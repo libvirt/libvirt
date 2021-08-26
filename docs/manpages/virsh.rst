@@ -5452,10 +5452,12 @@ net-port-create
 
 ::
 
-   net-port-create network file
+   net-port-create network file [--validate]
 
 Allocate a new network port reserving resources based on the
 port description.
+Optionally, the format of the input XML file can be validated against an
+internal RNG schema with *--validate*.
 
 
 net-port-dumpxml

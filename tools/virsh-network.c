@@ -1492,6 +1492,10 @@ static const vshCmdInfo info_network_port_create[] = {
 static const vshCmdOptDef opts_network_port_create[] = {
     VIRSH_COMMON_OPT_NETWORK_FULL(VIR_CONNECT_LIST_NETWORKS_ACTIVE),
     VIRSH_COMMON_OPT_FILE(N_("file containing an XML network port description")),
+    {.name = "validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the XML against the schema")
+    },
     {.name = NULL}
 };
 
@@ -1503,6 +1507,7 @@ cmdNetworkPortCreate(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     char *buffer = NULL;
     virNetworkPtr network = NULL;
+    unsigned int flags = 0;
 
     network = virshCommandOptNetwork(ctl, cmd, NULL);
     if (network == NULL)
@@ -1511,12 +1516,15 @@ cmdNetworkPortCreate(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         goto cleanup;
 
+    if (vshCommandOptBool(cmd, "validate"))
+        flags |= VIR_NETWORK_PORT_CREATE_VALIDATE;
+
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
         vshSaveLibvirtError();
         goto cleanup;
     }
 
-    port = virNetworkPortCreateXML(network, buffer, 0);
+    port = virNetworkPortCreateXML(network, buffer, flags);
 
     if (port != NULL) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
