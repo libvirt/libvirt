@@ -178,12 +178,15 @@ virNWFilterBindingDefParseNode(xmlDocPtr xml,
 
 static virNWFilterBindingDef *
 virNWFilterBindingDefParse(const char *xmlStr,
-                           const char *filename)
+                           const char *filename,
+                           unsigned int flags)
 {
     virNWFilterBindingDef *def = NULL;
     g_autoptr(xmlDoc) xml = NULL;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(nwfilterbinding_definition)"), NULL, false))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(nwfilterbinding_definition)"),
+                           "nwfilterbinding.rng",
+                           flags & VIR_NWFILTER_BINDING_CREATE_VALIDATE))) {
         def = virNWFilterBindingDefParseNode(xml, xmlDocGetRootElement(xml));
     }
 
@@ -192,16 +195,17 @@ virNWFilterBindingDefParse(const char *xmlStr,
 
 
 virNWFilterBindingDef *
-virNWFilterBindingDefParseString(const char *xmlStr)
+virNWFilterBindingDefParseString(const char *xmlStr,
+                                 unsigned int flags)
 {
-    return virNWFilterBindingDefParse(xmlStr, NULL);
+    return virNWFilterBindingDefParse(xmlStr, NULL, flags);
 }
 
 
 virNWFilterBindingDef *
 virNWFilterBindingDefParseFile(const char *filename)
 {
-    return virNWFilterBindingDefParse(NULL, filename);
+    return virNWFilterBindingDefParse(NULL, filename, 0);
 }
 
 

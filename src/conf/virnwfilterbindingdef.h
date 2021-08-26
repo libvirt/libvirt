@@ -51,7 +51,8 @@ virNWFilterBindingDefParseNode(xmlDocPtr xml,
                                xmlNodePtr root);
 
 virNWFilterBindingDef *
-virNWFilterBindingDefParseString(const char *xml);
+virNWFilterBindingDefParseString(const char *xml,
+                                 unsigned int flags);
 
 virNWFilterBindingDef *
 virNWFilterBindingDefParseFile(const char *filename);
