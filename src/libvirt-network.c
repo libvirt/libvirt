@@ -1485,7 +1485,7 @@ virNetworkPortGetParameters(virNetworkPortPtr port,
  * virNetworkPortCreateXML:
  * @net: pointer to the network object
  * @xmldesc: an XML description of the port
- * @flags: currently unused, pass 0
+ * @flags: bitwise-OR of virNetworkPortCreateFlags
  *
  * Create a new network port, based on an XML description
  * similar to the one returned by virNetworkPortGetXMLDesc()

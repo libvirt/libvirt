@@ -367,6 +367,7 @@ virNetworkPortLookupByUUIDString(virNetworkPtr net,
 
 typedef enum {
     VIR_NETWORK_PORT_CREATE_RECLAIM = (1 << 0), /* reclaim existing used resources */
+    VIR_NETWORK_PORT_CREATE_VALIDATE = (1 << 1), /* Validate the XML document against schema */
 } virNetworkPortCreateFlags;
 
 virNetworkPortPtr
