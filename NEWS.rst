@@ -19,6 +19,20 @@ v7.7.0 (unreleased)
 
 * **Improvements**
 
+  * virsh: Allow XML validation for define of: storage pool, network, secret,
+    nwfilter, interface
+
+    * Add flag ``VIR_STORAGE_POOL_DEFINE_VALIDATE`` to validate storage pool
+      input xml. For virsh, users can use it as ``virsh pool-define --validate``.
+    * Add flag ``VIR_NETWORK_DEFINE_VALIDATE`` to validate network input xml. For
+      virsh, users can use it as ``net-define --validate``.
+    * Add flag ``VIR_SECRET_DEFINE_VALIDATE`` to validate secret input xml. For
+      virsh, users can use it as ``secret-define --validate``.
+    * Add flag ``VIR_NWFILTER_DEFINE_VALIDATE`` to validate nwfilter input xml.
+      For virsh, users can use it as ``nwfilter-define --validate``.
+    * Add flag ``VIR_INTERFACE_DEFINE_VALIDATE`` to validate interface input xml.
+      For virsh, users can use it as ``iface-define --validate``.
+
 * **Bug fixes**
 
 
