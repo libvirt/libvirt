@@ -287,12 +287,15 @@ virNetworkPortDefParseNode(xmlDocPtr xml,
 
 static virNetworkPortDef *
 virNetworkPortDefParse(const char *xmlStr,
-                       const char *filename)
+                       const char *filename,
+                       unsigned int flags)
 {
     virNetworkPortDef *def = NULL;
     g_autoptr(xmlDoc) xml = NULL;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(networkport_definition)"), NULL, false))) {
+    if ((xml = virXMLParse(filename, xmlStr, _("(networkport_definition)"),
+                           "networkport.rng",
+                           flags & VIR_NETWORK_PORT_CREATE_VALIDATE))) {
         def = virNetworkPortDefParseNode(xml, xmlDocGetRootElement(xml));
     }
 
@@ -301,16 +304,17 @@ virNetworkPortDefParse(const char *xmlStr,
 
 
 virNetworkPortDef *
-virNetworkPortDefParseString(const char *xmlStr)
+virNetworkPortDefParseString(const char *xmlStr,
+                             unsigned int flags)
 {
-    return virNetworkPortDefParse(xmlStr, NULL);
+    return virNetworkPortDefParse(xmlStr, NULL, flags);
 }
 
 
 virNetworkPortDef *
 virNetworkPortDefParseFile(const char *filename)
 {
-    return virNetworkPortDefParse(NULL, filename);
+    return virNetworkPortDefParse(NULL, filename, 0);
 }
 
 

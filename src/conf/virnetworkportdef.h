@@ -86,7 +86,8 @@ virNetworkPortDefParseNode(xmlDocPtr xml,
                            xmlNodePtr root);
 
 virNetworkPortDef *
-virNetworkPortDefParseString(const char *xml);
+virNetworkPortDefParseString(const char *xml,
+                             unsigned int flags);
 
 virNetworkPortDef *
 virNetworkPortDefParseFile(const char *filename);

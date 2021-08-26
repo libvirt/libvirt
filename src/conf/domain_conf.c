@@ -30330,7 +30330,7 @@ virDomainNetCreatePort(virConnectPtr conn,
     VIR_FREE(portxml);
 
     if (!(portxml = virNetworkPortGetXMLDesc(port, 0)) ||
-        !(portdef = virNetworkPortDefParseString(portxml)) ||
+        !(portdef = virNetworkPortDefParseString(portxml, 0)) ||
         virDomainNetDefActualFromNetworkPort(iface, portdef) < 0) {
         virErrorPreserveLast(&save_err);
         virNetworkPortDelete(port, 0);

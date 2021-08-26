@@ -5287,7 +5287,7 @@ networkPortCreateXML(virNetworkPtr net,
 
     def = virNetworkObjGetDef(obj);
 
-    if (!(portdef = virNetworkPortDefParseString(xmldesc)))
+    if (!(portdef = virNetworkPortDefParseString(xmldesc, 0)))
         goto cleanup;
 
     if (virNetworkPortCreateXMLEnsureACL(net->conn, def, portdef) < 0)
