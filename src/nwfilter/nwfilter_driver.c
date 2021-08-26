@@ -737,7 +737,7 @@ nwfilterBindingCreateXML(virConnectPtr conn,
     virNWFilterBindingObj *obj = NULL;
     virNWFilterBindingPtr ret = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_NWFILTER_BINDING_CREATE_VALIDATE, NULL);
 
     if (!driver->privileged) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -745,7 +745,7 @@ nwfilterBindingCreateXML(virConnectPtr conn,
         return NULL;
     }
 
-    def = virNWFilterBindingDefParseString(xml, 0);
+    def = virNWFilterBindingDefParseString(xml, flags);
     if (!def)
         return NULL;
 
