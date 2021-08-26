@@ -5280,14 +5280,15 @@ networkPortCreateXML(virNetworkPtr net,
     virNetworkPortPtr ret = NULL;
     int rc;
 
-    virCheckFlags(VIR_NETWORK_PORT_CREATE_RECLAIM, NULL);
+    virCheckFlags(VIR_NETWORK_PORT_CREATE_RECLAIM |
+                  VIR_NETWORK_PORT_CREATE_VALIDATE, NULL);
 
     if (!(obj = networkObjFromNetwork(net)))
         return ret;
 
     def = virNetworkObjGetDef(obj);
 
-    if (!(portdef = virNetworkPortDefParseString(xmldesc, 0)))
+    if (!(portdef = virNetworkPortDefParseString(xmldesc, flags)))
         goto cleanup;
 
     if (virNetworkPortCreateXMLEnsureACL(net->conn, def, portdef) < 0)
