@@ -242,3 +242,5 @@ void qemuProcessQMPFree(qemuProcessQMP *proc);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuProcessQMP, qemuProcessQMPFree);
 
 int qemuProcessQMPStart(qemuProcessQMP *proc);
+
+bool qemuProcessRebootAllowed(const virDomainDef *def);

@@ -6361,6 +6361,24 @@ qemuProcessPrepareHostHostdevs(virDomainObj *vm)
 }
 
 
+/**
+ * qemuProcessRebootAllowed:
+ * @def: domain definition
+ *
+ * This function encapsulates the logic which dictated whether '-no-reboot' was
+ * used instead of '-no-shutdown' which is used  QEMU versions which don't
+ * support the 'set-action' QMP command.
+ */
+bool
+qemuProcessRebootAllowed(const virDomainDef *def)
+{
+    return def->onReboot != VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY ||
+           def->onPoweroff != VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY ||
+           (def->onCrash != VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY &&
+            def->onCrash != VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY);
+}
+
+
 static void
 qemuProcessPrepareAllowReboot(virDomainObj *vm)
 {
@@ -6375,14 +6393,7 @@ qemuProcessPrepareAllowReboot(virDomainObj *vm)
     if (priv->allowReboot != VIR_TRISTATE_BOOL_ABSENT)
         return;
 
-    if (def->onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY &&
-        def->onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY &&
-        (def->onCrash == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY ||
-         def->onCrash == VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY)) {
-        priv->allowReboot = VIR_TRISTATE_BOOL_NO;
-    } else {
-        priv->allowReboot = VIR_TRISTATE_BOOL_YES;
-    }
+    priv->allowReboot = virTristateBoolFromBool(qemuProcessRebootAllowed(def));
 }
 
 
