@@ -5293,6 +5293,8 @@ qemuDomainHotplugAddIOThread(virQEMUDriver *driver,
     qemuMonitorIOThreadInfo **new_iothreads = NULL;
     virDomainIOThreadIDDef *iothrid;
     virJSONValue *props = NULL;
+    bool threadAdded = false;
+    bool objectAdded = false;
 
     if (!(alias = g_strdup_printf("iothread%u", iothread_id)))
         return -1;
@@ -5304,6 +5306,8 @@ qemuDomainHotplugAddIOThread(virQEMUDriver *driver,
 
     if (qemuMonitorAddObject(priv->mon, &props, NULL) < 0)
         goto exit_monitor;
+
+    objectAdded = true;
 
     exp_niothreads++;
 
@@ -5344,6 +5348,7 @@ qemuDomainHotplugAddIOThread(virQEMUDriver *driver,
     if (!(iothrid = virDomainIOThreadIDAdd(vm->def, iothread_id)))
         goto cleanup;
 
+    threadAdded = true;
     iothrid->thread_id = new_iothreads[idx]->thread_id;
 
     if (qemuProcessSetupIOThread(vm, iothrid) < 0)
@@ -5352,6 +5357,19 @@ qemuDomainHotplugAddIOThread(virQEMUDriver *driver,
     ret = 0;
 
  cleanup:
+    if (ret < 0) {
+        if (threadAdded)
+            virDomainIOThreadIDDel(vm->def, iothread_id);
+
+        if (objectAdded) {
+            qemuDomainObjEnterMonitor(driver, vm);
+            if (qemuMonitorDelObject(priv->mon, alias, true) < 0)
+                VIR_WARN("deletion of iothread object %d of domain %s failed when cleanup",
+                         iothread_id, vm->def->name);
+            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        }
+    }
+
     if (new_iothreads) {
         for (idx = 0; idx < new_niothreads; idx++)
             VIR_FREE(new_iothreads[idx]);
